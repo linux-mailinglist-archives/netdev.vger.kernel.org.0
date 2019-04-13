@@ -2,135 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 597273D674B
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 21:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B8743D674C
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 21:08:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232332AbhGZS14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 14:27:56 -0400
-Received: from mslow1.mail.gandi.net ([217.70.178.240]:34747 "EHLO
+        id S232391AbhGZS15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 14:27:57 -0400
+Received: from mslow1.mail.gandi.net ([217.70.178.240]:40841 "EHLO
         mslow1.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231921AbhGZS1z (ORCPT
+        with ESMTP id S231548AbhGZS1z (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 14:27:55 -0400
 Received: from relay9-d.mail.gandi.net (unknown [217.70.183.199])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id BC7B0CEB87;
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 82D09C6D29;
         Mon, 26 Jul 2021 19:04:55 +0000 (UTC)
 Received: from h7.dl5rb.org.uk (p57907709.dip0.t-ipconnect.de [87.144.119.9])
         (Authenticated sender: ralf@linux-mips.org)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id A4BC0FF807;
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 79C7BFF804;
         Mon, 26 Jul 2021 19:04:33 +0000 (UTC)
 Received: from h7.dl5rb.org.uk (localhost [127.0.0.1])
-        by h7.dl5rb.org.uk (8.16.1/8.16.1) with ESMTPS id 16QJ4WZQ836365
+        by h7.dl5rb.org.uk (8.16.1/8.16.1) with ESMTPS id 16QJ4WAn836356
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
         Mon, 26 Jul 2021 21:04:32 +0200
 Received: (from ralf@localhost)
-        by h7.dl5rb.org.uk (8.16.1/8.16.1/Submit) id 16QJ4WB9836364;
+        by h7.dl5rb.org.uk (8.16.1/8.16.1/Submit) id 16QJ4WEd836355;
         Mon, 26 Jul 2021 21:04:32 +0200
-Message-Id: <d6830e69587964150cb51fe54f5a1d8459373ff5.1627295848.git.ralf@linux-mips.org>
+Message-Id: <e6060adc15ab772814303260f8591dbf730fcfc3.1627295848.git.ralf@linux-mips.org>
 In-Reply-To: <cover.1627295848.git.ralf@linux-mips.org>
 References: <cover.1627295848.git.ralf@linux-mips.org>
 From:   Ralf Baechle <ralf@linux-mips.org>
-Date:   Fri, 12 Apr 2019 14:27:07 +0200
-Subject: [PATCH 5/6] ROSE: Add rose_ntop implementation.
+Date:   Sat, 13 Apr 2019 18:17:36 +0200
+Subject: [PATCH 3/6] NETROM: Add netrom_ntop implementation.
 To:     Stephen Hemminger <stephen@networkplumber.org>
 Cc:     netdev@vger.kernel.org, linux-hams@vger.kernel.org
-Lines:  103
+Lines:  118
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ROSE addresses are ten digit numbers, basically like North American
-telephone numbers.
+NETROM uses AX.25 addresses so this is a simple wrapper around ax25_ntop1.
 
 Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
 ---
- Makefile        |  3 +++
- include/utils.h |  2 ++
- lib/rose_ntop.c | 56 +++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 61 insertions(+)
- create mode 100644 lib/rose_ntop.c
+ Makefile          |  3 +++
+ include/utils.h   |  2 ++
+ lib/ax25_ntop.c   | 22 +++++++++++++++-------
+ lib/netrom_ntop.c | 23 +++++++++++++++++++++++
+ 4 files changed, 43 insertions(+), 7 deletions(-)
+ create mode 100644 lib/netrom_ntop.c
 
 diff --git a/Makefile b/Makefile
-index df894d54..5eddd504 100644
+index 551f528b..df894d54 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -43,6 +43,9 @@ DEFINES+=-DCONFDIR=\"$(CONFDIR)\" \
- #options for AX.25
- ADDLIB+=ax25_ntop.o
- 
-+#options for AX.25
-+ADDLIB+=rose_ntop.o
-+
+@@ -46,6 +46,9 @@ ADDLIB+=ax25_ntop.o
  #options for mpls
  ADDLIB+=mpls_ntop.o mpls_pton.o
  
++#options for NETROM
++ADDLIB+=netrom_ntop.o
++
+ CC := gcc
+ HOSTCC ?= $(CC)
+ DEFINES += -D_GNU_SOURCE
 diff --git a/include/utils.h b/include/utils.h
-index c685a392..ba981186 100644
+index 31c1e442..c685a392 100644
 --- a/include/utils.h
 +++ b/include/utils.h
-@@ -211,6 +211,8 @@ int inet_addr_match_rta(const inet_prefix *m, const struct rtattr *rta);
- 
- const char *ax25_ntop(int af, const void *addr, char *str, socklen_t len);
- 
-+const char *rose_ntop(int af, const void *addr, char *buf, socklen_t buflen);
-+
+@@ -214,6 +214,8 @@ const char *ax25_ntop(int af, const void *addr, char *str, socklen_t len);
  const char *mpls_ntop(int af, const void *addr, char *str, size_t len);
  int mpls_pton(int af, const char *src, void *addr, size_t alen);
  
-diff --git a/lib/rose_ntop.c b/lib/rose_ntop.c
++const char *netrom_ntop(int af, const void *addr, char *str, socklen_t len);
++
+ extern int __iproute2_hz_internal;
+ int __get_hz(void);
+ 
+diff --git a/lib/ax25_ntop.c b/lib/ax25_ntop.c
+index 48098581..cfd0e04b 100644
+--- a/lib/ax25_ntop.c
++++ b/lib/ax25_ntop.c
+@@ -6,13 +6,22 @@
+ 
+ #include "utils.h"
+ 
++const char *ax25_ntop1(const ax25_address *src, char *dst, socklen_t size);
++
+ /*
+  * AX.25 addresses are based on Amateur radio callsigns followed by an SSID
+- * like XXXXXX-SS where the callsign is up to 6 characters which are either
+- * letters or digits and the SSID is a decimal number in the range 0..15.
++ * like XXXXXX-SS where the callsign consists of up to 6 ASCII characters
++ * which are either letters or digits and the SSID is a decimal number in the
++ * range 0..15.
+  * Amateur radio callsigns are assigned by a country's relevant authorities
+  * and are 3..6 characters though a few countries have assigned callsigns
+  * longer than that.  AX.25 is not able to handle such longer callsigns.
++ * There are further restrictions on the format of valid callsigns by
++ * applicable national and international law.  Linux doesn't need to care and
++ * will happily accept anything that consists of 6 ASCII characters in the
++ * range of A-Z and 0-9 for a callsign such as the default AX.25 MAC address
++ * LINUX-1 and the default broadcast address QST-0.
++ * The SSID is just a number and not encoded in ASCII digits.
+  *
+  * Being based on HDLC AX.25 encodes addresses by shifting them one bit left
+  * thus zeroing bit 0, the HDLC extension bit for all but the last bit of
+@@ -22,14 +31,13 @@
+  * Linux' internal representation of AX.25 addresses in Linux is very similar
+  * to this on the on-air or on-the-wire format.  The callsign is padded to
+  * 6 octets by adding spaces, followed by the SSID octet then all 7 octets
+- * are left-shifted by one byte.
++ * are left-shifted by one bit.
+  *
+- * This for example turns "LINUX-1" where the callsign is LINUX and SSID is 1
+- * into 98:92:9c:aa:b0:40:02.
++ * For example, for the address "LINUX-1" the callsign is LINUX and SSID is 1
++ * the internal format is 98:92:9c:aa:b0:40:02.
+  */
+ 
+-static const char *ax25_ntop1(const ax25_address *src, char *dst,
+-			      socklen_t size)
++const char *ax25_ntop1(const ax25_address *src, char *dst, socklen_t size)
+ {
+ 	char c, *s;
+ 	int n;
+diff --git a/lib/netrom_ntop.c b/lib/netrom_ntop.c
 new file mode 100644
-index 00000000..c9ba712c
+index 00000000..3dd6cb0b
 --- /dev/null
-+++ b/lib/rose_ntop.c
-@@ -0,0 +1,56 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
++++ b/lib/netrom_ntop.c
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0 */
 +
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+#include <fcntl.h>
-+#include <sys/ioctl.h>
 +#include <sys/socket.h>
-+#include <netinet/in.h>
-+#include <arpa/inet.h>
-+#include <string.h>
 +#include <errno.h>
++#include <linux/ax25.h>
 +
-+#include <linux/netdevice.h>
-+#include <linux/if_arp.h>
-+#include <linux/sockios.h>
-+#include <linux/rose.h>
-+
-+#include "rt_names.h"
 +#include "utils.h"
 +
-+static const char *rose_ntop1(const rose_address *src, char *dst,
-+			      socklen_t size)
-+{
-+	char *p = dst;
-+	int i;
++const char *ax25_ntop1(const ax25_address *src, char *dst, socklen_t size);
 +
-+	if (size < 10)
-+		return NULL;
-+
-+	for (i = 0; i < 5; i++) {
-+		*p++ = '0' + ((src->rose_addr[i] >> 4) & 0xf);
-+		*p++ = '0' + ((src->rose_addr[i]     ) & 0xf);
-+	}
-+
-+	if (size == 10)
-+		return dst;
-+
-+	*p = '\0';
-+
-+	return dst;
-+}
-+
-+const char *rose_ntop(int af, const void *addr, char *buf, socklen_t buflen)
++const char *netrom_ntop(int af, const void *addr, char *buf, socklen_t buflen)
 +{
 +	switch (af) {
-+	case AF_ROSE:
++	case AF_NETROM:
 +		errno = 0;
-+		return rose_ntop1((rose_address *)addr, buf, buflen);
++		return ax25_ntop1((ax25_address *)addr, buf, buflen);
 +
 +	default:
 +		errno = EAFNOSUPPORT;
