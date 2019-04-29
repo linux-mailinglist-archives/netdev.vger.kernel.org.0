@@ -2,60 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A12E230
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 14:22:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F417E27C
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 14:24:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728125AbfD2MWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 08:22:15 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:51250 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727710AbfD2MWP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 08:22:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Transfer-Encoding
-        :Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=xl4MrYPDmF4P7eoHhj1V5OKIKtqTlTb2zUS6E3j/D/k=; b=urzXn1TjNfhZgYIXvoNGdwcEL4
-        t32R7kXmkyDSDQ8U38vmgrR+PE3OEpsGs2J1p8qyU84uSDRMwJp4FZOCpIdDSVXWvMsDoT0+2JP2z
-        XNYcto0rN83HQx8dovrIibRYuZiernalkybiVBLziDtJ4OVr90Gvho1ip9OXiRTryUyGidMlj7Kbv
-        BkEwJrkIRessWqBBV40J+H7O5zd8oGPLTfKDWUwzoDo8wjTuHo4Sd8Q12kPlasjjsUM1hELMZ8n0/
-        U7mTMPPQKj2Pu/Bopf53s0bWYZQJQKNBMgwLYhVlOLWfwrfJsQzL5lx0ACoA2NoJTUE78c4EzZlle
-        bpg2Kz8Q==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red Hat Linux))
-        id 1hL5IQ-0001hq-Mt; Mon, 29 Apr 2019 12:22:10 +0000
-Date:   Mon, 29 Apr 2019 05:22:10 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Nicholas Mc Guire <der.herr@hofr.at>,
-        Nicholas Mc Guire <hofrat@osadl.org>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rds: ib: force endiannes annotation
-Message-ID: <20190429122210.GB32474@infradead.org>
-References: <1556518178-13786-1-git-send-email-hofrat@osadl.org>
- <20443fd3-bd1e-9472-8ca3-e3014e59f249@solarflare.com>
- <20190429111836.GA17830@osadl.at>
- <2ffed5fc-a372-3f90-e655-bcbc740eed33@solarflare.com>
+        id S1728071AbfD2MY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 08:24:27 -0400
+Received: from orbyte.nwl.cc ([151.80.46.58]:37724 "EHLO orbyte.nwl.cc"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727969AbfD2MY1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 08:24:27 -0400
+Received: from localhost ([::1]:50814 helo=tatos)
+        by orbyte.nwl.cc with esmtp (Exim 4.91)
+        (envelope-from <phil@nwl.cc>)
+        id 1hL5Kb-0003ag-G0; Mon, 29 Apr 2019 14:24:25 +0200
+From:   Phil Sutter <phil@nwl.cc>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: [iproute PATCH] ip-xfrm: Respect family in deleteall and list commands
+Date:   Mon, 29 Apr 2019 14:24:24 +0200
+Message-Id: <20190429122424.28196-1-phil@nwl.cc>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2ffed5fc-a372-3f90-e655-bcbc740eed33@solarflare.com>
-User-Agent: Mutt/1.9.2 (2017-12-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 01:02:31PM +0100, Edward Cree wrote:
-> ... are some bitwise ops on the values (bitwise ops are legal in any
->  endianness) and incrementation of the pointers (which cares only about
->  the pointee size, not type).
+Allow to limit 'ip xfrm {state|policy} list' output to a certain address
+family and to delete all states/policies by family.
 
-Oh, true.  That is why the underlying annotation is called __bitwise :)
-I'll take my previous comment back.
+Although preferred_family was already set in filters, the filter
+function ignored it. To enable filtering despite the lack of other
+selectors, filter.use has to be set if family is not AF_UNSPEC.
+
+Signed-off-by: Phil Sutter <phil@nwl.cc>
+---
+ ip/xfrm_policy.c   | 6 +++++-
+ ip/xfrm_state.c    | 6 +++++-
+ man/man8/ip-xfrm.8 | 6 +++---
+ 3 files changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
+index 4a63e9ab602d7..c6dfe836c5374 100644
+--- a/ip/xfrm_policy.c
++++ b/ip/xfrm_policy.c
+@@ -410,6 +410,10 @@ static int xfrm_policy_filter_match(struct xfrm_userpolicy_info *xpinfo,
+ 	if (!filter.use)
+ 		return 1;
+ 
++	if (filter.xpinfo.sel.family != AF_UNSPEC &&
++	    filter.xpinfo.sel.family != xpinfo->sel.family)
++			return 0;
++
+ 	if ((xpinfo->dir^filter.xpinfo.dir)&filter.dir_mask)
+ 		return 0;
+ 
+@@ -780,7 +784,7 @@ static int xfrm_policy_list_or_deleteall(int argc, char **argv, int deleteall)
+ 	char *selp = NULL;
+ 	struct rtnl_handle rth;
+ 
+-	if (argc > 0)
++	if (argc > 0 || preferred_family != AF_UNSPEC)
+ 		filter.use = 1;
+ 	filter.xpinfo.sel.family = preferred_family;
+ 
+diff --git a/ip/xfrm_state.c b/ip/xfrm_state.c
+index 9360143756016..f27270709d2fb 100644
+--- a/ip/xfrm_state.c
++++ b/ip/xfrm_state.c
+@@ -898,6 +898,10 @@ static int xfrm_state_filter_match(struct xfrm_usersa_info *xsinfo)
+ 	if (!filter.use)
+ 		return 1;
+ 
++	if (filter.xsinfo.family != AF_UNSPEC &&
++	    filter.xsinfo.family != xsinfo->family)
++		return 0;
++
+ 	if (filter.id_src_mask)
+ 		if (xfrm_addr_match(&xsinfo->saddr, &filter.xsinfo.saddr,
+ 				    filter.id_src_mask))
+@@ -1170,7 +1174,7 @@ static int xfrm_state_list_or_deleteall(int argc, char **argv, int deleteall)
+ 	struct rtnl_handle rth;
+ 	bool nokeys = false;
+ 
+-	if (argc > 0)
++	if (argc > 0 || preferred_family != AF_UNSPEC)
+ 		filter.use = 1;
+ 	filter.xsinfo.family = preferred_family;
+ 
+diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
+index 9547808539a08..cfce1e40b7f7d 100644
+--- a/man/man8/ip-xfrm.8
++++ b/man/man8/ip-xfrm.8
+@@ -89,7 +89,7 @@ ip-xfrm \- transform configuration
+ .IR MASK " ] ]"
+ 
+ .ti -8
+-.BR "ip xfrm state " deleteall " ["
++.BR ip " [ " -4 " | " -6 " ] " "xfrm state deleteall" " ["
+ .IR ID " ]"
+ .RB "[ " mode
+ .IR MODE " ]"
+@@ -99,7 +99,7 @@ ip-xfrm \- transform configuration
+ .IR FLAG-LIST " ]"
+ 
+ .ti -8
+-.BR "ip xfrm state " list " ["
++.BR ip " [ " -4 " | " -6 " ] " "xfrm state list" " ["
+ .IR ID " ]"
+ .RB "[ " nokeys " ]"
+ .RB "[ " mode
+@@ -257,7 +257,7 @@ ip-xfrm \- transform configuration
+ .IR PTYPE " ]"
+ 
+ .ti -8
+-.BR "ip xfrm policy" " { " deleteall " | " list " }"
++.BR ip " [ " -4 " | " -6 " ] " "xfrm policy" " { " deleteall " | " list " }"
+ .RB "[ " nosock " ]"
+ .RI "[ " SELECTOR " ]"
+ .RB "[ " dir
+-- 
+2.21.0
+
