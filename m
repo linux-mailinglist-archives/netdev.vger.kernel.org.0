@@ -2,58 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A640ECB0
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 00:21:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62889ECB5
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 00:24:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729610AbfD2WVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 18:21:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49232 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728105AbfD2WVR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 18:21:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=4tz67MkZsm7EoDBDjVjxlRhP32MwBSdt6O5PxAqikqY=; b=2XYoq8pKphKeA6+tolwq9fEh/4
-        ix6y7oagErUm+uiFmKH2yYHuHsYcOzjqPmFLmb6tMwjl7SnDYmbMPwYw4lFEB1yUZSxetYG+OXMHy
-        NhlXH20S4pbPv081p2bLinAKERbe/n7KaRpEUrDcOrWcsBD88kpUTDOATPhA3s5CP/t8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hLEeA-0007pg-2t; Tue, 30 Apr 2019 00:21:14 +0200
-Date:   Tue, 30 Apr 2019 00:21:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 08/12] net: dsa: sja1105: Add support for
- configuring address aging time
-Message-ID: <20190429222114.GS12333@lunn.ch>
-References: <20190429001706.7449-1-olteanv@gmail.com>
- <20190429001706.7449-9-olteanv@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190429001706.7449-9-olteanv@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1729617AbfD2WYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 18:24:21 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:59736 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728105AbfD2WYV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 18:24:21 -0400
+Received: from localhost (adsl-173-228-226-134.prtc.net [173.228.226.134])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C214314692ABD;
+        Mon, 29 Apr 2019 15:24:20 -0700 (PDT)
+Date:   Mon, 29 Apr 2019 18:24:19 -0400 (EDT)
+Message-Id: <20190429.182419.1714394273539373115.davem@davemloft.net>
+To:     willemdebruijn.kernel@gmail.com
+Cc:     netdev@vger.kernel.org, ebiederm@xmission.com, willemb@google.com
+Subject: Re: [PATCH net] ipv6: invert flowlabel sharing check in process
+ and user mode
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190425160654.211972-1-willemdebruijn.kernel@gmail.com>
+References: <20190425160654.211972-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 29 Apr 2019 15:24:21 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 03:17:02AM +0300, Vladimir Oltean wrote:
-> If STP is active, this setting is applied on bridged ports each time an
-> Ethernet link is established (topology changes).
-> 
-> Since the setting is global to the switch and a reset is required to
-> change it, resets are prevented if the new callback does not change the
-> value that the hardware already is programmed for.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Thu, 25 Apr 2019 12:06:54 -0400
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> From: Willem de Bruijn <willemb@google.com>
+> 
+> A request for a flowlabel fails in process or user exclusive mode must
+> fail if the caller pid or uid does not match. Invert the test.
+> 
+> Previously, the test was unsafe wrt PID recycling, but indeed tested
+> for inequality: fl1->owner != fl->owner
+> 
+> Fixes: 4f82f45730c68 ("net ip6 flowlabel: Make owner a union of struct pid* and kuid_t")
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
 
-    Andrew
+Applied and queued up for -stable, thanks Willem.
