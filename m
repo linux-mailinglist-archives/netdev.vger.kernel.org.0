@@ -2,117 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EA9CE539
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 16:48:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 621CAE545
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 16:49:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728375AbfD2OsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 10:48:07 -0400
-Received: from mail-it1-f194.google.com ([209.85.166.194]:35776 "EHLO
-        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728320AbfD2OsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 10:48:07 -0400
-Received: by mail-it1-f194.google.com with SMTP id w15so16783010itc.0
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 07:48:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ogNt8Qc8FZBEPxRolGPabZr/0z2nn731Ug6Yc3CHCaI=;
-        b=e5+kt4K24mE9VJAGME0nzdI7Dx/UZeEPPjHB74ta6iGr/RkDe4NiTPuBk7EO7zB98K
-         KEDrDVG89vYOFwYM3rQ3HtObyAknTwt+bFdgBwQXh4oulS8xmoZyhZKgiSztI3nSMMdr
-         EYRhXioAGiWsVekEtJKpYTCl/MebLibFSI8OA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ogNt8Qc8FZBEPxRolGPabZr/0z2nn731Ug6Yc3CHCaI=;
-        b=NOgtMhnTJPZm8OSHJofzT+DTslrDZlZQFF+rQRaM3R8CDoSvjt3CjQo+4MZt+zhIPQ
-         7J14z5m3LG4ZEOsZgFv14dC+Rd2O1Srdp21eew8xx2+iJOmS7U2iWkqNyumpYhnfuvh5
-         7gvVUJ7I0N5xOIwryw23CrlibD1lsLFQWkmcTOxV55oykjbrCJdd/EdD2d17V8/S7C/L
-         LnfrVvpdFJPKa+cSYrwwaX7Q2o6MOvZmfIKkENeWcxRhjYyh6hUQX+eBwGGxgI593Xy3
-         XOF4n3p7vVP9ii4I6m1fiqND+e8HRHq1zj/tqd1jMA/KiLFS7v1aLoiK6sbk0DKTWVfN
-         2VoA==
-X-Gm-Message-State: APjAAAWugwZ+XzkHK6wuf88oxOjyNJZDtdcNB5Dt3xvcWmMRkKOOOg4w
-        7WyaDJ+Lx22KkoIcem/OA7lW2Q==
-X-Google-Smtp-Source: APXvYqzjTZfH+IBIKICvHqEk5yG8sTH20SI/BjbUydIMb6S2Vgw6TKXZ2664ITjrgBgt76+9y+xIUQ==
-X-Received: by 2002:a24:5311:: with SMTP id n17mr7021375itb.151.1556549286163;
-        Mon, 29 Apr 2019 07:48:06 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:6497:134d:abc2:e6d0? ([2601:282:800:fd80:6497:134d:abc2:e6d0])
-        by smtp.googlemail.com with ESMTPSA id q141sm49217itc.2.2019.04.29.07.48.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Apr 2019 07:48:05 -0700 (PDT)
-Subject: Re: Why should we add duplicate rules without NLM_F_EXCL?
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Mateusz Bajorski <mateusz.bajorski@nokia.com>,
-        Thomas Haller <thaller@redhat.com>
-References: <20190428062137.GH18865@dhcp-12-139.nay.redhat.com>
-From:   David Ahern <dsa@cumulusnetworks.com>
-Message-ID: <d2a89996-2c73-be8c-a890-6d8543eda6ba@cumulusnetworks.com>
-Date:   Mon, 29 Apr 2019 08:48:04 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1728426AbfD2Oso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 10:48:44 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:39800 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728320AbfD2Osn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 10:48:43 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id B70F7608BA; Mon, 29 Apr 2019 14:48:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1556549322;
+        bh=NcFqWJZM8KHVVeLy31Z4V83m0XnDaKF7vCAx6RUJ4kQ=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=Wh/qgAmhyh7cA6V9hWUzr5W7oCSXScy5XwDthvFwo0xAf6rePnkuUxoaODcND7TXw
+         tLMHQZbSslvkTGFQCZmELkS2os0DDmXXpS0jd8MSklqBxQ/GqLVW9cnLP0TO9S4b6t
+         UNsnlSPkIZXHFOx0V861hIanpHY4dfsjQNyLsk+w=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id AF25760134;
+        Mon, 29 Apr 2019 14:48:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1556549322;
+        bh=NcFqWJZM8KHVVeLy31Z4V83m0XnDaKF7vCAx6RUJ4kQ=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=k5rSRXEu3lTa/+KjDCIwxoOyt7MXBCnBHltcQsIQJHPowy4bg6iHAmqOHnrLmsnWb
+         ehJSTJTtnV99sNUBNQAubQeAHzYENPFIIgDKVNX8Xv8sTdG5PIN1Grw7EcnhAfdU1u
+         IQXFaioSpe6//5LnSBnl/9R+2jnLdDG6NYchdhr4=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AF25760134
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20190428062137.GH18865@dhcp-12-139.nay.redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH][next] ath6kl: wmi: use struct_size() helper
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190403184949.GA7597@embeddedor>
+References: <20190403184949.GA7597@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190429144842.B70F7608BA@smtp.codeaurora.org>
+Date:   Mon, 29 Apr 2019 14:48:42 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/28/19 12:21 AM, Hangbin Liu wrote:
-> Hi David, Mateusz,
-> 
-> Kernel commit 153380ec4b9b ("fib_rules: Added NLM_F_EXCL support to
-> fib_nl_newrule") added a check and return -EEXIST if the rule is already
-> exist. With it the ip rule works as expected now.
-> 
-> But without NLM_F_EXCL people still could add duplicate rules. the result
-> looks like:
-> 
-> # ip rule
-> 0:      from all lookup local
-> 32766:  from all lookup main
-> 32767:  from all lookup default
-> 100000: from 192.168.7.5 lookup 5
-> 100000: from 192.168.7.5 lookup 5
-> 
-> The two same rules looks unreasonable. Do you know if there is a use case
-> that need this?
+"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
 
-It does not make sense to me to allow multiple entries with the same
-config; it only adds to the overhead of fib lookups.
+> Make use of the struct_size() helper instead of an open-coded version
+> in order to avoid any potential type mistakes, in particular in the
+> context in which this code is being used.
+> 
+> So, replace code of the following form:
+> 
+> sizeof(*ev) + ev->num_neighbors * sizeof(struct wmi_neighbor_info)
+> 
+> with:
+> 
+> struct_size(ev, neighbor, ev->num_neighbors)
+> 
+> This code was detected with the help of Coccinelle.
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-> 
-> So how about just return directly if user add a exactally same rule, as if
-> we did an update, like:
-> 
-> diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
-> index ffbb827723a2..c49b752ea7eb 100644
-> --- a/net/core/fib_rules.c
-> +++ b/net/core/fib_rules.c
-> @@ -756,9 +756,9 @@ int fib_nl_newrule(struct sk_buff *skb, struct nlmsghdr *nlh,
->         if (err)
->                 goto errout;
-> 
-> -       if ((nlh->nlmsg_flags & NLM_F_EXCL) &&
-> -           rule_exists(ops, frh, tb, rule)) {
-> -               err = -EEXIST;
-> +       if (rule_exists(ops, frh, tb, rule)) {
-> +               if (nlh->nlmsg_flags & NLM_F_EXCL)
-> +                       err = -EEXIST;
->                 goto errout_free;
->         }
-> 
-> 
-> What do you think?
+Patch applied to ath-next branch of ath.git, thanks.
 
-I'm not so sure about the failure and more from a consistency with other
-RTM_NEW commands which cover updates to an existing entry. In the case
-of rules if there is nothing to update and the rule already exists then
-- for consistency - 0 is the right return code.
+83d9562b6478 ath6kl: wmi: use struct_size() helper
 
+-- 
+https://patchwork.kernel.org/patch/10884343/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
