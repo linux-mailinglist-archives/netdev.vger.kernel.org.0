@@ -2,213 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 044D4DAC9
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 05:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C923DAD0
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 05:31:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727342AbfD2D1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Apr 2019 23:27:07 -0400
-Received: from anchovy3.45ru.net.au ([203.30.46.155]:49500 "EHLO
-        anchovy3.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727093AbfD2D1H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Apr 2019 23:27:07 -0400
-X-Greylist: delayed 399 seconds by postgrey-1.27 at vger.kernel.org; Sun, 28 Apr 2019 23:27:05 EDT
-Received: (qmail 13446 invoked by uid 5089); 29 Apr 2019 03:20:24 -0000
-Received: by simscan 1.2.0 ppid: 13358, pid: 13360, t: 0.1741s
-         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950
-Received: from unknown (HELO ?192.168.0.122?) (preid@electromag.com.au@203.59.235.95)
-  by anchovy2.45ru.net.au with ESMTPA; 29 Apr 2019 03:20:23 -0000
-Subject: Re: Testing of r8169 workaround removal
-To:     Neil MacLeod <neil@nmacleod.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <d2f64f21-6a1d-00bd-ec30-51c31acdb177@gmail.com>
- <CAFbqK8kk8UqLXC=FPHjjYawHRozCmsKuV3WcD8x1y5HvYw_2rA@mail.gmail.com>
- <a7d1f3fc-2ab3-33dc-b0f8-146fdfb46a1d@gmail.com>
- <CAFbqK8n3vVuTfX+ZAi-TN70HtY75u3fBiM-h0USqPuk9K3=FZg@mail.gmail.com>
- <7dfaf793-1cb1-faef-d700-aa24ff4d50d9@gmail.com>
- <CAFbqK8m1kH-+KQG_ozWjSwM1Ti-UgpBys6sAo4j4k+PVPKnrAg@mail.gmail.com>
-From:   Phil Reid <preid@electromag.com.au>
-Message-ID: <e8b12136-3dc2-17e4-ccdf-f2fd2040ff7b@electromag.com.au>
-Date:   Mon, 29 Apr 2019 11:20:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727281AbfD2Da5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Apr 2019 23:30:57 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:43751 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726819AbfD2Da5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Apr 2019 23:30:57 -0400
+Received: by mail-ot1-f67.google.com with SMTP id u15so7376700otq.10;
+        Sun, 28 Apr 2019 20:30:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=LQHjdbY/zv/adio9Yzeqc+a7PJdgSY2FiBN6qpuW2fY=;
+        b=qyfQZ5wUX2SwXgfM49OSy7Oh4BFCWIY155B2byCZ7UZiH4ypuJCBcJFSvVbuXA3xhN
+         mptnnsTm0NU9QHqE1P/g3AalTgcTKYfzzgc6rRc9kLnIMVRUmZfufoNasmVE2aTHUmAs
+         gO74mtT35Cl7DKc+PvLQfz5PxFHB9P2OQLkdgYAqo4W5e4ihGObskn9Y1XmLormv2Q9n
+         UnxcgdhUxh9DrGHYM1G+CDNNm3tSD5Nv1LZeE2685RdQlAc1Yuxu+Xl8XgnVdFd0gzsp
+         5DVW+fonP8pB4unguag8xpSZH2vOKrpXsM+d8yjl6ip0c7It0nIlVU38q67yiiNsvFTJ
+         v39A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LQHjdbY/zv/adio9Yzeqc+a7PJdgSY2FiBN6qpuW2fY=;
+        b=tq0P4WcOfaHd8K20Ud/6t3Y9l8BuF0aBnMc1gpFVqZHi+jW3ArmY9Grw4MRGMv6NXv
+         YHPcQnBk8ww1/LNONgLYFmkYqVFx854EnvweRGQ8K5P17tNbEPMH2Jm3ixlgo2Zp3xBj
+         FhvQZcLOAtN8xkv5B22NLnGc999TDT2Bj/jd3iZx2rsBbjP3oTN0lKgOLbPOmq9yqG42
+         p5Twyzd7CnRLi/hqor05BWxbET/kZ1Y/MCyCZs4htttAqQEbj3z5Aiei+KzIQKNYHUex
+         rqrG4GOTJewM5IqFlmigAOwLcf1aOD7k24SH1j27+M3QnXR9q1cdFe2KdEwDK63Pqmqi
+         m7Bw==
+X-Gm-Message-State: APjAAAX1ya0rGCoE4Aqc21i2HvpoNpAiDArg0aqXQL38BSod9PxRYqzz
+        iHHWbgcXHm2IOtQ0ejQqEyLNG5daQnQKrOr/gfg=
+X-Google-Smtp-Source: APXvYqw/lBO8wF2Ks0AYwd2A2FZJqfKDNi49mDKWfTxmKBbqYlIcbtvwuKRPsckOmyK0Lxcj9mSKy6ahZ7jvInaMeno=
+X-Received: by 2002:a9d:650e:: with SMTP id i14mr16866369otl.128.1556508656402;
+ Sun, 28 Apr 2019 20:30:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAFbqK8m1kH-+KQG_ozWjSwM1Ti-UgpBys6sAo4j4k+PVPKnrAg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-AU
-Content-Transfer-Encoding: 7bit
+References: <CA+A7VXWss=RAXMYb9FfWi=xPCF4Fg+A5tAbYX594HPX2b151fQ@mail.gmail.com>
+ <20190426085635.3363-1-jprvita@endlessm.com> <39A065B6-DA45-497F-9EC4-CA1AD42FCDDA@holtmann.org>
+In-Reply-To: <39A065B6-DA45-497F-9EC4-CA1AD42FCDDA@holtmann.org>
+From:   =?UTF-8?Q?Jo=C3=A3o_Paulo_Rechi_Vita?= <jprvita@gmail.com>
+Date:   Mon, 29 Apr 2019 11:30:20 +0800
+Message-ID: <CA+A7VXWcJGO7Un-N+8ObKVxUZxqsp+Fz8ySnb9SH5SpvzPvkMw@mail.gmail.com>
+Subject: Re: [PATCH v3] Bluetooth: Ignore CC events not matching the last HCI command
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Balakrishna Godavarthi <bgodavar@codeaurora.org>,
+        ytkim@qca.qualcomm.com, "David S. Miller" <davem@davemloft.net>,
+        linux-bluetooth@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Upstreaming Team <linux@endlessm.com>,
+        =?UTF-8?Q?Jo=C3=A3o_Paulo_Rechi_Vita?= <jprvita@endlessm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/04/2019 6:05 am, Neil MacLeod wrote:
-> Hi Heiner
-> 
-> 5.0.6 is the first kernel that does NOT require the workaround.
-> 
-> In 5.0.6 the only obvious r8169 change (to my untrained eyes) is:
-> 
-> https://github.com/torvalds/linux/commit/4951fc65d9153deded3d066ab371a61977c96e8a
-> 
-> but reverting this change in addition to the workaround makes no
-> difference, the resulting kernel still resumes at 1000Mbps so I'm not
-> sure what other change in .5.0.6 might be responsible for this changed
-> behaviour. If you can think of anything I'll give it a try!
-> 
-> Regards
-> Neil
+On Sat, Apr 27, 2019 at 1:01 AM Marcel Holtmann <marcel@holtmann.org> wrote=
+:
+>
+> Hi Joao,
+>
+> > This commit makes the kernel not send the next queued HCI command until
+> > a command complete arrives for the last HCI command sent to the
+> > controller. This change avoids a problem with some buggy controllers
+> > (seen on two SKUs of QCA9377) that send an extra command complete event
+> > for the previous command after the kernel had already sent a new HCI
+> > command to the controller.
+> >
+> > The problem was reproduced when starting an active scanning procedure,
+> > where an extra command complete event arrives for the LE_SET_RANDOM_ADD=
+R
+> > command. When this happends the kernel ends up not processing the
+> > command complete for the following commmand, LE_SET_SCAN_PARAM, and
+> > ultimately behaving as if a passive scanning procedure was being
+> > performed, when in fact controller is performing an active scanning
+> > procedure. This makes it impossible to discover BLE devices as no devic=
+e
+> > found events are sent to userspace.
+> >
+> > This problem is reproducible on 100% of the attempts on the affected
+> > controllers. The extra command complete event can be seen at timestamp
+> > 27.420131 on the btmon logs bellow.
+> >
+> > Bluetooth monitor ver 5.50
+> > =3D Note: Linux version 5.0.0+ (x86_64)                                =
+  0.352340
+> > =3D Note: Bluetooth subsystem version 2.22                             =
+  0.352343
+> > =3D New Index: 80:C5:F2:8F:87:84 (Primary,USB,hci0)               [hci0=
+] 0.352344
+> > =3D Open Index: 80:C5:F2:8F:87:84                                 [hci0=
+] 0.352345
+> > =3D Index Info: 80:C5:F2:8F:87:84 (Qualcomm)                      [hci0=
+] 0.352346
+> > @ MGMT Open: bluetoothd (privileged) version 1.14             {0x0001} =
+0.352347
+> > @ MGMT Open: btmon (privileged) version 1.14                  {0x0002} =
+0.352366
+> > @ MGMT Open: btmgmt (privileged) version 1.14                {0x0003} 2=
+7.302164
+> > @ MGMT Command: Start Discovery (0x0023) plen 1       {0x0003} [hci0] 2=
+7.302310
+> >        Address type: 0x06
+> >          LE Public
+> >          LE Random
+> > < HCI Command: LE Set Random Address (0x08|0x0005) plen 6   #1 [hci0] 2=
+7.302496
+> >        Address: 15:60:F2:91:B2:24 (Non-Resolvable)
+> >> HCI Event: Command Complete (0x0e) plen 4                 #2 [hci0] 27=
+.419117
+> >      LE Set Random Address (0x08|0x0005) ncmd 1
+> >        Status: Success (0x00)
+> > < HCI Command: LE Set Scan Parameters (0x08|0x000b) plen 7  #3 [hci0] 2=
+7.419244
+> >        Type: Active (0x01)
+> >        Interval: 11.250 msec (0x0012)
+> >        Window: 11.250 msec (0x0012)
+> >        Own address type: Random (0x01)
+> >        Filter policy: Accept all advertisement (0x00)
+> >> HCI Event: Command Complete (0x0e) plen 4                 #4 [hci0] 27=
+.420131
+> >      LE Set Random Address (0x08|0x0005) ncmd 1
+> >        Status: Success (0x00)
+> > < HCI Command: LE Set Scan Enable (0x08|0x000c) plen 2      #5 [hci0] 2=
+7.420259
+> >        Scanning: Enabled (0x01)
+> >        Filter duplicates: Enabled (0x01)
+> >> HCI Event: Command Complete (0x0e) plen 4                 #6 [hci0] 27=
+.420969
+> >      LE Set Scan Parameters (0x08|0x000b) ncmd 1
+> >        Status: Success (0x00)
+> >> HCI Event: Command Complete (0x0e) plen 4                 #7 [hci0] 27=
+.421983
+> >      LE Set Scan Enable (0x08|0x000c) ncmd 1
+> >        Status: Success (0x00)
+> > @ MGMT Event: Command Complete (0x0001) plen 4        {0x0003} [hci0] 2=
+7.422059
+> >      Start Discovery (0x0023) plen 1
+> >        Status: Success (0x00)
+> >        Address type: 0x06
+> >          LE Public
+> >          LE Random
+> > @ MGMT Event: Discovering (0x0013) plen 2             {0x0003} [hci0] 2=
+7.422067
+> >        Address type: 0x06
+> >          LE Public
+> >          LE Random
+> >        Discovery: Enabled (0x01)
+> > @ MGMT Event: Discovering (0x0013) plen 2             {0x0002} [hci0] 2=
+7.422067
+> >        Address type: 0x06
+> >          LE Public
+> >          LE Random
+> >        Discovery: Enabled (0x01)
+> > @ MGMT Event: Discovering (0x0013) plen 2             {0x0001} [hci0] 2=
+7.422067
+> >        Address type: 0x06
+> >          LE Public
+> >          LE Random
+> >        Discovery: Enabled (0x01)
+> >
+> > Signed-off-by: Jo=C3=A3o Paulo Rechi Vita <jprvita@endlessm.com>
+> > ---
+> > include/net/bluetooth/hci.h |  2 ++
+> > net/bluetooth/hci_core.c    |  5 +++++
+> > net/bluetooth/hci_event.c   | 12 ++++++++++++
+> > net/bluetooth/hci_request.c |  4 ----
+> > net/bluetooth/hci_request.h |  4 ++++
+> > 5 files changed, 23 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+> > index fbba43e9bef5..883a8c25ccfb 100644
+> > --- a/include/net/bluetooth/hci.h
+> > +++ b/include/net/bluetooth/hci.h
+> > @@ -221,6 +221,8 @@ enum {
+> >       HCI_RAW,
+> >
+> >       HCI_RESET,
+> > +
+> > +     HCI_CMD_PENDING,
+> > };
+>
+> no new flags here please. This is userspace visible use the hdev->dev_fla=
+gs.
+>
 
-The symptom sounds very similar to a problem I had with 1G link only linking at 10M.
+Ok, moved to hdev->dev_flags. Sending new revision now.
 
-Perhaps have a look at:
-net: phy: don't clear BMCR in genphy_soft_reset
-
-https://www.spinics.net/lists/netdev/msg559627.html
-
-Which looks to have been added in 5.0.6
-commit	fc8f36de77111bf925d19f347c21134542941a3c
-
-
-> 
-> PS. A while ago (5 Dec 2018 to be precise!) I emailed you about the
-> ASPM issue which it looks like you may have fixed in 5.1-rc5[1].
-> Unfortunately I don't have this issue myself, and I've been trying to
-> get feedback from the bug reporter[2,3] "Matt Devo" without much
-> success but will confirm to you if/when he replies.
-> 
-> 1, https://bugzilla.kernel.org/show_bug.cgi?id=202945
-> 2. https://forum.kodi.tv/showthread.php?tid=298462&pid=2845944#pid2845944
-> 3. https://forum.kodi.tv/showthread.php?tid=343069&pid=2850123#pid2850123
-> 
-> On Sun, 28 Apr 2019 at 19:43, Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>
->> Interesting, thanks for your efforts! I submitted the patch removing
->> the workaround because it seems now (at least since 5.1-rc1) we're fine.
->>
->> Heiner
->>
->> On 28.04.2019 20:40, Neil MacLeod wrote:
->>> Hi Heiner
->>>
->>> I'd already kicked off a 5.0.2 build without the workaround and I've
->>> tested that now, and it resumes at 10Mbps, so it may still be worth
->>> identifying the exact 5.0.y version when it was fixed just in case
->>> that provides some understanding of how it was fixed... I'll test the
->>> remaining kernels between 5.0.3 and 5.0.10 as that's not much extra
->>> work and let you know what I find!
->>>
->>> Regards
->>> Neil
->>>
->>> On Sun, 28 Apr 2019 at 18:39, Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>>>
->>>> Hi Neil,
->>>>
->>>> thanks for reporting back. Interesting, then the root cause of the
->>>> issue seems to have been in a different corner. On my hardware
->>>> I'm not able to reproduce the issue. It's not that relevant with which
->>>> exact version the issue vanished. Based on your results I'll just
->>>> remove the workaround on net-next (adding your Tested-by).
->>>>
->>>> Heiner
->>>>
->>>>
->>>> On 28.04.2019 19:30, Neil MacLeod wrote:
->>>>> Hi Heiner
->>>>>
->>>>> Do you know if this is already fixed in 5.1-rc6 (Linus Torvalds tree),
->>>>> as in order to test your request I thought I would reproduce the issue
->>>>> with plain 5.1-rc6 with the workaround removed, however without the
->>>>> workaround 5.1-rc6 is resuming correctly at 1000Mbps.
->>>>>
->>>>> I went back to 4.19-rc4 (which we know is brroken) and I can reproduce
->>>>> the issue with the PC (Revo 3700) resuming at 10Mbps, but with 5.1-rc6
->>>>> I can no longer reproduce the issue when the workaround is removed.
->>>>>
->>>>> I also tested 5.0.10 without the workaround, and again 5.0.10 is
->>>>> resuming correctly at 1000Mbps.
->>>>>
->>>>> I finally tested 4.19.23 without the workaround (the last iteration of
->>>>> this kernel I published) and this does NOT resume correctly at
->>>>> 1000Mbps (it resumes at 10Mbps).
->>>>>
->>>>> I'll test a few more iterations of 5.0.y to see if I can identify when
->>>>> it was "fixed" but if you have any suggestions when it might have been
->>>>> fixed I can try to confirm this that - currently it's somewhere
->>>>> between 4.19.24 and 5.0.10!
->>>>>
->>>>> Regards
->>>>> Neil
->>>>>
->>>>>
->>>>>
->>>>>
->>>>> On Sun, 28 Apr 2019 at 14:33, Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>>>>>
->>>>>> Hi Neil,
->>>>>>
->>>>>> you once reported the original issue resulting in this workaround.
->>>>>> This workaround shouldn't be needed any longer, but I have no affected HW
->>>>>> to test on. Do you have the option to apply the patch below to latest
->>>>>> net-next and test link speed after resume from suspend?
->>>>>> git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
->>>>>> That would be much appreciated.
->>>>>>
->>>>>> Heiner
->>>>>>
->>>>>> ----------------------------------------------------------------
->>>>>>
->>>>>> After 8c90b795e90f ("net: phy: improve genphy_soft_reset") this
->>>>>> workaround shouldn't be needed any longer. However I don't have
->>>>>> affected hardware so I can't test it.
->>>>>>
->>>>>> This was the bug report leading to the workaround:
->>>>>> https://bugzilla.kernel.org/show_bug.cgi?id=201081
->>>>>>
->>>>>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->>>>>> ---
->>>>>>   drivers/net/ethernet/realtek/r8169.c | 8 --------
->>>>>>   1 file changed, 8 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
->>>>>> index 383242df0..d4ec08e37 100644
->>>>>> --- a/drivers/net/ethernet/realtek/r8169.c
->>>>>> +++ b/drivers/net/ethernet/realtek/r8169.c
->>>>>> @@ -4083,14 +4083,6 @@ static void rtl8169_init_phy(struct net_device *dev, struct rtl8169_private *tp)
->>>>>>          phy_speed_up(tp->phydev);
->>>>>>
->>>>>>          genphy_soft_reset(tp->phydev);
->>>>>> -
->>>>>> -       /* It was reported that several chips end up with 10MBit/Half on a
->>>>>> -        * 1GBit link after resuming from S3. For whatever reason the PHY on
->>>>>> -        * these chips doesn't properly start a renegotiation when soft-reset.
->>>>>> -        * Explicitly requesting a renegotiation fixes this.
->>>>>> -        */
->>>>>> -       if (tp->phydev->autoneg == AUTONEG_ENABLE)
->>>>>> -               phy_restart_aneg(tp->phydev);
->>>>>>   }
->>>>>>
->>>>>>   static void rtl_rar_set(struct rtl8169_private *tp, u8 *addr)
->>>>>> --
->>>>>> 2.21.0
->>>>>
->>>>
->>>
->>
-> 
-> 
-
-
--- 
-Regards
-Phil Reid
-
-ElectroMagnetic Imaging Technology Pty Ltd
-Development of Geophysical Instrumentation & Software
-www.electromag.com.au
-
-3 The Avenue, Midland WA 6056, AUSTRALIA
-Ph: +61 8 9250 8100
-Fax: +61 8 9250 7100
-Email: preid@electromag.com.au
+--
+Jo=C3=A3o Paulo Rechi Vita
+http://about.me/jprvita
