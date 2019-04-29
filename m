@@ -2,110 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD0A0E33E
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:02:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9224E345
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbfD2NCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 09:02:53 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48494 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725267AbfD2NCw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 09:02:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=pMO8MgxmgZtRqiVhkOK0vuIx3g2rFxjLHblaJexuJ8E=; b=2VZ1ZQPSirqC65PM/+O7LzPEk3
-        sGCcd1va9DJWu7vSIuc/AinXw5reNwFcyAYPBlZw8qroP7pbKyNAoORZhuTzLRMEsb71K6bGNFAIP
-        jqyA7xKsiC1uhKGfdF2a9srhHkhIDW03WHgyN0SmArtv725suWGEZlkIuP6w26X7eKPY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hL5vk-0000hm-9E; Mon, 29 Apr 2019 15:02:48 +0200
-Date:   Mon, 29 Apr 2019 15:02:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Alban Bedel <albeu@free.fr>
-Subject: Re: [PATCH v2 3/4] net: macb: Drop nvmem_get_mac_address usage
-Message-ID: <20190429130248.GC10772@lunn.ch>
-References: <1556456002-13430-1-git-send-email-ynezz@true.cz>
- <1556456002-13430-4-git-send-email-ynezz@true.cz>
- <20190428165637.GJ23059@lunn.ch>
- <20190428210814.GA346@meh.true.cz>
- <20190428213640.GB10772@lunn.ch>
- <20190429075514.GB346@meh.true.cz>
+        id S1727846AbfD2NHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 09:07:24 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:36540 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725838AbfD2NHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 09:07:23 -0400
+Received: by mail-ed1-f68.google.com with SMTP id a8so7000061edx.3
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 06:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l28/1bM9PyrHGjO3UdrXKR0CAiKvukXSI46KTBL+2gc=;
+        b=k1wtgufltLeFfha30aDn81H3dTDSzdzUbOQb9u1Oa2q8am9UvbrbfBbQT8CqP7ICED
+         tLOO/WvHBYEvYWjqruRBI/4EN238AqlBXUqaHiKLKJZtH2rKOZ8kzIyeiTHI87UNuXD3
+         rg60JFJTKHHQrNjntvnHIE2YVb2OZ4wDluh8gMKVSi7TonzxvsnXwR+Jgk8Arx/Wwgq2
+         BNcdqc6bOdfu8bDoK8aQeO9ByANTI4ViFlB43Y0Rzki0cEyIYWcdCaHVuMSPHioAqLKJ
+         tgu86bvZDDsSKlMEKOp0bSsK3+uKoagjrXu8eYv9yW36bx18gC3K1fKVcq3Bo3DGSAU2
+         BfBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l28/1bM9PyrHGjO3UdrXKR0CAiKvukXSI46KTBL+2gc=;
+        b=IG990EkCVWoXhQ6IQUuIZIvg5lumos5/FL9fv6K70Vl7NNiuP/4QyLJVKs0Nu0fr81
+         198hE+EJoUG7TGVCBAF1TRnjE8hU8Xc5EzH624BQ9IjGNleCQPu8H14Kfob7eoJ1olAk
+         5TrbEdVY/u0QpA6AmvcdN8LZYI9wqJ/IE1mG6NsJxlgNDqeq2Vg58ITMTvd8ni8Xj7iM
+         Y6aQrtFCw78uipXIneSYBOZiv4e5dipan4WE7RW1wPSOj+0vFi/iKEam7hRPN6OLt45+
+         DFYst2a09oXtxQ9aqG7JzWvexQ2cO9uYJLSH/T8hJkciJSvjtkZidq7lF3rEyumYRNq1
+         Ur9A==
+X-Gm-Message-State: APjAAAWvVm5s1I3wK3wMEFVVmzZhvAO2aBvm1Dvl1DqQ98jSRZ44V3Ug
+        OcLkg/2YVaG8rbbRNO9mJadT0yYDP7tcNxYVjhc=
+X-Google-Smtp-Source: APXvYqwp6EwoJ+5oiAo1Ikk4cBOfNeMs6EnURncdnnMDQOoZJahZKLWsnbmpG8yg757ssd/Euzxqmj4z3bPhQJkaBeM=
+X-Received: by 2002:a17:906:f29a:: with SMTP id gu26mr8620676ejb.148.1556543241860;
+ Mon, 29 Apr 2019 06:07:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190429075514.GB346@meh.true.cz>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190426192954.146301-1-willemdebruijn.kernel@gmail.com> <d57c87e402354163a7ed311d6d27aa4f@AcuMS.aculab.com>
+In-Reply-To: <d57c87e402354163a7ed311d6d27aa4f@AcuMS.aculab.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 29 Apr 2019 09:06:45 -0400
+Message-ID: <CAF=yD-+omQXQO7ue=BkwjVahAFP6YuU5AMTKbC9fBG6qPu6rSw@mail.gmail.com>
+Subject: Re: [PATCH net] packet: in recvmsg msg_name return at least sockaddr_ll
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 09:55:14AM +0200, Petr Štetiar wrote:
-> Andrew Lunn <andrew@lunn.ch> [2019-04-28 23:36:40]:
-> 
-> Hi Andrew,
-> 
-> > > so if I understand this correctly, it probably means, that this approach with
-> > > modified of_get_mac_address is dead end as current of_get_mac_address users
-> > > don't expect and handle possible -EPROBE_DEFER error, so I would need to
-> > > change all the current users, which is nonsense.
-> > 
-> > I would not say it is dead, it just needs a bit more work.
-> 
-> ok, that's good news, I've probably just misunderstood your concern about the
-> random MAC address in case when platform/nvmem subsystem returns -EPROBE_DEFER.
-> 
-> > The current users should always be checking for a NULL pointer.  You
-> > just need to change that to !IS_ERR(). You can then return
-> > ERR_PTR(-PROBE_DEFER) from the NVMEM operation.
-> 
-> I'm more then happy to address this in v3, but I'm still curious, what is it
-> going to change in the current state of the tree. 
-> 
-> My understanding of -PROBE_DEFER is, that it needs to be propagated back from
-> the driver's probe callback/hook to the upper device/driver subsystem in order
-> to be moved to the list of pending drivers and considered for probe later
-> again. This is not going to happen in any of the current drivers, thus it will
-> probably still always result in random MAC address in case of -EPROBE_DEFER
-> error from the nvmem subsystem.
+On Mon, Apr 29, 2019 at 5:03 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Willem de Bruijn [mailto:willemdebruijn.kernel@gmail.com]
+> > Sent: 26 April 2019 20:30
+> > Packet send checks that msg_name is at least sizeof sockaddr_ll.
+> > Packet recv must return at least this length, so that its output
+> > can be passed unmodified to packet send.
+> >
+> > This ceased to be true since adding support for lladdr longer than
+> > sll_addr. Since, the return value uses true address length.
+> >
+> > Always return at least sizeof sockaddr_ll, even if address length
+> > is shorter. Zero the padding bytes.
+> >
+> > Fixes: 0fb375fb9b93 ("[AF_PACKET]: Allow for > 8 byte hardware addresses.")
+> > Suggested-by: David Laight <David.Laight@aculab.com>
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > ---
+> >  net/packet/af_packet.c | 7 ++++++-
+> >  1 file changed, 6 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> > index 13301e36b4a28..ca38e75c702e7 100644
+> > --- a/net/packet/af_packet.c
+> > +++ b/net/packet/af_packet.c
+> > @@ -3358,9 +3358,14 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+> >                       msg->msg_namelen = sizeof(struct sockaddr_pkt);
+> >               } else {
+> >                       struct sockaddr_ll *sll = &PACKET_SKB_CB(skb)->sa.ll;
+> > -
+> >                       msg->msg_namelen = sll->sll_halen +
+> >                               offsetof(struct sockaddr_ll, sll_addr);
+> > +                     if (msg->msg_namelen < sizeof(struct sockaddr_ll)) {
+> > +                             memset(msg->msg_name +
+> > +                                    offsetof(struct sockaddr_ll, sll_addr),
+> > +                                    0, sizeof(sll->sll_addr));
+> > +                             msg->msg_namelen = sizeof(struct sockaddr_ll);
+> > +                     }
+> >               }
+> >               memcpy(msg->msg_name, &PACKET_SKB_CB(skb)->sa,
+> >                      msg->msg_namelen);
+>
+> That memcpy() carefully overwrites the zeroed bytes.
+> You need a separate 'copy_len' that isn't updated (from 18 to 20).
 
-Hi Petr
+Argh. Thanks!
 
-All current drivers which don't look in NVMEM don't expect
-EPROBE_DEFER. So not returning it as the result of the probe is fine.
-The one driver which does expect EPROBE_DEFER already has the code to
-handle it.
+       if (msg->msg_name) {
++               int copy_len;
++
+                /* If the address length field is there to be filled
+                 * in, we fill it in now.
+                 */
+                if (sock->type == SOCK_PACKET) {
+                        __sockaddr_check_size(sizeof(struct sockaddr_pkt));
+                        msg->msg_namelen = sizeof(struct sockaddr_pkt);
++                       copy_len = msg->msg_namelen;
+                } else {
+                        struct sockaddr_ll *sll = &PACKET_SKB_CB(skb)->sa.ll;
 
-What you have to be careful of, is the return value from your new code
-looking in NVMEM. It should only return EPROBE_DEFER, or another error
-if there really is expected to be a value in NVMEM, or getting it from
-NVMEM resulted in an error.
+                        msg->msg_namelen = sll->sll_halen +
+                                offsetof(struct sockaddr_ll, sll_addr);
++                       copy_len = msg->msg_namelen;
++                       if (msg->msg_namelen < sizeof(struct sockaddr_ll)) {
++                               memset(msg->msg_name +
++                                      offsetof(struct sockaddr_ll, sll_addr),
++                                      0, sizeof(sll->sll_addr));
++                               msg->msg_namelen = sizeof(struct sockaddr_ll);
++                       }
+                }
+-               memcpy(msg->msg_name, &PACKET_SKB_CB(skb)->sa,
+-                      msg->msg_namelen);
++               memcpy(msg->msg_name, &PACKET_SKB_CB(skb)->sa, copy_len);
+        }
 
-I've not looked at the details of nvmem_get_mac_address(), but it
-should be a two stage process. The first is to look in device tree to
-find the properties. Device tree is always accessible. So performing a
-lookup will never return EPROBE_DEFER. If there are no properties, it
-probably return -ENODEV. You need to consider that as not being a real
-error, since these are optional properties. of_get_mac_address() needs
-to try the next source of the MAC address. The second stage is to look
-into the NVMEM. That could return -EPROBE_DEFER and you should return
-that error, or any other error at this stage. The MAC address should
-exist in NVMEM so we want to know about the error.
+Can then also change memset to zero only two bytes in the Ethernet case.
 
-      Andrew
++                       if (msg->msg_namelen < sizeof(struct sockaddr_ll)) {
++                               msg->msg_namelen = sizeof(struct sockaddr_ll);
++                               memset(msg->msg_name + copy_len, 0,
++                                      msg->namelen - copy_len);
++                       }
