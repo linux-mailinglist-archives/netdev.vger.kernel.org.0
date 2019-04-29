@@ -2,91 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63489E529
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 16:47:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 646C7E547
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 16:49:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728436AbfD2Oqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 10:46:32 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:36306 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728319AbfD2Oqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 10:46:31 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id D1D186028C; Mon, 29 Apr 2019 14:46:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1556549190;
-        bh=TXlvK+53Z5f7AAMbyCS48iatA/iddrA8c1tdF+6cefU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=R0d7TFh+0WYBWSk9avXHa0LzZlLH0FBwZOzrJkUG2vaF1CryoF/PwOLtRLwuELCoH
-         c2zxFEOPUrefK26fpfqQW7JpJGs9pOaiX5MKdy1Zjmh5ZwZBnFQMlOnXqDJs7QtEbG
-         km/5qqvQzhZBE2JxWj40ijgnnQ4QZvAwXnVqg8zc=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8F8AB60134;
-        Mon, 29 Apr 2019 14:46:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1556549190;
-        bh=TXlvK+53Z5f7AAMbyCS48iatA/iddrA8c1tdF+6cefU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=l6r95cqpXisbYCLJNfZkoe4mDjZdthulp9XKgShVCNuB2t4OQ6+nG8OXRU1YWFXlm
-         yw53+DDxo4ROPWsUADA/ps6jau3v2UowG5n1XyJJAAshLUBOvK/9FEDh8Rl03EybyT
-         xfHC1mBIXuzxbZn4mBYap/ZMs3aiIHvyg7MwhRoM=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8F8AB60134
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] ath6kl: debug: Use struct_size() helper
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190403154835.GA20955@embeddedor>
-References: <20190403154835.GA20955@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        id S1728445AbfD2OtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 10:49:14 -0400
+Received: from conuserg-11.nifty.com ([210.131.2.78]:43392 "EHLO
+        conuserg-11.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728318AbfD2OtO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 10:49:14 -0400
+Received: from grover.flets-west.jp (softbank126125154137.bbtec.net [126.125.154.137]) (authenticated)
+        by conuserg-11.nifty.com with ESMTP id x3TElneS020381;
+        Mon, 29 Apr 2019 23:47:50 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-11.nifty.com x3TElneS020381
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1556549270;
+        bh=0mmb8KbbWCtfjhHsrd+vj0pp6+i0mYzDtsbj3K9ug1I=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E/9dWespF/U4QZkTXajWW8HEjCLAKKtzzLhBEGSrAj4VfD82pdB+QgLaWlgB+DsaT
+         6UI0FG8X+mhTF7iJ86IY7bk/U3OQrxcU79h6tlvXMIkW+rNrOfRKryd3DVsWy1zDwK
+         GEoeQScbG6zQ4LquGHs3UKD3O3f/13bm8Od5l+ilrhK1fR+9bjc8BSU6acIm2x3XLC
+         HdLCTYw7cNLim5D7ScD3XYmceYHSbcgDvkXZ5QWKCbEs8RsV66wgIIkk/SAIjtrJzP
+         pGVLbPgdaEyka1onhlmaEIaNBLWsgWmMU3aBWNiOlyoyhj6j6f3nXE4QE494aHzA1n
+         QXm9/2qJy4Asg==
+X-Nifty-SrcIP: [126.125.154.137]
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Sirio Balmelli <sirio@b-ad.ch>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        Yonghong Song <yhs@fb.com>,
+        Taeung Song <treeze.taeung@gmail.com>,
         linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190429144630.D1D186028C@smtp.codeaurora.org>
-Date:   Mon, 29 Apr 2019 14:46:30 +0000 (UTC)
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+Subject: [PATCH] bpftool: exclude bash-completion/bpftool from .gitignore pattern
+Date:   Mon, 29 Apr 2019 23:47:39 +0900
+Message-Id: <1556549259-16298-1-git-send-email-yamada.masahiro@socionext.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
+tools/bpf/bpftool/.gitignore has the "bpftool" pattern, which is
+intended to ignore the following build artifact:
 
-> Make use of the struct_size() helper instead of an open-coded version
-> in order to avoid any potential type mistakes, in particular in the
-> context in which this code is being used.
-> 
-> So, change the following form:
-> 
-> sizeof(*tbl) + num_entries * sizeof(struct wmi_bss_roam_info)
-> 
->  to :
-> 
-> struct_size(tbl, info, num_entries)
-> 
-> This code was detected with the help of Coccinelle.
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+  tools/bpf/bpftool/bpftool
 
-Patch applied to ath-next branch of ath.git, thanks.
+However, the .gitignore entry is effective not only for the current
+directory, but also for any sub-directories.
 
-df75786b9233 ath6kl: debug: Use struct_size() helper
+So, the following file is also considered to be ignored:
 
+  tools/bpf/bpftool/bash-completion/bpftool
+
+It is obviously version-controlled, so should be excluded from the
+.gitignore pattern.
+
+You can fix it by prefixing the pattern with '/', which means it is
+only effective in the current directory.
+
+I prefixed the other patterns consistently. IMHO, '/' prefixing is
+safer when you intend to ignore specific files.
+
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+---
+
+ tools/bpf/bpftool/.gitignore | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tools/bpf/bpftool/.gitignore b/tools/bpf/bpftool/.gitignore
+index 67167e4..19efcc8 100644
+--- a/tools/bpf/bpftool/.gitignore
++++ b/tools/bpf/bpftool/.gitignore
+@@ -1,5 +1,5 @@
+ *.d
+-bpftool
+-bpftool*.8
+-bpf-helpers.*
+-FEATURE-DUMP.bpftool
++/bpftool
++/bpftool*.8
++/bpf-helpers.*
++/FEATURE-DUMP.bpftool
 -- 
-https://patchwork.kernel.org/patch/10884039/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.7.4
 
