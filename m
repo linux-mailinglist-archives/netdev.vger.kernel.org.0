@@ -2,108 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C4FCE577
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 16:53:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79C55E57C
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 16:53:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728522AbfD2OxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 10:53:24 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:45752 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728339AbfD2OxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 10:53:23 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 9ADFB608BA; Mon, 29 Apr 2019 14:53:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1556549602;
-        bh=irxS69ui9uFMypPtZqVaCG/Lyxyxkh55XfmeD07SihU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Cs8My31ZU3N55iB9OsJd1qkpQ/pS1e7Tz1rvpTO77bQ9TZqXUMd5UYure5BBxXpV+
-         yGf1XtsIWDvyN00FDOONjsJYznq2JGBi32jlw4j7LVoPCYLNYsV2s6FDM1/zQ7Agkg
-         EZ1w52b46Dmqfllhif2/DeMjanM9oufKJgrDRkoQ=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 753E9605A2;
-        Mon, 29 Apr 2019 14:53:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1556549602;
-        bh=irxS69ui9uFMypPtZqVaCG/Lyxyxkh55XfmeD07SihU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=kUMv2g9YWlEUImByOoq+dRrRUTRLUDM33tu/YtvF+krEF2knqyxMCmyozogHXt0UM
-         PC6GfOGZ7zBR7Ii8z3Bh1a5oTNqSODuP1baG0ORe+xWVDvbkzeOJHn1Bm9EC+IgouK
-         EHlzcohEw+tsV1VhbLLqM659jcWzpHmCNBdGMO3A=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 753E9605A2
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728617AbfD2Oxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 10:53:44 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36948 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728396AbfD2Oxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 10:53:42 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r6so16512213wrm.4
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 07:53:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iUY+GZis0kVqIpm5gzW2+iff8GWFEez2sdQ170vbkkE=;
+        b=FLqJeH1lhFjJk+cNuTi7NfAM0u0EjSpxiWkv26mpHVrEeIDXCukNPDDjVIPVcNT4D5
+         XGpdsIbojsL+HjGDl4tw+elZEMF4PoRTN3PnS4xsaH0Z9t1mA5VeQe7aSAjlZbEsntTb
+         tsEqJOC7r0Z+FpgYFAhIDAiBhvbERdX9ohsH/Rthgm1MH86gkmlqDo3Q0HyyZ2YejwDU
+         fBWiz0YU5j2NOXc0dUROMn+qm8PJksU0OJLgtsyvEpaiZHnYjCR+TMa7aKwEdV4loSBZ
+         MXr7fVGrawOk4/4uAo+PwQNDOktIZZ3zW4lBZZmFqlyKIFLhl/q8OAxLEQTj/WwAyz2I
+         0ivw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=iUY+GZis0kVqIpm5gzW2+iff8GWFEez2sdQ170vbkkE=;
+        b=FDc/TN4Fow6z25iVw0ftNIgcuZ+qwWWP1aeG/G4LZysMTrSuXMtf/uIeMj8xi23oXV
+         4MReRGpVstUBQ1y4Tt0W3lcZAxI3NmzeAWIjtfE1G6fM2M+OMofK9sZffaYSSqEn/ZzR
+         roobs87HYpqo+cUOUnwA5aqS7Ba9CMvSbC4tXsfxjLAmCpssMEzDJ2r0waWwTdmQL2gw
+         zTDYpvEwDK+uY6sKCoHeTEN8t011EFaETp/PbNQoI8YxNjipViuz6K5Hq9Da/lr5NCWj
+         OQMYHbwWMSBn2ZFojJQB0hJP8mZxC5K1gtvyEAsn8eE8lt5g6/ADXPHTiBL5T5EIaowZ
+         hRKA==
+X-Gm-Message-State: APjAAAWMQghoCWgi4qu2BOm4/whLuEbkhW4qKRpp2wLpWR1vLc1fk4N0
+        ok1JklBiG70leNod2ft3rRW6WzJY/Zc=
+X-Google-Smtp-Source: APXvYqzfkkLBvLSqX81B4QdtwrMMITitehPL6s3VkiH2eniKRcw13gHIMzTrFx0WkTxxMgCrJJootA==
+X-Received: by 2002:adf:f78e:: with SMTP id q14mr12978238wrp.100.1556549619986;
+        Mon, 29 Apr 2019 07:53:39 -0700 (PDT)
+Received: from ?IPv6:2a01:e35:8b63:dc30:a94e:84d3:3ed8:cdcd? ([2a01:e35:8b63:dc30:a94e:84d3:3ed8:cdcd])
+        by smtp.gmail.com with ESMTPSA id o15sm37048023wrj.59.2019.04.29.07.53.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Apr 2019 07:53:39 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH 07/31] netfilter: ctnetlink: Support L3 protocol-filter on
+ flush
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org,
+        Kristian Evensen <kristian.evensen@gmail.com>,
+        davem@davemloft.net, netdev@vger.kernel.org
+References: <20181008230125.2330-1-pablo@netfilter.org>
+ <20181008230125.2330-8-pablo@netfilter.org>
+ <33d60747-7550-1fba-a068-9b78aaedbc26@6wind.com>
+ <09d0cd50-b64d-72c3-0aa1-82eb461bfa19@6wind.com>
+ <20190426192529.yxzpunyenmk4yfk3@salvia>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <2dc9a105-930b-83b1-130f-891d941dc09b@6wind.com>
+Date:   Mon, 29 Apr 2019 16:53:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath9k: Check for errors when reading SREV register
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190318190557.21599-1-timschumi@gmx.de>
-References: <20190318190557.21599-1-timschumi@gmx.de>
-To:     Tim Schumacher <timschumi@gmx.de>
-Cc:     unlisted-recipients:; (no To-header on input) timschumi@gmx.de,
-        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)timschumi@gmx.de
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190429145322.9ADFB608BA@smtp.codeaurora.org>
-Date:   Mon, 29 Apr 2019 14:53:22 +0000 (UTC)
+In-Reply-To: <20190426192529.yxzpunyenmk4yfk3@salvia>
+Content-Type: text/plain; charset=utf-8
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tim Schumacher <timschumi@gmx.de> wrote:
-
-> Right now, if an error is encountered during the SREV register
-> read (i.e. an EIO in ath9k_regread()), that error code gets
-> passed all the way to __ath9k_hw_init(), where it is visible
-> during the "Chip rev not supported" message.
+Le 26/04/2019 à 21:25, Pablo Neira Ayuso a écrit :
+> On Thu, Apr 25, 2019 at 05:41:45PM +0200, Nicolas Dichtel wrote:
+>> Le 25/04/2019 à 12:07, Nicolas Dichtel a écrit :
+>> [snip]
+>>> In fact, the conntrack tool set by default the family to AF_INET and forbid to
+>>> set the family to something else (the '-f' option is not allowed for the command
+>>> 'flush').
+>>
+>> 'conntrack -D -f ipv6' will do the job, but this is still a regression.
 > 
->     ath9k_htc 1-1.4:1.0: ath9k_htc: HTC initialized with 33 credits
->     ath: phy2: Mac Chip Rev 0x0f.3 is not supported by this driver
->     ath: phy2: Unable to initialize hardware; initialization status: -95
->     ath: phy2: Unable to initialize hardware; initialization status: -95
->     ath9k_htc: Failed to initialize the device
+> You mean, before this patch, flush was ignoring the family, and after
+> Kristian's patch, it forces you to use NFPROTO_UNSPEC to achieve the
+> same thing, right?
 > 
-> Check for -EIO explicitly in ath9k_hw_read_revisions() and return
-> a boolean based on the success of the operation. Check for that in
-> __ath9k_hw_init() and abort with a more debugging-friendly message
-> if reading the revisions wasn't successful.
-> 
->     ath9k_htc 1-1.4:1.0: ath9k_htc: HTC initialized with 33 credits
->     ath: phy2: Failed to read SREV register
->     ath: phy2: Could not read hardware revision
->     ath: phy2: Unable to initialize hardware; initialization status: -95
->     ath: phy2: Unable to initialize hardware; initialization status: -95
->     ath9k_htc: Failed to initialize the device
-> 
-> This helps when debugging by directly showing the first point of
-> failure and it could prevent possible errors if a 0x0f.3 revision
-> is ever supported.
-> 
-> Signed-off-by: Tim Schumacher <timschumi@gmx.de>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Before the patch, flush was ignoring the family, and after the patch, the flush
+takes care of the family.
+The conntrack tool has always set the family to AF_INET by default, thus, since
+this patch, only ipv4 conntracks are flushed with 'conntrack -F':
+https://git.netfilter.org/conntrack-tools/tree/src/conntrack.c#n2565
+https://git.netfilter.org/conntrack-tools/tree/src/conntrack.c#n2796
 
-Patch applied to ath-next branch of ath.git, thanks.
 
-2f90c7e5d094 ath9k: Check for errors when reading SREV register
-
--- 
-https://patchwork.kernel.org/patch/10858399/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Regards,
+Nicolas
