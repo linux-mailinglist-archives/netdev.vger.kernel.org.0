@@ -2,177 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16C1EE691
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 17:32:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03068E69D
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 17:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728750AbfD2Pc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 11:32:29 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36711 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728635AbfD2Pc3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 11:32:29 -0400
-Received: by mail-wr1-f66.google.com with SMTP id o4so4755680wra.3
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 08:32:27 -0700 (PDT)
+        id S1728629AbfD2PfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 11:35:03 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:41679 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728546AbfD2PfB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 11:35:01 -0400
+Received: by mail-oi1-f195.google.com with SMTP id v23so8479649oif.8
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 08:35:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:references:from:openpgp:autocrypt:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Jm6QDHUao+fmhsEgeeVvgd+wkNrUYKnME477xuih/hc=;
-        b=PR3flQxhNbaAFxKjtv7FejaFDY6VRQ1kij1nO95FfSRPYPeQBy69TFJprPhIjzQzZH
-         dQ/HpqfI3WmNigkA46Wn3RNcxVxRiCND8GViaEzK5JBaceiS/G9lPhX/ZaRd+p1YBzt6
-         50e0CdLWrG5XcEdu+82Q82nHi9WF4/OJl3tFNRmjPP3fvbcc8etq2BhF17xh8d7cbIEa
-         wGXxpatqpW28jQ/UsH3FcsDgMJ8IQCI49FLBf+qjwbDyrcIdiFDIui0TOTpXuF+lzGcz
-         Mu2nBs4E7iEyZInVoIR7ZTGRadFbivpvBsKSTafqF7gZWnX3HSN7MYl9viipyR7oKOd/
-         UiaA==
+        d=kinvolk.io; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NCmEesKQZll6z8qms+OpZ8kCs6Eb9bECUhGbIFGCjHY=;
+        b=FQ9o14EdK9BE4hJyTRxHvBjI8WUQ9YLVspWY6yiOcsEhTAmKZSm8uIv1GgtotklAmu
+         lrFPviWMOAXoBKUTmNzyIwoL8cVHH5TQxVxXWMrrmWPQDbYRNGMQlGfpWH7ngFq2HOln
+         Mo7fCW6RVSce0XqXcqFdEkBIeVrDQj8IhTBW0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:openpgp:autocrypt:subject
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Jm6QDHUao+fmhsEgeeVvgd+wkNrUYKnME477xuih/hc=;
-        b=Mx6IpWdA3uFcRZiqmH01UYqYyumZDfy9Gu9c8TOLGEx9IR1N+pBMMICm3VDhHKFW5K
-         slnohUk/hte58Oyu+ugEms7Wz67RxBk6gFoRVNDsL4tdm9WyzxKhVRbih59BAKNFAocO
-         VcCx1n0oSwj5FfA0l7nlj/pK9rXydAVEx7IDU3wqn8PRHF4pTVqhB2QLpStTlReFUMf3
-         Xw1Hd48sfXpC7jBpO8eN2uWYU0BX//e+TXzzqCXmWyvB7K4iDEh65hRYA7WW/5cVHJ9d
-         91CbvR+k1bFpE4L0bP/Rsl2119x/58is8Rbr7xwIwCNMLpf5MxOkOsxYaZ36WQO0PMwN
-         K9qA==
-X-Gm-Message-State: APjAAAWw1byavSwVEnvO3rJBi/jbuKG8s1nceCRghQaHJn1p7xbKyIXM
-        J5hOp9Fubs4H/mDrwnYJpznpKg==
-X-Google-Smtp-Source: APXvYqysad4oREcw0QAUigGM16Cg5nBTyW/rr1rQECUTzgHeB4ew+1HRtxprS3wo4qEv4QCDFB03Mw==
-X-Received: by 2002:a5d:69cb:: with SMTP id s11mr10410137wrw.315.1556551946678;
-        Mon, 29 Apr 2019 08:32:26 -0700 (PDT)
-Received: from [172.20.1.250] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id t18sm839634wrg.19.2019.04.29.08.32.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Apr 2019 08:32:25 -0700 (PDT)
-To:     Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Sirio Balmelli <sirio@b-ad.ch>, Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>,
-        Taeung Song <treeze.taeung@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-References: <1556549259-16298-1-git-send-email-yamada.masahiro@socionext.com>
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
- 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
- RHhSHGnKaQ6MfrTge5Q0h5A=
-Subject: Re: [PATCH] bpftool: exclude bash-completion/bpftool from .gitignore
- pattern
-Message-ID: <ec1d2c14-ae27-38c7-9b79-4e323161d6f5@netronome.com>
-Date:   Mon, 29 Apr 2019 16:32:25 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NCmEesKQZll6z8qms+OpZ8kCs6Eb9bECUhGbIFGCjHY=;
+        b=VH/ZneCk3WxekuglxJegqqD5MgZVGC4t5Ru+Rrf2KJZTm1KYKzSXA5Ogs0xEJqzb9Z
+         URmVni691y6A7aYRIVJpdcs7Yki5pYuRcdusHn3ZTiA/s2KWBNN0Gylgi3gHIlZt837P
+         4sq+D2NZwtHonhvIuOMwBP1xUD1UnpVbbomYBe6Ig1KsCPdEdZfDGRsdpbqdfMY3sC32
+         7EdkohZYwIMzW7IYHosdpSAkDAjlQVu/Fmy4ldTDDl4hRrssm1VOflGtA3rkTOjq7F8/
+         lxhAjVG2dG9VL4ELBcb2arHkSRWMuWm/dzBxz+TmHJxrWaRgSAAMvtzXyR0vYWLmV+7k
+         tp9Q==
+X-Gm-Message-State: APjAAAWJ/KbNu8vWVgSKsusNp+xSQJnXhC4QekYE7iO9suytfy5G0ZKx
+        iqyUoscMJwktcw7yn9KkNYerwaBdoUlnQmtp+gQk8Q==
+X-Google-Smtp-Source: APXvYqxjAGhcRBlWXEqyEs3QV3IHzccHauIUWfnwvaaIE/CDiE6g1L2U/eHYbqjkZXPfJd9TzBI4S1GWgXTfwMtpXIc=
+X-Received: by 2002:aca:540a:: with SMTP id i10mr3317988oib.54.1556552099454;
+ Mon, 29 Apr 2019 08:34:59 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1556549259-16298-1-git-send-email-yamada.masahiro@socionext.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+References: <20190426154848.23490-1-alban@kinvolk.io> <CAH3MdRViqmPWm9UaOEO3ZKa5AodL7AGZ4Bb0FzyDcoqRoDmqNw@mail.gmail.com>
+In-Reply-To: <CAH3MdRViqmPWm9UaOEO3ZKa5AodL7AGZ4Bb0FzyDcoqRoDmqNw@mail.gmail.com>
+From:   Alban Crequy <alban@kinvolk.io>
+Date:   Mon, 29 Apr 2019 17:34:47 +0200
+Message-ID: <CADZs7q4rmRinZPMGVAnS95hA-prjdx7igFmaO=K_du13LsPm7g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/4] bpf: sock ops: add netns ino and dev in
+ bpf context
+To:     Y Song <ys114321@gmail.com>
+Cc:     Alban Crequy <alban.crequy@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-04-29 23:47 UTC+0900 ~ Masahiro Yamada <yamada.masahiro@socionext.com>
-> tools/bpf/bpftool/.gitignore has the "bpftool" pattern, which is
-> intended to ignore the following build artifact:
-> 
->   tools/bpf/bpftool/bpftool
-> 
-> However, the .gitignore entry is effective not only for the current
-> directory, but also for any sub-directories.
-> 
-> So, the following file is also considered to be ignored:
-> 
->   tools/bpf/bpftool/bash-completion/bpftool
-> 
-> It is obviously version-controlled, so should be excluded from the
-> .gitignore pattern.
-> 
-> You can fix it by prefixing the pattern with '/', which means it is
-> only effective in the current directory.
-> 
-> I prefixed the other patterns consistently. IMHO, '/' prefixing is
-> safer when you intend to ignore specific files.
-> 
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-> ---
+On Sat, Apr 27, 2019 at 6:35 PM Y Song <ys114321@gmail.com> wrote:
+>
+> On Fri, Apr 26, 2019 at 8:50 AM Alban Crequy <alban.crequy@gmail.com> wrote:
+> >
+> > From: Alban Crequy <alban@kinvolk.io>
+> >
+> > sockops programs can now access the network namespace inode and device
+> > via (struct bpf_sock_ops)->netns_ino and ->netns_dev. This can be useful
+> > to apply different policies on different network namespaces.
+> >
+> > In the unlikely case where network namespaces are not compiled in
+> > (CONFIG_NET_NS=n), the verifier will not allow access to ->netns_*.
+> >
+> > The generated BPF bytecode for netns_ino is loading the correct inode
+> > number at the time of execution.
+> >
+> > However, the generated BPF bytecode for netns_dev is loading an
+> > immediate value determined at BPF-load-time by looking at the initial
+> > network namespace. In practice, this works because all netns currently
+> > use the same virtual device. If this was to change, this code would need
+> > to be updated too.
+> >
+> > Signed-off-by: Alban Crequy <alban@kinvolk.io>
+> >
+> > ---
+> >
+> > Changes since v1:
+> > - add netns_dev (review from Alexei)
+> >
+> > Changes since v2:
+> > - replace __u64 by u64 in kernel code (review from Y Song)
+> > - remove unneeded #else branch: program would be rejected in
+> >   is_valid_access (review from Y Song)
+> > - allow partial reads (<u64) (review from Y Song)
+> >
+> >   Note: I have not been able to fully test partial reads on netns_dev.
+> > The following patches check partial reads in the verifier but it does
+> > not actually execute the program to check if partial reads generate the
+> > correct value. I tried to write a BPF program in C and declare the
+> > struct bpf_sock_ops as a volatile variable and I could get llvm to
+> > generate the BPF instructions to do partial loads. But then, I get the
+> > verifier error "dereference of modified ctx ptr R2 off=184 disallowed",
+> > explained in https://www.spinics.net/lists/netdev/msg531582.html
+> > What do you think should be done here?
+>
+> You added partial read tests in test_verifier with raw asm codes.
+> It should be good enough.
+>
+> For the compiler generated code causing verifier error, will take
+> a detailed look later.
 
-Hi,
+Thanks! To clarify my note: the patches I sent on the mailing list
+don't generate a verifier error.
 
-“Files already tracked by Git are not affected” by the .gitignore (says
-the relevant man page), so bash completion file is not ignored. It would
-be if we were to add the sources to the index of a new Git repo. But
-sure, it does not cost much to make the .gitignore cleaner.
+It only errors out when I try partial reads in C. You can see the code
+of the failed attempt that generate the error here:
+https://github.com/kinvolk/linux/blob/c5fe70990c897a866c7006a0068876b0fde9ee4d/tools/testing/selftests/bpf/test_sockmap_kern.h#L146-L176
 
-> 
->  tools/bpf/bpftool/.gitignore | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/tools/bpf/bpftool/.gitignore b/tools/bpf/bpftool/.gitignore
-> index 67167e4..19efcc8 100644
-> --- a/tools/bpf/bpftool/.gitignore
-> +++ b/tools/bpf/bpftool/.gitignore
-> @@ -1,5 +1,5 @@
->  *.d
-> -bpftool
-> -bpftool*.8
-> -bpf-helpers.*
-> -FEATURE-DUMP.bpftool
-> +/bpftool
-> +/bpftool*.8
-> +/bpf-helpers.*
+So if the partial read tests in test_verifier with raw asm codes are
+good enough, there is no need to investigate more on that.
 
-Careful when you add all those slashes, however. "bpftool*.8" and
-"bpf-helpers.*" should match files under Documentation/, so you do NOT
-want to prefix them with just a "/".
+> Also I did not see a cover letter. For a series with 4 patches, it would be
+> the best if you can provide a separate cover letter.
 
-Quentin
+Ok, I will do that for the next iteration.
 
-> +/FEATURE-DUMP.bpftool
-> 
+> > ---
+> >  include/uapi/linux/bpf.h |  2 +
+> >  net/core/filter.c        | 94 ++++++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 96 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index eaf2d3284248..f4f841dde42c 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -3213,6 +3213,8 @@ struct bpf_sock_ops {
+> >         __u32 sk_txhash;
+> >         __u64 bytes_received;
+> >         __u64 bytes_acked;
+> > +       __u64 netns_dev;
+> > +       __u64 netns_ino;
+> >  };
+> >
+> >  /* Definitions for bpf_sock_ops_cb_flags */
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 2f88baf39cc2..9c77464b1501 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -75,6 +75,8 @@
+> >  #include <net/seg6_local.h>
+> >  #include <net/lwtunnel.h>
+> >  #include <net/ipv6_stubs.h>
+> > +#include <linux/kdev_t.h>
+> > +#include <linux/proc_ns.h>
+> >
+> >  /**
+> >   *     sk_filter_trim_cap - run a packet through a socket filter
+> > @@ -6810,6 +6812,24 @@ static bool sock_ops_is_valid_access(int off, int size,
+> >                 }
+> >         } else {
+> >                 switch (off) {
+> > +               case offsetof(struct bpf_sock_ops, netns_dev) ...
+> > +                    offsetof(struct bpf_sock_ops, netns_dev) + sizeof(u64) - 1:
+> > +#ifdef CONFIG_NET_NS
+> > +                       if (off - offsetof(struct bpf_sock_ops, netns_dev)
+> > +                           + size > sizeof(u64))
+>
+> This will allow something off = 1, size = 4. This is not what we want as
+> the access is not properly aligned.
 
+sock_ops_is_valid_access() does not allow off = 1, size = 4. There is
+this check at the beginning of the function:
+        if (off % size != 0)
+                return false;
+
+> You can look at function bpf_skb_is_valid_access(), esp. the two lines below:
+>           bpf_ctx_record_field_size(info, size_default);
+>            if (!bpf_ctx_narrow_access_ok(off, size, size_default))
+>                    return false;
+
+Thanks for the pointer! I now see that if I use them, my code in
+sock_ops_convert_ctx_access() can be simplified.
+
+> > +                               return false;
+> > +#else
+> > +                       return false;
+> > +#endif
+> > +                       break;
+> > +               case offsetof(struct bpf_sock_ops, netns_ino):
+> > +#ifdef CONFIG_NET_NS
+> > +                       if (size != sizeof(u64))
+> > +                               return false;
+> > +#else
+> > +                       return false;
+> > +#endif
+> > +                       break;
+> >                 case bpf_ctx_range_till(struct bpf_sock_ops, bytes_received,
+> >                                         bytes_acked):
+> >                         if (size != sizeof(__u64))
+> > @@ -7727,6 +7747,11 @@ static u32 sock_addr_convert_ctx_access(enum bpf_access_type type,
+> >         return insn - insn_buf;
+> >  }
+> >
+> > +static struct ns_common *sockops_netns_cb(void *private_data)
+> > +{
+> > +       return &init_net.ns;
+> > +}
+> > +
+> >  static u32 sock_ops_convert_ctx_access(enum bpf_access_type type,
+> >                                        const struct bpf_insn *si,
+> >                                        struct bpf_insn *insn_buf,
+> > @@ -7735,6 +7760,10 @@ static u32 sock_ops_convert_ctx_access(enum bpf_access_type type,
+> >  {
+> >         struct bpf_insn *insn = insn_buf;
+> >         int off;
+> > +       struct inode *ns_inode;
+> > +       struct path ns_path;
+> > +       u64 netns_dev;
+> > +       void *res;
+> >
+> >  /* Helper macro for adding read access to tcp_sock or sock fields. */
+> >  #define SOCK_OPS_GET_FIELD(BPF_FIELD, OBJ_FIELD, OBJ)                        \
+> > @@ -7981,6 +8010,71 @@ static u32 sock_ops_convert_ctx_access(enum bpf_access_type type,
+> >                 SOCK_OPS_GET_OR_SET_FIELD(sk_txhash, sk_txhash,
+> >                                           struct sock, type);
+> >                 break;
+> > +
+> > +       case offsetof(struct bpf_sock_ops, netns_dev) ...
+> > +            offsetof(struct bpf_sock_ops, netns_dev) + sizeof(u64) - 1:
+> > +#ifdef CONFIG_NET_NS
+> > +               /* We get the netns_dev at BPF-load-time and not at
+> > +                * BPF-exec-time. We assume that netns_dev is a constant.
+> > +                */
+> > +               res = ns_get_path_cb(&ns_path, sockops_netns_cb, NULL);
+> > +               if (IS_ERR(res)) {
+> > +                       netns_dev = 0;
+> > +               } else {
+> > +                       ns_inode = ns_path.dentry->d_inode;
+> > +                       netns_dev = new_encode_dev(ns_inode->i_sb->s_dev);
+> > +               }
+> > +               off = si->off;
+> > +               off -= offsetof(struct bpf_sock_ops, netns_dev);
+> > +               switch (BPF_LDST_BYTES(si)) {
+> > +               case sizeof(u64):
+> > +                       *insn++ = BPF_MOV64_IMM(si->dst_reg, netns_dev);
+> > +                       break;
+> > +               case sizeof(u32):
+> > +                       netns_dev = *(u32 *)(((char *)&netns_dev) + off);
+> > +                       *insn++ = BPF_MOV32_IMM(si->dst_reg, netns_dev);
+> > +                       break;
+> > +               case sizeof(u16):
+> > +                       netns_dev = *(u16 *)(((char *)&netns_dev) + off);
+> > +                       *insn++ = BPF_MOV32_IMM(si->dst_reg, netns_dev);
+> > +                       break;
+> > +               case sizeof(u8):
+> > +                       netns_dev = *(u8 *)(((char *)&netns_dev) + off);
+> > +                       *insn++ = BPF_MOV32_IMM(si->dst_reg, netns_dev);
+> > +                       break;
+> > +               }
+> > +#endif
+> > +               break;
+> > +
+> > +       case offsetof(struct bpf_sock_ops, netns_ino):
+> > +#ifdef CONFIG_NET_NS
+> > +               /* Loading: sk_ops->sk->__sk_common.skc_net.net->ns.inum
+> > +                * Type: (struct bpf_sock_ops_kern *)
+> > +                *       ->(struct sock *)
+> > +                *       ->(struct sock_common)
+> > +                *       .possible_net_t
+> > +                *       .(struct net *)
+> > +                *       ->(struct ns_common)
+> > +                *       .(unsigned int)
+> > +                */
+> > +               BUILD_BUG_ON(offsetof(struct sock, __sk_common) != 0);
+> > +               BUILD_BUG_ON(offsetof(possible_net_t, net) != 0);
+> > +               *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(
+> > +                                               struct bpf_sock_ops_kern, sk),
+> > +                                     si->dst_reg, si->src_reg,
+> > +                                     offsetof(struct bpf_sock_ops_kern, sk));
+> > +               *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(
+> > +                                               possible_net_t, net),
+> > +                                     si->dst_reg, si->dst_reg,
+> > +                                     offsetof(struct sock_common, skc_net));
+> > +               *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(
+> > +                                               struct ns_common, inum),
+> > +                                     si->dst_reg, si->dst_reg,
+> > +                                     offsetof(struct net, ns) +
+> > +                                     offsetof(struct ns_common, inum));
+> > +#endif
+> > +               break;
+> > +
+> >         }
+> >         return insn - insn_buf;
+> >  }
+> > --
+> > 2.20.1
+> >
