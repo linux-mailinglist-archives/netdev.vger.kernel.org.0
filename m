@@ -2,150 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FD02E72E
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF0C7E772
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:16:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728827AbfD2QBs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Apr 2019 12:01:48 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:54181 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728506AbfD2QBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:01:48 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-226-5llsNYZ-NwuSveKxwifTrQ-1; Mon, 29 Apr 2019 17:01:45 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 29 Apr 2019 17:01:43 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 29 Apr 2019 17:01:43 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Willem de Bruijn' <willemdebruijn.kernel@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>
-Subject: RE: [PATCH net v2] packet: validate msg_namelen in send directly
-Thread-Topic: [PATCH net v2] packet: validate msg_namelen in send directly
-Thread-Index: AQHU/qOsnKDPErqEvkqlFzq1BUGVXKZTTEmA
-Date:   Mon, 29 Apr 2019 16:01:43 +0000
-Message-ID: <afaeff665f994174bf5751fc9068fe6e@AcuMS.aculab.com>
-References: <20190429155318.20433-1-willemdebruijn.kernel@gmail.com>
-In-Reply-To: <20190429155318.20433-1-willemdebruijn.kernel@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728764AbfD2QQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 12:16:31 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:36296 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728481AbfD2QQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:16:30 -0400
+Received: by mail-ed1-f67.google.com with SMTP id a8so7592944edx.3;
+        Mon, 29 Apr 2019 09:16:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=TEEvDMj9Vnh4ofwZ+ypl/2/A05GwNPsk2joWuaOOOw4=;
+        b=HJz0hQbA1rP8NYrqGN7y0hlrW3zLp4WGDSN0ueeyblkx7/6tCXcGmfDbLKuDutP5Xm
+         WVZP3vKy3VAx021VsNT7G8CgslKnBkyox4ENDFJ1cRMpLXt8kdL9ih9pMTI+d+kZpatk
+         RhPSnF8P2ySOxKw8ez/bHZ0O6OvDmD1iLPKZUt5CUD1hg/LJFpZMEdniT5UixMNK+Htm
+         HA+vvLvRiNwp4D6YOnMY/Cfh26skl+g4pNUOihXCD9ga0WEGHNgLzKjbITIqTZf7+rku
+         A/IfpppA8iKK/q1dDcPJCOx+t24qbWYKpajXooOQCuNNxMbCe0OFVZFWd5H3uTiSpwH0
+         YMUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TEEvDMj9Vnh4ofwZ+ypl/2/A05GwNPsk2joWuaOOOw4=;
+        b=iQoD/DD0qAsmIiPxbIjEON851bQmMI5dv7wlYe1Etv141Bro9C1Xlx08ZPMvR74kgi
+         G2n5lsWk46nb20kPzGqmmMXchR+qWg2bpZJ4DuL0q/ee+WJAttiCgrnxjTWlSz5xDK4m
+         wdxZt8HLCLpI0GZXrm8LiamJfXkaJ9lAjsaPen+qqnbHBiVVC6EOCW4c0ywkK4jVSMGs
+         TQYElKlG3ITrHbHqt/yXZa0PxmUh45azQ1lbaRzUDnzY0xV07/BVLy9IiHZ4kBuId5ie
+         2LKOjnFP+T/K8dwgvuSVZYdkzIihcSAhIjV5RP0m9zBsywKh1rnAUzJF9PX2rl4OQUc+
+         mnAA==
+X-Gm-Message-State: APjAAAV6DiTTYNuVecu59ERUI9cnVioPLTqqUHXltj2H4XM+yniNpAfA
+        OPckElv0M3QwHc3wK12cdHgYTJqv+Dc2gzwn6Kk=
+X-Google-Smtp-Source: APXvYqzfHd8EUL9/YOPCq45PtaLoMvDgtXEeoUUMFLXy5GztgZp7M/yNI5RTJ5FvH9J/MLiZ5MpfkrDKcAmLyOChczw=
+X-Received: by 2002:a50:bdcc:: with SMTP id z12mr37920478edh.138.1556554588928;
+ Mon, 29 Apr 2019 09:16:28 -0700 (PDT)
 MIME-Version: 1.0
-X-MC-Unique: 5llsNYZ-NwuSveKxwifTrQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+References: <20190429060107.10245-1-zajec5@gmail.com>
+In-Reply-To: <20190429060107.10245-1-zajec5@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 29 Apr 2019 12:15:52 -0400
+Message-ID: <CAF=yD-+Z=u5Vh=z73BSDrAQZSSXvwOYAxZNLzVMksz5pdfmP=Q@mail.gmail.com>
+Subject: Re: [PATCH] net-sysfs: expose IRQ number
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn
-> Sent: 29 April 2019 16:53
-> Packet sockets in datagram mode take a destination address. Verify its
-> length before passing to dev_hard_header.
-> 
-> Prior to 2.6.14-rc3, the send code ignored sll_halen. This is
-> established behavior. Directly compare msg_namelen to dev->addr_len.
-> 
-> Change v1->v2: initialize addr in all paths
-> 
-> Fixes: 6b8d95f1795c4 ("packet: validate address length if non-zero")
-> Suggested-by: David Laight <David.Laight@aculab.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
+On Mon, Apr 29, 2019 at 2:01 AM Rafa=C5=82 Mi=C5=82ecki <zajec5@gmail.com> =
+wrote:
+>
+> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+>
+> Knowing IRQ number makes e.g. reading /proc/interrupts much simpler.
+> It's more reliable than guessing device name used by a driver when
+> calling request_irq().
+>
+> Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
 > ---
->  net/packet/af_packet.c | 24 ++++++++++++++----------
->  1 file changed, 14 insertions(+), 10 deletions(-)
-> 
-> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> index 9419c5cf4de5e..a43876b374da2 100644
-> --- a/net/packet/af_packet.c
-> +++ b/net/packet/af_packet.c
-> @@ -2602,8 +2602,8 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
->  	void *ph;
->  	DECLARE_SOCKADDR(struct sockaddr_ll *, saddr, msg->msg_name);
->  	bool need_wait = !(msg->msg_flags & MSG_DONTWAIT);
-> +	unsigned char *addr = NULL;
->  	int tp_len, size_max;
-> -	unsigned char *addr;
->  	void *data;
->  	int len_sum = 0;
->  	int status = TP_STATUS_AVAILABLE;
-> @@ -2614,7 +2614,6 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
->  	if (likely(saddr == NULL)) {
->  		dev	= packet_cached_dev_get(po);
->  		proto	= po->num;
-> -		addr	= NULL;
->  	} else {
->  		err = -EINVAL;
->  		if (msg->msg_namelen < sizeof(struct sockaddr_ll))
-> @@ -2624,10 +2623,13 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
->  						sll_addr)))
->  			goto out;
->  		proto	= saddr->sll_protocol;
-> -		addr	= saddr->sll_halen ? saddr->sll_addr : NULL;
->  		dev = dev_get_by_index(sock_net(&po->sk), saddr->sll_ifindex);
-> -		if (addr && dev && saddr->sll_halen < dev->addr_len)
-> -			goto out_put;
-> +		if (po->sk.sk_socket->type == SOCK_DGRAM) {
-> +			if (dev && msg->msg_namelen < dev->addr_len +
-> +				   offsetof(struct sockaddr_ll, sll_addr))
-> +				goto out_put;
-> +			addr = saddr->sll_addr;
-> +		}
->  	}
-> 
->  	err = -ENXIO;
-> @@ -2799,7 +2801,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
->  	struct sk_buff *skb;
->  	struct net_device *dev;
->  	__be16 proto;
-> -	unsigned char *addr;
-> +	unsigned char *addr = NULL;
->  	int err, reserve = 0;
->  	struct sockcm_cookie sockc;
->  	struct virtio_net_hdr vnet_hdr = { 0 };
-> @@ -2816,7 +2818,6 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
->  	if (likely(saddr == NULL)) {
->  		dev	= packet_cached_dev_get(po);
->  		proto	= po->num;
-> -		addr	= NULL;
->  	} else {
->  		err = -EINVAL;
->  		if (msg->msg_namelen < sizeof(struct sockaddr_ll))
-> @@ -2824,10 +2825,13 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
->  		if (msg->msg_namelen < (saddr->sll_halen + offsetof(struct sockaddr_ll, sll_addr)))
->  			goto out;
->  		proto	= saddr->sll_protocol;
-> -		addr	= saddr->sll_halen ? saddr->sll_addr : NULL;
->  		dev = dev_get_by_index(sock_net(sk), saddr->sll_ifindex);
-> -		if (addr && dev && saddr->sll_halen < dev->addr_len)
-> -			goto out_unlock;
-> +		if (sock->type == SOCK_DGRAM) {
-> +			if (dev && msg->msg_namelen < dev->addr_len +
-> +				   offsetof(struct sockaddr_ll, sll_addr))
-> +				goto out_unlock;
-> +			addr = saddr->sll_addr;
-> +		}
->  	}
-> 
->  	err = -ENXIO;
-> --
-> 2.21.0.593.g511ec345e18-goog
+> I found a script parsing /proc/interrupts for a given interface name. It =
+wasn't
+> working for me as it assumed request_irq() was called with a device name.=
+ It's
+> not a case for all drivers.
+>
+> I also found some other people looking for a proper solution for that:
+> https://unix.stackexchange.com/questions/275075/programmatically-determin=
+e-the-irqs-associated-with-a-network-interface
+> https://stackoverflow.com/questions/7516984/retrieving-irq-number-of-a-ni=
+c
+>
+> Let me know if this solution makes sense. I can say it works for me ;)
 
-LGTM
+If parsing /proc/interrupts is problematic, also see the
+/sys/kernel/irq interface added in commit ecb3f394c5db ("genirq:
+Expose interrupt information through sysfs"). Does that address your
+use-case as well? Though it does the inverse mapping from IRQ to name.
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Another practical issue is that many network devices register more
+than one interrupt. Perhaps one control interrupt, plus one per
+receive queue and possibly one per transmit queue. Unfortunately those
+cannot be identified in a driver-independent manner. Because an
+interface /sys/class/net/$DEV/queues/rx-$i/irq would be useful.
