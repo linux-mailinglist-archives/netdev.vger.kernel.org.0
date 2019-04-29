@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A470ECEB
+	by mail.lfdr.de (Postfix) with ESMTP id ED035ECEC
 	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 00:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729677AbfD2Wqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 18:46:48 -0400
-Received: from mail-ot1-f73.google.com ([209.85.210.73]:54065 "EHLO
-        mail-ot1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729662AbfD2Wqr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 18:46:47 -0400
-Received: by mail-ot1-f73.google.com with SMTP id f11so6606097otl.20
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 15:46:46 -0700 (PDT)
+        id S1729682AbfD2Wqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 18:46:51 -0400
+Received: from mail-qk1-f201.google.com ([209.85.222.201]:38190 "EHLO
+        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729662AbfD2Wqu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 18:46:50 -0400
+Received: by mail-qk1-f201.google.com with SMTP id 207so10327996qkn.5
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 15:46:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=uMuen5efdqBvfuXFWl5+NzEu8kwv3fbxCMN6jpZXLvE=;
-        b=SAeh4F9Gkfm+luM2TOlgbyswYWatWwLFXGNu2XI/saXh9ZR9rskiTDhYmMVz35iZVC
-         HRJqfh6Ao/T3SDzR9FvoePP/nfFVJmqauKhN2WtnhP+k6dVEAxHviu9PtLDmKrVn6lyA
-         Vtw02Bxbl4m3wef6PgwIdxd7ro4MVjLB2PLRpWuorr2jsUlESJAscLaC2SZcp18zrbZC
-         JkGnCAZpIg7za8zGz5fyRbuASJHb5m+E76LcfdN+2Sbudqa3Lecrc4fZpGPVQyBGt61r
-         c6RHC68QpGgWeRHzFSfxIkHwuXe62G7MRPYAaJyULtponRX1yFHNxmWWziyN3G0MPPvF
-         YtfA==
+        bh=3+Hd/aLkQCBenZcRu1M3X4LM1hnWgsN1iWwgP2ItfZI=;
+        b=lOBHMYss8deJ5jd4JggcZdzDKKYtHyU8X6kK8IgtiR6zjaaIU9ML/5lOPRrFIKEXCQ
+         tU8DaajSgV9fjuW6zQL61qWCbpFPLkAhuJzJEQu8XVyi8VNxaPsF+I+L3gobU/7NQ3dG
+         vwsC85JGw5C5HBFQQFW/gu2+knZjrPaMIzY/Rx8GTl53n8IPTXOh9m9LCmTkhWXoQszk
+         CyMau1MxtN0OGTFX3UmQnVL10AXCHQSftIDxHHADGF/i3jI/uuitwrBML7pWZXIXuQUF
+         AyH0E7vObTXm9OT+dI+DM2I9R47/n7JVaY68yVO1Fy/KR/SA84kVwzkvG/5wFzOQ6zmz
+         fBfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=uMuen5efdqBvfuXFWl5+NzEu8kwv3fbxCMN6jpZXLvE=;
-        b=H4ebj0nYtrxpOXNtn2IsECnEcBUogZXEMdxesrH1bVm/WsiHejHTX5y0jAamtm4E/a
-         VrEHsB9ln5sdZ3AGocvZ8Y5pm3NZWYIUf8DdT6SJQyvkJJMmaOie0jnOJpKg1mBVlHtu
-         U4+5gy/VtwtsgSYyHgIDq5N7J1GxZlCvzIzoSu+uc/CKU5W0c7oUWqLKSlyXZh6D3f/X
-         yBjFghZhXu57gEYyUENfTMCkmUyxvs0f13NhSVcSJRXEfwtW6t2HHuaDG6YFSiME3Nmc
-         qZBRRf/fOh+/D7zw2iGZz29hq+s5qFjy6qoDMfIwFBLAJxGCf20DHX3cliush4YyIRr4
-         taEQ==
-X-Gm-Message-State: APjAAAWAdIN7u0WhC+EQ7C9/qEgtcYaGvxt7oj6y4qNdNO3cvQzGXkrm
-        9+McuorVk2MJsgyvc563oFKnfHHnGMs=
-X-Google-Smtp-Source: APXvYqw51wpXgPDhQqXdR5qQGPya3fzT65pKHDxkWsdV+iSnW9W7BdfGSIbapOCOcNauGUI6EoJohyyphBk=
-X-Received: by 2002:a9d:70c1:: with SMTP id w1mr14254108otj.312.1556578006437;
- Mon, 29 Apr 2019 15:46:46 -0700 (PDT)
-Date:   Mon, 29 Apr 2019 15:46:19 -0700
+        bh=3+Hd/aLkQCBenZcRu1M3X4LM1hnWgsN1iWwgP2ItfZI=;
+        b=V61OyW3P7rOyHUJOBwc6zdAqKJa8BJCVHAibsVgM73vSx4+AF1TTg0zW+1AKVej7V3
+         Xf4Ei+nHkH+dQBtWi+/8adT8/lfK6nrztGoVqz0J2jby2F/sQuadMYZ2kDbFvoLMbsod
+         IlwqpMHvDR2KYzgyIHqYWv+X777GRBbYKLH/g8hH+46wOuG6gKM0hj07O3e9Hx+C4vPZ
+         eIJDz7OjSj9C9WkLEqqZG90Cc0AIibD+wErjScWXsiPSaiqjgxdnTEnIceWGFHs/9p7q
+         5YwlLUST1VAZ2cs9XX6t0B5txfEY+hS74foERxAwl/1OgBTZpN25NJYGjz1BKobpEO1M
+         Dptw==
+X-Gm-Message-State: APjAAAW1vy2FYzJKGTMLQWPlD3v5iX3IXGcVnfWQrS63O9BdEOmWSE7g
+        FoSaadWytp+ib4i4S9H5+eBKUyqTNzU=
+X-Google-Smtp-Source: APXvYqwj2bHvrVoVBWvvThc8IFu85ICbvFhPHjQw6tYveY+0Fre5FlajUDWDmIlYCPbyEPmIrS+ODZ6qgsk=
+X-Received: by 2002:a0c:c950:: with SMTP id v16mr15718977qvj.152.1556578008896;
+ Mon, 29 Apr 2019 15:46:48 -0700 (PDT)
+Date:   Mon, 29 Apr 2019 15:46:20 -0700
 In-Reply-To: <20190429224620.151064-1-ycheng@google.com>
-Message-Id: <20190429224620.151064-8-ycheng@google.com>
+Message-Id: <20190429224620.151064-9-ycheng@google.com>
 Mime-Version: 1.0
 References: <20190429224620.151064-1-ycheng@google.com>
 X-Mailer: git-send-email 2.21.0.593.g511ec345e18-goog
-Subject: [PATCH net-next 7/8] tcp: refactor to consolidate TFO passive open code
+Subject: [PATCH net-next 8/8] tcp: refactor setting the initial congestion window
 From:   Yuchung Cheng <ycheng@google.com>
 To:     davem@davemloft.net, edumazet@google.com
 Cc:     netdev@vger.kernel.org, ncardwell@google.com, soheil@google.com,
@@ -57,94 +57,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use a helper to consolidate two identical code block for passive TFO.
+Relocate the congestion window initialization from tcp_init_metrics()
+to tcp_init_transfer() to improve code readability.
 
 Signed-off-by: Yuchung Cheng <ycheng@google.com>
 Signed-off-by: Neal Cardwell <ncardwell@google.com>
 Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp_input.c | 52 +++++++++++++++++++++-----------------------
- 1 file changed, 25 insertions(+), 27 deletions(-)
+ net/ipv4/tcp.c         | 12 ------------
+ net/ipv4/tcp_input.c   | 26 ++++++++++++++++++++++++++
+ net/ipv4/tcp_metrics.c | 10 ----------
+ 3 files changed, 26 insertions(+), 22 deletions(-)
 
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index f7567a3698eb..1fa15beb8380 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -457,18 +457,6 @@ void tcp_init_sock(struct sock *sk)
+ }
+ EXPORT_SYMBOL(tcp_init_sock);
+ 
+-void tcp_init_transfer(struct sock *sk, int bpf_op)
+-{
+-	struct inet_connection_sock *icsk = inet_csk(sk);
+-
+-	tcp_mtup_init(sk);
+-	icsk->icsk_af_ops->rebuild_header(sk);
+-	tcp_init_metrics(sk);
+-	tcp_call_bpf(sk, bpf_op, 0, NULL);
+-	tcp_init_congestion_control(sk);
+-	tcp_init_buffer_space(sk);
+-}
+-
+ static void tcp_tx_timestamp(struct sock *sk, u16 tsflags)
+ {
+ 	struct sk_buff *skb = tcp_write_queue_tail(sk);
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 3a40584cb473..706a99ec73f6 100644
+index 706a99ec73f6..077d9abdfcf5 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -5989,6 +5989,27 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 	return 1;
+@@ -5647,6 +5647,32 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
  }
+ EXPORT_SYMBOL(tcp_rcv_established);
  
-+static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
++void tcp_init_transfer(struct sock *sk, int bpf_op)
 +{
-+	tcp_try_undo_loss(sk, false);
-+	inet_csk(sk)->icsk_retransmits = 0;
++	struct inet_connection_sock *icsk = inet_csk(sk);
++	struct tcp_sock *tp = tcp_sk(sk);
 +
-+	/* Once we leave TCP_SYN_RECV or TCP_FIN_WAIT_1,
-+	 * we no longer need req so release it.
-+	 */
-+	reqsk_fastopen_remove(sk, tcp_sk(sk)->fastopen_rsk, false);
++	tcp_mtup_init(sk);
++	icsk->icsk_af_ops->rebuild_header(sk);
++	tcp_init_metrics(sk);
 +
-+	/* Re-arm the timer because data may have been sent out.
-+	 * This is similar to the regular data transmission case
-+	 * when new data has just been ack'ed.
-+	 *
-+	 * (TFO) - we could try to be more aggressive and
-+	 * retransmitting any data sooner based on when they
-+	 * are sent out.
++	/* Initialize the congestion window to start the transfer.
++	 * Cut cwnd down to 1 per RFC5681 if SYN or SYN-ACK has been
++	 * retransmitted. In light of RFC6298 more aggressive 1sec
++	 * initRTO, we only reset cwnd when more than 1 SYN/SYN-ACK
++	 * retransmission has occurred.
 +	 */
-+	tcp_rearm_rto(sk);
++	if (tp->total_retrans > 1 && tp->undo_marker)
++		tp->snd_cwnd = 1;
++	else
++		tp->snd_cwnd = tcp_init_cwnd(tp, __sk_dst_get(sk));
++	tp->snd_cwnd_stamp = tcp_jiffies32;
++
++	tcp_call_bpf(sk, bpf_op, 0, NULL);
++	tcp_init_congestion_control(sk);
++	tcp_init_buffer_space(sk);
 +}
 +
- /*
-  *	This function implements the receiving procedure of RFC 793 for
-  *	all states except ESTABLISHED and TIME_WAIT.
-@@ -6085,22 +6106,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 		if (!tp->srtt_us)
- 			tcp_synack_rtt_meas(sk, req);
+ void tcp_finish_connect(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+diff --git a/net/ipv4/tcp_metrics.c b/net/ipv4/tcp_metrics.c
+index d4d687330e2b..c4848e7a0aad 100644
+--- a/net/ipv4/tcp_metrics.c
++++ b/net/ipv4/tcp_metrics.c
+@@ -512,16 +512,6 @@ void tcp_init_metrics(struct sock *sk)
  
--		/* Once we leave TCP_SYN_RECV, we no longer need req
--		 * so release it.
--		 */
- 		if (req) {
--			tcp_try_undo_loss(sk, false);
--			inet_csk(sk)->icsk_retransmits = 0;
--			reqsk_fastopen_remove(sk, req, false);
--			/* Re-arm the timer because data may have been sent out.
--			 * This is similar to the regular data transmission case
--			 * when new data has just been ack'ed.
--			 *
--			 * (TFO) - we could try to be more aggressive and
--			 * retransmitting any data sooner based on when they
--			 * are sent out.
--			 */
--			tcp_rearm_rto(sk);
-+			tcp_rcv_synrecv_state_fastopen(sk);
- 		} else {
- 			tcp_try_undo_spurious_syn(sk);
- 			tp->retrans_stamp = 0;
-@@ -6138,18 +6145,9 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 	case TCP_FIN_WAIT1: {
- 		int tmo;
+ 		inet_csk(sk)->icsk_rto = TCP_TIMEOUT_FALLBACK;
+ 	}
+-	/* Cut cwnd down to 1 per RFC5681 if SYN or SYN-ACK has been
+-	 * retransmitted. In light of RFC6298 more aggressive 1sec
+-	 * initRTO, we only reset cwnd when more than 1 SYN/SYN-ACK
+-	 * retransmission has occurred.
+-	 */
+-	if (tp->total_retrans > 1 && tp->undo_marker)
+-		tp->snd_cwnd = 1;
+-	else
+-		tp->snd_cwnd = tcp_init_cwnd(tp, dst);
+-	tp->snd_cwnd_stamp = tcp_jiffies32;
+ }
  
--		/* If we enter the TCP_FIN_WAIT1 state and we are a
--		 * Fast Open socket and this is the first acceptable
--		 * ACK we have received, this would have acknowledged
--		 * our SYNACK so stop the SYNACK timer.
--		 */
--		if (req) {
--			tcp_try_undo_loss(sk, false);
--			inet_csk(sk)->icsk_retransmits = 0;
--			/* We no longer need the request sock. */
--			reqsk_fastopen_remove(sk, req, false);
--			tcp_rearm_rto(sk);
--		}
-+		if (req)
-+			tcp_rcv_synrecv_state_fastopen(sk);
-+
- 		if (tp->snd_una != tp->write_seq)
- 			break;
- 
+ bool tcp_peer_is_proven(struct request_sock *req, struct dst_entry *dst)
 -- 
 2.21.0.593.g511ec345e18-goog
 
