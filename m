@@ -2,86 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7197FE3E7
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE6DEE40A
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728180AbfD2NpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 09:45:00 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:36654 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725838AbfD2NpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 09:45:00 -0400
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C3891C00C7;
-        Mon, 29 Apr 2019 13:44:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1556545497; bh=KFEGEBvc2AV2G1HibQZsWwJ5igLQZzg0nEiClSfL5jw=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=TqMoLK/Dm8I9AH4ZobnzVJoyE5b13wyfv3pwZEMumuCuuFMr1Zdr4+oicb9Q4y4Mi
-         D7yMGG4UstHCJAuuF+3W1QBuYe0x6jlnti/pyVKJN37Xy2/FqlUBZEmW9s2+waqYWU
-         LPl4sCAWoyIpsyJoN39JsCqtrGb2Qiv6uWPF1C+S+QXqJFyfjoLsjOFTLPyRNbpLPC
-         jG4V4r5a37GRJ3ZwjiNTOSoBUMsHijXBrBEQNR0HP9SdsRG0xS5OJUdQxRD4vyCgym
-         aErimVjsElxcowsxtjp6lm9kdSCw8TioGZqmaYIrsXtCQdDXjFL4+B+K7LxBs471xB
-         5LxTTNJYqv+bQ==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 3FFC0A0066;
-        Mon, 29 Apr 2019 13:44:58 +0000 (UTC)
-Received: from DE02WEHTCB.internal.synopsys.com (10.225.19.94) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Mon, 29 Apr 2019 06:44:58 -0700
-Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCB.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Mon,
- 29 Apr 2019 15:44:57 +0200
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>
-CC:     "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Subject: RE: [PATCH 0/7] net: stmmac: enable EHL SGMII
-Thread-Topic: [PATCH 0/7] net: stmmac: enable EHL SGMII
-Thread-Index: AQHU+n6UM7GU7OtY/UWKCWYebuRSxqZLMmUAgAEn3oCAAFapgIAAIdQAgAAMagCABaWxAIAAfmcAgAAqzmA=
-Date:   Mon, 29 Apr 2019 13:44:56 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B46E367@DE02WEMBXB.internal.synopsys.com>
-References: <1556126241-2774-1-git-send-email-weifeng.voon@intel.com>
- <20190424134854.GP28405@lunn.ch>
- <D6759987A7968C4889FDA6FA91D5CBC8146EF128@PGSMSX103.gar.corp.intel.com>
- <20190425123801.GD8117@lunn.ch>
- <AF233D1473C1364ABD51D28909A1B1B75C0B205D@pgsmsx114.gar.corp.intel.com>
- <20190425152332.GD23779@lunn.ch>
- <AF233D1473C1364ABD51D28909A1B1B75C0B8B35@pgsmsx114.gar.corp.intel.com>
- <20190429131016.GE10772@lunn.ch>
-In-Reply-To: <20190429131016.GE10772@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.107.19.176]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728267AbfD2Nz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 09:55:58 -0400
+Received: from mout.kundenserver.de ([212.227.17.13]:37433 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725838AbfD2Nz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 09:55:58 -0400
+Received: from [192.168.1.110] ([77.9.18.117]) by mrelayeu.kundenserver.de
+ (mreue106 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MwPjf-1gT9H42mKz-00sLKc; Mon, 29 Apr 2019 15:54:35 +0200
+Subject: Re: [PATCH v10 0/7] Add Fieldbus subsystem + support HMS Profinet
+ card
+To:     Sven Van Asbroeck <thesven73@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>, mark.rutland@arm.com,
+        treding@nvidia.com, David Lechner <david@lechnology.com>,
+        noralf@tronnes.org, johan@kernel.org,
+        Michal Simek <monstr@monstr.eu>, michal.vokac@ysoft.com,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg KH <gregkh@linuxfoundation.org>, john.garry@huawei.com,
+        geert+renesas@glider.be, robin.murphy@arm.com,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        sebastien.bourdelin@savoirfairelinux.com, icenowy@aosc.io,
+        Stuart Yoder <stuyoder@gmail.com>,
+        "J. Kiszka" <jan.kiszka@siemens.com>, maxime.ripard@bootlin.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20190409144250.7237-1-TheSven73@gmail.com>
+ <982e69c6-4e68-6f62-8bed-cd5a1802272b@metux.net>
+ <CAGngYiUTHZFFY=H7xXHzZnN4pS0jAqWBTrcw04hjf5S-ykxC9w@mail.gmail.com>
+ <c1831703-a476-8870-0a5f-9060bda0f669@metux.net>
+ <CAGngYiXx2eKR7DnHm9sNWVC+B1F2N6uUNXqZAq4rey2yjU1RyA@mail.gmail.com>
+ <23a25601-ed98-5348-9bac-bf8fc2baea5e@metux.net>
+ <CAGngYiVJwRh_ESLfSYWak4RU60T2D1HW0-3Hg1CZbRjWhaSN5Q@mail.gmail.com>
+ <7ceaeb70-f937-bd84-95e5-d7a6baeb5d87@metux.net>
+ <CAGngYiUPZ+g4eXJKvgA9GSJXgOFAAf6Q3qqAheiqNSnJ+Dbx+w@mail.gmail.com>
+ <e07f7575-2617-a11a-fd78-d068b10a8171@metux.net>
+ <06024a8a-ad00-8062-215b-01b2f95a6e24@hartkopp.net>
+ <c1b783b0-9773-17f5-d043-35e28f7797f0@suse.de>
+ <d54b294e-d641-bb14-84ed-39d9a9079dc7@hartkopp.net>
+ <CAGngYiX_xxDWEAbxQ=XeZPYAA+zgQ32U0Ov=CG86yE=6=qTfpg@mail.gmail.com>
+From:   "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Organization: metux IT consult
+Message-ID: <2bed794d-4960-df09-df16-e063cc41eaae@metux.net>
+Date:   Mon, 29 Apr 2019 15:54:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux i686 on x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
+In-Reply-To: <CAGngYiX_xxDWEAbxQ=XeZPYAA+zgQ32U0Ov=CG86yE=6=qTfpg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:XKZ+U9p2e+DR5HEHnRD3a5YgCyikZoBUmNnTjxGi9hDiE/mOW05
+ MWW8x9pjhr0I3vtT2M9L+ZdxFYT2ydXVisV1SSZ4hu9gz4ovnbPz1NTvo5JQXim7xMcH7tP
+ 6Od4jzmaMi36swtR+Wdrmha4aSlss0Dfv9o+1HZuyWDeK9Fz9UhWkTft5ncMplULHCuAgla
+ lrqMyJPjIzrg+38RmVIfA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:YGZf1uj3/6I=:uILxPV5x+bGgNNEKC7e4j3
+ ZRnzQN+YTtXwsHoDQMyaNWvu6Jm7U6Qcha21dg/ejOZ71z2RNiORCtPH1g+emerxdEwWlWC4v
+ NJUVRdpmXdaLcpHejA/Z9q0bjPLg0EGzJXtPjCkgGdQd7ZUp3i7s6OcI+QCZ2IjXVzsFSi4cE
+ TmEIqfQagpIzOJ7bf2j7RimRZXupWLauRVEoTaEx7TgoUI8iskH3gf93pfdDVbJBTRs5bZhci
+ ch31pjCpbIcoHExjCYiqFoQJ78lPhME0GbbKsfurukisZqmem9FdEC15H8Et68fC1yYuwLjms
+ L7tRPSfDyMBZcOnig8r1HdMyoMVz66tBunZi/cWtCNc7WO5l/NyCLVugUVXxUyVAG6n0jc2Cz
+ Y2k1p3aHTRiABAPzLC/yL4uZHDTRDE2FD75HqlklkPSk279L2bISEYkMRGHSug7NJd/yQ2fDs
+ 2dKUHCjIZrGbtQnAujSvjQ3pRvstKFZ3Y6t5To45/MvG3RwhK0zfdSzISNVZnFJ63PnV+8im5
+ sEfUC21/QW4Pg/y1lyKCQ3micL1i4PTJJz8OkBFcmMdzzuf6AiR3Jc8QkFIxuBT64PrzEC0ZP
+ /KbTFQOI7ZuUa1GmQZvQN4UUitAS7JxFwcudbo2NV2LSBoQu9hy3Z3WWuNJwD3Ki3OFoe6zeI
+ Xm/xlbRLcs8VhaKrrGsDeD+kVcjSyKZAmFR04lBir4zLsbSATgJmeL6LPOiMWPJL9Vmo+LiYW
+ WnIOZoTymEHcEagvuhA2+r973IIV3lfRv9SZZ8h1cqtsiZ/0XtHRbM3onu8=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
-Date: Mon, Apr 29, 2019 at 14:10:16
+On 24.04.19 17:10, Sven Van Asbroeck wrote:
 
-> Yes, if all i can do is SGMII, hard coding SGMII is fine. But you
-> should probably check phy-mode and return an error if it has a value
-> other than SGMII,
+> The subsystem is called fieldbus_dev "fieldbus device" because it> abstracts Linux fieldbus clients that want to expose themselves as>
+e.g. an actuator, motor, console light, switch, ...
+Sounds a bit confusing. With that description, I'd expect highlevel
+interfaces similar to LED, input, IIO, etc ... but you're actually
+implementing an distributed process memory system. This in turn is
+just a subset of the fieldbus world.
 
-+1 because XPCS supports 1000Base-X but it seems this SoC doesn't.
+> During one of the eleven review cycles, drivers/fieldbus_dev got> truncated to drivers/fieldbus because the reviewers felt that> _dev
+was redundant, given the lack of other fieldbus> subsystems.
+There is at least one: CAN. Sometimes CAN is used in the IEC61158-way,
+but also completely different, even both in combination.
 
-Thanks,
-Jose Miguel Abreu
+> These cards are not controllers, but slaves on the bus.
+
+Do they really implement the process memory part or just the lower
+layer communications ?
+
+> I'm by no means a fieldbus expert. It seems that the term> 'fieldbus' is much broader than these process-memory based> standards?
+
+Yes, indeed.
+
+> I am open to any _concrete_ naming suggestion
+> that can get consensus.
+Maybe IEC61158 ?
+
+> I'm a bit confused by Wikipedia's entry for fieldbus.
+> It suggests that IEC 61158 and Fieldbus are
+> interchangeable?
+> https://en.wikipedia.org/wiki/Fieldbus
+
+That's wrong.
+
+> <quote>
+> Fieldbus is the name of a family of industrial computer
+> network protocols used for real-time distributed control,
+> standardized as IEC 61158.
+> </quote>
+
+IEC 61158 only standardizes one particular approach: the distributed
+process memory.
+
+> Given that CAN/EtherCAT are not process memory based
+> (that I know of), the fieldbus_dev subsystem is probably
+> not a good fit.
+
+ACK. Neither are MVB+friends.
+
+
+--mtx
+
+-- 
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
