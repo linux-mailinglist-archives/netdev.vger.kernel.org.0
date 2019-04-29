@@ -2,86 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56F12EC69
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 00:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA894EC70
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 00:06:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729491AbfD2WFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 18:05:13 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:35377 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729443AbfD2WFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 18:05:13 -0400
-Received: by mail-pg1-f194.google.com with SMTP id h1so5829757pgs.2
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 15:05:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oIClW+eAJGN2srX7oH2ruh8rBrCYjy//tpkEI243d30=;
-        b=z2/TNPN0HFkL0ngHxNY7PHsryplbslofoOzRL49oyUbENcGYGFb6T9Gf56u4MaG1+C
-         1J82aISJq/snOkKC8GiLp6MZv08/Xv+3Ed6HewAtz/t3LhgML8SJWORPCFTEfkohoVGY
-         c83eaRpbsI+BG8uqCyIRfRH9hHvSoMONXU7hUsx5Rf1+fT73bzlnLv2MDYUisOnRJiU4
-         HFfWqLy96BWVp146ZtG6qBrlsl4j0+mI8uJsw6eybLsV+X7RonzZJdtyGq1nTAPMbpOV
-         E7bn5HVMbWebm/d7cX3v22BO/kh/nJBnimiBz58Zqkn6iGAMum84Uz8yGgaZajQX8YIG
-         VkjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oIClW+eAJGN2srX7oH2ruh8rBrCYjy//tpkEI243d30=;
-        b=fxxvpR8Twp9ekv+jH+KJZXu5e5vTgyiqH0t1LVR+C111jKbdimOp6s1RImWpK/HM6n
-         0uWQNAz6JmT3v5MeFsc/m7ppvAbPsrU5DDzU68ortnIlA03klIjxXXAOBo+GNjF58PBb
-         aptujYpffYOeL2IXQhrktGaxv4t2KvI0/l2SA2bLscGLayxNJU39oE+ZLr2Tk74lrOJR
-         pgM/VtuTlyo+mYTskSYRbmvFkpH+vlPeLVHVd1fk/WLt2y1k3PZ9lc1eURaJLS8oObll
-         Qiq6BXJczM5J8qxG0nLGo+oD0v+uCWq3tXIV4hN0PTkBieLFARKeelKyi2tRTtshuoFl
-         Pzxg==
-X-Gm-Message-State: APjAAAWOnLDdLSrtl9p/zYeWIyKJFvrqeeijeJA95WRUd9aWf/TMYqvK
-        VpqbU1Cgs3s2skcEx9jonx4VDg==
-X-Google-Smtp-Source: APXvYqzkXZ7AJVDKNwSB0GiURr5QYjzm+0Z4j5Zj10YVaT/WMFAZM5hhEzACKhJCumclUAOwFibSgg==
-X-Received: by 2002:a63:a1f:: with SMTP id 31mr62597740pgk.427.1556575512715;
-        Mon, 29 Apr 2019 15:05:12 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q87sm61088448pfa.133.2019.04.29.15.05.12
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 29 Apr 2019 15:05:12 -0700 (PDT)
-Date:   Mon, 29 Apr 2019 15:05:05 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com
-Subject: Re: [PATCH iproute2] ip: mroute: add fflush to print_mroute
-Message-ID: <20190429150505.7f7f17a6@hermes.lan>
-In-Reply-To: <20190426105421.32139-1-nikolay@cumulusnetworks.com>
-References: <20190426105421.32139-1-nikolay@cumulusnetworks.com>
+        id S1729552AbfD2WGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 18:06:32 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49175 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729409AbfD2WGc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 18:06:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=CDkCYbBrMqsa0J2dGF7qat95dbAVM0+F+tk4bLYplek=; b=h5hYMGMCjtscuGrEym+sefVT0T
+        oVIvFVAdxF1s1igVBA+j9FCpaxdJTEufYRyHMF2uuO8dRPWmcDK7J2dG3taU9DR1YVTIkEDJEXAMW
+        Hy7SVCDqm10poJH6BmQALi7nL4yC9fmqxbsYPZyu85n31QsSjmLyiTmGM0YQ2lqmNV+M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hLEPW-0007Io-Qb; Tue, 30 Apr 2019 00:06:06 +0200
+Date:   Tue, 30 Apr 2019 00:06:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Esben Haabendal <esben@geanix.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Yang Wei <yang.wei9@zte.com.cn>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/12] net: ll_temac: Fix support for 64-bit platforms
+Message-ID: <20190429220606.GL12333@lunn.ch>
+References: <20190426073231.4008-1-esben@geanix.com>
+ <20190429083422.4356-1-esben@geanix.com>
+ <20190429083422.4356-4-esben@geanix.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190429083422.4356-4-esben@geanix.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 26 Apr 2019 13:54:21 +0300
-Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
+On Mon, Apr 29, 2019 at 10:34:13AM +0200, Esben Haabendal wrote:
+> The use of buffer descriptor APP4 field (32-bit) for storing skb pointer
+> obviously does not work on 64-bit platforms.
+> As APP3 is also unused, we can use that to store the other half of 64-bit
+> pointer values.
+> 
+> Contrary to what is hinted at in commit message of commit 15bfe05c8d63
+> ("net: ethernet: xilinx: Mark XILINX_LL_TEMAC broken on 64-bit")
+> there are no other pointers stored in cdmac_bd.
+> 
+> Signed-off-by: Esben Haabendal <esben@geanix.com>
 
-> Similar to other print functions we need to flush buffered data
-> in order to work with pipes and output redirects.
-> 
-> After this patch ip monitor mroute &>log works properly.
-> 
-> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> ---
->  ip/ipmroute.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/ip/ipmroute.c b/ip/ipmroute.c
-> index b29c78e4cc86..ede09ca96412 100644
-> --- a/ip/ipmroute.c
-> +++ b/ip/ipmroute.c
-> @@ -57,6 +57,7 @@ int print_mroute(struct nlmsghdr *n, void *arg)
->  	struct rtmsg *r = NLMSG_DATA(n);
->  	int len = n->nlmsg_len;
->  	struct rtattr *tb[RTA_MAX+1];
-> +	FILE *fp = (FILE *)arg;
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Applied, but the cast here is unnecessary in C.
-So I removed it.
+    Andrew
