@@ -2,102 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60F87E3A7
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50728E3AF
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:26:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728227AbfD2NXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 09:23:38 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48548 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725838AbfD2NXg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 09:23:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=G9+UVkmUelZPc/fq6yyI9wbOx04gDxUNqmqWJk98Nkg=; b=UJxTcsu3QVfNUjU0YZtQzi6U3y
-        wqS5EGC5LSO/GkxW9xCydVDvbZ1fs37BBldYsyRB4/OLeWLrobP38ZeMf/gS1JrYsru+wKb40eq3m
-        ceOmhYYufSpplKctvC8LKsMTHYMWy3AnrSfh9BAbBMXdDsP07MKex5LVfvQ4FhluvDmg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hL6Fj-00010z-OB; Mon, 29 Apr 2019 15:23:27 +0200
-Date:   Mon, 29 Apr 2019 15:23:27 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     biao huang <biao.huang@mediatek.com>
-Cc:     Jose Abreu <joabreu@synopsys.com>, davem@davemloft.net,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, yt.shen@mediatek.com,
-        jianguo.zhang@mediatek.com
-Subject: Re: [PATCH 5/6] net: stmmac: add mdio clause 45 access from mac
- device for dwmac4
-Message-ID: <20190429132327.GF10772@lunn.ch>
-References: <1556433009-25759-1-git-send-email-biao.huang@mediatek.com>
- <1556433009-25759-6-git-send-email-biao.huang@mediatek.com>
- <20190428163705.GH23059@lunn.ch>
- <1556517925.24897.17.camel@mhfsdcap03>
+        id S1728251AbfD2NZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 09:25:57 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:28342 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726321AbfD2NZ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 09:25:56 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-91-XpkMDVr_Mp6PD2FTGuRfFg-1; Mon, 29 Apr 2019 14:25:54 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
+ (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon,
+ 29 Apr 2019 14:25:53 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 29 Apr 2019 14:25:52 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Willem de Bruijn' <willemdebruijn.kernel@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "idosch@idosch.org" <idosch@idosch.org>,
+        "Willem de Bruijn" <willemb@google.com>
+Subject: RE: [PATCH net] packet: validate msg_namelen in send directly
+Thread-Topic: [PATCH net] packet: validate msg_namelen in send directly
+Thread-Index: AQHU/GYe1snsU+6jJ02GK9D6Ic6IaKZS2rOwgAAwtwCAABkQ8A==
+Date:   Mon, 29 Apr 2019 13:25:52 +0000
+Message-ID: <9e3e74586bdb4ea3bef2848d4ff60fcf@AcuMS.aculab.com>
+References: <20190426192735.145633-1-willemdebruijn.kernel@gmail.com>
+ <92f9793efb2a4d9fb7973dcb47192c4b@AcuMS.aculab.com>
+ <CAF=yD-KKSt+y5AcMrBDv6NUVeMoBVXy11dRJEZ1mDxf-Z5Rw6w@mail.gmail.com>
+In-Reply-To: <CAF=yD-KKSt+y5AcMrBDv6NUVeMoBVXy11dRJEZ1mDxf-Z5Rw6w@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1556517925.24897.17.camel@mhfsdcap03>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+X-MC-Unique: XpkMDVr_Mp6PD2FTGuRfFg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Hi Biao
-> > 
-> > readl_poll_timeout() returns an error code. It is better to return
-> > that, than make up some other error code. Yes, i know the C22 read
-> > returns EBUSY, but we don't need to copy that behaviour into C45.
-> > 
-> OK, will return error code here.
-> > > +
-> > > +	value = 0;
-> > > +	value |= (prtad << priv->hw->mii.cl45_reg_shift)
-> > > +			& priv->hw->mii.cl45_reg_mask;
-> > > +	writel(value, priv->ioaddr + mii_data);
-> > > +
-> > > +	/* delay 2ms to avoid error value of get_phy_c45_devs_in_pkg */
-> > > +	mdelay(2);
-> > 
-> > Please could you explain this a bit more?
-> when of_mdiobus_register is invoked,
-> the C22 PHY addr information will be obtained in device tree(reg = xx,
-> no need through mdiobus),
-> but C45 PHY addr should be got through mdiobus->read according to
-> current flow.
->     of_mdiobus_register -->
->     of_mdiobus_register_phy -->
->     get_phy_device -->
->     get_phy_id -->
->     get_phy_c45_ids -->
->     get_phy_c45_devs_in_pkg
-> 
-> In my platform, mdio bus read will return 0xffff or 0x0000 for C45 in
-> of_mdiobus_register callstack, and that's not the expected value. 
-> So that the mdiobus register fails.
-> 
-> We took some time to find that only after adding 2ms delay here,
-> the read action will be stable and return the expected value.
-> 
-> did you try C45 support in your platform? I can't tell whether it's a
-> common or specified issue.
+RnJvbTogV2lsbGVtIGRlIEJydWlqbg0KPiBTZW50OiAyOSBBcHJpbCAyMDE5IDEzOjUzDQo+IE9u
+IE1vbiwgQXByIDI5LCAyMDE5IGF0IDU6MDAgQU0gRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWlnaHRA
+YWN1bGFiLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBGcm9tOiBXaWxsZW0gZGUgQnJ1aWpuDQo+ID4g
+PiBTZW50OiAyNiBBcHJpbCAyMDE5IDIwOjI4DQo+ID4gPiBQYWNrZXQgc29ja2V0cyBpbiBkYXRh
+Z3JhbSBtb2RlIHRha2UgYSBkZXN0aW5hdGlvbiBhZGRyZXNzLiBWZXJpZnkgaXRzDQo+ID4gPiBs
+ZW5ndGggYmVmb3JlIHBhc3NpbmcgdG8gZGV2X2hhcmRfaGVhZGVyLg0KPiA+ID4NCj4gPiA+IFBy
+aW9yIHRvIDIuNi4xNC1yYzMsIHRoZSBzZW5kIGNvZGUgaWdub3JlZCBzbGxfaGFsZW4uIFRoaXMg
+aXMNCj4gPiA+IGVzdGFibGlzaGVkIGJlaGF2aW9yLiBEaXJlY3RseSBjb21wYXJlIG1zZ19uYW1l
+bGVuIHRvIGRldi0+YWRkcl9sZW4uDQo+ID4gPg0KPiA+ID4gRml4ZXM6IDZiOGQ5NWYxNzk1YzQg
+KCJwYWNrZXQ6IHZhbGlkYXRlIGFkZHJlc3MgbGVuZ3RoIGlmIG5vbi16ZXJvIikNCj4gPiA+IFN1
+Z2dlc3RlZC1ieTogRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWlnaHRAYWN1bGFiLmNvbT4NCj4gPiA+
+IFNpZ25lZC1vZmYtYnk6IFdpbGxlbSBkZSBCcnVpam4gPHdpbGxlbWJAZ29vZ2xlLmNvbT4NCj4g
+PiA+IC0tLQ0KPiA+ID4gIG5ldC9wYWNrZXQvYWZfcGFja2V0LmMgfCAxOCArKysrKysrKysrKyst
+LS0tLS0NCj4gPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlv
+bnMoLSkNCj4gPiA+DQo+ID4gPiBkaWZmIC0tZ2l0IGEvbmV0L3BhY2tldC9hZl9wYWNrZXQuYyBi
+L25ldC9wYWNrZXQvYWZfcGFja2V0LmMNCj4gPiA+IGluZGV4IDk0MTljNWNmNGRlNWUuLjEzMzAx
+ZTM2YjRhMjggMTAwNjQ0DQo+ID4gPiAtLS0gYS9uZXQvcGFja2V0L2FmX3BhY2tldC5jDQo+ID4g
+PiArKysgYi9uZXQvcGFja2V0L2FmX3BhY2tldC5jDQo+ID4gPiBAQCAtMjYyNCwxMCArMjYyNCwx
+MyBAQCBzdGF0aWMgaW50IHRwYWNrZXRfc25kKHN0cnVjdCBwYWNrZXRfc29jayAqcG8sIHN0cnVj
+dCBtc2doZHIgKm1zZykNCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBzbGxfYWRkcikpKQ0KPiA+ID4gICAgICAgICAgICAgICAgICAgICAgIGdvdG8g
+b3V0Ow0KPiA+ID4gICAgICAgICAgICAgICBwcm90byAgID0gc2FkZHItPnNsbF9wcm90b2NvbDsN
+Cj4gPiA+IC0gICAgICAgICAgICAgYWRkciAgICA9IHNhZGRyLT5zbGxfaGFsZW4gPyBzYWRkci0+
+c2xsX2FkZHIgOiBOVUxMOw0KPiA+ID4gICAgICAgICAgICAgICBkZXYgPSBkZXZfZ2V0X2J5X2lu
+ZGV4KHNvY2tfbmV0KCZwby0+c2spLCBzYWRkci0+c2xsX2lmaW5kZXgpOw0KPiA+ID4gLSAgICAg
+ICAgICAgICBpZiAoYWRkciAmJiBkZXYgJiYgc2FkZHItPnNsbF9oYWxlbiA8IGRldi0+YWRkcl9s
+ZW4pDQo+ID4gPiAtICAgICAgICAgICAgICAgICAgICAgZ290byBvdXRfcHV0Ow0KPiA+ID4gKyAg
+ICAgICAgICAgICBpZiAocG8tPnNrLnNrX3NvY2tldC0+dHlwZSA9PSBTT0NLX0RHUkFNKSB7DQo+
+ID4gPiArICAgICAgICAgICAgICAgICAgICAgYWRkciA9IHNhZGRyLT5zbGxfYWRkcjsNCj4gPiA+
+ICsgICAgICAgICAgICAgICAgICAgICBpZiAoZGV2ICYmIG1zZy0+bXNnX25hbWVsZW4gPCBkZXYt
+PmFkZHJfbGVuICsNCj4gPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+b2Zmc2V0b2Yoc3RydWN0IHNvY2thZGRyX2xsLCBzbGxfYWRkcikpDQo+ID4gPiArICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBnb3RvIG91dF9wdXQ7DQo+ID4gPiArICAgICAgICAgICAgIH0N
+Cj4gPg0KPiA+IElJUkMgeW91IG5lZWQgdG8gaW5pdGlhbGlzZSAnYWRkciAtIE5VTEwnIGF0IHRo
+ZSB0b3Agb2YgdGhlIGZ1bmN0aW9ucy4NCj4gPiBJJ20gc3VycHJpc2VkIHRoZSBjb21waWxlciBk
+b2Vzbid0IGNvbXBsYWluLg0KPiANCj4gSXQgZGlkIGNvbXBsYWluIHdoZW4gSSBtb3ZlZCBpdCBi
+ZWxvdyB0aGUgaWYgKGRldiAmJiAuLikgYnJhbmNoLiBCdXQNCj4gaW5zaWRlIGEgYnJhbmNoIHdp
+dGggZXhhY3RseSB0aGUgc2FtZSBjb25kaXRpb24gYXMgdGhlIG9uZSB3aGVyZSB1c2VkLA0KPiB0
+aGUgY29tcGlsZXIgZGlkIGZpZ3VyZSBpdCBvdXQuIEFkbWl0dGVkbHkgdGhhdCBpcyBmcmFnaWxl
+Lg0KDQpFdmVuIGEgZnVuY3Rpb24gY2FsbCBzaG91bGQgYmUgZW5vdWdoIHNpbmNlIHRoZSBjYWxs
+ZWQgY29kZSBpcyBhbGxvd2VkDQp0byBtb2RpZnkgcG8tPnNrLnNrX3NvY2tldC0+dHlwZSB2aWEg
+YSBnbG9iYWwgcG9pbnRlci4NCg0KPiBUaGVuIGl0IG1pZ2h0IGJlIHNpbXBsZXN0IHRvIHJlc3Rv
+cmUgdGhlIHVuY29uZGl0aW9uYWwgYXNzaWdubWVudA0KPiANCj4gICAgICAgICAgICAgICAgIHBy
+b3RvICAgPSBzYWRkci0+c2xsX3Byb3RvY29sOw0KPiArICAgICAgICAgICAgICAgYWRkciAgICA9
+IHNhZGRyLT5zbGxfYWRkcjsNCj4gICAgICAgICAgICAgICAgIGRldiA9IGRldl9nZXRfYnlfaW5k
+ZXgoc29ja19uZXQoc2spLCBzYWRkci0+c2xsX2lmaW5kZXgpOw0KDQpUaGVyZSBpcyBhbiAnYWRk
+ciA9IE5VTEwnIGluIHRoZSAnYWRkcmVzcyBhYnNlbnQnIGJyYW5jaC4NCk1vdmluZyB0aGF0IGhp
+Z2hlciB1cCBtYWtlcyBpdCBldmVuIG1vcmUgY2xlYXIgdGhhdCB0aGUgYWRkcmVzcyBpcyANCm9u
+bHkgc2V0IGluIG9uZSBwbGFjZS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBM
+YWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBU
+LCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-It sounds like you need to put a logic analyser on the bus and see if
-it performs a C22 transaction, or an invalid transaction, without the
-2ms pause.
-
-This sounds like a 'silicon' bug. There should not be a need to pause
-here. And the comment should talk about this silicon bug, not
-get_phy_c45_devs_in_pkg(). It will fail for all accesses, not just
-those for get_phy_c45_devs_in_pkg().
-
-	Andrew
