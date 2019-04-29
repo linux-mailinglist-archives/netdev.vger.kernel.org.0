@@ -2,253 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 896D9DAD3
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 05:31:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE3E9DAE1
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 05:53:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727268AbfD2Dbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Apr 2019 23:31:41 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:43569 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727061AbfD2Dbl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Apr 2019 23:31:41 -0400
-Received: by mail-pl1-f194.google.com with SMTP id n8so4384802plp.10;
-        Sun, 28 Apr 2019 20:31:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Y6KbDCX7Pmn/wRMcoZAAZ5xbraDQ5PCVMdIhF0FKLp4=;
-        b=Of/zBwUNMPtdBUf5XMN8WGkbcfHNfg4EQKQX97s52FK7+Hijs2gLg96oGhZo9y4k+C
-         x3EP2U7C+mjuoyKTWQlGGvhFD8uixta3UoxsHGGx3FNcs+hLqEbBHBwxKKFiECrupXi6
-         qlbKgaG2i4u+UR3ol3vEyOrpldRAU667unjsNgrL60jI+Pa5TTz7FiGzT3xjL75qV8NS
-         OID9sxcetUHWJA8Q2WKECnqzQNK6sO78x9iVmEv5bxjvK3p/tnTjUHvYA3S1CLxkW8Op
-         7n30nOQ/2G66iuunWAoq23gxZv1Q0r3zJGFixKwkzlh/Qa+n8E9CNh5TXnslIk+mEOo/
-         XjvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Y6KbDCX7Pmn/wRMcoZAAZ5xbraDQ5PCVMdIhF0FKLp4=;
-        b=nQ5GMiPhtslqUuHN4TU7E816LQzMeidAnpLppM0zuEXb8znbsvsmEbcUlSroTO1rf9
-         m40hQs5f8FycYUduFQC4Mha6aJ4mYb40BgS4EwOliLw0CmF+UI37SsDSz9vf5wbxYQ01
-         BZF07iiPWKZNLE/JHxUSv9TDWXG2GhVTDnuEn5MT22U4rrwnm8xbiGxHr/rBmLihmizP
-         fN/c/nmpRXWEOoSmDAJ+76rc0CIgvoDpm0o1rwpTYCbbrCTKObJXipcuNUs/uPOrW9Kd
-         MCsfY6JdatcrtXWPjdsOGg6Wzu/6doBsCX+ecaew/w1DHZ+L8hRGLPzMeo6kThGk9vqh
-         m5zA==
-X-Gm-Message-State: APjAAAUVmAVRiTE9IgBZKj2/Df6PUVQDM0J7jrnQ+6zmodX1/b5og1pE
-        WEK+ZFj0HnYKdRCtTubizR0=
-X-Google-Smtp-Source: APXvYqwe/DewZhU1feKUoJYgGd0nkPQwYyhUiZcEpAGkEUBupPdraE7NvbSVEeJQbbSCEInORpbZ0Q==
-X-Received: by 2002:a17:902:900a:: with SMTP id a10mr52780837plp.336.1556508699809;
-        Sun, 28 Apr 2019 20:31:39 -0700 (PDT)
-Received: from localhost.localdomain (123-204-46-122.static.seed.net.tw. [123.204.46.122])
-        by smtp.gmail.com with ESMTPSA id 9sm21716353pgv.5.2019.04.28.20.31.36
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 28 Apr 2019 20:31:38 -0700 (PDT)
-From:   "=?UTF-8?q?Jo=C3=A3o=20Paulo=20Rechi=20Vita?=" <jprvita@gmail.com>
-X-Google-Original-From: =?UTF-8?q?Jo=C3=A3o=20Paulo=20Rechi=20Vita?= <jprvita@endlessm.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     bgodavar@codeaurora.org, ytkim@qca.qualcomm.com,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessm.com,
-        =?UTF-8?q?Jo=C3=A3o=20Paulo=20Rechi=20Vita?= <jprvita@endlessm.com>
-Subject: [PATCH v4] Bluetooth: Ignore CC events not matching the last HCI command
-Date:   Mon, 29 Apr 2019 11:31:11 +0800
-Message-Id: <20190429033111.30594-1-jprvita@endlessm.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <CA+A7VXWcJGO7Un-N+8ObKVxUZxqsp+Fz8ySnb9SH5SpvzPvkMw@mail.gmail.com>
-References: <CA+A7VXWcJGO7Un-N+8ObKVxUZxqsp+Fz8ySnb9SH5SpvzPvkMw@mail.gmail.com>
+        id S1727146AbfD2Dxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Apr 2019 23:53:46 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3003 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726819AbfD2Dxq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Apr 2019 23:53:46 -0400
+Received: from DGGEML402-HUB.china.huawei.com (unknown [172.30.72.57])
+        by Forcepoint Email with ESMTP id 60D8B949FE01AB8477CA;
+        Mon, 29 Apr 2019 11:53:43 +0800 (CST)
+Received: from DGGEML532-MBS.china.huawei.com ([169.254.7.161]) by
+ DGGEML402-HUB.china.huawei.com ([fe80::fca6:7568:4ee3:c776%31]) with mapi id
+ 14.03.0439.000; Mon, 29 Apr 2019 11:53:33 +0800
+From:   "weiyongjun (A)" <weiyongjun1@huawei.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+CC:     yuehaibing <yuehaibing@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "lirongqing@baidu.com" <lirongqing@baidu.com>,
+        nicolas dichtel <nicolas.dichtel@6wind.com>,
+        "3chas3@gmail.com" <3chas3@gmail.com>,
+        "wangli39@baidu.com" <wangli39@baidu.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Peter Xu <peterx@redhat.com>
+Subject: RE: [PATCH] tun: Fix use-after-free in tun_net_xmit
+Thread-Topic: [PATCH] tun: Fix use-after-free in tun_net_xmit
+Thread-Index: AQHU/W9g3sfuWPKNdEe3Jj6+nCJHZaZQYsSAgAARegCAAJO30P//pXyAgACp3ACAAIzUgIAAnq8w
+Date:   Mon, 29 Apr 2019 03:53:32 +0000
+Message-ID: <6AADFAC011213A4C87B956458587ADB4021F9A34@dggeml532-mbs.china.huawei.com>
+References: <71250616-36c1-0d96-8fac-4aaaae6a28d4@redhat.com>
+ <20190428030539.17776-1-yuehaibing@huawei.com>
+ <516ba6e4-359b-15d0-e169-d8cc1e989a4a@redhat.com>
+ <2c823bbf-28c4-b43d-52d9-b0e0356f03ae@redhat.com>
+ <6AADFAC011213A4C87B956458587ADB4021F7531@dggeml532-mbs.china.huawei.com>
+ <b33ce1f9-3d65-2d05-648b-f5a6cfbd59ab@redhat.com>
+ <CAM_iQpUfpruaFowbiTOY7aH4Ts-xcY4JACGLOT3CUjLqpg_zXw@mail.gmail.com>
+ <528517144.24310809.1556504619719.JavaMail.zimbra@redhat.com>
+In-Reply-To: <528517144.24310809.1556504619719.JavaMail.zimbra@redhat.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.177.30.138]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit makes the kernel not send the next queued HCI command until
-a command complete arrives for the last HCI command sent to the
-controller. This change avoids a problem with some buggy controllers
-(seen on two SKUs of QCA9377) that send an extra command complete event
-for the previous command after the kernel had already sent a new HCI
-command to the controller.
-
-The problem was reproduced when starting an active scanning procedure,
-where an extra command complete event arrives for the LE_SET_RANDOM_ADDR
-command. When this happends the kernel ends up not processing the
-command complete for the following commmand, LE_SET_SCAN_PARAM, and
-ultimately behaving as if a passive scanning procedure was being
-performed, when in fact controller is performing an active scanning
-procedure. This makes it impossible to discover BLE devices as no device
-found events are sent to userspace.
-
-This problem is reproducible on 100% of the attempts on the affected
-controllers. The extra command complete event can be seen at timestamp
-27.420131 on the btmon logs bellow.
-
-Bluetooth monitor ver 5.50
-= Note: Linux version 5.0.0+ (x86_64)                                  0.352340
-= Note: Bluetooth subsystem version 2.22                               0.352343
-= New Index: 80:C5:F2:8F:87:84 (Primary,USB,hci0)               [hci0] 0.352344
-= Open Index: 80:C5:F2:8F:87:84                                 [hci0] 0.352345
-= Index Info: 80:C5:F2:8F:87:84 (Qualcomm)                      [hci0] 0.352346
-@ MGMT Open: bluetoothd (privileged) version 1.14             {0x0001} 0.352347
-@ MGMT Open: btmon (privileged) version 1.14                  {0x0002} 0.352366
-@ MGMT Open: btmgmt (privileged) version 1.14                {0x0003} 27.302164
-@ MGMT Command: Start Discovery (0x0023) plen 1       {0x0003} [hci0] 27.302310
-        Address type: 0x06
-          LE Public
-          LE Random
-< HCI Command: LE Set Random Address (0x08|0x0005) plen 6   #1 [hci0] 27.302496
-        Address: 15:60:F2:91:B2:24 (Non-Resolvable)
-> HCI Event: Command Complete (0x0e) plen 4                 #2 [hci0] 27.419117
-      LE Set Random Address (0x08|0x0005) ncmd 1
-        Status: Success (0x00)
-< HCI Command: LE Set Scan Parameters (0x08|0x000b) plen 7  #3 [hci0] 27.419244
-        Type: Active (0x01)
-        Interval: 11.250 msec (0x0012)
-        Window: 11.250 msec (0x0012)
-        Own address type: Random (0x01)
-        Filter policy: Accept all advertisement (0x00)
-> HCI Event: Command Complete (0x0e) plen 4                 #4 [hci0] 27.420131
-      LE Set Random Address (0x08|0x0005) ncmd 1
-        Status: Success (0x00)
-< HCI Command: LE Set Scan Enable (0x08|0x000c) plen 2      #5 [hci0] 27.420259
-        Scanning: Enabled (0x01)
-        Filter duplicates: Enabled (0x01)
-> HCI Event: Command Complete (0x0e) plen 4                 #6 [hci0] 27.420969
-      LE Set Scan Parameters (0x08|0x000b) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Command Complete (0x0e) plen 4                 #7 [hci0] 27.421983
-      LE Set Scan Enable (0x08|0x000c) ncmd 1
-        Status: Success (0x00)
-@ MGMT Event: Command Complete (0x0001) plen 4        {0x0003} [hci0] 27.422059
-      Start Discovery (0x0023) plen 1
-        Status: Success (0x00)
-        Address type: 0x06
-          LE Public
-          LE Random
-@ MGMT Event: Discovering (0x0013) plen 2             {0x0003} [hci0] 27.422067
-        Address type: 0x06
-          LE Public
-          LE Random
-        Discovery: Enabled (0x01)
-@ MGMT Event: Discovering (0x0013) plen 2             {0x0002} [hci0] 27.422067
-        Address type: 0x06
-          LE Public
-          LE Random
-        Discovery: Enabled (0x01)
-@ MGMT Event: Discovering (0x0013) plen 2             {0x0001} [hci0] 27.422067
-        Address type: 0x06
-          LE Public
-          LE Random
-        Discovery: Enabled (0x01)
-
-Signed-off-by: João Paulo Rechi Vita <jprvita@endlessm.com>
----
- include/net/bluetooth/hci.h |  1 +
- net/bluetooth/hci_core.c    |  5 +++++
- net/bluetooth/hci_event.c   | 12 ++++++++++++
- net/bluetooth/hci_request.c |  4 ----
- net/bluetooth/hci_request.h |  4 ++++
- 5 files changed, 22 insertions(+), 4 deletions(-)
-
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index fbba43e9bef5..9a5330eed794 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -282,6 +282,7 @@ enum {
- 	HCI_FORCE_BREDR_SMP,
- 	HCI_FORCE_STATIC_ADDR,
- 	HCI_LL_RPA_RESOLUTION,
-+	HCI_CMD_PENDING,
- 
- 	__HCI_NUM_FLAGS,
- };
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index d6b2540ba7f8..d654476c8d62 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -4383,6 +4383,9 @@ void hci_req_cmd_complete(struct hci_dev *hdev, u16 opcode, u8 status,
- 		return;
- 	}
- 
-+	/* If we reach this point this event matches the last command sent */
-+	hci_dev_clear_flag(hdev, HCI_CMD_PENDING);
-+
- 	/* If the command succeeded and there's still more commands in
- 	 * this request the request is not yet complete.
- 	 */
-@@ -4493,6 +4496,8 @@ static void hci_cmd_work(struct work_struct *work)
- 
- 		hdev->sent_cmd = skb_clone(skb, GFP_KERNEL);
- 		if (hdev->sent_cmd) {
-+			if (hdev->req_status == HCI_REQ_PEND)
-+				hci_dev_set_flag(hdev, HCI_CMD_PENDING);
- 			atomic_dec(&hdev->cmd_cnt);
- 			hci_send_frame(hdev, skb);
- 			if (test_bit(HCI_RESET, &hdev->flags))
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 609fd6871c5a..8b893baf9bbe 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -3404,6 +3404,12 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb,
- 	hci_req_cmd_complete(hdev, *opcode, *status, req_complete,
- 			     req_complete_skb);
- 
-+	if (hci_dev_test_flag(hdev, HCI_CMD_PENDING)) {
-+		bt_dev_err(hdev,
-+			   "unexpected event for opcode 0x%4.4x", *opcode);
-+		return;
-+	}
-+
- 	if (atomic_read(&hdev->cmd_cnt) && !skb_queue_empty(&hdev->cmd_q))
- 		queue_work(hdev->workqueue, &hdev->cmd_work);
- }
-@@ -3511,6 +3517,12 @@ static void hci_cmd_status_evt(struct hci_dev *hdev, struct sk_buff *skb,
- 		hci_req_cmd_complete(hdev, *opcode, ev->status, req_complete,
- 				     req_complete_skb);
- 
-+	if (hci_dev_test_flag(hdev, HCI_CMD_PENDING)) {
-+		bt_dev_err(hdev,
-+			   "unexpected event for opcode 0x%4.4x", *opcode);
-+		return;
-+	}
-+
- 	if (atomic_read(&hdev->cmd_cnt) && !skb_queue_empty(&hdev->cmd_q))
- 		queue_work(hdev->workqueue, &hdev->cmd_work);
- }
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index ca73d36cc149..5b3838a3bdc1 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -30,10 +30,6 @@
- #include "smp.h"
- #include "hci_request.h"
- 
--#define HCI_REQ_DONE	  0
--#define HCI_REQ_PEND	  1
--#define HCI_REQ_CANCELED  2
--
- void hci_req_init(struct hci_request *req, struct hci_dev *hdev)
- {
- 	skb_queue_head_init(&req->cmd_q);
-diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
-index 692cc8b13368..d0cea517d66e 100644
---- a/net/bluetooth/hci_request.h
-+++ b/net/bluetooth/hci_request.h
-@@ -22,6 +22,10 @@
- 
- #include <asm/unaligned.h>
- 
-+#define HCI_REQ_DONE	  0
-+#define HCI_REQ_PEND	  1
-+#define HCI_REQ_CANCELED  2
-+
- #define hci_req_sync_lock(hdev)   mutex_lock(&hdev->req_lock)
- #define hci_req_sync_unlock(hdev) mutex_unlock(&hdev->req_lock)
- 
--- 
-2.20.1
-
+PiA+IE9uIFN1biwgQXByIDI4LCAyMDE5IGF0IDEyOjUxIEFNIEphc29uIFdhbmcgPGphc293YW5n
+QHJlZGhhdC5jb20+DQo+IHdyb3RlOg0KPiA+Pj4gdHVuX25ldF94bWl0KCkgZG9lc24ndCBoYXZl
+IHRoZSBjaGFuY2UgdG8NCj4gPj4+IGFjY2VzcyB0aGUgY2hhbmdlIGJlY2F1c2UgaXQgaG9sZGlu
+ZyB0aGUgcmN1X3JlYWRfbG9jaygpLg0KPiA+Pg0KPiA+Pg0KPiA+PiBUaGUgcHJvYmxlbSBpcyB0
+aGUgZm9sbG93aW5nIGNvZGVzOg0KPiA+Pg0KPiA+Pg0KPiA+PiAgICAgICAgICAtLXR1bi0+bnVt
+cXVldWVzOw0KPiA+Pg0KPiA+PiAgICAgICAgICAuLi4NCj4gPj4NCj4gPj4gICAgICAgICAgc3lu
+Y2hyb25pemVfbmV0KCk7DQo+ID4+DQo+ID4+IFdlIG5lZWQgbWFrZSBzdXJlIHRoZSBkZWNyZW1l
+bnQgb2YgdHVuLT5udW1xdWV1ZXMgYmUgdmlzaWJsZSB0bw0KPiByZWFkZXJzDQo+ID4+IGFmdGVy
+IHN5bmNocm9uaXplX25ldCgpLiBBbmQgaW4gdHVuX25ldF94bWl0KCk6DQo+ID4NCj4gPiBJdCBk
+b2Vzbid0IG1hdHRlciBhdCBhbGwuIFJlYWRlcnMgYXJlIG9rYXkgdG8gcmVhZCBpdCBldmVuIHRo
+ZXkgc3RpbGwgdXNlIHRoZQ0KPiA+IHN0YWxlIHR1bi0+bnVtcXVldWVzLCBhcyBsb25nIGFzIHRo
+ZSB0ZmlsZSBpcyBub3QgZnJlZWQgcmVhZGVycyBjYW4gcmVhZA0KPiA+IHdoYXRldmVyIHRoZXkg
+d2FudC4uLg0KPiANCj4gVGhpcyBpcyBvbmx5IHRydWUgaWYgd2Ugc2V0IFNPQ0tfUkNVX0ZSRUUs
+IGlzbid0IGl0Pw0KPiANCj4gPg0KPiA+IFRoZSBkZWNyZW1lbnQgb2YgdHVuLT5udW1xdWV1ZXMg
+aXMganVzdCBob3cgd2UgdW5wdWJsaXNoIHRoZSBvbGQNCj4gPiB0ZmlsZSwgaXQgaXMgc3RpbGwg
+dmFsaWQgZm9yIHJlYWRlcnMgdG8gcmVhZCBpdCBfYWZ0ZXJfIHVucHVibGlzaCwgd2Ugb25seSBu
+ZWVkDQo+ID4gdG8gd29ycnkgYWJvdXQgZnJlZSwgbm90IGFib3V0IHVucHVibGlzaC4gVGhpcyBp
+cyB0aGUgd2hvbGUgc3Bpcml0IG9mIFJDVS4NCj4gPg0KPiANCj4gVGhlIHBvaW50IGlzIHdlIGRv
+bid0IGNvbnZlcnQgdHVuLT5udW1xdWV1ZXMgdG8gUkNVIGJ1dCB1c2UNCj4gc3luY2hyb25pemVf
+bmV0KCkuDQo+IA0KPiA+IFlvdSBuZWVkIHRvIHJldGhpbmsgYWJvdXQgbXkgU09DS19SQ1VfRlJF
+RSBwYXRjaC4NCj4gDQo+IFRoZSBjb2RlIGlzIHdyb3RlIGJlZm9yZSBTT0NLX1JDVV9GUkVFIGlz
+IGludHJvZHVjZWQgYW5kIGFzc3VtZSBubw0KPiBkZS1yZWZlcmVuY2UgZnJvbSBkZXZpY2UgYWZ0
+ZXIgc3luY2hyb25pemVfbmV0KCkuIEl0IGRvZXNuJ3QgaGFybSB0bw0KPiBmaWd1cmUgb3V0IHRo
+ZSByb290IGNhdXNlIHdoaWNoIG1heSBnaXZlIHVzIG1vcmUgY29uZmlkZW5jZSB0byB0aGUgZml4
+DQo+IChlLmcgbGlrZSBTT0NLX1JDVV9GUkVFKS4NCj4gDQo+IEkgZG9uJ3Qgb2JqZWN0IHRvIGZp
+eCB3aXRoIFNPQ0tfUkNVX0ZSRUUsIGJ1dCB0aGVuIHdlIHNob3VsZCByZW1vdmUNCj4gdGhlIHJl
+ZHVuZGFudCBzeW5jaHJvbml6ZV9uZXQoKS4gQnV0IEkgc3RpbGwgcHJlZmVyIHRvIHN5bmNocm9u
+aXplDQo+IGV2ZXJ5dGhpbmcgZXhwbGljaXRseSBsaWtlIChjb21wbGV0ZWx5IHVudGVzdGVkKToN
+Cj4gDQo+IEZyb20gZGY5MWY3N2QzNWE2YWE3OTQzYjZmMmE3ZDRiMzI5OTkwODk2YTBmZSBNb24g
+U2VwIDE3IDAwOjAwOjAwDQo+IDIwMDENCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVk
+aGF0LmNvbT4NCj4gRGF0ZTogTW9uLCAyOSBBcHIgMjAxOSAxMDoyMTowNiArMDgwMA0KPiBTdWJq
+ZWN0OiBbUEFUQ0hdIHR1bnRhcDogc3luY2hyb25pemUgdGhyb3VnaCB0ZmlsZXMgaW5zdGVhZCBv
+ZiBudW1xdWV1ZXMNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEphc29uIFdhbmcgPGphc293YW5nQHJl
+ZGhhdC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9uZXQvdHVuLmMgfCAxMSArKysrKy0tLS0tLQ0K
+PiAgMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlvbnMoLSkNCj4gDQo+
+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC90dW4uYyBiL2RyaXZlcnMvbmV0L3R1bi5jDQo+IGlu
+ZGV4IDgwYmZmMWI0ZWMxNy4uMDM3MTVmNjA1ZmI1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25l
+dC90dW4uYw0KPiArKysgYi9kcml2ZXJzL25ldC90dW4uYw0KPiBAQCAtNjk4LDYgKzY5OCw3IEBA
+IHN0YXRpYyB2b2lkIF9fdHVuX2RldGFjaChzdHJ1Y3QgdHVuX2ZpbGUgKnRmaWxlLCBib29sDQo+
+IGNsZWFuKQ0KPiANCj4gIAkJcmN1X2Fzc2lnbl9wb2ludGVyKHR1bi0+dGZpbGVzW2luZGV4XSwN
+Cj4gIAkJCQkgICB0dW4tPnRmaWxlc1t0dW4tPm51bXF1ZXVlcyAtIDFdKTsNCj4gKwkJcmN1X2Fz
+c2lnbl9wb2ludGVyKHR1bi0+dGZpbGVzW3R1bi0+bnVtcXVldWVzXSwgTlVMTCk7DQoNClNob3Vs
+ZCBiZSAicmN1X2Fzc2lnbl9wb2ludGVyKHR1bi0+dGZpbGVzW3R1bi0+bnVtcXVldWVzIC0gMV0s
+IE5VTEwpOyINCg0KPiAgCQludGZpbGUgPSBydG5sX2RlcmVmZXJlbmNlKHR1bi0+dGZpbGVzW2lu
+ZGV4XSk7DQo+ICAJCW50ZmlsZS0+cXVldWVfaW5kZXggPSBpbmRleDsNCj4gDQo+IEBAIC0xMDgy
+LDcgKzEwODMsNyBAQCBzdGF0aWMgbmV0ZGV2X3R4X3QgdHVuX25ldF94bWl0KHN0cnVjdCBza19i
+dWZmDQo+ICpza2IsIHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpDQo+ICAJdGZpbGUgPSByY3VfZGVy
+ZWZlcmVuY2UodHVuLT50ZmlsZXNbdHhxXSk7DQo+IA0KPiAgCS8qIERyb3AgcGFja2V0IGlmIGlu
+dGVyZmFjZSBpcyBub3QgYXR0YWNoZWQgKi8NCj4gLQlpZiAodHhxID49IHR1bi0+bnVtcXVldWVz
+KQ0KPiArCWlmICghdGZpbGUpDQo+ICAJCWdvdG8gZHJvcDsNCj4gDQo+ICAJaWYgKCFyY3VfZGVy
+ZWZlcmVuY2UodHVuLT5zdGVlcmluZ19wcm9nKSkNCj4gQEAgLTEzMDUsMTUgKzEzMDYsMTMgQEAg
+c3RhdGljIGludCB0dW5feGRwX3htaXQoc3RydWN0IG5ldF9kZXZpY2UgKmRldiwNCj4gaW50IG4s
+DQo+IA0KPiAgCXJjdV9yZWFkX2xvY2soKTsNCj4gDQo+IC0JbnVtcXVldWVzID0gUkVBRF9PTkNF
+KHR1bi0+bnVtcXVldWVzKTsNCj4gLQlpZiAoIW51bXF1ZXVlcykgew0KPiArCXRmaWxlID0gcmN1
+X2RlcmVmZXJlbmNlKHR1bi0+dGZpbGVzW3NtcF9wcm9jZXNzb3JfaWQoKSAlDQo+ICsJCQkJCSAg
+ICB0dW4tPm51bXF1ZXVlc10pOw0KPiArCWlmICghdGZpbGUpIHsNCj4gIAkJcmN1X3JlYWRfdW5s
+b2NrKCk7DQo+ICAJCXJldHVybiAtRU5YSU87IC8qIENhbGxlciB3aWxsIGZyZWUvcmV0dXJuIGFs
+bCBmcmFtZXMgKi8NCj4gIAl9DQo+IA0KPiAtCXRmaWxlID0gcmN1X2RlcmVmZXJlbmNlKHR1bi0+
+dGZpbGVzW3NtcF9wcm9jZXNzb3JfaWQoKSAlDQo+IC0JCQkJCSAgICBudW1xdWV1ZXNdKTsNCj4g
+LQ0KPiAgCXNwaW5fbG9jaygmdGZpbGUtPnR4X3JpbmcucHJvZHVjZXJfbG9jayk7DQo+ICAJZm9y
+IChpID0gMDsgaSA8IG47IGkrKykgew0KPiAgCQlzdHJ1Y3QgeGRwX2ZyYW1lICp4ZHAgPSBmcmFt
+ZXNbaV07DQo+IC0tDQo+IDIuMTkuMQ0K
