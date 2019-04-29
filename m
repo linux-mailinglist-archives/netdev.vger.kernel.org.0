@@ -2,100 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DC0DE02
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 10:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A7CDDD9
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 10:35:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727525AbfD2IfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 04:35:17 -0400
-Received: from first.geanix.com ([116.203.34.67]:50060 "EHLO first.geanix.com"
+        id S1727819AbfD2IfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 04:35:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727873AbfD2IfP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 04:35:15 -0400
-Received: from localhost (unknown [193.163.1.7])
-        by first.geanix.com (Postfix) with ESMTPSA id B5BBD308E94;
-        Mon, 29 Apr 2019 08:33:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1556526830; bh=Syxx7UjWQdn8ym6ReJbNhi4YaO2pdMxoPdpOacvkHXc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=JOWacCElGVfmBjFHHw8WQQBDPJFJyMUpHn9DabH+ik6VatsagT46g8dJ0BBKibVgS
-         ar45ruo6nspqTR2U8meXgSCmOlOWm6yBhdUcjG+wDc4v5147vnPD2uoKa0sFkPRN+R
-         vk8ZlXCtcL6jsW9XGZzotjB41ISICQ99dRQCtoyxjUoXvGM18EYgjul1OzsMZ8jHgH
-         pqdBks6XSYJPcqYD+X3rDLD9qg3kjCkvrelK4W8MK8nGKeaqzXyhfGl64tL+ShStLo
-         uI84DxhLE82oDZN2wJR5HMEz+hpP7h3/U89uXUPvnrofBtpMzcOo1/Xl+G+DLjEuaw
-         5HzNSKYl4jApg==
-From:   Esben Haabendal <esben@geanix.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Yang Wei <yang.wei9@zte.com.cn>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 12/12] net: ll_temac: Enable DMA when ready, not before
-Date:   Mon, 29 Apr 2019 10:34:22 +0200
-Message-Id: <20190429083422.4356-13-esben@geanix.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190429083422.4356-1-esben@geanix.com>
-References: <20190426073231.4008-1-esben@geanix.com>
- <20190429083422.4356-1-esben@geanix.com>
+        id S1727656AbfD2IfA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 04:35:00 -0400
+Received: from localhost (unknown [77.138.135.184])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5DE78214AF;
+        Mon, 29 Apr 2019 08:34:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1556526900;
+        bh=g53n92kjY0DZyrDpRqur0LAr8PIVTHeUKHPGUguSS+k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=he/Egha4V3GeSM9tBzJz21X9hC1RN/Fxj7wGAEMy7kkoef8HN/egFX570kcjFNj2d
+         vKtB1EhkbXWHYQ0mmLFEwJWeozkJp/tVCJea2mpzlKmMk+2K/EtNhjHzB8u78203iW
+         CcYNZ8q3ly6gPfZC6AfaHSowat3a1Z7NMk7b1bew=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: [PATCH rdma-next v2 00/17] Statistics counter support
+Date:   Mon, 29 Apr 2019 11:34:36 +0300
+Message-Id: <20190429083453.16654-1-leon@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,UNPARSEABLE_RELAY,URIBL_BLOCKED
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 3e0c63300934
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As soon as TAILDESCR_PTR is written, DMA transfers might start.
-Let's ensure we are ready to receive DMA IRQ's before doing that.
+From: Leon Romanovsky <leonro@mellanox.com>
 
-Signed-off-by: Esben Haabendal <esben@geanix.com>
----
- drivers/net/ethernet/xilinx/ll_temac_main.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+Changelog:
+ v1 -> v2:
+ * Rebased to latest rdma-next
+ v0 -> v1:
+ * Changed wording of counter comment
+ * Removed unneeded assignments
+ * Added extra patch to present global counters
 
-diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 5833f02..a230f6a 100644
---- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-+++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -316,17 +316,21 @@ static int temac_dma_bd_init(struct net_device *ndev)
- 		    CHNL_CTRL_IRQ_EN | CHNL_CTRL_IRQ_ERR_EN |
- 		    CHNL_CTRL_IRQ_DLY_EN | CHNL_CTRL_IRQ_COAL_EN);
- 
--	lp->dma_out(lp, RX_CURDESC_PTR,  lp->rx_bd_p);
--	lp->dma_out(lp, RX_TAILDESC_PTR,
--		       lp->rx_bd_p + (sizeof(*lp->rx_bd_v) * (RX_BD_NUM - 1)));
--	lp->dma_out(lp, TX_CURDESC_PTR, lp->tx_bd_p);
--
- 	/* Init descriptor indexes */
- 	lp->tx_bd_ci = 0;
- 	lp->tx_bd_next = 0;
- 	lp->tx_bd_tail = 0;
- 	lp->rx_bd_ci = 0;
- 
-+	/* Enable RX DMA transfers */
-+	wmb();
-+	lp->dma_out(lp, RX_CURDESC_PTR,  lp->rx_bd_p);
-+	lp->dma_out(lp, RX_TAILDESC_PTR,
-+		       lp->rx_bd_p + (sizeof(*lp->rx_bd_v) * (RX_BD_NUM - 1)));
-+
-+	/* Prepare for TX DMA transfer */
-+	lp->dma_out(lp, TX_CURDESC_PTR, lp->tx_bd_p);
-+
- 	return 0;
- 
- out:
-@@ -790,6 +794,7 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 	skb_tx_timestamp(skb);
- 
- 	/* Kick off the transfer */
-+	wmb();
- 	lp->dma_out(lp, TX_TAILDESC_PTR, tail_p); /* DMA start */
- 
- 	return NETDEV_TX_OK;
--- 
-2.4.11
+ * I didn't change QP type from int to be enum ib_qp_type,
+   because it caused to cyclic dependency between ib_verbs.h and
+   rdma_counter.h.
+
+----------------------------------------------------
+
+Hi,
+
+This series from Mark provides dynamic statistics infrastructure.
+He uses netlink interface to configure and retrieve those counters.
+
+This infrastructure allows to users monitor various objects by binding
+to them counters. As the beginning, we used QP object as target for
+those counters, but future patches will include ODP MR information too.
+
+Two binding modes are supported:
+ - Auto: This allows a user to build automatic set of objects to a counter
+   according to common criteria. For example in a per-type scheme, where in
+   one process all QPs with same QP type are bound automatically to a single
+   counter.
+ - Manual: This allows a user to manually bind objects on a counter.
+
+Those two modes are mutual-exclusive with separation between processes,
+objects created by different processes cannot be bound to a same counter.
+
+For objects which don't support counter binding, we will return
+pre-allocated counters.
+
+$ rdma statistic qp set link mlx5_2/1 auto type on
+$ rdma statistic qp set link mlx5_2/1 auto off
+$ rdma statistic qp bind link mlx5_2/1 lqpn 178
+$ rdma statistic qp unbind link mlx5_2/1 cntn 4 lqpn 178
+$ rdma statistic show
+$ rdma statistic qp mode
+
+Thanks
+
+
+Mark Zhang (17):
+  net/mlx5: Add rts2rts_qp_counters_set_id field in hca cap
+  RDMA/restrack: Introduce statistic counter
+  RDMA/restrack: Add an API to attach a task to a resource
+  RDMA/restrack: Make is_visible_in_pid_ns() as an API
+  RDMA/counter: Add set/clear per-port auto mode support
+  RDMA/counter: Add "auto" configuration mode support
+  IB/mlx5: Support set qp counter
+  IB/mlx5: Add counter set id as a parameter for
+    mlx5_ib_query_q_counters()
+  IB/mlx5: Support statistic q counter configuration
+  RDMA/nldev: Allow counter auto mode configration through RDMA netlink
+  RDMA/netlink: Implement counter dumpit calback
+  IB/mlx5: Add counter_alloc_stats() and counter_update_stats() support
+  RDMA/core: Get sum value of all counters when perform a sysfs stat
+    read
+  RDMA/counter: Allow manual mode configuration support
+  RDMA/nldev: Allow counter manual mode configration through RDMA
+    netlink
+  RDMA/nldev: Allow get counter mode through RDMA netlink
+  RDMA/nldev: Allow get default counter statistics through RDMA netlink
+
+ drivers/infiniband/core/Makefile     |   2 +-
+ drivers/infiniband/core/counters.c   | 653 +++++++++++++++++++++++++++
+ drivers/infiniband/core/device.c     |  14 +
+ drivers/infiniband/core/nldev.c      | 524 ++++++++++++++++++++-
+ drivers/infiniband/core/restrack.c   |  49 +-
+ drivers/infiniband/core/restrack.h   |   3 +
+ drivers/infiniband/core/sysfs.c      |  10 +-
+ drivers/infiniband/core/verbs.c      |   9 +
+ drivers/infiniband/hw/mlx5/main.c    |  88 +++-
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |   6 +
+ drivers/infiniband/hw/mlx5/qp.c      |  76 +++-
+ include/linux/mlx5/mlx5_ifc.h        |   4 +-
+ include/linux/mlx5/qp.h              |   1 +
+ include/rdma/ib_verbs.h              |  30 ++
+ include/rdma/rdma_counter.h          |  64 +++
+ include/rdma/restrack.h              |   4 +
+ include/uapi/rdma/rdma_netlink.h     |  52 ++-
+ 17 files changed, 1558 insertions(+), 31 deletions(-)
+ create mode 100644 drivers/infiniband/core/counters.c
+ create mode 100644 include/rdma/rdma_counter.h
+
+--
+2.20.1
 
