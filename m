@@ -2,90 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C944E0D9
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 12:51:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85099E0FB
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 13:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727781AbfD2KvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 06:51:02 -0400
-Received: from 178.115.242.59.static.drei.at ([178.115.242.59]:60394 "EHLO
-        mail.osadl.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727753AbfD2KvC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 06:51:02 -0400
-X-Greylist: delayed 355 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Apr 2019 06:51:01 EDT
-Received: by mail.osadl.at (Postfix, from userid 1001)
-        id 040CF5C0B38; Mon, 29 Apr 2019 12:44:14 +0200 (CEST)
-Date:   Mon, 29 Apr 2019 12:44:14 +0200
-From:   Nicholas Mc Guire <der.herr@hofr.at>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Nicholas Mc Guire <hofrat@osadl.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net_sched: force endianness annotation
-Message-ID: <20190429104414.GB17493@osadl.at>
-References: <1556430899-11018-1-git-send-email-hofrat@osadl.org>
- <07d36e94-aad4-a263-bf09-705ee1dd59ed@solarflare.com>
+        id S1727939AbfD2LAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 07:00:13 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:50376 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727710AbfD2LAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 07:00:13 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us4.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id E14D728008D;
+        Mon, 29 Apr 2019 11:00:11 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 29 Apr
+ 2019 04:00:07 -0700
+Subject: Re: [PATCH] rds: ib: force endiannes annotation
+To:     Nicholas Mc Guire <hofrat@osadl.org>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>
+CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <rds-devel@oss.oracle.com>,
+        <linux-kernel@vger.kernel.org>
+References: <1556518178-13786-1-git-send-email-hofrat@osadl.org>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <20443fd3-bd1e-9472-8ca3-e3014e59f249@solarflare.com>
+Date:   Mon, 29 Apr 2019 12:00:06 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <1556518178-13786-1-git-send-email-hofrat@osadl.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <07d36e94-aad4-a263-bf09-705ee1dd59ed@solarflare.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24580.005
+X-TM-AS-Result: No-4.279000-4.000000-10
+X-TMASE-MatchedRID: cgbqQT5W8hcOwH4pD14DsPHkpkyUphL9LC92/N1OWlkCJwlu5sh0qPlY
+        oV6p/cSxnvxAs02MrVHZj9bX58WOAtrx1weWCpUF9Ib/6w+1lWRzd7C7BtJobplWFHP5R0I96F2
+        xWH9ZAxvo0cmq7QOKCJE7C19CEuIWhlahuHmDw1YwmhCbeOj6aY/8SyGg0rIRY0DjZWmXtn6jxY
+        yRBa/qJUl4W8WVUOR/9xS3mVzWUuAojN1lLei7Rd/CUQwie/Fo7Mq1xmO35qw8xi0U5YNGcJ4n9
+        vxgOV3iHkqjqrZMW0AEbTwwTTJVcrjaVpzLE/5p34yXMiKxtsZMv+p+q89pYtQ17CngTb9OBKmZ
+        VgZCVnezGTWRXUlrx+EijnvekEIH
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.279000-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24580.005
+X-MDID: 1556535612-qOvS5RxvVGZd
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 11:11:20AM +0100, Edward Cree wrote:
-> On 28/04/2019 06:54, Nicholas Mc Guire wrote:
-> > While the endiannes is being handled correctly sparse was unhappy with
-> > the missing annotation as be16_to_cpu()/be32_to_cpu() expects a __be16
-> > respectively __be32.
-> [...]
-> > diff --git a/net/sched/em_cmp.c b/net/sched/em_cmp.c
-> > index 1c8360a..3045ee1 100644
-> > --- a/net/sched/em_cmp.c
-> > +++ b/net/sched/em_cmp.c
-> > @@ -41,7 +41,7 @@ static int em_cmp_match(struct sk_buff *skb, struct tcf_ematch *em,
-> >  		val = get_unaligned_be16(ptr);
-> >  
-> >  		if (cmp_needs_transformation(cmp))
-> > -			val = be16_to_cpu(val);
-> > +			val = be16_to_cpu((__force __be16)val);
-> >  		break;
-> There should probably be a comment here to explain what's going on.  TBH
->  it's probably a good general rule that any use of __force should have a
->  comment explaining why it's needed.
-> AFAICT, get_unaligned_be16(ptr) is (barring alignment) equivalent to
->  be16_to_cpu(*(__be16 *)ptr).  But then calling be16_to_cpu() again on
->  val is bogus; it's already CPU endian.  There's a distinct lack of
->  documentation around as to the intended semantics of TCF_EM_CMP_TRANS,
->  but it would seem either (__force u16)cpu_to_be16(val); (which preserves
->  the existing semantics, that trans is a no-op on BE) or swab16(val);
->  would make more sense.
->
-be16_to_cpu((__force __be16)val) should be a NOP on big-endian as well - 
-atleast that is how I understood it (usr/include/linux/byteorder/big_endian.h).
+On 29/04/2019 07:09, Nicholas Mc Guire wrote:
+> diff --git a/net/rds/ib_recv.c b/net/rds/ib_recv.c
+> index 7055985..a070a2d 100644
+> --- a/net/rds/ib_recv.c
+> +++ b/net/rds/ib_recv.c
+> @@ -824,7 +824,7 @@ static void rds_ib_cong_recv(struct rds_connection *conn,
+>  	}
+>  
+>  	/* the congestion map is in little endian order */
+> -	uncongested = le64_to_cpu(uncongested);
+> +	uncongested = le64_to_cpu((__force __le64)uncongested);
+>  
+>  	rds_cong_map_updated(map, uncongested);
+>  }
+Again, a __force cast doesn't seem necessary here.Â  It looks like the
+Â code is just using the wrong types; if all of src, dst and uncongested
+Â were __le64 instead of uint64_t, and the last two lines replaced with
+Â rds_cong_map_updated(map, le64_to_cpu(uncongested)); then the semantics
+Â would be kept with neither sparse errors nor __force.
 
-The problem with using swab16 is that it is impating the binary significantly
-so I'm not sure if the change is really side-effect free - while the somewhat
-brute force solution is evaluatable simply by diffing.
-The swab16() solution seems cleaner than adding another layer of casting - 
-but I just am unsure if
--                   val = be16_to_cpu(val);
-+                   val = swab16(val);
-is actually equivalent. For the original patch this can be checked
+__force is almost never necessary and mostly just masks other bugs or
+Â endianness confusion in the surrounding code.Â  Instead of adding a
+Â __force, either fix the code to be sparse-clean or leave the sparse
+Â warning in place so that future developers know there's something not
+Â right.
 
--rw-r--r-- 1 hofrat hofrat 2984 Apr 28 01:49 /tmp/em_cmp_force.o
--rw-r--r-- 1 hofrat hofrat 2984 Apr 28 01:49 /tmp/em_cmp_org.o
--rw-r--r-- 1 hofrat hofrat 3392 Apr 29 06:25 /tmp/em_cmp_swab.o
-hofrat@debian:~/linux-next$ diff /tmp/em_cmp_force.o /tmp/em_cmp_org.o
-hofrat@debian:~/linux-next$
-
-which is why I prefered that solution. if swab16() is equivalent I' resend
-a V2
-
-thx!
-hofrat
+-Ed
