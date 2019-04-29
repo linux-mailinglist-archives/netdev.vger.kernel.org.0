@@ -2,193 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24CC4EA0B
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 20:22:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 710CAEA22
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 20:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729031AbfD2SWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 14:22:08 -0400
-Received: from mail-eopbgr80043.outbound.protection.outlook.com ([40.107.8.43]:59269
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728844AbfD2SWH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 14:22:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s3YJfX9nezLIG2CxyXrP+0CYPS5ruR64afjjNv6ykaM=;
- b=WgcXO0B01W9qXaHSlhIF56TeviB0l6E5I3SsykLnu/KDggBVwwaRVHmFn2nkjyge2oT0UWgZdIZ/EnORUI1gio4ZNwYIFntSVVlVY3smhnHz65+1ab2SYgxOz7I0YBJQxQuTGDdL8XnvNoqg6G+VqOkaEkLrx4K7rlB1IdgaWS4=
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
- DB8PR05MB6108.eurprd05.prod.outlook.com (20.179.10.155) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1813.16; Mon, 29 Apr 2019 18:22:03 +0000
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::ed24:8317:76e4:1a07]) by DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::ed24:8317:76e4:1a07%4]) with mapi id 15.20.1835.018; Mon, 29 Apr 2019
- 18:22:03 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Jason Gunthorpe <jgg@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>
-CC:     Majd Dibbiny <majd@mellanox.com>, Mark Zhang <markz@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH mlx5-next v2 07/17] IB/mlx5: Support set qp counter
-Thread-Topic: [PATCH mlx5-next v2 07/17] IB/mlx5: Support set qp counter
-Thread-Index: AQHU/mZ9jXcS1/AXhkGWWknQ683nEqZTdBOA
-Date:   Mon, 29 Apr 2019 18:22:03 +0000
-Message-ID: <ecdb1a67243d50854af74fb95271cc63e9b6c508.camel@mellanox.com>
-References: <20190429083453.16654-1-leon@kernel.org>
-         <20190429083453.16654-8-leon@kernel.org>
-In-Reply-To: <20190429083453.16654-8-leon@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.30.5 (3.30.5-1.fc29) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0ec1b492-ba1e-4ad8-ced4-08d6cccf93fa
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB6108;
-x-ms-traffictypediagnostic: DB8PR05MB6108:
-x-microsoft-antispam-prvs: <DB8PR05MB6108CA8F638B8DCF3951D3D4BE390@DB8PR05MB6108.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0022134A87
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(366004)(136003)(376002)(396003)(346002)(199004)(189003)(7736002)(73956011)(66066001)(81156014)(66476007)(6436002)(2906002)(66446008)(8676002)(71190400001)(14454004)(86362001)(64756008)(26005)(186003)(6506007)(102836004)(91956017)(76116006)(5660300002)(478600001)(8936002)(229853002)(6486002)(81166006)(25786009)(66556008)(71200400001)(2201001)(316002)(256004)(54906003)(76176011)(6116002)(36756003)(14444005)(99286004)(110136005)(118296001)(3846002)(66946007)(486006)(58126008)(6246003)(2616005)(68736007)(4326008)(11346002)(6512007)(53936002)(97736004)(446003)(476003)(305945005)(2501003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB6108;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 68o+k1R1wvrvtydaaN3R/TDgWJUywrHFm6RcRKLX1SAqrUJxx0eEe2MGiTaCATI2xWDkQCVj9nyqr3zjPLq3fDHFUi/v8uGOEvKYCP2eRIWm6+2BSg2SsibPr847yzMLZi3K7124FVG1bEOhb0jTLsT3YDPAd8N5Lbk8fPcmZpOkWg0cWiIqmgUg02lEukwz7jB1Q+cK4pFducKIIwnntJEmKaJSQ7il1ocd9j9vUQHbs3tF7A3FsyBhHSkl1U2ss9VjrO3YpndnZdPEFuVpZa6hiTGiEECX7hwXTLELKc5AxdBxfe6mmPNKmKWGsu0fwVIClSsNohaLp6wRsUo4eT1wpLWCK8le/9bUjGJBCj2Tdo8CcC6EpFVPe+K2RdlLFl38dWx5XoxjlZp0m9ZYTfDh2lomAKuXWdqNifbjULM=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <65B6BB67FBD9F04AA2A7A1EB5D2D09A8@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1729088AbfD2S3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 14:29:51 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:36805 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728962AbfD2S3v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 14:29:51 -0400
+Received: by mail-wr1-f66.google.com with SMTP id o4so5539748wra.3;
+        Mon, 29 Apr 2019 11:29:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BFZmWgLdy4ykcNe/TIuE4Y6yUre/3XY2vSeqK8r6OmY=;
+        b=C72veEyoMpx+St4h0M0XyY/oHvtg3/QKE7xADm0qC7WtPJ1GOYmG6f5+jtDIQZFHTh
+         B0MMyqO/CLpT13RWG9qjH4pstogDv5rfFHpX/fc6SNI4KMDzbu3pjD0ytWp0Kv34tfiV
+         yErfC9z4Mtmpv8vfeZDgPK3a74It8J3zGFBLoJ+aVe+MMn0VwzKvogm3Wwc5VZ7jNwz5
+         mLC2EzGhQ78dbteiRSu7BtdHL5Abpsp962YvAsv9vFczxz23jXOjnKzLE6XmaccVtrAf
+         MJzZU2mzqpRrjr/fvKNCuvj6+n30lvXvCVJXatigwe8T+I/KJFEj4G9HyCD5bPp15iwj
+         zuAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BFZmWgLdy4ykcNe/TIuE4Y6yUre/3XY2vSeqK8r6OmY=;
+        b=YPwj4Cqna5wrFF8sDISg3kxeG2Ov8z68pZ951rzyS6nGM5H8KwwHEjx9Hgj5kaJY0t
+         qwAHTeBpdbXGzMp3HiT6yKbAAnfEXV1oMGLbIgR2Lb1/jp070ZT5+/Y/V+r1YowBxv8y
+         9LeYVqhUY0ZIUQ9oukJJGe9wnbku1rX7+3EHUveI5iO/FasEvxL0EVvz/gZATuYeBY8/
+         Iv73aIo3rhHvh+zkQTz5iKKN8lV+AtVlcbGzebz6fjrPuV2VqZoUrLp3MRA1NRRr0mBY
+         WvRzopHchxCFBD4roI8j8PCKWtXaTJmQppx2oEciWzR/rGdfZfQTbO+mscUgEaJgr8q2
+         uRZw==
+X-Gm-Message-State: APjAAAVCeMyvuYdcu7tLRAjs0JitjCsWuCblHTon9BRkDkZ/Km0ckF+T
+        nNkGChfyDUcbsLrLP3QrifpQ/GSWbgUba9c1WjAmPxseaGc=
+X-Google-Smtp-Source: APXvYqxvFR2auxcmCUH1Vm273Y/vIr6fBoELXmpxpTYxXcxpaFZEpqxSViNim2HjoPBUi+Lwvx3Z+0sWkGhb6aGz5tk=
+X-Received: by 2002:adf:cc8a:: with SMTP id p10mr257791wrj.34.1556562589013;
+ Mon, 29 Apr 2019 11:29:49 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ec1b492-ba1e-4ad8-ced4-08d6cccf93fa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2019 18:22:03.1847
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6108
+References: <20190426212112.5624-1-fancer.lancer@gmail.com>
+ <20190426212112.5624-2-fancer.lancer@gmail.com> <20190426214631.GV4041@lunn.ch>
+ <20190426233511.qnkgz75ag7axt5lp@mobilestation> <f27df721-47aa-a708-aaee-69be53def814@gmail.com>
+In-Reply-To: <f27df721-47aa-a708-aaee-69be53def814@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 29 Apr 2019 21:29:37 +0300
+Message-ID: <CA+h21hpTRCrD=FxDr=ihDPr+Pdhu6hXT3xcKs47-NZZZ3D9zyg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] net: phy: realtek: Change TX-delay setting for
+ RGMII modes only
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Serge Semin <Sergey.Semin@t-platforms.ru>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTA0LTI5IGF0IDExOjM0ICswMzAwLCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6
-DQo+IEZyb206IE1hcmsgWmhhbmcgPG1hcmt6QG1lbGxhbm94LmNvbT4NCj4gDQo+IFN1cHBvcnQg
-YmluZCBhIHFwIHdpdGggY291bnRlci4gSWYgY291bnRlciBpcyBudWxsIHRoZW4gYmluZCB0aGUg
-cXANCj4gdG8NCj4gdGhlIGRlZmF1bHQgY291bnRlci4gRGlmZmVyZW50IFFQIHN0YXRlIGhhcyBk
-aWZmZXJlbnQgb3BlcmF0aW9uOg0KPiAtIFJFU0VUOiBTZXQgdGhlIGNvdW50ZXIgZmllbGQgc28g
-dGhhdCBpdCB3aWxsIHRha2UgZWZmZWN0aXZlDQo+ICAgZHVyaW5nIFJTVDJJTklUIGNoYW5nZTsN
-Cj4gLSBSVFM6IElzc3VlIGFuIFJUUzJSVFMgY2hhbmdlIHRvIHVwZGF0ZSB0aGUgUVAgY291bnRl
-cjsNCj4gLSBPdGhlcjogU2V0IHRoZSBjb3VudGVyIGZpZWxkIGFuZCBtYXJrIHRoZSBjb3VudGVy
-X3BlbmRpbmcgZmxhZywNCj4gICB3aGVuIFFQIGlzIG1vdmVkIHRvIFJUUyBzdGF0ZSBhbmQgdGhp
-cyBmbGFnIGlzIHNldCwgdGhlbiBpc3N1ZQ0KPiAgIGFuIFJUUzJSVFMgbW9kaWZpY2F0aW9uIHRv
-IHVwZGF0ZSB0aGUgY291bnRlci4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IE1hcmsgWmhhbmcgPG1h
-cmt6QG1lbGxhbm94LmNvbT4NCj4gUmV2aWV3ZWQtYnk6IE1hamQgRGliYmlueSA8bWFqZEBtZWxs
-YW5veC5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IExlb24gUm9tYW5vdnNreSA8bGVvbnJvQG1lbGxh
-bm94LmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NS9tbHg1X2liLmgg
-fCAgNiArKysNCj4gIGRyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L3FwLmMgICAgICB8IDc2DQo+
-ICsrKysrKysrKysrKysrKysrKysrKysrKysrKy0NCj4gIGluY2x1ZGUvbGludXgvbWx4NS9xcC5o
-ICAgICAgICAgICAgICB8ICAxICsNCg0KSSBkb24ndCBzZWUgYW55IHJlYXNvbiB3aHkgdGhpcyBw
-YXRjaCBzaG91bGQgZ28gdG8gbWx4NS1uZXh0IGJyYW5jaC4NCkp1c3QgYmVjYXVzZSB5b3UgaGF2
-ZSBvbmUgbGluZXIgaW4gaW5jbHVkZS9saW51eC9tbHg1L3FwLmgsIGlzIG5vdA0KZW5vdWdoIHJl
-YXNvbi4NCg0KPiAgMyBmaWxlcyBjaGFuZ2VkLCA4MSBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9u
-cygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L21seDVf
-aWIuaA0KPiBiL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L21seDVfaWIuaA0KPiBpbmRleCA1
-NWI4YmRiNDAyYjYuLjQ0N2Y4YWQ1YWJiZCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pbmZpbmli
-YW5kL2h3L21seDUvbWx4NV9pYi5oDQo+ICsrKyBiL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1
-L21seDVfaWIuaA0KPiBAQCAtNDM3LDYgKzQzNywxMCBAQCBzdHJ1Y3QgbWx4NV9pYl9xcCB7DQo+
-ICAJdTMyCQkJZmxhZ3NfZW47DQo+ICAJLyogc3RvcmFnZSBmb3IgcXAgc3ViIHR5cGUgd2hlbiBj
-b3JlIHFwIHR5cGUgaXMgSUJfUVBUX0RSSVZFUg0KPiAqLw0KPiAgCWVudW0gaWJfcXBfdHlwZQkJ
-cXBfc3ViX3R5cGU7DQo+ICsJLyogQSBmbGFnIHRvIGluZGljYXRlIGlmIHRoZXJlJ3MgYSBuZXcg
-Y291bnRlciBpcyBjb25maWd1cmVkDQo+ICsJICogYnV0IG5vdCB0YWtlIGVmZmVjdGl2ZQ0KPiAr
-CSAqLw0KPiArCXUzMiAgICAgICAgICAgICAgICAgICAgIGNvdW50ZXJfcGVuZGluZzsNCj4gIH07
-DQo+ICANCj4gIHN0cnVjdCBtbHg1X2liX2NxX2J1ZiB7DQo+IEBAIC0xNDE4LDQgKzE0MjIsNiBA
-QCB2b2lkIG1seDVfaWJfcHV0X3hsdF9lbWVyZ2VuY3lfcGFnZSh2b2lkKTsNCj4gIGludCBiZnJl
-Z25fdG9fdWFyX2luZGV4KHN0cnVjdCBtbHg1X2liX2RldiAqZGV2LA0KPiAgCQkJc3RydWN0IG1s
-eDVfYmZyZWdfaW5mbyAqYmZyZWdpLCB1MzIgYmZyZWduLA0KPiAgCQkJYm9vbCBkeW5fYmZyZWcp
-Ow0KPiArDQo+ICtpbnQgbWx4NV9pYl9xcF9zZXRfY291bnRlcihzdHJ1Y3QgaWJfcXAgKnFwLCBz
-dHJ1Y3QgcmRtYV9jb3VudGVyDQo+ICpjb3VudGVyKTsNCj4gICNlbmRpZiAvKiBNTFg1X0lCX0gg
-Ki8NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L3FwLmMNCj4gYi9k
-cml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NS9xcC5jDQo+IGluZGV4IGVmZTFmNmYwYzM1MS4uMjll
-M2ZjZDY2NTEwIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NS9xcC5j
-DQo+ICsrKyBiL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L3FwLmMNCj4gQEAgLTM0LDYgKzM0
-LDcgQEANCj4gICNpbmNsdWRlIDxyZG1hL2liX3VtZW0uaD4NCj4gICNpbmNsdWRlIDxyZG1hL2li
-X2NhY2hlLmg+DQo+ICAjaW5jbHVkZSA8cmRtYS9pYl91c2VyX3ZlcmJzLmg+DQo+ICsjaW5jbHVk
-ZSA8cmRtYS9yZG1hX2NvdW50ZXIuaD4NCj4gICNpbmNsdWRlIDxsaW51eC9tbHg1L2ZzLmg+DQo+
-ICAjaW5jbHVkZSAibWx4NV9pYi5oIg0KPiAgI2luY2x1ZGUgImliX3JlcC5oIg0KPiBAQCAtMzM2
-NSw2ICszMzY2LDM1IEBAIHN0YXRpYyB1bnNpZ25lZCBpbnQgZ2V0X3R4X2FmZmluaXR5KHN0cnVj
-dA0KPiBtbHg1X2liX2RldiAqZGV2LA0KPiAgCXJldHVybiB0eF9wb3J0X2FmZmluaXR5Ow0KPiAg
-fQ0KPiAgDQo+ICtzdGF0aWMgaW50IF9fbWx4NV9pYl9xcF9zZXRfY291bnRlcihzdHJ1Y3QgaWJf
-cXAgKnFwLA0KPiArCQkJCSAgICBzdHJ1Y3QgcmRtYV9jb3VudGVyICpjb3VudGVyKQ0KPiArew0K
-PiArCXN0cnVjdCBtbHg1X2liX2RldiAqZGV2ID0gdG9fbWRldihxcC0+ZGV2aWNlKTsNCj4gKwlz
-dHJ1Y3QgbWx4NV9pYl9xcCAqbXFwID0gdG9fbXFwKHFwKTsNCj4gKwlzdHJ1Y3QgbWx4NV9xcF9j
-b250ZXh0IGNvbnRleHQgPSB7fTsNCj4gKwlzdHJ1Y3QgbWx4NV9pYl9wb3J0ICptaWJwb3J0ID0g
-TlVMTDsNCj4gKwlzdHJ1Y3QgbWx4NV9pYl9xcF9iYXNlICpiYXNlOw0KPiArCXUzMiBzZXRfaWQ7
-DQo+ICsNCj4gKwlpZiAoIU1MWDVfQ0FQX0dFTihkZXYtPm1kZXYsIHJ0czJydHNfcXBfY291bnRl
-cnNfc2V0X2lkKSkNCj4gKwkJcmV0dXJuIDA7DQo+ICsNCj4gKwlpZiAoY291bnRlcikgew0KPiAr
-CQlzZXRfaWQgPSBjb3VudGVyLT5pZDsNCj4gKwl9IGVsc2Ugew0KPiArCQltaWJwb3J0ID0gJmRl
-di0+cG9ydFttcXAtPnBvcnQgLSAxXTsNCj4gKwkJc2V0X2lkID0gbWlicG9ydC0+Y250cy5zZXRf
-aWQ7DQo+ICsJfQ0KPiArDQo+ICsJYmFzZSA9ICZtcXAtPnRyYW5zX3FwLmJhc2U7DQo+ICsJY29u
-dGV4dC5xcF9jb3VudGVyX3NldF91c3JfcGFnZSAmPSBjcHVfdG9fYmUzMigweGZmZmZmZik7DQo+
-ICsJY29udGV4dC5xcF9jb3VudGVyX3NldF91c3JfcGFnZSB8PSBjcHVfdG9fYmUzMihzZXRfaWQg
-PDwgMjQpOw0KPiArCXJldHVybiBtbHg1X2NvcmVfcXBfbW9kaWZ5KGRldi0+bWRldiwNCj4gKwkJ
-CQkgICBNTFg1X0NNRF9PUF9SVFMyUlRTX1FQLA0KPiArCQkJCSAgIE1MWDVfUVBfT1BUUEFSX0NP
-VU5URVJfU0VUX0lELA0KPiArCQkJCSAgICZjb250ZXh0LCAmYmFzZS0+bXFwKTsNCj4gK30NCj4g
-Kw0KPiAgc3RhdGljIGludCBfX21seDVfaWJfbW9kaWZ5X3FwKHN0cnVjdCBpYl9xcCAqaWJxcCwN
-Cj4gIAkJCSAgICAgICBjb25zdCBzdHJ1Y3QgaWJfcXBfYXR0ciAqYXR0ciwgaW50DQo+IGF0dHJf
-bWFzaywNCj4gIAkJCSAgICAgICBlbnVtIGliX3FwX3N0YXRlIGN1cl9zdGF0ZSwNCj4gQEAgLTM0
-MTgsNiArMzQ0OCw3IEBAIHN0YXRpYyBpbnQgX19tbHg1X2liX21vZGlmeV9xcChzdHJ1Y3QgaWJf
-cXANCj4gKmlicXAsDQo+ICAJc3RydWN0IG1seDVfaWJfcG9ydCAqbWlicG9ydCA9IE5VTEw7DQo+
-ICAJZW51bSBtbHg1X3FwX3N0YXRlIG1seDVfY3VyLCBtbHg1X25ldzsNCj4gIAllbnVtIG1seDVf
-cXBfb3B0cGFyIG9wdHBhcjsNCj4gKwl1MzIgc2V0X2lkID0gMDsNCj4gIAlpbnQgbWx4NV9zdDsN
-Cj4gIAlpbnQgZXJyOw0KPiAgCXUxNiBvcDsNCj4gQEAgLTM1ODAsOCArMzYxMSwxMiBAQCBzdGF0
-aWMgaW50IF9fbWx4NV9pYl9tb2RpZnlfcXAoc3RydWN0IGliX3FwDQo+ICppYnFwLA0KPiAgCQkJ
-cG9ydF9udW0gPSAwOw0KPiAgDQo+ICAJCW1pYnBvcnQgPSAmZGV2LT5wb3J0W3BvcnRfbnVtXTsN
-Cj4gKwkJaWYgKGlicXAtPmNvdW50ZXIpDQo+ICsJCQlzZXRfaWQgPSBpYnFwLT5jb3VudGVyLT5p
-ZDsNCj4gKwkJZWxzZQ0KPiArCQkJc2V0X2lkID0gbWlicG9ydC0+Y250cy5zZXRfaWQ7DQo+ICAJ
-CWNvbnRleHQtPnFwX2NvdW50ZXJfc2V0X3Vzcl9wYWdlIHw9DQo+IC0JCQljcHVfdG9fYmUzMigo
-dTMyKShtaWJwb3J0LT5jbnRzLnNldF9pZCkgPDwgMjQpOw0KPiArCQkJY3B1X3RvX2JlMzIoc2V0
-X2lkIDw8IDI0KTsNCj4gIAl9DQo+ICANCj4gIAlpZiAoIWlicXAtPnVvYmplY3QgJiYgY3VyX3N0
-YXRlID09IElCX1FQU19SRVNFVCAmJiBuZXdfc3RhdGUgPT0NCj4gSUJfUVBTX0lOSVQpDQo+IEBA
-IC0zNjA5LDcgKzM2NDQsNyBAQCBzdGF0aWMgaW50IF9fbWx4NV9pYl9tb2RpZnlfcXAoc3RydWN0
-IGliX3FwDQo+ICppYnFwLA0KPiAgDQo+ICAJCXJhd19xcF9wYXJhbS5vcGVyYXRpb24gPSBvcDsN
-Cj4gIAkJaWYgKGN1cl9zdGF0ZSA9PSBJQl9RUFNfUkVTRVQgJiYgbmV3X3N0YXRlID09DQo+IElC
-X1FQU19JTklUKSB7DQo+IC0JCQlyYXdfcXBfcGFyYW0ucnFfcV9jdHJfaWQgPSBtaWJwb3J0LQ0K
-PiA+Y250cy5zZXRfaWQ7DQo+ICsJCQlyYXdfcXBfcGFyYW0ucnFfcV9jdHJfaWQgPSBzZXRfaWQ7
-DQo+ICAJCQlyYXdfcXBfcGFyYW0uc2V0X21hc2sgfD0NCj4gTUxYNV9SQVdfUVBfTU9EX1NFVF9S
-UV9RX0NUUl9JRDsNCj4gIAkJfQ0KPiAgDQo+IEBAIC0zNjg2LDYgKzM3MjEsMTIgQEAgc3RhdGlj
-IGludCBfX21seDVfaWJfbW9kaWZ5X3FwKHN0cnVjdCBpYl9xcA0KPiAqaWJxcCwNCj4gIAkJcXAt
-PmRiLmRiW01MWDVfU05EX0RCUl0gPSAwOw0KPiAgCX0NCj4gIA0KPiArCWlmICgobmV3X3N0YXRl
-ID09IElCX1FQU19SVFMpICYmIHFwLT5jb3VudGVyX3BlbmRpbmcpIHsNCj4gKwkJZXJyID0gX19t
-bHg1X2liX3FwX3NldF9jb3VudGVyKGlicXAsIGlicXAtPmNvdW50ZXIpOw0KPiArCQlpZiAoIWVy
-cikNCj4gKwkJCXFwLT5jb3VudGVyX3BlbmRpbmcgPSAwOw0KPiArCX0NCj4gKw0KPiAgb3V0Og0K
-PiAgCWtmcmVlKGNvbnRleHQpOw0KPiAgCXJldHVybiBlcnI7DQo+IEBAIC02MzQ3LDMgKzYzODgs
-MzQgQEAgdm9pZCBtbHg1X2liX2RyYWluX3JxKHN0cnVjdCBpYl9xcCAqcXApDQo+ICANCj4gIAlo
-YW5kbGVfZHJhaW5fY29tcGxldGlvbihjcSwgJnJkcmFpbiwgZGV2KTsNCj4gIH0NCj4gKw0KPiAr
-LyoqDQo+ICsgKiBCaW5kIGEgcXAgdG8gYSBjb3VudGVyLiBJZiBAY291bnRlciBpcyBOVUxMIHRo
-ZW4gYmluZCB0aGUgcXAgdG8NCj4gKyAqIHRoZSBkZWZhdWx0IGNvdW50ZXINCj4gKyAqLw0KPiAr
-aW50IG1seDVfaWJfcXBfc2V0X2NvdW50ZXIoc3RydWN0IGliX3FwICpxcCwgc3RydWN0IHJkbWFf
-Y291bnRlcg0KPiAqY291bnRlcikNCj4gK3sNCj4gKwlzdHJ1Y3QgbWx4NV9pYl9xcCAqbXFwID0g
-dG9fbXFwKHFwKTsNCj4gKwlpbnQgZXJyID0gMDsNCj4gKw0KPiArCW11dGV4X2xvY2soJm1xcC0+
-bXV0ZXgpOw0KPiArCWlmIChtcXAtPnN0YXRlID09IElCX1FQU19SRVNFVCkgew0KPiArCQlxcC0+
-Y291bnRlciA9IGNvdW50ZXI7DQo+ICsJCWdvdG8gb3V0Ow0KPiArCX0NCj4gKw0KPiArCWlmICht
-cXAtPnN0YXRlID09IElCX1FQU19SVFMpIHsNCj4gKwkJZXJyID0gX19tbHg1X2liX3FwX3NldF9j
-b3VudGVyKHFwLCBjb3VudGVyKTsNCj4gKwkJaWYgKCFlcnIpDQo+ICsJCQlxcC0+Y291bnRlciA9
-IGNvdW50ZXI7DQo+ICsNCj4gKwkJZ290byBvdXQ7DQo+ICsJfQ0KPiArDQo+ICsJbXFwLT5jb3Vu
-dGVyX3BlbmRpbmcgPSAxOw0KPiArCXFwLT5jb3VudGVyID0gY291bnRlcjsNCj4gKw0KPiArb3V0
-Og0KPiArCW11dGV4X3VubG9jaygmbXFwLT5tdXRleCk7DQo+ICsJcmV0dXJuIGVycjsNCj4gK30N
-Cj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvbWx4NS9xcC5oIGIvaW5jbHVkZS9saW51eC9t
-bHg1L3FwLmgNCj4gaW5kZXggMDM0M2M4MWQ0YzVmLi5iMGI0NzEwNmJjNzYgMTAwNjQ0DQo+IC0t
-LSBhL2luY2x1ZGUvbGludXgvbWx4NS9xcC5oDQo+ICsrKyBiL2luY2x1ZGUvbGludXgvbWx4NS9x
-cC5oDQo+IEBAIC03MCw2ICs3MCw3IEBAIGVudW0gbWx4NV9xcF9vcHRwYXIgew0KPiAgCU1MWDVf
-UVBfT1BUUEFSX0NRTl9SQ1YJCQk9IDEgPDwgMTksDQo+ICAJTUxYNV9RUF9PUFRQQVJfRENfSFMJ
-CQk9IDEgPDwgMjAsDQo+ICAJTUxYNV9RUF9PUFRQQVJfRENfS0VZCQkJPSAxIDw8IDIxLA0KPiAr
-CU1MWDVfUVBfT1BUUEFSX0NPVU5URVJfU0VUX0lECQk9IDEgPDwgMjUsDQo+ICB9Ow0KPiAgDQo+
-ICBlbnVtIG1seDVfcXBfc3RhdGUgew0K
+On Mon, 29 Apr 2019 at 20:39, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> On 4/26/19 4:35 PM, Serge Semin wrote:
+> > On Fri, Apr 26, 2019 at 11:46:31PM +0200, Andrew Lunn wrote:
+> >> On Sat, Apr 27, 2019 at 12:21:12AM +0300, Serge Semin wrote:
+> >>> It's prone to problems if delay is cleared out for other than RGMII
+> >>> modes. So lets set/clear the TX-delay in the config register only
+> >>> if actually RGMII-like interface mode is requested.
+> >>>
+> >>> Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+> >>>
+> >>> ---
+> >>>  drivers/net/phy/realtek.c | 16 ++++++++++++----
+> >>>  1 file changed, 12 insertions(+), 4 deletions(-)
+> >>>
+> >>> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+> >>> index ab567a1923ad..a18cb01158f9 100644
+> >>> --- a/drivers/net/phy/realtek.c
+> >>> +++ b/drivers/net/phy/realtek.c
+> >>> @@ -163,16 +163,24 @@ static int rtl8211c_config_init(struct phy_device *phydev)
+> >>>  static int rtl8211f_config_init(struct phy_device *phydev)
+> >>>  {
+> >>>     int ret;
+> >>> -   u16 val = 0;
+> >>> +   u16 val;
+> >>>
+> >>>     ret = genphy_config_init(phydev);
+> >>>     if (ret < 0)
+> >>>             return ret;
+> >>>
+> >>> -   /* enable TX-delay for rgmii-id and rgmii-txid, otherwise disable it */
+> >>> -   if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+> >>> -       phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
+> >>> +   /* enable TX-delay for rgmii-id/rgmii-txid, and disable it for rgmii */
+> >>> +   switch (phydev->interface) {
+> >>> +   case PHY_INTERFACE_MODE_RGMII:
+> >>> +           val = 0;
+> >>> +           break;
+> >>> +   case PHY_INTERFACE_MODE_RGMII_ID:
+> >>> +   case PHY_INTERFACE_MODE_RGMII_TXID:
+> >>>             val = RTL8211F_TX_DELAY;
+> >>> +           break;
+> >>> +   default: /* the rest of the modes imply leaving delay as is. */
+> >>> +           return 0;
+> >>> +   }
+> >>
+> >> So there is no control of the RX delay?
+> >>
+> >
+> > As you can see it hasn't been there even before this change. So I suppose
+> > either the hardware just doesn't support it (although the openly available
+> > datasheet states that there is an RXD pin) or the original driver developer
+> > decided to set TX-delay only.
+> >
+> > Just to make sure you understand. I am not working for realtek and don't
+> > posses any inside info regarding these PHYs. I was working on a project,
+> > which happened to utilize a rtl8211e PHY. We needed to find a way to
+> > programmatically change the delays setting. So I searched the Internet
+> > and found the U-boot rtl8211f driver and freebsd-folks discussion. This
+> > info has been used to write the config_init method for Linux version of the
+> > PHY' driver. That's it.
+> >
+> >> That means PHY_INTERFACE_MODE_RGMII_ID and
+> >> PHY_INTERFACE_MODE_RGMII_RXID are not supported, and you should return
+> >> -EINVAL.
+> >>
+> >
+> > Apparently the current config_init method doesn't support RXID setting.
+> > The patch introduced current function code was submitted by
+> > Martin Blumenstingl in 2016:
+> > https://patchwork.kernel.org/patch/9447581/
+> > and was reviewed by Florian. So we'd better ask him why it was ok to mark
+> > the RGMII_ID as supported while only TX-delay could be set.
+> > I also failed to find anything regarding programmatic rtl8211f delays setting
+> > in the Internet. So at this point we can set TX-delay only for f-model of the PHY.
+> >
+> > Anyway lets clarify the situation before to proceed further. You are suggesting
+> > to return an error in case if either RGMII_ID or RGMII_RXID interface mode is
+> > requested to be enabled for the PHY. It's fair seeing the driver can't fully
+> > support either of them.
+>
+> That is how I read Andrew's suggestion and it is reasonable. WRT to the
+> original changes from Martin, he is probably the one you would want to
+> add to this conversation in case there are any RX delay control knobs
+> available, I certainly don't have the datasheet, and Martin's change
+> looks and looked reasonable, seemingly independent of the direction of
+> this very conversation we are having.
+>
+> But what about the rest of the modes like GMII, MII
+> > and others?
+>
+> The delays should be largely irrelevant for GMII and MII, since a) the
+> PCB is required to have matching length traces, and b) these are not
+> double data rate interfaces
+>
+> > Shouldn't we also return an error instead of leaving a default
+> > delay value?
+>
+> That seems a bit harsh, those could have been configured by firmware,
+> whatever before Linux comes up and be correct and valid. We don't know
+> of a way to configure it, but that does not mean it does not exist and
+> some software is doing it already.
+>
+> >
+> > The same question can be actually asked regarding the config_init method of
+> > rtl8211e PHY, which BTW you already tagged as Reviewed-by.
+> >
+> >> This is where we get into interesting backwards compatibility
+> >> issues. Are there any broken DT blobs with rgmii-id or rgmii-rxid,
+> >> which will break with such a change?
+> >>
+> >
+> > Not that I am aware of and which simple grep rtl8211 could find. Do you
+> > know about one?
+> >
+> > -Sergey
+> >
+> >>      Andrew
+>
+>
+> --
+> Florian
+
+There seems to be some confusion here.
+The "normal" RTL8211F has RXDLY and TXDLY configurable only via pin
+strapping (pull-up/pull-down), not via MDIO.
+The "1588-capable" RTL8211FS has RXDLY configurable via pin strapping
+(different pin than the regular 8211F) and TXDLY via page 0xd08,
+register 17, bit 8.
+I think setting the Tx delay via MDIO for the normal RTL8211F is snake oil.
+Disclaimer: I don't work for Realtek either, so I have no insight on
+why it is like that.
+From Linux' point of view, there are two aspects:
+* Erroring out now will likely just break something that was working
+(since it was relying on hardware strapping and the DT phy-mode
+property was more or less informative).
+* Arguably what is wrong here is the semantics of the phy-mode
+bindings for RGMII. It gets said a lot that DT means "hardware
+description", not "hardware configuration". So having said that, the
+correct interpretation of phy-mode = "rgmii-id" is that the operating
+system is informed that RGMII delays were handled in both directions
+(either the PHY was strapped, or PCB traces were lengthened). But the
+current meaning of "rgmii-id" in practice is an imperative "PHY
+driver, please apply delays in both directions" (or MAC driver, if
+it's fixed-link).
+
+Thanks,
+-Vladimir
