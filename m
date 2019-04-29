@@ -2,111 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1E9AE6B2
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 17:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7625CE6BB
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 17:41:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728524AbfD2Pjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 11:39:48 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34265 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728436AbfD2Pjs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 11:39:48 -0400
-Received: by mail-wr1-f68.google.com with SMTP id v16so14326715wrp.1
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 08:39:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dGFkoTu0Keh5FErbv2jHaILuGkugGYnVDjqnoguNPM4=;
-        b=ibYJ3gPsKZ1B4W8dM/PLKaWNyb4BBULchwqZh7iwHh0ATtxXFtWqjVgfnhQsNeAM4e
-         NgMYzalB1tl3v5qMhwIL0INC3LJFoNMxo3JPMF9M2E39Jtx0m3HQWp+HAYpqDRroX+Sc
-         fwgZxlf2Hdy01suXXk9PkiGrzJ7lBHYZiMbpT+Bzbist2gaLI/HYTiNVlLmN6GHsSEV4
-         pLzijMjRNif3Zt8Yhixo+NGsrG3AJAmHL4SK1nNJaxwRSdlWtXT7/AboCq4GM3aCxD0A
-         22bnRjmmuYafAnOXPx7kTMp8gn4OWN8KVm6ZiveyCCRmZ1S0FAVrw1lGhUtGfJ5wBgcs
-         YiBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=dGFkoTu0Keh5FErbv2jHaILuGkugGYnVDjqnoguNPM4=;
-        b=LycQkUHmgdNZrS+ecTn91AqoNtcr9Zil5M7kFEaKA+zO6whPRFWKrRkznW6Chkzzva
-         rJRi83ZmdofB8hOhFw9urszwpMZOQyD1LC81WGK2dDg+shpschb8frwO4A2hjSGRa+KO
-         ZHk4qvoRA3srO+5Y76xYGZyZOPiYkKi/ZCTUfy7WhUp92z10SO0u4O0LBzByaG03vPbk
-         p23vwng+V8i4a+vvgxMb3Klfzwc9iDRdwj81dPJZ2Ty2MgbjitvMv+W4oji/FQ2Jx6Xb
-         CYqNPqMlGktki4Asy3u0gGIwdjzia1BPceA2+nLzgPDwIGFueKu76QygnGCbFePXrNWW
-         xP9g==
-X-Gm-Message-State: APjAAAVyBdKfST44HbMfyebf3OgpMnFru+1hRNDU41s/j/37AjdSfAJa
-        zxenEDePVfxZlbKT+kb9Nc/6VhbvKlU=
-X-Google-Smtp-Source: APXvYqzSaD5tWV67H+tmILOKQi7XkkbdL99mWq6/GBV5/V+WJDLJRpEiBZNvGM2fP61sYTc2krQmKw==
-X-Received: by 2002:adf:edc8:: with SMTP id v8mr11132484wro.206.1556552386144;
-        Mon, 29 Apr 2019 08:39:46 -0700 (PDT)
-Received: from ?IPv6:2a01:e35:8b63:dc30:a94e:84d3:3ed8:cdcd? ([2a01:e35:8b63:dc30:a94e:84d3:3ed8:cdcd])
-        by smtp.gmail.com with ESMTPSA id a4sm44590924wmf.45.2019.04.29.08.39.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Apr 2019 08:39:45 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH 07/31] netfilter: ctnetlink: Support L3 protocol-filter on
- flush
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org,
-        Kristian Evensen <kristian.evensen@gmail.com>,
-        davem@davemloft.net, netdev@vger.kernel.org
-References: <20181008230125.2330-1-pablo@netfilter.org>
- <20181008230125.2330-8-pablo@netfilter.org>
- <33d60747-7550-1fba-a068-9b78aaedbc26@6wind.com>
- <09d0cd50-b64d-72c3-0aa1-82eb461bfa19@6wind.com>
- <20190426192529.yxzpunyenmk4yfk3@salvia>
- <2dc9a105-930b-83b1-130f-891d941dc09b@6wind.com>
- <20190429152357.kwah6tvdwax6ae7p@salvia>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <fbafb8db-4a07-9836-5765-afd9ca683cb8@6wind.com>
-Date:   Mon, 29 Apr 2019 17:39:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1728555AbfD2Plg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 11:41:36 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:57624 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728436AbfD2Plf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 11:41:35 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x3TFUuLP006764;
+        Mon, 29 Apr 2019 08:40:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=iLZA70gLFhJM7f0zFPd1aRE6IaUnN3rcUL/lhvvpl44=;
+ b=OultsvJKEShCnYB8iSoj8j1QCYME2QkEQlvbO6hLXGOVZC08766RuKUoa6BPRJP4elYF
+ 3ZEptPeqwTlREjiItFE4R0gi/UybtZaTXDnBDYgNxdP7ofc2cx3Z8F9tEqAnRl4qutib
+ SJ5QG5I8k8XPeTQzGDm232HdO3zWklwUKHk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2s62ad0dyt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 29 Apr 2019 08:40:25 -0700
+Received: from ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) by
+ ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 29 Apr 2019 08:40:22 -0700
+Received: from NAM05-BY2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Mon, 29 Apr 2019 08:40:22 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iLZA70gLFhJM7f0zFPd1aRE6IaUnN3rcUL/lhvvpl44=;
+ b=Gl/zhS0azfObgxdaMIfqzYCmpZKl5h/QpvvwU8/najE1ZOIoZTnFnZyUMEKve3yJ1Zsy8bhrlHv9XeNABM0Cp7n217KqHU1XsQRLzLNK+cUSSqJ3Gz0y7oeMQcWuikF274jZ2L37KaoAGRcSbjb34nLWu9r9n6AYOuTv0r4E3GI=
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.255.19) by
+ MWHPR15MB1245.namprd15.prod.outlook.com (10.175.3.7) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1835.12; Mon, 29 Apr 2019 15:40:20 +0000
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::d13:8c3d:9110:b44a]) by MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::d13:8c3d:9110:b44a%8]) with mapi id 15.20.1835.018; Mon, 29 Apr 2019
+ 15:40:20 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+Subject: Re: [PATCH net-next] bpf: Use PTR_ERR_OR_ZERO in
+ bpf_fd_sk_storage_update_elem()
+Thread-Topic: [PATCH net-next] bpf: Use PTR_ERR_OR_ZERO in
+ bpf_fd_sk_storage_update_elem()
+Thread-Index: AQHU/pH06s/P2PoS+UqnPdwriAt0qqZTRoyA
+Date:   Mon, 29 Apr 2019 15:40:20 +0000
+Message-ID: <20190429154017.j5yotcmvtw4fcbuo@kafai-mbp.dhcp.thefacebook.com>
+References: <20190429135611.72640-1-yuehaibing@huawei.com>
+In-Reply-To: <20190429135611.72640-1-yuehaibing@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR0201CA0022.namprd02.prod.outlook.com
+ (2603:10b6:301:74::35) To MWHPR15MB1790.namprd15.prod.outlook.com
+ (2603:10b6:301:4e::19)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::3a1a]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a6028122-2970-424b-e125-08d6ccb8fc41
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:MWHPR15MB1245;
+x-ms-traffictypediagnostic: MWHPR15MB1245:
+x-microsoft-antispam-prvs: <MWHPR15MB1245DA195D3DEF6BE7A8DC66D5390@MWHPR15MB1245.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:741;
+x-forefront-prvs: 0022134A87
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(199004)(189003)(2906002)(5660300002)(81156014)(8676002)(498600001)(8936002)(81166006)(68736007)(4326008)(76176011)(558084003)(53936002)(25786009)(9686003)(6512007)(6246003)(52116002)(1076003)(6916009)(54906003)(97736004)(99286004)(14454004)(71200400001)(71190400001)(66556008)(64756008)(229853002)(73956011)(66946007)(7736002)(66476007)(66446008)(6486002)(102836004)(305945005)(476003)(6116002)(46003)(86362001)(186003)(6506007)(446003)(386003)(256004)(11346002)(486006)(6436002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1245;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: UdQk6/+KBLofeVwxuJhExyAsxMoZGpirFVaFZaLh11k6M/GJQxeuwZekZDYSEaysfikckJvN7cU0jBcvZ+sBDY/fymPNWXbjMv113eldOaUIT6ByRfLtJ2kluLV0elokBYOBAF4dy/rEu+eQndvB5qtF4JjliW8YC/cCzYyxDDZHTrOm6TKciRAtBPd9Y3R5xWFzziVTA5UoOhEeuy2KG26vZb0WS5UJ56b7umTj+EZMqTqJc15GWWxSUqM1hITSloSUqljhcODyBXDXTchJkMH3C4gJ6Z4c21mwPR82lX8jBg8erIZui/PkQY4TIyMes6RVsxcLbfsPL1XpUob6/2yTswnPax4v30Y7/JVwjxDGQF2RrDliQ4Xuv3AD5x+aMXbHN50yqecZREUAgi9nytJUnafTWS1w4qlXTGew24M=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <BCFFAFBA9133DC45874498ACB59C730F@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20190429152357.kwah6tvdwax6ae7p@salvia>
-Content-Type: text/plain; charset=utf-8
-Content-Language: fr
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6028122-2970-424b-e125-08d6ccb8fc41
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2019 15:40:20.1541
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1245
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-04-29_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=506 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1904290108
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 29/04/2019 à 17:23, Pablo Neira Ayuso a écrit :
-> On Mon, Apr 29, 2019 at 04:53:38PM +0200, Nicolas Dichtel wrote:
->> Le 26/04/2019 à 21:25, Pablo Neira Ayuso a écrit :
->>> On Thu, Apr 25, 2019 at 05:41:45PM +0200, Nicolas Dichtel wrote:
->>>> Le 25/04/2019 à 12:07, Nicolas Dichtel a écrit :
->>>> [snip]
->>>>> In fact, the conntrack tool set by default the family to AF_INET and forbid to
->>>>> set the family to something else (the '-f' option is not allowed for the command
->>>>> 'flush').
->>>>
->>>> 'conntrack -D -f ipv6' will do the job, but this is still a regression.
->>>
->>> You mean, before this patch, flush was ignoring the family, and after
->>> Kristian's patch, it forces you to use NFPROTO_UNSPEC to achieve the
->>> same thing, right?
->>>
->> Before the patch, flush was ignoring the family, and after the patch, the flush
->> takes care of the family.
->> The conntrack tool has always set the family to AF_INET by default, thus, since
->> this patch, only ipv4 conntracks are flushed with 'conntrack -F':
->> https://git.netfilter.org/conntrack-tools/tree/src/conntrack.c#n2565
->> https://git.netfilter.org/conntrack-tools/tree/src/conntrack.c#n2796
-> 
-> Thanks for explaining, what fix would you propose for this?
-> 
-The least bad fix I see is adding a new attribute, something like
-CTA_FLUSH_FAMILY, to be used by the flush filter (and ignoring struct
-nfgenmsg->nfgen_family in this flush filter).
-The drawback is that it will break the (relatively new) users of this feature
-(the patch has been pushed in v4.20).
-
-
-Regards,
-Nicolas
+On Mon, Apr 29, 2019 at 01:56:11PM +0000, YueHaibing wrote:
+> Use PTR_ERR_OR_ZERO rather than if(IS_ERR(...)) + PTR_ERR
+Acked-by: Martin KaFai Lau <kafai@fb.com>
