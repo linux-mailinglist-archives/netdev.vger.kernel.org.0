@@ -2,134 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6A83E3A8
+	by mail.lfdr.de (Postfix) with ESMTP id 60F87E3A7
 	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728104AbfD2NXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 09:23:34 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:35922 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725838AbfD2NXe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 09:23:34 -0400
-Received: from mailhost.synopsys.com (dc8-mailhost2.synopsys.com [10.13.135.210])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 1A312C00C9;
-        Mon, 29 Apr 2019 13:23:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1556544212; bh=Mflle1+S8Aliq2KJvkEHM5CV5/kFY6OCRX0cLLFEGAY=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=SbZBNC01WoIzwIP7hzZyDQ3Rk+XCeJzqaCBLZFlVvVhjX8w1M0aselKh4oBk+2+zf
-         lD1FsYsCU53FVMKM0yOjURKDEwTpuZRtd5wnuljCj0iaa8pmPXa7Nv+k4LgF/zRC2I
-         psmGyGHtCGy1O8JJH7tqcupzT7f/kCJpGd2PTfLAkQ8WrLVJWUM2CAPuAJYOVe8mBr
-         jJyAnY/xD8Jf489yymUkM1SRIl8oD9vizWZ+d3mJPvC8sA9Km0K7hU39h9GQjg40wF
-         cMcRerTVL52CK3Sc6BBkqsQ/MuQO2OSE1j9X1UGyu8IeKajq50c/vTDWQt3ht1i5eP
-         FwE1q+7bHZ1aA==
-Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 5B869A0065;
-        Mon, 29 Apr 2019 13:23:29 +0000 (UTC)
-Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
- us01wehtc1.internal.synopsys.com (10.12.239.231) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Mon, 29 Apr 2019 06:23:29 -0700
-Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Mon,
- 29 Apr 2019 15:23:27 +0200
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        id S1728227AbfD2NXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 09:23:38 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48548 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725838AbfD2NXg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 09:23:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=G9+UVkmUelZPc/fq6yyI9wbOx04gDxUNqmqWJk98Nkg=; b=UJxTcsu3QVfNUjU0YZtQzi6U3y
+        wqS5EGC5LSO/GkxW9xCydVDvbZ1fs37BBldYsyRB4/OLeWLrobP38ZeMf/gS1JrYsru+wKb40eq3m
+        ceOmhYYufSpplKctvC8LKsMTHYMWy3AnrSfh9BAbBMXdDsP07MKex5LVfvQ4FhluvDmg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hL6Fj-00010z-OB; Mon, 29 Apr 2019 15:23:27 +0200
+Date:   Mon, 29 Apr 2019 15:23:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     biao huang <biao.huang@mediatek.com>
+Cc:     Jose Abreu <joabreu@synopsys.com>, davem@davemloft.net,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Subject: RE: [PATCH 4/7] net: stmmac: introducing support for DWC xPCS logics
-Thread-Topic: [PATCH 4/7] net: stmmac: introducing support for DWC xPCS
- logics
-Thread-Index: AQHU+oijzDBWZoWOSkutjbTSvGWKlaZMVEeAgAai8KA=
-Date:   Mon, 29 Apr 2019 13:23:26 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B46E26B@DE02WEMBXB.internal.synopsys.com>
-References: <1556126241-2774-1-git-send-email-weifeng.voon@intel.com>
- <1556126241-2774-5-git-send-email-weifeng.voon@intel.com>
- <D6759987A7968C4889FDA6FA91D5CBC8146EF0A8@PGSMSX103.gar.corp.intel.com>
-In-Reply-To: <D6759987A7968C4889FDA6FA91D5CBC8146EF0A8@PGSMSX103.gar.corp.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.107.19.176]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, yt.shen@mediatek.com,
+        jianguo.zhang@mediatek.com
+Subject: Re: [PATCH 5/6] net: stmmac: add mdio clause 45 access from mac
+ device for dwmac4
+Message-ID: <20190429132327.GF10772@lunn.ch>
+References: <1556433009-25759-1-git-send-email-biao.huang@mediatek.com>
+ <1556433009-25759-6-git-send-email-biao.huang@mediatek.com>
+ <20190428163705.GH23059@lunn.ch>
+ <1556517925.24897.17.camel@mhfsdcap03>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1556517925.24897.17.camel@mhfsdcap03>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon, Weifeng <weifeng.voon@intel.com>
-Date: Thu, Apr 25, 2019 at 08:06:43
+> > Hi Biao
+> > 
+> > readl_poll_timeout() returns an error code. It is better to return
+> > that, than make up some other error code. Yes, i know the C22 read
+> > returns EBUSY, but we don't need to copy that behaviour into C45.
+> > 
+> OK, will return error code here.
+> > > +
+> > > +	value = 0;
+> > > +	value |= (prtad << priv->hw->mii.cl45_reg_shift)
+> > > +			& priv->hw->mii.cl45_reg_mask;
+> > > +	writel(value, priv->ioaddr + mii_data);
+> > > +
+> > > +	/* delay 2ms to avoid error value of get_phy_c45_devs_in_pkg */
+> > > +	mdelay(2);
+> > 
+> > Please could you explain this a bit more?
+> when of_mdiobus_register is invoked,
+> the C22 PHY addr information will be obtained in device tree(reg = xx,
+> no need through mdiobus),
+> but C45 PHY addr should be got through mdiobus->read according to
+> current flow.
+>     of_mdiobus_register -->
+>     of_mdiobus_register_phy -->
+>     get_phy_device -->
+>     get_phy_id -->
+>     get_phy_c45_ids -->
+>     get_phy_c45_devs_in_pkg
+> 
+> In my platform, mdio bus read will return 0xffff or 0x0000 for C45 in
+> of_mdiobus_register callstack, and that's not the expected value. 
+> So that the mdiobus register fails.
+> 
+> We took some time to find that only after adding 2ms delay here,
+> the read action will be stable and return the expected value.
+> 
+> did you try C45 support in your platform? I can't tell whether it's a
+> common or specified issue.
 
-> > From: Ong Boon Leong <boon.leong.ong@intel.com>
-> >=20
-> > xPCS is DWC Ethernet Physical Coding Sublayer that may be integrated in=
-to a
-> > GbE controller that uses DWC EQoS MAC controller. An example of HW
-> > configuration is shown below:-
-> >=20
-> >   <-----------------GBE Controller---------->|<--External PHY chip-->
-> >=20
-> >   +----------+         +----+    +---+               +--------------+
-> >   |   EQoS   | <-GMII->|xPCS|<-->|L1 | <-- SGMII --> | External GbE |
-> >   |   MAC    |         |    |    |PHY|               | PHY Chip     |
-> >   +----------+         +----+    +---+               +--------------+
-> >          ^               ^                                  ^
-> >          |               |                                  |
-> >          +---------------------MDIO-------------------------+
-> >=20
-> > xPCS is a Clause-45 MDIO Manageable Device (MMD) and we need a way to
-> > differentiate it from external PHY chip that is discovered over MDIO.
-> > Therefore, xpcs_phy_addr is introduced in stmmac platform data
-> > (plat_stmmacenet_data) for differentiating xPCS from 'phy_addr' that
-> > belongs to external PHY.
-> >=20
-> > Basic functionalities for initializing xPCS and configuring auto negoti=
-ation (AN),
-> > loopback, link status, AN advertisement and Link Partner ability are
-> > implemented.
-> >=20
-> > xPCS interrupt handling for C37 AN complete is also implemented.
-> >=20
-> > Tested-by: Kweh Hock Leong <hock.leong.kweh@intel.com>
-> > Reviewed-by: Chuah Kim Tatt <kim.tatt.chuah@intel.com>
-> > Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
-> > Reviewed-by: Kweh Hock Leong <hock.leong.kweh@intel.com>
-> > Reviewed-by: Baoli Zhang <baoli.zhang@intel.com>
-> > Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-> > ---
-> >  drivers/net/ethernet/stmicro/stmmac/dw_xpcs.h | 288
-> > ++++++++++++++++++++++++++
-> >  drivers/net/ethernet/stmicro/stmmac/hwif.h    |  17 ++
-> >  include/linux/stmmac.h                        |   1 +
-> >  3 files changed, 306 insertions(+)
-> >  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dw_xpcs.h
-> >=20
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dw_xpcs.h
-> > b/drivers/net/ethernet/stmicro/stmmac/dw_xpcs.h
-> > new file mode 100644
-> > index 0000000..446b714
-> > --- /dev/null
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/dw_xpcs.h
+It sounds like you need to put a logic analyser on the bus and see if
+it performs a C22 transaction, or an invalid transaction, without the
+2ms pause.
 
-I would rather prefer see this as a .c file and then just export a new=20
-structure for HWIF because this does not belong to the MAC. Is there any=20
-specific reason why you added this as a .h file besides the reuse of=20
-callbacks across cores ?
+This sounds like a 'silicon' bug. There should not be a need to pause
+here. And the comment should talk about this silicon bug, not
+get_phy_c45_devs_in_pkg(). It will fail for all accesses, not just
+those for get_phy_c45_devs_in_pkg().
 
-And having inline functions everywhere seems overkill also.
-
-Thanks,
-Jose Miguel Abreu
+	Andrew
