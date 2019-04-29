@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE750E1B1
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 13:57:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B97F3E1CB
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 14:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728104AbfD2L5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 07:57:32 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:40869 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727936AbfD2L5b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 07:57:31 -0400
-Received: by mail-qt1-f193.google.com with SMTP id y49so5776744qta.7
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 04:57:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mv/muY5rNtRRH+MvwfpqL7bgByAD3SswrQwk16n8zjY=;
-        b=axY1XzOctFtBu4IPkEtP77LyT3a/l3Mp36FEM6+Qy/VwSiO/LesvaLgcVcUAY6NaQB
-         onsDyDE6IdtBoi8nZiPTJheQn+jjDutUoyZ9pAYTxtikaANXpwfzqIRNhryn4awBX7/n
-         544CWWgrYBvLWW+hnFj6XZEw16HJuFr0rlEShZiq+Sn2PH7QgCFDb/+i2pMZmLKHLrAL
-         4vb0GqQ+usyop0tIQXE2ls0x5QgJ9V5SHLYFdpr09gwkoy63Ma9Ob5MYPKf7IVxj9eM0
-         5uIahjk+o3Zgd4PULXtpBJ2qE93ADS2MI5My8NHf5ClioxfX/KmGpxiByF9AFwOa7J6M
-         NLMw==
-X-Gm-Message-State: APjAAAUYhQIumORGdXThxvbzVZTLFygamxryPNzmp7sum+ObeXz5guvj
-        pkswyQ/xvL2nCXdajkjPH1uJGrHhjIXVwatW0fM=
-X-Google-Smtp-Source: APXvYqzS8ZKjshNGvfKGjDEQYkOZnPtW4o5dq64X5wTIsr2yyF2nFgIwL+lE1bd9u+XPlcz2nZii7o/shWFGIPWvmzk=
-X-Received: by 2002:a0c:d2fa:: with SMTP id x55mr48817309qvh.161.1556539050677;
- Mon, 29 Apr 2019 04:57:30 -0700 (PDT)
+        id S1728161AbfD2MCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 08:02:39 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:48030 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728024AbfD2MCj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 08:02:39 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id 68B641400A8;
+        Mon, 29 Apr 2019 12:02:37 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 29 Apr
+ 2019 05:02:33 -0700
+Subject: Re: [PATCH] rds: ib: force endiannes annotation
+To:     Nicholas Mc Guire <der.herr@hofr.at>
+CC:     Nicholas Mc Guire <hofrat@osadl.org>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <rds-devel@oss.oracle.com>,
+        <linux-kernel@vger.kernel.org>
+References: <1556518178-13786-1-git-send-email-hofrat@osadl.org>
+ <20443fd3-bd1e-9472-8ca3-e3014e59f249@solarflare.com>
+ <20190429111836.GA17830@osadl.at>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <2ffed5fc-a372-3f90-e655-bcbc740eed33@solarflare.com>
+Date:   Mon, 29 Apr 2019 13:02:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190423151143.464992-1-arnd@arndb.de> <20190423151143.464992-12-arnd@arndb.de>
- <20190424092451.exkkwv2jkk5bwjfq@intra2net.com> <CAK8P3a0RKEdpk70tH8ac3QW=kjuz47Ghcz_CWLraoGV_Bb8Epw@mail.gmail.com>
- <20190424130625.uuqtujpvf7lyn4rc@intra2net.com> <CAK8P3a31NRqNJnBbZF=pUhQRrEoW0pZ37Wp-eABebG3iqXJe-w@mail.gmail.com>
- <20190429095856.jedh4ujwjkslpyp5@intra2net.com>
-In-Reply-To: <20190429095856.jedh4ujwjkslpyp5@intra2net.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 29 Apr 2019 13:57:13 +0200
-Message-ID: <CAK8P3a2AUXrffu6pfgwcJj5qp2EyzxNnUf8kYq4wd73hL4njTQ@mail.gmail.com>
-Subject: Re: [PATCH 5/5] isdn: move capi drivers to staging
-To:     Thomas Jarosch <thomas.jarosch@intra2net.com>
-Cc:     Karsten Keil <isdn@linux-pingi.de>,
-        Networking <netdev@vger.kernel.org>,
-        Tilman Schmidt <tilman@imap.cc>,
-        Paul Bolle <pebolle@tiscali.nl>,
-        gigaset307x-common@lists.sourceforge.net,
-        isdn4linux@listserv.isdn4linux.de,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Holger Schurig <holgerschurig@googlemail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190429111836.GA17830@osadl.at>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24580.005
+X-TM-AS-Result: No-14.176100-4.000000-10
+X-TMASE-MatchedRID: HXSqh3WYKfsOwH4pD14DsPHkpkyUphL9+WzVGPiSY8jkVi/vHE4dwPM+
+        9Fw01I7GRQLzGM7KIBh9cJyW2BrvG9lnkI1u79lBnprizKKMwma1d0Fs4VikB0S/boWSGMtd9P1
+        gJOQHwkv5O2/3eJ45TlT7pLySGeP0n19mXmEdfVlfLa2Qr61pJCGi0ftsSkQygrAXgr/AjP3ZSx
+        a9R97yPI6kPNsstSO0xcKxQpPhJ/bdM4TtXgVTNLlwTkBCo+04i/ymJ2FVg5SbKItl61J/yZkw8
+        KdMzN86KrauXd3MZDWXf5sC39gVVMrUvx27s9YcSJo1rqxdGLyzw2JSXY5EclrsV/jyG+zxXwji
+        hSrlWBo=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--14.176100-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24580.005
+X-MDID: 1556539358-e9OzWke6H3iF
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 11:59 AM Thomas Jarosch
-<thomas.jarosch@intra2net.com> wrote:
-> You wrote on Thu, Apr 25, 2019 at 01:24:09PM +0200:
-> > I'm still confused by this: You say here that you use the CAPI
-> > subsystem from the mainline kernel (i.e. /dev/capi20 rather
-> > than mISDNcapid), but this does not appear to interact at all with
-> > mISDN, neither the in-kernel variant nor the one you link to.
->
-> my working theory was that a userspace capi application
-> talks to mISDNcapid via the kernel's CAPI layer as a proxy.
->
-> Karsten's original announcement mentioned
-> mISDN v2 CAPI support is userspace only:
-> https://isdn4linux.listserv.isdn4linux.narkive.com/bRkOUkZG/announcement-misdn-fax-capi-2-0-support
->
->
-> I did some preliminary research by removing the /dev/capi20 device node
-> and checked if "capiinfo" still works via strace -> it does.
->
-> # strace -e open,connect capiinfo
-> open("/usr/lib/libcapi20.so.3", O_RDONLY|O_CLOEXEC) = 3
-> open("/dev/shm/sem.CAPI20_shared_sem.v01000010", O_RDWR|O_NOFOLLOW) = 3
-> open("/dev/shm/CAPI20_shared_memory.v01000010", O_RDWR|O_CREAT|O_NOFOLLOW|O_CLOEXEC, 0666) = 3
-> open("/usr/lib/capi/lib_capi_mod_misdn.so.2", O_RDONLY|O_CLOEXEC) = 5
-> open("/usr/lib/capi/lib_capi_mod_std.so.2", O_RDONLY|O_CLOEXEC) = 5
-> open("/root/.capi20rc", O_RDONLY)       = -1 ENOENT (No such file or directory)
-> open("/etc/capi20.conf", O_RDONLY)      = 4
-> open("/dev/capi20", O_RDWR)             = -1 ENOENT (No such file or directory)
-> open("/dev/isdn/capi20", O_RDWR)        = -1 ENOENT (No such file or directory)
-> connect(4, {sa_family=AF_UNIX, sun_path="/var/run/mISDNcapid/sock"}, 110) = 0
-> Number of Controllers : 1
-> connect(5, {sa_family=AF_UNIX, sun_path="/var/run/mISDNcapid/sock"}, 110) = 0
-> Controller 1:
-> Manufacturer: mISDN
-> CAPI Version: 2.0
-> Manufacturer Version: 0.1
-> Serial Number: 0000001
-> ..
->
-> The trick is the lib_capi_mod_misdn.so library.
-> It's a plugin for the CAPI tools to directly talk to mISDNcapid.
+On 29/04/2019 12:18, Nicholas Mc Guire wrote:
+> On Mon, Apr 29, 2019 at 12:00:06PM +0100, Edward Cree wrote:
+>> Again, a __force cast doesn't seem necessary here.  It looks like the
+>>  code is just using the wrong types; if all of src, dst and uncongested
+>>  were __le64 instead of uint64_t, and the last two lines replaced with
+>>  rds_cong_map_updated(map, le64_to_cpu(uncongested)); then the semantics
+>>  would be kept with neither sparse errors nor __force.
+>>
+>> __force is almost never necessary and mostly just masks other bugs or
+>>  endianness confusion in the surrounding code.  Instead of adding a
+>>  __force, either fix the code to be sparse-clean or leave the sparse
+>>  warning in place so that future developers know there's something not
+>>  right.
+>>
+> changing uncongested to __le64 is not an option here - it would only move
+> the sparse warnings to those other locatoins where the ports that 
+> became uncongested are being or'ed into uncongested.
+That's why I say to change *src and *dst too.  Sparse won't mind the
+ conversion from void * to __le64 * when they're assigned, and the only
+ operations we do on them...
+>                         uncongested |= ~(*src) & *dst;
+>                         *dst++ = *src++;
+... are some bitwise ops on the values (bitwise ops are legal in any
+ endianness) and incrementation of the pointers (which cares only about
+ the pointee size, not type).
 
-Ok, that's also what I guessed from taking a brief look at the
-library: it just tries all possible backends to find hardware, which
-will open /dev/capi20 if it exists, but it still continues without it.
-
-> Intra2net officially supports AVM b1 and c4 cards for fax but we didn't
-> encounter these cards for years in customer support and I'm also
-> willing to officially cancel support for those.
->
-> -> it's good to move the drivers to staging.
-
-Ok, thanks a lot for researching this! Since you are currently moving
-to 4.19 which still has CAPI, you also don't have to cancel support
-for those quite yet, and we may also have yet another stable release
-(5.3 or 5.4?) that you can upgrade to before it gets thrown out of
-staging.
-
-       Arnd
+-Ed
