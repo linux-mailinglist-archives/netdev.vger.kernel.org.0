@@ -2,135 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 880D5DBBA
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 08:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADDFCDBC2
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 08:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727330AbfD2GBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 02:01:21 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:45977 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727016AbfD2GBU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 02:01:20 -0400
-Received: by mail-lf1-f66.google.com with SMTP id t11so6848776lfl.12;
-        Sun, 28 Apr 2019 23:01:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UC42DcLXAcE+LVtPIk7UgcztXVrIO708I+O1jic9JgM=;
-        b=dDW3XiWgt4NK6FQcYSxmKx8WCraOlZhI5Hgu9cP0lV2vV7b0rIqgghfRuqMGKjkG0z
-         gS+Ef1NaGI15YSpI6wgcsOnhWb4PJ9txy8V8IkWhevO0izfWWU5CmnOosuMk2xWns536
-         nHgGIAFh6W5QeX/R2elWsP++rF8uRumO/kihhsZHyK2Aa5HUKnY5JGyPGMkwo3bNqtcn
-         FXW+8kb24b5D6yTlyMsA+ea1hFSf+v7VJwYomc7RRwCwBaiBq4I1WFmfoLkcipKCdCks
-         zy6UVhBGvLbG8a8ySNtZN/0f4a/nXaDAWzZeMEbZp1Klg7EYy7S3U4UGnXz6L9JvHv+Q
-         Pb4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UC42DcLXAcE+LVtPIk7UgcztXVrIO708I+O1jic9JgM=;
-        b=T459qRzTmNZ1U+9nJQQD4hn86jZlmVqg1FWBmDiekLhH6xa5ADUpk1EcHcjwGifxJ5
-         RVnTMQ3+Ra7b+J+4sHXem14n+bJJkKtoqCdCpTBtiiB3G+yiGVvKQlbRlQdll/4nuCwf
-         F1Sv62pnt/Lqw4+rA3GMVK7Mi/mf3pnhyEqG56aQuNa+mSB23oeup1MM6K9ryWpbdahe
-         Y0dfWCFTWWvbKc2Dd6nv22+UBznTNHt6VnOLsfxkUteN2ngU+QCC10hGSL+UcJY42Uuy
-         3WNV83Ig2ndms1ci69MbZQRZOFV8odQsZc1orx6LoiFiLAiyN8mIJ29kV5RXBg2ZnbWg
-         S9nQ==
-X-Gm-Message-State: APjAAAVwzKGEmIFY9uvN8Tu9u9EYLUK0pfvwagy5P5+1PkcspXQ9Y2hF
-        6C9fzdLZdD9BZvrXIbtS59s=
-X-Google-Smtp-Source: APXvYqzE6DM+lM6WV3M7l5Wvzxp1UPxhvXPyDnX49kh9UkLUyRY04nx0O0NK2JsQnsER0oDxn+8SEw==
-X-Received: by 2002:a19:f001:: with SMTP id p1mr33272665lfc.27.1556517678598;
-        Sun, 28 Apr 2019 23:01:18 -0700 (PDT)
-Received: from elitebook.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id t8sm514783lfl.73.2019.04.28.23.01.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 28 Apr 2019 23:01:18 -0700 (PDT)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH] net-sysfs: expose IRQ number
-Date:   Mon, 29 Apr 2019 08:01:07 +0200
-Message-Id: <20190429060107.10245-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        id S1727381AbfD2GFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 02:05:32 -0400
+Received: from mailgw02.mediatek.com ([1.203.163.81]:52013 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727016AbfD2GFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 02:05:32 -0400
+X-UUID: b952677fe0ec41e19dd2a36adff33e10-20190429
+X-UUID: b952677fe0ec41e19dd2a36adff33e10-20190429
+Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLS)
+        with ESMTP id 948546939; Mon, 29 Apr 2019 14:05:27 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 29 Apr
+ 2019 14:05:26 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS32.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Mon, 29 Apr 2019 14:05:25 +0800
+Message-ID: <1556517925.24897.17.camel@mhfsdcap03>
+Subject: Re: [PATCH 5/6] net: stmmac: add mdio clause 45 access from mac
+ device for dwmac4
+From:   biao huang <biao.huang@mediatek.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Jose Abreu <joabreu@synopsys.com>, <davem@davemloft.net>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
+        <jianguo.zhang@mediatek.com>
+Date:   Mon, 29 Apr 2019 14:05:25 +0800
+In-Reply-To: <20190428163705.GH23059@lunn.ch>
+References: <1556433009-25759-1-git-send-email-biao.huang@mediatek.com>
+         <1556433009-25759-6-git-send-email-biao.huang@mediatek.com>
+         <20190428163705.GH23059@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+Hi Andrew,
 
-Knowing IRQ number makes e.g. reading /proc/interrupts much simpler.
-It's more reliable than guessing device name used by a driver when
-calling request_irq().
+On Sun, 2019-04-28 at 18:37 +0200, Andrew Lunn wrote:
+> On Sun, Apr 28, 2019 at 02:30:08PM +0800, Biao Huang wrote:
+> > +static int stmmac_c45_read(struct mii_bus *bus, int phyaddr,
+> > +			   int devad, int prtad)
+> > +{
+> > +	struct net_device *ndev = bus->priv;
+> > +	struct stmmac_priv *priv = netdev_priv(ndev);
+> > +	unsigned int mii_address = priv->hw->mii.addr;
+> > +	unsigned int mii_data = priv->hw->mii.data;
+> > +	u32 v, value;
+> > +	int data;
+> > +
+> > +	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
+> > +			       100, 10000))
+> > +		return -EBUSY;
+> 
+> Hi Biao
+> 
+> readl_poll_timeout() returns an error code. It is better to return
+> that, than make up some other error code. Yes, i know the C22 read
+> returns EBUSY, but we don't need to copy that behaviour into C45.
+> 
+OK, will return error code here.
+> > +
+> > +	value = 0;
+> > +	value |= (prtad << priv->hw->mii.cl45_reg_shift)
+> > +			& priv->hw->mii.cl45_reg_mask;
+> > +	writel(value, priv->ioaddr + mii_data);
+> > +
+> > +	/* delay 2ms to avoid error value of get_phy_c45_devs_in_pkg */
+> > +	mdelay(2);
+> 
+> Please could you explain this a bit more?
+when of_mdiobus_register is invoked,
+the C22 PHY addr information will be obtained in device tree(reg = xx,
+no need through mdiobus),
+but C45 PHY addr should be got through mdiobus->read according to
+current flow.
+    of_mdiobus_register -->
+    of_mdiobus_register_phy -->
+    get_phy_device -->
+    get_phy_id -->
+    get_phy_c45_ids -->
+    get_phy_c45_devs_in_pkg
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
-I found a script parsing /proc/interrupts for a given interface name. It wasn't
-working for me as it assumed request_irq() was called with a device name. It's
-not a case for all drivers.
+In my platform, mdio bus read will return 0xffff or 0x0000 for C45 in
+of_mdiobus_register callstack, and that's not the expected value. 
+So that the mdiobus register fails.
 
-I also found some other people looking for a proper solution for that:
-https://unix.stackexchange.com/questions/275075/programmatically-determine-the-irqs-associated-with-a-network-interface
-https://stackoverflow.com/questions/7516984/retrieving-irq-number-of-a-nic
+We took some time to find that only after adding 2ms delay here,
+the read action will be stable and return the expected value.
 
-Let me know if this solution makes sense. I can say it works for me ;)
----
- Documentation/ABI/testing/sysfs-class-net |  7 +++++++
- net/core/net-sysfs.c                      | 16 ++++++++++++++++
- 2 files changed, 23 insertions(+)
+did you try C45 support in your platform? I can't tell whether it's a
+common or specified issue.
 
-diff --git a/Documentation/ABI/testing/sysfs-class-net b/Documentation/ABI/testing/sysfs-class-net
-index 664a8f6a634f..33440fe77ca7 100644
---- a/Documentation/ABI/testing/sysfs-class-net
-+++ b/Documentation/ABI/testing/sysfs-class-net
-@@ -301,3 +301,10 @@ Contact:	netdev@vger.kernel.org
- Description:
- 		32-bit unsigned integer counting the number of times the link has
- 		been down
-+
-+What:		/sys/class/net/<iface>/irq
-+Date:		April 2019
-+KernelVersion:	5.2
-+Contact:	netdev@vger.kernel.org
-+Description:
-+		IRQ number used by device
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index e4fd68389d6f..a3eb7c3f1f37 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -512,6 +512,21 @@ static ssize_t phys_switch_id_show(struct device *dev,
- }
- static DEVICE_ATTR_RO(phys_switch_id);
- 
-+static ssize_t irq_show(struct device *dev, struct device_attribute *attr,
-+			char *buf)
-+{
-+	const struct net_device *netdev = to_net_dev(dev);
-+	ssize_t ret;
-+
-+	if (!rtnl_trylock())
-+		return restart_syscall();
-+	ret = sprintf(buf, "%d\n", netdev->irq);
-+	rtnl_unlock();
-+
-+	return ret;
-+}
-+static DEVICE_ATTR_RO(irq);
-+
- static struct attribute *net_class_attrs[] __ro_after_init = {
- 	&dev_attr_netdev_group.attr,
- 	&dev_attr_type.attr,
-@@ -542,6 +557,7 @@ static struct attribute *net_class_attrs[] __ro_after_init = {
- 	&dev_attr_proto_down.attr,
- 	&dev_attr_carrier_up_count.attr,
- 	&dev_attr_carrier_down_count.attr,
-+	&dev_attr_irq.attr,
- 	NULL,
- };
- ATTRIBUTE_GROUPS(net_class);
--- 
-2.21.0
+our version is 4.21a.
+> 
+>        Andrew
+
 
