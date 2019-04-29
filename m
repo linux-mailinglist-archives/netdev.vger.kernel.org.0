@@ -2,85 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C370E5AD
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 17:02:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB1BEE5B6
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 17:04:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728635AbfD2PCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 11:02:46 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34387 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728414AbfD2PCq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 11:02:46 -0400
-Received: by mail-pg1-f195.google.com with SMTP id c13so4314789pgt.1
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 08:02:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=77ow54CgaXjj5cjAYE2H0LMs7A26Lujq7BYje1Kz56g=;
-        b=l/PBjDj/48qpvuWwY+4y+QJ3zqmZYbTJdqONqWHczLuadKoQMaW2quXpBxcjjJ+9/J
-         PYCzNRSe/uIie8KK2LqWmz7irKHjESyORDUAy+VhCPoRDSNFQ75rXwchPtCj3NvCxerx
-         uTKguKrzNsTt53qYPZmwCHDnnB5sauxgwhco22s83T8pEFAPdLYq+SFl9Z00bwOUEjeU
-         ZJdqS791ilHM2Zya0XFHyCQhQnwaepgpyKohkfANgacilSNk9/1ZY5cJBnbSzqYHPic8
-         G1gkBzwNor73NQgFvv8L/COWEjszyWOR9Iv3nFhcyQNHEzoDCeRWOIfK8hXbjKbE1M9e
-         9vwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=77ow54CgaXjj5cjAYE2H0LMs7A26Lujq7BYje1Kz56g=;
-        b=V001rWi31ZKSBnF0wuIy+uEmbhWwC9WZnCJBklZBUAwmFH1dHRT6QMDioMdiNB0RHt
-         WQN8Z7wDlQ/oGRwZOXTWM0HmvNvKyUJTT1V3H4Xek1ib7BTbOQQkLtBImvkrXHcLWzuF
-         qqCAOQM0pUPPeHaXCr27YtCKrEAmsJV6EtApxBpCEuim6ikGuqFNECvazOBY06qzrGrS
-         +7Nh5nhXob5WT+5MNSg/dojQgs2o0OSKXdsxuP+bvfXKm9jePu3muZ7Wi630/RNe2+W0
-         7s7zdU/Y9U+2Jvl8yTiY8tw0ihY9Iuxmq6iyva4pHECWoVJ+23Fli3OKo8eRsdvn8w1x
-         csrw==
-X-Gm-Message-State: APjAAAVSVyAjGE91+zQl7fr4tjuFgZVwxK/6Ek5Pq+7cldx9PT33ysVX
-        Qg3gWLDxnMfKb0CyC+7lLuo=
-X-Google-Smtp-Source: APXvYqyFFJuX6TFm3kdaX38ZIWDrSTwzLRwRqryVjTagtnnj1Ll2QwSZqNqyJiuFVQOQzx6o05PpAA==
-X-Received: by 2002:a63:e22:: with SMTP id d34mr54618576pgl.251.1556550165298;
-        Mon, 29 Apr 2019 08:02:45 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id x23sm11445609pfo.175.2019.04.29.08.02.44
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 29 Apr 2019 08:02:44 -0700 (PDT)
-Date:   Mon, 29 Apr 2019 08:02:42 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Stephen Mallon <stephen.mallon@sydney.edu.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] ipv4: Fix updating SOF_TIMESTAMPING_OPT_ID when
- SKBTX_HW_TSTAMP is enabled
-Message-ID: <20190429150242.vckwna4bt4xynzjo@localhost>
-References: <20190428054521.GA14504@stephen-mallon>
- <20190428151938.njy3ip5szwj3vkda@localhost>
- <CAF=yD-JLcmyoJ6tq1osgrQbXs6+As0R+J-ofU+XwQWcvaW+LBg@mail.gmail.com>
+        id S1728577AbfD2PEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 11:04:04 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:42138 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728376AbfD2PEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 11:04:04 -0400
+Received: from mailhost.synopsys.com (dc2-mailhost2.synopsys.com [10.12.135.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 98CE4C002F;
+        Mon, 29 Apr 2019 15:04:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1556550245; bh=EP0l9O+XUelRrIR09obEO6YxvbV7t+C4HdJOJBUa3uI=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=CE28/wGVwxEHboixUzXvBZ7W0piorfaFhmjtBZRhP4xYW+cXCsLqM9ARST+iO2GB1
+         2lmPyX06uBcZ32qFp054wZojyhLd/027tG3kH2nsHICGO+Nz3BVKw9vxHmj2uLhv2m
+         LquYPNX+IDbVZN9WeMFkIRlaqEptiXCg7U64vya21NE/y4j+mN83Juf+EM/pKOllWc
+         ylXLrpNe5cvhyhoYTJCHDF6E09DIbEUQmkgDtYnWQ3womAmskL0pzdFAuhajVFV2cX
+         OI4hPVl+aw0bRpWstwOhobMyeGW1eomffJIM22vstnJyp+4SD+STwP2NhlCIoTIL0i
+         bs+w9Mp89a9wg==
+Received: from US01WXQAHTC1.internal.synopsys.com (us01wxqahtc1.internal.synopsys.com [10.12.238.230])
+        (using TLSv1.2 with cipher AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 94C3FA0096;
+        Mon, 29 Apr 2019 15:04:02 +0000 (UTC)
+Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
+ US01WXQAHTC1.internal.synopsys.com (10.12.238.230) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Mon, 29 Apr 2019 08:04:02 -0700
+Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
+ by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Mon,
+ 29 Apr 2019 17:04:00 +0200
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Biao Huang <biao.huang@mediatek.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "yt.shen@mediatek.com" <yt.shen@mediatek.com>,
+        "jianguo.zhang@mediatek.com" <jianguo.zhang@mediatek.com>
+Subject: RE: [PATCH 2/2] net-next: stmmac: add mdio clause 45 access from
+ mac device for dwmac4
+Thread-Topic: [PATCH 2/2] net-next: stmmac: add mdio clause 45 access from
+ mac device for dwmac4
+Thread-Index: AQHU/lXExFDw5bAlc0G9MPOfQZ0kMKZTPDhg
+Date:   Mon, 29 Apr 2019 15:03:59 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B46E586@DE02WEMBXB.internal.synopsys.com>
+References: <1556519724-1576-1-git-send-email-biao.huang@mediatek.com>
+ <1556519724-1576-3-git-send-email-biao.huang@mediatek.com>
+In-Reply-To: <1556519724-1576-3-git-send-email-biao.huang@mediatek.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.107.19.176]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF=yD-JLcmyoJ6tq1osgrQbXs6+As0R+J-ofU+XwQWcvaW+LBg@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 28, 2019 at 10:57:57PM -0400, Willem de Bruijn wrote:
-> It is debatable whether this is a fix or a new feature. It extends
-> SOF_TIMESTAMPING_OPT_ID to hardware timestamps. I don't think this
-> would be a stable candidate.
+From: Biao Huang <biao.huang@mediatek.com>
+Date: Mon, Apr 29, 2019 at 07:35:24
 
-Was the original series advertised as SW timestamping only?
+> +		value |=3D priv->hw->mii.cl45_en;
 
-If so, I missed that at the time.  After seeing it not work, I meant
-to fix it, but never got around to it.  So to me this is a known
-issue.
- 
-> More importantly, note that __ip6_append_data has similar logic. For
-> consistency the two should be updated at the same time.
-
-+1
+This tells the MAC that a C45 Capable PHY is connected so it should be=20
+written before anything else. Maybe that explains the need for the=20
+mdelay() that you have in the code ?
 
 Thanks,
-Richard
+Jose Miguel Abreu
