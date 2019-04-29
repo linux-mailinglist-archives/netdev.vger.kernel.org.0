@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57B9FDA1A
+	by mail.lfdr.de (Postfix) with ESMTP id D0246DA1B
 	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 02:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727218AbfD2ASR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Apr 2019 20:18:17 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:34737 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727137AbfD2ASQ (ORCPT
+        id S1727238AbfD2ASS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Apr 2019 20:18:18 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:55575 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727138AbfD2ASQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 28 Apr 2019 20:18:16 -0400
-Received: by mail-wm1-f65.google.com with SMTP id b67so1711426wmg.1;
-        Sun, 28 Apr 2019 17:18:13 -0700 (PDT)
+Received: by mail-wm1-f67.google.com with SMTP id o25so11490467wmf.5;
+        Sun, 28 Apr 2019 17:18:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Ekmf/iCiwYUJOyS9XMTLs//GJ1lEH4C2AK7EKmVQ+nU=;
-        b=c+rna2SHz0Ghkz1Mqof0fDbJE9piV7wvthS8XIjnIqAI4Q5ViUBTAp6TTGk76vs/ps
-         AIoLsL0S6XxVsf+H1x1M1S/9l/cVAt8JClq2BbtzwYarz5mACzms9HorVQZQdFUwLsjn
-         zH4UnORpouqeIxQKTh/6uLLW/4IzBAye0Sl42LwGHsXf6rRvgBsgfIkY2oZ4/NLdEsCH
-         oDLVHKStTaCKHDmztXVkh11uf9Tl151YCg6N7rvrZ8AD4fNtFySGIKjPNS3PYUw0WJF+
-         /B91h/DHaacYUGYFmWHTVyK79BiVWxon1651BrBKjde1h4Rj57MMHR5ESq5SuvWge4W8
-         Lddw==
+        bh=WRytol4TsLCjzvjFivOBEq5e1CUmdiuLX9qE0edSQhk=;
+        b=BGPSCS6ojz9nm/TKHuLkr9IzMY0qibhEQQLnk6L+YhFlNMV6+hj2NGw4G9PKWwiwrL
+         uU6vzyuExMcsrYJi7orN2mApfwyGc0f6fnHgCj18k54kvzUQaGdxzr94KCD9qc/GDO0e
+         5UFErZlvfDtutCkLwfrMfy2UGNcC3tX0Mx15uWKbNoO4y2J+RbLhgq2ebn6+y1ymIPDb
+         px/p7SdSH6UdQZ7utuvAih9RcM4FYdzXGPdQ3uClKbnoSpSLu4vOdSTRerJkTnF3A1j/
+         fclwJqEFmlc5LmJ+7upfxIYpDVeKOYANJojtcP4WZty9owSNKL7I6nZnqyOUBBB1JlOX
+         lj2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Ekmf/iCiwYUJOyS9XMTLs//GJ1lEH4C2AK7EKmVQ+nU=;
-        b=L7IzRZksfn7BdkL+iRLZdZHkPcJg3CNq7WOSIGnjpDpWWDJOnF+LUAr66GW87rnxnn
-         Oh5vOJ5YwnzsmJTFRDDi+jTU+4owA+XHyjz7mWZmagzLR1T6rWe784opc08puxLrp0xT
-         /vVxXvqvjRPgoqx1Fj7GYfBCUNR5pQhijsC/saYGeMWBKMViEW+4V8IQswi7yzjROFP+
-         eWSOR6Bx4T9giSjMm3MUIxcfDN6jTNBiAIEueLaIbIYBY73zLbMSjTAMP3Y5YFSL0Izn
-         XZpzyJP+9AAwn/zW5Fv4h6E9wEcLOLc8DtA/PnOqJ/j7XzYEGxpmyWuXPdQm7Ia24ivi
-         8GOg==
-X-Gm-Message-State: APjAAAVDMTtpj6lNbRiDBNUSX/7qqqAO15TyZGg6/oMSXFgoh6W2BuF9
-        tpvNHgw+5LyN181B0kHMXaQqqWZHPZ8=
-X-Google-Smtp-Source: APXvYqy9RhkflfvPjfvhWJ02KiFAitfHALj6v2MKbnSAfyEnUa1qcC+Ixsmq4NkcwrF7NvvOsoGvLg==
-X-Received: by 2002:a1c:730c:: with SMTP id d12mr14639246wmb.47.1556497092691;
-        Sun, 28 Apr 2019 17:18:12 -0700 (PDT)
+        bh=WRytol4TsLCjzvjFivOBEq5e1CUmdiuLX9qE0edSQhk=;
+        b=TNGaDeVr8uiLD/lR+XfPMaRDnkbI1i0uD54rxdTMy79rZz3w2hMPP6Kj7ylkpRDXHv
+         s7iwZdOj08Zj88Pu9ACEvUpXuN/sICYxPwM92I4iOllIwRufaBkkhShY0wq2TA1qjGim
+         uazLLwqos6K/dr/61NdLNuNhCOXYJ740Lh6HDQhK3B7tIO6f7oZK5ENVuheTiaXMH40O
+         puZdNef4UuEozXN2NxAmTq3d7pVvseiKUe5c337b4lg3zTyx7sn5CBGHlbJkJNnDJ3L0
+         6If1yJG1fHeDBr7PEJVCBmoSiEwpYX3oAWXV1yaNQgmZMihX5DXBrdhOK0buXGSzbvji
+         fl4w==
+X-Gm-Message-State: APjAAAWVs7MZjfYsdmDy8htRQzDjKYAcYgV5j80QbKpyj4faGqInBHVx
+        HgPAqTlH0fu4Lx+ZdVztVZpCcA3XFMs=
+X-Google-Smtp-Source: APXvYqyL7EyYUeIAGHJUIWxCUUyfNiQqNzucPjwGb/7w8iUIAfX+Z9XF32ENViuAEGAQX5DEbPMcoA==
+X-Received: by 2002:a7b:c923:: with SMTP id h3mr15114054wml.34.1556497093652;
+        Sun, 28 Apr 2019 17:18:13 -0700 (PDT)
 Received: from localhost.localdomain (5-12-225-227.residential.rdsnet.ro. [5.12.225.227])
-        by smtp.gmail.com with ESMTPSA id h16sm5098030wrb.31.2019.04.28.17.18.11
+        by smtp.gmail.com with ESMTPSA id h16sm5098030wrb.31.2019.04.28.17.18.12
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 28 Apr 2019 17:18:12 -0700 (PDT)
+        Sun, 28 Apr 2019 17:18:13 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v4 net-next 11/12] Documentation: net: dsa: Add details about NXP SJA1105 driver
-Date:   Mon, 29 Apr 2019 03:17:05 +0300
-Message-Id: <20190429001706.7449-12-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 12/12] dt-bindings: net: dsa: Add documentation for NXP SJA1105 driver
+Date:   Mon, 29 Apr 2019 03:17:06 +0300
+Message-Id: <20190429001706.7449-13-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190429001706.7449-1-olteanv@gmail.com>
 References: <20190429001706.7449-1-olteanv@gmail.com>
@@ -60,205 +60,184 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v4:
-Removed the section about traffic, as well as mentions of other
-unsupported yet features.
+None.
 
 Changes in v3:
-Reworked as rst, added a table for traffic support, added chapter for
-switching features.
+None.
 
 Changes in v2:
-More verbiage at the end, regarding RGMII delays and potentially other
-hardware-related caveats.
+Renamed sja1105,phy-mode to sja1105,role-phy and similarly for mac.
+Clarified the switch situation with RGMII delays.
 
- Documentation/networking/dsa/index.rst   |   1 +
- Documentation/networking/dsa/sja1105.rst | 167 +++++++++++++++++++++++
- 2 files changed, 168 insertions(+)
- create mode 100644 Documentation/networking/dsa/sja1105.rst
+ .../devicetree/bindings/net/dsa/sja1105.txt   | 157 ++++++++++++++++++
+ 1 file changed, 157 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/sja1105.txt
 
-diff --git a/Documentation/networking/dsa/index.rst b/Documentation/networking/dsa/index.rst
-index 5c488d345a1e..0e5b7a9be406 100644
---- a/Documentation/networking/dsa/index.rst
-+++ b/Documentation/networking/dsa/index.rst
-@@ -8,3 +8,4 @@ Distributed Switch Architecture
-    dsa
-    bcm_sf2
-    lan9303
-+   sja1105
-diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
+diff --git a/Documentation/devicetree/bindings/net/dsa/sja1105.txt b/Documentation/devicetree/bindings/net/dsa/sja1105.txt
 new file mode 100644
-index 000000000000..71cdb19bb66e
+index 000000000000..cf4961af36c4
 --- /dev/null
-+++ b/Documentation/networking/dsa/sja1105.rst
-@@ -0,0 +1,167 @@
-+=========================
++++ b/Documentation/devicetree/bindings/net/dsa/sja1105.txt
+@@ -0,0 +1,157 @@
 +NXP SJA1105 switch driver
 +=========================
 +
-+Overview
-+========
++Required properties:
 +
-+The NXP SJA1105 is a family of 6 devices:
++- compatible:
++	Must be one of:
++	- "nxp,sja1105e"
++	- "nxp,sja1105t"
++	- "nxp,sja1105p"
++	- "nxp,sja1105q"
++	- "nxp,sja1105r"
++	- "nxp,sja1105s"
 +
-+- SJA1105E: First generation, no TTEthernet
-+- SJA1105T: First generation, TTEthernet
-+- SJA1105P: Second generation, no TTEthernet, no SGMII
-+- SJA1105Q: Second generation, TTEthernet, no SGMII
-+- SJA1105R: Second generation, no TTEthernet, SGMII
-+- SJA1105S: Second generation, TTEthernet, SGMII
++	Although the device ID could be detected at runtime, explicit bindings
++	are required in order to be able to statically check their validity.
++	For example, SGMII can only be specified on port 4 of R and S devices,
++	and the non-SGMII devices, while pin-compatible, are not equal in terms
++	of support for RGMII internal delays (supported on P/Q/R/S, but not on
++	E/T).
 +
-+These are SPI-managed automotive switches, with all ports being gigabit
-+capable, and supporting MII/RMII/RGMII and optionally SGMII on one port.
++Optional properties:
 +
-+Being automotive parts, their configuration interface is geared towards
-+set-and-forget use, with minimal dynamic interaction at runtime. They
-+require a static configuration to be composed by software and packed
-+with CRC and table headers, and sent over SPI.
++- sja1105,role-mac:
++- sja1105,role-phy:
++	Boolean properties that can be assigned under each port node. By
++	default (unless otherwise specified) a port is configured as MAC if it
++	is driving a PHY (phy-handle is present) or as PHY if it is PHY-less
++	(fixed-link specified, presumably because it is connected to a MAC).
++	The effect of this property (in either its implicit or explicit form)
++	is:
++	- In the case of MII or RMII it specifies whether the SJA1105 port is a
++	  clock source or sink for this interface (not applicable for RGMII
++	  where there is a Tx and an Rx clock).
++	- In the case of RGMII it affects the behavior regarding internal
++	  delays:
++	  1. If sja1105,role-mac is specified, and the phy-mode property is one
++	     of "rgmii-id", "rgmii-txid" or "rgmii-rxid", then the entity
++	     designated to apply the delay/clock skew necessary for RGMII
++	     is the PHY. The SJA1105 MAC does not apply any internal delays.
++	  2. If sja1105,role-phy is specified, and the phy-mode property is one
++	     of the above, the designated entity to apply the internal delays
++	     is the SJA1105 MAC (if hardware-supported). This is only supported
++	     by the second-generation (P/Q/R/S) hardware. On a first-generation
++	     E or T device, it is an error to specify an RGMII phy-mode other
++	     than "rgmii" for a port that is in fixed-link mode. In that case,
++	     the clock skew must either be added by the MAC at the other end of
++	     the fixed-link, or by PCB serpentine traces on the board.
++	These properties are required, for example, in the case where SJA1105
++	ports are at both ends of a MII/RMII PHY-less setup. One end would need
++	to have sja1105,role-mac, while the other sja1105,role-phy.
 +
-+The static configuration is composed of several configuration tables. Each
-+table takes a number of entries. Some configuration tables can be (partially)
-+reconfigured at runtime, some not. Some tables are mandatory, some not:
++See Documentation/devicetree/bindings/net/dsa/dsa.txt for the list of standard
++DSA required and optional properties.
 +
-+============================= ================== =============================
-+Table                          Mandatory          Reconfigurable
-+============================= ================== =============================
-+Schedule                       no                 no
-+Schedule entry points          if Scheduling      no
-+VL Lookup                      no                 no
-+VL Policing                    if VL Lookup       no
-+VL Forwarding                  if VL Lookup       no
-+L2 Lookup                      no                 no
-+L2 Policing                    yes                no
-+VLAN Lookup                    yes                yes
-+L2 Forwarding                  yes                partially (fully on P/Q/R/S)
-+MAC Config                     yes                partially (fully on P/Q/R/S)
-+Schedule Params                if Scheduling      no
-+Schedule Entry Points Params   if Scheduling      no
-+VL Forwarding Params           if VL Forwarding   no
-+L2 Lookup Params               no                 partially (fully on P/Q/R/S)
-+L2 Forwarding Params           yes                no
-+Clock Sync Params              no                 no
-+AVB Params                     no                 no
-+General Params                 yes                partially
-+Retagging                      no                 yes
-+xMII Params                    yes                no
-+SGMII                          no                 yes
-+============================= ================== =============================
++Other observations
++------------------
 +
++The SJA1105 SPI interface requires a CS-to-CLK time (t2 in UM10944) of at least
++one half of t_CLK. At an SPI frequency of 1MHz, this means a minimum
++cs_sck_delay of 500ns. Ensuring that this SPI timing requirement is observed
++depends on the SPI bus master driver.
 +
-+Also the configuration is write-only (software cannot read it back from the
-+switch except for very few exceptions).
++Example
++-------
 +
-+The driver creates a static configuration at probe time, and keeps it at
-+all times in memory, as a shadow for the hardware state. When required to
-+change a hardware setting, the static configuration is also updated.
-+If that changed setting can be transmitted to the switch through the dynamic
-+reconfiguration interface, it is; otherwise the switch is reset and
-+reprogrammed with the updated static configuration.
++Ethernet switch connected via SPI to the host, CPU port wired to enet2:
 +
-+Switching features
-+==================
++arch/arm/boot/dts/ls1021a-tsn.dts:
 +
-+The driver supports the configuration of L2 forwarding rules in hardware for
-+port bridging. The forwarding, broadcast and flooding domain between ports can
-+be restricted through two methods: either at the L2 forwarding level (isolate
-+one bridge's ports from another's) or at the VLAN port membership level
-+(isolate ports within the same bridge). The final forwarding decision taken by
-+the hardware is a logical AND of these two sets of rules.
++/* SPI controller of the LS1021 */
++&dspi0 {
++	sja1105@1 {
++		reg = <0x1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "nxp,sja1105t";
++		spi-max-frequency = <4000000>;
++		fsl,spi-cs-sck-delay = <1000>;
++		fsl,spi-sck-cs-delay = <1000>;
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			port@0 {
++				/* ETH5 written on chassis */
++				label = "swp5";
++				phy-handle = <&rgmii_phy6>;
++				phy-mode = "rgmii-id";
++				reg = <0>;
++				/* Implicit "sja1105,role-mac;" */
++			};
++			port@1 {
++				/* ETH2 written on chassis */
++				label = "swp2";
++				phy-handle = <&rgmii_phy3>;
++				phy-mode = "rgmii-id";
++				reg = <1>;
++				/* Implicit "sja1105,role-mac;" */
++			};
++			port@2 {
++				/* ETH3 written on chassis */
++				label = "swp3";
++				phy-handle = <&rgmii_phy4>;
++				phy-mode = "rgmii-id";
++				reg = <2>;
++				/* Implicit "sja1105,role-mac;" */
++			};
++			port@3 {
++				/* ETH4 written on chassis */
++				phy-handle = <&rgmii_phy5>;
++				label = "swp4";
++				phy-mode = "rgmii-id";
++				reg = <3>;
++				/* Implicit "sja1105,role-mac;" */
++			};
++			port@4 {
++				/* Internal port connected to eth2 */
++				ethernet = <&enet2>;
++				phy-mode = "rgmii";
++				reg = <4>;
++				/* Implicit "sja1105,role-phy;" */
++				fixed-link {
++					speed = <1000>;
++					full-duplex;
++				};
++			};
++		};
++	};
++};
 +
-+The hardware tags all traffic internally with a port-based VLAN (pvid), or it
-+decodes the VLAN information from the 802.1Q tag. Advanced VLAN classification
-+is not possible. Once attributed a VLAN tag, frames are checked against the
-+port's membership rules and dropped at ingress if they don't match any VLAN.
-+This behavior is available when switch ports are enslaved to a bridge with
-+``vlan_filtering 1``.
++/* MDIO controller of the LS1021 */
++&mdio0 {
++	/* BCM5464 */
++	rgmii_phy3: ethernet-phy@3 {
++		reg = <0x3>;
++	};
++	rgmii_phy4: ethernet-phy@4 {
++		reg = <0x4>;
++	};
++	rgmii_phy5: ethernet-phy@5 {
++		reg = <0x5>;
++	};
++	rgmii_phy6: ethernet-phy@6 {
++		reg = <0x6>;
++	};
++};
 +
-+Normally the hardware is not configurable with respect to VLAN awareness, but
-+by changing what TPID the switch searches 802.1Q tags for, the semantics of a
-+bridge with ``vlan_filtering 0`` can be kept (accept all traffic, tagged or
-+untagged), and therefore this mode is also supported.
-+
-+Segregating the switch ports in multiple bridges is supported (e.g. 2 + 2), but
-+all bridges should have the same level of VLAN awareness (either both have
-+``vlan_filtering`` 0, or both 1). Also an inevitable limitation of the fact
-+that VLAN awareness is global at the switch level is that once a bridge with
-+``vlan_filtering`` enslaves at least one switch port, the other un-bridged
-+ports are no longer available for standalone traffic termination.
-+
-+Device Tree bindings and board design
-+=====================================
-+
-+This section references ``Documentation/devicetree/bindings/net/dsa/sja1105.txt``
-+and aims to showcase some potential switch caveats.
-+
-+RMII PHY role and out-of-band signaling
-+---------------------------------------
-+
-+In the RMII spec, the 50 MHz clock signals are either driven by the MAC or by
-+an external oscillator (but not by the PHY).
-+But the spec is rather loose and devices go outside it in several ways.
-+Some PHYs go against the spec and may provide an output pin where they source
-+the 50 MHz clock themselves, in an attempt to be helpful.
-+On the other hand, the SJA1105 is only binary configurable - when in the RMII
-+MAC role it will also attempt to drive the clock signal. To prevent this from
-+happening it must be put in RMII PHY role.
-+But doing so has some unintended consequences.
-+In the RMII spec, the PHY can transmit extra out-of-band signals via RXD[1:0].
-+These are practically some extra code words (/J/ and /K/) sent prior to the
-+preamble of each frame. The MAC does not have this out-of-band signaling
-+mechanism defined by the RMII spec.
-+So when the SJA1105 port is put in PHY role to avoid having 2 drivers on the
-+clock signal, inevitably an RMII PHY-to-PHY connection is created. The SJA1105
-+emulates a PHY interface fully and generates the /J/ and /K/ symbols prior to
-+frame preambles, which the real PHY is not expected to understand. So the PHY
-+simply encodes the extra symbols received from the SJA1105-as-PHY onto the
-+100Base-Tx wire.
-+On the other side of the wire, some link partners might discard these extra
-+symbols, while others might choke on them and discard the entire Ethernet
-+frames that follow along. This looks like packet loss with some link partners
-+but not with others.
-+The take-away is that in RMII mode, the SJA1105 must be let to drive the
-+reference clock if connected to a PHY.
-+
-+RGMII fixed-link and internal delays
-+------------------------------------
-+
-+As mentioned in the bindings document, the second generation of devices has
-+tunable delay lines as part of the MAC, which can be used to establish the
-+correct RGMII timing budget.
-+When powered up, these can shift the Rx and Tx clocks with a phase difference
-+between 73.8 and 101.7 degrees.
-+The catch is that the delay lines need to lock onto a clock signal with a
-+stable frequency. This means that there must be at least 2 microseconds of
-+silence between the clock at the old vs at the new frequency. Otherwise the
-+lock is lost and the delay lines must be reset (powered down and back up).
-+In RGMII the clock frequency changes with link speed (125 MHz at 1000 Mbps, 25
-+MHz at 100 Mbps and 2.5 MHz at 10 Mbps), and link speed might change during the
-+AN process.
-+In the situation where the switch port is connected through an RGMII fixed-link
-+to a link partner whose link state life cycle is outside the control of Linux
-+(such as a different SoC), then the delay lines would remain unlocked (and
-+inactive) until there is manual intervention (ifdown/ifup on the switch port).
-+The take-away is that in RGMII mode, the switch's internal delays are only
-+reliable if the link partner never changes link speeds, or if it does, it does
-+so in a way that is coordinated with the switch port (practically, both ends of
-+the fixed-link are under control of the same Linux system).
-+As to why would a fixed-link interface ever change link speeds: there are
-+Ethernet controllers out there which come out of reset in 100 Mbps mode, and
-+their driver inevitably needs to change the speed and clock frequency if it's
-+required to work at gigabit.
-+
-+MDIO bus and PHY management
-+---------------------------
-+
-+The SJA1105 does not have an MDIO bus and does not perform in-band AN either.
-+Therefore there is no link state notification coming from the switch device.
-+A board would need to hook up the PHYs connected to the switch to any other
-+MDIO bus available to Linux within the system (e.g. to the DSA master's MDIO
-+bus). Link state management then works by the driver manually keeping in sync
-+(over SPI commands) the MAC link speed with the settings negotiated by the PHY.
++/* Ethernet master port of the LS1021 */
++&enet2 {
++	phy-connection-type = "rgmii";
++	status = "ok";
++	fixed-link {
++		speed = <1000>;
++		full-duplex;
++	};
++};
 +
 -- 
 2.17.1
