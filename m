@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84859DDEF
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 10:35:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E49DDF8
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 10:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727953AbfD2Ifh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 04:35:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48530 "EHLO mail.kernel.org"
+        id S1727974AbfD2Ifz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 04:35:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48836 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727947AbfD2Ifg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 04:35:36 -0400
+        id S1727611AbfD2Ifw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 04:35:52 -0400
 Received: from localhost (unknown [77.138.135.184])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CC225214AE;
-        Mon, 29 Apr 2019 08:35:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3FC4D20578;
+        Mon, 29 Apr 2019 08:35:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556526934;
-        bh=zeSPXntvbkBRz43FQqdbHgAljMnumVFdjwR5ajtGKeo=;
+        s=default; t=1556526951;
+        bh=oytWg4y6lENL2SglViMxfGxf3kbh8jtcSzLuDtAaKsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pNiYYvzu45PN5ScC1Zy4kCRrk4ETRztgVlM+5WojjEEujoDEpiuSg1+tj/DJE5k4r
-         uz0FGaVi0YbxhIfv4tUqIJF+qjSxdR1wJ9IEJ0rXa5CjjTHgZcTJ2SZKO9PZuizfbS
-         P7xw3KlKRgq304Hni9O3PYZIrU7NjNc0up5AohLk=
+        b=ZsXjjzLOG8K0nZ8QK4rxQohHe1M3cl7t8jS0vVsnqGqexro5PxsBaynmSMhixx49Q
+         +MzRl6+q6ID/j2HLWVkf/Wfbgu36+Wq8p/YDUeA779+RCvz+KFf7+1d33JtYgCi9ee
+         Tsb//cRiRqIIVaRCdXIaNCvf1w0IlieO6j4qvq9Y=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
@@ -32,9 +32,9 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Mark Zhang <markz@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next v2 11/17] RDMA/netlink: Implement counter dumpit calback
-Date:   Mon, 29 Apr 2019 11:34:47 +0300
-Message-Id: <20190429083453.16654-12-leon@kernel.org>
+Subject: [PATCH rdma-next v2 12/17] IB/mlx5: Add counter_alloc_stats() and counter_update_stats() support
+Date:   Mon, 29 Apr 2019 11:34:48 +0300
+Message-Id: <20190429083453.16654-13-leon@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190429083453.16654-1-leon@kernel.org>
 References: <20190429083453.16654-1-leon@kernel.org>
@@ -47,377 +47,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mark Zhang <markz@mellanox.com>
 
-This patch adds the ability to return all available counters
-together with their properties and hwstats.
+Add support for ib callback counter_alloc_stats() and
+counter_update_stats().
 
 Signed-off-by: Mark Zhang <markz@mellanox.com>
 Reviewed-by: Majd Dibbiny <majd@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/core/counters.c |  28 +++++
- drivers/infiniband/core/device.c   |   2 +
- drivers/infiniband/core/nldev.c    | 173 +++++++++++++++++++++++++++++
- include/rdma/ib_verbs.h            |  10 ++
- include/rdma/rdma_counter.h        |   3 +
- include/uapi/rdma/rdma_netlink.h   |  10 +-
- 6 files changed, 225 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/mlx5/main.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
-index 665e0d43c21b..36cd9eca1e46 100644
---- a/drivers/infiniband/core/counters.c
-+++ b/drivers/infiniband/core/counters.c
-@@ -62,6 +62,9 @@ static struct rdma_counter *rdma_counter_alloc(struct ib_device *dev, u8 port,
- {
- 	struct rdma_counter *counter;
- 
-+	if (!dev->ops.counter_alloc_stats)
-+		return NULL;
-+
- 	counter = kzalloc(sizeof(*counter), GFP_KERNEL);
- 	if (!counter)
- 		return NULL;
-@@ -69,16 +72,25 @@ static struct rdma_counter *rdma_counter_alloc(struct ib_device *dev, u8 port,
- 	counter->device    = dev;
- 	counter->port      = port;
- 	counter->res.type  = RDMA_RESTRACK_COUNTER;
-+	counter->stats     = dev->ops.counter_alloc_stats(counter);
-+	if (!counter->stats)
-+		goto err_stats;
-+
- 	counter->mode.mode = mode;
- 	atomic_set(&counter->usecnt, 0);
- 	mutex_init(&counter->lock);
- 
- 	return counter;
-+
-+err_stats:
-+	kfree(counter);
-+	return NULL;
+diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
+index 18a3e855d45b..d69cfe511c37 100644
+--- a/drivers/infiniband/hw/mlx5/main.c
++++ b/drivers/infiniband/hw/mlx5/main.c
+@@ -5450,6 +5450,27 @@ static int mlx5_ib_get_hw_stats(struct ib_device *ibdev,
+ 	return num_counters;
  }
  
- static void rdma_counter_dealloc(struct rdma_counter *counter)
++static struct rdma_hw_stats *
++mlx5_ib_counter_alloc_stats(struct rdma_counter *counter)
++{
++	struct mlx5_ib_dev *dev = to_mdev(counter->device);
++	struct mlx5_ib_port *port = &dev->port[counter->port - 1];
++
++	/* Q counters are in the beginning of all counters */
++	return rdma_alloc_hw_stats_struct(port->cnts.names,
++					  port->cnts.num_q_counters,
++					  RDMA_HW_STATS_DEFAULT_LIFESPAN);
++}
++
++static int mlx5_ib_counter_update_stats(struct rdma_counter *counter)
++{
++	struct mlx5_ib_dev *dev = to_mdev(counter->device);
++	struct mlx5_ib_port *port = &dev->port[counter->port - 1];
++
++	return mlx5_ib_query_q_counters(dev->mdev, port,
++					counter->stats, counter->id);
++}
++
+ static int mlx5_ib_counter_bind_qp(struct rdma_counter *counter,
+ 				   struct ib_qp *qp)
  {
- 	rdma_restrack_del(&counter->res);
-+	kfree(counter->stats);
- 	kfree(counter);
- }
- 
-@@ -279,6 +291,22 @@ int rdma_counter_unbind_qp(struct ib_qp *qp, bool force)
- 	return 0;
- }
- 
-+int rdma_counter_query_stats(struct rdma_counter *counter)
-+{
-+	int ret;
-+
-+	struct ib_device *dev = counter->device;
-+
-+	if (!dev->ops.counter_update_stats)
-+		return -EINVAL;
-+
-+	mutex_lock(&counter->lock);
-+	ret = dev->ops.counter_update_stats(counter);
-+	mutex_unlock(&counter->lock);
-+
-+	return ret;
-+}
-+
- void rdma_counter_init(struct ib_device *dev)
- {
- 	struct rdma_port_counter *port_counter;
-diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
-index dfaa57de871f..c56ffc61ab1e 100644
---- a/drivers/infiniband/core/device.c
-+++ b/drivers/infiniband/core/device.c
-@@ -2351,6 +2351,8 @@ void ib_set_device_ops(struct ib_device *dev, const struct ib_device_ops *ops)
- 	SET_DEVICE_OP(dev_ops, unmap_fmr);
- 	SET_DEVICE_OP(dev_ops, counter_bind_qp);
- 	SET_DEVICE_OP(dev_ops, counter_unbind_qp);
-+	SET_DEVICE_OP(dev_ops, counter_alloc_stats);
-+	SET_DEVICE_OP(dev_ops, counter_update_stats);
- 
- 	SET_OBJ_SIZE(dev_ops, ib_ah);
- 	SET_OBJ_SIZE(dev_ops, ib_pd);
-diff --git a/drivers/infiniband/core/nldev.c b/drivers/infiniband/core/nldev.c
-index b46992ed3553..1f7de88effad 100644
---- a/drivers/infiniband/core/nldev.c
-+++ b/drivers/infiniband/core/nldev.c
-@@ -123,6 +123,13 @@ static const struct nla_policy nldev_policy[RDMA_NLDEV_ATTR_MAX] = {
- 	[RDMA_NLDEV_ATTR_STAT_MODE]		= { .type = NLA_U32 },
- 	[RDMA_NLDEV_ATTR_STAT_RES]		= { .type = NLA_U32 },
- 	[RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK]	= { .type = NLA_U32 },
-+	[RDMA_NLDEV_ATTR_STAT_COUNTER]		= { .type = NLA_NESTED },
-+	[RDMA_NLDEV_ATTR_STAT_COUNTER_ENTRY]	= { .type = NLA_NESTED },
-+	[RDMA_NLDEV_ATTR_STAT_COUNTER_ID]       = { .type = NLA_U32 },
-+	[RDMA_NLDEV_ATTR_STAT_HWCOUNTERS]       = { .type = NLA_NESTED },
-+	[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY]  = { .type = NLA_NESTED },
-+	[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME] = { .type = NLA_NUL_STRING },
-+	[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_VALUE] = { .type = NLA_U64 },
+@@ -6361,6 +6382,8 @@ static const struct ib_device_ops mlx5_ib_dev_hw_stats_ops = {
+ 	.get_hw_stats = mlx5_ib_get_hw_stats,
+ 	.counter_bind_qp = mlx5_ib_counter_bind_qp,
+ 	.counter_unbind_qp = mlx5_ib_counter_unbind_qp,
++	.counter_alloc_stats = mlx5_ib_counter_alloc_stats,
++	.counter_update_stats = mlx5_ib_counter_update_stats,
  };
  
- static int put_driver_name_print_type(struct sk_buff *msg, const char *name,
-@@ -625,6 +632,160 @@ static int fill_res_pd_entry(struct sk_buff *msg, bool has_cap_net_admin,
- err:	return -EMSGSIZE;
- }
- 
-+static int fill_stat_counter_mode(struct sk_buff *msg,
-+				  struct rdma_counter *counter)
-+{
-+	struct rdma_counter_mode *m = &counter->mode;
-+
-+	if (nla_put_u32(msg, RDMA_NLDEV_ATTR_STAT_MODE, m->mode))
-+		return -EMSGSIZE;
-+
-+	if (m->mode == RDMA_COUNTER_MODE_AUTO)
-+		if ((m->mask & RDMA_COUNTER_MASK_QP_TYPE) &&
-+		    nla_put_u8(msg, RDMA_NLDEV_ATTR_RES_TYPE, m->param.qp_type))
-+			return -EMSGSIZE;
-+
-+	return 0;
-+}
-+
-+static int fill_stat_counter_qp_entry(struct sk_buff *msg, u32 qpn)
-+{
-+	struct nlattr *entry_attr;
-+
-+	entry_attr = nla_nest_start(msg, RDMA_NLDEV_ATTR_RES_QP_ENTRY);
-+	if (!entry_attr)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u32(msg, RDMA_NLDEV_ATTR_RES_LQPN, qpn))
-+		goto err;
-+
-+	nla_nest_end(msg, entry_attr);
-+	return 0;
-+
-+err:
-+	nla_nest_cancel(msg, entry_attr);
-+	return -EMSGSIZE;
-+}
-+
-+static int fill_stat_counter_qps(struct sk_buff *msg,
-+				 struct rdma_counter *counter)
-+{
-+	struct rdma_restrack_entry *res;
-+	struct rdma_restrack_root *rt;
-+	struct nlattr *table_attr;
-+	struct ib_qp *qp = NULL;
-+	unsigned long id = 0;
-+	int ret = 0;
-+
-+	table_attr = nla_nest_start(msg, RDMA_NLDEV_ATTR_RES_QP);
-+
-+	rt = &counter->device->res[RDMA_RESTRACK_QP];
-+	xa_lock(&rt->xa);
-+	xa_for_each(&rt->xa, id, res) {
-+		if (!rdma_is_visible_in_pid_ns(res))
-+			continue;
-+
-+		if (!rdma_restrack_get(res))
-+			continue;
-+
-+		qp = container_of(res, struct ib_qp, res);
-+		if (qp->qp_type == IB_QPT_RAW_PACKET && !capable(CAP_NET_RAW))
-+			goto next;
-+
-+		if (!qp->counter || (qp->counter->id != counter->id))
-+			goto next;
-+
-+		ret = fill_stat_counter_qp_entry(msg, qp->qp_num);
-+		if (ret) {
-+			rdma_restrack_put(res);
-+			goto err;
-+		}
-+
-+next:
-+		rdma_restrack_put(res);
-+	}
-+
-+	xa_unlock(&rt->xa);
-+	nla_nest_end(msg, table_attr);
-+	return 0;
-+
-+err:
-+	xa_unlock(&rt->xa);
-+	nla_nest_cancel(msg, table_attr);
-+	return ret;
-+}
-+
-+static int fill_stat_hwcounter_entry(struct sk_buff *msg,
-+				     const char *name, u64 value)
-+{
-+	struct nlattr *entry_attr;
-+
-+	entry_attr = nla_nest_start(msg, RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY);
-+	if (!entry_attr)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_string(msg, RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME,
-+			   name))
-+		goto err;
-+	if (nla_put_u64_64bit(msg, RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_VALUE,
-+			      value, RDMA_NLDEV_ATTR_PAD))
-+		goto err;
-+
-+	nla_nest_end(msg, entry_attr);
-+	return 0;
-+
-+err:
-+	nla_nest_cancel(msg, entry_attr);
-+	return -EMSGSIZE;
-+}
-+
-+static int fill_stat_counter_hwcounters(struct sk_buff *msg,
-+					struct rdma_counter *counter)
-+{
-+	struct rdma_hw_stats *st = counter->stats;
-+	struct nlattr *table_attr;
-+	int i;
-+
-+	table_attr = nla_nest_start(msg, RDMA_NLDEV_ATTR_STAT_HWCOUNTERS);
-+	if (!table_attr)
-+		return -EMSGSIZE;
-+
-+	for (i = 0; i < st->num_counters; i++)
-+		if (fill_stat_hwcounter_entry(msg, st->names[i], st->value[i]))
-+			goto err;
-+
-+	nla_nest_end(msg, table_attr);
-+	return 0;
-+
-+err:
-+	nla_nest_cancel(msg, table_attr);
-+	return -EMSGSIZE;
-+}
-+
-+static int fill_res_counter_entry(struct sk_buff *msg, bool has_cap_net_admin,
-+				  struct rdma_restrack_entry *res,
-+				  uint32_t port)
-+{
-+	struct rdma_counter *counter =
-+		container_of(res, struct rdma_counter, res);
-+
-+	if (port && port != counter->port)
-+		return 0;
-+
-+	/* Dump it even query failed */
-+	rdma_counter_query_stats(counter);
-+
-+	if (nla_put_u32(msg, RDMA_NLDEV_ATTR_PORT_INDEX, counter->port) ||
-+	    nla_put_u32(msg, RDMA_NLDEV_ATTR_STAT_COUNTER_ID, counter->id) ||
-+	    fill_res_name_pid(msg, &counter->res) ||
-+	    fill_stat_counter_mode(msg, counter) ||
-+	    fill_stat_counter_qps(msg, counter) ||
-+	    fill_stat_counter_hwcounters(msg, counter))
-+		return -EMSGSIZE;
-+
-+	return 0;
-+}
-+
- static int nldev_get_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			  struct netlink_ext_ack *extack)
- {
-@@ -992,6 +1153,13 @@ static const struct nldev_fill_res_entry fill_entries[RDMA_RESTRACK_MAX] = {
- 		.entry = RDMA_NLDEV_ATTR_RES_PD_ENTRY,
- 		.id = RDMA_NLDEV_ATTR_RES_PDN,
- 	},
-+	[RDMA_RESTRACK_COUNTER] = {
-+		.fill_res_func = fill_res_counter_entry,
-+		.nldev_cmd = RDMA_NLDEV_CMD_STAT_GET,
-+		.nldev_attr = RDMA_NLDEV_ATTR_STAT_COUNTER,
-+		.entry = RDMA_NLDEV_ATTR_STAT_COUNTER_ENTRY,
-+		.id = RDMA_NLDEV_ATTR_STAT_COUNTER_ID,
-+	},
- };
- 
- static int res_get_common_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
-@@ -1228,6 +1396,7 @@ RES_GET_FUNCS(cm_id, RDMA_RESTRACK_CM_ID);
- RES_GET_FUNCS(cq, RDMA_RESTRACK_CQ);
- RES_GET_FUNCS(pd, RDMA_RESTRACK_PD);
- RES_GET_FUNCS(mr, RDMA_RESTRACK_MR);
-+RES_GET_FUNCS(counter, RDMA_RESTRACK_COUNTER);
- 
- static LIST_HEAD(link_ops);
- static DECLARE_RWSEM(link_ops_rwsem);
-@@ -1514,6 +1683,10 @@ static const struct rdma_nl_cbs nldev_cb_table[RDMA_NLDEV_NUM_OPS] = {
- 		.doit = nldev_stat_set_doit,
- 		.flags = RDMA_NL_ADMIN_PERM,
- 	},
-+	[RDMA_NLDEV_CMD_STAT_GET] = {
-+		.doit = nldev_res_get_counter_doit,
-+		.dump = nldev_res_get_counter_dumpit,
-+	},
- };
- 
- void __init nldev_init(void)
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index 06c77b3e42cd..d12770f63e4e 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -2570,6 +2570,16 @@ struct ib_device_ops {
- 	 *   used in cases like qp destroy.
- 	 */
- 	int (*counter_unbind_qp)(struct ib_qp *qp, bool force);
-+	/**
-+	 * counter_alloc_stats - Allocate a struct rdma_hw_stats and fill in
-+	 * the driver initialized data.
-+	 */
-+	struct rdma_hw_stats *(*counter_alloc_stats)(
-+		struct rdma_counter *counter);
-+	/**
-+	 * counter_update_stats - Query the stats value of this counter
-+	 */
-+	int (*counter_update_stats)(struct rdma_counter *counter);
- 
- 	DECLARE_RDMA_OBJ_SIZE(ib_ah);
- 	DECLARE_RDMA_OBJ_SIZE(ib_pd);
-diff --git a/include/rdma/rdma_counter.h b/include/rdma/rdma_counter.h
-index 159b8ba3487e..4bc62909a638 100644
---- a/include/rdma/rdma_counter.h
-+++ b/include/rdma/rdma_counter.h
-@@ -37,6 +37,7 @@ struct rdma_counter {
- 	atomic_t			usecnt;
- 	struct rdma_counter_mode	mode;
- 	struct mutex			lock;
-+	struct rdma_hw_stats		*stats;
- 	u8				port;
- };
- 
-@@ -47,4 +48,6 @@ int rdma_counter_set_auto_mode(struct ib_device *dev, u8 port,
- int rdma_counter_bind_qp_auto(struct ib_qp *qp, u8 port);
- int rdma_counter_unbind_qp(struct ib_qp *qp, bool force);
- 
-+int rdma_counter_query_stats(struct rdma_counter *counter);
-+
- #endif /* _RDMA_COUNTER_H_ */
-diff --git a/include/uapi/rdma/rdma_netlink.h b/include/uapi/rdma/rdma_netlink.h
-index 673fdf9ba10f..33eee6fb16b2 100644
---- a/include/uapi/rdma/rdma_netlink.h
-+++ b/include/uapi/rdma/rdma_netlink.h
-@@ -269,6 +269,8 @@ enum rdma_nldev_command {
- 
- 	RDMA_NLDEV_CMD_STAT_SET,
- 
-+	RDMA_NLDEV_CMD_STAT_GET, /* can dump */
-+
- 	RDMA_NLDEV_NUM_OPS
- };
- 
-@@ -486,7 +488,13 @@ enum rdma_nldev_attr {
- 	RDMA_NLDEV_ATTR_STAT_MODE,		/* u32 */
- 	RDMA_NLDEV_ATTR_STAT_RES,		/* u32 */
- 	RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK,	/* u32 */
--
-+	RDMA_NLDEV_ATTR_STAT_COUNTER,		/* nested table */
-+	RDMA_NLDEV_ATTR_STAT_COUNTER_ENTRY,	/* nested table */
-+	RDMA_NLDEV_ATTR_STAT_COUNTER_ID,	/* u32 */
-+	RDMA_NLDEV_ATTR_STAT_HWCOUNTERS,	/* nested table */
-+	RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY,	/* nested table */
-+	RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME,	/* string */
-+	RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_VALUE,	/* u64 */
- 	/*
- 	 * Always the end
- 	 */
+ static int mlx5_ib_stage_counters_init(struct mlx5_ib_dev *dev)
 -- 
 2.20.1
 
