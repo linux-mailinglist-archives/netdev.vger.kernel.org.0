@@ -2,126 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F417E27C
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 14:24:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C352BE2D9
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 14:38:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728071AbfD2MY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 08:24:27 -0400
-Received: from orbyte.nwl.cc ([151.80.46.58]:37724 "EHLO orbyte.nwl.cc"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727969AbfD2MY1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 08:24:27 -0400
-Received: from localhost ([::1]:50814 helo=tatos)
-        by orbyte.nwl.cc with esmtp (Exim 4.91)
-        (envelope-from <phil@nwl.cc>)
-        id 1hL5Kb-0003ag-G0; Mon, 29 Apr 2019 14:24:25 +0200
-From:   Phil Sutter <phil@nwl.cc>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: [iproute PATCH] ip-xfrm: Respect family in deleteall and list commands
-Date:   Mon, 29 Apr 2019 14:24:24 +0200
-Message-Id: <20190429122424.28196-1-phil@nwl.cc>
-X-Mailer: git-send-email 2.21.0
+        id S1728226AbfD2MiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 08:38:16 -0400
+Received: from 178.115.242.59.static.drei.at ([178.115.242.59]:60492 "EHLO
+        mail.osadl.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728044AbfD2MiQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 08:38:16 -0400
+Received: by mail.osadl.at (Postfix, from userid 1001)
+        id 861765C0C43; Mon, 29 Apr 2019 14:37:23 +0200 (CEST)
+Date:   Mon, 29 Apr 2019 14:37:23 +0200
+From:   Nicholas Mc Guire <der.herr@hofr.at>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Edward Cree <ecree@solarflare.com>,
+        Nicholas Mc Guire <hofrat@osadl.org>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rds: ib: force endiannes annotation
+Message-ID: <20190429123723.GA18362@osadl.at>
+References: <1556518178-13786-1-git-send-email-hofrat@osadl.org>
+ <20443fd3-bd1e-9472-8ca3-e3014e59f249@solarflare.com>
+ <20190429111836.GA17830@osadl.at>
+ <20190429122132.GA32474@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190429122132.GA32474@infradead.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow to limit 'ip xfrm {state|policy} list' output to a certain address
-family and to delete all states/policies by family.
+On Mon, Apr 29, 2019 at 05:21:32AM -0700, Christoph Hellwig wrote:
+> On Mon, Apr 29, 2019 at 01:18:36PM +0200, Nicholas Mc Guire wrote:
+> > changing uncongested to __le64 is not an option here - it would only move
+> > the sparse warnings to those other locatoins where the ports that 
+> > became uncongested are being or'ed into uncongested.
+> 
+> Than fix that a well.  Either by throwing in a conversion, or
+> add {be,le}XX_{and,or} helpers.
 
-Although preferred_family was already set in filters, the filter
-function ignored it. To enable filtering despite the lack of other
-selectors, filter.use has to be set if family is not AF_UNSPEC.
+ok - that is an option in that case - will try that route
 
-Signed-off-by: Phil Sutter <phil@nwl.cc>
----
- ip/xfrm_policy.c   | 6 +++++-
- ip/xfrm_state.c    | 6 +++++-
- man/man8/ip-xfrm.8 | 6 +++---
- 3 files changed, 13 insertions(+), 5 deletions(-)
-
-diff --git a/ip/xfrm_policy.c b/ip/xfrm_policy.c
-index 4a63e9ab602d7..c6dfe836c5374 100644
---- a/ip/xfrm_policy.c
-+++ b/ip/xfrm_policy.c
-@@ -410,6 +410,10 @@ static int xfrm_policy_filter_match(struct xfrm_userpolicy_info *xpinfo,
- 	if (!filter.use)
- 		return 1;
- 
-+	if (filter.xpinfo.sel.family != AF_UNSPEC &&
-+	    filter.xpinfo.sel.family != xpinfo->sel.family)
-+			return 0;
-+
- 	if ((xpinfo->dir^filter.xpinfo.dir)&filter.dir_mask)
- 		return 0;
- 
-@@ -780,7 +784,7 @@ static int xfrm_policy_list_or_deleteall(int argc, char **argv, int deleteall)
- 	char *selp = NULL;
- 	struct rtnl_handle rth;
- 
--	if (argc > 0)
-+	if (argc > 0 || preferred_family != AF_UNSPEC)
- 		filter.use = 1;
- 	filter.xpinfo.sel.family = preferred_family;
- 
-diff --git a/ip/xfrm_state.c b/ip/xfrm_state.c
-index 9360143756016..f27270709d2fb 100644
---- a/ip/xfrm_state.c
-+++ b/ip/xfrm_state.c
-@@ -898,6 +898,10 @@ static int xfrm_state_filter_match(struct xfrm_usersa_info *xsinfo)
- 	if (!filter.use)
- 		return 1;
- 
-+	if (filter.xsinfo.family != AF_UNSPEC &&
-+	    filter.xsinfo.family != xsinfo->family)
-+		return 0;
-+
- 	if (filter.id_src_mask)
- 		if (xfrm_addr_match(&xsinfo->saddr, &filter.xsinfo.saddr,
- 				    filter.id_src_mask))
-@@ -1170,7 +1174,7 @@ static int xfrm_state_list_or_deleteall(int argc, char **argv, int deleteall)
- 	struct rtnl_handle rth;
- 	bool nokeys = false;
- 
--	if (argc > 0)
-+	if (argc > 0 || preferred_family != AF_UNSPEC)
- 		filter.use = 1;
- 	filter.xsinfo.family = preferred_family;
- 
-diff --git a/man/man8/ip-xfrm.8 b/man/man8/ip-xfrm.8
-index 9547808539a08..cfce1e40b7f7d 100644
---- a/man/man8/ip-xfrm.8
-+++ b/man/man8/ip-xfrm.8
-@@ -89,7 +89,7 @@ ip-xfrm \- transform configuration
- .IR MASK " ] ]"
- 
- .ti -8
--.BR "ip xfrm state " deleteall " ["
-+.BR ip " [ " -4 " | " -6 " ] " "xfrm state deleteall" " ["
- .IR ID " ]"
- .RB "[ " mode
- .IR MODE " ]"
-@@ -99,7 +99,7 @@ ip-xfrm \- transform configuration
- .IR FLAG-LIST " ]"
- 
- .ti -8
--.BR "ip xfrm state " list " ["
-+.BR ip " [ " -4 " | " -6 " ] " "xfrm state list" " ["
- .IR ID " ]"
- .RB "[ " nokeys " ]"
- .RB "[ " mode
-@@ -257,7 +257,7 @@ ip-xfrm \- transform configuration
- .IR PTYPE " ]"
- 
- .ti -8
--.BR "ip xfrm policy" " { " deleteall " | " list " }"
-+.BR ip " [ " -4 " | " -6 " ] " "xfrm policy" " { " deleteall " | " list " }"
- .RB "[ " nosock " ]"
- .RI "[ " SELECTOR " ]"
- .RB "[ " dir
--- 
-2.21.0
-
+thx!
+hofrat
