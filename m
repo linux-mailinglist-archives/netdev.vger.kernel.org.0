@@ -2,84 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85099E0FB
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 13:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91B5FE105
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 13:05:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727939AbfD2LAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 07:00:13 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:50376 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727710AbfD2LAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 07:00:13 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id E14D728008D;
-        Mon, 29 Apr 2019 11:00:11 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 29 Apr
- 2019 04:00:07 -0700
-Subject: Re: [PATCH] rds: ib: force endiannes annotation
-To:     Nicholas Mc Guire <hofrat@osadl.org>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>
-CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <rds-devel@oss.oracle.com>,
-        <linux-kernel@vger.kernel.org>
-References: <1556518178-13786-1-git-send-email-hofrat@osadl.org>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <20443fd3-bd1e-9472-8ca3-e3014e59f249@solarflare.com>
-Date:   Mon, 29 Apr 2019 12:00:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727865AbfD2LFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 07:05:15 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:37641 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727776AbfD2LFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 07:05:15 -0400
+Received: by mail-wm1-f68.google.com with SMTP id y5so14178653wma.2
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 04:05:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=JyCdc5gZkR3Qq1DjvPmdztMb+4DbBLd30vsC8ayEy68=;
+        b=JwqPiMmlkBbRl+8STUVjxV7mu9j7I9gu+7xnz+6/MRSZPfd0eELUIPE13g2nyX1BcP
+         UJ3Rfh2muIiKCN+2iUciSFXr9sgT3tYCivqYlZB5CWJBd9DXFdvJAiA8ZkzLlAEgbG7m
+         3LIWHCLCnZa+bQNv0EB1Xga3wL+CF+uEDr+8kYERbI2zFYf947r5Z/2Xo8zUpg1RoZEX
+         tRhQVLMuF/TO/OHURICfhahTD61AnI6q92mzExtbtl7Un0WSPReAuC7MZCt9seOwI6Vm
+         TJlf2YCzkw8qBGfmLQ/dRZ//eEd8pBGPKFDljgyRL+/dYfRMksu3/NDmFevCwp2B41IF
+         WGeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=JyCdc5gZkR3Qq1DjvPmdztMb+4DbBLd30vsC8ayEy68=;
+        b=Ui4JxTYunInjuKrzNw/viEB7Yw6RVsjsUt7SBZVBYjTwRYJ1mqPyC1YYFw9FIxDGaB
+         X84XLZ+iXy//ajYoVuEwfGGhUj3wyuA4Nak9yscSxVdaDowXJsfUe1gSeoPlHCYH/KJV
+         ajoVaJTU4rWbAS4hEt8uT8MWWqaRsIxZowl08LqsXWWjVS8XGGEYZzVRI8N5aw1n4h4J
+         ET3CYVehyBwGP1UHt4tW6SS43zg09gTrqLcBhWbBf3p6oWlQT0gXrXldG2jnji2Wup3T
+         DNdmcHq1RO43Hp0sRfjJkgdxDQm12klEXXTFUQ97wDDSU2TLHyicbnUc+dx9k9iW9XF9
+         NYgQ==
+X-Gm-Message-State: APjAAAXGz7HPZKL5BOprqJHbGWDCurK3QGswTEI8cq1nOA4CwIxhSiMr
+        IOIanv7V5MDr/ZWKo3AmwSqLvg==
+X-Google-Smtp-Source: APXvYqw/L3v97PCfK7QGFiHA4eaBEqBhwMoz4vrRQKAAJImMY8oVJ6Nxd5q9Cnl7N71aiEA5Q9rUmQ==
+X-Received: by 2002:a1c:c181:: with SMTP id r123mr16610408wmf.13.1556535913172;
+        Mon, 29 Apr 2019 04:05:13 -0700 (PDT)
+Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
+        by smtp.gmail.com with ESMTPSA id z4sm10799474wrq.75.2019.04.29.04.05.12
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 29 Apr 2019 04:05:12 -0700 (PDT)
+Date:   Mon, 29 Apr 2019 13:05:11 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Saeed Mahameed <saeedm@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] devlink: Change devlink health locking mechanism
+Message-ID: <20190429110511.GD2121@nanopsycho>
+References: <1556530905-9908-1-git-send-email-moshe@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <1556518178-13786-1-git-send-email-hofrat@osadl.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24580.005
-X-TM-AS-Result: No-4.279000-4.000000-10
-X-TMASE-MatchedRID: cgbqQT5W8hcOwH4pD14DsPHkpkyUphL9LC92/N1OWlkCJwlu5sh0qPlY
-        oV6p/cSxnvxAs02MrVHZj9bX58WOAtrx1weWCpUF9Ib/6w+1lWRzd7C7BtJobplWFHP5R0I96F2
-        xWH9ZAxvo0cmq7QOKCJE7C19CEuIWhlahuHmDw1YwmhCbeOj6aY/8SyGg0rIRY0DjZWmXtn6jxY
-        yRBa/qJUl4W8WVUOR/9xS3mVzWUuAojN1lLei7Rd/CUQwie/Fo7Mq1xmO35qw8xi0U5YNGcJ4n9
-        vxgOV3iHkqjqrZMW0AEbTwwTTJVcrjaVpzLE/5p34yXMiKxtsZMv+p+q89pYtQ17CngTb9OBKmZ
-        VgZCVnezGTWRXUlrx+EijnvekEIH
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.279000-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24580.005
-X-MDID: 1556535612-qOvS5RxvVGZd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1556530905-9908-1-git-send-email-moshe@mellanox.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/04/2019 07:09, Nicholas Mc Guire wrote:
-> diff --git a/net/rds/ib_recv.c b/net/rds/ib_recv.c
-> index 7055985..a070a2d 100644
-> --- a/net/rds/ib_recv.c
-> +++ b/net/rds/ib_recv.c
-> @@ -824,7 +824,7 @@ static void rds_ib_cong_recv(struct rds_connection *conn,
->  	}
->  
->  	/* the congestion map is in little endian order */
-> -	uncongested = le64_to_cpu(uncongested);
-> +	uncongested = le64_to_cpu((__force __le64)uncongested);
->  
->  	rds_cong_map_updated(map, uncongested);
->  }
-Again, a __force cast doesn't seem necessary here.  It looks like the
- code is just using the wrong types; if all of src, dst and uncongested
- were __le64 instead of uint64_t, and the last two lines replaced with
- rds_cong_map_updated(map, le64_to_cpu(uncongested)); then the semantics
- would be kept with neither sparse errors nor __force.
+Mon, Apr 29, 2019 at 11:41:45AM CEST, moshe@mellanox.com wrote:
+>The devlink health reporters create/destroy and user commands currently
+>use the devlink->lock as a locking mechanism. Different reporters have
+>different rules in the driver and are being created/destroyed during
+>different stages of driver load/unload/running. So during execution of a
+>reporter recover the flow can go through another reporter's destroy and
+>create. Such flow leads to deadlock trying to lock a mutex already
+>held.
+>
+>With the new locking mechanism the different reporters share mutex lock
+>only to protect access to shared reporters list.
+>Added refcount per reporter, to protect the reporters from destroy while
+>being used.
+>
+>Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 
-__force is almost never necessary and mostly just masks other bugs or
- endianness confusion in the surrounding code.  Instead of adding a
- __force, either fix the code to be sparse-clean or leave the sparse
- warning in place so that future developers know there's something not
- right.
-
--Ed
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
