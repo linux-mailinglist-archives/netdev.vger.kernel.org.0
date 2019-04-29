@@ -2,88 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D2F9E635
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 17:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E805CE694
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 17:32:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728676AbfD2PYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 11:24:02 -0400
-Received: from mail.us.es ([193.147.175.20]:35544 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728472AbfD2PYC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 11:24:02 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 77EA11878B4
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 17:24:00 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 67C89DA707
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 17:24:00 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 5D419DA701; Mon, 29 Apr 2019 17:24:00 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0734EDA701;
-        Mon, 29 Apr 2019 17:23:58 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 29 Apr 2019 17:23:58 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id D77934265A32;
-        Mon, 29 Apr 2019 17:23:57 +0200 (CEST)
-Date:   Mon, 29 Apr 2019 17:23:57 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     netfilter-devel@vger.kernel.org,
-        Kristian Evensen <kristian.evensen@gmail.com>,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH 07/31] netfilter: ctnetlink: Support L3 protocol-filter
- on flush
-Message-ID: <20190429152357.kwah6tvdwax6ae7p@salvia>
-References: <20181008230125.2330-1-pablo@netfilter.org>
- <20181008230125.2330-8-pablo@netfilter.org>
- <33d60747-7550-1fba-a068-9b78aaedbc26@6wind.com>
- <09d0cd50-b64d-72c3-0aa1-82eb461bfa19@6wind.com>
- <20190426192529.yxzpunyenmk4yfk3@salvia>
- <2dc9a105-930b-83b1-130f-891d941dc09b@6wind.com>
+        id S1728656AbfD2Pcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 11:32:47 -0400
+Received: from mail-ed1-f47.google.com ([209.85.208.47]:44858 "EHLO
+        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728526AbfD2Pcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 11:32:46 -0400
+Received: by mail-ed1-f47.google.com with SMTP id b8so437919edm.11
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 08:32:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WGxmUuK/iKGgz/VPYSyDdbdql9h9vFR3WwDYTYbXWgA=;
+        b=HbtWwUzbVs3fgxgrEa5QKrEMnTsFFNd7uzKMH74lQCQpA8ESxfzpMyqLTqgg9PPkVS
+         4qdB8HmIlakYFEbp8zk/jBoVfsFvkV0S0UHbIwOAr94ED9feiVnGXoTBwv7mR2hoplBf
+         JFG2YNkUGRcsLHu+406iqYbFKYpMhAjfDma2O8d+O/5jVNvbiN4ciL/tQlnnMnlbGtIe
+         vkUsqbdJNBjz88bJwdJ3tJam4iX1KZSiwT8berkoJ1O/W57vpNMpQNIKwMoWZJCdNnLS
+         qMENApcyn+GnMutX6xxPnMFuiCI1gQw7BuzCalX69qAo+W5Oda5hYQ2ch0BoxZsRW1KW
+         OvTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WGxmUuK/iKGgz/VPYSyDdbdql9h9vFR3WwDYTYbXWgA=;
+        b=U0rzoVZWCTup+vBdDsAMTPSnEg614WpJARrCxdZyc6JrePJhiH7cXfSzurhWzazZND
+         T+1DNP/1yVZnFrSaWAu+RZeZnhbLg58IfStPrTpO7IXCm5LPhUbHQS07mvHSBa1oM5Ds
+         I9enqeJkgOlbjcafBsP8Zug9LZBKVtZiuo40MDvKsasE+dyeUxr24flt243XirW7inli
+         ycLbAOA3lxxmI/E0Rp8lW52sJXFHko+Sfg0Bk4NAyafx7WtJ+RU78zIAEVaDAfbANQsv
+         qEyZWLHYQUb+Pte+m1iN+8SKyDjJ/A0mtHTM7/w1Lm02WscX2ysw8AkOGSAk4KJumBm0
+         5/nw==
+X-Gm-Message-State: APjAAAWIO5VEm31tbOhACLUNsgSukyaKFOclO6c8DcbPhbdVHmhclMIq
+        GLe8zb1ckk/A5GpIKqJddlBKWHpDp9uoHbDAakkqig==
+X-Google-Smtp-Source: APXvYqyY5KCnlZr8c7jHDf8mbng7ImbTLVgjQytlpf3CurEzW7n8NGOIVP4IVMooTCtbVx8yhtYPCBraUL40raH8vrg=
+X-Received: by 2002:a50:adda:: with SMTP id b26mr26084817edd.2.1556551964849;
+ Mon, 29 Apr 2019 08:32:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2dc9a105-930b-83b1-130f-891d941dc09b@6wind.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20190428054521.GA14504@stephen-mallon> <20190428151938.njy3ip5szwj3vkda@localhost>
+ <CAF=yD-JLcmyoJ6tq1osgrQbXs6+As0R+J-ofU+XwQWcvaW+LBg@mail.gmail.com> <20190429150242.vckwna4bt4xynzjo@localhost>
+In-Reply-To: <20190429150242.vckwna4bt4xynzjo@localhost>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 29 Apr 2019 11:32:08 -0400
+Message-ID: <CAF=yD-+EdbxnSa1SUqPamdxeDN_oPd4-kXAEF6yV1o_Zwj+LUw@mail.gmail.com>
+Subject: Re: [PATCH net] ipv4: Fix updating SOF_TIMESTAMPING_OPT_ID when
+ SKBTX_HW_TSTAMP is enabled
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Stephen Mallon <stephen.mallon@sydney.edu.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 04:53:38PM +0200, Nicolas Dichtel wrote:
-> Le 26/04/2019 à 21:25, Pablo Neira Ayuso a écrit :
-> > On Thu, Apr 25, 2019 at 05:41:45PM +0200, Nicolas Dichtel wrote:
-> >> Le 25/04/2019 à 12:07, Nicolas Dichtel a écrit :
-> >> [snip]
-> >>> In fact, the conntrack tool set by default the family to AF_INET and forbid to
-> >>> set the family to something else (the '-f' option is not allowed for the command
-> >>> 'flush').
-> >>
-> >> 'conntrack -D -f ipv6' will do the job, but this is still a regression.
-> > 
-> > You mean, before this patch, flush was ignoring the family, and after
-> > Kristian's patch, it forces you to use NFPROTO_UNSPEC to achieve the
-> > same thing, right?
-> > 
-> Before the patch, flush was ignoring the family, and after the patch, the flush
-> takes care of the family.
-> The conntrack tool has always set the family to AF_INET by default, thus, since
-> this patch, only ipv4 conntracks are flushed with 'conntrack -F':
-> https://git.netfilter.org/conntrack-tools/tree/src/conntrack.c#n2565
-> https://git.netfilter.org/conntrack-tools/tree/src/conntrack.c#n2796
+On Mon, Apr 29, 2019 at 11:02 AM Richard Cochran
+<richardcochran@gmail.com> wrote:
+>
+> On Sun, Apr 28, 2019 at 10:57:57PM -0400, Willem de Bruijn wrote:
+> > It is debatable whether this is a fix or a new feature. It extends
+> > SOF_TIMESTAMPING_OPT_ID to hardware timestamps. I don't think this
+> > would be a stable candidate.
+>
+> Was the original series advertised as SW timestamping only?
 
-Thanks for explaining, what fix would you propose for this?
+I did not intend to cover hardware timestamps at the time.
+
+> If so, I missed that at the time.  After seeing it not work, I meant
+> to fix it, but never got around to it.  So to me this is a known
+> issue.
+
+Understood. I certainly understand that view. I never use hw
+timestamps, so it is a bit of a blind spot for me. If this is a safe
+and predictable change, I don't care strongly about net vs net-next. I
+don't think it meets the bar for stable, but that is not my call.
+
+> > More importantly, note that __ip6_append_data has similar logic. For
+> > consistency the two should be updated at the same time.
+>
+> +1
+>
+> Thanks,
+> Richard
