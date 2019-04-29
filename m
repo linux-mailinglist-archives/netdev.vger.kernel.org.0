@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C283DDFE
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 10:36:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00953DDFA
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 10:36:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727977AbfD2IgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 04:36:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48984 "EHLO mail.kernel.org"
+        id S1727989AbfD2If6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 04:35:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48898 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727611AbfD2IgA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 04:36:00 -0400
+        id S1727611AbfD2If4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 04:35:56 -0400
 Received: from localhost (unknown [77.138.135.184])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 77C0220578;
-        Mon, 29 Apr 2019 08:35:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BBD0D214AE;
+        Mon, 29 Apr 2019 08:35:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556526959;
-        bh=y95JVLHEl5iGiUYRY6GARAY34/svx2jtZxvhmWkvVG0=;
+        s=default; t=1556526955;
+        bh=DVwUCiWkka9qSQ5iT3UBevW65T70pQ15TVQej26pceY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C6ejDHO02e85dfKCs9VStYLTAg0C4c9NGOolgCV5w6d+Evwo4+qeC0bO/vDTkx1dG
-         /+AEHEqv+GKPMzgL7nlrzPI8QVgJR6y4bTIBTFRjxWIxtyKFbJC5fayAkxuEZWK+zF
-         l8JiwgSdwsM1LV+/vKCNdkKKq6MgEzLKO121Pclc=
+        b=ThieOPg1DHoX4ACBAAueVhqOF5vn8dcxIoZMl9bY9NXNdJycii1ez+Q1zi7jj661w
+         VEj1r53JW2dl1qTgmzXR9GkfVB1Kr/LeghSY7EMWP5Zp+p8ExnWN1M9rQY182MaFQy
+         Yx32SSJjUBmGS5pytfx0x6YYONpWxGiMCmJRUUIs=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
@@ -32,9 +32,9 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Mark Zhang <markz@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next v2 16/17] RDMA/nldev: Allow get counter mode through RDMA netlink
-Date:   Mon, 29 Apr 2019 11:34:52 +0300
-Message-Id: <20190429083453.16654-17-leon@kernel.org>
+Subject: [PATCH rdma-next v2 17/17] RDMA/nldev: Allow get default counter statistics through RDMA netlink
+Date:   Mon, 29 Apr 2019 11:34:53 +0300
+Message-Id: <20190429083453.16654-18-leon@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190429083453.16654-1-leon@kernel.org>
 References: <20190429083453.16654-1-leon@kernel.org>
@@ -47,78 +47,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mark Zhang <markz@mellanox.com>
 
-Provide an option to get current counter mode through RDMA netlink.
+This patch adds the ability to return the hwstats of per-port default
+counters (which can also be queried through sysfs nodes).
 
 Signed-off-by: Mark Zhang <markz@mellanox.com>
-Reviewed-by: Majd Dibbiny <majd@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/core/counters.c | 13 +++++
- drivers/infiniband/core/nldev.c    | 78 +++++++++++++++++++++++++++++-
- 2 files changed, 90 insertions(+), 1 deletion(-)
+ drivers/infiniband/core/nldev.c | 101 +++++++++++++++++++++++++++++++-
+ 1 file changed, 99 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
-index 6f58352a29ee..a3151799f625 100644
---- a/drivers/infiniband/core/counters.c
-+++ b/drivers/infiniband/core/counters.c
-@@ -596,6 +596,19 @@ int rdma_counter_unbind_qpn(struct ib_device *dev, u8 port,
- 	return ret;
- }
- 
-+int rdma_counter_get_mode(struct ib_device *dev, u8 port,
-+			  enum rdma_nl_counter_mode *mode,
-+			  enum rdma_nl_counter_mask *mask)
-+{
-+	struct rdma_port_counter *port_counter;
-+
-+	port_counter = &dev->port_data[port].port_counter;
-+	*mode = port_counter->mode.mode;
-+	*mask = port_counter->mode.mask;
-+
-+	return 0;
-+}
-+
- int rdma_counter_init(struct ib_device *dev)
- {
- 	struct rdma_port_counter *port_counter;
 diff --git a/drivers/infiniband/core/nldev.c b/drivers/infiniband/core/nldev.c
-index 6b7bc1a3d61d..53c1d2d82a06 100644
+index 53c1d2d82a06..cb2dd38f49f1 100644
 --- a/drivers/infiniband/core/nldev.c
 +++ b/drivers/infiniband/core/nldev.c
-@@ -1709,6 +1709,82 @@ static int nldev_stat_del_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+@@ -1709,6 +1709,98 @@ static int nldev_stat_del_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
  	return ret;
  }
  
-+static int nldev_stat_get_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			       struct netlink_ext_ack *extack)
++static int nldev_res_get_default_counter_doit(struct sk_buff *skb,
++					      struct nlmsghdr *nlh,
++					      struct netlink_ext_ack *extack,
++					      struct nlattr *tb[])
 +{
-+	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX];
-+	static enum rdma_nl_counter_mode mode;
-+	static enum rdma_nl_counter_mask mask;
++	struct rdma_hw_stats *stats;
++	struct nlattr *table_attr;
 +	struct ib_device *device;
++	int ret, num_cnts, i;
 +	struct sk_buff *msg;
 +	u32 index, port;
-+	int ret;
++	u64 v;
 +
-+	ret = nlmsg_parse(nlh, 0, tb, RDMA_NLDEV_ATTR_MAX - 1,
-+			  nldev_policy, extack);
-+	if (ret)
-+		return -EINVAL;
-+
-+	if (!tb[RDMA_NLDEV_ATTR_STAT_MODE])
-+		return nldev_res_get_counter_doit(skb, nlh, extack);
-+
-+	if (!tb[RDMA_NLDEV_ATTR_STAT_RES] || !tb[RDMA_NLDEV_ATTR_DEV_INDEX] ||
-+	    !tb[RDMA_NLDEV_ATTR_PORT_INDEX])
-+		return -EINVAL;
-+
-+	if (nla_get_u32(tb[RDMA_NLDEV_ATTR_STAT_RES]) != RDMA_NLDEV_ATTR_RES_QP)
++	if (!tb[RDMA_NLDEV_ATTR_DEV_INDEX] || !tb[RDMA_NLDEV_ATTR_PORT_INDEX])
 +		return -EINVAL;
 +
 +	index = nla_get_u32(tb[RDMA_NLDEV_ATTR_DEV_INDEX]);
 +	device = ib_device_get_by_index(sock_net(skb->sk), index);
 +	if (!device)
 +		return -EINVAL;
++
++	if (!device->ops.alloc_hw_stats || !device->ops.get_hw_stats) {
++		ret = -EINVAL;
++		goto err;
++	}
 +
 +	port = nla_get_u32(tb[RDMA_NLDEV_ATTR_PORT_INDEX]);
 +	if (!rdma_is_port_valid(device, port)) {
@@ -137,27 +107,48 @@ index 6b7bc1a3d61d..53c1d2d82a06 100644
 +					 RDMA_NLDEV_CMD_STAT_GET),
 +			0, 0);
 +
-+	ret = rdma_counter_get_mode(device, port, &mode, &mask);
-+	if (ret)
-+		goto err_msg;
-+
 +	if (fill_nldev_handle(msg, device) ||
-+	    nla_put_u32(msg, RDMA_NLDEV_ATTR_PORT_INDEX, port) ||
-+	    nla_put_u32(msg, RDMA_NLDEV_ATTR_STAT_MODE, mode)) {
++	    nla_put_u32(msg, RDMA_NLDEV_ATTR_PORT_INDEX, port)) {
 +		ret = -EMSGSIZE;
 +		goto err_msg;
 +	}
 +
-+	if ((mode == RDMA_COUNTER_MODE_AUTO) &&
-+	    nla_put_u32(msg, RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK, mask)) {
-+		ret = -EMSGSIZE;
++	stats = device->ops.alloc_hw_stats(device, port);
++	if (!stats) {
++		ret = -ENOMEM;
 +		goto err_msg;
 +	}
 +
++	num_cnts = device->ops.get_hw_stats(device, stats, port, 0);
++	if (num_cnts < 0) {
++		ret = -EINVAL;
++		goto err_stats;
++	}
++
++	table_attr = nla_nest_start(msg, RDMA_NLDEV_ATTR_STAT_HWCOUNTERS);
++	if (!table_attr) {
++		ret = -EMSGSIZE;
++		goto err_stats;
++	}
++	for (i = 0; i < num_cnts; i++) {
++		v = stats->value[i] +
++			rdma_counter_get_hwstat_value(device, port, i);
++		if (fill_stat_hwcounter_entry(msg, stats->names[i], v)) {
++			ret = -EMSGSIZE;
++			goto err_table;
++		}
++	}
++	nla_nest_end(msg, table_attr);
++
++	kfree(stats);
 +	nlmsg_end(msg, nlh);
 +	ib_device_put(device);
 +	return rdma_nl_unicast(msg, NETLINK_CB(skb).portid);
 +
++err_table:
++	nla_nest_cancel(msg, table_attr);
++err_stats:
++	kfree(stats);
 +err_msg:
 +	nlmsg_free(msg);
 +err:
@@ -165,18 +156,25 @@ index 6b7bc1a3d61d..53c1d2d82a06 100644
 +	return ret;
 +}
 +
- static const struct rdma_nl_cbs nldev_cb_table[RDMA_NLDEV_NUM_OPS] = {
- 	[RDMA_NLDEV_CMD_GET] = {
- 		.doit = nldev_get_doit,
-@@ -1765,7 +1841,7 @@ static const struct rdma_nl_cbs nldev_cb_table[RDMA_NLDEV_NUM_OPS] = {
- 		.flags = RDMA_NL_ADMIN_PERM,
- 	},
- 	[RDMA_NLDEV_CMD_STAT_GET] = {
--		.doit = nldev_res_get_counter_doit,
-+		.doit = nldev_stat_get_doit,
- 		.dump = nldev_res_get_counter_dumpit,
- 	},
- 	[RDMA_NLDEV_CMD_STAT_DEL] = {
+ static int nldev_stat_get_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			       struct netlink_ext_ack *extack)
+ {
+@@ -1725,8 +1817,13 @@ static int nldev_stat_get_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (ret)
+ 		return -EINVAL;
+ 
+-	if (!tb[RDMA_NLDEV_ATTR_STAT_MODE])
+-		return nldev_res_get_counter_doit(skb, nlh, extack);
++	if (!tb[RDMA_NLDEV_ATTR_STAT_MODE]) {
++		if (!tb[RDMA_NLDEV_ATTR_STAT_COUNTER_ID])
++			return nldev_res_get_default_counter_doit(skb, nlh,
++								  extack, tb);
++		else
++			return nldev_res_get_counter_doit(skb, nlh, extack);
++	}
+ 
+ 	if (!tb[RDMA_NLDEV_ATTR_STAT_RES] || !tb[RDMA_NLDEV_ATTR_DEV_INDEX] ||
+ 	    !tb[RDMA_NLDEV_ATTR_PORT_INDEX])
 -- 
 2.20.1
 
