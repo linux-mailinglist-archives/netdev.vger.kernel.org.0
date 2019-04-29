@@ -2,104 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50728E3AF
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:26:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BF1CE3B8
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728251AbfD2NZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 09:25:57 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:28342 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726321AbfD2NZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 09:25:56 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-91-XpkMDVr_Mp6PD2FTGuRfFg-1; Mon, 29 Apr 2019 14:25:54 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
- (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon,
- 29 Apr 2019 14:25:53 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 29 Apr 2019 14:25:52 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Willem de Bruijn' <willemdebruijn.kernel@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "idosch@idosch.org" <idosch@idosch.org>,
-        "Willem de Bruijn" <willemb@google.com>
-Subject: RE: [PATCH net] packet: validate msg_namelen in send directly
-Thread-Topic: [PATCH net] packet: validate msg_namelen in send directly
-Thread-Index: AQHU/GYe1snsU+6jJ02GK9D6Ic6IaKZS2rOwgAAwtwCAABkQ8A==
-Date:   Mon, 29 Apr 2019 13:25:52 +0000
-Message-ID: <9e3e74586bdb4ea3bef2848d4ff60fcf@AcuMS.aculab.com>
-References: <20190426192735.145633-1-willemdebruijn.kernel@gmail.com>
- <92f9793efb2a4d9fb7973dcb47192c4b@AcuMS.aculab.com>
- <CAF=yD-KKSt+y5AcMrBDv6NUVeMoBVXy11dRJEZ1mDxf-Z5Rw6w@mail.gmail.com>
-In-Reply-To: <CAF=yD-KKSt+y5AcMrBDv6NUVeMoBVXy11dRJEZ1mDxf-Z5Rw6w@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1727554AbfD2N13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 09:27:29 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:34198 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725838AbfD2N13 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 09:27:29 -0400
+Received: by mail-ed1-f65.google.com with SMTP id a6so9153160edv.1
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 06:27:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=shYkIO9bAN3z3pFDjcybu/SSUaUrnVfOtbLRwTrvQE8=;
+        b=uv7haMwiRUCb4gvNjdU/L+FKa303X6Uf7eOErDaG/LQbxGnIl7nueBk+BdiCRt9vRn
+         t4sfsT/uTGyLhgGrppbgjXr8Co39bR/iK14bRWv5kFF1KtTqPeLe+P2Dx/RR8IUtfXZu
+         wz2KTuz79bhA9EZcNs7IxLDclEQsQQj9VHLDSKd5+ToygVaAbOA/W07wrmiibjLywol0
+         XQTwrjKvCEFS6cr2f93T5OIVDT5iQAwniwZgAxFQuO/Itn0PwiElji4i54BfIj8zCziR
+         jGrSxSxbHxK+EiYm+ItsRsGMmh+6DXiu3Z/ogBhEcIdbsctsSGgWRN8349KizOxCXL5P
+         3gmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=shYkIO9bAN3z3pFDjcybu/SSUaUrnVfOtbLRwTrvQE8=;
+        b=dC1Dh5tBH5KaQ81HnOrDM32LZNQCCWfwW/rG6PnCtUwgnLaI6EadQKRmm7dPTzzbsx
+         Wq7iTU8vzEwbbAhQHMy0TGRsEV/4cIXpomB52oAo8PXjzWuyR1Be+OJGRAIdQvZOrgwV
+         01nKO8U0sGf9m6bvKCBbsDdzSbHZM91Z2KAQagJ5mti/I73tGmIgOLgYQDm61BQRKvgA
+         frnED3HLTjT8QRu3HGENyxJCkQvDDWSBi23BmLAgCQCA2fDg1fCCOj7EnrBE8ahnwogc
+         l2HA7dErYbbky+vMqGoj1BY26OaPsIMNO9w0GnqJ1KXtP6ZVTvbbDs5gjIhXxWRrDuAV
+         FX7g==
+X-Gm-Message-State: APjAAAX+I+LLHWvqQ4gSiltYAcfkOhFyZCQnpF2wpDKoTiJc7WkJHZoT
+        XRN3UqStkHN5ocmkdnRTCtFb6r6cZdJQ70lVRoE=
+X-Google-Smtp-Source: APXvYqxLhMQsHMI32p4fTGdGMv/lv7BvpbdY7g2wuucf2ZYQneumDcshw63MTBOKkZHf3ajRjQkj9Bo3j/2ksBXYxik=
+X-Received: by 2002:a17:906:580e:: with SMTP id m14mr189192ejq.287.1556544441759;
+ Mon, 29 Apr 2019 06:27:21 -0700 (PDT)
 MIME-Version: 1.0
-X-MC-Unique: XpkMDVr_Mp6PD2FTGuRfFg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+References: <20190426192954.146301-1-willemdebruijn.kernel@gmail.com>
+ <d57c87e402354163a7ed311d6d27aa4f@AcuMS.aculab.com> <CAF=yD-+omQXQO7ue=BkwjVahAFP6YuU5AMTKbC9fBG6qPu6rSw@mail.gmail.com>
+ <e559e87385254ad1a0fdc5f36bdde44a@AcuMS.aculab.com>
+In-Reply-To: <e559e87385254ad1a0fdc5f36bdde44a@AcuMS.aculab.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 29 Apr 2019 09:26:45 -0400
+Message-ID: <CAF=yD-Ji+=AJPCscPdy0wdt1YMr3scwm0skx2V=jk7U6QtRQYw@mail.gmail.com>
+Subject: Re: [PATCH net] packet: in recvmsg msg_name return at least sockaddr_ll
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogV2lsbGVtIGRlIEJydWlqbg0KPiBTZW50OiAyOSBBcHJpbCAyMDE5IDEzOjUzDQo+IE9u
-IE1vbiwgQXByIDI5LCAyMDE5IGF0IDU6MDAgQU0gRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWlnaHRA
-YWN1bGFiLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBGcm9tOiBXaWxsZW0gZGUgQnJ1aWpuDQo+ID4g
-PiBTZW50OiAyNiBBcHJpbCAyMDE5IDIwOjI4DQo+ID4gPiBQYWNrZXQgc29ja2V0cyBpbiBkYXRh
-Z3JhbSBtb2RlIHRha2UgYSBkZXN0aW5hdGlvbiBhZGRyZXNzLiBWZXJpZnkgaXRzDQo+ID4gPiBs
-ZW5ndGggYmVmb3JlIHBhc3NpbmcgdG8gZGV2X2hhcmRfaGVhZGVyLg0KPiA+ID4NCj4gPiA+IFBy
-aW9yIHRvIDIuNi4xNC1yYzMsIHRoZSBzZW5kIGNvZGUgaWdub3JlZCBzbGxfaGFsZW4uIFRoaXMg
-aXMNCj4gPiA+IGVzdGFibGlzaGVkIGJlaGF2aW9yLiBEaXJlY3RseSBjb21wYXJlIG1zZ19uYW1l
-bGVuIHRvIGRldi0+YWRkcl9sZW4uDQo+ID4gPg0KPiA+ID4gRml4ZXM6IDZiOGQ5NWYxNzk1YzQg
-KCJwYWNrZXQ6IHZhbGlkYXRlIGFkZHJlc3MgbGVuZ3RoIGlmIG5vbi16ZXJvIikNCj4gPiA+IFN1
-Z2dlc3RlZC1ieTogRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWlnaHRAYWN1bGFiLmNvbT4NCj4gPiA+
-IFNpZ25lZC1vZmYtYnk6IFdpbGxlbSBkZSBCcnVpam4gPHdpbGxlbWJAZ29vZ2xlLmNvbT4NCj4g
-PiA+IC0tLQ0KPiA+ID4gIG5ldC9wYWNrZXQvYWZfcGFja2V0LmMgfCAxOCArKysrKysrKysrKyst
-LS0tLS0NCj4gPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlv
-bnMoLSkNCj4gPiA+DQo+ID4gPiBkaWZmIC0tZ2l0IGEvbmV0L3BhY2tldC9hZl9wYWNrZXQuYyBi
-L25ldC9wYWNrZXQvYWZfcGFja2V0LmMNCj4gPiA+IGluZGV4IDk0MTljNWNmNGRlNWUuLjEzMzAx
-ZTM2YjRhMjggMTAwNjQ0DQo+ID4gPiAtLS0gYS9uZXQvcGFja2V0L2FmX3BhY2tldC5jDQo+ID4g
-PiArKysgYi9uZXQvcGFja2V0L2FmX3BhY2tldC5jDQo+ID4gPiBAQCAtMjYyNCwxMCArMjYyNCwx
-MyBAQCBzdGF0aWMgaW50IHRwYWNrZXRfc25kKHN0cnVjdCBwYWNrZXRfc29jayAqcG8sIHN0cnVj
-dCBtc2doZHIgKm1zZykNCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICBzbGxfYWRkcikpKQ0KPiA+ID4gICAgICAgICAgICAgICAgICAgICAgIGdvdG8g
-b3V0Ow0KPiA+ID4gICAgICAgICAgICAgICBwcm90byAgID0gc2FkZHItPnNsbF9wcm90b2NvbDsN
-Cj4gPiA+IC0gICAgICAgICAgICAgYWRkciAgICA9IHNhZGRyLT5zbGxfaGFsZW4gPyBzYWRkci0+
-c2xsX2FkZHIgOiBOVUxMOw0KPiA+ID4gICAgICAgICAgICAgICBkZXYgPSBkZXZfZ2V0X2J5X2lu
-ZGV4KHNvY2tfbmV0KCZwby0+c2spLCBzYWRkci0+c2xsX2lmaW5kZXgpOw0KPiA+ID4gLSAgICAg
-ICAgICAgICBpZiAoYWRkciAmJiBkZXYgJiYgc2FkZHItPnNsbF9oYWxlbiA8IGRldi0+YWRkcl9s
-ZW4pDQo+ID4gPiAtICAgICAgICAgICAgICAgICAgICAgZ290byBvdXRfcHV0Ow0KPiA+ID4gKyAg
-ICAgICAgICAgICBpZiAocG8tPnNrLnNrX3NvY2tldC0+dHlwZSA9PSBTT0NLX0RHUkFNKSB7DQo+
-ID4gPiArICAgICAgICAgICAgICAgICAgICAgYWRkciA9IHNhZGRyLT5zbGxfYWRkcjsNCj4gPiA+
-ICsgICAgICAgICAgICAgICAgICAgICBpZiAoZGV2ICYmIG1zZy0+bXNnX25hbWVsZW4gPCBkZXYt
-PmFkZHJfbGVuICsNCj4gPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-b2Zmc2V0b2Yoc3RydWN0IHNvY2thZGRyX2xsLCBzbGxfYWRkcikpDQo+ID4gPiArICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBnb3RvIG91dF9wdXQ7DQo+ID4gPiArICAgICAgICAgICAgIH0N
-Cj4gPg0KPiA+IElJUkMgeW91IG5lZWQgdG8gaW5pdGlhbGlzZSAnYWRkciAtIE5VTEwnIGF0IHRo
-ZSB0b3Agb2YgdGhlIGZ1bmN0aW9ucy4NCj4gPiBJJ20gc3VycHJpc2VkIHRoZSBjb21waWxlciBk
-b2Vzbid0IGNvbXBsYWluLg0KPiANCj4gSXQgZGlkIGNvbXBsYWluIHdoZW4gSSBtb3ZlZCBpdCBi
-ZWxvdyB0aGUgaWYgKGRldiAmJiAuLikgYnJhbmNoLiBCdXQNCj4gaW5zaWRlIGEgYnJhbmNoIHdp
-dGggZXhhY3RseSB0aGUgc2FtZSBjb25kaXRpb24gYXMgdGhlIG9uZSB3aGVyZSB1c2VkLA0KPiB0
-aGUgY29tcGlsZXIgZGlkIGZpZ3VyZSBpdCBvdXQuIEFkbWl0dGVkbHkgdGhhdCBpcyBmcmFnaWxl
-Lg0KDQpFdmVuIGEgZnVuY3Rpb24gY2FsbCBzaG91bGQgYmUgZW5vdWdoIHNpbmNlIHRoZSBjYWxs
-ZWQgY29kZSBpcyBhbGxvd2VkDQp0byBtb2RpZnkgcG8tPnNrLnNrX3NvY2tldC0+dHlwZSB2aWEg
-YSBnbG9iYWwgcG9pbnRlci4NCg0KPiBUaGVuIGl0IG1pZ2h0IGJlIHNpbXBsZXN0IHRvIHJlc3Rv
-cmUgdGhlIHVuY29uZGl0aW9uYWwgYXNzaWdubWVudA0KPiANCj4gICAgICAgICAgICAgICAgIHBy
-b3RvICAgPSBzYWRkci0+c2xsX3Byb3RvY29sOw0KPiArICAgICAgICAgICAgICAgYWRkciAgICA9
-IHNhZGRyLT5zbGxfYWRkcjsNCj4gICAgICAgICAgICAgICAgIGRldiA9IGRldl9nZXRfYnlfaW5k
-ZXgoc29ja19uZXQoc2spLCBzYWRkci0+c2xsX2lmaW5kZXgpOw0KDQpUaGVyZSBpcyBhbiAnYWRk
-ciA9IE5VTEwnIGluIHRoZSAnYWRkcmVzcyBhYnNlbnQnIGJyYW5jaC4NCk1vdmluZyB0aGF0IGhp
-Z2hlciB1cCBtYWtlcyBpdCBldmVuIG1vcmUgY2xlYXIgdGhhdCB0aGUgYWRkcmVzcyBpcyANCm9u
-bHkgc2V0IGluIG9uZSBwbGFjZS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBM
-YWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBU
-LCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+On Mon, Apr 29, 2019 at 9:19 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> > Can then also change memset to zero only two bytes in the Ethernet case.
+> >
+> > +                       if (msg->msg_namelen < sizeof(struct sockaddr_ll)) {
+> > +                               msg->msg_namelen = sizeof(struct sockaddr_ll);
+> > +                               memset(msg->msg_name + copy_len, 0,
+> > +                                      msg->namelen - copy_len);
+>
+> copy_len not defined ....
 
+Was a quick sketch of an iteration on the above, sorry if unclear.
+Intended to be defined before the branch.
+
+>
+> > +                       }
+>
+> Except that has to be a real memset() not an inlined direct
+> write of an 8byte register (or 2 writes on a 32bit systems).
+
+I wasn't sure whether a 2 byte store would be optimized in a similar
+manner. That might even be architecture dependent, I imagine? Will
+leave as is.
+
+Thanks for the quick response!
+
+
+
+>
+>         David
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
