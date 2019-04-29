@@ -2,95 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EABF1E0B8
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 12:43:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C944E0D9
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 12:51:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727936AbfD2Kns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 06:43:48 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:39986 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727774AbfD2Kns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 06:43:48 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us3.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id 32DD0B40056;
-        Mon, 29 Apr 2019 10:43:46 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 29 Apr
- 2019 03:43:42 -0700
-Subject: Re: 32-bit zext time complexity (Was Re: [PATCH bpf-next]
- selftests/bpf: two scale tests)
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Jiong Wang <jiong.wang@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>, <daniel@iogearbox.net>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>
-References: <20190412214132.2726285-1-ast@kernel.org>
- <lyimv3hujp.fsf@netronome.com>
- <20190425043347.pxrz5ln4m7khebt6@ast-mbp.dhcp.thefacebook.com>
- <lylfzyeebr.fsf@netronome.com>
- <20190425221021.ov2jj4piann7wmid@ast-mbp.dhcp.thefacebook.com>
- <lyk1fgrk4m.fsf@netronome.com>
- <6757534d-4d0d-6698-7536-118fed7be977@solarflare.com>
- <20190427031122.dgnt4y4v6rnbawq2@ast-mbp>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <2a6aba4c-e5df-20ec-8742-dffe0c645201@solarflare.com>
-Date:   Mon, 29 Apr 2019 11:43:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727781AbfD2KvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 06:51:02 -0400
+Received: from 178.115.242.59.static.drei.at ([178.115.242.59]:60394 "EHLO
+        mail.osadl.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727753AbfD2KvC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 06:51:02 -0400
+X-Greylist: delayed 355 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Apr 2019 06:51:01 EDT
+Received: by mail.osadl.at (Postfix, from userid 1001)
+        id 040CF5C0B38; Mon, 29 Apr 2019 12:44:14 +0200 (CEST)
+Date:   Mon, 29 Apr 2019 12:44:14 +0200
+From:   Nicholas Mc Guire <der.herr@hofr.at>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Nicholas Mc Guire <hofrat@osadl.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net_sched: force endianness annotation
+Message-ID: <20190429104414.GB17493@osadl.at>
+References: <1556430899-11018-1-git-send-email-hofrat@osadl.org>
+ <07d36e94-aad4-a263-bf09-705ee1dd59ed@solarflare.com>
 MIME-Version: 1.0
-In-Reply-To: <20190427031122.dgnt4y4v6rnbawq2@ast-mbp>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24580.005
-X-TM-AS-Result: No-5.072300-4.000000-10
-X-TMASE-MatchedRID: twkXAvRFVBlJJDuM6qazTm9m40jFd8wv7yWPaQc4INSCsBeCv8CM/crE
-        t0HAZpVUrgMlijRLL39OpyDH40bTVO/1b0g+BX56de4BwMgBa9M0AKed0u9fB2HZ+cd7VyKXMrS
-        9FFYHpDXstNXLbn6uraPXlikKpo5mhi8uFzr7cfuRfvUfL+585lt06oMfzUpKuu0N7j6PSiP+yk
-        IGQmXQki9rdJU8q29pJeTU/VzQAYJFsw2Lp+kSuINoF/xJo8tUfrTt+hmA5bIhvFjBsLEZNLCx9
-        OEvXmLWdgpFqmK1AE9ftuJwrFEhTY2j49Ftap9Eymsk/wUE4hoocMW4yq6ZUBlfGgeYTxmsv+vp
-        FF3B9SZ+iEe5Vz8gG84HmKiqQEgtwL6SxPpr1/I=
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.072300-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24580.005
-X-MDID: 1556534627-R8SZ_r2k7aKU
+In-Reply-To: <07d36e94-aad4-a263-bf09-705ee1dd59ed@solarflare.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/04/2019 04:11, Alexei Starovoitov wrote:
-> instead of converting all insns into lists of 1 before all patching
-> it can be done on demand:
-> convert from insn to list only when patching is needed.
-Makes sense.
-> Patched insn becomes a pointer to a block of new insns.
-> We have reserved opcodes to recognize such situation.
-It's not clear to me where you can fit everything though.Â  The pointer
-Â is 64 bits, which is the same as struct bpf_insn.Â  Are you suggesting
-Â relying on kernel pointers always starting 0xff?
-> The question is how to linearise it once at the end?
-Walk the old prog once to calculate out_insn_idx for each in_insn
-Â (since we will only ever be jumping to the first insn of a list (or
-Â to a non-list insn), that's all we need), as well as out_len.
-Allocate enough pages for out_len (let's not try to do any of this
-Â in-place, that would be painful), then walk the old prog to copy it
-Â insn-by-insn into the new one, recalculating any jump offsets by
-Â looking up the dest insn's out_insn_idx and subtracting our own
-Â out_insn_idx (plus an offset if we're not the first insn in the list
-Â of course).Â  While we're at it we can also fix up e.g.
-Â linfo[].insn_off: if in_insn_idx matches linfo[li_idx].insn_off,
-Â then set linfo[li_idx++].insn_off = out_insn_idx.Â  If we still need
-Â aux_data at this point we can copy that across too.
-Runtime O(out_len), and gets rid of all the adjusts on
-Â patch_insn_single â€” branches, linfo, subprog_starts, aux_data.
-Have I missed anything?Â  If I have time I'll put together an RFC
-Â patch in the next few days.
+On Mon, Apr 29, 2019 at 11:11:20AM +0100, Edward Cree wrote:
+> On 28/04/2019 06:54, Nicholas Mc Guire wrote:
+> > While the endiannes is being handled correctly sparse was unhappy with
+> > the missing annotation as be16_to_cpu()/be32_to_cpu() expects a __be16
+> > respectively __be32.
+> [...]
+> > diff --git a/net/sched/em_cmp.c b/net/sched/em_cmp.c
+> > index 1c8360a..3045ee1 100644
+> > --- a/net/sched/em_cmp.c
+> > +++ b/net/sched/em_cmp.c
+> > @@ -41,7 +41,7 @@ static int em_cmp_match(struct sk_buff *skb, struct tcf_ematch *em,
+> >  		val = get_unaligned_be16(ptr);
+> >  
+> >  		if (cmp_needs_transformation(cmp))
+> > -			val = be16_to_cpu(val);
+> > +			val = be16_to_cpu((__force __be16)val);
+> >  		break;
+> There should probably be a comment here to explain what's going on.  TBH
+>  it's probably a good general rule that any use of __force should have a
+>  comment explaining why it's needed.
+> AFAICT, get_unaligned_be16(ptr) is (barring alignment) equivalent to
+>  be16_to_cpu(*(__be16 *)ptr).  But then calling be16_to_cpu() again on
+>  val is bogus; it's already CPU endian.  There's a distinct lack of
+>  documentation around as to the intended semantics of TCF_EM_CMP_TRANS,
+>  but it would seem either (__force u16)cpu_to_be16(val); (which preserves
+>  the existing semantics, that trans is a no-op on BE) or swab16(val);
+>  would make more sense.
+>
+be16_to_cpu((__force __be16)val) should be a NOP on big-endian as well - 
+atleast that is how I understood it (usr/include/linux/byteorder/big_endian.h).
 
--Ed
+The problem with using swab16 is that it is impating the binary significantly
+so I'm not sure if the change is really side-effect free - while the somewhat
+brute force solution is evaluatable simply by diffing.
+The swab16() solution seems cleaner than adding another layer of casting - 
+but I just am unsure if
+-                   val = be16_to_cpu(val);
++                   val = swab16(val);
+is actually equivalent. For the original patch this can be checked
+
+-rw-r--r-- 1 hofrat hofrat 2984 Apr 28 01:49 /tmp/em_cmp_force.o
+-rw-r--r-- 1 hofrat hofrat 2984 Apr 28 01:49 /tmp/em_cmp_org.o
+-rw-r--r-- 1 hofrat hofrat 3392 Apr 29 06:25 /tmp/em_cmp_swab.o
+hofrat@debian:~/linux-next$ diff /tmp/em_cmp_force.o /tmp/em_cmp_org.o
+hofrat@debian:~/linux-next$
+
+which is why I prefered that solution. if swab16() is equivalent I' resend
+a V2
+
+thx!
+hofrat
