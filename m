@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96995ED38
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 01:16:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C933ED39
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 01:16:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729323AbfD2XQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 19:16:38 -0400
-Received: from mail-it1-f195.google.com ([209.85.166.195]:38618 "EHLO
-        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728926AbfD2XQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 19:16:35 -0400
-Received: by mail-it1-f195.google.com with SMTP id q19so1818948itk.3
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 16:16:34 -0700 (PDT)
+        id S1729363AbfD2XQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 19:16:39 -0400
+Received: from mail-it1-f194.google.com ([209.85.166.194]:50435 "EHLO
+        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729084AbfD2XQh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 19:16:37 -0400
+Received: by mail-it1-f194.google.com with SMTP id q14so1832581itk.0
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 16:16:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=hAj0kqmai0y0EXSiNLbJqJt1e4EmwfMuX+PW7YER1s8=;
-        b=EPIdvl9y31PsRA7xfC8gFLvaO8pPubO5tkBVvGf2bEZBUm0bd4F2O96+1riaC0ROjs
-         xQ7wr/Y6HSdcMoc2AGSg4pDPfPA5FbeSOT8uRYpTd0bgX1npHxUxNABE3giHacjguFRE
-         GXYNc3cQ4Y9j6lzfTQnwWyRU65VjIhzg/pMB0rpIHyEtx2kdDkfX9qqJB6AIYhKH6WNa
-         D+JooPPhTrUpPbtOPBianknH7V3Xdn3ZXcwSQ2WtzSvsX+sDwIyYvU3HTkqYY7rZOTxX
-         Ma4OEN8oe+83zd+ttVmN8OjllECW7eY8ZSHJIrOxtU51ux7kkEeEd5OHjZohFZvxdOgp
-         aJdg==
+        bh=3ehiZ3qC4g9CrzHxpvZLq9Y09Ky2/tSRw0ikjA0r6WQ=;
+        b=bzsRO53KfL8aOoL8k7a4ved30689ofrLLPFR5hl24t8OjaYYSm6aYmODL8Zp96ktbB
+         yUFxNswlv0ZVK8hhSimQ5Qy9rQ/ZwC7PQzNm0LawZ6oN6fCIpYc4nvx/oMWtoZsiCfyB
+         yg3kGxW2y+b2ffRAyxqJx7UXXnDc/c5nOAagkihVLlMuEINECSAkM7XfoiivvNevAOso
+         HwFNE6mMkOgE5y+XMXL4vtalW5BplOqJede8qczwpAYiSivCEMmRDULq1XNmsj3r9THP
+         WCsnWe9inGNxyuGn/LyoC6BA8Q9PHr+DKnCDcAG5MW0xy9ufOJYtUKuqzsOgMki9nMBf
+         ahuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=hAj0kqmai0y0EXSiNLbJqJt1e4EmwfMuX+PW7YER1s8=;
-        b=U2qt9n1Uae82dQqwCz+3Dc14bzvuQK93qB/PezQS6PoFUkth6FbfxsJrbbh/DaSiw6
-         82LPeaky4V6ebCqPkEBD5mmAmSom9wzpZsipIa8F1Z4wfn7FY9OKxnGBw0gXKpgyhbcq
-         ZwaJhdjlgByp0GZ6GmNj/II3gKw2GbAY6wQPPLx6wGtBQj/Mpu6RQS5s+/upNKPsM0Uz
-         /7XZS/DLOG12bChXf2cLcDHZaqLZ7TAePcyESO7xx1xQslAkjYdRRLk9xtg1DWZYjCii
-         9habe1G2mBcoUIuQjGWTzUFXAGaKGg3pkRpcPB+OGEaMd5g6+XHHMh+v/6giEuy2u5Dp
-         VfNQ==
-X-Gm-Message-State: APjAAAXXu/FqsSSfsJJE0j1eah7kISVAEIPoPT1Ca+jlBjVwEeMK3KLO
-        ORLpP4x4EQLF/jnjHl1nQuHInEpAnlY=
-X-Google-Smtp-Source: APXvYqynVLOWn/G0kqb6Qr8w8R5f2Hw/QV2O/c40CbLWRK46I0ZvlaAv1iAtiVsWwnXJa7eMHuLsmQ==
-X-Received: by 2002:a24:6e01:: with SMTP id w1mr1411770itc.15.1556579794325;
-        Mon, 29 Apr 2019 16:16:34 -0700 (PDT)
+        bh=3ehiZ3qC4g9CrzHxpvZLq9Y09Ky2/tSRw0ikjA0r6WQ=;
+        b=T/HxBcXPDGwmXHHIyLd2h4MgR+js6CXDLmJ6nDn3qW/tSYVVfrEJXPqx7S8iAQ/xVN
+         5i9m6YSuR+aPxlPqZXJKhXPrug/3msf7sjfMPthh4JzHwiKo2HGECfCbnyn5NpsCUNoI
+         AFxewlXeTvsdyYHt/FPSRMtSFk9Sg4Wx/8eUegeWtFCvoNfLjTq16r90gYgj2rxBL/NV
+         ZsDvywUV4al6wOYetF26Vwfydtm3oC9k7Pe0KFjNsc654Ouh33AQxznjLm9NxbRobYD2
+         X5V7oBSoqYAouuYKJPKmav2ej9huNojFaKGUK7jr1pYpSM55kKLeTHXGRYLrIXdqG+rJ
+         LFwg==
+X-Gm-Message-State: APjAAAVTd/vvHQYzh3pGEqJjdzp0c6DMLFwLb0zmKw+sVBpY6/by62lV
+        l0KJR72W5ApUe+lWjBzg+o47kQ==
+X-Google-Smtp-Source: APXvYqwCDsZwx3JqlSKZ/jtNC9d8ZgY8oQ7H6xusNpwXU92jWTRZ6s7nEBi/nveNevpoTBGOA/evIw==
+X-Received: by 2002:a24:8b07:: with SMTP id g7mr1288180ite.129.1556579795823;
+        Mon, 29 Apr 2019 16:16:35 -0700 (PDT)
 Received: from localhost.localdomain (107-0-94-194-ip-static.hfc.comcastbusiness.net. [107.0.94.194])
-        by smtp.gmail.com with ESMTPSA id s7sm8547686ioo.17.2019.04.29.16.16.33
+        by smtp.gmail.com with ESMTPSA id s7sm8547686ioo.17.2019.04.29.16.16.35
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 29 Apr 2019 16:16:33 -0700 (PDT)
+        Mon, 29 Apr 2019 16:16:35 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 X-Google-Original-From: Tom Herbert <tom@quantonium.net>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [PATCH v9 net-next 2/6] exthdrs: Move generic EH functions to exthdrs_common.c
-Date:   Mon, 29 Apr 2019 16:16:16 -0700
-Message-Id: <1556579780-1603-3-git-send-email-tom@quantonium.net>
+Subject: [PATCH v9 net-next 3/6] exthdrs: Registration of TLV handlers and parameters
+Date:   Mon, 29 Apr 2019 16:16:17 -0700
+Message-Id: <1556579780-1603-4-git-send-email-tom@quantonium.net>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1556579780-1603-1-git-send-email-tom@quantonium.net>
 References: <1556579780-1603-1-git-send-email-tom@quantonium.net>
@@ -58,349 +58,655 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move generic functions in exthdrs.c to new exthdrs_common.c so that
-exthdrs.c only contains functions that are specific to IPv6 processing,
-and exthdrs_common.c contains functions that are generic. These
-functions include those that will be used with IPv4 extension headers.
+Create a single TLV parameter table that holds meta information for IPv6
+Hop-by-Hop and Destination TLVs. The data structure is composed of a 256
+element array of u8's (one entry for each TLV type to allow O(1)
+lookup). Each entry provides an offset into an array of TLV proc data
+structures which follows the array of u8s. The TLV proc data structure
+contains parameters and handler functions for receiving and transmitting
+TLVs. The zeroth element in the TLV proc array provides default
+parameters for TLVs.
+
+A class attribute indicates the type of extension header in which the
+TLV may be used (e.g. Hop-by-Hop options, Destination options, or
+Destination options before the routing header).
+
+Functions are defined to manipulate entries in the TLV parameter table.
+
+* tlv_{set|unset}_proc set a TLV proc entry (ops and parameters)
+* tlv_{set|unset}_params set parameters only
+
+Receive TLV lookup and processing is modified to be a lookup in the TLV
+parameter table. An init table containing parameters for TLVs supported
+by the kernel is used to initialize the TLV table.
 
 Signed-off-by: Tom Herbert <tom@quantonium.net>
 ---
- net/ipv6/Kconfig          |   4 ++
- net/ipv6/Makefile         |   1 +
- net/ipv6/exthdrs.c        | 138 --------------------------------------------
- net/ipv6/exthdrs_common.c | 144 ++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 149 insertions(+), 138 deletions(-)
- create mode 100644 net/ipv6/exthdrs_common.c
+ include/net/ipv6.h         |  60 +++++++++-
+ include/uapi/linux/in6.h   |  10 ++
+ net/ipv6/exthdrs.c         |  52 +++++----
+ net/ipv6/exthdrs_common.c  | 278 +++++++++++++++++++++++++++++++++++++++++++++
+ net/ipv6/exthdrs_options.c |  62 ++++++----
+ 5 files changed, 415 insertions(+), 47 deletions(-)
 
-diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
-index 613282c..c88fc9b 100644
---- a/net/ipv6/Kconfig
-+++ b/net/ipv6/Kconfig
-@@ -2,9 +2,13 @@
- # IPv6 configuration
- #
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index e36c2c1..bb667ed 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -386,13 +386,63 @@ struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
+  *     and false, if it failed.
+  *     It MUST NOT touch skb->h.
+  */
+-struct tlvtype_proc {
+-	int	type;
+-	bool	(*func)(struct sk_buff *skb, int offset);
++struct tlv_ops {
++	bool	(*func)(unsigned int class, struct sk_buff *skb, int offset);
+ };
  
-+config EXTHDRS
-+	bool
+-extern const struct tlvtype_proc tlvprocdestopt_lst[];
+-extern const struct tlvtype_proc tlvprochopopt_lst[];
++struct tlv_params {
++	unsigned char rx_class : 3;
++};
 +
- #   IPv6 as module will cause a CRASH if you try to unload it
- menuconfig IPV6
- 	tristate "The IPv6 protocol"
-+	select EXTHDRS
- 	default y
- 	---help---
- 	  Support for IP version 6 (IPv6).
-diff --git a/net/ipv6/Makefile b/net/ipv6/Makefile
-index 72bd775..22438ca 100644
---- a/net/ipv6/Makefile
-+++ b/net/ipv6/Makefile
-@@ -48,6 +48,7 @@ obj-$(CONFIG_IPV6_SIT) += sit.o
- obj-$(CONFIG_IPV6_TUNNEL) += ip6_tunnel.o
- obj-$(CONFIG_IPV6_GRE) += ip6_gre.o
- obj-$(CONFIG_IPV6_FOU) += fou6.o
-+obj-$(CONFIG_EXTHDRS) += exthdrs_common.o
++struct tlv_proc {
++	struct tlv_ops ops;
++	struct tlv_params params;
++};
++
++struct tlv_proc_init {
++	int type;
++	struct tlv_proc proc;
++};
++
++struct tlv_param_table_data {
++	unsigned char entries[256];
++	unsigned char count;
++	struct rcu_head rcu;
++	struct tlv_proc procs[0];
++};
++
++struct tlv_param_table {
++	struct tlv_param_table_data __rcu *data;
++};
++
++extern struct tlv_param_table ipv6_tlv_param_table;
++
++int tlv_set_proc(struct tlv_param_table *tlv_param_table,
++		 unsigned char type, const struct tlv_proc *proc);
++int tlv_unset_proc(struct tlv_param_table *tlv_param_table, unsigned char type);
++int tlv_set_params(struct tlv_param_table *tlv_param_table,
++		   unsigned char type, const struct tlv_params *params);
++int tlv_unset_params(struct tlv_param_table *tlv_param_table,
++		     unsigned char type);
++
++int exthdrs_init(struct tlv_param_table *tlv_param_table,
++		 const struct tlv_proc_init *init_params,
++		 int num_init_params);
++void exthdrs_fini(struct tlv_param_table *tlv_param_table);
++
++int ipv6_exthdrs_options_init(void);
++void ipv6_exthdrs_options_exit(void);
++
++/* tlv_get_proc assumes rcu_read_lock is held */
++static inline struct tlv_proc *tlv_get_proc(
++		struct tlv_param_table *tlv_param_table,
++		unsigned int type)
++{
++	struct tlv_param_table_data *tpt =
++				rcu_dereference(tlv_param_table->data);
++
++	return &tpt->procs[tpt->entries[type]];
++}
  
- obj-y += addrconf_core.o exthdrs_core.o ip6_checksum.o ip6_icmp.o
- obj-$(CONFIG_INET) += output_core.o protocol.o $(ipv6-offload)
+ bool ipv6_opt_accepted(const struct sock *sk, const struct sk_buff *skb,
+ 		       const struct inet6_skb_parm *opt);
+diff --git a/include/uapi/linux/in6.h b/include/uapi/linux/in6.h
+index 9f2273a..8b9ac7f 100644
+--- a/include/uapi/linux/in6.h
++++ b/include/uapi/linux/in6.h
+@@ -297,4 +297,14 @@ struct in6_flowlabel_req {
+  * ...
+  * MRT6_MAX
+  */
++
++/* Flags for EH type that can use a TLV option */
++#define IPV6_TLV_CLASS_FLAG_HOPOPT	BIT(0)
++#define IPV6_TLV_CLASS_FLAG_RTRDSTOPT	BIT(1)
++#define IPV6_TLV_CLASS_FLAG_DSTOPT	BIT(2)
++#define IPV6_TLV_CLASS_MAX		((1 << 3) - 1)
++
++#define IPV6_TLV_CLASS_ANY_DSTOPT      (IPV6_TLV_CLASS_FLAG_RTRDSTOPT | \
++					IPV6_TLV_CLASS_FLAG_DSTOPT)
++
+ #endif /* _UAPI_LINUX_IN6_H */
 diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 55ca778..6dbacf1 100644
+index 6dbacf1..71a12a7 100644
 --- a/net/ipv6/exthdrs.c
 +++ b/net/ipv6/exthdrs.c
-@@ -788,144 +788,6 @@ void ipv6_push_frag_opts(struct sk_buff *skb, struct ipv6_txoptions *opt, u8 *pr
- }
- EXPORT_SYMBOL(ipv6_push_frag_opts);
+@@ -100,15 +100,14 @@ static bool ip6_tlvopt_unknown(struct sk_buff *skb, int optoff,
  
--struct ipv6_txoptions *
--ipv6_dup_options(struct sock *sk, struct ipv6_txoptions *opt)
--{
--	struct ipv6_txoptions *opt2;
--
--	opt2 = sock_kmalloc(sk, opt->tot_len, GFP_ATOMIC);
--	if (opt2) {
--		long dif = (char *)opt2 - (char *)opt;
--		memcpy(opt2, opt, opt->tot_len);
--		if (opt2->hopopt)
--			*((char **)&opt2->hopopt) += dif;
--		if (opt2->dst0opt)
--			*((char **)&opt2->dst0opt) += dif;
--		if (opt2->dst1opt)
--			*((char **)&opt2->dst1opt) += dif;
--		if (opt2->srcrt)
--			*((char **)&opt2->srcrt) += dif;
--		refcount_set(&opt2->refcnt, 1);
--	}
--	return opt2;
--}
--EXPORT_SYMBOL_GPL(ipv6_dup_options);
--
--static void ipv6_renew_option(int renewtype,
--			      struct ipv6_opt_hdr **dest,
--			      struct ipv6_opt_hdr *old,
--			      struct ipv6_opt_hdr *new,
--			      int newtype, char **p)
--{
--	struct ipv6_opt_hdr *src;
--
--	src = (renewtype == newtype ? new : old);
--	if (!src)
--		return;
--
--	memcpy(*p, src, ipv6_optlen(src));
--	*dest = (struct ipv6_opt_hdr *)*p;
--	*p += CMSG_ALIGN(ipv6_optlen(*dest));
--}
--
--/**
-- * ipv6_renew_options - replace a specific ext hdr with a new one.
-- *
-- * @sk: sock from which to allocate memory
-- * @opt: original options
-- * @newtype: option type to replace in @opt
-- * @newopt: new option of type @newtype to replace (user-mem)
-- * @newoptlen: length of @newopt
-- *
-- * Returns a new set of options which is a copy of @opt with the
-- * option type @newtype replaced with @newopt.
-- *
-- * @opt may be NULL, in which case a new set of options is returned
-- * containing just @newopt.
-- *
-- * @newopt may be NULL, in which case the specified option type is
-- * not copied into the new set of options.
-- *
-- * The new set of options is allocated from the socket option memory
-- * buffer of @sk.
-- */
--struct ipv6_txoptions *
--ipv6_renew_options(struct sock *sk, struct ipv6_txoptions *opt,
--		   int newtype, struct ipv6_opt_hdr *newopt)
--{
--	int tot_len = 0;
--	char *p;
--	struct ipv6_txoptions *opt2;
--
--	if (opt) {
--		if (newtype != IPV6_HOPOPTS && opt->hopopt)
--			tot_len += CMSG_ALIGN(ipv6_optlen(opt->hopopt));
--		if (newtype != IPV6_RTHDRDSTOPTS && opt->dst0opt)
--			tot_len += CMSG_ALIGN(ipv6_optlen(opt->dst0opt));
--		if (newtype != IPV6_RTHDR && opt->srcrt)
--			tot_len += CMSG_ALIGN(ipv6_optlen(opt->srcrt));
--		if (newtype != IPV6_DSTOPTS && opt->dst1opt)
--			tot_len += CMSG_ALIGN(ipv6_optlen(opt->dst1opt));
--	}
--
--	if (newopt)
--		tot_len += CMSG_ALIGN(ipv6_optlen(newopt));
--
--	if (!tot_len)
--		return NULL;
--
--	tot_len += sizeof(*opt2);
--	opt2 = sock_kmalloc(sk, tot_len, GFP_ATOMIC);
--	if (!opt2)
--		return ERR_PTR(-ENOBUFS);
--
--	memset(opt2, 0, tot_len);
--	refcount_set(&opt2->refcnt, 1);
--	opt2->tot_len = tot_len;
--	p = (char *)(opt2 + 1);
--
--	ipv6_renew_option(IPV6_HOPOPTS, &opt2->hopopt,
--			  (opt ? opt->hopopt : NULL),
--			  newopt, newtype, &p);
--	ipv6_renew_option(IPV6_RTHDRDSTOPTS, &opt2->dst0opt,
--			  (opt ? opt->dst0opt : NULL),
--			  newopt, newtype, &p);
--	ipv6_renew_option(IPV6_RTHDR,
--			  (struct ipv6_opt_hdr **)&opt2->srcrt,
--			  (opt ? (struct ipv6_opt_hdr *)opt->srcrt : NULL),
--			  newopt, newtype, &p);
--	ipv6_renew_option(IPV6_DSTOPTS, &opt2->dst1opt,
--			  (opt ? opt->dst1opt : NULL),
--			  newopt, newtype, &p);
--
--	opt2->opt_nflen = (opt2->hopopt ? ipv6_optlen(opt2->hopopt) : 0) +
--			  (opt2->dst0opt ? ipv6_optlen(opt2->dst0opt) : 0) +
--			  (opt2->srcrt ? ipv6_optlen(opt2->srcrt) : 0);
--	opt2->opt_flen = (opt2->dst1opt ? ipv6_optlen(opt2->dst1opt) : 0);
--
--	return opt2;
--}
--
--struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
--					  struct ipv6_txoptions *opt)
--{
--	/*
--	 * ignore the dest before srcrt unless srcrt is being included.
--	 * --yoshfuji
--	 */
--	if (opt && opt->dst0opt && !opt->srcrt) {
--		if (opt_space != opt) {
--			memcpy(opt_space, opt, sizeof(*opt_space));
--			opt = opt_space;
--		}
--		opt->opt_nflen -= ipv6_optlen(opt->dst0opt);
--		opt->dst0opt = NULL;
--	}
--
--	return opt;
--}
--EXPORT_SYMBOL_GPL(ipv6_fixup_options);
--
- /**
-  * fl6_update_dst - update flowi destination address with info given
-  *                  by srcrt option, if any.
+ /* Parse tlv encoded option header (hop-by-hop or destination) */
+ 
+-static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+-			  struct sk_buff *skb,
++static bool ip6_parse_tlv(unsigned int class, struct sk_buff *skb,
+ 			  int max_count)
+ {
+ 	int len = (skb_transport_header(skb)[1] + 1) << 3;
+ 	const unsigned char *nh = skb_network_header(skb);
+ 	int off = skb_network_header_len(skb);
+-	const struct tlvtype_proc *curr;
+ 	bool disallow_unknowns = false;
++	const struct tlv_proc *curr;
+ 	int tlv_count = 0;
+ 	int padlen = 0;
+ 
+@@ -117,12 +116,16 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+ 		max_count = -max_count;
+ 	}
+ 
+-	if (skb_transport_offset(skb) + len > skb_headlen(skb))
+-		goto bad;
++	if (skb_transport_offset(skb) + len > skb_headlen(skb)) {
++		kfree_skb(skb);
++		return false;
++	}
+ 
+ 	off += 2;
+ 	len -= 2;
+ 
++	rcu_read_lock();
++
+ 	while (len > 0) {
+ 		int optlen = nh[off + 1] + 2;
+ 		int i;
+@@ -162,19 +165,18 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+ 			if (tlv_count > max_count)
+ 				goto bad;
+ 
+-			for (curr = procs; curr->type >= 0; curr++) {
+-				if (curr->type == nh[off]) {
+-					/* type specific length/alignment
+-					   checks will be performed in the
+-					   func(). */
+-					if (curr->func(skb, off) == false)
+-						return false;
+-					break;
+-				}
++			curr = tlv_get_proc(&ipv6_tlv_param_table, nh[off]);
++			if ((curr->params.rx_class & class) && curr->ops.func) {
++				/* Handler will apply additional checks to
++				 * the TLV
++				 */
++				if (!curr->ops.func(class, skb, off))
++					goto bad_nofree;
++			} else if (!ip6_tlvopt_unknown(skb, off,
++						       disallow_unknowns)) {
++				/* No appropriate handler, TLV is unknown */
++				goto bad_nofree;
+ 			}
+-			if (curr->type < 0 &&
+-			    !ip6_tlvopt_unknown(skb, off, disallow_unknowns))
+-				return false;
+ 
+ 			padlen = 0;
+ 			break;
+@@ -183,10 +185,14 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+ 		len -= optlen;
+ 	}
+ 
+-	if (len == 0)
++	if (len == 0) {
++		rcu_read_unlock();
+ 		return true;
++	}
+ bad:
+ 	kfree_skb(skb);
++bad_nofree:
++	rcu_read_unlock();
+ 	return false;
+ }
+ 
+@@ -220,7 +226,7 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
+ 	dstbuf = opt->dst1;
+ #endif
+ 
+-	if (ip6_parse_tlv(tlvprocdestopt_lst, skb,
++	if (ip6_parse_tlv(IPV6_TLV_CLASS_FLAG_DSTOPT, skb,
+ 			  init_net.ipv6.sysctl.max_dst_opts_cnt)) {
+ 		skb->transport_header += extlen;
+ 		opt = IP6CB(skb);
+@@ -602,8 +608,13 @@ int __init ipv6_exthdrs_init(void)
+ 	if (ret)
+ 		goto out_destopt;
+ 
++	ret = ipv6_exthdrs_options_init();
++	if (ret)
++		goto out_nodata;
+ out:
+ 	return ret;
++out_nodata:
++	inet6_del_protocol(&nodata_protocol, IPPROTO_NONE);
+ out_destopt:
+ 	inet6_del_protocol(&destopt_protocol, IPPROTO_DSTOPTS);
+ out_rthdr:
+@@ -613,6 +624,7 @@ int __init ipv6_exthdrs_init(void)
+ 
+ void ipv6_exthdrs_exit(void)
+ {
++	ipv6_exthdrs_options_exit();
+ 	inet6_del_protocol(&nodata_protocol, IPPROTO_NONE);
+ 	inet6_del_protocol(&destopt_protocol, IPPROTO_DSTOPTS);
+ 	inet6_del_protocol(&rthdr_protocol, IPPROTO_ROUTING);
+@@ -643,7 +655,7 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
+ 		goto fail_and_free;
+ 
+ 	opt->flags |= IP6SKB_HOPBYHOP;
+-	if (ip6_parse_tlv(tlvprochopopt_lst, skb,
++	if (ip6_parse_tlv(IPV6_TLV_CLASS_FLAG_HOPOPT, skb,
+ 			  init_net.ipv6.sysctl.max_hbh_opts_cnt)) {
+ 		skb->transport_header += extlen;
+ 		opt = IP6CB(skb);
 diff --git a/net/ipv6/exthdrs_common.c b/net/ipv6/exthdrs_common.c
-new file mode 100644
-index 0000000..179861c
---- /dev/null
+index 179861c..0c0e32d 100644
+--- a/net/ipv6/exthdrs_common.c
 +++ b/net/ipv6/exthdrs_common.c
-@@ -0,0 +1,144 @@
-+// SPDX-License-Identifier: GPL-2.0
+@@ -142,3 +142,281 @@ struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
+ 	return opt;
+ }
+ EXPORT_SYMBOL_GPL(ipv6_fixup_options);
 +
-+/* Extension header and TLV library code that is not specific to IPv6. */
-+#include <linux/export.h>
-+#include <net/ipv6.h>
++/* TLV parameter table functions and structures */
 +
-+struct ipv6_txoptions *
-+ipv6_dup_options(struct sock *sk, struct ipv6_txoptions *opt)
++static void tlv_param_table_release(struct rcu_head *rcu)
 +{
-+	struct ipv6_txoptions *opt2;
++	struct tlv_param_table_data *tpt =
++	    container_of(rcu, struct tlv_param_table_data, rcu);
 +
-+	opt2 = sock_kmalloc(sk, opt->tot_len, GFP_ATOMIC);
-+	if (opt2) {
-+		long dif = (char *)opt2 - (char *)opt;
++	kvfree(tpt);
++}
 +
-+		memcpy(opt2, opt, opt->tot_len);
-+		if (opt2->hopopt)
-+			*((char **)&opt2->hopopt) += dif;
-+		if (opt2->dst0opt)
-+			*((char **)&opt2->dst0opt) += dif;
-+		if (opt2->dst1opt)
-+			*((char **)&opt2->dst1opt) += dif;
-+		if (opt2->srcrt)
-+			*((char **)&opt2->srcrt) += dif;
-+		refcount_set(&opt2->refcnt, 1);
++/* Default (unset) values for TLV parameters */
++static const struct tlv_proc tlv_default_proc = {
++};
++
++static size_t tlv_param_table_size(unsigned char count)
++{
++	return sizeof(struct tlv_param_table_data) +
++	    (count * sizeof(struct tlv_proc));
++}
++
++static DEFINE_MUTEX(tlv_mutex);
++
++/* mutex held */
++static int __tlv_set_proc(struct tlv_param_table *tlv_param_table,
++			  unsigned char type, const struct tlv_ops *ops,
++			  const struct tlv_params *params)
++{
++	struct tlv_param_table_data *tpt, *old;
++	struct tlv_proc *tproc;
++	unsigned char count, pos;
++
++	old = rcu_dereference_protected(tlv_param_table->data,
++					lockdep_is_held(&tlv_mutex));
++
++	if (old->entries[type]) {
++		/* Type is already set, modifying entry */
++		pos = old->entries[type];
++		count = old->count;
++
++		/* If ops is not provided, take them from existing proc */
++		if (!ops)
++			ops = &old->procs[pos].ops;
++	} else {
++		/* Type entry unset, need to create new entry */
++		pos = old->count;
++		count = pos + 1;
 +	}
-+	return opt2;
-+}
-+EXPORT_SYMBOL_GPL(ipv6_dup_options);
 +
-+static void ipv6_renew_option(int renewtype,
-+			      struct ipv6_opt_hdr **dest,
-+			      struct ipv6_opt_hdr *old,
-+			      struct ipv6_opt_hdr *new,
-+			      int newtype, char **p)
++	tpt = kvmalloc(tlv_param_table_size(count), GFP_KERNEL);
++	if (!tpt)
++		return -ENOMEM;
++
++	memcpy(tpt, old, tlv_param_table_size(old->count));
++
++	tproc = &tpt->procs[pos];
++	tproc->params = *params;
++	tproc->ops = ops ? *ops : tlv_default_proc.ops;
++
++	tpt->entries[type] = pos;
++	tpt->count = count;
++
++	rcu_assign_pointer(tlv_param_table->data, tpt);
++
++	call_rcu(&old->rcu, tlv_param_table_release);
++
++	return 0;
++}
++
++/* mutex held */
++static int __tlv_unset_proc(struct tlv_param_table *tlv_param_table,
++			    unsigned char type)
 +{
-+	struct ipv6_opt_hdr *src;
++	struct tlv_param_table_data *tpt, *old;
++	unsigned char pos;
++	int i;
 +
-+	src = (renewtype == newtype ? new : old);
-+	if (!src)
-+		return;
++	old = rcu_dereference_protected(tlv_param_table->data,
++					lockdep_is_held(&tlv_mutex));
 +
-+	memcpy(*p, src, ipv6_optlen(src));
-+	*dest = (struct ipv6_opt_hdr *)*p;
-+	*p += CMSG_ALIGN(ipv6_optlen(*dest));
++	if (!old->entries[type]) {
++		/* Type entry already unset, nothing to do */
++		return 0;
++	}
++
++	tpt = kvmalloc(tlv_param_table_size(old->count - 1), GFP_KERNEL);
++	if (!tpt)
++		return -ENOMEM;
++
++	pos = old->entries[type];
++
++	memcpy(tpt->procs, old->procs, pos * sizeof(struct tlv_proc));
++	memcpy(&tpt->procs[pos], &old->procs[pos + 1],
++	       (old->count - pos - 1) * sizeof(struct tlv_proc));
++
++	for (i = 0; i < 256; i++) {
++		if (old->entries[i] > pos)
++			tpt->entries[i] = old->entries[i] - 1;
++		else
++			tpt->entries[i] = old->entries[i];
++	}
++
++	/* Clear entry for type being unset (point to default params) */
++	tpt->entries[type] = 0;
++
++	tpt->count = old->count - 1;
++
++	rcu_assign_pointer(tlv_param_table->data, tpt);
++
++	call_rcu(&old->rcu, tlv_param_table_release);
++
++	return 0;
 +}
 +
-+/**
-+ * ipv6_renew_options - replace a specific ext hdr with a new one.
-+ *
-+ * @sk: sock from which to allocate memory
-+ * @opt: original options
-+ * @newtype: option type to replace in @opt
-+ * @newopt: new option of type @newtype to replace (user-mem)
-+ * @newoptlen: length of @newopt
-+ *
-+ * Returns a new set of options which is a copy of @opt with the
-+ * option type @newtype replaced with @newopt.
-+ *
-+ * @opt may be NULL, in which case a new set of options is returned
-+ * containing just @newopt.
-+ *
-+ * @newopt may be NULL, in which case the specified option type is
-+ * not copied into the new set of options.
-+ *
-+ * The new set of options is allocated from the socket option memory
-+ * buffer of @sk.
++static void __tlv_destroy_param_table(struct tlv_param_table *tlv_param_table)
++{
++	struct tlv_param_table_data *tpt;
++
++	mutex_lock(&tlv_mutex);
++
++	tpt = rcu_dereference_protected(tlv_param_table->data,
++					lockdep_is_held(&tlv_mutex));
++	if (tpt) {
++		rcu_assign_pointer(tlv_param_table->data, NULL);
++		call_rcu(&tpt->rcu, tlv_param_table_release);
++	}
++
++	mutex_unlock(&tlv_mutex);
++}
++
++int tlv_set_proc(struct tlv_param_table *tlv_param_table, unsigned char type,
++		 const struct tlv_proc *proc)
++{
++	int ret;
++
++	if (type < 2)
++		return -EINVAL;
++
++	mutex_lock(&tlv_mutex);
++	ret = __tlv_set_proc(tlv_param_table, type, &proc->ops,
++			     &proc->params);
++	mutex_unlock(&tlv_mutex);
++
++	return ret;
++}
++EXPORT_SYMBOL(tlv_set_proc);
++
++int tlv_unset_proc(struct tlv_param_table *tlv_param_table,
++		   unsigned char type)
++{
++	int ret;
++
++	if (type < 2)
++		return -EINVAL;
++
++	mutex_lock(&tlv_mutex);
++	ret = __tlv_unset_proc(tlv_param_table, type);
++	mutex_unlock(&tlv_mutex);
++
++	return ret;
++}
++EXPORT_SYMBOL(tlv_unset_proc);
++
++int tlv_set_params(struct tlv_param_table *tlv_param_table,
++		   unsigned char type, const struct tlv_params *params)
++{
++	int ret;
++
++	if (type < 2)
++		return -EINVAL;
++
++	mutex_lock(&tlv_mutex);
++	ret = __tlv_set_proc(tlv_param_table, type, NULL, params);
++	mutex_unlock(&tlv_mutex);
++
++	return ret;
++}
++EXPORT_SYMBOL(tlv_set_params);
++
++/* tlv_internal_proc_type is used to check it the TLV proc was set
++ * internally. This is deduced by checking if any operations are
++ * defined.
 + */
-+struct ipv6_txoptions *
-+ipv6_renew_options(struct sock *sk, struct ipv6_txoptions *opt,
-+		   int newtype, struct ipv6_opt_hdr *newopt)
++static bool tlv_internal_proc_type(struct tlv_proc *proc)
 +{
-+	int tot_len = 0;
-+	char *p;
-+	struct ipv6_txoptions *opt2;
++	return !!proc->ops.func;
++}
 +
-+	if (opt) {
-+		if (newtype != IPV6_HOPOPTS && opt->hopopt)
-+			tot_len += CMSG_ALIGN(ipv6_optlen(opt->hopopt));
-+		if (newtype != IPV6_RTHDRDSTOPTS && opt->dst0opt)
-+			tot_len += CMSG_ALIGN(ipv6_optlen(opt->dst0opt));
-+		if (newtype != IPV6_RTHDR && opt->srcrt)
-+			tot_len += CMSG_ALIGN(ipv6_optlen(opt->srcrt));
-+		if (newtype != IPV6_DSTOPTS && opt->dst1opt)
-+			tot_len += CMSG_ALIGN(ipv6_optlen(opt->dst1opt));
++int tlv_unset_params(struct tlv_param_table *tlv_param_table,
++		     unsigned char type)
++{
++	struct tlv_param_table_data *tpt;
++	struct tlv_proc *proc;
++	int entry, ret = 0;
++
++	mutex_lock(&tlv_mutex);
++
++	tpt = rcu_dereference_protected(tlv_param_table->data,
++					lockdep_is_held(&tlv_mutex));
++	if (!tpt)
++		goto out;
++
++	entry = tpt->entries[type];
++	if (!entry) {
++		/* Entry is already unset */
++		goto out;
 +	}
 +
-+	if (newopt)
-+		tot_len += CMSG_ALIGN(ipv6_optlen(newopt));
++	proc = &tpt->procs[entry];
 +
-+	if (!tot_len)
-+		return NULL;
++	if (tlv_internal_proc_type(proc)) {
++		/* TLV was set by internal source, so maintain
++		 * the non-parameter fields (i.e. the operations).
++		 */
++		ret = __tlv_set_proc(tlv_param_table, type, &proc->ops,
++				     &tlv_default_proc.params);
++	} else {
++		ret = __tlv_unset_proc(tlv_param_table, type);
++	}
 +
-+	tot_len += sizeof(*opt2);
-+	opt2 = sock_kmalloc(sk, tot_len, GFP_ATOMIC);
-+	if (!opt2)
-+		return ERR_PTR(-ENOBUFS);
++out:
++	mutex_unlock(&tlv_mutex);
 +
-+	memset(opt2, 0, tot_len);
-+	refcount_set(&opt2->refcnt, 1);
-+	opt2->tot_len = tot_len;
-+	p = (char *)(opt2 + 1);
-+
-+	ipv6_renew_option(IPV6_HOPOPTS, &opt2->hopopt,
-+			  (opt ? opt->hopopt : NULL),
-+			  newopt, newtype, &p);
-+	ipv6_renew_option(IPV6_RTHDRDSTOPTS, &opt2->dst0opt,
-+			  (opt ? opt->dst0opt : NULL),
-+			  newopt, newtype, &p);
-+	ipv6_renew_option(IPV6_RTHDR,
-+			  (struct ipv6_opt_hdr **)&opt2->srcrt,
-+			  (opt ? (struct ipv6_opt_hdr *)opt->srcrt : NULL),
-+			  newopt, newtype, &p);
-+	ipv6_renew_option(IPV6_DSTOPTS, &opt2->dst1opt,
-+			  (opt ? opt->dst1opt : NULL),
-+			  newopt, newtype, &p);
-+
-+	opt2->opt_nflen = (opt2->hopopt ? ipv6_optlen(opt2->hopopt) : 0) +
-+			  (opt2->dst0opt ? ipv6_optlen(opt2->dst0opt) : 0) +
-+			  (opt2->srcrt ? ipv6_optlen(opt2->srcrt) : 0);
-+	opt2->opt_flen = (opt2->dst1opt ? ipv6_optlen(opt2->dst1opt) : 0);
-+
-+	return opt2;
++	return ret;
 +}
-+EXPORT_SYMBOL(ipv6_renew_options);
++EXPORT_SYMBOL(tlv_unset_params);
 +
-+struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
-+					  struct ipv6_txoptions *opt)
++int exthdrs_init(struct tlv_param_table *tlv_param_table,
++		 const struct tlv_proc_init *tlv_init_params,
++		 int num_init_params)
 +{
-+	/* ignore the dest before srcrt unless srcrt is being included.
-+	 * --yoshfuji
-+	 */
-+	if (opt && opt->dst0opt && !opt->srcrt) {
-+		if (opt_space != opt) {
-+			memcpy(opt_space, opt, sizeof(*opt_space));
-+			opt = opt_space;
++	struct tlv_param_table_data *tpt;
++	size_t tsize;
++	int i;
++
++	tsize = tlv_param_table_size(num_init_params + 1);
++
++	tpt = kvmalloc(tsize, GFP_KERNEL);
++	if (!tpt)
++		return -ENOMEM;
++
++	memset(tpt, 0, tsize);
++
++	/* Zeroth TLV proc entry is default */
++	tpt->procs[0] = tlv_default_proc;
++
++	for (i = 0; i < num_init_params; i++) {
++		const struct tlv_proc_init *tpi = &tlv_init_params[i];
++		struct tlv_proc *tp = &tpt->procs[i + 1];
++
++		if (WARN_ON(tpi->type < 2)) {
++			 /* Padding TLV initialized? */
++			kvfree(tpt);
++			return -EINVAL;
 +		}
-+		opt->opt_nflen -= ipv6_optlen(opt->dst0opt);
-+		opt->dst0opt = NULL;
++		if (WARN_ON(tpt->entries[tpi->type])) {
++			/* TLV type already set */
++			kvfree(tpt);
++			return -EINVAL;
++		}
++
++		*tp = tpi->proc;
++		tpt->entries[tpi->type] = i + 1;
 +	}
 +
-+	return opt;
++	tpt->count = num_init_params + 1;
++
++	RCU_INIT_POINTER(tlv_param_table->data, tpt);
++
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(ipv6_fixup_options);
++EXPORT_SYMBOL(exthdrs_init);
++
++void exthdrs_fini(struct tlv_param_table *tlv_param_table)
++{
++	__tlv_destroy_param_table(tlv_param_table);
++}
++EXPORT_SYMBOL(exthdrs_fini);
+diff --git a/net/ipv6/exthdrs_options.c b/net/ipv6/exthdrs_options.c
+index 032e072..eb3ae2a 100644
+--- a/net/ipv6/exthdrs_options.c
++++ b/net/ipv6/exthdrs_options.c
+@@ -15,7 +15,7 @@
+ /* Destination options header */
+ 
+ #if IS_ENABLED(CONFIG_IPV6_MIP6)
+-static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
++static bool ipv6_dest_hao(unsigned int class, struct sk_buff *skb, int optoff)
+ {
+ 	struct ipv6_destopt_hao *hao;
+ 	struct inet6_skb_parm *opt = IP6CB(skb);
+@@ -74,16 +74,6 @@ static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
+ }
+ #endif
+ 
+-const struct tlvtype_proc tlvprocdestopt_lst[] = {
+-#if IS_ENABLED(CONFIG_IPV6_MIP6)
+-	{
+-		.type	= IPV6_TLV_HAO,
+-		.func	= ipv6_dest_hao,
+-	},
+-#endif
+-	{-1,			NULL}
+-};
+-
+ /* Hop-by-hop options */
+ 
+ /* Note: we cannot rely on skb_dst(skb) before we assign it in
+@@ -102,7 +92,7 @@ static inline struct net *ipv6_skb_net(struct sk_buff *skb)
+ 
+ /* Router Alert as of RFC 2711 */
+ 
+-static bool ipv6_hop_ra(struct sk_buff *skb, int optoff)
++static bool ipv6_hop_ra(unsigned int class, struct sk_buff *skb, int optoff)
+ {
+ 	const unsigned char *nh = skb_network_header(skb);
+ 
+@@ -120,7 +110,7 @@ static bool ipv6_hop_ra(struct sk_buff *skb, int optoff)
+ 
+ /* Jumbo payload */
+ 
+-static bool ipv6_hop_jumbo(struct sk_buff *skb, int optoff)
++static bool ipv6_hop_jumbo(unsigned int class, struct sk_buff *skb, int optoff)
+ {
+ 	const unsigned char *nh = skb_network_header(skb);
+ 	struct inet6_dev *idev = __in6_dev_get_safely(skb->dev);
+@@ -164,7 +154,8 @@ static bool ipv6_hop_jumbo(struct sk_buff *skb, int optoff)
+ 
+ /* CALIPSO RFC 5570 */
+ 
+-static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff)
++static bool ipv6_hop_calipso(unsigned int class, struct sk_buff *skb,
++			     int optoff)
+ {
+ 	const unsigned char *nh = skb_network_header(skb);
+ 
+@@ -184,18 +175,45 @@ static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff)
+ 	return false;
+ }
+ 
+-const struct tlvtype_proc tlvprochopopt_lst[] = {
++static const struct tlv_proc_init tlv_init_params[] __initconst = {
++#if IS_ENABLED(CONFIG_IPV6_MIP6)
+ 	{
+-		.type	= IPV6_TLV_ROUTERALERT,
+-		.func	= ipv6_hop_ra,
++		.type = IPV6_TLV_HAO,
++
++		.proc.ops.func = ipv6_dest_hao,
++		.proc.params.rx_class = IPV6_TLV_CLASS_FLAG_DSTOPT,
+ 	},
++#endif
+ 	{
+-		.type	= IPV6_TLV_JUMBO,
+-		.func	= ipv6_hop_jumbo,
++		.type = IPV6_TLV_ROUTERALERT,
++
++		.proc.ops.func = ipv6_hop_ra,
++		.proc.params.rx_class = IPV6_TLV_CLASS_FLAG_HOPOPT,
+ 	},
+ 	{
+-		.type	= IPV6_TLV_CALIPSO,
+-		.func	= ipv6_hop_calipso,
++		.type = IPV6_TLV_JUMBO,
++
++		.proc.ops.func	= ipv6_hop_jumbo,
++		.proc.params.rx_class = IPV6_TLV_CLASS_FLAG_HOPOPT,
++	},
++	{
++		.type = IPV6_TLV_CALIPSO,
++
++		.proc.ops.func = ipv6_hop_calipso,
++		.proc.params.rx_class = IPV6_TLV_CLASS_FLAG_HOPOPT,
+ 	},
+-	{ -1, }
+ };
++
++struct tlv_param_table __rcu ipv6_tlv_param_table;
++EXPORT_SYMBOL(ipv6_tlv_param_table);
++
++int __init ipv6_exthdrs_options_init(void)
++{
++	return exthdrs_init(&ipv6_tlv_param_table, tlv_init_params,
++			    ARRAY_SIZE(tlv_init_params));
++}
++
++void ipv6_exthdrs_options_exit(void)
++{
++	exthdrs_fini(&ipv6_tlv_param_table);
++}
 -- 
 2.7.4
 
