@@ -2,86 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1313EE04E
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 12:11:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5323E07D
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 12:26:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727730AbfD2KL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 06:11:28 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54210 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727428AbfD2KL2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 06:11:28 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        id S1727811AbfD2KZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 06:25:59 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:57060 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727608AbfD2KZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 06:25:58 -0400
+Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C00BDC0087;
+        Mon, 29 Apr 2019 10:25:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1556533559; bh=z5eTlFYWQgzvaQeVi4z2PR7OioSoOCan0A0M7ft+gn0=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=AtaFGGkjAPvJDpQd3JAVKtVDly3g731hAe5bIr4sHeExke95zn/ywMT/RRaUqgv3d
+         aZIdswU4TMX7BKDK5Lerp2xZDmO1rZgMV+4WZjRljGfwLdex6Pj2s0e/i4h38gdcoc
+         /c03GNuO59xmtVoLv43zbErL/1VMk5Gm8ZYXYFAWVtra4bulNwwRXqn8DfmSeJmEk1
+         Mm3fIfFtFfHbfDAoLSgUxSU1xHkzIJOggqQrXInHJiTFVyfEmueZVnrd+3qhtf2x/9
+         ehyTTdWmDDA9NJVgPr3DrWZK2tLXCjyr5O9BLG2/bqIJkTs5mMcNnwCOoUGZEEUW6e
+         5mQgl+6UZVZxg==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id 3865B400066;
-        Mon, 29 Apr 2019 10:11:26 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 29 Apr
- 2019 03:11:22 -0700
-Subject: Re: [PATCH] net_sched: force endianness annotation
-To:     Nicholas Mc Guire <hofrat@osadl.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-CC:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1556430899-11018-1-git-send-email-hofrat@osadl.org>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <07d36e94-aad4-a263-bf09-705ee1dd59ed@solarflare.com>
-Date:   Mon, 29 Apr 2019 11:11:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 1B09EA00B8;
+        Mon, 29 Apr 2019 10:25:56 +0000 (UTC)
+Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Mon, 29 Apr 2019 03:25:56 -0700
+Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
+ by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Mon,
+ 29 Apr 2019 12:25:54 +0200
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Subject: RE: [PATCH 3/7] net: stmmac: dma channel control register need to
+ be init first
+Thread-Topic: [PATCH 3/7] net: stmmac: dma channel control register need to
+ be init first
+Thread-Index: AQHU+n6DdNJICrCLmkmtbuchA6NOs6ZMVDIAgAaifDA=
+Date:   Mon, 29 Apr 2019 10:25:52 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B46E022@DE02WEMBXB.internal.synopsys.com>
+References: <1556126241-2774-1-git-send-email-weifeng.voon@intel.com>
+ <1556126241-2774-4-git-send-email-weifeng.voon@intel.com>
+ <D6759987A7968C4889FDA6FA91D5CBC8146EF098@PGSMSX103.gar.corp.intel.com>
+In-Reply-To: <D6759987A7968C4889FDA6FA91D5CBC8146EF098@PGSMSX103.gar.corp.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.107.19.176]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <1556430899-11018-1-git-send-email-hofrat@osadl.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24580.005
-X-TM-AS-Result: No-4.292800-4.000000-10
-X-TMASE-MatchedRID: O/y65JfDwwsOwH4pD14DsPHkpkyUphL9Nvjc2DbB99Wrkv7SfIzez2mt
-        ukJWdiprNJnt9TW/xwYACvZf/rOov2c/On6gI+zz84dsinZ5e1hAq6/y5AEOOvVbyY0/zdkG8z7
-        0XDTUjsZOk++lKId7iyISKQcUnlqDq8jCopVJlk10BEBFOTiHn30tCKdnhB581kTfEkyaZdz6C0
-        ePs7A07fhmFHnZFzVqIamWssUXa64BevIcQN9A5G+FnJlIEuK1YTtPBk8rKR4ak2Ci3GfcjitY1
-        vUCSu8aNiWmlXPkwJxfqo383V2C46tqoSd6FkMRh8xkx6AsMh4ZTSkqdqz5FucIl+0VmRmLNglg
-        0VTTR7s35c5BnKCu9g==
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.292800-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24580.005
-X-MDID: 1556532687-g3uCOSzhz_G4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/04/2019 06:54, Nicholas Mc Guire wrote:
-> While the endiannes is being handled correctly sparse was unhappy with
-> the missing annotation as be16_to_cpu()/be32_to_cpu() expects a __be16
-> respectively __be32.
-[...]
-> diff --git a/net/sched/em_cmp.c b/net/sched/em_cmp.c
-> index 1c8360a..3045ee1 100644
-> --- a/net/sched/em_cmp.c
-> +++ b/net/sched/em_cmp.c
-> @@ -41,7 +41,7 @@ static int em_cmp_match(struct sk_buff *skb, struct tcf_ematch *em,
->  		val = get_unaligned_be16(ptr);
->  
->  		if (cmp_needs_transformation(cmp))
-> -			val = be16_to_cpu(val);
-> +			val = be16_to_cpu((__force __be16)val);
->  		break;
-There should probably be a comment here to explain what's going on.  TBH
- it's probably a good general rule that any use of __force should have a
- comment explaining why it's needed.
-AFAICT, get_unaligned_be16(ptr) is (barring alignment) equivalent to
- be16_to_cpu(*(__be16 *)ptr).  But then calling be16_to_cpu() again on
- val is bogus; it's already CPU endian.  There's a distinct lack of
- documentation around as to the intended semantics of TCF_EM_CMP_TRANS,
- but it would seem either (__force u16)cpu_to_be16(val); (which preserves
- the existing semantics, that trans is a no-op on BE) or swab16(val);
- would make more sense.
+From: Voon, Weifeng <weifeng.voon@intel.com>
+Date: Thu, Apr 25, 2019 at 08:06:08
 
--Ed
+> > stmmac_init_chan() needs to be called before stmmac_init_rx_chan() and
+> > stmmac_init_tx_chan(). This is because if PBLx8 is to be used,
+> > "DMA_CH(#i)_Control.PBLx8" needs to be set before programming
+> > "DMA_CH(#i)_TX_Control.TxPBL" and "DMA_CH(#i)_RX_Control.RxPBL".
+> >=20
+> > Reviewed-by: Zhang, Baoli <baoli.zhang@intel.com>
+> > Signed-off-by: Weifeng Voon <weifeng.voon@intel.com>
+> > Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+
+This is a fix so it should belong to -net tree and it should have the=20
+"Fixes: " tag.
+
+Thanks,
+Jose Miguel Abreu
