@@ -2,123 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE3E9DAE1
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 05:53:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBAE6DAE2
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 05:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727146AbfD2Dxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Apr 2019 23:53:46 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3003 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726819AbfD2Dxq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Apr 2019 23:53:46 -0400
-Received: from DGGEML402-HUB.china.huawei.com (unknown [172.30.72.57])
-        by Forcepoint Email with ESMTP id 60D8B949FE01AB8477CA;
-        Mon, 29 Apr 2019 11:53:43 +0800 (CST)
-Received: from DGGEML532-MBS.china.huawei.com ([169.254.7.161]) by
- DGGEML402-HUB.china.huawei.com ([fe80::fca6:7568:4ee3:c776%31]) with mapi id
- 14.03.0439.000; Mon, 29 Apr 2019 11:53:33 +0800
-From:   "weiyongjun (A)" <weiyongjun1@huawei.com>
-To:     Jason Wang <jasowang@redhat.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-CC:     yuehaibing <yuehaibing@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "lirongqing@baidu.com" <lirongqing@baidu.com>,
-        nicolas dichtel <nicolas.dichtel@6wind.com>,
-        "3chas3@gmail.com" <3chas3@gmail.com>,
-        "wangli39@baidu.com" <wangli39@baidu.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Peter Xu <peterx@redhat.com>
-Subject: RE: [PATCH] tun: Fix use-after-free in tun_net_xmit
-Thread-Topic: [PATCH] tun: Fix use-after-free in tun_net_xmit
-Thread-Index: AQHU/W9g3sfuWPKNdEe3Jj6+nCJHZaZQYsSAgAARegCAAJO30P//pXyAgACp3ACAAIzUgIAAnq8w
-Date:   Mon, 29 Apr 2019 03:53:32 +0000
-Message-ID: <6AADFAC011213A4C87B956458587ADB4021F9A34@dggeml532-mbs.china.huawei.com>
-References: <71250616-36c1-0d96-8fac-4aaaae6a28d4@redhat.com>
- <20190428030539.17776-1-yuehaibing@huawei.com>
- <516ba6e4-359b-15d0-e169-d8cc1e989a4a@redhat.com>
- <2c823bbf-28c4-b43d-52d9-b0e0356f03ae@redhat.com>
- <6AADFAC011213A4C87B956458587ADB4021F7531@dggeml532-mbs.china.huawei.com>
- <b33ce1f9-3d65-2d05-648b-f5a6cfbd59ab@redhat.com>
- <CAM_iQpUfpruaFowbiTOY7aH4Ts-xcY4JACGLOT3CUjLqpg_zXw@mail.gmail.com>
- <528517144.24310809.1556504619719.JavaMail.zimbra@redhat.com>
-In-Reply-To: <528517144.24310809.1556504619719.JavaMail.zimbra@redhat.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.177.30.138]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726935AbfD2Dz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Apr 2019 23:55:27 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:33131 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726819AbfD2Dz1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Apr 2019 23:55:27 -0400
+Received: by mail-io1-f67.google.com with SMTP id u12so7825092iop.0
+        for <netdev@vger.kernel.org>; Sun, 28 Apr 2019 20:55:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nmacleod-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jDPpiQKr4eze974gr9FsFzy3eEO0l/JOq2xZNzn0bpI=;
+        b=R7ijgtwvp9rWAo+AkONW0AI5Lhdu9sUK1sgZ0JHFGTI7lasBVOil0goNk+Sut0780y
+         h2p2LyYCmleHqlPzDtNKj4Vk1DMg/68mC89wjftcXZhWuyZqnNkNij8BiyEAhQyWMboY
+         iZ/4hZ03dGBhBo/1uljevhUS0/74gtuiP/cbgr73I2ISuGLmZRy2tAxDSOiJ4brxoTcx
+         b5H2GHmlv0As2NlgS4Vn4lVuSTAeC71A9Zp9mXU44+IGCJlDXxdLTv5G6YqEf0pqKiv1
+         pmZ/lsFArgIHvwD+o4l1n4mUcSHYursJExEErbgUBdl69T1+qYWyo9Y7cSMSkTV9NDdf
+         VnaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jDPpiQKr4eze974gr9FsFzy3eEO0l/JOq2xZNzn0bpI=;
+        b=DFYrweogMDe7QdEV6+20uoltTqtHdu8ZPCuNew2Hw/CWMGgPNm02ZDS5Ws4doB8V7b
+         T83O0DEpEoB9SZCnkzxF9siOxlD6bA0bAuSpyarmuQdmEHBEm5080jiIxbF5fMWLN5qQ
+         NOf6e+P7ksQCYYagGXjpmoF8eq+Z0cDwuJAY9xbQZ8kGDBRM1V4vLF1j8lVQBej5oltj
+         BGTuefAVA2bxcF+UqyqBKH8fafe4Ez1faYQAYHAF3OUagi4vbvmP31lJEhpmQXC4QWJP
+         mQUZ7c4vf8p07QWPRl4OZ59WEwLLzd6tx7GErE/DPaFpPlfmkR48dit/rcfCv8e8vVf6
+         hRfw==
+X-Gm-Message-State: APjAAAU7FUw727wAN1/jFmA4vkyYYA34791XiBIyAS1DOC1RqImCydev
+        kHw70haWGrYTt8UqKTOIJVrxNA4jiRee3YvjN7aoVHbaOgA=
+X-Google-Smtp-Source: APXvYqwa5WRnwQboIRDQ/bXa3kwQZFC1krhxNWBNBzwkmhDKHWfFWELsbiEBOpIufumH3gQfpa0qETQIq5CNcm72+M4=
+X-Received: by 2002:a5d:8d13:: with SMTP id p19mr7300778ioj.147.1556510125625;
+ Sun, 28 Apr 2019 20:55:25 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <d2f64f21-6a1d-00bd-ec30-51c31acdb177@gmail.com>
+ <CAFbqK8kk8UqLXC=FPHjjYawHRozCmsKuV3WcD8x1y5HvYw_2rA@mail.gmail.com>
+ <a7d1f3fc-2ab3-33dc-b0f8-146fdfb46a1d@gmail.com> <CAFbqK8n3vVuTfX+ZAi-TN70HtY75u3fBiM-h0USqPuk9K3=FZg@mail.gmail.com>
+ <7dfaf793-1cb1-faef-d700-aa24ff4d50d9@gmail.com> <CAFbqK8m1kH-+KQG_ozWjSwM1Ti-UgpBys6sAo4j4k+PVPKnrAg@mail.gmail.com>
+ <e8b12136-3dc2-17e4-ccdf-f2fd2040ff7b@electromag.com.au>
+In-Reply-To: <e8b12136-3dc2-17e4-ccdf-f2fd2040ff7b@electromag.com.au>
+From:   Neil MacLeod <neil@nmacleod.com>
+Date:   Mon, 29 Apr 2019 04:55:12 +0100
+Message-ID: <CAFbqK8=yOnhNRJH0sdXK4i5TGev5yZcFc+W_6K1VY3kQZ64Eww@mail.gmail.com>
+Subject: Re: Testing of r8169 workaround removal
+To:     Phil Reid <preid@electromag.com.au>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+IE9uIFN1biwgQXByIDI4LCAyMDE5IGF0IDEyOjUxIEFNIEphc29uIFdhbmcgPGphc293YW5n
-QHJlZGhhdC5jb20+DQo+IHdyb3RlOg0KPiA+Pj4gdHVuX25ldF94bWl0KCkgZG9lc24ndCBoYXZl
-IHRoZSBjaGFuY2UgdG8NCj4gPj4+IGFjY2VzcyB0aGUgY2hhbmdlIGJlY2F1c2UgaXQgaG9sZGlu
-ZyB0aGUgcmN1X3JlYWRfbG9jaygpLg0KPiA+Pg0KPiA+Pg0KPiA+PiBUaGUgcHJvYmxlbSBpcyB0
-aGUgZm9sbG93aW5nIGNvZGVzOg0KPiA+Pg0KPiA+Pg0KPiA+PiAgICAgICAgICAtLXR1bi0+bnVt
-cXVldWVzOw0KPiA+Pg0KPiA+PiAgICAgICAgICAuLi4NCj4gPj4NCj4gPj4gICAgICAgICAgc3lu
-Y2hyb25pemVfbmV0KCk7DQo+ID4+DQo+ID4+IFdlIG5lZWQgbWFrZSBzdXJlIHRoZSBkZWNyZW1l
-bnQgb2YgdHVuLT5udW1xdWV1ZXMgYmUgdmlzaWJsZSB0bw0KPiByZWFkZXJzDQo+ID4+IGFmdGVy
-IHN5bmNocm9uaXplX25ldCgpLiBBbmQgaW4gdHVuX25ldF94bWl0KCk6DQo+ID4NCj4gPiBJdCBk
-b2Vzbid0IG1hdHRlciBhdCBhbGwuIFJlYWRlcnMgYXJlIG9rYXkgdG8gcmVhZCBpdCBldmVuIHRo
-ZXkgc3RpbGwgdXNlIHRoZQ0KPiA+IHN0YWxlIHR1bi0+bnVtcXVldWVzLCBhcyBsb25nIGFzIHRo
-ZSB0ZmlsZSBpcyBub3QgZnJlZWQgcmVhZGVycyBjYW4gcmVhZA0KPiA+IHdoYXRldmVyIHRoZXkg
-d2FudC4uLg0KPiANCj4gVGhpcyBpcyBvbmx5IHRydWUgaWYgd2Ugc2V0IFNPQ0tfUkNVX0ZSRUUs
-IGlzbid0IGl0Pw0KPiANCj4gPg0KPiA+IFRoZSBkZWNyZW1lbnQgb2YgdHVuLT5udW1xdWV1ZXMg
-aXMganVzdCBob3cgd2UgdW5wdWJsaXNoIHRoZSBvbGQNCj4gPiB0ZmlsZSwgaXQgaXMgc3RpbGwg
-dmFsaWQgZm9yIHJlYWRlcnMgdG8gcmVhZCBpdCBfYWZ0ZXJfIHVucHVibGlzaCwgd2Ugb25seSBu
-ZWVkDQo+ID4gdG8gd29ycnkgYWJvdXQgZnJlZSwgbm90IGFib3V0IHVucHVibGlzaC4gVGhpcyBp
-cyB0aGUgd2hvbGUgc3Bpcml0IG9mIFJDVS4NCj4gPg0KPiANCj4gVGhlIHBvaW50IGlzIHdlIGRv
-bid0IGNvbnZlcnQgdHVuLT5udW1xdWV1ZXMgdG8gUkNVIGJ1dCB1c2UNCj4gc3luY2hyb25pemVf
-bmV0KCkuDQo+IA0KPiA+IFlvdSBuZWVkIHRvIHJldGhpbmsgYWJvdXQgbXkgU09DS19SQ1VfRlJF
-RSBwYXRjaC4NCj4gDQo+IFRoZSBjb2RlIGlzIHdyb3RlIGJlZm9yZSBTT0NLX1JDVV9GUkVFIGlz
-IGludHJvZHVjZWQgYW5kIGFzc3VtZSBubw0KPiBkZS1yZWZlcmVuY2UgZnJvbSBkZXZpY2UgYWZ0
-ZXIgc3luY2hyb25pemVfbmV0KCkuIEl0IGRvZXNuJ3QgaGFybSB0bw0KPiBmaWd1cmUgb3V0IHRo
-ZSByb290IGNhdXNlIHdoaWNoIG1heSBnaXZlIHVzIG1vcmUgY29uZmlkZW5jZSB0byB0aGUgZml4
-DQo+IChlLmcgbGlrZSBTT0NLX1JDVV9GUkVFKS4NCj4gDQo+IEkgZG9uJ3Qgb2JqZWN0IHRvIGZp
-eCB3aXRoIFNPQ0tfUkNVX0ZSRUUsIGJ1dCB0aGVuIHdlIHNob3VsZCByZW1vdmUNCj4gdGhlIHJl
-ZHVuZGFudCBzeW5jaHJvbml6ZV9uZXQoKS4gQnV0IEkgc3RpbGwgcHJlZmVyIHRvIHN5bmNocm9u
-aXplDQo+IGV2ZXJ5dGhpbmcgZXhwbGljaXRseSBsaWtlIChjb21wbGV0ZWx5IHVudGVzdGVkKToN
-Cj4gDQo+IEZyb20gZGY5MWY3N2QzNWE2YWE3OTQzYjZmMmE3ZDRiMzI5OTkwODk2YTBmZSBNb24g
-U2VwIDE3IDAwOjAwOjAwDQo+IDIwMDENCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVk
-aGF0LmNvbT4NCj4gRGF0ZTogTW9uLCAyOSBBcHIgMjAxOSAxMDoyMTowNiArMDgwMA0KPiBTdWJq
-ZWN0OiBbUEFUQ0hdIHR1bnRhcDogc3luY2hyb25pemUgdGhyb3VnaCB0ZmlsZXMgaW5zdGVhZCBv
-ZiBudW1xdWV1ZXMNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEphc29uIFdhbmcgPGphc293YW5nQHJl
-ZGhhdC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9uZXQvdHVuLmMgfCAxMSArKysrKy0tLS0tLQ0K
-PiAgMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlvbnMoLSkNCj4gDQo+
-IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC90dW4uYyBiL2RyaXZlcnMvbmV0L3R1bi5jDQo+IGlu
-ZGV4IDgwYmZmMWI0ZWMxNy4uMDM3MTVmNjA1ZmI1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25l
-dC90dW4uYw0KPiArKysgYi9kcml2ZXJzL25ldC90dW4uYw0KPiBAQCAtNjk4LDYgKzY5OCw3IEBA
-IHN0YXRpYyB2b2lkIF9fdHVuX2RldGFjaChzdHJ1Y3QgdHVuX2ZpbGUgKnRmaWxlLCBib29sDQo+
-IGNsZWFuKQ0KPiANCj4gIAkJcmN1X2Fzc2lnbl9wb2ludGVyKHR1bi0+dGZpbGVzW2luZGV4XSwN
-Cj4gIAkJCQkgICB0dW4tPnRmaWxlc1t0dW4tPm51bXF1ZXVlcyAtIDFdKTsNCj4gKwkJcmN1X2Fz
-c2lnbl9wb2ludGVyKHR1bi0+dGZpbGVzW3R1bi0+bnVtcXVldWVzXSwgTlVMTCk7DQoNClNob3Vs
-ZCBiZSAicmN1X2Fzc2lnbl9wb2ludGVyKHR1bi0+dGZpbGVzW3R1bi0+bnVtcXVldWVzIC0gMV0s
-IE5VTEwpOyINCg0KPiAgCQludGZpbGUgPSBydG5sX2RlcmVmZXJlbmNlKHR1bi0+dGZpbGVzW2lu
-ZGV4XSk7DQo+ICAJCW50ZmlsZS0+cXVldWVfaW5kZXggPSBpbmRleDsNCj4gDQo+IEBAIC0xMDgy
-LDcgKzEwODMsNyBAQCBzdGF0aWMgbmV0ZGV2X3R4X3QgdHVuX25ldF94bWl0KHN0cnVjdCBza19i
-dWZmDQo+ICpza2IsIHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpDQo+ICAJdGZpbGUgPSByY3VfZGVy
-ZWZlcmVuY2UodHVuLT50ZmlsZXNbdHhxXSk7DQo+IA0KPiAgCS8qIERyb3AgcGFja2V0IGlmIGlu
-dGVyZmFjZSBpcyBub3QgYXR0YWNoZWQgKi8NCj4gLQlpZiAodHhxID49IHR1bi0+bnVtcXVldWVz
-KQ0KPiArCWlmICghdGZpbGUpDQo+ICAJCWdvdG8gZHJvcDsNCj4gDQo+ICAJaWYgKCFyY3VfZGVy
-ZWZlcmVuY2UodHVuLT5zdGVlcmluZ19wcm9nKSkNCj4gQEAgLTEzMDUsMTUgKzEzMDYsMTMgQEAg
-c3RhdGljIGludCB0dW5feGRwX3htaXQoc3RydWN0IG5ldF9kZXZpY2UgKmRldiwNCj4gaW50IG4s
-DQo+IA0KPiAgCXJjdV9yZWFkX2xvY2soKTsNCj4gDQo+IC0JbnVtcXVldWVzID0gUkVBRF9PTkNF
-KHR1bi0+bnVtcXVldWVzKTsNCj4gLQlpZiAoIW51bXF1ZXVlcykgew0KPiArCXRmaWxlID0gcmN1
-X2RlcmVmZXJlbmNlKHR1bi0+dGZpbGVzW3NtcF9wcm9jZXNzb3JfaWQoKSAlDQo+ICsJCQkJCSAg
-ICB0dW4tPm51bXF1ZXVlc10pOw0KPiArCWlmICghdGZpbGUpIHsNCj4gIAkJcmN1X3JlYWRfdW5s
-b2NrKCk7DQo+ICAJCXJldHVybiAtRU5YSU87IC8qIENhbGxlciB3aWxsIGZyZWUvcmV0dXJuIGFs
-bCBmcmFtZXMgKi8NCj4gIAl9DQo+IA0KPiAtCXRmaWxlID0gcmN1X2RlcmVmZXJlbmNlKHR1bi0+
-dGZpbGVzW3NtcF9wcm9jZXNzb3JfaWQoKSAlDQo+IC0JCQkJCSAgICBudW1xdWV1ZXNdKTsNCj4g
-LQ0KPiAgCXNwaW5fbG9jaygmdGZpbGUtPnR4X3JpbmcucHJvZHVjZXJfbG9jayk7DQo+ICAJZm9y
-IChpID0gMDsgaSA8IG47IGkrKykgew0KPiAgCQlzdHJ1Y3QgeGRwX2ZyYW1lICp4ZHAgPSBmcmFt
-ZXNbaV07DQo+IC0tDQo+IDIuMTkuMQ0K
+Phil
+
+Many thanks - you've nailed it!
+
+Reverting the workaround from Heiner, and also
+fc8f36de77111bf925d19f347c2113, resulted in 5.0.6 syncing at 10Mbps
+after resuming from S3 instead of the 1000Mbps it syncs at boot.
+
+Hopefully this is helpful in understanding why the workaround is no
+longer required.
+
+Thanks all
+Neil
+
+On Mon, 29 Apr 2019 at 04:20, Phil Reid <preid@electromag.com.au> wrote:
+>
+> On 29/04/2019 6:05 am, Neil MacLeod wrote:
+> > Hi Heiner
+> >
+> > 5.0.6 is the first kernel that does NOT require the workaround.
+> >
+> > In 5.0.6 the only obvious r8169 change (to my untrained eyes) is:
+> >
+> > https://github.com/torvalds/linux/commit/4951fc65d9153deded3d066ab371a61977c96e8a
+> >
+> > but reverting this change in addition to the workaround makes no
+> > difference, the resulting kernel still resumes at 1000Mbps so I'm not
+> > sure what other change in .5.0.6 might be responsible for this changed
+> > behaviour. If you can think of anything I'll give it a try!
+> >
+> > Regards
+> > Neil
+>
+> The symptom sounds very similar to a problem I had with 1G link only linking at 10M.
+>
+> Perhaps have a look at:
+> net: phy: don't clear BMCR in genphy_soft_reset
+>
+> https://www.spinics.net/lists/netdev/msg559627.html
+>
+> Which looks to have been added in 5.0.6
+> commit  fc8f36de77111bf925d19f347c21134542941a3c
+>
+>
+> >
+> > PS. A while ago (5 Dec 2018 to be precise!) I emailed you about the
+> > ASPM issue which it looks like you may have fixed in 5.1-rc5[1].
+> > Unfortunately I don't have this issue myself, and I've been trying to
+> > get feedback from the bug reporter[2,3] "Matt Devo" without much
+> > success but will confirm to you if/when he replies.
+> >
+> > 1, https://bugzilla.kernel.org/show_bug.cgi?id=202945
+> > 2. https://forum.kodi.tv/showthread.php?tid=298462&pid=2845944#pid2845944
+> > 3. https://forum.kodi.tv/showthread.php?tid=343069&pid=2850123#pid2850123
+> >
+> > On Sun, 28 Apr 2019 at 19:43, Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> >>
+> >> Interesting, thanks for your efforts! I submitted the patch removing
+> >> the workaround because it seems now (at least since 5.1-rc1) we're fine.
+> >>
+> >> Heiner
+> >>
+> >> On 28.04.2019 20:40, Neil MacLeod wrote:
+> >>> Hi Heiner
+> >>>
+> >>> I'd already kicked off a 5.0.2 build without the workaround and I've
+> >>> tested that now, and it resumes at 10Mbps, so it may still be worth
+> >>> identifying the exact 5.0.y version when it was fixed just in case
+> >>> that provides some understanding of how it was fixed... I'll test the
+> >>> remaining kernels between 5.0.3 and 5.0.10 as that's not much extra
+> >>> work and let you know what I find!
+> >>>
+> >>> Regards
+> >>> Neil
+> >>>
+> >>> On Sun, 28 Apr 2019 at 18:39, Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> >>>>
+> >>>> Hi Neil,
+> >>>>
+> >>>> thanks for reporting back. Interesting, then the root cause of the
+> >>>> issue seems to have been in a different corner. On my hardware
+> >>>> I'm not able to reproduce the issue. It's not that relevant with which
+> >>>> exact version the issue vanished. Based on your results I'll just
+> >>>> remove the workaround on net-next (adding your Tested-by).
+> >>>>
+> >>>> Heiner
+> >>>>
+> >>>>
+> >>>> On 28.04.2019 19:30, Neil MacLeod wrote:
+> >>>>> Hi Heiner
+> >>>>>
+> >>>>> Do you know if this is already fixed in 5.1-rc6 (Linus Torvalds tree),
+> >>>>> as in order to test your request I thought I would reproduce the issue
+> >>>>> with plain 5.1-rc6 with the workaround removed, however without the
+> >>>>> workaround 5.1-rc6 is resuming correctly at 1000Mbps.
+> >>>>>
+> >>>>> I went back to 4.19-rc4 (which we know is brroken) and I can reproduce
+> >>>>> the issue with the PC (Revo 3700) resuming at 10Mbps, but with 5.1-rc6
+> >>>>> I can no longer reproduce the issue when the workaround is removed.
+> >>>>>
+> >>>>> I also tested 5.0.10 without the workaround, and again 5.0.10 is
+> >>>>> resuming correctly at 1000Mbps.
+> >>>>>
+> >>>>> I finally tested 4.19.23 without the workaround (the last iteration of
+> >>>>> this kernel I published) and this does NOT resume correctly at
+> >>>>> 1000Mbps (it resumes at 10Mbps).
+> >>>>>
+> >>>>> I'll test a few more iterations of 5.0.y to see if I can identify when
+> >>>>> it was "fixed" but if you have any suggestions when it might have been
+> >>>>> fixed I can try to confirm this that - currently it's somewhere
+> >>>>> between 4.19.24 and 5.0.10!
+> >>>>>
+> >>>>> Regards
+> >>>>> Neil
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>>
+> >>>>> On Sun, 28 Apr 2019 at 14:33, Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> >>>>>>
+> >>>>>> Hi Neil,
+> >>>>>>
+> >>>>>> you once reported the original issue resulting in this workaround.
+> >>>>>> This workaround shouldn't be needed any longer, but I have no affected HW
+> >>>>>> to test on. Do you have the option to apply the patch below to latest
+> >>>>>> net-next and test link speed after resume from suspend?
+> >>>>>> git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
+> >>>>>> That would be much appreciated.
+> >>>>>>
+> >>>>>> Heiner
+> >>>>>>
+> >>>>>> ----------------------------------------------------------------
+> >>>>>>
+> >>>>>> After 8c90b795e90f ("net: phy: improve genphy_soft_reset") this
+> >>>>>> workaround shouldn't be needed any longer. However I don't have
+> >>>>>> affected hardware so I can't test it.
+> >>>>>>
+> >>>>>> This was the bug report leading to the workaround:
+> >>>>>> https://bugzilla.kernel.org/show_bug.cgi?id=201081
+> >>>>>>
+> >>>>>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> >>>>>> ---
+> >>>>>>   drivers/net/ethernet/realtek/r8169.c | 8 --------
+> >>>>>>   1 file changed, 8 deletions(-)
+> >>>>>>
+> >>>>>> diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
+> >>>>>> index 383242df0..d4ec08e37 100644
+> >>>>>> --- a/drivers/net/ethernet/realtek/r8169.c
+> >>>>>> +++ b/drivers/net/ethernet/realtek/r8169.c
+> >>>>>> @@ -4083,14 +4083,6 @@ static void rtl8169_init_phy(struct net_device *dev, struct rtl8169_private *tp)
+> >>>>>>          phy_speed_up(tp->phydev);
+> >>>>>>
+> >>>>>>          genphy_soft_reset(tp->phydev);
+> >>>>>> -
+> >>>>>> -       /* It was reported that several chips end up with 10MBit/Half on a
+> >>>>>> -        * 1GBit link after resuming from S3. For whatever reason the PHY on
+> >>>>>> -        * these chips doesn't properly start a renegotiation when soft-reset.
+> >>>>>> -        * Explicitly requesting a renegotiation fixes this.
+> >>>>>> -        */
+> >>>>>> -       if (tp->phydev->autoneg == AUTONEG_ENABLE)
+> >>>>>> -               phy_restart_aneg(tp->phydev);
+> >>>>>>   }
+> >>>>>>
+> >>>>>>   static void rtl_rar_set(struct rtl8169_private *tp, u8 *addr)
+> >>>>>> --
+> >>>>>> 2.21.0
+> >>>>>
+> >>>>
+> >>>
+> >>
+> >
+> >
+>
+>
+> --
+> Regards
+> Phil Reid
+>
+> ElectroMagnetic Imaging Technology Pty Ltd
+> Development of Geophysical Instrumentation & Software
+> www.electromag.com.au
+>
+> 3 The Avenue, Midland WA 6056, AUSTRALIA
+> Ph: +61 8 9250 8100
+> Fax: +61 8 9250 7100
+> Email: preid@electromag.com.au
