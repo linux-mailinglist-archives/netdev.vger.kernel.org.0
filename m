@@ -2,280 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB6A0ED55
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 01:32:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49443ED59
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 01:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729147AbfD2Xcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 19:32:53 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:45916 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728748AbfD2Xcx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 19:32:53 -0400
-Received: by mail-io1-f66.google.com with SMTP id e8so10541539ioe.12;
-        Mon, 29 Apr 2019 16:32:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FHZfi5iW6HeO4gNAYB84MWqeizOGnBzEIRUuiVrwJMk=;
-        b=DA1dD8zjmeBAeA1Ee0lzq8z1DPv/5z9EkHCvdNJsl9ufaIGEAcTgawaTU0HktsV/wt
-         LMIWEAq0J/Ug+M23/B2TcLWn0daxB5B49FfBJ6oFbYjLHEoPp2cl3fhfS342JvkNPAno
-         5zWRJ+94cOJXDlbuTkZ5AkVrSOHiryGZtwsmthriEzUmjjG9d0AqqiiGSVPocdzIh907
-         YvaJxfhnzmVePC9V+H5WNWPE6Z1jcsIhuSUGt8bp62LGCEJvHMzjDNC0xoDhhwfLflUh
-         0xoaE1nQ732BigqMzlUbaLwvOL8bU35fSO5hfx75NZRMVLhhtlxD7jWIdwRoGqOh1dac
-         aJTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FHZfi5iW6HeO4gNAYB84MWqeizOGnBzEIRUuiVrwJMk=;
-        b=jyxWYKeccIk0+re2Hgxwwx45NzQZThh0Hlhuan/YvdOZp4/VquHHEANU4l4g8xyybv
-         xdYeKdyHd7rtJC5gfkFY3F0B/MjXHCzLXr6V7jrLf9hktgtonEqTgYNfKZHuZBvrYoCG
-         3XtxbUCW9Lv64FnlGol1aYHf5nqCPFNVIH6IL/FW0TNsVuyywLiDXmh0zfjYioGhL6qL
-         LjleA22EMZvMQ8ya53Bi16ipznexvbQQxTBqrZ7ftFXkS8M6idCGmF4jmBdU+Rji9OeU
-         9tIyT8bAG5LXyBUMp15WkUqIxOEeswmQcpdFfZTbWJZ0VqYiTp7Ku0EjSdceRadq0Ata
-         EbJg==
-X-Gm-Message-State: APjAAAXpt80d9mAxxqdWXz70cavdfQcgxO944Y8wqHg/Em9hyzk8WKgf
-        LscckoO38Ytyhktote8M3J/2/DYmIskPxb4n3xU=
-X-Google-Smtp-Source: APXvYqywEpn1WRJzCRSeJYcynIwRtSUCWThETR4iLXnUkIhfVMxUQN9YQ9NNXxUslGlgFc8TfvJfQ0SOWw+vOXBueJw=
-X-Received: by 2002:a5d:8a02:: with SMTP id w2mr24390895iod.89.1556580771889;
- Mon, 29 Apr 2019 16:32:51 -0700 (PDT)
+        id S1729147AbfD2Xhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 19:37:38 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:58934 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729065AbfD2Xhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 19:37:38 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x3TNYMjX189556;
+        Mon, 29 Apr 2019 23:37:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=corp-2018-07-02;
+ bh=R4b/aXnANLbgB03RsAUPJ7vkeGgzs0Q1hSYdoj2f0Ys=;
+ b=hCVPZ9+x8eHACgctSyPLl0Xoi1A39jA9TPR/MgwB0zPmnE4BdAuH++Y4Jg8HoJnObbmT
+ qZZ+jEKYiDyUmHvkZguPzM1+f5NFWUlc+Wh4rzE1qc4wL6tRWZqLiB9YCEptR2ak88+C
+ sC+GbecyXgpQXwQaLvC6jq+3UfeqFuQ6TYbKlJNe1DenMOuiUca2glqdw2CUysxmrFSO
+ 3JETXFsdaPjaFq+d9nNMP7Mhz76ScBv28IFvW17VTboAw+AX+pKo6Cv2G1klxTyujKyx
+ X33pv5u8iMX8/EENiieQEtY6pBr29ZZngD1/x4f8IqUtUX3EX1RTMohBJCeEEkXiCN3i Yg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 2s4fqq1aub-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 29 Apr 2019 23:37:30 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x3TNbT98164619;
+        Mon, 29 Apr 2019 23:37:29 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 2s4d4a71py-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 29 Apr 2019 23:37:29 +0000
+Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x3TNbPRb022224;
+        Mon, 29 Apr 2019 23:37:26 GMT
+Received: from userv0022.oracle.com (/10.11.38.116)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 29 Apr 2019 16:37:25 -0700
+From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     santosh.shilimkar@oracle.com
+Subject: [net-next][PATCH v2 0/2] rds: handle unsupported rdma request to fs dax memory
+Date:   Mon, 29 Apr 2019 16:37:18 -0700
+Message-Id: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-References: <20190429095227.9745-1-quentin.monnet@netronome.com> <20190429095227.9745-2-quentin.monnet@netronome.com>
-In-Reply-To: <20190429095227.9745-2-quentin.monnet@netronome.com>
-From:   Y Song <ys114321@gmail.com>
-Date:   Mon, 29 Apr 2019 16:32:15 -0700
-Message-ID: <CAH3MdRUQn=ycpcDLbLxGAZwGhnVMoD-avPPcSCopAtwof4czNw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/6] tools: bpftool: add --log-libbpf option to
- get debug info from libbpf
-To:     Quentin Monnet <quentin.monnet@netronome.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9242 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=894
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1904290153
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9242 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=925 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1904290153
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 2:53 AM Quentin Monnet
-<quentin.monnet@netronome.com> wrote:
->
-> libbpf has three levels of priority for output: warn, info, debug. By
-> default, debug output is not printed to stderr.
->
-> Add a new "--log-libbpf LOG_LEVEL" option to bpftool to provide more
-> flexibility on the log level for libbpf. LOG_LEVEL is a comma-separated
-> list of levels of log to print ("warn", "info", "debug"). The value
-> corresponding to the default behaviour would be "warn,info".
+RDS doesn't support RDMA on memory apertures that require On Demand
+Paging (ODP), such as FS DAX memory. User applications can try to use
+RDS to perform RDMA over such memories and since it doesn't report any
+failure, it can lead to unexpected issues like memory corruption when
+a couple of out of sync file system operations like ftruncate etc. are
+performed.
 
-Do you think option like "warn,debug" will be useful for bpftool users?
-Maybe at bpftool level, we could allow user only to supply minimum level
-for log output, e.g., "info" will output "warn,info"?
+The patch adds a check so that such an attempt to RDMA to/from memory
+apertures requiring ODP will fail. A sysctl is added to indicate
+whether RDMA on ODP memory is supported.
 
->
-> Internally, we simply use the function provided by libbpf to replace the
-> default printing function by one that prints logs for all required
-> levels.
->
-> Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> ---
->  .../bpftool/Documentation/bpftool-prog.rst    |  6 ++
->  tools/bpf/bpftool/bash-completion/bpftool     | 41 ++++++++++++-
->  tools/bpf/bpftool/main.c                      | 61 ++++++++++++++++---
->  3 files changed, 100 insertions(+), 8 deletions(-)
->
-> diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-> index e8118544d118..77d9570488d1 100644
-> --- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-> +++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-> @@ -174,6 +174,12 @@ OPTIONS
->                   Do not automatically attempt to mount any virtual file system
->                   (such as tracefs or BPF virtual file system) when necessary.
->
-> +       --log-libbpf *LOG_LEVEL*
-> +                 Set the log level for libbpf output when attempting to load
-> +                 programs. *LOG_LEVEL* must be a comma-separated list of the
-> +                 levels of information to print, which can be **warn**,
-> +                 **info** or **debug**. The default is **warn,info**.
-> +
->  EXAMPLES
->  ========
->  **# bpftool prog show**
-> diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-> index 50e402a5a9c8..a232da1b158d 100644
-> --- a/tools/bpf/bpftool/bash-completion/bpftool
-> +++ b/tools/bpf/bpftool/bash-completion/bpftool
-> @@ -44,6 +44,34 @@ _bpftool_one_of_list()
->      COMPREPLY+=( $( compgen -W "$*" -- "$cur" ) )
->  }
->
-> +# Complete a comma-separated list of items. For example:
-> +#     _bpftool_cslist "abc def ghi"
-> +# will suggest:
-> +#     - "abc" and "abc,"        to complete "a"
-> +#     - "abc,def" and "abc,ghi" to complete "abc,"
-> +#     - "abc,ghi,def"           to complete "abc,ghi,"
-> +_bpftool_cslist()
-> +{
-> +    local array_arg array_cur array_comp prevsubwords w ifs_back
-> +    read -r -a array_arg <<< "$*"
-> +    ifs_back=$IFS
-> +    IFS="," read -r -a array_cur <<< "$cur"
-> +    IFS=$ifs_back
-> +    prevsubwords=${cur%,*}
-> +    for w in "${array_arg[@]}"; do
-> +            if [[ ! "$cur" =~ "," ]]; then
-> +                array_comp+=( "$w" "$w," )
-> +            elif [[ ! "$cur" =~ "$w," ]]; then
-> +                if [[ "${#array_arg[@]}" > ${#array_cur[@]} ]]; then
-> +                    array_comp+=( "$prevsubwords,$w" "$prevsubwords,$w," )
-> +                else
-> +                    array_comp+=( "$prevsubwords,$w" )
-> +                fi
-> +            fi
-> +    done
-> +    COMPREPLY+=( $( compgen -W "${array_comp[*]}" -- "$cur" ) )
-> +}
-> +
->  _bpftool_get_map_ids()
->  {
->      COMPREPLY+=( $( compgen -W "$( bpftool -jp map  2>&1 | \
-> @@ -181,7 +209,7 @@ _bpftool()
->
->      # Deal with options
->      if [[ ${words[cword]} == -* ]]; then
-> -        local c='--version --json --pretty --bpffs --mapcompat'
-> +        local c='--version --json --pretty --bpffs --mapcompat --log-libbpf'
->          COMPREPLY=( $( compgen -W "$c" -- "$cur" ) )
->          return 0
->      fi
-> @@ -203,12 +231,23 @@ _bpftool()
->              COMPREPLY=( $( compgen -W 'file' -- "$cur" ) )
->              return 0
->              ;;
-> +        --log-libbpf)
-> +            _bpftool_cslist 'warn info debug'
-> +            return 0
-> +            ;;
->      esac
->
->      # Remove all options so completions don't have to deal with them.
->      local i
->      for (( i=1; i < ${#words[@]}; )); do
->          if [[ ${words[i]::1} == - ]]; then
-> +            # Remove arguments for options, if necessary
-> +            case ${words[i]} in
-> +                --log-libbpf)
-> +                    words=( "${words[@]:0:i+1}" "${words[@]:i+2}" )
-> +                    [[ $i -le $cword ]] && cword=$(( cword - 1 ))
-> +                    ;;
-> +            esac
->              words=( "${words[@]:0:i}" "${words[@]:i+1}" )
->              [[ $i -le $cword ]] && cword=$(( cword - 1 ))
->          else
-> diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-> index 1ac1fc520e6a..6318be6feb5c 100644
-> --- a/tools/bpf/bpftool/main.c
-> +++ b/tools/bpf/bpftool/main.c
-> @@ -10,6 +10,7 @@
->  #include <string.h>
->
->  #include <bpf.h>
-> +#include <libbpf.h>
->
->  #include "main.h"
->
-> @@ -26,6 +27,7 @@ bool json_output;
->  bool show_pinned;
->  bool block_mount;
->  int bpf_flags;
-> +int log_level_libbpf;
->  struct pinned_obj_table prog_table;
->  struct pinned_obj_table map_table;
->
-> @@ -77,6 +79,46 @@ static int do_version(int argc, char **argv)
->         return 0;
->  }
->
-> +static int __printf(2, 0)
-> +print_selected_levels(enum libbpf_print_level level, const char *format,
-> +                     va_list args)
-> +{
-> +       if (!(log_level_libbpf & (1 << level)))
-> +               return 0;
-> +
-> +       return vfprintf(stderr, format, args);
-> +}
-> +
-> +static int set_libbpf_loglevel(const char *log_str)
-> +{
-> +       char *log_str_cpy, *token;
-> +
-> +       log_str_cpy = strdup(log_str);
-> +       if (!log_str_cpy) {
-> +               p_err("mem alloc failed");
-> +               return -1;
-> +       }
-> +
-> +       token = strtok(log_str_cpy, ",");
-> +       while (token) {
-> +               if (is_prefix(token, "warn"))
-> +                       log_level_libbpf |= (1 << LIBBPF_WARN);
-> +               else if (is_prefix(token, "info"))
-> +                       log_level_libbpf |= (1 << LIBBPF_INFO);
-> +               else if (is_prefix(token, "debug"))
-> +                       log_level_libbpf |= (1 << LIBBPF_DEBUG);
-> +               else
-> +                       p_info("unrecognized log level for libbpf: %s", token);
-> +
-> +               token = strtok(NULL, ",");
-> +       }
-> +       free(log_str_cpy);
-> +
-> +       libbpf_set_print(print_selected_levels);
-> +
-> +       return 0;
-> +}
-> +
->  int cmd_select(const struct cmd *cmds, int argc, char **argv,
->                int (*help)(int argc, char **argv))
->  {
-> @@ -310,13 +352,14 @@ static int do_batch(int argc, char **argv)
->  int main(int argc, char **argv)
->  {
->         static const struct option options[] = {
-> -               { "json",       no_argument,    NULL,   'j' },
-> -               { "help",       no_argument,    NULL,   'h' },
-> -               { "pretty",     no_argument,    NULL,   'p' },
-> -               { "version",    no_argument,    NULL,   'V' },
-> -               { "bpffs",      no_argument,    NULL,   'f' },
-> -               { "mapcompat",  no_argument,    NULL,   'm' },
-> -               { "nomount",    no_argument,    NULL,   'n' },
-> +               { "json",       no_argument,            NULL,   'j' },
-> +               { "help",       no_argument,            NULL,   'h' },
-> +               { "pretty",     no_argument,            NULL,   'p' },
-> +               { "version",    no_argument,            NULL,   'V' },
-> +               { "bpffs",      no_argument,            NULL,   'f' },
-> +               { "mapcompat",  no_argument,            NULL,   'm' },
-> +               { "nomount",    no_argument,            NULL,   'n' },
-> +               { "log-libbpf", required_argument,      NULL,   'd' },
->                 { 0 }
->         };
->         int opt, ret;
-> @@ -362,6 +405,10 @@ int main(int argc, char **argv)
->                 case 'n':
->                         block_mount = true;
->                         break;
-> +               case 'd':
-> +                       if (set_libbpf_loglevel(optarg))
-> +                               return -1;
-> +                       break;
->                 default:
->                         p_err("unrecognized option '%s'", argv[optind - 1]);
->                         if (json_output)
-> --
-> 2.17.1
->
+
+Hans Westgaard Ry (1):
+  rds: handle unsupported rdma request to fs dax memory
+
+Santosh Shilimkar (1):
+  rds: add sysctl for rds support of On-Demand-Paging
+
+ net/rds/ib.h        | 1 +
+ net/rds/ib_sysctl.c | 8 ++++++++
+ net/rds/rdma.c      | 5 +++--
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+-- 
+1.9.1
+
