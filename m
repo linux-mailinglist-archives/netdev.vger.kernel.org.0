@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9947ECE7
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 00:46:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0D4ECE8
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 00:46:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729652AbfD2Wqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 18:46:37 -0400
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:39925 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729453AbfD2Wqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 18:46:35 -0400
-Received: by mail-pg1-f202.google.com with SMTP id m35so8048720pgl.6
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 15:46:35 -0700 (PDT)
+        id S1729661AbfD2Wqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 18:46:40 -0400
+Received: from mail-qt1-f201.google.com ([209.85.160.201]:35327 "EHLO
+        mail-qt1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729453AbfD2Wqi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 18:46:38 -0400
+Received: by mail-qt1-f201.google.com with SMTP id d38so11729573qtb.2
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 15:46:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=M/b9939hEXj6kjf8ixGTEF02G4AWtacrYADvTMlcODQ=;
-        b=eCX8ipEFmVBo42wV9eYf50/M6osVOZla8K1zBDFC7II3q7WPmGbhklm+J9Gv6EAKXF
-         hSQVl0rOpqDHFllav5RqeXvCsxmDcTIZFAyAJFxBbSH3RUk+ylDvVEg82vC9IVJxFRUq
-         keKZj32LYDsySgyzjErFho8CKi6/coSmcH7PbRBzZ9h1WsJkE0WdeWfmVf+M3kr9gGwp
-         Uxr5E6f2PNRdsSQZZ2KNvlLp40x456Q1LuLiFTYkoNywRzvUI3D2ei4tnAi8hC9lYnEO
-         UnA8346EmBtG0RkZhNg4OV2Pn1G8bS6Zl3yLD2K9A9QVLsV/hK+GBrfEhZl0aq/KJNuS
-         gWkQ==
+        bh=SsaVIdpmxOsoJtUbKm1tlZ5CzZ2C5YKxQwxyAKypJN0=;
+        b=WftGa4uf7PoTH/Kc3x4fV/iPcM27Amu6XRlwn1XsVkyma59H/JnkjHIF2x+glgFCtF
+         lkG1nZu60qNDFxReiGd0Pzgb7YqVx7mm+XyFbzsiPXCShvumeiOAgUvnMjtzIiqp+n0b
+         o8gj68bobQodsZq0B1+X6HmTejPEeQBeyPdpGCXpN5oI0Jutqhl992/EheSFvHTjbL0F
+         QDabXQfGsI9cLMaUxvJsIg1qEbA4qBE3UdaXnKTosaRgZIick7HbcdFbYFfBPZpnyooa
+         zI1Bxjjzx13psBuoAIuAc4Ve8Qfr9yYfSSGxYAiCsBBvh+0cUVWUoXrq2RfWYi9zyZ8v
+         e9aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=M/b9939hEXj6kjf8ixGTEF02G4AWtacrYADvTMlcODQ=;
-        b=SnN53QryDQr4LO2Y9vwixCJN1w1I1blXRe9pcku9KrLfyK7DNFwJ4CaVtaoc//Fnyo
-         W8EGUO997L9yeqyzi4/LUDKYyh4GOyWmf2A6aGQr8LRhbUPK32OoBoWzyOHRBQZ58n8h
-         bcUfwkgzDodfGO23/dfbGKSx5yA3KTOLi1OX6wDSj64Owbi+EYF6UWNrwD6hYrqavzxj
-         +KVOZMAzFqZkGrWtUcvKeQ12tLJ3ASB9+bdf4/uolQb7QEhnjiYsvJNRprbgZVSug91z
-         Qkvph2ha/+kPzLF7RLFIh11yDuO/UhLPyQEs3G7m70D2qznvY7DYmHLawFJNEE8AdEpA
-         XoUQ==
-X-Gm-Message-State: APjAAAUFVSXxojqylmpABsH70i4oDfXg2xrH/G3vtnnmSeb+6C7mUwrN
-        DZyJBozMXbjjfCXYbIED7+bZhQ/FYrQ=
-X-Google-Smtp-Source: APXvYqzoNpLt4CI9mJmqjO05WoiU6IA0nlXFMx7KgwvAnK04xNvbGgUTE1mlkXREfWXRoCTA+1ZnOdFZOeU=
-X-Received: by 2002:a65:518d:: with SMTP id h13mr62912761pgq.259.1556577994940;
- Mon, 29 Apr 2019 15:46:34 -0700 (PDT)
-Date:   Mon, 29 Apr 2019 15:46:15 -0700
+        bh=SsaVIdpmxOsoJtUbKm1tlZ5CzZ2C5YKxQwxyAKypJN0=;
+        b=Ld0o+HFJX45TMLqc5TcsXV5/MxCdulmiCYOqH+GYQPoHdEonzeYRcly2QzdpVsT2sc
+         I2BXbl3IaDxFDYNv9zDwLp/Xl7Ee3j41CtHoTGq1NTOIGKakLW3mEnYThH8gdBujNTxq
+         Hq5eIYkEoXaH5Jsh04Dgv/F02d+JhxzO2WOkUbIlD/LvlG8U0Dxv8KVoIIlf2tMsUPVI
+         HupK6/T5XVpGqQmvFKf/beBl+kBQTfRyiTY3DrzVqI9xJ8Ef4RGJC1n6Xjhv4FwpuRGp
+         6btiIGtUoJc9sFPden/SjM6kmKx40RSjmcutYHtQunpUV5b+SKL87eJ7II9sXMrGS6B5
+         Caew==
+X-Gm-Message-State: APjAAAXfC038iMm1Pnlfst9L5Szaa+RaQ1Y8GEeGcTtqwc1z2JZLVzck
+        bwYuELsmPTIIvCli8Pv58BTpX0SazS4=
+X-Google-Smtp-Source: APXvYqyo0UShXG2eA/pVCPaxD+eRmvIXbH2AHdWowfkXIg0FrqT870QYWPmibIV6MEPLfQGn/ws2NFRDQMY=
+X-Received: by 2002:a0c:d0b2:: with SMTP id z47mr10844276qvg.203.1556577997500;
+ Mon, 29 Apr 2019 15:46:37 -0700 (PDT)
+Date:   Mon, 29 Apr 2019 15:46:16 -0700
 In-Reply-To: <20190429224620.151064-1-ycheng@google.com>
-Message-Id: <20190429224620.151064-4-ycheng@google.com>
+Message-Id: <20190429224620.151064-5-ycheng@google.com>
 Mime-Version: 1.0
 References: <20190429224620.151064-1-ycheng@google.com>
 X-Mailer: git-send-email 2.21.0.593.g511ec345e18-goog
-Subject: [PATCH net-next 3/8] tcp: better SYNACK sent timestamp
+Subject: [PATCH net-next 4/8] tcp: undo init congestion window on false SYNACK timeout
 From:   Yuchung Cheng <ycheng@google.com>
 To:     davem@davemloft.net, edumazet@google.com
 Cc:     netdev@vger.kernel.org, ncardwell@google.com, soheil@google.com,
@@ -57,49 +57,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Detecting spurious SYNACK timeout using timestamp option requires
-recording the exact SYNACK skb timestamp. Previously the SYNACK
-sent timestamp was stamped slightly earlier before the skb
-was transmitted. This patch uses the SYNACK skb transmission
-timestamp directly.
+Linux implements RFC6298 and use an initial congestion window
+of 1 upon establishing the connection if the SYNACK packet is
+retransmitted 2 or more times. In cellular networks SYNACK timeouts
+are often spurious if the wireless radio was dormant or idle. Also
+some network path is longer than the default SYNACK timeout. In
+both cases falsely starting with a minimal cwnd are detrimental
+to performance.
+
+This patch avoids doing so when the final ACK's TCP timestamp
+indicates the original SYNACK was delivered. It remembers the
+original SYNACK timestamp when SYNACK timeout has occurred and
+re-uses the function to detect spurious SYN timeout conveniently.
+
+Note that a server may receives multiple SYNs from and immediately
+retransmits SYNACKs without any SYNACK timeout. This often happens
+on when the client SYNs have timed out due to wireless delay
+above. In this case since the server will still use the default
+initial congestion (e.g. 10) because tp->undo_marker is reset in
+tcp_init_metrics(). This is an intentional design because packets
+are not lost but delayed.
+
+This patch only covers regular TCP passive open. Fast Open is
+supported in the next patch.
 
 Signed-off-by: Yuchung Cheng <ycheng@google.com>
 Signed-off-by: Neal Cardwell <ncardwell@google.com>
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp_input.c  | 2 +-
- net/ipv4/tcp_output.c | 4 ++++
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_input.c     | 2 ++
+ net/ipv4/tcp_minisocks.c | 5 +++++
+ 2 files changed, 7 insertions(+)
 
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 695f840acc14..30c6a42b1f5b 100644
+index 30c6a42b1f5b..53b4c5a3113b 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -6319,7 +6319,7 @@ static void tcp_openreq_init(struct request_sock *req,
- 	req->cookie_ts = 0;
- 	tcp_rsk(req)->rcv_isn = TCP_SKB_CB(skb)->seq;
- 	tcp_rsk(req)->rcv_nxt = TCP_SKB_CB(skb)->seq + 1;
--	tcp_rsk(req)->snt_synack = tcp_clock_us();
-+	tcp_rsk(req)->snt_synack = 0;
- 	tcp_rsk(req)->last_oow_ack_time = 0;
- 	req->mss = rx_opt->mss_clamp;
- 	req->ts_recent = rx_opt->saw_tstamp ? rx_opt->rcv_tsval : 0;
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 32061928b054..0c4ed66dc1bf 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3247,7 +3247,11 @@ struct sk_buff *tcp_make_synack(const struct sock *sk, struct dst_entry *dst,
- 		skb->skb_mstamp_ns = cookie_init_timestamp(req);
- 	else
- #endif
-+	{
- 		skb->skb_mstamp_ns = tcp_clock_ns();
-+		if (!tcp_rsk(req)->snt_synack) /* Timestamp first SYNACK */
-+			tcp_rsk(req)->snt_synack = tcp_skb_timestamp_us(skb);
+@@ -6101,6 +6101,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			 */
+ 			tcp_rearm_rto(sk);
+ 		} else {
++			tcp_try_undo_spurious_syn(sk);
++			tp->retrans_stamp = 0;
+ 			tcp_init_transfer(sk, BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB);
+ 			tp->copied_seq = tp->rcv_nxt;
+ 		}
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index 79900f783e0d..9c2a0d36fb20 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -522,6 +522,11 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
+ 		newtp->rx_opt.ts_recent_stamp = 0;
+ 		newtp->tcp_header_len = sizeof(struct tcphdr);
+ 	}
++	if (req->num_timeout) {
++		newtp->undo_marker = treq->snt_isn;
++		newtp->retrans_stamp = div_u64(treq->snt_synack,
++					       USEC_PER_SEC / TCP_TS_HZ);
 +	}
- 
+ 	newtp->tsoffset = treq->ts_off;
  #ifdef CONFIG_TCP_MD5SIG
- 	rcu_read_lock();
+ 	newtp->md5sig_info = NULL;	/*XXX*/
 -- 
 2.21.0.593.g511ec345e18-goog
 
