@@ -2,126 +2,352 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C29BECD2
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 00:34:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43641ECD5
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 00:37:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729611AbfD2Wez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 18:34:55 -0400
-Received: from mail-eopbgr140048.outbound.protection.outlook.com ([40.107.14.48]:52868
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729481AbfD2Wez (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 18:34:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fasTFBcoLJLbh6mv/s6SBGg0oL1VkRqwAvDKN6mFfts=;
- b=wYEjTxA0J56g0uXSqJ+I8mtv+ogL9yVizaoCP1pHuH7BDr7m6DdEU9I/OYJFkT5C8WYSl66WNDYA/ks0NooGeefqbRnihj3OXqvc2xWIXARxqpHxZ5wet/B41OPOMX274zP7SSVo3TocXYstkZMinAndXNs2Kx9CZMVjUaYdr7Q=
-Received: from VI1PR0501MB2271.eurprd05.prod.outlook.com (10.169.134.149) by
- VI1PR0501MB2592.eurprd05.prod.outlook.com (10.168.137.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1835.12; Mon, 29 Apr 2019 22:34:51 +0000
-Received: from VI1PR0501MB2271.eurprd05.prod.outlook.com
- ([fe80::8810:9799:ab77:9494]) by VI1PR0501MB2271.eurprd05.prod.outlook.com
- ([fe80::8810:9799:ab77:9494%2]) with mapi id 15.20.1835.018; Mon, 29 Apr 2019
- 22:34:51 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Mark Bloch <markb@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-CC:     Jason Gunthorpe <jgg@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Maor Gottlieb <maorg@mellanox.com>
-Subject: RE: [PATCH V2 mlx5-next 09/11] net/mlx5: Eswitch, enable RoCE
- loopback traffic
-Thread-Topic: [PATCH V2 mlx5-next 09/11] net/mlx5: Eswitch, enable RoCE
- loopback traffic
-Thread-Index: AQHU/rdxfbRKUZWs402AO/w32fvXqaZTeNWAgAAAqlCAAD9mAIAAAK9w
-Date:   Mon, 29 Apr 2019 22:34:51 +0000
-Message-ID: <VI1PR0501MB22719EBFAF3F1BBEF81D7823D1390@VI1PR0501MB2271.eurprd05.prod.outlook.com>
-References: <20190429181326.6262-1-saeedm@mellanox.com>
- <20190429181326.6262-10-saeedm@mellanox.com>
- <20190429184116.GB6705@mtr-leonro.mtl.com>
- <VI1PR0501MB22712A3E3743FE283308771ED1390@VI1PR0501MB2271.eurprd05.prod.outlook.com>
- <e08a2f83-03ac-61cf-322f-652f4549e074@mellanox.com>
-In-Reply-To: <e08a2f83-03ac-61cf-322f-652f4549e074@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [208.176.44.194]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5d4fbfe3-b8a9-4e2f-a591-08d6ccf2e4d5
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR0501MB2592;
-x-ms-traffictypediagnostic: VI1PR0501MB2592:
-x-microsoft-antispam-prvs: <VI1PR0501MB25922A08E4ECE88A14745284D1390@VI1PR0501MB2592.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0022134A87
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(39860400002)(396003)(136003)(376002)(366004)(13464003)(51914003)(199004)(189003)(52536014)(55016002)(107886003)(256004)(9686003)(14444005)(53936002)(6246003)(316002)(54906003)(97736004)(76176011)(8676002)(53546011)(7736002)(74316002)(33656002)(305945005)(66066001)(99286004)(8936002)(186003)(26005)(110136005)(81156014)(81166006)(102836004)(6506007)(71200400001)(25786009)(71190400001)(14454004)(6436002)(66946007)(450100002)(3846002)(66476007)(4326008)(6116002)(76116006)(64756008)(66446008)(66556008)(73956011)(2906002)(86362001)(5660300002)(93886005)(446003)(11346002)(476003)(7696005)(486006)(68736007)(6636002)(478600001)(229853002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0501MB2592;H:VI1PR0501MB2271.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: qzgxUW+2dgAU+ARhtsmUxBr5nGHC0mk1BhZmJQvPhfrNW+MwUFpOXGBBvGhh0N7wtrlbXvMMO+pVsRtlcXyzAEZmY1fERhuRmb0Auj394poTkv+cJEEtGEKRDlCEK0xxNUFSYXX/5Ceb3hPtiBVDxZ9K8EMifI3ai4zIk08j4Su6eBxFw6fYSiPGzVxg/J07M536l/WwcX4zJx5CfYtMH2S8PQ0behIoE0pvKdDUWepM8LeJ3uDSR3ovLZ+d/lL0QwKVUdvGuQ4KGKS2jrrA6ow9G8PLEJZ86SoyW+sJ5ndtkA8grBgNprOO2sNvaFeklFa5yj1/0UpkloXOOQfF5AkfgHoPGsxJdscBDzN/CcR2kM61onQnWQ+lr6l7YGpxc8vPk2OoW9A+/VOeFC6SneyUXb5+nh0/4HY0dNfdiKc=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1729624AbfD2WhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 18:37:13 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:33362 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729481AbfD2WhN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 18:37:13 -0400
+Received: by mail-wr1-f67.google.com with SMTP id s18so18413657wrp.0;
+        Mon, 29 Apr 2019 15:37:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7S4KMd/ygX8leVdrYwsDdPFvu75RsDdgYnaRdFkfSlo=;
+        b=nFYC7P674cz/E2itH/J0cSRnPHW3/1akR3zLMtHooEEcvNBy+f5SqPK60HJhcklGh+
+         YWzxO3exQywWoStjjKPD/U+77w98cakVgF3gCBSwjS60SuM7+bNZUk+4ItNhWEel3RcJ
+         me0KFZ6c5LRSYPxC5lHhF7jT+8eJLmj8VKrjqyj/mBgzWJDl79ZhsSteK1N9M3zd9mqT
+         4lVhL1NNVsMK/rBSB2zGjTvg2oZJaEUrjUI9POM9kPrbIgnTn5nJ2bz2M6SdEut4YX6r
+         K0Jtyzg/hIBV9jv3TOs0Iia0wqEhk2eJeOW+HjtruPEcwZ06D+h1kuVp6DRUVxLF5po1
+         CEbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7S4KMd/ygX8leVdrYwsDdPFvu75RsDdgYnaRdFkfSlo=;
+        b=YdB4AR7PDRUPYEOKwepOE4z3ovFNUU4b0CgOYuZGM7NP9mLrXoV/TbZaeSBNUf3WhI
+         cLihPnTvAEWnoaFv728cynjnDNsG9gn0RpVwCS1NtMlJBpBRxmiH7MLfhnntznKwNvV3
+         DeUC0+Lj4wsXqM8JPbrTjIDnNJBS7Xdvd6+flVUvAc0J8rIYuxQDM9fTLhA4gNVb4NLI
+         veUy7y7keJ063zmBY5gr93BBN32wAOuBM/Aeai/khjcSGdiYG0bTnEGPBCNkxhDJ89Hr
+         oHmd+cmg3JtlKA2I4qzJCZpYBK5unAaY/kwrKyMJA66fqyf+txkzCykn+mXj1Aaoy5Qe
+         UHqQ==
+X-Gm-Message-State: APjAAAV32EUWZGOC0R2jXAZ7eCQHFnf+/Rd4CD2M63Ij+BT3zrXyAI6M
+        3Nxm6Bv3Rvk14d+VjZcXwQhCeHxnoK8ucqI4sWM=
+X-Google-Smtp-Source: APXvYqzI2ecTN/5fDOorWY1Zw8iQHxFjaUifdyaEBljhP3vhMHBcJ/HHG+zoT67Hzqgs2vQ9TlSpR9eYzHuNDKOkxYk=
+X-Received: by 2002:adf:cc8a:: with SMTP id p10mr885723wrj.34.1556577430282;
+ Mon, 29 Apr 2019 15:37:10 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d4fbfe3-b8a9-4e2f-a591-08d6ccf2e4d5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2019 22:34:51.1981
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2592
+References: <20190426212112.5624-1-fancer.lancer@gmail.com>
+ <20190426212112.5624-2-fancer.lancer@gmail.com> <20190426214631.GV4041@lunn.ch>
+ <20190426233511.qnkgz75ag7axt5lp@mobilestation> <f27df721-47aa-a708-aaee-69be53def814@gmail.com>
+ <CA+h21hpTRCrD=FxDr=ihDPr+Pdhu6hXT3xcKs47-NZZZ3D9zyg@mail.gmail.com> <20190429211225.ce7cspqwvlhwdxv6@mobilestation>
+In-Reply-To: <20190429211225.ce7cspqwvlhwdxv6@mobilestation>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 30 Apr 2019 01:36:59 +0300
+Message-ID: <CA+h21hrbrc7NKrdhrEk-t7+atj-EdNfEpmy85XK7dOr4Cyj-ag@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] net: phy: realtek: Change TX-delay setting for
+ RGMII modes only
+To:     Serge Semin <fancer.lancer@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Serge Semin <Sergey.Semin@t-platforms.ru>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgTWFyaywNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBNYXJrIEJs
-b2NoDQo+IFNlbnQ6IE1vbmRheSwgQXByaWwgMjksIDIwMTkgNTozMSBQTQ0KPiBUbzogUGFyYXYg
-UGFuZGl0IDxwYXJhdkBtZWxsYW5veC5jb20+OyBMZW9uIFJvbWFub3Zza3kNCj4gPGxlb25yb0Bt
-ZWxsYW5veC5jb20+OyBTYWVlZCBNYWhhbWVlZCA8c2FlZWRtQG1lbGxhbm94LmNvbT4NCj4gQ2M6
-IEphc29uIEd1bnRob3JwZSA8amdnQG1lbGxhbm94LmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5v
-cmc7IGxpbnV4LQ0KPiByZG1hQHZnZXIua2VybmVsLm9yZzsgTWFvciBHb3R0bGllYiA8bWFvcmdA
-bWVsbGFub3guY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIFYyIG1seDUtbmV4dCAwOS8xMV0g
-bmV0L21seDU6IEVzd2l0Y2gsIGVuYWJsZSBSb0NFDQo+IGxvb3BiYWNrIHRyYWZmaWMNCj4gDQo+
-IA0KPiANCj4gT24gNC8yOS8xOSAxMTo0NSBBTSwgUGFyYXYgUGFuZGl0IHdyb3RlOg0KPiA+DQo+
-ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogbmV0ZGV2LW93
-bmVyQHZnZXIua2VybmVsLm9yZyA8bmV0ZGV2LW93bmVyQHZnZXIua2VybmVsLm9yZz4NCj4gT24N
-Cj4gPj4gQmVoYWxmIE9mIExlb24gUm9tYW5vdnNreQ0KPiA+PiBTZW50OiBNb25kYXksIEFwcmls
-IDI5LCAyMDE5IDE6NDEgUE0NCj4gPj4gVG86IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFu
-b3guY29tPg0KPiA+PiBDYzogSmFzb24gR3VudGhvcnBlIDxqZ2dAbWVsbGFub3guY29tPjsgbmV0
-ZGV2QHZnZXIua2VybmVsLm9yZzsNCj4gPj4gbGludXgtIHJkbWFAdmdlci5rZXJuZWwub3JnOyBN
-YW9yIEdvdHRsaWViIDxtYW9yZ0BtZWxsYW5veC5jb20+Ow0KPiBNYXJrDQo+ID4+IEJsb2NoIDxt
-YXJrYkBtZWxsYW5veC5jb20+DQo+ID4+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjIgbWx4NS1uZXh0
-IDA5LzExXSBuZXQvbWx4NTogRXN3aXRjaCwgZW5hYmxlDQo+ID4+IFJvQ0UgbG9vcGJhY2sgdHJh
-ZmZpYw0KPiA+Pg0KPiA+PiBPbiBNb24sIEFwciAyOSwgMjAxOSBhdCAwNjoxNDoxNlBNICswMDAw
-LCBTYWVlZCBNYWhhbWVlZCB3cm90ZToNCj4gPj4+IEZyb206IE1hb3IgR290dGxpZWIgPG1hb3Jn
-QG1lbGxhbm94LmNvbT4NCj4gPj4+DQo+ID4+PiBXaGVuIGluIHN3aXRjaGRldiBtb2RlLCB3ZSB3
-b3VsZCBsaWtlIHRvIHRyZWF0IGxvb3BiYWNrIFJvQ0UgdHJhZmZpYw0KPiA+Pj4gKG9uIGVzd2l0
-Y2ggbWFuYWdlcikgYXMgUkRNQSBhbmQgbm90IGFzIHJlZ3VsYXIgRXRoZXJuZXQgdHJhZmZpYyBJ
-bg0KPiA+Pj4gb3JkZXIgdG8gZW5hYmxlIGl0IHdlIGFkZCBmbG93IHN0ZWVyaW5nIHJ1bGUgdGhh
-dCBmb3J3YXJkIFJvQ0UNCj4gPj4+IGxvb3BiYWNrIHRyYWZmaWMgdG8gdGhlIEhXIFJvQ0UgZmls
-dGVyIChieSBhZGRpbmcgYWxsb3cgcnVsZSkuDQo+ID4+PiBJbiBhZGRpdGlvbiB3ZSBhZGQgUm9D
-RSBhZGRyZXNzIGluIEdJRCBpbmRleCAwLCB3aGljaCB3aWxsIGJlIHNldCBpbg0KPiA+Pj4gdGhl
-IFJvQ0UgbG9vcGJhY2sgcGFja2V0Lg0KPiA+Pj4NCj4gPiBJIGxpa2VseSBkb24ndCB1bmRlcnN0
-YW5kIG5vciBJIHJldmlld2VkIHRoZSBwYXRjaGVzLg0KPiA+IFBhcnQgdGhhdCBJIGRvbid0IHVu
-ZGVyc3RhbmQgaXMgR0lEIGluZGV4IDAgZm9yIFJvQ0UuDQo+ID4gUm9DRSB0cmFmZmljIHJ1bnMg
-b3ZlciBhbGwgdGhlIEdJRCBlbnRyaWVzIGFuZCBmb3IgYWxsIHByYWN0aWNhbCBwdXJwb3NlcyBm
-cm9tDQo+IG5vbl96ZXJvIGluZGV4Lg0KPiA+IEhvdyB3aWxsIGl0IHdvcms/DQo+IA0KPiBDdXJy
-ZW50bHkgaW4gc3dpdGNoZGV2IG1vZGUgd2Ugb25seSBzdXBwb3J0IFJBVyBFdGhlcm5ldCBRUCBh
-bmQgbm8gUm9DRQ0KPiBjYXBhYmlsaXRpZXMgYXJlIHJlcG9ydGVkIHRvIGliX2NvcmUuDQo+IFdo
-aWNoIG1lYW5zIG5vIEdJRHMgYXJlIGluc2VydGVkIHRvIHRoZSBIVydzIEdJRCB0YWJsZSBhbmQg
-Um9DRSBpc24ndA0KPiBlbmFibGVkIG9uIHRoZSB2cG9ydC4NCj4gDQo+IEhvd2V2ZXIsIHRoZXJl
-IGFyZSBjYXNlcyB3aGVyZSBhbiBpbnRlcm5hbCBSQyBRUCBtaWdodCBiZSBuZWVkZWQsIGFuZCBm
-b3INCj4gdGhhdCB3ZSBuZWVkIGEgR0lELg0KPiBUaGUgcGF0Y2hlcyBmcm9tIE1hb3IgbWFrZSBz
-dXJlIGEgR0lEIGVudHJ5IGF0IGluZGV4IDAgaXMgdmFsaWQgKGFuZCB3ZSBkbw0KPiB0aGF0IG9u
-bHkgaW4gc3dpdGNoZGV2IG1vZGUpLCBhbmQgd2l0aCBzdGVlcmluZyB3ZSBtYWtlIHN1cmUgc3Vj
-aCB0cmFmZmljIGlzDQo+IG9ubHkgdXNlZCBmb3IgbG9vcGJhY2sgcHVycG9zZXMuDQoNCkdvdCBp
-dC4gVGhhbmtzIGZvciB0aGUgZGV0YWlsZWQgZGVzY3JpcHRpb24uIEl0cyBjbGVhciB0byBtZSBu
-b3cuDQo=
+Hi Serge,
+
+On Tue, 30 Apr 2019 at 00:12, Serge Semin <fancer.lancer@gmail.com> wrote:
+>
+> On Mon, Apr 29, 2019 at 09:29:37PM +0300, Vladimir Oltean wrote:
+> > On Mon, 29 Apr 2019 at 20:39, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> > >
+> > > On 4/26/19 4:35 PM, Serge Semin wrote:
+> > > > On Fri, Apr 26, 2019 at 11:46:31PM +0200, Andrew Lunn wrote:
+> > > >> On Sat, Apr 27, 2019 at 12:21:12AM +0300, Serge Semin wrote:
+> > > >>> It's prone to problems if delay is cleared out for other than RGMII
+> > > >>> modes. So lets set/clear the TX-delay in the config register only
+> > > >>> if actually RGMII-like interface mode is requested.
+> > > >>>
+> > > >>> Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+> > > >>>
+> > > >>> ---
+> > > >>>  drivers/net/phy/realtek.c | 16 ++++++++++++----
+> > > >>>  1 file changed, 12 insertions(+), 4 deletions(-)
+> > > >>>
+> > > >>> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+> > > >>> index ab567a1923ad..a18cb01158f9 100644
+> > > >>> --- a/drivers/net/phy/realtek.c
+> > > >>> +++ b/drivers/net/phy/realtek.c
+> > > >>> @@ -163,16 +163,24 @@ static int rtl8211c_config_init(struct phy_device *phydev)
+> > > >>>  static int rtl8211f_config_init(struct phy_device *phydev)
+> > > >>>  {
+> > > >>>     int ret;
+> > > >>> -   u16 val = 0;
+> > > >>> +   u16 val;
+> > > >>>
+> > > >>>     ret = genphy_config_init(phydev);
+> > > >>>     if (ret < 0)
+> > > >>>             return ret;
+> > > >>>
+> > > >>> -   /* enable TX-delay for rgmii-id and rgmii-txid, otherwise disable it */
+> > > >>> -   if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+> > > >>> -       phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
+> > > >>> +   /* enable TX-delay for rgmii-id/rgmii-txid, and disable it for rgmii */
+> > > >>> +   switch (phydev->interface) {
+> > > >>> +   case PHY_INTERFACE_MODE_RGMII:
+> > > >>> +           val = 0;
+> > > >>> +           break;
+> > > >>> +   case PHY_INTERFACE_MODE_RGMII_ID:
+> > > >>> +   case PHY_INTERFACE_MODE_RGMII_TXID:
+> > > >>>             val = RTL8211F_TX_DELAY;
+> > > >>> +           break;
+> > > >>> +   default: /* the rest of the modes imply leaving delay as is. */
+> > > >>> +           return 0;
+> > > >>> +   }
+> > > >>
+> > > >> So there is no control of the RX delay?
+> > > >>
+> > > >
+> > > > As you can see it hasn't been there even before this change. So I suppose
+> > > > either the hardware just doesn't support it (although the openly available
+> > > > datasheet states that there is an RXD pin) or the original driver developer
+> > > > decided to set TX-delay only.
+> > > >
+> > > > Just to make sure you understand. I am not working for realtek and don't
+> > > > posses any inside info regarding these PHYs. I was working on a project,
+> > > > which happened to utilize a rtl8211e PHY. We needed to find a way to
+> > > > programmatically change the delays setting. So I searched the Internet
+> > > > and found the U-boot rtl8211f driver and freebsd-folks discussion. This
+> > > > info has been used to write the config_init method for Linux version of the
+> > > > PHY' driver. That's it.
+> > > >
+> > > >> That means PHY_INTERFACE_MODE_RGMII_ID and
+> > > >> PHY_INTERFACE_MODE_RGMII_RXID are not supported, and you should return
+> > > >> -EINVAL.
+> > > >>
+> > > >
+> > > > Apparently the current config_init method doesn't support RXID setting.
+> > > > The patch introduced current function code was submitted by
+> > > > Martin Blumenstingl in 2016:
+> > > > https://patchwork.kernel.org/patch/9447581/
+> > > > and was reviewed by Florian. So we'd better ask him why it was ok to mark
+> > > > the RGMII_ID as supported while only TX-delay could be set.
+> > > > I also failed to find anything regarding programmatic rtl8211f delays setting
+> > > > in the Internet. So at this point we can set TX-delay only for f-model of the PHY.
+> > > >
+> > > > Anyway lets clarify the situation before to proceed further. You are suggesting
+> > > > to return an error in case if either RGMII_ID or RGMII_RXID interface mode is
+> > > > requested to be enabled for the PHY. It's fair seeing the driver can't fully
+> > > > support either of them.
+> > >
+> > > That is how I read Andrew's suggestion and it is reasonable. WRT to the
+> > > original changes from Martin, he is probably the one you would want to
+> > > add to this conversation in case there are any RX delay control knobs
+> > > available, I certainly don't have the datasheet, and Martin's change
+> > > looks and looked reasonable, seemingly independent of the direction of
+> > > this very conversation we are having.
+> > >
+> > > But what about the rest of the modes like GMII, MII
+> > > > and others?
+> > >
+> > > The delays should be largely irrelevant for GMII and MII, since a) the
+> > > PCB is required to have matching length traces, and b) these are not
+> > > double data rate interfaces
+> > >
+> > > > Shouldn't we also return an error instead of leaving a default
+> > > > delay value?
+> > >
+> > > That seems a bit harsh, those could have been configured by firmware,
+> > > whatever before Linux comes up and be correct and valid. We don't know
+> > > of a way to configure it, but that does not mean it does not exist and
+> > > some software is doing it already.
+> > >
+> > > >
+> > > > The same question can be actually asked regarding the config_init method of
+> > > > rtl8211e PHY, which BTW you already tagged as Reviewed-by.
+> > > >
+> > > >> This is where we get into interesting backwards compatibility
+> > > >> issues. Are there any broken DT blobs with rgmii-id or rgmii-rxid,
+> > > >> which will break with such a change?
+> > > >>
+> > > >
+> > > > Not that I am aware of and which simple grep rtl8211 could find. Do you
+> > > > know about one?
+> > > >
+> > > > -Sergey
+> > > >
+> > > >>      Andrew
+> > >
+> > >
+> > > --
+> > > Florian
+> >
+> > There seems to be some confusion here.
+> > The "normal" RTL8211F has RXDLY and TXDLY configurable only via pin
+> > strapping (pull-up/pull-down), not via MDIO.
+> > The "1588-capable" RTL8211FS has RXDLY configurable via pin strapping
+> > (different pin than the regular 8211F) and TXDLY via page 0xd08,
+> > register 17, bit 8.
+> > I think setting the Tx delay via MDIO for the normal RTL8211F is snake oil.
+> > Disclaimer: I don't work for Realtek either, so I have no insight on
+> > why it is like that.
+> > From Linux' point of view, there are two aspects:
+> > * Erroring out now will likely just break something that was working
+> > (since it was relying on hardware strapping and the DT phy-mode
+> > property was more or less informative).
+> > * Arguably what is wrong here is the semantics of the phy-mode
+> > bindings for RGMII. It gets said a lot that DT means "hardware
+> > description", not "hardware configuration". So having said that, the
+> > correct interpretation of phy-mode = "rgmii-id" is that the operating
+> > system is informed that RGMII delays were handled in both directions
+> > (either the PHY was strapped, or PCB traces were lengthened). But the
+> > current meaning of "rgmii-id" in practice is an imperative "PHY
+> > driver, please apply delays in both directions" (or MAC driver, if
+> > it's fixed-link).
+> >
+> > Thanks,
+> > -Vladimir
+>
+> Hello Vladimir, Florian and Andrew
+>
+> Thanks for your comments on this matter. Let me sum my understanding of
+> this up so we'd set a checkpoint of the rtl8211* interface delays
+> discussion.
+>
+> rtl8211(e|f) TX/RX delays can be configured either by external pins
+> strapping or via software registers. This is one of the clue to provide
+> a proper config_init method code. But not all rtl8211f phys provide
+> that software register, and if they do it only concerns TX-delay (as we
+> aware of). So we need to take this into account when creating the updated
+> versions of these functions.
+>
+> (Martin, I also Cc'ed you in this discussion, so if you have anything to
+> say in this matter, please don't hesitate to comment.)
+>
+> As Vladimir fairly pointed out DT should be considered as a "hardware
+> description", and not a "hardware configuration". But I would correct
+> the interpretation you suggested a bit. Current phy-mode property meaning
+> I would explain as a MAC-PHY interface description (so it complies with
+> "DT - hardware description" rule). So "rgmii" means TXC/RXC, TXD[4] RXD[4],
+> RX_CTL lanes, etc; "gmii" - GTXCLK, TXCLK/RXCLK, TXD[8], RXD[8],
+> TXEN, RXEN, COL, CS lanes, etc and so on. The "-*id" suffixes are something
+> that describe the logical signal delays, which due to the physical lanes design
+> might be required so the corresponding "{r,g,rg}mii" interface would work
+> correctly.
+>
+
+As Andrew pointed out, only RGMII needs clock skew, mainly because it
+is an interface with source-synchronous clocking that runs at 125 MHz
+(when the link speed is 1000 Mbps, otherwise the delays are less
+important) and is double data rate (data gets sampled on both rising
+and falling clock edges).
+Moreover, RGMII *always* needs clock skew. As a fact, all delays
+applied on RX and RX, by the PHY, MAC or traces, should always amount
+to a logical "rgmii-id". There's nothing that needs to be described
+about that. Everybody knows it.
+What Linux gets told through the phy-mode property for RGMII is where
+there's extra stuff to do, and where there's nothing to do. There are
+also unwritten rules about whose job it is to apply the clock skew
+(MAC or PHY).That is 100% configuration and 0% description.
+
+> Then in accordance with the phy-mode property value MAC and PHY drivers
+> determine which way the MAC and PHY are connected to each other and how
+> their settings are supposed to be customized to comply with it. This
+> interpretation perfectly fits with the "DT is the hardware description"
+> rule.
+>
+
+Most of the phy-mode properties really mean nothing. I changed the
+phy-mode from "sgmii" to "rgmii" on a PHY binding I had at hand and
+nothing happened (traffic still runs normally). I think this behavior
+is 100% within expectation.
+
+> Finally I dig into the available rtl8211(e|f) datasheets a bit deeper
+> and found out, that rtl8211f PHYs provide the RGMII interface only.
+> While there is only one model of rtl8211e PHY which aside from the default
+> RGMII-interface can work over MII/GMII-interfaces (which BTW can be
+> enabled via a pin strapping and via a register I used for delay
+> settings). So even if MAC provides a way to enable MII/GMII/RGMII/SGMII/etc
+> interfaces the PHY driver should refuse to work over interfaces
+> it' device doesn't support by design. This is what lacks the current
+> rtl8211(f|e)_config_init methods design. (Andrew also might have
+> suggested something like this, though I am not sure I fully understood
+> what he meant.)
+>
+> So as all of this info must be taken into account to create a proper driver
+> rtl8211(e|f) config_init methods. As I see it we need to provide the following
+> alterations to the realtek driver:
+> rtl8211f config_init:
+> - RGMII-interface is only supported, so return an error if any other
+> interface mode is requested. Andrew also suggested to accept
+> the PHY_INTERFACE_MODE_NA mode as an implication to leave the mode as is.
+> Although I have a doubt about this since none of the PHY' drivers
+> does this at the moment. Any comment on this?
+
+I think this is way overboard, since "configuring the interface as
+SGMII" is not something that software alone can do (and many times,
+the software can't do anything at all to make a MAC speak SGMII vs
+RGMII vs whatever else). And there are times when the software can't
+even know what the MAC speaks, unless the driver hardcodes it. So the
+phy-mode checking would only protect against mismatches of hardcoded
+values. So it would error out whilst the hardware would keep working
+and minding its own business as if nothing happened... You can't
+really connect an RGMII MAC to an SGMII PHY, in real life :)
+
+> - phy-mode = "rgmii", no delays need to be set on the PHY side, so clear
+> {page=0xd08, register=0x11, bit=8} bit and rely on the RXD pin being pulled
+> low (RX delay is also disabled).
+> - phy-mode = "rgmii-id", all delays are supposed to be set on the PHY side.
+> We can manually set the TX-delay, while RX-delay is set over an external pin.
+> So set the {page=0xd08, register=0x11, bit=8} bit only, and rely on the
+> hardware designer pulling the RXD pin high.
+> - phy-mode = "rgmii-txid", set the {page=0xd08, register=0x11, bit=8} bit only,
+> and rely on the hardware designer pulling the RXD pin low.
+> - phy-mode = "rgmii-rxid", clear the {page=0xd08, register=0x11, bit=8} bit only,
+> and rely on the hardware designer pulling the RXD pin high.
+>
+
+I would remove the portions where you say "rely on hw doing
+this/that". The phy-mode only concerns software (MDIO) business. The
+"hardware description vs hardware configuration" on my part is just
+wishful thinking. You *can* have the phy-mode as "rgmii-txid" and the
+RXDLY pin enabled in the strapping config, and that would amount to a
+total, logical "rgmii-id" on the PHY, and it would be fine (Linux not
+having an accurate "hardware description" of the system).
+
+> rtl8211e config_init:
+> - MII/GMII/RGMII-interfaces are only supported, so return an error if any other
+> interface mode is requested. The same thought about PHY_INTERFACE_MODE_NA is
+> applicable here.
+> - MII/GMII-interface can be enabled via the Mode pin strapping or via the
+> configuration register I've used to set the delays. So use it to enable/disable
+> either MII/GMII or RGMII interface mode.
+> - phy-mode = ("rgmii"|"rgmii-id"|"rgmii-txid"|"rgmii-rxid") - enable and disable
+> the TX/RX-delay bits of the corresponding register, since either of these modes
+> can be configured by software.
+>
+>
+> Could you comment on these thoughts so we'd finally come up with a final
+> decision and I'd send out a new version of the patchset.
+
+Erroring out on rgmii-rxid and rgmii-id is probably justifiable, but
+then again, just because you can, doesn't mean you should. Could you
+please explain again what problem this is trying to solve? I only see
+the problems that this will create :)
+
+>
+> -Sergey
+
+Thanks,
+-Vladimir
