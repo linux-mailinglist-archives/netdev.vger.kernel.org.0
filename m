@@ -2,80 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB4FDEC4D
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 23:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA875EC4E
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 23:55:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729401AbfD2VxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 17:53:01 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49133 "EHLO vps0.lunn.ch"
+        id S1729412AbfD2VzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 17:55:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49138 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729354AbfD2VxA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 17:53:00 -0400
+        id S1729354AbfD2VzD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 17:55:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=HAmWT8PNT+hk3EDjJxkxVCBjh/Xucm6d68wN9S+QqPM=; b=n+nc2uDceKz5DV1oG0btamjqoZ
-        V0BKxDcB1lllN62RZagp8n0n3jBlBGPZbPKe3v3+ALCQaVhKXYK/qLrdmvsuEbkG/DqV5cbMqBNtK
-        aLsqvFmx/3hzO8+htqMM0wWMEjMVCmCr9SxuBgr8xuHvtQenJbJM65FoDFJkhi6U4sIs=;
+        bh=F521CCrtIQW5uRRwyywy4lNDdVu4FKJqviWBVYsKYkc=; b=cZG4FyOSxDvx1kHGh0khoRKzb/
+        hbPHR8sa/9kAPvqxz9x+pmNl0TNE9Uk7bDOLbWRWkNayPQIbhoBO9AVnMzreUR0R9zZjCbWUww2dX
+        A0LupPac/giDZ4R4YMRxV+MOO+KxOJoii2LOBFYZUAigfci8PgYFs2JFTLUc//NN8ilE=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hLECk-0006vX-84; Mon, 29 Apr 2019 23:52:54 +0200
-Date:   Mon, 29 Apr 2019 23:52:54 +0200
+        id 1hLEEm-000700-Ur; Mon, 29 Apr 2019 23:55:00 +0200
+Date:   Mon, 29 Apr 2019 23:55:00 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/2] net: phy: improve phy_set_sym_pause and
- phy_set_asym_pause
-Message-ID: <20190429215254.GG12333@lunn.ch>
-References: <5ac8d9b0-ac63-64d2-d5e1-e0911a35e534@gmail.com>
- <f5521d12-bc72-8ed7-eeda-888185c6cee6@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 08/13] net: dsa: Add helper function to retrieve
+ VLAN awareness setting
+Message-ID: <20190429215500.GH12333@lunn.ch>
+References: <20190428184554.9968-1-olteanv@gmail.com>
+ <20190428184554.9968-9-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f5521d12-bc72-8ed7-eeda-888185c6cee6@gmail.com>
+In-Reply-To: <20190428184554.9968-9-olteanv@gmail.com>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -2078,6 +2089,11 @@ EXPORT_SYMBOL(phy_set_sym_pause);
->  void phy_set_asym_pause(struct phy_device *phydev, bool rx, bool tx)
->  {
->  	__ETHTOOL_DECLARE_LINK_MODE_MASK(oldadv);
-> +	bool asym_pause_supported;
-> +
-> +	asym_pause_supported =
-> +		linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-> +				  phydev->supported);
->  
->  	linkmode_copy(oldadv, phydev->advertising);
->  
-> @@ -2086,14 +2102,14 @@ void phy_set_asym_pause(struct phy_device *phydev, bool rx, bool tx)
->  	linkmode_clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
->  			   phydev->advertising);
->  
-> -	if (rx) {
-> +	if (rx && asym_pause_supported) {
->  		linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT,
->  				 phydev->advertising);
->  		linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
->  				 phydev->advertising);
->  	}
->  
-> -	if (tx)
-> +	if (tx && asym_pause_supported)
->  		linkmode_change_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
->  				    phydev->advertising);
+On Sun, Apr 28, 2019 at 09:45:49PM +0300, Vladimir Oltean wrote:
+> Since different types of hardware may or may not support this setting
+> per-port, DSA keeps it either in dsa_switch or in dsa_port.
+> 
+> While drivers may know the characteristics of their hardware and
+> retrieve it from the correct place without the need of helpers, it is
+> cumbersone to find out an unambigous answer from generic DSA code.
+> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
-Hi Heiner
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-If the PHY only supports Pause, not Asym Pause, i wounder if we should
-fall back to Pause here?
-
-     Andrew
+    Andrew
