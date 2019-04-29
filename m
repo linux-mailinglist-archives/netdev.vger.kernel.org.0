@@ -2,191 +2,405 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ECF3ED23
+	by mail.lfdr.de (Postfix) with ESMTP id EE46BED24
 	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 01:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729664AbfD2XEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 19:04:44 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:39942 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729603AbfD2XEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 19:04:44 -0400
-Received: by mail-io1-f68.google.com with SMTP id m9so4149117iok.7
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 16:04:43 -0700 (PDT)
+        id S1729677AbfD2XEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 19:04:49 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:34152 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729603AbfD2XEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 19:04:49 -0400
+Received: by mail-io1-f65.google.com with SMTP id h26so10558457ioj.1
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 16:04:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=B+Ngb4rXH6PXovTDj5p+X4ZxRy6EdDYWKDD639BxDng=;
-        b=zfKvvV3w5WlaRfp/B8CbxYC+U9bXZP0vHSPujkXNK+Exg45pIp+vGqQKH8HADdyGEH
-         eMccP6uPdD/WIFwvcwNVTiziafjAgKi6SkP8DlTaF9j7SuaL1KkT0o1kv/Pvbu9bsURH
-         cW75QhJUR5Tn7iKIbx2Af/9lilq1KMHM1dYUvvZ7NcOV75g2d71HiGR4zFFk/VLoC/mz
-         VtdddVFCHje9Xdz8aQJSNSGBrdlzfp6xqCUBF4f7oOVaYi9o+TQYZUTnkWFQACsCKrlV
-         THiYB5tRNsMZujn8SqMzhRliLXajpLUtwfYhr2ezeED2y4tp8e8Wjjcz9L9Taj4j2rRu
-         qlGA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=hAj0kqmai0y0EXSiNLbJqJt1e4EmwfMuX+PW7YER1s8=;
+        b=h9F/11WhikgGH06gPdS6ROy7zShW+Jr0kTrCAYS1jPes5dEC03jq7DAnu17zRSDov9
+         5BMEc4/ETA9x/0tCORkDxLfUk4nquXsF157UnGVAU/BJImAx1Rd2FQtfFhfVDF+lrQUo
+         O6YPPeLszHWEbxJLH8Ufafzd32RTTL3PrH7Ff5gfmFtPHqowkXbVJK+aHANTqBysDWh6
+         Biv3ju/N1D0YOjj3thkA3mdHMKbq4g/PA7G2ChznBCSzLsIxoQ4yb5dRUk8eoZFKM7WY
+         7XJ0L9Nz51p4MeiEfmkgvybn1iuUzunhP9fiWp0BfT1lreAdhlpoHGlcs/LKUMxSVZqe
+         Jk4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=B+Ngb4rXH6PXovTDj5p+X4ZxRy6EdDYWKDD639BxDng=;
-        b=t8dwDG2Z2CObyioQagXTlC1ZeySi1MdyTAfWRqIFBQUCY2SHwd2aVS2Pw5w0KReOPI
-         nJdbV1HChD9FWrmUx0prqgqc0j51J8cxvs8wNrpayD8XW5CvP7RBaLPpBRftdRkjVAcK
-         X80NHY1dWoAmkxHgIxi9nkpzfmoHzgKTwHJ6e1HQPIX1QEYxl4eUaHBUPNQVBXcY7G1V
-         D7d2mjBB/ZZH/bs/QqL2t1a+E0XQhrdq8Xqlwbsq1/COa9cO8vyMGxQDw2+AEPOWabLG
-         s8nCeVc6Kc8vDdD0u9VhBcYKZQxU09Q+HxqGGgP/L9vCUo6oOB26Z/u5xrI2GmPZtgZY
-         svWg==
-X-Gm-Message-State: APjAAAUWU4I5OJRWmhLO7WtMMm56yh5Bcp5KxryUWOhgYG4H7HqJsWKE
-        39ynUZINJW3YHoeL8cZJ5Elqo6oUw9I=
-X-Google-Smtp-Source: APXvYqzRtK+jUv8djgttbZFDhYTp6qXRcmlEvXLkP171PKY8YVj7uKqfe1D91t8jF5FGbdx1Bfu4Vw==
-X-Received: by 2002:a5d:8e19:: with SMTP id e25mr25459635iod.139.1556579082844;
-        Mon, 29 Apr 2019 16:04:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=hAj0kqmai0y0EXSiNLbJqJt1e4EmwfMuX+PW7YER1s8=;
+        b=abOuqo2UZtEP341++qaDNVAN//OwzMpNLdDn4ke2revS95xlL+NoyUJ7psNrqqOBiB
+         BbUpQ/+hbZVrnWMEYQPALbRVznR5t2fZKA1QpnkEb2uxNUo31U6aq6VbgUF8zjZRG3za
+         uugo5C5F2Ixl2Eqm/Il0L987aJLZexcfyl8mrVrAHqvvDT+A4wbQ4g828p/IunfadmMI
+         reg7PQjYKdt9ZvI7VmIivRgHKaRBHpow/2NXdOgnyKLc/3fOcISTw7EHCIchqQLtqbU0
+         xVKZHJlX4o2cuJV5vjLwkDkBvxj4noBniLSNuX+vryq0QlvYfJhXGQC/4Hc/vs9Gb7DE
+         eNag==
+X-Gm-Message-State: APjAAAXWSRuu6dMWDfIIfwJyw6a/FX6DkWsflAjZN8CcoanR9wRU2sFH
+        SPHz8AfH7zpDVPrKZRXvY/9eRQ==
+X-Google-Smtp-Source: APXvYqzF3qShgWe7RpPSsoh8/tqV96m0ubeKMA9jJhQBAbaV4/23Ga99YYDKTdgQnW+YpZ1uF+5y9g==
+X-Received: by 2002:a6b:3b53:: with SMTP id i80mr1189136ioa.142.1556579087576;
+        Mon, 29 Apr 2019 16:04:47 -0700 (PDT)
 Received: from localhost.localdomain (107-0-94-194-ip-static.hfc.comcastbusiness.net. [107.0.94.194])
-        by smtp.gmail.com with ESMTPSA id y62sm340626itg.13.2019.04.29.16.04.41
+        by smtp.gmail.com with ESMTPSA id y62sm340626itg.13.2019.04.29.16.04.46
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 29 Apr 2019 16:04:42 -0700 (PDT)
+        Mon, 29 Apr 2019 16:04:47 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 X-Google-Original-From: Tom Herbert <tom@quantonium.net>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [PATCH v8 net-next 0/8] exthdrs: Make ext. headers & options useful - Part I
-Date:   Mon, 29 Apr 2019 16:04:15 -0700
-Message-Id: <1556579063-1367-1-git-send-email-tom@quantonium.net>
+Subject: [PATCH v8 net-next 1/8] exthdrs: Move generic EH functions to exthdrs_common.c
+Date:   Mon, 29 Apr 2019 16:04:16 -0700
+Message-Id: <1556579063-1367-2-git-send-email-tom@quantonium.net>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1556579063-1367-1-git-send-email-tom@quantonium.net>
+References: <1556579063-1367-1-git-send-email-tom@quantonium.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extension headers are the mechanism of extensibility for the IPv6
-protocol, however to date they have only seen limited deployment.
-The reasons for that are because intermediate devices don't handle
-them well, and there haven't really be any useful extension headers
-defined. In particular, Destination and Hop-by-Hop options have
-not been deployed to any extent.
+Move generic functions in exthdrs.c to new exthdrs_common.c so that
+exthdrs.c only contains functions that are specific to IPv6 processing,
+and exthdrs_common.c contains functions that are generic. These
+functions include those that will be used with IPv4 extension headers.
 
-The landscape may be changing as there are now a number of serious
-efforts to define and deploy extension headers. In particular, a number
-of uses for Hop-by-Hop Options are currently being proposed, Some of
-these are from router vendors so there is hope that they might start
-start to fix their brokenness. These proposals include IOAM, Path MTU,
-Firewall and Service Tickets, SRv6, CRH, etc.
-
-Assuming that IPv6 extension headers gain traction, that leaves a
-noticeable gap in IPv4 support. IPv4 options have long been considered a
-non-starter for deployment. An alternative being proposed is to enable
-use of IPv6 options with IPv4 (draft-herbert-ipv4-eh-00).
-
-This series of patch sets endeavours to make extension headers and
-related options useful and easy to use. The following items will be
-addressed:
-
-  - Reorganize extension header files
-  - Allow registration of TLV handlers
-  - Elaborate on the TLV tables to include more characteristics
-  - Add a netlink interface to set TLV parameters (such as
-    alignment requirements, authorization to send, etc.)
-  - Enhance validation of TLVs being sent. Validation is strict
-    (unless overridden by admin) following that sending clause
-    of the robustness principle
-  - Allow non-privileged users to set Hop-by-Hop and Destination
-    Options if authorized by the admin
-  - Add an API that allows individual Hop-by-Hop and Destination
-    Options to be set or removed for a connected socket. The
-    backend end enforces permissions on what TLVs may be set and
-    merges set TLVs per following the rules in the TLV parameter table
-    (for instance, TLV parameters include a preferred sending order
-    that merging adheres to)
-  - Add an infrastructure to allow Hop-by-Hop and Destination Options
-    to be processed in the context of a connected socket
-  - Support for some of the aforementioned options
-  - Enable IPv4 extension headers
-
-------
-
-In this series:
-
-- Create exhdrs_options.c. Move options specific processing to this
-  file from exthdrs.c (for RA, Jumbo, Calipso, and HAO).
-- Create exthdrs_common.c. This holds generic exthdr and TLV related
-  functions that are not IPv6 specific. These functions will also be
-  used with IPv4 extension headers.
-- Allow modules to register TLV handlers for Destination and HBH
-  options.
-- Add parameters block to TLV type entries that describe characteristics
-  related to the TLV. For the most part, these encode rules about
-  sending each TLV (TLV alignment requirements for instance).
-- Add a netlink interface to manage parameters in the TLV table.
-- Add validation of HBH and Destination Options that are set on a
-  socket or in ancillary data in sendmsg. The validation applies the
-  rules that are encoded in the TLV parameters.
-- TLV parameters includes permissions that may allow non-privileged
-  users to set specific TLVs on a socket HBH options or Destination
-  options. Strong validation can be enabled for this to constrain
-  what the non-privileged user is able to do.
-
-v2:
-
-- Don't rename extension header files with IPv6 specific code before
-  code for IPv4 extension headers is present
-- Added patches for creating TLV parameters and validation
-
-v3:
-
-- Fix kbuild errors. Ensure build and operation when IPv6 is disabled.
-
-v4:
-
-- Remove patch that consolidated option cases in option cases in
-  ip6_datagram_send_ctl per feedback
-
-v5:
-
-- Add signoffs.
-
-v6:
-
-- Fix init_module issue from kuild.
-  Reported-by: kbuild test robot <lkp@intel.com>
-
-v7:
-
-- Create exthdrs_common.c. Use this file for for generic functions that
-  apply to IPv6 and IPv4 extension headers. Don't touch exthdr_core.c
-  to preserve the semantics that that file contains functions that are
-  needed when IPv6 (or IPv4 extension headers) is not enabled.
-- A few other minor fixes and cleanup.
-- Answered David Ahern's question about why use generic netlink instead
-  of rtnetlink.
-
-v8:
-
-- Don't explicitly set fields to zero when initializing TLV paramter
-  structures.
-
-Tested:
-
-Set Hop-by-Hop options on TCP/UDP socket and verified to be functional.
-
-Tom Herbert (8):
-  exthdrs: Move generic EH functions to exthdrs_common.c
-  exthdrs: Registration of TLV handlers and parameters
-  exthdrs: Add TX parameters
-  ip6tlvs: Add netlink interface
-  ip6tlvs: Validation of TX Destination and Hop-by-Hop options
-  ipv6tlvs: opt_update function
-  ipv6tlvs: Infrastructure for manipulating individual TLVs
-  ipv6tlvs: API for manipuateling TLVs on a connect socket
-
- include/net/ipv6.h         |  147 +++-
- include/uapi/linux/in6.h   |   58 ++
- net/ipv6/Kconfig           |    4 +
- net/ipv6/Makefile          |    1 +
- net/ipv6/datagram.c        |   51 +-
- net/ipv6/exthdrs.c         |  190 +----
- net/ipv6/exthdrs_common.c  | 1682 ++++++++++++++++++++++++++++++++++++++++++++
- net/ipv6/exthdrs_options.c |  188 ++++-
- net/ipv6/ipv6_sockglue.c   |   82 ++-
- 9 files changed, 2179 insertions(+), 224 deletions(-)
+Signed-off-by: Tom Herbert <tom@quantonium.net>
+---
+ net/ipv6/Kconfig          |   4 ++
+ net/ipv6/Makefile         |   1 +
+ net/ipv6/exthdrs.c        | 138 --------------------------------------------
+ net/ipv6/exthdrs_common.c | 144 ++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 149 insertions(+), 138 deletions(-)
  create mode 100644 net/ipv6/exthdrs_common.c
 
+diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
+index 613282c..c88fc9b 100644
+--- a/net/ipv6/Kconfig
++++ b/net/ipv6/Kconfig
+@@ -2,9 +2,13 @@
+ # IPv6 configuration
+ #
+ 
++config EXTHDRS
++	bool
++
+ #   IPv6 as module will cause a CRASH if you try to unload it
+ menuconfig IPV6
+ 	tristate "The IPv6 protocol"
++	select EXTHDRS
+ 	default y
+ 	---help---
+ 	  Support for IP version 6 (IPv6).
+diff --git a/net/ipv6/Makefile b/net/ipv6/Makefile
+index 72bd775..22438ca 100644
+--- a/net/ipv6/Makefile
++++ b/net/ipv6/Makefile
+@@ -48,6 +48,7 @@ obj-$(CONFIG_IPV6_SIT) += sit.o
+ obj-$(CONFIG_IPV6_TUNNEL) += ip6_tunnel.o
+ obj-$(CONFIG_IPV6_GRE) += ip6_gre.o
+ obj-$(CONFIG_IPV6_FOU) += fou6.o
++obj-$(CONFIG_EXTHDRS) += exthdrs_common.o
+ 
+ obj-y += addrconf_core.o exthdrs_core.o ip6_checksum.o ip6_icmp.o
+ obj-$(CONFIG_INET) += output_core.o protocol.o $(ipv6-offload)
+diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+index 55ca778..6dbacf1 100644
+--- a/net/ipv6/exthdrs.c
++++ b/net/ipv6/exthdrs.c
+@@ -788,144 +788,6 @@ void ipv6_push_frag_opts(struct sk_buff *skb, struct ipv6_txoptions *opt, u8 *pr
+ }
+ EXPORT_SYMBOL(ipv6_push_frag_opts);
+ 
+-struct ipv6_txoptions *
+-ipv6_dup_options(struct sock *sk, struct ipv6_txoptions *opt)
+-{
+-	struct ipv6_txoptions *opt2;
+-
+-	opt2 = sock_kmalloc(sk, opt->tot_len, GFP_ATOMIC);
+-	if (opt2) {
+-		long dif = (char *)opt2 - (char *)opt;
+-		memcpy(opt2, opt, opt->tot_len);
+-		if (opt2->hopopt)
+-			*((char **)&opt2->hopopt) += dif;
+-		if (opt2->dst0opt)
+-			*((char **)&opt2->dst0opt) += dif;
+-		if (opt2->dst1opt)
+-			*((char **)&opt2->dst1opt) += dif;
+-		if (opt2->srcrt)
+-			*((char **)&opt2->srcrt) += dif;
+-		refcount_set(&opt2->refcnt, 1);
+-	}
+-	return opt2;
+-}
+-EXPORT_SYMBOL_GPL(ipv6_dup_options);
+-
+-static void ipv6_renew_option(int renewtype,
+-			      struct ipv6_opt_hdr **dest,
+-			      struct ipv6_opt_hdr *old,
+-			      struct ipv6_opt_hdr *new,
+-			      int newtype, char **p)
+-{
+-	struct ipv6_opt_hdr *src;
+-
+-	src = (renewtype == newtype ? new : old);
+-	if (!src)
+-		return;
+-
+-	memcpy(*p, src, ipv6_optlen(src));
+-	*dest = (struct ipv6_opt_hdr *)*p;
+-	*p += CMSG_ALIGN(ipv6_optlen(*dest));
+-}
+-
+-/**
+- * ipv6_renew_options - replace a specific ext hdr with a new one.
+- *
+- * @sk: sock from which to allocate memory
+- * @opt: original options
+- * @newtype: option type to replace in @opt
+- * @newopt: new option of type @newtype to replace (user-mem)
+- * @newoptlen: length of @newopt
+- *
+- * Returns a new set of options which is a copy of @opt with the
+- * option type @newtype replaced with @newopt.
+- *
+- * @opt may be NULL, in which case a new set of options is returned
+- * containing just @newopt.
+- *
+- * @newopt may be NULL, in which case the specified option type is
+- * not copied into the new set of options.
+- *
+- * The new set of options is allocated from the socket option memory
+- * buffer of @sk.
+- */
+-struct ipv6_txoptions *
+-ipv6_renew_options(struct sock *sk, struct ipv6_txoptions *opt,
+-		   int newtype, struct ipv6_opt_hdr *newopt)
+-{
+-	int tot_len = 0;
+-	char *p;
+-	struct ipv6_txoptions *opt2;
+-
+-	if (opt) {
+-		if (newtype != IPV6_HOPOPTS && opt->hopopt)
+-			tot_len += CMSG_ALIGN(ipv6_optlen(opt->hopopt));
+-		if (newtype != IPV6_RTHDRDSTOPTS && opt->dst0opt)
+-			tot_len += CMSG_ALIGN(ipv6_optlen(opt->dst0opt));
+-		if (newtype != IPV6_RTHDR && opt->srcrt)
+-			tot_len += CMSG_ALIGN(ipv6_optlen(opt->srcrt));
+-		if (newtype != IPV6_DSTOPTS && opt->dst1opt)
+-			tot_len += CMSG_ALIGN(ipv6_optlen(opt->dst1opt));
+-	}
+-
+-	if (newopt)
+-		tot_len += CMSG_ALIGN(ipv6_optlen(newopt));
+-
+-	if (!tot_len)
+-		return NULL;
+-
+-	tot_len += sizeof(*opt2);
+-	opt2 = sock_kmalloc(sk, tot_len, GFP_ATOMIC);
+-	if (!opt2)
+-		return ERR_PTR(-ENOBUFS);
+-
+-	memset(opt2, 0, tot_len);
+-	refcount_set(&opt2->refcnt, 1);
+-	opt2->tot_len = tot_len;
+-	p = (char *)(opt2 + 1);
+-
+-	ipv6_renew_option(IPV6_HOPOPTS, &opt2->hopopt,
+-			  (opt ? opt->hopopt : NULL),
+-			  newopt, newtype, &p);
+-	ipv6_renew_option(IPV6_RTHDRDSTOPTS, &opt2->dst0opt,
+-			  (opt ? opt->dst0opt : NULL),
+-			  newopt, newtype, &p);
+-	ipv6_renew_option(IPV6_RTHDR,
+-			  (struct ipv6_opt_hdr **)&opt2->srcrt,
+-			  (opt ? (struct ipv6_opt_hdr *)opt->srcrt : NULL),
+-			  newopt, newtype, &p);
+-	ipv6_renew_option(IPV6_DSTOPTS, &opt2->dst1opt,
+-			  (opt ? opt->dst1opt : NULL),
+-			  newopt, newtype, &p);
+-
+-	opt2->opt_nflen = (opt2->hopopt ? ipv6_optlen(opt2->hopopt) : 0) +
+-			  (opt2->dst0opt ? ipv6_optlen(opt2->dst0opt) : 0) +
+-			  (opt2->srcrt ? ipv6_optlen(opt2->srcrt) : 0);
+-	opt2->opt_flen = (opt2->dst1opt ? ipv6_optlen(opt2->dst1opt) : 0);
+-
+-	return opt2;
+-}
+-
+-struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
+-					  struct ipv6_txoptions *opt)
+-{
+-	/*
+-	 * ignore the dest before srcrt unless srcrt is being included.
+-	 * --yoshfuji
+-	 */
+-	if (opt && opt->dst0opt && !opt->srcrt) {
+-		if (opt_space != opt) {
+-			memcpy(opt_space, opt, sizeof(*opt_space));
+-			opt = opt_space;
+-		}
+-		opt->opt_nflen -= ipv6_optlen(opt->dst0opt);
+-		opt->dst0opt = NULL;
+-	}
+-
+-	return opt;
+-}
+-EXPORT_SYMBOL_GPL(ipv6_fixup_options);
+-
+ /**
+  * fl6_update_dst - update flowi destination address with info given
+  *                  by srcrt option, if any.
+diff --git a/net/ipv6/exthdrs_common.c b/net/ipv6/exthdrs_common.c
+new file mode 100644
+index 0000000..179861c
+--- /dev/null
++++ b/net/ipv6/exthdrs_common.c
+@@ -0,0 +1,144 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/* Extension header and TLV library code that is not specific to IPv6. */
++#include <linux/export.h>
++#include <net/ipv6.h>
++
++struct ipv6_txoptions *
++ipv6_dup_options(struct sock *sk, struct ipv6_txoptions *opt)
++{
++	struct ipv6_txoptions *opt2;
++
++	opt2 = sock_kmalloc(sk, opt->tot_len, GFP_ATOMIC);
++	if (opt2) {
++		long dif = (char *)opt2 - (char *)opt;
++
++		memcpy(opt2, opt, opt->tot_len);
++		if (opt2->hopopt)
++			*((char **)&opt2->hopopt) += dif;
++		if (opt2->dst0opt)
++			*((char **)&opt2->dst0opt) += dif;
++		if (opt2->dst1opt)
++			*((char **)&opt2->dst1opt) += dif;
++		if (opt2->srcrt)
++			*((char **)&opt2->srcrt) += dif;
++		refcount_set(&opt2->refcnt, 1);
++	}
++	return opt2;
++}
++EXPORT_SYMBOL_GPL(ipv6_dup_options);
++
++static void ipv6_renew_option(int renewtype,
++			      struct ipv6_opt_hdr **dest,
++			      struct ipv6_opt_hdr *old,
++			      struct ipv6_opt_hdr *new,
++			      int newtype, char **p)
++{
++	struct ipv6_opt_hdr *src;
++
++	src = (renewtype == newtype ? new : old);
++	if (!src)
++		return;
++
++	memcpy(*p, src, ipv6_optlen(src));
++	*dest = (struct ipv6_opt_hdr *)*p;
++	*p += CMSG_ALIGN(ipv6_optlen(*dest));
++}
++
++/**
++ * ipv6_renew_options - replace a specific ext hdr with a new one.
++ *
++ * @sk: sock from which to allocate memory
++ * @opt: original options
++ * @newtype: option type to replace in @opt
++ * @newopt: new option of type @newtype to replace (user-mem)
++ * @newoptlen: length of @newopt
++ *
++ * Returns a new set of options which is a copy of @opt with the
++ * option type @newtype replaced with @newopt.
++ *
++ * @opt may be NULL, in which case a new set of options is returned
++ * containing just @newopt.
++ *
++ * @newopt may be NULL, in which case the specified option type is
++ * not copied into the new set of options.
++ *
++ * The new set of options is allocated from the socket option memory
++ * buffer of @sk.
++ */
++struct ipv6_txoptions *
++ipv6_renew_options(struct sock *sk, struct ipv6_txoptions *opt,
++		   int newtype, struct ipv6_opt_hdr *newopt)
++{
++	int tot_len = 0;
++	char *p;
++	struct ipv6_txoptions *opt2;
++
++	if (opt) {
++		if (newtype != IPV6_HOPOPTS && opt->hopopt)
++			tot_len += CMSG_ALIGN(ipv6_optlen(opt->hopopt));
++		if (newtype != IPV6_RTHDRDSTOPTS && opt->dst0opt)
++			tot_len += CMSG_ALIGN(ipv6_optlen(opt->dst0opt));
++		if (newtype != IPV6_RTHDR && opt->srcrt)
++			tot_len += CMSG_ALIGN(ipv6_optlen(opt->srcrt));
++		if (newtype != IPV6_DSTOPTS && opt->dst1opt)
++			tot_len += CMSG_ALIGN(ipv6_optlen(opt->dst1opt));
++	}
++
++	if (newopt)
++		tot_len += CMSG_ALIGN(ipv6_optlen(newopt));
++
++	if (!tot_len)
++		return NULL;
++
++	tot_len += sizeof(*opt2);
++	opt2 = sock_kmalloc(sk, tot_len, GFP_ATOMIC);
++	if (!opt2)
++		return ERR_PTR(-ENOBUFS);
++
++	memset(opt2, 0, tot_len);
++	refcount_set(&opt2->refcnt, 1);
++	opt2->tot_len = tot_len;
++	p = (char *)(opt2 + 1);
++
++	ipv6_renew_option(IPV6_HOPOPTS, &opt2->hopopt,
++			  (opt ? opt->hopopt : NULL),
++			  newopt, newtype, &p);
++	ipv6_renew_option(IPV6_RTHDRDSTOPTS, &opt2->dst0opt,
++			  (opt ? opt->dst0opt : NULL),
++			  newopt, newtype, &p);
++	ipv6_renew_option(IPV6_RTHDR,
++			  (struct ipv6_opt_hdr **)&opt2->srcrt,
++			  (opt ? (struct ipv6_opt_hdr *)opt->srcrt : NULL),
++			  newopt, newtype, &p);
++	ipv6_renew_option(IPV6_DSTOPTS, &opt2->dst1opt,
++			  (opt ? opt->dst1opt : NULL),
++			  newopt, newtype, &p);
++
++	opt2->opt_nflen = (opt2->hopopt ? ipv6_optlen(opt2->hopopt) : 0) +
++			  (opt2->dst0opt ? ipv6_optlen(opt2->dst0opt) : 0) +
++			  (opt2->srcrt ? ipv6_optlen(opt2->srcrt) : 0);
++	opt2->opt_flen = (opt2->dst1opt ? ipv6_optlen(opt2->dst1opt) : 0);
++
++	return opt2;
++}
++EXPORT_SYMBOL(ipv6_renew_options);
++
++struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
++					  struct ipv6_txoptions *opt)
++{
++	/* ignore the dest before srcrt unless srcrt is being included.
++	 * --yoshfuji
++	 */
++	if (opt && opt->dst0opt && !opt->srcrt) {
++		if (opt_space != opt) {
++			memcpy(opt_space, opt, sizeof(*opt_space));
++			opt = opt_space;
++		}
++		opt->opt_nflen -= ipv6_optlen(opt->dst0opt);
++		opt->dst0opt = NULL;
++	}
++
++	return opt;
++}
++EXPORT_SYMBOL_GPL(ipv6_fixup_options);
 -- 
 2.7.4
 
