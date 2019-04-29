@@ -2,101 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4EA6DCBC
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 09:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51C2ADCE4
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 09:32:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727435AbfD2HTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 03:19:05 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:46150 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727306AbfD2HTF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 03:19:05 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x3T7BApm016465;
-        Mon, 29 Apr 2019 09:18:44 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=STMicroelectronics;
- bh=TykFYt9jpvTCwyKhyahs+89NrVvncrSmdvgdWwwYztk=;
- b=vpsxKVmdKayCtuheOa+LEhE9Hcpk7rlGwuMKQum+17xVVfQrvFfnO40kzSgCbA84AUwH
- L7SlOnCyZSO6lBJafRag5na2endexM3rAmXLyb+9FX1d3/Fp0Y9LXo9tCgLKmZbSVRiD
- JT3SIbLns4QyIg4IOxlefXJLcmjxlB5f+iIuKr0rglt2G9yRqur/OkXoVTvkPSgQyhbr
- nXHarlN5rFyPXEdrmmZlVsBlRfprzHc3Jfi16QGK6iYtvca8BiWCw3G/k3EuUN/JVPqV
- z2bZZIRjM0do9BmEnoL/IwY57OVi9H2q1HSY/7I0/7YQtbPw3yU/IcvISF0I/ju5oi/m KQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2s5u5d0g7p-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Mon, 29 Apr 2019 09:18:44 +0200
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9757B31;
-        Mon, 29 Apr 2019 07:18:43 +0000 (GMT)
-Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 357AD122C;
-        Mon, 29 Apr 2019 07:18:43 +0000 (GMT)
-Received: from [10.48.0.204] (10.75.127.51) by SFHDAG3NODE2.st.com
- (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon, 29 Apr
- 2019 09:18:43 +0200
-Subject: Re: [PATCH 2/6] net: stmmac: fix csr_clk can't be zero issue
-To:     Biao Huang <biao.huang@mediatek.com>,
-        Jose Abreu <joabreu@synopsys.com>, <davem@davemloft.net>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
-        <jianguo.zhang@mediatek.com>
-References: <1556433009-25759-1-git-send-email-biao.huang@mediatek.com>
- <1556433009-25759-3-git-send-email-biao.huang@mediatek.com>
-From:   Alexandre Torgue <alexandre.torgue@st.com>
-Message-ID: <24f4b268-aa7f-e1f7-59fc-2bc163eb8277@st.com>
-Date:   Mon, 29 Apr 2019 09:18:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727448AbfD2HcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 03:32:05 -0400
+Received: from Galois.linutronix.de ([146.0.238.70]:40722 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726846AbfD2HcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 03:32:04 -0400
+Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1hL0lK-00053O-Qd; Mon, 29 Apr 2019 09:31:43 +0200
+Date:   Mon, 29 Apr 2019 09:31:37 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     Xiaoyao Li <xiaoyao.li@linux.intel.com>
+cc:     Fenghua Yu <fenghua.yu@intel.com>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>, H Peter Anvin <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        Christopherson Sean J <sean.j.christopherson@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        x86 <x86@kernel.org>, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: Re: [PATCH v8 12/15] kvm/vmx: Emulate MSR TEST_CTL
+In-Reply-To: <87ef9a01-fc99-20be-ec20-2c65e6a012a1@linux.intel.com>
+Message-ID: <alpine.DEB.2.21.1904290929570.1626@nanos.tec.linutronix.de>
+References: <1556134382-58814-1-git-send-email-fenghua.yu@intel.com> <1556134382-58814-13-git-send-email-fenghua.yu@intel.com> <alpine.DEB.2.21.1904250931020.1762@nanos.tec.linutronix.de> <7395908840acfbf806146f5f20d3509342771a19.camel@linux.intel.com>
+ <alpine.DEB.2.21.1904280903520.1757@nanos.tec.linutronix.de> <87ef9a01-fc99-20be-ec20-2c65e6a012a1@linux.intel.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <1556433009-25759-3-git-send-email-biao.huang@mediatek.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG4NODE1.st.com (10.75.127.10) To SFHDAG3NODE2.st.com
- (10.75.127.8)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-04-29_04:,,
- signatures=0
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+On Sun, 28 Apr 2019, Xiaoyao Li wrote:
+> On 4/28/2019 3:09 PM, Thomas Gleixner wrote:
+> > On Sat, 27 Apr 2019, Xiaoyao Li wrote:
+> > > Indeed, if we use split lock detection for protection purpose, when host
+> > > has it enabled we should directly pass it to guest and forbid guest from
+> > > disabling it.  And only when host disables split lock detection, we can
+> > > expose it and allow the guest to turn it on.
+> > ?
+> > > If it is used for protection purpose, then it should follow what you said
+> > > and
+> > > this feature needs to be disabled by default. Because there are split lock
+> > > issues in old/current kernels and BIOS. That will cause the existing guest
+> > > booting failure and killed due to those split lock.
+> > 
+> > Rightfully so.
+> 
+> So, the patch 13 "Enable split lock detection by default" needs to be removed?
 
-On 4/28/19 8:30 AM, Biao Huang wrote:
-> The specific clk_csr value can be zero, and
-> stmmac_clk is necessary for MDC clock which can be set dynamically.
-> So, change the condition from plat->clk_csr to plat->stmmac_clk to
-> fix clk_csr can't be zero issue.
-> 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> ---
->   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 818ad88..9e89b94 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -4376,7 +4376,7 @@ int stmmac_dvr_probe(struct device *device,
->   	 * set the MDC clock dynamically according to the csr actual
->   	 * clock input.
->   	 */
-> -	if (!priv->plat->clk_csr)
-> +	if (priv->plat->stmmac_clk)
->   		stmmac_clk_csr_set(priv);
->   	else
->   		priv->clk_csr = priv->plat->clk_csr;
-> 
+Why? No. We enable it by default and everything which violates the rules
+gets what it deserves. If there is an issue, boot with ac_splitlock_off and
+be done with it.
 
-So, as soon as stmmac_clk will be declared, it is no longer possible to 
-fix a CSR through the device tree ?
+Thanks,
+
+	tglx
