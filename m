@@ -2,149 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95CA1E79D
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04EEAE7B1
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:25:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728626AbfD2QUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 12:20:31 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40851 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728520AbfD2QUa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:20:30 -0400
-Received: by mail-pf1-f196.google.com with SMTP id u17so1591454pfn.7
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 09:20:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iuoLsJiPnw/JXgOxrXpRVQgpAhR00WHi9L2khmPRaTU=;
-        b=iSPjnQYQaqRrj0IHGTf3wsrwbk+JHEPAnXZITG0ikQDFPK8m3yc1CaalbhvyWR29bk
-         7s8DH8X3ZDDWG/U3DkDT2ILEuyvYtDJbtVoEcQehKE+SO7r4a7BVvPYm93YjJXf44gAt
-         mmtBl9dwWu5XnlfvLh2TZ6HbgAuf7JsrwV9UPy/H4vHnSdMACAHADCOrUGgIQhj2fuG1
-         OnyL+pWRN6HKmyp0DO5QVVNopshYK8xfvD4WgvzMYPNxCXy5P5M/NEhXraBMf2zB2UZH
-         TB9+8Z87rIw+oorbIcLiXJHaJwyPgykxBTLQMWunRVfyEO0pP+vzOkiBAupgCdfc8yye
-         Gr0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iuoLsJiPnw/JXgOxrXpRVQgpAhR00WHi9L2khmPRaTU=;
-        b=Ba2SI2kJoLb6ueACo39XneNcrF7G3dR+pbrxzmN6ZtUJ+ol16GYFUBZfUuSnjzhb15
-         5l2l3s6rs/hChJH6zZcXX2fufLsgQkytNkNdDE+DPf7suTH0FpPlCDuK39y9dgnVMeJ+
-         jmolFb5m9lmqzhjpWHt9APeE3o2wn9AA+SXzdT1moBjj3DP9ZTtbGyy0NXkJyykpUnre
-         /YwEeLpEotLl+fScwB8LUU0LaIw245f8nlxgcG00SyHt+/iHgGn8MbdnwwGktgJpKILS
-         u0NVvXDpbll/xZEMTM0GU/3cokBPvsFgIGE0Bb50cxKLR4h9jraGyPSY9W5+Cy9QIYo9
-         ZT4Q==
-X-Gm-Message-State: APjAAAUqLTyFm72CQpnVniNSpHP+XA2TTayL5Rhgdq/PqFS9M9PRWRvj
-        JvCIlbL/qVZB8UBC+imdaLfRiw==
-X-Google-Smtp-Source: APXvYqy3R91vdFUP7MKOE9lK74Z9U5vcLN6dC1ce1iC0TEnZ1uYEIe4JQCIqgHZKe27Fn8Hxbq0p3A==
-X-Received: by 2002:a62:5707:: with SMTP id l7mr65700691pfb.205.1556554829368;
-        Mon, 29 Apr 2019 09:20:29 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id s187sm38235391pgb.13.2019.04.29.09.20.28
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 29 Apr 2019 09:20:29 -0700 (PDT)
-Date:   Mon, 29 Apr 2019 09:20:27 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH] net-sysfs: expose IRQ number
-Message-ID: <20190429092027.6013677d@hermes.lan>
-In-Reply-To: <20190429060107.10245-1-zajec5@gmail.com>
-References: <20190429060107.10245-1-zajec5@gmail.com>
+        id S1728621AbfD2QZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 12:25:17 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:51622 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728518AbfD2QZR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:25:17 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us4.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id 1435A140092;
+        Mon, 29 Apr 2019 16:25:15 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 29 Apr
+ 2019 09:25:12 -0700
+Subject: Re: TC stats / hw offload question
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        netdev <netdev@vger.kernel.org>, "Jiri Pirko" <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+References: <26f0cfc9-3bef-8579-72cc-aa6c5ccecd43@solarflare.com>
+ <4cb765dd-453f-3139-bce6-6e0b31167aec@mojatatu.com>
+ <ec4092a6-196d-7eca-04be-0654e762c0b2@solarflare.com>
+ <20190424141139.5c5vhihie5mryxlt@salvia>
+ <26afcaaf-abdf-42ad-1715-5af9c6f3c2ef@solarflare.com>
+ <58c74d0f-b92e-31f9-9828-24fb04129534@solarflare.com>
+ <20190425223346.zqfadtphmhuj7ohp@salvia>
+ <e09faf92-c947-5b98-78d3-a37a28c0fc59@solarflare.com>
+ <20190426184943.idewf2rqebvslcva@salvia>
+ <97133878-8e78-287b-9854-431b116b0788@solarflare.com>
+ <20190429152128.4mbqyipjv25jiiko@salvia>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <e30859ad-a4e9-b0fb-f37d-4e8dcf638fdb@solarflare.com>
+Date:   Mon, 29 Apr 2019 17:25:10 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190429152128.4mbqyipjv25jiiko@salvia>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24580.005
+X-TM-AS-Result: No-12.581000-4.000000-10
+X-TMASE-MatchedRID: HXSqh3WYKfsbF9xF7zzuNSa1MaKuob8PC/ExpXrHizxV1lQ/Hn0TOvPM
+        gMdM5A4ejL4yZhAqBTn74R5CCqjLXtbIurZnjVAYg2gX/Emjy1SjOD+AkhTbUzbV6I7x0gIJmpY
+        YVVDsQzBUvbjPASn0LB2Pk0f04far4V7Lw7fwUM8zw5Ejs3g1lrQ0n3DEfu2Ti2g8XzxCDfthcJ
+        qAtNJYSM41PT2VftWQuyS8CWRLQohqcOCJ4oqGatIxRgow+5HIPj366R4tj3WbKItl61J/yZkw8
+        KdMzN86KrauXd3MZDWXf5sC39gVVOxaE5MUcTt+mZ6WwpKpbyqbYn5Qbl7Hnr82zIuRjhqBxYVz
+        I3UCCaY=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--12.581000-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24580.005
+X-MDID: 1556555116-vWo3jFxkVZsE
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Apr 2019 08:01:07 +0200
-Rafa=C5=82 Mi=C5=82ecki <zajec5@gmail.com> wrote:
+On 29/04/2019 16:21, Pablo Neira Ayuso wrote:
+> On Mon, Apr 29, 2019 at 03:11:06PM +0100, Edward Cree wrote:
+>> This is a bit of a mess; the best idea I've got is for the
+>>  TC_CLSFLOWER_STATS call to include a tcfa_index.  Then the driver
+>>  returns counter stats for that index, and tcf_exts_stats_update()
+>>  only updates those actions whose index matches.  But then
+>>  fl_hw_update_stats() would have to iterate over all the indices in
+>>  f->exts.  What do you think?
+> You could extend struct flow_stats to pass an array of stats to the
+> driver, including one stats per action and the counter index. Then,
+> tcf_exts_stats_update() uses this array of stats to update per-action
+> stats.
+Yes, but that means allocating the flow_stats.stats array each time;
+ I'd rather avoid memory allocation unless it's necessary.  As long as
+ we can move the preempt_disable() inside the loop that's currently in
+ tcf_exts_stats_update() (i.e. only disable pre-emption across each
+ individual call to tcf_action_stats_update()) I think we can.
+I think I prefer my approach (ask for one tcfa_index at a time); but
+ unmodified drivers that don't look at the passed index would return
+ zeroes for actions after the first, so we'll need some way to handle
+ those drivers separately (e.g. one tc_setup_cb_call with "answer
+ this one if you don't do indices" and a bunch more with specified
+ index values).  I think that requires much less change to the
+ existing drivers than putting an array back in the API, and keeps as
+ much of the work as possible in the core where it won't have to be
+ replicated in every driver.
+I'll put an RFC patch together soonish if no objections.
 
-> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
->=20
-> Knowing IRQ number makes e.g. reading /proc/interrupts much simpler.
-> It's more reliable than guessing device name used by a driver when
-> calling request_irq().
->=20
-> Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
-> ---
-> I found a script parsing /proc/interrupts for a given interface name. It =
-wasn't
-> working for me as it assumed request_irq() was called with a device name.=
- It's
-> not a case for all drivers.
->=20
-> I also found some other people looking for a proper solution for that:
-> https://unix.stackexchange.com/questions/275075/programmatically-determin=
-e-the-irqs-associated-with-a-network-interface
-> https://stackoverflow.com/questions/7516984/retrieving-irq-number-of-a-nic
->=20
-> Let me know if this solution makes sense. I can say it works for me ;)
-> ---
->  Documentation/ABI/testing/sysfs-class-net |  7 +++++++
->  net/core/net-sysfs.c                      | 16 ++++++++++++++++
->  2 files changed, 23 insertions(+)
->=20
-> diff --git a/Documentation/ABI/testing/sysfs-class-net b/Documentation/AB=
-I/testing/sysfs-class-net
-> index 664a8f6a634f..33440fe77ca7 100644
-> --- a/Documentation/ABI/testing/sysfs-class-net
-> +++ b/Documentation/ABI/testing/sysfs-class-net
-> @@ -301,3 +301,10 @@ Contact:	netdev@vger.kernel.org
->  Description:
->  		32-bit unsigned integer counting the number of times the link has
->  		been down
-> +
-> +What:		/sys/class/net/<iface>/irq
-> +Date:		April 2019
-> +KernelVersion:	5.2
-> +Contact:	netdev@vger.kernel.org
-> +Description:
-> +		IRQ number used by device
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index e4fd68389d6f..a3eb7c3f1f37 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -512,6 +512,21 @@ static ssize_t phys_switch_id_show(struct device *de=
-v,
->  }
->  static DEVICE_ATTR_RO(phys_switch_id);
-> =20
-> +static ssize_t irq_show(struct device *dev, struct device_attribute *att=
-r,
-> +			char *buf)
-> +{
-> +	const struct net_device *netdev =3D to_net_dev(dev);
-> +	ssize_t ret;
-> +
-> +	if (!rtnl_trylock())
-> +		return restart_syscall();
-> +	ret =3D sprintf(buf, "%d\n", netdev->irq);
-> +	rtnl_unlock();
-> +
-> +	return ret;
-> +}
-> +static DEVICE_ATTR_RO(irq);
-> +
->  static struct attribute *net_class_attrs[] __ro_after_init =3D {
->  	&dev_attr_netdev_group.attr,
->  	&dev_attr_type.attr,
-> @@ -542,6 +557,7 @@ static struct attribute *net_class_attrs[] __ro_after=
-_init =3D {
->  	&dev_attr_proto_down.attr,
->  	&dev_attr_carrier_up_count.attr,
->  	&dev_attr_carrier_down_count.attr,
-> +	&dev_attr_irq.attr,
->  	NULL,
->  };
->  ATTRIBUTE_GROUPS(net_class);
-
-Can't you find this on the PCI side already?
-$ ls /sys/class/net/eno1/device/msi_irqs/
-37  38  39  40  41
-
+-Ed
