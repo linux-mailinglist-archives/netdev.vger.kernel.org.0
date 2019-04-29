@@ -2,81 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B7BE7C7
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:30:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA161E7D8
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728663AbfD2Qap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 12:30:45 -0400
-Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:16648
-        "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728518AbfD2Qap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:30:45 -0400
-X-IronPort-AV: E=Sophos;i="5.60,410,1549926000"; 
-   d="scan'208";a="304358659"
-Received: from 50-250-39-241-static.hfc.comcastbusiness.net (HELO hadrien) ([50.250.39.241])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Apr 2019 18:30:23 +0200
-Date:   Mon, 29 Apr 2019 12:30:21 -0400 (EDT)
-From:   Julia Lawall <julia.lawall@lip6.fr>
-X-X-Sender: jll@hadrien
-To:     YueHaibing <yuehaibing@huawei.com>
-cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] net: ethernet: ti: cpsw: Fix inconsistent
- IS_ERR and PTR_ERR in cpsw_probe()
-In-Reply-To: <20190429143157.79035-1-yuehaibing@huawei.com>
-Message-ID: <alpine.DEB.2.21.1904291228000.2444@hadrien>
-References: <20190429135650.72794-1-yuehaibing@huawei.com> <20190429143157.79035-1-yuehaibing@huawei.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1728777AbfD2QdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 12:33:07 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45658 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728658AbfD2QdH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:33:07 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id B68071C00FC;
+        Mon, 29 Apr 2019 16:33:05 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 29 Apr
+ 2019 09:33:01 -0700
+Subject: Re: [PATCH net-next] sfc: mcdi_port: Mark expected switch
+ fall-through
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        "Solarflare linux maintainers" <linux-net-drivers@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>
+References: <20190429153755.GA10596@embeddedor>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <868472ed-29e9-9e9c-fbba-e10b9a9cda10@solarflare.com>
+Date:   Mon, 29 Apr 2019 17:33:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190429153755.GA10596@embeddedor>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24580.005
+X-TM-AS-Result: No-6.551600-4.000000-10
+X-TMASE-MatchedRID: +c13yJDs9029RoRMIcfOgH/vIGFxULe8jLOy13Cgb4+qvcIF1TcLYCqz
+        9bm0+YwHXiSIvUL/7sfc+0V24WCpMVr6zeO3/gBbULGoTjCGdeUNwryf5xHtclc/CedjlcvkfMr
+        dD3NIUvvaFM5TPGLdCIAGGZdCG6IYv1l2Uvx6idpWdFebWIc3VsRB0bsfrpPI0PU0TdJoUtfgHh
+        Ytb7lu11txDPP/0YTMxa4J+jHZ5EVVJ1rq+IcxDSe2DxJHD59fxGSSRjLzG8m9o4SAHpQc8790q
+        q3qAMrd/VEPcph09jWFcgJc+QNMwu8bJovJYm8FYupx0XjSQPLDOFVmKqGJ4bPn3tFon6UK
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--6.551600-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24580.005
+X-MDID: 1556555586-ZkJinuE-NKWe
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On Mon, 29 Apr 2019, YueHaibing wrote:
-
-> Change the call to PTR_ERR to access the value just tested by IS_ERR.
-
-I assume you didn't find the problem just looking through the code by
-hand.  If you used a tool, it would be really good to acknowledge the tool
-that was used.  The tools don't come for free, and you don't pay for them.
-The only payment that you can offer is to acknowledge that the tool was
-used, which helps justify that the tool is useful and what it is useful
-for.
-
-julia
-
+On 29/04/2019 16:37, Gustavo A. R. Silva wrote:
+> In preparation to enabling -Wimplicit-fallthrough, mark switch
+> cases where we are expecting to fall through.
 >
-> Fixes: 83a8471ba255 ("net: ethernet: ti: cpsw: refactor probe to group common hw initialization")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> ---
-> v2: add Fixes tag
-> ---
->  drivers/net/ethernet/ti/cpsw.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> This patch fixes the following warning:
 >
-> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-> index c3cba46fac9d..e37680654a13 100644
-> --- a/drivers/net/ethernet/ti/cpsw.c
-> +++ b/drivers/net/ethernet/ti/cpsw.c
-> @@ -2381,7 +2381,7 @@ static int cpsw_probe(struct platform_device *pdev)
+> drivers/net/ethernet/sfc/mcdi_port.c: In function ‘efx_mcdi_phy_decode_link’:
+> ./include/linux/compiler.h:77:22: warning: this statement may fall through [-Wimplicit-fallthrough=]
+>  # define unlikely(x) __builtin_expect(!!(x), 0)
+>                       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> ./include/asm-generic/bug.h:125:2: note: in expansion of macro ‘unlikely’
+>   unlikely(__ret_warn_on);     \
+>   ^~~~~~~~
+> drivers/net/ethernet/sfc/mcdi_port.c:344:3: note: in expansion of macro ‘WARN_ON’
+>    WARN_ON(1);
+>    ^~~~~~~
+> drivers/net/ethernet/sfc/mcdi_port.c:345:2: note: here
+>   case MC_CMD_FCNTL_OFF:
+>   ^~~~
 >
->  	clk = devm_clk_get(dev, "fck");
->  	if (IS_ERR(clk)) {
-> -		ret = PTR_ERR(mode);
-> +		ret = PTR_ERR(clk);
->  		dev_err(dev, "fck is not found %d\n", ret);
->  		return ret;
->  	}
+> Warning level 3 was used: -Wimplicit-fallthrough=3
 >
+> This patch is part of the ongoing efforts to enable
+> -Wimplicit-fallthrough.
 >
->
->
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+Acked-by: Edward Cree <ecree@solarflare.com>
