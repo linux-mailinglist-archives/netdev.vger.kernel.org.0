@@ -2,136 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF333DB7C
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 07:21:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B818DB91
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 07:38:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727279AbfD2FVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 01:21:20 -0400
-Received: from mga17.intel.com ([192.55.52.151]:10549 "EHLO mga17.intel.com"
+        id S1727158AbfD2Fh4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Apr 2019 01:37:56 -0400
+Received: from mga17.intel.com ([192.55.52.151]:11169 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726585AbfD2FVU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 01:21:20 -0400
+        id S1726139AbfD2Fh4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 01:37:56 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Apr 2019 22:21:20 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Apr 2019 22:37:55 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.60,408,1549958400"; 
-   d="scan'208";a="341652909"
-Received: from xiaoyaol-mobl.ccr.corp.intel.com (HELO [10.239.13.123]) ([10.239.13.123])
-  by fmsmga005.fm.intel.com with ESMTP; 28 Apr 2019 22:21:18 -0700
-Subject: Re: [PATCH v8 12/15] kvm/vmx: Emulate MSR TEST_CTL
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Xiaoyao Li <xiaoyao.li@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Fenghua Yu <fenghua.yu@intel.com>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>, H Peter Anvin <hpa@zytor.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Christopherson Sean J <sean.j.christopherson@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        x86 <x86@kernel.org>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-References: <1556134382-58814-1-git-send-email-fenghua.yu@intel.com>
- <1556134382-58814-13-git-send-email-fenghua.yu@intel.com>
- <alpine.DEB.2.21.1904250931020.1762@nanos.tec.linutronix.de>
- <7395908840acfbf806146f5f20d3509342771a19.camel@linux.intel.com>
- <alpine.DEB.2.21.1904280903520.1757@nanos.tec.linutronix.de>
-From:   Xiaoyao Li <xiaoyao.li@linux.intel.com>
-Message-ID: <725e3442-949d-efe6-a60c-1ca3716428fb@linux.intel.com>
-Date:   Mon, 29 Apr 2019 13:21:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1904280903520.1757@nanos.tec.linutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+   d="scan'208";a="341656340"
+Received: from pgsmsx108.gar.corp.intel.com ([10.221.44.103])
+  by fmsmga005.fm.intel.com with ESMTP; 28 Apr 2019 22:37:53 -0700
+Received: from pgsmsx114.gar.corp.intel.com ([169.254.4.194]) by
+ PGSMSX108.gar.corp.intel.com ([169.254.8.246]) with mapi id 14.03.0415.000;
+ Mon, 29 Apr 2019 13:37:52 +0800
+From:   "Ong, Boon Leong" <boon.leong.ong@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>
+Subject: RE: [PATCH 0/7] net: stmmac: enable EHL SGMII
+Thread-Topic: [PATCH 0/7] net: stmmac: enable EHL SGMII
+Thread-Index: AQHU+n5wKUIUU2n+WEWdYYhqXR355qZKzdAAgAEn3oCAAFapgIAApFcw//+J5wCABircQA==
+Date:   Mon, 29 Apr 2019 05:37:52 +0000
+Message-ID: <AF233D1473C1364ABD51D28909A1B1B75C0B8B35@pgsmsx114.gar.corp.intel.com>
+References: <1556126241-2774-1-git-send-email-weifeng.voon@intel.com>
+ <20190424134854.GP28405@lunn.ch>
+ <D6759987A7968C4889FDA6FA91D5CBC8146EF128@PGSMSX103.gar.corp.intel.com>
+ <20190425123801.GD8117@lunn.ch>
+ <AF233D1473C1364ABD51D28909A1B1B75C0B205D@pgsmsx114.gar.corp.intel.com>
+ <20190425152332.GD23779@lunn.ch>
+In-Reply-To: <20190425152332.GD23779@lunn.ch>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYWQ3N2Q5ODAtZDRhNC00ZjhjLWJjMjAtMDRhMjI2YzQ4MzgxIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoibE0xM0dxWjhrd04ya3JiUmZFOGJ4YVk2bkVmTll2QmpCOFBycWlXdEZrYVpVWGs3VmJZUXFPZmJtaDdvVnpEOSJ9
+dlp-product: dlpe-windows
+dlp-version: 11.0.600.7
+dlp-reaction: no-action
+x-originating-ip: [172.30.20.205]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Thomas,
-
-Base on your comments, I plan to make the design as following:
-
-1) When host enables this feature, there is no switch between host and 
-guest that guest running with it enabled by force. Since #AC in 
-exception bitmap is set in current kvm, every #AC in guest will be 
-trapped. And in handle_exception() handler in kvm, if #AC is caused by 
-alignment check, kvm injects #AC back to guest; if #AC is caused by 
-split lock, kvm sends a SIGBUS to userspace.
-
-2) When host disables this feature, there needs atomic switch between 
-host and guest if different. And in handle_exception() handler in kvm, 
-we can just inject #AC back to guest, and let guest to handle it.
-
-Besides, I think there might be an optimization for case #1.
-When host has it enabled and guest also has it enabled, I think it's OK 
-to inject #AC back to guest, not directly kill the guest.
-Because guest kernel has it enabled means it knows what this feature is 
-and it also want to get aware of and fault every split lock.
-At this point, if guest has it enabled, we can leave it to guest. Only 
-when guest's configuration is having it disabled, can it be regards as 
-potentially harmful that we kill the guest once there is a #AC due to 
-split lock.
-
-How do you think about the design and this optimization?
-
-Hi, Paolo,
-
-What's your opinion about this design of split lock in KVM?
-
-Thanks.
-
-On 4/28/2019 3:09 PM, Thomas Gleixner wrote:
-> On Sat, 27 Apr 2019, Xiaoyao Li wrote:
->> On Thu, 2019-04-25 at 09:42 +0200, Thomas Gleixner wrote:
->>> But the way more interesting question is why are you exposing the MSR and
->>> the bit to the guest at all if the host has split lock detection enabled?
->>>
->>> That does not make any sense as you basically allow the guest to switch it
->>> off and then launch a slowdown attack. If the host has it enabled, then a
->>> guest has to be treated like any other process and the #AC trap has to be
->>> caught by the hypervisor which then kills the guest.
->>>
->>> Only if the host has split lock detection disabled, then you can expose it
->>> and allow the guest to turn it on and handle it on its own.
+>-----Original Message-----
+>From: Andrew Lunn [mailto:andrew@lunn.ch]
+>Sent: Thursday, April 25, 2019 11:24 PM
+>To: Ong, Boon Leong <boon.leong.ong@intel.com>
+>Cc: Voon, Weifeng <weifeng.voon@intel.com>; David S. Miller
+><davem@davemloft.net>; netdev@vger.kernel.org; linux-
+>kernel@vger.kernel.org; Kweh, Hock Leong <hock.leong.kweh@intel.com>;
+>Florian Fainelli <f.fainelli@gmail.com>; Maxime Coquelin
+><mcoquelin.stm32@gmail.com>; Giuseppe Cavallaro
+><peppe.cavallaro@st.com>; Jose Abreu <joabreu@synopsys.com>
+>Subject: Re: [PATCH 0/7] net: stmmac: enable EHL SGMII
+>
+>> >> > > This patch-set is to enable Ethernet controller (DW Ethernet QoS and
+>> >> > > DW Ethernet PCS) with SGMII interface in Elkhart Lake.
+>> >> >
+>> >> > Can the hardware also do 1000BaseX?
+>> >>
+>> >> Yes, it is able to do 1000BaseX.
+>> >
+>> >I Voon
+>> >
+>> >That means you should not really hard code it to SGMII. Somebody is
+>> >going to connect an SFP or an Ethernet switch and want to use
+>> >1000BaseX.
 >>
->> Indeed, if we use split lock detection for protection purpose, when host
->> has it enabled we should directly pass it to guest and forbid guest from
->> disabling it.  And only when host disables split lock detection, we can
->> expose it and allow the guest to turn it on.
-> ?
->> If it is used for protection purpose, then it should follow what you said and
->> this feature needs to be disabled by default. Because there are split lock
->> issues in old/current kernels and BIOS. That will cause the existing guest
->> booting failure and killed due to those split lock.
-> 
-> Rightfully so.
-> 
->> If it is only used for debug purpose, I think it might be OK to enable this
->> feature by default and make it indepedent between host and guest?
-> 
-> No. It does not make sense.
-> 
->> So I think how to handle this feature between host and guest depends on how we
->> use it? Once you give me a decision, I will follow it in next version.
-> 
-> As I said: The host kernel makes the decision.
-> 
-> If the host kernel has it enabled then the guest is not allowed to change
-> it. If the guest triggers an #AC it will be killed.
-> 
-> If the host kernel has it disabled then the guest can enable it for it's
-> own purposes.
-> 
-> Thanks,
-> 
-> 	tglx
-> 
+>> Hi Andrew,
+>>
+>> The Ethernet controller consists of two ways to connect to external PHY,
+>> RGMII and SGMII. The selection is done through soft strap.
+>> The patch-series is to enable SGMII interface. The DW xPCS IP is
+>> configured to operate in 1000BASE-X mode. The xPCS IP is external
+>> connected through internal PHY interface which presents externally
+>> as SGMII interface. To help illustrate the connection:-
+>>
+>>       <-----------------GBE Controller----------------->|<--External PHY chip-->
+>>
+>>       +----------+                    +----+          +---+                          +-----------------+
+>>       |   EQoS   | <-GMII->|xPCS|<--> | L1 | <-- SGMII --> | External GbE |
+>>       |   MAC    |                 |         |       |PHY|                         | PHY Chip        |
+>>       +----------+                    +----+          +---+                          +-----------------+
+>>
+>> In future, we will submit the changes for the RGMII connection that
+>> bypasses DW xPCS.
+>
+>The ASCII art get messed up somewhere.
+Sorry for that. 
+
+>
+>What you are implementing looks like:
+>
+>
+>       <-----------------GBE Controller------------>|<--External PHY chip-->
+>
+>       +----------+                    +----+                 +---+
+>       |   EQoS   | <-GMII->|xPCS|<--> | L1 | <-- SGMII -->   |PHY|
+>       |   MAC    |                    |    |                 +---+
+>       +----------+                    +----+
+>
+>With the Ethernet controller, the MAC connects to the xPCS. Out of the
+>xPCS you have a SERDES connection, running the SGMII protocol. That
+>connects to external pins of the SoC. These are then connected to a
+>copper PHY which also supports SGMII.
+>
+>What i'm trying to understand is if the following is possible:
+>
+>       <-----------------GBE Controller------------->|<--External SFP cage/module-->
+>
+>       +----------+                    +----+                   +---+
+>       |   EQoS   | <-GMII->|xPCS|<--> | L1 | <-- 1000BaseX --> |SPF|
+>       |   MAC    |                    |    |                   +---+
+>       +----------+                    +----+
+>
+>Rather than use a Copper PHY, an SFP cage+module is used. The same
+>SERDES interface is used, but 1000BaseX runs over it.
+>
+>Generally, an xPCS which can run SGMII can also do 1000BaseX, because
+>SGMII is just some Cisco Proprietary extensions to 1000BaseX.
+>
+>If the xPCS can do 1000BaseX over the SERDES, you should not hard code
+>it to SGMII, but allow it to be configured.
+
+Thanks for the review and checking above.
+
+Sorry for the delay, we have checked with hardware/SoC HW architect
+and gotten confirmation that the controller can only support SGMII inter-chip
+connection. It does not support 1000Base-X. 
+
+In this case, we believe that the current implementation of the DW xPCS
+are sufficient. Ok?
