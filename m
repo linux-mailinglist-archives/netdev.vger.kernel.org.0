@@ -2,86 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1617EE71B
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD02E72E
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728600AbfD2QAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 12:00:14 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:41341 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728468AbfD2QAO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:00:14 -0400
-Received: by mail-ed1-f66.google.com with SMTP id m4so9591482edd.8
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 09:00:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oCAfamZkmNrnp3NOTBhI/B1L259GPKMj7r2c0Kfbv8c=;
-        b=RdXqsnaAkfVxYAJ8twpS4ZuWmw29D9ZXRY8UtvltmouhBeywKVJGx1GTSu/g7nhIf6
-         S5K6VrVhvwjXHAuxb1QNyoXNSl/dtAH9vhVCoj3H3XM/9e2KCYuLx/L/K8t8aLO4wyGZ
-         yq+x1xhjENHpcd6PwENybf6ar+M/Mk6BCy4L7OpeBICGPvP0+6TSTp7Na8qEOpjLoCrF
-         FmjRJQ4SkjxGVSE/9GZG9e+J3qa87buPMYBpP3vRTf2P+WX9xjo8TXv7gqLBkqNr2DUe
-         r50JaFCsq//STtq11C5CxMyxqo97wogo9sWe6jRlxaAEZWdd7Pl+qNjGGXXPjolf2Q/X
-         +Psw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oCAfamZkmNrnp3NOTBhI/B1L259GPKMj7r2c0Kfbv8c=;
-        b=qaRPhL9bcrz0kadSLYBXUqK7I/LKk5DOnxrFumtkyFesvzt6FB4rIKueYOoeum9ET/
-         QqYtxZSbHvvg+yQaJWcJNFtC7Wo5Blf3sG2xpRCyoAAx7tIeolIebnMBlABChYKH3u2D
-         Z46/mN4PjlOcFkIyBtzS+m4QeRIa8N8rRAhJ1PBjNq0I7dcmCuAgq3Ab2uWRgn6nH7GQ
-         S9XgnMSvCszatohoN2BsTflEUETPUd9F62Ss7nX8P1iTZznp5iDGkdBDBath6evQtqm2
-         TscAy2x+thjWllJ6JnlyeFZZbIlsrV61UPZwvZ0mmI56OGbX+9hbielU1s2NJtqL8OgB
-         wM8w==
-X-Gm-Message-State: APjAAAXjkwFWYjK76K4KnWLkWllPQySbyU9jVf/xIda8Tsh3rAoQyovr
-        CmZauNmxC6xEcFdCPj68BFPbl4D4SF4nXElNx6U=
-X-Google-Smtp-Source: APXvYqxf0ByI0Ohmghe86CqzGzW0LyDDQIBcvkYHHUh5B+r8aCSNYZejdDUso8s5qAFy45D+WcOYRHKL1FFJ2d4HFYI=
-X-Received: by 2002:a17:906:1c8c:: with SMTP id g12mr30464284ejh.97.1556553612470;
- Mon, 29 Apr 2019 09:00:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190429154655.9141-1-willemdebruijn.kernel@gmail.com> <b4a396b7c2f5467a97433d7c52530924@AcuMS.aculab.com>
-In-Reply-To: <b4a396b7c2f5467a97433d7c52530924@AcuMS.aculab.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 29 Apr 2019 11:59:36 -0400
-Message-ID: <CAF=yD-Ksh0w=60v6DNFudKJvHWs0L0Da1GuSM=w0wOX-Gm+LYg@mail.gmail.com>
-Subject: Re: [PATCH net v2] packet: in recvmsg msg_name return at least sizeof sockaddr_ll
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        id S1728827AbfD2QBs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Apr 2019 12:01:48 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:54181 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728506AbfD2QBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:01:48 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-226-5llsNYZ-NwuSveKxwifTrQ-1; Mon, 29 Apr 2019 17:01:45 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 29 Apr 2019 17:01:43 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 29 Apr 2019 17:01:43 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Willem de Bruijn' <willemdebruijn.kernel@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: RE: [PATCH net v2] packet: validate msg_namelen in send directly
+Thread-Topic: [PATCH net v2] packet: validate msg_namelen in send directly
+Thread-Index: AQHU/qOsnKDPErqEvkqlFzq1BUGVXKZTTEmA
+Date:   Mon, 29 Apr 2019 16:01:43 +0000
+Message-ID: <afaeff665f994174bf5751fc9068fe6e@AcuMS.aculab.com>
+References: <20190429155318.20433-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20190429155318.20433-1-willemdebruijn.kernel@gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-MC-Unique: 5llsNYZ-NwuSveKxwifTrQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 11:49 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Willem de Bruijn
-> > Sent: 29 April 2019 16:47
-> > Packet send checks that msg_name is at least sizeof sockaddr_ll.
-> > Packet recv must return at least this length, so that its output
-> > can be passed unmodified to packet send.
-> >
-> > This ceased to be true since adding support for lladdr longer than
-> > sll_addr. Since, the return value uses true address length.
-> >
-> > Always return at least sizeof sockaddr_ll, even if address length
-> > is shorter. Zero the padding bytes.
-> >
-> > Change v1->v2: do not overwrite zeroed padding again. use copy_len.
-> >
-> > Fixes: 0fb375fb9b93 ("[AF_PACKET]: Allow for > 8 byte hardware addresses.")
-> > Suggested-by: David Laight <David.Laight@aculab.com>
-> > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > ---
-..
->
-> Looks ok to me, not tried to compile it though.
+From: Willem de Bruijn
+> Sent: 29 April 2019 16:53
+> Packet sockets in datagram mode take a destination address. Verify its
+> length before passing to dev_hard_header.
+> 
+> Prior to 2.6.14-rc3, the send code ignored sll_halen. This is
+> established behavior. Directly compare msg_namelen to dev->addr_len.
+> 
+> Change v1->v2: initialize addr in all paths
+> 
+> Fixes: 6b8d95f1795c4 ("packet: validate address length if non-zero")
+> Suggested-by: David Laight <David.Laight@aculab.com>
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> ---
+>  net/packet/af_packet.c | 24 ++++++++++++++----------
+>  1 file changed, 14 insertions(+), 10 deletions(-)
+> 
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index 9419c5cf4de5e..a43876b374da2 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -2602,8 +2602,8 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>  	void *ph;
+>  	DECLARE_SOCKADDR(struct sockaddr_ll *, saddr, msg->msg_name);
+>  	bool need_wait = !(msg->msg_flags & MSG_DONTWAIT);
+> +	unsigned char *addr = NULL;
+>  	int tp_len, size_max;
+> -	unsigned char *addr;
+>  	void *data;
+>  	int len_sum = 0;
+>  	int status = TP_STATUS_AVAILABLE;
+> @@ -2614,7 +2614,6 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>  	if (likely(saddr == NULL)) {
+>  		dev	= packet_cached_dev_get(po);
+>  		proto	= po->num;
+> -		addr	= NULL;
+>  	} else {
+>  		err = -EINVAL;
+>  		if (msg->msg_namelen < sizeof(struct sockaddr_ll))
+> @@ -2624,10 +2623,13 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>  						sll_addr)))
+>  			goto out;
+>  		proto	= saddr->sll_protocol;
+> -		addr	= saddr->sll_halen ? saddr->sll_addr : NULL;
+>  		dev = dev_get_by_index(sock_net(&po->sk), saddr->sll_ifindex);
+> -		if (addr && dev && saddr->sll_halen < dev->addr_len)
+> -			goto out_put;
+> +		if (po->sk.sk_socket->type == SOCK_DGRAM) {
+> +			if (dev && msg->msg_namelen < dev->addr_len +
+> +				   offsetof(struct sockaddr_ll, sll_addr))
+> +				goto out_put;
+> +			addr = saddr->sll_addr;
+> +		}
+>  	}
+> 
+>  	err = -ENXIO;
+> @@ -2799,7 +2801,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>  	struct sk_buff *skb;
+>  	struct net_device *dev;
+>  	__be16 proto;
+> -	unsigned char *addr;
+> +	unsigned char *addr = NULL;
+>  	int err, reserve = 0;
+>  	struct sockcm_cookie sockc;
+>  	struct virtio_net_hdr vnet_hdr = { 0 };
+> @@ -2816,7 +2818,6 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>  	if (likely(saddr == NULL)) {
+>  		dev	= packet_cached_dev_get(po);
+>  		proto	= po->num;
+> -		addr	= NULL;
+>  	} else {
+>  		err = -EINVAL;
+>  		if (msg->msg_namelen < sizeof(struct sockaddr_ll))
+> @@ -2824,10 +2825,13 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>  		if (msg->msg_namelen < (saddr->sll_halen + offsetof(struct sockaddr_ll, sll_addr)))
+>  			goto out;
+>  		proto	= saddr->sll_protocol;
+> -		addr	= saddr->sll_halen ? saddr->sll_addr : NULL;
+>  		dev = dev_get_by_index(sock_net(sk), saddr->sll_ifindex);
+> -		if (addr && dev && saddr->sll_halen < dev->addr_len)
+> -			goto out_unlock;
+> +		if (sock->type == SOCK_DGRAM) {
+> +			if (dev && msg->msg_namelen < dev->addr_len +
+> +				   offsetof(struct sockaddr_ll, sll_addr))
+> +				goto out_unlock;
+> +			addr = saddr->sll_addr;
+> +		}
+>  	}
+> 
+>  	err = -ENXIO;
+> --
+> 2.21.0.593.g511ec345e18-goog
 
-Thanks again. I did that and also ran a small recv test that verifies
-namelen (but clearly did not help me see the stupid bug I made in
-v1..).
+LGTM
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
