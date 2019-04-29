@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22993DC00
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 08:35:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5B67DC01
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 08:35:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727432AbfD2Gfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 02:35:40 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:48889 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727281AbfD2Gfi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 02:35:38 -0400
-X-UUID: 81a79a01bfdf4b47b8dc23da11288354-20190429
-X-UUID: 81a79a01bfdf4b47b8dc23da11288354-20190429
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw01.mediatek.com
+        id S1727460AbfD2Gfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 02:35:46 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:41973 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726137AbfD2Gfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 02:35:40 -0400
+X-UUID: 88c07c6299c34c1884c22a856f736142-20190429
+X-UUID: 88c07c6299c34c1884c22a856f736142-20190429
+Received: from mtkmrs01.mediatek.inc [(172.21.131.159)] by mailgw02.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
         (mhqrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 1311759518; Mon, 29 Apr 2019 14:35:32 +0800
+        with ESMTP id 1974388627; Mon, 29 Apr 2019 14:35:32 +0800
 Received: from mtkcas09.mediatek.inc (172.21.101.178) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Mon, 29 Apr 2019 14:35:29 +0800
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Mon, 29 Apr 2019 14:35:30 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas09.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Mon, 29 Apr 2019 14:35:29 +0800
+ Transport; Mon, 29 Apr 2019 14:35:30 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     Jose Abreu <joabreu@synopsys.com>, <davem@davemloft.net>
 CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -35,184 +35,266 @@ CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         <linux-kernel@vger.kernel.org>,
         <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
         <biao.huang@mediatek.com>, <jianguo.zhang@mediatek.com>
-Subject: [PATCH 1/2] net-next: stmmac: add support for hash table size 128/256 in dwmac4
-Date:   Mon, 29 Apr 2019 14:35:23 +0800
-Message-ID: <1556519724-1576-2-git-send-email-biao.huang@mediatek.com>
+Subject: [PATCH 2/2] net-next: stmmac: add mdio clause 45 access from mac device for dwmac4
+Date:   Mon, 29 Apr 2019 14:35:24 +0800
+Message-ID: <1556519724-1576-3-git-send-email-biao.huang@mediatek.com>
 X-Mailer: git-send-email 1.7.9.5
 In-Reply-To: <1556519724-1576-1-git-send-email-biao.huang@mediatek.com>
 References: <1556519724-1576-1-git-send-email-biao.huang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-TM-SNTS-SMTP: 08C56445BB69E9595636BAC85EDBCC0011C07998E334D637A8EA177E17BA72B82000:8
 X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. get hash table size in hw feature reigster, and add support
-for taller hash table(128/256) in dwmac4.
-2. only clear PR/HMC/PM bits of GMAC_PACKET_FILTER, to avoid
-side effect to functions of other bits.
+add clause 45 mdio read and write from mac device for dwmac4.
 
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/common.h      |    7 +--
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h      |    4 +-
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |   50 ++++++++++++---------
- drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c  |    1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    4 ++
- 5 files changed, 40 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/common.h      |   11 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |    3 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c |  167 +++++++++++++++++++--
+ 3 files changed, 165 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 272b9ca6..709dcec 100644
+index 709dcec..06573b3 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/common.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -335,6 +335,7 @@ struct dma_features {
- 	/* 802.3az - Energy-Efficient Ethernet (EEE) */
- 	unsigned int eee;
- 	unsigned int av;
-+	unsigned int hash_tb_sz;
- 	unsigned int tsoen;
- 	/* TX and RX csum */
- 	unsigned int tx_coe;
-@@ -427,9 +428,9 @@ struct mac_device_info {
- 	struct mii_regs mii;	/* MII register Addresses */
- 	struct mac_link link;
- 	void __iomem *pcsr;     /* vpointer to device CSRs */
--	int multicast_filter_bins;
--	int unicast_filter_entries;
--	int mcast_bits_log2;
-+	unsigned int multicast_filter_bins;
-+	unsigned int unicast_filter_entries;
-+	unsigned int mcast_bits_log2;
- 	unsigned int rx_csum;
- 	unsigned int pcs;
- 	unsigned int pmt;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index eb013d5..a5eb7df 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -18,8 +18,7 @@
- /*  MAC registers */
- #define GMAC_CONFIG			0x00000000
- #define GMAC_PACKET_FILTER		0x00000008
--#define GMAC_HASH_TAB_0_31		0x00000010
--#define GMAC_HASH_TAB_32_63		0x00000014
-+#define GMAC_HASH_TAB(x)		(0x10 + x * 4)
- #define GMAC_RX_FLOW_CTRL		0x00000090
- #define GMAC_QX_TX_FLOW_CTRL(x)		(0x70 + x * 4)
- #define GMAC_TXQ_PRTY_MAP0		0x98
-@@ -181,6 +180,7 @@ enum power_event {
- #define GMAC_HW_FEAT_MIISEL		BIT(0)
+@@ -410,12 +410,15 @@ struct mac_link {
+ struct mii_regs {
+ 	unsigned int addr;	/* MII Address */
+ 	unsigned int data;	/* MII Data */
+-	unsigned int addr_shift;	/* MII address shift */
+-	unsigned int reg_shift;		/* MII reg shift */
+-	unsigned int addr_mask;		/* MII address mask */
+-	unsigned int reg_mask;		/* MII reg mask */
++	unsigned int addr_shift;	/* PHY address shift */
++	unsigned int cl45_reg_shift;	/* CL45 reg address shift */
++	unsigned int reg_shift;		/* CL22 reg/CL45 dev shift */
++	unsigned int addr_mask;		/* PHY address mask */
++	unsigned int cl45_reg_mask;	/* CL45 reg mask */
++	unsigned int reg_mask;		/* CL22 reg/CL45 dev mask */
+ 	unsigned int clk_csr_shift;
+ 	unsigned int clk_csr_mask;
++	unsigned int cl45_en;	/* CL45 Enable*/
+ };
  
- /* MAC HW features1 bitmap */
-+#define GMAC_HW_HASH_TB_SZ		GENMASK(25, 24)
- #define GMAC_HW_FEAT_AVSEL		BIT(20)
- #define GMAC_HW_TSOEN			BIT(18)
- #define GMAC_HW_TXFIFOSIZE		GENMASK(10, 6)
+ struct mac_device_info {
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index 7e5d5db..2a41c64 100644
+index 2a41c64..1ca03f9 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -401,41 +401,49 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
- 			      struct net_device *dev)
+@@ -835,6 +835,9 @@ int dwmac4_setup(struct stmmac_priv *priv)
+ 	mac->mii.reg_mask = GENMASK(20, 16);
+ 	mac->mii.clk_csr_shift = 8;
+ 	mac->mii.clk_csr_mask = GENMASK(11, 8);
++	mac->mii.cl45_reg_shift = 16;
++	mac->mii.cl45_reg_mask = GENMASK(31, 16);
++	mac->mii.cl45_en = BIT(1);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index bdd3515..a70c967 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -150,16 +150,16 @@ static int stmmac_xgmac2_mdio_write(struct mii_bus *bus, int phyaddr,
+ }
+ 
+ /**
+- * stmmac_mdio_read
++ * stmmac_c22_read
+  * @bus: points to the mii_bus structure
+- * @phyaddr: MII addr
+- * @phyreg: MII reg
+- * Description: it reads data from the MII register from within the phy device.
++ * @phyaddr: clause 22 phy address
++ * @phyreg: clause 22 phy register
++ * Description: it reads data from the MII register follow clause 22.
+  * For the 7111 GMAC, we must set the bit 0 in the MII address register while
+  * accessing the PHY registers.
+  * Fortunately, it seems this has no drawback for the 7109 MAC.
+  */
+-static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
++static int stmmac_c22_read(struct mii_bus *bus, int phyaddr, int phyreg)
  {
- 	void __iomem *ioaddr = (void __iomem *)dev->base_addr;
--	unsigned int value = 0;
-+	unsigned int value;
-+	int i;
-+	int numhashregs = (hw->multicast_filter_bins >> 5);
-+	int mcbitslog2 = hw->mcast_bits_log2;
+ 	struct net_device *ndev = bus->priv;
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
+@@ -194,15 +194,15 @@ static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+ }
+ 
+ /**
+- * stmmac_mdio_write
++ * stmmac_c22_write
+  * @bus: points to the mii_bus structure
+- * @phyaddr: MII addr
+- * @phyreg: MII reg
+- * @phydata: phy data
+- * Description: it writes the data into the MII register from within the device.
++ * @phyaddr: clause-22 phy address
++ * @phyreg: clause-22 phy register
++ * @phydata: clause-22 phy data
++ * Description: it writes the data into the MII register follow clause 22.
+  */
+-static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
+-			     u16 phydata)
++static int stmmac_c22_write(struct mii_bus *bus, int phyaddr, int phyreg,
++			    u16 phydata)
+ {
+ 	struct net_device *ndev = bus->priv;
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
+@@ -237,6 +237,149 @@ static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
+ }
+ 
+ /**
++ * stmmac_c45_read
++ * @bus: points to the mii_bus structure
++ * @phyaddr: clause-45 phy address
++ * @devad: clause-45 device address
++ * @prtad: clause-45 register address
++ * @phydata: phy data
++ * Description: it reads the data from the  MII register follow clause 45.
++ */
++static int stmmac_c45_read(struct mii_bus *bus, int phyaddr,
++			   int devad, int prtad)
++{
++	struct net_device *ndev = bus->priv;
++	struct stmmac_priv *priv = netdev_priv(ndev);
++	unsigned int mii_address = priv->hw->mii.addr;
++	unsigned int mii_data = priv->hw->mii.data;
++	u32 v, value;
++	int data;
 +
-+	value = readl(ioaddr + GMAC_PACKET_FILTER);
-+	value &= ~GMAC_PACKET_FILTER_PR;
-+	value &= ~GMAC_PACKET_FILTER_HMC;
-+	value &= ~GMAC_PACKET_FILTER_PM;
- 
- 	if (dev->flags & IFF_PROMISC) {
--		value = GMAC_PACKET_FILTER_PR;
-+		value |= GMAC_PACKET_FILTER_PR;
- 	} else if ((dev->flags & IFF_ALLMULTI) ||
--			(netdev_mc_count(dev) > HASH_TABLE_SIZE)) {
-+		   (netdev_mc_count(dev) > hw->multicast_filter_bins)) {
- 		/* Pass all multi */
--		value = GMAC_PACKET_FILTER_PM;
--		/* Set the 64 bits of the HASH tab. To be updated if taller
--		 * hash table is used
--		 */
--		writel(0xffffffff, ioaddr + GMAC_HASH_TAB_0_31);
--		writel(0xffffffff, ioaddr + GMAC_HASH_TAB_32_63);
-+		value |= GMAC_PACKET_FILTER_PM;
-+		/* Set all the bits of the HASH tab */
-+		for (i = 0; i < numhashregs; i++)
-+			writel(0xffffffff, ioaddr + GMAC_HASH_TAB(i));
- 	} else if (!netdev_mc_empty(dev)) {
--		u32 mc_filter[2];
-+		u32 mc_filter[8];
- 		struct netdev_hw_addr *ha;
- 
- 		/* Hash filter for multicast */
--		value = GMAC_PACKET_FILTER_HMC;
-+		value |= GMAC_PACKET_FILTER_HMC;
- 
- 		memset(mc_filter, 0, sizeof(mc_filter));
- 		netdev_for_each_mc_addr(ha, dev) {
--			/* The upper 6 bits of the calculated CRC are used to
--			 * index the content of the Hash Table Reg 0 and 1.
-+			/* The upper n bits of the calculated CRC are used to
-+			 * index the contents of the hash table. The number of
-+			 * bits used depends on the hardware configuration
-+			 * selected at core configuration time.
- 			 */
--			int bit_nr =
--				(bitrev32(~crc32_le(~0, ha->addr, 6)) >> 26);
--			/* The most significant bit determines the register
--			 * to use while the other 5 bits determines the bit
--			 * within the selected register
-+			int bit_nr = bitrev32(~crc32_le(~0, ha->addr,
-+					ETH_ALEN)) >> (32 - mcbitslog2);
-+			/* The most significant bit determines the register to
-+			 * use (H/L) while the other 5 bits determine the bit
-+			 * within the register.
- 			 */
--			mc_filter[bit_nr >> 5] |= (1 << (bit_nr & 0x1F));
-+			mc_filter[bit_nr >> 5] |= (1 << (bit_nr & 0x1f));
- 		}
--		writel(mc_filter[0], ioaddr + GMAC_HASH_TAB_0_31);
--		writel(mc_filter[1], ioaddr + GMAC_HASH_TAB_32_63);
-+		for (i = 0; i < numhashregs; i++)
-+			writel(mc_filter[i], ioaddr + GMAC_HASH_TAB(i));
- 	}
- 
- 	/* Handle multiple unicast addresses */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-index edb6053..59afb53 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-@@ -354,6 +354,7 @@ static void dwmac4_get_hw_feature(void __iomem *ioaddr,
- 
- 	/* MAC HW feature1 */
- 	hw_cap = readl(ioaddr + GMAC_HW_FEATURE1);
-+	dma_cap->hash_tb_sz = (hw_cap & GMAC_HW_HASH_TB_SZ) >> 24;
- 	dma_cap->av = (hw_cap & GMAC_HW_FEAT_AVSEL) >> 20;
- 	dma_cap->tsoen = (hw_cap & GMAC_HW_TSOEN) >> 18;
- 	/* RX and TX FIFO sizes are encoded as log2(n / 128). Undo that by
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 97c5e1a..1971f9f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4159,6 +4159,10 @@ static int stmmac_hw_init(struct stmmac_priv *priv)
- 		priv->plat->enh_desc = priv->dma_cap.enh_desc;
- 		priv->plat->pmt = priv->dma_cap.pmt_remote_wake_up;
- 		priv->hw->pmt = priv->plat->pmt;
-+		if (priv->dma_cap.hash_tb_sz) {
-+			priv->hw->multicast_filter_bins = BIT(priv->dma_cap.hash_tb_sz) * 32;
-+			priv->hw->mcast_bits_log2 = ilog2(priv->hw->multicast_filter_bins);
-+		}
- 
- 		/* TXCOE doesn't work in thresh DMA mode */
- 		if (priv->plat->force_thresh_dma_mode)
++	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
++			       100, 10000))
++		return -EIO;
++
++	value = 0;
++	value |= (prtad << priv->hw->mii.cl45_reg_shift)
++			& priv->hw->mii.cl45_reg_mask;
++	writel(value, priv->ioaddr + mii_data);
++
++	/* delay 2ms to avoid error value of get_phy_c45_devs_in_pkg */
++	mdelay(2);
++
++	value = MII_BUSY;
++	value |= (phyaddr << priv->hw->mii.addr_shift)
++		& priv->hw->mii.addr_mask;
++	value |= (devad << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
++	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
++		& priv->hw->mii.clk_csr_mask;
++	if (priv->plat->has_gmac4) {
++		value |= MII_GMAC4_READ;
++		value |= priv->hw->mii.cl45_en;
++	}
++	writel(value, priv->ioaddr + mii_address);
++
++	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
++			       100, 10000))
++		return -EIO;
++
++	/* Read the data from the MII data register */
++	data = (int)(readl(priv->ioaddr + mii_data) & 0xffff);
++
++	return data;
++}
++
++/**
++ * stmmac_c45_write
++ * @bus: points to the mii_bus structure
++ * @phyaddr: clause-45 phy address
++ * @devad: clause-45 device address
++ * @prtad: clause-45 register address
++ * @phydata: phy data
++ * Description: it writes the data into the MII register follow clause 45.
++ */
++static int stmmac_c45_write(struct mii_bus *bus, int phyaddr, int devad,
++			    int prtad, u16 phydata)
++{
++	struct net_device *ndev = bus->priv;
++	struct stmmac_priv *priv = netdev_priv(ndev);
++	unsigned int mii_address = priv->hw->mii.addr;
++	unsigned int mii_data = priv->hw->mii.data;
++	u32 v, value;
++
++	/* Wait until any existing MII operation is complete */
++	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
++			       100, 10000))
++		return -EIO;
++
++	value = phydata;
++	value |= (prtad << priv->hw->mii.cl45_reg_shift) &
++		 priv->hw->mii.cl45_reg_mask;
++	writel(value, priv->ioaddr + mii_data);
++
++	mdelay(2);
++
++	value = MII_BUSY;
++	value |= (phyaddr << priv->hw->mii.addr_shift) &
++		 priv->hw->mii.addr_mask;
++	value |= (devad << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
++	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift) &
++		 priv->hw->mii.clk_csr_mask;
++
++	if (priv->plat->has_gmac4) {
++		value |= MII_GMAC4_WRITE;
++		value |= priv->hw->mii.cl45_en;
++	}
++	writel(value, priv->ioaddr + mii_address);
++
++	/* Wait until any existing MII operation is complete */
++	return readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
++				  100, 10000);
++}
++
++/**
++ * stmmac_mdio_read
++ * @bus: points to the mii_bus structure
++ * @phyaddr: MII addr
++ * @phyreg: MII reg
++ * Description: it reads data from the MII register from within the phy device.
++ */
++static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
++{
++	if (phyreg & MII_ADDR_C45) {
++		int devad, prtad;
++
++		devad = (phyreg >> 16) & 0x1f;
++		prtad = phyreg & 0xffff;
++		return stmmac_c45_read(bus, phyaddr, devad, prtad);
++	} else {
++		return stmmac_c22_read(bus, phyaddr, phyreg);
++	}
++}
++
++/**
++ * stmmac_mdio_write
++ * @bus: points to the mii_bus structure
++ * @phyaddr: MII addr
++ * @phyreg: MII reg
++ * @phydata: phy data
++ * Description: it writes the data into the MII register from within the device.
++ */
++static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
++			     u16 phydata)
++{
++	if (phyreg & MII_ADDR_C45) {
++		int devad, prtad;
++
++		devad = (phyreg >> 16) & 0x1f;
++		prtad = phyreg & 0xffff;
++		return stmmac_c45_write(bus, phyaddr, devad, prtad, phydata);
++	} else {
++		return stmmac_c22_write(bus, phyaddr, phyreg, phydata);
++	}
++}
++
++/**
+  * stmmac_mdio_reset
+  * @bus: points to the mii_bus structure
+  * Description: reset the MII bus
 -- 
 1.7.9.5
 
