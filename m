@@ -2,70 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5B81E34A
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:10:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1EA8E397
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 15:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728104AbfD2NKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 09:10:22 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48511 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725838AbfD2NKW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 09:10:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=aYKtvh8CGD4Fir29/5qEcjjZUDlh8MOEt6C5OW0zFX0=; b=lIpDsbuhS8wthEqycJIffIJRuO
-        noAYg/gVoDvjB3kzDXFB5oOuLHqiwkTg2k7cdgjY4eGBb2JnpiPCLDXnaFjia2+R48Iwsy8qFhZlS
-        wSGaJOkLXAzvsPAN1c/qksACWcdG9JeCJYmRSDuqj0xzJX/lsDzIBbeAU3K9118YoijA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hL62y-0000qn-7g; Mon, 29 Apr 2019 15:10:16 +0200
-Date:   Mon, 29 Apr 2019 15:10:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Ong, Boon Leong" <boon.leong.ong@intel.com>
-Cc:     "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Subject: Re: [PATCH 0/7] net: stmmac: enable EHL SGMII
-Message-ID: <20190429131016.GE10772@lunn.ch>
-References: <1556126241-2774-1-git-send-email-weifeng.voon@intel.com>
- <20190424134854.GP28405@lunn.ch>
- <D6759987A7968C4889FDA6FA91D5CBC8146EF128@PGSMSX103.gar.corp.intel.com>
- <20190425123801.GD8117@lunn.ch>
- <AF233D1473C1364ABD51D28909A1B1B75C0B205D@pgsmsx114.gar.corp.intel.com>
- <20190425152332.GD23779@lunn.ch>
- <AF233D1473C1364ABD51D28909A1B1B75C0B8B35@pgsmsx114.gar.corp.intel.com>
+        id S1728243AbfD2NTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 09:19:43 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:42550 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725838AbfD2NTm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 09:19:42 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-160-XeyJq5N0PkKkDtqUV6LkPA-1; Mon, 29 Apr 2019 14:19:35 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 29 Apr 2019 14:19:34 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 29 Apr 2019 14:19:34 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Willem de Bruijn' <willemdebruijn.kernel@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: RE: [PATCH net] packet: in recvmsg msg_name return at least
+ sockaddr_ll
+Thread-Topic: [PATCH net] packet: in recvmsg msg_name return at least
+ sockaddr_ll
+Thread-Index: AQHU/GZvSQrCFfAZB0iZHUe9Gb/AfaZS22WggAAz1YCAABNqkA==
+Date:   Mon, 29 Apr 2019 13:19:34 +0000
+Message-ID: <e559e87385254ad1a0fdc5f36bdde44a@AcuMS.aculab.com>
+References: <20190426192954.146301-1-willemdebruijn.kernel@gmail.com>
+ <d57c87e402354163a7ed311d6d27aa4f@AcuMS.aculab.com>
+ <CAF=yD-+omQXQO7ue=BkwjVahAFP6YuU5AMTKbC9fBG6qPu6rSw@mail.gmail.com>
+In-Reply-To: <CAF=yD-+omQXQO7ue=BkwjVahAFP6YuU5AMTKbC9fBG6qPu6rSw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AF233D1473C1364ABD51D28909A1B1B75C0B8B35@pgsmsx114.gar.corp.intel.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+X-MC-Unique: XeyJq5N0PkKkDtqUV6LkPA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Sorry for the delay, we have checked with hardware/SoC HW architect
-> and gotten confirmation that the controller can only support SGMII inter-chip
-> connection. It does not support 1000Base-X. 
+PiBDYW4gdGhlbiBhbHNvIGNoYW5nZSBtZW1zZXQgdG8gemVybyBvbmx5IHR3byBieXRlcyBpbiB0
+aGUgRXRoZXJuZXQgY2FzZS4NCj4gDQo+ICsgICAgICAgICAgICAgICAgICAgICAgIGlmIChtc2ct
+Pm1zZ19uYW1lbGVuIDwgc2l6ZW9mKHN0cnVjdCBzb2NrYWRkcl9sbCkpIHsNCj4gKyAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBtc2ctPm1zZ19uYW1lbGVuID0gc2l6ZW9mKHN0cnVjdCBz
+b2NrYWRkcl9sbCk7DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWVtc2V0KG1z
+Zy0+bXNnX25hbWUgKyBjb3B5X2xlbiwgMCwNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgbXNnLT5uYW1lbGVuIC0gY29weV9sZW4pOw0KDQpjb3B5X2xlbiBub3QgZGVm
+aW5lZCAuLi4uDQoNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgfQ0KDQpFeGNlcHQgdGhhdCBo
+YXMgdG8gYmUgYSByZWFsIG1lbXNldCgpIG5vdCBhbiBpbmxpbmVkIGRpcmVjdA0Kd3JpdGUgb2Yg
+YW4gOGJ5dGUgcmVnaXN0ZXIgKG9yIDIgd3JpdGVzIG9uIGEgMzJiaXQgc3lzdGVtcykuDQoNCglE
+YXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91
+bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5
+NzM4NiAoV2FsZXMpDQo=
 
-O.K, i'm surprised about that, but if that is what the hardware
-engineer says...
-
-> In this case, we believe that the current implementation of the DW xPCS
-> are sufficient. Ok?
-
-Yes, if all i can do is SGMII, hard coding SGMII is fine. But you
-should probably check phy-mode and return an error if it has a value
-other than SGMII,
-
-      Andrew
