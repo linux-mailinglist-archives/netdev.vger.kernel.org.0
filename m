@@ -2,68 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6A0FE7E9
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A897E810
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728681AbfD2QjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 12:39:06 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37309 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728520AbfD2QjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:39:06 -0400
-Received: by mail-pl1-f195.google.com with SMTP id z8so5337909pln.4;
-        Mon, 29 Apr 2019 09:39:05 -0700 (PDT)
+        id S1728826AbfD2Qpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 12:45:41 -0400
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:33551 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728629AbfD2Qpk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:45:40 -0400
+Received: by mail-yw1-f66.google.com with SMTP id q11so3954003ywb.0;
+        Mon, 29 Apr 2019 09:45:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=jUEy/JfKfAv3JgfKqnjgpSSW50RrxOwyz2Nzl3lB0hI=;
-        b=ZBrmWAnv9fcmRiGCYDyoIWph2fwLJdjyv3YUg3ROJj5npmjNa4zOXRIbfel92LFMr2
-         ph/v/JxibDkDqzXqrljIPY6dsuZc7Zj7t9jeMEvFA7f+TI987shq0jl1rtJ7EDmJKIYR
-         0NFJpU+cOC+21BCbdSHCuHsBC4y45lt1hQlXz1LQka//6Ibf2lehV0kTvpR8guw9ODS2
-         6ENPmPFY1r8r3ZIAk15xDZQmiDdkbouwXKv9idgbUavUw5EG6JpBnEuqIFOActUDjbHA
-         ZyhmpLlyrh+CXZ/DeifNnWhxsZ0tIM/4iWWsFsaX9ZGmTDwNAgMladqCUpnVeB5dVcpF
-         FFcQ==
+        bh=g1Yba+QgALlemKiNnIFJPcJGdSg5qg6+Ws/obYqZr2s=;
+        b=vG2JaxvrLJn69v0XTXrXGlmN7IJahwJEOOqEOu+kB3/39GuWdeiYXPiHPidkJII8At
+         7RoI+VAoMqr1UNqDPAzhaUIEMu74at7sr1iZ3DAUjdDa6hQ5yiocFV6yGmZWdcrRqc7u
+         +YWqYlKEua2bWFGRJBHOPzynYB0unnK+aSDzHsE7zgA/vxKIlJ/3ofJNX6I43nFto35L
+         OQfDM3zmImtw3raJOjTCZZ7cayzEOCpLyr3z2xopByyrjVJ9J9R8QH4SBrKvJQkgP+IC
+         O4nZP7P8TzzQLNDS08vMLbh+sIZEBE4HfgWr3bjtxHV7WCJFV2u/Mc6MrVPBrMc1sRFx
+         gl6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jUEy/JfKfAv3JgfKqnjgpSSW50RrxOwyz2Nzl3lB0hI=;
-        b=IBeUZr58ckRnMladsPbfxv0nZNiqnN6ILMjsZwjCaZ9HiK2m0/h0Ga7lchpi3555V9
-         virRciygwcWXHC93aNG/pwkP8eYnoUCCBeuobZ7N4FDaKqm3PgMaMgxVDpar2/wEDfV0
-         q7bciRZwe8WMtwy+Oub0YONGYAOz+0r5StEd9lg5nOS/XjWR/8o85wBDJZQGCqnSYPQK
-         +dMMpiB6al+ohEF0wq8VI9xVv8G88TfTcx3nhD7Y9qD71zjWSsvR7ObNi2uvUcmHlSbj
-         gvOQmdTIexyeDEPBejMI/DWj2ljepD9nKSBnGdVMR0QKduHY+CByDj7dbnEWChrCKVcq
-         TcdQ==
-X-Gm-Message-State: APjAAAU1G9sAOVtJH82wQz4nxnGhsHUyOzJplC9AM3Eq0F+I/h7qI47k
-        0q8hAWp6t9U0oc5fDRjLLHyP89cUrEu26nZdrC0=
-X-Google-Smtp-Source: APXvYqyMszo9xwsEj1TyrNFV1V5WbicK6+ycUoN8zZVsBE3oF5obZedR/jl686YkTKcc2RWGqce016AWd1HMH8DPC2U=
-X-Received: by 2002:a17:902:9b83:: with SMTP id y3mr63071549plp.165.1556555945476;
- Mon, 29 Apr 2019 09:39:05 -0700 (PDT)
+        bh=g1Yba+QgALlemKiNnIFJPcJGdSg5qg6+Ws/obYqZr2s=;
+        b=CXjkWAO6v0P+9YFK2iJuNe3m+KwMZktaCbP6tcP4TDO1LbXg8UgChboUEoCeVbMFR+
+         8FrVAs9WByH0+X5RwGgG+Rau/Xv9b5zNuuuFJAvEFK7Cc44KuOubRuFsM6JMXLHw4+dA
+         hLdlZSeLu/RlNgkXb2FVHSJPd0dbDSh3rBBvNg8k5C7yjq9rhuCoVLpqzcXGJQkuVgRQ
+         4iAQoAA2pomPqyyNFVzoq4kseBehVUrUaMGYtAO+rWOvneTNCf/qGa0gmbaklt0NYRK3
+         nXsgnshUE35NSBcGe/XKpvEldwYVToBjNzbvsH3Wp1eoTKJDcG/UI+gXdSAmPVc6DCqk
+         CdJg==
+X-Gm-Message-State: APjAAAVj8Coiy+9x0n8YzwSiUlpCpVkmpC5R1Exx4hhVNOzdPw4+qiOj
+        SjM+8zMgAwJF9MMlTvlUreRpLr2SEFg7QkXXwv01/r8AAf8=
+X-Google-Smtp-Source: APXvYqzByaqDq/lpvzDC/2ukc1ZkxWus1THiiXBmzPw+9WYzGRKw4P0GFUHrZKBL20xJMVCBqIp0HNOj15fNiQoBZow=
+X-Received: by 2002:a81:b653:: with SMTP id h19mr41969960ywk.253.1556556339615;
+ Mon, 29 Apr 2019 09:45:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <71250616-36c1-0d96-8fac-4aaaae6a28d4@redhat.com>
- <20190428030539.17776-1-yuehaibing@huawei.com> <516ba6e4-359b-15d0-e169-d8cc1e989a4a@redhat.com>
- <2c823bbf-28c4-b43d-52d9-b0e0356f03ae@redhat.com> <6AADFAC011213A4C87B956458587ADB4021F7531@dggeml532-mbs.china.huawei.com>
- <b33ce1f9-3d65-2d05-648b-f5a6cfbd59ab@redhat.com> <CAM_iQpUfpruaFowbiTOY7aH4Ts-xcY4JACGLOT3CUjLqpg_zXw@mail.gmail.com>
- <528517144.24310809.1556504619719.JavaMail.zimbra@redhat.com>
-In-Reply-To: <528517144.24310809.1556504619719.JavaMail.zimbra@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 29 Apr 2019 09:38:54 -0700
-Message-ID: <CAM_iQpXNp4h-ZAf4S+OH_1kVE_qk_eb+r6=ZUsK1t2=3aQOOtw@mail.gmail.com>
-Subject: Re: [PATCH] tun: Fix use-after-free in tun_net_xmit
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
-        yuehaibing <yuehaibing@huawei.com>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "Li,Rongqing" <lirongqing@baidu.com>,
-        nicolas dichtel <nicolas.dichtel@6wind.com>,
-        Chas Williams <3chas3@gmail.com>, wangli39@baidu.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Peter Xu <peterx@redhat.com>
+References: <20190429060107.10245-1-zajec5@gmail.com> <20190429092027.6013677d@hermes.lan>
+In-Reply-To: <20190429092027.6013677d@hermes.lan>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Date:   Mon, 29 Apr 2019 18:45:28 +0200
+Message-ID: <CACna6rykbCkYjoTDP7wumBYVbHkQBCKBfZEq1-fWFrVTC==QNg@mail.gmail.com>
+Subject: Re: [PATCH] net-sysfs: expose IRQ number
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -71,80 +59,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 28, 2019 at 7:23 PM Jason Wang <jasowang@redhat.com> wrote:
+On Mon, 29 Apr 2019 at 18:20, Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+> On Mon, 29 Apr 2019 08:01:07 +0200
+> Rafa=C5=82 Mi=C5=82ecki <zajec5@gmail.com> wrote:
 >
->
-> On 2019/4/29 =E4=B8=8A=E5=8D=881:59, Cong Wang wrote:
-> > On Sun, Apr 28, 2019 at 12:51 AM Jason Wang <jasowang@redhat.com> wrote=
-:
-> >>> tun_net_xmit() doesn't have the chance to
-> >>> access the change because it holding the rcu_read_lock().
-> >>
-> >>
-> >> The problem is the following codes:
-> >>
-> >>
-> >>          --tun->numqueues;
-> >>
-> >>          ...
-> >>
-> >>          synchronize_net();
-> >>
-> >> We need make sure the decrement of tun->numqueues be visible to reader=
-s
-> >> after synchronize_net(). And in tun_net_xmit():
+> > From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
 > >
-> > It doesn't matter at all. Readers are okay to read it even they still u=
-se the
-> > stale tun->numqueues, as long as the tfile is not freed readers can rea=
-d
-> > whatever they want...
->
-> This is only true if we set SOCK_RCU_FREE, isn't it?
-
-
-Sure, this is how RCU is supposed to work.
-
->
+> > Knowing IRQ number makes e.g. reading /proc/interrupts much simpler.
+> > It's more reliable than guessing device name used by a driver when
+> > calling request_irq().
 > >
-> > The decrement of tun->numqueues is just how we unpublish the old
-> > tfile, it is still valid for readers to read it _after_ unpublish, we o=
-nly need
-> > to worry about free, not about unpublish. This is the whole spirit of R=
-CU.
+> > Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+> > ---
+> > I found a script parsing /proc/interrupts for a given interface name. I=
+t wasn't
+> > working for me as it assumed request_irq() was called with a device nam=
+e. It's
+> > not a case for all drivers.
 > >
+> > I also found some other people looking for a proper solution for that:
+> > https://unix.stackexchange.com/questions/275075/programmatically-determ=
+ine-the-irqs-associated-with-a-network-interface
+> > https://stackoverflow.com/questions/7516984/retrieving-irq-number-of-a-=
+nic
+> >
+> > Let me know if this solution makes sense. I can say it works for me ;)
+> > ---
+> >  Documentation/ABI/testing/sysfs-class-net |  7 +++++++
+> >  net/core/net-sysfs.c                      | 16 ++++++++++++++++
+> >  2 files changed, 23 insertions(+)
+> >
+> > diff --git a/Documentation/ABI/testing/sysfs-class-net b/Documentation/=
+ABI/testing/sysfs-class-net
+> > index 664a8f6a634f..33440fe77ca7 100644
+> > --- a/Documentation/ABI/testing/sysfs-class-net
+> > +++ b/Documentation/ABI/testing/sysfs-class-net
+> > @@ -301,3 +301,10 @@ Contact: netdev@vger.kernel.org
+> >  Description:
+> >               32-bit unsigned integer counting the number of times the =
+link has
+> >               been down
+> > +
+> > +What:                /sys/class/net/<iface>/irq
+> > +Date:                April 2019
+> > +KernelVersion:       5.2
+> > +Contact:     netdev@vger.kernel.org
+> > +Description:
+> > +             IRQ number used by device
+> > diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+> > index e4fd68389d6f..a3eb7c3f1f37 100644
+> > --- a/net/core/net-sysfs.c
+> > +++ b/net/core/net-sysfs.c
+> > @@ -512,6 +512,21 @@ static ssize_t phys_switch_id_show(struct device *=
+dev,
+> >  }
+> >  static DEVICE_ATTR_RO(phys_switch_id);
+> >
+> > +static ssize_t irq_show(struct device *dev, struct device_attribute *a=
+ttr,
+> > +                     char *buf)
+> > +{
+> > +     const struct net_device *netdev =3D to_net_dev(dev);
+> > +     ssize_t ret;
+> > +
+> > +     if (!rtnl_trylock())
+> > +             return restart_syscall();
+> > +     ret =3D sprintf(buf, "%d\n", netdev->irq);
+> > +     rtnl_unlock();
+> > +
+> > +     return ret;
+> > +}
+> > +static DEVICE_ATTR_RO(irq);
+> > +
+> >  static struct attribute *net_class_attrs[] __ro_after_init =3D {
+> >       &dev_attr_netdev_group.attr,
+> >       &dev_attr_type.attr,
+> > @@ -542,6 +557,7 @@ static struct attribute *net_class_attrs[] __ro_aft=
+er_init =3D {
+> >       &dev_attr_proto_down.attr,
+> >       &dev_attr_carrier_up_count.attr,
+> >       &dev_attr_carrier_down_count.attr,
+> > +     &dev_attr_irq.attr,
+> >       NULL,
+> >  };
+> >  ATTRIBUTE_GROUPS(net_class);
 >
-> The point is we don't convert tun->numqueues to RCU but use
-> synchronize_net().
+> Can't you find this on the PCI side already?
+> $ ls /sys/class/net/eno1/device/msi_irqs/
+> 37  38  39  40  41
 
-Why tun->numqueues needs RCU? It is an integer, and reading a stale
-value is _perfectly_ fine.
+I'm dealing with bgmac supported ethernet device on bcma bus (not
+PCI). I could make bcma bus provide IRQ numbers, but I thought
+something at net subsystem level will be more generic.
 
-If you actually meant to say tun->tfiles[] itself, no, it is a fixed-size a=
-rray,
-it doesn't shrink or grow, so we don't need RCU for it. This is also why
-a stale tun->numqueues is fine, as long as it never goes out-of-bound.
+I'm going to review Willem's solution/idea for now.
 
-
->
-> > You need to rethink about my SOCK_RCU_FREE patch.
->
-> The code is wrote before SOCK_RCU_FREE is introduced and assume no
-> de-reference from device after synchronize_net(). It doesn't harm to
-> figure out the root cause which may give us more confidence to the fix
-> (e.g like SOCK_RCU_FREE).
-
-I believe SOCK_RCU_FREE is the fix for the root cause, not just a
-cover-up.
-
-
->
-> I don't object to fix with SOCK_RCU_FREE, but then we should remove
-> the redundant synchronize_net(). But I still prefer to synchronize
-> everything explicitly like (completely untested):
-
-I agree that synchronize_net() can be removed. However I don't
-understand your untested patch at all, it looks like to fix a completely
-different problem rather than this use-after-free.
-
-Thanks.
+--=20
+Rafa=C5=82
