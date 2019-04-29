@@ -2,85 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA161E7D8
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:33:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6A0FE7E9
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 18:39:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728777AbfD2QdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 12:33:07 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45658 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728658AbfD2QdH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:33:07 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id B68071C00FC;
-        Mon, 29 Apr 2019 16:33:05 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 29 Apr
- 2019 09:33:01 -0700
-Subject: Re: [PATCH net-next] sfc: mcdi_port: Mark expected switch
- fall-through
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        "Solarflare linux maintainers" <linux-net-drivers@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>
-References: <20190429153755.GA10596@embeddedor>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <868472ed-29e9-9e9c-fbba-e10b9a9cda10@solarflare.com>
-Date:   Mon, 29 Apr 2019 17:33:00 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1728681AbfD2QjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 12:39:06 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37309 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728520AbfD2QjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 12:39:06 -0400
+Received: by mail-pl1-f195.google.com with SMTP id z8so5337909pln.4;
+        Mon, 29 Apr 2019 09:39:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=jUEy/JfKfAv3JgfKqnjgpSSW50RrxOwyz2Nzl3lB0hI=;
+        b=ZBrmWAnv9fcmRiGCYDyoIWph2fwLJdjyv3YUg3ROJj5npmjNa4zOXRIbfel92LFMr2
+         ph/v/JxibDkDqzXqrljIPY6dsuZc7Zj7t9jeMEvFA7f+TI987shq0jl1rtJ7EDmJKIYR
+         0NFJpU+cOC+21BCbdSHCuHsBC4y45lt1hQlXz1LQka//6Ibf2lehV0kTvpR8guw9ODS2
+         6ENPmPFY1r8r3ZIAk15xDZQmiDdkbouwXKv9idgbUavUw5EG6JpBnEuqIFOActUDjbHA
+         ZyhmpLlyrh+CXZ/DeifNnWhxsZ0tIM/4iWWsFsaX9ZGmTDwNAgMladqCUpnVeB5dVcpF
+         FFcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=jUEy/JfKfAv3JgfKqnjgpSSW50RrxOwyz2Nzl3lB0hI=;
+        b=IBeUZr58ckRnMladsPbfxv0nZNiqnN6ILMjsZwjCaZ9HiK2m0/h0Ga7lchpi3555V9
+         virRciygwcWXHC93aNG/pwkP8eYnoUCCBeuobZ7N4FDaKqm3PgMaMgxVDpar2/wEDfV0
+         q7bciRZwe8WMtwy+Oub0YONGYAOz+0r5StEd9lg5nOS/XjWR/8o85wBDJZQGCqnSYPQK
+         +dMMpiB6al+ohEF0wq8VI9xVv8G88TfTcx3nhD7Y9qD71zjWSsvR7ObNi2uvUcmHlSbj
+         gvOQmdTIexyeDEPBejMI/DWj2ljepD9nKSBnGdVMR0QKduHY+CByDj7dbnEWChrCKVcq
+         TcdQ==
+X-Gm-Message-State: APjAAAU1G9sAOVtJH82wQz4nxnGhsHUyOzJplC9AM3Eq0F+I/h7qI47k
+        0q8hAWp6t9U0oc5fDRjLLHyP89cUrEu26nZdrC0=
+X-Google-Smtp-Source: APXvYqyMszo9xwsEj1TyrNFV1V5WbicK6+ycUoN8zZVsBE3oF5obZedR/jl686YkTKcc2RWGqce016AWd1HMH8DPC2U=
+X-Received: by 2002:a17:902:9b83:: with SMTP id y3mr63071549plp.165.1556555945476;
+ Mon, 29 Apr 2019 09:39:05 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190429153755.GA10596@embeddedor>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24580.005
-X-TM-AS-Result: No-6.551600-4.000000-10
-X-TMASE-MatchedRID: +c13yJDs9029RoRMIcfOgH/vIGFxULe8jLOy13Cgb4+qvcIF1TcLYCqz
-        9bm0+YwHXiSIvUL/7sfc+0V24WCpMVr6zeO3/gBbULGoTjCGdeUNwryf5xHtclc/CedjlcvkfMr
-        dD3NIUvvaFM5TPGLdCIAGGZdCG6IYv1l2Uvx6idpWdFebWIc3VsRB0bsfrpPI0PU0TdJoUtfgHh
-        Ytb7lu11txDPP/0YTMxa4J+jHZ5EVVJ1rq+IcxDSe2DxJHD59fxGSSRjLzG8m9o4SAHpQc8790q
-        q3qAMrd/VEPcph09jWFcgJc+QNMwu8bJovJYm8FYupx0XjSQPLDOFVmKqGJ4bPn3tFon6UK
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--6.551600-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24580.005
-X-MDID: 1556555586-ZkJinuE-NKWe
+References: <71250616-36c1-0d96-8fac-4aaaae6a28d4@redhat.com>
+ <20190428030539.17776-1-yuehaibing@huawei.com> <516ba6e4-359b-15d0-e169-d8cc1e989a4a@redhat.com>
+ <2c823bbf-28c4-b43d-52d9-b0e0356f03ae@redhat.com> <6AADFAC011213A4C87B956458587ADB4021F7531@dggeml532-mbs.china.huawei.com>
+ <b33ce1f9-3d65-2d05-648b-f5a6cfbd59ab@redhat.com> <CAM_iQpUfpruaFowbiTOY7aH4Ts-xcY4JACGLOT3CUjLqpg_zXw@mail.gmail.com>
+ <528517144.24310809.1556504619719.JavaMail.zimbra@redhat.com>
+In-Reply-To: <528517144.24310809.1556504619719.JavaMail.zimbra@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 29 Apr 2019 09:38:54 -0700
+Message-ID: <CAM_iQpXNp4h-ZAf4S+OH_1kVE_qk_eb+r6=ZUsK1t2=3aQOOtw@mail.gmail.com>
+Subject: Re: [PATCH] tun: Fix use-after-free in tun_net_xmit
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        yuehaibing <yuehaibing@huawei.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "Li,Rongqing" <lirongqing@baidu.com>,
+        nicolas dichtel <nicolas.dichtel@6wind.com>,
+        Chas Williams <3chas3@gmail.com>, wangli39@baidu.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Peter Xu <peterx@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/04/2019 16:37, Gustavo A. R. Silva wrote:
-> In preparation to enabling -Wimplicit-fallthrough, mark switch
-> cases where we are expecting to fall through.
+On Sun, Apr 28, 2019 at 7:23 PM Jason Wang <jasowang@redhat.com> wrote:
 >
-> This patch fixes the following warning:
 >
-> drivers/net/ethernet/sfc/mcdi_port.c: In function ‘efx_mcdi_phy_decode_link’:
-> ./include/linux/compiler.h:77:22: warning: this statement may fall through [-Wimplicit-fallthrough=]
->  # define unlikely(x) __builtin_expect(!!(x), 0)
->                       ^~~~~~~~~~~~~~~~~~~~~~~~~~
-> ./include/asm-generic/bug.h:125:2: note: in expansion of macro ‘unlikely’
->   unlikely(__ret_warn_on);     \
->   ^~~~~~~~
-> drivers/net/ethernet/sfc/mcdi_port.c:344:3: note: in expansion of macro ‘WARN_ON’
->    WARN_ON(1);
->    ^~~~~~~
-> drivers/net/ethernet/sfc/mcdi_port.c:345:2: note: here
->   case MC_CMD_FCNTL_OFF:
->   ^~~~
+> On 2019/4/29 =E4=B8=8A=E5=8D=881:59, Cong Wang wrote:
+> > On Sun, Apr 28, 2019 at 12:51 AM Jason Wang <jasowang@redhat.com> wrote=
+:
+> >>> tun_net_xmit() doesn't have the chance to
+> >>> access the change because it holding the rcu_read_lock().
+> >>
+> >>
+> >> The problem is the following codes:
+> >>
+> >>
+> >>          --tun->numqueues;
+> >>
+> >>          ...
+> >>
+> >>          synchronize_net();
+> >>
+> >> We need make sure the decrement of tun->numqueues be visible to reader=
+s
+> >> after synchronize_net(). And in tun_net_xmit():
+> >
+> > It doesn't matter at all. Readers are okay to read it even they still u=
+se the
+> > stale tun->numqueues, as long as the tfile is not freed readers can rea=
+d
+> > whatever they want...
 >
-> Warning level 3 was used: -Wimplicit-fallthrough=3
+> This is only true if we set SOCK_RCU_FREE, isn't it?
+
+
+Sure, this is how RCU is supposed to work.
+
 >
-> This patch is part of the ongoing efforts to enable
-> -Wimplicit-fallthrough.
+> >
+> > The decrement of tun->numqueues is just how we unpublish the old
+> > tfile, it is still valid for readers to read it _after_ unpublish, we o=
+nly need
+> > to worry about free, not about unpublish. This is the whole spirit of R=
+CU.
+> >
 >
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-Acked-by: Edward Cree <ecree@solarflare.com>
+> The point is we don't convert tun->numqueues to RCU but use
+> synchronize_net().
+
+Why tun->numqueues needs RCU? It is an integer, and reading a stale
+value is _perfectly_ fine.
+
+If you actually meant to say tun->tfiles[] itself, no, it is a fixed-size a=
+rray,
+it doesn't shrink or grow, so we don't need RCU for it. This is also why
+a stale tun->numqueues is fine, as long as it never goes out-of-bound.
+
+
+>
+> > You need to rethink about my SOCK_RCU_FREE patch.
+>
+> The code is wrote before SOCK_RCU_FREE is introduced and assume no
+> de-reference from device after synchronize_net(). It doesn't harm to
+> figure out the root cause which may give us more confidence to the fix
+> (e.g like SOCK_RCU_FREE).
+
+I believe SOCK_RCU_FREE is the fix for the root cause, not just a
+cover-up.
+
+
+>
+> I don't object to fix with SOCK_RCU_FREE, but then we should remove
+> the redundant synchronize_net(). But I still prefer to synchronize
+> everything explicitly like (completely untested):
+
+I agree that synchronize_net() can be removed. However I don't
+understand your untested patch at all, it looks like to fix a completely
+different problem rather than this use-after-free.
+
+Thanks.
