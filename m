@@ -2,89 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23967EB49
-	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 22:03:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44E66EB69
+	for <lists+netdev@lfdr.de>; Mon, 29 Apr 2019 22:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729380AbfD2UCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 16:02:00 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44603 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729229AbfD2UCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 16:02:00 -0400
-Received: by mail-pf1-f193.google.com with SMTP id y13so5847455pfm.11
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 13:02:00 -0700 (PDT)
+        id S1729302AbfD2UMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 16:12:45 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:45877 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728928AbfD2UMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 16:12:45 -0400
+Received: by mail-wr1-f65.google.com with SMTP id s15so17831608wra.12
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 13:12:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=appneta.com; s=google;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=n3iKxa+4/Y8ghD3yFm+F3jT4Iz1b+JS2aEY2Qy+Qchk=;
-        b=meYEu8lj99lYWHuC3D7tQV2qNDcATM5x+wSJnG583MtSAxODlewcjfj/NCZwXjAqpg
-         CcNeuHqWQkgXJfZX0qOc28XhuYY7fftz67DTpjp1y/G+rV3ZTlo4nFrQBRzYcWSJkazm
-         ZnRPok/rzD0ChPThEmywkTDKGlGm197iSyIgw=
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=k5nJmaBF6OpSVcZ5LfAT9LCyZcfx5x+XkhPrq1bZw2c=;
+        b=e8OvZZA8myNRhPu5pHBxt3BAKTu97XA4FupS6FMoUzPPy2QQ5sBNBk76zOqlQYs5sl
+         fvve54wixONHgniMyCW5dK4ZO/31wsrgicYL8e3ENnUAtw6UBxFac3ywsAz1smdpWP4Q
+         5prVy/uYQkCU3rN/GCeIE+afugBDjyZ5uXEFtVrlF4QxO61gb9Rjz6mCOgb7Dg3eu1Z3
+         DpObNlE8sHzuXGS9Wek0lVXZT/BhlPx7MK1cNH9OYdy5Letqy4UuniXfKurH2yAsxcWh
+         AbQGGJZRdrCMDWaVYQO/YlDO3DqDMUUgzL9EwEZA8pdGtsyJHB9ZZDvWn4CvHGEcWqHQ
+         QjcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=n3iKxa+4/Y8ghD3yFm+F3jT4Iz1b+JS2aEY2Qy+Qchk=;
-        b=GsDikEPARvYdqrHQ7921pUeW+Z8IEsZjsCQmSx5AZtfNthcJ1fh1SC96uTZksRdGif
-         t4OyQudY0A9PoaqZRTJOFKWnEPUAoNgdIhtn4vqfef2dsJFe2wiN9DBXRghQ2jgiB7Bw
-         v+SlfpJT3XlwVdlQoaJcWjbUSBth90UCdjieIl/LTGH74Nj4NIvePSXBn1xZETl/d8hS
-         HS/WMZRUj/Z+9TuPLIy+GpVFCppeN2ZU/+biS9Tf9pn/+tCeXEbz7bN7NnB6RuPuSaGX
-         kacMxZzahc10sBIg8zyucCSy48MLNwR6rrmdL6zl3uULbcq8bT1lIW/co7rMOb8T4q/e
-         pDfw==
-X-Gm-Message-State: APjAAAVvXh2vflQSazTdXWumZhZE1pXH0/82MQofgqmdO1dv6g4z01qf
-        Qvf8aM03NVnhH+NmiqXCjxHI
-X-Google-Smtp-Source: APXvYqxbgAk6T3Vn+nrQdmHuwR5M8xdMbKp1Q4a0zLguAUTsL2r3tIBtDZt2m0LJLABrxn1tDBTmtg==
-X-Received: by 2002:a63:4c26:: with SMTP id z38mr62557696pga.425.1556568119807;
-        Mon, 29 Apr 2019 13:01:59 -0700 (PDT)
-Received: from [192.168.1.90] (d173-180-161-165.bchsia.telus.net. [173.180.161.165])
-        by smtp.gmail.com with ESMTPSA id s9sm45375213pfe.183.2019.04.29.13.01.58
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=k5nJmaBF6OpSVcZ5LfAT9LCyZcfx5x+XkhPrq1bZw2c=;
+        b=OxA8P2WbKmXYfvs1ziCN6amuh5nmHPGzWibA8R2EOirSEIn7JljRR/RTq6QkIrbUtv
+         fTE6oP9LvcQ+Q4x20/KxTnQuHDBfI8RncLc33Jy4ol4o/2kn1oDRhGTR0s2kB8Yf9oyP
+         CBFxCRCdLHa34mOCVM4rFWVs8ht4r6rTERTSKaXjS/WeuZ9trUrIP8bqeRih3iPpLOvt
+         tlesivzu3tQXcDT44f2p+KqTk5+bRZ1x9X7gVXxqzrKH72SqM+i6sBG8A7J1sI/5Eh4a
+         e4alfjJhCDoDqQ6mF9Fp62p/xvFh5Av4cmkXadPDGmsEOlGCH0H7/xpG7b5/fQPEq2oy
+         Wpxg==
+X-Gm-Message-State: APjAAAVChXTu7JbMU8XHaimv919hWJ4rbyNyjREIoJjeUHFvp/92lHG1
+        g/OOZQTtasHHcYwnO1QMxZor1I+AWvE=
+X-Google-Smtp-Source: APXvYqxkqR8g7lBXJWBvmw5BYzJGkiWpoJdNinK3P0ZHdytppdUF1osuXM1L34KgfqjMtP6OZKridg==
+X-Received: by 2002:a5d:698b:: with SMTP id g11mr40815551wru.65.1556568763493;
+        Mon, 29 Apr 2019 13:12:43 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bd4:5700:2492:3326:fa98:92d1? (p200300EA8BD4570024923326FA9892D1.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:2492:3326:fa98:92d1])
+        by smtp.googlemail.com with ESMTPSA id m25sm315717wmi.45.2019.04.29.13.12.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Apr 2019 13:01:59 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
-Subject: Re: [net-next 01/12] i40e: replace switch-statement to speed-up
- retpoline-enabled builds
-From:   Josh Elsasser <jelsasser@appneta.com>
-In-Reply-To: <20190429191628.31212-2-jeffrey.t.kirsher@intel.com>
-Date:   Mon, 29 Apr 2019 13:01:57 -0700
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <6C3E4204-AABF-45AD-B32D-62CB50391D89@appneta.com>
-References: <20190429191628.31212-1-jeffrey.t.kirsher@intel.com>
- <20190429191628.31212-2-jeffrey.t.kirsher@intel.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-X-Mailer: Apple Mail (2.3445.102.3)
+        Mon, 29 Apr 2019 13:12:42 -0700 (PDT)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/2] net: phy: improve pause handling
+Message-ID: <5ac8d9b0-ac63-64d2-d5e1-e0911a35e534@gmail.com>
+Date:   Mon, 29 Apr 2019 22:12:35 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Apr 29, 2019, at 12:16 PM, Jeff Kirsher <jeffrey.t.kirsher@intel.com> =
-wrote:
+Based on a recent discussion with Andrew that's an attempt to improve
+several aspects of how phylib handles sym/asym pause.
 
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->=20
-> GCC will generate jump tables for switch-statements with more than 5
-> case statements. An entry into the jump table is an indirect call,
-> which means that for CONFIG_RETPOLINE builds, this is rather
-> expensive.
->=20
-> This commit replaces the switch-statement that acts on the XDP program
-> result with an if-clause.
+Heiner Kallweit (2):
+  net: phy: improve pause handling
+  net: phy: improve phy_set_sym_pause and phy_set_asym_pause
 
-Apologies for the noise, but is this patch still required after the
-recent threshold bump[0] and later removal[1] of switch-case jump
-table generation when building with CONFIG_RETPOLINE?
+ drivers/net/phy/fixed_phy.c  |  2 +-
+ drivers/net/phy/phy-core.c   |  2 +-
+ drivers/net/phy/phy_device.c | 64 ++++++++++++++++++++++++++++--------
+ include/linux/phy.h          |  1 +
+ 4 files changed, 54 insertions(+), 15 deletions(-)
 
-[0]: https://lore.kernel.org/patchwork/patch/1044863/
-[1]: https://lore.kernel.org/patchwork/patch/1054472/
+-- 
+2.21.0
 
-If nothing else the commit message no longer seems accurate.
-
-Regards,
--- Josh=
