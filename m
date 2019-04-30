@@ -2,274 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51F83FB26
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 16:13:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4113FB33
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 16:16:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727599AbfD3ONn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 10:13:43 -0400
-Received: from smtp-out.xnet.cz ([178.217.244.18]:61438 "EHLO smtp-out.xnet.cz"
+        id S1726614AbfD3OQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 10:16:05 -0400
+Received: from mail01.preh.com ([80.149.130.22]:46254 "EHLO mail01.preh.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726436AbfD3ONm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 10:13:42 -0400
-Received: from meh.true.cz (meh.true.cz [108.61.167.218])
-        (Authenticated sender: petr@true.cz)
-        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 9D0FE6633;
-        Tue, 30 Apr 2019 16:13:36 +0200 (CEST)
-Received: from localhost (meh.true.cz [local])
-        by meh.true.cz (OpenSMTPD) with ESMTPA id 3c5c6e60;
-        Tue, 30 Apr 2019 16:13:35 +0200 (CEST)
-Date:   Tue, 30 Apr 2019 16:13:35 +0200
-From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Alban Bedel <albeu@free.fr>
-Subject: Handling of EPROBE_DEFER in of_get_mac_address [Was: Re: [PATCH v2
- 3/4] net: macb: Drop nvmem_get_mac_address usage]
-Message-ID: <20190430141335.GC346@meh.true.cz>
-Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-References: <1556456002-13430-1-git-send-email-ynezz@true.cz>
- <1556456002-13430-4-git-send-email-ynezz@true.cz>
- <20190428165637.GJ23059@lunn.ch>
- <20190428210814.GA346@meh.true.cz>
- <20190428213640.GB10772@lunn.ch>
- <20190429075514.GB346@meh.true.cz>
- <20190429130248.GC10772@lunn.ch>
+        id S1726015AbfD3OQE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 10:16:04 -0400
+From:   Kloetzke Jan <Jan.Kloetzke@preh.de>
+To:     Oliver Neukum <oneukum@suse.com>,
+        =?utf-8?B?SmFuIEtsw7Z0emtl?= <jan@kloetzke.net>,
+        David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        Kloetzke Jan <Jan.Kloetzke@preh.de>
+Subject: [PATCH v2] usbnet: fix kernel crash after disconnect
+Thread-Topic: [PATCH v2] usbnet: fix kernel crash after disconnect
+Thread-Index: AQHU/18dyV1WEybtp0WgCkArhegqtA==
+Date:   Tue, 30 Apr 2019 14:15:07 +0000
+Message-ID: <20190430141440.9469-1-Jan.Kloetzke@preh.de>
+References: <1556563688.20085.31.camel@suse.com>
+In-Reply-To: <1556563688.20085.31.camel@suse.com>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-exclaimer-md-config: 142fe46c-4d13-4ac1-9970-1f36f118897a
+x-tm-snts-smtp: F3E4B2CF7EDBFE907604E668AE1C5937C7EDCBBCF80B5A9536C223D3EB23FD8C2000:8
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C26ED2F505691B4389703F9226B036F3@preh.de>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190429130248.GC10772@lunn.ch>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=preh.de; s=key1; c=relaxed/relaxed;
+ h=from:to:cc:subject:date:message-id:references:content-type:mime-version;
+ bh=sNbOqU7Z17TWcAp2dBHoOLNECx2E9fJeaxEEvfKSq4w=;
+ b=Auti/CG8nuk2BsnKX/stukyuvS5TIYztcozHrczZRNyu9rZivvJHVcca6oFechBaZ7Nw/tQDMVJd
+        3mYYySqR+w03SSGLx24/JqmQ8HvB1wuGG0Tsb0xIbVOvciJAi7BIShnW47n/oyr5SoSQNVEwaJ8F
+        iZNr3Mi+iiogwkJPHPbCtyfWwzZfsWWPNoqin/6oWA3yqwJaSn0lYtS+2agWvD3F77GOO7SPplqj
+        dA1H1qdxZtYRRel42Nm9jO8w4H/ppdxcEvwKp5jMGGwwQTF4VwFwMYcUsjcWw2kfEEXVmzvfsqqB
+        JOg+QssgQSilXwy5sx6tN2Es0Uc3+PK3Z8rdVA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew Lunn <andrew@lunn.ch> [2019-04-29 15:02:48]:
-
-Hi Andrew,
-
-> > My understanding of -PROBE_DEFER is, that it needs to be propagated back from
-> > the driver's probe callback/hook to the upper device/driver subsystem in order
-> > to be moved to the list of pending drivers and considered for probe later
-> > again. This is not going to happen in any of the current drivers, thus it will
-> > probably still always result in random MAC address in case of -EPROBE_DEFER
-> > error from the nvmem subsystem.
-> 
-> All current drivers which don't look in NVMEM don't expect
-> EPROBE_DEFER. 
-
-once there's NVMEM wired in of_get_mac_address, one can simply use it, nothing
-is going to stop the potential user of doing so and if EPROBE_DEFER isn't
-propagated from the driver back to the upper device driver subsytem, it's
-probably going to end with random MAC address in some (very rare?) cases.
-
-So if we don't want to properly convert all current of_get_mac_address users,
-and just selectively upgrade drivers which could support NVMEM (and it makes
-sense for those drivers) with proper EPROBE_DEFER handling, we should probably
-just extend of_get_mac_address and convert those drivers to NVMEM one by one,
-as needed:
-
- enum of_mac_addr {
-	OF_MAC_ADDR_DT = 0,
-	OF_MAC_ADDR_DT_NVMEM
- };
-
- const void *of_get_mac_address(struct device_node *np, enum of_mac_addr type);
-
-  (just my first rough idea, feel free to suggest something more acceptable)
-
-> The one driver which does expect EPROBE_DEFER already has the code to
-> handle it.
-
-I've read the code in that macb driver several times and I don't see any code
-which is specificaly handling the EPROBE_DEFER, so I'm probably blind or I miss
-something fundamental ;-) This driver is simply forwarding that EPROBE_DEFER
-error to the upper layer, nothing specific. The other one, davinci_emac simply
-doesn't care about the possible EPROBE_DEFER and uses random MAC address in
-case of any NVMEM error.
-
-> What you have to be careful of, is the return value from your new code
-> looking in NVMEM. It should only return EPROBE_DEFER, or another error
-> if there really is expected to be a value in NVMEM, or getting it from
-> NVMEM resulted in an error.
-
-Thanks for the hint, I've created of_has_nvmem_mac_addr helper for that and it
-works fine.
-
-> I've not looked at the details of nvmem_get_mac_address(), but it
-> should be a two stage process. The first is to look in device tree to
-> find the properties. Device tree is always accessible. So performing a
-> lookup will never return EPROBE_DEFER. If there are no properties, it
-> probably return -ENODEV. You need to consider that as not being a real
-> error, since these are optional properties. of_get_mac_address() needs
-> to try the next source of the MAC address. The second stage is to look
-> into the NVMEM. That could return -EPROBE_DEFER and you should return
-> that error, or any other error at this stage. The MAC address should
-> exist in NVMEM so we want to know about the error.
-
-While looking at all current of_get_mac_address users, I've simply found out,
-that it would look inconsistent and confusing to propagate back EPROBE_DEFER
-just in some places, so I've bitten the bullet and converted all current
-of_get_mac_address users to return EPROBE_DEFER properly (where applicable),
-see bellow.
-
-It has resulted in a bunch of commits, and as I'm not sure how it's going to be
-received and to avoid sending more nonsense to a lot of lists and people, I've
-made it available in my GitHub repository (just tell me that it's OK and I'll
-send it as v3):
-
- The following changes since commit 37624b58542fb9f2d9a70e6ea006ef8a5f66c30b:
-
-   Linux 5.1-rc7 (2019-04-28 17:04:13 -0700)
-
- are available in the git repository at:
-
-   https://github.com/ynezz/linux.git upstream/nvmem-mac-address
-
- for you to fetch changes up to 5eb1e8131d3f97a488b74563dd8fefa068218e05:
-
-   powerpc: tsi108: adjust for of_get_mac_address ERR_PTR encoded error value (2019-04-30 13:02:22 +0200)
-
- ----------------------------------------------------------------
- Petr Štetiar (20):
-       of_net: add NVMEM support to of_get_mac_address
-       dt-bindings: doc: reflect new NVMEM of_get_mac_address behaviour
-       net: macb: drop nvmem_get_mac_address usage
-       net: davinci_emac: drop nvmem_get_mac_address usage
-       net: ethernet: make eth_platform_get_mac_address probe defer aware
-       net: ethernet: make of_get_mac_address probe defer aware
-       net: usb: make eth_platform_get_mac_address probe defer aware
-       net: usb: make of_get_mac_address probe defer aware
-       net: sh_eth: make of_get_mac_address probe defer aware
-       net: fec: make of_get_mac_address probe defer aware
-       net: fec_mpc52xx: make of_get_mac_address probe defer aware
-       net: hisi_femac: make of_get_mac_address probe defer aware
-       net: sky2: make of_get_mac_address probe defer aware
-       net: ks8851: make of_get_mac_address probe defer aware
-       wireless: ath9k: make of_get_mac_address probe defer aware
-       wireless: mt76: make of_get_mac_address probe defer aware
-       wireless: ralink: make of_get_mac_address probe defer aware
-       staging: octeon-ethernet: make of_get_mac_address probe defer aware
-       ARM: Kirkwood: adjust for of_get_mac_address ERR_PTR encoded error value
-       powerpc: tsi108: adjust for of_get_mac_address ERR_PTR encoded error value
-
-  .../devicetree/bindings/net/altera_tse.txt         |  5 +-
-  Documentation/devicetree/bindings/net/amd-xgbe.txt |  5 +-
-  .../devicetree/bindings/net/brcm,amac.txt          |  4 +-
-  Documentation/devicetree/bindings/net/cpsw.txt     |  4 +-
-  .../devicetree/bindings/net/davinci_emac.txt       |  5 +-
-  Documentation/devicetree/bindings/net/dsa/dsa.txt  |  5 +-
-  Documentation/devicetree/bindings/net/ethernet.txt |  6 +-
-  .../devicetree/bindings/net/hisilicon-femac.txt    |  4 +-
-  .../bindings/net/hisilicon-hix5hd2-gmac.txt        |  4 +-
-  .../devicetree/bindings/net/keystone-netcp.txt     | 10 ++--
-  Documentation/devicetree/bindings/net/macb.txt     |  5 +-
-  .../devicetree/bindings/net/marvell-pxa168.txt     |  4 +-
-  .../devicetree/bindings/net/microchip,enc28j60.txt |  3 +-
-  .../devicetree/bindings/net/microchip,lan78xx.txt  |  5 +-
-  .../devicetree/bindings/net/qca,qca7000.txt        |  4 +-
-  .../devicetree/bindings/net/samsung-sxgbe.txt      |  4 +-
-  .../bindings/net/snps,dwc-qos-ethernet.txt         |  5 +-
-  .../bindings/net/socionext,uniphier-ave4.txt       |  4 +-
-  .../devicetree/bindings/net/socionext-netsec.txt   |  5 +-
-  .../bindings/net/wireless/mediatek,mt76.txt        |  5 +-
-  .../devicetree/bindings/net/wireless/qca,ath9k.txt |  4 +-
-  arch/arm/mach-mvebu/kirkwood.c                     |  3 +-
-  arch/powerpc/sysdev/tsi108_dev.c                   |  2 +-
-  drivers/net/ethernet/aeroflex/greth.c              |  5 +-
-  drivers/net/ethernet/allwinner/sun4i-emac.c        |  9 +--
-  drivers/net/ethernet/altera/altera_tse_main.c      |  8 ++-
-  drivers/net/ethernet/arc/emac_main.c               |  9 ++-
-  drivers/net/ethernet/aurora/nb8800.c               |  9 ++-
-  drivers/net/ethernet/broadcom/bcmsysport.c         |  5 +-
-  drivers/net/ethernet/broadcom/bgmac-bcma.c         |  9 ++-
-  drivers/net/ethernet/broadcom/bgmac-platform.c     |  4 +-
-  drivers/net/ethernet/broadcom/genet/bcmgenet.c     |  7 ++-
-  drivers/net/ethernet/broadcom/tg3.c                | 10 +++-
-  drivers/net/ethernet/cadence/macb_main.c           | 12 ++--
-  drivers/net/ethernet/cavium/octeon/octeon_mgmt.c   |  9 ++-
-  drivers/net/ethernet/cavium/thunder/thunder_bgx.c  |  4 +-
-  drivers/net/ethernet/davicom/dm9000.c              |  4 +-
-  drivers/net/ethernet/ethoc.c                       |  6 +-
-  drivers/net/ethernet/ezchip/nps_enet.c             |  8 ++-
-  drivers/net/ethernet/freescale/fec_main.c          | 17 ++++--
-  drivers/net/ethernet/freescale/fec_mpc52xx.c       | 25 +++++----
-  drivers/net/ethernet/freescale/fman/mac.c          |  5 +-
-  .../net/ethernet/freescale/fs_enet/fs_enet-main.c  |  6 +-
-  drivers/net/ethernet/freescale/gianfar.c           |  7 ++-
-  drivers/net/ethernet/freescale/ucc_geth.c          |  6 +-
-  drivers/net/ethernet/hisilicon/hisi_femac.c        | 21 ++++---
-  drivers/net/ethernet/hisilicon/hix5hd2_gmac.c      |  7 ++-
-  drivers/net/ethernet/intel/i40e/i40e_main.c        | 15 ++++-
-  drivers/net/ethernet/intel/igb/igb_main.c          |  5 +-
-  drivers/net/ethernet/intel/igc/igc_main.c          |  5 +-
-  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |  6 +-
-  drivers/net/ethernet/lantiq_xrx200.c               |  4 +-
-  drivers/net/ethernet/marvell/mv643xx_eth.c         |  4 +-
-  drivers/net/ethernet/marvell/mvneta.c              |  5 +-
-  drivers/net/ethernet/marvell/pxa168_eth.c          |  9 ++-
-  drivers/net/ethernet/marvell/sky2.c                | 14 +++--
-  drivers/net/ethernet/mediatek/mtk_eth_soc.c        |  8 +--
-  drivers/net/ethernet/micrel/ks8851.c               | 15 +++--
-  drivers/net/ethernet/micrel/ks8851_mll.c           |  6 +-
-  drivers/net/ethernet/microchip/enc28j60.c          |  8 ++-
-  drivers/net/ethernet/nxp/lpc_eth.c                 | 10 +++-
-  drivers/net/ethernet/qualcomm/qca_spi.c            |  9 +--
-  drivers/net/ethernet/qualcomm/qca_uart.c           |  9 +--
-  drivers/net/ethernet/realtek/r8169.c               |  4 +-
-  drivers/net/ethernet/renesas/ravb_main.c           | 11 +++-
-  drivers/net/ethernet/renesas/sh_eth.c              | 15 ++---
-  .../net/ethernet/samsung/sxgbe/sxgbe_platform.c    |  7 ++-
-  drivers/net/ethernet/socionext/sni_ave.c           |  9 +--
-  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |  2 +-
-  .../net/ethernet/stmicro/stmmac/stmmac_platform.c  |  3 +
-  drivers/net/ethernet/ti/cpsw.c                     |  4 +-
-  drivers/net/ethernet/ti/davinci_emac.c             | 25 ++++-----
-  drivers/net/ethernet/ti/netcp_core.c               |  8 ++-
-  drivers/net/ethernet/wiznet/w5100-spi.c            |  6 +-
-  drivers/net/ethernet/wiznet/w5100.c                |  2 +-
-  drivers/net/ethernet/xilinx/ll_temac_main.c        |  5 +-
-  drivers/net/ethernet/xilinx/xilinx_axienet_main.c  |  4 +-
-  drivers/net/ethernet/xilinx/xilinx_emaclite.c      |  7 ++-
-  drivers/net/usb/asix_devices.c                     |  7 ++-
-  drivers/net/usb/lan78xx.c                          | 13 ++++-
-  drivers/net/usb/smsc75xx.c                         | 16 ++++--
-  drivers/net/usb/smsc95xx.c                         | 16 ++++--
-  drivers/net/wireless/ath/ath9k/init.c              |  4 +-
-  drivers/net/wireless/mediatek/mt76/eeprom.c        | 10 +++-
-  drivers/net/wireless/mediatek/mt76/mt76.h          |  2 +-
-  drivers/net/wireless/mediatek/mt76/mt7603/eeprom.c |  4 +-
-  drivers/net/wireless/mediatek/mt76/mt76x2/eeprom.c |  6 +-
-  drivers/net/wireless/ralink/rt2x00/rt2400pci.c     |  5 +-
-  drivers/net/wireless/ralink/rt2x00/rt2500pci.c     |  5 +-
-  drivers/net/wireless/ralink/rt2x00/rt2500usb.c     |  5 +-
-  drivers/net/wireless/ralink/rt2x00/rt2800lib.c     |  4 +-
-  drivers/net/wireless/ralink/rt2x00/rt2x00.h        |  3 +-
-  drivers/net/wireless/ralink/rt2x00/rt2x00dev.c     | 16 ++++--
-  drivers/net/wireless/ralink/rt2x00/rt61pci.c       |  5 +-
-  drivers/net/wireless/ralink/rt2x00/rt73usb.c       |  5 +-
-  drivers/of/of_net.c                                | 64 +++++++++++++++++++++-
-  drivers/staging/octeon/ethernet.c                  |  7 ++-
-  net/ethernet/eth.c                                 |  8 ++-
-  98 files changed, 527 insertions(+), 239 deletions(-)
-
-So I'm wondering, is this (probably) proper handling of EPROBE_DEFER overkill?
-
-Or should I really just convert all current consumers of of_get_mac_address to
-IS_ERR_OR_NULL() macro check (as you've suggested) and call it a day? 
-
-Or should I simply change of_get_mac_address so it would allow for progressive
-conversion of drivers using of_get_mac_address to NVMEM?
-
-Thanks!
-
--- ynezz
+V2hlbiBkaXNjb25uZWN0aW5nIGNkY19uY20gdGhlIGtlcm5lbCBzcG9yYWRpY2FsbHkgY3Jhc2hl
+cyBzaG9ydGx5DQphZnRlciB0aGUgZGlzY29ubmVjdDoNCg0KICBbICAgNTcuODY4ODEyXSBVbmFi
+bGUgdG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQgdmlydHVhbCBh
+ZGRyZXNzIDAwMDAwMDAwDQogIC4uLg0KICBbICAgNTguMDA2NjUzXSBQQyBpcyBhdCAweDANCiAg
+WyAgIDU4LjAwOTIwMl0gTFIgaXMgYXQgY2FsbF90aW1lcl9mbisweGVjLzB4MWI0DQogIFsgICA1
+OC4wMTM1NjddIHBjIDogWzwwMDAwMDAwMDAwMDAwMDAwPl0gbHIgOiBbPGZmZmZmZjgwMDgwZjUx
+MzA+XSBwc3RhdGU6IDAwMDAwMTQ1DQogIFsgICA1OC4wMjA5NzZdIHNwIDogZmZmZmZmODAwODAw
+M2RhMA0KICBbICAgNTguMDI0Mjk1XSB4Mjk6IGZmZmZmZjgwMDgwMDNkYTAgeDI4OiAwMDAwMDAw
+MDAwMDAwMDAxDQogIFsgICA1OC4wMjk2MThdIHgyNzogMDAwMDAwMDAwMDAwMDAwYSB4MjY6IDAw
+MDAwMDAwMDAwMDAxMDANCiAgWyAgIDU4LjAzNDk0MV0geDI1OiAwMDAwMDAwMDAwMDAwMDAwIHgy
+NDogZmZmZmZmODAwODAwM2U2OA0KICBbICAgNTguMDQwMjYzXSB4MjM6IDAwMDAwMDAwMDAwMDAw
+MDAgeDIyOiAwMDAwMDAwMDAwMDAwMDAwDQogIFsgICA1OC4wNDU1ODddIHgyMTogMDAwMDAwMDAw
+MDAwMDAwMCB4MjA6IGZmZmZmZmM2OGZhYzE4MDgNCiAgWyAgIDU4LjA1MDkxMF0geDE5OiAwMDAw
+MDAwMDAwMDAwMTAwIHgxODogMDAwMDAwMDAwMDAwMDAwMA0KICBbICAgNTguMDU2MjMyXSB4MTc6
+IDAwMDAwMDdmODg1YWZmOGMgeDE2OiAwMDAwMDA3Zjg4M2E5ZjEwDQogIFsgICA1OC4wNjE1NTZd
+IHgxNTogMDAwMDAwMDAwMDAwMDAwMSB4MTQ6IDAwMDAwMDAwMDAwMDAwNmUNCiAgWyAgIDU4LjA2
+Njg3OF0geDEzOiAwMDAwMDAwMDAwMDAwMDAwIHgxMjogMDAwMDAwMDAwMDAwMDBiYQ0KICBbICAg
+NTguMDcyMjAxXSB4MTE6IGZmZmZmZmM2OWZmMWRiMzAgeDEwOiAwMDAwMDAwMDAwMDAwMDIwDQog
+IFsgICA1OC4wNzc1MjRdIHg5IDogODAwMDEwMDAwODAwMTAwMCB4OCA6IDAwMDAwMDAwMDAwMDAw
+MDENCiAgWyAgIDU4LjA4Mjg0N10geDcgOiAwMDAwMDAwMDAwMDAwODAwIHg2IDogZmZmZmZmODAw
+ODAwM2U3MA0KICBbICAgNTguMDg4MTY5XSB4NSA6IGZmZmZmZmM2OWZmMTdhMjggeDQgOiAwMDAw
+MDAwMGZmZmYxMzhiDQogIFsgICA1OC4wOTM0OTJdIHgzIDogMDAwMDAwMDAwMDAwMDAwMCB4MiA6
+IDAwMDAwMDAwMDAwMDAwMDANCiAgWyAgIDU4LjA5ODgxNF0geDEgOiAwMDAwMDAwMDAwMDAwMDAw
+IHgwIDogMDAwMDAwMDAwMDAwMDAwMA0KICAuLi4NCiAgWyAgIDU4LjIwNTgwMF0gWzwgICAgICAg
+ICAgKG51bGwpPl0gICAgICAgICAgIChudWxsKQ0KICBbICAgNTguMjEwNTIxXSBbPGZmZmZmZjgw
+MDgwZjUyOTg+XSBleHBpcmVfdGltZXJzKzB4YTAvMHgxNGMNCiAgWyAgIDU4LjIxNTkzN10gWzxm
+ZmZmZmY4MDA4MGY1NDJjPl0gcnVuX3RpbWVyX3NvZnRpcnErMHhlOC8weDEyOA0KICBbICAgNTgu
+MjIxNzAyXSBbPGZmZmZmZjgwMDgwODExMjA+XSBfX2RvX3NvZnRpcnErMHgyOTgvMHgzNDgNCiAg
+WyAgIDU4LjIyNzExOF0gWzxmZmZmZmY4MDA4MGE2MzA0Pl0gaXJxX2V4aXQrMHg3NC8weGJjDQog
+IFsgICA1OC4yMzIwMDldIFs8ZmZmZmZmODAwODBlMTdkYz5dIF9faGFuZGxlX2RvbWFpbl9pcnEr
+MHg3OC8weGFjDQogIFsgICA1OC4yMzc4NTddIFs8ZmZmZmZmODAwODA4MGNmND5dIGdpY19oYW5k
+bGVfaXJxKzB4ODAvMHhhYw0KICAuLi4NCg0KVGhlIGNyYXNoIGhhcHBlbnMgcm91Z2hseSAxMjUu
+LjEzMG1zIGFmdGVyIHRoZSBkaXNjb25uZWN0LiBUaGlzDQpjb3JyZWxhdGVzIHdpdGggdGhlICdk
+ZWxheScgdGltZXIgdGhhdCBpcyBzdGFydGVkIG9uIGNlcnRhaW4gVVNCIHR4L3J4DQplcnJvcnMg
+aW4gdGhlIFVSQiBjb21wbGV0aW9uIGhhbmRsZXIuDQoNClRoZSBzdXNwZWN0ZWQgcHJvYmxlbSBp
+cyBhIHJhY2Ugb2YgdXNibmV0X3N0b3AoKSB3aXRoDQp1c2JuZXRfc3RhcnRfeG1pdCgpLiBJbiB1
+c2JuZXRfc3RvcCgpIHdlIGNhbGwgdXNibmV0X3Rlcm1pbmF0ZV91cmJzKCkNCnRvIGNhbmNlbCBh
+bGwgVVJCcyBpbiBmbGlnaHQuIFRoaXMgb25seSBtYWtlcyBzZW5zZSBpZiBubyBuZXcgVVJCcyBh
+cmUNCnN1Ym1pdHRlZCBjb25jdXJyZW50bHksIHRob3VnaC4gQnV0IHRoZSB1c2JuZXRfc3RhcnRf
+eG1pdCgpIGNhbiBydW4gYXQNCnRoZSBzYW1lIHRpbWUgb24gYW5vdGhlciBDUFUgd2hpY2ggYWxt
+b3N0IHVuY29uZGl0aW9uYWxseSBzdWJtaXRzIGFuDQpVUkIuIFRoZSBlcnJvciBjYWxsYmFjayBv
+ZiB0aGUgbmV3IFVSQiB3aWxsIHRoZW4gc2NoZWR1bGUgdGhlIHRpbWVyDQphZnRlciBpdCB3YXMg
+YWxyZWFkeSBzdG9wcGVkLg0KDQpUaGUgZml4IGFkZHMgYSBjaGVjayBpZiB0aGUgdHggcXVldWUg
+aXMgc3RvcHBlZCBhZnRlciB0aGUgdHggbGlzdCBsb2NrDQpoYXMgYmVlbiB0YWtlbi4gVGhpcyBz
+aG91bGQgcmVsaWFibHkgcHJldmVudCB0aGUgc3VibWlzc2lvbiBvZiBuZXcgVVJCcw0Kd2hpbGUg
+dXNibmV0X3Rlcm1pbmF0ZV91cmJzKCkgZG9lcyBpdHMgam9iLiBUaGUgc2FtZSB0aGluZyBpcyBk
+b25lIG9uDQp0aGUgcnggc2lkZSBldmVuIHRob3VnaCBpdCBtaWdodCBiZSBzYWZlIGR1ZSB0byBv
+dGhlciBmbGFncyB0aGF0IGFyZQ0KY2hlY2tlZCB0aGVyZS4NCg0KU2lnbmVkLW9mZi1ieTogSmFu
+IEtsw7Z0emtlIDxKYW4uS2xvZXR6a2VAcHJlaC5kZT4NCi0tLQ0KIGRyaXZlcnMvbmV0L3VzYi91
+c2JuZXQuYyB8IDYgKysrKysrDQogMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKQ0KDQpk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvdXNiL3VzYm5ldC5jIGIvZHJpdmVycy9uZXQvdXNiL3Vz
+Ym5ldC5jDQppbmRleCA1MDQyODJhZjI3ZTUuLjM2YmIwYTRmYzMyMCAxMDA2NDQNCi0tLSBhL2Ry
+aXZlcnMvbmV0L3VzYi91c2JuZXQuYw0KKysrIGIvZHJpdmVycy9uZXQvdXNiL3VzYm5ldC5jDQpA
+QCAtNTA2LDYgKzUwNiw3IEBAIHN0YXRpYyBpbnQgcnhfc3VibWl0IChzdHJ1Y3QgdXNibmV0ICpk
+ZXYsIHN0cnVjdCB1cmIgKnVyYiwgZ2ZwX3QgZmxhZ3MpDQogDQogCWlmIChuZXRpZl9ydW5uaW5n
+IChkZXYtPm5ldCkgJiYNCiAJICAgIG5ldGlmX2RldmljZV9wcmVzZW50IChkZXYtPm5ldCkgJiYN
+CisJICAgIHRlc3RfYml0KEVWRU5UX0RFVl9PUEVOLCAmZGV2LT5mbGFncykgJiYNCiAJICAgICF0
+ZXN0X2JpdCAoRVZFTlRfUlhfSEFMVCwgJmRldi0+ZmxhZ3MpICYmDQogCSAgICAhdGVzdF9iaXQg
+KEVWRU5UX0RFVl9BU0xFRVAsICZkZXYtPmZsYWdzKSkgew0KIAkJc3dpdGNoIChyZXR2YWwgPSB1
+c2Jfc3VibWl0X3VyYiAodXJiLCBHRlBfQVRPTUlDKSkgew0KQEAgLTE0MzEsNiArMTQzMiwxMSBA
+QCBuZXRkZXZfdHhfdCB1c2JuZXRfc3RhcnRfeG1pdCAoc3RydWN0IHNrX2J1ZmYgKnNrYiwNCiAJ
+CXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmRldi0+dHhxLmxvY2ssIGZsYWdzKTsNCiAJCWdvdG8g
+ZHJvcDsNCiAJfQ0KKwlpZiAoV0FSTl9PTihuZXRpZl9xdWV1ZV9zdG9wcGVkKG5ldCkpKSB7DQor
+CQl1c2JfYXV0b3BtX3B1dF9pbnRlcmZhY2VfYXN5bmMoZGV2LT5pbnRmKTsNCisJCXNwaW5fdW5s
+b2NrX2lycXJlc3RvcmUoJmRldi0+dHhxLmxvY2ssIGZsYWdzKTsNCisJCWdvdG8gZHJvcDsNCisJ
+fQ0KIA0KICNpZmRlZiBDT05GSUdfUE0NCiAJLyogaWYgdGhpcyB0cmlnZ2VycyB0aGUgZGV2aWNl
+IGlzIHN0aWxsIGEgc2xlZXAgKi8NCi0tIA0KMi4xMS4wDQo=
