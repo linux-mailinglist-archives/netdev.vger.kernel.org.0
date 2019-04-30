@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCF00F129
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 09:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CABE4F116
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 09:18:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726565AbfD3HSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 03:18:31 -0400
-Received: from first.geanix.com ([116.203.34.67]:43698 "EHLO first.geanix.com"
+        id S1726628AbfD3HSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 03:18:39 -0400
+Received: from first.geanix.com ([116.203.34.67]:43706 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726546AbfD3HS3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 03:18:29 -0400
+        id S1726519AbfD3HSi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 03:18:38 -0400
 Received: from localhost (unknown [193.163.1.7])
-        by first.geanix.com (Postfix) with ESMTPSA id 98FB7308E99;
-        Tue, 30 Apr 2019 07:18:21 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id 7C52E308E9B;
+        Tue, 30 Apr 2019 07:18:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1556608701; bh=pjOz5DOCt3U+7Kse+9zthfTgeUxy/f8iFmNu5nYhzIk=;
+        t=1556608707; bh=/Bgd3S7uqo3EE49fB3Lh7KSbfowcaUia9+3zzN0uQiM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=BjJ+lCQ+5EHozGQyEPFFiUVcH/edQjp4dR4KSAwTLB0lQbXn9q68qxspHX4HFWM1E
-         cFvoEgVEg6ExVxPO0qc03aL+VsC7DSSAM4wQ3US2+O/J4IzmDZMxV/h+IB3siOBlud
-         DgbR6OCHc4+4UuGXyvHIm++G6woLyZSJiy1y6FHu2UEOgrXgFInArG2lQEp83uEObI
-         45mFsWzN+O2CpWMnzKCf9u0y4Sw5/GCnMFZN1SXsmI9GfVLNmDZGMYUhTraX+eAVBR
-         vRZdQs1EfdSlA4V5CyKuTRhD1ylAc0FFz/defi0QtHAsCV5xnSA9Vrdcv1HRn4sa6x
-         m/82zqT9tBxsg==
+        b=Iw/uj0PPADKbZdTR/Pyd1NqaYCCGPoAWmazttaxHfmmn1iyKSi5tveT/FOp1FNCta
+         1pV1EHAohBP/IuGtZWliYkP/cz1KC4Sp+fDTB3tzH1bcGA/5ApONQXhkdjCYVcDRvE
+         nPNq48GMETxM8/YFcjfMJKHp5UQoZgH1VUgN4LigYMXdSCVWFybxwq/cWH7IAvfx5P
+         001tnddUYJiGaO36CinbH6xzv3n03u+g8+L7XHSeUEkPeopz8xiKya8iYUOSGnbBXH
+         8VE5tnxwg9UpcDBmhK6sr/XihwCtQZ5M3vru6rNdjFmVarGxck0NqAuCitu6uW+m4p
+         1aGos5ZZZ0gTw==
 From:   Esben Haabendal <esben@geanix.com>
 To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Michal Simek <michal.simek@xilinx.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Yang Wei <yang.wei9@zte.com.cn>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 06/12] net: ll_temac: Allow use on x86 platforms
-Date:   Tue, 30 Apr 2019 09:17:53 +0200
-Message-Id: <20190430071759.2481-7-esben@geanix.com>
+Subject: [PATCH v3 07/12] net: ll_temac: Support indirect_mutex share within TEMAC IP
+Date:   Tue, 30 Apr 2019 09:17:54 +0200
+Message-Id: <20190430071759.2481-8-esben@geanix.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190430071759.2481-1-esben@geanix.com>
 References: <20190429083422.4356-1-esben@geanix.com>
@@ -47,39 +49,240 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With little-endian and 64-bit support in place, the ll_temac driver can
-now be used on x86 and x86_64 platforms.
+Indirect register access goes through a DCR bus bridge, which
+allows only one outstanding transaction.  And to make matters
+worse, each TEMAC IP block contains two Ethernet interfaces, and
+although they seem to have separate registers for indirect access,
+they actually share the registers.  Or to be more specific, MSW, LSW
+and CTL registers are physically shared between Ethernet interfaces
+in same TEMAC IP, with RDY register being (almost) specificic to
+the Ethernet interface.  The 0x10000 bit in RDY reflects combined
+bus ready state though.
 
-And while at it, enable COMPILE_TEST also.
+So we need to take care to synchronize not only within a single
+device, but also between devices in same TEMAC IP.
+
+This commit allows to do that with legacy platform devices.
+
+For OF devices, the xlnx,compound parent of the temac node should be
+used to find siblings, and setup a shared indirect_mutex between them.
+I will leave this work to somebody else, as I don't have hardware to
+test that.  No regression is introduced by that, as before this commit
+using two Ethernet interfaces in same TEMAC block is simply broken.
 
 Signed-off-by: Esben Haabendal <esben@geanix.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/xilinx/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/xilinx/ll_temac.h        |  5 +++-
+ drivers/net/ethernet/xilinx/ll_temac_main.c   | 36 +++++++++++++++++++--------
+ drivers/net/ethernet/xilinx/ll_temac_mdio.c   | 16 ++++++------
+ include/linux/platform_data/xilinx-ll-temac.h |  6 +++++
+ 4 files changed, 43 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
-index 6d68c8a..db448fa 100644
---- a/drivers/net/ethernet/xilinx/Kconfig
-+++ b/drivers/net/ethernet/xilinx/Kconfig
-@@ -5,7 +5,7 @@
- config NET_VENDOR_XILINX
- 	bool "Xilinx devices"
- 	default y
--	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS
-+	depends on PPC || PPC32 || MICROBLAZE || ARCH_ZYNQ || MIPS || X86 || COMPILE_TEST
- 	---help---
- 	  If you have a network (Ethernet) card belonging to this class, say Y.
+diff --git a/drivers/net/ethernet/xilinx/ll_temac.h b/drivers/net/ethernet/xilinx/ll_temac.h
+index 23d8dd5..990f9ed 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac.h
++++ b/drivers/net/ethernet/xilinx/ll_temac.h
+@@ -358,7 +358,10 @@ struct temac_local {
  
-@@ -33,7 +33,7 @@ config XILINX_AXI_EMAC
+ 	struct sk_buff **rx_skb;
+ 	spinlock_t rx_lock;
+-	struct mutex indirect_mutex;
++	/* For synchronization of indirect register access.  Must be
++	 * shared mutex between interfaces in same TEMAC block.
++	 */
++	struct mutex *indirect_mutex;
+ 	u32 options;			/* Current options word */
+ 	int last_link;
+ 	unsigned int temac_features;
+diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+index 179a998..d3899e7 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac_main.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+@@ -344,7 +344,7 @@ static void temac_do_set_mac_address(struct net_device *ndev)
+ 	struct temac_local *lp = netdev_priv(ndev);
  
- config XILINX_LL_TEMAC
- 	tristate "Xilinx LL TEMAC (LocalLink Tri-mode Ethernet MAC) driver"
--	depends on (PPC || MICROBLAZE)
-+	depends on PPC || MICROBLAZE || X86 || COMPILE_TEST
- 	select PHYLIB
- 	---help---
- 	  This driver supports the Xilinx 10/100/1000 LocalLink TEMAC
+ 	/* set up unicast MAC address filter set its mac address */
+-	mutex_lock(&lp->indirect_mutex);
++	mutex_lock(lp->indirect_mutex);
+ 	temac_indirect_out32(lp, XTE_UAW0_OFFSET,
+ 			     (ndev->dev_addr[0]) |
+ 			     (ndev->dev_addr[1] << 8) |
+@@ -355,7 +355,7 @@ static void temac_do_set_mac_address(struct net_device *ndev)
+ 	temac_indirect_out32(lp, XTE_UAW1_OFFSET,
+ 			     (ndev->dev_addr[4] & 0x000000ff) |
+ 			     (ndev->dev_addr[5] << 8));
+-	mutex_unlock(&lp->indirect_mutex);
++	mutex_unlock(lp->indirect_mutex);
+ }
+ 
+ static int temac_init_mac_address(struct net_device *ndev, const void *address)
+@@ -384,7 +384,7 @@ static void temac_set_multicast_list(struct net_device *ndev)
+ 	u32 multi_addr_msw, multi_addr_lsw, val;
+ 	int i;
+ 
+-	mutex_lock(&lp->indirect_mutex);
++	mutex_lock(lp->indirect_mutex);
+ 	if (ndev->flags & (IFF_ALLMULTI | IFF_PROMISC) ||
+ 	    netdev_mc_count(ndev) > MULTICAST_CAM_TABLE_NUM) {
+ 		/*
+@@ -423,7 +423,7 @@ static void temac_set_multicast_list(struct net_device *ndev)
+ 		temac_indirect_out32(lp, XTE_MAW1_OFFSET, 0);
+ 		dev_info(&ndev->dev, "Promiscuous mode disabled.\n");
+ 	}
+-	mutex_unlock(&lp->indirect_mutex);
++	mutex_unlock(lp->indirect_mutex);
+ }
+ 
+ static struct temac_option {
+@@ -515,7 +515,7 @@ static u32 temac_setoptions(struct net_device *ndev, u32 options)
+ 	struct temac_option *tp = &temac_options[0];
+ 	int reg;
+ 
+-	mutex_lock(&lp->indirect_mutex);
++	mutex_lock(lp->indirect_mutex);
+ 	while (tp->opt) {
+ 		reg = temac_indirect_in32(lp, tp->reg) & ~tp->m_or;
+ 		if (options & tp->opt)
+@@ -524,7 +524,7 @@ static u32 temac_setoptions(struct net_device *ndev, u32 options)
+ 		tp++;
+ 	}
+ 	lp->options |= options;
+-	mutex_unlock(&lp->indirect_mutex);
++	mutex_unlock(lp->indirect_mutex);
+ 
+ 	return 0;
+ }
+@@ -543,7 +543,7 @@ static void temac_device_reset(struct net_device *ndev)
+ 
+ 	dev_dbg(&ndev->dev, "%s()\n", __func__);
+ 
+-	mutex_lock(&lp->indirect_mutex);
++	mutex_lock(lp->indirect_mutex);
+ 	/* Reset the receiver and wait for it to finish reset */
+ 	temac_indirect_out32(lp, XTE_RXC1_OFFSET, XTE_RXC1_RXRST_MASK);
+ 	timeout = 1000;
+@@ -595,7 +595,7 @@ static void temac_device_reset(struct net_device *ndev)
+ 	temac_indirect_out32(lp, XTE_TXC_OFFSET, 0);
+ 	temac_indirect_out32(lp, XTE_FCC_OFFSET, XTE_FCC_RXFLO_MASK);
+ 
+-	mutex_unlock(&lp->indirect_mutex);
++	mutex_unlock(lp->indirect_mutex);
+ 
+ 	/* Sync default options with HW
+ 	 * but leave receiver and transmitter disabled.  */
+@@ -623,7 +623,7 @@ static void temac_adjust_link(struct net_device *ndev)
+ 	/* hash together the state values to decide if something has changed */
+ 	link_state = phy->speed | (phy->duplex << 1) | phy->link;
+ 
+-	mutex_lock(&lp->indirect_mutex);
++	mutex_lock(lp->indirect_mutex);
+ 	if (lp->last_link != link_state) {
+ 		mii_speed = temac_indirect_in32(lp, XTE_EMCFG_OFFSET);
+ 		mii_speed &= ~XTE_EMCFG_LINKSPD_MASK;
+@@ -639,7 +639,7 @@ static void temac_adjust_link(struct net_device *ndev)
+ 		lp->last_link = link_state;
+ 		phy_print_status(phy);
+ 	}
+-	mutex_unlock(&lp->indirect_mutex);
++	mutex_unlock(lp->indirect_mutex);
+ }
+ 
+ #ifdef CONFIG_64BIT
+@@ -1091,7 +1091,21 @@ static int temac_probe(struct platform_device *pdev)
+ 	lp->dev = &pdev->dev;
+ 	lp->options = XTE_OPTION_DEFAULTS;
+ 	spin_lock_init(&lp->rx_lock);
+-	mutex_init(&lp->indirect_mutex);
++
++	/* Setup mutex for synchronization of indirect register access */
++	if (pdata) {
++		if (!pdata->indirect_mutex) {
++			dev_err(&pdev->dev,
++				"indirect_mutex missing in platform_data\n");
++			return -EINVAL;
++		}
++		lp->indirect_mutex = pdata->indirect_mutex;
++	} else {
++		lp->indirect_mutex = devm_kmalloc(&pdev->dev,
++						  sizeof(*lp->indirect_mutex),
++						  GFP_KERNEL);
++		mutex_init(lp->indirect_mutex);
++	}
+ 
+ 	/* map device registers */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+diff --git a/drivers/net/ethernet/xilinx/ll_temac_mdio.c b/drivers/net/ethernet/xilinx/ll_temac_mdio.c
+index c5307e5..c2a1170 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac_mdio.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_mdio.c
+@@ -29,10 +29,10 @@ static int temac_mdio_read(struct mii_bus *bus, int phy_id, int reg)
+ 	/* Write the PHY address to the MIIM Access Initiator register.
+ 	 * When the transfer completes, the PHY register value will appear
+ 	 * in the LSW0 register */
+-	mutex_lock(&lp->indirect_mutex);
++	mutex_lock(lp->indirect_mutex);
+ 	temac_iow(lp, XTE_LSW0_OFFSET, (phy_id << 5) | reg);
+ 	rc = temac_indirect_in32(lp, XTE_MIIMAI_OFFSET);
+-	mutex_unlock(&lp->indirect_mutex);
++	mutex_unlock(lp->indirect_mutex);
+ 
+ 	dev_dbg(lp->dev, "temac_mdio_read(phy_id=%i, reg=%x) == %x\n",
+ 		phy_id, reg, rc);
+@@ -50,10 +50,10 @@ static int temac_mdio_write(struct mii_bus *bus, int phy_id, int reg, u16 val)
+ 	/* First write the desired value into the write data register
+ 	 * and then write the address into the access initiator register
+ 	 */
+-	mutex_lock(&lp->indirect_mutex);
++	mutex_lock(lp->indirect_mutex);
+ 	temac_indirect_out32(lp, XTE_MGTDR_OFFSET, val);
+ 	temac_indirect_out32(lp, XTE_MIIMAI_OFFSET, (phy_id << 5) | reg);
+-	mutex_unlock(&lp->indirect_mutex);
++	mutex_unlock(lp->indirect_mutex);
+ 
+ 	return 0;
+ }
+@@ -87,9 +87,9 @@ int temac_mdio_setup(struct temac_local *lp, struct platform_device *pdev)
+ 
+ 	/* Enable the MDIO bus by asserting the enable bit and writing
+ 	 * in the clock config */
+-	mutex_lock(&lp->indirect_mutex);
++	mutex_lock(lp->indirect_mutex);
+ 	temac_indirect_out32(lp, XTE_MC_OFFSET, 1 << 6 | clk_div);
+-	mutex_unlock(&lp->indirect_mutex);
++	mutex_unlock(lp->indirect_mutex);
+ 
+ 	bus = devm_mdiobus_alloc(&pdev->dev);
+ 	if (!bus)
+@@ -116,10 +116,10 @@ int temac_mdio_setup(struct temac_local *lp, struct platform_device *pdev)
+ 	if (rc)
+ 		return rc;
+ 
+-	mutex_lock(&lp->indirect_mutex);
++	mutex_lock(lp->indirect_mutex);
+ 	dev_dbg(lp->dev, "MDIO bus registered;  MC:%x\n",
+ 		temac_indirect_in32(lp, XTE_MC_OFFSET));
+-	mutex_unlock(&lp->indirect_mutex);
++	mutex_unlock(lp->indirect_mutex);
+ 	return 0;
+ }
+ 
+diff --git a/include/linux/platform_data/xilinx-ll-temac.h b/include/linux/platform_data/xilinx-ll-temac.h
+index af87927..b0b8238 100644
+--- a/include/linux/platform_data/xilinx-ll-temac.h
++++ b/include/linux/platform_data/xilinx-ll-temac.h
+@@ -16,6 +16,12 @@ struct ll_temac_platform_data {
+ 	phy_interface_t phy_interface; /* PHY interface mode */
+ 	bool reg_little_endian;	/* Little endian TEMAC register access  */
+ 	bool dma_little_endian;	/* Little endian DMA register access  */
++	/* Pre-initialized mutex to use for synchronizing indirect
++	 * register access.  When using both interfaces of a single
++	 * TEMAC IP block, the same mutex should be passed here, as
++	 * they share the same DCR bus bridge.
++	 */
++	struct mutex *indirect_mutex;
+ };
+ 
+ #endif /* __LINUX_XILINX_LL_TEMAC_H */
 -- 
 2.4.11
 
