@@ -2,155 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B483BFF0F
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 19:45:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07904FF37
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 20:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbfD3RpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 13:45:17 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:41116 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725942AbfD3RpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 13:45:17 -0400
-Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
-        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x3UHcgKj031182
-        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 10:45:15 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=5H4kRIjdm6+6H7bwEw+KHqfFYYGJK8d+cnYGte/qnqg=;
- b=O7coycKIj/N8oR6fXnsIfZ+z4RWY2BDPxwfJ9iWZSx/hd43AhqeTcXpyruL/5UGHmpqh
- ZcgdHW2Nrqbtqj1xhRyTkFHMopW7yjKtlTzFNyD3QtLvMPK6+duvMug/E5PwwGIOuVQF
- IFBRZaH1Nqvg+ap5H4qSLILXwWWlqB8OuAQ= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0b-00082601.pphosted.com with ESMTP id 2s6m1whh5m-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 10:45:15 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 30 Apr 2019 10:45:13 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 822CF2941A1F; Tue, 30 Apr 2019 10:45:12 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <netdev@vger.kernel.org>
-CC:     David Ahern <dsahern@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <bsd@fb.com>, <kernel-team@fb.com>,
-        Wei Wang <weiwan@google.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH net] ipv6: A few fixes on dereferencing rt->from
-Date:   Tue, 30 Apr 2019 10:45:12 -0700
-Message-ID: <20190430174512.3898413-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1726218AbfD3SAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 14:00:50 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:40932 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725950AbfD3SAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 14:00:50 -0400
+Received: by mail-pl1-f194.google.com with SMTP id b3so7084345plr.7
+        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 11:00:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ol30xF3sF32FHb22ABUVGco08QKe2Wr3Kzo1kkjgDLw=;
+        b=s9W0b+eb8os3sHM4984Pnmy2E++GGe0Br7qmTk148uhg3AGt9QieKTeGzAJgA+BFvt
+         y3F9uH5dGp8o4hGH6NCqTUvByK9/tpB4oxRXLiVglAvQUWs9Souw87Xb/XW3NI/aJDrI
+         Ef7P2vzn7zgweTEXulpfeSDkopVtLh36UoxCupBTHcbBbaITTfSlhs+phB0+IHn5KRxA
+         LQAECESR4ETbhsisNfQUd/kUqcaGAF4R0Dlw3DSLl4Ix6Rwl2BWpJ3IeGmeRw94HKWyN
+         JOA02xU6y15F4m09ZTKZjuYCuMgyYBCTsBTfs6Ba9e0khnZwqlpy2HicE6rE7OOPRIdR
+         KmNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ol30xF3sF32FHb22ABUVGco08QKe2Wr3Kzo1kkjgDLw=;
+        b=VOTDhrwXdhsm0ECF8Fjz08HbEneW/qanYoCrC37Qw8S5Qu2ftC4zF+qI/oiz/RvLI2
+         CMeIija1qjrqTVlIUn/gGlGz4VS66yHR57xCzcnEidH01cRAaaODxKms6UQeNpcGaFAB
+         s+Cd2PMcvggTioOe/7PdGMMdVCMsKLdXijoAr8X+Zw4c+fa+bbM1zJh6+/9tLS4v9wy5
+         cPJycMnwsK7d9sQ1nT6UjLYhGhbdDvh5RDkFLf6E9IJNjbUATtDXXl1yaUOb1BjPWrxh
+         52RLyK62um6P/rrvkZEv9ZJjJlsWEhvqldI/AjTAcOJcFDghp8nf0N5klfc0d0YiXB4Z
+         aRsw==
+X-Gm-Message-State: APjAAAWISb/bCNqgy/yC+CG88kh91ziQLQWktGGzhnb+ylu72cim4eKQ
+        n/Swx0Dns+45xbYyCL647upbpJ27
+X-Google-Smtp-Source: APXvYqxVDx/W/57zTCZVpvFFRR/pBb3t6sdMLENo+QYocUt1Yd8e5zQc1fmj3Rhgwbv2iaWu7HAt4Q==
+X-Received: by 2002:a17:902:2aa7:: with SMTP id j36mr8906817plb.38.1556647249325;
+        Tue, 30 Apr 2019 11:00:49 -0700 (PDT)
+Received: from [172.27.227.169] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id c1sm42107809pgk.44.2019.04.30.11.00.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Apr 2019 11:00:48 -0700 (PDT)
+Subject: Re: [PATCH net] selftests: fib_rule_tests: Fix icmp proto with ipv6
+To:     Hangbin Liu <liuhangbin@gmail.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+References: <20190429173009.8396-1-dsahern@kernel.org>
+ <20190430023740.GJ18865@dhcp-12-139.nay.redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <dac5b0ed-fa7e-1723-0067-6c607825ec31@gmail.com>
+Date:   Tue, 30 Apr 2019 12:00:46 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-04-30_08:,,
- signatures=0
-X-Proofpoint-Spam-Reason: safe
-X-FB-Internal: Safe
+In-Reply-To: <20190430023740.GJ18865@dhcp-12-139.nay.redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is a followup after the fix in
-commit 9c69a1320515 ("route: Avoid crash from dereferencing NULL rt->from")
+On 4/29/19 8:37 PM, Hangbin Liu wrote:
+> An other issue is The IPv4 rule 'from iif' check test failed while IPv6
+> passed. I haven't found out the reason yet.
+> 
+> # ip -netns testns rule add from 192.51.100.3 iif dummy0 table 100
+> # ip -netns testns route get 192.51.100.2 from 192.51.100.3 iif dummy0
+> RTNETLINK answers: No route to host
+> 
+>     TEST: rule4 check: from 192.51.100.3 iif dummy0           [FAIL]
+> 
+> # ip -netns testns -6 rule add from 2001:db8:1::3 iif dummy0 table 100
+> # ip -netns testns -6 route get 2001:db8:1::2 from 2001:db8:1::3 iif dummy0
+> 2001:db8:1::2 via 2001:db8:1::2 dev dummy0 table 100 metric 1024 iif dummy0 pref medium
+> 
+>     TEST: rule6 check: from 2001:db8:1::3 iif dummy0          [ OK ]
 
-rt6_do_redirect():
-1. NULL checking is needed on rt->from because a parallel
-   fib6_info delete could happen that sets rt->from to NULL.
-   (e.g. rt6_remove_exception() and fib6_drop_pcpu_from()).
-
-2. fib6_info_hold() is not enough.  Same reason as (1).
-   Meaning, holding dst->__refcnt cannot ensure
-   rt->from is not NULL or rt->from->fib6_ref is not 0.
-
-   Instead of using fib6_info_hold_safe() which ip6_rt_cache_alloc()
-   is already doing, this patch chooses to extend the rcu section
-   to keep "from" dereference-able after checking for NULL.
-
-inet6_rtm_getroute():
-1. NULL checking is also needed on rt->from for a similar reason.
-   Note that inet6_rtm_getroute() is using RTNL_FLAG_DOIT_UNLOCKED.
-
-Fixes: a68886a69180 ("net/ipv6: Make from in rt6_info rcu protected")
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- net/ipv6/route.c | 38 ++++++++++++++++++--------------------
- 1 file changed, 18 insertions(+), 20 deletions(-)
-
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index b4899f0de0d0..73ef72c208af 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3397,11 +3397,8 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
- 
- 	rcu_read_lock();
- 	from = rcu_dereference(rt->from);
--	/* This fib6_info_hold() is safe here because we hold reference to rt
--	 * and rt already holds reference to fib6_info.
--	 */
--	fib6_info_hold(from);
--	rcu_read_unlock();
-+	if (!from)
-+		goto out;
- 
- 	nrt = ip6_rt_cache_alloc(from, &msg->dest, NULL);
- 	if (!nrt)
-@@ -3413,10 +3410,7 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
- 
- 	nrt->rt6i_gateway = *(struct in6_addr *)neigh->primary_key;
- 
--	/* No need to remove rt from the exception table if rt is
--	 * a cached route because rt6_insert_exception() will
--	 * takes care of it
--	 */
-+	/* rt6_insert_exception() will take care of duplicated exceptions */
- 	if (rt6_insert_exception(nrt, from)) {
- 		dst_release_immediate(&nrt->dst);
- 		goto out;
-@@ -3429,7 +3423,7 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
- 	call_netevent_notifiers(NETEVENT_REDIRECT, &netevent);
- 
- out:
--	fib6_info_release(from);
-+	rcu_read_unlock();
- 	neigh_release(neigh);
- }
- 
-@@ -5028,16 +5022,20 @@ static int inet6_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
- 
- 	rcu_read_lock();
- 	from = rcu_dereference(rt->from);
--
--	if (fibmatch)
--		err = rt6_fill_node(net, skb, from, NULL, NULL, NULL, iif,
--				    RTM_NEWROUTE, NETLINK_CB(in_skb).portid,
--				    nlh->nlmsg_seq, 0);
--	else
--		err = rt6_fill_node(net, skb, from, dst, &fl6.daddr,
--				    &fl6.saddr, iif, RTM_NEWROUTE,
--				    NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
--				    0);
-+	if (from) {
-+		if (fibmatch)
-+			err = rt6_fill_node(net, skb, from, NULL, NULL, NULL,
-+					    iif, RTM_NEWROUTE,
-+					    NETLINK_CB(in_skb).portid,
-+					    nlh->nlmsg_seq, 0);
-+		else
-+			err = rt6_fill_node(net, skb, from, dst, &fl6.daddr,
-+					    &fl6.saddr, iif, RTM_NEWROUTE,
-+					    NETLINK_CB(in_skb).portid,
-+					    nlh->nlmsg_seq, 0);
-+	} else {
-+		err = -ENETUNREACH;
-+	}
- 	rcu_read_unlock();
- 
- 	if (err < 0) {
--- 
-2.17.1
-
+use perf to look at the fib lookup parameters:
+  perf record -e fib:* -- ip -netns testns route get 192.51.100.2 from
+192.51.100.3 iif dummy0
+  perf script
