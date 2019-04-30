@@ -2,64 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A331EEAE
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 04:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AA72EECD
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 04:37:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729895AbfD3CGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 22:06:22 -0400
-Received: from sonic316-21.consmr.mail.ne1.yahoo.com ([66.163.187.147]:42293
-        "EHLO sonic316-21.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729238AbfD3CGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 22:06:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1556589980; bh=ju9QMU3Wj5EJaMjh3j1TbXSj+bQyfIa51mtbctjO2hY=; h=Date:From:Reply-To:Subject:References:From:Subject; b=jzA/hqbwYhMJoe6qvL1KA9WX3+OLiqqbErV3wm1mW74WwXOSouDVKvbeifl7Afofwr34CJjepAQBdxf8sigi5jmJknqj4lNKGlO8DBcpT5uKRaVYXVAuyaJ/EfCZ/VtvzbtatoCHJaN3AtNWvk2wBPDL7Lb6ONEs5NpcMZF7nSXZ/cSh9n0cv/TQt+jXzfXCF8ZWolbOrmWnkeeAf1higtdD/bOuoH7LPP+eV5kxHXcEdP5pDB7qmM+vASkVUlw4n5yO3X/VV9P/aismqx6dXJv601OAEeRLzbevWDSoyBkgnyjTMADPg/HlXW2vXQrHaKfUsDd46XyMhs6zUVgrsw==
-X-YMail-OSG: uj2zGw8VM1kp2Jo1pRMQm6ObDP1sf8ZBuH95qKNzpw6Byhme995fnkTiMI3qf8J
- 2Rle7qTbBggd_CsIAUHHdd7FLtVBg4BTuLgLi4xE9DSNMjAD.mRaVOS6o8v5hnN68.ktwtOYUzFO
- 712FP6w4b66gKcNuPylq1_0rKrHLI4Iq3aj5mT08IuG0DaMo1V1skX3exbuGO1EO97DqkN7h8rWv
- 2yLjo2ZTpVRnf4mKjsuH0qxSZP5aURMxMpBgnhH8chou13d1SF9TrxnVx56r4RSbOxwdtXd0enpS
- gRBYs4x42EVtnBU.2IFZJcvTuxLE.TtWyvnofkP5KUOslVkIy.y9XXlKOprrcacHl2moJG63sImP
- 3Q9b94ITdLMnUpK3lQuMqszUEbmwQzNdciujHge.ZkqE_gKKH0d4aOboS7Aa6qeiVxMsImGWazcs
- reqWPZoleC2RIHho9agO80l2DttOA7ciQxLTAo83_oEgChB.kN57gpXlVA_FdGWNkXnjBVqtJiqN
- 1it9JcAdDfkSrDrkqBD1DgpbiI9hJ0gbL9KZMPwVlx75Rucxs8MJ1rgN3X5AqjrFCn7f_4KKaMnP
- P4FOHBWV6uzKEVtX3P.kEWQ2LH7DEIRJyHL73o9byTigebASA5AxgChjwoiljk8ocxXyoiAPHGTk
- KNYsM9U_MzmJy113dcanF36jnbfUrQp1wouv6udT9..KMCwF4ND0ijdirpIrK06WzQpJ.LEl4lWb
- no4QmENcskAN1X.pasPqgVnc.RKgvJmfVGhvOv1JtEdWCJDzMbxyvCTYLLMLBsKyZqG2ghSFaF9u
- sVL2WMPznSKRb0XtedL41BUl0rYFwPMIDTq0nbTZjwTvjjz2dyLP3oLXk3cHLCbgppjgy04lz9vr
- rTp8YhS9nqTu4qVxoLpbfvYs92BqVLEgAYHR8lLdQWYOOc.we.rTSX2nI7S1J.dfryyxV_BWJ_XA
- VxNbJV44B..y7gRUAvb3nfwkbDGWODMG5TecwYHJ8VRGeI_3pOgmQttLR33MpcMSYqvNMn8Yx3lE
- 56sXo3RVAQ6TJZS0PVAN8b37HVuPv.ll0sKgSTQMsW9vFa1jtwCLFB9px83KvZJb3Bsqai0evBOc
- U.xpZS5prPr5TTzEZkFE3YZpwnN0wKXFoBh0OKakAGd0EMr_AGWptLFuBdlAYMeEqUJAjHYHBH5o
- -
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Tue, 30 Apr 2019 02:06:20 +0000
-Date:   Tue, 30 Apr 2019 02:06:18 +0000 (UTC)
-From:   dunawattara <drdunawattara@gmail.com>
-Reply-To: dunawattara <dunawattara@outlook.com>
-Message-ID: <23240180.2487619.1556589978896@mail.yahoo.com>
-Subject: with due respect
+        id S1729913AbfD3Chz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 22:37:55 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:45510 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729882AbfD3Chz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 22:37:55 -0400
+Received: by mail-ed1-f68.google.com with SMTP id g57so4340270edc.12
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 19:37:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=fnREn9dGyvlSodTLCRoAxPFeIY6fhnUk2MrrlpNaYxE=;
+        b=d6pyMU+B1Zb/cr1s7m5osmXJi43FH9dZFq19iEpf2aqqKlVWjed20Fffx2ixQR24Pu
+         gTct4Y5AAodLyik19KED4xKnAvt01aEaI6eaOJ4oj9KQQZq/PHt6FGFbZC/LdeMgyle+
+         TytiVpP85haTzPUamJ86KtS5WytCowDJJzGGMBPN0ulge29nJJkbwPeqjKtX9YLZ5WU3
+         CTV/Q2AuUld5AQbJVqXACAwOFb0boQi6EK/jj9GvkSh3DaY78o9xEkQwl8e8e1F3hgwg
+         urhpbSh9ATvwbUFW/d0oNcrqoXIyvfaNrmpvXYkAYygiUajlRVSHY9uecBz7LnByP/rO
+         fSGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fnREn9dGyvlSodTLCRoAxPFeIY6fhnUk2MrrlpNaYxE=;
+        b=ity0OO2tM7F8IM5M3Z9Lbjt7Ah4pVEX2DoS8lBxzW0/H03UeLuDPmg29xxo6MYsye3
+         622AbhVjTkE9O7OV/tatoqS2scVy4aSUTIy4VG7gIWyT1GcCM+jNYQpdShMdm1xmQ7SV
+         dFk3L3NkYOvMgnGb2JQdQyYpefYWS72n7yAg08gKAcCF/VEG5RywSGNVTuO38r1HJ3E1
+         IGV911FKHeVp6qrQki8aLAvbYoEfzoMau31GccNvEq+CHf2K3hfmxXHoW+4u3mThLAQr
+         OwzTaGJ826+6c/zDXTL+7SvWawZNeKVpYYae7eS6sAnuf+goe+cQHQG6jdG7xq8/pSIV
+         hi2w==
+X-Gm-Message-State: APjAAAXrWoL+wPdv1lLrTNG9wapCgI6KjWTt5/G0ZIGiekOs65eUMd/q
+        goE+4b48zMVv8iEuNxA4+74=
+X-Google-Smtp-Source: APXvYqytI+wmRyr+STphszeHC9kMxlxKtCgHcWJYHYAmOU4W5uTPORKjAzexiHPE7TgZPkvv0xSwhg==
+X-Received: by 2002:a17:906:28d1:: with SMTP id p17mr10399981ejd.133.1556591873886;
+        Mon, 29 Apr 2019 19:37:53 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id c23sm1123945ejr.78.2019.04.29.19.37.50
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 29 Apr 2019 19:37:53 -0700 (PDT)
+Date:   Tue, 30 Apr 2019 10:37:40 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net] selftests: fib_rule_tests: Fix icmp proto with ipv6
+Message-ID: <20190430023740.GJ18865@dhcp-12-139.nay.redhat.com>
+References: <20190429173009.8396-1-dsahern@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <23240180.2487619.1556589978896.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.13554 YahooMailBasic Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.2)
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190429173009.8396-1-dsahern@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Apr 29, 2019 at 10:30:09AM -0700, David Ahern wrote:
+> From: David Ahern <dsahern@gmail.com>
+> 
+> A recent commit returns an error if icmp is used as the ip-proto for
+> IPv6 fib rules. Update fib_rule_tests to send ipv6-icmp instead of icmp.
+> 
+> Fixes: 5e1a99eae8499 ("ipv4: Add ICMPv6 support when parse route ipproto")
+> Signed-off-by: David Ahern <dsahern@gmail.com>
 
+Yes, I also found this issue and have the same patch in my pipeline...
 
-Dear Friend,
+There are two other issues with the fib_rules_tests. The first is the test
+didn't check the nfail and will always return 0. I will post the fix later.
 
-I know that this mail will come to you as a surprise as we have never met before, but need not to worry as I am contacting you independently of my investigation and no one is informed of this communication.
+An other issue is The IPv4 rule 'from iif' check test failed while IPv6
+passed. I haven't found out the reason yet.
 
-I need your urgent assistance in transferring the sum of $11.3million immediately to your private account.The money has been here in our
-Bank lying dormant for years now without anybody coming for the claim of it.
+# ip -netns testns rule add from 192.51.100.3 iif dummy0 table 100
+# ip -netns testns route get 192.51.100.2 from 192.51.100.3 iif dummy0
+RTNETLINK answers: No route to host
 
-I want to release the money to you as the relative to our deceased customer (the account owner) who died a long with his supposed NEXT OF KIN since 16th October 2005. The Banking laws here does not allow such money to stay more than 14 years, because the money will be recalled to the Bank treasury account as unclaimed fund. 
+    TEST: rule4 check: from 192.51.100.3 iif dummy0           [FAIL]
 
-By indicating your interest I will send you the full details on how the business will be executed. 
+# ip -netns testns -6 rule add from 2001:db8:1::3 iif dummy0 table 100
+# ip -netns testns -6 route get 2001:db8:1::2 from 2001:db8:1::3 iif dummy0
+2001:db8:1::2 via 2001:db8:1::2 dev dummy0 table 100 metric 1024 iif dummy0 pref medium
 
-Please respond urgently and delete if you are not interested.
+    TEST: rule6 check: from 2001:db8:1::3 iif dummy0          [ OK ]
 
-Best Regards,
-Mr. Duna Wattara.
+Thanks
+Hangbin
