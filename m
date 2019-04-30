@@ -2,107 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8493EF37
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 05:36:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98AE4EF95
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 06:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730019AbfD3Dgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 23:36:45 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:51286 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729933AbfD3Dgp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 23:36:45 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 89612B9477FDCEFFFD37;
-        Tue, 30 Apr 2019 11:36:43 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Tue, 30 Apr 2019
- 11:36:35 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] vti4: Fix error path in vti_init and vti_fini
-Date:   Tue, 30 Apr 2019 11:36:30 +0800
-Message-ID: <20190430033630.27240-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1726023AbfD3EZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 00:25:43 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:50528 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbfD3EZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 00:25:43 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x3U4NsFP157497;
+        Tue, 30 Apr 2019 04:25:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=Mb9RbwxX8QI4dGkhYSLrdKoKKBHjSFyPMeVIBLchQcY=;
+ b=jFYY8Y/8e9/wt4ZH85LtuN0GVHQHb79s6zGFGMlBeOBnLeZozmQQZyjONSiD1F5An4Uh
+ BnnfoIc7w/mIBo2FurAdWEgOS8PIFA3Tu6aAesoedqpZYx983w8/i91q75DDYmrzv57w
+ wbYiBfPGzjIaaoxwWCPG5Gd5BTJpYxhMKm7MaOza5zZT4iJVaYNy8BdEzUKNimQtfB8o
+ txC2BuIyxdw3TOmcCwPv3zAfPQFedBMLc3VU3hgNaT+XIc56MdAuEpv/j7oxL7jEp+LL
+ SRbjbq4dekGRZdARhBfEqPqPgqTWTmBWNpMIXLu3f2mrgCRzWLKL5xJ2E3YvSS9k/Ykd fA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 2s5j5txr0g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 30 Apr 2019 04:25:26 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x3U4NZeP092158;
+        Tue, 30 Apr 2019 04:25:25 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 2s4yy9aqxr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 30 Apr 2019 04:25:25 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x3U4PPnM095590;
+        Tue, 30 Apr 2019 04:25:25 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 2s4yy9aqxn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 30 Apr 2019 04:25:25 +0000
+Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x3U4PNL8006894;
+        Tue, 30 Apr 2019 04:25:24 GMT
+Received: from santoshs-mbp.lan (/69.181.241.203)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 29 Apr 2019 21:25:23 -0700
+Subject: Re: [PATCH V2] rds: ib: force endiannes annotation
+To:     Nicholas Mc Guire <hofrat@osadl.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org
+References: <1556593977-15828-1-git-send-email-hofrat@osadl.org>
+From:   "santosh.shilimkar@oracle.com" <santosh.shilimkar@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <5ba055e9-5221-bff2-fdd2-d4b837c95ce1@oracle.com>
+Date:   Mon, 29 Apr 2019 21:25:15 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+In-Reply-To: <1556593977-15828-1-git-send-email-hofrat@osadl.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9242 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=984 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1904300028
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KASAN report this:
 
-BUG: unable to handle kernel paging request at fffffbfff8280cc7
-PGD 237fe4067 P4D 237fe4067 PUD 237e60067 PMD 1ebfd0067 PTE 0
-Oops: 0000 [#1] SMP KASAN PTI
-CPU: 0 PID: 8156 Comm: syz-executor.0 Tainted: G         C        5.1.0-rc3+ #8
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-RIP: 0010:xfrm4_tunnel_register+0xb3/0x1f0 [tunnel4]
-Code: e8 03 42 80 3c 28 00 0f 85 25 01 00 00 48 8b 5d 00 48 85 db 0f 84 a8 00 00 00 e8 08 cd b3 f3 48 8d 7b 18 48 89 f8 48 c1 e8 03 <42> 0f b6 04 28 84 c0 74 08 3c 03 0f 8e 04 01 00 00 44 8b 63 18 45
-RSP: 0018:ffff8881b65bf9a0 EFLAGS: 00010a02
-RAX: 1ffffffff8280cc7 RBX: ffffffffc1406620 RCX: ffffffff8d8880a8
-RDX: 0000000000031712 RSI: ffffc900014bf000 RDI: ffffffffc1406638
-RBP: ffffffffc108a4a0 R08: fffffbfff8211401 R09: fffffbfff8211401
-R10: ffff8881b65bf9a0 R11: fffffbfff8211400 R12: ffffffffc1c08000
-R13: dffffc0000000000 R14: 0000000000000000 R15: ffffffffc1bfe620
-FS:  00007f5f07be3700(0000) GS:ffff8881f7200000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffffbfff8280cc7 CR3: 00000001e8d00004 CR4: 00000000007606f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- ? 0xffffffffc1c08000
- vti_init+0x9d/0x1000 [ip_vti]
- do_one_initcall+0xbc/0x47d init/main.c:901
- do_init_module+0x1b5/0x547 kernel/module.c:3456
- load_module+0x6405/0x8c10 kernel/module.c:3804
- __do_sys_finit_module+0x162/0x190 kernel/module.c:3898
- do_syscall_64+0x9f/0x450 arch/x86/entry/common.c:290
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-commit dd9ee3444014 ("vti4: Fix a ipip packet processing bug
-in 'IPCOMP' virtual tunnel") misplace xfrm4_tunnel_deregister in
-vti_init and forgot to add cleanup in vti_fini.
+On 4/29/19 8:12 PM, Nicholas Mc Guire wrote:
+> While the endiannes is being handled correctly as indicated by the comment
+> above the offending line - sparse was unhappy with the missing annotation
+> as be64_to_cpu() expects a __be64 argument. To mitigate this annotation
+> all involved variables are changed to a consistent __le64 and the
+>   conversion to uint64_t delayed to the call to rds_cong_map_updated().
+> 
+> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+> ---
+> 
+> Problem located by an experimental coccinelle script to locate
+> patters that make sparse unhappy (false positives):
+> net/rds/ib_recv.c:827:23: warning: cast to restricted __le64
+> 
+> V2: Edward Cree <ecree@solarflare.com> rejected the need for using __force
+>      here - instead solve the sparse issue by updating all of the involved
+>      variables - which results in an identical binary as well without using
+>      the __force "solution" to the sparse warning. Thanks !
+> 
+> Patch was compile-tested with: x86_64_defconfig + INFINIBAND=m, RDS_RDMA=m
+> 
+> Patch was verified not to change the binary by diffing the
+> generated object code before and after applying the patch.
+> 
+Thanks. I was worried about this macro magic o.w
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: dd9ee3444014 ("vti4: Fix a ipip packet processing bug in 'IPCOMP' virtual tunnel")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- net/ipv4/ip_vti.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
-index 68a21bf..b6235ca 100644
---- a/net/ipv4/ip_vti.c
-+++ b/net/ipv4/ip_vti.c
-@@ -659,9 +659,9 @@ static int __init vti_init(void)
- 	return err;
- 
- rtnl_link_failed:
--	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
--xfrm_tunnel_failed:
- 	xfrm4_tunnel_deregister(&ipip_handler, AF_INET);
-+xfrm_tunnel_failed:
-+	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
- xfrm_proto_comp_failed:
- 	xfrm4_protocol_deregister(&vti_ah4_protocol, IPPROTO_AH);
- xfrm_proto_ah_failed:
-@@ -676,6 +676,7 @@ static int __init vti_init(void)
- static void __exit vti_fini(void)
- {
- 	rtnl_link_unregister(&vti_link_ops);
-+	xfrm4_tunnel_deregister(&ipip_handler, AF_INET);
- 	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
- 	xfrm4_protocol_deregister(&vti_ah4_protocol, IPPROTO_AH);
- 	xfrm4_protocol_deregister(&vti_esp4_protocol, IPPROTO_ESP);
--- 
-2.7.0
-
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
 
