@@ -2,126 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D07ED7C
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 02:06:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E663ED90
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 02:15:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729238AbfD3AGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 20:06:18 -0400
-Received: from mga05.intel.com ([192.55.52.43]:32977 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728844AbfD3AGR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Apr 2019 20:06:17 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Apr 2019 17:06:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,411,1549958400"; 
-   d="scan'208";a="146933125"
-Received: from dorilex.jf.intel.com (HELO dorilex) ([10.54.70.84])
-  by fmsmga007.fm.intel.com with ESMTP; 29 Apr 2019 17:06:17 -0700
-From:   Leandro Dorileo <l@dorileo.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
-        Leandro Dorileo <leandro.maciel.dorileo@intel.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Subject: Re: [PATCH net-next 3/5] net/sched: taprio: fix build without 64bit div
-In-Reply-To: <20190417205159.30938-4-jakub.kicinski@netronome.com>
-References: <20190417205159.30938-1-jakub.kicinski@netronome.com> <20190417205159.30938-4-jakub.kicinski@netronome.com>
-Date:   Mon, 29 Apr 2019 17:04:21 -0700
-Message-ID: <87y33s1hq2.fsf@intel.com>
+        id S1729620AbfD3APp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 20:15:45 -0400
+Received: from conssluserg-03.nifty.com ([210.131.2.82]:28682 "EHLO
+        conssluserg-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729083AbfD3APp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 20:15:45 -0400
+X-Greylist: delayed 33991 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Apr 2019 20:15:43 EDT
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id x3U0Fd25000867;
+        Tue, 30 Apr 2019 09:15:40 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com x3U0Fd25000867
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1556583340;
+        bh=q+wnSYJgkuXCqwUQQQG2fqHF1PoqjJGwSyWrsWQE94c=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=xZwit9Hy6Z7yHd7FKiZxqkHlA/bLXU/WykOGiv+L1JwBrATQrlPAKQ7rkLHbGGJIH
+         Nb8ntDBv0s6xoSvW8K+4STy0Ak/FmWU+3oy9xNZBb0ff/CJslJi7rfLxJ8KYsbK8Ev
+         YnLTI7v+EJdEtml9aA8Qoa1CBoEvNfzlzKWiihqso/WUwdcq3JpjukLgPFDIC7GlDw
+         aB1RWiZ5si3OXdz3zU/9TmwHDXzI60L6Na86T/7ZslTCe/7nADk45F7CN+KW9RXcyW
+         wzoHv69N/GiXTD+zg4U7MWHfIf21Pmy6EIFIOpCQGhPg/yP1irYDqAd7tqNovKKp2D
+         zfXf93X5OTCWA==
+X-Nifty-SrcIP: [209.85.217.53]
+Received: by mail-vs1-f53.google.com with SMTP id g127so7000845vsd.6;
+        Mon, 29 Apr 2019 17:15:40 -0700 (PDT)
+X-Gm-Message-State: APjAAAVEUl1/DSl2xQzYovpasi6f2RPeCn+k8wa4aqMLAXiYC0ParJQ0
+        +344hUGzTegnpXNrZtNcV1Y4lvJh8Pd1VSCmPL4=
+X-Google-Smtp-Source: APXvYqxJ7rTBWuDPzw87BgOp3DuLMtn+EoCbWyN0RkUTb1ATihGYEaPQMWglwlBdQmpgTqHdSgJ6IWLuEEkmT9yLzKU=
+X-Received: by 2002:a67:f105:: with SMTP id n5mr34539591vsk.181.1556583339164;
+ Mon, 29 Apr 2019 17:15:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <1556549259-16298-1-git-send-email-yamada.masahiro@socionext.com> <ec1d2c14-ae27-38c7-9b79-4e323161d6f5@netronome.com>
+In-Reply-To: <ec1d2c14-ae27-38c7-9b79-4e323161d6f5@netronome.com>
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Tue, 30 Apr 2019 09:15:03 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARBOtOMr-=FRh0K1nMFLijRjRCMHYb0L=NY7KZQGydVrQ@mail.gmail.com>
+Message-ID: <CAK7LNARBOtOMr-=FRh0K1nMFLijRjRCMHYb0L=NY7KZQGydVrQ@mail.gmail.com>
+Subject: Re: [PATCH] bpftool: exclude bash-completion/bpftool from .gitignore pattern
+To:     Quentin Monnet <quentin.monnet@netronome.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Sirio Balmelli <sirio@b-ad.ch>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        Taeung Song <treeze.taeung@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Quentin,
 
-Hi,
 
-Jakub Kicinski <jakub.kicinski@netronome.com> writes:
-
-> Recent changes to taprio did not use the correct div64 helpers,
-> leading to:
+On Tue, Apr 30, 2019 at 12:33 AM Quentin Monnet
+<quentin.monnet@netronome.com> wrote:
 >
-> net/sched/sch_taprio.o: In function `taprio_dequeue':
-> sch_taprio.c:(.text+0x34a): undefined reference to `__divdi3'
-> net/sched/sch_taprio.o: In function `advance_sched':
-> sch_taprio.c:(.text+0xa0b): undefined reference to `__divdi3'
-> net/sched/sch_taprio.o: In function `taprio_init':
-> sch_taprio.c:(.text+0x1450): undefined reference to `__divdi3'
-> /home/jkicinski/devel/linux/Makefile:1032: recipe for target 'vmlinux' failed
+> 2019-04-29 23:47 UTC+0900 ~ Masahiro Yamada <yamada.masahiro@socionext.co=
+m>
+> > tools/bpf/bpftool/.gitignore has the "bpftool" pattern, which is
+> > intended to ignore the following build artifact:
+> >
+> >   tools/bpf/bpftool/bpftool
+> >
+> > However, the .gitignore entry is effective not only for the current
+> > directory, but also for any sub-directories.
+> >
+> > So, the following file is also considered to be ignored:
+> >
+> >   tools/bpf/bpftool/bash-completion/bpftool
+> >
+> > It is obviously version-controlled, so should be excluded from the
+> > .gitignore pattern.
+> >
+> > You can fix it by prefixing the pattern with '/', which means it is
+> > only effective in the current directory.
+> >
+> > I prefixed the other patterns consistently. IMHO, '/' prefixing is
+> > safer when you intend to ignore specific files.
+> >
+> > Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> > ---
 >
-> Use math64 helpers.
+> Hi,
 >
-> Fixes: 7b9eba7ba0c1 ("net/sched: taprio: fix picos_per_byte miscalculation")
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+> =E2=80=9CFiles already tracked by Git are not affected=E2=80=9D by the .g=
+itignore (says
+> the relevant man page), so bash completion file is not ignored. It would
+> be if we were to add the sources to the index of a new Git repo. But
+> sure, it does not cost much to make the .gitignore cleaner.
+
+Right, git seems to be flexible enough.
 
 
-Acked-by: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
+But, .gitignore is useful to identify
+build artifacts in general.
+In fact, other than git, some projects
+already parse this.
+
+For example, tar(1) supports:
+
+     --exclude-vcs-ignores
+           read exclude patterns from the VCS ignore files
 
 
-> ---
-> CC: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
-> CC: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+As of writing, this option works only to some extent,
+but I thought this would be useful to create a source
+package without relying on "git archive".
+
+When I tried "tar --exclude-vcs-ignores", I noticed
+tools/bpf/bpftool/bash-completion/bpftool was not
+contained in the tarball.
+
+That's why I sent this patch.
+
+I can add more info in v2 to clarify
+my motivation though.
+
+
+
+
+
+> >
+> >  tools/bpf/bpftool/.gitignore | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/tools/bpf/bpftool/.gitignore b/tools/bpf/bpftool/.gitignor=
+e
+> > index 67167e4..19efcc8 100644
+> > --- a/tools/bpf/bpftool/.gitignore
+> > +++ b/tools/bpf/bpftool/.gitignore
+> > @@ -1,5 +1,5 @@
+> >  *.d
+> > -bpftool
+> > -bpftool*.8
+> > -bpf-helpers.*
+> > -FEATURE-DUMP.bpftool
+> > +/bpftool
+> > +/bpftool*.8
+> > +/bpf-helpers.*
 >
->  net/sched/sch_taprio.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
+> Careful when you add all those slashes, however. "bpftool*.8" and
+> "bpf-helpers.*" should match files under Documentation/, so you do NOT
+> want to prefix them with just a "/".
+
+OK, I should not have touched what I was unsure about.
+Will fix in v2.
+
+
+> Quentin
 >
-> diff --git a/net/sched/sch_taprio.c b/net/
-> sched/sch_taprio.c
-> index 1b0fb80162e6..001182aa3959 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -13,6 +13,7 @@
->  #include <linux/list.h>
->  #include <linux/errno.h>
->  #include <linux/skbuff.h>
-> +#include <linux/math64.h>
->  #include <linux/module.h>
->  #include <linux/spinlock.h>
->  #include <net/netlink.h>
-> @@ -121,7 +122,14 @@ static struct sk_buff *taprio_peek(struct Qdisc *sch)
->  
->  static inline int length_to_duration(struct taprio_sched *q, int len)
->  {
-> -	return (len * atomic64_read(&q->picos_per_byte)) / 1000;
-> +	return div_u64(len * atomic64_read(&q->picos_per_byte), 1000);
-> +}
-> +
-> +static void taprio_set_budget(struct taprio_sched *q, struct sched_entry *entry)
-> +{
-> +	atomic_set(&entry->budget,
-> +		   div64_u64((u64)entry->interval * 1000,
-> +			     atomic64_read(&q->picos_per_byte)));
->  }
->  
->  static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
-> @@ -241,8 +249,7 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
->  	close_time = k
-> time_add_ns(entry->close_time, next->interval);
->  
->  	next->close_time = close_time;
-> -	atomic_set(&next->budget,
-> -		   (next->interval * 1000) / atomic64_read(&q->picos_per_byte));
-> +	taprio_set_budget(q, next);
->  
->  first_run:
->  	rcu_assign_pointer(q->current_entry, next);
-> @@ -575,9 +582,7 @@ static void taprio_start_sched(struct Qdisc *sch, ktime_t start)
->  				 list);
->  
->  	first->close_time = ktime_add_ns(start, first->interval);
-> -	atomic_set(&first->budget,
-> -		   (first->interval * 1000) /
-> -		   atomic64_read(&q->picos_per_byte));
-> +	taprio_set_budget(q, first);
->  	rcu_assign_pointer(q->current_entry, NULL);
->  
->  	spin_unlock_irqrestore(&q->current_entry_lock, flags);
-> -- 
-> 2.21.0
+> > +/FEATURE-DUMP.bpftool
+> >
+>
+
+
+
+--
+Best Regards
+Masahiro Yamada
