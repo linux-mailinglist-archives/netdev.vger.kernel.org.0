@@ -2,89 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C58C10241
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 00:12:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E873910299
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 00:48:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727177AbfD3WMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 18:12:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50601 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726048AbfD3WMw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 18:12:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:MIME-Version
-        :Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=My7jehS3q31G66MLxVuxb7SE05cYGDtZmhw1/cHMnzU=; b=GeaciIYcS9d8zI6N7y+46jIC4I
-        2QSujjLnJPequrBQO47+kc9YVtwlt7LTNolBMtfsW++CdnIO/sHnLP/vfYzy6eKS/h4NLSnnmIB0a
-        gRvZ+upy7S/F6ezRcHBWsk00EMRY0XW2bA7kGg2CspARfCPFIgSFInMQ3Vx9cJCXldT4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hLaxk-00059C-HN; Wed, 01 May 2019 00:10:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next] net: dsa: mv88e6xxx: Pass interrupt number in platform data
-Date:   Wed,  1 May 2019 00:10:50 +0200
-Message-Id: <20190430221050.19749-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.11.0
+        id S1727341AbfD3WsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 18:48:22 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:50377 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726086AbfD3WsV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 18:48:21 -0400
+X-Greylist: delayed 565 seconds by postgrey-1.27 at vger.kernel.org; Tue, 30 Apr 2019 18:48:21 EDT
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id D71741474F;
+        Tue, 30 Apr 2019 18:38:55 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 30 Apr 2019 18:38:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tobin.cc; h=date
+        :from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=Shvvh6bYkVynmPVjaxxYGOnJjtN
+        JnW6pe8SSFGB+9gs=; b=E7Py6SObItEMXdwpDk49INqD+0vHqT/Vbw/krJ6zjUs
+        U9X5tnXLt00rRAIuulfe4Yp8EoSQbcN1o6+Cmn8UXQdaC8gc/3gal55BXsCdmma1
+        dSLUKFpziZQmp48uoHxsOo+g2ynGtMl1/nwY5tkLpFzrspxpRmabbpyXp75nX/+j
+        ER3kwznjUMbm0JefHnms5bBDE5zGYfccsZt1ee8TgpfUr7hbavVVYwedINXr9nH9
+        mZJcB/pPsUi9j4aRbk/EqDoCHpwz+MxX2VWm0hLFUrdjiLujK6WbwlYD7wpTxned
+        dpE36f/KvLwdmT+71oWbqXbY/zLb/8S/WyljpSV7tQQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Shvvh6
+        bYkVynmPVjaxxYGOnJjtNJnW6pe8SSFGB+9gs=; b=lT4vftptI4eKVotuLn6OCs
+        WoBZwAw4Uz1TUGD7KlPqeIddftZSfzTx9O/OaYfEEN2mYrXmSVBsw50f2U+JvKYe
+        Uj0Rk7oqLoSgoezEv7ww8nTXgpRtvRfAZk3GGh++BJ8Uaq8VmPhiHHeCcngKRayP
+        ifmsCxojpuABDhL3IRXLsHPe8fqdggpxDVATJXwrqXtDfAcoe2Fm0PsaIKWO001g
+        0zXCpaKuUdA8fe7h/fdZP7FZc4zi59OJ10OzIQczMsaYbe4XfLlvZBV2W3Kahi3p
+        5b/PR5ILdpj23iUD8alj4RvaPDdnG8e+uQhCQ4ZK/1PQ9acrXfZvcmOyM5jItltw
+        ==
+X-ME-Sender: <xms:fs7IXL61kTmkx1T9LjrBThP45xlTZQWdl2rB-BUXve_4JFQIgpBGzw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrieeigddufecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfg
+    hrlhcuvffnffculdeftddmnecujfgurhepfffhvffukfhfgggtuggjofgfsehttdertdfo
+    redvnecuhfhrohhmpedfvfhosghinhcuvedrucfjrghrughinhhgfdcuoehmvgesthhosg
+    hinhdrtggtqeenucfkphepuddvuddrgeegrddvtdegrddvfeehnecurfgrrhgrmhepmhgr
+    ihhlfhhrohhmpehmvgesthhosghinhdrtggtnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:fs7IXHcfIdGnp86k4kWzuvRqaK7hkNPGB_rpLVcLvayDKZ84bSVLOQ>
+    <xmx:fs7IXEKt9hWqUmrFoh322Um06JgI2Nai9C67EBtd9OAeY1fZQLg4ZA>
+    <xmx:fs7IXFljeKCvwGnOuUvtwqLdtjG3hczDSf1rlW4bu78LK9hBKRs6CQ>
+    <xmx:f87IXJX92_jjmtkSP-vL6EMahcL73jhWnVYpOf4rf6Uv1A9ujdME_w>
+Received: from localhost (ppp121-44-204-235.bras1.syd2.internode.on.net [121.44.204.235])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5C1B6E4547;
+        Tue, 30 Apr 2019 18:38:53 -0400 (EDT)
+Date:   Wed, 1 May 2019 08:38:07 +1000
+From:   "Tobin C. Harding" <me@tobin.cc>
+To:     "Tobin C. Harding" <tobin@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Wang Hai <wanghai26@huawei.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Amritha Nambiar <amritha.nambiar@intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] bridge: Fix error path for kobject_init_and_add()
+Message-ID: <20190430223807.GE9454@eros.localdomain>
+References: <20190430002817.10785-1-tobin@kernel.org>
+ <20190430002817.10785-2-tobin@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190430002817.10785-2-tobin@kernel.org>
+X-Mailer: Mutt 1.11.4 (2019-03-13)
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow an interrupt number to be passed in the platform data. The
-driver will then use it if not zero, otherwise it will poll for
-interrupts.
+On Tue, Apr 30, 2019 at 10:28:15AM +1000, Tobin C. Harding wrote:
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/dsa/mv88e6xxx/chip.c        | 13 +++++++++----
- include/linux/platform_data/mv88e6xxx.h |  1 +
- 2 files changed, 10 insertions(+), 4 deletions(-)
+[snip]
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 46020fe1b5e7..bad30be699bf 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -4894,12 +4894,17 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- 	if (err)
- 		goto out;
- 
--	chip->irq = of_irq_get(np, 0);
--	if (chip->irq == -EPROBE_DEFER) {
--		err = chip->irq;
--		goto out;
-+	if (np) {
-+		chip->irq = of_irq_get(np, 0);
-+		if (chip->irq == -EPROBE_DEFER) {
-+			err = chip->irq;
-+			goto out;
-+		}
- 	}
- 
-+	if (pdata)
-+		chip->irq = pdata->irq;
-+
- 	/* Has to be performed before the MDIO bus is created, because
- 	 * the PHYs will link their interrupts to these interrupt
- 	 * controllers
-diff --git a/include/linux/platform_data/mv88e6xxx.h b/include/linux/platform_data/mv88e6xxx.h
-index 963730b44aea..21452a9365e1 100644
---- a/include/linux/platform_data/mv88e6xxx.h
-+++ b/include/linux/platform_data/mv88e6xxx.h
-@@ -13,6 +13,7 @@ struct dsa_mv88e6xxx_pdata {
- 	unsigned int enabled_ports;
- 	struct net_device *netdev;
- 	u32 eeprom_len;
-+	int irq;
- };
- 
- #endif
--- 
-2.20.1
+Please do not consider this series for merge.  There is a bit of
+confusion here.
 
+There are a few of theses patches live on various LKML lists.  Have to
+consolidate all the knowledge.  When I _actually_ know how to use
+kobject correctly I'll re-spin.
+
+Thanks for your patience.
+
+	Tobin
