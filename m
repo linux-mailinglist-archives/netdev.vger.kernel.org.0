@@ -2,187 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E70A41010B
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 22:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBA4D10118
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 22:44:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727300AbfD3UkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 16:40:22 -0400
-Received: from mail-eopbgr30081.outbound.protection.outlook.com ([40.107.3.81]:37375
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727259AbfD3UkS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 16:40:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zmBqzyF9pCkfs/DzmH994jOViYWVnJFIwy01Dw2U6EY=;
- b=RpNofgVBm+tr9LIpFQz4MDkcrI6aGt97hgsSySmsrfYN3R9CLW8AezCW/25W5DGDXA8zQseEWSSIU0F0pUunEeOMBJnmOBMmrtNp5CXYuzeo60MJ/5FiWY0m8sbJWIfYA4hAoXdBhB/iyo9pPlGvm577RgvINo1S4q9dutpttjY=
-Received: from VI1PR05MB5902.eurprd05.prod.outlook.com (20.178.125.223) by
- VI1PR05MB6542.eurprd05.prod.outlook.com (20.179.27.149) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1835.15; Tue, 30 Apr 2019 20:40:14 +0000
-Received: from VI1PR05MB5902.eurprd05.prod.outlook.com
- ([fe80::1d74:be4b:cfe9:59a2]) by VI1PR05MB5902.eurprd05.prod.outlook.com
- ([fe80::1d74:be4b:cfe9:59a2%5]) with mapi id 15.20.1835.018; Tue, 30 Apr 2019
- 20:40:14 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Bodong Wang <bodong@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Vu Pham <vuhuong@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 15/15] net/mlx5: E-Switch, Use atomic rep state to
- serialize state change
-Thread-Topic: [net-next 15/15] net/mlx5: E-Switch, Use atomic rep state to
- serialize state change
-Thread-Index: AQHU/5TpAazup7hKP0mk4d4d08soQg==
-Date:   Tue, 30 Apr 2019 20:40:14 +0000
-Message-ID: <20190430203926.19284-16-saeedm@mellanox.com>
-References: <20190430203926.19284-1-saeedm@mellanox.com>
-In-Reply-To: <20190430203926.19284-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.20.1
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR02CA0055.namprd02.prod.outlook.com
- (2603:10b6:a03:54::32) To VI1PR05MB5902.eurprd05.prod.outlook.com
- (2603:10a6:803:df::31)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: add7b07e-17d8-4d89-d71d-08d6cdac0bd3
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB6542;
-x-ms-traffictypediagnostic: VI1PR05MB6542:
-x-microsoft-antispam-prvs: <VI1PR05MB6542442438D202B228A86516BE3A0@VI1PR05MB6542.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2150;
-x-forefront-prvs: 00235A1EEF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(346002)(376002)(396003)(366004)(39860400002)(189003)(199004)(99286004)(25786009)(102836004)(53936002)(36756003)(386003)(478600001)(186003)(6506007)(7736002)(26005)(2616005)(476003)(446003)(52116002)(6436002)(4326008)(305945005)(5660300002)(76176011)(486006)(66066001)(11346002)(14454004)(107886003)(6512007)(6486002)(68736007)(71200400001)(2906002)(6916009)(81166006)(316002)(1076003)(97736004)(81156014)(66446008)(64756008)(66556008)(50226002)(66476007)(66946007)(73956011)(8936002)(54906003)(256004)(8676002)(3846002)(86362001)(6116002)(71190400001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6542;H:VI1PR05MB5902.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: PZSuyCg2RLEdYjOivxGU/3kD6fRy0dSo8BumMIOeqHaTku0m4DVSgPJyx54ggPKCNxs4QoQ7oW0f4qFyifa0wstRJWWWqWpUUHV3+wYM2pQegtPNnVpT1WZuXue4rTX8wdqo/mJZOktxo3NHWXc9CpNx8dXhMsGC+dh0elGh6AQo8chPTuFjQEuDolvRBIl05u+RWPFgWWw/nF1S5wl3qZg0OV7gtqtnc7BsFHUDkAqj3AQE6Yl5k7ky5UJDU+E8CyQxwquAGbLXOkg6xOzxEJ56lgU6/4d67XAuWF70f87InkZ4thxdADqu2DOG9/YUo8f3QMJjU09kVwtnRCmfjk+JBzydJbDDv601ufRQXcOWA7DyJ8LLMLAWflKrMXxP+m91BhFNcAjXTb2qu1APTma5/AsZvJHohVLFI6vrUmM=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726723AbfD3UoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 16:44:14 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:41407 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726028AbfD3UoN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 16:44:13 -0400
+Received: by mail-ot1-f68.google.com with SMTP id g8so12209922otl.8;
+        Tue, 30 Apr 2019 13:44:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PTV15nJneVdfmyDcOrRVmlbOb/fi8FsOQi10bI3xRQw=;
+        b=p9ATfaJmi5ZNgwSqlP9r7LDOw6tzURlyulmIIU6vapZqDyOudh7DnDErqBzVG9c9SP
+         ReA2XymC4j5Jvi4KB2UhRmUAM68WSUWrUI2GVACGl/hB9qxaG3q9Ecd1vdPXWX7c80F1
+         V7qDxTw2WLTiHuGy5UasIwmBwQBBALpWTqV+WTdzfWNrVRThwW1XYJzpuM7bHEjPFqsR
+         C2j18a21kvPVS78oGX08tjY7OJoHUrzOxskU0hHtehO73nEF7K/wUx69Xs/QdIF8eyLd
+         LwR+VKUVzoVoBCqMHWVf+wczCWsH1TpzwjuzU+2tgb1iqIg773B+4cGOv0Us8ZSXXMtV
+         RXoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PTV15nJneVdfmyDcOrRVmlbOb/fi8FsOQi10bI3xRQw=;
+        b=dPKipP+aQsvru9sJd7eMLr9OWnqkxttSOY6CLckM2053HNNDRTJ/kvug+/VV8cPfoo
+         CZO71A9cVoBRNujvqTRvv5+7blmQt/Jc3d1Tv+EnHv/ArKFf4q5cccSkDmcOAxMAtJ9U
+         w00r8KRqGGzZMUz1uTu587bC5UKbYnEupjOeOHY8Cw2SuUNADQ/qZVG9S+e1H6KBd+3l
+         8DylAjCfFkyxE5fBbEuWfGKp9j7kgJbEQNcJ8spy+dh1BMeaWTfcMBx6/nmtHrwrclkd
+         QYYgs4YR6sqAltoiDvn/LSr7+6AfajMmwqrjGRsQotKiFGvTn4/DYR00BRqZ5uwmeX6D
+         vj5g==
+X-Gm-Message-State: APjAAAUT1Nrksi0OU+YEKrzx7YfAvQEzuh8VWw5nKsbynMcQ8DJRXVoI
+        8NLN5mhZwaVUByZbysU4kooHk34oomJGrtfRMr8=
+X-Google-Smtp-Source: APXvYqwXp+++he2rIyQNsyjXebRLLugDsonVUFyzm+I44eP5vPdEPyYcmjJUrYL3Hdexr69kyb4YdSEIjFGG2j9HrQ8=
+X-Received: by 2002:a9d:5e90:: with SMTP id f16mr2035975otl.86.1556657051625;
+ Tue, 30 Apr 2019 13:44:11 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: add7b07e-17d8-4d89-d71d-08d6cdac0bd3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Apr 2019 20:40:14.1879
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6542
+References: <20190426212112.5624-1-fancer.lancer@gmail.com>
+ <20190426212112.5624-2-fancer.lancer@gmail.com> <20190426214631.GV4041@lunn.ch>
+ <20190426233511.qnkgz75ag7axt5lp@mobilestation> <f27df721-47aa-a708-aaee-69be53def814@gmail.com>
+ <CA+h21hpTRCrD=FxDr=ihDPr+Pdhu6hXT3xcKs47-NZZZ3D9zyg@mail.gmail.com>
+ <20190429211225.ce7cspqwvlhwdxv6@mobilestation> <CA+h21hrbrc7NKrdhrEk-t7+atj-EdNfEpmy85XK7dOr4Cyj-ag@mail.gmail.com>
+In-Reply-To: <CA+h21hrbrc7NKrdhrEk-t7+atj-EdNfEpmy85XK7dOr4Cyj-ag@mail.gmail.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Tue, 30 Apr 2019 22:44:00 +0200
+Message-ID: <CAFBinCC14+b_nnAMLf0RAET440jGMGz2KRheioffjM+-ftifRQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] net: phy: realtek: Change TX-delay setting for
+ RGMII modes only
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Serge Semin <Sergey.Semin@t-platforms.ru>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQm9kb25nIFdhbmcgPGJvZG9uZ0BtZWxsYW5veC5jb20+DQoNCldoZW4gdGhlIHN0YXRl
-IG9mIHJlcCB3YXMgaW50cm9kdWNlZCwgaXQgd2FzIGFsc28gZGVzaWduZWQgdG8gcHJldmVudA0K
-ZHVwbGljYXRlIHVubG9hZGluZyBvZiB0aGUgc2FtZSByZXAuIENvbnNpZGVyaW5nIHRoZSBmb2xs
-b3dpbmcgdHdvDQpmbG93cyB3aGVuIGFuIGVzd2l0Y2ggbWFuYWdlciBpcyBhdCBzd2l0Y2hkZXYg
-bW9kZSB3aXRoIG4gVkYgcmVwcyBsb2FkZWQuDQoNCistLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsNCnwgY3B1LTAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgY3B1LTEgICAgICAgICAgICAgICAgICAg
-ICAgICAgIHwNCnwgLS0tLS0tLS0gICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgLS0tLS0t
-LS0gICAgICAgICAgICAgICAgICAgICAgIHwNCnwgbWx4NV9pYl9yZW1vdmUgICAgICAgICAgICAg
-ICAgICAgICAgIHwgbWx4NV9lc3dpdGNoX2Rpc2FibGVfc3Jpb3YgICAgIHwNCnwgIG1seDVfaWJf
-dW5yZWdpc3Rlcl92cG9ydF9yZXBzICAgICAgIHwgIGVzd19vZmZsb2Fkc19jbGVhbnVwICAgICAg
-ICAgIHwNCnwgICBtbHg1X2Vzd2l0Y2hfdW5yZWdpc3Rlcl92cG9ydF9yZXBzIHwgICBlc3dfb2Zm
-bG9hZHNfdW5sb2FkX2FsbF9yZXBzIHwNCnwgICAgX191bmxvYWRfcmVwc19hbGxfdnBvcnQgICAg
-ICAgICAgIHwgICAgX191bmxvYWRfcmVwc19hbGxfdnBvcnQgICAgIHwNCistLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LSsNCg0KVGhlc2UgdHdvIGZsb3dzIHdpbGwgdHJ5IHRvIHVubG9hZCB0aGUgc2FtZSByZXAuIFBl
-ciBvcmlnaW5hbCBkZXNpZ24sDQpvbmNlIG9uZSBmbG93IHVubG9hZHMgdGhlIHJlcCwgdGhlIHN0
-YXRlIG1vdmVzIHRvIFJFR0lTVEVSRUQuIFRoZSAybmQNCmZsb3cgd2lsbCBubyBsb25nZXIgbmVl
-ZHMgdG8gZG8gdGhlIHVubG9hZCBhbmQgYmFpbHMgb3V0LiBIb3dldmVyLCBhcw0KcmVhZCBhbmQg
-d3JpdGUgb2YgdGhlIHN0YXRlIGlzIG5vdCBhdG9taWMsIHdoZW4gMXN0IGZsb3cgaXMgZG9pbmcg
-dGhlDQp1bmxvYWQsIHRoZSBzdGF0ZSBpcyBzdGlsbCBMT0FERUQsIDJuZCBmbG93IGlzIGFibGUg
-dG8gZG8gdGhlIHNhbWUNCnVubG9hZCBhY3Rpb24uIEtlcm5lbCBjcmFzaCB3aWxsIGhhcHBlbi4N
-Cg0KVG8gc29sdmUgdGhpcywgZHJpdmVyIHNob3VsZCBkbyBhdG9taWMgdGVzdC1hbmQtc2V0IGZv
-ciB0aGUgc3RhdGUuIFNvDQp0aGF0IG9ubHkgb25lIGZsb3cgY2FuIGNoYW5nZSB0aGUgcmVwIHN0
-YXRlIGZyb20gTE9BREVEIHRvIFJFR0lTVEVSRUQsDQphbmQgcHJvY2VlZCB0byBkbyB0aGUgYWN0
-dWFsIHVubG9hZGluZy4NCg0KU2luY2UgdGhlIHN0YXRlIGlzIGNoYW5naW5nIHRvIGF0b21pYyB0
-eXBlLCBhbGwgb3RoZXIgcmVhZC93cml0ZSBzaG91bGQNCmJlIGF0b21pYyBhY3Rpb24gYXMgd2Vs
-bC4NCg0KRml4ZXM6IGYxMjFlMGVhOTU4NiAobmV0L21seDU6IEUtU3dpdGNoLCBBZGQgc3RhdGUg
-dG8gZXN3aXRjaCB2cG9ydCByZXByZXNlbnRvcnMpDQpTaWduZWQtb2ZmLWJ5OiBCb2RvbmcgV2Fu
-ZyA8Ym9kb25nQG1lbGxhbm94LmNvbT4NClJldmlld2VkLWJ5OiBQYXJhdiBQYW5kaXQgPHBhcmF2
-QG1lbGxhbm94LmNvbT4NClJldmlld2VkLWJ5OiBWdSBQaGFtIDx2dWh1b25nQG1lbGxhbm94LmNv
-bT4NClNpZ25lZC1vZmYtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0K
-LS0tDQogLi4uL21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMgICAgIHwgMzYg
-KysrKysrKysrLS0tLS0tLS0tLQ0KIGluY2x1ZGUvbGludXgvbWx4NS9lc3dpdGNoLmggICAgICAg
-ICAgICAgICAgICB8ICAyICstDQogMiBmaWxlcyBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCspLCAy
-MCBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
-bm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9t
-ZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9vZmZsb2Fkcy5jDQppbmRleCBlODhmZWFhMjkzZjYu
-LmUwOWFlMjc0ODVlZSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94
-L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMNCisrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0
-L21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMNCkBAIC0zMzMsNyArMzMzLDcg
-QEAgc3RhdGljIGludCBlc3dfc2V0X2dsb2JhbF92bGFuX3BvcChzdHJ1Y3QgbWx4NV9lc3dpdGNo
-ICplc3csIHU4IHZhbCkNCiAJZXN3X2RlYnVnKGVzdy0+ZGV2LCAiJXMgYXBwbHlpbmcgZ2xvYmFs
-ICVzIHBvbGljeVxuIiwgX19mdW5jX18sIHZhbCA/ICJwb3AiIDogIm5vbmUiKTsNCiAJZm9yICh2
-Zl92cG9ydCA9IDE7IHZmX3Zwb3J0IDwgZXN3LT5lbmFibGVkX3Zwb3J0czsgdmZfdnBvcnQrKykg
-ew0KIAkJcmVwID0gJmVzdy0+b2ZmbG9hZHMudnBvcnRfcmVwc1t2Zl92cG9ydF07DQotCQlpZiAo
-cmVwLT5yZXBfaWZbUkVQX0VUSF0uc3RhdGUgIT0gUkVQX0xPQURFRCkNCisJCWlmIChhdG9taWNf
-cmVhZCgmcmVwLT5yZXBfaWZbUkVQX0VUSF0uc3RhdGUpICE9IFJFUF9MT0FERUQpDQogCQkJY29u
-dGludWU7DQogDQogCQllcnIgPSBfX21seDVfZXN3aXRjaF9zZXRfdnBvcnRfdmxhbihlc3csIHJl
-cC0+dnBvcnQsIDAsIDAsIHZhbCk7DQpAQCAtMTI3Nyw3ICsxMjc3LDggQEAgaW50IGVzd19vZmZs
-b2Fkc19pbml0X3JlcHMoc3RydWN0IG1seDVfZXN3aXRjaCAqZXN3KQ0KIAkJZXRoZXJfYWRkcl9j
-b3B5KHJlcC0+aHdfaWQsIGh3X2lkKTsNCiANCiAJCWZvciAocmVwX3R5cGUgPSAwOyByZXBfdHlw
-ZSA8IE5VTV9SRVBfVFlQRVM7IHJlcF90eXBlKyspDQotCQkJcmVwLT5yZXBfaWZbcmVwX3R5cGVd
-LnN0YXRlID0gUkVQX1VOUkVHSVNURVJFRDsNCisJCQlhdG9taWNfc2V0KCZyZXAtPnJlcF9pZlty
-ZXBfdHlwZV0uc3RhdGUsDQorCQkJCSAgIFJFUF9VTlJFR0lTVEVSRUQpOw0KIAl9DQogDQogCXJl
-dHVybiAwOw0KQEAgLTEyODYsMTEgKzEyODcsOSBAQCBpbnQgZXN3X29mZmxvYWRzX2luaXRfcmVw
-cyhzdHJ1Y3QgbWx4NV9lc3dpdGNoICplc3cpDQogc3RhdGljIHZvaWQgX19lc3dfb2ZmbG9hZHNf
-dW5sb2FkX3JlcChzdHJ1Y3QgbWx4NV9lc3dpdGNoICplc3csDQogCQkJCSAgICAgIHN0cnVjdCBt
-bHg1X2Vzd2l0Y2hfcmVwICpyZXAsIHU4IHJlcF90eXBlKQ0KIHsNCi0JaWYgKHJlcC0+cmVwX2lm
-W3JlcF90eXBlXS5zdGF0ZSAhPSBSRVBfTE9BREVEKQ0KLQkJcmV0dXJuOw0KLQ0KLQlyZXAtPnJl
-cF9pZltyZXBfdHlwZV0udW5sb2FkKHJlcCk7DQotCXJlcC0+cmVwX2lmW3JlcF90eXBlXS5zdGF0
-ZSA9IFJFUF9SRUdJU1RFUkVEOw0KKwlpZiAoYXRvbWljX2NtcHhjaGcoJnJlcC0+cmVwX2lmW3Jl
-cF90eXBlXS5zdGF0ZSwNCisJCQkgICBSRVBfTE9BREVELCBSRVBfUkVHSVNURVJFRCkgPT0gUkVQ
-X0xPQURFRCkNCisJCXJlcC0+cmVwX2lmW3JlcF90eXBlXS51bmxvYWQocmVwKTsNCiB9DQogDQog
-c3RhdGljIHZvaWQgX191bmxvYWRfcmVwc19zcGVjaWFsX3Zwb3J0KHN0cnVjdCBtbHg1X2Vzd2l0
-Y2ggKmVzdywgdTggcmVwX3R5cGUpDQpAQCAtMTM1MSwxNiArMTM1MCwxNSBAQCBzdGF0aWMgaW50
-IF9fZXN3X29mZmxvYWRzX2xvYWRfcmVwKHN0cnVjdCBtbHg1X2Vzd2l0Y2ggKmVzdywNCiB7DQog
-CWludCBlcnIgPSAwOw0KIA0KLQlpZiAocmVwLT5yZXBfaWZbcmVwX3R5cGVdLnN0YXRlICE9IFJF
-UF9SRUdJU1RFUkVEKQ0KLQkJcmV0dXJuIDA7DQotDQotCWVyciA9IHJlcC0+cmVwX2lmW3JlcF90
-eXBlXS5sb2FkKGVzdy0+ZGV2LCByZXApOw0KLQlpZiAoZXJyKQ0KLQkJcmV0dXJuIGVycjsNCi0N
-Ci0JcmVwLT5yZXBfaWZbcmVwX3R5cGVdLnN0YXRlID0gUkVQX0xPQURFRDsNCisJaWYgKGF0b21p
-Y19jbXB4Y2hnKCZyZXAtPnJlcF9pZltyZXBfdHlwZV0uc3RhdGUsDQorCQkJICAgUkVQX1JFR0lT
-VEVSRUQsIFJFUF9MT0FERUQpID09IFJFUF9SRUdJU1RFUkVEKSB7DQorCQllcnIgPSByZXAtPnJl
-cF9pZltyZXBfdHlwZV0ubG9hZChlc3ctPmRldiwgcmVwKTsNCisJCWlmIChlcnIpDQorCQkJYXRv
-bWljX3NldCgmcmVwLT5yZXBfaWZbcmVwX3R5cGVdLnN0YXRlLA0KKwkJCQkgICBSRVBfUkVHSVNU
-RVJFRCk7DQorCX0NCiANCi0JcmV0dXJuIDA7DQorCXJldHVybiBlcnI7DQogfQ0KIA0KIHN0YXRp
-YyBpbnQgX19sb2FkX3JlcHNfc3BlY2lhbF92cG9ydChzdHJ1Y3QgbWx4NV9lc3dpdGNoICplc3cs
-IHU4IHJlcF90eXBlKQ0KQEAgLTIyMTcsNyArMjIxNSw3IEBAIHZvaWQgbWx4NV9lc3dpdGNoX3Jl
-Z2lzdGVyX3Zwb3J0X3JlcHMoc3RydWN0IG1seDVfZXN3aXRjaCAqZXN3LA0KIAkJcmVwX2lmLT5n
-ZXRfcHJvdG9fZGV2ID0gX19yZXBfaWYtPmdldF9wcm90b19kZXY7DQogCQlyZXBfaWYtPnByaXYg
-PSBfX3JlcF9pZi0+cHJpdjsNCiANCi0JCXJlcF9pZi0+c3RhdGUgPSBSRVBfUkVHSVNURVJFRDsN
-CisJCWF0b21pY19zZXQoJnJlcF9pZi0+c3RhdGUsIFJFUF9SRUdJU1RFUkVEKTsNCiAJfQ0KIH0N
-CiBFWFBPUlRfU1lNQk9MKG1seDVfZXN3aXRjaF9yZWdpc3Rlcl92cG9ydF9yZXBzKTsNCkBAIC0y
-MjMyLDcgKzIyMzAsNyBAQCB2b2lkIG1seDVfZXN3aXRjaF91bnJlZ2lzdGVyX3Zwb3J0X3JlcHMo
-c3RydWN0IG1seDVfZXN3aXRjaCAqZXN3LCB1OCByZXBfdHlwZSkNCiAJCV9fdW5sb2FkX3JlcHNf
-YWxsX3Zwb3J0KGVzdywgbWF4X3ZmLCByZXBfdHlwZSk7DQogDQogCW1seDVfZXN3X2Zvcl9hbGxf
-cmVwcyhlc3csIGksIHJlcCkNCi0JCXJlcC0+cmVwX2lmW3JlcF90eXBlXS5zdGF0ZSA9IFJFUF9V
-TlJFR0lTVEVSRUQ7DQorCQlhdG9taWNfc2V0KCZyZXAtPnJlcF9pZltyZXBfdHlwZV0uc3RhdGUs
-IFJFUF9VTlJFR0lTVEVSRUQpOw0KIH0NCiBFWFBPUlRfU1lNQk9MKG1seDVfZXN3aXRjaF91bnJl
-Z2lzdGVyX3Zwb3J0X3JlcHMpOw0KIA0KQEAgLTIyNTIsNyArMjI1MCw3IEBAIHZvaWQgKm1seDVf
-ZXN3aXRjaF9nZXRfcHJvdG9fZGV2KHN0cnVjdCBtbHg1X2Vzd2l0Y2ggKmVzdywNCiANCiAJcmVw
-ID0gbWx4NV9lc3dpdGNoX2dldF9yZXAoZXN3LCB2cG9ydCk7DQogDQotCWlmIChyZXAtPnJlcF9p
-ZltyZXBfdHlwZV0uc3RhdGUgPT0gUkVQX0xPQURFRCAmJg0KKwlpZiAoYXRvbWljX3JlYWQoJnJl
-cC0+cmVwX2lmW3JlcF90eXBlXS5zdGF0ZSkgPT0gUkVQX0xPQURFRCAmJg0KIAkgICAgcmVwLT5y
-ZXBfaWZbcmVwX3R5cGVdLmdldF9wcm90b19kZXYpDQogCQlyZXR1cm4gcmVwLT5yZXBfaWZbcmVw
-X3R5cGVdLmdldF9wcm90b19kZXYocmVwKTsNCiAJcmV0dXJuIE5VTEw7DQpkaWZmIC0tZ2l0IGEv
-aW5jbHVkZS9saW51eC9tbHg1L2Vzd2l0Y2guaCBiL2luY2x1ZGUvbGludXgvbWx4NS9lc3dpdGNo
-LmgNCmluZGV4IDk2ZDg0MzU0MjFkZS4uMGNhNzdkZDE0MjljIDEwMDY0NA0KLS0tIGEvaW5jbHVk
-ZS9saW51eC9tbHg1L2Vzd2l0Y2guaA0KKysrIGIvaW5jbHVkZS9saW51eC9tbHg1L2Vzd2l0Y2gu
-aA0KQEAgLTM1LDcgKzM1LDcgQEAgc3RydWN0IG1seDVfZXN3aXRjaF9yZXBfaWYgew0KIAl2b2lk
-CQkgICAgICAgKCp1bmxvYWQpKHN0cnVjdCBtbHg1X2Vzd2l0Y2hfcmVwICpyZXApOw0KIAl2b2lk
-CQkgICAgICAgKigqZ2V0X3Byb3RvX2Rldikoc3RydWN0IG1seDVfZXN3aXRjaF9yZXAgKnJlcCk7
-DQogCXZvaWQJCQkqcHJpdjsNCi0JdTgJCQlzdGF0ZTsNCisJYXRvbWljX3QJCXN0YXRlOw0KIH07
-DQogDQogc3RydWN0IG1seDVfZXN3aXRjaF9yZXAgew0KLS0gDQoyLjIwLjENCg0K
+Hello Vladimir,
+
+On Tue, Apr 30, 2019 at 12:37 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+[...]
+> Moreover, RGMII *always* needs clock skew. As a fact, all delays
+> applied on RX and RX, by the PHY, MAC or traces, should always amount
+> to a logical "rgmii-id". There's nothing that needs to be described
+> about that. Everybody knows it.
+thank you for mentioning this - I didn't know about it. I thought that
+the delays have to be added in "some cases" only (without knowing the
+definition of "some cases").
+
+> What Linux gets told through the phy-mode property for RGMII is where
+> there's extra stuff to do, and where there's nothing to do. There are
+> also unwritten rules about whose job it is to apply the clock skew
+> (MAC or PHY).That is 100% configuration and 0% description.
+the phy-mode property is documented here [0] and the rgmii modes have
+a short explanation about the delays.
+that said: the documentation currently ignores the fact that a PCB
+designer might have added a delay
+
+> > Then in accordance with the phy-mode property value MAC and PHY drivers
+> > determine which way the MAC and PHY are connected to each other and how
+> > their settings are supposed to be customized to comply with it. This
+> > interpretation perfectly fits with the "DT is the hardware description"
+> > rule.
+> >
+>
+> Most of the phy-mode properties really mean nothing. I changed the
+> phy-mode from "sgmii" to "rgmii" on a PHY binding I had at hand and
+> nothing happened (traffic still runs normally). I think this behavior
+> is 100% within expectation.
+the PHY drivers I know of don't complain if the phy-mode is not supported.
+however, there are MAC drivers which complain in this case, see [1]
+for one example
+
+
+Martin
+
+
+[0] https://github.com/torvalds/linux/blob/bf3bd966dfd7d9582f50e9bd08b15922197cd277/Documentation/devicetree/bindings/net/ethernet.txt#L17
+[1] https://github.com/torvalds/linux/blob/bf3bd966dfd7d9582f50e9bd08b15922197cd277/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c#L187
