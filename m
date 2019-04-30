@@ -2,118 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 974FBF79D
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 14:01:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F70CF7E4
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 14:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727920AbfD3MAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 08:00:53 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:58664 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727107AbfD3MAv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 08:00:51 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 88B1F6B4890463D119E6;
-        Tue, 30 Apr 2019 20:00:49 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Tue, 30 Apr 2019
- 20:00:39 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <ericvh@gmail.com>, <lucho@ionkov.net>,
-        <asmadeus@codewreck.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <v9fs-developer@lists.sourceforge.net>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] 9p/virtio: Add cleanup path in p9_virtio_init
-Date:   Tue, 30 Apr 2019 19:59:42 +0800
-Message-ID: <20190430115942.41840-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1729043AbfD3MDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 08:03:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50694 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727465AbfD3MD2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 08:03:28 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5781F20835;
+        Tue, 30 Apr 2019 12:03:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1556625806;
+        bh=vfCr04KFuWTnfRIx5YFbzxFml3k6X036yCo56FLgZHw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JV95ZyezEgr2kzNrEuLil5pkzkqEL+QJXmM8eMx0gozO8Hty8hRwiQUnvITXu+MNW
+         /TO4ACMbTIsFza+bLXSh33ZElmvqbbD2Lu+SHn0q83lDt9L5/3rVYfbjuNqGQUI9S+
+         h66Nn25wjDLCBFUhOOXOrUusqUqAiBXR0jRxXwpM=
+Date:   Tue, 30 Apr 2019 15:03:21 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Andrey Konovalov <andreyknvl@google.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Kees Cook <keescook@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Kostya Serebryany <kcc@google.com>,
+        Evgeniy Stepanov <eugenis@google.com>,
+        Ramana Radhakrishnan <Ramana.Radhakrishnan@arm.com>,
+        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Dave Martin <Dave.Martin@arm.com>,
+        Kevin Brodsky <kevin.brodsky@arm.com>,
+        Szabolcs Nagy <Szabolcs.Nagy@arm.com>
+Subject: Re: [PATCH v13 16/20] IB/mlx4, arm64: untag user pointers in
+ mlx4_get_umem_mr
+Message-ID: <20190430120321.GF6705@mtr-leonro.mtl.com>
+References: <cover.1553093420.git.andreyknvl@google.com>
+ <1e2824fd77e8eeb351c6c6246f384d0d89fd2d58.1553093421.git.andreyknvl@google.com>
+ <20190429180915.GZ6705@mtr-leonro.mtl.com>
+ <20190430111625.GD29799@arrakis.emea.arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190430111625.GD29799@arrakis.emea.arm.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KASAN report this:
+On Tue, Apr 30, 2019 at 12:16:25PM +0100, Catalin Marinas wrote:
+> (trimmed down the cc list slightly as the message bounces)
+>
+> On Mon, Apr 29, 2019 at 09:09:15PM +0300, Leon Romanovsky wrote:
+> > On Wed, Mar 20, 2019 at 03:51:30PM +0100, Andrey Konovalov wrote:
+> > > This patch is a part of a series that extends arm64 kernel ABI to allow to
+> > > pass tagged user pointers (with the top byte set to something else other
+> > > than 0x00) as syscall arguments.
+> > >
+> > > mlx4_get_umem_mr() uses provided user pointers for vma lookups, which can
+> > > only by done with untagged pointers.
+> > >
+> > > Untag user pointers in this function.
+> > >
+> > > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+> > > ---
+> > >  drivers/infiniband/hw/mlx4/mr.c | 7 ++++---
+> > >  1 file changed, 4 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/infiniband/hw/mlx4/mr.c b/drivers/infiniband/hw/mlx4/mr.c
+> > > index 395379a480cb..9a35ed2c6a6f 100644
+> > > --- a/drivers/infiniband/hw/mlx4/mr.c
+> > > +++ b/drivers/infiniband/hw/mlx4/mr.c
+> > > @@ -378,6 +378,7 @@ static struct ib_umem *mlx4_get_umem_mr(struct ib_udata *udata, u64 start,
+> > >  	 * again
+> > >  	 */
+> > >  	if (!ib_access_writable(access_flags)) {
+> > > +		unsigned long untagged_start = untagged_addr(start);
+> > >  		struct vm_area_struct *vma;
+> > >
+> > >  		down_read(&current->mm->mmap_sem);
+> > > @@ -386,9 +387,9 @@ static struct ib_umem *mlx4_get_umem_mr(struct ib_udata *udata, u64 start,
+> > >  		 * cover the memory, but for now it requires a single vma to
+> > >  		 * entirely cover the MR to support RO mappings.
+> > >  		 */
+> > > -		vma = find_vma(current->mm, start);
+> > > -		if (vma && vma->vm_end >= start + length &&
+> > > -		    vma->vm_start <= start) {
+> > > +		vma = find_vma(current->mm, untagged_start);
+> > > +		if (vma && vma->vm_end >= untagged_start + length &&
+> > > +		    vma->vm_start <= untagged_start) {
+> > >  			if (vma->vm_flags & VM_WRITE)
+> > >  				access_flags |= IB_ACCESS_LOCAL_WRITE;
+> > >  		} else {
+> > > --
+> >
+> > Thanks,
+> > Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
+>
+> Thanks for the review.
+>
+> > Interesting, the followup question is why mlx4 is only one driver in IB which
+> > needs such code in umem_mr. I'll take a look on it.
+>
+> I don't know. Just using the light heuristics of find_vma() shows some
+> other places. For example, ib_umem_odp_get() gets the umem->address via
+> ib_umem_start(). This was previously set in ib_umem_get() as called from
+> mlx4_get_umem_mr(). Should the above patch have just untagged "start" on
+> entry?
 
-BUG: unable to handle kernel paging request at ffffffffa0097000
-PGD 3870067 P4D 3870067 PUD 3871063 PMD 2326e2067 PTE 0
-Oops: 0000 [#1
-CPU: 0 PID: 5340 Comm: modprobe Not tainted 5.1.0-rc7+ #25
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.9.3-0-ge2fc41e-prebuilt.qemu-project.org 04/01/2014
-RIP: 0010:__list_add_valid+0x10/0x70
-Code: c3 48 8b 06 55 48 89 e5 5d 48 39 07 0f 94 c0 0f b6 c0 c3 90 90 90 90 90 90 90 55 48 89 d0 48 8b 52 08 48 89 e5 48 39 f2 75 19 <48> 8b 32 48 39 f0 75 3a
+ODP flows are not applicable to any driver except mlx5.
+According to commit message of d8f9cc328c88 ("IB/mlx4: Mark user
+MR as writable if actual virtual memory is writable"), the code in its
+current form needed to deal with different mappings between RDMA memory
+requested and VMA memory underlined.
 
-RSP: 0018:ffffc90000e23c68 EFLAGS: 00010246
-RAX: ffffffffa00ad000 RBX: ffffffffa009d000 RCX: 0000000000000000
-RDX: ffffffffa0097000 RSI: ffffffffa0097000 RDI: ffffffffa009d000
-RBP: ffffc90000e23c68 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffffffa0097000
-R13: ffff888231797180 R14: 0000000000000000 R15: ffffc90000e23e78
-FS:  00007fb215285540(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffa0097000 CR3: 000000022f144000 CR4: 00000000000006f0
-Call Trace:
- v9fs_register_trans+0x2f/0x60 [9pnet
- ? 0xffffffffa0087000
- p9_virtio_init+0x25/0x1000 [9pnet_virtio
- do_one_initcall+0x6c/0x3cc
- ? kmem_cache_alloc_trace+0x248/0x3b0
- do_init_module+0x5b/0x1f1
- load_module+0x1db1/0x2690
- ? m_show+0x1d0/0x1d0
- __do_sys_finit_module+0xc5/0xd0
- __x64_sys_finit_module+0x15/0x20
- do_syscall_64+0x6b/0x1d0
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x7fb214d8e839
-Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01
+>
+> BTW, what's the provenience of such "start" address here? Is it
+> something that the user would have malloc()'ed? We try to impose some
+> restrictions one what is allowed to be tagged in user so that we don't
+> have to untag the addresses in the kernel. For example, if it was the
+> result of an mmap() on the device file, we don't allow tagging.
 
-RSP: 002b:00007ffc96554278 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-RAX: ffffffffffffffda RBX: 000055e67eed2aa0 RCX: 00007fb214d8e839
-RDX: 0000000000000000 RSI: 000055e67ce95c2e RDI: 0000000000000003
-RBP: 000055e67ce95c2e R08: 0000000000000000 R09: 000055e67eed2aa0
-R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000000000
-R13: 000055e67eeda500 R14: 0000000000040000 R15: 000055e67eed2aa0
-Modules linked in: 9pnet_virtio(+) 9pnet gre rfkill vmw_vsock_virtio_transport_common vsock [last unloaded: 9pnet_virtio
-CR2: ffffffffa0097000
----[ end trace 4a52bb13ff07b761
+The *_reg_user_mr() is called from userspace through ibv_reg_mr() call [1]
+and this is how "address" and access flags are provided.
 
-If register_virtio_driver() fails in p9_virtio_init,
-we should call v9fs_unregister_trans() to do cleanup.
+Right now, the address should point to memory accessible by
+get_user_pages(), however mmap-ed memory uses remap_pfn_range()
+to provide such pages which makes them unusable for get_user_pages().
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: b530cc794024 ("9p: add virtio transport")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- net/9p/trans_virtio.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+I would be glad to see this is a current limitation of RDMA stack and
+not as a final design decision.
 
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index b1d39ca..6753ee9 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -782,10 +782,16 @@ static struct p9_trans_module p9_virtio_trans = {
- /* The standard init function */
- static int __init p9_virtio_init(void)
- {
-+	int rc;
-+
- 	INIT_LIST_HEAD(&virtio_chan_list);
- 
- 	v9fs_register_trans(&p9_virtio_trans);
--	return register_virtio_driver(&p9_virtio_drv);
-+	rc = register_virtio_driver(&p9_virtio_drv);
-+	if (rc)
-+		v9fs_unregister_trans(&p9_virtio_trans);
-+
-+	return rc;
- }
- 
- static void __exit p9_virtio_cleanup(void)
--- 
-2.7.0
+[1] https://linux.die.net/man/3/ibv_reg_mr
 
-
+>
+> Thanks.
+>
+> --
+> Catalin
