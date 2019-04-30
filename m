@@ -2,59 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7800F004
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 07:35:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 403E8F073
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 08:24:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726010AbfD3Ffa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 01:35:30 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:47030 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725446AbfD3Ff3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 01:35:29 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 8CC0620257;
-        Tue, 30 Apr 2019 07:35:27 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id u-yucW2QBsC7; Tue, 30 Apr 2019 07:35:27 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 07EB7201E1;
-        Tue, 30 Apr 2019 07:35:27 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 30 Apr 2019
- 07:35:26 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 8A2DD3180584;
- Tue, 30 Apr 2019 07:35:26 +0200 (CEST)
-Date:   Tue, 30 Apr 2019 07:35:26 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+        id S1726225AbfD3GXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 02:23:55 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7145 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725799AbfD3GXz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 02:23:55 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 69C8A5508477262F9133;
+        Tue, 30 Apr 2019 14:23:51 +0800 (CST)
+Received: from [127.0.0.1] (10.177.31.96) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.439.0; Tue, 30 Apr 2019
+ 14:23:46 +0800
 Subject: Re: [PATCH] vti4: Fix error path in vti_init and vti_fini
-Message-ID: <20190430053526.GG17989@gauss3.secunet.de>
+To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>
 References: <20190430033630.27240-1-yuehaibing@huawei.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+From:   YueHaibing <yuehaibing@huawei.com>
+Message-ID: <a846f1ce-f975-8b8a-5c69-0b3af1b1f0f1@huawei.com>
+Date:   Tue, 30 Apr 2019 14:23:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
 In-Reply-To: <20190430033630.27240-1-yuehaibing@huawei.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-G-Data-MailSecurity-for-Exchange-State: 0
-X-G-Data-MailSecurity-for-Exchange-Error: 0
-X-G-Data-MailSecurity-for-Exchange-Sender: 23
-X-G-Data-MailSecurity-for-Exchange-Server: d65e63f7-5c15-413f-8f63-c0d707471c93
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-G-Data-MailSecurity-for-Exchange-Guid: 01763916-A510-404D-987A-D154CA99A683
-X-G-Data-MailSecurity-for-Exchange-ProcessedOnRouted: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.31.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 30, 2019 at 11:36:30AM +0800, YueHaibing wrote:
+Well, there has a same fix in ipsec tree, Pls ignore this.
+
+On 2019/4/30 11:36, YueHaibing wrote:
 > KASAN report this:
 > 
 > BUG: unable to handle kernel paging request at fffffbfff8280cc7
@@ -93,8 +80,33 @@ On Tue, Apr 30, 2019 at 11:36:30AM +0800, YueHaibing wrote:
 > Reported-by: Hulk Robot <hulkci@huawei.com>
 > Fixes: dd9ee3444014 ("vti4: Fix a ipip packet processing bug in 'IPCOMP' virtual tunnel")
 > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  net/ipv4/ip_vti.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
+> index 68a21bf..b6235ca 100644
+> --- a/net/ipv4/ip_vti.c
+> +++ b/net/ipv4/ip_vti.c
+> @@ -659,9 +659,9 @@ static int __init vti_init(void)
+>  	return err;
+>  
+>  rtnl_link_failed:
+> -	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
+> -xfrm_tunnel_failed:
+>  	xfrm4_tunnel_deregister(&ipip_handler, AF_INET);
+> +xfrm_tunnel_failed:
+> +	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
+>  xfrm_proto_comp_failed:
+>  	xfrm4_protocol_deregister(&vti_ah4_protocol, IPPROTO_AH);
+>  xfrm_proto_ah_failed:
+> @@ -676,6 +676,7 @@ static int __init vti_init(void)
+>  static void __exit vti_fini(void)
+>  {
+>  	rtnl_link_unregister(&vti_link_ops);
+> +	xfrm4_tunnel_deregister(&ipip_handler, AF_INET);
+>  	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
+>  	xfrm4_protocol_deregister(&vti_ah4_protocol, IPPROTO_AH);
+>  	xfrm4_protocol_deregister(&vti_esp4_protocol, IPPROTO_ESP);
+> 
 
-This is already fixed in the ipsec tree by commit
-5483844c3fc1 ("vti4: ipip tunnel deregistration fixes.")
-
-Thanks anyway!
