@@ -2,93 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E53A4ED73
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 01:59:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D07ED7C
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 02:06:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729363AbfD2X7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 19:59:44 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:33856 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729310AbfD2X7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 19:59:44 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x3TNsYZT030621
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 16:59:43 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=2wMCErr0sND7f1nPIJ6IsOlqNybTQX/QdARsf/EQBJc=;
- b=lN3kRjA2thGLKMsFbOc9bQWSFmQtDxG2DKXFw14xvE+RksJe1GpCi/wa0gK5U2Vcr+9+
- Q/WhOJDPyTgt1j/AkXdrhsBSAeg1M6zOSDGviTt0aZzTj82q2W1FlfBApDZU1iPIX8ja
- H8YM6uM39bpBJq0t5npHorE3drt90ZyERk0= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2s65hh17u1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 16:59:43 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 29 Apr 2019 16:59:41 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id D51373702EE7; Mon, 29 Apr 2019 16:59:38 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Yonghong Song <yhs@fb.com>
-Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Yonghong Song <yhs@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] selftests/bpf: set RLIMIT_MEMLOCK properly for test_libbpf_open.c
-Date:   Mon, 29 Apr 2019 16:59:38 -0700
-Message-ID: <20190429235938.392833-1-yhs@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1729238AbfD3AGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 20:06:18 -0400
+Received: from mga05.intel.com ([192.55.52.43]:32977 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728844AbfD3AGR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Apr 2019 20:06:17 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Apr 2019 17:06:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,411,1549958400"; 
+   d="scan'208";a="146933125"
+Received: from dorilex.jf.intel.com (HELO dorilex) ([10.54.70.84])
+  by fmsmga007.fm.intel.com with ESMTP; 29 Apr 2019 17:06:17 -0700
+From:   Leandro Dorileo <l@dorileo.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
+        Leandro Dorileo <leandro.maciel.dorileo@intel.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Subject: Re: [PATCH net-next 3/5] net/sched: taprio: fix build without 64bit div
+In-Reply-To: <20190417205159.30938-4-jakub.kicinski@netronome.com>
+References: <20190417205159.30938-1-jakub.kicinski@netronome.com> <20190417205159.30938-4-jakub.kicinski@netronome.com>
+Date:   Mon, 29 Apr 2019 17:04:21 -0700
+Message-ID: <87y33s1hq2.fsf@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-04-29_14:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=9 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=699 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1904290155
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test test_libbpf.sh failed on my development server with failure
-  -bash-4.4$ sudo ./test_libbpf.sh
-  [0] libbpf: Error in bpf_object__probe_name():Operation not permitted(1).
-      Couldn't load basic 'r0 = 0' BPF program.
-  test_libbpf: failed at file test_l4lb.o
-  selftests: test_libbpf [FAILED]
-  -bash-4.4$
 
-The reason is because my machine has 64KB locked memory by default which
-is not enough for this program to get locked memory.
-Similar to other bpf selftests, let us increase RLIMIT_MEMLOCK
-to infinity, which fixed the issue.
+Hi,
 
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- tools/testing/selftests/bpf/test_libbpf_open.c | 2 ++
- 1 file changed, 2 insertions(+)
+Jakub Kicinski <jakub.kicinski@netronome.com> writes:
 
-diff --git a/tools/testing/selftests/bpf/test_libbpf_open.c b/tools/testing/selftests/bpf/test_libbpf_open.c
-index 65cbd30704b5..9e9db202d218 100644
---- a/tools/testing/selftests/bpf/test_libbpf_open.c
-+++ b/tools/testing/selftests/bpf/test_libbpf_open.c
-@@ -11,6 +11,8 @@ static const char *__doc__ =
- #include <bpf/libbpf.h>
- #include <getopt.h>
- 
-+#include "bpf_rlimit.h"
-+
- static const struct option long_options[] = {
- 	{"help",	no_argument,		NULL, 'h' },
- 	{"debug",	no_argument,		NULL, 'D' },
--- 
-2.17.1
+> Recent changes to taprio did not use the correct div64 helpers,
+> leading to:
+>
+> net/sched/sch_taprio.o: In function `taprio_dequeue':
+> sch_taprio.c:(.text+0x34a): undefined reference to `__divdi3'
+> net/sched/sch_taprio.o: In function `advance_sched':
+> sch_taprio.c:(.text+0xa0b): undefined reference to `__divdi3'
+> net/sched/sch_taprio.o: In function `taprio_init':
+> sch_taprio.c:(.text+0x1450): undefined reference to `__divdi3'
+> /home/jkicinski/devel/linux/Makefile:1032: recipe for target 'vmlinux' failed
+>
+> Use math64 helpers.
+>
+> Fixes: 7b9eba7ba0c1 ("net/sched: taprio: fix picos_per_byte miscalculation")
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 
+
+Acked-by: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
+
+
+> ---
+> CC: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
+> CC: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+>
+>  net/sched/sch_taprio.c | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
+>
+> diff --git a/net/sched/sch_taprio.c b/net/
+> sched/sch_taprio.c
+> index 1b0fb80162e6..001182aa3959 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/list.h>
+>  #include <linux/errno.h>
+>  #include <linux/skbuff.h>
+> +#include <linux/math64.h>
+>  #include <linux/module.h>
+>  #include <linux/spinlock.h>
+>  #include <net/netlink.h>
+> @@ -121,7 +122,14 @@ static struct sk_buff *taprio_peek(struct Qdisc *sch)
+>  
+>  static inline int length_to_duration(struct taprio_sched *q, int len)
+>  {
+> -	return (len * atomic64_read(&q->picos_per_byte)) / 1000;
+> +	return div_u64(len * atomic64_read(&q->picos_per_byte), 1000);
+> +}
+> +
+> +static void taprio_set_budget(struct taprio_sched *q, struct sched_entry *entry)
+> +{
+> +	atomic_set(&entry->budget,
+> +		   div64_u64((u64)entry->interval * 1000,
+> +			     atomic64_read(&q->picos_per_byte)));
+>  }
+>  
+>  static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
+> @@ -241,8 +249,7 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
+>  	close_time = k
+> time_add_ns(entry->close_time, next->interval);
+>  
+>  	next->close_time = close_time;
+> -	atomic_set(&next->budget,
+> -		   (next->interval * 1000) / atomic64_read(&q->picos_per_byte));
+> +	taprio_set_budget(q, next);
+>  
+>  first_run:
+>  	rcu_assign_pointer(q->current_entry, next);
+> @@ -575,9 +582,7 @@ static void taprio_start_sched(struct Qdisc *sch, ktime_t start)
+>  				 list);
+>  
+>  	first->close_time = ktime_add_ns(start, first->interval);
+> -	atomic_set(&first->budget,
+> -		   (first->interval * 1000) /
+> -		   atomic64_read(&q->picos_per_byte));
+> +	taprio_set_budget(q, first);
+>  	rcu_assign_pointer(q->current_entry, NULL);
+>  
+>  	spin_unlock_irqrestore(&q->current_entry_lock, flags);
+> -- 
+> 2.21.0
