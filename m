@@ -2,111 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ACF7EDB7
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 02:30:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40F4EEDF9
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 02:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729754AbfD3A3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 20:29:22 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:48353 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729214AbfD3A3U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 20:29:20 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 78DE64113;
-        Mon, 29 Apr 2019 20:29:19 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 29 Apr 2019 20:29:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=s7mszwv9bEcj1/j0Ken9h1TuXoSRYZGHb7Hqwq/CGpw=; b=5MjxaFQb
-        NJL49V0S3XUIlTTGODJFyfPtUwxqhsR9yOK94mwekQt9cLdlAvXTNuLbmfbikWdA
-        iLtGUYeB/iME4dJIPPPmHzaJUwCabV7CJhJg7OHanNhk/uCBAP2gOfaEKxmJDMhx
-        QOaARTRbKYPTDj05YxKDsulPbLc4715IvHdLVejfozCQl3+y7Ta6AXM7ci7N3jPj
-        +XJXnHO3mKT1V3PPPsHhPLmNBQ4WXZ6p70vPyYUVjAUAuqgGqrUpT78xLonVXr1f
-        qdnsnC6qNpEbbjMXGLrbNju1i5sej4kOHN9eyJWSrIU+I9w4tupR+foi6/TY/28F
-        T8rNTvswE9jujA==
-X-ME-Sender: <xms:35bHXDBwD4DQ6Gemg-WDoyvxPmqokBbv-5oakFlebFNPcPwqY7MMdA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrieefgdefhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepfdfvohgsihhn
-    ucevrdcujfgrrhguihhnghdfuceothhosghinheskhgvrhhnvghlrdhorhhgqeenucfkph
-    epuddvuddrgeegrddvfedtrddukeeknecurfgrrhgrmhepmhgrihhlfhhrohhmpehtohgs
-    ihhnsehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:35bHXHxXCSdwpUygfQWZaQ3gSHhmLBp-5R7hbU59UTUxf1tXbabCpg>
-    <xmx:35bHXIsr0Dii1Y-4WYrzK0fyFl_0l7vIadBfAj6cIgDC6e1hmfHG1A>
-    <xmx:35bHXCLHx7UnYf1W13aWlo69XvfKy8187lm5wQnOYhKs7fMwlUnDQQ>
-    <xmx:35bHXHxr1lB28mcPr6lR9724dj1RWvT2z4QoaZOkrgFKNG3TwFdGPg>
-Received: from eros.localdomain (ppp121-44-230-188.bras2.syd2.internode.on.net [121.44.230.188])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A521D103CA;
-        Mon, 29 Apr 2019 20:29:14 -0400 (EDT)
-From:   "Tobin C. Harding" <tobin@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     "Tobin C. Harding" <tobin@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tyler Hicks <tyhicks@canonical.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Wang Hai <wanghai26@huawei.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] net-sysfs: Fix error path for kobject_init_and_add()
-Date:   Tue, 30 Apr 2019 10:28:17 +1000
-Message-Id: <20190430002817.10785-4-tobin@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190430002817.10785-1-tobin@kernel.org>
-References: <20190430002817.10785-1-tobin@kernel.org>
+        id S1729703AbfD3Ak2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 20:40:28 -0400
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:43299 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729319AbfD3Ak2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 20:40:28 -0400
+Received: by mail-yw1-f66.google.com with SMTP id w196so4666097ywd.10
+        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 17:40:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=LgDHqiBMkIEP2Gjv1b/BPNB6tTx6cNIX8WGn2OufiRQ=;
+        b=F2K/xby4cmu6d2bZoZHJLR5Z4UZj5CGWYwSUm3LxusNt5Jmmm9YeWtE5K9sqrAdZuk
+         gwz6epfbgd98xGZRRXx2zBxmy2oDyAdASJQHHpO8rY3PjpCAFbhU+2RcJuuqUE4ZqfaW
+         /leG3SS/9/y27TwwrXCfbtJGcjzg3UZBYRPMitXPLwSbOuAM8QaXoh6yQaQfT/IcPXeW
+         vuVLqIIdHj1Ou0IAaxfLoslywy/E4eDi9gpDAv1OG1wWf0w2PeT6Qri71vyTbJcrqbUX
+         KEuZ4nD3RjUSl0spMlo3D/3HRKtuTLpV0xrX3NhRVCe+vuVhpPIJcyxcKf7zQhI8Kwau
+         YXQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=LgDHqiBMkIEP2Gjv1b/BPNB6tTx6cNIX8WGn2OufiRQ=;
+        b=a/rYj37KhpmmBY2614sODbxUiCvom9NYz6JhwdrudcdQ8lM7mysh8X3iHNacU+UjxM
+         N7LnvsslsJDIJtdoskvAyi1tY8FmzVZnCfW7ikPkey7psA4fXWaOlLEz+m5t6SIvG5Zz
+         haENTyxcDReiGiweEYwfo1WF3BeUpH4751wJdHTBnYTWO8Q1kADGgNZ1wXEqUE/7+5ro
+         2fbqFVfnzV32xfREvXNIgyJ7MR2jUCrA3okCJxX+p9LaFxFa7JjTh3Cc1oZvziSFSMfv
+         qjVEtLWUxi1JqMsCPEbGbwUlN0P3KUzNW3IRNhnE/BANiKHhNCvV0mrVd3d+/ao81Pkw
+         /njA==
+X-Gm-Message-State: APjAAAVc+XJiV4FJk+krP3rldKiWdU4BfMxyJL3IWUTC0XDTMzpQaybz
+        Qo1qTui/jWQ2Bq2/Do1yrjghVA==
+X-Google-Smtp-Source: APXvYqwRUNNglVfbfdo5R7L0BKzVxB+n+Hc3Y+ZAEsg00ux13E71kxX4gWJaZPEGNX5YB88pffHYaA==
+X-Received: by 2002:a81:3b13:: with SMTP id i19mr18065733ywa.100.1556584827229;
+        Mon, 29 Apr 2019 17:40:27 -0700 (PDT)
+Received: from cakuba (adsl-173-228-226-134.prtc.net. [173.228.226.134])
+        by smtp.gmail.com with ESMTPSA id x189sm7834917ywb.41.2019.04.29.17.40.26
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 29 Apr 2019 17:40:27 -0700 (PDT)
+Date:   Mon, 29 Apr 2019 20:40:23 -0400
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] netdevsim: fix fall-through annotation
+Message-ID: <20190429204023.259fe70a@cakuba>
+In-Reply-To: <20190429173807.GA18088@embeddedor>
+References: <20190429173807.GA18088@embeddedor>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently error return from kobject_init_and_add() is not followed by a
-call to kobject_put().  This means there is a memory leak.
+On Mon, 29 Apr 2019 12:38:07 -0500, Gustavo A. R. Silva wrote:
+> Replace "pass through" with a proper "fall through" annotation
+> in order to fix the following warning:
+>=20
+> drivers/net/netdevsim/bus.c: In function =E2=80=98new_device_store=E2=80=
+=99:
+> drivers/net/netdevsim/bus.c:170:14: warning: this statement may fall thro=
+ugh [-Wimplicit-fallthrough=3D]
+>    port_count =3D 1;
+>    ~~~~~~~~~~~^~~
+> drivers/net/netdevsim/bus.c:172:2: note: here
+>   case 2:
+>   ^~~~
+>=20
+> Warning level 3 was used: -Wimplicit-fallthrough=3D3
+>=20
+> This fix is part of the ongoing efforts to enable
+> -Wimplicit-fallthrough
+>=20
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
-Add call to kobject_put() in error path of kobject_init_and_add().
-
-Signed-off-by: Tobin C. Harding <tobin@kernel.org>
----
- net/core/net-sysfs.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 8f8b7b6c2945..9d4e3f47b789 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -925,8 +925,10 @@ static int rx_queue_add_kobject(struct net_device *dev, int index)
- 	kobj->kset = dev->queues_kset;
- 	error = kobject_init_and_add(kobj, &rx_queue_ktype, NULL,
- 				     "rx-%u", index);
--	if (error)
-+	if (error) {
-+		kobject_put(kobj);
- 		return error;
-+	}
- 
- 	dev_hold(queue->dev);
- 
-@@ -1462,8 +1464,10 @@ static int netdev_queue_add_kobject(struct net_device *dev, int index)
- 	kobj->kset = dev->queues_kset;
- 	error = kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
- 				     "tx-%u", index);
--	if (error)
-+	if (error) {
-+		kobject_put(kobj);
- 		return error;
-+	}
- 
- 	dev_hold(queue->dev);
- 
--- 
-2.21.0
-
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
