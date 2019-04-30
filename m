@@ -2,240 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F001CEE23
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 03:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A0C5EE37
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 03:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729777AbfD3BIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Apr 2019 21:08:00 -0400
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:45239 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729238AbfD3BH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 21:07:59 -0400
-Received: by mail-yw1-f66.google.com with SMTP id r139so4696328ywe.12
-        for <netdev@vger.kernel.org>; Mon, 29 Apr 2019 18:07:59 -0700 (PDT)
+        id S1729790AbfD3BPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Apr 2019 21:15:33 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41867 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729238AbfD3BPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Apr 2019 21:15:32 -0400
+Received: by mail-pg1-f193.google.com with SMTP id f6so6016453pgs.8;
+        Mon, 29 Apr 2019 18:15:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=I59Gowpm55WuTd5q3pzBBwbpPTdXSYidB4GetoWIaw0=;
-        b=CfD43KnVAS4HfwnvxEYLzAaa8Z2666QM5B7UWb2Of5au1cWVKysPJ56i7GgTYkau9b
-         cZRBCg188KURpxqKocormZkIA/r4I/HQtepM8hEfuiSN0kZ9kI4U6d/hpkDLon3vqr2e
-         PkOD7nLM8mAulRNzYc7VQ6+gIeniIjBBHJBaWz546EXc3H1q1Q8tU5JUKncNgW/uBU+a
-         cI4dHkmQVi5+7iNL7Dq8qbY3jPpLxoBJykxvT13FZKfW1HhPYUwJMl4pasES27cmjNSI
-         cNGfvnjVzzOnKHev7z7bWA32Noflv0cuHBkx0ptuKreI2Qp3xzjGbXiokvFCP2Scr5Ts
-         NtNA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SJR2bqkaxTTZSrKOHpSh+1p44wBNtrD7UfXsdGZTi18=;
+        b=Beo9N4BnADPEIi1HCq2wYdn1zIeVDJ3/QVI/sXM9MMdHg3gbLEcbjGN5TkdrROcUjp
+         2k6eD077b1qkMhFqNmXw9W///FgszQerwO0FdCGil81+Hq+3NPWRAbSwpl442P1grv7B
+         zkEZ1dyXBmPOQ/uUZJNlXyl46YgLZ6yQ+dWE41Wy2j6wzBVmUF5A53rGKsow5TZ4SuMj
+         NEg7txBctaUiZccU+Ws+MrlVVDjBfL+d6SEA9L5ZxakCLCct2HLEVVpwQanIWwe1vCnV
+         kMOONxVns9HwJbJuW1m3X9tyDBVtSktUD3I8GZEMi1YlVNn7efCJP/6XuAu4uQ5sWA7Q
+         M4Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=I59Gowpm55WuTd5q3pzBBwbpPTdXSYidB4GetoWIaw0=;
-        b=YuEIq/OMnq9ZCVDteSKqbOHnwMSv1lbgZJ1crxELbasZsnSi2tG++vRKsdVWNAdtje
-         OBOxS6ybt46DtRLiEXHyO3w76EGVIh7zPDAck90E2QvsK4nhWqWMpJ+vskrrO+RgmspZ
-         HovQBs8cRiMnoZoukSGuRw6YyW5+fbeTVWquVBdWj7VrFLu/saOTO1hUSoV6GXIridVU
-         jaKgCmqFK2dnoPPb9CVaokVm2XhOeZO6muZm1Flm7Z0e2oK/h4l4TVwHhmZetKGVkiph
-         SOtR02oli8GyYYJcMnSN9IRM3bAAqvPPfBzt0XF4p2qAN+hZS3XMEHZSZX18NQ3OeN60
-         nWiA==
-X-Gm-Message-State: APjAAAWvU6KrKLAaZkGM3wlbcQB+yObGWuDmNZudFmCBYHsMIgRj7Edv
-        iV7ePfUVhGe49kM++J+FcqKWKA==
-X-Google-Smtp-Source: APXvYqx/wsBOoKr1wm4c2uhSg0AuqTVbztb5hsXhxkplLVoNPWELAsBNnrE3zsliPiEcRlSGCQ61ww==
-X-Received: by 2002:a25:260c:: with SMTP id m12mr53467788ybm.300.1556586478722;
-        Mon, 29 Apr 2019 18:07:58 -0700 (PDT)
-Received: from cakuba (adsl-173-228-226-134.prtc.net. [173.228.226.134])
-        by smtp.gmail.com with ESMTPSA id p3sm11740925ywd.94.2019.04.29.18.07.58
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 29 Apr 2019 18:07:58 -0700 (PDT)
-Date:   Mon, 29 Apr 2019 21:07:55 -0400
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Piotr Marczak <piotr.marczak@intel.com>,
-        Don Buchholz <donald.buchholz@intel.com>
-Subject: Re: [net-next 12/12] i40e: Introduce recovery mode support
-Message-ID: <20190429210755.0de283ed@cakuba>
-In-Reply-To: <20190429191628.31212-13-jeffrey.t.kirsher@intel.com>
-References: <20190429191628.31212-1-jeffrey.t.kirsher@intel.com>
-        <20190429191628.31212-13-jeffrey.t.kirsher@intel.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SJR2bqkaxTTZSrKOHpSh+1p44wBNtrD7UfXsdGZTi18=;
+        b=W9TkX9AQW4jh4oTSilB7Z3LqN/YelBK3tVPaK3VDE+HISn5yJ6XA4OlVdV2qziUIAR
+         NhgYyQ3NiAcgixCHKsUYilhJoe0nI1HWZ2SKhBg9Q5hkOGCqr8+3QwUmxBHt5FptktMv
+         xtpQVzX7HB4de8il1pqjiJkv0VyV1IfxHCfvZxrkcvbiTz7GIHIEg0pytTZ5kUe+5grE
+         PDmRxQV+g4duQApk/kUhaEWnpWtRvRKTdQB6D7xZbkMsDZYcUMBYsZdG7OCiGlfFmo8e
+         NX5XYhLs7JMecpajuIBa4W1p0oHuTFzn8+7iKdHcx8Bkyq/Ynw6mFKniCDaNJsdZsPul
+         tgpQ==
+X-Gm-Message-State: APjAAAXjW1PvcBz3GJHsacyPqJfTC4anBKrUA7vmwfsRFoAAVjQjgMU4
+        eGpFeF4gwoQF7/fMpLVFi6s=
+X-Google-Smtp-Source: APXvYqw2SGm3BTsHdsLohh4J1ZBkW4UbLNOORIYOQLS5NYLqdt5q+xmynXGiVI/jcMkGrP88+BivMg==
+X-Received: by 2002:aa7:8b4c:: with SMTP id i12mr14401909pfd.189.1556586932334;
+        Mon, 29 Apr 2019 18:15:32 -0700 (PDT)
+Received: from [192.168.1.70] (c-24-6-192-50.hsd1.ca.comcast.net. [24.6.192.50])
+        by smtp.gmail.com with ESMTPSA id q80sm64336468pfa.66.2019.04.29.18.15.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Apr 2019 18:15:31 -0700 (PDT)
+Subject: Re: [PATCH] of_net: add mtd-mac-address support to
+ of_get_mac_address()
+To:     Rob Herring <robh@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
+References: <1555445100-30936-1-git-send-email-ynezz@true.cz>
+ <d29bcf08-9299-8f2c-00bc-791b60658581@gmail.com>
+ <93770c6a-5f99-38f6-276b-316c00176cac@gmail.com>
+ <20190430004845.GA29722@bogus>
+From:   Frank Rowand <frowand.list@gmail.com>
+Message-ID: <91fc37e6-aacd-cb67-cf7e-2415a59375a4@gmail.com>
+Date:   Mon, 29 Apr 2019 18:15:30 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190430004845.GA29722@bogus>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Apr 2019 12:16:28 -0700, Jeff Kirsher wrote:
-> From: Alice Michael <alice.michael@intel.com>
->=20
-> This patch introduces "recovery mode" to the i40e driver. It is
-> part of a new Any2Any idea of upgrading the firmware. In this
-> approach, it is required for the driver to have support for
-> "transition firmware", that is used for migrating from structured
-> to flat firmware image. In this new, very basic mode, i40e driver
-> must be able to handle particular IOCTL calls from the NVM Update
-> Tool and run a small set of AQ commands.
+On 4/29/19 5:48 PM, Rob Herring wrote:
+> On Tue, Apr 16, 2019 at 08:01:56PM -0700, Frank Rowand wrote:
+>> Hi Rob,
+>>
+>> On 4/16/19 5:29 PM, Florian Fainelli wrote:
+>>>
+>>>
+>>> On 16/04/2019 13:05, Petr Štetiar wrote:
+>>>> From: John Crispin <john@phrozen.org>
+>>>>
+>>>> Many embedded devices have information such as MAC addresses stored
+>>>> inside MTD devices. This patch allows us to add a property inside a node
+>>>> describing a network interface. The new property points at a MTD
+>>>> partition with an offset where the MAC address can be found.
+>>>>
+>>>> This patch has originated in OpenWrt some time ago, so in order to
+>>>> consider usefulness of this patch, here are some real-world numbers
+>>>> which hopefully speak for themselves:
+>>>>
+>>>>   * mtd-mac-address                used 497 times in 357 device tree files
+>>>>   * mtd-mac-address-increment      used  74 times in  58 device tree files
+>>>>   * mtd-mac-address-increment-byte used   1 time  in   1 device tree file
+>>>>
+>>>> Signed-off-by: John Crispin <john@phrozen.org>
+>>>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+>>>> [cleanup of the patch for upstream submission]
+>>>> Signed-off-by: Petr Štetiar <ynezz@true.cz>
+>>>> ---
+>>>
+>>> [snip]
+>>>
+>>>> +static const void *of_get_mac_address_mtd(struct device_node *np)
+>>>> +{
+>>>> +#ifdef CONFIG_MTD
+>>>> +    void *addr;
+>>>> +    size_t retlen;
+>>>> +    int size, ret;
+>>>> +    u8 mac[ETH_ALEN];
+>>>> +    phandle phandle;
+>>>> +    const char *part;
+>>>> +    const __be32 *list;
+>>>> +    struct mtd_info *mtd;
+>>>> +    struct property *prop;
+>>>> +    u32 mac_inc = 0;
+>>>> +    u32 inc_idx = ETH_ALEN-1;
+>>>> +    struct device_node *mtd_np = NULL;
+>>>
+>>> Reverse christmas tree would look a bit nicer here.
+>>
+>> Do we a variable declaration format preference for drivers/of/*?
+> 
+> We'd better get one. It's all the rage.
+> 
+> How about fallen Christmas tree:
+> 
+> 	int a;
+> 	bool fallen;
+> 	char christmas_tree;
+> 	int for_our;
+> 	int dt;
 
-Could you show us commands that get executed?  I think that'd be much
-quicker for people to parse.
+Nice!  That is actually the most aesthetically pleasing method I have
+seen.  :-)
 
-> Signed-off-by: Alice Michael <alice.michael@intel.com>
-> Signed-off-by: Piotr Marczak <piotr.marczak@intel.com>
-> Tested-by: Don Buchholz <donald.buchholz@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+In the future I will tell people to ignore devicetree review comments
+that espouse a declaration religion.  As long as the declarations are
+within reason (and sort of follow whatever style is present elsewhere
+in the same file).
 
-=46rom a cursory look it seems you create a "basic" netdev.  Can this
-netdev pass traffic?
-
-I'd suggest you implement devlink "limp mode".  Devlink can flash the
-device now.  You can register a devlink instance without registering
-any "minimal" netdevs, and flash with devlink.
-
-> @@ -13904,6 +14007,134 @@ void i40e_set_fec_in_flags(u8 fec_cfg, u32 *fla=
-gs)
->  		*flags &=3D ~(I40E_FLAG_RS_FEC | I40E_FLAG_BASE_R_FEC);
->  }
-> =20
-> +/**
-> + * i40e_check_recovery_mode - check if we are running transition firmware
-> + * @pf: board private structure
-> + *
-> + * Check registers indicating the firmware runs in recovery mode. Sets t=
-he
-> + * appropriate driver state.
-> + *
-> + * Returns true if the recovery mode was detected, false otherwise
-> + **/
-> +static bool i40e_check_recovery_mode(struct i40e_pf *pf)
-> +{
-> +	u32 val =3D rd32(&pf->hw, I40E_GL_FWSTS);
-> +
-> +	if (val & I40E_GL_FWSTS_FWS1B_MASK) {
-> +		dev_notice(&pf->pdev->dev, "Firmware recovery mode detected. Limiting =
-functionality.\n");
-> +		dev_notice(&pf->pdev->dev, "Refer to the Intel(R) Ethernet Adapters an=
-d Devices User Guide for details on firmware recovery mode.\n");
-> +		set_bit(__I40E_RECOVERY_MODE, pf->state);
-> +
-> +		return true;
-> +	}
-> +	if (test_and_clear_bit(__I40E_RECOVERY_MODE, pf->state))
-> +		dev_info(&pf->pdev->dev, "Reinitializing in normal mode with full func=
-tionality.\n");
-> +
-> +	return false;
-> +}
-> +
-> +/**
-> + * i40e_init_recovery_mode - initialize subsystems needed in recovery mo=
-de
-> + * @pf: board private structure
-> + * @hw: ptr to the hardware info
-> + *
-> + * This function does a minimal setup of all subsystems needed for runni=
-ng
-> + * recovery mode.
-> + *
-> + * Returns 0 on success, negative on failure
-> + **/
-> +static int i40e_init_recovery_mode(struct i40e_pf *pf, struct i40e_hw *h=
-w)
-> +{
-> +	struct i40e_vsi *vsi;
-> +	int err;
-> +	int v_idx;
-> +
-> +#ifdef HAVE_PCI_ERS
-> +	pci_save_state(pf->pdev);
-> +#endif
-> +
-> +	/* set up periodic task facility */
-> +	timer_setup(&pf->service_timer, i40e_service_timer, 0);
-> +	pf->service_timer_period =3D HZ;
-> +
-> +	INIT_WORK(&pf->service_task, i40e_service_task);
-> +	clear_bit(__I40E_SERVICE_SCHED, pf->state);
-> +
-> +	err =3D i40e_init_interrupt_scheme(pf);
-> +	if (err)
-> +		goto err_switch_setup;
-> +
-> +	/* The number of VSIs reported by the FW is the minimum guaranteed
-> +	 * to us; HW supports far more and we share the remaining pool with
-> +	 * the other PFs. We allocate space for more than the guarantee with
-> +	 * the understanding that we might not get them all later.
-> +	 */
-> +	if (pf->hw.func_caps.num_vsis < I40E_MIN_VSI_ALLOC)
-> +		pf->num_alloc_vsi =3D I40E_MIN_VSI_ALLOC;
-> +	else
-> +		pf->num_alloc_vsi =3D pf->hw.func_caps.num_vsis;
-> +
-> +	/* Set up the vsi struct and our local tracking of the MAIN PF vsi. */
-> +	pf->vsi =3D kcalloc(pf->num_alloc_vsi, sizeof(struct i40e_vsi *),
-> +			  GFP_KERNEL);
-> +	if (!pf->vsi) {
-> +		err =3D -ENOMEM;
-> +		goto err_switch_setup;
-> +	}
-> +
-> +	/* We allocate one VSI which is needed as absolute minimum
-> +	 * in order to register the netdev
-> +	 */
-> +	v_idx =3D i40e_vsi_mem_alloc(pf, I40E_VSI_MAIN);
-> +	if (v_idx < 0)
-> +		goto err_switch_setup;
-> +	pf->lan_vsi =3D v_idx;
-> +	vsi =3D pf->vsi[v_idx];
-> +	if (!vsi)
-> +		goto err_switch_setup;
-> +	vsi->alloc_queue_pairs =3D 1;
-> +	err =3D i40e_config_netdev(vsi);
-> +	if (err)
-> +		goto err_switch_setup;
-> +	err =3D register_netdev(vsi->netdev);
-> +	if (err)
-> +		goto err_switch_setup;
-> +	vsi->netdev_registered =3D true;
-> +	i40e_dbg_pf_init(pf);
-> +
-> +	err =3D i40e_setup_misc_vector_for_recovery_mode(pf);
-> +	if (err)
-> +		goto err_switch_setup;
-> +
-> +	/* tell the firmware that we're starting */
-> +	i40e_send_version(pf);
-> +
-> +	/* since everything's happy, start the service_task timer */
-> +	mod_timer(&pf->service_timer,
-> +		  round_jiffies(jiffies + pf->service_timer_period));
-> +
-> +	return 0;
-> +
-> +err_switch_setup:
-> +	i40e_reset_interrupt_capability(pf);
-> +	del_timer_sync(&pf->service_timer);
-> +#ifdef NOT_FOR_UPSTREAM
-
-Delightful :)
-
-> +	dev_warn(&pf->pdev->dev, "previous errors forcing module to load in deb=
-ug mode\n");
-> +	i40e_dbg_pf_init(pf);
-> +	set_bit(__I40E_DEBUG_MODE, pf->state);
-> +	return 0;
-> +#else
-> +	i40e_shutdown_adminq(hw);
-> +	iounmap(hw->hw_addr);
-> +	pci_disable_pcie_error_reporting(pf->pdev);
-> +	pci_release_mem_regions(pf->pdev);
-> +	pci_disable_device(pf->pdev);
-> +	kfree(pf);
-> +
-> +	return err;
-> +#endif
-> +}
-> +
->  /**
->   * i40e_probe - Device initialization routine
->   * @pdev: PCI device information struct
+> 
+> Rob
+> 
 
