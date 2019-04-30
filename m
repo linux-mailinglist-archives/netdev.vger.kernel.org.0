@@ -2,81 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F4E1EFD4
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 07:12:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E943CEFFF
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 07:33:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726062AbfD3FL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 01:11:56 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:2948 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725790AbfD3FL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 01:11:56 -0400
-Received: from DGGEML403-HUB.china.huawei.com (unknown [172.30.72.54])
-        by Forcepoint Email with ESMTP id 02DC252454B093154051;
-        Tue, 30 Apr 2019 13:11:54 +0800 (CST)
-Received: from DGGEML532-MBS.china.huawei.com ([169.254.7.161]) by
- DGGEML403-HUB.china.huawei.com ([fe80::74d9:c659:fbec:21fa%31]) with mapi id
- 14.03.0439.000; Tue, 30 Apr 2019 13:11:46 +0800
-From:   "weiyongjun (A)" <weiyongjun1@huawei.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-CC:     yuehaibing <yuehaibing@huawei.com>,
-        David Miller <davem@davemloft.net>,
-        Jason Wang <jasowang@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jesper Dangaard Brouer" <brouer@redhat.com>,
-        "Li,Rongqing" <lirongqing@baidu.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Chas Williams <3chas3@gmail.com>,
-        "wangli39@baidu.com" <wangli39@baidu.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: RE: [PATCH] tun: Fix use-after-free in tun_net_xmit
-Thread-Topic: [PATCH] tun: Fix use-after-free in tun_net_xmit
-Thread-Index: AQHU/W9g3sfuWPKNdEe3Jj6+nCJHZaZSthwAgAAig4CAAU5I4A==
-Date:   Tue, 30 Apr 2019 05:11:45 +0000
-Message-ID: <6AADFAC011213A4C87B956458587ADB4021FE16C@dggeml532-mbs.china.huawei.com>
-References: <71250616-36c1-0d96-8fac-4aaaae6a28d4@redhat.com>
- <20190428030539.17776-1-yuehaibing@huawei.com>
- <20190429105422-mutt-send-email-mst@kernel.org>
- <CAM_iQpWvp2i6iOZtSPskqU_uXHL2zKfM_cS1rGTh_T0r3BwvnA@mail.gmail.com>
-In-Reply-To: <CAM_iQpWvp2i6iOZtSPskqU_uXHL2zKfM_cS1rGTh_T0r3BwvnA@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.177.30.138]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726372AbfD3FbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 01:31:19 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:46814 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726197AbfD3Fau (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 01:30:50 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 6BB8620268;
+        Tue, 30 Apr 2019 07:30:48 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id ku_tkkrA_kWL; Tue, 30 Apr 2019 07:30:47 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 670E02026B;
+        Tue, 30 Apr 2019 07:30:47 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 30 Apr 2019
+ 07:30:47 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id DF6143180584;
+ Tue, 30 Apr 2019 07:30:46 +0200 (CEST)
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        <netdev@vger.kernel.org>
+Subject: pull request (net): ipsec 2019-04-30
+Date:   Tue, 30 Apr 2019 07:30:18 +0200
+Message-ID: <20190430053030.27009-1-steffen.klassert@secunet.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-G-Data-MailSecurity-for-Exchange-State: 0
+X-G-Data-MailSecurity-for-Exchange-Error: 0
+X-G-Data-MailSecurity-for-Exchange-Sender: 23
+X-G-Data-MailSecurity-for-Exchange-Server: d65e63f7-5c15-413f-8f63-c0d707471c93
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-G-Data-MailSecurity-for-Exchange-Guid: 5827F9EF-B50D-4062-B12F-184131A88B8A
+X-G-Data-MailSecurity-for-Exchange-ProcessedOnRouted: True
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBOZXR3b3JrIERldmVsb3BlcnMgPG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+DQo+IFN1YmplY3Q6
-IFJlOiBbUEFUQ0hdIHR1bjogRml4IHVzZS1hZnRlci1mcmVlIGluIHR1bl9uZXRfeG1pdA0KPiAN
-Cj4gT24gTW9uLCBBcHIgMjksIDIwMTkgYXQgNzo1NSBBTSBNaWNoYWVsIFMuIFRzaXJraW4gPG1z
-dEByZWRoYXQuY29tPg0KPiB3cm90ZToNCj4gPiBUaGUgcHJvYmxlbSBzZWVtcyByZWFsIGVub3Vn
-aCwgYnV0IGFuIGV4dHJhIHN5bmNocm9uaXplX25ldCBvbg0KPiB0dW5fYXR0YWNoDQo+ID4gbWln
-aHQgYmUgYSBwcm9ibGVtLCBzbG93aW5nIGd1ZXN0IHN0YXJ0dXAgc2lnbmlmaWNhbnRseS4NCj4g
-PiBCZXR0ZXIgaWRlYXM/DQo+IA0KPiBZZXMsIEkgcHJvcG9zZWQgdGhlIGZvbGxvd2luZyBwYXRj
-aCBpbiB0aGUgb3RoZXIgdGhyZWFkLg0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3R1
-bi5jIGIvZHJpdmVycy9uZXQvdHVuLmMNCj4gaW5kZXggZTljYTFjMDg4ZDBiLi4zMWMzMjEwMjg4
-Y2IgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L3R1bi5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0
-L3R1bi5jDQo+IEBAIC0zNDMxLDYgKzM0MzEsNyBAQCBzdGF0aWMgaW50IHR1bl9jaHJfb3Blbihz
-dHJ1Y3QgaW5vZGUgKmlub2RlLA0KPiBzdHJ1Y3QgZmlsZSAqIGZpbGUpDQo+ICAgICAgICAgZmls
-ZS0+cHJpdmF0ZV9kYXRhID0gdGZpbGU7DQo+ICAgICAgICAgSU5JVF9MSVNUX0hFQUQoJnRmaWxl
-LT5uZXh0KTsNCj4gDQo+ICsgICAgICAgc29ja19zZXRfZmxhZygmdGZpbGUtPnNrLCBTT0NLX1JD
-VV9GUkVFKTsNCj4gICAgICAgICBzb2NrX3NldF9mbGFnKCZ0ZmlsZS0+c2ssIFNPQ0tfWkVST0NP
-UFkpOw0KPiANCj4gICAgICAgICByZXR1cm4gMDsNCg0KDQpUaGlzIHBhdGNoIHNob3VsZCBub3Qg
-d29yay4gVGhlIGtleSBwb2ludCBpcyB0aGF0IHdoZW4gZGV0YWNoIHRoZSBxdWV1ZQ0Kd2l0aCBp
-bmRleCBpcyBlcXVhbCB0byB0dW4tPm51bXF1ZXVlcyAtIDEsIHdlIGRvIG5vdCBjbGVhciB0aGUg
-cG9pbnQNCmluIHR1bi0+dGZpbGVzOg0KDQpzdGF0aWMgdm9pZCBfX3R1bl9kZXRhY2goLi4uKQ0K
-ew0KLi4uDQogICAgICAgICoqKiogaWYgaW5kZXggPT0gdHVuLT5udW1xdWV1ZXMgLSAxLCBub3Ro
-aW5nIGNoYW5nZWQgKioqKg0KICAgICAgICByY3VfYXNzaWduX3BvaW50ZXIodHVuLT50ZmlsZXNb
-aW5kZXhdLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-dHVuLT50ZmlsZXNbdHVuLT5udW1xdWV1ZXMgLSAxXSk7DQouLi4uDQp9DQoNCkFuZCBhZnRlciB0
-ZmlsZSBmcmVlLCB4bWl0IGhhdmUgY2hhbmdlIHRvIGdldCBhbmQgdXNlIHRoZSBmcmVlZCBmaWxl
-IHBvaW50Lg0KDQpSZWdhcmRzDQoNCg==
+1) Fix an out-of-bound array accesses in __xfrm_policy_unlink.
+   From YueHaibing.
+
+2) Reset the secpath on failure in the ESP GRO handlers
+   to avoid dereferencing an invalid pointer on error.
+   From Myungho Jung.
+
+3) Add and revert a patch that tried to add rcu annotations
+   to netns_xfrm. From Su Yanjun.
+
+4) Wait for rcu callbacks before freeing xfrm6_tunnel_spi_kmem.
+   From Su Yanjun.
+
+5) Fix forgotten vti4 ipip tunnel deregistration.
+   From Jeremy Sowden:
+
+6) Remove some duplicated log messages in vti4.
+   From Jeremy Sowden.
+
+7) Don't use IPSEC_PROTO_ANY when flushing states because
+   this will flush only IPsec portocol speciffic states.
+   IPPROTO_ROUTING states may remain in the lists when
+   doing net exit. Fix this by replacing IPSEC_PROTO_ANY
+   with zero. From Cong Wang.
+
+8) Add length check for UDP encapsulation to fix "Oversized IP packet"
+   warnings on receive side. From Sabrina Dubroca.
+
+9) Fix xfrm interface lookup when the interface is associated to
+   a vrf layer 3 master device. From Martin Willi.
+
+10) Reload header pointers after pskb_may_pull() in _decode_session4(),
+    otherwise we may read from uninitialized memory.
+
+11) Update the documentation about xfrm[46]_gc_thresh, it
+    is not used anymore after the flowcache removal.
+    From Nicolas Dichtel.
+
+Please pull or let me know if there are problems.
+
+Thanks!
+
+The following changes since commit d235c48b40d399328585a68f3f9bf7cc3062d586:
+
+  net: dsa: mv88e6xxx: power serdes on/off for 10G interfaces on 6390X (2019-02-28 15:16:06 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git master
+
+for you to fetch changes up to 837f74116585dcd235fae1696e1e1471b6bb9e01:
+
+  xfrm: update doc about xfrm[46]_gc_thresh (2019-04-12 09:38:23 +0200)
+
+----------------------------------------------------------------
+Cong Wang (1):
+      xfrm: clean up xfrm protocol checks
+
+Jeremy Sowden (2):
+      vti4: ipip tunnel deregistration fixes.
+      vti4: removed duplicate log message.
+
+Martin Willi (1):
+      xfrm: Honor original L3 slave device in xfrmi policy lookup
+
+Myungho Jung (1):
+      xfrm: Reset secpath in xfrm failure
+
+Nicolas Dichtel (1):
+      xfrm: update doc about xfrm[46]_gc_thresh
+
+Sabrina Dubroca (1):
+      esp4: add length check for UDP encapsulation
+
+Steffen Klassert (2):
+      Revert "net: xfrm: Add '_rcu' tag for rcu protected pointer in netns_xfrm"
+      xfrm4: Fix uninitialized memory read in _decode_session4
+
+Su Yanjun (2):
+      net: xfrm: Add '_rcu' tag for rcu protected pointer in netns_xfrm
+      xfrm6_tunnel: Fix potential panic when unloading xfrm6_tunnel module
+
+YueHaibing (1):
+      xfrm: policy: Fix out-of-bound array accesses in __xfrm_policy_unlink
+
+ Documentation/networking/ip-sysctl.txt |  2 ++
+ include/net/xfrm.h                     | 20 +++++++++++++++++++-
+ net/ipv4/esp4.c                        | 20 +++++++++++++++-----
+ net/ipv4/esp4_offload.c                |  8 +++++---
+ net/ipv4/ip_vti.c                      |  9 ++++-----
+ net/ipv4/xfrm4_policy.c                | 24 +++++++++++++-----------
+ net/ipv6/esp6_offload.c                |  8 +++++---
+ net/ipv6/xfrm6_tunnel.c                |  6 +++++-
+ net/key/af_key.c                       |  4 +++-
+ net/xfrm/xfrm_interface.c              | 17 ++++++++++++++---
+ net/xfrm/xfrm_policy.c                 |  2 +-
+ net/xfrm/xfrm_state.c                  |  2 +-
+ net/xfrm/xfrm_user.c                   | 16 ++--------------
+ 13 files changed, 89 insertions(+), 49 deletions(-)
