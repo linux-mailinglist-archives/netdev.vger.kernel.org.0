@@ -2,111 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 403E8F073
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 08:24:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D45F074
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 08:24:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726225AbfD3GXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 02:23:55 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7145 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725799AbfD3GXz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 02:23:55 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 69C8A5508477262F9133;
-        Tue, 30 Apr 2019 14:23:51 +0800 (CST)
-Received: from [127.0.0.1] (10.177.31.96) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.439.0; Tue, 30 Apr 2019
- 14:23:46 +0800
-Subject: Re: [PATCH] vti4: Fix error path in vti_init and vti_fini
-To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>
-References: <20190430033630.27240-1-yuehaibing@huawei.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-From:   YueHaibing <yuehaibing@huawei.com>
-Message-ID: <a846f1ce-f975-8b8a-5c69-0b3af1b1f0f1@huawei.com>
-Date:   Tue, 30 Apr 2019 14:23:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+        id S1726343AbfD3GYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 02:24:18 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:36445 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725790AbfD3GYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 02:24:17 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 98174222BA;
+        Tue, 30 Apr 2019 02:24:16 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 30 Apr 2019 02:24:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=R4PNIa
+        woZroIatMAqIDL5AOAk2m7CUyJd9rOpQuko0I=; b=ePp8cX+XxTlKOJoGq/CMGr
+        mr99WPLKjw4L4nCje+fy1b71foFdU37LUv8t1no2R0J3J1SNPipggGVD5Lx9ym7D
+        ddRMFQLzE/lwUxVgKRS/NZRftjNqww5MSq8oojn7DyUneDKH/t6yiXVs5+rhDBfa
+        PjNoqVEBrdehaG6NauUh8r04BjAxDk7HwzZFvcIczgzWV5UtA545HUexFE0TmQx7
+        jdYXYhfxNQdhFjCEYkaij0YcN9KPIeGiKkb5bNxJtGwV8wEJTY+flwMHgvPrLTrw
+        nYZnFmDYBHxDuK5gYzikhe4Kf0CdrM6P116b6iQ2M1M7zm0EwA1UTYbi0RwU/03g
+        ==
+X-ME-Sender: <xms:EOrHXCnXBdon12UOsWggwOIYMnPbp3knQe0TypczSB1qRv10LG5YRw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrieefgddutdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
+    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:EOrHXPxKRAr77tk14RmY5IxOpiDsH8FHm-hv8126srOfv0Q79K7yzA>
+    <xmx:EOrHXOQNY5JLU51Y6vMDrateIF8by8HmAXaQd60QjBM3ee1GrGU81Q>
+    <xmx:EOrHXFb8bZRtFsiJQODbmrbs7RdXfZdncAa_XXKYU_6tS4h1D6nI5w>
+    <xmx:EOrHXN-1X_3VH9t40hdspJsZHG-7fFobYQ6c0KS91OktTeiq1ZgTvg>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8FD78103C9;
+        Tue, 30 Apr 2019 02:24:15 -0400 (EDT)
+Date:   Tue, 30 Apr 2019 09:24:13 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, alexanderk@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH iproute2-next] devlink: Increase column size for larger
+ shared buffers
+Message-ID: <20190430062413.GA18155@splinter>
+References: <20190423063630.5599-1-idosch@idosch.org>
+ <dc650651-a9e7-6ee7-f055-636701bfc745@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190430033630.27240-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dc650651-a9e7-6ee7-f055-636701bfc745@gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Well, there has a same fix in ipsec tree, Pls ignore this.
+On Tue, Apr 23, 2019 at 08:27:36PM -0600, David Ahern wrote:
+> 2 more columns fixes the current problem, what assurances are there that
+> the occupancy levels and max won't reach 100 million in the next few years?
 
-On 2019/4/30 11:36, YueHaibing wrote:
-> KASAN report this:
-> 
-> BUG: unable to handle kernel paging request at fffffbfff8280cc7
-> PGD 237fe4067 P4D 237fe4067 PUD 237e60067 PMD 1ebfd0067 PTE 0
-> Oops: 0000 [#1] SMP KASAN PTI
-> CPU: 0 PID: 8156 Comm: syz-executor.0 Tainted: G         C        5.1.0-rc3+ #8
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-> RIP: 0010:xfrm4_tunnel_register+0xb3/0x1f0 [tunnel4]
-> Code: e8 03 42 80 3c 28 00 0f 85 25 01 00 00 48 8b 5d 00 48 85 db 0f 84 a8 00 00 00 e8 08 cd b3 f3 48 8d 7b 18 48 89 f8 48 c1 e8 03 <42> 0f b6 04 28 84 c0 74 08 3c 03 0f 8e 04 01 00 00 44 8b 63 18 45
-> RSP: 0018:ffff8881b65bf9a0 EFLAGS: 00010a02
-> RAX: 1ffffffff8280cc7 RBX: ffffffffc1406620 RCX: ffffffff8d8880a8
-> RDX: 0000000000031712 RSI: ffffc900014bf000 RDI: ffffffffc1406638
-> RBP: ffffffffc108a4a0 R08: fffffbfff8211401 R09: fffffbfff8211401
-> R10: ffff8881b65bf9a0 R11: fffffbfff8211400 R12: ffffffffc1c08000
-> R13: dffffc0000000000 R14: 0000000000000000 R15: ffffffffc1bfe620
-> FS:  00007f5f07be3700(0000) GS:ffff8881f7200000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: fffffbfff8280cc7 CR3: 00000001e8d00004 CR4: 00000000007606f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> PKRU: 55555554
-> Call Trace:
->  ? 0xffffffffc1c08000
->  vti_init+0x9d/0x1000 [ip_vti]
->  do_one_initcall+0xbc/0x47d init/main.c:901
->  do_init_module+0x1b5/0x547 kernel/module.c:3456
->  load_module+0x6405/0x8c10 kernel/module.c:3804
->  __do_sys_finit_module+0x162/0x190 kernel/module.c:3898
->  do_syscall_64+0x9f/0x450 arch/x86/entry/common.c:290
->  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> 
-> commit dd9ee3444014 ("vti4: Fix a ipip packet processing bug
-> in 'IPCOMP' virtual tunnel") misplace xfrm4_tunnel_deregister in
-> vti_init and forgot to add cleanup in vti_fini.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: dd9ee3444014 ("vti4: Fix a ipip packet processing bug in 'IPCOMP' virtual tunnel")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  net/ipv4/ip_vti.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
-> index 68a21bf..b6235ca 100644
-> --- a/net/ipv4/ip_vti.c
-> +++ b/net/ipv4/ip_vti.c
-> @@ -659,9 +659,9 @@ static int __init vti_init(void)
->  	return err;
->  
->  rtnl_link_failed:
-> -	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
-> -xfrm_tunnel_failed:
->  	xfrm4_tunnel_deregister(&ipip_handler, AF_INET);
-> +xfrm_tunnel_failed:
-> +	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
->  xfrm_proto_comp_failed:
->  	xfrm4_protocol_deregister(&vti_ah4_protocol, IPPROTO_AH);
->  xfrm_proto_ah_failed:
-> @@ -676,6 +676,7 @@ static int __init vti_init(void)
->  static void __exit vti_fini(void)
->  {
->  	rtnl_link_unregister(&vti_link_ops);
-> +	xfrm4_tunnel_deregister(&ipip_handler, AF_INET);
->  	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
->  	xfrm4_protocol_deregister(&vti_ah4_protocol, IPPROTO_AH);
->  	xfrm4_protocol_deregister(&vti_esp4_protocol, IPPROTO_ESP);
-> 
+Yes, I thought about that as well, but while the size of the shared
+buffers is getting bigger and bigger (with the number of ports), I'm not
+familiar with sizes at the levels you're referring to.
 
+Anyway, point taken, I'll make this more future-proof.
+
+Thanks!
