@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ACF5FD07
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 17:38:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A73F8FD0B
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 17:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbfD3Piz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 11:38:55 -0400
-Received: from smtp5.emailarray.com ([65.39.216.39]:41659 "EHLO
-        smtp5.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725906AbfD3Piz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 11:38:55 -0400
-Received: (qmail 35411 invoked by uid 89); 30 Apr 2019 15:38:54 -0000
-Received: from unknown (HELO ?172.26.104.201?) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTk5LjIwMS42NC40) (POLARISLOCAL)  
-  by smtp5.emailarray.com with (AES256-GCM-SHA384 encrypted) SMTP; 30 Apr 2019 15:38:54 -0000
-From:   "Jonathan Lemon" <jlemon@flugsvamp.com>
-To:     "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        bpf@vger.kernel.org, u9012063@gmail.com
-Subject: Re: [PATCH bpf 0/2] libbpf: fixes for AF_XDP teardown
-Date:   Tue, 30 Apr 2019 08:38:49 -0700
-X-Mailer: MailMate (1.12.4r5594)
-Message-ID: <15B5FD82-D048-416F-9D1E-7F2B675100DA@flugsvamp.com>
-In-Reply-To: <20190430124536.7734-1-bjorn.topel@gmail.com>
-References: <20190430124536.7734-1-bjorn.topel@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; markup=markdown
-Content-Transfer-Encoding: 8bit
+        id S1726387AbfD3Pjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 11:39:35 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:44648 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725906AbfD3Pjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 11:39:35 -0400
+Received: from localhost (adsl-173-228-226-134.prtc.net [173.228.226.134])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9CCCC1418EB7B;
+        Tue, 30 Apr 2019 08:39:34 -0700 (PDT)
+Date:   Tue, 30 Apr 2019 11:39:31 -0400 (EDT)
+Message-Id: <20190430.113931.1930596224086750181.davem@davemloft.net>
+To:     edumazet@google.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        syzkaller@googlegroups.com, g.nault@alphalink.fr
+Subject: Re: [PATCH net] l2ip: fix possible use-after-free
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190430132758.163542-1-edumazet@google.com>
+References: <20190430132758.163542-1-edumazet@google.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Apr 2019 08:39:35 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 30 Apr 2019 06:27:58 -0700
 
+> Before taking a refcount on a rcu protected structure,
+> we need to make sure the refcount is not zero.
+> 
+> syzbot reported :
+ ...
+> Fixes: 54652eb12c1b ("l2tp: hold tunnel while looking up sessions in l2tp_netlink")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Cc: Guillaume Nault <g.nault@alphalink.fr>
 
-On 30 Apr 2019, at 5:45, Björn Töpel wrote:
-
-> William found two bugs, when doing socket teardown within the same
-> process.
->
-> The first issue was an invalid munmap call, and the second one was an
-> invalid XSKMAP cleanup. Both resulted in that the process kept
-> references to the socket, which was not correctly cleaned up. When a
-> new socket was created, the bind() call would fail, since the old
-> socket was still lingering, refusing to give up the queue on the
-> netdev.
->
-> More details can be found in the individual commits.
-
-Reviewed-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Applied, thanks Eric.
