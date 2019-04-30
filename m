@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC29DF123
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 09:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9FF2F125
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 09:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbfD3HSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 03:18:41 -0400
-Received: from first.geanix.com ([116.203.34.67]:43728 "EHLO first.geanix.com"
+        id S1726766AbfD3HTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 03:19:13 -0400
+Received: from first.geanix.com ([116.203.34.67]:43740 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726607AbfD3HSh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 03:18:37 -0400
+        id S1726622AbfD3HSk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 03:18:40 -0400
 Received: from localhost (unknown [193.163.1.7])
-        by first.geanix.com (Postfix) with ESMTPSA id 93690308E9D;
-        Tue, 30 Apr 2019 07:18:30 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id E72C5308E9E;
+        Tue, 30 Apr 2019 07:18:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1556608710; bh=DAjULfeqzzhfRAwoGb6qT4ROYTcoiZ5UMEfG1sSyqwE=;
+        t=1556608713; bh=qpf2haf0uskUuWVyjS1tnigmbJbmXAOP/MifuPOymYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=XrR5isrIxnDNZT6BiKSVeGFIiLNNkraLx1S1jEjxtIsnSttINxL4DbM895/VaNTMO
-         RWeCntKFPGSoH2ceWfb7vXq0DjFKKou4YzUKGs1Cv6jFlb94URnExlu8h/otCDJ+Va
-         3KEjR0aqg7g0mrTckcapDYV0n/e/ZmhkUCPaf4PjTi/ljmfCkwZBRtOImTIflleANq
-         r3OsMJGwyy7tyOjFQMViLhOC0FGSnAUg2V83UJFuStzevzZwNvM4UNPlicC/7+3IHX
-         LBhTr0DX1UKsQDlg2pLgutrTmet6e9q+CCp6NnT+c0CFuVaWkoL6RpR+Ffdol48MJ/
-         O3Ax46WjCS5pg==
+        b=cf/RXeX4VymrAq05Ny3WfKYAgQ6t1XOqpjKqB1rUWFyAn9T3j3iQITY811authpkT
+         RVpWXBX1PU8JRDHzhhsXupLvyA6Qbgmmum9mXXQedMfcxX2BtfLKIqZZETRGOStQ81
+         RoYmUn3GdzTiumYT62Aqj2bT8bbHlcXj336s1Lpdgp1OzT2XQ1+HT6l2egXlaZxzQz
+         opX0eaEbPokwMCQdNSGN40Jlflq1ZNW2nkJEXDL+a/1G25NDuPfgigPpltq21TLUzg
+         /nNa8VmnK21pmrqhZepIjSGLXPWzq3BYOfe6LLLfqnqTs+o07qbqFU6BMI+FUudDnm
+         SAf0MdyRL6RTA==
 From:   Esben Haabendal <esben@geanix.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Michal Simek <michal.simek@xilinx.com>,
-        Yang Wei <yang.wei9@zte.com.cn>,
         Luis Chamberlain <mcgrof@kernel.org>,
         YueHaibing <yuehaibing@huawei.com>,
+        Yang Wei <yang.wei9@zte.com.cn>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 08/12] net: ll_temac: Fix iommu/swiotlb leak
-Date:   Tue, 30 Apr 2019 09:17:55 +0200
-Message-Id: <20190430071759.2481-9-esben@geanix.com>
+Subject: [PATCH v3 09/12] net: ll_temac: Fix bug causing buffer descriptor overrun
+Date:   Tue, 30 Apr 2019 09:17:56 +0200
+Message-Id: <20190430071759.2481-10-esben@geanix.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190430071759.2481-1-esben@geanix.com>
 References: <20190429083422.4356-1-esben@geanix.com>
@@ -49,8 +49,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unmap the actual buffer length, not the amount of data received, avoiding
-resource exhaustion of swiotlb (seen on x86_64 platform).
+As we are actually using a BD for both the skb and each frag contained in
+it, the oldest TX BD would be overwritten when there was exactly one BD
+less than needed.
 
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
@@ -58,18 +59,18 @@ Signed-off-by: Esben Haabendal <esben@geanix.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index d3899e7..7e42746 100644
+index 7e42746..6837565 100644
 --- a/drivers/net/ethernet/xilinx/ll_temac_main.c
 +++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -820,7 +820,7 @@ static void ll_temac_recv(struct net_device *ndev)
- 		length = be32_to_cpu(cur_p->app4) & 0x3FFF;
+@@ -743,7 +743,7 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	start_p = lp->tx_bd_p + sizeof(*lp->tx_bd_v) * lp->tx_bd_tail;
+ 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
  
- 		dma_unmap_single(ndev->dev.parent, be32_to_cpu(cur_p->phys),
--				 length, DMA_FROM_DEVICE);
-+				 XTE_MAX_JUMBO_FRAME_SIZE, DMA_FROM_DEVICE);
- 
- 		skb_put(skb, length);
- 		skb->protocol = eth_type_trans(skb, ndev);
+-	if (temac_check_tx_bd_space(lp, num_frag)) {
++	if (temac_check_tx_bd_space(lp, num_frag + 1)) {
+ 		if (!netif_queue_stopped(ndev))
+ 			netif_stop_queue(ndev);
+ 		return NETDEV_TX_BUSY;
 -- 
 2.4.11
 
