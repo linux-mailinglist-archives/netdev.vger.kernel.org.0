@@ -2,91 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3E43F463
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 12:43:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2FBEF470
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 12:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727100AbfD3KnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 06:43:01 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:53618 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726262AbfD3KnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 06:43:01 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-214-fUhUDUw5N06zvUU-bx0x7w-1; Tue, 30 Apr 2019 11:42:59 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
- (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue,
- 30 Apr 2019 11:42:58 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 30 Apr 2019 11:42:58 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Josh Elsasser' <jelsasser@appneta.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-CC:     David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: RE: [net-next 01/12] i40e: replace switch-statement to speed-up
- retpoline-enabled builds
-Thread-Topic: [net-next 01/12] i40e: replace switch-statement to speed-up
- retpoline-enabled builds
-Thread-Index: AQHU/sZqyivfda7WEUK+lV099PMxUqZUhJ9Q
-Date:   Tue, 30 Apr 2019 10:42:58 +0000
-Message-ID: <4b9338513f16457ea167da651c8b997b@AcuMS.aculab.com>
-References: <20190429191628.31212-1-jeffrey.t.kirsher@intel.com>
- <20190429191628.31212-2-jeffrey.t.kirsher@intel.com>
- <6C3E4204-AABF-45AD-B32D-62CB50391D89@appneta.com>
-In-Reply-To: <6C3E4204-AABF-45AD-B32D-62CB50391D89@appneta.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1727246AbfD3Kqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 06:46:46 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:58772 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726736AbfD3Kqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 06:46:45 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x3UAdJt7083398;
+        Tue, 30 Apr 2019 10:46:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2018-07-02;
+ bh=uL+fUIqFbcI2TUW4GUxAidr70o04zT98/FRTHJRRrTg=;
+ b=flu2aNUZP/+7518N21y8hr2E9ekPxUMD289tdGK4PtwB/E7DQ855V7f8E3HehLvd1Aua
+ T9VMtCGk+cfymuuhuYCnlZXf97GbXbFnHyxmOCO81CaGlN2mwrL9njquuJT07hJ2S5rN
+ PW4XW3i2OwQuH91NErD3HIHAOhZpsu4kkadd5QG8aAtX5JTJld0g8XJxR4ann+U9jrMt
+ Rp2YvTmeZGgSRltLNpXrApxRkQBq2HpPHaZPuzXCVlxjKfnZ06WeMX22FYZuTfZ5U88q
+ HwfnO8x5InVhTFWXkQ8C3/s4tes8NUOGBxPRg4Wn27Z3TLv6x2riZctH1TxPBNJNhmY1 UA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 2s4fqq3nfc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 30 Apr 2019 10:46:32 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x3UAh1Rx086933;
+        Tue, 30 Apr 2019 10:44:32 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 2s5u50webc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 30 Apr 2019 10:44:32 +0000
+Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x3UAiSM9003493;
+        Tue, 30 Apr 2019 10:44:29 GMT
+Received: from mwanda (/196.97.65.153)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 30 Apr 2019 03:44:28 -0700
+Date:   Tue, 30 Apr 2019 13:44:19 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH] net: dsa: bcm_sf2: fix buffer overflow doing set_rxnfc
+Message-ID: <20190430104419.GA9096@mwanda>
 MIME-Version: 1.0
-X-MC-Unique: fUhUDUw5N06zvUU-bx0x7w-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9242 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=7 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1904300070
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9242 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=2
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1904300070
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSm9zaCBFbHNhc3Nlcg0KPiBTZW50OiAyOSBBcHJpbCAyMDE5IDIxOjAyDQo+IE9uIEFw
-ciAyOSwgMjAxOSwgYXQgMTI6MTYgUE0sIEplZmYgS2lyc2hlciA8amVmZnJleS50LmtpcnNoZXJA
-aW50ZWwuY29tPiB3cm90ZToNCj4gDQo+ID4gRnJvbTogQmrDtnJuIFTDtnBlbCA8Ympvcm4udG9w
-ZWxAaW50ZWwuY29tPg0KPiA+DQo+ID4gR0NDIHdpbGwgZ2VuZXJhdGUganVtcCB0YWJsZXMgZm9y
-IHN3aXRjaC1zdGF0ZW1lbnRzIHdpdGggbW9yZSB0aGFuIDUNCj4gPiBjYXNlIHN0YXRlbWVudHMu
-IEFuIGVudHJ5IGludG8gdGhlIGp1bXAgdGFibGUgaXMgYW4gaW5kaXJlY3QgY2FsbCwNCj4gPiB3
-aGljaCBtZWFucyB0aGF0IGZvciBDT05GSUdfUkVUUE9MSU5FIGJ1aWxkcywgdGhpcyBpcyByYXRo
-ZXINCj4gPiBleHBlbnNpdmUuDQo+ID4NCj4gPiBUaGlzIGNvbW1pdCByZXBsYWNlcyB0aGUgc3dp
-dGNoLXN0YXRlbWVudCB0aGF0IGFjdHMgb24gdGhlIFhEUCBwcm9ncmFtDQo+ID4gcmVzdWx0IHdp
-dGggYW4gaWYtY2xhdXNlLg0KPiANCj4gQXBvbG9naWVzIGZvciB0aGUgbm9pc2UsIGJ1dCBpcyB0
-aGlzIHBhdGNoIHN0aWxsIHJlcXVpcmVkIGFmdGVyIHRoZQ0KPiByZWNlbnQgdGhyZXNob2xkIGJ1
-bXBbMF0gYW5kIGxhdGVyIHJlbW92YWxbMV0gb2Ygc3dpdGNoLWNhc2UganVtcA0KPiB0YWJsZSBn
-ZW5lcmF0aW9uIHdoZW4gYnVpbGRpbmcgd2l0aCBDT05GSUdfUkVUUE9MSU5FPw0KPiANCj4gWzBd
-OiBodHRwczovL2xvcmUua2VybmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvMTA0NDg2My8NCj4gWzFd
-OiBodHRwczovL2xvcmUua2VybmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvMTA1NDQ3Mi8NCj4gDQo+
-IElmIG5vdGhpbmcgZWxzZSB0aGUgY29tbWl0IG1lc3NhZ2Ugbm8gbG9uZ2VyIHNlZW1zIGFjY3Vy
-YXRlLg0KDQpMb29raW5nIGF0IHRob3NlIHR3byBwYXRjaGVzLCB0aGUgc2Vjb25kIG9uZSBzZWVt
-cyB3cm9uZzoNCg0KICAgIyBBZGRpdGlvbmFsbHksIGF2b2lkIGdlbmVyYXRpbmcgZXhwZW5zaXZl
-IGluZGlyZWN0IGp1bXBzIHdoaWNoDQogICAjIGFyZSBzdWJqZWN0IHRvIHJldHBvbGluZXMgZm9y
-IHNtYWxsIG51bWJlciBvZiBzd2l0Y2ggY2FzZXMuDQogICAjIGNsYW5nIHR1cm5zIG9mZiBqdW1w
-IHRhYmxlIGdlbmVyYXRpb24gYnkgZGVmYXVsdCB3aGVuIHVuZGVyDQotICAjIHJldHBvbGluZSBi
-dWlsZHMsIGhvd2V2ZXIsIGdjYyBkb2VzIG5vdCBmb3IgeDg2Lg0KLSAgS0JVSUxEX0NGTEFHUyAr
-PSAkKGNhbGwgY2Mtb3B0aW9uLC0tcGFyYW09Y2FzZS12YWx1ZXMtdGhyZXNob2xkPTIwKQ0KKyAg
-IyByZXRwb2xpbmUgYnVpbGRzLCBob3dldmVyLCBnY2MgZG9lcyBub3QgZm9yIHg4Ni4gVGhpcyBo
-YXMNCisgICMgb25seSBiZWVuIGZpeGVkIHN0YXJ0aW5nIGZyb20gZ2NjIHN0YWJsZSB2ZXJzaW9u
-IDguNC4wIGFuZA0KKyAgIyBvbndhcmRzLCBidXQgbm90IGZvciBvbGRlciBvbmVzLiBTZWUgZ2Nj
-IGJ1ZyAjODY5NTIuDQorICBpZm5kZWYgQ09ORklHX0NDX0lTX0NMQU5HDQorICAgIEtCVUlMRF9D
-RkxBR1MgKz0gJChjYWxsIGNjLW9wdGlvbiwtZm5vLWp1bXAtdGFibGVzKQ0KKyAgZW5kaWYNCg0K
-SWYgLWZuby1qdW1wLXRhYmxlcyBpc24ndCBzdXBwb3J0ZWQgdGhlbiAtLXBhcmFtPWNhc2UtdmFs
-dWVzLXRocmVzaG9sZD0yMA0KbmVlZHMgdG8gYmUgc2V0IChpZiBzdXBwb3J0ZWQpLg0KDQoJRGF2
-aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50
-IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTcz
-ODYgKFdhbGVzKQ0K
+The "fs->location" is a u32 that comes from the user in ethtool_set_rxnfc().
+We can't pass unclamped values to test_bit() or it results in an out of
+bounds access beyond the end of the bitmap.
 
+Fixes: 7318166cacad ("net: dsa: bcm_sf2: Add support for ethtool::rxnfc")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/dsa/bcm_sf2_cfp.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/dsa/bcm_sf2_cfp.c b/drivers/net/dsa/bcm_sf2_cfp.c
+index e6234d209787..4212bc4a5f31 100644
+--- a/drivers/net/dsa/bcm_sf2_cfp.c
++++ b/drivers/net/dsa/bcm_sf2_cfp.c
+@@ -886,6 +886,9 @@ static int bcm_sf2_cfp_rule_set(struct dsa_switch *ds, int port,
+ 	     fs->m_ext.data[1]))
+ 		return -EINVAL;
+ 
++	if (fs->location != RX_CLS_LOC_ANY && fs->location >= CFP_NUM_RULES)
++		return -EINVAL;
++
+ 	if (fs->location != RX_CLS_LOC_ANY &&
+ 	    test_bit(fs->location, priv->cfp.used))
+ 		return -EBUSY;
+@@ -974,6 +977,9 @@ static int bcm_sf2_cfp_rule_del(struct bcm_sf2_priv *priv, int port, u32 loc)
+ 	struct cfp_rule *rule;
+ 	int ret;
+ 
++	if (loc >= CFP_NUM_RULES)
++		return -EINVAL;
++
+ 	/* Refuse deleting unused rules, and those that are not unique since
+ 	 * that could leave IPv6 rules with one of the chained rule in the
+ 	 * table.
+-- 
+2.18.0
