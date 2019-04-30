@@ -2,75 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD711FBBE
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 16:42:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 688DAFBC8
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 16:45:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727180AbfD3Olj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 10:41:39 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7149 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726073AbfD3Olj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 10:41:39 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id B43494593EFE64FF1F6E;
-        Tue, 30 Apr 2019 22:41:36 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Tue, 30 Apr 2019
- 22:41:29 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <ericvh@gmail.com>, <lucho@ionkov.net>,
-        <asmadeus@codewreck.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <v9fs-developer@lists.sourceforge.net>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH -next] 9p/xen: Add cleanup path in p9_trans_xen_init
-Date:   Tue, 30 Apr 2019 22:39:33 +0800
-Message-ID: <20190430143933.19368-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+        id S1727635AbfD3Oop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 10:44:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55636 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726053AbfD3Oop (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 10:44:45 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7BA432147A;
+        Tue, 30 Apr 2019 14:44:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1556635484;
+        bh=jQl6KZ1mkt2sFen+G+4PwxY4Gea4OC9Ny6/E3aBMeOs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=T3Qg+S+Jfwc91y28o9Gen624qUDTKTyFgP15EYwDtwOvQCjCkn32PD7YoktkT9Jn1
+         LriI+VKyBDSwblQadABpH79fbr+wZtUXXXR8iCch1GVOEma82G06y985zuZINCjJN3
+         lN8KhxcGzm4TsEKl+0J1NKyJO44YB3EZ7YpSqGpc=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     idosch@mellanox.com, David Ahern <dsahern@gmail.com>
+Subject: [PATCH v4 net-next 0/3] ipv4: Move location of pcpu route cache and exceptions
+Date:   Tue, 30 Apr 2019 07:45:47 -0700
+Message-Id: <20190430144550.15033-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If xenbus_register_frontend() fails in p9_trans_xen_init,
-we should call v9fs_unregister_trans() to do cleanup.
+From: David Ahern <dsahern@gmail.com>
 
-Fixes: 868eb122739a ("xen/9pfs: introduce Xen 9pfs transport driver")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- net/9p/trans_xen.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+This series moves IPv4 pcpu cached routes from fib_nh to fib_nh_common
+to make the caches available for IPv6 nexthops (fib6_nh) with IPv4
+routes. This allows a fib6_nh struct to be used with both IPv4 and
+and IPv6 routes.
 
-diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index 29420eb..3963eb1 100644
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -530,13 +530,19 @@ static struct xenbus_driver xen_9pfs_front_driver = {
- 
- static int p9_trans_xen_init(void)
- {
-+	int rc;
-+
- 	if (!xen_domain())
- 		return -ENODEV;
- 
- 	pr_info("Initialising Xen transport for 9pfs\n");
- 
- 	v9fs_register_trans(&p9_xen_trans);
--	return xenbus_register_frontend(&xen_9pfs_front_driver);
-+	rc = xenbus_register_frontend(&xen_9pfs_front_driver);
-+	if (rc)
-+		v9fs_unregister_trans(&p9_xen_trans);
-+
-+	return rc;
- }
- module_init(p9_trans_xen_init);
- 
+v4
+- fixed memleak if encap_type is not set as noticed by Ido
+
+v3
+- dropped ipv6 patches for now. Will resubmit those once the existing
+  refcnt problem is fixed
+
+v2
+- reverted patch 2 to use ifdef CONFIG_IP_ROUTE_CLASSID instead
+  of IS_ENABLED(CONFIG_IP_ROUTE_CLASSID) to fix compile issues
+  reported by kbuild test robot
+
+David Ahern (3):
+  ipv4: Move cached routes to fib_nh_common
+  ipv4: Pass fib_nh_common to rt_cache_route
+  ipv4: Move exception bucket to nh_common
+
+ include/net/ip_fib.h     |  8 ++++--
+ net/ipv4/fib_semantics.c | 48 ++++++++++++++++---------------
+ net/ipv4/route.c         | 75 ++++++++++++++++++++++--------------------------
+ 3 files changed, 64 insertions(+), 67 deletions(-)
+
 -- 
-2.7.0
-
+2.11.0
 
