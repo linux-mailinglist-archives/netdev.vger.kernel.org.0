@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D094F7DD
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 14:03:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62EC9F768
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 13:59:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728864AbfD3MDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 08:03:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53914 "EHLO mail.kernel.org"
+        id S1730628AbfD3Lq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 07:46:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60034 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729938AbfD3Lng (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 07:43:36 -0400
+        id S1730614AbfD3Lqw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 07:46:52 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1E18921670;
-        Tue, 30 Apr 2019 11:43:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5FF05217D8;
+        Tue, 30 Apr 2019 11:46:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556624614;
-        bh=gXLdoaAcPWLTUVmzvOUrQ4bL46PcIJ0n9kh5CiHo3PA=;
+        s=default; t=1556624810;
+        bh=jT6k2AMOLNDuggff30WlVymrh4A9K6C9ycBCTZHxF0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aH5UEdkNGRn/RJtVoJQ5nwiL/+dhdloi1FnhlwDP2GaaHLjPIwlkC7oCVKz8zmNhf
-         SZyx4aLI58M2Yfqt5H9D3bH1j3E4rEUAmdDLb2GyVopDYFo472K/iJ979Y4YGNRht4
-         Bk8IckUKamW4N4eCU9DEdEiWNMILQu6Cshud9+cw=
+        b=i7e0MawShUrnYo6hXG4M7Dv9e2mXaBv2csAOJsdmw15tiXQSd3kSJI8T0JJkpxpJt
+         ncyW+FPNyzZu4taPuoDwzk1upa9Y/zxn8PY7NVjN1oQmRNGyYMjSq2ThT0CULmjx/I
+         plEj5Xte6woic6JRZLxEWECwaCv6H7/eKTzo2Ga0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,12 +38,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         David Woodhouse <dwmw2@infradead.org>,
         Andy Lutomirski <luto@kernel.org>,
         Borislav Petkov <bp@alien8.de>
-Subject: [PATCH 4.14 40/53] x86, retpolines: Raise limit for generating indirect calls from switch-case
-Date:   Tue, 30 Apr 2019 13:38:47 +0200
-Message-Id: <20190430113558.059074259@linuxfoundation.org>
+Subject: [PATCH 4.19 080/100] x86, retpolines: Raise limit for generating indirect calls from switch-case
+Date:   Tue, 30 Apr 2019 13:38:49 +0200
+Message-Id: <20190430113612.525707189@linuxfoundation.org>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190430113549.400132183@linuxfoundation.org>
-References: <20190430113549.400132183@linuxfoundation.org>
+In-Reply-To: <20190430113608.616903219@linuxfoundation.org>
+References: <20190430113608.616903219@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -208,7 +208,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -242,6 +242,11 @@ KBUILD_CFLAGS += -fno-asynchronous-unwin
+@@ -224,6 +224,11 @@ KBUILD_CFLAGS += -fno-asynchronous-unwin
  # Avoid indirect branches in kernel to deal with Spectre
  ifdef CONFIG_RETPOLINE
    KBUILD_CFLAGS += $(RETPOLINE_CFLAGS)
