@@ -2,106 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E64010063
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 21:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69A4910064
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 21:41:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbfD3TkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 15:40:17 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:38687 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726024AbfD3TkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 15:40:17 -0400
-Received: by mail-yw1-f68.google.com with SMTP id i66so6812990ywe.5
-        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 12:40:16 -0700 (PDT)
+        id S1726086AbfD3Tlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 15:41:42 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41287 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725996AbfD3Tlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 15:41:42 -0400
+Received: by mail-pg1-f193.google.com with SMTP id f6so7311281pgs.8
+        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 12:41:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=9hapJfe16PyJZQNfi17Kkf8yv+f1SqUnJbmE8AnYr4E=;
-        b=pz1nHFqIzMz7SkqEfjLv9j53AdOex0KJr1Jjv40jel6TDuOtHLUc1IyvYybLp8+Rg8
-         SeJCdRW+CcTZYMz97kCsU9qZOMj6GbXBY1FhwQTPRoVkXET6lGsi/we5FwlT4NN8ZgGV
-         D9HvQnd4WUerLRjIl7MHMI+zIzOO1OvFXA9aqxKG1DZKYvc/wdLLXdlne9u8chp4JI7z
-         uSfhgXP+waFbZ+Y+hEAPmfIAv5EQ8iLEFU/LAe+y+912hhXcECsVrLpd9P9lQ2PLIpaa
-         q1rzWkiYHKuoIbD2Cmj8YoOlJZtAIK7eVdnUhNPAJr877KBNLYYtlhevOefACCm8g5v9
-         QYGw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JYyOSRB+35GoOgzVAVZ1PxtBkzoE2H9cHm+FWy1I/SM=;
+        b=M6bSwWrI4yoeRTL0xe1v6f6uBlJtVvOm89tJlShrxlGPRXWJKOd4ILpuUFrC5IJN0x
+         rCW5mpsovd6zGbJD+tc0wNCpAln4grTOUPQfMDiuLzMs3+wmMtcyiz+nGQ9DMDYQWxIV
+         6jog4DHfG3QNW15ZAWDzVuPd8J/JJ3x0XaIU1LsFzdWPIXzyevkdvmYm3I6aE5Wvkbey
+         DQwdZ/EdB6Xq9LnOf0lQqObdSpA1MqohKfRfq4UByU3oQ91cAyIHhaVVDb5khNfmasGJ
+         WE6+bH1oKzKAUjRVh5ApIpeq2BVL8T+AAKezxqK6gU2fbl2pjOPuWHqNdLwZnL82u7CJ
+         7agQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=9hapJfe16PyJZQNfi17Kkf8yv+f1SqUnJbmE8AnYr4E=;
-        b=MjDZGNSkKL18k1nCV7YUOlPNZs/yRxmhFgdQFxo6S4hDZXLFi+zWOd0ygOMfJ28STR
-         GPL4laLC3ypw4MBDY10C0zfRCEE7Q8JyqGtRilfrfYM/Vz58w+XzaGd7KF+tvE3fx1xm
-         /ELcmRbg5zLrI+GY6XYVvpQa0nowWNecCK9/7ErMn5NkuDm+KJrzMgxHIaTXncjPQMeq
-         kDLZ12amBWLhXckFYzEx5h2op7ax5QyoQPNgO58F1tPUGJ+v81NGeuOfu+q6uhBSQrmz
-         +Rzv5kU49pZjOhdkZAw3hzOX60Ac9FX9Jz4KapnPUw/fzb/5olYxEQ09Us/DyHvAYkH/
-         tghg==
-X-Gm-Message-State: APjAAAVaKxfpiSH3ZSBygLceFOEL5QtX3Pf38rk8sf+TZL1pwnwdREcO
-        Ah8a+uH1fv4Oq871EVchwrKajg==
-X-Google-Smtp-Source: APXvYqxqKpnwgH9sBzyVrkWzckuTsdDNH71RQl9Qesa6m+dtdU+SW7zkJIti4k+R188J6xC/gHqb/A==
-X-Received: by 2002:a25:1d57:: with SMTP id d84mr18191417ybd.40.1556653216257;
-        Tue, 30 Apr 2019 12:40:16 -0700 (PDT)
-Received: from cakuba (adsl-173-228-226-134.prtc.net. [173.228.226.134])
-        by smtp.gmail.com with ESMTPSA id p3sm7840711ywf.2.2019.04.30.12.40.15
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 30 Apr 2019 12:40:16 -0700 (PDT)
-Date:   Tue, 30 Apr 2019 15:39:32 -0400
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Y Song <ys114321@gmail.com>
-Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH bpf-next 1/6] tools: bpftool: add --log-libbpf option to
- get debug info from libbpf
-Message-ID: <20190430153932.7d741d4d@cakuba>
-In-Reply-To: <CAH3MdRXFBsBdrmTc36yBs0Y0wcz4tOk-cBY4q6_s9bmtdnctyA@mail.gmail.com>
-References: <20190429095227.9745-1-quentin.monnet@netronome.com>
-        <20190429095227.9745-2-quentin.monnet@netronome.com>
-        <CAH3MdRUQn=ycpcDLbLxGAZwGhnVMoD-avPPcSCopAtwof4czNw@mail.gmail.com>
-        <d4f761c3-d133-4f89-44c2-a96c7f917571@netronome.com>
-        <CAH3MdRXFBsBdrmTc36yBs0Y0wcz4tOk-cBY4q6_s9bmtdnctyA@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JYyOSRB+35GoOgzVAVZ1PxtBkzoE2H9cHm+FWy1I/SM=;
+        b=c+iiX+CHb2tjjITPozxcUY8lBgZg/mEg6s0D9mSG3zN0zquVhYJCdY2Abqp2JgaORX
+         lHvby3FrL+7hwFNbKdRVZXqWn9UbsvtAT7+HgCSuxxWuGkEBiBrdh8O0nQ4U6qT6yRtK
+         9ZaxiZBTIrhviBBkRtg9/sAPWVeieZOKQQnwCpcJU+uJjujskirnMiW+uibQs1yMquz0
+         VgkbchPfavpJDhs3GAftvzsr7BhS71NAKMjz3iQqYIpUCvouNwaJ5+YJ83+s7cG9HMnw
+         RAykmOWUU9zXQPqV6dJpyGylq629g+0ta0htI87nwQSgxD+mLESK6PJPEsZr/98RjCvZ
+         ocyQ==
+X-Gm-Message-State: APjAAAUEh4fLOyUPnFNyXcL0PQJ8ZoMyk0DvSlqXNjqdEmUhM6Fz1AKA
+        /6yVIveQe2vYICe9mmxKVXlFkj8H
+X-Google-Smtp-Source: APXvYqwMM5nn+9cF0eiXcsf5AEwm+glPy14T+496NvXeyIWmLn8ukYZ1AiuS1ASNxJXUXeUii9dDig==
+X-Received: by 2002:a63:6cc7:: with SMTP id h190mr67373095pgc.350.1556653301492;
+        Tue, 30 Apr 2019 12:41:41 -0700 (PDT)
+Received: from [172.27.227.169] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id i135sm58850835pgd.41.2019.04.30.12.41.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Apr 2019 12:41:40 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] ss: add option to print socket information
+ on one line
+To:     Josh Hunt <johunt@akamai.com>, stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org
+References: <1556227308-16057-1-git-send-email-johunt@akamai.com>
+ <7f3e7f62-200c-fba3-96b1-f0682e763560@gmail.com>
+ <f1a1cd3b-8b85-3296-edd0-8106b7e28010@akamai.com>
+ <1f1ca56d-bfd7-7fc4-1fed-cff2cc69c6f7@akamai.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4ff0fbb5-9f32-440f-8eac-6f05b405b934@gmail.com>
+Date:   Tue, 30 Apr 2019 13:41:39 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <1f1ca56d-bfd7-7fc4-1fed-cff2cc69c6f7@akamai.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Apr 2019 08:31:53 -0700, Y Song wrote:
-> On Tue, Apr 30, 2019 at 2:34 AM Quentin Monnet
-> <quentin.monnet@netronome.com> wrote:
-> >
-> > Hi Yonghong,
-> >
-> > 2019-04-29 16:32 UTC-0700 ~ Y Song <ys114321@gmail.com>  
-> > > On Mon, Apr 29, 2019 at 2:53 AM Quentin Monnet
-> > > <quentin.monnet@netronome.com> wrote:  
-> > >>
-> > >> libbpf has three levels of priority for output: warn, info, debug. By
-> > >> default, debug output is not printed to stderr.
-> > >>
-> > >> Add a new "--log-libbpf LOG_LEVEL" option to bpftool to provide more
-> > >> flexibility on the log level for libbpf. LOG_LEVEL is a comma-separated
-> > >> list of levels of log to print ("warn", "info", "debug"). The value
-> > >> corresponding to the default behaviour would be "warn,info".  
-> > >
-> > > Do you think option like "warn,debug" will be useful for bpftool users?
-> > > Maybe at bpftool level, we could allow user only to supply minimum level
-> > > for log output, e.g., "info" will output "warn,info"?  
-> > I've been pondering this, too. Since we allow to combine all levels for
-> > the verifier logs it feels a bit odd to be less flexible for libbpf. And
-> > we could imagine a user who wants verifier logs (so libbpf "debug") but
-> > prefers to limit libbpf output (so no "info")... Although I admit this
-> > might be a bit far-fetched.
-> >
-> > I can resend a version with the option taking only the minimal log
-> > level, as you describe, if you think this is best.  
-> 
-> Thanks, I think providing a single minimum level for output probably
-> better.
+On 4/30/19 12:55 PM, Josh Hunt wrote:
+> Actually, David can you clarify what you meant by "use 'oneline' as the
+> long option without the '-'."?
 
-I have a weak preference for what we have here, because it's similar to
-the kernel bit opt in (log level, stats etc)..
+for your patch:
+1,$s/one-line/oneline/
+
+ip has -oneline which is most likely used as 'ip -o'. having ss with
+--one-line vs --oneline is at least consistent to the level it can be.
