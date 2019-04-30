@@ -2,90 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F4AFFAB
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 20:23:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C51BFFFB0
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 20:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726767AbfD3SXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 14:23:16 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:35321 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726006AbfD3SXQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 14:23:16 -0400
-Received: by mail-pf1-f194.google.com with SMTP id t21so7478760pfh.2
-        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 11:23:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=f8pxTs3dwceHEcKoUZ8IveiI6Ua1SOusN87dK1uxhpw=;
-        b=ZT+pxB7yfWnxeFw0CUiQr71Oq5ZQQEG56wMoGR9ltxc2au1b7l/olJFSWZxS/mUC2Y
-         Ctx+4j7IZTbsuWkb3EKUYjoWq0APeMjrTQcOVmfzwIH0YwdqM2/uVUH1UZnN8v+/T+X4
-         BS0PFUkIqKJ0Dxbdg0sZiUBdK91p86m7Ub0ZbwJo46LiRGWR5YTSG/hvxCPcMjuYoqFW
-         oK/IE+Fduv/TO0VXEG02wKcSV7LIwqGVp5J+u1pMCVTcPfdRecDEEFvfTEelYbTGoReR
-         MWIBClP2rD22+lIeyadv7C2lGrqBQwZ5GFZ4amIA7pJ8XBW5tGDA4WTo+YLNGIzlmtAJ
-         cbZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=f8pxTs3dwceHEcKoUZ8IveiI6Ua1SOusN87dK1uxhpw=;
-        b=Mj7k4KitmFWDXL53vHJD+DHGNSjJ7jCgCcR5zm6gVuflXezRiCBJReMRJH3jGRj8/U
-         2hYZtgMX8iBAw0NojAqqPeitylNrsVblvsPMaVBkmeu9dPp2E1UiDhTpqR0iRi8EQPWk
-         Ofla6asweCawoKLVlLvT1pUza8ocz429KtsvdSN02YNuKqbPZOGqNmH4KjhowErMUnWP
-         WbhFkSgWPe5yGq57mUPrjcYc+vAQbgLRMIEmRUmctxqtfK1CQe2dBely8d8di286k8+9
-         UviNxACGESVxu7KoYsQw1LN+o1BX8FARrazYolv2/FRYk/HIJI8Vk4g9hBJEF4ynBY6T
-         MPEg==
-X-Gm-Message-State: APjAAAW4/UwR0v22DzoydlmshOyiD5iw5I6zJHRjR+z/Had8ulShjrFf
-        +DMHFhU40qKdPP4ccxb2ruc=
-X-Google-Smtp-Source: APXvYqz1UHGEZMOf8k++dHD1L+m8XuBkkNSKUzfMmnMWmkhkg/7pV71AtjGDmYC/EybRRSmcpIjsQA==
-X-Received: by 2002:a63:191b:: with SMTP id z27mr2605095pgl.327.1556648595617;
-        Tue, 30 Apr 2019 11:23:15 -0700 (PDT)
-Received: from [172.27.227.169] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id u5sm9449305pfb.60.2019.04.30.11.23.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 30 Apr 2019 11:23:14 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2] devlink: Increase column size for larger
- shared buffers
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     alexanderk@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-References: <20190430084208.4693-1-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <95526302-cccb-7f19-d2ff-1a5701749af7@gmail.com>
-Date:   Tue, 30 Apr 2019 12:23:12 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1726514AbfD3SYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 14:24:49 -0400
+Received: from mga07.intel.com ([134.134.136.100]:47726 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726006AbfD3SYt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 14:24:49 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Apr 2019 11:24:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,414,1549958400"; 
+   d="scan'208";a="147164319"
+Received: from unknown (HELO btopel-mobl.ger.intel.com) ([10.255.41.105])
+  by fmsmga007.fm.intel.com with ESMTP; 30 Apr 2019 11:24:45 -0700
+Subject: Re: [PATCH net-next 4/6] xsk: Extend channels to support combined
+ XSK/non-XSK traffic
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jonathan Lemon <bsd@fb.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+References: <20190426114156.8297-1-maximmi@mellanox.com>
+ <20190426114156.8297-5-maximmi@mellanox.com>
+ <e4c2a6ee-5aa4-eabf-444f-b5f6df17fe38@intel.com>
+ <4e830da4-086b-4157-e0d6-bd1adcf49788@mellanox.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <5e2b78de-b66c-bba6-23a5-c89b1bc50391@intel.com>
+Date:   Tue, 30 Apr 2019 20:24:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190430084208.4693-1-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <4e830da4-086b-4157-e0d6-bd1adcf49788@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/19 2:42 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
-> 
-> With current number of spaces the output is mangled if the shared buffer
-> is congested.
-> 
+On 2019-04-30 20:11, Maxim Mikityanskiy wrote:
+> I'm going to respin this series, adding the mlx5 patches and addressing
+> the other comments. If you feel like there are more things to discuss
+> regarding this patch, please move on to the v2.
 
-...
+Very cool, thanks for working on this Maxim!
 
-> 
-> v2:
-> * Increase number of spaces to make the change more future-proof
-> 
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> Reported-by: Alex Kushnarov <alexanderk@mellanox.com>
-> ---
->  devlink/devlink.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-
-applied to iproute2-next. Thanks
+It's Labor Day in Sweden tomorrow, I'll have a look Thu/Fri!
 
 
+Cheers,
+Björn
