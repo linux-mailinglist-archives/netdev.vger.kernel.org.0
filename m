@@ -2,151 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0485F1D9
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 10:12:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7438FF228
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 10:42:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726495AbfD3IMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 04:12:39 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:38179 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726165AbfD3IMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 04:12:39 -0400
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1hLNsL-000189-Bz; Tue, 30 Apr 2019 10:12:29 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1hLNsJ-0004oN-QK; Tue, 30 Apr 2019 10:12:27 +0200
-Date:   Tue, 30 Apr 2019 10:12:27 +0200
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
-To:     Aurelien Jarno <aurel32@debian.org>, 927825@bugs.debian.org
-Cc:     Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        netdev@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>
-Subject: Re: Bug#927825: arm: mvneta driver used on Armada XP GP boards does
- not receive packets (regression from 4.9)
-Message-ID: <20190430081223.GA7409@taurus.defre.kleine-koenig.org>
-References: <155605060923.15313.17004641650838278623.reportbug@ohm.local>
- <155605060923.15313.17004641650838278623.reportbug@ohm.local>
- <20190425125046.GA7210@aurel32.net>
- <155605060923.15313.17004641650838278623.reportbug@ohm.local>
- <20190425191732.GA28481@aurel32.net>
+        id S1726754AbfD3Imo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 04:42:44 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:33277 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725938AbfD3Imo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 04:42:44 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id E016F23075;
+        Tue, 30 Apr 2019 04:42:42 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 30 Apr 2019 04:42:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=yVrkeUk2KBhDPnm2O
+        fjgvCa5g/Fz1bstW+rBK/o0zNA=; b=h73VzZ7IoO/659sbJfPD1JOjSnnfd1ii6
+        d+gBhI3SCUNMh0FO+fJ2+P7NIBWiCurExn0lK/E1I8WZSsPwIJtRE8ZuaHLoRQeZ
+        LKeXzVjPPbjFQt4Slb3tQ7H2DyFfs2tMKRq+utKCGtZwEDibF+u6hvWMI/7zZlQ9
+        MAMMZqBDEEF+U5kG5b/8biAox7HZ9JBamgreLS3+ntBXonqjhxcAYZgk09Fpn8kA
+        nerfV/ej/LBnmIu4fShVudDS+ziAkHZzGDcGze83R7xQAuoZVP+o4h6vFDvVNbnV
+        58TDkKBTc5VzQ/Gw3TwPxebabpyHyOZDI6tpYfFA8fS+XMV3BqRAQ==
+X-ME-Sender: <xms:ggrIXBt1793mTSDT8iDL6nNxJh0borhauXVfXTXqPlEiPnOKtZwy-w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrieeggddtkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:ggrIXJ5CdhxLvIerutqGphi_zLmpfMwKjE2TI9J2rLB-p2GRK8eOdw>
+    <xmx:ggrIXF1WB2C9ARE8i7BfWYRjV6VlgIIYlnHrBQGHeycV5yZgPTtQww>
+    <xmx:ggrIXMjGHfL-y0s_yyCkBbp_xXJFYPbbHa0oa8qaphKQZBuspPGMyw>
+    <xmx:ggrIXLUiSUYUJGBnvulB5VbO9dhnpeDOwibxOj6o7yhemv44Up20sA>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id C2A03103CB;
+        Tue, 30 Apr 2019 04:42:40 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, alexanderk@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH iproute2-next v2] devlink: Increase column size for larger shared buffers
+Date:   Tue, 30 Apr 2019 11:42:08 +0300
+Message-Id: <20190430084208.4693-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="0F1p//8PRICkK4MW"
-Content-Disposition: inline
-In-Reply-To: <20190425191732.GA28481@aurel32.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Ido Schimmel <idosch@mellanox.com>
 
---0F1p//8PRICkK4MW
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+With current number of spaces the output is mangled if the shared buffer
+is congested.
 
-[Adding the mvebu guys and netdev to Cc]
+Before:
 
-Hello,
+# devlink sb occupancy show swp25
+swp25:
+  pool: 0:    33384960/39344256 1:          0/0       2:          0/0       3:          0/0
+        4:          0/720     5:          0/0       6:          0/0       7:          0/0
+        8:          0/288     9:          0/0      10:          0/0
+  itc:  0(0): 33272064/39344256 1(0):       0/0       2(0):       0/0       3(0):       0/0
+        4(0):       0/0       5(0):       0/0       6(0):       0/0       7(0):       0/0
+  etc:  0(4):       0/720     1(4):       0/0       2(4):       0/0       3(4):       0/0
+        4(4):       0/0       5(4):       0/0       6(4):       0/0       7(4):       0/0
+        8(8):       0/288     9(8):       0/0      10(8):       0/0      11(8):       0/0
+       12(8):       0/0      13(8):       0/0      14(8):       0/0      15(8):       0/0
 
-On Thu, Apr 25, 2019 at 09:17:32PM +0200, Aurelien Jarno wrote:
-> On 2019-04-25 14:50, Aurelien Jarno wrote:
-> > On 2019-04-23 22:16, Aurelien Jarno wrote:
-> > > Source: linux
-> > > Version: 4.19.28-2
-> > > Severity: important
-> > >=20
-> > > After upgrading hartmann.debian.org (an armhf buildd using an Armada =
-XP
-> > > GP board) from buster to stretch, the ethernet device is not working
+After:
 
-"upgrading from buster to stretch" doesn't make sense. I think you meant
-=66rom stretch to buster.
+# devlink sb occupancy show swp25
+swp25:
+  pool: 0:      39070080/39344256   1:             0/0          2:             0/0          3:             0/0
+        4:             0/720        5:             0/0          6:             0/0          7:             0/0
+        8:             0/288        9:             0/0         10:             0/0
+  itc:  0(0):   39062016/39344256   1(0):          0/0          2(0):          0/0          3(0):          0/0
+        4(0):          0/0          5(0):          0/0          6(0):          0/0          7(0):          0/0
+  etc:  0(4):          0/720        1(4):          0/0          2(4):          0/0          3(4):          0/0
+        4(4):          0/0          5(4):          0/0          6(4):          0/0          7(4):          0/0
+        8(8):          0/288        9(8):          0/0         10(8):          0/0         11(8):          0/0
+       12(8):          0/0         13(8):          0/0         14(8):          0/0         15(8):          0/0
 
-> >=20
-> > More precisely the board is a "Marvell Armada XP Development Board
-> > DB-MV784MP-GP"
-> >=20
-> > > anymore. Using tcpdump on both the buildd and a remote host, it appea=
-rs
-> > > that the packets correctly leave the board and that the reception side
-> > > fails.
+v2:
+* Increase number of spaces to make the change more future-proof
 
-If you can send to a remote host at least ARP (or ND) must be working,
-so some reception still works, right?
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reported-by: Alex Kushnarov <alexanderk@mellanox.com>
+---
+ devlink/devlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > > The module used for the ethernet device is mvneta. The corresponding =
-DT
-> > > compatible entry is "marvell,armada-xp-neta".
-> > >
-> >=20
-> > I have started a "bisection" with the kernels from snapshot. This is
-> > what I have found so far:
-> >=20
-> > This one works:
-> > - linux-image-4.19.0-rc6-armmp-lpae_4.19~rc6-1~exp1_armhf.deb=20
-> >=20
-> > The following ones don't:
-> > - linux-image-4.19.0-rc7-armmp-lpae_4.19~rc7-1~exp1_armhf.deb
-> > - linux-image-5.0.0-trunk-armmp_5.0.2-1~exp1_armhf.deb
-> >=20
-> > My guess (I don't have time to try more now) is that the issue is caused
-> > by the following change:
-> >=20
-> > |  [ Uwe Kleine-K=F6nig ]
-> > |  * [armhf] enable MVNETA_BM_ENABLE and CAN_FLEXCAN as a module
-> >=20
->=20
-> I confirm this is the issue. Disabling MVNETA_BM_ENABLE on kernel=20
-> 4.19.28-2 fixes the issue. Note that it breaks the ABI.
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index dc6e73fec20c..5bf81f55cde8 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -3422,7 +3422,7 @@ static void pr_out_occ_show_item_list(const char *label, struct list_head *list,
+ 				  occ_item->bound_pool_index);
+ 		else
+ 			pr_out_sp(7, "%2u:", occ_item->index);
+-		pr_out_sp(15, "%7u/%u", occ_item->cur, occ_item->max);
++		pr_out_sp(21, "%10u/%u", occ_item->cur, occ_item->max);
+ 		if (i++ % 4 == 0)
+ 			pr_out("\n");
+ 	}
+-- 
+2.20.1
 
-A colleague happens to work with an XP based machine with a (nearly)
-vanilla kernel based on 5.1.0-rc6 and there enabling MVNETA_BM_ENABLE
-doesn't render networking nonfunctional.
-
-Looking through the changes to drivers/net/ethernet/marvell/mvneta*
-between 5.0 and 5.1-rc6 there isn't something that would explain a fix
-though. There doesn't seem to be a good explanation in the debian
-specific patches either.
-
-So this problem is either machine specific or it works with the mvneta
-driver builtin. (I didn't double check, but guess that my colleague uses
-=3Dy and the Debian kernel =3Dm). Well, or I missed something.
-
-Is it possible to test a few things on hartmann? I'd suggest:
-
- - try (vanilla) 5.1-rc6 with MVNETA=3Dy
- - try an older kernel (maybe 4.6 as the buffer manager stuff was
-   introduced in dc35a10f68d3 ("net: mvneta: bm: add support for
-   hardware buffer management") which made it into 4.6-rc1) with
-   MVNETA_BM_ENABLE=3D[ym].
-
-Best regards
-Uwe
-
---0F1p//8PRICkK4MW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAlzIA2QACgkQwfwUeK3K
-7AkBuQf/Rj+7QkSaunh9KxGHlIlT+4yTRUXbpMWiuSeELDhgfyoAQU0HixcFU6QK
-0p7aWGNMRVScHRXmN5Gi3pF6bLq8F6I+xlLraTelYVBAGRcEDHKQZPyLEUyyKnr2
-6pDSZnLmqna8ppycjkvhegdqpT8+hb8w9L4F1jiJ2eKBcYvFw7e5s3oqm7cOZEPe
-zyrP+USLjhn78X+9uai0uRclWi8gSpTUvwpFBz8f/xe5y4yzBzsOegDz96S10GLV
-t91ElpxS6UBBYED8gaNMByia8sbylMmmALTDFylu1sN7reQGGBY0O8MDVO6TVk3A
-kSc3lXcQTFJgus6ZMbCYKshPip+l+Q==
-=pB6Y
------END PGP SIGNATURE-----
-
---0F1p//8PRICkK4MW--
