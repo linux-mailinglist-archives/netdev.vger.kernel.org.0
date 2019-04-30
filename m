@@ -2,80 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C92F8E3
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 14:31:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71CCAF929
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 14:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727821AbfD3MbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 08:31:08 -0400
-Received: from mail.us.es ([193.147.175.20]:49738 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726436AbfD3MbH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 08:31:07 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id BCB9111FF92
-        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 14:31:05 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id AC343DA720
-        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 14:31:05 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id A129FDA717; Tue, 30 Apr 2019 14:31:05 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8D924DA707;
-        Tue, 30 Apr 2019 14:31:03 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 30 Apr 2019 14:31:03 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (129.166.216.87.static.jazztel.es [87.216.166.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 546204265A31;
-        Tue, 30 Apr 2019 14:31:03 +0200 (CEST)
-Date:   Tue, 30 Apr 2019 14:31:02 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] netfilter: nat: avoid unused-variable warning
-Message-ID: <20190430123102.xia5kwlkqsvinqvi@salvia>
-References: <20190325135336.2107801-1-arnd@arndb.de>
+        id S1727527AbfD3MqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 08:46:07 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:38575 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726166AbfD3MqG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 08:46:06 -0400
+Received: by mail-pl1-f196.google.com with SMTP id f36so6678542plb.5;
+        Tue, 30 Apr 2019 05:46:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+SHDYhoT7yzWGQoKK7GNVw6jL5ApU1S48wIix1XWmW0=;
+        b=HyGhI8ysHdGGF0okgTADzSVz0l5itILr0VjXof3cbCjjRHdUP69FmO+07lNmbriub9
+         yxwxa2hA+K9nBqfRfB4rpsV5debt0waUyKho6gSj6iIbko9C/6HsvyDdbVDj7pMBBD7P
+         G3U7eXu7HCbAFsvhTrMdeDe1t7HWMX7fQDDL0jMFjCu5s5Fk9h8kSsFUsYNnikzrerjG
+         Xd9okNOQb0t+RXm58W79mmVDR9V+lm0w9ndqH2DvbkaGC8yDA4qGDMxA2HkeZ0vn9DC9
+         OI1lhtz5/McKP0yRYxr+/hc1n6u1Gb0/BN2jUGTVoX3v/TzO31HKfadu+WI5t7sIXpB2
+         wOkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+SHDYhoT7yzWGQoKK7GNVw6jL5ApU1S48wIix1XWmW0=;
+        b=P5FYrOmwVqRQ9T4O+ZoeHrA0MADdVFqZqamSjrRnt20WMidIHFOpCW9dRyaBwSxL90
+         gx8jisAUSocEC/ZjVB8OifVxEC5TmtjjDayQUyGaniSDGFx5/XDeJVqFqtUC4PQakveF
+         6WN2U1cs8eCz7cPiHsh/vNdJLxVF7vE/fx3UffjrG4hXf+OfD2fPnA6i5YJY1AZNdt0G
+         Cx0xq2oo+RsAt/2+Z+aM855ukoP8s0H6fJuHnOTSSMV0pWfYcl7AcAchZ673HpPjGYTn
+         4mJfLDAvGqKVBDk5Fja0+HL9A7A6dW/cd6IkCr/o7ONs6XrIf25sIEp4hCbshLeAgwVx
+         UToA==
+X-Gm-Message-State: APjAAAVR8PPfLAEeHjf782OWXSyWQOs/v7kAFIvxOqTJlM7yDzvwZQ9e
+        W0PWElFlwxioYLmz7YDuyt8=
+X-Google-Smtp-Source: APXvYqzOMyUVpg2lNVH7XtnfgKclpcjZPDGAAqnrGtZkFgcEOLW2ijFjH3n3QU1WikIeqEYFXSM6Bg==
+X-Received: by 2002:a17:902:6949:: with SMTP id k9mr11655994plt.59.1556628366306;
+        Tue, 30 Apr 2019 05:46:06 -0700 (PDT)
+Received: from btopel-mobl.ger.intel.com ([192.55.54.41])
+        by smtp.gmail.com with ESMTPSA id u5sm52334523pfa.169.2019.04.30.05.46.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Apr 2019 05:46:05 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
+        bpf@vger.kernel.org, u9012063@gmail.com
+Subject: [PATCH bpf 0/2] libbpf: fixes for AF_XDP teardown
+Date:   Tue, 30 Apr 2019 14:45:34 +0200
+Message-Id: <20190430124536.7734-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190325135336.2107801-1-arnd@arndb.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 25, 2019 at 02:53:05PM +0100, Arnd Bergmann wrote:
-> masq_refcnt6 was added at the start of the file, but it is
-> only used in the option IPv6 section of the file, causing
-> a harmless compiler warning if IPv6 is disabled:
-> 
-> net/netfilter/nf_nat_masquerade.c:15:21: error: 'masq_refcnt6' defined but not used [-Werror=unused-variable]
->  static unsigned int masq_refcnt6 __read_mostly;
-> 
-> Move the variable next to the user to avoid that warning.
-> 
-> Fixes: 46f7487e161b ("netfilter: nat: don't register device notifier twice")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ----
-> This is an older patch stack, for some reason I seem to have never
-> sent it, and I can't find any indication of anyone else sending
-> a similar fix, so sending this out now.
-> 
-> If it's already fixed upstream, please ignore.
+William found two bugs, when doing socket teardown within the same
+process.
 
-Yes, Florian fixed this in nf-next.
+The first issue was an invalid munmap call, and the second one was an
+invalid XSKMAP cleanup. Both resulted in that the process kept
+references to the socket, which was not correctly cleaned up. When a
+new socket was created, the bind() call would fail, since the old
+socket was still lingering, refusing to give up the queue on the
+netdev.
+
+More details can be found in the individual commits.
+
+Thanks,
+Björn
+
+
+Björn Töpel (2):
+  libbpf: fix invalid munmap call
+  libbpf: proper XSKMAP cleanup
+
+ tools/lib/bpf/xsk.c | 192 +++++++++++++++++++++++---------------------
+ 1 file changed, 100 insertions(+), 92 deletions(-)
+
+-- 
+2.20.1
+
