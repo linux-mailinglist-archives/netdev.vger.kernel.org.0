@@ -2,134 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F4A4F29C
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 11:16:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCB1AF2AE
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 11:22:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726835AbfD3JPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 05:15:52 -0400
-Received: from mailgw02.mediatek.com ([1.203.163.81]:38375 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726309AbfD3JPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 05:15:52 -0400
-X-UUID: 4abeeb068a474662a8d7693ede82dd06-20190430
-X-UUID: 4abeeb068a474662a8d7693ede82dd06-20190430
-Received: from mtkcas34.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLS)
-        with ESMTP id 1089139566; Tue, 30 Apr 2019 17:15:47 +0800
-Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N1.mediatek.inc
- (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 30 Apr
- 2019 17:15:45 +0800
-Received: from [10.17.3.153] (172.27.4.253) by MTKCAS32.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Tue, 30 Apr 2019 17:15:45 +0800
-Message-ID: <1556615745.24897.40.camel@mhfsdcap03>
-Subject: Re: [PATCH 2/6] net: stmmac: fix csr_clk can't be zero issue
-From:   biao huang <biao.huang@mediatek.com>
-To:     Alexandre Torgue <alexandre.torgue@st.com>
-CC:     Jose Abreu <joabreu@synopsys.com>, <davem@davemloft.net>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
-        <jianguo.zhang@mediatek.com>
-Date:   Tue, 30 Apr 2019 17:15:45 +0800
-In-Reply-To: <738b37cd-4719-9257-18fc-aab1dc7424f4@st.com>
-References: <1556433009-25759-1-git-send-email-biao.huang@mediatek.com>
-         <1556433009-25759-3-git-send-email-biao.huang@mediatek.com>
-         <24f4b268-aa7f-e1f7-59fc-2bc163eb8277@st.com>
-         <1556525353.24897.30.camel@mhfsdcap03>
-         <738b37cd-4719-9257-18fc-aab1dc7424f4@st.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
-Content-Transfer-Encoding: 7bit
+        id S1726769AbfD3JV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 05:21:57 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:33710 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726263AbfD3JV4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 05:21:56 -0400
+Received: by mail-wm1-f67.google.com with SMTP id z6so1875310wmi.0
+        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 02:21:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iaFDFnvVtS1iWSBFrIIKUe+7Fko1T4rJ0OHw8pGokPc=;
+        b=SGZs7DUnbcoM2RcuSABcJ5nEoFb5Jh0yeaPcnF7PUPj+8pC9/WQCx9BoIHQSJleqz3
+         N/9J58myQKiVQXvIx8lwvoC+4AC9LE0osAegiYd5wfE42z2H/ePs54RyDNrRSTAa2IXw
+         7ByXxjQSOPkiK2LuY8u2671JH6lLW96Vv1MD5QJe62rqoc7RjuFVEEa0byaLidAP6+ss
+         mJg+n7238TTgYfVBHgjWao3xUI8HqccPyvjGIsXVyTLswrqQWSqnLM/WCl2P2UDefbzq
+         wY1iDaaKC5b4iIaEUCuRGx9TKrASiJp1IY0YURTny0z3gzpj5c7obFWhL8lZPD35gAo3
+         RPrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iaFDFnvVtS1iWSBFrIIKUe+7Fko1T4rJ0OHw8pGokPc=;
+        b=CxOmT4VWXuG/RrD77aLun56fNXGK5XMTW1CLrMGZKW4Iydw8+GZMw/pSEZ8+pg+fC8
+         he8yP6lhIOrFNeJc4P5dETmvmEKlCIy2KmNhirqVQQ0Rs9Hepebw6ud4Nf23Kcpnk9a1
+         xiEtiNthPbY22sIjU6Q4/DJ9p56wqAfmjBKeQfKIfOxEGsY92JaXknSXcNpIQmDHZ7zU
+         scOqczn3QswHqpWPOPe6yq9o04tPlZozloGlrmOqAzB7TD9ugMPE4ag4JCP6RCOJ6EE/
+         p3mR/AJLZfXZzZxuFcrqiL9K2xg1MiL1TixsFF+QwCq1CzUbi/SGaV0FdCqtgHsNHhyR
+         iNwg==
+X-Gm-Message-State: APjAAAWkq6YLWBsl7ys5qWnmJrToxzTQRJ5yxYLS0goM7Lmfsl8cWlgk
+        AJiMo7hDBAQX6ApOF69Uk1yaww==
+X-Google-Smtp-Source: APXvYqx+yh3Iadp8l8x5yFZGysITBwlj+gNULdwM6jjBvepbMk7WQhnCC99IjaETLKFpNyD41sTd9w==
+X-Received: by 2002:a7b:c054:: with SMTP id u20mr2564880wmc.100.1556616114786;
+        Tue, 30 Apr 2019 02:21:54 -0700 (PDT)
+Received: from [192.168.1.2] ([194.53.187.71])
+        by smtp.gmail.com with ESMTPSA id r2sm9694774wrr.65.2019.04.30.02.21.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Apr 2019 02:21:54 -0700 (PDT)
+Subject: Re: [PATCH] bpftool: exclude bash-completion/bpftool from .gitignore
+ pattern
+To:     Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Sirio Balmelli <sirio@b-ad.ch>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        Taeung Song <treeze.taeung@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+References: <1556549259-16298-1-git-send-email-yamada.masahiro@socionext.com>
+ <ec1d2c14-ae27-38c7-9b79-4e323161d6f5@netronome.com>
+ <CAK7LNARBOtOMr-=FRh0K1nMFLijRjRCMHYb0L=NY7KZQGydVrQ@mail.gmail.com>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Message-ID: <ca18f97d-0a16-0c2f-2849-841633ad09cb@netronome.com>
+Date:   Tue, 30 Apr 2019 10:21:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-MTK:  N
+In-Reply-To: <CAK7LNARBOtOMr-=FRh0K1nMFLijRjRCMHYb0L=NY7KZQGydVrQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-04-29 at 10:26 +0200, Alexandre Torgue wrote:
-> 
-> On 4/29/19 10:09 AM, biao huang wrote:
-> > Hi,
-> > 
-> > On Mon, 2019-04-29 at 09:18 +0200, Alexandre Torgue wrote:
-> >> Hi
-> >>
-> >> On 4/28/19 8:30 AM, Biao Huang wrote:
-> >>> The specific clk_csr value can be zero, and
-> >>> stmmac_clk is necessary for MDC clock which can be set dynamically.
-> >>> So, change the condition from plat->clk_csr to plat->stmmac_clk to
-> >>> fix clk_csr can't be zero issue.
-> >>>
-> >>> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> >>> ---
-> >>>    drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    2 +-
-> >>>    1 file changed, 1 insertion(+), 1 deletion(-)
-> >>>
-> >>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> >>> index 818ad88..9e89b94 100644
-> >>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> >>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> >>> @@ -4376,7 +4376,7 @@ int stmmac_dvr_probe(struct device *device,
-> >>>    	 * set the MDC clock dynamically according to the csr actual
-> >>>    	 * clock input.
-> >>>    	 */
-> >>> -	if (!priv->plat->clk_csr)
-> >>> +	if (priv->plat->stmmac_clk)
-> >>>    		stmmac_clk_csr_set(priv);
-> >>>    	else
-> >>>    		priv->clk_csr = priv->plat->clk_csr;
-> >>>
-> >>
-> >> So, as soon as stmmac_clk will be declared, it is no longer possible to
-> >> fix a CSR through the device tree ?
-> > 
-> > let's focus on the condition:
-> > 1. clk_csr may be zero, it should not be the condition. or the clk_csr =
-> > 0 will jump to the wrong block.
-> > 2. Since stmmac_clk_csr_set will get_clk_rate from stmmac_clk,
-> > the plat->stmmac_clk is a more proper condition.
-> > 
-> 
-> Ok, but here you remove one possibility: stmmac_clk and clk_csr defined. 
-> no ?
-> 
-> Other way could be the following code + initialize priv->plat->clk_csr 
-> with a non null value before read it in device tree (in stmmac_platform).
-> 
-> if (priv->plat->clk_csr >= 0)
-> 	priv->clk_csr = priv->plat->clk_csr;
-> else
-> 	stmmac_clk_csr_set(priv);
+2019-04-30 09:15 UTC+0900 ~ Masahiro Yamada <yamada.masahiro@socionext.com>
+> Hi Quentin,
 > 
 > 
+> On Tue, Apr 30, 2019 at 12:33 AM Quentin Monnet
+> <quentin.monnet@netronome.com> wrote:
+>>
+>> 2019-04-29 23:47 UTC+0900 ~ Masahiro Yamada <yamada.masahiro@socionext.com>
+>>> tools/bpf/bpftool/.gitignore has the "bpftool" pattern, which is
+>>> intended to ignore the following build artifact:
+>>>
+>>>    tools/bpf/bpftool/bpftool
+>>>
+>>> However, the .gitignore entry is effective not only for the current
+>>> directory, but also for any sub-directories.
+>>>
+>>> So, the following file is also considered to be ignored:
+>>>
+>>>    tools/bpf/bpftool/bash-completion/bpftool
+>>>
+>>> It is obviously version-controlled, so should be excluded from the
+>>> .gitignore pattern.
+>>>
+>>> You can fix it by prefixing the pattern with '/', which means it is
+>>> only effective in the current directory.
+>>>
+>>> I prefixed the other patterns consistently. IMHO, '/' prefixing is
+>>> safer when you intend to ignore specific files.
+>>>
+>>> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+>>> ---
+>>
+>> Hi,
+>>
+>> “Files already tracked by Git are not affected” by the .gitignore (says
+>> the relevant man page), so bash completion file is not ignored. It would
+>> be if we were to add the sources to the index of a new Git repo. But
+>> sure, it does not cost much to make the .gitignore cleaner.
 > 
-> > In some case, it's impossible to get the clk rate of stmmac_clk,
-> > so it's better to remain the clk_csr flow.
-> > 
-Agree.
+> Right, git seems to be flexible enough.
+> 
+> 
+> But, .gitignore is useful to identify
+> build artifacts in general.
+> In fact, other than git, some projects
+> already parse this.
+> 
+> For example, tar(1) supports:
+> 
+>       --exclude-vcs-ignores
+>             read exclude patterns from the VCS ignore files
+> 
+> 
+> As of writing, this option works only to some extent,
+> but I thought this would be useful to create a source
+> package without relying on "git archive".
+> 
+> When I tried "tar --exclude-vcs-ignores", I noticed
+> tools/bpf/bpftool/bash-completion/bpftool was not
+> contained in the tarball.
+> 
+> That's why I sent this patch.
 
-Maybe we should initialize plat->clk_csr to -1
-in stmmac_probe_config_dt:
+Ok, thanks for explaining! Makes sense to me now.
 
-plat->clk_csr = -1;
-/* Get clk_csr from device tree */                                      
-of_property_read_u32(np, "clk_csr", &plat->clk_csr); 
+> 
+> I can add more info in v2 to clarify
+> my motivation though.
 
-Then the condition can write as you proposed:
-if (priv->plat->clk_csr >= 0)
- 	priv->clk_csr = priv->plat->clk_csr;
-else
- 	stmmac_clk_csr_set(priv);
+Sounds good, yes please.
 
-> > 
-> > 
+> 
+> 
+>>>
+>>>   tools/bpf/bpftool/.gitignore | 8 ++++----
+>>>   1 file changed, 4 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/tools/bpf/bpftool/.gitignore b/tools/bpf/bpftool/.gitignore
+>>> index 67167e4..19efcc8 100644
+>>> --- a/tools/bpf/bpftool/.gitignore
+>>> +++ b/tools/bpf/bpftool/.gitignore
+>>> @@ -1,5 +1,5 @@
+>>>   *.d
+>>> -bpftool
+>>> -bpftool*.8
+>>> -bpf-helpers.*
+>>> -FEATURE-DUMP.bpftool
+>>> +/bpftool
+>>> +/bpftool*.8
+>>> +/bpf-helpers.*
+>>
+>> Careful when you add all those slashes, however. "bpftool*.8" and
+>> "bpf-helpers.*" should match files under Documentation/, so you do NOT
+>> want to prefix them with just a "/".
+> 
+> OK, I should not have touched what I was unsure about.
+> Will fix in v2.
 
-
+Thanks!
+Quentin
