@@ -2,61 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17BF1F236
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 10:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84328F24E
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 10:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726845AbfD3IpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 04:45:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57972 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725769AbfD3IpE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 04:45:04 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5DADE21734;
-        Tue, 30 Apr 2019 08:45:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556613903;
-        bh=hmEdMLOBQTMhqvYySsI2VjoDTZMk1bXzuYJWTusGvvA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qFJfgvoiXS9zW7Wo5cizxBucjK5BG3P38b4yYgIJXcwtpuxKoEy1k2FjVB3BboWAa
-         UnzvGL5EpHLj01xuqb/V2Rr02OlSc09vHGr5DU2MV2kUEcfr/SQDX28nC2ZjZ7M+xh
-         bGXiJs2VE0EwP186Dp+6y55GKN/jYTmhgg8PdQbw=
-Date:   Tue, 30 Apr 2019 10:45:01 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Tobin C. Harding" <tobin@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Tyler Hicks <tyhicks@canonical.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Wang Hai <wanghai26@huawei.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] net-sysfs: Fix error path for kobject_init_and_add()
-Message-ID: <20190430084501.GF11737@kroah.com>
-References: <20190430002817.10785-1-tobin@kernel.org>
- <20190430002817.10785-4-tobin@kernel.org>
+        id S1726700AbfD3I4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 04:56:08 -0400
+Received: from mailgw02.mediatek.com ([1.203.163.81]:24483 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725790AbfD3I4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 04:56:08 -0400
+X-UUID: 660ccab875084f589928a94b3a8c365e-20190430
+X-UUID: 660ccab875084f589928a94b3a8c365e-20190430
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLS)
+        with ESMTP id 562232972; Tue, 30 Apr 2019 16:56:02 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 30 Apr
+ 2019 16:56:01 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS32.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Tue, 30 Apr 2019 16:56:00 +0800
+Message-ID: <1556614560.24897.31.camel@mhfsdcap03>
+Subject: RE: [PATCH 1/4] net: stmmac: update rx tail pointer register to fix
+ rx dma hang issue.
+From:   biao huang <biao.huang@mediatek.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "yt.shen@mediatek.com" <yt.shen@mediatek.com>,
+        "jianguo.zhang@mediatek.com" <jianguo.zhang@mediatek.com>
+Date:   Tue, 30 Apr 2019 16:56:00 +0800
+In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B46DDF0@DE02WEMBXB.internal.synopsys.com>
+References: <1556518556-32464-1-git-send-email-biao.huang@mediatek.com>
+         <1556518556-32464-2-git-send-email-biao.huang@mediatek.com>
+         <78EB27739596EE489E55E81C33FEC33A0B46DDF0@DE02WEMBXB.internal.synopsys.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190430002817.10785-4-tobin@kernel.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 30, 2019 at 10:28:17AM +1000, Tobin C. Harding wrote:
-> Currently error return from kobject_init_and_add() is not followed by a
-> call to kobject_put().  This means there is a memory leak.
+On Mon, 2019-04-29 at 08:51 +0000, Jose Abreu wrote:
+> From: Biao Huang <biao.huang@mediatek.com>
+> Date: Mon, Apr 29, 2019 at 07:15:53
 > 
-> Add call to kobject_put() in error path of kobject_init_and_add().
+> > Currently we will not update the receive descriptor tail pointer in
+> > stmmac_rx_refill. Rx dma will think no available descriptors and stop
+> > once received packets exceed DMA_RX_SIZE, so that the rx only test will fail.
+> > 
+> > Update the receive tail pointer in stmmac_rx_refill to add more descriptors
+> > to the rx channel, so packets can be received continually
+> > 
+> > Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> > ---
+> >  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > index 97c5e1a..818ad88 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > @@ -3336,6 +3336,9 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
+> >  		entry = STMMAC_GET_ENTRY(entry, DMA_RX_SIZE);
+> >  	}
+> >  	rx_q->dirty_rx = entry;
+> > +	stmmac_set_rx_tail_ptr(priv, priv->ioaddr,
+> > +			       rx_q->dma_rx_phy + (entry * sizeof(struct dma_desc)),
 > 
-> Signed-off-by: Tobin C. Harding <tobin@kernel.org>
+> I think you can just use the "rx_q->rx_tail_addr" here. It'll always 
+> trigger a poll demand for the channel.
+Yes, will use rx_q->rx_tail_addr here.
+> 
+> Thanks,
+> Jose Miguel Abreu
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
