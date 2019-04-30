@@ -2,156 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44AF0F0A2
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 08:40:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF7FF0B7
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 08:51:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726358AbfD3Gkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 02:40:43 -0400
-Received: from mail-eopbgr30083.outbound.protection.outlook.com ([40.107.3.83]:20708
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725810AbfD3Gkn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Apr 2019 02:40:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wgvwS1AmHxskoF3cgI8434Dov5fv3kJ1oJd+XHRNwZ4=;
- b=kRPymRd9RuUP5HudMLIueKsPOynfgntoSAQfqL/SLG6QiNW6O9A0fjPlG+bej1zEJepJjeIWTCzWn93h9d5bFKA9+jgBbCCY5FlCjFXH3kEb63te1q1R9nIP6cxM5725yoD6JC2IcBLdOoBuseW3x29m8aUwaX/Bgxsh570wbuk=
-Received: from AM0PR05MB6497.eurprd05.prod.outlook.com (20.179.34.15) by
- AM0PR05MB5346.eurprd05.prod.outlook.com (20.178.19.144) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1835.12; Tue, 30 Apr 2019 06:40:36 +0000
-Received: from AM0PR05MB6497.eurprd05.prod.outlook.com
- ([fe80::151:4fc5:f798:6ef1]) by AM0PR05MB6497.eurprd05.prod.outlook.com
- ([fe80::151:4fc5:f798:6ef1%5]) with mapi id 15.20.1835.018; Tue, 30 Apr 2019
- 06:40:35 +0000
-From:   Ido Schimmel <idosch@mellanox.com>
-To:     David Ahern <dsahern@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH v3 net-next 1/3] ipv4: Move cached routes to fib_nh_common
-Thread-Topic: [PATCH v3 net-next 1/3] ipv4: Move cached routes to
- fib_nh_common
-Thread-Index: AQHU/qbBJ/rDaOIUHU+SKswK5TrlBaZUQeqA
-Date:   Tue, 30 Apr 2019 06:40:35 +0000
-Message-ID: <20190430064033.GA20104@splinter>
-References: <20190429161619.23671-1-dsahern@kernel.org>
- <20190429161619.23671-2-dsahern@kernel.org>
-In-Reply-To: <20190429161619.23671-2-dsahern@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM5PR0201CA0006.eurprd02.prod.outlook.com
- (2603:10a6:203:3d::16) To AM0PR05MB6497.eurprd05.prod.outlook.com
- (2603:10a6:208:13f::15)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=idosch@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 64ef4d1b-4468-4c5e-fcb2-08d6cd36c032
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB5346;
-x-ms-traffictypediagnostic: AM0PR05MB5346:
-x-microsoft-antispam-prvs: <AM0PR05MB5346A8C0754FA1E4390BA26DBF3A0@AM0PR05MB5346.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1751;
-x-forefront-prvs: 00235A1EEF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(366004)(136003)(346002)(396003)(39860400002)(376002)(189003)(199004)(102836004)(14444005)(6486002)(256004)(26005)(486006)(476003)(11346002)(386003)(6506007)(7736002)(76176011)(446003)(3846002)(6116002)(305945005)(2906002)(229853002)(6916009)(6436002)(33656002)(8936002)(33716001)(478600001)(81166006)(8676002)(14454004)(5660300002)(186003)(81156014)(68736007)(25786009)(66066001)(97736004)(66946007)(1076003)(4326008)(64756008)(54906003)(71190400001)(99286004)(316002)(52116002)(6246003)(53936002)(6512007)(66476007)(66556008)(66446008)(71200400001)(73956011)(86362001)(9686003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5346;H:AM0PR05MB6497.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: xVulaoDv/UzwzArrS14A5s4aTrAVL4uBolF4M/0sJAYE8AtIlWhNqXnuqVIuS8yG88GRXaHvUyoleYa6Sr2TyG5kA8ngWo1k5uXGJf6MKGXIr4CzE4q1E0iC+HLsys2tGq2+lHW9gmfYmTZD1uoguSF8Xjt2x2mNY7xPmMxCEi3/1jwSq7N6RUdHFsOBdRhFuRf+20v4Pisd/7V0hL8CLxeRP/UNb0g4AIyzLKmIEv5kdsj+GkmpxHFw8bKqtdFDTsv5IT/aPtmh6wiiBWgBnk0bdyi98OIlihcpKvmMdhueerNebKM12gtI6saEI4JxJ000QauRYdRJn8YqSeuQhlTlnGykkYJWcxnP9+sgsCvVWBZL42h6exLn1sYW9orKMam0fjJtlrhsI/16vyQY1jyOvUr9qdR/ctWs+9JZCQQ=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <8339DF5A1CBFCA4588DE6641C4DA6D0E@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64ef4d1b-4468-4c5e-fcb2-08d6cd36c032
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Apr 2019 06:40:35.9037
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5346
+        id S1726369AbfD3Gvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 02:51:51 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:52464 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725790AbfD3Gvv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 02:51:51 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1hLMcC-0003vR-Rd; Tue, 30 Apr 2019 08:51:44 +0200
+Message-ID: <c64504ca3ec2946f4d1575b7a28279f606fbd3d9.camel@sipsolutions.net>
+Subject: Re: [PATCH 2/6] netlink: extend policy range validation
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, dsa@cumulusnetworks.com,
+        pablo@netfilter.org
+Date:   Tue, 30 Apr 2019 08:51:43 +0200
+In-Reply-To: <20190429.224951.1389806535373048089.davem@davemloft.net>
+References: <20190426121306.10871-1-johannes@sipsolutions.net>
+         <20190426121306.10871-3-johannes@sipsolutions.net>
+         <20190429.224951.1389806535373048089.davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 09:16:17AM -0700, David Ahern wrote:
->  /* Release a nexthop info record */
-> @@ -491,9 +491,15 @@ int fib_nh_common_init(struct fib_nh_common *nhc, st=
-ruct nlattr *encap,
->  		       u16 encap_type, void *cfg, gfp_t gfp_flags,
->  		       struct netlink_ext_ack *extack)
->  {
-> +	int err;
-> +
-> +	nhc->nhc_pcpu_rth_output =3D alloc_percpu_gfp(struct rtable __rcu *,
-> +						    gfp_flags);
-> +	if (!nhc->nhc_pcpu_rth_output)
-> +		return -ENOMEM;
-> +
->  	if (encap) {
->  		struct lwtunnel_state *lwtstate;
-> -		int err;
-> =20
->  		if (encap_type =3D=3D LWTUNNEL_ENCAP_NONE) {
->  			NL_SET_ERR_MSG(extack, "LWT encap type not specified");
+On Mon, 2019-04-29 at 22:49 -0400, David Miller wrote:
+> From: Johannes Berg <johannes@sipsolutions.net>
+> Date: Fri, 26 Apr 2019 14:13:02 +0200
+> 
+> >   *                         NLA_POLICY_RANGE() macros.
+> > + *    NLA_U8,
+> > + *    NLA_U16,
+> > + *    NLA_U32,
+> > + *    NLA_U64              If the validation_type field instead is set to
+> > + *                         NLA_VALIDATE_RANGE_PTR, `range' must be a pointer
+> > + *                         to a struct netlink_range_validation that indicates
+> > + *                         the min/max values.
+> > + *                         Use NLA_POLICY_FULL_RANGE().
+> > + *    NLA_S8,
+> > + *    NLA_S16,
+> > + *    NLA_S32,
+> > + *    NLA_S64              If the validation_type field instead is set to
+> > + *                         NLA_VALIDATE_RANGE_PTR, `range_signed' must be a
+> > + *                         pointer to a struct netlink_range_validation_signed
+> > + *                         that indicates the min/max values.
+> > + *                         Use NLA_POLICY_FULL_RANGE_SIGNED().
+> 
+> Documentation and datastructure says that "range_signed" member should be set
+> for signed ranges, however:
+> 
+> > +#define NLA_POLICY_FULL_RANGE(tp, _range) {          \
+> > +     .type = NLA_ENSURE_UINT_TYPE(tp),               \
+> > +     .validation_type = NLA_VALIDATE_RANGE_PTR,      \
+> > +     .range = _range,                                \
+> > +}
+> > +
+> > +#define NLA_POLICY_FULL_RANGE_SIGNED(tp, _range) {   \
+> > +     .type = NLA_ENSURE_SINT_TYPE(tp),               \
+> > +     .validation_type = NLA_VALIDATE_RANGE_PTR,      \
+> > +     .range = _range,                                \
+> > +}
+> 
+> The NLA_POLICY_FULL_RANGE_SIGNED macros sets 'range' not 'range_signed'.
 
-Failure here will leak 'nhc->nhc_pcpu_rth_output'
+D'oh. Copy/paste error, and I must've missed the compiler warning that
+should appear here on usage then. At least I'm pretty sure I tested that
+with the policy exposition patch.
 
-> @@ -502,12 +508,17 @@ int fib_nh_common_init(struct fib_nh_common *nhc, s=
-truct nlattr *encap,
->  		err =3D lwtunnel_build_state(encap_type, encap, nhc->nhc_family,
->  					   cfg, &lwtstate, extack);
->  		if (err)
-> -			return err;
-> +			goto lwt_failure;
-> =20
->  		nhc->nhc_lwtstate =3D lwtstate_get(lwtstate);
->  	}
-> =20
->  	return 0;
-> +
-> +lwt_failure:
-> +	rt_fibinfo_free_cpus(nhc->nhc_pcpu_rth_output);
-> +	nhc->nhc_pcpu_rth_output =3D NULL;
-> +	return err;
->  }
->  EXPORT_SYMBOL_GPL(fib_nh_common_init);
-> =20
-> @@ -515,18 +526,14 @@ int fib_nh_init(struct net *net, struct fib_nh *nh,
->  		struct fib_config *cfg, int nh_weight,
->  		struct netlink_ext_ack *extack)
->  {
-> -	int err =3D -ENOMEM;
-> +	int err;
-> =20
->  	nh->fib_nh_family =3D AF_INET;
-> =20
-> -	nh->nh_pcpu_rth_output =3D alloc_percpu(struct rtable __rcu *);
-> -	if (!nh->nh_pcpu_rth_output)
-> -		goto err_out;
-> -
->  	err =3D fib_nh_common_init(&nh->nh_common, cfg->fc_encap,
->  				 cfg->fc_encap_type, cfg, GFP_KERNEL, extack);
->  	if (err)
-> -		goto init_failure;
-> +		return err;
-> =20
->  	nh->fib_nh_oif =3D cfg->fc_oif;
->  	nh->fib_nh_gw_family =3D cfg->fc_gw_family;
-> @@ -546,12 +553,6 @@ int fib_nh_init(struct net *net, struct fib_nh *nh,
->  	nh->fib_nh_weight =3D nh_weight;
->  #endif
->  	return 0;
-> -
-> -init_failure:
-> -	rt_fibinfo_free_cpus(nh->nh_pcpu_rth_output);
-> -	nh->nh_pcpu_rth_output =3D NULL;
-> -err_out:
-> -	return err;
->  }
+Will fix.
+
+> Also, since range and range_signed are in a union however there is only one
+> NLA_VALIDATE_RANGE_PTR type, how does one differentiate between signed and
+> unsigned ranges exactly?
+
+Based on the type - NLA_S* or NLA_U*. See the NLA_ENSURE_SINT_TYPE() and
+NLA_ENSURE_UINT_TYPE() in the macros - that ensures you can only use
+NLA_POLICY_FULL_RANGE_SIGNED() with NLA_S*, and NLA_POLICY_FULL_RANGE()
+with NLA_U*.
+
+johannes
+
