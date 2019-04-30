@@ -2,134 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45A9E102CB
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 00:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D4911035A
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 01:33:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726166AbfD3Wve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 18:51:34 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:35149 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727770AbfD3Wvd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 18:51:33 -0400
-Received: by mail-ot1-f67.google.com with SMTP id g24so8900781otq.2;
-        Tue, 30 Apr 2019 15:51:32 -0700 (PDT)
+        id S1726412AbfD3Xdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 19:33:41 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:34165 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726086AbfD3Xdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 19:33:41 -0400
+Received: by mail-pg1-f195.google.com with SMTP id c13so6599832pgt.1;
+        Tue, 30 Apr 2019 16:33:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Yfh9BzfzF2kTBQWbbF//TMwNJfjcByuhaFdN+KNSCPY=;
+        b=MBqQmkmeWTkfrQNTOhiybCv6h3lmsmddjluCeIfh0JOaFsPZm7uvpVuaYn/NjhRJu/
+         GW0XRtE6gKh1QFL08ubQLvoeCuDZnOp1qLHuzseWONl5X1oYZvRE5/eoM/CJU6SGw+ta
+         GlCtYd8bNl5QxVEBB8iqC5U8KCBstuWEaxYwgnN04HNedQpielHoWvX84+U4pmoTQEqb
+         4wt5a7Zo+O0SnpSflR5I2QEuLprgsqC65aOrdFflN8LkLsmNEwthD670BDgMxz1qKgI0
+         McxxxhpbNA4130Dj6e5AUUA+9ODoiYQtOw6uq7+NdSxMX/HZPfXEQ4VdD0XQFNptSHoL
+         ulAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3hmHPTgV/bi1eZA1TKy2C+Ms5iNmeogSof6Y1DoOt64=;
-        b=ftCh8Kjiu4WSchjQKeW/SwicMc/oqBMKKJbbhnYPJ+8EZqB1YETPl9x6VPpmZwqRi3
-         DPeNdCffBnPw3Wk0UZtlxyeTaJu6OX6WbwMNKR6m1j/MiFfHwJGvLhps3A2PBHDcmdrn
-         dRzUxqgx2fZLHQ0crg2N/ss7MwxkNAgHOvYXloS8GuRDDMroMMFRS32UO31fhfLYzGg6
-         xkZppSYQKgkZJPb1XiRcbG3nZxAc2j1pyo/Iu8dSSIsUA8mleYU0jS2A7SCDBaYI+xPQ
-         F8xuJXRbDyiZUgPgAeHuD5hOWygi1fXGP3JOnepP/YTgLTVywjYmIQiyhXRFrv8/3IUT
-         XMCw==
-X-Gm-Message-State: APjAAAVDaYPDNwXqBwoKhIWf0kt99t10bUJQdNkLlW6jRW98icfeQPY3
-        w4KvpDvz25Ds7aU2rk2waw==
-X-Google-Smtp-Source: APXvYqzCvqmsBL7hdv+MANoijnliQcs7gcB/JlqgrpY74V90wibJ6XokQDyfNO5RXAHNGjOAnjvGmQ==
-X-Received: by 2002:a05:6830:2106:: with SMTP id i6mr1714548otc.146.1556664691778;
-        Tue, 30 Apr 2019 15:51:31 -0700 (PDT)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id 3sm10756189oti.45.2019.04.30.15.51.30
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 30 Apr 2019 15:51:30 -0700 (PDT)
-Date:   Tue, 30 Apr 2019 17:51:30 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Paul Burton <paul.burton@mips.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        James Hogan <jhogan@kernel.org>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] dt-bindings: net: add qca,ar71xx.txt documentation
-Message-ID: <20190430225130.GA10771@bogus>
-References: <20190422064046.2822-1-o.rempel@pengutronix.de>
- <20190422064046.2822-2-o.rempel@pengutronix.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yfh9BzfzF2kTBQWbbF//TMwNJfjcByuhaFdN+KNSCPY=;
+        b=k8ylkl1DN0uNncRwA0R5WHHm452MlquTyeNxrpy0kgWqRG+3jGgteMJyNqiLCL8l+V
+         o528K5YTNWQD5ZYGrRm2Om577OSsgaD2gc6k5g/aOYAZsMUl2bnG4Voxommr8qxqAJIn
+         vIkNDfmu8mznCuqm48886U5xwau5UOcniBlqavfXp6VUUQO6tH95zOcMXIXu9sqSUHTS
+         FkiUIdRIJ6T7mo1XNYg5wBZvBIXV0FKV/YWLl9UgO82hag0m9Cr15Y/ZGVYJFdmGi3Yy
+         /ffCPa1v9+N2udt1souv8A8lGKvsOn22sHcl2+1hz9jIiGeuXm48tyuN9I3ztSpSOOeA
+         nVDg==
+X-Gm-Message-State: APjAAAWI204+TmbYALEEtseYyUdjrUjLuM6Ru5dvw8nIMMfU9wKQKa5t
+        YgA5RTUxwi9TSDll3oxmlBtYl6ItLmMF7SH4FKk=
+X-Google-Smtp-Source: APXvYqyj3rW7My3WNzBw5igeS1yAx1PECJvSaIg5pyZXw55zAl4M71Uo5sGHZggSWwy7P+khkn9g9PUhG21xhlk9IZE=
+X-Received: by 2002:a63:6604:: with SMTP id a4mr38265766pgc.104.1556667220498;
+ Tue, 30 Apr 2019 16:33:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190422064046.2822-2-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <71250616-36c1-0d96-8fac-4aaaae6a28d4@redhat.com>
+ <20190428030539.17776-1-yuehaibing@huawei.com> <516ba6e4-359b-15d0-e169-d8cc1e989a4a@redhat.com>
+ <2c823bbf-28c4-b43d-52d9-b0e0356f03ae@redhat.com> <6AADFAC011213A4C87B956458587ADB4021F7531@dggeml532-mbs.china.huawei.com>
+ <b33ce1f9-3d65-2d05-648b-f5a6cfbd59ab@redhat.com> <CAM_iQpUfpruaFowbiTOY7aH4Ts-xcY4JACGLOT3CUjLqpg_zXw@mail.gmail.com>
+ <528517144.24310809.1556504619719.JavaMail.zimbra@redhat.com>
+ <CAM_iQpXNp4h-ZAf4S+OH_1kVE_qk_eb+r6=ZUsK1t2=3aQOOtw@mail.gmail.com> <89f38a2b-c416-f838-ee85-356bffed5bdb@huawei.com>
+In-Reply-To: <89f38a2b-c416-f838-ee85-356bffed5bdb@huawei.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 30 Apr 2019 16:33:28 -0700
+Message-ID: <CAM_iQpUvv5yMZYecaKeiThfoUqqK1Lwvn0gi8KLAeksUxDEyLA@mail.gmail.com>
+Subject: Re: [PATCH] tun: Fix use-after-free in tun_net_xmit
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "Li,Rongqing" <lirongqing@baidu.com>,
+        nicolas dichtel <nicolas.dichtel@6wind.com>,
+        Chas Williams <3chas3@gmail.com>, wangli39@baidu.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Peter Xu <peterx@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 22, 2019 at 08:40:44AM +0200, Oleksij Rempel wrote:
-> Add binding documentation for Atheros/QCA networking IP core used
-> in many routers.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  .../devicetree/bindings/net/qca,ar71xx.txt    | 44 +++++++++++++++++++
->  1 file changed, 44 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/qca,ar71xx.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/net/qca,ar71xx.txt b/Documentation/devicetree/bindings/net/qca,ar71xx.txt
-> new file mode 100644
-> index 000000000000..56abf224de2c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/qca,ar71xx.txt
-> @@ -0,0 +1,44 @@
+On Mon, Apr 29, 2019 at 7:44 PM YueHaibing <yuehaibing@huawei.com> wrote:
+>
+> With SOCK_RCU_FREE tfile is ok ,
+>
+> but tfile->sk is freed by sock_put in __tun_detach, it will trgger
 
-Needs some title and info about what this h/w is.
+SOCK_RCU_FREE is exactly for sock and for sock_put(),
+you need to look into sock_put() path to see where SOCK_RCU_FREE
+is tested.
 
-> +Required properties:
-> +- compatible:	Should be "qca,<soc>-eth". Currently support compatibles are:
-> +		qca,ar7100-eth - Atheros AR7100
-> +		qca,ar7240-eth - Atheros AR7240
-> +		qca,ar7241-eth - Atheros AR7241
-> +		qca,ar7242-eth - Atheros AR7242
-> +		qca,ar9130-eth - Atheros AR9130
-> +		qca,ar9330-eth - Atheros AR9330
-> +		qca,ar9340-eth - Atheros AR9340
-> +		qca,qca9530-eth - Qualcomm Atheros QCA9530
-> +		qca,qca9550-eth - Qualcomm Atheros QCA9550
-> +		qca,qca9560-eth - Qualcomm Atheros QCA9560
-> +
-> +- reg : Address and length of the register set for the device
-> +- interrupts : Should contain eth interrupt
-> +- phy-mode : See ethernet.txt file in the same directory
 
-Is there a subset of valid modes?
+>
+> use-after-free in tun_net_xmit if tun->numqueues check passed.
 
-> +- clocks: the clock used by the core
-> +- clock-names: the names of the clock listed in the clocks property. These are
-> +	"mdio".
+Why do you believe we still have use-after-free with SOCK_RCU_FREE?
 
-Seems strange that's the only clock.
-
-> +- resets: Should contain phandles to the reset signals
-> +- reset-names: Should contain the names of reset signal listed in the resets
-> +		property. These are "mac" and "mdio"
-> +
-> +Optional properties:
-> +- phy-handle : phandle to the PHY device connected to this device.
-> +- fixed-link : Assume a fixed link. See fixed-link.txt in the same directory.
-> +  Use instead of phy-handle.
-> +
-> +Optional subnodes:
-> +- mdio : specifies the mdio bus, used as a container for phy nodes
-> +  according to phy.txt in the same directory
-> +
-> +Example:
-> +
-> +ethernet@1a000000 {
-> +	compatible = "qca,ar9330-eth";
-> +	reg = <0x1a000000 0x200>;
-> +	interrupts = <5>;
-> +	resets = <&rst 13>, <&rst 23>;
-> +	reset-names = "mac", "mdio";
-> +	clocks = <&pll ATH79_CLK_MDIO>;
-> +	clock-names = "mdio";
-> +	phy-mode = "gmii";
-> +};
-> -- 
-> 2.20.1
-> 
+tun_net_xmit() holds RCU read lock, so with SOCK_RCU_FREE,
+the sock won't be freed until tun_net_xmit() releases RCU read lock.
+This is just how RCU works...
