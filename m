@@ -2,164 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77A13FFB8
-	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 20:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E5DAFFC3
+	for <lists+netdev@lfdr.de>; Tue, 30 Apr 2019 20:30:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726723AbfD3S0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 14:26:45 -0400
-Received: from mail-it1-f193.google.com ([209.85.166.193]:34929 "EHLO
-        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726017AbfD3S0o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 14:26:44 -0400
-Received: by mail-it1-f193.google.com with SMTP id l140so5091510itb.0
-        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 11:26:43 -0700 (PDT)
+        id S1727013AbfD3Sa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 14:30:26 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:36584 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbfD3SaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 14:30:25 -0400
+Received: by mail-pf1-f195.google.com with SMTP id v80so2886732pfa.3
+        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 11:30:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HakQ9LkfUgS2eaG91+T+1KuJ/RPgs+dOQkwrk87yjQo=;
-        b=EBPd3BwhXQu1tI1yN/R66dU6G7rOF+BNBt0UEiB29kkcTj4iclF0pRewHCQIxMsdJC
-         5F34rIdkTlWka0ofXVdZKPfSkf958l+bq/nn/mbOv40Qj1d6+zipFsV+qGlaswpKYWte
-         xC/mpaHQCuJDrIxBWsFeqUqUMBJhcY9I0YqFKyqpiw9h9omM6ebhedg61EYlyBSOc64J
-         uF767Op3Li/zC/7Tn3Pjrc9f6q0df6+BaHxA7OzKJ3A6Geq3e7SLCIqC5bsQayl9T6Ui
-         IPeSXvGZsprbrgT5dt/whmg8L0XPiloHbAq56gexkA5m8EilaD881EcWniwDx1H8G+KT
-         M15Q==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SZsIi7ZjjZm8D3+PhFs6hoju1kSeRpgqe8lpVgqQ4tM=;
+        b=uzQQHvvgx7SxzjbnK7MHj/H5gismsipD1NGLxccBJ0Ar7LFxfNDkfyT3oQHtbYdyPL
+         LrzINPwLvPdFaapmkulywCAOxGig8XYT2P6QF3UgN8TpTVdxU+I/eeUtRiVI6CPCHrqu
+         vQC+MvB/ZiCzW+6fHjbBEWuDrNmAC+YtKIZjeSA8uZbwjllCy3AtTZPJU5LLs2mGX06H
+         HFG5jsp9j2+Fm/I124TwbX3d3ffJprttH+gp0tWx7SqXY5hyOZgFWbl4hmDipVvxpGKH
+         wkDsSjj9NoxG2pfuMz8Sj+7Q8fjR6GghV6xQHeIx1Z1xwfHwUNkFlWrRJ6nbOYgVkmMG
+         M1ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HakQ9LkfUgS2eaG91+T+1KuJ/RPgs+dOQkwrk87yjQo=;
-        b=NiQHZ+4IVwVDpKtoU1jd+CoP2T9iVrQR7f8iS8rA4IExBAizrUkIFE1vaCtw4hG+36
-         4xlaWiOFJVsAuHHVCQuRE9f38n3w9OntoJTN6DjnI2T0SKTIAYtesiCyW8jfV8QIERw6
-         8IsYFagT20mko4KKzUzlRSJBzOEXpRi3SxmvNLZRAhf2UTwri07eGAu0zCToXEJpUObB
-         H8dv0qYKh9Q/DxapQ67H5XYJyhXeTDxXX+1HjKVV/f8mu5jjDXLhI82VVTzFBqtMm0Dp
-         DjhPGWJAa55lzA5cbY9QCt7BOFUcqlqmW6u9O2/f/6z2jI6KTKH6Exrcbhbx+zbxgIlI
-         2qiA==
-X-Gm-Message-State: APjAAAWBMbAfX71qkY4Y2ZPnFXROutBXifYW9JWq/6r3JwZRBiicph6d
-        0jCkXQJ5ocyNPC3BeVWK8L7YDrvESsw2OVi5rav7nQ==
-X-Google-Smtp-Source: APXvYqxMPgJF7ukQb4fk4dGcE3D0OGDFCUJf0fYpCKUHxC0lmzmIuDKus3dQN2owkJSmePNYqP+caZwEkZCEAyrrtks=
-X-Received: by 2002:a05:660c:95:: with SMTP id t21mr5011230itj.6.1556648803140;
- Tue, 30 Apr 2019 11:26:43 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SZsIi7ZjjZm8D3+PhFs6hoju1kSeRpgqe8lpVgqQ4tM=;
+        b=Ftju+NZ2wxgrV6/vP042p3w6q243chINbJJ0lGJ4auiixCKT6i2nbJXL+ArLfiH6t0
+         oZfMftYuQHS0ZjDFTklEq6m5pauMlRdRrO7gAlFsG1ZUgowp9IlM2PhC3vKQWWxOnuBr
+         sRDfkR4AU51My+YZ95F30tbOuPUJU7I8dWb9xEP+LIIsuEY6k6pHi2qsCcgofBjs8Zkb
+         lkThne85okC0ueNYCXYJBBbqtaZhM6OX07p2mTjCqm7GE6m2uhN8NdIH2JiVItLCTqcx
+         1gEhhmw78lk/THxQAHQYrrOSZAcr5xxuYK33jCfLI7154Z8JDMvsMtEWpB0VB26uEY6w
+         y6Xg==
+X-Gm-Message-State: APjAAAVcyrGVnl0r8hj2DlOQdRdvXyZxMPTM+39QDLAJYM0yMRNhnM3b
+        k+CeEzSPSzWNv/F2vQQkXcPsKym2
+X-Google-Smtp-Source: APXvYqzbqzh8VD7Tcxtom6IpNeUdAQTY+g1tG8NJqe4b2EwHErdVdWWNnmdBI7QGOUPDOrSVJOi9sw==
+X-Received: by 2002:a63:e10b:: with SMTP id z11mr67111818pgh.46.1556649024205;
+        Tue, 30 Apr 2019 11:30:24 -0700 (PDT)
+Received: from [172.27.227.169] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id s198sm30220538pfs.34.2019.04.30.11.30.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Apr 2019 11:30:23 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] ss: add option to print socket information
+ on one line
+To:     Josh Hunt <johunt@akamai.com>, stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org
+References: <1556227308-16057-1-git-send-email-johunt@akamai.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7f3e7f62-200c-fba3-96b1-f0682e763560@gmail.com>
+Date:   Tue, 30 Apr 2019 12:30:21 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190430174512.3898413-1-kafai@fb.com>
-In-Reply-To: <20190430174512.3898413-1-kafai@fb.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Tue, 30 Apr 2019 11:26:32 -0700
-Message-ID: <CAEA6p_AjpgPMoZ0-6BM=Ymx3D2maN5LGZ-UoeJs7bh6rBnvecQ@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: A few fixes on dereferencing rt->from
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <bsd@fb.com>, kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1556227308-16057-1-git-send-email-johunt@akamai.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 30, 2019 at 10:45 AM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> It is a followup after the fix in
-> commit 9c69a1320515 ("route: Avoid crash from dereferencing NULL rt->from")
->
-> rt6_do_redirect():
-> 1. NULL checking is needed on rt->from because a parallel
->    fib6_info delete could happen that sets rt->from to NULL.
->    (e.g. rt6_remove_exception() and fib6_drop_pcpu_from()).
->
-> 2. fib6_info_hold() is not enough.  Same reason as (1).
->    Meaning, holding dst->__refcnt cannot ensure
->    rt->from is not NULL or rt->from->fib6_ref is not 0.
->
->    Instead of using fib6_info_hold_safe() which ip6_rt_cache_alloc()
->    is already doing, this patch chooses to extend the rcu section
->    to keep "from" dereference-able after checking for NULL.
->
-> inet6_rtm_getroute():
-> 1. NULL checking is also needed on rt->from for a similar reason.
->    Note that inet6_rtm_getroute() is using RTNL_FLAG_DOIT_UNLOCKED.
->
-> Fixes: a68886a69180 ("net/ipv6: Make from in rt6_info rcu protected")
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
-Acked-by: Wei Wang <weiwan@google.com>
+On 4/25/19 3:21 PM, Josh Hunt wrote:
+> @@ -4877,6 +4903,7 @@ static void _usage(FILE *dest)
+>  "\n"
+>  "   -K, --kill          forcibly close sockets, display what was closed\n"
+>  "   -H, --no-header     Suppress header line\n"
+> +"   -O, --one-line      socket's data printed on a single line\n"
+>  "\n"
+>  "   -A, --query=QUERY, --socket=QUERY\n"
+>  "       QUERY := {all|inet|tcp|udp|raw|unix|unix_dgram|unix_stream|unix_seqpacket|packet|netlink|vsock_stream|vsock_dgram|tipc}[,QUERY]\n"
+> @@ -5003,6 +5030,7 @@ static const struct option long_opts[] = {
+>  	{ "kill", 0, 0, 'K' },
+>  	{ "no-header", 0, 0, 'H' },
+>  	{ "xdp", 0, 0, OPT_XDPSOCK},
+> +	{ "one-line", 0, 0, 'O' },
 
-Nice fix. Thanks Martin.
+shame 'o' can not be used for consistency with ip, but we can have both
+use 'oneline' as the long option without the '-'.
 
->  net/ipv6/route.c | 38 ++++++++++++++++++--------------------
->  1 file changed, 18 insertions(+), 20 deletions(-)
->
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index b4899f0de0d0..73ef72c208af 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -3397,11 +3397,8 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
->
->         rcu_read_lock();
->         from = rcu_dereference(rt->from);
-> -       /* This fib6_info_hold() is safe here because we hold reference to rt
-> -        * and rt already holds reference to fib6_info.
-> -        */
-> -       fib6_info_hold(from);
-> -       rcu_read_unlock();
-> +       if (!from)
-> +               goto out;
->
->         nrt = ip6_rt_cache_alloc(from, &msg->dest, NULL);
->         if (!nrt)
-> @@ -3413,10 +3410,7 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
->
->         nrt->rt6i_gateway = *(struct in6_addr *)neigh->primary_key;
->
-> -       /* No need to remove rt from the exception table if rt is
-> -        * a cached route because rt6_insert_exception() will
-> -        * takes care of it
-> -        */
-> +       /* rt6_insert_exception() will take care of duplicated exceptions */
->         if (rt6_insert_exception(nrt, from)) {
->                 dst_release_immediate(&nrt->dst);
->                 goto out;
-> @@ -3429,7 +3423,7 @@ static void rt6_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_bu
->         call_netevent_notifiers(NETEVENT_REDIRECT, &netevent);
->
->  out:
-> -       fib6_info_release(from);
-> +       rcu_read_unlock();
->         neigh_release(neigh);
->  }
->
-> @@ -5028,16 +5022,20 @@ static int inet6_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
->
->         rcu_read_lock();
->         from = rcu_dereference(rt->from);
-> -
-> -       if (fibmatch)
-> -               err = rt6_fill_node(net, skb, from, NULL, NULL, NULL, iif,
-> -                                   RTM_NEWROUTE, NETLINK_CB(in_skb).portid,
-> -                                   nlh->nlmsg_seq, 0);
-> -       else
-> -               err = rt6_fill_node(net, skb, from, dst, &fl6.daddr,
-> -                                   &fl6.saddr, iif, RTM_NEWROUTE,
-> -                                   NETLINK_CB(in_skb).portid, nlh->nlmsg_seq,
-> -                                   0);
-> +       if (from) {
-> +               if (fibmatch)
-> +                       err = rt6_fill_node(net, skb, from, NULL, NULL, NULL,
-> +                                           iif, RTM_NEWROUTE,
-> +                                           NETLINK_CB(in_skb).portid,
-> +                                           nlh->nlmsg_seq, 0);
-> +               else
-> +                       err = rt6_fill_node(net, skb, from, dst, &fl6.daddr,
-> +                                           &fl6.saddr, iif, RTM_NEWROUTE,
-> +                                           NETLINK_CB(in_skb).portid,
-> +                                           nlh->nlmsg_seq, 0);
-> +       } else {
-> +               err = -ENETUNREACH;
-> +       }
->         rcu_read_unlock();
->
->         if (err < 0) {
-> --
-> 2.17.1
->
