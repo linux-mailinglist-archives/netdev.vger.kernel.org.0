@@ -2,101 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D3110BFD
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 19:28:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6189A10602
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 10:14:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726137AbfEAR2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 13:28:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56330 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726019AbfEAR2i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 May 2019 13:28:38 -0400
-Received: from localhost (unknown [37.142.3.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 50D3420866;
-        Wed,  1 May 2019 17:28:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556731718;
-        bh=THWOHjZdin30zLuSdTabNsX8kjET8/Mhic2YzBJ+7fw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EbcN2fM6r4z1qv3wj4pDAoI1vsCDmm/COkcRA0u2ZSDI//SowIALbRoLgEasC4Ufw
-         hi/GaE6bA1A4qsXlQ/Dg6p8z74stYkZDliXI+WKugZzGABaQ12N3tBzzn1fzYim1hz
-         Z/JcmqUkKKs0tXpWK0m0F5h2UKGG74kWDsvaY+Ms=
-Date:   Wed, 1 May 2019 10:45:00 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [net-next][PATCH v2 2/2] rds: add sysctl for rds support of
- On-Demand-Paging
-Message-ID: <20190501074500.GC7676@mtr-leonro.mtl.com>
-References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
- <1556581040-4812-3-git-send-email-santosh.shilimkar@oracle.com>
+        id S1726077AbfEAIOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 04:14:45 -0400
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:45802 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726014AbfEAIOp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 04:14:45 -0400
+Received: by mail-yw1-f66.google.com with SMTP id r139so7821195ywe.12
+        for <netdev@vger.kernel.org>; Wed, 01 May 2019 01:14:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MmY19Z1QVEc3yW3mekSsham5SrWXgj5jq6qjwyvS1O8=;
+        b=KjocuGTflWsf4c3Wp6N3CndW5yRamNFECeIHqqxxGk98i+G4ne8zwvpYp2pHoaQQo2
+         563cIGo39Dnf7SScSPM6O5XrOU0ltBBVErldG7zxk12bRNc9QgYWfrxHz2M3jOkGyDJl
+         ifJ4r7A9EO6VTIMry8oeLnxDcHQ8UIdSJUqjaPQ2GcyYKguzROVN2iUDXGKQiqT1v9n2
+         euuVQd9kgwVzV/ulQAcMyRwoH/NyG6lcnyXtYAQ3Q0HtXLQnubSoEbNduCz0sHGUfuoE
+         lzIjEjNpsh+qR6kGeHncfgOzMLp37q265pdUsODliehwd2QMYG2dArLS65ANtgjFOlqi
+         GtiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MmY19Z1QVEc3yW3mekSsham5SrWXgj5jq6qjwyvS1O8=;
+        b=Kh6RMO7MeBCbRKyI9abVNRWzyF7P7Yxnyfs6hFoJy7DOLNy8fGb3cmBYGoFNBTn02s
+         41R7wvT5ql9HXhhXFY7E8L4Zbb0G9dm99Dm8wuPi29XlQnlsugapdC2V/SlAA0i9FmnW
+         m3NE2HrBQtZPjgNbJRmF9Aw/ewUOsX+HFF6JdVp4YiZEoTUQo2pYMObnPMgUXhtY4Vbo
+         6+cXfIqZ3wKHMfmthaXMcElL57ETnkM99JSSzegJQx043+9BUJEBtLvak63crqcBP438
+         gQyjkUv/LWoIDPIw7fFGPyN/HHxaf19KaZa58fYYNP4OucLFiZeHVcorV6oVdfipaVeY
+         vx1g==
+X-Gm-Message-State: APjAAAXFcX7fb081P836MfpUZE4xf/EL0GTXAbyCM4pCarqH6qavq0UA
+        G21xO3JiIbySyu5jVOvWaV4lnlw9
+X-Google-Smtp-Source: APXvYqya6VAL9fNseG8YBC0Q17tvGWgSbHVP7tbGkA9z4v6ls0qqA3KJ9VJJspNMhZ8rQDOz2oZFQg==
+X-Received: by 2002:a81:4b94:: with SMTP id y142mr48670461ywa.69.1556698484466;
+        Wed, 01 May 2019 01:14:44 -0700 (PDT)
+Received: from [172.20.0.54] (adsl-173-228-226-134.prtc.net. [173.228.226.134])
+        by smtp.gmail.com with ESMTPSA id 205sm4125097ywl.13.2019.05.01.01.14.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 01 May 2019 01:14:42 -0700 (PDT)
+Subject: Re: [PATCH 0/5] Beginnings of skb_frag -> bio_vec conversion
+To:     Matthew Wilcox <willy@infradead.org>, davem@davemloft.net
+Cc:     hch@lst.de, netdev@vger.kernel.org
+References: <20190501041757.8647-1-willy@infradead.org>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <639880c6-5703-857c-8a70-82fbb5a90238@gmail.com>
+Date:   Wed, 1 May 2019 04:14:41 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1556581040-4812-3-git-send-email-santosh.shilimkar@oracle.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190501041757.8647-1-willy@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 04:37:20PM -0700, Santosh Shilimkar wrote:
-> RDS doesn't support RDMA on memory apertures that require On Demand
-> Paging (ODP), such as FS DAX memory. A sysctl is added to indicate
-> whether RDMA requiring ODP is supported.
->
-> Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
-> Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
-> Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
-> Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
-> ---
->  net/rds/ib.h        | 1 +
->  net/rds/ib_sysctl.c | 8 ++++++++
->  2 files changed, 9 insertions(+)
 
-This sysctl is not needed at all
 
->
-> diff --git a/net/rds/ib.h b/net/rds/ib.h
-> index 67a715b..80e11ef 100644
-> --- a/net/rds/ib.h
-> +++ b/net/rds/ib.h
-> @@ -457,5 +457,6 @@ unsigned int rds_ib_stats_info_copy(struct rds_info_iterator *iter,
->  extern unsigned long rds_ib_sysctl_max_unsig_bytes;
->  extern unsigned long rds_ib_sysctl_max_recv_allocation;
->  extern unsigned int rds_ib_sysctl_flow_control;
-> +extern unsigned int rds_ib_sysctl_odp_support;
->
->  #endif
-> diff --git a/net/rds/ib_sysctl.c b/net/rds/ib_sysctl.c
-> index e4e41b3..7cc02cd 100644
-> --- a/net/rds/ib_sysctl.c
-> +++ b/net/rds/ib_sysctl.c
-> @@ -60,6 +60,7 @@
->   * will cause credits to be added before protocol negotiation.
->   */
->  unsigned int rds_ib_sysctl_flow_control = 0;
-> +unsigned int rds_ib_sysctl_odp_support;
->
->  static struct ctl_table rds_ib_sysctl_table[] = {
->  	{
-> @@ -103,6 +104,13 @@
->  		.mode		= 0644,
->  		.proc_handler	= proc_dointvec,
->  	},
-> +	{
-> +		.procname       = "odp_support",
-> +		.data           = &rds_ib_sysctl_odp_support,
-> +		.maxlen         = sizeof(rds_ib_sysctl_odp_support),
-> +		.mode           = 0444,
-> +		.proc_handler   = proc_dointvec,
-> +	},
->  	{ }
->  };
->
-> --
-> 1.9.1
->
+On 4/30/19 9:17 PM, Matthew Wilcox wrote:
+> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+> 
+> It turns out there's a lot of accessors for the skb_frag, which would
+> make this conversion really easy if some drivers didn't bypass them.
+> This is what I've done so far; my laptop's not really beefy enough to
+> cope with changing skbuff.h too often ;-)
+> 
+> This would be a great time to tell me I'm going about this all wrong.
+> I already found one problem in this patch set; some of the drivers should
+> have been converted to skb_frag_dma_map() instead of fixing the arguments
+> to dma_map_page().  But anyway, I need sleep.
+> 
+
+I guess the missing part here is the "why" all this is done ?
+
+32 bit hosts will have bigger skb_shared_info and this impacts sk_rcvbuf and sk_sndbuf limits.
+
+17 * 4 are 68 extra bytes per skb.
