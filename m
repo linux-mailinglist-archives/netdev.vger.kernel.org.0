@@ -2,207 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EFFA10D81
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 21:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD1210D6B
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 21:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726120AbfEATyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 15:54:35 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:45650 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726004AbfEATye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 15:54:34 -0400
-Received: by mail-wr1-f67.google.com with SMTP id s15so25779548wra.12
-        for <netdev@vger.kernel.org>; Wed, 01 May 2019 12:54:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NKPtm+HwJ02Jv4ss+nossrB6dd4/54X4LWggsxI8rVs=;
-        b=eWZv2fkDgmBaZ1a6NmX5UgEEzpa5Y4G8h0vVIJxEb6MJUy2KUynkpLNqsC2Dp4KEuK
-         yWG0/+pdLtTibbT/TWqVjgS2u4KoyGqA+1Cj2sQNwB4cHkUNxRGfgGvPQqeh8LWwzL0a
-         U8CkU4YZOM5JiZToZ3ituMItqZH9JveBU6cI4lhv8XlHB2+XgyWH8CL4+kB2qlLZxwpn
-         Fl+ajdKqqjdT5ecbvp4CuyvZViuCb36ovA3vnn5eDsnlnzJOTqM/txGkEeZ/0xY/vIqO
-         SpLrdCfV5Oudbu1k1q5ZpCWuZvGNXN40hHmzOffSfexbpwpNfrNzM3aBSG4OE43cYLU6
-         jdew==
+        id S1726125AbfEATrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 15:47:36 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:36301 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726004AbfEATrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 15:47:35 -0400
+Received: by mail-ot1-f67.google.com with SMTP id b18so43679otq.3;
+        Wed, 01 May 2019 12:47:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NKPtm+HwJ02Jv4ss+nossrB6dd4/54X4LWggsxI8rVs=;
-        b=tC2a07QABtLcwxN3k8nsJvxf0yKAaFlCqtVrYWrAXcs3YCyKItuqfATmyowSXczGRP
-         ow1T2Ue/o73oZt82wQcPlMl2mN0PAEhpajKGu2GBGlE8fd42+DwVd9gB8tJlz2L5Bimp
-         WwibaaL5p+xD9S0gdFIq2Fp21eNt9ykZdwAwHzEuICH5ExrIAMVxRjv8edzAzqSex0D7
-         5t9ndPkD8tc67yamg+6RFM4yGfIf48SvSH+o35ydBw7Ccjo7OlXO6rbKItAn1stRL7LK
-         c1maJSfMWd7KTd0DItTtB7R19flhbfk17K4nhC/ZJ6o6+RT2ZCPcn01B1ustjiw6KwaO
-         KZ/g==
-X-Gm-Message-State: APjAAAXD6vXQAv6omnPBdtoRFsJnDeHJZjUd6wXrLqbPVa9jkkz++Cu6
-        DoMdrTZT5lbTDzGuigIL4A8eCElT6KQ=
-X-Google-Smtp-Source: APXvYqxExwLryGAqzDx3rKYPJSCThM58HRIeAw0F3rDq/PoXsLlJp75uGl7+xDxkp37HuuVzolOt/w==
-X-Received: by 2002:adf:f102:: with SMTP id r2mr21080949wro.136.1556740472574;
-        Wed, 01 May 2019 12:54:32 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd4:5700:a160:62e9:d01f:fc0a? (p200300EA8BD45700A16062E9D01FFC0A.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:a160:62e9:d01f:fc0a])
-        by smtp.googlemail.com with ESMTPSA id e10sm31931996wra.52.2019.05.01.12.54.31
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5YzhllM92etO0io7FIdy5LneCJOMFGyjoYKOXsJVIvU=;
+        b=TI9BHWera1jK36OUXBn9K7OM6HE2WDhcg+e4wFseSeK0xLQ2vC4Xhf4P8yzg6NN/xm
+         o5kZruLa22gOlfKIc1SsUqFrf2ml0EgXXLz/oUWb+uqC5M1u9Gazxaz0h6cmwqTM08mY
+         COjzTerSiKDTFzj4woTqP+v4NrSchx5ZKNOMfJxY1MvE7IBrjv3rsMIwquee64PQubW3
+         Iq+1+nSd5mzvd5anBVMfymsCyM9AWzYMtEwUR/1WgK9+wuEPkFfnFXH2cqhvZTUEVPG5
+         w5dk84rDGgO3OM2kUPvAjG7HwyrufD3UpGQCC+N6dzKKuNrWonP4e/gIhrBiMm5Zgd6p
+         bfZA==
+X-Gm-Message-State: APjAAAWeGAJcwj9UZBcn/GL/fMlL3kvLJe8olOoNeU/ipukMl3dfUGS2
+        klDP6+EXXJuCiASlGqQrfH1w+7SJnOY=
+X-Google-Smtp-Source: APXvYqyjAAtqISB0UYlacWbZ6j7hDIsGjG/AGAPspfzy1GhukVHpVp7cphvFnhY4OuJmhfwDSwxLGg==
+X-Received: by 2002:a9d:3b06:: with SMTP id z6mr2141880otb.140.1556740054614;
+        Wed, 01 May 2019 12:47:34 -0700 (PDT)
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com. [209.85.167.181])
+        by smtp.gmail.com with ESMTPSA id g62sm785067otg.25.2019.05.01.12.47.33
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 01 May 2019 12:54:31 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2 net-next] net: phy: improve pause handling
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <5ac8d9b0-ac63-64d2-d5e1-e0911a35e534@gmail.com>
-Message-ID: <d437c5d8-e683-4d69-7818-c6f69053bc02@gmail.com>
-Date:   Wed, 1 May 2019 21:34:43 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        Wed, 01 May 2019 12:47:33 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id n187so14622003oih.6;
+        Wed, 01 May 2019 12:47:33 -0700 (PDT)
+X-Received: by 2002:aca:d984:: with SMTP id q126mr15911oig.108.1556740053075;
+ Wed, 01 May 2019 12:47:33 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <5ac8d9b0-ac63-64d2-d5e1-e0911a35e534@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190427071031.6563-1-laurentiu.tudor@nxp.com> <20190427071031.6563-3-laurentiu.tudor@nxp.com>
+In-Reply-To: <20190427071031.6563-3-laurentiu.tudor@nxp.com>
+From:   Li Yang <leoyang.li@nxp.com>
+Date:   Wed, 1 May 2019 14:47:21 -0500
+X-Gmail-Original-Message-ID: <CADRPPNSUBYGKp9cQRdOhsdgr+z85Dtz1TKav9yoAmV6gqPOVUg@mail.gmail.com>
+Message-ID: <CADRPPNSUBYGKp9cQRdOhsdgr+z85Dtz1TKav9yoAmV6gqPOVUg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/9] soc/fsl/qbman_portals: add APIs to retrieve the
+ probing status
+To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc:     Netdev <netdev@vger.kernel.org>, madalin.bucur@nxp.com,
+        Roy Pledge <roy.pledge@nxp.com>, camelia.groza@nxp.com,
+        lkml <linux-kernel@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        David Miller <davem@davemloft.net>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When probing the phy device we set sym and asym pause in the "supported"
-bitmap (unless the PHY tells us otherwise). However we don't know yet
-whether the MAC supports pause. Simply copying phy->supported to
-phy->advertising will trigger advertising pause, and that's not
-what we want. Therefore add phy_advertise_supported() that copies all
-modes but doesn't touch the pause bits.
+On Sat, Apr 27, 2019 at 2:14 AM <laurentiu.tudor@nxp.com> wrote:
+>
+> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+>
+> Add a couple of new APIs to check the probing status of the required
+> cpu bound qman and bman portals:
+>  'int bman_portals_probed()' and 'int qman_portals_probed()'.
+> They return the following values.
+>  *  1 if qman/bman portals were all probed correctly
+>  *  0 if qman/bman portals were not yet probed
+>  * -1 if probing of qman/bman portals failed
+> Portals are considered successful probed if no error occurred during
+> the probing of any of the portals and if enough portals were probed
+> to have one available for each cpu.
+> The error handling paths were slightly rearranged in order to fit this
+> new functionality without being too intrusive.
+> Drivers that use qman/bman portal driver services are required to use
+> these APIs before calling any functions exported by these drivers or
+> otherwise they will crash the kernel.
+> First user will be the dpaa1 ethernet driver, coming in a subsequent
+> patch.
+>
+> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-In phy_support_(a)sym_pause we shouldn't set any bits in the supported
-bitmap because we may set a bit the PHY intentionally disabled.
-Effective pause support should be the AND-combined PHY and MAC pause
-capabilities. If the MAC supports everything, then it's only relevant
-what the PHY supports. If MAC supports sym pause only, then we have to
-clear the asym bit in phydev->supported.
-Copy the pause flags only and don't touch the modes, because a driver
-may have intentionally removed a mode from phydev->advertising.
+Applied for next.  Thanks.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
-v2:
-- removed patch 2 from the series
----
- drivers/net/phy/fixed_phy.c  |  2 +-
- drivers/net/phy/phy-core.c   |  2 +-
- drivers/net/phy/phy_device.c | 36 +++++++++++++++++++++++++++++-------
- include/linux/phy.h          |  1 +
- 4 files changed, 32 insertions(+), 9 deletions(-)
+Leo
 
-diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
-index 1acd8bfdb..3ffe46df2 100644
---- a/drivers/net/phy/fixed_phy.c
-+++ b/drivers/net/phy/fixed_phy.c
-@@ -301,7 +301,7 @@ static struct phy_device *__fixed_phy_register(unsigned int irq,
- 				 phy->supported);
- 	}
- 
--	linkmode_copy(phy->advertising, phy->supported);
-+	phy_advertise_supported(phy);
- 
- 	ret = phy_device_register(phy);
- 	if (ret) {
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 12ce67102..3daf0214a 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -228,7 +228,7 @@ int phy_set_max_speed(struct phy_device *phydev, u32 max_speed)
- 	if (err)
- 		return err;
- 
--	linkmode_copy(phydev->advertising, phydev->supported);
-+	phy_advertise_supported(phydev);
- 
- 	return 0;
- }
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 2a2aaa5f3..544b98b34 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1985,10 +1985,35 @@ EXPORT_SYMBOL(genphy_loopback);
- void phy_remove_link_mode(struct phy_device *phydev, u32 link_mode)
- {
- 	linkmode_clear_bit(link_mode, phydev->supported);
--	linkmode_copy(phydev->advertising, phydev->supported);
-+	phy_advertise_supported(phydev);
- }
- EXPORT_SYMBOL(phy_remove_link_mode);
- 
-+static void phy_copy_pause_bits(unsigned long *dst, unsigned long *src)
-+{
-+	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, dst,
-+		linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, src));
-+	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT, dst,
-+		linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, src));
-+}
-+
-+/**
-+ * phy_advertise_supported - Advertise all supported modes
-+ * @phydev: target phy_device struct
-+ *
-+ * Description: Called to advertise all supported modes, doesn't touch
-+ * pause mode advertising.
-+ */
-+void phy_advertise_supported(struct phy_device *phydev)
-+{
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(new);
-+
-+	linkmode_copy(new, phydev->supported);
-+	phy_copy_pause_bits(new, phydev->advertising);
-+	linkmode_copy(phydev->advertising, new);
-+}
-+EXPORT_SYMBOL(phy_advertise_supported);
-+
- /**
-  * phy_support_sym_pause - Enable support of symmetrical pause
-  * @phydev: target phy_device struct
-@@ -1999,8 +2024,7 @@ EXPORT_SYMBOL(phy_remove_link_mode);
- void phy_support_sym_pause(struct phy_device *phydev)
- {
- 	linkmode_clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->supported);
--	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, phydev->supported);
--	linkmode_copy(phydev->advertising, phydev->supported);
-+	phy_copy_pause_bits(phydev->advertising, phydev->supported);
- }
- EXPORT_SYMBOL(phy_support_sym_pause);
- 
-@@ -2012,9 +2036,7 @@ EXPORT_SYMBOL(phy_support_sym_pause);
-  */
- void phy_support_asym_pause(struct phy_device *phydev)
- {
--	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, phydev->supported);
--	linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->supported);
--	linkmode_copy(phydev->advertising, phydev->supported);
-+	phy_copy_pause_bits(phydev->advertising, phydev->supported);
- }
- EXPORT_SYMBOL(phy_support_asym_pause);
- 
-@@ -2177,7 +2199,7 @@ static int phy_probe(struct device *dev)
- 		phydev->is_gigabit_capable = 1;
- 
- 	of_set_phy_supported(phydev);
--	linkmode_copy(phydev->advertising, phydev->supported);
-+	phy_advertise_supported(phydev);
- 
- 	/* Get the EEE modes we want to prohibit. We will ask
- 	 * the PHY stop advertising these mode later on
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 0f9552b17..4a03f8a46 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1154,6 +1154,7 @@ void phy_request_interrupt(struct phy_device *phydev);
- void phy_print_status(struct phy_device *phydev);
- int phy_set_max_speed(struct phy_device *phydev, u32 max_speed);
- void phy_remove_link_mode(struct phy_device *phydev, u32 link_mode);
-+void phy_advertise_supported(struct phy_device *phydev);
- void phy_support_sym_pause(struct phy_device *phydev);
- void phy_support_asym_pause(struct phy_device *phydev);
- void phy_set_sym_pause(struct phy_device *phydev, bool rx, bool tx,
--- 
-2.21.0
-
-
+> ---
+>  drivers/soc/fsl/qbman/bman_portal.c | 20 ++++++++++++++++----
+>  drivers/soc/fsl/qbman/qman_portal.c | 21 +++++++++++++++++----
+>  include/soc/fsl/bman.h              |  8 ++++++++
+>  include/soc/fsl/qman.h              |  9 +++++++++
+>  4 files changed, 50 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/soc/fsl/qbman/bman_portal.c b/drivers/soc/fsl/qbman/bman_portal.c
+> index 2c95cf59f3e7..cf4f10d6f590 100644
+> --- a/drivers/soc/fsl/qbman/bman_portal.c
+> +++ b/drivers/soc/fsl/qbman/bman_portal.c
+> @@ -32,6 +32,7 @@
+>
+>  static struct bman_portal *affine_bportals[NR_CPUS];
+>  static struct cpumask portal_cpus;
+> +static int __bman_portals_probed;
+>  /* protect bman global registers and global data shared among portals */
+>  static DEFINE_SPINLOCK(bman_lock);
+>
+> @@ -87,6 +88,12 @@ static int bman_online_cpu(unsigned int cpu)
+>         return 0;
+>  }
+>
+> +int bman_portals_probed(void)
+> +{
+> +       return __bman_portals_probed;
+> +}
+> +EXPORT_SYMBOL_GPL(bman_portals_probed);
+> +
+>  static int bman_portal_probe(struct platform_device *pdev)
+>  {
+>         struct device *dev = &pdev->dev;
+> @@ -104,8 +111,10 @@ static int bman_portal_probe(struct platform_device *pdev)
+>         }
+>
+>         pcfg = devm_kmalloc(dev, sizeof(*pcfg), GFP_KERNEL);
+> -       if (!pcfg)
+> +       if (!pcfg) {
+> +               __bman_portals_probed = -1;
+>                 return -ENOMEM;
+> +       }
+>
+>         pcfg->dev = dev;
+>
+> @@ -113,14 +122,14 @@ static int bman_portal_probe(struct platform_device *pdev)
+>                                              DPAA_PORTAL_CE);
+>         if (!addr_phys[0]) {
+>                 dev_err(dev, "Can't get %pOF property 'reg::CE'\n", node);
+> -               return -ENXIO;
+> +               goto err_ioremap1;
+>         }
+>
+>         addr_phys[1] = platform_get_resource(pdev, IORESOURCE_MEM,
+>                                              DPAA_PORTAL_CI);
+>         if (!addr_phys[1]) {
+>                 dev_err(dev, "Can't get %pOF property 'reg::CI'\n", node);
+> -               return -ENXIO;
+> +               goto err_ioremap1;
+>         }
+>
+>         pcfg->cpu = -1;
+> @@ -128,7 +137,7 @@ static int bman_portal_probe(struct platform_device *pdev)
+>         irq = platform_get_irq(pdev, 0);
+>         if (irq <= 0) {
+>                 dev_err(dev, "Can't get %pOF IRQ'\n", node);
+> -               return -ENXIO;
+> +               goto err_ioremap1;
+>         }
+>         pcfg->irq = irq;
+>
+> @@ -150,6 +159,7 @@ static int bman_portal_probe(struct platform_device *pdev)
+>         spin_lock(&bman_lock);
+>         cpu = cpumask_next_zero(-1, &portal_cpus);
+>         if (cpu >= nr_cpu_ids) {
+> +               __bman_portals_probed = 1;
+>                 /* unassigned portal, skip init */
+>                 spin_unlock(&bman_lock);
+>                 return 0;
+> @@ -175,6 +185,8 @@ static int bman_portal_probe(struct platform_device *pdev)
+>  err_ioremap2:
+>         memunmap(pcfg->addr_virt_ce);
+>  err_ioremap1:
+> +        __bman_portals_probed = -1;
+> +
+>         return -ENXIO;
+>  }
+>
+> diff --git a/drivers/soc/fsl/qbman/qman_portal.c b/drivers/soc/fsl/qbman/qman_portal.c
+> index 661c9b234d32..e2186b681d87 100644
+> --- a/drivers/soc/fsl/qbman/qman_portal.c
+> +++ b/drivers/soc/fsl/qbman/qman_portal.c
+> @@ -38,6 +38,7 @@ EXPORT_SYMBOL(qman_dma_portal);
+>  #define CONFIG_FSL_DPA_PIRQ_FAST  1
+>
+>  static struct cpumask portal_cpus;
+> +static int __qman_portals_probed;
+>  /* protect qman global registers and global data shared among portals */
+>  static DEFINE_SPINLOCK(qman_lock);
+>
+> @@ -220,6 +221,12 @@ static int qman_online_cpu(unsigned int cpu)
+>         return 0;
+>  }
+>
+> +int qman_portals_probed(void)
+> +{
+> +       return __qman_portals_probed;
+> +}
+> +EXPORT_SYMBOL_GPL(qman_portals_probed);
+> +
+>  static int qman_portal_probe(struct platform_device *pdev)
+>  {
+>         struct device *dev = &pdev->dev;
+> @@ -238,8 +245,10 @@ static int qman_portal_probe(struct platform_device *pdev)
+>         }
+>
+>         pcfg = devm_kmalloc(dev, sizeof(*pcfg), GFP_KERNEL);
+> -       if (!pcfg)
+> +       if (!pcfg) {
+> +               __qman_portals_probed = -1;
+>                 return -ENOMEM;
+> +       }
+>
+>         pcfg->dev = dev;
+>
+> @@ -247,19 +256,20 @@ static int qman_portal_probe(struct platform_device *pdev)
+>                                              DPAA_PORTAL_CE);
+>         if (!addr_phys[0]) {
+>                 dev_err(dev, "Can't get %pOF property 'reg::CE'\n", node);
+> -               return -ENXIO;
+> +               goto err_ioremap1;
+>         }
+>
+>         addr_phys[1] = platform_get_resource(pdev, IORESOURCE_MEM,
+>                                              DPAA_PORTAL_CI);
+>         if (!addr_phys[1]) {
+>                 dev_err(dev, "Can't get %pOF property 'reg::CI'\n", node);
+> -               return -ENXIO;
+> +               goto err_ioremap1;
+>         }
+>
+>         err = of_property_read_u32(node, "cell-index", &val);
+>         if (err) {
+>                 dev_err(dev, "Can't get %pOF property 'cell-index'\n", node);
+> +               __qman_portals_probed = -1;
+>                 return err;
+>         }
+>         pcfg->channel = val;
+> @@ -267,7 +277,7 @@ static int qman_portal_probe(struct platform_device *pdev)
+>         irq = platform_get_irq(pdev, 0);
+>         if (irq <= 0) {
+>                 dev_err(dev, "Can't get %pOF IRQ\n", node);
+> -               return -ENXIO;
+> +               goto err_ioremap1;
+>         }
+>         pcfg->irq = irq;
+>
+> @@ -291,6 +301,7 @@ static int qman_portal_probe(struct platform_device *pdev)
+>         spin_lock(&qman_lock);
+>         cpu = cpumask_next_zero(-1, &portal_cpus);
+>         if (cpu >= nr_cpu_ids) {
+> +               __qman_portals_probed = 1;
+>                 /* unassigned portal, skip init */
+>                 spin_unlock(&qman_lock);
+>                 return 0;
+> @@ -321,6 +332,8 @@ static int qman_portal_probe(struct platform_device *pdev)
+>  err_ioremap2:
+>         memunmap(pcfg->addr_virt_ce);
+>  err_ioremap1:
+> +       __qman_portals_probed = -1;
+> +
+>         return -ENXIO;
+>  }
+>
+> diff --git a/include/soc/fsl/bman.h b/include/soc/fsl/bman.h
+> index 5b99cb2ea5ef..173e4049d963 100644
+> --- a/include/soc/fsl/bman.h
+> +++ b/include/soc/fsl/bman.h
+> @@ -133,5 +133,13 @@ int bman_acquire(struct bman_pool *pool, struct bm_buffer *bufs, u8 num);
+>   * failed to probe or 0 if the bman driver did not probed yet.
+>   */
+>  int bman_is_probed(void);
+> +/**
+> + * bman_portals_probed - Check if all cpu bound bman portals are probed
+> + *
+> + * Returns 1 if all the required cpu bound bman portals successfully probed,
+> + * -1 if probe errors appeared or 0 if the bman portals did not yet finished
+> + * probing.
+> + */
+> +int bman_portals_probed(void);
+>
+>  #endif /* __FSL_BMAN_H */
+> diff --git a/include/soc/fsl/qman.h b/include/soc/fsl/qman.h
+> index 5cc7af06c1ba..aa31c05a103a 100644
+> --- a/include/soc/fsl/qman.h
+> +++ b/include/soc/fsl/qman.h
+> @@ -1194,6 +1194,15 @@ int qman_release_cgrid(u32 id);
+>   */
+>  int qman_is_probed(void);
+>
+> +/**
+> + * qman_portals_probed - Check if all cpu bound qman portals are probed
+> + *
+> + * Returns 1 if all the required cpu bound qman portals successfully probed,
+> + * -1 if probe errors appeared or 0 if the qman portals did not yet finished
+> + * probing.
+> + */
+> +int qman_portals_probed(void);
+> +
+>  /**
+>   * qman_dqrr_get_ithresh - Get coalesce interrupt threshold
+>   * @portal: portal to get the value for
+> --
+> 2.17.1
+>
