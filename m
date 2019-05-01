@@ -2,63 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EF4610676
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 11:44:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C19CE106A8
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 11:58:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726121AbfEAJoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 05:44:39 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:41396 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725959AbfEAJoj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 05:44:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=P89j+25lH0nkY1fWt1lCASyBoIOZxVLtI8SLGLQKKnI=; b=djDhol+MuXzIaHsOiQQZagWbU
-        Xx6yR2Yh6NclihBk0gid4rBg40151OMAxcja6+m4NlbPXlqCgZOVrGzPNA4X9x9XF7vSlPfqUzPIf
-        cDmjBsbjIQOVQ/XB/2jhQNg7vwXP1Ip+CUTyVyjrByL0FdPYncPF+NrexKTkWhpRLbDWSJ0bTcLjB
-        rq/tDlQGDXKQ1KyZ1Rvcj3rP+zREmmN4uI6VyvQFhm/viSz9uUiz3svIYWfxyUvnrgDTWylY6XZ5+
-        tbEoiyxq3lwuWHkxtmd1LrFPd1hNwyX+FvJE0wnRGwLWte7a/9nF0fHSV2YVCxLET9ipf0LwVUOAI
-        bugHGBavA==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red Hat Linux))
-        id 1hLln3-0004Ey-FU; Wed, 01 May 2019 09:44:37 +0000
-Date:   Wed, 1 May 2019 02:44:37 -0700
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, hch@lst.de, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/5] Beginnings of skb_frag -> bio_vec conversion
-Message-ID: <20190501094437.GA3698@bombadil.infradead.org>
-References: <20190501041757.8647-1-willy@infradead.org>
- <639880c6-5703-857c-8a70-82fbb5a90238@gmail.com>
+        id S1726353AbfEAJ61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 05:58:27 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:34268 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725959AbfEAJ60 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 05:58:26 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x419unpN015845;
+        Wed, 1 May 2019 02:58:20 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=b3HmliJJ7ZJRafZhMbhNvKlUGw2rkoLHSmWVvtIpV0g=;
+ b=EdRZEvH7m34RyQCp6r7BBBnKQ+2zMaiAoYL1QHdOQpAtIyJLbAOb0p8jdNQ3MHx3IrqT
+ wpbcp+C5anzq52vBTXEYTDHKEJCRfaVZoKu1xMPytAhhSoCGaBA185cAq4UmI0cFZ7T1
+ jnX1RbILL47nNrjEKYnkEVQ6CaRmmX8JKPRLdm5bfAQox19sh/11T6sGgexjfu1zHTOi
+ DGvv1kWVWeMdEcwD6SsI2a/zuu3KGOZixri5d+WtDTyQjibmNGSIpZC04Fzze6Slh2OY
+ CH+jQpiYzYC3k+zw9XpO/SVG1W4YEb3aoOL1mfa+CE3U/cGmyaLrAdU5sEO+tSnbeATk GQ== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2s6xgchw9g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 01 May 2019 02:58:20 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Wed, 1 May
+ 2019 02:58:18 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Wed, 1 May 2019 02:58:18 -0700
+Received: from lb-tlvb-michal.il.qlogic.org (unknown [10.5.220.215])
+        by maili.marvell.com (Postfix) with ESMTP id 8011A3F7043;
+        Wed,  1 May 2019 02:58:16 -0700 (PDT)
+From:   Michal Kalderon <michal.kalderon@marvell.com>
+To:     <michal.kalderon@marvell.com>, <ariel.elior@marvell.com>,
+        <davem@davemloft.net>
+CC:     <jgg@ziepe.ca>, <dledford@redhat.com>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>
+Subject: [PATCH net-next 00/10] qed*: Improve performance on 100G link for offload protocols
+Date:   Wed, 1 May 2019 12:57:12 +0300
+Message-ID: <20190501095722.6902-1-michal.kalderon@marvell.com>
+X-Mailer: git-send-email 2.14.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <639880c6-5703-857c-8a70-82fbb5a90238@gmail.com>
-User-Agent: Mutt/1.9.2 (2017-12-15)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-01_04:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 01, 2019 at 04:14:41AM -0400, Eric Dumazet wrote:
-> On 4/30/19 9:17 PM, Matthew Wilcox wrote:
-> > It turns out there's a lot of accessors for the skb_frag, which would
-> > make this conversion really easy if some drivers didn't bypass them.
-> > This is what I've done so far; my laptop's not really beefy enough to
-> > cope with changing skbuff.h too often ;-)
-> 
-> I guess the missing part here is the "why" all this is done ?
-> 
-> 32 bit hosts will have bigger skb_shared_info and this impacts sk_rcvbuf and sk_sndbuf limits.
-> 
-> 17 * 4 are 68 extra bytes per skb.
+This patch series modifies the current implementation of PF selection.
+The refactoring of the llh code enables setting additional filters
+(mac / protocol) per PF, and improves performance for offload protocols
+(RoCE, iWARP, iSCSI, fcoe) on 100G link (was capped at 90G per single
+PF).
 
-Right.  The plan is to replace get_user_pages() with get_user_bvec().  If
-userspace has physically consecutive pages (and often it will, even when
-not using THP), we can reduce the number of elements in the array at the
-start.  So each skb_frag_t is larger, but you'll have fewer of them for a
-large I/O.  Obviously this particularly benefits THP.
+Improved performance on 100G link is achieved by configuring engine
+affinty to each PF.
+The engine affinity is read from the Management FW and hw is configured accordingly.
+A new hw resource called PPFID is exposed and an API is introduced to utilize
+it. This additional resource enables setting the affinity of a PF and providing
+more classification rules per PF.
+qedr,qedi,qedf are also modified as part of the series. Without the
+changes functionality is broken.
+
+
+Chad Dupuis (1):
+  qedf: Use hwfns and affin_hwfn_idx to get MSI-X vector index to use
+
+Manish Rangankar (2):
+  Revert "scsi: qedi: Allocate IRQs based on msix_cnt"
+  qedi: Use hwfns and affin_hwfn_idx to get MSI-X vector index
+
+Michal Kalderon (7):
+  qed: Modify api for performing a dmae to another PF
+  qed: Add llh ppfid interface and 100g support for offload protocols
+  qed: Change hwfn used for sb initialization
+  qed: Modify offload protocols to use the affined engine
+  qedr: Change the MSI-X vectors selection to be based on affined engine
+  qed: Set the doorbell address correctly
+  qed*: Add iWARP 100g support
+
+ drivers/infiniband/hw/qedr/main.c              |   34 +-
+ drivers/infiniband/hw/qedr/qedr.h              |    2 +
+ drivers/net/ethernet/qlogic/qed/qed.h          |   21 +-
+ drivers/net/ethernet/qlogic/qed/qed_cxt.c      |    5 +-
+ drivers/net/ethernet/qlogic/qed/qed_debug.c    |    2 +-
+ drivers/net/ethernet/qlogic/qed/qed_dev.c      | 1275 +++++++++++++++++++-----
+ drivers/net/ethernet/qlogic/qed/qed_dev_api.h  |  113 ++-
+ drivers/net/ethernet/qlogic/qed/qed_fcoe.c     |   26 +-
+ drivers/net/ethernet/qlogic/qed/qed_hsi.h      |   16 +-
+ drivers/net/ethernet/qlogic/qed/qed_hw.c       |   45 +-
+ drivers/net/ethernet/qlogic/qed/qed_init_ops.c |   11 +-
+ drivers/net/ethernet/qlogic/qed/qed_int.c      |   12 +-
+ drivers/net/ethernet/qlogic/qed/qed_iscsi.c    |   35 +-
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c    |   24 +-
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.h    |    4 +-
+ drivers/net/ethernet/qlogic/qed/qed_l2.c       |    6 +-
+ drivers/net/ethernet/qlogic/qed/qed_ll2.c      |  406 +++++---
+ drivers/net/ethernet/qlogic/qed/qed_main.c     |   47 +-
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c      |   65 ++
+ drivers/net/ethernet/qlogic/qed/qed_mcp.h      |   16 +
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c     |   71 +-
+ drivers/net/ethernet/qlogic/qed/qed_reg_addr.h |    6 +
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c    |    4 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c   |    3 +-
+ drivers/scsi/qedf/qedf_main.c                  |   39 +-
+ drivers/scsi/qedi/qedi_main.c                  |   34 +-
+ include/linux/qed/qed_if.h                     |   10 +-
+ include/linux/qed/qed_rdma_if.h                |    2 +
+ 28 files changed, 1712 insertions(+), 622 deletions(-)
+
+-- 
+2.14.5
 
