@@ -2,56 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7175210BF1
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 19:21:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4D2C10BFE
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 19:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726124AbfEARVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 13:21:00 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:42627 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726088AbfEARU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 13:20:59 -0400
-Received: by mail-lj1-f194.google.com with SMTP id r72so11655860ljb.9
-        for <netdev@vger.kernel.org>; Wed, 01 May 2019 10:20:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ePFVSgAMfRMoDNDkCPYtR+eih/XeW/OUwUqyNHjE6UI=;
-        b=vdwmL67Qgh3LUzIBsUuThkhI+ei4K+iipgqgJNYV3rKs4TUg+EA7DVKB0kr5tlI43M
-         kJYXcvDmg/OFxYj36+vpevFT9IZ6AjPZhC1BOlwHvSAlYbUB002AG2VmKLgzBCh7DKly
-         x8ftwyOmOqbB55BaUTQMMZadStvS4m8qFIfZnCXG6AL3Nlr/dWqEUkHDPLGs31yXXcRB
-         CLRTyIGdHOHiRF1tDRuT/Yj8TDIlJu2YYXzFTL672Zj/alHY5dDvWjjh/264RJCsmCZG
-         lVplELPwO9m8DXN53wgUx094psZGqJ0RSMJdMVIi2S3kwneWNzjf2+JlORwKKp9ov9G6
-         deCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ePFVSgAMfRMoDNDkCPYtR+eih/XeW/OUwUqyNHjE6UI=;
-        b=GVlxJJ//dsAVJ3tn/nxqllKx/OievP3QETpAE3Rz6YpCypUoO8na+uOPX4Sl6oUvpV
-         iqCXuzjkqwMYn6sLkN9bb3sZGyVz7OD4HS0poKB69LysVgpFtanZMPbUwMTr421dZ3WL
-         +cGj2DDAbeG/kzbAujLnKpzdRYG7ggGb92MmOvbWz5SqV67OxgwM5bDogtpsw28T/wwf
-         JNhlFbWStkXhHXWU2TnjzKFJNx/Ap6wVoSSffgWQ0Dua1YZXi+copp8kFIkp0cmBIvHH
-         e6f+QtT6WXtzF45u6rzZF11mGF/D9ggd9t65ZDDU3COG1LwxjkQdc0R0x124zyKVpK3y
-         KqTA==
-X-Gm-Message-State: APjAAAXeMVBPI9ShYiIUxGtKP1KiD1wBq75Fe5dlMtE6NXvzyRDft2tu
-        nTpcanR5KsAtNVyYBIeOLXLhrmh2Mh5ZNNakgHI=
-X-Google-Smtp-Source: APXvYqx4GrLLsWb2IqhW+RxLMdRLBa335N5VSKfTYHHP7g7DoHceaJAwbFfz7mJFhSZMc8j856sIvktnUSdBAx0pyfQ=
-X-Received: by 2002:a2e:1296:: with SMTP id 22mr6024827ljs.11.1556731258054;
- Wed, 01 May 2019 10:20:58 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a05:6504:15d6:0:0:0:0 with HTTP; Wed, 1 May 2019 10:20:57
- -0700 (PDT)
-Reply-To: petersina60@gmail.com
-From:   "Mr.Peter Sina" <kojofofone8@gmail.com>
-Date:   Wed, 1 May 2019 17:20:57 +0000
-Message-ID: <CADiSXQZYS9+12w3p5r1qbw=scQOLzY8RMFJM1HWmC-yD1MVtsg@mail.gmail.com>
-Subject: please let me know
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        id S1726150AbfEAR3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 13:29:19 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:36446 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726019AbfEAR3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 13:29:19 -0400
+Received: from localhost (adsl-173-228-226-134.prtc.net [173.228.226.134])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 20C021478DBE9;
+        Wed,  1 May 2019 10:29:17 -0700 (PDT)
+Date:   Wed, 01 May 2019 13:29:14 -0400 (EDT)
+Message-Id: <20190501.132914.1542638584464970678.davem@davemloft.net>
+To:     shmulik@metanetworks.com
+Cc:     netdev@vger.kernel.org, kuznet@ms2.inr.ac.ru,
+        shmulik.ladkani@gmail.com
+Subject: Re: [PATCH net] ipv4: ip_do_fragment: Preserve skb_iif during
+ fragmentation
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190429133930.6287-1-shmulik.ladkani@gmail.com>
+References: <20190429133930.6287-1-shmulik.ladkani@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 01 May 2019 10:29:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greeting, Did you received my message? please let me know.Thanks.Mr.Peter Sina.
+From: Shmulik Ladkani <shmulik@metanetworks.com>
+Date: Mon, 29 Apr 2019 16:39:30 +0300
+
+> Previously, during fragmentation after forwarding, skb->skb_iif isn't
+> preserved, i.e. 'ip_copy_metadata' does not copy skb_iif from given
+> 'from' skb.
+> 
+> As a result, ip_do_fragment's creates fragments with zero skb_iif,
+> leading to inconsistent behavior.
+> 
+> Assume for example an eBPF program attached at tc egress (post
+> forwarding) that examines __sk_buff->ingress_ifindex:
+>  - the correct iif is observed if forwarding path does not involve
+>    fragmentation/refragmentation
+>  - a bogus iif is observed if forwarding path involves
+>    fragmentation/refragmentatiom
+> 
+> Fix, by preserving skb_iif during 'ip_copy_metadata'.
+> 
+> Signed-off-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+
+Applied and queued up for -stable.
