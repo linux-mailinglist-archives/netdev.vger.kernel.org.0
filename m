@@ -2,100 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C99210BFB
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 19:28:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3D3110BFD
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 19:28:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726096AbfEAR23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 13:28:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56290 "EHLO mail.kernel.org"
+        id S1726137AbfEAR2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 13:28:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56330 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726004AbfEAR23 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 May 2019 13:28:29 -0400
+        id S1726019AbfEAR2i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 May 2019 13:28:38 -0400
 Received: from localhost (unknown [37.142.3.125])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7826620866;
-        Wed,  1 May 2019 17:28:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 50D3420866;
+        Wed,  1 May 2019 17:28:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556731708;
-        bh=BTFzOgrW09cyI0ednOUIo13jwwfcT1aombvGpH19wyQ=;
+        s=default; t=1556731718;
+        bh=THWOHjZdin30zLuSdTabNsX8kjET8/Mhic2YzBJ+7fw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jqscfDeISAU08bln/CQtmXsFhusVXHA91Y3w62SlHfdYDmoRAjT5pr082a5UtJ+ex
-         ut7b9Cg42p9Wxk+nVfXkNu6RucKLEsE/yQONm/DVc0QqCWQf9oDFVKd2Hvj/KVEM1D
-         Vd+WPaMvbC7dsoaaySG8qqun9vMOZmtkXabDMNrQ=
-Date:   Wed, 1 May 2019 10:44:15 +0300
+        b=EbcN2fM6r4z1qv3wj4pDAoI1vsCDmm/COkcRA0u2ZSDI//SowIALbRoLgEasC4Ufw
+         hi/GaE6bA1A4qsXlQ/Dg6p8z74stYkZDliXI+WKugZzGABaQ12N3tBzzn1fzYim1hz
+         Z/JcmqUkKKs0tXpWK0m0F5h2UKGG74kWDsvaY+Ms=
+Date:   Wed, 1 May 2019 10:45:00 +0300
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [net-next][PATCH v2 1/2] rds: handle unsupported rdma request to
- fs dax memory
-Message-ID: <20190501074415.GB7676@mtr-leonro.mtl.com>
+Subject: Re: [net-next][PATCH v2 2/2] rds: add sysctl for rds support of
+ On-Demand-Paging
+Message-ID: <20190501074500.GC7676@mtr-leonro.mtl.com>
 References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
- <1556581040-4812-2-git-send-email-santosh.shilimkar@oracle.com>
+ <1556581040-4812-3-git-send-email-santosh.shilimkar@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1556581040-4812-2-git-send-email-santosh.shilimkar@oracle.com>
+In-Reply-To: <1556581040-4812-3-git-send-email-santosh.shilimkar@oracle.com>
 User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 04:37:19PM -0700, Santosh Shilimkar wrote:
-> From: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
->
+On Mon, Apr 29, 2019 at 04:37:20PM -0700, Santosh Shilimkar wrote:
 > RDS doesn't support RDMA on memory apertures that require On Demand
-> Paging (ODP), such as FS DAX memory. User applications can try to use
-> RDS to perform RDMA over such memories and since it doesn't report any
-> failure, it can lead to unexpected issues like memory corruption when
-> a couple of out of sync file system operations like ftruncate etc. are
-> performed.
->
-> The patch adds a check so that such an attempt to RDMA to/from memory
-> apertures requiring ODP will fail.
+> Paging (ODP), such as FS DAX memory. A sysctl is added to indicate
+> whether RDMA requiring ODP is supported.
 >
 > Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
 > Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
 > Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
 > Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
 > ---
->  net/rds/rdma.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+>  net/rds/ib.h        | 1 +
+>  net/rds/ib_sysctl.c | 8 ++++++++
+>  2 files changed, 9 insertions(+)
+
+This sysctl is not needed at all
+
 >
-> diff --git a/net/rds/rdma.c b/net/rds/rdma.c
-> index 182ab84..e0a6b72 100644
-> --- a/net/rds/rdma.c
-> +++ b/net/rds/rdma.c
-> @@ -158,8 +158,9 @@ static int rds_pin_pages(unsigned long user_addr, unsigned int nr_pages,
->  {
->  	int ret;
+> diff --git a/net/rds/ib.h b/net/rds/ib.h
+> index 67a715b..80e11ef 100644
+> --- a/net/rds/ib.h
+> +++ b/net/rds/ib.h
+> @@ -457,5 +457,6 @@ unsigned int rds_ib_stats_info_copy(struct rds_info_iterator *iter,
+>  extern unsigned long rds_ib_sysctl_max_unsig_bytes;
+>  extern unsigned long rds_ib_sysctl_max_recv_allocation;
+>  extern unsigned int rds_ib_sysctl_flow_control;
+> +extern unsigned int rds_ib_sysctl_odp_support;
 >
-> -	ret = get_user_pages_fast(user_addr, nr_pages, write, pages);
-> -
-> +	/* get_user_pages return -EOPNOTSUPP for fs_dax memory */
-> +	ret = get_user_pages_longterm(user_addr, nr_pages,
-> +				      write, pages, NULL);
-
-I'm not RDS expert, but from what I see in net/rds/rdma.c and this code,
-you tried to mimic ib_umem_get() without protection, checks and native
-ODP, FS and DAX supports.
-
-The real way to solve your ODP problem will require to extend
-ib_umem_get() to work for kernel ULPs too and use it instead of
-get_user_pages(). We are working on that and it is in internal review now.
-
-It is applicable if underneath your RDS code, there is IB code, in case
-there is no such layer, you shouldn't return IB_DEVICE_ON_DEMAND_PAGING
-capability to user space and return EINVAL for every attempt to create
-such ODP MR.
-
-Thanks
-
->  	if (ret >= 0 && ret < nr_pages) {
->  		while (ret--)
->  			put_page(pages[ret]);
+>  #endif
+> diff --git a/net/rds/ib_sysctl.c b/net/rds/ib_sysctl.c
+> index e4e41b3..7cc02cd 100644
+> --- a/net/rds/ib_sysctl.c
+> +++ b/net/rds/ib_sysctl.c
+> @@ -60,6 +60,7 @@
+>   * will cause credits to be added before protocol negotiation.
+>   */
+>  unsigned int rds_ib_sysctl_flow_control = 0;
+> +unsigned int rds_ib_sysctl_odp_support;
+>
+>  static struct ctl_table rds_ib_sysctl_table[] = {
+>  	{
+> @@ -103,6 +104,13 @@
+>  		.mode		= 0644,
+>  		.proc_handler	= proc_dointvec,
+>  	},
+> +	{
+> +		.procname       = "odp_support",
+> +		.data           = &rds_ib_sysctl_odp_support,
+> +		.maxlen         = sizeof(rds_ib_sysctl_odp_support),
+> +		.mode           = 0444,
+> +		.proc_handler   = proc_dointvec,
+> +	},
+>  	{ }
+>  };
+>
 > --
 > 1.9.1
 >
