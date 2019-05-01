@@ -2,94 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A027110B43
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 18:23:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8082D10E84
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 23:21:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726517AbfEAQXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 12:23:18 -0400
-Received: from gateway23.websitewelcome.com ([192.185.50.250]:27373 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726101AbfEAQXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 12:23:18 -0400
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 937CF1AF66
-        for <netdev@vger.kernel.org>; Wed,  1 May 2019 11:23:17 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id Ls0rh07bTiQerLs0rhfpZe; Wed, 01 May 2019 11:23:17 -0500
-X-Authority-Reason: nr=8
-Received: from [189.250.119.203] (port=36490 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hLs0q-001tWw-5p; Wed, 01 May 2019 11:23:16 -0500
-Date:   Wed, 1 May 2019 11:23:15 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH net-next] net: sched: cls_u32: use struct_size() helper
-Message-ID: <20190501162315.GA27166@embeddedor>
+        id S1726133AbfEAVVD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 1 May 2019 17:21:03 -0400
+Received: from sella4.gpi.it ([89.190.163.252]:47744 "EHLO sella4.gpi.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726115AbfEAVVD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 May 2019 17:21:03 -0400
+X-Greylist: delayed 11889 seconds by postgrey-1.27 at vger.kernel.org; Wed, 01 May 2019 17:21:02 EDT
+Received: from prdzimgpi04.gpi.it (prdmta.gpi.it [192.168.40.36])
+        by sella4.gpi.it (Postfix) with ESMTPS id 364EE101B2F;
+        Wed,  1 May 2019 18:25:58 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by prdzimgpi04.gpi.it (Postfix) with ESMTP id 45099411EE;
+        Wed,  1 May 2019 18:25:56 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at prdzimgpi04.gpi.it
+Received: from prdzimgpi04.gpi.it ([127.0.0.1])
+        by localhost (prdzimgpi04.gpi.it [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 4k80btKt_OXS; Wed,  1 May 2019 18:25:56 +0200 (CEST)
+Received: from [172.20.10.4] (unknown [105.112.38.69])
+        (Authenticated sender: u09096)
+        by prdzimgpi04.gpi.it (Postfix) with ESMTPSA id 7F5D736001E;
+        Wed,  1 May 2019 18:25:28 +0200 (CEST)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.119.203
-X-Source-L: No
-X-Exim-ID: 1hLs0q-001tWw-5p
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [189.250.119.203]:36490
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 9
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: 
+To:     Recipients <gizzi@gpi.it>
+From:   "Alice Walton" <gizzi@gpi.it>
+Date:   Wed, 01 May 2019 17:25:23 +0100
+Reply-To: alicewalton7653@hotmail.com
+Message-Id: <20190501162528.7F5D736001E@prdzimgpi04.gpi.it>
+X-GPI-MailScanner-Information: Please contact sat@gpi.it for more information
+X-GPI-MailScanner-ID: 364EE101B2F.A44EB
+X-GPI-MailScanner: Found to be clean
+X-GPI-MailScanner-MCPCheck: 
+X-GPI-MailScanner-SpamCheck: non spam, SpamAssassin (cached, punteggio=2.147,
+        necessario 5, ALL_TRUSTED -1.00, BAYES_50 0.80,
+        FREEMAIL_FORGED_REPLYTO 2.10, FREEMAIL_REPLYTO_END_DIGIT 0.25,
+        LOTS_OF_MONEY 0.00, MONEY_FROM_MISSP 0.00)
+X-GPI-MailScanner-SpamScore: ss
+X-GPI-MailScanner-From: gizzi@gpi.it
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version
-in order to avoid any potential type mistakes, in particular in the
-context in which this code is being used.
-
-So, replace code of the following form:
-
-sizeof(*s) + s->nkeys*sizeof(struct tc_u32_key)
-
-with:
-
-struct_size(s, keys, s->nkeys)
-
-This code was detected with the help of Coccinelle.
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- net/sched/cls_u32.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-index 04e9ef088535..4b8710a266cc 100644
---- a/net/sched/cls_u32.c
-+++ b/net/sched/cls_u32.c
-@@ -847,7 +847,7 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
- 	/* Similarly success statistics must be moved as pointers */
- 	new->pcpu_success = n->pcpu_success;
- #endif
--	memcpy(&new->sel, s, sizeof(*s) + s->nkeys*sizeof(struct tc_u32_key));
-+	memcpy(&new->sel, s, struct_size(s, keys, s->nkeys));
- 
- 	if (tcf_exts_init(&new->exts, net, TCA_U32_ACT, TCA_U32_POLICE)) {
- 		kfree(new);
--- 
-2.21.0
-
+You have a charity mission worth $ 100 million from Alice Walton for more information contact her email:  alicewalton7653@hotmail.com
