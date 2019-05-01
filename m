@@ -2,169 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 377DB10C48
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 19:42:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F8DE10C72
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 19:51:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726225AbfEARmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 13:42:08 -0400
-Received: from gateway24.websitewelcome.com ([192.185.51.251]:41500 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726101AbfEARmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 13:42:07 -0400
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id CD302361883
-        for <netdev@vger.kernel.org>; Wed,  1 May 2019 12:42:06 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id LtF8h56yM2PzOLtF8hYyMJ; Wed, 01 May 2019 12:42:06 -0500
-X-Authority-Reason: nr=8
-Received: from [189.250.119.203] (port=40056 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hLtF8-002WgJ-4b; Wed, 01 May 2019 12:42:06 -0500
-Subject: Re: [PATCH net-next] can: kvaser_usb: Use struct_size() in
- alloc_candev()
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190208031035.GA2665@embeddedor>
- <1220cd8d-913f-934b-9c4d-26f4012c3150@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <524a265c-21fb-72e1-e077-dd51d8807751@embeddedor.com>
-Date:   Wed, 1 May 2019 12:42:03 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+        id S1726225AbfEARvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 13:51:21 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:54300 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbfEARvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 13:51:21 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x41HYH1t123589;
+        Wed, 1 May 2019 17:51:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=OXBx6DYwRcii4bmGU1wJbSki8qBSriUFZSz+lmwynY8=;
+ b=WAWoHVC0duYbvJ3LfcG71vHT7LJqdCppmPjlEw7SS/OUQUG+bJjIHI6I0Zui7cgdQZSW
+ 8TMkCVYs4CqFFDYJu7dcG4edGG1cxu+HS/t+burPudGNetQGrDPQ/aDBNwEMsi7Vo9li
+ Ueaooha16KdSmEAVs2kqjbIRHUkZh2+bZ1sYOMc8oo7WvVBuy8Kfn1LS/R57H6DmTLQL
+ AJFIyYY259pamUrIW9LxRmVOl6IMthrMiZrQLDsvF8viei8Ikk+nzSPfjYma4dNHxEaz
+ rlMjkYXLG2MiO6+0DOHfqwBHLDh2plT0z5ZZ3FJcLakh84hhMaRC4SAEnjb4RvpOWYgE PQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2s6xhym52x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 01 May 2019 17:51:11 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x41HolS9050701;
+        Wed, 1 May 2019 17:51:10 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 2s6xhgctnw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 01 May 2019 17:51:10 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x41HpAuS023051;
+        Wed, 1 May 2019 17:51:10 GMT
+Received: from [10.209.243.127] (/10.209.243.127)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 01 May 2019 10:51:09 -0700
+Subject: Re: [net-next][PATCH v2 1/2] rds: handle unsupported rdma request to
+ fs dax memory
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
+ <1556581040-4812-2-git-send-email-santosh.shilimkar@oracle.com>
+ <20190501074415.GB7676@mtr-leonro.mtl.com>
+From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <2829f9d8-0383-d141-46c3-f2a09cd542b2@oracle.com>
+Date:   Wed, 1 May 2019 10:54:00 -0700
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <1220cd8d-913f-934b-9c4d-26f4012c3150@embeddedor.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20190501074415.GB7676@mtr-leonro.mtl.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.119.203
-X-Source-L: No
-X-Exim-ID: 1hLtF8-002WgJ-4b
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.119.203]:40056
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 10
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9244 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1905010109
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9244 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1905010109
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
-
-Friendly ping(second one):
-
-Who can take this?
-
-Thanks
---
-Gustavo
-
-On 2/25/19 6:48 PM, Gustavo A. R. Silva wrote:
-> Hi all,
-> 
-> Friendly ping:
-> 
-> Who can take this?
-> 
-> Thanks
-> --
-> Gustavo
-> 
-> On 2/7/19 9:10 PM, Gustavo A. R. Silva wrote:
->> One of the more common cases of allocation size calculations is finding
->> the size of a structure that has a zero-sized array at the end, along
->> with memory for some number of elements for that array. For example:
+On 5/1/2019 12:44 AM, Leon Romanovsky wrote:
+> On Mon, Apr 29, 2019 at 04:37:19PM -0700, Santosh Shilimkar wrote:
+>> From: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
 >>
->> struct foo {
->>     int stuff;
->>     void *entry[];
->> };
+>> RDS doesn't support RDMA on memory apertures that require On Demand
+>> Paging (ODP), such as FS DAX memory. User applications can try to use
+>> RDS to perform RDMA over such memories and since it doesn't report any
+>> failure, it can lead to unexpected issues like memory corruption when
+>> a couple of out of sync file system operations like ftruncate etc. are
+>> performed.
 >>
->> instance = alloc(sizeof(struct foo) + count * sizeof(void *));
+>> The patch adds a check so that such an attempt to RDMA to/from memory
+>> apertures requiring ODP will fail.
 >>
->> Instead of leaving these open-coded and prone to type mistakes, we can
->> now use the new struct_size() helper:
->>
->> instance = alloc(struct_size(instance, entry, count));
->>
->> This code was detected with the help of Coccinelle.
->>
->> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+>> Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
+>> Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+>> Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+>> Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
 >> ---
->>  drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c | 3 +--
->>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>   net/rds/rdma.c | 5 +++--
+>>   1 file changed, 3 insertions(+), 2 deletions(-)
 >>
->> diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
->> index c89c7d4900d7..0f1d3e807d63 100644
->> --- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
->> +++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
->> @@ -643,8 +643,7 @@ static int kvaser_usb_init_one(struct kvaser_usb *dev,
->>  			return err;
->>  	}
->>  
->> -	netdev = alloc_candev(sizeof(*priv) +
->> -			      dev->max_tx_urbs * sizeof(*priv->tx_contexts),
->> +	netdev = alloc_candev(struct_size(priv, tx_contexts, dev->max_tx_urbs),
->>  			      dev->max_tx_urbs);
->>  	if (!netdev) {
->>  		dev_err(&dev->intf->dev, "Cannot alloc candev\n");
+>> diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+>> index 182ab84..e0a6b72 100644
+>> --- a/net/rds/rdma.c
+>> +++ b/net/rds/rdma.c
+>> @@ -158,8 +158,9 @@ static int rds_pin_pages(unsigned long user_addr, unsigned int nr_pages,
+>>   {
+>>   	int ret;
 >>
+>> -	ret = get_user_pages_fast(user_addr, nr_pages, write, pages);
+>> -
+>> +	/* get_user_pages return -EOPNOTSUPP for fs_dax memory */
+>> +	ret = get_user_pages_longterm(user_addr, nr_pages,
+>> +				      write, pages, NULL);
+> 
+> I'm not RDS expert, but from what I see in net/rds/rdma.c and this code,
+> you tried to mimic ib_umem_get() without protection, checks and native
+> ODP, FS and DAX supports.
+>
+> The real way to solve your ODP problem will require to extend
+> ib_umem_get() to work for kernel ULPs too and use it instead of
+> get_user_pages(). We are working on that and it is in internal review now.
+>
+Yes am aware of it. For FS_DAX like memory,  get_user_pages_longterm()
+fails and then using ib_reg_user_mr() the memory is registered as
+ODP regsion. This work is not ready yet and without above check,
+one can do RDMA on FS DAX memory with Fast Reg or FMR memory
+registration which is not safe and hence need to fail the operation.
+
+Once the support is added to RDS, this code path will make that
+registration go through.
+
+Hope it clarifies.
+
+Regards,
+Santosh
+
