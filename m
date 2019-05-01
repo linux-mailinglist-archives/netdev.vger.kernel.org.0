@@ -2,90 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BE9D1045E
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 05:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D11E10473
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 06:18:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726231AbfEADoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 23:44:30 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54702 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbfEADoa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 23:44:30 -0400
-Received: from localhost (adsl-173-228-226-134.prtc.net [173.228.226.134])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 53963136E24DD;
-        Tue, 30 Apr 2019 20:44:27 -0700 (PDT)
-Date:   Tue, 30 Apr 2019 23:44:25 -0400 (EDT)
-Message-Id: <20190430.234425.732219702361005278.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 00/12] NXP SJA1105 DSA driver
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190429001706.7449-1-olteanv@gmail.com>
-References: <20190429001706.7449-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Apr 2019 20:44:29 -0700 (PDT)
+        id S1726152AbfEAESE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 00:18:04 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:37328 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726065AbfEAESD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 00:18:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Message-Id:Date:Subject:Cc:To:From:
+        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=4CtwH/3Vudsp+9VSENeCNm4OxfDR1zWjqI85mqLBp/I=; b=Y4JmOFT0UT+cEor06n4xKI5uQ
+        9jzHRi7luuHV/bMUVFt8FjPMPiOJYCnERMzuI7fxUj1wR+MVyrwyvtXYtZHffLQuKyL6yibrHG1eQ
+        F4z2XWP+L5qroaUo8FKBhyq0e0rz2XPOdpwPSMqJiDKbNBAs0wBki5wTWrx9AwLWj1lt0dKu5hC4/
+        OUySBa2syEkdiabx9/IRmzgOL42j3eHkuw4+V4C7q/8+XjDuDbTIAUqNCHFD1UOOAv98ITG8YOqc8
+        wm5+L3DD+2RLl1O/8AZiVXyw2sWIEJqndfy74JSDSs2NWu7hoO44iZMpKvz7Q6qW2VvpnOtsZt01A
+        3dAmme2Dg==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red Hat Linux))
+        id 1hLggy-0002GD-Mm; Wed, 01 May 2019 04:18:00 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     davem@davemloft.net
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>, hch@lst.de,
+        netdev@vger.kernel.org
+Subject: [PATCH 0/5] Beginnings of skb_frag -> bio_vec conversion
+Date:   Tue, 30 Apr 2019 21:17:51 -0700
+Message-Id: <20190501041757.8647-1-willy@infradead.org>
+X-Mailer: git-send-email 2.14.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Mon, 29 Apr 2019 03:16:54 +0300
+From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-> This patchset adds a DSA driver for the SPI-controlled NXP SJA1105
-> switch.
+It turns out there's a lot of accessors for the skb_frag, which would
+make this conversion really easy if some drivers didn't bypass them.
+This is what I've done so far; my laptop's not really beefy enough to
+cope with changing skbuff.h too often ;-)
 
-This patch series adds many whitespace errors, which are all reported
-by GIT when I try to apply your changes:
+This would be a great time to tell me I'm going about this all wrong.
+I already found one problem in this patch set; some of the drivers should
+have been converted to skb_frag_dma_map() instead of fixing the arguments
+to dma_map_page().  But anyway, I need sleep.
 
-Applying: lib: Add support for generic packing operations
-.git/rebase-apply/patch:176: new blank line at EOF.
-+
-.git/rebase-apply/patch:480: new blank line at EOF.
-+
-warning: 2 lines add whitespace errors.
-Applying: net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch
-.git/rebase-apply/patch:102: new blank line at EOF.
-+
-.git/rebase-apply/patch:117: new blank line at EOF.
-+
-.git/rebase-apply/patch:262: new blank line at EOF.
-+
-.git/rebase-apply/patch:867: new blank line at EOF.
-+
-.git/rebase-apply/patch:2905: new blank line at EOF.
-+
-warning: squelched 2 whitespace errors
-warning: 7 lines add whitespace errors.
-Applying: net: dsa: sja1105: Add support for FDB and MDB management
-.git/rebase-apply/patch:81: new blank line at EOF.
-+
-warning: 1 line adds whitespace errors.
-Applying: net: dsa: sja1105: Error out if RGMII delays are requested in DT
-Applying: ether: Add dedicated Ethertype for pseudo-802.1Q DSA tagging
-Applying: net: dsa: sja1105: Add support for VLAN operations
-.git/rebase-apply/patch:359: new blank line at EOF.
-+
-warning: 1 line adds whitespace errors.
-Applying: net: dsa: sja1105: Add support for ethtool port counters
-.git/rebase-apply/patch:474: new blank line at EOF.
-+
-warning: 1 line adds whitespace errors.
-Applying: net: dsa: sja1105: Add support for configuring address aging time
-Applying: net: dsa: sja1105: Prevent PHY jabbering during switch reset
-Applying: net: dsa: sja1105: Reject unsupported link modes for AN
-Applying: Documentation: net: dsa: Add details about NXP SJA1105 driver
-.git/rebase-apply/patch:200: new blank line at EOF.
-+
-warning: 1 line adds whitespace errors.
-Applying: dt-bindings: net: dsa: Add documentation for NXP SJA1105 driver
-.git/rebase-apply/patch:178: new blank line at EOF.
-+
-warning: 1 line adds whitespace errors.
+Matthew Wilcox (Oracle) (5):
+  net: Increase the size of skb_frag_t
+  net: Reorder the contents of skb_frag_t
+  net: Include bvec.h in skbuff.h
+  net: Use skb accessors for skb->page
+  net: Rename skb_frag page to bv_page
+
+ drivers/hsi/clients/ssi_protocol.c            |  3 ++-
+ .../net/ethernet/cavium/liquidio/lio_main.c   |  2 +-
+ .../ethernet/cavium/liquidio/lio_vf_main.c    |  2 +-
+ drivers/net/ethernet/freescale/fec_main.c     |  2 +-
+ drivers/net/ethernet/marvell/mvneta.c         |  2 +-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  2 +-
+ drivers/net/ethernet/qualcomm/emac/emac-mac.c |  3 ++-
+ drivers/net/usb/usbnet.c                      |  2 +-
+ drivers/net/xen-netback/netback.c             |  4 ++--
+ drivers/staging/octeon/ethernet-tx.c          |  3 +--
+ drivers/target/iscsi/cxgbit/cxgbit_target.c   |  6 +++---
+ include/linux/skbuff.h                        | 20 +++++++------------
+ net/core/skbuff.c                             |  8 ++++----
+ net/core/tso.c                                |  4 ++--
+ net/kcm/kcmsock.c                             |  2 +-
+ net/tls/tls_device.c                          |  4 ++--
+ 16 files changed, 32 insertions(+), 37 deletions(-)
+
+-- 
+2.20.1
+
