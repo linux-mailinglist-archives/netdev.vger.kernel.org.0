@@ -2,84 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17BBE10634
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 10:48:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 765D61064A
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 11:28:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbfEAIsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 04:48:08 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:45999 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbfEAIsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 04:48:08 -0400
-Received: by mail-io1-f65.google.com with SMTP id e8so14343994ioe.12;
-        Wed, 01 May 2019 01:48:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7c0fhRu6giFCvpGllzdKQiTq639GBLku2ENIbueW4Ss=;
-        b=aD3kfAkWBTTNPZjRdGnbaq+dMZVivUxNeHpfyGOCJJs2Goih6UPF9q0d7hkJLsmS7+
-         YP7jyb8ZcbHEtWQsJSBspeUoAXnlMN/NDTixRgJiUuHFzf8El655BOR//CKGjuU/aVmx
-         NGaOmIXEHisiNiNaeGE9dYsTN/7D9wgepRJTqp3niqgqntKBe3hW1HfTllTOtBGBcSqo
-         4UPibKlERJMPt2Bvx9fhvyee4L+AMSCmqdOl60rITtHPJHRELL0CxPQnoYdDAcwCOoWm
-         s9tue67ugkhJTH0HEgyni09e8w3VUmyk8gpGHUwQBMon7CYg8fK0fOxWDQa4qLS77QAQ
-         X1Dw==
+        id S1726270AbfEAJ1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 05:27:50 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:34923 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725959AbfEAJ1u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 05:27:50 -0400
+Received: by mail-lj1-f194.google.com with SMTP id z26so15088737ljj.2
+        for <netdev@vger.kernel.org>; Wed, 01 May 2019 02:27:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7c0fhRu6giFCvpGllzdKQiTq639GBLku2ENIbueW4Ss=;
-        b=NUpBpqGSSwHRAkw0eFCxkkiFrEqXz98tSwAa0MEdYg1z0uer+yhh29h+AcdE5ONa6L
-         cVv0+PqiTcK/gqzryFHezGUX0+jZq/2Zv1g1yqI7D/7wBqflEfSTfX0HMy6fwph4B6Cd
-         3KBdFXh+YbsWAZPQ5noHXOFXNPFcvisiCSsTRVtCTRoBxu8NBLg1fJ/F2ACRc2LMwH+0
-         md5fKd+I2YdTWysJINwndCkvYxmt7BWG6Ss3cUHX5EPuIsoCsO7uCn+uAnxUJoz4SWdA
-         dtutS7WFhnUGBgLEcziMon4FL3VbZfmYcJ/hFAiP+qKupOvRMwWduAufwiIuTTktVn00
-         CaCA==
-X-Gm-Message-State: APjAAAUk5AtdVAboKqf5TIAK7ttcMOZZq/gtt8ers7n+bJsCfucMIhOg
-        Cibw5RGmfCswl4c56NAbV3+QO6prxpXklYL4mnRveA==
-X-Google-Smtp-Source: APXvYqw/HuAtmgbpfxk0gJq3E5RlW/EZE++1yei6QCykZbPY3eRLkpe6k6CNxVVwu2HyBNQoH/+0g3cBBW6AIkORAQk=
-X-Received: by 2002:a5d:91c1:: with SMTP id k1mr956091ior.180.1556700487522;
- Wed, 01 May 2019 01:48:07 -0700 (PDT)
+        bh=XqKy8I+a4T0E223MovLI7JFFmULW34ElM/2ZaJcNK4s=;
+        b=KHwWO3/Xsy0QHfHzhX2ZJ+huUw9RaHYTlYXYT02s0DIJdxSaHyVvDkC005L6HHRff3
+         4RXlADG+DN3Hn6jsPuYMadmAhF5Cm8DqNDKbK/3JwWcF1yuh/uwyMwFcfN2+ZIMP/Ub3
+         ns5J4MDqHLxx7nYU0QRBHY5PRSxWcYa0RRJwja2/SsO61jWVU2Ondfri9BU4lyAm+oAn
+         6zsq/FIJ9AWFs83caNt6/W8xJuofNaCx5L26MwJnOMJuZCyapCb45rXc8ONS+qZlnnTg
+         MIA9fYaoLLMslApB1PxJ0ljUPMDQGGbZPtz98r/4u99sSr79Z2Yt8OBozI6KJaE9ct/6
+         QuAg==
+X-Gm-Message-State: APjAAAVLcB4yp9Om7gF/rFaZ/ohla46mMBVHWdNrxi7AEDpMpvsNPYyx
+        ZdJg0D1YpgbrPB5efUUk3KXCVjL4tkCQiSfIw0d/rQ==
+X-Google-Smtp-Source: APXvYqyfcdKdmTzQ8IDTm8A6KvrZpfBsYY5e4SzYQbGiU178aoFr95yoxbDZs5+rGpEjE6DYrQH5+YnXMs0fV9fhFn4=
+X-Received: by 2002:a2e:9f53:: with SMTP id v19mr6467840ljk.0.1556702868264;
+ Wed, 01 May 2019 02:27:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20181008230125.2330-1-pablo@netfilter.org> <20181008230125.2330-8-pablo@netfilter.org>
- <33d60747-7550-1fba-a068-9b78aaedbc26@6wind.com>
-In-Reply-To: <33d60747-7550-1fba-a068-9b78aaedbc26@6wind.com>
-From:   Kristian Evensen <kristian.evensen@gmail.com>
-Date:   Wed, 1 May 2019 10:47:56 +0200
-Message-ID: <CAKfDRXjY9J1yHz1px6-gbmrEYJi9P9+16Mez+qzqhYLr9MtCQg@mail.gmail.com>
-Subject: Re: [PATCH 07/31] netfilter: ctnetlink: Support L3 protocol-filter on flush
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
+References: <20190429173805.4455-1-mcroce@redhat.com> <CAM_iQpXB83o+Nnbef8-h_8cg6rTVZn194uZvP1-VKPcJ+xMEjA@mail.gmail.com>
+In-Reply-To: <CAM_iQpXB83o+Nnbef8-h_8cg6rTVZn194uZvP1-VKPcJ+xMEjA@mail.gmail.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Wed, 1 May 2019 11:27:12 +0200
+Message-ID: <CAGnkfhzPZjqnemq+Sh=pAQPsoadYD2UYfdVf8UHt-Dd7gqhVOg@mail.gmail.com>
+Subject: Re: [PATCH net] cls_matchall: avoid panic when receiving a packet
+ before filter set
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Vlad Buslov <vladbu@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Apr 30, 2019 at 11:25 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Mon, Apr 29, 2019 at 10:38 AM Matteo Croce <mcroce@redhat.com> wrote:
+> >
+> > When a matchall classifier is added, there is a small time interval in
+> > which tp->root is NULL. If we receive a packet in this small time slice
+> > a NULL pointer dereference will happen, leading to a kernel panic:
+>
+> Hmm, why not just check tp->root against NULL in mall_classify()?
+>
+> Also, which is the offending commit here? Please add a Fixes: tag.
+>
+> Thanks.
 
-On Thu, Apr 25, 2019 at 12:07 PM Nicolas Dichtel
-<nicolas.dichtel@6wind.com> wrote:
-> Since this patch, there is a regression with 'conntrack -F', it does not flush
-> anymore ipv6 conntrack entries.
-> In fact, the conntrack tool set by default the family to AF_INET and forbid to
-> set the family to something else (the '-f' option is not allowed for the command
-> 'flush').
+Hi,
 
-I am very sorry for my late reply and for the trouble my change has
-caused. However, I am not sure if I agree that it triggers a
-regression. Had conntrack for example not set any family and my change
-caused only IPv4 entries to be flushed, then I agree it would have
-been a regression. If you ask me, what my change has exposed is
-incorrect API usage in conntrack. One could argue that since conntrack
-explicitly sets the family to AF_INET, the fact that IPv6 entries also
-has been flushed has been incorrect. However, if the general consensus
-is that this is a regression, I am more than willing to help in
-finding a solution (if I have anything to contribute :)).
+I just want to avoid an extra check which would be made for every packet.
+Probably the benefit over a check is negligible, but it's still a
+per-packet thing.
+If you prefer a simple check, I can make a v2 that way.
 
-BR,
-Kristian
+For the fixes tag, I didn't put it as I'm not really sure about the
+offending commit. I guess it's the following, what do you think?
+
+commit ed76f5edccc98fa66f2337f0b3b255d6e1a568b7
+Author: Vlad Buslov <vladbu@mellanox.com>
+Date:   Mon Feb 11 10:55:38 2019 +0200
+
+    net: sched: protect filter_chain list with filter_chain_lock mutex
+
+-- 
+Matteo Croce
+per aspera ad upstream
