@@ -2,142 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E801E10DD0
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 22:14:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6DCA10DD5
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 22:19:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726137AbfEAUO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 16:14:27 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39694 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726077AbfEAUO1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 16:14:27 -0400
-Received: by mail-wr1-f67.google.com with SMTP id a9so62900wrp.6
-        for <netdev@vger.kernel.org>; Wed, 01 May 2019 13:14:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=32W3Gfp3AWj7QrnOygUDmDsEehpBVtRIs4X65zNip/I=;
-        b=SiKN7VTvKJScx7pkeGA5i0REcsdxcfWg31PTErsdaDOPH4p7naMFXtm4pGpgXnu+dN
-         26k4s+UZ/IchtZqqtHvv94i80Y/zg5TRxnPpx7QzaFpsu/ZIPyQ+sXnGGeVH5Nqc61nw
-         wej1UV6jwuS+hNd+xnVJP1d343tFzS6bqZi5LiTtCOOBTidyv5UrRu50XlLagrmkVC9j
-         wqyYBlUTFhQmAD8DZCcn4bN5jTfh5aBnhKOVyB2RCJEsrZTyktJfNkv7hFpnJX80758J
-         ReVz5L+Fu5yOBb0N6HsotDTc6fWIZ84jI4o9MWWcbzAVtnF3DX5cSuQwh0DZXkJjkI7A
-         vysQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=32W3Gfp3AWj7QrnOygUDmDsEehpBVtRIs4X65zNip/I=;
-        b=SDt4bmYP62ZVeZEMGP9uZjvXa2xAE9/ne3Od6NlgXqhDufAI+vAv9jAEhfN/1lSMGp
-         DQiJ0bSmDJ7WabtXv0Hxa8lLho3zgUydjBrEOPzA9YNBS5MFIx01rx1s8o3HR5CDDYOY
-         BEHRqA0hBkJcF4xf/gegSwPkP3htMzKgJKKJeyDwQSi05rY257UfuG5+ThiOWj130pi3
-         LJOz9u4PvbXMyDqjbKyfMGYUdfUXUTJ9lS5CuKQsWX9p3KJtwStXTMoFctUnh+nIl4Nb
-         x7P1LIiQFjURNZ7zUpTBA/mnPiLVfmkuhYnoQaI+1zwZV+l7Q6u8Ix161zPsoUxeBrj4
-         ZXGQ==
-X-Gm-Message-State: APjAAAWt831k56/E5/ZEC2xle3lPz32aNZKOMZJqPyhW7PuFycdHoJ0J
-        JGKVk4MMkpKck5+oJTO+tNcviBwhpnY=
-X-Google-Smtp-Source: APXvYqx0HpE1qZbkQL6FkXundsHc+KuJGu4aKKV7fOIMffjN08TJKxfolK7eWqF2Svgh3E1t4AqsXA==
-X-Received: by 2002:adf:fb0d:: with SMTP id c13mr23527wrr.214.1556741665783;
-        Wed, 01 May 2019 13:14:25 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd4:5700:a160:62e9:d01f:fc0a? (p200300EA8BD45700A16062E9D01FFC0A.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:a160:62e9:d01f:fc0a])
-        by smtp.googlemail.com with ESMTPSA id o5sm5273659wmc.16.2019.05.01.13.14.24
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 01 May 2019 13:14:25 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] net: phy: improve resuming from hibernation
-To:     Andrew Lunn <andrew@lunn.ch>,
+        id S1726133AbfEAUTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 16:19:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51461 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726077AbfEAUTZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 May 2019 16:19:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=s6BGr5cr9wEgPZpkidr/u2k/JjLoCrVQkciMEVrY8/8=; b=xwzbMKbNvvOvT14C63QHLOQOjC
+        +NcK+cVLxkLdlhw7HwV8S9XVr10v/J5oY6sOSrZkREFDSuVCckB0ihvgDW8486nzBRPm5Bsqgkpn7
+        s5l2VJEOADYnuvDt69nJ+o4Oiya/HudMiS13MVO1vBmoR4Qp243EqGjIA5mnsShWAD5k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hLvhH-00085b-Mb; Wed, 01 May 2019 22:19:19 +0200
+Date:   Wed, 1 May 2019 22:19:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Cc:     Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <1b6fc016-b4cd-a27a-216b-d17441072809@gmail.com>
-Date:   Wed, 1 May 2019 22:14:21 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>
+Subject: Re: [RFC PATCH 1/5] net: dsa: mv88e6xxx: introduce support for two
+ chips using direct smi addressing
+Message-ID: <20190501201919.GC19809@lunn.ch>
+References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
+ <20190501193126.19196-2-rasmus.villemoes@prevas.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190501193126.19196-2-rasmus.villemoes@prevas.dk>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got an interesting report [0] that after resuming from hibernation
-the link has 100Mbps instead of 1Gbps. Reason is that another OS has
-been used whilst Linux was hibernated. And this OS speeds down the link
-due to WoL. Therefore, when resuming, we shouldn't expect that what
-the PHY advertises is what it did when hibernating.
-Easiest way to do this is removing state PHY_RESUMING. Instead always
-go via PHY_UP that configures PHY advertisement.
+On Wed, May 01, 2019 at 07:32:10PM +0000, Rasmus Villemoes wrote:
+> The 88e6250 (as well as 6220, 6071, 6070, 6020) do not support
+> multi-chip (indirect) addressing. However, one can still have two of
+> them on the same mdio bus, since the device only uses 16 of the 32
+> possible addresses, either addresses 0x00-0x0F or 0x10-0x1F depending
+> on the ADDR4 pin at reset [since ADDR4 is internally pulled high, the
+> latter is the default].
+> 
+> In order to prepare for supporting the 88e6250 and friends, introduce
+> mv88e6xxx_info::dual_chip to allow having a non-zero sw_addr while
+> still using direct addressing.
+> 
+> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+> ---
+>  drivers/net/dsa/mv88e6xxx/chip.c | 10 +++++++---
+>  drivers/net/dsa/mv88e6xxx/chip.h |  5 +++++
+>  2 files changed, 12 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index c078c791f481..f66daa77774b 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -62,6 +62,10 @@ static void assert_reg_lock(struct mv88e6xxx_chip *chip)
+>   * When ADDR is non-zero, the chip uses Multi-chip Addressing Mode, allowing
+>   * multiple devices to share the SMI interface. In this mode it responds to only
+>   * 2 registers, used to indirectly access the internal SMI devices.
+> + *
+> + * Some chips use a different scheme: Only the ADDR4 pin is used for
+> + * configuration, and the device responds to 16 of the 32 SMI
+> + * addresses, allowing two to coexist on the same SMI interface.
+>   */
+>  
+>  static int mv88e6xxx_smi_read(struct mv88e6xxx_chip *chip,
+> @@ -87,7 +91,7 @@ static int mv88e6xxx_smi_single_chip_read(struct mv88e6xxx_chip *chip,
+>  {
+>  	int ret;
+>  
+> -	ret = mdiobus_read_nested(chip->bus, addr, reg);
+> +	ret = mdiobus_read_nested(chip->bus, addr + chip->sw_addr, reg);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> @@ -101,7 +105,7 @@ static int mv88e6xxx_smi_single_chip_write(struct mv88e6xxx_chip *chip,
+>  {
+>  	int ret;
+>  
+> -	ret = mdiobus_write_nested(chip->bus, addr, reg, val);
+> +	ret = mdiobus_write_nested(chip->bus, addr + chip->sw_addr, reg, val);
+>  	if (ret < 0)
+>  		return ret;
 
-[0] https://bugzilla.kernel.org/show_bug.cgi?id=202851
+Hi Rasmus
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/phy.c | 7 +------
- include/linux/phy.h   | 9 +--------
- 2 files changed, 2 insertions(+), 14 deletions(-)
+This works, but i think i prefer adding mv88e6xxx_smi_dual_chip_write,
+mv88e6xxx_smi_dual_chip_read, and create a
+mv88e6xxx_smi_single_chip_ops.
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 984de9872..1a146c5c5 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -43,7 +43,6 @@ static const char *phy_state_to_str(enum phy_state st)
- 	PHY_STATE_STR(NOLINK)
- 	PHY_STATE_STR(FORCING)
- 	PHY_STATE_STR(HALTED)
--	PHY_STATE_STR(RESUMING)
- 	}
- 
- 	return NULL;
-@@ -859,10 +858,7 @@ void phy_start(struct phy_device *phydev)
- 			goto out;
- 	}
- 
--	if (phydev->state == PHY_READY)
--		phydev->state = PHY_UP;
--	else
--		phydev->state = PHY_RESUMING;
-+	phydev->state = PHY_UP;
- 
- 	phy_start_machine(phydev);
- out:
-@@ -897,7 +893,6 @@ void phy_state_machine(struct work_struct *work)
- 		break;
- 	case PHY_NOLINK:
- 	case PHY_RUNNING:
--	case PHY_RESUMING:
- 		err = phy_check_link_status(phydev);
- 		break;
- 	case PHY_FORCING:
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 4a03f8a46..073fb151b 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -308,13 +308,7 @@ struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr);
-  *
-  * HALTED: PHY is up, but no polling or interrupts are done. Or
-  * PHY is in an error state.
-- *
-- * - phy_start moves to RESUMING
-- *
-- * RESUMING: PHY was halted, but now wants to run again.
-- * - If we are forcing, or aneg is done, timer moves to RUNNING
-- * - If aneg is not done, timer moves to AN
-- * - phy_stop moves to HALTED
-+ * - phy_start moves to UP
-  */
- enum phy_state {
- 	PHY_DOWN = 0,
-@@ -324,7 +318,6 @@ enum phy_state {
- 	PHY_RUNNING,
- 	PHY_NOLINK,
- 	PHY_FORCING,
--	PHY_RESUMING
- };
- 
- /**
--- 
-2.21.0
+>  
+> @@ -4548,7 +4552,7 @@ static struct mv88e6xxx_chip *mv88e6xxx_alloc_chip(struct device *dev)
+>  static int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
+>  			      struct mii_bus *bus, int sw_addr)
+>  {
+> -	if (sw_addr == 0)
+> +	if (sw_addr == 0 || chip->info->dual_chip)
+>  		chip->smi_ops = &mv88e6xxx_smi_single_chip_ops;
+>  	else if (chip->info->multi_chip)
+>  		chip->smi_ops = &mv88e6xxx_smi_multi_chip_ops;
 
+And then select the dual chip ops here. That seems be to more in
+keeping with the current code.
+
+Thanks
+	Andrew
