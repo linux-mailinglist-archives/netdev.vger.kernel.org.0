@@ -2,244 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4340710412
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 05:01:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ADC010415
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 05:02:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726065AbfEADAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 23:00:55 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:36725 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbfEADAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 23:00:54 -0400
-Received: by mail-lj1-f193.google.com with SMTP id y8so8212229ljd.3
-        for <netdev@vger.kernel.org>; Tue, 30 Apr 2019 20:00:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DaAKn4uql97tM2n5pM20CkAQUqXHKsNCnSEAjg2e2PY=;
-        b=FBtNfRPVUpwOf/3EKQKasUlwfR7pE7wLBkDFpwzKIdSxA95vZLvpSw5CCQDx2pXUFc
-         fCrWTMsHxwZRfd532CIYRVSjOD5Duq1r+ND34dNgbBknJbJFbfmqxNBBkfpSiYsLN5c4
-         vM5LMdPZ5pW0ae5Z9wbqxJX8pCl+6RDXY2G3RXCxQ6wly7zWqfjBkUDrVLvf9Ni1TSNE
-         q4u2/aM3oJveGKqOsOul6zcE4yLqIMcJda1VoyniWJMYA14yOYNl8xDKekjqS4orZWm2
-         XOEUzFIqiAr8btMvfXqcJPbL8wqHm2lvCB3VnR2cjVvciJRhbJzhI76AavAOorC9+npV
-         cSvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DaAKn4uql97tM2n5pM20CkAQUqXHKsNCnSEAjg2e2PY=;
-        b=JPHGlOB92r7J4y+kLj/NvBp8LbDPzDtR8p7pe1txIDDGSlUsqkn80JK/S5OshG0Pfg
-         +9VEgap/L5z9hxlx5qAu5ANOVXSiv7Znax2RfgCXWBUFEKu2RiXoVxO7QK05ZfNhCwJO
-         7tP3Vy+SZ5WrfP8Gcz9gyN+Ou5Nl4vx3IaH8dVHAGPX2RGKCyIRDDMPAAhztRs2+xUtW
-         FCKy6fL3br32Wjn3Ofnkx9zlhsH9BveutWkqdMdm1CL29EtF7oTx78XlZijsvgOujV36
-         kMlLNfOnGs95MIRdgpnmsoQytUBNoCDNHUuCUOPlPcJOuxYG3/hcycR4R10tDJtiWek7
-         WqQA==
-X-Gm-Message-State: APjAAAWNYptzGQJRrxVT8s22RVdjb5BAhR3LfNIBAhExkOgI6NvcAhWX
-        XGHcEuZrRO8hWdX6db7rRYEBFFldUpswoFSYeetYpQPeEB4=
-X-Google-Smtp-Source: APXvYqzRIEpqglSlXiIAqZkpPMDpxarQz0yEVKfa/2/UG8eXS5kHap3Wrm+GwgBw9l95u4Qqb5Ltn2Nsc6bLsk3VSG4=
-X-Received: by 2002:a2e:6510:: with SMTP id z16mr813897ljb.185.1556679651745;
- Tue, 30 Apr 2019 20:00:51 -0700 (PDT)
+        id S1726152AbfEADCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 23:02:10 -0400
+Received: from ozlabs.org ([203.11.71.1]:36641 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725973AbfEADCK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Apr 2019 23:02:10 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 44v38W66Sgz9s9T;
+        Wed,  1 May 2019 13:02:02 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1556679726;
+        bh=mJ1gGQj+3W3VHxjTxKHKaQ7/wNorgvmBDE2iMo3R9BM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gog7uv7heUXwS6TdGAN5O81zR6nYKN/E5f7Ks1MuVOZK4EABfCWdHnPMqFWRFpY6l
+         zcOQguNcN2ufPMiUk14Th6TyjzAYYcmFSkb4eJJyXfMyjcWlUvPKqkthqm5tMjh6ba
+         51VW79le5d68v4QUQmKQ7GR7si8HMUlIK2MSNUum7q+2/fh65sNI9dx2u0qPAer68m
+         iA/wQOOJptnCpVXlNr/HZ4P5Lw4VJz43+qCFTCBDwn/C1A+cD1jBBSk1hqott362Qe
+         Vt49iVzC/OikjbrPzE/8vtPpPMosL3entR1yZPZ62DvZpVoDQfQZ9h3sgQnO3DAWnU
+         eTkVY69zaN70Q==
+Date:   Wed, 1 May 2019 13:01:57 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Florian Westphal <fw@strlen.de>
+Subject: Re: linux-next: manual merge of the ipsec-next tree with the ipsec
+ tree
+Message-ID: <20190501130157.27fb69cd@canb.auug.org.au>
+In-Reply-To: <20190426114120.73e906e3@canb.auug.org.au>
+References: <20190426114120.73e906e3@canb.auug.org.au>
 MIME-Version: 1.0
-References: <bab2ed8b-70dc-4a00-6c68-06a2df6ccb62@lca.pw>
-In-Reply-To: <bab2ed8b-70dc-4a00-6c68-06a2df6ccb62@lca.pw>
-From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
-Date:   Tue, 30 Apr 2019 20:00:40 -0700
-Message-ID: <CALzJLG-TgHP8tgv_1eqYmWjpO4nRD3=7QRdyGXGp1x_qQdKErg@mail.gmail.com>
-Subject: Re: mlx5_core failed to load with 5.1.0-rc7-next-20190430+
-To:     Qian Cai <cai@lca.pw>
-Cc:     kliteyn@mellanox.com, ozsh@mellanox.com,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        linux kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/M3cE/Mz/_GFYcjnICVpCSmv"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 30, 2019 at 6:23 PM Qian Cai <cai@lca.pw> wrote:
->
-> Reverted the commit b169e64a2444 ("net/mlx5: Geneve, Add flow table capabilities
-> for Geneve decap with TLV options") fixed the problem below during boot ends up
-> without networking.
->
+--Sig_/M3cE/Mz/_GFYcjnICVpCSmv
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hi Qian, thanks for the report, i clearly see where the issue is,
-mlx5_ifc_cmd_hca_cap_bits offsets are all off ! due to cited patch,
-will fix ASAP.
+Hi all,
 
-> [   92.471247] mlx5_core 0000:0b:00.0: mlx5_cmd_check:744:(pid 13):
-> CREATE_EQ(0x301) op_mod(0x0) failed, status bad parameter(0x3), syndrome (0x8fef)
-> [   92.484824] mlx5_core 0000:0b:00.0: create_async_eqs:572:(pid 13): failed to
-> create async EQ -22
-> [   92.603279] mlx5_core 0000:0b:00.0: mlx5_eq_table_create:1007:(pid 13):
-> Failed to create async EQs
-> [   92.630541] mlx5_core 0000:0b:00.0: mlx5_load:1053:(pid 13): Failed to create EQs
-> [   94.866908] mlx5_core 0000:0b:00.0: init_one:1329:(pid 13): mlx5_load_one
-> failed with error code -22
-> [   94.879657] mlx5_core: probe of 0000:0b:00.0 failed with error -22
-> [   94.887784] mlx5_core 0000:0b:00.1: Adding to iommu group 2
-> [   95.017012] mlx5_core 0000:0b:00.1: firmware version: 14.21.1000
-> [   95.023090] mlx5_core 0000:0b:00.1: 63.008 Gb/s available PCIe bandwidth (8
-> GT/s x8 link)
-> [   96.155792] mlx5_core 0000:0b:00.1: mlx5_cmd_check:744:(pid 13):
-> CREATE_EQ(0x301) op_mod(0x0) failed, status bad parameter(0x3), syndrome (0x8fef)
-> [   96.169220] mlx5_core 0000:0b:00.1: create_async_eqs:572:(pid 13): failed to
-> create async EQ -22
-> [   96.199340] mlx5_core 0000:0b:00.1: mlx5_eq_table_create:1007:(pid 13):
-> Failed to create async EQs
-> [   96.224004] mlx5_core 0000:0b:00.1: mlx5_load:1053:(pid 13): Failed to create EQs
-> [   97.681695] mlx5_core 0000:0b:00.1: init_one:1329:(pid 13): mlx5_load_one
-> failed with error code -22
-> [   97.692749] mlx5_core: probe of 0000:0b:00.1 failed with error -22
+On Fri, 26 Apr 2019 11:41:20 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
 >
-> # lspci -vvv
-> ...
-> 0b:00.0 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
->         Subsystem: Hewlett Packard Enterprise Device 028a
->         Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping-
-> SERR+ FastB2B- DisINTx+
->         Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
-> <MAbort- >SERR- <PERR- INTx-
->         Latency: 0
->         Interrupt: pin A routed to IRQ 23
->         NUMA node: 0
->         Region 0: Memory at 10000000000 (64-bit, prefetchable) [size=32M]
->         Expansion ROM at 43000000 [disabled] [size=1M]
->         Capabilities: [60] Express (v2) Endpoint, MSI 00
->                 DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s unlimited, L1 unlimited
->                         ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 0.000W
->                 DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ Unsupported+
->                         RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop+ FLReset-
->                         MaxPayload 128 bytes, MaxReadReq 512 bytes
->                 DevSta: CorrErr+ UncorrErr- FatalErr- UnsuppReq+ AuxPwr- TransPend-
->                 LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM not supported
->                         ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
->                 LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- CommClk-
->                         ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
->                 LnkSta: Speed 8GT/s, Width x8, TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
->                 DevCap2: Completion Timeout: Range ABCD, TimeoutDis+, LTR-, OBFF Not Supported
->                          AtomicOpsCap: 32bit- 64bit- 128bitCAS-
->                 DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-, LTR-, OBFF Disabled
->                          AtomicOpsCtl: ReqEn-
->                 LnkCtl2: Target Link Speed: 8GT/s, EnterCompliance- SpeedDis-
->                          Transmit Margin: Normal Operating Range, EnterModifiedCompliance- ComplianceSOS-
->                          Compliance De-emphasis: -6dB
->                 LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete+,
-> EqualizationPhase1+
->                          EqualizationPhase2+, EqualizationPhase3+, LinkEqualizationRequest-
->         Capabilities: [48] Vital Product Data
->                 End
->         Capabilities: [9c] MSI-X: Enable+ Count=64 Masked-
->                 Vector table: BAR=0 offset=00002000
->                 PBA: BAR=0 offset=00003000
->         Capabilities: [c0] Vendor Specific Information: Len=18 <?>
->         Capabilities: [40] Power Management version 3
->                 Flags: PMEClk- DSI- D1- D2- AuxCurrent=375mA PME(D0-,D1-,D2-,D3hot-,D3cold+)
->                 Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
->         Capabilities: [100 v1] Advanced Error Reporting
->                 UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC-
-> UnsupReq- ACSViol-
->                 UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC-
-> UnsupReq- ACSViol-
->                 UESvrt: DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+
-> ECRC- UnsupReq- ACSViol-
->                 CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- NonFatalErr+
->                 CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- NonFatalErr+
->                 AERCap: First Error Pointer: 04, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
->                         MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
->                 HeaderLog: 00000000 00000000 00000000 00000000
->         Capabilities: [150 v1] Alternative Routing-ID Interpretation (ARI)
->                 ARICap: MFVC- ACS-, Next Function: 1
->                 ARICtl: MFVC- ACS-, Function Group: 0
->         Capabilities: [180 v1] Single Root I/O Virtualization (SR-IOV)
->                 IOVCap: Migration-, Interrupt Message Number: 000
->                 IOVCtl: Enable- Migration- Interrupt- MSE- ARIHierarchy+
->                 IOVSta: Migration-
->                 Initial VFs: 8, Total VFs: 8, Number of VFs: 0, Function Dependency Link: 00
->                 VF offset: 2, stride: 1, Device ID: 1016
->                 Supported Page Size: 000007ff, System Page Size: 00000001
->                 Region 0: Memory at 0000010004800000 (64-bit, prefetchable)
->                 VF Migration: offset: 00000000, BIR: 0
->         Capabilities: [1c0 v1] #19
->         Capabilities: [230 v1] Access Control Services
->                 ACSCap: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl-
-> DirectTrans-
->                 ACSCtl: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl-
-> DirectTrans-
->         Kernel driver in use: mlx5_core
->         Kernel modules: mlx5_core
->
-> 0b:00.1 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
->         Subsystem: Hewlett Packard Enterprise Device 028a
->         Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping-
-> SERR+ FastB2B- DisINTx+
->         Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
-> <MAbort- >SERR- <PERR- INTx-
->         Latency: 0
->         Interrupt: pin B routed to IRQ 24
->         NUMA node: 0
->         Region 0: Memory at 10002000000 (64-bit, prefetchable) [size=32M]
->         Expansion ROM at 43100000 [disabled] [size=1M]
->         Capabilities: [60] Express (v2) Endpoint, MSI 00
->                 DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s unlimited, L1 unlimited
->                         ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 0.000W
->                 DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ Unsupported+
->                         RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop+ FLReset-
->                         MaxPayload 128 bytes, MaxReadReq 512 bytes
->                 DevSta: CorrErr+ UncorrErr- FatalErr- UnsuppReq+ AuxPwr- TransPend-
->                 LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM not supported
->                         ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
->                 LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- CommClk-
->                         ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
->                 LnkSta: Speed 8GT/s, Width x8, TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
->                 DevCap2: Completion Timeout: Range ABCD, TimeoutDis+, LTR-, OBFF Not Supported
->                          AtomicOpsCap: 32bit- 64bit- 128bitCAS-
->                 DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-, LTR-, OBFF Disabled
->                          AtomicOpsCtl: ReqEn-
->                 LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete-,
-> EqualizationPhase1-
->                          EqualizationPhase2-, EqualizationPhase3-, LinkEqualizationRequest-
->         Capabilities: [48] Vital Product Data
->                 End
->         Capabilities: [9c] MSI-X: Enable+ Count=64 Masked-
->                 Vector table: BAR=0 offset=00002000
->                 PBA: BAR=0 offset=00003000
->         Capabilities: [c0] Vendor Specific Information: Len=18 <?>
->         Capabilities: [40] Power Management version 3
->                 Flags: PMEClk- DSI- D1- D2- AuxCurrent=375mA PME(D0-,D1-,D2-,D3hot-,D3cold+)
->                 Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
->         Capabilities: [100 v1] Advanced Error Reporting
->                 UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC-
-> UnsupReq- ACSViol-
->                 UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC-
-> UnsupReq- ACSViol-
->                 UESvrt: DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+
-> ECRC- UnsupReq- ACSViol-
->                 CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- NonFatalErr+
->                 CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- NonFatalErr+
->                 AERCap: First Error Pointer: 04, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
->                         MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
->                 HeaderLog: 00000000 00000000 00000000 00000000
->         Capabilities: [150 v1] Alternative Routing-ID Interpretation (ARI)
->                 ARICap: MFVC- ACS-, Next Function: 0
->                 ARICtl: MFVC- ACS-, Function Group: 0
->         Capabilities: [180 v1] Single Root I/O Virtualization (SR-IOV)
->                 IOVCap: Migration-, Interrupt Message Number: 000
->                 IOVCtl: Enable- Migration- Interrupt- MSE- ARIHierarchy-
->                 IOVSta: Migration-
->                 Initial VFs: 8, Total VFs: 8, Number of VFs: 0, Function Dependency Link: 00
->                 VF offset: 9, stride: 1, Device ID: 1016
->                 Supported Page Size: 000007ff, System Page Size: 00000001
->                 Region 0: Memory at 0000010004000000 (64-bit, prefetchable)
->                 VF Migration: offset: 00000000, BIR: 0
->         Capabilities: [230 v1] Access Control Services
->                 ACSCap: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl-
-> DirectTrans-
->                 ACSCtl: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl-
-> DirectTrans-
->         Kernel driver in use: mlx5_core
->         Kernel modules: mlx5_core
+> Today's linux-next merge of the ipsec-next tree got a conflict in:
+>=20
+>   net/ipv4/xfrm4_policy.c
+>=20
+> between commit:
+>=20
+>   8742dc86d0c7 ("xfrm4: Fix uninitialized memory read in _decode_session4=
+")
+>=20
+> from the ipsec tree and commit:
+>=20
+>   c53ac41e3720 ("xfrm: remove decode_session indirection from afinfo_poli=
+cy")
+>=20
+> from the ipsec-next tree.
+>=20
+> From: Stephen Rothwell <sfr@canb.auug.org.au>
+> Date: Fri, 26 Apr 2019 11:37:41 +1000
+> Subject: [PATCH] xfrm4: fix up for moved _decode_session4
+>=20
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> ---
+>  net/xfrm/xfrm_policy.c | 24 +++++++++++++-----------
+>  1 file changed, 13 insertions(+), 11 deletions(-)
+>=20
+> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+> index 410233c5681e..7a43ae6b2a44 100644
+> --- a/net/xfrm/xfrm_policy.c
+> +++ b/net/xfrm/xfrm_policy.c
+> @@ -3264,7 +3264,8 @@ static void
+>  decode_session4(struct sk_buff *skb, struct flowi *fl, bool reverse)
+>  {
+>  	const struct iphdr *iph =3D ip_hdr(skb);
+> -	u8 *xprth =3D skb_network_header(skb) + iph->ihl * 4;
+> +	int ihl =3D iph->ihl;
+> +	u8 *xprth =3D skb_network_header(skb) + ihl * 4;
+>  	struct flowi4 *fl4 =3D &fl->u.ip4;
+>  	int oif =3D 0;
+> =20
+> @@ -3275,6 +3276,11 @@ decode_session4(struct sk_buff *skb, struct flowi =
+*fl, bool reverse)
+>  	fl4->flowi4_mark =3D skb->mark;
+>  	fl4->flowi4_oif =3D reverse ? skb->skb_iif : oif;
+> =20
+> +	fl4->flowi4_proto =3D iph->protocol;
+> +	fl4->daddr =3D reverse ? iph->saddr : iph->daddr;
+> +	fl4->saddr =3D reverse ? iph->daddr : iph->saddr;
+> +	fl4->flowi4_tos =3D iph->tos;
+> +
+>  	if (!ip_is_fragment(iph)) {
+>  		switch (iph->protocol) {
+>  		case IPPROTO_UDP:
+> @@ -3286,7 +3292,7 @@ decode_session4(struct sk_buff *skb, struct flowi *=
+fl, bool reverse)
+>  			    pskb_may_pull(skb, xprth + 4 - skb->data)) {
+>  				__be16 *ports;
+> =20
+> -				xprth =3D skb_network_header(skb) + iph->ihl * 4;
+> +				xprth =3D skb_network_header(skb) + ihl * 4;
+>  				ports =3D (__be16 *)xprth;
+> =20
+>  				fl4->fl4_sport =3D ports[!!reverse];
+> @@ -3298,7 +3304,7 @@ decode_session4(struct sk_buff *skb, struct flowi *=
+fl, bool reverse)
+>  			    pskb_may_pull(skb, xprth + 2 - skb->data)) {
+>  				u8 *icmp;
+> =20
+> -				xprth =3D skb_network_header(skb) + iph->ihl * 4;
+> +				xprth =3D skb_network_header(skb) + ihl * 4;
+>  				icmp =3D xprth;
+> =20
+>  				fl4->fl4_icmp_type =3D icmp[0];
+> @@ -3310,7 +3316,7 @@ decode_session4(struct sk_buff *skb, struct flowi *=
+fl, bool reverse)
+>  			    pskb_may_pull(skb, xprth + 4 - skb->data)) {
+>  				__be32 *ehdr;
+> =20
+> -				xprth =3D skb_network_header(skb) + iph->ihl * 4;
+> +				xprth =3D skb_network_header(skb) + ihl * 4;
+>  				ehdr =3D (__be32 *)xprth;
+> =20
+>  				fl4->fl4_ipsec_spi =3D ehdr[0];
+> @@ -3321,7 +3327,7 @@ decode_session4(struct sk_buff *skb, struct flowi *=
+fl, bool reverse)
+>  			    pskb_may_pull(skb, xprth + 8 - skb->data)) {
+>  				__be32 *ah_hdr;
+> =20
+> -				xprth =3D skb_network_header(skb) + iph->ihl * 4;
+> +				xprth =3D skb_network_header(skb) + ihl * 4;
+>  				ah_hdr =3D (__be32 *)xprth;
+> =20
+>  				fl4->fl4_ipsec_spi =3D ah_hdr[1];
+> @@ -3332,7 +3338,7 @@ decode_session4(struct sk_buff *skb, struct flowi *=
+fl, bool reverse)
+>  			    pskb_may_pull(skb, xprth + 4 - skb->data)) {
+>  				__be16 *ipcomp_hdr;
+> =20
+> -				xprth =3D skb_network_header(skb) + iph->ihl * 4;
+> +				xprth =3D skb_network_header(skb) + ihl * 4;
+>  				ipcomp_hdr =3D (__be16 *)xprth;
+> =20
+>  				fl4->fl4_ipsec_spi =3D htonl(ntohs(ipcomp_hdr[1]));
+> @@ -3344,7 +3350,7 @@ decode_session4(struct sk_buff *skb, struct flowi *=
+fl, bool reverse)
+>  				__be16 *greflags;
+>  				__be32 *gre_hdr;
+> =20
+> -				xprth =3D skb_network_header(skb) + iph->ihl * 4;
+> +				xprth =3D skb_network_header(skb) + ihl * 4;
+>  				greflags =3D (__be16 *)xprth;
+>  				gre_hdr =3D (__be32 *)xprth;
+> =20
+> @@ -3360,10 +3366,6 @@ decode_session4(struct sk_buff *skb, struct flowi =
+*fl, bool reverse)
+>  			break;
+>  		}
+>  	}
+> -	fl4->flowi4_proto =3D iph->protocol;
+> -	fl4->daddr =3D reverse ? iph->saddr : iph->daddr;
+> -	fl4->saddr =3D reverse ? iph->daddr : iph->saddr;
+> -	fl4->flowi4_tos =3D iph->tos;
+>  }
+> =20
+>  #if IS_ENABLED(CONFIG_IPV6)
+
+This is now a conflict between the net and net-next trees.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/M3cE/Mz/_GFYcjnICVpCSmv
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlzJDCUACgkQAVBC80lX
+0Gy9Fgf8CKCUfwZyOc+NYnIis5XdV2rt9QwhMOvdPufFxymwNzoDM7d0vdYMfL7f
+reyK2cgoYezviKavCgOz7L1kLblWC+XBe9fP/sVZHLqwPtkiBuFPXV4AScfmFw7W
+txSo06oWFFV1NWnpU4eOazlaJf71odiX2ANPJAfSivk6baPB//ULlOwCot4E6fPj
+UCmWikVk5Y7UAv+TfCA+x7qwI/h8fQf5Dd0y+4+GOKBe0l45mwtnAq369f6lSGKu
+Q4lDNOuhLHsUWxqx7rfGDkH5bsHky4BtwznTUsCZ5VVzmrZLzRNE3eECk7MLc/60
+Qe8YSET02WFYVDt2C11QWgmoCGKyQQ==
+=LQEd
+-----END PGP SIGNATURE-----
+
+--Sig_/M3cE/Mz/_GFYcjnICVpCSmv--
