@@ -2,121 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6DCA10DD5
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 22:19:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D257110DD7
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 22:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726133AbfEAUTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 16:19:25 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51461 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726077AbfEAUTZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 May 2019 16:19:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=s6BGr5cr9wEgPZpkidr/u2k/JjLoCrVQkciMEVrY8/8=; b=xwzbMKbNvvOvT14C63QHLOQOjC
-        +NcK+cVLxkLdlhw7HwV8S9XVr10v/J5oY6sOSrZkREFDSuVCckB0ihvgDW8486nzBRPm5Bsqgkpn7
-        s5l2VJEOADYnuvDt69nJ+o4Oiya/HudMiS13MVO1vBmoR4Qp243EqGjIA5mnsShWAD5k=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hLvhH-00085b-Mb; Wed, 01 May 2019 22:19:19 +0200
-Date:   Wed, 1 May 2019 22:19:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1726224AbfEAUT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 16:19:28 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:35511 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726077AbfEAUT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 16:19:27 -0400
+Received: by mail-ot1-f66.google.com with SMTP id g24so123073otq.2;
+        Wed, 01 May 2019 13:19:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=pWjiQFV3UJniVf7i9GQdkFxM1mLNQy5apvQLEnb/wcA=;
+        b=XT8kSi7FStTspSJhrHhowV4YV87QWx3IoXw8viq3VZsJIyenPoK10/Y30plqk//gx6
+         RKCRVFMrjzpv16pf9HZubSxQbddDtdEvrYB+liXndKWiW0PG2zMtEVvpMU5qhVhRUmNv
+         1n1VhHAUw6cWXUo3qPQniH20RWvAvokDiy5V31NZsxhCm4O4OJCtdbzjFM652tkIjq7g
+         u2W3g1J6OtsReuwUdEJllAMDHeHehtvqgQQk0eyy3tKADIJtbMUVbyBdJTusLr9wIj2T
+         rAjsYS4C0p3Dc88E+ckT2YotutXRdm8ajNrwD5y9whumABBfWWn9a2b1i0NDxmWr0/7E
+         cWYw==
+X-Gm-Message-State: APjAAAXPnwhqqhSNwwAo1Vc1Wya9Rvoje4lu0rJ3Ig+OChWTndswe8/Z
+        TaVtXC3iSSj3S0MCuT3yJQ==
+X-Google-Smtp-Source: APXvYqw5MFY6FhUc4sy5hYLKwSVXvm613zjKKo4m1Gvry7731V5ByvnaY6LCX29jU2nFksffTD10oQ==
+X-Received: by 2002:a05:6830:1647:: with SMTP id h7mr12775386otr.360.1556741966617;
+        Wed, 01 May 2019 13:19:26 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id 2sm16316487ots.22.2019.05.01.13.19.25
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 01 May 2019 13:19:25 -0700 (PDT)
+Date:   Wed, 1 May 2019 15:19:25 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>
-Subject: Re: [RFC PATCH 1/5] net: dsa: mv88e6xxx: introduce support for two
- chips using direct smi addressing
-Message-ID: <20190501201919.GC19809@lunn.ch>
-References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
- <20190501193126.19196-2-rasmus.villemoes@prevas.dk>
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Alban Bedel <albeu@free.fr>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>
+Subject: Re: [PATCH v2 1/4] of_net: Add NVMEM support to of_get_mac_address
+Message-ID: <20190501201925.GA15495@bogus>
+References: <1556456002-13430-1-git-send-email-ynezz@true.cz>
+ <1556456002-13430-2-git-send-email-ynezz@true.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190501193126.19196-2-rasmus.villemoes@prevas.dk>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1556456002-13430-2-git-send-email-ynezz@true.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 01, 2019 at 07:32:10PM +0000, Rasmus Villemoes wrote:
-> The 88e6250 (as well as 6220, 6071, 6070, 6020) do not support
-> multi-chip (indirect) addressing. However, one can still have two of
-> them on the same mdio bus, since the device only uses 16 of the 32
-> possible addresses, either addresses 0x00-0x0F or 0x10-0x1F depending
-> on the ADDR4 pin at reset [since ADDR4 is internally pulled high, the
-> latter is the default].
+On Sun, Apr 28, 2019 at 02:53:19PM +0200, Petr Štetiar wrote:
+> Many embedded devices have information such as MAC addresses stored
+> inside NVMEMs like EEPROMs and so on. Currently there are only two
+> drivers in the tree which benefit from NVMEM bindings.
 > 
-> In order to prepare for supporting the 88e6250 and friends, introduce
-> mv88e6xxx_info::dual_chip to allow having a non-zero sw_addr while
-> still using direct addressing.
+> Adding support for NVMEM into every other driver would mean adding a lot
+> of repetitive code. This patch allows us to configure MAC addresses in
+> various devices like ethernet and wireless adapters directly from
+> of_get_mac_address, which is already used by almost every driver in the
+> tree.
 > 
-> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+> Predecessor of this patch which used directly MTD layer has originated
+> in OpenWrt some time ago and supports already about 497 use cases in 357
+> device tree files.
+> 
+> Cc: Alban Bedel <albeu@free.fr>
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> Signed-off-by: John Crispin <john@phrozen.org>
+> Signed-off-by: Petr Štetiar <ynezz@true.cz>
 > ---
->  drivers/net/dsa/mv88e6xxx/chip.c | 10 +++++++---
->  drivers/net/dsa/mv88e6xxx/chip.h |  5 +++++
->  2 files changed, 12 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index c078c791f481..f66daa77774b 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -62,6 +62,10 @@ static void assert_reg_lock(struct mv88e6xxx_chip *chip)
->   * When ADDR is non-zero, the chip uses Multi-chip Addressing Mode, allowing
->   * multiple devices to share the SMI interface. In this mode it responds to only
->   * 2 registers, used to indirectly access the internal SMI devices.
-> + *
-> + * Some chips use a different scheme: Only the ADDR4 pin is used for
-> + * configuration, and the device responds to 16 of the 32 SMI
-> + * addresses, allowing two to coexist on the same SMI interface.
->   */
+>  Changes since v1:
+> 
+>   * moved handling of nvmem after mac-address and local-mac-address properties
+> 
+>  drivers/of/of_net.c | 42 ++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 40 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
+> index d820f3e..8ce4f47 100644
+> --- a/drivers/of/of_net.c
+> +++ b/drivers/of/of_net.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/etherdevice.h>
+>  #include <linux/kernel.h>
+>  #include <linux/of_net.h>
+> +#include <linux/of_platform.h>
+>  #include <linux/phy.h>
+>  #include <linux/export.h>
 >  
->  static int mv88e6xxx_smi_read(struct mv88e6xxx_chip *chip,
-> @@ -87,7 +91,7 @@ static int mv88e6xxx_smi_single_chip_read(struct mv88e6xxx_chip *chip,
->  {
->  	int ret;
+> @@ -47,12 +48,45 @@ static const void *of_get_mac_addr(struct device_node *np, const char *name)
+>  	return NULL;
+>  }
 >  
-> -	ret = mdiobus_read_nested(chip->bus, addr, reg);
-> +	ret = mdiobus_read_nested(chip->bus, addr + chip->sw_addr, reg);
->  	if (ret < 0)
->  		return ret;
+> +static const void *of_get_mac_addr_nvmem(struct device_node *np)
+> +{
+> +	int r;
+> +	u8 mac[ETH_ALEN];
+> +	struct property *pp;
+> +	struct platform_device *pdev = of_find_device_by_node(np);
+> +
+> +	if (!pdev)
+> +		return NULL;
+> +
+> +	r = nvmem_get_mac_address(&pdev->dev, &mac);
+> +	if (r < 0)
+> +		return NULL;
+> +
+> +	pp = kzalloc(sizeof(*pp), GFP_KERNEL);
+> +	if (!pp)
+> +		return NULL;
+> +
+> +	pp->name = "nvmem-mac-address";
+> +	pp->length = ETH_ALEN;
+> +	pp->value = kmemdup(mac, ETH_ALEN, GFP_KERNEL);
+> +	if (!pp->value || of_add_property(np, pp))
+> +		goto free;
+
+Why add this to the DT? You have the struct device ptr, so just use 
+devm_kzalloc() if you need an allocation.
+
+> +
+> +	return pp->value;
+> +free:
+> +	kfree(pp->value);
+> +	kfree(pp);
+> +
+> +	return NULL;
+> +}
+> +
+>  /**
+>   * Search the device tree for the best MAC address to use.  'mac-address' is
+>   * checked first, because that is supposed to contain to "most recent" MAC
+>   * address. If that isn't set, then 'local-mac-address' is checked next,
+> - * because that is the default address.  If that isn't set, then the obsolete
+> - * 'address' is checked, just in case we're using an old device tree.
+> + * because that is the default address.  If that isn't set, try to get MAC
+> + * address from nvmem cell named 'mac-address'. If that isn't set, then the
+> + * obsolete 'address' is checked, just in case we're using an old device tree.
+>   *
+>   * Note that the 'address' property is supposed to contain a virtual address of
+>   * the register set, but some DTS files have redefined that property to be the
+> @@ -77,6 +111,10 @@ const void *of_get_mac_address(struct device_node *np)
+>  	if (addr)
+>  		return addr;
 >  
-> @@ -101,7 +105,7 @@ static int mv88e6xxx_smi_single_chip_write(struct mv88e6xxx_chip *chip,
->  {
->  	int ret;
->  
-> -	ret = mdiobus_write_nested(chip->bus, addr, reg, val);
-> +	ret = mdiobus_write_nested(chip->bus, addr + chip->sw_addr, reg, val);
->  	if (ret < 0)
->  		return ret;
-
-Hi Rasmus
-
-This works, but i think i prefer adding mv88e6xxx_smi_dual_chip_write,
-mv88e6xxx_smi_dual_chip_read, and create a
-mv88e6xxx_smi_single_chip_ops.
-
->  
-> @@ -4548,7 +4552,7 @@ static struct mv88e6xxx_chip *mv88e6xxx_alloc_chip(struct device *dev)
->  static int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
->  			      struct mii_bus *bus, int sw_addr)
->  {
-> -	if (sw_addr == 0)
-> +	if (sw_addr == 0 || chip->info->dual_chip)
->  		chip->smi_ops = &mv88e6xxx_smi_single_chip_ops;
->  	else if (chip->info->multi_chip)
->  		chip->smi_ops = &mv88e6xxx_smi_multi_chip_ops;
-
-And then select the dual chip ops here. That seems be to more in
-keeping with the current code.
-
-Thanks
-	Andrew
+> +	addr = of_get_mac_addr_nvmem(np);
+> +	if (addr)
+> +		return addr;
+> +
+>  	return of_get_mac_addr(np, "address");
+>  }
+>  EXPORT_SYMBOL(of_get_mac_address);
+> -- 
+> 1.9.1
+> 
