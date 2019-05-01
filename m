@@ -2,186 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5898610ED6
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 23:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC2F810EE3
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 00:01:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726402AbfEAVzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 17:55:17 -0400
-Received: from mail-eopbgr150084.outbound.protection.outlook.com ([40.107.15.84]:12416
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726128AbfEAVzQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 May 2019 17:55:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zmBqzyF9pCkfs/DzmH994jOViYWVnJFIwy01Dw2U6EY=;
- b=a4HLict1rxsnI8/XqIIgl+5OATEI6JCPr5uNVJbFusl4tDEZS0DDyRLoYTkJqCKajBde9YD7WXI6Krh4McL01kNCINRXIUeLZgCdcZIIueWtYWu98S8Fk3U4ENdNAFjnOzCgFkV4EdHgMEI2+kiQmpUr0FatrXIMEwfJ6WdYZwk=
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
- DB8PR05MB6137.eurprd05.prod.outlook.com (20.179.8.159) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1835.12; Wed, 1 May 2019 21:55:11 +0000
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::ed24:8317:76e4:1a07]) by DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::ed24:8317:76e4:1a07%5]) with mapi id 15.20.1856.008; Wed, 1 May 2019
- 21:55:11 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Bodong Wang <bodong@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Vu Pham <vuhuong@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next V2 15/15] net/mlx5: E-Switch, Use atomic rep state to
- serialize state change
-Thread-Topic: [net-next V2 15/15] net/mlx5: E-Switch, Use atomic rep state to
- serialize state change
-Thread-Index: AQHVAGiM61kMJLqVdUOYBwZBxKbH7Q==
-Date:   Wed, 1 May 2019 21:55:11 +0000
-Message-ID: <20190501215433.24047-16-saeedm@mellanox.com>
-References: <20190501215433.24047-1-saeedm@mellanox.com>
-In-Reply-To: <20190501215433.24047-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.20.1
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR01CA0012.prod.exchangelabs.com (2603:10b6:a02:80::25)
- To DB8PR05MB5898.eurprd05.prod.outlook.com (2603:10a6:10:a4::32)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3d93e76d-427d-4c73-798f-08d6ce7faf0c
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB6137;
-x-ms-traffictypediagnostic: DB8PR05MB6137:
-x-microsoft-antispam-prvs: <DB8PR05MB6137F8D3C078B614E6074EDABE3B0@DB8PR05MB6137.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2150;
-x-forefront-prvs: 00246AB517
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(396003)(136003)(39860400002)(376002)(366004)(189003)(199004)(11346002)(71200400001)(66066001)(6916009)(107886003)(50226002)(64756008)(8676002)(1076003)(66556008)(8936002)(66946007)(6512007)(66446008)(53936002)(66476007)(73956011)(478600001)(36756003)(81156014)(25786009)(14454004)(5660300002)(99286004)(76176011)(6436002)(86362001)(6506007)(6116002)(486006)(2906002)(7736002)(305945005)(71190400001)(26005)(54906003)(386003)(446003)(186003)(4326008)(68736007)(476003)(52116002)(256004)(6486002)(2616005)(3846002)(316002)(81166006)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB6137;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: vnHXriReNy7NKF3q0Hhij4Pjh5c8aV8Iu0wuDwkpeVDvK2zMaQKyzpEcZ+IG9nT/OiWz0qZHJ//M9ZLBbzAvwM8TeJe2PrYDOKwXoMkUfvQqcGt7vUOdI/l7m2BlVGIdBeTEeQrvUqMbb2S3xWdIUYZsT1X8Uh/oxJYk6xFBWIQ2XylM6TDd5YIfwmY0acUTDxZ/AT6jHt9nD5x73W9umt0xZ2kdArM4bXRNvMsnnDZPwPtuOqJQCS3HTsUpxKwu/qkVnOU5ZQKGofutHNG0aJDwXEjoL3w+G15U/IXwTk+kluXNULllfP3JjsOhzzwNJaLRikUUoqDkURc4+afY4V8kwYxkXD+mPoUC7bnpY3KQ4J0RZu1NePAwQVl2n1PwqM4FRArVvYZ/8WmeKPHxmtEksbl/9LbZJI0m8Ha8aL8=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726301AbfEAWBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 18:01:16 -0400
+Received: from gateway21.websitewelcome.com ([192.185.45.212]:44618 "EHLO
+        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726137AbfEAWBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 18:01:15 -0400
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway21.websitewelcome.com (Postfix) with ESMTP id E4D02400C9255
+        for <netdev@vger.kernel.org>; Wed,  1 May 2019 17:01:14 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id LxHuhZVId90onLxHuhhp1A; Wed, 01 May 2019 17:01:14 -0500
+X-Authority-Reason: nr=8
+Received: from [189.250.119.203] (port=58416 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.91)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hLxHr-000EDy-Su; Wed, 01 May 2019 17:01:11 -0500
+Date:   Wed, 1 May 2019 17:01:08 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] netfilter: xt_hashlimit: use struct_size() helper
+Message-ID: <20190501220108.GA30487@embeddedor>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d93e76d-427d-4c73-798f-08d6ce7faf0c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 May 2019 21:55:11.6445
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6137
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.119.203
+X-Source-L: No
+X-Exim-ID: 1hLxHr-000EDy-Su
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [189.250.119.203]:58416
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 7
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQm9kb25nIFdhbmcgPGJvZG9uZ0BtZWxsYW5veC5jb20+DQoNCldoZW4gdGhlIHN0YXRl
-IG9mIHJlcCB3YXMgaW50cm9kdWNlZCwgaXQgd2FzIGFsc28gZGVzaWduZWQgdG8gcHJldmVudA0K
-ZHVwbGljYXRlIHVubG9hZGluZyBvZiB0aGUgc2FtZSByZXAuIENvbnNpZGVyaW5nIHRoZSBmb2xs
-b3dpbmcgdHdvDQpmbG93cyB3aGVuIGFuIGVzd2l0Y2ggbWFuYWdlciBpcyBhdCBzd2l0Y2hkZXYg
-bW9kZSB3aXRoIG4gVkYgcmVwcyBsb2FkZWQuDQoNCistLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsNCnwgY3B1LTAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgY3B1LTEgICAgICAgICAgICAgICAgICAg
-ICAgICAgIHwNCnwgLS0tLS0tLS0gICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgLS0tLS0t
-LS0gICAgICAgICAgICAgICAgICAgICAgIHwNCnwgbWx4NV9pYl9yZW1vdmUgICAgICAgICAgICAg
-ICAgICAgICAgIHwgbWx4NV9lc3dpdGNoX2Rpc2FibGVfc3Jpb3YgICAgIHwNCnwgIG1seDVfaWJf
-dW5yZWdpc3Rlcl92cG9ydF9yZXBzICAgICAgIHwgIGVzd19vZmZsb2Fkc19jbGVhbnVwICAgICAg
-ICAgIHwNCnwgICBtbHg1X2Vzd2l0Y2hfdW5yZWdpc3Rlcl92cG9ydF9yZXBzIHwgICBlc3dfb2Zm
-bG9hZHNfdW5sb2FkX2FsbF9yZXBzIHwNCnwgICAgX191bmxvYWRfcmVwc19hbGxfdnBvcnQgICAg
-ICAgICAgIHwgICAgX191bmxvYWRfcmVwc19hbGxfdnBvcnQgICAgIHwNCistLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LSsNCg0KVGhlc2UgdHdvIGZsb3dzIHdpbGwgdHJ5IHRvIHVubG9hZCB0aGUgc2FtZSByZXAuIFBl
-ciBvcmlnaW5hbCBkZXNpZ24sDQpvbmNlIG9uZSBmbG93IHVubG9hZHMgdGhlIHJlcCwgdGhlIHN0
-YXRlIG1vdmVzIHRvIFJFR0lTVEVSRUQuIFRoZSAybmQNCmZsb3cgd2lsbCBubyBsb25nZXIgbmVl
-ZHMgdG8gZG8gdGhlIHVubG9hZCBhbmQgYmFpbHMgb3V0LiBIb3dldmVyLCBhcw0KcmVhZCBhbmQg
-d3JpdGUgb2YgdGhlIHN0YXRlIGlzIG5vdCBhdG9taWMsIHdoZW4gMXN0IGZsb3cgaXMgZG9pbmcg
-dGhlDQp1bmxvYWQsIHRoZSBzdGF0ZSBpcyBzdGlsbCBMT0FERUQsIDJuZCBmbG93IGlzIGFibGUg
-dG8gZG8gdGhlIHNhbWUNCnVubG9hZCBhY3Rpb24uIEtlcm5lbCBjcmFzaCB3aWxsIGhhcHBlbi4N
-Cg0KVG8gc29sdmUgdGhpcywgZHJpdmVyIHNob3VsZCBkbyBhdG9taWMgdGVzdC1hbmQtc2V0IGZv
-ciB0aGUgc3RhdGUuIFNvDQp0aGF0IG9ubHkgb25lIGZsb3cgY2FuIGNoYW5nZSB0aGUgcmVwIHN0
-YXRlIGZyb20gTE9BREVEIHRvIFJFR0lTVEVSRUQsDQphbmQgcHJvY2VlZCB0byBkbyB0aGUgYWN0
-dWFsIHVubG9hZGluZy4NCg0KU2luY2UgdGhlIHN0YXRlIGlzIGNoYW5naW5nIHRvIGF0b21pYyB0
-eXBlLCBhbGwgb3RoZXIgcmVhZC93cml0ZSBzaG91bGQNCmJlIGF0b21pYyBhY3Rpb24gYXMgd2Vs
-bC4NCg0KRml4ZXM6IGYxMjFlMGVhOTU4NiAobmV0L21seDU6IEUtU3dpdGNoLCBBZGQgc3RhdGUg
-dG8gZXN3aXRjaCB2cG9ydCByZXByZXNlbnRvcnMpDQpTaWduZWQtb2ZmLWJ5OiBCb2RvbmcgV2Fu
-ZyA8Ym9kb25nQG1lbGxhbm94LmNvbT4NClJldmlld2VkLWJ5OiBQYXJhdiBQYW5kaXQgPHBhcmF2
-QG1lbGxhbm94LmNvbT4NClJldmlld2VkLWJ5OiBWdSBQaGFtIDx2dWh1b25nQG1lbGxhbm94LmNv
-bT4NClNpZ25lZC1vZmYtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0K
-LS0tDQogLi4uL21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMgICAgIHwgMzYg
-KysrKysrKysrLS0tLS0tLS0tLQ0KIGluY2x1ZGUvbGludXgvbWx4NS9lc3dpdGNoLmggICAgICAg
-ICAgICAgICAgICB8ICAyICstDQogMiBmaWxlcyBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCspLCAy
-MCBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
-bm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9t
-ZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9vZmZsb2Fkcy5jDQppbmRleCBlODhmZWFhMjkzZjYu
-LmUwOWFlMjc0ODVlZSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94
-L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMNCisrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0
-L21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMNCkBAIC0zMzMsNyArMzMzLDcg
-QEAgc3RhdGljIGludCBlc3dfc2V0X2dsb2JhbF92bGFuX3BvcChzdHJ1Y3QgbWx4NV9lc3dpdGNo
-ICplc3csIHU4IHZhbCkNCiAJZXN3X2RlYnVnKGVzdy0+ZGV2LCAiJXMgYXBwbHlpbmcgZ2xvYmFs
-ICVzIHBvbGljeVxuIiwgX19mdW5jX18sIHZhbCA/ICJwb3AiIDogIm5vbmUiKTsNCiAJZm9yICh2
-Zl92cG9ydCA9IDE7IHZmX3Zwb3J0IDwgZXN3LT5lbmFibGVkX3Zwb3J0czsgdmZfdnBvcnQrKykg
-ew0KIAkJcmVwID0gJmVzdy0+b2ZmbG9hZHMudnBvcnRfcmVwc1t2Zl92cG9ydF07DQotCQlpZiAo
-cmVwLT5yZXBfaWZbUkVQX0VUSF0uc3RhdGUgIT0gUkVQX0xPQURFRCkNCisJCWlmIChhdG9taWNf
-cmVhZCgmcmVwLT5yZXBfaWZbUkVQX0VUSF0uc3RhdGUpICE9IFJFUF9MT0FERUQpDQogCQkJY29u
-dGludWU7DQogDQogCQllcnIgPSBfX21seDVfZXN3aXRjaF9zZXRfdnBvcnRfdmxhbihlc3csIHJl
-cC0+dnBvcnQsIDAsIDAsIHZhbCk7DQpAQCAtMTI3Nyw3ICsxMjc3LDggQEAgaW50IGVzd19vZmZs
-b2Fkc19pbml0X3JlcHMoc3RydWN0IG1seDVfZXN3aXRjaCAqZXN3KQ0KIAkJZXRoZXJfYWRkcl9j
-b3B5KHJlcC0+aHdfaWQsIGh3X2lkKTsNCiANCiAJCWZvciAocmVwX3R5cGUgPSAwOyByZXBfdHlw
-ZSA8IE5VTV9SRVBfVFlQRVM7IHJlcF90eXBlKyspDQotCQkJcmVwLT5yZXBfaWZbcmVwX3R5cGVd
-LnN0YXRlID0gUkVQX1VOUkVHSVNURVJFRDsNCisJCQlhdG9taWNfc2V0KCZyZXAtPnJlcF9pZlty
-ZXBfdHlwZV0uc3RhdGUsDQorCQkJCSAgIFJFUF9VTlJFR0lTVEVSRUQpOw0KIAl9DQogDQogCXJl
-dHVybiAwOw0KQEAgLTEyODYsMTEgKzEyODcsOSBAQCBpbnQgZXN3X29mZmxvYWRzX2luaXRfcmVw
-cyhzdHJ1Y3QgbWx4NV9lc3dpdGNoICplc3cpDQogc3RhdGljIHZvaWQgX19lc3dfb2ZmbG9hZHNf
-dW5sb2FkX3JlcChzdHJ1Y3QgbWx4NV9lc3dpdGNoICplc3csDQogCQkJCSAgICAgIHN0cnVjdCBt
-bHg1X2Vzd2l0Y2hfcmVwICpyZXAsIHU4IHJlcF90eXBlKQ0KIHsNCi0JaWYgKHJlcC0+cmVwX2lm
-W3JlcF90eXBlXS5zdGF0ZSAhPSBSRVBfTE9BREVEKQ0KLQkJcmV0dXJuOw0KLQ0KLQlyZXAtPnJl
-cF9pZltyZXBfdHlwZV0udW5sb2FkKHJlcCk7DQotCXJlcC0+cmVwX2lmW3JlcF90eXBlXS5zdGF0
-ZSA9IFJFUF9SRUdJU1RFUkVEOw0KKwlpZiAoYXRvbWljX2NtcHhjaGcoJnJlcC0+cmVwX2lmW3Jl
-cF90eXBlXS5zdGF0ZSwNCisJCQkgICBSRVBfTE9BREVELCBSRVBfUkVHSVNURVJFRCkgPT0gUkVQ
-X0xPQURFRCkNCisJCXJlcC0+cmVwX2lmW3JlcF90eXBlXS51bmxvYWQocmVwKTsNCiB9DQogDQog
-c3RhdGljIHZvaWQgX191bmxvYWRfcmVwc19zcGVjaWFsX3Zwb3J0KHN0cnVjdCBtbHg1X2Vzd2l0
-Y2ggKmVzdywgdTggcmVwX3R5cGUpDQpAQCAtMTM1MSwxNiArMTM1MCwxNSBAQCBzdGF0aWMgaW50
-IF9fZXN3X29mZmxvYWRzX2xvYWRfcmVwKHN0cnVjdCBtbHg1X2Vzd2l0Y2ggKmVzdywNCiB7DQog
-CWludCBlcnIgPSAwOw0KIA0KLQlpZiAocmVwLT5yZXBfaWZbcmVwX3R5cGVdLnN0YXRlICE9IFJF
-UF9SRUdJU1RFUkVEKQ0KLQkJcmV0dXJuIDA7DQotDQotCWVyciA9IHJlcC0+cmVwX2lmW3JlcF90
-eXBlXS5sb2FkKGVzdy0+ZGV2LCByZXApOw0KLQlpZiAoZXJyKQ0KLQkJcmV0dXJuIGVycjsNCi0N
-Ci0JcmVwLT5yZXBfaWZbcmVwX3R5cGVdLnN0YXRlID0gUkVQX0xPQURFRDsNCisJaWYgKGF0b21p
-Y19jbXB4Y2hnKCZyZXAtPnJlcF9pZltyZXBfdHlwZV0uc3RhdGUsDQorCQkJICAgUkVQX1JFR0lT
-VEVSRUQsIFJFUF9MT0FERUQpID09IFJFUF9SRUdJU1RFUkVEKSB7DQorCQllcnIgPSByZXAtPnJl
-cF9pZltyZXBfdHlwZV0ubG9hZChlc3ctPmRldiwgcmVwKTsNCisJCWlmIChlcnIpDQorCQkJYXRv
-bWljX3NldCgmcmVwLT5yZXBfaWZbcmVwX3R5cGVdLnN0YXRlLA0KKwkJCQkgICBSRVBfUkVHSVNU
-RVJFRCk7DQorCX0NCiANCi0JcmV0dXJuIDA7DQorCXJldHVybiBlcnI7DQogfQ0KIA0KIHN0YXRp
-YyBpbnQgX19sb2FkX3JlcHNfc3BlY2lhbF92cG9ydChzdHJ1Y3QgbWx4NV9lc3dpdGNoICplc3cs
-IHU4IHJlcF90eXBlKQ0KQEAgLTIyMTcsNyArMjIxNSw3IEBAIHZvaWQgbWx4NV9lc3dpdGNoX3Jl
-Z2lzdGVyX3Zwb3J0X3JlcHMoc3RydWN0IG1seDVfZXN3aXRjaCAqZXN3LA0KIAkJcmVwX2lmLT5n
-ZXRfcHJvdG9fZGV2ID0gX19yZXBfaWYtPmdldF9wcm90b19kZXY7DQogCQlyZXBfaWYtPnByaXYg
-PSBfX3JlcF9pZi0+cHJpdjsNCiANCi0JCXJlcF9pZi0+c3RhdGUgPSBSRVBfUkVHSVNURVJFRDsN
-CisJCWF0b21pY19zZXQoJnJlcF9pZi0+c3RhdGUsIFJFUF9SRUdJU1RFUkVEKTsNCiAJfQ0KIH0N
-CiBFWFBPUlRfU1lNQk9MKG1seDVfZXN3aXRjaF9yZWdpc3Rlcl92cG9ydF9yZXBzKTsNCkBAIC0y
-MjMyLDcgKzIyMzAsNyBAQCB2b2lkIG1seDVfZXN3aXRjaF91bnJlZ2lzdGVyX3Zwb3J0X3JlcHMo
-c3RydWN0IG1seDVfZXN3aXRjaCAqZXN3LCB1OCByZXBfdHlwZSkNCiAJCV9fdW5sb2FkX3JlcHNf
-YWxsX3Zwb3J0KGVzdywgbWF4X3ZmLCByZXBfdHlwZSk7DQogDQogCW1seDVfZXN3X2Zvcl9hbGxf
-cmVwcyhlc3csIGksIHJlcCkNCi0JCXJlcC0+cmVwX2lmW3JlcF90eXBlXS5zdGF0ZSA9IFJFUF9V
-TlJFR0lTVEVSRUQ7DQorCQlhdG9taWNfc2V0KCZyZXAtPnJlcF9pZltyZXBfdHlwZV0uc3RhdGUs
-IFJFUF9VTlJFR0lTVEVSRUQpOw0KIH0NCiBFWFBPUlRfU1lNQk9MKG1seDVfZXN3aXRjaF91bnJl
-Z2lzdGVyX3Zwb3J0X3JlcHMpOw0KIA0KQEAgLTIyNTIsNyArMjI1MCw3IEBAIHZvaWQgKm1seDVf
-ZXN3aXRjaF9nZXRfcHJvdG9fZGV2KHN0cnVjdCBtbHg1X2Vzd2l0Y2ggKmVzdywNCiANCiAJcmVw
-ID0gbWx4NV9lc3dpdGNoX2dldF9yZXAoZXN3LCB2cG9ydCk7DQogDQotCWlmIChyZXAtPnJlcF9p
-ZltyZXBfdHlwZV0uc3RhdGUgPT0gUkVQX0xPQURFRCAmJg0KKwlpZiAoYXRvbWljX3JlYWQoJnJl
-cC0+cmVwX2lmW3JlcF90eXBlXS5zdGF0ZSkgPT0gUkVQX0xPQURFRCAmJg0KIAkgICAgcmVwLT5y
-ZXBfaWZbcmVwX3R5cGVdLmdldF9wcm90b19kZXYpDQogCQlyZXR1cm4gcmVwLT5yZXBfaWZbcmVw
-X3R5cGVdLmdldF9wcm90b19kZXYocmVwKTsNCiAJcmV0dXJuIE5VTEw7DQpkaWZmIC0tZ2l0IGEv
-aW5jbHVkZS9saW51eC9tbHg1L2Vzd2l0Y2guaCBiL2luY2x1ZGUvbGludXgvbWx4NS9lc3dpdGNo
-LmgNCmluZGV4IDk2ZDg0MzU0MjFkZS4uMGNhNzdkZDE0MjljIDEwMDY0NA0KLS0tIGEvaW5jbHVk
-ZS9saW51eC9tbHg1L2Vzd2l0Y2guaA0KKysrIGIvaW5jbHVkZS9saW51eC9tbHg1L2Vzd2l0Y2gu
-aA0KQEAgLTM1LDcgKzM1LDcgQEAgc3RydWN0IG1seDVfZXN3aXRjaF9yZXBfaWYgew0KIAl2b2lk
-CQkgICAgICAgKCp1bmxvYWQpKHN0cnVjdCBtbHg1X2Vzd2l0Y2hfcmVwICpyZXApOw0KIAl2b2lk
-CQkgICAgICAgKigqZ2V0X3Byb3RvX2Rldikoc3RydWN0IG1seDVfZXN3aXRjaF9yZXAgKnJlcCk7
-DQogCXZvaWQJCQkqcHJpdjsNCi0JdTgJCQlzdGF0ZTsNCisJYXRvbWljX3QJCXN0YXRlOw0KIH07
-DQogDQogc3RydWN0IG1seDVfZXN3aXRjaF9yZXAgew0KLS0gDQoyLjIwLjENCg0K
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes, in particular in the
+context in which this code is being used.
+
+So, replace code of the following form:
+
+sizeof(struct xt_hashlimit_htable) + sizeof(struct hlist_head) * size
+
+with:
+
+struct_size(hinfo, hash, size)
+
+This code was detected with the help of Coccinelle.
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ net/netfilter/xt_hashlimit.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/netfilter/xt_hashlimit.c b/net/netfilter/xt_hashlimit.c
+index 8d86e39d6280..a30536b17ee1 100644
+--- a/net/netfilter/xt_hashlimit.c
++++ b/net/netfilter/xt_hashlimit.c
+@@ -288,8 +288,7 @@ static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
+ 			size = 16;
+ 	}
+ 	/* FIXME: don't use vmalloc() here or anywhere else -HW */
+-	hinfo = vmalloc(sizeof(struct xt_hashlimit_htable) +
+-	                sizeof(struct hlist_head) * size);
++	hinfo = vmalloc(struct_size(hinfo, hash, size));
+ 	if (hinfo == NULL)
+ 		return -ENOMEM;
+ 	*out_hinfo = hinfo;
+-- 
+2.21.0
+
