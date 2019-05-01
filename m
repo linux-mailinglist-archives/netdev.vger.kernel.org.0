@@ -2,84 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 765D61064A
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 11:28:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EF4610676
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 11:44:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726270AbfEAJ1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 05:27:50 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:34923 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725959AbfEAJ1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 05:27:50 -0400
-Received: by mail-lj1-f194.google.com with SMTP id z26so15088737ljj.2
-        for <netdev@vger.kernel.org>; Wed, 01 May 2019 02:27:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XqKy8I+a4T0E223MovLI7JFFmULW34ElM/2ZaJcNK4s=;
-        b=KHwWO3/Xsy0QHfHzhX2ZJ+huUw9RaHYTlYXYT02s0DIJdxSaHyVvDkC005L6HHRff3
-         4RXlADG+DN3Hn6jsPuYMadmAhF5Cm8DqNDKbK/3JwWcF1yuh/uwyMwFcfN2+ZIMP/Ub3
-         ns5J4MDqHLxx7nYU0QRBHY5PRSxWcYa0RRJwja2/SsO61jWVU2Ondfri9BU4lyAm+oAn
-         6zsq/FIJ9AWFs83caNt6/W8xJuofNaCx5L26MwJnOMJuZCyapCb45rXc8ONS+qZlnnTg
-         MIA9fYaoLLMslApB1PxJ0ljUPMDQGGbZPtz98r/4u99sSr79Z2Yt8OBozI6KJaE9ct/6
-         QuAg==
-X-Gm-Message-State: APjAAAVLcB4yp9Om7gF/rFaZ/ohla46mMBVHWdNrxi7AEDpMpvsNPYyx
-        ZdJg0D1YpgbrPB5efUUk3KXCVjL4tkCQiSfIw0d/rQ==
-X-Google-Smtp-Source: APXvYqyfcdKdmTzQ8IDTm8A6KvrZpfBsYY5e4SzYQbGiU178aoFr95yoxbDZs5+rGpEjE6DYrQH5+YnXMs0fV9fhFn4=
-X-Received: by 2002:a2e:9f53:: with SMTP id v19mr6467840ljk.0.1556702868264;
- Wed, 01 May 2019 02:27:48 -0700 (PDT)
+        id S1726121AbfEAJoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 05:44:39 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:41396 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725959AbfEAJoj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 05:44:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=P89j+25lH0nkY1fWt1lCASyBoIOZxVLtI8SLGLQKKnI=; b=djDhol+MuXzIaHsOiQQZagWbU
+        Xx6yR2Yh6NclihBk0gid4rBg40151OMAxcja6+m4NlbPXlqCgZOVrGzPNA4X9x9XF7vSlPfqUzPIf
+        cDmjBsbjIQOVQ/XB/2jhQNg7vwXP1Ip+CUTyVyjrByL0FdPYncPF+NrexKTkWhpRLbDWSJ0bTcLjB
+        rq/tDlQGDXKQ1KyZ1Rvcj3rP+zREmmN4uI6VyvQFhm/viSz9uUiz3svIYWfxyUvnrgDTWylY6XZ5+
+        tbEoiyxq3lwuWHkxtmd1LrFPd1hNwyX+FvJE0wnRGwLWte7a/9nF0fHSV2YVCxLET9ipf0LwVUOAI
+        bugHGBavA==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red Hat Linux))
+        id 1hLln3-0004Ey-FU; Wed, 01 May 2019 09:44:37 +0000
+Date:   Wed, 1 May 2019 02:44:37 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, hch@lst.de, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/5] Beginnings of skb_frag -> bio_vec conversion
+Message-ID: <20190501094437.GA3698@bombadil.infradead.org>
+References: <20190501041757.8647-1-willy@infradead.org>
+ <639880c6-5703-857c-8a70-82fbb5a90238@gmail.com>
 MIME-Version: 1.0
-References: <20190429173805.4455-1-mcroce@redhat.com> <CAM_iQpXB83o+Nnbef8-h_8cg6rTVZn194uZvP1-VKPcJ+xMEjA@mail.gmail.com>
-In-Reply-To: <CAM_iQpXB83o+Nnbef8-h_8cg6rTVZn194uZvP1-VKPcJ+xMEjA@mail.gmail.com>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Wed, 1 May 2019 11:27:12 +0200
-Message-ID: <CAGnkfhzPZjqnemq+Sh=pAQPsoadYD2UYfdVf8UHt-Dd7gqhVOg@mail.gmail.com>
-Subject: Re: [PATCH net] cls_matchall: avoid panic when receiving a packet
- before filter set
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Vlad Buslov <vladbu@mellanox.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <639880c6-5703-857c-8a70-82fbb5a90238@gmail.com>
+User-Agent: Mutt/1.9.2 (2017-12-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 30, 2019 at 11:25 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Mon, Apr 29, 2019 at 10:38 AM Matteo Croce <mcroce@redhat.com> wrote:
-> >
-> > When a matchall classifier is added, there is a small time interval in
-> > which tp->root is NULL. If we receive a packet in this small time slice
-> > a NULL pointer dereference will happen, leading to a kernel panic:
->
-> Hmm, why not just check tp->root against NULL in mall_classify()?
->
-> Also, which is the offending commit here? Please add a Fixes: tag.
->
-> Thanks.
+On Wed, May 01, 2019 at 04:14:41AM -0400, Eric Dumazet wrote:
+> On 4/30/19 9:17 PM, Matthew Wilcox wrote:
+> > It turns out there's a lot of accessors for the skb_frag, which would
+> > make this conversion really easy if some drivers didn't bypass them.
+> > This is what I've done so far; my laptop's not really beefy enough to
+> > cope with changing skbuff.h too often ;-)
+> 
+> I guess the missing part here is the "why" all this is done ?
+> 
+> 32 bit hosts will have bigger skb_shared_info and this impacts sk_rcvbuf and sk_sndbuf limits.
+> 
+> 17 * 4 are 68 extra bytes per skb.
 
-Hi,
+Right.  The plan is to replace get_user_pages() with get_user_bvec().  If
+userspace has physically consecutive pages (and often it will, even when
+not using THP), we can reduce the number of elements in the array at the
+start.  So each skb_frag_t is larger, but you'll have fewer of them for a
+large I/O.  Obviously this particularly benefits THP.
 
-I just want to avoid an extra check which would be made for every packet.
-Probably the benefit over a check is negligible, but it's still a
-per-packet thing.
-If you prefer a simple check, I can make a v2 that way.
-
-For the fixes tag, I didn't put it as I'm not really sure about the
-offending commit. I guess it's the following, what do you think?
-
-commit ed76f5edccc98fa66f2337f0b3b255d6e1a568b7
-Author: Vlad Buslov <vladbu@mellanox.com>
-Date:   Mon Feb 11 10:55:38 2019 +0200
-
-    net: sched: protect filter_chain list with filter_chain_lock mutex
-
--- 
-Matteo Croce
-per aspera ad upstream
