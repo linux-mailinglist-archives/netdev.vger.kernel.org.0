@@ -2,56 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7EB91044F
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 05:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BE9D1045E
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 05:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726052AbfEADkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Apr 2019 23:40:17 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54654 "EHLO
+        id S1726231AbfEADoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Apr 2019 23:44:30 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:54702 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbfEADkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 23:40:17 -0400
+        with ESMTP id S1726014AbfEADoa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Apr 2019 23:44:30 -0400
 Received: from localhost (adsl-173-228-226-134.prtc.net [173.228.226.134])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id F1AC7136D6BC8;
-        Tue, 30 Apr 2019 20:40:15 -0700 (PDT)
-Date:   Tue, 30 Apr 2019 23:40:14 -0400 (EDT)
-Message-Id: <20190430.234014.837178465736820152.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        syzkaller@googlegroups.com, dsahern@gmail.com
-Subject: Re: [PATCH net] ipv6: fix races in ip6_dst_destroy()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 53963136E24DD;
+        Tue, 30 Apr 2019 20:44:27 -0700 (PDT)
+Date:   Tue, 30 Apr 2019 23:44:25 -0400 (EDT)
+Message-Id: <20190430.234425.732219702361005278.davem@davemloft.net>
+To:     olteanv@gmail.com
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 00/12] NXP SJA1105 DSA driver
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190428192225.123882-1-edumazet@google.com>
-References: <20190428192225.123882-1-edumazet@google.com>
+In-Reply-To: <20190429001706.7449-1-olteanv@gmail.com>
+References: <20190429001706.7449-1-olteanv@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Apr 2019 20:40:16 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Apr 2019 20:44:29 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Sun, 28 Apr 2019 12:22:25 -0700
+From: Vladimir Oltean <olteanv@gmail.com>
+Date: Mon, 29 Apr 2019 03:16:54 +0300
 
-> We had many syzbot reports that seem to be caused by use-after-free
-> of struct fib6_info.
-> 
-> ip6_dst_destroy(), fib6_drop_pcpu_from() and rt6_remove_exception()
-> are writers vs rt->from, and use non consistent synchronization among
-> themselves.
-> 
-> Switching to xchg() will solve the issues with no possible
-> lockdep issues.
- ...
-> Fixes: a68886a69180 ("net/ipv6: Make from in rt6_info rcu protected")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Cc: David Ahern <dsahern@gmail.com>
+> This patchset adds a DSA driver for the SPI-controlled NXP SJA1105
+> switch.
 
-Applied and queued up for -stable, thanks Eric.
+This patch series adds many whitespace errors, which are all reported
+by GIT when I try to apply your changes:
+
+Applying: lib: Add support for generic packing operations
+.git/rebase-apply/patch:176: new blank line at EOF.
++
+.git/rebase-apply/patch:480: new blank line at EOF.
++
+warning: 2 lines add whitespace errors.
+Applying: net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch
+.git/rebase-apply/patch:102: new blank line at EOF.
++
+.git/rebase-apply/patch:117: new blank line at EOF.
++
+.git/rebase-apply/patch:262: new blank line at EOF.
++
+.git/rebase-apply/patch:867: new blank line at EOF.
++
+.git/rebase-apply/patch:2905: new blank line at EOF.
++
+warning: squelched 2 whitespace errors
+warning: 7 lines add whitespace errors.
+Applying: net: dsa: sja1105: Add support for FDB and MDB management
+.git/rebase-apply/patch:81: new blank line at EOF.
++
+warning: 1 line adds whitespace errors.
+Applying: net: dsa: sja1105: Error out if RGMII delays are requested in DT
+Applying: ether: Add dedicated Ethertype for pseudo-802.1Q DSA tagging
+Applying: net: dsa: sja1105: Add support for VLAN operations
+.git/rebase-apply/patch:359: new blank line at EOF.
++
+warning: 1 line adds whitespace errors.
+Applying: net: dsa: sja1105: Add support for ethtool port counters
+.git/rebase-apply/patch:474: new blank line at EOF.
++
+warning: 1 line adds whitespace errors.
+Applying: net: dsa: sja1105: Add support for configuring address aging time
+Applying: net: dsa: sja1105: Prevent PHY jabbering during switch reset
+Applying: net: dsa: sja1105: Reject unsupported link modes for AN
+Applying: Documentation: net: dsa: Add details about NXP SJA1105 driver
+.git/rebase-apply/patch:200: new blank line at EOF.
++
+warning: 1 line adds whitespace errors.
+Applying: dt-bindings: net: dsa: Add documentation for NXP SJA1105 driver
+.git/rebase-apply/patch:178: new blank line at EOF.
++
+warning: 1 line adds whitespace errors.
