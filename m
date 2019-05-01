@@ -2,100 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 874111086A
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 15:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A17F10866
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 15:47:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbfEANrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 09:47:33 -0400
-Received: from conuserg-11.nifty.com ([210.131.2.78]:29860 "EHLO
-        conuserg-11.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726497AbfEANrd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 09:47:33 -0400
-Received: from grover.flets-west.jp (softbank126125154137.bbtec.net [126.125.154.137]) (authenticated)
-        by conuserg-11.nifty.com with ESMTP id x41DkAqH006908;
-        Wed, 1 May 2019 22:46:10 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-11.nifty.com x41DkAqH006908
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1556718371;
-        bh=r0tKWu4K0FaqMQsDo16rqksf/YsVt69hJkPu3of5sNs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Si7Jr3+R+5NB5DAbMoi+oNJUQEhichvJc7P6ya+mg1vm6/5aK6WVp9kpY8a1C7Oth
-         ILQAa6yO0t1uWDOFYJeOOHH7SZHzMgJcuFOkTdCoYNDs/C4g3v9c0bDHkWvxP++nuY
-         jRuHdh627B42W8JzIZiZVjagvzZNr2yFf/B3nUtI4moG7spsHrXAueqn5F93lgsc0h
-         xJLRW4w6lEA9utgwsZG49UGerJ6pkdxFhV28p/zihvr6RCKeNvozRQSh+a6rSQPhtF
-         9NgzNE4qWZw0ePK4JiB+3NsmmVKr1nRVT6Qskl+EslWk5ZCxaLXzKXxzMDCS4Bj1NL
-         u2EfE5O1cd7xA==
-X-Nifty-SrcIP: [126.125.154.137]
-From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Sirio Balmelli <sirio@b-ad.ch>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>,
-        Taeung Song <treeze.taeung@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Subject: [PATCH v2] bpftool: exclude bash-completion/bpftool from .gitignore pattern
-Date:   Wed,  1 May 2019 22:45:59 +0900
-Message-Id: <1556718359-1598-1-git-send-email-yamada.masahiro@socionext.com>
-X-Mailer: git-send-email 2.7.4
+        id S1726495AbfEANrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 09:47:21 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:21453 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726101AbfEANrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 09:47:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1556718440; x=1588254440;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=X8BQBTBxSozr2UXfoDcbZIqiD5JJU4bJ1pE3G+jJKW8=;
+  b=OMh3lVh00g7auyOofWnKSSer9kQsn4i/3FOnjRMxdRxRU53q6y5nbXU7
+   y4fI3mqNqOkrGOEi+5eBw2DAz4b+kkro27j4jXuCYFmEbn+1aUc7kHWRL
+   Ti511KyiXYlyX4GiirFxHz2XOrceNO8qL5L+yY5nm4v6ctLI5BwhvGE7T
+   c=;
+X-IronPort-AV: E=Sophos;i="5.60,417,1549929600"; 
+   d="scan'208";a="802298956"
+Received: from sea3-co-svc-lb6-vlan3.sea.amazon.com (HELO email-inbound-relay-1a-807d4a99.us-east-1.amazon.com) ([10.47.22.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 01 May 2019 13:47:19 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1a-807d4a99.us-east-1.amazon.com (8.14.7/8.14.7) with ESMTP id x41DlFEa112010
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=FAIL);
+        Wed, 1 May 2019 13:47:18 GMT
+Received: from EX13d09UWC002.ant.amazon.com (10.43.162.102) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 1 May 2019 13:47:18 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13d09UWC002.ant.amazon.com (10.43.162.102) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Wed, 1 May 2019 13:47:17 +0000
+Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.60.55) by
+ mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
+ 15.0.1367.3 via Frontend Transport; Wed, 1 May 2019 13:47:13 +0000
+From:   <sameehj@amazon.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <akiyano@amazon.com>
+Subject: [PATCH V1 net 0/8] Bug fixes for ENA Ethernet driver
+Date:   Wed, 1 May 2019 16:47:02 +0300
+Message-ID: <20190501134710.8938-1-sameehj@amazon.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tools/bpf/bpftool/.gitignore has the "bpftool" pattern, which is
-intended to ignore the following build artifact:
+From: Sameeh Jubran <sameehj@amazon.com>
 
-  tools/bpf/bpftool/bpftool
+Sameeh Jubran (8):
+  net: ena: fix swapped parameters when calling
+    ena_com_indirect_table_fill_entry
+  net: ena: fix: set freed objects to NULL to avoid failing future
+    allocations
+  net: ena: fix: Free napi resources when ena_up() fails
+  net: ena: fix incorrect test of supported hash function
+  net: ena: fix return value of ena_com_config_llq_info()
+  net: ena: improve latency by disabling adaptive interrupt moderation
+    by default
+  net: ena: fix ena_com_fill_hash_function() implementation
+  net: ena: gcc 8: fix compilation warning
 
-However, the .gitignore entry is effective not only for the current
-directory, but also for any sub-directories.
+ drivers/net/ethernet/amazon/ena/ena_com.c     | 11 ++++++--
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |  4 +--
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 28 +++++++++++--------
+ 3 files changed, 27 insertions(+), 16 deletions(-)
 
-So, from the point of .gitignore grammar, the following check-in file
-is also considered to be ignored:
-
-  tools/bpf/bpftool/bash-completion/bpftool
-
-As the manual gitignore(5) says "Files already tracked by Git are not
-affected", this is not a problem as far as Git is concerned.
-
-However, Git is not the only program that parses .gitignore because
-.gitignore is useful to distinguish build artifacts from source files.
-
-For example, tar(1) supports the --exclude-vcs-ignore option. As of
-writing, this option does not work perfectly, but it intends to create
-a tarball excluding files specified by .gitignore.
-
-So, I believe it is better to fix this issue.
-
-You can fix it by prefixing the pattern with a slash; the leading slash
-means the specified pattern is relative to the current directory.
-
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
-
-Changes in v2:
-  - Add more information to the commit log to clarify my main motivation
-  - Touch "bpftool" pattern only
-
- tools/bpf/bpftool/.gitignore | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/bpf/bpftool/.gitignore b/tools/bpf/bpftool/.gitignore
-index 67167e4..8248b8d 100644
---- a/tools/bpf/bpftool/.gitignore
-+++ b/tools/bpf/bpftool/.gitignore
-@@ -1,5 +1,5 @@
- *.d
--bpftool
-+/bpftool
- bpftool*.8
- bpf-helpers.*
- FEATURE-DUMP.bpftool
 -- 
-2.7.4
+2.17.1
 
