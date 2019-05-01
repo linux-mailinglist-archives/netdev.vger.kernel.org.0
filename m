@@ -2,151 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 412E610E7D
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 23:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49EF210E88
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 23:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726209AbfEAVTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 17:19:09 -0400
-Received: from lb3-smtp-cloud7.xs4all.net ([194.109.24.31]:53899 "EHLO
-        lb3-smtp-cloud7.xs4all.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726116AbfEAVTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 17:19:08 -0400
-Received: from localhost.localdomain ([83.160.161.190])
-        by smtp-cloud7.xs4all.net with ESMTPSA
-        id Lwd5hCHvaZVjxLwd7h3Uok; Wed, 01 May 2019 23:19:05 +0200
-From:   Paul Bolle <pebolle@tiscali.nl>
-To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        gigaset307x-common@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] isdn: bas_gigaset: use usb_fill_int_urb() properly
-Date:   Wed,  1 May 2019 23:19:03 +0200
-Message-Id: <20190501211903.14806-1-pebolle@tiscali.nl>
-X-Mailer: git-send-email 2.17.2
-X-CMAE-Envelope: MS4wfOp5vPG9xELxzSh+dUzvBxQYzI2cQDZmE49vzSrlF8aB/d8MQv73euPb7NwpkqLRPCuN2y3q7AaFj98EZiFJVvl+SrNigkTRoTvllg5fw5EIFxwU+O56
- j3yCP7A7LTEJq8/LlQWbDdCDmUFq0Wvy9gy2iwuIVD+TvMvfmMP5RB0Pe2uZfaR/SHjqt0fWAzoKMtK5DoZa4Y++aBIMdOF7AHsYQpq+9LPtTnBayqRgdxDB
- vpLvZxXd6V8HK9zdaSUC4Bbo60+YFl1if+pL7ynypWNO9ff6JGBh5WCQL/FpAVnDEbs2oxchqt4zqY8h1XD0JNCumDMfjOux+pWzbFRzkOYOWmZ4aFA59Ygf
- Ng51pFRb4J3lmMREZejU17ZBtV1jKomXOibkPdbzIMlTMntUPCY=
+        id S1726270AbfEAVVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 17:21:12 -0400
+Received: from gateway24.websitewelcome.com ([192.185.51.209]:29283 "EHLO
+        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726088AbfEAVVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 17:21:12 -0400
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 799E88A25
+        for <netdev@vger.kernel.org>; Wed,  1 May 2019 16:21:10 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id Lwf8hagHl2qH7Lwf8htiCO; Wed, 01 May 2019 16:21:10 -0500
+X-Authority-Reason: nr=8
+Received: from [189.250.119.203] (port=52682 helo=[192.168.1.76])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.91)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hLwf5-004IrK-SC; Wed, 01 May 2019 16:21:10 -0500
+Subject: Re: [PATCH net-next] sfc: mcdi_port: Mark expected switch
+ fall-through
+To:     David Miller <davem@davemloft.net>
+Cc:     linux-net-drivers@solarflare.com, ecree@solarflare.com,
+        mhabets@solarflare.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, keescook@chromium.org
+References: <20190429153755.GA10596@embeddedor>
+ <20190501.112428.331673135522488793.davem@davemloft.net>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ VtSixD1uOgytAP7RWS474w==
+Message-ID: <7d1c6339-325c-275b-f6f5-44a1c8b83cce@embeddedor.com>
+Date:   Wed, 1 May 2019 16:21:03 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <20190501.112428.331673135522488793.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.119.203
+X-Source-L: No
+X-Exim-ID: 1hLwf5-004IrK-SC
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.1.76]) [189.250.119.203]:52682
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 5
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The switch to make bas_gigaset use usb_fill_int_urb() - instead of
-filling that urb "by hand" - missed the subtle ordering of the previous
-code.
 
-See, before the switch urb->dev was set to a member somewhere deep in a
-complicated structure and then supplied to usb_rcvisocpipe() and
-usb_sndisocpipe(). After that switch urb->dev wasn't set to anything
-specific before being supplied to those two macros. This triggers a
-nasty oops:
 
-    BUG: unable to handle kernel NULL pointer dereference at 00000000
-    #PF error: [normal kernel read fault]
-    *pde = 00000000
-    Oops: 0000 [#1] SMP
-    CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.1.0-0.rc4.1.local0.fc28.i686 #1
-    Hardware name: IBM 2525FAG/2525FAG, BIOS 74ET64WW (2.09 ) 12/14/2006
-    EIP: gigaset_init_bchannel+0x89/0x320 [bas_gigaset]
-    Code: 75 07 83 8b 84 00 00 00 40 8d 47 74 c7 07 01 00 00 00 89 45 f0 8b 44 b7 68 85 c0 0f 84 6a 02 00 00 8b 48 28 8b 93 88 00 00 00 <8b> 09 8d 54 12 03 c1 e2 0f c1 e1 08 09 ca 8b 8b 8c 00 00 00 80 ca
-    EAX: f05ec200 EBX: ed404200 ECX: 00000000 EDX: 00000000
-    ESI: 00000000 EDI: f065a000 EBP: f30c9f40 ESP: f30c9f20
-    DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00010086
-    CR0: 80050033 CR2: 00000000 CR3: 0ddc7000 CR4: 000006d0
-    Call Trace:
-     <SOFTIRQ>
-     ? gigaset_isdn_connD+0xf6/0x140 [gigaset]
-     gigaset_handle_event+0x173e/0x1b90 [gigaset]
-     tasklet_action_common.isra.16+0x4e/0xf0
-     tasklet_action+0x1e/0x20
-     __do_softirq+0xb2/0x293
-     ? __irqentry_text_end+0x3/0x3
-     call_on_stack+0x45/0x50
-     </SOFTIRQ>
-     ? irq_exit+0xb5/0xc0
-     ? do_IRQ+0x78/0xd0
-     ? acpi_idle_enter_s2idle+0x50/0x50
-     ? common_interrupt+0xd4/0xdc
-     ? acpi_idle_enter_s2idle+0x50/0x50
-     ? sched_cpu_activate+0x1b/0xf0
-     ? acpi_fan_resume.cold.7+0x9/0x18
-     ? cpuidle_enter_state+0x152/0x4c0
-     ? cpuidle_enter+0x14/0x20
-     ? call_cpuidle+0x21/0x40
-     ? do_idle+0x1c8/0x200
-     ? cpu_startup_entry+0x25/0x30
-     ? rest_init+0x88/0x8a
-     ? arch_call_rest_init+0xd/0x19
-     ? start_kernel+0x42f/0x448
-     ? i386_start_kernel+0xac/0xb0
-     ? startup_32_smp+0x164/0x168
-    Modules linked in: ppp_generic slhc capi bas_gigaset gigaset kernelcapi nf_conntrack_netbios_ns nf_conntrack_broadcast xt_CT ip6t_rpfilter ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set nfnetlink ebtable_nat ebtable_broute bridge stp llc ip6table_nat ip6table_mangle ip6table_raw ip6table_security iptable_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c iptable_mangle iptable_raw iptable_security ebtable_filter ebtables ip6table_filter ip6_tables sunrpc ipw2200 iTCO_wdt gpio_ich snd_intel8x0 libipw iTCO_vendor_support snd_ac97_codec lib80211 ppdev ac97_bus snd_seq cfg80211 snd_seq_device pcspkr thinkpad_acpi lpc_ich snd_pcm i2c_i801 snd_timer ledtrig_audio snd soundcore rfkill parport_pc parport pcc_cpufreq acpi_cpufreq i915 i2c_algo_bit drm_kms_helper syscopyarea sysfillrect sdhci_pci sysimgblt cqhci fb_sys_fops drm sdhci mmc_core tg3 ata_generic serio_raw yenta_socket pata_acpi video
-    CR2: 0000000000000000
-    ---[ end trace 1fe07487b9200c73 ]---
-    EIP: gigaset_init_bchannel+0x89/0x320 [bas_gigaset]
-    Code: 75 07 83 8b 84 00 00 00 40 8d 47 74 c7 07 01 00 00 00 89 45 f0 8b 44 b7 68 85 c0 0f 84 6a 02 00 00 8b 48 28 8b 93 88 00 00 00 <8b> 09 8d 54 12 03 c1 e2 0f c1 e1 08 09 ca 8b 8b 8c 00 00 00 80 ca
-    EAX: f05ec200 EBX: ed404200 ECX: 00000000 EDX: 00000000
-    ESI: 00000000 EDI: f065a000 EBP: f30c9f40 ESP: cddcb3bc
-    DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00010086
-    CR0: 80050033 CR2: 00000000 CR3: 0ddc7000 CR4: 000006d0
-    Kernel panic - not syncing: Fatal exception in interrupt
-    Kernel Offset: 0xcc00000 from 0xc0400000 (relocation range: 0xc0000000-0xf6ffdfff)
-    ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+On 5/1/19 10:24 AM, David Miller wrote:
+> From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+> Date: Mon, 29 Apr 2019 10:37:55 -0500
+> 
+>> In preparation to enabling -Wimplicit-fallthrough, mark switch
+>> cases where we are expecting to fall through.
+>>
+>> This patch fixes the following warning:
+>  ...
+>> Warning level 3 was used: -Wimplicit-fallthrough=3
+>>
+>> This patch is part of the ongoing efforts to enable
+>> -Wimplicit-fallthrough.
+>>
+>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> 
+> Applied.
+> 
 
-No-one noticed because this Oops is apparently only triggered by setting
-up an ISDN data connection on a live ISDN line on a gigaset base (ie,
-the PBX that the gigaset driver support). Very few people do that
-running present day kernels.
-
-Anyhow, a little code reorganization makes this problem go away, while
-avoiding the subtle ordering that was used in the past. So let's do
-that.
-
-Fixes: 78c696c19578 ("isdn: gigaset: use usb_fill_int_urb()")
-Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
----
-Arnd's ISDN cleanup hasn't yet hit net-next so this still uses
-drivers/isdn. If people prefer to apply this after Arnd has exiled
-gigaset into staging, I'll gladly respin. 
-
- drivers/isdn/gigaset/bas-gigaset.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/isdn/gigaset/bas-gigaset.c b/drivers/isdn/gigaset/bas-gigaset.c
-index ecdeb89645d0..149b1aca52a2 100644
---- a/drivers/isdn/gigaset/bas-gigaset.c
-+++ b/drivers/isdn/gigaset/bas-gigaset.c
-@@ -958,6 +958,7 @@ static void write_iso_callback(struct urb *urb)
-  */
- static int starturbs(struct bc_state *bcs)
- {
-+	struct usb_device *udev = bcs->cs->hw.bas->udev;
- 	struct bas_bc_state *ubc = bcs->hw.bas;
- 	struct urb *urb;
- 	int j, k;
-@@ -975,8 +976,8 @@ static int starturbs(struct bc_state *bcs)
- 			rc = -EFAULT;
- 			goto error;
- 		}
--		usb_fill_int_urb(urb, bcs->cs->hw.bas->udev,
--				 usb_rcvisocpipe(urb->dev, 3 + 2 * bcs->channel),
-+		usb_fill_int_urb(urb, udev,
-+				 usb_rcvisocpipe(udev, 3 + 2 * bcs->channel),
- 				 ubc->isoinbuf + k * BAS_INBUFSIZE,
- 				 BAS_INBUFSIZE, read_iso_callback, bcs,
- 				 BAS_FRAMETIME);
-@@ -1006,8 +1007,8 @@ static int starturbs(struct bc_state *bcs)
- 			rc = -EFAULT;
- 			goto error;
- 		}
--		usb_fill_int_urb(urb, bcs->cs->hw.bas->udev,
--				 usb_sndisocpipe(urb->dev, 4 + 2 * bcs->channel),
-+		usb_fill_int_urb(urb, udev,
-+				 usb_sndisocpipe(udev, 4 + 2 * bcs->channel),
- 				 ubc->isooutbuf->data,
- 				 sizeof(ubc->isooutbuf->data),
- 				 write_iso_callback, &ubc->isoouturbs[k],
--- 
-2.17.2
-
+Thanks, Dave.
+--
+Gustavo
