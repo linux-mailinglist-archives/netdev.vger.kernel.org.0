@@ -2,69 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7931D10EB3
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 23:44:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE57410ECA
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 23:54:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbfEAVoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 17:44:23 -0400
-Received: from www62.your-server.de ([213.133.104.62]:43006 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbfEAVoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 17:44:22 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hLx1R-0008PH-NM; Wed, 01 May 2019 23:44:13 +0200
-Received: from [173.228.226.134] (helo=localhost.localdomain)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hLx1R-000OV8-8R; Wed, 01 May 2019 23:44:13 +0200
-Subject: Re: [PATCH v2] bpf, x32: Fix bug for BPF_JMP | {BPF_JSGT, BPF_JSLE,
- BPF_JSLT, BPF_JSGE}
-To:     Wang YanQing <udknight@gmail.com>, ast@kernel.org,
-        davem@davemloft.net, kuznet@ms2.inr.ac.ru, tglx@linutronix.de,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190427082826.GA16311@udknight>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <aca27db2-5c16-6bf8-e601-be8b42678cd4@iogearbox.net>
-Date:   Wed, 1 May 2019 23:44:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
-MIME-Version: 1.0
-In-Reply-To: <20190427082826.GA16311@udknight>
-Content-Type: text/plain; charset=utf-8
+        id S1726184AbfEAVyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 17:54:52 -0400
+Received: from mail-eopbgr60089.outbound.protection.outlook.com ([40.107.6.89]:10321
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726128AbfEAVyw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 May 2019 17:54:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=azWZMb4GG69nF9xGZeI6UWY+yMQeAL/BPbujuf9LZi0=;
+ b=rTD3T/wb57EOrdwf321xgp1nXoF6dUoGBoKuyKCmlh6L1qg1euEWew1BJAyrjiUDz1WpbPJIzXlKQbCGTao+3s1hpGNjIeVs+JFuGHbhpDwzfyjeRwI2iHY7xr2XDBR3DcHZ7GSLWbMQhR1Cc0fPlxmO5EQvbb6Yq+XBE3ZT9Ek=
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
+ DB8PR05MB6044.eurprd05.prod.outlook.com (20.179.10.157) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1835.13; Wed, 1 May 2019 21:54:46 +0000
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::ed24:8317:76e4:1a07]) by DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::ed24:8317:76e4:1a07%5]) with mapi id 15.20.1856.008; Wed, 1 May 2019
+ 21:54:46 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next V2 00/15] Mellanox, mlx5 updates 2019-04-30
+Thread-Topic: [pull request][net-next V2 00/15] Mellanox, mlx5 updates
+ 2019-04-30
+Thread-Index: AQHVAGh93AUoze2a3kyise9WX4iTOQ==
+Date:   Wed, 1 May 2019 21:54:46 +0000
+Message-ID: <20190501215433.24047-1-saeedm@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25436/Wed May  1 09:58:19 2019)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.20.1
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR01CA0012.prod.exchangelabs.com (2603:10b6:a02:80::25)
+ To DB8PR05MB5898.eurprd05.prod.outlook.com (2603:10a6:10:a4::32)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0ef6c92f-4fe2-437e-bd94-08d6ce7fa01f
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB6044;
+x-ms-traffictypediagnostic: DB8PR05MB6044:
+x-microsoft-antispam-prvs: <DB8PR05MB6044B6D88EBA7FB5E16F5B03BE3B0@DB8PR05MB6044.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 00246AB517
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(39860400002)(136003)(376002)(346002)(366004)(189003)(199004)(386003)(66946007)(66066001)(50226002)(8936002)(25786009)(26005)(186003)(107886003)(3846002)(6116002)(6506007)(73956011)(102836004)(1076003)(6486002)(53936002)(6512007)(2906002)(66556008)(64756008)(66476007)(66446008)(68736007)(6916009)(71190400001)(71200400001)(7736002)(8676002)(15650500001)(476003)(14454004)(2616005)(52116002)(486006)(4326008)(54906003)(6436002)(305945005)(316002)(86362001)(478600001)(99286004)(5660300002)(14444005)(81156014)(81166006)(256004)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB6044;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: MolbLyvu8807vPvMxU+BtrkRGcSbO9CUbXJ5p8dDh28drrfYIhGPX+IJUb0hu+5imhdGizhx8kMGPwMRUT05wp3bbqVvuGZFfQsGN7CC6q0M0iZ8zOV6xFTxPk0CEVi4hyB09CzFffhOHdJFp5LaMBQNiU7K3SCD0yzI4DsDzuPnMRF930106iQNhCSKiKi+ObNLmZMATgk8vAUjp01lTfRwym1O73OUJq9R9Wm8dvO6v+GRmZUrGhe4uTHi5cEcDDJJxZN0TZFrd4Zv6K5iAFc5Y9yUTK/BaVgWepFb8iELyXSFgxrkYcbFXDd7MuvZKC0YcNkZ8gog+2/U01tMmQQH/W6z8tLVrRcQzoSQNOBm3wR5vAfqrmFpJ1U9YaJ39TGYx4+34arT5JhytPk/cbKWmhsUpHujwAfz4NJ3udw=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ef6c92f-4fe2-437e-bd94-08d6ce7fa01f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 May 2019 21:54:46.6660
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6044
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/27/2019 10:28 AM, Wang YanQing wrote:
-> The current method to compare 64-bit numbers for conditional jump is:
-> 
-> 1) Compare the high 32-bit first.
-> 
-> 2) If the high 32-bit isn't the same, then goto step 4.
-> 
-> 3) Compare the low 32-bit.
-> 
-> 4) Check the desired condition.
-> 
-> This method is right for unsigned comparison, but it is buggy for signed
-> comparison, because it does signed comparison for low 32-bit too.
-> 
-> There is only one sign bit in 64-bit number, that is the MSB in the 64-bit
-> number, it is wrong to treat low 32-bit as signed number and do the signed
-> comparison for it.
-> 
-> This patch fixes the bug and adds a testcase in selftests/bpf for such bug.
-> 
-> Signed-off-by: Wang YanQing <udknight@gmail.com>
-
-Applied, thanks!
+SGkgRGF2ZSwNCg0KVGhpcyBzZXJpZXMgcHJvdmlkZXMgbWlzYyB1cGRhdGVzIHRvIG1seDUgZHJp
+dmVyLg0KVGhlcmUgaXMgb25lIHBhdGNoIG9mIHRoaXMgc2VyaWVzIHRoYXQgaXMgdG91Y2hpbmcg
+b3V0c2lkZSBtbHg1IGRyaXZlcjoNCg0KZXRodG9vbC5oOiBBZGQgU0ZGLTg0MzYgYW5kIFNGRi04
+NjM2IG1heCBFRVBST00gbGVuZ3RoIGRlZmluaXRpb25zDQpBZGRlZCBtYXggRUVQUk9NIGxlbmd0
+aCBkZWZpbmVzIGZvciBldGh0b29sIHVzYWdlOg0KICAgICAjZGVmaW5lIEVUSF9NT0RVTEVfU0ZG
+Xzg2MzZfTUFYX0xFTiAgICAgNjQwDQogICAgICNkZWZpbmUgRVRIX01PRFVMRV9TRkZfODQzNl9N
+QVhfTEVOICAgICA2NDANCg0KVGhlc2UgZGVmaW5pdGlvbnMgdXNlZCB0byBkZXRlcm1pbmUgdGhl
+IEVFUFJPTSBkYXRhDQpsZW5ndGggd2hlbiByZWFkaW5nIGhpZ2ggZWVwcm9tIHBhZ2VzLg0KDQpG
+b3IgbW9yZSBpbmZvcm1hdGlvbiBwbGVhc2Ugc2VlIHRhZyBsb2cgYmVsb3cuDQoNClBsZWFzZSBw
+dWxsIGFuZCBsZXQgbWUga25vdyBpZiB0aGVyZSBpcyBhbnkgcHJvYmxlbS4NCg0KUGxlYXNlIG5v
+dGUgdGhhdCB0aGUgc2VyaWVzIHN0YXJ0cyB3aXRoIGEgbWVyZ2Ugb2YgbWx4NS1uZXh0IGJyYW5j
+aCwNCnRvIHJlc29sdmUgYW5kIGF2b2lkIGRlcGVuZGVuY3kgd2l0aCByZG1hIHRyZWUuDQoNClYy
+OiANCiAgLSBVcGRhdGUgdGhlIG1seDUtbmV4dCBtZXJnZSBjb21taXQgdG8gaW5jbHVkZSBsYXRl
+c3QgZml4Lg0KDQpUaGFua3MsDQpTYWVlZC4NCg0KLS0tDQpUaGUgZm9sbG93aW5nIGNoYW5nZXMg
+c2luY2UgY29tbWl0IGM1MTVlNzBkNjc1NDIxMjQwZmY2NjI4YTE4MzFhNTZlNGVhMGU4MmM6DQoN
+CiAgTWVyZ2UgYnJhbmNoICdtbHg1LW5leHQnIG9mIGdpdDovL2dpdC5rZXJuZWwub3JnL3B1Yi9z
+Y20vbGludXgva2VybmVsL2dpdC9tZWxsYW5veC9saW51eCAoMjAxOS0wNS0wMSAxMzo1Nzo0OCAt
+MDcwMCkNCg0KYXJlIGF2YWlsYWJsZSBpbiB0aGUgR2l0IHJlcG9zaXRvcnkgYXQ6DQoNCiAgZ2l0
+Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3NhZWVkL2xpbnV4Lmdp
+dCB0YWdzL21seDUtdXBkYXRlcy0yMDE5LTA0LTMwDQoNCmZvciB5b3UgdG8gZmV0Y2ggY2hhbmdl
+cyB1cCB0byA2ZjRlMDIxOTNjOWE5ZWE1NGRkMzE1MWNmOTc0ODlmYTc4N2NkMGU2Og0KDQogIG5l
+dC9tbHg1OiBFLVN3aXRjaCwgVXNlIGF0b21pYyByZXAgc3RhdGUgdG8gc2VyaWFsaXplIHN0YXRl
+IGNoYW5nZSAoMjAxOS0wNS0wMSAxNDozOToxNyAtMDcwMCkNCg0KLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KbWx4NS11cGRh
+dGVzLTIwMTktMDQtMzANCg0KbWx4NSBtaXNjIHVwZGF0ZXM6DQoNCjEpIEJvZG9uZyBXYW5nIGFu
+ZCBQYXJhdiBQYW5kaXQgKDYpOg0KICAgLSBSZW1vdmUgdW51c2VkIG1seDVfcXVlcnlfbmljX3Zw
+b3J0X3ZsYW5zDQogICAtIHZwb3J0IG1hY3JvcyByZWZhY3RvcmluZw0KICAgLSBGaXggdnBvcnQg
+YWNjZXNzIGluIEUtU3dpdGNoDQogICAtIFVzZSBhdG9taWMgcmVwIHN0YXRlIHRvIHNlcmlhbGl6
+ZSBzdGF0ZSBjaGFuZ2UNCg0KMikgRWxpIEJyaXRzdGVpbiAoMik6DQogICAtIHByaW8gdGFnIG1v
+ZGUgc3VwcG9ydCwgYWRkZWQgQUNMcyBhbmQgcmVwbGFjZSBUQyB2bGFuIHBvcCB3aXRoDQogICAg
+IHZsYW4gMCByZXdyaXRlIHdoZW4gcHJpbyB0YWcgbW9kZSBpcyBlbmFibGVkLg0KDQozKSBFcmV6
+IEFsZmFzaSAoMik6DQogICAtIGV0aHRvb2w6IEFkZCBTRkYtODQzNiBhbmQgU0ZGLTg2MzYgbWF4
+IEVFUFJPTSBsZW5ndGggZGVmaW5pdGlvbnMNCiAgIC0gbWx4NWU6IGV0aHRvb2wsIEFkZCBzdXBw
+b3J0IGZvciBFRVBST00gaGlnaCBwYWdlcyBxdWVyeQ0KDQo0KSBNYXNhaGlybyBZYW1hZGEgKDEp
+Og0KICAgLSByZW1vdmUgbWVhbmluZ2xlc3MgQ0ZMQUdTX3RyYWNlcG9pbnQubw0KDQo1KSBNYXhp
+bSBNaWtpdHlhbnNraXkgKDEpOg0KICAgLSBQdXQgdGhlIGNvbW1vbiBYRFAgY29kZSBpbnRvIGEg
+ZnVuY3Rpb24NCg0KNikgVGFyaXEgVG91a2FuICgyKToNCiAgIC0gVHVybiBvbiBIVyB0dW5uZWwg
+b2ZmbG9hZCBpbiBhbGwgVElScw0KDQo3KSBWbGFkIEJ1c2xvdiAoMSk6DQogICAtIFJldHVybiBl
+cnJvciB3aGVuIHRyeWluZyB0byBpbnNlcnQgZXhpc3RpbmcgZmxvd2VyIGZpbHRlcg0KDQotLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tDQpCb2RvbmcgV2FuZyAoNCk6DQogICAgICBuZXQvbWx4NTogUmVtb3ZlIHVudXNlZCBtbHg1
+X3F1ZXJ5X25pY192cG9ydF92bGFucw0KICAgICAgbmV0L21seDU6IEUtU3dpdGNoLCBVc2UgZ2V0
+dGVyIHRvIGFjY2VzcyBhbGwgdnBvcnQgYXJyYXkNCiAgICAgIG5ldC9tbHg1OiBFLVN3aXRjaCwg
+Rml4IHRoZSBjaGVjayBvZiBsZWdhbCB2cG9ydA0KICAgICAgbmV0L21seDU6IEUtU3dpdGNoLCBV
+c2UgYXRvbWljIHJlcCBzdGF0ZSB0byBzZXJpYWxpemUgc3RhdGUgY2hhbmdlDQoNCkVsaSBCcml0
+c3RlaW4gKDIpOg0KICAgICAgbmV0L21seDVlOiBBQ0xzIGZvciBwcmlvcml0eSB0YWcgbW9kZQ0K
+ICAgICAgbmV0L21seDVlOiBSZXBsYWNlIFRDIFZMQU4gcG9wIHdpdGggVkxBTiAwIHJld3JpdGUg
+aW4gcHJpbyB0YWcgbW9kZQ0KDQpFcmV6IEFsZmFzaSAoMik6DQogICAgICBldGh0b29sOiBBZGQg
+U0ZGLTg0MzYgYW5kIFNGRi04NjM2IG1heCBFRVBST00gbGVuZ3RoIGRlZmluaXRpb25zDQogICAg
+ICBuZXQvbWx4NWU6IGV0aHRvb2wsIEFkZCBzdXBwb3J0IGZvciBFRVBST00gaGlnaCBwYWdlcyBx
+dWVyeQ0KDQpNYXNhaGlybyBZYW1hZGEgKDEpOg0KICAgICAgbmV0L21seDVlOiByZW1vdmUgbWVh
+bmluZ2xlc3MgQ0ZMQUdTX3RyYWNlcG9pbnQubw0KDQpNYXhpbSBNaWtpdHlhbnNraXkgKDEpOg0K
+ICAgICAgbmV0L21seDVlOiBQdXQgdGhlIGNvbW1vbiBYRFAgY29kZSBpbnRvIGEgZnVuY3Rpb24N
+Cg0KUGFyYXYgUGFuZGl0ICgyKToNCiAgICAgIG5ldC9tbHg1OiBSZXVzZSBtbHg1X2Vzd19mb3Jf
+ZWFjaF92Zl92cG9ydCBtYWNybyBpbiB0d28gZmlsZXMNCiAgICAgIG5ldC9tbHg1OiBVc2UgYXZh
+aWxhYmxlIG1seDVfdnBvcnQgc3RydWN0DQoNClRhcmlxIFRvdWthbiAoMik6DQogICAgICBuZXQv
+bWx4NWU6IFRha2UgY29tbW9uIFRJUiBjb250ZXh0IHNldHRpbmdzIGludG8gYSBmdW5jdGlvbg0K
+ICAgICAgbmV0L21seDVlOiBUdXJuIG9uIEhXIHR1bm5lbCBvZmZsb2FkIGluIGFsbCBUSVJzDQoN
+ClZsYWQgQnVzbG92ICgxKToNCiAgICAgIG5ldC9tbHg1ZTogUmV0dXJuIGVycm9yIHdoZW4gdHJ5
+aW5nIHRvIGluc2VydCBleGlzdGluZyBmbG93ZXIgZmlsdGVyDQoNCiBkcml2ZXJzL25ldC9ldGhl
+cm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvTWFrZWZpbGUgICB8ICAgMiAtDQogZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuLmggICAgICAgfCAgIDEgKw0KIGRyaXZlcnMv
+bmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi94ZHAuYyAgIHwgIDYzICsrKy0tLQ0K
+IC4uLi9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX2V0aHRvb2wuYyAgIHwgICA4
+ICstDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX21haW4uYyAg
+fCAgNTIgKysrLS0NCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5f
+cmVwLmMgICB8ICAgMSArDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3Jl
+L2VuX3RjLmMgICAgfCAgMzcgKysrKw0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21s
+eDUvY29yZS9lc3dpdGNoLmMgIHwgMjI0ICsrKysrKysrKy0tLS0tLS0tLS0NCiBkcml2ZXJzL25l
+dC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaC5oICB8ICA1NyArKysrKw0KIC4u
+Li9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9vZmZsb2Fkcy5jIHwgMjQwICsr
+KysrKysrKysrKysrKystLS0tLQ0KIC4uLi9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3Jl
+L2lwb2liL2lwb2liLmMgIHwgICAxICsNCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9t
+bHg1L2NvcmUvcG9ydC5jICAgICB8ICA0MCArKystDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVs
+bGFub3gvbWx4NS9jb3JlL3Zwb3J0LmMgICAgfCAgNjEgLS0tLS0tDQogaW5jbHVkZS9saW51eC9t
+bHg1L2Vzd2l0Y2guaCAgICAgICAgICAgICAgICAgICAgICAgfCAgIDIgKy0NCiBpbmNsdWRlL2xp
+bnV4L21seDUvcG9ydC5oICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMSArDQogaW5jbHVk
+ZS9saW51eC9tbHg1L3Zwb3J0LmggICAgICAgICAgICAgICAgICAgICAgICAgfCAgIDQgLQ0KIGlu
+Y2x1ZGUvdWFwaS9saW51eC9ldGh0b29sLmggICAgICAgICAgICAgICAgICAgICAgIHwgICAzICsN
+CiAxNyBmaWxlcyBjaGFuZ2VkLCA0ODUgaW5zZXJ0aW9ucygrKSwgMzEyIGRlbGV0aW9ucygtKQ0K
