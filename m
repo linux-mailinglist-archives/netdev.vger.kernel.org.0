@@ -2,100 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66EF410871
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 15:48:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B68610882
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 15:54:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbfEANsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 09:48:11 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:29493 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726436AbfEANsL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 09:48:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1556718490; x=1588254490;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=XKxfx3v5CPtrk8hbJNzKoFzutCPUwlqFyMynRigVUBc=;
-  b=hvWd1rO1NQM/z3rpTxAnxaPeMEDzlBD7KJoUpzPhtAHdNfpsnxQzX/ME
-   xTe8+oHDGfvjRGXJb+WGRRqgZuWOIf9f97iJyP2gXh2GOSwk1IdD2zaJs
-   6nXZzieX4czkCd7RFkMFgsHuR/aY/veEgjmPCjq66Arz2mGwzovsGNnVm
-   I=;
-X-IronPort-AV: E=Sophos;i="5.60,417,1549929600"; 
-   d="scan'208";a="672061717"
-Received: from sea3-co-svc-lb6-vlan3.sea.amazon.com (HELO email-inbound-relay-1a-16acd5e0.us-east-1.amazon.com) ([10.47.22.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 01 May 2019 13:48:09 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1a-16acd5e0.us-east-1.amazon.com (8.14.7/8.14.7) with ESMTP id x41Dm48o010169
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=FAIL);
-        Wed, 1 May 2019 13:48:08 GMT
-Received: from EX13d09UWC003.ant.amazon.com (10.43.162.113) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 1 May 2019 13:47:51 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13d09UWC003.ant.amazon.com (10.43.162.113) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 1 May 2019 13:47:51 +0000
-Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.60.55) by
- mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Wed, 1 May 2019 13:47:47 +0000
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>
-Subject: [PATCH V1 net 8/8] net: ena: gcc 8: fix compilation warning
-Date:   Wed, 1 May 2019 16:47:10 +0300
-Message-ID: <20190501134710.8938-9-sameehj@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190501134710.8938-1-sameehj@amazon.com>
-References: <20190501134710.8938-1-sameehj@amazon.com>
+        id S1726565AbfEANyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 09:54:22 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50962 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726165AbfEANyW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 May 2019 09:54:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=4b2MeUM65BJCSCVV5omqKdf271pxpyOswePbL8+W7f4=; b=0GXurpj8rD8/3hixIl1Iwnk4e8
+        NJ4/JKTZGYuwArzJWvpTmIVXUP0UHXeGybTs3idHvKmfC7MTmJVXVa4B/7Rbij5rKYfg2lUJzJ5R5
+        0CElid7s3A7cPstCIH5mq+EsFkM/b4CMLN95HtdhVrJ6x9/MyeldSWH5oMpcCtiykNw8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hLpgf-0003Xb-Em; Wed, 01 May 2019 15:54:17 +0200
+Date:   Wed, 1 May 2019 15:54:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Alban Bedel <albeu@free.fr>
+Subject: Re: Handling of EPROBE_DEFER in of_get_mac_address [Was: Re: [PATCH
+ v2 3/4] net: macb: Drop nvmem_get_mac_address usage]
+Message-ID: <20190501135417.GB19809@lunn.ch>
+References: <1556456002-13430-1-git-send-email-ynezz@true.cz>
+ <1556456002-13430-4-git-send-email-ynezz@true.cz>
+ <20190428165637.GJ23059@lunn.ch>
+ <20190428210814.GA346@meh.true.cz>
+ <20190428213640.GB10772@lunn.ch>
+ <20190429075514.GB346@meh.true.cz>
+ <20190429130248.GC10772@lunn.ch>
+ <20190430141335.GC346@meh.true.cz>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190430141335.GC346@meh.true.cz>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+On Tue, Apr 30, 2019 at 04:13:35PM +0200, Petr Štetiar wrote:
+> Andrew Lunn <andrew@lunn.ch> [2019-04-29 15:02:48]:
+> 
+> Hi Andrew,
+> 
+> > > My understanding of -PROBE_DEFER is, that it needs to be propagated back from
+> > > the driver's probe callback/hook to the upper device/driver subsystem in order
+> > > to be moved to the list of pending drivers and considered for probe later
+> > > again. This is not going to happen in any of the current drivers, thus it will
+> > > probably still always result in random MAC address in case of -EPROBE_DEFER
+> > > error from the nvmem subsystem.
+> > 
+> > All current drivers which don't look in NVMEM don't expect
+> > EPROBE_DEFER. 
+> 
+> once there's NVMEM wired in of_get_mac_address, one can simply use it, nothing
+> is going to stop the potential user of doing so and if EPROBE_DEFER isn't
+> propagated from the driver back to the upper device driver subsytem, it's
+> probably going to end with random MAC address in some (very rare?) cases.
 
-GCC 8 contains a number of new warnings as well as enhancements to existing
-checkers. The warning - Wstringop-truncation - warns for calls to bounded
-string manipulation functions such as strncat, strncpy, and stpncpy that
-may either truncate the copied string or leave the destination unchanged.
+Hi Petr
 
-In our case the destination string length (32 bytes) is much shorter than
-the source string (64 bytes) which causes this warning to show up. In
-general the destination has to be at least a byte larger than the length
-of the source string with strncpy for this warning not to showup.
+There is no simple answer here. If we add EPROBE_DEFER support to all
+the current drivers using of_get_mac_address(), we are likely to break
+something. Regressions are bad. If somebody does add NVMEM properties
+to a device which does not currently have them, and it fails, that it
+just bad testing, not a regressions.
 
-This can be easily fixed by using strlcpy instead which already does the
-truncation to the string. Documentation for this function can be
-found here:
+So i would keep it KISS. Allow of_get_mac_address() to return an
+error, but don't modify current drivers to look for it.
 
-https://elixir.bootlin.com/linux/latest/source/lib/string.c#L141
-
-Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
-
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 03244155f74c..bc5997a5f809 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -2298,7 +2298,7 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev,
- 	host_info->bdf = (pdev->bus->number << 8) | pdev->devfn;
- 	host_info->os_type = ENA_ADMIN_OS_LINUX;
- 	host_info->kernel_ver = LINUX_VERSION_CODE;
--	strncpy(host_info->kernel_ver_str, utsname()->version,
-+	strlcpy(host_info->kernel_ver_str, utsname()->version,
- 		sizeof(host_info->kernel_ver_str) - 1);
- 	host_info->os_dist = 0;
- 	strncpy(host_info->os_dist_str, utsname()->release,
--- 
-2.17.1
-
+       Andrew
