@@ -2,150 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 668D610D38
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 21:32:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A4E10D37
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 21:32:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726310AbfEATcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 15:32:24 -0400
-Received: from mail-eopbgr30097.outbound.protection.outlook.com ([40.107.3.97]:30801
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726289AbfEATcW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726296AbfEATcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 1 May 2019 15:32:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.se;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i8Ozsr0svN/G73Pw1tcMb9atfEqk3hrAD0fdD6JtnFE=;
- b=tbVqzgU+V+KBxdm1ULo+kzBE+8IKq9sZHSNqc3WPQJiv5bsvEsvzJ3rq2fZ4XhqId2W0KFfKij53Q7U/mDBHwoWli407jvsEEGNzX82DAFU4r0hiU96bgliJyNQzu2dQpvN8j64VkvXDSNLLlWExlD0D+Ptw0acHkQuZDC1bYII=
-Received: from VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM (20.178.126.212) by
- VI1PR10MB2382.EURPRD10.PROD.OUTLOOK.COM (20.177.62.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1835.15; Wed, 1 May 2019 19:32:13 +0000
-Received: from VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::48b8:9cff:182:f3d8]) by VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::48b8:9cff:182:f3d8%2]) with mapi id 15.20.1856.008; Wed, 1 May 2019
- 19:32:13 +0000
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>
-Subject: [RFC PATCH 4/5] net: dsa: implement vtu_getnext and vtu_loadpurge for
- mv88e6250
-Thread-Topic: [RFC PATCH 4/5] net: dsa: implement vtu_getnext and
- vtu_loadpurge for mv88e6250
-Thread-Index: AQHVAFSTxJvpVJ1k/0ChQ6SyRHzKCw==
-Date:   Wed, 1 May 2019 19:32:13 +0000
-Message-ID: <20190501193126.19196-5-rasmus.villemoes@prevas.dk>
-References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
-In-Reply-To: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1PR0902CA0005.eurprd09.prod.outlook.com
- (2603:10a6:3:e5::15) To VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:803:e3::20)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Rasmus.Villemoes@prevas.se; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.20.1
-x-originating-ip: [5.186.118.63]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3cd7fc2a-e68b-4e3f-8680-08d6ce6bb629
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:VI1PR10MB2382;
-x-ms-traffictypediagnostic: VI1PR10MB2382:
-x-microsoft-antispam-prvs: <VI1PR10MB2382DE11BC76DB00457FDEC48A3B0@VI1PR10MB2382.EURPRD10.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 00246AB517
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39850400004)(396003)(136003)(346002)(376002)(189003)(199004)(81166006)(6512007)(14454004)(186003)(50226002)(8676002)(107886003)(66066001)(3846002)(71190400001)(4326008)(6116002)(8976002)(478600001)(54906003)(81156014)(1076003)(8936002)(25786009)(71446004)(72206003)(316002)(73956011)(71200400001)(305945005)(74482002)(68736007)(66476007)(76176011)(44832011)(486006)(64756008)(53936002)(66446008)(66556008)(256004)(99286004)(110136005)(6436002)(446003)(386003)(476003)(11346002)(6486002)(7736002)(26005)(6506007)(42882007)(2906002)(66946007)(2616005)(36756003)(52116002)(102836004)(5660300002)(138113003);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR10MB2382;H:VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: prevas.se does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: YxJ1UIUyPMBfUALNJAIv7TPugDh7dGvoOdJm6WS+d6nAADnNogdhSQsoUcB6+v9UWIOQc6naVe+1tKrTlvLW8RJMHllYNVtl5pH4d+19qotHH4SOmIq3O5qJaaGuao7KSq95ydEOzoJ0EkFFap+tpk4mY0293b/XdLU7wxANzJ839KemR5O6eMZfOJW3NtM4OXenX9j09aS6KCVq68pT1rpGPJorM1gduUO6OL0bUSX8oU9INwu+cSC3s9eUeVhbmy7uaXZWa9V0TguxSQhmq4mqen14C0AuDsXb3Z1yhtMitwwFsQA0vVmT00j2GnbDDw6KmYF7lHxg3y9hpiiFH6o5NMsG8mcDtw+Lqexb4tjXUm66JIwWHyfo41Sz8ss2KEiqXiWx39kKWj+fJnYQiKSD4RFKa17PMSKaWH6gl+8=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:41930 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726285AbfEATcV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 15:32:21 -0400
+Received: by mail-wr1-f67.google.com with SMTP id c12so25713521wrt.8
+        for <netdev@vger.kernel.org>; Wed, 01 May 2019 12:32:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mEUGlVwEFwACHWYLiLq66kqXDolevcELyCsdP2CXGSM=;
+        b=I2Hd62zPwgbxiLIV1+AZinEkAmbnuftGgAmTC8VqwqzrPgTU2qjuJmEHe7medO7BBX
+         PAN6sAbNe1VnY7kdegoT1OvcydY/+yGef8jlfabz2JgIZ47OjcpWcBsyvrFKv/BbVr6E
+         p3Fz2eIt1DfEUuuBzDr6dVPz21TR/hlVfwRg3do92FL1q5YC3R6zYuOPoQ32G2J1QjIw
+         m4R9F3xKE519SplyYciQU13v7zPJhMKmya8nCSYmQWEvOuMaissHli1UjUBFalfmciQl
+         GcZKVznGHfGGEcQmYT+vYhNbI4x0QCUVS7Hf9Raae/90SRIFmQXU4oFpuatouFVQ8K+V
+         vIlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mEUGlVwEFwACHWYLiLq66kqXDolevcELyCsdP2CXGSM=;
+        b=fjDYBtCBJF8SWxMKnGMjAl1E52HECKLTflI89B3SHgCBYEatHG1LblY0Clu/tEfSKK
+         yV7SPtpmDbgJ1mcxW+JTJAeffRCCAt1X89oWZdal8zhfGW5ktuaLbi2AvLke3ArGn/Fn
+         rLvIzWfJfQEYL6p0ELh5n9JYhxK4AMKudiyhoNgsgK0yXDAPe8lyyyDuCEaB/gWhFOrT
+         pEwb03Lw8jMisUVuSr7NXtpCICATt/KcREWFufaRn6XF076l4wU751frdKMMJJZgY2Ku
+         FpvA9pzhV18mBphBZgFRgMXZjAarFfGtlIyfFyaAPQdz3MWdDHnX+xZXRE6pJvQtdJv/
+         tUgw==
+X-Gm-Message-State: APjAAAUHeS7FsawmCvbLJoPvRSWfP8OSeWu7C/fE/56snekX/xOiUALO
+        CUltp3Id9n6CtKvYFTEoPN6TzV9pN5s=
+X-Google-Smtp-Source: APXvYqzsYYgsIYTw8Na672wbR6vb9y7j9y305CRp+/Q+bDVqC3GzvZPTuqozK4LTdPnoJLOifLTyAg==
+X-Received: by 2002:adf:dd12:: with SMTP id a18mr28854113wrm.188.1556739139154;
+        Wed, 01 May 2019 12:32:19 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bd4:5700:a160:62e9:d01f:fc0a? (p200300EA8BD45700A16062E9D01FFC0A.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:a160:62e9:d01f:fc0a])
+        by smtp.googlemail.com with ESMTPSA id g28sm15907997wrb.50.2019.05.01.12.32.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 01 May 2019 12:32:18 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] net: phy: improve phy_set_sym_pause and
+ phy_set_asym_pause
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <5ac8d9b0-ac63-64d2-d5e1-e0911a35e534@gmail.com>
+ <f5521d12-bc72-8ed7-eeda-888185c6cee6@gmail.com>
+ <20190429215254.GG12333@lunn.ch>
+ <40b84e7e-24ed-bf14-f55d-c943ac9f4f4c@gmail.com>
+Message-ID: <f2fb8c83-c824-9c61-0660-22c164cde5c7@gmail.com>
+Date:   Wed, 1 May 2019 21:32:14 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3cd7fc2a-e68b-4e3f-8680-08d6ce6bb629
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 May 2019 19:32:13.5343
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB2382
+In-Reply-To: <40b84e7e-24ed-bf14-f55d-c943ac9f4f4c@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhlc2UgYXJlIGFsbW9zdCBpZGVudGljYWwgdG8gdGhlIDYxODUgdmFyaWFudHMsIGJ1dCBoYXZl
-IGZld2VyIGJpdHMNCmZvciB0aGUgRklELg0KDQpCaXQgMTAgb2YgdGhlIFZUVV9PUCByZWdpc3Rl
-ciAob2Zmc2V0IDB4MDUpIGlzIHRoZSBWaWRQb2xpY3kgYml0LA0Kd2hpY2ggb25lIHNob3VsZCBw
-cm9iYWJseSBwcmVzZXJ2ZSBpbiBtdjg4ZTZ4eHhfZzFfdnR1X29wKCksIGluc3RlYWQNCm9mIGFs
-d2F5cyB3cml0aW5nIGEgMC4gSG93ZXZlciwgb24gdGhlIDYzNTIgZmFtaWx5LCB0aGF0IGJpdCBp
-cw0KbG9jYXRlZCBhdCBiaXQgMTIgaW4gdGhlIFZUVSBGSUQgcmVnaXN0ZXIgKG9mZnNldCAweDAy
-KSwgYW5kIGlzIGFsd2F5cw0KdW5jb25kaXRpb25hbGx5IGNsZWFyZWQgYnkgdGhlIG12ODhlNnh4
-eF9nMV92dHVfZmlkX3dyaXRlKCkNCmZ1bmN0aW9uLg0KDQpTaW5jZSBub3RoaW5nIGluIHRoZSBl
-eGlzdGluZyBkcml2ZXIgc2VlbXMgdG8ga25vdyBvciBjYXJlIGFib3V0IHRoYXQNCmJpdCwgaXQg
-c2VlbXMgcmVhc29uYWJsZSB0byBub3QgYWRkIHRoZSBib2lsZXJwbGF0ZSB0byBwcmVzZXJ2ZSBp
-dCBmb3INCnRoZSA2MjUwICh3aGljaCB3b3VsZCByZXF1aXJlIGFkZGluZyBhIGNoaXAtc3BlY2lm
-aWMgdnR1X29wIGZ1bmN0aW9uLA0Kb3IgYWRkaW5nIGNoaXAtcXVpcmtzIHRvIHRoZSBleGlzdGlu
-ZyBvbmUpLg0KDQpTaWduZWQtb2ZmLWJ5OiBSYXNtdXMgVmlsbGVtb2VzIDxyYXNtdXMudmlsbGVt
-b2VzQHByZXZhcy5kaz4NCi0tLQ0KIGRyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5o
-ICAgICB8ICA0ICsrDQogZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxX3Z0dS5jIHwg
-NTggKysrKysrKysrKysrKysrKysrKysrKysrKw0KIDIgZmlsZXMgY2hhbmdlZCwgNjIgaW5zZXJ0
-aW9ucygrKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwx
-LmggYi9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEuaA0KaW5kZXggYmVmMDEzMzEy
-NjZmLi5iMjA1YjBiYmExNTggMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4
-L2dsb2JhbDEuaA0KKysrIGIvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9iYWwxLmgNCkBA
-IC0zMDUsNiArMzA1LDEwIEBAIGludCBtdjg4ZTYxODVfZzFfdnR1X2dldG5leHQoc3RydWN0IG12
-ODhlNnh4eF9jaGlwICpjaGlwLA0KIAkJCSAgICAgc3RydWN0IG12ODhlNnh4eF92dHVfZW50cnkg
-KmVudHJ5KTsNCiBpbnQgbXY4OGU2MTg1X2cxX3Z0dV9sb2FkcHVyZ2Uoc3RydWN0IG12ODhlNnh4
-eF9jaGlwICpjaGlwLA0KIAkJCSAgICAgICBzdHJ1Y3QgbXY4OGU2eHh4X3Z0dV9lbnRyeSAqZW50
-cnkpOw0KK2ludCBtdjg4ZTYyNTBfZzFfdnR1X2dldG5leHQoc3RydWN0IG12ODhlNnh4eF9jaGlw
-ICpjaGlwLA0KKwkJCSAgICAgc3RydWN0IG12ODhlNnh4eF92dHVfZW50cnkgKmVudHJ5KTsNCitp
-bnQgbXY4OGU2MjUwX2cxX3Z0dV9sb2FkcHVyZ2Uoc3RydWN0IG12ODhlNnh4eF9jaGlwICpjaGlw
-LA0KKwkJCSAgICAgICBzdHJ1Y3QgbXY4OGU2eHh4X3Z0dV9lbnRyeSAqZW50cnkpOw0KIGludCBt
-djg4ZTYzNTJfZzFfdnR1X2dldG5leHQoc3RydWN0IG12ODhlNnh4eF9jaGlwICpjaGlwLA0KIAkJ
-CSAgICAgc3RydWN0IG12ODhlNnh4eF92dHVfZW50cnkgKmVudHJ5KTsNCiBpbnQgbXY4OGU2MzUy
-X2cxX3Z0dV9sb2FkcHVyZ2Uoc3RydWN0IG12ODhlNnh4eF9jaGlwICpjaGlwLA0KZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMV92dHUuYyBiL2RyaXZlcnMvbmV0
-L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMV92dHUuYw0KaW5kZXggMDU4MzI2OTI0ZjNlLi5hOGVmMjY4
-YzMyY2IgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDFfdnR1
-LmMNCisrKyBiL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMV92dHUuYw0KQEAgLTMw
-Nyw2ICszMDcsMzUgQEAgc3RhdGljIGludCBtdjg4ZTZ4eHhfZzFfdnR1X2dldG5leHQoc3RydWN0
-IG12ODhlNnh4eF9jaGlwICpjaGlwLA0KIAlyZXR1cm4gbXY4OGU2eHh4X2cxX3Z0dV92aWRfcmVh
-ZChjaGlwLCBlbnRyeSk7DQogfQ0KIA0KK2ludCBtdjg4ZTYyNTBfZzFfdnR1X2dldG5leHQoc3Ry
-dWN0IG12ODhlNnh4eF9jaGlwICpjaGlwLA0KKwkJCSAgICAgc3RydWN0IG12ODhlNnh4eF92dHVf
-ZW50cnkgKmVudHJ5KQ0KK3sNCisJdTE2IHZhbDsNCisJaW50IGVycjsNCisNCisJZXJyID0gbXY4
-OGU2eHh4X2cxX3Z0dV9nZXRuZXh0KGNoaXAsIGVudHJ5KTsNCisJaWYgKGVycikNCisJCXJldHVy
-biBlcnI7DQorDQorCWlmIChlbnRyeS0+dmFsaWQpIHsNCisJCWVyciA9IG12ODhlNjE4NV9nMV92
-dHVfZGF0YV9yZWFkKGNoaXAsIGVudHJ5KTsNCisJCWlmIChlcnIpDQorCQkJcmV0dXJuIGVycjsN
-CisNCisJCS8qIFZUVSBEQk51bVszOjBdIGFyZSBsb2NhdGVkIGluIFZUVSBPcGVyYXRpb24gMzow
-DQorCQkgKiBWVFUgREJOdW1bNTo0XSBhcmUgbG9jYXRlZCBpbiBWVFUgT3BlcmF0aW9uIDk6OA0K
-KwkJICovDQorCQllcnIgPSBtdjg4ZTZ4eHhfZzFfcmVhZChjaGlwLCBNVjg4RTZYWFhfRzFfVlRV
-X09QLCAmdmFsKTsNCisJCWlmIChlcnIpDQorCQkJcmV0dXJuIGVycjsNCisNCisJCWVudHJ5LT5m
-aWQgPSB2YWwgJiAweDAwMGY7DQorCQllbnRyeS0+ZmlkIHw9ICh2YWwgJiAweDAzMDApID4+IDQ7
-DQorCX0NCisNCisJcmV0dXJuIDA7DQorfQ0KKw0KIGludCBtdjg4ZTYxODVfZzFfdnR1X2dldG5l
-eHQoc3RydWN0IG12ODhlNnh4eF9jaGlwICpjaGlwLA0KIAkJCSAgICAgc3RydWN0IG12ODhlNnh4
-eF92dHVfZW50cnkgKmVudHJ5KQ0KIHsNCkBAIC0zOTYsNiArNDI1LDM1IEBAIGludCBtdjg4ZTYz
-OTBfZzFfdnR1X2dldG5leHQoc3RydWN0IG12ODhlNnh4eF9jaGlwICpjaGlwLA0KIAlyZXR1cm4g
-MDsNCiB9DQogDQoraW50IG12ODhlNjI1MF9nMV92dHVfbG9hZHB1cmdlKHN0cnVjdCBtdjg4ZTZ4
-eHhfY2hpcCAqY2hpcCwNCisJCQkgICAgICAgc3RydWN0IG12ODhlNnh4eF92dHVfZW50cnkgKmVu
-dHJ5KQ0KK3sNCisJdTE2IG9wID0gTVY4OEU2WFhYX0cxX1ZUVV9PUF9WVFVfTE9BRF9QVVJHRTsN
-CisJaW50IGVycjsNCisNCisJZXJyID0gbXY4OGU2eHh4X2cxX3Z0dV9vcF93YWl0KGNoaXApOw0K
-KwlpZiAoZXJyKQ0KKwkJcmV0dXJuIGVycjsNCisNCisJZXJyID0gbXY4OGU2eHh4X2cxX3Z0dV92
-aWRfd3JpdGUoY2hpcCwgZW50cnkpOw0KKwlpZiAoZXJyKQ0KKwkJcmV0dXJuIGVycjsNCisNCisJ
-aWYgKGVudHJ5LT52YWxpZCkgew0KKwkJZXJyID0gbXY4OGU2MTg1X2cxX3Z0dV9kYXRhX3dyaXRl
-KGNoaXAsIGVudHJ5KTsNCisJCWlmIChlcnIpDQorCQkJcmV0dXJuIGVycjsNCisNCisJCS8qIFZU
-VSBEQk51bVszOjBdIGFyZSBsb2NhdGVkIGluIFZUVSBPcGVyYXRpb24gMzowDQorCQkgKiBWVFUg
-REJOdW1bNTo0XSBhcmUgbG9jYXRlZCBpbiBWVFUgT3BlcmF0aW9uIDk6OA0KKwkJICovDQorCQlv
-cCB8PSBlbnRyeS0+ZmlkICYgMHgwMDBmOw0KKwkJb3AgfD0gKGVudHJ5LT5maWQgJiAweDAwMzAp
-IDw8IDg7DQorCX0NCisNCisJcmV0dXJuIG12ODhlNnh4eF9nMV92dHVfb3AoY2hpcCwgb3ApOw0K
-K30NCisNCiBpbnQgbXY4OGU2MTg1X2cxX3Z0dV9sb2FkcHVyZ2Uoc3RydWN0IG12ODhlNnh4eF9j
-aGlwICpjaGlwLA0KIAkJCSAgICAgICBzdHJ1Y3QgbXY4OGU2eHh4X3Z0dV9lbnRyeSAqZW50cnkp
-DQogew0KLS0gDQoyLjIwLjENCg0K
+On 30.04.2019 07:06, Heiner Kallweit wrote:
+> On 29.04.2019 23:52, Andrew Lunn wrote:
+>>> @@ -2078,6 +2089,11 @@ EXPORT_SYMBOL(phy_set_sym_pause);
+>>>  void phy_set_asym_pause(struct phy_device *phydev, bool rx, bool tx)
+>>>  {
+>>>  	__ETHTOOL_DECLARE_LINK_MODE_MASK(oldadv);
+>>> +	bool asym_pause_supported;
+>>> +
+>>> +	asym_pause_supported =
+>>> +		linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+>>> +				  phydev->supported);
+>>>  
+>>>  	linkmode_copy(oldadv, phydev->advertising);
+>>>  
+>>> @@ -2086,14 +2102,14 @@ void phy_set_asym_pause(struct phy_device *phydev, bool rx, bool tx)
+>>>  	linkmode_clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+>>>  			   phydev->advertising);
+>>>  
+>>> -	if (rx) {
+>>> +	if (rx && asym_pause_supported) {
+>>>  		linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+>>>  				 phydev->advertising);
+>>>  		linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+>>>  				 phydev->advertising);
+>>>  	}
+>>>  
+>>> -	if (tx)
+>>> +	if (tx && asym_pause_supported)
+>>>  		linkmode_change_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+>>>  				    phydev->advertising);
+>>
+>> Hi Heiner
+>>
+> Hi Andrew,
+> 
+>> If the PHY only supports Pause, not Asym Pause, i wounder if we should
+>> fall back to Pause here?
+>>
+> I wasn't sure about whether a silent fallback is the expected behavior.
+> Also open is whether we can rely on a set_pause callback having called
+> phy_validate_pause() before. Another option could be to change the
+> return type to int and return an error like -EOPNOTSUPP if the requested
+> mode isn't supported.
+> 
+Most drivers call phy_validate_pause() first, this seems to be the
+expected pattern. Therefore I will remove patch 2. However there seems to
+be an error in phy_validate_pause(), the fix I will submit separately.
+
+>>      Andrew
+>>
+> Heiner
+> 
+
