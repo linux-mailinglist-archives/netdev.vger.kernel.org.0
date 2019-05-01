@@ -2,113 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 554D0109A7
-	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 16:52:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF83B109BD
+	for <lists+netdev@lfdr.de>; Wed,  1 May 2019 16:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726880AbfEAOwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 10:52:45 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33044 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726506AbfEAOwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 10:52:43 -0400
-Received: by mail-pf1-f194.google.com with SMTP id z28so3405102pfk.0;
-        Wed, 01 May 2019 07:52:42 -0700 (PDT)
+        id S1726871AbfEAO7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 10:59:37 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:36799 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726481AbfEAO7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 10:59:37 -0400
+Received: by mail-wm1-f67.google.com with SMTP id p16so1475827wma.1
+        for <netdev@vger.kernel.org>; Wed, 01 May 2019 07:59:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oWROtRdPBWTf7HTlcFeLvHN8moYEACZeaHhy/xJiSv0=;
-        b=L1aBWvxy2K+R3sMxmTz7GhC3sns+1WyTpaeuGZ0wjKCrk9xzgtACf0ijI5RHnG5F7T
-         K4gxPCeVPvHbm/PC6gaehD3NSEyogbDn4a6cAEYc0F4z5hQSJu60LnDdVC1H2v3Zlubt
-         isIxmGloKem4FUOw5j15O2ZPoDDB1FpzqL5+bWsFZwK0pFHXBGS2SJgR51jwdHUdNK8S
-         fqfBnbldFbG7qXj0oElml4Sz7dMWlX4HQ4Cf7vwNsravbptRTh+0DJzAR6NNacj01r1W
-         m+R7kJO2OIIso1c8XYcCgCMxzn+3bCznvYOmkqd61vkIU2mfgPsMyxyI8rwdYfiQf1+Z
-         Y8cQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZwZ6MdL5R5AOerbVDItJqenvqXbPYw3Q89hSGLypnfM=;
+        b=A7Any30y+Ixmf+Ti12t1rhXwX2O0gO0UWQdiQn6QI93upvjR4Kwm7YLr6FD7pAJrvF
+         NVVpOPacWFu1v/qyeSm8nIGBnOOBfkZAKd52940lplB3Ql5ZZMILEppZUbvPZ1ulY98T
+         yHskaCo+N9hjxNRUues88jFU7yQUTGwA9pLeC157ONj5agcljACRHDv28kkvAJvBhV/w
+         8yTf+v5Fwv7BHcyDwyCHYETEoQ0tphjlzZAglWWFgeCILVH/qziO7wCW0IkyZLOfDOdB
+         SLZ2qyNSxnOm2ZNci/BpJRaheHCc3ePdyEZ4ceD/KDoHXCcqkMXHsuMC9vq3HAOQ3rzB
+         Oj3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oWROtRdPBWTf7HTlcFeLvHN8moYEACZeaHhy/xJiSv0=;
-        b=Zlt74aulX6xvwSeTdLnaTwq7eElWZNzlxxiHhsCb4z4zuPYYO6fD7mWbO4PX+25oBh
-         PXjahoyANZ5x5SszvmyudlyW+8K2i32RKaEOt+gFNttAPhHVYZYQuWa+6AF9Pal+is3H
-         ubTJQLWI63wVu8LUxUUQ9ArGjn8/RvbG9zosSio52NMEmHLryybTWRl4/VE1YLv+zi9W
-         /mRoGjcqkLJ1LFMBnZ+lpzV9yoL278MNdenhXc14KLKg2OoEzFvPmkH7Xwgc7myZQalG
-         UIL4f9m3hOjcIAr44LRb8qNfYEtUX+vraf7qsx3gdQ/WYpYgW0+OgzxfexF6McrordqV
-         YKwg==
-X-Gm-Message-State: APjAAAVJcpAmPWGo5xrdNr5tJwj1Q08oZ5T2bfpyQ2IUvoXz7A/Sb2j5
-        agnPnys2tVzIp2aFQSYxulE=
-X-Google-Smtp-Source: APXvYqzS2NLovEFoo71ZXdlfy+C1Ekszn7LBSp60zvJC49KCN2jjwa0O/cUTe5CtRQP7pQXSimKQNQ==
-X-Received: by 2002:aa7:99c7:: with SMTP id v7mr19874361pfi.103.1556722362514;
-        Wed, 01 May 2019 07:52:42 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:950d:299e:8124:b280? ([2601:282:800:fd80:950d:299e:8124:b280])
-        by smtp.googlemail.com with ESMTPSA id m131sm984427pfc.25.2019.05.01.07.52.40
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 01 May 2019 07:52:41 -0700 (PDT)
-Subject: Re: unregister_netdevice: waiting for DEV to become free (2)
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Julian Anastasov <ja@ssi.bg>, Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot <syzbot+30209ea299c09d8785c9@syzkaller.appspotmail.com>,
-        ddstreet@ieee.org, dvyukov@google.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <0000000000007d22100573d66078@google.com>
- <alpine.LFD.2.20.1808201527230.2758@ja.home.ssi.bg>
- <4684eef5-ea50-2965-86a0-492b8b1e4f52@I-love.SAKURA.ne.jp>
- <9d430543-33c3-0d9b-dc77-3a179a8e3919@I-love.SAKURA.ne.jp>
- <920ebaf1-ee87-0dbb-6805-660c1cbce3d0@I-love.SAKURA.ne.jp>
- <cc054b5c-4e95-8d30-d4bf-9c85f7e20092@gmail.com>
- <15b353e9-49a2-f08b-dc45-2e9bad3abfe2@i-love.sakura.ne.jp>
- <057735f0-4475-7a7b-815f-034b1095fa6c@gmail.com>
- <6e57bc11-1603-0898-dfd4-0f091901b422@i-love.sakura.ne.jp>
- <f71dd5cd-c040-c8d6-ab4b-df97dea23341@gmail.com>
- <d56b7989-8ac6-36be-0d0b-43251e1a2907@gmail.com>
- <117fcc49-d389-c389-918f-86ccaef82e51@i-love.sakura.ne.jp>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <70be7d61-a6fe-e703-978a-d17f544efb44@gmail.com>
-Date:   Wed, 1 May 2019 08:52:37 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZwZ6MdL5R5AOerbVDItJqenvqXbPYw3Q89hSGLypnfM=;
+        b=P/3poSkVqxX6buwbXfrFhJHJb+6/jh6vwJ5kj41B0WMfqVRKT8qH9p2l0OQQ6xD+VS
+         i5HhcLWqKVVnaGXAkvIuW4heCqAj8WAm0AXf+Y7M1hmlG3abM4ldUzqULDMfZwScjm8H
+         1/Di/FVpGHiV+7IUNBX2uF+Dobhz07uegnzqjYyyXDIOwg6PkYNBscqqpQsLFWeBa6B3
+         Uww3wM4W1Y7QpwCOmyBC3JfR4AuTJ6MH3pstC5vLDO65ER9+c8gBc7RM82EiwlorFfxQ
+         8PlaaMCvi6/7idzFkEkeezLz9tpM3LkgScyCpHLKOXf0Wcdu6KVHrLFpzMTUNcZq1Kzq
+         9HbA==
+X-Gm-Message-State: APjAAAVyUT92heUPFhvO1m19HnwY4x7tHUgcmEwa/zUHYPD6sW4Vwv02
+        PSs567a1/baTvvjHV5XGcIFt1lbt+4Wpo1bB3tOr5Q==
+X-Google-Smtp-Source: APXvYqxupOpdlAgq4mdMFssyDUB6fHCFkMjNBzRsPQDZ+ywudw0oP++fFWfCkpUGDgb51g73ZVV83nqftjInNrc4Er8=
+X-Received: by 2002:a1c:35c3:: with SMTP id c186mr7433197wma.135.1556722775680;
+ Wed, 01 May 2019 07:59:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <117fcc49-d389-c389-918f-86ccaef82e51@i-love.sakura.ne.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190412214132.2726285-1-ast@kernel.org> <lyimv3hujp.fsf@netronome.com>
+ <20190425043347.pxrz5ln4m7khebt6@ast-mbp.dhcp.thefacebook.com>
+ <lylfzyeebr.fsf@netronome.com> <20190425221021.ov2jj4piann7wmid@ast-mbp.dhcp.thefacebook.com>
+ <lyk1fgrk4m.fsf@netronome.com> <20190427030512.zs3tfdudjbfpyawh@ast-mbp> <760D400C-2548-41B6-AE34-F89A66397A75@netronome.com>
+In-Reply-To: <760D400C-2548-41B6-AE34-F89A66397A75@netronome.com>
+From:   Jiong Wang <jiong.wang@netronome.com>
+Date:   Wed, 1 May 2019 15:59:22 +0100
+Message-ID: <CAMsOgNDumbU7EWmOpwUoXdM5QWZ8h=W5nG3_JTFU5Tju-ofg_A@mail.gmail.com>
+Subject: Re: 32-bit zext time complexity (Was Re: [PATCH bpf-next]
+ selftests/bpf: two scale tests)
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/1/19 7:38 AM, Tetsuo Handa wrote:
-> On 2019/04/30 3:43, David Ahern wrote:
->>> The attached patch adds a tracepoint to notifier_call_chain. If you have
->>> KALLSYMS enabled it will show the order of the function handlers:
->>>
->>> perf record -e notifier:* -a -g &
->>>
->>> ip netns del <NAME>
->>> <wait a few seconds>
->>>
->>> fg
->>> <ctrl-c on perf-record>
->>>
->>> perf script
->>>
->>
->> with the header file this time.
->>
-> 
-> What is the intent of your patch? I can see that many notifiers are called. But
-> how does this help identify which event is responsible for dropping the refcount?
-> 
+> > if you can craft a test that shows patch_insn issue before your set,
+> > then it's ok to hack bpf_fill_scale1 to use alu64.
+>
+> As described above, does the test_verifier 732 + jit blinding looks convincing?
+>
+> > I would also prefer to go with option 2 (new zext insn) for JITs.
+>
+> Got it.
 
-In a previous response you stated: "Since I'm not a netdev person, I
-appreciate if you can explain that shutdown sequence using a flow chart."
+I followed option 2 and have sent out v5 with latests changes/fixes:
 
-The notifier sequence tells you the order of cleanup handlers and what
-happens when a namespace is destroyed.
+The major changes are:
+  - introduced BPF_ZEXT, even though it doesn't resolve insn patch in-efficient,
+    but could let JIT back-ends do optimal code-gen, and the change is small,
+    so perhap just better to support it in this set.
+  - while look insn patch code, I feel patched-insn need to be conservatiely
+    marked if any insn inside patch buffer define sub-register.
+  - Also fixed helper function return value handling bug. I am thinking helper
+    function should have accurate return value type description, otherwise
+    there could be bug. For example arm32 back-end just executes the native
+    helper functions and doesn't do anything special on the return value. So
+    a function returns u32 would only set native reg r0, not r1 in the pair.
+    Then if the outside eBPF insn is casting it into u64, there needs to be
+    zext.
+  - adjusted test_verifier to make sure it could pass on hosts w and w/o hw
+    zext.
 
-The dev_hold / dev_put tracepoint helps find the refcnt leak but
-requires some time analyzing the output to match up hold / put stack traces.
+For more info, please see the cover letter and patch description at v5.
+
+Thanks.
+Regards,
+Jiong
