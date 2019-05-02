@@ -2,97 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B7AA11C26
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:06:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05BA611C2B
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:08:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbfEBPGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 11:06:42 -0400
-Received: from mail.us.es ([193.147.175.20]:53922 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726197AbfEBPGm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 11:06:42 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 5E6D612BFF4
-        for <netdev@vger.kernel.org>; Thu,  2 May 2019 17:06:40 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 4FA8ADA70D
-        for <netdev@vger.kernel.org>; Thu,  2 May 2019 17:06:40 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 42146DA70E; Thu,  2 May 2019 17:06:40 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2D0C2DA70D;
-        Thu,  2 May 2019 17:06:38 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 02 May 2019 17:06:38 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 09E074265A31;
-        Thu,  2 May 2019 17:06:38 +0200 (CEST)
-Date:   Thu, 2 May 2019 17:06:37 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Kristian Evensen <kristian.evensen@gmail.com>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH 07/31] netfilter: ctnetlink: Support L3 protocol-filter
- on flush
-Message-ID: <20190502150637.6f7vqoxiheytg4le@salvia>
-References: <20181008230125.2330-1-pablo@netfilter.org>
- <20181008230125.2330-8-pablo@netfilter.org>
- <33d60747-7550-1fba-a068-9b78aaedbc26@6wind.com>
- <CAKfDRXjY9J1yHz1px6-gbmrEYJi9P9+16Mez+qzqhYLr9MtCQg@mail.gmail.com>
- <51b7d27b-a67e-e3c6-c574-01f50a860a5c@6wind.com>
- <20190502074642.ph64t7uax73xuxeo@breakpoint.cc>
- <20190502113151.xcnutl2eedjkftsb@salvia>
- <627088b3-7134-2b9a-8be4-7c96d51a3b94@6wind.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <627088b3-7134-2b9a-8be4-7c96d51a3b94@6wind.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726360AbfEBPHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 11:07:54 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:58650 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726197AbfEBPHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 11:07:54 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1hMDJO-0006PH-Ow; Thu, 02 May 2019 17:07:50 +0200
+Message-ID: <3c683fc0d3ea3d07034366a5fbbd5ed5049d48b9.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next 3/3] netlink: add validation of NLA_F_NESTED
+ flag
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Thu, 02 May 2019 17:07:49 +0200
+In-Reply-To: <20190502131416.GE21672@unicorn.suse.cz>
+References: <cover.1556798793.git.mkubecek@suse.cz>
+         <75a0887b3eb70005c272685d8ef9a712f37d7a54.1556798793.git.mkubecek@suse.cz>
+         <3e8291cb2491e9a1830afdb903ed2c52e9f7475c.camel@sipsolutions.net>
+         <20190502131416.GE21672@unicorn.suse.cz>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 02, 2019 at 02:56:42PM +0200, Nicolas Dichtel wrote:
-> Le 02/05/2019 à 13:31, Pablo Neira Ayuso a écrit :
-> > On Thu, May 02, 2019 at 09:46:42AM +0200, Florian Westphal wrote:
-> >> Nicolas Dichtel <nicolas.dichtel@6wind.com> wrote:
-> >>> I understand your point, but this is a regression. Ignoring a field/attribute of
-> >>> a netlink message is part of the uAPI. This field exists for more than a decade
-> >>> (probably two), so you cannot just use it because nobody was using it. Just see
-> >>> all discussions about strict validation of netlink messages.
-> >>> Moreover, the conntrack tool exists also for ages and is an official tool.
-> >>
-> >> FWIW I agree with Nicolas, we should restore old behaviour and flush
-> >> everything when AF_INET is given.  We can add new netlink attr to
-> >> restrict this.
+On Thu, 2019-05-02 at 15:14 +0200, Michal Kubecek wrote:
+> 
+> > > @@ -415,7 +418,8 @@ enum netlink_validation {
+> > >  #define NL_VALIDATE_STRICT (NL_VALIDATE_TRAILING |\
+> > >  			    NL_VALIDATE_MAXTYPE |\
+> > >  			    NL_VALIDATE_UNSPEC |\
+> > > -			    NL_VALIDATE_STRICT_ATTRS)
+> > > +			    NL_VALIDATE_STRICT_ATTRS |\
+> > > +			    NL_VALIDATE_NESTED)
 > > 
-> > Let's use nfgenmsg->version for this. This is so far set to zero. We
-> > can just update userspace to set it to 1, so family is used.
-> > 
-> > The version field in the kernel size is ignored so far, so this should
-> > be enough. So we avoid that extract netlink attribute.
->
-> Why making such a hack? If any userspace app set this field (simply because it's
-> not initialized), it will show up a new regression.
-> What is the problem of adding another attribute?
+> > This is fine _right now_, but in general we cannot keep adding here
+> > after the next release :-)
+> 
+> Right, that's why I would like to get this into the same cycle as your
+> series.
 
-The version field was meant to deal with this case.
+Yeah, I know you know, just wanted state it again :-)
 
-It has been not unused so far because we had no good reason.
+> How about "NLA_F_NESTED is missing" and "NLA_F_NESTED not expected"?
+
+Looks good to me.
+
+johannes
+
