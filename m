@@ -2,89 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDADC110D9
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 03:21:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08BB511105
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 03:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbfEBBRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 21:17:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40044 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726126AbfEBBRe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 May 2019 21:17:34 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4B4522085A;
-        Thu,  2 May 2019 01:17:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556759853;
-        bh=MI4GiHRyFuoxJ7qSu+5vOU4uQv7NttY1eeOtpJKf3K0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=T4mWd3x7ozohFe6C/yKDr5masxKrvmGhKzjIirOwQ5Xal4kshiI3uHukORWHBkw6r
-         6HZ1EW76Wn3y5w8pQZg7CFO9/zaQUHvoM9SYUpAIX6mekjEU9c+TyZXsQmVBar66Wm
-         0b1nAFVdotcF3b1Xo7p+ZLE57cWw4xAhYM4XOBrQ=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, alan.maguire@oracle.com,
-        jwestfall@surrealistic.net, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net] neighbor: Call __ipv4_neigh_lookup_noref in neigh_xmit
-Date:   Wed,  1 May 2019 18:18:42 -0700
-Message-Id: <20190502011842.1645-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S1726194AbfEBB4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 21:56:33 -0400
+Received: from mail-yw1-f74.google.com ([209.85.161.74]:41505 "EHLO
+        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726152AbfEBB4d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 21:56:33 -0400
+Received: by mail-yw1-f74.google.com with SMTP id e5so1665726ywc.8
+        for <netdev@vger.kernel.org>; Wed, 01 May 2019 18:56:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=HbO2VwPqw8gSKYq9lBHNjx4/negZEuhj+znUaUUgs/g=;
+        b=WK0ppeEjiWxvF3N+ovFlcJ0t2Bkxmm7R1WMF34C0vFY0uiN7NVo3ZHzOqEf2c6HQM2
+         dvA97nI09MghV8sIi9gEHZf/BinIaOgLrPJZPjGAKrMBHje+siSd5AH8x8WwelaimfnX
+         PGm/DaU/G2a8QX3fQVydC4hOMtiGD/QsAYH7HXA0qC3QNVf9lMpWCK1+WxRjIkXZBasV
+         1FubaRfPExtfHdzM2MJNrphRueJsRsaw5J+lctZXoZFWH/MtjQNZKxTe1ZfxR2WNPuVU
+         DcQqau1am3eW34cW/J41ZsfVKrQQoHn2DIIblk7SaQXGkiridV87q2JEJIEGUFws7Z19
+         Jvwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=HbO2VwPqw8gSKYq9lBHNjx4/negZEuhj+znUaUUgs/g=;
+        b=syhHEcPfOT+AzTiK1XF6pzFWpASWxMwFTD5fIxE/ypv2U7kNDhYefQqJqpmXxXxJnL
+         I9Q9jVS1t6o4IpHuBADZkShVY0iQcmifJngqvS9UaCmt23k8HcqyWO2aRPamyZp0NifR
+         XDeIklNZSt2FSUFicuBi7qvCTzs44KfNdpsf6c3L9LlmIwWB6WgWfQMMWeAOaSDZqFLO
+         Er/o2W8IzoHHF9zjF7vz35snX+85dIuR+eYdRVG/46fWp2ywfVIXwBqbtgcZAtAxqobG
+         DGC9tetB6xJIG+rTBN8v6UTnlbPezkcCrTk/xmr2BeypDDYJ6WJwRZel1gHA/sAXZTZK
+         zY+Q==
+X-Gm-Message-State: APjAAAWXdT9IY4H78ztB2Sz/rrIPA5KMlQkio+xH/apexU1QIb906Hl5
+        gjd4UPBA01WTx+N1SejnVttPzugsEAvabg==
+X-Google-Smtp-Source: APXvYqxXMEekjb4V72jVuj87pfpBVbhXNfkKZYFYS95AlUnCFhWVTuJL7w0z8C5YPlKG9M0OWWXJOL5BZK37yQ==
+X-Received: by 2002:a81:a6c6:: with SMTP id d189mr827904ywh.268.1556762191923;
+ Wed, 01 May 2019 18:56:31 -0700 (PDT)
+Date:   Wed,  1 May 2019 18:56:28 -0700
+Message-Id: <20190502015628.22215-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.21.0.593.g511ec345e18-goog
+Subject: [PATCH net] udp: fix GRO packet of death
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+syzbot was able to crash host by sending UDP packets with a 0 payload.
 
-Commit cd9ff4de0107 changed the key for IFF_POINTOPOINT devices to
-INADDR_ANY but neigh_xmit which is used for MPLS encapsulations was not
-updated to use the altered key. The result is that every packet Tx does
-a lookup on the gateway address which does not find an entry, a new one
-is created only to find the existing one in the table right before the
-insert since arp_constructor was updated to reset the primary key. This
-is seen in the allocs and destroys counters:
-    ip -s -4 ntable show | head -10 | grep alloc
+TCP does not have this issue since we do not aggregate packets without
+payload.
 
-which increase for each packet showing the unnecessary overhread.
+Since dev_gro_receive() sets gso_size based on skb_gro_len(skb)
+it seems not worth trying to cope with padded packets.
 
-Fix by having neigh_xmit use __ipv4_neigh_lookup_noref for NEIGH_ARP_TABLE.
+BUG: KASAN: slab-out-of-bounds in skb_gro_receive+0xf5f/0x10e0 net/core/skbuff.c:3826
+Read of size 16 at addr ffff88808893fff0 by task syz-executor612/7889
 
-Fixes: cd9ff4de0107 ("ipv4: Make neigh lookup keys for loopback/point-to-point devices be INADDR_ANY")
-Reported-by: Alan Maguire <alan.maguire@oracle.com>
-Signed-off-by: David Ahern <dsahern@gmail.com>
+CPU: 0 PID: 7889 Comm: syz-executor612 Not tainted 5.1.0-rc7+ #96
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ print_address_description.cold+0x7c/0x20d mm/kasan/report.c:187
+ kasan_report.cold+0x1b/0x40 mm/kasan/report.c:317
+ __asan_report_load16_noabort+0x14/0x20 mm/kasan/generic_report.c:133
+ skb_gro_receive+0xf5f/0x10e0 net/core/skbuff.c:3826
+ udp_gro_receive_segment net/ipv4/udp_offload.c:382 [inline]
+ call_gro_receive include/linux/netdevice.h:2349 [inline]
+ udp_gro_receive+0xb61/0xfd0 net/ipv4/udp_offload.c:414
+ udp4_gro_receive+0x763/0xeb0 net/ipv4/udp_offload.c:478
+ inet_gro_receive+0xe72/0x1110 net/ipv4/af_inet.c:1510
+ dev_gro_receive+0x1cd0/0x23c0 net/core/dev.c:5581
+ napi_gro_frags+0x36b/0xd10 net/core/dev.c:5843
+ tun_get_user+0x2f24/0x3fb0 drivers/net/tun.c:1981
+ tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2027
+ call_write_iter include/linux/fs.h:1866 [inline]
+ do_iter_readv_writev+0x5e1/0x8e0 fs/read_write.c:681
+ do_iter_write fs/read_write.c:957 [inline]
+ do_iter_write+0x184/0x610 fs/read_write.c:938
+ vfs_writev+0x1b3/0x2f0 fs/read_write.c:1002
+ do_writev+0x15e/0x370 fs/read_write.c:1037
+ __do_sys_writev fs/read_write.c:1110 [inline]
+ __se_sys_writev fs/read_write.c:1107 [inline]
+ __x64_sys_writev+0x75/0xb0 fs/read_write.c:1107
+ do_syscall_64+0x103/0x610 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x441cc0
+Code: 05 48 3d 01 f0 ff ff 0f 83 9d 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 83 3d 51 93 29 00 00 75 14 b8 14 00 00 00 0f 05 <48> 3d 01 f0 ff ff 0f 83 74 09 fc ff c3 48 83 ec 08 e8 ba 2b 00 00
+RSP: 002b:00007ffe8c716118 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
+RAX: ffffffffffffffda RBX: 00007ffe8c716150 RCX: 0000000000441cc0
+RDX: 0000000000000001 RSI: 00007ffe8c716170 RDI: 00000000000000f0
+RBP: 0000000000000000 R08: 000000000000ffff R09: 0000000000a64668
+R10: 0000000020000040 R11: 0000000000000246 R12: 000000000000c2d9
+R13: 0000000000402b50 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task 5143:
+ save_stack+0x45/0xd0 mm/kasan/common.c:75
+ set_track mm/kasan/common.c:87 [inline]
+ __kasan_kmalloc mm/kasan/common.c:497 [inline]
+ __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:470
+ kasan_slab_alloc+0xf/0x20 mm/kasan/common.c:505
+ slab_post_alloc_hook mm/slab.h:437 [inline]
+ slab_alloc mm/slab.c:3393 [inline]
+ kmem_cache_alloc+0x11a/0x6f0 mm/slab.c:3555
+ mm_alloc+0x1d/0xd0 kernel/fork.c:1030
+ bprm_mm_init fs/exec.c:363 [inline]
+ __do_execve_file.isra.0+0xaa3/0x23f0 fs/exec.c:1791
+ do_execveat_common fs/exec.c:1865 [inline]
+ do_execve fs/exec.c:1882 [inline]
+ __do_sys_execve fs/exec.c:1958 [inline]
+ __se_sys_execve fs/exec.c:1953 [inline]
+ __x64_sys_execve+0x8f/0xc0 fs/exec.c:1953
+ do_syscall_64+0x103/0x610 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 5351:
+ save_stack+0x45/0xd0 mm/kasan/common.c:75
+ set_track mm/kasan/common.c:87 [inline]
+ __kasan_slab_free+0x102/0x150 mm/kasan/common.c:459
+ kasan_slab_free+0xe/0x10 mm/kasan/common.c:467
+ __cache_free mm/slab.c:3499 [inline]
+ kmem_cache_free+0x86/0x260 mm/slab.c:3765
+ __mmdrop+0x238/0x320 kernel/fork.c:677
+ mmdrop include/linux/sched/mm.h:49 [inline]
+ finish_task_switch+0x47b/0x780 kernel/sched/core.c:2746
+ context_switch kernel/sched/core.c:2880 [inline]
+ __schedule+0x81b/0x1cc0 kernel/sched/core.c:3518
+ preempt_schedule_irq+0xb5/0x140 kernel/sched/core.c:3745
+ retint_kernel+0x1b/0x2d
+ arch_local_irq_restore arch/x86/include/asm/paravirt.h:767 [inline]
+ kmem_cache_free+0xab/0x260 mm/slab.c:3766
+ anon_vma_chain_free mm/rmap.c:134 [inline]
+ unlink_anon_vmas+0x2ba/0x870 mm/rmap.c:401
+ free_pgtables+0x1af/0x2f0 mm/memory.c:394
+ exit_mmap+0x2d1/0x530 mm/mmap.c:3144
+ __mmput kernel/fork.c:1046 [inline]
+ mmput+0x15f/0x4c0 kernel/fork.c:1067
+ exec_mmap fs/exec.c:1046 [inline]
+ flush_old_exec+0x8d9/0x1c20 fs/exec.c:1279
+ load_elf_binary+0x9bc/0x53f0 fs/binfmt_elf.c:864
+ search_binary_handler fs/exec.c:1656 [inline]
+ search_binary_handler+0x17f/0x570 fs/exec.c:1634
+ exec_binprm fs/exec.c:1698 [inline]
+ __do_execve_file.isra.0+0x1394/0x23f0 fs/exec.c:1818
+ do_execveat_common fs/exec.c:1865 [inline]
+ do_execve fs/exec.c:1882 [inline]
+ __do_sys_execve fs/exec.c:1958 [inline]
+ __se_sys_execve fs/exec.c:1953 [inline]
+ __x64_sys_execve+0x8f/0xc0 fs/exec.c:1953
+ do_syscall_64+0x103/0x610 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+The buggy address belongs to the object at ffff88808893f7c0
+ which belongs to the cache mm_struct of size 1496
+The buggy address is located 600 bytes to the right of
+ 1496-byte region [ffff88808893f7c0, ffff88808893fd98)
+The buggy address belongs to the page:
+page:ffffea0002224f80 count:1 mapcount:0 mapping:ffff88821bc40ac0 index:0xffff88808893f7c0 compound_mapcount: 0
+flags: 0x1fffc0000010200(slab|head)
+raw: 01fffc0000010200 ffffea00025b4f08 ffffea00027b9d08 ffff88821bc40ac0
+raw: ffff88808893f7c0 ffff88808893e440 0000000100000001 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88808893fe80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88808893ff00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88808893ff80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                                             ^
+ ffff888088940000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff888088940080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+Fixes: e20cf8d3f1f7 ("udp: implement GRO for plain UDP sockets.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
- net/core/neighbour.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ net/ipv4/udp_offload.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index aff051e5521d..9b9da5142613 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -31,6 +31,7 @@
- #include <linux/times.h>
- #include <net/net_namespace.h>
- #include <net/neighbour.h>
-+#include <net/arp.h>
- #include <net/dst.h>
- #include <net/sock.h>
- #include <net/netevent.h>
-@@ -2984,7 +2985,13 @@ int neigh_xmit(int index, struct net_device *dev,
- 		if (!tbl)
- 			goto out;
- 		rcu_read_lock_bh();
--		neigh = __neigh_lookup_noref(tbl, addr, dev);
-+		if (index == NEIGH_ARP_TABLE) {
-+			u32 key = *((u32 *)addr);
-+
-+			neigh = __ipv4_neigh_lookup_noref(dev, key);
-+		} else {
-+			neigh = __neigh_lookup_noref(tbl, addr, dev);
-+		}
- 		if (!neigh)
- 			neigh = __neigh_create(tbl, addr, dev, false);
- 		err = PTR_ERR(neigh);
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index d8776b2110c107ea322262d83532cb8c2759a9dc..065334b41d575aa0ba28de8487a6a5d018ec8804 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -352,6 +352,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ 	struct sk_buff *pp = NULL;
+ 	struct udphdr *uh2;
+ 	struct sk_buff *p;
++	unsigned int ulen;
+ 
+ 	/* requires non zero csum, for symmetry with GSO */
+ 	if (!uh->check) {
+@@ -359,6 +360,12 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ 		return NULL;
+ 	}
+ 
++	/* Do not deal with padded or malicious packets, sorry ! */
++	ulen = ntohs(uh->len);
++	if (ulen <= sizeof(*uh) || ulen != skb_gro_len(skb)) {
++		NAPI_GRO_CB(skb)->flush = 1;
++		return NULL;
++	}
+ 	/* pull encapsulating udp header */
+ 	skb_gro_pull(skb, sizeof(struct udphdr));
+ 	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
+@@ -377,12 +384,12 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ 
+ 		/* Terminate the flow on len mismatch or if it grow "too much".
+ 		 * Under small packet flood GRO count could elsewhere grow a lot
+-		 * leading to execessive truesize values.
++		 * leading to excessive truesize values.
+ 		 * On len mismatch merge the first packet shorter than gso_size,
+ 		 * otherwise complete the GRO packet.
+ 		 */
+-		if (uh->len > uh2->len || skb_gro_receive(p, skb) ||
+-		    uh->len != uh2->len ||
++		if (ulen > ntohs(uh2->len) || skb_gro_receive(p, skb) ||
++		    ulen != ntohs(uh2->len) ||
+ 		    NAPI_GRO_CB(p)->count >= UDP_GRO_CNT_MAX)
+ 			pp = p;
+ 
 -- 
-2.11.0
+2.21.0.593.g511ec345e18-goog
 
