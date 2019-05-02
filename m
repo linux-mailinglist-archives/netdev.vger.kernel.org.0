@@ -2,130 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E9111995
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 14:58:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2DE3119B5
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 15:05:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfEBM6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 08:58:10 -0400
-Received: from mail-eopbgr40075.outbound.protection.outlook.com ([40.107.4.75]:21618
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726283AbfEBM6J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 08:58:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RXKzJUgPgE5wSsL1xuganqMQcLHfdvaxVMsbcvTAPIw=;
- b=mTS8Vp+pAqohTzInZHEYm4TuZ3vryiFF2IiAzSlK0f2CSuUO+QZhTFvnSuRavtAAJoZ84538i3x4QOeWm/Z6l0nzuDc9fKyaGwnRhFnRtZakzkElYTQLduNPOyDbInLbQeGLI/fU9O7C6FHFKCPpy2yX3DXvM0UHEOcX6oEvNG8=
-Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.50.159) by
- VI1PR04MB4430.eurprd04.prod.outlook.com (20.177.55.158) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1856.10; Thu, 2 May 2019 12:58:05 +0000
-Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
- ([fe80::81d8:f74b:f91e:f071]) by VI1PR04MB5134.eurprd04.prod.outlook.com
- ([fe80::81d8:f74b:f91e:f071%7]) with mapi id 15.20.1835.018; Thu, 2 May 2019
- 12:58:05 +0000
-From:   Laurentiu Tudor <laurentiu.tudor@nxp.com>
-To:     "jocke@infinera.com" <joakim.tjernlund@infinera.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Madalin-cristian Bucur <madalin.bucur@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>, Roy Pledge <roy.pledge@nxp.com>,
-        Camelia Alexandra Groza <camelia.groza@nxp.com>
-CC:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Subject: RE: [PATCH v2 9/9] dpaa_eth: fix SG frame cleanup
-Thread-Topic: [PATCH v2 9/9] dpaa_eth: fix SG frame cleanup
-Thread-Index: AQHU/MhUOSfNbgWjXk28jO3/UbT5S6ZQPsaAgAdTq4CAABnMAIAAIyeg
-Date:   Thu, 2 May 2019 12:58:04 +0000
-Message-ID: <VI1PR04MB5134872815E02B053B383C08EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
-References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
-         <20190427071031.6563-10-laurentiu.tudor@nxp.com>
-         <2c6f5d170edab346e0a87b1dfeb12e2f65801685.camel@infinera.com>
-         <VI1PR04MB5134C0D6707E78D674B96898EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
- <728fe477849debcc14bb1af01e35bc7b184a0a03.camel@infinera.com>
-In-Reply-To: <728fe477849debcc14bb1af01e35bc7b184a0a03.camel@infinera.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=laurentiu.tudor@nxp.com; 
-x-originating-ip: [192.88.166.1]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 80670efb-ec53-4f70-4c2e-08d6cefdd122
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR04MB4430;
-x-ms-traffictypediagnostic: VI1PR04MB4430:
-x-ms-exchange-purlcount: 1
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-microsoft-antispam-prvs: <VI1PR04MB44307FD8A6DB5FA45E44F0A8EC340@VI1PR04MB4430.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0025434D2D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(396003)(376002)(136003)(366004)(39860400002)(189003)(199004)(13464003)(66556008)(64756008)(7736002)(99286004)(5660300002)(6636002)(26005)(478600001)(8676002)(110136005)(54906003)(186003)(2906002)(66446008)(102836004)(2501003)(76176011)(316002)(229853002)(52536014)(25786009)(66476007)(66946007)(73956011)(76116006)(7696005)(4326008)(6506007)(6246003)(44832011)(6436002)(33656002)(14454004)(6306002)(66066001)(81156014)(55016002)(71200400001)(71190400001)(81166006)(305945005)(8936002)(53936002)(446003)(486006)(3846002)(74316002)(86362001)(11346002)(6116002)(14444005)(256004)(966005)(9686003)(476003)(68736007)(491001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB4430;H:VI1PR04MB5134.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 0LPv1EluzdhCWa85usBocVjm6uEOT0wlatyrvLOoS8VQKA6lbazybzkM3heUWLIGNQcBJoYsGGtKn1hi9xRUVCZOqjI9rGb1bT599gTk/FRLk+snMt/EyPlS7B+P+DWwSVs5RZKzygOGySe5TtC1wegh1AEe6ccQXAqM3sEZpANdpkDzC8zHY2BBBov7+wAosd9cAye1pg4/CuhU8mxizcvUQHLOeB4yTZADM06+ugjksjWhvXMubKMe2RSScskczzJrEEiO9+mjJF7WcorsPhr6nwiJJbYTdWGMpcIZcftlYR3LVUYuXurAODamAmZDTHFlEwCAILbaT+r5kJDf3EUSPz4iq/+63FMIn5tcLQjFyTBA0qPlO6+p/Ri6AZ24mkPHj5j4pbpTtMnuZkihqj2QrP2r9W2ckoqii3WYhZQ=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726417AbfEBNFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 09:05:30 -0400
+Received: from rs07.intra2net.com ([85.214.138.66]:41340 "EHLO
+        rs07.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726267AbfEBNFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 09:05:30 -0400
+X-Greylist: delayed 409 seconds by postgrey-1.27 at vger.kernel.org; Thu, 02 May 2019 09:05:29 EDT
+Received: from mail.m.i2n (unknown [172.17.128.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by rs07.intra2net.com (Postfix) with ESMTPS id F2BA515001F6
+        for <netdev@vger.kernel.org>; Thu,  2 May 2019 14:58:37 +0200 (CEST)
+Received: from localhost (mail.m.i2n [127.0.0.1])
+        by localhost (Postfix) with ESMTP id B62F4858
+        for <netdev@vger.kernel.org>; Thu,  2 May 2019 14:58:37 +0200 (CEST)
+X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.54.20,VDF=8.15.28.254)
+X-Spam-Status: 
+X-Spam-Level: 0
+Received: from rocinante.m.i2n (rocinante.m.i2n [172.16.1.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: smtp-auth-user)
+        by mail.m.i2n (Postfix) with ESMTPSA id D0D6859E
+        for <netdev@vger.kernel.org>; Thu,  2 May 2019 14:58:35 +0200 (CEST)
+From:   Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+To:     netdev@vger.kernel.org
+Subject: Re: [bisected regression] e1000e: "Detected Hardware Unit Hang"
+Date:   Thu, 02 May 2019 14:58:35 +0200
+Message-ID: <2623037.2OFtx9BLgF@rocinante.m.i2n>
+In-Reply-To: <1970944.Bv0UlMJzsJ@storm>
+References: <1719052.SGOfRAJhfQ@storm> <309B89C4C689E141A5FF6A0C5FB2118B78DDC307@ORSMSX101.amr.corp.intel.com> <1970944.Bv0UlMJzsJ@storm>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80670efb-ec53-4f70-4c2e-08d6cefdd122
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 May 2019 12:58:04.6674
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4430
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9ha2ltIFRqZXJubHVu
-ZCA8Sm9ha2ltLlRqZXJubHVuZEBpbmZpbmVyYS5jb20+DQo+IFNlbnQ6IFRodXJzZGF5LCBNYXkg
-MiwgMjAxOSAxOjM3IFBNDQo+IA0KPiBPbiBUaHUsIDIwMTktMDUtMDIgYXQgMDk6MDUgKzAwMDAs
-IExhdXJlbnRpdSBUdWRvciB3cm90ZToNCj4gPiBIaSBKb2FraW0sDQo+ID4NCj4gPiA+IC0tLS0t
-T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiBGcm9tOiBKb2FraW0gVGplcm5sdW5kIDxKb2Fr
-aW0uVGplcm5sdW5kQGluZmluZXJhLmNvbT4NCj4gPiA+IFNlbnQ6IFNhdHVyZGF5LCBBcHJpbCAy
-NywgMjAxOSA4OjExIFBNDQo+ID4gPg0KPiA+ID4gT24gU2F0LCAyMDE5LTA0LTI3IGF0IDEwOjEw
-ICswMzAwLCBsYXVyZW50aXUudHVkb3JAbnhwLmNvbSB3cm90ZToNCj4gPiA+ID4gRnJvbTogTGF1
-cmVudGl1IFR1ZG9yIDxsYXVyZW50aXUudHVkb3JAbnhwLmNvbT4NCj4gPiA+ID4NCj4gPiA+ID4g
-Rml4IGlzc3VlIHdpdGggdGhlIGVudHJ5IGluZGV4aW5nIGluIHRoZSBzZyBmcmFtZSBjbGVhbnVw
-IGNvZGUgYmVpbmcNCj4gPiA+ID4gb2ZmLWJ5LTEuIFRoaXMgcHJvYmxlbSBzaG93ZWQgdXAgd2hl
-biBkb2luZyBzb21lIGJhc2ljIGlwZXJmIHRlc3RzDQo+IGFuZA0KPiA+ID4gPiBtYW5pZmVzdGVk
-IGluIHRyYWZmaWMgY29taW5nIHRvIGEgaGFsdC4NCj4gPiA+ID4NCj4gPiA+ID4gU2lnbmVkLW9m
-Zi1ieTogTGF1cmVudGl1IFR1ZG9yIDxsYXVyZW50aXUudHVkb3JAbnhwLmNvbT4NCj4gPiA+ID4g
-QWNrZWQtYnk6IE1hZGFsaW4gQnVjdXIgPG1hZGFsaW4uYnVjdXJAbnhwLmNvbT4NCj4gPiA+DQo+
-ID4gPiBXYXNuJ3QgdGhpcyBhIHN0YWJsZSBjYW5kaWRhdGUgdG9vPw0KPiA+DQo+ID4gWWVzLCBp
-dCBpcy4gSSBmb3Jnb3QgdG8gYWRkIHRoZSBjYzpzdGFibGUgdGFnLCBzb3JyeSBhYm91dCB0aGF0
-Lg0KPiANCj4gVGhlbiB0aGlzIGlzIGEgYnVnIGZpeCB0aGF0IHNob3VsZCBnbyBkaXJlY3RseSB0
-byBsaW51cy9zdGFibGUuDQo+IA0KPiBJIG5vdGUgdGhhdA0KPiBodHRwczovL2dpdC5rZXJuZWwu
-b3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9zdGFibGUvbGludXguZ2l0L2xvZy9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYT9oPWxpbnV4LTQuMTkueQ0KDQpOb3Qgc3VyZSBJ
-IHVuZGVyc3RhbmQgLi4uIEkgZG9uJ3Qgc2VlIHRoZSBwYXRjaCBpbiB0aGUgbGluay4NCg0KPiBp
-cyBpbiA0LjE5IGJ1dCBub3QgaW4gNC4xNCAsIGlzIGl0IG5vdCBhcHByb3ByaWF0ZSBmb3IgNC4x
-ND8NCg0KSSB0aGluayBpdCBtYWtlcyBzZW5zZSB0byBnbyBpbiBib3RoIHN0YWJsZSB0cmVlcy4N
-Cg0KLS0tDQpCZXN0IFJlZ2FyZHMsIExhdXJlbnRpdQ0KDQo+ID4NCj4gPiA+ID4gLS0tDQo+ID4g
-PiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jIHwgMiAr
-LQ0KPiA+ID4gPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0p
-DQo+ID4gPiA+DQo+ID4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVl
-c2NhbGUvZHBhYS9kcGFhX2V0aC5jDQo+ID4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVz
-Y2FsZS9kcGFhL2RwYWFfZXRoLmMNCj4gPiA+ID4gaW5kZXggZGFlZGU3MjcyNzY4Li40MDQyMGVk
-YzljZTYgMTAwNjQ0DQo+ID4gPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2Fs
-ZS9kcGFhL2RwYWFfZXRoLmMNCj4gPiA+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJl
-ZXNjYWxlL2RwYWEvZHBhYV9ldGguYw0KPiA+ID4gPiBAQCAtMTY2Myw3ICsxNjYzLDcgQEAgc3Rh
-dGljIHN0cnVjdCBza19idWZmDQo+ICpkcGFhX2NsZWFudXBfdHhfZmQoY29uc3QNCj4gPiA+IHN0
-cnVjdCBkcGFhX3ByaXYgKnByaXYsDQo+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIHFtX3NnX2VudHJ5X2dldF9sZW4oJnNndFswXSksDQo+IGRtYV9kaXIpOw0KPiA+ID4g
-Pg0KPiA+ID4gPiAgICAgICAgICAgICAgICAgLyogcmVtYWluaW5nIHBhZ2VzIHdlcmUgbWFwcGVk
-IHdpdGgNCj4gc2tiX2ZyYWdfZG1hX21hcCgpDQo+ID4gPiAqLw0KPiA+ID4gPiAtICAgICAgICAg
-ICAgICAgZm9yIChpID0gMTsgaSA8IG5yX2ZyYWdzOyBpKyspIHsNCj4gPiA+ID4gKyAgICAgICAg
-ICAgICAgIGZvciAoaSA9IDE7IGkgPD0gbnJfZnJhZ3M7IGkrKykgew0KPiA+ID4gPiAgICAgICAg
-ICAgICAgICAgICAgICAgICBXQVJOX09OKHFtX3NnX2VudHJ5X2lzX2V4dCgmc2d0W2ldKSk7DQo+
-ID4gPiA+DQo+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIGRtYV91bm1hcF9wYWdlKGRl
-diwgcW1fc2dfYWRkcigmc2d0W2ldKSwNCj4gPiA+ID4gLS0NCj4gPiA+ID4gMi4xNy4xDQo+ID4g
-PiA+DQo=
+Hi All.
+
+While updating to kernel 4.19, we realised that a problem reported in 2015 for 
+kernel 3.7 is still around. Please see this link for more details: https://
+marc.info/?l=linux-netdev&m=142124954120315
+
+Basically, when using the e1000e driver, each few minutes the following 
+messages appear in dmesg or system log.
+
+[12465.174759] e1000e 0000:00:19.0 eth0: Detected Hardware Unit Hang:
+  TDH                  <c6>
+  TDT                  <fb>
+  next_to_use          <fb>
+  next_to_clean        <c4>
+buffer_info[next_to_clean]:
+  time_stamp           <2e5e92>
+  next_to_watch        <c6>
+  jiffies              <2e67e8>
+  next_to_watch.status <0>
+MAC Status             <40080083>
+PHY Status             <796d>
+PHY 1000BASE-T Status  <7800>
+PHY Extended Status    <3000>
+PCI Status             <10>
+
+Back in 2015, we applied a workaround that decreases the page size:
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 85ab7d7..9f0ef97 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2108,7 +2108,7 @@ static inline void __skb_queue_purge(struct 
+sk_buff_head *list)
+                kfree_skb(skb);
+ }
+ 
+-#define NETDEV_FRAG_PAGE_MAX_ORDER get_order(32768)
++#define NETDEV_FRAG_PAGE_MAX_ORDER get_order(4096)
+ #define NETDEV_FRAG_PAGE_MAX_SIZE  (PAGE_SIZE << NETDEV_FRAG_PAGE_MAX_ORDER)
+ #define NETDEV_PAGECNT_MAX_BIAS           NETDEV_FRAG_PAGE_MAX_SIZE
+ 
+
+Testing kernel 4.19 with the same hardware showed the same problems, so we 
+tried to adapt the old workaround to the current code:
+
+diff -u -r -p linux-4.19.i686/net/core/sock.c linux-4.19.i686.e1000e/net/core/
+sock.c
+--- linux-4.19.i686/net/core/sock.c     2019-03-22 13:55:24.198266383 +0100
++++ linux-4.19.i686.e1000e/net/core/sock.c      2019-03-22 13:56:43.165765856 
++0100
+@@ -2183,7 +2183,8 @@ static void sk_leave_memory_pressure(str
+ }
+ 
+ /* On 32bit arches, an skb frag is limited to 2^15 */
+-#define SKB_FRAG_PAGE_ORDER    get_order(32768)
++/* Limit to 4096 instead of 32768 */
++#define SKB_FRAG_PAGE_ORDER    get_order(4096)
+ 
+ /**
+  * skb_page_frag_refill - check that a page_frag contains enough room
+
+
+Unfortunately, this patch does not help with the "Unit Hang" messages anymore, 
+the problem occurs with any page size.
+
+
+Some insight in how to deal with this problem would be very much appreciated.
+
+Thank you!
+
+
+
+
+
