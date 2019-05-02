@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 018FE11C91
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72DF511E3C
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:45:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726669AbfEBPWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 11:22:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37794 "EHLO mail.kernel.org"
+        id S1727940AbfEBP1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 11:27:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44108 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726617AbfEBPW3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 11:22:29 -0400
+        id S1727190AbfEBP1T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 11:27:19 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C575B20B7C;
-        Thu,  2 May 2019 15:22:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5597C20449;
+        Thu,  2 May 2019 15:27:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556810548;
-        bh=sLS4DGfxX2pynUxKD6bhgJx/JP1Hdidayw2k21aaiBg=;
+        s=default; t=1556810838;
+        bh=YCC58WRLN0LAEq6qx9S2ipLzMQyqq4KpD2hqiu2Zoqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nHVvkQTuqLksuKli9TAlKqmSE23hG4hCbu0X0GWl3HBSqVqKop1uIp7LTWsIRijPw
-         E0istgEINdkcI/0+iBtTi5fJ/MmZ1apVwIDKID4r4L+fLOX3wfN0oAn7T1XDPKvD1w
-         J63SgcxfQQQpd82s7PYYSxpjM5bXharQqAUyFnbE=
+        b=vcjOLPmYcpo3wttniPiudEQapRRQTbSWnRJs9deJiM/ZfPC8gutVeFCHOvYgXtPVF
+         ERxaqdRqvCV0NFKsQvBfkU9ri/Aco89nUGrV9qfSMbKOdp7Nv8cEAR1+eLxrPgGOah
+         QeYHCqGLztQOwQdHLnHEeHOzcO+RaDXCvezCA5PM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -30,12 +30,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Douglas Miller <dougmill@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         "Sasha Levin (Microsoft)" <sashal@kernel.org>
-Subject: [PATCH 4.9 22/32] net: ibm: fix possible object reference leak
-Date:   Thu,  2 May 2019 17:21:08 +0200
-Message-Id: <20190502143321.312803981@linuxfoundation.org>
+Subject: [PATCH 4.19 47/72] net: ibm: fix possible object reference leak
+Date:   Thu,  2 May 2019 17:21:09 +0200
+Message-Id: <20190502143337.177564699@linuxfoundation.org>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190502143314.649935114@linuxfoundation.org>
-References: <20190502143314.649935114@linuxfoundation.org>
+In-Reply-To: <20190502143333.437607839@linuxfoundation.org>
+References: <20190502143333.437607839@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -66,10 +66,10 @@ Signed-off-by: Sasha Levin (Microsoft) <sashal@kernel.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/ethernet/ibm/ehea/ehea_main.c b/drivers/net/ethernet/ibm/ehea/ehea_main.c
-index bd719e25dd76..2dd17e01e3a7 100644
+index 03f64f40b2a3..506f78322d74 100644
 --- a/drivers/net/ethernet/ibm/ehea/ehea_main.c
 +++ b/drivers/net/ethernet/ibm/ehea/ehea_main.c
-@@ -3184,6 +3184,7 @@ static ssize_t ehea_probe_port(struct device *dev,
+@@ -3161,6 +3161,7 @@ static ssize_t ehea_probe_port(struct device *dev,
  
  	if (ehea_add_adapter_mr(adapter)) {
  		pr_err("creating MR failed\n");
