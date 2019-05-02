@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87AC611602
+	by mail.lfdr.de (Postfix) with ESMTP id 1189A11601
 	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 11:06:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726434AbfEBJG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 05:06:28 -0400
-Received: from mga01.intel.com ([192.55.52.88]:47592 "EHLO mga01.intel.com"
+        id S1726424AbfEBJG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 05:06:27 -0400
+Received: from mga01.intel.com ([192.55.52.88]:47595 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726376AbfEBJGZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726377AbfEBJGZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 2 May 2019 05:06:25 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 May 2019 02:06:22 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 May 2019 02:06:23 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.60,421,1549958400"; 
-   d="scan'208";a="147615340"
+   d="scan'208";a="147615343"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by fmsmga007.fm.intel.com with ESMTP; 02 May 2019 02:06:22 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 04/15] ice: Reduce scope of variable in ice_vsi_cfg_rxqs
-Date:   Thu,  2 May 2019 02:06:09 -0700
-Message-Id: <20190502090620.21281-5-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 05/15] ice: Validate ring existence and its q_vector per VSI
+Date:   Thu,  2 May 2019 02:06:10 -0700
+Message-Id: <20190502090620.21281-6-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190502090620.21281-1-jeffrey.t.kirsher@intel.com>
 References: <20190502090620.21281-1-jeffrey.t.kirsher@intel.com>
@@ -40,58 +40,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-Reduce scope of the variable 'err' to inside the for loop instead
-of using it as a second looping conditional. Also while here,
-improve the debug message if we fail to configure a Rx queue.
+When stopping Tx rings, we use 'i' as an ring array index for looking up
+whether the ice_ring exists and have assigned a q_vector. This checks
+rings only within a given TC and we need to go through every ring in
+VSI. Use 'q_idx' instead.
 
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_lib.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index fa8ebd8a10ce..61bb9e92f6ce 100644
+index 61bb9e92f6ce..57b2873a6123 100644
 --- a/drivers/net/ethernet/intel/ice/ice_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -1641,7 +1641,6 @@ int ice_vsi_kill_vlan(struct ice_vsi *vsi, u16 vid)
-  */
- int ice_vsi_cfg_rxqs(struct ice_vsi *vsi)
- {
--	int err = 0;
- 	u16 i;
+@@ -2072,7 +2072,8 @@ ice_vsi_stop_tx_rings(struct ice_vsi *vsi, enum ice_disq_rst_src rst_src,
+ 		for (i = 0; i < vsi->tc_cfg.tc_info[tc].qcount_tx; i++) {
+ 			u16 v_idx;
  
- 	if (vsi->type == ICE_VSI_VF)
-@@ -1656,14 +1655,19 @@ int ice_vsi_cfg_rxqs(struct ice_vsi *vsi)
- 	vsi->rx_buf_len = ICE_RXBUF_2048;
- setup_rings:
- 	/* set up individual rings */
--	for (i = 0; i < vsi->num_rxq && !err; i++)
--		err = ice_setup_rx_ctx(vsi->rx_rings[i]);
-+	for (i = 0; i < vsi->num_rxq; i++) {
-+		int err;
- 
--	if (err) {
--		dev_err(&vsi->back->pdev->dev, "ice_setup_rx_ctx failed\n");
--		return -EIO;
-+		err = ice_setup_rx_ctx(vsi->rx_rings[i]);
-+		if (err) {
-+			dev_err(&vsi->back->pdev->dev,
-+				"ice_setup_rx_ctx failed for RxQ %d, err %d\n",
-+				i, err);
-+			return err;
-+		}
- 	}
--	return err;
-+
-+	return 0;
- }
- 
- /**
+-			if (!rings || !rings[i] || !rings[i]->q_vector) {
++			if (!rings || !rings[q_idx] ||
++			    !rings[q_idx]->q_vector) {
+ 				err = -EINVAL;
+ 				goto err_out;
+ 			}
 -- 
 2.20.1
 
