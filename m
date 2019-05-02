@@ -2,175 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6540612384
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 22:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7969B12387
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 22:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbfEBUjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 16:39:10 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:57050 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726201AbfEBUjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 16:39:10 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x42KZfWW031127;
-        Thu, 2 May 2019 13:39:03 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=b1zJawd/2Y7DeWP96lCAUc7tUxynOE7QMXQfDieHFNM=;
- b=CLQ29pfAcPYNib0y6RzZ2Vi9iAhuQEUvMnpYTshs6RcwDP06xtpafYPb274z+mQPSfjc
- rFPwBCICyVFkQwFM+MYljlGBzFjviBAFycaUhKdtVXHzNFe3uQnVGIkisjQrNLkRUz0n
- KJOhlk/7Rmzls25RrJiCKrJw0AL2ULPPKZqPsrfRfbxGJc0NpqKACptfRPD+/TzeUCGe
- XabwckuUyoZ5Aieq2S841kxpHavQ2MY5WNjkZxXK2Z7MyFURJCGwBXYfR1B8zxHKrisB
- K51Sqfm0lyn3FCyMW7k6JEHhkcgpo6y7nrKRZxKpVYdlcmE8U8J5WRa8Y4jG4cnFCfjI xg== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2s7k3bc17x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 02 May 2019 13:39:03 -0700
-Received: from SC-EXCH02.marvell.com (10.93.176.82) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 2 May
- 2019 13:39:02 -0700
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (104.47.44.54) by
- SC-EXCH02.marvell.com (10.93.176.82) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Thu, 2 May 2019 13:39:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b1zJawd/2Y7DeWP96lCAUc7tUxynOE7QMXQfDieHFNM=;
- b=rns+zZWHETrzKY0/zokq/OvOl9pvz/duU4ffB37tQjmIQ1SU0mSrirAZnw65fsIxYZSd0plN2adJBHPyGcV4h9S587xLbQXTqyP9OfTZuVGcO+YfI5CXE2sHJ3kYE20T48UVe3XdwuAcaK2AjpmxIi9ln2O/eq63KNAgowXgarE=
-Received: from BLUPR18MB0130.namprd18.prod.outlook.com (10.160.188.26) by
- BLUPR18MB0130.namprd18.prod.outlook.com (10.160.188.26) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1835.18; Thu, 2 May 2019 20:38:57 +0000
-Received: from BLUPR18MB0130.namprd18.prod.outlook.com
- ([fe80::d998:a162:bdee:3ed3]) by BLUPR18MB0130.namprd18.prod.outlook.com
- ([fe80::d998:a162:bdee:3ed3%7]) with mapi id 15.20.1835.018; Thu, 2 May 2019
- 20:38:57 +0000
-From:   Michal Kalderon <mkalderon@marvell.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        Ariel Elior <aelior@marvell.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH net-next 07/10] qed*: Add iWARP 100g support
-Thread-Topic: [EXT] Re: [PATCH net-next 07/10] qed*: Add iWARP 100g support
-Thread-Index: AQHVAASJgb30DtcUnkKd3+vJ8gvix6ZW/dEAgABNqQCAAHNAoIAABx4AgACIFjA=
-Date:   Thu, 2 May 2019 20:38:56 +0000
-Message-ID: <BLUPR18MB013088A1CA1A8C618B0D4443A1340@BLUPR18MB0130.namprd18.prod.outlook.com>
-References: <20190501095722.6902-1-michal.kalderon@marvell.com>
- <20190501095722.6902-8-michal.kalderon@marvell.com>
- <20190501.203522.1577716429222042609.davem@davemloft.net>
- <20190502051320.GF7676@mtr-leonro.mtl.com>
- <BLUPR18MB0130AF99D6AB674A85E075D9A1340@BLUPR18MB0130.namprd18.prod.outlook.com>
- <20190502123118.GR7676@mtr-leonro.mtl.com>
-In-Reply-To: <20190502123118.GR7676@mtr-leonro.mtl.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [79.179.90.23]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e33d23b1-44fe-43d2-3345-08d6cf3e3309
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BLUPR18MB0130;
-x-ms-traffictypediagnostic: BLUPR18MB0130:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <BLUPR18MB01307321D202A4CF0A4C4183A1340@BLUPR18MB0130.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0025434D2D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(396003)(39860400002)(346002)(376002)(136003)(189003)(199004)(52536014)(478600001)(4326008)(73956011)(66556008)(54906003)(64756008)(229853002)(26005)(66946007)(66446008)(486006)(66476007)(316002)(81166006)(256004)(8936002)(81156014)(5660300002)(68736007)(8676002)(86362001)(76116006)(71200400001)(71190400001)(66066001)(14444005)(9686003)(7736002)(6916009)(6246003)(76176011)(6306002)(74316002)(33656002)(11346002)(53936002)(99286004)(446003)(6116002)(2906002)(102836004)(55016002)(14454004)(966005)(7696005)(6436002)(186003)(476003)(3846002)(305945005)(6506007)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:BLUPR18MB0130;H:BLUPR18MB0130.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: KgrdKz0VlNUCivrAIkRZ7hwBlDju16uvyfWQZ48JHa6AxuoUQQ6COuaJegr4UVV+nbCKghPYQuheAjFYrE1ytT0+tnCKSk073+znKBv8esBeaG6HQrIJ9WDxO93rIkY4f0TvgeaC0HoXqxGK8Ts+RD5uHDzj+Is3evfDCHZvqDgi7eVra1oDZSxzzA5/9XsCw6GhftFGfhbN/Oly8wxcbl68ChYtnYs2tyPh3AIEBD+kdoKpX4NXebOUfQv0RISKDMOdEXkalXPK2KTxALiCIRAjW6VsnCZCW/jfM+p4wkM1Q4BdANHjcm9UGOrwWNWnzm82aeB52xFNaw3/h3FyNmwLNVy++s3qtYSCtJxKobpQSo5EXnFF0KF8WupRv52BTZJ0GwuBuFjYXJtcCUQ/RLLKlw4nD8yqZZDM8Ul614k=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726324AbfEBUkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 16:40:02 -0400
+Received: from mga02.intel.com ([134.134.136.20]:19745 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726175AbfEBUkC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 16:40:02 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 May 2019 13:40:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,423,1549958400"; 
+   d="asc'?scan'208";a="320953549"
+Received: from vbhyrapu-mobl.amr.corp.intel.com ([10.252.138.72])
+  by orsmga005.jf.intel.com with ESMTP; 02 May 2019 13:40:00 -0700
+Message-ID: <5e546c17ad929d97d6c4ca7d93b8f504da33dc31.camel@intel.com>
+Subject: Re: [net-next 01/12] i40e: replace switch-statement to speed-up
+ retpoline-enabled builds
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Date:   Thu, 02 May 2019 13:40:00 -0700
+In-Reply-To: <0c73af48-d638-dd58-fcf8-c872ff8591d7@intel.com>
+References: <20190429191628.31212-1-jeffrey.t.kirsher@intel.com>
+         <20190429191628.31212-2-jeffrey.t.kirsher@intel.com>
+         <806f5242-d509-e015-275e-ad0325f17222@iogearbox.net>
+         <0c73af48-d638-dd58-fcf8-c872ff8591d7@intel.com>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-MbaSF+XY3PvY1kLHplAo"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: e33d23b1-44fe-43d2-3345-08d6cf3e3309
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 May 2019 20:38:56.7674
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLUPR18MB0130
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-02_12:,,
- signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Leon Romanovsky <leon@kernel.org>
-> Sent: Thursday, May 2, 2019 3:31 PM
->=20
-> On Thu, May 02, 2019 at 12:10:39PM +0000, Michal Kalderon wrote:
-> > > From: Leon Romanovsky <leon@kernel.org>
-> > > Sent: Thursday, May 2, 2019 8:13 AM
-> > > On Wed, May 01, 2019 at 08:35:22PM -0400, David Miller wrote:
-> > > > From: Michal Kalderon <michal.kalderon@marvell.com>
-> > > > Date: Wed, 1 May 2019 12:57:19 +0300
-> > > >
-> > > > > diff --git a/drivers/infiniband/hw/qedr/main.c
-> > > > > b/drivers/infiniband/hw/qedr/main.c
-> > > > > index d93c8a893a89..8bc6775abb79 100644
-> > > > > --- a/drivers/infiniband/hw/qedr/main.c
-> > > > > +++ b/drivers/infiniband/hw/qedr/main.c
-> > > > > @@ -52,6 +52,10 @@ MODULE_DESCRIPTION("QLogic 40G/100G
-> ROCE
-> > > > > Driver");  MODULE_AUTHOR("QLogic Corporation");
-> > > > > MODULE_LICENSE("Dual BSD/GPL");
-> > > > >
-> > > > > +static uint iwarp_cmt;
-> > > > > +module_param(iwarp_cmt, uint, 0444);
-> > > MODULE_PARM_DESC(iwarp_cmt, "
-> > > > > +iWARP: Support CMT mode. 0 - Disabled, 1 - Enabled. Default:
-> > > > > +Disabled");
-> > > > > +
-> > > >
-> > > > Sorry no, this is totally beneath us.
-> > >
-> > > It is not acceptable for RDMA too.
-> >
-> > Dave and Leon,
-> >
-> > This is a bit of a special case related specifically to our hardware.
-> > Enabling iWARP on this kind of configuration impacts L2 performance.
-> > We don't want this to happen implicitly once the rdma driver is loaded
-> > since that can happen automatically and could lead to unexpected behavi=
-or
-> from user perspective.
-> > Therefore we need a way of giving the user control to decide whether
-> > they want iWARP at the cost of L2 performance degradation.
-> > We also need this information as soon as the iWARP device registers, so
-> using the rdma-tool would be too late.
-> >
-> > If module parameter is not an option, could you please advise what woul=
-d
-> be ok ?
-> > ethtool private flags ?
-> > devlink ?
->=20
-> Yes, devlink params are modern way to have same functionality as module
-> parameters.
->=20
-> This patch can help you in order to get a sense of how to do it.
-> https://lore.kernel.org/patchwork/patch/959195/
->=20
-Thanks Leon,=20
-Michal
 
-> Thanks
+--=-MbaSF+XY3PvY1kLHplAo
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, 2019-05-02 at 22:29 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
+> On 2019-05-02 16:47, Daniel Borkmann wrote:
+> > On 04/29/2019 09:16 PM, Jeff Kirsher wrote:
+> > > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > >=20
+> > > GCC will generate jump tables for switch-statements with more than 5
+> > > case statements. An entry into the jump table is an indirect call,
+> > > which means that for CONFIG_RETPOLINE builds, this is rather
+> > > expensive.
+> > >=20
+> > > This commit replaces the switch-statement that acts on the XDP
+> > > program
+> > > result with an if-clause.
+> > >=20
+> > > The if-clause was also refactored into a common function that can be
+> > > used by AF_XDP zero-copy and non-zero-copy code.
+> >=20
+> > Isn't it fixed upstream by now already (also in gcc)?
+> >=20
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/comm=
+it/?id=3Dce02ef06fcf7a399a6276adb83f37373d10cbbe1
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/comm=
+it/?id=3Da9d57ef15cbe327fe54416dd194ee0ea66ae53a4
+> >=20
 >=20
-> >
-> > thanks,
-> > Michal
-> >
-> > >
-> > > Also please don't use comments inside function calls, it complicates
-> > > various checkers without real need.
-> > > dev->ops->iwarp_set_engine_affin(dev->cdev, true /* reset */);
-> > >                                                 ^^^^^^^^^^^^^^
-> > > Thanks
+> Hmm, given that Daniel's work is upstream, this patch doesn't really
+> make sense any more. OTOH it can stay in the series, and be cleaned up
+> later.
+>=20
+> I'll leave it for you to decide, Jeff!
+
+I am already making revisions to the series due to another patch, so if
+these changes are no longer needed to improve performance in RETPOLINE
+builds, then lets drop it.
+
+Bj=C3=B6rn, can you confirm that with or without these changes, XDP perform=
+ance
+stays the same for RETPOLINE builds?
+
+--=-MbaSF+XY3PvY1kLHplAo
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAlzLVaAACgkQ5W/vlVpL
+7c5dtA/+KH0OZ0Jj0d51xdf6Fhor0hJauecW54myanjnJXt/z+3kBu3/1GK9yo5A
+oAazQT4QI1ev+TkJ0CLPRM6pt9C6u66P+4sSYq2R3swOg2CNpkkgp6ES3kUhOFoR
+BXQ+ru0JKqMMQX5BgNZs3ckicJxE1U2m9Q6S8W/THHiStSqmTqKD9YSsUJdNqJYc
+OB7UEGxss3hV92dIyc9mD8TSXw+ejG5Al9TvXit0CFFiB8P6rFsO+EwWBM6giwo8
+saqpftncCrUZBV1hCm9GkPSMK6nnB0RTEaxGbtpnN4nRoGW0ugpmME1kncv7kE9q
+hIZiDxB/6wIRJxexbu3rCRHPxdiYmfnwlaR6JhIUiMK7S9nPJwXrKL3M42j2a3Zk
+c07ZL2n8q+OMU5c9pMie3mthcXKQXr0ZeCkz8a5IJy9DiDmRaM3w/yr8gWTOqZlW
+ntwhb4HgRagOHvF+RxdGM7GIGc3f1W4LWrNu8s+dWDKJu/OoLGin5B/RisejQAZI
+lfzeOY2P0Mkg0yHrRoAHUd97ISOa2Kr5UG51IIyBjvv5J6U9S3nW7U/QziaCEAjC
+t0PVW/Z0F9jqzhDdQfY8rNnBMnUYMUpUC6U++AGMYABeGt73NhRN60sfdDu8f8Ge
+rXHstSOanlH7NKYqJ7YMyUrlWbxqp9hGtUo4z269eXAe6O7tnxc=
+=sjKw
+-----END PGP SIGNATURE-----
+
+--=-MbaSF+XY3PvY1kLHplAo--
+
