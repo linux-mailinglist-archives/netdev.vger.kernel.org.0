@@ -2,137 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03881111C2
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 04:57:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 901D9111C8
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 05:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726378AbfEBC5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 22:57:19 -0400
-Received: from ozlabs.org ([203.11.71.1]:36495 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726183AbfEBC5T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 May 2019 22:57:19 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 44vg0W1XhVz9s55;
-        Thu,  2 May 2019 12:57:14 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1556765835;
-        bh=njGjmv1Kh8IKRDfr0l6tcSALENdRE1UnT9QoiUBRVAI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=gc4kd9qCBbgSsgMBu7chfvC91er2ncqKN/18IVqhLHwRMO28EjyEawJDhcz4j3Edk
-         4aqV1y7ZB08ffZ0+VEYDAlL025YfmwG/yzviHYsTg6tz7FVbCLgFE4jKILFdUzkbQH
-         3PtEfoYuTIhKGl/L4VhYQuDwBcfqp1LA8BMIKhspRJ1S43SQJjTRO0LnHw75YJvWl/
-         nU1ixYwKE2ibaG5JirGl0ZJE9WZWnGL/lWlhsPjsfVCdG/g03EGMsEoyLO/Zw2WvKb
-         WE7aJLqd6LlzSWJ2LSscL/71BtuC9hFvBYwI8C/1g0gn4QzkBTcstBts/FFmsL4oqF
-         71J8FXvV4KGng==
-Date:   Thu, 2 May 2019 12:57:13 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20190502125713.062a6c03@canb.auug.org.au>
+        id S1726310AbfEBDFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 23:05:21 -0400
+Received: from zeniv.linux.org.uk ([195.92.253.2]:44140 "EHLO
+        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726183AbfEBDFU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 23:05:20 -0400
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92 #3 (Red Hat Linux))
+        id 1hM210-0001NK-Lx; Thu, 02 May 2019 03:04:06 +0000
+Date:   Thu, 2 May 2019 04:04:06 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Wenbin Zeng <wenbin.zeng@gmail.com>
+Cc:     davem@davemloft.net, bfields@fieldses.org, jlayton@kernel.org,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        wenbinzeng@tencent.com, dsahern@gmail.com,
+        nicolas.dichtel@6wind.com, willy@infradead.org,
+        edumazet@google.com, jakub.kicinski@netronome.com,
+        tyhicks@canonical.com, chuck.lever@oracle.com, neilb@suse.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-nfs@vger.kernel.org
+Subject: Re: [PATCH 1/3] nsfs: add evict callback into struct
+ proc_ns_operations
+Message-ID: <20190502030406.GT23075@ZenIV.linux.org.uk>
+References: <1556692945-3996-1-git-send-email-wenbinzeng@tencent.com>
+ <1556692945-3996-2-git-send-email-wenbinzeng@tencent.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/xX1HVvcycWHYg5aSwOZ0mB5"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1556692945-3996-2-git-send-email-wenbinzeng@tencent.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/xX1HVvcycWHYg5aSwOZ0mB5
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Wed, May 01, 2019 at 02:42:23PM +0800, Wenbin Zeng wrote:
+> The newly added evict callback shall be called by nsfs_evict(). Currently
+> only put() callback is called in nsfs_evict(), it is not able to release
+> all netns refcount, for example, a rpc client holds two netns refcounts,
+> these refcounts are supposed to be released when the rpc client is freed,
+> but the code to free rpc client is normally triggered by put() callback
+> only when netns refcount gets to 0, specifically:
+>     refcount=0 -> cleanup_net() -> ops_exit_list -> free rpc client
+> But netns refcount will never get to 0 before rpc client gets freed, to
+> break the deadlock, the code to free rpc client can be put into the newly
+> added evict callback.
+> 
+> Signed-off-by: Wenbin Zeng <wenbinzeng@tencent.com>
+> ---
+>  fs/nsfs.c               | 2 ++
+>  include/linux/proc_ns.h | 1 +
+>  2 files changed, 3 insertions(+)
+> 
+> diff --git a/fs/nsfs.c b/fs/nsfs.c
+> index 60702d6..5939b12 100644
+> --- a/fs/nsfs.c
+> +++ b/fs/nsfs.c
+> @@ -49,6 +49,8 @@ static void nsfs_evict(struct inode *inode)
+>  	struct ns_common *ns = inode->i_private;
+>  	clear_inode(inode);
+>  	ns->ops->put(ns);
+> +	if (ns->ops->evict)
+> +		ns->ops->evict(ns);
 
-Hi all,
-
-Today's linux-next merge of the net-next tree got a conflict in:
-
-  net/ipv6/route.c
-
-between commit:
-
-  886b7a50100a ("ipv6: A few fixes on dereferencing rt->from")
-
-from the net tree and commits:
-
-  85bd05deb35a ("ipv6: Pass fib6_result to ip6_rt_cache_alloc")
-  5012f0a5944c ("ipv6: Pass fib6_result to rt6_insert_exception")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/ipv6/route.c
-index 0520aca3354b,b18e85cd7587..000000000000
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@@ -3391,11 -3494,17 +3489,14 @@@ static void rt6_do_redirect(struct dst_
-  		     NDISC_REDIRECT, &ndopts);
- =20
-  	rcu_read_lock();
-- 	from =3D rcu_dereference(rt->from);
-- 	if (!from)
-+ 	res.f6i =3D rcu_dereference(rt->from);
- -	/* This fib6_info_hold() is safe here because we hold reference to rt
- -	 * and rt already holds reference to fib6_info.
- -	 */
- -	fib6_info_hold(res.f6i);
- -	rcu_read_unlock();
-++	if (!res.f6i)
- +		goto out;
- =20
-- 	nrt =3D ip6_rt_cache_alloc(from, &msg->dest, NULL);
-+ 	res.nh =3D &res.f6i->fib6_nh;
-+ 	res.fib6_flags =3D res.f6i->fib6_flags;
-+ 	res.fib6_type =3D res.f6i->fib6_type;
-+ 	nrt =3D ip6_rt_cache_alloc(&res, &msg->dest, NULL);
-  	if (!nrt)
-  		goto out;
- =20
-@@@ -3405,8 -3514,11 +3506,8 @@@
- =20
-  	nrt->rt6i_gateway =3D *(struct in6_addr *)neigh->primary_key;
- =20
- -	/* No need to remove rt from the exception table if rt is
- -	 * a cached route because rt6_insert_exception() will
- -	 * takes care of it
- -	 */
- +	/* rt6_insert_exception() will take care of duplicated exceptions */
-- 	if (rt6_insert_exception(nrt, from)) {
-+ 	if (rt6_insert_exception(nrt, &res)) {
-  		dst_release_immediate(&nrt->dst);
-  		goto out;
-  	}
-
---Sig_/xX1HVvcycWHYg5aSwOZ0mB5
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlzKXIkACgkQAVBC80lX
-0Gztzwf/ToY88yxVwWAUTvwTmg00mGiGlGcVjCVTR+uG3HsvYpqYdBDuS30OLXzZ
-3UVohdgPs40P9mB9aqWsXG857cej5wW03ATbtnNz9vHESBZgPOW5x53TkUR4Ua2D
-FwKtA19kMapS1B7DV8vqa+t+dWhzI17Surit6c/P/ev1WorvCC3Qps0Hyw8x83PF
-PWWzQCi7p/IwvsnbT3vSjnfy2QEW99AobT+FKHdTieq+germbds+t2jN7biszf6b
-xIPQ06qxWbNfwbBzkYVnMuBlRq//wk+q0eRyKHEkZlKmJBjDfoS6HLtDNAGql8mN
-AkcNUt8r21IdJTXVAasy/V/oCRWt/A==
-=+YCd
------END PGP SIGNATURE-----
-
---Sig_/xX1HVvcycWHYg5aSwOZ0mB5--
+What's to guarantee that ns will not be freed by ->put()?
+Confused...
