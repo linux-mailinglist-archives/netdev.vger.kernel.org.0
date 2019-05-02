@@ -2,124 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC4211C1A
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:03:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7AA11C26
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfEBPDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 11:03:06 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:39767 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbfEBPDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 11:03:06 -0400
-Received: by mail-ed1-f67.google.com with SMTP id e24so2408350edq.6;
-        Thu, 02 May 2019 08:03:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TkF9Hp+nVZ6H1AjfuCnC+ng5EY02GRsXnvKx+KkYxQo=;
-        b=Tq72OJ96OAc0q+hwdQt8AwjfNnkRAgsgXXrdf7XLuvTqDUQnWdQnS6+Kc1t9wv3dr7
-         hBgTWwYVionGn1ZW/yOB7YYHJ2Ba+r2iz80JKNN0RVEJe2tfec7SQbcEnxqRaxs+K1dB
-         cRugASuy2Lno6f/v/MhiheP8Sr7N/QMCll+3ZU02eUuJ5+4phLY2Kqo7ASque9H6FS8U
-         3CbV25rE2+LhqRzm9FlMgWKSrnZlXTSoL91AbJ/yCF3m1/mM7xwU2xhrM50lEmmyvHiZ
-         gEaMrPgIhzc9I7M7dyBQlz1ZEc641at3uRRo8+CjVYcLpjoDtLthxZIs11shbSjauNab
-         Wa3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TkF9Hp+nVZ6H1AjfuCnC+ng5EY02GRsXnvKx+KkYxQo=;
-        b=iS1lm8/ExioGps4mgiQDVJNS5nkwrI5snasC1OuPL0Ukw6kfKgBGM3B6DE1IYQ3z7X
-         cYRV0D3Cc14C3XPq6M9kA3d1EAgGzM90qNRdZOjCYlOQKcLu22Kdl81xEJOEXMFjZ88m
-         WrEmkVtv5k3rAOYxqOZ8ZIKIyx8vQriE6+a9nQew9mBSHSdJvTkqOaAd/bnJNn9YhIn1
-         ZU/WgEWTVM/cebzZ4uxEADsrB9ZyfRmxEf2W5PlIasd/P5mi44q/M9D0JCcAxKu+JpyI
-         guwa6NLLZHBWm+/FTvJ0kJI0cHG+9iP5Nj/HRdHBw7LwvZxmIuX7pGRCQOxsnc3hPrA5
-         T5FA==
-X-Gm-Message-State: APjAAAX8mDADEJqaydvYr7ZMC8c0pdeZ1oB1yVlMbMC4Bj+IG0CO7Qdd
-        eEFpSG7oiDEYClC2BBXxG24=
-X-Google-Smtp-Source: APXvYqxPK1tA48H7Ar4Sg5qBAablpNrcjB1TDiCPvPJRN12IfZH8s20HOQiU/dIQMS5rHkK6azQNRA==
-X-Received: by 2002:a17:906:9519:: with SMTP id u25mr2110038ejx.34.1556809383965;
-        Thu, 02 May 2019 08:03:03 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:4f9:2b:2b84::2])
-        by smtp.gmail.com with ESMTPSA id d59sm7450726edc.34.2019.05.02.08.03.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 May 2019 08:03:02 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH v2] rtw88: Make RA_MASK macros ULL
-Date:   Thu,  2 May 2019 08:02:10 -0700
-Message-Id: <20190502150209.4475-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190502150022.4182-1-natechancellor@gmail.com>
-References: <20190502150022.4182-1-natechancellor@gmail.com>
+        id S1726350AbfEBPGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 11:06:42 -0400
+Received: from mail.us.es ([193.147.175.20]:53922 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726197AbfEBPGm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 11:06:42 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 5E6D612BFF4
+        for <netdev@vger.kernel.org>; Thu,  2 May 2019 17:06:40 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4FA8ADA70D
+        for <netdev@vger.kernel.org>; Thu,  2 May 2019 17:06:40 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 42146DA70E; Thu,  2 May 2019 17:06:40 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2D0C2DA70D;
+        Thu,  2 May 2019 17:06:38 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 02 May 2019 17:06:38 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 09E074265A31;
+        Thu,  2 May 2019 17:06:38 +0200 (CEST)
+Date:   Thu, 2 May 2019 17:06:37 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Kristian Evensen <kristian.evensen@gmail.com>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH 07/31] netfilter: ctnetlink: Support L3 protocol-filter
+ on flush
+Message-ID: <20190502150637.6f7vqoxiheytg4le@salvia>
+References: <20181008230125.2330-1-pablo@netfilter.org>
+ <20181008230125.2330-8-pablo@netfilter.org>
+ <33d60747-7550-1fba-a068-9b78aaedbc26@6wind.com>
+ <CAKfDRXjY9J1yHz1px6-gbmrEYJi9P9+16Mez+qzqhYLr9MtCQg@mail.gmail.com>
+ <51b7d27b-a67e-e3c6-c574-01f50a860a5c@6wind.com>
+ <20190502074642.ph64t7uax73xuxeo@breakpoint.cc>
+ <20190502113151.xcnutl2eedjkftsb@salvia>
+ <627088b3-7134-2b9a-8be4-7c96d51a3b94@6wind.com>
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <627088b3-7134-2b9a-8be4-7c96d51a3b94@6wind.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns about the definitions of these macros (full warnings trimmed
-for brevity):
+On Thu, May 02, 2019 at 02:56:42PM +0200, Nicolas Dichtel wrote:
+> Le 02/05/2019 à 13:31, Pablo Neira Ayuso a écrit :
+> > On Thu, May 02, 2019 at 09:46:42AM +0200, Florian Westphal wrote:
+> >> Nicolas Dichtel <nicolas.dichtel@6wind.com> wrote:
+> >>> I understand your point, but this is a regression. Ignoring a field/attribute of
+> >>> a netlink message is part of the uAPI. This field exists for more than a decade
+> >>> (probably two), so you cannot just use it because nobody was using it. Just see
+> >>> all discussions about strict validation of netlink messages.
+> >>> Moreover, the conntrack tool exists also for ages and is an official tool.
+> >>
+> >> FWIW I agree with Nicolas, we should restore old behaviour and flush
+> >> everything when AF_INET is given.  We can add new netlink attr to
+> >> restrict this.
+> > 
+> > Let's use nfgenmsg->version for this. This is so far set to zero. We
+> > can just update userspace to set it to 1, so family is used.
+> > 
+> > The version field in the kernel size is ignored so far, so this should
+> > be enough. So we avoid that extract netlink attribute.
+>
+> Why making such a hack? If any userspace app set this field (simply because it's
+> not initialized), it will show up a new regression.
+> What is the problem of adding another attribute?
 
-drivers/net/wireless/realtek/rtw88/main.c:524:15: warning: signed shift
-result (0x3FF00000000) requires 43 bits to represent, but 'int' only has
-32 bits [-Wshift-overflow]
-                        ra_mask &= RA_MASK_VHT_RATES | RA_MASK_OFDM_IN_VHT;
-                                   ^~~~~~~~~~~~~~~~~
-drivers/net/wireless/realtek/rtw88/main.c:527:15: warning: signed shift
-result (0xFF0000000) requires 37 bits to represent, but 'int' only has
-32 bits [-Wshift-overflow]
-                        ra_mask &= RA_MASK_HT_RATES | RA_MASK_OFDM_IN_HT_5G;
-                                   ^~~~~~~~~~~~~~~~
+The version field was meant to deal with this case.
 
-Given that these are all used with ra_mask, which is of type u64, we can
-just declare the macros to be ULL as well.
-
-Fixes: e3037485c68e ("rtw88: new Realtek 802.11ac driver")
-Link: https://github.com/ClangBuiltLinux/linux/issues/467
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
-
-v1 -> v2:
-
-* Fix commit message wording (made -> make)...
-
- drivers/net/wireless/realtek/rtw88/main.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-index 9893e5e297e3..a14a5f1b4b6d 100644
---- a/drivers/net/wireless/realtek/rtw88/main.c
-+++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -462,15 +462,15 @@ static u8 get_rate_id(u8 wireless_set, enum rtw_bandwidth bw_mode, u8 tx_num)
- 
- #define RA_MASK_CCK_RATES	0x0000f
- #define RA_MASK_OFDM_RATES	0x00ff0
--#define RA_MASK_HT_RATES_1SS	(0xff000 << 0)
--#define RA_MASK_HT_RATES_2SS	(0xff000 << 8)
--#define RA_MASK_HT_RATES_3SS	(0xff000 << 16)
-+#define RA_MASK_HT_RATES_1SS	(0xff000ULL << 0)
-+#define RA_MASK_HT_RATES_2SS	(0xff000ULL << 8)
-+#define RA_MASK_HT_RATES_3SS	(0xff000ULL << 16)
- #define RA_MASK_HT_RATES	(RA_MASK_HT_RATES_1SS | \
- 				 RA_MASK_HT_RATES_2SS | \
- 				 RA_MASK_HT_RATES_3SS)
--#define RA_MASK_VHT_RATES_1SS	(0x3ff000 << 0)
--#define RA_MASK_VHT_RATES_2SS	(0x3ff000 << 10)
--#define RA_MASK_VHT_RATES_3SS	(0x3ff000 << 20)
-+#define RA_MASK_VHT_RATES_1SS	(0x3ff000ULL << 0)
-+#define RA_MASK_VHT_RATES_2SS	(0x3ff000ULL << 10)
-+#define RA_MASK_VHT_RATES_3SS	(0x3ff000ULL << 20)
- #define RA_MASK_VHT_RATES	(RA_MASK_VHT_RATES_1SS | \
- 				 RA_MASK_VHT_RATES_2SS | \
- 				 RA_MASK_VHT_RATES_3SS)
--- 
-2.21.0
-
+It has been not unused so far because we had no good reason.
