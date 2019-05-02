@@ -2,115 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE54911624
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 11:10:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 563421167B
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 11:20:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726249AbfEBJKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 05:10:43 -0400
-Received: from mail-eopbgr30067.outbound.protection.outlook.com ([40.107.3.67]:21694
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726196AbfEBJKm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 05:10:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mLoDalNMvJO2k9ZH9S2I3msqVINEPnwBYV3c1d4FHYc=;
- b=Eo3yE/UyUAi83xZd+52e4TW9y4zCx9h7Xanj7yGVMID4O5+fZ0Xz3lyEroJnD1c4XANKJow4Ism6K0ZnNAv3SYpSth7muXmym/8ITQi78+TIHxQ6L4GPTd2CO4beLiMX/uo1uVvbuNXwyHBJ5m/yC5OkHNwDt/8Zjc4/kbyuhgo=
-Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.50.159) by
- VI1PR04MB4221.eurprd04.prod.outlook.com (52.134.31.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1856.11; Thu, 2 May 2019 09:10:39 +0000
-Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
- ([fe80::81d8:f74b:f91e:f071]) by VI1PR04MB5134.eurprd04.prod.outlook.com
- ([fe80::81d8:f74b:f91e:f071%7]) with mapi id 15.20.1835.018; Thu, 2 May 2019
- 09:10:39 +0000
-From:   Laurentiu Tudor <laurentiu.tudor@nxp.com>
-To:     Christoph Hellwig <hch@infradead.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Madalin-cristian Bucur <madalin.bucur@nxp.com>,
-        Roy Pledge <roy.pledge@nxp.com>,
-        Camelia Alexandra Groza <camelia.groza@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH v2 7/9] dpaa_eth: fix iova handling for contiguous frames
-Thread-Topic: [PATCH v2 7/9] dpaa_eth: fix iova handling for contiguous frames
-Thread-Index: AQHU/MhTJGEcyHulVEGnKf6u21efK6ZQN+AAgAdbO3A=
-Date:   Thu, 2 May 2019 09:10:38 +0000
-Message-ID: <VI1PR04MB513490961A52D86E46C02B49EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
-References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
- <20190427071031.6563-8-laurentiu.tudor@nxp.com>
- <20190427164612.GA12450@infradead.org>
-In-Reply-To: <20190427164612.GA12450@infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=laurentiu.tudor@nxp.com; 
-x-originating-ip: [192.88.166.1]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 949729a3-b344-4971-ab0e-08d6cede0b7c
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR04MB4221;
-x-ms-traffictypediagnostic: VI1PR04MB4221:
-x-microsoft-antispam-prvs: <VI1PR04MB42210DAD43AADA76D8A8ACE7EC340@VI1PR04MB4221.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 0025434D2D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(366004)(39860400002)(136003)(376002)(396003)(13464003)(51444003)(199004)(189003)(66066001)(33656002)(44832011)(476003)(14444005)(71190400001)(486006)(71200400001)(186003)(2906002)(55016002)(52536014)(53936002)(9686003)(6246003)(229853002)(6116002)(3846002)(11346002)(256004)(446003)(81156014)(8936002)(8676002)(6916009)(5660300002)(81166006)(54906003)(14454004)(99286004)(25786009)(76176011)(478600001)(6506007)(26005)(102836004)(7696005)(6436002)(68736007)(305945005)(74316002)(66446008)(64756008)(73956011)(86362001)(316002)(66946007)(66556008)(4326008)(76116006)(66476007)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB4221;H:VI1PR04MB5134.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: sBJMuIh7ZVYNoZaRTfgNPy7W7P809zWGFM7EdbsDCmnSHzLgZlornyv/IW//mcN2XIS2kJjfm9i9DhL66lMFSVpk4FWkVORjMuOGhDfnE1oN2kB9LH/bMbsy+Rq7KQSNY+LZCc/ZPMltm9u69EnlvTLZLs5wMVA1YVIhgo0r+7RkycaJs8L/uA6tAU8IS6sauefu7JrQQ18JMPqT2RtCPWbebKWv80Th8YZPBXMuT2IACjl6UQmr1YMla/T2W7nNf5pXLPDV6YcxAynNPZF9CandBotx9sEGUNSPVJKYJTF/aA589lwKYJlUcprD71tGZFAVVqt+piXg8RgPBMb9alv93I6usw/08pmjDFol4ZZimGFb01fq4g7EBlZJlyAXyxFUBPXPhH4EvUH2hhi6AjL3rtmua/7UabMVKiA2eAI=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726231AbfEBJU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 05:20:26 -0400
+Received: from mga18.intel.com ([134.134.136.126]:20806 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726202AbfEBJU0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 05:20:26 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 May 2019 02:20:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,421,1549958400"; 
+   d="asc'?scan'208";a="342664452"
+Received: from vbhyrapu-mobl.amr.corp.intel.com ([10.252.138.72])
+  by fmsmga005.fm.intel.com with ESMTP; 02 May 2019 02:20:25 -0700
+Message-ID: <74f5b137ac9af4bbceb7ba08d2de94e972e0fda4.camel@intel.com>
+Subject: Re: [net-next 12/12] i40e: Introduce recovery mode support
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Piotr Marczak <piotr.marczak@intel.com>,
+        Don Buchholz <donald.buchholz@intel.com>
+Date:   Thu, 02 May 2019 02:20:24 -0700
+In-Reply-To: <20190429210755.0de283ed@cakuba>
+References: <20190429191628.31212-1-jeffrey.t.kirsher@intel.com>
+         <20190429191628.31212-13-jeffrey.t.kirsher@intel.com>
+         <20190429210755.0de283ed@cakuba>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-28NwW8wvmwfnvd8jxxKn"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 949729a3-b344-4971-ab0e-08d6cede0b7c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 May 2019 09:10:38.8633
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4221
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--=-28NwW8wvmwfnvd8jxxKn
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> -----Original Message-----
-> From: Christoph Hellwig <hch@infradead.org>
-> Sent: Saturday, April 27, 2019 7:46 PM
+On Mon, 2019-04-29 at 21:07 -0400, Jakub Kicinski wrote:
+> On Mon, 29 Apr 2019 12:16:28 -0700, Jeff Kirsher wrote:
+> > From: Alice Michael <alice.michael@intel.com>
+> >=20
+> > This patch introduces "recovery mode" to the i40e driver. It is
+> > part of a new Any2Any idea of upgrading the firmware. In this
+> > approach, it is required for the driver to have support for
+> > "transition firmware", that is used for migrating from structured
+> > to flat firmware image. In this new, very basic mode, i40e driver
+> > must be able to handle particular IOCTL calls from the NVM Update
+> > Tool and run a small set of AQ commands.
 >=20
-> On Sat, Apr 27, 2019 at 10:10:29AM +0300, laurentiu.tudor@nxp.com wrote:
-> > From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> >
-> > The driver relies on the no longer valid assumption that dma addresses
-> > (iovas) are identical to physical addressees and uses phys_to_virt() to
-> > make iova -> vaddr conversions. Fix this by adding a function that does
-> > proper iova -> phys conversions using the iommu api and update the code
-> > to use it.
-> > Also, a dma_unmap_single() call had to be moved further down the code
-> > because iova -> vaddr conversions were required before the unmap.
-> > For now only the contiguous frame case is handled and the SG case is
-> > split in a following patch.
-> > While at it, clean-up a redundant dpaa_bpid2pool() and pass the bp
-> > as parameter.
+> Could you show us commands that get executed?  I think that'd be much
+> quicker for people to parse.
 >=20
-> Err, this is broken.  A driver using the DMA API has no business
-> call IOMMU APIs.  Just save the _virtual_ address used for the mapping
-> away and use that again.  We should not go through crazy gymnastics
-> like this.
+> > Signed-off-by: Alice Michael <alice.michael@intel.com>
+> > Signed-off-by: Piotr Marczak <piotr.marczak@intel.com>
+> > Tested-by: Don Buchholz <donald.buchholz@intel.com>
+> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+>=20
+> From a cursory look it seems you create a "basic" netdev.  Can this
+> netdev pass traffic?
+>=20
+> I'd suggest you implement devlink "limp mode".  Devlink can flash the
+> device now.  You can register a devlink instance without registering
+> any "minimal" netdevs, and flash with devlink.
 
-I think that due to the particularity of this hardware we don't have a way =
-of saving the VA, but I'd let my colleagues maintaining this driver to comm=
-ent more on why we need to do this.
+Good to know, currently this driver and our other LAN drivers do not have
+devlink support, but we are currently working to rectify that.  I am hoping
+that we can get devlink support in i40e and other drivers in the 5.3 or 5.4
+kernel. =20
 
----
-Best Regards, Laurentiu
+Alice has updated this patch to add the requested additional information to
+the patch description and cleaned up the code not intended for the Linux
+kernel driver.  So I will resubmit this series with the updates, once it
+goes through our validation checks.
+
+>=20
+> > @@ -13904,6 +14007,134 @@ void i40e_set_fec_in_flags(u8 fec_cfg, u32
+> > *flags)
+> >  		*flags &=3D ~(I40E_FLAG_RS_FEC | I40E_FLAG_BASE_R_FEC);
+> >  }
+> > =20
+> > +/**
+> > + * i40e_check_recovery_mode - check if we are running transition
+> > firmware
+> > + * @pf: board private structure
+> > + *
+> > + * Check registers indicating the firmware runs in recovery mode. Sets
+> > the
+> > + * appropriate driver state.
+> > + *
+> > + * Returns true if the recovery mode was detected, false otherwise
+> > + **/
+> > +static bool i40e_check_recovery_mode(struct i40e_pf *pf)
+> > +{
+> > +	u32 val =3D rd32(&pf->hw, I40E_GL_FWSTS);
+> > +
+> > +	if (val & I40E_GL_FWSTS_FWS1B_MASK) {
+> > +		dev_notice(&pf->pdev->dev, "Firmware recovery mode
+> > detected. Limiting functionality.\n");
+> > +		dev_notice(&pf->pdev->dev, "Refer to the Intel(R) Ethernet
+> > Adapters and Devices User Guide for details on firmware recovery
+> > mode.\n");
+> > +		set_bit(__I40E_RECOVERY_MODE, pf->state);
+> > +
+> > +		return true;
+> > +	}
+> > +	if (test_and_clear_bit(__I40E_RECOVERY_MODE, pf->state))
+> > +		dev_info(&pf->pdev->dev, "Reinitializing in normal mode
+> > with full functionality.\n");
+> > +
+> > +	return false;
+> > +}
+> > +
+> > +/**
+> > + * i40e_init_recovery_mode - initialize subsystems needed in recovery
+> > mode
+> > + * @pf: board private structure
+> > + * @hw: ptr to the hardware info
+> > + *
+> > + * This function does a minimal setup of all subsystems needed for
+> > running
+> > + * recovery mode.
+> > + *
+> > + * Returns 0 on success, negative on failure
+> > + **/
+> > +static int i40e_init_recovery_mode(struct i40e_pf *pf, struct i40e_hw
+> > *hw)
+> > +{
+> > +	struct i40e_vsi *vsi;
+> > +	int err;
+> > +	int v_idx;
+> > +
+> > +#ifdef HAVE_PCI_ERS
+> > +	pci_save_state(pf->pdev);
+> > +#endif
+> > +
+> > +	/* set up periodic task facility */
+> > +	timer_setup(&pf->service_timer, i40e_service_timer, 0);
+> > +	pf->service_timer_period =3D HZ;
+> > +
+> > +	INIT_WORK(&pf->service_task, i40e_service_task);
+> > +	clear_bit(__I40E_SERVICE_SCHED, pf->state);
+> > +
+> > +	err =3D i40e_init_interrupt_scheme(pf);
+> > +	if (err)
+> > +		goto err_switch_setup;
+> > +
+> > +	/* The number of VSIs reported by the FW is the minimum guaranteed
+> > +	 * to us; HW supports far more and we share the remaining pool with
+> > +	 * the other PFs. We allocate space for more than the guarantee
+> > with
+> > +	 * the understanding that we might not get them all later.
+> > +	 */
+> > +	if (pf->hw.func_caps.num_vsis < I40E_MIN_VSI_ALLOC)
+> > +		pf->num_alloc_vsi =3D I40E_MIN_VSI_ALLOC;
+> > +	else
+> > +		pf->num_alloc_vsi =3D pf->hw.func_caps.num_vsis;
+> > +
+> > +	/* Set up the vsi struct and our local tracking of the MAIN PF vsi.
+> > */
+> > +	pf->vsi =3D kcalloc(pf->num_alloc_vsi, sizeof(struct i40e_vsi *),
+> > +			  GFP_KERNEL);
+> > +	if (!pf->vsi) {
+> > +		err =3D -ENOMEM;
+> > +		goto err_switch_setup;
+> > +	}
+> > +
+> > +	/* We allocate one VSI which is needed as absolute minimum
+> > +	 * in order to register the netdev
+> > +	 */
+> > +	v_idx =3D i40e_vsi_mem_alloc(pf, I40E_VSI_MAIN);
+> > +	if (v_idx < 0)
+> > +		goto err_switch_setup;
+> > +	pf->lan_vsi =3D v_idx;
+> > +	vsi =3D pf->vsi[v_idx];
+> > +	if (!vsi)
+> > +		goto err_switch_setup;
+> > +	vsi->alloc_queue_pairs =3D 1;
+> > +	err =3D i40e_config_netdev(vsi);
+> > +	if (err)
+> > +		goto err_switch_setup;
+> > +	err =3D register_netdev(vsi->netdev);
+> > +	if (err)
+> > +		goto err_switch_setup;
+> > +	vsi->netdev_registered =3D true;
+> > +	i40e_dbg_pf_init(pf);
+> > +
+> > +	err =3D i40e_setup_misc_vector_for_recovery_mode(pf);
+> > +	if (err)
+> > +		goto err_switch_setup;
+> > +
+> > +	/* tell the firmware that we're starting */
+> > +	i40e_send_version(pf);
+> > +
+> > +	/* since everything's happy, start the service_task timer */
+> > +	mod_timer(&pf->service_timer,
+> > +		  round_jiffies(jiffies + pf->service_timer_period));
+> > +
+> > +	return 0;
+> > +
+> > +err_switch_setup:
+> > +	i40e_reset_interrupt_capability(pf);
+> > +	del_timer_sync(&pf->service_timer);
+> > +#ifdef NOT_FOR_UPSTREAM
+>=20
+> Delightful :)
+>=20
+> > +	dev_warn(&pf->pdev->dev, "previous errors forcing module to load in
+> > debug mode\n");
+> > +	i40e_dbg_pf_init(pf);
+> > +	set_bit(__I40E_DEBUG_MODE, pf->state);
+> > +	return 0;
+> > +#else
+> > +	i40e_shutdown_adminq(hw);
+> > +	iounmap(hw->hw_addr);
+> > +	pci_disable_pcie_error_reporting(pf->pdev);
+> > +	pci_release_mem_regions(pf->pdev);
+> > +	pci_disable_device(pf->pdev);
+> > +	kfree(pf);
+> > +
+> > +	return err;
+> > +#endif
+> > +}
+> > +
+> >  /**
+> >   * i40e_probe - Device initialization routine
+> >   * @pdev: PCI device information struct
+
+
+--=-28NwW8wvmwfnvd8jxxKn
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAlzKtlgACgkQ5W/vlVpL
+7c5mNg/9E5YIkozfy+J2aN5gxaMwHzw2X7D3gHHXmqWBa2mN0afUVOEz24ldPL3s
+jYJngRMfMjaiBm0s2bdUmlT51Ljm+YTS0/rQTM6PEPVj5jwM8P3Nl2sJAGA19MW+
+JcujkPrW746e1TNltFBgWqzXrBCw2h1XCBoA/wBs54opGU3kjNzPnbfJTCIHtlJe
+0Pga+d4QRkKh//Ff1TTZdDXSGD5dK9+v6vZ2W6vreAu+c4pphmdH3yN8C12B3Pmu
+TamZpvJe6lw5z6HPJ+7e25QhXADHoaEpLSL9MlRZTzjX1Tnsb4CG9fM5IthR+s0+
+gicvjsPetXc1Cb9CQ/jhEKtzC0Gk1OhSUokKphO5wcbdU49HV9TQA5zxXdtdQYEI
+NirwOOprn4RV52GX4F8eELfbJY/+GOZqXuiNWScG2dNuKJPYkuwyzaozulCxunNs
+5WKTqE5BQqrxQr++CP4ise6lfVswchvprLs9mZ7X+Oif7aywl62pCzXS5YfbmoCL
+HfyUzIfxNo/+UjTix+6xWbeqqsJob2PkyepVdPgtC/6meuPGHb1YkbceoJ3QKM99
+MT3E/CgyX8v6qyklQD6XBUuXhVKL0qYarOY6VijNb93t3FF1i4mG17Lhab2sAi97
+g/VbM/eFlurXGzsES5ZQt71Um7xpmx+nHc0H3o11za7Ft+jDT3A=
+=bSux
+-----END PGP SIGNATURE-----
+
+--=-28NwW8wvmwfnvd8jxxKn--
+
