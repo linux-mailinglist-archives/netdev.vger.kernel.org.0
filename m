@@ -2,71 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F27C41127E
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 07:13:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B92711345
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 08:18:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725807AbfEBFN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 01:13:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55542 "EHLO mail.kernel.org"
+        id S1726231AbfEBGSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 02:18:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51646 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725681AbfEBFN1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 01:13:27 -0400
+        id S1726202AbfEBGSF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 02:18:05 -0400
 Received: from localhost (unknown [37.142.3.125])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1AD6B2081C;
-        Thu,  2 May 2019 05:13:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D1CC42085A;
+        Thu,  2 May 2019 06:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556774006;
-        bh=CrH2zf+C2T7OR/wQ8PNnjw3DEiFgZssh6zb6un90Zps=;
+        s=default; t=1556777884;
+        bh=XXaTpMTC9nZg6UM+aFyb7QneNlScezsgXqar1ar7ohs=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LWEwJ23DjdMowrXBg/ptNJY41dX3+6r/soZmIhRqjhArv/nEMECbV0p6BWdu5SCvd
-         I1Re0hhrd7ewlsJVYEe40l2fgrUFv4LFxbUJ7E9Rs8ivC99nE/4OsZvU8t+dEFK7lQ
-         jth9gdv6zlczoDm2VKJjyb0Vx0Dufh59VlSWVZF8=
-Date:   Thu, 2 May 2019 08:13:20 +0300
+        b=dfeSjGR6puxpygJv9D51wnnPZiK4wDMVqUtRB1rQdDRyvrVQPkZTA2DMIZ2Tz4GVw
+         CU7tXZdnd6xqSabbxDnXd0YsA4ztxlf1kPh4VEbWE/hMDQs3Evb0WjFemcK9EE+dHv
+         UeGXXOfyyXRHfB7hzxejOWAcobMBOEb/jsHB8vk8=
+Date:   Thu, 2 May 2019 09:18:00 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     michal.kalderon@marvell.com, David Miller <davem@davemloft.net>
-Cc:     ariel.elior@marvell.com, jgg@ziepe.ca, dledford@redhat.com,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Subject: Re: [PATCH net-next 07/10] qed*: Add iWARP 100g support
-Message-ID: <20190502051320.GF7676@mtr-leonro.mtl.com>
-References: <20190501095722.6902-1-michal.kalderon@marvell.com>
- <20190501095722.6902-8-michal.kalderon@marvell.com>
- <20190501.203522.1577716429222042609.davem@davemloft.net>
+To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [net-next][PATCH v2 2/2] rds: add sysctl for rds support of
+ On-Demand-Paging
+Message-ID: <20190502061800.GL7676@mtr-leonro.mtl.com>
+References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
+ <1556581040-4812-3-git-send-email-santosh.shilimkar@oracle.com>
+ <20190501074500.GC7676@mtr-leonro.mtl.com>
+ <81e6e4c1-a57c-0f66-75ad-90f75417cc4a@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20190501.203522.1577716429222042609.davem@davemloft.net>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <81e6e4c1-a57c-0f66-75ad-90f75417cc4a@oracle.com>
 User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 01, 2019 at 08:35:22PM -0400, David Miller wrote:
-> From: Michal Kalderon <michal.kalderon@marvell.com>
-> Date: Wed, 1 May 2019 12:57:19 +0300
->
-> > diff --git a/drivers/infiniband/hw/qedr/main.c b/drivers/infiniband/hw/qedr/main.c
-> > index d93c8a893a89..8bc6775abb79 100644
-> > --- a/drivers/infiniband/hw/qedr/main.c
-> > +++ b/drivers/infiniband/hw/qedr/main.c
-> > @@ -52,6 +52,10 @@ MODULE_DESCRIPTION("QLogic 40G/100G ROCE Driver");
-> >  MODULE_AUTHOR("QLogic Corporation");
-> >  MODULE_LICENSE("Dual BSD/GPL");
+On Wed, May 01, 2019 at 10:54:50AM -0700, Santosh Shilimkar wrote:
+> On 5/1/2019 12:45 AM, Leon Romanovsky wrote:
+> > On Mon, Apr 29, 2019 at 04:37:20PM -0700, Santosh Shilimkar wrote:
+> > > RDS doesn't support RDMA on memory apertures that require On Demand
+> > > Paging (ODP), such as FS DAX memory. A sysctl is added to indicate
+> > > whether RDMA requiring ODP is supported.
+> > >
+> > > Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
+> > > Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+> > > Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+> > > Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+> > > ---
+> > >   net/rds/ib.h        | 1 +
+> > >   net/rds/ib_sysctl.c | 8 ++++++++
+> > >   2 files changed, 9 insertions(+)
 > >
-> > +static uint iwarp_cmt;
-> > +module_param(iwarp_cmt, uint, 0444);
-> > +MODULE_PARM_DESC(iwarp_cmt, " iWARP: Support CMT mode. 0 - Disabled, 1 - Enabled. Default: Disabled");
-> > +
+> > This sysctl is not needed at all
+> >
+> Its needed for application to check the support of the ODP support
+> feature which in progress. Failing the RDS_GET_MR was just one path
+> and we also support inline MR registration along with message request.
 >
-> Sorry no, this is totally beneath us.
+> Basically application runs on different kernel versions and to be
+> portable, it will check if underneath RDS support ODP and then only
+> use RDMA. If not it will fallback to buffer copy mode. Hope
+> it clarifies.
 
-It is not acceptable for RDMA too.
+Using ODP sysctl to determine if to use RDMA or not, looks like very
+problematic approach. How old applications will work in such case
+without knowledge of such sysctl?
+How new applications will distinguish between ODP is not supported, but
+RDMA works?
 
-Also please don't use comments inside function calls, it complicates
-various checkers without real need.
-dev->ops->iwarp_set_engine_affin(dev->cdev, true /* reset */);
-                                                ^^^^^^^^^^^^^^
 Thanks
+
+>
+>
+> Regards,
+> Santosh
