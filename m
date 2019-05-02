@@ -2,63 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7E29119DA
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 15:13:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBDFA119E1
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 15:14:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726508AbfEBNNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 09:13:09 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:56028 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbfEBNNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 09:13:09 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hMBWI-0002Bu-CD; Thu, 02 May 2019 15:13:02 +0200
-Message-ID: <ab9b48a0e21d0a9e5069045c23db36f43e4356e3.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next 1/3] genetlink: do not validate dump requests
- if there is no policy
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Michal Kubecek <mkubecek@suse.cz>
+        id S1726357AbfEBNOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 09:14:19 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38550 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726197AbfEBNOS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 09:14:18 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id A1BE5AEFD;
+        Thu,  2 May 2019 13:14:16 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 4FEBFE0117; Thu,  2 May 2019 15:14:16 +0200 (CEST)
+Date:   Thu, 2 May 2019 15:14:16 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Johannes Berg <johannes@sipsolutions.net>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         David Ahern <dsahern@gmail.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Thu, 02 May 2019 15:13:00 +0200
-In-Reply-To: <20190502131023.GD21672@unicorn.suse.cz>
+Subject: Re: [PATCH net-next 3/3] netlink: add validation of NLA_F_NESTED flag
+Message-ID: <20190502131416.GE21672@unicorn.suse.cz>
 References: <cover.1556798793.git.mkubecek@suse.cz>
-         <0a54a4db49c20e76a998ea3e4548b22637fbad34.1556798793.git.mkubecek@suse.cz>
-         <031933f3fc4b26e284912771b480c87483574bea.camel@sipsolutions.net>
-         <20190502131023.GD21672@unicorn.suse.cz>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+ <75a0887b3eb70005c272685d8ef9a712f37d7a54.1556798793.git.mkubecek@suse.cz>
+ <3e8291cb2491e9a1830afdb903ed2c52e9f7475c.camel@sipsolutions.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3e8291cb2491e9a1830afdb903ed2c52e9f7475c.camel@sipsolutions.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-05-02 at 15:10 +0200, Michal Kubecek wrote:
-> On Thu, May 02, 2019 at 02:51:33PM +0200, Johannes Berg wrote:
-> > On Thu, 2019-05-02 at 12:48 +0000, Michal Kubecek wrote:
-> > > Unlike do requests, dump genetlink requests now perform strict validation
-> > > by default even if the genetlink family does not set policy and maxtype
-> > > because it does validation and parsing on its own (e.g. because it wants to
-> > > allow different message format for different commands). While the null
-> > > policy will be ignored, maxtype (which would be zero) is still checked so
-> > > that any attribute will fail validation.
-> > > 
-> > > The solution is to only call __nla_validate() from genl_family_rcv_msg()
-> > > if family->maxtype is set.
+On Thu, May 02, 2019 at 02:54:56PM +0200, Johannes Berg wrote:
+> On Thu, 2019-05-02 at 12:48 +0000, Michal Kubecek wrote:
+> > Add new validation flag NL_VALIDATE_NESTED which adds three consistency
+> > checks of NLA_F_NESTED_FLAG:
 > > 
-> > D'oh. Which family was it that you found this on? I checked only ones
-> > with policy I guess.
+> >   - the flag is set on attributes with NLA_NESTED{,_ARRAY} policy
+> >   - the flag is not set on attributes with other policies except NLA_UNSPEC
+> >   - the flag is set on attribute passed to nla_parse_nested()
 > 
-> It was with my ethtool netlink series (still work in progress).
+> Looks good to me!
+> 
+> > @@ -415,7 +418,8 @@ enum netlink_validation {
+> >  #define NL_VALIDATE_STRICT (NL_VALIDATE_TRAILING |\
+> >  			    NL_VALIDATE_MAXTYPE |\
+> >  			    NL_VALIDATE_UNSPEC |\
+> > -			    NL_VALIDATE_STRICT_ATTRS)
+> > +			    NL_VALIDATE_STRICT_ATTRS |\
+> > +			    NL_VALIDATE_NESTED)
+> 
+> This is fine _right now_, but in general we cannot keep adding here
+> after the next release :-)
 
-Then you should probably *have* a policy to get all the other goodies
-like automatic policy export (once I repost those patches)
+Right, that's why I would like to get this into the same cycle as your
+series.
 
-johannes
+> >  int netlink_rcv_skb(struct sk_buff *skb,
+> >  		    int (*cb)(struct sk_buff *, struct nlmsghdr *,
+> > @@ -1132,6 +1136,10 @@ static inline int nla_parse_nested(struct nlattr *tb[], int maxtype,
+> >  				   const struct nla_policy *policy,
+> >  				   struct netlink_ext_ack *extack)
+> >  {
+> > +	if (!(nla->nla_type & NLA_F_NESTED)) {
+> > +		NL_SET_ERR_MSG_ATTR(extack, nla, "nested attribute expected");
+> 
+> Maybe reword that to say "NLA_F_NESTED is missing" or so? The "nested
+> attribute expected" could result in a lot of headscratching (without
+> looking at the code) because it looks nested if you do nla_nest_start()
+> etc.
 
+How about "NLA_F_NESTED is missing" and "NLA_F_NESTED not expected"?
+
+> 
+> > +		return -EINVAL;
+> > +	}
+> >  	return __nla_parse(tb, maxtype, nla_data(nla), nla_len(nla), policy,
+> >  			   NL_VALIDATE_STRICT, extack);
+> 
+> I'd probably put a blank line there but ymmv.
+
+OK
+
+> >  }
+> > diff --git a/lib/nlattr.c b/lib/nlattr.c
+> > index adc919b32bf9..92da65cb6637 100644
+> > --- a/lib/nlattr.c
+> > +++ b/lib/nlattr.c
+> > @@ -184,6 +184,21 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
+> >  		}
+> >  	}
+> >  
+> > +	if (validate & NL_VALIDATE_NESTED) {
+> > +		if ((pt->type == NLA_NESTED || pt->type == NLA_NESTED_ARRAY) &&
+> > +		    !(nla->nla_type & NLA_F_NESTED)) {
+> > +			NL_SET_ERR_MSG_ATTR(extack, nla,
+> > +					    "nested attribute expected");
+> > +			return -EINVAL;
+> > +		}
+> > +		if (pt->type != NLA_NESTED && pt->type != NLA_NESTED_ARRAY &&
+> > +		    pt->type != NLA_UNSPEC && (nla->nla_type & NLA_F_NESTED)) {
+> > +			NL_SET_ERR_MSG_ATTR(extack, nla,
+> > +					    "nested attribute not expected");
+> > +			return -EINVAL;
+> 
+> Same comment here wrt. the messages, I think they should more explicitly
+> refer to the flag.
+> 
+> johannes
+> 
+> (PS: if you CC me on this address I generally can respond quicker)
+
+I'll try to keep that in mind.
+
+Michal
