@@ -2,91 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A804312314
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 22:18:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8391912318
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 22:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726341AbfEBUSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 16:18:54 -0400
-Received: from mail-it1-f193.google.com ([209.85.166.193]:39924 "EHLO
-        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbfEBUSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 16:18:54 -0400
-Received: by mail-it1-f193.google.com with SMTP id t200so5682241itf.4;
-        Thu, 02 May 2019 13:18:54 -0700 (PDT)
+        id S1726327AbfEBUUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 16:20:04 -0400
+Received: from mail-it1-f196.google.com ([209.85.166.196]:35129 "EHLO
+        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbfEBUUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 16:20:04 -0400
+Received: by mail-it1-f196.google.com with SMTP id l140so5715742itb.0;
+        Thu, 02 May 2019 13:20:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BqrdERgYm6oaGKzw62ZugOufogtv2Ccque8qwoUuCvs=;
-        b=ZcsBdqCC6n31fkPJ8ASfbQWNAEEs6BUW0COVKXsow4GizghE73TsCSVKffmYPpRD6M
-         5rl5YpDT+m3fCNXTwjL/luVLKdJLHfg1cHd96VbZf+UKwZVpCOfNirDGB7oc2JOHWsWy
-         ahW/Ukl02kdIltUB9LG1sdMl2LS9Y9tEiZc2tI9XE+mAn1juFrE7NMIFS6WQZEg690JQ
-         RsNyS6j8GpCTAgO0NN6MGq3x6MRdTQwdBFbn7MYsO8X8DMGjh8YEMpzj8+3YynwC3NmR
-         eJCS6XLN0J7NQnGdxyxEuvS9pitLDIrAZ0DiNF37DIHhlskFcYLRE4JcWR9ITzboUlWV
-         Oy+A==
+        bh=8rF3Gnx4uVH4vT8m+J/MHBp1IFdWlP4V/lANQLuXU0M=;
+        b=RQFE7+4k4M8+wYI1I36VEomE+70DTGRCY2e78zXFq+B81n8sxAx18GFz4GgO3NFQ+f
+         i5iUxn5WZnAVv3I8mWshGlNK4Splcr+bnc3szwrTNDtJPBH/b516CnUzhWQHvx/Mf8cv
+         O5vwO52jV1tooZc1iA3sstlBaC0ewt4gencAIKc6YQCCDuKGq2WCj8/BRCWk6+2uK8LN
+         ANSRHfV6GkaVz9KgknChBTqdcClODdr0xlboTb577IwkYThRF66gwS7joZ1F2LQv/AQP
+         nmk5OQroaFZPYylRTUjRZmqf/p4XXbEp0phxn47UeGk9Da1TMNLRMxReL1JbqyNLJSXf
+         FF2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BqrdERgYm6oaGKzw62ZugOufogtv2Ccque8qwoUuCvs=;
-        b=gBIvkkN8XSGht5+WSc9CjsBxI9ijF4BMXK9J/bC9cwdMT8eg0S/255xs7jqDhXMhyL
-         5gUqRxcy9+mV0BneufGBaPCZJ0ZX6weI7jGhrgvj1Qst/HhRIyKoZLMR/jJWiXh2XgC8
-         9VC97zqt7sQfn7G1N1E98GHDKRmp71amGxwf2x8nyWlaMrvAlGblP8YwpwKOFZfcm7HX
-         XXuXW97c508VoVYhxWGoY9cOJT+KZwslMtWmOzF7LPupOFXfutgxsmdjsXKONTbi/DPC
-         yVww+ul+f8zUJMPFfL8XI2FN9r+ywVviE1KZxVxVusdUKKEYeoAPBckh2PI/TVssr49F
-         wPfg==
-X-Gm-Message-State: APjAAAUpm7SFE3j+zOAlXzzEC9kAGdMBkrs9ZRJJoibqx0Re4mW9KteR
-        AVGlciJ5k6ZaERSLb3n2g6bQ+8wike/Clq6NhWY=
-X-Google-Smtp-Source: APXvYqyhOjAAwkfA5XXosGRI9NbToQpDgFnNe5aaxF4ifLbemoFih1YT2N1NiR6Hbnx5GPsozlBSmx/sG05/NrfRaaM=
-X-Received: by 2002:a24:4210:: with SMTP id i16mr3914027itb.37.1556828333546;
- Thu, 02 May 2019 13:18:53 -0700 (PDT)
+        bh=8rF3Gnx4uVH4vT8m+J/MHBp1IFdWlP4V/lANQLuXU0M=;
+        b=lVRphhDY9Y/3HaHE/CHavsLWtRtEgl+zfhqPX5VPXL7OssD5wgdTFDZi1ZiSL8LRwZ
+         yn/BOkCG1Hb4DUe9sAQO1Ky42jqLTrA8lH134YLJh4ynu56AAc94zTq3VSsRaGb8vRkH
+         Sxys9W4kZNwPcdAvio5Z/Ng3RpAykjZjIpV8eNpzOIREYYldR0U2FqTDdQiFA1uYXMAr
+         m32s3c0lJp+XEntjK64APRcI0FvKNRl1aVPnOT2pru827Y6m4fOtPfK0RxwlT+YI7CTy
+         LT/xRyIaBTiiBSfPHuyOwHtziqoOfORQfEYqvn7JIaW/vvSr+Uwx7hoqVFHRTNeNGii0
+         2x1A==
+X-Gm-Message-State: APjAAAX0WfxUU4dxay1a4gqsHaFR2n+n+3DHJ199x2mrr+rsMXRpjs8V
+        Bj/9uO4mPqxzTc9VlnDjoBjUA5p7FkHlQaPpryo=
+X-Google-Smtp-Source: APXvYqz7roQk4gRK1HEoWI9GAtvZPk3QvMFuzChbPtXXdtzeJkmNSXo3h52CK/tTfBBECFjLP9QPI5qO8G04gXgWM0A=
+X-Received: by 2002:a05:6638:214:: with SMTP id e20mr4243086jaq.59.1556828403141;
+ Thu, 02 May 2019 13:20:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <1556822018-75282-1-git-send-email-u9012063@gmail.com>
-In-Reply-To: <1556822018-75282-1-git-send-email-u9012063@gmail.com>
+References: <CAH3MdRVkUFfwKkgT-pi-RLBpcEf6n0bAwWZOu-=7+qctPTCpkw@mail.gmail.com>
+ <1556812610-27957-1-git-send-email-vgupta@synopsys.com>
+In-Reply-To: <1556812610-27957-1-git-send-email-vgupta@synopsys.com>
 From:   Y Song <ys114321@gmail.com>
-Date:   Thu, 2 May 2019 13:18:17 -0700
-Message-ID: <CAH3MdRVLVugbJbD4_u2bYjqitC4xFL_j8GoHUTBN77Tm9Dy3Ew@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: add libbpf_util.h to header install.
-To:     William Tu <u9012063@gmail.com>
+Date:   Thu, 2 May 2019 13:19:27 -0700
+Message-ID: <CAH3MdRWkiFSRA+PRo53_Syx9OBmyj2U_ebap-9iBR8L7xW9UVw@mail.gmail.com>
+Subject: Re: [PATCH v2] tools/bpf: fix perf build error with uClibc (seen on ARC)
+To:     Vineet Gupta <Vineet.Gupta1@synopsys.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>, blp@ovn.org
+        netdev <netdev@vger.kernel.org>, Wang Nan <wangnan0@huawei.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-snps-arc@lists.infradead.org,
+        linux-perf-users@vger.kernel.org, arnaldo.melo@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 2, 2019 at 11:34 AM William Tu <u9012063@gmail.com> wrote:
+On Thu, May 2, 2019 at 8:57 AM Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
 >
-> The libbpf_util.h is used by xsk.h, so add it to
-> the install headers.
-
-Can we try to change code a little bit to avoid exposing libbpf_util.h?
-Originally libbpf_util.h is considered as libbpf internal.
-I am not strongly against this patch. But would really like to see
-whether we have an alternative not exposing libbpf_util.h.
-
+> When build perf for ARC recently, there was a build failure due to lack
+> of __NR_bpf.
 >
-> Reported-by: Ben Pfaff <blp@ovn.org>
-> Signed-off-by: William Tu <u9012063@gmail.com>
+> | Auto-detecting system features:
+> |
+> | ...                     get_cpuid: [ OFF ]
+> | ...                           bpf: [ on  ]
+> |
+> | #  error __NR_bpf not defined. libbpf does not support your arch.
+>     ^~~~~
+> | bpf.c: In function 'sys_bpf':
+> | bpf.c:66:17: error: '__NR_bpf' undeclared (first use in this function)
+> |  return syscall(__NR_bpf, cmd, attr, size);
+> |                 ^~~~~~~~
+> |                 sys_bpf
+>
+> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+
+Acked-by: Yonghong Song <yhs@fb.com>
+
 > ---
->  tools/lib/bpf/Makefile | 1 +
->  1 file changed, 1 insertion(+)
+> v1 -> v2
+>   - Only add syscall nr for ARC, as asm-generic won't work with arm/sh [Y Song]
+> ---
+>  tools/lib/bpf/bpf.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >
-> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> index c6c06bc6683c..f91639bf5650 100644
-> --- a/tools/lib/bpf/Makefile
-> +++ b/tools/lib/bpf/Makefile
-> @@ -230,6 +230,7 @@ install_headers:
->                 $(call do_install,bpf.h,$(prefix)/include/bpf,644); \
->                 $(call do_install,libbpf.h,$(prefix)/include/bpf,644); \
->                 $(call do_install,btf.h,$(prefix)/include/bpf,644); \
-> +               $(call do_install,libbpf_util.h,$(prefix)/include/bpf,644); \
->                 $(call do_install,xsk.h,$(prefix)/include/bpf,644);
->
->  install_pkgconfig: $(PC_FILE)
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index 9cd015574e83..d82edadf7589 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -46,6 +46,8 @@
+>  #  define __NR_bpf 349
+>  # elif defined(__s390__)
+>  #  define __NR_bpf 351
+> +# elif defined(__arc__)
+> +#  define __NR_bpf 280
+>  # else
+>  #  error __NR_bpf not defined. libbpf does not support your arch.
+>  # endif
 > --
 > 2.7.4
 >
