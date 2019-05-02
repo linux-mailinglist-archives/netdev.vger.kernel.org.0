@@ -2,100 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FD4B12143
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 19:50:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3652E12142
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 19:49:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726279AbfEBRuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 13:50:03 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:37997 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbfEBRuD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 13:50:03 -0400
-Received: by mail-yw1-f65.google.com with SMTP id b74so2102847ywe.5
-        for <netdev@vger.kernel.org>; Thu, 02 May 2019 10:50:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4C05sjemEEDudPs213iU2v9Yk+71basnA+u/NaFHvTo=;
-        b=eHL0VvFB83MT9MczIaeFOXQyF3uKRQmcqDLj1efm8XVzTaPwjpw5pbqjDnZ3QW9ZJH
-         RTtzTgKIJ5nAENYyz0DeL3DZehuYW3ey8XJzpHf7yLr1jXGXilg0yqh4NhlFRWlXMIbJ
-         IHU7SpCD1MfpICSXXt+FIKILVNZ0/HoUdhq0XbZduebIhpnCPMoTbkFGS9xCH4k2laUZ
-         AZ52YA2Van7Kvsdbb3Bx6CHhfk36+xhpochkH94iX30SnljOCzTUoM/UJ6D9i4kLKfkB
-         EFM0yGoCLuwomhJiG5ty/1mAMRPSpoAWg/LUzN1MJa7O0JbT3KA0LiVlUY5NApJhcQh/
-         /Yow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4C05sjemEEDudPs213iU2v9Yk+71basnA+u/NaFHvTo=;
-        b=Yzh7HoW+gUbdKqoZocL5kWhgK6x0bOu2I2yhAnIgLTmPBmjx5/GjqiMvAkYXLztuny
-         YP1eeQQKTPY7qJCwrPjwhdCZVZP34mWJi9tehlrag0KV6rQ7ofe5SeJrbarkxWysJB6C
-         Rv8wtI0KM298UWOTzsBPgZijWjkoJONCBPb70IZjvGQN9/ADi0vNOCw6kh2YhFpM4gqv
-         HY86aCkFl0Jl+zTXrdHgI3QYPJejoy8dARoHGXXoelGCBy8N/sqNgLw52+cGbCV8jWvS
-         MutMIDwXL6AxzZk1z/zkNSrtE/gQmR/rjtqnt+m/TQhCVV6vFF7CPYthf1p6GwhXYtkN
-         bfzg==
-X-Gm-Message-State: APjAAAUD0zIS5pV67aZSNu7aVh+8ABFVTb93YodDtYVt31hc2ISS3bmW
-        4DUCYddtyMqQOcZnQ9GY335USA2q
-X-Google-Smtp-Source: APXvYqx9/knLXtoPYCOGfKV6RF6bL6TJWzleeEddMYo4Z/moy5EiuQL6cqOGB0T3vS4mkorQySCWHw==
-X-Received: by 2002:a25:6f83:: with SMTP id k125mr4312643ybc.106.1556819401916;
-        Thu, 02 May 2019 10:50:01 -0700 (PDT)
-Received: from [172.20.0.54] (adsl-173-228-226-134.prtc.net. [173.228.226.134])
-        by smtp.gmail.com with ESMTPSA id s13sm8190344ywj.58.2019.05.02.10.50.00
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 May 2019 10:50:01 -0700 (PDT)
-Subject: Re: Question re. skb_orphan for TPROXY
-To:     Florian Westphal <fw@strlen.de>, Lorenz Bauer <lmb@cloudflare.com>
-Cc:     herbert@gondor.apana.org.au, netdev@vger.kernel.org
-References: <CACAyw9-pYyvkUBOzdD+XQBEKdGGB9foJ5ph5sdjiuE4_uyEoJg@mail.gmail.com>
- <20190416150002.cbkih4lfrna4ywdu@breakpoint.cc>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <c0b633fc-a16d-5172-18a5-b909092173e9@gmail.com>
-Date:   Thu, 2 May 2019 13:50:00 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+        id S1726249AbfEBRtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 13:49:51 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:58258 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbfEBRtu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 13:49:50 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x42HhfSm075745;
+        Thu, 2 May 2019 17:49:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=Zllxr7zFj9Mxi2llQHnc+FtQRHF78ZbzweOBCHpwCl4=;
+ b=rlTgtSd6TFp/9fNMeieTGcHKDpZ6T0dKbJ165MiTxvXOjyoa1mkg6GFH+tG2GVnGjZ4z
+ FNwQuBxiD9I67TxaNyyfyQjZntYAHYsVLzX9juepMbQJ8/Ttb4jwyMr15lHGEafNU9GO
+ XLvbdoM4CiZIJYgQGr8wweCHLOu3Dbh3P4g4j+412EsqLZGwjTNrlK6/y0QceqvtlQel
+ eTwlGS/oBQwkZpColwg9CfRPZWNLwLAvyY5kNgbsp3peFV7GXoldroJ3JHBlW8ey+E3m
+ 1TP801qrDIUmf+tKD1N5WeSZU4fPucI6oIdnMgOtLq/qDqO4Syy8PLQzyJ2eZjUKkxqL ug== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 2s6xhytc06-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 02 May 2019 17:49:36 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x42HlfPs161654;
+        Thu, 2 May 2019 17:49:36 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 2s7p89wjfn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 02 May 2019 17:49:36 +0000
+Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x42HnYBL031208;
+        Thu, 2 May 2019 17:49:35 GMT
+Received: from [10.209.243.127] (/10.209.243.127)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 02 May 2019 10:49:34 -0700
+Subject: Re: [net-next][PATCH v2 1/2] rds: handle unsupported rdma request to
+ fs dax memory
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Moni Shoua <monis@mellanox.com>
+References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
+ <1556581040-4812-2-git-send-email-santosh.shilimkar@oracle.com>
+ <20190501074415.GB7676@mtr-leonro.mtl.com>
+ <2829f9d8-0383-d141-46c3-f2a09cd542b2@oracle.com>
+ <20190502062120.GM7676@mtr-leonro.mtl.com>
+From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <b7781380-e85b-78b4-f89e-1e627e213896@oracle.com>
+Date:   Thu, 2 May 2019 10:52:23 -0700
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190416150002.cbkih4lfrna4ywdu@breakpoint.cc>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20190502062120.GM7676@mtr-leonro.mtl.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9245 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1905020114
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9245 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1905020114
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/16/19 8:00 AM, Florian Westphal wrote:
-> Lorenz Bauer <lmb@cloudflare.com> wrote:
->> Apologies for contacting you out of the blue. I'm currently trying to
->> understand how TPROXY works under the hood. As part of this endeavour,
->> I've stumbled upon the commit attached to this email.
+On 5/1/2019 11:21 PM, Leon Romanovsky wrote:
+> On Wed, May 01, 2019 at 10:54:00AM -0700, Santosh Shilimkar wrote:
+>> On 5/1/2019 12:44 AM, Leon Romanovsky wrote:
+>>> On Mon, Apr 29, 2019 at 04:37:19PM -0700, Santosh Shilimkar wrote:
+>>>> From: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+>>>>
+>>>> RDS doesn't support RDMA on memory apertures that require On Demand
+>>>> Paging (ODP), such as FS DAX memory. User applications can try to use
+>>>> RDS to perform RDMA over such memories and since it doesn't report any
+>>>> failure, it can lead to unexpected issues like memory corruption when
+>>>> a couple of out of sync file system operations like ftruncate etc. are
+>>>> performed.
+>>>>
+>>>> The patch adds a check so that such an attempt to RDMA to/from memory
+>>>> apertures requiring ODP will fail.
+>>>>
+>>>> Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
+>>>> Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+>>>> Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+>>>> Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+>>>> ---
+>>>>    net/rds/rdma.c | 5 +++--
+>>>>    1 file changed, 3 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+>>>> index 182ab84..e0a6b72 100644
+>>>> --- a/net/rds/rdma.c
+>>>> +++ b/net/rds/rdma.c
+>>>> @@ -158,8 +158,9 @@ static int rds_pin_pages(unsigned long user_addr, unsigned int nr_pages,
+>>>>    {
+>>>>    	int ret;
+>>>>
+>>>> -	ret = get_user_pages_fast(user_addr, nr_pages, write, pages);
+>>>> -
+>>>> +	/* get_user_pages return -EOPNOTSUPP for fs_dax memory */
+>>>> +	ret = get_user_pages_longterm(user_addr, nr_pages,
+>>>> +				      write, pages, NULL);
+>>>
+>>> I'm not RDS expert, but from what I see in net/rds/rdma.c and this code,
+>>> you tried to mimic ib_umem_get() without protection, checks and native
+>>> ODP, FS and DAX supports.
+>>>
+>>> The real way to solve your ODP problem will require to extend
+>>> ib_umem_get() to work for kernel ULPs too and use it instead of
+>>> get_user_pages(). We are working on that and it is in internal review now.
+>>>
+>> Yes am aware of it. For FS_DAX like memory,  get_user_pages_longterm()
+>> fails and then using ib_reg_user_mr() the memory is registered as
+>> ODP regsion. This work is not ready yet and without above check,
+>> one can do RDMA on FS DAX memory with Fast Reg or FMR memory
+>> registration which is not safe and hence need to fail the operation.
 >>
->> From the commit message I infer that somewhere, TPROXY relies on a
->> check of skb->sk == NULL to function. However, I can't figure out
->> where! I've traced TPROXY from NF_HOOK(NF_INET_PRE_ROUTING) just after
->> the call to skb_orphan to __inet_lookup_skb / skb_steal_sock called
->> from the TCP and UDP receive functions, and as far as I can tell there
->> is no such check. Can you maybe shed some light on this?
+>> Once the support is added to RDS, this code path will make that
+>> registration go through.
+>>
+>> Hope it clarifies.
 > 
-> Without the skb_orphan udp/tcp might steal tunnel/ppp etc. socket
-> instead of tproxy assigned tcp/udp socket.
+> Only partial, why don't you check if user asked ODP through verbs
+> interface and return EOPNOTSUPP in such case?
+>
+I think you are mixing two separate things. ODP is just one way of
+supporting RDMA on FS DAX memory. Tomorrow, some other mechanism
+can be used as well. RDS is just using inbuilt kernel mm API
+to find out if its FS DAX memory(get_user_pages_longterm).
+Current code will make RDS get_mr fail if RDS application issues
+memory registration request on FS DAX memory and in future when
+support gets added, it will do the ODP registration and return
+the key.
+
+> It will ensure that once your code will support ODP properly written
+> applications will work with/without ODP natively.
 > 
+Application shouldn't care if RDS ULP internally uses ODP
+or some other mechanism to support RDMA on FS DAX memory.
+This makes it transparent it to RDS application.
 
-Florian, it is the responsibility of the loopback code to perform the skb_orphan()
-
-I am confident we can revert 71f9dacd2e4d23 and fix the
-paths that eventually miss the skb_orphan() call.
-
-loopback_xmit() properly calls skb_orphan(), we also need to make sure that any kind 
-of loopback (veth and others) do the same.
-
-This is a prereq so that XDP or tc code can implement early demux earlier.
-
-As a bonus we remove one skb_orphan() in rx fast path ;)
-
-Note that skb_scrub_packet() used to call skb_orphan(), we need to a bit smarter
-and insert it only in __dev_forward_skb()
-
+Regards,
+Santosh
