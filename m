@@ -2,26 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04EA311955
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 14:49:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4E3E11953
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 14:48:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbfEBMsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 08:48:02 -0400
-Received: from mx2.suse.de ([195.135.220.15]:33934 "EHLO mx1.suse.de"
+        id S1726518AbfEBMsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 08:48:03 -0400
+Received: from mx2.suse.de ([195.135.220.15]:33940 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726267AbfEBMsC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726278AbfEBMsC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 2 May 2019 08:48:02 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 0565CADEA;
+        by mx1.suse.de (Postfix) with ESMTP id 055F3ADE0;
         Thu,  2 May 2019 12:48:00 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 662ABE0157; Thu,  2 May 2019 14:48:00 +0200 (CEST)
-Message-Id: <75a0887b3eb70005c272685d8ef9a712f37d7a54.1556798793.git.mkubecek@suse.cz>
+        id 60A55E00D0; Thu,  2 May 2019 14:48:00 +0200 (CEST)
+Message-Id: <0a54a4db49c20e76a998ea3e4548b22637fbad34.1556798793.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1556798793.git.mkubecek@suse.cz>
 References: <cover.1556798793.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next 3/3] netlink: add validation of NLA_F_NESTED flag
+Subject: [PATCH net-next 1/3] genetlink: do not validate dump requests if
+ there is no policy
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         David Ahern <dsahern@gmail.com>, linux-kernel@vger.kernel.org
@@ -31,87 +32,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new validation flag NL_VALIDATE_NESTED which adds three consistency
-checks of NLA_F_NESTED_FLAG:
+Unlike do requests, dump genetlink requests now perform strict validation
+by default even if the genetlink family does not set policy and maxtype
+because it does validation and parsing on its own (e.g. because it wants to
+allow different message format for different commands). While the null
+policy will be ignored, maxtype (which would be zero) is still checked so
+that any attribute will fail validation.
 
-  - the flag is set on attributes with NLA_NESTED{,_ARRAY} policy
-  - the flag is not set on attributes with other policies except NLA_UNSPEC
-  - the flag is set on attribute passed to nla_parse_nested()
+The solution is to only call __nla_validate() from genl_family_rcv_msg()
+if family->maxtype is set.
 
+Fixes: ef6243acb478 ("genetlink: optionally validate strictly/dumps")
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- include/net/netlink.h | 10 +++++++++-
- lib/nlattr.c          | 15 +++++++++++++++
- 2 files changed, 24 insertions(+), 1 deletion(-)
+ net/netlink/genetlink.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 679f649748d4..55f68e00fb6e 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -401,6 +401,8 @@ struct nl_info {
-  *	are enforced going forward.
-  * @NL_VALIDATE_STRICT_ATTRS: strict attribute policy parsing (e.g.
-  *	U8, U16, U32 must have exact size, etc.)
-+ * @NL_VALIDATE_NESTED: Check that NLA_F_NESTED is set for NLA_NESTED(_ARRAY)
-+ *	and unset for other policies.
-  */
- enum netlink_validation {
- 	NL_VALIDATE_LIBERAL = 0,
-@@ -408,6 +410,7 @@ enum netlink_validation {
- 	NL_VALIDATE_MAXTYPE = BIT(1),
- 	NL_VALIDATE_UNSPEC = BIT(2),
- 	NL_VALIDATE_STRICT_ATTRS = BIT(3),
-+	NL_VALIDATE_NESTED = BIT(4),
- };
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 72668759cd2b..9814d6dbd2d6 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -537,21 +537,25 @@ static int genl_family_rcv_msg(const struct genl_family *family,
+ 			return -EOPNOTSUPP;
  
- #define NL_VALIDATE_DEPRECATED_STRICT (NL_VALIDATE_TRAILING |\
-@@ -415,7 +418,8 @@ enum netlink_validation {
- #define NL_VALIDATE_STRICT (NL_VALIDATE_TRAILING |\
- 			    NL_VALIDATE_MAXTYPE |\
- 			    NL_VALIDATE_UNSPEC |\
--			    NL_VALIDATE_STRICT_ATTRS)
-+			    NL_VALIDATE_STRICT_ATTRS |\
-+			    NL_VALIDATE_NESTED)
+ 		if (!(ops->validate & GENL_DONT_VALIDATE_DUMP)) {
+-			unsigned int validate = NL_VALIDATE_STRICT;
+ 			int hdrlen = GENL_HDRLEN + family->hdrsize;
  
- int netlink_rcv_skb(struct sk_buff *skb,
- 		    int (*cb)(struct sk_buff *, struct nlmsghdr *,
-@@ -1132,6 +1136,10 @@ static inline int nla_parse_nested(struct nlattr *tb[], int maxtype,
- 				   const struct nla_policy *policy,
- 				   struct netlink_ext_ack *extack)
- {
-+	if (!(nla->nla_type & NLA_F_NESTED)) {
-+		NL_SET_ERR_MSG_ATTR(extack, nla, "nested attribute expected");
-+		return -EINVAL;
-+	}
- 	return __nla_parse(tb, maxtype, nla_data(nla), nla_len(nla), policy,
- 			   NL_VALIDATE_STRICT, extack);
- }
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index adc919b32bf9..92da65cb6637 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -184,6 +184,21 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 		}
- 	}
+-			if (ops->validate & GENL_DONT_VALIDATE_DUMP_STRICT)
+-				validate = NL_VALIDATE_LIBERAL;
+-
+ 			if (nlh->nlmsg_len < nlmsg_msg_size(hdrlen))
+ 				return -EINVAL;
  
-+	if (validate & NL_VALIDATE_NESTED) {
-+		if ((pt->type == NLA_NESTED || pt->type == NLA_NESTED_ARRAY) &&
-+		    !(nla->nla_type & NLA_F_NESTED)) {
-+			NL_SET_ERR_MSG_ATTR(extack, nla,
-+					    "nested attribute expected");
-+			return -EINVAL;
-+		}
-+		if (pt->type != NLA_NESTED && pt->type != NLA_NESTED_ARRAY &&
-+		    pt->type != NLA_UNSPEC && (nla->nla_type & NLA_F_NESTED)) {
-+			NL_SET_ERR_MSG_ATTR(extack, nla,
-+					    "nested attribute not expected");
-+			return -EINVAL;
-+		}
-+	}
+-			rc = __nla_validate(nlmsg_attrdata(nlh, hdrlen),
+-					    nlmsg_attrlen(nlh, hdrlen),
+-					    family->maxattr, family->policy,
+-					    validate, extack);
+-			if (rc)
+-				return rc;
++			if (family->maxattr) {
++				unsigned int validate = NL_VALIDATE_STRICT;
 +
- 	switch (pt->type) {
- 	case NLA_EXACT_LEN:
- 		if (attrlen != pt->len)
++				if (ops->validate &
++				    GENL_DONT_VALIDATE_DUMP_STRICT)
++					validate = NL_VALIDATE_LIBERAL;
++				rc = __nla_validate(nlmsg_attrdata(nlh, hdrlen),
++						    nlmsg_attrlen(nlh, hdrlen),
++						    family->maxattr,
++						    family->policy,
++						    validate, extack);
++				if (rc)
++					return rc;
++			}
+ 		}
+ 
+ 		if (!family->parallel_ops) {
 -- 
 2.21.0
 
