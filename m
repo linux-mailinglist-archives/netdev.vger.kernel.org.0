@@ -2,101 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5967C115AC
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 10:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C530115BF
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 10:51:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726383AbfEBIpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 04:45:06 -0400
-Received: from mail-eopbgr20068.outbound.protection.outlook.com ([40.107.2.68]:26597
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725951AbfEBIpF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 04:45:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=REQElg20qAbYRs2veFouFWQo4EJT+BLD7/xhiQYvHHA=;
- b=XMBZLtjW7aylmMrCHkUtQGyzoDYiFdgPIsKFpN51tteiSx3E8iJCSD0qeWUV5eK0C8l6yy5FW/tnu5VY+dTnKS948esVUBGMbBcYkAk0EOKcY0cfsbPXhUsyHjeTPj3pzGnG4RsLW7B/OKfP/ytqjg16vTEE6openhbrgHF9kVA=
-Received: from AM6PR05MB5288.eurprd05.prod.outlook.com (20.177.196.225) by
- AM6PR05MB5505.eurprd05.prod.outlook.com (20.177.188.205) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1835.15; Thu, 2 May 2019 08:45:02 +0000
-Received: from AM6PR05MB5288.eurprd05.prod.outlook.com
- ([fe80::ac0c:21b7:bdfa:c4e]) by AM6PR05MB5288.eurprd05.prod.outlook.com
- ([fe80::ac0c:21b7:bdfa:c4e%6]) with mapi id 15.20.1856.008; Thu, 2 May 2019
- 08:45:02 +0000
-From:   Tal Gilboa <talgi@mellanox.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Idan Burstein <idanb@mellanox.com>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        Max Gurtovoy <maxg@mellanox.com>,
+        id S1726418AbfEBIvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 04:51:09 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40953 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726011AbfEBIvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 04:51:09 -0400
+Received: by mail-wr1-f66.google.com with SMTP id h4so2144759wre.7
+        for <netdev@vger.kernel.org>; Thu, 02 May 2019 01:51:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8A56Rre3k7aBGmNQU4YWhBjgqJZl+Mib35DSUhbaDps=;
+        b=UpUMjJqsGifpOCEcW9jXly4Ms27rne3/Za8oqzbVg4DVUwb/3Bni10wA0EHuF5V269
+         AMA+3rRhPuskUyHf3slbsc5GcHxpJeIeEB14uGND4pNYimDZsUR+r8/2nXbAjc0PtBOD
+         smu8x5RnxWg6DKbxupCpXxMQiV8xbrXlb4aB/yjnOPw/BkNwfl+JeAevCvtZKACtmt6J
+         88lqhxOVacgke33zsnUfMeQc51buJmgEFhdLUO1nOpoAVFXA/N1WLHfAeVC8o34NCjMI
+         PdcoJg0+JYgS/b1WY8HzE+Mp2HdlmgnCMs750cIE7x+z2P0fZLt7P0bBbwfvPCitauKn
+         6BEQ==
+X-Gm-Message-State: APjAAAXrbDboTuNxqHJ/gc/dzqv0ybbgpjrGJFlGpLJTZC3m+DEtZaAj
+        DZ+M54p7efpWihzFZ910a/LQd1w0qTs=
+X-Google-Smtp-Source: APXvYqzKqA26TTVFlks64WQcHDvLTQwxTMy9/MTjIb4emoa26zr+WwjZxZm/vqVP61IX92eMbf3LlQ==
+X-Received: by 2002:a5d:5545:: with SMTP id g5mr1902942wrw.146.1556787067242;
+        Thu, 02 May 2019 01:51:07 -0700 (PDT)
+Received: from mcroce-redhat.mxp.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.gmail.com with ESMTPSA id y4sm6523232wmj.20.2019.05.02.01.51.05
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 02 May 2019 01:51:06 -0700 (PDT)
+From:   Matteo Croce <mcroce@redhat.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-for-next 0/9] drivers/infiniband: Introduce rdma_dim
-Thread-Topic: [PATCH rdma-for-next 0/9] drivers/infiniband: Introduce rdma_dim
-Thread-Index: AQHVACyKoTvknlLO7kOSxA4Fp6QZcKZWbquAgAEXiQA=
-Date:   Thu, 2 May 2019 08:45:02 +0000
-Message-ID: <a6ca622e-9203-e69c-8d34-22e151529f0a@mellanox.com>
-References: <1556721879-35987-1-git-send-email-talgi@mellanox.com>
- <20190501160409.GA15547@ziepe.ca>
-In-Reply-To: <20190501160409.GA15547@ziepe.ca>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [193.47.165.251]
-x-clientproxiedby: AM0PR01CA0031.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:69::44) To AM6PR05MB5288.eurprd05.prod.outlook.com
- (2603:10a6:20b:64::33)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=talgi@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 12a16f7d-6b8a-4ea9-5ca7-08d6ceda7758
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB5505;
-x-ms-traffictypediagnostic: AM6PR05MB5505:
-x-microsoft-antispam-prvs: <AM6PR05MB5505287124D7629262B039FDD2340@AM6PR05MB5505.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0025434D2D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(136003)(376002)(366004)(39860400002)(396003)(189003)(199004)(3846002)(86362001)(36756003)(476003)(4744005)(186003)(6116002)(31686004)(31696002)(229853002)(53936002)(8936002)(8676002)(14454004)(81166006)(6512007)(81156014)(6486002)(26005)(6436002)(256004)(66066001)(102836004)(66446008)(54906003)(478600001)(6246003)(5660300002)(25786009)(7736002)(305945005)(53546011)(6506007)(68736007)(486006)(6916009)(71200400001)(71190400001)(99286004)(4326008)(11346002)(64756008)(2616005)(66946007)(76176011)(446003)(66476007)(386003)(52116002)(2906002)(73956011)(316002)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5505;H:AM6PR05MB5288.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 89pzj+9oh17BGfaN2OUsHWlnzZ8zT5REdbslC2vSIrK3TXE1Bx7TPTibFpxFsDRgLMgsMCrpN3St/U4Lrdr1+7avgHxNdf7mdQFXGceTqWHKnnPlKnd/7oBKy2jKZDD+QQ2DNZi92/sAjBcO/DyDwjSuSiYD+jQpiHLFg8gfbu3g4JCkUnHXz3FhG2cuHTFW76XvzNrsasr4z2ZPajfxT3VS5nD6+wbUkGEimCZ+52kfSARgGD96kZty0/OoFsT5Vchmw9vM7v3qlzXDU+NrhqMLmkbPw0ZWuSlGk/R+qDG8efY7aDfhH5H9GS/5GinpwNqmi5R7m9lm0qzFKesePnRNrQt8EPy4P0ohF3AwYa0E2AdURfVUsXVD43A039o13BDYSFhK2LP54Ljjuxhop+aGnbeLROoR33IiTETUzcM=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <22854B5815F29D45B77BE94ABAD1FC31@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH net] cls_matchall: avoid panic when receiving a packet before filter set
+Date:   Thu,  2 May 2019 10:51:05 +0200
+Message-Id: <20190502085105.2967-1-mcroce@redhat.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12a16f7d-6b8a-4ea9-5ca7-08d6ceda7758
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 May 2019 08:45:02.3348
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5505
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gNS8xLzIwMTkgNzowNCBQTSwgSmFzb24gR3VudGhvcnBlIHdyb3RlOg0KPiANCj4gQSBsb3Qg
-b2YgdGhpcyBpcyB0b3VjaGluZyBuZXRkZXYsIHdoeSB3YXNuJ3QgbmV0ZGV2IGNjJ2Q/DQo+IA0K
-PiBXaG8gaXMgc3VwcG9zZWQgdG8gbWVyZ2UgdGhpcz8NCj4gDQo+IEkgdGhpbmsgeW91IG5lZWQg
-dG8gdGFrZSB0d28gc3RlcHMgYW5kIGhhdmUgbmV0ZGV2IG1lcmdlIHRoZSBhYm92ZQ0KPiBwYXJ0
-IGFuZCB0aGVuIHNlbmQgdGhlIHNpbmdsZSBwYXRjaCB0byBSRE1BIGZvciB0aGUgbGFzdCBwYXJ0
-LCBJIGRvbid0DQo+IHJlYWxseSB3YW50IHRvIHRha2Ugc28gbXVjaCBuZXRkZXYgY29kZSBoZXJl
-Lg0KDQpPaywgSSdsbCBzdWJtaXQgdGhlIGZpcnN0IDcgcGF0Y2hlcyB0byBuZXRkZXYgYW5kIHRo
-ZSAyIFJETUEgc3BlY2lmaWMgDQpwYXRjaGVzIHdpbGwgYmUgc3VibWl0dGVkIG9uIHRvcCBvZiB0
-aGVtLg0KDQo+IA0KPiBUaGUgbWFpbnRhaW5lcnMgZmlsZSBzaG91bGQgYWxzbyBoYXZlIHNvbWUg
-aW5kaWNhdGlvbiB3aGljaCB0cmVlDQo+IHBhdGNoZXMgZm9yIGxpYi9kaW0vKiB0aGlzIHNob3Vs
-ZCBnbyB0aHJvdWdoLi4NCj4gDQo+IEphc29uDQo+IA0K
+When a matchall classifier is added, there is a small time interval in
+which tp->root is NULL. If we receive a packet in this small time slice
+a NULL pointer dereference will happen, leading to a kernel panic:
+
+    # tc qdisc replace dev eth0 ingress
+    # tc filter add dev eth0 parent ffff: matchall action gact drop
+    Unable to handle kernel NULL pointer dereference at virtual address 0000000000000034
+    Mem abort info:
+      ESR = 0x96000005
+      Exception class = DABT (current EL), IL = 32 bits
+      SET = 0, FnV = 0
+      EA = 0, S1PTW = 0
+    Data abort info:
+      ISV = 0, ISS = 0x00000005
+      CM = 0, WnR = 0
+    user pgtable: 4k pages, 39-bit VAs, pgdp = 00000000a623d530
+    [0000000000000034] pgd=0000000000000000, pud=0000000000000000
+    Internal error: Oops: 96000005 [#1] SMP
+    Modules linked in: cls_matchall sch_ingress nls_iso8859_1 nls_cp437 vfat fat m25p80 spi_nor mtd xhci_plat_hcd xhci_hcd phy_generic sfp mdio_i2c usbcore i2c_mv64xxx marvell10g mvpp2 usb_common spi_orion mvmdio i2c_core sbsa_gwdt phylink ip_tables x_tables autofs4
+    Process ksoftirqd/0 (pid: 9, stack limit = 0x0000000009de7d62)
+    CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 5.1.0-rc6 #21
+    Hardware name: Marvell 8040 MACCHIATOBin Double-shot (DT)
+    pstate: 40000005 (nZcv daif -PAN -UAO)
+    pc : mall_classify+0x28/0x78 [cls_matchall]
+    lr : tcf_classify+0x78/0x138
+    sp : ffffff80109db9d0
+    x29: ffffff80109db9d0 x28: ffffffc426058800
+    x27: 0000000000000000 x26: ffffffc425b0dd00
+    x25: 0000000020000000 x24: 0000000000000000
+    x23: ffffff80109dbac0 x22: 0000000000000001
+    x21: ffffffc428ab5100 x20: ffffffc425b0dd00
+    x19: ffffff80109dbac0 x18: 0000000000000000
+    x17: 0000000000000000 x16: 0000000000000000
+    x15: 0000000000000000 x14: 0000000000000000
+    x13: ffffffbf108ad288 x12: dead000000000200
+    x11: 00000000f0000000 x10: 0000000000000001
+    x9 : ffffffbf1089a220 x8 : 0000000000000001
+    x7 : ffffffbebffaa950 x6 : 0000000000000000
+    x5 : 000000442d6ba000 x4 : 0000000000000000
+    x3 : ffffff8008735ad8 x2 : ffffff80109dbac0
+    x1 : ffffffc425b0dd00 x0 : ffffff8010592078
+    Call trace:
+     mall_classify+0x28/0x78 [cls_matchall]
+     tcf_classify+0x78/0x138
+     __netif_receive_skb_core+0x29c/0xa20
+     __netif_receive_skb_one_core+0x34/0x60
+     __netif_receive_skb+0x28/0x78
+     netif_receive_skb_internal+0x2c/0xc0
+     napi_gro_receive+0x1a0/0x1d8
+     mvpp2_poll+0x928/0xb18 [mvpp2]
+     net_rx_action+0x108/0x378
+     __do_softirq+0x128/0x320
+     run_ksoftirqd+0x44/0x60
+     smpboot_thread_fn+0x168/0x1b0
+     kthread+0x12c/0x130
+     ret_from_fork+0x10/0x1c
+    Code: aa0203f3 aa1e03e0 d503201f f9400684 (b9403480)
+    ---[ end trace fc71e2ef7b8ab5a5 ]---
+    Kernel panic - not syncing: Fatal exception in interrupt
+    SMP: stopping secondary CPUs
+    Kernel Offset: disabled
+    CPU features: 0x002,00002000
+    Memory Limit: none
+    Rebooting in 1 seconds..
+
+Fix this by adding a NULL check in mall_classify().
+
+Fixes: ed76f5edccc9 ("net: sched: protect filter_chain list with filter_chain_lock mutex")
+Signed-off-by: Matteo Croce <mcroce@redhat.com>
+---
+ net/sched/cls_matchall.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
+index a13bc351a414..3d021f2aad1c 100644
+--- a/net/sched/cls_matchall.c
++++ b/net/sched/cls_matchall.c
+@@ -32,6 +32,9 @@ static int mall_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ {
+ 	struct cls_mall_head *head = rcu_dereference_bh(tp->root);
+ 
++	if (unlikely(!head))
++		return -1;
++
+ 	if (tc_skip_sw(head->flags))
+ 		return -1;
+ 
+-- 
+2.21.0
+
