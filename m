@@ -2,67 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6506A1137A
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 08:44:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84FF9113A7
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 09:06:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726300AbfEBGoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 02:44:10 -0400
-Received: from first.geanix.com ([116.203.34.67]:34224 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725772AbfEBGoK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 02:44:10 -0400
-Received: from localhost (87-49-45-205-mobile.dk.customer.tdc.net [87.49.45.205])
-        by first.geanix.com (Postfix) with ESMTPSA id 9CA5B308E60;
-        Thu,  2 May 2019 06:43:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1556779432; bh=IK0D6zczZeZdKYv2r0AW45oME3lOQxyfMlPoQHK4S6Q=;
-        h=From:To:Cc:Subject:Date;
-        b=figuhPYRgcYIUEYVBAFaM/n9CsIBKURD1ZLfD9Xv7aZnnkp3HvxemTAr0i7/h5neg
-         s/NxRPguK7LMcXExC1HCUVpJJD4tYa576PYKGyVkED7wG8bY3/ro9uwFO4YGf/pfns
-         fIldqkH+GeND3M6my/Jt3wBm6kJdRU8l4IY02HnXrpEvNwy1+GmJ/BS6Ub0KYbd3Bl
-         HqkzZN6qf9Wqiz5V4jSTG/wst/7Kg03t9qpbTt8cdfj1BQpA3cHcRJtgDQuGirIdxo
-         2ix6doM4+pOwxu2JSWrawBHkyzhII3YqJELF2Y9+/jUDiQ/4vzH5q24U+51NNQtVFO
-         ohVK1KwKP8DdQ==
-From:   Esben Haabendal <esben@geanix.com>
-To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, YueHaibing <yuehaibing@huawei.com>,
-        Yang Wei <yang.wei9@zte.com.cn>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: [PATCH] net: ll_temac: Fix typo bug for 32-bit
-Date:   Thu,  2 May 2019 08:43:43 +0200
-Message-Id: <20190502064406.12608-1-esben@geanix.com>
-X-Mailer: git-send-email 2.21.0
+        id S1726209AbfEBHGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 03:06:03 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:40145 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725795AbfEBHGD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 03:06:03 -0400
+Received: by mail-wr1-f65.google.com with SMTP id h4so1709286wre.7
+        for <netdev@vger.kernel.org>; Thu, 02 May 2019 00:06:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9nuAm33drpfdpA1x3+NK73mmXriKTzSgcblLqhQ29Pw=;
+        b=Kdm/coQh9bq5j1DRKQX40+S++ifLmi+eRj42FU865wlxEYU/zNEmB+bP6mgH1TVnvh
+         MO5ci2j9qdjzhHd28jr85xd/VlUSARhWYu1Lao1/5Ef8fdOHkS6RV7ft06q5ZhvnHOhW
+         xebcbwGacASGkOil2CfC2yw7RfHLFV/tlPromqUp+f6fK5yJ02BvZsz2p5JsXHtqAbv+
+         t0FuZ9HJc6SdNGU6VOaSdFlbu+0jCwzZIXtOGbKf7L9UslG/GoiDLDybEuG48obm3bQi
+         NNM2ob5Anu4vzJUdZrroZ4E6qX9C+F1+vXnkfMeJf/tKANsu+XElHjPPJnLMZ3v+HnrH
+         yquw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9nuAm33drpfdpA1x3+NK73mmXriKTzSgcblLqhQ29Pw=;
+        b=JTYyhKKK59lDZ8HgOYNTs75j5lSZE4R7XzcmY3v+hxYGFmDLx1JLf+uf6kFN4ENHum
+         5mfdNXjgkbWLOSAfvSHIK+atjQHnyrp8xot94l65XhY7HmHM426aZn+GxH4AH+7+JFbr
+         hs+7i5f4lO5aN5H1iyHTW2NfM1o334DXcl3M4wYTlbnytbIQQvp/AX57lFFRynytBvuN
+         nzDLuHBPAiKj5OwJPFimptPGsp/Bu4qMmlZYCQeIOHVfW4Xj9CMugctZ0vJSpw8PH5j/
+         s3FNK9KXNnoqsQxuo/n0MAeVGE1HX6dLDvSGlu9h8wfn4ZkRO/L5HP8fxB7vrWVOT2To
+         0nMg==
+X-Gm-Message-State: APjAAAW4QzqJQtSGQWOhSiQVBzQ9jeU13AYHeJ1rQShaA16ln6nvS0BO
+        B8T9Y9K6d+RdNndbcdChoshx4fctvPk=
+X-Google-Smtp-Source: APXvYqzBVvWGxy0TAtxRLATgIakbd6igIHh9RQK3an6oQRnq8oPIUQlrP2CZIH+ExSlSmvd97JCigQ==
+X-Received: by 2002:adf:f588:: with SMTP id f8mr1003330wro.282.1556780761957;
+        Thu, 02 May 2019 00:06:01 -0700 (PDT)
+Received: from localhost (ip-89-177-126-50.net.upcbroadband.cz. [89.177.126.50])
+        by smtp.gmail.com with ESMTPSA id h16sm28084677wrb.31.2019.05.02.00.06.01
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 02 May 2019 00:06:01 -0700 (PDT)
+Date:   Thu, 2 May 2019 09:06:01 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, Eran Ben Elisha <eranbe@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [Patch net-next v2] net: add a generic tracepoint for TX queue
+ timeout
+Message-ID: <20190502070601.GD2251@nanopsycho>
+References: <20190502025659.30351-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,UNPARSEABLE_RELAY,URIBL_BLOCKED
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on b7bf6291adac
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190502025659.30351-1-xiyou.wangcong@gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes: d84aec42151b ("net: ll_temac: Fix support for 64-bit platforms")
+Thu, May 02, 2019 at 04:56:59AM CEST, xiyou.wangcong@gmail.com wrote:
+>Although devlink health report does a nice job on reporting TX
+>timeout and other NIC errors, unfortunately it requires drivers
+>to support it but currently only mlx5 has implemented it.
+>Before other drivers could catch up, it is useful to have a
+>generic tracepoint to monitor this kind of TX timeout. We have
+>been suffering TX timeout with different drivers, we plan to
+>start to monitor it with rasdaemon which just needs a new tracepoint.
+>
+>Sample output:
+>
+>  ksoftirqd/1-16    [001] ..s2   144.043173: net_dev_xmit_timeout: dev=ens3 driver=e1000 queue=0
+>
+>Cc: Eran Ben Elisha <eranbe@mellanox.com>
+>Cc: Jiri Pirko <jiri@mellanox.com>
+>Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-Signed-off-by: Esben Haabendal <esben@geanix.com>
----
- drivers/net/ethernet/xilinx/ll_temac_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Useful. Thanks!
 
-diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 1003ee14c833..ca95c726269a 100644
---- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-+++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -658,7 +658,7 @@ void *ptr_from_txbd(struct cdmac_bd *bd)
- 
- #else
- 
--void ptr_to_txbd(void *p, struct cmdac_bd *bd)
-+void ptr_to_txbd(void *p, struct cdmac_bd *bd)
- {
- 	bd->app4 = (u32)p;
- }
--- 
-2.21.0
-
+Acked-by: Jiri Pirko <jiri@mellanox.com>
