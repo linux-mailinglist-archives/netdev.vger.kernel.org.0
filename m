@@ -2,154 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B1F1192F
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 14:34:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F2DC119D4
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 15:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbfEBMdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 08:33:15 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52163 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726267AbfEBMdO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 08:33:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=hIZ2r4SHmJaCkF2EdisXrrWwKAQXEwuZvn4QXzFxD7w=; b=zJCC6NV/LulBNFOyb7zANwOp7f
-        2OjqNtVlSchdm8gSp8kJaAcCM+qtp5Cv+n4jZKNZUaWYtUVazU7MzLbfMSUMZDBlQuV+rdMSpPRiD
-        MNI2CCar4Z/sWrAmBsfc1rZ4lgXhxtHQiaOStuqOtze/dYdAL/rnKQJ81TGhwghncOl8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hMAtJ-00087U-Bv; Thu, 02 May 2019 14:32:45 +0200
-Date:   Thu, 2 May 2019 14:32:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joergen Andreasen <joergen.andreasen@microchip.com>
-Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/3] net: mscc: ocelot: Implement port policers
- via tc command
-Message-ID: <20190502123245.GB9844@lunn.ch>
-References: <20190502094029.22526-1-joergen.andreasen@microchip.com>
- <20190502094029.22526-3-joergen.andreasen@microchip.com>
+        id S1726480AbfEBNM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 09:12:28 -0400
+Received: from gosford.compton.nu ([217.169.17.27]:48730 "EHLO
+        gosford.compton.nu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726285AbfEBNM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 09:12:28 -0400
+X-Greylist: delayed 1783 seconds by postgrey-1.27 at vger.kernel.org; Thu, 02 May 2019 09:12:27 EDT
+Received: from bericote.compton.nu ([2001:8b0:bd:1:1881:14ff:fe46:3cc7]:40954)
+        by gosford.compton.nu with esmtps (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <tom@compton.nu>)
+        id 1hMB2u-0002U6-Qj; Thu, 02 May 2019 13:42:41 +0100
+Received: from bristol.uk.cyberscience.com ([172.16.2.29]:38986)
+        by bericote.compton.nu with esmtps (TLSv1.3:TLS_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <tom@compton.nu>)
+        id 1hMB2u-0000sS-MD; Thu, 02 May 2019 13:42:40 +0100
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+From:   Tom Hughes <tom@compton.nu>
+Subject: ndisc_cache garbage collection issue
+Message-ID: <7ebe8ec1-c407-d907-e99a-adcd89a8e16b@compton.nu>
+Date:   Thu, 2 May 2019 13:42:40 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190502094029.22526-3-joergen.andreasen@microchip.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joergen
+I recently upgraded a machine from a 4.20.13 kernel to 5.0.9 and am
+finding that after a few days I start getting a lot of these messages:
 
-> +
-> +#define MSCC_RC(expr)				\
-> +	do {					\
-> +		int __rc__ = (expr);		\
-> +		if (__rc__ < 0)			\
-> +			return __rc__;		\
-> +	}					\
-> +	while (0)
+   neighbour: ndisc_cache: neighbor table overflow!
 
-I'm sure checkpatch warned about this. A return inside a macros is a
-bad idea. I inherited code doing this, and broke it when adding
-locking, because it was not obvious there was a return.
+and IPv6 networking starts to fail intermittently as a result.
 
-> +
-> +/* The following two functions do the same as in iproute2 */
-> +#define TIME_UNITS_PER_SEC	1000000
-> +static unsigned int tc_core_tick2time(unsigned int tick)
-> +{
-> +	return (tick * (u32)PSCHED_TICKS2NS(1)) / 1000;
-> +}
-> +
-> +static unsigned int tc_calc_xmitsize(u64 rate, unsigned int ticks)
-> +{
-> +	return div_u64(rate * tc_core_tick2time(ticks), TIME_UNITS_PER_SEC);
-> +}
+The neighbour table doesn't appear to have much in it however so I've
+been looking at the code, and especially your recent changes to garbage
+collection in the neighbour tables and my working theory is that the
+value of gc_entries is somehow out of sync with the actual list of what
+needs to be garbage collected.
 
-Should these but put somewhere others can use them?
+Looking at the code I think I see a possible way that this could be
+happening post 8cc196d6ef8 which moved the addition of new entries to
+the gc list out of neigh_alloc into ___neigh_create.
 
-> +
-> +enum mscc_qos_rate_mode {
-> +	MSCC_QOS_RATE_MODE_DISABLED, /* Policer/shaper disabled */
-> +	MSCC_QOS_RATE_MODE_LINE, /* Measure line rate in kbps incl. IPG */
-> +	MSCC_QOS_RATE_MODE_DATA, /* Measures data rate in kbps excl. IPG */
-> +	MSCC_QOS_RATE_MODE_FRAME, /* Measures frame rate in fps */
-> +	__MSCC_QOS_RATE_MODE_END,
-> +	NUM_MSCC_QOS_RATE_MODE = __MSCC_QOS_RATE_MODE_END,
-> +	MSCC_QOS_RATE_MODE_MAX = __MSCC_QOS_RATE_MODE_END - 1,
-> +};
-> +
-> +/* Round x divided by y to nearest integer. x and y are integers */
-> +#define MSCC_ROUNDING_DIVISION(x, y) (((x) + ((y) / 2)) / (y))
+The problem is that neigh_alloc is doing the increment of gc_entries, so
+if ___neigh_create winds up taking an error path gc_entries will have
+been incremented but the neighbour will never be added to the gc list.
 
-linux/kernel.h defines DIV_ROUND_UP(). Maybe add DIV_ROUND_DOWN()?
+I don't know for sure yet that this is the cause of my problem, but it
+seems to be incorrect in any case unless I have misunderstood something?
 
-> +
-> +/* Round x divided by y to nearest higher integer. x and y are integers */
-> +#define MSCC_DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
+Tom
 
-DIV_ROUND_UP() ?
-
-> +	/* Limit to maximum values */
-> +	pir = min_t(u32, GENMASK(15, 0), pir);
-> +	cir = min_t(u32, GENMASK(15, 0), cir);
-> +	pbs = min_t(u32, pbs_max, pbs);
-> +	cbs = min_t(u32, cbs_max, cbs);
-
-If it does need to limit, maybe return -EOPNOTSUPP?
-
-> +int ocelot_port_policer_add(struct ocelot_port *port,
-> +			    struct tcf_police *p)
-> +{
-> +	struct ocelot *ocelot = port->ocelot;
-> +	struct qos_policer_conf pp;
-> +
-> +	if (!p)
-> +		return -EINVAL;
-> +
-> +	netdev_dbg(port->dev,
-> +		   "result %d ewma_rate %u burst %lld mtu %u mtu_pktoks %lld\n",
-> +		   p->params->tcfp_result,
-> +		   p->params->tcfp_ewma_rate,
-> +		   p->params->tcfp_burst,
-> +		   p->params->tcfp_mtu,
-> +		   p->params->tcfp_mtu_ptoks);
-> +
-> +	if (p->params->rate_present)
-> +		netdev_dbg(port->dev,
-> +			   "rate: rate %llu mult %u over %u link %u shift %u\n",
-> +			   p->params->rate.rate_bytes_ps,
-> +			   p->params->rate.mult,
-> +			   p->params->rate.overhead,
-> +			   p->params->rate.linklayer,
-> +			   p->params->rate.shift);
-> +
-> +	if (p->params->peak_present)
-> +		netdev_dbg(port->dev,
-> +			   "peak: rate %llu mult %u over %u link %u shift %u\n",
-> +			   p->params->peak.rate_bytes_ps,
-> +			   p->params->peak.mult,
-> +			   p->params->peak.overhead,
-> +			   p->params->peak.linklayer,
-> +			   p->params->peak.shift);
-> +
-> +	memset(&pp, 0, sizeof(pp));
-
-Rather than memset, you can do:
-
-	struct qos_policer_conf pp = { 0 };
-
-	Andrew
+-- 
+Tom Hughes (tom@compton.nu)
+http://compton.nu/
