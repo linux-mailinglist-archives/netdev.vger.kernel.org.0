@@ -2,425 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAEFE1159B
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 10:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3937B115A8
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 10:44:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726525AbfEBIkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 04:40:09 -0400
-Received: from mga02.intel.com ([134.134.136.20]:64550 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725944AbfEBIkI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 04:40:08 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 May 2019 01:40:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,421,1549958400"; 
-   d="scan'208";a="296322531"
-Received: from mkarlsso-mobl.ger.corp.intel.com (HELO VM.isw.intel.com) ([10.103.211.43])
-  by orsmga004.jf.intel.com with ESMTP; 02 May 2019 01:40:04 -0700
-From:   Magnus Karlsson <magnus.karlsson@intel.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org, brouer@redhat.com
-Cc:     bpf@vger.kernel.org, bruce.richardson@intel.com,
-        ciara.loftus@intel.com, jakub.kicinski@netronome.com,
-        xiaolong.ye@intel.com, qi.z.zhang@intel.com, maximmi@mellanox.com,
-        sridhar.samudrala@intel.com, kevin.laatz@intel.com
-Subject: [RFC bpf-next 7/7] samples/bpf: add busy-poll support to xdpsock sample
-Date:   Thu,  2 May 2019 10:39:23 +0200
-Message-Id: <1556786363-28743-8-git-send-email-magnus.karlsson@intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1556786363-28743-1-git-send-email-magnus.karlsson@intel.com>
-References: <1556786363-28743-1-git-send-email-magnus.karlsson@intel.com>
+        id S1726266AbfEBIo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 04:44:26 -0400
+Received: from mail-eopbgr40083.outbound.protection.outlook.com ([40.107.4.83]:28494
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725951AbfEBIo0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 04:44:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=P2yGAJcHu5IwfQKbKzjn1UcAXGjzsMooAqTNnDq8Zsg=;
+ b=PNEvYgLRByPNkvuHeaTsuWoHRu0poaBiSUYK1MVI0UGzYMtH4VgHzB8Sy93F+8HQJZrRLj5ZbdNc15fr5a8472auxrpm29gp1SfhTNGIVY8k/0jdinC6oJmVQP2OCJzp1gcG6q396+BZyOruBFUMiiniymnuLINWulOEE07Z0gk=
+Received: from AM0PR0502MB4068.eurprd05.prod.outlook.com (52.133.38.142) by
+ AM0PR0502MB3827.eurprd05.prod.outlook.com (52.133.47.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1856.10; Thu, 2 May 2019 08:44:22 +0000
+Received: from AM0PR0502MB4068.eurprd05.prod.outlook.com
+ ([fe80::c978:d8d3:5678:4488]) by AM0PR0502MB4068.eurprd05.prod.outlook.com
+ ([fe80::c978:d8d3:5678:4488%3]) with mapi id 15.20.1835.018; Thu, 2 May 2019
+ 08:44:22 +0000
+From:   Eran Ben Elisha <eranbe@mellanox.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [Patch net-next v2] net: add a generic tracepoint for TX queue
+ timeout
+Thread-Topic: [Patch net-next v2] net: add a generic tracepoint for TX queue
+ timeout
+Thread-Index: AQHVAJK/vS0YpBROGE+0RuPjVoT/l6ZXhVIA
+Date:   Thu, 2 May 2019 08:44:22 +0000
+Message-ID: <a1d1c7d3-047b-ce63-8466-a1eba7c0f106@mellanox.com>
+References: <20190502025659.30351-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20190502025659.30351-1-xiyou.wangcong@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR06CA0047.eurprd06.prod.outlook.com
+ (2603:10a6:208:aa::24) To AM0PR0502MB4068.eurprd05.prod.outlook.com
+ (2603:10a6:208:d::14)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=eranbe@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cd8b59cc-782f-4ba8-ccfd-08d6ceda5f9c
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM0PR0502MB3827;
+x-ms-traffictypediagnostic: AM0PR0502MB3827:
+x-microsoft-antispam-prvs: <AM0PR0502MB3827184E9CE3C32E5787B329BA340@AM0PR0502MB3827.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1186;
+x-forefront-prvs: 0025434D2D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(366004)(376002)(39860400002)(396003)(136003)(199004)(189003)(102836004)(53546011)(478600001)(446003)(66946007)(66556008)(486006)(66476007)(11346002)(2616005)(86362001)(4326008)(305945005)(8936002)(81166006)(3846002)(64756008)(476003)(186003)(81156014)(2501003)(25786009)(31686004)(2906002)(14454004)(66446008)(6506007)(26005)(256004)(386003)(73956011)(6246003)(110136005)(31696002)(6486002)(71190400001)(71200400001)(7736002)(36756003)(68736007)(6436002)(66066001)(6116002)(107886003)(99286004)(53936002)(6512007)(52116002)(316002)(8676002)(229853002)(5660300002)(4744005)(76176011)(41533002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR0502MB3827;H:AM0PR0502MB4068.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: kj01PDH80MOqxsMKArfRLMt6IMCsOkagU+V0wWZ7JNla2INZ/eIghd8OEj9IvJ4eKsQxzF/yXAZrFUo8g6c0R3c/bKUR+5MUUytlBlwm4/E/qrwpqv9mhjCd9xwaquclKgbngQi953uUCmn+efUByITaWM/SUqw0UDEe2iuh9TaXVEOALl0phEwBdLx1jHA7b92rxHbOj4pcI0n2jjq4EixPbEFxYbJab0i1r2qsDJkvX7IWBUnRjAZc+4OXT1KA1hmxhXPNlQONVCaSbzH9YmqYdGGraM/8V+73U2OdhQttygx404IlbZ1xbhqDXmG0zfP3Ey004c5c+PHDdkewxi80MaJB1/uL1xMkDn4E5FpsBVI5NUC/gtteF5KwRjIQt5hVeirgHpaeF3nE2rSa6REuPdxSuCWdP4GeB5Z7uBM=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A913B88E4012094D849517C0DE278403@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd8b59cc-782f-4ba8-ccfd-08d6ceda5f9c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 May 2019 08:44:22.4569
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB3827
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds busy-poll support to the xdpsock sample
-application. It is enabled by the "-b" or the "--busy-poll" command
-line options.
-
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- samples/bpf/xdpsock_user.c | 203 ++++++++++++++++++++++++++++-----------------
- 1 file changed, 125 insertions(+), 78 deletions(-)
-
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index d08ee1a..1272edf 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -66,6 +66,7 @@ static const char *opt_if = "";
- static int opt_ifindex;
- static int opt_queue;
- static int opt_poll;
-+static int opt_busy_poll;
- static int opt_interval = 1;
- static u32 opt_xdp_bind_flags;
- static __u32 prog_id;
-@@ -119,8 +120,11 @@ static void print_benchmark(bool running)
- 	else
- 		printf("	");
- 
--	if (opt_poll)
-+	if (opt_poll) {
-+		if (opt_busy_poll)
-+			printf("busy-");
- 		printf("poll() ");
-+	}
- 
- 	if (running) {
- 		printf("running...");
-@@ -306,7 +310,7 @@ static struct xsk_socket_info *xsk_configure_socket(struct xsk_umem_info *umem)
- 	xsk->umem = umem;
- 	cfg.rx_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
- 	cfg.tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
--	cfg.libbpf_flags = 0;
-+	cfg.busy_poll = (opt_busy_poll ? BATCH_SIZE : 0);
- 	cfg.xdp_flags = opt_xdp_flags;
- 	cfg.bind_flags = opt_xdp_bind_flags;
- 	ret = xsk_socket__create(&xsk->xsk, opt_if, opt_queue, umem->umem,
-@@ -319,17 +323,17 @@ static struct xsk_socket_info *xsk_configure_socket(struct xsk_umem_info *umem)
- 		exit_with_error(-ret);
- 
- 	ret = xsk_ring_prod__reserve(&xsk->umem->fq,
--				     XSK_RING_PROD__DEFAULT_NUM_DESCS,
-+				     1024,
- 				     &idx);
--	if (ret != XSK_RING_PROD__DEFAULT_NUM_DESCS)
-+	if (ret != 1024)
- 		exit_with_error(-ret);
- 	for (i = 0;
--	     i < XSK_RING_PROD__DEFAULT_NUM_DESCS *
-+	     i < 1024 *
- 		     XSK_UMEM__DEFAULT_FRAME_SIZE;
- 	     i += XSK_UMEM__DEFAULT_FRAME_SIZE)
- 		*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx++) = i;
- 	xsk_ring_prod__submit(&xsk->umem->fq,
--			      XSK_RING_PROD__DEFAULT_NUM_DESCS);
-+			      1024);
- 
- 	return xsk;
- }
-@@ -341,6 +345,7 @@ static struct option long_options[] = {
- 	{"interface", required_argument, 0, 'i'},
- 	{"queue", required_argument, 0, 'q'},
- 	{"poll", no_argument, 0, 'p'},
-+	{"busy-poll", no_argument, 0, 'b'},
- 	{"xdp-skb", no_argument, 0, 'S'},
- 	{"xdp-native", no_argument, 0, 'N'},
- 	{"interval", required_argument, 0, 'n'},
-@@ -360,6 +365,7 @@ static void usage(const char *prog)
- 		"  -i, --interface=n	Run on interface n\n"
- 		"  -q, --queue=n	Use queue n (default 0)\n"
- 		"  -p, --poll		Use poll syscall\n"
-+		"  -b, --busy-poll	Use poll syscall with busy poll\n"
- 		"  -S, --xdp-skb=n	Use XDP skb-mod\n"
- 		"  -N, --xdp-native=n	Enfore XDP native mode\n"
- 		"  -n, --interval=n	Specify statistics update interval (default 1 sec).\n"
-@@ -377,7 +383,7 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
- 
- 	for (;;) {
--		c = getopt_long(argc, argv, "Frtli:q:psSNn:cz", long_options,
-+		c = getopt_long(argc, argv, "Frtli:q:pbsSNn:cz", long_options,
- 				&option_index);
- 		if (c == -1)
- 			break;
-@@ -401,6 +407,10 @@ static void parse_command_line(int argc, char **argv)
- 		case 'p':
- 			opt_poll = 1;
- 			break;
-+		case 'b':
-+			opt_busy_poll = 1;
-+			opt_poll = 1;
-+			break;
- 		case 'S':
- 			opt_xdp_flags |= XDP_FLAGS_SKB_MODE;
- 			opt_xdp_bind_flags |= XDP_COPY;
-@@ -444,7 +454,8 @@ static void kick_tx(struct xsk_socket_info *xsk)
- 	exit_with_error(errno);
- }
- 
--static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
-+static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk,
-+				     struct pollfd *fds)
- {
- 	u32 idx_cq = 0, idx_fq = 0;
- 	unsigned int rcvd;
-@@ -453,7 +464,8 @@ static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
- 	if (!xsk->outstanding_tx)
- 		return;
- 
--	kick_tx(xsk);
-+	if (!opt_poll)
-+		kick_tx(xsk);
- 	ndescs = (xsk->outstanding_tx > BATCH_SIZE) ? BATCH_SIZE :
- 		xsk->outstanding_tx;
- 
-@@ -467,6 +479,8 @@ static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
- 		while (ret != rcvd) {
- 			if (ret < 0)
- 				exit_with_error(-ret);
-+			if (opt_busy_poll)
-+				ret = poll(fds, num_socks, 0);
- 			ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd,
- 						     &idx_fq);
- 		}
-@@ -490,7 +504,8 @@ static inline void complete_tx_only(struct xsk_socket_info *xsk)
- 	if (!xsk->outstanding_tx)
- 		return;
- 
--	kick_tx(xsk);
-+	if (!opt_busy_poll)
-+		kick_tx(xsk);
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->umem->cq, BATCH_SIZE, &idx);
- 	if (rcvd > 0) {
-@@ -500,10 +515,10 @@ static inline void complete_tx_only(struct xsk_socket_info *xsk)
- 	}
- }
- 
--static void rx_drop(struct xsk_socket_info *xsk)
-+static void rx_drop(struct xsk_socket_info *xsk, struct pollfd *fds)
- {
--	unsigned int rcvd, i;
- 	u32 idx_rx = 0, idx_fq = 0;
-+	unsigned int rcvd, i;
- 	int ret;
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
-@@ -514,6 +529,8 @@ static void rx_drop(struct xsk_socket_info *xsk)
- 	while (ret != rcvd) {
- 		if (ret < 0)
- 			exit_with_error(-ret);
-+		if (opt_busy_poll)
-+			ret = poll(fds, num_socks, 0);
- 		ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
- 	}
- 
-@@ -533,43 +550,68 @@ static void rx_drop(struct xsk_socket_info *xsk)
- 
- static void rx_drop_all(void)
- {
--	struct pollfd fds[MAX_SOCKS + 1];
--	int i, ret, timeout, nfds = 1;
-+	struct pollfd fds[MAX_SOCKS];
-+	int i, ret;
- 
- 	memset(fds, 0, sizeof(fds));
- 
- 	for (i = 0; i < num_socks; i++) {
- 		fds[i].fd = xsk_socket__fd(xsks[i]->xsk);
- 		fds[i].events = POLLIN;
--		timeout = 1000; /* 1sn */
- 	}
- 
- 	for (;;) {
- 		if (opt_poll) {
--			ret = poll(fds, nfds, timeout);
-+			ret = poll(fds, num_socks, 0);
- 			if (ret <= 0)
- 				continue;
- 		}
- 
- 		for (i = 0; i < num_socks; i++)
--			rx_drop(xsks[i]);
-+			rx_drop(xsks[i], fds);
-+	}
-+}
-+
-+static void tx_only(struct xsk_socket_info *xsk, u32 frame_nb)
-+{
-+	u32 idx;
-+
-+	if (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) ==
-+	    BATCH_SIZE) {
-+		unsigned int i;
-+
-+		for (i = 0; i < BATCH_SIZE; i++) {
-+			xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->addr
-+				= (frame_nb + i) <<
-+				XSK_UMEM__DEFAULT_FRAME_SHIFT;
-+			xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->len =
-+				sizeof(pkt_data) - 1;
-+		}
-+
-+		xsk_ring_prod__submit(&xsk->tx, BATCH_SIZE);
-+		xsk->outstanding_tx += BATCH_SIZE;
-+		frame_nb += BATCH_SIZE;
-+		frame_nb %= NUM_FRAMES;
- 	}
-+
-+	complete_tx_only(xsk);
- }
- 
--static void tx_only(struct xsk_socket_info *xsk)
-+static void tx_only_all(void)
- {
--	int timeout, ret, nfds = 1;
--	struct pollfd fds[nfds + 1];
--	u32 idx, frame_nb = 0;
-+	struct pollfd fds[MAX_SOCKS];
-+	u32 frame_nb[MAX_SOCKS] = {};
-+	int i, ret;
- 
- 	memset(fds, 0, sizeof(fds));
--	fds[0].fd = xsk_socket__fd(xsk->xsk);
--	fds[0].events = POLLOUT;
--	timeout = 1000; /* 1sn */
-+	for (i = 0; i < num_socks; i++) {
-+		fds[0].fd = xsk_socket__fd(xsks[i]->xsk);
-+		fds[0].events = POLLOUT;
-+	}
- 
- 	for (;;) {
- 		if (opt_poll) {
--			ret = poll(fds, nfds, timeout);
-+			ret = poll(fds, num_socks, 0);
- 			if (ret <= 0)
- 				continue;
- 
-@@ -577,70 +619,75 @@ static void tx_only(struct xsk_socket_info *xsk)
- 				continue;
- 		}
- 
--		if (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) ==
--		    BATCH_SIZE) {
--			unsigned int i;
--
--			for (i = 0; i < BATCH_SIZE; i++) {
--				xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->addr
--					= (frame_nb + i) <<
--					XSK_UMEM__DEFAULT_FRAME_SHIFT;
--				xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->len =
--					sizeof(pkt_data) - 1;
--			}
--
--			xsk_ring_prod__submit(&xsk->tx, BATCH_SIZE);
--			xsk->outstanding_tx += BATCH_SIZE;
--			frame_nb += BATCH_SIZE;
--			frame_nb %= NUM_FRAMES;
--		}
--
--		complete_tx_only(xsk);
-+		for (i = 0; i < num_socks; i++)
-+			tx_only(xsks[i], frame_nb[i]);
- 	}
- }
- 
--static void l2fwd(struct xsk_socket_info *xsk)
-+static void l2fwd(struct xsk_socket_info *xsk, struct pollfd *fds)
- {
--	for (;;) {
--		unsigned int rcvd, i;
--		u32 idx_rx = 0, idx_tx = 0;
--		int ret;
-+	unsigned int rcvd, i;
-+	u32 idx_rx = 0, idx_tx = 0;
-+	int ret;
- 
--		for (;;) {
--			complete_tx_l2fwd(xsk);
-+	complete_tx_l2fwd(xsk, fds);
- 
--			rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE,
--						   &idx_rx);
--			if (rcvd > 0)
--				break;
--		}
-+	rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE,
-+				   &idx_rx);
-+	if (!rcvd)
-+		return;
- 
-+	ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
-+	while (ret != rcvd) {
-+		if (ret < 0)
-+			exit_with_error(-ret);
-+		if (opt_busy_poll)
-+			ret = poll(fds, num_socks, 0);
- 		ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
--		while (ret != rcvd) {
--			if (ret < 0)
--				exit_with_error(-ret);
--			ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
--		}
-+	}
-+
-+	for (i = 0; i < rcvd; i++) {
-+		u64 addr = xsk_ring_cons__rx_desc(&xsk->rx,
-+						  idx_rx)->addr;
-+		u32 len = xsk_ring_cons__rx_desc(&xsk->rx,
-+						 idx_rx++)->len;
-+		char *pkt = xsk_umem__get_data(xsk->umem->buffer, addr);
- 
--		for (i = 0; i < rcvd; i++) {
--			u64 addr = xsk_ring_cons__rx_desc(&xsk->rx,
--							  idx_rx)->addr;
--			u32 len = xsk_ring_cons__rx_desc(&xsk->rx,
--							 idx_rx++)->len;
--			char *pkt = xsk_umem__get_data(xsk->umem->buffer, addr);
-+		swap_mac_addresses(pkt);
- 
--			swap_mac_addresses(pkt);
-+		hex_dump(pkt, len, addr);
-+		xsk_ring_prod__tx_desc(&xsk->tx, idx_tx)->addr = addr;
-+		xsk_ring_prod__tx_desc(&xsk->tx, idx_tx++)->len = len;
-+	}
- 
--			hex_dump(pkt, len, addr);
--			xsk_ring_prod__tx_desc(&xsk->tx, idx_tx)->addr = addr;
--			xsk_ring_prod__tx_desc(&xsk->tx, idx_tx++)->len = len;
--		}
-+	xsk_ring_prod__submit(&xsk->tx, rcvd);
-+	xsk_ring_cons__release(&xsk->rx, rcvd);
- 
--		xsk_ring_prod__submit(&xsk->tx, rcvd);
--		xsk_ring_cons__release(&xsk->rx, rcvd);
-+	xsk->rx_npkts += rcvd;
-+	xsk->outstanding_tx += rcvd;
-+}
- 
--		xsk->rx_npkts += rcvd;
--		xsk->outstanding_tx += rcvd;
-+static void l2fwd_all(void)
-+{
-+	struct pollfd fds[MAX_SOCKS];
-+	int i, ret;
-+
-+	memset(fds, 0, sizeof(fds));
-+
-+	for (i = 0; i < num_socks; i++) {
-+		fds[i].fd = xsk_socket__fd(xsks[i]->xsk);
-+		fds[i].events = POLLOUT | POLLIN;
-+	}
-+
-+	for (;;) {
-+		if (opt_poll) {
-+			ret = poll(fds, num_socks, 0);
-+			if (ret <= 0)
-+				continue;
-+		}
-+
-+		for (i = 0; i < num_socks; i++)
-+			l2fwd(xsks[i], fds);
- 	}
- }
- 
-@@ -693,9 +740,9 @@ int main(int argc, char **argv)
- 	if (opt_bench == BENCH_RXDROP)
- 		rx_drop_all();
- 	else if (opt_bench == BENCH_TXONLY)
--		tx_only(xsks[0]);
-+		tx_only_all();
- 	else
--		l2fwd(xsks[0]);
-+		l2fwd_all();
- 
- 	return 0;
- }
--- 
-2.7.4
-
+DQoNCk9uIDUvMi8yMDE5IDU6NTYgQU0sIENvbmcgV2FuZyB3cm90ZToNCj4gQWx0aG91Z2ggZGV2
+bGluayBoZWFsdGggcmVwb3J0IGRvZXMgYSBuaWNlIGpvYiBvbiByZXBvcnRpbmcgVFgNCj4gdGlt
+ZW91dCBhbmQgb3RoZXIgTklDIGVycm9ycywgdW5mb3J0dW5hdGVseSBpdCByZXF1aXJlcyBkcml2
+ZXJzDQo+IHRvIHN1cHBvcnQgaXQgYnV0IGN1cnJlbnRseSBvbmx5IG1seDUgaGFzIGltcGxlbWVu
+dGVkIGl0Lg0KPiBCZWZvcmUgb3RoZXIgZHJpdmVycyBjb3VsZCBjYXRjaCB1cCwgaXQgaXMgdXNl
+ZnVsIHRvIGhhdmUgYQ0KPiBnZW5lcmljIHRyYWNlcG9pbnQgdG8gbW9uaXRvciB0aGlzIGtpbmQg
+b2YgVFggdGltZW91dC4gV2UgaGF2ZQ0KPiBiZWVuIHN1ZmZlcmluZyBUWCB0aW1lb3V0IHdpdGgg
+ZGlmZmVyZW50IGRyaXZlcnMsIHdlIHBsYW4gdG8NCj4gc3RhcnQgdG8gbW9uaXRvciBpdCB3aXRo
+IHJhc2RhZW1vbiB3aGljaCBqdXN0IG5lZWRzIGEgbmV3IHRyYWNlcG9pbnQuDQo+IA0KPiBTYW1w
+bGUgb3V0cHV0Og0KPiANCj4gICAga3NvZnRpcnFkLzEtMTYgICAgWzAwMV0gLi5zMiAgIDE0NC4w
+NDMxNzM6IG5ldF9kZXZfeG1pdF90aW1lb3V0OiBkZXY9ZW5zMyBkcml2ZXI9ZTEwMDAgcXVldWU9
+MA0KPiANCj4gQ2M6IEVyYW4gQmVuIEVsaXNoYSA8ZXJhbmJlQG1lbGxhbm94LmNvbT4NCj4gQ2M6
+IEppcmkgUGlya28gPGppcmlAbWVsbGFub3guY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBDb25nIFdh
+bmcgPHhpeW91Lndhbmdjb25nQGdtYWlsLmNvbT4NCg0KUmV2aWV3ZWQtYnk6IEVyYW4gQmVuIEVs
+aXNoYSA8ZXJhbmJlQG1lbGxhbm94LmNvbT4NCg==
