@@ -2,111 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF75122F7
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 22:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 265E212302
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 22:09:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726150AbfEBUFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 16:05:13 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:35805 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbfEBUFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 16:05:13 -0400
-Received: by mail-yw1-f68.google.com with SMTP id n188so2564665ywe.2;
-        Thu, 02 May 2019 13:05:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TJNAk0Lvfagj8fRo6Jl6RQONptd5xU+ZB1fw7sgph30=;
-        b=eAs4GRXJ5Bl7vzQy7WcntFmTXgCjyDkydNz11hqgpIygMgpRlH/Rni8x07UN5Ov8zt
-         gfpHNxfO8oboQIBwIOqXOsYiv/atbjnio1nni0LLOUDECgVkoTDRInzrtLFajrFsT5Mm
-         d1UVXabCg+Bbkgg2ORLc13O9X5JPMtKzV2eeUdBoOZGGiAtPQzUh0gDMNJKbSpkHgcF2
-         t2/k8uPGHkV7T9KVSbk1OyavlIxlgVNpJBuQPs3T+vCKO8eni7gZ/xYsNKTP9PPFGqb4
-         W+17lnLJcakRSgPAarG+aE6zHDjV79GYj/GgpIALFpD8U4++cdrv+l4TbXmFmrEYjHyY
-         nCww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TJNAk0Lvfagj8fRo6Jl6RQONptd5xU+ZB1fw7sgph30=;
-        b=uR9vFK9NwoncqXyqyVqCLGKjU3z3K0fDbIiWbK+T3+lWflnDCLkAS8kTFVVQUa/B9A
-         3xr6KrRalTUdXzC2Gv4Kv62z6hmp240DibmU/5RmJ9K2uvWcnDV59QuCTW56fOXyM7gM
-         ALnZpFYOT5aarxt7OKJI37AYnPYr8XK2VtWMkQdlfhMY/oK9eT8WLSOXtAL4E2SfT3hs
-         3pcHuCDE1R4PlXt9I1OF57g8RJXqLk6aLvO7AY9QGUSM128p8xXpoH94fc9hPeeVFuta
-         QEBFwk/kfuBzgp9pRg5+PuTKKpiR4rch2yg8beQySaW9b3lTHNuw9JNYEk5MWDZM+5ff
-         FDBA==
-X-Gm-Message-State: APjAAAWbSAms6n8hg3eTBPyXNq7de4XpSg7mO/GylOrkwJmz/13ex9nC
-        pj+n9RhRD4TTVFEsZdw6mArJQlwP/5/lmg==
-X-Google-Smtp-Source: APXvYqwciAe4nEria44nc6rzApTMdY1iD2aS5mcwajyy/cffGlk4sZyRqLkM4cV6eKKiDXJ+Cv9ZYg==
-X-Received: by 2002:a81:110c:: with SMTP id 12mr4887289ywr.188.1556827512026;
-        Thu, 02 May 2019 13:05:12 -0700 (PDT)
-Received: from [172.20.28.132] (adsl-173-228-226-134.prtc.net. [173.228.226.134])
-        by smtp.gmail.com with ESMTPSA id m1sm6100ywi.89.2019.05.02.13.05.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 May 2019 13:05:10 -0700 (PDT)
-Subject: Re: [bpf-next PATCH v3 0/4] sockmap/ktls fixes
-To:     jakub.kicinski@netronome.com, ast@kernel.org, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <155667629056.4128.14102391877350907561.stgit@john-XPS-13-9360>
-From:   John Fastabend <john.fastabend@gmail.com>
-Message-ID: <c6621617-9edf-bd4a-7738-63de6e910eb4@gmail.com>
-Date:   Thu, 2 May 2019 13:05:09 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726297AbfEBUJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 16:09:36 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:57055 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbfEBUJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 16:09:36 -0400
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1hMI1L-0000oC-6g; Thu, 02 May 2019 22:09:31 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1hMI1J-0001C6-Va; Thu, 02 May 2019 22:09:29 +0200
+Date:   Thu, 2 May 2019 22:09:26 +0200
+From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
+To:     Aurelien Jarno <aurel32@debian.org>, 927825@bugs.debian.org
+Cc:     Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        netdev@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
+        Steve McIntyre <93sam@debian.org>
+Subject: Re: Bug#927825: arm: mvneta driver used on Armada XP GP boards does
+ not receive packets (regression from 4.9)
+Message-ID: <20190502200926.GA9569@taurus.defre.kleine-koenig.org>
+References: <155605060923.15313.17004641650838278623.reportbug@ohm.local>
+ <155605060923.15313.17004641650838278623.reportbug@ohm.local>
+ <20190425125046.GA7210@aurel32.net>
+ <155605060923.15313.17004641650838278623.reportbug@ohm.local>
+ <20190425191732.GA28481@aurel32.net>
+ <20190430081223.GA7409@taurus.defre.kleine-koenig.org>
 MIME-Version: 1.0
-In-Reply-To: <155667629056.4128.14102391877350907561.stgit@john-XPS-13-9360>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="FL5UXtIhxfXey3p5"
+Content-Disposition: inline
+In-Reply-To: <20190430081223.GA7409@taurus.defre.kleine-koenig.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/19 7:06 PM, John Fastabend wrote:
-> Series of fixes for sockmap and ktls, see patches for descriptions.
-> 
-> v2: fix build issue for CONFIG_TLS_DEVICE and fixup couple comments
->     from Jakub
-> 
-> v3: fix issue where release could call unhash resulting in a use after
->     free. Now we detach the ulp pointer before calling into destroy
->     or unhash. This way if we get a callback into unhash from destroy
->     path there is no ulp to access. The fallout is we must pass the
->     ctx into the functions rather than use the sk lookup in each
->     routine. This is probably better anyways.
-> 
->     @Jakub, I did not fix the hw device case it seems the ulp ptr is
->     needed for the hardware teardown but this is buggy for sure. Its
->     not clear to me how to resolve the hw issue at the moment so fix
->     the sw path why we discuss it.
-> 
-Unfortunately, this is still failing with hardware offload (thanks
-Jakub) so will need a v4 to actually fix this.
 
+--FL5UXtIhxfXey3p5
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
-John
+Hello,
 
-> ---
-> 
-> John Fastabend (4):
->       bpf: tls, implement unhash to avoid transition out of ESTABLISHED
->       bpf: sockmap remove duplicate queue free
->       bpf: sockmap fix msg->sg.size account on ingress skb
->       bpf: sockmap, only stop/flush strp if it was enabled at some point
-> 
-> 
->  include/net/tls.h    |   24 ++++++++++++---
->  net/core/skmsg.c     |    7 +++-
->  net/ipv4/tcp_bpf.c   |    2 -
->  net/tls/tls_device.c |    6 ++--
->  net/tls/tls_main.c   |   78 +++++++++++++++++++++++++++++++++-----------------
->  net/tls/tls_sw.c     |   51 ++++++++++++++++-----------------
->  6 files changed, 103 insertions(+), 65 deletions(-)
-> 
-> --
-> Signature
-> 
+On Tue, Apr 30, 2019 at 10:12:27AM +0200, Uwe Kleine-K=F6nig wrote:
+> On Thu, Apr 25, 2019 at 09:17:32PM +0200, Aurelien Jarno wrote:
+> > On 2019-04-25 14:50, Aurelien Jarno wrote:
+> > > On 2019-04-23 22:16, Aurelien Jarno wrote:
+> > > > Source: linux
+> > > > Version: 4.19.28-2
+> > > > Severity: important
+> > > >=20
+> > > > After upgrading hartmann.debian.org (an armhf buildd using an Armad=
+a XP
+> > > > GP board) from buster to stretch, the ethernet device is not working
+>=20
+> "upgrading from buster to stretch" doesn't make sense. I think you meant
+> from stretch to buster.
+>=20
+> > >=20
+> > > More precisely the board is a "Marvell Armada XP Development Board
+> > > DB-MV784MP-GP"
+> > >=20
+> > > > anymore. Using tcpdump on both the buildd and a remote host, it app=
+ears
+> > > > that the packets correctly leave the board and that the reception s=
+ide
+> > > > fails.
+>=20
+> If you can send to a remote host at least ARP (or ND) must be working,
+> so some reception still works, right?
+>=20
+> > > > The module used for the ethernet device is mvneta. The correspondin=
+g DT
+> > > > compatible entry is "marvell,armada-xp-neta".
+> > > >
+> > >=20
+> > > I have started a "bisection" with the kernels from snapshot. This is
+> > > what I have found so far:
+> > >=20
+> > > This one works:
+> > > - linux-image-4.19.0-rc6-armmp-lpae_4.19~rc6-1~exp1_armhf.deb=20
+> > >=20
+> > > The following ones don't:
+> > > - linux-image-4.19.0-rc7-armmp-lpae_4.19~rc7-1~exp1_armhf.deb
+> > > - linux-image-5.0.0-trunk-armmp_5.0.2-1~exp1_armhf.deb
+> > >=20
+> > > My guess (I don't have time to try more now) is that the issue is cau=
+sed
+> > > by the following change:
+> > >=20
+> > > |  [ Uwe Kleine-K=F6nig ]
+> > > |  * [armhf] enable MVNETA_BM_ENABLE and CAN_FLEXCAN as a module
+> > >=20
+> >=20
+> > I confirm this is the issue. Disabling MVNETA_BM_ENABLE on kernel=20
+> > 4.19.28-2 fixes the issue. Note that it breaks the ABI.
+>=20
+> A colleague happens to work with an XP based machine with a (nearly)
+> vanilla kernel based on 5.1.0-rc6 and there enabling MVNETA_BM_ENABLE
+> doesn't render networking nonfunctional.
+>=20
+> Looking through the changes to drivers/net/ethernet/marvell/mvneta*
+> between 5.0 and 5.1-rc6 there isn't something that would explain a fix
+> though. There doesn't seem to be a good explanation in the debian
+> specific patches either.
+>=20
+> So this problem is either machine specific or it works with the mvneta
+> driver builtin. (I didn't double check, but guess that my colleague uses
+> =3Dy and the Debian kernel =3Dm). Well, or I missed something.
+>=20
+> Is it possible to test a few things on hartmann? I'd suggest:
+>=20
+>  - try (vanilla) 5.1-rc6 with MVNETA=3Dy
+>  - try an older kernel (maybe 4.6 as the buffer manager stuff was
+>    introduced in dc35a10f68d3 ("net: mvneta: bm: add support for
+>    hardware buffer management") which made it into 4.6-rc1) with
+>    MVNETA_BM_ENABLE=3D[ym].
 
+Thanks to Steve McIntyre I got access to a DB-MV784MP-GP and did the
+second test. I used mvebu_v7_defconfig and enabled CGROUPS and AUTOFS4
+(to please systemd) and MVNETA_BM_ENABLE=3Dy on 4.6. The latter breaks
+networking similar to newer kernel versions.
+
+So I guess the buffer management never worked on that board.
+
+I don't have the time to debug this issue further, but will disable
+buffer management for the Debian kernel again.
+
+Best regards
+Uwe
+
+--FL5UXtIhxfXey3p5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAlzLTnEACgkQwfwUeK3K
+7AnhwQf/WYTeqDwt7aTw/zJVyXlDWXkiMbMDf8MbZtysBZ1W9jQYrEDQgBx3ZJ9e
+XDaXIYf+mem7kxeCspJBlG4iIdR3sf9n/D+nPsIwojpesKbaATGC1VXdQ3PhnGi+
+KP3CXMYZ344CTcnIjya5XUNfPzgm8VRyPnKwEh+Rm7LaRpatttP9OVqUOBdGJbJU
+zK8LKTC0M40cMGvJ2GnxDJFEFbhuWHhD9QezBUP3j6ErqF+5CxpVFF6lLylFVP+J
+At08izoxd3UK/BPfR0QPJ8hNZUSJQd//PFw5f+029B7pHgRRUvTzteQKx+DBg5kp
+Nw8Hfdc0GSUZanTOHdk4RvizDJor2g==
+=y7DE
+-----END PGP SIGNATURE-----
+
+--FL5UXtIhxfXey3p5--
