@@ -2,109 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D136D11910
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 14:31:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7B1F1192F
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 14:34:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726444AbfEBMbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 08:31:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55898 "EHLO mail.kernel.org"
+        id S1726598AbfEBMdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 08:33:15 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52163 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726197AbfEBMbY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 08:31:24 -0400
-Received: from localhost (unknown [37.142.3.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3DAC3205C9;
-        Thu,  2 May 2019 12:31:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556800282;
-        bh=It9xOODjDn7wMJak1mHLQFFyrTN1wpLbbNbHJwe7KxY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wu7hdQstgVGy50FlKNhQbj/0KE1wyxVPl8gSMz5jfzShQDd33TddaG65GmBOjaODj
-         rt7Ah3dQqj4JQkXBgDYMegl/BqYkQ1GU5pc/TGNw8BDz7OkgFeYnT9zXmt/6OaNobl
-         8vcKnz/Jy0Veq0aRnU2tlqMX4WeUxXK0BoKPUJNo=
-Date:   Thu, 2 May 2019 15:31:18 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Michal Kalderon <mkalderon@marvell.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Ariel Elior <aelior@marvell.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
-Subject: Re: [EXT] Re: [PATCH net-next 07/10] qed*: Add iWARP 100g support
-Message-ID: <20190502123118.GR7676@mtr-leonro.mtl.com>
-References: <20190501095722.6902-1-michal.kalderon@marvell.com>
- <20190501095722.6902-8-michal.kalderon@marvell.com>
- <20190501.203522.1577716429222042609.davem@davemloft.net>
- <20190502051320.GF7676@mtr-leonro.mtl.com>
- <BLUPR18MB0130AF99D6AB674A85E075D9A1340@BLUPR18MB0130.namprd18.prod.outlook.com>
+        id S1726267AbfEBMdO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 08:33:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=hIZ2r4SHmJaCkF2EdisXrrWwKAQXEwuZvn4QXzFxD7w=; b=zJCC6NV/LulBNFOyb7zANwOp7f
+        2OjqNtVlSchdm8gSp8kJaAcCM+qtp5Cv+n4jZKNZUaWYtUVazU7MzLbfMSUMZDBlQuV+rdMSpPRiD
+        MNI2CCar4Z/sWrAmBsfc1rZ4lgXhxtHQiaOStuqOtze/dYdAL/rnKQJ81TGhwghncOl8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hMAtJ-00087U-Bv; Thu, 02 May 2019 14:32:45 +0200
+Date:   Thu, 2 May 2019 14:32:45 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joergen Andreasen <joergen.andreasen@microchip.com>
+Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] net: mscc: ocelot: Implement port policers
+ via tc command
+Message-ID: <20190502123245.GB9844@lunn.ch>
+References: <20190502094029.22526-1-joergen.andreasen@microchip.com>
+ <20190502094029.22526-3-joergen.andreasen@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BLUPR18MB0130AF99D6AB674A85E075D9A1340@BLUPR18MB0130.namprd18.prod.outlook.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190502094029.22526-3-joergen.andreasen@microchip.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 02, 2019 at 12:10:39PM +0000, Michal Kalderon wrote:
-> > From: Leon Romanovsky <leon@kernel.org>
-> > Sent: Thursday, May 2, 2019 8:13 AM
-> > On Wed, May 01, 2019 at 08:35:22PM -0400, David Miller wrote:
-> > > From: Michal Kalderon <michal.kalderon@marvell.com>
-> > > Date: Wed, 1 May 2019 12:57:19 +0300
-> > >
-> > > > diff --git a/drivers/infiniband/hw/qedr/main.c
-> > > > b/drivers/infiniband/hw/qedr/main.c
-> > > > index d93c8a893a89..8bc6775abb79 100644
-> > > > --- a/drivers/infiniband/hw/qedr/main.c
-> > > > +++ b/drivers/infiniband/hw/qedr/main.c
-> > > > @@ -52,6 +52,10 @@ MODULE_DESCRIPTION("QLogic 40G/100G ROCE
-> > > > Driver");  MODULE_AUTHOR("QLogic Corporation");
-> > > > MODULE_LICENSE("Dual BSD/GPL");
-> > > >
-> > > > +static uint iwarp_cmt;
-> > > > +module_param(iwarp_cmt, uint, 0444);
-> > MODULE_PARM_DESC(iwarp_cmt, "
-> > > > +iWARP: Support CMT mode. 0 - Disabled, 1 - Enabled. Default:
-> > > > +Disabled");
-> > > > +
-> > >
-> > > Sorry no, this is totally beneath us.
-> >
-> > It is not acceptable for RDMA too.
->
-> Dave and Leon,
->
-> This is a bit of a special case related specifically to our hardware.
-> Enabling iWARP on this kind of configuration impacts L2 performance.
-> We don't want this to happen implicitly once the rdma driver is loaded since
-> that can happen automatically and could lead to unexpected behavior from user perspective.
-> Therefore we need a way of giving the user control to decide whether they want iWARP at the cost
-> of L2 performance degradation.
-> We also need this information as soon as the iWARP device registers, so using the rdma-tool would be too late.
->
-> If module parameter is not an option, could you please advise what would be ok ?
-> ethtool private flags ?
-> devlink ?
+Hi Joergen
 
-Yes, devlink params are modern way to have same functionality as module
-parameters.
+> +
+> +#define MSCC_RC(expr)				\
+> +	do {					\
+> +		int __rc__ = (expr);		\
+> +		if (__rc__ < 0)			\
+> +			return __rc__;		\
+> +	}					\
+> +	while (0)
 
-This patch can help you in order to get a sense of how to do it.
-https://lore.kernel.org/patchwork/patch/959195/
+I'm sure checkpatch warned about this. A return inside a macros is a
+bad idea. I inherited code doing this, and broke it when adding
+locking, because it was not obvious there was a return.
 
-Thanks
+> +
+> +/* The following two functions do the same as in iproute2 */
+> +#define TIME_UNITS_PER_SEC	1000000
+> +static unsigned int tc_core_tick2time(unsigned int tick)
+> +{
+> +	return (tick * (u32)PSCHED_TICKS2NS(1)) / 1000;
+> +}
+> +
+> +static unsigned int tc_calc_xmitsize(u64 rate, unsigned int ticks)
+> +{
+> +	return div_u64(rate * tc_core_tick2time(ticks), TIME_UNITS_PER_SEC);
+> +}
 
->
-> thanks,
-> Michal
->
-> >
-> > Also please don't use comments inside function calls, it complicates various
-> > checkers without real need.
-> > dev->ops->iwarp_set_engine_affin(dev->cdev, true /* reset */);
-> >                                                 ^^^^^^^^^^^^^^ Thanks
+Should these but put somewhere others can use them?
+
+> +
+> +enum mscc_qos_rate_mode {
+> +	MSCC_QOS_RATE_MODE_DISABLED, /* Policer/shaper disabled */
+> +	MSCC_QOS_RATE_MODE_LINE, /* Measure line rate in kbps incl. IPG */
+> +	MSCC_QOS_RATE_MODE_DATA, /* Measures data rate in kbps excl. IPG */
+> +	MSCC_QOS_RATE_MODE_FRAME, /* Measures frame rate in fps */
+> +	__MSCC_QOS_RATE_MODE_END,
+> +	NUM_MSCC_QOS_RATE_MODE = __MSCC_QOS_RATE_MODE_END,
+> +	MSCC_QOS_RATE_MODE_MAX = __MSCC_QOS_RATE_MODE_END - 1,
+> +};
+> +
+> +/* Round x divided by y to nearest integer. x and y are integers */
+> +#define MSCC_ROUNDING_DIVISION(x, y) (((x) + ((y) / 2)) / (y))
+
+linux/kernel.h defines DIV_ROUND_UP(). Maybe add DIV_ROUND_DOWN()?
+
+> +
+> +/* Round x divided by y to nearest higher integer. x and y are integers */
+> +#define MSCC_DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
+
+DIV_ROUND_UP() ?
+
+> +	/* Limit to maximum values */
+> +	pir = min_t(u32, GENMASK(15, 0), pir);
+> +	cir = min_t(u32, GENMASK(15, 0), cir);
+> +	pbs = min_t(u32, pbs_max, pbs);
+> +	cbs = min_t(u32, cbs_max, cbs);
+
+If it does need to limit, maybe return -EOPNOTSUPP?
+
+> +int ocelot_port_policer_add(struct ocelot_port *port,
+> +			    struct tcf_police *p)
+> +{
+> +	struct ocelot *ocelot = port->ocelot;
+> +	struct qos_policer_conf pp;
+> +
+> +	if (!p)
+> +		return -EINVAL;
+> +
+> +	netdev_dbg(port->dev,
+> +		   "result %d ewma_rate %u burst %lld mtu %u mtu_pktoks %lld\n",
+> +		   p->params->tcfp_result,
+> +		   p->params->tcfp_ewma_rate,
+> +		   p->params->tcfp_burst,
+> +		   p->params->tcfp_mtu,
+> +		   p->params->tcfp_mtu_ptoks);
+> +
+> +	if (p->params->rate_present)
+> +		netdev_dbg(port->dev,
+> +			   "rate: rate %llu mult %u over %u link %u shift %u\n",
+> +			   p->params->rate.rate_bytes_ps,
+> +			   p->params->rate.mult,
+> +			   p->params->rate.overhead,
+> +			   p->params->rate.linklayer,
+> +			   p->params->rate.shift);
+> +
+> +	if (p->params->peak_present)
+> +		netdev_dbg(port->dev,
+> +			   "peak: rate %llu mult %u over %u link %u shift %u\n",
+> +			   p->params->peak.rate_bytes_ps,
+> +			   p->params->peak.mult,
+> +			   p->params->peak.overhead,
+> +			   p->params->peak.linklayer,
+> +			   p->params->peak.shift);
+> +
+> +	memset(&pp, 0, sizeof(pp));
+
+Rather than memset, you can do:
+
+	struct qos_policer_conf pp = { 0 };
+
+	Andrew
