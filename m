@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 172D911C12
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:01:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EC4211C1A
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:03:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726400AbfEBPBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 11:01:25 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:44835 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbfEBPBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 11:01:24 -0400
-Received: by mail-ed1-f65.google.com with SMTP id b8so2381507edm.11;
-        Thu, 02 May 2019 08:01:23 -0700 (PDT)
+        id S1726415AbfEBPDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 11:03:06 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:39767 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726197AbfEBPDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 11:03:06 -0400
+Received: by mail-ed1-f67.google.com with SMTP id e24so2408350edq.6;
+        Thu, 02 May 2019 08:03:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=F4ystsakZfQavkq/1h2e8hRLzNto9oFi+KNjdeCmL64=;
-        b=PCC0xq5ufyxEAa9KaVRkdQWnkVxx/kVb6SxM6C8v1f4VnXfLkIJvpS+U8VKy7KHfv5
-         ji63O9XTc/P1fkA8UGQ330CURPKWxcV1UVg9cv8zY8+GClAWeyIjub9tSSWmOR/z/4If
-         f11F4PM8T0FwHh1dR/WpPAPuAdDXLYbnydg1KcSjm1BoVE8FWkYcYTScPn7evoyZS4qd
-         X7FwrsTSjb4YggILF3p+ZDTiNTWxmwEc/Yv94ChVdcKnlSrNBO8iKa6cPCz9XUsxy1AC
-         Sn16cqVh3Dm42xBXsNjH8oCZZeEbKlKgA1uFCWCrVLsPOTqyRJhhTLtXk1Tvh8QNMDOC
-         SQLg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TkF9Hp+nVZ6H1AjfuCnC+ng5EY02GRsXnvKx+KkYxQo=;
+        b=Tq72OJ96OAc0q+hwdQt8AwjfNnkRAgsgXXrdf7XLuvTqDUQnWdQnS6+Kc1t9wv3dr7
+         hBgTWwYVionGn1ZW/yOB7YYHJ2Ba+r2iz80JKNN0RVEJe2tfec7SQbcEnxqRaxs+K1dB
+         cRugASuy2Lno6f/v/MhiheP8Sr7N/QMCll+3ZU02eUuJ5+4phLY2Kqo7ASque9H6FS8U
+         3CbV25rE2+LhqRzm9FlMgWKSrnZlXTSoL91AbJ/yCF3m1/mM7xwU2xhrM50lEmmyvHiZ
+         gEaMrPgIhzc9I7M7dyBQlz1ZEc641at3uRRo8+CjVYcLpjoDtLthxZIs11shbSjauNab
+         Wa3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=F4ystsakZfQavkq/1h2e8hRLzNto9oFi+KNjdeCmL64=;
-        b=tOBD9qX+zoAN59OQ6N6JIvTyXYrF99CWhr4nNj85A+zzcoluY3SZICZCUJLHB0ITcu
-         eBVlr1dNgDRk9DSyYs/BqVysCr87yD/Wo2f9S6skDtUfJ5TGw3zrwZHOxiJHrf6XrlAD
-         jgtuis2w5WpXJCo22kvCOncxmD/kOdTK3FxSMeCMvkXDFIKJk4WpwvS5myPRIXkQ0V31
-         D1SICqf1IpA3awkABULwgR7R5zHjMs9cy1F3wDG1681+HYhsm5jqUS1xFgOjs/7X3f/Q
-         ADhaNR6qeB+ZwkNnyqhWsY3k1VXoD2L5aeKArnIAqquZKHpyWPYic4XnVBoLopoeW90f
-         BBTQ==
-X-Gm-Message-State: APjAAAVfM8QazsorjNjkS+zqORqx6X9ow4OTa++kHeMBlIR6+7HGEVHm
-        YQseG5p+98BeSHZF/Va/DA8=
-X-Google-Smtp-Source: APXvYqx885g/yRDrtzqXx6mkE80l3zSptxcZjU6uKFdcZqN3zMHnJiaGnbk139arXon5BQo2eX0tgw==
-X-Received: by 2002:aa7:c403:: with SMTP id j3mr2903456edq.144.1556809282579;
-        Thu, 02 May 2019 08:01:22 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TkF9Hp+nVZ6H1AjfuCnC+ng5EY02GRsXnvKx+KkYxQo=;
+        b=iS1lm8/ExioGps4mgiQDVJNS5nkwrI5snasC1OuPL0Ukw6kfKgBGM3B6DE1IYQ3z7X
+         cYRV0D3Cc14C3XPq6M9kA3d1EAgGzM90qNRdZOjCYlOQKcLu22Kdl81xEJOEXMFjZ88m
+         WrEmkVtv5k3rAOYxqOZ8ZIKIyx8vQriE6+a9nQew9mBSHSdJvTkqOaAd/bnJNn9YhIn1
+         ZU/WgEWTVM/cebzZ4uxEADsrB9ZyfRmxEf2W5PlIasd/P5mi44q/M9D0JCcAxKu+JpyI
+         guwa6NLLZHBWm+/FTvJ0kJI0cHG+9iP5Nj/HRdHBw7LwvZxmIuX7pGRCQOxsnc3hPrA5
+         T5FA==
+X-Gm-Message-State: APjAAAX8mDADEJqaydvYr7ZMC8c0pdeZ1oB1yVlMbMC4Bj+IG0CO7Qdd
+        eEFpSG7oiDEYClC2BBXxG24=
+X-Google-Smtp-Source: APXvYqxPK1tA48H7Ar4Sg5qBAablpNrcjB1TDiCPvPJRN12IfZH8s20HOQiU/dIQMS5rHkK6azQNRA==
+X-Received: by 2002:a17:906:9519:: with SMTP id u25mr2110038ejx.34.1556809383965;
+        Thu, 02 May 2019 08:03:03 -0700 (PDT)
 Received: from localhost.localdomain ([2a01:4f9:2b:2b84::2])
-        by smtp.gmail.com with ESMTPSA id f8sm3579312edd.15.2019.05.02.08.01.21
+        by smtp.gmail.com with ESMTPSA id d59sm7450726edc.34.2019.05.02.08.03.02
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 May 2019 08:01:21 -0700 (PDT)
+        Thu, 02 May 2019 08:03:02 -0700 (PDT)
 From:   Nathan Chancellor <natechancellor@gmail.com>
 To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
         Kalle Valo <kvalo@codeaurora.org>
@@ -51,10 +51,12 @@ Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
         Nick Desaulniers <ndesaulniers@google.com>,
         Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] rtw88: Made RA_MASK macros ULL
-Date:   Thu,  2 May 2019 08:00:22 -0700
-Message-Id: <20190502150022.4182-1-natechancellor@gmail.com>
+Subject: [PATCH v2] rtw88: Make RA_MASK macros ULL
+Date:   Thu,  2 May 2019 08:02:10 -0700
+Message-Id: <20190502150209.4475-1-natechancellor@gmail.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190502150022.4182-1-natechancellor@gmail.com>
+References: <20190502150022.4182-1-natechancellor@gmail.com>
 MIME-Version: 1.0
 X-Patchwork-Bot: notify
 Content-Transfer-Encoding: 8bit
@@ -84,6 +86,11 @@ Fixes: e3037485c68e ("rtw88: new Realtek 802.11ac driver")
 Link: https://github.com/ClangBuiltLinux/linux/issues/467
 Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 ---
+
+v1 -> v2:
+
+* Fix commit message wording (made -> make)...
+
  drivers/net/wireless/realtek/rtw88/main.c | 12 ++++++------
  1 file changed, 6 insertions(+), 6 deletions(-)
 
