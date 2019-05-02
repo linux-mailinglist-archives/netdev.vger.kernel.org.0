@@ -2,234 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BB511105
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 03:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C600F1110D
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 04:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726194AbfEBB4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 May 2019 21:56:33 -0400
-Received: from mail-yw1-f74.google.com ([209.85.161.74]:41505 "EHLO
-        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726152AbfEBB4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 21:56:33 -0400
-Received: by mail-yw1-f74.google.com with SMTP id e5so1665726ywc.8
-        for <netdev@vger.kernel.org>; Wed, 01 May 2019 18:56:32 -0700 (PDT)
+        id S1726207AbfEBCCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 May 2019 22:02:22 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:40153 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726152AbfEBCCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 May 2019 22:02:22 -0400
+Received: by mail-pl1-f193.google.com with SMTP id b3so273332plr.7;
+        Wed, 01 May 2019 19:02:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=HbO2VwPqw8gSKYq9lBHNjx4/negZEuhj+znUaUUgs/g=;
-        b=WK0ppeEjiWxvF3N+ovFlcJ0t2Bkxmm7R1WMF34C0vFY0uiN7NVo3ZHzOqEf2c6HQM2
-         dvA97nI09MghV8sIi9gEHZf/BinIaOgLrPJZPjGAKrMBHje+siSd5AH8x8WwelaimfnX
-         PGm/DaU/G2a8QX3fQVydC4hOMtiGD/QsAYH7HXA0qC3QNVf9lMpWCK1+WxRjIkXZBasV
-         1FubaRfPExtfHdzM2MJNrphRueJsRsaw5J+lctZXoZFWH/MtjQNZKxTe1ZfxR2WNPuVU
-         DcQqau1am3eW34cW/J41ZsfVKrQQoHn2DIIblk7SaQXGkiridV87q2JEJIEGUFws7Z19
-         Jvwg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=n3dYpSr2wLyNBpaRIILn1VQ81Od2w4aatd1mSGJbDko=;
+        b=bkp17jgf+JoMC+CQMSg3n7NO6QUPADlpQ1C4As2AXCdAMB9pm3xPMFrvIK9wk+RV32
+         syk8dvutl09BHXMrkYvLBIvN8d9qUZr+pV/pQmnYHh9jXDrojvoF5XxQB6SIUloWscxD
+         YoN1NPt6KI0zuz29WTRLAgzAQqfZG+QT8ucj0cKq6H+Ne4G+vm85XDcHKJUtqFIdy7IA
+         fSj+5GF1apHpmTGXLMh28lM/WStm6EtTDeqXWpOz9sT+qsNEgEsWd1wSLSx8vZZ4zfyJ
+         9MLvLXrsWMdOHvuub6Avn0as7KcUAn6gnjizZ8fHBIRqTAnLJj2DuLEyH4pW11gAYWAP
+         GgmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=HbO2VwPqw8gSKYq9lBHNjx4/negZEuhj+znUaUUgs/g=;
-        b=syhHEcPfOT+AzTiK1XF6pzFWpASWxMwFTD5fIxE/ypv2U7kNDhYefQqJqpmXxXxJnL
-         I9Q9jVS1t6o4IpHuBADZkShVY0iQcmifJngqvS9UaCmt23k8HcqyWO2aRPamyZp0NifR
-         XDeIklNZSt2FSUFicuBi7qvCTzs44KfNdpsf6c3L9LlmIwWB6WgWfQMMWeAOaSDZqFLO
-         Er/o2W8IzoHHF9zjF7vz35snX+85dIuR+eYdRVG/46fWp2ywfVIXwBqbtgcZAtAxqobG
-         DGC9tetB6xJIG+rTBN8v6UTnlbPezkcCrTk/xmr2BeypDDYJ6WJwRZel1gHA/sAXZTZK
-         zY+Q==
-X-Gm-Message-State: APjAAAWXdT9IY4H78ztB2Sz/rrIPA5KMlQkio+xH/apexU1QIb906Hl5
-        gjd4UPBA01WTx+N1SejnVttPzugsEAvabg==
-X-Google-Smtp-Source: APXvYqxXMEekjb4V72jVuj87pfpBVbhXNfkKZYFYS95AlUnCFhWVTuJL7w0z8C5YPlKG9M0OWWXJOL5BZK37yQ==
-X-Received: by 2002:a81:a6c6:: with SMTP id d189mr827904ywh.268.1556762191923;
- Wed, 01 May 2019 18:56:31 -0700 (PDT)
-Date:   Wed,  1 May 2019 18:56:28 -0700
-Message-Id: <20190502015628.22215-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.21.0.593.g511ec345e18-goog
-Subject: [PATCH net] udp: fix GRO packet of death
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=n3dYpSr2wLyNBpaRIILn1VQ81Od2w4aatd1mSGJbDko=;
+        b=JFkN8sEhR4+Va/dGmJbZsk5jC+xmL9zb+3NBSQA1iZkETHAPZzoEkuWYK/pUMwSBlB
+         kwJiGQFDDKkN7n1f1DboJy/N24JZFuQM4z5s9YKLIod8G8kTsqZyUGKUcZsmrVSk/WcZ
+         FwDVPICG5sUFA+5OzmGtLHaL/t8e49VtshiULkowLg8Bq1eO3NwTP/tGgdBVgrxe/n+z
+         mdjCy8Jg7bQxL5s+X3w8mYU3R3TeQTC3ma5jlJTfaPEW7Q91ODGJhbIytqUNUd4hGHXG
+         fuAX+fS1couXAGzCVZyysqI9j0AFsmMrheBkB5p4FuC+UA7u9N5CPljnc2Vgpdlmljrp
+         s5fg==
+X-Gm-Message-State: APjAAAWJCf2XOaeKjw+haD+i1D7lHUnkihKtule0I49gXVAxZ/56Hzu+
+        cCPWOXvRcJNbCFTYsEh3zYXLF6/Wtx1aZQ==
+X-Google-Smtp-Source: APXvYqwfCnovnUV0z8xKBDt7WZ8LZ9KD6puvhf0rUtYi5elzxuT6rBomUrgvSQqGNlYQ5zY4/i+QyA==
+X-Received: by 2002:a17:902:263:: with SMTP id 90mr852952plc.257.1556762541512;
+        Wed, 01 May 2019 19:02:21 -0700 (PDT)
+Received: from localhost.localdomain (123-204-46-122.static.seed.net.tw. [123.204.46.122])
+        by smtp.gmail.com with ESMTPSA id t127sm13301152pfb.106.2019.05.01.19.02.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 01 May 2019 19:02:20 -0700 (PDT)
+From:   "=?UTF-8?q?Jo=C3=A3o=20Paulo=20Rechi=20Vita?=" <jprvita@gmail.com>
+X-Google-Original-From: =?UTF-8?q?Jo=C3=A3o=20Paulo=20Rechi=20Vita?= <jprvita@endlessm.com>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>
+Cc:     bgodavar@codeaurora.org, ytkim@qca.qualcomm.com,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com,
+        =?UTF-8?q?Jo=C3=A3o=20Paulo=20Rechi=20Vita?= <jprvita@endlessm.com>
+Subject: [PATCH v5] Bluetooth: Ignore CC events not matching the last HCI command
+Date:   Thu,  2 May 2019 10:01:52 +0800
+Message-Id: <20190502020152.2099-1-jprvita@endlessm.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <A657D3D3-93D8-4F77-A143-72E921C552AE@holtmann.org>
+References: <A657D3D3-93D8-4F77-A143-72E921C552AE@holtmann.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot was able to crash host by sending UDP packets with a 0 payload.
+This commit makes the kernel not send the next queued HCI command until
+a command complete arrives for the last HCI command sent to the
+controller. This change avoids a problem with some buggy controllers
+(seen on two SKUs of QCA9377) that send an extra command complete event
+for the previous command after the kernel had already sent a new HCI
+command to the controller.
 
-TCP does not have this issue since we do not aggregate packets without
-payload.
+The problem was reproduced when starting an active scanning procedure,
+where an extra command complete event arrives for the LE_SET_RANDOM_ADDR
+command. When this happends the kernel ends up not processing the
+command complete for the following commmand, LE_SET_SCAN_PARAM, and
+ultimately behaving as if a passive scanning procedure was being
+performed, when in fact controller is performing an active scanning
+procedure. This makes it impossible to discover BLE devices as no device
+found events are sent to userspace.
 
-Since dev_gro_receive() sets gso_size based on skb_gro_len(skb)
-it seems not worth trying to cope with padded packets.
+This problem is reproducible on 100% of the attempts on the affected
+controllers. The extra command complete event can be seen at timestamp
+27.420131 on the btmon logs bellow.
 
-BUG: KASAN: slab-out-of-bounds in skb_gro_receive+0xf5f/0x10e0 net/core/skbuff.c:3826
-Read of size 16 at addr ffff88808893fff0 by task syz-executor612/7889
+Bluetooth monitor ver 5.50
+= Note: Linux version 5.0.0+ (x86_64)                                  0.352340
+= Note: Bluetooth subsystem version 2.22                               0.352343
+= New Index: 80:C5:F2:8F:87:84 (Primary,USB,hci0)               [hci0] 0.352344
+= Open Index: 80:C5:F2:8F:87:84                                 [hci0] 0.352345
+= Index Info: 80:C5:F2:8F:87:84 (Qualcomm)                      [hci0] 0.352346
+@ MGMT Open: bluetoothd (privileged) version 1.14             {0x0001} 0.352347
+@ MGMT Open: btmon (privileged) version 1.14                  {0x0002} 0.352366
+@ MGMT Open: btmgmt (privileged) version 1.14                {0x0003} 27.302164
+@ MGMT Command: Start Discovery (0x0023) plen 1       {0x0003} [hci0] 27.302310
+        Address type: 0x06
+          LE Public
+          LE Random
+< HCI Command: LE Set Random Address (0x08|0x0005) plen 6   #1 [hci0] 27.302496
+        Address: 15:60:F2:91:B2:24 (Non-Resolvable)
+> HCI Event: Command Complete (0x0e) plen 4                 #2 [hci0] 27.419117
+      LE Set Random Address (0x08|0x0005) ncmd 1
+        Status: Success (0x00)
+< HCI Command: LE Set Scan Parameters (0x08|0x000b) plen 7  #3 [hci0] 27.419244
+        Type: Active (0x01)
+        Interval: 11.250 msec (0x0012)
+        Window: 11.250 msec (0x0012)
+        Own address type: Random (0x01)
+        Filter policy: Accept all advertisement (0x00)
+> HCI Event: Command Complete (0x0e) plen 4                 #4 [hci0] 27.420131
+      LE Set Random Address (0x08|0x0005) ncmd 1
+        Status: Success (0x00)
+< HCI Command: LE Set Scan Enable (0x08|0x000c) plen 2      #5 [hci0] 27.420259
+        Scanning: Enabled (0x01)
+        Filter duplicates: Enabled (0x01)
+> HCI Event: Command Complete (0x0e) plen 4                 #6 [hci0] 27.420969
+      LE Set Scan Parameters (0x08|0x000b) ncmd 1
+        Status: Success (0x00)
+> HCI Event: Command Complete (0x0e) plen 4                 #7 [hci0] 27.421983
+      LE Set Scan Enable (0x08|0x000c) ncmd 1
+        Status: Success (0x00)
+@ MGMT Event: Command Complete (0x0001) plen 4        {0x0003} [hci0] 27.422059
+      Start Discovery (0x0023) plen 1
+        Status: Success (0x00)
+        Address type: 0x06
+          LE Public
+          LE Random
+@ MGMT Event: Discovering (0x0013) plen 2             {0x0003} [hci0] 27.422067
+        Address type: 0x06
+          LE Public
+          LE Random
+        Discovery: Enabled (0x01)
+@ MGMT Event: Discovering (0x0013) plen 2             {0x0002} [hci0] 27.422067
+        Address type: 0x06
+          LE Public
+          LE Random
+        Discovery: Enabled (0x01)
+@ MGMT Event: Discovering (0x0013) plen 2             {0x0001} [hci0] 27.422067
+        Address type: 0x06
+          LE Public
+          LE Random
+        Discovery: Enabled (0x01)
 
-CPU: 0 PID: 7889 Comm: syz-executor612 Not tainted 5.1.0-rc7+ #96
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x172/0x1f0 lib/dump_stack.c:113
- print_address_description.cold+0x7c/0x20d mm/kasan/report.c:187
- kasan_report.cold+0x1b/0x40 mm/kasan/report.c:317
- __asan_report_load16_noabort+0x14/0x20 mm/kasan/generic_report.c:133
- skb_gro_receive+0xf5f/0x10e0 net/core/skbuff.c:3826
- udp_gro_receive_segment net/ipv4/udp_offload.c:382 [inline]
- call_gro_receive include/linux/netdevice.h:2349 [inline]
- udp_gro_receive+0xb61/0xfd0 net/ipv4/udp_offload.c:414
- udp4_gro_receive+0x763/0xeb0 net/ipv4/udp_offload.c:478
- inet_gro_receive+0xe72/0x1110 net/ipv4/af_inet.c:1510
- dev_gro_receive+0x1cd0/0x23c0 net/core/dev.c:5581
- napi_gro_frags+0x36b/0xd10 net/core/dev.c:5843
- tun_get_user+0x2f24/0x3fb0 drivers/net/tun.c:1981
- tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2027
- call_write_iter include/linux/fs.h:1866 [inline]
- do_iter_readv_writev+0x5e1/0x8e0 fs/read_write.c:681
- do_iter_write fs/read_write.c:957 [inline]
- do_iter_write+0x184/0x610 fs/read_write.c:938
- vfs_writev+0x1b3/0x2f0 fs/read_write.c:1002
- do_writev+0x15e/0x370 fs/read_write.c:1037
- __do_sys_writev fs/read_write.c:1110 [inline]
- __se_sys_writev fs/read_write.c:1107 [inline]
- __x64_sys_writev+0x75/0xb0 fs/read_write.c:1107
- do_syscall_64+0x103/0x610 arch/x86/entry/common.c:290
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x441cc0
-Code: 05 48 3d 01 f0 ff ff 0f 83 9d 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 83 3d 51 93 29 00 00 75 14 b8 14 00 00 00 0f 05 <48> 3d 01 f0 ff ff 0f 83 74 09 fc ff c3 48 83 ec 08 e8 ba 2b 00 00
-RSP: 002b:00007ffe8c716118 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
-RAX: ffffffffffffffda RBX: 00007ffe8c716150 RCX: 0000000000441cc0
-RDX: 0000000000000001 RSI: 00007ffe8c716170 RDI: 00000000000000f0
-RBP: 0000000000000000 R08: 000000000000ffff R09: 0000000000a64668
-R10: 0000000020000040 R11: 0000000000000246 R12: 000000000000c2d9
-R13: 0000000000402b50 R14: 0000000000000000 R15: 0000000000000000
-
-Allocated by task 5143:
- save_stack+0x45/0xd0 mm/kasan/common.c:75
- set_track mm/kasan/common.c:87 [inline]
- __kasan_kmalloc mm/kasan/common.c:497 [inline]
- __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:470
- kasan_slab_alloc+0xf/0x20 mm/kasan/common.c:505
- slab_post_alloc_hook mm/slab.h:437 [inline]
- slab_alloc mm/slab.c:3393 [inline]
- kmem_cache_alloc+0x11a/0x6f0 mm/slab.c:3555
- mm_alloc+0x1d/0xd0 kernel/fork.c:1030
- bprm_mm_init fs/exec.c:363 [inline]
- __do_execve_file.isra.0+0xaa3/0x23f0 fs/exec.c:1791
- do_execveat_common fs/exec.c:1865 [inline]
- do_execve fs/exec.c:1882 [inline]
- __do_sys_execve fs/exec.c:1958 [inline]
- __se_sys_execve fs/exec.c:1953 [inline]
- __x64_sys_execve+0x8f/0xc0 fs/exec.c:1953
- do_syscall_64+0x103/0x610 arch/x86/entry/common.c:290
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 5351:
- save_stack+0x45/0xd0 mm/kasan/common.c:75
- set_track mm/kasan/common.c:87 [inline]
- __kasan_slab_free+0x102/0x150 mm/kasan/common.c:459
- kasan_slab_free+0xe/0x10 mm/kasan/common.c:467
- __cache_free mm/slab.c:3499 [inline]
- kmem_cache_free+0x86/0x260 mm/slab.c:3765
- __mmdrop+0x238/0x320 kernel/fork.c:677
- mmdrop include/linux/sched/mm.h:49 [inline]
- finish_task_switch+0x47b/0x780 kernel/sched/core.c:2746
- context_switch kernel/sched/core.c:2880 [inline]
- __schedule+0x81b/0x1cc0 kernel/sched/core.c:3518
- preempt_schedule_irq+0xb5/0x140 kernel/sched/core.c:3745
- retint_kernel+0x1b/0x2d
- arch_local_irq_restore arch/x86/include/asm/paravirt.h:767 [inline]
- kmem_cache_free+0xab/0x260 mm/slab.c:3766
- anon_vma_chain_free mm/rmap.c:134 [inline]
- unlink_anon_vmas+0x2ba/0x870 mm/rmap.c:401
- free_pgtables+0x1af/0x2f0 mm/memory.c:394
- exit_mmap+0x2d1/0x530 mm/mmap.c:3144
- __mmput kernel/fork.c:1046 [inline]
- mmput+0x15f/0x4c0 kernel/fork.c:1067
- exec_mmap fs/exec.c:1046 [inline]
- flush_old_exec+0x8d9/0x1c20 fs/exec.c:1279
- load_elf_binary+0x9bc/0x53f0 fs/binfmt_elf.c:864
- search_binary_handler fs/exec.c:1656 [inline]
- search_binary_handler+0x17f/0x570 fs/exec.c:1634
- exec_binprm fs/exec.c:1698 [inline]
- __do_execve_file.isra.0+0x1394/0x23f0 fs/exec.c:1818
- do_execveat_common fs/exec.c:1865 [inline]
- do_execve fs/exec.c:1882 [inline]
- __do_sys_execve fs/exec.c:1958 [inline]
- __se_sys_execve fs/exec.c:1953 [inline]
- __x64_sys_execve+0x8f/0xc0 fs/exec.c:1953
- do_syscall_64+0x103/0x610 arch/x86/entry/common.c:290
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-The buggy address belongs to the object at ffff88808893f7c0
- which belongs to the cache mm_struct of size 1496
-The buggy address is located 600 bytes to the right of
- 1496-byte region [ffff88808893f7c0, ffff88808893fd98)
-The buggy address belongs to the page:
-page:ffffea0002224f80 count:1 mapcount:0 mapping:ffff88821bc40ac0 index:0xffff88808893f7c0 compound_mapcount: 0
-flags: 0x1fffc0000010200(slab|head)
-raw: 01fffc0000010200 ffffea00025b4f08 ffffea00027b9d08 ffff88821bc40ac0
-raw: ffff88808893f7c0 ffff88808893e440 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88808893fe80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88808893ff00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88808893ff80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                                                             ^
- ffff888088940000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff888088940080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-
-Fixes: e20cf8d3f1f7 ("udp: implement GRO for plain UDP sockets.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: João Paulo Rechi Vita <jprvita@endlessm.com>
 ---
- net/ipv4/udp_offload.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ include/net/bluetooth/hci.h |  1 +
+ net/bluetooth/hci_core.c    |  5 +++++
+ net/bluetooth/hci_event.c   | 12 ++++++++++++
+ net/bluetooth/hci_request.c |  5 +++++
+ net/bluetooth/hci_request.h |  1 +
+ 5 files changed, 24 insertions(+)
 
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index d8776b2110c107ea322262d83532cb8c2759a9dc..065334b41d575aa0ba28de8487a6a5d018ec8804 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -352,6 +352,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 	struct sk_buff *pp = NULL;
- 	struct udphdr *uh2;
- 	struct sk_buff *p;
-+	unsigned int ulen;
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index fbba43e9bef5..9a5330eed794 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -282,6 +282,7 @@ enum {
+ 	HCI_FORCE_BREDR_SMP,
+ 	HCI_FORCE_STATIC_ADDR,
+ 	HCI_LL_RPA_RESOLUTION,
++	HCI_CMD_PENDING,
  
- 	/* requires non zero csum, for symmetry with GSO */
- 	if (!uh->check) {
-@@ -359,6 +360,12 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 		return NULL;
+ 	__HCI_NUM_FLAGS,
+ };
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index d6b2540ba7f8..f275c9905650 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -4383,6 +4383,9 @@ void hci_req_cmd_complete(struct hci_dev *hdev, u16 opcode, u8 status,
+ 		return;
  	}
  
-+	/* Do not deal with padded or malicious packets, sorry ! */
-+	ulen = ntohs(uh->len);
-+	if (ulen <= sizeof(*uh) || ulen != skb_gro_len(skb)) {
-+		NAPI_GRO_CB(skb)->flush = 1;
-+		return NULL;
++	/* If we reach this point this event matches the last command sent */
++	hci_dev_clear_flag(hdev, HCI_CMD_PENDING);
++
+ 	/* If the command succeeded and there's still more commands in
+ 	 * this request the request is not yet complete.
+ 	 */
+@@ -4493,6 +4496,8 @@ static void hci_cmd_work(struct work_struct *work)
+ 
+ 		hdev->sent_cmd = skb_clone(skb, GFP_KERNEL);
+ 		if (hdev->sent_cmd) {
++			if (hci_req_status_pend(hdev))
++				hci_dev_set_flag(hdev, HCI_CMD_PENDING);
+ 			atomic_dec(&hdev->cmd_cnt);
+ 			hci_send_frame(hdev, skb);
+ 			if (test_bit(HCI_RESET, &hdev->flags))
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 609fd6871c5a..8b893baf9bbe 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -3404,6 +3404,12 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb,
+ 	hci_req_cmd_complete(hdev, *opcode, *status, req_complete,
+ 			     req_complete_skb);
+ 
++	if (hci_dev_test_flag(hdev, HCI_CMD_PENDING)) {
++		bt_dev_err(hdev,
++			   "unexpected event for opcode 0x%4.4x", *opcode);
++		return;
 +	}
- 	/* pull encapsulating udp header */
- 	skb_gro_pull(skb, sizeof(struct udphdr));
- 	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
-@@ -377,12 +384,12 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
++
+ 	if (atomic_read(&hdev->cmd_cnt) && !skb_queue_empty(&hdev->cmd_q))
+ 		queue_work(hdev->workqueue, &hdev->cmd_work);
+ }
+@@ -3511,6 +3517,12 @@ static void hci_cmd_status_evt(struct hci_dev *hdev, struct sk_buff *skb,
+ 		hci_req_cmd_complete(hdev, *opcode, ev->status, req_complete,
+ 				     req_complete_skb);
  
- 		/* Terminate the flow on len mismatch or if it grow "too much".
- 		 * Under small packet flood GRO count could elsewhere grow a lot
--		 * leading to execessive truesize values.
-+		 * leading to excessive truesize values.
- 		 * On len mismatch merge the first packet shorter than gso_size,
- 		 * otherwise complete the GRO packet.
- 		 */
--		if (uh->len > uh2->len || skb_gro_receive(p, skb) ||
--		    uh->len != uh2->len ||
-+		if (ulen > ntohs(uh2->len) || skb_gro_receive(p, skb) ||
-+		    ulen != ntohs(uh2->len) ||
- 		    NAPI_GRO_CB(p)->count >= UDP_GRO_CNT_MAX)
- 			pp = p;
++	if (hci_dev_test_flag(hdev, HCI_CMD_PENDING)) {
++		bt_dev_err(hdev,
++			   "unexpected event for opcode 0x%4.4x", *opcode);
++		return;
++	}
++
+ 	if (atomic_read(&hdev->cmd_cnt) && !skb_queue_empty(&hdev->cmd_q))
+ 		queue_work(hdev->workqueue, &hdev->cmd_work);
+ }
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index ca73d36cc149..e9a95ed65491 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -46,6 +46,11 @@ void hci_req_purge(struct hci_request *req)
+ 	skb_queue_purge(&req->cmd_q);
+ }
  
++bool hci_req_status_pend(struct hci_dev *hdev)
++{
++	return hdev->req_status == HCI_REQ_PEND;
++}
++
+ static int req_run(struct hci_request *req, hci_req_complete_t complete,
+ 		   hci_req_complete_skb_t complete_skb)
+ {
+diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
+index 692cc8b13368..55b2050cc9ff 100644
+--- a/net/bluetooth/hci_request.h
++++ b/net/bluetooth/hci_request.h
+@@ -37,6 +37,7 @@ struct hci_request {
+ 
+ void hci_req_init(struct hci_request *req, struct hci_dev *hdev);
+ void hci_req_purge(struct hci_request *req);
++bool hci_req_status_pend(struct hci_dev *hdev);
+ int hci_req_run(struct hci_request *req, hci_req_complete_t complete);
+ int hci_req_run_skb(struct hci_request *req, hci_req_complete_skb_t complete);
+ void hci_req_add(struct hci_request *req, u16 opcode, u32 plen,
 -- 
-2.21.0.593.g511ec345e18-goog
+2.20.1
 
