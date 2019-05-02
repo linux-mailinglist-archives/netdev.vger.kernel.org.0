@@ -2,64 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05BA611C2B
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:08:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2766911C4F
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:11:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726360AbfEBPHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 11:07:54 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:58650 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbfEBPHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 11:07:54 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hMDJO-0006PH-Ow; Thu, 02 May 2019 17:07:50 +0200
-Message-ID: <3c683fc0d3ea3d07034366a5fbbd5ed5049d48b9.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next 3/3] netlink: add validation of NLA_F_NESTED
- flag
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Thu, 02 May 2019 17:07:49 +0200
-In-Reply-To: <20190502131416.GE21672@unicorn.suse.cz>
-References: <cover.1556798793.git.mkubecek@suse.cz>
-         <75a0887b3eb70005c272685d8ef9a712f37d7a54.1556798793.git.mkubecek@suse.cz>
-         <3e8291cb2491e9a1830afdb903ed2c52e9f7475c.camel@sipsolutions.net>
-         <20190502131416.GE21672@unicorn.suse.cz>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726458AbfEBPLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 11:11:43 -0400
+Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:52225 "EHLO
+        caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726270AbfEBPLm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 11:11:42 -0400
+Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
+        id 3485F461D3A; Thu,  2 May 2019 11:11:40 -0400 (EDT)
+Date:   Thu, 2 May 2019 11:11:40 -0400
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec
+ packets
+Message-ID: <20190502151140.gf5ugodqamtdd5tz@csclub.uwaterloo.ca>
+References: <20190501205215.ptoi2czhklte5jbm@csclub.uwaterloo.ca>
+ <CAKgT0UczVvREiXwde6yJ8_i9RT2z7FhenEutXJKW8AmDypn_0g@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UczVvREiXwde6yJ8_i9RT2z7FhenEutXJKW8AmDypn_0g@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-05-02 at 15:14 +0200, Michal Kubecek wrote:
-> 
-> > > @@ -415,7 +418,8 @@ enum netlink_validation {
-> > >  #define NL_VALIDATE_STRICT (NL_VALIDATE_TRAILING |\
-> > >  			    NL_VALIDATE_MAXTYPE |\
-> > >  			    NL_VALIDATE_UNSPEC |\
-> > > -			    NL_VALIDATE_STRICT_ATTRS)
-> > > +			    NL_VALIDATE_STRICT_ATTRS |\
-> > > +			    NL_VALIDATE_NESTED)
-> > 
-> > This is fine _right now_, but in general we cannot keep adding here
-> > after the next release :-)
-> 
-> Right, that's why I would like to get this into the same cycle as your
-> series.
+On Wed, May 01, 2019 at 03:52:57PM -0700, Alexander Duyck wrote:
+> I'm not sure how RSS will do much for you here. Basically you only
+> have the source IP address as your only source of entropy when it
+> comes to RSS since the destination IP should always be the same if you
+> are performing a server role and terminating packets on the local
+> system and as far as the ports in your example you seem to only be
+> using 4500 for both the source and the destination.
 
-Yeah, I know you know, just wanted state it again :-)
+I have thousands of IPsec clients connecting.  Simply treating them as
+normal UDP packets would work.  The IP address is different, and often
+the port too.
 
-> How about "NLA_F_NESTED is missing" and "NLA_F_NESTED not expected"?
+> In your testing are you only looking at a point to point connection
+> between two systems, or do you have multiple systems accessing the
+> system you are testing? I ask as the only way this should do any
+> traffic spreading via RSS would be if the source IPs are different and
+> that would require multiple client systems accessing the server.
 
-Looks good to me.
+I tried changing the client IP address and the RSS hash key.  It never
+changed to another queue.  Something is broken.
 
-johannes
+> In the case of other encapsulation types over UDP, such as VXLAN, I
+> know that a hash value is stored in the UDP source port location
+> instead of the true source port number. This allows the RSS hashing to
+> occur on this extra information which would allow for a greater
+> diversity in hash results. Depending on how you are generating the ESP
+> encapsulation you might look at seeing if it would be possible to have
+> a hash on the inner data used as the UDP source port in the outgoing
+> packets. This would help to resolve this sort of issue.
 
+Well it works on every other network card except this one.  Every other
+intel card in the past we have used had no problem doing this right.
+
+You want all the packets for a given ipsec tunnel to go to the same queue.
+That is not a problem here.  What you don't want is every ipsec packet
+from everyone going to the same queue (always queue 0).  So simply
+treating them as UDP packets with a source and destination IP and port
+would work perfectly fine.  The X722 isn't doing that.  It is always
+assigning a hash value of 0 to these packets.
+
+-- 
+Len Sorensen
