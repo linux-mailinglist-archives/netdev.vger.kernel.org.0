@@ -2,118 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B435511FD7
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 18:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 387DE12006
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 18:22:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbfEBQOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 12:14:22 -0400
-Received: from rs07.intra2net.com ([85.214.138.66]:52326 "EHLO
-        rs07.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726303AbfEBQOW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 12:14:22 -0400
-Received: from mail.m.i2n (unknown [172.17.128.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by rs07.intra2net.com (Postfix) with ESMTPS id ACEC415001EA;
-        Thu,  2 May 2019 18:14:19 +0200 (CEST)
-Received: from localhost (mail.m.i2n [127.0.0.1])
-        by localhost (Postfix) with ESMTP id 7B3994C9;
-        Thu,  2 May 2019 18:14:19 +0200 (CEST)
-X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.54.20,VDF=8.15.29.0)
-X-Spam-Status: 
-X-Spam-Level: 0
-Received: from rocinante.m.i2n (rocinante.m.i2n [172.16.1.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: smtp-auth-user)
-        by mail.m.i2n (Postfix) with ESMTPSA id CA9F8222;
-        Thu,  2 May 2019 18:14:17 +0200 (CEST)
-From:   Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
-To:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: Hyperv netvsc - regression for 32-PAE kernel
-Date:   Thu, 02 May 2019 18:14:17 +0200
-Message-ID: <6166175.oDc9uM0lzg@rocinante.m.i2n>
+        id S1726451AbfEBQWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 12:22:10 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:39173 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726197AbfEBQWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 12:22:10 -0400
+Received: by mail-pl1-f194.google.com with SMTP id e92so1259813plb.6;
+        Thu, 02 May 2019 09:22:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zn8yfJGYS08KppxEtG2xWjDfTf/WXjwvvw1EeDqj28g=;
+        b=RNS6PHS7ucN6F9SkJdAWHHj+5V97+gr0foD0Q80WnV31Wof5/V5Hp+fPLM2l2r0lrF
+         kA5+CxY3MFhetfkrU+DSY2+TBtdkgd9p35c5Tbx+PiVrXL7wOONeLE4VlgQq/UyuyQMD
+         1zM7v/PFk08XI2QtJd/DcW4xFUG2htZ0rA2AYZ0tZT0zPg86LhX7nnXx/Uyi4AYmVT7F
+         XpCVQ6QJatiI87+LD6dqnMMRqH48p6oFBdD5pC5678jHFuVD7cozdOhNDtDqzhndVArH
+         UB75RkUDalroOz6FiTQU6+zv5/1pYX5qyDg+1YRVqUNPNTiQOmZRmAbwf7KZ3RsKLrZQ
+         npIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zn8yfJGYS08KppxEtG2xWjDfTf/WXjwvvw1EeDqj28g=;
+        b=F38rSS3810RRnEABECMQWWuyTQ3DPz0Des1kUjDyEhNic9Ri8LuOiiVf/gSRLDJJ0g
+         IQM+3bji4FWK4lYtB43e2FNWJWSio1Sgdi2MxL7qoFBESITPGhxs4Ec+tADfOW6jlr2s
+         bHQaINzY7YoMjQc/tjAqZh7qc7yVWB2z0FSVaIlhomEhdYjw8cFAhOZELu9jZm1HW1V4
+         Qz3dS37q+007YiGvSJP52UpogNn1TPYg+cqnRWrSRmbXE1O+gPM6DqO/sEwf1xc37o8g
+         hoa4HtJrDaMNm2HMtd33vV0ZbeXkCE5msAJ6FZrIKOufnHUHtOeplHtvOH9Hxh9Q7BmY
+         pWiA==
+X-Gm-Message-State: APjAAAVa9b9AB+HiHZm0qOp0TiKRPHCABpgbmP7BwGtdo8fEzw2HBj6y
+        xYMcM6ay/UeDsSWGYqWvWrrI3PhxtkTTCB41cbo=
+X-Google-Smtp-Source: APXvYqzwL5UmlQcYlE7GRSLphSa7A1IINLApmkSPtNF3HVJbu1kriWw32hLTlgbCrNkTVhrjbzBuferb1Nzfr/j4acM=
+X-Received: by 2002:a17:902:9b83:: with SMTP id y3mr4675914plp.165.1556814129261;
+ Thu, 02 May 2019 09:22:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+References: <20190502085105.2967-1-mcroce@redhat.com> <CAGnkfhwWnST_uMOOpBtz4scN50T_9X+bJnVYaHeFvLzPHgRGtA@mail.gmail.com>
+In-Reply-To: <CAGnkfhwWnST_uMOOpBtz4scN50T_9X+bJnVYaHeFvLzPHgRGtA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 2 May 2019 09:21:57 -0700
+Message-ID: <CAM_iQpVqyPiEeL8b1n9+3xzT22-m8cArwJL1nwYBAo+1JHB0QA@mail.gmail.com>
+Subject: Re: [PATCH net] cls_matchall: avoid panic when receiving a packet
+ before filter set
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all.
+On Thu, May 2, 2019 at 1:55 AM Matteo Croce <mcroce@redhat.com> wrote:
+>
+> On Thu, May 2, 2019 at 10:51 AM Matteo Croce <mcroce@redhat.com> wrote:
+> >
+> > When a matchall classifier is added, there is a small time interval in
+> > which tp->root is NULL. If we receive a packet in this small time slice
+> > a NULL pointer dereference will happen, leading to a kernel panic:
+> >
+>
+> Hi,
+>
+> I forgot to mark it as v2. Will someone handle it, or I have to
+> resubmit a v2 or v3?
 
-I have a custom linux OS vm running kernel 3.14 (32b with or without PAE) in 
-windows 2012 R2. The vm has one Network Adapter and is generation 1. With this 
-setup everything runs fine.
+As long as David doesn't get confused on which one he should apply,
+it is okay.
 
-The problem started when I tried to update to kernel 4.19. The Synthetic 
-network adapter driver does not successfully loads during boot and then the 
-machine gets stuck.
-
-If I remove the Network Adapter and add a Legacy one instead, the system runs 
-normally. However, this implies an unacceptable performance regression for my 
-use case.
-
-I manage to boot the vm with the Network Adapter by adding "hv_netvsc" to the 
-blacklist, so I can inspect the system. Manually running "modprobe -v 
-hv_netvsc" doesn't show any errors, just the "instmod" for ucs2_string and 
-hv_netvsc, and then hangs forever. The "dmesg" output shows the following 
-problems:
-
-[  994.830251] hv_netvsc 0969e9e1-1392-4ed6-a230-d5db70c76a3c (unnamed 
-net_device) (uninitialized): 0x0 (len 0)
-[  994.830306] hv_netvsc 0969e9e1-1392-4ed6-a230-d5db70c76a3c (unnamed 
-net_device) (uninitialized): unhandled rndis message (type 0 len 0)
-[  994.830435] hv_netvsc 0969e9e1-1392-4ed6-a230-d5db70c76a3c (unnamed 
-net_device) (uninitialized): 0x0 (len 0)
-[  994.830440] hv_netvsc 0969e9e1-1392-4ed6-a230-d5db70c76a3c (unnamed 
-net_device) (uninitialized): unhandled rndis message (type 0 len 0)
-
-
-The Network Adapter was "Not connected" during these error messages, but when 
-connected to a Virtual Switch the errors are the same, except doubled, so I 
-would have four "unhandled rndis message".
-
-I tested kernel 4.19 without PAE, the module is loaded without problems and 
-those error messages never appear. 
-
-I also tested other stable kernel versions, for example 4.14.114, and this one 
-actually works fine with PAE. At this point, it looked like a bisect could 
-help me to get to the offending changes and to understand the problem.
-
-So I got to the following commit:
-
-commit 6ba34171bcbd10321c6cf554e0c1144d170f9d1a
-Author: Michael Kelley <mikelley@microsoft.com>
-Date:   Thu Aug 2 03:08:24 2018 +0000
-
-    Drivers: hv: vmbus: Remove use of slow_virt_to_phys()
-    
-    slow_virt_to_phys() is only implemented for arch/x86.
-    Remove its use in arch independent Hyper-V drivers, and
-    replace with test for vmalloc() address followed by
-    appropriate v-to-p function. This follows the typical
-    pattern of other drivers and avoids the need to implement
-    slow_virt_to_phys() for Hyper-V on ARM64.
-    
-    Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-    Signed-off-by: K. Y. Srinivasan <kys@microsoft.com>
-    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-
-The catch is that slow_virt_to_phys has a special trick implemented in order 
-to keep specifically 32-PAE kernel working, it is explained in a comment 
-inside the function.
-
-Reverting this commit makes the kernel 4.19 32-bit PAE work again. However I 
-believe a better solution might exist.
-
-Comments are very much appreciated.
-
-Cheers!
-Julie R.
-
-
-
+Thanks.
