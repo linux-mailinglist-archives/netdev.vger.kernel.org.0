@@ -2,114 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEE521134B
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 08:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9976411363
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 08:32:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726321AbfEBGVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 02:21:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52596 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726202AbfEBGVZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 02:21:25 -0400
-Received: from localhost (unknown [37.142.3.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 802CE2085A;
-        Thu,  2 May 2019 06:21:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556778084;
-        bh=U3VdY1Yu2Cf3cFUWAMwaV9luwZehJB6zJ3B9+GKYMFk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vxyUYKwDbmjGwr9OUviOFKzl5lnBZ4p/umsxKLI4sV7Y5OA8NVoqIRB+y0VYAuQvi
-         tkxNdPPYHlt/SEZz/ayNhAGqKUyXTLwRijQwPtyXDhhPoNjMgvN+rPe9u9xaef1jOL
-         GphkqKVzhMhlWG+t6nYn0ZQv9KKuYKmtERbTfsR8=
-Date:   Thu, 2 May 2019 09:21:20 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [net-next][PATCH v2 1/2] rds: handle unsupported rdma request to
- fs dax memory
-Message-ID: <20190502062120.GM7676@mtr-leonro.mtl.com>
-References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
- <1556581040-4812-2-git-send-email-santosh.shilimkar@oracle.com>
- <20190501074415.GB7676@mtr-leonro.mtl.com>
- <2829f9d8-0383-d141-46c3-f2a09cd542b2@oracle.com>
+        id S1726285AbfEBGcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 02:32:03 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:44399 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725764AbfEBGcC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 02:32:02 -0400
+Received: by mail-io1-f66.google.com with SMTP id r71so1072084iod.11;
+        Wed, 01 May 2019 23:32:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WGMCFAzGm3CobSQocX4r+FnTqfDTBc1bpPU4QQeOhDY=;
+        b=CXMeVfq0ALu7tWgwUP+PeWaHpT2p9eKmz76o3zD9hnt2O7wj9FEZhcm1iubi+6qJ25
+         HCS8zEdI8HANKXKt2mpN2Cdais0yzlnLPQwuKj8nfm3HaDOeC+56GC1bSKkw+BfhnFJK
+         FJYMW+2Xr9J/QobmDEOxMkIp+i5uPgikmL++JBu0XHAKmFX2fPHIJ9QfpsQ+a854gnEG
+         kYAKMoqhtss6NzBF7uq23XkK8oJIPVZedn2UAYQZg5ZDk5odHm7IFl90rG5+7B7t/vPV
+         9Rva7vsPetYxp9WbjYyh20VWER4uA8+lX0Xv5R29M6aMUo26MdIuGqllERStuHRQRQHU
+         27dA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WGMCFAzGm3CobSQocX4r+FnTqfDTBc1bpPU4QQeOhDY=;
+        b=pO7ciQ62nuPlM8yr4QeIAeFMxldwFj437Xau4+R0i1RyyCTxcU5zF984Ykr2YorGdM
+         k9mZv8JIb+tyrOfvvxxx50Fl83dHEo3Y6NbRFPYCM4nPCL2jTKAAep0A9shCBCICgkna
+         6gn7C9z8zvx54b1+BJmAd3gJ5moWfp3NuvRCZqIbBaofZLf+8UUl9cHHJ9ZKEbPNMUfO
+         vd6S71knpXJ9EeJuGfCGbvZmynio3ljQXd4HZM+wB69S4+B9Xw8cK4ZQ0FOo2iJCQOZb
+         MvBC/EF4BeMq2S9N1NnEbhVS1vFMt7t4ONrRT4ZHUUUkR/JqT28M9WRegmh9r98vICWn
+         3IhQ==
+X-Gm-Message-State: APjAAAWFYq5oNWJcVOxATShRM5zlEHKk2LbRmTbBmnf1odE90RnFUx1C
+        qMzi5Y3h0P53MzOmZ4aASmERFC6/0jYtEDwe+Us=
+X-Google-Smtp-Source: APXvYqxvraDLWRHUAd6drNfVgpeSbYfAIVhDqH2YhhHfFHihnxUJyYTI75XZixavJtyWEnYfKEfxjxVAjzKL3wgRxnE=
+X-Received: by 2002:a05:6602:21d3:: with SMTP id c19mr1262943ioc.233.1556778721541;
+ Wed, 01 May 2019 23:32:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2829f9d8-0383-d141-46c3-f2a09cd542b2@oracle.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+References: <1556751209-4778-1-git-send-email-vgupta@synopsys.com>
+In-Reply-To: <1556751209-4778-1-git-send-email-vgupta@synopsys.com>
+From:   Y Song <ys114321@gmail.com>
+Date:   Wed, 1 May 2019 23:31:25 -0700
+Message-ID: <CAH3MdRVkUFfwKkgT-pi-RLBpcEf6n0bAwWZOu-=7+qctPTCpkw@mail.gmail.com>
+Subject: Re: [PATCH] tools/bpf: fix perf build error with uClibc (seen on ARC)
+To:     Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        netdev <netdev@vger.kernel.org>, Wang Nan <wangnan0@huawei.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-snps-arc@lists.infradead.org,
+        linux-perf-users@vger.kernel.org, arnaldo.melo@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 01, 2019 at 10:54:00AM -0700, Santosh Shilimkar wrote:
-> On 5/1/2019 12:44 AM, Leon Romanovsky wrote:
-> > On Mon, Apr 29, 2019 at 04:37:19PM -0700, Santosh Shilimkar wrote:
-> > > From: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
-> > >
-> > > RDS doesn't support RDMA on memory apertures that require On Demand
-> > > Paging (ODP), such as FS DAX memory. User applications can try to use
-> > > RDS to perform RDMA over such memories and since it doesn't report any
-> > > failure, it can lead to unexpected issues like memory corruption when
-> > > a couple of out of sync file system operations like ftruncate etc. are
-> > > performed.
-> > >
-> > > The patch adds a check so that such an attempt to RDMA to/from memory
-> > > apertures requiring ODP will fail.
-> > >
-> > > Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
-> > > Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
-> > > Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
-> > > Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
-> > > ---
-> > >   net/rds/rdma.c | 5 +++--
-> > >   1 file changed, 3 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/net/rds/rdma.c b/net/rds/rdma.c
-> > > index 182ab84..e0a6b72 100644
-> > > --- a/net/rds/rdma.c
-> > > +++ b/net/rds/rdma.c
-> > > @@ -158,8 +158,9 @@ static int rds_pin_pages(unsigned long user_addr, unsigned int nr_pages,
-> > >   {
-> > >   	int ret;
-> > >
-> > > -	ret = get_user_pages_fast(user_addr, nr_pages, write, pages);
-> > > -
-> > > +	/* get_user_pages return -EOPNOTSUPP for fs_dax memory */
-> > > +	ret = get_user_pages_longterm(user_addr, nr_pages,
-> > > +				      write, pages, NULL);
-> >
-> > I'm not RDS expert, but from what I see in net/rds/rdma.c and this code,
-> > you tried to mimic ib_umem_get() without protection, checks and native
-> > ODP, FS and DAX supports.
-> >
-> > The real way to solve your ODP problem will require to extend
-> > ib_umem_get() to work for kernel ULPs too and use it instead of
-> > get_user_pages(). We are working on that and it is in internal review now.
-> >
-> Yes am aware of it. For FS_DAX like memory,  get_user_pages_longterm()
-> fails and then using ib_reg_user_mr() the memory is registered as
-> ODP regsion. This work is not ready yet and without above check,
-> one can do RDMA on FS DAX memory with Fast Reg or FMR memory
-> registration which is not safe and hence need to fail the operation.
+On Wed, May 1, 2019 at 3:55 PM Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
 >
-> Once the support is added to RDS, this code path will make that
-> registration go through.
+> When build perf for ARC recently, there was a build failure due to lack
+> of __NR_bpf.
 >
-> Hope it clarifies.
+> | Auto-detecting system features:
+> |
+> | ...                     get_cpuid: [ OFF ]
+> | ...                           bpf: [ on  ]
+> |
+> | #  error __NR_bpf not defined. libbpf does not support your arch.
+>     ^~~~~
+> | bpf.c: In function 'sys_bpf':
+> | bpf.c:66:17: error: '__NR_bpf' undeclared (first use in this function)
+> |  return syscall(__NR_bpf, cmd, attr, size);
+> |                 ^~~~~~~~
+> |                 sys_bpf
+>
+> The fix is to define a fallbak __NR_bpf.
+>
+> The obvious fix with be __arc__ specific value, but i think a better fix
+> is to use the asm-generic uapi value applicable to ARC as well as any new
+> arch (hopefully we don't add an old existing arch here). Otherwise I can
+> just add __arc__
 
-Only partial, why don't you check if user asked ODP through verbs
-interface and return EOPNOTSUPP in such case?
+I prefer explicitly guard with __arc__. We still have arm/sh with different
+__NR_bpf values. This patch will give wrong bpf syscall values for these
+two architectures.
 
-It will ensure that once your code will support ODP properly written
-applications will work with/without ODP natively.
-
-Thanks
+Alternatively, you could add support for arm/sh together
+with your current patch. Hopefully I did not miss other architectures.
 
 >
-> Regards,
-> Santosh
+> Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
+> ---
+>  tools/lib/bpf/bpf.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index 9cd015574e83..2c5eb7928400 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -47,7 +47,10 @@
+>  # elif defined(__s390__)
+>  #  define __NR_bpf 351
+>  # else
+> -#  error __NR_bpf not defined. libbpf does not support your arch.
+> +/*
+> + * Any non listed arch (new) will have to asm-generic uapi complient
+> + */
+> +#  define __NR_bpf 280
+>  # endif
+>  #endif
+>
+> --
+> 2.7.4
 >
