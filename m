@@ -2,88 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0517911A69
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 15:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4E5711A71
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 15:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726327AbfEBNk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 09:40:28 -0400
-Received: from mail-it1-f194.google.com ([209.85.166.194]:38792 "EHLO
-        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbfEBNk2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 09:40:28 -0400
-Received: by mail-it1-f194.google.com with SMTP id q19so3421786itk.3;
-        Thu, 02 May 2019 06:40:28 -0700 (PDT)
+        id S1726366AbfEBNqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 09:46:17 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:46575 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726310AbfEBNqQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 09:46:16 -0400
+Received: by mail-io1-f67.google.com with SMTP id m14so2133728ion.13;
+        Thu, 02 May 2019 06:46:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7lTOIb797ZbgM37YhSzuOttlU06SmTOl4wegncATLZk=;
-        b=BHpTILKlTctQL2DRgAjqWw5ranFKQcCqUM2wzLyQt8LnOkc4ohbC0twXEKth2S2FBO
-         cyBN3DJHClKL4DkM0iZrOkdMutYfyhsa5MP6NI/bkLMSw1bThxmrcTgAEQ5tTB/CDnY+
-         zrDNJyUdBosptp6bd6kv7b8dd8J9/jdMJS58JhcZAb7NPVwTnkvbvv/Myv2DhBIxGBMW
-         XG0vF1IVU0SoG8cbkzV1xZLNPzKoElwJY8kSfPH7CbEexqV8vPGi/ZDnIE59U8poodYb
-         NPkN6IBDD/C8RInHryahrCyH3S3Bbf+V3s69PwUTAo34E8nL67SuPAJmEE/1B3E4g6c0
-         5CDw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EEWh+28qpDYOvlHtdbYrMDDj4copt8ISMEsDc2LV22A=;
+        b=RHwJWu35pNPSUgXswLwopzg/j8te7VzQvTYZt3AAF8hsRrykfRW9+VciZTO0AcjrRH
+         ygx7PVb81NAvnVdDZr1eiYWhu0HoRRftBQeoCpsMHK4lQ5r1bWss5GAxxNyhoDHxDX9G
+         WI3bIhbCfgudLvyNW0BX7n/iCILaSZlwpBLGi1mQHcZBoMlf2JIAXOTzBUuX2Fc0ALrQ
+         o36f2izxKNN9hraLPjOdpumpGowAHgWWrYLxa80rF0lyEdlMK4YIV56jBe84hcf/8kKg
+         Wv+wHLB9isf2XT1yQpjVlXKA3WDCgo8wj/0OMN4wKlEtQteYPEL4Bf5sd+A4NPn/Um0k
+         unTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7lTOIb797ZbgM37YhSzuOttlU06SmTOl4wegncATLZk=;
-        b=OKrytRUbvl7H7Ch6oL+5H1XCarrdDUVA5q3rx/CX5o21gJ0k88ZcLU3rrWto+NGryN
-         FsVF0+GminQ3S+zD71WOiKyp+qqDFqToRraLsCLTlkrF1zjsnYyG/Wy4rL701ovhlT/D
-         GG7Hs5LAPah0BbkaQwDWEOv4yXPhKibREPFui4s8BJ7GTdCQx5d/MhZG2+ajnWLP/07e
-         /prdG4kE+ToBf3aF1RzTW2f7LH7zOkLMyEGL7QzewvK7UElGORknubosZQIibJsFeahG
-         4z8JVHTi7yqrArrmC08+h/fS8J3EyrI1j9YYSxx6TbeWEyh5QXJKT5eN8iz82VGEeUT4
-         rFOw==
-X-Gm-Message-State: APjAAAXbb/uDIUqOj8R4eCT/HDmhCB8RYeV1CGxHyJOQHk8UjwvjjZ/z
-        c6RWWtSk+3uaJ6vMiGSCqWkr98yZ
-X-Google-Smtp-Source: APXvYqzmARoJzyiWlYiKjPHMnD+vGj78ZzSCinREjqZLDiNQ8VG6wT4s7ju9ovV9W0XlVqh/nw7Zmw==
-X-Received: by 2002:a24:fa88:: with SMTP id v130mr2481013ith.122.1556804427420;
-        Thu, 02 May 2019 06:40:27 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:7d41:7f77:8419:85e7? ([2601:282:800:fd80:7d41:7f77:8419:85e7])
-        by smtp.googlemail.com with ESMTPSA id v64sm4655286ita.4.2019.05.02.06.40.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 May 2019 06:40:26 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/3] netlink: add validation of NLA_F_NESTED flag
-To:     Michal Kubecek <mkubecek@suse.cz>,
-        Johannes Berg <johannes@sipsolutions.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <cover.1556798793.git.mkubecek@suse.cz>
- <75a0887b3eb70005c272685d8ef9a712f37d7a54.1556798793.git.mkubecek@suse.cz>
- <3e8291cb2491e9a1830afdb903ed2c52e9f7475c.camel@sipsolutions.net>
- <20190502131416.GE21672@unicorn.suse.cz>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b11f899b-bfbf-7205-7b96-b8a974447662@gmail.com>
-Date:   Thu, 2 May 2019 07:40:25 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EEWh+28qpDYOvlHtdbYrMDDj4copt8ISMEsDc2LV22A=;
+        b=IBkvVbVgy+bFlvs4SxiPRaArCN91H4L844YOB/PLUwe92QicyyIXf9nSSX+j+vA44E
+         buU7QxscoPumwpGp3rIEkxW9G98d5I9pD6DsOrcEeVOHJHsU/e9peJUiTzSeU1HRd/dG
+         GogGRUW8d+YhY/Nk/ShOqLofT4k2rOnomY6iJIeP5O5kWn5NnsBhDqsZXkRtI3CcWtge
+         XWF2xXuKYmr9v3TV6H3TGkksYK5WHDpWT5riXhoEYwps9Jk6k/EXXQu+kkacflbOEZaa
+         qeLUt6USFd3IKRK1p72NR2gtgjkZIw+fp0F1f9yXTWE9K5sqfLU31DYm1XE0ZYIa9gP4
+         oR+A==
+X-Gm-Message-State: APjAAAUXWxLT59rQrmacFvpjGBhwBWKOa9OXNwwMIGOyj2mrQSlaX6yL
+        XW01h2iqtZLD+rDN7Ug+N9Zox82udLItzxP9jRJdFJ7/kOw=
+X-Google-Smtp-Source: APXvYqwT2KaZZ1hB1kMRANZiYqS0sZ9uCQWxyDoNnpzy05ndtra8GiSaLpSdcAvTPqSbZnhPtewiNSuQI/vTrNVand0=
+X-Received: by 2002:a5d:9b90:: with SMTP id r16mr2593452iom.217.1556804775838;
+ Thu, 02 May 2019 06:46:15 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190502131416.GE21672@unicorn.suse.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190501204032.26380-1-hch@lst.de>
+In-Reply-To: <20190501204032.26380-1-hch@lst.de>
+From:   Ilya Dryomov <idryomov@gmail.com>
+Date:   Thu, 2 May 2019 15:46:20 +0200
+Message-ID: <CAOi1vP_kG_tshGbkb6WQGYECswYJ+BAmsBm6t9e-KHu1WSszFA@mail.gmail.com>
+Subject: Re: [PATCH] ceph: remove ceph_get_direct_page_vector
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Ceph Development <ceph-devel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/2/19 7:14 AM, Michal Kubecek wrote:
->>> @@ -1132,6 +1136,10 @@ static inline int nla_parse_nested(struct nlattr *tb[], int maxtype,
->>>  				   const struct nla_policy *policy,
->>>  				   struct netlink_ext_ack *extack)
->>>  {
->>> +	if (!(nla->nla_type & NLA_F_NESTED)) {
->>> +		NL_SET_ERR_MSG_ATTR(extack, nla, "nested attribute expected");
->>
->> Maybe reword that to say "NLA_F_NESTED is missing" or so? The "nested
->> attribute expected" could result in a lot of headscratching (without
->> looking at the code) because it looks nested if you do nla_nest_start()
->> etc.
-> 
-> How about "NLA_F_NESTED is missing" and "NLA_F_NESTED not expected"?
-> 
+On Wed, May 1, 2019 at 10:43 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> This function is entirely unused.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  include/linux/ceph/libceph.h |  4 ----
+>  net/ceph/pagevec.c           | 33 ---------------------------------
+>  2 files changed, 37 deletions(-)
+>
+> diff --git a/include/linux/ceph/libceph.h b/include/linux/ceph/libceph.h
+> index 337d5049ff93..a3cddf5f0e60 100644
+> --- a/include/linux/ceph/libceph.h
+> +++ b/include/linux/ceph/libceph.h
+> @@ -299,10 +299,6 @@ int ceph_wait_for_latest_osdmap(struct ceph_client *client,
+>
+>  /* pagevec.c */
+>  extern void ceph_release_page_vector(struct page **pages, int num_pages);
+> -
+> -extern struct page **ceph_get_direct_page_vector(const void __user *data,
+> -                                                int num_pages,
+> -                                                bool write_page);
+>  extern void ceph_put_page_vector(struct page **pages, int num_pages,
+>                                  bool dirty);
+>  extern struct page **ceph_alloc_page_vector(int num_pages, gfp_t flags);
+> diff --git a/net/ceph/pagevec.c b/net/ceph/pagevec.c
+> index d3736f5bffec..64305e7056a1 100644
+> --- a/net/ceph/pagevec.c
+> +++ b/net/ceph/pagevec.c
+> @@ -10,39 +10,6 @@
+>
+>  #include <linux/ceph/libceph.h>
+>
+> -/*
+> - * build a vector of user pages
+> - */
+> -struct page **ceph_get_direct_page_vector(const void __user *data,
+> -                                         int num_pages, bool write_page)
+> -{
+> -       struct page **pages;
+> -       int got = 0;
+> -       int rc = 0;
+> -
+> -       pages = kmalloc_array(num_pages, sizeof(*pages), GFP_NOFS);
+> -       if (!pages)
+> -               return ERR_PTR(-ENOMEM);
+> -
+> -       while (got < num_pages) {
+> -               rc = get_user_pages_fast(
+> -                   (unsigned long)data + ((unsigned long)got * PAGE_SIZE),
+> -                   num_pages - got, write_page, pages + got);
+> -               if (rc < 0)
+> -                       break;
+> -               BUG_ON(rc == 0);
+> -               got += rc;
+> -       }
+> -       if (rc < 0)
+> -               goto fail;
+> -       return pages;
+> -
+> -fail:
+> -       ceph_put_page_vector(pages, got, false);
+> -       return ERR_PTR(rc);
+> -}
+> -EXPORT_SYMBOL(ceph_get_direct_page_vector);
+> -
+>  void ceph_put_page_vector(struct page **pages, int num_pages, bool dirty)
+>  {
+>         int i;
 
-That is much better to me.
+Applied.
+
+Thanks,
+
+                Ilya
