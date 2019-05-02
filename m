@@ -2,64 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B55D115D9
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 10:55:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E23AC115FA
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 11:05:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726458AbfEBIzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 04:55:12 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:36577 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726127AbfEBIzM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 04:55:12 -0400
-Received: by mail-lj1-f193.google.com with SMTP id y8so1230266ljd.3
-        for <netdev@vger.kernel.org>; Thu, 02 May 2019 01:55:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XcwQBg8J7QsNVW/WrwQtCeiLPV6+gS2aQiC/Sl4nM9M=;
-        b=RPFy3+dCeVREXH9FwiTrugWwEaAasMVV3Gf1i4SWx0v8LPuLBhfHi2DY8C1PQkXDV6
-         7hW81i6R1F+Fu596QmxR32/RCciqCykxrMT59m8NE5Gn+FubVPtpPYK4Cl2eKYN/K1o4
-         mUdF9+vKQ1xiHApDkY6JKKTT32BVDca0itsE4bI5ySxRjDHeHpXOAeJ25Bp/RwxbHsy7
-         ajtvD26CCmcbARYKiJao6Za1doUSkNfhhV0GlE3zQHBfH39mBNrpDbiQO6lBx24r5rgG
-         DSTFFB/qHIO45DziTZyavDVnjVre7pHco8sW71k6vny5wzjXggvaEjI5zr1UBl1OtegX
-         a4qQ==
-X-Gm-Message-State: APjAAAUEE8lkRFwZz7xEHefAXnUi8VNMbRL3ZVK0LJ4bRMbr7xaFvN7l
-        7R5QJmq4K+mWPVYVbFq4FYihxUV+vo4ucrvYOiXGMRrK
-X-Google-Smtp-Source: APXvYqz2pqQelrV7mW5UIHU/z27RQVBlfb9cw8OqwPI7xGo8xR/m90tdJZzhWRDEb/SHdQyQANIdyO2H6klgOfE8Btw=
-X-Received: by 2002:a2e:9f53:: with SMTP id v19mr1269972ljk.0.1556787310088;
- Thu, 02 May 2019 01:55:10 -0700 (PDT)
+        id S1726265AbfEBJFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 05:05:43 -0400
+Received: from smtp-out.xnet.cz ([178.217.244.18]:46782 "EHLO smtp-out.xnet.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726001AbfEBJFn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 05:05:43 -0400
+Received: from meh.true.cz (meh.true.cz [108.61.167.218])
+        (Authenticated sender: petr@true.cz)
+        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 3720F4725;
+        Thu,  2 May 2019 11:05:40 +0200 (CEST)
+Received: from localhost (meh.true.cz [local])
+        by meh.true.cz (OpenSMTPD) with ESMTPA id d6160ae8;
+        Thu, 2 May 2019 11:05:38 +0200 (CEST)
+Date:   Thu, 2 May 2019 11:05:38 +0200
+From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+To:     Rob Herring <robh@kernel.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Alban Bedel <albeu@free.fr>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>
+Subject: Re: [PATCH v2 1/4] of_net: Add NVMEM support to of_get_mac_address
+Message-ID: <20190502090538.GD346@meh.true.cz>
+Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+References: <1556456002-13430-1-git-send-email-ynezz@true.cz>
+ <1556456002-13430-2-git-send-email-ynezz@true.cz>
+ <20190501201925.GA15495@bogus>
 MIME-Version: 1.0
-References: <20190502085105.2967-1-mcroce@redhat.com>
-In-Reply-To: <20190502085105.2967-1-mcroce@redhat.com>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Thu, 2 May 2019 10:54:34 +0200
-Message-ID: <CAGnkfhwWnST_uMOOpBtz4scN50T_9X+bJnVYaHeFvLzPHgRGtA@mail.gmail.com>
-Subject: Re: [PATCH net] cls_matchall: avoid panic when receiving a packet
- before filter set
-To:     netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190501201925.GA15495@bogus>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 2, 2019 at 10:51 AM Matteo Croce <mcroce@redhat.com> wrote:
->
-> When a matchall classifier is added, there is a small time interval in
-> which tp->root is NULL. If we receive a packet in this small time slice
-> a NULL pointer dereference will happen, leading to a kernel panic:
->
+Rob Herring <robh@kernel.org> [2019-05-01 15:19:25]:
 
-Hi,
+Hi Rob,
 
-I forgot to mark it as v2. Will someone handle it, or I have to
-resubmit a v2 or v3?
+> > +	struct property *pp;
 
-Regards,
--- 
-Matteo Croce
-per aspera ad upstream
+...
+
+> > +	pp = kzalloc(sizeof(*pp), GFP_KERNEL);
+> > +	if (!pp)
+> > +		return NULL;
+> > +
+> > +	pp->name = "nvmem-mac-address";
+> > +	pp->length = ETH_ALEN;
+> > +	pp->value = kmemdup(mac, ETH_ALEN, GFP_KERNEL);
+> > +	if (!pp->value || of_add_property(np, pp))
+> > +		goto free;
+> 
+> Why add this to the DT?
+
+I've just carried it over from v1 ("of_net: add mtd-mac-address support to
+of_get_mac_address()")[1] as nobody objected about this so far. 
+
+Honestly I don't know if it's necessary to have it, but so far address,
+mac-address and local-mac-address properties provide this DT nodes, so I've
+simply thought, that it would be good to have it for MAC address from NVMEM as
+well in order to stay consistent.
+
+Just FYI, my testing ar9331_8dev_carambola2.dts[2] currently produces
+following runtime DT content:
+
+ root@OpenWrt:/# find /sys/firmware/devicetree/ -name *nvmem* -o -name *addr@*
+ /sys/firmware/devicetree/base/ahb/spi@1f000000/flash@0/partitions/partition@ff0000/nvmem-cells
+ /sys/firmware/devicetree/base/ahb/spi@1f000000/flash@0/partitions/partition@ff0000/nvmem-cells/eth-mac-addr@0
+ /sys/firmware/devicetree/base/ahb/spi@1f000000/flash@0/partitions/partition@ff0000/nvmem-cells/eth-mac-addr@6
+ /sys/firmware/devicetree/base/ahb/spi@1f000000/flash@0/partitions/partition@ff0000/nvmem-cells/wifi-mac-addr@1002
+ /sys/firmware/devicetree/base/ahb/wmac@18100000/nvmem-cells
+ /sys/firmware/devicetree/base/ahb/wmac@18100000/nvmem-mac-address
+ /sys/firmware/devicetree/base/ahb/wmac@18100000/nvmem-cell-names
+ /sys/firmware/devicetree/base/ahb/eth@1a000000/nvmem-cells
+ /sys/firmware/devicetree/base/ahb/eth@1a000000/nvmem-mac-address
+ /sys/firmware/devicetree/base/ahb/eth@1a000000/nvmem-cell-names
+ /sys/firmware/devicetree/base/ahb/eth@19000000/nvmem-cells
+ /sys/firmware/devicetree/base/ahb/eth@19000000/nvmem-mac-address
+ /sys/firmware/devicetree/base/ahb/eth@19000000/nvmem-cell-names
+
+ root@OpenWrt:/# hexdump -C /sys/firmware/devicetree/base/ahb/wmac@18100000/nvmem-mac-address
+ 00000000  00 03 7f 11 52 da                                 |....R.|
+ 00000006
+
+ root@OpenWrt:/# ip addr show wlan0
+ 4: wlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000
+    link/ether 00:03:7f:11:52:da brd ff:ff:ff:ff:ff:ff
+
+1. https://patchwork.ozlabs.org/patch/1086628/
+2. https://git.openwrt.org/?p=openwrt/staging/ynezz.git;a=blob;f=target/linux/ath79/dts/ar9331_8dev_carambola2.dts;h=349c91e760ca5a56d65c587c949fed5fb6ea980e;hb=349c91e760ca5a56d65c587c949fed5fb6ea980e
+
+> You have the struct device ptr, so just use devm_kzalloc() if you need an
+> allocation.
+
+I'll address this in v3, thanks.
+
+-- ynezz
