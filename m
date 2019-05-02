@@ -2,24 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8246911954
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 14:49:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04EA311955
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 14:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726486AbfEBMsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726427AbfEBMsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 2 May 2019 08:48:02 -0400
-Received: from mx2.suse.de ([195.135.220.15]:33932 "EHLO mx1.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:33934 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726197AbfEBMsC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726267AbfEBMsC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 2 May 2019 08:48:02 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 058F9AE9D;
+        by mx1.suse.de (Postfix) with ESMTP id 0565CADEA;
         Thu,  2 May 2019 12:48:00 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 5E28EE0117; Thu,  2 May 2019 14:48:00 +0200 (CEST)
-Message-Id: <cover.1556798793.git.mkubecek@suse.cz>
+        id 662ABE0157; Thu,  2 May 2019 14:48:00 +0200 (CEST)
+Message-Id: <75a0887b3eb70005c272685d8ef9a712f37d7a54.1556798793.git.mkubecek@suse.cz>
+In-Reply-To: <cover.1556798793.git.mkubecek@suse.cz>
+References: <cover.1556798793.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next 0/3] netlink: strict attribute checking follow-up
+Subject: [PATCH net-next 3/3] netlink: add validation of NLA_F_NESTED flag
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         David Ahern <dsahern@gmail.com>, linux-kernel@vger.kernel.org
@@ -29,30 +31,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Three follow-up patches for recent strict netlink validation series.
+Add new validation flag NL_VALIDATE_NESTED which adds three consistency
+checks of NLA_F_NESTED_FLAG:
 
-Patch 1 fixes dump handling for genetlink families which validate and parse
-messages themselves (e.g. because they need different policies for diferent
-commands).
+  - the flag is set on attributes with NLA_NESTED{,_ARRAY} policy
+  - the flag is not set on attributes with other policies except NLA_UNSPEC
+  - the flag is set on attribute passed to nla_parse_nested()
 
-Patch 2 sets bad_attr in extack in one place where this was omitted.
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+---
+ include/net/netlink.h | 10 +++++++++-
+ lib/nlattr.c          | 15 +++++++++++++++
+ 2 files changed, 24 insertions(+), 1 deletion(-)
 
-Patch 3 adds new NL_VALIDATE_NESTED flags for strict validation to enable
-checking that NLA_F_NESTED value in received messages matches expectations
-and includes this flag in NL_VALIDATE_STRICT. This would change userspace
-visible behavior but the previous switching to NL_VALIDATE_STRICT for new
-code is still only in net-next at the moment.
-
-Michal Kubecek (3):
-  genetlink: do not validate dump requests if there is no policy
-  netlink: set bad attribute also on maxtype check
-  netlink: add validation of NLA_F_NESTED flag
-
- include/net/netlink.h   | 10 +++++++++-
- lib/nlattr.c            | 18 +++++++++++++++++-
- net/netlink/genetlink.c | 24 ++++++++++++++----------
- 3 files changed, 40 insertions(+), 12 deletions(-)
-
+diff --git a/include/net/netlink.h b/include/net/netlink.h
+index 679f649748d4..55f68e00fb6e 100644
+--- a/include/net/netlink.h
++++ b/include/net/netlink.h
+@@ -401,6 +401,8 @@ struct nl_info {
+  *	are enforced going forward.
+  * @NL_VALIDATE_STRICT_ATTRS: strict attribute policy parsing (e.g.
+  *	U8, U16, U32 must have exact size, etc.)
++ * @NL_VALIDATE_NESTED: Check that NLA_F_NESTED is set for NLA_NESTED(_ARRAY)
++ *	and unset for other policies.
+  */
+ enum netlink_validation {
+ 	NL_VALIDATE_LIBERAL = 0,
+@@ -408,6 +410,7 @@ enum netlink_validation {
+ 	NL_VALIDATE_MAXTYPE = BIT(1),
+ 	NL_VALIDATE_UNSPEC = BIT(2),
+ 	NL_VALIDATE_STRICT_ATTRS = BIT(3),
++	NL_VALIDATE_NESTED = BIT(4),
+ };
+ 
+ #define NL_VALIDATE_DEPRECATED_STRICT (NL_VALIDATE_TRAILING |\
+@@ -415,7 +418,8 @@ enum netlink_validation {
+ #define NL_VALIDATE_STRICT (NL_VALIDATE_TRAILING |\
+ 			    NL_VALIDATE_MAXTYPE |\
+ 			    NL_VALIDATE_UNSPEC |\
+-			    NL_VALIDATE_STRICT_ATTRS)
++			    NL_VALIDATE_STRICT_ATTRS |\
++			    NL_VALIDATE_NESTED)
+ 
+ int netlink_rcv_skb(struct sk_buff *skb,
+ 		    int (*cb)(struct sk_buff *, struct nlmsghdr *,
+@@ -1132,6 +1136,10 @@ static inline int nla_parse_nested(struct nlattr *tb[], int maxtype,
+ 				   const struct nla_policy *policy,
+ 				   struct netlink_ext_ack *extack)
+ {
++	if (!(nla->nla_type & NLA_F_NESTED)) {
++		NL_SET_ERR_MSG_ATTR(extack, nla, "nested attribute expected");
++		return -EINVAL;
++	}
+ 	return __nla_parse(tb, maxtype, nla_data(nla), nla_len(nla), policy,
+ 			   NL_VALIDATE_STRICT, extack);
+ }
+diff --git a/lib/nlattr.c b/lib/nlattr.c
+index adc919b32bf9..92da65cb6637 100644
+--- a/lib/nlattr.c
++++ b/lib/nlattr.c
+@@ -184,6 +184,21 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
+ 		}
+ 	}
+ 
++	if (validate & NL_VALIDATE_NESTED) {
++		if ((pt->type == NLA_NESTED || pt->type == NLA_NESTED_ARRAY) &&
++		    !(nla->nla_type & NLA_F_NESTED)) {
++			NL_SET_ERR_MSG_ATTR(extack, nla,
++					    "nested attribute expected");
++			return -EINVAL;
++		}
++		if (pt->type != NLA_NESTED && pt->type != NLA_NESTED_ARRAY &&
++		    pt->type != NLA_UNSPEC && (nla->nla_type & NLA_F_NESTED)) {
++			NL_SET_ERR_MSG_ATTR(extack, nla,
++					    "nested attribute not expected");
++			return -EINVAL;
++		}
++	}
++
+ 	switch (pt->type) {
+ 	case NLA_EXACT_LEN:
+ 		if (attrlen != pt->len)
 -- 
 2.21.0
 
