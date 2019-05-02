@@ -2,123 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6308812044
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 18:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C7812048
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 18:32:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbfEBQcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 12:32:03 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:41451 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726303AbfEBQcD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 12:32:03 -0400
-Received: by mail-wr1-f68.google.com with SMTP id c12so4244754wrt.8;
-        Thu, 02 May 2019 09:32:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OR6QWT2JELhOB9le865j5O2IBOFUN5khtXIl2Jxx/VA=;
-        b=odrOjW7MtyRFbNv7MrvgUa9bUlS54p9MsZ2AqhKyhNISg5LFHn3S0dlOqfDE8RtKPk
-         XNaiGt3hPTXQczhcgjinMfewvVRHQBjj2E3YBhyf5Opn96LZokTjLidh6LKkGXg+GyyV
-         WRK6sscrqep80zwztIkHJkyEWsj3DWG9hFo2gi7XJ32tYg4ZstYwLePP8Rv4hSrshSO1
-         Bv5KtfMXi+WT9TO1nyFAN+4Soakbmd9uM8exzw53qNZ+EQBsqcYKocU+gr1ij91we0Dn
-         D8HLO4pbP0pSUOX5J66EHJx0Wy/8vvXntqlgDSlhezYIiCHKa9Y1sqvN23P9IUH70SwG
-         RVQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OR6QWT2JELhOB9le865j5O2IBOFUN5khtXIl2Jxx/VA=;
-        b=kfpnz2ANeFqTVyc8REmanuUKdwivjK33hQLrMG08e1d5xnM64tmNrQoib5fFS+tOh+
-         r/Sh0GtjUSJStgkIFE9De+VrIZjqBIOyBBTBFFyw84WmmVxY2bZYoZ92YdfIYYZYfVwg
-         LX2DLNT21S5Pn8/f3Af6iw/ZhDaYFKmx6HZ0upUuEquFKkAwkwbhvO9IbbDXZuDhKPfC
-         B9Uugp/tAA3DJi+r842tD0YIhRbpf8At5WGklYPP98Bu3rC8+9uMmdVLE6VEdXe4bhcu
-         0yeNmYgMCJhX3Jty2a9AiNUsN4tdDsCUSCPIuRB/jVB4EL/8SJQe8w9i3jK4/gFYFYTc
-         TI9g==
-X-Gm-Message-State: APjAAAWOAaQFPALVMApbbYuKKIin6jYWoan3MecsOAZb09DUokTKh41M
-        tFVAmFOMuhxNmDnnZoY36kINMUsNFpyPNgrX2w1tya8zMFc=
-X-Google-Smtp-Source: APXvYqy+F0zZ6hos3HtuEvs+JdqPQAu4BsnKkO5aYKCk3zI0E0q4Bepm/4j2kA5tFrfUzF9jZafa1ckYMuYBoH7LhFw=
-X-Received: by 2002:adf:dccd:: with SMTP id x13mr3394597wrm.33.1556814721560;
- Thu, 02 May 2019 09:32:01 -0700 (PDT)
+        id S1726518AbfEBQc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 12:32:27 -0400
+Received: from zeniv.linux.org.uk ([195.92.253.2]:53038 "EHLO
+        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726300AbfEBQc1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 12:32:27 -0400
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92 #3 (Red Hat Linux))
+        id 1hMEdD-0002lM-Vc; Thu, 02 May 2019 16:32:24 +0000
+Date:   Thu, 2 May 2019 17:32:23 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [RFC] folding socket->wq into struct socket
+Message-ID: <20190502163223.GW23075@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-References: <20190429001706.7449-1-olteanv@gmail.com> <20190430.234425.732219702361005278.davem@davemloft.net>
-In-Reply-To: <20190430.234425.732219702361005278.davem@davemloft.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 2 May 2019 19:31:50 +0300
-Message-ID: <CA+h21hrmXaAAepTrY-HfbrmZPVRf3Qg1-fA8EW4prwSkrGYogQ@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 00/12] NXP SJA1105 DSA driver
-To:     David Miller <davem@davemloft.net>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, vivien.didelot@gmail.com,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 1 May 2019 at 06:44, David Miller <davem@davemloft.net> wrote:
->
-> From: Vladimir Oltean <olteanv@gmail.com>
-> Date: Mon, 29 Apr 2019 03:16:54 +0300
->
-> > This patchset adds a DSA driver for the SPI-controlled NXP SJA1105
-> > switch.
->
-> This patch series adds many whitespace errors, which are all reported
-> by GIT when I try to apply your changes:
->
-> Applying: lib: Add support for generic packing operations
-> .git/rebase-apply/patch:176: new blank line at EOF.
-> +
-> .git/rebase-apply/patch:480: new blank line at EOF.
-> +
-> warning: 2 lines add whitespace errors.
-> Applying: net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch
-> .git/rebase-apply/patch:102: new blank line at EOF.
-> +
-> .git/rebase-apply/patch:117: new blank line at EOF.
-> +
-> .git/rebase-apply/patch:262: new blank line at EOF.
-> +
-> .git/rebase-apply/patch:867: new blank line at EOF.
-> +
-> .git/rebase-apply/patch:2905: new blank line at EOF.
-> +
-> warning: squelched 2 whitespace errors
-> warning: 7 lines add whitespace errors.
-> Applying: net: dsa: sja1105: Add support for FDB and MDB management
-> .git/rebase-apply/patch:81: new blank line at EOF.
-> +
-> warning: 1 line adds whitespace errors.
-> Applying: net: dsa: sja1105: Error out if RGMII delays are requested in DT
-> Applying: ether: Add dedicated Ethertype for pseudo-802.1Q DSA tagging
-> Applying: net: dsa: sja1105: Add support for VLAN operations
-> .git/rebase-apply/patch:359: new blank line at EOF.
-> +
-> warning: 1 line adds whitespace errors.
-> Applying: net: dsa: sja1105: Add support for ethtool port counters
-> .git/rebase-apply/patch:474: new blank line at EOF.
-> +
-> warning: 1 line adds whitespace errors.
-> Applying: net: dsa: sja1105: Add support for configuring address aging time
-> Applying: net: dsa: sja1105: Prevent PHY jabbering during switch reset
-> Applying: net: dsa: sja1105: Reject unsupported link modes for AN
-> Applying: Documentation: net: dsa: Add details about NXP SJA1105 driver
-> .git/rebase-apply/patch:200: new blank line at EOF.
-> +
-> warning: 1 line adds whitespace errors.
-> Applying: dt-bindings: net: dsa: Add documentation for NXP SJA1105 driver
-> .git/rebase-apply/patch:178: new blank line at EOF.
-> +
-> warning: 1 line adds whitespace errors.
+	I'm not sure what's the right way to handle that.
+Background: new inode method (->free_inode()) allows to
+do RCU-delayed parts of ->destroy_inode() conveniently,
+killing a lot of boilerplate code in process.
 
-Wow I am sorry, Gmail apparently moved your reply to spam and I only
-got it when I posted my message just now.
-Do you know what causes these whitespace errors, so I can avoid them
-next time? I think I'm generating my patches rather normally, with
-$(git format-patch -12 --subject-prefix="PATCH v4 net-next"
---cover-letter).
+	It's optional, so sockfs doesn't have to be
+converted; however, looking at the ->destroy_inode() there
+static void sock_destroy_inode(struct inode *inode)
+{
+        struct socket_alloc *ei;
 
-Thanks,
--Vladimir
+        ei = container_of(inode, struct socket_alloc, vfs_inode);
+        kfree_rcu(ei->socket.wq, rcu);
+        kmem_cache_free(sock_inode_cachep, ei);
+}
+it appears that we might take freeing the socket itself to the
+RCU-delayed part, along with socket->wq.  And doing that has
+an interesting benefit - the only reason to do two separate
+allocation disappears.
+
+	We have 3 sources of struct socket - the regular one
+in sock_alloc_inode() (where we allocate struct socket_wq
+separately and set socket->wq to it; struct socket is embedded
+into struct socket_alloc there) and two more in tun and tap
+respectively.  There struct socket is embedded into struct
+tun_file and struct tap_queue, with matching struct socket_wq
+right next it it.  In all cases socket->wq is assigned once
+at the initialization time and never modified afterwards.
+
+	We do have other sources of struct socket_wq,
+but these only go into sock->sk_wq, not socket->wq.
+Folding struct socket_wq into struct socket (with socket->wq
+turning from struct socket_wq * into struct socket_wq) looks
+like a reasonable cleanup, possibly even with performance
+improvements.  We already do RCU delay on socket destruction
+(that kfree_rcu() in the current code), so we won't gain
+overhead from those.  Is there any downside to doing that?
+
+	I've put a couple of patches (switch to ->free_inode(),
+taking freeing of struct socket into RCU-delayed part along
+with freeing socket_wq + getting rid of separate allocations)
+into vfs.git#for-davem; they are dependent upon the #work.icache,
+where ->free_inode() is introduced.
+
+	I don't think that feeding those two through vfs.git
+would be right; nothing else in there depends upon those
+and diffstat speaks for itself:
+ drivers/net/tap.c      |  5 ++---
+ drivers/net/tun.c      |  8 +++-----
+ include/linux/if_tap.h |  1 -
+ include/linux/net.h    |  4 ++--
+ include/net/sock.h     |  4 ++--
+ net/core/sock.c        |  2 +-
+ net/socket.c           | 23 +++++++----------------
+ 7 files changed, 17 insertions(+), 30 deletions(-)
+
+	One way to deal with that would be to leave those two
+until the next window - once ->free_inode() series is in mainline,
+they lose any dependencies on vfs.git and can just go through
+netdev.
+
+	Or am I missing some fundamental reason why coallocation
+would be a bad idea?  FWIW, the composite of those two patches
+is below:
+
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index 2ea9b4976f4a..249bfd85b65c 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -519,8 +519,7 @@ static int tap_open(struct inode *inode, struct file *file)
+ 		goto err;
+ 	}
+ 
+-	RCU_INIT_POINTER(q->sock.wq, &q->wq);
+-	init_waitqueue_head(&q->wq.wait);
++	init_waitqueue_head(&q->sock.wq.wait);
+ 	q->sock.type = SOCK_RAW;
+ 	q->sock.state = SS_CONNECTED;
+ 	q->sock.file = file;
+@@ -578,7 +577,7 @@ static __poll_t tap_poll(struct file *file, poll_table *wait)
+ 		goto out;
+ 
+ 	mask = 0;
+-	poll_wait(file, &q->wq.wait, wait);
++	poll_wait(file, &q->sock.wq.wait, wait);
+ 
+ 	if (!ptr_ring_empty(&q->ring))
+ 		mask |= EPOLLIN | EPOLLRDNORM;
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index e9ca1c088d0b..f404d1588e9c 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -169,7 +169,6 @@ struct tun_pcpu_stats {
+ struct tun_file {
+ 	struct sock sk;
+ 	struct socket socket;
+-	struct socket_wq wq;
+ 	struct tun_struct __rcu *tun;
+ 	struct fasync_struct *fasync;
+ 	/* only used for fasnyc */
+@@ -2174,7 +2173,7 @@ static void *tun_ring_recv(struct tun_file *tfile, int noblock, int *err)
+ 		goto out;
+ 	}
+ 
+-	add_wait_queue(&tfile->wq.wait, &wait);
++	add_wait_queue(&tfile->socket.wq.wait, &wait);
+ 
+ 	while (1) {
+ 		set_current_state(TASK_INTERRUPTIBLE);
+@@ -2194,7 +2193,7 @@ static void *tun_ring_recv(struct tun_file *tfile, int noblock, int *err)
+ 	}
+ 
+ 	__set_current_state(TASK_RUNNING);
+-	remove_wait_queue(&tfile->wq.wait, &wait);
++	remove_wait_queue(&tfile->socket.wq.wait, &wait);
+ 
+ out:
+ 	*err = error;
+@@ -3417,8 +3416,7 @@ static int tun_chr_open(struct inode *inode, struct file * file)
+ 	tfile->flags = 0;
+ 	tfile->ifindex = 0;
+ 
+-	init_waitqueue_head(&tfile->wq.wait);
+-	RCU_INIT_POINTER(tfile->socket.wq, &tfile->wq);
++	init_waitqueue_head(&tfile->socket.wq.wait);
+ 
+ 	tfile->socket.file = file;
+ 	tfile->socket.ops = &tun_socket_ops;
+diff --git a/include/linux/if_tap.h b/include/linux/if_tap.h
+index 8e66866c11be..915a187cfabd 100644
+--- a/include/linux/if_tap.h
++++ b/include/linux/if_tap.h
+@@ -62,7 +62,6 @@ struct tap_dev {
+ struct tap_queue {
+ 	struct sock sk;
+ 	struct socket sock;
+-	struct socket_wq wq;
+ 	int vnet_hdr_sz;
+ 	struct tap_dev __rcu *tap;
+ 	struct file *file;
+diff --git a/include/linux/net.h b/include/linux/net.h
+index c606c72311d0..6979057c7c86 100644
+--- a/include/linux/net.h
++++ b/include/linux/net.h
+@@ -120,11 +120,11 @@ struct socket {
+ 
+ 	unsigned long		flags;
+ 
+-	struct socket_wq	*wq;
+-
+ 	struct file		*file;
+ 	struct sock		*sk;
+ 	const struct proto_ops	*ops;
++
++	struct socket_wq	wq;
+ };
+ 
+ struct vm_area_struct;
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 8de5ee258b93..0e1975b6202f 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1811,7 +1811,7 @@ static inline void sock_graft(struct sock *sk, struct socket *parent)
+ {
+ 	WARN_ON(parent->sk);
+ 	write_lock_bh(&sk->sk_callback_lock);
+-	rcu_assign_pointer(sk->sk_wq, parent->wq);
++	rcu_assign_pointer(sk->sk_wq, &parent->wq);
+ 	parent->sk = sk;
+ 	sk_set_socket(sk, parent);
+ 	sk->sk_uid = SOCK_INODE(parent)->i_uid;
+@@ -2095,7 +2095,7 @@ static inline void sock_poll_wait(struct file *filp, struct socket *sock,
+ 				  poll_table *p)
+ {
+ 	if (!poll_does_not_wait(p)) {
+-		poll_wait(filp, &sock->wq->wait, p);
++		poll_wait(filp, &sock->wq.wait, p);
+ 		/* We need to be sure we are in sync with the
+ 		 * socket flags modification.
+ 		 *
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 782343bb925b..11af1ee7d542 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2842,7 +2842,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
+ 
+ 	if (sock) {
+ 		sk->sk_type	=	sock->type;
+-		RCU_INIT_POINTER(sk->sk_wq, sock->wq);
++		RCU_INIT_POINTER(sk->sk_wq, &sock->wq);
+ 		sock->sk	=	sk;
+ 		sk->sk_uid	=	SOCK_INODE(sock)->i_uid;
+ 	} else {
+diff --git a/net/socket.c b/net/socket.c
+index 8255f5bda0aa..7d3d043fc56f 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -239,20 +239,13 @@ static struct kmem_cache *sock_inode_cachep __ro_after_init;
+ static struct inode *sock_alloc_inode(struct super_block *sb)
+ {
+ 	struct socket_alloc *ei;
+-	struct socket_wq *wq;
+ 
+ 	ei = kmem_cache_alloc(sock_inode_cachep, GFP_KERNEL);
+ 	if (!ei)
+ 		return NULL;
+-	wq = kmalloc(sizeof(*wq), GFP_KERNEL);
+-	if (!wq) {
+-		kmem_cache_free(sock_inode_cachep, ei);
+-		return NULL;
+-	}
+-	init_waitqueue_head(&wq->wait);
+-	wq->fasync_list = NULL;
+-	wq->flags = 0;
+-	ei->socket.wq = wq;
++	init_waitqueue_head(&ei->socket.wq.wait);
++	ei->socket.wq.fasync_list = NULL;
++	ei->socket.wq.flags = 0;
+ 
+ 	ei->socket.state = SS_UNCONNECTED;
+ 	ei->socket.flags = 0;
+@@ -263,12 +256,11 @@ static struct inode *sock_alloc_inode(struct super_block *sb)
+ 	return &ei->vfs_inode;
+ }
+ 
+-static void sock_destroy_inode(struct inode *inode)
++static void sock_free_inode(struct inode *inode)
+ {
+ 	struct socket_alloc *ei;
+ 
+ 	ei = container_of(inode, struct socket_alloc, vfs_inode);
+-	kfree_rcu(ei->socket.wq, rcu);
+ 	kmem_cache_free(sock_inode_cachep, ei);
+ }
+ 
+@@ -293,7 +285,7 @@ static void init_inodecache(void)
+ 
+ static const struct super_operations sockfs_ops = {
+ 	.alloc_inode	= sock_alloc_inode,
+-	.destroy_inode	= sock_destroy_inode,
++	.free_inode	= sock_free_inode,
+ 	.statfs		= simple_statfs,
+ };
+ 
+@@ -604,7 +596,7 @@ static void __sock_release(struct socket *sock, struct inode *inode)
+ 		module_put(owner);
+ 	}
+ 
+-	if (sock->wq->fasync_list)
++	if (sock->wq.fasync_list)
+ 		pr_err("%s: fasync list not empty!\n", __func__);
+ 
+ 	if (!sock->file) {
+@@ -1263,13 +1255,12 @@ static int sock_fasync(int fd, struct file *filp, int on)
+ {
+ 	struct socket *sock = filp->private_data;
+ 	struct sock *sk = sock->sk;
+-	struct socket_wq *wq;
++	struct socket_wq *wq = &sock->wq;
+ 
+ 	if (sk == NULL)
+ 		return -EINVAL;
+ 
+ 	lock_sock(sk);
+-	wq = sock->wq;
+ 	fasync_helper(fd, filp, on, &wq->fasync_list);
+ 
+ 	if (!wq->fasync_list)
