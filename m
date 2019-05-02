@@ -2,110 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A3B119EB
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 15:17:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63B47119F4
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 15:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726383AbfEBNR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 09:17:58 -0400
-Received: from w1.tutanota.de ([81.3.6.162]:25988 "EHLO w1.tutanota.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726197AbfEBNR5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 May 2019 09:17:57 -0400
-Received: from w2.tutanota.de (unknown [192.168.1.163])
-        by w1.tutanota.de (Postfix) with ESMTP id B9D23FA0158;
-        Thu,  2 May 2019 13:17:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tutanota.com;
-        s=20161216; t=1556803075;
-        bh=Q8EjxTHMmCzzB4wuLJ/pun1j1gtByqZ6bbrrm2x+nF4=;
-        h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-        b=IQvMZSh0C/hnykAijH4pSdd0AKfIx3kzDgB+6tx5hbfK6HzC00KepL+Mc5rtIY/3p
-         m6bSVeyvt/+hx+24QfB+1tQXymB4QkOOtZfGE8O/hfJwS0h1rbG6BdZpmlNHHO0Fom
-         Ug9EXr7YRpyl/YGUsh4iKbN+Paqn0jSrFhtoWbSnMnPYxENUfL67M00tc8bZ27UOM9
-         /gZ4h2pBcPLyvnynwBtKNVu4vTQCKbNNm8cpyM4y7H43bfYWn4na6JndIIiDTHckzS
-         yHObIP9DDlj80Q3Ql99zD7Bv6/2z41UwWclJSpprxYR/O0fJNwe86PSaZ7Bq5JLxzb
-         1rTHzfwN2ZFMQ==
-Date:   Thu, 2 May 2019 15:17:55 +0200 (CEST)
-From:   <emersonbernier@tutanota.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, Netdev <netdev@vger.kernel.org>,
-        Stephen <stephen@networkplumber.org>,
-        Kuznet <kuznet@ms2.inr.ac.ru>, Jason <jason@zx2c4.com>,
-        Davem <davem@davemloft.net>
-Message-ID: <LdsgQO---3-1@tutanota.com>
-In-Reply-To: <26689b18-e0f1-c490-7802-4256f12aa5e2@gmail.com>
-References: <LaeckvP--3-1@tutanota.com> <f60d6632-2f3c-c371-08c1-30bcb6a25344@gmail.com> <LakduwN--3-1@tutanota.com> <0e008631-e6f6-3c08-f76a-8069052f19ef@gmail.com> <20190324182908.GA26076@unicorn.suse.cz> <20190324183618.GB26076@unicorn.suse.cz> <26689b18-e0f1-c490-7802-4256f12aa5e2@gmail.com>
-Subject: Re: [BUG][iproute2][5.0] ip route show table default: "Error: ipv4:
- FIB table does not exist."
+        id S1726434AbfEBNTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 09:19:51 -0400
+Received: from mail-yw1-f47.google.com ([209.85.161.47]:37837 "EHLO
+        mail-yw1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726270AbfEBNTu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 09:19:50 -0400
+Received: by mail-yw1-f47.google.com with SMTP id a62so1522741ywa.4
+        for <netdev@vger.kernel.org>; Thu, 02 May 2019 06:19:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LSZ6Xny4LZQUGhGFg3mYcBhhmn/IHd740K5h6icxRBg=;
+        b=ejfAAHxEYeAPd+Oe9yGVG2tCYYs+BBJsHXum/PHpaT/re1ljiPJvRcMd5fsY9qwGL+
+         O1Y6FuYx9XNWFsirqCMP2M5qQeliQDwxzRhVs4ow4ewpwFY+/aYJg20INx1VreY0RGMO
+         XLSSYoPqBIVQbht4/aG5++NW+6KQ7PnxNGDSn+xoJwUtueAlF+OlNRRNqWEnapwb//vw
+         pA03zh95B2oprdYHRP4vxSf1UB/9Hu/rnlC7qHVld+Xr8QpRMmFQSk5UkXeisg/lQPSK
+         styXC5IwCtBSm9KPRY57rnTp00GEaxa75Uj9eA8WlWHoYld8t9I3cX3kCT+jJnrV5eWO
+         oQrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LSZ6Xny4LZQUGhGFg3mYcBhhmn/IHd740K5h6icxRBg=;
+        b=uBWpO8hajGYFvPTeb99DJ2Y0jCbPDOjJYOiHT6Bqg1hzRC+z7HUyrmORbRwhkXvNSP
+         43+Sh9Jp1/2o6b7qCc76xTCBWoxuf80guB4v0MfKElz3sMuC+L0LueaTgyrZbwCekTIW
+         VtHobID4a7oZLp2DUpJZBGHNxS0DKDJY5GgfxGbzD82ql16XYv7pcrjCB4rhlpG5EWq/
+         s0RlGe0VHlaNFZ3ZCt+clNTtUlvRwkc3JkuKFFAnbsgo8jD78erWhfJi4aC+mbGdHxxi
+         IL8AZia7Gde3akUcrJVmkuYlvtrt7cxP1xt4s3SleWM6hR7rpYkjPhjYlBWYfKPUD/wy
+         DcDw==
+X-Gm-Message-State: APjAAAULoPSS1ITGTEQSwyMicO5zq6fY/O79TRS1zsmO9/zpnQz5mwdZ
+        /Gm8Z17rLqzzjjCFsx7aozN/2rSw
+X-Google-Smtp-Source: APXvYqxX4U/szx7iQcE4wBXnX/mnI9IlIoK7gARgSNsDB3XHwYofeAHl/zF6AULGXV1J3QX+NnxdVQ==
+X-Received: by 2002:a25:b6c9:: with SMTP id f9mr3037240ybm.514.1556803189535;
+        Thu, 02 May 2019 06:19:49 -0700 (PDT)
+Received: from [172.20.0.54] (adsl-173-228-226-134.prtc.net. [173.228.226.134])
+        by smtp.gmail.com with ESMTPSA id x12sm17451165ywj.76.2019.05.02.06.19.48
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 02 May 2019 06:19:48 -0700 (PDT)
+Subject: Re: ndisc_cache garbage collection issue
+To:     Tom Hughes <tom@compton.nu>, David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+References: <7ebe8ec1-c407-d907-e99a-adcd89a8e16b@compton.nu>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7b7bb95a-9940-54eb-94df-9085d269c431@gmail.com>
+Date:   Thu, 2 May 2019 09:19:47 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <7ebe8ec1-c407-d907-e99a-adcd89a8e16b@compton.nu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mar 24, 2019, 10:09 PM by dsahern@gmail.com:
 
-> On 3/24/19 12:36 PM, Michal Kubecek wrote:
->
->> On Sun, Mar 24, 2019 at 07:29:08PM +0100, Michal Kubecek wrote:
->>
->>> On Sun, Mar 24, 2019 at 11:20:33AM -0600, David Ahern wrote:
->>>
->>>> On 3/24/19 11:02 AM, >>>> emersonbernier@tutanota.com <mailto:emersonbernier@tutanota.com>>>>>  wrote:
->>>>
->>>>> Ok but previous versions of iproute2 didn't treat this as error and didn't exited with non-zero status. Is non existing default route a system error which needs fixing?
->>>>>
->>>>
->>>> The kernel is returning that error, not iproute2.
->>>>
->>>> It is the default *table*, not a default route.
->>>>
->>>
->>> Something did change on iproute2 side between 4.20 and 5.0, though:
->>>
->>> lion:~ # rpm -q iproute2
->>> iproute2-4.20-0.x86_64
->>> lion:~ # ip route show table default ; echo $?
->>> 0
->>> lion:~ # ip route show table 123 ; echo $?
->>> 0
->>> ...
->>> lion:~ # rpm -q iproute2
->>> iproute2-5.0.0-0.x86_64
->>> lion:~ # ip route show table default ; echo $?
->>> Error: ipv4: FIB table does not exist.
->>> Dump terminated
->>> 2
->>> lion:~ # ip route show table 123 ; echo $?
->>> Error: ipv4: FIB table does not exist.
->>> Dump terminated
->>> 2
->>>
->>> All I did was updating iproute2 package, the same kernel was running for
->>> both (I tried 5.0.3 and 5.1-rc1).
->>>
->>
->> Commit c7e6371bc4af ("ip route: Add protocol, table id and device to
->> dump request") seems to be an obvious candidate. Before it, no matching
->> rules in the dump used to be presented as an empty table but now ip gets
->> a kernel error which it displays to the user.
->>
->
-> It's the commit that enables strict checking. Kernel side has been
-> changed to better inform the user of what happens on a request when
-> strict checking is enabled. iproute2 has been updated to use this.
->
-> Essentially, ip asks for a dump of table 253. In the past there is no
-> data, so nothing to return. The strict checking tells you explicitly
-> "that table does not exist" versus the old method where nothing is
-> returned and the user has to guess "the table exists but is empty or
-> there is a bug dumping the table?"
->
-> Given the legacy of table 253/default, iproute2 can easily catch this
-> error and just do nothing for backwards compatibility.
->
-Hi, 
 
-are those changes planned then? I don't see anything in repo
-https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/log/
+On 5/2/19 5:42 AM, Tom Hughes wrote:
+> I recently upgraded a machine from a 4.20.13 kernel to 5.0.9 and am
+> finding that after a few days I start getting a lot of these messages:
+> 
+>   neighbour: ndisc_cache: neighbor table overflow!
+> 
+> and IPv6 networking starts to fail intermittently as a result.
+> 
+> The neighbour table doesn't appear to have much in it however so I've
+> been looking at the code, and especially your recent changes to garbage
+> collection in the neighbour tables and my working theory is that the
+> value of gc_entries is somehow out of sync with the actual list of what
+> needs to be garbage collected.
+> 
+> Looking at the code I think I see a possible way that this could be
+> happening post 8cc196d6ef8 which moved the addition of new entries to
+> the gc list out of neigh_alloc into ___neigh_create.
+> 
+> The problem is that neigh_alloc is doing the increment of gc_entries, so
+> if ___neigh_create winds up taking an error path gc_entries will have
+> been incremented but the neighbour will never be added to the gc list.
+> 
+> I don't know for sure yet that this is the cause of my problem, but it
+> seems to be incorrect in any case unless I have misunderstood something?
+> 
+> Tom
+> 
+
+Hi Tom
+
+This seems to match your report : https://patchwork.ozlabs.org/patch/1093973/
