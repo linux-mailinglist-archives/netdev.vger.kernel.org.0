@@ -2,91 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87A9711F88
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:52:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7031311F9D
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 17:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726678AbfEBPuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 11:50:14 -0400
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:35179 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726458AbfEBPuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 11:50:11 -0400
-Received: by mail-yw1-f66.google.com with SMTP id n188so1942547ywe.2
-        for <netdev@vger.kernel.org>; Thu, 02 May 2019 08:50:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fJQ31N3hZaG9+3EMTDqJhUCYotKpMS/dVZKKtxe+Og4=;
-        b=b+XIq+GkTKcoCtZ1Lz6WL/o+5eaVjTufTLPMjk6cgvBoVcK+e7DcW40qAtLOoRvmJm
-         BD75qUetNXmeihMBZQioG1xv1IJVge2ZYfUgciXnNb8sCZaAxE7mkbG1jvySB0HdLpf8
-         8US/PmFeJiavVyTEJDZaHx3+B/emxIR8vrMVg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fJQ31N3hZaG9+3EMTDqJhUCYotKpMS/dVZKKtxe+Og4=;
-        b=OHYobP4SDL78OTIOYcGoyEDf8xgDe6Jj/5EKOj9+HKjpaDoTzMVMz9pG+C1OjB2EGi
-         IypbHAVWDHLojKKbaumVgGBXFKw7y5QiZqFaTASFyaSD/tGGOHPRuIAPcfojexAtOh+E
-         vqHl0GE+/PSOhidaMuCuLHz6U0NUAsgAxodrbuXo5PqVEcf6AJDYuG3c1uWjC9UaEa3L
-         q5YkDQoIXIfC/jL6x6i4llNRb+J3Om2RDFFcz50nHkA6V+RZXQOvP58dBB2oEE0YhtVa
-         I160njRR2RF9rR53i8sLoZVY0jBHqmvIE9BU/pdAEX3BFYIbQo1tdC5ouXvmJlxq0aj8
-         W2LA==
-X-Gm-Message-State: APjAAAVNxsk9FyeNl1rgxoG3DdbF6M/Tz6WIaJnQhLBg24X46y+ytvB8
-        k0aRbjlzgbK5c32EqBbskIo6uQ==
-X-Google-Smtp-Source: APXvYqwfb0PKIVIU25pzoxPKrevwD/g/zS0h2bxI7g00FVabFLPLw3S5mto5v9w14ae5HQJenNSmdA==
-X-Received: by 2002:a25:a20a:: with SMTP id b10mr3857534ybi.431.1556812210579;
-        Thu, 02 May 2019 08:50:10 -0700 (PDT)
-Received: from localhost.localdomain (adsl-173-228-226-134.prtc.net. [173.228.226.134])
-        by smtp.gmail.com with ESMTPSA id g7sm18913724ywg.31.2019.05.02.08.50.09
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 May 2019 08:50:09 -0700 (PDT)
-From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net
-Cc:     Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH bpf] libbpf: always NULL out pobj in bpf_prog_load_xattr
-Date:   Thu,  2 May 2019 11:49:32 -0400
-Message-Id: <20190502154932.14698-1-lmb@cloudflare.com>
-X-Mailer: git-send-email 2.19.1
+        id S1726462AbfEBP5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 11:57:08 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:39146 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726282AbfEBP5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 11:57:07 -0400
+Received: from mailhost.synopsys.com (dc8-mailhost1.synopsys.com [10.13.135.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 323CBC020C;
+        Thu,  2 May 2019 15:57:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1556812623; bh=RBOX3eQrC5rsRBXO9Yo4WNgviqeI5NSvve/zb+XLVxc=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=Y9N0v0jbsVcHuNWEyS1eF82Jf4TrB1GjTxL4ay82AZzmkjfu9VriSg14I27lP0YdC
+         fQEqLS2NlVx9dDvL4mFiu+c+/9kpgO72N6F/2v+ZtNs4AW0Xg84LLUq4P/MCC9N1DV
+         rqsN7sYzVG0fDGI36mF3d6qChyQ4AfjURSYmMLyy5kj1/6Elmzy1g4MsrAQo1nZrHE
+         AHslJ8cnBPiJjPWui/RyUJz/RDflxwpyS6i8MUfjgSg9svZpoTp/CvDojnVgBFMWxQ
+         tuIE91wmOvITeiZo35AtcBJ/860RMj8IrTtpt6awXJ4Mz6XjwdhPq31e6lCA2cJseX
+         NfdwXAyzG/1Zw==
+Received: from US01WEHTC2.internal.synopsys.com (us01wehtc2.internal.synopsys.com [10.12.239.237])
+        (using TLSv1.2 with cipher AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id BEF7BA005D;
+        Thu,  2 May 2019 15:57:04 +0000 (UTC)
+Received: from IN01WEHTCB.internal.synopsys.com (10.144.199.106) by
+ US01WEHTC2.internal.synopsys.com (10.12.239.237) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 2 May 2019 08:57:04 -0700
+Received: from IN01WEHTCA.internal.synopsys.com (10.144.199.103) by
+ IN01WEHTCB.internal.synopsys.com (10.144.199.105) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 2 May 2019 21:27:12 +0530
+Received: from vineetg-Latitude-E7450.internal.synopsys.com (10.10.161.89) by
+ IN01WEHTCA.internal.synopsys.com (10.144.199.243) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 2 May 2019 21:27:12 +0530
+From:   Vineet Gupta <Vineet.Gupta1@synopsys.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+CC:     <netdev@vger.kernel.org>, Wang Nan <wangnan0@huawei.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-snps-arc@lists.infradead.org>,
+        <linux-perf-users@vger.kernel.org>, <arnaldo.melo@gmail.com>,
+        Y Song <ys114321@gmail.com>,
+        Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: [PATCH v2] tools/bpf: fix perf build error with uClibc (seen on ARC)
+Date:   Thu, 2 May 2019 08:56:50 -0700
+Message-ID: <1556812610-27957-1-git-send-email-vgupta@synopsys.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <CAH3MdRVkUFfwKkgT-pi-RLBpcEf6n0bAwWZOu-=7+qctPTCpkw@mail.gmail.com>
+References: <CAH3MdRVkUFfwKkgT-pi-RLBpcEf6n0bAwWZOu-=7+qctPTCpkw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.10.161.89]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, code like the following segfaults if bpf_prog_load_xattr
-returns an error:
+When build perf for ARC recently, there was a build failure due to lack
+of __NR_bpf.
 
-    struct bpf_object *obj;
+| Auto-detecting system features:
+|
+| ...                     get_cpuid: [ OFF ]
+| ...                           bpf: [ on  ]
+|
+| #  error __NR_bpf not defined. libbpf does not support your arch.
+    ^~~~~
+| bpf.c: In function 'sys_bpf':
+| bpf.c:66:17: error: '__NR_bpf' undeclared (first use in this function)
+|  return syscall(__NR_bpf, cmd, attr, size);
+|                 ^~~~~~~~
+|                 sys_bpf
 
-    err = bpf_prog_load_xattr(&attr, &obj, &prog_fd);
-    bpf_object__close(obj);
-    if (err)
-        ...
-
-Unconditionally reset pobj to NULL at the start of the function
-to fix this.
-
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
 ---
- tools/lib/bpf/libbpf.c | 2 ++
+v1 -> v2
+  - Only add syscall nr for ARC, as asm-generic won't work with arm/sh [Y Song]
+---
+ tools/lib/bpf/bpf.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 11a65db4b93f..2ddf3212b8f7 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3363,6 +3363,8 @@ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
- 	struct bpf_map *map;
- 	int err;
- 
-+	*pobj = NULL;
-+
- 	if (!attr)
- 		return -EINVAL;
- 	if (!attr->file)
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+index 9cd015574e83..d82edadf7589 100644
+--- a/tools/lib/bpf/bpf.c
++++ b/tools/lib/bpf/bpf.c
+@@ -46,6 +46,8 @@
+ #  define __NR_bpf 349
+ # elif defined(__s390__)
+ #  define __NR_bpf 351
++# elif defined(__arc__)
++#  define __NR_bpf 280
+ # else
+ #  error __NR_bpf not defined. libbpf does not support your arch.
+ # endif
 -- 
-2.19.1
+2.7.4
 
