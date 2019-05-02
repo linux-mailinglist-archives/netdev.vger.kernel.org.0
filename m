@@ -2,132 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C48112160
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 19:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63ADB121A2
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 20:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726357AbfEBR5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 13:57:20 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:48930 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbfEBR5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 13:57:20 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x42Hs6ub072533;
-        Thu, 2 May 2019 17:57:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=JR0XBTYriJZkxU/hUSRi6iAQTlKAN5vJQzdI8eSqNVw=;
- b=WZp2wpvFk/kuwaL/YRc/55Y+ORjYM2N8u8IheYgGktur5ZFsp0JIdsi4Lq6tPznuoiAm
- 5zoCN8EPEancHB+IOYhW5DtZhz15G0GHvQKhyDVtdddmdsJPDY78qhAlzA2LaA2GVsUd
- 7wHrnZ0xdV1fHqTMZ3FQCArqejwzwPTvLha+ZMMnk0qlA9hHhcEb/Ut2Y03wpGK+FluH
- YF88DMGYUk4SX3TZVSWxa+rwifCffb6QlQGw/vE2xA3Fe8jZDPAV2UB3bzHMIZ+8LY8y
- PAhmHu0DGWqoNysrG32OD1C5SmrhskM4z5bZDpYDDnj+lw6A2Jj3iZk2LzZhI8HqCwAG 9Q== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2130.oracle.com with ESMTP id 2s6xhyjcq7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 02 May 2019 17:57:11 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x42Hv6jc164249;
-        Thu, 2 May 2019 17:57:10 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 2s6xhh73jg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 02 May 2019 17:57:10 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x42Hv9tH024799;
-        Thu, 2 May 2019 17:57:09 GMT
-Received: from [10.209.243.127] (/10.209.243.127)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 02 May 2019 10:57:09 -0700
-Subject: Re: [net-next][PATCH v2 2/2] rds: add sysctl for rds support of
- On-Demand-Paging
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Moni Shoua <monis@mellanox.com>
-References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
- <1556581040-4812-3-git-send-email-santosh.shilimkar@oracle.com>
- <20190501074500.GC7676@mtr-leonro.mtl.com>
- <81e6e4c1-a57c-0f66-75ad-90f75417cc4a@oracle.com>
- <20190502061800.GL7676@mtr-leonro.mtl.com>
-From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <6560f4e5-8ded-6fb3-dd2b-d4733633addc@oracle.com>
-Date:   Thu, 2 May 2019 10:59:58 -0700
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726409AbfEBSGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 14:06:25 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37676 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbfEBSGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 14:06:25 -0400
+Received: by mail-pf1-f196.google.com with SMTP id g3so1513691pfi.4
+        for <netdev@vger.kernel.org>; Thu, 02 May 2019 11:06:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SPMACVp79GS//al7ZHAcheTzC8tw3WbRMUcAunoVbxM=;
+        b=oUVoMGz9zF/pPCKZMRozRdi18Af/VZkW5Z5l3h0cADJcE7RUGXoYdOLwOqkVk0rWHy
+         NKadeCC54To4Dni6Yy5hoa9AH1V7UBl2N6dAQedGqfpXD9B9J4czPQcd4PI4NWhkDIrb
+         1/5WLaj4VhjIGki7wU3hZrHisoK1ztKP+SECYoZ/1j6O+K4ZBQiDbG3NBQ/ARPnVrdzw
+         ZLqLg8+BFUKQVeCRpjC6zql3u8At8tnja9mHeUEylQFobVw+cwB+ONkMVoj4sOOQgaP4
+         vU0xbxra2nKAU5Zn5+JcztpwWb0bOPle2V087Xij0UM95oBcl4RG7xiZTYP16ZT3kC9j
+         bBzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SPMACVp79GS//al7ZHAcheTzC8tw3WbRMUcAunoVbxM=;
+        b=rMsajsV2anahqGJQVzwrYJE/s8SKVR8cbpe+XZZxO7vlycIdeZaTzsbbO8LVMhQUSv
+         33oHrVv2HA8HPPamDwvi65ZOY8rXCDaNQs5wf/KlRF8+NOA3SVMA2TjY2xzcUWm044SM
+         svT1SrMdpHZvUdfvbVjafGfFPM9Gg1oLhCa8fJ4PJTpTvURK4Ef6dgeOzyMFhxWTfzpg
+         Tph4TIuLpXmMLAOBP8GVEjtGJsjUGiyuSvqLbDBv019MkrO8NWzAY2rdVGlny98HfyCZ
+         ENSg2SR4f5ATGDoysP0sFvfMNqud39NRV5P+2e7BJIzDI0gh+6zP+xzAECx43sKTJNyS
+         NgcA==
+X-Gm-Message-State: APjAAAUUfPXNC/24/2wN1UjOc9/rAc/dv/FZ+5cq67QsVGl4w3po2JSe
+        GnxwNbimRGPWjXX9ln48vN4OruQG
+X-Google-Smtp-Source: APXvYqyjlKC8Jb0cZvrQAXqscd/bREzDEAE6lyFrc4Lh+O/xGgmuoo0Fm+SvtiRs9IN3VnwwQ2AZdg==
+X-Received: by 2002:a65:60d0:: with SMTP id r16mr5197031pgv.229.1556820384536;
+        Thu, 02 May 2019 11:06:24 -0700 (PDT)
+Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
+        by smtp.gmail.com with ESMTPSA id n188sm36039462pfn.64.2019.05.02.11.06.23
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 02 May 2019 11:06:23 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [Patch net-next] sch_htb: redefine htb qdisc overlimits
+Date:   Thu,  2 May 2019 11:06:10 -0700
+Message-Id: <20190502180610.10369-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190502061800.GL7676@mtr-leonro.mtl.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9245 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1905020115
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9245 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1905020115
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In commit 3c75f6ee139d ("net_sched: sch_htb: add per class overlimits counter")
+we added an overlimits counter for each HTB class which could
+properly reflect how many times we use up all the bandwidth
+on each class. However, the overlimits counter in HTB qdisc
+does not, it is way bigger than the sum of each HTB class.
+In fact, this qdisc overlimits counter increases when we have
+no skb to dequeue, which happens more often than we run out of
+bandwidth.
 
+It makes more sense to make this qdisc overlimits counter just
+be a sum of each HTB class, in case people still get confused.
 
-On 5/1/2019 11:18 PM, Leon Romanovsky wrote:
-> On Wed, May 01, 2019 at 10:54:50AM -0700, Santosh Shilimkar wrote:
->> On 5/1/2019 12:45 AM, Leon Romanovsky wrote:
->>> On Mon, Apr 29, 2019 at 04:37:20PM -0700, Santosh Shilimkar wrote:
->>>> RDS doesn't support RDMA on memory apertures that require On Demand
->>>> Paging (ODP), such as FS DAX memory. A sysctl is added to indicate
->>>> whether RDMA requiring ODP is supported.
->>>>
->>>> Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
->>>> Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
->>>> Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
->>>> Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
->>>> ---
->>>>    net/rds/ib.h        | 1 +
->>>>    net/rds/ib_sysctl.c | 8 ++++++++
->>>>    2 files changed, 9 insertions(+)
->>>
->>> This sysctl is not needed at all
->>>
->> Its needed for application to check the support of the ODP support
->> feature which in progress. Failing the RDS_GET_MR was just one path
->> and we also support inline MR registration along with message request.
->>
->> Basically application runs on different kernel versions and to be
->> portable, it will check if underneath RDS support ODP and then only
->> use RDMA. If not it will fallback to buffer copy mode. Hope
->> it clarifies.
-> 
-> Using ODP sysctl to determine if to use RDMA or not, looks like very
-> problematic approach. How old applications will work in such case
-> without knowledge of such sysctl?
-> How new applications will distinguish between ODP is not supported, but
-> RDMA works?
-> 
-Actually this is not ODP sysctl but really whether RDS supports
-RDMA on fs_dax memory or not. I had different name for sysctl but
-in internal review it got changed.
+I have verified this patch with one single HTB class, where HTB
+qdisc counters now always match HTB class counters as expected.
 
-Ignoring the name of the sysctl, here is the application logic.
-- If fs_dax sysctl path doesn't exist, no RDMA on FS DAX memory(this
-will cover all the older kernels, which doesn't have this patch)
-- If fs_dax sysctl path exist and its value is 0, no RDMA on FS
-DAX. This will cover kernels which this patch but don't have
-actual support for ODP based registration.
-- If fs_dax sysctl path exist and its value is 1, RDMA can be
-issued on FS DAX memory. This sysctl will be updated to value 1
-once the support gets added.
+Cc: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+ net/sched/sch_htb.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Hope it clarifies better now.
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index d27d9bc9d010..cece0d455985 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -177,6 +177,7 @@ struct htb_sched {
+ 	int			row_mask[TC_HTB_MAXDEPTH];
+ 
+ 	struct htb_level	hlevel[TC_HTB_MAXDEPTH];
++	u32			overlimits;
+ };
+ 
+ /* find class in global hash table using given handle */
+@@ -533,8 +534,10 @@ htb_change_class_mode(struct htb_sched *q, struct htb_class *cl, s64 *diff)
+ 	if (new_mode == cl->cmode)
+ 		return;
+ 
+-	if (new_mode == HTB_CANT_SEND)
++	if (new_mode == HTB_CANT_SEND) {
+ 		cl->overlimits++;
++		q->overlimits++;
++	}
+ 
+ 	if (cl->prio_activity) {	/* not necessary: speed optimization */
+ 		if (cl->cmode != HTB_CANT_SEND)
+@@ -937,7 +940,6 @@ static struct sk_buff *htb_dequeue(struct Qdisc *sch)
+ 				goto ok;
+ 		}
+ 	}
+-	qdisc_qstats_overlimit(sch);
+ 	if (likely(next_event > q->now))
+ 		qdisc_watchdog_schedule_ns(&q->watchdog, next_event);
+ 	else
+@@ -1048,6 +1050,7 @@ static int htb_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	struct nlattr *nest;
+ 	struct tc_htb_glob gopt;
+ 
++	sch->qstats.overlimits = q->overlimits;
+ 	/* Its safe to not acquire qdisc lock. As we hold RTNL,
+ 	 * no change can happen on the qdisc parameters.
+ 	 */
+-- 
+2.20.1
 
-Regards,
-Santosh
