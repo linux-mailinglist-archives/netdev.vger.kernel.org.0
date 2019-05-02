@@ -2,65 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEB6511BB6
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 16:47:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD2D411BF0
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 16:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbfEBOrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 10:47:51 -0400
-Received: from www62.your-server.de ([213.133.104.62]:54146 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbfEBOru (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 10:47:50 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hMCzt-0002Gp-Lg; Thu, 02 May 2019 16:47:41 +0200
-Received: from [173.228.226.134] (helo=localhost.localdomain)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hMCzt-000FI5-7p; Thu, 02 May 2019 16:47:41 +0200
-Subject: Re: [net-next 01/12] i40e: replace switch-statement to speed-up
- retpoline-enabled builds
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-References: <20190429191628.31212-1-jeffrey.t.kirsher@intel.com>
- <20190429191628.31212-2-jeffrey.t.kirsher@intel.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <806f5242-d509-e015-275e-ad0325f17222@iogearbox.net>
-Date:   Thu, 2 May 2019 16:47:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726415AbfEBO6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 10:58:41 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:39106 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726197AbfEBO6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 10:58:38 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 0511B608D4; Thu,  2 May 2019 14:58:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1556809117;
+        bh=FEqQA6mURavj3aREhqTvLezlNLMBGSwPuDJJrCP+Ylo=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=RZ45vaZybJMHHvi0Lir6N+5+GOc+u7Mkr3v6Agzm4uG9AoXsGg2MA29I1+RZ0Bs2n
+         wqixkVJ8d9wF2VF+eXjarlUst6rOUha4lKQMgdvkgurTQ1evbekQPEMeJvTjeV7Y/1
+         WcE7MIUb4zo6NxB2XDvN1UmIrBb9E7k/Ce5G9/3I=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2132060746;
+        Thu,  2 May 2019 14:58:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1556809116;
+        bh=FEqQA6mURavj3aREhqTvLezlNLMBGSwPuDJJrCP+Ylo=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=Kr/TGZV/vjKi5YICmHMu1FNGw1iPCCSMCbytZ0nY5n85T18AJ6usNsf61l7PY9G8o
+         gBrDFNNl/PfUMUGgOF+r8HnIQ8FzRlV/zRGtAI/kTid2cmasHcpNjmKcpKymYfvblO
+         fMj9esuZgnQEd9dUbPOLu3xfiGPYp+3bkcpb36zc=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2132060746
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20190429191628.31212-2-jeffrey.t.kirsher@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25437/Thu May  2 09:59:34 2019)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH][next] rtw88: fix shift of more than 32 bits of a integer
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190501141945.22522-1-colin.king@canonical.com>
+References: <20190501141945.22522-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190502145837.0511B608D4@smtp.codeaurora.org>
+Date:   Thu,  2 May 2019 14:58:37 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/29/2019 09:16 PM, Jeff Kirsher wrote:
-> From: Björn Töpel <bjorn.topel@intel.com>
-> 
-> GCC will generate jump tables for switch-statements with more than 5
-> case statements. An entry into the jump table is an indirect call,
-> which means that for CONFIG_RETPOLINE builds, this is rather
-> expensive.
-> 
-> This commit replaces the switch-statement that acts on the XDP program
-> result with an if-clause.
-> 
-> The if-clause was also refactored into a common function that can be
-> used by AF_XDP zero-copy and non-zero-copy code.
+Colin King <colin.king@canonical.com> wrote:
 
-Isn't it fixed upstream by now already (also in gcc)?
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Currently the shift of an integer value more than 32 bits can
+> occur when nss is more than 32.  Fix this by making the integer
+> constants unsigned long longs before shifting and bit-wise or'ing
+> with the u64 ra_mask to avoid the undefined shift behaviour.
+> 
+> Addresses-Coverity: ("Bad shift operation")
+> Fixes: e3037485c68e ("rtw88: new Realtek 802.11ac driver")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ce02ef06fcf7a399a6276adb83f37373d10cbbe1
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a9d57ef15cbe327fe54416dd194ee0ea66ae53a4
+Patch applied to wireless-drivers-next.git, thanks.
+
+b85bd9a14c4b rtw88: fix shift of more than 32 bits of a integer
+
+-- 
+https://patchwork.kernel.org/patch/10925147/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
