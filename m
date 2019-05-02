@@ -2,118 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E9EE12228
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 20:47:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 108191222D
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 20:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726417AbfEBSrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 14:47:00 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41668 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726145AbfEBSq7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 14:46:59 -0400
-Received: by mail-wr1-f67.google.com with SMTP id c12so4786989wrt.8
-        for <netdev@vger.kernel.org>; Thu, 02 May 2019 11:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=x6XkIPyUZg7pCnY2WgVGHlyxqyE2CrT+22pz9TDEorY=;
-        b=Y0uANagvKkVhaUmI9IR7LJkg6+FD2Yam36JcQuOY4DEBVytcb3PwKYv/a26WATe7wd
-         PLV9P/ieEpKnMSZj6fXKmG8LYqBrZ3zL7tyeLcYNUwW7x8Rh0V/YRZVkCwDBblhAnb61
-         tVDvN62EEkGNbYrQc8LZ6c/NJWGDk1+wU1Wmf5F9I/+EyqLF8ZENSuxVpdjO1xJu0BXK
-         +LHQ14bZIq7ej+8kkn9UokNgYTErT/1gAUTL7xjOiNMFB9R8997ym0+vVXRRYY+A1eT/
-         6yPIYITZHMpMvLUGmCNLyr1ep+6397lemMXsArI/fCts9FM5JD0vjO+yCQdJTpBMJQPR
-         EVwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=x6XkIPyUZg7pCnY2WgVGHlyxqyE2CrT+22pz9TDEorY=;
-        b=UrZRchu5uTR9juMI/fHIVq85/CeARdE/o1iZ65Rh3hPT1Mj1SRL0EquasgwMdrwSOK
-         OVOjv3zLZMKk9kg4c6M4AIz0lYSYjmN9u3buBNy2CFBQwJvE8st6RQ3UjPhHBb1x39bp
-         FCUw2NwYG09jH3BzWCXUjLpDvHYKwtiIhJFbvEAPyU1AkMndSz1CSUJqyER13CMgUVYn
-         CgyO7Wf52P7+gWcASp4ghl2yL5xqBH4Q0vJifLvwzKqwZ/qXnNSS/nccK4813blbHneS
-         1asOt2LQFrVyP4Xt6eMYY8o0ryERzEcvogyAZuFYkY1W0pbLazypS4ZtMjCctTQ+TI4n
-         Opqw==
-X-Gm-Message-State: APjAAAVZRDO9EnERhDr/vIIT3d+Z0h6jkD6MbPX0ppUp9sojA9FMUA25
-        VpJqvVuDcQaw0k+ZbL+14D3qdmmdh/U=
-X-Google-Smtp-Source: APXvYqx515o8T8jMxUa63IZ2tN+JVaBERB7aHEI8LQkyXnVmz7iIFB7eTioRwSRhSgXQzrVBWrFdTw==
-X-Received: by 2002:a5d:4a81:: with SMTP id o1mr3853430wrq.183.1556822817817;
-        Thu, 02 May 2019 11:46:57 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd4:5700:d5f:9121:fe0:2821? (p200300EA8BD457000D5F91210FE02821.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:d5f:9121:fe0:2821])
-        by smtp.googlemail.com with ESMTPSA id f1sm12841907wrc.93.2019.05.02.11.46.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 May 2019 11:46:57 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: remove rtl_write_exgmac_batch
-Message-ID: <0720a8db-562c-d2cb-b992-8c29385461ac@gmail.com>
-Date:   Thu, 2 May 2019 20:46:52 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726308AbfEBSwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 14:52:53 -0400
+Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:52807 "EHLO
+        caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725962AbfEBSwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 14:52:53 -0400
+Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
+        id CB101461D3A; Thu,  2 May 2019 14:52:50 -0400 (EDT)
+Date:   Thu, 2 May 2019 14:52:50 -0400
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec
+ packets
+Message-ID: <20190502185250.vlsainugtn6zjd6p@csclub.uwaterloo.ca>
+References: <20190501205215.ptoi2czhklte5jbm@csclub.uwaterloo.ca>
+ <CAKgT0UczVvREiXwde6yJ8_i9RT2z7FhenEutXJKW8AmDypn_0g@mail.gmail.com>
+ <20190502151140.gf5ugodqamtdd5tz@csclub.uwaterloo.ca>
+ <CAKgT0Uc_OUAcPfRe6yCSwpYXCXomOXKG2Yvy9c1_1RJn-7Cb5g@mail.gmail.com>
+ <20190502171636.3yquioe3gcwsxlus@csclub.uwaterloo.ca>
+ <CAKgT0Ufk8LXMb9vVWfvgbjbQFKAuenncf95pfkA0P1t-3+Ni_g@mail.gmail.com>
+ <20190502175513.ei7kjug3az6fe753@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190502175513.ei7kjug3az6fe753@csclub.uwaterloo.ca>
+User-Agent: NeoMutt/20170113 (1.7.2)
+From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtl_write_exgmac_batch is used in only one place, so we can remove it.
+On Thu, May 02, 2019 at 01:55:13PM -0400, Lennart Sorensen wrote:
+> Here is the same packets as before with the link level header included
+> (I forgot to use -XX rather than -X):
+> 
+> 13:43:49.081567 54:ee:75:30:f1:e1 > a4:bf:01:4e:0c:87, ethertype IPv4 (0x0800), length 174: (tos 0x0, ttl 64, id 21783, offset 0, flags [DF], proto UDP (17), length 160)
+>     1.99.99.2.4500 > 1.99.99.1.4500: [no cksum] UDP-encap: ESP(spi=0x8de82290,seq=0x6a56), length 132
+>         0x0000:  a4bf 014e 0c87 54ee 7530 f1e1 0800 4500  ...N..T.u0....E.
+>         0x0010:  00a0 5517 4000 4011 1c6d 0163 6302 0163  ..U.@.@..m.cc..c
+>         0x0020:  6301 1194 1194 008c 0000 8de8 2290 0000  c..........."...
+>         0x0030:  6a56 72da 0734 52f6 406e 9346 f946 c698  jVr..4R.@n.F.F..
+>         0x0040:  a38c 280c 94da 53e1 91e0 35bf 812a 4500  ..(...S...5..*E.
+>         0x0050:  6003 ca7d 6872 a50b d41a 5c4d 7c22 3fb8  `..}hr....\M|"?.
+>         0x0060:  56d8 2a0f bc3f d3a6 5853 682c 914c c1b1  V.*..?..XSh,.L..
+>         0x0070:  c5c3 94e8 4789 d8b4 4ab4 e5f9 d20a e5ef  ....G...J.......
+>         0x0080:  de1d 05dd e98a 996b 5c11 6657 b667 6af1  .......k\.fW.gj.
+>         0x0090:  2a97 694b 16de 74e2 f8fe 13a3 d45e e3e9  *.iK..t......^..
+>         0x00a0:  f0b1 b83b 99e3 55cb b40b 5ba8 9c23       ...;..U...[..#
+> 13:43:49.081658 a4:bf:01:4e:0c:87 > 54:ee:75:30:f1:e1, ethertype IPv4 (0x0800), length 174: (tos 0x0, ttl 64, id 44552, offset 0, flags [none], proto UDP (17), length 160)
+>     1.99.99.1.4500 > 1.99.99.2.4500: [no cksum] UDP-encap: ESP(spi=0x1d4ecfdf,seq=0x6a56), length 132
+>         0x0000:  54ee 7530 f1e1 a4bf 014e 0c87 0800 4500  T.u0.....N....E.
+>         0x0010:  00a0 ae08 0000 4011 037c 0163 6301 0163  ......@..|.cc..c
+>         0x0020:  6302 1194 1194 008c 0000 1d4e cfdf 0000  c..........N....
+>         0x0030:  6a56 28ca 4809 8933 911d f2be 4510 e757  jV(.H..3....E..W
+>         0x0040:  3885 7d26 5238 8c58 38e3 6c07 2f8e 335a  8.}&R8.X8.l./.3Z
+>         0x0050:  6d48 2a72 4619 e8a3 c421 bc54 48b2 6239  mH*rF....!.TH.b9
+>         0x0060:  5e07 7e89 a68e 0161 4e6a 5b6f 8b89 9f53  ^.~....aNj[o...S
+>         0x0070:  4c40 1c6c d159 60f8 68e7 24db 8b21 2ec2  L@.l.Y`.h.$..!..
+>         0x0080:  4b67 9b83 643b b0ac 6e2d bf4f 1ee1 9508  Kg..d;..n-.O....
+>         0x0090:  d1bd dcd4 74ee e4dc 78d0 578a 5905 1f4d  ....t...x.W.Y..M
+>         0x00a0:  74be e643 910b b4d3 f428 8822 e22b       t..C.....(.".+
+> 
+> I will try to see what I can do with netperf.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169.c | 26 ++++----------------------
- 1 file changed, 4 insertions(+), 22 deletions(-)
+Hmm, maybe UDP isn't doing as well as I thought.
 
-diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
-index 9200fa8ae..ee16b7782 100644
---- a/drivers/net/ethernet/realtek/r8169.c
-+++ b/drivers/net/ethernet/realtek/r8169.c
-@@ -1286,21 +1286,6 @@ static void rtl_reset_packet_filter(struct rtl8169_private *tp)
- 	rtl_eri_set_bits(tp, 0xdc, ERIAR_MASK_0001, BIT(0));
- }
- 
--struct exgmac_reg {
--	u16 addr;
--	u16 mask;
--	u32 val;
--};
--
--static void rtl_write_exgmac_batch(struct rtl8169_private *tp,
--				   const struct exgmac_reg *r, int len)
--{
--	while (len-- > 0) {
--		rtl_eri_write(tp, r->addr, r->mask, r->val);
--		r++;
--	}
--}
--
- DECLARE_RTL_COND(rtl_efusear_cond)
- {
- 	return RTL_R32(tp, EFUSEAR) & EFUSEAR_FLAG;
-@@ -3288,14 +3273,11 @@ static void rtl_rar_exgmac_set(struct rtl8169_private *tp, u8 *addr)
- 		addr[2] | (addr[3] << 8),
- 		addr[4] | (addr[5] << 8)
- 	};
--	const struct exgmac_reg e[] = {
--		{ .addr = 0xe0, ERIAR_MASK_1111, .val = w[0] | (w[1] << 16) },
--		{ .addr = 0xe4, ERIAR_MASK_1111, .val = w[2] },
--		{ .addr = 0xf0, ERIAR_MASK_1111, .val = w[0] << 16 },
--		{ .addr = 0xf4, ERIAR_MASK_1111, .val = w[1] | (w[2] << 16) }
--	};
- 
--	rtl_write_exgmac_batch(tp, e, ARRAY_SIZE(e));
-+	rtl_eri_write(tp, 0xe0, ERIAR_MASK_1111, w[0] | (w[1] << 16));
-+	rtl_eri_write(tp, 0xe4, ERIAR_MASK_1111, w[2]);
-+	rtl_eri_write(tp, 0xf0, ERIAR_MASK_1111, w[0] << 16);
-+	rtl_eri_write(tp, 0xf4, ERIAR_MASK_1111, w[1] | (w[2] << 16));
- }
- 
- static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp)
+Playing with packit doing this:
+
+packit -t UDP -d 1.99.99.1 -D 32432 -S 4500 -i enp0s25 -h -p "0x 00 11 22 33 44 55 66 77 88 99 00 11 22 33 44 55 66 77 88 99 00 11 22 33 44 55 66 77 88 99" -c 5
+
+I have played with the source and destination port numbers, and so far
+I have only managed to hit queues 0, 1 and 2 (mostly 0 and 2).  No port
+number I have tried has made it hit any other queue.  That is weird.
+Making random changes ought to distribute more than that.  And changing
+the hkey certainly ought to make a difference, and so far it doesn't
+seem to for these packets (I know I saw icmp move around just fine before
+when changing the hkey).
+
 -- 
-2.21.0
-
+Len Sorensen
