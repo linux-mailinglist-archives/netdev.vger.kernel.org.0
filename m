@@ -2,156 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3652E12142
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 19:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23B4512150
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 19:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726249AbfEBRtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 13:49:51 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:58258 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbfEBRtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 13:49:50 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x42HhfSm075745;
-        Thu, 2 May 2019 17:49:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=Zllxr7zFj9Mxi2llQHnc+FtQRHF78ZbzweOBCHpwCl4=;
- b=rlTgtSd6TFp/9fNMeieTGcHKDpZ6T0dKbJ165MiTxvXOjyoa1mkg6GFH+tG2GVnGjZ4z
- FNwQuBxiD9I67TxaNyyfyQjZntYAHYsVLzX9juepMbQJ8/Ttb4jwyMr15lHGEafNU9GO
- XLvbdoM4CiZIJYgQGr8wweCHLOu3Dbh3P4g4j+412EsqLZGwjTNrlK6/y0QceqvtlQel
- eTwlGS/oBQwkZpColwg9CfRPZWNLwLAvyY5kNgbsp3peFV7GXoldroJ3JHBlW8ey+E3m
- 1TP801qrDIUmf+tKD1N5WeSZU4fPucI6oIdnMgOtLq/qDqO4Syy8PLQzyJ2eZjUKkxqL ug== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 2s6xhytc06-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 02 May 2019 17:49:36 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x42HlfPs161654;
-        Thu, 2 May 2019 17:49:36 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2s7p89wjfn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 02 May 2019 17:49:36 +0000
-Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x42HnYBL031208;
-        Thu, 2 May 2019 17:49:35 GMT
-Received: from [10.209.243.127] (/10.209.243.127)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 02 May 2019 10:49:34 -0700
-Subject: Re: [net-next][PATCH v2 1/2] rds: handle unsupported rdma request to
- fs dax memory
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Moni Shoua <monis@mellanox.com>
-References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
- <1556581040-4812-2-git-send-email-santosh.shilimkar@oracle.com>
- <20190501074415.GB7676@mtr-leonro.mtl.com>
- <2829f9d8-0383-d141-46c3-f2a09cd542b2@oracle.com>
- <20190502062120.GM7676@mtr-leonro.mtl.com>
-From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <b7781380-e85b-78b4-f89e-1e627e213896@oracle.com>
-Date:   Thu, 2 May 2019 10:52:23 -0700
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726373AbfEBRzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 13:55:16 -0400
+Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:44981 "EHLO
+        caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725962AbfEBRzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 13:55:16 -0400
+Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
+        id DC830461D3A; Thu,  2 May 2019 13:55:13 -0400 (EDT)
+Date:   Thu, 2 May 2019 13:55:13 -0400
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec
+ packets
+Message-ID: <20190502175513.ei7kjug3az6fe753@csclub.uwaterloo.ca>
+References: <20190501205215.ptoi2czhklte5jbm@csclub.uwaterloo.ca>
+ <CAKgT0UczVvREiXwde6yJ8_i9RT2z7FhenEutXJKW8AmDypn_0g@mail.gmail.com>
+ <20190502151140.gf5ugodqamtdd5tz@csclub.uwaterloo.ca>
+ <CAKgT0Uc_OUAcPfRe6yCSwpYXCXomOXKG2Yvy9c1_1RJn-7Cb5g@mail.gmail.com>
+ <20190502171636.3yquioe3gcwsxlus@csclub.uwaterloo.ca>
+ <CAKgT0Ufk8LXMb9vVWfvgbjbQFKAuenncf95pfkA0P1t-3+Ni_g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190502062120.GM7676@mtr-leonro.mtl.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9245 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1905020114
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9245 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1905020114
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0Ufk8LXMb9vVWfvgbjbQFKAuenncf95pfkA0P1t-3+Ni_g@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/1/2019 11:21 PM, Leon Romanovsky wrote:
-> On Wed, May 01, 2019 at 10:54:00AM -0700, Santosh Shilimkar wrote:
->> On 5/1/2019 12:44 AM, Leon Romanovsky wrote:
->>> On Mon, Apr 29, 2019 at 04:37:19PM -0700, Santosh Shilimkar wrote:
->>>> From: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
->>>>
->>>> RDS doesn't support RDMA on memory apertures that require On Demand
->>>> Paging (ODP), such as FS DAX memory. User applications can try to use
->>>> RDS to perform RDMA over such memories and since it doesn't report any
->>>> failure, it can lead to unexpected issues like memory corruption when
->>>> a couple of out of sync file system operations like ftruncate etc. are
->>>> performed.
->>>>
->>>> The patch adds a check so that such an attempt to RDMA to/from memory
->>>> apertures requiring ODP will fail.
->>>>
->>>> Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
->>>> Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
->>>> Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
->>>> Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
->>>> ---
->>>>    net/rds/rdma.c | 5 +++--
->>>>    1 file changed, 3 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/net/rds/rdma.c b/net/rds/rdma.c
->>>> index 182ab84..e0a6b72 100644
->>>> --- a/net/rds/rdma.c
->>>> +++ b/net/rds/rdma.c
->>>> @@ -158,8 +158,9 @@ static int rds_pin_pages(unsigned long user_addr, unsigned int nr_pages,
->>>>    {
->>>>    	int ret;
->>>>
->>>> -	ret = get_user_pages_fast(user_addr, nr_pages, write, pages);
->>>> -
->>>> +	/* get_user_pages return -EOPNOTSUPP for fs_dax memory */
->>>> +	ret = get_user_pages_longterm(user_addr, nr_pages,
->>>> +				      write, pages, NULL);
->>>
->>> I'm not RDS expert, but from what I see in net/rds/rdma.c and this code,
->>> you tried to mimic ib_umem_get() without protection, checks and native
->>> ODP, FS and DAX supports.
->>>
->>> The real way to solve your ODP problem will require to extend
->>> ib_umem_get() to work for kernel ULPs too and use it instead of
->>> get_user_pages(). We are working on that and it is in internal review now.
->>>
->> Yes am aware of it. For FS_DAX like memory,  get_user_pages_longterm()
->> fails and then using ib_reg_user_mr() the memory is registered as
->> ODP regsion. This work is not ready yet and without above check,
->> one can do RDMA on FS DAX memory with Fast Reg or FMR memory
->> registration which is not safe and hence need to fail the operation.
->>
->> Once the support is added to RDS, this code path will make that
->> registration go through.
->>
->> Hope it clarifies.
-> 
-> Only partial, why don't you check if user asked ODP through verbs
-> interface and return EOPNOTSUPP in such case?
->
-I think you are mixing two separate things. ODP is just one way of
-supporting RDMA on FS DAX memory. Tomorrow, some other mechanism
-can be used as well. RDS is just using inbuilt kernel mm API
-to find out if its FS DAX memory(get_user_pages_longterm).
-Current code will make RDS get_mr fail if RDS application issues
-memory registration request on FS DAX memory and in future when
-support gets added, it will do the ODP registration and return
-the key.
+On Thu, May 02, 2019 at 10:28:22AM -0700, Alexander Duyck wrote:
+> The thing is the firmware has to have some idea what it is dealing
+> with. As far as I know I don't believe port number 4500 is being
+> auto-flagged as any special type. In the case of the other tunnel
+> types such as VXLAN, NVGRE, and GENEVE the driver has to set a port
+> value indicating that the port will receive special handling. If it
+> isn't added via i40e_udp_tunnel_add then the firmware/hardware
+> shouldn't know anything about the tunnel.
 
-> It will ensure that once your code will support ODP properly written
-> applications will work with/without ODP natively.
-> 
-Application shouldn't care if RDS ULP internally uses ODP
-or some other mechanism to support RDMA on FS DAX memory.
-This makes it transparent it to RDS application.
+Well that makes some sense.  I was wondering why there didn't seem to
+be an on/off switch for that feature.
 
-Regards,
-Santosh
+> It really isn't that unusual of a feature. Many NICs have this
+> functionality now. In order to support it we usually have to populate
+> the port values for the device so the internal parser knows to expect
+> them.
+> 
+> That is one of the reasons I suggested testing with netperf as I did
+> below. Basically if we construct all the outer headers the same as
+> your packet we can see if some specific combination is causing a
+> parsing issue. I tested the netperf approach on an XL710 and didn't
+> see any issues, but perhaps the XL722 is doing something differently.
+> 
+> Thanks. If nothing else it should make it possible to just use
+> tcpreplay if needed to reproduce the issue.
+
+Here is the same packets as before with the link level header included
+(I forgot to use -XX rather than -X):
+
+13:43:49.081567 54:ee:75:30:f1:e1 > a4:bf:01:4e:0c:87, ethertype IPv4 (0x0800), length 174: (tos 0x0, ttl 64, id 21783, offset 0, flags [DF], proto UDP (17), length 160)
+    1.99.99.2.4500 > 1.99.99.1.4500: [no cksum] UDP-encap: ESP(spi=0x8de82290,seq=0x6a56), length 132
+        0x0000:  a4bf 014e 0c87 54ee 7530 f1e1 0800 4500  ...N..T.u0....E.
+        0x0010:  00a0 5517 4000 4011 1c6d 0163 6302 0163  ..U.@.@..m.cc..c
+        0x0020:  6301 1194 1194 008c 0000 8de8 2290 0000  c..........."...
+        0x0030:  6a56 72da 0734 52f6 406e 9346 f946 c698  jVr..4R.@n.F.F..
+        0x0040:  a38c 280c 94da 53e1 91e0 35bf 812a 4500  ..(...S...5..*E.
+        0x0050:  6003 ca7d 6872 a50b d41a 5c4d 7c22 3fb8  `..}hr....\M|"?.
+        0x0060:  56d8 2a0f bc3f d3a6 5853 682c 914c c1b1  V.*..?..XSh,.L..
+        0x0070:  c5c3 94e8 4789 d8b4 4ab4 e5f9 d20a e5ef  ....G...J.......
+        0x0080:  de1d 05dd e98a 996b 5c11 6657 b667 6af1  .......k\.fW.gj.
+        0x0090:  2a97 694b 16de 74e2 f8fe 13a3 d45e e3e9  *.iK..t......^..
+        0x00a0:  f0b1 b83b 99e3 55cb b40b 5ba8 9c23       ...;..U...[..#
+13:43:49.081658 a4:bf:01:4e:0c:87 > 54:ee:75:30:f1:e1, ethertype IPv4 (0x0800), length 174: (tos 0x0, ttl 64, id 44552, offset 0, flags [none], proto UDP (17), length 160)
+    1.99.99.1.4500 > 1.99.99.2.4500: [no cksum] UDP-encap: ESP(spi=0x1d4ecfdf,seq=0x6a56), length 132
+        0x0000:  54ee 7530 f1e1 a4bf 014e 0c87 0800 4500  T.u0.....N....E.
+        0x0010:  00a0 ae08 0000 4011 037c 0163 6301 0163  ......@..|.cc..c
+        0x0020:  6302 1194 1194 008c 0000 1d4e cfdf 0000  c..........N....
+        0x0030:  6a56 28ca 4809 8933 911d f2be 4510 e757  jV(.H..3....E..W
+        0x0040:  3885 7d26 5238 8c58 38e3 6c07 2f8e 335a  8.}&R8.X8.l./.3Z
+        0x0050:  6d48 2a72 4619 e8a3 c421 bc54 48b2 6239  mH*rF....!.TH.b9
+        0x0060:  5e07 7e89 a68e 0161 4e6a 5b6f 8b89 9f53  ^.~....aNj[o...S
+        0x0070:  4c40 1c6c d159 60f8 68e7 24db 8b21 2ec2  L@.l.Y`.h.$..!..
+        0x0080:  4b67 9b83 643b b0ac 6e2d bf4f 1ee1 9508  Kg..d;..n-.O....
+        0x0090:  d1bd dcd4 74ee e4dc 78d0 578a 5905 1f4d  ....t...x.W.Y..M
+        0x00a0:  74be e643 910b b4d3 f428 8822 e22b       t..C.....(.".+
+
+I will try to see what I can do with netperf.
+
+-- 
+Len Sorensen
