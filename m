@@ -2,245 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A70D911727
-	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 12:23:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B1A611758
+	for <lists+netdev@lfdr.de>; Thu,  2 May 2019 12:36:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726449AbfEBKXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 May 2019 06:23:36 -0400
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:35741 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726231AbfEBKXf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 May 2019 06:23:35 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id A1AACFA30A;
-        Thu,  2 May 2019 20:23:30 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received; s=mail_dkim; t=1556792610; bh=heY2I
-        hFuPrNzPEDF/+84AQ2oRDc+b0Pgt/BXRb5pQco=; b=mtujrXMWzmZZLHCn0k8gX
-        Ut3qSEy7VbwCG+JgKi8aQh5wPBQ8zIHVdKRaWiPf3NRCxL6lxSNT3qlQoEHsdj9v
-        gNswR2BPGTynZ3LwhEQSh8LDUPPz6CbUx7Qm82zTBKQrxqvI/4SaOO9ypMBR6ZNV
-        SMTsZLMoonFFK5WIw1IY1E=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 2WXTYFNpLRVr; Thu,  2 May 2019 20:23:30 +1000 (AEST)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 0A69BFA30B;
-        Thu,  2 May 2019 20:23:29 +1000 (AEST)
-Received: from localhost.localdomain (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id 63CDAFA30A;
-        Thu,  2 May 2019 20:23:28 +1000 (AEST)
-From:   Tuong Lien <tuong.t.lien@dektech.com.au>
-To:     davem@davemloft.net, jon.maloy@ericsson.com, maloy@donjonn.com,
-        ying.xue@windriver.com, netdev@vger.kernel.org
-Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [net-next] tipc: fix missing Name entries due to half-failover
-Date:   Thu,  2 May 2019 17:23:23 +0700
-Message-Id: <20190502102323.16548-1-tuong.t.lien@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
+        id S1726584AbfEBKfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 May 2019 06:35:53 -0400
+Received: from mail-eopbgr760045.outbound.protection.outlook.com ([40.107.76.45]:13075
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726231AbfEBKfJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 May 2019 06:35:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector1-xilinx-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oHpWHxqskoSlSadAMLt09ozUUUgZ3kzHN+8B/ee8fbI=;
+ b=b92kOuk44jUwOEIF/CSUz8pg7uEBY77AMrMhfc7C63ffuXL10DsdVB81CRy7c6MD8lFlTy1B1ImXecnfQl84r1GdbziK0jYWprULykxdnEwBRtlaL6l3X3hs8U6YrujYO+1QFrnm/p9NJ61yaiy8qAd6vDfqfvs5JqK7iJox9nk=
+Received: from BN6PR02CA0030.namprd02.prod.outlook.com (2603:10b6:404:5f::16)
+ by CY4PR0201MB3396.namprd02.prod.outlook.com (2603:10b6:910:8b::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1856.11; Thu, 2 May
+ 2019 10:35:04 +0000
+Received: from CY1NAM02FT024.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::204) by BN6PR02CA0030.outlook.office365.com
+ (2603:10b6:404:5f::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1856.10 via Frontend
+ Transport; Thu, 2 May 2019 10:35:03 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ CY1NAM02FT024.mail.protection.outlook.com (10.152.74.210) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1856.11
+ via Frontend Transport; Thu, 2 May 2019 10:35:02 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <kalyani.akula@xilinx.com>)
+        id 1hM93O-0004iW-Fl; Thu, 02 May 2019 03:35:02 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <kalyani.akula@xilinx.com>)
+        id 1hM93J-0007Vo-CX; Thu, 02 May 2019 03:34:57 -0700
+Received: from xsj-pvapsmtp01 (xsj-smtp.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x42AYsY9031031;
+        Thu, 2 May 2019 03:34:55 -0700
+Received: from [172.23.155.80] (helo=xhdengvm155080.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <kalyania@xilinx.com>)
+        id 1hM93G-0007VC-ML; Thu, 02 May 2019 03:34:54 -0700
+Received: by xhdengvm155080.xilinx.com (Postfix, from userid 23151)
+        id DA45D81340; Thu,  2 May 2019 16:04:53 +0530 (IST)
+From:   Kalyani Akula <kalyani.akula@xilinx.com>
+To:     <herbert@gondor.apana.org.au>, <kstewart@linuxfoundation.org>,
+        <gregkh@linuxfoundation.org>, <tglx@linutronix.de>,
+        <pombredanne@nexb.com>, <linux-crypto@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <saratcha@xilinx.com>
+CC:     Kalyani Akula <kalyania@xilinx.com>,
+        Kalyani Akula <kalyani.akula@xilinx.com>
+Subject: [RFC PATCH V3 0/4] Add Xilinx's ZynqMP SHA3 driver support
+Date:   Thu, 2 May 2019 16:04:38 +0530
+Message-ID: <1556793282-17346-1-git-send-email-kalyani.akula@xilinx.com>
+X-Mailer: git-send-email 1.9.5
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(346002)(396003)(136003)(39860400002)(2980300002)(189003)(199004)(81166006)(8936002)(81156014)(110136005)(54906003)(16586007)(36756003)(4326008)(6306002)(103686004)(8676002)(42186006)(36386004)(50226002)(44832011)(2906002)(26005)(478600001)(52956003)(51416003)(48376002)(966005)(50466002)(70586007)(70206006)(106002)(2616005)(336012)(486006)(126002)(476003)(6266002)(426003)(186003)(316002)(107886003)(305945005)(90966002)(2201001)(47776003)(5660300002)(356004)(63266004)(6636002)(6666004);DIR:OUT;SFP:1101;SCL:1;SRVR:CY4PR0201MB3396;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 25eaa23a-e9aa-498e-725b-08d6cee9d61b
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4709054)(2017052603328);SRVR:CY4PR0201MB3396;
+X-MS-TrafficTypeDiagnostic: CY4PR0201MB3396:
+X-MS-Exchange-PUrlCount: 2
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-Microsoft-Antispam-PRVS: <CY4PR0201MB33966B386B1474B385E8564CAF340@CY4PR0201MB3396.namprd02.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-Forefront-PRVS: 0025434D2D
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: 4RyCrrkXPpIRmpPbdRFn/IRL2i3Lkg5jzb87VJRzwCl5SqHSehbGqXTdagJkSgMODCviKXYky4EZ3ep8JcOtgGC9+0u2x/YJr5ItSW3aWVrlkRD851phoU6BaiJkJYct3048SN6s7byWWVatNdVvHN8pfxVXOM1/mTvmi6ruAJB5vwPgcPKWyRv4OAofXsmfaW/PxMcMtimo4Hu7oipFmELlZlbFejFyg9qif+sk4EBDD3D67RFreIMLQtjsZtH5fC9A3gktWhtTFXAoPzjwNZ1FOJixdH5BOTHr83vPhMMYD2Uk2RaSMaG5L1xqQtuj0zrfvwGnJJ3EtRgEfPcPVMGwpaOtD8Yagv9e/EHJIWfdh9vnL4rljOmGeQkN62WIYtQwhAUjGpatkg4SO+VJ4XDIGhAmPVXlyJB810wsFzo=
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2019 10:35:02.9474
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25eaa23a-e9aa-498e-725b-08d6cee9d61b
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR0201MB3396
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TIPC link can temporarily fall into "half-establish" that only one of
-the link endpoints is ESTABLISHED and starts to send traffic, PROTOCOL
-messages, whereas the other link endpoint is not up (e.g. immediately
-when the endpoint receives ACTIVATE_MSG, the network interface goes
-down...).
+This patch set adds support for
+- dt-binding docs for Xilinx ZynqMP SHA3 driver
+- Adds communication layer support for sha_hash in zynqmp.c
+- Adds Xilinx ZynqMP driver for SHA3 Algorithm
+- Adds device tree node for ZynqMP SHA3 driver
 
-This is a normal situation and will be settled because the link
-endpoint will be eventually brought down after the link tolerance time.
+V3 Changes :
+- Removed zynqmp_sha_import and export APIs.The reason as follows
+The user space code does an accept on an already accepted FD
+when we create AF_ALG socket and call accept on it,
+it calls af_alg_accept and not hash_accept.
+import and export APIs are called from hash_accept.
+The flow is as below
+accept--> af_alg_accept-->hash_accept_parent-->hash_accept_parent_nokey
+for hash salg_type.
+- Resolved comments from 
+        https://patchwork.kernel.org/patch/10753719/
 
-However, the situation will become worse when the second link is
-established before the first link endpoint goes down,
-For example:
+V2 Changes :
+- Added new patch (2/4) for sha_hash zynqmp API support
+- Incorporated code review comments from v1 patch series. Discussed below:
+        https://lore.kernel.org/patchwork/patch/1029433/
 
-   1. Both links <1A-2A>, <1B-2B> down
-   2. Link endpoint 2A up, but 1A still down (e.g. due to network
-      disturbance, wrong session, etc.)
-   3. Link <1B-2B> up
-   4. Link endpoint 2A down (e.g. due to link tolerance timeout)
-   5. Node B starts failover onto link <1B-2B>
 
-   ==> Node A does never start link failover.
+Kalyani Akula (4):
+  dt-bindings: crypto: Add bindings for ZynqMP SHA3 driver
+  firmware: xilinx: Add ZynqMP sha_hash API for SHA3 functionality
+  crypto: Add Xilinx SHA3 driver
+  ARM64: zynqmp: Add Xilinix SHA-384 node.
 
-When the "half-failover" situation happens, two consequences have been
-observed:
+ .../devicetree/bindings/crypto/zynqmp-sha.txt      |  12 ++
+ arch/arm64/boot/dts/xilinx/zynqmp.dtsi             |   4 +
+ drivers/crypto/Kconfig                             |  10 +
+ drivers/crypto/Makefile                            |   1 +
+ drivers/crypto/zynqmp-sha.c                        | 240 +++++++++++++++++++++
+ drivers/firmware/xilinx/zynqmp.c                   |  27 +++
+ include/linux/firmware/xlnx-zynqmp.h               |   2 +
+ 7 files changed, 296 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/crypto/zynqmp-sha.txt
+ create mode 100644 drivers/crypto/zynqmp-sha.c
 
-a) Peer link/node gets stuck in FAILINGOVER state;
-b) Traffic or user messages that peer node is trying to failover onto
-the second link can be partially or completely dropped by this node.
-
-The consequence a) was actually solved by commit c140eb166d68 ("tipc:
-fix failover problem"), but that commit didn't cover the b). It's due
-to the fact that the tunnel link endpoint has never been prepared for a
-failover, so the 'l->drop_point' (and the other data...) is not set
-correctly. When a TUNNEL_MSG from peer node arrives on the link,
-depending on the inner message's seqno and the current 'l->drop_point'
-value, the message can be dropped (- treated as a duplicate message) or
-processed.
-At this early stage, the traffic messages from peer are likely to be
-NAME_DISTRIBUTORs, this means some name table entries will be missed on
-the node forever!
-
-The commit resolves the issue by starting the FAILOVER process on this
-node as well. Another benefit from this solution is that we ensure the
-link will not be re-established until the failover ends.
-
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
----
- net/tipc/link.c | 35 +++++++++++++++++++++++++++++++++++
- net/tipc/link.h |  2 ++
- net/tipc/node.c | 54 +++++++++++++++++++++++++++++++++++++++++++++++-------
- 3 files changed, 84 insertions(+), 7 deletions(-)
-
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index 1c514b64a0a9..f5cd986e1e50 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -1705,6 +1705,41 @@ void tipc_link_tnl_prepare(struct tipc_link *l, struct tipc_link *tnl,
- 	}
- }
- 
-+/**
-+ * tipc_link_failover_prepare() - prepare tnl for link failover
-+ *
-+ * This is a special version of the precursor - tipc_link_tnl_prepare(),
-+ * see the tipc_node_link_failover() for details
-+ *
-+ * @l: failover link
-+ * @tnl: tunnel link
-+ * @xmitq: queue for messages to be xmited
-+ */
-+void tipc_link_failover_prepare(struct tipc_link *l, struct tipc_link *tnl,
-+				struct sk_buff_head *xmitq)
-+{
-+	struct sk_buff_head *fdefq = &tnl->failover_deferdq;
-+
-+	tipc_link_create_dummy_tnl_msg(tnl, xmitq);
-+
-+	/* This failover link enpoint was never established before,
-+	 * so it has not received anything from peer.
-+	 * Otherwise, it must be a normal failover situation or the
-+	 * node has entered SELF_DOWN_PEER_LEAVING and both peer nodes
-+	 * would have to start over from scratch instead.
-+	 */
-+	WARN_ON(l && tipc_link_is_up(l));
-+	tnl->drop_point = 1;
-+	tnl->failover_reasm_skb = NULL;
-+
-+	/* Initiate the link's failover deferdq */
-+	if (unlikely(!skb_queue_empty(fdefq))) {
-+		pr_warn("Link failover deferdq not empty: %d!\n",
-+			skb_queue_len(fdefq));
-+		__skb_queue_purge(fdefq);
-+	}
-+}
-+
- /* tipc_link_validate_msg(): validate message against current link state
-  * Returns true if message should be accepted, otherwise false
-  */
-diff --git a/net/tipc/link.h b/net/tipc/link.h
-index 8439e0ee53a8..adcad65e761c 100644
---- a/net/tipc/link.h
-+++ b/net/tipc/link.h
-@@ -90,6 +90,8 @@ void tipc_link_tnl_prepare(struct tipc_link *l, struct tipc_link *tnl,
- 			   int mtyp, struct sk_buff_head *xmitq);
- void tipc_link_create_dummy_tnl_msg(struct tipc_link *tnl,
- 				    struct sk_buff_head *xmitq);
-+void tipc_link_failover_prepare(struct tipc_link *l, struct tipc_link *tnl,
-+				struct sk_buff_head *xmitq);
- void tipc_link_build_reset_msg(struct tipc_link *l, struct sk_buff_head *xmitq);
- int tipc_link_fsm_evt(struct tipc_link *l, int evt);
- bool tipc_link_is_up(struct tipc_link *l);
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 0eb1bf850219..9e106d3ed187 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -714,7 +714,6 @@ static void __tipc_node_link_up(struct tipc_node *n, int bearer_id,
- 		*slot0 = bearer_id;
- 		*slot1 = bearer_id;
- 		tipc_node_fsm_evt(n, SELF_ESTABL_CONTACT_EVT);
--		n->failover_sent = false;
- 		n->action_flags |= TIPC_NOTIFY_NODE_UP;
- 		tipc_link_set_active(nl, true);
- 		tipc_bcast_add_peer(n->net, nl, xmitq);
-@@ -757,6 +756,45 @@ static void tipc_node_link_up(struct tipc_node *n, int bearer_id,
- }
- 
- /**
-+ * tipc_node_link_failover() - start failover in case "half-failover"
-+ *
-+ * This function is only called in a very special situation where link
-+ * failover can be already started on peer node but not on this node.
-+ * This can happen when e.g.
-+ *	1. Both links <1A-2A>, <1B-2B> down
-+ *	2. Link endpoint 2A up, but 1A still down (e.g. due to network
-+ *	   disturbance, wrong session, etc.)
-+ *	3. Link <1B-2B> up
-+ *	4. Link endpoint 2A down (e.g. due to link tolerance timeout)
-+ *	5. Node B starts failover onto link <1B-2B>
-+ *
-+ *	==> Node A does never start link/node failover!
-+ *
-+ * @n: tipc node structure
-+ * @l: link peer endpoint failingover (- can be NULL)
-+ * @tnl: tunnel link
-+ * @xmitq: queue for messages to be xmited on tnl link later
-+ */
-+static void tipc_node_link_failover(struct tipc_node *n, struct tipc_link *l,
-+				    struct tipc_link *tnl,
-+				    struct sk_buff_head *xmitq)
-+{
-+	/* Avoid to be "self-failover" that can never end */
-+	if (!tipc_link_is_up(tnl))
-+		return;
-+
-+	tipc_link_fsm_evt(tnl, LINK_SYNCH_END_EVT);
-+	tipc_node_fsm_evt(n, NODE_SYNCH_END_EVT);
-+
-+	n->sync_point = tipc_link_rcv_nxt(tnl) + (U16_MAX / 2 - 1);
-+	tipc_link_failover_prepare(l, tnl, xmitq);
-+
-+	if (l)
-+		tipc_link_fsm_evt(l, LINK_FAILOVER_BEGIN_EVT);
-+	tipc_node_fsm_evt(n, NODE_FAILOVER_BEGIN_EVT);
-+}
-+
-+/**
-  * __tipc_node_link_down - handle loss of link
-  */
- static void __tipc_node_link_down(struct tipc_node *n, int *bearer_id,
-@@ -1675,14 +1713,16 @@ static bool tipc_node_check_state(struct tipc_node *n, struct sk_buff *skb,
- 			tipc_skb_queue_splice_tail_init(tipc_link_inputq(pl),
- 							tipc_link_inputq(l));
- 		}
-+
- 		/* If parallel link was already down, and this happened before
--		 * the tunnel link came up, FAILOVER was never sent. Ensure that
--		 * FAILOVER is sent to get peer out of NODE_FAILINGOVER state.
-+		 * the tunnel link came up, node failover was never started.
-+		 * Ensure that a FAILOVER_MSG is sent to get peer out of
-+		 * NODE_FAILINGOVER state, also this node must accept
-+		 * TUNNEL_MSGs from peer.
- 		 */
--		if (n->state != NODE_FAILINGOVER && !n->failover_sent) {
--			tipc_link_create_dummy_tnl_msg(l, xmitq);
--			n->failover_sent = true;
--		}
-+		if (n->state != NODE_FAILINGOVER)
-+			tipc_node_link_failover(n, pl, l, xmitq);
-+
- 		/* If pkts arrive out of order, use lowest calculated syncpt */
- 		if (less(syncpt, n->sync_point))
- 			n->sync_point = syncpt;
 -- 
-2.13.7
+1.9.5
 
