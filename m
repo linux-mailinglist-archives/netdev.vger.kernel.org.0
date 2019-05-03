@@ -2,106 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CE3D127F4
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 08:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EECE12862
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 09:03:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726934AbfECGsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 02:48:38 -0400
-Received: from mail-eopbgr150089.outbound.protection.outlook.com ([40.107.15.89]:20288
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726227AbfECGsi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 May 2019 02:48:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OoJUzgyqqnOz7MejnMgD7FyNhpYQ8w7qYUSDXhn82gU=;
- b=jzQk+rSfViCz5OW+lYeDXJU7EBYmjMjVjR3AdHO6jt+2MWovX9mmbolD2qbZl4OomWQ/1YGkZu03RLZawhALWUGBUQhf8Uy+U/WVp+Xu/0QIg8+1TxZsyHCRvp9hp7LXTzSao13WpmCoPfHQN6C2UnY4IpxCpj5UrkgZaUhlFrk=
-Received: from VE1PR04MB6670.eurprd04.prod.outlook.com (20.179.235.142) by
- VE1PR04MB6509.eurprd04.prod.outlook.com (20.179.233.159) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1856.12; Fri, 3 May 2019 06:48:34 +0000
-Received: from VE1PR04MB6670.eurprd04.prod.outlook.com
- ([fe80::812f:13f4:8c9d:86d1]) by VE1PR04MB6670.eurprd04.prod.outlook.com
- ([fe80::812f:13f4:8c9d:86d1%2]) with mapi id 15.20.1856.008; Fri, 3 May 2019
- 06:48:34 +0000
-From:   Vakul Garg <vakul.garg@nxp.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-CC:     Florian Westphal <fw@strlen.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [RFC HACK] xfrm: make state refcounting percpu
-Thread-Topic: [RFC HACK] xfrm: make state refcounting percpu
-Thread-Index: AQHU+osNJr96QpyKR0OmqmjggxV6FaZY9/oAgAAAcBCAAAOPAIAAADywgAAGhwCAAAAusA==
-Date:   Fri, 3 May 2019 06:48:33 +0000
-Message-ID: <VE1PR04MB667020CB281B9132C45B0B448B350@VE1PR04MB6670.eurprd04.prod.outlook.com>
-References: <20190423162521.sn4lfd5iia566f44@breakpoint.cc>
- <20190424104023.10366-1-fw@strlen.de>
- <20190503060748.GK17989@gauss3.secunet.de>
- <VE1PR04MB6670F77D42F9DA342F8E58238B350@VE1PR04MB6670.eurprd04.prod.outlook.com>
- <20190503062206.GL17989@gauss3.secunet.de>
- <VE1PR04MB66701E2D8CE661F280D6A6C48B350@VE1PR04MB6670.eurprd04.prod.outlook.com>
- <20190503064618.GM17989@gauss3.secunet.de>
-In-Reply-To: <20190503064618.GM17989@gauss3.secunet.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vakul.garg@nxp.com; 
-x-originating-ip: [92.121.36.198]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9a75c6e4-c664-4c07-cbd9-08d6cf935ca5
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VE1PR04MB6509;
-x-ms-traffictypediagnostic: VE1PR04MB6509:
-x-microsoft-antispam-prvs: <VE1PR04MB65091FE04C08C51625A150EF8B350@VE1PR04MB6509.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0026334A56
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(136003)(396003)(366004)(39860400002)(13464003)(189003)(199004)(11346002)(316002)(7736002)(486006)(446003)(44832011)(305945005)(26005)(71190400001)(71200400001)(66946007)(73956011)(64756008)(66476007)(53546011)(66556008)(76116006)(66446008)(2906002)(14454004)(52536014)(6436002)(68736007)(4744005)(86362001)(102836004)(256004)(99286004)(25786009)(66066001)(9686003)(8676002)(81166006)(33656002)(81156014)(74316002)(476003)(3846002)(76176011)(478600001)(4326008)(6246003)(7696005)(6506007)(186003)(54906003)(8936002)(5660300002)(6916009)(53936002)(229853002)(6116002)(55016002);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6509;H:VE1PR04MB6670.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: fDKhs8mH92zcUoefHVm9Tpe0ADgMidlZLG86uCnpfAD/+AfY47/XmYAdblVJvfZB27mwhX+o+g7A2zuy+uLzG+zMiVfXISRCDzMDscHWHVfP1xhp9NGOWD2cowFBbaKlFrVCzkyWm0NoiV+hhI3G9OEq5BaJxTQzXDdYD1IUmeOix4W3i4RakiH53OAtQKPPvPm9QJczDk0AnbLgW5Pszk4UlPneIUBqpmG3vvEtHj0rrDbiZkV+ouzHHRiH9JBofwSq7jItE6MKu2wiZC0H8xxCkgYWWohHMJwfhZkapM8FuQYTpe5riJMDy3HK/3xytXAU1H3Rny/K91kikv9huv7thsdl17v6LcyIrBqaUqt11l/QFecCUrz6BIPZZXbKSmU8T2rbt4ND1XZsNj3j5bzjr9300K6Yu9KA2fzrsPY=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726885AbfECHCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 03:02:45 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33317 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbfECHCp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 03:02:45 -0400
+Received: by mail-wr1-f66.google.com with SMTP id e28so6432381wra.0
+        for <netdev@vger.kernel.org>; Fri, 03 May 2019 00:02:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=q4GB8dUDBUrfR8RceX90h6C1IAenPkt0gX+UGWoL71w=;
+        b=e6fYFR+GXwr3DkqbVm9LIvr65yHlXbdk/iUulw6JJFl8cvMXYR02H5POxa2t/PC3TK
+         /SaN3qGSn2z0K3SFAgrhR3gjxwstvTzoUm7AjnfvLyXc2sZjp2FN/8QBpn3Tf8PXyENj
+         6defLm77xrYHHUOjUUMumBa2ZKQtl1SLQ2ZD5eMIPZyU8bq5jQ43Nh1A0BI/0OzKWXly
+         ctCpqvonrPez/nGSSaOE4CdRIwOBzi/MZhgGMKrm5ZFO3y5UJEA54OGY9p5HnoH3PibF
+         spWuLGYqKz2G90y+H2/r7nm5xx5rb+3xHMCX2+70ymb9d0aZcVhudVorGvaENKsTABNa
+         XLew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=q4GB8dUDBUrfR8RceX90h6C1IAenPkt0gX+UGWoL71w=;
+        b=eapHFVc/Cw57mvD/BMhbEJjzxVzMevRFrHijMqsfGQK/ICWNIexTnFvWSL6YKNhuK2
+         UKCkNVXfxyC+a29nC29XSJ4Qvfp3u06xsbHiXbG0Va9f+6/3dKabUJbPFOILuPBvCXX1
+         dtOo386SmTNGIjFKkex0hWUwLXMqdYf/GpzQicSO1tYFthWM00EkklsTNlwo0L/4ZjOh
+         LctzvC2ukT6k3IKhgTwpm1c0JlG/oFe5uES+DJ3dCaAj5BhBPe7RDvj0LGrBjAoU6YYb
+         WRtYcU8hsVER5eR5DGTecmZ0QdvcGtXgWQ47lizQm9v4G9jEjohUlO2i+bx1a6RUjQ4M
+         E0qA==
+X-Gm-Message-State: APjAAAUdxInL1oiYvbIIT0i/jXMwRBk8i0Cwx5Bf0eWASocoviEGFzMu
+        RG+5FXRZpYd661HfcxySXasbOcrmFT8=
+X-Google-Smtp-Source: APXvYqz/T1ENfzxvoXBU7ZPulPnp13v5CFPUy5m+/fW8qjj8MVLigScFoiAeZuEhQh0MwfHircMp3A==
+X-Received: by 2002:adf:db05:: with SMTP id s5mr5596501wri.247.1556866963947;
+        Fri, 03 May 2019 00:02:43 -0700 (PDT)
+Received: from ?IPv6:2a01:e35:8b63:dc30:9d85:cd02:d5cd:3fb? ([2a01:e35:8b63:dc30:9d85:cd02:d5cd:3fb])
+        by smtp.gmail.com with ESMTPSA id c131sm1229100wma.31.2019.05.03.00.02.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 03 May 2019 00:02:43 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH 07/31] netfilter: ctnetlink: Support L3 protocol-filter on
+ flush
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Kristian Evensen <kristian.evensen@gmail.com>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+References: <20181008230125.2330-1-pablo@netfilter.org>
+ <20181008230125.2330-8-pablo@netfilter.org>
+ <33d60747-7550-1fba-a068-9b78aaedbc26@6wind.com>
+ <CAKfDRXjY9J1yHz1px6-gbmrEYJi9P9+16Mez+qzqhYLr9MtCQg@mail.gmail.com>
+ <51b7d27b-a67e-e3c6-c574-01f50a860a5c@6wind.com>
+ <20190502074642.ph64t7uax73xuxeo@breakpoint.cc>
+ <20190502113151.xcnutl2eedjkftsb@salvia>
+ <627088b3-7134-2b9a-8be4-7c96d51a3b94@6wind.com>
+ <20190502150637.6f7vqoxiheytg4le@salvia>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <7c0e2fec-3bf8-9adc-2968-074e84f00bb4@6wind.com>
+Date:   Fri, 3 May 2019 09:02:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a75c6e4-c664-4c07-cbd9-08d6cf935ca5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2019 06:48:33.9174
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6509
+In-Reply-To: <20190502150637.6f7vqoxiheytg4le@salvia>
+Content-Type: text/plain; charset=utf-8
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Le 02/05/2019 à 17:06, Pablo Neira Ayuso a écrit :
+> On Thu, May 02, 2019 at 02:56:42PM +0200, Nicolas Dichtel wrote:
+>> Le 02/05/2019 à 13:31, Pablo Neira Ayuso a écrit :
+>>> On Thu, May 02, 2019 at 09:46:42AM +0200, Florian Westphal wrote:
+>>>> Nicolas Dichtel <nicolas.dichtel@6wind.com> wrote:
+>>>>> I understand your point, but this is a regression. Ignoring a field/attribute of
+>>>>> a netlink message is part of the uAPI. This field exists for more than a decade
+>>>>> (probably two), so you cannot just use it because nobody was using it. Just see
+>>>>> all discussions about strict validation of netlink messages.
+>>>>> Moreover, the conntrack tool exists also for ages and is an official tool.
+>>>>
+>>>> FWIW I agree with Nicolas, we should restore old behaviour and flush
+>>>> everything when AF_INET is given.  We can add new netlink attr to
+>>>> restrict this.
+>>>
+>>> Let's use nfgenmsg->version for this. This is so far set to zero. We
+>>> can just update userspace to set it to 1, so family is used.
+>>>
+>>> The version field in the kernel size is ignored so far, so this should
+>>> be enough. So we avoid that extract netlink attribute.
+>>
+>> Why making such a hack? If any userspace app set this field (simply because it's
+>> not initialized), it will show up a new regression.
+>> What is the problem of adding another attribute?
+> 
+> The version field was meant to deal with this case.
+> 
+> It has been not unused so far because we had no good reason.
+> 
+Fair point, agreed.
 
 
-> -----Original Message-----
-> From: Steffen Klassert <steffen.klassert@secunet.com>
-> Sent: Friday, May 3, 2019 12:16 PM
-> To: Vakul Garg <vakul.garg@nxp.com>
-> Cc: Florian Westphal <fw@strlen.de>; netdev@vger.kernel.org
-> Subject: Re: [RFC HACK] xfrm: make state refcounting percpu
->=20
-> On Fri, May 03, 2019 at 06:34:29AM +0000, Vakul Garg wrote:
-> > > -----Original Message-----
-> > > From: Steffen Klassert <steffen.klassert@secunet.com>
-> > >
-> > > Also, is this a new problem or was it always like that?
-> >
-> > It is always like this. On 4-core, 8-core platforms as well, these atom=
-ics
-> consume significant cpu
-> > (8 core cpu usage is more than 4 core).
->=20
-> Ok, so it is not a regression. That's what I wanted to know.
->=20
-> Did the patch from Florian improve the situation?
-
-Actually I could not get time to try it yet.
-Also I do not find Florian's patch making refcount in 'struct dst' to be pc=
-pu.
-So I think it may not help....
+Thank you,
+Nicolas
