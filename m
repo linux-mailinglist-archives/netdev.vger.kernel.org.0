@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 689ED1331E
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 19:27:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D1F01331F
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 19:28:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728445AbfECR1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 13:27:34 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41320 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726585AbfECR1d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 13:27:33 -0400
-Received: by mail-pl1-f196.google.com with SMTP id d9so3003052pls.8
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 10:27:33 -0700 (PDT)
+        id S1728550AbfECR2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 13:28:00 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:43210 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727226AbfECR17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 13:27:59 -0400
+Received: by mail-pl1-f195.google.com with SMTP id n8so2997426plp.10
+        for <netdev@vger.kernel.org>; Fri, 03 May 2019 10:27:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=QEwuRbbDC8Ey6q3q1sX4G/vH0tBSl/67CoaqjcG2M6k=;
-        b=gBzONwMnFLsZ007tKz+Uxv9z1CFA7Bz4TZ9uJHbVeis7n5+SXFIrbYdleTPxnAz/9H
-         2gTxIUb7Rntj4IQ9M19OAludif3pZGc1KGJwhNsFfiDeXcXDYqLMU2mU2QfJs+cIiieL
-         viLR9UJe7cEC3MHuS9BAlQFp3W1yL9bBmlX7S6XvaofQIy7jLu6Lj2gk62af7v8lrqnW
-         6hfmon4QlkSVkaEneGcht7Mmmjm77GTV7cN2fE54HR5UrOPfa33UWbVJKjmAM+1ExRkE
-         mp70uaxU6vNxGCN3yoBAz7n2UOK9qnN4xymyT+UZbeuZk36B4Lb44kpCZ/UQwD3ds5mO
-         ezjg==
+        bh=PY6DTt56wAODc12aKjUcvP39KRPEu8gqrtx7BKoXmP4=;
+        b=H6UsaWMlX/65u0rqFk1wXp1TJ5xB48l0KuTIxyQy+myj2yKmy/qW3RZKTw3l8W/dNN
+         yIkckRceKmy5Elgoh+JR48nx0lOWEpn0hk+y6FtgK7P7A7PwEJYKfPub0T5lByCtQPOB
+         PwcdVbyQlrfWe+/j9XmZGjY+kriACzmsggzKGO/FahYwJ1pnhDBW0gBJCPYS6YkRSQMY
+         IGcgSNc1zZdO3O3tvhhjEI+z27uyKofjIJdgd6ISfWOHsvAxhkaD+i0kklASMXSrvg8Q
+         yNHdy+Cry5fWqDgNFOYpIlln4/mgq1t77xso8+OgE4FLo7yQ88HXabEoVTL1o8orOZTL
+         luLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=QEwuRbbDC8Ey6q3q1sX4G/vH0tBSl/67CoaqjcG2M6k=;
-        b=sZj45kqJbq3RckOR3JJd1jmM7uPs0G1PiXLL8aD/Xk2K0nHbRE6X1LKXGcmypdH9OS
-         2F78t5W81CuytBej73cDFaTro0f7IqRKpphJUJm4xnJ2eMhfZn0mmTTDo16tTwGEyjeq
-         WVOdUM6kt/cjLdMQzksrcLzykZLJZy4+HXfdozCjFdHNCSDdUBsHAWybACV0hrHFJunQ
-         vJ6pgb3EUZ843FD6O5R7d1c+mScr0aJWFo+cZqtG2CAFo57EPqPqE86DjPm8sjHvlbAV
-         A3l16jEmteNfTRSKzFsiyB0JPIyM+iDGNWLqKM3OlA+3phS3ALbs/Y8Ic8HMa9P5L9e5
-         eShg==
-X-Gm-Message-State: APjAAAWndtiK3AMBTXrLXefmBw+gg4FgDmYECuoKO+L5cd34Fvz1JI0a
-        wnoeJNls+1XJP28Y1nvQlTbXh/YI
-X-Google-Smtp-Source: APXvYqx0RDmI//y0nISWER9v/085uAkWOPAPCl3jw610TPpAq3+HgG6xNhak4PaJBUCs5JPjJga/PQ==
-X-Received: by 2002:a17:902:e791:: with SMTP id cp17mr2173890plb.11.1556904452370;
-        Fri, 03 May 2019 10:27:32 -0700 (PDT)
+        bh=PY6DTt56wAODc12aKjUcvP39KRPEu8gqrtx7BKoXmP4=;
+        b=H1uHbJ0Ck55HIDujMhjcNoQfvfhadthkWJslHoSQsjJPPZ75AhSWlp6uSTRLc3nFT2
+         fp1iomfOiWi9AicU0o9zV9+LNHsIrtPtuRFfYXZlzudBsMIugikaNPd0IgZoIzTB5Xl7
+         ONiS9BABqQGrL/E6qKoxjJ4kFwEH1yX2+7ub36+8wiDRDjHfb5U738CQy0ydXHOL+wjp
+         yOpCMV+VVOEvhwHOa7HfipuzGetreDWJJocrN6dFgtdIbmw/lO1QaqXV/ECvFwCsq6Ss
+         Ku7a6wCgLaFeUHB/s/WeosU0+awLpSt3JW3TGaM4Yh+86oeWJqa1XfxpBzxE+/Sr5DZM
+         uUbA==
+X-Gm-Message-State: APjAAAWdXszOdNBqnfIjFJvMciOCyvyi0YWm+46QBwKddSdJ2yHQBRwL
+        ur2fhNB6LQGcFQlQ9FVTOrU=
+X-Google-Smtp-Source: APXvYqwSxK1Ory0SNpux5e214h4AczUp5k6a3vQrqGZ9bTa4m/alDrOYrDWAjiR2G/6owiS4+ubYQA==
+X-Received: by 2002:a17:902:c85:: with SMTP id 5mr5053519plt.172.1556904478504;
+        Fri, 03 May 2019 10:27:58 -0700 (PDT)
 Received: from [10.67.48.213] ([192.19.223.250])
-        by smtp.googlemail.com with ESMTPSA id q5sm4128425pfb.51.2019.05.03.10.27.30
+        by smtp.googlemail.com with ESMTPSA id y20sm3558684pfe.188.2019.05.03.10.27.57
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 May 2019 10:27:31 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: Set STP disable state
- in port_disable
+        Fri, 03 May 2019 10:27:57 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] net: dsa :mv88e6xxx: Disable unused ports
 To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Vivien Didelot <vivien.didelot@gmail.com>
 References: <20190430220831.19505-1-andrew@lunn.ch>
- <20190430220831.19505-2-andrew@lunn.ch>
+ <20190430220831.19505-3-andrew@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -109,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <dc267873-e1c0-0a3a-3759-c22f4ff7beaf@gmail.com>
-Date:   Fri, 3 May 2019 10:27:24 -0700
+Message-ID: <68b44a04-c6b5-ca39-1322-196cc4c153ea@gmail.com>
+Date:   Fri, 3 May 2019 10:27:56 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190430220831.19505-2-andrew@lunn.ch>
+In-Reply-To: <20190430220831.19505-3-andrew@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,8 +123,12 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 4/30/19 3:08 PM, Andrew Lunn wrote:
-> When requested to disable a port, set the port STP state to disabled.
-> This fully disables the port and should save some power.
+> If the NO_CPU strap is set, the switch starts in 'dumb hub' mode, with
+> all ports enable. Ports which are then actively used are reconfigured
+> as required when the driver starts. However unused ports are left
+> alone. Change this to disable them, and turn off any SERDES
+> interface. This could save some power and so reduce the temperature a
+> bit.
 > 
 > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
