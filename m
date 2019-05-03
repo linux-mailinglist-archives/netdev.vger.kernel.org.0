@@ -2,129 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B92CE126F1
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 06:39:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7851F1277D
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 08:07:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726424AbfECEi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 00:38:59 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:38780 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726121AbfECEi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 00:38:59 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 8FD2961132; Fri,  3 May 2019 04:38:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1556858337;
-        bh=tmO9bZ8OSVF3w2WCn5bCHHR5VcAERihrVuWPn4eTVVo=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=WbnuGeem6wmks0G9pvkliRJ6bjIvrLEVb6rrx++NvPHTdORn3mOwTDs6+pFTzinpB
-         h7Kf6R/cDEEoHkPiwIUZ5WBrAPbCVfcRWKaVQft497o7Q7dKMqfRukBXM/YWKzBKwy
-         lCyBYfXos0w7Fk8v81YA1Frrw92+fKX/lOmk24Bc=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726400AbfECGHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 02:07:51 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:53232 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725775AbfECGHv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 May 2019 02:07:51 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 25292201BB;
+        Fri,  3 May 2019 08:07:49 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Khg5qQ1whgOW; Fri,  3 May 2019 08:07:48 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0C86761132;
-        Fri,  3 May 2019 04:38:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1556858336;
-        bh=tmO9bZ8OSVF3w2WCn5bCHHR5VcAERihrVuWPn4eTVVo=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=fpIR+sx5CPmg8HXT9vrjKMg1KHUbBWFs1aO5cxUOWDpbKGz2qI2tfGlh57TuLckqx
-         gjobOfW5e64o+zFQ489u4LtJX981TYPVJPcfR85Qv6SHq29+HXvxjfEihIZXNqnT9T
-         R7L0A2poNp4dT2nbjSvNiW9qvzgHAoetI7ndp0Gk=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0C86761132
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Subject: Re: [PATCH] rsi: Properly initialize data in rsi_sdio_ta_reset
-References: <20190502151548.11143-1-natechancellor@gmail.com>
-        <CAKwvOd=nvKGGW5jvN+WFUXzOm9xeiNNUD0F9--9YcpuRmnWWhA@mail.gmail.com>
-Date:   Fri, 03 May 2019 07:38:52 +0300
-In-Reply-To: <CAKwvOd=nvKGGW5jvN+WFUXzOm9xeiNNUD0F9--9YcpuRmnWWhA@mail.gmail.com>
-        (Nick Desaulniers's message of "Thu, 2 May 2019 11:18:01 -0700")
-Message-ID: <87h8ackv8j.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by a.mx.secunet.com (Postfix) with ESMTPS id AEC4420182;
+        Fri,  3 May 2019 08:07:48 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 3 May 2019
+ 08:07:48 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 5139C31805BF;
+ Fri,  3 May 2019 08:07:48 +0200 (CEST)
+Date:   Fri, 3 May 2019 08:07:48 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Florian Westphal <fw@strlen.de>
+CC:     <vakul.garg@nxp.com>, <netdev@vger.kernel.org>
+Subject: Re: [RFC HACK] xfrm: make state refcounting percpu
+Message-ID: <20190503060748.GK17989@gauss3.secunet.de>
+References: <20190423162521.sn4lfd5iia566f44@breakpoint.cc>
+ <20190424104023.10366-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20190424104023.10366-1-fw@strlen.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-G-Data-MailSecurity-for-Exchange-State: 0
+X-G-Data-MailSecurity-for-Exchange-Error: 0
+X-G-Data-MailSecurity-for-Exchange-Sender: 23
+X-G-Data-MailSecurity-for-Exchange-Server: d65e63f7-5c15-413f-8f63-c0d707471c93
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-G-Data-MailSecurity-for-Exchange-Guid: D2706F5B-396A-4195-B7ED-19BB99182D38
+X-G-Data-MailSecurity-for-Exchange-ProcessedOnRouted: True
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nick Desaulniers <ndesaulniers@google.com> writes:
+On Wed, Apr 24, 2019 at 12:40:23PM +0200, Florian Westphal wrote:
+> I'm not sure this is a good idea to begin with, refcount
+> is right next to state spinlock which is taken for both tx and rx ops,
+> plus this complicates debugging quite a bit.
 
-> On Thu, May 2, 2019 at 8:16 AM Nathan Chancellor
-> <natechancellor@gmail.com> wrote:
->>
->> When building with -Wuninitialized, Clang warns:
->>
->> drivers/net/wireless/rsi/rsi_91x_sdio.c:940:43: warning: variable 'data'
->> is uninitialized when used here [-Wuninitialized]
->>         put_unaligned_le32(TA_HOLD_THREAD_VALUE, data);
->>                                                  ^~~~
->> drivers/net/wireless/rsi/rsi_91x_sdio.c:930:10: note: initialize the
->> variable 'data' to silence this warning
->>         u8 *data;
->>                 ^
->>                  = NULL
->> 1 warning generated.
->>
->> Using Clang's suggestion of initializing data to NULL wouldn't work out
->> because data will be dereferenced by put_unaligned_le32. Use kzalloc to
->> properly initialize data, which matches a couple of other places in this
->> driver.
->>
->> Fixes: e5a1ecc97e5f ("rsi: add firmware loading for 9116 device")
->> Link: https://github.com/ClangBuiltLinux/linux/issues/464
->> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
->> ---
->>  drivers/net/wireless/rsi/rsi_91x_sdio.c | 21 ++++++++++++++-------
->>  1 file changed, 14 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
->> index f9c67ed473d1..b35728564c7b 100644
->> --- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
->> +++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
->> @@ -929,11 +929,15 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
->>         u32 addr;
->>         u8 *data;
->>
->> +       data = kzalloc(sizeof(u32), GFP_KERNEL);
->
-> Something fishy is going on here.  We allocate 4 B but declare data as
-> a u8* (pointer to individual bytes)?  In general, dynamically
-> allocating that few bytes is a code smell; either you meant to just
-> use the stack, or this memory's lifetime extends past the lifetime of
-> this stackframe, at which point you probably just meant to stack
-> allocate space in a higher parent frame and pass this preallocated
-> memory down to the child frame to get filled in.
->
-> Reading through this code, I don't think that the memory is meant to
-> outlive the stack frame.  Is there a reason why we can't just declare
-> data as:
->
-> u8 data [4];
->
-> then use ARRAY_SIZE(data) or RSI_9116_REG_SIZE in rsi_reset_chip(),
-> getting rid of the kzalloc/kfree?
 
-I haven't checked the details but AFAIK stack variables are not supposed
-to be used with DMA. So in that case I think it's ok alloc four bytes,
-unless the DMA rules have changed of course. But I didn't check if rsi
-is using DMA here, just a general comment.
+Hm, what would be the usecase where this could help?
 
--- 
-Kalle Valo
+The only thing that comes to my mind is a TX state
+with wide selectors. In that case you might see
+traffic for this state on a lot of cpus. But in
+that case we have a lot of other problems too,
+state lock, replay window etc. It might make more
+sense to install a full state per cpu as this
+would solve all the other problems too (I've
+talked about that idea at the IPsec workshop).
+
+In fact RFC 7296 allows to insert multiple SAs
+with the same traffic selector, so it is possible
+to install one state per cpu. We did a PoC for this
+at the IETF meeting the week after the IPsec workshop.
+
+One problem that is not solved completely is that,
+from userland point of view, a SA consists of two
+states (RX/TX) and this has to be symetic i.e.
+both ends must have the same number of states.
+So if both ends have a different number of cpus,
+it is not clear how many states we should install.
+
+We are currently discuss to extend the IKEv2 standard
+so that we can negotiate the 'optimal' number of
+(per cpu) SAs for a connection.
