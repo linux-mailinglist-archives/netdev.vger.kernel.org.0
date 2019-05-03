@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9A3012A60
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 11:25:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9131412A5F
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 11:25:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727296AbfECJZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 05:25:20 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:51666 "EHLO
+        id S1727280AbfECJZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 05:25:18 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:51670 "EHLO
         sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727250AbfECJZQ (ORCPT
+        with ESMTP id S1727252AbfECJZQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 05:25:16 -0400
 Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1hMURN-0005qF-8v; Fri, 03 May 2019 11:25:13 +0200
+        id 1hMURN-0005qF-K5; Fri, 03 May 2019 11:25:13 +0200
 From:   Johannes Berg <johannes@sipsolutions.net>
 To:     netdev@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH v2 7/8] netlink: add infrastructure to expose policies to userspace
-Date:   Fri,  3 May 2019 11:25:00 +0200
-Message-Id: <20190503092501.10275-8-johannes@sipsolutions.net>
+Subject: [PATCH v2 8/8] netlink: limit recursion depth in policy validation
+Date:   Fri,  3 May 2019 11:25:01 +0200
+Message-Id: <20190503092501.10275-9-johannes@sipsolutions.net>
 X-Mailer: git-send-email 2.17.2
 In-Reply-To: <20190503092501.10275-1-johannes@sipsolutions.net>
 References: <20190503092501.10275-1-johannes@sipsolutions.net>
@@ -31,619 +31,212 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-Add, and use in generic netlink, helpers to dump out a netlink
-policy to userspace, including all the range validation data,
-nested policies etc.
+Now that we have nested policies, we can theoretically
+recurse forever parsing attributes if a (sub-)policy
+refers back to a higher level one. This is a situation
+that has happened in nl80211, and we've avoided it there
+by not linking it.
 
-This lets userspace discover what the kernel understands.
-
-For families/commands other than generic netlink, the helpers
-need to be used directly in an appropriate command, or we can
-add some infrastructure (a new netlink family) that those can
-register their policies with for introspection. I'm not that
-familiar with non-generic netlink, so that's left out for now.
-
-The data exposed to userspace also includes min and max length
-for binary/string data, I've done that instead of letting the
-userspace tools figure out whether min/max is intended based
-on the type so that we can extend this later in the kernel, we
-might want to just use the range data for example.
-
-Because of this, I opted to not directly expose the NLA_*
-values, even if some of them are already exposed via BPF, as
-with min/max length we don't need to have different types here
-for NLA_BINARY/NLA_MIN_LEN/NLA_EXACT_LEN, we just make them
-all NL_ATTR_TYPE_BINARY with min/max length optionally set.
-
-Similarly, we don't really need NLA_MSECS, and perhaps can
-remove it in the future - but not if we encode it into the
-userspace API now. It gets mapped to NL_ATTR_TYPE_U64 here.
-
-Note that the exposing here corresponds to the strict policy
-interpretation, and NLA_UNSPEC items are omitted entirely.
-To get those, change them to NLA_MIN_LEN which behaves in
-exactly the same way, but is exposed.
+Add some code to netlink parsing to limit recursion depth,
+allowing us to safely change nl80211 to actually link the
+nested policy, which in turn allows some code cleanups.
 
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 ---
- include/net/netlink.h          |   6 +
- include/uapi/linux/genetlink.h |   2 +
- include/uapi/linux/netlink.h   | 103 +++++++++++
- net/netlink/Makefile           |   2 +-
- net/netlink/genetlink.c        |  77 +++++++++
- net/netlink/policy.c           | 308 +++++++++++++++++++++++++++++++++
- 6 files changed, 497 insertions(+), 1 deletion(-)
- create mode 100644 net/netlink/policy.c
+ lib/nlattr.c           | 46 +++++++++++++++++++++++++++++++-----------
+ net/wireless/nl80211.c | 10 ++++-----
+ net/wireless/nl80211.h |  2 --
+ net/wireless/pmsr.c    |  3 +--
+ 4 files changed, 39 insertions(+), 22 deletions(-)
 
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index c2b4bc819784..e298838a57dc 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -1900,4 +1900,10 @@ void nla_get_range_unsigned(const struct nla_policy *pt,
- void nla_get_range_signed(const struct nla_policy *pt,
- 			  struct netlink_range_validation_signed *range);
- 
-+int netlink_policy_dump_start(const struct nla_policy *policy,
-+			      unsigned int maxtype,
-+			      unsigned long *state);
-+bool netlink_policy_dump_loop(unsigned long *state);
-+int netlink_policy_dump_write(struct sk_buff *skb, unsigned long state);
-+
- #endif
-diff --git a/include/uapi/linux/genetlink.h b/include/uapi/linux/genetlink.h
-index 877f7fa95466..9c0636ec2286 100644
---- a/include/uapi/linux/genetlink.h
-+++ b/include/uapi/linux/genetlink.h
-@@ -48,6 +48,7 @@ enum {
- 	CTRL_CMD_NEWMCAST_GRP,
- 	CTRL_CMD_DELMCAST_GRP,
- 	CTRL_CMD_GETMCAST_GRP, /* unused */
-+	CTRL_CMD_GETPOLICY,
- 	__CTRL_CMD_MAX,
- };
- 
-@@ -62,6 +63,7 @@ enum {
- 	CTRL_ATTR_MAXATTR,
- 	CTRL_ATTR_OPS,
- 	CTRL_ATTR_MCAST_GROUPS,
-+	CTRL_ATTR_POLICY,
- 	__CTRL_ATTR_MAX,
- };
- 
-diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
-index 0a4d73317759..eac8a6a648ea 100644
---- a/include/uapi/linux/netlink.h
-+++ b/include/uapi/linux/netlink.h
-@@ -249,4 +249,107 @@ struct nla_bitfield32 {
- 	__u32 selector;
+diff --git a/lib/nlattr.c b/lib/nlattr.c
+index 3db7a6984cb0..ef06645de56c 100644
+--- a/lib/nlattr.c
++++ b/lib/nlattr.c
+@@ -44,6 +44,20 @@ static const u8 nla_attr_minlen[NLA_TYPE_MAX+1] = {
+ 	[NLA_S64]	= sizeof(s64),
  };
  
 +/*
-+ * policy descriptions - it's specific to each family how this is used
-+ * Normally, it should be retrieved via a dump inside another attribute
-+ * specifying where it applies.
++ * Nested policies might refer back to the original
++ * policy in some cases, and userspace could try to
++ * abuse that and recurse by nesting in the right
++ * ways. Limit recursion to avoid this problem.
 + */
++#define MAX_POLICY_RECURSION_DEPTH	10
 +
-+/**
-+ * enum netlink_attribute_type - type of an attribute
-+ * @NL_ATTR_TYPE_INVALID: unused
-+ * @NL_ATTR_TYPE_FLAG: flag attribute (present/not present)
-+ * @NL_ATTR_TYPE_U8: 8-bit unsigned attribute
-+ * @NL_ATTR_TYPE_U16: 16-bit unsigned attribute
-+ * @NL_ATTR_TYPE_U32: 32-bit unsigned attribute
-+ * @NL_ATTR_TYPE_U64: 64-bit unsigned attribute
-+ * @NL_ATTR_TYPE_S8: 8-bit signed attribute
-+ * @NL_ATTR_TYPE_S16: 16-bit signed attribute
-+ * @NL_ATTR_TYPE_S32: 32-bit signed attribute
-+ * @NL_ATTR_TYPE_S64: 64-bit signed attribute
-+ * @NL_ATTR_TYPE_BINARY: binary data, min/max length may be specified
-+ * @NL_ATTR_TYPE_STRING: string, min/max length may be specified
-+ * @NL_ATTR_TYPE_NUL_STRING: NUL-terminated string,
-+ *	min/max length may be specified
-+ * @NL_ATTR_TYPE_NESTED: nested, i.e. the content of this attribute
-+ *	consists of sub-attributes. The nested policy and maxtype
-+ *	inside may be specified.
-+ * @NL_ATTR_TYPE_NESTED_ARRAY: nested array, i.e. the content of this
-+ *	attribute contains sub-attributes whose type is irrelevant
-+ *	(just used to separate the array entries) and each such array
-+ *	entry has attributes again, the policy for those inner ones
-+ *	and the corresponding maxtype may be specified.
-+ * @NL_ATTR_TYPE_BITFIELD32: &struct nla_bitfield32 attribute
-+ */
-+enum netlink_attribute_type {
-+	NL_ATTR_TYPE_INVALID,
++static int __nla_validate_parse(const struct nlattr *head, int len, int maxtype,
++				const struct nla_policy *policy,
++				unsigned int validate,
++				struct netlink_ext_ack *extack,
++				struct nlattr **tb, unsigned int depth);
 +
-+	NL_ATTR_TYPE_FLAG,
-+
-+	NL_ATTR_TYPE_U8,
-+	NL_ATTR_TYPE_U16,
-+	NL_ATTR_TYPE_U32,
-+	NL_ATTR_TYPE_U64,
-+
-+	NL_ATTR_TYPE_S8,
-+	NL_ATTR_TYPE_S16,
-+	NL_ATTR_TYPE_S32,
-+	NL_ATTR_TYPE_S64,
-+
-+	NL_ATTR_TYPE_BINARY,
-+	NL_ATTR_TYPE_STRING,
-+	NL_ATTR_TYPE_NUL_STRING,
-+
-+	NL_ATTR_TYPE_NESTED,
-+	NL_ATTR_TYPE_NESTED_ARRAY,
-+
-+	NL_ATTR_TYPE_BITFIELD32,
-+};
-+
-+/**
-+ * enum netlink_policy_type_attr - policy type attributes
-+ * @NL_POLICY_TYPE_ATTR_UNSPEC: unused
-+ * @NL_POLICY_TYPE_ATTR_TYPE: type of the attribute,
-+ *	&enum netlink_attribute_type (U32)
-+ * @NL_POLICY_TYPE_ATTR_MIN_VALUE_S: minimum value for signed
-+ *	integers (S64)
-+ * @NL_POLICY_TYPE_ATTR_MAX_VALUE_S: maximum value for signed
-+ *	integers (S64)
-+ * @NL_POLICY_TYPE_ATTR_MIN_VALUE_U: minimum value for unsigned
-+ *	integers (U64)
-+ * @NL_POLICY_TYPE_ATTR_MAX_VALUE_U: maximum value for unsigned
-+ *	integers (U64)
-+ * @NL_POLICY_TYPE_ATTR_MIN_LENGTH: minimum length for binary
-+ *	attributes, no minimum if not given (U32)
-+ * @NL_POLICY_TYPE_ATTR_MAX_LENGTH: maximum length for binary
-+ *	attributes, no maximum if not given (U32)
-+ * @NL_POLICY_TYPE_ATTR_POLICY_IDX: sub policy for nested and
-+ *	nested array types (U32)
-+ * @NL_POLICY_TYPE_ATTR_POLICY_MAXTYPE: maximum sub policy
-+ *	attribute for nested and nested array types, this can
-+ *	in theory be < the size of the policy pointed to by
-+ *	the index, if limited inside the nesting (U32)
-+ * @NL_POLICY_TYPE_ATTR_BITFIELD32_MASK: valid mask for the
-+ *	bitfield32 type (U32)
-+ * @NL_POLICY_TYPE_ATTR_PAD: pad attribute for 64-bit alignment
-+ */
-+enum netlink_policy_type_attr {
-+	NL_POLICY_TYPE_ATTR_UNSPEC,
-+	NL_POLICY_TYPE_ATTR_TYPE,
-+	NL_POLICY_TYPE_ATTR_MIN_VALUE_S,
-+	NL_POLICY_TYPE_ATTR_MAX_VALUE_S,
-+	NL_POLICY_TYPE_ATTR_MIN_VALUE_U,
-+	NL_POLICY_TYPE_ATTR_MAX_VALUE_U,
-+	NL_POLICY_TYPE_ATTR_MIN_LENGTH,
-+	NL_POLICY_TYPE_ATTR_MAX_LENGTH,
-+	NL_POLICY_TYPE_ATTR_POLICY_IDX,
-+	NL_POLICY_TYPE_ATTR_POLICY_MAXTYPE,
-+	NL_POLICY_TYPE_ATTR_BITFIELD32_MASK,
-+	NL_POLICY_TYPE_ATTR_PAD,
-+
-+	/* keep last */
-+	__NL_POLICY_TYPE_ATTR_MAX,
-+	NL_POLICY_TYPE_ATTR_MAX = __NL_POLICY_TYPE_ATTR_MAX - 1
-+};
-+
- #endif /* _UAPI__LINUX_NETLINK_H */
-diff --git a/net/netlink/Makefile b/net/netlink/Makefile
-index e837917f6c03..fd08054e69b4 100644
---- a/net/netlink/Makefile
-+++ b/net/netlink/Makefile
-@@ -2,7 +2,7 @@
- # Makefile for the netlink driver.
- #
+ static int validate_nla_bitfield32(const struct nlattr *nla,
+ 				   const u32 valid_flags_mask)
+ {
+@@ -70,7 +84,7 @@ static int validate_nla_bitfield32(const struct nlattr *nla,
+ static int nla_validate_array(const struct nlattr *head, int len, int maxtype,
+ 			      const struct nla_policy *policy,
+ 			      struct netlink_ext_ack *extack,
+-			      unsigned int validate)
++			      unsigned int validate, unsigned int depth)
+ {
+ 	const struct nlattr *entry;
+ 	int rem;
+@@ -87,8 +101,9 @@ static int nla_validate_array(const struct nlattr *head, int len, int maxtype,
+ 			return -ERANGE;
+ 		}
  
--obj-y  				:= af_netlink.o genetlink.o
-+obj-y  				:= af_netlink.o genetlink.o policy.o
+-		ret = __nla_validate(nla_data(entry), nla_len(entry),
+-				     maxtype, policy, validate, extack);
++		ret = __nla_validate_parse(nla_data(entry), nla_len(entry),
++					   maxtype, policy, validate, extack,
++					   NULL, depth + 1);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+@@ -280,7 +295,7 @@ static int nla_validate_int_range(const struct nla_policy *pt,
  
- obj-$(CONFIG_NETLINK_DIAG)	+= netlink_diag.o
- netlink_diag-y			:= diag.o
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 79cfa031dc7d..ccf1714141e9 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -958,6 +958,79 @@ static int genl_ctrl_event(int event, const struct genl_family *family,
- 	return 0;
+ static int validate_nla(const struct nlattr *nla, int maxtype,
+ 			const struct nla_policy *policy, unsigned int validate,
+-			struct netlink_ext_ack *extack)
++			struct netlink_ext_ack *extack, unsigned int depth)
+ {
+ 	u16 strict_start_type = policy[0].strict_start_type;
+ 	const struct nla_policy *pt;
+@@ -375,9 +390,10 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
+ 		if (attrlen < NLA_HDRLEN)
+ 			goto out_err;
+ 		if (pt->nested_policy) {
+-			err = __nla_validate(nla_data(nla), nla_len(nla), pt->len,
+-					     pt->nested_policy, validate,
+-					     extack);
++			err = __nla_validate_parse(nla_data(nla), nla_len(nla),
++						   pt->len, pt->nested_policy,
++						   validate, extack, NULL,
++						   depth + 1);
+ 			if (err < 0) {
+ 				/*
+ 				 * return directly to preserve the inner
+@@ -400,7 +416,7 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
+ 
+ 			err = nla_validate_array(nla_data(nla), nla_len(nla),
+ 						 pt->len, pt->nested_policy,
+-						 extack, validate);
++						 extack, validate, depth);
+ 			if (err < 0) {
+ 				/*
+ 				 * return directly to preserve the inner
+@@ -472,11 +488,17 @@ static int __nla_validate_parse(const struct nlattr *head, int len, int maxtype,
+ 				const struct nla_policy *policy,
+ 				unsigned int validate,
+ 				struct netlink_ext_ack *extack,
+-				struct nlattr **tb)
++				struct nlattr **tb, unsigned int depth)
+ {
+ 	const struct nlattr *nla;
+ 	int rem;
+ 
++	if (depth >= MAX_POLICY_RECURSION_DEPTH) {
++		NL_SET_ERR_MSG(extack,
++			       "allowed policy recursion depth exceeded");
++		return -EINVAL;
++	}
++
+ 	if (tb)
+ 		memset(tb, 0, sizeof(struct nlattr *) * (maxtype + 1));
+ 
+@@ -492,7 +514,7 @@ static int __nla_validate_parse(const struct nlattr *head, int len, int maxtype,
+ 		}
+ 		if (policy) {
+ 			int err = validate_nla(nla, maxtype, policy,
+-					       validate, extack);
++					       validate, extack, depth);
+ 
+ 			if (err < 0)
+ 				return err;
+@@ -534,7 +556,7 @@ int __nla_validate(const struct nlattr *head, int len, int maxtype,
+ 		   struct netlink_ext_ack *extack)
+ {
+ 	return __nla_validate_parse(head, len, maxtype, policy, validate,
+-				    extack, NULL);
++				    extack, NULL, 0);
+ }
+ EXPORT_SYMBOL(__nla_validate);
+ 
+@@ -589,7 +611,7 @@ int __nla_parse(struct nlattr **tb, int maxtype,
+ 		struct netlink_ext_ack *extack)
+ {
+ 	return __nla_validate_parse(head, len, maxtype, policy, validate,
+-				    extack, tb);
++				    extack, tb, 0);
+ }
+ EXPORT_SYMBOL(__nla_parse);
+ 
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index f40a004ec6f2..d47629214705 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -219,6 +219,8 @@ static int validate_ie_attr(const struct nlattr *attr,
  }
  
-+static int ctrl_dumppolicy(struct sk_buff *skb, struct netlink_callback *cb)
-+{
-+	const struct genl_family *rt;
-+	unsigned int fam_id = cb->args[0];
-+	int err;
+ /* policy for the attributes */
++static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR];
 +
-+	if (!fam_id) {
-+		struct nlattr *tb[CTRL_ATTR_MAX + 1];
-+
-+		int err = genlmsg_parse(cb->nlh, &genl_ctrl, tb,
-+					genl_ctrl.maxattr,
-+					genl_ctrl.policy, cb->extack);
-+		if (err)
-+			return err;
-+
-+		if (!tb[CTRL_ATTR_FAMILY_ID] && !tb[CTRL_ATTR_FAMILY_NAME])
-+			return -EINVAL;
-+		if (tb[CTRL_ATTR_FAMILY_ID]) {
-+			fam_id = nla_get_u16(tb[CTRL_ATTR_FAMILY_ID]);
-+		} else {
-+			rt = genl_family_find_byname(
-+				nla_data(tb[CTRL_ATTR_FAMILY_NAME]));
-+			if (!rt)
-+				return -ENOENT;
-+			fam_id = rt->id;
-+		}
-+	}
-+
-+	rt = genl_family_find_byid(fam_id);
-+	if (!rt)
-+		return -ENOENT;
-+
-+	if (!rt->policy)
-+		return -ENODATA;
-+
-+	err = netlink_policy_dump_start(rt->policy, rt->maxattr, &cb->args[1]);
-+	if (err)
-+		return err;
-+
-+	while (netlink_policy_dump_loop(&cb->args[1])) {
-+		void *hdr;
-+		struct nlattr *nest;
-+
-+		hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid,
-+				  cb->nlh->nlmsg_seq, &genl_ctrl,
-+				  NLM_F_MULTI, CTRL_CMD_GETPOLICY);
-+		if (!hdr)
-+			goto nla_put_failure;
-+
-+		if (nla_put_u16(skb, CTRL_ATTR_FAMILY_ID, rt->id))
-+			goto nla_put_failure;
-+
-+		nest = nla_nest_start(skb, CTRL_ATTR_POLICY);
-+		if (!nest)
-+			goto nla_put_failure;
-+
-+		if (netlink_policy_dump_write(skb, cb->args[1]))
-+			goto nla_put_failure;
-+
-+		nla_nest_end(skb, nest);
-+
-+		genlmsg_end(skb, hdr);
-+		continue;
-+
-+nla_put_failure:
-+		genlmsg_cancel(skb, hdr);
-+		break;
-+	}
-+
-+	cb->args[0] = fam_id;
-+	return skb->len;
-+}
-+
- static const struct genl_ops genl_ctrl_ops[] = {
- 	{
- 		.cmd		= CTRL_CMD_GETFAMILY,
-@@ -965,6 +1038,10 @@ static const struct genl_ops genl_ctrl_ops[] = {
- 		.doit		= ctrl_getfamily,
- 		.dumpit		= ctrl_dumpfamily,
- 	},
-+	{
-+		.cmd		= CTRL_CMD_GETPOLICY,
-+		.dumpit		= ctrl_dumppolicy,
-+	},
+ static const struct nla_policy
+ nl80211_ftm_responder_policy[NL80211_FTM_RESP_ATTR_MAX + 1] = {
+ 	[NL80211_FTM_RESP_ATTR_ENABLED] = { .type = NLA_FLAG, },
+@@ -260,11 +262,7 @@ nl80211_pmsr_req_attr_policy[NL80211_PMSR_REQ_ATTR_MAX + 1] = {
+ static const struct nla_policy
+ nl80211_psmr_peer_attr_policy[NL80211_PMSR_PEER_ATTR_MAX + 1] = {
+ 	[NL80211_PMSR_PEER_ATTR_ADDR] = NLA_POLICY_ETH_ADDR,
+-	/*
+-	 * we could specify this again to be the top-level policy,
+-	 * but that would open us up to recursion problems ...
+-	 */
+-	[NL80211_PMSR_PEER_ATTR_CHAN] = { .type = NLA_NESTED },
++	[NL80211_PMSR_PEER_ATTR_CHAN] = NLA_POLICY_NESTED(nl80211_policy),
+ 	[NL80211_PMSR_PEER_ATTR_REQ] =
+ 		NLA_POLICY_NESTED(nl80211_pmsr_req_attr_policy),
+ 	[NL80211_PMSR_PEER_ATTR_RESP] = { .type = NLA_REJECT },
+@@ -280,7 +278,7 @@ nl80211_pmsr_attr_policy[NL80211_PMSR_ATTR_MAX + 1] = {
+ 		NLA_POLICY_NESTED_ARRAY(nl80211_psmr_peer_attr_policy),
  };
  
- static const struct genl_multicast_group genl_ctrl_groups[] = {
-diff --git a/net/netlink/policy.c b/net/netlink/policy.c
-new file mode 100644
-index 000000000000..f6491853c797
---- /dev/null
-+++ b/net/netlink/policy.c
-@@ -0,0 +1,308 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * NETLINK      Policy advertisement to userspace
-+ *
-+ * 		Authors:	Johannes Berg <johannes@sipsolutions.net>
-+ *
-+ * Copyright 2019 Intel Corporation
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/errno.h>
-+#include <linux/types.h>
-+#include <net/netlink.h>
-+
-+#define INITIAL_POLICIES_ALLOC	10
-+
-+struct nl_policy_dump {
-+	unsigned int policy_idx;
-+	unsigned int attr_idx;
-+	unsigned int n_alloc;
-+	struct {
-+		const struct nla_policy *policy;
-+		unsigned int maxtype;
-+	} policies[];
-+};
-+
-+static int add_policy(struct nl_policy_dump **statep,
-+		      const struct nla_policy *policy,
-+		      unsigned int maxtype)
-+{
-+	struct nl_policy_dump *state = *statep;
-+	unsigned int n_alloc, i;
-+
-+	if (!policy || !maxtype)
-+		return 0;
-+
-+	for (i = 0; i < state->n_alloc; i++) {
-+		if (state->policies[i].policy == policy)
-+			return 0;
-+
-+		if (!state->policies[i].policy) {
-+			state->policies[i].policy = policy;
-+			state->policies[i].maxtype = maxtype;
-+			return 0;
-+		}
-+	}
-+
-+	n_alloc = state->n_alloc + INITIAL_POLICIES_ALLOC;
-+	state = krealloc(state, struct_size(state, policies, n_alloc),
-+			 GFP_KERNEL);
-+	if (!state)
-+		return -ENOMEM;
-+
-+	state->policies[state->n_alloc].policy = policy;
-+	state->policies[state->n_alloc].maxtype = maxtype;
-+	state->n_alloc = n_alloc;
-+	*statep = state;
-+
-+	return 0;
-+}
-+
-+static unsigned int get_policy_idx(struct nl_policy_dump *state,
-+				   const struct nla_policy *policy)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < state->n_alloc; i++) {
-+		if (state->policies[i].policy == policy)
-+			return i;
-+	}
-+
-+	WARN_ON_ONCE(1);
-+	return -1;
-+}
-+
-+int netlink_policy_dump_start(const struct nla_policy *policy,
-+			      unsigned int maxtype,
-+                              unsigned long *_state)
-+{
-+	struct nl_policy_dump *state;
-+	unsigned int policy_idx;
-+	int err;
-+
-+	/* also returns 0 if "*_state" is our ERR_PTR() end marker */
-+	if (*_state)
-+		return 0;
-+
-+	/*
-+	 * walk the policies and nested ones first, and build
-+	 * a linear list of them.
-+	 */
-+
-+	state = kzalloc(struct_size(state, policies, INITIAL_POLICIES_ALLOC),
-+			GFP_KERNEL);
-+	if (!state)
-+		return -ENOMEM;
-+	state->n_alloc = INITIAL_POLICIES_ALLOC;
-+
-+	err = add_policy(&state, policy, maxtype);
-+	if (err)
-+		return err;
-+
-+	for (policy_idx = 0;
-+	     policy_idx < state->n_alloc && state->policies[policy_idx].policy;
-+	     policy_idx++) {
-+		const struct nla_policy *policy;
-+		unsigned int type;
-+
-+		policy = state->policies[policy_idx].policy;
-+
-+		for (type = 0;
-+		     type <= state->policies[policy_idx].maxtype;
-+		     type++) {
-+			switch (policy[type].type) {
-+			case NLA_NESTED:
-+			case NLA_NESTED_ARRAY:
-+				err = add_policy(&state,
-+						 policy[type].nested_policy,
-+						 policy[type].len);
-+				if (err)
-+					return err;
-+				break;
-+			default:
-+				break;
-+			}
-+		}
-+	}
-+
-+	*_state = (unsigned long)state;
-+
-+	return 0;
-+}
-+
-+static bool netlink_policy_dump_finished(struct nl_policy_dump *state)
-+{
-+	return state->policy_idx >= state->n_alloc ||
-+	       !state->policies[state->policy_idx].policy;
-+}
-+
-+bool netlink_policy_dump_loop(unsigned long *_state)
-+{
-+	struct nl_policy_dump *state = (void *)*_state;
-+
-+	if (IS_ERR(state))
-+		return false;
-+
-+	if (netlink_policy_dump_finished(state)) {
-+		kfree(state);
-+		/* store end marker instead of freed state */
-+		*_state = (unsigned long)ERR_PTR(-ENOENT);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+int netlink_policy_dump_write(struct sk_buff *skb, unsigned long _state)
-+{
-+	struct nl_policy_dump *state = (void *)_state;
-+	const struct nla_policy *pt;
-+	struct nlattr *policy, *attr;
-+	enum netlink_attribute_type type;
-+	bool again;
-+
-+send_attribute:
-+	again = false;
-+
-+	pt = &state->policies[state->policy_idx].policy[state->attr_idx];
-+
-+	policy = nla_nest_start(skb, state->policy_idx);
-+	if (!policy)
-+		return -ENOBUFS;
-+
-+	attr = nla_nest_start(skb, state->attr_idx);
-+	if (!attr)
-+		goto nla_put_failure;
-+
-+	switch (pt->type) {
-+	default:
-+	case NLA_UNSPEC:
-+	case NLA_REJECT:
-+		/* skip - use NLA_MIN_LEN to advertise such */
-+		nla_nest_cancel(skb, policy);
-+		again = true;
-+		goto next;
-+	case NLA_NESTED:
-+		type = NL_ATTR_TYPE_NESTED;
-+		/* fall through */
-+	case NLA_NESTED_ARRAY:
-+		if (pt->type == NLA_NESTED_ARRAY)
-+			type = NL_ATTR_TYPE_NESTED_ARRAY;
-+		if (pt->nested_policy && pt->len &&
-+		    (nla_put_u32(skb, NL_POLICY_TYPE_ATTR_POLICY_IDX,
-+				 get_policy_idx(state, pt->nested_policy)) ||
-+		     nla_put_u32(skb, NL_POLICY_TYPE_ATTR_POLICY_MAXTYPE,
-+				 pt->len)))
-+			goto nla_put_failure;
-+		break;
-+	case NLA_U8:
-+	case NLA_U16:
-+	case NLA_U32:
-+	case NLA_U64:
-+	case NLA_MSECS: {
-+		struct netlink_range_validation range;
-+
-+		if (pt->type == NLA_U8)
-+			type = NL_ATTR_TYPE_U8;
-+		else if (pt->type == NLA_U16)
-+			type = NL_ATTR_TYPE_U16;
-+		else if (pt->type == NLA_U32)
-+			type = NL_ATTR_TYPE_U32;
-+		else
-+			type = NL_ATTR_TYPE_U64;
-+
-+		nla_get_range_unsigned(pt, &range);
-+
-+		if (nla_put_u64_64bit(skb, NL_POLICY_TYPE_ATTR_MIN_VALUE_U,
-+				      range.min, NL_POLICY_TYPE_ATTR_PAD) ||
-+		    nla_put_u64_64bit(skb, NL_POLICY_TYPE_ATTR_MAX_VALUE_U,
-+				      range.max, NL_POLICY_TYPE_ATTR_PAD))
-+			goto nla_put_failure;
-+		break;
-+	}
-+	case NLA_S8:
-+	case NLA_S16:
-+	case NLA_S32:
-+	case NLA_S64: {
-+		struct netlink_range_validation_signed range;
-+
-+		if (pt->type == NLA_S8)
-+			type = NL_ATTR_TYPE_S8;
-+		else if (pt->type == NLA_S16)
-+			type = NL_ATTR_TYPE_S16;
-+		else if (pt->type == NLA_S32)
-+			type = NL_ATTR_TYPE_S32;
-+		else
-+			type = NL_ATTR_TYPE_S64;
-+
-+		nla_get_range_signed(pt, &range);
-+
-+		if (nla_put_s64(skb, NL_POLICY_TYPE_ATTR_MIN_VALUE_S,
-+				range.min, NL_POLICY_TYPE_ATTR_PAD) ||
-+		    nla_put_s64(skb, NL_POLICY_TYPE_ATTR_MAX_VALUE_S,
-+				range.max, NL_POLICY_TYPE_ATTR_PAD))
-+			goto nla_put_failure;
-+		break;
-+	}
-+	case NLA_BITFIELD32:
-+		type = NL_ATTR_TYPE_BITFIELD32;
-+		if (nla_put_u32(skb, NL_POLICY_TYPE_ATTR_BITFIELD32_MASK,
-+				pt->bitfield32_valid))
-+			goto nla_put_failure;
-+		break;
-+	case NLA_EXACT_LEN:
-+		type = NL_ATTR_TYPE_BINARY;
-+		if (nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MIN_LENGTH, pt->len) ||
-+		    nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MAX_LENGTH, pt->len))
-+			goto nla_put_failure;
-+		break;
-+	case NLA_STRING:
-+	case NLA_NUL_STRING:
-+	case NLA_BINARY:
-+		if (pt->type == NLA_STRING)
-+			type = NL_ATTR_TYPE_STRING;
-+		else if (pt->type == NLA_NUL_STRING)
-+			type = NL_ATTR_TYPE_NUL_STRING;
-+		else
-+			type = NL_ATTR_TYPE_BINARY;
-+		if (pt->len && nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MAX_LENGTH,
-+					   pt->len))
-+			goto nla_put_failure;
-+		break;
-+	case NLA_MIN_LEN:
-+		type = NL_ATTR_TYPE_BINARY;
-+		if (nla_put_u32(skb, NL_POLICY_TYPE_ATTR_MIN_LENGTH, pt->len))
-+			goto nla_put_failure;
-+		break;
-+	case NLA_FLAG:
-+		type = NL_ATTR_TYPE_FLAG;
-+		break;
-+	}
-+
-+	if (nla_put_u32(skb, NL_POLICY_TYPE_ATTR_TYPE, type))
-+		goto nla_put_failure;
-+
-+	/* finish and move state to next attribute */
-+	nla_nest_end(skb, attr);
-+	nla_nest_end(skb, policy);
-+
-+next:
-+	state->attr_idx += 1;
-+	if (state->attr_idx > state->policies[state->policy_idx].maxtype) {
-+		state->attr_idx = 0;
-+		state->policy_idx++;
-+	}
-+
-+	if (again) {
-+		if (netlink_policy_dump_finished(state))
-+			return -ENODATA;
-+		goto send_attribute;
-+	}
-+
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(skb, policy);
-+	return -ENOBUFS;
-+}
+-const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
++static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
+ 	[NL80211_ATTR_WIPHY] = { .type = NLA_U32 },
+ 	[NL80211_ATTR_WIPHY_NAME] = { .type = NLA_NUL_STRING,
+ 				      .len = 20-1 },
+diff --git a/net/wireless/nl80211.h b/net/wireless/nl80211.h
+index a41e94a49a89..d3e8e426c486 100644
+--- a/net/wireless/nl80211.h
++++ b/net/wireless/nl80211.h
+@@ -11,8 +11,6 @@
+ int nl80211_init(void);
+ void nl80211_exit(void);
+ 
+-extern const struct nla_policy nl80211_policy[NUM_NL80211_ATTR];
+-
+ void *nl80211hdr_put(struct sk_buff *skb, u32 portid, u32 seq,
+ 		     int flags, u8 cmd);
+ bool nl80211_put_sta_rate(struct sk_buff *msg, struct rate_info *info,
+diff --git a/net/wireless/pmsr.c b/net/wireless/pmsr.c
+index 1b190475359a..69f64b36d379 100644
+--- a/net/wireless/pmsr.c
++++ b/net/wireless/pmsr.c
+@@ -155,10 +155,9 @@ static int pmsr_parse_peer(struct cfg80211_registered_device *rdev,
+ 
+ 	/* reuse info->attrs */
+ 	memset(info->attrs, 0, sizeof(*info->attrs) * (NL80211_ATTR_MAX + 1));
+-	/* need to validate here, we don't want to have validation recursion */
+ 	err = nla_parse_nested_deprecated(info->attrs, NL80211_ATTR_MAX,
+ 					  tb[NL80211_PMSR_PEER_ATTR_CHAN],
+-					  nl80211_policy, info->extack);
++					  NULL, info->extack);
+ 	if (err)
+ 		return err;
+ 
 -- 
 2.17.2
 
