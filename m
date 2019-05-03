@@ -2,149 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3841912B1B
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 11:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5290912B46
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 12:08:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727279AbfECJyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 05:54:25 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:50798 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726495AbfECJyY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 May 2019 05:54:24 -0400
-Received: from DGGEMM406-HUB.china.huawei.com (unknown [172.30.72.54])
-        by Forcepoint Email with ESMTP id 8A8414505F37E3B35B3B;
-        Fri,  3 May 2019 17:54:21 +0800 (CST)
-Received: from dggeme757-chm.china.huawei.com (10.3.19.103) by
- DGGEMM406-HUB.china.huawei.com (10.3.20.214) with Microsoft SMTP Server (TLS)
- id 14.3.408.0; Fri, 3 May 2019 17:54:21 +0800
-Received: from [127.0.0.1] (10.63.173.108) by dggeme757-chm.china.huawei.com
- (10.3.19.103) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1591.10; Fri, 3
- May 2019 17:54:20 +0800
-Reply-To: <lipeng321@huawei.com>
-Subject: Re: [PATCH net-next 1/3] net: hns3: add support for multiple media
- type
-References: <1556679944-100941-1-git-send-email-lipeng321@huawei.com>
- <1556679944-100941-2-git-send-email-lipeng321@huawei.com>
- <20190501123750.GA9844@lunn.ch>
- <1d7faec8-22f7-0e8f-7e38-9ad600134a7c@huawei.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>
-From:   "lipeng (Y)" <lipeng321@huawei.com>
-Message-ID: <96bbc8c7-0e13-decd-dfb5-ce68df143f39@huawei.com>
-Date:   Fri, 3 May 2019 17:54:19 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S1727479AbfECKIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 06:08:19 -0400
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:54085 "EHLO
+        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbfECKIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 06:08:19 -0400
+Received: by atrey.karlin.mff.cuni.cz (Postfix, from userid 512)
+        id B2436802D6; Fri,  3 May 2019 12:08:06 +0200 (CEST)
+Date:   Fri, 3 May 2019 12:08:16 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Wen Yang <wen.yang99@zte.com.cn>,
+        Anirudha Sarangi <anirudh@xilinx.com>,
+        John Linn <John.Linn@xilinx.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Michal Simek <michal.simek@xilinx.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        "Sasha Levin (Microsoft)" <sashal@kernel.org>
+Subject: Re: [PATCH 4.19 46/72] net: xilinx: fix possible object reference
+ leak
+Message-ID: <20190503100816.GD5834@amd>
+References: <20190502143333.437607839@linuxfoundation.org>
+ <20190502143337.107638265@linuxfoundation.org>
 MIME-Version: 1.0
-In-Reply-To: <1d7faec8-22f7-0e8f-7e38-9ad600134a7c@huawei.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.63.173.108]
-X-ClientProxiedBy: dggemx702-chm.china.huawei.com (10.1.199.49) To
- dggeme757-chm.china.huawei.com (10.3.19.103)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="a2FkP9tdjPU2nyhF"
+Content-Disposition: inline
+In-Reply-To: <20190502143337.107638265@linuxfoundation.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--a2FkP9tdjPU2nyhF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 2019/5/3 11:13, lipeng (Y) wrote:
->
->
-> On 2019/5/1 20:37, Andrew Lunn wrote:
->> On Wed, May 01, 2019 at 11:05:42AM +0800, Peng Li wrote:
->>> From: Jian Shen <shenjian15@huawei.com>
->>>
->>> Previously, we can only identify copper and fiber type, the
->>> supported link modes of port information are always showing
->>> SR type. This patch adds support for multiple media types,
->>> include SR, LR CR, KR. Driver needs to query the media type
->>> from firmware periodicly, and updates the port information.
->>>
->>> The new port information looks like this:
->>> Settings for eth0:
->>>          Supported ports: [ FIBRE ]
->>>          Supported link modes:   25000baseCR/Full
->>>                                  25000baseSR/Full
->>>                                  1000baseX/Full
->>>                                  10000baseCR/Full
->>>                                  10000baseSR/Full
->>>                                  10000baseLR/Full
->>>          Supported pause frame use: Symmetric
->>>          Supports auto-negotiation: No
->>>          Supported FEC modes: None BaseR
->>>          Advertised link modes:  25000baseCR/Full
->>>                                  25000baseSR/Full
->>>                                  1000baseX/Full
->>>                                  10000baseCR/Full
->>>                                  10000baseSR/Full
->>>                                  10000baseLR/Full
->> Hi Peng
->>
->> If it does not support auto-negotiation, do these advertised link
->> modes make any sense? Does it really advertise, or is it all fixed
->> configured?
->>
->>     Andrew
->>
->> .
-> Hi Andrew:
->
-> it makes no sense when auto-negotiation is not supported.
-> I should handle it differently with the case supports auto-negotiation
-> and not supports auto-negotiation.
->
-> I will fix it in next version, result like below:
-> Settings for eth0:
->         Supported ports: [ FIBRE ]
->         Supported link modes:   25000baseCR/Full
->                                 25000baseSR/Full
->                                 1000baseX/Full
->                                 10000baseCR/Full
->                                 10000baseSR/Full
->                                 10000baseLR/Full
->         Supported pause frame use: Symmetric
->         Supports auto-negotiation: No
->         Supported FEC modes: None BaseR
->         Advertised link modes:  Not reported
->         Advertised pause frame use: No
->         Advertised auto-negotiation: No
->         Advertised FEC modes: Not reported
->         Speed: 10000Mb/s
->         Duplex: Full
->         Port: FIBRE
->         PHYAD: 0
->         Transceiver: internal
->         Auto-negotiation: off
->         Current message level: 0x00000036 (54)
->                                probe link ifdown ifup
->         Link detected: yes
->
->         Wish I have understood your comments correctly.
->
->
-> Thanks!
->
+On Thu 2019-05-02 17:21:08, Greg Kroah-Hartman wrote:
+> [ Upstream commit fa3a419d2f674b431d38748cb58fb7da17ee8949 ]
+>=20
+> The call to of_parse_phandle returns a node pointer with refcount
+> incremented thus it must be explicitly decremented after the last
+> usage.
+>=20
+> Detected by coccinelle with the following warnings:
+> ./drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1624:1-7: ERROR: miss=
+ing of_node_put; acquired a node pointer with refcount incremented on line =
+1569, but without a corresponding object release within this function.
+>=20
+> Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+> Cc: Anirudha Sarangi <anirudh@xilinx.com>
+> Cc: John Linn <John.Linn@xilinx.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Michal Simek <michal.simek@xilinx.com>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin (Microsoft) <sashal@kernel.org>
 
-Hi, Andrew:
-Thanks for your review. And I have replied your comments.
+Bug is real, but fix is horrible. This already uses gotos for error
+handling, so use them....
 
-As this week is 5.1-rc7,  not sure if there is rc8,
-I'm sorry for sending V2 patch-set
-without waiting for your reply again on V1.
+This fixes it up.
 
-Thanks
+Plus... I do not think these "of_node_put" fixes belong in
+stable. They are theoretical bugs; so we hold reference to device tree
+structure. a) it is small, b) it stays in memory, anyway. This does
+not fix any real problem.
 
->
->>
->
->
->
-> .
->
+								Pavel
 
 
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/ne=
+t/ethernet/xilinx/xilinx_axienet_main.c
+index 4041c75..490d440 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -1575,15 +1575,13 @@ static int axienet_probe(struct platform_device *pd=
+ev)
+ 	ret =3D of_address_to_resource(np, 0, &dmares);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "unable to get DMA resource\n");
+-		of_node_put(np);
+-		goto free_netdev;
++		goto free_netdev_put;
+ 	}
+ 	lp->dma_regs =3D devm_ioremap_resource(&pdev->dev, &dmares);
+ 	if (IS_ERR(lp->dma_regs)) {
+ 		dev_err(&pdev->dev, "could not map DMA regs\n");
+ 		ret =3D PTR_ERR(lp->dma_regs);
+-		of_node_put(np);
+-		goto free_netdev;
++		goto free_netdev_put;
+ 	}
+ 	lp->rx_irq =3D irq_of_parse_and_map(np, 1);
+ 	lp->tx_irq =3D irq_of_parse_and_map(np, 0);
+@@ -1620,6 +1618,8 @@ static int axienet_probe(struct platform_device *pdev)
+=20
+ 	return 0;
+=20
++free_netdev_put:
++	of_node_put(np);
+ free_netdev:
+ 	free_netdev(ndev);
+=20
+
+
+> ---
+>  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>=20
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/=
+net/ethernet/xilinx/xilinx_axienet_main.c
+> index f24f48f33802..7cfd7ff38e86 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> @@ -1574,12 +1574,14 @@ static int axienet_probe(struct platform_device *=
+pdev)
+>  	ret =3D of_address_to_resource(np, 0, &dmares);
+>  	if (ret) {
+>  		dev_err(&pdev->dev, "unable to get DMA resource\n");
+> +		of_node_put(np);
+>  		goto free_netdev;
+>  	}
+>  	lp->dma_regs =3D devm_ioremap_resource(&pdev->dev, &dmares);
+>  	if (IS_ERR(lp->dma_regs)) {
+>  		dev_err(&pdev->dev, "could not map DMA regs\n");
+>  		ret =3D PTR_ERR(lp->dma_regs);
+> +		of_node_put(np);
+>  		goto free_netdev;
+>  	}
+>  	lp->rx_irq =3D irq_of_parse_and_map(np, 1);
+
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--a2FkP9tdjPU2nyhF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlzMExAACgkQMOfwapXb+vIrQACfRGO7B7c76iqFSkLanh93OYhc
+YB8AnjX80JqCdvKDKa6YoJRJg3pTE41w
+=GJN0
+-----END PGP SIGNATURE-----
+
+--a2FkP9tdjPU2nyhF--
