@@ -2,133 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0347F129FF
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 10:45:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8989012A38
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 11:03:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726628AbfECIpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 04:45:08 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:45297 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725777AbfECIpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 04:45:08 -0400
-Received: by mail-lf1-f66.google.com with SMTP id q23so106974lfc.12
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 01:45:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0zaRsn/g4+Scrvd9QffeeQZcCaOKO0r6yp/twndpRhM=;
-        b=J29qlBrRDMBWZUJdNN5p12YGrIys/NsojzcLa1n1TYLAUB518riMbaBuJQO5+mDEJK
-         L2htaevZM1u1JKo0IzFcQJ+sA6EHz2fcvoFO0my6fdQIeXl5cvKpH7uhuXu4dBjCrTgA
-         /u60oBNQ1uLuPDvz87mMX77P2G1fJeSt/AUabcTFhCz0X+kP8pY5GBhuL7rJxYI7D7ei
-         0/IHjmhgyReOcnaGEXru+yo4GVYidglu2WIpgkc2KFXGjF8/z98fqMnmKjxH1xu9RGKy
-         Xv/9z2Ag934kKZPwMfNdaHOELa35GigKKUAC/0JRFbIS9l6Mklp8/6nH8ZzboTicnxiV
-         75qQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0zaRsn/g4+Scrvd9QffeeQZcCaOKO0r6yp/twndpRhM=;
-        b=E/KhijHM3vwON6Kj8gTHv5BNIX7vJh/x/LBVrhlgKBsiUMaiowrBtFRvnKNfJiiqKu
-         Jh53OLNJpZ/s1rHFpsbrh9zWilVzNSd1vl+QvuuKy90I2t+Aqzo21kjlIWKHNHVxyISH
-         jGse3Gc8TCD8ZLhXgiKv2IMoQVmp3q2HImdQjUqDVwBzusVnTtB7dHT1zxcz7xpw/19g
-         n35eyTZK4MCgUX1JhSjTST+wsUNfwrKUEiB91QCi35OABtwgIkQ2zXbP49d2STgfR5nn
-         xM0he2ikt3hVrHGlnZ6+ZaJ5d9CKUIv7X0nd2zifYYSmpAdrqmCfAmH2U9vlf5VJTkDa
-         dWcQ==
-X-Gm-Message-State: APjAAAVYe9LL6ZfVGCQSagBQFotl58ev/CiQ1tTaxY5NZQpJacyo9BcK
-        EoOtMoHuEJr/+dCr6WfKXFd7Bg==
-X-Google-Smtp-Source: APXvYqyqfYigHLJVXnG7jnnuj50dTMyohCgOVYg1Pu5wNkO5Y4cooG5oT/xf8nz76WLGS04Xse2DPA==
-X-Received: by 2002:ac2:4ac2:: with SMTP id m2mr4490084lfp.154.1556873106562;
-        Fri, 03 May 2019 01:45:06 -0700 (PDT)
-Received: from [10.114.8.178] ([5.182.27.10])
-        by smtp.gmail.com with ESMTPSA id g21sm274007ljj.2.2019.05.03.01.45.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 May 2019 01:45:05 -0700 (PDT)
-Subject: Re: [PATCH v3 01/10] of_net: add NVMEM support to of_get_mac_address
-To:     =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Alban Bedel <albeu@free.fr>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org
-References: <1556870168-26864-1-git-send-email-ynezz@true.cz>
- <1556870168-26864-2-git-send-email-ynezz@true.cz>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <2a5fcdec-c661-6dc5-6741-7d6675457b9b@cogentembedded.com>
-Date:   Fri, 3 May 2019 11:44:54 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <1556870168-26864-2-git-send-email-ynezz@true.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1726953AbfECJDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 05:03:22 -0400
+Received: from mail-eopbgr80084.outbound.protection.outlook.com ([40.107.8.84]:30689
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726138AbfECJDW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 May 2019 05:03:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yrEDpZWVwMd225XqkRd/JdqC5eDCN7BYEhBawF9UxaA=;
+ b=mNCFc8wNwElb6cvRVh9IGe04U8DyUkia7UeBNnOIGhWkuzakU2tGdFAHGjWhpWyPh2w5Hwod2Bu2UsT5cvuZbZGAicW/wkx23lLYPzvucOk214UmdDpbDx7Pz4h65A732h6nEJaIfLVfquY3uYf+z5WStzUey2zmprmDlafi7kU=
+Received: from HE1PR0502MB3641.eurprd05.prod.outlook.com (10.167.127.11) by
+ HE1PR0502MB3817.eurprd05.prod.outlook.com (10.167.127.159) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1856.12; Fri, 3 May 2019 09:03:12 +0000
+Received: from HE1PR0502MB3641.eurprd05.prod.outlook.com
+ ([fe80::8a6:f9c8:9a75:8948]) by HE1PR0502MB3641.eurprd05.prod.outlook.com
+ ([fe80::8a6:f9c8:9a75:8948%2]) with mapi id 15.20.1856.008; Fri, 3 May 2019
+ 09:03:12 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Matteo Croce <mcroce@redhat.com>
+CC:     Vlad Buslov <vladbu@mellanox.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] cls_matchall: avoid panic when receiving a packet
+ before filter set
+Thread-Topic: [PATCH net] cls_matchall: avoid panic when receiving a packet
+ before filter set
+Thread-Index: AQHU/rJZyWdv7dUO60+kMc0WWWwiZaZVOOWAgADJ0wCAAQFbgIACHJGA
+Date:   Fri, 3 May 2019 09:03:11 +0000
+Message-ID: <vbf8svnq59y.fsf@mellanox.com>
+References: <20190429173805.4455-1-mcroce@redhat.com>
+ <CAM_iQpXB83o+Nnbef8-h_8cg6rTVZn194uZvP1-VKPcJ+xMEjA@mail.gmail.com>
+ <CAGnkfhzPZjqnemq+Sh=pAQPsoadYD2UYfdVf8UHt-Dd7gqhVOg@mail.gmail.com>
+ <CAM_iQpXNdZPAWiGuwRGhgX4WdRGEwVnax5VyMrXZ+hM9xhhzCQ@mail.gmail.com>
+In-Reply-To: <CAM_iQpXNdZPAWiGuwRGhgX4WdRGEwVnax5VyMrXZ+hM9xhhzCQ@mail.gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0261.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:8a::33) To HE1PR0502MB3641.eurprd05.prod.outlook.com
+ (2603:10a6:7:85::11)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0b5882c5-1c4f-494a-bf41-08d6cfa62b03
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:HE1PR0502MB3817;
+x-ms-traffictypediagnostic: HE1PR0502MB3817:
+x-microsoft-antispam-prvs: <HE1PR0502MB38171F06D32C09FB31393A98AD350@HE1PR0502MB3817.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0026334A56
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(346002)(396003)(366004)(376002)(136003)(51444003)(199004)(189003)(102836004)(81166006)(186003)(81156014)(68736007)(256004)(66446008)(64756008)(66556008)(66476007)(66946007)(73956011)(14444005)(26005)(54906003)(52116002)(86362001)(4326008)(229853002)(2906002)(478600001)(110136005)(316002)(25786009)(36756003)(76176011)(71200400001)(6486002)(486006)(99286004)(8676002)(2616005)(446003)(11346002)(305945005)(7736002)(14454004)(8936002)(6246003)(5660300002)(6436002)(53546011)(53936002)(6116002)(6506007)(386003)(3846002)(476003)(66066001)(6512007)(71190400001);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR0502MB3817;H:HE1PR0502MB3641.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:3;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: P/BSrS8/eVmgpemDN7YDt70i8oXqEQw7mQE+aYD+1EgqafX84tOL1TjqT7NUrRJziawXyh2dQ4qawIbP8E4KeZDjO6SGYcQANsmo+5YTTXTIuiuN2Hp04tC9F3yq8mWoJTFXTmhztASbxg6SbU5vVl3556OVCW0R6CdHknAkgQB7dFnnfQakkMEY4ROMln9ab+5Lz+jY9iR7+RI3qsy7B90XEEm7kkxjoubYyozUNFX+qIuvqCk80ElRms8Kx2as8p+jjQpvmA/WKYcmfEA89zMjpsSyQhrr732y3qvkT4JNuvoq+tU8i1lGeP71xkNodKWeYUWdr5g035LTopq+TXntWvkB/KNfp9brRkOCt/Ue1ZMtX3xHF4n0HE2xjezQW89voc2N+1UdkVRJi2dZI+INJ6OF0ZcsCjD6d4ExkPY=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b5882c5-1c4f-494a-bf41-08d6cfa62b03
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2019 09:03:11.9105
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0502MB3817
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-
-On 03.05.2019 10:55, Petr Štetiar wrote:
-
-> Many embedded devices have information such as MAC addresses stored
-> inside NVMEMs like EEPROMs and so on. Currently there are only two
-> drivers in the tree which benefit from NVMEM bindings.
-> 
-> Adding support for NVMEM into every other driver would mean adding a lot
-> of repetitive code. This patch allows us to configure MAC addresses in
-> various devices like ethernet and wireless adapters directly from
-> of_get_mac_address, which is already used by almost every driver in the
-> tree.
-> 
-> Predecessor of this patch which used directly MTD layer has originated
-> in OpenWrt some time ago and supports already about 497 use cases in 357
-> device tree files.
-> 
-> Cc: Alban Bedel <albeu@free.fr>
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> Signed-off-by: John Crispin <john@phrozen.org>
-> Signed-off-by: Petr Štetiar <ynezz@true.cz>
-> ---
-> 
->   Changes since v1:
-> 
->    * moved handling of nvmem after mac-address and local-mac-address properties
-> 
->   Changes since v2:
-> 
->    * moved of_get_mac_addr_nvmem after of_get_mac_addr(np, "address") call
->    * replaced kzalloc, kmemdup and kfree with it's devm variants
->    * introduced of_has_nvmem_mac_addr helper which checks if DT node has nvmem
->      cell with `mac-address`
->    * of_get_mac_address now returns ERR_PTR encoded error value
-> 
->   drivers/of/of_net.c | 65 ++++++++++++++++++++++++++++++++++++++++++++++++++---
->   1 file changed, 62 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
-> index d820f3e..258ceb8 100644
-> --- a/drivers/of/of_net.c
-> +++ b/drivers/of/of_net.c
-[...]
-> @@ -64,6 +113,9 @@ static const void *of_get_mac_addr(struct device_node *np, const char *name)
->    * addresses.  Some older U-Boots only initialized 'local-mac-address'.  In
->    * this case, the real MAC is in 'local-mac-address', and 'mac-address' exists
->    * but is all zeros.
-> + *
-> + * Return: Will be a valid pointer on success, NULL in case there wasn't
-> + *         'mac-address' nvmem cell node found, and ERR_PTR in case of error.
-
-    Returning both NULL and error codes on failure is usually a sign of a 
-misdesigned API. Why not always return an error code?
-
-[...]
-
-MBR, Sergei
+T24gVGh1IDAyIE1heSAyMDE5IGF0IDAzOjQ4LCBDb25nIFdhbmcgPHhpeW91Lndhbmdjb25nQGdt
+YWlsLmNvbT4gd3JvdGU6DQo+IE9uIFdlZCwgTWF5IDEsIDIwMTkgYXQgMjoyNyBBTSBNYXR0ZW8g
+Q3JvY2UgPG1jcm9jZUByZWRoYXQuY29tPiB3cm90ZToNCj4+DQo+PiBPbiBUdWUsIEFwciAzMCwg
+MjAxOSBhdCAxMToyNSBQTSBDb25nIFdhbmcgPHhpeW91Lndhbmdjb25nQGdtYWlsLmNvbT4gd3Jv
+dGU6DQo+PiA+DQo+PiA+IE9uIE1vbiwgQXByIDI5LCAyMDE5IGF0IDEwOjM4IEFNIE1hdHRlbyBD
+cm9jZSA8bWNyb2NlQHJlZGhhdC5jb20+IHdyb3RlOg0KPj4gPiA+DQo+PiA+ID4gV2hlbiBhIG1h
+dGNoYWxsIGNsYXNzaWZpZXIgaXMgYWRkZWQsIHRoZXJlIGlzIGEgc21hbGwgdGltZSBpbnRlcnZh
+bCBpbg0KPj4gPiA+IHdoaWNoIHRwLT5yb290IGlzIE5VTEwuIElmIHdlIHJlY2VpdmUgYSBwYWNr
+ZXQgaW4gdGhpcyBzbWFsbCB0aW1lIHNsaWNlDQo+PiA+ID4gYSBOVUxMIHBvaW50ZXIgZGVyZWZl
+cmVuY2Ugd2lsbCBoYXBwZW4sIGxlYWRpbmcgdG8gYSBrZXJuZWwgcGFuaWM6DQo+PiA+DQo+PiA+
+IEhtbSwgd2h5IG5vdCBqdXN0IGNoZWNrIHRwLT5yb290IGFnYWluc3QgTlVMTCBpbiBtYWxsX2Ns
+YXNzaWZ5KCk/DQo+PiA+DQo+PiA+IEFsc28sIHdoaWNoIGlzIHRoZSBvZmZlbmRpbmcgY29tbWl0
+IGhlcmU/IFBsZWFzZSBhZGQgYSBGaXhlczogdGFnLg0KPj4gPg0KPj4gPiBUaGFua3MuDQo+Pg0K
+Pj4gSGksDQo+Pg0KPj4gSSBqdXN0IHdhbnQgdG8gYXZvaWQgYW4gZXh0cmEgY2hlY2sgd2hpY2gg
+d291bGQgYmUgbWFkZSBmb3IgZXZlcnkgcGFja2V0Lg0KPj4gUHJvYmFibHkgdGhlIGJlbmVmaXQg
+b3ZlciBhIGNoZWNrIGlzIG5lZ2xpZ2libGUsIGJ1dCBpdCdzIHN0aWxsIGENCj4+IHBlci1wYWNr
+ZXQgdGhpbmcuDQo+PiBJZiB5b3UgcHJlZmVyIGEgc2ltcGxlIGNoZWNrLCBJIGNhbiBtYWtlIGEg
+djIgdGhhdCB3YXkuDQo+DQo+IFllYWgsIEkgdGhpbmsgdGhhdCBpcyBiZXR0ZXIsIHlvdSBjYW4g
+YWRkIGFuIHVubGlrZWx5KCkgZm9yIHBlcmZvcm1hbmNlDQo+IGNvbmNlcm4sIGFzIE5VTEwgaXMg
+YSByYXJlIGNhc2UuDQo+DQo+DQo+Pg0KPj4gRm9yIHRoZSBmaXhlcyB0YWcsIEkgZGlkbid0IHB1
+dCBpdCBhcyBJJ20gbm90IHJlYWxseSBzdXJlIGFib3V0IHRoZQ0KPj4gb2ZmZW5kaW5nIGNvbW1p
+dC4gSSBndWVzcyBpdCdzIHRoZSBmb2xsb3dpbmcsIHdoYXQgZG8geW91IHRoaW5rPw0KPj4NCj4+
+IGNvbW1pdCBlZDc2ZjVlZGNjYzk4ZmE2NmYyMzM3ZjBiM2IyNTVkNmUxYTU2OGI3DQo+PiBBdXRo
+b3I6IFZsYWQgQnVzbG92IDx2bGFkYnVAbWVsbGFub3guY29tPg0KPj4gRGF0ZTogICBNb24gRmVi
+IDExIDEwOjU1OjM4IDIwMTkgKzAyMDANCj4+DQo+PiAgICAgbmV0OiBzY2hlZDogcHJvdGVjdCBm
+aWx0ZXJfY2hhaW4gbGlzdCB3aXRoIGZpbHRlcl9jaGFpbl9sb2NrIG11dGV4DQo+DQo+IEkgdGhp
+bmsgeW91IGFyZSByaWdodCwgdGhpcyBpcyB0aGUgY29tbWl0IGludHJvZHVjZWQgdGhlIGNvZGUN
+Cj4gdGhhdCBpbnNlcnRzIHRoZSB0cCBiZWZvcmUgZnVsbHkgaW5pdGlhbGl6aW5nIGl0LiBQbGVh
+c2UgQ2MgVmxhZA0KPiBmb3IgeW91ciB2MiwgaW4gY2FzZSB3ZSBibGFtZSBhIHdyb25nIGNvbW1p
+dCBoZXJlLg0KPg0KPg0KPiBCVFcsIGl0IGxvb2tzIGxpa2UgY2xzX2Nncm91cCBuZWVkcyBhIHNh
+bWUgZml4LiBQbGVhc2UgYXVkaXQNCj4gb3RoZXIgdGMgZmlsdGVycyBhcyB3ZWxsLg0KPg0KPiBU
+aGFua3MhDQoNClNvcnJ5IGZvciBsYXRlIHJlc3BvbnNlLiBUaGlzIGlzIGluZGVlZCB0aGUgb2Zm
+ZW5kaW5nIGNvbW1pdCB0aGF0IHNob3VsZA0KYmUgcmVmZXJlbmNlZCBieSBmaXhlcyB0YWcuDQoN
+ClRoYW5rcyBmb3IgZml4aW5nIHRoaXMsIE1hdHRlbyENCg==
