@@ -2,179 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57E2F135E8
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 01:01:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B6A135F4
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 01:09:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726789AbfECXBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 19:01:47 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:33542 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726302AbfECXBr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 19:01:47 -0400
-Received: by mail-pg1-f193.google.com with SMTP id k19so3417096pgh.0
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 16:01:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=C1rs1tfR2FYSko9vETTVyr8nmKi6GRcguYbcvuWlimk=;
-        b=WKglV8bcQHg7xKL4JIK5E9mPRY3nL9REcbNkyqs4NSPhqTB3ce1rFnNcJWngKnMX90
-         U516dzspUWpLpZEpPIQ/iZUH1DzXKRH3Z/BYqDrGkVGF2HEa85TFPTu14SSNIY/PFsfR
-         EuuyRSooIkat8CJedvJqR8k+fMoUVQrJ/Wv3zyFaWgl1AdId5v4XfwQUCmEPhrs3Ckm3
-         SvmeO5iVlSzUg/XQBG3RoT219ZIWE+TJ+EoxqZC2OrcaMqkrHwAAd0e5EYyFYyGWFvbz
-         B1jBZyCY4ytBBzyMXaM11ivRW006y05XWJcHnPn307Ussc/cKd/p6o+N7F1DZRSd2JWP
-         kqPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=C1rs1tfR2FYSko9vETTVyr8nmKi6GRcguYbcvuWlimk=;
-        b=aLpBj7x6z19v3xnPb3zCJGJ5wGYjIAHKdzhlrpRqJIGD2ZhMrnBo0VmRuvJdNmOKuK
-         JJyxCFww8In9O7SXN+2xLetoLc6SnAkD9mNnh8HgHTHc/O1rxk1kVgIGCTWTADO7fazv
-         mF5vczvgCjCbMYc1LQem8w6UeNnccUCe3+arwVFsaLIkwhvcNbeesZdBBmsczxlWaKDk
-         JCPi3AUBfwFJbHsUau3dh0ZHYc3EcbwVkT18o79iJ7THMozMQnF124VoIFQlMLJC8W7C
-         M6DWpYQq3a39dGlcWwR3vaS6szL6ljBoS+8H+EE0+bWM41Dt7pSzPme3H5KhIAPo/ljk
-         Xdpw==
-X-Gm-Message-State: APjAAAUaVfXXaLKx+dVg9NJJzHnrPGzIoobfxrNK3BuBJL5AAFZBfQxh
-        0rKIvemmj7Piyep4okzVNL8=
-X-Google-Smtp-Source: APXvYqxERSAcOGVCvt/uI7BshnLbpqwgbr+9FpVsD8uBZkEl3+nuqAKu6yxaLcn3oKjSJpBqgiVfKA==
-X-Received: by 2002:a63:3fc1:: with SMTP id m184mr13831033pga.222.1556924506254;
-        Fri, 03 May 2019 16:01:46 -0700 (PDT)
-Received: from [10.67.48.213] ([192.19.223.250])
-        by smtp.googlemail.com with ESMTPSA id h127sm4017758pgc.31.2019.05.03.16.01.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 May 2019 16:01:45 -0700 (PDT)
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: refine SMI support
-To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <20190503224937.1598-1-vivien.didelot@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <d50590b2-a7bc-587a-bee1-5616a73f6bef@gmail.com>
-Date:   Fri, 3 May 2019 16:01:38 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726939AbfECXJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 19:09:40 -0400
+Received: from mga11.intel.com ([192.55.52.93]:40730 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726042AbfECXJk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 May 2019 19:09:40 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 May 2019 16:09:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,427,1549958400"; 
+   d="scan'208";a="136660068"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by orsmga007.jf.intel.com with ESMTP; 03 May 2019 16:09:40 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next v2 00/11][pull request] 40GbE Intel Wired LAN Driver Updates 2019-05-03
+Date:   Fri,  3 May 2019 16:09:28 -0700
+Message-Id: <20190503230939.6739-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190503224937.1598-1-vivien.didelot@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/3/19 3:49 PM, Vivien Didelot wrote:
-> The Marvell SOHO switches have several ways to access the internal
-> registers. One of them being the System Management Interface (SMI),
-> using the MDC and MDIO pins, with direct and indirect variants.
-> 
-> In preparation for adding support for other register accesses, move
-> the SMI code into its own files. At the same time, refine the code
-> to make it clear that the indirect variant is implemented using the
-> direct variant accessing only two registers for command and data.
-> 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-> ---
+This series contains updates to the i40e driver only.
 
-With some nits below:
+Carolyn changes the driver behavior to now disable the VF after one MDD
+event instead of allowing a couple of MDD events before doing the reset.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Aleksandr changes the driver to only report an error when a VF tries to
+remove VLAN when a port VLAN is configured, unless it is VLAN 0.  Also
+extends the LLDP support to be able to keep the current LLDP state
+persistent across a power cycle.
 
-[snip]
+Maciej fixes the checksum calculation due to firmware changes, which
+requires the driver to perform a double shadow RAM dump in some cases.
 
->  	assert_reg_lock(chip);
->  
-> -	err = mv88e6xxx_smi_read(chip, addr, reg, val);
-> +	if (chip->smi_ops)
-> +		err = chip->smi_ops->read(chip, addr, reg, val);
-> +	else
+Adam adds advertising support for 40GBase_LR4, 40GBase_CR4 and fibre in
+the driver.
 
-You might want to check for smi_ops && smi_ops->read here to be safe.
-You could also keep that code unchanged, and just make
-mv88e6xxx_smi_read() an inline helper within smi.h:
+Jake cleans up a check that is not needed and was producing a warning in
+GCC 8.
 
-static inline int mv88e6xxx_smi_read(struct mv88e6xxx_chip *chip, int
-addr, int reg, int *val)
-{
-	if (chip->smi_ops && chip->smi_ops->read)
-		return chip->smi_ops->read(chip, addr, reg, val);
+Harshitha fixes a misleading message by ensuring that a success message
+is only printed on the host side when the promiscuous mode change has
+been successful.
 
-	return -EOPNOTSUPP;
-}
+Stefan Assmann adds the vendor id and device id to the dmesg log entry
+during probe to help with bug reports when lspci output may not be
+available.
 
-> +		err = -EOPNOTSUPP;
-> +
->  	if (err)
->  		return err;
->  
-> @@ -217,7 +79,11 @@ int mv88e6xxx_write(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val)
->  
->  	assert_reg_lock(chip);
->  
-> -	err = mv88e6xxx_smi_write(chip, addr, reg, val);
-> +	if (chip->smi_ops)
-> +		err = chip->smi_ops->write(chip, addr, reg, val);
-> +	else
+Alice and Piotr add recovery mode support in the i40e driver, which is
+needed for migrating from a structured to a flat firmware image.
 
-Same here, you might want to check smi_ops && smi_ops->write to avoid
-de-referencing a potentially NULL pointer.
+v2: Removed patch 1 "i40e: replace switch-statement to speed-up
+    retpoline-enabled builds" from the series since it is no longer
+    needed.  Also updated the last patch in the series that introduces
+    recovery mode support, to include a more detailed patch description
+    and removed code not intended for the upstream kernel.
+
+The following are changes since commit 8ef988b914bd449458eb2174febb67b0f137b33c:
+  Merge branch 'NXP-SJA1105-DSA-driver'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
+
+Adam Ludkiewicz (1):
+  i40e: Report advertised link modes on 40GBase_LR4, CR4 and fibre
+
+Aleksandr Loktionov (2):
+  i40e: remove error msg when vf with port vlan tries to remove vlan 0
+  i40e: Further implementation of LLDP
+
+Alice Michael (2):
+  i40e: update version number
+  i40e: Introduce recovery mode support
+
+Carolyn Wyborny (2):
+  i40e: Fix for allowing too many MDD events on VF
+  i40e: change behavior on PF in response to MDD event
+
+Harshitha Ramamurthy (1):
+  i40e: fix misleading message about promisc setting on un-trusted VF
+
+Jacob Keller (1):
+  i40e: remove out-of-range comparisons in i40e_validate_cloud_filter
+
+Maciej Paczkowski (1):
+  i40e: ShadowRAM checksum calculation change
+
+Stefan Assmann (1):
+  i40e: print PCI vendor and device ID during probe
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |   1 +
+ drivers/net/ethernet/intel/i40e/i40e_adminq.c |   5 +
+ .../net/ethernet/intel/i40e/i40e_adminq_cmd.h |  20 +-
+ drivers/net/ethernet/intel/i40e/i40e_common.c |  62 +++-
+ .../net/ethernet/intel/i40e/i40e_debugfs.c    |   4 +-
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    |  28 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 341 +++++++++++++++---
+ drivers/net/ethernet/intel/i40e/i40e_nvm.c    |  29 +-
+ .../net/ethernet/intel/i40e/i40e_prototype.h  |   8 +-
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |   1 +
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    |  35 +-
+ 11 files changed, 451 insertions(+), 83 deletions(-)
+
 -- 
-Florian
+2.20.1
+
