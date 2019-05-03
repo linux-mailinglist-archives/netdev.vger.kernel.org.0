@@ -2,94 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA58612FD5
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 16:09:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B44C112FF5
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 16:18:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727997AbfECOJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 10:09:34 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51382 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726789AbfECOJe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 10:09:34 -0400
-Received: by mail-wm1-f66.google.com with SMTP id t76so7319376wmt.1
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 07:09:33 -0700 (PDT)
+        id S1728112AbfECOSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 10:18:12 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:40594 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728099AbfECOSM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 10:18:12 -0400
+Received: by mail-qt1-f195.google.com with SMTP id k24so3054643qtq.7
+        for <netdev@vger.kernel.org>; Fri, 03 May 2019 07:18:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=3LxTUsWtAnugj+yiOaxg4TXl8GgTh7eQs5xZZAZRyaA=;
-        b=TtBiPkj9qUv5qRt5mG5HzJVFiXjO/TI+M7cB7E0/Wx+Ib2lg3ITuVgeIhlEBGsdoq+
-         qT9C5IYswN7vzTMTWSGEFxPYDQSC29b9g6rBEaefbp343HEAwxmCtvfs1vtTbX+bfPAM
-         ZpCSwnHTGwFiXchnVbG10bOlTM4CHJ2Vk/c+31H8Czn0CnwuGFsFFkYOz6gGm6tZ7cKX
-         u30YcXZUkpwxLYlyPisV8z5125ZZpO1gujKeuE/qDEtA0cVnjKWtjtT33C1Xae7ml5R5
-         HNVbCza19In/nlvuR66Mj754/rymiBCg6pQsz3kbDa5XEvud53ZooVkazPIHOefRrRkD
-         aPRg==
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=NzCSKre21JPtX58veFIQQmZcmfBsSiJd/ZyJsjnrdPE=;
+        b=AKUUJ+KuztothryZybRdFHtD9D8Vug/6Gx/B5QbBCxcgy7vpyC/UtAs31J7prxbcG7
+         lPPctW4NHByMq3fJrjwK0d9STmkcAYuA6v0x1EOvfod5vuZ85R/lWeko423uXlG7FSDe
+         /clS1QwYFTm8eMmiKxtb/yDn+MRqAjQ4MPinGDVExY01xFP8P4lShYygujkNaIuqhNxY
+         sbiJwXfQup2qxENU4LACq+mQUHfa8eE7IAC7UMo1Iv4jxe7u3HfI/JVmGD9ORBZotKdm
+         i5umainWALvmTlr/qnZM4afIR4GAEHMgEGcW6x9lv0XRQ7NKm9RhuQLdpJqnZlHwBfpr
+         UVSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=3LxTUsWtAnugj+yiOaxg4TXl8GgTh7eQs5xZZAZRyaA=;
-        b=A87vXx1+hBJED6EiCbUNVb3hxKqpE26iI1PYbQEkdwGcHksDXnLR3eGndUo4Fc4L5W
-         CFsbuLcfMX0xWownEFwf4NRzvQgNqUhPb1eL3B+54WpNkY2BbxeWqvDVAbB32mIJvDSt
-         yKjDHb6Ic8ezmj2vLSgo+TFjByR7zaVWoyiGmLLYr5WtXIydVbCYJ+Wtw0tMpszWMRQa
-         onOMno9uS3mxgwSiefL380qgmHWZbWJD93sQfhs4uTbFU5nL10EmGAjag0KwEBaXHYM6
-         VZWa7zS2CTC33Qh+5zRPxw2HKU3ArP6BFOTCgnGGRFhXvz7C5qWr70lS5065eF3gFvLt
-         oADQ==
-X-Gm-Message-State: APjAAAVptQYjCKtI5pFxhNkc3qzyBpsiXftl+6IFxNP1IPicv2/x9c30
-        12M0yWkndaUc8i1eOtvGLdPUXg==
-X-Google-Smtp-Source: APXvYqy9E6ZOEkePRxtojtiwEO+EjbEE02ROsyb8URo0GPFIwy6HHw/JCsCpPIGvuFGrE6NMB8zzuw==
-X-Received: by 2002:a1c:e916:: with SMTP id q22mr6417579wmc.148.1556892572728;
-        Fri, 03 May 2019 07:09:32 -0700 (PDT)
-Received: from LAPTOP-V3S7NLPL ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id a20sm4599865wrf.37.2019.05.03.07.09.31
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=NzCSKre21JPtX58veFIQQmZcmfBsSiJd/ZyJsjnrdPE=;
+        b=qi+AEiiAQic6E5P85asQsn8VwsabQ61a/MeNC27HBjd4m8ygJJfY6cV7wzJicwArE+
+         MYSV3wFeDF0RAK5WK8/G/pbONqpEgTXTKQhRjz+sm7O5xpIZKCwvA4urXtvcgj8P12hL
+         n5SpTxtRjJ6J1a85SWLbG3JhVvstdR98eIDRuvLKSEXQS38cEcf64WNy75phEf8ZARNt
+         LixiFFbeq0TVjsDjvoftVFuHJWDywEWLPCV/BllqHRvyIWO6jEc0f46XLhlwRg/vonQl
+         e0wkf3H4OyQmxRo4Nc/s2Yf5hHWYwchmAFyl8Pl4TFEu0olvtSg3qG7vm1miZIQTDz5e
+         qF1A==
+X-Gm-Message-State: APjAAAWsyaYnpR6yilfSBo2NU8vCsLcyxaQ9ikT1PtPdEtweLiJljCEW
+        NNH62Ie0BSg1KdkkwPYbcN4=
+X-Google-Smtp-Source: APXvYqwlVjeknbdB5i4Z3vg1QX067t8Gb+xQlwRAVDJEm9QLm2QpdYQomhvYziZWIyBpNjKhfJvYvA==
+X-Received: by 2002:ac8:88f:: with SMTP id v15mr8900978qth.382.1556893091650;
+        Fri, 03 May 2019 07:18:11 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id b187sm1408032qkd.73.2019.05.03.07.18.09
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 03 May 2019 07:09:31 -0700 (PDT)
-References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com> <1556880164-10689-14-git-send-email-jiong.wang@netronome.com> <20190503134118.GA5602@osiris>
-User-agent: mu4e 0.9.18; emacs 25.2.2
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     Heiko Carstens <heiko.carstens@de.ibm.com>
-Cc:     Jiong Wang <jiong.wang@netronome.com>,
-        alexei.starovoitov@gmail.com, daniel@iogearbox.net,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>
-Subject: Re: [PATCH v6 bpf-next 13/17] s390: bpf: eliminate zero extension code-gen
-In-reply-to: <20190503134118.GA5602@osiris>
-Date:   Fri, 03 May 2019 15:09:29 +0100
-Message-ID: <87zho38w9y.fsf@netronome.com>
+        Fri, 03 May 2019 07:18:10 -0700 (PDT)
+Date:   Fri, 3 May 2019 10:18:09 -0400
+Message-ID: <20190503101809.GB25090@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: Set STP disable state
+ in port_disable
+In-Reply-To: <20190430220831.19505-2-andrew@lunn.ch>
+References: <20190430220831.19505-1-andrew@lunn.ch>
+ <20190430220831.19505-2-andrew@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed,  1 May 2019 00:08:30 +0200, Andrew Lunn <andrew@lunn.ch> wrote:
+> When requested to disable a port, set the port STP state to disabled.
+> This fully disables the port and should save some power.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-Heiko Carstens writes:
-
-> On Fri, May 03, 2019 at 11:42:40AM +0100, Jiong Wang wrote:
->> Cc: Martin Schwidefsky <schwidefsky@de.ibm.com>
->> Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
->> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
->> ---
->>  arch/s390/net/bpf_jit_comp.c | 20 +++++++++++++++++---
->>  1 file changed, 17 insertions(+), 3 deletions(-)
->
-> When sending patches which affect s390, could you please add Martin
-> and me on cc to _all_ patches? We now received only the cover-letter
-> plus one patch. It's always hard in such cirumstances to figure out if
-> the code is doing the right thing.
-
-OK, will do it next time.
-
-Will just CC back-end maintainers on all patches including patches for the
-other back-ends to make the information complete.
-
-Regards,
-Jiong
-
-> Usually I end up looking up the missing patches within other mailing
-> lists, however I haven't subscribed the bpf and netdev mailing lists.
->
-> The extra e-mail volume because of being added to CC really doesn't
-> matter at all.
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
