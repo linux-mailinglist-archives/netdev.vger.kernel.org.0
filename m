@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED0013171
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 17:50:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A76913172
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 17:50:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728157AbfECPua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 11:50:30 -0400
-Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:51974 "EHLO
+        id S1728168AbfECPue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 11:50:34 -0400
+Received: from Chamillionaire.breakpoint.cc ([146.0.238.67]:51980 "EHLO
         Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728130AbfECPu3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 11:50:29 -0400
+        by vger.kernel.org with ESMTP id S1728130AbfECPue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 11:50:34 -0400
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
         (envelope-from <fw@breakpoint.cc>)
-        id 1hMaSB-0004WE-0Y; Fri, 03 May 2019 17:50:27 +0200
+        id 1hMaSF-0004WW-H9; Fri, 03 May 2019 17:50:31 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     steffen.klassert@secunet.com, Florian Westphal <fw@strlen.de>
-Subject: [PATCH ipsec-next 1/6] xfrm: remove init_tempsel indirection from xfrm_state_afinfo
-Date:   Fri,  3 May 2019 17:46:14 +0200
-Message-Id: <20190503154619.32352-2-fw@strlen.de>
+Subject: [PATCH ipsec-next 2/6] xfrm: remove init_temprop indirection from xfrm_state_afinfo
+Date:   Fri,  3 May 2019 17:46:15 +0200
+Message-Id: <20190503154619.32352-3-fw@strlen.de>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190503154619.32352-1-fw@strlen.de>
 References: <20190503154619.32352-1-fw@strlen.de>
@@ -30,182 +30,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simple initialization, handle it in the caller.
+same as previous patch: just place this in the caller, no need to
+have an indirection for a structure initialization.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- include/net/xfrm.h     |  2 --
- net/ipv4/xfrm4_state.c | 19 --------------
- net/ipv6/xfrm6_state.c | 21 ----------------
- net/xfrm/xfrm_state.c  | 56 ++++++++++++++++++++++++++++++++++++------
- 4 files changed, 49 insertions(+), 49 deletions(-)
+ include/net/xfrm.h     |  4 ----
+ net/ipv4/xfrm4_state.c | 16 ----------------
+ net/ipv6/xfrm6_state.c | 16 ----------------
+ net/xfrm/xfrm_state.c  | 27 ++++++++++++++++++++-------
+ 4 files changed, 20 insertions(+), 43 deletions(-)
 
 diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index eb5018b1cf9c..9f97e6c1f3ee 100644
+index 9f97e6c1f3ee..8ac6d4d617cc 100644
 --- a/include/net/xfrm.h
 +++ b/include/net/xfrm.h
-@@ -353,8 +353,6 @@ struct xfrm_state_afinfo {
+@@ -353,10 +353,6 @@ struct xfrm_state_afinfo {
  	const struct xfrm_type_offload	*type_offload_map[IPPROTO_MAX];
  
  	int			(*init_flags)(struct xfrm_state *x);
--	void			(*init_tempsel)(struct xfrm_selector *sel,
--						const struct flowi *fl);
- 	void			(*init_temprop)(struct xfrm_state *x,
- 						const struct xfrm_tmpl *tmpl,
- 						const xfrm_address_t *daddr,
+-	void			(*init_temprop)(struct xfrm_state *x,
+-						const struct xfrm_tmpl *tmpl,
+-						const xfrm_address_t *daddr,
+-						const xfrm_address_t *saddr);
+ 	int			(*tmpl_sort)(struct xfrm_tmpl **dst, struct xfrm_tmpl **src, int n);
+ 	int			(*state_sort)(struct xfrm_state **dst, struct xfrm_state **src, int n);
+ 	int			(*output)(struct net *net, struct sock *sk, struct sk_buff *skb);
 diff --git a/net/ipv4/xfrm4_state.c b/net/ipv4/xfrm4_state.c
-index 80c40b4981bb..da0fd9556d57 100644
+index da0fd9556d57..018448e222af 100644
 --- a/net/ipv4/xfrm4_state.c
 +++ b/net/ipv4/xfrm4_state.c
-@@ -22,24 +22,6 @@ static int xfrm4_init_flags(struct xfrm_state *x)
+@@ -22,21 +22,6 @@ static int xfrm4_init_flags(struct xfrm_state *x)
  	return 0;
  }
  
 -static void
--__xfrm4_init_tempsel(struct xfrm_selector *sel, const struct flowi *fl)
+-xfrm4_init_temprop(struct xfrm_state *x, const struct xfrm_tmpl *tmpl,
+-		   const xfrm_address_t *daddr, const xfrm_address_t *saddr)
 -{
--	const struct flowi4 *fl4 = &fl->u.ip4;
--
--	sel->daddr.a4 = fl4->daddr;
--	sel->saddr.a4 = fl4->saddr;
--	sel->dport = xfrm_flowi_dport(fl, &fl4->uli);
--	sel->dport_mask = htons(0xffff);
--	sel->sport = xfrm_flowi_sport(fl, &fl4->uli);
--	sel->sport_mask = htons(0xffff);
--	sel->family = AF_INET;
--	sel->prefixlen_d = 32;
--	sel->prefixlen_s = 32;
--	sel->proto = fl4->flowi4_proto;
--	sel->ifindex = fl4->flowi4_oif;
+-	x->id = tmpl->id;
+-	if (x->id.daddr.a4 == 0)
+-		x->id.daddr.a4 = daddr->a4;
+-	x->props.saddr = tmpl->saddr;
+-	if (x->props.saddr.a4 == 0)
+-		x->props.saddr.a4 = saddr->a4;
+-	x->props.mode = tmpl->mode;
+-	x->props.reqid = tmpl->reqid;
+-	x->props.family = AF_INET;
 -}
 -
- static void
- xfrm4_init_temprop(struct xfrm_state *x, const struct xfrm_tmpl *tmpl,
- 		   const xfrm_address_t *daddr, const xfrm_address_t *saddr)
-@@ -77,7 +59,6 @@ static struct xfrm_state_afinfo xfrm4_state_afinfo = {
+ int xfrm4_extract_header(struct sk_buff *skb)
+ {
+ 	const struct iphdr *iph = ip_hdr(skb);
+@@ -59,7 +44,6 @@ static struct xfrm_state_afinfo xfrm4_state_afinfo = {
  	.eth_proto		= htons(ETH_P_IP),
  	.owner			= THIS_MODULE,
  	.init_flags		= xfrm4_init_flags,
--	.init_tempsel		= __xfrm4_init_tempsel,
- 	.init_temprop		= xfrm4_init_temprop,
+-	.init_temprop		= xfrm4_init_temprop,
  	.output			= xfrm4_output,
  	.output_finish		= xfrm4_output_finish,
+ 	.extract_input		= xfrm4_extract_input,
 diff --git a/net/ipv6/xfrm6_state.c b/net/ipv6/xfrm6_state.c
-index 5bdca3d5d6b7..0e19ded3e33b 100644
+index 0e19ded3e33b..aa5d2c52cc31 100644
 --- a/net/ipv6/xfrm6_state.c
 +++ b/net/ipv6/xfrm6_state.c
-@@ -21,26 +21,6 @@
+@@ -21,21 +21,6 @@
  #include <net/ipv6.h>
  #include <net/addrconf.h>
  
 -static void
--__xfrm6_init_tempsel(struct xfrm_selector *sel, const struct flowi *fl)
+-xfrm6_init_temprop(struct xfrm_state *x, const struct xfrm_tmpl *tmpl,
+-		   const xfrm_address_t *daddr, const xfrm_address_t *saddr)
 -{
--	const struct flowi6 *fl6 = &fl->u.ip6;
--
--	/* Initialize temporary selector matching only
--	 * to current session. */
--	*(struct in6_addr *)&sel->daddr = fl6->daddr;
--	*(struct in6_addr *)&sel->saddr = fl6->saddr;
--	sel->dport = xfrm_flowi_dport(fl, &fl6->uli);
--	sel->dport_mask = htons(0xffff);
--	sel->sport = xfrm_flowi_sport(fl, &fl6->uli);
--	sel->sport_mask = htons(0xffff);
--	sel->family = AF_INET6;
--	sel->prefixlen_d = 128;
--	sel->prefixlen_s = 128;
--	sel->proto = fl6->flowi6_proto;
--	sel->ifindex = fl6->flowi6_oif;
+-	x->id = tmpl->id;
+-	if (ipv6_addr_any((struct in6_addr *)&x->id.daddr))
+-		memcpy(&x->id.daddr, daddr, sizeof(x->sel.daddr));
+-	memcpy(&x->props.saddr, &tmpl->saddr, sizeof(x->props.saddr));
+-	if (ipv6_addr_any((struct in6_addr *)&x->props.saddr))
+-		memcpy(&x->props.saddr, saddr, sizeof(x->props.saddr));
+-	x->props.mode = tmpl->mode;
+-	x->props.reqid = tmpl->reqid;
+-	x->props.family = AF_INET6;
 -}
 -
- static void
- xfrm6_init_temprop(struct xfrm_state *x, const struct xfrm_tmpl *tmpl,
- 		   const xfrm_address_t *daddr, const xfrm_address_t *saddr)
-@@ -173,7 +153,6 @@ static struct xfrm_state_afinfo xfrm6_state_afinfo = {
+ /* distribution counting sort function for xfrm_state and xfrm_tmpl */
+ static int
+ __xfrm6_sort(void **dst, void **src, int n, int (*cmp)(void *p), int maxclass)
+@@ -153,7 +138,6 @@ static struct xfrm_state_afinfo xfrm6_state_afinfo = {
  	.proto			= IPPROTO_IPV6,
  	.eth_proto		= htons(ETH_P_IPV6),
  	.owner			= THIS_MODULE,
--	.init_tempsel		= __xfrm6_init_tempsel,
- 	.init_temprop		= xfrm6_init_temprop,
+-	.init_temprop		= xfrm6_init_temprop,
  	.tmpl_sort		= __xfrm6_tmpl_sort,
  	.state_sort		= __xfrm6_state_sort,
+ 	.output			= xfrm6_output,
 diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index ed25eb81aabe..f93c6dc57754 100644
+index f93c6dc57754..42662d9e8b5e 100644
 --- a/net/xfrm/xfrm_state.c
 +++ b/net/xfrm/xfrm_state.c
-@@ -767,6 +767,43 @@ void xfrm_sad_getinfo(struct net *net, struct xfrmk_sadinfo *si)
- }
- EXPORT_SYMBOL(xfrm_sad_getinfo);
- 
-+static void
-+__xfrm4_init_tempsel(struct xfrm_selector *sel, const struct flowi *fl)
-+{
-+	const struct flowi4 *fl4 = &fl->u.ip4;
-+
-+	sel->daddr.a4 = fl4->daddr;
-+	sel->saddr.a4 = fl4->saddr;
-+	sel->dport = xfrm_flowi_dport(fl, &fl4->uli);
-+	sel->dport_mask = htons(0xffff);
-+	sel->sport = xfrm_flowi_sport(fl, &fl4->uli);
-+	sel->sport_mask = htons(0xffff);
-+	sel->family = AF_INET;
-+	sel->prefixlen_d = 32;
-+	sel->prefixlen_s = 32;
-+	sel->proto = fl4->flowi4_proto;
-+	sel->ifindex = fl4->flowi4_oif;
-+}
-+
-+static void
-+__xfrm6_init_tempsel(struct xfrm_selector *sel, const struct flowi *fl)
-+{
-+	const struct flowi6 *fl6 = &fl->u.ip6;
-+
-+	/* Initialize temporary selector matching only to current session. */
-+	*(struct in6_addr *)&sel->daddr = fl6->daddr;
-+	*(struct in6_addr *)&sel->saddr = fl6->saddr;
-+	sel->dport = xfrm_flowi_dport(fl, &fl6->uli);
-+	sel->dport_mask = htons(0xffff);
-+	sel->sport = xfrm_flowi_sport(fl, &fl6->uli);
-+	sel->sport_mask = htons(0xffff);
-+	sel->family = AF_INET6;
-+	sel->prefixlen_d = 128;
-+	sel->prefixlen_s = 128;
-+	sel->proto = fl6->flowi6_proto;
-+	sel->ifindex = fl6->flowi6_oif;
-+}
-+
- static void
- xfrm_init_tempstate(struct xfrm_state *x, const struct flowi *fl,
- 		    const struct xfrm_tmpl *tmpl,
-@@ -775,16 +812,21 @@ xfrm_init_tempstate(struct xfrm_state *x, const struct flowi *fl,
+@@ -810,8 +810,6 @@ xfrm_init_tempstate(struct xfrm_state *x, const struct flowi *fl,
+ 		    const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+ 		    unsigned short family)
  {
- 	struct xfrm_state_afinfo *afinfo = xfrm_state_afinfo_get_rcu(family);
+-	struct xfrm_state_afinfo *afinfo = xfrm_state_afinfo_get_rcu(family);
+-
+ 	switch (family) {
+ 	case AF_INET:
+ 		__xfrm4_init_tempsel(&x->sel, fl);
+@@ -821,13 +819,28 @@ xfrm_init_tempstate(struct xfrm_state *x, const struct flowi *fl,
+ 		break;
+ 	}
  
-+	switch (family) {
+-	if (family != tmpl->encap_family)
+-		afinfo = xfrm_state_afinfo_get_rcu(tmpl->encap_family);
++	x->id = tmpl->id;
+ 
+-	if (!afinfo)
+-		return;
++	switch (tmpl->encap_family) {
 +	case AF_INET:
-+		__xfrm4_init_tempsel(&x->sel, fl);
++		if (x->id.daddr.a4 == 0)
++			x->id.daddr.a4 = daddr->a4;
++		x->props.saddr = tmpl->saddr;
++		if (x->props.saddr.a4 == 0)
++			x->props.saddr.a4 = saddr->a4;
 +		break;
 +	case AF_INET6:
-+		__xfrm6_init_tempsel(&x->sel, fl);
++		if (ipv6_addr_any((struct in6_addr *)&x->id.daddr))
++			memcpy(&x->id.daddr, daddr, sizeof(x->sel.daddr));
++		memcpy(&x->props.saddr, &tmpl->saddr, sizeof(x->props.saddr));
++		if (ipv6_addr_any((struct in6_addr *)&x->props.saddr))
++			memcpy(&x->props.saddr, saddr, sizeof(x->props.saddr));
 +		break;
 +	}
-+
-+	if (family != tmpl->encap_family)
-+		afinfo = xfrm_state_afinfo_get_rcu(tmpl->encap_family);
-+
- 	if (!afinfo)
- 		return;
  
--	afinfo->init_tempsel(&x->sel, fl);
--
--	if (family != tmpl->encap_family) {
--		afinfo = xfrm_state_afinfo_get_rcu(tmpl->encap_family);
--		if (!afinfo)
--			return;
--	}
- 	afinfo->init_temprop(x, tmpl, daddr, saddr);
+-	afinfo->init_temprop(x, tmpl, daddr, saddr);
++	x->props.mode = tmpl->mode;
++	x->props.reqid = tmpl->reqid;
++	x->props.family = tmpl->encap_family;
  }
  
+ static struct xfrm_state *__xfrm_state_lookup(struct net *net, u32 mark,
 -- 
 2.21.0
 
