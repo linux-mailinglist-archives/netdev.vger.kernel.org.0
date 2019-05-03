@@ -2,132 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C544712D07
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 13:59:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38E3F12D1B
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 14:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727718AbfECL7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 07:59:05 -0400
-Received: from mail-it1-f196.google.com ([209.85.166.196]:36858 "EHLO
-        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727631AbfECL7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 07:59:05 -0400
-Received: by mail-it1-f196.google.com with SMTP id v143so8587623itc.1
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 04:59:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vDgYOPNAs5a7jn6rrh+mqlUAcW/QL6gqLTt3pqvnNY8=;
-        b=Y6srGshKU+8ofVAzr5oXPRlANIBEkdOrCHKBPiE3tUswNgNowbNADcWMckRUE5gkSL
-         9ukukehth9mBJJ/QJCpdkUMMW2+iAg10JbBAKpi7BjWy2OQ+HfalsNh4xdNDSsHWnKVY
-         6bANvGQZzE11Hw3Y7RiWx/Sk3RaGiUf3o+mJs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vDgYOPNAs5a7jn6rrh+mqlUAcW/QL6gqLTt3pqvnNY8=;
-        b=Difyyq8vPnzUXLc1LEwwL0FrTAoNlDRMMI0F10y+pgegWmuU+XxFhUFumIxSK88yQ8
-         JG9RvF2kxMPIHaLvDrAaypohLI4AV9Pp5aXQTy7JW+TsCrJdYnNUlxrmT57cwi5iLbB7
-         uyfgTWVMjkT5ogWbH5Vh2rQJNgEtPEBaMlAqor2CUoYkwfcCdWvQVTBVqNc1SWJcrlsW
-         gRnzRRK9jyTIVAetzUa0DL81V8XrrG3qXlMxD8QBs1S8X5gXbkDpEEa6StGEgxezfcnE
-         VOnzRG33pagffqUoibcEMwAp8jdPRtQ8BBiNOjOHu9q7N6F2qv5bQ6NWi6iAD9glF8pB
-         WXgA==
-X-Gm-Message-State: APjAAAVfMSTkdOHcAeI7MMTmRdSE11/D5YzzXltITN8H38IXlphNfsfc
-        HqZ/CKXnbWKsgz93eUsqi3PMYYtQP3ruxuls5ezHFw==
-X-Google-Smtp-Source: APXvYqxogbylovsed3LC9Wji6QY3Bj1N0GsCs2SPDNY1RvVGOuqXHQj+rfQkbvVmWscSed3alM3kokBhRmxHN3Y8JlY=
-X-Received: by 2002:a24:70d5:: with SMTP id f204mr6307014itc.32.1556884744596;
- Fri, 03 May 2019 04:59:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190413165418.27880-1-megous@megous.com> <20190413165418.27880-6-megous@megous.com>
-In-Reply-To: <20190413165418.27880-6-megous@megous.com>
-From:   Jagan Teki <jagan@amarulasolutions.com>
-Date:   Fri, 3 May 2019 17:28:53 +0530
-Message-ID: <CAMty3ZDx6NXyYhQehYT9geeGwAk2PZidiVMwVw1nnZJa3zwyOg@mail.gmail.com>
-Subject: Re: [linux-sunxi] [PATCH v4 5/9] arm64: dts: allwinner: orange-pi-3:
- Enable ethernet
-To:     megous@megous.com
-Cc:     linux-sunxi <linux-sunxi@googlegroups.com>,
+        id S1726997AbfECMFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 08:05:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53269 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726047AbfECMFV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 May 2019 08:05:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=B1UpGozjvI9WSxKZnLVoVeTJch3smhGmBqpm9mGYVXY=; b=bCbTqxhI+ikd0bw36I52qTDClw
+        ZlidW4a6GvoT3Ws6fMHjA6XMAmLxWP2Mf1Zm/aag5256wso/F7iYmZhZ3Syl3fsW5zTDFW8cjvazn
+        pWZfZn7MqjGtsgQnvaF6VTgYKByVdymdzFykUVYG53asOoMSe2RF9xbnOb8SdNPIs/ec=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hMWw9-0000kc-8L; Fri, 03 May 2019 14:05:09 +0200
+Date:   Fri, 3 May 2019 14:05:09 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+Cc:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Maxime Ripard <maxime.ripard@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-gpio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Alban Bedel <albeu@free.fr>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 01/10] of_net: add NVMEM support to of_get_mac_address
+Message-ID: <20190503120509.GA1941@lunn.ch>
+References: <1556870168-26864-1-git-send-email-ynezz@true.cz>
+ <1556870168-26864-2-git-send-email-ynezz@true.cz>
+ <2a5fcdec-c661-6dc5-6741-7d6675457b9b@cogentembedded.com>
+ <20190503091542.GE346@meh.true.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190503091542.GE346@meh.true.cz>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 13, 2019 at 10:24 PM megous via linux-sunxi
-<linux-sunxi@googlegroups.com> wrote:
->
-> From: Ondrej Jirman <megous@megous.com>
->
-> Orange Pi 3 has two regulators that power the Realtek RTL8211E. According
-> to the phy datasheet, both regulators need to be enabled at the same time,
-> but we can only specify a single phy-supply in the DT.
->
-> This can be achieved by making one regulator depedning on the other via
-> vin-supply. While it's not a technically correct description of the
-> hardware, it achieves the purpose.
->
-> All values of RX/TX delay were tested exhaustively and a middle one of the
-> working values was chosen.
->
-> Signed-off-by: Ondrej Jirman <megous@megous.com>
-> ---
->  .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 44 +++++++++++++++++++
->  1 file changed, 44 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-> index 17d496990108..6d6b1f66796d 100644
-> --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-> +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-> @@ -15,6 +15,7 @@
->
->         aliases {
->                 serial0 = &uart0;
-> +               ethernet0 = &emac;
->         };
->
->         chosen {
-> @@ -44,6 +45,27 @@
->                 regulator-max-microvolt = <5000000>;
->                 regulator-always-on;
->         };
-> +
-> +       /*
-> +        * The board uses 2.5V RGMII signalling. Power sequence to enable
-> +        * the phy is to enable GMAC-2V5 and GMAC-3V3 (aldo2) power rails
-> +        * at the same time and to wait 100ms.
-> +        */
-> +       reg_gmac_2v5: gmac-2v5 {
-> +               compatible = "regulator-fixed";
-> +               regulator-name = "gmac-2v5";
-> +               regulator-min-microvolt = <2500000>;
-> +               regulator-max-microvolt = <2500000>;
-> +               startup-delay-us = <100000>;
-> +               enable-active-high;
-> +               gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
-> +
-> +               /* The real parent of gmac-2v5 is reg_vcc5v, but we need to
-> +                * enable two regulators to power the phy. This is one way
-> +                * to achieve that.
-> +                */
-> +               vin-supply = <&reg_aldo2>; /* GMAC-3V3 */
+On Fri, May 03, 2019 at 11:15:42AM +0200, Petr Štetiar wrote:
+> Sergei Shtylyov <sergei.shtylyov@cogentembedded.com> [2019-05-03 11:44:54]:
+> 
+> Hi Sergei,
+> 
+> > > diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
+> > > index d820f3e..258ceb8 100644
+> > > --- a/drivers/of/of_net.c
+> > > +++ b/drivers/of/of_net.c
+> > [...]
+> > > @@ -64,6 +113,9 @@ static const void *of_get_mac_addr(struct device_node *np, const char *name)
+> > >    * addresses.  Some older U-Boots only initialized 'local-mac-address'.  In
+> > >    * this case, the real MAC is in 'local-mac-address', and 'mac-address' exists
+> > >    * but is all zeros.
+> > > + *
+> > > + * Return: Will be a valid pointer on success, NULL in case there wasn't
+> > > + *         'mac-address' nvmem cell node found, and ERR_PTR in case of error.
+> > 
+> >    Returning both NULL and error codes on failure is usually a sign of a
+> > misdesigned API. 
+> 
+> well, then there's a lot of misdesigned APIs in the tree already, as I've just
+> grepped for IS_ERR_OR_NULL usage and found this pointer/NULL/ERR_PTR usage
+> pretty legit.
+> 
+> > Why not always return an error code?
+> 
+> I've received following comment[1] from Andrew:
+> 
+>  "What you have to be careful of, is the return value from your new code
+>   looking in NVMEM. It should only return EPROBE_DEFER, or another error
+>   if there really is expected to be a value in NVMEM, or getting it from
+>   NVMEM resulted in an error."
+> 
+> So in order to fullfil this remark, I can't simply use ENOENT instead of
+> current NULL, as the caller couldn't distinguish between ENOENT from
+> of_get_mac_address or ENOENT from NVMEM subsystem.
 
-The actual output supply pin name is GMAC-3V which has an input of
-VCC3V3-MAC (ie aldo2), if we compatible to schematics better to use
-the same, IMHO.
+ENOENT and its like have to be handled special by of_get_mac_address()
+for all the different ways you can find the MAC address. It means that
+method does not have a MAC address, try the next. And if at the end
+you have not found a MAC address, ENOENT is a good return code, it
+indicates none of the methods found a MAC address.
+
+If you are using of_get_mac_address() you don't really care where the
+MAC address came from, except you expect the documented search order.
+So you don't need to know that NVMEM returned ENOENT. If you do care
+about that, you would not use of_get_mac_address(), but directly go to
+the NVMEM.
+
+    Andrew
