@@ -2,124 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5A2A130D0
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 17:01:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABDDC130CF
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 17:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728081AbfECPBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728125AbfECPBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 3 May 2019 11:01:52 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:50482 "EHLO mx1.redhat.com"
+Received: from mx1.redhat.com ([209.132.183.28]:59978 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727960AbfECPBu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 May 2019 11:01:50 -0400
+        id S1727972AbfECPBv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 May 2019 11:01:51 -0400
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 4CBB23139CA3;
-        Fri,  3 May 2019 15:01:50 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 621EBC0B0234;
+        Fri,  3 May 2019 15:01:51 +0000 (UTC)
 Received: from localhost.localdomain.com (unknown [10.32.181.182])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 778BF50B54;
-        Fri,  3 May 2019 15:01:49 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8FBD22DACC;
+        Fri,  3 May 2019 15:01:50 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 3/4] net: use indirect calls helpers at early demux stage
-Date:   Fri,  3 May 2019 17:01:38 +0200
-Message-Id: <79e792e45a71e111f4266c0589611432b5ac1e7d.1556889691.git.pabeni@redhat.com>
+Subject: [PATCH net-next 4/4] net: use indirect calls helpers at the socket layer
+Date:   Fri,  3 May 2019 17:01:39 +0200
+Message-Id: <fd4e398581e0660c7228bdb778052201e61b1da8.1556889691.git.pabeni@redhat.com>
 In-Reply-To: <cover.1556889691.git.pabeni@redhat.com>
 References: <cover.1556889691.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Fri, 03 May 2019 15:01:50 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Fri, 03 May 2019 15:01:51 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So that we avoid another indirect call per RX packet, if
-early demux is enabled.
+This avoids an indirect call per {send,recv}msg syscall in
+the common (IPv6 or IPv4 socket) case.
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/ipv4/ip_input.c  | 5 ++++-
- net/ipv6/ip6_input.c | 5 ++++-
- net/ipv6/tcp_ipv6.c  | 2 +-
- net/ipv6/udp.c       | 2 +-
- 4 files changed, 10 insertions(+), 4 deletions(-)
+ net/socket.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index 8d78de4b0304..ed97724c5e33 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -309,6 +309,8 @@ static inline bool ip_rcv_options(struct sk_buff *skb, struct net_device *dev)
- 	return true;
+diff --git a/net/socket.c b/net/socket.c
+index a180e1a9ff23..472fbefa5d9b 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -90,6 +90,7 @@
+ #include <linux/slab.h>
+ #include <linux/xattr.h>
+ #include <linux/nospec.h>
++#include <linux/indirect_call_wrapper.h>
+ 
+ #include <linux/uaccess.h>
+ #include <asm/unistd.h>
+@@ -108,6 +109,13 @@
+ #include <net/busy_poll.h>
+ #include <linux/errqueue.h>
+ 
++/* proto_ops for ipv4 and ipv6 use the same {recv,send}msg function */
++#if IS_ENABLED(CONFIG_INET)
++#define INDIRECT_CALL_INET4(f, f1, ...) INDIRECT_CALL_1(f, f1, __VA_ARGS__)
++#else
++#define INDIRECT_CALL_INET4(f, f1, ...) f(__VA_ARGS__)
++#endif
++
+ #ifdef CONFIG_NET_RX_BUSY_POLL
+ unsigned int sysctl_net_busy_read __read_mostly;
+ unsigned int sysctl_net_busy_poll __read_mostly;
+@@ -645,10 +653,12 @@ EXPORT_SYMBOL(__sock_tx_timestamp);
+  *	Sends @msg through @sock, passing through LSM.
+  *	Returns the number of bytes sent, or an error code.
+  */
+-
++INDIRECT_CALLABLE_DECLARE(int inet_sendmsg(struct socket *, struct msghdr *,
++					   size_t));
+ static inline int sock_sendmsg_nosec(struct socket *sock, struct msghdr *msg)
+ {
+-	int ret = sock->ops->sendmsg(sock, msg, msg_data_left(msg));
++	int ret = INDIRECT_CALL_INET4(sock->ops->sendmsg, inet_sendmsg, sock,
++				      msg, msg_data_left(msg));
+ 	BUG_ON(ret == -EIOCBQUEUED);
+ 	return ret;
+ }
+@@ -874,11 +884,13 @@ EXPORT_SYMBOL_GPL(__sock_recv_ts_and_drops);
+  *	Receives @msg from @sock, passing through LSM. Returns the total number
+  *	of bytes received, or an error.
+  */
+-
++INDIRECT_CALLABLE_DECLARE(int inet_recvmsg(struct socket *, struct msghdr *,
++					   size_t , int ));
+ static inline int sock_recvmsg_nosec(struct socket *sock, struct msghdr *msg,
+ 				     int flags)
+ {
+-	return sock->ops->recvmsg(sock, msg, msg_data_left(msg), flags);
++	return INDIRECT_CALL_INET4(sock->ops->recvmsg, inet_recvmsg, sock, msg,
++				   msg_data_left(msg), flags);
  }
  
-+INDIRECT_CALLABLE_DECLARE(int udp_v4_early_demux(struct sk_buff *));
-+INDIRECT_CALLABLE_DECLARE(int tcp_v4_early_demux(struct sk_buff *));
- static int ip_rcv_finish_core(struct net *net, struct sock *sk,
- 			      struct sk_buff *skb, struct net_device *dev)
- {
-@@ -326,7 +328,8 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
- 
- 		ipprot = rcu_dereference(inet_protos[protocol]);
- 		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux))) {
--			err = edemux(skb);
-+			err = INDIRECT_CALL_2(edemux, tcp_v4_early_demux,
-+					      udp_v4_early_demux, skb);
- 			if (unlikely(err))
- 				goto drop_error;
- 			/* must reload iph, skb->head might have changed */
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index adf06159837f..b50b1af1f530 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -48,6 +48,8 @@
- #include <net/inet_ecn.h>
- #include <net/dst_metadata.h>
- 
-+INDIRECT_CALLABLE_DECLARE(void udp_v6_early_demux(struct sk_buff *));
-+INDIRECT_CALLABLE_DECLARE(void tcp_v6_early_demux(struct sk_buff *));
- static void ip6_rcv_finish_core(struct net *net, struct sock *sk,
- 				struct sk_buff *skb)
- {
-@@ -58,7 +60,8 @@ static void ip6_rcv_finish_core(struct net *net, struct sock *sk,
- 
- 		ipprot = rcu_dereference(inet6_protos[ipv6_hdr(skb)->nexthdr]);
- 		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux)))
--			edemux(skb);
-+			INDIRECT_CALL_2(edemux, tcp_v6_early_demux,
-+					udp_v6_early_demux, skb);
- 	}
- 	if (!skb_valid_dst(skb))
- 		ip6_route_input(skb);
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index d58bf84e0f9a..beaf28456301 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1655,7 +1655,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	goto discard_it;
- }
- 
--static void tcp_v6_early_demux(struct sk_buff *skb)
-+INDIRECT_CALLABLE_SCOPE void tcp_v6_early_demux(struct sk_buff *skb)
- {
- 	const struct ipv6hdr *hdr;
- 	const struct tcphdr *th;
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index b3fcafaf5576..07fa579dfb96 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -981,7 +981,7 @@ static struct sock *__udp6_lib_demux_lookup(struct net *net,
- 	return NULL;
- }
- 
--static void udp_v6_early_demux(struct sk_buff *skb)
-+INDIRECT_CALLABLE_SCOPE void udp_v6_early_demux(struct sk_buff *skb)
- {
- 	struct net *net = dev_net(skb->dev);
- 	const struct udphdr *uh;
+ int sock_recvmsg(struct socket *sock, struct msghdr *msg, int flags)
 -- 
 2.20.1
 
