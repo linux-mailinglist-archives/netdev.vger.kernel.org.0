@@ -2,96 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B15A13055
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 16:35:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 403D313082
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 16:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727982AbfECOfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 10:35:08 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:46602 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726377AbfECOfI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 10:35:08 -0400
-Received: by mail-pl1-f193.google.com with SMTP id bi2so2778848plb.13;
-        Fri, 03 May 2019 07:35:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=kMGLnhggc8cifwRrjEK9HALOorMf0mLsznAzU3ByQJ4=;
-        b=shNY8wGsdG7K1gn0sScFEu/UG87+cKxU8rBCXtb8tyo+rAKekJK+7uISp4XTWWgBA4
-         mMR6f1lRqLExLgSCD47O08vLxUrzx+Aa7MtEwDM1fYTizYyGG991dxO+1rGubS8CeqGL
-         fuH0M46aEiOtlQIEybjoTs34L1vO9NcvFKaJCb2f7xoKFeK2vROY6owPj1Y4VdRET597
-         yXFSgXFQfIIaA0gouVJTOTy0z/eoMMxy5g+gNiK7bm0B/v3ylUmrwBMUtJZGJKxh2owY
-         9r45sdCvSgKdqpkckoiMVZ/5UPCn26BqC/8kYXBAKiZXhrY+0dj4HX8W3Z4OJFLiRSYl
-         +Mqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=kMGLnhggc8cifwRrjEK9HALOorMf0mLsznAzU3ByQJ4=;
-        b=THODU3yHnS6lIzCyLc7fLHCvaSx4wHo7PvB6T49dntdaiNT7/fKDjxF/LkLbg/R5WE
-         tdpok1VV5QXs+ICr18LB47m/jbDrY4a4qdibk2LYh4XEmM+wo1/lKABrLJQZ6lHIhPgM
-         TVJGbbjhiQ29eCd/ouM4ab6aveRpC9T02Zm19mO8T4A2QSktLtGn/Oi5xBsE8bkNFdnD
-         AZdwiO4lsYR62g4XxpZ6aKV+78WwSwBdUQ4NESKYE9Ksy+aP9mFEDkCtVZtDosUYhBjW
-         dO3sC5L2g/nc95lyMIINgPuWpVfyZwG4HYH3qMMIQYxgVz7huQnkgv7oj2+eIGBOGdx7
-         xi+g==
-X-Gm-Message-State: APjAAAXVnd5TddQHcRq7xplxLVZaFw7QoXDTAaHANQv/HkfOe7P0z01v
-        btCgJ/I0+thB1GsUriWQG2g=
-X-Google-Smtp-Source: APXvYqzLw5RFP+moTLdaj7O6UqQIbnzuJQcywkHNCxDgZyn604CU0+GbY7CVtCWF8KqN+EQLh/fuSQ==
-X-Received: by 2002:a17:902:8c81:: with SMTP id t1mr2372272plo.333.1556893714461;
-        Fri, 03 May 2019 07:28:34 -0700 (PDT)
-Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
-        by smtp.gmail.com with ESMTPSA id s19sm2789351pgj.62.2019.05.03.07.28.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 May 2019 07:28:33 -0700 (PDT)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: e1000: Fix some bugs in error handling code of e1000_probe()
-Date:   Fri,  3 May 2019 22:28:23 +0800
-Message-Id: <20190503142823.15319-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.0
+        id S1728050AbfECOgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 10:36:49 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:51423 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726267AbfECOgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 10:36:48 -0400
+Received: from localhost (aaubervilliers-681-1-29-145.w90-88.abo.wanadoo.fr [90.88.149.145])
+        (Authenticated sender: maxime.ripard@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 563FE200020;
+        Fri,  3 May 2019 14:36:44 +0000 (UTC)
+Date:   Fri, 3 May 2019 16:36:43 +0200
+From:   Maxime Ripard <maxime.ripard@bootlin.com>
+To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alban Bedel <albeu@free.fr>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 01/10] of_net: add NVMEM support to of_get_mac_address
+Message-ID: <20190503143643.hhfamnptcuriav4k@flea>
+References: <1556893635-18549-1-git-send-email-ynezz@true.cz>
+ <1556893635-18549-2-git-send-email-ynezz@true.cz>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="w5grxr2nn7x6p3l6"
+Content-Disposition: inline
+In-Reply-To: <1556893635-18549-2-git-send-email-ynezz@true.cz>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When "hw->ce4100_gbe_mdio_base_virt = ioremap(...)" fails, the driver
-does not free the memory allocated in e1000_sw_init(), and also calls
-"iounmap(hw->ce4100_gbe_mido_base_virt)" that is unnecessary.
 
-Besides, when e1000_sw_init() fails, the driver also calls 
-"iounmap(hw->ce4100_gbe_mido_base_virt)" but 
-hw->ce4100_gbe_mido_base_virt has not been assigned.
+--w5grxr2nn7x6p3l6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-These bugs are found by a runtime fuzzing tool named FIZZER written by us.
+On Fri, May 03, 2019 at 04:27:06PM +0200, Petr =C5=A0tetiar wrote:
+> Many embedded devices have information such as MAC addresses stored
+> inside NVMEMs like EEPROMs and so on. Currently there are only two
+> drivers in the tree which benefit from NVMEM bindings.
+>
+> Adding support for NVMEM into every other driver would mean adding a lot
+> of repetitive code. This patch allows us to configure MAC addresses in
+> various devices like ethernet and wireless adapters directly from
+> of_get_mac_address, which is already used by almost every driver in the
+> tree.
+>
+> Predecessor of this patch which used directly MTD layer has originated
+> in OpenWrt some time ago and supports already about 497 use cases in 357
+> device tree files.
+>
+> Cc: Alban Bedel <albeu@free.fr>
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> Signed-off-by: John Crispin <john@phrozen.org>
+> Signed-off-by: Petr =C5=A0tetiar <ynezz@true.cz>
+> ---
+>
+>  Changes since v1:
+>
+>   * moved handling of nvmem after mac-address and local-mac-address prope=
+rties
+>
+>  Changes since v2:
+>
+>   * moved of_get_mac_addr_nvmem after of_get_mac_addr(np, "address") call
+>   * replaced kzalloc, kmemdup and kfree with it's devm variants
+>   * introduced of_has_nvmem_mac_addr helper which checks if DT node has n=
+vmem
+>     cell with `mac-address`
+>   * of_get_mac_address now returns ERR_PTR encoded error value
+>
+>  Changes since v3:
+>
+>   * removed of_has_nvmem_mac_addr helper as it's not needed now
+>   * of_get_mac_address now returns only valid pointer or ERR_PTR encoded =
+error value
+>
+>  drivers/of/of_net.c | 54 +++++++++++++++++++++++++++++++++++++++++++++++=
++++---
+>  1 file changed, 51 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
+> index d820f3e..9649cd5 100644
+> --- a/drivers/of/of_net.c
+> +++ b/drivers/of/of_net.c
+> @@ -8,8 +8,10 @@
+>  #include <linux/etherdevice.h>
+>  #include <linux/kernel.h>
+>  #include <linux/of_net.h>
+> +#include <linux/of_platform.h>
+>  #include <linux/phy.h>
+>  #include <linux/export.h>
+> +#include <linux/device.h>
+>
+>  /**
+>   * of_get_phy_mode - Get phy mode for given device_node
+> @@ -47,12 +49,52 @@ static const void *of_get_mac_addr(struct device_node=
+ *np, const char *name)
+>  	return NULL;
+>  }
+>
+> +static const void *of_get_mac_addr_nvmem(struct device_node *np)
+> +{
+> +	int ret;
+> +	u8 mac[ETH_ALEN];
+> +	struct property *pp;
+> +	struct platform_device *pdev =3D of_find_device_by_node(np);
+> +
+> +	if (!pdev)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	ret =3D nvmem_get_mac_address(&pdev->dev, &mac);
+> +	if (ret)
+> +		return ERR_PTR(ret);
+> +
+> +	pp =3D devm_kzalloc(&pdev->dev, sizeof(*pp), GFP_KERNEL);
+> +	if (!pp)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	pp->name =3D "nvmem-mac-address";
+> +	pp->length =3D ETH_ALEN;
+> +	pp->value =3D devm_kmemdup(&pdev->dev, mac, ETH_ALEN, GFP_KERNEL);
+> +	if (!pp->value) {
+> +		ret =3D -ENOMEM;
+> +		goto free;
+> +	}
+> +
+> +	ret =3D of_add_property(np, pp);
+> +	if (ret)
+> +		goto free;
+> +
+> +	return pp->value;
 
-To fix these bugs, the error handling code of e1000_probe() is adjusted.
+I'm not sure why you need to do that allocation here, and why you need
+to modify the DT?
 
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/net/ethernet/intel/e1000/e1000_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+can't you just return the mac address directly since it's what the
+of_get_mac_address caller will expect anyway?
 
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index 8fe9af0e2ab7..7743c4d9723f 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -1227,12 +1227,12 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	if (hw->flash_address)
- 		iounmap(hw->flash_address);
-+	iounmap(hw->ce4100_gbe_mdio_base_virt);
-+err_mdio_ioremap:
- 	kfree(adapter->tx_ring);
- 	kfree(adapter->rx_ring);
--err_dma:
- err_sw_init:
--err_mdio_ioremap:
--	iounmap(hw->ce4100_gbe_mdio_base_virt);
-+err_dma:
- 	iounmap(hw->hw_addr);
- err_ioremap:
- 	disable_dev = !test_and_set_bit(__E1000_DISABLED, &adapter->flags);
--- 
-2.17.0
+maxime
 
+--
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--w5grxr2nn7x6p3l6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXMxR8gAKCRDj7w1vZxhR
+xbqcAP49YjJI7V+9AD9J0n1SEWgqSDf1RN9dCqV6WDaspNX5cAEA4l11UjhuTwp3
+bsOoNNlu5yGF+MU5kr8sKmJYaWx7cAg=
+=mHTC
+-----END PGP SIGNATURE-----
+
+--w5grxr2nn7x6p3l6--
