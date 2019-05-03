@@ -2,72 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A935A12FA0
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 15:55:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA58612FD5
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 16:09:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727843AbfECNzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 09:55:14 -0400
-Received: from merlin.infradead.org ([205.233.59.134]:37666 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfECNzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 09:55:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ALgcqCtqCqOGvegvBJbnoppT5gDBB9wFVtxlPQfWxJ4=; b=rSOqH7Y7dB0q+WGGArvuwubx2
-        xfwvuCL173N0TCzBY+atLybyrLySXjcFgnAuDB8FDkwz4P83zwvfLEkfttt19qPsUaWk5BhfDDiZi
-        fwMATyBMZIZlT7lGLCH4dQUagQ1e0fofItj807gvtD9qhAIg7T5COxrdTkex45Rl/8wR4o+bxZHBr
-        L5vye6VwsVHFezQ4IAAkyAjxOp3Wev/avoiLulN2JVhOpNyubPm7SwSRpzdiC6BbT9PwzkVrfW+2I
-        cbxla5CLXbdTIL9z3iQtQuWGZkybFsRssW+yWrR41P9r6XKD5NHS/ztQeHc1Qo6fnYI6u+kUPj5Xr
-        DGW79aGQg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-        id 1hMYdw-0007F7-1b; Fri, 03 May 2019 13:54:28 +0000
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 39C93214242EB; Fri,  3 May 2019 15:54:26 +0200 (CEST)
-Date:   Fri, 3 May 2019 15:54:26 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org,
-        Michal Gregorczyk <michalgr@live.com>,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Mohammad Husain <russoue@gmail.com>,
-        Srinivas Ramana <sramana@codeaurora.org>,
-        duyuchao <yuchao.du@unisoc.com>,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Karim Yaghmour <karim.yaghmour@opersys.com>,
-        Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Brendan Gregg <brendan.d.gregg@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
-Message-ID: <20190503135426.GA2606@hirez.programming.kicks-ass.net>
-References: <20190502204958.7868-1-joel@joelfernandes.org>
- <20190503121234.6don256zuvfjtdg6@e107158-lin.cambridge.arm.com>
- <20190503134935.GA253329@google.com>
+        id S1727997AbfECOJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 10:09:34 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51382 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726789AbfECOJe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 10:09:34 -0400
+Received: by mail-wm1-f66.google.com with SMTP id t76so7319376wmt.1
+        for <netdev@vger.kernel.org>; Fri, 03 May 2019 07:09:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=3LxTUsWtAnugj+yiOaxg4TXl8GgTh7eQs5xZZAZRyaA=;
+        b=TtBiPkj9qUv5qRt5mG5HzJVFiXjO/TI+M7cB7E0/Wx+Ib2lg3ITuVgeIhlEBGsdoq+
+         qT9C5IYswN7vzTMTWSGEFxPYDQSC29b9g6rBEaefbp343HEAwxmCtvfs1vtTbX+bfPAM
+         ZpCSwnHTGwFiXchnVbG10bOlTM4CHJ2Vk/c+31H8Czn0CnwuGFsFFkYOz6gGm6tZ7cKX
+         u30YcXZUkpwxLYlyPisV8z5125ZZpO1gujKeuE/qDEtA0cVnjKWtjtT33C1Xae7ml5R5
+         HNVbCza19In/nlvuR66Mj754/rymiBCg6pQsz3kbDa5XEvud53ZooVkazPIHOefRrRkD
+         aPRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=3LxTUsWtAnugj+yiOaxg4TXl8GgTh7eQs5xZZAZRyaA=;
+        b=A87vXx1+hBJED6EiCbUNVb3hxKqpE26iI1PYbQEkdwGcHksDXnLR3eGndUo4Fc4L5W
+         CFsbuLcfMX0xWownEFwf4NRzvQgNqUhPb1eL3B+54WpNkY2BbxeWqvDVAbB32mIJvDSt
+         yKjDHb6Ic8ezmj2vLSgo+TFjByR7zaVWoyiGmLLYr5WtXIydVbCYJ+Wtw0tMpszWMRQa
+         onOMno9uS3mxgwSiefL380qgmHWZbWJD93sQfhs4uTbFU5nL10EmGAjag0KwEBaXHYM6
+         VZWa7zS2CTC33Qh+5zRPxw2HKU3ArP6BFOTCgnGGRFhXvz7C5qWr70lS5065eF3gFvLt
+         oADQ==
+X-Gm-Message-State: APjAAAVptQYjCKtI5pFxhNkc3qzyBpsiXftl+6IFxNP1IPicv2/x9c30
+        12M0yWkndaUc8i1eOtvGLdPUXg==
+X-Google-Smtp-Source: APXvYqy9E6ZOEkePRxtojtiwEO+EjbEE02ROsyb8URo0GPFIwy6HHw/JCsCpPIGvuFGrE6NMB8zzuw==
+X-Received: by 2002:a1c:e916:: with SMTP id q22mr6417579wmc.148.1556892572728;
+        Fri, 03 May 2019 07:09:32 -0700 (PDT)
+Received: from LAPTOP-V3S7NLPL ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id a20sm4599865wrf.37.2019.05.03.07.09.31
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 03 May 2019 07:09:31 -0700 (PDT)
+References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com> <1556880164-10689-14-git-send-email-jiong.wang@netronome.com> <20190503134118.GA5602@osiris>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     Heiko Carstens <heiko.carstens@de.ibm.com>
+Cc:     Jiong Wang <jiong.wang@netronome.com>,
+        alexei.starovoitov@gmail.com, daniel@iogearbox.net,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Martin Schwidefsky <schwidefsky@de.ibm.com>
+Subject: Re: [PATCH v6 bpf-next 13/17] s390: bpf: eliminate zero extension code-gen
+In-reply-to: <20190503134118.GA5602@osiris>
+Date:   Fri, 03 May 2019 15:09:29 +0100
+Message-ID: <87zho38w9y.fsf@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190503134935.GA253329@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 03, 2019 at 09:49:35AM -0400, Joel Fernandes wrote:
-> In
-> particular, we learnt with extensive discussions that user/kernel pointers
-> are not necessarily distinguishable purely based on their address.
 
-This is correct; a number of architectures have a completely separate
-user and kernel address space. Much like how the old i386 4G:4G patches
-worked.
+Heiko Carstens writes:
+
+> On Fri, May 03, 2019 at 11:42:40AM +0100, Jiong Wang wrote:
+>> Cc: Martin Schwidefsky <schwidefsky@de.ibm.com>
+>> Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
+>> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+>> ---
+>>  arch/s390/net/bpf_jit_comp.c | 20 +++++++++++++++++---
+>>  1 file changed, 17 insertions(+), 3 deletions(-)
+>
+> When sending patches which affect s390, could you please add Martin
+> and me on cc to _all_ patches? We now received only the cover-letter
+> plus one patch. It's always hard in such cirumstances to figure out if
+> the code is doing the right thing.
+
+OK, will do it next time.
+
+Will just CC back-end maintainers on all patches including patches for the
+other back-ends to make the information complete.
+
+Regards,
+Jiong
+
+> Usually I end up looking up the missing patches within other mailing
+> lists, however I haven't subscribed the bpf and netdev mailing lists.
+>
+> The extra e-mail volume because of being added to CC really doesn't
+> matter at all.
