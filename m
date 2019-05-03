@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 873EF135FF
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 01:10:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1248135F8
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 01:09:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727229AbfECXKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 19:10:01 -0400
-Received: from mga11.intel.com ([192.55.52.93]:40730 "EHLO mga11.intel.com"
+        id S1727094AbfECXJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 19:09:43 -0400
+Received: from mga11.intel.com ([192.55.52.93]:40732 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726984AbfECXJl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727107AbfECXJl (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 3 May 2019 19:09:41 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,18 +17,18 @@ Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 May 2019 16:09:40 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.60,427,1549958400"; 
-   d="scan'208";a="136660079"
+   d="scan'208";a="136660082"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga007.jf.intel.com with ESMTP; 03 May 2019 16:09:40 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+Cc:     Maciej Paczkowski <maciej.paczkowski@intel.com>,
         netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 03/11] i40e: remove error msg when vf with port vlan tries to remove vlan 0
-Date:   Fri,  3 May 2019 16:09:31 -0700
-Message-Id: <20190503230939.6739-4-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v2 04/11] i40e: ShadowRAM checksum calculation change
+Date:   Fri,  3 May 2019 16:09:32 -0700
+Message-Id: <20190503230939.6739-5-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190503230939.6739-1-jeffrey.t.kirsher@intel.com>
 References: <20190503230939.6739-1-jeffrey.t.kirsher@intel.com>
@@ -39,32 +39,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+From: Maciej Paczkowski <maciej.paczkowski@intel.com>
 
-VF's attempt to delete vlan 0 when a port vlan is configured is harmless
-in this case pf driver just does nothing.  If vf will try to remove
-other vlans when a port vlan is configured it will still produce error
-as before.
+Due to changes in FW the SW is required to perform double SR dump in
+some cases.
 
-Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+Implementation adds two new steps to update nvm checksum function:
+* recalculate checksum and check if checksum in NVM is correct
+* if checksum in NVM is not correct then update it again
+
+Signed-off-by: Maciej Paczkowski <maciej.paczkowski@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_nvm.c | 29 +++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 71cd159e7902..24628de8e624 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -2766,7 +2766,8 @@ static int i40e_vc_remove_vlan_msg(struct i40e_vf *vf, u8 *msg)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_nvm.c b/drivers/net/ethernet/intel/i40e/i40e_nvm.c
+index 0299e5bbb902..ee89779a9a6f 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_nvm.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_nvm.c
+@@ -574,13 +574,34 @@ static i40e_status i40e_calc_nvm_checksum(struct i40e_hw *hw,
+ i40e_status i40e_update_nvm_checksum(struct i40e_hw *hw)
+ {
+ 	i40e_status ret_code;
+-	u16 checksum;
++	u16 checksum, checksum_sr;
+ 	__le16 le_sum;
  
- 	vsi = pf->vsi[vf->lan_vsi_idx];
- 	if (vsi->info.pvid) {
--		aq_ret = I40E_ERR_PARAM;
-+		if (vfl->num_elements > 1 || vfl->vlan_id[0])
-+			aq_ret = I40E_ERR_PARAM;
- 		goto error_param;
+ 	ret_code = i40e_calc_nvm_checksum(hw, &checksum);
+-	if (!ret_code) {
+-		le_sum = cpu_to_le16(checksum);
+-		ret_code = i40e_write_nvm_aq(hw, 0x00, I40E_SR_SW_CHECKSUM_WORD,
++	if (ret_code)
++		return ret_code;
++
++	le_sum = cpu_to_le16(checksum);
++	ret_code = i40e_write_nvm_aq(hw, 0x00, I40E_SR_SW_CHECKSUM_WORD,
++				     1, &le_sum, true);
++	if (ret_code)
++		return ret_code;
++
++	/* Due to changes in FW the SW is required to perform double SR-dump
++	 * in some cases. SR-dump is the process when internal shadow RAM is
++	 * dumped into flash bank. It is triggered by setting "last_command"
++	 * argument in i40e_write_nvm_aq function call.
++	 * Since FW 1.8 we need to calculate SR checksum again and update it
++	 * in flash if it is not equal to previously computed checksum.
++	 * This situation would occur only in FW >= 1.8
++	 */
++	ret_code = i40e_calc_nvm_checksum(hw, &checksum_sr);
++	if (ret_code)
++		return ret_code;
++	if (checksum_sr != checksum) {
++		le_sum = cpu_to_le16(checksum_sr);
++		ret_code = i40e_write_nvm_aq(hw, 0x00,
++					     I40E_SR_SW_CHECKSUM_WORD,
+ 					     1, &le_sum, true);
  	}
  
 -- 
