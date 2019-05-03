@@ -2,530 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 994A01362B
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 01:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA2D13663
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 01:53:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726733AbfECX2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 19:28:39 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:36074 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726150AbfECX2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 19:28:39 -0400
-Received: by mail-qt1-f193.google.com with SMTP id c35so8691092qtk.3
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 16:28:38 -0700 (PDT)
+        id S1727083AbfECXw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 19:52:59 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34151 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727020AbfECXw6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 19:52:58 -0400
+Received: by mail-qt1-f194.google.com with SMTP id j6so8744790qtq.1
+        for <netdev@vger.kernel.org>; Fri, 03 May 2019 16:52:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d7lGGlXjpuxyRR35sdEOKKUf6juSw/qezPaG8Z2VzaA=;
-        b=Y7BkhH/VK63Id6V8YFRhjHtgUCkmL2HbySbxpHNku9PQNaBbfATs5+cXh8+s4iWLP8
-         lzfFB6RAfP9+1eW+AAb+DjFfxQKlx5tGDIrS37nF1w4WlTGKBiJoI6T/NXAbCSO+g4KY
-         GCE0YYWBsrIuD9jwjZUOZ5KQkyD2ASFCo18818iNSr0f7DrorrJ9mze6hfi0keYjxges
-         8dPINsLHRPWvjGTF1tLjTriKaVE0bnJX7b65RZO7G0EypCvo1UYNJR0XCXB0Acx2ghlr
-         CVUKk03u4sYvE5GNaETDMDakENkTKw6tr7hYgqIIPbMezSka/n/SHxynv1exENI51OEe
-         VMyg==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Y9uds37g7f4813/ZqlKEDnGn948IiuDvboVC7bPadlI=;
+        b=N9BE3PqMA0nL0NvpOU63kepSs17NWxuaQGMx7Tupv6wpFQNuRqB6tenh0G/BWpJ1PP
+         HEd7ZRYuplIPMrp/i3Cbd8pyLv65lE/Kcn6MATxFD0LAM764ONzAI9CGs51aZh5QkF2i
+         IUvMmfzMxlcfJSqngQx2TZEML8ZbCAHWTFmHtqfhFJeQ8JVqaTAgfiqfKRaZhlNd6jZX
+         Xiy8j3oAf41/Kg4WEp6FuwvI9DlafHuBxOiRzLclafXL2AMIXhBmFJmJrK5KHtm2pgmi
+         Pkc8sfsyJqh6zaTpfCu0T9ewb4rk6AtpL8uJLJA4xZTB0LSOR9blqcrj5s/eIqJuMPaw
+         q8oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d7lGGlXjpuxyRR35sdEOKKUf6juSw/qezPaG8Z2VzaA=;
-        b=LYXKmgI0X6fuAYaMdtXyKuu+nIsWi56NQ4loAr8/yCoxoYNLRDf/ZB+62UeEYbNQq4
-         4KxcMzT25f4d0DXDPaaPnS23gdrgRyRoXBCzCm2TTNpD9aasfeLRNCf+39W4HMLuoeAO
-         8+ABpjTX2aD7zhFQru61vrxd+xdVX9n37/NthIqOHpx4Q3JJTOYX28u9coL6mypMiEus
-         Qq5ebXef1DoN7zHV+79v7Sy+gdMt0BFnKmY5syiOxdy2zUs2ULJFmTQXTx333UauRCKr
-         e5bt7Jk7v4XgzguSROMciwJasgWo3Rt3TzDo044XNkHlDJeS9s7sEUvpn23Z5iIAHEYd
-         i9jg==
-X-Gm-Message-State: APjAAAWKdRjfqvi59/WvZZrPVI8+kJU7QNLVVMKKVROZJmxL2h/oeGAS
-        MS6fFp51DqgPGBgGLByc8l+71CTt88A=
-X-Google-Smtp-Source: APXvYqylmhI2LIZMNMu/KGcf70aISeJgAq4lA1UzOrQzB4AeRE15fIT8Mc/7b/DJv22WhVad0yi41w==
-X-Received: by 2002:ac8:2565:: with SMTP id 34mr11165683qtn.37.1556926117365;
-        Fri, 03 May 2019 16:28:37 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id y18sm1747899qtf.87.2019.05.03.16.28.36
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Y9uds37g7f4813/ZqlKEDnGn948IiuDvboVC7bPadlI=;
+        b=LDC1toQidrExZOU8Yzfqc4SNvMTQGiRcn8n16SWCQARkwVTHvCIUqXd2V95IJ8O4/0
+         zSYaSTNMJYSyH34IN48RoICQYhCbrny/MYPno8bdr4k+Yu6q56QQZyIQVFXwx0MxmTnk
+         LgAeJAqQ/SiPDQiW0EBU+X+Pu3f6WdTpxroEx480ZzA6FjTWlNha324nxYFLxUl85PmZ
+         m8zKA/zzdEiHj7EjzZ/oSCbNxP/08UytBmT3jq6lPjZ2Sc5ZKofRMifPJ+CSXkXGGZ61
+         w39yF5m7odFK/Gkay+89Hquz61DSM2fHdvC65j3AzNJQiVAkbC87Z66P3+oQiwzLNhYk
+         8mHw==
+X-Gm-Message-State: APjAAAWDsAhoWDSULcz6mJUJAg+cHHUjJpx85CBCEH61tS2p6Unkcuyw
+        vLNlPNSutiMiLVaRzt+ewQT4Ig==
+X-Google-Smtp-Source: APXvYqziKdH2wZvx3iC97K6c8A4weeprYaQkrXpo4FxMM1oMFrPSRq/nQcOHMobAnKPDvieS6kD22g==
+X-Received: by 2002:ac8:8ad:: with SMTP id v42mr10692638qth.337.1556927577786;
+        Fri, 03 May 2019 16:52:57 -0700 (PDT)
+Received: from ziepe.ca ([65.119.211.164])
+        by smtp.gmail.com with ESMTPSA id r1sm1636491qtp.77.2019.05.03.16.52.56
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 03 May 2019 16:28:36 -0700 (PDT)
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next v2] net: dsa: mv88e6xxx: refine SMI support
-Date:   Fri,  3 May 2019 19:28:22 -0400
-Message-Id: <20190503232822.23986-1-vivien.didelot@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        Fri, 03 May 2019 16:52:56 -0700 (PDT)
+Received: from jgg by jggl.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1hMhz6-0001lg-BL; Fri, 03 May 2019 20:52:56 -0300
+Date:   Fri, 3 May 2019 20:52:56 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Kees Cook <keescook@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Kostya Serebryany <kcc@google.com>,
+        Evgeniy Stepanov <eugenis@google.com>,
+        Ramana Radhakrishnan <Ramana.Radhakrishnan@arm.com>,
+        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Dave Martin <Dave.Martin@arm.com>,
+        Kevin Brodsky <kevin.brodsky@arm.com>,
+        Szabolcs Nagy <Szabolcs.Nagy@arm.com>
+Subject: Re: [PATCH v13 16/20] IB/mlx4, arm64: untag user pointers in
+ mlx4_get_umem_mr
+Message-ID: <20190503235256.GB6660@ziepe.ca>
+References: <cover.1553093420.git.andreyknvl@google.com>
+ <1e2824fd77e8eeb351c6c6246f384d0d89fd2d58.1553093421.git.andreyknvl@google.com>
+ <20190429180915.GZ6705@mtr-leonro.mtl.com>
+ <20190430111625.GD29799@arrakis.emea.arm.com>
+ <20190502184442.GA31165@ziepe.ca>
+ <20190503162846.GI55449@arrakis.emea.arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190503162846.GI55449@arrakis.emea.arm.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Marvell SOHO switches have several ways to access the internal
-registers. One of them being the System Management Interface (SMI),
-using the MDC and MDIO pins, with direct and indirect variants.
+On Fri, May 03, 2019 at 05:28:46PM +0100, Catalin Marinas wrote:
+> Thanks Jason and Leon for the information.
+> 
+> On Thu, May 02, 2019 at 03:44:42PM -0300, Jason Gunthorpe wrote:
+> > On Tue, Apr 30, 2019 at 12:16:25PM +0100, Catalin Marinas wrote:
+> > > > Interesting, the followup question is why mlx4 is only one driver in IB which
+> > > > needs such code in umem_mr. I'll take a look on it.
+> > > 
+> > > I don't know. Just using the light heuristics of find_vma() shows some
+> > > other places. For example, ib_umem_odp_get() gets the umem->address via
+> > > ib_umem_start(). This was previously set in ib_umem_get() as called from
+> > > mlx4_get_umem_mr(). Should the above patch have just untagged "start" on
+> > > entry?
+> > 
+> > I have a feeling that there needs to be something for this in the odp
+> > code..
+> > 
+> > Presumably mmu notifiers and what not also use untagged pointers? Most
+> > likely then the umem should also be storing untagged pointers.
+> 
+> Yes.
+> 
+> > This probably becomes problematic because we do want the tag in cases
+> > talking about the base VA of the MR..
+> 
+> It depends on whether the tag is relevant to the kernel or not. The only
+> useful case so far is for the kernel performing copy_form_user() etc.
+> accesses so they'd get checked in the presence of hardware memory
+> tagging (MTE; but it's not mandatory, a 0 tag would do as well).
+> 
+> If we talk about a memory range where the content is relatively opaque
+> (or irrelevant) to the kernel code, we don't really need the tag. I'm
+> not familiar to RDMA but I presume it would be a device accessing such
+> MR but not through the user VA directly. 
 
-In preparation for adding support for other register accesses, move
-the SMI code into its own files. At the same time, refine the code
-to make it clear that the indirect variant is implemented using the
-direct variant accessing only two registers for command and data.
+RDMA exposes the user VA directly (the IOVA) as part of the wire
+protocol, we must preserve the tag in these cases as that is what the
+userspace is using for the pointer.
 
-Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/Makefile |   1 +
- drivers/net/dsa/mv88e6xxx/chip.c   | 160 +----------------------------
- drivers/net/dsa/mv88e6xxx/chip.h   |  11 --
- drivers/net/dsa/mv88e6xxx/smi.c    | 158 ++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/smi.h    |  59 +++++++++++
- 5 files changed, 219 insertions(+), 170 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/smi.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/smi.h
+So the ODP stuff will definately need some adjusting when it interacts
+with the mmu notifiers and get user pages.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/Makefile b/drivers/net/dsa/mv88e6xxx/Makefile
-index 50de304abe2f..e85755dde90b 100644
---- a/drivers/net/dsa/mv88e6xxx/Makefile
-+++ b/drivers/net/dsa/mv88e6xxx/Makefile
-@@ -12,3 +12,4 @@ mv88e6xxx-objs += phy.o
- mv88e6xxx-objs += port.o
- mv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o
- mv88e6xxx-objs += serdes.o
-+mv88e6xxx-objs += smi.o
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 489a899c80b6..e8e25ceb2679 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -43,6 +43,7 @@
- #include "port.h"
- #include "ptp.h"
- #include "serdes.h"
-+#include "smi.h"
- 
- static void assert_reg_lock(struct mv88e6xxx_chip *chip)
- {
-@@ -52,149 +53,6 @@ static void assert_reg_lock(struct mv88e6xxx_chip *chip)
- 	}
- }
- 
--/* The switch ADDR[4:1] configuration pins define the chip SMI device address
-- * (ADDR[0] is always zero, thus only even SMI addresses can be strapped).
-- *
-- * When ADDR is all zero, the chip uses Single-chip Addressing Mode, assuming it
-- * is the only device connected to the SMI master. In this mode it responds to
-- * all 32 possible SMI addresses, and thus maps directly the internal devices.
-- *
-- * When ADDR is non-zero, the chip uses Multi-chip Addressing Mode, allowing
-- * multiple devices to share the SMI interface. In this mode it responds to only
-- * 2 registers, used to indirectly access the internal SMI devices.
-- */
--
--static int mv88e6xxx_smi_read(struct mv88e6xxx_chip *chip,
--			      int addr, int reg, u16 *val)
--{
--	if (!chip->smi_ops)
--		return -EOPNOTSUPP;
--
--	return chip->smi_ops->read(chip, addr, reg, val);
--}
--
--static int mv88e6xxx_smi_write(struct mv88e6xxx_chip *chip,
--			       int addr, int reg, u16 val)
--{
--	if (!chip->smi_ops)
--		return -EOPNOTSUPP;
--
--	return chip->smi_ops->write(chip, addr, reg, val);
--}
--
--static int mv88e6xxx_smi_single_chip_read(struct mv88e6xxx_chip *chip,
--					  int addr, int reg, u16 *val)
--{
--	int ret;
--
--	ret = mdiobus_read_nested(chip->bus, addr, reg);
--	if (ret < 0)
--		return ret;
--
--	*val = ret & 0xffff;
--
--	return 0;
--}
--
--static int mv88e6xxx_smi_single_chip_write(struct mv88e6xxx_chip *chip,
--					   int addr, int reg, u16 val)
--{
--	int ret;
--
--	ret = mdiobus_write_nested(chip->bus, addr, reg, val);
--	if (ret < 0)
--		return ret;
--
--	return 0;
--}
--
--static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_single_chip_ops = {
--	.read = mv88e6xxx_smi_single_chip_read,
--	.write = mv88e6xxx_smi_single_chip_write,
--};
--
--static int mv88e6xxx_smi_multi_chip_wait(struct mv88e6xxx_chip *chip)
--{
--	int ret;
--	int i;
--
--	for (i = 0; i < 16; i++) {
--		ret = mdiobus_read_nested(chip->bus, chip->sw_addr, SMI_CMD);
--		if (ret < 0)
--			return ret;
--
--		if ((ret & SMI_CMD_BUSY) == 0)
--			return 0;
--	}
--
--	return -ETIMEDOUT;
--}
--
--static int mv88e6xxx_smi_multi_chip_read(struct mv88e6xxx_chip *chip,
--					 int addr, int reg, u16 *val)
--{
--	int ret;
--
--	/* Wait for the bus to become free. */
--	ret = mv88e6xxx_smi_multi_chip_wait(chip);
--	if (ret < 0)
--		return ret;
--
--	/* Transmit the read command. */
--	ret = mdiobus_write_nested(chip->bus, chip->sw_addr, SMI_CMD,
--				   SMI_CMD_OP_22_READ | (addr << 5) | reg);
--	if (ret < 0)
--		return ret;
--
--	/* Wait for the read command to complete. */
--	ret = mv88e6xxx_smi_multi_chip_wait(chip);
--	if (ret < 0)
--		return ret;
--
--	/* Read the data. */
--	ret = mdiobus_read_nested(chip->bus, chip->sw_addr, SMI_DATA);
--	if (ret < 0)
--		return ret;
--
--	*val = ret & 0xffff;
--
--	return 0;
--}
--
--static int mv88e6xxx_smi_multi_chip_write(struct mv88e6xxx_chip *chip,
--					  int addr, int reg, u16 val)
--{
--	int ret;
--
--	/* Wait for the bus to become free. */
--	ret = mv88e6xxx_smi_multi_chip_wait(chip);
--	if (ret < 0)
--		return ret;
--
--	/* Transmit the data to write. */
--	ret = mdiobus_write_nested(chip->bus, chip->sw_addr, SMI_DATA, val);
--	if (ret < 0)
--		return ret;
--
--	/* Transmit the write command. */
--	ret = mdiobus_write_nested(chip->bus, chip->sw_addr, SMI_CMD,
--				   SMI_CMD_OP_22_WRITE | (addr << 5) | reg);
--	if (ret < 0)
--		return ret;
--
--	/* Wait for the write command to complete. */
--	ret = mv88e6xxx_smi_multi_chip_wait(chip);
--	if (ret < 0)
--		return ret;
--
--	return 0;
--}
--
--static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_multi_chip_ops = {
--	.read = mv88e6xxx_smi_multi_chip_read,
--	.write = mv88e6xxx_smi_multi_chip_write,
--};
--
- int mv88e6xxx_read(struct mv88e6xxx_chip *chip, int addr, int reg, u16 *val)
- {
- 	int err;
-@@ -4632,22 +4490,6 @@ static struct mv88e6xxx_chip *mv88e6xxx_alloc_chip(struct device *dev)
- 	return chip;
- }
- 
--static int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
--			      struct mii_bus *bus, int sw_addr)
--{
--	if (sw_addr == 0)
--		chip->smi_ops = &mv88e6xxx_smi_single_chip_ops;
--	else if (chip->info->multi_chip)
--		chip->smi_ops = &mv88e6xxx_smi_multi_chip_ops;
--	else
--		return -EINVAL;
--
--	chip->bus = bus;
--	chip->sw_addr = sw_addr;
--
--	return 0;
--}
--
- static enum dsa_tag_protocol mv88e6xxx_get_tag_protocol(struct dsa_switch *ds,
- 							int port)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 19c07dff0440..faa3fa889f19 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -21,17 +21,6 @@
- #include <linux/timecounter.h>
- #include <net/dsa.h>
- 
--#define SMI_CMD			0x00
--#define SMI_CMD_BUSY		BIT(15)
--#define SMI_CMD_CLAUSE_22	BIT(12)
--#define SMI_CMD_OP_22_WRITE	((1 << 10) | SMI_CMD_BUSY | SMI_CMD_CLAUSE_22)
--#define SMI_CMD_OP_22_READ	((2 << 10) | SMI_CMD_BUSY | SMI_CMD_CLAUSE_22)
--#define SMI_CMD_OP_45_WRITE_ADDR	((0 << 10) | SMI_CMD_BUSY)
--#define SMI_CMD_OP_45_WRITE_DATA	((1 << 10) | SMI_CMD_BUSY)
--#define SMI_CMD_OP_45_READ_DATA		((2 << 10) | SMI_CMD_BUSY)
--#define SMI_CMD_OP_45_READ_DATA_INC	((3 << 10) | SMI_CMD_BUSY)
--#define SMI_DATA		0x01
--
- #define MV88E6XXX_N_FID		4096
- 
- /* PVT limits for 4-bit port and 5-bit switch */
-diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
-new file mode 100644
-index 000000000000..96f7d2685bdc
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/smi.c
-@@ -0,0 +1,158 @@
-+/*
-+ * Marvell 88E6xxx System Management Interface (SMI) support
-+ *
-+ * Copyright (c) 2008 Marvell Semiconductor
-+ *
-+ * Copyright (c) 2019 Vivien Didelot <vivien.didelot@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ */
-+
-+#include "chip.h"
-+#include "smi.h"
-+
-+/* The switch ADDR[4:1] configuration pins define the chip SMI device address
-+ * (ADDR[0] is always zero, thus only even SMI addresses can be strapped).
-+ *
-+ * When ADDR is all zero, the chip uses Single-chip Addressing Mode, assuming it
-+ * is the only device connected to the SMI master. In this mode it responds to
-+ * all 32 possible SMI addresses, and thus maps directly the internal devices.
-+ *
-+ * When ADDR is non-zero, the chip uses Multi-chip Addressing Mode, allowing
-+ * multiple devices to share the SMI interface. In this mode it responds to only
-+ * 2 registers, used to indirectly access the internal SMI devices.
-+ */
-+
-+static int mv88e6xxx_smi_direct_read(struct mv88e6xxx_chip *chip,
-+				     int dev, int reg, u16 *data)
-+{
-+	int ret;
-+
-+	ret = mdiobus_read_nested(chip->bus, dev, reg);
-+	if (ret < 0)
-+		return ret;
-+
-+	*data = ret & 0xffff;
-+
-+	return 0;
-+}
-+
-+static int mv88e6xxx_smi_direct_write(struct mv88e6xxx_chip *chip,
-+				      int dev, int reg, u16 data)
-+{
-+	int ret;
-+
-+	ret = mdiobus_write_nested(chip->bus, dev, reg, data);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int mv88e6xxx_smi_direct_wait(struct mv88e6xxx_chip *chip,
-+				     int dev, int reg, int bit, int val)
-+{
-+	u16 data;
-+	int err;
-+	int i;
-+
-+	for (i = 0; i < 16; i++) {
-+		err = mv88e6xxx_smi_direct_read(chip, dev, reg, &data);
-+		if (err)
-+			return err;
-+
-+		if (!!(data >> bit) == !!val)
-+			return 0;
-+	}
-+
-+	return -ETIMEDOUT;
-+}
-+
-+static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_direct_ops = {
-+	.read = mv88e6xxx_smi_direct_read,
-+	.write = mv88e6xxx_smi_direct_write,
-+};
-+
-+/* Offset 0x00: SMI Command Register
-+ * Offset 0x01: SMI Data Register
-+ */
-+
-+static int mv88e6xxx_smi_indirect_read(struct mv88e6xxx_chip *chip,
-+				       int dev, int reg, u16 *data)
-+{
-+	int err;
-+
-+	err = mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
-+					MV88E6XXX_SMI_CMD, 15, 0);
-+	if (err)
-+		return err;
-+
-+	err = mv88e6xxx_smi_direct_write(chip, chip->sw_addr,
-+					 MV88E6XXX_SMI_CMD,
-+					 MV88E6XXX_SMI_CMD_BUSY |
-+					 MV88E6XXX_SMI_CMD_MODE_22 |
-+					 MV88E6XXX_SMI_CMD_OP_22_READ |
-+					 (dev << 5) | reg);
-+	if (err)
-+		return err;
-+
-+	err = mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
-+					MV88E6XXX_SMI_CMD, 15, 0);
-+	if (err)
-+		return err;
-+
-+	return mv88e6xxx_smi_direct_read(chip, chip->sw_addr,
-+					 MV88E6XXX_SMI_DATA, data);
-+}
-+
-+static int mv88e6xxx_smi_indirect_write(struct mv88e6xxx_chip *chip,
-+					int dev, int reg, u16 data)
-+{
-+	int err;
-+
-+	err = mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
-+					MV88E6XXX_SMI_CMD, 15, 0);
-+	if (err)
-+		return err;
-+
-+	err = mv88e6xxx_smi_direct_write(chip, chip->sw_addr,
-+					 MV88E6XXX_SMI_DATA, data);
-+	if (err)
-+		return err;
-+
-+	err = mv88e6xxx_smi_direct_write(chip, chip->sw_addr,
-+					 MV88E6XXX_SMI_CMD,
-+					 MV88E6XXX_SMI_CMD_BUSY |
-+					 MV88E6XXX_SMI_CMD_MODE_22 |
-+					 MV88E6XXX_SMI_CMD_OP_22_WRITE |
-+					 (dev << 5) | reg);
-+	if (err)
-+		return err;
-+
-+	return mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
-+					 MV88E6XXX_SMI_CMD, 15, 0);
-+}
-+
-+static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_indirect_ops = {
-+	.read = mv88e6xxx_smi_indirect_read,
-+	.write = mv88e6xxx_smi_indirect_write,
-+};
-+
-+int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
-+		       struct mii_bus *bus, int sw_addr)
-+{
-+	if (sw_addr == 0)
-+		chip->smi_ops = &mv88e6xxx_smi_direct_ops;
-+	else if (chip->info->multi_chip)
-+		chip->smi_ops = &mv88e6xxx_smi_indirect_ops;
-+	else
-+		return -EINVAL;
-+
-+	chip->bus = bus;
-+	chip->sw_addr = sw_addr;
-+
-+	return 0;
-+}
-diff --git a/drivers/net/dsa/mv88e6xxx/smi.h b/drivers/net/dsa/mv88e6xxx/smi.h
-new file mode 100644
-index 000000000000..35e6403b65dc
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/smi.h
-@@ -0,0 +1,59 @@
-+/*
-+ * Marvell 88E6xxx System Management Interface (SMI) support
-+ *
-+ * Copyright (c) 2008 Marvell Semiconductor
-+ *
-+ * Copyright (c) 2019 Vivien Didelot <vivien.didelot@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ */
-+
-+#ifndef _MV88E6XXX_SMI_H
-+#define _MV88E6XXX_SMI_H
-+
-+#include "chip.h"
-+
-+/* Offset 0x00: SMI Command Register */
-+#define MV88E6XXX_SMI_CMD			0x00
-+#define MV88E6XXX_SMI_CMD_BUSY			0x8000
-+#define MV88E6XXX_SMI_CMD_MODE_MASK		0x1000
-+#define MV88E6XXX_SMI_CMD_MODE_45		0x0000
-+#define MV88E6XXX_SMI_CMD_MODE_22		0x1000
-+#define MV88E6XXX_SMI_CMD_OP_MASK		0x0c00
-+#define MV88E6XXX_SMI_CMD_OP_22_WRITE		0x0400
-+#define MV88E6XXX_SMI_CMD_OP_22_READ		0x0800
-+#define MV88E6XXX_SMI_CMD_OP_45_WRITE_ADDR	0x0000
-+#define MV88E6XXX_SMI_CMD_OP_45_WRITE_DATA	0x0400
-+#define MV88E6XXX_SMI_CMD_OP_45_READ_DATA	0x0800
-+#define MV88E6XXX_SMI_CMD_OP_45_READ_DATA_INC	0x0c00
-+#define MV88E6XXX_SMI_CMD_DEV_ADDR_MASK		0x003e
-+#define MV88E6XXX_SMI_CMD_REG_ADDR_MASK		0x001f
-+
-+/* Offset 0x01: SMI Data Register */
-+#define MV88E6XXX_SMI_DATA			0x01
-+
-+int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
-+		       struct mii_bus *bus, int sw_addr);
-+
-+static inline int mv88e6xxx_smi_read(struct mv88e6xxx_chip *chip,
-+				     int dev, int reg, u16 *data)
-+{
-+	if (chip->smi_ops && chip->smi_ops->read)
-+		return chip->smi_ops->read(chip, dev, reg, data);
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline int mv88e6xxx_smi_write(struct mv88e6xxx_chip *chip,
-+				      int dev, int reg, u16 data)
-+{
-+	if (chip->smi_ops && chip->smi_ops->write)
-+		return chip->smi_ops->write(chip, dev, reg, data);
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+#endif /* _MV88E6XXX_SMI_H */
--- 
-2.21.0
-
+Jason
