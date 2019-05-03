@@ -2,96 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 717AC130E7
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 17:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72E99130EA
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 17:09:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728161AbfECPIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 11:08:31 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:56770 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726495AbfECPIb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 11:08:31 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id AC55C30007B;
-        Fri,  3 May 2019 15:08:29 +0000 (UTC)
-Received: from ehc-opti7040.uk.solarflarecom.com (10.17.20.203) by
- ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Fri, 3 May 2019 16:08:22 +0100
-Date:   Fri, 3 May 2019 16:08:13 +0100
-From:   Edward Cree <ecree@solarflare.com>
-X-X-Sender: ehc@ehc-opti7040.uk.solarflarecom.com
-To:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>
-CC:     netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Anjali Singhai Jain <anjali.singhai@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Subject: [RFC PATCH net-next 3/3] flow_offload: support CVLAN match
-Message-ID: <alpine.LFD.2.21.1905031607170.11823@ehc-opti7040.uk.solarflarecom.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1728023AbfECPJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 11:09:29 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40602 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726289AbfECPJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 11:09:28 -0400
+Received: by mail-pg1-f194.google.com with SMTP id d31so2859643pgl.7
+        for <netdev@vger.kernel.org>; Fri, 03 May 2019 08:09:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=hp/Tj1QYz56VfTMd1RiR2FT6yvDdqYC2zjWo8LyAtkA=;
+        b=XVMEwTvgSW0fLQs1WlzPcg8PmDBpqQLEQk+l6MRhlmpMcbdm4grgueXWpP8gUgJHwa
+         5UcAYa8QLpXmeyoTf4aZKyeRiUhlp6p8Exru114uSeqRCUSO4AT0Rj0P6+gAgzPfAdKv
+         96iLl5UuNdjG1WzfWwaAMoL9pTj6QfEbQXLZ0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=hp/Tj1QYz56VfTMd1RiR2FT6yvDdqYC2zjWo8LyAtkA=;
+        b=aym6nPYHyweL9jnMoirVc3TDfAiNGJcQt4YSq++1fQ/UUzYQe5cPLduz4bmebZyaHQ
+         6WtLIFxFdvg3MXbXiYC3uGQwA8GD9i7WAP9YIvvPoc7TZayy+q32V3ANPSyBNOW9Hfb9
+         Y+4pczCdCM74QiTfai6H/8zWwRIB8qTQwkLp6kxg+zPFh0Fy4LS0OZkHfW0FJ2blWLAF
+         AY4+73HTY9XzRrz17FjO9k8/qUZI676Su2tz3sryA2mjFp99EXb2DPpmCsDRRH3nxCwD
+         6BuzVA90z8TpmsRqz8BcTyaW5Rlqp+Bq6fmNBhfmovO2YXNVJM+KScJedZmpJ1rTPFzt
+         yUXA==
+X-Gm-Message-State: APjAAAVFrYHrnuKoL53fptwpfuohyWXaKIvgLwtS2JAjWPteu/snW4jh
+        xALdux5i4RpRw+cKZ6mYa5AGSQ==
+X-Google-Smtp-Source: APXvYqy+kMyXCOYXt3tkQiqhn8ghrjZXjBP+x14BUTwqGUx5FSITGx6w6TqBrjvdy1o7gXfH68Aj5Q==
+X-Received: by 2002:a65:6644:: with SMTP id z4mr10890842pgv.300.1556896167237;
+        Fri, 03 May 2019 08:09:27 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id h189sm5627185pfc.125.2019.05.03.08.09.25
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 03 May 2019 08:09:26 -0700 (PDT)
+Date:   Fri, 3 May 2019 11:09:24 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org,
+        Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
+Message-ID: <20190503150924.GD253329@google.com>
+References: <20190502204958.7868-1-joel@joelfernandes.org>
+ <20190503121234.6don256zuvfjtdg6@e107158-lin.cambridge.arm.com>
+ <20190503134935.GA253329@google.com>
+ <20190503135426.GA2606@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24588.003
-X-TM-AS-Result: No-2.055700-8.000000-10
-X-TMASE-MatchedRID: sCDf79FZeQnOt+/gOYaZxQPZZctd3P4Bl2F9+KxZd8dLiJUKJm5lyKPF
-        jJEFr+olxpQ77C1A1tr3FLeZXNZS4CiM3WUt6LtFaOz8F/pTe4s6KXoNUjPX83e0nBluT2htduc
-        eJolmdr+YVct0aJ7Wm++yCLGQELewg2VxtXdrUuvUlyHrHv2rMgKTsGFb+J78FwqhNBEHf/RyoI
-        PhxHMm1bhCj6a0MTv8SvGzpcUo0RA=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.055700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24588.003
-X-MDID: 1556896110-QFXLn_q7yj2D
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190503135426.GA2606@hirez.programming.kicks-ass.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Plumb it through from the flow_dissector.
+On Fri, May 03, 2019 at 03:54:26PM +0200, Peter Zijlstra wrote:
+> On Fri, May 03, 2019 at 09:49:35AM -0400, Joel Fernandes wrote:
+> > In
+> > particular, we learnt with extensive discussions that user/kernel pointers
+> > are not necessarily distinguishable purely based on their address.
+> 
+> This is correct; a number of architectures have a completely separate
+> user and kernel address space. Much like how the old i386 4G:4G patches
+> worked.
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- include/net/flow_offload.h | 2 ++
- net/core/flow_offload.c    | 7 +++++++
- 2 files changed, 9 insertions(+)
+Thanks Peter for confirming.
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 6f59cdaf6eb6..48847ee7aa3a 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -71,6 +71,8 @@ void flow_rule_match_eth_addrs(const struct flow_rule *rule,
- 			       struct flow_match_eth_addrs *out);
- void flow_rule_match_vlan(const struct flow_rule *rule,
- 			  struct flow_match_vlan *out);
-+void flow_rule_match_cvlan(const struct flow_rule *rule,
-+			   struct flow_match_vlan *out);
- void flow_rule_match_ipv4_addrs(const struct flow_rule *rule,
- 				struct flow_match_ipv4_addrs *out);
- void flow_rule_match_ipv6_addrs(const struct flow_rule *rule,
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index c3a00eac4804..5ce7d47a960e 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -54,6 +54,13 @@ void flow_rule_match_vlan(const struct flow_rule *rule,
- }
- EXPORT_SYMBOL(flow_rule_match_vlan);
- 
-+void flow_rule_match_cvlan(const struct flow_rule *rule,
-+			   struct flow_match_vlan *out)
-+{
-+	FLOW_DISSECTOR_MATCH(rule, FLOW_DISSECTOR_KEY_CVLAN, out);
-+}
-+EXPORT_SYMBOL(flow_rule_match_cvlan);
-+
- void flow_rule_match_ipv4_addrs(const struct flow_rule *rule,
- 				struct flow_match_ipv4_addrs *out)
- {
