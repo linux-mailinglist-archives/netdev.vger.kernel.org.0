@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D54F012B12
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 11:51:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9370A12B10
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 11:51:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727335AbfECJvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 05:51:43 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7716 "EHLO huawei.com"
+        id S1727380AbfECJvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 05:51:44 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7717 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726417AbfECJv3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725777AbfECJv3 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 3 May 2019 05:51:29 -0400
 Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 911AEAD4E779F30E3A08;
+        by Forcepoint Email with ESMTP id 968568EC41FD42738A69;
         Fri,  3 May 2019 17:51:27 +0800 (CST)
 Received: from linux-ioko.site (10.71.200.31) by
  DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
@@ -22,9 +22,9 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, <yisen.zhuang@huawei.com>,
         <salil.mehta@huawei.com>, <lipeng321@huawei.com>
-Subject: [PATCH V2 net-next 2/3] net: hns3: add autoneg and change speed support for fibre port
-Date:   Fri, 3 May 2019 17:50:38 +0800
-Message-ID: <1556877039-1692-3-git-send-email-lipeng321@huawei.com>
+Subject: [PATCH V2 net-next 3/3] net: hns3: add support for FEC encoding control
+Date:   Fri, 3 May 2019 17:50:39 +0800
+Message-ID: <1556877039-1692-4-git-send-email-lipeng321@huawei.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1556877039-1692-1-git-send-email-lipeng321@huawei.com>
 References: <1556877039-1692-1-git-send-email-lipeng321@huawei.com>
@@ -39,313 +39,352 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jian Shen <shenjian15@huawei.com>
 
-Previously, our driver only supports phydev to autoneg or change
-port speed. This patch adds support for fibre port, driver gets
-media speed capability and autoneg capability from firmware. If
-the media supports multiple speeds, user can change port speed
-with command "ethtool -s <devname> speed xxxx autoneg off duplex
-full". If autoneg on, the user configuration may be overwritten
-by the autoneg result.
+This patch adds support for FEC encoding control, user can change
+FEC mode by command ethtool --set-fec, and get FEC mode by command
+ethtool --show-fec. The fec capability is changed follow the port
+speed. If autoneg on, the user configure fec mode will be overwritten
+by autoneg result.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  6 ++
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 90 ++++++++++++++++++++--
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 78 +++++++++++++++++--
- 3 files changed, 163 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  10 ++
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  77 +++++++++++++++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  16 ++++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 106 +++++++++++++++++++++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   5 +-
+ 5 files changed, 213 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 8b46c6c..7ee40ec 100644
+index 7ee40ec..ad21b0e 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -244,6 +244,8 @@ struct hnae3_ae_dev {
-  *   Get negotiation status,speed and duplex
-  * get_media_type()
-  *   Get media type of MAC
-+ * check_port_speed()
-+ *   Check target speed whether is supported
-  * adjust_link()
-  *   Adjust link status
-  * set_loopback()
-@@ -260,6 +262,8 @@ struct hnae3_ae_dev {
-  *   set auto autonegotiation of pause frame use
-  * get_autoneg()
-  *   get auto autonegotiation of pause frame use
-+ * restart_autoneg()
-+ *   restart autonegotiation
-  * get_coalesce_usecs()
-  *   get usecs to delay a TX interrupt after a packet is sent
-  * get_rx_max_coalesced_frames()
-@@ -355,6 +359,7 @@ struct hnae3_ae_ops {
+@@ -132,6 +132,13 @@ enum hnae3_module_type {
  
+ };
+ 
++enum hnae3_fec_mode {
++	HNAE3_FEC_AUTO = 0,
++	HNAE3_FEC_BASER,
++	HNAE3_FEC_RS,
++	HNAE3_FEC_USER_DEF,
++};
++
+ enum hnae3_reset_notify_type {
+ 	HNAE3_UP_CLIENT,
+ 	HNAE3_DOWN_CLIENT,
+@@ -360,6 +367,9 @@ struct hnae3_ae_ops {
  	void (*get_media_type)(struct hnae3_handle *handle, u8 *media_type,
  			       u8 *module_type);
-+	int (*check_port_speed)(struct hnae3_handle *handle, u32 speed);
+ 	int (*check_port_speed)(struct hnae3_handle *handle, u32 speed);
++	void (*get_fec)(struct hnae3_handle *handle, u8 *fec_ability,
++			u8 *fec_mode);
++	int (*set_fec)(struct hnae3_handle *handle, u32 fec_mode);
  	void (*adjust_link)(struct hnae3_handle *handle, int speed, int duplex);
  	int (*set_loopback)(struct hnae3_handle *handle,
  			    enum hnae3_loop loop_mode, bool en);
-@@ -370,6 +375,7 @@ struct hnae3_ae_ops {
- 
- 	int (*set_autoneg)(struct hnae3_handle *handle, bool enable);
- 	int (*get_autoneg)(struct hnae3_handle *handle);
-+	int (*restart_autoneg)(struct hnae3_handle *handle);
- 
- 	void (*get_coalesce_usecs)(struct hnae3_handle *handle,
- 				   u32 *tx_usecs, u32 *rx_usecs);
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index bf7fdb8..23ded8a 100644
+index 23ded8a..1746943 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -659,10 +659,54 @@ static int hns3_get_link_ksettings(struct net_device *netdev,
- 	return 0;
+@@ -1211,6 +1211,81 @@ static void hns3_set_msglevel(struct net_device *netdev, u32 msg_level)
+ 	h->msg_enable = msg_level;
  }
  
-+static int hns3_check_ksettings_param(struct net_device *netdev,
-+				      const struct ethtool_link_ksettings *cmd)
++/* Translate local fec value into ethtool value. */
++static unsigned int loc_to_eth_fec(u8 loc_fec)
++{
++	u32 eth_fec = 0;
++
++	if (loc_fec & BIT(HNAE3_FEC_AUTO))
++		eth_fec |= ETHTOOL_FEC_AUTO;
++	if (loc_fec & BIT(HNAE3_FEC_RS))
++		eth_fec |= ETHTOOL_FEC_RS;
++	if (loc_fec & BIT(HNAE3_FEC_BASER))
++		eth_fec |= ETHTOOL_FEC_BASER;
++
++	/* if nothing is set, then FEC is off */
++	if (!eth_fec)
++		eth_fec = ETHTOOL_FEC_OFF;
++
++	return eth_fec;
++}
++
++/* Translate ethtool fec value into local value. */
++static unsigned int eth_to_loc_fec(unsigned int eth_fec)
++{
++	u32 loc_fec = 0;
++
++	if (eth_fec & ETHTOOL_FEC_OFF)
++		return loc_fec;
++
++	if (eth_fec & ETHTOOL_FEC_AUTO)
++		loc_fec |= BIT(HNAE3_FEC_AUTO);
++	if (eth_fec & ETHTOOL_FEC_RS)
++		loc_fec |= BIT(HNAE3_FEC_RS);
++	if (eth_fec & ETHTOOL_FEC_BASER)
++		loc_fec |= BIT(HNAE3_FEC_BASER);
++
++	return loc_fec;
++}
++
++static int hns3_get_fecparam(struct net_device *netdev,
++			     struct ethtool_fecparam *fec)
 +{
 +	struct hnae3_handle *handle = hns3_get_handle(netdev);
 +	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
-+	u8 module_type = HNAE3_MODULE_TYPE_UNKNOWN;
-+	u8 media_type = HNAE3_MEDIA_TYPE_UNKNOWN;
-+	u8 autoneg;
-+	u32 speed;
-+	u8 duplex;
-+	int ret;
++	u8 fec_ability;
++	u8 fec_mode;
 +
-+	if (ops->get_ksettings_an_result) {
-+		ops->get_ksettings_an_result(handle, &autoneg, &speed, &duplex);
-+		if (cmd->base.autoneg == autoneg && cmd->base.speed == speed &&
-+		    cmd->base.duplex == duplex)
-+			return 0;
-+	}
++	if (handle->pdev->revision == 0x20)
++		return -EOPNOTSUPP;
 +
-+	if (ops->get_media_type)
-+		ops->get_media_type(handle, &media_type, &module_type);
++	if (!ops->get_fec)
++		return -EOPNOTSUPP;
 +
-+	if (cmd->base.duplex != DUPLEX_FULL &&
-+	    media_type != HNAE3_MEDIA_TYPE_COPPER) {
-+		netdev_err(netdev,
-+			   "only copper port supports half duplex!");
-+		return -EINVAL;
-+	}
++	ops->get_fec(handle, &fec_ability, &fec_mode);
 +
-+	if (ops->check_port_speed) {
-+		ret = ops->check_port_speed(handle, cmd->base.speed);
-+		if (ret) {
-+			netdev_err(netdev, "unsupported speed\n");
-+			return ret;
-+		}
-+	}
++	fec->fec = loc_to_eth_fec(fec_ability);
++	fec->active_fec = loc_to_eth_fec(fec_mode);
 +
 +	return 0;
 +}
 +
- static int hns3_set_link_ksettings(struct net_device *netdev,
- 				   const struct ethtool_link_ksettings *cmd)
- {
--	/* Chip doesn't support this mode. */
++static int hns3_set_fecparam(struct net_device *netdev,
++			     struct ethtool_fecparam *fec)
++{
 +	struct hnae3_handle *handle = hns3_get_handle(netdev);
 +	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
-+	int ret = 0;
++	u32 fec_mode;
 +
-+	/* Chip don't support this mode. */
- 	if (cmd->base.speed == SPEED_1000 && cmd->base.duplex == DUPLEX_HALF)
- 		return -EINVAL;
- 
-@@ -670,7 +714,24 @@ static int hns3_set_link_ksettings(struct net_device *netdev,
- 	if (netdev->phydev)
- 		return phy_ethtool_ksettings_set(netdev->phydev, cmd);
- 
--	return -EOPNOTSUPP;
 +	if (handle->pdev->revision == 0x20)
 +		return -EOPNOTSUPP;
 +
-+	ret = hns3_check_ksettings_param(netdev, cmd);
-+	if (ret)
-+		return ret;
-+
-+	if (ops->set_autoneg) {
-+		ret = ops->set_autoneg(handle, cmd->base.autoneg);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (ops->cfg_mac_speed_dup_h)
-+		ret = ops->cfg_mac_speed_dup_h(handle, cmd->base.speed,
-+					       cmd->base.duplex);
-+
-+	return ret;
- }
- 
- static u32 hns3_get_rss_key_size(struct net_device *netdev)
-@@ -875,19 +936,36 @@ static int hns3_set_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd)
- 
- static int hns3_nway_reset(struct net_device *netdev)
- {
-+	struct hnae3_handle *handle = hns3_get_handle(netdev);
-+	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
- 	struct phy_device *phy = netdev->phydev;
-+	int autoneg;
- 
- 	if (!netif_running(netdev))
- 		return 0;
- 
--	/* Only support nway_reset for netdev with phy attached for now */
--	if (!phy)
-+	if (hns3_nic_resetting(netdev)) {
-+		netdev_err(netdev, "dev resetting!");
-+		return -EBUSY;
-+	}
-+
-+	if (!ops->get_autoneg || !ops->restart_autoneg)
- 		return -EOPNOTSUPP;
- 
--	if (phy->autoneg != AUTONEG_ENABLE)
-+	autoneg = ops->get_autoneg(handle);
-+	if (autoneg != AUTONEG_ENABLE) {
-+		netdev_err(netdev,
-+			   "Autoneg is off, don't support to restart it\n");
- 		return -EINVAL;
-+	}
-+
-+	if (phy)
-+		return genphy_restart_aneg(phy);
-+
-+	if (handle->pdev->revision == 0x20)
++	if (!ops->set_fec)
 +		return -EOPNOTSUPP;
++	fec_mode = eth_to_loc_fec(fec->fec);
++	return ops->set_fec(handle, fec_mode);
++}
++
+ static const struct ethtool_ops hns3vf_ethtool_ops = {
+ 	.get_drvinfo = hns3_get_drvinfo,
+ 	.get_ringparam = hns3_get_ringparam,
+@@ -1264,6 +1339,8 @@ static void hns3_set_msglevel(struct net_device *netdev, u32 msg_level)
+ 	.set_phys_id = hns3_set_phys_id,
+ 	.get_msglevel = hns3_get_msglevel,
+ 	.set_msglevel = hns3_set_msglevel,
++	.get_fecparam = hns3_get_fecparam,
++	.set_fecparam = hns3_set_fecparam,
+ };
  
--	return genphy_restart_aneg(phy);
-+	return ops->restart_autoneg(handle);
- }
+ void hns3_ethtool_set_ops(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+index 653ef6ad..d79a209 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+@@ -113,6 +113,7 @@ enum hclge_opcode_type {
+ 	HCLGE_OPC_MAC_TNL_INT_EN	= 0x0311,
+ 	HCLGE_OPC_CLEAR_MAC_TNL_INT	= 0x0312,
+ 	HCLGE_OPC_SERDES_LOOPBACK       = 0x0315,
++	HCLGE_OPC_CONFIG_FEC_MODE	= 0x031A,
  
- static void hns3_get_channels(struct net_device *netdev,
+ 	/* PFC/Pause commands */
+ 	HCLGE_OPC_CFG_MAC_PAUSE_EN      = 0x0701,
+@@ -610,6 +611,21 @@ struct hclge_sfp_info_cmd {
+ 	u8 rsv[8];
+ };
+ 
++#define HCLGE_MAC_CFG_FEC_AUTO_EN_B	0
++#define HCLGE_MAC_CFG_FEC_MODE_S	1
++#define HCLGE_MAC_CFG_FEC_MODE_M	GENMASK(3, 1)
++#define HCLGE_MAC_CFG_FEC_SET_DEF_B	0
++#define HCLGE_MAC_CFG_FEC_CLR_DEF_B	1
++
++#define HCLGE_MAC_FEC_OFF		0
++#define HCLGE_MAC_FEC_BASER		1
++#define HCLGE_MAC_FEC_RS		2
++struct hclge_config_fec_cmd {
++	u8 fec_mode;
++	u8 default_config;
++	u8 rsv[22];
++};
++
+ #define HCLGE_MAC_UPLINK_PORT		0x100
+ 
+ struct hclge_config_max_frm_size_cmd {
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 1a920d4..87615c9 100644
+index 87615c9..d3b1f8c 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -845,6 +845,48 @@ static int hclge_parse_speed(int speed_cmd, int *speed)
- 	return 0;
+@@ -966,6 +966,37 @@ static void hclge_convert_setting_kr(struct hclge_mac *mac, u8 speed_ability)
+ 				 mac->supported);
  }
  
-+static int hclge_check_port_speed(struct hnae3_handle *handle, u32 speed)
++static void hclge_convert_setting_fec(struct hclge_mac *mac)
++{
++	linkmode_clear_bit(ETHTOOL_LINK_MODE_FEC_BASER_BIT, mac->supported);
++	linkmode_clear_bit(ETHTOOL_LINK_MODE_FEC_RS_BIT, mac->supported);
++
++	switch (mac->speed) {
++	case HCLGE_MAC_SPEED_10G:
++	case HCLGE_MAC_SPEED_40G:
++		linkmode_set_bit(ETHTOOL_LINK_MODE_FEC_BASER_BIT,
++				 mac->supported);
++		mac->fec_ability =
++			BIT(HNAE3_FEC_BASER) | BIT(HNAE3_FEC_AUTO);
++		break;
++	case HCLGE_MAC_SPEED_25G:
++	case HCLGE_MAC_SPEED_50G:
++		linkmode_set_bit(ETHTOOL_LINK_MODE_FEC_RS_BIT,
++				 mac->supported);
++		mac->fec_ability =
++			BIT(HNAE3_FEC_BASER) | BIT(HNAE3_FEC_RS) |
++			BIT(HNAE3_FEC_AUTO);
++		break;
++	case HCLGE_MAC_SPEED_100G:
++		linkmode_set_bit(ETHTOOL_LINK_MODE_FEC_RS_BIT, mac->supported);
++		mac->fec_ability = BIT(HNAE3_FEC_RS) | BIT(HNAE3_FEC_AUTO);
++		break;
++	default:
++		mac->fec_ability = 0;
++		break;
++	}
++}
++
+ static void hclge_parse_fiber_link_mode(struct hclge_dev *hdev,
+ 					u8 speed_ability)
+ {
+@@ -978,9 +1009,12 @@ static void hclge_parse_fiber_link_mode(struct hclge_dev *hdev,
+ 	hclge_convert_setting_sr(mac, speed_ability);
+ 	hclge_convert_setting_lr(mac, speed_ability);
+ 	hclge_convert_setting_cr(mac, speed_ability);
++	if (hdev->pdev->revision >= 0x21)
++		hclge_convert_setting_fec(mac);
+ 
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT, mac->supported);
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, mac->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_FEC_NONE_BIT, mac->supported);
+ }
+ 
+ static void hclge_parse_backplane_link_mode(struct hclge_dev *hdev,
+@@ -989,8 +1023,11 @@ static void hclge_parse_backplane_link_mode(struct hclge_dev *hdev,
+ 	struct hclge_mac *mac = &hdev->hw.mac;
+ 
+ 	hclge_convert_setting_kr(mac, speed_ability);
++	if (hdev->pdev->revision >= 0x21)
++		hclge_convert_setting_fec(mac);
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_Backplane_BIT, mac->supported);
+ 	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, mac->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_FEC_NONE_BIT, mac->supported);
+ }
+ 
+ static void hclge_parse_copper_link_mode(struct hclge_dev *hdev,
+@@ -2279,6 +2316,64 @@ static int hclge_restart_autoneg(struct hnae3_handle *handle)
+ 	return hclge_notify_client(hdev, HNAE3_UP_CLIENT);
+ }
+ 
++static int hclge_set_fec_hw(struct hclge_dev *hdev, u32 fec_mode)
++{
++	struct hclge_config_fec_cmd *req;
++	struct hclge_desc desc;
++	int ret;
++
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_CONFIG_FEC_MODE, false);
++
++	req = (struct hclge_config_fec_cmd *)desc.data;
++	if (fec_mode & BIT(HNAE3_FEC_AUTO))
++		hnae3_set_bit(req->fec_mode, HCLGE_MAC_CFG_FEC_AUTO_EN_B, 1);
++	if (fec_mode & BIT(HNAE3_FEC_RS))
++		hnae3_set_field(req->fec_mode, HCLGE_MAC_CFG_FEC_MODE_M,
++				HCLGE_MAC_CFG_FEC_MODE_S, HCLGE_MAC_FEC_RS);
++	if (fec_mode & BIT(HNAE3_FEC_BASER))
++		hnae3_set_field(req->fec_mode, HCLGE_MAC_CFG_FEC_MODE_M,
++				HCLGE_MAC_CFG_FEC_MODE_S, HCLGE_MAC_FEC_BASER);
++
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret)
++		dev_err(&hdev->pdev->dev, "set fec mode failed %d.\n", ret);
++
++	return ret;
++}
++
++static int hclge_set_fec(struct hnae3_handle *handle, u32 fec_mode)
 +{
 +	struct hclge_vport *vport = hclge_get_vport(handle);
 +	struct hclge_dev *hdev = vport->back;
-+	u32 speed_ability = hdev->hw.mac.speed_ability;
-+	u32 speed_bit = 0;
++	struct hclge_mac *mac = &hdev->hw.mac;
++	int ret;
 +
-+	switch (speed) {
-+	case HCLGE_MAC_SPEED_10M:
-+		speed_bit = HCLGE_SUPPORT_10M_BIT;
-+		break;
-+	case HCLGE_MAC_SPEED_100M:
-+		speed_bit = HCLGE_SUPPORT_100M_BIT;
-+		break;
-+	case HCLGE_MAC_SPEED_1G:
-+		speed_bit = HCLGE_SUPPORT_1G_BIT;
-+		break;
-+	case HCLGE_MAC_SPEED_10G:
-+		speed_bit = HCLGE_SUPPORT_10G_BIT;
-+		break;
-+	case HCLGE_MAC_SPEED_25G:
-+		speed_bit = HCLGE_SUPPORT_25G_BIT;
-+		break;
-+	case HCLGE_MAC_SPEED_40G:
-+		speed_bit = HCLGE_SUPPORT_40G_BIT;
-+		break;
-+	case HCLGE_MAC_SPEED_50G:
-+		speed_bit = HCLGE_SUPPORT_50G_BIT;
-+		break;
-+	case HCLGE_MAC_SPEED_100G:
-+		speed_bit = HCLGE_SUPPORT_100G_BIT;
-+		break;
-+	default:
++	if (fec_mode && !(mac->fec_ability & fec_mode)) {
++		dev_err(&hdev->pdev->dev, "unsupported fec mode\n");
 +		return -EINVAL;
 +	}
 +
-+	if (speed_bit & speed_ability)
-+		return 0;
++	ret = hclge_set_fec_hw(hdev, fec_mode);
++	if (ret)
++		return ret;
 +
-+	return -EINVAL;
++	mac->user_fec_mode = fec_mode | BIT(HNAE3_FEC_USER_DEF);
++	return 0;
 +}
 +
- static void hclge_convert_setting_sr(struct hclge_mac *mac, u8 speed_ability)
- {
- 	if (speed_ability & HCLGE_SUPPORT_10G_BIT)
-@@ -2198,6 +2240,16 @@ static int hclge_set_autoneg(struct hnae3_handle *handle, bool enable)
- 	struct hclge_vport *vport = hclge_get_vport(handle);
- 	struct hclge_dev *hdev = vport->back;
- 
-+	if (!hdev->hw.mac.support_autoneg) {
-+		if (enable) {
-+			dev_err(&hdev->pdev->dev,
-+				"autoneg is not supported by current port\n");
-+			return -EOPNOTSUPP;
-+		} else {
-+			return 0;
-+		}
-+	}
-+
- 	return hclge_set_autoneg_en(hdev, enable);
- }
- 
-@@ -2213,6 +2265,20 @@ static int hclge_get_autoneg(struct hnae3_handle *handle)
- 	return hdev->hw.mac.autoneg;
- }
- 
-+static int hclge_restart_autoneg(struct hnae3_handle *handle)
++static void hclge_get_fec(struct hnae3_handle *handle, u8 *fec_ability,
++			  u8 *fec_mode)
 +{
 +	struct hclge_vport *vport = hclge_get_vport(handle);
 +	struct hclge_dev *hdev = vport->back;
-+	int ret;
++	struct hclge_mac *mac = &hdev->hw.mac;
 +
-+	dev_dbg(&hdev->pdev->dev, "restart autoneg\n");
-+
-+	ret = hclge_notify_client(hdev, HNAE3_DOWN_CLIENT);
-+	if (ret)
-+		return ret;
-+	return hclge_notify_client(hdev, HNAE3_UP_CLIENT);
++	if (fec_ability)
++		*fec_ability = mac->fec_ability;
++	if (fec_mode)
++		*fec_mode = mac->fec_mode;
 +}
 +
  static int hclge_mac_init(struct hclge_dev *hdev)
  {
  	struct hclge_mac *mac = &hdev->hw.mac;
-@@ -7613,13 +7679,13 @@ static int hclge_set_pauseparam(struct hnae3_handle *handle, u32 auto_neg,
- 	if (!fc_autoneg)
- 		return hclge_cfg_pauseparam(hdev, rx_en, tx_en);
+@@ -2296,6 +2391,15 @@ static int hclge_mac_init(struct hclge_dev *hdev)
  
--	/* Only support flow control negotiation for netdev with
--	 * phy attached for now.
--	 */
--	if (!phydev)
-+	if (phydev)
-+		return phy_start_aneg(phydev);
+ 	mac->link = 0;
+ 
++	if (mac->user_fec_mode & BIT(HNAE3_FEC_USER_DEF)) {
++		ret = hclge_set_fec_hw(hdev, mac->user_fec_mode);
++		if (ret) {
++			dev_err(&hdev->pdev->dev,
++				"Fec mode init fail, ret = %d\n", ret);
++			return ret;
++		}
++	}
 +
-+	if (hdev->pdev->revision == 0x20)
- 		return -EOPNOTSUPP;
- 
--	return phy_start_aneg(phydev);
-+	return hclge_restart_autoneg(handle);
- }
- 
- static void hclge_get_ksettings_an_result(struct hnae3_handle *handle,
-@@ -8686,6 +8752,7 @@ static int hclge_gro_en(struct hnae3_handle *handle, bool enable)
- 	.get_ksettings_an_result = hclge_get_ksettings_an_result,
+ 	ret = hclge_set_mac_mtu(hdev, hdev->mps);
+ 	if (ret) {
+ 		dev_err(&hdev->pdev->dev, "set mtu failed ret=%d\n", ret);
+@@ -8753,6 +8857,8 @@ static int hclge_gro_en(struct hnae3_handle *handle, bool enable)
  	.cfg_mac_speed_dup_h = hclge_cfg_mac_speed_dup_h,
  	.get_media_type = hclge_get_media_type,
-+	.check_port_speed = hclge_check_port_speed,
+ 	.check_port_speed = hclge_check_port_speed,
++	.get_fec = hclge_get_fec,
++	.set_fec = hclge_set_fec,
  	.get_rss_key_size = hclge_get_rss_key_size,
  	.get_rss_indir_size = hclge_get_rss_indir_size,
  	.get_rss = hclge_get_rss,
-@@ -8702,6 +8769,7 @@ static int hclge_gro_en(struct hnae3_handle *handle, bool enable)
- 	.rm_mc_addr = hclge_rm_mc_addr,
- 	.set_autoneg = hclge_set_autoneg,
- 	.get_autoneg = hclge_get_autoneg,
-+	.restart_autoneg = hclge_restart_autoneg,
- 	.get_pauseparam = hclge_get_pauseparam,
- 	.set_pauseparam = hclge_set_pauseparam,
- 	.set_mtu = hclge_set_mtu,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 197e702..dd06b11 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -253,7 +253,10 @@ struct hclge_mac {
+ 	u32 speed;
+ 	u32 speed_ability; /* speed ability supported by current media */
+ 	u32 module_type; /* sub media type, e.g. kr/cr/sr/lr */
+-	int link;	/* store the link status of mac & phy (if phy exit)*/
++	u32 fec_mode; /* active fec mode */
++	u32 user_fec_mode;
++	u32 fec_ability;
++	int link;	/* store the link status of mac & phy (if phy exit) */
+ 	struct phy_device *phydev;
+ 	struct mii_bus *mdio_bus;
+ 	phy_interface_t phy_if;
 -- 
 1.9.1
 
