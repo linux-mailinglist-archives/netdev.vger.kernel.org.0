@@ -2,122 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FF2312BCE
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 12:47:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0027112C14
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 13:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbfECKrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 06:47:24 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:11257 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfECKrY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 06:47:24 -0400
-Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
-  Joergen.Andreasen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Joergen.Andreasen@microchip.com";
-  x-sender="Joergen.Andreasen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa2.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Joergen.Andreasen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa2.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Joergen.Andreasen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-X-IronPort-AV: E=Sophos;i="5.60,425,1549954800"; 
-   d="scan'208";a="31691973"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 03 May 2019 03:47:23 -0700
-Received: from localhost (10.10.76.4) by chn-sv-exch02.mchp-main.com
- (10.10.76.38) with Microsoft SMTP Server id 14.3.352.0; Fri, 3 May 2019
- 03:47:22 -0700
-Date:   Fri, 3 May 2019 12:47:21 +0200
-From:   Joergen Andreasen <joergen.andreasen@microchip.com>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-CC:     <netdev@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>, <linux-mips@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Joergen Andreasen" <joergen.andreasen@microchip.com>
-Subject: Re: [PATCH net-next 3/3] MIPS: generic: Add police related options
- to ocelot_defconfig
-Message-ID: <20190503104720.v5iltltcfdbyy3it@soft-dev16>
-References: <20190502094029.22526-1-joergen.andreasen@microchip.com>
- <20190502094029.22526-4-joergen.andreasen@microchip.com>
- <20190502162700.GC22550@piout.net>
+        id S1727526AbfECLMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 07:12:55 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:34956 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726396AbfECLMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 07:12:55 -0400
+Received: by mail-yw1-f65.google.com with SMTP id n188so3990355ywe.2
+        for <netdev@vger.kernel.org>; Fri, 03 May 2019 04:12:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oMzmlbm6DryfEe21xkabZtCsxj90Gxx6vP8vYNTUdws=;
+        b=X5fVaAHcFmLkejeYnAJYK9850wiKqSos2nQ5FAL+ZsWqqYGG1spAi/TY4DsRsP3WAj
+         EjpDA3ciz/veV5dfzr1Rz1lJDQWHOrmf8qpnHKZd7IS0bFZB+RyyI2X1/PfXBQxQJWKa
+         gcJtwdt7D3girqhfAIRMTHhkbXkHTF6cr8n13BLn92Sn265xJbxc/5JnhH9fCBnPqwki
+         g3MU0piLkNa1c7OC36JNe1Lw6roWmDjcnlaxoRRsdCVi3BIVnfOzbBSeOGAzhcMPQJPS
+         W8icB0YKYmZqHIKsH04m74z6lBHKXGpG56frHv13VMx+pyvMs1BNiidWCw9OibRZdTh3
+         BPeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oMzmlbm6DryfEe21xkabZtCsxj90Gxx6vP8vYNTUdws=;
+        b=mTue/BZjV4k/dUvubif7MsvFAtfL6cb/MbINrd/YAeLwRcHj0OELO5CfTPxFwKJMpW
+         XMQHe9h8foYgundGzgOVgHcfVd9B24EgeVylZEDYlg8//pzCP0LFqVhd+spFQCr3BxUV
+         e8NHkeMhmQLx9X8PLD5CaPGsa+lTarFvs+YphSZv8IPfLdnfIsqKd6ErdEa8Sf/KTA8v
+         hIzs70mHyFN0hB8pK7pQnHgNZyX35CVCipQ0OjwjgejZKvR6VnaNKMG0NvPyqkhW6fL/
+         9iBvGg6Xv7ETIR/6FkT2MEjt0tv/fLoeKf+qmPgG6rg4iNYna3IxCbzvexaMmdrAa9Os
+         +S9A==
+X-Gm-Message-State: APjAAAUQHRypa7me96KPtR9UHsD4MF5RWnp5VjH5KzBA4czNbkQ9QhZF
+        hpX53QScUHyRBLyIXO+33yVjRbKQEfoneewnyjZszYIl7hfk6w==
+X-Google-Smtp-Source: APXvYqyEw6qIDLkRK+XQiGcFmfvS4qX2TtvJ999uaK1tw9Jb0kW7nMjjDvdKOxQWnQmb+qwQasox9l51G3hRgf7PWUQ=
+X-Received: by 2002:a81:58c4:: with SMTP id m187mr6983314ywb.92.1556881973682;
+ Fri, 03 May 2019 04:12:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20190502162700.GC22550@piout.net>
-User-Agent: NeoMutt/20171215
+References: <20190503091732.19452-1-stefan.bader@canonical.com>
+In-Reply-To: <20190503091732.19452-1-stefan.bader@canonical.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 3 May 2019 07:12:42 -0400
+Message-ID: <CANn89iLjw2bvXO-N-JUhQLZtnWhQey8Hy9KiizMq0=4=CEonGA@mail.gmail.com>
+Subject: Re: Possible refcount bug in ip6_expire_frag_queue()?
+To:     Stefan Bader <stefan.bader@canonical.com>,
+        Peter Oskolkov <posk@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Ben Hutchings <ben.hutchings@codethink.co.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexandre,
+On Fri, May 3, 2019 at 5:17 AM Stefan Bader <stefan.bader@canonical.com> wrote:
+>
+> In commit 05c0b86b9696802fd0ce5676a92a63f1b455bdf3 "ipv6: frags:
+> rewrite ip6_expire_frag_queue()" this function got changed to
+> be like ip_expire() (after dropping a clone there).
+> This was backported to 4.4.y stable (amongst other stable trees)
+> in v4.4.174.
+>
+> Since then we got reports that in evironments with heave ipv6 load,
+> the kernel crashes about every 2-3hrs with the following trace: [1].
+>
+> The crash is triggered by the skb_shared(skb) check in
+> pskb_expand_head(). Comparing ip6_expire_frag_queue() and
+> ip_expire(), the ipv6 code does a skb_get() which increments that
+> refcount while the ipv4 code does not seem to do that.
+>
+> Would it be possible that ip6_expire-frag_queue() should not
+> call skb_get() when using the first skb of the frag queue for
+> the icmp message?
 
-The 05/02/2019 18:27, Alexandre Belloni wrote:
-> External E-Mail
-> 
-> 
-> Hi Joergen,
-> 
-> On 02/05/2019 11:40:29+0200, Joergen Andreasen wrote:
-> > Add default support for ingress qdisc, matchall classification
-> > and police action on MSCC Ocelot.
-> > 
-> 
-> This patch should be separated from the series as this doesn't have any
-> dependencies and should go through the MIPS tree.
-> 
+Hi Stefan
 
-I will create a separate patch for this when the other patches has been
-accepted.
+The bug should also trigger in latest/current trees as I can see, right ?
 
-> > Signed-off-by: Joergen Andreasen <joergen.andreasen@microchip.com>
-> > ---
-> >  arch/mips/configs/generic/board-ocelot.config | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> > 
-> > diff --git a/arch/mips/configs/generic/board-ocelot.config b/arch/mips/configs/generic/board-ocelot.config
-> > index 5e53b4bc47f1..5c7360dd819c 100644
-> > --- a/arch/mips/configs/generic/board-ocelot.config
-> > +++ b/arch/mips/configs/generic/board-ocelot.config
-> > @@ -25,6 +25,13 @@ CONFIG_SERIAL_OF_PLATFORM=y
-> >  CONFIG_NETDEVICES=y
-> >  CONFIG_NET_SWITCHDEV=y
-> >  CONFIG_NET_DSA=y
-> > +CONFIG_NET_SCHED=y
-> > +CONFIG_NET_SCH_INGRESS=y
-> > +CONFIG_NET_CLS_MATCHALL=y
-> > +CONFIG_NET_CLS_ACT=y
-> > +CONFIG_NET_ACT_POLICE=y
-> > +CONFIG_NET_ACT_GACT=y
-> > +
-> >  CONFIG_MSCC_OCELOT_SWITCH=y
-> >  CONFIG_MSCC_OCELOT_SWITCH_OCELOT=y
-> >  CONFIG_MDIO_MSCC_MIIM=y
-> > -- 
-> > 2.17.1
-> > 
-> 
-> -- 
-> Alexandre Belloni, Bootlin
-> Embedded Linux and Kernel engineering
-> https://bootlin.com
-> 
+The skb_get() in current linux kernel seems unnecessary since we
+remove the head skb thanks
+to the call to inet_frag_pull_head(). We did remove the skb_get() in
+IPv4, but not in IPv6. [1]
 
--- 
-Joergen Andreasen, Microchip
+But in 4.4.stable this is not happening.
+
+To fix the issue (remove the skb_get()) , we would need to remove the
+head from fq->q.fragments
+
+[1]
+In IPv4, the skb_get() removal was done in commit
+fa0f527358bd900ef92f925878ed6bfbd51305cc
+("ip: use rb trees for IP frag queue.")
+
+I will send the following fix
+
+diff --git a/include/net/ipv6_frag.h b/include/net/ipv6_frag.h
+index 28aa9b30aeceac9a86ee6754e4b5809be115e947..d3152811b8962705a508b3fd31d2157dd19ae8e5
+100644
+--- a/include/net/ipv6_frag.h
++++ b/include/net/ipv6_frag.h
+@@ -94,11 +94,9 @@ ip6frag_expire_frag_queue(struct net *net, struct
+frag_queue *fq)
+                goto out;
+
+        head->dev = dev;
+-       skb_get(head);
+        spin_unlock(&fq->q.lock);
+
+        icmpv6_send(head, ICMPV6_TIME_EXCEED, ICMPV6_EXC_FRAGTIME, 0);
+-       kfree_skb(head);
+        goto out_rcu_unlock;
+
+ out:
+
+
+>
+> Thanks,
+> Stefan
+>
+>
+>
+> [1]
+> [296583.091021] kernel BUG at /build/linux-6VmqmP/linux-4.4.0/net/core/skbuff.c:1207!
+> [296583.091734] Call Trace:
+> [296583.091749]  [<ffffffff81740e50>] __pskb_pull_tail+0x50/0x350
+> [296583.091764]  [<ffffffff8183939a>] _decode_session6+0x26a/0x400
+> [296583.091779]  [<ffffffff817ec719>] __xfrm_decode_session+0x39/0x50
+> [296583.091795]  [<ffffffff818239d0>] icmpv6_route_lookup+0xf0/0x1c0
+> [296583.091809]  [<ffffffff81824421>] icmp6_send+0x5e1/0x940
+> [296583.091823]  [<ffffffff81753238>] ? __netif_receive_skb+0x18/0x60
+> [296583.091838]  [<ffffffff817532b2>] ? netif_receive_skb_internal+0x32/0xa0
+> [296583.091858]  [<ffffffffc0199f74>] ? ixgbe_clean_rx_irq+0x594/0xac0 [ixgbe]
+> [296583.091876]  [<ffffffffc04eb260>] ? nf_ct_net_exit+0x50/0x50 [nf_defrag_ipv6]
+> [296583.091893]  [<ffffffff8183d431>] icmpv6_send+0x21/0x30
+> [296583.091906]  [<ffffffff8182b500>] ip6_expire_frag_queue+0xe0/0x120
+> [296583.091921]  [<ffffffffc04eb27f>] nf_ct_frag6_expire+0x1f/0x30 [nf_defrag_ipv6]
+> [296583.091938]  [<ffffffff810f3b57>] call_timer_fn+0x37/0x140
+> [296583.091951]  [<ffffffffc04eb260>] ? nf_ct_net_exit+0x50/0x50 [nf_defrag_ipv6]
+> [296583.091968]  [<ffffffff810f5464>] run_timer_softirq+0x234/0x330
+> [296583.091982]  [<ffffffff8108a339>] __do_softirq+0x109/0x2b0
+> [296583.091995]  [<ffffffff8108a655>] irq_exit+0xa5/0xb0
+> [296583.092008]  [<ffffffff818660c0>] smp_apic_timer_interrupt+0x50/0x70
+> [296583.092023]  [<ffffffff8186383c>] apic_timer_interrupt+0xcc/0xe0
+> [296583.092037]  <EOI>
+> [296583.092044]  [<ffffffff816f07ae>] ? cpuidle_enter_state+0x11e/0x2d0
+> [296583.092060]  [<ffffffff816f0997>] cpuidle_enter+0x17/0x20
+> [296583.092073]  [<ffffffff810ca5c2>] call_cpuidle+0x32/0x60
+> [296583.092086]  [<ffffffff816f0979>] ? cpuidle_select+0x19/0x20
+> [296583.092099]  [<ffffffff810ca886>] cpu_startup_entry+0x296/0x360
+> [296583.092114]  [<ffffffff81052da7>] start_secondary+0x177/0x1b0
+> [296583.092878] Code: 75 1a 41 8b 87 cc 00 00 00 49 03 87 d0 00 00 00 e9 e2 fe ff ff b8 f4 ff ff ff eb bc 4c 89 ef e8 f4 99 ab ff b8 f4 ff ff ff eb ad <0f> 0b 90 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 55 48 89
+> [296583.094510] RIP  [<ffffffff81740953>] pskb_expand_head+0x243/0x250
+> [296583.095302]  RSP <ffff88021fd03b80>
+> [296583.099491] ---[ end trace 4262f47656f8ba9f ]---
