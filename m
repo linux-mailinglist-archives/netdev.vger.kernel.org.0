@@ -2,165 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B970613293
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 18:54:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C604B13297
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 18:56:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728545AbfECQyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 12:54:51 -0400
-Received: from mail-wm1-f41.google.com ([209.85.128.41]:52200 "EHLO
-        mail-wm1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726444AbfECQyv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 12:54:51 -0400
-Received: by mail-wm1-f41.google.com with SMTP id t76so7922664wmt.1
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 09:54:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=to:references:from:openpgp:autocrypt:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PBkCo7H43paaF58OJbFhZqz3qqkLvI0mr2OE6GZuuYs=;
-        b=GN6mWva+AUxMSOiu241GRHrFYnAVMooxsf3mzFMoHtTfpHshn0NP9Xz2+VIypYokT9
-         MVQwBaksQjPLMQOL3QSRPXneYrCYKAGwZM+d1aBJ7wGze/targIjhJSWkN5x9ejjBo/1
-         jFUUe4cOlgCrpF0tkF3dvDgqmK/DwaP71olEt9UavGDUzZHyLVVjkG5EYMoUcHcGdsOr
-         T+gsofy3rWnelnANgMnMCQvMyBa5AStj8GFq4gMdhs+Ra0jje2otZuRDhoVWPkaeOzWU
-         LKFbT2+QJuPD07NfbMqmdP4+CTfdxTa4vXX+uu/LtKl++YLfQZ0+5yAcdSmJKNwXL9NB
-         rErw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:references:from:openpgp:autocrypt:subject
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=PBkCo7H43paaF58OJbFhZqz3qqkLvI0mr2OE6GZuuYs=;
-        b=NVRDepL7oz2cBHY2eE1XOpTmFBexM4556upspCkCKTQM33/TrKUuozL3vprtlbf9eR
-         EsoZO54+Y5wIdSIUODxa4SMkkdeS10OXdZNwq1D0zAW0MoBI+Jb+j1qmFQ6JwvOBrbe1
-         xDeZqlJ08UBQUhmNLiZQx7NJvgernTKAODkj9YUYy14luXRhZepDcBkJcFRR70OjwfOu
-         Q0VU9yLguKoj1XX2uS1hNw/Iv2WtVnvgxGkV9+0hBiaKAz7Z541QUf8wOqBzFZdo98PC
-         qgLh8JfONHEiaLvzsur8p4RfdswqTF+QwaTt6LN6tPSEcxkYEjHIUWWTuA8Kdm4Ei0FW
-         XYhg==
-X-Gm-Message-State: APjAAAVs6lDF/sYQXAb9VmD12800JYw/HkjhYgUW/W042zfIZm8iEnpX
-        Oqwl+gUZWNjZjoGNzwR/W/BCaw==
-X-Google-Smtp-Source: APXvYqw5nBScjcDcgSupylbNoYWeIx0Px3OWG+q3+nw8+w/eB/Adv9cEepIRskv5tO2naWLHb0bFhg==
-X-Received: by 2002:a1c:304:: with SMTP id 4mr4726704wmd.39.1556902488523;
-        Fri, 03 May 2019 09:54:48 -0700 (PDT)
-Received: from [172.20.1.104] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id v9sm3847834wrg.20.2019.05.03.09.54.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 May 2019 09:54:47 -0700 (PDT)
-To:     Yonghong Song <yhs@fb.com>, netdev <netdev@vger.kernel.org>,
+        id S1728640AbfECQ4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 12:56:42 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:43736 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726289AbfECQ4m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 12:56:42 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x43GoK1g026004;
+        Fri, 3 May 2019 09:56:23 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : subject :
+ date : message-id : references : in-reply-to : content-type : content-id :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=Bqub1FOrse2aWjsw6Y80GpTwC2df4Twuz56HK/Nymck=;
+ b=lSGTG3JpMUW/+VS2nbmJQOko+r0bY5+kzcfqZlmgs1rG555p/lzZP11Qvi/tkmNIlTqz
+ 0k0NxtxvyU9ReavTDC5PjtOqRr+BQiJ/97jJaQ/Cb7qTAbviamTTPn9wjr2fmTOKiuac
+ +d4ajMouHGk4eiMWKAdoj/kIChz1RvaftBo= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2s86r1k49v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 03 May 2019 09:56:23 -0700
+Received: from ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) by
+ ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 3 May 2019 09:56:22 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 3 May 2019 09:56:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Bqub1FOrse2aWjsw6Y80GpTwC2df4Twuz56HK/Nymck=;
+ b=jHEXnEGkaiQzY71jAf2SXK3jiVHSGHWUvIFLziZ2wPx6CwtqUiwmsum2gxCqGtsvqbsdVb3Rk6KIbiGySgj+O+dqa8OTnZyDm9LYjoUd06/+NHLqw2SiVgBCvi5yCd7K912NtnptXgCWw/bG35hxUtH+Ct3vr0v4GD0QXKz3uZ0=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
+ BYAPR15MB3013.namprd15.prod.outlook.com (20.178.238.30) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1856.10; Fri, 3 May 2019 16:56:20 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::750c:2d8e:bf62:4d0d]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::750c:2d8e:bf62:4d0d%5]) with mapi id 15.20.1856.008; Fri, 3 May 2019
+ 16:56:20 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Quentin Monnet <quentin.monnet@netronome.com>,
+        netdev <netdev@vger.kernel.org>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
+        "Alexei Starovoitov" <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>
-References: <d84c162f-9ccf-18f5-6d99-d7c88eb61a89@fb.com>
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
- 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
- RHhSHGnKaQ6MfrTge5Q0h5A=
 Subject: Re: bpftool doc man page build failure
-Message-ID: <1a2c2f20-ede9-61ae-564a-d44843983f73@netronome.com>
-Date:   Fri, 3 May 2019 17:54:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+Thread-Topic: bpftool doc man page build failure
+Thread-Index: AQHVAcxB+ZLo09PUHkCRkk5C26pzvKZZnjuAgAAAbQA=
+Date:   Fri, 3 May 2019 16:56:20 +0000
+Message-ID: <4223a383-7731-0a4d-d807-1141b6fcbea8@fb.com>
+References: <d84c162f-9ccf-18f5-6d99-d7c88eb61a89@fb.com>
+ <1a2c2f20-ede9-61ae-564a-d44843983f73@netronome.com>
+In-Reply-To: <1a2c2f20-ede9-61ae-564a-d44843983f73@netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR06CA0058.namprd06.prod.outlook.com
+ (2603:10b6:104:3::16) To BYAPR15MB3384.namprd15.prod.outlook.com
+ (2603:10b6:a03:10e::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::3:35ed]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 17e64f32-3685-4788-b320-08d6cfe8442e
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR15MB3013;
+x-ms-traffictypediagnostic: BYAPR15MB3013:
+x-microsoft-antispam-prvs: <BYAPR15MB3013780E35C46111CDAC0A79D3350@BYAPR15MB3013.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-forefront-prvs: 0026334A56
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(39860400002)(396003)(346002)(136003)(366004)(199004)(189003)(51914003)(478600001)(2501003)(14454004)(305945005)(66556008)(386003)(2906002)(66476007)(31696002)(7736002)(73956011)(446003)(2616005)(316002)(64756008)(46003)(476003)(11346002)(486006)(6116002)(8676002)(66446008)(66946007)(14444005)(8936002)(186003)(36756003)(6506007)(102836004)(76176011)(229853002)(31686004)(6486002)(53546011)(25786009)(81156014)(99286004)(81166006)(71190400001)(52116002)(6512007)(71200400001)(53936002)(5660300002)(86362001)(68736007)(6246003)(110136005)(6436002)(256004);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3013;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: EF4HiCdBOFMETXQR2zfGoQ1AxtPcj+RICQihRJX7i5TCpaDGR48yiTZNagH5+0w506kGnCNhd5PtkQosDk3blBpVa4wAIyriNhmbkS4YvtAQ6++u2Jtzzq9W/QDU3JJj+ezdUSA4yT3hY1BxPpyzeZfVuOR+T3YbQK7MO2guhe6J72WQfNVc+1GHAbolrHddw3xyMMxoQ8IvO8Klb7SSjYioKDfYM6tLLgfOwZ4sRHmaLcuO5mV1BirRTf47At/8RB4alYINgDEQ/4TwcorJAnHmpkefTAtqi6mTeQ7IGIG+po671/4rDPdDCXhUdqlGhSKGUQ09V/4+MvOxuoAJDKZ+k9gvy7Do50UFshlvbgrThGahMeQjXIrZbH2pMejqWmkbuLzGRB4fIiPsMV57uTNUvoPiMbR08yrqHTcaRzY=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <36784B0BF0BDE946A6EFDBA42D68B448@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <d84c162f-9ccf-18f5-6d99-d7c88eb61a89@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17e64f32-3685-4788-b320-08d6cfe8442e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2019 16:56:20.5949
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3013
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-03_10:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=813 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905030108
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-05-03 16:21 UTC+0000 ~ Yonghong Song <yhs@fb.com>
-> Quentin,
-> 
-> I hit the following errors with latest bpf-next.
-> 
-> -bash-4.4$ make man
->    GEN      bpftool-perf.8
->    GEN      bpftool-map.8
->    GEN      bpftool.8
->    GEN      bpftool-net.8
->    GEN      bpftool-feature.8
->    GEN      bpftool-prog.8
->    GEN      bpftool-cgroup.8
->    GEN      bpftool-btf.8
->    GEN      bpf-helpers.rst
-> Parsed description of 111 helper function(s)
-> Traceback (most recent call last):
->    File "../../../../scripts/bpf_helpers_doc.py", line 421, in <module>
->      printer.print_all()
->    File "../../../../scripts/bpf_helpers_doc.py", line 187, in print_all
->      self.print_one(helper)
->    File "../../../../scripts/bpf_helpers_doc.py", line 378, in print_one
->      self.print_proto(helper)
->    File "../../../../scripts/bpf_helpers_doc.py", line 356, in print_proto
->      proto = helper.proto_break_down()
->    File "../../../../scripts/bpf_helpers_doc.py", line 56, in 
-> proto_break_down
->      'type' : capture.group(1),
-> AttributeError: 'NoneType' object has no attribute 'group'
-> make: *** [bpf-helpers.rst] Error 1
-> -bash-4.4$ pwd
-> /home/yhs/work/net-next/tools/bpf/bpftool/Documentation
-> -bash-4.4$
-> 
-> Maybe a format issue in the comments with some recent helpers?
-> 
-> Thanks,
-> 
-> Yonghong
-> 
-
-Hi Yonghong,
-
-Thanks for the notice! Yes, I observed the same thing not long ago. It
-seems that the Python script breaks on the "unsigned long" pointer
-argument for strtoul(): the script only accepts "const" or "struct" for
-types made of several words, not "unsigned".
-
-I'll fix the script so it can take any word and send a patch next week,
-along with some other clean-up fixes for the doc.
-
-Best regards,
-Quentin
+DQoNCk9uIDUvMy8xOSA5OjU0IEFNLCBRdWVudGluIE1vbm5ldCB3cm90ZToNCj4gMjAxOS0wNS0w
+MyAxNjoyMSBVVEMrMDAwMCB+IFlvbmdob25nIFNvbmcgPHloc0BmYi5jb20+DQo+PiBRdWVudGlu
+LA0KPj4NCj4+IEkgaGl0IHRoZSBmb2xsb3dpbmcgZXJyb3JzIHdpdGggbGF0ZXN0IGJwZi1uZXh0
+Lg0KPj4NCj4+IC1iYXNoLTQuNCQgbWFrZSBtYW4NCj4+ICAgICBHRU4gICAgICBicGZ0b29sLXBl
+cmYuOA0KPj4gICAgIEdFTiAgICAgIGJwZnRvb2wtbWFwLjgNCj4+ICAgICBHRU4gICAgICBicGZ0
+b29sLjgNCj4+ICAgICBHRU4gICAgICBicGZ0b29sLW5ldC44DQo+PiAgICAgR0VOICAgICAgYnBm
+dG9vbC1mZWF0dXJlLjgNCj4+ICAgICBHRU4gICAgICBicGZ0b29sLXByb2cuOA0KPj4gICAgIEdF
+TiAgICAgIGJwZnRvb2wtY2dyb3VwLjgNCj4+ICAgICBHRU4gICAgICBicGZ0b29sLWJ0Zi44DQo+
+PiAgICAgR0VOICAgICAgYnBmLWhlbHBlcnMucnN0DQo+PiBQYXJzZWQgZGVzY3JpcHRpb24gb2Yg
+MTExIGhlbHBlciBmdW5jdGlvbihzKQ0KPj4gVHJhY2ViYWNrIChtb3N0IHJlY2VudCBjYWxsIGxh
+c3QpOg0KPj4gICAgIEZpbGUgIi4uLy4uLy4uLy4uL3NjcmlwdHMvYnBmX2hlbHBlcnNfZG9jLnB5
+IiwgbGluZSA0MjEsIGluIDxtb2R1bGU+DQo+PiAgICAgICBwcmludGVyLnByaW50X2FsbCgpDQo+
+PiAgICAgRmlsZSAiLi4vLi4vLi4vLi4vc2NyaXB0cy9icGZfaGVscGVyc19kb2MucHkiLCBsaW5l
+IDE4NywgaW4gcHJpbnRfYWxsDQo+PiAgICAgICBzZWxmLnByaW50X29uZShoZWxwZXIpDQo+PiAg
+ICAgRmlsZSAiLi4vLi4vLi4vLi4vc2NyaXB0cy9icGZfaGVscGVyc19kb2MucHkiLCBsaW5lIDM3
+OCwgaW4gcHJpbnRfb25lDQo+PiAgICAgICBzZWxmLnByaW50X3Byb3RvKGhlbHBlcikNCj4+ICAg
+ICBGaWxlICIuLi8uLi8uLi8uLi9zY3JpcHRzL2JwZl9oZWxwZXJzX2RvYy5weSIsIGxpbmUgMzU2
+LCBpbiBwcmludF9wcm90bw0KPj4gICAgICAgcHJvdG8gPSBoZWxwZXIucHJvdG9fYnJlYWtfZG93
+bigpDQo+PiAgICAgRmlsZSAiLi4vLi4vLi4vLi4vc2NyaXB0cy9icGZfaGVscGVyc19kb2MucHki
+LCBsaW5lIDU2LCBpbg0KPj4gcHJvdG9fYnJlYWtfZG93bg0KPj4gICAgICAgJ3R5cGUnIDogY2Fw
+dHVyZS5ncm91cCgxKSwNCj4+IEF0dHJpYnV0ZUVycm9yOiAnTm9uZVR5cGUnIG9iamVjdCBoYXMg
+bm8gYXR0cmlidXRlICdncm91cCcNCj4+IG1ha2U6ICoqKiBbYnBmLWhlbHBlcnMucnN0XSBFcnJv
+ciAxDQo+PiAtYmFzaC00LjQkIHB3ZA0KPj4gL2hvbWUveWhzL3dvcmsvbmV0LW5leHQvdG9vbHMv
+YnBmL2JwZnRvb2wvRG9jdW1lbnRhdGlvbg0KPj4gLWJhc2gtNC40JA0KPj4NCj4+IE1heWJlIGEg
+Zm9ybWF0IGlzc3VlIGluIHRoZSBjb21tZW50cyB3aXRoIHNvbWUgcmVjZW50IGhlbHBlcnM/DQo+
+Pg0KPj4gVGhhbmtzLA0KPj4NCj4+IFlvbmdob25nDQo+Pg0KPiANCj4gSGkgWW9uZ2hvbmcsDQo+
+IA0KPiBUaGFua3MgZm9yIHRoZSBub3RpY2UhIFllcywgSSBvYnNlcnZlZCB0aGUgc2FtZSB0aGlu
+ZyBub3QgbG9uZyBhZ28uIEl0DQo+IHNlZW1zIHRoYXQgdGhlIFB5dGhvbiBzY3JpcHQgYnJlYWtz
+IG9uIHRoZSAidW5zaWduZWQgbG9uZyIgcG9pbnRlcg0KPiBhcmd1bWVudCBmb3Igc3RydG91bCgp
+OiB0aGUgc2NyaXB0IG9ubHkgYWNjZXB0cyAiY29uc3QiIG9yICJzdHJ1Y3QiIGZvcg0KPiB0eXBl
+cyBtYWRlIG9mIHNldmVyYWwgd29yZHMsIG5vdCAidW5zaWduZWQiLg0KPiANCj4gSSdsbCBmaXgg
+dGhlIHNjcmlwdCBzbyBpdCBjYW4gdGFrZSBhbnkgd29yZCBhbmQgc2VuZCBhIHBhdGNoIG5leHQg
+d2VlaywNCj4gYWxvbmcgd2l0aCBzb21lIG90aGVyIGNsZWFuLXVwIGZpeGVzIGZvciB0aGUgZG9j
+Lg0KDQpUaGFua3MhDQoNCj4gDQo+IEJlc3QgcmVnYXJkcywNCj4gUXVlbnRpbg0KPiANCg==
