@@ -2,149 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F4012927
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 09:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0347F129FF
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 10:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727079AbfECH40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 03:56:26 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:35232 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725777AbfECH40 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 03:56:26 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 4D0A7611FA; Fri,  3 May 2019 07:56:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1556870184;
-        bh=aDusQfMCjBF3dgdzRMthBxZkCv+AeRrwz8Z7d1VTjKo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DRWkNWGAu7exQ3h4FFMC4HoxLk3WlgQ/prXDPdGrKGq5XEuvhLMmnMIPJ1UONp8JC
-         IdJpXD8luIkdRlg7tK31E6NdUm18rXc2veqcjehjof7wFxNnycWsn374j87pL4PYKx
-         S5ZJI5UEoCvkrtHRpSkMAyzXyE5mlDnEnPQ304r4=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by smtp.codeaurora.org (Postfix) with ESMTP id 27FBB61112;
-        Fri,  3 May 2019 07:56:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1556870183;
-        bh=aDusQfMCjBF3dgdzRMthBxZkCv+AeRrwz8Z7d1VTjKo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ap9zuQAHsDHkRvSiCgmkJ2xd96WFTtPhOLcWJKSupjL2AXB/QnOa3Uiscn8bktcLW
-         O97hFHWI9+1QUfaKMxREaqDRACQuVHq+3rgFBBnFdhz14nHSTQ/AhQDpBq1Qa/92Lo
-         lzvQm+MogmNpc7fsLW72XQ3a/D8ky3sau1reA4Zk=
+        id S1726628AbfECIpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 04:45:08 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:45297 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725777AbfECIpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 04:45:08 -0400
+Received: by mail-lf1-f66.google.com with SMTP id q23so106974lfc.12
+        for <netdev@vger.kernel.org>; Fri, 03 May 2019 01:45:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0zaRsn/g4+Scrvd9QffeeQZcCaOKO0r6yp/twndpRhM=;
+        b=J29qlBrRDMBWZUJdNN5p12YGrIys/NsojzcLa1n1TYLAUB518riMbaBuJQO5+mDEJK
+         L2htaevZM1u1JKo0IzFcQJ+sA6EHz2fcvoFO0my6fdQIeXl5cvKpH7uhuXu4dBjCrTgA
+         /u60oBNQ1uLuPDvz87mMX77P2G1fJeSt/AUabcTFhCz0X+kP8pY5GBhuL7rJxYI7D7ei
+         0/IHjmhgyReOcnaGEXru+yo4GVYidglu2WIpgkc2KFXGjF8/z98fqMnmKjxH1xu9RGKy
+         Xv/9z2Ag934kKZPwMfNdaHOELa35GigKKUAC/0JRFbIS9l6Mklp8/6nH8ZzboTicnxiV
+         75qQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0zaRsn/g4+Scrvd9QffeeQZcCaOKO0r6yp/twndpRhM=;
+        b=E/KhijHM3vwON6Kj8gTHv5BNIX7vJh/x/LBVrhlgKBsiUMaiowrBtFRvnKNfJiiqKu
+         Jh53OLNJpZ/s1rHFpsbrh9zWilVzNSd1vl+QvuuKy90I2t+Aqzo21kjlIWKHNHVxyISH
+         jGse3Gc8TCD8ZLhXgiKv2IMoQVmp3q2HImdQjUqDVwBzusVnTtB7dHT1zxcz7xpw/19g
+         n35eyTZK4MCgUX1JhSjTST+wsUNfwrKUEiB91QCi35OABtwgIkQ2zXbP49d2STgfR5nn
+         xM0he2ikt3hVrHGlnZ6+ZaJ5d9CKUIv7X0nd2zifYYSmpAdrqmCfAmH2U9vlf5VJTkDa
+         dWcQ==
+X-Gm-Message-State: APjAAAVYe9LL6ZfVGCQSagBQFotl58ev/CiQ1tTaxY5NZQpJacyo9BcK
+        EoOtMoHuEJr/+dCr6WfKXFd7Bg==
+X-Google-Smtp-Source: APXvYqyqfYigHLJVXnG7jnnuj50dTMyohCgOVYg1Pu5wNkO5Y4cooG5oT/xf8nz76WLGS04Xse2DPA==
+X-Received: by 2002:ac2:4ac2:: with SMTP id m2mr4490084lfp.154.1556873106562;
+        Fri, 03 May 2019 01:45:06 -0700 (PDT)
+Received: from [10.114.8.178] ([5.182.27.10])
+        by smtp.gmail.com with ESMTPSA id g21sm274007ljj.2.2019.05.03.01.45.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 03 May 2019 01:45:05 -0700 (PDT)
+Subject: Re: [PATCH v3 01/10] of_net: add NVMEM support to of_get_mac_address
+To:     =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Alban Bedel <albeu@free.fr>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org
+References: <1556870168-26864-1-git-send-email-ynezz@true.cz>
+ <1556870168-26864-2-git-send-email-ynezz@true.cz>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <2a5fcdec-c661-6dc5-6741-7d6675457b9b@cogentembedded.com>
+Date:   Fri, 3 May 2019 11:44:54 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+In-Reply-To: <1556870168-26864-2-git-send-email-ynezz@true.cz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Date:   Fri, 03 May 2019 15:56:23 +0800
-From:   Rocky Liao <rjliao@codeaurora.org>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Thierry Escande <thierry.escande@linaro.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-kernel@vger.kernel.org,
-        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Balakrishna Godavarthi <bgodavar@codeaurora.org>,
-        linux-bluetooth-owner@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] dt-bindings: net: bluetooth: Add device property
- firmware-name for QCA6174
-In-Reply-To: <60C7AC89-37B6-441C-9349-BCB15717EB2C@holtmann.org>
-References: <1554368908-22017-2-git-send-email-rjliao@codeaurora.org>
- <1554888476-17560-1-git-send-email-rjliao@codeaurora.org>
- <A85D7982-E000-4A5F-9927-CA36E0BA60F2@holtmann.org>
- <7e0cf9ba98260309c43d9d6e63dead6c@codeaurora.org>
- <CAL_JsqLnM4XqQTCT7VTUSmukujz0VHJoCbXMF2--RmTEx_LZww@mail.gmail.com>
- <60C7AC89-37B6-441C-9349-BCB15717EB2C@holtmann.org>
-Message-ID: <17221139821fb6ee35f3119df7405401@codeaurora.org>
-X-Sender: rjliao@codeaurora.org
-User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
+Hello!
 
-On 2019-04-27 13:59, Marcel Holtmann wrote:
-> Hi Rob,
-> 
->>>>> This patch adds an optional device property "firmware-name" to 
->>>>> allow
->>>>> the
->>>>> driver to load customized nvm firmware file based on this property.
->>>>> 
->>>>> Signed-off-by: Rocky Liao <rjliao@codeaurora.org>
->>>>> ---
->>>>> Changes in v3:
->>>>> * added firmware-name instead of nvm-postfix to specify full 
->>>>> firmware
->>>>> name
->>>>> ---
->>>>> Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 2 ++
->>>>> 1 file changed, 2 insertions(+)
->>>>> 
->>>>> diff --git
->>>>> a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
->>>>> b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
->>>>> index 824c0e2..2bcea50 100644
->>>>> --- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
->>>>> +++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
->>>>> @@ -16,6 +16,7 @@ Optional properties for compatible string
->>>>> qcom,qca6174-bt:
->>>>> 
->>>>> - enable-gpios: gpio specifier used to enable chip
->>>>> - clocks: clock provided to the controller (SUSCLK_32KHZ)
->>>>> + - firmware-name: specify the name of nvm firmware to load
->>>>> 
->>>>> Required properties for compatible string qcom,wcn3990-bt:
->>>>> 
->>>>> @@ -39,6 +40,7 @@ serial@7570000 {
->>>>> 
->>>>>             enable-gpios = <&pm8994_gpios 19 GPIO_ACTIVE_HIGH>;
->>>>>             clocks = <&divclk4>;
->>>>> +            firmware-name = "nvm_00440302.bin";
->>>>>     };
->>>> 
->>>> and how is this a firmware-name property. Wouldn’t this be more like
->>>> nvm-file or something along these lines. This really needs to be
->>>> cleared with Rob to pick the right property name.
->>>> 
->>>> Regards
->>>> 
->>>> Marcel
->>> 
->>> Hi Rob,
->>> 
->>> Are you OK to use a property name "nvm-file" or "firmware-nvm-file"?
->>> Actually we have two firmware files, one is the patch file which is
->>> common to all of the products, the other is the nvm file which is
->>> customized. Using a "nvm-file" or "firmware-nvm-file" property name
->>> would be more clear.
->> 
->> 'firmware-name' is the standard name for specifying firmware file 
->> names.
-> 
-> but it is not a firmware file, it is a NVM file. What happens if in
-> the future they need a firmware file and a NVM file?
-> 
-> Regards
-> 
-> Marcel
+On 03.05.2019 10:55, Petr Štetiar wrote:
 
-We won't need to specify a rampatch firmware file in future as it's a 
-same file for all the boards with same chip, only the NVM firmware file 
-may have board differences. NVM file is also one of the firmware files 
-so I think it should be OK to use "firmware-name" property to specify 
-it.
+> Many embedded devices have information such as MAC addresses stored
+> inside NVMEMs like EEPROMs and so on. Currently there are only two
+> drivers in the tree which benefit from NVMEM bindings.
+> 
+> Adding support for NVMEM into every other driver would mean adding a lot
+> of repetitive code. This patch allows us to configure MAC addresses in
+> various devices like ethernet and wireless adapters directly from
+> of_get_mac_address, which is already used by almost every driver in the
+> tree.
+> 
+> Predecessor of this patch which used directly MTD layer has originated
+> in OpenWrt some time ago and supports already about 497 use cases in 357
+> device tree files.
+> 
+> Cc: Alban Bedel <albeu@free.fr>
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> Signed-off-by: John Crispin <john@phrozen.org>
+> Signed-off-by: Petr Štetiar <ynezz@true.cz>
+> ---
+> 
+>   Changes since v1:
+> 
+>    * moved handling of nvmem after mac-address and local-mac-address properties
+> 
+>   Changes since v2:
+> 
+>    * moved of_get_mac_addr_nvmem after of_get_mac_addr(np, "address") call
+>    * replaced kzalloc, kmemdup and kfree with it's devm variants
+>    * introduced of_has_nvmem_mac_addr helper which checks if DT node has nvmem
+>      cell with `mac-address`
+>    * of_get_mac_address now returns ERR_PTR encoded error value
+> 
+>   drivers/of/of_net.c | 65 ++++++++++++++++++++++++++++++++++++++++++++++++++---
+>   1 file changed, 62 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
+> index d820f3e..258ceb8 100644
+> --- a/drivers/of/of_net.c
+> +++ b/drivers/of/of_net.c
+[...]
+> @@ -64,6 +113,9 @@ static const void *of_get_mac_addr(struct device_node *np, const char *name)
+>    * addresses.  Some older U-Boots only initialized 'local-mac-address'.  In
+>    * this case, the real MAC is in 'local-mac-address', and 'mac-address' exists
+>    * but is all zeros.
+> + *
+> + * Return: Will be a valid pointer on success, NULL in case there wasn't
+> + *         'mac-address' nvmem cell node found, and ERR_PTR in case of error.
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
-Forum,
-a Linux Foundation Collaborative Project
+    Returning both NULL and error codes on failure is usually a sign of a 
+misdesigned API. Why not always return an error code?
+
+[...]
+
+MBR, Sergei
