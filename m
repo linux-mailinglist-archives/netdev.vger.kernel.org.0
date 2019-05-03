@@ -2,76 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06FCE1317A
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 17:52:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9917213188
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 17:53:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728119AbfECPwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 11:52:16 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:45400 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726561AbfECPwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 11:52:16 -0400
-Received: by mail-yw1-f65.google.com with SMTP id w18so4626418ywa.12
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 08:52:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cglHYBBihEYW7EKc6k81VJmdyePJKglzrezHfBYFZpg=;
-        b=ZJC+aj6PuAbOvpe4ZoFRK63e9H7B0KqgirDW+FKPSJO5sQb1xBwcX68zf15WWL82l3
-         w/9trqpvrhSUeiFQ4vil65M2AMU7g+Tc730khGBn/JX6IniiIWiSqVAh4TfJebYYgvEF
-         q/wyMrzA4JKMTUvfbCn205lR34jifP71Cz2Ya7MtImmyHcttacOgaxU8+THjfsygoZhE
-         U6abtPGquAxoxllI0cQdDSl/94yb+ulqHKlGzlRJVQEoPu7mi2DMAnqGF/GuIVrbk485
-         0oXiGJNpBVokccMahq4gN2nTFka0LU25shsBOpz5wl5qtxZd8n96WmkA3Bv9hEI2SOD0
-         TLQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cglHYBBihEYW7EKc6k81VJmdyePJKglzrezHfBYFZpg=;
-        b=EN6dNGlrvCPf60Hjjcr5aNU9YBpinw5IxoAEwaX9lK28I3Qon5jSPrSujH7NrUOi0x
-         ONV0LaW+6851wMl5PMqAisGWxNJgUrAbjUVM7gdCuGSn1cE8uKKyOfZdoBo+hPSZjUTY
-         11yNgyNMGlKuW+ko15JR7UdoETUhNSnJit5eF5OE9xLoa7pMJULm4IiE89ghmRgXWVJy
-         1JhU8kZJlO48iH5+4snI2yr1JkJiYcTZM9gmpoY2JfkT+MdCThucllmPOI4Bi5YNIp6X
-         H238zEoC1MKcYajGIQy2tn0138XVReOzUW0XPj3r4ukjG0PF0XEG6zZxqGbequBrmMz5
-         mfQQ==
-X-Gm-Message-State: APjAAAWMJJIETv65IsD+gfpE6kGtBwvQRC7Qr/6upfTFtXmXJ5YaG+sq
-        0r4bg7OlI74zUqyt8uDGQ6nRjZ4lOtFdwOp9qhY+9PLUrks=
-X-Google-Smtp-Source: APXvYqwxYFPx+sKSpd3sJR5IlzWyZuMSl1bfP0wNwKiPSPWr/dVk0ksFV/4ahIQHrvjBtCcbP5gvfaZwN2F4CkIsQpk=
-X-Received: by 2002:a0d:c0c5:: with SMTP id b188mr3482061ywd.83.1556898734869;
- Fri, 03 May 2019 08:52:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190503114721.10502-1-edumazet@google.com> <CAPNVh5c-xeSaRkQgFtFUL1h3u0DpEozBXDP+xf-XEvXKbDgCYg@mail.gmail.com>
-In-Reply-To: <CAPNVh5c-xeSaRkQgFtFUL1h3u0DpEozBXDP+xf-XEvXKbDgCYg@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 3 May 2019 11:52:02 -0400
-Message-ID: <CANn89i+cRBCg=7Q4W45z9HuwJoCHspMNRKZJw9ztigjUDryY7w@mail.gmail.com>
-Subject: Re: [PATCH net] ip6: fix skb leak in ip6frag_expire_frag_queue()
-To:     Peter Oskolkov <posk@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Stfan Bader <stefan.bader@canonical.com>,
-        Florian Westphal <fw@strlen.de>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728285AbfECPxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 11:53:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60598 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725809AbfECPxu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 May 2019 11:53:50 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8A41A2075C;
+        Fri,  3 May 2019 15:53:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1556898829;
+        bh=9lLucm5+W1Auddm1GFDkkqllaxje41X1M+JhnYNJ+go=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AzXMmgg/hE+my9m9xFJ8/1g57ZFzNGcKIIUupvSCStUNunm9JHUTtnxuIjinLhhJS
+         0d5kZxV0ab3VQ3zVeOnqg/Uoth2rPT1ZUhBu5ACJXyTEpDaWreyBG50fqMqHRqJlUc
+         5uoXlk2JbdPvo7iQKwiiN7PuOSzt6X96cEJRxK4Y=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, alan.maguire@oracle.com,
+        jwestfall@surrealistic.net, David Ahern <dsahern@gmail.com>
+Subject: [PATCH v2 net] neighbor: Call __ipv4_neigh_lookup_noref in neigh_xmit
+Date:   Fri,  3 May 2019 08:55:01 -0700
+Message-Id: <20190503155501.28182-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 3, 2019 at 11:33 AM Peter Oskolkov <posk@google.com> wrote:
->
-> This skb_get was introduced by commit 05c0b86b9696802fd0ce5676a92a63f1b455bdf3
-> "ipv6: frags: rewrite ip6_expire_frag_queue()", and the rbtree patch
-> is not in 4.4, where the bug is reported at.
-> Shouldn't the "Fixes" tag also reference the original patch?
+From: David Ahern <dsahern@gmail.com>
 
-No, this bug really fixes a memory leak.
+Commit cd9ff4de0107 changed the key for IFF_POINTOPOINT devices to
+INADDR_ANY, but neigh_xmit which is used for MPLS encapsulations was not
+updated to use the altered key. The result is that every packet Tx does
+a lookup on the gateway address which does not find an entry, a new one
+is created only to find the existing one in the table right before the
+insert since arp_constructor was updated to reset the primary key. This
+is seen in the allocs and destroys counters:
+    ip -s -4 ntable show | head -10 | grep alloc
 
-Fact that it also fixes the XFRM issue is secondary, since all your
-patches are being backported in stable
-trees anyway for other reasons.
+which increase for each packet showing the unnecessary overhread.
 
-There is no need to list all commits and give a complete context for a
-bug fix like this one,
-this would be quite noisy.
+Fix by having neigh_xmit use __ipv4_neigh_lookup_noref for NEIGH_ARP_TABLE.
+Define __ipv4_neigh_lookup_noref in case CONFIG_INET is not set.
+
+v2
+- define __ipv4_neigh_lookup_noref in case CONFIG_INET is not set as
+  reported by kbuild test robot
+
+Fixes: cd9ff4de0107 ("ipv4: Make neigh lookup keys for loopback/point-to-point devices be INADDR_ANY")
+Reported-by: Alan Maguire <alan.maguire@oracle.com>
+Signed-off-by: David Ahern <dsahern@gmail.com>
+
+Signed-off-by: David Ahern <dsahern@gmail.com>
+---
+ include/net/arp.h    | 8 ++++++++
+ net/core/neighbour.c | 9 ++++++++-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/arp.h b/include/net/arp.h
+index 977aabfcdc03..c8f580a0e6b1 100644
+--- a/include/net/arp.h
++++ b/include/net/arp.h
+@@ -18,6 +18,7 @@ static inline u32 arp_hashfn(const void *pkey, const struct net_device *dev, u32
+ 	return val * hash_rnd[0];
+ }
+ 
++#ifdef CONFIG_INET
+ static inline struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev, u32 key)
+ {
+ 	if (dev->flags & (IFF_LOOPBACK | IFF_POINTOPOINT))
+@@ -25,6 +26,13 @@ static inline struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev
+ 
+ 	return ___neigh_lookup_noref(&arp_tbl, neigh_key_eq32, arp_hashfn, &key, dev);
+ }
++#else
++static inline
++struct neighbour *__ipv4_neigh_lookup_noref(struct net_device *dev, u32 key)
++{
++	return NULL;
++}
++#endif
+ 
+ static inline struct neighbour *__ipv4_neigh_lookup(struct net_device *dev, u32 key)
+ {
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 30f6fd8f68e0..0ba5018ccb7f 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -31,6 +31,7 @@
+ #include <linux/times.h>
+ #include <net/net_namespace.h>
+ #include <net/neighbour.h>
++#include <net/arp.h>
+ #include <net/dst.h>
+ #include <net/sock.h>
+ #include <net/netevent.h>
+@@ -2982,7 +2983,13 @@ int neigh_xmit(int index, struct net_device *dev,
+ 		if (!tbl)
+ 			goto out;
+ 		rcu_read_lock_bh();
+-		neigh = __neigh_lookup_noref(tbl, addr, dev);
++		if (index == NEIGH_ARP_TABLE) {
++			u32 key = *((u32 *)addr);
++
++			neigh = __ipv4_neigh_lookup_noref(dev, key);
++		} else {
++			neigh = __neigh_lookup_noref(tbl, addr, dev);
++		}
+ 		if (!neigh)
+ 			neigh = __neigh_create(tbl, addr, dev, false);
+ 		err = PTR_ERR(neigh);
+-- 
+2.11.0
+
