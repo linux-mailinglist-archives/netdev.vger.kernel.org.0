@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C673012BAE
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 12:43:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1CDC12BAF
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 12:43:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727484AbfECKnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 06:43:51 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33053 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727276AbfECKnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 06:43:49 -0400
-Received: by mail-wr1-f65.google.com with SMTP id e28so7299284wra.0
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 03:43:48 -0700 (PDT)
+        id S1727504AbfECKnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 06:43:53 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:37212 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726267AbfECKnu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 06:43:50 -0400
+Received: by mail-wr1-f66.google.com with SMTP id d22so139109wrb.4
+        for <netdev@vger.kernel.org>; Fri, 03 May 2019 03:43:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=K4gLqJ4SgDOsgXMmICWdVA0zCxYikPtUo1d3XLqhgFA=;
-        b=v4ZxxQ1KTyQ5O3GeNw5PvYYAdDrhFj+uHrpzgQVuLgBCOWg8q4gl1TQAPHFVHG8G0M
-         TEKqIFHWoSQPaRAhxznmu7UERdvAqkSOVIpwS83PoA2vHPp3SsDFBgZJRCYdwHSUbpS0
-         c2FaEXJdqSMJxJk55GacCwDsKNicaaN9KTs/SktNyMOP4s7IPRBoOdEKCJfTbbiX7c3P
-         bAVEWJU7Ozt2t+tRSpLU0LjDSWyr5GTGu5HJPn2zPb/ac21AR5SJpAZktY659TS8Fl3q
-         snq8Dh7vRZbcw8VWDRNvClUyOG67nOXuUTAt8W8j57fXrW7nzfz1+r3TQQySTwFpri5z
-         5hyw==
+        bh=o6b5gCI0kQsMVMTRnly2wwGRw9RnWLxNorJTJW60taw=;
+        b=BPQmM9egHcjPaM66UAArqH6p6Z/HPl6MCnPrHPkE9wr+vYaUuBjemmgniyQjTd8p64
+         2q12e6eh5/C9/xDqNcpsZ+/WUsZ7/HcxxkmWY3n44dBp1S/S1T8TZpQwEgAPzpa2WcVP
+         QEdcM0aHjpINIX/JSXMxNSdFaLKZSmE0FF7BzLhzltDuX08247OBffzJOY1fvtLdPZ4K
+         NQ78+HprHh9ydnoPJOer0V1fxZNAVpVLFic82B1Rcdesg8V+l7UzndQ3W4KTTLMcBTry
+         0ZKNujs4mL9yM/wrtIelXTuI52O8eAIx7ltJvHJILLZZpV0ujKgCrr9m6lwArHpTYJXK
+         pCGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=K4gLqJ4SgDOsgXMmICWdVA0zCxYikPtUo1d3XLqhgFA=;
-        b=g6C8eeCXXUYmmZn44mqqm+IEvcDT2CKSDxczAU+E9I8DUtjuYHj2mr/rUaSL1kjn2r
-         GOs+pMssHijq6Oi1qUbqyuNt45dDiXfHUe7IrunK4EBd6kXs9oFHXBiencnldwzUV9PI
-         LWbW2SdhSmAqMnQ679Gp3ZkMbLEzjrgCVSjBbf7cWJcVaKUN3UBbcC/6YZXRJ2YaNU0r
-         RxopmlrqeGJ4x07obnKBR3bbMp3zi75RhroaszBregrAnQG9WRhQfJl2dF8wJvAPHeuZ
-         rNysuL/1GDXPMSJ88w9b7fuD0uruc4i0fGklcgGmVgKhXt3fPhcue2SRYvmiUD9hMsiK
-         gILg==
-X-Gm-Message-State: APjAAAVvNuRcle3DAk+THxWgQvUeVnOBM3ltf9+EhOtk1grfs8kwItqy
-        /ukp7nu5EgRU8XuyXwgNUlRClw==
-X-Google-Smtp-Source: APXvYqxmES30jzauIQvZznWOLf6CJ5RhObBl0zMx451X3bpaaoUw5IVsoYJ1tggNqzvt+fwqfUwyeQ==
-X-Received: by 2002:a5d:4942:: with SMTP id r2mr6157661wrs.159.1556880227408;
-        Fri, 03 May 2019 03:43:47 -0700 (PDT)
+        bh=o6b5gCI0kQsMVMTRnly2wwGRw9RnWLxNorJTJW60taw=;
+        b=bfyP1KCtFFJTuknHczdsGGSsmqv39HSlnWVNmnkIkNTQEcXUwnpPSb5G/5+Q7pkRe+
+         iPOL8SAEGaIdWhtmCVpR7IxF0KIi6kv+kjmvp9bzQvNSAQ6MRY0L4IqeUoxuuOjPHd9M
+         L0O5CZF5XMgkUdzcsiq/g+kPy9f6b7BJHasq9MzIrRPAwMQGA3GSmu9RNjhchEn0IbGV
+         YUOMs3dG42GKQLPoHEmGaenrLNFsgI2vhq62/HdHqGlzhBTuKh75FNef/hSE+XMZgRNJ
+         Gv8tvp+JiGiuhZyL834X0RWYDI3QZBsl80+egjdBDUTvkTvKDmYUdaFc2W0wKa137tQu
+         Inzw==
+X-Gm-Message-State: APjAAAUuDqrVcZcDIBOzth5w3DkMlexuUZle2s1F3ppiRWctRrBNh+LN
+        3RTMgZcAqJgwNupqUYfcJLLw6F4a/wM=
+X-Google-Smtp-Source: APXvYqymzev1szgI437Z8oEdFLBAFsO5nuGw1E6XOdwamRjM1CvQ4pzTO08Voc7rJ+sIrUWYLKhxRw==
+X-Received: by 2002:a5d:67cb:: with SMTP id n11mr6397395wrw.3.1556880228379;
+        Fri, 03 May 2019 03:43:48 -0700 (PDT)
 Received: from cbtest28.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id r29sm1716999wra.56.2019.05.03.03.43.46
+        by smtp.gmail.com with ESMTPSA id r29sm1716999wra.56.2019.05.03.03.43.47
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 03 May 2019 03:43:46 -0700 (PDT)
+        Fri, 03 May 2019 03:43:47 -0700 (PDT)
 From:   Jiong Wang <jiong.wang@netronome.com>
 To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         oss-drivers@netronome.com, Jiong Wang <jiong.wang@netronome.com>
-Subject: [PATCH v6 bpf-next 04/17] bpf: introduce new alu insn BPF_ZEXT for explicit zero extension
-Date:   Fri,  3 May 2019 11:42:31 +0100
-Message-Id: <1556880164-10689-5-git-send-email-jiong.wang@netronome.com>
+Subject: [PATCH v6 bpf-next 05/17] bpf: verifier: insert BPF_ZEXT according to zext analysis result
+Date:   Fri,  3 May 2019 11:42:32 +0100
+Message-Id: <1556880164-10689-6-git-send-email-jiong.wang@netronome.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
 References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
@@ -58,101 +58,144 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduce new alu32 insn BPF_ZEXT, and allocate the unused
-opcode 0xe0 to it.
+After previous patches, verifier has marked those instructions that really
+need zero extension on dst_reg.
 
-Compared with the other alu32 insns, zero extension on low 32-bit is the
-only semantics for this instruction. It also allows various JIT back-ends
-to do optimal zero extension code-gen.
+It is then for all back-ends to decide how to use such information to
+eliminate unnecessary zero extension code-gen during JIT compilation.
 
-BPF_ZEXT is supposed to be encoded with BPF_ALU only, and is supposed to be
-generated by the latter 32-bit optimization code inside verifier for those
-arches that do not support hardware implicit zero extension only.
+One approach is:
+  1. Verifier insert explicit zero extension for those instructions that
+     need zero extension.
+  2. All JIT back-ends do NOT generate zero extension for sub-register
+     write any more.
 
-It is not supposed to be used in user's program directly at the moment.
-Therefore, no need to recognize it inside generic verification code. It
-just need to be supported for execution on interpreter or related JIT
-back-ends.
+The good thing for this approach is no major change on JIT back-end
+interface, all back-ends could get this optimization.
 
+However, only those back-ends that do not have hardware zero extension
+want this optimization. For back-ends like x86_64 and AArch64, there is
+hardware support, so zext insertion should be disabled.
+
+This patch introduces new target hook "bpf_jit_hardware_zext" which is
+default true, meaning the underlying hardware will do zero extension
+implicitly, therefore zext insertion by verifier will be disabled. Once a
+back-end overrides this hook to false, then verifier will insert BPF_ZEXT
+to clear high 32-bit of definitions when necessary.
+
+Offload targets do not use this native target hook, instead, they could
+get the optimization results using bpf_prog_offload_ops.finalize.
+
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
 ---
- Documentation/networking/filter.txt | 10 ++++++++++
- include/uapi/linux/bpf.h            |  3 +++
- kernel/bpf/core.c                   |  4 ++++
- tools/include/uapi/linux/bpf.h      |  3 +++
- 4 files changed, 20 insertions(+)
+ include/linux/bpf.h    |  1 +
+ include/linux/filter.h |  1 +
+ kernel/bpf/core.c      |  8 ++++++++
+ kernel/bpf/verifier.c  | 40 ++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 50 insertions(+)
 
-diff --git a/Documentation/networking/filter.txt b/Documentation/networking/filter.txt
-index 319e5e0..1cb3e42 100644
---- a/Documentation/networking/filter.txt
-+++ b/Documentation/networking/filter.txt
-@@ -903,6 +903,16 @@ If BPF_CLASS(code) == BPF_ALU or BPF_ALU64 [ in eBPF ], BPF_OP(code) is one of:
-   BPF_MOV   0xb0  /* eBPF only: mov reg to reg */
-   BPF_ARSH  0xc0  /* eBPF only: sign extending shift right */
-   BPF_END   0xd0  /* eBPF only: endianness conversion */
-+  BPF_ZEXT  0xe0  /* eBPF BPF_ALU only: zero-extends low 32-bit */
-+
-+Compared with BPF_ALU | BPF_MOV which zero-extends low 32-bit implicitly,
-+BPF_ALU | BPF_ZEXT zero-extends low 32-bit explicitly. Such zero extension is
-+not the main semantics for the prior, but is for the latter. Therefore, JIT
-+optimizer could optimize out the zero extension for the prior when it is
-+concluded safe to do so, but should never do such optimization for the latter.
-+LLVM compiler won't generate BPF_ZEXT, and hand written assembly is not supposed
-+to use it. Verifier 32-bit optimization pass, which removes zero extension
-+semantics from the other BPF_ALU instructions, is the only place generates it.
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 11a5fb9..cf3c3f3 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -373,6 +373,7 @@ struct bpf_prog_aux {
+ 	u32 id;
+ 	u32 func_cnt; /* used by non-func prog as the number of func progs */
+ 	u32 func_idx; /* 0 for non-func prog, the index in func array for func prog */
++	bool verifier_zext; /* Zero extensions has been inserted by verifier. */
+ 	bool offload_requested;
+ 	struct bpf_prog **func;
+ 	void *jit_data; /* JIT specific data. arch dependent */
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index fb0edad..8750657 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -821,6 +821,7 @@ u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
  
- If BPF_CLASS(code) == BPF_JMP or BPF_JMP32 [ in eBPF ], BPF_OP(code) is one of:
+ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog);
+ void bpf_jit_compile(struct bpf_prog *prog);
++bool bpf_jit_hardware_zext(void);
+ bool bpf_helper_changes_pkt_data(void *func);
  
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 72336ba..22ccdf4 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -32,6 +32,9 @@
- #define BPF_FROM_LE	BPF_TO_LE
- #define BPF_FROM_BE	BPF_TO_BE
- 
-+/* zero extend low 32-bit */
-+#define BPF_ZEXT	0xe0
-+
- /* jmp encodings */
- #define BPF_JNE		0x50	/* jump != */
- #define BPF_JLT		0xa0	/* LT is unsigned, '<' */
+ static inline bool bpf_dump_raw_ok(void)
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 2792eda..ee8703d 100644
+index ee8703d..9754346 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -1152,6 +1152,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
- 	INSN_2(ALU, NEG),			\
- 	INSN_3(ALU, END, TO_BE),		\
- 	INSN_3(ALU, END, TO_LE),		\
-+	INSN_2(ALU, ZEXT),			\
- 	/*   Immediate based. */		\
- 	INSN_3(ALU, ADD,  K),			\
- 	INSN_3(ALU, SUB,  K),			\
-@@ -1352,6 +1353,9 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
- 	ALU64_NEG:
- 		DST = -DST;
- 		CONT;
-+	ALU_ZEXT:
-+		DST = (u32) DST;
-+		CONT;
- 	ALU_MOV_X:
- 		DST = (u32) SRC;
- 		CONT;
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 72336ba..22ccdf4 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -32,6 +32,9 @@
- #define BPF_FROM_LE	BPF_TO_LE
- #define BPF_FROM_BE	BPF_TO_BE
+@@ -2095,6 +2095,14 @@ bool __weak bpf_helper_changes_pkt_data(void *func)
+ 	return false;
+ }
  
-+/* zero extend low 32-bit */
-+#define BPF_ZEXT	0xe0
++/* Return TRUE is the target hardware of JIT will do zero extension to high bits
++ * when writing to low 32-bit of one register. Otherwise, return FALSE.
++ */
++bool __weak bpf_jit_hardware_zext(void)
++{
++	return true;
++}
 +
- /* jmp encodings */
- #define BPF_JNE		0x50	/* jump != */
- #define BPF_JLT		0xa0	/* LT is unsigned, '<' */
+ /* To execute LD_ABS/LD_IND instructions __bpf_prog_run() may call
+  * skb_copy_bits(), so provide a weak definition of it for NET-less config.
+  */
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index b43e8a2..999da02 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -7648,6 +7648,37 @@ static int opt_remove_nops(struct bpf_verifier_env *env)
+ 	return 0;
+ }
+ 
++static int opt_subreg_zext_lo32(struct bpf_verifier_env *env)
++{
++	struct bpf_insn_aux_data *aux = env->insn_aux_data;
++	struct bpf_insn *insns = env->prog->insnsi;
++	int i, delta = 0, len = env->prog->len;
++	struct bpf_insn zext_patch[2];
++	struct bpf_prog *new_prog;
++
++	zext_patch[1] = BPF_ALU32_IMM(BPF_ZEXT, 0, 0);
++	for (i = 0; i < len; i++) {
++		int adj_idx = i + delta;
++		struct bpf_insn insn;
++
++		if (!aux[adj_idx].zext_dst)
++			continue;
++
++		insn = insns[adj_idx];
++		zext_patch[0] = insn;
++		zext_patch[1].dst_reg = insn.dst_reg;
++		new_prog = bpf_patch_insn_data(env, adj_idx, zext_patch, 2);
++		if (!new_prog)
++			return -ENOMEM;
++		env->prog = new_prog;
++		insns = new_prog->insnsi;
++		aux = env->insn_aux_data;
++		delta += 2;
++	}
++
++	return 0;
++}
++
+ /* convert load instructions that access fields of a context type into a
+  * sequence of instructions that access fields of the underlying structure:
+  *     struct __sk_buff    -> struct sk_buff
+@@ -8499,6 +8530,15 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
+ 	if (ret == 0)
+ 		ret = fixup_bpf_calls(env);
+ 
++	/* do 32-bit optimization after insn patching has done so those patched
++	 * insns could be handled correctly.
++	 */
++	if (ret == 0 && !bpf_jit_hardware_zext() &&
++	    !bpf_prog_is_dev_bound(env->prog->aux)) {
++		ret = opt_subreg_zext_lo32(env);
++		env->prog->aux->verifier_zext = !ret;
++	}
++
+ 	if (ret == 0)
+ 		ret = fixup_call_args(env);
+ 
 -- 
 2.7.4
 
