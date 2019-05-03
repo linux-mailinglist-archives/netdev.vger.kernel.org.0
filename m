@@ -2,96 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEFED132D6
-	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 19:05:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 568E2132B9
+	for <lists+netdev@lfdr.de>; Fri,  3 May 2019 19:02:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728446AbfECRFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 13:05:14 -0400
-Received: from mail.us.es ([193.147.175.20]:45070 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726585AbfECRFO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 May 2019 13:05:14 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id BEBBEE8624
-        for <netdev@vger.kernel.org>; Fri,  3 May 2019 19:05:12 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id AF638DA70E
-        for <netdev@vger.kernel.org>; Fri,  3 May 2019 19:05:12 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id A4EF5DA708; Fri,  3 May 2019 19:05:12 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9990DDA704;
-        Fri,  3 May 2019 19:05:10 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 03 May 2019 19:05:10 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 721414265A32;
-        Fri,  3 May 2019 19:05:10 +0200 (CEST)
-Date:   Fri, 3 May 2019 19:05:10 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     Kristian Evensen <kristian.evensen@gmail.com>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        Florian Westphal <fw@strlen.de>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH] netfilter: ctnetlink: Resolve conntrack L3-protocol
- flush regression
-Message-ID: <20190503170510.dn3z2363bsc5y4zp@salvia>
-References: <20190503154007.32495-1-kristian.evensen@gmail.com>
- <0326116f-f163-5ae1-ce19-6a891323eb03@6wind.com>
+        id S1728702AbfECRCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 13:02:38 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:56318 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726724AbfECRCh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 13:02:37 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x43GxPbM141123;
+        Fri, 3 May 2019 17:02:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=BncSkmKFfSjgngfBN0eKIEFvp3WAo4qj1izyOTi5oSU=;
+ b=Laftfx5AdthWx83pArbwSNaQCp2334pSq8Nd3V+Lf4APplC9cbaTIUg0gREZxZKNfIzt
+ xbHhLDOisBrHOFg+HrjZG1jjrScs+5RF2go67GY1u2odxUp4LF83/0LcyAFD62qDvVDn
+ SJx57SB5qA0vXf3la01p3Hqx/xygF05KacrwvMo4qqLsr0qkd2Xd7htbwst8ER4NzOn4
+ 4zkbYsAa0wja5JzjTMTIv3cx/dv8AWQFQxYIGfKNwqI6JTF58bBfHg+61e+jnYcWcQIn
+ fqS1V5AnE0lz6R5t2nE39ct+/5UR4Hshk6mh8khKM/UmG+f6g/M5sa2kLAManHrq3pEL RA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2130.oracle.com with ESMTP id 2s6xhyr3ts-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 03 May 2019 17:02:26 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x43H18eQ143976;
+        Fri, 3 May 2019 17:02:25 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 2s6xhhqx69-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 03 May 2019 17:02:25 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x43H2PZq147775;
+        Fri, 3 May 2019 17:02:25 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 2s6xhhqx61-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 03 May 2019 17:02:25 +0000
+Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x43H2OEZ010679;
+        Fri, 3 May 2019 17:02:24 GMT
+Received: from [10.209.243.127] (/10.209.243.127)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 03 May 2019 10:02:24 -0700
+Subject: Re: [PATCH] net: rds: fix spelling mistake "syctl" -> "sysctl"
+To:     Colin King <colin.king@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190503121017.5227-1-colin.king@canonical.com>
+From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <0fc4a8a5-d275-ef2c-3cbc-5cfa97fe6881@oracle.com>
+Date:   Fri, 3 May 2019 10:05:12 -0700
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0326116f-f163-5ae1-ce19-6a891323eb03@6wind.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20190503121017.5227-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9245 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=802 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1905030109
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 03, 2019 at 07:02:54PM +0200, Nicolas Dichtel wrote:
-> Please, keep in CC all involved people.
+On 5/3/2019 5:10 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Le 03/05/2019 à 17:40, Kristian Evensen a écrit :
-> > Commit 59c08c69c278 ("netfilter: ctnetlink: Support L3 protocol-filter
-> > on flush") introduced a user-space regression when flushing connection
-> > track entries. Before this commit, the nfgen_family field was not used
-> > by the kernel and all entries were removed. Since this commit,
-> > nfgen_family is used to filter out entries that should not be removed.
-> > One example a broken tool is conntrack. conntrack always sets
-> > nfgen_family to AF_INET, so after 59c08c69c278 only IPv4 entries were
-> > removed with the -F parameter.
-> > 
-> > Pablo Neira Ayuso suggested using nfgenmsg->version to resolve the
-> > regression, and this commit implements his suggestion. nfgenmsg->version
-> > is so far set to zero, so it is well-suited to be used as a flag for
-> > selecting old or new flush behavior. If version is 0, nfgen_family is
-> > ignored and all entries are used. If user-space sets the version to one
-> > (or any other value than 0), then the new behavior is used. As version
-> > only can have two valid values, I chose not to add a new
-> > NFNETLINK_VERSION-constant.
-> > 
-> > Fixes: 59c08c69c278 ("netfilter: ctnetlink: Support L3 protocol-filter
-> > on flush")
-> > 
-> Please, don't break the fixes line and don't separate it from other tags with an
-> empty line.
-
-Will fix this before applying, no worries.
-
-> > Reported-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> > Suggested-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> > Signed-off-by: Kristian Evensen <kristian.evensen@gmail.com>
-> Tested-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> There is a spelling mistake in a pr_warn warning. Fix it.
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
