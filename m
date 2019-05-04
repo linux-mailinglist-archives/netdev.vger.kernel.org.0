@@ -2,136 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CA2D13663
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 01:53:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D480136E9
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 03:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727083AbfECXw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 19:52:59 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:34151 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727020AbfECXw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 19:52:58 -0400
-Received: by mail-qt1-f194.google.com with SMTP id j6so8744790qtq.1
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 16:52:58 -0700 (PDT)
+        id S1726873AbfEDBSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 21:18:41 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40656 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726042AbfEDBSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 21:18:41 -0400
+Received: by mail-wr1-f66.google.com with SMTP id h4so9907543wre.7;
+        Fri, 03 May 2019 18:18:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Y9uds37g7f4813/ZqlKEDnGn948IiuDvboVC7bPadlI=;
-        b=N9BE3PqMA0nL0NvpOU63kepSs17NWxuaQGMx7Tupv6wpFQNuRqB6tenh0G/BWpJ1PP
-         HEd7ZRYuplIPMrp/i3Cbd8pyLv65lE/Kcn6MATxFD0LAM764ONzAI9CGs51aZh5QkF2i
-         IUvMmfzMxlcfJSqngQx2TZEML8ZbCAHWTFmHtqfhFJeQ8JVqaTAgfiqfKRaZhlNd6jZX
-         Xiy8j3oAf41/Kg4WEp6FuwvI9DlafHuBxOiRzLclafXL2AMIXhBmFJmJrK5KHtm2pgmi
-         Pkc8sfsyJqh6zaTpfCu0T9ewb4rk6AtpL8uJLJA4xZTB0LSOR9blqcrj5s/eIqJuMPaw
-         q8oA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=1zQYpHCU7UlsHYJBg7jwPlzoSjQyIJpUN9QDyya+MQ4=;
+        b=iNyGD2djAV4yvcaEiFk74Q3jMsefHRPo2VLdHt6+MDRkoGpn2/BdwSM85jK0O+lh4w
+         FtoB0Pwc9HSyTKTj/PJo+u6qGIosa+3AGS1dIIfPGvUwXqqBsCLYXM244i5/mzazaTbZ
+         romkbGP14FJPlQNLK+MMJ4i5iwO+KE0K7T59l1k5NlcVYPp9aNn6kBbgFnwLAuw0ixKV
+         1ZJIdiA/YhxssYzwoiv6ezEuvkiOpWUZwkHerdNl9AyaKVx0E4+Al6hzKtCo5l1RwZFX
+         hxRaWR5bcZRcXwk7xIGKibIBDjcbVkwQP+EFsTyVyMiCN3K+b9MKJlNkdjWPtAQvHxXH
+         EJXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Y9uds37g7f4813/ZqlKEDnGn948IiuDvboVC7bPadlI=;
-        b=LDC1toQidrExZOU8Yzfqc4SNvMTQGiRcn8n16SWCQARkwVTHvCIUqXd2V95IJ8O4/0
-         zSYaSTNMJYSyH34IN48RoICQYhCbrny/MYPno8bdr4k+Yu6q56QQZyIQVFXwx0MxmTnk
-         LgAeJAqQ/SiPDQiW0EBU+X+Pu3f6WdTpxroEx480ZzA6FjTWlNha324nxYFLxUl85PmZ
-         m8zKA/zzdEiHj7EjzZ/oSCbNxP/08UytBmT3jq6lPjZ2Sc5ZKofRMifPJ+CSXkXGGZ61
-         w39yF5m7odFK/Gkay+89Hquz61DSM2fHdvC65j3AzNJQiVAkbC87Z66P3+oQiwzLNhYk
-         8mHw==
-X-Gm-Message-State: APjAAAWDsAhoWDSULcz6mJUJAg+cHHUjJpx85CBCEH61tS2p6Unkcuyw
-        vLNlPNSutiMiLVaRzt+ewQT4Ig==
-X-Google-Smtp-Source: APXvYqziKdH2wZvx3iC97K6c8A4weeprYaQkrXpo4FxMM1oMFrPSRq/nQcOHMobAnKPDvieS6kD22g==
-X-Received: by 2002:ac8:8ad:: with SMTP id v42mr10692638qth.337.1556927577786;
-        Fri, 03 May 2019 16:52:57 -0700 (PDT)
-Received: from ziepe.ca ([65.119.211.164])
-        by smtp.gmail.com with ESMTPSA id r1sm1636491qtp.77.2019.05.03.16.52.56
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 03 May 2019 16:52:56 -0700 (PDT)
-Received: from jgg by jggl.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1hMhz6-0001lg-BL; Fri, 03 May 2019 20:52:56 -0300
-Date:   Fri, 3 May 2019 20:52:56 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Kostya Serebryany <kcc@google.com>,
-        Evgeniy Stepanov <eugenis@google.com>,
-        Ramana Radhakrishnan <Ramana.Radhakrishnan@arm.com>,
-        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Dave Martin <Dave.Martin@arm.com>,
-        Kevin Brodsky <kevin.brodsky@arm.com>,
-        Szabolcs Nagy <Szabolcs.Nagy@arm.com>
-Subject: Re: [PATCH v13 16/20] IB/mlx4, arm64: untag user pointers in
- mlx4_get_umem_mr
-Message-ID: <20190503235256.GB6660@ziepe.ca>
-References: <cover.1553093420.git.andreyknvl@google.com>
- <1e2824fd77e8eeb351c6c6246f384d0d89fd2d58.1553093421.git.andreyknvl@google.com>
- <20190429180915.GZ6705@mtr-leonro.mtl.com>
- <20190430111625.GD29799@arrakis.emea.arm.com>
- <20190502184442.GA31165@ziepe.ca>
- <20190503162846.GI55449@arrakis.emea.arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190503162846.GI55449@arrakis.emea.arm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1zQYpHCU7UlsHYJBg7jwPlzoSjQyIJpUN9QDyya+MQ4=;
+        b=ftNhThYlCHcVFPoRxlqLjXcTWCo+G7x8K63nmEL726MpXohQI1G7H9stIB8uxttiOk
+         97TLZupVMeKYCRLMVgyuzon+RuEIak/cEebBu0ZoT/v8CV+MofwoRLAt57ea8qdWVnIK
+         shUIV3NT418Yl+2kkeejvHNkXuWuZHfArK/NNKixFEdk+xYzZmEQ2/y7A8tSs3Vn+/at
+         4+Q4vT8+Q+2sksGqPUpvnmFyIbTTlvRvhoRMLo8zbAP2xulErjiltC1f/O2HJE9rwwq7
+         rZFEROsCG5IUmV7H2cAS0Mcd7o7NatQAhBuJNl5Z8p5CZkJllGsgTOeu04WCqmUtAo4V
+         NViw==
+X-Gm-Message-State: APjAAAU7KvaRv0xythf+3DmLeUfDwvpDjhXKmdSb+znEK+TMpQ0fsTCt
+        UIyY9wbUjvAdrzxRZ8QRtCs=
+X-Google-Smtp-Source: APXvYqw6wc3ZIfNewUS90lwCR4NOKjdRSzhVflAo5NyRDdVdP/14J8wfKH0BjyoXDNrlziVicETL/g==
+X-Received: by 2002:adf:dbce:: with SMTP id e14mr9061327wrj.249.1556932718724;
+        Fri, 03 May 2019 18:18:38 -0700 (PDT)
+Received: from localhost.localdomain (5-12-225-227.residential.rdsnet.ro. [5.12.225.227])
+        by smtp.gmail.com with ESMTPSA id t1sm3937639wro.34.2019.05.03.18.18.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 03 May 2019 18:18:38 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next 0/9] Traffic support for SJA1105 DSA driver
+Date:   Sat,  4 May 2019 04:18:17 +0300
+Message-Id: <20190504011826.30477-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 03, 2019 at 05:28:46PM +0100, Catalin Marinas wrote:
-> Thanks Jason and Leon for the information.
-> 
-> On Thu, May 02, 2019 at 03:44:42PM -0300, Jason Gunthorpe wrote:
-> > On Tue, Apr 30, 2019 at 12:16:25PM +0100, Catalin Marinas wrote:
-> > > > Interesting, the followup question is why mlx4 is only one driver in IB which
-> > > > needs such code in umem_mr. I'll take a look on it.
-> > > 
-> > > I don't know. Just using the light heuristics of find_vma() shows some
-> > > other places. For example, ib_umem_odp_get() gets the umem->address via
-> > > ib_umem_start(). This was previously set in ib_umem_get() as called from
-> > > mlx4_get_umem_mr(). Should the above patch have just untagged "start" on
-> > > entry?
-> > 
-> > I have a feeling that there needs to be something for this in the odp
-> > code..
-> > 
-> > Presumably mmu notifiers and what not also use untagged pointers? Most
-> > likely then the umem should also be storing untagged pointers.
-> 
-> Yes.
-> 
-> > This probably becomes problematic because we do want the tag in cases
-> > talking about the base VA of the MR..
-> 
-> It depends on whether the tag is relevant to the kernel or not. The only
-> useful case so far is for the kernel performing copy_form_user() etc.
-> accesses so they'd get checked in the presence of hardware memory
-> tagging (MTE; but it's not mandatory, a 0 tag would do as well).
-> 
-> If we talk about a memory range where the content is relatively opaque
-> (or irrelevant) to the kernel code, we don't really need the tag. I'm
-> not familiar to RDMA but I presume it would be a device accessing such
-> MR but not through the user VA directly. 
+This patch set is a continuation of the "NXP SJA1105 DSA driver" v3
+series, which was split in multiple pieces for easier review.
 
-RDMA exposes the user VA directly (the IOVA) as part of the wire
-protocol, we must preserve the tag in these cases as that is what the
-userspace is using for the pointer.
+Supporting a fully-featured (traffic-capable) driver for this switch
+requires some rework in DSA and also leaves behind a more generic
+infrastructure for other dumb switches that rely on 802.1Q pseudo-switch
+tagging for port separation. Among the DSA changes required are:
 
-So the ODP stuff will definately need some adjusting when it interacts
-with the mmu notifiers and get user pages.
+* Generic xmit and rcv functions for pushing/popping 802.1Q tags on
+  skb's. These are modeled as a tagging protocol of its own but which
+  must be customized by drivers to fit their own hardware possibilities.
 
-Jason
+* Permitting the .setup callback to invoke switchdev operations that
+  will loop back into the driver through the switchdev notifier chain.
+
+The SJA1105 driver then proceeds to extend this 8021q switch tagging
+protocol while adding its own (tag_sja1105). This is done because
+the driver actually implements a "dual tagger":
+
+* For normal traffic it uses 802.1Q tags
+
+* For management (multicast DMAC) frames the switch has native support
+  for recognizing and annotating these with source port and switch id
+  information.
+
+Because this is a "dual tagger", decoding of management frames should
+still function when regular traffic can't (under a bridge with VLAN
+filtering).
+There was intervention in the DSA receive hotpath, where a new
+filtering function called from eth_type_trans() is needed. This is
+useful in the general sense for switches that might actually have some
+limited means of source port decoding, such as only for management
+traffic, but not for everything.
+In order for the 802.1Q tagging protocol (which cannot be enabled under
+all conditions, unlike the management traffic decoding) to not be an
+all-or-nothing choice, the filtering function matches everything that
+can be decoded, and everything else is left to pass to the master
+netdevice.
+
+Lastly, DSA core support was added for drivers to request skb deferral.
+SJA1105 needs this for SPI intervention during transmission of link-local
+traffic. This is not done from within the tagger.
+
+Some patches were carried over unchanged from the previous patchset
+(01/09). Others were slightly reworked while adapting to the recent
+changes in "Make DSA tag drivers kernel modules" (02/09).
+
+The introduction of some structures (DSA_SKB_CB, dp->priv) may seem a
+little premature at this point and the new structures under-utilized.
+The reason is that traffic support has been rewritten with PTP
+timestamping in mind, and then I removed the timestamping code from the
+current submission (1. it is a different topic, 2. it does not work very
+well yet). On demand I can provide the timestamping patchset as a RFC
+though.
+
+"NXP SJA1105 DSA driver" v3 patchset can be found at:
+https://lkml.org/lkml/2019/4/12/978
+
+Vladimir Oltean (9):
+  net: dsa: Call driver's setup callback after setting up its switchdev
+    notifier
+  net: dsa: Optional VLAN-based port separation for switches without
+    tagging
+  net: dsa: Allow drivers to filter packets they can decode source port
+    from
+  net: dsa: Keep private info in the skb->cb
+  net: dsa: Add support for deferred xmit
+  net: dsa: Add a private structure pointer to dsa_port
+  net: dsa: sja1105: Add support for traffic through standalone ports
+  net: dsa: sja1105: Add support for Spanning Tree Protocol
+  Documentation: net: dsa: sja1105: Add info about supported traffic
+    modes
+
+ Documentation/networking/dsa/sja1105.rst |  49 +++++
+ drivers/net/dsa/sja1105/Kconfig          |   1 +
+ drivers/net/dsa/sja1105/sja1105.h        |   6 +
+ drivers/net/dsa/sja1105/sja1105_main.c   | 246 +++++++++++++++++++++--
+ include/linux/dsa/8021q.h                |  76 +++++++
+ include/linux/dsa/sja1105.h              |  35 +++-
+ include/net/dsa.h                        |  65 ++++++
+ net/dsa/Kconfig                          |  20 ++
+ net/dsa/Makefile                         |   2 +
+ net/dsa/dsa2.c                           |   9 +-
+ net/dsa/dsa_priv.h                       |   2 +
+ net/dsa/slave.c                          |  61 ++++--
+ net/dsa/tag_8021q.c                      | 222 ++++++++++++++++++++
+ net/dsa/tag_sja1105.c                    | 131 ++++++++++++
+ net/ethernet/eth.c                       |   6 +-
+ 15 files changed, 890 insertions(+), 41 deletions(-)
+ create mode 100644 include/linux/dsa/8021q.h
+ create mode 100644 net/dsa/tag_8021q.c
+ create mode 100644 net/dsa/tag_sja1105.c
+
+-- 
+2.17.1
+
