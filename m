@@ -2,96 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6B21382E
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 10:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F185113835
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 10:12:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726770AbfEDIDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 04:03:51 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7719 "EHLO huawei.com"
+        id S1726957AbfEDIMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 04:12:23 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:51960 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726258AbfEDIDv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 May 2019 04:03:51 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 344A468EBF5E222164BB;
-        Sat,  4 May 2019 16:03:47 +0800 (CST)
-Received: from [127.0.0.1] (10.184.189.20) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
- 16:03:40 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-Subject: [PATCH] net: route: Fix vrf dst_entry ref count false increasing
-To:     <davem@davemloft.net>, <christian@brauner.io>,
-        <roopa@cumulusnetworks.com>, <dsahern@gmail.com>,
-        <Jason@zx2c4.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     mousuanming <mousuanming@huawei.com>,
-        Mingfangsen <mingfangsen@huawei.com>
-Message-ID: <76551ed7-47ef-7442-69de-6fb42fff4708@huawei.com>
-Date:   Sat, 4 May 2019 16:03:33 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.1
+        id S1726217AbfEDIMW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 May 2019 04:12:22 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 459ACBBC3AFF944E1B78;
+        Sat,  4 May 2019 16:12:20 +0800 (CST)
+Received: from localhost (10.177.31.96) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
+ 16:12:11 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <jakub.kicinski@netronome.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] netdevsim: Make nsim_num_vf static
+Date:   Sat, 4 May 2019 16:12:07 +0800
+Message-ID: <20190504081207.22764-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.189.20]
+Content-Type: text/plain
+X-Originating-IP: [10.177.31.96]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Suanming.Mou <mousuanming@huawei.com>
+Fix sparse warning:
 
-When config ip in default vrf same as the ip in specified
-vrf, fib_lookup will return the route from table local
-even if the in device is an enslaved l3mdev. Then the
-dst_entry will hold the vrf device rather than loopback
-device in local_input of function ip_route_input_slow.
-So vrf dst_entry is false increased by route from table
-local.
+drivers/net/netdevsim/bus.c:253:5: warning:
+ symbol 'nsim_num_vf' was not declared. Should it be static?
 
-Here is reproduce step:
-1.enslave enp4s0 to vrf2, and config ip address:
-ip link add vrf2 type vrf table 1
-ip link set vrf2 up
-ip link set enp4s0 master vrf2
-ip addr ad 125.1.1.1/16 dev enp4s0
-
-2.config same ip in default vrf:
-ip addr ad 125.1.1.1/16 dev enp6s0
-
-3.config peer and ping:
-ip vrf exec vrf2 ping 125.1.1.2 -c 3
-
-4.del vrf2 link:
-ip link del vrf2
-
-And "unregister_netdevice: waiting for vrf2 to become free.
-Usage count = 1" will occur.
-
-Signed-off-by: Suanming.Mou <mousuanming@huawei.com>
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- net/core/fib_rules.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/netdevsim/bus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
-index ffbb827723a2..1a2c11ed1585 100644
---- a/net/core/fib_rules.c
-+++ b/net/core/fib_rules.c
-@@ -263,6 +263,11 @@ static int fib_rule_match(struct fib_rule *rule, struct fib_rules_ops *ops,
- 	if (rule->tun_id && (rule->tun_id != fl->flowi_tun_key.tun_id))
- 		goto out;
-
-+	if (!rule->l3mdev &&
-+	    (netif_index_is_l3_master(rule->fr_net, fl->flowi_iif) ||
-+	     netif_index_is_l3_master(rule->fr_net, fl->flowi_oif)))
-+		goto out;
-+
- 	if (rule->l3mdev && !l3mdev_fib_rule_match(rule->fr_net, fl, arg))
- 		goto out;
-
+diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
+index ae48234..868fb9a 100644
+--- a/drivers/net/netdevsim/bus.c
++++ b/drivers/net/netdevsim/bus.c
+@@ -250,7 +250,7 @@ static int nsim_bus_remove(struct device *dev)
+ 	return 0;
+ }
+ 
+-int nsim_num_vf(struct device *dev)
++static int nsim_num_vf(struct device *dev)
+ {
+ 	struct nsim_bus_dev *nsim_bus_dev = to_nsim_bus_dev(dev);
+ 
 -- 
-2.21.GIT
+2.7.0
 
 
