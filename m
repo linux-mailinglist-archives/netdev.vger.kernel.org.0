@@ -2,120 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4FE513B18
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 18:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35AE513B16
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 18:07:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727191AbfEDQHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 12:07:06 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:34107 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726217AbfEDQHD (ORCPT
+        id S1727159AbfEDQHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 12:07:03 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:41014 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727057AbfEDQHD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 12:07:03 -0400
-Received: by mail-pg1-f193.google.com with SMTP id c13so4258195pgt.1;
-        Sat, 04 May 2019 09:07:02 -0700 (PDT)
+Received: by mail-pl1-f194.google.com with SMTP id d9so4193198pls.8
+        for <netdev@vger.kernel.org>; Sat, 04 May 2019 09:07:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lS00FWHyTFR/FJuO91xXRMo5CVp7ykNCRIiy16tO7jc=;
-        b=JsFg9epaupPV7iKZ39JCayZMQ9nw2lrjF6cMtCBDJT+7R5wYmlRnI/vk9fAdT4sV4Y
-         VeV3w4Dk0ldqkIUcHmD/SwLQSqpuP0YidI/H0io78GxiawwbrK2/2gyWt73vuHu4gJhX
-         3JAlO/DpXSvzDpaWr+icOGvHvvJ3gJILeqpF9bHctQQC/13mNsnwEYnj+nUMAsBMI/9r
-         8zaOXaqzYS3FcvqYMrd39S6ZgsyXQSk96cnIjfsZka++5O++8t2G26EMAlpANacUiuYR
-         jcDSPcE3eji9uWHqIbkk2DKif5mhE04ehIvjwpWQWO8NoT1QNdwbUf8FKCIsDDIf92Nf
-         VRNg==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=89jH98lOa/OYSsEz8DyT+x1rCRjXFUvom3wDoF5JI20=;
+        b=qZYVrf7QL92bq3ngEpoiZ92ZppFbx8LmTbDoXu+SH/bSSQvD5uZVExGJk0xLtoRqP7
+         qIFbcJ27hugd2/HaT/qbYpz9aX2QheqBWnNT4SlL2aCozd3VFdkKPQLTSeDOf5gaPGXL
+         RdamY+ADbG0f4qy8exOyfX2wognS9hCKCWk1DJaLCC6G1ICFAN7P57WaaZVeF//PRDIo
+         Xsd8dSpXj9v02cY4ZQV+OmBspDaestD2ODaVnqCk2aYjsjjCSexCjWjIlpp7OyWZkh61
+         uvzCDfSeqnuSWIyNfdjVumLLN4wPGdRRxCJLCzzJVrkEHVfXdfP8uF8VLNCeHodJdNfd
+         xyZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lS00FWHyTFR/FJuO91xXRMo5CVp7ykNCRIiy16tO7jc=;
-        b=kyo3JL6nwjkqL0Ld913VwLZ8/L2nPj4oYxytR3WwVyVtHGUcnBq2/q87CZigIAdrDH
-         5TJF+yHgW4mwfSEOYYtla9jlS8LtGGVrjIxPugrMxAkJy3dEJ08WysMaOg0rvEu3sWb/
-         CpEdnFtx5xxFy8oj4u5XrGGArpZ3Ao8zWNg+qVHQe6z2jTXOwo3by5epHC6j9seDYa/J
-         lott4GZyG6CguEohtLenWKwy5WHxD1NnESOo/+AH4pm7D3jFgwy3y2n4LKenmqM9Yo8/
-         T/46R31V41fRXAMjKjzIybkHpFoQWBUC/PY17UVJhHx5I62G2rdDSbpzs7Uu87wpacv9
-         89ng==
-X-Gm-Message-State: APjAAAWe2KFwCSm7GJ2iqVVpVp+2st7xGqL+bYs3ieulHXMJp46h0x3t
-        iH6lwQP9mEk5FcWi+2Isq+8=
-X-Google-Smtp-Source: APXvYqwAmuH2qndIpc0pucEuioTwFb2HFdinvmSJMBpUQ/JQOH2PbH+xAao75xHrT5dDuKQK6PyyxA==
-X-Received: by 2002:aa7:8c84:: with SMTP id p4mr20310671pfd.164.1556986022616;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=89jH98lOa/OYSsEz8DyT+x1rCRjXFUvom3wDoF5JI20=;
+        b=ssDVIZMS37HkeIlns48WjYr2Vrzi0SQuG9C7gscMfp54X+F6p7lkBH7K0wbHSGNYLY
+         TSv2AZi8c/2jWioHgy/uEulyHkGIsi0qXY/RdmTbNWpwKG0QuYa88bGKnLHgbbbg/ROW
+         idvN1ppDav3BwMr7DtQbFkPyQX+wKaSsNyt1KO3MDgldGLzbLbF6xWJLnwXUvIjlOSB4
+         lx51xsHl+SBDDOEESrTdbH3aZkghNwyukEhaIk9EFq1KdB3Xs0vTdXXn/pZUx/MVK420
+         8JN1m0KiQ8e8suksF5jZgA/L5DuIJ2ryQ6VeIQAI/brZRIVgCMdGXI9pfjJzVd9UPa2q
+         vqBw==
+X-Gm-Message-State: APjAAAXn2PMWdziT3ejYC1Qt00p/l392H3yHNKoi1BJkrJEmZbtqvxBM
+        jLA1hxFqiLPk2N0zCzACiBOCbERX
+X-Google-Smtp-Source: APXvYqz9PdjuRNYZQak1VMF7V5ZR8kQnm8MBcfjhDpvC6XzzUECtk150v2B91HSsKVjpB5qJBN6BPA==
+X-Received: by 2002:a17:902:e58a:: with SMTP id cl10mr19161404plb.226.1556986022081;
         Sat, 04 May 2019 09:07:02 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.54.44])
-        by smtp.gmail.com with ESMTPSA id n67sm8032593pfn.22.2019.05.04.09.06.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 09:07:02 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        bruce.richarson@intel.com, bpf@vger.kernel.org
-Subject: [PATCH bpf-next 2/2] xsk: honor BPF_EXIST and BPF_NOEXIST flags in XSKMAP
-Date:   Sat,  4 May 2019 18:06:03 +0200
-Message-Id: <20190504160603.10173-3-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190504160603.10173-1-bjorn.topel@gmail.com>
-References: <20190504160603.10173-1-bjorn.topel@gmail.com>
+Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
+        by smtp.gmail.com with ESMTPSA id h20sm12769715pfj.40.2019.05.04.09.07.00
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Sat, 04 May 2019 09:07:00 -0700 (PDT)
+Subject: Re: CVE-2019-11683
+To:     Reindl Harald <h.reindl@thelounge.net>, netdev@vger.kernel.org
+References: <7a1c575b-b341-261c-1f22-92d656d6d9ae@thelounge.net>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <0ca5c3b7-49e5-6fdd-13ba-4aaee72f2060@gmail.com>
+Date:   Sat, 4 May 2019 12:06:59 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <7a1c575b-b341-261c-1f22-92d656d6d9ae@thelounge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
 
-The XSKMAP did not honor the BPF_EXIST/BPF_NOEXIST flags when updating
-an entry. This patch addresses that.
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- kernel/bpf/xskmap.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+On 5/4/19 11:49 AM, Reindl Harald wrote:
+> is this fixed in 5.0.12 and just not visible in the changelog?
+> 
+> because if not there's no poiunt to reboot a over a long time randomly
+> crahsing firewall setup which *appears* stable now after replace "LOG"
+> with "NFLOG" and remove --reap from the xt_recent rules
+> 
+> ----------------------
+> 
+> https://www.openwall.com/lists/oss-security/2019/05/02/1
+> 
+> syzbot has reported a remotely triggerable memory corruption in the
+> Linux kernel. It's been introduced quite recently in e20cf8d3f1f7
+> ("udp: implement GRO for plain UDP sockets.") and only affects the 5.0
+> (stable) release (so the name is a bit overhyped :).
+> 
+> CVE-2019-11683 description:
+> 
+> udp_gro_receive_segment in net/ipv4/udp_offload.c in the Linux kernel
+> 5.x through 5.0.11 allows remote attackers to cause a denial of
+> service (slab-out-of-bounds memory corruption) or possibly have
+> unspecified other impact via UDP packets with a 0 payload, because of
+> mishandling of padded packets, aka the "GRO packet of death" issue.
+> 
+> Fix (not yet upstream):
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=4dd2b82d5adfbe0b1587ccad7a8f76d826120f37
+> 
+> ----------------------
+> 
+> https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.0.11
+> https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.0.12
+> 
 
-diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
-index ad15e8e92a87..4214ea7b8cfc 100644
---- a/kernel/bpf/xskmap.c
-+++ b/kernel/bpf/xskmap.c
-@@ -236,8 +236,6 @@ static int xsk_map_update_elem(struct bpf_map *map, void *key, void *value,
- 		return -EINVAL;
- 	if (unlikely(i >= m->map.max_entries))
- 		return -E2BIG;
--	if (unlikely(map_flags == BPF_NOEXIST))
--		return -EEXIST;
- 
- 	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
-@@ -263,15 +261,28 @@ static int xsk_map_update_elem(struct bpf_map *map, void *key, void *value,
- 
- 	spin_lock_bh(&m->lock);
- 	entry = &m->xsk_map[i];
-+	old_xs = *entry;
-+	if (old_xs && map_flags == BPF_NOEXIST) {
-+		err = -EEXIST;
-+		goto out;
-+	} else if (!old_xs && map_flags == BPF_EXIST) {
-+		err = -ENOENT;
-+		goto out;
-+	}
- 	xsk_map_node_init(node, m, entry);
- 	xsk_map_add_node(xs, node);
--	old_xs = xchg(entry, xs);
- 	if (old_xs)
- 		xsk_map_del_node(old_xs, entry);
- 	spin_unlock_bh(&m->lock);
- 
- 	sockfd_put(sock);
- 	return 0;
-+
-+out:
-+	spin_unlock_bh(&m->lock);
-+	sockfd_put(sock);
-+	xsk_map_node_free(node);
-+	return err;
- }
- 
- static int xsk_map_delete_elem(struct bpf_map *map, void *key)
--- 
-2.20.1
+The missing part in this CVE is that this is not remotely triggerable as-is.
 
+UDP receiver has to opt-in for GRO, and I doubt any application does this currently.
