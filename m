@@ -2,75 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DBCC1396F
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:07:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ED081397A
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:34:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727020AbfEDLHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 07:07:40 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:33710 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725981AbfEDLHk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:07:40 -0400
-Received: by mail-pf1-f195.google.com with SMTP id z28so4235375pfk.0
-        for <netdev@vger.kernel.org>; Sat, 04 May 2019 04:07:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=nl39g1T53hJKf6/e5lRm3PMMlr45uQylbYUKdQVwCZQ=;
-        b=P3x+TuZjO/Tiiyl0gQtR335ZstOaMNPLqE/hLK7B2kqG7r2mekcmcVcn4e7G2UB1X0
-         DoppWzS5KQ0cTy4uQGWi8NejpmyzjJlm3NZvFtW5+4Som8PwKpi2/rf6kT7r1kgjiwdL
-         jtQRhcm8vpn7A5vRYuLPBlsjNDO7TgVyq7+EFF8SSGzYqsY2ZBj3qV6GaL+Ov1xpw2v3
-         GbtR018SSuxz73HhyIG5AYrMdjV3UwwO/TRBPDi7ugEMLI8K4jM/RqIJQfbHKzGlZgam
-         9HCVdI/V4zXJYv7uozm+315T8hn+AlvvwgPvDCkTWITP2g7fvNmdDuh5WzI8Q7kkN5Ts
-         7+9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=nl39g1T53hJKf6/e5lRm3PMMlr45uQylbYUKdQVwCZQ=;
-        b=d9TYjyrJE9QGnSPrAtloFK3VWKlxh5RL1nbSdePlo8cRIDenqAaws81RUt0MKubZtZ
-         329ZlulXYDXXd9ky1ykpHo2aMHIEOI9M9pHH1HvTquhoZTmPzx2sqwc0SBTs/ziytpPf
-         bwotzaCzrVg/GTryjxBECYZdIRHwOoJoV5eTOTW3NIYiXV8KOmP27IERcwykNF/YZ9lY
-         uRHcHrhx7E3uczQyqMUXV5/JS2nhBF09RwtQRqv/bTg7yeSCmggWK2wcgQaDImHk4dWC
-         gCNWCW3Lhc8LppoLg7G0M1Ah1cat0TZ15mU38cuiufp6vk4v3M3+tPZrajxqWlLxWKcn
-         5mMw==
-X-Gm-Message-State: APjAAAVdikq0IvLMRsOm+LOcDVDma96HhbFDqi60qQ4Z9pwpNVA8SKCD
-        z46a6PnTYB1vM7fz0zuPXpVNKQ==
-X-Google-Smtp-Source: APXvYqzsaN9URwb267F102CSdh+nIvxMj4k9Y3AWShpurEAK0b2y5Tak9/sA6WKLkkL2z1Vdv6r2hg==
-X-Received: by 2002:a62:62c2:: with SMTP id w185mr18628880pfb.237.1556968059359;
-        Sat, 04 May 2019 04:07:39 -0700 (PDT)
-Received: from cakuba.netronome.com (ip-174-155-149-146.miamfl.spcsdns.net. [174.155.149.146])
-        by smtp.gmail.com with ESMTPSA id j19sm5779633pfh.41.2019.05.04.04.07.37
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 04 May 2019 04:07:39 -0700 (PDT)
-Date:   Sat, 4 May 2019 07:07:24 -0400
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] netdevsim: Make nsim_num_vf static
-Message-ID: <20190504070724.439eab34@cakuba.netronome.com>
-In-Reply-To: <20190504081207.22764-1-yuehaibing@huawei.com>
-References: <20190504081207.22764-1-yuehaibing@huawei.com>
-Organization: Netronome Systems, Ltd.
+        id S1727416AbfEDLeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 07:34:12 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7722 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726529AbfEDLeM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 May 2019 07:34:12 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 4919084083BFD99A0328;
+        Sat,  4 May 2019 19:34:09 +0800 (CST)
+Received: from [127.0.0.1] (10.184.189.20) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
+ 19:34:02 +0800
+Subject: Re: [PATCH] net: route: Fix vrf dst_entry ref count false increasing
+From:   linmiaohe <linmiaohe@huawei.com>
+To:     <davem@davemloft.net>, <christian@brauner.io>,
+        <roopa@cumulusnetworks.com>, <dsahern@gmail.com>,
+        <Jason@zx2c4.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     mousuanming <mousuanming@huawei.com>,
+        Mingfangsen <mingfangsen@huawei.com>
+References: <76551ed7-47ef-7442-69de-6fb42fff4708@huawei.com>
+Message-ID: <9f599716-eef7-a224-0bda-2f4e7c2f58b4@huawei.com>
+Date:   Sat, 4 May 2019 19:33:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <76551ed7-47ef-7442-69de-6fb42fff4708@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.189.20]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 4 May 2019 16:12:07 +0800, YueHaibing wrote:
-> Fix sparse warning:
-> 
-> drivers/net/netdevsim/bus.c:253:5: warning:
->  symbol 'nsim_num_vf' was not declared. Should it be static?
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-Thanks!
+On 2019/5/4 16:03, linmiaohe wrote:
+> From: Suanming.Mou <mousuanming@huawei.com>
+> 
+> When config ip in default vrf same as the ip in specified
+> vrf, fib_lookup will return the route from table local
+> even if the in device is an enslaved l3mdev. Then the
+> dst_entry will hold the vrf device rather than loopback
+> device in local_input of function ip_route_input_slow.
+> So vrf dst_entry is false increased by route from table
+> local.
+> 
+> Here is reproduce step:
+> 1.enslave enp4s0 to vrf2, and config ip address:
+> ip link add vrf2 type vrf table 1
+> ip link set vrf2 up
+> ip link set enp4s0 master vrf2
+> ip addr ad 125.1.1.1/16 dev enp4s0
+> 
+> 2.config same ip in default vrf:
+> ip addr ad 125.1.1.1/16 dev enp6s0
+> 
+> 3.config peer and ping:
+> ip vrf exec vrf2 ping 125.1.1.2 -c 3
+> 
+> 4.del vrf2 link:
+> ip link del vrf2
+> 
+> And "unregister_netdevice: waiting for vrf2 to become free.
+> Usage count = 1" will occur.
+> 
+> Signed-off-by: Suanming.Mou <mousuanming@huawei.com>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  net/core/fib_rules.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
+> index ffbb827723a2..1a2c11ed1585 100644
+> --- a/net/core/fib_rules.c
+> +++ b/net/core/fib_rules.c
+> @@ -263,6 +263,11 @@ static int fib_rule_match(struct fib_rule *rule, struct fib_rules_ops *ops,
+>  	if (rule->tun_id && (rule->tun_id != fl->flowi_tun_key.tun_id))
+>  		goto out;
+> 
+> +	if (!rule->l3mdev &&
+> +	    (netif_index_is_l3_master(rule->fr_net, fl->flowi_iif) ||
+> +	     netif_index_is_l3_master(rule->fr_net, fl->flowi_oif)))
+> +		goto out;
+> +
+>  	if (rule->l3mdev && !l3mdev_fib_rule_match(rule->fr_net, fl, arg))
+>  		goto out;
+> 
+
+I'am sorry, but I think this fix looks bad because this patch make vrf
+working with other ip rule impossible. I will send anothor patch to fix
+this. Thanks.
+
