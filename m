@@ -2,80 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C492F139FA
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 15:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F702139FC
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 15:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727066AbfEDNKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 09:10:12 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44789 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726529AbfEDNKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 09:10:11 -0400
-Received: by mail-wr1-f68.google.com with SMTP id c5so11213415wrs.11
-        for <netdev@vger.kernel.org>; Sat, 04 May 2019 06:10:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ylCighmR5KFCKvfl0MK/JOotS+k2IaaBA67id1CYsFY=;
-        b=AMrkyGWIHoMFrqr8KcJ7YNgwwe5fYArjp46P4R8gx3YogtskSZl/Gmh8eWeKNsHiAt
-         rOBE6QGo7vzOvVUjb+CZnN0x3bcG3u3DvIn5pCpoJXAS2sj+dcG2NLHTzOFcFft//pXG
-         z3B16wriU0DAe5z0JujFoH7+GAMyTD5fYpe4J6O6UhmDSsyRWj7+IRPZ18B9mc5lxOrb
-         +yKHOv/3JEmnzG7okWvSLIO4CPvt4BBWj2EvxT0ert23OKMGhVlRjj7nPZut9Z2Pbt3h
-         Cs/+qZkgx4z/b0gAxwsB4WuKrM8mWehDobNuLbIhWwPq06CCOeZo0LhGhOuyR51WssUv
-         XXtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ylCighmR5KFCKvfl0MK/JOotS+k2IaaBA67id1CYsFY=;
-        b=Iot8rb/288PQNb4Lgh/zrdNut94s86skV4gQoms8ZhGrXTS/1/ZfiHZDGkziBsoVn/
-         U4cU9gNv+0XAu7XCJn1sk2ee0GuQWUrR7/FE+QKTKR20RGKqQy8LhJkT45SYiwgz1dUS
-         o83DIwckC2DjUbPxA+8ypEgLmbhsE6mEdOas1zXpMtiRV/aw2fO6e/f0buXUZ5HcYr3g
-         msVliEusCqgoliM1CUySBsNDyAY0IhGMUPKCTs35vIl8BCga38jFF2FryVF5km8Fkmr6
-         DODoCPmPfc7mLWbfdkMZfFcrjxwHNuHxRiPGYJfi1HALaORQplqM9QcPBExU6a0Lqott
-         097g==
-X-Gm-Message-State: APjAAAXXvO+ilJy/PBYzAN724sq2VPO3D68Oainzi7S6s5J7Xe7UyA+v
-        RsFnCMtoYAqw6x98zZKI5IiJeQ==
-X-Google-Smtp-Source: APXvYqx+K/6vB6g9UV5+dCuGtd7gate4zMWwdukTA3/SWfxf/9L8ZA/mt6ecrGY7uQ6U9kmf+ZyioQ==
-X-Received: by 2002:a5d:5551:: with SMTP id g17mr11922779wrw.50.1556975410574;
-        Sat, 04 May 2019 06:10:10 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id o6sm8825081wre.60.2019.05.04.06.10.10
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 04 May 2019 06:10:10 -0700 (PDT)
-Date:   Sat, 4 May 2019 15:10:09 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, xiyou.wangcong@gmail.com,
-        idosch@mellanox.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, gerlitz.or@gmail.com,
-        simon.horman@netronome.com,
-        Pieter Jansen van Vuuren 
-        <pieter.jansenvanvuuren@netronome.com>
-Subject: Re: [PATCH net-next 08/13] net/sched: extend matchall offload for
- hardware statistics
-Message-ID: <20190504131009.GI9049@nanopsycho.orion>
-References: <20190504114628.14755-1-jakub.kicinski@netronome.com>
- <20190504114628.14755-9-jakub.kicinski@netronome.com>
+        id S1727111AbfEDNOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 09:14:01 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:59456 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726529AbfEDNOB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 May 2019 09:14:01 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 7B240A1AF4234E123CF5;
+        Sat,  4 May 2019 21:13:58 +0800 (CST)
+Received: from [127.0.0.1] (10.184.189.20) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
+ 21:13:47 +0800
+From:   linmiaohe <linmiaohe@huawei.com>
+Subject: [PATCH v2] net: route: Fix vrf dst_entry ref count false increasing
+To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     mousuanming <mousuanming@huawei.com>,
+        Mingfangsen <mingfangsen@huawei.com>
+Message-ID: <1a4c0c31-e74c-5167-0668-328dd342005e@huawei.com>
+Date:   Sat, 4 May 2019 21:13:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190504114628.14755-9-jakub.kicinski@netronome.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.189.20]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, May 04, 2019 at 01:46:23PM CEST, jakub.kicinski@netronome.com wrote:
->From: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
->
->Introduce a new command for matchall classifiers that allows hardware
->to update statistics.
->
->Signed-off-by: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
->Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+From: Suanming.Mou <mousuanming@huawei.com>
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+When config ip in default vrf same as the ip in specified
+vrf, fib_lookup will return the route from table local
+even if the in device is an enslaved l3mdev. Then the
+dst_entry will hold the vrf device rather than loopback
+device in local_input of function ip_route_input_slow.
+So vrf dst_entry is false increased by route from table
+local because device passed to rt_dst_alloc is in device
+rather than fib result device.
+
+Here is reproduce step:
+1.enslave enp4s0 to vrf2, and config ip address:
+ip link add vrf2 type vrf table 1
+ip link set vrf2 up
+ip link set enp4s0 master vrf2
+ip addr ad 125.1.1.1/16 dev enp4s0
+
+2.config same ip in default vrf:
+ip addr ad 125.1.1.1/16 dev enp6s0
+
+3.config peer and ping:
+ip vrf exec vrf2 ping 125.1.1.2 -c 3
+
+4.del vrf2 link:
+ip link del vrf2
+
+System hang with del vrf2 ops and "unregister_netdevice:
+waiting for vrf2 to become free. Usage count = 1" occur.
+
+Reported-by: Hui Wang <wanghui104@huawei.com>
+Signed-off-by: Suanming.Mou <mousuanming@huawei.com>
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ net/ipv4/route.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 6fdf1c195d8e..74def8710ae8 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -2077,6 +2077,11 @@ out:	return err;
+ 			}
+ 			do_cache = true;
+ 		}
++		/* Use fib res nh_dev as local input device because enslaved
++		 * l3mdev may hit route from other rule table. Dst_entry
++		 * should hold right device.
++		 */
++		dev = FIB_RES_DEV(*res);
+ 	}
+
+ 	rth = rt_dst_alloc(l3mdev_master_dev_rcu(dev) ? : net->loopback_dev,
+-- 
+2.21.GIT
+
+
