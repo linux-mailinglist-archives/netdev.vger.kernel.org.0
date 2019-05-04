@@ -2,100 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F52C1381C
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 09:27:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6B21382E
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 10:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726963AbfEDH1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 03:27:04 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:48432 "EHLO huawei.com"
+        id S1726770AbfEDIDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 04:03:51 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7719 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726590AbfEDH1D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 May 2019 03:27:03 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id C338F1F97E7787E56504;
-        Sat,  4 May 2019 15:27:01 +0800 (CST)
-Received: from [127.0.0.1] (10.184.225.177) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
- 15:26:52 +0800
-Subject: [PATCH iproute2 v3] ipnetns: use-after-free problem in
- get_netnsid_from_name func
-From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
-To:     <stephen@networkplumber.org>, <liuhangbin@gmail.com>,
-        <kuznet@ms2.inr.ac.ru>
-CC:     <nicolas.dichtel@6wind.com>, <phil@nwl.cc>,
-        "wangxiaogang (F)" <wangxiaogang3@huawei.com>,
-        Mingfangsen <mingfangsen@huawei.com>,
-        "Zhoukang (A)" <zhoukang7@huawei.com>, <kouhuiying@huawei.com>,
-        <netdev@vger.kernel.org>
-References: <f6c76a60-d5c4-700f-2fbf-912fc1545a31@huawei.com>
- <815afacc-4cd2-61b4-2181-aabce6582309@huawei.com>
-Message-ID: <1fca256d-fbce-4da9-471f-14573be4ea21@huawei.com>
-Date:   Sat, 4 May 2019 15:26:25 +0800
+        id S1726258AbfEDIDv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 May 2019 04:03:51 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 344A468EBF5E222164BB;
+        Sat,  4 May 2019 16:03:47 +0800 (CST)
+Received: from [127.0.0.1] (10.184.189.20) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
+ 16:03:40 +0800
+From:   linmiaohe <linmiaohe@huawei.com>
+Subject: [PATCH] net: route: Fix vrf dst_entry ref count false increasing
+To:     <davem@davemloft.net>, <christian@brauner.io>,
+        <roopa@cumulusnetworks.com>, <dsahern@gmail.com>,
+        <Jason@zx2c4.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     mousuanming <mousuanming@huawei.com>,
+        Mingfangsen <mingfangsen@huawei.com>
+Message-ID: <76551ed7-47ef-7442-69de-6fb42fff4708@huawei.com>
+Date:   Sat, 4 May 2019 16:03:33 +0800
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.0
+ Thunderbird/60.5.1
 MIME-Version: 1.0
-In-Reply-To: <815afacc-4cd2-61b4-2181-aabce6582309@huawei.com>
-Content-Type: text/plain; charset="gbk"
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.225.177]
+X-Originating-IP: [10.184.189.20]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+From: Suanming.Mou <mousuanming@huawei.com>
 
-Follow the following steps:
-# ip netns add net1
-# export MALLOC_MMAP_THRESHOLD_=0
-# ip netns list
-then Segmentation fault (core dumped) will occur.
+When config ip in default vrf same as the ip in specified
+vrf, fib_lookup will return the route from table local
+even if the in device is an enslaved l3mdev. Then the
+dst_entry will hold the vrf device rather than loopback
+device in local_input of function ip_route_input_slow.
+So vrf dst_entry is false increased by route from table
+local.
 
-In get_netnsid_from_name func, answer is freed before rta_getattr_u32(tb[NETNSA_NSID]),
-where tb[] refers to answer`s content. If we set MALLOC_MMAP_THRESHOLD_=0, mmap will
-be adoped to malloc memory, which will be freed immediately after calling free func.
-So reading tb[NETNSA_NSID] will access the released memory after free(answer).
+Here is reproduce step:
+1.enslave enp4s0 to vrf2, and config ip address:
+ip link add vrf2 type vrf table 1
+ip link set vrf2 up
+ip link set enp4s0 master vrf2
+ip addr ad 125.1.1.1/16 dev enp4s0
 
-Here, we will call get_netnsid_from_name(tb[NETNSA_NSID]) before free(answer).
+2.config same ip in default vrf:
+ip addr ad 125.1.1.1/16 dev enp6s0
 
-Fixes: 86bf43c7c2f ("lib/libnetlink: update rtnl_talk to support malloc buff at run time")
-Reported-by: Huiying Kou <kouhuiying@huawei.com>
-Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
-Acked-by: Phil Sutter <phil@nwl.cc>
+3.config peer and ping:
+ip vrf exec vrf2 ping 125.1.1.2 -c 3
+
+4.del vrf2 link:
+ip link del vrf2
+
+And "unregister_netdevice: waiting for vrf2 to become free.
+Usage count = 1" will occur.
+
+Signed-off-by: Suanming.Mou <mousuanming@huawei.com>
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
-v2->v3: add Cc:netdev@vger.kernel.org suggested by Phil Sutter
-v1->v2: correct commit log
+ net/core/fib_rules.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
- ip/ipnetns.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
+index ffbb827723a2..1a2c11ed1585 100644
+--- a/net/core/fib_rules.c
++++ b/net/core/fib_rules.c
+@@ -263,6 +263,11 @@ static int fib_rule_match(struct fib_rule *rule, struct fib_rules_ops *ops,
+ 	if (rule->tun_id && (rule->tun_id != fl->flowi_tun_key.tun_id))
+ 		goto out;
 
-diff --git a/ip/ipnetns.c b/ip/ipnetns.c
-index 430d884..d72be95 100644
---- a/ip/ipnetns.c
-+++ b/ip/ipnetns.c
-@@ -107,7 +107,7 @@ int get_netnsid_from_name(const char *name)
- 	struct nlmsghdr *answer;
- 	struct rtattr *tb[NETNSA_MAX + 1];
- 	struct rtgenmsg *rthdr;
--	int len, fd;
-+	int len, fd, ret = -1;
++	if (!rule->l3mdev &&
++	    (netif_index_is_l3_master(rule->fr_net, fl->flowi_iif) ||
++	     netif_index_is_l3_master(rule->fr_net, fl->flowi_oif)))
++		goto out;
++
+ 	if (rule->l3mdev && !l3mdev_fib_rule_match(rule->fr_net, fl, arg))
+ 		goto out;
 
- 	netns_nsid_socket_init();
-
-@@ -134,8 +134,9 @@ int get_netnsid_from_name(const char *name)
- 	parse_rtattr(tb, NETNSA_MAX, NETNS_RTA(rthdr), len);
-
- 	if (tb[NETNSA_NSID]) {
-+		ret = rta_getattr_u32(tb[NETNSA_NSID]);
- 		free(answer);
--		return rta_getattr_u32(tb[NETNSA_NSID]);
-+		return ret;
- 	}
-
- err_out:
 -- 
-1.8.3.1
-
+2.21.GIT
 
 
