@@ -2,101 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4693D13967
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DBCC1396F
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:07:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbfEDLCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 07:02:35 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:38172 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725981AbfEDLCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:02:34 -0400
-Received: by mail-wm1-f65.google.com with SMTP id f2so4594037wmj.3;
-        Sat, 04 May 2019 04:02:32 -0700 (PDT)
+        id S1727020AbfEDLHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 07:07:40 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:33710 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbfEDLHk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:07:40 -0400
+Received: by mail-pf1-f195.google.com with SMTP id z28so4235375pfk.0
+        for <netdev@vger.kernel.org>; Sat, 04 May 2019 04:07:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=d9xqRvQ7LglnQSyEdyWwx0LaW1NdfXcmsha1uWwwA5U=;
-        b=aEV5cKHE7rw5w8phwcnK4XYABmhkwlqMGBjm4KtKfMkB3HMEFI0UbjyP1MWPKSsuO4
-         kV10cFluOgdaRPFW8lcQTDEA3j6cDs/KB4XFx2CjN2ohfEB9IiBX+JjKmplO9ehRUnXi
-         M8IfK57Avok/aRvhLtp5YxHlQLOWE/Bf7q4La4FNtfqWZkqCHBTtTAwVTTKze3VeRFBN
-         jUM10tGMTAIUns2YSTTTq+AynStJ805mdf6251QBordFuPHO+HdxdEtTAj/LpZX+tWIy
-         xwyNyGDc/gxwOuofptU3PJSSPHcKfeq+DuG5LdMzWZ5DzC+Otm7ocsyICkodvIuAUyS+
-         O1Hw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=nl39g1T53hJKf6/e5lRm3PMMlr45uQylbYUKdQVwCZQ=;
+        b=P3x+TuZjO/Tiiyl0gQtR335ZstOaMNPLqE/hLK7B2kqG7r2mekcmcVcn4e7G2UB1X0
+         DoppWzS5KQ0cTy4uQGWi8NejpmyzjJlm3NZvFtW5+4Som8PwKpi2/rf6kT7r1kgjiwdL
+         jtQRhcm8vpn7A5vRYuLPBlsjNDO7TgVyq7+EFF8SSGzYqsY2ZBj3qV6GaL+Ov1xpw2v3
+         GbtR018SSuxz73HhyIG5AYrMdjV3UwwO/TRBPDi7ugEMLI8K4jM/RqIJQfbHKzGlZgam
+         9HCVdI/V4zXJYv7uozm+315T8hn+AlvvwgPvDCkTWITP2g7fvNmdDuh5WzI8Q7kkN5Ts
+         7+9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=d9xqRvQ7LglnQSyEdyWwx0LaW1NdfXcmsha1uWwwA5U=;
-        b=WOp5zGp+rJXnUjfAak9oDZimyNV3QY9dzv5gZOI6TKWFUomqtVTdczkTy9kYbhmzOv
-         NKkh8p0iXDyvlBunZ1a0EbCVjem3l4t8JviqIbU4dl0QEBOXE+OCQtLH182xBSS8o1Aw
-         1bSLciZ6stovJT0zHy+JljzCyIIyKGQWX8SsM5qejhCb5pssMXgL0n2V++lHqDhBzllj
-         T0opQRhUL+DLhnTX7dZQIjBF0pAL0WQEX65z6ztcztag3/oRdrKlsJLdycSzigbdGHA8
-         ZxICLAoMaXaql/zgvbyHsasF8UHeB7yC7VlaGp81ov9P4TKCzEk4PjRNRLzItZMKpEPJ
-         hvlw==
-X-Gm-Message-State: APjAAAVTJ63JHIuQOPEqw5gmyxKUwl6JK5N5OuoFJpJA+fgYmu1joDAE
-        8FeG7wVsXOvdYKs3YHmcHagvf6jB7/o=
-X-Google-Smtp-Source: APXvYqy3dfTFdLwZrygw5pSCGAvurOj9VwUtSKJIX0E/y05IQOuv2UX4urpxWai1LbIz2W3WXRPigg==
-X-Received: by 2002:a1c:a008:: with SMTP id j8mr9967493wme.73.1556967751884;
-        Sat, 04 May 2019 04:02:31 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd4:5700:4cd8:8005:fc98:c429? (p200300EA8BD457004CD88005FC98C429.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:4cd8:8005:fc98:c429])
-        by smtp.googlemail.com with ESMTPSA id z4sm3251606wrq.75.2019.05.04.04.02.30
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 04:02:30 -0700 (PDT)
-Subject: Re: [PATCH] net: wireless: ath9k: Return an error when
- ath9k_hw_reset() fails
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, ath9k-devel@qca.qualcomm.com,
-        kvalo@codeaurora.org, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190504100815.19876-1-baijiaju1990@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <e47117d6-f918-1dd0-834e-d056534bfead@gmail.com>
-Date:   Sat, 4 May 2019 13:02:25 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=nl39g1T53hJKf6/e5lRm3PMMlr45uQylbYUKdQVwCZQ=;
+        b=d9TYjyrJE9QGnSPrAtloFK3VWKlxh5RL1nbSdePlo8cRIDenqAaws81RUt0MKubZtZ
+         329ZlulXYDXXd9ky1ykpHo2aMHIEOI9M9pHH1HvTquhoZTmPzx2sqwc0SBTs/ziytpPf
+         bwotzaCzrVg/GTryjxBECYZdIRHwOoJoV5eTOTW3NIYiXV8KOmP27IERcwykNF/YZ9lY
+         uRHcHrhx7E3uczQyqMUXV5/JS2nhBF09RwtQRqv/bTg7yeSCmggWK2wcgQaDImHk4dWC
+         gCNWCW3Lhc8LppoLg7G0M1Ah1cat0TZ15mU38cuiufp6vk4v3M3+tPZrajxqWlLxWKcn
+         5mMw==
+X-Gm-Message-State: APjAAAVdikq0IvLMRsOm+LOcDVDma96HhbFDqi60qQ4Z9pwpNVA8SKCD
+        z46a6PnTYB1vM7fz0zuPXpVNKQ==
+X-Google-Smtp-Source: APXvYqzsaN9URwb267F102CSdh+nIvxMj4k9Y3AWShpurEAK0b2y5Tak9/sA6WKLkkL2z1Vdv6r2hg==
+X-Received: by 2002:a62:62c2:: with SMTP id w185mr18628880pfb.237.1556968059359;
+        Sat, 04 May 2019 04:07:39 -0700 (PDT)
+Received: from cakuba.netronome.com (ip-174-155-149-146.miamfl.spcsdns.net. [174.155.149.146])
+        by smtp.gmail.com with ESMTPSA id j19sm5779633pfh.41.2019.05.04.04.07.37
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sat, 04 May 2019 04:07:39 -0700 (PDT)
+Date:   Sat, 4 May 2019 07:07:24 -0400
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] netdevsim: Make nsim_num_vf static
+Message-ID: <20190504070724.439eab34@cakuba.netronome.com>
+In-Reply-To: <20190504081207.22764-1-yuehaibing@huawei.com>
+References: <20190504081207.22764-1-yuehaibing@huawei.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20190504100815.19876-1-baijiaju1990@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04.05.2019 12:08, Jia-Ju Bai wrote:
-> ath9k_hw_reset() in ath9k_start() can fail, and in this case, 
-> ath9k_start() should return an error instead of executing the 
-> subsequent code.
+On Sat, 4 May 2019 16:12:07 +0800, YueHaibing wrote:
+> Fix sparse warning:
 > 
-Such mechanical patches w/o understanding the code are always
-problematic. Do you have any proof that this error is fatal?
-I think it is not, else we wouldn't have this line:
-ah->reset_power_on = false;
-Also you should consider that a mutex and a spinlock are held.
-Maybe changing the error message to a warning would be more
-appropriate. But this I would leave to somebody being more
-familiar with this driver.
+> drivers/net/netdevsim/bus.c:253:5: warning:
+>  symbol 'nsim_num_vf' was not declared. Should it be static?
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-> ---
->  drivers/net/wireless/ath/ath9k/main.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/wireless/ath/ath9k/main.c b/drivers/net/wireless/ath/ath9k/main.c
-> index f23cb2f3d296..f78e7c46764d 100644
-> --- a/drivers/net/wireless/ath/ath9k/main.c
-> +++ b/drivers/net/wireless/ath/ath9k/main.c
-> @@ -681,6 +681,7 @@ static int ath9k_start(struct ieee80211_hw *hw)
->  			"Unable to reset hardware; reset status %d (freq %u MHz)\n",
->  			r, curchan->center_freq);
->  		ah->reset_power_on = false;
-> +		return r;
->  	}
->  
->  	/* Setup our intr mask. */
-> 
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
+Thanks!
