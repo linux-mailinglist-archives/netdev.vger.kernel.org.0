@@ -2,97 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CAED13B00
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 17:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF02913B02
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 17:41:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726776AbfEDPlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 11:41:05 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:34223 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726217AbfEDPlF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 11:41:05 -0400
-Received: by mail-ot1-f65.google.com with SMTP id h2so174983oth.1;
-        Sat, 04 May 2019 08:41:04 -0700 (PDT)
+        id S1727020AbfEDPlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 11:41:45 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38576 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726217AbfEDPlp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 11:41:45 -0400
+Received: by mail-pf1-f193.google.com with SMTP id 10so4439975pfo.5
+        for <netdev@vger.kernel.org>; Sat, 04 May 2019 08:41:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NOqG3X6KeVU8jW9kB98iNlmMsjqP6JLYvww7EO9cTKU=;
-        b=CUK4rgKdIDA1cxCLaZilQgFgzUsj9LIn0xHBaVoj+tL1ynJO1ymrgmzCIBt1XKa9DI
-         7mjStmXpr4Md2G1X9It7LU6wyMY6LFu0S6zKL7bmKqY+bNDoDktyjuq1kMBlNR3owAYV
-         fn8d4tEvrjEXSxRAUphxi0KgZvkd5mQHAeysOjiVrT5NsPY948XFIo8roUsyLuV4nLfc
-         cToezmC45OVtOa6mCRXGhiyVILMOff9YGeo4gaTfIneOJAcp1eDoTn5R8Q2riM5NKqcC
-         YbhC2kUg/NUE225KMl7PJN8hQF2uMslrUhtUP9fXKkN8freEXF8UCm0LZFuzmbn+Xonv
-         q9eg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4JTroL5aiXg8j1IiFFXKAKN/RbWuX8j4w1HscxigDBM=;
+        b=PDDY1yh9pmMCaJQSACa92apF8+PMcanMAk9tM9kxIaIdcdSe1lMz0Vyi+WZokMMV9x
+         3xfP6xigvx5XUFOUrPZ1dU4fU+/ZOkP6tDmXxOaDlqjXw6ayDqc3AzDdhBCq/6CjYzcx
+         24uV2ijimqbM8wrMLT4gc/w3NNx2xJzRVpDUtzR0tl17Hm/PH3YYQxPbl2A/GC1X9/jt
+         iWxk/u4m1MbJyTW8z34C10p5ryf49OY2w4Q14TEGUzbp9RBWBAK8csEj/aVgSf7gI/vm
+         8WYmnfH+Wx/0KPpWuUIENI0lX+vYDtazV5WDMIu8AfFnEMaxaMm4TyOIotgHYwORsCCO
+         1QZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NOqG3X6KeVU8jW9kB98iNlmMsjqP6JLYvww7EO9cTKU=;
-        b=e9/KjuUzkp7Pd6MMPLP9p3eULVvJuukO586HbWrZWlVFzP/S1GAuPkHbpR4Si2Y6hW
-         Lv4z9f13Z5KJp1Fg8fpHXy/0t0S+BZMtcUt1/79qZUVGuz6QkIYahCKZyAfTP/PIpEwb
-         nXd9MZvHex1qSdqMqWD9sicpGVnIBWeWbqHJi7EMkJixE6NETfm3wgGNvnXrTXywsn2C
-         pMR3tVdyg7+9fW4LcLY7rxH6NWi8mtWItMPc+36eUeOZz+4TxGdpwgy9tNCm3Jidh8qX
-         ByDjc8QssUBquaOJcNb/RVckrzPSh6Xz8wDUzdsTYbwEFy37Iq04/DSuNGBla2WesAMs
-         dHHg==
-X-Gm-Message-State: APjAAAU0cmGbK0X4b7Z59hXDMHI0FE16LiaaKYelLDx0A6PFwDwS7Ib4
-        rK3p0L0w//IY4BNwccWr9bYa6jJ9J+nhWX6Xs+4=
-X-Google-Smtp-Source: APXvYqxcHQ/Bg7b3kWRZyf62dPFG7TyyCvCwOhkNH6X/hpK+QcYgbUfM30aI6ikuoHEyWbcw00nNIg2rTZHkgyI0YW8=
-X-Received: by 2002:a05:6830:14c2:: with SMTP id t2mr5165076otq.64.1556984464473;
- Sat, 04 May 2019 08:41:04 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4JTroL5aiXg8j1IiFFXKAKN/RbWuX8j4w1HscxigDBM=;
+        b=MyIqeZ7gMkmYVugxSc9s/2FweFcSSwr7G1IHSTCeCbWFnu1sfUfi42/gq4GiSavcKi
+         LmBUm1L2EMqbpwsDSraElJoSIhWGC6tZZfLNCmwUaRei9ZOgVhQcHCS4IDwl6h6oChWC
+         Jz7AH93/QUSfvM+snSlENwSwJIJ7hWs8F4/3HyoTc73nL7uqibCnEobmua/9NAIZ23fy
+         IHWkrrBXUPf3kRSzSoS8AqGACGQrTsJrmOha87tp59R76eo+i3f/TjBiuaNiCOq6S+Ix
+         inABk3C56qnlTr2mVMsJ02dzf+90Rz4sy1vEQRjxnS/oZJA1R1YmrirKLSmW5dqgTRnZ
+         8XCQ==
+X-Gm-Message-State: APjAAAXcxrtDm5EL8rGUNK2fOyLTAVjXn9OVfNwVnR3H7aj7MEE/YCnb
+        3qJpLfln9CZ79e0yyckfD3E=
+X-Google-Smtp-Source: APXvYqyF1zfKONZAtqDcZ412avpegbsvDHH8l6nLPgpRDh/eFgE/+F2Xcr3Cx72Z/wgO9iXHYgRBWA==
+X-Received: by 2002:a65:430a:: with SMTP id j10mr19672418pgq.143.1556984504375;
+        Sat, 04 May 2019 08:41:44 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
+        by smtp.gmail.com with ESMTPSA id k63sm7967099pfb.108.2019.05.04.08.41.42
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Sat, 04 May 2019 08:41:42 -0700 (PDT)
+Subject: Re: [Patch net-next] sch_htb: redefine htb qdisc overlimits
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>
+References: <20190502180610.10369-1-xiyou.wangcong@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <4d2d89b1-f52b-a978-75a5-39522e3eef05@gmail.com>
+Date:   Sat, 4 May 2019 11:41:41 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190422064046.2822-1-o.rempel@pengutronix.de>
- <20190422064046.2822-4-o.rempel@pengutronix.de> <20190422132533.GA12718@lunn.ch>
-In-Reply-To: <20190422132533.GA12718@lunn.ch>
-From:   Chuanhong Guo <gch981213@gmail.com>
-Date:   Sat, 4 May 2019 23:40:53 +0800
-Message-ID: <CAJsYDVJ84RsNVe9Mj9sYYwwLmmMkinRSJW4ziW22Sf04wS5gyw@mail.gmail.com>
-Subject: Re: [PATCH v3 3/3] net: ethernet: add ag71xx driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Paul Burton <paul.burton@mips.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        James Hogan <jhogan@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-mips@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190502180610.10369-1-xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
 
-On Mon, Apr 22, 2019 at 9:28 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> [...]
-> > +     /*
-> > +      * On most (all?) Atheros/QCA SoCs dual eth interfaces are not equal.
-> > +      *
-> > +      * That is to say eth0 can not work independently. It only works
-> > +      * when eth1 is working.
-> > +      */
->
-> Please could you explain that some more? Is there just one MDIO bus
-> shared by two ethernet controllers? If so, it would be better to have
-> the MDIO bus controller as a separate driver.
 
-mdio registers exists on both ethernet blocks. And due to how reset
-works on this ethernet IP, it's hard to split it into a separated
-driver. (Only asserting both eth and mdio resets together will reset
-everything including register values.)
-The reason why gmac1 should be brought up first is that on some chips,
-mdio on gmac0 connects to nothing and phy used by gmac0 is on mdio bus
-of gmac1.
+On 5/2/19 2:06 PM, Cong Wang wrote:
+> In commit 3c75f6ee139d ("net_sched: sch_htb: add per class overlimits counter")
+> we added an overlimits counter for each HTB class which could
+> properly reflect how many times we use up all the bandwidth
+> on each class. However, the overlimits counter in HTB qdisc
+> does not, it is way bigger than the sum of each HTB class.
+> In fact, this qdisc overlimits counter increases when we have
+> no skb to dequeue, which happens more often than we run out of
+> bandwidth.
+> 
+> It makes more sense to make this qdisc overlimits counter just
+> be a sum of each HTB class, in case people still get confused.
+> 
+> I have verified this patch with one single HTB class, where HTB
+> qdisc counters now always match HTB class counters as expected.
+> 
+> Cc: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> ---
+>  net/sched/sch_htb.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+> index d27d9bc9d010..cece0d455985 100644
+> --- a/net/sched/sch_htb.c
+> +++ b/net/sched/sch_htb.c
+> @@ -177,6 +177,7 @@ struct htb_sched {
+>  	int			row_mask[TC_HTB_MAXDEPTH];
+>  
+>  	struct htb_level	hlevel[TC_HTB_MAXDEPTH];
+> +	u32			overlimits;
+>  };
 
-> [...]
 
-Regards,
-Chuanhong Guo
+Hi Cong, your patch makes sense, but I am not sure about the location of this field,
+as this might need another cache line miss.
+
+Maybe instead reduce 'long            direct_pkts;'  to 'u32 direct_pkts;' since we only export
+direct_pkts as 32bit quantity in the struct tc_htb_glob.
+
+Then move the 'u32 overlimits;' right after direct_pkts to fill the new hole.
+
+Thanks !
+
