@@ -2,82 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F424137F2
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 08:54:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B158A1380F
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 09:10:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726939AbfEDGyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 02:54:10 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:39973 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726217AbfEDGyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 02:54:09 -0400
-Received: by mail-pg1-f193.google.com with SMTP id d31so3809291pgl.7
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 23:54:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=gqyA9w6RcMTkaC1wlrGYiIZtj1uy6ZoYFIu5t9JyriA=;
-        b=jPezRXAEY669SQbZu/6bAvGUuYDGTH/MEjwYqbzwbVaAG/LALvOho6XqI9/tKuCg5k
-         97jvuYYHpxQPkb70kyY6+qdqEtzAjEuQYcTOC42IK2C9x4WepVk4XosPjIO7ltRo8XOM
-         b6RZ5LuXsuLItHlqWK29Nk8bzZB+86OgAj+kE04Sk+XqwobHNUYQwdlOTPIRDNuSpEYc
-         W9aIzubh2IsmMqbAC+toy0jGJ6XUgDUJnajqX4s6lGljxFDmvGm/PltFnkQJNeHj/d+v
-         hTlrMbcn1l49qeJrjY0P2/urLIJ99auo+MI8B0BWmgqUu7Eb3EbvfXpf18tYYMwWDXqT
-         kU5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=gqyA9w6RcMTkaC1wlrGYiIZtj1uy6ZoYFIu5t9JyriA=;
-        b=ISCNr6SdKiN/gZ5zt3jT0BbKXruGLpJt5F7hRI9dYNt2tnZrtgxmg/ghqodZ8Yekqa
-         6za1nQOP5g6YP1bt7/tzhRp0yoIwPPHdTvqWBApd/dYtB0NHOGHO3FSZmruNBvZN1pz3
-         lvq+c91WPIOh9vKsB/aP+qTzluCslruA/xE/EcNsNnX9T7Feh8WjleGzqDR8OJuVVEAI
-         WDaebfbI1zhyHUUfjYYSHxDj4+wWNctJqMXj7iWXdrViL7f/QOAS5f0Ou+Nf+fX6JwS0
-         vTxvpu+NTMSeetkrXRSnJsu/HDX/iy/35LpMqnujuuDNJhncRMicjzXwol8sdLT1gpQy
-         WbPQ==
-X-Gm-Message-State: APjAAAU+Vj9yXelm1L7oN8Q9Vs/Z74UZroSgShW+kxAflWska7hcJy1q
-        DIKU7YOa6LLw7GdxE+xV1aYWxA==
-X-Google-Smtp-Source: APXvYqwE1Fot3eHa0e9hWyuSTftja1FGOlZ271uN0ygTu5BNBapRvhKLGijzB4soIdw2kWbKZ+M+0A==
-X-Received: by 2002:a62:3501:: with SMTP id c1mr17569232pfa.184.1556952849325;
-        Fri, 03 May 2019 23:54:09 -0700 (PDT)
-Received: from cakuba.netronome.com (ip-184-212-224-194.bympra.spcsdns.net. [184.212.224.194])
-        by smtp.gmail.com with ESMTPSA id s20sm5434573pgs.39.2019.05.03.23.54.05
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 03 May 2019 23:54:09 -0700 (PDT)
-Date:   Sat, 4 May 2019 02:53:53 -0400
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
-        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
-        mw@semihalf.com, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net-next 0/4] net: mvpp2: cls: Add classification
-Message-ID: <20190504025353.74acbb6d@cakuba.netronome.com>
-In-Reply-To: <20190430131429.19361-1-maxime.chevallier@bootlin.com>
-References: <20190430131429.19361-1-maxime.chevallier@bootlin.com>
-Organization: Netronome Systems, Ltd.
+        id S1726798AbfEDHKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 03:10:35 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7152 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725802AbfEDHKe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 May 2019 03:10:34 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 1D182BF89939EA7605A3;
+        Sat,  4 May 2019 15:10:33 +0800 (CST)
+Received: from [127.0.0.1] (10.184.225.177) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
+ 15:10:23 +0800
+Subject: Re: [PATCH v2] ipnetns: use-after-free problem in
+ get_netnsid_from_name func
+To:     Phil Sutter <phil@nwl.cc>
+CC:     <stephen@networkplumber.org>, <liuhangbin@gmail.com>,
+        <kuznet@ms2.inr.ac.ru>, <nicolas.dichtel@6wind.com>,
+        "wangxiaogang (F)" <wangxiaogang3@huawei.com>,
+        Mingfangsen <mingfangsen@huawei.com>,
+        "Zhoukang (A)" <zhoukang7@huawei.com>, <kouhuiying@huawei.com>,
+        <netdev@vger.kernel.org>
+References: <f6c76a60-d5c4-700f-2fbf-912fc1545a31@huawei.com>
+ <815afacc-4cd2-61b4-2181-aabce6582309@huawei.com>
+ <20190429092808.GZ31599@orbyte.nwl.cc>
+From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Message-ID: <c7a16354-f28d-7c8a-e5f6-41395da53da8@huawei.com>
+Date:   Sat, 4 May 2019 15:08:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190429092808.GZ31599@orbyte.nwl.cc>
+Content-Type: text/plain; charset="gbk"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.225.177]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Apr 2019 15:14:25 +0200, Maxime Chevallier wrote:
-> Compared to the first submissions, the NETIF_F_NTUPLE flag was also
-> removed, following Saeed's comment.
+> Hi,
+> 
+> On Mon, Apr 29, 2019 at 03:38:39PM +0800, Zhiqiang Liu wrote:
+>> From: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+>>
+>> Follow the following steps:
+>> # ip netns add net1
+>> # export MALLOC_MMAP_THRESHOLD_=0
+>> # ip netns list
+>> then Segmentation fault (core dumped) will occur.
+>>
+>> In get_netnsid_from_name func, answer is freed before rta_getattr_u32(tb[NETNSA_NSID]),
+>> where tb[] refers to answer`s content. If we set MALLOC_MMAP_THRESHOLD_=0, mmap will
+>> be adoped to malloc memory, which will be freed immediately after calling free func.
+>> So reading tb[NETNSA_NSID] will access the released memory after free(answer).
+>>
+>> Here, we will call get_netnsid_from_name(tb[NETNSA_NSID]) before free(answer).
+>>
+>> Fixes: 86bf43c7c2f ("lib/libnetlink: update rtnl_talk to support malloc buff at run time")
+>> Reported-by: Huiying Kou <kouhuiying@huawei.com>
+>> Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+> 
+> Acked-by: Phil Sutter <phil@nwl.cc>
+> 
+> Please always Cc: netdev@vger.kernel.org for iproute2 patches.
+> 
+> Thanks, Phil
 
-You should probably add it back, even though the stack only uses
-NETIF_F_NTUPLE for aRFS the ethtool APIs historically depend on the
-drivers doing a lot of the validation.
+Thank you for reminding me. I will Cc: netdev@vger.kernel.org in the v3 patch.
 
-The flag was added by:
+> 
+> .
+> 
 
-15682bc488d4 ("ethtool: Introduce n-tuple filter programming support")
-
-your initial use of the flag was correct.
