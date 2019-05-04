@@ -2,60 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15D8513B25
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 18:14:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D9C13B29
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 18:22:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbfEDQO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 12:14:57 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:34073 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726217AbfEDQO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 12:14:57 -0400
-Received: by mail-pf1-f194.google.com with SMTP id b3so4477630pfd.1
-        for <netdev@vger.kernel.org>; Sat, 04 May 2019 09:14:56 -0700 (PDT)
+        id S1726647AbfEDQW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 12:22:28 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:33906 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726323AbfEDQW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 12:22:28 -0400
+Received: by mail-pg1-f193.google.com with SMTP id c13so4272238pgt.1
+        for <netdev@vger.kernel.org>; Sat, 04 May 2019 09:22:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7w1yvQaiks6DAQUx89ULVAINRnVEbHEMWXBhS9ClnV0=;
-        b=C+zu8W+ZPRNcMZZantBfgRHzRIOYf27qEKJEjkLdkxZPfqqV7nUm6l7nBbd7MmF5wg
-         cTCb/UTWVRalS0L6h3+oNUymdcoNbrT1q64ckRoFX74KotcG7T1zqPV9heBP5nNM9eZa
-         f6AcriorswnwCuo7/57oqoOLXUXkbV69e5z7/OSkBOOO/QHMgcGYeDMmGP+d0LFT+RRQ
-         eHEjOIV+0EVnXSULk/PtptyXmG5LuzTdWUrGl2OsiPxQG06NStmKK2BXlLo31cC6ONhS
-         6Mn7QbtPxYFY7Nrea5/v1veQB6PeP/1yEisR/b1vznxchr9OB/m+nUaIcAswptXH959W
-         Yd1A==
+        bh=TR9yp8pd9r5nhE1cHIl67bxYylHEM7a3WI+AI34K2gg=;
+        b=BHR6sbiMrPiSrkENZFSsNyOW9myMGH9SB6cSpYIPBDgaqy4xSat2Fle+wQOuzB/UBJ
+         +5IXjcCb0K4kOa5ehR8DvfaMog+LWn9Mo86TvzPRdk3oDwAtHnT7ZcFIZIKmrVuigIqs
+         ORZaETiAi8RcCvTg48R0K3DqQmyrfACgeRz7mb/NBrWoA3fCEWMlonDecyblRjmAWcB7
+         QQZ9JfSRKvkAAaCeTGy33VsK+sJInPP327+OEGPWK16MED+VTCH744SNn+tQZWtSyHO7
+         wVlbloRs5XWbsh/+yONrEBwdkzOYqOWxxuaqmbRhsScpFw8XALN4sJIfdLl2PEvamKgs
+         XuWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=7w1yvQaiks6DAQUx89ULVAINRnVEbHEMWXBhS9ClnV0=;
-        b=V1qifDrWJgJGlKvbH2nbwZ9BK726oxUSV0/9hJLWtFvFJ7bonIUiITgkJB2uxmEsWo
-         qZfPC2kkBae4yPUAUXgT2jDeXpWow07J6At75zDGz9eoKgkspBisWtUU4MgRUcldNaTI
-         JDKOuq1WR+vh0GaIaUHYeNxU2JlD1H+HhVyItPENhkm4juMcvzw/51v4/LyHB+TBGG10
-         AzdkBCNJxcsX8QuGNwiKo3Ip2ciF692dOvP7ed7WRNnvrmrIaeH8rMX/mizTwTnMbA9i
-         Mdznc00diufL5Lf5VSkqKXn4FikHGWz4kz7LWVfLD4SG+SFYLt3CV7qPZNlOYjv8i2o3
-         Yr0g==
-X-Gm-Message-State: APjAAAU7dD1SsZSUI3C/PRTog2sTvCq9juOCu3209iaQcuc5noPnaATg
-        +TG0JYgsn4l00lJHo+UJ9Mx1LYWE
-X-Google-Smtp-Source: APXvYqx/GVl0pBeRBQR7d7vjpnxLhLvF1r2Gi2kB/nJdCbBfn49Jc2ttRBtMHaSWmGzQH5Mv43RozQ==
-X-Received: by 2002:aa7:8458:: with SMTP id r24mr20328202pfn.231.1556986496126;
-        Sat, 04 May 2019 09:14:56 -0700 (PDT)
+        bh=TR9yp8pd9r5nhE1cHIl67bxYylHEM7a3WI+AI34K2gg=;
+        b=IteomVcqHRmSR7nMY9l+5Z9dh6eQGKplcVZGXqrQdVhkZcRKYC2t+iV898iXPz2r7/
+         LkNxhpqQzXbZoej07oNDqWJW0rukcIIW1V4VAL5H7OHTHzM+4dBNLOWuH3LsVIKpfQwD
+         jgnR6t5RcJ6P5F4KC75DMRyrK4A7GM2cViqCt5i2STlu4n1fZyrFES3gbQRYusBovbfl
+         3AImgeaZ8rOGOUAYgorujR08WLCH2U2hlX44Y3I52XTEndEkEwnMGvbqOcEGu9ulFxmt
+         CqEd7r5cXrlqYCFFGXms4FpMWO8IOlJ5+gBiymTiAQ8Znet7IGMf8RzSmdyMVNHe0rSB
+         /uog==
+X-Gm-Message-State: APjAAAX6lTfFI/wsQzqavyEDS1DAEbw8k6EAExeKG3mwd2idTgjaBCcg
+        SNJ4XRpTu8vT2w7Oa9t7K5U=
+X-Google-Smtp-Source: APXvYqx4iOr5v4WN6sAu59QEV1qLjk94qG2UX0Kxu9Qfb+mFBJYmDzYOVJb60fPW4y41i0XEv6AA+g==
+X-Received: by 2002:a65:62d2:: with SMTP id m18mr19565555pgv.122.1556986947406;
+        Sat, 04 May 2019 09:22:27 -0700 (PDT)
 Received: from ?IPv6:2601:282:800:fd80:ad89:69d7:57b3:6a28? ([2601:282:800:fd80:ad89:69d7:57b3:6a28])
-        by smtp.googlemail.com with ESMTPSA id o3sm6543996pgk.84.2019.05.04.09.14.53
+        by smtp.googlemail.com with ESMTPSA id m2sm7872478pfi.24.2019.05.04.09.22.26
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 09:14:55 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2] tc: add support for plug qdisc
-To:     Paolo Abeni <pabeni@redhat.com>, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org
-References: <fe5c248b0eb19a2dd42bb1bff8a0c40c1e9e969f.1556640913.git.pabeni@redhat.com>
+        Sat, 04 May 2019 09:22:26 -0700 (PDT)
+Subject: Re: [PATCH iproute2 net-next v1 2/3] taprio: Add support for changing
+ schedules
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us
+References: <20190429225219.18984-1-vinicius.gomes@intel.com>
+ <20190429225219.18984-2-vinicius.gomes@intel.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <69ac0f81-76e6-391f-83df-727783f48956@gmail.com>
-Date:   Sat, 4 May 2019 10:14:53 -0600
+Message-ID: <40656b30-d38d-83c0-abb6-a18189ad22aa@gmail.com>
+Date:   Sat, 4 May 2019 10:22:25 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
  Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <fe5c248b0eb19a2dd42bb1bff8a0c40c1e9e969f.1556640913.git.pabeni@redhat.com>
+In-Reply-To: <20190429225219.18984-2-vinicius.gomes@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -64,28 +67,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/19 10:53 AM, Paolo Abeni wrote:
-> sch_plug can be used to perform functional qdisc unit tests
-> controlling explicitly the queuing behaviour from user-space.
+On 4/29/19 4:52 PM, Vinicius Costa Gomes wrote:
+> This allows for a new schedule to be specified during runtime, without
+> removing the current one.
+> 
+> For that, the semantics of the 'tc qdisc change' operation in the
+> context of taprio is that if "change" is called and there is a running
+> schedule, a new schedule is created and the base-time (let's call it
+> X) of this new schedule is used so at instant X, it becomes the
+> "current" schedule. So, in short, "change" doesn't change the current
+> schedule, it creates a new one and sets it up to it becomes the
+> current one at some point.
+> 
+> In IEEE 802.1Q terms, it means that we have support for the
+> "Oper" (current and read-only) and "Admin" (future and mutable)
+> schedules.
+> 
+...
+> 
+> It was necessary to fix a bug, so the clockid doesn't need to be
+> specified when changing the schedule.
 
-Hi Paolo:
-Do you have or are you planning to write unit tests?
+Does that bug fix need to be applied to master?
 
 > 
-> Plug support lacks since its introduction in 2012. This change
-> introduces basic support, to control the tc status.
+> Most of the changes are related to make it easier to reuse the same
+> function for printing the "admin" and "oper" schedules.
 > 
-> v1 -> v2:
->  - use the SPDX identifier
-> 
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 > ---
->  tc/Makefile |  1 +
->  tc/q_plug.c | 76 +++++++++++++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 77 insertions(+)
->  create mode 100644 tc/q_plug.c
+>  tc/q_taprio.c | 42 +++++++++++++++++++++++++++++++++---------
+>  1 file changed, 33 insertions(+), 9 deletions(-)
 > 
 
 applied to iproute2-next.
-
 
