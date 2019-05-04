@@ -2,141 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7568D13B62
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 19:24:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D6A13B64
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 19:25:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbfEDRYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 13:24:11 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:45711 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726432AbfEDRYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 13:24:10 -0400
-Received: by mail-pf1-f195.google.com with SMTP id e24so4497635pfi.12;
-        Sat, 04 May 2019 10:24:10 -0700 (PDT)
+        id S1726890AbfEDRZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 13:25:52 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:32922 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726480AbfEDRZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 13:25:51 -0400
+Received: by mail-qk1-f193.google.com with SMTP id k189so273584qkc.0;
+        Sat, 04 May 2019 10:25:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0JVR+B0UU3TgsLiMAHGGrQRoriLTMKx5OUbcXksRlDc=;
-        b=NrhwHrCg0m6lIyB40Emk1ksd8UDGBYE4QQkeWpHGEkFKzWtAB8HNQl/amDI2FVPdMX
-         a3MBH2WXso6QDtLwZ8LInhkJyZbJdACglugp2WK1a1mGwrwNw5JeDQxlPcVoyt1ArHmj
-         kgG05BnmgfEqJTunyjQNg3Asyg3hUW10b4wrdrZv34TPvjN4HXeBvjLfjtnX1Ahyowyi
-         uxIGVDQajqOrz9Qnd7tZRLL/EOSwaSZrd9AB40rlpQjbZmLlwmv2tNgTg9wEjQ3ghF7j
-         25mHK4BEESYwMHNbw2Qwrz6p50D3Z+FsHW+pTpwZ9vD9Dpq/70cogv9fDI7o7hZQst+u
-         2jqg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aeIr2xYUVvk3yQWnL07RF0qzoNgh0zjWYEMxr0YSFWA=;
+        b=mD1gRGwUPp5N64opyhHYamX+1iKoFew8i2R99fxUCC31Dt9vxtWIL9XjETHQ9uVbJv
+         DXm/LSDeTkZWkJXFcKic8cZIiP19/g9vgYSh/5WAlY873K9RyEaiKFyXNigYAACX2w1m
+         K9VFO9ct5eGJpc8aW6JfBxzEq4XUi8U2d12mXg2WtPc4i11BMgV0dtGMfd4Nxg3HUb7L
+         d02ckG6Uiuxo5rHxANDakZskw0l7JORdZHmoKtGjP4oUALP/8RKPlkCoZ5bfgReXnaP6
+         qNgAz+8MIzTw8c0olzQPuVRzU06KsfYPRqe0w1AfD3SYYWDfByep2V/cM9Nn5sfbrAeI
+         +CWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0JVR+B0UU3TgsLiMAHGGrQRoriLTMKx5OUbcXksRlDc=;
-        b=o8npqdAh0OgnRqC6d45Y4ZzzdRY9HrGqvYByYd4sZX5MNz7UecoSyItFafLnpr22Vc
-         kZQQxM34l6EZJd1OidYas+JteUzNSF/QVFxajsNk/xyGlG3O0ZvAhFA4o82I4UxXq0aN
-         8Ow0X0l2tG9VPDiPVLlq8b281G0vuTI9VlJl4F+vyWHvE7u5J/MVYKeBqAfhxSOZ0VJm
-         jy813EG86xIMRTADARlnRuMiacKWVs6hMpQTX6AztOWr+Cby6OSJBtDTVR/ezWbfjG8J
-         +UuVPCGsuA5ELx8/ZNdVeu0skT4QmophOwn9WmJt4gYULmHJIE/WuEJOAHo70/eiyIbW
-         VASg==
-X-Gm-Message-State: APjAAAWMykSroUJkK8f4xWx263LWxDAxsW1upT2zUKnzbqbbNfSPdyYV
-        v3QNnVZsvzn/TXkxrLsergg=
-X-Google-Smtp-Source: APXvYqzyt8fj+PtMYmfYVnfnoWHBpNYlydeIU8RPI/1Dvq2GoGrHyzbCh7vMR8XYPW3NDXgJ+ZCQ1g==
-X-Received: by 2002:a62:4690:: with SMTP id o16mr20782606pfi.166.1556990649903;
-        Sat, 04 May 2019 10:24:09 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
-        by smtp.gmail.com with ESMTPSA id n9sm6965141pff.59.2019.05.04.10.24.07
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 10:24:08 -0700 (PDT)
-Subject: Re: [PATCH] ipv4: Delete uncached routes upon unregistration of
- loopback device.
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     David Ahern <dsahern@gmail.com>, Julian Anastasov <ja@ssi.bg>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot <syzbot+30209ea299c09d8785c9@syzkaller.appspotmail.com>,
-        ddstreet@ieee.org, dvyukov@google.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Mahesh Bandewar <maheshb@google.com>
-References: <0000000000007d22100573d66078@google.com>
- <alpine.LFD.2.20.1808201527230.2758@ja.home.ssi.bg>
- <4684eef5-ea50-2965-86a0-492b8b1e4f52@I-love.SAKURA.ne.jp>
- <9d430543-33c3-0d9b-dc77-3a179a8e3919@I-love.SAKURA.ne.jp>
- <920ebaf1-ee87-0dbb-6805-660c1cbce3d0@I-love.SAKURA.ne.jp>
- <cc054b5c-4e95-8d30-d4bf-9c85f7e20092@gmail.com>
- <15b353e9-49a2-f08b-dc45-2e9bad3abfe2@i-love.sakura.ne.jp>
- <057735f0-4475-7a7b-815f-034b1095fa6c@gmail.com>
- <6e57bc11-1603-0898-dfd4-0f091901b422@i-love.sakura.ne.jp>
- <f71dd5cd-c040-c8d6-ab4b-df97dea23341@gmail.com>
- <d56b7989-8ac6-36be-0d0b-43251e1a2907@gmail.com>
- <117fcc49-d389-c389-918f-86ccaef82e51@i-love.sakura.ne.jp>
- <70be7d61-a6fe-e703-978a-d17f544efb44@gmail.com>
- <40199494-8eb7-d861-2e3b-6e20fcebc0dc@i-love.sakura.ne.jp>
- <519ea12b-4c24-9e8e-c5eb-ca02c9c7d264@i-love.sakura.ne.jp>
- <f6f770a7-17af-d51f-3ffb-4edba9b28101@gmail.com>
- <ab80de53-25b8-618b-4dcb-b732059f6f9c@i-love.sakura.ne.jp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <ed916873-4d7d-43f3-07cf-028d3ef4177c@gmail.com>
-Date:   Sat, 4 May 2019 13:24:07 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aeIr2xYUVvk3yQWnL07RF0qzoNgh0zjWYEMxr0YSFWA=;
+        b=hJHB4yHziEdF7Ef7B4t5KQmtcMyvzB96glamQRpeJhsjwvWcv+Y/tits5XTg3YunI/
+         jP5iCrmcGqz0HWiymDm034ToMUq090ToixeOvD/+ujDDRE2ADpslmidLnVDJIxgtjwmy
+         OVPkMBYkAf4yfcAlgbRbVCPbzUGv7XtkP3W+OOCKwlzkA9Fc1DFzPLJF607EazjDGJbo
+         s3dYNt9SeQPo8Y07i4fQ7O2g0j6x+JCX8S00qfYqNQh9Zj3pdB2NP7nfPrtIbJ8YXJ6i
+         0LhdAycFc7MAnv4FjmJQA+iz+zQSrSm/z1SC7bJqOA8o75ekE7/FqrDXv2bIMqPCsLNL
+         nBBQ==
+X-Gm-Message-State: APjAAAWaU6G4v6Oi8QDE9Rwzy87ZOW8MWkaH3JdEbGnDdO6lpcv1S9L/
+        QAo3MzmOhdpZFwpPruuhousryF9WXl0UVAIUys8=
+X-Google-Smtp-Source: APXvYqxi+w3yUON7YjqufOPe4m6KCd05Ub21wlYRl1pg2v1EqY0zS7mOcU78nDP+MIVJGwQ6w78+SJ4wlpJ1KhWaYEM=
+X-Received: by 2002:a05:620a:12a5:: with SMTP id x5mr13411197qki.334.1556990750181;
+ Sat, 04 May 2019 10:25:50 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <ab80de53-25b8-618b-4dcb-b732059f6f9c@i-love.sakura.ne.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190430181215.15305-1-maximmi@mellanox.com>
+In-Reply-To: <20190430181215.15305-1-maximmi@mellanox.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Sat, 4 May 2019 19:25:38 +0200
+Message-ID: <CAJ+HfNga0DJ9SXd71rf1emwnZnAExahHAX7GwDgV6wY-Escueg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 00/16] AF_XDP infrastructure improvements and
+ mlx5e support
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jonathan Lemon <bsd@fb.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 30 Apr 2019 at 20:12, Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
+>
+> This series contains improvements to the AF_XDP kernel infrastructure
+> and AF_XDP support in mlx5e. The infrastructure improvements are
+> required for mlx5e, but also some of them benefit to all drivers, and
+> some can be useful for other drivers that want to implement AF_XDP.
+>
+> The performance testing was performed on a machine with the following
+> configuration:
+>
+> - 24 cores of Intel Xeon E5-2620 v3 @ 2.40 GHz
+> - Mellanox ConnectX-5 Ex with 100 Gbit/s link
+>
+> The results with retpoline disabled, single stream:
+>
+> txonly: 33.3 Mpps (21.5 Mpps with queue and app pinned to the same CPU)
+> rxdrop: 12.2 Mpps
+> l2fwd: 9.4 Mpps
+>
+> The results with retpoline enabled, single stream:
+>
+> txonly: 21.3 Mpps (14.1 Mpps with queue and app pinned to the same CPU)
+> rxdrop: 9.9 Mpps
+> l2fwd: 6.8 Mpps
+>
+> v2 changes:
+>
+> Added patches for mlx5e and addressed the comments for v1. Rebased for
+> bpf-next (net-next has to be merged first, because this series depends
+> on some patches from there).
+>
+
+Nit: There're some checkpatch warnings (>80 char lines) for the driver parts.
 
 
-On 5/4/19 1:09 PM, Tetsuo Handa wrote:
-> On 2019/05/05 0:56, Eric Dumazet wrote:> 
->> Well, you have not fixed a bug, you simply made sure that whatever cpu is using the
->> routes you forcibly deleted is going to crash the host very soon (use-after-frees have
->> undefined behavior, but KASAN should crash most of the times)
-> 
-> I confirmed that this patch survives "#syz test:" before submitting.
-> But you know that this patch is deleting the route entry too early. OK.
-> 
->>
->> Please do not send patches like that with a huge CC list, keep networking patches
->> to netdev mailing list.
-> 
-> If netdev people started working on this "minutely crashing bug" earlier,
-> I would not have written a patch...
-
-
-So, just that you know, we are working on bug fixes, and this is best effort.
-
-It is not because _you_ want to fix a particular bug (out of hundreds)
-that we need to stop everything and work full time on a particular bug.
-
-And here the root cause of the problem is elsewhere. A dst is leaking somewhere,
-and prevents the netns dismantle.
-
-We had many dst leaks in the past, and they keep being added by new bugs.
-
-> 
->>
->> Mahesh has an alternative patch, adding a fake device that can not be dismantled
->> to make sure we fully intercept skbs sent through a dead route, instead of relying
->> on loopback dropping them later at some point.
-> 
-> So, the reason to temporarily move the refcount is to give enough period
-> so that the route entry is no longer used. But moving the refcount to a
-> loopback device in a namespace was wrong. Is this understanding correct?
-
-I believe you need spend more time on studying the networking code by yourself,
-add tracing if you believe this could be useful to you and others.
-
-> 
-> Compared to moving the refcount to the loopback device in the init namespace,
-> the fake device can somehow drop the refcount moved via rt_flush_dev(), can't it?
-> 
-
-The fake device wont ever disappear.
-
-> Anyway, I'll wait for Mahesh.
-> 
+> Maxim Mikityanskiy (16):
+>   xsk: Add API to check for available entries in FQ
+>   xsk: Add getsockopt XDP_OPTIONS
+>   libbpf: Support getsockopt XDP_OPTIONS
+>   xsk: Extend channels to support combined XSK/non-XSK traffic
+>   xsk: Change the default frame size to 4096 and allow controlling it
+>   xsk: Return the whole xdp_desc from xsk_umem_consume_tx
+>   net/mlx5e: Replace deprecated PCI_DMA_TODEVICE
+>   net/mlx5e: Calculate linear RX frag size considering XSK
+>   net/mlx5e: Allow ICO SQ to be used by multiple RQs
+>   net/mlx5e: Refactor struct mlx5e_xdp_info
+>   net/mlx5e: Share the XDP SQ for XDP_TX between RQs
+>   net/mlx5e: XDP_TX from UMEM support
+>   net/mlx5e: Consider XSK in XDP MTU limit calculation
+>   net/mlx5e: Encapsulate open/close queues into a function
+>   net/mlx5e: Move queue param structs to en/params.h
+>   net/mlx5e: Add XSK support
+>
+>  drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  12 +-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |  15 +-
+>  .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+>  drivers/net/ethernet/mellanox/mlx5/core/en.h  | 147 +++-
+>  .../ethernet/mellanox/mlx5/core/en/params.c   | 108 ++-
+>  .../ethernet/mellanox/mlx5/core/en/params.h   |  87 ++-
+>  .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 231 ++++--
+>  .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  36 +-
+>  .../mellanox/mlx5/core/en/xsk/Makefile        |   1 +
+>  .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 192 +++++
+>  .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |  27 +
+>  .../mellanox/mlx5/core/en/xsk/setup.c         | 220 ++++++
+>  .../mellanox/mlx5/core/en/xsk/setup.h         |  25 +
+>  .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   | 108 +++
+>  .../ethernet/mellanox/mlx5/core/en/xsk/tx.h   |  15 +
+>  .../ethernet/mellanox/mlx5/core/en/xsk/umem.c | 252 +++++++
+>  .../ethernet/mellanox/mlx5/core/en/xsk/umem.h |  34 +
+>  .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  21 +-
+>  .../mellanox/mlx5/core/en_fs_ethtool.c        |  44 +-
+>  .../net/ethernet/mellanox/mlx5/core/en_main.c | 680 +++++++++++-------
+>  .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  12 +-
+>  .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 104 ++-
+>  .../ethernet/mellanox/mlx5/core/en_stats.c    | 115 ++-
+>  .../ethernet/mellanox/mlx5/core/en_stats.h    |  30 +
+>  .../net/ethernet/mellanox/mlx5/core/en_txrx.c |  42 +-
+>  .../ethernet/mellanox/mlx5/core/ipoib/ipoib.c |  14 +-
+>  drivers/net/ethernet/mellanox/mlx5/core/wq.h  |   5 -
+>  include/net/xdp_sock.h                        |  27 +-
+>  include/uapi/linux/if_xdp.h                   |  18 +
+>  net/xdp/xsk.c                                 |  43 +-
+>  net/xdp/xsk_queue.h                           |  14 +
+>  samples/bpf/xdpsock_user.c                    |  52 +-
+>  tools/include/uapi/linux/if_xdp.h             |  18 +
+>  tools/lib/bpf/xsk.c                           | 127 +++-
+>  tools/lib/bpf/xsk.h                           |   6 +-
+>  35 files changed, 2384 insertions(+), 500 deletions(-)
+>  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/Makefile
+>  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
+>  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
+>  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
+>  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.h
+>  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
+>  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
+>  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c
+>  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.h
+>
+> --
+> 2.19.1
+>
