@@ -2,117 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E776B13B1C
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 18:08:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA0113B24
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 18:14:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727203AbfEDQIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 12:08:24 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44429 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726217AbfEDQIY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 12:08:24 -0400
-Received: by mail-pg1-f194.google.com with SMTP id z16so4236371pgv.11;
-        Sat, 04 May 2019 09:08:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sC4Bm0S6AdzqPJDKFbvFqnZ8jJH7VxxKHL8X8WXctzY=;
-        b=Qy5UvT9tK7aq1yH8lclXhft6+d/JDypXwBKIS31NCEoXBkkwBqtM1qmcroOAdjjzcJ
-         HIcWozT8ShmM+S820CGLhDvYEYIj9LGR4pvCUhZ3MnaMo/fzYhnD3zmXYaE/OH78wgGY
-         w3k1UMPOa62P3EkxJOpRdu7qi2sufU2olhywG5i/IrU3Bp2AoKkNwrjwbiBuqfx/5nTH
-         Z4ASOr4Nb4nZyKKzhIY/IUTYrEsYufbhjIwiUTGx1mUILePaRxU96rrHkSnwwjUAzZTs
-         RPoQIPRCWn2kTh57tIlOhUhYS6LGgjA0aToD2hIgNTUpqbgLfdYcfIVliR+xO2V9062k
-         V8Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sC4Bm0S6AdzqPJDKFbvFqnZ8jJH7VxxKHL8X8WXctzY=;
-        b=VgG6Q5kE49RvqFCjyiEfuN14bVP7Ma8p5Du2YkgTrmampPbbOmgnBN6Llp2amtJ0Jt
-         ngOGBZOhqpVG6/fdRqCreoQrgMmrhn24j615dbpBBempNigWMSfsuCxluJAfPfpFatBT
-         OCqIhcDf/wUMZRCJQz/XT4vJUbRRFbUGkoPPPOYPxRSbmOx7mcYG/Hjdq1XCgRFhieoS
-         Mqau+pfUm51AQ1bowmWS9t6FYBTVAjX55blNGYUBhJ34brQXkOYIyYWyC0amJt7TLxUm
-         ppcWaPeNe9M5BNKaVyhU+jbusifoyUyxxAltEdqYXoXOqDl44iq1EYRp6mQX5kb00FK+
-         78RA==
-X-Gm-Message-State: APjAAAXDS+0B3/IacieCiZIpEgoupLQkvoqXW2iT/oXUu4vBmql35R9n
-        1rh3G869ICOfFUeXPsnTvpY=
-X-Google-Smtp-Source: APXvYqxBQfLA16cLdJkghpXZpM2fYIlOwAM8blNJzY1aoU3igmXWBnATMkuSzRW4vvs5XlcUhLJ6ig==
-X-Received: by 2002:a63:243:: with SMTP id 64mr19321172pgc.214.1556986103844;
-        Sat, 04 May 2019 09:08:23 -0700 (PDT)
-Received: from bridge ([119.28.31.106])
-        by smtp.gmail.com with ESMTPSA id j20sm8706452pfn.84.2019.05.04.09.08.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 09:08:23 -0700 (PDT)
-Date:   Sun, 5 May 2019 00:08:17 +0800
-From:   Wenbin Zeng <wenbin.zeng@gmail.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     davem@davemloft.net, bfields@fieldses.org, jlayton@kernel.org,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        wenbinzeng@tencent.com, dsahern@gmail.com,
-        nicolas.dichtel@6wind.com, willy@infradead.org,
-        edumazet@google.com, jakub.kicinski@netronome.com,
-        tyhicks@canonical.com, chuck.lever@oracle.com, neilb@suse.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-nfs@vger.kernel.org
-Subject: Re: [PATCH 1/3] nsfs: add evict callback into struct
- proc_ns_operations
-Message-ID: <20190504160817.GA15804@bridge>
-References: <1556692945-3996-1-git-send-email-wenbinzeng@tencent.com>
- <1556692945-3996-2-git-send-email-wenbinzeng@tencent.com>
- <20190502030406.GT23075@ZenIV.linux.org.uk>
+        id S1726905AbfEDQN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 12:13:59 -0400
+Received: from mail.thelounge.net ([91.118.73.15]:62131 "EHLO
+        mail.thelounge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726217AbfEDQN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 12:13:59 -0400
+Received: from srv-rhsoft.rhsoft.net  (Authenticated sender: h.reindl@thelounge.net) by mail.thelounge.net (THELOUNGE MTA) with ESMTPSA id 44xDZs1hmTzXQW;
+        Sat,  4 May 2019 18:13:57 +0200 (CEST)
+Subject: Re: CVE-2019-11683
+To:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
+References: <7a1c575b-b341-261c-1f22-92d656d6d9ae@thelounge.net>
+ <0ca5c3b7-49e5-6fdd-13ba-4aaee72f2060@gmail.com>
+From:   Reindl Harald <h.reindl@thelounge.net>
+Openpgp: id=9D2B46CDBC140A36753AE4D733174D5A5892B7B8;
+ url=https://arrakis-tls.thelounge.net/gpg/h.reindl_thelounge.net.pub.txt
+Organization: the lounge interactive design
+Message-ID: <f81bad23-97d5-1b2b-20a1-f29cfc63ff79@thelounge.net>
+Date:   Sat, 4 May 2019 18:13:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190502030406.GT23075@ZenIV.linux.org.uk>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <0ca5c3b7-49e5-6fdd-13ba-4aaee72f2060@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-CH
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 02, 2019 at 04:04:06AM +0100, Al Viro wrote:
-> On Wed, May 01, 2019 at 02:42:23PM +0800, Wenbin Zeng wrote:
-> > The newly added evict callback shall be called by nsfs_evict(). Currently
-> > only put() callback is called in nsfs_evict(), it is not able to release
-> > all netns refcount, for example, a rpc client holds two netns refcounts,
-> > these refcounts are supposed to be released when the rpc client is freed,
-> > but the code to free rpc client is normally triggered by put() callback
-> > only when netns refcount gets to 0, specifically:
-> >     refcount=0 -> cleanup_net() -> ops_exit_list -> free rpc client
-> > But netns refcount will never get to 0 before rpc client gets freed, to
-> > break the deadlock, the code to free rpc client can be put into the newly
-> > added evict callback.
-> > 
-> > Signed-off-by: Wenbin Zeng <wenbinzeng@tencent.com>
-> > ---
-> >  fs/nsfs.c               | 2 ++
-> >  include/linux/proc_ns.h | 1 +
-> >  2 files changed, 3 insertions(+)
-> > 
-> > diff --git a/fs/nsfs.c b/fs/nsfs.c
-> > index 60702d6..5939b12 100644
-> > --- a/fs/nsfs.c
-> > +++ b/fs/nsfs.c
-> > @@ -49,6 +49,8 @@ static void nsfs_evict(struct inode *inode)
-> >  	struct ns_common *ns = inode->i_private;
-> >  	clear_inode(inode);
-> >  	ns->ops->put(ns);
-> > +	if (ns->ops->evict)
-> > +		ns->ops->evict(ns);
+
+
+Am 04.05.19 um 18:06 schrieb Eric Dumazet:
+>> ----------------------
+>>
+>> https://www.openwall.com/lists/oss-security/2019/05/02/1
+>>
+>> syzbot has reported a remotely triggerable memory corruption in the
+>> Linux kernel. It's been introduced quite recently in e20cf8d3f1f7
+>> ("udp: implement GRO for plain UDP sockets.") and only affects the 5.0
+>> (stable) release (so the name is a bit overhyped :).
+>>
+>> CVE-2019-11683 description:
+>>
+>> udp_gro_receive_segment in net/ipv4/udp_offload.c in the Linux kernel
+>> 5.x through 5.0.11 allows remote attackers to cause a denial of
+>> service (slab-out-of-bounds memory corruption) or possibly have
+>> unspecified other impact via UDP packets with a 0 payload, because of
+>> mishandling of padded packets, aka the "GRO packet of death" issue.
+>>
+>> Fix (not yet upstream):
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=4dd2b82d5adfbe0b1587ccad7a8f76d826120f37
+>>
+>> ----------------------
+>>
+>> https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.0.11
+>> https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.0.12
+>>
 > 
-> What's to guarantee that ns will not be freed by ->put()?
-> Confused...
+> The missing part in this CVE is that this is not remotely triggerable as-is.
+> 
+> UDP receiver has to opt-in for GRO, and I doubt any application does this currently
 
-Hi Al, thank you very much. You are absolutely right.
-->evict() should be called before ->put(), i.e.:
+ok, so the answer is no
 
-@@ -49,6 +49,8 @@ static void nsfs_evict(struct inode *inode)
-	struct ns_common *ns = inode->i_private;
-	clear_inode(inode);
-+	if (ns->ops->evict)
-+		ns->ops->evict(ns);
-	ns->ops->put(ns);
- }
-
-Does this look good?
+what's the point then release every 2 days a new "stable" kernel?
+even distributions like Fedora are not able to cope with that
