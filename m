@@ -2,54 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE551379A
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 07:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C79581379B
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 07:42:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbfEDFkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 01:40:19 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56922 "EHLO
+        id S1726070AbfEDFmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 01:42:09 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56976 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbfEDFkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 01:40:19 -0400
+        with ESMTP id S1725801AbfEDFmJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 01:42:09 -0400
 Received: from localhost (unknown [75.104.87.19])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 821A614DA6494;
-        Fri,  3 May 2019 22:40:14 -0700 (PDT)
-Date:   Sat, 04 May 2019 01:40:10 -0400 (EDT)
-Message-Id: <20190504.014010.1890791222224399323.davem@davemloft.net>
-To:     dsahern@kernel.org
-Cc:     nikolay@cumulusnetworks.com, netdev@vger.kernel.org,
-        dsahern@gmail.com
-Subject: Re: [PATCH net-next] ipmr: Do not define MAXVIFS twice
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A46AE14D99A92;
+        Fri,  3 May 2019 22:42:05 -0700 (PDT)
+Date:   Sat, 04 May 2019 01:42:02 -0400 (EDT)
+Message-Id: <20190504.014202.2301329130632974027.davem@davemloft.net>
+To:     johannes@sipsolutions.net
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v2 0/8] netlink policy export and recursive validation
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190502222326.2298-1-dsahern@kernel.org>
-References: <20190502222326.2298-1-dsahern@kernel.org>
+In-Reply-To: <20190503092501.10275-1-johannes@sipsolutions.net>
+References: <20190503092501.10275-1-johannes@sipsolutions.net>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 03 May 2019 22:40:19 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 03 May 2019 22:42:08 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
-Date: Thu,  2 May 2019 15:23:26 -0700
+From: Johannes Berg <johannes@sipsolutions.net>
+Date: Fri,  3 May 2019 11:24:53 +0200
 
-> From: David Ahern <dsahern@gmail.com>
+> Here's (finally, sorry) the respin with the range/range_signed assignment
+> fixed up.
 > 
-> b70432f7319eb refactored mroute code to make it common between ipv4
-> and ipv6. In the process, MAXVIFS got defined a second time: the
-> first is in the uapi file linux/mroute.h. A second one was created
-> presumably for IPv6 but it is not needed. Remove it and have
-> mroute_base.h include the uapi file directly since it is shared.
-> 
-> include/linux/mroute.h can not be included in mroute_base.h because
-> it contains a reference to mr_mfc which is defined in mroute_base.h.
-> 
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+> I've now included the validation recursion protection so it's clear that
+> it applies on top of the other patches only.
 
-Applied.
+Series applied, thanks.
