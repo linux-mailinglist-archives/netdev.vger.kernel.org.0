@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14B301398A
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DBBE1398B
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:47:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727547AbfEDLrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 07:47:14 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:40125 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727526AbfEDLrL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:47:11 -0400
-Received: by mail-qt1-f195.google.com with SMTP id k24so5926370qtq.7
-        for <netdev@vger.kernel.org>; Sat, 04 May 2019 04:47:10 -0700 (PDT)
+        id S1727555AbfEDLrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 07:47:16 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:42648 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727542AbfEDLrN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:47:13 -0400
+Received: by mail-qt1-f193.google.com with SMTP id p20so9701298qtc.9
+        for <netdev@vger.kernel.org>; Sat, 04 May 2019 04:47:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0FmN1IvOzQdqB1BzI3W3JrFfwZDtEU0Z8ynQdAsMOFQ=;
-        b=FS+8zJKLYi7KUpIC7YZUVv8I/aXkVjsBG4GyjRDhaUEHhbkn7Po9r1t/sFqdOjPiWU
-         Ny/y3jgoZb3Bt3xLHAk+kZSXzwGQIR2cxsTvwtudti1IrZqqCojv3DRzSz9wRsf1FZFO
-         VD5VnSmz64v1ibWMTU+CnDzl4jZRRmyeWGD16/FH5jchHCq2QlOX8BkIAwzZatAR96SG
-         gt8uNgbneF0wE0Y79hx5DqURSQxKXDBw4eJRSYd0lHLQH9Yx26eImEaHS+elFe+lQGRz
-         3QyWAl4dWbpsYTkG34izxS50AVFPmN7U+J6A1UF9cTK+C9mnQOJPwfm2276dascAzCTG
-         qZ6A==
+        bh=kzXsQ+5WljuJBE9IignS58GdcVhDPX9yFONSkbXrR0w=;
+        b=LqVZpGU/ujYjjqVzEAnsAt40adRjIcGz6i94CKUAtPyl1+MA/hDd/Ja13KUdEwjUkH
+         6UXmgCUK4HnMFruOAQo05Yk4iCASndWPyiYTHf5/JYJfBPYWvl7OVem0pBtdv01WyOI6
+         0pUpyKvDtRbiJg7FFle3l7QRvDE5UYix19yCRhjdFGnEogwhd8aE+gGx/u6xXmg9DxRE
+         q7tAGbFslSHlXBrkBIX3bg/tx3P0gTuITVq2Jo5LpF90Wd/36IiiCuBd9glAn8XC6JO9
+         soWVx0puDcTzp8ijV75f51ZsXO+vSnPe4P1jeAWnTkn9KtUrIddz4Cqm/XAnWnDVZCgW
+         A2BQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0FmN1IvOzQdqB1BzI3W3JrFfwZDtEU0Z8ynQdAsMOFQ=;
-        b=mgV8Sq5F3U5Ruzp2R2Mm8XLSjwYXEdYITsuCPSOUb2D2L09PRLTzTZ4i5TsRgGlcVc
-         AckMZDZF1JP/vd8jsqrfahqpCVYsXAyaew9nCtkedExg28jkLY/3wxjehcePIGkiTCmo
-         lyaynDpIZk3Dy66/DFiMJ/0tYtjpA5lPWkyvzi3zaWeGIcYk8v+YSrWycR71IylJ093Z
-         q6JzJda6u4hKsJbRpBU/9MVu0nUxGIYcjFdJ5VC2ybQvL2pCKX6ptor6dD1tzDPtuhF5
-         K+/nZL5CMNpEzoQICUpumyn4GHB5u4KxbXc4jhGy4GCbc5mk8sLmrsIsM0eUYywJJOzb
-         LV3A==
-X-Gm-Message-State: APjAAAWxkZvMlKsmVC5HlsYTFLSTNWjomFkByHoAWpPhECSQlPsv9cqL
-        afboC9XNwuzJ30Rd52FAk6Ra9g==
-X-Google-Smtp-Source: APXvYqzn5X+nGiAw2L9Wb8GmdnyJQKX+t2kq1kTlRrL1+NG9BE40NupJ0AUHDuvhq9o0XKnxsj2VLQ==
-X-Received: by 2002:aed:25f7:: with SMTP id y52mr13385866qtc.247.1556970430264;
-        Sat, 04 May 2019 04:47:10 -0700 (PDT)
+        bh=kzXsQ+5WljuJBE9IignS58GdcVhDPX9yFONSkbXrR0w=;
+        b=eCDQv2U+NgQE1GIwMID8PxdEsQckkfP+IBjaR3K5zOWg1CeUoXRqUggaxxoZwmxRBu
+         cvt/Rftxr/2WiM9lBUGMN80/cO5Y/fFxGdYmX5vImGMkGAeC+jGlcxyuBveTogsfbTHk
+         8PCCBmfabO+sm5YZwSOUEk6uxbv1kR2n2c1LGyT1wNcUXVHlnHcD0rPPEEJtFwHysmuM
+         TKkVBG0O4ZM3nBx0gAUA006xtN/TY1fTykLXnqIdEAcbUsoEnr05BYn0IW/yAYaOGF5A
+         ygiebDU3AX66FZQO/0DZu5NzBR4BRR0YKVSnICddXcCs2vEBOIJZN8wRe6LYmg+THpgr
+         TZrw==
+X-Gm-Message-State: APjAAAWB3yV8FHu4kkEfuzsFYDKmXU8YF59A0KI11t07avvRyXAIji6E
+        Ov2kImlO5XnnHggZFRfrwntbrA==
+X-Google-Smtp-Source: APXvYqyFZnA/RXBOYw/0c2zKB9UXLhADfMIl/Rl8zBt2wV8rlf0H/CbNVfSYhwyTlRT3jZbYeFsNfg==
+X-Received: by 2002:ac8:341b:: with SMTP id u27mr7180712qtb.246.1556970432454;
+        Sat, 04 May 2019 04:47:12 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g19sm2847276qkk.17.2019.05.04.04.47.08
+        by smtp.gmail.com with ESMTPSA id g19sm2847276qkk.17.2019.05.04.04.47.10
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 04:47:09 -0700 (PDT)
+        Sat, 04 May 2019 04:47:11 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -53,9 +53,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         Pieter Jansen van Vuuren 
         <pieter.jansenvanvuuren@netronome.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 05/13] net/sched: remove unused functions for matchall offload
-Date:   Sat,  4 May 2019 04:46:20 -0700
-Message-Id: <20190504114628.14755-6-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 06/13] net/sched: move police action structures to header
+Date:   Sat,  4 May 2019 04:46:21 -0700
+Message-Id: <20190504114628.14755-7-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190504114628.14755-1-jakub.kicinski@netronome.com>
 References: <20190504114628.14755-1-jakub.kicinski@netronome.com>
@@ -68,79 +68,142 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
 
-Cleanup unused functions and variables after porting to the newer
-intermediate representation.
+Move tcf_police_params, tcf_police and tc_police_compat structures to a
+header. Making them usable to other code for example drivers that would
+offload police actions to hardware.
 
 Signed-off-by: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- include/net/pkt_cls.h    | 25 -------------------------
- net/sched/cls_matchall.c |  2 --
- 2 files changed, 27 deletions(-)
+ include/net/tc_act/tc_police.h | 70 ++++++++++++++++++++++++++++++++++
+ net/sched/act_police.c         | 37 +-----------------
+ 2 files changed, 71 insertions(+), 36 deletions(-)
+ create mode 100644 include/net/tc_act/tc_police.h
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index c852ed502cc6..2d0470661277 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -371,30 +371,6 @@ static inline bool tcf_exts_has_actions(struct tcf_exts *exts)
- #endif
- }
- 
--/**
-- * tcf_exts_has_one_action - check if exactly one action is present
-- * @exts: tc filter extensions handle
-- *
-- * Returns true if exactly one action is present.
-- */
--static inline bool tcf_exts_has_one_action(struct tcf_exts *exts)
--{
--#ifdef CONFIG_NET_CLS_ACT
--	return exts->nr_actions == 1;
--#else
--	return false;
--#endif
--}
+diff --git a/include/net/tc_act/tc_police.h b/include/net/tc_act/tc_police.h
+new file mode 100644
+index 000000000000..8b9ef3664262
+--- /dev/null
++++ b/include/net/tc_act/tc_police.h
+@@ -0,0 +1,70 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __NET_TC_POLICE_H
++#define __NET_TC_POLICE_H
++
++#include <net/act_api.h>
++
++struct tcf_police_params {
++	int			tcfp_result;
++	u32			tcfp_ewma_rate;
++	s64			tcfp_burst;
++	u32			tcfp_mtu;
++	s64			tcfp_mtu_ptoks;
++	struct psched_ratecfg	rate;
++	bool			rate_present;
++	struct psched_ratecfg	peak;
++	bool			peak_present;
++	struct rcu_head rcu;
++};
++
++struct tcf_police {
++	struct tc_action	common;
++	struct tcf_police_params __rcu *params;
++
++	spinlock_t		tcfp_lock ____cacheline_aligned_in_smp;
++	s64			tcfp_toks;
++	s64			tcfp_ptoks;
++	s64			tcfp_t_c;
++};
++
++#define to_police(pc) ((struct tcf_police *)pc)
++
++/* old policer structure from before tc actions */
++struct tc_police_compat {
++	u32			index;
++	int			action;
++	u32			limit;
++	u32			burst;
++	u32			mtu;
++	struct tc_ratespec	rate;
++	struct tc_ratespec	peakrate;
++};
++
++static inline bool is_tcf_police(const struct tc_action *act)
++{
++#ifdef CONFIG_NET_CLS_ACT
++	if (act->ops && act->ops->id == TCA_ID_POLICE)
++		return true;
++#endif
++	return false;
++}
++
++static inline u64 tcf_police_rate_bytes_ps(const struct tc_action *act)
++{
++	struct tcf_police *police = to_police(act);
++	struct tcf_police_params *params;
++
++	params = rcu_dereference_bh(police->params);
++	return params->rate.rate_bytes_ps;
++}
++
++static inline s64 tcf_police_tcfp_burst(const struct tc_action *act)
++{
++	struct tcf_police *police = to_police(act);
++	struct tcf_police_params *params;
++
++	params = rcu_dereference_bh(police->params);
++	return params->tcfp_burst;
++}
++
++#endif /* __NET_TC_POLICE_H */
+diff --git a/net/sched/act_police.c b/net/sched/act_police.c
+index b48e40c69ad0..e33bcab75d1f 100644
+--- a/net/sched/act_police.c
++++ b/net/sched/act_police.c
+@@ -22,42 +22,7 @@
+ #include <net/act_api.h>
+ #include <net/netlink.h>
+ #include <net/pkt_cls.h>
 -
--static inline struct tc_action *tcf_exts_first_action(struct tcf_exts *exts)
--{
--#ifdef CONFIG_NET_CLS_ACT
--	return exts->actions[0];
--#else
--	return NULL;
--#endif
--}
+-struct tcf_police_params {
+-	int			tcfp_result;
+-	u32			tcfp_ewma_rate;
+-	s64			tcfp_burst;
+-	u32			tcfp_mtu;
+-	s64			tcfp_mtu_ptoks;
+-	struct psched_ratecfg	rate;
+-	bool			rate_present;
+-	struct psched_ratecfg	peak;
+-	bool			peak_present;
+-	struct rcu_head rcu;
+-};
 -
- /**
-  * tcf_exts_exec - execute tc filter extensions
-  * @skb: socket buffer
-@@ -790,7 +766,6 @@ struct tc_cls_matchall_offload {
- 	struct tc_cls_common_offload common;
- 	enum tc_matchall_command command;
- 	struct flow_rule *rule;
--	struct tcf_exts *exts;
- 	unsigned long cookie;
- };
+-struct tcf_police {
+-	struct tc_action	common;
+-	struct tcf_police_params __rcu *params;
+-
+-	spinlock_t		tcfp_lock ____cacheline_aligned_in_smp;
+-	s64			tcfp_toks;
+-	s64			tcfp_ptoks;
+-	s64			tcfp_t_c;
+-};
+-
+-#define to_police(pc) ((struct tcf_police *)pc)
+-
+-/* old policer structure from before tc actions */
+-struct tc_police_compat {
+-	u32			index;
+-	int			action;
+-	u32			limit;
+-	u32			burst;
+-	u32			mtu;
+-	struct tc_ratespec	rate;
+-	struct tc_ratespec	peakrate;
+-};
++#include <net/tc_act/tc_police.h>
  
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index 8d135ecab098..87bff17ac782 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -95,7 +95,6 @@ static int mall_replace_hw_filter(struct tcf_proto *tp,
+ /* Each policer is serialized by its individual spinlock */
  
- 	tc_cls_common_offload_init(&cls_mall.common, tp, head->flags, extack);
- 	cls_mall.command = TC_CLSMATCHALL_REPLACE;
--	cls_mall.exts = &head->exts;
- 	cls_mall.cookie = cookie;
- 
- 	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
-@@ -297,7 +296,6 @@ static int mall_reoffload(struct tcf_proto *tp, bool add, tc_setup_cb_t *cb,
- 	tc_cls_common_offload_init(&cls_mall.common, tp, head->flags, extack);
- 	cls_mall.command = add ?
- 		TC_CLSMATCHALL_REPLACE : TC_CLSMATCHALL_DESTROY;
--	cls_mall.exts = &head->exts;
- 	cls_mall.cookie = (unsigned long)head;
- 
- 	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
 -- 
 2.21.0
 
