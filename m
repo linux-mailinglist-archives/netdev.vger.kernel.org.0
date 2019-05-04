@@ -2,137 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC881370B
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 04:36:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBB4B1370D
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 04:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727129AbfEDCgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 22:36:04 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:50046 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726326AbfEDCgE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 22:36:04 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x442QuKh010095;
-        Fri, 3 May 2019 19:35:43 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=N/e7aIr7pOl4CTZRLuJdTWl01aQIzY0XwMPnpTmtVB0=;
- b=aqNTwgVjvn79Ex+2rcTzcJAhGA83APJdfE44rk8de7pXHcFW2wWWOwvA3q53PGkevJMp
- bADsxdhdqncTlEWrVbVCe9OUBKkqYtvHu+OKvG0q6UuPL+6rHjmRRCFDRgNjlFP00bKd
- HbsRDU2pH/j91JYbtBPdj6xbMYHnEEINHlY= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2s8vwjgrty-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 03 May 2019 19:35:43 -0700
-Received: from prn-hub04.TheFacebook.com (2620:10d:c081:35::128) by
- prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 3 May 2019 19:35:42 -0700
-Received: from NAM05-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.28) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 3 May 2019 19:35:42 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N/e7aIr7pOl4CTZRLuJdTWl01aQIzY0XwMPnpTmtVB0=;
- b=IVu1Dr5EXezx2DYlV60Qqhhp+cUNVhoPKkSlrbNKS5QRnNAQYVIO3FqL0aYHYuaPbS2vignT+XmFLYP8M+tHwcRIe7S1NWwzfoulIdHtpmT+2fuUjyua6QuU/ijAhAFa/OGix3ZOCaqvZ3hxh6n5bKCbkO0dbtuyrYliIRfD7kE=
-Received: from BYAPR15MB2311.namprd15.prod.outlook.com (52.135.197.145) by
- BYAPR15MB2760.namprd15.prod.outlook.com (20.179.157.209) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1856.12; Sat, 4 May 2019 02:35:41 +0000
-Received: from BYAPR15MB2311.namprd15.prod.outlook.com
- ([fe80::d0cd:ad09:6bf5:7e06]) by BYAPR15MB2311.namprd15.prod.outlook.com
- ([fe80::d0cd:ad09:6bf5:7e06%6]) with mapi id 15.20.1856.012; Sat, 4 May 2019
- 02:35:41 +0000
-From:   Lawrence Brakmo <brakmo@fb.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>
-CC:     netdev <netdev@vger.kernel.org>, Martin Lau <kafai@fb.com>,
-        "Alexei Starovoitov" <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Yuchung Cheng <ycheng@google.com>
-Subject: Re: [PATCH v2 bpf-next 5/7] bpf: sysctl for probe_on_drop
-Thread-Topic: [PATCH v2 bpf-next 5/7] bpf: sysctl for probe_on_drop
-Thread-Index: AQHU6ntMBPt++Bc1k02B9em4sME2AKYyd80AgAAOKYCAJ3PaAA==
-Date:   Sat, 4 May 2019 02:35:40 +0000
-Message-ID: <BAD306FE-4C97-49E8-9CB8-20891B0E8C0E@fb.com>
-References: <20190404001250.140554-1-brakmo@fb.com>
- <20190404001250.140554-6-brakmo@fb.com>
- <CADVnQynFtNiQxsRNx7phxsxgSRXowFag1=qbw0WrHyWHOnZ7Lw@mail.gmail.com>
- <1c827078-f462-0bbd-e03d-1c3d07ec593b@gmail.com>
-In-Reply-To: <1c827078-f462-0bbd-e03d-1c3d07ec593b@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/10.18.0.190414
-x-originating-ip: [2620:10d:c090:200::1:d434]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f3661045-f2d3-434e-cc15-08d6d0393338
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR15MB2760;
-x-ms-traffictypediagnostic: BYAPR15MB2760:
-x-microsoft-antispam-prvs: <BYAPR15MB27608BD82011E6F07B28BC84A9360@BYAPR15MB2760.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0027ED21E7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(366004)(346002)(136003)(376002)(396003)(189003)(199004)(11346002)(53546011)(486006)(66476007)(102836004)(6506007)(446003)(83716004)(186003)(6246003)(476003)(2616005)(64756008)(66556008)(110136005)(99286004)(66946007)(91956017)(66446008)(46003)(76116006)(73956011)(8936002)(58126008)(4326008)(25786009)(82746002)(6512007)(256004)(53936002)(7736002)(305945005)(316002)(54906003)(229853002)(68736007)(6116002)(14454004)(2906002)(33656002)(478600001)(6436002)(81156014)(8676002)(81166006)(71200400001)(71190400001)(86362001)(76176011)(36756003)(5660300002)(6486002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2760;H:BYAPR15MB2311.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: HETKXL/xEfmFyRc6meBlsxnV12LKrN0UlIxpurquuFKsjrSDdBt5U4h0MAVTxmYRlUGTn4lsz3DScSdeww0G+6oVk0G8zlY3wswoOa83zqSgSStyFpN7/ssjUX7WRy0HqxOk/EeY597iIKntq0Fpt4KnMYif8fyt+5cU+FiH9MeZYuQhmAlznhPAVTmESS0vKKdyEqNQjKS7IHWV98ZQ/8235+nJteyJQouMGtcdQuTdyl4thwiHsxqyivB+gEkCMWlQ/d+5sm+htBc5MGewJOhuZNhGnhhBROFJA5AjdakMxbVZ0SXxh1pr13CSigJS0PeDpilFGawxZ0yBL3KPS5fJiyJev+H3O7awsB0cwJahUtZr8RzA2MQZqLfGTdUvhgNoS1BUpYyL6PcOrXL52ozM6tKlPg4slyUFHhe6P94=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <66053F60667B6145B4C720927BFD7241@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727173AbfEDChG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 22:37:06 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38061 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726326AbfEDChG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 22:37:06 -0400
+Received: by mail-wr1-f67.google.com with SMTP id k16so10043618wrn.5;
+        Fri, 03 May 2019 19:37:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2Ntx05QG4ilOvib9WtlBUryyH4t9YJiOtbQVxpeRJFs=;
+        b=Slx5wgrbNxF3svrHhvpnyiLtH1KaGl67V26B/Nk/rM/aB9VEL9V6IjZfbZfyMGgH30
+         Ul6AJgAfXekcWpobFf92VDfXK/shYpuMiQBX/fY+q5dYu9PjEI3aYRV8u5Fne/GD+lza
+         h4faDZqb0Oxb7eUAlf4Vci5cvEWJ1jMINL5o3VaupC7H6xFGHX7x/wyEbF/1iAwgEB3o
+         L37u83UDCW3o/8qfg/ogJLdJhpHY1tv57Ap4KIpxJ4kxemz2ASL8OfTY8bwpFdlTNcI7
+         hfHz3rUUoOUDsNEoX25xIbn9O6hj050xg8dOhlUftuZa4Sz195WGI2ZM5j0hiGvP0LXC
+         0m/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2Ntx05QG4ilOvib9WtlBUryyH4t9YJiOtbQVxpeRJFs=;
+        b=Z3AkSf+rmNDKm9qxvioIIeCdLPbCp48pk7BTUKI6ya7PRHSslZSXB7Ts9pGSVokhtF
+         /XLy0dtVD5zTNX/t9B6+tc/FXQ4/mcnTckJvqNUdWjR9rx/uuBYMCnuorRyqnTGOAjfG
+         rpy6ZN0iOxqmdlGSZn9NQ2vc/+xOpbHPJAVHyerw6lNmNuZp3ifpa5gycjpiRxlauTcT
+         q3FQKkDcGN3EOEw28ZtdhAg7hpldnACp3j7fb1jass+4HaTbljwWT2ji9EAc6Mr5JBBF
+         1sH6z6zvRYdWMPxMPx0eYlYD9YIaPPHhrH3+MHSeq8D+ywws7Il/CvPqFHl+tQ55afxQ
+         4Nyw==
+X-Gm-Message-State: APjAAAWMU8tmDf04X6qx5GVz/E2uG0DiTpgFXh0Eo3uYtVCCh/8JRt3k
+        eUoMd9tjyJQU1AkXIIV1nwe7+zQxJpJn1GajJ+TQD45g
+X-Google-Smtp-Source: APXvYqzNS7/KAzFHNHYB+DNtu+lzHFn3oMUNt4ik3tylQdZULoa9EFuk9QS0iADHAwJXloGDpPdTpBN7t7nNrRHMz2c=
+X-Received: by 2002:a5d:4dc1:: with SMTP id f1mr9521663wru.300.1556937423661;
+ Fri, 03 May 2019 19:37:03 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3661045-f2d3-434e-cc15-08d6d0393338
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 May 2019 02:35:40.9396
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2760
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-04_02:,,
- signatures=0
-X-Proofpoint-Spam-Reason: safe
-X-FB-Internal: Safe
+References: <20190504011826.30477-1-olteanv@gmail.com> <20190504011826.30477-10-olteanv@gmail.com>
+ <a0b29ac4-7159-6ccf-9ad1-8193951be7ea@gmail.com>
+In-Reply-To: <a0b29ac4-7159-6ccf-9ad1-8193951be7ea@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sat, 4 May 2019 05:36:52 +0300
+Message-ID: <CA+h21hq25OSou=SJHgJmGyhmSFrPA3nsDV446Trg+awZwKTmtw@mail.gmail.com>
+Subject: Re: [PATCH net-next 9/9] Documentation: net: dsa: sja1105: Add info
+ about supported traffic modes
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     vivien.didelot@gmail.com, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCu+7v09uIDQvOC8xOSwgMTA6MDcgQU0sICJFcmljIER1bWF6ZXQiIDxlcmljLmR1bWF6ZXRA
-Z21haWwuY29tPiB3cm90ZToNCg0KICAgIA0KICAgIA0KICAgIE9uIDA0LzA4LzIwMTkgMDk6MTYg
-QU0sIE5lYWwgQ2FyZHdlbGwgd3JvdGU6DQogICAgPiBPbiBXZWQsIEFwciAzLCAyMDE5IGF0IDg6
-MTMgUE0gYnJha21vIDxicmFrbW9AZmIuY29tPiB3cm90ZToNCiAgICA+Pg0KICAgID4+IFdoZW4g
-YSBwYWNrZXQgaXMgZHJvcHBlZCB3aGVuIGNhbGxpbmcgcXVldWVfeG1pdCBpbiAgX190Y3BfdHJh
-bnNtaXRfc2tiDQogICAgPj4gYW5kIHBhY2tldHNfb3V0IGlzIDAsIGl0IGlzIGJlbmVmaWNpYWwg
-dG8gc2V0IGEgc21hbGwgcHJvYmUgdGltZXIuDQogICAgPj4gT3RoZXJ3aXNlLCB0aGUgdGhyb3Vn
-aHB1dCBmb3IgdGhlIGZsb3cgY2FuIHN1ZmZlciBiZWNhdXNlIGl0IG1heSBuZWVkIHRvDQogICAg
-Pj4gZGVwZW5kIG9uIHRoZSBwcm9iZSB0aW1lciB0byBzdGFydCBzZW5kaW5nIGFnYWluLiBUaGUg
-ZGVmYXVsdCB2YWx1ZSBmb3INCiAgICA+PiB0aGUgcHJvYmUgdGltZXIgaXMgYXQgbGVhc3QgMjAw
-bXMsIHRoaXMgcGF0Y2ggc2V0cyBpdCB0byAyMG1zIHdoZW4gYQ0KICAgID4+IHBhY2tldCBpcyBk
-cm9wcGVkIGFuZCB0aGVyZSBhcmUgbm8gb3RoZXIgcGFja2V0cyBpbiBmbGlnaHQuDQogICAgPj4N
-CiAgICA+PiBUaGlzIHBhdGNoIGludHJvZHVjZXMgYSBuZXcgc3lzY3RsLCBzeXNjdGxfdGNwX3By
-b2JlX29uX2Ryb3BfbXMsIHRoYXQgaXMNCiAgICA+PiB1c2VkIHRvIHNwZWNpZnkgdGhlIGR1cmF0
-aW9uIG9mIHRoZSBwcm9iZSB0aW1lciBmb3IgdGhlIGNhc2UgZGVzY3JpYmVkDQogICAgPj4gZWFy
-bGllci4gVGhlIGFsbG93ZWQgdmFsdWVzIGFyZSBiZXR3ZWVuIDAgYW5kIFRDUF9SVE9fTUlOLiBB
-IHZhbHVlIG9mIDANCiAgICA+PiBkaXNhYmxlcyBzZXR0aW5nIHRoZSBwcm9iZSB0aW1lciB3aXRo
-IGEgc21hbGwgdmFsdWUuDQogICAgDQogICAgVGhpcyBzZWVtcyB0byBjb250cmFkaWN0IG91ciBy
-ZWNlbnQgd29yayA/DQogICAgDQogICAgU2VlIHJlY2VudCBZdWNodW5nIHBhdGNoIHNlcmllcyA6
-DQogICAgDQogICAgYzFkNTY3NGY4MzEzYjlmOGU2ODNjMjY1ZjFjMDBhMjU4MmNmNWZjNSB0Y3A6
-IGxlc3MgYWdncmVzc2l2ZSB3aW5kb3cgcHJvYmluZyBvbiBsb2NhbCBjb25nZXN0aW9uDQogICAg
-NTkwZDIwMjZkNjI0MThiYjI3ZGU5Y2E4NzUyNmU5MTMxYzFmNDhhZiB0Y3A6IHJldHJ5IG1vcmUg
-Y29uc2VydmF0aXZlbHkgb24gbG9jYWwgY29uZ2VzdGlvbg0KICAgIDk3MjFlNzA5ZmE2OGVmOWI4
-NjBjMzIyYjQ3NGNmYmQxZjgyODViMGYgdGNwOiBzaW1wbGlmeSB3aW5kb3cgcHJvYmUgYWJvcnRp
-bmcgb24gVVNFUl9USU1FT1VUDQogICAgMDFhNTIzYjA3MTYxOGFiYmM2MzRkMTk1ODIyOWZlM2Jk
-MmRmYTVmYSB0Y3A6IGNyZWF0ZSBhIGhlbHBlciB0byBtb2RlbCBleHBvbmVudGlhbCBiYWNrb2Zm
-DQogICAgYzdkMTNjOGZhYTc0ZjRlOGVmMTkxZjg4YTI1MmNlZmFiNjgwNWIzOCB0Y3A6IHByb3Bl
-cmx5IHRyYWNrIHJldHJ5IHRpbWUgb24gcGFzc2l2ZSBGYXN0IE9wZW4NCiAgICA3YWUxODk3NTlj
-YzQ4Y2Y4YjU0YmVlYmZmNTY2ZTlmZDJkNGU3ZDdjIHRjcDogYWx3YXlzIHNldCByZXRyYW5zX3N0
-YW1wIG9uIHJlY292ZXJ5DQogICAgN2YxMjQyMmM0ODczZTliMjc0YmMxNTFlYTU5Y2IwY2RmOTQx
-NWNmMSB0Y3A6IGFsd2F5cyB0aW1lc3RhbXAgb24gZXZlcnkgc2tiIHRyYW5zbWlzc2lvbg0KICAg
-IA0KVGhhbmsgeW91IGZvciBwb2ludGluZyB0aGlzIG91dC4gSSdtIHRha2luZyB0aGlzIHBhdGNo
-IG91dCBvZiB0aGUgcGF0Y2hzZXQgYW5kIHdpbGwgcmVjb25zaWRlciBpdC4NCiAgICANCg0K
+On Sat, 4 May 2019 at 05:17, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+>
+>
+> On 5/3/2019 6:18 PM, Vladimir Oltean wrote:
+> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> > ---
+> >  Documentation/networking/dsa/sja1105.rst | 49 ++++++++++++++++++++++++
+> >  1 file changed, 49 insertions(+)
+> >
+> > diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
+> > index 7c13b40915c0..a70a04164d07 100644
+> > --- a/Documentation/networking/dsa/sja1105.rst
+> > +++ b/Documentation/networking/dsa/sja1105.rst
+> > @@ -63,6 +63,38 @@ If that changed setting can be transmitted to the switch through the dynamic
+> >  reconfiguration interface, it is; otherwise the switch is reset and
+> >  reprogrammed with the updated static configuration.
+> >
+> > +Traffic support
+> > +===============
+> > +
+> > +The switches do not support switch tagging in hardware. But they do support
+> > +customizing the TPID by which VLAN traffic is identified as such. The switch
+> > +driver is leveraging ``CONFIG_NET_DSA_TAG_8021Q`` by requesting that special
+> > +VLANs (with a custom TPID of ``ETH_P_EDSA`` instead of ``ETH_P_8021Q``) are
+> > +installed on its ports when not in ``vlan_filtering`` mode. This does not
+> > +interfere with the reception and transmission of real 802.1Q-tagged traffic,
+> > +because the switch does no longer parse those packets as VLAN after the TPID
+> > +change.
+> > +The TPID is restored when ``vlan_filtering`` is requested by the user through
+> > +the bridge layer, and general IP termination becomes no longer possible through
+> > +the switch netdevices in this mode.
+> > +
+> > +The switches have two programmable filters for link-local destination MACs.
+> > +These are used to trap BPDUs and PTP traffic to the master netdevice, and are
+> > +further used to support STP and 1588 ordinary clock/boundary clock
+> > +functionality.
+> > +
+> > +The following traffic modes are supported over the switch netdevices:
+> > +
+> > ++--------------------+------------+------------------+------------------+
+> > +|                    | Standalone |   Bridged with   |   Bridged with   |
+> > +|                    |    ports   | vlan_filtering 0 | vlan_filtering 1 |
+> > ++====================+============+==================+==================+
+> > +| Regular traffic    |     Yes    |       Yes        |  No (use master) |
+> > ++--------------------+------------+------------------+------------------+
+>
+> Just to make sure I fully understand the limitation here and sorry for
+> making you repeat it since I am sure you have explained it already.
+>
+> Let's say that I have a bridge with vlan_filtering=1 configured, and I
+> assign an IP address to the bridge master device (as is a common thing
+> with e.g.: SOHO routers), does that mean I cannot ping any stations
+> behind that bridge at all?
+>
+
+Let's make it even more concrete to make sure I understand.
+Let's say I have eth0, eth1, swp0@eth1, swp1@eth1, swp2@eth1,
+swp3@eth1. The DSA master is eth1, and swp0-3 are under br0.
+You are asking: "can I put more netdevices under br0 other than the
+switch ports, such as eth0?"
+No, if you want to do that you'd have to create br1 and bridge the DSA
+master (eth1) with the other netdevice you want to speak with. In the
+situation we're talking about, br0 is simply a conduit for switchdev
+operations and not so much of a netdevice.
+
+> We used to have this problem with DSA master devices being a bridge
+> member which was fixed a while ago by simply denying them a bridge join
+> [1], would that be something to rework somehow here such that we can let
+> your DSA master device join the bridge to continue delivering frames to
+> the bridge master?
+>
+> [1]:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8db0a2ee2c6302a1dcbcdb93cb731dfc6c0cdb5e
+>
+>
+
+I know this patch, but in what ways are you proposing a rework
+exactly? Would you want the "dumb switch" mode to bridge the master
+with the switch ports, so that you don't need another br1?
+
+> > +| Management traffic |     Yes    |       Yes        |       Yes        |
+> > +|    (BPDU, PTP)     |            |                  |                  |
+> > ++--------------------+------------+------------------+------------------+
+> > +
+> >  Switching features
+> >  ==================
+> >
+> > @@ -92,6 +124,23 @@ that VLAN awareness is global at the switch level is that once a bridge with
+> >  ``vlan_filtering`` enslaves at least one switch port, the other un-bridged
+> >  ports are no longer available for standalone traffic termination.
+> >
+> > +Topology and loop detection through STP is supported.
+> > +
+> > +L2 FDB manipulation (add/delete/dump) is currently possible for the first
+> > +generation devices. Aging time of FDB entries, as well as enabling fully static
+> > +management (no address learning and no flooding of unknown traffic) is not yet
+> > +configurable in the driver.
+> > +
+> > +Other notable features
+> > +======================
+> > +
+> > +The switches have a PTP Hardware Clock that can be steered through SPI and used
+> > +for timestamping management traffic on ingress and egress.
+> > +Also, the T, Q and S devices support TTEthernet (an implementation of SAE
+> > +AS6802 from TTTech), which is a set of Ethernet QoS enhancements somewhat
+> > +similar in behavior to IEEE TSN (time-aware shaping, time-based policing).
+> > +Configuring these features is currently not supported in the driver.
+> > +
+> >  Device Tree bindings and board design
+> >  =====================================
+> >
+> >
+>
+> --
+> Florian
+
+Thanks,
+-Vladimir
