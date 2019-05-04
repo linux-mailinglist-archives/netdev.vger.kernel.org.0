@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B95DA13987
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:47:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38A8C13988
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727510AbfEDLrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 07:47:06 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:41312 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727049AbfEDLrF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:47:05 -0400
-Received: by mail-qk1-f196.google.com with SMTP id g190so1220851qkf.8
-        for <netdev@vger.kernel.org>; Sat, 04 May 2019 04:47:04 -0700 (PDT)
+        id S1727522AbfEDLrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 07:47:08 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:40119 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727049AbfEDLrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:47:07 -0400
+Received: by mail-qt1-f195.google.com with SMTP id k24so5926259qtq.7
+        for <netdev@vger.kernel.org>; Sat, 04 May 2019 04:47:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1mfk9biFp9S/FpNoG60AhEA7qIqfszbbgEgZJMO2Oho=;
-        b=S6DlCMxso7xgynoiM6LIOasUifgK21AndrfeM8ZSFxtSOEfPu+1+madSktb9Nofoyx
-         gIMZfGWClJsr74icUUs5FpCFjXgzS3EOiEqXRBo1IPlDgI8XqebaJo6MozQWxIVEyk5u
-         s9xCufLwpg3eVl7V78N6PDsYPeNfPIzYEFOWCDUbI79rfonEawAsbSxWgDQoWgWj/chl
-         CQRErtTTdd/3dP/YcPbCjgTzRET4RCPzbjLYDfagoOJJX/fGHDWEOMQw2tka34GMXWyd
-         x7Az8nvHSCjob10mC9yGREgy3Y7jXISyH0eXSNXzSfGqLSW+HfaZnDBEDH/MJecOB+cE
-         2AeQ==
+        bh=htvnaS06xbftCu3yHwylvyFfY6mdCin7xvQCu5UunLU=;
+        b=reQriCjpeh0bECAOCqSC92W62u2o2U4yXnN9lreUyOcOD+kIQEBP1suYZviGOgN924
+         89GCVQLnIIU/6ID8nJ2BU5Gv35pEUKZdiN9xTjO9N//0eif3CmvccAowFaHHhGXwZpXS
+         t3xw575vsbfRE3quXQLAwKfWQqE7qd4DiZnN0IBIsPpZ+lqTzcg0c3zzY2TFBG7QcAQ2
+         K5ZQIhvNIDZXvnPvX8gt9g1GQTFsFNtM+OXEhmCQkX8GnzExYGH439TMlcqmvcV0sy4l
+         /kzPa0Y2mdXBv59si503tvTOyJgvobvk/1wGI0Le6Rb2m3AcVzLiryRojZqDrzhWKfvz
+         wBhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1mfk9biFp9S/FpNoG60AhEA7qIqfszbbgEgZJMO2Oho=;
-        b=bl9toAUmY3N61TTE2IwqrhIAcepUf2NU5paWOwsS1tXv7ByWLG3RXsVHo9ebx9rbFI
-         p0FE46jQJaOunvzUVdgm1io1GmqJ8fEFLniYJfcoRbdpNtBwRvAZeU9hj12SReNzs6Xm
-         wkIakAaxnHfQlZaE4C/i98PSHoadqFSnThRK6rzAfCxni6G9X8556ZORHKMFmgtBfhJs
-         djmWXUVoi9mk7MHu6KKIQj2UNsA1w46h+L4ECJkZVcyjC1hgi2PxjSqg3DAWvm1iEpo+
-         /pEN27prirSqbe2xMIap2Ytc5+qcjUdBpgJ2S88pPEd6I0nXCWn5TyvZmNs/qtLSKNG9
-         aaFg==
-X-Gm-Message-State: APjAAAXOPeqBFkZhtNE3H2zMhIM9Rw60/lkq1ftvaeu4cQbSTXmpuLNb
-        rWM3uqY5ixwAZKyEKihS+RPHNA==
-X-Google-Smtp-Source: APXvYqzR+4Aw4mkYhMt8HA0b3pmhI4hCfqydGWtfcDc+VHnpJ4zsB40+bKxuPFCr2ynKFErthnlvvA==
-X-Received: by 2002:a37:f602:: with SMTP id y2mr7841207qkj.136.1556970424077;
-        Sat, 04 May 2019 04:47:04 -0700 (PDT)
+        bh=htvnaS06xbftCu3yHwylvyFfY6mdCin7xvQCu5UunLU=;
+        b=JLH4jFlHkYuVZaJ23LXVJZ5UdXdHbayundRRrPbuL3NMIdaLZjfFmYtf6n2GFEYK1/
+         zqRZeLlvSKgd/1heD4t86rCNFV0glVHaHq25EBLVGR35RKYnLAwKpFb+unymgC3zWqyV
+         LLDVKm9G05XaupsvR3e09PtZFib3BWtq3CrRIIXBRPs72K9O7l6iD2PNhM5GnxiI4bj2
+         cFGmstN1hrjVA2Wnv+uA10ukil64WtlNDwaFPcjHzEePKsW2m3QtIgnfcHVdprfPpaMR
+         9xpsFewDebHDTH7yKXQdLtS2PKIa6t4AgWSYNgeEQGNwiU9ikXA7SUPBqdTLSeRLmN1N
+         +IWg==
+X-Gm-Message-State: APjAAAVaZFouLQXhG/5aKOk9YH4y+dVx4rHDB4ZQyhcfuMkpnqGSulKf
+        KxlhtJolG5YoaTRo0p1muesG+g==
+X-Google-Smtp-Source: APXvYqzoWb2v3SQmMTTUt+hsnpy9hGRF2R0KSLRfZrmMTDoaR5k0oezp7tITwdqZ7gVtuqsFvKWGOQ==
+X-Received: by 2002:aed:22ec:: with SMTP id q41mr6615993qtc.17.1556970426196;
+        Sat, 04 May 2019 04:47:06 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g19sm2847276qkk.17.2019.05.04.04.47.02
+        by smtp.gmail.com with ESMTPSA id g19sm2847276qkk.17.2019.05.04.04.47.04
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 04:47:03 -0700 (PDT)
+        Sat, 04 May 2019 04:47:05 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -53,9 +53,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         Pieter Jansen van Vuuren 
         <pieter.jansenvanvuuren@netronome.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 02/13] net/sched: use the hardware intermediate representation for matchall
-Date:   Sat,  4 May 2019 04:46:17 -0700
-Message-Id: <20190504114628.14755-3-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 03/13] mlxsw: use intermediate representation for matchall offload
+Date:   Sat,  4 May 2019 04:46:18 -0700
+Message-Id: <20190504114628.14755-4-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190504114628.14755-1-jakub.kicinski@netronome.com>
 References: <20190504114628.14755-1-jakub.kicinski@netronome.com>
@@ -68,95 +68,141 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
 
-Extends matchall offload to make use of the hardware intermediate
-representation. More specifically, this patch moves the native TC
-actions in cls_matchall offload to the newer flow_action
-representation. This ultimately allows us to avoid a direct
-dependency on native TC actions for matchall.
+Updates the Mellanox spectrum driver to use the newer intermediate
+representation for flow actions in matchall offloads.
 
 Signed-off-by: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- include/net/pkt_cls.h    |  1 +
- net/sched/cls_matchall.c | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+)
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 38 +++++++++----------
+ include/net/flow_offload.h                    | 11 ++++++
+ 2 files changed, 30 insertions(+), 19 deletions(-)
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index d5e7a1af346f..c852ed502cc6 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -789,6 +789,7 @@ enum tc_matchall_command {
- struct tc_cls_matchall_offload {
- 	struct tc_cls_common_offload common;
- 	enum tc_matchall_command command;
-+	struct flow_rule *rule;
- 	struct tcf_exts *exts;
- 	unsigned long cookie;
- };
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index 46982b4ea70a..8d135ecab098 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -89,12 +89,30 @@ static int mall_replace_hw_filter(struct tcf_proto *tp,
- 	bool skip_sw = tc_skip_sw(head->flags);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index a6c6d5ee9ead..f594c6a913ec 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -1269,21 +1269,19 @@ mlxsw_sp_port_mall_tc_entry_find(struct mlxsw_sp_port *port,
+ static int
+ mlxsw_sp_port_add_cls_matchall_mirror(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				      struct mlxsw_sp_port_mall_mirror_tc_entry *mirror,
+-				      const struct tc_action *a,
++				      const struct flow_action_entry *act,
+ 				      bool ingress)
+ {
+ 	enum mlxsw_sp_span_type span_type;
+-	struct net_device *to_dev;
+ 
+-	to_dev = tcf_mirred_dev(a);
+-	if (!to_dev) {
++	if (!act->dev) {
+ 		netdev_err(mlxsw_sp_port->dev, "Could not find requested device\n");
+ 		return -EINVAL;
+ 	}
+ 
+ 	mirror->ingress = ingress;
+ 	span_type = ingress ? MLXSW_SP_SPAN_INGRESS : MLXSW_SP_SPAN_EGRESS;
+-	return mlxsw_sp_span_mirror_add(mlxsw_sp_port, to_dev, span_type,
++	return mlxsw_sp_span_mirror_add(mlxsw_sp_port, act->dev, span_type,
+ 					true, &mirror->span_id);
+ }
+ 
+@@ -1302,7 +1300,7 @@ mlxsw_sp_port_del_cls_matchall_mirror(struct mlxsw_sp_port *mlxsw_sp_port,
+ static int
+ mlxsw_sp_port_add_cls_matchall_sample(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				      struct tc_cls_matchall_offload *cls,
+-				      const struct tc_action *a,
++				      const struct flow_action_entry *act,
+ 				      bool ingress)
+ {
+ 	int err;
+@@ -1313,18 +1311,18 @@ mlxsw_sp_port_add_cls_matchall_sample(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		netdev_err(mlxsw_sp_port->dev, "sample already active\n");
+ 		return -EEXIST;
+ 	}
+-	if (tcf_sample_rate(a) > MLXSW_REG_MPSC_RATE_MAX) {
++	if (act->sample.rate > MLXSW_REG_MPSC_RATE_MAX) {
+ 		netdev_err(mlxsw_sp_port->dev, "sample rate not supported\n");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+ 	rcu_assign_pointer(mlxsw_sp_port->sample->psample_group,
+-			   tcf_sample_psample_group(a));
+-	mlxsw_sp_port->sample->truncate = tcf_sample_truncate(a);
+-	mlxsw_sp_port->sample->trunc_size = tcf_sample_trunc_size(a);
+-	mlxsw_sp_port->sample->rate = tcf_sample_rate(a);
++			   act->sample.psample_group);
++	mlxsw_sp_port->sample->truncate = act->sample.truncate;
++	mlxsw_sp_port->sample->trunc_size = act->sample.trunc_size;
++	mlxsw_sp_port->sample->rate = act->sample.rate;
+ 
+-	err = mlxsw_sp_port_sample_set(mlxsw_sp_port, true, tcf_sample_rate(a));
++	err = mlxsw_sp_port_sample_set(mlxsw_sp_port, true, act->sample.rate);
+ 	if (err)
+ 		goto err_port_sample_set;
+ 	return 0;
+@@ -1350,10 +1348,10 @@ static int mlxsw_sp_port_add_cls_matchall(struct mlxsw_sp_port *mlxsw_sp_port,
+ {
+ 	struct mlxsw_sp_port_mall_tc_entry *mall_tc_entry;
+ 	__be16 protocol = f->common.protocol;
+-	const struct tc_action *a;
++	struct flow_action_entry *act;
  	int err;
  
-+	cls_mall.rule =	flow_rule_alloc(tcf_exts_num_actions(&head->exts));
-+	if (!cls_mall.rule)
-+		return -ENOMEM;
-+
- 	tc_cls_common_offload_init(&cls_mall.common, tp, head->flags, extack);
- 	cls_mall.command = TC_CLSMATCHALL_REPLACE;
- 	cls_mall.exts = &head->exts;
- 	cls_mall.cookie = cookie;
+-	if (!tcf_exts_has_one_action(f->exts)) {
++	if (!flow_offload_has_one_action(&f->rule->action)) {
+ 		netdev_err(mlxsw_sp_port->dev, "only singular actions are supported\n");
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -1363,19 +1361,21 @@ static int mlxsw_sp_port_add_cls_matchall(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		return -ENOMEM;
+ 	mall_tc_entry->cookie = f->cookie;
  
-+	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
-+	if (err) {
-+		kfree(cls_mall.rule);
-+		mall_destroy_hw_filter(tp, head, cookie, NULL);
-+		if (skip_sw)
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to setup flow action");
-+		else
-+			err = 0;
-+
-+		return err;
-+	}
-+
- 	err = tc_setup_cb_call(block, TC_SETUP_CLSMATCHALL, &cls_mall, skip_sw);
-+	kfree(cls_mall.rule);
-+
- 	if (err < 0) {
- 		mall_destroy_hw_filter(tp, head, cookie, NULL);
- 		return err;
-@@ -272,13 +290,28 @@ static int mall_reoffload(struct tcf_proto *tp, bool add, tc_setup_cb_t *cb,
- 	if (tc_skip_hw(head->flags))
- 		return 0;
+-	a = tcf_exts_first_action(f->exts);
++	act = &f->rule->action.entries[0];
  
-+	cls_mall.rule =	flow_rule_alloc(tcf_exts_num_actions(&head->exts));
-+	if (!cls_mall.rule)
-+		return -ENOMEM;
-+
- 	tc_cls_common_offload_init(&cls_mall.common, tp, head->flags, extack);
- 	cls_mall.command = add ?
- 		TC_CLSMATCHALL_REPLACE : TC_CLSMATCHALL_DESTROY;
- 	cls_mall.exts = &head->exts;
- 	cls_mall.cookie = (unsigned long)head;
+-	if (is_tcf_mirred_egress_mirror(a) && protocol == htons(ETH_P_ALL)) {
++	if (act->id == FLOW_ACTION_MIRRED && protocol == htons(ETH_P_ALL)) {
+ 		struct mlxsw_sp_port_mall_mirror_tc_entry *mirror;
  
-+	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
-+	if (err) {
-+		kfree(cls_mall.rule);
-+		if (add && tc_skip_sw(head->flags)) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to setup flow action");
-+			return err;
-+		}
-+	}
+ 		mall_tc_entry->type = MLXSW_SP_PORT_MALL_MIRROR;
+ 		mirror = &mall_tc_entry->mirror;
+ 		err = mlxsw_sp_port_add_cls_matchall_mirror(mlxsw_sp_port,
+-							    mirror, a, ingress);
+-	} else if (is_tcf_sample(a) && protocol == htons(ETH_P_ALL)) {
++							    mirror, act,
++							    ingress);
++	} else if (act->id == FLOW_ACTION_SAMPLE &&
++		   protocol == htons(ETH_P_ALL)) {
+ 		mall_tc_entry->type = MLXSW_SP_PORT_MALL_SAMPLE;
+ 		err = mlxsw_sp_port_add_cls_matchall_sample(mlxsw_sp_port, f,
+-							    a, ingress);
++							    act, ingress);
+ 	} else {
+ 		err = -EOPNOTSUPP;
+ 	}
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 9a6c89b2c2bb..3bf67dd64be5 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -177,6 +177,17 @@ static inline bool flow_action_has_entries(const struct flow_action *action)
+ 	return action->num_entries;
+ }
+ 
++/**
++ * flow_action_has_one_action() - check if exactly one action is present
++ * @action: tc filter flow offload action
++ *
++ * Returns true if exactly one action is present.
++ */
++static inline bool flow_offload_has_one_action(const struct flow_action *action)
++{
++	return action->num_entries == 1;
++}
 +
- 	err = cb(TC_SETUP_CLSMATCHALL, &cls_mall, cb_priv);
-+	kfree(cls_mall.rule);
-+
- 	if (err) {
- 		if (add && tc_skip_sw(head->flags))
- 			return err;
+ #define flow_action_for_each(__i, __act, __actions)			\
+         for (__i = 0, __act = &(__actions)->entries[0]; __i < (__actions)->num_entries; __act = &(__actions)->entries[++__i])
+ 
 -- 
 2.21.0
 
