@@ -2,101 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDC2413864
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 11:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AE4513872
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 11:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726529AbfEDJKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 05:10:13 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:45928 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725850AbfEDJKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 05:10:13 -0400
-Received: by mail-pf1-f196.google.com with SMTP id e24so4109490pfi.12;
-        Sat, 04 May 2019 02:10:13 -0700 (PDT)
+        id S1726720AbfEDJdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 05:33:16 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40831 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725823AbfEDJdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 05:33:16 -0400
+Received: by mail-pg1-f194.google.com with SMTP id d31so3932552pgl.7;
+        Sat, 04 May 2019 02:33:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=weyn+CHVWujXbQhxQpPXY+MmlPD3OaJ4CkltxPjfrS4=;
-        b=GX1wUbavt4/yeinpEnt7G2fmTCdYJ9kThtfe5FiGkRtqRpYj0PH5HJUNhAxuG+G0PO
-         Lgn+96yNkQ8xZNxbYtEElcrlGz49Ze6NAzDamdrDNFjxCIYe9wnMZDW9JUiFzLRXU6Zg
-         RLdi6HBpjD0EcKxEf6Hr2pA5yOeoHR3uPcOBbq5L0mUE28iwCq8din3Wyn+IhRFEcFUY
-         4Zex3MuxV0laRfO7Xz7VWlI3cyI8m4LedyLp+iHhmXzW4ay4CLzGfj4gVZWsn2KPRn8c
-         o2GNGL/sUpN2sjq0E893V2hmsWcnwnfvKQI+2ypviuDGHRcqChtOT+2iuOZORaJcfLZV
-         UB6A==
+        bh=o4j1T5yZ8t1V9WsJtSUZ/pyrVijvIYHALD8xyZnCv2E=;
+        b=SDHqbOWQEYpiZtXu9miV/f1WNH8j3fcQaHDOtq5uS8LwdVNSkLhLyyx36zJAg7RCmr
+         Inxs90oOWKzevhvzRfjiCRvTeYB34gF8BrjRgP7/TViod7RwfEnJQKWlKT8ep+mmdPwU
+         CPNPN0j1XADrukqawuWKSDKXo+ZFysVq8G3HNEoGkFSlrwJ7f0/aFG9IhZIVcl22JeCh
+         JYVj32eXCfvrIH8YtEoUGNLFjUaT21ibQ5OTawXZaYy5/uuwqJ9pVp92ZsoAPygPBCXB
+         s0EDWtYiWny6ZgrmEEDVneEG5uC0rUzlVsfhH3BLAPcm47fkQ6T8KyveADPztz9Bggu7
+         TYHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=weyn+CHVWujXbQhxQpPXY+MmlPD3OaJ4CkltxPjfrS4=;
-        b=bDNSq2yk4PrFCo687XuZ3q0v56N3jb8O3QOJUbs/7vA1kvLgFYShAJIuBdK+VBmz4G
-         IFihM0Mjxb64WPMBcqVeRJvGJhd2P7gxbhpSApoI/edWIxuRTqLE1tlr4cxslIr1QPRt
-         /o/l40yCFJWv/ltGL9E/fU2rQyYmn9ZDhtCR8JhBDzR/zS4kxlVvqDB4eGVCHlNhMQKN
-         jIqeYMyegTohUXDhUzOQJasm9uBAd6u7ziNRfm/evYUmPnGavtay4sfPf0wQuolOmP7J
-         tV0NIBCORzlaEjKTMvYtb1RLizvv/cmz+dzIUs32APlFWYhKlh6l3AJjWHnzwlD8+KVb
-         b3mg==
-X-Gm-Message-State: APjAAAWItNaxtukoDY+T7OO8PvlhEnWkr/9eNCzSMgahzlSPxb8G+6x+
-        GAF53849mPCvGncQW6s4Okc=
-X-Google-Smtp-Source: APXvYqzQaP3Vs7X9Cum2Z7PgW42q0Cahgu53Yir7dPOIiaVQSVyphkycH/dr0MPdOVXn3iWNrPWxig==
-X-Received: by 2002:aa7:8252:: with SMTP id e18mr17944696pfn.105.1556961012702;
-        Sat, 04 May 2019 02:10:12 -0700 (PDT)
+        bh=o4j1T5yZ8t1V9WsJtSUZ/pyrVijvIYHALD8xyZnCv2E=;
+        b=KsG50sgGCbINc04GRIFsehsmWMc1E6tK1BsJg9k1oVs+P5KmC6hmEydEEbPGzxtgdA
+         AO1zCG4JiTomG9+BP1ZzdHHMXMK6tyF7ZZ2d0Prp9b3Hp1wkqnz5MwLFVpr4KolHnvok
+         0MpKV58pXhF5shJfeTponh8rg0go25OwQ9mCDQMmBd3ddEVq/ZSJZ+pecR9Nw98wnxj2
+         kTTX2okVCayubyDilZ/kvk0Xeke+wkR3giW/PZQ8sRJqxxCdy32K9tLyox27sh9Oqj24
+         GN/IMBl4Jy+rvp8NvBVb3DxkuZb6MH7rztp13al3V9JRvfyLmKA+hjycXFHnzp7a0Pb3
+         YECg==
+X-Gm-Message-State: APjAAAUN/IjUEEUx1+x6MGMZQHK72bt6RoLs283yl7f3rVHHATmM5/tX
+        k84E/xHwQFrgSQvV7GIgoSQ=
+X-Google-Smtp-Source: APXvYqzV4He6PXMEm+3iAAIH0Opk3nip8WWLlYkb+jO2QDLwqHbCyPYdLwu7oQ3tzh6qUUhnW3i9Sw==
+X-Received: by 2002:a63:5057:: with SMTP id q23mr17508361pgl.30.1556962394911;
+        Sat, 04 May 2019 02:33:14 -0700 (PDT)
 Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
-        by smtp.gmail.com with ESMTPSA id 19sm9225490pfs.104.2019.05.04.02.10.09
+        by smtp.gmail.com with ESMTPSA id j22sm6066243pfi.139.2019.05.04.02.33.11
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 02:10:11 -0700 (PDT)
+        Sat, 04 May 2019 02:33:14 -0700 (PDT)
 From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     kvalo@codeaurora.org, davem@davemloft.net,
-        colin.king@canonical.com, yuehaibing@huawei.com
-Cc:     linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] net: wireless: b43: Avoid possible double calls to b43_one_core_detach()
-Date:   Sat,  4 May 2019 17:10:00 +0800
-Message-Id: <20190504091000.18665-1-baijiaju1990@gmail.com>
+To:     johannes.berg@intel.com, emmanuel.grumbach@intel.com,
+        luciano.coelho@intel.com, linuxwifi@intel.com,
+        kvalo@codeaurora.org, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: wireless: iwlwifi: Fix double-free problems in iwl_req_fw_callback()
+Date:   Sat,  4 May 2019 17:33:05 +0800
+Message-Id: <20190504093305.19360-1-baijiaju1990@gmail.com>
 X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In b43_request_firmware(), when ieee80211_register_hw() fails,
-b43_one_core_detach() is called. In b43_bcma_remove() and
-b43_ssb_remove(), b43_one_core_detach() is called again. In this case, 
-null-pointer dereferences and double-free problems can occur when 
-the driver is removed.
+In the error handling code of iwl_req_fw_callback(), iwl_dealloc_ucode()
+is called to free data. In iwl_drv_stop(), iwl_dealloc_ucode() is called
+again, which can cause double-free problems.
 
-To fix this bug, the call to b43_one_core_detach() in
-b43_request_firmware() is deleted.
+To fix this bug, the call to iwl_dealloc_ucode() in
+iwl_req_fw_callback() is deleted.
 
 This bug is found by a runtime fuzzing tool named FIZZER written by us.
 
 Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 ---
- drivers/net/wireless/broadcom/b43/main.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43/main.c b/drivers/net/wireless/broadcom/b43/main.c
-index 74be3c809225..e666a472a0da 100644
---- a/drivers/net/wireless/broadcom/b43/main.c
-+++ b/drivers/net/wireless/broadcom/b43/main.c
-@@ -2610,18 +2610,13 @@ static void b43_request_firmware(struct work_struct *work)
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+index 689a65b11cc3..4fd1737d768b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+@@ -1579,7 +1579,6 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
+ 	goto free;
  
- 	err = ieee80211_register_hw(wl->hw);
- 	if (err)
--		goto err_one_core_detach;
-+		goto out;
- 	wl->hw_registered = true;
- 	b43_leds_register(wl->current_dev);
- 
- 	/* Register HW RNG driver */
- 	b43_rng_init(wl);
- 
--	goto out;
--
--err_one_core_detach:
--	b43_one_core_detach(dev->dev);
--
- out:
- 	kfree(ctx);
- }
+  out_free_fw:
+-	iwl_dealloc_ucode(drv);
+ 	release_firmware(ucode_raw);
+  out_unbind:
+ 	complete(&drv->request_firmware_complete);
 -- 
 2.17.0
 
