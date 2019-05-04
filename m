@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACBB513C50
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 01:54:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FA4A13C51
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 01:54:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727399AbfEDXyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 19:54:36 -0400
+        id S1727203AbfEDXyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 19:54:35 -0400
 Received: from mga05.intel.com ([192.55.52.43]:32555 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727321AbfEDXyb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726846AbfEDXyb (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 4 May 2019 19:54:31 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,7 +17,7 @@ Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 May 2019 16:49:30 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.60,431,1549958400"; 
-   d="scan'208";a="139994659"
+   d="scan'208";a="139994662"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga008.jf.intel.com with ESMTP; 04 May 2019 16:49:30 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -27,9 +27,9 @@ Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
         Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 07/15] ice: Always free/allocate q_vectors
-Date:   Sat,  4 May 2019 16:49:21 -0700
-Message-Id: <20190504234929.3005-8-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 08/15] ice: Refactor getting/setting coalesce
+Date:   Sat,  4 May 2019 16:49:22 -0700
+Message-Id: <20190504234929.3005-9-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190504234929.3005-1-jeffrey.t.kirsher@intel.com>
 References: <20190504234929.3005-1-jeffrey.t.kirsher@intel.com>
@@ -42,129 +42,234 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Brett Creeley <brett.creeley@intel.com>
 
-Currently when probing/removing the driver we allocate/deallocate
-each vsi->q_vectors array in ice_vsi_alloc_arrays() and
-ice_vsi_free_arrays() respectively. However, we don't do this
-during the reset and VSI rebuild flow. This is inconsistent
-and unnecessary to have a difference between the two flows.
+Currently if the driver has an uneven amount of Rx/Tx queues
+setting the coalesce settings through ethtool will result in
+an error. This is happening because in the setting coalesce
+flow we are reporting an error if either Rx or Tx fails.
 
-This patch makes the change to always allocate/deallocate the
-vsi->q_vectors array regardless of the driver flow we are in.
+Also, the flow for setting/getting per_q_coalesce and
+setting/getting coalesce settings for the entire device
+is different.
 
-Also, update the comment for ice_vsi_free_arrays() to be more
-descriptive.
+Fix these issues by adding one function, ice_set_q_coalesce(),
+and another, ice_get_q_coalesce(), that both getting/setting
+per_q and entire device coalesce can use. This makes handling
+the error cases generic between the two flows and simplifies
+__ice_set_coalesce() and __ice_get_coalesce().
+
+Also, add a header comment to __ice_set_coalesce().
 
 Signed-off-by: Brett Creeley <brett.creeley@intel.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 34 ++++++++++--------------
- 1 file changed, 14 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 152 ++++++++++++-------
+ 1 file changed, 93 insertions(+), 59 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index caa00e8873ec..7a88bf639376 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -232,12 +232,11 @@ static int ice_vsi_ctrl_rx_rings(struct ice_vsi *vsi, bool ena)
- /**
-  * ice_vsi_alloc_arrays - Allocate queue and vector pointer arrays for the VSI
-  * @vsi: VSI pointer
-- * @alloc_qvectors: a bool to specify if q_vectors need to be allocated.
-  *
-  * On error: returns error code (negative)
-  * On success: returns 0
-  */
--static int ice_vsi_alloc_arrays(struct ice_vsi *vsi, bool alloc_qvectors)
-+static int ice_vsi_alloc_arrays(struct ice_vsi *vsi)
- {
- 	struct ice_pf *pf = vsi->back;
- 
-@@ -252,15 +251,11 @@ static int ice_vsi_alloc_arrays(struct ice_vsi *vsi, bool alloc_qvectors)
- 	if (!vsi->rx_rings)
- 		goto err_rxrings;
- 
--	if (alloc_qvectors) {
--		/* allocate memory for q_vector pointers */
--		vsi->q_vectors = devm_kcalloc(&pf->pdev->dev,
--					      vsi->num_q_vectors,
--					      sizeof(*vsi->q_vectors),
--					      GFP_KERNEL);
--		if (!vsi->q_vectors)
--			goto err_vectors;
--	}
-+	/* allocate memory for q_vector pointers */
-+	vsi->q_vectors = devm_kcalloc(&pf->pdev->dev, vsi->num_q_vectors,
-+				      sizeof(*vsi->q_vectors), GFP_KERNEL);
-+	if (!vsi->q_vectors)
-+		goto err_vectors;
- 
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index 0bfe696d8077..08ec2f3c5977 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -2254,50 +2254,61 @@ ice_get_rc_coalesce(struct ethtool_coalesce *ec, enum ice_container_type c_type,
  	return 0;
- 
-@@ -389,16 +384,15 @@ void ice_vsi_delete(struct ice_vsi *vsi)
  }
  
++/**
++ * ice_get_q_coalesce - get a queue's ITR/INTRL (coalesce) settings
++ * @vsi: VSI associated to the queue for getting ITR/INTRL (coalesce) settings
++ * @ec: coalesce settings to program the device with
++ * @q_num: update ITR/INTRL (coalesce) settings for this queue number/index
++ *
++ * Return 0 on success, and negative under the following conditions:
++ * 1. Getting Tx or Rx ITR/INTRL (coalesce) settings failed.
++ * 2. The q_num passed in is not a valid number/index for Tx and Rx rings.
++ */
++static int
++ice_get_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
++{
++	if (q_num < vsi->num_rxq && q_num < vsi->num_txq) {
++		if (ice_get_rc_coalesce(ec, ICE_RX_CONTAINER,
++					&vsi->rx_rings[q_num]->q_vector->rx))
++			return -EINVAL;
++		if (ice_get_rc_coalesce(ec, ICE_TX_CONTAINER,
++					&vsi->tx_rings[q_num]->q_vector->tx))
++			return -EINVAL;
++	} else if (q_num < vsi->num_rxq) {
++		if (ice_get_rc_coalesce(ec, ICE_RX_CONTAINER,
++					&vsi->rx_rings[q_num]->q_vector->rx))
++			return -EINVAL;
++	} else if (q_num < vsi->num_txq) {
++		if (ice_get_rc_coalesce(ec, ICE_TX_CONTAINER,
++					&vsi->tx_rings[q_num]->q_vector->tx))
++			return -EINVAL;
++	} else {
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
  /**
-- * ice_vsi_free_arrays - clean up VSI resources
-+ * ice_vsi_free_arrays - De-allocate queue and vector pointer arrays for the VSI
-  * @vsi: pointer to VSI being cleared
-- * @free_qvectors: bool to specify if q_vectors should be deallocated
+  * __ice_get_coalesce - get ITR/INTRL values for the device
+  * @netdev: pointer to the netdev associated with this query
+  * @ec: ethtool structure to fill with driver's coalesce settings
+  * @q_num: queue number to get the coalesce settings for
++ *
++ * If the caller passes in a negative q_num then we return coalesce settings
++ * based on queue number 0, else use the actual q_num passed in.
   */
--static void ice_vsi_free_arrays(struct ice_vsi *vsi, bool free_qvectors)
-+static void ice_vsi_free_arrays(struct ice_vsi *vsi)
+ static int
+ __ice_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec,
+ 		   int q_num)
  {
- 	struct ice_pf *pf = vsi->back;
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+-	int tx = -EINVAL, rx = -EINVAL;
+ 	struct ice_vsi *vsi = np->vsi;
  
- 	/* free the ring and vector containers */
--	if (free_qvectors && vsi->q_vectors) {
-+	if (vsi->q_vectors) {
- 		devm_kfree(&pf->pdev->dev, vsi->q_vectors);
- 		vsi->q_vectors = NULL;
+-	if (q_num < 0) {
+-		rx = ice_get_rc_coalesce(ec, ICE_RX_CONTAINER,
+-					 &vsi->rx_rings[0]->q_vector->rx);
+-		tx = ice_get_rc_coalesce(ec, ICE_TX_CONTAINER,
+-					 &vsi->tx_rings[0]->q_vector->tx);
+-
+-		goto update_coalesced_frames;
+-	}
+-
+-	if (q_num < vsi->num_rxq && q_num < vsi->num_txq) {
+-		rx = ice_get_rc_coalesce(ec, ICE_RX_CONTAINER,
+-					 &vsi->rx_rings[q_num]->q_vector->rx);
+-		tx = ice_get_rc_coalesce(ec, ICE_TX_CONTAINER,
+-					 &vsi->tx_rings[q_num]->q_vector->tx);
+-	} else if (q_num < vsi->num_rxq) {
+-		rx = ice_get_rc_coalesce(ec, ICE_RX_CONTAINER,
+-					 &vsi->rx_rings[q_num]->q_vector->rx);
+-	} else if (q_num < vsi->num_txq) {
+-		tx = ice_get_rc_coalesce(ec, ICE_TX_CONTAINER,
+-					 &vsi->tx_rings[q_num]->q_vector->tx);
+-	} else {
+-		/* q_num is invalid for both Rx and Tx queues */
+-		return -EINVAL;
+-	}
++	if (q_num < 0)
++		q_num = 0;
+ 
+-update_coalesced_frames:
+-	/* either q_num is invalid for both Rx and Tx queues or setting coalesce
+-	 * failed completely
+-	 */
+-	if (tx && rx)
++	if (ice_get_q_coalesce(vsi, ec, q_num))
+ 		return -EINVAL;
+ 
+ 	if (q_num < vsi->num_txq)
+@@ -2423,54 +2434,77 @@ ice_set_rc_coalesce(enum ice_container_type c_type, struct ethtool_coalesce *ec,
+ 	return 0;
+ }
+ 
++/**
++ * ice_set_q_coalesce - set a queue's ITR/INTRL (coalesce) settings
++ * @vsi: VSI associated to the queue that need updating
++ * @ec: coalesce settings to program the device with
++ * @q_num: update ITR/INTRL (coalesce) settings for this queue number/index
++ *
++ * Return 0 on success, and negative under the following conditions:
++ * 1. Setting Tx or Rx ITR/INTRL (coalesce) settings failed.
++ * 2. The q_num passed in is not a valid number/index for Tx and Rx rings.
++ */
++static int
++ice_set_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
++{
++	if (q_num < vsi->num_rxq && q_num < vsi->num_txq) {
++		if (ice_set_rc_coalesce(ICE_RX_CONTAINER, ec,
++					&vsi->rx_rings[q_num]->q_vector->rx,
++					vsi))
++			return -EINVAL;
++
++		if (ice_set_rc_coalesce(ICE_TX_CONTAINER, ec,
++					&vsi->tx_rings[q_num]->q_vector->tx,
++					vsi))
++			return -EINVAL;
++	} else if (q_num < vsi->num_rxq) {
++		if (ice_set_rc_coalesce(ICE_RX_CONTAINER, ec,
++					&vsi->rx_rings[q_num]->q_vector->rx,
++					vsi))
++			return -EINVAL;
++	} else if (q_num < vsi->num_txq) {
++		if (ice_set_rc_coalesce(ICE_TX_CONTAINER, ec,
++					&vsi->tx_rings[q_num]->q_vector->tx,
++					vsi))
++			return -EINVAL;
++	} else {
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++/**
++ * __ice_set_coalesce - set ITR/INTRL values for the device
++ * @netdev: pointer to the netdev associated with this query
++ * @ec: ethtool structure to fill with driver's coalesce settings
++ * @q_num: queue number to get the coalesce settings for
++ *
++ * If the caller passes in a negative q_num then we set the coalesce settings
++ * for all Tx/Rx queues, else use the actual q_num passed in.
++ */
+ static int
+ __ice_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec,
+ 		   int q_num)
+ {
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+-	int rx = -EINVAL, tx = -EINVAL;
+ 	struct ice_vsi *vsi = np->vsi;
+ 
+ 	if (q_num < 0) {
+ 		int i;
+ 
+ 		ice_for_each_q_vector(vsi, i) {
+-			struct ice_q_vector *q_vector = vsi->q_vectors[i];
+-
+-			if (ice_set_rc_coalesce(ICE_RX_CONTAINER, ec,
+-						&q_vector->rx, vsi) ||
+-			    ice_set_rc_coalesce(ICE_TX_CONTAINER, ec,
+-						&q_vector->tx, vsi))
++			if (ice_set_q_coalesce(vsi, ec, i))
+ 				return -EINVAL;
+ 		}
+-
+ 		goto set_work_lmt;
  	}
-@@ -446,7 +440,7 @@ int ice_vsi_clear(struct ice_vsi *vsi)
- 	if (vsi->idx < pf->next_vsi)
- 		pf->next_vsi = vsi->idx;
  
--	ice_vsi_free_arrays(vsi, true);
-+	ice_vsi_free_arrays(vsi);
- 	mutex_unlock(&pf->sw_mutex);
- 	devm_kfree(&pf->pdev->dev, vsi);
+-	if (q_num < vsi->num_rxq && q_num < vsi->num_txq) {
+-		rx = ice_set_rc_coalesce(ICE_RX_CONTAINER, ec,
+-					 &vsi->rx_rings[q_num]->q_vector->rx,
+-					 vsi);
+-		tx = ice_set_rc_coalesce(ICE_TX_CONTAINER, ec,
+-					 &vsi->tx_rings[q_num]->q_vector->tx,
+-					 vsi);
+-	} else if (q_num < vsi->num_rxq) {
+-		rx = ice_set_rc_coalesce(ICE_RX_CONTAINER, ec,
+-					 &vsi->rx_rings[q_num]->q_vector->rx,
+-					 vsi);
+-	} else if (q_num < vsi->num_txq) {
+-		tx  = ice_set_rc_coalesce(ICE_TX_CONTAINER, ec,
+-					  &vsi->tx_rings[q_num]->q_vector->tx,
+-					  vsi);
+-	}
+-
+-	/* either q_num is invalid for both Rx and Tx queues or setting coalesce
+-	 * failed completely
+-	 */
+-	if (rx && tx)
++	if (ice_set_q_coalesce(vsi, ec, q_num))
+ 		return -EINVAL;
  
-@@ -512,14 +506,14 @@ ice_vsi_alloc(struct ice_pf *pf, enum ice_vsi_type type, u16 vf_id)
- 
- 	switch (vsi->type) {
- 	case ICE_VSI_PF:
--		if (ice_vsi_alloc_arrays(vsi, true))
-+		if (ice_vsi_alloc_arrays(vsi))
- 			goto err_rings;
- 
- 		/* Setup default MSIX irq handler for VSI */
- 		vsi->irq_handler = ice_msix_clean_rings;
- 		break;
- 	case ICE_VSI_VF:
--		if (ice_vsi_alloc_arrays(vsi, true))
-+		if (ice_vsi_alloc_arrays(vsi))
- 			goto err_rings;
- 		break;
- 	default:
-@@ -2809,7 +2803,7 @@ int ice_vsi_rebuild(struct ice_vsi *vsi)
- 	vsi->hw_base_vector = 0;
- 
- 	ice_vsi_clear_rings(vsi);
--	ice_vsi_free_arrays(vsi, false);
-+	ice_vsi_free_arrays(vsi);
- 	ice_dev_onetime_setup(&pf->hw);
- 	if (vsi->type == ICE_VSI_VF)
- 		ice_vsi_set_num_qs(vsi, vf->vf_id);
-@@ -2822,7 +2816,7 @@ int ice_vsi_rebuild(struct ice_vsi *vsi)
- 	if (ret < 0)
- 		goto err_vsi;
- 
--	ret = ice_vsi_alloc_arrays(vsi, false);
-+	ret = ice_vsi_alloc_arrays(vsi);
- 	if (ret < 0)
- 		goto err_vsi;
- 
+ set_work_lmt:
++
+ 	if (ec->tx_max_coalesced_frames_irq || ec->rx_max_coalesced_frames_irq)
+ 		vsi->work_lmt = max(ec->tx_max_coalesced_frames_irq,
+ 				    ec->rx_max_coalesced_frames_irq);
 -- 
 2.20.1
 
