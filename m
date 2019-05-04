@@ -2,62 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFD10136F3
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 03:58:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C54B136F6
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 04:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbfEDB6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 21:58:18 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:35797 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726059AbfEDB6S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 21:58:18 -0400
-Received: by mail-pf1-f193.google.com with SMTP id t87so3206839pfa.2
-        for <netdev@vger.kernel.org>; Fri, 03 May 2019 18:58:17 -0700 (PDT)
+        id S1726600AbfEDCA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 22:00:59 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34935 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726059AbfEDCA6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 22:00:58 -0400
+Received: by mail-pf1-f196.google.com with SMTP id t87so3209292pfa.2;
+        Fri, 03 May 2019 19:00:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MSyfRO9WNGP7Tny7UaKtQ/+Ug+1U/JbO+NvaM4dtqTQ=;
-        b=lGNHoz6B8PcWicybGpSo0FU7PwEn3/6TX8ZxgJjaCDPR4CUysNNywXQfzmX0ZwL7yQ
-         Bm18fupklI3fnTfeV1zcDoHiItxm3WJtcmuN+vA7haGF460ahBrWHnBe6ejHCtwlrrqj
-         uxEGvtWpS+QTnmFq0sDaYEXEZXhZho7heafHLKgQmz2fUbiDRJe4I6nvRgB9zpDwemIC
-         D2qL4tYmcz6g0Qf4816bR7OIzvT1FpeO7RtLZPDA1JsOilYbRL+QqtwUtM4/BDhawVZl
-         b6oWoqNMp4rf6W0obMeEONXH+2MJILsJXV+s34nndzayLQOLTiZBn3vsdmfjSumSJl49
-         S+eg==
+        bh=sW39XxwT6QxdvhUrZmgvyJobiq2om+iJ0XiMpRypi+g=;
+        b=rLp3wy5KDzDEvPVw74Y+MqMi9ViwScosjL3tXLCkJu1N2ysh07L4YXyvysO+5tebTy
+         zA7nrLg16SC7p8WcX6po5VTR4cOaioXJPCeVtiWT3y1mZLkR7lVlS+nZGkvVnD9zhJcv
+         qvK8iDtaoKb7vNCxbcAmpj/jSZklnm5cay1TLliQBSCs81dbanlAhF2rTSjrHM6j5Zr5
+         uFGkREMQdxtUYdCwsTQhCI/yfPx9hLeq5HsRv3j5Ue2Ey1cN+uSp02+94lZXai6/4eOH
+         pqIU1ZzNaMcqYo3r+7293R1PhYdSN/j7Fi6KY92s1O63buAXSkyNQK5GgPODroEgMv2G
+         Kd4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=MSyfRO9WNGP7Tny7UaKtQ/+Ug+1U/JbO+NvaM4dtqTQ=;
-        b=kQO0Zb5bxMgYFQ4CaqzfHIlpESbpmf2mZA0Axg+3tWNX1szvK6fKkDLEnLuKsxv64A
-         Yic87lV/WDApS/c+I4ObmiHnIYyU88iBoudlgq39Jbpj6/jtDaBQI8vxwH6XJ1A+mlK3
-         trh4Cdc3iJQQpkk1jUac3hjZNyQruCKC3DFXg/pCanaTVgZLlGoIJpwcEOYBRIztMapL
-         uem90TIvYeh4+OYxEqf1bZ13ytJnZ3Xehgv4AvJTQdRrJnFbMdhlBkwl/JhxN8kRErjF
-         kupf9yVz/c7KB4dzExd1t1O+0XgJPz1kLQSbSSKaVRLlxOjUFqepXPkxU3BNd6I/hXdm
-         YdUg==
-X-Gm-Message-State: APjAAAXxvxkdORejyVSHaCBC9qHTbiCJMueGGS3nH4ro9gmS6fp/DloN
-        KhrJnmzsUr90z7tI1JIy1nw=
-X-Google-Smtp-Source: APXvYqwDleeq2gDuck9E4CqwQdoo+LQKpTuA1FD6rFVM3XUnXchWbfS3JoR7VczfEtv9vNKE/7s1/A==
-X-Received: by 2002:a63:8242:: with SMTP id w63mr14877129pgd.169.1556935096424;
-        Fri, 03 May 2019 18:58:16 -0700 (PDT)
+        bh=sW39XxwT6QxdvhUrZmgvyJobiq2om+iJ0XiMpRypi+g=;
+        b=NHeXkMep6PVzPVGEIb0M+aRuNt+eZoCzY4O+3UgaqCRZmFwt2DCJBwCdjYuEK+ebLa
+         TS8sGKiNGLzfsbSocU8Au2LMnz+qZtMn6/c64IlKzx5JLcBNqXuWK8LzJ4pb00chWk0l
+         6R6ySSIt0Wjn3k9dEF7EfBocCmy6KkpOUrwXZJH0d8CgwI9g6q5Q3X/4YOU/YriRrQ2z
+         pKro5qqVxjb6b60ZwG8tnxMrx8RVV+bkND6trORJcWNt/zq6KLZc5QgPgBuMkMir+A8C
+         35tTIYrerMLHu8MU/01eLoYv+9KmEYoRqrqShKRkxGLgt4n0OV1xSn8UAqF9PvFUvyD+
+         gl+w==
+X-Gm-Message-State: APjAAAUCDk806EirkCVWiCpM7eiHLdDZLmIFXypSPFFWDcHF88Bj/125
+        KJvLHJGnVkIcSoA95ZC5T2NQhdum
+X-Google-Smtp-Source: APXvYqybv9eWUjV7PPH4WD029y5MbVvqkeaCkgFrqj8jVjI3TI5K6ELDl5flVVaTjzR+Y56s1Eh89g==
+X-Received: by 2002:a62:b411:: with SMTP id h17mr15529149pfn.61.1556935257555;
+        Fri, 03 May 2019 19:00:57 -0700 (PDT)
 Received: from [10.230.28.107] ([192.19.223.250])
-        by smtp.gmail.com with ESMTPSA id k191sm6657481pfc.151.2019.05.03.18.58.13
+        by smtp.gmail.com with ESMTPSA id n11sm3711061pgq.8.2019.05.03.19.00.53
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 May 2019 18:58:15 -0700 (PDT)
-Subject: Re: [PATCH net-next v2] net: dsa: mv88e6xxx: refine SMI support
-To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <20190503232822.23986-1-vivien.didelot@gmail.com>
+        Fri, 03 May 2019 19:00:56 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/9] net: dsa: Allow drivers to filter packets
+ they can decode source port from
+To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
+        andrew@lunn.ch, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190504011826.30477-1-olteanv@gmail.com>
+ <20190504011826.30477-4-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
-Message-ID: <f49798be-13e7-e5e1-d6dc-1570f4c0cfed@gmail.com>
-Date:   Fri, 3 May 2019 18:58:10 -0700
+Message-ID: <dcf251bc-ace1-4a3e-d500-54c916fcfdbb@gmail.com>
+Date:   Fri, 3 May 2019 19:00:52 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190503232822.23986-1-vivien.didelot@gmail.com>
+In-Reply-To: <20190504011826.30477-4-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -68,18 +70,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 5/3/2019 4:28 PM, Vivien Didelot wrote:
-> The Marvell SOHO switches have several ways to access the internal
-> registers. One of them being the System Management Interface (SMI),
-> using the MDC and MDIO pins, with direct and indirect variants.
+On 5/3/2019 6:18 PM, Vladimir Oltean wrote:
+> Frames get processed by DSA and redirected to switch port net devices
+> based on the ETH_P_XDSA multiplexed packet_type handler found by the
+> network stack when calling eth_type_trans().
 > 
-> In preparation for adding support for other register accesses, move
-> the SMI code into its own files. At the same time, refine the code
-> to make it clear that the indirect variant is implemented using the
-> direct variant accessing only two registers for command and data.
+> The running assumption is that once the DSA .rcv function is called, DSA
+> is always able to decode the switch tag in order to change the skb->dev
+> from its master.
 > 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+> However there are tagging protocols (such as the new DSA_TAG_PROTO_SJA1105,
+> user of DSA_TAG_PROTO_8021Q) where this assumption is not completely
+> true, since switch tagging piggybacks on the absence of a vlan_filtering
+> bridge. Moreover, management traffic (BPDU, PTP) for this switch doesn't
+> rely on switch tagging, but on a different mechanism. So it would make
+> sense to at least be able to terminate that.
+> 
+> Having DSA receive traffic it can't decode would put it in an impossible
+> situation: the eth_type_trans() function would invoke the DSA .rcv(),
+> which could not change skb->dev, then eth_type_trans() would be invoked
+> again, which again would call the DSA .rcv, and the packet would never
+> be able to exit the DSA filter and would spiral in a loop until the
+> whole system dies.
+> 
+> This happens because eth_type_trans() doesn't actually look at the skb
+> (so as to identify a potential tag) when it deems it as being
+> ETH_P_XDSA. It just checks whether skb->dev has a DSA private pointer
+> installed (therefore it's a DSA master) and that there exists a .rcv
+> callback (everybody except DSA_TAG_PROTO_NONE has that). This is
+> understandable as there are many switch tags out there, and exhaustively
+> checking for all of them is far from ideal.
+> 
+> The solution lies in introducing a filtering function for each tagging
+> protocol. In the absence of a filtering function, all traffic is passed
+> to the .rcv DSA callback. The tagging protocol should see the filtering
+> function as a pre-validation that it can decode the incoming skb. The
+> traffic that doesn't match the filter will bypass the DSA .rcv callback
+> and be left on the master netdevice, which wasn't previously possible.
+
+I can't come up with a different solution either:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Maybe one day we will have in-kernel BPF filter for parsing DSA tags
+(similar to PTP) and then we can preserve the layering while leveraging
+the power of BPF!
 -- 
 Florian
