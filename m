@@ -2,124 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4623613700
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 04:11:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA29A13705
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 04:17:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727066AbfEDCLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 22:11:05 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34325 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726059AbfEDCLE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 22:11:04 -0400
-Received: by mail-wr1-f67.google.com with SMTP id e9so10028911wrc.1;
-        Fri, 03 May 2019 19:11:03 -0700 (PDT)
+        id S1726726AbfEDCRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 22:17:46 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36900 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726059AbfEDCRq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 22:17:46 -0400
+Received: by mail-pg1-f196.google.com with SMTP id e6so3598015pgc.4;
+        Fri, 03 May 2019 19:17:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yXnW8QwbRokk+qzSPvi3narjQ4Xryecxmsq/oRg84t0=;
-        b=rCsD4WyUm2f1tzHstzZYc9hNLYi5V4Ln+GhDX8ZckucOlbXRd48dZ2qLS8mp6K2hkw
-         Dsn0yrdFdl1prwClk6XGfSkFzUuULkS5m1NT905Jo54Sul0XOeQuZ9EY0HWblYYJI0tE
-         3e8XkpHPY6dxAGvUFCeRTyHB1aKW6IGQspT5XQEo2ZX86IJKTMtknlYICB9wcWRV0k0T
-         8aUh68GqAJHTHWY1USx8apGMq8my60Ye/Ix5iZ4jtc+tKKtxc4IrGcR4doO5pJ8A2vfS
-         ygDjfvIrpRVHma17OBJ2r7ylUJ4qsF6MVypFH1W4zvrY+Pbjguo3WnJVZbZ7oxkGOwPN
-         6l7w==
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FdFkjTtbV9VvfXaga3T7DcZNWEFcPMcBy5xwubcyVd8=;
+        b=LuSmqADsT8HEbFCPr60hbUACFBcY9mq7GeHgf9NPz+JbY8/KbwxafwZssgkoo0DbfO
+         yMkBaZdmI9xvGFEJgHF2blmBrzAf1PAzoLorVq33taC2y3mzFgvzsMgfFvqi5MPKAqpY
+         oT8VN+EUyFZrSrDPn6h3hdvz4BoEhJjM5VS+X/IsZkLML8/y5va/7mwAlC7Z39f5DjcV
+         tJ7gEoqnS8r4jbBWRfNBo6AQMVZGarlZqGzEoKG7KG4dfep8LgkpDml7eGjB6ZKM4ZSj
+         taMCxoOMyvZRNjvJEb8pfpdGI0MepIjWTjfztfvQGQK/n5ZWZmHIHtuUdc6mUownsuiB
+         zlzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yXnW8QwbRokk+qzSPvi3narjQ4Xryecxmsq/oRg84t0=;
-        b=I+W48221jn5lC5HARB/EaHjIs6DozcLOq1Gg2GfhmeK4P6DWycxOgEziWTNjZ/ok7e
-         o+PMWxpE5hbtDqSCKZOZabzLfydsPUEXNcdtUFkbMpoZHMZXCITSw8oJ3/a5na6LQYsQ
-         T7IsHkBfc+yH0ldo6GmAR2qdqMrXRluMa+AGlAycVVejRRaC4uzJc4VYdnGWiK+2imOs
-         9zVzjodFs1oqOHYLDgNo4Sy07KZFt7jrttDBJEek+sFGNh29OkZy4jZvm4nz6Tcc+U/X
-         VNF7brmpd1xMBcoaOmG26uwmU2dfkhyPI+xqs6YQs9Lt/zwlngaCCBPUg657/cyPcfTm
-         Bxag==
-X-Gm-Message-State: APjAAAVovBNFMeQe+5kbgwoqLLmK2AqueDpAGKEEjt0trvoFWSDHVWay
-        whAB89S34wmmyQZvrw2MSyeqoeOTYPO7TZUpVFs=
-X-Google-Smtp-Source: APXvYqyFhxLfsHmATpay3TS+w2UPXNeNQnnLd4sUyMCnq8H/uEaVcJfUGhmQIwy/Y5zu6gDngfLP4cU/zo0PFf4J9ao=
-X-Received: by 2002:adf:f84e:: with SMTP id d14mr9028645wrq.21.1556935863182;
- Fri, 03 May 2019 19:11:03 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FdFkjTtbV9VvfXaga3T7DcZNWEFcPMcBy5xwubcyVd8=;
+        b=I+9SOWQAiLQ4JUCkNI8WCOwMz6TWd7zgjEdT6cEkMjefzZVqH0psVIkjhWobgZKYsL
+         oQhj4XnpzHZJb8m80WV7ADIPu1T+mgMWY8qSh5kOp3gsV87L3uD7QbWAMBqe6A6cU6fa
+         P5lyb2vnx/7EtG2o/2jGeEzCOpNnMRVF59Z9JcJZCUI+TLGoGYWewaYVM5ZNTIaR3PKj
+         o6snIQp8xUKL158Xx4SFv8PgzeBw66QlVQRaRZz0ANqfA5EfDLSmyUW2qnplgCMgPFV2
+         9K9NOim53NHou6sFXJbyOLW+JfaYkjQm2PfXqD0h6zKtwQQEs3BWiNa51chx+iWlzc9y
+         3WOQ==
+X-Gm-Message-State: APjAAAUYo/CC72epGFJffRsTHu96SAYc/px9btVL0hPc6wcWvxmnBKmL
+        Z9dqvYPP9hD2qOURBVP8DEbINFxA
+X-Google-Smtp-Source: APXvYqz8guwzfg0TM6fOpf1KbWIIy59ZOHZrk9XDOLvF9YttJ1a4dxPlG1m2oZvqjvqx4XGYsGExqQ==
+X-Received: by 2002:aa7:9afc:: with SMTP id y28mr15761979pfp.101.1556936264629;
+        Fri, 03 May 2019 19:17:44 -0700 (PDT)
+Received: from [10.230.28.107] ([192.19.223.250])
+        by smtp.gmail.com with ESMTPSA id b14sm4322747pfi.92.2019.05.03.19.17.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 03 May 2019 19:17:43 -0700 (PDT)
+Subject: Re: [PATCH net-next 9/9] Documentation: net: dsa: sja1105: Add info
+ about supported traffic modes
+To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
+        andrew@lunn.ch, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190504011826.30477-1-olteanv@gmail.com>
+ <20190504011826.30477-10-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <a0b29ac4-7159-6ccf-9ad1-8193951be7ea@gmail.com>
+Date:   Fri, 3 May 2019 19:17:38 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190504011826.30477-1-olteanv@gmail.com> <20190504011826.30477-6-olteanv@gmail.com>
- <3232ef43-d568-0851-4511-6fe7c86d9e8a@gmail.com>
-In-Reply-To: <3232ef43-d568-0851-4511-6fe7c86d9e8a@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sat, 4 May 2019 05:10:52 +0300
-Message-ID: <CA+h21hppEwWT458brR+h_nVtb6jzpiWgTCU8SE4Hx_cFDksmRA@mail.gmail.com>
-Subject: Re: [PATCH net-next 5/9] net: dsa: Add support for deferred xmit
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     vivien.didelot@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190504011826.30477-10-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 4 May 2019 at 05:07, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 5/3/2019 6:18 PM, Vladimir Oltean wrote:
-> > Some hardware needs to take some convincing work in order to receive
-> > frames on the CPU port (such as the sja1105 which takes temporary L2
-> > forwarding rules over SPI that last for a single frame). Such work needs
-> > a sleepable context, and because the regular .ndo_start_xmit is atomic,
-> > this cannot be done in the tagger. So introduce a generic DSA mechanism
-> > that sets up a transmit skb queue and a workqueue for deferred
-> > transmission.
-> >
-> > The new driver callback (.port_deferred_xmit) is in dsa_switch and not
-> > in the tagger because the operations that require sleeping typically
-> > also involve interacting with the hardware, and not simply skb
-> > manipulations. Therefore having it there simplifies the structure a bit
-> > and makes it unnecessary to export functions from the driver to the
-> > tagger.
-> >
-> > The driver is responsible of calling dsa_enqueue_skb which transfers it
-> > to the master netdevice. This is so that it has a chance of performing
-> > some more work afterwards, such as cleanup or TX timestamping.
-> >
-> > To tell DSA that skb xmit deferral is required, I have thought about
-> > changing the return type of the tagger .xmit from struct sk_buff * into
-> > a enum dsa_tx_t that could potentially encode a DSA_XMIT_DEFER value.
-> >
-> > But the trailer tagger is reallocating every skb on xmit and therefore
-> > making a valid use of the pointer return value. So instead of reworking
-> > the API in complicated ways, right now a boolean property in the newly
-> > introduced DSA_SKB_CB is set.
-> >
-> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> > ---
->
-> [snip]
->
-> >  static inline struct dsa_port *dsa_slave_to_port(const struct net_device *dev)
-> >  {
-> >       struct dsa_slave_priv *p = netdev_priv(dev);
-> > diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> > index 8ad9bf957da1..cfb8cba6458c 100644
-> > --- a/net/dsa/slave.c
-> > +++ b/net/dsa/slave.c
-> > @@ -120,6 +120,9 @@ static int dsa_slave_close(struct net_device *dev)
-> >       struct net_device *master = dsa_slave_to_master(dev);
-> >       struct dsa_port *dp = dsa_slave_to_port(dev);
-> >
-> > +     cancel_work_sync(&dp->xmit_work);
-> > +     skb_queue_purge(&dp->xmit_queue);
-> > +
-> >       phylink_stop(dp->pl);
->
-> Don't you also need to do that for dsa_slave_suspend() in case the
-> xmit() raced with netif_device_detach() somehow?
->
->
-> --
-> Florian
 
-Hi Florian,
-Thanks for pointing that out. Not having power management ops I didn't
-even think about that.
--Vladimir
+
+On 5/3/2019 6:18 PM, Vladimir Oltean wrote:
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> ---
+>  Documentation/networking/dsa/sja1105.rst | 49 ++++++++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+> 
+> diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
+> index 7c13b40915c0..a70a04164d07 100644
+> --- a/Documentation/networking/dsa/sja1105.rst
+> +++ b/Documentation/networking/dsa/sja1105.rst
+> @@ -63,6 +63,38 @@ If that changed setting can be transmitted to the switch through the dynamic
+>  reconfiguration interface, it is; otherwise the switch is reset and
+>  reprogrammed with the updated static configuration.
+>  
+> +Traffic support
+> +===============
+> +
+> +The switches do not support switch tagging in hardware. But they do support
+> +customizing the TPID by which VLAN traffic is identified as such. The switch
+> +driver is leveraging ``CONFIG_NET_DSA_TAG_8021Q`` by requesting that special
+> +VLANs (with a custom TPID of ``ETH_P_EDSA`` instead of ``ETH_P_8021Q``) are
+> +installed on its ports when not in ``vlan_filtering`` mode. This does not
+> +interfere with the reception and transmission of real 802.1Q-tagged traffic,
+> +because the switch does no longer parse those packets as VLAN after the TPID
+> +change.
+> +The TPID is restored when ``vlan_filtering`` is requested by the user through
+> +the bridge layer, and general IP termination becomes no longer possible through
+> +the switch netdevices in this mode.
+> +
+> +The switches have two programmable filters for link-local destination MACs.
+> +These are used to trap BPDUs and PTP traffic to the master netdevice, and are
+> +further used to support STP and 1588 ordinary clock/boundary clock
+> +functionality.
+> +
+> +The following traffic modes are supported over the switch netdevices:
+> +
+> ++--------------------+------------+------------------+------------------+
+> +|                    | Standalone |   Bridged with   |   Bridged with   |
+> +|                    |    ports   | vlan_filtering 0 | vlan_filtering 1 |
+> ++====================+============+==================+==================+
+> +| Regular traffic    |     Yes    |       Yes        |  No (use master) |
+> ++--------------------+------------+------------------+------------------+
+
+Just to make sure I fully understand the limitation here and sorry for
+making you repeat it since I am sure you have explained it already.
+
+Let's say that I have a bridge with vlan_filtering=1 configured, and I
+assign an IP address to the bridge master device (as is a common thing
+with e.g.: SOHO routers), does that mean I cannot ping any stations
+behind that bridge at all?
+
+We used to have this problem with DSA master devices being a bridge
+member which was fixed a while ago by simply denying them a bridge join
+[1], would that be something to rework somehow here such that we can let
+your DSA master device join the bridge to continue delivering frames to
+the bridge master?
+
+[1]:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8db0a2ee2c6302a1dcbcdb93cb731dfc6c0cdb5e
+
+
+> +| Management traffic |     Yes    |       Yes        |       Yes        |
+> +|    (BPDU, PTP)     |            |                  |                  |
+> ++--------------------+------------+------------------+------------------+
+> +
+>  Switching features
+>  ==================
+>  
+> @@ -92,6 +124,23 @@ that VLAN awareness is global at the switch level is that once a bridge with
+>  ``vlan_filtering`` enslaves at least one switch port, the other un-bridged
+>  ports are no longer available for standalone traffic termination.
+>  
+> +Topology and loop detection through STP is supported.
+> +
+> +L2 FDB manipulation (add/delete/dump) is currently possible for the first
+> +generation devices. Aging time of FDB entries, as well as enabling fully static
+> +management (no address learning and no flooding of unknown traffic) is not yet
+> +configurable in the driver.
+> +
+> +Other notable features
+> +======================
+> +
+> +The switches have a PTP Hardware Clock that can be steered through SPI and used
+> +for timestamping management traffic on ingress and egress.
+> +Also, the T, Q and S devices support TTEthernet (an implementation of SAE
+> +AS6802 from TTTech), which is a set of Ethernet QoS enhancements somewhat
+> +similar in behavior to IEEE TSN (time-aware shaping, time-based policing).
+> +Configuring these features is currently not supported in the driver.
+> +
+>  Device Tree bindings and board design
+>  =====================================
+>  
+> 
+
+-- 
+Florian
