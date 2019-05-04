@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC6FC13989
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B301398A
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:47:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727537AbfEDLrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 07:47:11 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:40676 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727049AbfEDLrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:47:09 -0400
-Received: by mail-qk1-f195.google.com with SMTP id w20so5204341qka.7
-        for <netdev@vger.kernel.org>; Sat, 04 May 2019 04:47:08 -0700 (PDT)
+        id S1727547AbfEDLrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 07:47:14 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:40125 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727526AbfEDLrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:47:11 -0400
+Received: by mail-qt1-f195.google.com with SMTP id k24so5926370qtq.7
+        for <netdev@vger.kernel.org>; Sat, 04 May 2019 04:47:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IiULQ2GcMoMqnoewPPpD4vNptOziSzbX/olbMWY+w4c=;
-        b=uQ/DVUNJqsmN5ZWHsgBieKhrKeHzW9vKCAACoiVkx60r+lSZeKdLRfZeQrNnEPodIc
-         wCrXgbnO4wmHPip2z6HSrDF+OK6j4m52+g8T/3PGbtT+SR0SpM+tTSPBSKg7NBrjLxD8
-         1IbP3Z2nDDZz3KARwQtbwIe2P6/gARoTR3ku/CGQ0Zx3CtCUhFzisMW9Pze2b/rWTCdz
-         LvR8euaHakZ0v+xrGXZvzvw5SpmKx4YJDfn4zPetD/P32PER26CBmRcPUn3UxlzbQhcG
-         fH3LnLsEt+sHoldxbytaGOFhV/SEvnm7343v1WPqgN/MknnsUxQ1WUL1RLlUYyEHJ7Ju
-         aSCQ==
+        bh=0FmN1IvOzQdqB1BzI3W3JrFfwZDtEU0Z8ynQdAsMOFQ=;
+        b=FS+8zJKLYi7KUpIC7YZUVv8I/aXkVjsBG4GyjRDhaUEHhbkn7Po9r1t/sFqdOjPiWU
+         Ny/y3jgoZb3Bt3xLHAk+kZSXzwGQIR2cxsTvwtudti1IrZqqCojv3DRzSz9wRsf1FZFO
+         VD5VnSmz64v1ibWMTU+CnDzl4jZRRmyeWGD16/FH5jchHCq2QlOX8BkIAwzZatAR96SG
+         gt8uNgbneF0wE0Y79hx5DqURSQxKXDBw4eJRSYd0lHLQH9Yx26eImEaHS+elFe+lQGRz
+         3QyWAl4dWbpsYTkG34izxS50AVFPmN7U+J6A1UF9cTK+C9mnQOJPwfm2276dascAzCTG
+         qZ6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IiULQ2GcMoMqnoewPPpD4vNptOziSzbX/olbMWY+w4c=;
-        b=ds0rzdDHk7Hh04nfVeDcRuT26u6P9x197jA63MUCJARdGa99KqaL2WYJnq6HD8XWyR
-         qtM2RnXUeRNBTUo3yxgupGY2VNYh/oZWpTUhw+szofsJov/rYMz8QXWZ1c3Yy4Jaq6t6
-         VbKFU+lNPW6f6gsKo9Mx1mTCa4kJQe0i5dJnZFM18Ie6j0lU0BKrlCoRg69tEEZpmTze
-         y6KzdBvVm3Yc0micxL6U/puQ56L+a24OBwj7N3pNFmyaiGYDK0/gXt950M4k5yiNWE2C
-         FpPOJRI2tp2ftv0OJjEUfPLODGfCgrAVR+Iz0UgWIlB8G8loWJIc1jNrFrbpsvszvAeR
-         7zDA==
-X-Gm-Message-State: APjAAAWd8slHjmenbVDBfh8aVNg3CbdCylq+zoFcNOCQ+k94xm4H3aln
-        zlwymCQT7CZRBmwAY098lf5W0qdZDyDmVQ==
-X-Google-Smtp-Source: APXvYqyE/1CAP7SsknR8lpesGRJzcRRnRkyveoXa+dz7WgkYFmKiAEj99lqyT/zMiSybimeCQ5iJGw==
-X-Received: by 2002:a37:5a05:: with SMTP id o5mr11663257qkb.94.1556970428223;
-        Sat, 04 May 2019 04:47:08 -0700 (PDT)
+        bh=0FmN1IvOzQdqB1BzI3W3JrFfwZDtEU0Z8ynQdAsMOFQ=;
+        b=mgV8Sq5F3U5Ruzp2R2Mm8XLSjwYXEdYITsuCPSOUb2D2L09PRLTzTZ4i5TsRgGlcVc
+         AckMZDZF1JP/vd8jsqrfahqpCVYsXAyaew9nCtkedExg28jkLY/3wxjehcePIGkiTCmo
+         lyaynDpIZk3Dy66/DFiMJ/0tYtjpA5lPWkyvzi3zaWeGIcYk8v+YSrWycR71IylJ093Z
+         q6JzJda6u4hKsJbRpBU/9MVu0nUxGIYcjFdJ5VC2ybQvL2pCKX6ptor6dD1tzDPtuhF5
+         K+/nZL5CMNpEzoQICUpumyn4GHB5u4KxbXc4jhGy4GCbc5mk8sLmrsIsM0eUYywJJOzb
+         LV3A==
+X-Gm-Message-State: APjAAAWxkZvMlKsmVC5HlsYTFLSTNWjomFkByHoAWpPhECSQlPsv9cqL
+        afboC9XNwuzJ30Rd52FAk6Ra9g==
+X-Google-Smtp-Source: APXvYqzn5X+nGiAw2L9Wb8GmdnyJQKX+t2kq1kTlRrL1+NG9BE40NupJ0AUHDuvhq9o0XKnxsj2VLQ==
+X-Received: by 2002:aed:25f7:: with SMTP id y52mr13385866qtc.247.1556970430264;
+        Sat, 04 May 2019 04:47:10 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g19sm2847276qkk.17.2019.05.04.04.47.06
+        by smtp.gmail.com with ESMTPSA id g19sm2847276qkk.17.2019.05.04.04.47.08
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 04:47:07 -0700 (PDT)
+        Sat, 04 May 2019 04:47:09 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -53,9 +53,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         Pieter Jansen van Vuuren 
         <pieter.jansenvanvuuren@netronome.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 04/13] net/dsa: use intermediate representation for matchall offload
-Date:   Sat,  4 May 2019 04:46:19 -0700
-Message-Id: <20190504114628.14755-5-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 05/13] net/sched: remove unused functions for matchall offload
+Date:   Sat,  4 May 2019 04:46:20 -0700
+Message-Id: <20190504114628.14755-6-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190504114628.14755-1-jakub.kicinski@netronome.com>
 References: <20190504114628.14755-1-jakub.kicinski@netronome.com>
@@ -68,62 +68,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
 
-Updates dsa hardware switch handling infrastructure to use the newer
-intermediate representation for flow actions in matchall offloads.
+Cleanup unused functions and variables after porting to the newer
+intermediate representation.
 
 Signed-off-by: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- net/dsa/slave.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ include/net/pkt_cls.h    | 25 -------------------------
+ net/sched/cls_matchall.c |  2 --
+ 2 files changed, 27 deletions(-)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 8ad9bf957da1..6ce2fdb64db0 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -778,27 +778,25 @@ static int dsa_slave_add_cls_matchall(struct net_device *dev,
- 	struct dsa_mall_tc_entry *mall_tc_entry;
- 	__be16 protocol = cls->common.protocol;
- 	struct dsa_switch *ds = dp->ds;
--	struct net_device *to_dev;
--	const struct tc_action *a;
-+	struct flow_action_entry *act;
- 	struct dsa_port *to_dp;
- 	int err = -EOPNOTSUPP;
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index c852ed502cc6..2d0470661277 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -371,30 +371,6 @@ static inline bool tcf_exts_has_actions(struct tcf_exts *exts)
+ #endif
+ }
  
- 	if (!ds->ops->port_mirror_add)
- 		return err;
+-/**
+- * tcf_exts_has_one_action - check if exactly one action is present
+- * @exts: tc filter extensions handle
+- *
+- * Returns true if exactly one action is present.
+- */
+-static inline bool tcf_exts_has_one_action(struct tcf_exts *exts)
+-{
+-#ifdef CONFIG_NET_CLS_ACT
+-	return exts->nr_actions == 1;
+-#else
+-	return false;
+-#endif
+-}
+-
+-static inline struct tc_action *tcf_exts_first_action(struct tcf_exts *exts)
+-{
+-#ifdef CONFIG_NET_CLS_ACT
+-	return exts->actions[0];
+-#else
+-	return NULL;
+-#endif
+-}
+-
+ /**
+  * tcf_exts_exec - execute tc filter extensions
+  * @skb: socket buffer
+@@ -790,7 +766,6 @@ struct tc_cls_matchall_offload {
+ 	struct tc_cls_common_offload common;
+ 	enum tc_matchall_command command;
+ 	struct flow_rule *rule;
+-	struct tcf_exts *exts;
+ 	unsigned long cookie;
+ };
  
--	if (!tcf_exts_has_one_action(cls->exts))
-+	if (!flow_offload_has_one_action(&cls->rule->action))
- 		return err;
+diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
+index 8d135ecab098..87bff17ac782 100644
+--- a/net/sched/cls_matchall.c
++++ b/net/sched/cls_matchall.c
+@@ -95,7 +95,6 @@ static int mall_replace_hw_filter(struct tcf_proto *tp,
  
--	a = tcf_exts_first_action(cls->exts);
-+	act = &cls->rule->action.entries[0];
+ 	tc_cls_common_offload_init(&cls_mall.common, tp, head->flags, extack);
+ 	cls_mall.command = TC_CLSMATCHALL_REPLACE;
+-	cls_mall.exts = &head->exts;
+ 	cls_mall.cookie = cookie;
  
--	if (is_tcf_mirred_egress_mirror(a) && protocol == htons(ETH_P_ALL)) {
-+	if (act->id == FLOW_ACTION_MIRRED && protocol == htons(ETH_P_ALL)) {
- 		struct dsa_mall_mirror_tc_entry *mirror;
+ 	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
+@@ -297,7 +296,6 @@ static int mall_reoffload(struct tcf_proto *tp, bool add, tc_setup_cb_t *cb,
+ 	tc_cls_common_offload_init(&cls_mall.common, tp, head->flags, extack);
+ 	cls_mall.command = add ?
+ 		TC_CLSMATCHALL_REPLACE : TC_CLSMATCHALL_DESTROY;
+-	cls_mall.exts = &head->exts;
+ 	cls_mall.cookie = (unsigned long)head;
  
--		to_dev = tcf_mirred_dev(a);
--		if (!to_dev)
-+		if (!act->dev)
- 			return -EINVAL;
- 
--		if (!dsa_slave_dev_check(to_dev))
-+		if (!dsa_slave_dev_check(act->dev))
- 			return -EOPNOTSUPP;
- 
- 		mall_tc_entry = kzalloc(sizeof(*mall_tc_entry), GFP_KERNEL);
-@@ -809,7 +807,7 @@ static int dsa_slave_add_cls_matchall(struct net_device *dev,
- 		mall_tc_entry->type = DSA_PORT_MALL_MIRROR;
- 		mirror = &mall_tc_entry->mirror;
- 
--		to_dp = dsa_slave_to_port(to_dev);
-+		to_dp = dsa_slave_to_port(act->dev);
- 
- 		mirror->to_local_port = to_dp->index;
- 		mirror->ingress = ingress;
+ 	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
 -- 
 2.21.0
 
