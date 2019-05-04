@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E85B9136E8
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4CD136E7
 	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 03:19:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727129AbfEDBSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 May 2019 21:18:44 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:55965 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726714AbfEDBSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 21:18:43 -0400
-Received: by mail-wm1-f68.google.com with SMTP id y2so8720608wmi.5;
-        Fri, 03 May 2019 18:18:41 -0700 (PDT)
+        id S1727427AbfEDBTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 21:19:32 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:44714 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726622AbfEDBSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 May 2019 21:18:44 -0400
+Received: by mail-wr1-f68.google.com with SMTP id c5so9883047wrs.11;
+        Fri, 03 May 2019 18:18:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sQbUt0SGqYwRVaiqKgn2i3F7QMKYbh9JHG7KYJhy1+M=;
-        b=qOoLbGloqJNQkw9+f8BJhUrZR2VTLm+OItlWqzD45xQwVgdtDMU/6uoHLFvje1aSj1
-         MnRIjm8ZmE146746oLfWTulU0AzxD0GdyKzYDKxvDFGSDhs+tEK+yjoe7E5KRZ7LONTa
-         aLj7HSWOaPSTDxEMrpZL7/Bzm0n3Fm+NdUPIj7NN/alFamFVYFKLkF4T8FnnWDtRFZ1T
-         pO9RIA6iGsTpHi7LcydaiuJdiDihLohQIqGSuRBKTUqXRY4nSM/vpfBWcOF1iwnCcH9i
-         n+CQ1umzwzF/zvHIjqZKhkUyjUT+3AF9okJ70hkZCQlWDTiiy/ssYM3+jyT7dSXEa1LZ
-         odBQ==
+        bh=r3gWbU66Gb4F+ksq9kAmK2pxg5SekFLFxe9XHbpja70=;
+        b=h6nyEu8Olbvb1Bb0OZjlUr7rl+IwQ1HBFPh8JaEad/RcuwThjcXfqMBYNtuF0qiYE3
+         ubhQMzv6zVLJYfKWjGnALjx9XsboLvr3NZ5HasWmLV8x+WC8I8P8cxwZZng6sG6S9b6m
+         STduepBM+bWOpMRuBoBrR2ztC0TLd4jixLENnxxXgzoKrdgOn58GmNl1zDdA3c+DDAFz
+         QD1PXaMyHA1DwOnTwYCtlFPwlyQywZ8J66bWQ8DUlapjieem+xCfECr8NIUwSA0Lchoz
+         Fct8iDHz9hbOE5pdzu+NrAx64xqSBDas3tQRS5tsXpo6B5yRlBZ6oLD7tJX5FVuQYl6z
+         dSxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=sQbUt0SGqYwRVaiqKgn2i3F7QMKYbh9JHG7KYJhy1+M=;
-        b=eHQCB3e2Vt22TC6eYB1K6Z7mPd2fHuMlEdKeSEn3uXV0RQ1m6x8Gi/hgu1KUuEL3k3
-         /oFD9cuhVIAQinFVf4/cqcIzHjZM4ro1ImI7YWXX2Ik14tu7yqPUla1hgrZa72N+yvHT
-         Tju6emhw9sq9PVFuXmNnhC2eDIBwKTUyM6+93sy4TvVGqblpFq1PgTg/yl7WcG0oGzFM
-         WwZJD4sCpYingRMrbmJGzQkHxYwErzPAuvmOIXHTBYK+A7c+SIoDBFNhNVGhBbBtor8d
-         82G8fjAzxlKBIc7D75KxI/WkrO2+Z/SkMcoQ5QBAO34b412jb7kqBsAAxTP3Xnzk2fxM
-         LMNA==
-X-Gm-Message-State: APjAAAUxudjJKcLE5dXfq1196l6bolNT5CVqwRnsiYtbSR0mP4W3sFhY
-        ChYc4xx6HheQiXMZmJlACdQ=
-X-Google-Smtp-Source: APXvYqxW0V1iM8sBaTdVxr4BLaW1LVMBtf2jjmD2D0wyV2K3Dq/WjkZTEdfqxBNIWChGSIu1enRimA==
-X-Received: by 2002:a05:600c:224d:: with SMTP id a13mr8034762wmm.25.1556932720738;
-        Fri, 03 May 2019 18:18:40 -0700 (PDT)
+        bh=r3gWbU66Gb4F+ksq9kAmK2pxg5SekFLFxe9XHbpja70=;
+        b=KOYWSuY5snuqBrWd3L2rNZoGMaArKNbj3RYlytuCsR7LaMshTuFP6xT9t6WtSR66it
+         ++oF2guRUxahfnyUHFW1pYongk4NPKSTFfrkGVXNljFHhnfqg+j4tHOJ7tmwFAkhSttm
+         +tyZNqL8k4qz3lvk1wcTVhlz9cPONsrftO5YuHlzwwAg9la8r6H6PG6z68AqJQhpeBUk
+         +1smU7cUOvPDTuemL5Vwj3IgHWDCTSVctBZBXpYohxj5L6BYj27ukDvqe/odLI+LwLPa
+         jO8EmdgvvsFTGuf6D3Z3A2xDcg8BQPgDRARiW9t80xbQqL1cPPp6pU/qR1mUHPmU6lX+
+         o/cA==
+X-Gm-Message-State: APjAAAVQjvo6KK1v2yAQ97R5Ao3m10QpaHIhOaNrktGFZ30w1nFvt8aZ
+        oCFpsSB+gns08hRb8SA4aCI=
+X-Google-Smtp-Source: APXvYqwkRP8yhXOi9qIm3Jh1JPyOaHjqBhRADffLKh8mHhWraKgwvOIe/EIZTFAgyhL2Yu/uWGcadQ==
+X-Received: by 2002:a5d:67cb:: with SMTP id n11mr9139408wrw.3.1556932721801;
+        Fri, 03 May 2019 18:18:41 -0700 (PDT)
 Received: from localhost.localdomain (5-12-225-227.residential.rdsnet.ro. [5.12.225.227])
-        by smtp.gmail.com with ESMTPSA id t1sm3937639wro.34.2019.05.03.18.18.39
+        by smtp.gmail.com with ESMTPSA id t1sm3937639wro.34.2019.05.03.18.18.40
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 May 2019 18:18:40 -0700 (PDT)
+        Fri, 03 May 2019 18:18:41 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 2/9] net: dsa: Optional VLAN-based port separation for switches without tagging
-Date:   Sat,  4 May 2019 04:18:19 +0300
-Message-Id: <20190504011826.30477-3-olteanv@gmail.com>
+Subject: [PATCH net-next 3/9] net: dsa: Allow drivers to filter packets they can decode source port from
+Date:   Sat,  4 May 2019 04:18:20 +0300
+Message-Id: <20190504011826.30477-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190504011826.30477-1-olteanv@gmail.com>
 References: <20190504011826.30477-1-olteanv@gmail.com>
@@ -59,477 +59,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch provides generic DSA code for using VLAN (802.1Q) tags for
-the same purpose as a dedicated switch tag for injection/extraction.
-It is based on the discussions and interest that has been so far
-expressed in https://www.spinics.net/lists/netdev/msg556125.html.
+Frames get processed by DSA and redirected to switch port net devices
+based on the ETH_P_XDSA multiplexed packet_type handler found by the
+network stack when calling eth_type_trans().
 
-Unlike all other DSA-supported tagging protocols, CONFIG_NET_DSA_TAG_8021Q
-does not offer a complete solution for drivers (nor can it). Instead, it
-provides generic code that driver can opt into calling:
-- dsa_8021q_xmit: Inserts a VLAN header with the specified contents.
-  Can be called from another tagging protocol's xmit function.
-  Currently the LAN9303 driver is inserting headers that are simply
-  802.1Q with custom fields, so this is an opportunity for code reuse.
-- dsa_8021q_rcv: Retrieves the TPID and TCI from a VLAN-tagged skb.
-  Removing the VLAN header is left as a decision for the caller to make.
-- dsa_port_setup_8021q_tagging: For each user port, installs an Rx VID
-  and a Tx VID, for proper untagged traffic identification on ingress
-  and steering on egress. Also sets up the VLAN trunk on the upstream
-  (CPU or DSA) port. Drivers are intentionally left to call this
-  function explicitly, depending on the context and hardware support.
-  The expected switch behavior and VLAN semantics should not be violated
-  under any conditions. That is, after calling
-  dsa_port_setup_8021q_tagging, the hardware should still pass all
-  ingress traffic, be it tagged or untagged.
+The running assumption is that once the DSA .rcv function is called, DSA
+is always able to decode the switch tag in order to change the skb->dev
+from its master.
 
-For uniformity with the other tagging protocols, a module for the
-dsa_8021q_netdev_ops structure is registered, but the typical usage is
-to set up another tagging protocol which selects CONFIG_NET_DSA_TAG_8021Q,
-and calls the API from tag_8021q.h. Null function definitions are also
-provided so that a "depends on" is not forced in the Kconfig.
+However there are tagging protocols (such as the new DSA_TAG_PROTO_SJA1105,
+user of DSA_TAG_PROTO_8021Q) where this assumption is not completely
+true, since switch tagging piggybacks on the absence of a vlan_filtering
+bridge. Moreover, management traffic (BPDU, PTP) for this switch doesn't
+rely on switch tagging, but on a different mechanism. So it would make
+sense to at least be able to terminate that.
 
-This tagging protocol only works when switch ports are standalone, or
-when they are added to a VLAN-unaware bridge. It will probably remain
-this way for the reasons below.
+Having DSA receive traffic it can't decode would put it in an impossible
+situation: the eth_type_trans() function would invoke the DSA .rcv(),
+which could not change skb->dev, then eth_type_trans() would be invoked
+again, which again would call the DSA .rcv, and the packet would never
+be able to exit the DSA filter and would spiral in a loop until the
+whole system dies.
 
-When added to a bridge that has vlan_filtering 1, the bridge core will
-install its own VLANs and reset the pvids through switchdev. For the
-bridge core, switchdev is a write-only pipe. All VLAN-related state is
-kept in the bridge core and nothing is read from DSA/switchdev or from
-the driver. So the bridge core will break this port separation because
-it will install the vlan_default_pvid into all switchdev ports.
+This happens because eth_type_trans() doesn't actually look at the skb
+(so as to identify a potential tag) when it deems it as being
+ETH_P_XDSA. It just checks whether skb->dev has a DSA private pointer
+installed (therefore it's a DSA master) and that there exists a .rcv
+callback (everybody except DSA_TAG_PROTO_NONE has that). This is
+understandable as there are many switch tags out there, and exhaustively
+checking for all of them is far from ideal.
 
-Even if we could teach the bridge driver about switchdev preference of a
-certain vlan_default_pvid (task difficult in itself since the current
-setting is per-bridge but we would need it per-port), there would still
-exist many other challenges.
-
-Firstly, in the DSA rcv callback, a driver would have to perform an
-iterative reverse lookup to find the correct switch port. That is
-because the port is a bridge slave, so its Rx VID (port PVID) is subject
-to user configuration. How would we ensure that the user doesn't reset
-the pvid to a different value (which would make an O(1) translation
-impossible), or to a non-unique value within this DSA switch tree (which
-would make any translation impossible)?
-
-Finally, not all switch ports are equal in DSA, and that makes it
-difficult for the bridge to be completely aware of this anyway.
-The CPU port needs to transmit tagged packets (VLAN trunk) in order for
-the DSA rcv code to be able to decode source information.
-But the bridge code has absolutely no idea which switch port is the CPU
-port, if nothing else then just because there is no netdevice registered
-by DSA for the CPU port.
-Also DSA does not currently allow the user to specify that they want the
-CPU port to do VLAN trunking anyway. VLANs are added to the CPU port
-using the same flags as they were added on the user port.
-
-So the VLANs installed by dsa_port_setup_8021q_tagging per driver
-request should remain private from the bridge's and user's perspective,
-and should not alter the VLAN semantics observed by the user.
-
-In the current implementation a VLAN range ending at 4095 (VLAN_N_VID)
-is reserved for this purpose. Each port receives a unique Rx VLAN and a
-unique Tx VLAN. Separate VLANs are needed for Rx and Tx because they
-serve different purposes: on Rx the switch must process traffic as
-untagged and process it with a port-based VLAN, but with care not to
-hinder bridging. On the other hand, the Tx VLAN is where the
-reachability restrictions are imposed, since by tagging frames in the
-xmit callback we are telling the switch onto which port to steer the
-frame.
-
-Some general guidance on how this support might be employed for
-real-life hardware (some comments made by Florian Fainelli):
-
-- If the hardware supports VLAN tag stacking, it should somehow back
-  up its private VLAN settings when the bridge tries to override them.
-  Then the driver could re-apply them as outer tags. Dedicating an outer
-  tag per bridge device would allow identical inner tag VID numbers to
-  co-exist, yet preserve broadcast domain isolation.
-
-- If the switch cannot handle VLAN tag stacking, it should disable this
-  port separation when added as slave to a vlan_filtering bridge, in
-  that case having reduced functionality.
-
-- Drivers for old switches that don't support the entire VLAN_N_VID
-  range will need to rework the current range selection mechanism.
+The solution lies in introducing a filtering function for each tagging
+protocol. In the absence of a filtering function, all traffic is passed
+to the .rcv DSA callback. The tagging protocol should see the filtering
+function as a pre-validation that it can decode the incoming skb. The
+traffic that doesn't match the filter will bypass the DSA .rcv callback
+and be left on the master netdevice, which wasn't previously possible.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- include/linux/dsa/8021q.h |  76 +++++++++++++
- include/net/dsa.h         |   2 +
- net/dsa/Kconfig           |  11 ++
- net/dsa/Makefile          |   1 +
- net/dsa/tag_8021q.c       | 222 ++++++++++++++++++++++++++++++++++++++
- 5 files changed, 312 insertions(+)
- create mode 100644 include/linux/dsa/8021q.h
- create mode 100644 net/dsa/tag_8021q.c
+ include/net/dsa.h  | 15 +++++++++++++++
+ net/dsa/dsa2.c     |  1 +
+ net/ethernet/eth.c |  6 +++++-
+ 3 files changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/dsa/8021q.h b/include/linux/dsa/8021q.h
-new file mode 100644
-index 000000000000..3911e0586478
---- /dev/null
-+++ b/include/linux/dsa/8021q.h
-@@ -0,0 +1,76 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ * Copyright (c) 2019, Vladimir Oltean <olteanv@gmail.com>
-+ */
-+
-+#ifndef _NET_DSA_8021Q_H
-+#define _NET_DSA_8021Q_H
-+
-+#include <linux/types.h>
-+
-+struct dsa_switch;
-+struct sk_buff;
-+struct net_device;
-+struct packet_type;
-+
-+#if IS_ENABLED(CONFIG_NET_DSA_TAG_8021Q)
-+
-+int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int index,
-+				 bool enabled);
-+
-+struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
-+			       u16 tpid, u16 tci);
-+
-+struct sk_buff *dsa_8021q_rcv(struct sk_buff *skb, struct net_device *netdev,
-+			      struct packet_type *pt, u16 *tpid, u16 *tci);
-+
-+u16 dsa_8021q_tx_vid(struct dsa_switch *ds, int port);
-+
-+u16 dsa_8021q_rx_vid(struct dsa_switch *ds, int port);
-+
-+int dsa_8021q_rx_switch_id(u16 vid);
-+
-+int dsa_8021q_rx_source_port(u16 vid);
-+
-+#else
-+
-+int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int index,
-+				 bool enabled)
-+{
-+	return 0;
-+}
-+
-+struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
-+			       u16 tpid, u16 tci)
-+{
-+	return NULL;
-+}
-+
-+struct sk_buff *dsa_8021q_rcv(struct sk_buff *skb, struct net_device *netdev,
-+			      struct packet_type *pt, u16 *tpid, u16 *tci)
-+{
-+	return NULL;
-+}
-+
-+u16 dsa_8021q_tx_vid(struct dsa_switch *ds, int port)
-+{
-+	return 0;
-+}
-+
-+u16 dsa_8021q_rx_vid(struct dsa_switch *ds, int port)
-+{
-+	return 0;
-+}
-+
-+int dsa_8021q_rx_switch_id(u16 vid)
-+{
-+	return 0;
-+}
-+
-+int dsa_8021q_rx_source_port(u16 vid)
-+{
-+	return 0;
-+}
-+
-+#endif /* IS_ENABLED(CONFIG_NET_DSA_TAG_8021Q) */
-+
-+#endif /* _NET_DSA_8021Q_H */
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 18db7b8e7a8e..69f3714f42ba 100644
+index 69f3714f42ba..c90ceeec7d1f 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -42,6 +42,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_MTK_VALUE			9
- #define DSA_TAG_PROTO_QCA_VALUE			10
- #define DSA_TAG_PROTO_TRAILER_VALUE		11
-+#define DSA_TAG_PROTO_8021Q_VALUE		12
- 
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -56,6 +57,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_MTK		= DSA_TAG_PROTO_MTK_VALUE,
- 	DSA_TAG_PROTO_QCA		= DSA_TAG_PROTO_QCA_VALUE,
- 	DSA_TAG_PROTO_TRAILER		= DSA_TAG_PROTO_TRAILER_VALUE,
-+	DSA_TAG_PROTO_8021Q		= DSA_TAG_PROTO_8021Q_VALUE,
- };
- 
- struct packet_type;
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index c0734028c7dc..fc15a7e1a6df 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -17,6 +17,17 @@ menuconfig NET_DSA
- 
- if NET_DSA
- 
-+# tagging formats
-+config NET_DSA_TAG_8021Q
-+	tristate "Tag driver for switches using custom 802.1Q VLAN headers"
-+	select VLAN_8021Q
-+	help
-+	  Unlike the other tagging protocols, the 802.1Q config option simply
-+	  provides helpers for other tagging implementations that might rely on
-+	  VLAN in one way or another. It is not a complete solution.
-+
-+	  Drivers which use these helpers should select this as dependency.
-+
- config NET_DSA_TAG_BRCM_COMMON
- 	tristate
- 	default n
-diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-index 8a737b6ee94c..e97c794ec57b 100644
---- a/net/dsa/Makefile
-+++ b/net/dsa/Makefile
-@@ -4,6 +4,7 @@ obj-$(CONFIG_NET_DSA) += dsa_core.o
- dsa_core-y += dsa.o dsa2.o master.o port.o slave.o switch.o
- 
- # tagging formats
-+obj-$(CONFIG_NET_DSA_TAG_8021Q) += tag_8021q.o
- obj-$(CONFIG_NET_DSA_TAG_BRCM_COMMON) += tag_brcm.o
- obj-$(CONFIG_NET_DSA_TAG_DSA) += tag_dsa.o
- obj-$(CONFIG_NET_DSA_TAG_EDSA) += tag_edsa.o
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-new file mode 100644
-index 000000000000..8ae48c7e1e76
---- /dev/null
-+++ b/net/dsa/tag_8021q.c
-@@ -0,0 +1,222 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019, Vladimir Oltean <olteanv@gmail.com>
-+ *
-+ * This module is not a complete tagger implementation. It only provides
-+ * primitives for taggers that rely on 802.1Q VLAN tags to use. The
-+ * dsa_8021q_netdev_ops is registered for API compliance and not used
-+ * directly by callers.
-+ */
-+#include <linux/if_bridge.h>
-+#include <linux/if_vlan.h>
-+
-+#include "dsa_priv.h"
-+
-+/* Allocating two VLAN tags per port - one for the RX VID and
-+ * the other for the TX VID - see below
-+ */
-+#define DSA_8021Q_VID_RANGE	(DSA_MAX_SWITCHES * DSA_MAX_PORTS)
-+#define DSA_8021Q_VID_BASE	(VLAN_N_VID - 2 * DSA_8021Q_VID_RANGE - 1)
-+#define DSA_8021Q_RX_VID_BASE	(DSA_8021Q_VID_BASE)
-+#define DSA_8021Q_TX_VID_BASE	(DSA_8021Q_VID_BASE + DSA_8021Q_VID_RANGE)
-+
-+/* Returns the VID to be inserted into the frame from xmit for switch steering
-+ * instructions on egress. Encodes switch ID and port ID.
-+ */
-+u16 dsa_8021q_tx_vid(struct dsa_switch *ds, int port)
-+{
-+	return DSA_8021Q_TX_VID_BASE + (DSA_MAX_PORTS * ds->index) + port;
-+}
-+EXPORT_SYMBOL_GPL(dsa_8021q_tx_vid);
-+
-+/* Returns the VID that will be installed as pvid for this switch port, sent as
-+ * tagged egress towards the CPU port and decoded by the rcv function.
-+ */
-+u16 dsa_8021q_rx_vid(struct dsa_switch *ds, int port)
-+{
-+	return DSA_8021Q_RX_VID_BASE + (DSA_MAX_PORTS * ds->index) + port;
-+}
-+EXPORT_SYMBOL_GPL(dsa_8021q_rx_vid);
-+
-+/* Returns the decoded switch ID from the RX VID. */
-+int dsa_8021q_rx_switch_id(u16 vid)
-+{
-+	return ((vid - DSA_8021Q_RX_VID_BASE) / DSA_MAX_PORTS);
-+}
-+EXPORT_SYMBOL_GPL(dsa_8021q_rx_switch_id);
-+
-+/* Returns the decoded port ID from the RX VID. */
-+int dsa_8021q_rx_source_port(u16 vid)
-+{
-+	return ((vid - DSA_8021Q_RX_VID_BASE) % DSA_MAX_PORTS);
-+}
-+EXPORT_SYMBOL_GPL(dsa_8021q_rx_source_port);
-+
-+/* RX VLAN tagging (left) and TX VLAN tagging (right) setup shown for a single
-+ * front-panel switch port (here swp0).
-+ *
-+ * Port identification through VLAN (802.1Q) tags has different requirements
-+ * for it to work effectively:
-+ *  - On RX (ingress from network): each front-panel port must have a pvid
-+ *    that uniquely identifies it, and the egress of this pvid must be tagged
-+ *    towards the CPU port, so that software can recover the source port based
-+ *    on the VID in the frame. But this would only work for standalone ports;
-+ *    if bridged, this VLAN setup would break autonomous forwarding and would
-+ *    force all switched traffic to pass through the CPU. So we must also make
-+ *    the other front-panel ports members of this VID we're adding, albeit
-+ *    we're not making it their PVID (they'll still have their own).
-+ *    By the way - just because we're installing the same VID in multiple
-+ *    switch ports doesn't mean that they'll start to talk to one another, even
-+ *    while not bridged: the final forwarding decision is still an AND between
-+ *    the L2 forwarding information (which is limiting forwarding in this case)
-+ *    and the VLAN-based restrictions (of which there are none in this case,
-+ *    since all ports are members).
-+ *  - On TX (ingress from CPU and towards network) we are faced with a problem.
-+ *    If we were to tag traffic (from within DSA) with the port's pvid, all
-+ *    would be well, assuming the switch ports were standalone. Frames would
-+ *    have no choice but to be directed towards the correct front-panel port.
-+ *    But because we also want the RX VLAN to not break bridging, then
-+ *    inevitably that means that we have to give them a choice (of what
-+ *    front-panel port to go out on), and therefore we cannot steer traffic
-+ *    based on the RX VID. So what we do is simply install one more VID on the
-+ *    front-panel and CPU ports, and profit off of the fact that steering will
-+ *    work just by virtue of the fact that there is only one other port that's
-+ *    a member of the VID we're tagging the traffic with - the desired one.
-+ *
-+ * So at the end, each front-panel port will have one RX VID (also the PVID),
-+ * the RX VID of all other front-panel ports, and one TX VID. Whereas the CPU
-+ * port will have the RX and TX VIDs of all front-panel ports, and on top of
-+ * that, is also tagged-input and tagged-output (VLAN trunk).
-+ *
-+ *               CPU port                               CPU port
-+ * +-------------+-----+-------------+    +-------------+-----+-------------+
-+ * |  RX VID     |     |             |    |  TX VID     |     |             |
-+ * |  of swp0    |     |             |    |  of swp0    |     |             |
-+ * |             +-----+             |    |             +-----+             |
-+ * |                ^ T              |    |                | Tagged         |
-+ * |                |                |    |                | ingress        |
-+ * |    +-------+---+---+-------+    |    |    +-----------+                |
-+ * |    |       |       |       |    |    |    | Untagged                   |
-+ * |    |     U v     U v     U v    |    |    v egress                     |
-+ * | +-----+ +-----+ +-----+ +-----+ |    | +-----+ +-----+ +-----+ +-----+ |
-+ * | |     | |     | |     | |     | |    | |     | |     | |     | |     | |
-+ * | |PVID | |     | |     | |     | |    | |     | |     | |     | |     | |
-+ * +-+-----+-+-----+-+-----+-+-----+-+    +-+-----+-+-----+-+-----+-+-----+-+
-+ *   swp0    swp1    swp2    swp3           swp0    swp1    swp2    swp3
-+ */
-+int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int port, bool enabled)
-+{
-+	int upstream = dsa_upstream_port(ds, port);
-+	struct dsa_port *dp = &ds->ports[port];
-+	struct dsa_port *upstream_dp = &ds->ports[upstream];
-+	u16 rx_vid = dsa_8021q_rx_vid(ds, port);
-+	u16 tx_vid = dsa_8021q_tx_vid(ds, port);
-+	int i, err;
-+
-+	/* The CPU port is implicitly configured by
-+	 * configuring the front-panel ports
+@@ -69,6 +69,11 @@ struct dsa_device_ops {
+ 			       struct packet_type *pt);
+ 	int (*flow_dissect)(const struct sk_buff *skb, __be16 *proto,
+ 			    int *offset);
++	/* Used to determine which traffic should match the DSA filter in
++	 * eth_type_trans, and which, if any, should bypass it and be processed
++	 * as regular on the master net device.
 +	 */
-+	if (!dsa_is_user_port(ds, port))
-+		return 0;
-+
-+	/* Add this user port's RX VID to the membership list of all others
-+	 * (including itself). This is so that bridging will not be hindered.
-+	 * L2 forwarding rules still take precedence when there are no VLAN
-+	 * restrictions, so there are no concerns about leaking traffic.
-+	 */
-+	for (i = 0; i < ds->num_ports; i++) {
-+		struct dsa_port *other_dp = &ds->ports[i];
-+		u16 flags;
-+
-+		if (i == upstream)
-+			/* CPU port needs to see this port's RX VID
-+			 * as tagged egress.
-+			 */
-+			flags = 0;
-+		else if (i == port)
-+			/* The RX VID is pvid on this port */
-+			flags = BRIDGE_VLAN_INFO_UNTAGGED |
-+				BRIDGE_VLAN_INFO_PVID;
-+		else
-+			/* The RX VID is a regular VLAN on all others */
-+			flags = BRIDGE_VLAN_INFO_UNTAGGED;
-+
-+		if (enabled)
-+			err = dsa_port_vid_add(other_dp, rx_vid, flags);
-+		else
-+			err = dsa_port_vid_del(other_dp, rx_vid);
-+		if (err) {
-+			dev_err(ds->dev, "Failed to apply RX VID %d to port %d: %d\n",
-+				rx_vid, port, err);
-+			return err;
-+		}
-+	}
-+	/* Finally apply the TX VID on this port and on the CPU port */
-+	if (enabled)
-+		err = dsa_port_vid_add(dp, tx_vid, BRIDGE_VLAN_INFO_UNTAGGED);
-+	else
-+		err = dsa_port_vid_del(dp, tx_vid);
-+	if (err) {
-+		dev_err(ds->dev, "Failed to apply TX VID %d on port %d: %d\n",
-+			tx_vid, port, err);
-+		return err;
-+	}
-+	if (enabled)
-+		err = dsa_port_vid_add(upstream_dp, tx_vid, 0);
-+	else
-+		err = dsa_port_vid_del(upstream_dp, tx_vid);
-+	if (err) {
-+		dev_err(ds->dev, "Failed to apply TX VID %d on port %d: %d\n",
-+			tx_vid, upstream, err);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(dsa_port_setup_8021q_tagging);
-+
-+struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
-+			       u16 tpid, u16 tci)
++	bool (*filter)(const struct sk_buff *skb, struct net_device *dev);
+ 	unsigned int overhead;
+ 	const char *name;
+ 	enum dsa_tag_protocol proto;
+@@ -148,6 +153,7 @@ struct dsa_port {
+ 	struct dsa_switch_tree *dst;
+ 	struct sk_buff *(*rcv)(struct sk_buff *skb, struct net_device *dev,
+ 			       struct packet_type *pt);
++	bool (*filter)(const struct sk_buff *skb, struct net_device *dev);
+ 
+ 	enum {
+ 		DSA_PORT_TYPE_UNUSED = 0,
+@@ -520,6 +526,15 @@ static inline bool netdev_uses_dsa(struct net_device *dev)
+ 	return false;
+ }
+ 
++static inline bool dsa_can_decode(const struct sk_buff *skb,
++				  struct net_device *dev)
 +{
-+	/* skb->data points at skb_mac_header, which
-+	 * is fine for vlan_insert_tag.
-+	 */
-+	return vlan_insert_tag(skb, htons(tpid), tci);
++#if IS_ENABLED(CONFIG_NET_DSA)
++	return !dev->dsa_ptr->filter || dev->dsa_ptr->filter(skb, dev);
++#endif
++	return false;
 +}
-+EXPORT_SYMBOL_GPL(dsa_8021q_xmit);
 +
-+struct sk_buff *dsa_8021q_rcv(struct sk_buff *skb, struct net_device *netdev,
-+			      struct packet_type *pt, u16 *tpid, u16 *tci)
-+{
-+	struct vlan_ethhdr *tag;
-+
-+	if (unlikely(!pskb_may_pull(skb, VLAN_HLEN)))
-+		return NULL;
-+
-+	tag = vlan_eth_hdr(skb);
-+	*tpid = ntohs(tag->h_vlan_proto);
-+	*tci = ntohs(tag->h_vlan_TCI);
-+
-+	/* skb->data points in the middle of the VLAN tag,
-+	 * after tpid and before tci. This is because so far,
-+	 * ETH_HLEN (DMAC, SMAC, EtherType) bytes were pulled.
-+	 * There are 2 bytes of VLAN tag left in skb->data, and upper
-+	 * layers expect the 'real' EtherType to be consumed as well.
-+	 * Coincidentally, a VLAN header is also of the same size as
-+	 * the number of bytes that need to be pulled.
-+	 */
-+	skb_pull_rcsum(skb, VLAN_HLEN);
-+
-+	return skb;
-+}
-+EXPORT_SYMBOL_GPL(dsa_8021q_rcv);
-+
-+static const struct dsa_device_ops dsa_8021q_netdev_ops = {
-+	.name		= "8021q",
-+	.proto		= DSA_TAG_PROTO_8021Q,
-+	.overhead	= VLAN_HLEN,
-+};
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_8021Q);
-+
-+module_dsa_tag_driver(dsa_8021q_netdev_ops);
+ struct dsa_switch *dsa_switch_alloc(struct device *dev, size_t n);
+ void dsa_unregister_switch(struct dsa_switch *ds);
+ int dsa_register_switch(struct dsa_switch *ds);
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index f1ad80851616..3b5f434cad3f 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -586,6 +586,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
+ 	}
+ 
+ 	dp->type = DSA_PORT_TYPE_CPU;
++	dp->filter = tag_ops->filter;
+ 	dp->rcv = tag_ops->rcv;
+ 	dp->tag_ops = tag_ops;
+ 	dp->master = master;
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index 0f9863dc4d44..fddcee38c1da 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -185,8 +185,12 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
+ 	 * at all, so we check here whether one of those tagging
+ 	 * variants has been configured on the receiving interface,
+ 	 * and if so, set skb->protocol without looking at the packet.
++	 * The DSA tagging protocol may be able to decode some but not all
++	 * traffic (for example only for management). In that case give it the
++	 * option to filter the packets from which it can decode source port
++	 * information.
+ 	 */
+-	if (unlikely(netdev_uses_dsa(dev)))
++	if (unlikely(netdev_uses_dsa(dev)) && dsa_can_decode(skb, dev))
+ 		return htons(ETH_P_XDSA);
+ 
+ 	if (likely(eth_proto_is_802_3(eth->h_proto)))
 -- 
 2.17.1
 
