@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D6A13B64
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 19:25:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EE3713B68
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 19:26:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbfEDRZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 13:25:52 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:32922 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726480AbfEDRZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 13:25:51 -0400
-Received: by mail-qk1-f193.google.com with SMTP id k189so273584qkc.0;
-        Sat, 04 May 2019 10:25:50 -0700 (PDT)
+        id S1727053AbfEDR0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 13:26:03 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37698 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726480AbfEDR0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 13:26:03 -0400
+Received: by mail-qt1-f194.google.com with SMTP id e2so8705068qtb.4;
+        Sat, 04 May 2019 10:26:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=aeIr2xYUVvk3yQWnL07RF0qzoNgh0zjWYEMxr0YSFWA=;
-        b=mD1gRGwUPp5N64opyhHYamX+1iKoFew8i2R99fxUCC31Dt9vxtWIL9XjETHQ9uVbJv
-         DXm/LSDeTkZWkJXFcKic8cZIiP19/g9vgYSh/5WAlY873K9RyEaiKFyXNigYAACX2w1m
-         K9VFO9ct5eGJpc8aW6JfBxzEq4XUi8U2d12mXg2WtPc4i11BMgV0dtGMfd4Nxg3HUb7L
-         d02ckG6Uiuxo5rHxANDakZskw0l7JORdZHmoKtGjP4oUALP/8RKPlkCoZ5bfgReXnaP6
-         qNgAz+8MIzTw8c0olzQPuVRzU06KsfYPRqe0w1AfD3SYYWDfByep2V/cM9Nn5sfbrAeI
-         +CWQ==
+        bh=7u0082f7BXRr33GLp+jMp5y6Dcqt1DasDYM9WMjlfvg=;
+        b=CHe4yaZhawnTVRx5T60IKE2KQM9KzD3tIX9LNvkkaSjGv15nGTF2dBjpHt0b9bLO9T
+         SwHlBcMmocpR3mkCMZBSnDh6ad7XQHG2wFt/XewHlXuV4jYNQpM++xujZzrRDVFr2FK9
+         lXoCfYhojOgmWmPi2AZtRibunxDJdohOWOBGBP0uZr7EwFOu1xe3mroVB4IlU96RSEcj
+         x5gumkNMm8vBNbnlDfjar3/BSWfV+WhkdFF+5MsHaj8seeWM1hONqVUqYYAJkWaGqT8L
+         16Zq/XzaCO/grLXYkE6SBLoFRO7Yf0KoedOzXdv4IINqRg71JgohTelLkoGBMacVZrcw
+         NVMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=aeIr2xYUVvk3yQWnL07RF0qzoNgh0zjWYEMxr0YSFWA=;
-        b=hJHB4yHziEdF7Ef7B4t5KQmtcMyvzB96glamQRpeJhsjwvWcv+Y/tits5XTg3YunI/
-         jP5iCrmcGqz0HWiymDm034ToMUq090ToixeOvD/+ujDDRE2ADpslmidLnVDJIxgtjwmy
-         OVPkMBYkAf4yfcAlgbRbVCPbzUGv7XtkP3W+OOCKwlzkA9Fc1DFzPLJF607EazjDGJbo
-         s3dYNt9SeQPo8Y07i4fQ7O2g0j6x+JCX8S00qfYqNQh9Zj3pdB2NP7nfPrtIbJ8YXJ6i
-         0LhdAycFc7MAnv4FjmJQA+iz+zQSrSm/z1SC7bJqOA8o75ekE7/FqrDXv2bIMqPCsLNL
-         nBBQ==
-X-Gm-Message-State: APjAAAWaU6G4v6Oi8QDE9Rwzy87ZOW8MWkaH3JdEbGnDdO6lpcv1S9L/
-        QAo3MzmOhdpZFwpPruuhousryF9WXl0UVAIUys8=
-X-Google-Smtp-Source: APXvYqxi+w3yUON7YjqufOPe4m6KCd05Ub21wlYRl1pg2v1EqY0zS7mOcU78nDP+MIVJGwQ6w78+SJ4wlpJ1KhWaYEM=
-X-Received: by 2002:a05:620a:12a5:: with SMTP id x5mr13411197qki.334.1556990750181;
- Sat, 04 May 2019 10:25:50 -0700 (PDT)
+        bh=7u0082f7BXRr33GLp+jMp5y6Dcqt1DasDYM9WMjlfvg=;
+        b=keDHlKbOzK8UB/04orZ9d9n29ekfR7+CQbRe6kB8K5liBsQkDdfa6hYFKEaSl63YKj
+         sLByv7Hf+CM2kQ7bW+bOS6hA7G4oa/ewT+ZkCxUV4KQdMk7UHCIXMPXD8Jw3pmm9tLgT
+         abuEyiWRkDCSuDWZOycrHBHbFdvKZ4pPCcBiK51JE6g/VHeoMC+AnhDr29lcmFIfsVkk
+         qTpw4h5GyFwhTPzd7HDNFBJSLuDn19um02rLkfMsLa3tSKUwGCBKeQr6dcryNSKqJulm
+         ysNLWGVi1C0PYcDJPpskZujZ4BqrRZGKawepMvcE3LzsuqPcJ0+QAfI3AiNc1ORKl8/y
+         hwCA==
+X-Gm-Message-State: APjAAAXMgKQt9LJXIAuPwZKjiy8OMyKJvaT+ekS5Mo65LRfy2+GagSss
+        RzBsb/CS/KxTnz8sYyCpsVqsPXdE8VsjpilPYd8=
+X-Google-Smtp-Source: APXvYqz3bd+HxWu+MQMoYg70uaNmznmA9cblm2xdm4pdBPU3ycn9eTCeKhvCSKidbrZe1g+NBuj7QRonjB3sURzmZ1k=
+X-Received: by 2002:ac8:3758:: with SMTP id p24mr14448333qtb.3.1556990762079;
+ Sat, 04 May 2019 10:26:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190430181215.15305-1-maximmi@mellanox.com>
-In-Reply-To: <20190430181215.15305-1-maximmi@mellanox.com>
+References: <20190430181215.15305-1-maximmi@mellanox.com> <20190430181215.15305-3-maximmi@mellanox.com>
+In-Reply-To: <20190430181215.15305-3-maximmi@mellanox.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Sat, 4 May 2019 19:25:38 +0200
-Message-ID: <CAJ+HfNga0DJ9SXd71rf1emwnZnAExahHAX7GwDgV6wY-Escueg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 00/16] AF_XDP infrastructure improvements and
- mlx5e support
+Date:   Sat, 4 May 2019 19:25:50 +0200
+Message-ID: <CAJ+HfNid2hFN6ECetptT+pRQhvPpbdm39zQT9O9xVthadeqQWg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 02/16] xsk: Add getsockopt XDP_OPTIONS
 To:     Maxim Mikityanskiy <maximmi@mellanox.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -71,103 +70,111 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, 30 Apr 2019 at 20:12, Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
 >
-> This series contains improvements to the AF_XDP kernel infrastructure
-> and AF_XDP support in mlx5e. The infrastructure improvements are
-> required for mlx5e, but also some of them benefit to all drivers, and
-> some can be useful for other drivers that want to implement AF_XDP.
+> Make it possible for the application to determine whether the AF_XDP
+> socket is running in zero-copy mode. To achieve this, add a new
+> getsockopt option XDP_OPTIONS that returns flags. The only flag
+> supported for now is the zero-copy mode indicator.
 >
-> The performance testing was performed on a machine with the following
-> configuration:
+> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+> Acked-by: Saeed Mahameed <saeedm@mellanox.com>
+> ---
+>  include/uapi/linux/if_xdp.h       |  7 +++++++
+>  net/xdp/xsk.c                     | 22 ++++++++++++++++++++++
+>  tools/include/uapi/linux/if_xdp.h |  7 +++++++
+>  3 files changed, 36 insertions(+)
 >
-> - 24 cores of Intel Xeon E5-2620 v3 @ 2.40 GHz
-> - Mellanox ConnectX-5 Ex with 100 Gbit/s link
+> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+> index caed8b1614ff..9ae4b4e08b68 100644
+> --- a/include/uapi/linux/if_xdp.h
+> +++ b/include/uapi/linux/if_xdp.h
+> @@ -46,6 +46,7 @@ struct xdp_mmap_offsets {
+>  #define XDP_UMEM_FILL_RING             5
+>  #define XDP_UMEM_COMPLETION_RING       6
+>  #define XDP_STATISTICS                 7
+> +#define XDP_OPTIONS                    8
 >
-> The results with retpoline disabled, single stream:
+>  struct xdp_umem_reg {
+>         __u64 addr; /* Start of packet data area */
+> @@ -60,6 +61,12 @@ struct xdp_statistics {
+>         __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+>  };
 >
-> txonly: 33.3 Mpps (21.5 Mpps with queue and app pinned to the same CPU)
-> rxdrop: 12.2 Mpps
-> l2fwd: 9.4 Mpps
->
-> The results with retpoline enabled, single stream:
->
-> txonly: 21.3 Mpps (14.1 Mpps with queue and app pinned to the same CPU)
-> rxdrop: 9.9 Mpps
-> l2fwd: 6.8 Mpps
->
-> v2 changes:
->
-> Added patches for mlx5e and addressed the comments for v1. Rebased for
-> bpf-next (net-next has to be merged first, because this series depends
-> on some patches from there).
->
+> +struct xdp_options {
+> +       __u32 flags;
+> +};
+> +
+> +#define XDP_OPTIONS_FLAG_ZEROCOPY (1 << 0)
 
-Nit: There're some checkpatch warnings (>80 char lines) for the driver parts.
+Nit: The other flags doesn't use "FLAG" in its name, but that doesn't
+really matter.
+
+> +
+>  /* Pgoff for mmaping the rings */
+>  #define XDP_PGOFF_RX_RING                        0
+>  #define XDP_PGOFF_TX_RING               0x80000000
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index b68a380f50b3..998199109d5c 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -650,6 +650,28 @@ static int xsk_getsockopt(struct socket *sock, int level, int optname,
+>
+>                 return 0;
+>         }
+> +       case XDP_OPTIONS:
+> +       {
+> +               struct xdp_options opts;
+> +
+> +               if (len < sizeof(opts))
+> +                       return -EINVAL;
+> +
+> +               opts.flags = 0;
+
+Maybe get rid of this, in favor of "opts = {}" if the structure grows?
 
 
-> Maxim Mikityanskiy (16):
->   xsk: Add API to check for available entries in FQ
->   xsk: Add getsockopt XDP_OPTIONS
->   libbpf: Support getsockopt XDP_OPTIONS
->   xsk: Extend channels to support combined XSK/non-XSK traffic
->   xsk: Change the default frame size to 4096 and allow controlling it
->   xsk: Return the whole xdp_desc from xsk_umem_consume_tx
->   net/mlx5e: Replace deprecated PCI_DMA_TODEVICE
->   net/mlx5e: Calculate linear RX frag size considering XSK
->   net/mlx5e: Allow ICO SQ to be used by multiple RQs
->   net/mlx5e: Refactor struct mlx5e_xdp_info
->   net/mlx5e: Share the XDP SQ for XDP_TX between RQs
->   net/mlx5e: XDP_TX from UMEM support
->   net/mlx5e: Consider XSK in XDP MTU limit calculation
->   net/mlx5e: Encapsulate open/close queues into a function
->   net/mlx5e: Move queue param structs to en/params.h
->   net/mlx5e: Add XSK support
+> +
+> +               mutex_lock(&xs->mutex);
+> +               if (xs->zc)
+> +                       opts.flags |= XDP_OPTIONS_FLAG_ZEROCOPY;
+> +               mutex_unlock(&xs->mutex);
+> +
+> +               len = sizeof(opts);
+> +               if (copy_to_user(optval, &opts, len))
+> +                       return -EFAULT;
+> +               if (put_user(len, optlen))
+> +                       return -EFAULT;
+> +
+> +               return 0;
+> +       }
+>         default:
+>                 break;
+>         }
+> diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux/if_xdp.h
+> index caed8b1614ff..9ae4b4e08b68 100644
+> --- a/tools/include/uapi/linux/if_xdp.h
+> +++ b/tools/include/uapi/linux/if_xdp.h
+> @@ -46,6 +46,7 @@ struct xdp_mmap_offsets {
+>  #define XDP_UMEM_FILL_RING             5
+>  #define XDP_UMEM_COMPLETION_RING       6
+>  #define XDP_STATISTICS                 7
+> +#define XDP_OPTIONS                    8
 >
->  drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  12 +-
->  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |  15 +-
->  .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
->  drivers/net/ethernet/mellanox/mlx5/core/en.h  | 147 +++-
->  .../ethernet/mellanox/mlx5/core/en/params.c   | 108 ++-
->  .../ethernet/mellanox/mlx5/core/en/params.h   |  87 ++-
->  .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 231 ++++--
->  .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  36 +-
->  .../mellanox/mlx5/core/en/xsk/Makefile        |   1 +
->  .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 192 +++++
->  .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |  27 +
->  .../mellanox/mlx5/core/en/xsk/setup.c         | 220 ++++++
->  .../mellanox/mlx5/core/en/xsk/setup.h         |  25 +
->  .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   | 108 +++
->  .../ethernet/mellanox/mlx5/core/en/xsk/tx.h   |  15 +
->  .../ethernet/mellanox/mlx5/core/en/xsk/umem.c | 252 +++++++
->  .../ethernet/mellanox/mlx5/core/en/xsk/umem.h |  34 +
->  .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  21 +-
->  .../mellanox/mlx5/core/en_fs_ethtool.c        |  44 +-
->  .../net/ethernet/mellanox/mlx5/core/en_main.c | 680 +++++++++++-------
->  .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  12 +-
->  .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 104 ++-
->  .../ethernet/mellanox/mlx5/core/en_stats.c    | 115 ++-
->  .../ethernet/mellanox/mlx5/core/en_stats.h    |  30 +
->  .../net/ethernet/mellanox/mlx5/core/en_txrx.c |  42 +-
->  .../ethernet/mellanox/mlx5/core/ipoib/ipoib.c |  14 +-
->  drivers/net/ethernet/mellanox/mlx5/core/wq.h  |   5 -
->  include/net/xdp_sock.h                        |  27 +-
->  include/uapi/linux/if_xdp.h                   |  18 +
->  net/xdp/xsk.c                                 |  43 +-
->  net/xdp/xsk_queue.h                           |  14 +
->  samples/bpf/xdpsock_user.c                    |  52 +-
->  tools/include/uapi/linux/if_xdp.h             |  18 +
->  tools/lib/bpf/xsk.c                           | 127 +++-
->  tools/lib/bpf/xsk.h                           |   6 +-
->  35 files changed, 2384 insertions(+), 500 deletions(-)
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/Makefile
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.h
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.h
+>  struct xdp_umem_reg {
+>         __u64 addr; /* Start of packet data area */
+> @@ -60,6 +61,12 @@ struct xdp_statistics {
+>         __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+>  };
 >
+> +struct xdp_options {
+> +       __u32 flags;
+> +};
+> +
+> +#define XDP_OPTIONS_FLAG_ZEROCOPY (1 << 0)
+> +
+>  /* Pgoff for mmaping the rings */
+>  #define XDP_PGOFF_RX_RING                        0
+>  #define XDP_PGOFF_TX_RING               0x80000000
 > --
 > 2.19.1
 >
