@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ED081397A
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3E11397D
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 13:35:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727416AbfEDLeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 07:34:12 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7722 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726529AbfEDLeM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 May 2019 07:34:12 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 4919084083BFD99A0328;
-        Sat,  4 May 2019 19:34:09 +0800 (CST)
-Received: from [127.0.0.1] (10.184.189.20) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
- 19:34:02 +0800
-Subject: Re: [PATCH] net: route: Fix vrf dst_entry ref count false increasing
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     <davem@davemloft.net>, <christian@brauner.io>,
-        <roopa@cumulusnetworks.com>, <dsahern@gmail.com>,
-        <Jason@zx2c4.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     mousuanming <mousuanming@huawei.com>,
-        Mingfangsen <mingfangsen@huawei.com>
-References: <76551ed7-47ef-7442-69de-6fb42fff4708@huawei.com>
-Message-ID: <9f599716-eef7-a224-0bda-2f4e7c2f58b4@huawei.com>
-Date:   Sat, 4 May 2019 19:33:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.1
+        id S1727465AbfEDLfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 07:35:40 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46548 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726529AbfEDLfj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 07:35:39 -0400
+Received: by mail-pg1-f195.google.com with SMTP id n2so4020150pgg.13
+        for <netdev@vger.kernel.org>; Sat, 04 May 2019 04:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=fUeT1szSZocCYADzBMYe9ZpgYdjX1NCkTft/NbEat5w=;
+        b=B8kzpTI9EIiEazky3RNQuO703Id+7Nv1p/PtKZVYMqsU8RSjGFHohOFtFPqZOknrWx
+         PA37Xl/dtgUW/qbx/+w3YbAMwAglRZ6wW1SL5XsKsB07tRHkbpJ/eQWCiFe/k4yrYQGP
+         v0PaevFGI3IuicN8rSr3n6Id97o15Kkm+kbWuGNgML+HGF8oR1eKTgpCym7n3+SqLtA6
+         eqkXUn26BS66bqZzBTIaEKeehX8qbML3DnQuBa1qg6wZXyFlUE1RhuIZ9f9xYqIEUHPV
+         a4qa3wqjKREaqCnoHRcqSW1xPMnpM/2hjPRl6QX4L1RGxSPjHtjVdIw3Zd+wPzIMGUFf
+         ed1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=fUeT1szSZocCYADzBMYe9ZpgYdjX1NCkTft/NbEat5w=;
+        b=IxqC/Wk6X7JT38KTQSNpj8mupxqkW/3Mdpk3U4b/Dhk2zQWUa9lybqvhlBr3MJSzlX
+         e2ctL6Y9gHLMBgqrApxJaEdGj59CJtP73DQXPraoqufVGEYUL0kODiLpcXGO9pmSXuWc
+         du1QKrCk8FyaKdks/r9OBPjij0oirCYPinJ2MCV3bz1IS/NYDAcyN4S1KhlC4wVMXSLp
+         /22bmJYPXnKC/q5+ZuB5AGAodx4xoteJJ4ViQXp3vfQTeLjXpS2f8uArorKozeR4ErsK
+         H6crLHoA+/1qcBhReRtJ/IyKKuFfAnYDSzY3vQE0ipfhU/2tDLPnlqe48VWS0Q4/Nv7H
+         H7uQ==
+X-Gm-Message-State: APjAAAWrDp6tCOpojqgi2EAvf1B+P1NUZYS7M5ORDzuSv3weTw+7tds6
+        DZUNOH3ffCkoJGqmx5zBUQ7CIQ==
+X-Google-Smtp-Source: APXvYqwTZUnUDCh5ElMHbi7T0zKmCoOQ1/Ooz80LI40kDFlWw+hqS7/7IBzyjPPfsp5NUJZKXwn63g==
+X-Received: by 2002:aa7:8186:: with SMTP id g6mr19142772pfi.126.1556969738834;
+        Sat, 04 May 2019 04:35:38 -0700 (PDT)
+Received: from cakuba.netronome.com (ip-174-155-149-146.miamfl.spcsdns.net. [174.155.149.146])
+        by smtp.gmail.com with ESMTPSA id e13sm6253736pfi.130.2019.05.04.04.35.35
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sat, 04 May 2019 04:35:38 -0700 (PDT)
+Date:   Sat, 4 May 2019 07:35:22 -0400
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Alice Michael <alice.michael@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Piotr Marczak <piotr.marczak@intel.com>,
+        Don Buchholz <donald.buchholz@intel.com>
+Subject: Re: [net-next v2 11/11] i40e: Introduce recovery mode support
+Message-ID: <20190504073522.3bc7e00d@cakuba.netronome.com>
+In-Reply-To: <20190503230939.6739-12-jeffrey.t.kirsher@intel.com>
+References: <20190503230939.6739-1-jeffrey.t.kirsher@intel.com>
+        <20190503230939.6739-12-jeffrey.t.kirsher@intel.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <76551ed7-47ef-7442-69de-6fb42fff4708@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.189.20]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri,  3 May 2019 16:09:39 -0700, Jeff Kirsher wrote:
+> From: Alice Michael <alice.michael@intel.com>
+> 
+> This patch introduces "recovery mode" to the i40e driver. It is
+> part of a new Any2Any idea of upgrading the firmware. In this
+> approach, it is required for the driver to have support for
+> "transition firmware", that is used for migrating from structured
+> to flat firmware image. In this new, very basic mode, i40e driver
+> must be able to handle particular IOCTL calls from the NVM Update
+> Tool and run a small set of AQ commands.
 
+What's the "particular IOCTL" you speak of?  This patch adds a fake
+netdev with a .set_eeprom callback.  Are you wrapping the AQ commands
+in the set_eeprom now?  Or is there some other IOCTL here?
 
-On 2019/5/4 16:03, linmiaohe wrote:
-> From: Suanming.Mou <mousuanming@huawei.com>
-> 
-> When config ip in default vrf same as the ip in specified
-> vrf, fib_lookup will return the route from table local
-> even if the in device is an enslaved l3mdev. Then the
-> dst_entry will hold the vrf device rather than loopback
-> device in local_input of function ip_route_input_slow.
-> So vrf dst_entry is false increased by route from table
-> local.
-> 
-> Here is reproduce step:
-> 1.enslave enp4s0 to vrf2, and config ip address:
-> ip link add vrf2 type vrf table 1
-> ip link set vrf2 up
-> ip link set enp4s0 master vrf2
-> ip addr ad 125.1.1.1/16 dev enp4s0
-> 
-> 2.config same ip in default vrf:
-> ip addr ad 125.1.1.1/16 dev enp6s0
-> 
-> 3.config peer and ping:
-> ip vrf exec vrf2 ping 125.1.1.2 -c 3
-> 
-> 4.del vrf2 link:
-> ip link del vrf2
-> 
-> And "unregister_netdevice: waiting for vrf2 to become free.
-> Usage count = 1" will occur.
-> 
-> Signed-off-by: Suanming.Mou <mousuanming@huawei.com>
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  net/core/fib_rules.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
-> index ffbb827723a2..1a2c11ed1585 100644
-> --- a/net/core/fib_rules.c
-> +++ b/net/core/fib_rules.c
-> @@ -263,6 +263,11 @@ static int fib_rule_match(struct fib_rule *rule, struct fib_rules_ops *ops,
->  	if (rule->tun_id && (rule->tun_id != fl->flowi_tun_key.tun_id))
->  		goto out;
-> 
-> +	if (!rule->l3mdev &&
-> +	    (netif_index_is_l3_master(rule->fr_net, fl->flowi_iif) ||
-> +	     netif_index_is_l3_master(rule->fr_net, fl->flowi_oif)))
-> +		goto out;
-> +
->  	if (rule->l3mdev && !l3mdev_fib_rule_match(rule->fr_net, fl, arg))
->  		goto out;
-> 
+Let me repeat my other question - can the netdev you spawn in
+i40e_init_recovery_mode() pass traffic?
 
-I'am sorry, but I think this fix looks bad because this patch make vrf
-working with other ip rule impossible. I will send anothor patch to fix
-this. Thanks.
+> These additional AQ commands are part of the interface used by
+> the NVMUpdate tool.  The NVMUpdate tool contains all of the
+> necessary logic to reference these new AQ commands.  The end user
+> experience remains the same, they are using the NVMUpdate tool to
+> update the NVM contents.
 
+IOW to update FW users still need your special tool, but they can use
+ethtool -f to.. change the app-specific (DPDK) parser profiles?  Joy :)
+
+> Signed-off-by: Alice Michael <alice.michael@intel.com>
+> Signed-off-by: Piotr Marczak <piotr.marczak@intel.com>
+> Tested-by: Don Buchholz <donald.buchholz@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
