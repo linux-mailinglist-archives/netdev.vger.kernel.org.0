@@ -2,30 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80191138A8
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 12:20:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18CC7138AF
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 12:23:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbfEDKUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 06:20:43 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7154 "EHLO huawei.com"
+        id S1727220AbfEDKXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 06:23:07 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:56432 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726208AbfEDKUn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 May 2019 06:20:43 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id B9B73B0D760868D4156B;
-        Sat,  4 May 2019 18:20:40 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
- 18:20:29 +0800
+        id S1726631AbfEDKXG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 May 2019 06:23:06 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id C39828FB586CBB087327;
+        Sat,  4 May 2019 18:23:04 +0800 (CST)
+Received: from localhost (10.177.31.96) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
+ 18:22:54 +0800
 From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <michal.simek@xilinx.com>,
-        <esben@geanix.com>, <andrew@lunn.ch>
+To:     <nbd@nbd.name>, <lorenzo.bianconi83@gmail.com>,
+        <ryder.lee@mediatek.com>, <royluo@google.com>,
+        <kvalo@codeaurora.org>, <matthias.bgg@gmail.com>
 CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
         <linux-arm-kernel@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>,
         YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] net: ll_temac: Make some functions static
-Date:   Sat, 4 May 2019 18:10:30 +0800
-Message-ID: <20190504101030.37896-1-yuehaibing@huawei.com>
+Subject: [PATCH] mt76: mt7615: Make mt7615_irq_handler static
+Date:   Sat, 4 May 2019 18:22:47 +0800
+Message-ID: <20190504102247.43720-1-yuehaibing@huawei.com>
 X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -36,82 +39,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix sparse warnings:
+Fix sparse warning:
 
-drivers/net/ethernet/xilinx/ll_temac_main.c:66:5: warning: symbol '_temac_ior_be' was not declared. Should it be static?
-drivers/net/ethernet/xilinx/ll_temac_main.c:71:6: warning: symbol '_temac_iow_be' was not declared. Should it be static?
-drivers/net/ethernet/xilinx/ll_temac_main.c:76:5: warning: symbol '_temac_ior_le' was not declared. Should it be static?
-drivers/net/ethernet/xilinx/ll_temac_main.c:81:6: warning: symbol '_temac_iow_le' was not declared. Should it be static?
-drivers/net/ethernet/xilinx/ll_temac_main.c:648:6: warning: symbol 'ptr_to_txbd' was not declared. Should it be static?
-drivers/net/ethernet/xilinx/ll_temac_main.c:654:6: warning: symbol 'ptr_from_txbd' was not declared. Should it be static?
+drivers/net/wireless/mediatek/mt76/mt7615/pci.c:37:13:
+ warning: symbol 'mt7615_irq_handler' was not declared. Should it be static?
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/ethernet/xilinx/ll_temac_main.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index ca95c72..530a525 100644
---- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-+++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -63,22 +63,22 @@
-  * Low level register access functions
-  */
- 
--u32 _temac_ior_be(struct temac_local *lp, int offset)
-+static u32 _temac_ior_be(struct temac_local *lp, int offset)
- {
- 	return ioread32be(lp->regs + offset);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/pci.c b/drivers/net/wireless/mediatek/mt76/mt7615/pci.c
+index 11122bd..c181e59 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/pci.c
+@@ -34,7 +34,7 @@ void mt7615_rx_poll_complete(struct mt76_dev *mdev, enum mt76_rxq_id q)
+ 	mt7615_irq_enable(dev, MT_INT_RX_DONE(q));
  }
  
--void _temac_iow_be(struct temac_local *lp, int offset, u32 value)
-+static void _temac_iow_be(struct temac_local *lp, int offset, u32 value)
+-irqreturn_t mt7615_irq_handler(int irq, void *dev_instance)
++static irqreturn_t mt7615_irq_handler(int irq, void *dev_instance)
  {
- 	return iowrite32be(value, lp->regs + offset);
- }
- 
--u32 _temac_ior_le(struct temac_local *lp, int offset)
-+static u32 _temac_ior_le(struct temac_local *lp, int offset)
- {
- 	return ioread32(lp->regs + offset);
- }
- 
--void _temac_iow_le(struct temac_local *lp, int offset, u32 value)
-+static void _temac_iow_le(struct temac_local *lp, int offset, u32 value)
- {
- 	return iowrite32(value, lp->regs + offset);
- }
-@@ -645,25 +645,25 @@ static void temac_adjust_link(struct net_device *ndev)
- 
- #ifdef CONFIG_64BIT
- 
--void ptr_to_txbd(void *p, struct cdmac_bd *bd)
-+static void ptr_to_txbd(void *p, struct cdmac_bd *bd)
- {
- 	bd->app3 = (u32)(((u64)p) >> 32);
- 	bd->app4 = (u32)((u64)p & 0xFFFFFFFF);
- }
- 
--void *ptr_from_txbd(struct cdmac_bd *bd)
-+static void *ptr_from_txbd(struct cdmac_bd *bd)
- {
- 	return (void *)(((u64)(bd->app3) << 32) | bd->app4);
- }
- 
- #else
- 
--void ptr_to_txbd(void *p, struct cdmac_bd *bd)
-+static void ptr_to_txbd(void *p, struct cdmac_bd *bd)
- {
- 	bd->app4 = (u32)p;
- }
- 
--void *ptr_from_txbd(struct cdmac_bd *bd)
-+static void *ptr_from_txbd(struct cdmac_bd *bd)
- {
- 	return (void *)(bd->app4);
- }
+ 	struct mt7615_dev *dev = dev_instance;
+ 	u32 intr;
 -- 
 2.7.4
 
