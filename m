@@ -2,106 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCE3713938
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 12:34:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B99713960
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 12:57:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727388AbfEDKdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 06:33:18 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:34840 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726776AbfEDKdS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 May 2019 06:33:18 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 9B1C75067530B2D663B0;
-        Sat,  4 May 2019 18:33:15 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Sat, 4 May 2019
- 18:33:08 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <yhchuang@realtek.com>, <kvalo@codeaurora.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>, <davem@davemloft.net>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] rtw88: Make some symbols static
-Date:   Sat, 4 May 2019 18:32:24 +0800
-Message-ID: <20190504103224.27524-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1727208AbfEDK5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 06:57:37 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:37910 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbfEDK5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 06:57:37 -0400
+Received: by mail-ot1-f65.google.com with SMTP id b1so7576115otp.5;
+        Sat, 04 May 2019 03:57:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PtqbTcb72Q7KVyfWSiqnpI2Et59naldE4J83TTDiAbk=;
+        b=HbavCllmnSyLHIwTYPQZBvV+IexfpvZpAijOH7LH/3wbBSs+cd0OhiHxidH3xfGF3M
+         +C0iDYL4iQpte32qkK/ZBTbU2S48PIMmygYWABxE0Uu2rfvnpNkoPn0N+xkIBWN3zdgO
+         xwbgyZYq4RVJVKbAi4AMwvsZ+Qmvag7tJsYBD9lPbaVkbTjPJq3mNyIbrqdbWFxtTagO
+         xah72q7MWHLz87X2jcdimvx60ZTf37s49B6Ge8SocgFfihIRCe7JUXju5YIBtZ04ERKY
+         9jrwPIQ/JjiCCia6A5m3TlmNhiiprzWmqICBAjSFM+WQ7PifWfbEP+dZpoTit6lIqwPF
+         0Waw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PtqbTcb72Q7KVyfWSiqnpI2Et59naldE4J83TTDiAbk=;
+        b=n2XCnJ0J8+I4phSE9oY6gAksZF7T/zQMUz2PepdXHqX9D44b7jS7av2yiLr9B5+Qhp
+         xrWU2eWcjMHQLuzDTk9p5L/OUbRMaLlZmnqdZG4hBsdqDfpQHj4+uPNgEwAbnkbl8fyc
+         2zRsuCkcHDF9j3faPLUaJF0hkdv8kGs1kTb/gFCrtOyOSKuHN7X7B5ba1uvRLjXxtjMo
+         8n8Y5LbgB0Ayotm2yUyzvGLP8Y9uHQH2KZeunKnVKd5bhjeIv1anZxZ5EG0pzb9rrUbY
+         rCKlV+SdPt6cCsAkB+NnkQcwj982I0PsduPiXKHz4hdH+YEF+t9fK62oaD/isfazygvd
+         GcDQ==
+X-Gm-Message-State: APjAAAV160VF4nnzA03WE6DggYkb/0PNvhPmvQSz8EQ2pdS+ofaG3gdG
+        ynelD4M8Yad2BaMP/85G8w1UL2/pYh/hppnuT/cGS7No
+X-Google-Smtp-Source: APXvYqxJusKgJURVXUVLzDE2XjKyLIJZvdJlVTmwtwordrYhDZcxPBU+rlwhXgx9E/7iP8tCkp2bpzWnGN1Iq6I1KRM=
+X-Received: by 2002:a9d:77d6:: with SMTP id w22mr9767065otl.154.1556967456419;
+ Sat, 04 May 2019 03:57:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+References: <20190503154007.32495-1-kristian.evensen@gmail.com>
+ <0326116f-f163-5ae1-ce19-6a891323eb03@6wind.com> <20190503170510.dn3z2363bsc5y4zp@salvia>
+In-Reply-To: <20190503170510.dn3z2363bsc5y4zp@salvia>
+From:   Kristian Evensen <kristian.evensen@gmail.com>
+Date:   Sat, 4 May 2019 12:57:03 +0200
+Message-ID: <CAKfDRXiTy0dMko5=_H-gi5gtW6GHdSNhJYLf5+_=x1ZkUxe8kA@mail.gmail.com>
+Subject: Re: [PATCH] netfilter: ctnetlink: Resolve conntrack L3-protocol flush regression
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>, Florian Westphal <fw@strlen.de>,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix sparse warnings:
+On Fri, May 3, 2019 at 7:05 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> Will fix this before applying, no worries.
 
-drivers/net/wireless/realtek/rtw88/phy.c:851:4: warning: symbol 'rtw_cck_size' was not declared. Should it be static?
-drivers/net/wireless/realtek/rtw88/phy.c:852:4: warning: symbol 'rtw_ofdm_size' was not declared. Should it be static?
-drivers/net/wireless/realtek/rtw88/phy.c:853:4: warning: symbol 'rtw_ht_1s_size' was not declared. Should it be static?
-drivers/net/wireless/realtek/rtw88/phy.c:854:4: warning: symbol 'rtw_ht_2s_size' was not declared. Should it be static?
-drivers/net/wireless/realtek/rtw88/phy.c:855:4: warning: symbol 'rtw_vht_1s_size' was not declared. Should it be static?
-drivers/net/wireless/realtek/rtw88/phy.c:856:4: warning: symbol 'rtw_vht_2s_size' was not declared. Should it be static?
-drivers/net/wireless/realtek/rtw88/fw.c:11:6: warning: symbol 'rtw_fw_c2h_cmd_handle_ext' was not declared. Should it be static?
-drivers/net/wireless/realtek/rtw88/fw.c:50:6: warning: symbol 'rtw_fw_send_h2c_command' was not declared. Should it be static?
+Thanks for taking care of my mistake :)
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/wireless/realtek/rtw88/fw.c  |  6 ++++--
- drivers/net/wireless/realtek/rtw88/phy.c | 13 +++++++------
- 2 files changed, 11 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
-index cf4265c..62847797 100644
---- a/drivers/net/wireless/realtek/rtw88/fw.c
-+++ b/drivers/net/wireless/realtek/rtw88/fw.c
-@@ -8,7 +8,8 @@
- #include "reg.h"
- #include "debug.h"
- 
--void rtw_fw_c2h_cmd_handle_ext(struct rtw_dev *rtwdev, struct sk_buff *skb)
-+static void rtw_fw_c2h_cmd_handle_ext(struct rtw_dev *rtwdev,
-+				      struct sk_buff *skb)
- {
- 	struct rtw_c2h_cmd *c2h;
- 	u8 sub_cmd_id;
-@@ -47,7 +48,8 @@ void rtw_fw_c2h_cmd_handle(struct rtw_dev *rtwdev, struct sk_buff *skb)
- 	}
- }
- 
--void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev, u8 *h2c)
-+static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
-+				    u8 *h2c)
- {
- 	u8 box;
- 	u8 box_state;
-diff --git a/drivers/net/wireless/realtek/rtw88/phy.c b/drivers/net/wireless/realtek/rtw88/phy.c
-index 4381b36..2105fc4 100644
---- a/drivers/net/wireless/realtek/rtw88/phy.c
-+++ b/drivers/net/wireless/realtek/rtw88/phy.c
-@@ -848,12 +848,13 @@ u8 rtw_vht_2s_rates[] = {
- 	DESC_RATEVHT2SS_MCS6, DESC_RATEVHT2SS_MCS7,
- 	DESC_RATEVHT2SS_MCS8, DESC_RATEVHT2SS_MCS9
- };
--u8 rtw_cck_size = ARRAY_SIZE(rtw_cck_rates);
--u8 rtw_ofdm_size = ARRAY_SIZE(rtw_ofdm_rates);
--u8 rtw_ht_1s_size = ARRAY_SIZE(rtw_ht_1s_rates);
--u8 rtw_ht_2s_size = ARRAY_SIZE(rtw_ht_2s_rates);
--u8 rtw_vht_1s_size = ARRAY_SIZE(rtw_vht_1s_rates);
--u8 rtw_vht_2s_size = ARRAY_SIZE(rtw_vht_2s_rates);
-+
-+static u8 rtw_cck_size = ARRAY_SIZE(rtw_cck_rates);
-+static u8 rtw_ofdm_size = ARRAY_SIZE(rtw_ofdm_rates);
-+static u8 rtw_ht_1s_size = ARRAY_SIZE(rtw_ht_1s_rates);
-+static u8 rtw_ht_2s_size = ARRAY_SIZE(rtw_ht_2s_rates);
-+static u8 rtw_vht_1s_size = ARRAY_SIZE(rtw_vht_1s_rates);
-+static u8 rtw_vht_2s_size = ARRAY_SIZE(rtw_vht_2s_rates);
- u8 *rtw_rate_section[RTW_RATE_SECTION_MAX] = {
- 	rtw_cck_rates, rtw_ofdm_rates,
- 	rtw_ht_1s_rates, rtw_ht_2s_rates,
--- 
-2.7.4
-
-
+BR,
+Kristian
