@@ -2,51 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8366B13734
-	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 06:00:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 147E71372D
+	for <lists+netdev@lfdr.de>; Sat,  4 May 2019 05:54:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725830AbfEDEAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 00:00:11 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55634 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbfEDEAK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 May 2019 00:00:10 -0400
-Received: from localhost (unknown [75.104.87.19])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D73F514D79773;
-        Fri,  3 May 2019 21:00:05 -0700 (PDT)
-Date:   Sat, 04 May 2019 00:00:01 -0400 (EDT)
-Message-Id: <20190504.000001.652024295667504645.davem@davemloft.net>
-To:     linux@roeck-us.net
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, garsilva@embeddedor.com
-Subject: Re: [PATCH] usbnet: ipheth: Remove unnecessary NULL pointer check
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1556670933-755-1-git-send-email-linux@roeck-us.net>
-References: <1556670933-755-1-git-send-email-linux@roeck-us.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 03 May 2019 21:00:10 -0700 (PDT)
+        id S1727036AbfEDDy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 May 2019 23:54:27 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:34190 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726149AbfEDDy0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 May 2019 23:54:26 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 63757C7C4594CA4E31A4;
+        Sat,  4 May 2019 11:54:24 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.439.0; Sat, 4 May 2019 11:54:17 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+CC:     YueHaibing <yuehaibing@huawei.com>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+Subject: [PATCH net-next] net: mvpp2: cls: Remove set but not used variable 'act'
+Date:   Sat, 4 May 2019 04:04:05 +0000
+Message-ID: <20190504040405.13004-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
-Date: Tue, 30 Apr 2019 17:35:33 -0700
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-> ipheth_carrier_set() is called from two locations. In
-> ipheth_carrier_check_work(), its parameter 'dev' is set with
-> container_of(work, ...) and can not be NULL. In ipheth_open(),
-> dev is extracted from netdev_priv(net) and dereferenced before
-> the call to ipheth_carrier_set(). The NULL pointer check of dev
-> in ipheth_carrier_set() is therefore unnecessary and can be removed.
-> 
-> Cc: Gustavo A. R. Silva <garsilva@embeddedor.com>
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c: In function 'mvpp2_cls_c2_build_match':
+drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c:1159:28: warning:
+ variable 'act' set but not used [-Wunused-but-set-variable]
 
-Applied to net-next.
+It is never used since introduction in
+commit 90b509b39ac9 ("net: mvpp2: cls: Add Classification offload support")
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
+index 4989fb13244f..f9623f928915 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.c
+@@ -1156,11 +1156,8 @@ static int mvpp2_port_flt_rfs_rule_insert(struct mvpp2_port *port,
+ static int mvpp2_cls_c2_build_match(struct mvpp2_rfs_rule *rule)
+ {
+ 	struct flow_rule *flow = rule->flow;
+-	struct flow_action_entry *act;
+ 	int offs = 64;
+ 
+-	act = &flow->action.entries[0];
+-
+ 	if (flow_rule_match_key(flow, FLOW_DISSECTOR_KEY_PORTS)) {
+ 		struct flow_match_ports match;
+
+
+
