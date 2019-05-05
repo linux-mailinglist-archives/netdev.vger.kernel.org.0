@@ -2,165 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA93142D3
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 00:25:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECCBB142E1
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 00:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728030AbfEEWZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 18:25:50 -0400
-Received: from mx1.mailbox.org ([80.241.60.212]:20970 "EHLO mx1.mailbox.org"
+        id S1727896AbfEEWce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 18:32:34 -0400
+Received: from mail.us.es ([193.147.175.20]:50930 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727740AbfEEWZu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 May 2019 18:25:50 -0400
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
+        id S1727754AbfEEWce (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 May 2019 18:32:34 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 8DB2611ED81
+        for <netdev@vger.kernel.org>; Mon,  6 May 2019 00:32:32 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 78A94DA704
+        for <netdev@vger.kernel.org>; Mon,  6 May 2019 00:32:32 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 6E5E2DA703; Mon,  6 May 2019 00:32:32 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7E731DA704;
+        Mon,  6 May 2019 00:32:30 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 06 May 2019 00:32:30 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.mailbox.org (Postfix) with ESMTPS id 1D64849530;
-        Mon,  6 May 2019 00:25:48 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
-        with ESMTP id BaEaXkqXw_ZL; Mon,  6 May 2019 00:25:26 +0200 (CEST)
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-To:     davem@davemloft.net
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>
-Subject: [PATCH v3 5/5] net: dsa: lantiq: Add Forwarding Database access
-Date:   Mon,  6 May 2019 00:25:10 +0200
-Message-Id: <20190505222510.14619-6-hauke@hauke-m.de>
-In-Reply-To: <20190505222510.14619-1-hauke@hauke-m.de>
-References: <20190505222510.14619-1-hauke@hauke-m.de>
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 5C9044265A31;
+        Mon,  6 May 2019 00:32:30 +0200 (CEST)
+Date:   Mon, 6 May 2019 00:32:29 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Kristian Evensen <kristian.evensen@gmail.com>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH] netfilter: ctnetlink: Resolve conntrack L3-protocol
+ flush regression
+Message-ID: <20190505223229.3ujqpwmuefd3wh7b@salvia>
+References: <20190503154007.32495-1-kristian.evensen@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190503154007.32495-1-kristian.evensen@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds functions to add and remove static entries to and from the
-forwarding database and dump the full forwarding database.
+On Fri, May 03, 2019 at 05:40:07PM +0200, Kristian Evensen wrote:
+> Commit 59c08c69c278 ("netfilter: ctnetlink: Support L3 protocol-filter
+> on flush") introduced a user-space regression when flushing connection
+> track entries. Before this commit, the nfgen_family field was not used
+> by the kernel and all entries were removed. Since this commit,
+> nfgen_family is used to filter out entries that should not be removed.
+> One example a broken tool is conntrack. conntrack always sets
+> nfgen_family to AF_INET, so after 59c08c69c278 only IPv4 entries were
+> removed with the -F parameter.
+> 
+> Pablo Neira Ayuso suggested using nfgenmsg->version to resolve the
+> regression, and this commit implements his suggestion. nfgenmsg->version
+> is so far set to zero, so it is well-suited to be used as a flag for
+> selecting old or new flush behavior. If version is 0, nfgen_family is
+> ignored and all entries are used. If user-space sets the version to one
+> (or any other value than 0), then the new behavior is used. As version
+> only can have two valid values, I chose not to add a new
+> NFNETLINK_VERSION-constant.
 
-Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/lantiq_gswip.c | 98 ++++++++++++++++++++++++++++++++++
- 1 file changed, 98 insertions(+)
-
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 80afd3b9fd80..553831df58fe 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1290,6 +1290,101 @@ static void gswip_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
- 			  GSWIP_PCE_PCTRL_0p(port));
- }
- 
-+static int gswip_port_fdb(struct dsa_switch *ds, int port,
-+			  const unsigned char *addr, u16 vid, bool add)
-+{
-+	struct gswip_priv *priv = ds->priv;
-+	struct net_device *bridge = dsa_to_port(ds, port)->bridge_dev;
-+	struct gswip_pce_table_entry mac_bridge = {0,};
-+	unsigned int cpu_port = priv->hw_info->cpu_port;
-+	int fid = -1;
-+	int i;
-+	int err;
-+
-+	if (!bridge)
-+		return -EINVAL;
-+
-+	for (i = cpu_port; i < ARRAY_SIZE(priv->vlans); i++) {
-+		if (priv->vlans[i].bridge == bridge) {
-+			fid = priv->vlans[i].fid;
-+			break;
-+		}
-+	}
-+
-+	if (fid == -1) {
-+		dev_err(priv->dev, "Port not part of a bridge\n");
-+		return -EINVAL;
-+	}
-+
-+	mac_bridge.table = GSWIP_TABLE_MAC_BRIDGE;
-+	mac_bridge.key_mode = true;
-+	mac_bridge.key[0] = addr[5] | (addr[4] << 8);
-+	mac_bridge.key[1] = addr[3] | (addr[2] << 8);
-+	mac_bridge.key[2] = addr[1] | (addr[0] << 8);
-+	mac_bridge.key[3] = fid;
-+	mac_bridge.val[0] = add ? BIT(port) : 0; /* port map */
-+	mac_bridge.val[1] = GSWIP_TABLE_MAC_BRIDGE_STATIC;
-+	mac_bridge.valid = add;
-+
-+	err = gswip_pce_table_entry_write(priv, &mac_bridge);
-+	if (err)
-+		dev_err(priv->dev, "failed to write mac brigde: %d\n", err);
-+
-+	return err;
-+}
-+
-+static int gswip_port_fdb_add(struct dsa_switch *ds, int port,
-+			      const unsigned char *addr, u16 vid)
-+{
-+	return gswip_port_fdb(ds, port, addr, vid, true);
-+}
-+
-+static int gswip_port_fdb_del(struct dsa_switch *ds, int port,
-+			      const unsigned char *addr, u16 vid)
-+{
-+	return gswip_port_fdb(ds, port, addr, vid, false);
-+}
-+
-+static int gswip_port_fdb_dump(struct dsa_switch *ds, int port,
-+			       dsa_fdb_dump_cb_t *cb, void *data)
-+{
-+	struct gswip_priv *priv = ds->priv;
-+	struct gswip_pce_table_entry mac_bridge = {0,};
-+	unsigned char addr[6];
-+	int i;
-+	int err;
-+
-+	for (i = 0; i < 2048; i++) {
-+		mac_bridge.table = GSWIP_TABLE_MAC_BRIDGE;
-+		mac_bridge.index = i;
-+
-+		err = gswip_pce_table_entry_read(priv, &mac_bridge);
-+		if (err) {
-+			dev_err(priv->dev, "failed to write mac brigde: %d\n",
-+				err);
-+			return err;
-+		}
-+
-+		if (!mac_bridge.valid)
-+			continue;
-+
-+		addr[5] = mac_bridge.key[0] & 0xff;
-+		addr[4] = (mac_bridge.key[0] >> 8) & 0xff;
-+		addr[3] = mac_bridge.key[1] & 0xff;
-+		addr[2] = (mac_bridge.key[1] >> 8) & 0xff;
-+		addr[1] = mac_bridge.key[2] & 0xff;
-+		addr[0] = (mac_bridge.key[2] >> 8) & 0xff;
-+		if (mac_bridge.val[1] & GSWIP_TABLE_MAC_BRIDGE_STATIC) {
-+			if (mac_bridge.val[0] & BIT(port))
-+				cb(addr, 0, true, data);
-+		} else {
-+			if (((mac_bridge.val[0] & GENMASK(7, 4)) >> 4) == port)
-+				cb(addr, 0, false, data);
-+		}
-+	}
-+	return 0;
-+}
-+
- static void gswip_phylink_validate(struct dsa_switch *ds, int port,
- 				   unsigned long *supported,
- 				   struct phylink_link_state *state)
-@@ -1505,6 +1600,9 @@ static const struct dsa_switch_ops gswip_switch_ops = {
- 	.port_vlan_add		= gswip_port_vlan_add,
- 	.port_vlan_del		= gswip_port_vlan_del,
- 	.port_stp_state_set	= gswip_port_stp_state_set,
-+	.port_fdb_add		= gswip_port_fdb_add,
-+	.port_fdb_del		= gswip_port_fdb_del,
-+	.port_fdb_dump		= gswip_port_fdb_dump,
- 	.phylink_validate	= gswip_phylink_validate,
- 	.phylink_mac_config	= gswip_phylink_mac_config,
- 	.phylink_mac_link_down	= gswip_phylink_mac_link_down,
--- 
-2.20.1
-
+Applied, thanks.
