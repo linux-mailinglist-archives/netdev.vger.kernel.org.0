@@ -2,110 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2366313C93
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 03:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86E1F13CB6
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 04:00:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727020AbfEEBXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 21:23:09 -0400
-Received: from mga18.intel.com ([134.134.136.126]:64242 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726334AbfEEBXJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 May 2019 21:23:09 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 May 2019 18:23:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,431,1549958400"; 
-   d="asc'?scan'208";a="343683608"
-Received: from vbhyrapu-mobl.amr.corp.intel.com ([10.252.138.72])
-  by fmsmga006.fm.intel.com with ESMTP; 04 May 2019 18:23:07 -0700
-Message-ID: <7aeaec2041875afecbe63301dc51809aa1a3a93d.camel@intel.com>
-Subject: Re: [net-next v2 11/11] i40e: Introduce recovery mode support
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alice Michael <alice.michael@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Piotr Marczak <piotr.marczak@intel.com>,
-        Don Buchholz <donald.buchholz@intel.com>
-Date:   Sat, 04 May 2019 18:23:06 -0700
-In-Reply-To: <20190504073522.3bc7e00d@cakuba.netronome.com>
-References: <20190503230939.6739-1-jeffrey.t.kirsher@intel.com>
-         <20190503230939.6739-12-jeffrey.t.kirsher@intel.com>
-         <20190504073522.3bc7e00d@cakuba.netronome.com>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-xPeOpsrLU2bXUqCatDDm"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1727020AbfEECAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 22:00:34 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7158 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726390AbfEECAe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 May 2019 22:00:34 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 96B4D66BF88C1F477657;
+        Sun,  5 May 2019 10:00:31 +0800 (CST)
+Received: from [127.0.0.1] (10.184.225.177) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Sun, 5 May 2019
+ 10:00:22 +0800
+Subject: [PATCH iproute2 v4] ipnetns: use-after-free problem in
+ get_netnsid_from_name func
+From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
+To:     <stephen@networkplumber.org>, <liuhangbin@gmail.com>,
+        <kuznet@ms2.inr.ac.ru>
+CC:     <nicolas.dichtel@6wind.com>, <phil@nwl.cc>,
+        "wangxiaogang (F)" <wangxiaogang3@huawei.com>,
+        Mingfangsen <mingfangsen@huawei.com>,
+        "Zhoukang (A)" <zhoukang7@huawei.com>, <kouhuiying@huawei.com>,
+        <netdev@vger.kernel.org>
+References: <f6c76a60-d5c4-700f-2fbf-912fc1545a31@huawei.com>
+ <815afacc-4cd2-61b4-2181-aabce6582309@huawei.com>
+ <1fca256d-fbce-4da9-471f-14573be4ea21@huawei.com>
+Message-ID: <c28161a3-0a5a-a55f-485a-c5c44a697e6e@huawei.com>
+Date:   Sun, 5 May 2019 09:59:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.0
 MIME-Version: 1.0
+In-Reply-To: <1fca256d-fbce-4da9-471f-14573be4ea21@huawei.com>
+Content-Type: text/plain; charset="gbk"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.225.177]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Zhiqiang Liu <liuzhiqiang26@huawei.com>
 
---=-xPeOpsrLU2bXUqCatDDm
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Follow the following steps:
+# ip netns add net1
+# export MALLOC_MMAP_THRESHOLD_=0
+# ip netns list
+then Segmentation fault (core dumped) will occur.
 
-On Sat, 2019-05-04 at 07:35 -0400, Jakub Kicinski wrote:
-> On Fri,  3 May 2019 16:09:39 -0700, Jeff Kirsher wrote:
-> > From: Alice Michael <alice.michael@intel.com>
-> >=20
-> > This patch introduces "recovery mode" to the i40e driver. It is
-> > part of a new Any2Any idea of upgrading the firmware. In this
-> > approach, it is required for the driver to have support for
-> > "transition firmware", that is used for migrating from structured
-> > to flat firmware image. In this new, very basic mode, i40e driver
-> > must be able to handle particular IOCTL calls from the NVM Update
-> > Tool and run a small set of AQ commands.
->=20
-> What's the "particular IOCTL" you speak of?  This patch adds a fake
-> netdev with a .set_eeprom callback.  Are you wrapping the AQ commands
-> in the set_eeprom now?  Or is there some other IOCTL here?
->=20
-> Let me repeat my other question - can the netdev you spawn in
-> i40e_init_recovery_mode() pass traffic?
->=20
-> > These additional AQ commands are part of the interface used by
-> > the NVMUpdate tool.  The NVMUpdate tool contains all of the
-> > necessary logic to reference these new AQ commands.  The end user
-> > experience remains the same, they are using the NVMUpdate tool to
-> > update the NVM contents.
->=20
-> IOW to update FW users still need your special tool, but they can use
-> ethtool -f to.. change the app-specific (DPDK) parser profiles?  Joy :)
->=20
-> > Signed-off-by: Alice Michael <alice.michael@intel.com>
-> > Signed-off-by: Piotr Marczak <piotr.marczak@intel.com>
-> > Tested-by: Don Buchholz <donald.buchholz@intel.com>
-> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+In get_netnsid_from_name func, answer is freed before rta_getattr_u32(tb[NETNSA_NSID]),
+where tb[] refers to answer`s content. If we set MALLOC_MMAP_THRESHOLD_=0, mmap will
+be adoped to malloc memory, which will be freed immediately after calling free func.
+So reading tb[NETNSA_NSID] will access the released memory after free(answer).
 
-I will see if I can get either the author or one of our tools developers
-respond to your questions while I am on vacation (all next week).  If not,
-I will respond in a week.  Sorry in advance, if you have to wait for a week
-for a response.
+Here, we will call get_netnsid_from_name(tb[NETNSA_NSID]) before free(answer).
 
---=-xPeOpsrLU2bXUqCatDDm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+Fixes: 86bf43c7c2f ("lib/libnetlink: update rtnl_talk to support malloc buff at run time")
+Reported-by: Huiying Kou <kouhuiying@huawei.com>
+Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Acked-by: Phil Sutter <phil@nwl.cc>
+---
+v3->v4: optimize code suggested by David Ahern
+v2->v3: add Cc:netdev@vger.kernel.org suggested by Phil Sutter
+v1->v2: correct commit log
 
------BEGIN PGP SIGNATURE-----
+ ip/ipnetns.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAlzOOvsACgkQ5W/vlVpL
-7c7UFw//Z6Fe3bXcPPi8aqUItQyUnBmEazY1gv3gLdFKwjIbbCYLYjEecf65Zjr/
-P6vc9/GkexhZMNA5/Es3XMpkxQzeqAKws1ioAtaAAhez7mw23ueIe9OrE/fUsXc6
-EQgHheycrwXomkuiaEzwcxa6JMspA0o46JGD3mpahFQhsbBezceTjoh1+zcQk2Ed
-PMxABnFrXWxTb2PO6tF9QFHRVb2Gqm6yNrE46i/FYjCLoSmroyPpEbUIt8Kd5vZq
-GRMrneqOZV4aqt/Zxw86AWT9GkjurW6fZcrJFLdEVouI9A3ZhK7XbKkJeCFpYEBT
-eYUcGTtoZFZWQMFbbR6ztVcYUUfJ/e/QZQY7tj02wckWef56oH8A1zOkwxeAORcy
-hZrQm2bSmRGiWJlPZJa3mYHOrT1A9xzJksu9fR24AxV7ytliVm5uzM6ThpQC4imD
-dXe/e8ZptdpGSlsXc7Uwv1LDcub9rHCEBwMFU3NBLugXKE+4QBtLaZDUvenAGtLw
-n/OiAT7b5V87x3rBhMqinJDXTMQWYtVbKJbWkxKDCL44SSMN4QDlKK/D8WVqMjri
-BtkKra/89NQVxvBHmlPtZdy2YoXcBoGUlX4j/aQOhrnLbBwlesrcxvR45B2Nh8Dq
-xvsnWb8UCeUQyN0EwZnuCkHM9S0g9fPzXKyBv51duK00ZYqE2+U=
-=yRF5
------END PGP SIGNATURE-----
+diff --git a/ip/ipnetns.c b/ip/ipnetns.c
+index 430d884..52aefac 100644
+--- a/ip/ipnetns.c
++++ b/ip/ipnetns.c
+@@ -107,7 +107,7 @@ int get_netnsid_from_name(const char *name)
+ 	struct nlmsghdr *answer;
+ 	struct rtattr *tb[NETNSA_MAX + 1];
+ 	struct rtgenmsg *rthdr;
+-	int len, fd;
++	int len, fd, ret = -1;
 
---=-xPeOpsrLU2bXUqCatDDm--
+ 	netns_nsid_socket_init();
+
+@@ -124,23 +124,22 @@ int get_netnsid_from_name(const char *name)
+
+ 	/* Validate message and parse attributes */
+ 	if (answer->nlmsg_type == NLMSG_ERROR)
+-		goto err_out;
++		goto out;
+
+ 	rthdr = NLMSG_DATA(answer);
+ 	len = answer->nlmsg_len - NLMSG_SPACE(sizeof(*rthdr));
+ 	if (len < 0)
+-		goto err_out;
++		goto out;
+
+ 	parse_rtattr(tb, NETNSA_MAX, NETNS_RTA(rthdr), len);
+
+ 	if (tb[NETNSA_NSID]) {
+-		free(answer);
+-		return rta_getattr_u32(tb[NETNSA_NSID]);
++		ret = rta_getattr_u32(tb[NETNSA_NSID]);
+ 	}
+
+-err_out:
++out:
+ 	free(answer);
+-	return -1;
++	return ret;
+ }
+
+ struct nsid_cache {
+-- 
+1.8.3.1
+
+
 
