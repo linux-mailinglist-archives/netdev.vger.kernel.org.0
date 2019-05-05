@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9877D13ECE
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 12:20:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A3F13ECA
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 12:19:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727691AbfEEKUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 06:20:03 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:42700 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727576AbfEEKTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 06:19:46 -0400
-Received: by mail-wr1-f67.google.com with SMTP id l2so13422622wrb.9
-        for <netdev@vger.kernel.org>; Sun, 05 May 2019 03:19:45 -0700 (PDT)
+        id S1727601AbfEEKTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 06:19:53 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54285 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727584AbfEEKTs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 06:19:48 -0400
+Received: by mail-wm1-f68.google.com with SMTP id b10so12241908wmj.4
+        for <netdev@vger.kernel.org>; Sun, 05 May 2019 03:19:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=uAJqUDEHClJ+6muOD0Ci8z+C8CfsR6yL8j/FHzuUqfc=;
-        b=ewgjN9luttj9wW8VZR2GQsuOWTghpEx/+urzeQkC5Xf+Efk0gskY1e7l1nC1UQUpmw
-         CoknNcSrVwk0ptr5fqjC1ue9FG/WDwboTvhlM4oKmBW2yTwQgA6CsQh6yf6h6R150XeF
-         ey5420JprFW4u4h4U/2IbDJsNs33z7vzoCX7s8CYZmZ0eAnBHrcwrKL/a2GDgoJO0jiC
-         J9+eHej/2jEwJCeTBdeOmZn3iJU6UiZ0DWcfM49hzZs5Zcse65X9Tj67L0g7uYL8vOzE
-         nELaXYj7cbUbuj8PMJqhbtb0CCJ47LCjyoUIlfREP9UWVa2UsLv1CWEczRfEkFiqNcjI
-         BcCw==
+        bh=MprYmig8H31OGazDpgfBsjZmAtWycVx3vWhU4ImFGTE=;
+        b=Bvg204N0OUAKTmzENhWaKg0ZrTJDbfR2La2p2BdkK5UttsDS8Ing3yfvbmO8pmwZ0g
+         1KgKL7UTNSGDcXwbV/RtqX8yC/AGlClwvBXpLZaSeT08PMdEDREw5im6Z83RY/VQqkBQ
+         /3vJo9mAO1uoO6+kf3oPwrMg+AJ1OJfDI1XXi/ya+6pxY8vk0Gh3tdQgfzJbF0DDJAEh
+         HURWq+xHfsHAsrnvAIUfjuJo2G1z19hA+bJD1S0DWFJkXZHFiNJ6nwKlneB1//4zvnAI
+         6NDTPkSyqMh/xp+M45A87dcXxEohdbxhWNpc9o3lpIz74LdYdU1nX/n57DKXdjixTeMN
+         52ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=uAJqUDEHClJ+6muOD0Ci8z+C8CfsR6yL8j/FHzuUqfc=;
-        b=tKYJa/mTm2CGp1LPUEhrnPmKo8jPGHTpPgoQZ+21rmZ9NZEp7N9VXYKZ8ZRXkt40As
-         rMU3Dn1oDB8IQE0mzNroQLTp00cM7UdbbEw9LNPUT1zpV0PN/P9Ctholgmtz5daS5oCy
-         3mXDuNjVsSrQOXduk67zBG72ncH387+m94nI1xvSoGB7aQyujlSxiGsFDk7wrfQ5I8yz
-         XoUMktmpJ6CXWBYuFd34cWN97AytlxCT4QKkE4kWyOV3QcuYBgdjX34PocUeWApBS6Yu
-         Dacv28eZBEFmqKo3KENnevX7QWkRR2Qq35oe4FzfZ657nt/SjnSfC7O/GRB0+mj6VsqH
-         Hbvg==
-X-Gm-Message-State: APjAAAXxGUxaGf7BDeYywyxldYQzg5pV2CDintJisW+TEqMKutroqV62
-        YQW6AzTkb/QIA7rOhHxoWJ4=
-X-Google-Smtp-Source: APXvYqyd+elQFkHFNmOBPlmq8a9J/hOjJRIFBhuaBG1ns22WVYFELuwqmOAYQe+jYdmN6QLWau0zfw==
-X-Received: by 2002:adf:800e:: with SMTP id 14mr14364064wrk.303.1557051584554;
-        Sun, 05 May 2019 03:19:44 -0700 (PDT)
+        bh=MprYmig8H31OGazDpgfBsjZmAtWycVx3vWhU4ImFGTE=;
+        b=Wm7lRr/I5I3fKdBBiF2gVkm4dJjaGTA1dTUOAoIKG1OzBEglbTPmKn2PVjo4bYbryt
+         wRbZEg+rUbhE+Clves1wJVp/UTiTdQDph7w0GXbqxAqSsd8v33GeZNMkCkPAkvAL4V6v
+         uo0QHzgN74z2ZCnGDDOZilgDpZt6NRHdCS1WQkAKSst4zaL8S7t+KoSqwCdutmWYTVZ8
+         oScogl3pUID2JYRydc5gC1K/wG2qBcZgR2xmaM2pka38aD5N0sLBjsCb1BjwVRmryhV4
+         jaSKNe3WZ6I/Oqw7DefKpcxEwSFz+nRGiW6ZplgMTNV57DMvHxle6ZnjV1bhJdQqAqxm
+         +3BA==
+X-Gm-Message-State: APjAAAXuU8wTPN68Rm6emNzkL76JJ9Biu9fkyS90KgIOZLKjbffJ2xnk
+        RQaRYEdC1YMY6PXIUl1m5UdK7Zxj
+X-Google-Smtp-Source: APXvYqzoSdllzg4qfJhXEUJH6AF3gALZTmMbu6RZ26xi0reoThDGJkZeyuKR+g1hc+C3rKkrScGG8g==
+X-Received: by 2002:a1c:eb18:: with SMTP id j24mr13476672wmh.32.1557051585532;
+        Sun, 05 May 2019 03:19:45 -0700 (PDT)
 Received: from localhost.localdomain (5-12-225-227.residential.rdsnet.ro. [5.12.225.227])
-        by smtp.gmail.com with ESMTPSA id n2sm12333193wra.89.2019.05.05.03.19.43
+        by smtp.gmail.com with ESMTPSA id n2sm12333193wra.89.2019.05.05.03.19.44
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 05 May 2019 03:19:44 -0700 (PDT)
+        Sun, 05 May 2019 03:19:45 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next v3 05/10] net: dsa: Keep private info in the skb->cb
-Date:   Sun,  5 May 2019 13:19:24 +0300
-Message-Id: <20190505101929.17056-6-olteanv@gmail.com>
+Subject: [PATCH net-next v3 06/10] net: dsa: Add support for deferred xmit
+Date:   Sun,  5 May 2019 13:19:25 +0300
+Message-Id: <20190505101929.17056-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190505101929.17056-1-olteanv@gmail.com>
 References: <20190505101929.17056-1-olteanv@gmail.com>
@@ -58,77 +58,212 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Map a DSA structure over the 48-byte control block that will hold
-skb info on transmit and receive. This is only for use within the DSA
-processing layer (e.g. communicating between DSA core and tagger) and
-not for passing info around with other layers such as the master net
-device.
+Some hardware needs to take work to get convinced to receive frames on
+the CPU port (such as the sja1105 which takes temporary L2 forwarding
+rules over SPI that last for a single frame). Such work needs a
+sleepable context, and because the regular .ndo_start_xmit is atomic,
+this cannot be done in the tagger. So introduce a generic DSA mechanism
+that sets up a transmit skb queue and a workqueue for deferred
+transmission.
 
-Also add a DSA_SKB_CB_PRIV() macro which retrieves a pointer to the
-space up to 48 bytes that the DSA structure does not use. This space can
-be used for drivers to add their own private info.
+The new driver callback (.port_deferred_xmit) is in dsa_switch and not
+in the tagger because the operations that require sleeping typically
+also involve interacting with the hardware, and not simply skb
+manipulations. Therefore having it there simplifies the structure a bit
+and makes it unnecessary to export functions from the driver to the
+tagger.
 
-One use is for the PTP timestamping code path. When cloning a skb,
-annotate the original with a pointer to the clone, which the driver can
-then find easily and place the timestamp to. This avoids the need of a
-separate queue to hold clones and a way to match an original to a cloned
-skb.
+The driver is responsible of calling dsa_enqueue_skb which transfers it
+to the master netdevice. This is so that it has a chance of performing
+some more work afterwards, such as cleanup or TX timestamping.
+
+To tell DSA that skb xmit deferral is required, I have thought about
+changing the return type of the tagger .xmit from struct sk_buff * into
+a enum dsa_tx_t that could potentially encode a DSA_XMIT_DEFER value.
+
+But the trailer tagger is reallocating every skb on xmit and therefore
+making a valid use of the pointer return value. So instead of reworking
+the API in complicated ways, right now a boolean property in the newly
+introduced DSA_SKB_CB is set.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v3:
-  - Fixed the following checkpatch warnings in DSA_SKB_CB_CLONE:
-    Macro argument reuse 'skb' - possible side-effects?
-    Macro argument reuse 'clone' - possible side-effects?
-
-Changes in v2:
   - None.
 
- include/net/dsa.h | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+Changes in v2:
+  - Prevented a race condition between the xmit workqueue and the
+    dsa_slave_suspend.
+
+ include/net/dsa.h  | 12 +++++++++
+ net/dsa/dsa_priv.h |  2 ++
+ net/dsa/slave.c    | 64 +++++++++++++++++++++++++++++++++++++---------
+ 3 files changed, 66 insertions(+), 12 deletions(-)
 
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index c90ceeec7d1f..d628587e0bde 100644
+index d628587e0bde..0260b73938e2 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -83,6 +83,37 @@ struct dsa_device_ops {
- #define MODULE_ALIAS_DSA_TAG_DRIVER(__proto)				\
- 	MODULE_ALIAS(DSA_TAG_DRIVER_ALIAS __stringify(__proto##_VALUE))
+@@ -85,6 +85,7 @@ struct dsa_device_ops {
  
-+struct dsa_skb_cb {
-+	struct sk_buff *clone;
-+};
+ struct dsa_skb_cb {
+ 	struct sk_buff *clone;
++	bool deferred_xmit;
+ };
+ 
+ struct __dsa_skb_cb {
+@@ -205,6 +206,10 @@ struct dsa_port {
+ 	struct net_device	*bridge_dev;
+ 	struct devlink_port	devlink_port;
+ 	struct phylink		*pl;
 +
-+struct __dsa_skb_cb {
-+	struct dsa_skb_cb cb;
-+	u8 priv[48 - sizeof(struct dsa_skb_cb)];
-+};
++	struct work_struct	xmit_work;
++	struct sk_buff_head	xmit_queue;
 +
-+#define __DSA_SKB_CB(skb) ((struct __dsa_skb_cb *)((skb)->cb))
+ 	/*
+ 	 * Original copy of the master netdev ethtool_ops
+ 	 */
+@@ -539,6 +544,12 @@ struct dsa_switch_ops {
+ 				 struct sk_buff *clone, unsigned int type);
+ 	bool	(*port_rxtstamp)(struct dsa_switch *ds, int port,
+ 				 struct sk_buff *skb, unsigned int type);
 +
-+#define DSA_SKB_CB(skb) ((struct dsa_skb_cb *)((skb)->cb))
++	/*
++	 * Deferred frame Tx
++	 */
++	netdev_tx_t (*port_deferred_xmit)(struct dsa_switch *ds, int port,
++					  struct sk_buff *skb);
+ };
+ 
+ struct dsa_switch_driver {
+@@ -634,6 +645,7 @@ static inline int call_dsa_notifiers(unsigned long val, struct net_device *dev,
+ #define BRCM_TAG_GET_QUEUE(v)		((v) & 0xff)
+ 
+ 
++netdev_tx_t dsa_enqueue_skb(struct sk_buff *skb, struct net_device *dev);
+ int dsa_port_get_phy_strings(struct dsa_port *dp, uint8_t *data);
+ int dsa_port_get_ethtool_phy_stats(struct dsa_port *dp, uint64_t *data);
+ int dsa_port_get_phy_sset_count(struct dsa_port *dp);
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index b434f5ff55ab..8f1222324646 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -174,6 +174,8 @@ int dsa_slave_resume(struct net_device *slave_dev);
+ int dsa_slave_register_notifier(void);
+ void dsa_slave_unregister_notifier(void);
+ 
++void *dsa_defer_xmit(struct sk_buff *skb, struct net_device *dev);
 +
-+#define DSA_SKB_CB_COPY(nskb, skb)		\
-+	{ *__DSA_SKB_CB(nskb) = *__DSA_SKB_CB(skb); }
+ static inline struct dsa_port *dsa_slave_to_port(const struct net_device *dev)
+ {
+ 	struct dsa_slave_priv *p = netdev_priv(dev);
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 8ad9bf957da1..534dfbc27b1e 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -120,6 +120,9 @@ static int dsa_slave_close(struct net_device *dev)
+ 	struct net_device *master = dsa_slave_to_master(dev);
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 
++	cancel_work_sync(&dp->xmit_work);
++	skb_queue_purge(&dp->xmit_queue);
 +
-+#define DSA_SKB_CB_ZERO(skb)			\
-+	{ *__DSA_SKB_CB(skb) = (struct __dsa_skb_cb) {0}; }
+ 	phylink_stop(dp->pl);
+ 
+ 	dsa_port_disable(dp);
+@@ -430,6 +433,24 @@ static void dsa_skb_tx_timestamp(struct dsa_slave_priv *p,
+ 	kfree_skb(clone);
+ }
+ 
++netdev_tx_t dsa_enqueue_skb(struct sk_buff *skb, struct net_device *dev)
++{
++	/* SKB for netpoll still need to be mangled with the protocol-specific
++	 * tag to be successfully transmitted
++	 */
++	if (unlikely(netpoll_tx_running(dev)))
++		return dsa_slave_netpoll_send_skb(dev, skb);
 +
-+#define DSA_SKB_CB_PRIV(skb)			\
-+	((void *)(skb)->cb + offsetof(struct __dsa_skb_cb, priv))
++	/* Queue the SKB for transmission on the parent interface, but
++	 * do not modify its EtherType
++	 */
++	skb->dev = dsa_slave_to_master(dev);
++	dev_queue_xmit(skb);
 +
-+#define DSA_SKB_CB_CLONE(_clone, _skb)		\
-+	{					\
-+		struct sk_buff *clone = _clone;	\
-+		struct sk_buff *skb = _skb;	\
-+						\
-+		DSA_SKB_CB_COPY(clone, skb);	\
-+		DSA_SKB_CB(skb)->clone = clone; \
-+	}
++	return NETDEV_TX_OK;
++}
++EXPORT_SYMBOL_GPL(dsa_enqueue_skb);
 +
- struct dsa_switch_tree {
- 	struct list_head	list;
+ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct dsa_slave_priv *p = netdev_priv(dev);
+@@ -452,23 +473,37 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	 */
+ 	nskb = p->xmit(skb, dev);
+ 	if (!nskb) {
+-		kfree_skb(skb);
++		if (!DSA_SKB_CB(skb)->deferred_xmit)
++			kfree_skb(skb);
+ 		return NETDEV_TX_OK;
+ 	}
+ 
+-	/* SKB for netpoll still need to be mangled with the protocol-specific
+-	 * tag to be successfully transmitted
+-	 */
+-	if (unlikely(netpoll_tx_running(dev)))
+-		return dsa_slave_netpoll_send_skb(dev, nskb);
++	return dsa_enqueue_skb(nskb, dev);
++}
+ 
+-	/* Queue the SKB for transmission on the parent interface, but
+-	 * do not modify its EtherType
+-	 */
+-	nskb->dev = dsa_slave_to_master(dev);
+-	dev_queue_xmit(nskb);
++void *dsa_defer_xmit(struct sk_buff *skb, struct net_device *dev)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 
+-	return NETDEV_TX_OK;
++	DSA_SKB_CB(skb)->deferred_xmit = true;
++
++	skb_queue_tail(&dp->xmit_queue, skb);
++	schedule_work(&dp->xmit_work);
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(dsa_defer_xmit);
++
++static void dsa_port_xmit_work(struct work_struct *work)
++{
++	struct dsa_port *dp = container_of(work, struct dsa_port, xmit_work);
++	struct dsa_switch *ds = dp->ds;
++	struct sk_buff *skb;
++
++	if (unlikely(!ds->ops->port_deferred_xmit))
++		return;
++
++	while ((skb = skb_dequeue(&dp->xmit_queue)) != NULL)
++		ds->ops->port_deferred_xmit(ds, dp->index, skb);
+ }
+ 
+ /* ethtool operations *******************************************************/
+@@ -1320,6 +1355,9 @@ int dsa_slave_suspend(struct net_device *slave_dev)
+ 	if (!netif_running(slave_dev))
+ 		return 0;
+ 
++	cancel_work_sync(&dp->xmit_work);
++	skb_queue_purge(&dp->xmit_queue);
++
+ 	netif_device_detach(slave_dev);
+ 
+ 	rtnl_lock();
+@@ -1407,6 +1445,8 @@ int dsa_slave_create(struct dsa_port *port)
+ 	}
+ 	p->dp = port;
+ 	INIT_LIST_HEAD(&p->mall_tc_list);
++	INIT_WORK(&port->xmit_work, dsa_port_xmit_work);
++	skb_queue_head_init(&port->xmit_queue);
+ 	p->xmit = cpu_dp->tag_ops->xmit;
+ 	port->slave = slave_dev;
  
 -- 
 2.17.1
