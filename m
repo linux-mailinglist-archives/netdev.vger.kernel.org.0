@@ -2,137 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5E513DE8
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 08:28:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB97913DEB
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 08:30:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727253AbfEEG2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 02:28:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34040 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725792AbfEEG2t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 May 2019 02:28:49 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2F12220644;
-        Sun,  5 May 2019 06:28:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557037727;
-        bh=MdPpVfEbe2rIlXFICRizBGJh3Cmhzu8vV5pSJ/5rgpY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=w19skL2t/X8m0ixk8fYQGe3W2CmqtPIre/1mdhAg+ydPnsvxxk0UcjPR5uc64By0K
-         FK3a81KyrWq15jIxBO8cAHFiX+gAXoxTj0RuYqxHlTMKT7SHqseP/jRr+Vusp8NanK
-         DmipEnctNaX84//tnhXOzbXiqidXi5Co7Uf37H7w=
-Date:   Sun, 5 May 2019 09:28:44 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Moni Shoua <monis@mellanox.com>
-Subject: Re: [net-next][PATCH v2 1/2] rds: handle unsupported rdma request to
- fs dax memory
-Message-ID: <20190505062844.GB6938@mtr-leonro.mtl.com>
-References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
- <1556581040-4812-2-git-send-email-santosh.shilimkar@oracle.com>
- <20190501074415.GB7676@mtr-leonro.mtl.com>
- <2829f9d8-0383-d141-46c3-f2a09cd542b2@oracle.com>
- <20190502062120.GM7676@mtr-leonro.mtl.com>
- <b7781380-e85b-78b4-f89e-1e627e213896@oracle.com>
+        id S1727463AbfEEGaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 02:30:18 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:36441 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725792AbfEEGaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 02:30:18 -0400
+Received: by mail-lj1-f193.google.com with SMTP id y8so8229496ljd.3;
+        Sat, 04 May 2019 23:30:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Z6kO7dxsMMunnZKARKyE/0LnltVHVlMXkjj/mA+/oFk=;
+        b=UAP36nyOe2ByH+5om3PIY6bb2LytGPegl2pdbrf+lHEtrVtTM1CcuX8tFo2z2FR+Mg
+         vNZKygmXN/Rk3n7tIDKc3Zff5r7puDOeq/9QfgzrRBeR1N13nikcAr1X6WR1DAZygFz3
+         fz6c84tlZQKs9uon9uyxghe6clzo3bc77vJnjfBNwIFNAJ+e2rToy+4hzmo/PAxJj7S9
+         3h474cQyPIj/a2sFBs0A4Sm82lgz067TwCDZAr9UBUe95zkv0WtpZeo92bFlW7Dbn+8o
+         8x0HV21XHZqpYZaKcCPnb+FDR0jUCii5TNBCdRQxzmUM/kVwAqYdrWYQ2tKVrTAOjE5Q
+         uJ4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Z6kO7dxsMMunnZKARKyE/0LnltVHVlMXkjj/mA+/oFk=;
+        b=bzLDIF/m+vHBLlEz2BT7ujq5cSEZoVKztO4cQovVJ44Omj8CeesJ9dcnk3il6hYgVi
+         I/QY137Na4Yodox8R93YCRduImB8IGJv/xr5jPlU+7B7P68YGLYU2OSuQLK9RLotQ3p6
+         X4kEg7k6Il502dfu+b+4UAQ3Kw0/lgzI5fBPpUlyV1/1Nz6T8c7S98Fhl0NepQfZee/9
+         Qt0UYIzdcvNEUc8CB910crJZwrNlPPKXXhF3+VSCq6g29fPvxu1qQQcxDen04c9B7vLU
+         FANsMwQAbtM+kzh1d0co9B7b4lL5x57yonNNnIYEj/3kfvptoFDwqN4DBqLdyuSbAHDX
+         ZaXw==
+X-Gm-Message-State: APjAAAUpJhESuLdNqczuwCOlVRK/x6dgNAbYIcX2KemQdrXvpxc3HoJR
+        8HZ5YVx8UilqjJa6BQvMMa287B+mf5bwHjFJeUM=
+X-Google-Smtp-Source: APXvYqxuk6dLCFvzv+YmVVMA5/nC9GP3iucB/0qX55Djj1G/5n1TL1RiEvv4ZPGNbwcsDhR6bqdsttcBjCByo2JASQw=
+X-Received: by 2002:a2e:6e01:: with SMTP id j1mr9183204ljc.85.1557037816106;
+ Sat, 04 May 2019 23:30:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b7781380-e85b-78b4-f89e-1e627e213896@oracle.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <20190430124536.7734-1-bjorn.topel@gmail.com> <15B5FD82-D048-416F-9D1E-7F2B675100DA@flugsvamp.com>
+In-Reply-To: <15B5FD82-D048-416F-9D1E-7F2B675100DA@flugsvamp.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 4 May 2019 23:30:04 -0700
+Message-ID: <CAADnVQ+Jas=-sJyPRDA-79EQFfZAzjJAiXLwxZUkmv9MS+dLmQ@mail.gmail.com>
+Subject: Re: [PATCH bpf 0/2] libbpf: fixes for AF_XDP teardown
+To:     Jonathan Lemon <jlemon@flugsvamp.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        bpf <bpf@vger.kernel.org>, William Tu <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 02, 2019 at 10:52:23AM -0700, Santosh Shilimkar wrote:
-> On 5/1/2019 11:21 PM, Leon Romanovsky wrote:
-> > On Wed, May 01, 2019 at 10:54:00AM -0700, Santosh Shilimkar wrote:
-> > > On 5/1/2019 12:44 AM, Leon Romanovsky wrote:
-> > > > On Mon, Apr 29, 2019 at 04:37:19PM -0700, Santosh Shilimkar wrote:
-> > > > > From: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
-> > > > >
-> > > > > RDS doesn't support RDMA on memory apertures that require On Demand
-> > > > > Paging (ODP), such as FS DAX memory. User applications can try to use
-> > > > > RDS to perform RDMA over such memories and since it doesn't report any
-> > > > > failure, it can lead to unexpected issues like memory corruption when
-> > > > > a couple of out of sync file system operations like ftruncate etc. are
-> > > > > performed.
-> > > > >
-> > > > > The patch adds a check so that such an attempt to RDMA to/from memory
-> > > > > apertures requiring ODP will fail.
-> > > > >
-> > > > > Reviewed-by: H??kon Bugge <haakon.bugge@oracle.com>
-> > > > > Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
-> > > > > Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
-> > > > > Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
-> > > > > ---
-> > > > >    net/rds/rdma.c | 5 +++--
-> > > > >    1 file changed, 3 insertions(+), 2 deletions(-)
-> > > > >
-> > > > > diff --git a/net/rds/rdma.c b/net/rds/rdma.c
-> > > > > index 182ab84..e0a6b72 100644
-> > > > > --- a/net/rds/rdma.c
-> > > > > +++ b/net/rds/rdma.c
-> > > > > @@ -158,8 +158,9 @@ static int rds_pin_pages(unsigned long user_addr, unsigned int nr_pages,
-> > > > >    {
-> > > > >    	int ret;
-> > > > >
-> > > > > -	ret = get_user_pages_fast(user_addr, nr_pages, write, pages);
-> > > > > -
-> > > > > +	/* get_user_pages return -EOPNOTSUPP for fs_dax memory */
-> > > > > +	ret = get_user_pages_longterm(user_addr, nr_pages,
-> > > > > +				      write, pages, NULL);
-> > > >
-> > > > I'm not RDS expert, but from what I see in net/rds/rdma.c and this code,
-> > > > you tried to mimic ib_umem_get() without protection, checks and native
-> > > > ODP, FS and DAX supports.
-> > > >
-> > > > The real way to solve your ODP problem will require to extend
-> > > > ib_umem_get() to work for kernel ULPs too and use it instead of
-> > > > get_user_pages(). We are working on that and it is in internal review now.
-> > > >
-> > > Yes am aware of it. For FS_DAX like memory,  get_user_pages_longterm()
-> > > fails and then using ib_reg_user_mr() the memory is registered as
-> > > ODP regsion. This work is not ready yet and without above check,
-> > > one can do RDMA on FS DAX memory with Fast Reg or FMR memory
-> > > registration which is not safe and hence need to fail the operation.
-> > >
-> > > Once the support is added to RDS, this code path will make that
-> > > registration go through.
-> > >
-> > > Hope it clarifies.
-> >
-> > Only partial, why don't you check if user asked ODP through verbs
-> > interface and return EOPNOTSUPP in such case?
-> >
-> I think you are mixing two separate things. ODP is just one way of
-> supporting RDMA on FS DAX memory. Tomorrow, some other mechanism
-> can be used as well. RDS is just using inbuilt kernel mm API
-> to find out if its FS DAX memory(get_user_pages_longterm).
-> Current code will make RDS get_mr fail if RDS application issues
-> memory registration request on FS DAX memory and in future when
-> support gets added, it will do the ODP registration and return
-> the key.
-
-But we are talking about kernel code only, right?
-Future support will be added if it exists.
-
+On Tue, Apr 30, 2019 at 8:38 AM Jonathan Lemon <jlemon@flugsvamp.com> wrote=
+:
 >
-> > It will ensure that once your code will support ODP properly written
-> > applications will work with/without ODP natively.
-> >
-> Application shouldn't care if RDS ULP internally uses ODP
-> or some other mechanism to support RDMA on FS DAX memory.
-> This makes it transparent it to RDS application.
-
-ODP checks need to be internal to kernel, user won't see those ODP
-checks.
-
-Thanks
-
 >
-> Regards,
-> Santosh
+>
+> On 30 Apr 2019, at 5:45, Bj=C3=B6rn T=C3=B6pel wrote:
+>
+> > William found two bugs, when doing socket teardown within the same
+> > process.
+> >
+> > The first issue was an invalid munmap call, and the second one was an
+> > invalid XSKMAP cleanup. Both resulted in that the process kept
+> > references to the socket, which was not correctly cleaned up. When a
+> > new socket was created, the bind() call would fail, since the old
+> > socket was still lingering, refusing to give up the queue on the
+> > netdev.
+> >
+> > More details can be found in the individual commits.
+>
+> Reviewed-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+
+Applied. Thanks!
