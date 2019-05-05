@@ -2,112 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85E3613C4B
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 01:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3231813C5F
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 02:33:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727325AbfEDXte (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 May 2019 19:49:34 -0400
-Received: from mga03.intel.com ([134.134.136.65]:20569 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727176AbfEDXtc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 May 2019 19:49:32 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 May 2019 16:49:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,431,1549958400"; 
-   d="scan'208";a="139994682"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by orsmga008.jf.intel.com with ESMTP; 04 May 2019 16:49:30 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Michal Swiatkowski <michal.swiatkowski@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 15/15] ice: Disable sniffing VF traffic on PF
-Date:   Sat,  4 May 2019 16:49:29 -0700
-Message-Id: <20190504234929.3005-16-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190504234929.3005-1-jeffrey.t.kirsher@intel.com>
-References: <20190504234929.3005-1-jeffrey.t.kirsher@intel.com>
+        id S1727244AbfEEAdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 May 2019 20:33:09 -0400
+Received: from mail-eopbgr70082.outbound.protection.outlook.com ([40.107.7.82]:14048
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726962AbfEEAdJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 May 2019 20:33:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PQgkWM61QhLLyFyROPDmE+ic7CrrjDpREGWJW8US8WU=;
+ b=PiEN1cbFS0TWWiAlgQvdd7qUkEmTWe6h7wKHRx1lmljygjZtN07ceJnNpbiqLDUI2g1KY/FHDs0x7rtCPHSorhTmKZC6gpJA8/R711xQdVr6ztLDnV4vimqYOUcfNOAV44XwQ9Lm1u0WYenGyk7qdl6hyt2GmFy+FErd63WL4bY=
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
+ DB8PR05MB5881.eurprd05.prod.outlook.com (20.179.10.21) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1856.11; Sun, 5 May 2019 00:32:53 +0000
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::ed24:8317:76e4:1a07]) by DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::ed24:8317:76e4:1a07%5]) with mapi id 15.20.1856.012; Sun, 5 May 2019
+ 00:32:53 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 00/15] Mellanox, mlx5 Firmware devlink health
+ and sw reset
+Thread-Topic: [pull request][net-next 00/15] Mellanox, mlx5 Firmware devlink
+ health and sw reset
+Thread-Index: AQHVAtoTYdhC7iZHmEOxcKTo++zLSg==
+Date:   Sun, 5 May 2019 00:32:53 +0000
+Message-ID: <20190505003207.1353-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.20.1
+x-originating-ip: [73.15.39.150]
+x-clientproxiedby: BY5PR13CA0008.namprd13.prod.outlook.com
+ (2603:10b6:a03:180::21) To DB8PR05MB5898.eurprd05.prod.outlook.com
+ (2603:10a6:10:a4::32)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b9b74457-d45d-4338-b748-08d6d0f135ed
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB5881;
+x-ms-traffictypediagnostic: DB8PR05MB5881:
+x-microsoft-antispam-prvs: <DB8PR05MB5881F81090372F74C591563FBE370@DB8PR05MB5881.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 00286C0CA6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(366004)(39850400004)(136003)(396003)(199004)(189003)(305945005)(52116002)(36756003)(316002)(25786009)(6486002)(478600001)(14454004)(50226002)(476003)(2616005)(26005)(7736002)(4326008)(99286004)(86362001)(6916009)(53936002)(66476007)(186003)(68736007)(66446008)(64756008)(66556008)(6436002)(66946007)(73956011)(6512007)(14444005)(1076003)(66066001)(71190400001)(71200400001)(54906003)(256004)(102836004)(81156014)(81166006)(8936002)(3846002)(6506007)(386003)(107886003)(2906002)(8676002)(5660300002)(6116002)(486006)(383094003)(505234006);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB5881;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: lNyGc1nencU4OxxbmqHkMa+EItQtROQkHT9e0TgvY2XA3Ul/pA6D+HrYAlN0tn092WKu02xS+k5hIfwIGlaRpsZ564Jhq1GcGGcUygZRLKT9Iem37/Sbx9RIx9DiW71CmtOUm+0YCGF1dNeb3wbvRS5vaRHpLmoEa1/YleyrNTP1d7Qx6T78bVYmtptmduReoocsUnWt4V7++lKBJmzrKM0iDTcJmg20wsbb+NZZL+P6caLEftTiyiC7ByuNYESzOiCdtOS+TDlxzyyY2m4kpJKKyfLq/K5us8Z3fL3sMnSt9gPu/h7v+/VIAfo6kq4o3fg8A8gxr1S1dKRkN88y1gFfLSxY/lPuf2I2O+iFnncM+1hueKHpVvWOknz0SYgTZ1AOmK1EyGDp5GBWV2fOCkHDq5AbJWAGx9QnCfuprno=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b9b74457-d45d-4338-b748-08d6d0f135ed
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 May 2019 00:32:53.3593
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB5881
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Swiatkowski <michal.swiatkowski@intel.com>
-
-Delete code that add default Tx rule on PF. With this rule PF can see
-Tx VF traffic that should go outside. For traffic from VF to another
-VF default Tx rule on PF doesn't apply because of lower priority than
-VF mac rule.
-
-With this change on PF in promisc mode we can see only Rx traffic that
-doesn't match any other rule (mac etc.). We can't see Tx traffic from
-other VSI.
-
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@intel.com>
-Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 24 ++---------------------
- 1 file changed, 2 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index aa832d9b2458..7843abf4d44d 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -317,42 +317,22 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
- 	    test_bit(ICE_VSI_FLAG_PROMISC_CHANGED, vsi->flags)) {
- 		clear_bit(ICE_VSI_FLAG_PROMISC_CHANGED, vsi->flags);
- 		if (vsi->current_netdev_flags & IFF_PROMISC) {
--			/* Apply Tx filter rule to get traffic from VMs */
--			status = ice_cfg_dflt_vsi(hw, vsi->idx, true,
--						  ICE_FLTR_TX);
--			if (status) {
--				netdev_err(netdev, "Error setting default VSI %i tx rule\n",
--					   vsi->vsi_num);
--				vsi->current_netdev_flags &= ~IFF_PROMISC;
--				err = -EIO;
--				goto out_promisc;
--			}
- 			/* Apply Rx filter rule to get traffic from wire */
- 			status = ice_cfg_dflt_vsi(hw, vsi->idx, true,
- 						  ICE_FLTR_RX);
- 			if (status) {
--				netdev_err(netdev, "Error setting default VSI %i rx rule\n",
-+				netdev_err(netdev, "Error setting default VSI %i Rx rule\n",
- 					   vsi->vsi_num);
- 				vsi->current_netdev_flags &= ~IFF_PROMISC;
- 				err = -EIO;
- 				goto out_promisc;
- 			}
- 		} else {
--			/* Clear Tx filter rule to stop traffic from VMs */
--			status = ice_cfg_dflt_vsi(hw, vsi->idx, false,
--						  ICE_FLTR_TX);
--			if (status) {
--				netdev_err(netdev, "Error clearing default VSI %i tx rule\n",
--					   vsi->vsi_num);
--				vsi->current_netdev_flags |= IFF_PROMISC;
--				err = -EIO;
--				goto out_promisc;
--			}
- 			/* Clear Rx filter to remove traffic from wire */
- 			status = ice_cfg_dflt_vsi(hw, vsi->idx, false,
- 						  ICE_FLTR_RX);
- 			if (status) {
--				netdev_err(netdev, "Error clearing default VSI %i rx rule\n",
-+				netdev_err(netdev, "Error clearing default VSI %i Rx rule\n",
- 					   vsi->vsi_num);
- 				vsi->current_netdev_flags |= IFF_PROMISC;
- 				err = -EIO;
--- 
-2.20.1
-
+SGkgRGF2ZSwNCg0KVGhpcyBzZXJpZXMgcHJvdmlkZXMgdGhlIHN1cHBvcnQgZm9yIG1seDUgRmly
+bXdhcmUgZGV2bGluayBoZWFsdGggYW5kDQpzdyByZXNldC4NCg0KV2UgcGxhbiB0byBmb2xsb3cg
+dXAgdGhpcyBzZXJpZXMgd2l0aCBhIHBhdGNoIHRoYXQgcHJvdmlkZXMgbWx4NQ0KZG9jdW1lbnRh
+dGlvbiB1bmRlciBEb2N1bWVudGF0aW9uL25ldHdvcmtpbmcvbWx4NS5yc3QsIGZpcnN0IHRoaW5n
+IGluDQo1LjMga2VybmVsIHJlbGVhc2UsIGl0IHdpbGwgaW5jbHVkZSBhbGwgbmV3IG1seDUgZGV2
+bGluayBvcHRpb25zIGFuZA0KbW9yZS4NCg0KRm9yIG1vcmUgaW5mb3JtYXRpb24gcGxlYXNlIHNl
+ZSB0YWcgbG9nIGJlbG93Lg0KDQpQbGVhc2UgcHVsbCBhbmQgbGV0IG1lIGtub3cgaWYgdGhlcmUg
+aXMgYW55IHByb2JsZW0uDQoNClRoYW5rcywNClNhZWVkLg0KDQotLS0NClRoZSBmb2xsb3dpbmcg
+Y2hhbmdlcyBzaW5jZSBjb21taXQgYTczNGQxZjRjMmZjOTYyZWY0ZGFhMTc5ZTIxNmRmODRhOGVj
+NWY4NDoNCg0KICBuZXQ6IG9wZW52c3dpdGNoOiByZXR1cm4gYW4gZXJyb3IgaW5zdGVhZCBvZiBk
+b2luZyBCVUdfT04oKSAoMjAxOS0wNS0wNCAwMTozNjozNiAtMDQwMCkNCg0KYXJlIGF2YWlsYWJs
+ZSBpbiB0aGUgR2l0IHJlcG9zaXRvcnkgYXQ6DQoNCiAgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHVi
+L3NjbS9saW51eC9rZXJuZWwvZ2l0L3NhZWVkL2xpbnV4LmdpdCB0YWdzL21seDUtdXBkYXRlcy0y
+MDE5LTA1LTA0DQoNCmZvciB5b3UgdG8gZmV0Y2ggY2hhbmdlcyB1cCB0byAzMGQ4YjkzMmRjZWJi
+Y2I4YzVkMTk5MWNhYjUzMjVjMmUzZmFhZDZkOg0KDQogIG5ldC9tbHg1OiBSZXBvcnQgZGV2bGlu
+ayBoZWFsdGggb24gRlcgZmF0YWwgaXNzdWVzICgyMDE5LTA1LTA0IDE3OjIyOjQ1IC0wNzAwKQ0K
+DQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tDQptbHg1LXVwZGF0ZXMtMjAxOS0wNS0wNA0KDQpNbHg1IGRldmxpbmsgaGVhbHRo
+IGZ3IHJlcG9ydGVycyBhbmQgc3cgcmVzZXQgc3VwcG9ydA0KDQpUaGlzIHNlcmllcyBwcm92aWRl
+cyBtbHg1IGZpcm13YXJlIHJlc2V0IHN1cHBvcnQgYW5kIGZpcm13YXJlIGRldmxpbmsgaGVhbHRo
+DQpyZXBvcnRlcnMuDQoNCjEpIEFkZCBDUi1TcGFjZSBhY2Nlc3MgYW5kIEZXIENyZHVtcCBzbmFw
+c2hvdCBzdXBwb3J0IHZpYSBkZXZsaW5rIHJlZ2lvbl9zbmFwc2hvdA0KDQoyKSBJc3N1ZSBzb2Z0
+d2FyZSByZXNldCB1cG9uIEZXIGFzc2VydHMNCg0KMykgQWRkIGZ3IGFuZCBmd19mYXRhbCBkZXZs
+aW5rIGhlYXRoIHJlcG9ydGVycyB0byBmb2xsb3cgZncgZXJyb3JzIGluZGljYXRpb24gYnkNCmR1
+bXAgYW5kIHJlY292ZXIgcHJvY2VkdXJlcyBhbmQgZW5hYmxlIHRyaWdnZXIgdGhlc2UgZnVuY3Rp
+b25hbGl0eSBieSB1c2VyLg0KDQozLjEpIGZ3IHJlcG9ydGVyOg0KVGhlIGZ3IHJlcG9ydGVyIGlt
+cGxlbWVudHMgZGlhZ25vc2UgYW5kIGR1bXAgY2FsbGJhY2tzLg0KSXQgZm9sbG93cyBzeW1wdG9t
+cyBvZiBmdyBlcnJvciBzdWNoIGFzIGZ3IHN5bmRyb21lIGJ5IHRyaWdnZXJpbmcNCmZ3IGNvcmUg
+ZHVtcCBhbmQgc3RvcmluZyBpdCBhbmQgYW55IG90aGVyIGZ3IHRyYWNlIGludG8gdGhlIGR1bXAg
+YnVmZmVyLg0KVGhlIGZ3IHJlcG9ydGVyIGRpYWdub3NlIGNvbW1hbmQgY2FuIGJlIHRyaWdnZXJl
+ZCBhbnkgdGltZSBieSB0aGUgdXNlciB0byBjaGVjaw0KY3VycmVudCBmdyBzdGF0dXMuDQoNCjMu
+MikgZndfZmF0YWwgcmVwb3RlcjoNClRoZSBmd19mYXRhbCByZXBvcnRlciBpbXBsZW1lbnRzIGR1
+bXAgYW5kIHJlY292ZXIgY2FsbGJhY2tzLg0KSXQgZm9sbG93cyBmYXRhbCBlcnJvcnMgaW5kaWNh
+dGlvbnMgYnkgQ1Itc3BhY2UgZHVtcCBhbmQgcmVjb3ZlciBmbG93Lg0KVGhlIENSLXNwYWNlIGR1
+bXAgdXNlcyB2c2MgaW50ZXJmYWNlIHdoaWNoIGlzIHZhbGlkIGV2ZW4gaWYgdGhlIEZXIGNvbW1h
+bmQNCmludGVyZmFjZSBpcyBub3QgZnVuY3Rpb25hbCwgd2hpY2ggaXMgdGhlIGNhc2UgaW4gbW9z
+dCBGVyBmYXRhbCBlcnJvcnMuIFRoZQ0KQ1Itc3BhY2UgZHVtcCBpcyBzdG9yZWQgYXMgYSBtZW1v
+cnkgcmVnaW9uIHNuYXBzaG90IHRvIGVhc2UgcmVhZCBieSBhZGRyZXNzLg0KVGhlIHJlY292ZXIg
+ZnVuY3Rpb24gcnVucyByZWNvdmVyIGZsb3cgd2hpY2ggcmVsb2FkcyB0aGUgZHJpdmVyIGFuZCB0
+cmlnZ2VycyBmdw0KcmVzZXQgaWYgbmVlZGVkLg0KDQpDb21tYW5kIGV4YW1wbGVzIGFuZCBvdXRw
+dXQ6DQpkaWFnbm9zZSBkYXRhOg0KYXNzZXJ0X3ZhclswXSAweGZjM2ZjMDQzDQphc3NlcnRfdmFy
+WzFdIDB4MDAwMWI0MWMNCmFzc2VydF92YXJbMl0gMHgwMDAwMDAwMA0KYXNzZXJ0X3ZhclszXSAw
+eDAwMDAwMDAwDQphc3NlcnRfdmFyWzRdIDB4MDAwMDAwMDANCmFzc2VydF9leGl0X3B0ciAweDAw
+ODAzM2I0DQphc3NlcnRfY2FsbHJhIDB4MDA4MDM2NWMNCmZ3X3ZlciAxNi4yNC4xMDAwDQpod19p
+ZCAweDAwMDAwMjBkDQppcmlzY19pbmRleCAwDQpzeW5kIDB4ODogdW5yZWNvdmVyYWJsZSBoYXJk
+d2FyZSBlcnJvcg0KZXh0X3N5bmQgMHgwMDNkDQpyYXcgZndfdmVyIDB4MTAxODAzZTgNCg0KZHVt
+cCB0cmFjZXM6DQogICB0cmFjZTogMDAwMDo4MjowMC4xIFsweDY5Y2Q2YzUyODNlXSAwIFsweGI4
+XSBkdW1wIGdlbmVyYWwgaW5mbyBHVk1JPTB4MDAwMQ0KICAgdHJhY2U6IDAwMDA6ODI6MDAuMSBb
+MHg2OWNkNmM1M2JlY10gMCBbMHhiOF0gR1ZNSSBtYW5hZ2VtZW50IGluZm8sIGd2bWlfbWFuYWdl
+bWVudCBjb250ZXh0Og0KICAgdHJhY2U6IDAwMDA6ODI6MDAuMSBbMHg2OWNkNmM1NWVmZl0gMCBb
+MHhiOF0gWzAwMF06ICAwMDAwMDAwMCAgMDAwMDAwMDAgIDAwMDAwMDAwICAwMDAwMDAwMA0KICAg
+dHJhY2U6IDAwMDA6ODI6MDAuMSBbMHg2OWNkNmM1NjU3Zl0gMCBbMHhiOF0gWzAxMF06ICAwMDAw
+MDAwMCAgMDAwMDAwMDAgIDAwMDAwMDAwICAwMDAwMDAwMA0KICAgdHJhY2U6IDAwMDA6ODI6MDAu
+MSBbMHg2OWNkNmM1NjYwOF0gMCBbMHhiOF0gWzAyMF06ICAwMDAwMDAwMCAgMDAwMDAwMDAgIDAw
+MDAwMDAwICAwMDAwMDAwMA0KICAgdHJhY2U6IDAwMDA6ODI6MDAuMSBbMHg2OWNkNmM1NjZmZl0g
+MCBbMHhiOF0gWzAzMF06ICAwMDAwMDAwMCAgMDAwMDAwMDAgIDAwMDAwMDAwICAwMDAwMDAwMA0K
+ICAgdHJhY2U6IDAwMDA6ODI6MDAuMSBbMHg2OWNkNmM1Njc3Zl0gMCBbMHhiOF0gWzA0MF06ICAw
+MDAwMDAwMCAgMDAwMDAwMDAgIDAwMDAwMDAwICAwMDAwMDAwMA0KICAgdHJhY2U6IDAwMDA6ODI6
+MDAuMSBbMHg2OWNkNmM1Njg3Zl0gMCBbMHhiOF0gWzA1MF06ICAwMDAwMDAwMCAgMDAwMDAwMDAg
+IDAwMDAwMDAwICAwMDAwMDAwMA0KICAgdHJhY2U6IDAwMDA6ODI6MDAuMSBbMHg2OWNkNmM1Njhm
+Zl0gMCBbMHhiOF0gWzA2MF06ICAwMDAwMDAwMCAgMDAwMDAwMDAgIDAwMDAwMDAwICAwMDAwMDAw
+MA0KICAgdHJhY2U6IDAwMDA6ODI6MDAuMSBbMHg2OWNkNmM1NjlhNV0gMCBbMHhiOF0gWzA3MF06
+ICAwMDAwMDAwMCAgMDAwMDAwMDAgIDAwMDAwMDAwICAwMDAwMDAwMA0KICAgdHJhY2U6IDAwMDA6
+ODI6MDAuMSBbMHg2OWNkNmM1NzAyMV0gMCBbMHhiOF0gQ01ESUYgZGJhc2UgZnJvbSBJUk9OOiBh
+Y3RpdmVfZGJhc2Vfc2xvdHMgPSAweDAwMDAwMDAwDQogICB0cmFjZTogMDAwMDo4MjowMC4xIFsw
+eDY5Y2Q2YzU4ZGFlXSAwIFsweGI4XSBHVk1JPTB4MDAwMSBod190b2MgY29udGV4dDoNCiAgIHRy
+YWNlOiAwMDAwOjgyOjAwLjEgWzB4NjljZDZjNThlN2ZdIDAgWzB4YjhdIFswMDBdOiAgMDA0MDAx
+MDAgIDAwMDAwMDAwICAwMDAwMDAwMCAgZmZmZmYwMDANCiAgIHRyYWNlOiAwMDAwOjgyOjAwLjEg
+WzB4NjljZDZjNThmN2ZdIDAgWzB4YjhdIFswMTBdOiAgMDAwMDAwMDAgIDAwMDAwMDAwICAwMDAw
+MDAwMCAgMDAwMDAwMDANCi4uLg0KLi4uDQoNCmRldmxpbmtfcmVnaW9uX25hbWU6IGNyLXNwYWNl
+IHNuYXBzaG90X2lkOiAxDQoNCjAwMDAwMDAwMDAwZjAwMTggZTEgMDMgMDAgMDAgZmIgYWUgYTkg
+M2YNCg0KMDAwMDAwMDAwMDAwMDAwMCAwMCAyMCAwMCAwMSAwMCAwMCAwMCAwMCAwMyAwMCAwMCAw
+MCAwMCAwMCAwMCAwMA0KMDAwMDAwMDAwMDAwMDAxMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAwMCAwMCAwMA0KMDAwMDAwMDAwMDAwMDAyMCAwMCAwMCAwMCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMA0KMDAwMDAwMDAwMDAwMDAzMCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMA0KMDAwMDAwMDAwMDAwMDA0
+MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCA4MA0KMDAwMDAw
+MDAwMDAwMDA1MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
+MA0KMDAwMDAwMDAwMDAwMDA2MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCBk
+ZSAwYSAwMCAwMA0KMDAwMDAwMDAwMDAwMDA3MCAwYyAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAwMCAwMA0KMDAwMDAwMDAwMDAwMDA4MCAwMCAwMCAwMCAwMCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCBmYSAwMA0KMDAwMDAwMDAwMDAwMDA5MCBiNiAwYiAwMCAw
+MCAwMCAwMCAwMCAwMCA4MCBjNyBmZSBmZiA1MCAwYSAwMCAwMA0KLi4uDQouLi4NCg0KLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LQ0KQWxleCBWZXNrZXIgKDMpOg0KICAgICAgbmV0L21seDU6IEFkZCBWZW5kb3IgU3BlY2lmaWMg
+Q2FwYWJpbGl0eSBhY2Nlc3MgZ2F0ZXdheQ0KICAgICAgbmV0L21seDU6IEFkZCBDcmR1bXAgRlcg
+c25hcHNob3Qgc3VwcG9ydA0KICAgICAgbmV0L21seDU6IEFkZCBzdXBwb3J0IGZvciBkZXZsaW5r
+IHJlZ2lvbl9zbmFwc2hvdCBwYXJhbWV0ZXINCg0KRXJhbiBCZW4gRWxpc2hhICgxKToNCiAgICAg
+IG5ldC9tbHg1OiBNb3ZlIGFsbCBkZXZsaW5rIHJlbGF0ZWQgZnVuY3Rpb25zIGNhbGxzIHRvIGRl
+dmxpbmsuYw0KDQpGZXJhcyBEYW91ZCAoMyk6DQogICAgICBuZXQvbWx4NTogSGFuZGxlIFNXIHJl
+c2V0IG9mIEZXIGluIGVycm9yIGZsb3cNCiAgICAgIG5ldC9tbHg1OiBDb250cm9sIENSLXNwYWNl
+IGFjY2VzcyBieSBkaWZmZXJlbnQgUEZzDQogICAgICBuZXQvbWx4NTogSXNzdWUgU1cgcmVzZXQg
+b24gRlcgYXNzZXJ0DQoNCk1vc2hlIFNoZW1lc2ggKDgpOg0KICAgICAgbmV0L21seDU6IFJlZmFj
+dG9yIHByaW50IGhlYWx0aCBpbmZvDQogICAgICBuZXQvbWx4NTogQ3JlYXRlIEZXIGRldmxpbmsg
+aGVhbHRoIHJlcG9ydGVyDQogICAgICBuZXQvbWx4NTogQWRkIGNvcmUgZHVtcCByZWdpc3RlciBh
+Y2Nlc3MgZnVuY3Rpb25zDQogICAgICBuZXQvbWx4NTogQWRkIHN1cHBvcnQgZm9yIEZXIHJlcG9y
+dGVyIGR1bXANCiAgICAgIG5ldC9tbHg1OiBSZXBvcnQgZGV2bGluayBoZWFsdGggb24gRlcgaXNz
+dWVzDQogICAgICBuZXQvbWx4NTogQWRkIGZ3IGZhdGFsIGRldmxpbmsgaGVhbHRoIHJlcG9ydGVy
+DQogICAgICBuZXQvbWx4NTogQWRkIHN1cHBvcnQgZm9yIEZXIGZhdGFsIHJlcG9ydGVyIGR1bXAN
+CiAgICAgIG5ldC9tbHg1OiBSZXBvcnQgZGV2bGluayBoZWFsdGggb24gRlcgZmF0YWwgaXNzdWVz
+DQoNCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvTWFrZWZpbGUgICB8
+ICAgMyArLQ0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9kZXZsaW5r
+LmMgIHwgIDcyICsrKw0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9k
+ZXZsaW5rLmggIHwgIDEyICsNCiAuLi4vbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9k
+aWFnL2NyZHVtcC5jICB8IDIxMCArKysrKysrKw0KIC4uLi9ldGhlcm5ldC9tZWxsYW5veC9tbHg1
+L2NvcmUvZGlhZy9md190cmFjZXIuYyAgIHwgMTQzICsrKysrDQogLi4uL2V0aGVybmV0L21lbGxh
+bm94L21seDUvY29yZS9kaWFnL2Z3X3RyYWNlci5oICAgfCAgMTQgKw0KIC4uLi9uZXQvZXRoZXJu
+ZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3NlbGZ0ZXN0LmMgIHwgICAyICstDQogZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2hlYWx0aC5jICAgfCA1NzUgKysrKysrKysr
+KysrKysrKystLS0tDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2xp
+Yi9tbHg1LmggfCAgIDYgKw0KIC4uLi9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2xp
+Yi9wY2lfdnNjLmMgIHwgMzEzICsrKysrKysrKysrDQogLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5v
+eC9tbHg1L2NvcmUvbGliL3BjaV92c2MuaCAgfCAgMzMgKysNCiBkcml2ZXJzL25ldC9ldGhlcm5l
+dC9tZWxsYW5veC9tbHg1L2NvcmUvbWFpbi5jICAgICB8ICAxOSArLQ0KIC4uLi9uZXQvZXRoZXJu
+ZXQvbWVsbGFub3gvbWx4NS9jb3JlL21seDVfY29yZS5oICAgIHwgICA4ICstDQogaW5jbHVkZS9s
+aW51eC9tbHg1L2RldmljZS5oICAgICAgICAgICAgICAgICAgICAgICAgfCAgMTAgKy0NCiBpbmNs
+dWRlL2xpbnV4L21seDUvZHJpdmVyLmggICAgICAgICAgICAgICAgICAgICAgICB8ICAyMCArLQ0K
+IGluY2x1ZGUvbGludXgvbWx4NS9tbHg1X2lmYy5oICAgICAgICAgICAgICAgICAgICAgIHwgIDE3
+ICstDQogMTYgZmlsZXMgY2hhbmdlZCwgMTM1NyBpbnNlcnRpb25zKCspLCAxMDAgZGVsZXRpb25z
+KC0pDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21s
+eDUvY29yZS9kZXZsaW5rLmMNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvbWVsbGFub3gvbWx4NS9jb3JlL2RldmxpbmsuaA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2
+ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZGlhZy9jcmR1bXAuYw0KIGNyZWF0
+ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGli
+L3BjaV92c2MuYw0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxs
+YW5veC9tbHg1L2NvcmUvbGliL3BjaV92c2MuaA0K
