@@ -2,108 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30997140AB
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 17:38:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38082140B8
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 17:42:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727647AbfEEPiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 11:38:15 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:33232 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727479AbfEEPiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 11:38:14 -0400
-Received: by mail-wm1-f65.google.com with SMTP id s18so3384028wmh.0
-        for <netdev@vger.kernel.org>; Sun, 05 May 2019 08:38:12 -0700 (PDT)
+        id S1727657AbfEEPmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 11:42:20 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35782 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726524AbfEEPmU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 11:42:20 -0400
+Received: by mail-wr1-f66.google.com with SMTP id w12so589009wrp.2
+        for <netdev@vger.kernel.org>; Sun, 05 May 2019 08:42:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=fy/+9PXUKyRSU3Sv4uDN/frulT1UbpBoDta1NyU3LdQ=;
-        b=hduuH+iSAU4/CVQrL7ssm4qd11xpv2CA4DyCQIy+HM465sIQZ6ZsIPTavO3PWIEVe7
-         shm/PtBOkNJw7zWZWP89SYwGRgLmctdoCIIYbJN1vx46XJcGKMn17wQl+tFnbXm2TN+m
-         3HxQX0Rv2tn0hMkBeSs/yGegbgD2D+CLaQesc0lw5FSwEOJxpXdCpC1I33mOJwGLQiXm
-         oNp3PUhOxUwztG5tL7jy4Hm3NszLSXeexvAMAMcTFozMJUyZ/CP48TtCTEzC8mEyoWNR
-         /Zsx5d+0Whp4+ubWJ68WkQvO4CjvSK+uaIp9Py11WpI0WFRC0h0yGJHfzU6tsomkhoXz
-         dp3A==
+        d=quantonium-net.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DTOqDOwz5c2f2Hffm3ktmvzvS2NAobYWHGRBOMLEbyE=;
+        b=N2Io1kjqQmLmtwPO/1OOYmgu7I5qOPMeFchV/27ompJOl1enBcrOUJmJ4pYRIGqcKJ
+         WufECUE0PqFxlXofxei+avvrkUP8oQycPkoxaqqzfjPashqWE7CCpSVwyfuPAgEspEax
+         vm4iurqMpBwvZPqnybJ64aiBBxGMHMpAYtx0Q/wmP9anTktRePHLV+IY8QSxhDZI8963
+         xeLE/dnjM/3IydjKieu2Oitt3TjURn9AM1gBIemRVWeHNP37F+xuJCOBUag4LbcGOiAZ
+         N3nn7yejZZOktByUvezuz796N3Pxise+yrM8axyGRWzGkkQkXqBUwnMp+alvAMaMWDpg
+         aabA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=fy/+9PXUKyRSU3Sv4uDN/frulT1UbpBoDta1NyU3LdQ=;
-        b=jZ3pjiMBJNxOYquz3Q2tUfEJxcg/IZ0z0bMsJ6PD2PYUQNa8+7SscDBuEoqowxAEXg
-         D2jbAev6OHA1dutqt3vRhve8pCQOVdKi8Ygue2Ec6P+8jhUBB1vHomsUkBM7ZxNtlIql
-         QnR7ahasC2ixro3akijnzpXp464U4QZDfp53/hvB41YC61aJi490v93SNXpvptxWTLQ9
-         +fYBuliVWjjlZxAj6ibcnNaM0ENcChg1tWmhYgJcKAbI7Cv0iY+CEpu8aVkEjpqhu0MC
-         FjS4ASmOrw+06tyyvU0VQWFrvL+0PQ2A0RzpMjwZr+8Qrot1f6isrdDMEQtz562FUEJO
-         dAgQ==
-X-Gm-Message-State: APjAAAWfaKXeUBcGYO/Aba3rCA3waP646Ldqbn7M+uqDOGlSbzGler5i
-        cGZ71hx67Je3+sG2J9Cv9QbFWQ==
-X-Google-Smtp-Source: APXvYqw32MU1u5TyV3l9ZszLQl4E/BFX1qSFocwUwnDBfagYdFGX80lqzBtJWF6uezFt5ni+C8iLnQ==
-X-Received: by 2002:a1c:ce:: with SMTP id 197mr13117099wma.105.1557070692320;
-        Sun, 05 May 2019 08:38:12 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id t81sm10786453wmb.47.2019.05.05.08.38.11
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 05 May 2019 08:38:12 -0700 (PDT)
-Date:   Sun, 5 May 2019 17:38:11 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Feras Daoud <ferasda@mellanox.com>,
-        Alex Vesker <valex@mellanox.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Daniel Jurgens <danielj@mellanox.com>
-Subject: Re: [net-next 07/15] net/mlx5: Issue SW reset on FW assert
-Message-ID: <20190505153811.GB31501@nanopsycho.orion>
-References: <20190505003207.1353-1-saeedm@mellanox.com>
- <20190505003207.1353-8-saeedm@mellanox.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DTOqDOwz5c2f2Hffm3ktmvzvS2NAobYWHGRBOMLEbyE=;
+        b=ntNDHW/G3lqiz1LLlQjjbneYBFqXjRW368BW7sPIVpx8C+JEly1x0YxWzkgP7NlHH0
+         NvYuo2yHvxKLXeGF4WJXsk0iXjHnhFLjS49HCOlZbhB/EBcTdcQNkUva9ZH3ebwgay74
+         gaq4pZmh/zc1RUwx8R8jOnVe4F9wT9u98LCBxrmUEX80dPcv+REzfMS8h4vXWZM4Mt7L
+         QsUo0h3YP7rssgkk3tgRY9CBwcOYhDslg+Z6ucvbVvOTg89QpnOCet1zm0HXRgjbxTdb
+         4OG1k2UpetFszYQcZy+VMbwoO9H2itnhBovBKkIV/q/oIB0tysiiPb7PCK//vSCiivXV
+         kQiw==
+X-Gm-Message-State: APjAAAUvW17GMP09hZ51Fs7p3e/mCn6QdU4h+G1RBvpkgUY5IKNeDfI4
+        JFvmiGn0EZBCa4bLlLisYT2ftYjesHXsXXmRRZNAhA==
+X-Google-Smtp-Source: APXvYqy+Y/lOGfuaV09QTcI6KeaqpVtOAz1vKavdzlQlU2G9iY+EHoUhs6ygoOU5/IAHWAKhBSRxHXZFj9nmD7daLl0=
+X-Received: by 2002:adf:eb0e:: with SMTP id s14mr4916008wrn.158.1557070938884;
+ Sun, 05 May 2019 08:42:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190505003207.1353-8-saeedm@mellanox.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+References: <1556579717-1554-1-git-send-email-tom@quantonium.net> <20190505.002712.639270971831500623.davem@davemloft.net>
+In-Reply-To: <20190505.002712.639270971831500623.davem@davemloft.net>
+From:   Tom Herbert <tom@quantonium.net>
+Date:   Sun, 5 May 2019 08:42:08 -0700
+Message-ID: <CAPDqMepAvcL1ZjMM6GWLuFuDfN=E1BdTNWOB0sGGRHKMVxZzMw@mail.gmail.com>
+Subject: Re: [PATCH v9 net-next 0/6] exthdrs: Make ext. headers & options
+ useful - Part I
+To:     David Miller <davem@davemloft.net>
+Cc:     Tom Herbert <tom@herbertland.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, May 05, 2019 at 02:33:18AM CEST, saeedm@mellanox.com wrote:
->From: Feras Daoud <ferasda@mellanox.com>
+On Sun, May 5, 2019 at 12:45 AM David Miller <davem@davemloft.net> wrote:
 >
->If a FW assert is considered fatal, indicated by a new bit in the health
->buffer, reset the FW. After the reset go through the normal recovery
->flow. Only one PF needs to issue the reset, so an attempt is made to
->prevent the 2nd function from also issuing the reset.
->It's not an error if that happens, it just slows recovery.
+> From: Tom Herbert <tom@herbertland.com>
+> Date: Mon, 29 Apr 2019 16:15:11 -0700
 >
->Signed-off-by: Feras Daoud <ferasda@mellanox.com>
->Signed-off-by: Alex Vesker <valex@mellanox.com>
->Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
->Signed-off-by: Daniel Jurgens <danielj@mellanox.com>
->Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
->---
-> .../ethernet/mellanox/mlx5/core/diag/crdump.c |  13 +-
-> .../net/ethernet/mellanox/mlx5/core/health.c  | 157 +++++++++++++++++-
-> .../net/ethernet/mellanox/mlx5/core/main.c    |   1 +
-> .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
-> include/linux/mlx5/device.h                   |  10 +-
-> include/linux/mlx5/driver.h                   |   1 +
-> 6 files changed, 176 insertions(+), 8 deletions(-)
+> > Extension headers are the mechanism of extensibility for the IPv6
+> > protocol, however to date they have only seen limited deployment.
+> > The reasons for that are because intermediate devices don't handle
+> > them well, and there haven't really be any useful extension headers
+> > defined. In particular, Destination and Hop-by-Hop options have
+> > not been deployed to any extent.
+> >
+> > The landscape may be changing as there are now a number of serious
+> > efforts to define and deploy extension headers. In particular, a number
+> > of uses for Hop-by-Hop Options are currently being proposed, Some of
+> > these are from router vendors so there is hope that they might start
+> > start to fix their brokenness. These proposals include IOAM, Path MTU,
+> > Firewall and Service Tickets, SRv6, CRH, etc.
+> >
+> > Assuming that IPv6 extension headers gain traction, that leaves a
+> > noticeable gap in IPv4 support. IPv4 options have long been considered a
+> > non-starter for deployment. An alternative being proposed is to enable
+> > use of IPv6 options with IPv4 (draft-herbert-ipv4-eh-00).
 >
+> "Assuming ipv6 extension headers gain traction, my patch set is useful."
+>
+> Well, when they gain traction you can propose this stuff.
+>
+> Until then, it's a facility implemented based upon wishful thinking.
+>
+Hi Dave,
 
-[...]
+"Assuming" was probably the wrong word here :-). They are gaining
+traction. A specific example is In-situ OAM (IOAM) which is being
+heavily pushed by Cisco (draft-brockners-inband-oam-data-07). This
+requires host to network signalling in data packets which goes far
+beyond what information the IP header contains. Their first
+inclination was to hack up UDP encapsulation protocols like Geneve,
+but that fundamentally doesn't work for various reasons. We were able
+to convince them that Hop-by-Hop Options is the correct mechanism so
+they are pursuing that in
+draft-ioametal-ippm-6man-ioam-ipv6-options-00. Naturally, they want to
+support both IPv6 and IPv4 for their products, but there is no usable
+mechanism in IPv4 (IP options are effectively obsoleted)-- hence the
+motivation for back porting extension headers to IPv4.
 
+In short, we're at a crossroads. Extension headers are "use it or lose
+it". If we don't figure out how to make these usable and useful soon,
+that may never happen and they'll be relegated to a historical
+footnote just like IP options. IMO, it would be a shame if that
+happens since we'd be surrendering a valuable feature.
 
->+void mlx5_error_sw_reset(struct mlx5_core_dev *dev)
->+{
->+	unsigned long end, delay_ms = MLX5_FW_RESET_WAIT_MS;
->+	int lock = -EBUSY;
->+
->+	mutex_lock(&dev->intf_state_mutex);
->+	if (dev->state != MLX5_DEVICE_STATE_INTERNAL_ERROR)
->+		goto unlock;
->+
->+	mlx5_core_err(dev, "start\n");
+Tom
 
-Leftover?
+> Sorry Tom, I kept pushing back using trivial coding style feedback
+> because I simply can't justify applying this.
+>
