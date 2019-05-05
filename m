@@ -2,118 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EB6D13DC8
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 08:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 474BC13DD7
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 08:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727547AbfEEGTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 02:19:17 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34278 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726237AbfEEGTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 02:19:17 -0400
-Received: by mail-pg1-f195.google.com with SMTP id c13so4835763pgt.1;
-        Sat, 04 May 2019 23:19:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/O0+bcvBE2OoO/gEJJYwRuRI/RoGqtMYiiZRYQc0t4I=;
-        b=sVUer8yo9OhUMSJX6hMcLyZ+WUt9ijpiwKTXdDxyiNFPrWmlSF1bSzGIxcU9MQZDl/
-         VX9Pm4+viIfiVlcPLEUCKpLOhERG3PfBuMA/Abvbktj0/MF9jGMMRl5toJJli4UQOBDW
-         52BqRPznwSDs3vjHfnh8JJqbQVUofVXrjYcCBEUF207yGPlEL7QHvg/TB6wkNClRRwNJ
-         OULDI6PqWV3ffyHQpv5pJHc2J9nQyGa8sbRmqkpGKM1UNFxB9dvYkfvtalkxJq95upI8
-         r+3lAKrPCMLAndOZWsPtHMO6N9QUT4vBxyj+ROXQtHHN72eKkF8NPeq1CK2a+kWPmzq6
-         7iZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/O0+bcvBE2OoO/gEJJYwRuRI/RoGqtMYiiZRYQc0t4I=;
-        b=ok+TQIDWQ6+zjS9zdrEZG5sO+1IggXwuoKnVy1Bhaq7f90x6zH+K8jEcMx6TAIEG3b
-         UsJbwLPAt3zVcKifL57uJIygkmMvZCXrUbZ0VEzkP/Qhzlhhzm55ozJXH+ToV1OfHAvm
-         MOTqbECJScPNLxVO7wW8cYAPKd1ujasxvE5fIKRpL1oKHj1bybWWvEPOcE6aw35Lr6Ns
-         PGK2KOKUWMOi6Jr5yv//V/OPxshuXsuID3j5cCxiULQ+ljraObEdHAwk7ddBt06PrHFx
-         kVMP4U2GVxrnVzmMxlL8TdAtaMGBLAZMB+V8kBfTAQy5omxSulaqVJW5T9sMb6wOYRTS
-         Lv2w==
-X-Gm-Message-State: APjAAAVTS5roZt0S1KTVTYsOIhESQ6jfzS3obOmNwHB6LGl3s9B+i295
-        mHDJqz6zxKy/XbOjob12FzOk4Ic9
-X-Google-Smtp-Source: APXvYqzvyiCxAFPvRtwFJEnXIdbqPspm5dip3VA/y6atEk9Tt9bRxCDrDN4ROhC0K5EZZ7NbSWeOsg==
-X-Received: by 2002:a63:ed12:: with SMTP id d18mr23581304pgi.248.1557037156347;
-        Sat, 04 May 2019 23:19:16 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:180::2e11])
-        by smtp.gmail.com with ESMTPSA id k7sm8649674pfi.67.2019.05.04.23.19.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 May 2019 23:19:15 -0700 (PDT)
-Date:   Sat, 4 May 2019 23:19:14 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Quentin Monnet <quentin.monnet@netronome.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@netronome.com
-Subject: Re: [PATCH bpf-next 4/6] bpf: make BPF_LOG_* flags available in UAPI
- header
-Message-ID: <20190505061913.mgazaivmg62auirx@ast-mbp>
-References: <20190429095227.9745-1-quentin.monnet@netronome.com>
- <20190429095227.9745-5-quentin.monnet@netronome.com>
+        id S1727356AbfEEGW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 02:22:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59542 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726237AbfEEGW4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 May 2019 02:22:56 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8AB9320644;
+        Sun,  5 May 2019 06:22:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557037375;
+        bh=asbmlY+vrT0BEESfBu94E7n5cdnH4bf1PXYThT4BiDI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Wz+whTWieue87PBAHMJ36qI+QaiyojG8R+IHXpMbxlZevj9yNIfdC7kQpX1p5v1dU
+         C3n9s1N9SxLgq5nI4Cl5mMyChBD8yqorvChH+pHsuFt9d5NmbBXfbgNwwDQTpwfL58
+         Lz4Km6lX2dm+n8pj2yXew0t9wVAy58JLb6oCBLvY=
+Date:   Sun, 5 May 2019 09:22:50 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Moni Shoua <monis@mellanox.com>
+Subject: Re: [net-next][PATCH v2 2/2] rds: add sysctl for rds support of
+ On-Demand-Paging
+Message-ID: <20190505062250.GA6938@mtr-leonro.mtl.com>
+References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
+ <1556581040-4812-3-git-send-email-santosh.shilimkar@oracle.com>
+ <20190501074500.GC7676@mtr-leonro.mtl.com>
+ <81e6e4c1-a57c-0f66-75ad-90f75417cc4a@oracle.com>
+ <20190502061800.GL7676@mtr-leonro.mtl.com>
+ <6560f4e5-8ded-6fb3-dd2b-d4733633addc@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190429095227.9745-5-quentin.monnet@netronome.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <6560f4e5-8ded-6fb3-dd2b-d4733633addc@oracle.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 10:52:25AM +0100, Quentin Monnet wrote:
-> The kernel verifier combines several flags to select what kind of logs
-> to print to the log buffer provided by users.
-> 
-> In order to make it easier to provide the relevant flags, move the
-> related #define-s to the UAPI header, so that applications can set for
-> example: attr->log_level = BPF_LOG_LEVEL1 | BPF_LOG_STATS.
-> 
-> Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> ---
->  include/linux/bpf_verifier.h | 3 ---
->  include/uapi/linux/bpf.h     | 5 +++++
->  2 files changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-> index 1305ccbd8fe6..8160a4bb7ad9 100644
-> --- a/include/linux/bpf_verifier.h
-> +++ b/include/linux/bpf_verifier.h
-> @@ -253,9 +253,6 @@ static inline bool bpf_verifier_log_full(const struct bpf_verifier_log *log)
->  	return log->len_used >= log->len_total - 1;
->  }
->  
-> -#define BPF_LOG_LEVEL1	1
-> -#define BPF_LOG_LEVEL2	2
-> -#define BPF_LOG_STATS	4
->  #define BPF_LOG_LEVEL	(BPF_LOG_LEVEL1 | BPF_LOG_LEVEL2)
->  #define BPF_LOG_MASK	(BPF_LOG_LEVEL | BPF_LOG_STATS)
->  
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 72336bac7573..f8e3e764aff4 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -335,6 +335,11 @@ struct bpf_stack_build_id {
->  	};
->  };
->  
-> +/* verifier log_level values for loading programs, can be combined */
-> +#define BPF_LOG_LEVEL1	1
-> +#define BPF_LOG_LEVEL2	2
-> +#define BPF_LOG_STATS	4
+On Thu, May 02, 2019 at 10:59:58AM -0700, Santosh Shilimkar wrote:
+>
+>
+> On 5/1/2019 11:18 PM, Leon Romanovsky wrote:
+> > On Wed, May 01, 2019 at 10:54:50AM -0700, Santosh Shilimkar wrote:
+> > > On 5/1/2019 12:45 AM, Leon Romanovsky wrote:
+> > > > On Mon, Apr 29, 2019 at 04:37:20PM -0700, Santosh Shilimkar wrote:
+> > > > > RDS doesn't support RDMA on memory apertures that require On Demand
+> > > > > Paging (ODP), such as FS DAX memory. A sysctl is added to indicate
+> > > > > whether RDMA requiring ODP is supported.
+> > > > >
+> > > > > Reviewed-by: H??kon Bugge <haakon.bugge@oracle.com>
+> > > > > Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+> > > > > Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+> > > > > Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+> > > > > ---
+> > > > >    net/rds/ib.h        | 1 +
+> > > > >    net/rds/ib_sysctl.c | 8 ++++++++
+> > > > >    2 files changed, 9 insertions(+)
+> > > >
+> > > > This sysctl is not needed at all
+> > > >
+> > > Its needed for application to check the support of the ODP support
+> > > feature which in progress. Failing the RDS_GET_MR was just one path
+> > > and we also support inline MR registration along with message request.
+> > >
+> > > Basically application runs on different kernel versions and to be
+> > > portable, it will check if underneath RDS support ODP and then only
+> > > use RDMA. If not it will fallback to buffer copy mode. Hope
+> > > it clarifies.
+> >
+> > Using ODP sysctl to determine if to use RDMA or not, looks like very
+> > problematic approach. How old applications will work in such case
+> > without knowledge of such sysctl?
+> > How new applications will distinguish between ODP is not supported, but
+> > RDMA works?
+> >
+> Actually this is not ODP sysctl but really whether RDS supports
+> RDMA on fs_dax memory or not. I had different name for sysctl but
+> in internal review it got changed.
+>
+> Ignoring the name of the sysctl, here is the application logic.
+> - If fs_dax sysctl path doesn't exist, no RDMA on FS DAX memory(this
+> will cover all the older kernels, which doesn't have this patch)
+> - If fs_dax sysctl path exist and its value is 0, no RDMA on FS
+> DAX. This will cover kernels which this patch but don't have
+> actual support for ODP based registration.
+> - If fs_dax sysctl path exist and its value is 1, RDMA can be
+> issued on FS DAX memory. This sysctl will be updated to value 1
+> once the support gets added.
+>
+> Hope it clarifies better now.
 
-The verifier log levels are kernel implementation details.
-They were not exposed before and shouldn't be exposed in the future.
-I know that some folks already know about existence of level2 and use it
-when the verifier rejects the program, but this is not uapi.
-What is being output at level1 and 2 can change.
-It's ok for libbpf to use this knowledge of kernel internals,
-but it shouldn't be in uapi header.
-That was the reason I didn't expose stats=4 in uapi in the first place
-when I added that commit.
+Santosh,
 
+Thanks for explanation, I have one more question,
+
+If I'm author of hostile application and write code to disregard that
+new sysctl, will any of combinations of kernel/application cause to
+kernel panic? If not, we don't really need to expose this information,
+if yes, this sysctl is not enough.
+
+Thanks
+
+>
+> Regards,
+> Santosh
