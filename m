@@ -2,146 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78AD914209
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 21:12:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 437001420B
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 21:12:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727479AbfEETMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 15:12:09 -0400
-Received: from mail-pg1-f170.google.com ([209.85.215.170]:33693 "EHLO
-        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbfEETMJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 15:12:09 -0400
-Received: by mail-pg1-f170.google.com with SMTP id k19so5343785pgh.0;
-        Sun, 05 May 2019 12:12:09 -0700 (PDT)
+        id S1727706AbfEETMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 15:12:25 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:35334 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726636AbfEETMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 15:12:24 -0400
+Received: by mail-pl1-f193.google.com with SMTP id w24so5237572plp.2
+        for <netdev@vger.kernel.org>; Sun, 05 May 2019 12:12:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:mime-version
-         :content-disposition:user-agent;
-        bh=Fipyoptx6eV0hAvOLwL0MXlGgs/fg+c7AJV/X+NGfRA=;
-        b=uG+Jv6b07EMtw6Zcepj3tA+tq7D4mdJxn6Q2aA42pmK7ZaCy3boMTuxsOMTv3FoK5/
-         2CYWXpZYPXWKbWkNBE2SPHDPrw4TUGhGHaRFycAlLYcB6pwywYHbblJm8j3vZF0Q91iV
-         rNWY5dBHB2A3vTzJ48c6uMSBVLM2yx3jpHZO+gzbKau9S2Yo1eXdIfK56rRPzqBLl8iE
-         t7eNuu0r6z075xeFMaAGM5lCgMKpdPfmErNUDK+2RS6cxbmA653HGvZgz41/OiYrdFtd
-         wNZ9WwGcGeMtpE3j86lHaLLXQFbXtAX/b+p4b/F8bpmiMICxLmeVXI1jkb5t0Rqm666E
-         FBMA==
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UWdyAJFzDoOKPK42c+RdVNABzNrCdN5ShH0AFAVI6ko=;
+        b=Z8Cl+eMnUFxGADSKJo4ns7w/qpoUhI/wgAz5s93T1LxYEc1mSYIb/COqIRAtvRwGkp
+         VHUpHC3kh7SVsS7+x/AHETb56+yfuNmj0bCcHuvhVoHUiHpabDeDYH6oK9SADCrkp7fG
+         2Y8brnzZQIVFgN+tvbmqRb3V8KFPtjd1kH9Bgn8GLc81OJHaKqfbxUgHs9RfR98zrNY1
+         PoEWuAWqcCx1OPEELZxOJ5PkQj7LbQ/ncRGGIYPU1igL3YpUkm9eSlpfZQfK6/hQHNWk
+         no6LKC/n7P6aWYSKZwT7Dl0V8kmPD/0BBIOIFPSWX5PFfU+vRKNj/M3YQZ8h4huzUZkf
+         Lw3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:mime-version:content-disposition:user-agent;
-        bh=Fipyoptx6eV0hAvOLwL0MXlGgs/fg+c7AJV/X+NGfRA=;
-        b=DANfaMVPv+jsv3dHwhTJVj/2Fd8qV/ITJay1TEya3/p9ej0eMXYEBvYfowbZ53UerU
-         B04Nrc8mirwx1hdoiJdSblIwDTpBfl9hJbgvUKNnTF1W1rmpfSMjigrPWBXhlX0K3/ji
-         UssYIMGRoUNDHgr2pEccc9Qhj4ItHqh3KWEFnPW+cIg4PrKY2ijBdc0bnt0ZQ4OatRzs
-         OiuPTYoTn9REudpYM8bRG5cVSI+VhGyDVnVqHJXEVJ8eIo6WgW2xxMZ2K5QJW8LcpF1y
-         YJjbcMixeBdISiiu3ccsjKLJMlXfkpwcmFHjsLlzWD1jDUAtJNpmmk15W8OWNKEZWYIU
-         8Yig==
-X-Gm-Message-State: APjAAAUfkBv3Pp6IomNO5KbMbL8SNPFeOawRhUnYhZT0Lot/9DQ1V2Kx
-        ptMYWUXZihpbnFy521EIt08=
-X-Google-Smtp-Source: APXvYqwO81HSBH3jsjOeItovmEyPwoFG8wN1O6hdlRpdbysMSmICmEjjFMsl98ZOz+/28ubwrx3Yvw==
-X-Received: by 2002:a65:5941:: with SMTP id g1mr27027772pgu.51.1557083528597;
-        Sun, 05 May 2019 12:12:08 -0700 (PDT)
-Received: from localhost ([192.55.54.44])
-        by smtp.gmail.com with ESMTPSA id c129sm10809005pfg.178.2019.05.05.12.12.06
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UWdyAJFzDoOKPK42c+RdVNABzNrCdN5ShH0AFAVI6ko=;
+        b=anCNiYznVTKjRLtXEidueUEuWLdip6WC8o/yvga0PS0L5UF5zr7gizo2IsAPf1tPuP
+         cjp8OPojRm3HFkAZYkzm0wh4bhWFglm/7jY1zxc0QxDyOYhLelBSh6wqbruAnRAuoj68
+         yuMDBHkXwUfKxRjRVCyTpF8NfHCZAkVLWC51N87sANgdrKNmlpXKPzB37wEgeASTzTq8
+         sPAuhpxGEsiq2gQcHSs6Vz4k1yTdfc8Y9ay3PBMG1ywOW1c7kD+Al/mvaTKg++SNJlut
+         rB3FqF2jRmJw4TpAhbe07XZTRsafKUDDcr7Dxzd8gTZBpsdkyF8F4hOfMxT9BeM8fvaw
+         J7kA==
+X-Gm-Message-State: APjAAAVuSQACG3ksXMjl3PDcRa/SZptJXMsGlUf+x7wuo8wRWWde4IMr
+        NnE/373O7zWEYlgcdDJKOnc/jGen
+X-Google-Smtp-Source: APXvYqyWJ2B6rUCCjgOFOZWjQ/5whr9vheziO1XBYSxWQ4YjCA/rdyHSIE9PdNUy1nJiiHQhV9HpNQ==
+X-Received: by 2002:a17:902:e407:: with SMTP id ci7mr26816288plb.219.1557083543344;
+        Sun, 05 May 2019 12:12:23 -0700 (PDT)
+Received: from [10.230.28.107] ([192.19.223.250])
+        by smtp.gmail.com with ESMTPSA id s17sm10408040pfm.149.2019.05.05.12.12.21
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 05 May 2019 12:12:07 -0700 (PDT)
-Date:   Sun, 5 May 2019 22:12:03 +0300
-From:   Johan Hedberg <johan.hedberg@gmail.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org
-Subject: pull request: bluetooth-next 2019-05-05
-Message-ID: <20190505191203.GA86553@iliorx-mobl.ger.corp.intel.com>
-Mail-Followup-To: davem@davemloft.net, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org
+        Sun, 05 May 2019 12:12:22 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: phy: improve pause mode reporting in
+ phy_print_status
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1ea97344-6971-44dd-2191-9a8db0d2c10d@gmail.com>
+ <65df73ce-9213-2b6a-6894-f68bf54a5f3d@gmail.com>
+ <5cc8f009-c558-05ff-1739-4e4fd8c68bf2@gmail.com>
+ <87b70c57-2d95-8e23-674d-71541122b1b4@gmail.com>
+ <1278310b-5457-e8eb-851e-1796d2616f8d@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <ad7fc900-2f3f-abb1-5e7f-67a79a9125f3@gmail.com>
+Date:   Sun, 5 May 2019 12:12:20 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="/04w6evG8XlLl3ft"
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1278310b-5457-e8eb-851e-1796d2616f8d@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---/04w6evG8XlLl3ft
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi Dave,
+On 5/5/2019 12:06 PM, Heiner Kallweit wrote:
+> On 05.05.2019 20:46, Florian Fainelli wrote:
+>>
+>>
+>> On 5/5/2019 10:31 AM, Heiner Kallweit wrote:
+>>> On 05.05.2019 19:10, Florian Fainelli wrote:
+>>>>
+>>>>
+>>>> On 5/5/2019 10:03 AM, Heiner Kallweit wrote:
+>>>>> So far we report symmetric pause only, and we don't consider the local
+>>>>> pause capabilities. Let's properly consider local and remote
+>>>>> capabilities, and report also asymmetric pause.
+>>>>
+>>>> I would go one step further which is to print what is the link state of
+>>>> RX/TX pause, so something like:
+>>>>
+>>>> - local RX/TX pause advertisement
+>>>> - link partnr RX/TX pause advertisement
+>>>> - RX/TX being enabled for the link (auto-negotiated or manual)
+>>>>
+>>>> this sort of duplicates what ethtool offers already but arguably so does
+>>>> printing the link state so this would not be that big of a stretch.
+>>>>
+>>>> I would make the print be something like:
+>>>>
+>>>> Link is Up - 1Gb/Full - local pause: rx/tx, lpa pause: rx/tx, link
+>>>> pause: auto-negotiated
+>>>> Link is Up - 1Gb/Full - local pause: rx/tx, lpa pause: rx/tx, link
+>>>> pause: forced off
+>>>> Link is Up - 1Gb/Full - local pause: rx/tx, lpa pause: rx/tx, link
+>>>> pause: forced on
+>>>>
+>>> For speed and duplex we don't print the capabilities of both sides
+>>> but the negotiation result. Therefore I think it's more plausible
+>>> to do the same for pause.
+>>
+>> Pause is different though, if the link speed does not match, there is no
+>> link, if the duplex do not match you may establish a link but there will
+>> be a duplex mismatch which will cause all sorts of issues. Pause is not
+>> an essential link parameter and is more of an optimization.
+>>
+> Right, still I think this is too much and only partially relevant
+> information for the user. And if e.g. the remote side doesn't support
+> pause, then it's irrelevant what we support. I think the user is
+> (if at all) interested in the information which pause mode is effectively
+> used.
 
-Here's one more bluetooth-next pull request for 5.2:
+My point was really that I would rather see the resolved pause status,
+which takes into account the link partner advertised, locally advertised
+pause settings and local policy (enabled/disabled/auto-negotiated),
+rather than the current/locally advertised pause settings which are just
+one view of the link. Your patch is fine in that it properly decouples
+the symetric/assymetric nature of the settings though.
 
- - Fixed Command Complete event handling check for matching opcode
- - Added support for Qualcomm WCN3998 controller, along with DT bindings
- - Added default address for Broadcom BCM2076B1 controllers
+> 
+>>> IMO the intention of phy_print_status() is to print what is
+>>> effectively used. If a user is interested in the detailed capabilities
+>>> of both sides he can use ethtool, as mentioned by you.
+>>>
+>>> In fixed mode we currently report pause "off" always.
+>>>
+>>> Maybe, before we go further, one question for my understanding:
+>>> If the link partner doesn't support pause, who tells the MAC how that
+>>> it must not send pause frames? Is the network driver supposed to
+>>> do this in the adjust_link callback?
+>>
+>> If the link partner does not support pause, they are not advertised by
+>> the link partner and you can read that from the LPA and the resolution
+>> of the local pause and link partner pause settings should come back as
+>> "not possible" (there may be caveats with symmetric vs. asymmetric pause
+>> support).
+>>
+>> PHYLINK is a good example of how pause should be reported towards the MAC.
+>>
+> Thanks. So I think the usual MAC driver would have to check pause support
+> in the handler passed as argument to phy_connect_direct().
 
-Please let me know if there are any issues pulling. Thanks.
+Given that pause can be changed from ethtool -A, would not that just be
+a partial view of pause at the time the MAC and PHY get bound together?
 
-Johan
+> 
+>>>
+>>> In the Realtek network chip datasheet I found a vague comment that
+>>> the MAC checks the aneg result of the internal PHY to decide
+>>> whether send pause frames or not.
+>>
+>> That would mean that the MAC behaves in a mode where it defaults to
+>> pause frame being auto-negotiated, which is something that some Ethernet
+>> MAC drivers default to as well. As long as you can disable pause when
+>> the user requests it, that should be fine.
+>>
+> At least for the Realtek chips there is no documented way to disable pause.
+> If the remote side doesn't support pause, what happens if a pause frame is
+> sent? Is it just ignored or can we expect some sort of issue?
 
----
-The following changes since commit ff24e4980a68d83090a02fda081741a410fe8eef:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net (2019-05-02=
- 22:14:21 -0400)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.gi=
-t for-upstream
-
-for you to fetch changes up to 62a91990f4c52f0b56cfae3e4093a27ed61c49db:
-
-  Bluetooth: hci_qca: Rename STATE_<flags> to QCA_<flags> (2019-05-05 19:34=
-:00 +0200)
-
-----------------------------------------------------------------
-Harish Bandi (2):
-      Bluetooth: hci_qca: Added support for WCN3998
-      dt-bindings: net: bluetooth: Add device tree bindings for QTI chip WC=
-N3998
-
-Jo=E3o Paulo Rechi Vita (1):
-      Bluetooth: Ignore CC events not matching the last HCI command
-
-Matthias Kaehlcke (1):
-      Bluetooth: hci_qca: Rename STATE_<flags> to QCA_<flags>
-
-Stephan Gerhold (1):
-      Bluetooth: btbcm: Add default address for BCM2076B1
-
- .../devicetree/bindings/net/qualcomm-bluetooth.txt |  5 +-
- drivers/bluetooth/btbcm.c                          |  5 ++
- drivers/bluetooth/btqca.c                          |  7 +--
- drivers/bluetooth/btqca.h                          | 11 ++++-
- drivers/bluetooth/hci_qca.c                        | 55 +++++++++++++-----=
-----
- include/net/bluetooth/hci.h                        |  1 +
- net/bluetooth/hci_core.c                           |  5 ++
- net/bluetooth/hci_event.c                          | 12 +++++
- net/bluetooth/hci_request.c                        |  5 ++
- net/bluetooth/hci_request.h                        |  1 +
- 10 files changed, 80 insertions(+), 27 deletions(-)
-
---/04w6evG8XlLl3ft
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEyxvsVXjY3jV7sQ0/JCP2+/mo1BIFAlzPNYAACgkQJCP2+/mo
-1BJsTg//QIHHvPuI52sJ4wcbHuOvlGHdVJP54qsajCSFY0p4m4ML6xJ+UP6K8Mfv
-zvdX+4D7zdkLlI02LvTedrJT9AdP6dCuf/BrLXu2llDdGsT6DF2c2noylxRhFZli
-PAWo0vXxROKPgBIr1wwOG47n8tUd8tYXdDXb4vMywZjH6eEbQvPoE1GW8462TeZN
-j3XCs0NxsK7F/qppJeiLasYSa7q7kw8PR1S6h+3zij37AqZlcLpvQzCt0XiSN61T
-X9w1Se38RQoG7kYqD3l50QhF/Bwls0YUDDP2n8o/9QaYjXooYdlWB1g7vFcp333N
-7JEcUUbc0I7t3HB5XGwnFsQboTM+JPhsaw7G2h3VAE5d5nyvtHD15l+Hq+Uuyp1V
-5kzEaTlvkrX2x4P16MynatqS0V/PKro+0QsuPSz00X8iOsoO7nty1KAzTSGU/vsk
-CEqhkF6+fOeEP6mzAESfzEA9OwXD01x8Hh7zXeK4yVHP10e5O/y3ja+zPPP+ICfX
-CmB4/eMf1pqxgD9MoGdLxp1KXdkl5/Vgqq2fXXdaU8UR2My5JZLnNVkLtNeNJcaQ
-wJxH/yi4BMsINM9zWg+UKNpjGAexu2PYHRljfEhKDsxMXJAsQ8kv8fthQ8UmUzcL
-0Da/wSYdnQCloVrjcaoRTIFYZqMbUVl14oRPUszG47oN1UXZlWI=
-=ivpf
------END PGP SIGNATURE-----
-
---/04w6evG8XlLl3ft--
+Your mileage may vary of course, but if the remote side either does not
+support pause or has receive pause frame support disabled, then these
+frames should be ignored.
+-- 
+Florian
