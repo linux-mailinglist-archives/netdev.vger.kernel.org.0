@@ -2,98 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D7F11427E
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 23:22:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 794C914281
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 23:23:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727892AbfEEVWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 17:22:23 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:35619 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbfEEVWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 17:22:23 -0400
-Received: by mail-pf1-f193.google.com with SMTP id t87so5059766pfa.2
-        for <netdev@vger.kernel.org>; Sun, 05 May 2019 14:22:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HHKVhCOnqeLJsl6JvnIDCZrNYV798cOYOiPxV2wMUok=;
-        b=U+isgnYFOz8Me5Y+/+mHdYwjEpxeS/7Qonze9r0XJI485krwTzrlkDBJDvlEJQ0f/2
-         YdZPn7YWJeC2oO3858QWKPdML89uksdWMk6Q3R2xTxroG/ncclVjWA+qowVbI5v/P+cm
-         ePRH6qk89VRSTxQ33UMfWt8UXCr6rXF5R9bs16K0bvqbX55A05qg/dpfCaSVESO4+yvN
-         6GEM//wODy5zwcUNSnMt8rfoq4BlxtdYKwYbkFX8h+pDKes5BTeYxLC6cXQHMTAtL6nc
-         pUCjJ9694MwS5mVSKCgs7woLqQOqqeenB/Qd/nUUrA8CIrZP+ymdOYowGFqgzHJhnWNJ
-         kraw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HHKVhCOnqeLJsl6JvnIDCZrNYV798cOYOiPxV2wMUok=;
-        b=QsWo64FsyMSAI7kVqKCxf+sksuEsTMw2QNnd2BGXKlZr8u2fLuDognu68d6S5vQsOE
-         GCMB2uyeBsagl/qSfAlD4UQ2JC2wiCyvmKU1NPDNOb9D4HbnKYjVxcopwpUpOKf8+J9S
-         5bqWEUkHtMsqoh4rKFOCFMPuOaqn+ASNnDDs+inCbwOE7RC8COxuzqO87N2YgQAyrV9W
-         SJoXFfA+XdvCX6i6m/SYa7KcanxHhVmyKctcx1NLowcerXQAq5KVkSVzink/XABWJtoJ
-         gVDRNLjGYG9O5UpAuItH0rYdHJJ0eudpCTOW7ht/V78ObqhLJ89gdR2ref78LJ5ljlzl
-         6gsQ==
-X-Gm-Message-State: APjAAAX70b5Jg97t9v5u86ghDElMnDo6OkPtE+BYt0bmMsxfplRXvA2W
-        OiFdi0ujol4hw+5Lr4u7ik83eGiT
-X-Google-Smtp-Source: APXvYqzlJWKTnXX0+N333C/sBFN04lXrqYM5wTOjKpR/mSEfPnhri6ZDwOttl+y592WoUYahEIOtqA==
-X-Received: by 2002:a63:e550:: with SMTP id z16mr27874261pgj.329.1557091342441;
-        Sun, 05 May 2019 14:22:22 -0700 (PDT)
-Received: from [10.230.28.107] ([192.19.223.250])
-        by smtp.gmail.com with ESMTPSA id x66sm11833706pfb.78.2019.05.05.14.22.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 05 May 2019 14:22:21 -0700 (PDT)
-Subject: Re: [PATCH v2 5/5] net: dsa: lantiq: Add Forwarding Database access
-To:     Hauke Mehrtens <hauke@hauke-m.de>, davem@davemloft.net
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, netdev@vger.kernel.org
-References: <20190505211517.25237-1-hauke@hauke-m.de>
- <20190505211517.25237-6-hauke@hauke-m.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <8b1e332e-5f75-67bb-ccee-c15d2eca9650@gmail.com>
-Date:   Sun, 5 May 2019 14:22:16 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727913AbfEEVXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 17:23:50 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:33267 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726636AbfEEVXt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 May 2019 17:23:49 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 44xzPt1tD4z9s5c;
+        Mon,  6 May 2019 07:23:45 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1557091426;
+        bh=YA/FcEGzJdyHad6E/Sm0uJk7a32AdcrEnIvIoxm8LMQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=hBPEOQSOO28rV9xpDmcnRfMMoj8naqJ1axba+f15/qlpqSFCmx/3OGY7aaiIcCEHH
+         vX81kbxBgembkki2rOfN6caeDA09pRFzTfHNqpB2NMFKASIm0rheBW7ZmdnMTf1I8R
+         4wWZRgRRgIrlwdxrhryWAMr+ubGlwxRwsaybNdYOrC/GnZBGGQ93y1Ar6i56OYn/U+
+         vqZvtB4/Ec1NALk9YZmp8q6L4oLC+rLyXLxCxT0QwQKJ8vdItbdOuEKU4698piXK0v
+         796wPdi73LcGdcHmSyEY8PlhvaqVU3mYg81dei93F7rPJGgATTrhnN4sDJheH3CwiK
+         eymxjlbyPwuIg==
+Date:   Mon, 6 May 2019 07:23:34 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20190506072334.5eeb8858@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20190505211517.25237-6-hauke@hauke-m.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/iIoaWuLbT45b0W=22c.g9UB"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/iIoaWuLbT45b0W=22c.g9UB
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 5/5/2019 2:15 PM, Hauke Mehrtens wrote:
-> This adds functions to add and remove static entries to and from the
-> forwarding database and dump the full forwarding database.
-> 
-> Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
-> ---
+In commit
 
-[snip]
+  64c6f4bbca74 ("neighbor: Reset gc_entries counter if new entry is release=
+d before insert")
 
-> +	mac_bridge.table = 0x0b;
-> +	mac_bridge.key_mode = true;
-> +	mac_bridge.key[0] = addr[5] | (addr[4] << 8);
-> +	mac_bridge.key[1] = addr[3] | (addr[2] << 8);
-> +	mac_bridge.key[2] = addr[1] | (addr[0] << 8);
-> +	mac_bridge.key[3] = fid;
-> +	mac_bridge.val[0] = add ? BIT(port) : 0; /* port map */
-> +	mac_bridge.val[1] = 0x01; /* static entry */
+Fixes tag
 
-Could you add a define for that bit?
+  Fixes: 58956317c8d ("neighbor: Improve garbage collection")
 
-[snip]
-> +		addr[0] = (mac_bridge.key[2] >> 8) & 0xff;
-> +		if (mac_bridge.val[1] & 0x01) {
+has these problem(s):
 
-And use it here as well? The rest looks fine to me, so if you fix that:
+  - SHA1 should be at least 12 digits long
+    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+    or later) just making sure it is not set (or set to "auto").
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/iIoaWuLbT45b0W=22c.g9UB
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlzPVFYACgkQAVBC80lX
+0GzgSQf/c6OvVDblN1/YNpJhV/j2sx2hjoI5gDJX3J2y1AR+2+BPmP/SDRL3ZJmM
+8ukm5AsBNqrIeYWlM9sSzjOoQd8DSvyviJcvXJRdGU8aHothh+5LYNcgYGY4/D9J
+JU0czzAObzpo7I5+/Wlse7k1qwqWHTLJLc7QbUbMihagc++flkjUP1XO+eOeT7qo
+QSHTveRrhX+E0nF6WLanSEVsMeofWf+ANI44cy9GyI68/ElhTT4Pk6G0rgEPtnp3
+E2Ct31QNroLOdwVHevUmYTBEW0zP0bRjCALxIi4MJvSlp8FmEgO6QEAhmzImDtW0
+706zq/XALUR8RVfwZJq7AFf5HU9ofg==
+=QLd4
+-----END PGP SIGNATURE-----
+
+--Sig_/iIoaWuLbT45b0W=22c.g9UB--
