@@ -2,87 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 794C914281
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 23:23:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E59914282
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 23:27:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727913AbfEEVXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 17:23:50 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:33267 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726636AbfEEVXt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 May 2019 17:23:49 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 44xzPt1tD4z9s5c;
-        Mon,  6 May 2019 07:23:45 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1557091426;
-        bh=YA/FcEGzJdyHad6E/Sm0uJk7a32AdcrEnIvIoxm8LMQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=hBPEOQSOO28rV9xpDmcnRfMMoj8naqJ1axba+f15/qlpqSFCmx/3OGY7aaiIcCEHH
-         vX81kbxBgembkki2rOfN6caeDA09pRFzTfHNqpB2NMFKASIm0rheBW7ZmdnMTf1I8R
-         4wWZRgRRgIrlwdxrhryWAMr+ubGlwxRwsaybNdYOrC/GnZBGGQ93y1Ar6i56OYn/U+
-         vqZvtB4/Ec1NALk9YZmp8q6L4oLC+rLyXLxCxT0QwQKJ8vdItbdOuEKU4698piXK0v
-         796wPdi73LcGdcHmSyEY8PlhvaqVU3mYg81dei93F7rPJGgATTrhnN4sDJheH3CwiK
-         eymxjlbyPwuIg==
-Date:   Mon, 6 May 2019 07:23:34 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20190506072334.5eeb8858@canb.auug.org.au>
+        id S1727694AbfEEV1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 17:27:44 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:37858 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726905AbfEEV1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 17:27:44 -0400
+Received: by mail-pg1-f193.google.com with SMTP id e6so5432046pgc.4
+        for <netdev@vger.kernel.org>; Sun, 05 May 2019 14:27:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/XrBRKwAFDMT7VnxGH0FBo7HLpYORVyy8XIJ7U8J7Ko=;
+        b=l7EvNtCi3Jwq1coj2Z/fAktkR8//26wa448CQixLQ05f2iqj/rlBwQ0eeF8UqRduPR
+         8p9oUR38XFoX59eaHDd7oawK9nSj8ew5sMpkgh2XYw3x6yH0pHF2RfU6VwvhpJjdPFyQ
+         l26pi1C/M+bBtoG8cAXrHrGJUEKfugy7YMziwTU8n/E6itZgTHN/XjwksfV+pc2zPFPa
+         ri4GSWwyyVy3HMWrSUqsRycznkL6pzUqsPzQFl35s1qvjcjsBF8pNSOcsYCfGK1DSed+
+         JWQ42MK8J6UiZTLZspTNE8gAeAM73WxmQmZrZlAjGcfqrQMcLmNu1RT2CSk/PgV6DHYI
+         jNrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/XrBRKwAFDMT7VnxGH0FBo7HLpYORVyy8XIJ7U8J7Ko=;
+        b=ZXUvIVdyBUDcW41uIMe4oXniIJfa2Hs6vJf92G0d4diTbxuxfLs1QUp8nluuLbUf4S
+         LPJNTBZSoutahi7O9DN/iSydV8Dnw2GQi4JQQUjiMdLeEbVS2vM/UaLDiL5aB+HKUD7x
+         5a9J7lzA4N8JGdcPLO7nAf8bW0+xE5ZeCBMbvkeZi4sMJhFy7diyRMD8qZf8dD0lXRGJ
+         bWwmjLPFa7+Tno5gno/Kf62GI5lVBnLGQkRAXcCARzhNzpcTtI1CTNRGDoxGDL+siL+5
+         0T7vhBrdYZJ1nAWoSSzgOq5YOcKK2ybN+kO+faoC0BJnJQj1DNT0GwjV/vDFQerC6RG7
+         2AVg==
+X-Gm-Message-State: APjAAAXYjIS5AxEd3T2qw48v5g1hxJMhWOtIuR/b6kF5wIqG/doSRRcW
+        SDcUuGU7Fz+kCwclGDC2NwBJqVy3
+X-Google-Smtp-Source: APXvYqxPnl1yNtkviNtzcoa3BAXt/gq7eY96Q928ZdAhWeTevl8gJBizBGjBFwr0ntYejVG+ZwEqlw==
+X-Received: by 2002:a62:460a:: with SMTP id t10mr26738849pfa.3.1557091663488;
+        Sun, 05 May 2019 14:27:43 -0700 (PDT)
+Received: from [10.230.28.107] ([192.19.223.250])
+        by smtp.gmail.com with ESMTPSA id x6sm10333968pfm.114.2019.05.05.14.27.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 05 May 2019 14:27:42 -0700 (PDT)
+Subject: Re: [PATCH v2 3/5] net: dsa: lantiq: Add VLAN aware bridge offloading
+To:     Hauke Mehrtens <hauke@hauke-m.de>, davem@davemloft.net
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, netdev@vger.kernel.org
+References: <20190505211517.25237-1-hauke@hauke-m.de>
+ <20190505211517.25237-4-hauke@hauke-m.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <10cda90d-2899-62fe-425c-c2e7fdbb108e@gmail.com>
+Date:   Sun, 5 May 2019 14:27:37 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/iIoaWuLbT45b0W=22c.g9UB"; protocol="application/pgp-signature"
+In-Reply-To: <20190505211517.25237-4-hauke@hauke-m.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/iIoaWuLbT45b0W=22c.g9UB
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-In commit
+On 5/5/2019 2:15 PM, Hauke Mehrtens wrote:
+> The VLAN aware bridge offloading is similar to the VLAN unaware
+> offloading, this makes it possible to offload the VLAN bridge
+> functionalities.
+> 
+> The hardware supports up to 64 VLAN bridge entries, we already use one
+> entry for each LAN port to prevent forwarding of packets between the
+> ports when the ports are not in a bridge, so in the end we have 57
+> possible VLANs.
+> 
+> The VLAN filtering is currently only active when the ports are in a
+> bridge, VLAN filtering for ports not in a bridge is not implemented.
+> 
+> It is currently not possible to change between VLAN filtering and not
+> filtering while the port is already in a bridge, this would make the
+> driver more complicated.
+> 
+> The VLANs are only defined on bridge entries, so we will not add
+> anything into the hardware when the port joins a bridge if it is doing
+> VLAN filtering, but only when an allowed VLAN is added.
 
-  64c6f4bbca74 ("neighbor: Reset gc_entries counter if new entry is release=
-d before insert")
+[snip]
 
-Fixes tag
+>  	struct gswip_priv *priv = ds->priv;
+> +	struct net_device *bridge = dsa_to_port(ds, port)->bridge_dev;
+> +
+> +	/* Do not allow chaning the VLAN filtering options while in bridge */
 
-  Fixes: 58956317c8d ("neighbor: Improve garbage collection")
+Typo: changing.
 
-has these problem(s):
+This looks fine to me, you might be able to simplify the code a little
+bit if you directly used bridge_dev->ifindex as the FID and just keep a
+bitmap of active FIDs such that you can manage roll-overs etc. upon
+bridge device destruction/creation.
 
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/iIoaWuLbT45b0W=22c.g9UB
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlzPVFYACgkQAVBC80lX
-0GzgSQf/c6OvVDblN1/YNpJhV/j2sx2hjoI5gDJX3J2y1AR+2+BPmP/SDRL3ZJmM
-8ukm5AsBNqrIeYWlM9sSzjOoQd8DSvyviJcvXJRdGU8aHothh+5LYNcgYGY4/D9J
-JU0czzAObzpo7I5+/Wlse7k1qwqWHTLJLc7QbUbMihagc++flkjUP1XO+eOeT7qo
-QSHTveRrhX+E0nF6WLanSEVsMeofWf+ANI44cy9GyI68/ElhTT4Pk6G0rgEPtnp3
-E2Ct31QNroLOdwVHevUmYTBEW0zP0bRjCALxIi4MJvSlp8FmEgO6QEAhmzImDtW0
-706zq/XALUR8RVfwZJq7AFf5HU9ofg==
-=QLd4
------END PGP SIGNATURE-----
-
---Sig_/iIoaWuLbT45b0W=22c.g9UB--
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
