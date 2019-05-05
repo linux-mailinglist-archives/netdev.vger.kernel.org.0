@@ -2,85 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C3D513F06
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 13:04:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E31F913F25
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 13:17:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727675AbfEELEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 07:04:35 -0400
-Received: from foss.arm.com ([217.140.101.70]:56028 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727404AbfEELEa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 May 2019 07:04:30 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3C9F8374;
-        Sun,  5 May 2019 04:04:30 -0700 (PDT)
-Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.194.71])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CBC4D3F238;
-        Sun,  5 May 2019 04:04:26 -0700 (PDT)
-Date:   Sun, 5 May 2019 12:04:24 +0100
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Michal Gregorczyk <michalgr@live.com>,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Mohammad Husain <russoue@gmail.com>,
-        Srinivas Ramana <sramana@codeaurora.org>,
-        duyuchao <yuchao.du@unisoc.com>,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Karim Yaghmour <karim.yaghmour@opersys.com>,
-        Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Brendan Gregg <brendan.d.gregg@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
-Message-ID: <20190505110423.u7g3f2viovvgzbtn@e107158-lin.cambridge.arm.com>
-References: <20190502204958.7868-1-joel@joelfernandes.org>
- <20190503121234.6don256zuvfjtdg6@e107158-lin.cambridge.arm.com>
- <20190503134935.GA253329@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190503134935.GA253329@google.com>
-User-Agent: NeoMutt/20171215
+        id S1727673AbfEELRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 07:17:21 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34700 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726397AbfEELRU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 07:17:20 -0400
+Received: by mail-pf1-f196.google.com with SMTP id b3so5225991pfd.1
+        for <netdev@vger.kernel.org>; Sun, 05 May 2019 04:17:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=zoY5vXJw039b52pI6IQCKwFwK9TNKRZnXsbWiie7ZaY=;
+        b=MjUXkwS3ZiSGqnSiu9UbliZRZfuuQh26+bo3qNK7zJNv+jOki5U5F7IvikF6geRrkE
+         sdhjKH/aar2lEKfWa69Z3nl5SIU1NUOdpoAm0zfBhezkNf0wAfteIA/r3FW0dZp2q7Bk
+         jSIO/gOH3JcFFXg4+jY92LDgMLkzK8zXfveEk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=zoY5vXJw039b52pI6IQCKwFwK9TNKRZnXsbWiie7ZaY=;
+        b=EdQSJDn0GCVTcvCz4kT0XA9/ZG/dsdw3RFzqOXSURsfm6uYrUOhAb4/u27Yh/oqBm6
+         WecxPk+H1DIjusdMcHNd4xKcHWYJhJkAXodPS2SPZXXtqMnxlVhxUZhIkTX2xoBv6ekG
+         6iOut07e58a85TFCSn61JvxfLb4j77yAk1I60wcc1DSEfYA2Z3RFGszLEJkDI2DCJuCk
+         hMmhgwFcBiYhq6Ot86S9xoW4JcTYxuLYsM5ci9sFd7e4uLdLW8eLsOZQOqE28bU4SGFd
+         99kGVYGzVQa8TvKdiQm2NRZXyts4HAICXWRCnu+65lwk6T7LR4lF39ublbaILrgOoSjw
+         fdtQ==
+X-Gm-Message-State: APjAAAWbHL1ZOyck0sVPpBZfgNpaMgJx8ciCOHAzJMRXaj7+8BwoxNTT
+        yDwOlHT3p7FKv90NxrddJEUVBhOdqhc=
+X-Google-Smtp-Source: APXvYqwJ1Su0hrqucF+wvbJvZHgsK/L9XTfoA8kODx6MjL+0kUDeWuoL8pgYZy6UA1UzbHLlTe9Arg==
+X-Received: by 2002:a63:2c4a:: with SMTP id s71mr23836735pgs.373.1557055040251;
+        Sun, 05 May 2019 04:17:20 -0700 (PDT)
+Received: from localhost.localdomain.dhcp.broadcom.net ([192.19.223.250])
+        by smtp.gmail.com with ESMTPSA id 10sm9378902pfh.14.2019.05.05.04.17.19
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 05 May 2019 04:17:19 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next 00/11] bnxt_en: Driver updates.
+Date:   Sun,  5 May 2019 07:16:57 -0400
+Message-Id: <1557055028-14816-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/03/19 09:49, Joel Fernandes wrote:
-> On Fri, May 03, 2019 at 01:12:34PM +0100, Qais Yousef wrote:
-> > Hi Joel
-> > 
-> > On 05/02/19 16:49, Joel Fernandes (Google) wrote:
-> > > The eBPF based opensnoop tool fails to read the file path string passed
-> > > to the do_sys_open function. This is because it is a pointer to
-> > > userspace address and causes an -EFAULT when read with
-> > > probe_kernel_read. This is not an issue when running the tool on x86 but
-> > > is an issue on arm64. This patch adds a new bpf function call based
-> > 
-> > I just did an experiment and if I use Android 4.9 kernel I indeed fail to see
-> > PATH info when running opensnoop. But if I run on 5.1-rc7 opensnoop behaves
-> > correctly on arm64.
-> > 
-> > My guess either a limitation that was fixed on later kernel versions or Android
-> > kernel has some strict option/modifications that make this fail?
-> 
-> Thanks a lot for checking, yes I was testing 4.9 kernel with this patch (pixel 3).
-> 
-> I am not sure what has changed since then, but I still think it is a good
-> idea to make the code more robust against such future issues anyway. In
-> particular, we learnt with extensive discussions that user/kernel pointers
-> are not necessarily distinguishable purely based on their address.
+This patch series adds some extended statistics available with the new
+firmware interface, package version from firmware, aRFS support on
+57500 chips, new PCI IDs, and some miscellaneous fixes and improvements.
 
-Yes I wasn't arguing against that. But the commit message is misleading or
-needs more explanation at least. I tried 4.9.y stable and arm64 worked on that
-too. Why do you think it's an arm64 problem?
+Devesh Sharma (1):
+  bnxt_en: Separate RDMA MR/AH context allocation.
 
---
-Qais Yousef
+Michael Chan (5):
+  bnxt_en: Update firmware interface to 1.10.0.69.
+  bnxt_en: Improve NQ reservations.
+  bnxt_en: Query firmware capability to support aRFS on 57500 chips.
+  bnxt_en: Add support for aRFS on 57500 chips.
+  bnxt_en: Add device IDs 0x1806 and 0x1752 for 57500 devices.
+
+Vasundhara Volam (5):
+  bnxt_en: Refactor bnxt_alloc_stats().
+  bnxt_en: Add support for PCIe statistics
+  bnxt_en: Check new firmware capability to display extended stats.
+  bnxt_en: Read package version from firmware.
+  bnxt_en: read the clause type from the PHY ID
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 213 ++++++++++++++----
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  12 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  46 +++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h     | 263 +++++++++++++++++-----
+ 4 files changed, 432 insertions(+), 102 deletions(-)
+
+-- 
+2.5.1
+
