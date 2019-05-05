@@ -2,76 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75207142F2
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 01:02:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E2B142F9
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 01:25:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728033AbfEEXCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 19:02:40 -0400
-Received: from mail.us.es ([193.147.175.20]:54868 "EHLO mail.us.es"
+        id S1727816AbfEEXVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 19:21:37 -0400
+Received: from smtp3.ono.com ([62.42.230.163]:36209 "EHLO smtp3.ono.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727694AbfEEXCk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 May 2019 19:02:40 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 89DF511ED86
-        for <netdev@vger.kernel.org>; Mon,  6 May 2019 01:02:38 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 78B85DA704
-        for <netdev@vger.kernel.org>; Mon,  6 May 2019 01:02:38 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 75D16DA713; Mon,  6 May 2019 01:02:38 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6C9F4DA707;
-        Mon,  6 May 2019 01:02:36 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 06 May 2019 01:02:36 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 481FC4265A31;
-        Mon,  6 May 2019 01:02:36 +0200 (CEST)
-Date:   Mon, 6 May 2019 01:02:35 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] netfilter: xt_hashlimit: use struct_size() helper
-Message-ID: <20190505230235.d4cvm33ktds4gpxp@salvia>
-References: <20190501220108.GA30487@embeddedor>
+        id S1727593AbfEEXVh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 May 2019 19:21:37 -0400
+X-Junkmail-Premium-Raw: score=36/50,refid=2.7.2:2019.5.5.224516:17:36.586,ip=62.42.230.144,rules=__HAS_MSGID,
+ __SANE_MSGID, MSGID_JMAIL_DEFAULT, INVALID_MSGID_NO_FQDN, __HAS_FROM,
+ __HAS_REPLYTO, __FRAUD_WEBMAIL_REPLYTO, SUBJ_1WORD, __MIME_VERSION, __CT,
+ __CT_TEXT_PLAIN, __CTE, MISSING_HEADERS, __FRAUD_INTRO,
+ __FRAUD_MONEY_BIG_COIN_EN, __FRAUD_MONEY_CURRENCY_DOLLAR, __NO_HTML_TAG_RAW,
+ BODYTEXTP_SIZE_400_LESS, BODYTEXTP_SIZE_3000_LESS, BODY_SIZE_300_399,
+ __MIME_TEXT_P1, __MIME_TEXT_ONLY, HTML_00_01, HTML_00_10,
+ __FRAUD_MONEY_CURRENCY, __FRAUD_MONEY_BIG_COIN, __FRAUD_MONEY_VALUE,
+ __PHISH_SPEAR_GREETING, __FRAUD_MONEY, FRAUD_X3, BODY_SIZE_5000_LESS,
+ __FRAUD_WEBMAIL, WEBMAIL_REPLYTO_NOT_FROM, FRAUD_WEBMAIL_R_NOT_F,
+ __MIME_TEXT_P, NO_URI_FOUND, NO_CTA_URI_FOUND, FRAUD_LITTLE_BODY,
+ __PHISH_SPEAR_STRUCTURE_1, BODY_SIZE_1000_LESS, BODY_SIZE_2000_LESS,
+ __PHISH_SPEAR_STRUCTURE_2, REPLYTO_FROM_DIFF_ADDY, NO_URI_HTTPS,
+ BODY_SIZE_7000_LESS, TO_MALFORMED
+Received: from resprs05 (62.42.230.144) by smtp3.ono.com (9.0.019.09-1)
+        id 5CC0A28F007E1CC6; Mon, 6 May 2019 01:21:29 +0200
+Received: from (149.126.76.3) by webmailcpr05n.ono.com;  Mon, 6 May 2019 01:21:27 +0200
+Message-ID: <32936617.1107821557098487052.JavaMail.defaultUser@defaultHost>
+Date:   Mon, 6 May 2019 01:21:27 +0200 (CEST)
+From:   Jean Kabore <begoabad@ono.com>
+Reply-To: jeankabore10@gmail.com
+Subject: deal
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190501220108.GA30487@embeddedor>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain;charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 01, 2019 at 05:01:08PM -0500, Gustavo A. R. Silva wrote:
-> Make use of the struct_size() helper instead of an open-coded version
-> in order to avoid any potential type mistakes, in particular in the
-> context in which this code is being used.
-> 
-> So, replace code of the following form:
-> 
-> sizeof(struct xt_hashlimit_htable) + sizeof(struct hlist_head) * size
-> 
-> with:
-> 
-> struct_size(hinfo, hash, size)
-> 
-> This code was detected with the help of Coccinelle.
 
-Applied, thanks.
+
+--
+Dear Friend,
+
+Greetings and how are you today?
+
+I'm sorry if this message is found in the spam of your email box as
+that will certainly be a network mishap and I want us to discuss
+about the sum of Forty Million Dollars  discovered in my office and
+I'll give you more details when I hear from you.
+
+Regards
+
+Jean Kabore
+--
+
