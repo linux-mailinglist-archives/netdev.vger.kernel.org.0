@@ -2,88 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B203E13EEB
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 12:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3D513F06
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 13:04:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727479AbfEEKnY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 5 May 2019 06:43:24 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:44286 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727020AbfEEKnY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 06:43:24 -0400
-Received: by mail-lj1-f194.google.com with SMTP id c6so3277286lji.11
-        for <netdev@vger.kernel.org>; Sun, 05 May 2019 03:43:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=4GjLl7K6asTFLnlYxatdFlHWtyLi5pvTCEs/u8ILWik=;
-        b=TQXCE03gnS85aE97/kX6PA6tKUqfYhki2JqwioahpvAs39tDOqvnQdSf2H2j0vP9zi
-         lWCnQgA0bKqN3XipRaNdXObZStXn0DJxumWP6xtOl8NuC/uANmbZed+G44/0rX9nathh
-         EQuqpgFXQBacB2g+CI7TtLqQbJ3TJK3lnvKTPopZJdTpIHM1LyoP2O0kNlXTWag9dAVO
-         Zjt+xq2+510aHoqbkRIKnUkBDzJ8gXj8ExvTcfXNrLAbcMGjmzk6ft1kppe9BK/8HuQ4
-         ymuxvFDubUvDmkI09RdwMjtdoe9GYk/MmLMemML0MdgeQ/lun4pkvpv7g7KsBgb42yVH
-         r77Q==
-X-Gm-Message-State: APjAAAX4z6Wks/jkjgt8niwoqGHJtOX9r9Zv0B4Xd7oCBEGJIfu8LPJi
-        92OONXrKiAjJDaFap+/xMb27HQ==
-X-Google-Smtp-Source: APXvYqwEy7omAXcrY5BsTGyRKJslL4mnjw0B1lsP0tlQ3iQfUu4XMFEePdMId0TLiu6kV5iIrnsOWg==
-X-Received: by 2002:a2e:3c12:: with SMTP id j18mr10596470lja.193.1557053002627;
-        Sun, 05 May 2019 03:43:22 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (alrua-x1.vpn.toke.dk. [2a00:7660:6da:10::2])
-        by smtp.gmail.com with ESMTPSA id b25sm1445240lji.50.2019.05.05.03.43.21
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 05 May 2019 03:43:21 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AB2A318039B; Sun,  5 May 2019 12:43:20 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
-        Greg KH <greg@kroah.com>
-Cc:     "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "jhs\@mojatatu.com" <jhs@mojatatu.com>,
-        "jiri\@resnulli.us" <jiri@resnulli.us>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-kselftest\@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "shuah\@kernel.org" <shuah@kernel.org>
-Subject: Re: [net-next v2] net: sched: Introduce act_ctinfo action
-In-Reply-To: <B6426224-12CC-417B-9A38-6DDBE574A85C@darbyshire-bryant.me.uk>
-References: <CAM_iQpXnXyfLZ2+gjDufbdMrZLgtf9uKbzbUf50Xm-2Go7maVw@mail.gmail.com> <20190505101523.48425-1-ldir@darbyshire-bryant.me.uk> <20190505102314.GA12761@kroah.com> <B6426224-12CC-417B-9A38-6DDBE574A85C@darbyshire-bryant.me.uk>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sun, 05 May 2019 12:43:20 +0200
-Message-ID: <8736lt9o6v.fsf@toke.dk>
+        id S1727675AbfEELEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 07:04:35 -0400
+Received: from foss.arm.com ([217.140.101.70]:56028 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727404AbfEELEa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 May 2019 07:04:30 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3C9F8374;
+        Sun,  5 May 2019 04:04:30 -0700 (PDT)
+Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.194.71])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CBC4D3F238;
+        Sun,  5 May 2019 04:04:26 -0700 (PDT)
+Date:   Sun, 5 May 2019 12:04:24 +0100
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
+Message-ID: <20190505110423.u7g3f2viovvgzbtn@e107158-lin.cambridge.arm.com>
+References: <20190502204958.7868-1-joel@joelfernandes.org>
+ <20190503121234.6don256zuvfjtdg6@e107158-lin.cambridge.arm.com>
+ <20190503134935.GA253329@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Disposition: inline
+In-Reply-To: <20190503134935.GA253329@google.com>
+User-Agent: NeoMutt/20171215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk> writes:
+On 05/03/19 09:49, Joel Fernandes wrote:
+> On Fri, May 03, 2019 at 01:12:34PM +0100, Qais Yousef wrote:
+> > Hi Joel
+> > 
+> > On 05/02/19 16:49, Joel Fernandes (Google) wrote:
+> > > The eBPF based opensnoop tool fails to read the file path string passed
+> > > to the do_sys_open function. This is because it is a pointer to
+> > > userspace address and causes an -EFAULT when read with
+> > > probe_kernel_read. This is not an issue when running the tool on x86 but
+> > > is an issue on arm64. This patch adds a new bpf function call based
+> > 
+> > I just did an experiment and if I use Android 4.9 kernel I indeed fail to see
+> > PATH info when running opensnoop. But if I run on 5.1-rc7 opensnoop behaves
+> > correctly on arm64.
+> > 
+> > My guess either a limitation that was fixed on later kernel versions or Android
+> > kernel has some strict option/modifications that make this fail?
+> 
+> Thanks a lot for checking, yes I was testing 4.9 kernel with this patch (pixel 3).
+> 
+> I am not sure what has changed since then, but I still think it is a good
+> idea to make the code more robust against such future issues anyway. In
+> particular, we learnt with extensive discussions that user/kernel pointers
+> are not necessarily distinguishable purely based on their address.
 
->> On 5 May 2019, at 11:23, Greg KH <greg@kroah.com> wrote:
->> 
->> On Sun, May 05, 2019 at 10:15:43AM +0000, Kevin 'ldir' Darbyshire-Bryant wrote:
->>> --- /dev/null
->>> +++ b/net/sched/act_ctinfo.c
->>> @@ -0,0 +1,407 @@
->>> +// SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
->> 
->
-> Hey Greg, thanks for the review.
->
->> How can a .c file, buried in the kernel tree, have a Linux-syscall-note
->> exception to it?
->
-> Because I’m a moron and nobody else spotted it.
->> 
->> Are you _sure_ that is ok?  That license should only be for files in the
->> uapi header directory.
->
-> Expect a v3 shortly.  I shall wear your chastisement with honour :-)
+Yes I wasn't arguing against that. But the commit message is misleading or
+needs more explanation at least. I tried 4.9.y stable and arm64 worked on that
+too. Why do you think it's an arm64 problem?
 
-While you're at it, you don't actually need the GPL text blob when using
-the SPDX headers... :)
-
--Toke
+--
+Qais Yousef
