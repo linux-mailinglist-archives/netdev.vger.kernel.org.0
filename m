@@ -2,86 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0206513E04
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 09:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 195D413E08
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 09:05:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727325AbfEEHDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 03:03:24 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:36531 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725792AbfEEHDX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 03:03:23 -0400
-Received: by mail-lj1-f195.google.com with SMTP id y8so8256977ljd.3;
-        Sun, 05 May 2019 00:03:22 -0700 (PDT)
+        id S1727457AbfEEHFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 03:05:20 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:32784 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725792AbfEEHFU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 03:05:20 -0400
+Received: by mail-lj1-f194.google.com with SMTP id f23so8512102ljc.0;
+        Sun, 05 May 2019 00:05:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ualfQGZO/XL4lpOzDR7Gj6XZhSNh/P7TGnKM3Oo0yYU=;
-        b=k9MkHLWrw8QMSSyEGj3mMm3aBQvUmwq6NhVbZsaGYYe5VxkvpY4Qpq/9n7bOSngNlF
-         1BzocAGm9wh2IMU+mjaG2chKIwdddASVXgwoIGpSSc3CjWqyBsmpoxP0uEc8Dk4UKo0k
-         8ubOvFsihXEqv0cPM4VTnmo4NqY8UEOwwfWUhCLBZoQpyEeRWgsvyDVOhSfBzJ9gTdls
-         m2DlZvgF08I2yX7VpGRUTGGiSvkNzr/aZfYHT6JgTumt8kSdzYHQPOdNfLdj4eMDDGbh
-         AYJJGLY4IrDxW+iKR8OaolrgtUYWXdK3uCVrDEGPa3EvALnuZsnWkMEVjJO4ChdXfbpS
-         mtig==
+        bh=v7iSncdIvsuvyTrphAXGuJAYFAkD+y6z0FJYn1j2iZU=;
+        b=ZV9lW0QuO+Txr8J6/pYclsUtn6qhm6q+aw2Ada/zYRYutwLYhGR/0qVB/zXCtan7HC
+         Hvl7O++4DUMm7PmhW7OkGep0tTWB7pfDELlO/gOeZUkDUUcA0X1HxIAo2x9dVSOEqg9b
+         5OFwNj057kowEyNUUezQL+8vsfmJrIYjQRSCpKvaoh/cKjJxvaDeIiEthd3V8jwErDh2
+         XeaP8eoplBxpzgkF8Wt7OQ78JRYWQR0A3c0jKdUYvdGkMTWjt2r+S67BH40MK9GBakOr
+         HaCPCatBwXWKiIIH3n6dIdQvgnCYWC2Kd2PTpRkOuksp/rN8mcvcfYzVFA8/F6+U9nxy
+         Ymvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ualfQGZO/XL4lpOzDR7Gj6XZhSNh/P7TGnKM3Oo0yYU=;
-        b=GT1gYiUUtExMaxfO7+Y5DKb3ydwMSc11x1hzDR2Xp++VID/K2hxr1AaBQSqd0/vggg
-         euNJ2jUev0wrA7fCbiHDdqS3bUlTXtf7c8xk5C4S0eD2WTezbK8qvA2fry1JPBAzw8TQ
-         ZZ/toM3UVgucpjKS0mdHd9caVn50N1wwMSiI8nCfwwZ7WaC+NGgQbuNdAcgfsKUNomyK
-         zjv01RSr3x7NGnIic2KbrNkTdGwXU3fMeXa2lgmL4kX+M6uka2p8NfjRcAcodayQsh1v
-         jjb3YfRtpx6KEiai64Qn7CJIp5xTUT5Lj9Kh9g3bxzhkHZT9Tk2WjRck7fsBvCLvCxwF
-         fGZA==
-X-Gm-Message-State: APjAAAXYSAXAsJRoy0bVORCoUBcLBYlke3qkET/L8WnMHslUwjb+Rh4k
-        TbuCfzupVKFfLInANERPSm8GR+PPQgKRESRapOw=
-X-Google-Smtp-Source: APXvYqzdT6aPGFOKokWuDctgUsdvgDiasBMhIy4A5IlTVq0ZLRCNWZW7PXDhFE6K1CL/m0eIZ2rt9nekjkwzLYGYZ70=
-X-Received: by 2002:a2e:3c06:: with SMTP id j6mr9138016lja.99.1557039801359;
- Sun, 05 May 2019 00:03:21 -0700 (PDT)
+        bh=v7iSncdIvsuvyTrphAXGuJAYFAkD+y6z0FJYn1j2iZU=;
+        b=PGqHxx+VUVSz4Vywe5fuKnHznsTHoO533in4jwbNR0JEHtSi8NRhB+rm2aaqjOgHka
+         yfY/0yOCIAbnHNYuLxplye91kjeR7j/NK0up4YN3TYh15kPaICOSHuGAzKtuDh4TxH9O
+         Nvud4Z6nRhcElzsrXCtk6nj6jNc3udCdAyZt2DedXBp1AEcKwvrleaNdCWPADXjrhGnj
+         lmM/cMzcjYA0Aqrvqk6hHCFBKUFQcSTYEMJjq+zLt8QYHd3hzruMcq2KVFhLsgNTN6no
+         06RDcW3sU6ODEh+vGH3L8XalKTntOCYzzV3sxEAOaj8MiZItk4WISbK22IGQLGYdkqL2
+         qrog==
+X-Gm-Message-State: APjAAAX65m0y67V73cTZF3WijwrWpEpE+BLozI2jgaRBCeEvId9p9JS2
+        JLnKc0/tw0U5tqNVTOOD2pN/iJeF2lzneH01ND0=
+X-Google-Smtp-Source: APXvYqwzg0DtE4Y05nlp4ITu2sCe9+QtfxbhcVcWyBhvsHXtMsB9fvX522nv/54/3I0yk2DQkoo7EYf1RALeLvxv+AY=
+X-Received: by 2002:a2e:9703:: with SMTP id r3mr705226lji.37.1557039917517;
+ Sun, 05 May 2019 00:05:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190502081453.25097-1-mrostecki@opensuse.org>
-In-Reply-To: <20190502081453.25097-1-mrostecki@opensuse.org>
+References: <CAH3MdRVkUFfwKkgT-pi-RLBpcEf6n0bAwWZOu-=7+qctPTCpkw@mail.gmail.com>
+ <1556812610-27957-1-git-send-email-vgupta@synopsys.com> <CAH3MdRWkiFSRA+PRo53_Syx9OBmyj2U_ebap-9iBR8L7xW9UVw@mail.gmail.com>
+In-Reply-To: <CAH3MdRWkiFSRA+PRo53_Syx9OBmyj2U_ebap-9iBR8L7xW9UVw@mail.gmail.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 5 May 2019 00:03:09 -0700
-Message-ID: <CAADnVQ+exT+Jv=i9a4MWNB_eeO6ZeJWAm0=OL5_EZ1gQLvRk-w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] bpf, libbpf: Add .so files to gitignore
-To:     Michal Rostecki <mrostecki@opensuse.org>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+Date:   Sun, 5 May 2019 00:05:06 -0700
+Message-ID: <CAADnVQKOR7NJ=zDLndJpTnVjnkjr1UrtWG_2vwgJK3QcCAADcA@mail.gmail.com>
+Subject: Re: [PATCH v2] tools/bpf: fix perf build error with uClibc (seen on ARC)
+To:     Y Song <ys114321@gmail.com>
+Cc:     Vineet Gupta <Vineet.Gupta1@synopsys.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+        netdev <netdev@vger.kernel.org>, Wang Nan <wangnan0@huawei.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-snps-arc@lists.infradead.org,
+        linux-perf-users@vger.kernel.org,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 2, 2019 at 1:15 AM Michal Rostecki <mrostecki@opensuse.org> wrote:
+On Thu, May 2, 2019 at 1:20 PM Y Song <ys114321@gmail.com> wrote:
 >
-> This change adds libbpf shared libraries to .gitignore which were
-> previously not included there.
+> On Thu, May 2, 2019 at 8:57 AM Vineet Gupta <Vineet.Gupta1@synopsys.com> wrote:
+> >
+> > When build perf for ARC recently, there was a build failure due to lack
+> > of __NR_bpf.
+> >
+> > | Auto-detecting system features:
+> > |
+> > | ...                     get_cpuid: [ OFF ]
+> > | ...                           bpf: [ on  ]
+> > |
+> > | #  error __NR_bpf not defined. libbpf does not support your arch.
+> >     ^~~~~
+> > | bpf.c: In function 'sys_bpf':
+> > | bpf.c:66:17: error: '__NR_bpf' undeclared (first use in this function)
+> > |  return syscall(__NR_bpf, cmd, attr, size);
+> > |                 ^~~~~~~~
+> > |                 sys_bpf
+> >
+> > Signed-off-by: Vineet Gupta <vgupta@synopsys.com>
 >
 > Acked-by: Yonghong Song <yhs@fb.com>
-> Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
-> ---
->  tools/lib/bpf/.gitignore | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/tools/lib/bpf/.gitignore b/tools/lib/bpf/.gitignore
-> index 7d9e182a1f51..0b181b23f97d 100644
-> --- a/tools/lib/bpf/.gitignore
-> +++ b/tools/lib/bpf/.gitignore
-> @@ -1,4 +1,5 @@
->  libbpf_version.h
->  libbpf.pc
-> +libbpf.so.0*
 
-Some folks build libbpf as part of selftests.
-Please update .gitignore in tools/lib/bpf and
-in tools/testing/selftests/bpf
-
-Also instead of "bpf, libbpf:" subj prefix just mention "libbpf:"
+Applied. Thanks
