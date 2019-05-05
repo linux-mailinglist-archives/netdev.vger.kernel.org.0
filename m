@@ -2,63 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B30D414146
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 19:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01FED14149
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 19:04:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727902AbfEERD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 13:03:28 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:44486 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727885AbfEERD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 13:03:28 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y13so5439017pfm.11
-        for <netdev@vger.kernel.org>; Sun, 05 May 2019 10:03:28 -0700 (PDT)
+        id S1727916AbfEERD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 13:03:59 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:34722 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726905AbfEERD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 13:03:59 -0400
+Received: by mail-wr1-f66.google.com with SMTP id f7so3898844wrq.1
+        for <netdev@vger.kernel.org>; Sun, 05 May 2019 10:03:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hC712R57b4ANozWLBOYTG/WKw9R59dDG1GtwnRq/t7c=;
-        b=sieVejKi1FkyndmOAUY9e4IjwzVvuVzDxmzrH3t4BgBYZSX+JcFXqa0cNFxMa8iCPR
-         aFKojpAGmcfzxhtM3CHBkGk/ChlzU6QE4jCgaC3tS50M1KMbyKhAhSonVsfAzSn6FdT3
-         6hEUpgkaCPQh1xZxdb6JD67N/3jAB5wWSagp6AAC/1/XmG0DbAisK2vMIXgFu1u3HU5N
-         v0uSD9EGgBEAjXn0/1IOdhUS4o6scnzgSNIZT1oMmw0UKFR+Fa324+yg2HDQIXiv9ICN
-         pkdD3FIRi7aw+WqxF8V/gp5OeGY3SEH83tyWqSZfQ8FyIw2zTUfaGS/YALLxVOk/9/b3
-         MPSg==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=gYLJth6xSX/5u2JKvRJw87pSGIGzdYWMzx7n+oe98so=;
+        b=k2BylEy5A/wXijnyrPYDNFhzxSYqo9W2b0Y0wcCPeNEk9M5F5kQLYCFH9jbsm6e79E
+         rHPZj4VZSPvdQhZBQ10bllviw06fJKNxhKVm62t5dvInxIwLgN1KprHhyfOrjaIvHHFX
+         Wr1Hgmabr7bwhDceXX5OcQZGo28Qqvs1/Bp6qvtVFeckKcptoBCm32YSBu6iYRraCzK5
+         5XNzDwO+o6kZEri4nEoJ/YQRweIbXLY6zfwMmyRQ5AtrKJQcLjplkC9Zedlmjatfc2Zb
+         hPFdkLbEMXg6tSVJ4q46dI5R8yhURXxo+TwTCnrr4eIvBIz+pQuJJYqejzAYs+wri/sS
+         kdfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hC712R57b4ANozWLBOYTG/WKw9R59dDG1GtwnRq/t7c=;
-        b=MlUXQrjmTkpF8W4dWf8GNxaVJtb7wFtxwvjTrJPe3AATByX7u7E6w7aiI0ASnlJses
-         lm7zkxmdHhxye9nOVGRNo9lDA1iEgDI1K+6BFJJ+FlPVjsCMJj+ZwZ/Qcck0NwKQoz2y
-         0x/q8AvRz8qpw+kubLv2+1yNagchRrGdoAMWKm06jGqfwO8uNNmnXuGcjCIbswnUe/d/
-         7oY/qYGeATjBkT5RLYgBu1VSZvwL82GgWGnABU7+WzlUFfZlwclMqqBi8Pk6VZk1PvPt
-         XoY/SUveiMWkxeXgtnR6RzrWVJklxYyU+xE/URIFheuu8wXV9pfjXUOT40u2pCvK8Qmq
-         ShfQ==
-X-Gm-Message-State: APjAAAXEEvNVIWYrnbYl0T/q7vv1OAQqYZbxyMfb2/vh6jy9pbzgmo/r
-        dmLvnvV/8fvbO2SNjk8lwWJralhN
-X-Google-Smtp-Source: APXvYqxw7XoEQ1Ji8HAhbkcItfwH62MOmbFKpXSpxUQC//Gi2ZKZX5WGy+q2bOUmQc9mihW4ctTKng==
-X-Received: by 2002:a62:e10f:: with SMTP id q15mr27336037pfh.56.1557075807481;
-        Sun, 05 May 2019 10:03:27 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
-        by smtp.gmail.com with ESMTPSA id i15sm11469836pfr.8.2019.05.05.10.03.25
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=gYLJth6xSX/5u2JKvRJw87pSGIGzdYWMzx7n+oe98so=;
+        b=MC5DLL0KHg4fK/AymGKOz7/HrGs5R+GceDPM4y2z2HlCMiTsfW4j0w4gJdAt+UUYLd
+         UADY6ZPG52T/ChxY4nRzYBkOQUYmPT1ZCsaxKOv40pT4YVai6B/ycG/NfvunMXI1tcXg
+         rpAUYzuL39bngrLWNTQSaurxl/ECXIvpl5Iz6G6qubh64k5h0XIuyPNU3kR8WOOIjBUs
+         d32p2O8HD+FOsOqzCzDwOozkY8RttpSRtOesVE8lT7nEp6Rxk83cw4M6TaGadgKT3p9z
+         Dl07RGuaLzY8tW/VZLGNyR3SXyp+y3swuyfaNEmxeFBDGQVl/FBR2SAAGUpNEaDgHQts
+         qYDw==
+X-Gm-Message-State: APjAAAWtm1N/tjk5aaEsDVQqAPId4rhWSornwnIWSjwSe3cqFJ0sOG7h
+        i7tQcLPvDXi6thG2krqPTvvJa8NVIuo=
+X-Google-Smtp-Source: APXvYqzo9jomqiZJBTo85uJJ+fe11F66d/QN0W3NaBRjo6577lIXn2pXF3nwOIf6S+VYi71Ofh2+hw==
+X-Received: by 2002:adf:80c3:: with SMTP id 61mr15458933wrl.123.1557075836872;
+        Sun, 05 May 2019 10:03:56 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bd4:5700:d9a7:917c:8564:c504? (p200300EA8BD45700D9A7917C8564C504.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:d9a7:917c:8564:c504])
+        by smtp.googlemail.com with ESMTPSA id x14sm6314471wmj.3.2019.05.05.10.03.55
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 05 May 2019 10:03:26 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 06/10] net: dsa: Add support for deferred xmit
-To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
-        andrew@lunn.ch, davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-References: <20190505101929.17056-1-olteanv@gmail.com>
- <20190505101929.17056-7-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <f921e950-cd69-501e-0278-7afb8a34cca7@gmail.com>
-Date:   Sun, 5 May 2019 10:03:24 -0700
+        Sun, 05 May 2019 10:03:56 -0700 (PDT)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] net: phy: improve pause mode reporting in
+ phy_print_status
+Message-ID: <1ea97344-6971-44dd-2191-9a8db0d2c10d@gmail.com>
+Date:   Sun, 5 May 2019 19:03:51 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190505101929.17056-7-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,39 +64,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+So far we report symmetric pause only, and we don't consider the local
+pause capabilities. Let's properly consider local and remote
+capabilities, and report also asymmetric pause.
 
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/phy.c | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
 
-On 5/5/2019 3:19 AM, Vladimir Oltean wrote:
-> Some hardware needs to take work to get convinced to receive frames on
-> the CPU port (such as the sja1105 which takes temporary L2 forwarding
-> rules over SPI that last for a single frame). Such work needs a
-> sleepable context, and because the regular .ndo_start_xmit is atomic,
-> this cannot be done in the tagger. So introduce a generic DSA mechanism
-> that sets up a transmit skb queue and a workqueue for deferred
-> transmission.
-> 
-> The new driver callback (.port_deferred_xmit) is in dsa_switch and not
-> in the tagger because the operations that require sleeping typically
-> also involve interacting with the hardware, and not simply skb
-> manipulations. Therefore having it there simplifies the structure a bit
-> and makes it unnecessary to export functions from the driver to the
-> tagger.
-> 
-> The driver is responsible of calling dsa_enqueue_skb which transfers it
-> to the master netdevice. This is so that it has a chance of performing
-> some more work afterwards, such as cleanup or TX timestamping.
-> 
-> To tell DSA that skb xmit deferral is required, I have thought about
-> changing the return type of the tagger .xmit from struct sk_buff * into
-> a enum dsa_tx_t that could potentially encode a DSA_XMIT_DEFER value.
-> 
-> But the trailer tagger is reallocating every skb on xmit and therefore
-> making a valid use of the pointer return value. So instead of reworking
-> the API in complicated ways, right now a boolean property in the newly
-> introduced DSA_SKB_CB is set.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 1a146c5c5..e88854292 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -60,6 +60,32 @@ static void phy_link_down(struct phy_device *phydev, bool do_carrier)
+ 	phy_led_trigger_change_speed(phydev);
+ }
+ 
++static const char *phy_pause_str(struct phy_device *phydev)
++{
++	bool local_pause, local_asym_pause;
++
++	if (phydev->autoneg == AUTONEG_DISABLE)
++		goto no_pause;
++
++	local_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
++					phydev->advertising);
++	local_asym_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
++					     phydev->advertising);
++
++	if (local_pause && phydev->pause)
++		return "rx/tx";
++
++	if (local_asym_pause && phydev->asym_pause) {
++		if (local_pause)
++			return "rx";
++		if (phydev->pause)
++			return "tx";
++	}
++
++no_pause:
++	return "off";
++}
++
+ /**
+  * phy_print_status - Convenience function to print out the current phy status
+  * @phydev: the phy_device struct
+@@ -71,7 +97,7 @@ void phy_print_status(struct phy_device *phydev)
+ 			"Link is Up - %s/%s - flow control %s\n",
+ 			phy_speed_to_str(phydev->speed),
+ 			phy_duplex_to_str(phydev->duplex),
+-			phydev->pause ? "rx/tx" : "off");
++			phy_pause_str(phydev));
+ 	} else	{
+ 		netdev_info(phydev->attached_dev, "Link is Down\n");
+ 	}
 -- 
-Florian
+2.21.0
+
