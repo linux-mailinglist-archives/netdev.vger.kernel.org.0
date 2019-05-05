@@ -2,64 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D80851429C
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 00:01:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C54FC142A5
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 00:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727919AbfEEWAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 18:00:53 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:35863 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726905AbfEEWAx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 18:00:53 -0400
-Received: by mail-wm1-f65.google.com with SMTP id n25so629350wmi.1
-        for <netdev@vger.kernel.org>; Sun, 05 May 2019 15:00:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IUmgFC5Hr3TFhUp5EcDjdtmxJD5BsWEMn5rPzzaHQAA=;
-        b=oQNVVrAe1geIcO/WIHTJrdMYObbEbPbpLuEI9qjV4rlf9lUZUHEEsacbGTL48KbESA
-         NdFOVRDxb4Wtezbu9qvCQ3odObfUbLYIqf5pbBn4I7BlfaAib31bwL107Scb6zzZoNEU
-         VuKMUl0c1yRub/x8rwhsXVusO7YkJrVJa8cnj2Trb2C97LWeln0pOsgDwPvCq1RP+sMY
-         8/1i3TNoOV3ehTIx9RvZbYk/dF26sl8fpd26L4Y/KLOg5DJ+qYBSRsMO7zuSRkB7qft8
-         BooXsuZ1B1J2wgN3uMY47ms/BgR3OQLu6Cl8pD5CdO30pnwrq5b19zsP8eioqLlxiA8p
-         RAew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=IUmgFC5Hr3TFhUp5EcDjdtmxJD5BsWEMn5rPzzaHQAA=;
-        b=JD2umCwfFe2kuiGMivmzACMy++fQLX43iy5CbWH3h9XktUjlJgqH9ZC7miQUpQnclQ
-         0BDX9M+BLbQXTwQjeTG2oLN7gEySmqGdTcCHyaob28LriyIRtICRjO4Lw7kh/zccbLy0
-         Xs4BK2kPKK5QfU3ObHUryaRZjrJodjeVOYKCkKEt6WZOgIZVRx3il+RaBe04KTuSm3z+
-         ufxsQuFDr74aCsk8lv9kZh94j4bhF+ISymdbyzybu6VQ3yVnM76raAFF4HInxA6iOsXE
-         +cSjVXZ81Qz7NN8EATbycm7BCedcOUGUjTfo+Al5v0hAJCEz1mT+S4WkYRcign9tmAyV
-         IPiQ==
-X-Gm-Message-State: APjAAAUPJA4sW9Cl7Kd1ihA6aT+OAuDOJk3Ar5ZpciOZpdxFYeE//dFN
-        73SerZPb6cMluP9qa0O6P+1oiO6+
-X-Google-Smtp-Source: APXvYqwNlGR7o/4WZojh2tyoyjynyOnLIycn+xrGKEMbWhjUme0Y1C9Pp480blkqHC8K7IWTD2nIzw==
-X-Received: by 2002:a1c:99d5:: with SMTP id b204mr13741735wme.141.1557093651357;
-        Sun, 05 May 2019 15:00:51 -0700 (PDT)
-Received: from [192.168.1.2] (5-12-225-227.residential.rdsnet.ro. [5.12.225.227])
-        by smtp.gmail.com with ESMTPSA id c139sm16507449wmd.26.2019.05.05.15.00.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 05 May 2019 15:00:50 -0700 (PDT)
-Subject: Decoupling phy_device from net_device (was "Re: [PATCH] net: dsa:
- fixed-link interface is reporting SPEED_UNKNOWN")
-To:     Heiner Kallweit <hkallweit1@gmail.com>, f.fainelli@gmail.com,
-        andrew@lunn.ch, davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-References: <20190411230139.13160-1-olteanv@gmail.com>
- <3661ec3f-1a13-26d8-f7dc-7a73ac210f08@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Message-ID: <a10e3ef7-2928-8865-c463-f9edc7261410@gmail.com>
-Date:   Mon, 6 May 2019 01:00:49 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727848AbfEEWEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 18:04:35 -0400
+Received: from mx2.mailbox.org ([80.241.60.215]:64814 "EHLO mx2.mailbox.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727295AbfEEWEf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 May 2019 18:04:35 -0400
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
+        (No client certificate requested)
+        by mx2.mailbox.org (Postfix) with ESMTPS id AF737A01CC;
+        Mon,  6 May 2019 00:04:32 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
+        with ESMTP id vkBajbJxPWhd; Mon,  6 May 2019 00:04:06 +0200 (CEST)
+Subject: Re: [PATCH v2 5/5] net: dsa: lantiq: Add Forwarding Database access
+To:     Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, netdev@vger.kernel.org
+References: <20190505211517.25237-1-hauke@hauke-m.de>
+ <20190505211517.25237-6-hauke@hauke-m.de>
+ <8b1e332e-5f75-67bb-ccee-c15d2eca9650@gmail.com>
+From:   Hauke Mehrtens <hauke@hauke-m.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=hauke@hauke-m.de; keydata=
+ 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
+ U9K2P2+nz7is4sF1hNVarw==
+Message-ID: <1998f6b9-8384-9d83-61eb-d4e3b86e4e36@hauke-m.de>
+Date:   Mon, 6 May 2019 00:04:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <3661ec3f-1a13-26d8-f7dc-7a73ac210f08@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <8b1e332e-5f75-67bb-ccee-c15d2eca9650@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -67,74 +100,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/12/19 8:57 PM, Heiner Kallweit wrote:
-> On 12.04.2019 01:01, Vladimir Oltean wrote:
->> With Heiner's recent patch "b6163f194c69 net: phy: improve
->> genphy_read_status", the phydev->speed is now initialized by default to
->> SPEED_UNKNOWN even for fixed PHYs. This is not necessarily bad, since it
->> is not correct to call genphy_config_init() and genphy_read_status() for
->> a fixed PHY.
->>
-> What do you mean with "it is not correct"? Whether the calls are always
-> needed may be a valid question, but it's not forbidden to use these calls
-> with a fixed PHY. Actually in phylib polling mode genphy_read_status is
-> called every second also for a fixed PHY. swphy emulates all relevant
-> PHY registers.
+On 5/5/19 11:22 PM, Florian Fainelli wrote:
 > 
->> This dates back all the way to "39b0c705195e net: dsa: Allow
->> configuration of CPU & DSA port speeds/duplex" (discussion thread:
->> https://www.spinics.net/lists/netdev/msg340862.html).
->>
->> I don't seem to understand why these calls were necessary back then, but
->> removing these calls seemingly has no impact now apart from preventing
->> the phydev->speed that was set in of_phy_register_fixed_link() from
->> getting overwritten.
->>
-> I tend to agree with the change itself, but not with the justification.
-> For genphy_config_init I'd rather say:
-> genphy_config_init removes invalid modes based on the abilities read
-> from the chip. But as we emulate all registers anyway, this doesn't
-> provide any benefit for a swphy.
 > 
->> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> On 5/5/2019 2:15 PM, Hauke Mehrtens wrote:
+>> This adds functions to add and remove static entries to and from the
+>> forwarding database and dump the full forwarding database.
+>>
+>> Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
 >> ---
->>   net/dsa/port.c | 3 ---
->>   1 file changed, 3 deletions(-)
->>
->> diff --git a/net/dsa/port.c b/net/dsa/port.c
->> index 87769cb38c31..481412c892a7 100644
->> --- a/net/dsa/port.c
->> +++ b/net/dsa/port.c
->> @@ -485,9 +485,6 @@ static int dsa_port_fixed_link_register_of(struct dsa_port *dp)
->>   		mode = PHY_INTERFACE_MODE_NA;
->>   	phydev->interface = mode;
->>   
->> -	genphy_config_init(phydev);
->> -	genphy_read_status(phydev);
->> -
->>   	if (ds->ops->adjust_link)
->>   		ds->ops->adjust_link(ds, port, phydev);
->>   
->>
+> 
+> [snip]
+> 
+>> +	mac_bridge.table = 0x0b;
+>> +	mac_bridge.key_mode = true;
+>> +	mac_bridge.key[0] = addr[5] | (addr[4] << 8);
+>> +	mac_bridge.key[1] = addr[3] | (addr[2] << 8);
+>> +	mac_bridge.key[2] = addr[1] | (addr[0] << 8);
+>> +	mac_bridge.key[3] = fid;
+>> +	mac_bridge.val[0] = add ? BIT(port) : 0; /* port map */
+>> +	mac_bridge.val[1] = 0x01; /* static entry */
+> 
+> Could you add a define for that bit?
+
+Done, I am also using this in the fast age function now.
+The table ID (0x0b) now also uses the define.
+
+> [snip]
+>> +		addr[0] = (mac_bridge.key[2] >> 8) & 0xff;
+>> +		if (mac_bridge.val[1] & 0x01) {
+> 
+> And use it here as well? The rest looks fine to me, so if you fix that:
+> 
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 > 
 
-Hi,
-
-I'd like to resend this, but I'm actually thinking of a nicer way to 
-deal with the whole situation.
-Would people be interested in making phylib/phylink decoupled from the 
-phydev->attached_dev? The PHY state machine could be made to simply call 
-a notifier block (similar to how switchdev works) registered by 
-interested parties (MAC driver).
-To keep API compatibility (phylink_create), this notifier block could be 
-put inside the net_device structure and the PHY state machine would call 
-it. But a new phylink_create_raw could be added, which passes only the 
-notifier block with no net_device. The CPU port and DSA ports would be 
-immediate and obvious users of this (since they don't register net 
-devices), but there are some other out-of-tree Ethernet drivers out 
-there that have strange workarounds (create a net device that they don't 
-register) to have the PHY driver do its work.
-Wondering what's your opinion on this and if it would be worth exploring.
-
-Thanks,
--Vladimir
