@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE56F13F2A
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 13:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 250C713F2E
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 13:17:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727784AbfEELRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 07:17:31 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:37888 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727753AbfEELR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 07:17:29 -0400
-Received: by mail-pf1-f196.google.com with SMTP id 10so5217756pfo.5
-        for <netdev@vger.kernel.org>; Sun, 05 May 2019 04:17:29 -0700 (PDT)
+        id S1727808AbfEELRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 07:17:41 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:46167 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727767AbfEELRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 07:17:30 -0400
+Received: by mail-pg1-f194.google.com with SMTP id t187so884281pgb.13
+        for <netdev@vger.kernel.org>; Sun, 05 May 2019 04:17:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=31vfbB0sYysbgmmfrNzsDpWpYc0vZCSf5tdivnF6r+4=;
-        b=N2rFeqcZLRBPqmJg0DHJT19pIdGT8lJwUxuCBTv4PPGvdHM+vdsltK+uw5IWUrfiAi
-         8JkMEQ8sr8VGJT8SKxyETb1sr9falXbZIXrm89GodrpO4G/686p4KfHN3k0gEHWx+cIc
-         f/XohTLkUV1ul30fEmzzZ3nT0vsRqPNM4/puQ=
+        bh=YnitByAMRX/eyDXwVy7jeAlYnzqzGMvTT5MlSLMgYtQ=;
+        b=B2XMBzSBBa8kYlLR1ke15E/BqpX6A6YS+bW5cgHM8fuLyzjihSLhu8lBBKB23WGh8T
+         4n8Pzu3lObRzhm7tXlTprCYrgGi4+n4Ql1HFhopXU2GfbPq6nNuPpAyZLYtQ7skCjcO5
+         W7AvH4FaxzH39BbwBke+HVOx6/vx0LgKif7hU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=31vfbB0sYysbgmmfrNzsDpWpYc0vZCSf5tdivnF6r+4=;
-        b=DFK+PDMjRDgP0SJaPVJDmOzRC98RXiT/X3kUZCOqf3F9vgqWRoWTsfTaVYdYLrxYDT
-         l+ahKaCI1CZbl9WtY+5gIuw4W0U4qt0XGvxasDwQMX5gSzrTq8N71KCkVek0khfUrPA6
-         DeZM36hOIgK5FBBV+F64aOAAIXDm6ZG8q/sFwgnwvEpjNKZZr7hVAeE2PMwbO5BKAkbx
-         tprg+QC3Yr4si7ZH04xONQG6oyn4QxfTcGBGqKWAfVSGAa0QJOfs6bn7u22wSp6P+PoC
-         q4HFfOaZuHWS1Wgxfru2xqqeBGYHVbO8F/AEokt6k/Am4LOtIxYeS5s6t8PPeCmbBidM
-         IkAg==
-X-Gm-Message-State: APjAAAWwmeL/AlWtP7UzpKy6JhVHk6gWXyeCa43nIhHr/+D8PWyZ6NeE
-        3pDB6pZYMmpSR5QtoGyI9FLQKg==
-X-Google-Smtp-Source: APXvYqxmzAsaDPNU2IhqHtGBC7F11hYct1nBKvhgnQWcDX+zqFv4ZdN0WubLhgkgM24JuCzT2D2ZPg==
-X-Received: by 2002:a63:b507:: with SMTP id y7mr24052534pge.237.1557055049073;
+        bh=YnitByAMRX/eyDXwVy7jeAlYnzqzGMvTT5MlSLMgYtQ=;
+        b=Kd2dfubAhQj5NexB00z3o6//9M71+1HloaRhXDpW41L97Hw5hIleQvo+UeGrlpaTl7
+         f6tJHdKobvFcsLyz5TrgK89xPmRGl9RMWeSRwo+6pdN72NKLPIzUmeoBTQCuInOsJMlf
+         rs3i+EzORq3DnUgCbcCWDCPuPMGerLuNP28ojSzyCfo//IxBJWTQ+ruMq6LXgOmDbpEH
+         41MS0n8lOg9OdpytGGFyb2CMIpSxBgggR5jykZaQsiEGAlMg++cXlkxWj+/gpHLNYUm4
+         LyxsvVSKjTVI6jHJO4JOC2mzxSEwaP9No8GD4U4Na9SXq0+kje+nmrhy7amPZZi9+6VQ
+         4FJg==
+X-Gm-Message-State: APjAAAW5gvIAf3F1j+TGg8RVhAfGs8G5fce4de8uSAMJBG9FTKEMOnHp
+        77x6xGSb6p/ePQR6UQ/je/tX1w==
+X-Google-Smtp-Source: APXvYqyVWITsuFDpa24iCOhbLaSd4avC2HGwcM2SXMtEujHDZ7z3c9j5y0Vae+E5p5/ZSi/Mvvn2zQ==
+X-Received: by 2002:a63:d016:: with SMTP id z22mr24534190pgf.116.1557055049971;
         Sun, 05 May 2019 04:17:29 -0700 (PDT)
 Received: from localhost.localdomain.dhcp.broadcom.net ([192.19.223.250])
-        by smtp.gmail.com with ESMTPSA id 10sm9378902pfh.14.2019.05.05.04.17.28
+        by smtp.gmail.com with ESMTPSA id 10sm9378902pfh.14.2019.05.05.04.17.29
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 05 May 2019 04:17:28 -0700 (PDT)
+        Sun, 05 May 2019 04:17:29 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next 10/11] bnxt_en: Add support for aRFS on 57500 chips.
-Date:   Sun,  5 May 2019 07:17:07 -0400
-Message-Id: <1557055028-14816-11-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 11/11] bnxt_en: Add device IDs 0x1806 and 0x1752 for 57500 devices.
+Date:   Sun,  5 May 2019 07:17:08 -0400
+Message-Id: <1557055028-14816-12-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1557055028-14816-1-git-send-email-michael.chan@broadcom.com>
 References: <1557055028-14816-1-git-send-email-michael.chan@broadcom.com>
@@ -54,63 +54,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set RSS ring table index of the RFS destination ring for the NTUPLE
-filters on 57500 chips.
+0x1806 and 0x1752 are VF variant and PF variant of the 57500 chip
+family.
 
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index c9dad7c..143fdc9 100644
+index 143fdc9..e2c022e 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -4226,16 +4226,25 @@ static int bnxt_hwrm_cfa_ntuple_filter_free(struct bnxt *bp,
- static int bnxt_hwrm_cfa_ntuple_filter_alloc(struct bnxt *bp,
- 					     struct bnxt_ntuple_filter *fltr)
- {
--	struct bnxt_vnic_info *vnic = &bp->vnic_info[fltr->rxq + 1];
- 	struct hwrm_cfa_ntuple_filter_alloc_input req = {0};
- 	struct hwrm_cfa_ntuple_filter_alloc_output *resp;
- 	struct flow_keys *keys = &fltr->fkeys;
-+	struct bnxt_vnic_info *vnic;
-+	u32 dst_ena = 0;
- 	int rc = 0;
- 
- 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_CFA_NTUPLE_FILTER_ALLOC, -1, -1);
- 	req.l2_filter_id = bp->vnic_info[0].fw_l2_filter_id[fltr->l2_fltr_idx];
- 
--	req.enables = cpu_to_le32(BNXT_NTP_FLTR_FLAGS);
-+	if (bp->fw_cap & BNXT_FW_CAP_CFA_RFS_RING_TBL_IDX) {
-+		dst_ena = CFA_NTUPLE_FILTER_ALLOC_REQ_ENABLES_RFS_RING_TBL_IDX;
-+		req.rfs_ring_tbl_idx = cpu_to_le16(fltr->rxq);
-+		vnic = &bp->vnic_info[0];
-+	} else {
-+		vnic = &bp->vnic_info[fltr->rxq + 1];
-+	}
-+	req.dst_id = cpu_to_le16(vnic->fw_vnic_id);
-+	req.enables = cpu_to_le32(BNXT_NTP_FLTR_FLAGS | dst_ena);
- 
- 	req.ethertype = htons(ETH_P_IP);
- 	memcpy(req.src_macaddr, fltr->src_mac_addr, ETH_ALEN);
-@@ -4273,7 +4282,6 @@ static int bnxt_hwrm_cfa_ntuple_filter_alloc(struct bnxt *bp,
- 	req.dst_port = keys->ports.dst;
- 	req.dst_port_mask = cpu_to_be16(0xffff);
- 
--	req.dst_id = cpu_to_le16(vnic->fw_vnic_id);
- 	mutex_lock(&bp->hwrm_cmd_lock);
- 	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
- 	if (!rc) {
-@@ -9114,7 +9122,7 @@ static bool bnxt_rfs_capable(struct bnxt *bp)
- 	int vnics, max_vnics, max_rss_ctxs;
- 
- 	if (bp->flags & BNXT_FLAG_CHIP_P5)
--		return false;
-+		return bnxt_rfs_supported(bp);
- 	if (!(bp->flags & BNXT_FLAG_MSIX_CAP) || !bnxt_can_reserve_rings(bp))
- 		return false;
- 
+@@ -114,6 +114,7 @@ enum board_idx {
+ 	BCM5745x_NPAR,
+ 	BCM57508,
+ 	BCM57504,
++	BCM57502,
+ 	BCM58802,
+ 	BCM58804,
+ 	BCM58808,
+@@ -158,6 +159,7 @@ static const struct {
+ 	[BCM5745x_NPAR] = { "Broadcom BCM5745x NetXtreme-E Ethernet Partition" },
+ 	[BCM57508] = { "Broadcom BCM57508 NetXtreme-E 10Gb/25Gb/50Gb/100Gb/200Gb Ethernet" },
+ 	[BCM57504] = { "Broadcom BCM57504 NetXtreme-E 10Gb/25Gb/50Gb/100Gb/200Gb Ethernet" },
++	[BCM57502] = { "Broadcom BCM57502 NetXtreme-E 10Gb/25Gb/50Gb Ethernet" },
+ 	[BCM58802] = { "Broadcom BCM58802 NetXtreme-S 10Gb/25Gb/40Gb/50Gb Ethernet" },
+ 	[BCM58804] = { "Broadcom BCM58804 NetXtreme-S 10Gb/25Gb/40Gb/50Gb/100Gb Ethernet" },
+ 	[BCM58808] = { "Broadcom BCM58808 NetXtreme-S 10Gb/25Gb/40Gb/50Gb/100Gb Ethernet" },
+@@ -205,6 +207,7 @@ static const struct pci_device_id bnxt_pci_tbl[] = {
+ 	{ PCI_VDEVICE(BROADCOM, 0x16f1), .driver_data = BCM57452 },
+ 	{ PCI_VDEVICE(BROADCOM, 0x1750), .driver_data = BCM57508 },
+ 	{ PCI_VDEVICE(BROADCOM, 0x1751), .driver_data = BCM57504 },
++	{ PCI_VDEVICE(BROADCOM, 0x1752), .driver_data = BCM57502 },
+ 	{ PCI_VDEVICE(BROADCOM, 0xd802), .driver_data = BCM58802 },
+ 	{ PCI_VDEVICE(BROADCOM, 0xd804), .driver_data = BCM58804 },
+ #ifdef CONFIG_BNXT_SRIOV
+@@ -216,6 +219,7 @@ static const struct pci_device_id bnxt_pci_tbl[] = {
+ 	{ PCI_VDEVICE(BROADCOM, 0x16dc), .driver_data = NETXTREME_E_VF },
+ 	{ PCI_VDEVICE(BROADCOM, 0x16e1), .driver_data = NETXTREME_C_VF },
+ 	{ PCI_VDEVICE(BROADCOM, 0x16e5), .driver_data = NETXTREME_C_VF },
++	{ PCI_VDEVICE(BROADCOM, 0x1806), .driver_data = NETXTREME_E_P5_VF },
+ 	{ PCI_VDEVICE(BROADCOM, 0x1807), .driver_data = NETXTREME_E_P5_VF },
+ 	{ PCI_VDEVICE(BROADCOM, 0xd800), .driver_data = NETXTREME_S_VF },
+ #endif
 -- 
 2.5.1
 
