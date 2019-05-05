@@ -2,115 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD4F813FC4
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 15:33:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6996714019
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 16:13:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727897AbfEENdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 09:33:50 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:34017 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726310AbfEENdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 09:33:46 -0400
-Received: by mail-qt1-f195.google.com with SMTP id j6so11915602qtq.1
-        for <netdev@vger.kernel.org>; Sun, 05 May 2019 06:33:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8vh9GzL6Z3TESI/K8Xe7IDmt4lW4rJ2TS6d8Gg9f4ec=;
-        b=M+OUTlMvvZ88jH6CNuww2buF0wxPz/6/FyF26etHaJ7ads1jgfn2rS5KA/IggKuCiu
-         d5PlVyD6rNhxPiGnCzrrAbPGJkW2aSWXx8nKyGn3XiIe97TXbZnZWcH2GqnTn7P1eY4s
-         Hhs3bavkmsu1/D4xik3PSsJGHYede+vjcqdQo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8vh9GzL6Z3TESI/K8Xe7IDmt4lW4rJ2TS6d8Gg9f4ec=;
-        b=M1q+ppov2gGSBzM5N2D/uSeupxpXcqAfAwquzu//LfZ3Jd/4+376MU3Y1oyZQzPsXi
-         6/5Vt7zUTfYLooqpxFj02hRMTpTcVLK8RLBj7SSTi9n45t8Tq5jBehukrnHJRi2+ehwX
-         l0AaSwUUCe6q1lnSfQ7A1GUMw+87LlBbRoj9+7M+/Hh4FmUQCBgaKnnTs4TUcdlt+Q/V
-         C0LJZN1/R12UUCRg4UlFnJpPOlAPKvN7kVX/ADBI+aQXxOecnetyFcdoFUzrmxVQodJz
-         KWyUbdCVwSxRMw9U8+BfJYMj5TWieiw1LAMwvm6I049jeXftWwAWBvT/B+uCry2WqmC/
-         rT1A==
-X-Gm-Message-State: APjAAAW3ePyje3j6qX60v/1j9pWdBxF591gR+kbk5yTgWUSl8VwOuisr
-        simancWLESlLofTCx695GcEu7g==
-X-Google-Smtp-Source: APXvYqwZvrE19A+Oum63yFFoi2lvqbKSvPQtjx3rBN2iVToNB0C1ZrwrxK4w7/ddQ64WYLVkAEJcdg==
-X-Received: by 2002:ac8:6b11:: with SMTP id w17mr4479401qts.285.1557063225078;
-        Sun, 05 May 2019 06:33:45 -0700 (PDT)
-Received: from localhost (c-73-216-90-110.hsd1.va.comcast.net. [73.216.90.110])
-        by smtp.gmail.com with ESMTPSA id o55sm6298213qtj.14.2019.05.05.06.33.43
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 05 May 2019 06:33:44 -0700 (PDT)
-Date:   Sun, 5 May 2019 13:33:42 +0000
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Michal Gregorczyk <michalgr@live.com>,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Mohammad Husain <russoue@gmail.com>,
-        Qais Yousef <qais.yousef@arm.com>,
-        Srinivas Ramana <sramana@codeaurora.org>,
-        duyuchao <yuchao.du@unisoc.com>,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Karim Yaghmour <karim.yaghmour@opersys.com>,
-        Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Brendan Gregg <brendan.d.gregg@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
-Message-ID: <20190505133342.GC3076@localhost>
-References: <20190502204958.7868-1-joel@joelfernandes.org>
- <CAADnVQ+CPXKv_fryOxnDXjCLmWxor2j+WBFvPtG-Tcyr=hzRpQ@mail.gmail.com>
+        id S1727647AbfEEONC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 10:13:02 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:38339 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726965AbfEEONC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 10:13:02 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id A0E1820EB0;
+        Sun,  5 May 2019 10:13:01 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sun, 05 May 2019 10:13:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=WG0/d3GOaBcpCO2xB
+        UGXgu3XyBD/3FCJFZwhkkWD36M=; b=cwgCVYOg01pZOQV9rZE8As0sTXycrcKOR
+        4BHT0imOtigeE4mKjWoEW3dplSvvTiQMRta6pJ2yEwR7LfvJRvJcnRY08HHRDgUg
+        KgTlndXJgWCsZ/v+7iNOom1MRNCGU2lB/VSG2KfnvAQuB7EGARTUFLklgqh38E7m
+        xfs1oFJlKNwneM7ZgW7m4GKLl4PCGbHKPL2LqUYPgZp34ZSGkKqQuuJy+TKbHel0
+        2zpw1gYTACEuLRq7kV4Y96v534wHsV5jIg+gMdFFkFz3IwCz6Q6Q2ZtipbFCSyZY
+        V4tOG6aqEQYSSoSQ3pRw7s0Mj5H/uCE65I8wNQZulimteKRhs6gDg==
+X-ME-Sender: <xms:be_OXON4ZewRH2MjWmI4YnMQw6IAziD2wGsayR7gbCrRIIY5ka9igw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrjeehgdektdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:be_OXEQ72v57psFGqCfImVVBvhnt2Q3yux0uSlFu-j4Zw3xZqCFXig>
+    <xmx:be_OXJ8QignlZ5MjRv1KU58EX8nm-mGwhzIBzbvNI7FC2vWNP8RdSQ>
+    <xmx:be_OXHvc62Ql69s_hc4t4WAJx1rY7hIOhjndA01BCHFcxwzfXg9OAg>
+    <xmx:be_OXDATCtwZ2HBfUmXYDxve81LXosqx6o2nVPpbzaBPa7T8l7yjzQ>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id F0B98103C8;
+        Sun,  5 May 2019 10:12:59 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH iproute2-master] devlink: Fix monitor command
+Date:   Sun,  5 May 2019 17:12:43 +0300
+Message-Id: <20190505141243.9768-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQ+CPXKv_fryOxnDXjCLmWxor2j+WBFvPtG-Tcyr=hzRpQ@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 05, 2019 at 12:19:42AM -0700, Alexei Starovoitov wrote:
-> On Thu, May 2, 2019 at 1:50 PM Joel Fernandes (Google)
-> <joel@joelfernandes.org> wrote:
-> >
-> > The eBPF based opensnoop tool fails to read the file path string passed
-> > to the do_sys_open function. This is because it is a pointer to
-> > userspace address and causes an -EFAULT when read with
-> > probe_kernel_read. This is not an issue when running the tool on x86 but
-> > is an issue on arm64. This patch adds a new bpf function call based
-> > which calls the recently proposed probe_user_read function [1].
-> > Using this function call from opensnoop fixes the issue on arm64.
-> >
-> > [1] https://lore.kernel.org/patchwork/patch/1051588/
-> ...
-> > +BPF_CALL_3(bpf_probe_read_user, void *, dst, u32, size, const void *, unsafe_ptr)
-> > +{
-> > +       int ret;
-> > +
-> > +       ret = probe_user_read(dst, unsafe_ptr, size);
-> > +       if (unlikely(ret < 0))
-> > +               memset(dst, 0, size);
-> > +
-> > +       return ret;
-> > +}
-> 
-> probe_user_read() doesn't exist in bpf-next
-> therefore this patch has to wait for the next merge window.
-> At the same time we would need to introduce
-> bpf_probe_read_kernel() and introduce a load time warning
-> for existing bpf_probe_read(), so we can deprecate it eventually.
+From: Ido Schimmel <idosch@mellanox.com>
 
-Ok I will update it accordingly. Agreed. thanks,
+The command is supposed to allow users to filter events related to
+certain objects, but returns an error when an object is specified:
 
- - Joel
+# devlink mon dev
+Command "dev" not found
+
+Fix this by allowing the command to process the specified objects.
+
+Example:
+
+# devlink/devlink mon dev &
+# echo "10 1" > /sys/bus/netdevsim/new_device
+[dev,new] netdevsim/netdevsim10
+
+# devlink/devlink mon port &
+# echo "11 1" > /sys/bus/netdevsim/new_device
+[port,new] netdevsim/netdevsim11/0: type notset flavour physical
+[port,new] netdevsim/netdevsim11/0: type eth netdev eth1 flavour physical
+
+# devlink/devlink mon &
+# echo "12 1" > /sys/bus/netdevsim/new_device
+[dev,new] netdevsim/netdevsim12
+[port,new] netdevsim/netdevsim12/0: type notset flavour physical
+[port,new] netdevsim/netdevsim12/0: type eth netdev eth2 flavour physical
+
+Fixes: a3c4b484a1ed ("add devlink tool")
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+---
+ devlink/devlink.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index dc6e73fec20c..6a4ce58b9ee9 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -3858,12 +3858,8 @@ static int cmd_mon(struct dl *dl)
+ 	if (dl_argv_match(dl, "help")) {
+ 		cmd_mon_help();
+ 		return 0;
+-	} else if (dl_no_arg(dl)) {
+-		dl_arg_inc(dl);
+-		return cmd_mon_show(dl);
+ 	}
+-	pr_err("Command \"%s\" not found\n", dl_argv(dl));
+-	return -ENOENT;
++	return cmd_mon_show(dl);
+ }
+ 
+ struct dpipe_field {
+-- 
+2.20.1
 
