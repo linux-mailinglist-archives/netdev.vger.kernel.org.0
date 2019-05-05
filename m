@@ -2,115 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38082140B8
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 17:42:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38EA7140B7
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 17:42:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727657AbfEEPmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 11:42:20 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35782 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726524AbfEEPmU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 11:42:20 -0400
-Received: by mail-wr1-f66.google.com with SMTP id w12so589009wrp.2
-        for <netdev@vger.kernel.org>; Sun, 05 May 2019 08:42:19 -0700 (PDT)
+        id S1727479AbfEEPmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 11:42:16 -0400
+Received: from mail-wm1-f48.google.com ([209.85.128.48]:35033 "EHLO
+        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726524AbfEEPmP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 11:42:15 -0400
+Received: by mail-wm1-f48.google.com with SMTP id y197so12245550wmd.0
+        for <netdev@vger.kernel.org>; Sun, 05 May 2019 08:42:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=quantonium-net.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DTOqDOwz5c2f2Hffm3ktmvzvS2NAobYWHGRBOMLEbyE=;
-        b=N2Io1kjqQmLmtwPO/1OOYmgu7I5qOPMeFchV/27ompJOl1enBcrOUJmJ4pYRIGqcKJ
-         WufECUE0PqFxlXofxei+avvrkUP8oQycPkoxaqqzfjPashqWE7CCpSVwyfuPAgEspEax
-         vm4iurqMpBwvZPqnybJ64aiBBxGMHMpAYtx0Q/wmP9anTktRePHLV+IY8QSxhDZI8963
-         xeLE/dnjM/3IydjKieu2Oitt3TjURn9AM1gBIemRVWeHNP37F+xuJCOBUag4LbcGOiAZ
-         N3nn7yejZZOktByUvezuz796N3Pxise+yrM8axyGRWzGkkQkXqBUwnMp+alvAMaMWDpg
-         aabA==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=p4JsYWi9ym08opXx0yjpQVEz2QDZjiF/Ki7+3ghiRfw=;
+        b=0aZf4l5/XNzmhPji0CuJyeGqqzl/N2KpjYJHMr+OF1YCS6tTVhH7+RtZm+m3u1YMMD
+         WYw7THgBAmHUrpsJN9Jz5AVXdE4Am1jHmEEfynHSJ/Yi45FlHgo6unIRz7299QXyVMJN
+         yZS3tBaNbMtN5Mtf4BukJI2Huyu3wT4j54V5TuUG0ubpVjOEhuI1sI83m108udd3wcw3
+         3uhTm6Jb3M26FKD2GGndVa1y0xYRRQypIAL8TXqBVD3zT/ZaPJKYrPSYg46p7tP7smS7
+         M0CZirhscx0tc4kBOeVYOG3COC2v6Jk2PLFcGvy6kowq/uuwjaCbshVCflSNu1qhugnO
+         usEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DTOqDOwz5c2f2Hffm3ktmvzvS2NAobYWHGRBOMLEbyE=;
-        b=ntNDHW/G3lqiz1LLlQjjbneYBFqXjRW368BW7sPIVpx8C+JEly1x0YxWzkgP7NlHH0
-         NvYuo2yHvxKLXeGF4WJXsk0iXjHnhFLjS49HCOlZbhB/EBcTdcQNkUva9ZH3ebwgay74
-         gaq4pZmh/zc1RUwx8R8jOnVe4F9wT9u98LCBxrmUEX80dPcv+REzfMS8h4vXWZM4Mt7L
-         QsUo0h3YP7rssgkk3tgRY9CBwcOYhDslg+Z6ucvbVvOTg89QpnOCet1zm0HXRgjbxTdb
-         4OG1k2UpetFszYQcZy+VMbwoO9H2itnhBovBKkIV/q/oIB0tysiiPb7PCK//vSCiivXV
-         kQiw==
-X-Gm-Message-State: APjAAAUvW17GMP09hZ51Fs7p3e/mCn6QdU4h+G1RBvpkgUY5IKNeDfI4
-        JFvmiGn0EZBCa4bLlLisYT2ftYjesHXsXXmRRZNAhA==
-X-Google-Smtp-Source: APXvYqy+Y/lOGfuaV09QTcI6KeaqpVtOAz1vKavdzlQlU2G9iY+EHoUhs6ygoOU5/IAHWAKhBSRxHXZFj9nmD7daLl0=
-X-Received: by 2002:adf:eb0e:: with SMTP id s14mr4916008wrn.158.1557070938884;
- Sun, 05 May 2019 08:42:18 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=p4JsYWi9ym08opXx0yjpQVEz2QDZjiF/Ki7+3ghiRfw=;
+        b=Vlqj3jI1w88xyW99o/YRHqVPWpMF1jWJBUGT8nbAcGSGB4Mj9yohXvnn8nJK7cAwnl
+         cl+sYFxt4/neJ0kr/3vToL35TPvxNxf51avvyiMT89vR3Fftxh6OfMkreHPy48kqbT08
+         WiLfR62WLy38MAlofC2tefqjTdZuTqtt5gmWrZraQGdTli74OcjwQ8YVjkdW5oxCTddJ
+         yNc0Q/sS11wAHV/xvpIE2txo3zq6l/Q9W+QSB5tn4d2IIK9jtdMxSiCAWg5Sx/Il0U+r
+         eJBxOR0GCoBdyPPKQze4FrLxbZO0zOkforwbtm93WkISRxzc9eulgb8qcxKE/kUQHeTe
+         OwLA==
+X-Gm-Message-State: APjAAAXfYVmWWl0iCSMG/pDtw0MMj0qyXMCLpTc3d//M6TtzwY2DdZYL
+        vzVqlyuTZVQkewWcHgkRxxjQAQaTz2w=
+X-Google-Smtp-Source: APXvYqxWCndnzlM6w2KJzdiJys2xh9hF2yhl5PoLGVKYqlqwdSpFJ4sPNt+8oMjjqrybTBF1hVsuUw==
+X-Received: by 2002:a1c:f606:: with SMTP id w6mr12713541wmc.130.1557070934118;
+        Sun, 05 May 2019 08:42:14 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id v23sm5752667wmj.43.2019.05.05.08.42.13
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 05 May 2019 08:42:13 -0700 (PDT)
+Date:   Sun, 5 May 2019 17:42:12 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>
+Subject: Re: [net-next 09/15] net/mlx5: Create FW devlink health reporter
+Message-ID: <20190505154212.GC31501@nanopsycho.orion>
+References: <20190505003207.1353-1-saeedm@mellanox.com>
+ <20190505003207.1353-10-saeedm@mellanox.com>
 MIME-Version: 1.0
-References: <1556579717-1554-1-git-send-email-tom@quantonium.net> <20190505.002712.639270971831500623.davem@davemloft.net>
-In-Reply-To: <20190505.002712.639270971831500623.davem@davemloft.net>
-From:   Tom Herbert <tom@quantonium.net>
-Date:   Sun, 5 May 2019 08:42:08 -0700
-Message-ID: <CAPDqMepAvcL1ZjMM6GWLuFuDfN=E1BdTNWOB0sGGRHKMVxZzMw@mail.gmail.com>
-Subject: Re: [PATCH v9 net-next 0/6] exthdrs: Make ext. headers & options
- useful - Part I
-To:     David Miller <davem@davemloft.net>
-Cc:     Tom Herbert <tom@herbertland.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190505003207.1353-10-saeedm@mellanox.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 5, 2019 at 12:45 AM David Miller <davem@davemloft.net> wrote:
+Sun, May 05, 2019 at 02:33:23AM CEST, saeedm@mellanox.com wrote:
+>From: Moshe Shemesh <moshe@mellanox.com>
 >
-> From: Tom Herbert <tom@herbertland.com>
-> Date: Mon, 29 Apr 2019 16:15:11 -0700
+>Create mlx5_devlink_health_reporter for FW reporter. The FW reporter
+>implements devlink_health_reporter diagnose callback.
 >
-> > Extension headers are the mechanism of extensibility for the IPv6
-> > protocol, however to date they have only seen limited deployment.
-> > The reasons for that are because intermediate devices don't handle
-> > them well, and there haven't really be any useful extension headers
-> > defined. In particular, Destination and Hop-by-Hop options have
-> > not been deployed to any extent.
-> >
-> > The landscape may be changing as there are now a number of serious
-> > efforts to define and deploy extension headers. In particular, a number
-> > of uses for Hop-by-Hop Options are currently being proposed, Some of
-> > these are from router vendors so there is hope that they might start
-> > start to fix their brokenness. These proposals include IOAM, Path MTU,
-> > Firewall and Service Tickets, SRv6, CRH, etc.
-> >
-> > Assuming that IPv6 extension headers gain traction, that leaves a
-> > noticeable gap in IPv4 support. IPv4 options have long been considered a
-> > non-starter for deployment. An alternative being proposed is to enable
-> > use of IPv6 options with IPv4 (draft-herbert-ipv4-eh-00).
+>The fw reporter diagnose command can be triggered any time by the user
+>to check current fw status.
+>In healthy status, it will return clear syndrome. Otherwise it will dump
+>the health info buffer.
 >
-> "Assuming ipv6 extension headers gain traction, my patch set is useful."
+>Command example and output on healthy status:
+>$ devlink health diagnose pci/0000:82:00.0 reporter fw
+>Syndrome: 0
 >
-> Well, when they gain traction you can propose this stuff.
+>Command example and output on non healthy status:
+>$ devlink health diagnose pci/0000:82:00.0 reporter fw
+>diagnose data:
+>assert_var[0] 0xfc3fc043
+>assert_var[1] 0x0001b41c
+>assert_var[2] 0x00000000
+>assert_var[3] 0x00000000
+>assert_var[4] 0x00000000
+>assert_exit_ptr 0x008033b4
+>assert_callra 0x0080365c
+>fw_ver 16.24.1000
+>hw_id 0x0000020d
+>irisc_index 0
+>synd 0x8: unrecoverable hardware error
+>ext_synd 0x003d
+>raw fw_ver 0x101803e8
 >
-> Until then, it's a facility implemented based upon wishful thinking.
->
-Hi Dave,
+>Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+>Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
+>Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 
-"Assuming" was probably the wrong word here :-). They are gaining
-traction. A specific example is In-situ OAM (IOAM) which is being
-heavily pushed by Cisco (draft-brockners-inband-oam-data-07). This
-requires host to network signalling in data packets which goes far
-beyond what information the IP header contains. Their first
-inclination was to hack up UDP encapsulation protocols like Geneve,
-but that fundamentally doesn't work for various reasons. We were able
-to convince them that Hop-by-Hop Options is the correct mechanism so
-they are pursuing that in
-draft-ioametal-ippm-6man-ioam-ipv6-options-00. Naturally, they want to
-support both IPv6 and IPv4 for their products, but there is no usable
-mechanism in IPv4 (IP options are effectively obsoleted)-- hence the
-motivation for back porting extension headers to IPv4.
+	
+[...]	
+	
+	
+>+static int
+>+mlx5_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
+>+			  struct devlink_fmsg *fmsg)
+>+{
+>+	struct mlx5_core_dev *dev = devlink_health_reporter_priv(reporter);
+>+	struct mlx5_core_health *health = &dev->priv.health;
+>+	u8 synd;
+>+	int err;
+>+
+>+	mutex_lock(&health->info_buf_lock);
+>+	mlx5_get_health_info(dev, &synd);
+>+
+>+	if (!synd) {
+>+		mutex_unlock(&health->info_buf_lock);
+>+		return devlink_fmsg_u8_pair_put(fmsg, "Syndrome", synd);
+>+	}
+>+
+>+	err = devlink_fmsg_string_pair_put(fmsg, "diagnose data",
+>+					   health->info_buf);
 
-In short, we're at a crossroads. Extension headers are "use it or lose
-it". If we don't figure out how to make these usable and useful soon,
-that may never happen and they'll be relegated to a historical
-footnote just like IP options. IMO, it would be a shame if that
-happens since we'd be surrendering a valuable feature.
-
-Tom
-
-> Sorry Tom, I kept pushing back using trivial coding style feedback
-> because I simply can't justify applying this.
->
+No! This is wrong! You are sneaking in text blob. Please put the info in
+structured form using proper fmsg helpers.
