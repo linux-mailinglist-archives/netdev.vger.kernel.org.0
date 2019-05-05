@@ -2,95 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ABE213D95
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 07:41:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EB6D13DC8
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 08:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727174AbfEEFlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 01:41:35 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:55405 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726237AbfEEFle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 01:41:34 -0400
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1hN9tp-0000vQ-Py; Sun, 05 May 2019 07:41:21 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1hN9tn-0007wk-6c; Sun, 05 May 2019 07:41:19 +0200
-Date:   Sun, 5 May 2019 07:41:19 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Chuanhong Guo <gch981213@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Paul Burton <paul.burton@mips.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        James Hogan <jhogan@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-mips@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] net: ethernet: add ag71xx driver
-Message-ID: <20190505054119.ac3jxtonkpn4pszn@pengutronix.de>
-References: <20190422064046.2822-1-o.rempel@pengutronix.de>
- <20190422064046.2822-4-o.rempel@pengutronix.de>
- <20190422132533.GA12718@lunn.ch>
- <CAJsYDVJ84RsNVe9Mj9sYYwwLmmMkinRSJW4ziW22Sf04wS5gyw@mail.gmail.com>
+        id S1727547AbfEEGTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 02:19:17 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:34278 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726237AbfEEGTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 02:19:17 -0400
+Received: by mail-pg1-f195.google.com with SMTP id c13so4835763pgt.1;
+        Sat, 04 May 2019 23:19:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/O0+bcvBE2OoO/gEJJYwRuRI/RoGqtMYiiZRYQc0t4I=;
+        b=sVUer8yo9OhUMSJX6hMcLyZ+WUt9ijpiwKTXdDxyiNFPrWmlSF1bSzGIxcU9MQZDl/
+         VX9Pm4+viIfiVlcPLEUCKpLOhERG3PfBuMA/Abvbktj0/MF9jGMMRl5toJJli4UQOBDW
+         52BqRPznwSDs3vjHfnh8JJqbQVUofVXrjYcCBEUF207yGPlEL7QHvg/TB6wkNClRRwNJ
+         OULDI6PqWV3ffyHQpv5pJHc2J9nQyGa8sbRmqkpGKM1UNFxB9dvYkfvtalkxJq95upI8
+         r+3lAKrPCMLAndOZWsPtHMO6N9QUT4vBxyj+ROXQtHHN72eKkF8NPeq1CK2a+kWPmzq6
+         7iZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/O0+bcvBE2OoO/gEJJYwRuRI/RoGqtMYiiZRYQc0t4I=;
+        b=ok+TQIDWQ6+zjS9zdrEZG5sO+1IggXwuoKnVy1Bhaq7f90x6zH+K8jEcMx6TAIEG3b
+         UsJbwLPAt3zVcKifL57uJIygkmMvZCXrUbZ0VEzkP/Qhzlhhzm55ozJXH+ToV1OfHAvm
+         MOTqbECJScPNLxVO7wW8cYAPKd1ujasxvE5fIKRpL1oKHj1bybWWvEPOcE6aw35Lr6Ns
+         PGK2KOKUWMOi6Jr5yv//V/OPxshuXsuID3j5cCxiULQ+ljraObEdHAwk7ddBt06PrHFx
+         kVMP4U2GVxrnVzmMxlL8TdAtaMGBLAZMB+V8kBfTAQy5omxSulaqVJW5T9sMb6wOYRTS
+         Lv2w==
+X-Gm-Message-State: APjAAAVTS5roZt0S1KTVTYsOIhESQ6jfzS3obOmNwHB6LGl3s9B+i295
+        mHDJqz6zxKy/XbOjob12FzOk4Ic9
+X-Google-Smtp-Source: APXvYqzvyiCxAFPvRtwFJEnXIdbqPspm5dip3VA/y6atEk9Tt9bRxCDrDN4ROhC0K5EZZ7NbSWeOsg==
+X-Received: by 2002:a63:ed12:: with SMTP id d18mr23581304pgi.248.1557037156347;
+        Sat, 04 May 2019 23:19:16 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:180::2e11])
+        by smtp.gmail.com with ESMTPSA id k7sm8649674pfi.67.2019.05.04.23.19.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 04 May 2019 23:19:15 -0700 (PDT)
+Date:   Sat, 4 May 2019 23:19:14 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Quentin Monnet <quentin.monnet@netronome.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@netronome.com
+Subject: Re: [PATCH bpf-next 4/6] bpf: make BPF_LOG_* flags available in UAPI
+ header
+Message-ID: <20190505061913.mgazaivmg62auirx@ast-mbp>
+References: <20190429095227.9745-1-quentin.monnet@netronome.com>
+ <20190429095227.9745-5-quentin.monnet@netronome.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJsYDVJ84RsNVe9Mj9sYYwwLmmMkinRSJW4ziW22Sf04wS5gyw@mail.gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 07:36:45 up 106 days, 10:18, 78 users,  load average: 0.00, 0.00,
- 0.00
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20190429095227.9745-5-quentin.monnet@netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 04, 2019 at 11:40:53PM +0800, Chuanhong Guo wrote:
-> Hi!
+On Mon, Apr 29, 2019 at 10:52:25AM +0100, Quentin Monnet wrote:
+> The kernel verifier combines several flags to select what kind of logs
+> to print to the log buffer provided by users.
 > 
-> On Mon, Apr 22, 2019 at 9:28 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > [...]
-> > > +     /*
-> > > +      * On most (all?) Atheros/QCA SoCs dual eth interfaces are not equal.
-> > > +      *
-> > > +      * That is to say eth0 can not work independently. It only works
-> > > +      * when eth1 is working.
-> > > +      */
-> >
-> > Please could you explain that some more? Is there just one MDIO bus
-> > shared by two ethernet controllers? If so, it would be better to have
-> > the MDIO bus controller as a separate driver.
+> In order to make it easier to provide the relevant flags, move the
+> related #define-s to the UAPI header, so that applications can set for
+> example: attr->log_level = BPF_LOG_LEVEL1 | BPF_LOG_STATS.
 > 
-> mdio registers exists on both ethernet blocks. And due to how reset
-> works on this ethernet IP, it's hard to split it into a separated
-> driver. (Only asserting both eth and mdio resets together will reset
-> everything including register values.)
-> The reason why gmac1 should be brought up first is that on some chips,
-> mdio on gmac0 connects to nothing and phy used by gmac0 is on mdio bus
-> of gmac1.
+> Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
+> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> ---
+>  include/linux/bpf_verifier.h | 3 ---
+>  include/uapi/linux/bpf.h     | 5 +++++
+>  2 files changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+> index 1305ccbd8fe6..8160a4bb7ad9 100644
+> --- a/include/linux/bpf_verifier.h
+> +++ b/include/linux/bpf_verifier.h
+> @@ -253,9 +253,6 @@ static inline bool bpf_verifier_log_full(const struct bpf_verifier_log *log)
+>  	return log->len_used >= log->len_total - 1;
+>  }
+>  
+> -#define BPF_LOG_LEVEL1	1
+> -#define BPF_LOG_LEVEL2	2
+> -#define BPF_LOG_STATS	4
+>  #define BPF_LOG_LEVEL	(BPF_LOG_LEVEL1 | BPF_LOG_LEVEL2)
+>  #define BPF_LOG_MASK	(BPF_LOG_LEVEL | BPF_LOG_STATS)
+>  
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 72336bac7573..f8e3e764aff4 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -335,6 +335,11 @@ struct bpf_stack_build_id {
+>  	};
+>  };
+>  
+> +/* verifier log_level values for loading programs, can be combined */
+> +#define BPF_LOG_LEVEL1	1
+> +#define BPF_LOG_LEVEL2	2
+> +#define BPF_LOG_STATS	4
 
-It could be implemented as mfd device. Not sure if it is worth it.
-Pro/contra argumentation is welcome.
+The verifier log levels are kernel implementation details.
+They were not exposed before and shouldn't be exposed in the future.
+I know that some folks already know about existence of level2 and use it
+when the verifier rejects the program, but this is not uapi.
+What is being output at level1 and 2 can change.
+It's ok for libbpf to use this knowledge of kernel internals,
+but it shouldn't be in uapi header.
+That was the reason I didn't expose stats=4 in uapi in the first place
+when I added that commit.
 
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
