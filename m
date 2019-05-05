@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 618B313DFC
+	by mail.lfdr.de (Postfix) with ESMTP id D5D8D13DFD
 	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 08:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727472AbfEEGsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727451AbfEEGsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 5 May 2019 02:48:40 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:52837 "EHLO
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:38479 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726524AbfEEGsj (ORCPT
+        by vger.kernel.org with ESMTP id S1726443AbfEEGsj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 02:48:39 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 279D32106A;
-        Sun,  5 May 2019 02:48:37 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 634412151C;
+        Sun,  5 May 2019 02:48:38 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 05 May 2019 02:48:37 -0400
+  by compute3.internal (MEProxy); Sun, 05 May 2019 02:48:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=a7o9M1+LINeV+UFn/hpUrYF9ZzsC6+gtZn9wKufuFi0=; b=3ia+yNBf
-        SS1YAvihnkh4EywOUdK8E1wL3a2e0ljOi+8JlkS82k71pvUeHnCdZeIRAc2wLNqz
-        dZm0EvYpCOVJOZEaIz/sdvc6RbCkt5x29h0sxoYTNGdFl9bz2Ty+OTsDXReME0Os
-        1gV2gTpDNX4sLY0Jp539mZmpDcRNFwUQGQsj79XyMKVbNzWdaUh/P2JE3mPnkErL
-        v5QhsHx/yMecguRHAWJqRAq0xmzGcchu7/ON14MmgadGPw44ts20oJWQxqXzBkA/
-        GL5iDRMC4aGwjHF59Bmg7yHJ84urvyNMWddwAGXqZYgbbQnirf+29ba8JIE1dhy9
-        Cc9SKI69mrmSXg==
-X-ME-Sender: <xms:RYfOXKK6pw4m4qMHbbydu8_BWRy2iiBbSUh5mT_P4g7SzenA-TUxYg>
+        fm2; bh=KO3vZpyEEbtFo+KwYGJqOupAU7i/Dn5QNSz3OJcilqU=; b=ko+7OXjh
+        Bbi26x2CK29TYiutxY/oedWdzHtuJviFzikeIPTqKvJui4rpEGuXdnnbX0PHV8ua
+        tKeNr776k74+MscRdxVJbHMbKYlKpYzYH7n8Rh+YviNDQdT/XKAw8zlwfmISVtfe
+        ipdW8Z45mUjaN4o0VtEqj7T2GqQNPL7pQDyiYHHheMAnbkNTQdOqdUghM0jk+Zi2
+        D36WWyiymA9Dci0mCgmG2J8ZFVb9+XauebmsXVWIa2mFfsMpWStuoB7/wN6hrH0g
+        7+oIXQH1U2Mk8vf/OiZu1yVv4oZu6Uo1HkNDfoLmXkQMmy0tw45GzHv76MTsiQL1
+        ImKghra9wv0EOQ==
+X-ME-Sender: <xms:RofOXEwfBEZNOaAKTtuxzClhAHTLyTSG7fgx7KazQFnhFr9sFyWaHQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrjeeggdduudefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrjeeggdduudefucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpedt
-X-ME-Proxy: <xmx:RYfOXHoiD8MbP7hBZYBaUtIcCtLk3q5hrVJqcXLqoKREefQge2Q2uw>
-    <xmx:RYfOXDDh_ZxV863bx5cSs89vjVcs9CMSkjZjtLTFU_MNq8mQWibI1g>
-    <xmx:RYfOXNfAYMRbJHeLW0QZlt__7sTXXsNnJ33jb_ZQwHqShn9NlGBUuw>
-    <xmx:RYfOXKU7bohDrnzZWvCOiZ3Bn5XtfNGfLh8loNAA2pSySnKVIH9dLQ>
+X-ME-Proxy: <xmx:RofOXNKOQEiDk0TQOH8-ODv3lTVL-sLxIKIg47wlhRT8OKbFPoqZvw>
+    <xmx:RofOXD6MkeHyKa67-dHWWWe_I6tHe3fHNDe0llso2RbrmE7fSDVpNQ>
+    <xmx:RofOXEk6w-hija1uASKvEPsETt5u1OhFDIOd4W6v6vl01poroKDlaQ>
+    <xmx:RofOXJJk3Czo7La82YjvA44XeaDxzpKuMRot0w1k-HX7YoSCcFEU0w>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E1CB7E432B;
-        Sun,  5 May 2019 02:48:35 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1D2C9E40C3;
+        Sun,  5 May 2019 02:48:36 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 1/3] mlxsw: reg: Add Port Physical Loopback Register
-Date:   Sun,  5 May 2019 09:48:05 +0300
-Message-Id: <20190505064807.27925-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/3] mlxsw: spectrum: Implement loopback ethtool feature
+Date:   Sun,  5 May 2019 09:48:06 +0300
+Message-Id: <20190505064807.27925-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190505064807.27925-1-idosch@idosch.org>
 References: <20190505064807.27925-1-idosch@idosch.org>
@@ -61,69 +61,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-The PPLR register allows configuration of the port's loopback mode.
+Allow user to enable loopback feature for individual ports using ethtool.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 37 +++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 35 +++++++++++++++++--
+ 1 file changed, 33 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index e1ee7f4994db..e8002bfc1e8f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -5210,6 +5210,42 @@ static inline void mlxsw_reg_pspa_pack(char *payload, u8 swid, u8 local_port)
- 	mlxsw_reg_pspa_sub_port_set(payload, 0);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index a6c6d5ee9ead..cbb02e37ec41 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -1669,6 +1669,25 @@ static int mlxsw_sp_feature_hw_tc(struct net_device *dev, bool enable)
+ 	return 0;
  }
  
-+/* PPLR - Port Physical Loopback Register
-+ * --------------------------------------
-+ * This register allows configuration of the port's loopback mode.
-+ */
-+#define MLXSW_REG_PPLR_ID 0x5018
-+#define MLXSW_REG_PPLR_LEN 0x8
-+
-+MLXSW_REG_DEFINE(pplr, MLXSW_REG_PPLR_ID, MLXSW_REG_PPLR_LEN);
-+
-+/* reg_pplr_local_port
-+ * Local port number.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, pplr, local_port, 0x00, 16, 8);
-+
-+/* Phy local loopback. When set the port's egress traffic is looped back
-+ * to the receiver and the port transmitter is disabled.
-+ */
-+#define MLXSW_REG_PPLR_LB_TYPE_BIT_PHY_LOCAL BIT(1)
-+
-+/* reg_pplr_lb_en
-+ * Loopback enable.
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, pplr, lb_en, 0x04, 0, 8);
-+
-+static inline void mlxsw_reg_pplr_pack(char *payload, u8 local_port,
-+				       bool phy_local)
++static int mlxsw_sp_feature_loopback(struct net_device *dev, bool enable)
 +{
-+	MLXSW_REG_ZERO(pplr, payload);
-+	mlxsw_reg_pplr_local_port_set(payload, local_port);
-+	mlxsw_reg_pplr_lb_en_set(payload,
-+				 phy_local ?
-+				 MLXSW_REG_PPLR_LB_TYPE_BIT_PHY_LOCAL : 0);
++	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
++	char pplr_pl[MLXSW_REG_PPLR_LEN];
++	int err;
++
++	if (netif_running(dev))
++		mlxsw_sp_port_admin_status_set(mlxsw_sp_port, false);
++
++	mlxsw_reg_pplr_pack(pplr_pl, mlxsw_sp_port->local_port, enable);
++	err = mlxsw_reg_write(mlxsw_sp_port->mlxsw_sp->core, MLXSW_REG(pplr),
++			      pplr_pl);
++
++	if (netif_running(dev))
++		mlxsw_sp_port_admin_status_set(mlxsw_sp_port, true);
++
++	return err;
 +}
 +
- /* HTGT - Host Trap Group Table
-  * ----------------------------
-  * Configures the properties for forwarding to CPU.
-@@ -9981,6 +10017,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(pptb),
- 	MLXSW_REG(pbmc),
- 	MLXSW_REG(pspa),
-+	MLXSW_REG(pplr),
- 	MLXSW_REG(htgt),
- 	MLXSW_REG(hpkt),
- 	MLXSW_REG(rgcr),
+ typedef int (*mlxsw_sp_feature_handler)(struct net_device *dev, bool enable);
+ 
+ static int mlxsw_sp_handle_feature(struct net_device *dev,
+@@ -1700,8 +1719,20 @@ static int mlxsw_sp_handle_feature(struct net_device *dev,
+ static int mlxsw_sp_set_features(struct net_device *dev,
+ 				 netdev_features_t features)
+ {
+-	return mlxsw_sp_handle_feature(dev, features, NETIF_F_HW_TC,
++	netdev_features_t oper_features = dev->features;
++	int err = 0;
++
++	err |= mlxsw_sp_handle_feature(dev, features, NETIF_F_HW_TC,
+ 				       mlxsw_sp_feature_hw_tc);
++	err |= mlxsw_sp_handle_feature(dev, features, NETIF_F_LOOPBACK,
++				       mlxsw_sp_feature_loopback);
++
++	if (err) {
++		dev->features = oper_features;
++		return -EINVAL;
++	}
++
++	return 0;
+ }
+ 
+ static struct devlink_port *
+@@ -3452,7 +3483,7 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u8 local_port,
+ 
+ 	dev->features |= NETIF_F_NETNS_LOCAL | NETIF_F_LLTX | NETIF_F_SG |
+ 			 NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_TC;
+-	dev->hw_features |= NETIF_F_HW_TC;
++	dev->hw_features |= NETIF_F_HW_TC | NETIF_F_LOOPBACK;
+ 
+ 	dev->min_mtu = 0;
+ 	dev->max_mtu = ETH_MAX_MTU;
 -- 
 2.20.1
 
