@@ -2,111 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6996714019
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 16:13:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 949631405C
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 16:46:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727647AbfEEONC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 10:13:02 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:38339 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726965AbfEEONC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 10:13:02 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id A0E1820EB0;
-        Sun,  5 May 2019 10:13:01 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 05 May 2019 10:13:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=WG0/d3GOaBcpCO2xB
-        UGXgu3XyBD/3FCJFZwhkkWD36M=; b=cwgCVYOg01pZOQV9rZE8As0sTXycrcKOR
-        4BHT0imOtigeE4mKjWoEW3dplSvvTiQMRta6pJ2yEwR7LfvJRvJcnRY08HHRDgUg
-        KgTlndXJgWCsZ/v+7iNOom1MRNCGU2lB/VSG2KfnvAQuB7EGARTUFLklgqh38E7m
-        xfs1oFJlKNwneM7ZgW7m4GKLl4PCGbHKPL2LqUYPgZp34ZSGkKqQuuJy+TKbHel0
-        2zpw1gYTACEuLRq7kV4Y96v534wHsV5jIg+gMdFFkFz3IwCz6Q6Q2ZtipbFCSyZY
-        V4tOG6aqEQYSSoSQ3pRw7s0Mj5H/uCE65I8wNQZulimteKRhs6gDg==
-X-ME-Sender: <xms:be_OXON4ZewRH2MjWmI4YnMQw6IAziD2wGsayR7gbCrRIIY5ka9igw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrjeehgdektdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
-    vgeptd
-X-ME-Proxy: <xmx:be_OXEQ72v57psFGqCfImVVBvhnt2Q3yux0uSlFu-j4Zw3xZqCFXig>
-    <xmx:be_OXJ8QignlZ5MjRv1KU58EX8nm-mGwhzIBzbvNI7FC2vWNP8RdSQ>
-    <xmx:be_OXHvc62Ql69s_hc4t4WAJx1rY7hIOhjndA01BCHFcxwzfXg9OAg>
-    <xmx:be_OXDATCtwZ2HBfUmXYDxve81LXosqx6o2nVPpbzaBPa7T8l7yjzQ>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id F0B98103C8;
-        Sun,  5 May 2019 10:12:59 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH iproute2-master] devlink: Fix monitor command
-Date:   Sun,  5 May 2019 17:12:43 +0300
-Message-Id: <20190505141243.9768-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.20.1
+        id S1727699AbfEEOqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 10:46:16 -0400
+Received: from foss.arm.com ([217.140.101.70]:59214 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727325AbfEEOqP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 May 2019 10:46:15 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B972374;
+        Sun,  5 May 2019 07:46:15 -0700 (PDT)
+Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.194.71])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AF2D63F575;
+        Sun,  5 May 2019 07:46:11 -0700 (PDT)
+Date:   Sun, 5 May 2019 15:46:08 +0100
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
+Message-ID: <20190505144608.u3vsxyz5huveuskx@e107158-lin.cambridge.arm.com>
+References: <20190502204958.7868-1-joel@joelfernandes.org>
+ <20190503121234.6don256zuvfjtdg6@e107158-lin.cambridge.arm.com>
+ <20190503134935.GA253329@google.com>
+ <20190505110423.u7g3f2viovvgzbtn@e107158-lin.cambridge.arm.com>
+ <20190505132949.GB3076@localhost>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190505132949.GB3076@localhost>
+User-Agent: NeoMutt/20171215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On 05/05/19 13:29, Joel Fernandes wrote:
+> On Sun, May 05, 2019 at 12:04:24PM +0100, Qais Yousef wrote:
+> > On 05/03/19 09:49, Joel Fernandes wrote:
+> > > On Fri, May 03, 2019 at 01:12:34PM +0100, Qais Yousef wrote:
+> > > > Hi Joel
+> > > > 
+> > > > On 05/02/19 16:49, Joel Fernandes (Google) wrote:
+> > > > > The eBPF based opensnoop tool fails to read the file path string passed
+> > > > > to the do_sys_open function. This is because it is a pointer to
+> > > > > userspace address and causes an -EFAULT when read with
+> > > > > probe_kernel_read. This is not an issue when running the tool on x86 but
+> > > > > is an issue on arm64. This patch adds a new bpf function call based
+> > > > 
+> > > > I just did an experiment and if I use Android 4.9 kernel I indeed fail to see
+> > > > PATH info when running opensnoop. But if I run on 5.1-rc7 opensnoop behaves
+> > > > correctly on arm64.
+> > > > 
+> > > > My guess either a limitation that was fixed on later kernel versions or Android
+> > > > kernel has some strict option/modifications that make this fail?
+> > > 
+> > > Thanks a lot for checking, yes I was testing 4.9 kernel with this patch (pixel 3).
+> > > 
+> > > I am not sure what has changed since then, but I still think it is a good
+> > > idea to make the code more robust against such future issues anyway. In
+> > > particular, we learnt with extensive discussions that user/kernel pointers
+> > > are not necessarily distinguishable purely based on their address.
+> > 
+> > Yes I wasn't arguing against that. But the commit message is misleading or
+> > needs more explanation at least. I tried 4.9.y stable and arm64 worked on that
+> > too. Why do you think it's an arm64 problem?
+> 
+> Well it is broken on at least on at least one arm64 device and the patch I
+> sent fixes it. We know that the bpf is using wrong kernel API so why not fix
+> it? Are you saying we should not fix it like in this patch? Or do you have
+> another fix in mind?
 
-The command is supposed to allow users to filter events related to
-certain objects, but returns an error when an object is specified:
+Again I have no issue with the new API. But the claim that it's a fix for
+a broken arm64 is a big stretch. AFAICT you don't understand the root cause of
+why copy_to_user_inatomic() fails in your case. Given that Android 4.9 has
+its own patches on top of 4.9 stable, it might be something that was introduced
+in one of these patches that breaks opensnoop, and by making it use the new API
+you might be simply working around the problem. All I can see is that vanilla
+4.9 stable works on arm64.
 
-# devlink mon dev
-Command "dev" not found
+So I am happy about introducing the new API but not happy with the commit
+message or the explanation given in it. Unless you can investigate the root
+cause and relate how this fixes it (and not workaround a problem you're
+specifically having) I think it's better to introduce this patch as a generic
+new API that is more robust to handle reading __user data in BPF and drop
+reference to opensnoop failures. They raise more questions and the real
+intention of this patch anyway is to provide the new correct way for BPF
+programs to read __user data regardless opensnoop fails or not AFAIU.
 
-Fix this by allowing the command to process the specified objects.
+Cheers
 
-Example:
-
-# devlink/devlink mon dev &
-# echo "10 1" > /sys/bus/netdevsim/new_device
-[dev,new] netdevsim/netdevsim10
-
-# devlink/devlink mon port &
-# echo "11 1" > /sys/bus/netdevsim/new_device
-[port,new] netdevsim/netdevsim11/0: type notset flavour physical
-[port,new] netdevsim/netdevsim11/0: type eth netdev eth1 flavour physical
-
-# devlink/devlink mon &
-# echo "12 1" > /sys/bus/netdevsim/new_device
-[dev,new] netdevsim/netdevsim12
-[port,new] netdevsim/netdevsim12/0: type notset flavour physical
-[port,new] netdevsim/netdevsim12/0: type eth netdev eth2 flavour physical
-
-Fixes: a3c4b484a1ed ("add devlink tool")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- devlink/devlink.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index dc6e73fec20c..6a4ce58b9ee9 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -3858,12 +3858,8 @@ static int cmd_mon(struct dl *dl)
- 	if (dl_argv_match(dl, "help")) {
- 		cmd_mon_help();
- 		return 0;
--	} else if (dl_no_arg(dl)) {
--		dl_arg_inc(dl);
--		return cmd_mon_show(dl);
- 	}
--	pr_err("Command \"%s\" not found\n", dl_argv(dl));
--	return -ENOENT;
-+	return cmd_mon_show(dl);
- }
- 
- struct dpipe_field {
--- 
-2.20.1
-
+--
+Qais Yousef
