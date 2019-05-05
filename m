@@ -2,139 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82FDF1425F
-	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 23:00:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 331101425E
+	for <lists+netdev@lfdr.de>; Sun,  5 May 2019 22:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727767AbfEEVAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 17:00:48 -0400
-Received: from rcdn-iport-4.cisco.com ([173.37.86.75]:38701 "EHLO
-        rcdn-iport-4.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727295AbfEEVAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 17:00:47 -0400
-X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Sun, 05 May 2019 17:00:47 EDT
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0D8AAAqTM9c/4wNJK1lGwEBAQEDAQE?=
- =?us-ascii?q?BBwMBAQGBZYIRgToBMiizfRCEbQKCBiM4EwEDAQEEAQECAQJtKIVLBidSEBk?=
- =?us-ascii?q?4VwYBEoMiggurCDOIY4FFFIEehniEVheBf4ERg1CKJgSSPYEMk2kJggtWkWM?=
- =?us-ascii?q?nbpRajBuVEYFmIYFWMxoIGxWDJ5BxHwMwkT8BAQ?=
-X-IronPort-AV: E=Sophos;i="5.60,435,1549929600"; 
-   d="scan'208";a="555191920"
-Received: from alln-core-7.cisco.com ([173.36.13.140])
-  by rcdn-iport-4.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 05 May 2019 20:53:40 +0000
-Received: from tusi.cisco.com (tusi.cisco.com [172.24.98.27])
-        by alln-core-7.cisco.com (8.15.2/8.15.2) with ESMTP id x45Krdkh024395;
-        Sun, 5 May 2019 20:53:40 GMT
-From:   Ruslan Babayev <ruslan@babayev.com>
-To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     xe-linux-external@cisco.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] net: phy: sfp: enable i2c-bus detection on ACPI based systems
-Date:   Sun,  5 May 2019 13:51:40 -0700
-Message-Id: <20190505205140.17052-2-ruslan@babayev.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190505193435.3248-1-ruslan@babayev.com>
-References: <20190505193435.3248-1-ruslan@babayev.com>
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 172.24.98.27, tusi.cisco.com
-X-Outbound-Node: alln-core-7.cisco.com
+        id S1727911AbfEEU5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 16:57:01 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:35489 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727479AbfEEU5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 16:57:01 -0400
+Received: by mail-qt1-f193.google.com with SMTP id d20so2573315qto.2;
+        Sun, 05 May 2019 13:57:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YExjinVHBlRCvyNUu8p8UV5CV+SOy0PucZu7uPEhF+Q=;
+        b=u6xgvh3Ppat2oz7uXspjcFuVpUhv6hsbX8z1lbYVDU/Jug1fOWqNnG1se/x/wGPrFa
+         CkUQvNeWxcZCGo275+GMdJeB/TprIOUIJy1KrVjWVmbQw/1ObaS3MQEU1qTYF0BgnO5e
+         NhwZVeMGxF28kiBBqefS5GZ+yMDPxYHOpLRWgCC/TnCx1QhxH04eGEWz/GCtSiYxVull
+         /UV7xmn2FQvhZZCOGifKxjWq0cGayRwmCU81nZd1CquX1rO9SloKZcU2JKeqXgoWSERO
+         S5FI6rqMwVuONt643YcUpjCU0Erymmwa9jqGHQy8/GK9LEbUHDzK8H2fkrfm0DhtuWb5
+         fijg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YExjinVHBlRCvyNUu8p8UV5CV+SOy0PucZu7uPEhF+Q=;
+        b=lWjdlm1fCiAajaXlPqkR4UMRoPrG/QKK/VWO0Pb3mgmcHKtAkgVwB2xv8SDKmFaVBg
+         0E7MLKHwGVRs/Q4qDba3ECkfhYevBpp5eqPTdOJOk3u/xZZ2AbhjnPYHd/Gv/xNLOqbp
+         Ct6dPgBKr4I5lOaGNJ66I6L0Uxo0yzERFrln4bU5frSs1rvAmhDVtirbbIOxgoOV4jpZ
+         lzqhBdy6m3RG/EKydSjDMwK96j0oyaJkuxIpszDEnil8MQmYiUl1AeVROe3fx6IG7Hit
+         6AgJ6giNqEKQogVeesAc4WwdXFmNqIn56glDT+ZO4Szajd9f1YDscgz9QDNdoyUHZ4L8
+         DxjA==
+X-Gm-Message-State: APjAAAVhE1zv657WlbceD7J+y/BIdzYz+O2Rnh105HmZ4qqoqd0peXDS
+        le9/Amh1G958F/3WZbAPs6Y=
+X-Google-Smtp-Source: APXvYqx2jxtVCbhpO32VDgpv7uYVj5F+dXhvH7fbW7bh7WPyzTRyd8hfY6uyDwzwzGfZ+3q5F2Fg0g==
+X-Received: by 2002:a0c:e98f:: with SMTP id z15mr316682qvn.181.1557089820434;
+        Sun, 05 May 2019 13:57:00 -0700 (PDT)
+Received: from rani.riverdale.lan ([2001:470:1f07:5f3::b55f])
+        by smtp.gmail.com with ESMTPSA id e65sm796741qkd.64.2019.05.05.13.56.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 05 May 2019 13:56:59 -0700 (PDT)
+Date:   Sun, 5 May 2019 16:56:58 -0400
+From:   Arvind Sankar <niveditas98@gmail.com>
+To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Cc:     David Miller <davem@davemloft.net>,
+        "jon.maloy@ericsson.com" <jon.maloy@ericsson.com>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] tipc: Avoid copying bytes beyond the supplied data
+Message-ID: <20190505205656.GA27130@rani.riverdale.lan>
+References: <20190502031004.7125-1-chris.packham@alliedtelesis.co.nz>
+ <20190504.004449.945185836330139212.davem@davemloft.net>
+ <306471ba2dc54014a77b090d2cf6a7c7@svr-chch-ex1.atlnz.lc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <306471ba2dc54014a77b090d2cf6a7c7@svr-chch-ex1.atlnz.lc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lookup I2C adapter using the "i2c-bus" device property on ACPI based
-systems similar to how it's done with DT.
+On Sun, May 05, 2019 at 08:20:14PM +0000, Chris Packham wrote:
+> On 4/05/19 4:45 PM, David Miller wrote:
+> > From: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> > Date: Thu,  2 May 2019 15:10:04 +1200
+> > 
+> >> TLV_SET is called with a data pointer and a len parameter that tells us
+> >> how many bytes are pointed to by data. When invoking memcpy() we need
+> >> to careful to only copy len bytes.
+> >>
+> >> Previously we would copy TLV_LENGTH(len) bytes which would copy an extra
+> >> 4 bytes past the end of the data pointer which newer GCC versions
+> >> complain about.
+> >>
+> >>   In file included from test.c:17:
+> >>   In function 'TLV_SET',
+> >>       inlined from 'test' at test.c:186:5:
+> >>   /usr/include/linux/tipc_config.h:317:3:
+> >>   warning: 'memcpy' forming offset [33, 36] is out of the bounds [0, 32]
+> >>   of object 'bearer_name' with type 'char[32]' [-Warray-bounds]
+> >>       memcpy(TLV_DATA(tlv_ptr), data, tlv_len);
+> >>       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >>   test.c: In function 'test':
+> >>   test.c::161:10: note:
+> >>   'bearer_name' declared here
+> >>       char bearer_name[TIPC_MAX_BEARER_NAME];
+> >>            ^~~~~~~~~~~
+> >>
+> >> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> > 
+> > But now the pad bytes at the end are uninitialized.
+> > 
+> > The whole idea is that the encapsulating TLV object has to be rounded
+> > up in size based upon the given 'len' for the data.
+> > 
+> 
+> TLV_LENGTH() does not account for any padding bytes due to the 
+> alignment. TLV_SPACE() does but that wasn't used in the code before my 
+> change.
+> 
+> Are you suggesting something like this
+> 
+> 
+> -        if (len && data)
+> -               memcpy(TLV_DATA(tlv_ptr), data, tlv_len);
+> +        if (len && data) {
+> +               memcpy(TLV_DATA(tlv_ptr), data, len);
+> +               memset(TLV_DATA(tlv_ptr) + len, 0, TLV_SPACE(len) - 
+> TLV_LENGTH(len));
+> +        }
+> 
+> 
 
-An example DSD describing an SFP on an ACPI based system:
-
-Device (SFP0)
-{
-    Name (_HID, "PRP0001")
-    Name (_DSD, Package ()
-    {
-        ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-        Package () {
-            Package () { "compatible", "sff,sfp" },
-            Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
-        },
-    })
-}
-
-Signed-off-by: Ruslan Babayev <ruslan@babayev.com>
-Cc: xe-linux-external@cisco.com
----
- drivers/net/phy/sfp.c | 33 +++++++++++++++++++++++++--------
- 1 file changed, 25 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index d4635c2178d1..7a6c8df8899b 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -9,6 +9,7 @@
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/of.h>
-+#include <linux/acpi.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
- #include <linux/rtnetlink.h>
-@@ -1783,6 +1784,7 @@ static int sfp_probe(struct platform_device *pdev)
- {
- 	const struct sff_data *sff;
- 	struct sfp *sfp;
-+	struct i2c_adapter *i2c = NULL;
- 	bool poll = false;
- 	int irq, err, i;
- 
-@@ -1801,7 +1803,6 @@ static int sfp_probe(struct platform_device *pdev)
- 	if (pdev->dev.of_node) {
- 		struct device_node *node = pdev->dev.of_node;
- 		const struct of_device_id *id;
--		struct i2c_adapter *i2c;
- 		struct device_node *np;
- 
- 		id = of_match_node(sfp_of_match, node);
-@@ -1818,14 +1819,30 @@ static int sfp_probe(struct platform_device *pdev)
- 
- 		i2c = of_find_i2c_adapter_by_node(np);
- 		of_node_put(np);
--		if (!i2c)
--			return -EPROBE_DEFER;
--
--		err = sfp_i2c_configure(sfp, i2c);
--		if (err < 0) {
--			i2c_put_adapter(i2c);
--			return err;
-+	} else if (ACPI_COMPANION(&pdev->dev)) {
-+		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
-+		struct fwnode_handle *fw = acpi_fwnode_handle(adev);
-+		struct fwnode_reference_args args;
-+		struct acpi_handle *acpi_handle;
-+		int ret;
-+
-+		ret = acpi_node_get_property_reference(fw, "i2c-bus", 0, &args);
-+		if (ACPI_FAILURE(ret) || !is_acpi_device_node(args.fwnode)) {
-+			dev_err(&pdev->dev, "missing 'i2c-bus' property\n");
-+			return -ENODEV;
- 		}
-+
-+		acpi_handle = ACPI_HANDLE_FWNODE(args.fwnode);
-+		i2c = i2c_acpi_find_adapter_by_handle(acpi_handle);
-+	}
-+
-+	if (!i2c)
-+		return -EPROBE_DEFER;
-+
-+	err = sfp_i2c_configure(sfp, i2c);
-+	if (err < 0) {
-+		i2c_put_adapter(i2c);
-+		return err;
- 	}
- 
- 	for (i = 0; i < GPIO_MAX; i++)
--- 
-2.17.1
-
+For zeroing out the padding, should that be done in TCM_SET in the same
+file as well? That one only copies data_len bytes but doesn't zero out
+any alignment padding.
