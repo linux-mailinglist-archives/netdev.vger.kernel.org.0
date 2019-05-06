@@ -2,145 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A8B15513
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 22:51:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B39415520
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 22:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726449AbfEFUv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 16:51:29 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:35847 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbfEFUv3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 16:51:29 -0400
-Received: by mail-ed1-f68.google.com with SMTP id a8so16677617edx.3;
-        Mon, 06 May 2019 13:51:27 -0700 (PDT)
+        id S1726439AbfEFU6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 16:58:11 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:38509 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726352AbfEFU6L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 16:58:11 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 10so7403253pfo.5
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 13:58:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=joelfernandes.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=Bsvy77V2BabW+yLUp1HGYQuE0fTStgpoE1+/qytzq1s=;
-        b=Gdi526GL5SLBSrFzSNH2cZhQTQcqkwWSKruwyg5I24oUNCSjXjBGiy1p6rR8+LPVQ3
-         rC5k6Wo1AdZuWVwM20IdXb14YnLjmupTiDHkVm1xvHWfxPMjU7xtBLSchLh8nuaJ21NA
-         hAwp5a4GEi5DCM3dDH4T0xhvnK56aTDxCotMzqJtFLaCXHfAoxuALyJ0o3qjfotXsseE
-         SPUJ5no8Gr+bxmmICEuehz6GZLeio5Kb1yB+fzMSBBFls8dCUoig1omE51fIJeFrhnyC
-         d7LjP/FupmguhcJBCiaTksw0tTedrkeAGbketDuNB6PxWc//3NJi6CjHTAjMAKgndZkz
-         aVUg==
+        bh=kLvBEkbGH2riUHwBmQ3jNmUgnYR588n2GWNQ8y8PGCE=;
+        b=OTEKU73clE6B6zjUJhEw6aF1TCgyEE6l6Jlty1yHWx43iZ9pTMHpSlvBIvsXC3DZqW
+         3dRE5Jt67zdSEBTCnNkF2c1i/hWhxPopBmGZWoN285CLByjeps7LkIuNvBSgYnPbwJlA
+         IFqm8+81yGkeBshC/6R5YWtE7k47BPcG7nsxg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Bsvy77V2BabW+yLUp1HGYQuE0fTStgpoE1+/qytzq1s=;
-        b=AllwfkREJlW5rkrTdrOe2a3qq3ArCbkq3J1LYpYgVgOYkttDMg9cHc8KXVvv9/1ZVw
-         /F2emcHzVNdPF8dRPpQdbCX1Oj/KacFruIyTPpcVPaSVxOT9WI5dfA3Rxaebs7cn2fgb
-         b4Vr8jQFXMehAvlLAOMpGfH/Nnd+NcFyx1OWf8Qak4iY0CZ+PIAR3mXOhcymXxo7w0Wz
-         NXsVjFbX2K3pUPqdtAp4UNZWxeE2wzwJSJiyQBF8ORq0bYmBHORYwVS/+beJkpwvHybZ
-         LaqtLC/XF76EN9dpA8KOKFMYoJalLPHfN2p9xbD9mQjTVONaboHYMvY/KO1EyK4kjzu0
-         Dk/w==
-X-Gm-Message-State: APjAAAUiDonDb1YN1dLZHOQM07uhUFp8TfQFxBq0k8A2hKTAM8083B1n
-        LNhfvma2Fp3dJG0HMeDlyCI=
-X-Google-Smtp-Source: APXvYqx792ZxnRPmeKSlVuPcmkI5N4D9ONfjaQkrJxkqIgpWXAAKDFTpL6xQkKVarA5y32JLLzeE/Q==
-X-Received: by 2002:a50:dece:: with SMTP id d14mr28348575edl.97.1557175886802;
-        Mon, 06 May 2019 13:51:26 -0700 (PDT)
-Received: from archlinux-i9 ([2a01:4f9:2b:2b84::2])
-        by smtp.gmail.com with ESMTPSA id n7sm1761506ejk.72.2019.05.06.13.51.25
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 06 May 2019 13:51:26 -0700 (PDT)
-Date:   Mon, 6 May 2019 13:51:24 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Subject: Re: [PATCH] rsi: Properly initialize data in rsi_sdio_ta_reset
-Message-ID: <20190506205124.GA23683@archlinux-i9>
-References: <20190502151548.11143-1-natechancellor@gmail.com>
- <CAKwvOd=nvKGGW5jvN+WFUXzOm9xeiNNUD0F9--9YcpuRmnWWhA@mail.gmail.com>
- <87h8ackv8j.fsf@kamboji.qca.qualcomm.com>
+        bh=kLvBEkbGH2riUHwBmQ3jNmUgnYR588n2GWNQ8y8PGCE=;
+        b=ryUFY1/JnEbmmG4WJypsU3bJ4cSlzry3YNdewuC343geZ2uSNpdDDHA6IypGrl0Knw
+         aYmP9FtoeAXw3FHUb9nyWK8NUyMsjck9wabUjVp0lw3mDphi8BhFr5Y0rf6/WzPy3Mzy
+         afZZ/2cUIgfvJuGXuuxI/aM1HPKfybWgRBey4iReMjFgZle89FBZzGUGRf//vWCgjiz2
+         sbpFiccsbcSIWau3ILAhbTlX2AZ5x8tS0+xJxNHiVpMrUUdARyrBmitWOf0GShvCoDtw
+         fQRBJ6+61tuB4RmZqMxzGXyZdfIJrfqsX7pS17y+xhBJ5hOfzEfp3wGqJD8xQ4LxY3q7
+         tAkA==
+X-Gm-Message-State: APjAAAWh2hiU3o9S6AYP1ZXBIS8SP+ENVjkbLJ5/CmOCLgffux2oM2pn
+        yV6LlNnoXpN+IBe+kauRwOYs5Q==
+X-Google-Smtp-Source: APXvYqzNxbDaZNkAkn2IFcOFX6jeB95iYdhBq3D6DLWqE4q+X5tNDHdBAe4TCV+WnbzUN5tSp0m8+g==
+X-Received: by 2002:aa7:8384:: with SMTP id u4mr35598358pfm.214.1557176289853;
+        Mon, 06 May 2019 13:58:09 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id l23sm5007490pgh.68.2019.05.06.13.58.08
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 May 2019 13:58:08 -0700 (PDT)
+Date:   Mon, 6 May 2019 16:58:07 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     Will Deacon <will.deacon@arm.com>
+Cc:     Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org,
+        Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
+Message-ID: <20190506205807.GA223956@google.com>
+References: <20190502204958.7868-1-joel@joelfernandes.org>
+ <20190503121234.6don256zuvfjtdg6@e107158-lin.cambridge.arm.com>
+ <20190503134935.GA253329@google.com>
+ <20190505110423.u7g3f2viovvgzbtn@e107158-lin.cambridge.arm.com>
+ <20190505132949.GB3076@localhost>
+ <20190505144608.u3vsxyz5huveuskx@e107158-lin.cambridge.arm.com>
+ <20190505155223.GA4976@localhost>
+ <20190505180313.GA80924@google.com>
+ <20190506183506.GD2875@brain-police>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87h8ackv8j.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190506183506.GD2875@brain-police>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 03, 2019 at 07:38:52AM +0300, Kalle Valo wrote:
-> Nick Desaulniers <ndesaulniers@google.com> writes:
+On Mon, May 06, 2019 at 07:35:06PM +0100, Will Deacon wrote:
+> Hi Joel,
 > 
-> > On Thu, May 2, 2019 at 8:16 AM Nathan Chancellor
-> > <natechancellor@gmail.com> wrote:
-> >>
-> >> When building with -Wuninitialized, Clang warns:
-> >>
-> >> drivers/net/wireless/rsi/rsi_91x_sdio.c:940:43: warning: variable 'data'
-> >> is uninitialized when used here [-Wuninitialized]
-> >>         put_unaligned_le32(TA_HOLD_THREAD_VALUE, data);
-> >>                                                  ^~~~
-> >> drivers/net/wireless/rsi/rsi_91x_sdio.c:930:10: note: initialize the
-> >> variable 'data' to silence this warning
-> >>         u8 *data;
-> >>                 ^
-> >>                  = NULL
-> >> 1 warning generated.
-> >>
-> >> Using Clang's suggestion of initializing data to NULL wouldn't work out
-> >> because data will be dereferenced by put_unaligned_le32. Use kzalloc to
-> >> properly initialize data, which matches a couple of other places in this
-> >> driver.
-> >>
-> >> Fixes: e5a1ecc97e5f ("rsi: add firmware loading for 9116 device")
-> >> Link: https://github.com/ClangBuiltLinux/linux/issues/464
-> >> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> >> ---
-> >>  drivers/net/wireless/rsi/rsi_91x_sdio.c | 21 ++++++++++++++-------
-> >>  1 file changed, 14 insertions(+), 7 deletions(-)
-> >>
-> >> diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-> >> index f9c67ed473d1..b35728564c7b 100644
-> >> --- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-> >> +++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-> >> @@ -929,11 +929,15 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
-> >>         u32 addr;
-> >>         u8 *data;
-> >>
-> >> +       data = kzalloc(sizeof(u32), GFP_KERNEL);
-> >
-> > Something fishy is going on here.  We allocate 4 B but declare data as
-> > a u8* (pointer to individual bytes)?  In general, dynamically
-> > allocating that few bytes is a code smell; either you meant to just
-> > use the stack, or this memory's lifetime extends past the lifetime of
-> > this stackframe, at which point you probably just meant to stack
-> > allocate space in a higher parent frame and pass this preallocated
-> > memory down to the child frame to get filled in.
-> >
-> > Reading through this code, I don't think that the memory is meant to
-> > outlive the stack frame.  Is there a reason why we can't just declare
-> > data as:
-> >
-> > u8 data [4];
-> >
-> > then use ARRAY_SIZE(data) or RSI_9116_REG_SIZE in rsi_reset_chip(),
-> > getting rid of the kzalloc/kfree?
+> On Sun, May 05, 2019 at 02:03:13PM -0400, Joel Fernandes wrote:
+> > +Mark, Will since discussion is about arm64 arch code.
+> > 
+> > The difference between observing the bug and everything just working seems to
+> > be the set_fs(USER_DS) as done by Masami's patch that this patch is based on.
+> > The following diff shows 'ret' as 255 when set_fs(KERN_DS) is used, and then
+> > after we retry with set_fs(USER_DS), the read succeeds.
+> > 
+> > diff --git a/mm/maccess.c b/mm/maccess.c
+> > index 78f9274dd49d..d3e01a33c712 100644
+> > --- a/mm/maccess.c
+> > +++ b/mm/maccess.c
+> > @@ -32,9 +32,20 @@ long __probe_kernel_read(void *dst, const void *src, size_t size)
+> >  	pagefault_disable();
+> >  	ret = __copy_from_user_inatomic(dst,
+> >  			(__force const void __user *)src, size);
+> > +	trace_printk("KERNEL_DS: __copy_from_user_inatomic: ret=%d\n", ret);
+> >  	pagefault_enable();
+> >  	set_fs(old_fs);
+> >  
+> > +	if (ret) {
+> > +	set_fs(USER_DS);
+> > +	pagefault_disable();
+> > +	ret = __copy_from_user_inatomic(dst,
+> > +			(__force const void __user *)src, size);
+> > +	trace_printk("RETRY WITH USER_DS: __copy_from_user_inatomic: ret=%d\n", ret);
+> > +	pagefault_enable();
+> > +	set_fs(old_fs);
+> > +	}
+> > +
+> >  	return ret ? -EFAULT : 0;
+> >  }
+> >  EXPORT_SYMBOL_GPL(probe_kernel_read);
+> > 
+> > In initially thought this was because of the addr_limit pointer masking done
+> > by this patch from Mark Rutland "arm64: Use pointer masking to limit uaccess
+> > speculation"
+> > 
+> > However removing this masking still makes it fail with KERNEL_DS.
+> > 
+> > Fwiw, I am still curious which other paths in arm64 check the addr_limit
+> > which might make the __copy_from_user_inatomic fail if the set_fs is not
+> > setup correctly.
+> > 
+> > Either way, I will resubmit the patch with the commit message fixed correctly
+> > as we agreed and also address Alexei's comments.
 > 
-> I haven't checked the details but AFAIK stack variables are not supposed
-> to be used with DMA. So in that case I think it's ok alloc four bytes,
-> unless the DMA rules have changed of course. But I didn't check if rsi
-> is using DMA here, just a general comment.
-> 
-> -- 
-> Kalle Valo
+> I'm coming at this with no background, so it's tricky to understand exactly
+> what's going on here. Some questions:
 
-I don't think it is using the DMA API but it might be the same thing for
-SDIO. If passing that around on the stack is okay, great but we don't
-want what commit f700546682a6 ("rsi: fix nommu_map_sg overflow kernel
-panic") fixes to happen here.
+No problem, I added you out of the blue so it is quite understandable :)
 
-I can't answer that for sure though since I am not at all familiar with
-this driver or the SDIO APIs.
+>   * Are you seeing a failure with mainline and/or an official stable kernel?
 
-Cheers,
-Nathan
+This issue is noticed on the Pixel3 kernel (4.9 based):
+git clone https://android.googlesource.com/kernel/msm
+(branch: android-msm-crosshatch-4.9-q-preview-1)
+
+>   * What is the failing CPU? (so we can figure out which architectural
+>     extensions are implemented)
+From cpuinfo:
+AArch64 Processor rev 12 (aarch64)
+(Qualcomm SDM845 SoC). It is a Pixel 3 phone.
+
+>   * Do you have a .config anywhere? Particular, how are ARM64_PAN,
+>     ARM64_TTBR0_PAN and ARM64_UAO set?
+
+CONFIG_ARM64_SW_TTBR0_PAN is not set
+CONFIG_ARM64_PAN=y
+CONFIG_ARM64_UAO=y
+
+I wanted to say I enabled SW_TTBR0_PAN config and also got the same result.
+
+>   * Is the address being accessed a user or a kernel address?
+
+User. It is the second argument of do_sys_open() kernel function. kprobe
+gives bpf the pointer which the bpf program dereferences with
+probe_kernel_read.
+
+> If you're trying to dereference a pointer to userspace using
+> probe_kernel_read(), that clearly isn't going to work.
+
+Ok. Thanks for confirming as well. The existing code has this bug and these
+patches fix it.
+
+ - Joel
+
