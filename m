@@ -2,193 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1529014D48
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 324C114D7C
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729473AbfEFOtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 10:49:45 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52624 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729605AbfEFOtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 10:49:42 -0400
-Received: from [88.198.220.132] (helo=sslproxy03.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNevz-00043M-Gy; Mon, 06 May 2019 16:49:39 +0200
-Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNevz-0001hM-4Q; Mon, 06 May 2019 16:49:39 +0200
-Subject: Re: [PATCH v6 bpf-next 02/17] bpf: verifier: mark verified-insn with
- sub-register zext flag
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Jiong Wang <jiong.wang@netronome.com>, alexei.starovoitov@gmail.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
- <1556880164-10689-3-git-send-email-jiong.wang@netronome.com>
- <76304717-347f-990a-2a5a-0999ebbc3b70@iogearbox.net>
-Message-ID: <31605274-2146-1bb8-7625-8820f6948f6e@iogearbox.net>
-Date:   Mon, 6 May 2019 16:49:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1729444AbfEFOv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 10:51:27 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:33747 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729483AbfEFOvU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 10:51:20 -0400
+Received: by mail-qk1-f193.google.com with SMTP id k189so788271qkc.0;
+        Mon, 06 May 2019 07:51:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=EUqbtnBDML3NXPrwjM3lOcCy0+gNa0GHK0Zw6wsv7vk=;
+        b=AXTDnLjU4V5dPhIaqTfxEvyLYGM6Ju3eFNv0qIjyCiDhH80SqzSBl8gqCzk71+F8En
+         6FZBzMHUG20Ea88H/H4v3tV6iodGgF81A4RWwPpTJptIvVzUiMQUN3vx/S2PGtidPIVu
+         txpEda5KDfCAQvKaGidI40u3a2CT6ltxytWXxIgllylF3HU7mFmHw2Z3Lhy59yXdMvLM
+         y6v6ykITIP9UnL7CtW8v+klC7wr/X2vN5DT1hSv9JjdgeBNj78eEV77CVowZfYziAiGs
+         24NBtWK6UJTL7Z4R7jdP+qXnenOUqbd0eKNm0fGpbpg8kRu6C9MHRRt8KVF/35B4F8N/
+         wEQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=EUqbtnBDML3NXPrwjM3lOcCy0+gNa0GHK0Zw6wsv7vk=;
+        b=BBSKYS91VIRrvwbeJ/IEG5BZT5sFbgDcbDcbikYZPQ/PWwiMnwfF1BZ30qeWbw46as
+         8+AXx+e6XlpS+IJAy2Zf1Ougm2IYP+2Rt+Lrh7KUUBwpbw8Y9DLHWDFnJmKvC4Kqp8os
+         DYXCobpAH/bJLqoe9Fa903h5V1I3dlo2i0wVaM7df3DmTIYLRh5N3fr0Q0gaE4hKlvyA
+         oEJIKqA6nOVpK31aDXonlciehtea0wwRlETwFswzvtFqR4LZfqaj/+zMZ1C9dTgW4IAp
+         zsblnQjyWAy3xkJMw2QAneHVKTyaDGR/1unOowkBqQZiC9/6jocoyQthoZauJR4KlvIf
+         5RPQ==
+X-Gm-Message-State: APjAAAWMbzkMPXvbghZbWd7NMMQyRu5hFO0ZHQ9AgTMpi9YrC7mbIHy4
+        VNTT6qERaidtOZPYa3gpIP8=
+X-Google-Smtp-Source: APXvYqxTY7WCj2xqd8jZnjpQFVhDqMsXc162OV4Ev36zk054hC0qFGnC4etgldMyVboC8w5Y9MBvNA==
+X-Received: by 2002:a37:52c1:: with SMTP id g184mr11795366qkb.338.1557154279804;
+        Mon, 06 May 2019 07:51:19 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id m62sm5695639qkd.68.2019.05.06.07.51.18
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 May 2019 07:51:18 -0700 (PDT)
+Date:   Mon, 6 May 2019 10:51:17 -0400
+Message-ID: <20190506105117.GB24823@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH 2/5] net: dsa: mv88e6xxx: rename smi read/write
+ functions
+In-Reply-To: <8d14f3e0-4b95-900c-55f0-dfff30ae655f@prevas.dk>
+References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
+ <20190501193126.19196-3-rasmus.villemoes@prevas.dk>
+ <20190503175732.GB4060@t480s.localdomain>
+ <8d14f3e0-4b95-900c-55f0-dfff30ae655f@prevas.dk>
 MIME-Version: 1.0
-In-Reply-To: <76304717-347f-990a-2a5a-0999ebbc3b70@iogearbox.net>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25441/Mon May  6 10:04:24 2019)
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/06/2019 03:49 PM, Daniel Borkmann wrote:
-> On 05/03/2019 12:42 PM, Jiong Wang wrote:
->> eBPF ISA specification requires high 32-bit cleared when low 32-bit
->> sub-register is written. This applies to destination register of ALU32 etc.
->> JIT back-ends must guarantee this semantic when doing code-gen.
->>
->> x86-64 and arm64 ISA has the same semantic, so the corresponding JIT
->> back-end doesn't need to do extra work. However, 32-bit arches (arm, nfp
->> etc.) and some other 64-bit arches (powerpc, sparc etc), need explicit zero
->> extension sequence to meet such semantic.
->>
->> This is important, because for code the following:
->>
->>   u64_value = (u64) u32_value
->>   ... other uses of u64_value
->>
->> compiler could exploit the semantic described above and save those zero
->> extensions for extending u32_value to u64_value. Hardware, runtime, or BPF
->> JIT back-ends, are responsible for guaranteeing this. Some benchmarks show
->> ~40% sub-register writes out of total insns, meaning ~40% extra code-gen (
->> could go up to more for some arches which requires two shifts for zero
->> extension) because JIT back-end needs to do extra code-gen for all such
->> instructions.
->>
->> However this is not always necessary in case u32_value is never cast into
->> a u64, which is quite normal in real life program. So, it would be really
->> good if we could identify those places where such type cast happened, and
->> only do zero extensions for them, not for the others. This could save a lot
->> of BPF code-gen.
->>
->> Algo:
->>  - Split read flags into READ32 and READ64.
->>
->>  - Record indices of instructions that do sub-register def (write). And
->>    these indices need to stay with reg state so path pruning and bpf
->>    to bpf function call could be handled properly.
->>
->>    These indices are kept up to date while doing insn walk.
->>
->>  - A full register read on an active sub-register def marks the def insn as
->>    needing zero extension on dst register.
->>
->>  - A new sub-register write overrides the old one.
->>
->>    A new full register write makes the register free of zero extension on
->>    dst register.
->>
->>  - When propagating read64 during path pruning, also marks def insns whose
->>    defs are hanging active sub-register.
->>
->> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
->> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+Hi Rasmus,
+
+On Mon, 6 May 2019 05:57:11 +0000, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
+
+> > I have a preparatory patch which does almost exactly that. I'm sending it
+> > to simplify this patchset.
 > 
-> [...]
->> +/* This function is supposed to be used by the following 32-bit optimization
->> + * code only. It returns TRUE if the source or destination register operates
->> + * on 64-bit, otherwise return FALSE.
->> + */
->> +static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
->> +		     u32 regno, struct bpf_reg_state *reg, enum reg_arg_type t)
->> +{
->> +	u8 code, class, op;
->> +
->> +	code = insn->code;
->> +	class = BPF_CLASS(code);
->> +	op = BPF_OP(code);
->> +	if (class == BPF_JMP) {
->> +		/* BPF_EXIT for "main" will reach here. Return TRUE
->> +		 * conservatively.
->> +		 */
->> +		if (op == BPF_EXIT)
->> +			return true;
->> +		if (op == BPF_CALL) {
->> +			/* BPF to BPF call will reach here because of marking
->> +			 * caller saved clobber with DST_OP_NO_MARK for which we
->> +			 * don't care the register def because they are anyway
->> +			 * marked as NOT_INIT already.
->> +			 */
->> +			if (insn->src_reg == BPF_PSEUDO_CALL)
->> +				return false;
->> +			/* Helper call will reach here because of arg type
->> +			 * check.
->> +			 */
->> +			if (t == SRC_OP)
->> +				return helper_call_arg64(env, insn->imm, regno);
->> +
->> +			return false;
->> +		}
->> +	}
->> +
->> +	if (class == BPF_ALU64 || class == BPF_JMP ||
->> +	    /* BPF_END always use BPF_ALU class. */
->> +	    (class == BPF_ALU && op == BPF_END && insn->imm == 64))
->> +		return true;
-> 
-> For the BPF_JMP + JA case we don't look at registers, but I presume here
-> we 'pretend' to use 64 bit regs to be more conservative as verifier would
-> otherwise need to do more complex analysis at the jump target wrt zero
-> extension, correct?
+> OK, I'll hold off sending a v2 until I see how 1/5 and 2/5 are obsoleted
+> by your patch(es).
 
-Hmm, scratch that last thought. Shouldn't it behave the same as with the
-below class == BPF_JMP32 case?
+You may rebase your patches now and add your new implementation of
+register access through SMI in the smi.c file if that is necessary.
 
->> +	if (class == BPF_ALU || class == BPF_JMP32)
->> +		return false;
->> +
->> +	if (class == BPF_LDX) {
->> +		if (t != SRC_OP)
->> +			return BPF_SIZE(code) == BPF_DW;
->> +		/* LDX source must be ptr. */
->> +		return true;
->> +	}
->> +
->> +	if (class == BPF_STX) {
->> +		if (reg->type != SCALAR_VALUE)
->> +			return true;
->> +		return BPF_SIZE(code) == BPF_DW;
->> +	}
->> +
->> +	if (class == BPF_LD) {
->> +		u8 mode = BPF_MODE(code);
->> +
->> +		/* LD_IMM64 */
->> +		if (mode == BPF_IMM)
->> +			return true;
->> +
->> +		/* Both LD_IND and LD_ABS return 32-bit data. */
->> +		if (t != SRC_OP)
->> +			return  false;
->> +
->> +		/* Implicit ctx ptr. */
->> +		if (regno == BPF_REG_6)
->> +			return true;
->> +
->> +		/* Explicit source could be any width. */
->> +		return true;
->> +	}
->> +
->> +	if (class == BPF_ST)
->> +		/* The only source register for BPF_ST is a ptr. */
->> +		return true;
->> +
->> +	/* Conservatively return true at default. */
->> +	return true;
->> +}
 
+Thanks,
+
+	Vivien
