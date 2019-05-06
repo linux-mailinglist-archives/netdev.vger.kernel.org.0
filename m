@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8061531C
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 19:54:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 022DE1536A
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 20:11:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726951AbfEFRyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 13:54:16 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:37355 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726063AbfEFRyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 13:54:16 -0400
-Received: by mail-qt1-f193.google.com with SMTP id o7so3818951qtp.4
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 10:54:15 -0700 (PDT)
+        id S1726894AbfEFSLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 14:11:23 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:33552 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726287AbfEFSLW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 14:11:22 -0400
+Received: by mail-qk1-f193.google.com with SMTP id k189so1245462qkc.0
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 11:11:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=QhugHBuoBeAcIwpcanoLwTWHJfxQHnSCegSWAvWi8kU=;
-        b=puewRPLH4Nh/tosb7+eyKJyRGegVRvwvSe51SQhwLutt2q6m0+ltEOplW8mkMCUoiz
-         c9A02CPaqRZaZExZZ8hjy1+Wi12kEipDiFDwJcKNFhoYqxwGNA1xnN+PTUvHSBW+mTrl
-         v1C3cZHCAz+/YObFqsrKCorzir4viKXiogisTmNG/II+6qOgGMez0Dw7PhiX/pfAw5B1
-         G7jbTG1mSlgyh4DlZaMPtF8WXUwxSHowOeYCVHwF/XVuecLJTzzwrfjLPxAp6kildygK
-         GIZFmG5d6/N8z6/CATq1ii4dfcJvhKRsjRhdbbyGk8DFEDIsTchK0gjtvUxpC+iDOC1q
-         vnEQ==
+        bh=0Me1KTo/zMfF7DxvunGK3RvXAhXXhY9/8XaAHBID0aM=;
+        b=pFT4J9rFsls+sXP7X4unMkHvD4AuHAoSHKoplc9ZbgFJ2kTyNFa7dHRfwPGPRGybUT
+         H5XDJvgUtiebSI+Rkxi2C4totrI3W8wfTlQYIjDBvJzVGVmmU7OhP/2c2ab03TvLfD8I
+         XyZ2mQJHHH0vHbZmiPjn+RZ6/hf1KPwY6Bv5iVR3Z0yBMCi/bjEMjykKegUjsUBTwSQh
+         v7lPdCFJ82nTFFjrlrayf4y/0cLLBc33OCRo+QGS1C4YWEVP7TwSveAs+W+sqoLj5W3e
+         0GN5LiXh339lWYDovnbVRUMDJjQ0x9cBUz5Hd5oiKqSMA+aV84Iw2NbI4oVnA8ceRqfy
+         RhQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=QhugHBuoBeAcIwpcanoLwTWHJfxQHnSCegSWAvWi8kU=;
-        b=XoBGl5naVNp+MkRbIC5OXywVaAhOpabs/D4nQAMdvCKEp8SCAv8L720GkVGOFNbM3J
-         WHldsT5ZEN8YFhnW+HZXNaz2o8kMQ7OKcN0Eag+La/H0hX5vmyt6WIMSJvaNMmkJV3fB
-         upxzoWWbVYgxpL4o79UrpU4tEORqOX0aoIQjowUrWcvNIaY5mZTKt18BVazUqCjGkxes
-         C4MN8k4t4WVNfcrHX8Mv5seJIgON22ZIecCfzbmx/DiXWl/b+vlvAO/DbXiGvmcq9Lfi
-         p4XAwxP36CPdITg8toQsdzrlFmdhtFHXHEq6o8P3P0opR/o1gcAKl7mBYZXp+VQrNVBp
-         H3Lw==
-X-Gm-Message-State: APjAAAVIqoFMOg3Yyhg9t38Kes2IgHkcD1XdAxfdNEczBDkpizVHlaWx
-        6QO/XPU1Su1DIAXXp0sgaxt4Hg==
-X-Google-Smtp-Source: APXvYqy5PtVe8FLAX6kDTgdUP43dSzUlx/5JyN5cnA6nyK/VlRdXqugen7LkGUTYbhAIs7gMXx0zyg==
-X-Received: by 2002:ac8:3157:: with SMTP id h23mr84589qtb.248.1557165255314;
-        Mon, 06 May 2019 10:54:15 -0700 (PDT)
+        bh=0Me1KTo/zMfF7DxvunGK3RvXAhXXhY9/8XaAHBID0aM=;
+        b=FQ8s5UvxxTRqf8hfjdluLE+mikDgHSv2oTYnSUpEt4YPZllYlaxLnHtM54mMNU3vYw
+         9lyfcyxkt/ZFIsrs2B8Xew1Ij1KidqkKmG/02F9VwTkaC3TeEwMsd8mMmAs54ICmUXva
+         4IUusrhyjwfe0nJyWvtfQyZF8qdTKddAdS56uSsum1qUMPU6t2+Ky9G5ak2gbQVcLbu+
+         2LufTZORIEntW1H6oUKMTV+lsp/VE9Ye9Iin14gxYAMTx06GdvRA11DSuBIPhG8OE2/C
+         FHurEz2ZJ0UewXR73C2ybd6plAotZnES0nlpNNDodxe4wO3/VWH9rNYjnoO6ck57kngJ
+         gSXA==
+X-Gm-Message-State: APjAAAX7mrifb0qyKpdjGAh9zWXwmthhEnrL8v6/FwkRlpSmrcXwUJeq
+        ySqcJc+dSUjycUKvzGsHJRiqhA==
+X-Google-Smtp-Source: APXvYqzuLcZlrnMAMf9IqLYSJv9N7CU+g691qLvsGZYmHfbnD2/O+ReNLou/Q63+FK82ZunzYKyA7w==
+X-Received: by 2002:a37:de04:: with SMTP id h4mr20118723qkj.196.1557166281582;
+        Mon, 06 May 2019 11:11:21 -0700 (PDT)
 Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id f6sm6382006qti.4.2019.05.06.10.54.13
+        by smtp.gmail.com with ESMTPSA id v2sm5876838qkh.65.2019.05.06.11.11.19
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 06 May 2019 10:54:15 -0700 (PDT)
-Date:   Mon, 6 May 2019 10:54:07 -0700
+        Mon, 06 May 2019 11:11:21 -0700 (PDT)
+Date:   Mon, 6 May 2019 11:11:13 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Jiri Pirko <jiri@resnulli.us>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
-        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
-        mw@semihalf.com, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net-next 0/4] net: mvpp2: cls: Add classification
-Message-ID: <20190506105407.69ff9a08@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20190506100026.7d0094fc@bootlin.com>
-References: <20190430131429.19361-1-maxime.chevallier@bootlin.com>
-        <20190504025353.74acbb6d@cakuba.netronome.com>
-        <20190506100026.7d0094fc@bootlin.com>
+        oss-drivers@netronome.com, xiyou.wangcong@gmail.com,
+        idosch@mellanox.com, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, gerlitz.or@gmail.com,
+        simon.horman@netronome.com,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>
+Subject: Re: [PATCH net-next 10/13] net/sched: add block pointer to
+ tc_cls_common_offload structure
+Message-ID: <20190506111113.052b08d9@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20190506061631.GB2362@nanopsycho.orion>
+References: <20190504114628.14755-1-jakub.kicinski@netronome.com>
+        <20190504114628.14755-11-jakub.kicinski@netronome.com>
+        <20190504131654.GJ9049@nanopsycho.orion>
+        <20190505133432.4fb7e978@cakuba.hsd1.ca.comcast.net>
+        <20190506061631.GB2362@nanopsycho.orion>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -70,26 +72,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 May 2019 10:00:26 +0200, Maxime Chevallier wrote:
-> Hello Jakub,
-> 
-> On Sat, 4 May 2019 02:53:53 -0400
-> Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
-> 
-> >On Tue, 30 Apr 2019 15:14:25 +0200, Maxime Chevallier wrote:  
-> >> Compared to the first submissions, the NETIF_F_NTUPLE flag was also
-> >> removed, following Saeed's comment.    
+On Mon, 6 May 2019 08:16:31 +0200, Jiri Pirko wrote:
+> Sun, May 05, 2019 at 07:34:32PM CEST, jakub.kicinski@netronome.com wrote:
+> >On Sat, 4 May 2019 15:16:54 +0200, Jiri Pirko wrote:  
+> >> Sat, May 04, 2019 at 01:46:25PM CEST, jakub.kicinski@netronome.com wrote:  
+> >> >From: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
+> >> >
+> >> >Some actions like the police action are stateful and could share state
+> >> >between devices. This is incompatible with offloading to multiple devices
+> >> >and drivers might want to test for shared blocks when offloading.
+> >> >Store a pointer to the tcf_block structure in the tc_cls_common_offload
+> >> >structure to allow drivers to determine when offloads apply to a shared
+> >> >block.    
+> >> 
+> >> I don't this this is good idea. If your driver supports shared blocks,
+> >> you should register the callback accordingly. See:
+> >> mlxsw_sp_setup_tc_block_flower_bind() where tcf_block_cb_lookup() and
+> >> __tcf_block_cb_register() are used to achieve that.  
 > >
-> >You should probably add it back, even though the stack only uses
-> >NETIF_F_NTUPLE for aRFS the ethtool APIs historically depend on the
-> >drivers doing a lot of the validation.  
+> >Right, in some ways.  Unfortunately we don't support shared blocks
+> >fully, i.e. we register multiple callbacks and get the rules
+> >replicated.  It's a FW limitation, but I don't think we have shared
+> >blocks on the roadmap, since rule storage is not an issue for our HW.
+> >
+> >But even if we did support sharing blocks, we'd have to teach TC that
+> >some rules can only be offloaded if there is only a single callback
+> >registered, right?  In case the block is shared between different ASICs.  
 > 
-> OK my bad, reading your previous comments again, I should indeed have
-> left it.
-> 
-> I'll re-add the flag, do you think this should go through -net or wait
-> until net-next reopens ?
+> I don't see why sharing block between different ASICs is a problem. The
+> sharing implementation is totally up to the driver. It can duplicate the
+> rules even within one ASIC. According to that, it registers one or more
+> callbacks.
 
-I think the patch should be relatively simple and clean?  So I'd try for
-net, with a Fixes tag, it's a slight ABI correction and we are still
-in the merge window period.  So I'd go for net :)
+If we want to replicate software semantics for act_police all ports
+sharing the port should count against the same rate limit.  This is
+pretty much impossible unless the rule is offloaded to a single ASIC
+and the ASIC/FW supports proper block/action sharing.
+
+> In this patchset, you use the block only to see if it is shared or not.
+> When TC calls the driver to bind, it provides the block struct:
+> ndo_setup_tc
+>    type == TC_SETUP_BLOCK
+>       f->command == TC_BLOCK_BIND
+> You can check for sharing there and remember it for the future check in
+> filter insertion.
+> 
+> I would like to avoid passing block pointer during filter insertion. It
+> is misleading and I'm pretty sure it would lead to misuse by drivers.
+> 
+> I see that Dave already applied this patchset. Could you please send
+> follow-up removing the block pointer from filter offload struct?
+
+Makes sense, we'll follow up shortly!
