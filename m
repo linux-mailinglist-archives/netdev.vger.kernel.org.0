@@ -2,87 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B65A81537D
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 20:14:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9461757E
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 11:56:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbfEFSOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 14:14:18 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:46544 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726475AbfEFSOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 14:14:18 -0400
-Received: by mail-io1-f67.google.com with SMTP id m14so11910794ion.13
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 11:14:18 -0700 (PDT)
+        id S1726901AbfEHJ4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 05:56:46 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:40953 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726281AbfEHJ4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 05:56:46 -0400
+Received: by mail-pf1-f195.google.com with SMTP id u17so10227212pfn.7
+        for <netdev@vger.kernel.org>; Wed, 08 May 2019 02:56:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=babayev.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=bi1X8E2iJDbOTLkAMJo/IBi1WYDSDyokTPbiJ53Ivxs=;
-        b=TJRCGKtEXJDmSGGyA07GXyq5cu9+tq3LBaNSRxUT0BZZDVFM4LmrCmly/KfJo84I5Z
-         3auKvn5kVMlG32tq7aHcagk45FMqrBYza/Oa9XxyvV7ozMKX8cASX53o8SHr2ccIUDmD
-         pUk3zaZhy4m5wrR6xFY3/mEHVvkOvddzct5hk=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=qquBjBove3ER5uhNFBRlaephH9pjEijqbalNiddfVs4=;
+        b=p3eb0lEjArwwqGFJo0Wt1nNePLPDX9mKVNYRVzB7CPbrMUv5e91iFWJ/g8+XEikG7D
+         EEQ6B6DY2cTaNTKU9XeUpiBeQMdBsqXvtFXbFpksVE5fYvfZPBiMxJZTUoAI+1l/OcAF
+         bRmuaANnrtFltEJQbCbsv/7ML51xJMRhiKyOGc/ZPvBE07jOTuh2FF+sC2WI1KdBJkYa
+         SIt/StiYQeiurWi4cazrRM4Qxa9xbozy2mGDJ8BbOVLdF7PcvpdlQvh4ZQgq3ldrueIi
+         d2+XGBGL6y8+fbEumQdIIKEBU3T7tKnDOM/Tfu55NPkPffaniofqCtcxBZC9LsGFG4xx
+         bX1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=bi1X8E2iJDbOTLkAMJo/IBi1WYDSDyokTPbiJ53Ivxs=;
-        b=lkRBZMNGthLn7fEQvfDF2lvUB/PX2YCRQX1Gf1qxUxanlj5I5WieybeNlkfmAj+wtl
-         m1wzb75ZzgNw8BSSOaeyb3AgvrYQuoQTKOBTEINJnB4veqS36UsslIC6vh6XcCkRWDey
-         pO5IqmIz7pXEt/prAbEjWDNukz7NjjVssrVcN1ZkMYVvgy9H7A1ZsSFPP61HQOsdHBQf
-         16z9f2siZTByOyX0sj/Nm0PeU1+MJGCZqA7R/olK9yyHKGC7xaiCZzdFyJrlG/v7+Phs
-         wJNCm4+TQHNdOJaoLEF9IYDNUUf2yDp1GjQ/KMif4g1ktkc+/JgfrrWKutlUgbBy7tNf
-         HyHw==
-X-Gm-Message-State: APjAAAX5p8IHYewcvspHvSu7V0tQThW05he1a6T+6TfOQ+x53Xydw0KD
-        QDsHFefP/BUsfms5CqZRZmHP5w==
-X-Google-Smtp-Source: APXvYqxmH1MfnNyv9pTsAAZjt8KEU+PLQD878IbPuF3Kcy0xI+f0xrPj83IaLJSfaeDvvPIweCR+EQ==
-X-Received: by 2002:a6b:8ec4:: with SMTP id q187mr11218439iod.280.1557166457616;
-        Mon, 06 May 2019 11:14:17 -0700 (PDT)
-Received: from localhost (50-46-216-15.evrt.wa.frontiernet.net. [50.46.216.15])
-        by smtp.gmail.com with ESMTPSA id d133sm5546120ita.5.2019.05.06.11.14.16
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 06 May 2019 11:14:16 -0700 (PDT)
-References: <20190505220524.37266-3-ruslan@babayev.com> <20190506045951.GB2895@lahna.fi.intel.com>
-User-agent: mu4e 1.0; emacs 26.1
-From:   Ruslan Babayev <ruslan@babayev.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     Ruslan Babayev <ruslan@babayev.com>, linux@armlinux.org.uk,
-        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        wsa@the-dreams.de, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-acpi@vger.kernel.org, xe-linux-external@cisco.com
-Subject: Re: [PATCH net-next 2/2] net: phy: sfp: enable i2c-bus detection on ACPI based systems
-In-reply-to: <20190506045951.GB2895@lahna.fi.intel.com>
-Date:   Mon, 06 May 2019 11:14:15 -0700
-Message-ID: <871s1bv4aw.fsf@babayev.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=qquBjBove3ER5uhNFBRlaephH9pjEijqbalNiddfVs4=;
+        b=Gubz7zwm0+eAXAyGtqXPU2BVlzm5b2ZvMiTO4zfFHn04+a6obDQBRCeW7bBP1g91Y9
+         kEUZthOvI5JDxNQjDSpCJf8oiMeFgSNyNuuPEUZ/D2hob4SgG1LLdxFrFegcXc7AQaQM
+         bmMGwcnqPuIEuiUJROLX87Oa5xMAQ5bLQ6Xx67zEK523CS0qduD2ViK+Ts/CZzPn1bqF
+         quwTsvFGR3nqBA5ojTX9S1r6ftA6drYXc+Jy52AMHbmXP6F4rP3W20o4eBjJ1P6dh0pL
+         MgqfBaI8XuwgY97zsStKMHuYcUoHHl2zREZ/EkWj5aMhMP5Ci38Qx9X3mvJE/hVHiFep
+         d6pA==
+X-Gm-Message-State: APjAAAXa7MPWyBvxZT4+6hrIJbFFgz+4pGKtx4OuAknlso4wMvAY5Vk2
+        tN4LP1Hst28EbApDeOyNoRY=
+X-Google-Smtp-Source: APXvYqxV6VgsR6ImGRNT8fPwHOcBVZZu56+G4jZyMo/Wj06m+WAmFjcC6gc5NubBbgWJJIXaGsJDEQ==
+X-Received: by 2002:a63:c601:: with SMTP id w1mr46501149pgg.190.1557309405796;
+        Wed, 08 May 2019 02:56:45 -0700 (PDT)
+Received: from local.opencloud.tech.localdomain ([203.100.54.194])
+        by smtp.gmail.com with ESMTPSA id e23sm19927974pfi.159.2019.05.08.02.56.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 08 May 2019 02:56:45 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     roid@mellanox.com, saeedm@mellanox.com
+Cc:     netdev@vger.kernel.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH] net/mlx5e: Allow matching only enc_key_id/enc_dst_port for decapsulation action
+Date:   Mon,  6 May 2019 11:28:37 -0700
+Message-Id: <1557167317-50202-1-git-send-email-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Mika Westerberg writes:
+In some case, we don't care the enc_src_ip and enc_dst_ip, and
+if we don't match the field enc_src_ip and enc_dst_ip, we can use
+fewer flows in hardware when revice the tunnel packets. For example,
+the tunnel packets may be sent from different hosts, we must offload
+one rule for each host.
 
-> On Sun, May 05, 2019 at 03:05:23PM -0700, Ruslan Babayev wrote:
->> Lookup I2C adapter using the "i2c-bus" device property on ACPI based
->> systems similar to how it's done with DT.
->> 
->> An example DSD describing an SFP on an ACPI based system:
->> 
->> Device (SFP0)
->> {
->>     Name (_HID, "PRP0001")
->>     Name (_DSD, Package ()
->>     {
->>         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->>         Package () {
->>             Package () { "compatible", "sff,sfp" },
->>             Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
->
-> Hmm, ACPI has I2cSerialBusV2() resource for this purpose. Why you are not
-> using that?
+	$ tc filter add dev vxlan0 protocol ip parent ffff: prio 1 \
+		flower dst_mac 00:11:22:33:44:00 \
+		enc_src_ip Host0_IP enc_dst_ip 2.2.2.100 \
+		enc_dst_port 4789 enc_key_id 100 \
+		action tunnel_key unset action mirred egress redirect dev eth0_1
 
-I am not an ACPI expert, but my understanding is I2cSerialBusV2() is
-used for slave connections. I am trying to reference an I2C controller
-here.
+	$ tc filter add dev vxlan0 protocol ip parent ffff: prio 1 \
+		flower dst_mac 00:11:22:33:44:00 \
+		enc_src_ip Host1_IP enc_dst_ip 2.2.2.100 \
+		enc_dst_port 4789 enc_key_id 100 \
+		action tunnel_key unset action mirred egress redirect dev eth0_1
+
+If we support flows which only match the enc_key_id and enc_dst_port,
+a flow can process the packets sent to VM which (mac 00:11:22:33:44:00).
+
+	$ tc filter add dev vxlan0 protocol ip parent ffff: prio 1 \
+		flower dst_mac 00:11:22:33:44:00 \
+		enc_dst_port 4789 enc_key_id 100 \
+		action tunnel_key unset action mirred egress redirect dev eth0_1
+
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 27 +++++++------------------
+ 1 file changed, 7 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 122f457..91e4db1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -1339,7 +1339,6 @@ static int parse_tunnel_attr(struct mlx5e_priv *priv,
+ 	void *headers_v = MLX5_ADDR_OF(fte_match_param, spec->match_value,
+ 				       outer_headers);
+ 	struct flow_rule *rule = tc_cls_flower_offload_flow_rule(f);
+-	struct flow_match_control enc_control;
+ 	int err;
+ 
+ 	err = mlx5e_tc_tun_parse(filter_dev, priv, spec, f,
+@@ -1350,9 +1349,7 @@ static int parse_tunnel_attr(struct mlx5e_priv *priv,
+ 		return err;
+ 	}
+ 
+-	flow_rule_match_enc_control(rule, &enc_control);
+-
+-	if (enc_control.key->addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS)) {
+ 		struct flow_match_ipv4_addrs match;
+ 
+ 		flow_rule_match_enc_ipv4_addrs(rule, &match);
+@@ -1372,7 +1369,7 @@ static int parse_tunnel_attr(struct mlx5e_priv *priv,
+ 
+ 		MLX5_SET_TO_ONES(fte_match_set_lyr_2_4, headers_c, ethertype);
+ 		MLX5_SET(fte_match_set_lyr_2_4, headers_v, ethertype, ETH_P_IP);
+-	} else if (enc_control.key->addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
++	} else if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS)) {
+ 		struct flow_match_ipv6_addrs match;
+ 
+ 		flow_rule_match_enc_ipv6_addrs(rule, &match);
+@@ -1504,22 +1501,12 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	if ((flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) ||
+-	     flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_KEYID) ||
+-	     flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_PORTS)) &&
+-	    flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_CONTROL)) {
+-		struct flow_match_control match;
+-
+-		flow_rule_match_enc_control(rule, &match);
+-		switch (match.key->addr_type) {
+-		case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
+-		case FLOW_DISSECTOR_KEY_IPV6_ADDRS:
+-			if (parse_tunnel_attr(priv, spec, f, filter_dev, tunnel_match_level))
+-				return -EOPNOTSUPP;
+-			break;
+-		default:
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) ||
++	    flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS) ||
++	    flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_KEYID) ||
++	    flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_PORTS)) {
++		if (parse_tunnel_attr(priv, spec, f, filter_dev, tunnel_match_level))
+ 			return -EOPNOTSUPP;
+-		}
+ 
+ 		/* In decap flow, header pointers should point to the inner
+ 		 * headers, outer header were already set by parse_tunnel_attr
+-- 
+1.8.3.1
+
