@@ -2,97 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB752146A2
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 10:43:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F29146C1
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 10:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbfEFInv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 04:43:51 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57706 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725855AbfEFInv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 04:43:51 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNZDs-0003jm-NP; Mon, 06 May 2019 10:43:44 +0200
-Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNZDs-000Hdy-GP; Mon, 06 May 2019 10:43:44 +0200
-Subject: Re: [net-next 01/12] i40e: replace switch-statement to speed-up
- retpoline-enabled builds
-To:     David Laight <David.Laight@ACULAB.COM>,
-        'Josh Elsasser' <jelsasser@appneta.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-References: <20190429191628.31212-1-jeffrey.t.kirsher@intel.com>
- <20190429191628.31212-2-jeffrey.t.kirsher@intel.com>
- <6C3E4204-AABF-45AD-B32D-62CB50391D89@appneta.com>
- <4b9338513f16457ea167da651c8b997b@AcuMS.aculab.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <14dd60c5-0fb7-1fc5-9bf6-4cb1510a1abc@iogearbox.net>
-Date:   Mon, 6 May 2019 10:43:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1725994AbfEFIt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 04:49:56 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40518 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725851AbfEFIt4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 04:49:56 -0400
+Received: by mail-wr1-f66.google.com with SMTP id h4so16172186wre.7
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 01:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fYN/6GDN+nENRFzZcXvnQ7/LdAUQ4tlCkdHDCr7kHiI=;
+        b=URnDtY1eKxPAv7PEvcUcvNiZcEXGtH7ylgkcBGZNsVQZeFe2k/pyFTa6+13a6IOSCF
+         gqlb/YGYnfvIce2o3QAyf0jKceDoP33X/kde7b3YOtomZ+L6DTUqlZX64I9cnMtgudMK
+         i2lWel9ejr5iBd6+IAIZvNgzdlmbQndkC5FPjPOEDod04+pO1MMb/o3mInky8TMAcVWb
+         zpHLviLK9mas77Z8jVtPnC69g4eckvCD5R/Glqxaj4yamAwfFzAWQg7AF7MHYz/gOeDK
+         xQU4AMfz+voyQAq4BukHhvK9WjgcEK9j0qz29C1h4j7AV15aBidAkZSTL+G9dB1zk2lP
+         suxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=fYN/6GDN+nENRFzZcXvnQ7/LdAUQ4tlCkdHDCr7kHiI=;
+        b=bFf2LygsUJkPA1sxuCDSSKcy/yYx/I0xVVrnwDlNkWndQppOJtFgjVaIhSJSC6Yid1
+         c+qKnc+5Ul+5hhS0553o214/RswDUVbAiqLwQwUpUlydul0k4cc+H1bqs7FYq6Y3uVn3
+         8Zp2AgS7FnDin2H2OL2WSZ+V9Civ0laRANd9TsFGCf5scASa15F3w5TA0gxurVPJLxqs
+         cumo0Fs+YXHlWTGrS8db9EnNvswOzeHA6pheeYbTNfn5N03r99oRkdqJ1zzbwwddG/K4
+         DrLXHZ2hcisIKoC4N3ec0+uLJQVZhIhDhYHNioRq8lL3dzxcfPtEoMRqmozSNatv7fKt
+         o9ng==
+X-Gm-Message-State: APjAAAWyercWeLgVy9eHyN43gdxQgngxnJKIDx75ZKIBXwv0rGr9xHjC
+        0UvCwEv3XcZhEssc4oJr2Cz/Yw==
+X-Google-Smtp-Source: APXvYqybCiX8dVUjWGyMpToHJsHKjEWTr/pgichjTRTSrm2rivStQzlABLsGYDHYy47ArA+NIppfVg==
+X-Received: by 2002:adf:db0b:: with SMTP id s11mr9988959wri.180.1557132594286;
+        Mon, 06 May 2019 01:49:54 -0700 (PDT)
+Received: from ?IPv6:2a01:e35:8b63:dc30:35a7:9cb3:43e0:63e? ([2a01:e35:8b63:dc30:35a7:9cb3:43e0:63e])
+        by smtp.gmail.com with ESMTPSA id a22sm7612539wmb.47.2019.05.06.01.49.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 May 2019 01:49:53 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH] netfilter: ctnetlink: Resolve conntrack L3-protocol flush
+ regression
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Kristian Evensen <kristian.evensen@gmail.com>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+References: <20190503154007.32495-1-kristian.evensen@gmail.com>
+ <20190505223229.3ujqpwmuefd3wh7b@salvia>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <4ecbebbb-0a7f-6d45-c2c0-00dee746e573@6wind.com>
+Date:   Mon, 6 May 2019 10:49:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <4b9338513f16457ea167da651c8b997b@AcuMS.aculab.com>
+In-Reply-To: <20190505223229.3ujqpwmuefd3wh7b@salvia>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Language: fr
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25440/Sun May  5 10:04:31 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/30/2019 12:42 PM, David Laight wrote:
-> From: Josh Elsasser
->> Sent: 29 April 2019 21:02
->> On Apr 29, 2019, at 12:16 PM, Jeff Kirsher <jeffrey.t.kirsher@intel.com> wrote:
+Le 06/05/2019 à 00:32, Pablo Neira Ayuso a écrit :
+> On Fri, May 03, 2019 at 05:40:07PM +0200, Kristian Evensen wrote:
+>> Commit 59c08c69c278 ("netfilter: ctnetlink: Support L3 protocol-filter
+>> on flush") introduced a user-space regression when flushing connection
+>> track entries. Before this commit, the nfgen_family field was not used
+>> by the kernel and all entries were removed. Since this commit,
+>> nfgen_family is used to filter out entries that should not be removed.
+>> One example a broken tool is conntrack. conntrack always sets
+>> nfgen_family to AF_INET, so after 59c08c69c278 only IPv4 entries were
+>> removed with the -F parameter.
 >>
->>> From: Björn Töpel <bjorn.topel@intel.com>
->>>
->>> GCC will generate jump tables for switch-statements with more than 5
->>> case statements. An entry into the jump table is an indirect call,
->>> which means that for CONFIG_RETPOLINE builds, this is rather
->>> expensive.
->>>
->>> This commit replaces the switch-statement that acts on the XDP program
->>> result with an if-clause.
->>
->> Apologies for the noise, but is this patch still required after the
->> recent threshold bump[0] and later removal[1] of switch-case jump
->> table generation when building with CONFIG_RETPOLINE?
->>
->> [0]: https://lore.kernel.org/patchwork/patch/1044863/
->> [1]: https://lore.kernel.org/patchwork/patch/1054472/
->>
->> If nothing else the commit message no longer seems accurate.
+>> Pablo Neira Ayuso suggested using nfgenmsg->version to resolve the
+>> regression, and this commit implements his suggestion. nfgenmsg->version
+>> is so far set to zero, so it is well-suited to be used as a flag for
+>> selecting old or new flush behavior. If version is 0, nfgen_family is
+>> ignored and all entries are used. If user-space sets the version to one
+>> (or any other value than 0), then the new behavior is used. As version
+>> only can have two valid values, I chose not to add a new
+>> NFNETLINK_VERSION-constant.
 > 
-> Looking at those two patches, the second one seems wrong:
+> Applied, thanks.
 > 
->    # Additionally, avoid generating expensive indirect jumps which
->    # are subject to retpolines for small number of switch cases.
->    # clang turns off jump table generation by default when under
-> -  # retpoline builds, however, gcc does not for x86.
-> -  KBUILD_CFLAGS += $(call cc-option,--param=case-values-threshold=20)
-> +  # retpoline builds, however, gcc does not for x86. This has
-> +  # only been fixed starting from gcc stable version 8.4.0 and
-> +  # onwards, but not for older ones. See gcc bug #86952.
-> +  ifndef CONFIG_CC_IS_CLANG
-> +    KBUILD_CFLAGS += $(call cc-option,-fno-jump-tables)
-> +  endif
-> 
-> If -fno-jump-tables isn't supported then --param=case-values-threshold=20
-> needs to be set (if supported).
+Thank you.
+Is it possible to queue this for stable?
 
-Nope, not really, -fno-jump-tables support predates the latter, and
-both are supported for gcc versions the kernel cares about.
+
+Regards,
+Nicolas
