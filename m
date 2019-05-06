@@ -2,125 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 022DE1536A
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 20:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B65A81537D
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 20:14:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726894AbfEFSLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 14:11:23 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:33552 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726287AbfEFSLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 14:11:22 -0400
-Received: by mail-qk1-f193.google.com with SMTP id k189so1245462qkc.0
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 11:11:22 -0700 (PDT)
+        id S1726911AbfEFSOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 14:14:18 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:46544 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726475AbfEFSOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 14:14:18 -0400
+Received: by mail-io1-f67.google.com with SMTP id m14so11910794ion.13
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 11:14:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=0Me1KTo/zMfF7DxvunGK3RvXAhXXhY9/8XaAHBID0aM=;
-        b=pFT4J9rFsls+sXP7X4unMkHvD4AuHAoSHKoplc9ZbgFJ2kTyNFa7dHRfwPGPRGybUT
-         H5XDJvgUtiebSI+Rkxi2C4totrI3W8wfTlQYIjDBvJzVGVmmU7OhP/2c2ab03TvLfD8I
-         XyZ2mQJHHH0vHbZmiPjn+RZ6/hf1KPwY6Bv5iVR3Z0yBMCi/bjEMjykKegUjsUBTwSQh
-         v7lPdCFJ82nTFFjrlrayf4y/0cLLBc33OCRo+QGS1C4YWEVP7TwSveAs+W+sqoLj5W3e
-         0GN5LiXh339lWYDovnbVRUMDJjQ0x9cBUz5Hd5oiKqSMA+aV84Iw2NbI4oVnA8ceRqfy
-         RhQg==
+        d=babayev.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=bi1X8E2iJDbOTLkAMJo/IBi1WYDSDyokTPbiJ53Ivxs=;
+        b=TJRCGKtEXJDmSGGyA07GXyq5cu9+tq3LBaNSRxUT0BZZDVFM4LmrCmly/KfJo84I5Z
+         3auKvn5kVMlG32tq7aHcagk45FMqrBYza/Oa9XxyvV7ozMKX8cASX53o8SHr2ccIUDmD
+         pUk3zaZhy4m5wrR6xFY3/mEHVvkOvddzct5hk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=0Me1KTo/zMfF7DxvunGK3RvXAhXXhY9/8XaAHBID0aM=;
-        b=FQ8s5UvxxTRqf8hfjdluLE+mikDgHSv2oTYnSUpEt4YPZllYlaxLnHtM54mMNU3vYw
-         9lyfcyxkt/ZFIsrs2B8Xew1Ij1KidqkKmG/02F9VwTkaC3TeEwMsd8mMmAs54ICmUXva
-         4IUusrhyjwfe0nJyWvtfQyZF8qdTKddAdS56uSsum1qUMPU6t2+Ky9G5ak2gbQVcLbu+
-         2LufTZORIEntW1H6oUKMTV+lsp/VE9Ye9Iin14gxYAMTx06GdvRA11DSuBIPhG8OE2/C
-         FHurEz2ZJ0UewXR73C2ybd6plAotZnES0nlpNNDodxe4wO3/VWH9rNYjnoO6ck57kngJ
-         gSXA==
-X-Gm-Message-State: APjAAAX7mrifb0qyKpdjGAh9zWXwmthhEnrL8v6/FwkRlpSmrcXwUJeq
-        ySqcJc+dSUjycUKvzGsHJRiqhA==
-X-Google-Smtp-Source: APXvYqzuLcZlrnMAMf9IqLYSJv9N7CU+g691qLvsGZYmHfbnD2/O+ReNLou/Q63+FK82ZunzYKyA7w==
-X-Received: by 2002:a37:de04:: with SMTP id h4mr20118723qkj.196.1557166281582;
-        Mon, 06 May 2019 11:11:21 -0700 (PDT)
-Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id v2sm5876838qkh.65.2019.05.06.11.11.19
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 06 May 2019 11:11:21 -0700 (PDT)
-Date:   Mon, 6 May 2019 11:11:13 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, xiyou.wangcong@gmail.com,
-        idosch@mellanox.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, gerlitz.or@gmail.com,
-        simon.horman@netronome.com,
-        Pieter Jansen van Vuuren 
-        <pieter.jansenvanvuuren@netronome.com>
-Subject: Re: [PATCH net-next 10/13] net/sched: add block pointer to
- tc_cls_common_offload structure
-Message-ID: <20190506111113.052b08d9@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20190506061631.GB2362@nanopsycho.orion>
-References: <20190504114628.14755-1-jakub.kicinski@netronome.com>
-        <20190504114628.14755-11-jakub.kicinski@netronome.com>
-        <20190504131654.GJ9049@nanopsycho.orion>
-        <20190505133432.4fb7e978@cakuba.hsd1.ca.comcast.net>
-        <20190506061631.GB2362@nanopsycho.orion>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=bi1X8E2iJDbOTLkAMJo/IBi1WYDSDyokTPbiJ53Ivxs=;
+        b=lkRBZMNGthLn7fEQvfDF2lvUB/PX2YCRQX1Gf1qxUxanlj5I5WieybeNlkfmAj+wtl
+         m1wzb75ZzgNw8BSSOaeyb3AgvrYQuoQTKOBTEINJnB4veqS36UsslIC6vh6XcCkRWDey
+         pO5IqmIz7pXEt/prAbEjWDNukz7NjjVssrVcN1ZkMYVvgy9H7A1ZsSFPP61HQOsdHBQf
+         16z9f2siZTByOyX0sj/Nm0PeU1+MJGCZqA7R/olK9yyHKGC7xaiCZzdFyJrlG/v7+Phs
+         wJNCm4+TQHNdOJaoLEF9IYDNUUf2yDp1GjQ/KMif4g1ktkc+/JgfrrWKutlUgbBy7tNf
+         HyHw==
+X-Gm-Message-State: APjAAAX5p8IHYewcvspHvSu7V0tQThW05he1a6T+6TfOQ+x53Xydw0KD
+        QDsHFefP/BUsfms5CqZRZmHP5w==
+X-Google-Smtp-Source: APXvYqxmH1MfnNyv9pTsAAZjt8KEU+PLQD878IbPuF3Kcy0xI+f0xrPj83IaLJSfaeDvvPIweCR+EQ==
+X-Received: by 2002:a6b:8ec4:: with SMTP id q187mr11218439iod.280.1557166457616;
+        Mon, 06 May 2019 11:14:17 -0700 (PDT)
+Received: from localhost (50-46-216-15.evrt.wa.frontiernet.net. [50.46.216.15])
+        by smtp.gmail.com with ESMTPSA id d133sm5546120ita.5.2019.05.06.11.14.16
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 May 2019 11:14:16 -0700 (PDT)
+References: <20190505220524.37266-3-ruslan@babayev.com> <20190506045951.GB2895@lahna.fi.intel.com>
+User-agent: mu4e 1.0; emacs 26.1
+From:   Ruslan Babayev <ruslan@babayev.com>
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     Ruslan Babayev <ruslan@babayev.com>, linux@armlinux.org.uk,
+        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        wsa@the-dreams.de, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-acpi@vger.kernel.org, xe-linux-external@cisco.com
+Subject: Re: [PATCH net-next 2/2] net: phy: sfp: enable i2c-bus detection on ACPI based systems
+In-reply-to: <20190506045951.GB2895@lahna.fi.intel.com>
+Date:   Mon, 06 May 2019 11:14:15 -0700
+Message-ID: <871s1bv4aw.fsf@babayev.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 May 2019 08:16:31 +0200, Jiri Pirko wrote:
-> Sun, May 05, 2019 at 07:34:32PM CEST, jakub.kicinski@netronome.com wrote:
-> >On Sat, 4 May 2019 15:16:54 +0200, Jiri Pirko wrote:  
-> >> Sat, May 04, 2019 at 01:46:25PM CEST, jakub.kicinski@netronome.com wrote:  
-> >> >From: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
-> >> >
-> >> >Some actions like the police action are stateful and could share state
-> >> >between devices. This is incompatible with offloading to multiple devices
-> >> >and drivers might want to test for shared blocks when offloading.
-> >> >Store a pointer to the tcf_block structure in the tc_cls_common_offload
-> >> >structure to allow drivers to determine when offloads apply to a shared
-> >> >block.    
-> >> 
-> >> I don't this this is good idea. If your driver supports shared blocks,
-> >> you should register the callback accordingly. See:
-> >> mlxsw_sp_setup_tc_block_flower_bind() where tcf_block_cb_lookup() and
-> >> __tcf_block_cb_register() are used to achieve that.  
-> >
-> >Right, in some ways.  Unfortunately we don't support shared blocks
-> >fully, i.e. we register multiple callbacks and get the rules
-> >replicated.  It's a FW limitation, but I don't think we have shared
-> >blocks on the roadmap, since rule storage is not an issue for our HW.
-> >
-> >But even if we did support sharing blocks, we'd have to teach TC that
-> >some rules can only be offloaded if there is only a single callback
-> >registered, right?  In case the block is shared between different ASICs.  
-> 
-> I don't see why sharing block between different ASICs is a problem. The
-> sharing implementation is totally up to the driver. It can duplicate the
-> rules even within one ASIC. According to that, it registers one or more
-> callbacks.
 
-If we want to replicate software semantics for act_police all ports
-sharing the port should count against the same rate limit.  This is
-pretty much impossible unless the rule is offloaded to a single ASIC
-and the ASIC/FW supports proper block/action sharing.
+Mika Westerberg writes:
 
-> In this patchset, you use the block only to see if it is shared or not.
-> When TC calls the driver to bind, it provides the block struct:
-> ndo_setup_tc
->    type == TC_SETUP_BLOCK
->       f->command == TC_BLOCK_BIND
-> You can check for sharing there and remember it for the future check in
-> filter insertion.
-> 
-> I would like to avoid passing block pointer during filter insertion. It
-> is misleading and I'm pretty sure it would lead to misuse by drivers.
-> 
-> I see that Dave already applied this patchset. Could you please send
-> follow-up removing the block pointer from filter offload struct?
+> On Sun, May 05, 2019 at 03:05:23PM -0700, Ruslan Babayev wrote:
+>> Lookup I2C adapter using the "i2c-bus" device property on ACPI based
+>> systems similar to how it's done with DT.
+>> 
+>> An example DSD describing an SFP on an ACPI based system:
+>> 
+>> Device (SFP0)
+>> {
+>>     Name (_HID, "PRP0001")
+>>     Name (_DSD, Package ()
+>>     {
+>>         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+>>         Package () {
+>>             Package () { "compatible", "sff,sfp" },
+>>             Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
+>
+> Hmm, ACPI has I2cSerialBusV2() resource for this purpose. Why you are not
+> using that?
 
-Makes sense, we'll follow up shortly!
+I am not an ACPI expert, but my understanding is I2cSerialBusV2() is
+used for slave connections. I am trying to reference an I2C controller
+here.
