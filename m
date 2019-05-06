@@ -2,112 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3594154E1
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 22:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 470DB154E3
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 22:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbfEFUZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 16:25:21 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:45366 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726370AbfEFUZU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 16:25:20 -0400
-Received: by mail-ed1-f65.google.com with SMTP id g57so16557801edc.12;
-        Mon, 06 May 2019 13:25:19 -0700 (PDT)
+        id S1726352AbfEFU2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 16:28:53 -0400
+Received: from mail-it1-f193.google.com ([209.85.166.193]:55134 "EHLO
+        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726201AbfEFU2x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 16:28:53 -0400
+Received: by mail-it1-f193.google.com with SMTP id a190so22621611ite.4
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 13:28:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bDKWxpSWtN7t9ZwYgFWuZ3G1rf5UldWM78eGgF598PI=;
-        b=mYrhtD+ZdOfyuP/KMjr3IxVl5tOI76UviXEWVb8LHlvUcywAjfQflwrhcVFcEclSNi
-         SyZY6+T5HlazSvwS/5/VR/hygzj4JU7UVT/I4YvD/nVDOfvDw5I8IlWYkwVHyQd/x8wV
-         BEZF+z8BOzxzhrHJAlA4zwUPuDm+wTu60K3pBNvKB4JIvIy9FPitLXUAKz2uBsMV8ZPL
-         QbsAcsPdoHDBsdkd2EiQb4aBc5/NYr15Wi7nsHagN5ORyymdCpXQ5C+kpsiL9LonA42j
-         3EVEJlRJ3AWYHLLlNvEYkS+MnyxlEdztxtqKHvg7RDA0p7KAmOxsGJwZODN9BGgbrWjX
-         3gDw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=fBbI/qcAvKvk05jnDkbLDq7pl64ZpI8aJ+Db8H41XOA=;
+        b=TdtaZtOxWsuPFHEKYV6Z1MYa7vte83NMw2/LLSq9rZOwMw0lTKqX/5JN3woHoECPK7
+         6ScrtKIl0jUbXnS+2sRyWejTFUiVfD+SB4cWTBvQuvvXAoNZX9EoJzSXhLRK0uYTatY8
+         asnGW6jC6emVzJrKBYsoP0rr3LP8TNRFyPCwJ/2sctTMtvB/8MeuEYEpEHeIGSAnYdd0
+         feSf9PMur48nHwCtArpphoAv9Yvs1eqlNfVWbUu/cFFm9LFt1xchauzraEYF2SaWRYdq
+         +qWI1WmxCoeY+Zt1SQMa8Nq6UlRP9BVJDlNwRYDqFzCEEkjn7p45WLtGiqUVSnFhXFF1
+         u8OA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bDKWxpSWtN7t9ZwYgFWuZ3G1rf5UldWM78eGgF598PI=;
-        b=P1As+IFGNVA2nnZc85jz7i13wFGkYLGzzcX8q854HUUEGvXnq10cf2m0NKaxUY4GTH
-         S+tpHzk+nEnERsuWqbaatDn4BklR61NmqyWaSd+NyXdzT8H0plUGDjec0BRzRKcY7i6U
-         07FgbJZlPbtG6WjaYTBABTkaoz9ceBK3ioXbOhBqa43OUWE8dAEjspHPBjBPWOXGqG5M
-         eGexJwEdnCRPE64aBmCREIXAoEkIu+WfzapeyXWPEk+9wZSYA0V0+atvOwm6LDR6F2hC
-         7cs0/yqZrk+1FBaV7+VyeIVzDGBRClR0VMcJoKDjWRDQa5zBa/hgZHTZT+MfpaBbs17B
-         OxBA==
-X-Gm-Message-State: APjAAAXGm0q4CTQosAltKvtAMldJsDbaxVwwC1ERHZNE6N1EOlj87jxx
-        WT8WbrXNw+g8m0tQ0mgZZiRXZgtP
-X-Google-Smtp-Source: APXvYqwGvfQTQo31h6V2msi7QKP8O/IdcP5J3pC2myev/vMCkuRXX9r/Q8AKMcn2+H6xuoeYxoP0Xg==
-X-Received: by 2002:a17:906:27c5:: with SMTP id k5mr21244496ejc.141.1557174318651;
-        Mon, 06 May 2019 13:25:18 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:4f9:2b:2b84::2])
-        by smtp.gmail.com with ESMTPSA id i9sm3394847edk.56.2019.05.06.13.25.16
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 May 2019 13:25:17 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] net: dsa: sja1105: Fix status initialization in sja1105_get_ethtool_stats
-Date:   Mon,  6 May 2019 13:24:47 -0700
-Message-Id: <20190506202447.30907-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fBbI/qcAvKvk05jnDkbLDq7pl64ZpI8aJ+Db8H41XOA=;
+        b=JdqBWhedED1iqGsMuIHM2oz/X+sw+nFu4Z8I318Y4ZSeWaLBlcy56NETiJbeCl7Qx/
+         Szd4CKM8vNktf3RGpbePYFcsFnVinBFzFLJP7rTZHLUw21r6Qs+mSBP0pFVIRduPI8cq
+         i1WelPBOP8XVCw3eDBdn1bKRJvOpysgTx84O9Dv3vhWk3zpyWk5eXwoLlQ9+55+89HoY
+         QYIESAdekQfb+DIhzV/4Axl+EdD8nSdwwtQkd7vDF0dU6PXmIbWtlfk+W+PDtkjuEUzR
+         rBXtWUpmYV3agKLFaawS6XfaCdQla3ZvZSP3jhZ5c6Em/HbqQnQ4T3xOkL69PM+5m9Zr
+         14Jg==
+X-Gm-Message-State: APjAAAVugjXew5/5H0N/23UJ6tzp7iTRo7YSzUpUWx5K0vlzjs1u0ByT
+        MwPhmmxoId9wkveSEXgvog==
+X-Google-Smtp-Source: APXvYqw0IB60QWhjqfUiVIYVuwS9L0E18A87bX/X1S00r6RqwxPIIbyUy/XypyYrG/YQH06KL1gjlg==
+X-Received: by 2002:a05:660c:9c2:: with SMTP id i2mr13894689itl.80.1557174532488;
+        Mon, 06 May 2019 13:28:52 -0700 (PDT)
+Received: from ubuntu ([12.38.14.10])
+        by smtp.gmail.com with ESMTPSA id a21sm4037207ioo.68.2019.05.06.13.28.51
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 May 2019 13:28:51 -0700 (PDT)
+Date:   Mon, 6 May 2019 16:28:48 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net] vrf: sit mtu should not be updated when vrf netdev
+ is the link
+Message-ID: <20190506202848.GA19038@ubuntu>
+References: <20190506190001.6567-1-ssuryaextr@gmail.com>
+ <667fd9b5-6122-bd9f-e6ae-e08d82197ef9@gmail.com>
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <667fd9b5-6122-bd9f-e6ae-e08d82197ef9@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+On Mon, May 06, 2019 at 01:54:16PM -0600, David Ahern wrote:
+> On 5/6/19 1:00 PM, Stephen Suryaputra wrote:
+> > VRF netdev mtu isn't typically set and have an mtu of 65536. When the
+> > link of a tunnel is set, the tunnel mtu is changed from 1480 to the link
+> > mtu minus tunnel header. In the case of VRF netdev is the link, then the
+> > tunnel mtu becomes 65516. So, fix it by not setting the tunnel mtu in
+> > this case.
+> > 
+> > Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+> > ---
+> >  net/ipv6/sit.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+> > index b2109b74857d..971d60bf9640 100644
+> > --- a/net/ipv6/sit.c
+> > +++ b/net/ipv6/sit.c
+> > @@ -1084,7 +1084,7 @@ static void ipip6_tunnel_bind_dev(struct net_device *dev)
+> >  	if (!tdev && tunnel->parms.link)
+> >  		tdev = __dev_get_by_index(tunnel->net, tunnel->parms.link);
+> >  
+> > -	if (tdev) {
+> > +	if (tdev && !netif_is_l3_master(tdev)) {
+> >  		int t_hlen = tunnel->hlen + sizeof(struct iphdr);
+> >  
+> >  		dev->hard_header_len = tdev->hard_header_len + sizeof(struct iphdr);
+> > 
+> 
+> can you explain how tdev is a VRF device? What's the config setup for
+> this case?
 
-drivers/net/dsa/sja1105/sja1105_ethtool.c:316:39: warning: suggest
-braces around initialization of subobject [-Wmissing-braces]
-        struct sja1105_port_status status = {0};
-                                             ^
-                                             {}
-1 warning generated.
+Hi David,
 
-One way to fix these warnings is to add additional braces like Clang
-suggests; however, there has been a bit of push back from some
-maintainers[1][2], who just prefer memset as it is unambiguous, doesn't
-depend on a particular compiler version[3], and properly initializes all
-subobjects. Do that here so there are no more warnings.
+tdev is set to VRF device per your suggestion to my colleague back in
+2017:
+	https://www.spinics.net/lists/netdev/msg462706.html.
+Specifically this on this follow up:
+	https://www.spinics.net/lists/netdev/msg463287.html
 
-[1]: https://lore.kernel.org/lkml/022e41c0-8465-dc7a-a45c-64187ecd9684@amd.com/
-[2]: https://lore.kernel.org/lkml/20181128.215241.702406654469517539.davem@davemloft.net/
-[3]: https://lore.kernel.org/lkml/20181116150432.2408a075@redhat.com/
+His basic config before your suggestion is available in:
+	https://www.spinics.net/lists/netdev/msg462770.html
 
-Fixes: 52c34e6e125c ("net: dsa: sja1105: Add support for ethtool port counters")
-Link: https://github.com/ClangBuiltLinux/linux/issues/471
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/dsa/sja1105/sja1105_ethtool.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_ethtool.c b/drivers/net/dsa/sja1105/sja1105_ethtool.c
-index 46d22be31309..ab581a28cd41 100644
---- a/drivers/net/dsa/sja1105/sja1105_ethtool.c
-+++ b/drivers/net/dsa/sja1105/sja1105_ethtool.c
-@@ -313,9 +313,11 @@ static char sja1105pqrs_extra_port_stats[][ETH_GSTRING_LEN] = {
- void sja1105_get_ethtool_stats(struct dsa_switch *ds, int port, u64 *data)
- {
- 	struct sja1105_private *priv = ds->priv;
--	struct sja1105_port_status status = {0};
-+	struct sja1105_port_status status;
- 	int rc, i, k = 0;
- 
-+	memset(&status, 0, sizeof(status));
-+
- 	rc = sja1105_port_status_get(priv, &status, port);
- 	if (rc < 0) {
- 		dev_err(ds->dev, "Failed to read port %d counters: %d\n",
--- 
-2.21.0
-
+He and I had a refresher discussion this am trying to figure out if tdev
+should be a slave device. This is true if the local addr is specified.
+In this case the addr has to bound to a slave device. Then the underlay
+VRF can be derived from it. But if only remote is specified, then there
+isn't a straightforward way to associate the remote with a VRF unless
+tdev is set to a VRF device.
