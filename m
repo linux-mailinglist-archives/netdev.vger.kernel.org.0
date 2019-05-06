@@ -2,142 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1158143DA
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 06:02:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D13B143DD
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 06:11:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725834AbfEFEBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 00:01:53 -0400
-Received: from ozlabs.org ([203.11.71.1]:60797 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725710AbfEFEBw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 May 2019 00:01:52 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 44y8F822jhz9s9y;
-        Mon,  6 May 2019 14:01:48 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1557115309;
-        bh=rgj1QEiHtv32sP/0bA6Oo89nP54c8y/a8Bke4LC1GuQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fQDIf4ooi7pE3dOtu1OJF04FUlFr+5b3JOOK44NQt4y8Lm6ApBGhs33pzQ3C8SGN6
-         /IPAEE0aS2TdHD8NTExLe91UZGFC6q4xiHDPN8M3m1ETJ7Cdx3smJ5hCG54Lwd+h9E
-         0ACyYLZQKm9SnoafxzJwRQgoNHOUjN9tm8W3V777ajCuPlIxSa+pFMpvdkXicQZYCr
-         SELt5oWUC52uG/1WNsl/eccNHJ/9EJckACDo8AApyZS1CeKFBxP5LDJcPZuB9Nflcn
-         aZr5hzRabYQGHvELLQwi3M7TfnyRJYBULTuYKVisZt8xNAYAPJSJF6ZCSClLbQv6IV
-         P3GUlfoQRTOVQ==
-Date:   Mon, 6 May 2019 14:01:47 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vu Pham <vuhuong@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Mark Bloch <markb@mellanox.com>
-Subject: Re: linux-next: manual merge of the mlx5-next tree with the rdma
- tree
-Message-ID: <20190506140147.23d41ac1@canb.auug.org.au>
-In-Reply-To: <20190430135846.0c17df6e@canb.auug.org.au>
-References: <20190430135846.0c17df6e@canb.auug.org.au>
+        id S1725856AbfEFELO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 00:11:14 -0400
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:42406 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725710AbfEFELO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 00:11:14 -0400
+Received: by mail-yw1-f66.google.com with SMTP id s5so2840755ywd.9;
+        Sun, 05 May 2019 21:11:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ZG6yX+dIIIOkAbndjIKZSBlSKQ8nnVPhJPelxK27FAo=;
+        b=C1aj3s7z+lostEBcHHmXNnU+TQA5pSw6ndOUOfykpjTyVGCjcJcDqkteayH8mqzDCS
+         LlAbP5iFyhuYqvfwlUne6hYM/H7O3L5keuOmQPAxp9xQEscGwR6IXLswVQOhOBwnssus
+         68IRPCeEp8cQ9+TVGEkUtQUhbABUC0bvQ6BCDsrkEGrbazjjaWVwLsf9QXajK4RrAU7k
+         KxXO8T2M4zQGuq/Xdyhj5G2Bw4lFKzMcRihS+JB0YBVZIdM+/NcCtWI9uYFXLzmPQS2p
+         ILSvPQiTGM+5uBt5rc8NSqbMho7mobYW8sXJGqve+e18NQerURoIp2oB+ILveCltve6x
+         OqQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZG6yX+dIIIOkAbndjIKZSBlSKQ8nnVPhJPelxK27FAo=;
+        b=T8jkkecdUPtuofiqh3MtVS3yCR/+zZX8aqGrUUYsIHhn0E1aHAMoSp8s5qPn4csGO/
+         DIXlgTN/17+v9ZZKcnCCjGMXB05PScqeipRN/dM7tj6+4DLGFItYlkamNTK5fCNfueKU
+         EtxjOSuD6wdb+3xNvMs6uoFIbXmMkL4gOCpqMtoP/L3FT6b2z7XiVVOI3GBYh9t2lGLk
+         t8lv20bqgqmxweDdJ1K4TJWlpac1RZdn9/AjRdkYwD4CqF7+8q8wdLXO86RHCLdChm2s
+         0bBNqo6y1vc2WulMFnZuqz1QOWNd59cipUunPjM4FD41AIn1imd31FCdXYyi/HOm52Fy
+         DIRQ==
+X-Gm-Message-State: APjAAAWbFaIalx0CM+M7StjI5UjkY6fwaMkK+4bcQ9FDnZFgeGu1M2pD
+        cYZLSaaJrhUd3J7UH3rSbB2Y7N0/JbUwKEYQybE=
+X-Google-Smtp-Source: APXvYqyH4XjfN/4h5z/sYyUgOpJMRICyPENNLXKmmT5lo7PNaZkCMv7a24jbC7IIDugnHv9gV1FXgY+L4PMUYdukgr8=
+X-Received: by 2002:a81:9a96:: with SMTP id r144mr16017123ywg.353.1557115873186;
+ Sun, 05 May 2019 21:11:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/vW/eo0iJa5WsE4O1KPNByGd"; protocol="application/pgp-signature"
+References: <20190505211623.3153-1-colin.king@canonical.com>
+In-Reply-To: <20190505211623.3153-1-colin.king@canonical.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Date:   Mon, 6 May 2019 06:11:02 +0200
+Message-ID: <CACna6rzqzzST4zu-6umnezmznnfoUqQP6V-yfyePaqCX8NakQQ@mail.gmail.com>
+Subject: Re: [PATCH][next] brcmfmac: remove redundant u32 comparison with less
+ than zero
+To:     Colin King <colin.king@canonical.com>,
+        Wright Feng <wright.feng@cypress.com>
+Cc:     Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER
+        <brcm80211-dev-list.pdl@broadcom.com>," 
+        <brcm80211-dev-list@cypress.com>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/vW/eo0iJa5WsE4O1KPNByGd
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi all,
-
-On Tue, 30 Apr 2019 13:58:46 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
+On Sun, 5 May 2019 at 23:33, Colin King <colin.king@canonical.com> wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 >
-> Hi Leon,
->=20
-> Today's linux-next merge of the mlx5-next tree got a conflict in:
->=20
->   drivers/infiniband/hw/mlx5/main.c
->=20
-> between commit:
->=20
->   35b0aa67b298 ("RDMA/mlx5: Refactor netdev affinity code")
->=20
-> from the rdma tree and commit:
->=20
->   c42260f19545 ("net/mlx5: Separate and generalize dma device from pci de=
-vice")
->=20
-> from the mlx5-next tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> --=20
-> Cheers,
-> Stephen Rothwell
->=20
-> diff --cc drivers/infiniband/hw/mlx5/main.c
-> index 6135a0b285de,fae6a6a1fbea..000000000000
-> --- a/drivers/infiniband/hw/mlx5/main.c
-> +++ b/drivers/infiniband/hw/mlx5/main.c
-> @@@ -200,12 -172,18 +200,12 @@@ static int mlx5_netdev_event(struct not
->  =20
->   	switch (event) {
->   	case NETDEV_REGISTER:
->  +		/* Should already be registered during the load */
->  +		if (ibdev->is_rep)
->  +			break;
->   		write_lock(&roce->netdev_lock);
-> - 		if (ndev->dev.parent =3D=3D &mdev->pdev->dev)
->  -		if (ibdev->rep) {
->  -			struct mlx5_eswitch *esw =3D ibdev->mdev->priv.eswitch;
->  -			struct net_device *rep_ndev;
->  -
->  -			rep_ndev =3D mlx5_ib_get_rep_netdev(esw,
->  -							  ibdev->rep->vport);
->  -			if (rep_ndev =3D=3D ndev)
->  -				roce->netdev =3D ndev;
->  -		} else if (ndev->dev.parent =3D=3D mdev->device) {
-> ++		if (ndev->dev.parent =3D=3D mdev->device)
->   			roce->netdev =3D ndev;
->  -		}
->   		write_unlock(&roce->netdev_lock);
->   		break;
->  =20
+> The check for the u32 variable idx being less than zero is
+> always false and is redundant. Remove it.
+>
+> Addresses-Coverity: ("Unsigned compared against 0")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c b/=
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
+> index 9d1f9ff25bfa..e874dddc7b7f 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
+> @@ -375,7 +375,7 @@ brcmf_msgbuf_get_pktid(struct device *dev, struct brc=
+mf_msgbuf_pktids *pktids,
+>         struct brcmf_msgbuf_pktid *pktid;
+>         struct sk_buff *skb;
+>
+> -       if (idx < 0 || idx >=3D pktids->array_size) {
+> +       if (idx >=3D pktids->array_size) {
+>                 brcmf_err("Invalid packet id %d (max %d)\n", idx,
+>                           pktids->array_size);
+>                 return NULL;
 
-This is now a conflict between the net-next tree and the rdma tree.
+It was added in the commit 2d91c8ad068a ("brcmfmac: set txflow request
+id from 1 to pktids array size") and was probably meant to handle a
+following brcmf_msgbuf_process_txstatus() case:
+idx =3D le32_to_cpu(tx_status->msg.request_id) - 1;
+
+So this patch is wrong/incomplete.
+
+You should change that to a signed value OR add an extra check in
+brcmf_msgbuf_process_txstatus() to make sure it doesn't pass -1 as u32
+argument.
 
 --=20
-Cheers,
-Stephen Rothwell
-
---Sig_/vW/eo0iJa5WsE4O1KPNByGd
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlzPsasACgkQAVBC80lX
-0GzZWgf/eqG/54nzJcLhDHl6eODVDtlhnjK246o4r1hZcOY9BPPCZzfnt7UhQeuZ
-bgrHLsNtf80Et97a6omcAWmIhsIthwgYj9TMet67FdHov8m81rPnOrcewGjoXVLZ
-t43y04hZRMdyrMAaPyHYl2O9O/aYRAgPvn7kWZYzpruvmLm/dRE4kNRO40PDA3mz
-3CaaFAbKgowu+T6W77q6NZeNhW6z5mi1lWIx8ODd2nGLrIawX4NtlXmZ7kNZRFZQ
-Ckerg8IawE08QNoj7f11Fe+DdOcQdbdS8gtzZvlQ09rUPA6MqtT4yFn//JnPlFcR
-PUreXiO2/oZ/+NKszPVhyG5n44X8bw==
-=wKty
------END PGP SIGNATURE-----
-
---Sig_/vW/eo0iJa5WsE4O1KPNByGd--
+Rafa=C5=82
