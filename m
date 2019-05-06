@@ -2,124 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D3D815651
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 01:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA4715649
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 01:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726337AbfEFXai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 19:30:38 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49720 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725994AbfEFXah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 19:30:37 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNmkx-0007So-C5; Tue, 07 May 2019 01:10:47 +0200
-Received: from [178.199.41.31] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNmkx-00061k-4J; Tue, 07 May 2019 01:10:47 +0200
-Subject: Re: [PATCH v2 1/4] bpf: Add support for reading user pointers
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Michal Gregorczyk <michalgr@live.com>,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Mohammad Husain <russoue@gmail.com>,
-        Qais Yousef <qais.yousef@arm.com>,
-        Srinivas Ramana <sramana@codeaurora.org>,
-        duyuchao <yuchao.du@unisoc.com>,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Karim Yaghmour <karim.yaghmour@opersys.com>,
-        Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Brendan Gregg <brendan.d.gregg@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
-        bpf@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
-        Song Liu <songliubraving@fb.com>
-References: <20190506183116.33014-1-joel@joelfernandes.org>
- <3c6b312c-5763-0d9c-7c2c-436ee41f9be1@iogearbox.net>
- <20190506195711.GA48323@google.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7e0d07af-79ad-5ff3-74ce-c12b0b9b78cd@iogearbox.net>
-Date:   Tue, 7 May 2019 01:10:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726197AbfEFXTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 19:19:25 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:53855 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725994AbfEFXTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 19:19:25 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 198so12667wme.3
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 16:19:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=9cZLP6fo4MDd86K+wDwoMo5fbYSVGBhrzMdAO/+1uHs=;
+        b=oBrI4gK6UIKtBxmx1CdcwL0e9gHr5osvz0nUTmr/xgCsGomyCXhhcy78LMoOeEEnQe
+         PW0Q28Y7Ol+SL3DuSurae4TSxzxbSxd869yQQaGbDn36dwtuaOHAMUy61vAAMO499CPX
+         dmAGy/dgEj4vvMFfxdDWbmqtUNIMlJ2O0LoV8FApQFjPypYFw3tZsrywIrDlR2TTLCZA
+         NZ1K6RbDOqugbTcLlIO6tQvgpSPu0WRATCCjSvtHN8720pfl3sHHexEi74w3BxmNdHbR
+         bVeGekTwZO51TNMyHyFlt+L8t2Sh7KMQtraLEzOQf5xsaQGCRPiX64GTHiD2pUmIqvyE
+         s36A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=9cZLP6fo4MDd86K+wDwoMo5fbYSVGBhrzMdAO/+1uHs=;
+        b=WehN05S6txOksmRRnkUx5T5YpD8T+0Qc0s+Dkxs07oq5XKBSQOauRUsiuunzJVZ4p4
+         +6KEwBl2cWJLxRLZbP2kp/mBjdGO5R1ipHLnJxUn/ONcxBjKd926DMpeFji9r+LirPEA
+         GrFm+87UtmKqIjg2Y/Yr+q0NdGNTIlZWk2wt3XUv/u12zH71jZFcfEuZ6n8QAWZEuhTN
+         oGV953JqNEohadmm9kvsrYNxoOg+vqkaA+nCQw4f+3vOLibBQ/fzS2XnFAujJ0sd4kHK
+         7HTsQSPxohfJ+odMlLcarH+UWx9oiwjrleMDtBe1cqRBtPuQueijyf6Vi4Q+jW18uecT
+         yTgw==
+X-Gm-Message-State: APjAAAUVNEJ/SvTAD/bDhJC+i+SNxDmpnYYlXOC1Jsv8UkkvvWCZEeSE
+        7/+2YGeMeGIDRV2lrYk8+sZOTqs3fPY=
+X-Google-Smtp-Source: APXvYqwaDCm9YWV/gp6Sz1pJ5uRToyWR44Eeyy/DycJ5MGiwj+/iwiT1dPwBQ/82YZjsOmXPlCHBYw==
+X-Received: by 2002:a1c:6342:: with SMTP id x63mr18564737wmb.58.1557184763777;
+        Mon, 06 May 2019 16:19:23 -0700 (PDT)
+Received: from LAPTOP-V3S7NLPL (cpc1-cmbg19-2-0-cust104.5-4.cable.virginm.net. [82.27.180.105])
+        by smtp.gmail.com with ESMTPSA id f2sm21506653wmh.3.2019.05.06.16.19.19
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 May 2019 16:19:21 -0700 (PDT)
+References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com> <1556880164-10689-5-git-send-email-jiong.wang@netronome.com> <20190506155704.4t7xy3mqer4eps3y@ast-mbp>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiong Wang <jiong.wang@netronome.com>, daniel@iogearbox.net,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH v6 bpf-next 04/17] bpf: introduce new alu insn BPF_ZEXT for explicit zero extension
+In-reply-to: <20190506155704.4t7xy3mqer4eps3y@ast-mbp>
+Date:   Tue, 07 May 2019 00:19:19 +0100
+Message-ID: <87imunuq6g.fsf@netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <20190506195711.GA48323@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25441/Mon May  6 10:04:24 2019)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/06/2019 09:57 PM, Joel Fernandes wrote:
-> On Mon, May 06, 2019 at 09:11:19PM +0200, Daniel Borkmann wrote:
->> On 05/06/2019 08:31 PM, Joel Fernandes (Google) wrote:
->>> The eBPF based opensnoop tool fails to read the file path string passed
->>> to the do_sys_open function. This is because it is a pointer to
->>> userspace address and causes an -EFAULT when read with
->>> probe_kernel_read. This is not an issue when running the tool on x86 but
->>> is an issue on arm64. This patch adds a new bpf function call based
->>> which calls the recently proposed probe_user_read function [1].
->>> Using this function call from opensnoop fixes the issue on arm64.
->>>
->>> [1] https://lore.kernel.org/patchwork/patch/1051588/
->>>
->>> Cc: Michal Gregorczyk <michalgr@live.com>
->>> Cc: Adrian Ratiu <adrian.ratiu@collabora.com>
->>> Cc: Mohammad Husain <russoue@gmail.com>
->>> Cc: Qais Yousef <qais.yousef@arm.com>
->>> Cc: Srinivas Ramana <sramana@codeaurora.org>
->>> Cc: duyuchao <yuchao.du@unisoc.com>
->>> Cc: Manjo Raja Rao <linux@manojrajarao.com>
->>> Cc: Karim Yaghmour <karim.yaghmour@opersys.com>
->>> Cc: Tamir Carmeli <carmeli.tamir@gmail.com>
->>> Cc: Yonghong Song <yhs@fb.com>
->>> Cc: Alexei Starovoitov <ast@kernel.org>
->>> Cc: Brendan Gregg <brendan.d.gregg@gmail.com>
->>> Cc: Masami Hiramatsu <mhiramat@kernel.org>
->>> Cc: Peter Ziljstra <peterz@infradead.org>
->>> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
->>> Cc: Steven Rostedt <rostedt@goodmis.org>
->>> Cc: Kees Cook <keescook@chromium.org>
->>> Cc: kernel-team@android.com
->>> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
->>> ---
->>> Masami, could you carry these patches in the series where are you add
->>> probe_user_read function?
->>>
->>> Previous submissions is here:
->>> https://lore.kernel.org/patchwork/patch/1069552/
->>> v1->v2: split tools uapi sync into separate commit, added deprecation
->>> warning for old bpf_probe_read function.
->>
->> Please properly submit this series to bpf tree once the base
->> infrastructure from Masami is upstream.
-> 
-> Could you clarify what do you mean by "properly submit this series to bpf
-> tree" mean? bpf@vger.kernel.org is CC'd.
 
-Yeah, send the BPF series to bpf@vger.kernel.org once Masami's patches have
-hit mainline, and we'll then route yours as fixes the usual path through
-bpf tree.
+Alexei Starovoitov writes:
 
->> This series here should
->> also fix up all current probe read usage under samples/bpf/ and
->> tools/testing/selftests/bpf/.
-> 
-> Ok. Agreed, will do that.
+> On Fri, May 03, 2019 at 11:42:31AM +0100, Jiong Wang wrote:
+>> This patch introduce new alu32 insn BPF_ZEXT, and allocate the unused
+>> opcode 0xe0 to it.
+>> 
+>> Compared with the other alu32 insns, zero extension on low 32-bit is the
+>> only semantics for this instruction. It also allows various JIT back-ends
+>> to do optimal zero extension code-gen.
+>> 
+>> BPF_ZEXT is supposed to be encoded with BPF_ALU only, and is supposed to be
+>> generated by the latter 32-bit optimization code inside verifier for those
+>> arches that do not support hardware implicit zero extension only.
+>> 
+>> It is not supposed to be used in user's program directly at the moment.
+>> Therefore, no need to recognize it inside generic verification code. It
+>> just need to be supported for execution on interpreter or related JIT
+>> back-ends.
+>
+> uapi and the doc define it, but "it is not supposed to be used" ?!
+>
+>> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+>> ---
+>>  Documentation/networking/filter.txt | 10 ++++++++++
+>>  include/uapi/linux/bpf.h            |  3 +++
+>>  kernel/bpf/core.c                   |  4 ++++
+>>  tools/include/uapi/linux/bpf.h      |  3 +++
+>>  4 files changed, 20 insertions(+)
+>> 
+>> diff --git a/Documentation/networking/filter.txt b/Documentation/networking/filter.txt
+>> index 319e5e0..1cb3e42 100644
+>> --- a/Documentation/networking/filter.txt
+>> +++ b/Documentation/networking/filter.txt
+>> @@ -903,6 +903,16 @@ If BPF_CLASS(code) == BPF_ALU or BPF_ALU64 [ in eBPF ], BPF_OP(code) is one of:
+>>    BPF_MOV   0xb0  /* eBPF only: mov reg to reg */
+>>    BPF_ARSH  0xc0  /* eBPF only: sign extending shift right */
+>>    BPF_END   0xd0  /* eBPF only: endianness conversion */
+>> +  BPF_ZEXT  0xe0  /* eBPF BPF_ALU only: zero-extends low 32-bit */
+>> +
+>> +Compared with BPF_ALU | BPF_MOV which zero-extends low 32-bit implicitly,
+>> +BPF_ALU | BPF_ZEXT zero-extends low 32-bit explicitly. Such zero extension is
+>
+> wait. that's an excellent observation. alu|mov is exactly it.
+> we do not need another insn.
+> we probably can teach the verifier to recognize <<32, >>32 and replace
+> with mov32
 
-Great, thanks!
-Daniel
+Hmm, I am silly, in v6, patched insn will be conservatively marked as
+always needing zext, so looks like no problem to just insert mov32 as
+zext. But some backends needs minor opt, because this will be special mov,
+with the same src and dst, just need to clear high 32-bit, no need of mov.
+
+Regards,
+Jiong
+
