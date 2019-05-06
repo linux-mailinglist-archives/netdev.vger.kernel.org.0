@@ -2,136 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3EB61530D
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 19:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8061531C
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 19:54:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbfEFRss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 13:48:48 -0400
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:51119 "EHLO
-        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbfEFRss (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 13:48:48 -0400
-Received: by atrey.karlin.mff.cuni.cz (Postfix, from userid 512)
-        id 3E6AD80179; Mon,  6 May 2019 19:48:35 +0200 (CEST)
-Date:   Mon, 6 May 2019 19:48:46 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     wen.yang99@zte.com.cn
-Cc:     pavel@denx.de, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        anirudh@xilinx.com, John.Linn@xilinx.com, davem@davemloft.net,
-        michal.simek@xilinx.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, sashal@kernel.org
-Subject: Re: [PATCH 4.19 46/72] net: xilinx: fix possible object referenceleak
-Message-ID: <20190506174846.GA13326@amd>
-References: <20190503100816.GD5834@amd>
- <201905051417486865228@zte.com.cn>
+        id S1726951AbfEFRyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 13:54:16 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:37355 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726063AbfEFRyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 13:54:16 -0400
+Received: by mail-qt1-f193.google.com with SMTP id o7so3818951qtp.4
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 10:54:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=QhugHBuoBeAcIwpcanoLwTWHJfxQHnSCegSWAvWi8kU=;
+        b=puewRPLH4Nh/tosb7+eyKJyRGegVRvwvSe51SQhwLutt2q6m0+ltEOplW8mkMCUoiz
+         c9A02CPaqRZaZExZZ8hjy1+Wi12kEipDiFDwJcKNFhoYqxwGNA1xnN+PTUvHSBW+mTrl
+         v1C3cZHCAz+/YObFqsrKCorzir4viKXiogisTmNG/II+6qOgGMez0Dw7PhiX/pfAw5B1
+         G7jbTG1mSlgyh4DlZaMPtF8WXUwxSHowOeYCVHwF/XVuecLJTzzwrfjLPxAp6kildygK
+         GIZFmG5d6/N8z6/CATq1ii4dfcJvhKRsjRhdbbyGk8DFEDIsTchK0gjtvUxpC+iDOC1q
+         vnEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=QhugHBuoBeAcIwpcanoLwTWHJfxQHnSCegSWAvWi8kU=;
+        b=XoBGl5naVNp+MkRbIC5OXywVaAhOpabs/D4nQAMdvCKEp8SCAv8L720GkVGOFNbM3J
+         WHldsT5ZEN8YFhnW+HZXNaz2o8kMQ7OKcN0Eag+La/H0hX5vmyt6WIMSJvaNMmkJV3fB
+         upxzoWWbVYgxpL4o79UrpU4tEORqOX0aoIQjowUrWcvNIaY5mZTKt18BVazUqCjGkxes
+         C4MN8k4t4WVNfcrHX8Mv5seJIgON22ZIecCfzbmx/DiXWl/b+vlvAO/DbXiGvmcq9Lfi
+         p4XAwxP36CPdITg8toQsdzrlFmdhtFHXHEq6o8P3P0opR/o1gcAKl7mBYZXp+VQrNVBp
+         H3Lw==
+X-Gm-Message-State: APjAAAVIqoFMOg3Yyhg9t38Kes2IgHkcD1XdAxfdNEczBDkpizVHlaWx
+        6QO/XPU1Su1DIAXXp0sgaxt4Hg==
+X-Google-Smtp-Source: APXvYqy5PtVe8FLAX6kDTgdUP43dSzUlx/5JyN5cnA6nyK/VlRdXqugen7LkGUTYbhAIs7gMXx0zyg==
+X-Received: by 2002:ac8:3157:: with SMTP id h23mr84589qtb.248.1557165255314;
+        Mon, 06 May 2019 10:54:15 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id f6sm6382006qti.4.2019.05.06.10.54.13
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 06 May 2019 10:54:15 -0700 (PDT)
+Date:   Mon, 6 May 2019 10:54:07 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
+        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
+        mw@semihalf.com, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Re: [PATCH net-next 0/4] net: mvpp2: cls: Add classification
+Message-ID: <20190506105407.69ff9a08@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20190506100026.7d0094fc@bootlin.com>
+References: <20190430131429.19361-1-maxime.chevallier@bootlin.com>
+        <20190504025353.74acbb6d@cakuba.netronome.com>
+        <20190506100026.7d0094fc@bootlin.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="VS++wcV0S1rZb1Fb"
-Content-Disposition: inline
-In-Reply-To: <201905051417486865228@zte.com.cn>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 6 May 2019 10:00:26 +0200, Maxime Chevallier wrote:
+> Hello Jakub,
+> 
+> On Sat, 4 May 2019 02:53:53 -0400
+> Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+> 
+> >On Tue, 30 Apr 2019 15:14:25 +0200, Maxime Chevallier wrote:  
+> >> Compared to the first submissions, the NETIF_F_NTUPLE flag was also
+> >> removed, following Saeed's comment.    
+> >
+> >You should probably add it back, even though the stack only uses
+> >NETIF_F_NTUPLE for aRFS the ethtool APIs historically depend on the
+> >drivers doing a lot of the validation.  
+> 
+> OK my bad, reading your previous comments again, I should indeed have
+> left it.
+> 
+> I'll re-add the flag, do you think this should go through -net or wait
+> until net-next reopens ?
 
---VS++wcV0S1rZb1Fb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi!
-> > > [ Upstream commit fa3a419d2f674b431d38748cb58fb7da17ee8949 ]
-> > >
-> > > The call to of_parse_phandle returns a node pointer with refcount
-> > > incremented thus it must be explicitly decremented after the last
-> > > usage.
-> > >
-> > > Detected by coccinelle with the following warnings:
-> > > ./drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1624:1-7: ERROR: =
-missing of_node_put; acquired a node pointer with refcount incremented on l=
-ine 1569, but without a corresponding object release within this function.
-> >=20
-> > Bug is real, but fix is horrible. This already uses gotos for error
-> > handling, so use them....
-> >=20
-> > This fixes it up.
-> >=20
-> > Plus... I do not think these "of_node_put" fixes belong in
-> > stable. They are theoretical bugs; so we hold reference to device tree
-> > structure. a) it is small, b) it stays in memory, anyway. This does
-> > not fix any real problem.
-> >=20
->=20
-> Thank you very much for your comments.
-> We developed the following coccinelle SmPL to look for places where
-> there is an of_node_put on some path but not on others.
-
-I agree that the fix is good. Thanks for doing coccinelle work.
-
-> We use it to detect drivers/net/ethernet/xilinx/xilinx_axienet_main.c and=
- found the following issue:
->=20
-> static int axienet_probe(struct platform_device *pdev)
-> {
-> ...
->         struct device_node *np;
-> ...
->         if (ret) {
->                 dev_err(&pdev->dev, "unable to get DMA resource\n");
->                 goto free_netdev;  ---> leaked here
->         }
-> ...
->         if (IS_ERR(lp->dma_regs)) {
->                 dev_err(&pdev->dev, "could not map DMA regs\n");
->                 ret =3D PTR_ERR(lp->dma_regs);
->                 goto free_netdev; ---> leaked here
->         }
-> ...
->          of_node_put(np);   --->    released here
-> ...
-> free_netdev:
->         free_netdev(ndev);
->=20
->         return ret;
-> }
->=20
-> If we insmod/rmmod xilinx_emaclite.ko multiple times,=20
-> axienet_probe() may be called multiple times, then a resource leak
-> may occur.
-
-Yeah, well. I agree the bug is real. But how much memory will it leak
-during each insmod? Kilobyte? (Is it actually anything at all? I'd
-expect just reference counter to be increaed.) How often do you
-usually insmod?
-
-> At the same time, we also checked the code for handling resource leaks in=
- the current kernel
-> and found that the regular of_node_put mode is commonly used in
-> addition to the goto target mode.
-
-Ok, so this uglyness happens elsewhere. But I'd really prefer to use
-goto if it is already used in the function.
-
-Thanks,
-
-								Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---VS++wcV0S1rZb1Fb
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlzQc34ACgkQMOfwapXb+vKjLQCfR30gJwbflpVIZMeXq9XtoP1X
-bpMAn0gYdpIGkf2vx98ZqTyzLuMecomn
-=Ekqr
------END PGP SIGNATURE-----
-
---VS++wcV0S1rZb1Fb--
+I think the patch should be relatively simple and clean?  So I'd try for
+net, with a Fixes tag, it's a slight ABI correction and we are still
+in the merge window period.  So I'd go for net :)
