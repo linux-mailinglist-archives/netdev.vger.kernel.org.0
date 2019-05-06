@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BB49153B2
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 20:31:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FCE6153AF
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 20:31:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbfEFSbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 14:31:31 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:35803 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726837AbfEFSb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 14:31:28 -0400
-Received: by mail-pg1-f196.google.com with SMTP id h1so6883738pgs.2
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 11:31:28 -0700 (PDT)
+        id S1726964AbfEFSbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 14:31:34 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:36228 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726927AbfEFSbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 14:31:32 -0400
+Received: by mail-pf1-f196.google.com with SMTP id v80so7216509pfa.3
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 11:31:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=joelfernandes.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xhmLyaLAyu6ZncCjM6Pqxqgn8DvO3yzF5Ng7O6wfqzc=;
-        b=xbBnkKUCkXZY8xbWHpA3tGU2J7SUUx7/NLgLAt3tyGUz03dKifE0RSHJtvpC+RPCPv
-         IBlhboZr1JR6xw9oxPJLxTvvJ748640oM2RDzJFONho4jUOlkEZD8ihYogfdw8deWRWT
-         /FwK3KlFafEFliWQl5Icqlt4W/GFxdGVylpIs=
+        bh=IfCUWTvSpe/ObcPM/LvXdQ0XKYCGSq77k0PD73RxjWI=;
+        b=EIe86cQ7K8TderF8T7VdJ9IfpOXHbQ4Dzy2wT0wXDDyf6obptddgHxnwhoZi+ehABK
+         yOmUlKW35Oo/Alh8q2aCAPAxQyxZ/AoBBlb1QCOj3Df7DId59pn45lc+9Tf4jXpF0Yd4
+         PloBwXKn79IsNG6avU6/JP0r8IicZzIyVLyOU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xhmLyaLAyu6ZncCjM6Pqxqgn8DvO3yzF5Ng7O6wfqzc=;
-        b=kvj9JX1buEW44c/5JmcwcHcRVAUAGQxZMv8c1+a15FPVSVHzH9rB+N6vmL08EgUJEq
-         Y0Mhd4eLwN7XYgU+wZy0p7qfZDHbj+L4UdEkSSSGI8/dcRufYmUKH2u4zxvlQ5GvJOcW
-         03WS9bpB9vJ4sr5vOiPWqC99pQJPbfUqd1yLqzXXB17SKV6pMxVQ2EJx6Si4ppZpSp/3
-         CX6jlZfIZUsPOaI/PnQ14o5b+M6HQV0BZa5QBiSSeaJ3Yv9ZoGRhBC1+U+bGnxT2ajki
-         z30p8dWnCG3HcJTavDiOcIi6R1ovp9mUuCVEtZ/v5irfb9ByThmRv/iZJlozeUAkgbSw
-         5CaA==
-X-Gm-Message-State: APjAAAWGOy005iJSXFGhk0c3HmG+KWIBZhWWp1ctuBpLK/8+mvu5ktjY
-        B85uhi4so6DewHog54r44s0pHw==
-X-Google-Smtp-Source: APXvYqwcC5Kplq4r8tbbGJ9eiRVDoJAXyJYR3TAcvVzM6mKAQaUCaRbQ9kZ6/gmln3JqJYWTMS9nww==
-X-Received: by 2002:a63:d345:: with SMTP id u5mr32124227pgi.83.1557167487924;
-        Mon, 06 May 2019 11:31:27 -0700 (PDT)
+        bh=IfCUWTvSpe/ObcPM/LvXdQ0XKYCGSq77k0PD73RxjWI=;
+        b=Fjy6iDX6Ycif6XqfwML+oL49dL7xBjfseC6TPT4UZcu2Bv/Odkgwwr5imx9seyeYBz
+         U++DoPjdXd/ITIL8Pf15e4VQIpQAHR65ClAb35Sr4apG+bddswNXZo3XjgD2dkV9zNo4
+         /Z0mND4c8zaIJge+jrz2fq0pKhGeQ3OZYROtb56YtOJKECPKjds3XwTMdQV1hFIvsEW8
+         44AdU/FxxhrKWi4mG16WLAYOPr7vI/z4t4ho8/dyQhYS47ELnHdstiuAv3NI3Y+atssf
+         TlgfQSqi/y3d03vR/Q0PGPJVgg0V/DvMjrNBOPnvoO56CQUijrnulmL5hj6dzJOH3fvv
+         dV1w==
+X-Gm-Message-State: APjAAAVHS+Yy89BIJlJ2RlkB/h7YNkt/hw2w8X8DpzQEI6V1e7/fy/JU
+        4rhoBU/Q96yDERXvzzNdlGpv4Q==
+X-Google-Smtp-Source: APXvYqw87aBaFaX0JfldiFHxy8FnYx3ibxSNeKODs8Fn08SOhD4IlfvMrdf+aewDAAvL101n3sCA7A==
+X-Received: by 2002:a63:a18:: with SMTP id 24mr33507004pgk.332.1557167491372;
+        Mon, 06 May 2019 11:31:31 -0700 (PDT)
 Received: from joelaf.cam.corp.google.com ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id h30sm21412414pgi.38.2019.05.06.11.31.24
+        by smtp.gmail.com with ESMTPSA id h30sm21412414pgi.38.2019.05.06.11.31.28
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 06 May 2019 11:31:27 -0700 (PDT)
+        Mon, 06 May 2019 11:31:30 -0700 (PDT)
 From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
@@ -64,9 +64,9 @@ Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Tamir Carmeli <carmeli.tamir@gmail.com>,
         Yonghong Song <yhs@fb.com>
-Subject: [PATCH v2 2/4] bpf: Add support for reading kernel pointers
-Date:   Mon,  6 May 2019 14:31:14 -0400
-Message-Id: <20190506183116.33014-2-joel@joelfernandes.org>
+Subject: [PATCH v2 3/4] bpf: Add warning when program uses deprecated bpf_probe_read
+Date:   Mon,  6 May 2019 14:31:15 -0400
+Message-Id: <20190506183116.33014-3-joel@joelfernandes.org>
 X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
 In-Reply-To: <20190506183116.33014-1-joel@joelfernandes.org>
 References: <20190506183116.33014-1-joel@joelfernandes.org>
@@ -77,83 +77,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpf_probe_read function is ambiguous in whether the pointer being
-read is a kernel or user one. Add a specific function for kernel pointer
-in this patch. Previous patches add it for userspace pointers.
+bpf_probe_read is deprecated and ambiguous. Add a warning if programs
+still use it, so that they may be moved to not use it. After sufficient
+time, the warning can be removed.
 
 Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 ---
- include/uapi/linux/bpf.h |  9 ++++++++-
- kernel/trace/bpf_trace.c | 22 ++++++++++++++++++++++
- 2 files changed, 30 insertions(+), 1 deletion(-)
+ kernel/bpf/verifier.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 8146784b9fe3..05af4e1151d3 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2437,6 +2437,12 @@ union bpf_attr {
-  *             Read a userspace pointer safely.
-  *     Return
-  *             0 on success or negative error
-+ *
-+ * int bpf_probe_read_kernel(void *dst, int size, void *src)
-+ *     Description
-+ *             Read a kernel pointer safely.
-+ *     Return
-+ *             0 on success or negative error
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2538,7 +2544,8 @@ union bpf_attr {
- 	FN(tcp_sock),			\
- 	FN(skb_ecn_set_ce),		\
- 	FN(get_listener_sock),		\
--	FN(probe_read_user),
-+	FN(probe_read_user),		\
-+	FN(probe_read_kernel),
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 09d5d972c9ff..f8cc77e85b48 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -7656,6 +7656,10 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+ 		if (insn->src_reg == BPF_PSEUDO_CALL)
+ 			continue;
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 7485deb0777f..99dc354fd62b 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -153,6 +153,26 @@ static const struct bpf_func_proto bpf_probe_read_proto = {
- 	.arg3_type	= ARG_ANYTHING,
- };
- 
-+BPF_CALL_3(bpf_probe_read_kernel, void *, dst, u32, size, const void *, unsafe_ptr)
-+{
-+	int ret;
++		if (insn->imm == BPF_FUNC_probe_read)
++			pr_warn_once("bpf_probe_read is deprecated, please use "
++				     "bpf_probe_read_{kernel,user} in eBPF programs.\n");
 +
-+	ret = probe_kernel_read(dst, unsafe_ptr, size);
-+	if (unlikely(ret < 0))
-+		memset(dst, 0, size);
-+
-+	return ret;
-+}
-+
-+static const struct bpf_func_proto bpf_probe_read_kernel_proto = {
-+	.func		= bpf_probe_read_kernel,
-+	.gpl_only	= true,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_UNINIT_MEM,
-+	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
-+	.arg3_type	= ARG_ANYTHING,
-+};
-+
- BPF_CALL_3(bpf_probe_read_user, void *, dst, u32, size, const void *, unsafe_ptr)
- {
- 	int ret;
-@@ -593,6 +613,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_probe_read_proto;
- 	case BPF_FUNC_probe_read_user:
- 		return &bpf_probe_read_user_proto;
-+	case BPF_FUNC_probe_read_kernel:
-+		return &bpf_probe_read_kernel_proto;
- 	case BPF_FUNC_ktime_get_ns:
- 		return &bpf_ktime_get_ns_proto;
- 	case BPF_FUNC_tail_call:
+ 		if (insn->imm == BPF_FUNC_get_route_realm)
+ 			prog->dst_needed = 1;
+ 		if (insn->imm == BPF_FUNC_get_prandom_u32)
 -- 
 2.21.0.1020.gf2820cf01a-goog
 
