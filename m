@@ -2,88 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6758F1430A
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 01:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE9AD1431F
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 02:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728140AbfEEXdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 19:33:32 -0400
-Received: from mail.us.es ([193.147.175.20]:34086 "EHLO mail.us.es"
+        id S1727913AbfEFABq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 20:01:46 -0400
+Received: from foss.arm.com ([217.140.101.70]:39212 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728084AbfEEXdW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 May 2019 19:33:22 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id D9E9211ED83
-        for <netdev@vger.kernel.org>; Mon,  6 May 2019 01:33:20 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C8780DA705
-        for <netdev@vger.kernel.org>; Mon,  6 May 2019 01:33:20 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id BE1E0DA703; Mon,  6 May 2019 01:33:20 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id D2204DA701;
-        Mon,  6 May 2019 01:33:18 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 06 May 2019 01:33:18 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (sys.soleta.eu [212.170.55.40])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 9F7754265A31;
-        Mon,  6 May 2019 01:33:18 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 12/12] netfilter: slightly optimize nf_inet_addr_mask
-Date:   Mon,  6 May 2019 01:33:05 +0200
-Message-Id: <20190505233305.13650-13-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190505233305.13650-1-pablo@netfilter.org>
-References: <20190505233305.13650-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727285AbfEFABp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 May 2019 20:01:45 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C9054374;
+        Sun,  5 May 2019 17:01:44 -0700 (PDT)
+Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.194.71])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1FA823F238;
+        Sun,  5 May 2019 17:01:40 -0700 (PDT)
+Date:   Mon, 6 May 2019 01:01:38 +0100
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
+Message-ID: <20190506000137.akzv4rj5sasy6fby@e107158-lin.cambridge.arm.com>
+References: <20190502204958.7868-1-joel@joelfernandes.org>
+ <20190503121234.6don256zuvfjtdg6@e107158-lin.cambridge.arm.com>
+ <20190503134935.GA253329@google.com>
+ <20190505110423.u7g3f2viovvgzbtn@e107158-lin.cambridge.arm.com>
+ <20190505132949.GB3076@localhost>
+ <20190505144608.u3vsxyz5huveuskx@e107158-lin.cambridge.arm.com>
+ <20190505155223.GA4976@localhost>
+ <20190505180313.GA80924@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190505180313.GA80924@google.com>
+User-Agent: NeoMutt/20171215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Li RongQing <lirongqing@baidu.com>
+On 05/05/19 14:03, Joel Fernandes wrote:
+> On Sun, May 05, 2019 at 03:52:23PM +0000, Joel Fernandes wrote:
+> > On Sun, May 05, 2019 at 03:46:08PM +0100, Qais Yousef wrote:
+> > > On 05/05/19 13:29, Joel Fernandes wrote:
+> > > > On Sun, May 05, 2019 at 12:04:24PM +0100, Qais Yousef wrote:
+> > > > > On 05/03/19 09:49, Joel Fernandes wrote:
+> > > > > > On Fri, May 03, 2019 at 01:12:34PM +0100, Qais Yousef wrote:
+> > > > > > > Hi Joel
+> > > > > > > 
+> > > > > > > On 05/02/19 16:49, Joel Fernandes (Google) wrote:
+> > > > > > > > The eBPF based opensnoop tool fails to read the file path string passed
+> > > > > > > > to the do_sys_open function. This is because it is a pointer to
+> > > > > > > > userspace address and causes an -EFAULT when read with
+> > > > > > > > probe_kernel_read. This is not an issue when running the tool on x86 but
+> > > > > > > > is an issue on arm64. This patch adds a new bpf function call based
+> > > > > > > 
+> > > > > > > I just did an experiment and if I use Android 4.9 kernel I indeed fail to see
+> > > > > > > PATH info when running opensnoop. But if I run on 5.1-rc7 opensnoop behaves
+> > > > > > > correctly on arm64.
+> > > > > > > 
+> > > > > > > My guess either a limitation that was fixed on later kernel versions or Android
+> > > > > > > kernel has some strict option/modifications that make this fail?
+> > > > > > 
+> > > > > > Thanks a lot for checking, yes I was testing 4.9 kernel with this patch (pixel 3).
+> > > > > > 
+> > > > > > I am not sure what has changed since then, but I still think it is a good
+> > > > > > idea to make the code more robust against such future issues anyway. In
+> > > > > > particular, we learnt with extensive discussions that user/kernel pointers
+> > > > > > are not necessarily distinguishable purely based on their address.
+> > > > > 
+> > > > > Yes I wasn't arguing against that. But the commit message is misleading or
+> > > > > needs more explanation at least. I tried 4.9.y stable and arm64 worked on that
+> > > > > too. Why do you think it's an arm64 problem?
+> > > > 
+> > > > Well it is broken on at least on at least one arm64 device and the patch I
+> > > > sent fixes it. We know that the bpf is using wrong kernel API so why not fix
+> > > > it? Are you saying we should not fix it like in this patch? Or do you have
+> > > > another fix in mind?
+> > > 
+> > > Again I have no issue with the new API. But the claim that it's a fix for
+> > > a broken arm64 is a big stretch. AFAICT you don't understand the root cause of
+> > > why copy_to_user_inatomic() fails in your case. Given that Android 4.9 has
+> > > its own patches on top of 4.9 stable, it might be something that was introduced
+> > > in one of these patches that breaks opensnoop, and by making it use the new API
+> > > you might be simply working around the problem. All I can see is that vanilla
+> > > 4.9 stable works on arm64.
+> > 
+> > Agreed that commit message could be improved. I believe issue is something to
+> > do with differences in 4.9 PAN emulation backports. AIUI PAN was introduced
+> > in upstream only in 4.10 so 4.9 needed backports.
+> > 
+> > I did not root cause this completely because "doing the right thing" fixed
+> > the issue. I will look more closely once I am home.
+> > 
+> > Thank you.
+> 
+> +Mark, Will since discussion is about arm64 arch code.
+> 
+> The difference between observing the bug and everything just working seems to
+> be the set_fs(USER_DS) as done by Masami's patch that this patch is based on.
+> The following diff shows 'ret' as 255 when set_fs(KERN_DS) is used, and then
+> after we retry with set_fs(USER_DS), the read succeeds.
+> 
+> diff --git a/mm/maccess.c b/mm/maccess.c
+> index 78f9274dd49d..d3e01a33c712 100644
+> --- a/mm/maccess.c
+> +++ b/mm/maccess.c
+> @@ -32,9 +32,20 @@ long __probe_kernel_read(void *dst, const void *src, size_t size)
+>  	pagefault_disable();
+>  	ret = __copy_from_user_inatomic(dst,
+>  			(__force const void __user *)src, size);
+> +	trace_printk("KERNEL_DS: __copy_from_user_inatomic: ret=%d\n", ret);
+>  	pagefault_enable();
+>  	set_fs(old_fs);
+>  
+> +	if (ret) {
+> +	set_fs(USER_DS);
+> +	pagefault_disable();
+> +	ret = __copy_from_user_inatomic(dst,
+> +			(__force const void __user *)src, size);
+> +	trace_printk("RETRY WITH USER_DS: __copy_from_user_inatomic: ret=%d\n", ret);
+> +	pagefault_enable();
+> +	set_fs(old_fs);
+> +	}
+> +
+>  	return ret ? -EFAULT : 0;
+>  }
+>  EXPORT_SYMBOL_GPL(probe_kernel_read);
+> 
+> In initially thought this was because of the addr_limit pointer masking done
+> by this patch from Mark Rutland "arm64: Use pointer masking to limit uaccess
+> speculation"
+> 
+> However removing this masking still makes it fail with KERNEL_DS.
+> 
+> Fwiw, I am still curious which other paths in arm64 check the addr_limit
+> which might make the __copy_from_user_inatomic fail if the set_fs is not
+> setup correctly.
 
-using 64bit computation to slightly optimize nf_inet_addr_mask
+PAN and UAO configs seem to affect its behavior. I lost access to my board to
+play with this myself and will have to wait until I get back to the office on
+Tuesday to revive it.
 
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/linux/netfilter.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+> 
+> Either way, I will resubmit the patch with the commit message fixed correctly
+> as we agreed and also address Alexei's comments.
 
-diff --git a/include/linux/netfilter.h b/include/linux/netfilter.h
-index a7252f3baeb0..996bc247ef6e 100644
---- a/include/linux/netfilter.h
-+++ b/include/linux/netfilter.h
-@@ -41,10 +41,19 @@ static inline void nf_inet_addr_mask(const union nf_inet_addr *a1,
- 				     union nf_inet_addr *result,
- 				     const union nf_inet_addr *mask)
- {
-+#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
-+	const unsigned long *ua = (const unsigned long *)a1;
-+	unsigned long *ur = (unsigned long *)result;
-+	const unsigned long *um = (const unsigned long *)mask;
-+
-+	ur[0] = ua[0] & um[0];
-+	ur[1] = ua[1] & um[1];
-+#else
- 	result->all[0] = a1->all[0] & mask->all[0];
- 	result->all[1] = a1->all[1] & mask->all[1];
- 	result->all[2] = a1->all[2] & mask->all[2];
- 	result->all[3] = a1->all[3] & mask->all[3];
-+#endif
- }
- 
- int netfilter_init(void);
--- 
-2.11.0
+Thanks
 
+--
+Qais Yousef
