@@ -2,84 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23EFE14A57
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 14:55:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11F2914A87
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 15:03:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbfEFMzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 08:55:38 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55727 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725852AbfEFMzi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 May 2019 08:55:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=BgoSaHcSVXeUVaFDGwlvfT0vdS0WcIHzaajAD/u3L3U=; b=Q6xiMyQ3DRmztW7tLFke5nxDPs
-        moHuR1ihA/uJVKKZ+h6SOxFgybRSOYuvPuvFTFi7nYmUB4w5BNEXV5FP7QYdcqc8AHEIEtJ00cxPo
-        /t6oxbTjyYW24CWKqlegJGmQfEJ3z5OzlHUFM+SA9vhrEHjcjrmU5mZ9gcZbFKwpSPMA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hNd9P-0004hc-JZ; Mon, 06 May 2019 14:55:23 +0200
-Date:   Mon, 6 May 2019 14:55:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ruslan Babayev <ruslan@babayev.com>
-Cc:     linux@armlinux.org.uk, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        mika.westerberg@linux.intel.com, wsa@the-dreams.de,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-acpi@vger.kernel.org, xe-linux-external@cisco.com
-Subject: Re: [PATCH net-next 2/2] net: phy: sfp: enable i2c-bus detection on
- ACPI based systems
-Message-ID: <20190506125523.GA15291@lunn.ch>
-References: <20190505220524.37266-3-ruslan@babayev.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190505220524.37266-3-ruslan@babayev.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1726085AbfEFNDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 09:03:41 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46612 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725852AbfEFNDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 09:03:41 -0400
+Received: by mail-pg1-f196.google.com with SMTP id t187so2310601pgb.13
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 06:03:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=WKdP+UEeopxgjQSMgreuh4UMPqlIGzPch7aMirej5P8=;
+        b=AV5QDLEu1wdmXRBBfi8ckacZGpEIKwp1xLQmzL8b8Thy5LjDNjHtGYlFTVplHlKepR
+         ux9pKBXBdBITSsr7NnPcSLbveiO052ZLiv2q5ebVPRDHMf4fg5UkRr9lYKr0ekED5ffL
+         00ps7VA7RweK/2HfSKvmeiImOJQrwhnjnb13rIaOWpomuiQSMNNrpg+J4b0fT/ajHl6m
+         jp7Nw7eV6obaZOGJFmkwGBfYPeWy9XZDD5yTsjlwRx1jms+G8m9kXYXepSPDRlEHAWYo
+         VeG6MDWV6Pn4QiZC5WDgOH1Q3M9EFrAQjDrAZLqpk5chnPzpSOb1PTlpL2JBaHNlctQz
+         nU2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=WKdP+UEeopxgjQSMgreuh4UMPqlIGzPch7aMirej5P8=;
+        b=kQftVwVANCQSjvtA93fxHPnYzJWY6n6aY0taLwBGg+sf4mlk1+J5KMyJXvdNLa81iW
+         NK206/DFMz0Eh2fDqr3q7A7h+ZvXGTzsGwYG8Z2Eg+rE6K5bKx9t7HIVnlVl1Ec6lBLE
+         8GDElIJ4B5aWqdcJzZ96uqy9vRLMTQw1ggczMLJ0JGVWmqTfJ8l6KMNqXitYj1t7AAv1
+         nZOJzdcY3Q0JmlLIISnzXvhoBS6+wAMlXCf1T69D9+Y7TNeTHxcla/gThgCxXOXL4uEa
+         edyWOXTIR+loYCyP1U0wxGMY8HOrdoNst5mH+jRDGnZd5bgNEWistgpd+DxInFjA/tn7
+         FExA==
+X-Gm-Message-State: APjAAAWGUHCW9/ikFEyhUjZZ73e/O8M92arQgID0h7CAyKt5QmCobOd4
+        m1A6yei7Jre/j83jjOdnDxA9bwuywA==
+X-Google-Smtp-Source: APXvYqyYnHvbEaiBPBiZj2us4ArsiPRnQGVQhihFfrBhwbS29nZiaoHjBTPdBWoD2YfoLCezUaj7Qw==
+X-Received: by 2002:a65:4b88:: with SMTP id t8mr31654704pgq.374.1557147820449;
+        Mon, 06 May 2019 06:03:40 -0700 (PDT)
+Received: from localhost.localdomain ([114.71.48.108])
+        by smtp.gmail.com with ESMTPSA id h4sm110128pgn.13.2019.05.06.06.03.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 May 2019 06:03:39 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] samples: bpf: fix style in bpf_load
+Date:   Mon,  6 May 2019 22:03:10 +0900
+Message-Id: <20190506130310.12803-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 05, 2019 at 03:05:23PM -0700, Ruslan Babayev wrote:
-> Lookup I2C adapter using the "i2c-bus" device property on ACPI based
-> systems similar to how it's done with DT.
-> 
-> An example DSD describing an SFP on an ACPI based system:
-> 
-> Device (SFP0)
-> {
->     Name (_HID, "PRP0001")
->     Name (_DSD, Package ()
->     {
->         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->         Package () {
->             Package () { "compatible", "sff,sfp" },
->             Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
->         },
->     })
-> }
+This commit fixes style problem in samples/bpf/bpf_load.c
 
-Hi Ruslan
+Styles that have been changed are:
+ - Magic string use of 'DEBUGFS'
+ - Useless zero initialization of a global variable
+ - Minor style fix with whitespace
 
-So this gives you the I2C bus. But what about the 6 GPIOs? And the
-maximum power property? You are defining the ACPI interface which from
-now on everybody has to follow. So it would be good to make it
-complete. ACPI also seems to be poorly documented. There does not
-appear to be anything like Documentation/devicetree. So having one
-patch, with a good commit message, which implements everything makes
-it easier for those that follow.
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+---
+ samples/bpf/bpf_load.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-This appears to be enough to get a very minimal SFP instantiated. But
-then what?  How are you using it? How do you instantiate a Phylink
-instance for the MAC? How do you link the SFP to the Phylink?
+diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
+index eae7b635343d..e71d23d2a0ff 100644
+--- a/samples/bpf/bpf_load.c
++++ b/samples/bpf/bpf_load.c
+@@ -40,7 +40,7 @@ int prog_cnt;
+ int prog_array_fd = -1;
+ 
+ struct bpf_map_data map_data[MAX_MAPS];
+-int map_data_count = 0;
++int map_data_count;
+ 
+ static int populate_prog_array(const char *event, int prog_fd)
+ {
+@@ -57,6 +57,7 @@ static int populate_prog_array(const char *event, int prog_fd)
+ static int write_kprobe_events(const char *val)
+ {
+ 	int fd, ret, flags;
++	char buf[256];
+ 
+ 	if (val == NULL)
+ 		return -1;
+@@ -65,7 +66,9 @@ static int write_kprobe_events(const char *val)
+ 	else
+ 		flags = O_WRONLY | O_APPEND;
+ 
+-	fd = open("/sys/kernel/debug/tracing/kprobe_events", flags);
++	strcpy(buf, DEBUGFS);
++	strcat(buf, "kprobe_events");
++	fd = open(buf, flags);
+ 
+ 	ret = write(fd, val, strlen(val));
+ 	close(fd);
+@@ -490,8 +493,8 @@ static int load_elf_maps_section(struct bpf_map_data *maps, int maps_shndx,
+ 
+ 		/* Verify no newer features were requested */
+ 		if (validate_zero) {
+-			addr = (unsigned char*) def + map_sz_copy;
+-			end  = (unsigned char*) def + map_sz_elf;
++			addr = (unsigned char *) def + map_sz_copy;
++			end  = (unsigned char *) def + map_sz_elf;
+ 			for (; addr < end; addr++) {
+ 				if (*addr != 0) {
+ 					free(sym);
+-- 
+2.17.1
 
-Before accepting this patch, i would like to know more about the
-complete solution.
-
-Thanks
-	Andrew
