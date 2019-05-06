@@ -2,85 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 324C114D7C
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C251508F
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:45:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729444AbfEFOv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 10:51:27 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:33747 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729483AbfEFOvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 10:51:20 -0400
-Received: by mail-qk1-f193.google.com with SMTP id k189so788271qkc.0;
-        Mon, 06 May 2019 07:51:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=EUqbtnBDML3NXPrwjM3lOcCy0+gNa0GHK0Zw6wsv7vk=;
-        b=AXTDnLjU4V5dPhIaqTfxEvyLYGM6Ju3eFNv0qIjyCiDhH80SqzSBl8gqCzk71+F8En
-         6FZBzMHUG20Ea88H/H4v3tV6iodGgF81A4RWwPpTJptIvVzUiMQUN3vx/S2PGtidPIVu
-         txpEda5KDfCAQvKaGidI40u3a2CT6ltxytWXxIgllylF3HU7mFmHw2Z3Lhy59yXdMvLM
-         y6v6ykITIP9UnL7CtW8v+klC7wr/X2vN5DT1hSv9JjdgeBNj78eEV77CVowZfYziAiGs
-         24NBtWK6UJTL7Z4R7jdP+qXnenOUqbd0eKNm0fGpbpg8kRu6C9MHRRt8KVF/35B4F8N/
-         wEQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=EUqbtnBDML3NXPrwjM3lOcCy0+gNa0GHK0Zw6wsv7vk=;
-        b=BBSKYS91VIRrvwbeJ/IEG5BZT5sFbgDcbDcbikYZPQ/PWwiMnwfF1BZ30qeWbw46as
-         8+AXx+e6XlpS+IJAy2Zf1Ougm2IYP+2Rt+Lrh7KUUBwpbw8Y9DLHWDFnJmKvC4Kqp8os
-         DYXCobpAH/bJLqoe9Fa903h5V1I3dlo2i0wVaM7df3DmTIYLRh5N3fr0Q0gaE4hKlvyA
-         oEJIKqA6nOVpK31aDXonlciehtea0wwRlETwFswzvtFqR4LZfqaj/+zMZ1C9dTgW4IAp
-         zsblnQjyWAy3xkJMw2QAneHVKTyaDGR/1unOowkBqQZiC9/6jocoyQthoZauJR4KlvIf
-         5RPQ==
-X-Gm-Message-State: APjAAAWMbzkMPXvbghZbWd7NMMQyRu5hFO0ZHQ9AgTMpi9YrC7mbIHy4
-        VNTT6qERaidtOZPYa3gpIP8=
-X-Google-Smtp-Source: APXvYqxTY7WCj2xqd8jZnjpQFVhDqMsXc162OV4Ev36zk054hC0qFGnC4etgldMyVboC8w5Y9MBvNA==
-X-Received: by 2002:a37:52c1:: with SMTP id g184mr11795366qkb.338.1557154279804;
-        Mon, 06 May 2019 07:51:19 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id m62sm5695639qkd.68.2019.05.06.07.51.18
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 06 May 2019 07:51:18 -0700 (PDT)
-Date:   Mon, 6 May 2019 10:51:17 -0400
-Message-ID: <20190506105117.GB24823@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH 2/5] net: dsa: mv88e6xxx: rename smi read/write
- functions
-In-Reply-To: <8d14f3e0-4b95-900c-55f0-dfff30ae655f@prevas.dk>
-References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
- <20190501193126.19196-3-rasmus.villemoes@prevas.dk>
- <20190503175732.GB4060@t480s.localdomain>
- <8d14f3e0-4b95-900c-55f0-dfff30ae655f@prevas.dk>
+        id S1726814AbfEFPp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 11:45:29 -0400
+Received: from www62.your-server.de ([213.133.104.62]:35698 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726321AbfEFPp3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 11:45:29 -0400
+Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hNfNm-0007gy-PX; Mon, 06 May 2019 17:18:22 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: pull-request: bpf-next 2019-05-06
+Date:   Mon,  6 May 2019 17:18:22 +0200
+Message-Id: <20190506151822.19628-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.9.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25441/Mon May  6 10:04:24 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rasmus,
+Hi David,
 
-On Mon, 6 May 2019 05:57:11 +0000, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
+The following pull-request contains BPF updates for your *net-next* tree.
 
-> > I have a preparatory patch which does almost exactly that. I'm sending it
-> > to simplify this patchset.
-> 
-> OK, I'll hold off sending a v2 until I see how 1/5 and 2/5 are obsoleted
-> by your patch(es).
+The main changes are:
 
-You may rebase your patches now and add your new implementation of
-register access through SMI in the smi.c file if that is necessary.
+1) Two AF_XDP libbpf fixes for socket teardown; first one an invalid
+   munmap and the other one an invalid skmap cleanup, both from Björn.
 
+2) More graceful CONFIG_DEBUG_INFO_BTF handling when pahole is not
+   present in the system to generate vmlinux btf info, from Andrii.
 
-Thanks,
+3) Fix libbpf and thus fix perf build error with uClibc on arc
+   architecture, from Vineet.
 
-	Vivien
+4) Fix missing libbpf_util.h header install in libbpf, from William.
+
+5) Exclude bash-completion/bpftool from .gitignore pattern, from Masahiro.
+
+6) Fix up rlimit in test_libbpf_open kselftest test case, from Yonghong.
+
+7) Minor misc cleanups.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+----------------------------------------------------------------
+
+The following changes since commit a734d1f4c2fc962ef4daa179e216df84a8ec5f84:
+
+  net: openvswitch: return an error instead of doing BUG_ON() (2019-05-04 01:36:36 -0400)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to d24ed99b3b270c6de8f47c25d709b5f6ef7d3807:
+
+  libbpf: remove unnecessary cast-to-void (2019-05-06 11:35:17 +0200)
+
+----------------------------------------------------------------
+Alexei Starovoitov (1):
+      Merge branch 'af_xdp-fixes'
+
+Andrii Nakryiko (1):
+      kbuild: tolerate missing pahole when generating BTF
+
+Björn Töpel (3):
+      libbpf: fix invalid munmap call
+      libbpf: proper XSKMAP cleanup
+      libbpf: remove unnecessary cast-to-void
+
+Masahiro Yamada (1):
+      bpftool: exclude bash-completion/bpftool from .gitignore pattern
+
+Vineet Gupta (1):
+      tools/bpf: fix perf build error with uClibc (seen on ARC)
+
+William Tu (1):
+      libbpf: add libbpf_util.h to header install.
+
+Yonghong Song (1):
+      selftests/bpf: set RLIMIT_MEMLOCK properly for test_libbpf_open.c
+
+YueHaibing (1):
+      bpf: Use PTR_ERR_OR_ZERO in bpf_fd_sk_storage_update_elem()
+
+ net/core/bpf_sk_storage.c                      |   2 +-
+ scripts/link-vmlinux.sh                        |   5 +
+ tools/bpf/bpftool/.gitignore                   |   2 +-
+ tools/lib/bpf/Makefile                         |   1 +
+ tools/lib/bpf/bpf.c                            |   2 +
+ tools/lib/bpf/xsk.c                            | 184 +++++++++++++------------
+ tools/testing/selftests/bpf/test_libbpf_open.c |   2 +
+ 7 files changed, 106 insertions(+), 92 deletions(-)
