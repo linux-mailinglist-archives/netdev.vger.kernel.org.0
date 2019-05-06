@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F1EE14B2C
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 15:49:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E06F14B5B
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 15:57:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726349AbfEFNta (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 09:49:30 -0400
-Received: from www62.your-server.de ([213.133.104.62]:38266 "EHLO
+        id S1726261AbfEFN51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 09:57:27 -0400
+Received: from www62.your-server.de ([213.133.104.62]:40660 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726046AbfEFNta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 09:49:30 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        with ESMTP id S1725853AbfEFN51 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 09:57:27 -0400
+Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1hNdzi-0006uv-Tv; Mon, 06 May 2019 15:49:27 +0200
+        id 1hNe7Q-0007Zq-VV; Mon, 06 May 2019 15:57:25 +0200
 Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89)
         (envelope-from <daniel@iogearbox.net>)
-        id 1hNdzi-000F2F-MY; Mon, 06 May 2019 15:49:26 +0200
-Subject: Re: [PATCH v6 bpf-next 02/17] bpf: verifier: mark verified-insn with
- sub-register zext flag
+        id 1hNe7Q-0001ty-IQ; Mon, 06 May 2019 15:57:24 +0200
+Subject: Re: [PATCH v6 bpf-next 01/17] bpf: verifier: offer more accurate
+ helper function arg and return type
 To:     Jiong Wang <jiong.wang@netronome.com>, alexei.starovoitov@gmail.com
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         oss-drivers@netronome.com
 References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
- <1556880164-10689-3-git-send-email-jiong.wang@netronome.com>
+ <1556880164-10689-2-git-send-email-jiong.wang@netronome.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <76304717-347f-990a-2a5a-0999ebbc3b70@iogearbox.net>
-Date:   Mon, 6 May 2019 15:49:23 +0200
+Message-ID: <2c83afa7-d3ba-0881-e98f-81a406367f93@iogearbox.net>
+Date:   Mon, 6 May 2019 15:57:23 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
  Thunderbird/52.3.0
 MIME-Version: 1.0
-In-Reply-To: <1556880164-10689-3-git-send-email-jiong.wang@netronome.com>
+In-Reply-To: <1556880164-10689-2-git-send-email-jiong.wang@netronome.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -46,144 +46,58 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 05/03/2019 12:42 PM, Jiong Wang wrote:
-> eBPF ISA specification requires high 32-bit cleared when low 32-bit
-> sub-register is written. This applies to destination register of ALU32 etc.
-> JIT back-ends must guarantee this semantic when doing code-gen.
+> BPF helper call transfers execution from eBPF insns to native functions
+> while verifier insn walker only walks eBPF insns. So, verifier can only
+> knows argument and return value types from explicit helper function
+> prototype descriptions.
 > 
-> x86-64 and arm64 ISA has the same semantic, so the corresponding JIT
-> back-end doesn't need to do extra work. However, 32-bit arches (arm, nfp
-> etc.) and some other 64-bit arches (powerpc, sparc etc), need explicit zero
-> extension sequence to meet such semantic.
+> For 32-bit optimization, it is important to know whether argument (register
+> use from eBPF insn) and return value (register define from external
+> function) is 32-bit or 64-bit, so corresponding registers could be
+> zero-extended correctly.
 > 
-> This is important, because for code the following:
+> For arguments, they are register uses, we conservatively treat all of them
+> as 64-bit at default, while the following new bpf_arg_type are added so we
+> could start to mark those frequently used helper functions with more
+> accurate argument type.
 > 
->   u64_value = (u64) u32_value
->   ... other uses of u64_value
+>   ARG_CONST_SIZE32
+>   ARG_CONST_SIZE32_OR_ZERO
+
+For the above two, I was wondering is there a case where the passed size is
+not used as 32 bit aka couldn't we generally assume 32 bit here w/o adding
+these two extra arg types? For ARG_ANYTHING32 and RET_INTEGER64 definitely
+makes sense (btw, opt-in value like RET_INTEGER32 might have been easier for
+reviewing converted helpers).
+
+>   ARG_ANYTHING32
 > 
-> compiler could exploit the semantic described above and save those zero
-> extensions for extending u32_value to u64_value. Hardware, runtime, or BPF
-> JIT back-ends, are responsible for guaranteeing this. Some benchmarks show
-> ~40% sub-register writes out of total insns, meaning ~40% extra code-gen (
-> could go up to more for some arches which requires two shifts for zero
-> extension) because JIT back-end needs to do extra code-gen for all such
-> instructions.
+> A few helper functions shown up frequently inside Cilium bpf program are
+> updated using these new types.
 > 
-> However this is not always necessary in case u32_value is never cast into
-> a u64, which is quite normal in real life program. So, it would be really
-> good if we could identify those places where such type cast happened, and
-> only do zero extensions for them, not for the others. This could save a lot
-> of BPF code-gen.
+> For return values, they are register defs, we need to know accurate width
+> for correct zero extensions. Given most of the helper functions returning
+> integers return 32-bit value, a new RET_INTEGER64 is added to make those
+> functions return 64-bit value. All related helper functions are updated.
 > 
-> Algo:
->  - Split read flags into READ32 and READ64.
-> 
->  - Record indices of instructions that do sub-register def (write). And
->    these indices need to stay with reg state so path pruning and bpf
->    to bpf function call could be handled properly.
-> 
->    These indices are kept up to date while doing insn walk.
-> 
->  - A full register read on an active sub-register def marks the def insn as
->    needing zero extension on dst register.
-> 
->  - A new sub-register write overrides the old one.
-> 
->    A new full register write makes the register free of zero extension on
->    dst register.
-> 
->  - When propagating read64 during path pruning, also marks def insns whose
->    defs are hanging active sub-register.
-> 
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 > Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
-
 [...]
-> +/* This function is supposed to be used by the following 32-bit optimization
-> + * code only. It returns TRUE if the source or destination register operates
-> + * on 64-bit, otherwise return FALSE.
-> + */
-> +static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
-> +		     u32 regno, struct bpf_reg_state *reg, enum reg_arg_type t)
-> +{
-> +	u8 code, class, op;
-> +
-> +	code = insn->code;
-> +	class = BPF_CLASS(code);
-> +	op = BPF_OP(code);
-> +	if (class == BPF_JMP) {
-> +		/* BPF_EXIT for "main" will reach here. Return TRUE
-> +		 * conservatively.
-> +		 */
-> +		if (op == BPF_EXIT)
-> +			return true;
-> +		if (op == BPF_CALL) {
-> +			/* BPF to BPF call will reach here because of marking
-> +			 * caller saved clobber with DST_OP_NO_MARK for which we
-> +			 * don't care the register def because they are anyway
-> +			 * marked as NOT_INIT already.
-> +			 */
-> +			if (insn->src_reg == BPF_PSEUDO_CALL)
-> +				return false;
-> +			/* Helper call will reach here because of arg type
-> +			 * check.
-> +			 */
-> +			if (t == SRC_OP)
-> +				return helper_call_arg64(env, insn->imm, regno);
-> +
-> +			return false;
-> +		}
-> +	}
-> +
-> +	if (class == BPF_ALU64 || class == BPF_JMP ||
-> +	    /* BPF_END always use BPF_ALU class. */
-> +	    (class == BPF_ALU && op == BPF_END && insn->imm == 64))
-> +		return true;
 
-For the BPF_JMP + JA case we don't look at registers, but I presume here
-we 'pretend' to use 64 bit regs to be more conservative as verifier would
-otherwise need to do more complex analysis at the jump target wrt zero
-extension, correct?
+> @@ -2003,9 +2003,9 @@ static const struct bpf_func_proto bpf_csum_diff_proto = {
+>  	.pkt_access	= true,
+>  	.ret_type	= RET_INTEGER,
+>  	.arg1_type	= ARG_PTR_TO_MEM_OR_NULL,
+> -	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
+> +	.arg2_type	= ARG_CONST_SIZE32_OR_ZERO,
+>  	.arg3_type	= ARG_PTR_TO_MEM_OR_NULL,
+> -	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
+> +	.arg4_type	= ARG_CONST_SIZE32_OR_ZERO,
+>  	.arg5_type	= ARG_ANYTHING,
+>  };
 
-> +
-> +	if (class == BPF_ALU || class == BPF_JMP32)
-> +		return false;
-> +
-> +	if (class == BPF_LDX) {
-> +		if (t != SRC_OP)
-> +			return BPF_SIZE(code) == BPF_DW;
-> +		/* LDX source must be ptr. */
-> +		return true;
-> +	}
-> +
-> +	if (class == BPF_STX) {
-> +		if (reg->type != SCALAR_VALUE)
-> +			return true;
-> +		return BPF_SIZE(code) == BPF_DW;
-> +	}
-> +
-> +	if (class == BPF_LD) {
-> +		u8 mode = BPF_MODE(code);
-> +
-> +		/* LD_IMM64 */
-> +		if (mode == BPF_IMM)
-> +			return true;
-> +
-> +		/* Both LD_IND and LD_ABS return 32-bit data. */
-> +		if (t != SRC_OP)
-> +			return  false;
-> +
-> +		/* Implicit ctx ptr. */
-> +		if (regno == BPF_REG_6)
-> +			return true;
-> +
-> +		/* Explicit source could be any width. */
-> +		return true;
-> +	}
-> +
-> +	if (class == BPF_ST)
-> +		/* The only source register for BPF_ST is a ptr. */
-> +		return true;
-> +
-> +	/* Conservatively return true at default. */
-> +	return true;
-> +}
+I noticed that the above and also bpf_csum_update() would need to be converted
+to RET_INTEGER64 as they would break otherwise: it's returning error but also
+u32 csum value, so use for error checking would be s64 ret = bpf_csum_xyz(...).
+
+Thanks,
+Daniel
