@@ -2,202 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 119E814D68
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1529014D48
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:51:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729406AbfEFOsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 10:48:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47762 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728610AbfEFOr7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 May 2019 10:47:59 -0400
-Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B09AF2087F;
-        Mon,  6 May 2019 14:47:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557154078;
-        bh=I3RuPUnsau3/9T4URycFeXmxeH3JbPXrTjlfIFBbXOg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DqUmgGisNw+/giG/ord66rkonSMoqSF91WC7wOTWyCgsJgOSov+m1vSLOqOSBKKCP
-         vDLYkj9L48KHbOS3Qi8WGDP12vZ7j49e5S7Zb8SQ86NZgkUg24H2BMf285zL9TVBjo
-         PXd56WG6upWC1grtw6tlaMl3VETTE9eTFQ7J7+NA=
-Date:   Mon, 6 May 2019 23:47:51 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Michal Gregorczyk <michalgr@live.com>,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Mohammad Husain <russoue@gmail.com>,
-        Qais Yousef <qais.yousef@arm.com>,
-        Srinivas Ramana <sramana@codeaurora.org>,
-        duyuchao <yuchao.du@unisoc.com>,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Karim Yaghmour <karim.yaghmour@opersys.com>,
-        Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Brendan Gregg <brendan.d.gregg@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
-Message-Id: <20190506234751.65c92139dccbfa025bdfe300@kernel.org>
-In-Reply-To: <20190502204958.7868-1-joel@joelfernandes.org>
-References: <20190502204958.7868-1-joel@joelfernandes.org>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1729473AbfEFOtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 10:49:45 -0400
+Received: from www62.your-server.de ([213.133.104.62]:52624 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729605AbfEFOtm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 10:49:42 -0400
+Received: from [88.198.220.132] (helo=sslproxy03.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hNevz-00043M-Gy; Mon, 06 May 2019 16:49:39 +0200
+Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hNevz-0001hM-4Q; Mon, 06 May 2019 16:49:39 +0200
+Subject: Re: [PATCH v6 bpf-next 02/17] bpf: verifier: mark verified-insn with
+ sub-register zext flag
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Jiong Wang <jiong.wang@netronome.com>, alexei.starovoitov@gmail.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com
+References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
+ <1556880164-10689-3-git-send-email-jiong.wang@netronome.com>
+ <76304717-347f-990a-2a5a-0999ebbc3b70@iogearbox.net>
+Message-ID: <31605274-2146-1bb8-7625-8820f6948f6e@iogearbox.net>
+Date:   Mon, 6 May 2019 16:49:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
+MIME-Version: 1.0
+In-Reply-To: <76304717-347f-990a-2a5a-0999ebbc3b70@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25441/Mon May  6 10:04:24 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joel,
-
-On Thu,  2 May 2019 16:49:58 -0400
-"Joel Fernandes (Google)" <joel@joelfernandes.org> wrote:
-
-> The eBPF based opensnoop tool fails to read the file path string passed
-> to the do_sys_open function. This is because it is a pointer to
-> userspace address and causes an -EFAULT when read with
-> probe_kernel_read. This is not an issue when running the tool on x86 but
-> is an issue on arm64. This patch adds a new bpf function call based
-> which calls the recently proposed probe_user_read function [1].
-> Using this function call from opensnoop fixes the issue on arm64.
+On 05/06/2019 03:49 PM, Daniel Borkmann wrote:
+> On 05/03/2019 12:42 PM, Jiong Wang wrote:
+>> eBPF ISA specification requires high 32-bit cleared when low 32-bit
+>> sub-register is written. This applies to destination register of ALU32 etc.
+>> JIT back-ends must guarantee this semantic when doing code-gen.
+>>
+>> x86-64 and arm64 ISA has the same semantic, so the corresponding JIT
+>> back-end doesn't need to do extra work. However, 32-bit arches (arm, nfp
+>> etc.) and some other 64-bit arches (powerpc, sparc etc), need explicit zero
+>> extension sequence to meet such semantic.
+>>
+>> This is important, because for code the following:
+>>
+>>   u64_value = (u64) u32_value
+>>   ... other uses of u64_value
+>>
+>> compiler could exploit the semantic described above and save those zero
+>> extensions for extending u32_value to u64_value. Hardware, runtime, or BPF
+>> JIT back-ends, are responsible for guaranteeing this. Some benchmarks show
+>> ~40% sub-register writes out of total insns, meaning ~40% extra code-gen (
+>> could go up to more for some arches which requires two shifts for zero
+>> extension) because JIT back-end needs to do extra code-gen for all such
+>> instructions.
+>>
+>> However this is not always necessary in case u32_value is never cast into
+>> a u64, which is quite normal in real life program. So, it would be really
+>> good if we could identify those places where such type cast happened, and
+>> only do zero extensions for them, not for the others. This could save a lot
+>> of BPF code-gen.
+>>
+>> Algo:
+>>  - Split read flags into READ32 and READ64.
+>>
+>>  - Record indices of instructions that do sub-register def (write). And
+>>    these indices need to stay with reg state so path pruning and bpf
+>>    to bpf function call could be handled properly.
+>>
+>>    These indices are kept up to date while doing insn walk.
+>>
+>>  - A full register read on an active sub-register def marks the def insn as
+>>    needing zero extension on dst register.
+>>
+>>  - A new sub-register write overrides the old one.
+>>
+>>    A new full register write makes the register free of zero extension on
+>>    dst register.
+>>
+>>  - When propagating read64 during path pruning, also marks def insns whose
+>>    defs are hanging active sub-register.
+>>
+>> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+>> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
 > 
-> [1] https://lore.kernel.org/patchwork/patch/1051588/
-
-Anyway, this series is still out-of-tree. We have to push this or similar
-update into kernel at first. I can resend v7 on the latest -tip tree including
-this patch if you update the description.
-
-Thank you,
-
+> [...]
+>> +/* This function is supposed to be used by the following 32-bit optimization
+>> + * code only. It returns TRUE if the source or destination register operates
+>> + * on 64-bit, otherwise return FALSE.
+>> + */
+>> +static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
+>> +		     u32 regno, struct bpf_reg_state *reg, enum reg_arg_type t)
+>> +{
+>> +	u8 code, class, op;
+>> +
+>> +	code = insn->code;
+>> +	class = BPF_CLASS(code);
+>> +	op = BPF_OP(code);
+>> +	if (class == BPF_JMP) {
+>> +		/* BPF_EXIT for "main" will reach here. Return TRUE
+>> +		 * conservatively.
+>> +		 */
+>> +		if (op == BPF_EXIT)
+>> +			return true;
+>> +		if (op == BPF_CALL) {
+>> +			/* BPF to BPF call will reach here because of marking
+>> +			 * caller saved clobber with DST_OP_NO_MARK for which we
+>> +			 * don't care the register def because they are anyway
+>> +			 * marked as NOT_INIT already.
+>> +			 */
+>> +			if (insn->src_reg == BPF_PSEUDO_CALL)
+>> +				return false;
+>> +			/* Helper call will reach here because of arg type
+>> +			 * check.
+>> +			 */
+>> +			if (t == SRC_OP)
+>> +				return helper_call_arg64(env, insn->imm, regno);
+>> +
+>> +			return false;
+>> +		}
+>> +	}
+>> +
+>> +	if (class == BPF_ALU64 || class == BPF_JMP ||
+>> +	    /* BPF_END always use BPF_ALU class. */
+>> +	    (class == BPF_ALU && op == BPF_END && insn->imm == 64))
+>> +		return true;
 > 
-> Cc: Michal Gregorczyk <michalgr@live.com>
-> Cc: Adrian Ratiu <adrian.ratiu@collabora.com>
-> Cc: Mohammad Husain <russoue@gmail.com>
-> Cc: Qais Yousef <qais.yousef@arm.com>
-> Cc: Srinivas Ramana <sramana@codeaurora.org>
-> Cc: duyuchao <yuchao.du@unisoc.com>
-> Cc: Manjo Raja Rao <linux@manojrajarao.com>
-> Cc: Karim Yaghmour <karim.yaghmour@opersys.com>
-> Cc: Tamir Carmeli <carmeli.tamir@gmail.com>
-> Cc: Yonghong Song <yhs@fb.com>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Brendan Gregg <brendan.d.gregg@gmail.com>
-> Cc: Masami Hiramatsu <mhiramat@kernel.org>
-> Cc: Peter Ziljstra <peterz@infradead.org>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: kernel-team@android.com
-> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> ---
->  include/uapi/linux/bpf.h       |  7 ++++++-
->  kernel/trace/bpf_trace.c       | 22 ++++++++++++++++++++++
->  tools/include/uapi/linux/bpf.h |  7 ++++++-
->  3 files changed, 34 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index e99e3e6f8b37..6fec701eaa46 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -539,6 +539,10 @@ union bpf_attr {
->   *     @mode: operation mode (enum bpf_adj_room_mode)
->   *     @flags: reserved for future use
->   *     Return: 0 on success or negative error code
-> + *
-> + * int bpf_probe_read_user(void *dst, int size, void *src)
-> + *     Read a userspace pointer safely.
-> + *     Return: 0 on success or negative error
->   */
->  #define __BPF_FUNC_MAPPER(FN)		\
->  	FN(unspec),			\
-> @@ -591,7 +595,8 @@ union bpf_attr {
->  	FN(get_socket_uid),		\
->  	FN(set_hash),			\
->  	FN(setsockopt),			\
-> -	FN(skb_adjust_room),
-> +	FN(skb_adjust_room),		\
-> +	FN(probe_read_user),
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index dc498b605d5d..1e1a11d9faa8 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -81,6 +81,26 @@ static const struct bpf_func_proto bpf_probe_read_proto = {
->  	.arg3_type	= ARG_ANYTHING,
->  };
->  
-> +BPF_CALL_3(bpf_probe_read_user, void *, dst, u32, size, const void *, unsafe_ptr)
-> +{
-> +	int ret;
-> +
-> +	ret = probe_user_read(dst, unsafe_ptr, size);
-> +	if (unlikely(ret < 0))
-> +		memset(dst, 0, size);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct bpf_func_proto bpf_probe_read_user_proto = {
-> +	.func		= bpf_probe_read_user,
-> +	.gpl_only	= true,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type	= ARG_PTR_TO_UNINIT_MEM,
-> +	.arg2_type	= ARG_CONST_SIZE,
-> +	.arg3_type	= ARG_ANYTHING,
-> +};
-> +
->  BPF_CALL_3(bpf_probe_write_user, void *, unsafe_ptr, const void *, src,
->  	   u32, size)
->  {
-> @@ -459,6 +479,8 @@ static const struct bpf_func_proto *tracing_func_proto(enum bpf_func_id func_id)
->  		return &bpf_map_delete_elem_proto;
->  	case BPF_FUNC_probe_read:
->  		return &bpf_probe_read_proto;
-> +	case BPF_FUNC_probe_read_user:
-> +		return &bpf_probe_read_user_proto;
->  	case BPF_FUNC_ktime_get_ns:
->  		return &bpf_ktime_get_ns_proto;
->  	case BPF_FUNC_tail_call:
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index e99e3e6f8b37..6fec701eaa46 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -539,6 +539,10 @@ union bpf_attr {
->   *     @mode: operation mode (enum bpf_adj_room_mode)
->   *     @flags: reserved for future use
->   *     Return: 0 on success or negative error code
-> + *
-> + * int bpf_probe_read_user(void *dst, int size, void *src)
-> + *     Read a userspace pointer safely.
-> + *     Return: 0 on success or negative error
->   */
->  #define __BPF_FUNC_MAPPER(FN)		\
->  	FN(unspec),			\
-> @@ -591,7 +595,8 @@ union bpf_attr {
->  	FN(get_socket_uid),		\
->  	FN(set_hash),			\
->  	FN(setsockopt),			\
-> -	FN(skb_adjust_room),
-> +	FN(skb_adjust_room),		\
-> +	FN(probe_read_user),
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> -- 
-> 2.21.0.593.g511ec345e18-goog
-> 
+> For the BPF_JMP + JA case we don't look at registers, but I presume here
+> we 'pretend' to use 64 bit regs to be more conservative as verifier would
+> otherwise need to do more complex analysis at the jump target wrt zero
+> extension, correct?
 
+Hmm, scratch that last thought. Shouldn't it behave the same as with the
+below class == BPF_JMP32 case?
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+>> +	if (class == BPF_ALU || class == BPF_JMP32)
+>> +		return false;
+>> +
+>> +	if (class == BPF_LDX) {
+>> +		if (t != SRC_OP)
+>> +			return BPF_SIZE(code) == BPF_DW;
+>> +		/* LDX source must be ptr. */
+>> +		return true;
+>> +	}
+>> +
+>> +	if (class == BPF_STX) {
+>> +		if (reg->type != SCALAR_VALUE)
+>> +			return true;
+>> +		return BPF_SIZE(code) == BPF_DW;
+>> +	}
+>> +
+>> +	if (class == BPF_LD) {
+>> +		u8 mode = BPF_MODE(code);
+>> +
+>> +		/* LD_IMM64 */
+>> +		if (mode == BPF_IMM)
+>> +			return true;
+>> +
+>> +		/* Both LD_IND and LD_ABS return 32-bit data. */
+>> +		if (t != SRC_OP)
+>> +			return  false;
+>> +
+>> +		/* Implicit ctx ptr. */
+>> +		if (regno == BPF_REG_6)
+>> +			return true;
+>> +
+>> +		/* Explicit source could be any width. */
+>> +		return true;
+>> +	}
+>> +
+>> +	if (class == BPF_ST)
+>> +		/* The only source register for BPF_ST is a ptr. */
+>> +		return true;
+>> +
+>> +	/* Conservatively return true at default. */
+>> +	return true;
+>> +}
+
