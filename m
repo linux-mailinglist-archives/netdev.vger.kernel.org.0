@@ -2,64 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D00BB15083
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CD3515086
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:43:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbfEFPmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 11:42:39 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34656 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbfEFPmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 11:42:38 -0400
-Received: by mail-pg1-f194.google.com with SMTP id c13so6653479pgt.1
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 08:42:38 -0700 (PDT)
+        id S1726960AbfEFPnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 11:43:13 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39696 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbfEFPnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 11:43:13 -0400
+Received: by mail-pg1-f195.google.com with SMTP id w22so5332023pgi.6
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 08:43:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5bABSmUJlEcKBPjRKjKtHd6jbmA1GxSpl6ICNk7u3UQ=;
-        b=KJnfHAqYdFe95NUgdv2s0/pQ0LB0tBbJz9cM6xchn1924mqdLPMWF/P8DVYVLwWyqk
-         OJ2RuOGAY63CqGXh1qXr0ii86ScUPQWozlxNZgSzyqEKnmP7g2h6QyF2ZDblBJRJ7Lxp
-         N4Im7yewYDYoi5xzOJvc2Qyb/gEl9ScRSWhZ6PcFOSxG967JReJz4HxcRe4u/BXwgxgd
-         RfZYy6tUZF53HU4LIoXnJvj/DXuuFwX+nxleFD8YsJOOGsx2SJ6G3PYgS9KaFiWcf0vj
-         6LUKxV4foJWyc1/7kdJXoBZqIKWn3Jto7VJEqy1lN9u4by9NYqkyEWGHexHkIjWF/CIc
-         3yMQ==
+        bh=YFDcb2GDO2Kxv2PPfJ3SQUvp0mS5049CM6AN1LgUruk=;
+        b=TbgX6rzDOfL58FgV4KyR14F1xu447zfrXHQ4t7MSnW4gYIMgp8eKftRluEsP1LeJtS
+         8s/754uI5pE6wvLDvR+wRppZl2uwoqavkz2ayH/Rfs413mqGTrqCbzP/lovoiUF7z/IJ
+         KmZkzM6nBBigWyv0qZyL48zGitIcjHVeDzJTJzcVAaRD3freVcFmgdjCWvI0yBv07oaO
+         n0kzry+nTqZVjTwPIZWq1T64rS6LyXLZW6AmeNMroV3xBaQyPHHP40bCX4wF6QYpCe9q
+         zumwCAA452VfjN/LP7jiUk6nfSFt0T3CZSZ2BAM25YfwvZ6yjp59EthErcqPp2Qox6Kj
+         lVyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5bABSmUJlEcKBPjRKjKtHd6jbmA1GxSpl6ICNk7u3UQ=;
-        b=iEThnJYrGis/K+bmkW99aTZOYCQM1EMKYweQjnPWuc2Xvpr1+Pea6Zusnz17GAakMK
-         PUToTFOdSoI8Hpyf/xe73kekrfC8XfsVR4E1hkalKs3nz/TAFxdvMb2azR8Y5iOvp5mZ
-         OdgdwKHDxaJA3910xroy3BAoDqAPGhmRGWH3l2ntSnctcGRFjwGfHlGQJ1SGKcmuVWQq
-         ROLUuc3lH5TTiAcKPW0bFAnFApVkjYkDknwVvAT3Rd/C2E3mCdB7ggWl3RK2xTCWiqfp
-         Fb8zkE6fU+TdIZpIX1D/xdZBneboPCHUmTx1jHeqzbOpF3yaCRF2DiNlt41aDwtmm3jt
-         8JRA==
-X-Gm-Message-State: APjAAAUir5cjimzXBmS+Zslm5S8KTo9YT2igngRWf/IdwCe4cWoRYxcY
-        XWMvsqQ0hNG4TWo0qD6riOH6Wg==
-X-Google-Smtp-Source: APXvYqwVlk2vQ4JyoDzbl01TLGhrrTKn5H7j3km61gQ2nbVi/rqVyZryg0LDJQIzghO8tWIvfgYZsA==
-X-Received: by 2002:a63:2d87:: with SMTP id t129mr32819376pgt.451.1557157358110;
-        Mon, 06 May 2019 08:42:38 -0700 (PDT)
+        bh=YFDcb2GDO2Kxv2PPfJ3SQUvp0mS5049CM6AN1LgUruk=;
+        b=CMPcId6maNbqWRAxRcucgEHJQkDvxQ+UevchTaaGiHi2tyqa0bxA0oH0F1BALgER3r
+         WebTSjZrnkGunjXN+7D1Hw0UQDxOUGbNG78RlBR7+v0pwwIyPmPt3nEy9m/J7K/ZNwVv
+         XealSPP9k4AEpXupFokl2bjjw2EwdSiaPSXCoMFH2IjsaMeafxiW/VfveRzHNHeR7fnj
+         MxwV1eq3M6Qopy96L1YoNk/htDzpEb6AkYMZTgFb1gKUjvUw4WoyS6qpvKM0kj1Mdmod
+         4AkH7q895YiwBBuaiYWTjP1DPQ5zb4BlC9vhtLm7sy9ggrQ01V647k5uDpMqQsosNwHM
+         K3tw==
+X-Gm-Message-State: APjAAAUAPXHmFX8o1UI85Ew15xkDl3VhTxT1I1KUM8/ai803ZNjS4ZDZ
+        0lSPHZZ4hAqsB7zX7c/7vBwojg==
+X-Google-Smtp-Source: APXvYqxSVv2RJhZwT8L9BHTt50iqu/CsNwqIviSqR/l0M3AHncMrjqIqvlPIswS48Q2/CiJ1W4byzw==
+X-Received: by 2002:a62:5c3:: with SMTP id 186mr28115047pff.116.1557157392779;
+        Mon, 06 May 2019 08:43:12 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id j19sm13138545pfh.41.2019.05.06.08.42.37
+        by smtp.gmail.com with ESMTPSA id k67sm18062805pfb.44.2019.05.06.08.43.12
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 06 May 2019 08:42:37 -0700 (PDT)
-Date:   Mon, 6 May 2019 08:42:30 -0700
+        Mon, 06 May 2019 08:43:12 -0700 (PDT)
+Date:   Mon, 6 May 2019 08:43:11 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Zhiqiang Liu <liuzhiqiang26@huawei.com>
-Cc:     <liuhangbin@gmail.com>, <kuznet@ms2.inr.ac.ru>,
-        <nicolas.dichtel@6wind.com>, <phil@nwl.cc>,
-        "wangxiaogang (F)" <wangxiaogang3@huawei.com>,
-        Mingfangsen <mingfangsen@huawei.com>,
-        "Zhoukang (A)" <zhoukang7@huawei.com>, <kouhuiying@huawei.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH iproute2 v3] ipnetns: use-after-free problem in
- get_netnsid_from_name func
-Message-ID: <20190506084230.196fee67@hermes.lan>
-In-Reply-To: <1fca256d-fbce-4da9-471f-14573be4ea21@huawei.com>
-References: <f6c76a60-d5c4-700f-2fbf-912fc1545a31@huawei.com>
-        <815afacc-4cd2-61b4-2181-aabce6582309@huawei.com>
-        <1fca256d-fbce-4da9-471f-14573be4ea21@huawei.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH iproute2-master] devlink: Fix monitor command
+Message-ID: <20190506084311.152bdcef@hermes.lan>
+In-Reply-To: <20190505141243.9768-1-idosch@idosch.org>
+References: <20190505141243.9768-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -68,29 +61,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 4 May 2019 15:26:25 +0800
-Zhiqiang Liu <liuzhiqiang26@huawei.com> wrote:
+On Sun,  5 May 2019 17:12:43 +0300
+Ido Schimmel <idosch@idosch.org> wrote:
 
-> From: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+> From: Ido Schimmel <idosch@mellanox.com>
 > 
-> Follow the following steps:
-> # ip netns add net1
-> # export MALLOC_MMAP_THRESHOLD_=0
-> # ip netns list
-> then Segmentation fault (core dumped) will occur.
+> The command is supposed to allow users to filter events related to
+> certain objects, but returns an error when an object is specified:
 > 
-> In get_netnsid_from_name func, answer is freed before rta_getattr_u32(tb[NETNSA_NSID]),
-> where tb[] refers to answer`s content. If we set MALLOC_MMAP_THRESHOLD_=0, mmap will
-> be adoped to malloc memory, which will be freed immediately after calling free func.
-> So reading tb[NETNSA_NSID] will access the released memory after free(answer).
+> # devlink mon dev
+> Command "dev" not found
 > 
-> Here, we will call get_netnsid_from_name(tb[NETNSA_NSID]) before free(answer).
+> Fix this by allowing the command to process the specified objects.
 > 
-> Fixes: 86bf43c7c2f ("lib/libnetlink: update rtnl_talk to support malloc buff at run time")
-> Reported-by: Huiying Kou <kouhuiying@huawei.com>
-> Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
-> Acked-by: Phil Sutter <phil@nwl.cc>
+> Example:
+> 
+> # devlink/devlink mon dev &
+> # echo "10 1" > /sys/bus/netdevsim/new_device
+> [dev,new] netdevsim/netdevsim10
+> 
+> # devlink/devlink mon port &
+> # echo "11 1" > /sys/bus/netdevsim/new_device
+> [port,new] netdevsim/netdevsim11/0: type notset flavour physical
+> [port,new] netdevsim/netdevsim11/0: type eth netdev eth1 flavour physical
+> 
+> # devlink/devlink mon &
+> # echo "12 1" > /sys/bus/netdevsim/new_device
+> [dev,new] netdevsim/netdevsim12
+> [port,new] netdevsim/netdevsim12/0: type notset flavour physical
+> [port,new] netdevsim/netdevsim12/0: type eth netdev eth2 flavour physical
+> 
+> Fixes: a3c4b484a1ed ("add devlink tool")
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 
-Applied. You can get better and more detailed checks by running with
-valgrind. Which is what I did after applying your patch.
-
+Applied, thanks.
