@@ -2,61 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E85AD147B3
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 11:36:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CDCD147F8
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 11:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726156AbfEFJgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 05:36:17 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40372 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725855AbfEFJgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 05:36:16 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNa2g-0000UI-Jm; Mon, 06 May 2019 11:36:14 +0200
-Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNa2g-000QDF-D8; Mon, 06 May 2019 11:36:14 +0200
-Subject: Re: [PATCH bpf] libbpf: remove unnecessary cast-to-void
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, netdev@vger.kernel.org
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        bpf@vger.kernel.org
-References: <20190506092443.24483-1-bjorn.topel@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2f46de83-7b76-b7ba-54ed-9b084bb83df8@iogearbox.net>
-Date:   Mon, 6 May 2019 11:36:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726529AbfEFJ70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 05:59:26 -0400
+Received: from smtp-out.xnet.cz ([178.217.244.18]:36681 "EHLO smtp-out.xnet.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726363AbfEFJ70 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 May 2019 05:59:26 -0400
+Received: from meh.true.cz (meh.true.cz [108.61.167.218])
+        (Authenticated sender: petr@true.cz)
+        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 632803859;
+        Mon,  6 May 2019 11:59:24 +0200 (CEST)
+Received: by meh.true.cz (OpenSMTPD) with ESMTP id f49d01de;
+        Mon, 6 May 2019 11:59:23 +0200 (CEST)
+From:   =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next 2/3] net: dsa: support of_get_mac_address new ERR_PTR error
+Date:   Mon,  6 May 2019 11:58:36 +0200
+Message-Id: <1557136717-531-3-git-send-email-ynezz@true.cz>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1557136717-531-1-git-send-email-ynezz@true.cz>
+References: <1557136717-531-1-git-send-email-ynezz@true.cz>
 MIME-Version: 1.0
-In-Reply-To: <20190506092443.24483-1-bjorn.topel@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25441/Mon May  6 10:04:24 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/06/2019 11:24 AM, Björn Töpel wrote:
-> From: Björn Töpel <bjorn.topel@intel.com>
-> 
-> The patches with fixes tags added a cast-to-void in the places when
-> the return value of a function was ignored.
-> 
-> This is not common practice in the kernel, and is therefore removed in
-> this patch.
-> 
-> Reported-by: Daniel Borkmann <daniel@iogearbox.net>
-> Fixes: 5750902a6e9b ("libbpf: proper XSKMAP cleanup")
-> Fixes: 0e6741f09297 ("libbpf: fix invalid munmap call")
-> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+There was NVMEM support added to of_get_mac_address, so it could now
+return ERR_PTR encoded error values, so we need to adjust all current
+users of of_get_mac_address to this new fact.
 
-Applied, thanks!
+While at it, remove superfluous is_valid_ether_addr as the MAC address
+returned from of_get_mac_address is always valid and checked by
+is_valid_ether_addr anyway.
+
+Signed-off-by: Petr Štetiar <ynezz@true.cz>
+---
+ net/dsa/slave.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 316bce9..2e1deef 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1418,7 +1418,7 @@ int dsa_slave_create(struct dsa_port *port)
+ 				NETIF_F_HW_VLAN_CTAG_FILTER;
+ 	slave_dev->hw_features |= NETIF_F_HW_TC;
+ 	slave_dev->ethtool_ops = &dsa_slave_ethtool_ops;
+-	if (port->mac && is_valid_ether_addr(port->mac))
++	if (!IS_ERR_OR_NULL(port->mac))
+ 		ether_addr_copy(slave_dev->dev_addr, port->mac);
+ 	else
+ 		eth_hw_addr_inherit(slave_dev, master);
+-- 
+1.9.1
+
