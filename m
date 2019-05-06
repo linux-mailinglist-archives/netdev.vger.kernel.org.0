@@ -2,102 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E06F14B5B
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 15:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 326D614B67
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726261AbfEFN51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 09:57:27 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40660 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725853AbfEFN51 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 09:57:27 -0400
-Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNe7Q-0007Zq-VV; Mon, 06 May 2019 15:57:25 +0200
-Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNe7Q-0001ty-IQ; Mon, 06 May 2019 15:57:24 +0200
-Subject: Re: [PATCH v6 bpf-next 01/17] bpf: verifier: offer more accurate
- helper function arg and return type
-To:     Jiong Wang <jiong.wang@netronome.com>, alexei.starovoitov@gmail.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
- <1556880164-10689-2-git-send-email-jiong.wang@netronome.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2c83afa7-d3ba-0881-e98f-81a406367f93@iogearbox.net>
-Date:   Mon, 6 May 2019 15:57:23 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726218AbfEFOB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 10:01:28 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:46454 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726034AbfEFOB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 10:01:27 -0400
+Received: by mail-pg1-f193.google.com with SMTP id t187so2383853pgb.13
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 07:01:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=blNElsH0nKttFL9QJoixbJLS8nXkItulDEFRWhW74QE=;
+        b=Yv3d3PAdQXN5mSui3Q5+5KwGMkn7hYbhH1JvQwGEdXLT/BncT9ub4ojfSLosEDADKd
+         kSR3niAEVGhBQMmiDhtSJxf5QCAi9dujegSGosPxFIt8eUOoMBBIkFSDhR7QCFWTX2vu
+         Lc4isCAhJUwnNrYxmQ6Gx80kGwvirlY35V8GEuViFjheWgbtYZgWUhMiNhvSxb+S6k/E
+         qEapY3d3BxkES65JF2Km+AhSQRiZXNUdRKfPa7z1ZVSYJL9DOKsnytec25ndkkSL0pjk
+         uUT6gr44AZGQrYD02gZyOWW4+ToUfKJjFfwnpHkHlLw5/ApbC0cGmAqm2U+fezMDPLNo
+         LIXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=blNElsH0nKttFL9QJoixbJLS8nXkItulDEFRWhW74QE=;
+        b=ar2KTKpS5lUyGI+sFGDl16V6BEJ4gifLWB0vnO1TjWnd+1y4FXwOajAcUFiEOW5kNH
+         F4baNjms3qwKH/E5Ef4/CJhSpXHTv4+8gQigCjD1NTp0zxbLlj2Y7+CiTPlfryvfAT89
+         Kn79zBFcr9XqCzPNiHlyh4cSRSpEmk+q+viS4OLGu1UdHdfXxD4yRm5Pp+wWZTpBbzN7
+         W6fiKcPoeMnahLcJK0xDa1LNxlWxVKSTNfQEnwsiz2aq47HbtTwzQjCth//vVDnYuHA+
+         Gh5TZ5fTl7RxtCMzXtinvtCLLVqa6uy0ofeQmIvvW5azjqStvLuVQqDVT8usitEAeM8l
+         7w9w==
+X-Gm-Message-State: APjAAAVzEZsdnjaft2Q09ZhpwxI+gklg5C7H+HE2WTXNVQfNhTuUsl91
+        N+v3xBIkKVc62ySKXcSsw9SevTc1
+X-Google-Smtp-Source: APXvYqwx5lY4yehBvaJR87touvpWL3gGnZZIs3rkLKtG/F0uTYH/UFddbzfgekT9XJ3LZ906o83nVw==
+X-Received: by 2002:a62:6b44:: with SMTP id g65mr33565472pfc.27.1557151286818;
+        Mon, 06 May 2019 07:01:26 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id v1sm14526926pff.81.2019.05.06.07.01.24
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 May 2019 07:01:25 -0700 (PDT)
+Date:   Mon, 6 May 2019 07:01:23 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Patrick McHardy <kaber@trash.net>,
+        stefan.sorensen@spectralink.com
+Subject: Re: [PATCH net-next] macvlan: pass get_ts_info and SIOC[SG]HWTSTAMP
+ ioctl to real device
+Message-ID: <20190506140123.k2kw7apaubvljsa5@localhost>
+References: <20190417061452.GA18865@dhcp-12-139.nay.redhat.com>
+ <20190417154306.om6rjkxq4hikhsht@localhost>
+ <20190417205958.6508bda2@redhat.com>
+ <20190418033157.irs25halxnemh65y@localhost>
+ <20190418080509.GD5984@localhost>
+ <20190423041817.GE18865@dhcp-12-139.nay.redhat.com>
+ <20190423083141.GA5188@localhost>
+ <20190423091543.GF18865@dhcp-12-139.nay.redhat.com>
+ <20190423093213.GA7246@localhost>
+ <20190425134006.GG18865@dhcp-12-139.nay.redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <1556880164-10689-2-git-send-email-jiong.wang@netronome.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25441/Mon May  6 10:04:24 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190425134006.GG18865@dhcp-12-139.nay.redhat.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/03/2019 12:42 PM, Jiong Wang wrote:
-> BPF helper call transfers execution from eBPF insns to native functions
-> while verifier insn walker only walks eBPF insns. So, verifier can only
-> knows argument and return value types from explicit helper function
-> prototype descriptions.
-> 
-> For 32-bit optimization, it is important to know whether argument (register
-> use from eBPF insn) and return value (register define from external
-> function) is 32-bit or 64-bit, so corresponding registers could be
-> zero-extended correctly.
-> 
-> For arguments, they are register uses, we conservatively treat all of them
-> as 64-bit at default, while the following new bpf_arg_type are added so we
-> could start to mark those frequently used helper functions with more
-> accurate argument type.
-> 
->   ARG_CONST_SIZE32
->   ARG_CONST_SIZE32_OR_ZERO
+On Thu, Apr 25, 2019 at 09:40:06PM +0800, Hangbin Liu wrote:
+> Would you please help have a look at it and see which way we should use?
+> Drop SIOCSHWTSTAMP in container or add a filter on macvlan(maybe only in
+> container)?
 
-For the above two, I was wondering is there a case where the passed size is
-not used as 32 bit aka couldn't we generally assume 32 bit here w/o adding
-these two extra arg types? For ARG_ANYTHING32 and RET_INTEGER64 definitely
-makes sense (btw, opt-in value like RET_INTEGER32 might have been easier for
-reviewing converted helpers).
+I vote for dropping SIOCSHWTSTAMP altogether.  Why?  Because the
+filter idea means that the ioctl will magically succeed or fail, based
+on the unknowable state of the container's host.  It is better IMHO to
+let the admin of the host set up HWTSTAMP globally (like with
+hwtstamp_ctl for example) and configure the apps appropriately (like
+with ptp4l --hwts_filter=check).
 
->   ARG_ANYTHING32
-> 
-> A few helper functions shown up frequently inside Cilium bpf program are
-> updated using these new types.
-> 
-> For return values, they are register defs, we need to know accurate width
-> for correct zero extensions. Given most of the helper functions returning
-> integers return 32-bit value, a new RET_INTEGER64 is added to make those
-> functions return 64-bit value. All related helper functions are updated.
-> 
-> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
-[...]
-
-> @@ -2003,9 +2003,9 @@ static const struct bpf_func_proto bpf_csum_diff_proto = {
->  	.pkt_access	= true,
->  	.ret_type	= RET_INTEGER,
->  	.arg1_type	= ARG_PTR_TO_MEM_OR_NULL,
-> -	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
-> +	.arg2_type	= ARG_CONST_SIZE32_OR_ZERO,
->  	.arg3_type	= ARG_PTR_TO_MEM_OR_NULL,
-> -	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
-> +	.arg4_type	= ARG_CONST_SIZE32_OR_ZERO,
->  	.arg5_type	= ARG_ANYTHING,
->  };
-
-I noticed that the above and also bpf_csum_update() would need to be converted
-to RET_INTEGER64 as they would break otherwise: it's returning error but also
-u32 csum value, so use for error checking would be s64 ret = bpf_csum_xyz(...).
+(BTW the patch has issues, but I'll let the advocates of the filter
+idea do the review ;)
 
 Thanks,
-Daniel
+Richard
