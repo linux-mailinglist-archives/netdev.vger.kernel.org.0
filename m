@@ -2,103 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57912145AA
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 09:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 879E8145AE
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 10:00:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726319AbfEFH7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 03:59:40 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:50134 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725830AbfEFH7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 03:59:40 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 65982609D4; Mon,  6 May 2019 07:59:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1557129579;
-        bh=NMarB24NYlqwYKYppR0+S1WNXUCddPdMFLRiI09z0ms=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=mRdZrEdQgxOHHpWSrXDps+CjZWlglNzBgvdBhoe1p8xnQZBr8+/jVP9ICnddMwsFc
-         IyIhxHSZhbFFwRn69ER2oH56Jv2rzX/jdWKQCEzJD+I0ndxoVH+5TcLILibOt8KlU6
-         aJ6jgfn3sumIJhBY8oba0StcExfqZNxOrBEDzEqU=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (37-136-65-53.rev.dnainternet.fi [37.136.65.53])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 81E6460770;
-        Mon,  6 May 2019 07:59:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1557129578;
-        bh=NMarB24NYlqwYKYppR0+S1WNXUCddPdMFLRiI09z0ms=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=S9wBSr0a+TQBG7xwfbdOrrv1ahXoiDudhF6XkCXpTt/CW9pqbvjWbczmdmJNR0MYc
-         2/kdA7onz3mXKfh302yaLeXlkLoadd0mBVlhFR31R7df8rrS/KzZ3SWKRPkQrlBzc7
-         xx7pQXs+bEF84B2H5G/cwYWGPraloPEoHiQfWWA4=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 81E6460770
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        id S1726016AbfEFIAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 04:00:34 -0400
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:46451 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725830AbfEFIAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 04:00:34 -0400
+X-Originating-IP: 90.88.149.145
+Received: from bootlin.com (aaubervilliers-681-1-29-145.w90-88.abo.wanadoo.fr [90.88.149.145])
+        (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 19B771C0019;
+        Mon,  6 May 2019 08:00:27 +0000 (UTC)
+Date:   Mon, 6 May 2019 10:00:26 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
+        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
+        mw@semihalf.com, Russell King <linux@armlinux.org.uk>,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v4 07/10] net: wireless: support of_get_mac_address new ERR_PTR error
-References: <1556893635-18549-1-git-send-email-ynezz@true.cz>
-        <1556893635-18549-8-git-send-email-ynezz@true.cz>
-Date:   Mon, 06 May 2019 10:59:29 +0300
-In-Reply-To: <1556893635-18549-8-git-send-email-ynezz@true.cz> ("Petr
-        \=\?utf-8\?Q\?\=C5\=A0tetiar\=22's\?\= message of "Fri, 3 May 2019 16:27:12 +0200")
-Message-ID: <878svkvwri.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Re: [PATCH net-next 0/4] net: mvpp2: cls: Add classification
+Message-ID: <20190506100026.7d0094fc@bootlin.com>
+In-Reply-To: <20190504025353.74acbb6d@cakuba.netronome.com>
+References: <20190430131429.19361-1-maxime.chevallier@bootlin.com>
+        <20190504025353.74acbb6d@cakuba.netronome.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Petr =C5=A0tetiar <ynezz@true.cz> writes:
+Hello Jakub,
 
-> There was NVMEM support added to of_get_mac_address, so it could now retu=
-rn
-> ERR_PTR encoded error values, so we need to adjust all current users of
-> of_get_mac_address to this new fact.
->
-> Signed-off-by: Petr =C5=A0tetiar <ynezz@true.cz>
-> ---
->
->  Changes since v3:
->
->   * IS_ERR_OR_NULL -> IS_ERR
->
->  drivers/net/wireless/ath/ath9k/init.c          | 2 +-
->  drivers/net/wireless/mediatek/mt76/eeprom.c    | 2 +-
->  drivers/net/wireless/ralink/rt2x00/rt2x00dev.c | 2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
+On Sat, 4 May 2019 02:53:53 -0400
+Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 
-Via which tree is this supposed to go? In case something else than my
-wireless-drivers-next:
+>On Tue, 30 Apr 2019 15:14:25 +0200, Maxime Chevallier wrote:
+>> Compared to the first submissions, the NETIF_F_NTUPLE flag was also
+>> removed, following Saeed's comment.  
+>
+>You should probably add it back, even though the stack only uses
+>NETIF_F_NTUPLE for aRFS the ethtool APIs historically depend on the
+>drivers doing a lot of the validation.
 
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
+OK my bad, reading your previous comments again, I should indeed have
+left it.
 
---=20
-Kalle Valo
+I'll re-add the flag, do you think this should go through -net or wait
+until net-next reopens ?
+
+Thanks,
+
+Maxime
