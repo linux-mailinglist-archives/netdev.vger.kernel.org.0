@@ -2,84 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEC0014A97
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 15:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF96814AA9
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 15:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726236AbfEFNLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 09:11:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55747 "EHLO vps0.lunn.ch"
+        id S1726261AbfEFNQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 09:16:12 -0400
+Received: from mail.us.es ([193.147.175.20]:40098 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725773AbfEFNLA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 May 2019 09:11:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=8kK7MDK5OvSv4G2AfixGougja6HPpqlMJjQr3v6Sgpc=; b=uEbhgm1sSG6gWS7iLGepNldkwJ
-        41KMrLsQaPfWo2P5dsH31dPwEg5Xx0uWOgwIODTzBveiNkRjUHNEdZ9kiheqZSTjb7I+8yl3XRQ50
-        45X230U+eoNnGh5hGyF9TLAkP8grO02RwwdDPlTjPamjkIUX7xN14lhWm3Jspm93byq0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hNdOT-0004pw-Mq; Mon, 06 May 2019 15:10:57 +0200
-Date:   Mon, 6 May 2019 15:10:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>, f.fainelli@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: Decoupling phy_device from net_device (was "Re: [PATCH] net:
- dsa: fixed-link interface is reporting SPEED_UNKNOWN")
-Message-ID: <20190506131057.GB15291@lunn.ch>
-References: <20190411230139.13160-1-olteanv@gmail.com>
- <3661ec3f-1a13-26d8-f7dc-7a73ac210f08@gmail.com>
- <a10e3ef7-2928-8865-c463-f9edc7261410@gmail.com>
+        id S1725813AbfEFNQM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 May 2019 09:16:12 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 3468A9D3CC
+        for <netdev@vger.kernel.org>; Mon,  6 May 2019 15:16:10 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2564EDA716
+        for <netdev@vger.kernel.org>; Mon,  6 May 2019 15:16:10 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 1AE9ADA705; Mon,  6 May 2019 15:16:10 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4CECBDA717;
+        Mon,  6 May 2019 15:16:06 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 06 May 2019 15:16:06 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 2503C4265A32;
+        Mon,  6 May 2019 15:16:06 +0200 (CEST)
+Date:   Mon, 6 May 2019 15:16:05 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     Kristian Evensen <kristian.evensen@gmail.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH] netfilter: ctnetlink: Resolve conntrack L3-protocol
+ flush regression
+Message-ID: <20190506131605.kapyns6gkyphbea2@salvia>
+References: <20190503154007.32495-1-kristian.evensen@gmail.com>
+ <20190505223229.3ujqpwmuefd3wh7b@salvia>
+ <4ecbebbb-0a7f-6d45-c2c0-00dee746e573@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <a10e3ef7-2928-8865-c463-f9edc7261410@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <4ecbebbb-0a7f-6d45-c2c0-00dee746e573@6wind.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 06, 2019 at 01:00:49AM +0300, Vladimir Oltean wrote:
-> On 4/12/19 8:57 PM, Heiner Kallweit wrote:
-> >On 12.04.2019 01:01, Vladimir Oltean wrote:
-> >>With Heiner's recent patch "b6163f194c69 net: phy: improve
-> >>genphy_read_status", the phydev->speed is now initialized by default to
-> >>SPEED_UNKNOWN even for fixed PHYs. This is not necessarily bad, since it
-> >>is not correct to call genphy_config_init() and genphy_read_status() for
-> >>a fixed PHY.
+On Mon, May 06, 2019 at 10:49:52AM +0200, Nicolas Dichtel wrote:
+> Le 06/05/2019 à 00:32, Pablo Neira Ayuso a écrit :
+> > On Fri, May 03, 2019 at 05:40:07PM +0200, Kristian Evensen wrote:
+> >> Commit 59c08c69c278 ("netfilter: ctnetlink: Support L3 protocol-filter
+> >> on flush") introduced a user-space regression when flushing connection
+> >> track entries. Before this commit, the nfgen_family field was not used
+> >> by the kernel and all entries were removed. Since this commit,
+> >> nfgen_family is used to filter out entries that should not be removed.
+> >> One example a broken tool is conntrack. conntrack always sets
+> >> nfgen_family to AF_INET, so after 59c08c69c278 only IPv4 entries were
+> >> removed with the -F parameter.
 > >>
-> >What do you mean with "it is not correct"? Whether the calls are always
-> >needed may be a valid question, but it's not forbidden to use these calls
-> >with a fixed PHY. Actually in phylib polling mode genphy_read_status is
-> >called every second also for a fixed PHY. swphy emulates all relevant
-> >PHY registers.
-> >
-> >>This dates back all the way to "39b0c705195e net: dsa: Allow
-> >>configuration of CPU & DSA port speeds/duplex" (discussion thread:
-> >>https://www.spinics.net/lists/netdev/msg340862.html).
-> >>
-> >>I don't seem to understand why these calls were necessary back then, but
-> >>removing these calls seemingly has no impact now apart from preventing
-> >>the phydev->speed that was set in of_phy_register_fixed_link() from
-> >>getting overwritten.
+> >> Pablo Neira Ayuso suggested using nfgenmsg->version to resolve the
+> >> regression, and this commit implements his suggestion. nfgenmsg->version
+> >> is so far set to zero, so it is well-suited to be used as a flag for
+> >> selecting old or new flush behavior. If version is 0, nfgen_family is
+> >> ignored and all entries are used. If user-space sets the version to one
+> >> (or any other value than 0), then the new behavior is used. As version
+> >> only can have two valid values, I chose not to add a new
+> >> NFNETLINK_VERSION-constant.
+> > 
+> > Applied, thanks.
+> > 
+> Thank you.
+> Is it possible to queue this for stable?
 
-As Florian said, if you have patches, please post them and we will
-consider them.
-
-But i think we also need to take a step back and consider the big
-picture. There has been a lot of work recently to support multi-G
-PHYs. It is clear we soon need to make changes to fixed-link. It only
-supports up to 1G. But we have use cases where we need multi-G fixed
-links.
-
-We could also consider making the tie to the MAC much stronger. We
-have been encouraging MAC driver writers to make use of the
-ndev->phylib pointer. We could even enforce that, and use
-container_of() to determine the MAC associated to a PHY.
-
-	Andrew
+Sure, as soon as this hits Linus' tree.
