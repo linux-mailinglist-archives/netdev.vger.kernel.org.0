@@ -2,115 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69DFE1550B
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 22:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73A8B15513
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 22:51:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726563AbfEFUpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 16:45:35 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:34901 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726451AbfEFUpf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 16:45:35 -0400
-Received: by mail-ed1-f65.google.com with SMTP id p26so16664336edr.2;
-        Mon, 06 May 2019 13:45:33 -0700 (PDT)
+        id S1726449AbfEFUv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 16:51:29 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:35847 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726197AbfEFUv3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 16:51:29 -0400
+Received: by mail-ed1-f68.google.com with SMTP id a8so16677617edx.3;
+        Mon, 06 May 2019 13:51:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T0nHJ9khqFzYd9X1bGFM55dYV8Drkoa/Hw+bI+N/V5w=;
-        b=h6fz1yi/MJ5wJovCykD/1iOQnsTzXFfSRsjxb68Du13HmdUx3xKMKgJtVe/+XSJoHF
-         JAPoIOwErthkTls1yy1gJM62S7msSsh8wqreyrL3F/qaIlxiqnF5zAc/7qAPdOkFllgz
-         f+zemVeyHOmlcsDIBYHemNcI5r5LE7WuqO36f6bZjNKS5ngXnBKdtbOocyWItTjQrVHP
-         vi/tS53Mk1GooAkaogUjCsj3zLBuYk8emn/aBYMPntnQjnt9Wx77VQdl1nldkkhtZw0N
-         Cky7AW8QiFmFp5TiRC2pGb/l1O8yWlJq606fi1hSGFH8SkwzKu8Oz+k9fOsTWOptaPJT
-         YJ6w==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Bsvy77V2BabW+yLUp1HGYQuE0fTStgpoE1+/qytzq1s=;
+        b=Gdi526GL5SLBSrFzSNH2cZhQTQcqkwWSKruwyg5I24oUNCSjXjBGiy1p6rR8+LPVQ3
+         rC5k6Wo1AdZuWVwM20IdXb14YnLjmupTiDHkVm1xvHWfxPMjU7xtBLSchLh8nuaJ21NA
+         hAwp5a4GEi5DCM3dDH4T0xhvnK56aTDxCotMzqJtFLaCXHfAoxuALyJ0o3qjfotXsseE
+         SPUJ5no8Gr+bxmmICEuehz6GZLeio5Kb1yB+fzMSBBFls8dCUoig1omE51fIJeFrhnyC
+         d7LjP/FupmguhcJBCiaTksw0tTedrkeAGbketDuNB6PxWc//3NJi6CjHTAjMAKgndZkz
+         aVUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T0nHJ9khqFzYd9X1bGFM55dYV8Drkoa/Hw+bI+N/V5w=;
-        b=VKGpnYvb1CZG5HCxw57ru4oJmehhtF7kWbV6q/2TCsZTGZVYT2mOPKmR+YX8sIY5dR
-         Mx7DfDL//ZJN1pDoCPx6wzhzQVfgmit7xfABmRXCiQFXud9qwfcM/zx9kpNWvWRIG18j
-         Zd0zB8DELi3TreYQEAw+d92v6+jL5uzzGPHsnY190N2QAA2h7DPNyG5F+me3H9wZeWL+
-         mDknadqEsolvuG7nFSdl71MuDS2n87ttWEnxT+7afPSnKf5YjJbPh1xJAKrW7qwnVnnx
-         krHvA0lsQOXEl7twiryApn89zXzG/xXDCEn4cTFN47gKXQP/3lQflwYdNV9O8pfNkOR5
-         ebug==
-X-Gm-Message-State: APjAAAVVZVa/1UZ2t6GWNirsD8yxZvnPQE3xUw8TGwbfY6uivn+Bkkfn
-        7ejgTaufJYurW1BAK0zbnjP6pvmx+EnzRrQ3FRc=
-X-Google-Smtp-Source: APXvYqxafPtBl+3HWXW7hDxqDmr1hvHRlVnDeusFECLnBRyfxCF8K4AAyn/TXq04Gah1Ed9de0ZGLae9A+61+M2/iJg=
-X-Received: by 2002:a50:9177:: with SMTP id f52mr28874627eda.18.1557175533006;
- Mon, 06 May 2019 13:45:33 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Bsvy77V2BabW+yLUp1HGYQuE0fTStgpoE1+/qytzq1s=;
+        b=AllwfkREJlW5rkrTdrOe2a3qq3ArCbkq3J1LYpYgVgOYkttDMg9cHc8KXVvv9/1ZVw
+         /F2emcHzVNdPF8dRPpQdbCX1Oj/KacFruIyTPpcVPaSVxOT9WI5dfA3Rxaebs7cn2fgb
+         b4Vr8jQFXMehAvlLAOMpGfH/Nnd+NcFyx1OWf8Qak4iY0CZ+PIAR3mXOhcymXxo7w0Wz
+         NXsVjFbX2K3pUPqdtAp4UNZWxeE2wzwJSJiyQBF8ORq0bYmBHORYwVS/+beJkpwvHybZ
+         LaqtLC/XF76EN9dpA8KOKFMYoJalLPHfN2p9xbD9mQjTVONaboHYMvY/KO1EyK4kjzu0
+         Dk/w==
+X-Gm-Message-State: APjAAAUiDonDb1YN1dLZHOQM07uhUFp8TfQFxBq0k8A2hKTAM8083B1n
+        LNhfvma2Fp3dJG0HMeDlyCI=
+X-Google-Smtp-Source: APXvYqx792ZxnRPmeKSlVuPcmkI5N4D9ONfjaQkrJxkqIgpWXAAKDFTpL6xQkKVarA5y32JLLzeE/Q==
+X-Received: by 2002:a50:dece:: with SMTP id d14mr28348575edl.97.1557175886802;
+        Mon, 06 May 2019 13:51:26 -0700 (PDT)
+Received: from archlinux-i9 ([2a01:4f9:2b:2b84::2])
+        by smtp.gmail.com with ESMTPSA id n7sm1761506ejk.72.2019.05.06.13.51.25
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 06 May 2019 13:51:26 -0700 (PDT)
+Date:   Mon, 6 May 2019 13:51:24 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Subject: Re: [PATCH] rsi: Properly initialize data in rsi_sdio_ta_reset
+Message-ID: <20190506205124.GA23683@archlinux-i9>
+References: <20190502151548.11143-1-natechancellor@gmail.com>
+ <CAKwvOd=nvKGGW5jvN+WFUXzOm9xeiNNUD0F9--9YcpuRmnWWhA@mail.gmail.com>
+ <87h8ackv8j.fsf@kamboji.qca.qualcomm.com>
 MIME-Version: 1.0
-References: <20190506202447.30907-1-natechancellor@gmail.com>
-In-Reply-To: <20190506202447.30907-1-natechancellor@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 6 May 2019 23:45:22 +0300
-Message-ID: <CA+h21hpODxkfP8c0CVZwfVpUs91U1REsc2vWMVBAOteDnkJJjQ@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: sja1105: Fix status initialization in sja1105_get_ethtool_stats
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        clang-built-linux@googlegroups.com,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87h8ackv8j.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 May 2019 at 23:25, Nathan Chancellor <natechancellor@gmail.com> wrote:
->
-> Clang warns:
->
-> drivers/net/dsa/sja1105/sja1105_ethtool.c:316:39: warning: suggest
-> braces around initialization of subobject [-Wmissing-braces]
->         struct sja1105_port_status status = {0};
->                                              ^
->                                              {}
-> 1 warning generated.
->
-> One way to fix these warnings is to add additional braces like Clang
-> suggests; however, there has been a bit of push back from some
-> maintainers[1][2], who just prefer memset as it is unambiguous, doesn't
-> depend on a particular compiler version[3], and properly initializes all
-> subobjects. Do that here so there are no more warnings.
->
-> [1]: https://lore.kernel.org/lkml/022e41c0-8465-dc7a-a45c-64187ecd9684@amd.com/
-> [2]: https://lore.kernel.org/lkml/20181128.215241.702406654469517539.davem@davemloft.net/
-> [3]: https://lore.kernel.org/lkml/20181116150432.2408a075@redhat.com/
->
-> Fixes: 52c34e6e125c ("net: dsa: sja1105: Add support for ethtool port counters")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/471
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> ---
->  drivers/net/dsa/sja1105/sja1105_ethtool.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/dsa/sja1105/sja1105_ethtool.c b/drivers/net/dsa/sja1105/sja1105_ethtool.c
-> index 46d22be31309..ab581a28cd41 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_ethtool.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_ethtool.c
-> @@ -313,9 +313,11 @@ static char sja1105pqrs_extra_port_stats[][ETH_GSTRING_LEN] = {
->  void sja1105_get_ethtool_stats(struct dsa_switch *ds, int port, u64 *data)
->  {
->         struct sja1105_private *priv = ds->priv;
-> -       struct sja1105_port_status status = {0};
-> +       struct sja1105_port_status status;
->         int rc, i, k = 0;
->
-> +       memset(&status, 0, sizeof(status));
-> +
->         rc = sja1105_port_status_get(priv, &status, port);
->         if (rc < 0) {
->                 dev_err(ds->dev, "Failed to read port %d counters: %d\n",
-> --
-> 2.21.0
->
+On Fri, May 03, 2019 at 07:38:52AM +0300, Kalle Valo wrote:
+> Nick Desaulniers <ndesaulniers@google.com> writes:
+> 
+> > On Thu, May 2, 2019 at 8:16 AM Nathan Chancellor
+> > <natechancellor@gmail.com> wrote:
+> >>
+> >> When building with -Wuninitialized, Clang warns:
+> >>
+> >> drivers/net/wireless/rsi/rsi_91x_sdio.c:940:43: warning: variable 'data'
+> >> is uninitialized when used here [-Wuninitialized]
+> >>         put_unaligned_le32(TA_HOLD_THREAD_VALUE, data);
+> >>                                                  ^~~~
+> >> drivers/net/wireless/rsi/rsi_91x_sdio.c:930:10: note: initialize the
+> >> variable 'data' to silence this warning
+> >>         u8 *data;
+> >>                 ^
+> >>                  = NULL
+> >> 1 warning generated.
+> >>
+> >> Using Clang's suggestion of initializing data to NULL wouldn't work out
+> >> because data will be dereferenced by put_unaligned_le32. Use kzalloc to
+> >> properly initialize data, which matches a couple of other places in this
+> >> driver.
+> >>
+> >> Fixes: e5a1ecc97e5f ("rsi: add firmware loading for 9116 device")
+> >> Link: https://github.com/ClangBuiltLinux/linux/issues/464
+> >> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> >> ---
+> >>  drivers/net/wireless/rsi/rsi_91x_sdio.c | 21 ++++++++++++++-------
+> >>  1 file changed, 14 insertions(+), 7 deletions(-)
+> >>
+> >> diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
+> >> index f9c67ed473d1..b35728564c7b 100644
+> >> --- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
+> >> +++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
+> >> @@ -929,11 +929,15 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
+> >>         u32 addr;
+> >>         u8 *data;
+> >>
+> >> +       data = kzalloc(sizeof(u32), GFP_KERNEL);
+> >
+> > Something fishy is going on here.  We allocate 4 B but declare data as
+> > a u8* (pointer to individual bytes)?  In general, dynamically
+> > allocating that few bytes is a code smell; either you meant to just
+> > use the stack, or this memory's lifetime extends past the lifetime of
+> > this stackframe, at which point you probably just meant to stack
+> > allocate space in a higher parent frame and pass this preallocated
+> > memory down to the child frame to get filled in.
+> >
+> > Reading through this code, I don't think that the memory is meant to
+> > outlive the stack frame.  Is there a reason why we can't just declare
+> > data as:
+> >
+> > u8 data [4];
+> >
+> > then use ARRAY_SIZE(data) or RSI_9116_REG_SIZE in rsi_reset_chip(),
+> > getting rid of the kzalloc/kfree?
+> 
+> I haven't checked the details but AFAIK stack variables are not supposed
+> to be used with DMA. So in that case I think it's ok alloc four bytes,
+> unless the DMA rules have changed of course. But I didn't check if rsi
+> is using DMA here, just a general comment.
+> 
+> -- 
+> Kalle Valo
 
-Acked-by: Vladimir Oltean <olteanv@gmail.com>
+I don't think it is using the DMA API but it might be the same thing for
+SDIO. If passing that around on the stack is okay, great but we don't
+want what commit f700546682a6 ("rsi: fix nommu_map_sg overflow kernel
+panic") fixes to happen here.
 
-Thanks Nathan, compound literals got me this time.
--Vladimir
+I can't answer that for sure though since I am not at all familiar with
+this driver or the SDIO APIs.
+
+Cheers,
+Nathan
