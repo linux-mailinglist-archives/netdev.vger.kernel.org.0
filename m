@@ -2,586 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E84E014BBE
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:23:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E43C614E9A
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:04:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726324AbfEFOXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 10:23:46 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:41133 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbfEFOXp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 10:23:45 -0400
-Received: by mail-ot1-f66.google.com with SMTP id g8so11592201otl.8;
-        Mon, 06 May 2019 07:23:45 -0700 (PDT)
+        id S1726557AbfEFOjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 10:39:14 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:33524 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727748AbfEFOjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 10:39:14 -0400
+Received: by mail-lj1-f196.google.com with SMTP id f23so11327648ljc.0;
+        Mon, 06 May 2019 07:39:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=++UkGsIUx9t7WVhiBoVNxWyhYFlHUZ7coGlPoWGL8bc=;
-        b=kilCW+X0Z57MliVVtXRe4ijXh1GotsD5hht4qGmxOq2+ruMJSIh4QRiqxtfuETEiRA
-         CIbvvq+aUrqRFAQcB12QqUgYlnNUYVZ2ACBtgG5UOQk7oUxjUxLxVvbVVaAdvLiUbnxK
-         wFV3J2rcKJdRT8jALP3x33qTKGTNVCCTYLntZPArAOFDzTO+3r6Dqed+hid1pqbjOAea
-         vI3rloJo0AnPjZS/zeC/dZHLPNm3kLvGrBasIQEGkX8HBpY3wVymPVUTB7QMEGkwmELU
-         XaDFh84XEMiGgofJ3yDKdMZkb+eLw1WUSXfGRBWAfeJxRXd7sqWZPJUrUK2e589fJHfS
-         n04Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aea4AeGRcNFYVaxX9HKC+puP0Uu/dDxECENRVLl8ZzQ=;
+        b=hKgCp8gP1dbtFfMP1v2Z6/JR65Xgq8Df0RqAuCJQ9vs/9uy/h8M0pWhM65UvcdvWy7
+         EzHPVghXOEczgnEYKPs3RoXqNBOk8kjvoYYfIfA6pOtzdnkLvrDn4r5CE6BvI0zBxo4R
+         kiEWvwJdyCWc38A/7O3XNOisUPzDYRfMChRsjowiP8xjTLPu6dv63WzRtT6dm1p9m4CW
+         jVR9NzG8VkcxPEArSjO2NEvknjvp4tA3x/+LA24wRGUodIdoWpLEz2QxLEtsBx9rmxG0
+         3oiYYQOtz03f9ud+IY8flRIV6Hi3Cfi4Bx6R5hp4bFFKos8xIIH/9orVEcsr11pejURe
+         ebDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=++UkGsIUx9t7WVhiBoVNxWyhYFlHUZ7coGlPoWGL8bc=;
-        b=qA+BWY8422foxr4cHjGBDkcAYr0m8iZ+b5gFp84ArgYj5QqcGF59ey4pDAx/vV44nJ
-         3IouH5fDDl4KjpIEreTDfyfMFlKabQD8wmxb64hve2UmHslW8Hp4koGood4+0G89gNr8
-         35r/DnZwdFiV3CwOwa1hsJ4EWXkHuyHXRRoYSdbitW/dAL4CCLfzZw7JJI8znHkjio0M
-         VN2G8aneanSM56maBT9IhOybu+nUSXLb0gnMZIae32CZxxQFIJ2YGjmeP5CND0RePKcI
-         ZlzBw2Mo7lT367N/9ESHj9cpnkR+IZABh/hAHOey3utP778GtmEvdZVDAlKAQjdE0wLQ
-         I+hA==
-X-Gm-Message-State: APjAAAVLkD3kbE5flGT9UtC5GqrnOePQydlyoR6dK+kIUWfN84d+WJt0
-        k0slcANSSzX7GEbQsdIWzZyjqJPu+GqgbManWgs=
-X-Google-Smtp-Source: APXvYqza9fLTLFoA3kbqNV4Oyh5+zggrC8TLoXN4uP6/08p/xfUv/YbP7fFidZlV9+BShybEn03b55HblOvxtZPhvKo=
-X-Received: by 2002:a9d:4e15:: with SMTP id p21mr17348322otf.285.1557152624674;
- Mon, 06 May 2019 07:23:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190430181215.15305-1-maximmi@mellanox.com> <20190430181215.15305-5-maximmi@mellanox.com>
- <CAJ+HfNho0H7qq+hFn7Ri=9Y+KGEcM19SOChfPZxwkyqJNymKcQ@mail.gmail.com> <a9d22f97-b6b6-33ca-5120-fbe1231a9484@mellanox.com>
-In-Reply-To: <a9d22f97-b6b6-33ca-5120-fbe1231a9484@mellanox.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 6 May 2019 16:23:32 +0200
-Message-ID: <CAJ8uoz0=YLF1s2nm6kGS=gD0xBhiqN8H8cqOX6ZcqdW2af8qDg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 04/16] xsk: Extend channels to support
- combined XSK/non-XSK traffic
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aea4AeGRcNFYVaxX9HKC+puP0Uu/dDxECENRVLl8ZzQ=;
+        b=XOx9RSkMkIdi8j+IbbZE2rA1R1Cxo8JCVmd5xcCrgBdP+69zARZVUkBQ5CeLw/BhPR
+         3HoqGOR/AaHUt/2gRy7w1jXwDmmY1Jd0pzBqlCtrwnOKnT7Tsk0kVAoBmEkHnW/llib3
+         dhKgBMdua5dN9jrjuND2Y0CDHEtuqgcxaFycP7/6oDGddWnvuE99kYOGVPQYYahWBbLr
+         VfI0I+ClXE3bKDno+mDnW3MfWrdNpKH8x0PT4YhXcLv1IJJRpxKQCWsRdQ4Za891oiTZ
+         kAAX53wgDMLgIQEwtX/55Xdff07VmQ6KBomrlxfFJdqEtdC9h1o1ANeSneLwmiqZP1Ie
+         O/cA==
+X-Gm-Message-State: APjAAAXGFNA/ChKHsLgnetp1BUoU0U0HsRCscpsg+raWg6Yty5VfjWzq
+        gQYKIhAdjy/ZU042GLK1qV8=
+X-Google-Smtp-Source: APXvYqxSzsUHKviXNs/xM2+ZB2tYRfkOuCfgvHSUV1EGi1G7PCKqMGLpl6MFky2QGSZHRz+h8uvViw==
+X-Received: by 2002:a2e:9c57:: with SMTP id t23mr13974422ljj.152.1557153550534;
+        Mon, 06 May 2019 07:39:10 -0700 (PDT)
+Received: from mobilestation ([5.164.217.122])
+        by smtp.gmail.com with ESMTPSA id q29sm2416918ljc.8.2019.05.06.07.39.09
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 06 May 2019 07:39:09 -0700 (PDT)
+Date:   Mon, 6 May 2019 17:39:07 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jonathan Lemon <bsd@fb.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Serge Semin <Sergey.Semin@t-platforms.ru>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] net: phy: realtek: Change TX-delay setting for
+ RGMII modes only
+Message-ID: <20190506143906.o3tublcxr5ge46rg@mobilestation>
+References: <20190426212112.5624-1-fancer.lancer@gmail.com>
+ <20190426212112.5624-2-fancer.lancer@gmail.com>
+ <20190426214631.GV4041@lunn.ch>
+ <20190426233511.qnkgz75ag7axt5lp@mobilestation>
+ <f27df721-47aa-a708-aaee-69be53def814@gmail.com>
+ <CA+h21hpTRCrD=FxDr=ihDPr+Pdhu6hXT3xcKs47-NZZZ3D9zyg@mail.gmail.com>
+ <20190429211225.ce7cspqwvlhwdxv6@mobilestation>
+ <CAFBinCBxgMr6ZkOSGfXZ9VwJML=GnzrL+FSo5jMpN27L2o5+JA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFBinCBxgMr6ZkOSGfXZ9VwJML=GnzrL+FSo5jMpN27L2o5+JA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 6, 2019 at 3:46 PM Maxim Mikityanskiy <maximmi@mellanox.com> wr=
-ote:
->
-> On 2019-05-04 20:26, Bj=C3=B6rn T=C3=B6pel wrote:
-> > On Tue, 30 Apr 2019 at 20:12, Maxim Mikityanskiy <maximmi@mellanox.com>=
- wrote:
-> >>
-> >> Currently, the drivers that implement AF_XDP zero-copy support (e.g.,
-> >> i40e) switch the channel into a different mode when an XSK is opened. =
-It
-> >> causes some issues that have to be taken into account. For example, RS=
-S
-> >> needs to be reconfigured to skip the XSK-enabled channels, or the XDP
-> >> program should filter out traffic not intended for that socket and
-> >> XDP_PASS it with an additional copy. As nothing validates or forces th=
-e
-> >> proper configuration, it's easy to have packets drops, when they get
-> >> into an XSK by mistake, and, in fact, it's the default configuration.
-> >> There has to be some tool to have RSS reconfigured on each socket open
-> >> and close event, but such a tool is problematic to implement, because =
-no
-> >> one reports these events, and it's race-prone.
-> >>
-> >> This commit extends XSK to support both kinds of traffic (XSK and
-> >> non-XSK) in the same channel. It implies having two RX queues in
-> >> XSK-enabled channels: one for the regular traffic, and the other for
-> >> XSK. It solves the problem with RSS: the default configuration just
-> >> works without the need to manually reconfigure RSS or to perform some
-> >> possibly complicated filtering in the XDP layer. It makes it easy to r=
-un
-> >> both AF_XDP and regular sockets on the same machine. In the XDP progra=
-m,
-> >> the QID's most significant bit will serve as a flag to indicate whethe=
-r
-> >> it's the XSK queue or not. The extension is compatible with the legacy
-> >> configuration, so if one wants to run the legacy mode, they can
-> >> reconfigure RSS and ignore the flag in the XDP program (implemented in
-> >> the reference XDP program in libbpf). mlx5e will support this extensio=
-n.
-> >>
-> >> A single XDP program can run both with drivers supporting or not
-> >> supporting this extension. The xdpsock sample and libbpf are updated
-> >> accordingly.
-> >>
+Hello Martin.
+
+On Tue, Apr 30, 2019 at 11:16:21PM +0200, Martin Blumenstingl wrote:
+>  Hello Serge,
+> 
+> On Mon, Apr 29, 2019 at 11:12 PM Serge Semin <fancer.lancer@gmail.com> wrote:
+> [...]
+> > > > > Apparently the current config_init method doesn't support RXID setting.
+> > > > > The patch introduced current function code was submitted by
+> > > > > Martin Blumenstingl in 2016:
+> > > > > https://patchwork.kernel.org/patch/9447581/
+> > > > > and was reviewed by Florian. So we'd better ask him why it was ok to mark
+> > > > > the RGMII_ID as supported while only TX-delay could be set.
+> > > > > I also failed to find anything regarding programmatic rtl8211f delays setting
+> > > > > in the Internet. So at this point we can set TX-delay only for f-model of the PHY.
+> let me give you a bit of context on that patch:
+> most boards (SBCs and TV boxes) with an Amlogic SoC and a Gigabit
+> Ethernet PHY use a Realtek RTL8211F PHY. we were seeing high packet
+> loss when transmitting from the board to another device.
+> it took us very long to understand that a combination of different
+> hardware and driver pieces lead to this issue:
+> - in the MAC driver we enabled a 2ns TX delay by default, like Amlogic
+> does it in their vendor (BSP) kernel
+> - we used the upstream Realtek RTL8211F PHY driver which only enabled
+> the TX delay if requested (it never disabled the TX delay)
+> - hardware defaults or pin strapping of the Realtek RTL8211F PHY
+> enabled the TX delay in the PHY
+> 
+> This means that the TX delay was applied twice: once at the MAC and
+> once at the PHY.
+> That lead to high packet loss when transmitting data.
+> To solve that I wrote the patch you mentioned, which has since been
+> ported over to u-boot (for a non-Amlogic related board)
+> 
+
+Yeah. This is a standard problem if you ever worked with a hardware just
+designed, when you try to make MAC+PHY working together. If you experienced
+packets loss and it's RGMII, then most likely the problem with delays.
+
+> > > > > Anyway lets clarify the situation before to proceed further. You are suggesting
+> > > > > to return an error in case if either RGMII_ID or RGMII_RXID interface mode is
+> > > > > requested to be enabled for the PHY. It's fair seeing the driver can't fully
+> > > > > support either of them.
+> I don't have any datasheet for the Realtek RTL8211F PHY and I'm not in
+> the position to get one (company contracts seem to be required for
+> this).
+> Linux is not my main job, I do driver development in my spare time.
+> 
+> there may or may not be a register or pin strapping to configure the RX delay.
+> due to this I decided to leave the RX delay behavior "not defined"
+> instead of rejecting RGMII_RXID and RGMII_ID.
+> 
+> > > > That is how I read Andrew's suggestion and it is reasonable. WRT to the
+> > > > original changes from Martin, he is probably the one you would want to
+> > > > add to this conversation in case there are any RX delay control knobs
+> > > > available, I certainly don't have the datasheet, and Martin's change
+> > > > looks and looked reasonable, seemingly independent of the direction of
+> > > > this very conversation we are having.
+> the changes in patch 1 are looking good to me (except that I would use
+> phy_modify_paged instead of open-coding it, functionally it's
+> identical with what you have already)
+> 
+
+Nah, this isn't going to work since the config register is placed on an extension
+page. So in order to reach the register first I needed to enable a standard page,
+then select an extended page, then modify the register bits.
+
+> I'm not sure about patch 2:
+> personally I would wait for someone to come up with the requirement to
+> use RGMII_RXID with a RTL8211F PHY.
+> that person will then a board to test the changes and (hopefully) a
+> datasheet to explain the RX delay situation with that PHY.
+> that way we only change the RGMII_RXID behavior once (when someone
+> requests support for it) instead of twice (now with your change, later
+> on when someone needs RGMII_RXID support in the RTL8211F driver)
+> 
+> that said, the change in patch 2 itself looks fine on Amlogic boards
+> (because all upstream .dts let the MAC generate the TX delay). I
+> haven't runtime-tested your patch there yet.
+> but there seem to be other boards (than the Amlogic ones, the RTL8211F
+> PHY driver discussion in u-boot was not related to an Amlogic board)
+> out there with a RTL8211F PHY (these may or may not be supported in
+> mainline Linux or u-boot and may or may not use RGMII_RXID where you
+> are now changing the behavior). that's not a problem by itself, but
+> you should be aware of this.
+> 
+> [...]
+> > rtl8211(e|f) TX/RX delays can be configured either by external pins
+> > strapping or via software registers. This is one of the clue to provide
+> > a proper config_init method code. But not all rtl8211f phys provide
+> > that software register, and if they do it only concerns TX-delay (as we
+> > aware of). So we need to take this into account when creating the updated
+> > versions of these functions.
 > >
-> > I'm still not a fan of this, or maybe I'm not following you. It makes
-> > it more complex and even harder to use. Let's take a look at the
-> > kernel nomenclature. "ethtool" uses netdevs and channels. A channel is
-> > a Rx queue or a Tx queue.
->
-> There are also combined channels that consist of an RX and a TX queue.
-> mlx5e has only this kind of channels. For us, a channel is a set of
-> queues "pinned to a CPU core" (they use the same NAPI).
->
-> > In AF_XDP we call the channel a queue, which
-> > is what kernel uses internally (netdev_rx_queue, netdev_queue).
->
-> You seem to agree it's a channel, right?
->
-> AF_XDP doesn't allow to configure RX queue number and TX queue number
-> separately. Basically you choose a channel in AF_XDP. For some reason,
-> it's referred as a queue in some places, but logically it means "channel"=
-.
+> > (Martin, I also Cc'ed you in this discussion, so if you have anything to
+> > say in this matter, please don't hesitate to comment.)
+> Amlogic boards, such as the Hardkernel Odroid-C1 and Odroid-C2 as well
+> as the Khadas VIM2 use a "RTL8211F" RGMII PHY. I don't know whether
+> there are multiple versions of this PHY. all RTL8211F I have seen so
+> far did behave exactly the same.
+> 
+> I also don't know whether the RX delay is configurable (by pin
+> strapping or some register) on RTL8211F PHYs because I don't have
+> access to the datasheet.
+> 
+> 
+> Martin
 
-You can configure the Rx queue and the Tx queue separately by creating
-two sockets tied to the same umem area. But if you just create one,
-you are correct.
+Ok. Thanks for the comments. I am sure the RX-delay is configurable at list
+via external RXD pin strapping at the chip powering up procedure. The only
+problem with a way of software to change the setting.
 
-> > Today, AF_XDP can attach to an existing queue for ingress. (On the
-> > egress side, we're using "a queue", but the "XDP queue". XDP has these
-> > "shadow queues" which are separated from the netdev. This is a bit
-> > messy, and we can't really configure them. I believe Jakub has some
-> > ideas here. :-) For now, let's leave egress aside.)
->
-> So, XDP already has "shadow queues" for TX, so I see no problem in
-> having the similar concept for AF_XDP RX.
+I don't think there is going to be anyone revealing that realtek black boxed
+registers layout anytime soon. So as I see it it's better to leave the
+rtl8211f-part as is for now.
 
-The question is if we would like to continue down the path of "shadow
-queues" by adding even more. In the busy-poll RFC I sent out last
-week, I talk about the possibility to create a new queue (set) not
-tied to the napi of the regular Rx queues in order to get better
-performance when using busy-poll. How would such a queue set fit into
-a shadow queue set approach? When does hiding the real queues created
-to support various features break and we have to expose the real queue
-number? Trying to wrap my head around these questions.
-
-Maxim, would it be possible for you to respin this set without this
-feature? I like the other stuff you have implemented and think that
-the rest of the common functionality should be useful for all of us.
-This way you can get the AF_XDP support accepted quicker while we
-debate the best way to solve the issue in this thread.
-
-Thanks for all your work: Magnus
-
-> > If an application would like to get all the traffic from a netdev,
-> > it'll create an equal amout of sockets as the queues and bind to the
-> > queues. Yes, even the queues in the RSS  set.
-> >
-> > What you would like (I think):
-> > a) is a way of spawning a new queue for a netdev, that is not part of
-> > the stack and/or RSS set
->
-> Yes - for the simplicity sake and to make configuration easier. The only
-> thing needed is to steer the traffic and to open an AF_XDP socket on
-> channel X. We don't need to care about removing the queue out of RSS,
-> about finding a way to administer this (which is hard because it's racy
-> if the configuration in not known in advance). So I don't agree I'm
-> complicating things, my goal is to make them easier.
->
-> > b) steering traffic to that queue using a configuration mechanism (tc?
-> > some yet to be hacked BPF configuration hook?)
->
-> Currently, ethtool --config-ntuple is used to steer the traffic. The
-> user-def argument has a bit that selects XSK RQ/regular RQ, and action
-> selects a channel:
->
-> ethtool -N eth0 flow-type udp4 dst-port 4242 action 3 user-def 1
->
-> > With your mechanism you're doing this in contrived way. This makes the
-> > existing AF_XDP model *more* complex/hard(er) to use.
->
-> No, as I said above, some issues are eliminated with my approach, and no
-> new limitations are introduced, so it makes things more universal and
-> simpler to configure.
->
-> > How do you steer traffic to this dual-channel RQ?
->
-> First, there is no dual-channel RQ, a more accurate term is dual-RQ
-> channel, cause now the channel contains a regular RQ and can contain an
-> XSK RQ.
->
-> For the steering itself, see the ethtool command above - the user-def
-> argument has a bit that selects one of two RQs.
->
-> > So you have a netdev
-> > receiving on all queues. Then, e.g., the last queue is a "dual
-> > channel" queue that can receive traffic from some other filter. How do
-> > you use it?
->
-> If I want to take the last (or some) channel and start using AF_XDP with
-> it, I simply configure steering to the XSK RQ of that channel and open a
-> socket specifying the channel number. I don't need to reconfigure RSS,
-> because RSS packets go to the regular RQ of that channel and don't
-> interfere with XSK.
->
-> No functionality is lost - if you don't distinguish the regular and XSK
-> RQs on the XDP level, you'll get the same effect as with i40e's
-> implementation. If you want to dedicate the CPU core and channel solely
-> for AF_XDP, in i40e you exclude the channel from RSS, and here you can
-> do exactly the same thing. So, no use case is complicated comparing to
-> i40e, but there are use cases where this feature is to advantage.
->
-> I hope I explained the points you were interested in. Please ask more
-> questions if there is still something that I should clarify regarding
-> this topic.
->
-> Thanks,
-> Max
->
-> >
-> >
-> > Bj=C3=B6rn
-> >
-> >> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> >> Acked-by: Saeed Mahameed <saeedm@mellanox.com>
-> >> ---
-> >>   include/uapi/linux/if_xdp.h       |  11 +++
-> >>   net/xdp/xsk.c                     |   5 +-
-> >>   samples/bpf/xdpsock_user.c        |  10 ++-
-> >>   tools/include/uapi/linux/if_xdp.h |  11 +++
-> >>   tools/lib/bpf/xsk.c               | 116 ++++++++++++++++++++++------=
---
-> >>   tools/lib/bpf/xsk.h               |   4 ++
-> >>   6 files changed, 126 insertions(+), 31 deletions(-)
-> >>
-> >> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
-> >> index 9ae4b4e08b68..cf6ff1ecc6bd 100644
-> >> --- a/include/uapi/linux/if_xdp.h
-> >> +++ b/include/uapi/linux/if_xdp.h
-> >> @@ -82,4 +82,15 @@ struct xdp_desc {
-> >>
-> >>   /* UMEM descriptor is __u64 */
-> >>
-> >> +/* The driver may run a dedicated XSK RQ in the channel. The XDP prog=
-ram uses
-> >> + * this flag bit in the queue index to distinguish between two RQs of=
- the same
-> >> + * channel.
-> >> + */
-> >> +#define XDP_QID_FLAG_XSKRQ (1 << 31)
-> >> +
-> >> +static inline __u32 xdp_qid_get_channel(__u32 qid)
-> >> +{
-> >> +       return qid & ~XDP_QID_FLAG_XSKRQ;
-> >> +}
-> >> +
-> >>   #endif /* _LINUX_IF_XDP_H */
-> >> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> >> index 998199109d5c..114ba17acb09 100644
-> >> --- a/net/xdp/xsk.c
-> >> +++ b/net/xdp/xsk.c
-> >> @@ -104,9 +104,12 @@ static int __xsk_rcv_zc(struct xdp_sock *xs, stru=
-ct xdp_buff *xdp, u32 len)
-> >>
-> >>   int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
-> >>   {
-> >> +       struct xdp_rxq_info *rxq =3D xdp->rxq;
-> >> +       u32 channel =3D xdp_qid_get_channel(rxq->queue_index);
-> >>          u32 len;
-> >>
-> >> -       if (xs->dev !=3D xdp->rxq->dev || xs->queue_id !=3D xdp->rxq->=
-queue_index)
-> >> +       if (xs->dev !=3D rxq->dev || xs->queue_id !=3D channel ||
-> >> +           xs->zc !=3D (rxq->mem.type =3D=3D MEM_TYPE_ZERO_COPY))
-> >>                  return -EINVAL;
-> >>
-> >>          len =3D xdp->data_end - xdp->data;
-> >> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-> >> index d08ee1ab7bb4..a6b13025ee79 100644
-> >> --- a/samples/bpf/xdpsock_user.c
-> >> +++ b/samples/bpf/xdpsock_user.c
-> >> @@ -62,6 +62,7 @@ enum benchmark_type {
-> >>
-> >>   static enum benchmark_type opt_bench =3D BENCH_RXDROP;
-> >>   static u32 opt_xdp_flags =3D XDP_FLAGS_UPDATE_IF_NOEXIST;
-> >> +static u32 opt_libbpf_flags;
-> >>   static const char *opt_if =3D "";
-> >>   static int opt_ifindex;
-> >>   static int opt_queue;
-> >> @@ -306,7 +307,7 @@ static struct xsk_socket_info *xsk_configure_socke=
-t(struct xsk_umem_info *umem)
-> >>          xsk->umem =3D umem;
-> >>          cfg.rx_size =3D XSK_RING_CONS__DEFAULT_NUM_DESCS;
-> >>          cfg.tx_size =3D XSK_RING_PROD__DEFAULT_NUM_DESCS;
-> >> -       cfg.libbpf_flags =3D 0;
-> >> +       cfg.libbpf_flags =3D opt_libbpf_flags;
-> >>          cfg.xdp_flags =3D opt_xdp_flags;
-> >>          cfg.bind_flags =3D opt_xdp_bind_flags;
-> >>          ret =3D xsk_socket__create(&xsk->xsk, opt_if, opt_queue, umem=
-->umem,
-> >> @@ -346,6 +347,7 @@ static struct option long_options[] =3D {
-> >>          {"interval", required_argument, 0, 'n'},
-> >>          {"zero-copy", no_argument, 0, 'z'},
-> >>          {"copy", no_argument, 0, 'c'},
-> >> +       {"combined", no_argument, 0, 'C'},
-> >>          {0, 0, 0, 0}
-> >>   };
-> >>
-> >> @@ -365,6 +367,7 @@ static void usage(const char *prog)
-> >>                  "  -n, --interval=3Dn     Specify statistics update i=
-nterval (default 1 sec).\n"
-> >>                  "  -z, --zero-copy      Force zero-copy mode.\n"
-> >>                  "  -c, --copy           Force copy mode.\n"
-> >> +               "  -C, --combined       Driver supports combined XSK a=
-nd non-XSK traffic in a channel.\n"
-> >>                  "\n";
-> >>          fprintf(stderr, str, prog);
-> >>          exit(EXIT_FAILURE);
-> >> @@ -377,7 +380,7 @@ static void parse_command_line(int argc, char **ar=
-gv)
-> >>          opterr =3D 0;
-> >>
-> >>          for (;;) {
-> >> -               c =3D getopt_long(argc, argv, "Frtli:q:psSNn:cz", long=
-_options,
-> >> +               c =3D getopt_long(argc, argv, "Frtli:q:psSNn:czC", lon=
-g_options,
-> >>                                  &option_index);
-> >>                  if (c =3D=3D -1)
-> >>                          break;
-> >> @@ -420,6 +423,9 @@ static void parse_command_line(int argc, char **ar=
-gv)
-> >>                  case 'F':
-> >>                          opt_xdp_flags &=3D ~XDP_FLAGS_UPDATE_IF_NOEXI=
-ST;
-> >>                          break;
-> >> +               case 'C':
-> >> +                       opt_libbpf_flags |=3D XSK_LIBBPF_FLAGS__COMBIN=
-ED_CHANNELS;
-> >> +                       break;
-> >>                  default:
-> >>                          usage(basename(argv[0]));
-> >>                  }
-> >> diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/li=
-nux/if_xdp.h
-> >> index 9ae4b4e08b68..cf6ff1ecc6bd 100644
-> >> --- a/tools/include/uapi/linux/if_xdp.h
-> >> +++ b/tools/include/uapi/linux/if_xdp.h
-> >> @@ -82,4 +82,15 @@ struct xdp_desc {
-> >>
-> >>   /* UMEM descriptor is __u64 */
-> >>
-> >> +/* The driver may run a dedicated XSK RQ in the channel. The XDP prog=
-ram uses
-> >> + * this flag bit in the queue index to distinguish between two RQs of=
- the same
-> >> + * channel.
-> >> + */
-> >> +#define XDP_QID_FLAG_XSKRQ (1 << 31)
-> >> +
-> >> +static inline __u32 xdp_qid_get_channel(__u32 qid)
-> >> +{
-> >> +       return qid & ~XDP_QID_FLAG_XSKRQ;
-> >> +}
-> >> +
-> >>   #endif /* _LINUX_IF_XDP_H */
-> >> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> >> index a95b06d1f81d..969dfd856039 100644
-> >> --- a/tools/lib/bpf/xsk.c
-> >> +++ b/tools/lib/bpf/xsk.c
-> >> @@ -76,6 +76,12 @@ struct xsk_nl_info {
-> >>          int fd;
-> >>   };
-> >>
-> >> +enum qidconf {
-> >> +       QIDCONF_REGULAR,
-> >> +       QIDCONF_XSK,
-> >> +       QIDCONF_XSK_COMBINED,
-> >> +};
-> >> +
-> >>   /* For 32-bit systems, we need to use mmap2 as the offsets are 64-bi=
-t.
-> >>    * Unfortunately, it is not part of glibc.
-> >>    */
-> >> @@ -139,7 +145,7 @@ static int xsk_set_xdp_socket_config(struct xsk_so=
-cket_config *cfg,
-> >>                  return 0;
-> >>          }
-> >>
-> >> -       if (usr_cfg->libbpf_flags & ~XSK_LIBBPF_FLAGS__INHIBIT_PROG_LO=
-AD)
-> >> +       if (usr_cfg->libbpf_flags & ~XSK_LIBBPF_FLAGS_MASK)
-> >>                  return -EINVAL;
-> >>
-> >>          cfg->rx_size =3D usr_cfg->rx_size;
-> >> @@ -267,44 +273,93 @@ static int xsk_load_xdp_prog(struct xsk_socket *=
-xsk)
-> >>          /* This is the C-program:
-> >>           * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
-> >>           * {
-> >> -        *     int *qidconf, index =3D ctx->rx_queue_index;
-> >> +        *     int *qidconf, qc;
-> >> +        *     int index =3D ctx->rx_queue_index & ~(1 << 31);
-> >> +        *     bool is_xskrq =3D ctx->rx_queue_index & (1 << 31);
-> >>           *
-> >> -        *     // A set entry here means that the correspnding queue_i=
-d
-> >> -        *     // has an active AF_XDP socket bound to it.
-> >> +        *     // A set entry here means that the corresponding queue_=
-id
-> >> +        *     // has an active AF_XDP socket bound to it. Value 2 mea=
-ns
-> >> +        *     // it's zero-copy multi-RQ mode.
-> >>           *     qidconf =3D bpf_map_lookup_elem(&qidconf_map, &index);
-> >>           *     if (!qidconf)
-> >>           *         return XDP_ABORTED;
-> >>           *
-> >> -        *     if (*qidconf)
-> >> +        *     qc =3D *qidconf;
-> >> +        *
-> >> +        *     if (qc =3D=3D 2)
-> >> +        *         qc =3D is_xskrq ? 1 : 0;
-> >> +        *
-> >> +        *     switch (qc) {
-> >> +        *     case 0:
-> >> +        *         return XDP_PASS;
-> >> +        *     case 1:
-> >>           *         return bpf_redirect_map(&xsks_map, index, 0);
-> >> +        *     }
-> >>           *
-> >> -        *     return XDP_PASS;
-> >> +        *     return XDP_ABORTED;
-> >>           * }
-> >>           */
-> >>          struct bpf_insn prog[] =3D {
-> >> -               /* r1 =3D *(u32 *)(r1 + 16) */
-> >> -               BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 16),
-> >> -               /* *(u32 *)(r10 - 4) =3D r1 */
-> >> -               BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_1, -4),
-> >> -               BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-> >> -               BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4),
-> >> -               BPF_LD_MAP_FD(BPF_REG_1, xsk->qidconf_map_fd),
-> >> +               /* Load index. */
-> >> +               /* r6 =3D *(u32 *)(r1 + 16) */
-> >> +               BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_ARG1, 16),
-> >> +               /* w7 =3D w6 */
-> >> +               BPF_MOV32_REG(BPF_REG_7, BPF_REG_6),
-> >> +               /* w7 &=3D 2147483647 */
-> >> +               BPF_ALU32_IMM(BPF_AND, BPF_REG_7, ~XDP_QID_FLAG_XSKRQ)=
-,
-> >> +               /* *(u32 *)(r10 - 4) =3D r7 */
-> >> +               BPF_STX_MEM(BPF_W, BPF_REG_FP, BPF_REG_7, -4),
-> >> +
-> >> +               /* Call bpf_map_lookup_elem. */
-> >> +               /* r2 =3D r10 */
-> >> +               BPF_MOV64_REG(BPF_REG_ARG2, BPF_REG_FP),
-> >> +               /* r2 +=3D -4 */
-> >> +               BPF_ALU64_IMM(BPF_ADD, BPF_REG_ARG2, -4),
-> >> +               /* r1 =3D qidconf_map ll */
-> >> +               BPF_LD_MAP_FD(BPF_REG_ARG1, xsk->qidconf_map_fd),
-> >> +               /* call 1 */
-> >>                  BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-> >> -               BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-> >> -               BPF_MOV32_IMM(BPF_REG_0, 0),
-> >> -               /* if r1 =3D=3D 0 goto +8 */
-> >> -               BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 8),
-> >> -               BPF_MOV32_IMM(BPF_REG_0, 2),
-> >> -               /* r1 =3D *(u32 *)(r1 + 0) */
-> >> -               BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 0),
-> >> -               /* if r1 =3D=3D 0 goto +5 */
-> >> -               BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 5),
-> >> -               /* r2 =3D *(u32 *)(r10 - 4) */
-> >> -               BPF_LD_MAP_FD(BPF_REG_1, xsk->xsks_map_fd),
-> >> -               BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_10, -4),
-> >> +
-> >> +               /* Check the return value. */
-> >> +               /* if r0 =3D=3D 0 goto +14 */
-> >> +               BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 14),
-> >> +
-> >> +               /* Check qc =3D=3D QIDCONF_XSK_COMBINED. */
-> >> +               /* r6 >>=3D 31 */
-> >> +               BPF_ALU64_IMM(BPF_RSH, BPF_REG_6, 31),
-> >> +               /* r1 =3D *(u32 *)(r0 + 0) */
-> >> +               BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_0, 0),
-> >> +               /* if r1 =3D=3D 2 goto +1 */
-> >> +               BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, QIDCONF_XSK_COMBINED, =
-1),
-> >> +
-> >> +               /* qc !=3D QIDCONF_XSK_COMBINED */
-> >> +               /* r6 =3D r1 */
-> >> +               BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-> >> +
-> >> +               /* switch (qc) */
-> >> +               /* w0 =3D 2 */
-> >> +               BPF_MOV32_IMM(BPF_REG_0, XDP_PASS),
-> >> +               /* if w6 =3D=3D 0 goto +8 */
-> >> +               BPF_JMP32_IMM(BPF_JEQ, BPF_REG_6, QIDCONF_REGULAR, 8),
-> >> +               /* if w6 !=3D 1 goto +6 */
-> >> +               BPF_JMP32_IMM(BPF_JNE, BPF_REG_6, QIDCONF_XSK, 6),
-> >> +
-> >> +               /* Call bpf_redirect_map. */
-> >> +               /* r1 =3D xsks_map ll */
-> >> +               BPF_LD_MAP_FD(BPF_REG_ARG1, xsk->xsks_map_fd),
-> >> +               /* w2 =3D w7 */
-> >> +               BPF_MOV32_REG(BPF_REG_ARG2, BPF_REG_7),
-> >> +               /* w3 =3D 0 */
-> >>                  BPF_MOV32_IMM(BPF_REG_3, 0),
-> >> +               /* call 51 */
-> >>                  BPF_EMIT_CALL(BPF_FUNC_redirect_map),
-> >> -               /* The jumps are to this instruction */
-> >> +               /* exit */
-> >> +               BPF_EXIT_INSN(),
-> >> +
-> >> +               /* XDP_ABORTED */
-> >> +               /* w0 =3D 0 */
-> >> +               BPF_MOV32_IMM(BPF_REG_0, XDP_ABORTED),
-> >> +               /* exit */
-> >>                  BPF_EXIT_INSN(),
-> >>          };
-> >>          size_t insns_cnt =3D sizeof(prog) / sizeof(struct bpf_insn);
-> >> @@ -483,6 +538,7 @@ static int xsk_update_bpf_maps(struct xsk_socket *=
-xsk, int qidconf_value,
-> >>
-> >>   static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
-> >>   {
-> >> +       int qidconf_value =3D QIDCONF_XSK;
-> >>          bool prog_attached =3D false;
-> >>          __u32 prog_id =3D 0;
-> >>          int err;
-> >> @@ -505,7 +561,11 @@ static int xsk_setup_xdp_prog(struct xsk_socket *=
-xsk)
-> >>                  xsk->prog_fd =3D bpf_prog_get_fd_by_id(prog_id);
-> >>          }
-> >>
-> >> -       err =3D xsk_update_bpf_maps(xsk, true, xsk->fd);
-> >> +       if (xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__COMBINED_CHAN=
-NELS)
-> >> +               if (xsk->zc)
-> >> +                       qidconf_value =3D QIDCONF_XSK_COMBINED;
-> >> +
-> >> +       err =3D xsk_update_bpf_maps(xsk, qidconf_value, xsk->fd);
-> >>          if (err)
-> >>                  goto out_load;
-> >>
-> >> @@ -717,7 +777,7 @@ void xsk_socket__delete(struct xsk_socket *xsk)
-> >>          if (!xsk)
-> >>                  return;
-> >>
-> >> -       (void)xsk_update_bpf_maps(xsk, 0, 0);
-> >> +       (void)xsk_update_bpf_maps(xsk, QIDCONF_REGULAR, 0);
-> >>
-> >>          optlen =3D sizeof(off);
-> >>          err =3D getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, =
-&optlen);
-> >> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> >> index 82ea71a0f3ec..be26a2423c04 100644
-> >> --- a/tools/lib/bpf/xsk.h
-> >> +++ b/tools/lib/bpf/xsk.h
-> >> @@ -180,6 +180,10 @@ struct xsk_umem_config {
-> >>
-> >>   /* Flags for the libbpf_flags field. */
-> >>   #define XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD (1 << 0)
-> >> +#define XSK_LIBBPF_FLAGS__COMBINED_CHANNELS (1 << 1)
-> >> +#define XSK_LIBBPF_FLAGS_MASK ( \
-> >> +       XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD | \
-> >> +       XSK_LIBBPF_FLAGS__COMBINED_CHANNELS)
-> >>
-> >>   struct xsk_socket_config {
-> >>          __u32 rx_size;
-> >> --
-> >> 2.19.1
-> >>
->
+-Sergey
