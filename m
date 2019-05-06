@@ -2,82 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4526615418
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 21:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3C3A15428
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 21:06:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726578AbfEFTAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 15:00:16 -0400
-Received: from mail-it1-f196.google.com ([209.85.166.196]:51266 "EHLO
-        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726145AbfEFTAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 15:00:15 -0400
-Received: by mail-it1-f196.google.com with SMTP id s3so9925715itk.1
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 12:00:15 -0700 (PDT)
+        id S1726682AbfEFTGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 15:06:12 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:39766 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726438AbfEFTGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 15:06:12 -0400
+Received: by mail-pf1-f193.google.com with SMTP id z26so7260746pfg.6
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 12:06:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=HLzd5SFscSjrDrCjhPj5uaWITAhh+zmbDPjUhQ8RDqU=;
-        b=ggRVGIPnDFt73BJZflqsSDzwWRgmqJZHqGfAg+2l5tnVY8U3UWKK5cfZkyEn/seUKj
-         95Nyi3A5fe3HGO5/Jy5KBLHI9QucxbHRzLJLAZ//Ed0Z17jHZZUqypfSSEw3SvkOcfi/
-         gJoAJsyFwRwysCkZwxpwXdG/czLaV0UA6g8dSkNcazwi8k7+vbDX/z2QBc8dGR6xrzsR
-         lD5LoSEhUo6zOgbfu83Yv2MpZnWsnFvKkHMlk6NxysUdoFVbPhtgNOHyfb0cDSFpRXOZ
-         ZsoINfw74/NhNqKDK0Q1nWC9lzTfIBh6Cfca98rJbvjahkezMGDtTQ3BaIoWfO6b2fkM
-         S8Tw==
+        d=babayev.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=6hW4hrPH/2E41pgWfspNre3qd7EyYPweaCQi68+mpOg=;
+        b=EFy2N1DfAPfdSzaxOnmE4xlZaCOPDxPymykKSCWVkEVmGNd2+RNaoATpsLs5aFY+og
+         GFZet74F9iM2rDTwDLCBRmBUSKSDot8kB0NN23bsJRUHRYpBEeAoF8eC0DyrMZuHc5Yx
+         iceUg1eYU1uTh5BYJi7WLKzkQ3t9IzPQVzzuI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=HLzd5SFscSjrDrCjhPj5uaWITAhh+zmbDPjUhQ8RDqU=;
-        b=GhCx/Bk8P2xpSr/Ihlx4Y/N6MWSaO9RpJaZ67OSqIk8IC1wOkX8pOsEMzGc/AcsiNs
-         FF/+NRIxKYZWDClHhLmytgmanP70NyyJ5dgXDaQuApnGbKZkvpg6vn+1Ag04hfq9I094
-         33W2irnmxppkRnF6VNeJ5TwzHRRK3izsfHMZ0xKUXAWrDjF1gHQVuV76hMnPYrQruVMf
-         dja21ZgzlY4bLRzgFGPAscmvJuVn4c9DKgFobnL4dja3JH1clb2o3DOy8kd6Cc4gjrm0
-         mp0f/Zc7rfrJAN7d5ZToxJPHEgTm1AQIsE3w/kFYr++w9id3+BgJrzFUcF9ASzfRh44O
-         rkUg==
-X-Gm-Message-State: APjAAAXhezPiL9Ao3PhXRVPetYOrK/bdF2RWLiO6/cW/1HpxQufrHwzi
-        QLKNDKYEHSmITiKJs3iLQZMDPT0=
-X-Google-Smtp-Source: APXvYqzoX9m41CbIWNdEZj5aNOqlzC+ETUuHvfnku0HANq9IzZAZyrGNhotdqrH6c3Gu8AQA0TipQQ==
-X-Received: by 2002:a02:7410:: with SMTP id o16mr19439568jac.87.1557169214120;
-        Mon, 06 May 2019 12:00:14 -0700 (PDT)
-Received: from ubuntu.extremenetworks.com ([12.38.14.10])
-        by smtp.gmail.com with ESMTPSA id c21sm2406290ioi.14.2019.05.06.12.00.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 May 2019 12:00:13 -0700 (PDT)
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Subject: [PATCH net] vrf: sit mtu should not be updated when vrf netdev is the link
-Date:   Mon,  6 May 2019 15:00:01 -0400
-Message-Id: <20190506190001.6567-1-ssuryaextr@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=6hW4hrPH/2E41pgWfspNre3qd7EyYPweaCQi68+mpOg=;
+        b=DYKutU37B3Qawru1ulMZvBpVKlZh+1tkuQ4RyBlWYLpHGI3h73GXhPZeEWv2QlJaGD
+         GCgCGu/u7fts6E3i9u4wqc/OYPGBdqfKmE4aEHjNRz3zu/bwe0I4Ldj6k4fyNL5e8SR8
+         1kIo62OZLJ7htYeBXUe+uBoWPdSw9yvI8BtcIpvnZvGAA8+8/nFzGLRxpVadHUoIq1CL
+         yBC2UnLDWPBQ5yfyFrs6G102Re7x6c1tb5mK57KBcpxm4co4D8jSYm3DUzlRfzGKJzQ2
+         XW9GxHRkswmGicn9J+sT1pWqYK4I/jsXkE6tuHAUIZa9Gv5Jr/6UhCgqx9lGoiOHKh9b
+         fn5A==
+X-Gm-Message-State: APjAAAXmL8KE1dPB9riXu5wD+3U706YV/p+7YP5bi1NYyiEUAKg2uoEt
+        Don+mLccz9vencls73+BVv5qHg==
+X-Google-Smtp-Source: APXvYqwubcG2zIxnszpN5JvEJ5/oUqyuv2KOC+f2f0mIfferTIpyl9TsDsaV1GIrIuWUTLWP2ve8HA==
+X-Received: by 2002:a65:64da:: with SMTP id t26mr34448347pgv.322.1557169571795;
+        Mon, 06 May 2019 12:06:11 -0700 (PDT)
+Received: from localhost (50-46-216-15.evrt.wa.frontiernet.net. [50.46.216.15])
+        by smtp.gmail.com with ESMTPSA id 13sm13922560pfi.172.2019.05.06.12.06.09
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 May 2019 12:06:10 -0700 (PDT)
+References: <20190505220524.37266-3-ruslan@babayev.com> <20190506125523.GA15291@lunn.ch>
+User-agent: mu4e 1.0; emacs 26.1
+From:   Ruslan Babayev <ruslan@babayev.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ruslan Babayev <ruslan@babayev.com>, linux@armlinux.org.uk,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
+        mika.westerberg@linux.intel.com, wsa@the-dreams.de,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-acpi@vger.kernel.org, xe-linux-external@cisco.com
+Subject: Re: [PATCH net-next 2/2] net: phy: sfp: enable i2c-bus detection on ACPI based systems
+In-reply-to: <20190506125523.GA15291@lunn.ch>
+Date:   Mon, 06 May 2019 12:06:09 -0700
+Message-ID: <87zhnztnby.fsf@babayev.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VRF netdev mtu isn't typically set and have an mtu of 65536. When the
-link of a tunnel is set, the tunnel mtu is changed from 1480 to the link
-mtu minus tunnel header. In the case of VRF netdev is the link, then the
-tunnel mtu becomes 65516. So, fix it by not setting the tunnel mtu in
-this case.
 
-Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
----
- net/ipv6/sit.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Andrew Lunn writes:
 
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index b2109b74857d..971d60bf9640 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -1084,7 +1084,7 @@ static void ipip6_tunnel_bind_dev(struct net_device *dev)
- 	if (!tdev && tunnel->parms.link)
- 		tdev = __dev_get_by_index(tunnel->net, tunnel->parms.link);
- 
--	if (tdev) {
-+	if (tdev && !netif_is_l3_master(tdev)) {
- 		int t_hlen = tunnel->hlen + sizeof(struct iphdr);
- 
- 		dev->hard_header_len = tdev->hard_header_len + sizeof(struct iphdr);
--- 
-2.17.1
+> On Sun, May 05, 2019 at 03:05:23PM -0700, Ruslan Babayev wrote:
+>> Lookup I2C adapter using the "i2c-bus" device property on ACPI based
+>> systems similar to how it's done with DT.
+>>
+>> An example DSD describing an SFP on an ACPI based system:
+>>
+>> Device (SFP0)
+>> {
+>>     Name (_HID, "PRP0001")
+>>     Name (_DSD, Package ()
+>>     {
+>>         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+>>         Package () {
+>>             Package () { "compatible", "sff,sfp" },
+>>             Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
+>>         },
+>>     })
+>> }
+>
+> Hi Ruslan
+>
+> So this gives you the I2C bus. But what about the 6 GPIOs? And the
+> maximum power property? You are defining the ACPI interface which from
+> now on everybody has to follow. So it would be good to make it
+> complete. ACPI also seems to be poorly documented. There does not
+> appear to be anything like Documentation/devicetree. So having one
+> patch, with a good commit message, which implements everything makes
+> it easier for those that follow.
+>
+Hi Andrew,
 
+I had the GPIOs and the "maximum-power" property in my ACPI snippet initially,
+but then decided to take it out thinking it was not relevant for the
+current patch. I can add the missing pieces back in V2.
+This is what it would like:
+
+Device (SFP0)
+{
+    Name (_HID, "PRP0001")
+    Name (_CRS, ResourceTemplate()
+    {
+        GpioIo(Exclusive, PullDefault, 0, 0, IoRestrictionNone,
+               "\\_SB.PCI0.RP01.GPIO", 0, ResourceConsumer)
+            { 0, 1, 2, 3, 4 }
+    })
+    Name (_DSD, Package ()
+    {
+        ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+        Package () {
+            Package () { "compatible", "sff,sfp" },
+            Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
+            Package () { "maximum-power-milliwatt", 1000 },
+            Package () { "tx-disable-gpios", Package () { ^SFP0, 0, 0, 1} },
+            Package () { "reset-gpio",       Package () { ^SFP0, 0, 1, 1} },
+            Package () { "mod-def0-gpios",   Package () { ^SFP0, 0, 2, 1} },
+            Package () { "tx-fault-gpios",   Package () { ^SFP0, 0, 3, 0} },
+            Package () { "los-gpios",        Package () { ^SFP0, 0, 4, 1} },
+        },
+    })
+}
+
+
+> This appears to be enough to get a very minimal SFP instantiated. But
+> then what?  How are you using it? How do you instantiate a Phylink
+> instance for the MAC? How do you link the SFP to the Phylink?
+>
+> Before accepting this patch, i would like to know more about the
+> complete solution.
+>
+> Thanks
+> 	Andrew
+
+I haven't gotten that far yet, but for the Phylink I was thinking something along the
+lines of:
+
+Device (PHY0)
+{
+    Name (_HID, "PRP0001")
+    Name (_DSD, Package ()
+    {
+        ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+        Package () {
+            Package () { "compatible", "ethernet-phy-ieee802.3-c45" },
+            Package () { "sfp", \_SB.PCI0.RP01.SFP0 },
+        },
+    })
+}
+
+Phylink is already using the fwnode_property_get_reference_args(fwnode,
+"sfp", ...), so it should work with ACPI.
+
+I don't have a complete solution working yet. With these patches
+I was hoping to get some early feedback.
+
+Thanks,
+Ruslan
