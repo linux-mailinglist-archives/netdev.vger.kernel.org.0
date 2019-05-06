@@ -2,158 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98C3B151BE
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 18:35:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 524A7151BC
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 18:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbfEFQfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 12:35:38 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:34662 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbfEFQfh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 12:35:37 -0400
-Received: by mail-pf1-f195.google.com with SMTP id b3so7063944pfd.1;
-        Mon, 06 May 2019 09:35:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=vsprXKYMuepEIEMsZfcfdZhuh/X5MIMuGXDVOD/tBIE=;
-        b=fUvcuW/zcbdyS0NwPGDmV+r2C6T4ieb9otKBUbjUWi/+pdXzcIdpHhlnt+ToopkteU
-         uZkErV7s9i1xWdVEoE5HSHDF7vkkVkwinqGSy4BeN8pBY1RSEw5lpDOhMQtEnRr6C3St
-         vqsnDLotSgXOKc+kUnLcnrVC2EMn4MuRz6JHhQGr2kYo82Hade8TQReiIfAohLb7jGGj
-         b9WrJ5s3iHssSPp8K4DvkRYJJ4jyQVjsSdwd0ywsPRTzsfztbr/mmqe4zKQNadcTG8pd
-         xvl6jm6A91C7AzsxWIobjT4+XZH4vQAdqnxALwtr0gsv3XQXlHtWfrvq3kaXAjoZShsq
-         7UWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=vsprXKYMuepEIEMsZfcfdZhuh/X5MIMuGXDVOD/tBIE=;
-        b=JcJWu6bEZ/Tf1ZMjx/ns1gxucWbD/FgFXJ2CpXgQ+LVz232YIhK4/8Af8mVP5kVhH9
-         i5UU2krw2/tVnTipPZOHFWroRLOKsWsHBKTXLHUjfaN9fqwEnepVmn+bkpsf7FK5q59P
-         jymu5iqCJfMRdR+GIUirB8WxtG05yxHqAaojfZMgdWx/Ay8Sm8VWKyWr8YDCeQr7o/P3
-         jarxplmd5xjZHn++C4CVTka7mTQ8SaHn4RHtQNdYiOcKmauy0rwKGPTCuJTBXr/bJmpX
-         zIDIThWh4Q3i+no5d8riSZ1WJK1PsypYkQ5jStefLTx8O2OuJwXUk4Xb/K7HXn8+ES0J
-         PkJA==
-X-Gm-Message-State: APjAAAXuvwQDWbPkwLRgls1Ql91wvMsQqMNBFGfEZeQMMKnKmKtI3zby
-        G39DR54SKvezOTzHil5pFe8=
-X-Google-Smtp-Source: APXvYqxtpzqbx31QR4OaMYVYd5JsRqiCX0c3ZU9bIyAvXqlroT+zv2cDeCMtns8OmVPK7aVbOy+wIg==
-X-Received: by 2002:aa7:8e59:: with SMTP id d25mr33965721pfr.24.1557160536066;
-        Mon, 06 May 2019 09:35:36 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:200::3:1919])
-        by smtp.gmail.com with ESMTPSA id i75sm17457325pfj.80.2019.05.06.09.35.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 May 2019 09:35:35 -0700 (PDT)
-Date:   Mon, 6 May 2019 09:35:33 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jonathan Lemon <bsd@fb.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Subject: Re: [PATCH bpf-next v2 02/16] xsk: Add getsockopt XDP_OPTIONS
-Message-ID: <20190506163532.4zythaxnndpcueqh@ast-mbp>
-References: <20190430181215.15305-1-maximmi@mellanox.com>
- <20190430181215.15305-3-maximmi@mellanox.com>
- <CAJ+HfNid2hFN6ECetptT+pRQhvPpbdm39zQT9O9xVthadeqQWg@mail.gmail.com>
- <f00130ea-86a8-355c-76fb-bd0bea389e62@mellanox.com>
+        id S1726617AbfEFQfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 12:35:16 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:60366 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726503AbfEFQfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 12:35:15 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x46GYTpZ181675;
+        Mon, 6 May 2019 16:35:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=iZ5THHAxssDblbKSPUAsvLOGOez7i4Ghuzpt5C3NiLs=;
+ b=voeFYptHz99POXm8A++RkHKr2DnqQYbZVMP+mJvbNGA9txTjIz0sNX/VhmjlTuQd+AcC
+ v1T71LE62LRd8Fkdbb2Osr88VixAmnSFVTq6NOsmNvk3eE9VksIyx/5T47/eUWOPvqz8
+ LccgN4WU3r611XRc2zjprDvcYQvO5UtUN+3tCK3bOBTvn5GC0kvznkwuSiX/klQYqeaF
+ FchQBG4usCGR34ycGyDpVW3noFWau/v735Yw+liz+tYIeamI3l5TRWe3+j1avSZU2Czn
+ s7e7rBeiHqZUZncM+VSZX9NoiXYpBPcMDI0Bm0TvatdrptlPTzDXCsfYCR0wy2FutXiO XQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 2s94b5qt1a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 06 May 2019 16:35:05 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x46GYvFq067799;
+        Mon, 6 May 2019 16:35:04 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2s94b90ces-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 06 May 2019 16:35:04 +0000
+Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x46GZ3Bd009525;
+        Mon, 6 May 2019 16:35:03 GMT
+Received: from [10.209.243.127] (/10.209.243.127)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 06 May 2019 09:35:03 -0700
+Subject: Re: [net-next][PATCH v2 2/2] rds: add sysctl for rds support of
+ On-Demand-Paging
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Moni Shoua <monis@mellanox.com>
+References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
+ <1556581040-4812-3-git-send-email-santosh.shilimkar@oracle.com>
+ <20190501074500.GC7676@mtr-leonro.mtl.com>
+ <81e6e4c1-a57c-0f66-75ad-90f75417cc4a@oracle.com>
+ <20190502061800.GL7676@mtr-leonro.mtl.com>
+ <6560f4e5-8ded-6fb3-dd2b-d4733633addc@oracle.com>
+ <20190505062250.GA6938@mtr-leonro.mtl.com>
+From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <49449b7a-2bd0-ef1e-edbe-0fade54f1862@oracle.com>
+Date:   Mon, 6 May 2019 09:37:48 -0700
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f00130ea-86a8-355c-76fb-bd0bea389e62@mellanox.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20190505062250.GA6938@mtr-leonro.mtl.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9249 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1905060141
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9249 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1905060141
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 06, 2019 at 01:45:40PM +0000, Maxim Mikityanskiy wrote:
-> On 2019-05-04 20:25, Björn Töpel wrote:
-> > On Tue, 30 Apr 2019 at 20:12, Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
-> >>
-> >> Make it possible for the application to determine whether the AF_XDP
-> >> socket is running in zero-copy mode. To achieve this, add a new
-> >> getsockopt option XDP_OPTIONS that returns flags. The only flag
-> >> supported for now is the zero-copy mode indicator.
-> >>
-> >> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> >> Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-> >> Acked-by: Saeed Mahameed <saeedm@mellanox.com>
-> >> ---
-> >>   include/uapi/linux/if_xdp.h       |  7 +++++++
-> >>   net/xdp/xsk.c                     | 22 ++++++++++++++++++++++
-> >>   tools/include/uapi/linux/if_xdp.h |  7 +++++++
-> >>   3 files changed, 36 insertions(+)
-> >>
-> >> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
-> >> index caed8b1614ff..9ae4b4e08b68 100644
-> >> --- a/include/uapi/linux/if_xdp.h
-> >> +++ b/include/uapi/linux/if_xdp.h
-> >> @@ -46,6 +46,7 @@ struct xdp_mmap_offsets {
-> >>   #define XDP_UMEM_FILL_RING             5
-> >>   #define XDP_UMEM_COMPLETION_RING       6
-> >>   #define XDP_STATISTICS                 7
-> >> +#define XDP_OPTIONS                    8
-> >>
-> >>   struct xdp_umem_reg {
-> >>          __u64 addr; /* Start of packet data area */
-> >> @@ -60,6 +61,12 @@ struct xdp_statistics {
-> >>          __u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
-> >>   };
-> >>
-> >> +struct xdp_options {
-> >> +       __u32 flags;
-> >> +};
-> >> +
-> >> +#define XDP_OPTIONS_FLAG_ZEROCOPY (1 << 0)
-> > 
-> > Nit: The other flags doesn't use "FLAG" in its name, but that doesn't
-> > really matter.
-> > 
-> >> +
-> >>   /* Pgoff for mmaping the rings */
-> >>   #define XDP_PGOFF_RX_RING                        0
-> >>   #define XDP_PGOFF_TX_RING               0x80000000
-> >> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> >> index b68a380f50b3..998199109d5c 100644
-> >> --- a/net/xdp/xsk.c
-> >> +++ b/net/xdp/xsk.c
-> >> @@ -650,6 +650,28 @@ static int xsk_getsockopt(struct socket *sock, int level, int optname,
-> >>
-> >>                  return 0;
-> >>          }
-> >> +       case XDP_OPTIONS:
-> >> +       {
-> >> +               struct xdp_options opts;
-> >> +
-> >> +               if (len < sizeof(opts))
-> >> +                       return -EINVAL;
-> >> +
-> >> +               opts.flags = 0;
-> > 
-> > Maybe get rid of this, in favor of "opts = {}" if the structure grows?
+5/4/2019 11:22 PM, Leon Romanovsky wrote:
+> On Thu, May 02, 2019 at 10:59:58AM -0700, Santosh Shilimkar wrote:
+>>
+>>
+>> On 5/1/2019 11:18 PM, Leon Romanovsky wrote:
+>>> On Wed, May 01, 2019 at 10:54:50AM -0700, Santosh Shilimkar wrote:
+>>>> On 5/1/2019 12:45 AM, Leon Romanovsky wrote:
+>>>>> On Mon, Apr 29, 2019 at 04:37:20PM -0700, Santosh Shilimkar wrote:
+>>>>>> RDS doesn't support RDMA on memory apertures that require On Demand
+>>>>>> Paging (ODP), such as FS DAX memory. A sysctl is added to indicate
+>>>>>> whether RDMA requiring ODP is supported.
+>>>>>>
+>>>>>> Reviewed-by: H??kon Bugge <haakon.bugge@oracle.com>
+>>>>>> Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+>>>>>> Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+>>>>>> Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+>>>>>> ---
+>>>>>>     net/rds/ib.h        | 1 +
+>>>>>>     net/rds/ib_sysctl.c | 8 ++++++++
+>>>>>>     2 files changed, 9 insertions(+)
+>>>>>
+>>>>> This sysctl is not needed at all
+>>>>>
+>>>> Its needed for application to check the support of the ODP support
+>>>> feature which in progress. Failing the RDS_GET_MR was just one path
+>>>> and we also support inline MR registration along with message request.
+>>>>
+>>>> Basically application runs on different kernel versions and to be
+>>>> portable, it will check if underneath RDS support ODP and then only
+>>>> use RDMA. If not it will fallback to buffer copy mode. Hope
+>>>> it clarifies.
+>>>
+>>> Using ODP sysctl to determine if to use RDMA or not, looks like very
+>>> problematic approach. How old applications will work in such case
+>>> without knowledge of such sysctl?
+>>> How new applications will distinguish between ODP is not supported, but
+>>> RDMA works?
+>>>
+>> Actually this is not ODP sysctl but really whether RDS supports
+>> RDMA on fs_dax memory or not. I had different name for sysctl but
+>> in internal review it got changed.
+>>
+>> Ignoring the name of the sysctl, here is the application logic.
+>> - If fs_dax sysctl path doesn't exist, no RDMA on FS DAX memory(this
+>> will cover all the older kernels, which doesn't have this patch)
+>> - If fs_dax sysctl path exist and its value is 0, no RDMA on FS
+>> DAX. This will cover kernels which this patch but don't have
+>> actual support for ODP based registration.
+>> - If fs_dax sysctl path exist and its value is 1, RDMA can be
+>> issued on FS DAX memory. This sysctl will be updated to value 1
+>> once the support gets added.
+>>
+>> Hope it clarifies better now.
 > 
-> I'm OK with any of these options. Should I respin the series, or can I 
-> follow up with the change in RCs if the series gets to 5.2?
+> Santosh,
 > 
-> Alexei, is it even possible to still make changes to this series? The 
-> window appears closed.
+> Thanks for explanation, I have one more question,
+> 
+> If I'm author of hostile application and write code to disregard that
+> new sysctl, will any of combinations of kernel/application cause to
+> kernel panic? If not, we don't really need to expose this information,
+> if yes, this sysctl is not enough.
+> 
+It Won't panic. Thats why the other patch also makes the call fail when
+tried to register FS DAX memory with RDS.
 
-The series were not applied.
-Please resubmit addressing all feedback when bpf-next reopens.
-Likely in ~2 weeks.
 
