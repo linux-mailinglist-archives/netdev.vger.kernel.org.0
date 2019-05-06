@@ -2,124 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB80414E35
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:00:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C141A14DFB
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:57:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728537AbfEFOmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 10:42:43 -0400
-Received: from mga14.intel.com ([192.55.52.115]:16244 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728524AbfEFOml (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 May 2019 10:42:41 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 May 2019 07:42:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,438,1549958400"; 
-   d="scan'208";a="140532081"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.86])
-  by orsmga008.jf.intel.com with ESMTP; 06 May 2019 07:42:38 -0700
-Received: from andy by smile with local (Exim 4.92)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1hNepA-0006aJ-R8; Mon, 06 May 2019 17:42:36 +0300
-Date:   Mon, 6 May 2019 17:42:36 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: linux-next: manual merge of the akpm-current tree with the
- net-next tree
-Message-ID: <20190506144236.GL9224@smile.fi.intel.com>
-References: <20190506204303.0d0082d7@canb.auug.org.au>
+        id S1728486AbfEFOoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 10:44:25 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:40414 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728774AbfEFOoW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 May 2019 10:44:22 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id D69EB479F90414FF5DC2;
+        Mon,  6 May 2019 22:44:18 +0800 (CST)
+Received: from localhost (10.177.31.96) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Mon, 6 May 2019
+ 22:44:10 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <g.nault@alphalink.fr>,
+        <jian.w.wen@oracle.com>, <edumazet@google.com>, <kafai@fb.com>,
+        <xiyou.wangcong@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] l2tp: Fix possible NULL pointer dereference
+Date:   Mon, 6 May 2019 22:44:04 +0800
+Message-ID: <20190506144404.25220-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190506204303.0d0082d7@canb.auug.org.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.177.31.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 06, 2019 at 08:43:03PM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the akpm-current tree got a conflict in:
-> 
->   lib/Makefile
-> 
-> between commit:
-> 
->   554aae35007e ("lib: Add support for generic packing operations")
-> 
-> from the net-next tree and commit:
-> 
->   1a1e7f563bd5 ("lib: Move mathematic helpers to separate folder")
-> 
-> from the akpm-current tree.
-> 
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
-> 
+BUG: unable to handle kernel NULL pointer dereference at 0000000000000128
+PGD 0 P4D 0
+Oops: 0000 [#1
+CPU: 0 PID: 5697 Comm: modprobe Tainted: G        W         5.1.0-rc7+ #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.9.3-0-ge2fc41e-prebuilt.qemu-project.org 04/01/2014
+RIP: 0010:__lock_acquire+0x53/0x10b0
+Code: 8b 1c 25 40 5e 01 00 4c 8b 6d 10 45 85 e4 0f 84 bd 06 00 00 44 8b 1d 7c d2 09 02 49 89 fe 41 89 d2 45 85 db 0f 84 47 02 00 00 <48> 81 3f a0 05 70 83 b8 00 00 00 00 44 0f 44 c0 83 fe 01 0f 86 3a
+RSP: 0018:ffffc90001c07a28 EFLAGS: 00010002
+RAX: 0000000000000000 RBX: ffff88822f038440 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000128
+RBP: ffffc90001c07a88 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000001
+R13: 0000000000000000 R14: 0000000000000128 R15: 0000000000000000
+FS:  00007fead0811540(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000128 CR3: 00000002310da000 CR4: 00000000000006f0
+Call Trace:
+ ? __lock_acquire+0x24e/0x10b0
+ lock_acquire+0xdf/0x230
+ ? flush_workqueue+0x71/0x530
+ flush_workqueue+0x97/0x530
+ ? flush_workqueue+0x71/0x530
+ l2tp_exit_net+0x170/0x2b0 [l2tp_core
+ ? l2tp_exit_net+0x93/0x2b0 [l2tp_core
+ ops_exit_list.isra.6+0x36/0x60
+ unregister_pernet_operations+0xb8/0x110
+ unregister_pernet_device+0x25/0x40
+ l2tp_init+0x55/0x1000 [l2tp_core
+ ? 0xffffffffa018d000
+ do_one_initcall+0x6c/0x3cc
+ ? do_init_module+0x22/0x1f1
+ ? rcu_read_lock_sched_held+0x97/0xb0
+ ? kmem_cache_alloc_trace+0x325/0x3b0
+ do_init_module+0x5b/0x1f1
+ load_module+0x1db1/0x2690
+ ? m_show+0x1d0/0x1d0
+ __do_sys_finit_module+0xc5/0xd0
+ __x64_sys_finit_module+0x15/0x20
+ do_syscall_64+0x6b/0x1d0
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x7fead031a839
+Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 1f f6 2c 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffe8d9acca8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+RAX: ffffffffffffffda RBX: 0000560078398b80 RCX: 00007fead031a839
+RDX: 0000000000000000 RSI: 000056007659dc2e RDI: 0000000000000003
+RBP: 000056007659dc2e R08: 0000000000000000 R09: 0000560078398b80
+R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000000000
+R13: 00005600783a04a0 R14: 0000000000040000 R15: 0000560078398b80
+Modules linked in: l2tp_core(+) e1000 ip_tables ipv6 [last unloaded: l2tp_core
+CR2: 0000000000000128
+---[ end trace 8322b2b8bf83f8e1
 
-Seems correct to me.
-Thanks!
+If alloc_workqueue fails in l2tp_init, l2tp_net_ops
+is unregistered on failure path. Then l2tp_exit_net
+is called which will flush NULL workqueue, this patch
+add a NULL check to fix it.
 
-> -- 
-> Cheers,
-> Stephen Rothwell
-> 
-> diff --cc lib/Makefile
-> index 83d7df2661ff,4eeb814eee2e..000000000000
-> --- a/lib/Makefile
-> +++ b/lib/Makefile
-> @@@ -17,20 -17,9 +17,20 @@@ KCOV_INSTRUMENT_list_debug.o := 
->   KCOV_INSTRUMENT_debugobjects.o := n
->   KCOV_INSTRUMENT_dynamic_debug.o := n
->   
->  +# Early boot use of cmdline, don't instrument it
->  +ifdef CONFIG_AMD_MEM_ENCRYPT
->  +KASAN_SANITIZE_string.o := n
->  +
->  +ifdef CONFIG_FUNCTION_TRACER
->  +CFLAGS_REMOVE_string.o = -pg
->  +endif
->  +
->  +CFLAGS_string.o := $(call cc-option, -fno-stack-protector)
->  +endif
->  +
->   lib-y := ctype.o string.o vsprintf.o cmdline.o \
->   	 rbtree.o radix-tree.o timerqueue.o xarray.o \
-> - 	 idr.o int_sqrt.o extable.o \
-> + 	 idr.o extable.o \
->   	 sha1.o chacha.o irq_regs.o argv_split.o \
->   	 flex_proportions.o ratelimit.o show_mem.o \
->   	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
-> @@@ -120,8 -110,6 +122,7 @@@ obj-$(CONFIG_DEBUG_LIST) += list_debug.
->   obj-$(CONFIG_DEBUG_OBJECTS) += debugobjects.o
->   
->   obj-$(CONFIG_BITREVERSE) += bitrev.o
->  +obj-$(CONFIG_PACKING)	+= packing.o
-> - obj-$(CONFIG_RATIONAL)	+= rational.o
->   obj-$(CONFIG_CRC_CCITT)	+= crc-ccitt.o
->   obj-$(CONFIG_CRC16)	+= crc16.o
->   obj-$(CONFIG_CRC_T10DIF)+= crc-t10dif.o
+Fixes: 67e04c29ec0d ("l2tp: unregister l2tp_net_ops on failure path")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ net/l2tp/l2tp_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-
-
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 52b5a27..e4dec03 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -1735,7 +1735,8 @@ static __net_exit void l2tp_exit_net(struct net *net)
+ 	}
+ 	rcu_read_unlock_bh();
+ 
+-	flush_workqueue(l2tp_wq);
++	if (l2tp_wq)
++		flush_workqueue(l2tp_wq);
+ 	rcu_barrier();
+ 
+ 	for (hash = 0; hash < L2TP_HASH_SIZE_2; hash++)
 -- 
-With Best Regards,
-Andy Shevchenko
+1.8.3.1
 
 
