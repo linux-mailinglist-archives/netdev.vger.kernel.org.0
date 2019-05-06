@@ -2,109 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D054F150C4
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:57:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F702150CA
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:59:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726554AbfEFP5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 11:57:08 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:35448 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726413AbfEFP5I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 11:57:08 -0400
-Received: by mail-pl1-f196.google.com with SMTP id w24so6592616plp.2;
-        Mon, 06 May 2019 08:57:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bBlrHQhW5FuglB+kG3W3afIDPM/nbvUWlv4S88e8oJc=;
-        b=a93yuSfhXaCyZmvdAOrF02fjXI7eaZ/+VB665uI/I4CIka6NCWz9HZSUigTE2Gqcq8
-         nWNIL29nUn57xruu16pMYDXQ1B7qPQT95kCBE9I1aQ2nem1+6sgXJnT17Lga250Gwyba
-         yNlNfW/vicwK2SceTtthnCV0FRS0wrT9MPoU4eMuy+fsND/nHFPH1tjxUKqjlLDQeiC0
-         JhBmajDirAxG5ydyTZyCAHATdbB6dkP8rl4SxhnUpXPEO3w873ls6ymBLLcCBufMZIvB
-         vtno2nveMB+XirjlTE4Q72b3DVDbDBMyzA6n1mCeXMtF49n9B+/ACEPrKdOsGhH2dbX1
-         I9hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bBlrHQhW5FuglB+kG3W3afIDPM/nbvUWlv4S88e8oJc=;
-        b=d9UPtyT2TtiJ5Dr3f5AR4Jl0aBZZfnUBlmO/KZl4xirw7Ub3Wpb2c5duRAOQIiwL/E
-         7EKUGtX6K4SK4LKosAtSrtzzlBqG5OJwSK6LizuLsAI6IfV3rzvWYnklDUcBtwCtkVmg
-         3yL18rr+QGJw+eflK/3oiL267fU9PvKOhrhGWU6Aoeldf0tgi2pW5ZKu5hKvknrku+0N
-         P89KtiV9cQMQf3odjSU5E5KZ9+GT+DmLFKTQE4GKHB8yjuudIGj4dj5hPljhsYAVSEgB
-         /5tGddzs412ATLwcc0ubRn4+PNlXHW2uybdg+p1xmGlwPfFSei3VHbzGsdCNpkQFz3Eo
-         H3gg==
-X-Gm-Message-State: APjAAAUFD4TtbOSYXOAH8gBJfH75nCCW+QAh08bj9lW0aIwaGPWlWr01
-        MyvI4j+8HXNz/EKKAF6qEM4=
-X-Google-Smtp-Source: APXvYqxTiwL7O2TBjD3qHxjvxbe0TW5B9oFs1us6wnstI0buQKUPdl9Ijukt9HO0BYWszeDyC5SAuA==
-X-Received: by 2002:a17:902:521:: with SMTP id 30mr32385674plf.248.1557158227780;
-        Mon, 06 May 2019 08:57:07 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:200::3:1919])
-        by smtp.gmail.com with ESMTPSA id d15sm7149299pgf.22.2019.05.06.08.57.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 May 2019 08:57:06 -0700 (PDT)
-Date:   Mon, 6 May 2019 08:57:06 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiong Wang <jiong.wang@netronome.com>
-Cc:     daniel@iogearbox.net, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH v6 bpf-next 04/17] bpf: introduce new alu insn BPF_ZEXT
- for explicit zero extension
-Message-ID: <20190506155704.4t7xy3mqer4eps3y@ast-mbp>
-References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
- <1556880164-10689-5-git-send-email-jiong.wang@netronome.com>
+        id S1726679AbfEFP7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 11:59:01 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:55684 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726413AbfEFP7B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 May 2019 11:59:01 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id B0D711A05372C52917E0;
+        Mon,  6 May 2019 23:58:57 +0800 (CST)
+Received: from localhost (10.177.31.96) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Mon, 6 May 2019
+ 23:58:50 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <vishal@chelsio.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] cxgb4: Fix error path in cxgb4_init_module
+Date:   Mon, 6 May 2019 23:57:54 +0800
+Message-ID: <20190506155754.42464-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1556880164-10689-5-git-send-email-jiong.wang@netronome.com>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain
+X-Originating-IP: [10.177.31.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 03, 2019 at 11:42:31AM +0100, Jiong Wang wrote:
-> This patch introduce new alu32 insn BPF_ZEXT, and allocate the unused
-> opcode 0xe0 to it.
-> 
-> Compared with the other alu32 insns, zero extension on low 32-bit is the
-> only semantics for this instruction. It also allows various JIT back-ends
-> to do optimal zero extension code-gen.
-> 
-> BPF_ZEXT is supposed to be encoded with BPF_ALU only, and is supposed to be
-> generated by the latter 32-bit optimization code inside verifier for those
-> arches that do not support hardware implicit zero extension only.
-> 
-> It is not supposed to be used in user's program directly at the moment.
-> Therefore, no need to recognize it inside generic verification code. It
-> just need to be supported for execution on interpreter or related JIT
-> back-ends.
+BUG: unable to handle kernel paging request at ffffffffa016a270
+PGD 3270067 P4D 3270067 PUD 3271063 PMD 230bbd067 PTE 0
+Oops: 0000 [#1
+CPU: 0 PID: 6134 Comm: modprobe Not tainted 5.1.0+ #33
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.9.3-0-ge2fc41e-prebuilt.qemu-project.org 04/01/2014
+RIP: 0010:atomic_notifier_chain_register+0x24/0x60
+Code: 1f 80 00 00 00 00 55 48 89 e5 41 54 49 89 f4 53 48 89 fb e8 ae b4 38 01 48 8b 53 38 48 8d 4b 38 48 85 d2 74 20 45 8b 44 24 10 <44> 3b 42 10 7e 08 eb 13 44 39 42 10 7c 0d 48 8d 4a 08 48 8b 52 08
+RSP: 0018:ffffc90000e2bc60 EFLAGS: 00010086
+RAX: 0000000000000292 RBX: ffffffff83467240 RCX: ffffffff83467278
+RDX: ffffffffa016a260 RSI: ffffffff83752140 RDI: ffffffff83467240
+RBP: ffffc90000e2bc70 R08: 0000000000000000 R09: 0000000000000001
+R10: 0000000000000000 R11: 00000000014fa61f R12: ffffffffa01c8260
+R13: ffff888231091e00 R14: 0000000000000000 R15: ffffc90000e2be78
+FS:  00007fbd8d7cd540(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffa016a270 CR3: 000000022c7e3000 CR4: 00000000000006f0
+Call Trace:
+ register_inet6addr_notifier+0x13/0x20
+ cxgb4_init_module+0x6c/0x1000 [cxgb4
+ ? 0xffffffffa01d7000
+ do_one_initcall+0x6c/0x3cc
+ ? do_init_module+0x22/0x1f1
+ ? rcu_read_lock_sched_held+0x97/0xb0
+ ? kmem_cache_alloc_trace+0x325/0x3b0
+ do_init_module+0x5b/0x1f1
+ load_module+0x1db1/0x2690
+ ? m_show+0x1d0/0x1d0
+ __do_sys_finit_module+0xc5/0xd0
+ __x64_sys_finit_module+0x15/0x20
+ do_syscall_64+0x6b/0x1d0
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-uapi and the doc define it, but "it is not supposed to be used" ?!
+If pci_register_driver fails, register inet6addr_notifier is
+pointless. This patch fix the error path in cxgb4_init_module.
 
-> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
-> ---
->  Documentation/networking/filter.txt | 10 ++++++++++
->  include/uapi/linux/bpf.h            |  3 +++
->  kernel/bpf/core.c                   |  4 ++++
->  tools/include/uapi/linux/bpf.h      |  3 +++
->  4 files changed, 20 insertions(+)
-> 
-> diff --git a/Documentation/networking/filter.txt b/Documentation/networking/filter.txt
-> index 319e5e0..1cb3e42 100644
-> --- a/Documentation/networking/filter.txt
-> +++ b/Documentation/networking/filter.txt
-> @@ -903,6 +903,16 @@ If BPF_CLASS(code) == BPF_ALU or BPF_ALU64 [ in eBPF ], BPF_OP(code) is one of:
->    BPF_MOV   0xb0  /* eBPF only: mov reg to reg */
->    BPF_ARSH  0xc0  /* eBPF only: sign extending shift right */
->    BPF_END   0xd0  /* eBPF only: endianness conversion */
-> +  BPF_ZEXT  0xe0  /* eBPF BPF_ALU only: zero-extends low 32-bit */
-> +
-> +Compared with BPF_ALU | BPF_MOV which zero-extends low 32-bit implicitly,
-> +BPF_ALU | BPF_ZEXT zero-extends low 32-bit explicitly. Such zero extension is
+Fixes: b5a02f503caa ("cxgb4 : Update ipv6 address handling api")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-wait. that's an excellent observation. alu|mov is exactly it.
-we do not need another insn.
-we probably can teach the verifier to recognize <<32, >>32 and replace with mov32
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index 89179e3..4bc0c35 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -6161,15 +6161,24 @@ static int __init cxgb4_init_module(void)
+ 
+ 	ret = pci_register_driver(&cxgb4_driver);
+ 	if (ret < 0)
+-		debugfs_remove(cxgb4_debugfs_root);
++		goto err_pci;
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	if (!inet6addr_registered) {
+-		register_inet6addr_notifier(&cxgb4_inet6addr_notifier);
+-		inet6addr_registered = true;
++		ret = register_inet6addr_notifier(&cxgb4_inet6addr_notifier);
++		if (ret)
++			pci_unregister_driver(&cxgb4_driver);
++		else
++			inet6addr_registered = true;
+ 	}
+ #endif
+ 
++	if (ret == 0)
++		return ret;
++
++err_pci:
++	debugfs_remove(cxgb4_debugfs_root);
++
+ 	return ret;
+ }
+ 
+-- 
+1.8.3.1
+
 
