@@ -2,162 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C3A15428
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 21:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06B471546F
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 21:30:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726682AbfEFTGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 15:06:12 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:39766 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726438AbfEFTGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 15:06:12 -0400
-Received: by mail-pf1-f193.google.com with SMTP id z26so7260746pfg.6
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 12:06:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=babayev.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=6hW4hrPH/2E41pgWfspNre3qd7EyYPweaCQi68+mpOg=;
-        b=EFy2N1DfAPfdSzaxOnmE4xlZaCOPDxPymykKSCWVkEVmGNd2+RNaoATpsLs5aFY+og
-         GFZet74F9iM2rDTwDLCBRmBUSKSDot8kB0NN23bsJRUHRYpBEeAoF8eC0DyrMZuHc5Yx
-         iceUg1eYU1uTh5BYJi7WLKzkQ3t9IzPQVzzuI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=6hW4hrPH/2E41pgWfspNre3qd7EyYPweaCQi68+mpOg=;
-        b=DYKutU37B3Qawru1ulMZvBpVKlZh+1tkuQ4RyBlWYLpHGI3h73GXhPZeEWv2QlJaGD
-         GCgCGu/u7fts6E3i9u4wqc/OYPGBdqfKmE4aEHjNRz3zu/bwe0I4Ldj6k4fyNL5e8SR8
-         1kIo62OZLJ7htYeBXUe+uBoWPdSw9yvI8BtcIpvnZvGAA8+8/nFzGLRxpVadHUoIq1CL
-         yBC2UnLDWPBQ5yfyFrs6G102Re7x6c1tb5mK57KBcpxm4co4D8jSYm3DUzlRfzGKJzQ2
-         XW9GxHRkswmGicn9J+sT1pWqYK4I/jsXkE6tuHAUIZa9Gv5Jr/6UhCgqx9lGoiOHKh9b
-         fn5A==
-X-Gm-Message-State: APjAAAXmL8KE1dPB9riXu5wD+3U706YV/p+7YP5bi1NYyiEUAKg2uoEt
-        Don+mLccz9vencls73+BVv5qHg==
-X-Google-Smtp-Source: APXvYqwubcG2zIxnszpN5JvEJ5/oUqyuv2KOC+f2f0mIfferTIpyl9TsDsaV1GIrIuWUTLWP2ve8HA==
-X-Received: by 2002:a65:64da:: with SMTP id t26mr34448347pgv.322.1557169571795;
-        Mon, 06 May 2019 12:06:11 -0700 (PDT)
-Received: from localhost (50-46-216-15.evrt.wa.frontiernet.net. [50.46.216.15])
-        by smtp.gmail.com with ESMTPSA id 13sm13922560pfi.172.2019.05.06.12.06.09
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 06 May 2019 12:06:10 -0700 (PDT)
-References: <20190505220524.37266-3-ruslan@babayev.com> <20190506125523.GA15291@lunn.ch>
-User-agent: mu4e 1.0; emacs 26.1
-From:   Ruslan Babayev <ruslan@babayev.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ruslan Babayev <ruslan@babayev.com>, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, hkallweit1@gmail.com,
-        mika.westerberg@linux.intel.com, wsa@the-dreams.de,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-acpi@vger.kernel.org, xe-linux-external@cisco.com
-Subject: Re: [PATCH net-next 2/2] net: phy: sfp: enable i2c-bus detection on ACPI based systems
-In-reply-to: <20190506125523.GA15291@lunn.ch>
-Date:   Mon, 06 May 2019 12:06:09 -0700
-Message-ID: <87zhnztnby.fsf@babayev.com>
+        id S1726409AbfEFTac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 15:30:32 -0400
+Received: from www62.your-server.de ([213.133.104.62]:32896 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726302AbfEFTab (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 15:30:31 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hNj1F-0002mm-CQ; Mon, 06 May 2019 21:11:21 +0200
+Received: from [178.199.41.31] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hNj1F-000NW8-2z; Mon, 06 May 2019 21:11:21 +0200
+Subject: Re: [PATCH v2 1/4] bpf: Add support for reading user pointers
+To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
+        linux-kernel@vger.kernel.org
+Cc:     Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Qais Yousef <qais.yousef@arm.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        bpf@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>
+References: <20190506183116.33014-1-joel@joelfernandes.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <3c6b312c-5763-0d9c-7c2c-436ee41f9be1@iogearbox.net>
+Date:   Mon, 6 May 2019 21:11:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20190506183116.33014-1-joel@joelfernandes.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25441/Mon May  6 10:04:24 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 05/06/2019 08:31 PM, Joel Fernandes (Google) wrote:
+> The eBPF based opensnoop tool fails to read the file path string passed
+> to the do_sys_open function. This is because it is a pointer to
+> userspace address and causes an -EFAULT when read with
+> probe_kernel_read. This is not an issue when running the tool on x86 but
+> is an issue on arm64. This patch adds a new bpf function call based
+> which calls the recently proposed probe_user_read function [1].
+> Using this function call from opensnoop fixes the issue on arm64.
+> 
+> [1] https://lore.kernel.org/patchwork/patch/1051588/
+> 
+> Cc: Michal Gregorczyk <michalgr@live.com>
+> Cc: Adrian Ratiu <adrian.ratiu@collabora.com>
+> Cc: Mohammad Husain <russoue@gmail.com>
+> Cc: Qais Yousef <qais.yousef@arm.com>
+> Cc: Srinivas Ramana <sramana@codeaurora.org>
+> Cc: duyuchao <yuchao.du@unisoc.com>
+> Cc: Manjo Raja Rao <linux@manojrajarao.com>
+> Cc: Karim Yaghmour <karim.yaghmour@opersys.com>
+> Cc: Tamir Carmeli <carmeli.tamir@gmail.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Brendan Gregg <brendan.d.gregg@gmail.com>
+> Cc: Masami Hiramatsu <mhiramat@kernel.org>
+> Cc: Peter Ziljstra <peterz@infradead.org>
+> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: kernel-team@android.com
+> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> ---
+> Masami, could you carry these patches in the series where are you add
+> probe_user_read function?
+> 
+> Previous submissions is here:
+> https://lore.kernel.org/patchwork/patch/1069552/
+> v1->v2: split tools uapi sync into separate commit, added deprecation
+> warning for old bpf_probe_read function.
 
-Andrew Lunn writes:
-
-> On Sun, May 05, 2019 at 03:05:23PM -0700, Ruslan Babayev wrote:
->> Lookup I2C adapter using the "i2c-bus" device property on ACPI based
->> systems similar to how it's done with DT.
->>
->> An example DSD describing an SFP on an ACPI based system:
->>
->> Device (SFP0)
->> {
->>     Name (_HID, "PRP0001")
->>     Name (_DSD, Package ()
->>     {
->>         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->>         Package () {
->>             Package () { "compatible", "sff,sfp" },
->>             Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
->>         },
->>     })
->> }
->
-> Hi Ruslan
->
-> So this gives you the I2C bus. But what about the 6 GPIOs? And the
-> maximum power property? You are defining the ACPI interface which from
-> now on everybody has to follow. So it would be good to make it
-> complete. ACPI also seems to be poorly documented. There does not
-> appear to be anything like Documentation/devicetree. So having one
-> patch, with a good commit message, which implements everything makes
-> it easier for those that follow.
->
-Hi Andrew,
-
-I had the GPIOs and the "maximum-power" property in my ACPI snippet initially,
-but then decided to take it out thinking it was not relevant for the
-current patch. I can add the missing pieces back in V2.
-This is what it would like:
-
-Device (SFP0)
-{
-    Name (_HID, "PRP0001")
-    Name (_CRS, ResourceTemplate()
-    {
-        GpioIo(Exclusive, PullDefault, 0, 0, IoRestrictionNone,
-               "\\_SB.PCI0.RP01.GPIO", 0, ResourceConsumer)
-            { 0, 1, 2, 3, 4 }
-    })
-    Name (_DSD, Package ()
-    {
-        ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-        Package () {
-            Package () { "compatible", "sff,sfp" },
-            Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
-            Package () { "maximum-power-milliwatt", 1000 },
-            Package () { "tx-disable-gpios", Package () { ^SFP0, 0, 0, 1} },
-            Package () { "reset-gpio",       Package () { ^SFP0, 0, 1, 1} },
-            Package () { "mod-def0-gpios",   Package () { ^SFP0, 0, 2, 1} },
-            Package () { "tx-fault-gpios",   Package () { ^SFP0, 0, 3, 0} },
-            Package () { "los-gpios",        Package () { ^SFP0, 0, 4, 1} },
-        },
-    })
-}
-
-
-> This appears to be enough to get a very minimal SFP instantiated. But
-> then what?  How are you using it? How do you instantiate a Phylink
-> instance for the MAC? How do you link the SFP to the Phylink?
->
-> Before accepting this patch, i would like to know more about the
-> complete solution.
->
-> Thanks
-> 	Andrew
-
-I haven't gotten that far yet, but for the Phylink I was thinking something along the
-lines of:
-
-Device (PHY0)
-{
-    Name (_HID, "PRP0001")
-    Name (_DSD, Package ()
-    {
-        ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-        Package () {
-            Package () { "compatible", "ethernet-phy-ieee802.3-c45" },
-            Package () { "sfp", \_SB.PCI0.RP01.SFP0 },
-        },
-    })
-}
-
-Phylink is already using the fwnode_property_get_reference_args(fwnode,
-"sfp", ...), so it should work with ACPI.
-
-I don't have a complete solution working yet. With these patches
-I was hoping to get some early feedback.
+Please properly submit this series to bpf tree once the base
+infrastructure from Masami is upstream. This series here should
+also fix up all current probe read usage under samples/bpf/ and
+tools/testing/selftests/bpf/.
 
 Thanks,
-Ruslan
+Daniel
