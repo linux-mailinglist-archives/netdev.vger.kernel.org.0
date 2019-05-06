@@ -2,214 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D2FA14DFF
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:57:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 119E814D68
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728624AbfEFO5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 10:57:32 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:55963 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727290AbfEFOoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 10:44:24 -0400
-Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
-  Claudiu.Beznea@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Claudiu.Beznea@microchip.com";
-  x-sender="Claudiu.Beznea@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa2.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Claudiu.Beznea@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa2.microchip.iphmx.com; spf=Pass smtp.mailfrom=Claudiu.Beznea@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
-X-IronPort-AV: E=Sophos;i="5.60,438,1549954800"; 
-   d="scan'208";a="31982866"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 06 May 2019 07:44:23 -0700
-Received: from NAM05-DM3-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.76.38) with Microsoft SMTP Server (TLS) id
- 14.3.352.0; Mon, 6 May 2019 07:44:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector1-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X4+pmcMEFn9vBV0bpmtn7Xovht3/9uh9C+t5CnvgEoI=;
- b=nP3wzAIHCbiSnWqXr3nY2KSAuzuKuc24HLPcnSxV5XdiJiwajGlxm3uksvyRt9Lsl7DLPNZQhtzHugvyTfnO7wgXwsMD3nfpu+WkfkS6GELv2WKmYo6EOeiDWQd/1paXU70uZLaf4xu368GOGnxP2k3nYqE8bMQcuzQa4i4q0Ow=
-Received: from MWHPR11MB1549.namprd11.prod.outlook.com (10.172.54.17) by
- MWHPR11MB2047.namprd11.prod.outlook.com (10.169.236.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1856.12; Mon, 6 May 2019 14:44:15 +0000
-Received: from MWHPR11MB1549.namprd11.prod.outlook.com
- ([fe80::f01a:9325:7a65:cdb4]) by MWHPR11MB1549.namprd11.prod.outlook.com
- ([fe80::f01a:9325:7a65:cdb4%4]) with mapi id 15.20.1856.012; Mon, 6 May 2019
- 14:44:15 +0000
-From:   <Claudiu.Beznea@microchip.com>
-To:     <Nicolas.Ferre@microchip.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <Claudiu.Beznea@microchip.com>
-Subject: [RFC PATCH] net: macb: save/restore the remaining registers and
- features
-Thread-Topic: [RFC PATCH] net: macb: save/restore the remaining registers and
- features
-Thread-Index: AQHVBBotTMTnr5riTEW2rKRd1fe7SA==
-Date:   Mon, 6 May 2019 14:44:15 +0000
-Message-ID: <1557153840-12579-1-git-send-email-claudiu.beznea@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM4PR0902CA0007.eurprd09.prod.outlook.com
- (2603:10a6:200:9b::17) To MWHPR11MB1549.namprd11.prod.outlook.com
- (2603:10b6:301:c::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.7.4
-x-originating-ip: [94.177.32.154]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 09c60b7e-2d0d-4716-071b-08d6d2314f65
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:MWHPR11MB2047;
-x-ms-traffictypediagnostic: MWHPR11MB2047:
-x-microsoft-antispam-prvs: <MWHPR11MB204730B1336BE8A097F758FE87300@MWHPR11MB2047.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0029F17A3F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(136003)(39860400002)(376002)(366004)(346002)(199004)(189003)(52116002)(66556008)(66446008)(64756008)(66476007)(107886003)(316002)(53936002)(86362001)(102836004)(6506007)(386003)(73956011)(256004)(14444005)(5024004)(110136005)(66946007)(7736002)(305945005)(36756003)(6512007)(99286004)(68736007)(71190400001)(71200400001)(54906003)(6436002)(6486002)(8676002)(186003)(50226002)(26005)(72206003)(6116002)(3846002)(2616005)(476003)(478600001)(8936002)(4326008)(81156014)(486006)(66066001)(81166006)(2906002)(14454004)(5660300002)(2501003)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB2047;H:MWHPR11MB1549.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microchip.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: OZWZi5qTVbOu2g+lx4UTO/UCLWWeaRRFSdwn6gpC7fFPt8wTpB6jwDd0EOrnjm4VLdKhctDiTg6/7ZpezNZp6Mn78nhuNxyoTZhbNeTI5Val1mhFEOn0Jhf/hD4P5BrgnnQUcT6+UxVlIlwrl96IMkMM7C3yEkYiUXMsHRFb8rU3WocaEpVkKVO7MAjRzcJoxLiGFgUAg7KObR+m9JBhU5aeX5AGKEvNXQJrfpyYziD6igHJfZdd6TL3wB5V3y3FWVy0r4g92gs4tKfS2APbZlAl2H/Zk00eTqKczvCHz4SHkFsglNffVqJkCfVswVcty0tzqzdcowoC2cHLJmeUAtJc04cff+EMfpd9YxIZLttrvVa1qLs6vrKIxv3T7+0SppEshlteVTNHrJjaX8ii8o+L011By84QSsCMKCMvdUU=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09c60b7e-2d0d-4716-071b-08d6d2314f65
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 May 2019 14:44:15.2119
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB2047
-X-OriginatorOrg: microchip.com
+        id S1729406AbfEFOsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 10:48:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47762 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728610AbfEFOr7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 May 2019 10:47:59 -0400
+Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B09AF2087F;
+        Mon,  6 May 2019 14:47:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557154078;
+        bh=I3RuPUnsau3/9T4URycFeXmxeH3JbPXrTjlfIFBbXOg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DqUmgGisNw+/giG/ord66rkonSMoqSF91WC7wOTWyCgsJgOSov+m1vSLOqOSBKKCP
+         vDLYkj9L48KHbOS3Qi8WGDP12vZ7j49e5S7Zb8SQ86NZgkUg24H2BMf285zL9TVBjo
+         PXd56WG6upWC1grtw6tlaMl3VETTE9eTFQ7J7+NA=
+Date:   Mon, 6 May 2019 23:47:51 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Qais Yousef <qais.yousef@arm.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
+Message-Id: <20190506234751.65c92139dccbfa025bdfe300@kernel.org>
+In-Reply-To: <20190502204958.7868-1-joel@joelfernandes.org>
+References: <20190502204958.7868-1-joel@joelfernandes.org>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQoNClNB
-TUE1RDIgU29DIGhhcyBhIHN1c3BlbmQgbW9kZSB3aGVyZSBTb0MncyBwb3dlciBpcyBjdXQgb2Zm
-LiBEdWUgdG8gdGhpcw0KdGhlIHJlZ2lzdGVycyBjb250ZW50IGlzIGxvc3QgYWZ0ZXIgYSBzdXNw
-ZW5kL3Jlc3VtZSBjeWNsZS4gVGhlIGN1cnJlbnQNCnN1c3BlbmQvcmVzdW1lIGltcGxlbWVudGF0
-aW9uIGNvdmVycyBzb21lIG9mIHRoZXNlIHJlZ2lzdGVycy4gSG93ZXZlcg0KdGhlcmUgYXJlIGZl
-dyB3aGljaCB3ZXJlIG5vdCB0cmVhdGVkIChlLmcuIFNDUlQyIGFuZCBVU1JJTykuIEFwYXJ0DQpm
-cm9tIHRoaXMsIG5ldGRldiBmZWF0dXJlcyBhcmUgbm90IHJlc3RvcmVkLiBUcmVhdCB0aGVzZSBp
-c3N1ZXMuDQoNClNpZ25lZC1vZmYtYnk6IENsYXVkaXUgQmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBt
-aWNyb2NoaXAuY29tPg0KLS0tDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvY2FkZW5jZS9tYWNiLmgg
-ICAgICB8ICAgNyArKw0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWluLmMg
-fCAxMTEgKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLQ0KIDIgZmlsZXMgY2hhbmdlZCwg
-OTEgaW5zZXJ0aW9ucygrKSwgMjcgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9jYWRlbmNlL21hY2IuaCBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVu
-Y2UvbWFjYi5oDQppbmRleCBhY2M2NmE3ZTdiOTUuLjAwZWU1ZThlMGZmMCAxMDA2NDQNCi0tLSBh
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYi5oDQorKysgYi9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9jYWRlbmNlL21hY2IuaA0KQEAgLTEwODAsNiArMTA4MCwxMSBAQCBzdHJ1Y3QgbWFj
-Yl9wdHBfaW5mbyB7DQogCQkJIHN0cnVjdCBpZnJlcSAqaWZyLCBpbnQgY21kKTsNCiB9Ow0KIA0K
-K3N0cnVjdCBtYWNiX3BtX2RhdGEgew0KKwl1MzIgc2NydDI7DQorCXUzMiB1c3JpbzsNCit9Ow0K
-Kw0KIHN0cnVjdCBtYWNiX2NvbmZpZyB7DQogCXUzMgkJCWNhcHM7DQogCXVuc2lnbmVkIGludAkJ
-ZG1hX2J1cnN0X2xlbmd0aDsNCkBAIC0xMjIwLDYgKzEyMjUsOCBAQCBzdHJ1Y3QgbWFjYiB7DQog
-CWludAl0eF9iZF9yZF9wcmVmZXRjaDsNCiANCiAJdTMyCXJ4X2ludHJfbWFzazsNCisNCisJc3Ry
-dWN0IG1hY2JfcG1fZGF0YSBwbV9kYXRhOw0KIH07DQogDQogI2lmZGVmIENPTkZJR19NQUNCX1VT
-RV9IV1NUQU1QDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2FkZW5jZS9tYWNi
-X21haW4uYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWluLmMNCmluZGV4
-IDVkNWM5ZDcwYjJiZS4uNWJkYjJiYTM1NTM5IDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvY2FkZW5jZS9tYWNiX21haW4uYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2Fk
-ZW5jZS9tYWNiX21haW4uYw0KQEAgLTI4NDksMTAgKzI4NDksMTQgQEAgc3RhdGljIGludCBtYWNi
-X2dldF90c19pbmZvKHN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYsDQogDQogc3RhdGljIHZvaWQg
-Z2VtX2VuYWJsZV9mbG93X2ZpbHRlcnMoc3RydWN0IG1hY2IgKmJwLCBib29sIGVuYWJsZSkNCiB7
-DQorCXN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYgPSBicC0+ZGV2Ow0KIAlzdHJ1Y3QgZXRodG9v
-bF9yeF9mc19pdGVtICppdGVtOw0KIAl1MzIgdDJfc2NyOw0KIAlpbnQgbnVtX3QyX3NjcjsNCiAN
-CisJaWYgKCEobmV0ZGV2LT5mZWF0dXJlcyAmIE5FVElGX0ZfTlRVUExFKSkNCisJCXJldHVybjsN
-CisNCiAJbnVtX3QyX3NjciA9IEdFTV9CRkVYVChUMlNDUiwgZ2VtX3JlYWRsKGJwLCBEQ0ZHOCkp
-Ow0KIA0KIAlsaXN0X2Zvcl9lYWNoX2VudHJ5KGl0ZW0sICZicC0+cnhfZnNfbGlzdC5saXN0LCBs
-aXN0KSB7DQpAQCAtMzAxMiw4ICszMDE2LDcgQEAgc3RhdGljIGludCBnZW1fYWRkX2Zsb3dfZmls
-dGVyKHN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYsDQogCWdlbV9wcm9nX2NtcF9yZWdzKGJwLCBm
-cyk7DQogCWJwLT5yeF9mc19saXN0LmNvdW50Kys7DQogCS8qIGVuYWJsZSBmaWx0ZXJpbmcgaWYg
-TlRVUExFIG9uICovDQotCWlmIChuZXRkZXYtPmZlYXR1cmVzICYgTkVUSUZfRl9OVFVQTEUpDQot
-CQlnZW1fZW5hYmxlX2Zsb3dfZmlsdGVycyhicCwgMSk7DQorCWdlbV9lbmFibGVfZmxvd19maWx0
-ZXJzKGJwLCAxKTsNCiANCiAJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmYnAtPnJ4X2ZzX2xvY2ss
-IGZsYWdzKTsNCiAJcmV0dXJuIDA7DQpAQCAtMzIwMSw2ICszMjA0LDUwIEBAIHN0YXRpYyBpbnQg
-bWFjYl9pb2N0bChzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LCBzdHJ1Y3QgaWZyZXEgKnJxLCBpbnQg
-Y21kKQ0KIAl9DQogfQ0KIA0KK3N0YXRpYyBpbmxpbmUgdm9pZCBtYWNiX3NldF90eGNzdW1fZmVh
-dHVyZShzdHJ1Y3QgbWFjYiAqYnAsDQorCQkJCQkgICBuZXRkZXZfZmVhdHVyZXNfdCBmZWF0dXJl
-cykNCit7DQorCXUzMiB2YWw7DQorDQorCWlmICghbWFjYl9pc19nZW0oYnApKQ0KKwkJcmV0dXJu
-Ow0KKw0KKwl2YWwgPSBnZW1fcmVhZGwoYnAsIERNQUNGRyk7DQorCWlmIChmZWF0dXJlcyAmIE5F
-VElGX0ZfSFdfQ1NVTSkNCisJCXZhbCB8PSBHRU1fQklUKFRYQ09FTik7DQorCWVsc2UNCisJCXZh
-bCAmPSB+R0VNX0JJVChUWENPRU4pOw0KKw0KKwlnZW1fd3JpdGVsKGJwLCBETUFDRkcsIHZhbCk7
-DQorfQ0KKw0KK3N0YXRpYyBpbmxpbmUgdm9pZCBtYWNiX3NldF9yeGNzdW1fZmVhdHVyZShzdHJ1
-Y3QgbWFjYiAqYnAsDQorCQkJCQkgICBuZXRkZXZfZmVhdHVyZXNfdCBmZWF0dXJlcykNCit7DQor
-CXN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYgPSBicC0+ZGV2Ow0KKwl1MzIgdmFsOw0KKw0KKwlp
-ZiAoIW1hY2JfaXNfZ2VtKGJwKSkNCisJCXJldHVybjsNCisNCisJdmFsID0gZ2VtX3JlYWRsKGJw
-LCBOQ0ZHUik7DQorCWlmICgoZmVhdHVyZXMgJiBORVRJRl9GX1JYQ1NVTSkgJiYgIShuZXRkZXYt
-PmZsYWdzICYgSUZGX1BST01JU0MpKQ0KKwkJdmFsIHw9IEdFTV9CSVQoUlhDT0VOKTsNCisJZWxz
-ZQ0KKwkJdmFsICY9IH5HRU1fQklUKFJYQ09FTik7DQorDQorCWdlbV93cml0ZWwoYnAsIE5DRkdS
-LCB2YWwpOw0KK30NCisNCitzdGF0aWMgaW5saW5lIHZvaWQgbWFjYl9zZXRfcnhmbG93X2ZlYXR1
-cmUoc3RydWN0IG1hY2IgKmJwLA0KKwkJCQkJICAgbmV0ZGV2X2ZlYXR1cmVzX3QgZmVhdHVyZXMp
-DQorew0KKwlpZiAoIW1hY2JfaXNfZ2VtKGJwKSkNCisJCXJldHVybjsNCisNCisJZ2VtX2VuYWJs
-ZV9mbG93X2ZpbHRlcnMoYnAsICEhKGZlYXR1cmVzICYgTkVUSUZfRl9OVFVQTEUpKTsNCit9DQor
-DQogc3RhdGljIGludCBtYWNiX3NldF9mZWF0dXJlcyhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0ZGV2
-LA0KIAkJCSAgICAgbmV0ZGV2X2ZlYXR1cmVzX3QgZmVhdHVyZXMpDQogew0KQEAgLTMyMDgsMzkg
-KzMyNTUsMzUgQEAgc3RhdGljIGludCBtYWNiX3NldF9mZWF0dXJlcyhzdHJ1Y3QgbmV0X2Rldmlj
-ZSAqbmV0ZGV2LA0KIAluZXRkZXZfZmVhdHVyZXNfdCBjaGFuZ2VkID0gZmVhdHVyZXMgXiBuZXRk
-ZXYtPmZlYXR1cmVzOw0KIA0KIAkvKiBUWCBjaGVja3N1bSBvZmZsb2FkICovDQotCWlmICgoY2hh
-bmdlZCAmIE5FVElGX0ZfSFdfQ1NVTSkgJiYgbWFjYl9pc19nZW0oYnApKSB7DQotCQl1MzIgZG1h
-Y2ZnOw0KLQ0KLQkJZG1hY2ZnID0gZ2VtX3JlYWRsKGJwLCBETUFDRkcpOw0KLQkJaWYgKGZlYXR1
-cmVzICYgTkVUSUZfRl9IV19DU1VNKQ0KLQkJCWRtYWNmZyB8PSBHRU1fQklUKFRYQ09FTik7DQot
-CQllbHNlDQotCQkJZG1hY2ZnICY9IH5HRU1fQklUKFRYQ09FTik7DQotCQlnZW1fd3JpdGVsKGJw
-LCBETUFDRkcsIGRtYWNmZyk7DQotCX0NCisJaWYgKGNoYW5nZWQgJiBORVRJRl9GX0hXX0NTVU0p
-DQorCQltYWNiX3NldF90eGNzdW1fZmVhdHVyZShicCwgZmVhdHVyZXMpOw0KIA0KIAkvKiBSWCBj
-aGVja3N1bSBvZmZsb2FkICovDQotCWlmICgoY2hhbmdlZCAmIE5FVElGX0ZfUlhDU1VNKSAmJiBt
-YWNiX2lzX2dlbShicCkpIHsNCi0JCXUzMiBuZXRjZmc7DQotDQotCQluZXRjZmcgPSBnZW1fcmVh
-ZGwoYnAsIE5DRkdSKTsNCi0JCWlmIChmZWF0dXJlcyAmIE5FVElGX0ZfUlhDU1VNICYmDQotCQkg
-ICAgIShuZXRkZXYtPmZsYWdzICYgSUZGX1BST01JU0MpKQ0KLQkJCW5ldGNmZyB8PSBHRU1fQklU
-KFJYQ09FTik7DQotCQllbHNlDQotCQkJbmV0Y2ZnICY9IH5HRU1fQklUKFJYQ09FTik7DQotCQln
-ZW1fd3JpdGVsKGJwLCBOQ0ZHUiwgbmV0Y2ZnKTsNCi0JfQ0KKwlpZiAoY2hhbmdlZCAmIE5FVElG
-X0ZfUlhDU1VNKQ0KKwkJbWFjYl9zZXRfcnhjc3VtX2ZlYXR1cmUoYnAsIGZlYXR1cmVzKTsNCiAN
-CiAJLyogUlggRmxvdyBGaWx0ZXJzICovDQotCWlmICgoY2hhbmdlZCAmIE5FVElGX0ZfTlRVUExF
-KSAmJiBtYWNiX2lzX2dlbShicCkpIHsNCi0JCWJvb2wgdHVybl9vbiA9IGZlYXR1cmVzICYgTkVU
-SUZfRl9OVFVQTEU7DQorCWlmIChjaGFuZ2VkICYgTkVUSUZfRl9OVFVQTEUpDQorCQltYWNiX3Nl
-dF9yeGZsb3dfZmVhdHVyZShicCwgZmVhdHVyZXMpOw0KIA0KLQkJZ2VtX2VuYWJsZV9mbG93X2Zp
-bHRlcnMoYnAsIHR1cm5fb24pOw0KLQl9DQogCXJldHVybiAwOw0KIH0NCiANCitzdGF0aWMgdm9p
-ZCBtYWNiX3Jlc3RvcmVfZmVhdHVyZXMoc3RydWN0IG1hY2IgKmJwKQ0KK3sNCisJc3RydWN0IG5l
-dF9kZXZpY2UgKm5ldGRldiA9IGJwLT5kZXY7DQorCW5ldGRldl9mZWF0dXJlc190IGZlYXR1cmVz
-ID0gbmV0ZGV2LT5mZWF0dXJlczsNCisNCisJLyogVFggY2hlY2tzdW0gb2ZmbG9hZCAqLw0KKwlt
-YWNiX3NldF90eGNzdW1fZmVhdHVyZShicCwgZmVhdHVyZXMpOw0KKw0KKwkvKiBSWCBjaGVja3N1
-bSBvZmZsb2FkICovDQorCW1hY2Jfc2V0X3J4Y3N1bV9mZWF0dXJlKGJwLCBmZWF0dXJlcyk7DQor
-DQorCS8qIFJYIEZsb3cgRmlsdGVycyAqLw0KKwltYWNiX3NldF9yeGZsb3dfZmVhdHVyZShicCwg
-ZmVhdHVyZXMpOw0KK30NCisNCiBzdGF0aWMgY29uc3Qgc3RydWN0IG5ldF9kZXZpY2Vfb3BzIG1h
-Y2JfbmV0ZGV2X29wcyA9IHsNCiAJLm5kb19vcGVuCQk9IG1hY2Jfb3BlbiwNCiAJLm5kb19zdG9w
-CQk9IG1hY2JfY2xvc2UsDQpAQCAtNDI3Myw2ICs0MzE2LDEyIEBAIHN0YXRpYyBpbnQgX19tYXli
-ZV91bnVzZWQgbWFjYl9zdXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikNCiAJCXNwaW5fbG9ja19p
-cnFzYXZlKCZicC0+bG9jaywgZmxhZ3MpOw0KIAkJbWFjYl9yZXNldF9odyhicCk7DQogCQlzcGlu
-X3VubG9ja19pcnFyZXN0b3JlKCZicC0+bG9jaywgZmxhZ3MpOw0KKw0KKwkJaWYgKCEoYnAtPmNh
-cHMgJiBNQUNCX0NBUFNfVVNSSU9fRElTQUJMRUQpKQ0KKwkJCWJwLT5wbV9kYXRhLnVzcmlvID0g
-bWFjYl9vcl9nZW1fcmVhZGwoYnAsIFVTUklPKTsNCisNCisJCWlmIChuZXRkZXYtPmh3X2ZlYXR1
-cmVzICYgTkVUSUZfRl9OVFVQTEUpDQorCQkJYnAtPnBtX2RhdGEuc2NydDIgPSBnZW1fcmVhZGxf
-bihicCwgRVRIVCwgU0NSVDJfRVRIVCk7DQogCX0NCiANCiAJbmV0aWZfY2Fycmllcl9vZmYobmV0
-ZGV2KTsNCkBAIC00MzAxLDYgKzQzNTAsMTMgQEAgc3RhdGljIGludCBfX21heWJlX3VudXNlZCBt
-YWNiX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpDQogCQlkaXNhYmxlX2lycV93YWtlKGJwLT5x
-dWV1ZXNbMF0uaXJxKTsNCiAJfSBlbHNlIHsNCiAJCW1hY2Jfd3JpdGVsKGJwLCBOQ1IsIE1BQ0Jf
-QklUKE1QRSkpOw0KKw0KKwkJaWYgKG5ldGRldi0+aHdfZmVhdHVyZXMgJiBORVRJRl9GX05UVVBM
-RSkNCisJCQlnZW1fd3JpdGVsX24oYnAsIEVUSFQsIFNDUlQyX0VUSFQsIGJwLT5wbV9kYXRhLnNj
-cnQyKTsNCisNCisJCWlmICghKGJwLT5jYXBzICYgTUFDQl9DQVBTX1VTUklPX0RJU0FCTEVEKSkN
-CisJCQltYWNiX29yX2dlbV93cml0ZWwoYnAsIFVTUklPLCBicC0+cG1fZGF0YS51c3Jpbyk7DQor
-DQogCQlmb3IgKHEgPSAwLCBxdWV1ZSA9IGJwLT5xdWV1ZXM7IHEgPCBicC0+bnVtX3F1ZXVlczsN
-CiAJCSAgICAgKytxLCArK3F1ZXVlKQ0KIAkJCW5hcGlfZW5hYmxlKCZxdWV1ZS0+bmFwaSk7DQpA
-QCAtNDMxMiw2ICs0MzY4LDcgQEAgc3RhdGljIGludCBfX21heWJlX3VudXNlZCBtYWNiX3Jlc3Vt
-ZShzdHJ1Y3QgZGV2aWNlICpkZXYpDQogCWJwLT5tYWNiZ2VtX29wcy5tb2dfaW5pdF9yaW5ncyhi
-cCk7DQogCW1hY2JfaW5pdF9odyhicCk7DQogCW1hY2Jfc2V0X3J4X21vZGUobmV0ZGV2KTsNCisJ
-bWFjYl9yZXN0b3JlX2ZlYXR1cmVzKGJwKTsNCiAJbmV0aWZfZGV2aWNlX2F0dGFjaChuZXRkZXYp
-Ow0KIAlpZiAoYnAtPnB0cF9pbmZvKQ0KIAkJYnAtPnB0cF9pbmZvLT5wdHBfaW5pdChuZXRkZXYp
-Ow0KLS0gDQoyLjcuNA0KDQo=
+Hi Joel,
+
+On Thu,  2 May 2019 16:49:58 -0400
+"Joel Fernandes (Google)" <joel@joelfernandes.org> wrote:
+
+> The eBPF based opensnoop tool fails to read the file path string passed
+> to the do_sys_open function. This is because it is a pointer to
+> userspace address and causes an -EFAULT when read with
+> probe_kernel_read. This is not an issue when running the tool on x86 but
+> is an issue on arm64. This patch adds a new bpf function call based
+> which calls the recently proposed probe_user_read function [1].
+> Using this function call from opensnoop fixes the issue on arm64.
+> 
+> [1] https://lore.kernel.org/patchwork/patch/1051588/
+
+Anyway, this series is still out-of-tree. We have to push this or similar
+update into kernel at first. I can resend v7 on the latest -tip tree including
+this patch if you update the description.
+
+Thank you,
+
+> 
+> Cc: Michal Gregorczyk <michalgr@live.com>
+> Cc: Adrian Ratiu <adrian.ratiu@collabora.com>
+> Cc: Mohammad Husain <russoue@gmail.com>
+> Cc: Qais Yousef <qais.yousef@arm.com>
+> Cc: Srinivas Ramana <sramana@codeaurora.org>
+> Cc: duyuchao <yuchao.du@unisoc.com>
+> Cc: Manjo Raja Rao <linux@manojrajarao.com>
+> Cc: Karim Yaghmour <karim.yaghmour@opersys.com>
+> Cc: Tamir Carmeli <carmeli.tamir@gmail.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Brendan Gregg <brendan.d.gregg@gmail.com>
+> Cc: Masami Hiramatsu <mhiramat@kernel.org>
+> Cc: Peter Ziljstra <peterz@infradead.org>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: kernel-team@android.com
+> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> ---
+>  include/uapi/linux/bpf.h       |  7 ++++++-
+>  kernel/trace/bpf_trace.c       | 22 ++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h |  7 ++++++-
+>  3 files changed, 34 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index e99e3e6f8b37..6fec701eaa46 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -539,6 +539,10 @@ union bpf_attr {
+>   *     @mode: operation mode (enum bpf_adj_room_mode)
+>   *     @flags: reserved for future use
+>   *     Return: 0 on success or negative error code
+> + *
+> + * int bpf_probe_read_user(void *dst, int size, void *src)
+> + *     Read a userspace pointer safely.
+> + *     Return: 0 on success or negative error
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)		\
+>  	FN(unspec),			\
+> @@ -591,7 +595,8 @@ union bpf_attr {
+>  	FN(get_socket_uid),		\
+>  	FN(set_hash),			\
+>  	FN(setsockopt),			\
+> -	FN(skb_adjust_room),
+> +	FN(skb_adjust_room),		\
+> +	FN(probe_read_user),
+>  
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index dc498b605d5d..1e1a11d9faa8 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -81,6 +81,26 @@ static const struct bpf_func_proto bpf_probe_read_proto = {
+>  	.arg3_type	= ARG_ANYTHING,
+>  };
+>  
+> +BPF_CALL_3(bpf_probe_read_user, void *, dst, u32, size, const void *, unsafe_ptr)
+> +{
+> +	int ret;
+> +
+> +	ret = probe_user_read(dst, unsafe_ptr, size);
+> +	if (unlikely(ret < 0))
+> +		memset(dst, 0, size);
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct bpf_func_proto bpf_probe_read_user_proto = {
+> +	.func		= bpf_probe_read_user,
+> +	.gpl_only	= true,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_PTR_TO_UNINIT_MEM,
+> +	.arg2_type	= ARG_CONST_SIZE,
+> +	.arg3_type	= ARG_ANYTHING,
+> +};
+> +
+>  BPF_CALL_3(bpf_probe_write_user, void *, unsafe_ptr, const void *, src,
+>  	   u32, size)
+>  {
+> @@ -459,6 +479,8 @@ static const struct bpf_func_proto *tracing_func_proto(enum bpf_func_id func_id)
+>  		return &bpf_map_delete_elem_proto;
+>  	case BPF_FUNC_probe_read:
+>  		return &bpf_probe_read_proto;
+> +	case BPF_FUNC_probe_read_user:
+> +		return &bpf_probe_read_user_proto;
+>  	case BPF_FUNC_ktime_get_ns:
+>  		return &bpf_ktime_get_ns_proto;
+>  	case BPF_FUNC_tail_call:
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index e99e3e6f8b37..6fec701eaa46 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -539,6 +539,10 @@ union bpf_attr {
+>   *     @mode: operation mode (enum bpf_adj_room_mode)
+>   *     @flags: reserved for future use
+>   *     Return: 0 on success or negative error code
+> + *
+> + * int bpf_probe_read_user(void *dst, int size, void *src)
+> + *     Read a userspace pointer safely.
+> + *     Return: 0 on success or negative error
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)		\
+>  	FN(unspec),			\
+> @@ -591,7 +595,8 @@ union bpf_attr {
+>  	FN(get_socket_uid),		\
+>  	FN(set_hash),			\
+>  	FN(setsockopt),			\
+> -	FN(skb_adjust_room),
+> +	FN(skb_adjust_room),		\
+> +	FN(probe_read_user),
+>  
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> -- 
+> 2.21.0.593.g511ec345e18-goog
+> 
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
