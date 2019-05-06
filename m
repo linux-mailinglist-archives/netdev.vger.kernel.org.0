@@ -2,166 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40A9414B1B
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 15:45:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F1EE14B2C
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 15:49:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726095AbfEFNps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 09:45:48 -0400
-Received: from mail-eopbgr20053.outbound.protection.outlook.com ([40.107.2.53]:3813
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725853AbfEFNps (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 May 2019 09:45:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F7WSOS8+POP1rDb6A/p4VBkZAX7Fj3taiNQe47/7g7w=;
- b=rQ0TKBJXq+cfDsrXNGa9wG7JWXTODwLw7TX/momQeHJCimmhP5Z+L12WHVMRxXO5EB3UAjKzRPDubawypUW8IGmX3C8GQnjj8Loz0eMlQYIvSZAooEcIMvz5ppTotlnborIxM0Rfaot/svHFkGwT/jSqGgRhQOVeZvr3XNoEBko=
-Received: from AM6PR05MB5879.eurprd05.prod.outlook.com (20.179.0.76) by
- AM6PR05MB6183.eurprd05.prod.outlook.com (20.178.86.205) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1856.10; Mon, 6 May 2019 13:45:40 +0000
-Received: from AM6PR05MB5879.eurprd05.prod.outlook.com
- ([fe80::cc18:150a:7740:1e2f]) by AM6PR05MB5879.eurprd05.prod.outlook.com
- ([fe80::cc18:150a:7740:1e2f%2]) with mapi id 15.20.1856.012; Mon, 6 May 2019
- 13:45:40 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jonathan Lemon <bsd@fb.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Subject: Re: [PATCH bpf-next v2 02/16] xsk: Add getsockopt XDP_OPTIONS
-Thread-Topic: [PATCH bpf-next v2 02/16] xsk: Add getsockopt XDP_OPTIONS
-Thread-Index: AQHU/4BKnZIGLije30iWBScoq61BJqZbPdUAgALnJAA=
-Date:   Mon, 6 May 2019 13:45:40 +0000
-Message-ID: <f00130ea-86a8-355c-76fb-bd0bea389e62@mellanox.com>
-References: <20190430181215.15305-1-maximmi@mellanox.com>
- <20190430181215.15305-3-maximmi@mellanox.com>
- <CAJ+HfNid2hFN6ECetptT+pRQhvPpbdm39zQT9O9xVthadeqQWg@mail.gmail.com>
-In-Reply-To: <CAJ+HfNid2hFN6ECetptT+pRQhvPpbdm39zQT9O9xVthadeqQWg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM0PR01CA0048.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:e6::25) To AM6PR05MB5879.eurprd05.prod.outlook.com
- (2603:10a6:20b:a2::12)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=maximmi@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [95.67.35.250]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9c933388-c923-4be2-da1b-08d6d2292052
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB6183;
-x-ms-traffictypediagnostic: AM6PR05MB6183:
-x-microsoft-antispam-prvs: <AM6PR05MB6183F55D685E36C6B9F26BA8D1300@AM6PR05MB6183.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0029F17A3F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(376002)(136003)(346002)(396003)(39860400002)(189003)(199004)(316002)(110136005)(8936002)(7736002)(54906003)(71190400001)(6246003)(71200400001)(25786009)(102836004)(7416002)(76176011)(26005)(6506007)(386003)(53546011)(14454004)(31686004)(2906002)(186003)(305945005)(66574012)(36756003)(99286004)(4326008)(6436002)(6486002)(256004)(14444005)(53936002)(31696002)(229853002)(66556008)(5660300002)(66066001)(73956011)(66476007)(66946007)(52116002)(478600001)(64756008)(2616005)(66446008)(68736007)(476003)(6512007)(81166006)(81156014)(8676002)(11346002)(446003)(86362001)(486006)(6116002)(3846002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6183;H:AM6PR05MB5879.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: wItRIBchIyMWor4LZ/5uCVx45lgT4F3VACuuhJy7aCuL8diuMol751XLG1E0Un++bgg02HxWIxpIMaE2SKfr+rB1oOL3iuzHrf6iOSAzHrh7Gjn9EXpHkf1QMvOdaoOlc3bPpHCXtoLVPJHZN1Cdx2RTB+qpfz5S+AgIbqrSWNwujdzyuD6Qs06C6QDK17+DvAFyvTrQFA1mOSdI7BJq+JjJJdOUox88urJ/4QcSyDKlakB94anPWEMY1059QsTj/SSCNDN6qLUePhWudiE6fWqderEYoARvblwpYYUxSCcMfVaM1XDu0i6BhDeZVjdVHMqXk1nNF6JVUbwhpQjZj7vPpz1fawfybxEuv2UczBQex81/0bHBLtZQl8kNHVky8UPMe+OQ6oNhvfL3wZByoU2nBiMtA/+963AWF7nhh1c=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1A21E3991AACB1408A0C39E345BC47D9@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726349AbfEFNta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 09:49:30 -0400
+Received: from www62.your-server.de ([213.133.104.62]:38266 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726046AbfEFNta (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 09:49:30 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hNdzi-0006uv-Tv; Mon, 06 May 2019 15:49:27 +0200
+Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hNdzi-000F2F-MY; Mon, 06 May 2019 15:49:26 +0200
+Subject: Re: [PATCH v6 bpf-next 02/17] bpf: verifier: mark verified-insn with
+ sub-register zext flag
+To:     Jiong Wang <jiong.wang@netronome.com>, alexei.starovoitov@gmail.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com
+References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
+ <1556880164-10689-3-git-send-email-jiong.wang@netronome.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <76304717-347f-990a-2a5a-0999ebbc3b70@iogearbox.net>
+Date:   Mon, 6 May 2019 15:49:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c933388-c923-4be2-da1b-08d6d2292052
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 May 2019 13:45:40.0228
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6183
+In-Reply-To: <1556880164-10689-3-git-send-email-jiong.wang@netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25441/Mon May  6 10:04:24 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjAxOS0wNS0wNCAyMDoyNSwgQmrDtnJuIFTDtnBlbCB3cm90ZToNCj4gT24gVHVlLCAzMCBB
-cHIgMjAxOSBhdCAyMDoxMiwgTWF4aW0gTWlraXR5YW5za2l5IDxtYXhpbW1pQG1lbGxhbm94LmNv
-bT4gd3JvdGU6DQo+Pg0KPj4gTWFrZSBpdCBwb3NzaWJsZSBmb3IgdGhlIGFwcGxpY2F0aW9uIHRv
-IGRldGVybWluZSB3aGV0aGVyIHRoZSBBRl9YRFANCj4+IHNvY2tldCBpcyBydW5uaW5nIGluIHpl
-cm8tY29weSBtb2RlLiBUbyBhY2hpZXZlIHRoaXMsIGFkZCBhIG5ldw0KPj4gZ2V0c29ja29wdCBv
-cHRpb24gWERQX09QVElPTlMgdGhhdCByZXR1cm5zIGZsYWdzLiBUaGUgb25seSBmbGFnDQo+PiBz
-dXBwb3J0ZWQgZm9yIG5vdyBpcyB0aGUgemVyby1jb3B5IG1vZGUgaW5kaWNhdG9yLg0KPj4NCj4+
-IFNpZ25lZC1vZmYtYnk6IE1heGltIE1pa2l0eWFuc2tpeSA8bWF4aW1taUBtZWxsYW5veC5jb20+
-DQo+PiBSZXZpZXdlZC1ieTogVGFyaXEgVG91a2FuIDx0YXJpcXRAbWVsbGFub3guY29tPg0KPj4g
-QWNrZWQtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0KPj4gLS0tDQo+
-PiAgIGluY2x1ZGUvdWFwaS9saW51eC9pZl94ZHAuaCAgICAgICB8ICA3ICsrKysrKysNCj4+ICAg
-bmV0L3hkcC94c2suYyAgICAgICAgICAgICAgICAgICAgIHwgMjIgKysrKysrKysrKysrKysrKysr
-KysrKw0KPj4gICB0b29scy9pbmNsdWRlL3VhcGkvbGludXgvaWZfeGRwLmggfCAgNyArKysrKysr
-DQo+PiAgIDMgZmlsZXMgY2hhbmdlZCwgMzYgaW5zZXJ0aW9ucygrKQ0KPj4NCj4+IGRpZmYgLS1n
-aXQgYS9pbmNsdWRlL3VhcGkvbGludXgvaWZfeGRwLmggYi9pbmNsdWRlL3VhcGkvbGludXgvaWZf
-eGRwLmgNCj4+IGluZGV4IGNhZWQ4YjE2MTRmZi4uOWFlNGI0ZTA4YjY4IDEwMDY0NA0KPj4gLS0t
-IGEvaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oDQo+PiArKysgYi9pbmNsdWRlL3VhcGkvbGlu
-dXgvaWZfeGRwLmgNCj4+IEBAIC00Niw2ICs0Niw3IEBAIHN0cnVjdCB4ZHBfbW1hcF9vZmZzZXRz
-IHsNCj4+ICAgI2RlZmluZSBYRFBfVU1FTV9GSUxMX1JJTkcgICAgICAgICAgICAgNQ0KPj4gICAj
-ZGVmaW5lIFhEUF9VTUVNX0NPTVBMRVRJT05fUklORyAgICAgICA2DQo+PiAgICNkZWZpbmUgWERQ
-X1NUQVRJU1RJQ1MgICAgICAgICAgICAgICAgIDcNCj4+ICsjZGVmaW5lIFhEUF9PUFRJT05TICAg
-ICAgICAgICAgICAgICAgICA4DQo+Pg0KPj4gICBzdHJ1Y3QgeGRwX3VtZW1fcmVnIHsNCj4+ICAg
-ICAgICAgIF9fdTY0IGFkZHI7IC8qIFN0YXJ0IG9mIHBhY2tldCBkYXRhIGFyZWEgKi8NCj4+IEBA
-IC02MCw2ICs2MSwxMiBAQCBzdHJ1Y3QgeGRwX3N0YXRpc3RpY3Mgew0KPj4gICAgICAgICAgX191
-NjQgdHhfaW52YWxpZF9kZXNjczsgLyogRHJvcHBlZCBkdWUgdG8gaW52YWxpZCBkZXNjcmlwdG9y
-ICovDQo+PiAgIH07DQo+Pg0KPj4gK3N0cnVjdCB4ZHBfb3B0aW9ucyB7DQo+PiArICAgICAgIF9f
-dTMyIGZsYWdzOw0KPj4gK307DQo+PiArDQo+PiArI2RlZmluZSBYRFBfT1BUSU9OU19GTEFHX1pF
-Uk9DT1BZICgxIDw8IDApDQo+IA0KPiBOaXQ6IFRoZSBvdGhlciBmbGFncyBkb2Vzbid0IHVzZSAi
-RkxBRyIgaW4gaXRzIG5hbWUsIGJ1dCB0aGF0IGRvZXNuJ3QNCj4gcmVhbGx5IG1hdHRlci4NCj4g
-DQo+PiArDQo+PiAgIC8qIFBnb2ZmIGZvciBtbWFwaW5nIHRoZSByaW5ncyAqLw0KPj4gICAjZGVm
-aW5lIFhEUF9QR09GRl9SWF9SSU5HICAgICAgICAgICAgICAgICAgICAgICAgMA0KPj4gICAjZGVm
-aW5lIFhEUF9QR09GRl9UWF9SSU5HICAgICAgICAgICAgICAgMHg4MDAwMDAwMA0KPj4gZGlmZiAt
-LWdpdCBhL25ldC94ZHAveHNrLmMgYi9uZXQveGRwL3hzay5jDQo+PiBpbmRleCBiNjhhMzgwZjUw
-YjMuLjk5ODE5OTEwOWQ1YyAxMDA2NDQNCj4+IC0tLSBhL25ldC94ZHAveHNrLmMNCj4+ICsrKyBi
-L25ldC94ZHAveHNrLmMNCj4+IEBAIC02NTAsNiArNjUwLDI4IEBAIHN0YXRpYyBpbnQgeHNrX2dl
-dHNvY2tvcHQoc3RydWN0IHNvY2tldCAqc29jaywgaW50IGxldmVsLCBpbnQgb3B0bmFtZSwNCj4+
-DQo+PiAgICAgICAgICAgICAgICAgIHJldHVybiAwOw0KPj4gICAgICAgICAgfQ0KPj4gKyAgICAg
-ICBjYXNlIFhEUF9PUFRJT05TOg0KPj4gKyAgICAgICB7DQo+PiArICAgICAgICAgICAgICAgc3Ry
-dWN0IHhkcF9vcHRpb25zIG9wdHM7DQo+PiArDQo+PiArICAgICAgICAgICAgICAgaWYgKGxlbiA8
-IHNpemVvZihvcHRzKSkNCj4+ICsgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiAtRUlOVkFM
-Ow0KPj4gKw0KPj4gKyAgICAgICAgICAgICAgIG9wdHMuZmxhZ3MgPSAwOw0KPiANCj4gTWF5YmUg
-Z2V0IHJpZCBvZiB0aGlzLCBpbiBmYXZvciBvZiAib3B0cyA9IHt9IiBpZiB0aGUgc3RydWN0dXJl
-IGdyb3dzPw0KDQpJJ20gT0sgd2l0aCBhbnkgb2YgdGhlc2Ugb3B0aW9ucy4gU2hvdWxkIEkgcmVz
-cGluIHRoZSBzZXJpZXMsIG9yIGNhbiBJIA0KZm9sbG93IHVwIHdpdGggdGhlIGNoYW5nZSBpbiBS
-Q3MgaWYgdGhlIHNlcmllcyBnZXRzIHRvIDUuMj8NCg0KQWxleGVpLCBpcyBpdCBldmVuIHBvc3Np
-YmxlIHRvIHN0aWxsIG1ha2UgY2hhbmdlcyB0byB0aGlzIHNlcmllcz8gVGhlIA0Kd2luZG93IGFw
-cGVhcnMgY2xvc2VkLg0KDQo+IA0KPj4gKw0KPj4gKyAgICAgICAgICAgICAgIG11dGV4X2xvY2so
-JnhzLT5tdXRleCk7DQo+PiArICAgICAgICAgICAgICAgaWYgKHhzLT56YykNCj4+ICsgICAgICAg
-ICAgICAgICAgICAgICAgIG9wdHMuZmxhZ3MgfD0gWERQX09QVElPTlNfRkxBR19aRVJPQ09QWTsN
-Cj4+ICsgICAgICAgICAgICAgICBtdXRleF91bmxvY2soJnhzLT5tdXRleCk7DQo+PiArDQo+PiAr
-ICAgICAgICAgICAgICAgbGVuID0gc2l6ZW9mKG9wdHMpOw0KPj4gKyAgICAgICAgICAgICAgIGlm
-IChjb3B5X3RvX3VzZXIob3B0dmFsLCAmb3B0cywgbGVuKSkNCj4+ICsgICAgICAgICAgICAgICAg
-ICAgICAgIHJldHVybiAtRUZBVUxUOw0KPj4gKyAgICAgICAgICAgICAgIGlmIChwdXRfdXNlcihs
-ZW4sIG9wdGxlbikpDQo+PiArICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gLUVGQVVMVDsN
-Cj4+ICsNCj4+ICsgICAgICAgICAgICAgICByZXR1cm4gMDsNCj4+ICsgICAgICAgfQ0KPj4gICAg
-ICAgICAgZGVmYXVsdDoNCj4+ICAgICAgICAgICAgICAgICAgYnJlYWs7DQo+PiAgICAgICAgICB9
-DQo+PiBkaWZmIC0tZ2l0IGEvdG9vbHMvaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oIGIvdG9v
-bHMvaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oDQo+PiBpbmRleCBjYWVkOGIxNjE0ZmYuLjlh
-ZTRiNGUwOGI2OCAxMDA2NDQNCj4+IC0tLSBhL3Rvb2xzL2luY2x1ZGUvdWFwaS9saW51eC9pZl94
-ZHAuaA0KPj4gKysrIGIvdG9vbHMvaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oDQo+PiBAQCAt
-NDYsNiArNDYsNyBAQCBzdHJ1Y3QgeGRwX21tYXBfb2Zmc2V0cyB7DQo+PiAgICNkZWZpbmUgWERQ
-X1VNRU1fRklMTF9SSU5HICAgICAgICAgICAgIDUNCj4+ICAgI2RlZmluZSBYRFBfVU1FTV9DT01Q
-TEVUSU9OX1JJTkcgICAgICAgNg0KPj4gICAjZGVmaW5lIFhEUF9TVEFUSVNUSUNTICAgICAgICAg
-ICAgICAgICA3DQo+PiArI2RlZmluZSBYRFBfT1BUSU9OUyAgICAgICAgICAgICAgICAgICAgOA0K
-Pj4NCj4+ICAgc3RydWN0IHhkcF91bWVtX3JlZyB7DQo+PiAgICAgICAgICBfX3U2NCBhZGRyOyAv
-KiBTdGFydCBvZiBwYWNrZXQgZGF0YSBhcmVhICovDQo+PiBAQCAtNjAsNiArNjEsMTIgQEAgc3Ry
-dWN0IHhkcF9zdGF0aXN0aWNzIHsNCj4+ICAgICAgICAgIF9fdTY0IHR4X2ludmFsaWRfZGVzY3M7
-IC8qIERyb3BwZWQgZHVlIHRvIGludmFsaWQgZGVzY3JpcHRvciAqLw0KPj4gICB9Ow0KPj4NCj4+
-ICtzdHJ1Y3QgeGRwX29wdGlvbnMgew0KPj4gKyAgICAgICBfX3UzMiBmbGFnczsNCj4+ICt9Ow0K
-Pj4gKw0KPj4gKyNkZWZpbmUgWERQX09QVElPTlNfRkxBR19aRVJPQ09QWSAoMSA8PCAwKQ0KPj4g
-Kw0KPj4gICAvKiBQZ29mZiBmb3IgbW1hcGluZyB0aGUgcmluZ3MgKi8NCj4+ICAgI2RlZmluZSBY
-RFBfUEdPRkZfUlhfUklORyAgICAgICAgICAgICAgICAgICAgICAgIDANCj4+ICAgI2RlZmluZSBY
-RFBfUEdPRkZfVFhfUklORyAgICAgICAgICAgICAgIDB4ODAwMDAwMDANCj4+IC0tDQo+PiAyLjE5
-LjENCj4+DQoNCg==
+On 05/03/2019 12:42 PM, Jiong Wang wrote:
+> eBPF ISA specification requires high 32-bit cleared when low 32-bit
+> sub-register is written. This applies to destination register of ALU32 etc.
+> JIT back-ends must guarantee this semantic when doing code-gen.
+> 
+> x86-64 and arm64 ISA has the same semantic, so the corresponding JIT
+> back-end doesn't need to do extra work. However, 32-bit arches (arm, nfp
+> etc.) and some other 64-bit arches (powerpc, sparc etc), need explicit zero
+> extension sequence to meet such semantic.
+> 
+> This is important, because for code the following:
+> 
+>   u64_value = (u64) u32_value
+>   ... other uses of u64_value
+> 
+> compiler could exploit the semantic described above and save those zero
+> extensions for extending u32_value to u64_value. Hardware, runtime, or BPF
+> JIT back-ends, are responsible for guaranteeing this. Some benchmarks show
+> ~40% sub-register writes out of total insns, meaning ~40% extra code-gen (
+> could go up to more for some arches which requires two shifts for zero
+> extension) because JIT back-end needs to do extra code-gen for all such
+> instructions.
+> 
+> However this is not always necessary in case u32_value is never cast into
+> a u64, which is quite normal in real life program. So, it would be really
+> good if we could identify those places where such type cast happened, and
+> only do zero extensions for them, not for the others. This could save a lot
+> of BPF code-gen.
+> 
+> Algo:
+>  - Split read flags into READ32 and READ64.
+> 
+>  - Record indices of instructions that do sub-register def (write). And
+>    these indices need to stay with reg state so path pruning and bpf
+>    to bpf function call could be handled properly.
+> 
+>    These indices are kept up to date while doing insn walk.
+> 
+>  - A full register read on an active sub-register def marks the def insn as
+>    needing zero extension on dst register.
+> 
+>  - A new sub-register write overrides the old one.
+> 
+>    A new full register write makes the register free of zero extension on
+>    dst register.
+> 
+>  - When propagating read64 during path pruning, also marks def insns whose
+>    defs are hanging active sub-register.
+> 
+> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+
+[...]
+> +/* This function is supposed to be used by the following 32-bit optimization
+> + * code only. It returns TRUE if the source or destination register operates
+> + * on 64-bit, otherwise return FALSE.
+> + */
+> +static bool is_reg64(struct bpf_verifier_env *env, struct bpf_insn *insn,
+> +		     u32 regno, struct bpf_reg_state *reg, enum reg_arg_type t)
+> +{
+> +	u8 code, class, op;
+> +
+> +	code = insn->code;
+> +	class = BPF_CLASS(code);
+> +	op = BPF_OP(code);
+> +	if (class == BPF_JMP) {
+> +		/* BPF_EXIT for "main" will reach here. Return TRUE
+> +		 * conservatively.
+> +		 */
+> +		if (op == BPF_EXIT)
+> +			return true;
+> +		if (op == BPF_CALL) {
+> +			/* BPF to BPF call will reach here because of marking
+> +			 * caller saved clobber with DST_OP_NO_MARK for which we
+> +			 * don't care the register def because they are anyway
+> +			 * marked as NOT_INIT already.
+> +			 */
+> +			if (insn->src_reg == BPF_PSEUDO_CALL)
+> +				return false;
+> +			/* Helper call will reach here because of arg type
+> +			 * check.
+> +			 */
+> +			if (t == SRC_OP)
+> +				return helper_call_arg64(env, insn->imm, regno);
+> +
+> +			return false;
+> +		}
+> +	}
+> +
+> +	if (class == BPF_ALU64 || class == BPF_JMP ||
+> +	    /* BPF_END always use BPF_ALU class. */
+> +	    (class == BPF_ALU && op == BPF_END && insn->imm == 64))
+> +		return true;
+
+For the BPF_JMP + JA case we don't look at registers, but I presume here
+we 'pretend' to use 64 bit regs to be more conservative as verifier would
+otherwise need to do more complex analysis at the jump target wrt zero
+extension, correct?
+
+> +
+> +	if (class == BPF_ALU || class == BPF_JMP32)
+> +		return false;
+> +
+> +	if (class == BPF_LDX) {
+> +		if (t != SRC_OP)
+> +			return BPF_SIZE(code) == BPF_DW;
+> +		/* LDX source must be ptr. */
+> +		return true;
+> +	}
+> +
+> +	if (class == BPF_STX) {
+> +		if (reg->type != SCALAR_VALUE)
+> +			return true;
+> +		return BPF_SIZE(code) == BPF_DW;
+> +	}
+> +
+> +	if (class == BPF_LD) {
+> +		u8 mode = BPF_MODE(code);
+> +
+> +		/* LD_IMM64 */
+> +		if (mode == BPF_IMM)
+> +			return true;
+> +
+> +		/* Both LD_IND and LD_ABS return 32-bit data. */
+> +		if (t != SRC_OP)
+> +			return  false;
+> +
+> +		/* Implicit ctx ptr. */
+> +		if (regno == BPF_REG_6)
+> +			return true;
+> +
+> +		/* Explicit source could be any width. */
+> +		return true;
+> +	}
+> +
+> +	if (class == BPF_ST)
+> +		/* The only source register for BPF_ST is a ptr. */
+> +		return true;
+> +
+> +	/* Conservatively return true at default. */
+> +	return true;
+> +}
