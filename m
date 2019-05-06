@@ -2,117 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17ADB14815
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 12:05:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E9181483D
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 12:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726085AbfEFKFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 06:05:01 -0400
-Received: from www62.your-server.de ([213.133.104.62]:46766 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725861AbfEFKFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 06:05:01 -0400
-Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNaUV-0002df-9i; Mon, 06 May 2019 12:04:59 +0200
-Received: from [2a02:120b:c3fc:feb0:dda7:bd28:a848:50e2] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hNaUU-0002c0-Sp; Mon, 06 May 2019 12:04:59 +0200
-Subject: Re: [PATCH bpf-next 1/2] xsk: remove AF_XDP socket from map when the
- socket is released
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, netdev@vger.kernel.org
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        bruce.richarson@intel.com, bpf@vger.kernel.org,
-        Bruce Richardson <bruce.richardson@intel.com>
-References: <20190504160603.10173-1-bjorn.topel@gmail.com>
- <20190504160603.10173-2-bjorn.topel@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <89542aec-4fb5-5322-624f-99731a834b8b@iogearbox.net>
-Date:   Mon, 6 May 2019 12:04:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726393AbfEFKPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 06:15:22 -0400
+Received: from mail.subredsuroccidente.gov.co ([190.24.142.69]:56195 "EHLO
+        mail.subredsuroccidente.gov.co" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725886AbfEFKPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 06:15:21 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.subredsuroccidente.gov.co (Postfix) with ESMTP id CD1466003C314;
+        Mon,  6 May 2019 05:07:56 -0500 (-05)
+Received: from mail.subredsuroccidente.gov.co ([127.0.0.1])
+        by localhost (mail.subredsuroccidente.gov.co [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id lC4OLNuZG6E5; Mon,  6 May 2019 05:07:56 -0500 (-05)
+Received: from mail.subredsuroccidente.gov.co (localhost [127.0.0.1])
+        by mail.subredsuroccidente.gov.co (Postfix) with ESMTPS id 6A32F6003EC11;
+        Mon,  6 May 2019 05:07:56 -0500 (-05)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.subredsuroccidente.gov.co 6A32F6003EC11
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=subredsuroccidente.gov.co; s=2EEC3DBC-2260-11E9-B606-45ACDB70FA67;
+        t=1557137276; bh=h0qg4hTOtjeGGKNKpEc3cPt261oVjDlc4VR0Cn4oP9U=;
+        h=MIME-Version:To:From:Date:Message-Id;
+        b=t3i2oQl6Mcqyy3wxuN5BQoKYvNHvbiAoUo0W7JjTbT6U1LBRgD3EaYy6XmMoJjbv0
+         zQlY/Cm6X1GRf03dTMadIAs4sOyfZZQzoOFatehLcB72NWURav65Fdi7N1GJC3Egs1
+         HrZ6PYD9Mxuh2HIPCW1woMXPgg56y+8LcLhBOHs+HCpgpmwp21a4LUDlQXfqGU+TtR
+         Cl4+TUqHAHB1uf6CEm9MEHbXxb2Tj3n3nfEUUWeP/s+8CpZD61+iVxFLvxkrVr7R7d
+         seSbqWA8QjnbVMbJBbhXpUVWYpJfhk5UlvmJk41aOWnBbRYhr6lCRoV6Dip/0uIcGT
+         C1OHAIpfc4gyg==
+Received: from [172.20.10.4] (unknown [110.225.89.76])
+        by mail.subredsuroccidente.gov.co (Postfix) with ESMTPSA id 4ECED6003C33E;
+        Mon,  6 May 2019 05:07:35 -0500 (-05)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-In-Reply-To: <20190504160603.10173-2-bjorn.topel@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25441/Mon May  6 10:04:24 2019)
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: ?
+To:     Recipients <seleccion.personal@subredsuroccidente.gov.co>
+From:   "Ms Ella Golan" <seleccion.personal@subredsuroccidente.gov.co>
+Date:   Mon, 06 May 2019 03:07:13 -0700
+Reply-To: 3173910591@qq.com
+Message-Id: <20190506100736.4ECED6003C33E@mail.subredsuroccidente.gov.co>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/04/2019 06:06 PM, Björn Töpel wrote:
-> From: Björn Töpel <bjorn.topel@intel.com>
-> 
-> When an AF_XDP socket is released/closed the XSKMAP still holds a
-> reference to the socket in a "released" state. The socket will still
-> use the netdev queue resource, and block newly created sockets from
-> attaching to that queue, but no user application can access the
-> fill/complete/rx/tx rings. This results in that all applications need
-> to explicitly clear the map entry from the old "zombie state"
-> socket. This should be done automatically.
-> 
-> After this patch, when a socket is released, it will remove itself
-> from all the XSKMAPs it resides in, allowing the socket application to
-> remove the code that cleans the XSKMAP entry.
-> 
-> This behavior is also closer to that of SOCKMAP, making the two socket
-> maps more consistent.
-> 
-> Reported-by: Bruce Richardson <bruce.richardson@intel.com>
-> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
-[...]
+Did you receive my email?
 
-
-> +static void __xsk_map_delete_elem(struct xsk_map *map,
-> +				  struct xdp_sock **map_entry)
-> +{
-> +	struct xdp_sock *old_xs;
-> +
-> +	spin_lock_bh(&map->lock);
-> +	old_xs = xchg(map_entry, NULL);
-> +	if (old_xs)
-> +		xsk_map_del_node(old_xs, map_entry);
-> +	spin_unlock_bh(&map->lock);
-> +
-> +}
-> +
->  static void xsk_map_free(struct bpf_map *map)
->  {
->  	struct xsk_map *m = container_of(map, struct xsk_map, map);
-> @@ -78,15 +142,16 @@ static void xsk_map_free(struct bpf_map *map)
->  	bpf_clear_redirect_map(map);
->  	synchronize_net();
->  
-> +	spin_lock_bh(&m->lock);
->  	for (i = 0; i < map->max_entries; i++) {
-> +		struct xdp_sock **entry = &m->xsk_map[i];
->  		struct xdp_sock *xs;
->  
-> -		xs = m->xsk_map[i];
-> -		if (!xs)
-> -			continue;
-> -
-> -		sock_put((struct sock *)xs);
-> +		xs = xchg(entry, NULL);
-> +		if (xs)
-> +			__xsk_map_delete_elem(m, entry);
->  	}
-> +	spin_unlock_bh(&m->lock);
->  
-
-Was this tested? Doesn't the above straight run into a deadlock?
-
-From xsk_map_free() you iterate over the map with m->lock held. Once you
-xchg'ed the entry and call into __xsk_map_delete_elem(), you attempt to
-call map->lock on the same map once again. What am I missing?
-
-Thanks,
-Daniel
+Faithfully,
+Ms Ella Golan
