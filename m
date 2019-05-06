@@ -2,96 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CD3515086
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:43:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC9001509C
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:47:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726960AbfEFPnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 11:43:13 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39696 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbfEFPnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 11:43:13 -0400
-Received: by mail-pg1-f195.google.com with SMTP id w22so5332023pgi.6
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 08:43:13 -0700 (PDT)
+        id S1727055AbfEFPr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 11:47:29 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:44666 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725994AbfEFPr3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 11:47:29 -0400
+Received: by mail-qk1-f194.google.com with SMTP id w25so2045503qkj.11;
+        Mon, 06 May 2019 08:47:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YFDcb2GDO2Kxv2PPfJ3SQUvp0mS5049CM6AN1LgUruk=;
-        b=TbgX6rzDOfL58FgV4KyR14F1xu447zfrXHQ4t7MSnW4gYIMgp8eKftRluEsP1LeJtS
-         8s/754uI5pE6wvLDvR+wRppZl2uwoqavkz2ayH/Rfs413mqGTrqCbzP/lovoiUF7z/IJ
-         KmZkzM6nBBigWyv0qZyL48zGitIcjHVeDzJTJzcVAaRD3freVcFmgdjCWvI0yBv07oaO
-         n0kzry+nTqZVjTwPIZWq1T64rS6LyXLZW6AmeNMroV3xBaQyPHHP40bCX4wF6QYpCe9q
-         zumwCAA452VfjN/LP7jiUk6nfSFt0T3CZSZ2BAM25YfwvZ6yjp59EthErcqPp2Qox6Kj
-         lVyw==
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=E/XjEjFJHTNXNUvCeIBTVGrT6CD0tFJQfkjcnYeMhDY=;
+        b=WFo86atePse5UmQK+FdjsQtdOQVjO6JrWLd1xYEi2IMozqnr1cQ3J6vuxd3K5gctkU
+         XsHuazRLDKDlGNx+rMgrPMRCPJ6oBDmOOlutFuDcLwMPw4scj7kpqzMv7cl6hg35vWEY
+         5Jo6jnIk5CH1m9lNzIXjTixLiTU77ECI7aUU/JbALWp0cMUgMEwkMgZ7hD3uN9i6ImhW
+         2a3f1jij5WKh6ZVyp1ZYKiNoBS3PgNo3b11OoMZftLmzMwIrn3ULeWrJwifkleo4h6d6
+         bKGMiQvOOvCNzRjOGOOP6O5nxYth83P/miVp9QGwck0+wEWuGrwwA1wlrLAfhekoHQTn
+         pYyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YFDcb2GDO2Kxv2PPfJ3SQUvp0mS5049CM6AN1LgUruk=;
-        b=CMPcId6maNbqWRAxRcucgEHJQkDvxQ+UevchTaaGiHi2tyqa0bxA0oH0F1BALgER3r
-         WebTSjZrnkGunjXN+7D1Hw0UQDxOUGbNG78RlBR7+v0pwwIyPmPt3nEy9m/J7K/ZNwVv
-         XealSPP9k4AEpXupFokl2bjjw2EwdSiaPSXCoMFH2IjsaMeafxiW/VfveRzHNHeR7fnj
-         MxwV1eq3M6Qopy96L1YoNk/htDzpEb6AkYMZTgFb1gKUjvUw4WoyS6qpvKM0kj1Mdmod
-         4AkH7q895YiwBBuaiYWTjP1DPQ5zb4BlC9vhtLm7sy9ggrQ01V647k5uDpMqQsosNwHM
-         K3tw==
-X-Gm-Message-State: APjAAAUAPXHmFX8o1UI85Ew15xkDl3VhTxT1I1KUM8/ai803ZNjS4ZDZ
-        0lSPHZZ4hAqsB7zX7c/7vBwojg==
-X-Google-Smtp-Source: APXvYqxSVv2RJhZwT8L9BHTt50iqu/CsNwqIviSqR/l0M3AHncMrjqIqvlPIswS48Q2/CiJ1W4byzw==
-X-Received: by 2002:a62:5c3:: with SMTP id 186mr28115047pff.116.1557157392779;
-        Mon, 06 May 2019 08:43:12 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id k67sm18062805pfb.44.2019.05.06.08.43.12
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 06 May 2019 08:43:12 -0700 (PDT)
-Date:   Mon, 6 May 2019 08:43:11 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH iproute2-master] devlink: Fix monitor command
-Message-ID: <20190506084311.152bdcef@hermes.lan>
-In-Reply-To: <20190505141243.9768-1-idosch@idosch.org>
-References: <20190505141243.9768-1-idosch@idosch.org>
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=E/XjEjFJHTNXNUvCeIBTVGrT6CD0tFJQfkjcnYeMhDY=;
+        b=NTNWAM4SS7AOFuCA0Kiu3c+b8LmjB+xLCrDGUkba+mYj5LDMBfA9GhBRQCuLy3TuH4
+         jCVgt7gjD7QS1cDdm2zmsoNUFzIK1LNgN8i1rZSzswEK4NWUCAb36sGYGmopXgtFSfO9
+         ikD6c4W9gVejNPrfKHGR1cCnCmHnmzHvlNeYOPEq7GOlL1YbZNvn2nMCV0+SUcXvG/6v
+         DSoFpBYZpRbj2hnlpCR9RhUVchEkDlZ8C1AfVIJsVSum89XBoYNFJRj+Wyq1N5AhIVyQ
+         EgFBVIC1YudFsjxGm/UQX2D94YjSwE+ViJtcROsW4RoH4DFR4rJBmBJ7/H2xYC+4RaTb
+         98Ug==
+X-Gm-Message-State: APjAAAWTFqphWOk4BKHRdouGRrmAfFyNou0+amEv8C1obHttu3S6c0Hj
+        nk5EMp6Mhyx+loATAA3xtXs=
+X-Google-Smtp-Source: APXvYqyGWKd+xSOSpvNfUpsvwC4L227cvwkKiLHI1zuDfWsdmprNrmz8KfFvHgA6pkY4TuPO96A4Rg==
+X-Received: by 2002:a37:de16:: with SMTP id h22mr19541559qkj.306.1557157647429;
+        Mon, 06 May 2019 08:47:27 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:500::3:34f3])
+        by smtp.gmail.com with ESMTPSA id i23sm8328331qtc.18.2019.05.06.08.47.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 May 2019 08:47:26 -0700 (PDT)
+Date:   Mon, 6 May 2019 08:47:25 -0700
+From:   Tejun Heo <tj@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Jens Axboe <axboe@kernel.dk>, Li Zefan <lizefan@huawei.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>, linux-block@vger.kernel.org,
+        cgroups@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v2 08/79] docs: cgroup-v1: convert docs to ReST and
+ rename to *.rst
+Message-ID: <20190506154725.GS374014@devbig004.ftw2.facebook.com>
+References: <cover.1555938375.git.mchehab+samsung@kernel.org>
+ <c6e79690c038fc6bbf9265a065c1f861d6e156fa.1555938375.git.mchehab+samsung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c6e79690c038fc6bbf9265a065c1f861d6e156fa.1555938375.git.mchehab+samsung@kernel.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  5 May 2019 17:12:43 +0300
-Ido Schimmel <idosch@idosch.org> wrote:
+On Mon, Apr 22, 2019 at 10:26:57AM -0300, Mauro Carvalho Chehab wrote:
+> Convert the cgroup-v1 files to ReST format, in order to
+> allow a later addition to the admin-guide.
+> 
+> The conversion is actually:
+>   - add blank lines and identation in order to identify paragraphs;
+>   - fix tables markups;
+>   - add some lists markups;
+>   - mark literal blocks;
+>   - adjust title markups.
+> 
+> At its new index.rst, let's add a :orphan: while this is not linked to
+> the main index.rst file, in order to avoid build warnings.
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 
-> From: Ido Schimmel <idosch@mellanox.com>
-> 
-> The command is supposed to allow users to filter events related to
-> certain objects, but returns an error when an object is specified:
-> 
-> # devlink mon dev
-> Command "dev" not found
-> 
-> Fix this by allowing the command to process the specified objects.
-> 
-> Example:
-> 
-> # devlink/devlink mon dev &
-> # echo "10 1" > /sys/bus/netdevsim/new_device
-> [dev,new] netdevsim/netdevsim10
-> 
-> # devlink/devlink mon port &
-> # echo "11 1" > /sys/bus/netdevsim/new_device
-> [port,new] netdevsim/netdevsim11/0: type notset flavour physical
-> [port,new] netdevsim/netdevsim11/0: type eth netdev eth1 flavour physical
-> 
-> # devlink/devlink mon &
-> # echo "12 1" > /sys/bus/netdevsim/new_device
-> [dev,new] netdevsim/netdevsim12
-> [port,new] netdevsim/netdevsim12/0: type notset flavour physical
-> [port,new] netdevsim/netdevsim12/0: type eth netdev eth2 flavour physical
-> 
-> Fixes: a3c4b484a1ed ("add devlink tool")
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Acked-by: Tejun Heo <tj@kernel.org>
 
-Applied, thanks.
+Please feel free to route with other patches in the series.
+
+Thanks.
+
+-- 
+tejun
