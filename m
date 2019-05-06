@@ -2,118 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C141A14DFB
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:57:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2FA14DFF
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 16:57:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728486AbfEFOoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 10:44:25 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:40414 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728774AbfEFOoW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 May 2019 10:44:22 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id D69EB479F90414FF5DC2;
-        Mon,  6 May 2019 22:44:18 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Mon, 6 May 2019
- 22:44:10 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <g.nault@alphalink.fr>,
-        <jian.w.wen@oracle.com>, <edumazet@google.com>, <kafai@fb.com>,
-        <xiyou.wangcong@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] l2tp: Fix possible NULL pointer dereference
-Date:   Mon, 6 May 2019 22:44:04 +0800
-Message-ID: <20190506144404.25220-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1728624AbfEFO5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 10:57:32 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:55963 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727290AbfEFOoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 10:44:24 -0400
+Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
+  Claudiu.Beznea@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
+  envelope-from="Claudiu.Beznea@microchip.com";
+  x-sender="Claudiu.Beznea@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa2.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
+  envelope-from="Claudiu.Beznea@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa2.microchip.iphmx.com; spf=Pass smtp.mailfrom=Claudiu.Beznea@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
+X-IronPort-AV: E=Sophos;i="5.60,438,1549954800"; 
+   d="scan'208";a="31982866"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 06 May 2019 07:44:23 -0700
+Received: from NAM05-DM3-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.76.38) with Microsoft SMTP Server (TLS) id
+ 14.3.352.0; Mon, 6 May 2019 07:44:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector1-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X4+pmcMEFn9vBV0bpmtn7Xovht3/9uh9C+t5CnvgEoI=;
+ b=nP3wzAIHCbiSnWqXr3nY2KSAuzuKuc24HLPcnSxV5XdiJiwajGlxm3uksvyRt9Lsl7DLPNZQhtzHugvyTfnO7wgXwsMD3nfpu+WkfkS6GELv2WKmYo6EOeiDWQd/1paXU70uZLaf4xu368GOGnxP2k3nYqE8bMQcuzQa4i4q0Ow=
+Received: from MWHPR11MB1549.namprd11.prod.outlook.com (10.172.54.17) by
+ MWHPR11MB2047.namprd11.prod.outlook.com (10.169.236.15) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1856.12; Mon, 6 May 2019 14:44:15 +0000
+Received: from MWHPR11MB1549.namprd11.prod.outlook.com
+ ([fe80::f01a:9325:7a65:cdb4]) by MWHPR11MB1549.namprd11.prod.outlook.com
+ ([fe80::f01a:9325:7a65:cdb4%4]) with mapi id 15.20.1856.012; Mon, 6 May 2019
+ 14:44:15 +0000
+From:   <Claudiu.Beznea@microchip.com>
+To:     <Nicolas.Ferre@microchip.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <Claudiu.Beznea@microchip.com>
+Subject: [RFC PATCH] net: macb: save/restore the remaining registers and
+ features
+Thread-Topic: [RFC PATCH] net: macb: save/restore the remaining registers and
+ features
+Thread-Index: AQHVBBotTMTnr5riTEW2rKRd1fe7SA==
+Date:   Mon, 6 May 2019 14:44:15 +0000
+Message-ID: <1557153840-12579-1-git-send-email-claudiu.beznea@microchip.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM4PR0902CA0007.eurprd09.prod.outlook.com
+ (2603:10a6:200:9b::17) To MWHPR11MB1549.namprd11.prod.outlook.com
+ (2603:10b6:301:c::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.7.4
+x-originating-ip: [94.177.32.154]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 09c60b7e-2d0d-4716-071b-08d6d2314f65
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:MWHPR11MB2047;
+x-ms-traffictypediagnostic: MWHPR11MB2047:
+x-microsoft-antispam-prvs: <MWHPR11MB204730B1336BE8A097F758FE87300@MWHPR11MB2047.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0029F17A3F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(136003)(39860400002)(376002)(366004)(346002)(199004)(189003)(52116002)(66556008)(66446008)(64756008)(66476007)(107886003)(316002)(53936002)(86362001)(102836004)(6506007)(386003)(73956011)(256004)(14444005)(5024004)(110136005)(66946007)(7736002)(305945005)(36756003)(6512007)(99286004)(68736007)(71190400001)(71200400001)(54906003)(6436002)(6486002)(8676002)(186003)(50226002)(26005)(72206003)(6116002)(3846002)(2616005)(476003)(478600001)(8936002)(4326008)(81156014)(486006)(66066001)(81166006)(2906002)(14454004)(5660300002)(2501003)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB2047;H:MWHPR11MB1549.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microchip.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: OZWZi5qTVbOu2g+lx4UTO/UCLWWeaRRFSdwn6gpC7fFPt8wTpB6jwDd0EOrnjm4VLdKhctDiTg6/7ZpezNZp6Mn78nhuNxyoTZhbNeTI5Val1mhFEOn0Jhf/hD4P5BrgnnQUcT6+UxVlIlwrl96IMkMM7C3yEkYiUXMsHRFb8rU3WocaEpVkKVO7MAjRzcJoxLiGFgUAg7KObR+m9JBhU5aeX5AGKEvNXQJrfpyYziD6igHJfZdd6TL3wB5V3y3FWVy0r4g92gs4tKfS2APbZlAl2H/Zk00eTqKczvCHz4SHkFsglNffVqJkCfVswVcty0tzqzdcowoC2cHLJmeUAtJc04cff+EMfpd9YxIZLttrvVa1qLs6vrKIxv3T7+0SppEshlteVTNHrJjaX8ii8o+L011By84QSsCMKCMvdUU=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09c60b7e-2d0d-4716-071b-08d6d2314f65
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 May 2019 14:44:15.2119
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB2047
+X-OriginatorOrg: microchip.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BUG: unable to handle kernel NULL pointer dereference at 0000000000000128
-PGD 0 P4D 0
-Oops: 0000 [#1
-CPU: 0 PID: 5697 Comm: modprobe Tainted: G        W         5.1.0-rc7+ #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.9.3-0-ge2fc41e-prebuilt.qemu-project.org 04/01/2014
-RIP: 0010:__lock_acquire+0x53/0x10b0
-Code: 8b 1c 25 40 5e 01 00 4c 8b 6d 10 45 85 e4 0f 84 bd 06 00 00 44 8b 1d 7c d2 09 02 49 89 fe 41 89 d2 45 85 db 0f 84 47 02 00 00 <48> 81 3f a0 05 70 83 b8 00 00 00 00 44 0f 44 c0 83 fe 01 0f 86 3a
-RSP: 0018:ffffc90001c07a28 EFLAGS: 00010002
-RAX: 0000000000000000 RBX: ffff88822f038440 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000128
-RBP: ffffc90001c07a88 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000001
-R13: 0000000000000000 R14: 0000000000000128 R15: 0000000000000000
-FS:  00007fead0811540(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000128 CR3: 00000002310da000 CR4: 00000000000006f0
-Call Trace:
- ? __lock_acquire+0x24e/0x10b0
- lock_acquire+0xdf/0x230
- ? flush_workqueue+0x71/0x530
- flush_workqueue+0x97/0x530
- ? flush_workqueue+0x71/0x530
- l2tp_exit_net+0x170/0x2b0 [l2tp_core
- ? l2tp_exit_net+0x93/0x2b0 [l2tp_core
- ops_exit_list.isra.6+0x36/0x60
- unregister_pernet_operations+0xb8/0x110
- unregister_pernet_device+0x25/0x40
- l2tp_init+0x55/0x1000 [l2tp_core
- ? 0xffffffffa018d000
- do_one_initcall+0x6c/0x3cc
- ? do_init_module+0x22/0x1f1
- ? rcu_read_lock_sched_held+0x97/0xb0
- ? kmem_cache_alloc_trace+0x325/0x3b0
- do_init_module+0x5b/0x1f1
- load_module+0x1db1/0x2690
- ? m_show+0x1d0/0x1d0
- __do_sys_finit_module+0xc5/0xd0
- __x64_sys_finit_module+0x15/0x20
- do_syscall_64+0x6b/0x1d0
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x7fead031a839
-Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 1f f6 2c 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffe8d9acca8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-RAX: ffffffffffffffda RBX: 0000560078398b80 RCX: 00007fead031a839
-RDX: 0000000000000000 RSI: 000056007659dc2e RDI: 0000000000000003
-RBP: 000056007659dc2e R08: 0000000000000000 R09: 0000560078398b80
-R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000000000
-R13: 00005600783a04a0 R14: 0000000000040000 R15: 0000560078398b80
-Modules linked in: l2tp_core(+) e1000 ip_tables ipv6 [last unloaded: l2tp_core
-CR2: 0000000000000128
----[ end trace 8322b2b8bf83f8e1
-
-If alloc_workqueue fails in l2tp_init, l2tp_net_ops
-is unregistered on failure path. Then l2tp_exit_net
-is called which will flush NULL workqueue, this patch
-add a NULL check to fix it.
-
-Fixes: 67e04c29ec0d ("l2tp: unregister l2tp_net_ops on failure path")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- net/l2tp/l2tp_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 52b5a27..e4dec03 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -1735,7 +1735,8 @@ static __net_exit void l2tp_exit_net(struct net *net)
- 	}
- 	rcu_read_unlock_bh();
- 
--	flush_workqueue(l2tp_wq);
-+	if (l2tp_wq)
-+		flush_workqueue(l2tp_wq);
- 	rcu_barrier();
- 
- 	for (hash = 0; hash < L2TP_HASH_SIZE_2; hash++)
--- 
-1.8.3.1
-
-
+RnJvbTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hpcC5jb20+DQoNClNB
+TUE1RDIgU29DIGhhcyBhIHN1c3BlbmQgbW9kZSB3aGVyZSBTb0MncyBwb3dlciBpcyBjdXQgb2Zm
+LiBEdWUgdG8gdGhpcw0KdGhlIHJlZ2lzdGVycyBjb250ZW50IGlzIGxvc3QgYWZ0ZXIgYSBzdXNw
+ZW5kL3Jlc3VtZSBjeWNsZS4gVGhlIGN1cnJlbnQNCnN1c3BlbmQvcmVzdW1lIGltcGxlbWVudGF0
+aW9uIGNvdmVycyBzb21lIG9mIHRoZXNlIHJlZ2lzdGVycy4gSG93ZXZlcg0KdGhlcmUgYXJlIGZl
+dyB3aGljaCB3ZXJlIG5vdCB0cmVhdGVkIChlLmcuIFNDUlQyIGFuZCBVU1JJTykuIEFwYXJ0DQpm
+cm9tIHRoaXMsIG5ldGRldiBmZWF0dXJlcyBhcmUgbm90IHJlc3RvcmVkLiBUcmVhdCB0aGVzZSBp
+c3N1ZXMuDQoNClNpZ25lZC1vZmYtYnk6IENsYXVkaXUgQmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBt
+aWNyb2NoaXAuY29tPg0KLS0tDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvY2FkZW5jZS9tYWNiLmgg
+ICAgICB8ICAgNyArKw0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWluLmMg
+fCAxMTEgKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLQ0KIDIgZmlsZXMgY2hhbmdlZCwg
+OTEgaW5zZXJ0aW9ucygrKSwgMjcgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJz
+L25ldC9ldGhlcm5ldC9jYWRlbmNlL21hY2IuaCBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVu
+Y2UvbWFjYi5oDQppbmRleCBhY2M2NmE3ZTdiOTUuLjAwZWU1ZThlMGZmMCAxMDA2NDQNCi0tLSBh
+L2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYi5oDQorKysgYi9kcml2ZXJzL25ldC9l
+dGhlcm5ldC9jYWRlbmNlL21hY2IuaA0KQEAgLTEwODAsNiArMTA4MCwxMSBAQCBzdHJ1Y3QgbWFj
+Yl9wdHBfaW5mbyB7DQogCQkJIHN0cnVjdCBpZnJlcSAqaWZyLCBpbnQgY21kKTsNCiB9Ow0KIA0K
+K3N0cnVjdCBtYWNiX3BtX2RhdGEgew0KKwl1MzIgc2NydDI7DQorCXUzMiB1c3JpbzsNCit9Ow0K
+Kw0KIHN0cnVjdCBtYWNiX2NvbmZpZyB7DQogCXUzMgkJCWNhcHM7DQogCXVuc2lnbmVkIGludAkJ
+ZG1hX2J1cnN0X2xlbmd0aDsNCkBAIC0xMjIwLDYgKzEyMjUsOCBAQCBzdHJ1Y3QgbWFjYiB7DQog
+CWludAl0eF9iZF9yZF9wcmVmZXRjaDsNCiANCiAJdTMyCXJ4X2ludHJfbWFzazsNCisNCisJc3Ry
+dWN0IG1hY2JfcG1fZGF0YSBwbV9kYXRhOw0KIH07DQogDQogI2lmZGVmIENPTkZJR19NQUNCX1VT
+RV9IV1NUQU1QDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2FkZW5jZS9tYWNi
+X21haW4uYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWluLmMNCmluZGV4
+IDVkNWM5ZDcwYjJiZS4uNWJkYjJiYTM1NTM5IDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvY2FkZW5jZS9tYWNiX21haW4uYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2Fk
+ZW5jZS9tYWNiX21haW4uYw0KQEAgLTI4NDksMTAgKzI4NDksMTQgQEAgc3RhdGljIGludCBtYWNi
+X2dldF90c19pbmZvKHN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYsDQogDQogc3RhdGljIHZvaWQg
+Z2VtX2VuYWJsZV9mbG93X2ZpbHRlcnMoc3RydWN0IG1hY2IgKmJwLCBib29sIGVuYWJsZSkNCiB7
+DQorCXN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYgPSBicC0+ZGV2Ow0KIAlzdHJ1Y3QgZXRodG9v
+bF9yeF9mc19pdGVtICppdGVtOw0KIAl1MzIgdDJfc2NyOw0KIAlpbnQgbnVtX3QyX3NjcjsNCiAN
+CisJaWYgKCEobmV0ZGV2LT5mZWF0dXJlcyAmIE5FVElGX0ZfTlRVUExFKSkNCisJCXJldHVybjsN
+CisNCiAJbnVtX3QyX3NjciA9IEdFTV9CRkVYVChUMlNDUiwgZ2VtX3JlYWRsKGJwLCBEQ0ZHOCkp
+Ow0KIA0KIAlsaXN0X2Zvcl9lYWNoX2VudHJ5KGl0ZW0sICZicC0+cnhfZnNfbGlzdC5saXN0LCBs
+aXN0KSB7DQpAQCAtMzAxMiw4ICszMDE2LDcgQEAgc3RhdGljIGludCBnZW1fYWRkX2Zsb3dfZmls
+dGVyKHN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYsDQogCWdlbV9wcm9nX2NtcF9yZWdzKGJwLCBm
+cyk7DQogCWJwLT5yeF9mc19saXN0LmNvdW50Kys7DQogCS8qIGVuYWJsZSBmaWx0ZXJpbmcgaWYg
+TlRVUExFIG9uICovDQotCWlmIChuZXRkZXYtPmZlYXR1cmVzICYgTkVUSUZfRl9OVFVQTEUpDQot
+CQlnZW1fZW5hYmxlX2Zsb3dfZmlsdGVycyhicCwgMSk7DQorCWdlbV9lbmFibGVfZmxvd19maWx0
+ZXJzKGJwLCAxKTsNCiANCiAJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmYnAtPnJ4X2ZzX2xvY2ss
+IGZsYWdzKTsNCiAJcmV0dXJuIDA7DQpAQCAtMzIwMSw2ICszMjA0LDUwIEBAIHN0YXRpYyBpbnQg
+bWFjYl9pb2N0bChzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LCBzdHJ1Y3QgaWZyZXEgKnJxLCBpbnQg
+Y21kKQ0KIAl9DQogfQ0KIA0KK3N0YXRpYyBpbmxpbmUgdm9pZCBtYWNiX3NldF90eGNzdW1fZmVh
+dHVyZShzdHJ1Y3QgbWFjYiAqYnAsDQorCQkJCQkgICBuZXRkZXZfZmVhdHVyZXNfdCBmZWF0dXJl
+cykNCit7DQorCXUzMiB2YWw7DQorDQorCWlmICghbWFjYl9pc19nZW0oYnApKQ0KKwkJcmV0dXJu
+Ow0KKw0KKwl2YWwgPSBnZW1fcmVhZGwoYnAsIERNQUNGRyk7DQorCWlmIChmZWF0dXJlcyAmIE5F
+VElGX0ZfSFdfQ1NVTSkNCisJCXZhbCB8PSBHRU1fQklUKFRYQ09FTik7DQorCWVsc2UNCisJCXZh
+bCAmPSB+R0VNX0JJVChUWENPRU4pOw0KKw0KKwlnZW1fd3JpdGVsKGJwLCBETUFDRkcsIHZhbCk7
+DQorfQ0KKw0KK3N0YXRpYyBpbmxpbmUgdm9pZCBtYWNiX3NldF9yeGNzdW1fZmVhdHVyZShzdHJ1
+Y3QgbWFjYiAqYnAsDQorCQkJCQkgICBuZXRkZXZfZmVhdHVyZXNfdCBmZWF0dXJlcykNCit7DQor
+CXN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYgPSBicC0+ZGV2Ow0KKwl1MzIgdmFsOw0KKw0KKwlp
+ZiAoIW1hY2JfaXNfZ2VtKGJwKSkNCisJCXJldHVybjsNCisNCisJdmFsID0gZ2VtX3JlYWRsKGJw
+LCBOQ0ZHUik7DQorCWlmICgoZmVhdHVyZXMgJiBORVRJRl9GX1JYQ1NVTSkgJiYgIShuZXRkZXYt
+PmZsYWdzICYgSUZGX1BST01JU0MpKQ0KKwkJdmFsIHw9IEdFTV9CSVQoUlhDT0VOKTsNCisJZWxz
+ZQ0KKwkJdmFsICY9IH5HRU1fQklUKFJYQ09FTik7DQorDQorCWdlbV93cml0ZWwoYnAsIE5DRkdS
+LCB2YWwpOw0KK30NCisNCitzdGF0aWMgaW5saW5lIHZvaWQgbWFjYl9zZXRfcnhmbG93X2ZlYXR1
+cmUoc3RydWN0IG1hY2IgKmJwLA0KKwkJCQkJICAgbmV0ZGV2X2ZlYXR1cmVzX3QgZmVhdHVyZXMp
+DQorew0KKwlpZiAoIW1hY2JfaXNfZ2VtKGJwKSkNCisJCXJldHVybjsNCisNCisJZ2VtX2VuYWJs
+ZV9mbG93X2ZpbHRlcnMoYnAsICEhKGZlYXR1cmVzICYgTkVUSUZfRl9OVFVQTEUpKTsNCit9DQor
+DQogc3RhdGljIGludCBtYWNiX3NldF9mZWF0dXJlcyhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0ZGV2
+LA0KIAkJCSAgICAgbmV0ZGV2X2ZlYXR1cmVzX3QgZmVhdHVyZXMpDQogew0KQEAgLTMyMDgsMzkg
+KzMyNTUsMzUgQEAgc3RhdGljIGludCBtYWNiX3NldF9mZWF0dXJlcyhzdHJ1Y3QgbmV0X2Rldmlj
+ZSAqbmV0ZGV2LA0KIAluZXRkZXZfZmVhdHVyZXNfdCBjaGFuZ2VkID0gZmVhdHVyZXMgXiBuZXRk
+ZXYtPmZlYXR1cmVzOw0KIA0KIAkvKiBUWCBjaGVja3N1bSBvZmZsb2FkICovDQotCWlmICgoY2hh
+bmdlZCAmIE5FVElGX0ZfSFdfQ1NVTSkgJiYgbWFjYl9pc19nZW0oYnApKSB7DQotCQl1MzIgZG1h
+Y2ZnOw0KLQ0KLQkJZG1hY2ZnID0gZ2VtX3JlYWRsKGJwLCBETUFDRkcpOw0KLQkJaWYgKGZlYXR1
+cmVzICYgTkVUSUZfRl9IV19DU1VNKQ0KLQkJCWRtYWNmZyB8PSBHRU1fQklUKFRYQ09FTik7DQot
+CQllbHNlDQotCQkJZG1hY2ZnICY9IH5HRU1fQklUKFRYQ09FTik7DQotCQlnZW1fd3JpdGVsKGJw
+LCBETUFDRkcsIGRtYWNmZyk7DQotCX0NCisJaWYgKGNoYW5nZWQgJiBORVRJRl9GX0hXX0NTVU0p
+DQorCQltYWNiX3NldF90eGNzdW1fZmVhdHVyZShicCwgZmVhdHVyZXMpOw0KIA0KIAkvKiBSWCBj
+aGVja3N1bSBvZmZsb2FkICovDQotCWlmICgoY2hhbmdlZCAmIE5FVElGX0ZfUlhDU1VNKSAmJiBt
+YWNiX2lzX2dlbShicCkpIHsNCi0JCXUzMiBuZXRjZmc7DQotDQotCQluZXRjZmcgPSBnZW1fcmVh
+ZGwoYnAsIE5DRkdSKTsNCi0JCWlmIChmZWF0dXJlcyAmIE5FVElGX0ZfUlhDU1VNICYmDQotCQkg
+ICAgIShuZXRkZXYtPmZsYWdzICYgSUZGX1BST01JU0MpKQ0KLQkJCW5ldGNmZyB8PSBHRU1fQklU
+KFJYQ09FTik7DQotCQllbHNlDQotCQkJbmV0Y2ZnICY9IH5HRU1fQklUKFJYQ09FTik7DQotCQln
+ZW1fd3JpdGVsKGJwLCBOQ0ZHUiwgbmV0Y2ZnKTsNCi0JfQ0KKwlpZiAoY2hhbmdlZCAmIE5FVElG
+X0ZfUlhDU1VNKQ0KKwkJbWFjYl9zZXRfcnhjc3VtX2ZlYXR1cmUoYnAsIGZlYXR1cmVzKTsNCiAN
+CiAJLyogUlggRmxvdyBGaWx0ZXJzICovDQotCWlmICgoY2hhbmdlZCAmIE5FVElGX0ZfTlRVUExF
+KSAmJiBtYWNiX2lzX2dlbShicCkpIHsNCi0JCWJvb2wgdHVybl9vbiA9IGZlYXR1cmVzICYgTkVU
+SUZfRl9OVFVQTEU7DQorCWlmIChjaGFuZ2VkICYgTkVUSUZfRl9OVFVQTEUpDQorCQltYWNiX3Nl
+dF9yeGZsb3dfZmVhdHVyZShicCwgZmVhdHVyZXMpOw0KIA0KLQkJZ2VtX2VuYWJsZV9mbG93X2Zp
+bHRlcnMoYnAsIHR1cm5fb24pOw0KLQl9DQogCXJldHVybiAwOw0KIH0NCiANCitzdGF0aWMgdm9p
+ZCBtYWNiX3Jlc3RvcmVfZmVhdHVyZXMoc3RydWN0IG1hY2IgKmJwKQ0KK3sNCisJc3RydWN0IG5l
+dF9kZXZpY2UgKm5ldGRldiA9IGJwLT5kZXY7DQorCW5ldGRldl9mZWF0dXJlc190IGZlYXR1cmVz
+ID0gbmV0ZGV2LT5mZWF0dXJlczsNCisNCisJLyogVFggY2hlY2tzdW0gb2ZmbG9hZCAqLw0KKwlt
+YWNiX3NldF90eGNzdW1fZmVhdHVyZShicCwgZmVhdHVyZXMpOw0KKw0KKwkvKiBSWCBjaGVja3N1
+bSBvZmZsb2FkICovDQorCW1hY2Jfc2V0X3J4Y3N1bV9mZWF0dXJlKGJwLCBmZWF0dXJlcyk7DQor
+DQorCS8qIFJYIEZsb3cgRmlsdGVycyAqLw0KKwltYWNiX3NldF9yeGZsb3dfZmVhdHVyZShicCwg
+ZmVhdHVyZXMpOw0KK30NCisNCiBzdGF0aWMgY29uc3Qgc3RydWN0IG5ldF9kZXZpY2Vfb3BzIG1h
+Y2JfbmV0ZGV2X29wcyA9IHsNCiAJLm5kb19vcGVuCQk9IG1hY2Jfb3BlbiwNCiAJLm5kb19zdG9w
+CQk9IG1hY2JfY2xvc2UsDQpAQCAtNDI3Myw2ICs0MzE2LDEyIEBAIHN0YXRpYyBpbnQgX19tYXli
+ZV91bnVzZWQgbWFjYl9zdXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikNCiAJCXNwaW5fbG9ja19p
+cnFzYXZlKCZicC0+bG9jaywgZmxhZ3MpOw0KIAkJbWFjYl9yZXNldF9odyhicCk7DQogCQlzcGlu
+X3VubG9ja19pcnFyZXN0b3JlKCZicC0+bG9jaywgZmxhZ3MpOw0KKw0KKwkJaWYgKCEoYnAtPmNh
+cHMgJiBNQUNCX0NBUFNfVVNSSU9fRElTQUJMRUQpKQ0KKwkJCWJwLT5wbV9kYXRhLnVzcmlvID0g
+bWFjYl9vcl9nZW1fcmVhZGwoYnAsIFVTUklPKTsNCisNCisJCWlmIChuZXRkZXYtPmh3X2ZlYXR1
+cmVzICYgTkVUSUZfRl9OVFVQTEUpDQorCQkJYnAtPnBtX2RhdGEuc2NydDIgPSBnZW1fcmVhZGxf
+bihicCwgRVRIVCwgU0NSVDJfRVRIVCk7DQogCX0NCiANCiAJbmV0aWZfY2Fycmllcl9vZmYobmV0
+ZGV2KTsNCkBAIC00MzAxLDYgKzQzNTAsMTMgQEAgc3RhdGljIGludCBfX21heWJlX3VudXNlZCBt
+YWNiX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXYpDQogCQlkaXNhYmxlX2lycV93YWtlKGJwLT5x
+dWV1ZXNbMF0uaXJxKTsNCiAJfSBlbHNlIHsNCiAJCW1hY2Jfd3JpdGVsKGJwLCBOQ1IsIE1BQ0Jf
+QklUKE1QRSkpOw0KKw0KKwkJaWYgKG5ldGRldi0+aHdfZmVhdHVyZXMgJiBORVRJRl9GX05UVVBM
+RSkNCisJCQlnZW1fd3JpdGVsX24oYnAsIEVUSFQsIFNDUlQyX0VUSFQsIGJwLT5wbV9kYXRhLnNj
+cnQyKTsNCisNCisJCWlmICghKGJwLT5jYXBzICYgTUFDQl9DQVBTX1VTUklPX0RJU0FCTEVEKSkN
+CisJCQltYWNiX29yX2dlbV93cml0ZWwoYnAsIFVTUklPLCBicC0+cG1fZGF0YS51c3Jpbyk7DQor
+DQogCQlmb3IgKHEgPSAwLCBxdWV1ZSA9IGJwLT5xdWV1ZXM7IHEgPCBicC0+bnVtX3F1ZXVlczsN
+CiAJCSAgICAgKytxLCArK3F1ZXVlKQ0KIAkJCW5hcGlfZW5hYmxlKCZxdWV1ZS0+bmFwaSk7DQpA
+QCAtNDMxMiw2ICs0MzY4LDcgQEAgc3RhdGljIGludCBfX21heWJlX3VudXNlZCBtYWNiX3Jlc3Vt
+ZShzdHJ1Y3QgZGV2aWNlICpkZXYpDQogCWJwLT5tYWNiZ2VtX29wcy5tb2dfaW5pdF9yaW5ncyhi
+cCk7DQogCW1hY2JfaW5pdF9odyhicCk7DQogCW1hY2Jfc2V0X3J4X21vZGUobmV0ZGV2KTsNCisJ
+bWFjYl9yZXN0b3JlX2ZlYXR1cmVzKGJwKTsNCiAJbmV0aWZfZGV2aWNlX2F0dGFjaChuZXRkZXYp
+Ow0KIAlpZiAoYnAtPnB0cF9pbmZvKQ0KIAkJYnAtPnB0cF9pbmZvLT5wdHBfaW5pdChuZXRkZXYp
+Ow0KLS0gDQoyLjcuNA0KDQo=
