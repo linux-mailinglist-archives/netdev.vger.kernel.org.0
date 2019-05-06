@@ -2,93 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F3E414FE8
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 353F515032
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726870AbfEFPSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 11:18:41 -0400
-Received: from smtp-out.xnet.cz ([178.217.244.18]:10696 "EHLO smtp-out.xnet.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725994AbfEFPSl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 May 2019 11:18:41 -0400
-Received: from meh.true.cz (meh.true.cz [108.61.167.218])
-        (Authenticated sender: petr@true.cz)
-        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 09BEF4862;
-        Mon,  6 May 2019 17:18:38 +0200 (CEST)
-Received: by meh.true.cz (OpenSMTPD) with ESMTP id 173092c3;
-        Mon, 6 May 2019 17:18:36 +0200 (CEST)
-From:   =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
-To:     Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Cc:     =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: usb: smsc: fix warning reported by kbuild test robot
-Date:   Mon,  6 May 2019 17:18:23 +0200
-Message-Id: <1557155903-29405-1-git-send-email-ynezz@true.cz>
-X-Mailer: git-send-email 1.9.1
+        id S1726768AbfEFP1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 11:27:33 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:45292 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726414AbfEFP1c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 May 2019 11:27:32 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 60A73F152B13A524385D;
+        Mon,  6 May 2019 23:27:30 +0800 (CST)
+Received: from localhost (10.177.31.96) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Mon, 6 May 2019
+ 23:27:22 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <andrew@lunn.ch>,
+        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] net: dsa: Fix error cleanup path in dsa_init_module
+Date:   Mon, 6 May 2019 23:25:29 +0800
+Message-ID: <20190506152529.6292-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.177.31.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes following warning reported by kbuild test robot:
+BUG: unable to handle kernel paging request at ffffffffa01c5430
+PGD 3270067 P4D 3270067 PUD 3271063 PMD 230bc5067 PTE 0
+Oops: 0000 [#1
+CPU: 0 PID: 6159 Comm: modprobe Not tainted 5.1.0+ #33
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.9.3-0-ge2fc41e-prebuilt.qemu-project.org 04/01/2014
+RIP: 0010:raw_notifier_chain_register+0x16/0x40
+Code: 63 f8 66 90 e9 5d ff ff ff 90 90 90 90 90 90 90 90 90 90 90 55 48 8b 07 48 89 e5 48 85 c0 74 1c 8b 56 10 3b 50 10 7e 07 eb 12 <39> 50 10 7c 0d 48 8d 78 08 48 8b 40 08 48 85 c0 75 ee 48 89 46 08
+RSP: 0018:ffffc90001c33c08 EFLAGS: 00010282
+RAX: ffffffffa01c5420 RBX: ffffffffa01db420 RCX: 4fcef45928070a8b
+RDX: 0000000000000000 RSI: ffffffffa01db420 RDI: ffffffffa01b0068
+RBP: ffffc90001c33c08 R08: 000000003e0a33d0 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000094443661 R12: ffff88822c320700
+R13: ffff88823109be80 R14: 0000000000000000 R15: ffffc90001c33e78
+FS:  00007fab8bd08540(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffa01c5430 CR3: 00000002297ea000 CR4: 00000000000006f0
+Call Trace:
+ register_netdevice_notifier+0x43/0x250
+ ? 0xffffffffa01e0000
+ dsa_slave_register_notifier+0x13/0x70 [dsa_core
+ ? 0xffffffffa01e0000
+ dsa_init_module+0x2e/0x1000 [dsa_core
+ do_one_initcall+0x6c/0x3cc
+ ? do_init_module+0x22/0x1f1
+ ? rcu_read_lock_sched_held+0x97/0xb0
+ ? kmem_cache_alloc_trace+0x325/0x3b0
+ do_init_module+0x5b/0x1f1
+ load_module+0x1db1/0x2690
+ ? m_show+0x1d0/0x1d0
+ __do_sys_finit_module+0xc5/0xd0
+ __x64_sys_finit_module+0x15/0x20
+ do_syscall_64+0x6b/0x1d0
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
- In function ‘memcpy’,
-     inlined from ‘smsc75xx_init_mac_address’ at drivers/net/usb/smsc75xx.c:778:3,
-     inlined from ‘smsc75xx_bind’ at drivers/net/usb/smsc75xx.c:1501:2:
- ./include/linux/string.h:355:9: warning: argument 2 null where non-null expected [-Wnonnull]
-   return __builtin_memcpy(p, q, size);
-          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
- drivers/net/usb/smsc75xx.c: In function ‘smsc75xx_bind’:
- ./include/linux/string.h:355:9: note: in a call to built-in function ‘__builtin_memcpy’
+Cleanup allocated resourses if there are errors,
+otherwise it will trgger memleak.
 
-I've replaced the offending memcpy with ether_addr_copy, because I'm
-100% sure, that of_get_mac_address can't return NULL as it returns valid
-pointer or ERR_PTR encoded value, nothing else.
-
-I'm hesitant to just change IS_ERR into IS_ERR_OR_NULL check, as this
-would make the warning disappear also, but it would be confusing to
-check for impossible return value just to make a compiler happy.
-
-Fixes: adfb3cb2c52e ("net: usb: support of_get_mac_address new ERR_PTR error")
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Petr Štetiar <ynezz@true.cz>
+Fixes: c9eb3e0f8701 ("net: dsa: Add support for learning FDB through notification")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/usb/smsc75xx.c | 2 +-
- drivers/net/usb/smsc95xx.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/dsa/dsa.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-index d27b627..e4c2f3a 100644
---- a/drivers/net/usb/smsc75xx.c
-+++ b/drivers/net/usb/smsc75xx.c
-@@ -775,7 +775,7 @@ static void smsc75xx_init_mac_address(struct usbnet *dev)
- 	/* maybe the boot loader passed the MAC address in devicetree */
- 	mac_addr = of_get_mac_address(dev->udev->dev.of_node);
- 	if (!IS_ERR(mac_addr)) {
--		memcpy(dev->net->dev_addr, mac_addr, ETH_ALEN);
-+		ether_addr_copy(dev->net->dev_addr, mac_addr);
- 		return;
- 	}
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index 36de4f2..cb080ef 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -344,15 +344,22 @@ static int __init dsa_init_module(void)
  
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index ab23911..a0e1199 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -918,7 +918,7 @@ static void smsc95xx_init_mac_address(struct usbnet *dev)
- 	/* maybe the boot loader passed the MAC address in devicetree */
- 	mac_addr = of_get_mac_address(dev->udev->dev.of_node);
- 	if (!IS_ERR(mac_addr)) {
--		memcpy(dev->net->dev_addr, mac_addr, ETH_ALEN);
-+		ether_addr_copy(dev->net->dev_addr, mac_addr);
- 		return;
- 	}
+ 	rc = dsa_slave_register_notifier();
+ 	if (rc)
+-		return rc;
++		goto register_notifier_fail;
+ 
+ 	rc = dsa_legacy_register();
+ 	if (rc)
+-		return rc;
++		goto legacy_register_fail;
+ 
+ 	dev_add_pack(&dsa_pack_type);
+ 
+ 	return 0;
++
++legacy_register_fail:
++	dsa_slave_unregister_notifier();
++register_notifier_fail:
++	destroy_workqueue(dsa_owq);
++
++	return rc;
+ }
+ module_init(dsa_init_module);
  
 -- 
-1.9.1
+1.8.3.1
+
 
