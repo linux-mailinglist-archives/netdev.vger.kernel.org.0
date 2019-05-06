@@ -2,103 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC9001509C
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:47:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF02A150B3
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 17:51:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727055AbfEFPr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 11:47:29 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:44666 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725994AbfEFPr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 11:47:29 -0400
-Received: by mail-qk1-f194.google.com with SMTP id w25so2045503qkj.11;
-        Mon, 06 May 2019 08:47:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=E/XjEjFJHTNXNUvCeIBTVGrT6CD0tFJQfkjcnYeMhDY=;
-        b=WFo86atePse5UmQK+FdjsQtdOQVjO6JrWLd1xYEi2IMozqnr1cQ3J6vuxd3K5gctkU
-         XsHuazRLDKDlGNx+rMgrPMRCPJ6oBDmOOlutFuDcLwMPw4scj7kpqzMv7cl6hg35vWEY
-         5Jo6jnIk5CH1m9lNzIXjTixLiTU77ECI7aUU/JbALWp0cMUgMEwkMgZ7hD3uN9i6ImhW
-         2a3f1jij5WKh6ZVyp1ZYKiNoBS3PgNo3b11OoMZftLmzMwIrn3ULeWrJwifkleo4h6d6
-         bKGMiQvOOvCNzRjOGOOP6O5nxYth83P/miVp9QGwck0+wEWuGrwwA1wlrLAfhekoHQTn
-         pYyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=E/XjEjFJHTNXNUvCeIBTVGrT6CD0tFJQfkjcnYeMhDY=;
-        b=NTNWAM4SS7AOFuCA0Kiu3c+b8LmjB+xLCrDGUkba+mYj5LDMBfA9GhBRQCuLy3TuH4
-         jCVgt7gjD7QS1cDdm2zmsoNUFzIK1LNgN8i1rZSzswEK4NWUCAb36sGYGmopXgtFSfO9
-         ikD6c4W9gVejNPrfKHGR1cCnCmHnmzHvlNeYOPEq7GOlL1YbZNvn2nMCV0+SUcXvG/6v
-         DSoFpBYZpRbj2hnlpCR9RhUVchEkDlZ8C1AfVIJsVSum89XBoYNFJRj+Wyq1N5AhIVyQ
-         EgFBVIC1YudFsjxGm/UQX2D94YjSwE+ViJtcROsW4RoH4DFR4rJBmBJ7/H2xYC+4RaTb
-         98Ug==
-X-Gm-Message-State: APjAAAWTFqphWOk4BKHRdouGRrmAfFyNou0+amEv8C1obHttu3S6c0Hj
-        nk5EMp6Mhyx+loATAA3xtXs=
-X-Google-Smtp-Source: APXvYqyGWKd+xSOSpvNfUpsvwC4L227cvwkKiLHI1zuDfWsdmprNrmz8KfFvHgA6pkY4TuPO96A4Rg==
-X-Received: by 2002:a37:de16:: with SMTP id h22mr19541559qkj.306.1557157647429;
-        Mon, 06 May 2019 08:47:27 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:500::3:34f3])
-        by smtp.gmail.com with ESMTPSA id i23sm8328331qtc.18.2019.05.06.08.47.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 May 2019 08:47:26 -0700 (PDT)
-Date:   Mon, 6 May 2019 08:47:25 -0700
-From:   Tejun Heo <tj@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        Jens Axboe <axboe@kernel.dk>, Li Zefan <lizefan@huawei.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>, linux-block@vger.kernel.org,
-        cgroups@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v2 08/79] docs: cgroup-v1: convert docs to ReST and
- rename to *.rst
-Message-ID: <20190506154725.GS374014@devbig004.ftw2.facebook.com>
-References: <cover.1555938375.git.mchehab+samsung@kernel.org>
- <c6e79690c038fc6bbf9265a065c1f861d6e156fa.1555938375.git.mchehab+samsung@kernel.org>
+        id S1727065AbfEFPvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 11:51:13 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7174 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726357AbfEFPvN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 May 2019 11:51:13 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 321F46582DD6F97E3708;
+        Mon,  6 May 2019 23:51:11 +0800 (CST)
+Received: from [127.0.0.1] (10.184.225.177) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Mon, 6 May 2019
+ 23:51:02 +0800
+Subject: Re: [PATCH iproute2 v3] ipnetns: use-after-free problem in
+ get_netnsid_from_name func
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     <liuhangbin@gmail.com>, <kuznet@ms2.inr.ac.ru>,
+        <nicolas.dichtel@6wind.com>, <phil@nwl.cc>,
+        "wangxiaogang (F)" <wangxiaogang3@huawei.com>,
+        Mingfangsen <mingfangsen@huawei.com>,
+        "Zhoukang (A)" <zhoukang7@huawei.com>, <kouhuiying@huawei.com>,
+        <netdev@vger.kernel.org>
+References: <f6c76a60-d5c4-700f-2fbf-912fc1545a31@huawei.com>
+ <815afacc-4cd2-61b4-2181-aabce6582309@huawei.com>
+ <1fca256d-fbce-4da9-471f-14573be4ea21@huawei.com>
+ <20190506084230.196fee67@hermes.lan>
+From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Message-ID: <03039f80-3abe-00ef-5174-f5c358fb6190@huawei.com>
+Date:   Mon, 6 May 2019 23:50:24 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c6e79690c038fc6bbf9265a065c1f861d6e156fa.1555938375.git.mchehab+samsung@kernel.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20190506084230.196fee67@hermes.lan>
+Content-Type: text/plain; charset="gbk"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.225.177]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 22, 2019 at 10:26:57AM -0300, Mauro Carvalho Chehab wrote:
-> Convert the cgroup-v1 files to ReST format, in order to
-> allow a later addition to the admin-guide.
+> On Sat, 4 May 2019 15:26:25 +0800
+> Zhiqiang Liu <liuzhiqiang26@huawei.com> wrote:
 > 
-> The conversion is actually:
->   - add blank lines and identation in order to identify paragraphs;
->   - fix tables markups;
->   - add some lists markups;
->   - mark literal blocks;
->   - adjust title markups.
+>> From: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+>>
+>> Follow the following steps:
+>> # ip netns add net1
+>> # export MALLOC_MMAP_THRESHOLD_=0
+>> # ip netns list
+>> then Segmentation fault (core dumped) will occur.
+>>
+>> In get_netnsid_from_name func, answer is freed before rta_getattr_u32(tb[NETNSA_NSID]),
+>> where tb[] refers to answer`s content. If we set MALLOC_MMAP_THRESHOLD_=0, mmap will
+>> be adoped to malloc memory, which will be freed immediately after calling free func.
+>> So reading tb[NETNSA_NSID] will access the released memory after free(answer).
+>>
+>> Here, we will call get_netnsid_from_name(tb[NETNSA_NSID]) before free(answer).
+>>
+>> Fixes: 86bf43c7c2f ("lib/libnetlink: update rtnl_talk to support malloc buff at run time")
+>> Reported-by: Huiying Kou <kouhuiying@huawei.com>
+>> Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+>> Acked-by: Phil Sutter <phil@nwl.cc>
 > 
-> At its new index.rst, let's add a :orphan: while this is not linked to
-> the main index.rst file, in order to avoid build warnings.
+> Applied. You can get better and more detailed checks by running with
+> valgrind. Which is what I did after applying your patch.
+
+Thank you for your advice. I will learn how to use valgrind, and use it to
+obtain more detailed checks.
+
 > 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> .
+> 
 
-Acked-by: Tejun Heo <tj@kernel.org>
-
-Please feel free to route with other patches in the series.
-
-Thanks.
-
--- 
-tejun
