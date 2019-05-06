@@ -2,123 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 848AD153AC
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 20:31:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A96E153BE
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 20:35:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727065AbfEFSbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 14:31:37 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:37800 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727023AbfEFSbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 14:31:35 -0400
-Received: by mail-pg1-f194.google.com with SMTP id e6so6879856pgc.4
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 11:31:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FstzZCVNUourlCPKszpn9bb32SRAhjzysdw+vvrIXh4=;
-        b=pR/MhP0a8C/4rn7h7f6KtuHjujH8POlivDuB+aDU36Q/jBPgBiGAw25b/1zZc0eej7
-         7Ajb5YGFegbSah/Cp8WVamV5HEN4l9ncLTSHyHyMBunw5IWSkTQQO0kqrbQkws1H3O8c
-         laukCErcKX4QcuBnE+nI1FvS2ri9wE2SScG78=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FstzZCVNUourlCPKszpn9bb32SRAhjzysdw+vvrIXh4=;
-        b=YuIapl80QVYYJBRHm1lwI34udrf/CpY7FIeoQhuKcS03PMANtH6edWfbGVtdVegcnK
-         cFAXn+U/QN0sT1VUKd23M43Cn3mxtk8pHmCjI2wZLUbYItBoEfm0QGJS0YaZJUPISzYZ
-         P9OjcNQI0nBjk/5uhjiFGX4GSDXjDVGKAghBLRZE6rIQl0XqhN1Q5QAtelfrZxOjn6Hj
-         7xWnJYLBrp5nBP/Yh+3JzuifChy6UojWSrMRjc0xdV1i/+h7f3lL1Otbkc0NEu/u+lLT
-         Kjs/LyOjBigSNXLeRpPG/LYR4z4WuSF84CPEhV2X6md82LcxZVJSBaQXnODtVC1FAf8B
-         H+gA==
-X-Gm-Message-State: APjAAAXlNPQXZASGXl3yX4otDxcKSHDZBPVxKOG0bSIhiYOicTYtGTor
-        SotfpMphMNWCp2pzIJ17JapulQ==
-X-Google-Smtp-Source: APXvYqxk6tRHGmBNl5Y4dp6RElXceV2g0n+bZh4+P9RLG8k4yfZ4SvrflzQxvSoywiXAsYl8f2R6Lg==
-X-Received: by 2002:a62:4697:: with SMTP id o23mr35488531pfi.224.1557167494792;
-        Mon, 06 May 2019 11:31:34 -0700 (PDT)
-Received: from joelaf.cam.corp.google.com ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id h30sm21412414pgi.38.2019.05.06.11.31.31
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 06 May 2019 11:31:33 -0700 (PDT)
-From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
-        Adrian Ratiu <adrian.ratiu@collabora.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf@vger.kernel.org, Brendan Gregg <brendan.d.gregg@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        duyuchao <yuchao.du@unisoc.com>, Ingo Molnar <mingo@redhat.com>,
-        Karim Yaghmour <karim.yaghmour@opersys.com>,
-        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
-        Manjo Raja Rao <linux@manojrajarao.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
+        id S1726503AbfEFSfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 14:35:16 -0400
+Received: from usa-sjc-mx-foss1.foss.arm.com ([217.140.101.70]:59244 "EHLO
+        foss.arm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726218AbfEFSfP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 May 2019 14:35:15 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EC17CA78;
+        Mon,  6 May 2019 11:35:14 -0700 (PDT)
+Received: from brain-police (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C0C843F5AF;
+        Mon,  6 May 2019 11:35:09 -0700 (PDT)
+Date:   Mon, 6 May 2019 19:35:06 +0100
+From:   Will Deacon <will.deacon@arm.com>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org,
         Michal Gregorczyk <michalgr@live.com>,
-        Mohammad Husain <russoue@gmail.com>, netdev@vger.kernel.org,
-        Peter Ziljstra <peterz@infradead.org>,
-        Qais Yousef <qais.yousef@arm.com>,
-        Song Liu <songliubraving@fb.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
         Srinivas Ramana <sramana@codeaurora.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
         Tamir Carmeli <carmeli.tamir@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: [PATCH v2 4/4] tools: Sync uapi headers with new bpf function calls
-Date:   Mon,  6 May 2019 14:31:16 -0400
-Message-Id: <20190506183116.33014-4-joel@joelfernandes.org>
-X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
-In-Reply-To: <20190506183116.33014-1-joel@joelfernandes.org>
-References: <20190506183116.33014-1-joel@joelfernandes.org>
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
+Message-ID: <20190506183506.GD2875@brain-police>
+References: <20190502204958.7868-1-joel@joelfernandes.org>
+ <20190503121234.6don256zuvfjtdg6@e107158-lin.cambridge.arm.com>
+ <20190503134935.GA253329@google.com>
+ <20190505110423.u7g3f2viovvgzbtn@e107158-lin.cambridge.arm.com>
+ <20190505132949.GB3076@localhost>
+ <20190505144608.u3vsxyz5huveuskx@e107158-lin.cambridge.arm.com>
+ <20190505155223.GA4976@localhost>
+ <20190505180313.GA80924@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190505180313.GA80924@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The uapi in tools/ needs an update after support for new bpf function
-calls were added. This commit does the same.
+Hi Joel,
 
-Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
----
- tools/include/uapi/linux/bpf.h | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+On Sun, May 05, 2019 at 02:03:13PM -0400, Joel Fernandes wrote:
+> +Mark, Will since discussion is about arm64 arch code.
+> 
+> The difference between observing the bug and everything just working seems to
+> be the set_fs(USER_DS) as done by Masami's patch that this patch is based on.
+> The following diff shows 'ret' as 255 when set_fs(KERN_DS) is used, and then
+> after we retry with set_fs(USER_DS), the read succeeds.
+> 
+> diff --git a/mm/maccess.c b/mm/maccess.c
+> index 78f9274dd49d..d3e01a33c712 100644
+> --- a/mm/maccess.c
+> +++ b/mm/maccess.c
+> @@ -32,9 +32,20 @@ long __probe_kernel_read(void *dst, const void *src, size_t size)
+>  	pagefault_disable();
+>  	ret = __copy_from_user_inatomic(dst,
+>  			(__force const void __user *)src, size);
+> +	trace_printk("KERNEL_DS: __copy_from_user_inatomic: ret=%d\n", ret);
+>  	pagefault_enable();
+>  	set_fs(old_fs);
+>  
+> +	if (ret) {
+> +	set_fs(USER_DS);
+> +	pagefault_disable();
+> +	ret = __copy_from_user_inatomic(dst,
+> +			(__force const void __user *)src, size);
+> +	trace_printk("RETRY WITH USER_DS: __copy_from_user_inatomic: ret=%d\n", ret);
+> +	pagefault_enable();
+> +	set_fs(old_fs);
+> +	}
+> +
+>  	return ret ? -EFAULT : 0;
+>  }
+>  EXPORT_SYMBOL_GPL(probe_kernel_read);
+> 
+> In initially thought this was because of the addr_limit pointer masking done
+> by this patch from Mark Rutland "arm64: Use pointer masking to limit uaccess
+> speculation"
+> 
+> However removing this masking still makes it fail with KERNEL_DS.
+> 
+> Fwiw, I am still curious which other paths in arm64 check the addr_limit
+> which might make the __copy_from_user_inatomic fail if the set_fs is not
+> setup correctly.
+> 
+> Either way, I will resubmit the patch with the commit message fixed correctly
+> as we agreed and also address Alexei's comments.
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 929c8e537a14..05af4e1151d3 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2431,6 +2431,18 @@ union bpf_attr {
-  *	Return
-  *		A **struct bpf_sock** pointer on success, or **NULL** in
-  *		case of failure.
-+ *
-+ * int bpf_probe_read_user(void *dst, int size, void *src)
-+ *     Description
-+ *             Read a userspace pointer safely.
-+ *     Return
-+ *             0 on success or negative error
-+ *
-+ * int bpf_probe_read_kernel(void *dst, int size, void *src)
-+ *     Description
-+ *             Read a kernel pointer safely.
-+ *     Return
-+ *             0 on success or negative error
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2531,7 +2543,9 @@ union bpf_attr {
- 	FN(sk_fullsock),		\
- 	FN(tcp_sock),			\
- 	FN(skb_ecn_set_ce),		\
--	FN(get_listener_sock),
-+	FN(get_listener_sock),		\
-+	FN(probe_read_user),		\
-+	FN(probe_read_kernel),
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
--- 
-2.21.0.1020.gf2820cf01a-goog
+I'm coming at this with no background, so it's tricky to understand exactly
+what's going on here. Some questions:
 
+  * Are you seeing a failure with mainline and/or an official stable kernel?
+  * What is the failing CPU? (so we can figure out which architectural
+    extensions are implemented)
+  * Do you have a .config anywhere? Particular, how are ARM64_PAN,
+    ARM64_TTBR0_PAN and ARM64_UAO set?
+  * Is the address being accessed a user or a kernel address?
+
+If you're trying to dereference a pointer to userspace using
+probe_kernel_read(), that clearly isn't going to work.
+
+Will
