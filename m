@@ -2,77 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2103A152D2
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 19:34:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3EB61530D
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 19:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726767AbfEFRel (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 13:34:41 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:44121 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726282AbfEFRel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 13:34:41 -0400
-Received: by mail-pl1-f193.google.com with SMTP id d3so2693504plj.11;
-        Mon, 06 May 2019 10:34:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YtGgQTFrjUq15UlrAoYcNo+HOJDXzqrzDoFc3h7pRGk=;
-        b=ZAWOFPuKDlkjRAuEb/dJdftNQKx0V9IcOP8S0NUi1lKR4+wpJ0pt7ED5mDfreV5hE1
-         tJ5cVfCT409UGQBESXQYkqZuPZYVKmZbG1mU2jqrgW7Tf1E5BOWIOq6ZUNHn1axkYRtf
-         L8FqfoYBWl/SS/E5JRZThbLsy1noid1XKzXb81cXhpX/MJSPNIHfXTioWFjgAK9XPbzE
-         1U3wAOdeN6j/xZX7/tNG026Kxkju026TqpQag7wRIO3t+N0zKW0wesEzH0B6UtZEpcuK
-         5fUrSypMnfIcz9bXv4LE6gNGPxeFepptDHkM6B7wV+pQAdLdwsklWXcX8MiCT7JSkb3e
-         GtXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YtGgQTFrjUq15UlrAoYcNo+HOJDXzqrzDoFc3h7pRGk=;
-        b=TBjmbtRE5uK2heWi5nu/ys64FBTY1/HZSauRnXWJL9ARNTGPO988uy2xp65jbkAVAU
-         zaoAemymDoJ33Diwy7kcgEShrcmbXdl2tJS8lS0Y7qe9iyJ9aRu5mh9+R3AR21x/ngF4
-         2iqgS/JubLj9RF1iT2fWmc8QxdO4waV2IhcLmOFoeZDjTWikfwu3Hz6BLEUbIUPlFc2q
-         MUFrx14gbh/EAGZpKIHUkDigV/RjUhsfw8cPO9K6e83PImZVRYIG8OBTFA/pwz0a9swP
-         A3t3+czZWSh83PELQRjQX2V4vNysI6qWoxlulOastnZxmhoymtIRW1SqgZzJn/6bVMo/
-         a21A==
-X-Gm-Message-State: APjAAAWK/holmRROSawiiCl7obz0rN3Ud3OXPR3nIZSYhA5ivt5T2O4m
-        zzR89oqCUrHrebezK6QWukUV6e7ILcVKaWwsnRHCRqc9
-X-Google-Smtp-Source: APXvYqzo8JEaPsCeNsXQ0JBGS4xPvJn5avMCXX4yO0yUY2oI8aPUWz6F7xiWVbje9DN/esQJWNfb/AAHnmuydi59kug=
-X-Received: by 2002:a17:902:9b83:: with SMTP id y3mr33755491plp.165.1557164080340;
- Mon, 06 May 2019 10:34:40 -0700 (PDT)
+        id S1726536AbfEFRss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 13:48:48 -0400
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:51119 "EHLO
+        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbfEFRss (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 13:48:48 -0400
+Received: by atrey.karlin.mff.cuni.cz (Postfix, from userid 512)
+        id 3E6AD80179; Mon,  6 May 2019 19:48:35 +0200 (CEST)
+Date:   Mon, 6 May 2019 19:48:46 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     wen.yang99@zte.com.cn
+Cc:     pavel@denx.de, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        anirudh@xilinx.com, John.Linn@xilinx.com, davem@davemloft.net,
+        michal.simek@xilinx.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, sashal@kernel.org
+Subject: Re: [PATCH 4.19 46/72] net: xilinx: fix possible object referenceleak
+Message-ID: <20190506174846.GA13326@amd>
+References: <20190503100816.GD5834@amd>
+ <201905051417486865228@zte.com.cn>
 MIME-Version: 1.0
-References: <20190505215019.4639-1-colin.king@canonical.com>
-In-Reply-To: <20190505215019.4639-1-colin.king@canonical.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 6 May 2019 10:34:28 -0700
-Message-ID: <CAM_iQpWZUjJS31cmW81C34DTfy1SV6ajBxFyo-yAmGppksKrHA@mail.gmail.com>
-Subject: Re: [PATCH][next] taprio: add null check on sched_nest to avoid
- potential null pointer dereference
-To:     Colin King <colin.king@canonical.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="VS++wcV0S1rZb1Fb"
+Content-Disposition: inline
+In-Reply-To: <201905051417486865228@zte.com.cn>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 5, 2019 at 2:50 PM Colin King <colin.king@canonical.com> wrote:
->
-> From: Colin Ian King <colin.king@canonical.com>
->
-> The call to nla_nest_start_noflag can return a null pointer and currently
-> this is not being checked and this can lead to a null pointer dereference
-> when the null pointer sched_nest is passed to function nla_nest_end. Fix
-> this by adding in a null pointer check.
->
-> Addresses-Coverity: ("Dereference null return value")
-> Fixes: a3d43c0d56f1 ("taprio: Add support adding an admin schedule")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+--VS++wcV0S1rZb1Fb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks.
+Hi!
+> > > [ Upstream commit fa3a419d2f674b431d38748cb58fb7da17ee8949 ]
+> > >
+> > > The call to of_parse_phandle returns a node pointer with refcount
+> > > incremented thus it must be explicitly decremented after the last
+> > > usage.
+> > >
+> > > Detected by coccinelle with the following warnings:
+> > > ./drivers/net/ethernet/xilinx/xilinx_axienet_main.c:1624:1-7: ERROR: =
+missing of_node_put; acquired a node pointer with refcount incremented on l=
+ine 1569, but without a corresponding object release within this function.
+> >=20
+> > Bug is real, but fix is horrible. This already uses gotos for error
+> > handling, so use them....
+> >=20
+> > This fixes it up.
+> >=20
+> > Plus... I do not think these "of_node_put" fixes belong in
+> > stable. They are theoretical bugs; so we hold reference to device tree
+> > structure. a) it is small, b) it stays in memory, anyway. This does
+> > not fix any real problem.
+> >=20
+>=20
+> Thank you very much for your comments.
+> We developed the following coccinelle SmPL to look for places where
+> there is an of_node_put on some path but not on others.
+
+I agree that the fix is good. Thanks for doing coccinelle work.
+
+> We use it to detect drivers/net/ethernet/xilinx/xilinx_axienet_main.c and=
+ found the following issue:
+>=20
+> static int axienet_probe(struct platform_device *pdev)
+> {
+> ...
+>         struct device_node *np;
+> ...
+>         if (ret) {
+>                 dev_err(&pdev->dev, "unable to get DMA resource\n");
+>                 goto free_netdev;  ---> leaked here
+>         }
+> ...
+>         if (IS_ERR(lp->dma_regs)) {
+>                 dev_err(&pdev->dev, "could not map DMA regs\n");
+>                 ret =3D PTR_ERR(lp->dma_regs);
+>                 goto free_netdev; ---> leaked here
+>         }
+> ...
+>          of_node_put(np);   --->    released here
+> ...
+> free_netdev:
+>         free_netdev(ndev);
+>=20
+>         return ret;
+> }
+>=20
+> If we insmod/rmmod xilinx_emaclite.ko multiple times,=20
+> axienet_probe() may be called multiple times, then a resource leak
+> may occur.
+
+Yeah, well. I agree the bug is real. But how much memory will it leak
+during each insmod? Kilobyte? (Is it actually anything at all? I'd
+expect just reference counter to be increaed.) How often do you
+usually insmod?
+
+> At the same time, we also checked the code for handling resource leaks in=
+ the current kernel
+> and found that the regular of_node_put mode is commonly used in
+> addition to the goto target mode.
+
+Ok, so this uglyness happens elsewhere. But I'd really prefer to use
+goto if it is already used in the function.
+
+Thanks,
+
+								Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--VS++wcV0S1rZb1Fb
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlzQc34ACgkQMOfwapXb+vKjLQCfR30gJwbflpVIZMeXq9XtoP1X
+bpMAn0gYdpIGkf2vx98ZqTyzLuMecomn
+=Ekqr
+-----END PGP SIGNATURE-----
+
+--VS++wcV0S1rZb1Fb--
