@@ -2,127 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCBBA148A4
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 12:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BADE5148C9
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 13:16:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726085AbfEFK6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 06:58:53 -0400
-Received: from mga07.intel.com ([134.134.136.100]:9295 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725852AbfEFK6x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 May 2019 06:58:53 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 May 2019 03:58:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,437,1549958400"; 
-   d="scan'208";a="155485080"
-Received: from btopel-mobl.isw.intel.com (HELO btopel-mobl.ger.intel.com) ([10.103.209.137])
-  by FMSMGA003.fm.intel.com with ESMTP; 06 May 2019 03:58:50 -0700
-Subject: Re: [PATCH bpf-next 1/2] xsk: remove AF_XDP socket from map when the
- socket is released
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, netdev@vger.kernel.org
-Cc:     magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        bpf@vger.kernel.org, Bruce Richardson <bruce.richardson@intel.com>
-References: <20190504160603.10173-1-bjorn.topel@gmail.com>
- <20190504160603.10173-2-bjorn.topel@gmail.com>
- <89542aec-4fb5-5322-624f-99731a834b8b@iogearbox.net>
- <033c455c-0f76-178e-3df0-97c0dc540f30@iogearbox.net>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <a45b0353-8878-f86f-7d85-2e38c8b8f99e@intel.com>
-Date:   Mon, 6 May 2019 12:58:49 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1725886AbfEFLQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 07:16:26 -0400
+Received: from mail-it1-f200.google.com ([209.85.166.200]:38172 "EHLO
+        mail-it1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726415AbfEFLQH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 07:16:07 -0400
+Received: by mail-it1-f200.google.com with SMTP id r198so11254831itb.3
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 04:16:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=wfo46abTbmuRXvxeTUG8sMq7sgvtISG77eUoUAEQFR8=;
+        b=krNx/SDjIf2avW4BEysGnUeWAVDJprSy7w4wNEq3SFj/+D8vesffKtcF1HdFtAxRxE
+         YAnVzyhk7Ls3hb83MmJbAL424FCkqVk5wCJg0wt/9+5ZgwBugm5Dk3P7dVNT+EZpmNFJ
+         0bO1L4X2IitDM0zZ0s1vdDrjMI6pPwWDrkpqF5WMWLc9GbDAbqy3dzyA8TiwoS4i70D+
+         6ZhrIZUfyq7rkQRU+4BVvarTuDNbpx0ga6ElAXyCwX2ooYQPn6rVD2fnTMXaOw7ea/O7
+         3TrlBL6uxdIyCxYdfFVl4GC/bFOzJPJPusOZ8eAKKF3E8GPkXaxL15cEBo9dzjQU6kAk
+         axOg==
+X-Gm-Message-State: APjAAAVz01rsN5fF7RS+zMf0PfHSDYdcg4gynqtBMulHMN4aEJqxa6K+
+        0E2ZekJz6DXlGKS1BGlZWMZJi5/0Y1AhFo2gSHMPUHZzvsGo
+X-Google-Smtp-Source: APXvYqzztlzlI6lMg9dhbdBE2nMsatxOpEwiQJkKfQh2hgdzj0WiGZDn2eO24DJhUe9O8pBYwusHdq0rIw///dxTCUPu68EKeRG3
 MIME-Version: 1.0
-In-Reply-To: <033c455c-0f76-178e-3df0-97c0dc540f30@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:3ac3:: with SMTP id h186mr12861180ioa.63.1557141366572;
+ Mon, 06 May 2019 04:16:06 -0700 (PDT)
+Date:   Mon, 06 May 2019 04:16:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000050c5f0588363ad6@google.com>
+Subject: KASAN: use-after-free Read in p54u_load_firmware_cb
+From:   syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, chunkeey@googlemail.com,
+        davem@davemloft.net, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-06 12:07, Daniel Borkmann wrote:
-> On 05/06/2019 12:04 PM, Daniel Borkmann wrote:
->> On 05/04/2019 06:06 PM, Björn Töpel wrote:
->>> From: Björn Töpel <bjorn.topel@intel.com>
->>>
->>> When an AF_XDP socket is released/closed the XSKMAP still holds a
->>> reference to the socket in a "released" state. The socket will still
->>> use the netdev queue resource, and block newly created sockets from
->>> attaching to that queue, but no user application can access the
->>> fill/complete/rx/tx rings. This results in that all applications need
->>> to explicitly clear the map entry from the old "zombie state"
->>> socket. This should be done automatically.
->>>
->>> After this patch, when a socket is released, it will remove itself
->>> from all the XSKMAPs it resides in, allowing the socket application to
->>> remove the code that cleans the XSKMAP entry.
->>>
->>> This behavior is also closer to that of SOCKMAP, making the two socket
->>> maps more consistent.
->>>
->>> Reported-by: Bruce Richardson <bruce.richardson@intel.com>
->>> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
->> [...]
->>
->>
->>> +static void __xsk_map_delete_elem(struct xsk_map *map,
->>> +				  struct xdp_sock **map_entry)
->>> +{
->>> +	struct xdp_sock *old_xs;
->>> +
->>> +	spin_lock_bh(&map->lock);
->>> +	old_xs = xchg(map_entry, NULL);
->>> +	if (old_xs)
->>> +		xsk_map_del_node(old_xs, map_entry);
->>> +	spin_unlock_bh(&map->lock);
->>> +
->>> +}
->>> +
->>>   static void xsk_map_free(struct bpf_map *map)
->>>   {
->>>   	struct xsk_map *m = container_of(map, struct xsk_map, map);
->>> @@ -78,15 +142,16 @@ static void xsk_map_free(struct bpf_map *map)
->>>   	bpf_clear_redirect_map(map);
->>>   	synchronize_net();
->>>   
->>> +	spin_lock_bh(&m->lock);
->>>   	for (i = 0; i < map->max_entries; i++) {
->>> +		struct xdp_sock **entry = &m->xsk_map[i];
->>>   		struct xdp_sock *xs;
->>>   
->>> -		xs = m->xsk_map[i];
->>> -		if (!xs)
->>> -			continue;
->>> -
->>> -		sock_put((struct sock *)xs);
->>> +		xs = xchg(entry, NULL);
->>> +		if (xs)
->>> +			__xsk_map_delete_elem(m, entry);
->>>   	}
->>> +	spin_unlock_bh(&m->lock);
->>>   
->>
->> Was this tested? Doesn't the above straight run into a deadlock?
->>
->>  From xsk_map_free() you iterate over the map with m->lock held. Once you
->> xchg'ed the entry and call into __xsk_map_delete_elem(), you attempt to
->> call map->lock on the same map once again. What am I missing?
-> 
-> (It also does the xchg() twice so we'd leak the xs since it's NULL in the
->   second one.)
-> 
+Hello,
 
-No, you're not missing anything. Just plain old sloppiness from my side.
-Apologies for the wasted time.
+syzbot found the following crash on:
+
+HEAD commit:    43151d6c usb-fuzzer: main usb gadget fuzzer driver
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=142b312ca00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4183eeef650d1234
+dashboard link: https://syzkaller.appspot.com/bug?extid=200d4bb11b23d929335f
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com
+
+usb 4-1: Direct firmware load for isl3887usb failed with error -2
+usb 4-1: Firmware not found.
+==================================================================
+BUG: KASAN: use-after-free in p54u_load_firmware_cb.cold+0x97/0x13a  
+drivers/net/wireless/intersil/p54/p54usb.c:936
+Read of size 8 at addr ffff888098bf3588 by task kworker/0:1/12
+
+CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.1.0-rc3-319004-g43151d6 #6
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: events request_firmware_work_func
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0xe8/0x16e lib/dump_stack.c:113
+  print_address_description+0x6c/0x236 mm/kasan/report.c:187
+  kasan_report.cold+0x1a/0x3c mm/kasan/report.c:317
+  p54u_load_firmware_cb.cold+0x97/0x13a  
+drivers/net/wireless/intersil/p54/p54usb.c:936
+  request_firmware_work_func+0x12d/0x249  
+drivers/base/firmware_loader/main.c:785
+  process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
+  worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
+  kthread+0x313/0x420 kernel/kthread.c:253
+  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+
+The buggy address belongs to the page:
+page:ffffea000262fcc0 count:0 mapcount:0 mapping:0000000000000000 index:0x0
+flags: 0xfff00000000000()
+raw: 00fff00000000000 0000000000000000 ffffffff02620101 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff888098bf3480: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+  ffff888098bf3500: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+> ffff888098bf3580: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                       ^
+  ffff888098bf3600: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+  ffff888098bf3680: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
 
 
-Björn
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
->> Thanks,
->> Daniel
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
