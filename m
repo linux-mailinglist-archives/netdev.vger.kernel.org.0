@@ -2,37 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4931C143AC
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 04:59:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A38BD143CF
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 05:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725846AbfEFC7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 May 2019 22:59:20 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:58660 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725786AbfEFC7U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 22:59:20 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id EA5A614DE3840
-        for <netdev@vger.kernel.org>; Sun,  5 May 2019 19:59:19 -0700 (PDT)
-Date:   Sun, 05 May 2019 19:59:17 -0700 (PDT)
-Message-Id: <20190505.195917.1729028564899664257.davem@davemloft.net>
+        id S1725846AbfEFDpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 May 2019 23:45:45 -0400
+Received: from smtp-gateway2-static103.gmoserver.jp ([163.44.89.103]:10359
+        "EHLO mailgateway.gmoserver.jp" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725813AbfEFDpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 May 2019 23:45:45 -0400
+X-Greylist: delayed 500 seconds by postgrey-1.27 at vger.kernel.org; Sun, 05 May 2019 23:45:43 EDT
+Received: from smtp15.gmoserver.jp (unknown [172.17.45.20])
+        by mailgateway.gmoserver.jp (Postfix) with ESMTP id 6F5C711EDBD
+        for <netdev@vger.kernel.org>; Mon,  6 May 2019 12:37:22 +0900 (JST)
+Received: from localhost (localhost [127.0.0.1])
+        by smtp15.gmoserver.jp (Postfix) with ESMTP id 933BD7B87A
+        for <netdev@vger.kernel.org>; Mon,  6 May 2019 12:37:20 +0900 (JST)
+X-Virus-Scanned: amavisd-new at gmoserver.jp
+Received: from smtp15.gmoserver.jp ([127.0.0.1])
+        by localhost (smtp15.gmoserver.jp [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id yvcqQUh6Yvrp for <netdev@vger.kernel.org>;
+        Mon,  6 May 2019 12:37:20 +0900 (JST)
+Received: from www15.gmoserver.jp (unknown [172.17.44.53])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by smtp15.gmoserver.jp (Postfix) with ESMTPSA id 898C87B878
+        for <netdev@vger.kernel.org>; Mon,  6 May 2019 12:37:20 +0900 (JST)
+Received: by www15.gmoserver.jp (Postfix, from userid 473622)
+        id 845567C5A4; Mon,  6 May 2019 12:37:20 +0900 (JST)
 To:     netdev@vger.kernel.org
-Subject: net-next is CLOSED
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+Subject: =?ISO-2022-JP?B?GyRCJCpMZCQkOWckbyQ7JHIbKEI=?=
+ =?ISO-2022-JP?B?GyRCPjUkaiReJDckPyEjGyhCKBskQjwrRjBHWz8uGyhCKQ==?=
+From:   =?ISO-2022-JP?B?GyRCM3Q8MDJxPFIbKEJDb25maWJhbms=?= 
+        <info@confibank.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-2022-JP
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 05 May 2019 19:59:20 -0700 (PDT)
+Message-Id: <20190506033720.845567C5A4@www15.gmoserver.jp>
+Date:   Mon,  6 May 2019 12:37:20 +0900 (JST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+FrankTom 様
 
-Don't even think about submitting anything other than bug fixes :-)
+下記の内容にてお問い合わせを承りました。
 
-Thank you.
+[件名]
+The best women for sex in your town
+
+[お問い合わせ内容]
+Beautiful women for sex in your town: http://www.lookweb.it/bestadultdating51321
+
+
+◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
+株式会社Confibank
+お問い合わせ http://confibank.com/contact/
+〒101-0046
+東京都千代田区神田多町2-2 神田穂月ビル 3階
+電話 03-3525-4678
+◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
+
