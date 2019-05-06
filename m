@@ -2,94 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFEF1154B1
-	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 21:54:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D3D4154BE
+	for <lists+netdev@lfdr.de>; Mon,  6 May 2019 21:57:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726609AbfEFTyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 15:54:20 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:46220 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726201AbfEFTyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 15:54:20 -0400
-Received: by mail-pl1-f194.google.com with SMTP id bi2so6874460plb.13
-        for <netdev@vger.kernel.org>; Mon, 06 May 2019 12:54:20 -0700 (PDT)
+        id S1726574AbfEFT5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 15:57:15 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:33834 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726201AbfEFT5O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 15:57:14 -0400
+Received: by mail-pf1-f194.google.com with SMTP id b3so7334534pfd.1
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 12:57:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Rm9SMfvnydhLhcx4SA7q/iYhVHUPFyZzONl50gsHFTo=;
-        b=W6psGKWkSl4rmx2PL8Qqr4z4pLx2r+FT/VxizmHQZJQemQ8kxyCwSZQlA4t0t3a6NQ
-         +UgwOMqBTci4CZ5oSb8GEB5DwIKl5a8z2sdILk+jXhBInjAJ3jwbRdsCvOi/cXMT8YNR
-         QD5XF865DulcGQTyFDJKHdDKgmCCueBULlcyKNhGuTC5um1vw5lLn9PoO931XGP4TEpr
-         E3ZH6LO4pw2KjmVszUJ+aMkWn4U/gDRFeBpWwC5Kua5QqXdoPevJqLn4n50co9OxZY9z
-         KPVYhoskm4JpzCJjhjY6Lq7X02fNkYNLP7nimFtB6f4LlK/L/rZAoTPX20yTnyZhV5zy
-         A/Hw==
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=CLvXgkmEF2HuuDRz+thRTXD1OtlI2uKzA2+jsYBonhs=;
+        b=S6iea+gwnFA7+UtQ38F/1k2BteEzmNzXl+aCRycK15pGhNFpdyCe6rhOEQHexmbGnQ
+         e2CB8RFbWcPDfBoW2UNpy6UNA1V6tEYjkD1QsWLAowhee9HO2z/IKHMNWHNqjuT8lG2x
+         O75FFPOK/kakEUTjZK1qAzPGXtVUQXnbi1kU4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Rm9SMfvnydhLhcx4SA7q/iYhVHUPFyZzONl50gsHFTo=;
-        b=FNe4el4KmiBhmzRKRZwI2atKVQneVpKLXiyUO9Bkhe5dVWU1QJQ60FBba38hsvJfPW
-         axoczp7hIrZmBIMM7M7J8fcr5RMAxVKF7zmyweCYfnJqPuxmpdsATECsjZMYj/oTuej0
-         1OXiZHixpNIl70AVSwgF+9WdLC2oHi88562uLMhs4QBqymSDiIhyqNXsJPC2KLSoL0SG
-         F/LwZxnP055mCjbz1lrh7+dW+YsyN51k/yyUyHT/h1o4OogERqaQoHeKUB4eLiqfIQzb
-         mZsSmKdheEX5eayZ0NlNN0RVUc+yheSViIDzDiIrCLrFcpIUeYrxAUhJGWDetYVh6osI
-         z8vw==
-X-Gm-Message-State: APjAAAV/zqHlY/hKdQzM/qdlZHHZimCjKQI53KV4ekzrPSvudAtWfcNH
-        XoJAkLhfQClM9M95sZmJ/GqRIm7/
-X-Google-Smtp-Source: APXvYqxflhB119agpOB4TpZZ/bujdhPOd5G3pdFzKSHkgHl+uVFq5aQHaPzVfkD8x6IyAqkwUyY+XQ==
-X-Received: by 2002:a17:902:8306:: with SMTP id bd6mr34746503plb.134.1557172458921;
-        Mon, 06 May 2019 12:54:18 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:80c3:e1ec:92e3:5225? ([2601:282:800:fd80:80c3:e1ec:92e3:5225])
-        by smtp.googlemail.com with ESMTPSA id p2sm7332453pgd.63.2019.05.06.12.54.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 May 2019 12:54:18 -0700 (PDT)
-Subject: Re: [PATCH net] vrf: sit mtu should not be updated when vrf netdev is
- the link
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
-References: <20190506190001.6567-1-ssuryaextr@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <667fd9b5-6122-bd9f-e6ae-e08d82197ef9@gmail.com>
-Date:   Mon, 6 May 2019 13:54:16 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=CLvXgkmEF2HuuDRz+thRTXD1OtlI2uKzA2+jsYBonhs=;
+        b=og9wAo8Zl8TNPYpdKU4RHe0VEMBtxAzcbNdecKgLObK/GRfzqqysWEcQRoBySa+hF2
+         4If1fGKEv7Um1QeAvn2wnqX3026sf4C2y+clAyrLep6Z9gLZX44JZ6dpPPZXBgWGYSkV
+         tH8do1+jVRobA8nw2URn48/C0vYRoyu2G4iOkomlWvExZfWj1sghoRtzzSoSt4X5H8nj
+         2kN5XzRE+g1rIJAUXb2CJPG6S4Sq1CC6u8U1Ox/wqJXyq2H8J167HLadgJEeOQlQy+Z0
+         YDF4qbgrC3+EY55224Dg+p4VWCpcbCL2vxDq7awDBc34ACSjlJmzqiCDJcufNxQP2SH9
+         vTPg==
+X-Gm-Message-State: APjAAAUppeKEy+Jjzh1xzn8GvEyAEOD18TTR+SB4a5H5KPdeHHXY+7DS
+        0e/toXVnTHvYn4igeTIWdlnlHA==
+X-Google-Smtp-Source: APXvYqynLDYXDnI9TexIDiiHv8fM/e64HKHfby9Od5eT6nRpjknFGCFcb8PzLIcX0Va+gYVKgmJsnA==
+X-Received: by 2002:aa7:8b8b:: with SMTP id r11mr35947156pfd.130.1557172633764;
+        Mon, 06 May 2019 12:57:13 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id 128sm13713965pgb.47.2019.05.06.12.57.12
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 May 2019 12:57:12 -0700 (PDT)
+Date:   Mon, 6 May 2019 15:57:11 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     linux-kernel@vger.kernel.org,
+        Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Qais Yousef <qais.yousef@arm.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        bpf@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>
+Subject: Re: [PATCH v2 1/4] bpf: Add support for reading user pointers
+Message-ID: <20190506195711.GA48323@google.com>
+References: <20190506183116.33014-1-joel@joelfernandes.org>
+ <3c6b312c-5763-0d9c-7c2c-436ee41f9be1@iogearbox.net>
 MIME-Version: 1.0
-In-Reply-To: <20190506190001.6567-1-ssuryaextr@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3c6b312c-5763-0d9c-7c2c-436ee41f9be1@iogearbox.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/6/19 1:00 PM, Stephen Suryaputra wrote:
-> VRF netdev mtu isn't typically set and have an mtu of 65536. When the
-> link of a tunnel is set, the tunnel mtu is changed from 1480 to the link
-> mtu minus tunnel header. In the case of VRF netdev is the link, then the
-> tunnel mtu becomes 65516. So, fix it by not setting the tunnel mtu in
-> this case.
+On Mon, May 06, 2019 at 09:11:19PM +0200, Daniel Borkmann wrote:
+> On 05/06/2019 08:31 PM, Joel Fernandes (Google) wrote:
+> > The eBPF based opensnoop tool fails to read the file path string passed
+> > to the do_sys_open function. This is because it is a pointer to
+> > userspace address and causes an -EFAULT when read with
+> > probe_kernel_read. This is not an issue when running the tool on x86 but
+> > is an issue on arm64. This patch adds a new bpf function call based
+> > which calls the recently proposed probe_user_read function [1].
+> > Using this function call from opensnoop fixes the issue on arm64.
+> > 
+> > [1] https://lore.kernel.org/patchwork/patch/1051588/
+> > 
+> > Cc: Michal Gregorczyk <michalgr@live.com>
+> > Cc: Adrian Ratiu <adrian.ratiu@collabora.com>
+> > Cc: Mohammad Husain <russoue@gmail.com>
+> > Cc: Qais Yousef <qais.yousef@arm.com>
+> > Cc: Srinivas Ramana <sramana@codeaurora.org>
+> > Cc: duyuchao <yuchao.du@unisoc.com>
+> > Cc: Manjo Raja Rao <linux@manojrajarao.com>
+> > Cc: Karim Yaghmour <karim.yaghmour@opersys.com>
+> > Cc: Tamir Carmeli <carmeli.tamir@gmail.com>
+> > Cc: Yonghong Song <yhs@fb.com>
+> > Cc: Alexei Starovoitov <ast@kernel.org>
+> > Cc: Brendan Gregg <brendan.d.gregg@gmail.com>
+> > Cc: Masami Hiramatsu <mhiramat@kernel.org>
+> > Cc: Peter Ziljstra <peterz@infradead.org>
+> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > Cc: kernel-team@android.com
+> > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> > ---
+> > Masami, could you carry these patches in the series where are you add
+> > probe_user_read function?
+> > 
+> > Previous submissions is here:
+> > https://lore.kernel.org/patchwork/patch/1069552/
+> > v1->v2: split tools uapi sync into separate commit, added deprecation
+> > warning for old bpf_probe_read function.
 > 
-> Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
-> ---
->  net/ipv6/sit.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-> index b2109b74857d..971d60bf9640 100644
-> --- a/net/ipv6/sit.c
-> +++ b/net/ipv6/sit.c
-> @@ -1084,7 +1084,7 @@ static void ipip6_tunnel_bind_dev(struct net_device *dev)
->  	if (!tdev && tunnel->parms.link)
->  		tdev = __dev_get_by_index(tunnel->net, tunnel->parms.link);
->  
-> -	if (tdev) {
-> +	if (tdev && !netif_is_l3_master(tdev)) {
->  		int t_hlen = tunnel->hlen + sizeof(struct iphdr);
->  
->  		dev->hard_header_len = tdev->hard_header_len + sizeof(struct iphdr);
-> 
+> Please properly submit this series to bpf tree once the base
+> infrastructure from Masami is upstream.
 
-can you explain how tdev is a VRF device? What's the config setup for
-this case?
+Could you clarify what do you mean by "properly submit this series to bpf
+tree" mean? bpf@vger.kernel.org is CC'd.
+
+> This series here should
+> also fix up all current probe read usage under samples/bpf/ and
+> tools/testing/selftests/bpf/.
+
+Ok. Agreed, will do that.
+
+thanks,
+
+- Joel
+
