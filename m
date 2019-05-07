@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6679B15907
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:33:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BDF015911
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:33:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbfEGFdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:33:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53170 "EHLO mail.kernel.org"
+        id S1726939AbfEGFd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:33:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53402 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726731AbfEGFdF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:33:05 -0400
+        id S1726894AbfEGFd1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:33:27 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 30983214AE;
-        Tue,  7 May 2019 05:33:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5D2A120B7C;
+        Tue,  7 May 2019 05:33:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207185;
-        bh=YlQuGwAHeK0mc4QWtXD6WY/m1BDOpX0GZj6Qku8Z/b0=;
+        s=default; t=1557207206;
+        bh=ljHDDdXyratzljjdrAbax9jGz9/dTE86P9+UvMbcDXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UFBADaETzztdCDi0ppaxZWhNf/UvstOPYfg4T4svcsBn9V9hwj0UyBizLsNB31A23
-         fJl1nzc07ks9F2B6MnTAgsCvpoV6KS+/RPmwzDoTLxxVfMFWZCjrfAZEyrCpvZ7l9r
-         F3Gdbk4j8r8/s8uQZGzhI/mKElt09FHnegzpySNM=
+        b=KepX4JqgQaVD4o6ZQeWrsI6IZqjar3QdHXMWYJuuFnB1AJ9tRb8KHokGPwMNX7pmz
+         Lkr+J8eG9L8zYMQE2TwZX+Dt+i4ZSLaZaNxIVMrQOWkm+LTVW4XMILPFmvKtYhwPc0
+         evQB6lPPMlyIAsbub72EsExoHXIcMTaSak8bz1p8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Wetzel <alexander@wetzel-home.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 20/99] mac80211: Honor SW_CRYPTO_CONTROL for unicast keys in AP VLAN mode
-Date:   Tue,  7 May 2019 01:31:14 -0400
-Message-Id: <20190507053235.29900-20-sashal@kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.0 26/99] selftests: fib_tests: Fix 'Command line is not complete' errors
+Date:   Tue,  7 May 2019 01:31:20 -0400
+Message-Id: <20190507053235.29900-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053235.29900-1-sashal@kernel.org>
 References: <20190507053235.29900-1-sashal@kernel.org>
@@ -44,61 +44,179 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Wetzel <alexander@wetzel-home.de>
+From: David Ahern <dsahern@gmail.com>
 
-[ Upstream commit 78ad2341521d5ea96cb936244ed4c4c4ef9ec13b ]
+[ Upstream commit a5f622984a623df9a84cf43f6b098d8dd76fbe05 ]
 
-Restore SW_CRYPTO_CONTROL operation on AP_VLAN interfaces for unicast
-keys, the original override was intended to be done for group keys as
-those are treated specially by mac80211 and would always have been
-rejected.
+A couple of tests are verifying a route has been removed. The helper
+expects the prefix as the first part of the expected output. When
+checking that a route has been deleted the prefix is empty leading
+to an invalid ip command:
 
-Now the situation is that AP_VLAN support must be enabled by the driver
-if it can support it (meaning it can support software crypto GTK TX).
+  $ ip ro ls match
+  Command line is not complete. Try option "help"
 
-Thus, also simplify the code - if we get here with AP_VLAN and non-
-pairwise key, software crypto must be used (driver doesn't know about
-the interface) and can be used (driver must've advertised AP_VLAN if
-it also uses SW_CRYPTO_CONTROL).
+Fix by moving the comparison of expected output and output to a new
+function that is used by both check_route and check_route6. Use the
+new helper for the 2 checks on route removal.
 
-Fixes: db3bdcb9c3ff ("mac80211: allow AP_VLAN operation on crypto controlled devices")
-Signed-off-by: Alexander Wetzel <alexander@wetzel-home.de>
-[rewrite commit message]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Also, remove the reset of 'set -x' in route_setup which overrides the
+user managed setting.
+
+Fixes: d69faad76584c ("selftests: fib_tests: Add prefix route tests with metric")
+Signed-off-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/key.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ tools/testing/selftests/net/fib_tests.sh | 94 ++++++++++--------------
+ 1 file changed, 40 insertions(+), 54 deletions(-)
 
-diff --git a/net/mac80211/key.c b/net/mac80211/key.c
-index 4700718e010f..37e372896230 100644
---- a/net/mac80211/key.c
-+++ b/net/mac80211/key.c
-@@ -167,8 +167,10 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
- 		 * The driver doesn't know anything about VLAN interfaces.
- 		 * Hence, don't send GTKs for VLAN interfaces to the driver.
- 		 */
--		if (!(key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE))
-+		if (!(key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
-+			ret = 1;
- 			goto out_unsupported;
-+		}
- 	}
+diff --git a/tools/testing/selftests/net/fib_tests.sh b/tools/testing/selftests/net/fib_tests.sh
+index 1080ff55a788..0d2a5f4f1e63 100755
+--- a/tools/testing/selftests/net/fib_tests.sh
++++ b/tools/testing/selftests/net/fib_tests.sh
+@@ -605,6 +605,39 @@ run_cmd()
+ 	return $rc
+ }
  
- 	ret = drv_set_key(key->local, SET_KEY, sdata,
-@@ -213,11 +215,8 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
- 		/* all of these we can do in software - if driver can */
- 		if (ret == 1)
- 			return 0;
--		if (ieee80211_hw_check(&key->local->hw, SW_CRYPTO_CONTROL)) {
--			if (sdata->vif.type == NL80211_IFTYPE_AP_VLAN)
--				return 0;
-+		if (ieee80211_hw_check(&key->local->hw, SW_CRYPTO_CONTROL))
- 			return -EINVAL;
--		}
- 		return 0;
- 	default:
- 		return -EINVAL;
++check_expected()
++{
++	local out="$1"
++	local expected="$2"
++	local rc=0
++
++	[ "${out}" = "${expected}" ] && return 0
++
++	if [ -z "${out}" ]; then
++		if [ "$VERBOSE" = "1" ]; then
++			printf "\nNo route entry found\n"
++			printf "Expected:\n"
++			printf "    ${expected}\n"
++		fi
++		return 1
++	fi
++
++	# tricky way to convert output to 1-line without ip's
++	# messy '\'; this drops all extra white space
++	out=$(echo ${out})
++	if [ "${out}" != "${expected}" ]; then
++		rc=1
++		if [ "${VERBOSE}" = "1" ]; then
++			printf "    Unexpected route entry. Have:\n"
++			printf "        ${out}\n"
++			printf "    Expected:\n"
++			printf "        ${expected}\n\n"
++		fi
++	fi
++
++	return $rc
++}
++
+ # add route for a prefix, flushing any existing routes first
+ # expected to be the first step of a test
+ add_route6()
+@@ -652,31 +685,7 @@ check_route6()
+ 	pfx=$1
+ 
+ 	out=$($IP -6 ro ls match ${pfx} | sed -e 's/ pref medium//')
+-	[ "${out}" = "${expected}" ] && return 0
+-
+-	if [ -z "${out}" ]; then
+-		if [ "$VERBOSE" = "1" ]; then
+-			printf "\nNo route entry found\n"
+-			printf "Expected:\n"
+-			printf "    ${expected}\n"
+-		fi
+-		return 1
+-	fi
+-
+-	# tricky way to convert output to 1-line without ip's
+-	# messy '\'; this drops all extra white space
+-	out=$(echo ${out})
+-	if [ "${out}" != "${expected}" ]; then
+-		rc=1
+-		if [ "${VERBOSE}" = "1" ]; then
+-			printf "    Unexpected route entry. Have:\n"
+-			printf "        ${out}\n"
+-			printf "    Expected:\n"
+-			printf "        ${expected}\n\n"
+-		fi
+-	fi
+-
+-	return $rc
++	check_expected "${out}" "${expected}"
+ }
+ 
+ route_cleanup()
+@@ -725,7 +734,7 @@ route_setup()
+ 	ip -netns ns2 addr add 172.16.103.2/24 dev veth4
+ 	ip -netns ns2 addr add 172.16.104.1/24 dev dummy1
+ 
+-	set +ex
++	set +e
+ }
+ 
+ # assumption is that basic add of a single path route works
+@@ -960,7 +969,8 @@ ipv6_addr_metric_test()
+ 	run_cmd "$IP li set dev dummy2 down"
+ 	rc=$?
+ 	if [ $rc -eq 0 ]; then
+-		check_route6 ""
++		out=$($IP -6 ro ls match 2001:db8:104::/64)
++		check_expected "${out}" ""
+ 		rc=$?
+ 	fi
+ 	log_test $rc 0 "Prefix route removed on link down"
+@@ -1091,38 +1101,13 @@ check_route()
+ 	local pfx
+ 	local expected="$1"
+ 	local out
+-	local rc=0
+ 
+ 	set -- $expected
+ 	pfx=$1
+ 	[ "${pfx}" = "unreachable" ] && pfx=$2
+ 
+ 	out=$($IP ro ls match ${pfx})
+-	[ "${out}" = "${expected}" ] && return 0
+-
+-	if [ -z "${out}" ]; then
+-		if [ "$VERBOSE" = "1" ]; then
+-			printf "\nNo route entry found\n"
+-			printf "Expected:\n"
+-			printf "    ${expected}\n"
+-		fi
+-		return 1
+-	fi
+-
+-	# tricky way to convert output to 1-line without ip's
+-	# messy '\'; this drops all extra white space
+-	out=$(echo ${out})
+-	if [ "${out}" != "${expected}" ]; then
+-		rc=1
+-		if [ "${VERBOSE}" = "1" ]; then
+-			printf "    Unexpected route entry. Have:\n"
+-			printf "        ${out}\n"
+-			printf "    Expected:\n"
+-			printf "        ${expected}\n\n"
+-		fi
+-	fi
+-
+-	return $rc
++	check_expected "${out}" "${expected}"
+ }
+ 
+ # assumption is that basic add of a single path route works
+@@ -1387,7 +1372,8 @@ ipv4_addr_metric_test()
+ 	run_cmd "$IP li set dev dummy2 down"
+ 	rc=$?
+ 	if [ $rc -eq 0 ]; then
+-		check_route ""
++		out=$($IP ro ls match 172.16.104.0/24)
++		check_expected "${out}" ""
+ 		rc=$?
+ 	fi
+ 	log_test $rc 0 "Prefix route removed on link down"
 -- 
 2.20.1
 
