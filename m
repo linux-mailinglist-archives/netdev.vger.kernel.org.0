@@ -2,80 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24BB61673F
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 17:57:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC58216751
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 18:02:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726690AbfEGP5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 11:57:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36882 "EHLO mail.kernel.org"
+        id S1726805AbfEGQCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 12:02:15 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57453 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726438AbfEGP5u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 11:57:50 -0400
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1ECBE20C01;
-        Tue,  7 May 2019 15:57:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557244669;
-        bh=yYeUtQyXycJKGzzKbaR03Sgh1x8livGCDAEBIteSL1I=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=m21zi0uw6YcaiMutrzLXpu2AH8gOQclBvy0xOtN3MrLBng7lPp8C8QFVwZJUsGC5k
-         opQvIYdSitiQLmo6xw5A/6HMFIboVYByWnoL6xlNjVBBpWd5sqUZDjnIk3s9cmXba3
-         ydobS7X0pn8834+IwkOGzoqFiD0vX8icyqbJKcoE=
-Received: by mail-qk1-f182.google.com with SMTP id a132so10367524qkb.13;
-        Tue, 07 May 2019 08:57:49 -0700 (PDT)
-X-Gm-Message-State: APjAAAXkZfhC38ZpGU7C3PcbXe4vqVU5uexG0dufJ1K8dh9EASxreL3r
-        d3x+JmIjpUSiT8fnHS4KhZXv4+k8gCV+k63OQA==
-X-Google-Smtp-Source: APXvYqwk+Jr303x3CaQ9QFpPib22XA30jtdBeT+DhVsEK0IVy2YDsaZ0ABIqg81EzByodZnq8CpRQJzVsrmS0QBUy9A=
-X-Received: by 2002:a37:4b92:: with SMTP id y140mr25992725qka.79.1557244668293;
- Tue, 07 May 2019 08:57:48 -0700 (PDT)
+        id S1726558AbfEGQCP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 12:02:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=hiATCeqL1Vk6UfJELBlityqgqtEBUTQWReY+Ns7XMlM=; b=hsUFxknEqKaevkLO6Hqg7M81E/
+        hN++7uHs97bcenWytbOeVLJObTsUUX15WYbiPogBQV8t5esmIJfD/GxsYtbcqnTCPIFxBiyrVbWP1
+        j3I9oPnIw0ZOrqriz0qwsf8SiN/ZzLyPux/kZpKiZyHoXQ5Kxop4MhxKh7AM9+h4DLww=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hO2Xg-0001YL-NA; Tue, 07 May 2019 18:02:08 +0200
+Date:   Tue, 7 May 2019 18:02:08 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com
+Subject: Re: [PATCH net] dt-bindings: net: Fix a typo in the phy-mode list
+ for ethernet bindings
+Message-ID: <20190507160208.GF25013@lunn.ch>
+References: <20190507153555.18545-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
-References: <1556893635-18549-1-git-send-email-ynezz@true.cz> <20190505.214727.1839442238121977055.davem@davemloft.net>
-In-Reply-To: <20190505.214727.1839442238121977055.davem@davemloft.net>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 7 May 2019 10:57:36 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqL66PdCv7bFwfD9p6VQCcXOesz3EjPcYB9FGosgjOS8yw@mail.gmail.com>
-Message-ID: <CAL_JsqL66PdCv7bFwfD9p6VQCcXOesz3EjPcYB9FGosgjOS8yw@mail.gmail.com>
-Subject: Re: [PATCH v4 00/10] of_net: Add NVMEM support to of_get_mac_address
-To:     David Miller <davem@davemloft.net>
-Cc:     =?UTF-8?Q?Petr_=C5=A0tetiar?= <ynezz@true.cz>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190507153555.18545-1-maxime.chevallier@bootlin.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 5, 2019 at 11:47 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Petr =C5=A0tetiar <ynezz@true.cz>
-> Date: Fri,  3 May 2019 16:27:05 +0200
->
-> > this patch series is a continuation of my previous attempt[1], where I'=
-ve
-> > tried to wire MTD layer into of_get_mac_address, so it would be possibl=
-e to
-> > load MAC addresses from various NVMEMs as EEPROMs etc.
->  ...
->
-> Series applied, thank you.
+On Tue, May 07, 2019 at 05:35:55PM +0200, Maxime Chevallier wrote:
+> The phy_mode "2000base-x" is actually supposed to be "1000base-x", even
+> though the commit title of the original patch says otherwise.
+> 
+> Fixes: 55601a880690 ("net: phy: Add 2000base-x, 2500base-x and rxaui modes")
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 
-Patch 1 at least is still be discussed. What was implemented based on
-my comments on v2 is really broken. Now the allocated buffer is
-tracked by both devm and DT refcounting. Whoever's ref count drops
-first will free the buffer.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Rob
+    Andrew
