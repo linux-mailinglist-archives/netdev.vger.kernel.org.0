@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A48815B3D
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:52:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3536615B3A
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728845AbfEGFjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:39:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58936 "EHLO mail.kernel.org"
+        id S1729203AbfEGFwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:52:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59088 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728836AbfEGFjU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:39:20 -0400
+        id S1727671AbfEGFj1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:39:27 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A67BE2087F;
-        Tue,  7 May 2019 05:39:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 61B1720B7C;
+        Tue,  7 May 2019 05:39:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207559;
-        bh=pJy2Eg34xnqknRoXNNqgNYUPSqT4D9lNmvVDhuy+jl4=;
+        s=default; t=1557207566;
+        bh=GGMllsJGL70Wd30hAUJvDQAa7WiQC42hvwxpkkNUawc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M2tMnz0F9v5OcA2SAaNXVC0XWeQUZfkS6i3tmzXX9vS4IG36pshFIQ1Vny+/I51Dw
-         srsW4JCAauiuAAbqS3yYXkeI7POsa0vJNbjh0jdp2flz9yPEqOcbeaYwZS3EHBjP2p
-         lerYjn3yTlj50eEeOUE4OqOpxRHOGUssmLnC4O1g=
+        b=t8GgBtQJ0UHmTFmnOOR4/W1+6lh2y1QcfHfrYisQWuEZFovMo1iTIFgSTZ4+tfpt7
+         sh+p5+uzarc9x7kMQJpYuv8jniQIdNloU80dGRywI5nP61TCwIXcpJoes768sbwJwR
+         7tZLRwLw9EXLywua3+ZqeimTjJVQUSGmbXl4SdzM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 25/95] netfilter: ctnetlink: don't use conntrack/expect object addresses as id
-Date:   Tue,  7 May 2019 01:37:14 -0400
-Message-Id: <20190507053826.31622-25-sashal@kernel.org>
+Cc:     Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 29/95] selftests/net: correct the return value for run_netsocktests
+Date:   Tue,  7 May 2019 01:37:18 -0400
+Message-Id: <20190507053826.31622-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053826.31622-1-sashal@kernel.org>
 References: <20190507053826.31622-1-sashal@kernel.org>
@@ -45,176 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Po-Hsu Lin <po-hsu.lin@canonical.com>
 
-[ Upstream commit 3c79107631db1f7fd32cf3f7368e4672004a3010 ]
+[ Upstream commit 30c04d796b693e22405c38e9b78e9a364e4c77e6 ]
 
-else, we leak the addresses to userspace via ctnetlink events
-and dumps.
+The run_netsocktests will be marked as passed regardless the actual test
+result from the ./socket:
 
-Compute an ID on demand based on the immutable parts of nf_conn struct.
+    selftests: net: run_netsocktests
+    ========================================
+    --------------------
+    running socket test
+    --------------------
+    [FAIL]
+    ok 1..6 selftests: net: run_netsocktests [PASS]
 
-Another advantage compared to using an address is that there is no
-immediate re-use of the same ID in case the conntrack entry is freed and
-reallocated again immediately.
+This is because the test script itself has been successfully executed.
+Fix this by exit 1 when the test failed.
 
-Fixes: 3583240249ef ("[NETFILTER]: nf_conntrack_expect: kill unique ID")
-Fixes: 7f85f914721f ("[NETFILTER]: nf_conntrack: kill unique ID")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netfilter/nf_conntrack.h |  2 ++
- net/netfilter/nf_conntrack_core.c    | 35 ++++++++++++++++++++++++++++
- net/netfilter/nf_conntrack_netlink.c | 34 +++++++++++++++++++++++----
- 3 files changed, 66 insertions(+), 5 deletions(-)
+ tools/testing/selftests/net/run_netsocktests | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-index 792c3f6d30ce..93bbae8f9641 100644
---- a/include/net/netfilter/nf_conntrack.h
-+++ b/include/net/netfilter/nf_conntrack.h
-@@ -315,6 +315,8 @@ struct nf_conn *nf_ct_tmpl_alloc(struct net *net,
- 				 gfp_t flags);
- void nf_ct_tmpl_free(struct nf_conn *tmpl);
- 
-+u32 nf_ct_get_id(const struct nf_conn *ct);
-+
- static inline void
- nf_ct_set(struct sk_buff *skb, struct nf_conn *ct, enum ip_conntrack_info info)
- {
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 06520bf30f29..fa49a627b681 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -25,6 +25,7 @@
- #include <linux/slab.h>
- #include <linux/random.h>
- #include <linux/jhash.h>
-+#include <linux/siphash.h>
- #include <linux/err.h>
- #include <linux/percpu.h>
- #include <linux/moduleparam.h>
-@@ -300,6 +301,40 @@ nf_ct_invert_tuple(struct nf_conntrack_tuple *inverse,
- }
- EXPORT_SYMBOL_GPL(nf_ct_invert_tuple);
- 
-+/* Generate a almost-unique pseudo-id for a given conntrack.
-+ *
-+ * intentionally doesn't re-use any of the seeds used for hash
-+ * table location, we assume id gets exposed to userspace.
-+ *
-+ * Following nf_conn items do not change throughout lifetime
-+ * of the nf_conn after it has been committed to main hash table:
-+ *
-+ * 1. nf_conn address
-+ * 2. nf_conn->ext address
-+ * 3. nf_conn->master address (normally NULL)
-+ * 4. tuple
-+ * 5. the associated net namespace
-+ */
-+u32 nf_ct_get_id(const struct nf_conn *ct)
-+{
-+	static __read_mostly siphash_key_t ct_id_seed;
-+	unsigned long a, b, c, d;
-+
-+	net_get_random_once(&ct_id_seed, sizeof(ct_id_seed));
-+
-+	a = (unsigned long)ct;
-+	b = (unsigned long)ct->master ^ net_hash_mix(nf_ct_net(ct));
-+	c = (unsigned long)ct->ext;
-+	d = (unsigned long)siphash(&ct->tuplehash, sizeof(ct->tuplehash),
-+				   &ct_id_seed);
-+#ifdef CONFIG_64BIT
-+	return siphash_4u64((u64)a, (u64)b, (u64)c, (u64)d, &ct_id_seed);
-+#else
-+	return siphash_4u32((u32)a, (u32)b, (u32)c, (u32)d, &ct_id_seed);
-+#endif
-+}
-+EXPORT_SYMBOL_GPL(nf_ct_get_id);
-+
- static void
- clean_from_lists(struct nf_conn *ct)
- {
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index 48dab1403b2c..c781c9a1a697 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -29,6 +29,7 @@
- #include <linux/spinlock.h>
- #include <linux/interrupt.h>
- #include <linux/slab.h>
-+#include <linux/siphash.h>
- 
- #include <linux/netfilter.h>
- #include <net/netlink.h>
-@@ -445,7 +446,9 @@ static int ctnetlink_dump_ct_seq_adj(struct sk_buff *skb, struct nf_conn *ct)
- 
- static int ctnetlink_dump_id(struct sk_buff *skb, const struct nf_conn *ct)
- {
--	if (nla_put_be32(skb, CTA_ID, htonl((unsigned long)ct)))
-+	__be32 id = (__force __be32)nf_ct_get_id(ct);
-+
-+	if (nla_put_be32(skb, CTA_ID, id))
- 		goto nla_put_failure;
- 	return 0;
- 
-@@ -1179,8 +1182,9 @@ static int ctnetlink_del_conntrack(struct net *net, struct sock *ctnl,
- 	ct = nf_ct_tuplehash_to_ctrack(h);
- 
- 	if (cda[CTA_ID]) {
--		u_int32_t id = ntohl(nla_get_be32(cda[CTA_ID]));
--		if (id != (u32)(unsigned long)ct) {
-+		__be32 id = nla_get_be32(cda[CTA_ID]);
-+
-+		if (id != (__force __be32)nf_ct_get_id(ct)) {
- 			nf_ct_put(ct);
- 			return -ENOENT;
- 		}
-@@ -2521,6 +2525,25 @@ static int ctnetlink_exp_dump_mask(struct sk_buff *skb,
- 
- static const union nf_inet_addr any_addr;
- 
-+static __be32 nf_expect_get_id(const struct nf_conntrack_expect *exp)
-+{
-+	static __read_mostly siphash_key_t exp_id_seed;
-+	unsigned long a, b, c, d;
-+
-+	net_get_random_once(&exp_id_seed, sizeof(exp_id_seed));
-+
-+	a = (unsigned long)exp;
-+	b = (unsigned long)exp->helper;
-+	c = (unsigned long)exp->master;
-+	d = (unsigned long)siphash(&exp->tuple, sizeof(exp->tuple), &exp_id_seed);
-+
-+#ifdef CONFIG_64BIT
-+	return (__force __be32)siphash_4u64((u64)a, (u64)b, (u64)c, (u64)d, &exp_id_seed);
-+#else
-+	return (__force __be32)siphash_4u32((u32)a, (u32)b, (u32)c, (u32)d, &exp_id_seed);
-+#endif
-+}
-+
- static int
- ctnetlink_exp_dump_expect(struct sk_buff *skb,
- 			  const struct nf_conntrack_expect *exp)
-@@ -2568,7 +2591,7 @@ ctnetlink_exp_dump_expect(struct sk_buff *skb,
- 	}
- #endif
- 	if (nla_put_be32(skb, CTA_EXPECT_TIMEOUT, htonl(timeout)) ||
--	    nla_put_be32(skb, CTA_EXPECT_ID, htonl((unsigned long)exp)) ||
-+	    nla_put_be32(skb, CTA_EXPECT_ID, nf_expect_get_id(exp)) ||
- 	    nla_put_be32(skb, CTA_EXPECT_FLAGS, htonl(exp->flags)) ||
- 	    nla_put_be32(skb, CTA_EXPECT_CLASS, htonl(exp->class)))
- 		goto nla_put_failure;
-@@ -2873,7 +2896,8 @@ static int ctnetlink_get_expect(struct net *net, struct sock *ctnl,
- 
- 	if (cda[CTA_EXPECT_ID]) {
- 		__be32 id = nla_get_be32(cda[CTA_EXPECT_ID]);
--		if (ntohl(id) != (u32)(unsigned long)exp) {
-+
-+		if (id != nf_expect_get_id(exp)) {
- 			nf_ct_expect_put(exp);
- 			return -ENOENT;
- 		}
+diff --git a/tools/testing/selftests/net/run_netsocktests b/tools/testing/selftests/net/run_netsocktests
+index b093f39c298c..14e41faf2c57 100755
+--- a/tools/testing/selftests/net/run_netsocktests
++++ b/tools/testing/selftests/net/run_netsocktests
+@@ -7,7 +7,7 @@ echo "--------------------"
+ ./socket
+ if [ $? -ne 0 ]; then
+ 	echo "[FAIL]"
++	exit 1
+ else
+ 	echo "[PASS]"
+ fi
+-
 -- 
 2.20.1
 
