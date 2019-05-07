@@ -2,109 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8B2216002
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 11:01:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19A4A16025
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 11:07:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726321AbfEGJBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 05:01:43 -0400
-Received: from smtp-out.xnet.cz ([178.217.244.18]:43662 "EHLO smtp-out.xnet.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726072AbfEGJBn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 05:01:43 -0400
-Received: from meh.true.cz (meh.true.cz [108.61.167.218])
-        (Authenticated sender: petr@true.cz)
-        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 3CDFA6E34;
-        Tue,  7 May 2019 11:01:39 +0200 (CEST)
-Received: from localhost (meh.true.cz [local])
-        by meh.true.cz (OpenSMTPD) with ESMTPA id dba1650f;
-        Tue, 7 May 2019 11:01:37 +0200 (CEST)
-Date:   Tue, 7 May 2019 11:01:37 +0200
-From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        id S1726321AbfEGJHv convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 May 2019 05:07:51 -0400
+Received: from mail-vs1-f66.google.com ([209.85.217.66]:38890 "EHLO
+        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726063AbfEGJHu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 05:07:50 -0400
+Received: by mail-vs1-f66.google.com with SMTP id v9so2115025vse.5;
+        Tue, 07 May 2019 02:07:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8lThRAo28vQwCl4DV4/hRXs4pusVcLZ06vXVXU+ReNg=;
+        b=UApIQqVvCdCdwez208QOX/KvpZdg45Aw0SyxZfCSaIKvmTC3Ti92Vq/UATMBa5SBu0
+         aVW7JcE570usIfzi+EPhs6sES83dCX9JdSYqlMIgYmEWEZsWJ5pXlpBz2amqrOqKmn2S
+         HRCKgtsXudML+kN1HaP80O+jVUcisFVihF4Tm7kZvmSNHnEV8YqrMFa7sW69rmvFKXxq
+         I6WGi8bLazGmTgL0CMoJdGpH8sZWKbkugn22iU/ZleACG/dEdE/qGqK5ddMFUT3oZCSU
+         00uw5rwkoi8GboV2rX2qPUyuKgB9cOnkl4Jm3FRCvyDKwxinyWXBlvF4/wBgIMqscTxB
+         kBTg==
+X-Gm-Message-State: APjAAAUheCQC4ZgSDlgnc5srBkUJAB+BMsNuBYUBsDbZ7vV/0EFOmtcR
+        g+RR9/U/tsRKERARt6wI2blc7Fgu1o84vm3y1KY=
+X-Google-Smtp-Source: APXvYqyd0GOgX82w7/Ps0Lm4sBbfBrQV34Mg2L46fkooG6+5Z29jjbCP+ChBPEI7uLyAXz7jM3WBzg+6K0S1grth8pg=
+X-Received: by 2002:a67:8e03:: with SMTP id q3mr15845324vsd.152.1557220063399;
+ Tue, 07 May 2019 02:07:43 -0700 (PDT)
+MIME-Version: 1.0
+References: <1557177887-30446-1-git-send-email-ynezz@true.cz>
+In-Reply-To: <1557177887-30446-1-git-send-email-ynezz@true.cz>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 7 May 2019 11:07:31 +0200
+Message-ID: <CAMuHMdVra2h00OUCxZ1s=ExpkgkN_SGZdUtdohBapjNHf6hesQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/4] of_get_mac_address ERR_PTR fixes
+To:     =?UTF-8?Q?Petr_=C5=A0tetiar?= <ynezz@true.cz>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        devel@driverdev.osuosl.org, Andrew Lunn <andrew@lunn.ch>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Maxime Ripard <maxime.ripard@bootlin.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
         Frank Rowand <frowand.list@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Jeremy Kerr <jk@ozlabs.org>
-Subject: netdev patchwork issues [Was: Re: [PATCH net-next v2 0/4]
- of_get_mac_address ERR_PTR fixes]
-Message-ID: <20190507090137.GJ81826@meh.true.cz>
-Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-References: <1557177887-30446-1-git-send-email-ynezz@true.cz>
- <20190507071914.GJ2269@kadam>
- <20190507083918.GI81826@meh.true.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190507083918.GI81826@meh.true.cz>
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Petr Štetiar <ynezz@true.cz> [2019-05-07 10:39:18]:
+Hi Petr,
 
-[adding Jeremy to the Cc: loop]
+On Mon, May 6, 2019 at 11:25 PM Petr Štetiar <ynezz@true.cz> wrote:
+> this patch series is an attempt to fix the mess, I've somehow managed to
+> introduce.
+>
+> First patch in this series is defacto v5 of the previous 05/10 patch in the
+> series, but since the v4 of this 05/10 patch wasn't picked up by the
+> patchwork for some unknown reason, this patch wasn't applied with the other
+> 9 patches in the series, so I'm resending it as a separate patch of this
+> fixup series again.
+>
+> Second patch is a result of this rebase against net-next tree, where I was
+> checking again all current users of of_get_mac_address and found out, that
+> there's new one in DSA, so I've converted this user to the new ERR_PTR
+> encoded error value as well.
+>
+> Third patch which was sent as v5 wasn't considered for merge, but I still
+> think, that we need to check for possible NULL value, thus current IS_ERR
+> check isn't sufficient and we need to use IS_ERR_OR_NULL instead.
+>
+> Fourth patch fixes warning reported by kbuild test robot.
+>
+> Cheers,
+>
+> Petr
+>
+> Petr Štetiar (4):
+>   net: ethernet: support of_get_mac_address new ERR_PTR error
 
-> it was applied[2] to David's net-next tree, but unfortunately partialy, just 9
-> patches out of 10, as the patch 05/10 in that series (which is patch 1/4 in
-> this series) never reached netdev mailing list and patchwork, probably because
-> of some netdev mailing list software and/or patchwork hiccup, very likely due
-> to the long list of recipients in that patch and as I'm not subscribed to the
-> netdev (due to the high traffic) I'm probably treaten somehow differently.
+I didn't receive the patch through email, but patchwork does have it:
+https://patchwork.ozlabs.org/patch/1096054/
 
-For the record, I've following in my ~/.gitconfig:
+This fixes the crash ("Unable to handle kernel paging request atvirtual
+address fffffffe") I'm seeing with sh_eth on r8a7791/koelsch, so
 
- [sendemail.linux]
-    tocmd ="`pwd`/scripts/get_maintainer.pl --nogit --nogit-fallback --norolestats --nol"
-    cccmd ="`pwd`/scripts/get_maintainer.pl --nogit --nogit-fallback --norolestats --nom"
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-and I've sent the patches with the following command:
+Gr{oetje,eeting}s,
 
- git send-email \
-	--to netdev@vger.kernel.org \
-	--to 'David S. Miller <davem@davemloft.net>' \
-	--cc 'Andrew Lunn <andrew@lunn.ch>' \
-	--cc 'Florian Fainelli <f.fainelli@gmail.com>' \
-	--cc 'Heiner Kallweit <hkallweit1@gmail.com>' \
-	--cc 'Frank Rowand <frowand.list@gmail.com>' \
-	--cc 'devel@driverdev.osuosl.org' \
-	--cc 'linux-kernel@vger.kernel.org' \
-	--cc 'Greg Kroah-Hartman <gregkh@linuxfoundation.org>' \
-	--cc 'Maxime Ripard <maxime.ripard@bootlin.com>' \
-	--identity linux tmp/nvmem-fix-v2/000*
+                        Geert
 
-which resulted just in the following 4 bounces:
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
- * nbd@openwrt.org (no such recipient)
- * ks.giri@samsung.com (no such recipient)
- * vipul.pandya@samsung.com (no such recipient)
-
- Your mail to 'linux-arm-kernel' with the subject
-
-    [PATCH net-next v2 1/4] net: ethernet: support of_get_mac_address new ERR_PTR error
-
- Is being held until the list moderator can review it for approval.  The reason
- it is being held:
-
-    Too many recipients to the message
-
-So maybe netdev have similar moderation stuff enabled, but doesn't send out
-this notices back? I've "fixed" the issue with the following workaround:
-
- git send-email \
- 	--to netdev@vger.kernel.org \
-	--in-reply-to '<1557177887-30446-1-git-send-email-ynezz@true.cz>' \
-	tmp/nvmem-fix-v2/0001-net-ethernet-support-of_get_mac_address-new-ERR_PTR-.patch
-
-That is, just using netdev as the sole recipient and then the patch has
-appeared in the patchwork and in the mailing list archive as well.
-
--- ynezz
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
