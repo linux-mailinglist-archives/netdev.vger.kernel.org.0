@@ -2,189 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F1A9163B1
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 14:26:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE687163BB
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 14:27:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726621AbfEGMZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 08:25:51 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:51279 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726404AbfEGMZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 08:25:50 -0400
-Received: by mail-wm1-f67.google.com with SMTP id o189so9283107wmb.1
-        for <netdev@vger.kernel.org>; Tue, 07 May 2019 05:25:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=RgWL/g6Ctb6576iEJfmm/zOjyy44S59/CosNUjRdC94=;
-        b=Yeov1d7wGWiIDK/IvY8d4f3Uov6DWAUFvLodKhtx+QfwYCSFBrlM5VKB2YGb/h80py
-         E9dH6Q8wK45WFL1Y2CThEQ69ZEdUE58S4gv3NQn5yQZnkHANYhQJCSjZfu43Q2nswGdM
-         4lt5lh58HeF1pxdMOf+2Pi/46T7WZc7uFfzJ8/ftbnoczAr5X2VJ+1brntWBdGs/wzZF
-         3+gvtYdW4t4M5fwHwGXs5Jeb71XT1fVAtUIrijt7SuMepqAAl8Fmlyo0DArPOXpD9G6y
-         BYltdMiRg/3Yc1UqNDybEwF2QhrhjYYlkGMVS/H/z8V10X0wIrUNTSWY1d1UJzAuPScj
-         zILg==
-X-Gm-Message-State: APjAAAWwStK4OwHcJPQT7XR44gbz92WgR3AOblCtOf8kZ/kLk/ITTLoc
-        X4O51znR//TMR3flOACUnAlxNA==
-X-Google-Smtp-Source: APXvYqztk3D6FfQCag9V/IMayhuu5K++rq1Y1HFSbHtcWI7a6N2/K8T/6FbFqS0eSiDEbqlaP89Edg==
-X-Received: by 2002:a05:600c:2506:: with SMTP id d6mr21690818wma.106.1557231946828;
-        Tue, 07 May 2019 05:25:46 -0700 (PDT)
-Received: from steredhat (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
-        by smtp.gmail.com with ESMTPSA id c20sm14679885wre.28.2019.05.07.05.25.45
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 07 May 2019 05:25:45 -0700 (PDT)
-Date:   Tue, 7 May 2019 14:25:43 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jorge Moreira Broche <jemoreira@google.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kernel-team@android.com, stable@vger.kernel.org
-Subject: Re: [PATCH] vsock/virtio: Initialize core virtio vsock before
- registering the driver
-Message-ID: <20190507122543.kgh44rvaw7nwlhjn@steredhat>
-References: <20190501003001.186239-1-jemoreira@google.com>
- <20190501190831.GF22391@stefanha-x1.localdomain>
- <20190502082045.u3xypjbac5npbhtc@steredhat.homenet.telecomitalia.it>
- <CAJi--POaVsfprbp5na5BvR=VNONKGfFya_BnmTzzcWmOQ1DM2Q@mail.gmail.com>
+        id S1726744AbfEGM1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 08:27:24 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:46416 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726329AbfEGM1X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 08:27:23 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us5.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id 98C7F180050;
+        Tue,  7 May 2019 12:27:21 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 7 May
+ 2019 05:27:17 -0700
+Subject: Re: [RFC PATCH net-next 2/3] flow_offload: restore ability to collect
+ separate stats per action
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        "Cong Wang" <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Anjali Singhai Jain <anjali.singhai@intel.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+References: <alpine.LFD.2.21.1905031603340.11823@ehc-opti7040.uk.solarflarecom.com>
+ <20190504022759.64232fc0@cakuba.netronome.com>
+ <db827a95-1042-cf74-1378-8e2eac356e6d@mojatatu.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <1b37d659-5a2b-6130-e8d6-c15d6f57b55e@solarflare.com>
+Date:   Tue, 7 May 2019 13:27:15 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJi--POaVsfprbp5na5BvR=VNONKGfFya_BnmTzzcWmOQ1DM2Q@mail.gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <db827a95-1042-cf74-1378-8e2eac356e6d@mojatatu.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24596.005
+X-TM-AS-Result: No-9.557400-4.000000-10
+X-TMASE-MatchedRID: 8+bhjh9TQnEOwH4pD14DsPHkpkyUphL9XsJIQWO/qJVnnK6mXN72mw/x
+        9pUv0o6LTiQecD9aKoSmgEH3vUzB3T9/6/cgYWdXdPuue3cRiRguFjL0BGSgFwbYcy9YQl6eQoZ
+        WNsznCcB+cF4VoGbxbsnxAZU+IVnO64dDeOHpGHBLxLYX2WS87ywJzaIVMjGtUCgEErrUGFzgdb
+        Ow50s7YrsrX+DAazgiMHPOlYJGd+yF9Rq0eQRY1HbtLK/jNLwLGSqdEmeD/nUoglbEnCQocYRp0
+        uV6Yx1jOAVPf0uep4YHbUB9wsCn6qB11RkmaqHef01qcJQDhV6L6a+kPOEFsFc/CedjlcvkwKjL
+        tlNOpCbnzlXMYw4XMAGLeSok4rrZC24oEZ6SpSk6XEE7Yhw4FgefYaJ6SJ6otLKQMZwMTspPKlc
+        stuCyEeEYB5IM4HzC1zNwDXWbHDtDDKa3G4nrLQ==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--9.557400-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24596.005
+X-MDID: 1557232042-gLQ2yFu5btL0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jorge,
+On 06/05/2019 13:41, Jamal Hadi Salim wrote:
+> On 2019-05-04 2:27 a.m., Jakub Kicinski wrote:
+>> On Fri, 3 May 2019 16:06:55 +0100, Edward Cree wrote:
+>>> Introduce a new offload command TC_CLSFLOWER_STATS_BYINDEX, similar to
+>>>   the existing TC_CLSFLOWER_STATS but specifying an action_index (the
+>>>   tcfa_index of the action), which is called for each stats-having action
+>>>   on the rule.  Drivers should implement either, but not both, of these
+>>>   commands.
+>
+> [..]
+>>
+>> It feels a little strange to me to call the new stats updates from
+>> cls_flower, if we really want to support action sharing correctly.
+>>
+>> Can RTM_GETACTION not be used to dump actions without dumping the
+>> classifiers?  If we dump from the classifiers wouldn't that lead to
+>> stale stats being returned?
+>
+> Not sure about the staleness factor, but:
+> For efficiency reasons we certainly need the RTM_GETACTION approach
+> (as you stated above we dont need to dump all that classifier info if
+> all we want are stats). This becomes a big deal if you have a lot
+> of stats/rules.
+I don't know much of anything about RTM_GETACTION, but it doesn't appear
+ to be part of the current "tc offload" world, which AIUI is very much
+ centred around cls_flower.  I'm just trying to make counters in
+ cls_flower offload do 'the right thing' (whatever that may be), anything
+ else is out of scope.
 
-On Mon, May 06, 2019 at 01:19:55PM -0700, Jorge Moreira Broche wrote:
-> > On Wed, May 01, 2019 at 03:08:31PM -0400, Stefan Hajnoczi wrote:
-> > > On Tue, Apr 30, 2019 at 05:30:01PM -0700, Jorge E. Moreira wrote:
-> > > > Avoid a race in which static variables in net/vmw_vsock/af_vsock.c are
-> > > > accessed (while handling interrupts) before they are initialized.
-> > > >
-> > > >
-> > > > [    4.201410] BUG: unable to handle kernel paging request at ffffffffffffffe8
-> > > > [    4.207829] IP: vsock_addr_equals_addr+0x3/0x20
-> > > > [    4.211379] PGD 28210067 P4D 28210067 PUD 28212067 PMD 0
-> > > > [    4.211379] Oops: 0000 [#1] PREEMPT SMP PTI
-> > > > [    4.211379] Modules linked in:
-> > > > [    4.211379] CPU: 1 PID: 30 Comm: kworker/1:1 Not tainted 4.14.106-419297-gd7e28cc1f241 #1
-> > > > [    4.211379] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
-> > > > [    4.211379] Workqueue: virtio_vsock virtio_transport_rx_work
-> > > > [    4.211379] task: ffffa3273d175280 task.stack: ffffaea1800e8000
-> > > > [    4.211379] RIP: 0010:vsock_addr_equals_addr+0x3/0x20
-> > > > [    4.211379] RSP: 0000:ffffaea1800ebd28 EFLAGS: 00010286
-> > > > [    4.211379] RAX: 0000000000000002 RBX: 0000000000000000 RCX: ffffffffb94e42f0
-> > > > [    4.211379] RDX: 0000000000000400 RSI: ffffffffffffffe0 RDI: ffffaea1800ebdd0
-> > > > [    4.211379] RBP: ffffaea1800ebd58 R08: 0000000000000001 R09: 0000000000000001
-> > > > [    4.211379] R10: 0000000000000000 R11: ffffffffb89d5d60 R12: ffffaea1800ebdd0
-> > > > [    4.211379] R13: 00000000828cbfbf R14: 0000000000000000 R15: ffffaea1800ebdc0
-> > > > [    4.211379] FS:  0000000000000000(0000) GS:ffffa3273fd00000(0000) knlGS:0000000000000000
-> > > > [    4.211379] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > > [    4.211379] CR2: ffffffffffffffe8 CR3: 000000002820e001 CR4: 00000000001606e0
-> > > > [    4.211379] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > > [    4.211379] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > > [    4.211379] Call Trace:
-> > > > [    4.211379]  ? vsock_find_connected_socket+0x6c/0xe0
-> > > > [    4.211379]  virtio_transport_recv_pkt+0x15f/0x740
-> > > > [    4.211379]  ? detach_buf+0x1b5/0x210
-> > > > [    4.211379]  virtio_transport_rx_work+0xb7/0x140
-> > > > [    4.211379]  process_one_work+0x1ef/0x480
-> > > > [    4.211379]  worker_thread+0x312/0x460
-> > > > [    4.211379]  kthread+0x132/0x140
-> > > > [    4.211379]  ? process_one_work+0x480/0x480
-> > > > [    4.211379]  ? kthread_destroy_worker+0xd0/0xd0
-> > > > [    4.211379]  ret_from_fork+0x35/0x40
-> > > > [    4.211379] Code: c7 47 08 00 00 00 00 66 c7 07 28 00 c7 47 08 ff ff ff ff c7 47 04 ff ff ff ff c3 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 8b 47 08 <3b> 46 08 75 0a 8b 47 04 3b 46 04 0f 94 c0 c3 31 c0 c3 90 66 2e
-> > > > [    4.211379] RIP: vsock_addr_equals_addr+0x3/0x20 RSP: ffffaea1800ebd28
-> > > > [    4.211379] CR2: ffffffffffffffe8
-> > > > [    4.211379] ---[ end trace f31cc4a2e6df3689 ]---
-> > > > [    4.211379] Kernel panic - not syncing: Fatal exception in interrupt
-> > > > [    4.211379] Kernel Offset: 0x37000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
-> > > > [    4.211379] Rebooting in 5 seconds..
-> > > >
-> > > > Fixes: 22b5c0b63f32 ("vsock/virtio: fix kernel panic after device hot-unplug")
-> > > > Cc: Stefan Hajnoczi <stefanha@redhat.com>
-> > > > Cc: "David S. Miller" <davem@davemloft.net>
-> > > > Cc: kvm@vger.kernel.org
-> > > > Cc: virtualization@lists.linux-foundation.org
-> > > > Cc: netdev@vger.kernel.org
-> > > > Cc: kernel-team@android.com
-> > > > Cc: stable@vger.kernel.org [4.9+]
-> > > > Signed-off-by: Jorge E. Moreira <jemoreira@google.com>
-> > > > ---
-> > > >  net/vmw_vsock/virtio_transport.c | 13 ++++++-------
-> > > >  1 file changed, 6 insertions(+), 7 deletions(-)
-> > > >
-> > > > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-> > > > index 15eb5d3d4750..96ab344f17bb 100644
-> > > > --- a/net/vmw_vsock/virtio_transport.c
-> > > > +++ b/net/vmw_vsock/virtio_transport.c
-> > > > @@ -702,28 +702,27 @@ static int __init virtio_vsock_init(void)
-> > > >     if (!virtio_vsock_workqueue)
-> > > >             return -ENOMEM;
-> > > >
-> > > > -   ret = register_virtio_driver(&virtio_vsock_driver);
-> > > > +   ret = vsock_core_init(&virtio_transport.transport);
-> > >
-> > > Have you checked that all transport callbacks are safe even if another
-> > > CPU calls them while virtio_vsock_probe() is executing on another CPU?
-> > >
-> >
-> > I have the same doubt.
-> >
-> > What do you think to take the 'the_virtio_vsock_mutex' in the
-> > virtio_vsock_init(), keeping the previous order?
-> >
-> > This should prevent this issue because the virtio_vsock_probe() remains
-> > blocked in the mutex until the end of vsock_core_init().
-> >
-> > Cheers,
-> > Stefano
-> 
-> Hi Stefan, Stefano,
-> Sorry for the late reply.
-
-Don't worry :)
-
-> 
-> @Stefan
-> The order of vsock_core_exit() does not need to be changed to fix the
-> bug I found, but not changing it means the exit function is not
-> symmetric to the init function.
-> 
-> @Stefano
-> Taking the mutex from virtio_vsock_init() could work too (I haven't
-> tried it yet), but it's unnecessary, all that needs to be done is
-> properly initialize vsock_core before attempting to use it.
-> 
-> I would prefer to change the order in virtio_vsock_init, while leaving
-> virtio_vsock_exit unchanged, but I'll leave the final decision to you
-> since I am not very familiar with the inner workings of these modules.
-
-In order to fix your issue, IMO changing the order in virtio_vsock_init(),
-is enough.
-
-I think also that is correct to change the order in the virtio_vsock_exit(),
-otherwise, we should have the same issue if an interrupt comes while we
-are removing the module.
-This should not lead to the problem that I tried to solve in 22b5c0b63f32,
-because the vsock_core_exit() should not be called if there are open sockets,
-since the virtio-vsock driver become the owner of AF_VSOCK protocol
-family.
-
-Not related to this patch, maybe there are some issues in the
-virtio_vsock_probe(). I'd check better if it is correct to set
-'the_virtio_vsock' before the end of the initialization (e.g. spinlocks
-are initialized later).
-
-Accordingly,
-
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-
-Thanks,
-Stefano
+> Most H/W i have seen has a global indexed stats table which is
+> shared by different action types (droppers, accept, mirror etc).
+> The specific actions may also have their own tables which also
+> then refer to the 32 bit index used in the stats table[1].
+> So for this to work well, the action will need at minimal to have
+> two indices one that is used in hardware stats table
+> and another that is kernel mapped to identify the attributes. Of
+> course we'll need to have a skip_sw flag etc.
+I'm not sure I'm parsing this correctly, but are you saying that the
+ index namespace is per-action type?  I.e. a mirred and a drop action
+ could have the same index yet expect to have separate counters?  My
+ approach here has assumed that in such a case they would share their
+ counters.
