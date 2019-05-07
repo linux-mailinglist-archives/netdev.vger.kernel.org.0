@@ -2,157 +2,427 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6771416031
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 11:10:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D2561605A
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 11:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbfEGJKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 05:10:07 -0400
-Received: from mail-it1-f200.google.com ([209.85.166.200]:41080 "EHLO
-        mail-it1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbfEGJKH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 05:10:07 -0400
-Received: by mail-it1-f200.google.com with SMTP id y62so14062868itd.6
-        for <netdev@vger.kernel.org>; Tue, 07 May 2019 02:10:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=wGj8QD5gKJW43OuUYpH6pO7J5gHO+g1GMqUge+gSVCw=;
-        b=J8bIFIK0DVV5bCZ6WVIyjQlGmgzzC90kGix/bFRkO3h8W0KjlbLho387aTT2cvFvTQ
-         lMZWSi5g0R7ebOKz08UlyoR1jv4tb3tM/Dta8XRf0f5n5AenQg6+YOTPevw3IpKiWtnR
-         JbgmlODH+3djSstojgXn9I1KjbrmL1i+eyKdnVtxxBwxnNU8u0VfWEsdYKjOs7E7nt2G
-         1hvMoNUcc8fjH/3Tl+oJvKe9hmRLgYXhb7j9lGm2+d5W6f7nZ8LLOBEwtJ4sPchPdj5R
-         Wa0mLX3InYiVtAZQn/Ggg9QuupSQQA6kUYhRB1oInkxRzWknv4srSTTK4Tzuhl/ppa7E
-         UOQw==
-X-Gm-Message-State: APjAAAV8qBtGpIBRD08D2G8+H4jL/SfnfEwfquyVncU6yHxeLqqqhz8a
-        hMvZW9zSwQn/mJz3CG/PhHVoB3oalf1p1p2Lsq1bsX0d4MdM
-X-Google-Smtp-Source: APXvYqxDW5QCZU/EC3UQeUBZbnYC491FuIKbQhdZyD6oz6ReScipKY22VF2GVnlNUccnTQrfJH2EAiIxRFO/ATvrnpwvlaT00zLt
+        id S1726805AbfEGJQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 05:16:11 -0400
+Received: from mail.katalix.com ([82.103.140.233]:48113 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726798AbfEGJQK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 05:16:10 -0400
+X-Greylist: delayed 330 seconds by postgrey-1.27 at vger.kernel.org; Tue, 07 May 2019 05:16:08 EDT
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 776D3BC821;
+        Tue,  7 May 2019 10:10:35 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=katalix.com; s=mail;
+        t=1557220235; bh=RSfMNPqTQc3cr0GQ+yyZsRK0XvXnC44GQn5BoIm9Thw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=0BCO09wgjKUE90bSy/P3dLLs4I3BxhTpnyGR81cA99IBgHylfoZnpjb0CJXgGjdNi
+         xH/3EoOQ3WLkqX4GELBDWPD5ff3o22Eg+vebrtX4XSHAT1Erbwzlwp/grb3luukeyJ
+         Gp64QsIzBrrqhrthV6rcCWf0HMsVFyjsXnAacpvI=
+Date:   Tue, 7 May 2019 10:10:34 +0100
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     linux-ppp@vger.kernel.org, netdev@vger.kernel.org,
+        Paul Mackerras <paulus@ozlabs.org>,
+        Jo-Philipp Wich <jo@mein.io>
+Subject: Re: [PATCH pppd v4] pppoe: custom host-uniq tag
+Message-ID: <20190507091034.GA3561@jackdaw>
+References: <20190504164853.4736-1-mcroce@redhat.com>
 MIME-Version: 1.0
-X-Received: by 2002:a24:7595:: with SMTP id y143mr7969814itc.42.1557220205903;
- Tue, 07 May 2019 02:10:05 -0700 (PDT)
-Date:   Tue, 07 May 2019 02:10:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000035c756058848954a@google.com>
-Subject: KASAN: use-after-free Read in hci_cmd_timeout
-From:   syzbot <syzbot+19a9f729f05272857487@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="RnlQjJ0d97Da+TV1"
+Content-Disposition: inline
+In-Reply-To: <20190504164853.4736-1-mcroce@redhat.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following crash on:
+--RnlQjJ0d97Da+TV1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-HEAD commit:    83a50840 Merge tag 'seccomp-v5.1-rc8' of git://git.kernel...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14b99b60a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ef1b87b455c397cf
-dashboard link: https://syzkaller.appspot.com/bug?extid=19a9f729f05272857487
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+Hi Matteo,
 
-Unfortunately, I don't have any reproducer for this crash yet.
+On Sat, May 04, 2019 at 06:48:53PM +0200, Matteo Croce wrote:
+> Add pppoe 'host-uniq' option to set an arbitrary
+> host-uniq tag instead of the pppd pid.
+> Some ISPs use such tag to authenticate the CPE,
+> so it must be set to a proper value to connect.
+>=20
+> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> Signed-off-by: Jo-Philipp Wich <jo@mein.io>
+> ---
+>  pppd/plugins/rp-pppoe/common.c          | 14 +++----
+>  pppd/plugins/rp-pppoe/discovery.c       | 52 ++++++++++---------------
+>  pppd/plugins/rp-pppoe/plugin.c          | 15 ++++++-
+>  pppd/plugins/rp-pppoe/pppoe-discovery.c | 41 ++++++++++++-------
+>  pppd/plugins/rp-pppoe/pppoe.h           | 30 +++++++++++++-
+>  5 files changed, 96 insertions(+), 56 deletions(-)
+>=20
+> diff --git a/pppd/plugins/rp-pppoe/common.c b/pppd/plugins/rp-pppoe/commo=
+n.c
+> index 89c633c..8f175ec 100644
+> --- a/pppd/plugins/rp-pppoe/common.c
+> +++ b/pppd/plugins/rp-pppoe/common.c
+> @@ -119,15 +119,11 @@ sendPADT(PPPoEConnection *conn, char const *msg)
+>      conn->session =3D 0;
+> =20
+>      /* If we're using Host-Uniq, copy it over */
+> -    if (conn->useHostUniq) {
+> -	PPPoETag hostUniq;
+> -	pid_t pid =3D getpid();
+> -	hostUniq.type =3D htons(TAG_HOST_UNIQ);
+> -	hostUniq.length =3D htons(sizeof(pid));
+> -	memcpy(hostUniq.payload, &pid, sizeof(pid));
+> -	memcpy(cursor, &hostUniq, sizeof(pid) + TAG_HDR_SIZE);
+> -	cursor +=3D sizeof(pid) + TAG_HDR_SIZE;
+> -	plen +=3D sizeof(pid) + TAG_HDR_SIZE;
+> +    if (conn->hostUniq.length) {
+> +	int len =3D ntohs(conn->hostUniq.length);
+> +	memcpy(cursor, &conn->hostUniq, len + TAG_HDR_SIZE);
+> +	cursor +=3D len + TAG_HDR_SIZE;
+> +	plen +=3D len + TAG_HDR_SIZE;
+>      }
+> =20
+>      /* Copy error message */
+> diff --git a/pppd/plugins/rp-pppoe/discovery.c b/pppd/plugins/rp-pppoe/di=
+scovery.c
+> index 04877cb..16a59f7 100644
+> --- a/pppd/plugins/rp-pppoe/discovery.c
+> +++ b/pppd/plugins/rp-pppoe/discovery.c
+> @@ -80,14 +80,10 @@ static void
+>  parseForHostUniq(UINT16_t type, UINT16_t len, unsigned char *data,
+>  		 void *extra)
+>  {
+> -    int *val =3D (int *) extra;
+> -    if (type =3D=3D TAG_HOST_UNIQ && len =3D=3D sizeof(pid_t)) {
+> -	pid_t tmp;
+> -	memcpy(&tmp, data, len);
+> -	if (tmp =3D=3D getpid()) {
+> -	    *val =3D 1;
+> -	}
+> -    }
+> +    PPPoETag *tag =3D extra;
+> +
+> +    if (type =3D=3D TAG_HOST_UNIQ && len =3D=3D ntohs(tag->length))
+> +	tag->length =3D memcmp(data, tag->payload, len);
+>  }
+> =20
+>  /**********************************************************************
+> @@ -104,16 +100,16 @@ parseForHostUniq(UINT16_t type, UINT16_t len, unsig=
+ned char *data,
+>  static int
+>  packetIsForMe(PPPoEConnection *conn, PPPoEPacket *packet)
+>  {
+> -    int forMe =3D 0;
+> +    PPPoETag hostUniq =3D conn->hostUniq;
+> =20
+>      /* If packet is not directed to our MAC address, forget it */
+>      if (memcmp(packet->ethHdr.h_dest, conn->myEth, ETH_ALEN)) return 0;
+> =20
+>      /* If we're not using the Host-Unique tag, then accept the packet */
+> -    if (!conn->useHostUniq) return 1;
+> +    if (!conn->hostUniq.length) return 1;
+> =20
+> -    parsePacket(packet, parseForHostUniq, &forMe);
+> -    return forMe;
+> +    parsePacket(packet, parseForHostUniq, &hostUniq);
+> +    return !hostUniq.length;
+>  }
+> =20
+>  /**********************************************************************
+> @@ -301,16 +297,12 @@ sendPADI(PPPoEConnection *conn)
+>      }
+> =20
+>      /* If we're using Host-Uniq, copy it over */
+> -    if (conn->useHostUniq) {
+> -	PPPoETag hostUniq;
+> -	pid_t pid =3D getpid();
+> -	hostUniq.type =3D htons(TAG_HOST_UNIQ);
+> -	hostUniq.length =3D htons(sizeof(pid));
+> -	memcpy(hostUniq.payload, &pid, sizeof(pid));
+> -	CHECK_ROOM(cursor, packet.payload, sizeof(pid) + TAG_HDR_SIZE);
+> -	memcpy(cursor, &hostUniq, sizeof(pid) + TAG_HDR_SIZE);
+> -	cursor +=3D sizeof(pid) + TAG_HDR_SIZE;
+> -	plen +=3D sizeof(pid) + TAG_HDR_SIZE;
+> +    if (conn->hostUniq.length) {
+> +	int len =3D ntohs(conn->hostUniq.length);
+> +	CHECK_ROOM(cursor, packet.payload, len + TAG_HDR_SIZE);
+> +	memcpy(cursor, &conn->hostUniq, len + TAG_HDR_SIZE);
+> +	cursor +=3D len + TAG_HDR_SIZE;
+> +	plen +=3D len + TAG_HDR_SIZE;
+>      }
+>
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+19a9f729f05272857487@syzkaller.appspotmail.com
+This change recently caused breakage for us in a test environment when
+we updated to Ubuntu Bionic for some of the test VMs.  Bionic picks up
+this patch:
 
-==================================================================
-BUG: KASAN: use-after-free in hci_cmd_timeout+0x212/0x220  
-net/bluetooth/hci_core.c:2617
-Read of size 2 at addr ffff88809fa9ca08 by task kworker/1:1/22
+https://sources.debian.org/patches/ppp/2.4.7-1+4/pr-28-pppoe-custom-host-un=
+iq-tag.patch/
 
-CPU: 1 PID: 22 Comm: kworker/1:1 Not tainted 5.1.0-rc7+ #94
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events hci_cmd_timeout
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  print_address_description.cold+0x7c/0x20d mm/kasan/report.c:187
-  kasan_report.cold+0x1b/0x40 mm/kasan/report.c:317
-  __asan_report_load_n_noabort+0xf/0x20 mm/kasan/generic_report.c:142
-  hci_cmd_timeout+0x212/0x220 net/bluetooth/hci_core.c:2617
-  process_one_work+0x98e/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x357/0x430 kernel/kthread.c:253
-  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+Previously, pppd would send a Host-Uniq tag by default, since
+PPPOEInitDevice would set conn->useHostUniq to 1, and nothing ever
+changed it from that default value.
 
-Allocated by task 8319:
-  save_stack+0x45/0xd0 mm/kasan/common.c:75
-  set_track mm/kasan/common.c:87 [inline]
-  __kasan_kmalloc mm/kasan/common.c:497 [inline]
-  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:470
-  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:511
-  __do_kmalloc_node mm/slab.c:3687 [inline]
-  __kmalloc_node_track_caller+0x4e/0x70 mm/slab.c:3701
-  __kmalloc_reserve.isra.0+0x40/0xf0 net/core/skbuff.c:140
-  __alloc_skb+0x10b/0x5e0 net/core/skbuff.c:208
-  alloc_skb include/linux/skbuff.h:1058 [inline]
-  bt_skb_alloc include/net/bluetooth/bluetooth.h:339 [inline]
-  hci_prepare_cmd+0x30/0x230 net/bluetooth/hci_request.c:287
-  hci_req_add_ev+0xb0/0x210 net/bluetooth/hci_request.c:321
-  __hci_cmd_sync_ev+0xfc/0x1c0 net/bluetooth/hci_request.c:133
-  __hci_cmd_sync+0x37/0x50 net/bluetooth/hci_request.c:182
-  btintel_enter_mfg+0x2e/0x90 drivers/bluetooth/btintel.c:82
-  ag6xx_setup+0x106/0x820 drivers/bluetooth/hci_ag6xx.c:180
-  hci_uart_setup+0x1c4/0x490 drivers/bluetooth/hci_ldisc.c:418
-  hci_dev_do_open+0x78c/0x1780 net/bluetooth/hci_core.c:1450
-  hci_power_on+0x10d/0x580 net/bluetooth/hci_core.c:2173
-  process_one_work+0x98e/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x357/0x430 kernel/kthread.c:253
-  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+With this change the logic is different: Host-Uniq will only be sent
+if the user supplies the tag content as a part of the pppd command
+line arguments.
 
-Freed by task 8319:
-  save_stack+0x45/0xd0 mm/kasan/common.c:75
-  set_track mm/kasan/common.c:87 [inline]
-  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:459
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:467
-  __cache_free mm/slab.c:3499 [inline]
-  kfree+0xcf/0x230 mm/slab.c:3822
-  skb_free_head+0x93/0xb0 net/core/skbuff.c:557
-  skb_release_data+0x576/0x7a0 net/core/skbuff.c:577
-  skb_release_all+0x4d/0x60 net/core/skbuff.c:631
-  __kfree_skb net/core/skbuff.c:645 [inline]
-  kfree_skb net/core/skbuff.c:663 [inline]
-  kfree_skb+0xe8/0x390 net/core/skbuff.c:657
-  hci_dev_do_open+0xb2b/0x1780 net/bluetooth/hci_core.c:1552
-  hci_power_on+0x10d/0x580 net/bluetooth/hci_core.c:2173
-  process_one_work+0x98e/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x357/0x430 kernel/kthread.c:253
-  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+This mattered in our test environment since we were using a single
+host to instantiate multiple PPPoE connections for stress-testing
+purposes.  The change from "default Host-Uniq on" to "default
+Host-Uniq off" broke that environment since the PPPoE server could no
+longer distinguish between the client pppd processes.
 
-The buggy address belongs to the object at ffff88809fa9ca00
-  which belongs to the cache kmalloc-512 of size 512
-The buggy address is located 8 bytes inside of
-  512-byte region [ffff88809fa9ca00, ffff88809fa9cc00)
-The buggy address belongs to the page:
-page:ffffea00027ea700 count:1 mapcount:0 mapping:ffff8880aa400940 index:0x0
-flags: 0x1fffc0000000200(slab)
-raw: 01fffc0000000200 ffffea00023039c8 ffffea00026f9488 ffff8880aa400940
-raw: 0000000000000000 ffff88809fa9c000 0000000100000006 0000000000000000
-page dumped because: kasan: bad access detected
+Whether or not this change would matter outside our test env I'm not
+sure.  But I wonder whether this change could be made while retaining
+the "default Host-Uniq on" behaviour?
 
-Memory state around the buggy address:
-  ffff88809fa9c900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff88809fa9c980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> ffff88809fa9ca00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                       ^
-  ffff88809fa9ca80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff88809fa9cb00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+>      /* Add our maximum MTU/MRU */
+> @@ -478,16 +470,12 @@ sendPADR(PPPoEConnection *conn)
+>      cursor +=3D namelen + TAG_HDR_SIZE;
+> =20
+>      /* If we're using Host-Uniq, copy it over */
+> -    if (conn->useHostUniq) {
+> -	PPPoETag hostUniq;
+> -	pid_t pid =3D getpid();
+> -	hostUniq.type =3D htons(TAG_HOST_UNIQ);
+> -	hostUniq.length =3D htons(sizeof(pid));
+> -	memcpy(hostUniq.payload, &pid, sizeof(pid));
+> -	CHECK_ROOM(cursor, packet.payload, sizeof(pid)+TAG_HDR_SIZE);
+> -	memcpy(cursor, &hostUniq, sizeof(pid) + TAG_HDR_SIZE);
+> -	cursor +=3D sizeof(pid) + TAG_HDR_SIZE;
+> -	plen +=3D sizeof(pid) + TAG_HDR_SIZE;
+> +    if (conn->hostUniq.length) {
+> +	int len =3D ntohs(conn->hostUniq.length);
+> +	CHECK_ROOM(cursor, packet.payload, len+TAG_HDR_SIZE);
+> +	memcpy(cursor, &conn->hostUniq, len + TAG_HDR_SIZE);
+> +	cursor +=3D len + TAG_HDR_SIZE;
+> +	plen +=3D len + TAG_HDR_SIZE;
+>      }
+> =20
+>      /* Add our maximum MTU/MRU */
+> diff --git a/pppd/plugins/rp-pppoe/plugin.c b/pppd/plugins/rp-pppoe/plugi=
+n.c
+> index c89be94..966be15 100644
+> --- a/pppd/plugins/rp-pppoe/plugin.c
+> +++ b/pppd/plugins/rp-pppoe/plugin.c
+> @@ -68,6 +68,7 @@ static char *existingSession =3D NULL;
+>  static int printACNames =3D 0;
+>  static char *pppoe_reqd_mac =3D NULL;
+>  unsigned char pppoe_reqd_mac_addr[6];
+> +static char *host_uniq;
+> =20
+>  static int PPPoEDevnameHook(char *cmd, char **argv, int doit);
+>  static option_t Options[] =3D {
+> @@ -85,6 +86,8 @@ static option_t Options[] =3D {
+>        "Be verbose about discovered access concentrators"},
+>      { "pppoe-mac", o_string, &pppoe_reqd_mac,
+>        "Only connect to specified MAC address" },
+> +    { "host-uniq", o_string, &host_uniq,
+> +      "Set the Host-Uniq to the supplied hex string" },
+>      { NULL }
+>  };
+>  int (*OldDevnameHook)(char *cmd, char **argv, int doit) =3D NULL;
+> @@ -110,7 +113,6 @@ PPPOEInitDevice(void)
+>      conn->ifName =3D devnam;
+>      conn->discoverySocket =3D -1;
+>      conn->sessionSocket =3D -1;
+> -    conn->useHostUniq =3D 1;
+>      conn->printACNames =3D printACNames;
+>      conn->discoveryTimeout =3D PADI_TIMEOUT;
+>      return 1;
+> @@ -166,6 +168,17 @@ PPPOEConnectDevice(void)
+>      if (lcp_wantoptions[0].mru > ifr.ifr_mtu - TOTAL_OVERHEAD)
+>  	lcp_wantoptions[0].mru =3D ifr.ifr_mtu - TOTAL_OVERHEAD;
+> =20
+> +    if (host_uniq) {
+> +	if (!parseHostUniq(host_uniq, &conn->hostUniq))
+> +	    fatal("Illegal value for host-uniq option");
+> +    } else {
+> +	/* if a custom host-uniq is not supplied, use our PID */
+> +	pid_t pid =3D getpid();
+> +	conn->hostUniq.type =3D htons(TAG_HOST_UNIQ);
+> +	conn->hostUniq.length =3D htons(sizeof(pid));
+> +	memcpy(conn->hostUniq.payload, &pid, sizeof(pid));
+> +    }
+> +
+>      conn->acName =3D acName;
+>      conn->serviceName =3D pppd_pppoe_service;
+>      strlcpy(ppp_devnam, devnam, sizeof(ppp_devnam));
+> diff --git a/pppd/plugins/rp-pppoe/pppoe-discovery.c b/pppd/plugins/rp-pp=
+poe/pppoe-discovery.c
+> index bce71fc..f71aec8 100644
+> --- a/pppd/plugins/rp-pppoe/pppoe-discovery.c
+> +++ b/pppd/plugins/rp-pppoe/pppoe-discovery.c
+> @@ -356,7 +356,7 @@ packetIsForMe(PPPoEConnection *conn, PPPoEPacket *pac=
+ket)
+>      if (memcmp(packet->ethHdr.h_dest, conn->myEth, ETH_ALEN)) return 0;
+> =20
+>      /* If we're not using the Host-Unique tag, then accept the packet */
+> -    if (!conn->useHostUniq) return 1;
+> +    if (!conn->hostUniq.length) return 1;
+> =20
+>      parsePacket(packet, parseForHostUniq, &forMe);
+>      return forMe;
+> @@ -494,16 +494,12 @@ sendPADI(PPPoEConnection *conn)
+>      cursor +=3D namelen + TAG_HDR_SIZE;
+> =20
+>      /* If we're using Host-Uniq, copy it over */
+> -    if (conn->useHostUniq) {
+> -	PPPoETag hostUniq;
+> -	pid_t pid =3D getpid();
+> -	hostUniq.type =3D htons(TAG_HOST_UNIQ);
+> -	hostUniq.length =3D htons(sizeof(pid));
+> -	memcpy(hostUniq.payload, &pid, sizeof(pid));
+> -	CHECK_ROOM(cursor, packet.payload, sizeof(pid) + TAG_HDR_SIZE);
+> -	memcpy(cursor, &hostUniq, sizeof(pid) + TAG_HDR_SIZE);
+> -	cursor +=3D sizeof(pid) + TAG_HDR_SIZE;
+> -	plen +=3D sizeof(pid) + TAG_HDR_SIZE;
+> +    if (conn->hostUniq.length) {
+> +	int len =3D ntohs(conn->hostUniq.length);
+> +	CHECK_ROOM(cursor, packet.payload, len + TAG_HDR_SIZE);
+> +	memcpy(cursor, &conn->hostUniq, len + TAG_HDR_SIZE);
+> +	cursor +=3D len + TAG_HDR_SIZE;
+> +	plen +=3D len + TAG_HDR_SIZE;
+>      }
+> =20
+>      packet.length =3D htons(plen);
+> @@ -669,7 +665,7 @@ int main(int argc, char *argv[])
+>      conn->discoveryTimeout =3D PADI_TIMEOUT;
+>      conn->discoveryAttempts =3D MAX_PADI_ATTEMPTS;
+> =20
+> -    while ((opt =3D getopt(argc, argv, "I:D:VUQS:C:t:a:h")) > 0) {
+> +    while ((opt =3D getopt(argc, argv, "I:D:VUQS:C:W:t:a:h")) > 0) {
+>  	switch(opt) {
+>  	case 'S':
+>  	    conn->serviceName =3D xstrdup(optarg);
+> @@ -696,7 +692,25 @@ int main(int argc, char *argv[])
+>  	    }
+>  	    break;
+>  	case 'U':
+> -	    conn->useHostUniq =3D 1;
+> +	    if(conn->hostUniq.length) {
+> +		fprintf(stderr, "-U and -W are mutually exclusive\n");
+> +		exit(EXIT_FAILURE);
+> +	    } else {
+> +		pid_t pid =3D getpid();
+> +		conn->hostUniq.type =3D htons(TAG_HOST_UNIQ);
+> +		conn->hostUniq.length =3D htons(sizeof(pid));
+> +		memcpy(conn->hostUniq.payload, &pid, sizeof(pid));
+> +	    }
+> +	    break;
+> +	case 'W':
+> +	    if(conn->hostUniq.length) {
+> +		fprintf(stderr, "-U and -W are mutually exclusive\n");
+> +		exit(EXIT_FAILURE);
+> +	    }
+> +	    if (!parseHostUniq(optarg, &conn->hostUniq)) {
+> +		fprintf(stderr, "Invalid host-uniq argument: %s\n", optarg);
+> +		exit(EXIT_FAILURE);
+> +            }
+>  	    break;
+>  	case 'D':
+>  	    conn->debugFile =3D fopen(optarg, "w");
+> @@ -777,6 +791,7 @@ void usage(void)
+>  	    "   -S name        -- Set desired service name.\n"
+>  	    "   -C name        -- Set desired access concentrator name.\n"
+>  	    "   -U             -- Use Host-Unique to allow multiple PPPoE sessi=
+ons.\n"
+> +	    "   -W hexvalue    -- Set the Host-Unique to the supplied hex strin=
+g.\n"
+>  	    "   -h             -- Print usage information.\n");
+>      fprintf(stderr, "\nVersion " RP_VERSION "\n");
+>  }
+> diff --git a/pppd/plugins/rp-pppoe/pppoe.h b/pppd/plugins/rp-pppoe/pppoe.h
+> index 813dcf3..2ea153f 100644
+> --- a/pppd/plugins/rp-pppoe/pppoe.h
+> +++ b/pppd/plugins/rp-pppoe/pppoe.h
+> @@ -21,6 +21,8 @@
+> =20
+>  #include <stdio.h>		/* For FILE */
+>  #include <sys/types.h>		/* For pid_t */
+> +#include <ctype.h>
+> +#include <string.h>
+> =20
+>  /* How do we access raw Ethernet devices? */
+>  #undef USE_LINUX_PACKET
+> @@ -236,7 +238,7 @@ typedef struct PPPoEConnectionStruct {
+>      char *serviceName;		/* Desired service name, if any */
+>      char *acName;		/* Desired AC name, if any */
+>      int synchronous;		/* Use synchronous PPP */
+> -    int useHostUniq;		/* Use Host-Uniq tag */
+> +    PPPoETag hostUniq;		/* Use Host-Uniq tag */
+>      int printACNames;		/* Just print AC names */
+>      FILE *debugFile;		/* Debug file for dumping packets */
+>      int numPADOs;		/* Number of PADO packets received */
+> @@ -293,6 +295,32 @@ void pppoe_printpkt(PPPoEPacket *packet,
+>  		    void (*printer)(void *, char *, ...), void *arg);
+>  void pppoe_log_packet(const char *prefix, PPPoEPacket *packet);
+> =20
+> +static inline int parseHostUniq(const char *uniq, PPPoETag *tag)
+> +{
+> +    unsigned i, len =3D strlen(uniq);
+> +
+> +#define hex(x) \
+> +    (((x) <=3D '9') ? ((x) - '0') : \
+> +        (((x) <=3D 'F') ? ((x) - 'A' + 10) : \
+> +            ((x) - 'a' + 10)))
+> +
+> +    if (!len || len % 2 || len / 2 > sizeof(tag->payload))
+> +        return 0;
+> +
+> +    for (i =3D 0; i < len; i +=3D 2) {
+> +        if (!isxdigit(uniq[i]) || !isxdigit(uniq[i+1]))
+> +            return 0;
+> +
+> +        tag->payload[i / 2] =3D (char)(hex(uniq[i]) << 4 | hex(uniq[i+1]=
+));
+> +    }
+> +
+> +#undef hex
+> +
+> +    tag->type =3D htons(TAG_HOST_UNIQ);
+> +    tag->length =3D htons(len / 2);
+> +    return 1;
+> +}
+> +
+>  #define SET_STRING(var, val) do { if (var) free(var); var =3D strDup(val=
+); } while(0);
+> =20
+>  #define CHECK_ROOM(cursor, start, len) \
+> --=20
+> 2.21.0
+>=20
 
+--=20
+Tom Parkin
+Katalix Systems Ltd
+http://www.katalix.com
+Catalysts for your Embedded Linux software development
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+--RnlQjJ0d97Da+TV1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQEcBAEBAgAGBQJc0UuKAAoJEJSMBmUKuovQR94IAIa9lbhcZ/+EbzQvvNv/VJXb
+PZJPdv6M5Ou3xjI4yZBMDD2rvNZicPqfWa8l1IR/NzF73p+tti4dJ2hazuPnQ4lp
+83/GeV4yDixIeqWs8vh9Nwqk9ZnCRX/b+S6y91Tjhofan3uEgClw8Sj3rVLtxgFG
+9H7Frge2w9N+l/S8zwHiywf6NKfGUWXrvYp1SiRD8AbvrsZPwwAIHNxPfVeyg3vI
++2Yl/bAVNvYy3ZsTUxGDI359G2neb1zHP0NpS9qiky88oRlEkl9OUJ52lqDccAoM
+K9qGuGhab8rTHO5mlqBGbEyJKNHSx/SbR6LmW/udHxHU0//OVIBGPJOCDT6V9w0=
+=+lq1
+-----END PGP SIGNATURE-----
+
+--RnlQjJ0d97Da+TV1--
