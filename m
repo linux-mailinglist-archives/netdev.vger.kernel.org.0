@@ -2,166 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E35156F8
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 02:37:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 749851578D
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 04:23:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726435AbfEGAhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 May 2019 20:37:50 -0400
-Received: from alln-iport-2.cisco.com ([173.37.142.89]:50779 "EHLO
-        alln-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726073AbfEGAhu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 May 2019 20:37:50 -0400
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0DtAgB90tBc/5JdJa1lHAEBAQQBAQc?=
- =?us-ascii?q?EAQGBZYIRgW0oshmBZxCEbQKCEyM4EwEDAQEEAQECAQJtKIVLBidSEFFXBxK?=
- =?us-ascii?q?DIoILrVIzhTeDOoFFFIEehniEVheBf4ERg1CEKAWFeQSSQIENk28JggtWkWc?=
- =?us-ascii?q?nbpRijB+VGYFmIYFWMxoIGxWCCIEfgkaOKx8DMJJaAQE?=
-X-IronPort-AV: E=Sophos;i="5.60,439,1549929600"; 
-   d="scan'208";a="270222088"
-Received: from rcdn-core-10.cisco.com ([173.37.93.146])
-  by alln-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 07 May 2019 00:37:48 +0000
-Received: from tusi.cisco.com (tusi.cisco.com [172.24.98.27])
-        by rcdn-core-10.cisco.com (8.15.2/8.15.2) with ESMTP id x470bjOH019352;
-        Tue, 7 May 2019 00:37:47 GMT
-From:   Ruslan Babayev <ruslan@babayev.com>
-To:     linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, mika.westerberg@linux.intel.com,
-        wsa@the-dreams.de
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-acpi@vger.kernel.org, xe-linux-external@cisco.com
-Subject: [PATCH RFC v2 net-next 2/2] net: phy: sfp: enable i2c-bus detection on ACPI based systems
-Date:   Mon,  6 May 2019 17:35:57 -0700
-Message-Id: <20190507003557.40648-3-ruslan@babayev.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190505220524.37266-2-ruslan@babayev.com>
-References: <20190505220524.37266-2-ruslan@babayev.com>
-Reply-To: 20190505220524.37266-2-ruslan@babayev.com
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 172.24.98.27, tusi.cisco.com
-X-Outbound-Node: rcdn-core-10.cisco.com
+        id S1726453AbfEGCXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 May 2019 22:23:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:41082 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726145AbfEGCXg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 May 2019 22:23:36 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id F155D81127;
+        Tue,  7 May 2019 02:23:35 +0000 (UTC)
+Received: from hp-dl380pg8-02.lab.eng.pek2.redhat.com (hp-dl380pg8-02.lab.eng.pek2.redhat.com [10.73.8.12])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5C87160BEC;
+        Tue,  7 May 2019 02:23:30 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        James Bottomley <James.Bottomley@HansenPartnership.com>,
+        Andrea Arcangeli <aarcange@redhat.com>
+Subject: [PATCH RFC] vhost: don't use kmap() to log dirty pages
+Date:   Mon,  6 May 2019 22:23:29 -0400
+Message-Id: <1557195809-12373-1-git-send-email-jasowang@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Tue, 07 May 2019 02:23:36 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lookup I2C adapter using the "i2c-bus" device property on ACPI based
-systems similar to how it's done with DT.
+Vhost log dirty pages directly to a userspace bitmap through GUP and
+kmap_atomic() since kernel doesn't have a set_bit_to_user()
+helper. This will cause issues for the arch that has virtually tagged
+caches. The way to fix is to keep using userspace virtual address.
 
-An example DSD describing an SFP on an ACPI based system:
+Fortunately, futex has a cmpxchg to userspace memory helper
+futex_atomic_cmpxchg_inatomic(). So switch to use it to exchange the
+userspace bitmap with zero, set the bit and then write it back through
+put_user().
 
-Device (SFP0)
-{
-    Name (_HID, "PRP0001")
-    Name (_CRS, ResourceTemplate()
-    {
-        GpioIo(Exclusive, PullDefault, 0, 0, IoRestrictionNone,
-               "\\_SB.PCI0.RP01.GPIO", 0, ResourceConsumer)
-            { 0, 1, 2, 3, 4 }
-    })
-    Name (_DSD, Package ()
-    {
-        ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-        Package () {
-            Package () { "compatible", "sff,sfp" },
-            Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
-            Package () { "maximum-power-milliwatt", 1000 },
-            Package () { "tx-disable-gpios", Package () { ^SFP0, 0, 0, 1} },
-            Package () { "reset-gpio",       Package () { ^SFP0, 0, 1, 1} },
-            Package () { "mod-def0-gpios",   Package () { ^SFP0, 0, 2, 1} },
-            Package () { "tx-fault-gpios",   Package () { ^SFP0, 0, 3, 0} },
-            Package () { "los-gpios",        Package () { ^SFP0, 0, 4, 1} },
-        },
-    })
-}
+Note: there're archs (few non popular ones) that don't implement
+futex helper, we can't log dirty pages. We can fix them on top or
+simply disable LOG_ALL features of vhost.
 
-Device (PHY0)
-{
-    Name (_HID, "PRP0001")
-    Name (_DSD, Package ()
-    {
-        ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-        Package () {
-            Package () { "compatible", "ethernet-phy-ieee802.3-c45" },
-            Package () { "sfp", \_SB.PCI0.RP01.SFP0 },
-            Package () { "managed", "in-band-status" },
-            Package () { "phy-mode", "sgmii" },
-        },
-    })
-}
-
-Signed-off-by: Ruslan Babayev <ruslan@babayev.com>
-Cc: xe-linux-external@cisco.com
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: James Bottomley <James.Bottomley@HansenPartnership.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Fixes: 3a4d5c94e9593 ("vhost_net: a kernel-level virtio server")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/net/phy/sfp.c | 33 +++++++++++++++++++++++++--------
- 1 file changed, 25 insertions(+), 8 deletions(-)
+ drivers/vhost/vhost.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index d4635c2178d1..7a6c8df8899b 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -9,6 +9,7 @@
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/of.h>
-+#include <linux/acpi.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
- #include <linux/rtnetlink.h>
-@@ -1783,6 +1784,7 @@ static int sfp_probe(struct platform_device *pdev)
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 351af88..9c94c41 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -31,6 +31,7 @@
+ #include <linux/sched/signal.h>
+ #include <linux/interval_tree_generic.h>
+ #include <linux/nospec.h>
++#include <asm/futex.h>
+ 
+ #include "vhost.h"
+ 
+@@ -1692,25 +1693,27 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
+ }
+ EXPORT_SYMBOL_GPL(vhost_dev_ioctl);
+ 
+-/* TODO: This is really inefficient.  We need something like get_user()
+- * (instruction directly accesses the data, with an exception table entry
+- * returning -EFAULT). See Documentation/x86/exception-tables.txt.
+- */
+-static int set_bit_to_user(int nr, void __user *addr)
++static int set_bit_to_user(int nr, u32 __user *addr)
  {
- 	const struct sff_data *sff;
- 	struct sfp *sfp;
-+	struct i2c_adapter *i2c = NULL;
- 	bool poll = false;
- 	int irq, err, i;
+ 	unsigned long log = (unsigned long)addr;
+ 	struct page *page;
+-	void *base;
+-	int bit = nr + (log % PAGE_SIZE) * 8;
++	u32 old_log;
+ 	int r;
  
-@@ -1801,7 +1803,6 @@ static int sfp_probe(struct platform_device *pdev)
- 	if (pdev->dev.of_node) {
- 		struct device_node *node = pdev->dev.of_node;
- 		const struct of_device_id *id;
--		struct i2c_adapter *i2c;
- 		struct device_node *np;
- 
- 		id = of_match_node(sfp_of_match, node);
-@@ -1818,14 +1819,30 @@ static int sfp_probe(struct platform_device *pdev)
- 
- 		i2c = of_find_i2c_adapter_by_node(np);
- 		of_node_put(np);
--		if (!i2c)
--			return -EPROBE_DEFER;
--
--		err = sfp_i2c_configure(sfp, i2c);
--		if (err < 0) {
--			i2c_put_adapter(i2c);
--			return err;
-+	} else if (ACPI_COMPANION(&pdev->dev)) {
-+		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
-+		struct fwnode_handle *fw = acpi_fwnode_handle(adev);
-+		struct fwnode_reference_args args;
-+		struct acpi_handle *acpi_handle;
-+		int ret;
+ 	r = get_user_pages_fast(log, 1, 1, &page);
+ 	if (r < 0)
+ 		return r;
+ 	BUG_ON(r != 1);
+-	base = kmap_atomic(page);
+-	set_bit(bit, base);
+-	kunmap_atomic(base);
 +
-+		ret = acpi_node_get_property_reference(fw, "i2c-bus", 0, &args);
-+		if (ACPI_FAILURE(ret) || !is_acpi_device_node(args.fwnode)) {
-+			dev_err(&pdev->dev, "missing 'i2c-bus' property\n");
-+			return -ENODEV;
- 		}
++	r = futex_atomic_cmpxchg_inatomic(&old_log, addr, 0, 0);
++	if (r < 0)
++		return r;
 +
-+		acpi_handle = ACPI_HANDLE_FWNODE(args.fwnode);
-+		i2c = i2c_acpi_find_adapter_by_handle(acpi_handle);
-+	}
++	old_log |= 1 << nr;
++	r = put_user(old_log, addr);
++	if (r < 0)
++		return r;
 +
-+	if (!i2c)
-+		return -EPROBE_DEFER;
-+
-+	err = sfp_i2c_configure(sfp, i2c);
-+	if (err < 0) {
-+		i2c_put_adapter(i2c);
-+		return err;
- 	}
- 
- 	for (i = 0; i < GPIO_MAX; i++)
+ 	set_page_dirty_lock(page);
+ 	put_page(page);
+ 	return 0;
+@@ -1727,8 +1730,8 @@ static int log_write(void __user *log_base,
+ 	write_length += write_address % VHOST_PAGE_SIZE;
+ 	for (;;) {
+ 		u64 base = (u64)(unsigned long)log_base;
+-		u64 log = base + write_page / 8;
+-		int bit = write_page % 8;
++		u64 log = base + write_page / 32;
++		int bit = write_page % 32;
+ 		if ((u64)(unsigned long)log != log)
+ 			return -EFAULT;
+ 		r = set_bit_to_user(bit, (void __user *)(unsigned long)log);
 -- 
-2.17.1
+1.8.3.1
 
