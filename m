@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F2A015C49
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 08:02:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED78715C3E
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 08:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727349AbfEGFfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:35:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55550 "EHLO mail.kernel.org"
+        id S1727881AbfEGFfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:35:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55736 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727276AbfEGFfb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:35:31 -0400
+        id S1727357AbfEGFfp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:35:45 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D2EDD214AE;
-        Tue,  7 May 2019 05:35:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 862E620989;
+        Tue,  7 May 2019 05:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207330;
-        bh=mfgA1AuaX10R2u6azGrWCWNVloqUtLhMbn73+xrO3Og=;
+        s=default; t=1557207344;
+        bh=To6ntoFPkk+7s1H59Tx1g2okEXT3UKCDKafe5bRRc3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SgsBV5ntmD6YRYy0DsZrp5Jz5q724SMQmzC+J240+HdvUloD21Pm4m4OTkhEiJKfn
-         3vdanpXLnR+GTq84q0dvK4ejeSRKVaBvQTOncXotnB2JLxU2wbqRi0czZ60qVFQbFX
-         oER0D7FRg0ve4uFvVn50r7PKRIYTVQka/B/OKWxs=
+        b=xI6kGt/V77e2f4im+fnYM32aEqZ5pJSTbNy/szYMHZIsDO2DtRZT412tVUBBwv3Qo
+         Izwzvpd18q7CoCp8vdZSuYvwkrnIMX1UzSGi1YBzwmfTHpbXF/bgrJcdQSOcUeg/2t
+         bqpBAEPdGlRtQrDknltbwawxN0LgUBRQw0coEmgY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miaohe Lin <linmiaohe@huawei.com>,
-        Hui Wang <wanghui104@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 90/99] net: vrf: Fix operation not supported when set vrf mac
-Date:   Tue,  7 May 2019 01:32:24 -0400
-Message-Id: <20190507053235.29900-90-sashal@kernel.org>
+Cc:     Willem de Bruijn <willemb@google.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <alexander.levin@microsoft.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.0 96/99] bpf: only test gso type on gso packets
+Date:   Tue,  7 May 2019 01:32:30 -0400
+Message-Id: <20190507053235.29900-96-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053235.29900-1-sashal@kernel.org>
 References: <20190507053235.29900-1-sashal@kernel.org>
@@ -44,42 +44,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Willem de Bruijn <willemb@google.com>
 
-[ Upstream commit 6819e3f6d83a24777813b0d031ebe0861694db5a ]
+[ Upstream commit 4c3024debf62de4c6ac6d3cb4c0063be21d4f652 ]
 
-Vrf device is not able to change mac address now because lack of
-ndo_set_mac_address. Complete this in case some apps need to do
-this.
+BPF can adjust gso only for tcp bytestreams. Fail on other gso types.
 
-Reported-by: Hui Wang <wanghui104@huawei.com>
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+But only on gso packets. It does not touch this field if !gso_size.
+
+Fixes: b90efd225874 ("bpf: only adjust gso_size on bytestream protocols")
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
 ---
- drivers/net/vrf.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/skbuff.h | 4 ++--
+ net/core/filter.c      | 8 ++++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index cd15c32b2e43..9ee4d7402ca2 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -875,6 +875,7 @@ static const struct net_device_ops vrf_netdev_ops = {
- 	.ndo_init		= vrf_dev_init,
- 	.ndo_uninit		= vrf_dev_uninit,
- 	.ndo_start_xmit		= vrf_xmit,
-+	.ndo_set_mac_address	= eth_mac_addr,
- 	.ndo_get_stats64	= vrf_get_stats64,
- 	.ndo_add_slave		= vrf_add_slave,
- 	.ndo_del_slave		= vrf_del_slave,
-@@ -1274,6 +1275,7 @@ static void vrf_setup(struct net_device *dev)
- 	/* default to no qdisc; user can add if desired */
- 	dev->priv_flags |= IFF_NO_QUEUE;
- 	dev->priv_flags |= IFF_NO_RX_HANDLER;
-+	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index bdb9563c64a0..b8679dcba96f 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -4212,10 +4212,10 @@ static inline bool skb_is_gso_sctp(const struct sk_buff *skb)
+ 	return skb_shinfo(skb)->gso_type & SKB_GSO_SCTP;
+ }
  
- 	/* VRF devices do not care about MTU, but if the MTU is set
- 	 * too low then the ipv4 and ipv6 protocols are disabled
++/* Note: Should be called only if skb_is_gso(skb) is true */
+ static inline bool skb_is_gso_tcp(const struct sk_buff *skb)
+ {
+-	return skb_is_gso(skb) &&
+-	       skb_shinfo(skb)->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6);
++	return skb_shinfo(skb)->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6);
+ }
+ 
+ static inline void skb_gso_reset(struct sk_buff *skb)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index f7d0004fc160..ff07996515f2 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2789,7 +2789,7 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
+ 	u32 off = skb_mac_header_len(skb);
+ 	int ret;
+ 
+-	if (!skb_is_gso_tcp(skb))
++	if (skb_is_gso(skb) && !skb_is_gso_tcp(skb))
+ 		return -ENOTSUPP;
+ 
+ 	ret = skb_cow(skb, len_diff);
+@@ -2830,7 +2830,7 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+ 	u32 off = skb_mac_header_len(skb);
+ 	int ret;
+ 
+-	if (!skb_is_gso_tcp(skb))
++	if (skb_is_gso(skb) && !skb_is_gso_tcp(skb))
+ 		return -ENOTSUPP;
+ 
+ 	ret = skb_unclone(skb, GFP_ATOMIC);
+@@ -2955,7 +2955,7 @@ static int bpf_skb_net_grow(struct sk_buff *skb, u32 len_diff)
+ 	u32 off = skb_mac_header_len(skb) + bpf_skb_net_base_len(skb);
+ 	int ret;
+ 
+-	if (!skb_is_gso_tcp(skb))
++	if (skb_is_gso(skb) && !skb_is_gso_tcp(skb))
+ 		return -ENOTSUPP;
+ 
+ 	ret = skb_cow(skb, len_diff);
+@@ -2984,7 +2984,7 @@ static int bpf_skb_net_shrink(struct sk_buff *skb, u32 len_diff)
+ 	u32 off = skb_mac_header_len(skb) + bpf_skb_net_base_len(skb);
+ 	int ret;
+ 
+-	if (!skb_is_gso_tcp(skb))
++	if (skb_is_gso(skb) && !skb_is_gso_tcp(skb))
+ 		return -ENOTSUPP;
+ 
+ 	ret = skb_unclone(skb, GFP_ATOMIC);
 -- 
 2.20.1
 
