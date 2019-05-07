@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5183415994
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:38:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 799CF15B97
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:56:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727967AbfEGFiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:38:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57814 "EHLO mail.kernel.org"
+        id S1728524AbfEGFiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:38:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57916 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728499AbfEGFiB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:38:01 -0400
+        id S1726694AbfEGFiH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:38:07 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 77C2521530;
-        Tue,  7 May 2019 05:37:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B862220578;
+        Tue,  7 May 2019 05:38:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207480;
-        bh=dxV053zhGb4G++2yO2/3vvKS9KiYcm1mq0KoO8T0WdY=;
+        s=default; t=1557207486;
+        bh=PKfrynBKEvM/PKeZRU7lV68wr5wLDaGH2t074wvcoTY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mw8amyw9NJum7BkuRZ/pGbXJCo+VEj0fWcTzbNbTOB18w9/HTW5PIiiQi/xFTaSHr
-         bRmzO/NKSAwTZNCfCA6I9GH9OCBqPJ6JJAR4DYHdphXEMFIg98t7OKBVPGF9XbR4G+
-         Zgw2m4QLISqJZVfe+kJE0s+3Iwkp6knzm3RZc8zg=
+        b=0K2i3p/3Jut5GrBZ83+IuBvUHoVXfhhhghlUjwDb3u2G7r1soClxIJA90c3XsJ3ni
+         bn50ACV5gS/ezhdPc8UnWWgchqxRTqncmYZEnQUn2wCI/EGJBgD8RzmukQQEFLgeLt
+         93SEBlUe8S6XRRJk3WzG2zxI/HSBOWGfDhmEcki8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         Sasha Levin <alexander.levin@microsoft.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 66/81] net: dsa: mv88e6xxx: fix few issues in mv88e6390x_port_set_cmode
-Date:   Tue,  7 May 2019 01:35:37 -0400
-Message-Id: <20190507053554.30848-66-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 70/81] netfilter: nf_tables: use-after-free in dynamic operations
+Date:   Tue,  7 May 2019 01:35:41 -0400
+Message-Id: <20190507053554.30848-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053554.30848-1-sashal@kernel.org>
 References: <20190507053554.30848-1-sashal@kernel.org>
@@ -45,98 +45,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 5ceaeb99ffb4dc002d20f6ac243c19a85e2c7a76 ]
+[ Upstream commit 3f3a390dbd59d236f62cff8e8b20355ef7069e3d ]
 
-This patches fixes few issues in mv88e6390x_port_set_cmode().
+Smatch reports:
 
-1. When entering the function the old cmode may be 0, in this case
-   mv88e6390x_serdes_get_lane() returns -ENODEV. As result we bail
-   out and have no chance to set a new mode. Therefore deal properly
-   with -ENODEV.
+       net/netfilter/nf_tables_api.c:2167 nf_tables_expr_destroy()
+        error: dereferencing freed memory 'expr->ops'
 
-2. Once we have disabled power and irq, let's set the cached cmode to 0.
-   This reflects the actual status and is cleaner if we bail out with an
-   error in the following function calls.
+net/netfilter/nf_tables_api.c
+    2162 static void nf_tables_expr_destroy(const struct nft_ctx *ctx,
+    2163                                   struct nft_expr *expr)
+    2164 {
+    2165        if (expr->ops->destroy)
+    2166                expr->ops->destroy(ctx, expr);
+                                                ^^^^
+--> 2167        module_put(expr->ops->type->owner);
+                           ^^^^^^^^^
+    2168 }
 
-3. The cached cmode is used by mv88e6390x_serdes_get_lane(),
-   mv88e6390_serdes_power_lane() and mv88e6390_serdes_irq_enable().
-   Currently we set the cached mode to the new one at the very end of
-   the function only, means until then we use the old one what may be
-   wrong.
+Smatch says there are three functions which free expr->ops.
 
-4. When calling mv88e6390_serdes_irq_enable() we use the lane value
-   belonging to the old cmode. Get the lane belonging to the new cmode
-   before calling this function.
-
-It's hard to provide a good "Fixes" tag because quite a few smaller
-changes have been done to the code in question recently.
-
-Fixes: d235c48b40d3 ("net: dsa: mv88e6xxx: power serdes on/off for 10G interfaces on 6390X")
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: b8e204006340 ("netfilter: nft_compat: use .release_ops and remove list of extension")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
 ---
- drivers/net/dsa/mv88e6xxx/port.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ net/netfilter/nf_tables_api.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 7fffce734f0a..fdeddbfa829d 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -379,18 +379,22 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 		return 0;
- 
- 	lane = mv88e6390x_serdes_get_lane(chip, port);
--	if (lane < 0)
-+	if (lane < 0 && lane != -ENODEV)
- 		return lane;
- 
--	if (chip->ports[port].serdes_irq) {
--		err = mv88e6390_serdes_irq_disable(chip, port, lane);
-+	if (lane >= 0) {
-+		if (chip->ports[port].serdes_irq) {
-+			err = mv88e6390_serdes_irq_disable(chip, port, lane);
-+			if (err)
-+				return err;
-+		}
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index f272f9538c44..ef7ff13a7b99 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2113,9 +2113,11 @@ static int nf_tables_newexpr(const struct nft_ctx *ctx,
+ static void nf_tables_expr_destroy(const struct nft_ctx *ctx,
+ 				   struct nft_expr *expr)
+ {
++	const struct nft_expr_type *type = expr->ops->type;
 +
-+		err = mv88e6390x_serdes_power(chip, port, false);
- 		if (err)
- 			return err;
- 	}
- 
--	err = mv88e6390x_serdes_power(chip, port, false);
--	if (err)
--		return err;
-+	chip->ports[port].cmode = 0;
- 
- 	if (cmode) {
- 		err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_STS, &reg);
-@@ -404,6 +408,12 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 		if (err)
- 			return err;
- 
-+		chip->ports[port].cmode = cmode;
-+
-+		lane = mv88e6390x_serdes_get_lane(chip, port);
-+		if (lane < 0)
-+			return lane;
-+
- 		err = mv88e6390x_serdes_power(chip, port, true);
- 		if (err)
- 			return err;
-@@ -415,8 +425,6 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 		}
- 	}
- 
--	chip->ports[port].cmode = cmode;
--
- 	return 0;
+ 	if (expr->ops->destroy)
+ 		expr->ops->destroy(ctx, expr);
+-	module_put(expr->ops->type->owner);
++	module_put(type->owner);
  }
  
+ struct nft_expr *nft_expr_init(const struct nft_ctx *ctx,
 -- 
 2.20.1
 
