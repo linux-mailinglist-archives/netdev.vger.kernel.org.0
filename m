@@ -2,80 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 833BF1616B
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 11:50:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CC0A1617F
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 11:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726972AbfEGJug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 05:50:36 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:38321 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726063AbfEGJug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 05:50:36 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hNwk6-00071R-8o; Tue, 07 May 2019 09:50:34 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH][next] net: dsa: sja1105: fix check on while loop exit
-Date:   Tue,  7 May 2019 10:50:33 +0100
-Message-Id: <20190507095033.25396-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726752AbfEGJwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 05:52:53 -0400
+Received: from foss.arm.com ([217.140.101.70]:48826 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726369AbfEGJwx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 05:52:53 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 69D47374;
+        Tue,  7 May 2019 02:52:52 -0700 (PDT)
+Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.72.51.249])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AF3AB3F5AF;
+        Tue,  7 May 2019 02:52:48 -0700 (PDT)
+Date:   Tue, 7 May 2019 10:52:42 +0100
+From:   Will Deacon <will.deacon@arm.com>
+To:     Qais Yousef <qais.yousef@arm.com>
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        linux-kernel@vger.kernel.org,
+        Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ingo Molnar <mingo@redhat.com>, netdev@vger.kernel.org,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH RFC] bpf: Add support for reading user pointers
+Message-ID: <20190507095242.GA17052@fuggles.cambridge.arm.com>
+References: <20190503121234.6don256zuvfjtdg6@e107158-lin.cambridge.arm.com>
+ <20190503134935.GA253329@google.com>
+ <20190505110423.u7g3f2viovvgzbtn@e107158-lin.cambridge.arm.com>
+ <20190505132949.GB3076@localhost>
+ <20190505144608.u3vsxyz5huveuskx@e107158-lin.cambridge.arm.com>
+ <20190505155223.GA4976@localhost>
+ <20190505180313.GA80924@google.com>
+ <20190506183506.GD2875@brain-police>
+ <20190506205807.GA223956@google.com>
+ <20190506215737.cuugrrxbhkp2uknn@e107158-lin.cambridge.arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190506215737.cuugrrxbhkp2uknn@e107158-lin.cambridge.arm.com>
+User-Agent: Mutt/1.11.1+86 (6f28e57d73f2) ()
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Mon, May 06, 2019 at 10:57:37PM +0100, Qais Yousef wrote:
+> On 05/06/19 16:58, Joel Fernandes wrote:
+> > > If you're trying to dereference a pointer to userspace using
+> > > probe_kernel_read(), that clearly isn't going to work.
+> > 
+> > Ok. Thanks for confirming as well. The existing code has this bug and these
+> > patches fix it.
+> 
+> 5.1-rc7 and 4.9.173 stable both managed to read the path in do_sys_open() on my
+> Juno-r2 board using the defconfig in the tree.
 
-The while-loop exit condition check is not correct; the
-loop should continue if the returns from the function calls are
-negative or the CRC status returns are invalid.  Currently it
-is ignoring the returns from the function calls.  Fix this by
-removing the status return checks and only break from the loop
-at the very end when we know that all the success condtions have
-been met.
+That's not surprising: Juno-r2 only features v8.0 CPUs, so doesn't have PAN
+or UAO capabilities. The SoC Joel is talking about is 8.2, so has both of
+those.
 
-Kudos to Dan Carpenter for describing the correct fix.
+Here's some background which might help...
 
-Addresses-Coverity: ("Uninitialized scalar variable")
-Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
+PAN (Privileged Access Never) prevents the kernel from inadvertently
+accessing userspace and will cause a page (permission) fault if such an
+access is made outside of the standard uaccess routines. This means that
+in those routines (e.g. get_user()) we have to toggle the PAN state in the
+same way that x86 toggles SMAP. This can be expensive and was part of the
+motivation for the adoption of things like unsafe_get_user() on x86.
 
-V2: Discard my broken origina fix. Use correct fix as described by
-    Dan Carpenter.
----
- drivers/net/dsa/sja1105/sja1105_spi.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+On arm64, we have a set of so-called "translated" memory access instructions
+which can be used to perform unprivileged accesses to userspace from within
+the kernel even when PAN is enabled. Using these special instructions (e.g.
+LDTR) in our uaccess routines can therefore remove the need to toggle PAN.
+Sounds great, right? Well, that all falls apart when the uaccess routines
+are used on kernel addresses as in probe_kernel_read() because they will
+fault when trying to dereference a kernel pointer.
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index 244a94ccfc18..40ac696adf63 100644
---- a/drivers/net/dsa/sja1105/sja1105_spi.c
-+++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -465,9 +465,11 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
- 			dev_err(dev, "Switch reported that configuration is "
- 				"invalid, retrying...\n");
- 			continue;
-+
- 		}
--	} while (--retries && (status.crcchkl == 1 || status.crcchkg == 1 ||
--		 status.configs == 0 || status.ids == 1));
-+		/* Success! */
-+		break;
-+	} while (--retries);
- 
- 	if (!retries) {
- 		rc = -EIO;
--- 
-2.20.1
+The answer is UAO (User Access Override). When UAO is set, the translated
+memory access instructions behave the same as non-translated accesses.
+Therefore we can toggle UAO in set_fs() so that it is set when we're using
+KERNEL_DS and cleared when we're using USER_DS.
 
+The side-effect of this is that when KERNEL_DS is set on a system that
+implements both PAN and UAO, passing a user pointer to our uaccess routines
+will return -EFAULT. In other words, set_fs() can be thought of as a
+selector between the kernel and user address spaces, which are distinct.
+
+Joel -- does disabling UAO in your .config "fix" the issue? If so, feel
+free to use some of the above text in a commit message if it helps to
+justify your change.
+
+Cheers,
+
+Will
