@@ -2,157 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 196CB1589B
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 06:42:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 875A4158A7
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 06:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726322AbfEGEmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 00:42:46 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:42476 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725926AbfEGEmp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 00:42:45 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 13so7647251pfw.9;
-        Mon, 06 May 2019 21:42:45 -0700 (PDT)
+        id S1726362AbfEGEzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 00:55:11 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:42373 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725843AbfEGEzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 00:55:11 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 13so7664051pfw.9
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 21:55:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VPw0DAMb1FFiAlQhajmPDBUHsq57yRedB5kG/vvR9uo=;
-        b=JaKOs0lRbT63d/XnvRVJ4hGYEMiZNqs9JvJD4K/0rQwgGQGQzKmaFi3ZCnp3a7131g
-         zsv6zcU7LQkLBy729LzjDjmHYIoYJA1bsAUJQVmtHKHTZXBdHDunZRCFH51j+GtrqqO6
-         /27GjZ5EHYWEQZ793FZcp/1sLztEI+TrWFkjauBCWYISIUlO9puFIL2QtnVd2srrPNXU
-         64gAioqyHkjnf6whp7tYchBkxCJTfs097P91ts+yNKXTyjcq6Bv56lRl56IzPVhIus9I
-         n9hISdf2wKhKOmIP/MPwypvwRi3GSNcRnJ0DEg+r9xIzV+QZafJVlrFP9zioViA2OlBD
-         C0Ag==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MR7XbqBxgoiR5jur+6kzx8lYjwYsLH0pb56IJHyA2us=;
+        b=cM22ZqOjKPKpscYe146iLTummDR1f+RTRa3YYv54VA76zCJ5YELT0pzil6gtkir2mk
+         YYYD+Ab8xYsJlqpd1K7EEHks8L/LqCtOYMvzuR20aEfzPBICwNGobQAmeDA8WmvEPl2e
+         pNEKuzU0YYQtZbT57xjCBmyKSlwz0sqmY+t3jfImvFjLGQkyz53iGlmzC+VYzZWdWd70
+         kI1nZgRgWZP3oI7F/RqMIrUenZXnN/VvfvEzTZOLzuyi9nOE3QzecxqNCfBOy8ZMnjk6
+         +5FoH64WZZ4jT3f2vwjdgUuveL17wqy9GCWvaOOeG8cAkxQqlOFEZSsXY9td1ZSVs4u+
+         mkXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VPw0DAMb1FFiAlQhajmPDBUHsq57yRedB5kG/vvR9uo=;
-        b=NJ6c+5zDZ1MSGyXg06BciqBqZGxgcxKI+TAw1p8FtB7195oEwyCuaEm2TWi/baklTU
-         fM4RJalkt3pk2P6r7+KAIvnHC+xw5oonAWHS7ICTSdDXha098nqfFHvHWzmbuoG57iEs
-         QvrxwabrJKobC+buKKjjk8/7kegflBJ6kN1YKW3aw7SeFUPCemy2YuHEfm+uYhUsddXI
-         6mkBpq21DO0T2niUEaRAbm843GFcNOwMnlA5pg0zsMKqnaK65ojeTVOtdT0W+lPOxYVL
-         8L0BMrXAt5ECqPCyhw0s20CZQR4AkvoTBdVCHetB6PqfDNZXtDxOQj0jJYl1Jgy/I29O
-         dIMg==
-X-Gm-Message-State: APjAAAXgxOTqQ9oNBkPLmFd0Z8PgU6tojQ578dPTi25bJ9tavkAw4Uig
-        DXjmqW19hyn0tvJbtYLzW/Q=
-X-Google-Smtp-Source: APXvYqwX8ELDnWM1avrD3b1Rkq/lw0ph50nTVHat3sFEh5X6jXVYg/2mlabcNZyfS60LCAXtChNVaw==
-X-Received: by 2002:aa7:9214:: with SMTP id 20mr38056389pfo.202.1557204164484;
-        Mon, 06 May 2019 21:42:44 -0700 (PDT)
-Received: from ast-mbp ([2603:3023:16e:5000:108a:d1df:38f5:ffa4])
-        by smtp.gmail.com with ESMTPSA id o66sm16083394pfb.184.2019.05.06.21.42.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 May 2019 21:42:43 -0700 (PDT)
-Date:   Mon, 6 May 2019 21:40:38 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiong Wang <jiong.wang@netronome.com>
-Cc:     daniel@iogearbox.net, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH v6 bpf-next 04/17] bpf: introduce new alu insn BPF_ZEXT
- for explicit zero extension
-Message-ID: <20190507044036.6enllherasccthgu@ast-mbp>
-References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
- <1556880164-10689-5-git-send-email-jiong.wang@netronome.com>
- <20190506155704.4t7xy3mqer4eps3y@ast-mbp>
- <87imunuq6g.fsf@netronome.com>
- <87ftpqc2ga.fsf@netronome.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MR7XbqBxgoiR5jur+6kzx8lYjwYsLH0pb56IJHyA2us=;
+        b=U07jX/cqOrsR8Xhzxg7aQRF75/L9wYKqAGLCCn4I+WlVndg9MxHqoz/tns3q6oM47p
+         s8V0p04iP9DGsGdRKgnfGuUYQEIEYYKKV/2jbiF4CMN3NuzDAe9XvAaXqQ2pwhvmbrBd
+         P2qA7V5VhsG2B0DxNFcZULbUCtLaTlgmnTh+zAksN4frWQvyIOqVWI7XPztyedjsnoGG
+         5YJMGMgfh6TbyrB1HbmeYwSD06rZEttR0sm0uYD/Gug2DEUKMFG0rKEYHAeYtT2NBr0U
+         lTgnugLEH0Braz23t1nw0RFSoOK1z737DAtu3KF3suSaRSdpdA6F7tQXyeYtF5n7urvp
+         MhXA==
+X-Gm-Message-State: APjAAAWZStNhj0rdvsRdBcFFtL344hcYcotXuz3uS7uzQ1rr6Z5ksbOt
+        TjiK2+unGYgzQp+eLuuM1q6kPuNxE9tW0MUykJ1KPA==
+X-Google-Smtp-Source: APXvYqyTLdTHJoEmZnyxvWU5STzNQPGU+UHy4NEM48qdPzaTPHiuAMMP1q+VmucPypES23vbZNzGnZiUrMOjjhzT3LI=
+X-Received: by 2002:a62:e101:: with SMTP id q1mr38745835pfh.160.1557204910828;
+ Mon, 06 May 2019 21:55:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ftpqc2ga.fsf@netronome.com>
-User-Agent: NeoMutt/20180223
+References: <1557201816-19945-1-git-send-email-jasowang@redhat.com>
+In-Reply-To: <1557201816-19945-1-git-send-email-jasowang@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 6 May 2019 21:54:59 -0700
+Message-ID: <CAM_iQpURdiJv9GqkEyk=MPokacvtJVfHUpBb3=6EWA0e1yiTZQ@mail.gmail.com>
+Subject: Re: [PATCH net V2] tuntap: synchronize through tfiles array instead
+ of tun->numqueues
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 07, 2019 at 05:29:09AM +0100, Jiong Wang wrote:
-> 
-> Jiong Wang writes:
-> 
-> > Alexei Starovoitov writes:
-> >
-> >> On Fri, May 03, 2019 at 11:42:31AM +0100, Jiong Wang wrote:
-> >>> This patch introduce new alu32 insn BPF_ZEXT, and allocate the unused
-> >>> opcode 0xe0 to it.
-> >>> 
-> >>> Compared with the other alu32 insns, zero extension on low 32-bit is the
-> >>> only semantics for this instruction. It also allows various JIT back-ends
-> >>> to do optimal zero extension code-gen.
-> >>> 
-> >>> BPF_ZEXT is supposed to be encoded with BPF_ALU only, and is supposed to be
-> >>> generated by the latter 32-bit optimization code inside verifier for those
-> >>> arches that do not support hardware implicit zero extension only.
-> >>> 
-> >>> It is not supposed to be used in user's program directly at the moment.
-> >>> Therefore, no need to recognize it inside generic verification code. It
-> >>> just need to be supported for execution on interpreter or related JIT
-> >>> back-ends.
-> >>
-> >> uapi and the doc define it, but "it is not supposed to be used" ?!
-> >>
-> >>> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
-> >>> ---
-> >>>  Documentation/networking/filter.txt | 10 ++++++++++
-> >>>  include/uapi/linux/bpf.h            |  3 +++
-> >>>  kernel/bpf/core.c                   |  4 ++++
-> >>>  tools/include/uapi/linux/bpf.h      |  3 +++
-> >>>  4 files changed, 20 insertions(+)
-> >>> 
-> >>> diff --git a/Documentation/networking/filter.txt b/Documentation/networking/filter.txt
-> >>> index 319e5e0..1cb3e42 100644
-> >>> --- a/Documentation/networking/filter.txt
-> >>> +++ b/Documentation/networking/filter.txt
-> >>> @@ -903,6 +903,16 @@ If BPF_CLASS(code) == BPF_ALU or BPF_ALU64 [ in eBPF ], BPF_OP(code) is one of:
-> >>>    BPF_MOV   0xb0  /* eBPF only: mov reg to reg */
-> >>>    BPF_ARSH  0xc0  /* eBPF only: sign extending shift right */
-> >>>    BPF_END   0xd0  /* eBPF only: endianness conversion */
-> >>> +  BPF_ZEXT  0xe0  /* eBPF BPF_ALU only: zero-extends low 32-bit */
-> >>> +
-> >>> +Compared with BPF_ALU | BPF_MOV which zero-extends low 32-bit implicitly,
-> >>> +BPF_ALU | BPF_ZEXT zero-extends low 32-bit explicitly. Such zero extension is
-> >>
-> >> wait. that's an excellent observation. alu|mov is exactly it.
-> >> we do not need another insn.
-> >> we probably can teach the verifier to recognize <<32, >>32 and replace
-> >> with mov32
-> >
-> > Hmm, I am silly, in v6, patched insn will be conservatively marked as
-> > always needing zext, so looks like no problem to just insert mov32 as
-> > zext. But some backends needs minor opt, because this will be special mov,
-> > with the same src and dst, just need to clear high 32-bit, no need of
-> > mov.
-> 
-> I take it back.
-> 
-> Recalled the reason why new ZEXT was introduced. It was because instruction
-> insertion based approach doesn't push analysis results down to JIT
-> back-ends, instead, it removes the clear-high-32bit semantics from
-> all sub-register write instructions, then insert new explicit ZEXT insn,
-> either by 64bit shifts combination or this new introduced ZEXT, what's
-> important, the inserted "ZEXT" should not be affected by
-> "env->verifier_zext", and be performed unconditionally.
-> 
-> That is to say, for the current zero extension insertion based approach,
-> JIT back-ends trust verifier has done full zero extension insertion and
-> rewritten the instruction sequence once the flag env->verifier_zext is set,
-> and then JIT back-end do NOT clear high 32-bit for all existing
-> sub-register write instructions, for example ALU32 and narrowed load, they
-> rely on those new inserted "unconditional ZEXT" to do the job if it is
-> needed. So, if we insert mov32, there actually won't be zero extension
-> insertion performed for it.
-> 
-> The inserted "ZEXT" needs to have zero extension semantics that is not
-> affected by env->verifier_zext. BPF_ZEXT was introduced because of this,
-> low32 zext is its only semantics and should be unconditionally done.
-> 
-> "mov32" could be used as "ZEXT" only when there is no such removal of zero
-> extension semantics from alu32, or if JIT back-end could have instruction
-> level information, for example the analyzed instruction level zero extension
-> information pushed down to JIT back-ends. The new inserted "mov32" would
-> then has information like "zext_dst" be true, JIT back-end then will
-> generate zero extension for it.
+On Mon, May 6, 2019 at 9:03 PM Jason Wang <jasowang@redhat.com> wrote:
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index e9ca1c0..32a0b23 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -700,6 +700,8 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
+>                                    tun->tfiles[tun->numqueues - 1]);
+>                 ntfile = rtnl_dereference(tun->tfiles[index]);
+>                 ntfile->queue_index = index;
+> +               rcu_assign_pointer(tun->tfiles[tun->numqueues - 1],
+> +                                  NULL);
+>
 
-JITs could simply always do zext for mov32. No need to for extra flags.
+How does this work? Existing readers could still read this
+tun->tfiles[tun->numqueues - 1] before you NULL it. And,
+_if_ the following sock_put() is the one frees it, you still miss
+a RCU grace period.
 
+                if (clean) {
+                        RCU_INIT_POINTER(tfile->tun, NULL);
+                        sock_put(&tfile->sk);
+
+
+Thanks.
