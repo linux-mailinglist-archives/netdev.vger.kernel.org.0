@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A20AF15C11
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 08:00:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 086EB15967
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:36:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728053AbfEGFgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:36:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56270 "EHLO mail.kernel.org"
+        id S1726799AbfEGFgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:36:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728034AbfEGFgQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:36:16 -0400
+        id S1728064AbfEGFgU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:36:20 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 323F320989;
-        Tue,  7 May 2019 05:36:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 34BE7216B7;
+        Tue,  7 May 2019 05:36:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207375;
-        bh=DP+cp4kWbbrvzRa8576r/rkPM2rH+Xn1vnpehE8E6Kc=;
+        s=default; t=1557207380;
+        bh=Mse0PztVDKI2pafPiRFY9YVP1ECY+99pN2bLesMeTqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OiZA5+woQ5WYMcMWra/AmZ64iPBs/z+6e0TOJeLB4ARxu2oeIuUIG4YUc7Gpm0qGx
-         ZBdN8x3APAQ59ItP8AVby50SBDASszROtFp9ailVH4wUvychJlrzvlsXDnPLwZUFfQ
-         LZBtsXwAjH0/nDae7i80/Mfrx3SekBZjRLMs7jMk=
+        b=hOVho6Jr7quuDcW7ltaxWLqrzbgb27gzgFJ7Ig5hovq+60QKzsMLyG9VFz2aMj5tb
+         ZLVgW1mTAeywrYhnkcFfE/FsyCQH8ozIg16Vbh6MFVuXO1UiCGinyunrqqml7Kkj3C
+         0xEPmI7HqjCiDq2vphTmiRmQov6i5lc1x1TT0awM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sunil Dutt <usdutt@codeaurora.org>,
+Cc:     Alexander Wetzel <alexander@wetzel-home.de>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 15/81] nl80211: Add NL80211_FLAG_CLEAR_SKB flag for other NL commands
-Date:   Tue,  7 May 2019 01:34:46 -0400
-Message-Id: <20190507053554.30848-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 18/81] mac80211: Honor SW_CRYPTO_CONTROL for unicast keys in AP VLAN mode
+Date:   Tue,  7 May 2019 01:34:49 -0400
+Message-Id: <20190507053554.30848-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053554.30848-1-sashal@kernel.org>
 References: <20190507053554.30848-1-sashal@kernel.org>
@@ -44,88 +44,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Dutt <usdutt@codeaurora.org>
+From: Alexander Wetzel <alexander@wetzel-home.de>
 
-[ Upstream commit d6db02a88a4aaa1cd7105137c67ddec7f3bdbc05 ]
+[ Upstream commit 78ad2341521d5ea96cb936244ed4c4c4ef9ec13b ]
 
-This commit adds NL80211_FLAG_CLEAR_SKB flag to other NL commands
-that carry key data to ensure they do not stick around on heap
-after the SKB is freed.
+Restore SW_CRYPTO_CONTROL operation on AP_VLAN interfaces for unicast
+keys, the original override was intended to be done for group keys as
+those are treated specially by mac80211 and would always have been
+rejected.
 
-Also introduced this flag for NL80211_CMD_VENDOR as there are sub
-commands which configure the keys.
+Now the situation is that AP_VLAN support must be enabled by the driver
+if it can support it (meaning it can support software crypto GTK TX).
 
-Signed-off-by: Sunil Dutt <usdutt@codeaurora.org>
+Thus, also simplify the code - if we get here with AP_VLAN and non-
+pairwise key, software crypto must be used (driver doesn't know about
+the interface) and can be used (driver must've advertised AP_VLAN if
+it also uses SW_CRYPTO_CONTROL).
+
+Fixes: db3bdcb9c3ff ("mac80211: allow AP_VLAN operation on crypto controlled devices")
+Signed-off-by: Alexander Wetzel <alexander@wetzel-home.de>
+[rewrite commit message]
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ net/mac80211/key.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 295cd8d5554f..048e004ed0ee 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -13392,7 +13392,8 @@ static const struct genl_ops nl80211_ops[] = {
- 		.policy = nl80211_policy,
- 		.flags = GENL_UNS_ADMIN_PERM,
- 		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
--				  NL80211_FLAG_NEED_RTNL,
-+				  NL80211_FLAG_NEED_RTNL |
-+				  NL80211_FLAG_CLEAR_SKB,
- 	},
- 	{
- 		.cmd = NL80211_CMD_DEAUTHENTICATE,
-@@ -13443,7 +13444,8 @@ static const struct genl_ops nl80211_ops[] = {
- 		.policy = nl80211_policy,
- 		.flags = GENL_UNS_ADMIN_PERM,
- 		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
--				  NL80211_FLAG_NEED_RTNL,
-+				  NL80211_FLAG_NEED_RTNL |
-+				  NL80211_FLAG_CLEAR_SKB,
- 	},
- 	{
- 		.cmd = NL80211_CMD_UPDATE_CONNECT_PARAMS,
-@@ -13451,7 +13453,8 @@ static const struct genl_ops nl80211_ops[] = {
- 		.policy = nl80211_policy,
- 		.flags = GENL_ADMIN_PERM,
- 		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
--				  NL80211_FLAG_NEED_RTNL,
-+				  NL80211_FLAG_NEED_RTNL |
-+				  NL80211_FLAG_CLEAR_SKB,
- 	},
- 	{
- 		.cmd = NL80211_CMD_DISCONNECT,
-@@ -13480,7 +13483,8 @@ static const struct genl_ops nl80211_ops[] = {
- 		.policy = nl80211_policy,
- 		.flags = GENL_UNS_ADMIN_PERM,
- 		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
--				  NL80211_FLAG_NEED_RTNL,
-+				  NL80211_FLAG_NEED_RTNL |
-+				  NL80211_FLAG_CLEAR_SKB,
- 	},
- 	{
- 		.cmd = NL80211_CMD_DEL_PMKSA,
-@@ -13832,7 +13836,8 @@ static const struct genl_ops nl80211_ops[] = {
- 		.policy = nl80211_policy,
- 		.flags = GENL_UNS_ADMIN_PERM,
- 		.internal_flags = NL80211_FLAG_NEED_WIPHY |
--				  NL80211_FLAG_NEED_RTNL,
-+				  NL80211_FLAG_NEED_RTNL |
-+				  NL80211_FLAG_CLEAR_SKB,
- 	},
- 	{
- 		.cmd = NL80211_CMD_SET_QOS_MAP,
-@@ -13887,7 +13892,8 @@ static const struct genl_ops nl80211_ops[] = {
- 		.doit = nl80211_set_pmk,
- 		.policy = nl80211_policy,
- 		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
--				  NL80211_FLAG_NEED_RTNL,
-+				  NL80211_FLAG_NEED_RTNL |
-+				  NL80211_FLAG_CLEAR_SKB,
- 	},
- 	{
- 		.cmd = NL80211_CMD_DEL_PMK,
+diff --git a/net/mac80211/key.c b/net/mac80211/key.c
+index c054ac85793c..f20bb39f492d 100644
+--- a/net/mac80211/key.c
++++ b/net/mac80211/key.c
+@@ -167,8 +167,10 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
+ 		 * The driver doesn't know anything about VLAN interfaces.
+ 		 * Hence, don't send GTKs for VLAN interfaces to the driver.
+ 		 */
+-		if (!(key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE))
++		if (!(key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
++			ret = 1;
+ 			goto out_unsupported;
++		}
+ 	}
+ 
+ 	ret = drv_set_key(key->local, SET_KEY, sdata,
+@@ -213,11 +215,8 @@ static int ieee80211_key_enable_hw_accel(struct ieee80211_key *key)
+ 		/* all of these we can do in software - if driver can */
+ 		if (ret == 1)
+ 			return 0;
+-		if (ieee80211_hw_check(&key->local->hw, SW_CRYPTO_CONTROL)) {
+-			if (sdata->vif.type == NL80211_IFTYPE_AP_VLAN)
+-				return 0;
++		if (ieee80211_hw_check(&key->local->hw, SW_CRYPTO_CONTROL))
+ 			return -EINVAL;
+-		}
+ 		return 0;
+ 	default:
+ 		return -EINVAL;
 -- 
 2.20.1
 
