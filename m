@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B17D15BFC
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B865215BD1
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:59:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728083AbfEGF7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:59:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56570 "EHLO mail.kernel.org"
+        id S1728285AbfEGFhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:37:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56922 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728158AbfEGFgp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:36:45 -0400
+        id S1727651AbfEGFhJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:37:09 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 97C3520B7C;
-        Tue,  7 May 2019 05:36:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 985FE20B7C;
+        Tue,  7 May 2019 05:37:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207405;
-        bh=wl5TuaET9VOElNIB4pAQ3YmM6xzvebkpLmf1Sbkd5Do=;
+        s=default; t=1557207428;
+        bh=tARrl+dlCeMWwd6+nJw4vqRjGE7VzfnCPt7TdhVL47o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VfTMrXl0iMWNausytItP2gOUzpu92/mU3l1JgyFrNJH01v6mRspLjZI2H3JHiAiu5
-         Vf4nE/978WV4t0piaZNi/pigMF1uzBSuk1mxYz9SFcG5W5AtcdAKyy0suIJd63CoO0
-         Bkb7uGj8Fh26dIVknEYc0AQV7o835DtM1U9Ccgyg=
+        b=c4gbq5IPnNr0m429qYkJy+i2DNLNq542pzOJQMqHGCUoWv/XBV8YFkqpM+vCLSzHt
+         4qegXFtxnBhZT7MllaFJ5d9w6I8x7Jtw1WjJhoZcMJ7SjbZHaoTYXgOI6KY+VKdqXu
+         LCWkR9ItanqlcSnUBmm5P0Z97XI7wa0vnTbEAtyY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Colin Ian King <colin.king@canonical.com>,
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 26/81] qede: fix write to free'd pointer error and double free of ptp
-Date:   Tue,  7 May 2019 01:34:57 -0400
-Message-Id: <20190507053554.30848-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 38/81] ocelot: Don't sleep in atomic context (irqs_disabled())
+Date:   Tue,  7 May 2019 01:35:09 -0400
+Message-Id: <20190507053554.30848-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053554.30848-1-sashal@kernel.org>
 References: <20190507053554.30848-1-sashal@kernel.org>
@@ -43,53 +43,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Claudiu Manoil <claudiu.manoil@nxp.com>
 
-[ Upstream commit 1dc2b3d65523780ed1972d446c76e62e13f3e8f5 ]
+[ Upstream commit a8fd48b50deaa20808bbf0f6685f6f1acba6a64c ]
 
-The err2 error return path calls qede_ptp_disable that cleans up
-on an error and frees ptp. After this, the free'd ptp is dereferenced
-when ptp->clock is set to NULL and the code falls-through to error
-path err1 that frees ptp again.
+Preemption disabled at:
+ [<ffff000008cabd54>] dev_set_rx_mode+0x1c/0x38
+ Call trace:
+ [<ffff00000808a5c0>] dump_backtrace+0x0/0x3d0
+ [<ffff00000808a9a4>] show_stack+0x14/0x20
+ [<ffff000008e6c0c0>] dump_stack+0xac/0xe4
+ [<ffff0000080fe76c>] ___might_sleep+0x164/0x238
+ [<ffff0000080fe890>] __might_sleep+0x50/0x88
+ [<ffff0000082261e4>] kmem_cache_alloc+0x17c/0x1d0
+ [<ffff000000ea0ae8>] ocelot_set_rx_mode+0x108/0x188 [mscc_ocelot_common]
+ [<ffff000008cabcf0>] __dev_set_rx_mode+0x58/0xa0
+ [<ffff000008cabd5c>] dev_set_rx_mode+0x24/0x38
 
-Fix this by calling qede_ptp_disable and exiting via an error
-return path that does not set ptp->clock or kfree ptp.
+Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
 
-Addresses-Coverity: ("Write to pointer after free")
-Fixes: 035744975aec ("qede: Add support for PTP resource locking.")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qede/qede_ptp.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ptp.c b/drivers/net/ethernet/qlogic/qede/qede_ptp.c
-index 013ff567283c..5e574c3b625e 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ptp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ptp.c
-@@ -490,18 +490,17 @@ int qede_ptp_enable(struct qede_dev *edev, bool init_tc)
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 0bdd3c400c92..10291198decd 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -605,7 +605,7 @@ static int ocelot_mact_mc_add(struct ocelot_port *port,
+ 			      struct netdev_hw_addr *hw_addr)
+ {
+ 	struct ocelot *ocelot = port->ocelot;
+-	struct netdev_hw_addr *ha = kzalloc(sizeof(*ha), GFP_KERNEL);
++	struct netdev_hw_addr *ha = kzalloc(sizeof(*ha), GFP_ATOMIC);
  
- 	ptp->clock = ptp_clock_register(&ptp->clock_info, &edev->pdev->dev);
- 	if (IS_ERR(ptp->clock)) {
--		rc = -EINVAL;
- 		DP_ERR(edev, "PTP clock registration failed\n");
-+		qede_ptp_disable(edev);
-+		rc = -EINVAL;
- 		goto err2;
- 	}
- 
- 	return 0;
- 
--err2:
--	qede_ptp_disable(edev);
--	ptp->clock = NULL;
- err1:
- 	kfree(ptp);
-+err2:
- 	edev->ptp = NULL;
- 
- 	return rc;
+ 	if (!ha)
+ 		return -ENOMEM;
 -- 
 2.20.1
 
