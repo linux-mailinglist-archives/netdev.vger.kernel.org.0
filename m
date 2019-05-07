@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0BA915BF7
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:59:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA2E215BF9
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:59:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727557AbfEGFgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:36:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56542 "EHLO mail.kernel.org"
+        id S1727579AbfEGFgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:36:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56560 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728142AbfEGFgm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:36:42 -0400
+        id S1728140AbfEGFgo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:36:44 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 14C4420989;
-        Tue,  7 May 2019 05:36:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8534720989;
+        Tue,  7 May 2019 05:36:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207401;
-        bh=PAJbD/nVxOh97/0w5rpO4ePGdhs/onBSViaK+uXO4gY=;
+        s=default; t=1557207404;
+        bh=OqokL3GaFvL/RYQ0/pqR9m4PkWqMIWIuV1si0M+F5Y0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EYg91JQpUvw3BCudCUYNOpBvwMlvg1uNoxGJTzhNqOmw/puo9KK6qHkwWzTdc3PfK
-         2YKvdB5awOw6ME4SDIbWA8pvkjJ7P4EetcM2aqqCiKXgt2w3wyiSMO1TYYbjh14I2v
-         cFKmmbFxXtiUCsp7aWwbbu8u8DfiaIVCWTh+7MVY=
+        b=Hg12NFCTxMnGw8M7H46nebXR062ZWawCAspZquVZEDegqtfGnK1ed+kFE68X4zygr
+         7t9AUWmHKOxYsqG1sfRb7qAQwHaRwF2EtfL/5kQ5A76yPRpdvaZr29hKdkoaqnE6E6
+         sD5wzPMTni3OZp7l9jKaz1WxQMoaNsqdPXd03SWY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+Cc:     Colin Ian King <colin.king@canonical.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 24/81] mISDN: Check address length before reading address family
-Date:   Tue,  7 May 2019 01:34:55 -0400
-Message-Id: <20190507053554.30848-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 25/81] vxge: fix return of a free'd memblock on a failed dma mapping
+Date:   Tue,  7 May 2019 01:34:56 -0400
+Message-Id: <20190507053554.30848-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053554.30848-1-sashal@kernel.org>
 References: <20190507053554.30848-1-sashal@kernel.org>
@@ -43,37 +43,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Colin Ian King <colin.king@canonical.com>
 
-[ Upstream commit 238ffdc49ef98b15819cfd5e3fb23194e3ea3d39 ]
+[ Upstream commit 0a2c34f18c94b596562bf3d019fceab998b8b584 ]
 
-KMSAN will complain if valid address length passed to bind() is shorter
-than sizeof("struct sockaddr_mISDN"->family) bytes.
+Currently if a pci dma mapping failure is detected a free'd
+memblock address is returned rather than a NULL (that indicates
+an error). Fix this by ensuring NULL is returned on this error case.
 
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Addresses-Coverity: ("Use after free")
+Fixes: 528f727279ae ("vxge: code cleanup and reorganization")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/mISDN/socket.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/neterion/vxge/vxge-config.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/isdn/mISDN/socket.c b/drivers/isdn/mISDN/socket.c
-index 18c0a1281914..b2abc44fa5cb 100644
---- a/drivers/isdn/mISDN/socket.c
-+++ b/drivers/isdn/mISDN/socket.c
-@@ -711,10 +711,10 @@ base_sock_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
- 	struct sock *sk = sock->sk;
- 	int err = 0;
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.c b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+index bf4302e45dcd..28f765664702 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-config.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+@@ -2365,6 +2365,7 @@ static void *__vxge_hw_blockpool_malloc(struct __vxge_hw_device *devh, u32 size,
+ 				dma_object->addr))) {
+ 			vxge_os_dma_free(devh->pdev, memblock,
+ 				&dma_object->acc_handle);
++			memblock = NULL;
+ 			goto exit;
+ 		}
  
--	if (!maddr || maddr->family != AF_ISDN)
-+	if (addr_len < sizeof(struct sockaddr_mISDN))
- 		return -EINVAL;
- 
--	if (addr_len < sizeof(struct sockaddr_mISDN))
-+	if (!maddr || maddr->family != AF_ISDN)
- 		return -EINVAL;
- 
- 	lock_sock(sk);
 -- 
 2.20.1
 
