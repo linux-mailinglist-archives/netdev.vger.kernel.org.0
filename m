@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CB3715CF4
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 08:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 255A915CEF
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 08:08:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbfEGGI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 02:08:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53000 "EHLO mail.kernel.org"
+        id S1727026AbfEGGIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 02:08:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53022 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726628AbfEGFcy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:32:54 -0400
+        id S1726645AbfEGFcz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:32:55 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8F68C20B7C;
-        Tue,  7 May 2019 05:32:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D2EB0206A3;
+        Tue,  7 May 2019 05:32:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207173;
-        bh=UGuFmFgX25477b1IJrm8ObHOYCgybrcwBYDJdb5Y36k=;
+        s=default; t=1557207174;
+        bh=8wC/aVu90WOcgXFnnUmi4jIsKqjKe6SON/plxwCe4l4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pnz0yNi9Io+RVzNyQn2RyQ/5MDAo/lz6ToHYZcJ4rjA1yiJyZCax+3AmMPTkFd3wx
-         zfgovNB5EjBaTscLA382E3+5c2BuyklRvBfAiEuY2qfDgaO2B0Zqd4bT3ynBnGKWGc
-         0jzqOfqm07vxoQny19UiQnPdI3G7R611rgl951zA=
+        b=zcYhb8NA0BvjWyGVSaldsXLoJ/GO7Q2jg5drXZBChJtO3Jhdve14OvSlJoIK4AnEX
+         RWaJu+f1SH1l/MVr1FuKRo/EvP1FL6lyHYLrHobeXI03U6E0PH4QFNUiMhNK3f5ang
+         j17eIQI1i9bXvVfLsaF1i6whaKTnuR1+OhBhjzy8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 13/99] cfg80211: Handle WMM rules in regulatory domain intersection
-Date:   Tue,  7 May 2019 01:31:07 -0400
-Message-Id: <20190507053235.29900-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 14/99] mac80211: fix memory accounting with A-MSDU aggregation
+Date:   Tue,  7 May 2019 01:31:08 -0400
+Message-Id: <20190507053235.29900-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053235.29900-1-sashal@kernel.org>
 References: <20190507053235.29900-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,93 +46,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 08a75a887ee46828b54600f4bb7068d872a5edd5 ]
+[ Upstream commit eb9b64e3a9f8483e6e54f4e03b2ae14ae5db2690 ]
 
-The support added for regulatory WMM rules did not handle
-the case of regulatory domain intersections. Fix it.
+skb->truesize can change due to memory reallocation or when adding extra
+fragments. Adjust fq->memory_usage accordingly
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Fixes: 230ebaa189af ("cfg80211: read wmm rules from regulatory database")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/reg.c | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ net/mac80211/tx.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index dd58b9909ac9..649c89946dec 100644
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -1298,6 +1298,16 @@ reg_intersect_dfs_region(const enum nl80211_dfs_regions dfs_region1,
- 	return dfs_region1;
- }
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 928f13a208b0..714d80e48a10 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -3214,6 +3214,7 @@ static bool ieee80211_amsdu_aggregate(struct ieee80211_sub_if_data *sdata,
+ 	u8 max_subframes = sta->sta.max_amsdu_subframes;
+ 	int max_frags = local->hw.max_tx_fragments;
+ 	int max_amsdu_len = sta->sta.max_amsdu_len;
++	int orig_truesize;
+ 	__be16 len;
+ 	void *data;
+ 	bool ret = false;
+@@ -3254,6 +3255,7 @@ static bool ieee80211_amsdu_aggregate(struct ieee80211_sub_if_data *sdata,
+ 	if (!head || skb_is_gso(head))
+ 		goto out;
  
-+static void reg_wmm_rules_intersect(const struct ieee80211_wmm_ac *wmm_ac1,
-+				    const struct ieee80211_wmm_ac *wmm_ac2,
-+				    struct ieee80211_wmm_ac *intersect)
-+{
-+	intersect->cw_min = max_t(u16, wmm_ac1->cw_min, wmm_ac2->cw_min);
-+	intersect->cw_max = max_t(u16, wmm_ac1->cw_max, wmm_ac2->cw_max);
-+	intersect->cot = min_t(u16, wmm_ac1->cot, wmm_ac2->cot);
-+	intersect->aifsn = max_t(u8, wmm_ac1->aifsn, wmm_ac2->aifsn);
-+}
-+
- /*
-  * Helper for regdom_intersect(), this does the real
-  * mathematical intersection fun
-@@ -1312,6 +1322,8 @@ static int reg_rules_intersect(const struct ieee80211_regdomain *rd1,
- 	struct ieee80211_freq_range *freq_range;
- 	const struct ieee80211_power_rule *power_rule1, *power_rule2;
- 	struct ieee80211_power_rule *power_rule;
-+	const struct ieee80211_wmm_rule *wmm_rule1, *wmm_rule2;
-+	struct ieee80211_wmm_rule *wmm_rule;
- 	u32 freq_diff, max_bandwidth1, max_bandwidth2;
++	orig_truesize = head->truesize;
+ 	orig_len = head->len;
  
- 	freq_range1 = &rule1->freq_range;
-@@ -1322,6 +1334,10 @@ static int reg_rules_intersect(const struct ieee80211_regdomain *rd1,
- 	power_rule2 = &rule2->power_rule;
- 	power_rule = &intersected_rule->power_rule;
+ 	if (skb->len + head->len > max_amsdu_len)
+@@ -3311,6 +3313,7 @@ static bool ieee80211_amsdu_aggregate(struct ieee80211_sub_if_data *sdata,
+ 	*frag_tail = skb;
  
-+	wmm_rule1 = &rule1->wmm_rule;
-+	wmm_rule2 = &rule2->wmm_rule;
-+	wmm_rule = &intersected_rule->wmm_rule;
-+
- 	freq_range->start_freq_khz = max(freq_range1->start_freq_khz,
- 					 freq_range2->start_freq_khz);
- 	freq_range->end_freq_khz = min(freq_range1->end_freq_khz,
-@@ -1365,6 +1381,29 @@ static int reg_rules_intersect(const struct ieee80211_regdomain *rd1,
- 	intersected_rule->dfs_cac_ms = max(rule1->dfs_cac_ms,
- 					   rule2->dfs_cac_ms);
- 
-+	if (rule1->has_wmm && rule2->has_wmm) {
-+		u8 ac;
-+
-+		for (ac = 0; ac < IEEE80211_NUM_ACS; ac++) {
-+			reg_wmm_rules_intersect(&wmm_rule1->client[ac],
-+						&wmm_rule2->client[ac],
-+						&wmm_rule->client[ac]);
-+			reg_wmm_rules_intersect(&wmm_rule1->ap[ac],
-+						&wmm_rule2->ap[ac],
-+						&wmm_rule->ap[ac]);
-+		}
-+
-+		intersected_rule->has_wmm = true;
-+	} else if (rule1->has_wmm) {
-+		*wmm_rule = *wmm_rule1;
-+		intersected_rule->has_wmm = true;
-+	} else if (rule2->has_wmm) {
-+		*wmm_rule = *wmm_rule2;
-+		intersected_rule->has_wmm = true;
-+	} else {
-+		intersected_rule->has_wmm = false;
-+	}
-+
- 	if (!is_valid_reg_rule(intersected_rule))
- 		return -EINVAL;
- 
+ out_recalc:
++	fq->memory_usage += head->truesize - orig_truesize;
+ 	if (head->len != orig_len) {
+ 		flow->backlog += head->len - orig_len;
+ 		tin->backlog_bytes += head->len - orig_len;
 -- 
 2.20.1
 
