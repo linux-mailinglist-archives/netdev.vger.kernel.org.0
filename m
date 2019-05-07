@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9EA15A55
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 984CA15A3B
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:44:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729244AbfEGFmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:42:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33220 "EHLO mail.kernel.org"
+        id S1729396AbfEGFoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:44:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33598 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729487AbfEGFmM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:42:12 -0400
+        id S1728741AbfEGFmn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:42:43 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E8CE121734;
-        Tue,  7 May 2019 05:42:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 622EF205ED;
+        Tue,  7 May 2019 05:42:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207731;
-        bh=UVLSvQxN4WWGLFkoue/+SE3gKBycu2NyT5o8Z1iqWxc=;
+        s=default; t=1557207762;
+        bh=+kACfupaAaVCm6jAKa9+y7DVVVVW7QKdcJ+pTqSk9fU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kZbBt4exwXw4FNTS1E4GP84fhUdGl5d5wZ872rGPSt66m0TKRS8+HHydbBuXoS/cJ
-         fqLvy0KsZH3p39XMXq9IDnbUiYFOG3XEVk8ay5TvAt3/Z9AAMj4izuc3cE0k/ylBYc
-         WJH889/c99Gfe3o3WSatnwqP9Y83GEBYjGygH74k=
+        b=AVUd+kUVgZQ5zo0SSow/O7Sihv59KNOgYQgmnkrHwjBBDtQU4FsZmeksDcBkzdzu3
+         ++v4aHtTm5aet6MPdx9IRlJuTq37NH+CynNsu4JWisMSWK2B/ExXerlRcuNoPSQwg3
+         cF2l4Y3awL9VwPiYS2DBuUC0N+EHQU2pSxhNaapg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Gomez <dagmcr@gmail.com>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 23/25] spi: Micrel eth switch: declare missing of table
-Date:   Tue,  7 May 2019 01:41:20 -0400
-Message-Id: <20190507054123.32514-23-sashal@kernel.org>
+Cc:     Julian Anastasov <ja@ssi.bg>, Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: [PATCH AUTOSEL 4.4 11/14] ipvs: do not schedule icmp errors from tunnels
+Date:   Tue,  7 May 2019 01:42:13 -0400
+Message-Id: <20190507054218.340-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190507054123.32514-1-sashal@kernel.org>
-References: <20190507054123.32514-1-sashal@kernel.org>
+In-Reply-To: <20190507054218.340-1-sashal@kernel.org>
+References: <20190507054218.340-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,66 +45,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Gomez <dagmcr@gmail.com>
+From: Julian Anastasov <ja@ssi.bg>
 
-[ Upstream commit 2f23a2a768bee7ad2ff1e9527c3f7e279e794a46 ]
+[ Upstream commit 0261ea1bd1eb0da5c0792a9119b8655cf33c80a3 ]
 
-Add missing <of_device_id> table for SPI driver relying on SPI
-device match since compatible is in a DT binding or in a DTS.
+We can receive ICMP errors from client or from
+tunneling real server. While the former can be
+scheduled to real server, the latter should
+not be scheduled, they are decapsulated only when
+existing connection is found.
 
-Before this patch:
-modinfo drivers/net/phy/spi_ks8995.ko | grep alias
-alias:          spi:ksz8795
-alias:          spi:ksz8864
-alias:          spi:ks8995
-
-After this patch:
-modinfo drivers/net/phy/spi_ks8995.ko | grep alias
-alias:          spi:ksz8795
-alias:          spi:ksz8864
-alias:          spi:ks8995
-alias:          of:N*T*Cmicrel,ksz8795C*
-alias:          of:N*T*Cmicrel,ksz8795
-alias:          of:N*T*Cmicrel,ksz8864C*
-alias:          of:N*T*Cmicrel,ksz8864
-alias:          of:N*T*Cmicrel,ks8995C*
-alias:          of:N*T*Cmicrel,ks8995
-
-Reported-by: Javier Martinez Canillas <javier@dowhile0.org>
-Signed-off-by: Daniel Gomez <dagmcr@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 6044eeffafbe ("ipvs: attempt to schedule icmp packets")
+Signed-off-by: Julian Anastasov <ja@ssi.bg>
+Signed-off-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/spi_ks8995.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/netfilter/ipvs/ip_vs_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/spi_ks8995.c b/drivers/net/phy/spi_ks8995.c
-index 1e2d4f1179da..45df03673e01 100644
---- a/drivers/net/phy/spi_ks8995.c
-+++ b/drivers/net/phy/spi_ks8995.c
-@@ -162,6 +162,14 @@ static const struct spi_device_id ks8995_id[] = {
- };
- MODULE_DEVICE_TABLE(spi, ks8995_id);
+diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+index ac212542a217..c4509a10ce52 100644
+--- a/net/netfilter/ipvs/ip_vs_core.c
++++ b/net/netfilter/ipvs/ip_vs_core.c
+@@ -1484,7 +1484,7 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 	if (!cp) {
+ 		int v;
  
-+static const struct of_device_id ks8895_spi_of_match[] = {
-+        { .compatible = "micrel,ks8995" },
-+        { .compatible = "micrel,ksz8864" },
-+        { .compatible = "micrel,ksz8795" },
-+        { },
-+ };
-+MODULE_DEVICE_TABLE(of, ks8895_spi_of_match);
-+
- static inline u8 get_chip_id(u8 val)
- {
- 	return (val >> ID1_CHIPID_S) & ID1_CHIPID_M;
-@@ -529,6 +537,7 @@ static int ks8995_remove(struct spi_device *spi)
- static struct spi_driver ks8995_driver = {
- 	.driver = {
- 		.name	    = "spi-ks8995",
-+		.of_match_table = of_match_ptr(ks8895_spi_of_match),
- 	},
- 	.probe	  = ks8995_probe,
- 	.remove	  = ks8995_remove,
+-		if (!sysctl_schedule_icmp(ipvs))
++		if (ipip || !sysctl_schedule_icmp(ipvs))
+ 			return NF_ACCEPT;
+ 
+ 		if (!ip_vs_try_to_schedule(ipvs, AF_INET, skb, pd, &v, &cp, &ciph))
 -- 
 2.20.1
 
