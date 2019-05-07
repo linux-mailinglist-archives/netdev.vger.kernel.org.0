@@ -2,137 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A13E01638C
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 14:15:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F1A9163B1
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 14:26:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfEGMOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 08:14:55 -0400
-Received: from mail-eopbgr30049.outbound.protection.outlook.com ([40.107.3.49]:11073
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726276AbfEGMOz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 08:14:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+2iVld42hbF7+tIVJxDvQSMVMYZbqDx4EQwGMQtxtrA=;
- b=BnIvsJZD1hsLhzaQPHXGvLQYlkP+CBQDM9iRW5LabBO9S99LI9TH1CyFFerm+J13rGE8YmpnXd2r9V8XyKeEvmQL7dTZRG5FXub2SqNagShnKhKXm1UwvJcQJtdtjfrK9b0S6CP1JJep5d8ZZgiNuDNX0X6Z4DYv7UyON2mGw+M=
-Received: from AM0PR04MB6434.eurprd04.prod.outlook.com (20.179.252.215) by
- AM0PR04MB4689.eurprd04.prod.outlook.com (20.176.214.77) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1856.14; Tue, 7 May 2019 12:14:50 +0000
-Received: from AM0PR04MB6434.eurprd04.prod.outlook.com
- ([fe80::19be:75a:9fe:7cec]) by AM0PR04MB6434.eurprd04.prod.outlook.com
- ([fe80::19be:75a:9fe:7cec%7]) with mapi id 15.20.1856.012; Tue, 7 May 2019
- 12:14:50 +0000
-From:   Leonard Crestez <leonard.crestez@nxp.com>
-To:     =?Windows-1252?Q?Petr_=8Atetiar?= <ynezz@true.cz>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH net-next v2 0/4] of_get_mac_address ERR_PTR fixes
-Thread-Topic: [PATCH net-next v2 0/4] of_get_mac_address ERR_PTR fixes
-Thread-Index: AQHVBFI0RuJU2cpMvEWgdGL840mRHg==
-Date:   Tue, 7 May 2019 12:14:50 +0000
-Message-ID: <AM0PR04MB6434E06E7C43A2C95EB81F42EE310@AM0PR04MB6434.eurprd04.prod.outlook.com>
-References: <1557177887-30446-1-git-send-email-ynezz@true.cz>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=leonard.crestez@nxp.com; 
-x-originating-ip: [89.37.124.34]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: cd066af7-f27a-4e62-3648-08d6d2e59aaf
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM0PR04MB4689;
-x-ms-traffictypediagnostic: AM0PR04MB4689:
-x-microsoft-antispam-prvs: <AM0PR04MB4689F6460F9132925426F4B0EE310@AM0PR04MB4689.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0030839EEE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(376002)(39860400002)(396003)(366004)(346002)(199004)(189003)(74316002)(7416002)(66066001)(99286004)(5660300002)(14454004)(66574012)(9686003)(91956017)(7736002)(305945005)(256004)(71190400001)(478600001)(6506007)(186003)(6116002)(3846002)(53546011)(6246003)(86362001)(53936002)(68736007)(2501003)(486006)(66476007)(66556008)(64756008)(66446008)(76116006)(66946007)(14444005)(446003)(73956011)(7696005)(102836004)(26005)(33656002)(55016002)(316002)(8676002)(81166006)(4326008)(8936002)(81156014)(476003)(71200400001)(2906002)(110136005)(52536014)(25786009)(54906003)(76176011)(229853002)(44832011)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB4689;H:AM0PR04MB6434.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: AhRPnDqmD6ntyYASANAaACNjKL+k8eWc81cF/HVFoM6nZPDgZZBx3DUtUCebbSWW5bZzF47Yx3YrFF6hpZGcrtyCK2ej7hAXXzxiMiy4JRkaPRJlZx4aAO2Oyskc+wFcpw13YeyKrAXJ/InJ08cLN2zh32KXD7KY10Q4HHrSnYf1AjvV7T1U6NyspoxVr6/r/AT8mFkTSTO9KDXdUSWvsC62g3VEYACvV75qjiLKRGDrXq3JbzAjFMxK2LgbDjyZLnU6AgXEuaOxkj5z6GT6FUXZ6YxkEEzG/FBpX2KUHp/Ikmw3C9b6vaNDDmsiMiRWqJDBwIv70tAhz85M9a5GBT2/gvKmpFik6R+3CHS1uweSybtZKI2+kV1eFl4czAeUx4nd5DMWO//02Bv7iVt1VwOfkWIGzCW4PkkistZsev4=
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
+        id S1726621AbfEGMZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 08:25:51 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:51279 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726404AbfEGMZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 08:25:50 -0400
+Received: by mail-wm1-f67.google.com with SMTP id o189so9283107wmb.1
+        for <netdev@vger.kernel.org>; Tue, 07 May 2019 05:25:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=RgWL/g6Ctb6576iEJfmm/zOjyy44S59/CosNUjRdC94=;
+        b=Yeov1d7wGWiIDK/IvY8d4f3Uov6DWAUFvLodKhtx+QfwYCSFBrlM5VKB2YGb/h80py
+         E9dH6Q8wK45WFL1Y2CThEQ69ZEdUE58S4gv3NQn5yQZnkHANYhQJCSjZfu43Q2nswGdM
+         4lt5lh58HeF1pxdMOf+2Pi/46T7WZc7uFfzJ8/ftbnoczAr5X2VJ+1brntWBdGs/wzZF
+         3+gvtYdW4t4M5fwHwGXs5Jeb71XT1fVAtUIrijt7SuMepqAAl8Fmlyo0DArPOXpD9G6y
+         BYltdMiRg/3Yc1UqNDybEwF2QhrhjYYlkGMVS/H/z8V10X0wIrUNTSWY1d1UJzAuPScj
+         zILg==
+X-Gm-Message-State: APjAAAWwStK4OwHcJPQT7XR44gbz92WgR3AOblCtOf8kZ/kLk/ITTLoc
+        X4O51znR//TMR3flOACUnAlxNA==
+X-Google-Smtp-Source: APXvYqztk3D6FfQCag9V/IMayhuu5K++rq1Y1HFSbHtcWI7a6N2/K8T/6FbFqS0eSiDEbqlaP89Edg==
+X-Received: by 2002:a05:600c:2506:: with SMTP id d6mr21690818wma.106.1557231946828;
+        Tue, 07 May 2019 05:25:46 -0700 (PDT)
+Received: from steredhat (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
+        by smtp.gmail.com with ESMTPSA id c20sm14679885wre.28.2019.05.07.05.25.45
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 07 May 2019 05:25:45 -0700 (PDT)
+Date:   Tue, 7 May 2019 14:25:43 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jorge Moreira Broche <jemoreira@google.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kernel-team@android.com, stable@vger.kernel.org
+Subject: Re: [PATCH] vsock/virtio: Initialize core virtio vsock before
+ registering the driver
+Message-ID: <20190507122543.kgh44rvaw7nwlhjn@steredhat>
+References: <20190501003001.186239-1-jemoreira@google.com>
+ <20190501190831.GF22391@stefanha-x1.localdomain>
+ <20190502082045.u3xypjbac5npbhtc@steredhat.homenet.telecomitalia.it>
+ <CAJi--POaVsfprbp5na5BvR=VNONKGfFya_BnmTzzcWmOQ1DM2Q@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd066af7-f27a-4e62-3648-08d6d2e59aaf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 May 2019 12:14:50.3172
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4689
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJi--POaVsfprbp5na5BvR=VNONKGfFya_BnmTzzcWmOQ1DM2Q@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07.05.2019 00:25, Petr =8Atetiar wrote:=0A=
-> Hi,=0A=
-> =0A=
-> this patch series is an attempt to fix the mess, I've somehow managed to=
-=0A=
-> introduce.=0A=
-> =0A=
-> First patch in this series is defacto v5 of the previous 05/10 patch in t=
-he=0A=
-> series, but since the v4 of this 05/10 patch wasn't picked up by the=0A=
-> patchwork for some unknown reason, this patch wasn't applied with the oth=
-er=0A=
-> 9 patches in the series, so I'm resending it as a separate patch of this=
-=0A=
-> fixup series again.=0A=
-> =0A=
-> Second patch is a result of this rebase against net-next tree, where I wa=
-s=0A=
-> checking again all current users of of_get_mac_address and found out, tha=
-t=0A=
-> there's new one in DSA, so I've converted this user to the new ERR_PTR=0A=
-> encoded error value as well.=0A=
-> =0A=
-> Third patch which was sent as v5 wasn't considered for merge, but I still=
-=0A=
-> think, that we need to check for possible NULL value, thus current IS_ERR=
-=0A=
-> check isn't sufficient and we need to use IS_ERR_OR_NULL instead.=0A=
-> =0A=
-> Fourth patch fixes warning reported by kbuild test robot.=0A=
-> =0A=
-> Cheers,=0A=
-> =0A=
-> Petr=0A=
-> =0A=
-> Petr =8Atetiar (4):=0A=
->    net: ethernet: support of_get_mac_address new ERR_PTR error=0A=
->    net: dsa: support of_get_mac_address new ERR_PTR error=0A=
->    staging: octeon-ethernet: Fix of_get_mac_address ERR_PTR check=0A=
->    net: usb: smsc: fix warning reported by kbuild test robot=0A=
-=0A=
->   drivers/net/ethernet/freescale/fec_main.c             | 2 +-=0A=
-=0A=
-This fixes netboot on imx (probably all of them).=0A=
-=0A=
-Tested-by: Leonard Crestez <leonard.crestez@nxp.com>=0A=
-=0A=
-But shouldn't "support of_get_mac_address new ERR_PTR error" somehow be =0A=
-reordered so that it's done before allowing non-null errors from =0A=
-of_get_mac_address?=0A=
-=0A=
-Otherwise it will break bisect for many people.=0A=
-=0A=
---=0A=
-Regards,=0A=
-Leonard=0A=
+Hi Jorge,
+
+On Mon, May 06, 2019 at 01:19:55PM -0700, Jorge Moreira Broche wrote:
+> > On Wed, May 01, 2019 at 03:08:31PM -0400, Stefan Hajnoczi wrote:
+> > > On Tue, Apr 30, 2019 at 05:30:01PM -0700, Jorge E. Moreira wrote:
+> > > > Avoid a race in which static variables in net/vmw_vsock/af_vsock.c are
+> > > > accessed (while handling interrupts) before they are initialized.
+> > > >
+> > > >
+> > > > [    4.201410] BUG: unable to handle kernel paging request at ffffffffffffffe8
+> > > > [    4.207829] IP: vsock_addr_equals_addr+0x3/0x20
+> > > > [    4.211379] PGD 28210067 P4D 28210067 PUD 28212067 PMD 0
+> > > > [    4.211379] Oops: 0000 [#1] PREEMPT SMP PTI
+> > > > [    4.211379] Modules linked in:
+> > > > [    4.211379] CPU: 1 PID: 30 Comm: kworker/1:1 Not tainted 4.14.106-419297-gd7e28cc1f241 #1
+> > > > [    4.211379] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
+> > > > [    4.211379] Workqueue: virtio_vsock virtio_transport_rx_work
+> > > > [    4.211379] task: ffffa3273d175280 task.stack: ffffaea1800e8000
+> > > > [    4.211379] RIP: 0010:vsock_addr_equals_addr+0x3/0x20
+> > > > [    4.211379] RSP: 0000:ffffaea1800ebd28 EFLAGS: 00010286
+> > > > [    4.211379] RAX: 0000000000000002 RBX: 0000000000000000 RCX: ffffffffb94e42f0
+> > > > [    4.211379] RDX: 0000000000000400 RSI: ffffffffffffffe0 RDI: ffffaea1800ebdd0
+> > > > [    4.211379] RBP: ffffaea1800ebd58 R08: 0000000000000001 R09: 0000000000000001
+> > > > [    4.211379] R10: 0000000000000000 R11: ffffffffb89d5d60 R12: ffffaea1800ebdd0
+> > > > [    4.211379] R13: 00000000828cbfbf R14: 0000000000000000 R15: ffffaea1800ebdc0
+> > > > [    4.211379] FS:  0000000000000000(0000) GS:ffffa3273fd00000(0000) knlGS:0000000000000000
+> > > > [    4.211379] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > > [    4.211379] CR2: ffffffffffffffe8 CR3: 000000002820e001 CR4: 00000000001606e0
+> > > > [    4.211379] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > > [    4.211379] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > > [    4.211379] Call Trace:
+> > > > [    4.211379]  ? vsock_find_connected_socket+0x6c/0xe0
+> > > > [    4.211379]  virtio_transport_recv_pkt+0x15f/0x740
+> > > > [    4.211379]  ? detach_buf+0x1b5/0x210
+> > > > [    4.211379]  virtio_transport_rx_work+0xb7/0x140
+> > > > [    4.211379]  process_one_work+0x1ef/0x480
+> > > > [    4.211379]  worker_thread+0x312/0x460
+> > > > [    4.211379]  kthread+0x132/0x140
+> > > > [    4.211379]  ? process_one_work+0x480/0x480
+> > > > [    4.211379]  ? kthread_destroy_worker+0xd0/0xd0
+> > > > [    4.211379]  ret_from_fork+0x35/0x40
+> > > > [    4.211379] Code: c7 47 08 00 00 00 00 66 c7 07 28 00 c7 47 08 ff ff ff ff c7 47 04 ff ff ff ff c3 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 8b 47 08 <3b> 46 08 75 0a 8b 47 04 3b 46 04 0f 94 c0 c3 31 c0 c3 90 66 2e
+> > > > [    4.211379] RIP: vsock_addr_equals_addr+0x3/0x20 RSP: ffffaea1800ebd28
+> > > > [    4.211379] CR2: ffffffffffffffe8
+> > > > [    4.211379] ---[ end trace f31cc4a2e6df3689 ]---
+> > > > [    4.211379] Kernel panic - not syncing: Fatal exception in interrupt
+> > > > [    4.211379] Kernel Offset: 0x37000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+> > > > [    4.211379] Rebooting in 5 seconds..
+> > > >
+> > > > Fixes: 22b5c0b63f32 ("vsock/virtio: fix kernel panic after device hot-unplug")
+> > > > Cc: Stefan Hajnoczi <stefanha@redhat.com>
+> > > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > > Cc: kvm@vger.kernel.org
+> > > > Cc: virtualization@lists.linux-foundation.org
+> > > > Cc: netdev@vger.kernel.org
+> > > > Cc: kernel-team@android.com
+> > > > Cc: stable@vger.kernel.org [4.9+]
+> > > > Signed-off-by: Jorge E. Moreira <jemoreira@google.com>
+> > > > ---
+> > > >  net/vmw_vsock/virtio_transport.c | 13 ++++++-------
+> > > >  1 file changed, 6 insertions(+), 7 deletions(-)
+> > > >
+> > > > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+> > > > index 15eb5d3d4750..96ab344f17bb 100644
+> > > > --- a/net/vmw_vsock/virtio_transport.c
+> > > > +++ b/net/vmw_vsock/virtio_transport.c
+> > > > @@ -702,28 +702,27 @@ static int __init virtio_vsock_init(void)
+> > > >     if (!virtio_vsock_workqueue)
+> > > >             return -ENOMEM;
+> > > >
+> > > > -   ret = register_virtio_driver(&virtio_vsock_driver);
+> > > > +   ret = vsock_core_init(&virtio_transport.transport);
+> > >
+> > > Have you checked that all transport callbacks are safe even if another
+> > > CPU calls them while virtio_vsock_probe() is executing on another CPU?
+> > >
+> >
+> > I have the same doubt.
+> >
+> > What do you think to take the 'the_virtio_vsock_mutex' in the
+> > virtio_vsock_init(), keeping the previous order?
+> >
+> > This should prevent this issue because the virtio_vsock_probe() remains
+> > blocked in the mutex until the end of vsock_core_init().
+> >
+> > Cheers,
+> > Stefano
+> 
+> Hi Stefan, Stefano,
+> Sorry for the late reply.
+
+Don't worry :)
+
+> 
+> @Stefan
+> The order of vsock_core_exit() does not need to be changed to fix the
+> bug I found, but not changing it means the exit function is not
+> symmetric to the init function.
+> 
+> @Stefano
+> Taking the mutex from virtio_vsock_init() could work too (I haven't
+> tried it yet), but it's unnecessary, all that needs to be done is
+> properly initialize vsock_core before attempting to use it.
+> 
+> I would prefer to change the order in virtio_vsock_init, while leaving
+> virtio_vsock_exit unchanged, but I'll leave the final decision to you
+> since I am not very familiar with the inner workings of these modules.
+
+In order to fix your issue, IMO changing the order in virtio_vsock_init(),
+is enough.
+
+I think also that is correct to change the order in the virtio_vsock_exit(),
+otherwise, we should have the same issue if an interrupt comes while we
+are removing the module.
+This should not lead to the problem that I tried to solve in 22b5c0b63f32,
+because the vsock_core_exit() should not be called if there are open sockets,
+since the virtio-vsock driver become the owner of AF_VSOCK protocol
+family.
+
+Not related to this patch, maybe there are some issues in the
+virtio_vsock_probe(). I'd check better if it is correct to set
+'the_virtio_vsock' before the end of the initialization (e.g. spinlocks
+are initialized later).
+
+Accordingly,
+
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+
+Thanks,
+Stefano
