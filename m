@@ -2,106 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 279B916212
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 12:40:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A16B01621C
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 12:48:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726547AbfEGKkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 06:40:43 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35608 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725844AbfEGKkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 06:40:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=JcsFUl7CHtmmwrs51FmIWdyRtiT3Wl9CxTGXiiAUYec=; b=mPaCfQeHR6JOJpSd6Hq+AJ5ub
-        3BLhIrQEjNLDuLkxG5+L8XTsPrJlxLrYCYfQUk3mlQ4iAQiG2+SvPVFD5veUHwFdE0FJ7Sbr221Gg
-        fARQLR2jtCIGMed5NPNDNWqlo0vRQjlRs+nLZKHpow92zqlOtz0X0bV9TUmJI3+gkUHyE2S3jsLg/
-        D7bL3ty0LHo0jp1ScAcdPN8SmSrWwj2/L+OyLmIHelffdbkIQmzvSRQj5tQQEkBtFZcU8JDE4PrGJ
-        vt3gPMAzwgpsFVEMoE0A3g4LRgTIfL0zQFZrBw57ohrp9kCuKxS8LMyog1/NvExVDsT89qs7E3Zru
-        23kPfarOw==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:55712)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hNxWT-0002o7-SO; Tue, 07 May 2019 11:40:34 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hNxWO-0001kd-Ou; Tue, 07 May 2019 11:40:28 +0100
-Date:   Tue, 7 May 2019 11:40:28 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     Ruslan Babayev <ruslan@babayev.com>, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, wsa@the-dreams.de,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-acpi@vger.kernel.org, xe-linux-external@cisco.com
-Subject: Re: [PATCH net-next 2/2] net: phy: sfp: enable i2c-bus detection on
- ACPI based systems
-Message-ID: <20190507104028.zf34wxr7hgwdwa64@shell.armlinux.org.uk>
-References: <20190505220524.37266-3-ruslan@babayev.com>
- <20190506045951.GB2895@lahna.fi.intel.com>
- <871s1bv4aw.fsf@babayev.com>
- <20190507092946.GS2895@lahna.fi.intel.com>
+        id S1726612AbfEGKsC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 May 2019 06:48:02 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:46485 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725844AbfEGKsB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 06:48:01 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-17-FGOFuhnMNn6udtXcfbbchQ-1; Tue, 07 May 2019 11:47:58 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
+ (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue,
+ 7 May 2019 11:47:57 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 7 May 2019 11:47:57 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jeff Kirsher' <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: RE: [net-next 13/15] ice: Use bitfields where possible
+Thread-Topic: [net-next 13/15] ice: Use bitfields where possible
+Thread-Index: AQHVAtQIMZDCHHo53Eewyfy3feGFlqZffokg
+Date:   Tue, 7 May 2019 10:47:57 +0000
+Message-ID: <dfd0b9bf9180413788b04984fd007b07@AcuMS.aculab.com>
+References: <20190504234929.3005-1-jeffrey.t.kirsher@intel.com>
+ <20190504234929.3005-14-jeffrey.t.kirsher@intel.com>
+In-Reply-To: <20190504234929.3005-14-jeffrey.t.kirsher@intel.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190507092946.GS2895@lahna.fi.intel.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+X-MC-Unique: FGOFuhnMNn6udtXcfbbchQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 07, 2019 at 12:29:46PM +0300, Mika Westerberg wrote:
-> On Mon, May 06, 2019 at 11:14:15AM -0700, Ruslan Babayev wrote:
-> > 
-> > Mika Westerberg writes:
-> > 
-> > > On Sun, May 05, 2019 at 03:05:23PM -0700, Ruslan Babayev wrote:
-> > >> Lookup I2C adapter using the "i2c-bus" device property on ACPI based
-> > >> systems similar to how it's done with DT.
-> > >> 
-> > >> An example DSD describing an SFP on an ACPI based system:
-> > >> 
-> > >> Device (SFP0)
-> > >> {
-> > >>     Name (_HID, "PRP0001")
-> > >>     Name (_DSD, Package ()
-> > >>     {
-> > >>         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-> > >>         Package () {
-> > >>             Package () { "compatible", "sff,sfp" },
-> > >>             Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
-> > >
-> > > Hmm, ACPI has I2cSerialBusV2() resource for this purpose. Why you are not
-> > > using that?
-> > 
-> > I am not an ACPI expert, but my understanding is I2cSerialBusV2() is
-> > used for slave connections. I am trying to reference an I2C controller
-> > here.
+From: Jeff Kirsher
+> Sent: 05 May 2019 00:49
+> The driver was converted to not use bool, but it was
+> neglected that the bools should have been converted to bit fields
+> as bit fields in software structures are ok, as long as they
+> use the correct kinds of unsigned types. This avoids
+> wasting lots of storage space to store single bit values.
 > 
-> Ah, the device itself is not sitting on an I2C bus? In that case I
-> agree, I2CSerialBusV2() is not correct here.
+> One of the change hunks moves a variable lport out of
+> a group of "combinable" bit fields because all bits of
+> the u8 lport are valid and the variable can be packed in the
+> struct in struct holes.
 
-There are several possibilities:
+How many copies of this structure are there?
+You may find that the code size increases more than the date size reduction.
+Also, unless the data size goes below a malloc threshold is saves
+no memory at all.
 
-- Identifying information in EEPROM-like device at 0x50.
-- Optional diagnostics information and measurements at 0x51.
-- Optional network PHY at some other address.
+	David
 
-Hence, we need access to the bus to be able to parse the EEPROM without
-interfering with the AT24 driver that would otherwise bind to it, to
-be able to read the diagnostics, and to probe for the network PHY
-without needing to have a big table of module vendors/descriptions to
-PHY information (and therefore limiting our SFP support to only
-"approved" known modules (which, common with big-name switches, pisses
-users off and is widely seen as a vendor lock-in measure.)
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
