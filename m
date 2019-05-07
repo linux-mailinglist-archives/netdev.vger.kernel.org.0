@@ -2,82 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B03D916298
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 13:08:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 589B5162D2
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 13:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfEGLIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 07:08:50 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:39430 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725844AbfEGLIu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 07:08:50 -0400
-Received: by mail-wr1-f68.google.com with SMTP id v10so9458577wrt.6
-        for <netdev@vger.kernel.org>; Tue, 07 May 2019 04:08:48 -0700 (PDT)
+        id S1726508AbfEGLbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 07:31:34 -0400
+Received: from mail-wm1-f42.google.com ([209.85.128.42]:55846 "EHLO
+        mail-wm1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725859AbfEGLbe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 07:31:34 -0400
+Received: by mail-wm1-f42.google.com with SMTP id y2so19678344wmi.5
+        for <netdev@vger.kernel.org>; Tue, 07 May 2019 04:31:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=d9LtJy4/cwav9m9zm9pCTRgTErui9H63/r98rqCx8eU=;
-        b=dAgwQfno7usUUZsw7sbrB5r76dzmGLnLRbqeYLk7kg6Xh2t7qVG91QFBP73QSl4HZ4
-         iFBLBRVqQtLH3k1+UigK9NJQ9Et1w0phOu0guZay+yj91OcIChMesE+W5sp/5LzJ6fqY
-         4cHN4IZpMrHddVdSKIupNWt2G4zwzFCRuhqSlHPl4Jwpg60zmugcEqcFJArWEMK+ckq7
-         QF+ohny9F4Fkr8+P9osvL7xyFNaFT3rYQBcmMec9jb3KGbBIs2/xRlANS3JwIEf/pGnK
-         7Z8AnX1F4ovbXtdKZEgXhp+jn2B3i1z/HCBmLg0CZi8UxBWd4LiKJMhLkU+iH2KRHRO4
-         9DoA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=QjMXMsSSirdUYoTUuJO+JEDtUnxzPrM5xgigZEkLnYQ=;
+        b=RqOFfDSYdz/H0bcGfdSjaCVDatHo8QOFl9VXt50M2D3B0Pl2xxxi0898C7GyYi3zx/
+         wgaHMiv4lbloz8y3chMJwbSDG05DUC/zjhHpvhcyQZDee25CFO4zB5a9nkeQgBhO/UA+
+         uz4qOSyAlE8agjyZOCgxdu7k5YhSui3vUYd58viRzWH88/Yfw++XsNAC4vTs/fIbhuY3
+         4UgDvzWCoOFnH8shxy0lBiaS8kLsM+mqqpqSy0KPVcMz0P8R/ltcUzh1iGkEGoBDM3ia
+         JYSUT2PH9o098h+nPMGyncOBu6+MU350F3EscT3UIFI0IE/B34or+gy5PQm+Y6966eef
+         /4yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=d9LtJy4/cwav9m9zm9pCTRgTErui9H63/r98rqCx8eU=;
-        b=kZcb0ySG0fwkuFo+0EthutC9t2nR4L91Te7cbUdBJc8G/upd1bJocQwU7b37ii95Zf
-         +Dcy9JoyNfxZGea1605CSEm7qNAJwIjeXPjaoMUihFrGdV/u1QZLML+e4Gylqwlq7p7f
-         ymF4hti3mcX3EnCYkVp5LN90rJFnjpf1PcjP17Jcu9MwNf0kNRw5JdOSGUcUN+n5DXGV
-         Qi3YHO7zdHSwrlA2DKM4hdfxc0x2/whu8xW/V7GhbdfxFtcfC1PjiXXLUVDBVkhIQtZE
-         DIpTbZ+PchPCnozuL3yXb1rpZfGYXv+EMcTNGHqrWKsz/0nxysmmFLMlIzb7TMB4PaTI
-         zA6g==
-X-Gm-Message-State: APjAAAW+oKcw1iOirHloNf1kx2m6euMz0PA/y1TUNIUTz9T+1jCtVy/c
-        GdZ7wodPbhgOBkfKLPkKoxnsEzMmLMA=
-X-Google-Smtp-Source: APXvYqySsYfeUvDPX0avYoE6dzZuHNctg0hIF0Ey7nmpeLBGF9f/F6TsDmcXZxQ7e8EEjoWV0pO8YQ==
-X-Received: by 2002:a5d:4711:: with SMTP id y17mr23504977wrq.122.1557227328250;
-        Tue, 07 May 2019 04:08:48 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id f2sm23460781wmh.3.2019.05.07.04.08.47
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=QjMXMsSSirdUYoTUuJO+JEDtUnxzPrM5xgigZEkLnYQ=;
+        b=O3q6puEDonJDG/MBjO9PL0VtwQO+Aqxvjr+miJGDMizjdTYUpGrF78/7a/LxIMXx1G
+         qRkgLwGOzosS4PvAhrJuYYlO33Emyr6YGb6zGs4N/R453wpjAmzKHxkgzS/1MEc7evmB
+         eZaGLhVLeEN+t7+s9HAKyftrNDCLzqzH6apwyxKhVSENHoYd66IB/3k/Yht/viyCqRMV
+         G7Q0ipwMdaOdCZANVAmsvyrEZLMYhT+MzHOZwAoyUc7+HiS6avYMikn81w/NxeSmVmtT
+         WIgLkd05EDCf8ISscLI81SploEEriU5rByEXS/6whcpuMIN4zFnbHhn78y8IUu1WN6g2
+         PwsA==
+X-Gm-Message-State: APjAAAWc1AcEqwqD6jwbXBO9tlow+1juRDeM9k6V31julUW21QML/Bpt
+        M62p2jnRL/noofkMqw7BsARZ4Q==
+X-Google-Smtp-Source: APXvYqzpk9v6VfYXiGQLaQXAPP9u1YxXM4HVm7/pNclsGOb/OESBsJfjNuMH+hELgSYpImHipKwfHA==
+X-Received: by 2002:a1c:cf83:: with SMTP id f125mr19275746wmg.96.1557228692779;
+        Tue, 07 May 2019 04:31:32 -0700 (PDT)
+Received: from LAPTOP-V3S7NLPL ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id m25sm12848005wmi.45.2019.05.07.04.31.31
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 07 May 2019 04:08:47 -0700 (PDT)
-Date:   Tue, 7 May 2019 13:08:47 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, xiyou.wangcong@gmail.com,
-        Pieter Jansen van Vuuren 
-        <pieter.jansenvanvuuren@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next] net/sched: remove block pointer from common
- offload structure
-Message-ID: <20190507110847.GA2157@nanopsycho>
-References: <20190507002421.32690-1-jakub.kicinski@netronome.com>
+        Tue, 07 May 2019 04:31:31 -0700 (PDT)
+References: <673b885183fb64f1cbb3ed2387524077@natalenko.name> <87mujzutsw.fsf@netronome.com> <4414f1798ea3c0f70128b7e4caa14edc@natalenko.name>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     Oleksandr Natalenko <oleksandr@natalenko.name>
+Cc:     Jiong Wang <jiong.wang@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        oss-drivers@netronome.com, linux-kernel@vger.kernel.org,
+        xdp-newbies@vger.kernel.org, valdis@vt.edu
+Subject: Re: [oss-drivers] netronome/nfp/bpf/jit.c cannot be build with -O3
+In-reply-to: <4414f1798ea3c0f70128b7e4caa14edc@natalenko.name>
+Date:   Tue, 07 May 2019 12:31:29 +0100
+Message-ID: <87ef5abiwe.fsf@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190507002421.32690-1-jakub.kicinski@netronome.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, May 07, 2019 at 02:24:21AM CEST, jakub.kicinski@netronome.com wrote:
->From: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
->
->Based on feedback from Jiri avoid carrying a pointer to the tcf_block
->structure in the tc_cls_common_offload structure. Instead store
->a flag in driver private data which indicates if offloads apply
->to a shared block at block binding time.
->
->Suggested-by: Jiri Pirko <jiri@mellanox.com>
->Signed-off-by: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
->Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Oleksandr Natalenko writes:
 
-Thanks!
+> Hi.
+>
+> On 07.05.2019 00:01, Jiong Wang wrote:
+>> I guess it's because constant prop. Could you try the following change 
+>> to
+>> __emit_shift?
+>> 
+>> drivers/net/ethernet/netronome/nfp/bpf/jit.c
+>> __emit_shift:331
+>> -       if (sc == SHF_SC_L_SHF)
+>> +       if (sc == SHF_SC_L_SHF && shift)
+>>                 shift = 32 - shift;
+>> 
+>> emit_shf_indir is passing "0" as shift to __emit_shift which will
+>> eventually be turned into 32 and it was OK because we truncate to 
+>> 5-bit,
+>> but before truncation, it will overflow the shift mask.
+>
+> Yup, it silences the error for me.
+
+Thanks for the testing.
+
+I have also reproduced this issue after switching to gcc 8.3, and confirmed
+the error is triggered from "value too large for the field" check inside
+__BF_FIELD_CHECK due to immediate "32" is out of range for mask 0x1f.
+
+Will send out a fix.
+
+Regards,
+Jiong
