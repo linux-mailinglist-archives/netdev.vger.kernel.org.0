@@ -2,131 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C27715E77
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 09:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FEE515F3A
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 10:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726731AbfEGHqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 03:46:18 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:57926 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726249AbfEGHqR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 03:46:17 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x477jXQC005216;
-        Tue, 7 May 2019 10:45:34 +0300
-Date:   Tue, 7 May 2019 10:45:33 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     hujunwei <hujunwei4@huawei.com>
-cc:     wensong@linux-vs.org, horms@verge.net.au, pablo@netfilter.org,
-        kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        mingfangsen@huawei.com, wangxiaogang3@huawei.com,
-        zhangwenhao8@huawei.com
-Subject: Re: Subject: [PATCH netfilter] ipvs: Fix crash when ipv6 route
- unreach
-In-Reply-To: <f40bae44-a4b1-868c-3572-3e89c4cadb6a@huawei.com>
-Message-ID: <alpine.LFD.2.21.1905071009060.3512@ja.home.ssi.bg>
-References: <f40bae44-a4b1-868c-3572-3e89c4cadb6a@huawei.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1726197AbfEGIUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 04:20:12 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:39042 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725780AbfEGIUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 04:20:12 -0400
+Received: by mail-pf1-f195.google.com with SMTP id z26so8258026pfg.6
+        for <netdev@vger.kernel.org>; Tue, 07 May 2019 01:20:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=4et2WhpsHXv6e9HfQL6DjEPM5EsR+0FaZExWLDbYzvw=;
+        b=LSlYzuGp3imgX5KJrjrPMiGiPyvXifMC86oQqggBOmhWv4/rUgb5uThS/+D4wKvzXs
+         UyzEHl+VaEeqEUry8G2r54vXuR39dzI9VXK+MVwhvJlLUA3H2Lckpelbf1AZ2uIHCpON
+         pq8w1WfEoDIjCWI1XFXjmX8mrUpYhd/p/LPSL1FDjmS8ESY5dqviQORITkBkuxJkAFl/
+         mcv7gBMv6fVfUMGzRhWM0xto7IVMj3UuXVLOVHoUO1zWK7MYi9vK06quF2T6XEqf9ope
+         6S6fAHh0c+6GG89zcGHDIeGHBt0KbUOuYrEpU3x3CJf33eEbaQNbcYs5CLMYMyUmBolK
+         eI3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4et2WhpsHXv6e9HfQL6DjEPM5EsR+0FaZExWLDbYzvw=;
+        b=ZgcHUOtjii0sUj/Zx+MwQoQwdgute8nxZuqopiHwdOlVKUVSLfkxPDwIfNQoptp1pk
+         4RMboYs3QumceqCN4NDghjkAtSHzYlIQX0a5gmCZ1x0OKvZ4vsFHffV6j1z2bMrWcC5L
+         zgsLGW6DwzcdDZfETPuvsXACKClYabBDmEjlSJzEAjNPKHfAWxllYr01bhmPBNaJh3Ia
+         5I6UD0cnuPyssmJMwvsC9s2fjwYrVYgU3GKlZX73bM7XshtapdFn2/2HokY5oOcSmpYg
+         /H+SXfvEA6I2WDJGB/64dYCtmOciTszZrETIfBXpNcWtOuGyfqIYm3jGICLQBZJ1eGsa
+         ONoA==
+X-Gm-Message-State: APjAAAU2ErzG/QUJNJ2NRTAVnCCRYvRb4dGYOgeVMoi9gzoLREITNvNR
+        z3IeAe2h3hrbdAnRsxFYgxI=
+X-Google-Smtp-Source: APXvYqy0UEY2TOn5Czu7GMUJ5lBLq0lMFg/OXjxC2YMp0UP5w9xh9kwsPr+oZ9umzacd7e3bUItJ/w==
+X-Received: by 2002:a63:ee01:: with SMTP id e1mr37170931pgi.20.1557217211811;
+        Tue, 07 May 2019 01:20:11 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id t9sm13710647pgp.66.2019.05.07.01.20.09
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 07 May 2019 01:20:10 -0700 (PDT)
+Date:   Tue, 7 May 2019 16:20:01 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] selftests: fib_rule_tests: Fix icmp proto with ipv6
+Message-ID: <20190507082001.GL18865@dhcp-12-139.nay.redhat.com>
+References: <20190429173009.8396-1-dsahern@kernel.org>
+ <20190430023740.GJ18865@dhcp-12-139.nay.redhat.com>
+ <dac5b0ed-fa7e-1723-0067-6c607825ec31@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dac5b0ed-fa7e-1723-0067-6c607825ec31@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Apr 30, 2019 at 12:00:46PM -0600, David Ahern wrote:
+> On 4/29/19 8:37 PM, Hangbin Liu wrote:
+> > An other issue is The IPv4 rule 'from iif' check test failed while IPv6
+> > passed. I haven't found out the reason yet.
+> > 
+> > # ip -netns testns rule add from 192.51.100.3 iif dummy0 table 100
+> > # ip -netns testns route get 192.51.100.2 from 192.51.100.3 iif dummy0
+> > RTNETLINK answers: No route to host
+> > 
+> >     TEST: rule4 check: from 192.51.100.3 iif dummy0           [FAIL]
+> > 
+> > # ip -netns testns -6 rule add from 2001:db8:1::3 iif dummy0 table 100
+> > # ip -netns testns -6 route get 2001:db8:1::2 from 2001:db8:1::3 iif dummy0
+> > 2001:db8:1::2 via 2001:db8:1::2 dev dummy0 table 100 metric 1024 iif dummy0 pref medium
+> > 
+> >     TEST: rule6 check: from 2001:db8:1::3 iif dummy0          [ OK ]
+> 
+> use perf to look at the fib lookup parameters:
+>   perf record -e fib:* -- ip -netns testns route get 192.51.100.2 from
+> 192.51.100.3 iif dummy0
+>   perf script
 
-	Hello,
+Hi David, Roopa,
 
-On Tue, 7 May 2019, hujunwei wrote:
+From the perf record the result looks good.
+fib_table_lookup could get correct route.
 
-> From: Junwei Hu <hujunwei4@huawei.com>
-> 
-> When Tcp send RST packet in ipvs, crash occurs with the following
-> stack trace:
-> 
-> BUG: unable to handle kernel NULL pointer dereference at 0000000000000018
-> PID: 0 COMMAND: "swapper/2"
-> TASK: ffff9ec83889bf40  (1 of 4)  [THREAD_INFO: ffff9ec8388b0000]
-> CPU: 2  STATE: TASK_RUNNING (PANIC)
->  [exception RIP: __ip_vs_get_out_rt_v6+1250]
-> RIP: ffffffffc0d566f2  RSP: ffff9ec83ed03c68  RFLAGS: 00010246
-> RAX: 0000000000000000  RBX: ffff9ec835e85000  RCX: 000000000005e1f9
-> RDX: 000000000005e1f8  RSI: 0000000000000200  RDI: ffff9ec83e801b00
-> RBP: ffff9ec83ed03cd8   R8: 000000000001bb40   R9: ffffffffc0d5673f
-> R10: ffff9ec83ed1bb40  R11: ffffe2d384d4fdc0  R12: ffff9ec7b7ad5900
-> R13: 0000000000000000  R14: 0000000000000007  R15: ffff9ec8353f7580
-> ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
->  [ffff9ec83ed03ce0] ip_vs_fnat_xmit_v6 at ffffffffc0d5b42c [ip_vs]
->  [ffff9ec83ed03d70] tcp_send_rst_ipv6 at ffffffffc0d6542a [ip_vs]
->  [ffff9ec83ed03df8] tcp_conn_expire_handler at ffffffffc0d65823 [ip_vs]
->  [ffff9ec83ed03e20] ip_vs_conn_expire at ffffffffc0d42373 [ip_vs]
->  [ffff9ec83ed03e70] call_timer_fn at ffffffffae0a6b58
->  [ffff9ec83ed03ea8] run_timer_softirq at ffffffffae0a904d
->  [ffff9ec83ed03f20] __do_softirq at ffffffffae09fa85
->  [ffff9ec83ed03f90] call_softirq at ffffffffae739dac
->  [ffff9ec83ed03fa8] do_softirq at ffffffffae02e62b
->  [ffff9ec83ed03fc0] irq_exit at ffffffffae09fe25
->  [ffff9ec83ed03fd8] smp_apic_timer_interrupt at ffffffffae73b158
->  [ffff9ec83ed03ff0] apic_timer_interrupt at ffffffffae737872
-> 
-> TCP connection timeout and send a RST packet, the skb is alloc
-> by alloc_skb, the pointer skb->dev and skb_dst(skb) is NULL,
-> however, ipv6 route unreach at that time, so go into err_unreach.
-> In err_unreach, crash occurs when skb->dev and skb_dst(skb) is NULL.
+For IPv4:
+ip  7155 [001]  8442.915515: fib:fib_table_lookup: table 255 oif 0 iif 2 proto 0 192.51.100.3/0 -> 192.51.100.2/0 tos 0 scope 0 flags 0 ==> dev - gw 0.0.0.0 src 0.0.0.0 err -11
+ip  7155 [001]  8442.915517: fib:fib_table_lookup: table 100 oif 0 iif 2 proto 0 192.51.100.3/0 -> 192.51.100.2/0 tos 0 scope 0 flags 0 ==> dev dummy0 gw 192.51.100.2 src 198.51.100.1 err 0
 
-	I guess, this is a modified IPVS module and the problem
-can not occur in mainline kernel. ip_vs_in() and ip_vs_out() already 
-have check for skb_dst(). May be you generate skb without attached
-route, so skb_dst is NULL. Also, note that decrement_ttl() has similar
-code.
+For IPv6:
+ip  6950 [000]   759.328850: fib6:fib6_table_lookup: table 255 oif 0 iif 2 proto 0 2001:db8:1::3/0 -> 2001:db8:1::2/0 tos 0 scope 0 flags 0 ==> dev lo gw :: err -113
+ip  6950 [000]   759.328852: fib6:fib6_table_lookup: table 100 oif 0 iif 2 proto 0 2001:db8:1::3/0 -> 2001:db8:1::2/0 tos 0 scope 0 flags 0 ==> dev dummy0 gw 2001:db8:1::2 err 0
 
-> The code is added by the following patch:
-> commit 326bf17ea5d4 ("ipvs: fix ipv6 route unreach panic")
-> because the ip6_link_failure function requires the skb->dev
-> in icmp6_send with that version.
-> 
-> This patch only fix the problem in specific scene, and icmp6_send in
-> current version is robust against null skb->dev by adding the
-> following patch.
-> commit 8d9336704521
-> ("ipv6: make icmp6_send() robust against null skb->dev")
-> 
-> So I delete the code, make __ip_vs_get_out_rt_v6() robust, when
-> skb->dev and skb_dst(skb) is NULL.
-> 
-> Fixes: 326bf17ea5d4 ("ipvs: fix ipv6 route unreach panic")
-> Signed-off-by: Junwei Hu <hujunwei4@huawei.com>
-> Reported-by: Wenhao Zhang <zhangwenhao8@huawei.com>
-> ---
->  net/netfilter/ipvs/ip_vs_xmit.c | 7 -------
->  1 file changed, 7 deletions(-)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_xmit.c b/net/netfilter/ipvs/ip_vs_xmit.c
-> index 175349fcf91f..e2bb6c223396 100644
-> --- a/net/netfilter/ipvs/ip_vs_xmit.c
-> +++ b/net/netfilter/ipvs/ip_vs_xmit.c
-> @@ -561,13 +561,6 @@ __ip_vs_get_out_rt_v6(struct netns_ipvs *ipvs, int skb_af, struct sk_buff *skb,
->  	return -1;
-> 
->  err_unreach:
-> -	/* The ip6_link_failure function requires the dev field to be set
-> -	 * in order to get the net (further for the sake of fwmark
-> -	 * reflection).
-> -	 */
-> -	if (!skb->dev)
-> -		skb->dev = skb_dst(skb)->dev;
-> -
->  	dst_link_failure(skb);
->  	return -1;
->  }
-> -- 
-> 2.21.GIT
 
-Regards
+Then I tracked the code and found in function ip_route_input_slow(),
+after fib_lookup(), we got res->type == RTN_UNICAST. So if we haven't
+enabled forwarding, it will return -EHOSTUNREACH.
 
---
-Julian Anastasov <ja@ssi.bg>
+But even we enabled forwarding, we still need to disable rp_filter as the
+source/dest address are in the same subnet. The ip_mkroute_input()
+-> __mkroute_input() -> fib_validate_source() -> __fib_validate_source() will
+return -EXDEV if we enabled rp_filter.
+
+So do you think if we should enable forwarding and disble rp_filter before
+test "from $SRC_IP iif $DEV" or just diable this test directly?
+
+Thanks
+Hangbin
