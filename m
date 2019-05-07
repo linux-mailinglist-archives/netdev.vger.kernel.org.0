@@ -2,116 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D46D91690A
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 19:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE7391692F
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 19:28:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727425AbfEGRXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 13:23:04 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36782 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726406AbfEGRXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 13:23:03 -0400
-Received: by mail-qt1-f194.google.com with SMTP id a17so5824537qth.3
-        for <netdev@vger.kernel.org>; Tue, 07 May 2019 10:23:03 -0700 (PDT)
+        id S1727458AbfEGR2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 13:28:14 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38101 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726892AbfEGR2N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 13:28:13 -0400
+Received: by mail-qt1-f193.google.com with SMTP id d13so3048959qth.5
+        for <netdev@vger.kernel.org>; Tue, 07 May 2019 10:28:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=NNP9eV+b9sJZJsQPk/KhvvBIeKZ5PvoMypZPDX1Y+RU=;
-        b=YifbW5DWJf5KJ7Sax6ODXtyDIEkIvz9LklBW4NG029IewL+nvxOqLWI0fRs+uDGfHA
-         SG1gVvdwDJtD4gTGC2YKwBoGZyiZsPmsZ0qzaViVXKyLxq0xTtYseFvdPi85wYsjDLmZ
-         PaNDOy8Qq4oEPpPAUi3GzB5mR5Rl9dw9jtaLO6mCFTgB3dF+GM2fvlFF++mZDyMifeIp
-         YfLEB4NJnqFGZ410oigvuZTWSZPVbzbpud2Wotb/1gE10IqDF0CKs8Tz8bGhN1L3rgM9
-         z8grety2qWXGlcerdM0M1o7W19H3fttT+K3KgLUkgalFjputMVyH/ADfQVLoM+pFi3Ai
-         ZWlw==
+        bh=EXaJJYnOhCMm1Ies7w0+ULwlGJK0FIFIMnFExUlBqmk=;
+        b=o/r9IVM5MhwMiJDJ9GVBWFCxkF0ebVK49NOcXyK3oMxdQdwXCejyZcGgqxxZbluDRm
+         TkLtTH/eX9lZ8Hmmjn3AjqvEtJOSVkbfEWlTF8X+cx3Ci0C6l/baZ/3IDmdJYLkq9Gxl
+         qNfjNfWyviSVQuJ5NI/NVbGyZcbmMWcmfOPDmg1bZcSh/1hDkQy+VnbtYiIy9KVel14o
+         Bh1AvI5Q4EXXWRlncz5nllTS/shUOyYW9YzFHkr3z+BRlktQFpIiru9Klc6AWvRe0uSa
+         0LWCXqSSHhiYrQQYtkK2F7v0nNk19iYZYDgbfam9iurl9vHv5dReP0Nx7sQLTqdLcpQS
+         XQEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=NNP9eV+b9sJZJsQPk/KhvvBIeKZ5PvoMypZPDX1Y+RU=;
-        b=qevR8eScvziHr5PFr67Y8fRMRyHMrVE+JrwUjR5pIZTm3eJSxvNZjb2T5q60yN5cJd
-         3NNqume2Gp4FK4Q+gu2hODkYL7F9cktTAIP94RJ7T78Wy9K3y0RVCamS0Uh3fMvNhT3v
-         Y2Li5OJggXkwPJJlubSCovhkh98KLzzW8jOqPpwm3VgyfIpcERssXwb4c6p6Iq5c+AUa
-         XjB6wvUW8bRM2Nsh+JFtv52KiCVA/9781wrj/CGEthJ0c8kZvJbWlqsLqTrOpjzxPenz
-         m2LLtlQY8DS8EPg7SZUHFw+YhpP1FDmRCRhA9yG2Y+Ue2qhTU6MTlJQKCDMxODz4cSFf
-         Ta0w==
-X-Gm-Message-State: APjAAAVSk9oYDT/+KbsaENfeVA57yhBcVeZvu1fvOyPSCoxNbEoydOGp
-        bLXYkQGskm6kwW/UERCRSnAeKw==
-X-Google-Smtp-Source: APXvYqzbEH1cb8ZhF66V6NtOY1C6FOTSqJuu9uHPCG/z6GyRjEXi9cKyxfIDOXQ2TIYrPKJbyzGclA==
-X-Received: by 2002:a0c:ee29:: with SMTP id l9mr22915982qvs.151.1557249782811;
-        Tue, 07 May 2019 10:23:02 -0700 (PDT)
+        bh=EXaJJYnOhCMm1Ies7w0+ULwlGJK0FIFIMnFExUlBqmk=;
+        b=UChY9AzkYIQMX0mdOHYOu4kx4gYlZeRF/jAGzEQxtvaaVP8BTU8OYS/upkCqkVRYe1
+         jrpGRS7g5PDX3im0GkLgK+11T2YT44404HXw7R38SoH2bvFRvIPNSzBY0/FLdosFQUuT
+         tYt8jDjw1R+yGE4mRTTMqGC/0rRTdcCoMD+g/uzhMB40w4hnOR1McX+DzxqC8BaX9MNy
+         sSjCWzpy4rF2v1TDLe73JIgBALOGX/UqAqexeAWvJT3p058cAyk637RYfhmRR1H3prS4
+         PnJ8S30AK3vl2htz+rPTXH9EH9/w0Xd7RDB1IE8QtHVxheNOJ4rCeXa0z4mN1rg4cVgC
+         2AOQ==
+X-Gm-Message-State: APjAAAWDfZSQsZwLG9RLNzFmK8xannvEfCTJbXi0d7EzVpzKAH5UbsQI
+        88fpahA6bKaCCDKYPmpoxyn0Xw==
+X-Google-Smtp-Source: APXvYqyIrBg1/Odexc0u9Gyx6vUUNEENb9y4VJBTuXlyJ+UvZiEnf2cIcBUNxrZ//Bz917WhUaM9ew==
+X-Received: by 2002:ac8:2565:: with SMTP id 34mr28459068qtn.37.1557250092551;
+        Tue, 07 May 2019 10:28:12 -0700 (PDT)
 Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id o37sm7629557qte.55.2019.05.07.10.23.01
+        by smtp.gmail.com with ESMTPSA id p6sm7274766qkc.13.2019.05.07.10.28.10
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 07 May 2019 10:23:02 -0700 (PDT)
-Date:   Tue, 7 May 2019 10:22:53 -0700
+        Tue, 07 May 2019 10:28:12 -0700 (PDT)
+Date:   Tue, 7 May 2019 10:28:03 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        "Cong Wang" <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Anjali Singhai Jain <anjali.singhai@intel.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Subject: Re: [RFC PATCH net-next 2/3] flow_offload: restore ability to
- collect separate stats per action
-Message-ID: <20190507102253.37b6681d@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <1b37d659-5a2b-6130-e8d6-c15d6f57b55e@solarflare.com>
-References: <alpine.LFD.2.21.1905031603340.11823@ehc-opti7040.uk.solarflarecom.com>
-        <20190504022759.64232fc0@cakuba.netronome.com>
-        <db827a95-1042-cf74-1378-8e2eac356e6d@mojatatu.com>
-        <1b37d659-5a2b-6130-e8d6-c15d6f57b55e@solarflare.com>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
+        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
+        mw@semihalf.com, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net] net: mvpp2: cls: Add missing NETIF_F_NTUPLE flag
+Message-ID: <20190507102803.09fcb56c@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20190507123635.17782-1-maxime.chevallier@bootlin.com>
+References: <20190507123635.17782-1-maxime.chevallier@bootlin.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 May 2019 13:27:15 +0100, Edward Cree wrote:
-> On 06/05/2019 13:41, Jamal Hadi Salim wrote:
-> > On 2019-05-04 2:27 a.m., Jakub Kicinski wrote: =20
-> >> On Fri, 3 May 2019 16:06:55 +0100, Edward Cree wrote: =20
-> >>> Introduce a new offload command TC_CLSFLOWER_STATS_BYINDEX, similar to
-> >>> =C2=A0 the existing TC_CLSFLOWER_STATS but specifying an action_index=
- (the
-> >>> =C2=A0 tcfa_index of the action), which is called for each stats-havi=
-ng action
-> >>> =C2=A0 on the rule.=C2=A0 Drivers should implement either, but not bo=
-th, of these
-> >>> =C2=A0 commands. =20
-> >>
-> >> It feels a little strange to me to call the new stats updates from
-> >> cls_flower, if we really want to support action sharing correctly.
-> >>
-> >> Can RTM_GETACTION not be used to dump actions without dumping the
-> >> classifiers?=C2=A0 If we dump from the classifiers wouldn't that lead =
-to
-> >> stale stats being returned? =20
-> >
-> > Not sure about the staleness factor, but:
-> > For efficiency reasons we certainly need the RTM_GETACTION approach
-> > (as you stated above we dont need to dump all that classifier info if
-> > all we want are stats). This becomes a big deal if you have a lot
-> > of stats/rules. =20
->=20
-> I don't know much of anything about RTM_GETACTION, but it doesn't appear
-> =C2=A0to be part of the current "tc offload" world, which AIUI is very mu=
-ch
-> =C2=A0centred around cls_flower.=C2=A0 I'm just trying to make counters in
-> =C2=A0cls_flower offload do 'the right thing' (whatever that may be), any=
-thing
-> =C2=A0else is out of scope.
+On Tue,  7 May 2019 14:36:35 +0200, Maxime Chevallier wrote:
+> Now that the mvpp2 driver supports classification offloading, we must
+> add the NETIF_F_NTUPLE to the features list.
+> 
+> Fixes: 90b509b39ac9 ("net: mvpp2: cls: Add Classification offload support")
+> Reported-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> ---
+> Hello David,
+> 
+> This patch applies on top of a commit 90b509b39ac9, which is in net-next
+> but hasn't made it to -net yet.
+> 
+> Thanks,
+> 
+> Maxime
+> 
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 25fbed2b8d94..1f164c893936 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -5040,8 +5040,10 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+>  	dev->hw_features |= features | NETIF_F_RXCSUM | NETIF_F_GRO |
+>  			    NETIF_F_HW_VLAN_CTAG_FILTER;
+>  
+> -	if (mvpp22_rss_is_supported())
+> +	if (mvpp22_rss_is_supported()) {
+>  		dev->hw_features |= NETIF_F_RXHASH;
+> +		dev->features |= NETIF_F_NTUPLE;
 
-I understand, and you are correct that the action sharing is not part
-of the current "tc offload" world.  My point is that you are making it
-part of the offload world, so it'd be best if it could be done well
-from the start.
+Hm, why not in hw_features?
 
-People trying to make the code do the right thing just in their narrow
-use case brings us the periodic rewrites of the TC offload
-infrastructure, and every time we do it some use cases get broken :/
+> +	}
+>  
+>  	if (port->pool_long->id == MVPP2_BM_JUMBO && port->id != 0) {
+>  		dev->features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
+
