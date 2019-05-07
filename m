@@ -2,97 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B0E15842
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 06:07:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9F71587E
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 06:29:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725844AbfEGEDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 00:03:43 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54974 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725771AbfEGEDn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 00:03:43 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 04AF481F25;
-        Tue,  7 May 2019 04:03:43 +0000 (UTC)
-Received: from hp-dl380pg8-02.lab.eng.pek2.redhat.com (hp-dl380pg8-02.lab.eng.pek2.redhat.com [10.73.8.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E9A81A4D9;
-        Tue,  7 May 2019 04:03:38 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     mst@redhat.com, Jason Wang <jasowang@redhat.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "weiyongjun (A)" <weiyongjun1@huawei.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net V2] tuntap: synchronize through tfiles array instead of tun->numqueues
-Date:   Tue,  7 May 2019 00:03:36 -0400
-Message-Id: <1557201816-19945-1-git-send-email-jasowang@redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Tue, 07 May 2019 04:03:43 +0000 (UTC)
+        id S1726072AbfEGE3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 00:29:14 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:33790 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726008AbfEGE3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 00:29:14 -0400
+Received: by mail-wr1-f65.google.com with SMTP id e11so7125226wrs.0
+        for <netdev@vger.kernel.org>; Mon, 06 May 2019 21:29:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=xZM+glBLwsdchvOHBtoZn/nXTbHdIjl0eC9RSCI39XY=;
+        b=bRWsDUgfEiGWG+WFEKSrIFgTdrZutZF8pOR6BYhiWPkX7ipAalH/24vaqH6phRG6+V
+         9RaBi3By/cmSX5MUTYnNu7v2zM3xZY8T6TqxzulvAGjrFVW7qikPTvjqy7WpVDJRsV8/
+         nxi2p2AusHu4MXWugPHKsc+W2Z8ajxANA2vN6EsSZmlq/pUfU52rVvyH172JdtanA8wF
+         T4Ov3rxsUiLtaDIunv/lzSc8EOZbFVag6wo7aZtvtzmLjvDsyUu1dRr4D4W12VhoWWvu
+         DkCKtiWH3LhHhUFCzabnGkLtAxm+maiQam1DPEi/QtAvTdWiOpDdi/n7MHvxWMWFyNvL
+         5Sng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=xZM+glBLwsdchvOHBtoZn/nXTbHdIjl0eC9RSCI39XY=;
+        b=Ol4J3rQsNTs3eYFwLronWbXr73LKgBAPZxXzzl+vLdYDHeFJiLJJvmcyzzK6gCTq9d
+         lhGf/3mKQFfTr6uyYkqB/r9J5J99x+M+tZwqssxuF0zFmyDbCjCsg0TEjXdA1MeN5xLh
+         SiZhxNJXZQac27BqcW2rLyzaAvVSVV16rDjnEdUA6+SM9EXGd6VW6PKqGHVWScNpThbE
+         L2Av5HupKKAHGHVDfiYtPxqfC9lEcOFJB9Oj/PFxfnmgMF1sBjNoHi9QW88AyGN0BlGD
+         8MoOZ8zGzzUIaT30TNbrA+xDDwGJcT8FC5iW7PosN8eFaMgUcUjgj/FeVdu+muydk1iW
+         XtTw==
+X-Gm-Message-State: APjAAAXMCXhnPWY1hqtUKKAo90sBuNJXEBQZlssaoU0NzWIovPoSYeHq
+        HetFtiLe88shDoH51wYvjs4xEA==
+X-Google-Smtp-Source: APXvYqwx393CRx6QHeM/lZjL3maL8Rz29CZqll4vjK6tRKw9itIRh/K7714v+I82gnDhew8TfEhlWg==
+X-Received: by 2002:adf:e712:: with SMTP id c18mr5090023wrm.202.1557203351899;
+        Mon, 06 May 2019 21:29:11 -0700 (PDT)
+Received: from LAPTOP-V3S7NLPL (cpc1-cmbg19-2-0-cust104.5-4.cable.virginm.net. [82.27.180.105])
+        by smtp.gmail.com with ESMTPSA id g5sm14218045wrh.44.2019.05.06.21.29.10
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 May 2019 21:29:11 -0700 (PDT)
+References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com> <1556880164-10689-5-git-send-email-jiong.wang@netronome.com> <20190506155704.4t7xy3mqer4eps3y@ast-mbp> <87imunuq6g.fsf@netronome.com>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     daniel@iogearbox.net, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH v6 bpf-next 04/17] bpf: introduce new alu insn BPF_ZEXT for explicit zero extension
+In-reply-to: <87imunuq6g.fsf@netronome.com>
+Date:   Tue, 07 May 2019 05:29:09 +0100
+Message-ID: <87ftpqc2ga.fsf@netronome.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a queue(tfile) is detached through __tun_detach(), we move the
-last enabled tfile to the position where detached one sit but don't
-NULL out last position. We expect to synchronize the datapath through
-tun->numqueues. Unfortunately, this won't work since we're lacking
-sufficient mechanism to order or synchronize the access to
-tun->numqueues.
 
-To fix this, NULL out the last position during detaching and check
-RCU protected tfile against NULL instead of checking tun->numqueues in
-datapath.
+Jiong Wang writes:
 
-Cc: YueHaibing <yuehaibing@huawei.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: weiyongjun (A) <weiyongjun1@huawei.com>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Fixes: c8d68e6be1c3b ("tuntap: multiqueue support")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
-Changes from V1:
-- keep the check in tun_xdp_xmit()
----
- drivers/net/tun.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+> Alexei Starovoitov writes:
+>
+>> On Fri, May 03, 2019 at 11:42:31AM +0100, Jiong Wang wrote:
+>>> This patch introduce new alu32 insn BPF_ZEXT, and allocate the unused
+>>> opcode 0xe0 to it.
+>>> 
+>>> Compared with the other alu32 insns, zero extension on low 32-bit is the
+>>> only semantics for this instruction. It also allows various JIT back-ends
+>>> to do optimal zero extension code-gen.
+>>> 
+>>> BPF_ZEXT is supposed to be encoded with BPF_ALU only, and is supposed to be
+>>> generated by the latter 32-bit optimization code inside verifier for those
+>>> arches that do not support hardware implicit zero extension only.
+>>> 
+>>> It is not supposed to be used in user's program directly at the moment.
+>>> Therefore, no need to recognize it inside generic verification code. It
+>>> just need to be supported for execution on interpreter or related JIT
+>>> back-ends.
+>>
+>> uapi and the doc define it, but "it is not supposed to be used" ?!
+>>
+>>> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+>>> ---
+>>>  Documentation/networking/filter.txt | 10 ++++++++++
+>>>  include/uapi/linux/bpf.h            |  3 +++
+>>>  kernel/bpf/core.c                   |  4 ++++
+>>>  tools/include/uapi/linux/bpf.h      |  3 +++
+>>>  4 files changed, 20 insertions(+)
+>>> 
+>>> diff --git a/Documentation/networking/filter.txt b/Documentation/networking/filter.txt
+>>> index 319e5e0..1cb3e42 100644
+>>> --- a/Documentation/networking/filter.txt
+>>> +++ b/Documentation/networking/filter.txt
+>>> @@ -903,6 +903,16 @@ If BPF_CLASS(code) == BPF_ALU or BPF_ALU64 [ in eBPF ], BPF_OP(code) is one of:
+>>>    BPF_MOV   0xb0  /* eBPF only: mov reg to reg */
+>>>    BPF_ARSH  0xc0  /* eBPF only: sign extending shift right */
+>>>    BPF_END   0xd0  /* eBPF only: endianness conversion */
+>>> +  BPF_ZEXT  0xe0  /* eBPF BPF_ALU only: zero-extends low 32-bit */
+>>> +
+>>> +Compared with BPF_ALU | BPF_MOV which zero-extends low 32-bit implicitly,
+>>> +BPF_ALU | BPF_ZEXT zero-extends low 32-bit explicitly. Such zero extension is
+>>
+>> wait. that's an excellent observation. alu|mov is exactly it.
+>> we do not need another insn.
+>> we probably can teach the verifier to recognize <<32, >>32 and replace
+>> with mov32
+>
+> Hmm, I am silly, in v6, patched insn will be conservatively marked as
+> always needing zext, so looks like no problem to just insert mov32 as
+> zext. But some backends needs minor opt, because this will be special mov,
+> with the same src and dst, just need to clear high 32-bit, no need of
+> mov.
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index e9ca1c0..32a0b23 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -700,6 +700,8 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
- 				   tun->tfiles[tun->numqueues - 1]);
- 		ntfile = rtnl_dereference(tun->tfiles[index]);
- 		ntfile->queue_index = index;
-+		rcu_assign_pointer(tun->tfiles[tun->numqueues - 1],
-+				   NULL);
- 
- 		--tun->numqueues;
- 		if (clean) {
-@@ -1082,7 +1084,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
- 	tfile = rcu_dereference(tun->tfiles[txq]);
- 
- 	/* Drop packet if interface is not attached */
--	if (txq >= tun->numqueues)
-+	if (!tfile)
- 		goto drop;
- 
- 	if (!rcu_dereference(tun->steering_prog))
-@@ -1313,6 +1315,10 @@ static int tun_xdp_xmit(struct net_device *dev, int n,
- 
- 	tfile = rcu_dereference(tun->tfiles[smp_processor_id() %
- 					    numqueues]);
-+	if (!tfile) {
-+		rcu_read_unlock();
-+		return -ENXIO; /* Caller will free/return all frames */
-+	}
- 
- 	spin_lock(&tfile->tx_ring.producer_lock);
- 	for (i = 0; i < n; i++) {
--- 
-1.8.3.1
+I take it back.
 
+Recalled the reason why new ZEXT was introduced. It was because instruction
+insertion based approach doesn't push analysis results down to JIT
+back-ends, instead, it removes the clear-high-32bit semantics from
+all sub-register write instructions, then insert new explicit ZEXT insn,
+either by 64bit shifts combination or this new introduced ZEXT, what's
+important, the inserted "ZEXT" should not be affected by
+"env->verifier_zext", and be performed unconditionally.
+
+That is to say, for the current zero extension insertion based approach,
+JIT back-ends trust verifier has done full zero extension insertion and
+rewritten the instruction sequence once the flag env->verifier_zext is set,
+and then JIT back-end do NOT clear high 32-bit for all existing
+sub-register write instructions, for example ALU32 and narrowed load, they
+rely on those new inserted "unconditional ZEXT" to do the job if it is
+needed. So, if we insert mov32, there actually won't be zero extension
+insertion performed for it.
+
+The inserted "ZEXT" needs to have zero extension semantics that is not
+affected by env->verifier_zext. BPF_ZEXT was introduced because of this,
+low32 zext is its only semantics and should be unconditionally done.
+
+"mov32" could be used as "ZEXT" only when there is no such removal of zero
+extension semantics from alu32, or if JIT back-end could have instruction
+level information, for example the analyzed instruction level zero extension
+information pushed down to JIT back-ends. The new inserted "mov32" would
+then has information like "zext_dst" be true, JIT back-end then will
+generate zero extension for it.
+
+Regards,
+Jiong
