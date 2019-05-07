@@ -2,65 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFECA16D14
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 23:22:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E837616D9D
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 00:48:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727273AbfEGVW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 17:22:27 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34910 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726582AbfEGVW1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 17:22:27 -0400
-Received: by mail-qt1-f196.google.com with SMTP id d20so3287719qto.2
-        for <netdev@vger.kernel.org>; Tue, 07 May 2019 14:22:26 -0700 (PDT)
+        id S1726448AbfEGWsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 18:48:33 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:37442 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725843AbfEGWsc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 18:48:32 -0400
+Received: by mail-qk1-f194.google.com with SMTP id c1so1976055qkk.4
+        for <netdev@vger.kernel.org>; Tue, 07 May 2019 15:48:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=qKJrOarY2DKNHpkAcDz+cQOZGHxGEuN8oZtuT2g3BJU=;
-        b=uoPOqfW/pPF456MLmGkDS1nrQnOjcghZK0kta2Dsv9YUQK4ZZI+hNl8b+/QGqcOgXp
-         SiR4e2uQjOTHPLn7svZ2j5CIAB8msFSXYsSq9E43f/in1MJJkg1Ro7BlZXtvyGqvZlYq
-         /npUqxUrdzYendTO43/X/TizDaIY/WKUoQfzbo/BZ2ol889nmVZDn/SOxSTWqZttrWKH
-         abaaV6vP8yP37QQwRKqMsSuSfKPX2QHOVk0ZonlFsHDe1Vrjnqv8+dK/cjYn+Yjh6LJN
-         R//HyG62zUOIMF4Uc4h6UmVEupFWtFfMDdEXWebJRzNi7aNG035Ur+tM2hRIf4VypCxd
-         leUg==
+        bh=xxk1I9iNW8G6154lt9spaBJJd7VgHW36j4K0WHRcyow=;
+        b=l69sznhGwxe1nQgn6oxo52fenPGAnolimIs47b9+djCmMsyaO5sSy7wxLA1EkAK2D9
+         Ogwc8X6C/P5xKukKPWVeM+ojSJvK0ZPxyWjevAizgd9m/bOLgEMnBbUOgJKTXD0TrOI6
+         jyKSLHIqhXmIwaKh2Qd9U5RuuuzcDG6LdXQaKcugEjpT2ttzlYrNCcu1GZYRilZU0nwz
+         ToI3exO4jnbQTK74obnVqFjqQlBKJBuolE9ZGG8vdYlb9DyS+GaCTtn671TxyxBKBto+
+         8ZkbJMwPJ7dFLYiuAqHpR0o2ZMsVDKhA8PfqIY1x5ceXgzcgSovzWZL0Jr2xhvC3nyu+
+         387w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=qKJrOarY2DKNHpkAcDz+cQOZGHxGEuN8oZtuT2g3BJU=;
-        b=go1PWygoTogEIDkzDew88kjRUX8v4Mdt9SATD8p1ppb/oek1+SCnruH7iBsTGQUBDN
-         9cPmCVqpB7myU2fPnUzGOqwwnLyPxCoAHNqZwgZr1TrwwBxULh4/KaSuLZ3ICR//GmFN
-         SXaI3vAmg7zPH8sJ1FU9/edXg5Y4STN+I487ir8/BYstD5I8YNl+hjEMnFcXDkixpg3V
-         CJGzMXMm7Tkn6hx/kIjNmzT9u9ZjNkc2kkBwbrC9q3jBUW8FkorQa2nnV5reA9vWToHl
-         sk+WJhdbYDNHFk9e8sysHPCzVZ5VYwX35tqoKrigSFoqSnezb7TrrA9gR95NONGFcHHV
-         YgdQ==
-X-Gm-Message-State: APjAAAXMTCbwdZ2+UhFBXf2iIc47RnBQZnf0fX4sKEvdJuN489I8rFD+
-        /5xR7mKInLD6MkyNEPSxPCBLAg==
-X-Google-Smtp-Source: APXvYqy3u+oS8uEtwiDrX8KDHqBlOgQ6m/ofOPJPup/tygn7Gv2JLDM0+G0cr9p+vfoZakxIWHv1bw==
-X-Received: by 2002:a0c:9863:: with SMTP id e32mr28167463qvd.163.1557264146039;
-        Tue, 07 May 2019 14:22:26 -0700 (PDT)
+        bh=xxk1I9iNW8G6154lt9spaBJJd7VgHW36j4K0WHRcyow=;
+        b=jQzXlYkX8PPCZiwSHURi3GThB4Wy+IN9wvM5XzBdZfU24vru3I+ov2WGKtY/aRzg0w
+         QM6qKfT3GHI9LnagwJSekgNkG+vAs85BbUAv8vJqqV2w/+x9XKDv9M7nbyBeuUerNDdx
+         T8jhhcWSi3mAYJlGLj6Coag1cyRFQLI0sKUkN23D05GfoluFtyPl4roIUrnYhd32bn7g
+         xP891G9fRne9MNK4gY0UPUNFNRMrDl+2Rt1kBng79lvbOCgE//Iy2pSuMxn2w2GJ3DLB
+         Lf3aeGziMkmp+Msz9U1EuyAu5N+tErnAcZHOcjfhWCsbSAMpkHt8KqJejH66UN63x3WK
+         4w0g==
+X-Gm-Message-State: APjAAAWEMryyMCTQyHDHY7nJ/A0zojn65zAMRCpBIYntgnfuBTTln+al
+        hka8sL/El4dv4wAXEXzHVGZU0Q==
+X-Google-Smtp-Source: APXvYqy9K+QwTsgkQpI2AW+V0xRPiKAtUOLm3ktla5vxOmCdm5ertpiO/mGcasVbRdz8N8oPmbAstA==
+X-Received: by 2002:a37:b404:: with SMTP id d4mr4847748qkf.111.1557269311293;
+        Tue, 07 May 2019 15:48:31 -0700 (PDT)
 Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id d41sm2898903qta.22.2019.05.07.14.22.24
+        by smtp.gmail.com with ESMTPSA id s1sm8793121qkm.93.2019.05.07.15.48.29
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 07 May 2019 14:22:25 -0700 (PDT)
-Date:   Tue, 7 May 2019 14:22:14 -0700
+        Tue, 07 May 2019 15:48:31 -0700 (PDT)
+Date:   Tue, 7 May 2019 15:48:21 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     "Michael, Alice" <alice.michael@intel.com>
-Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Marczak, Piotr" <piotr.marczak@intel.com>,
-        "Buchholz, Donald" <donald.buchholz@intel.com>
-Subject: Re: [net-next v2 11/11] i40e: Introduce recovery mode support
-Message-ID: <20190507142214.26611a49@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <CD14C679C9B9B1409B02829D9B523C290AE87E5E@ORSMSX112.amr.corp.intel.com>
-References: <20190503230939.6739-1-jeffrey.t.kirsher@intel.com>
-        <20190503230939.6739-12-jeffrey.t.kirsher@intel.com>
-        <20190504073522.3bc7e00d@cakuba.netronome.com>
-        <CD14C679C9B9B1409B02829D9B523C290AE87E5E@ORSMSX112.amr.corp.intel.com>
+To:     syzbot <syzbot+13d91ed9bbcd7dc13230@syzkaller.appspotmail.com>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davejwatson@fb.com, davem@davemloft.net, doronrk@fb.com,
+        kafai@fb.com, kjlu@umn.edu, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, vakul.garg@nxp.com, yhs@fb.com,
+        yuehaibing@huawei.com, John Fastabend <john.fastabend@gmail.com>
+Subject: Re: WARNING: ODEBUG bug in del_timer (3)
+Message-ID: <20190507154821.1b04f4aa@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <000000000000dace5e0588529558@google.com>
+References: <000000000000dace5e0588529558@google.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -70,46 +66,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 May 2019 18:51:02 +0000, Michael, Alice wrote:
-> > -----Original Message-----
-> > From: Jakub Kicinski [mailto:jakub.kicinski@netronome.com]
-> > Sent: Saturday, May 4, 2019 4:35 AM
-> > To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; Michael, Alice
-> > <alice.michael@intel.com>
-> > Cc: davem@davemloft.net; netdev@vger.kernel.org; nhorman@redhat.com;
-> > sassmann@redhat.com; Marczak, Piotr <piotr.marczak@intel.com>; Buchholz,
-> > Donald <donald.buchholz@intel.com>
-> > Subject: Re: [net-next v2 11/11] i40e: Introduce recovery mode support
-> > 
-> > On Fri,  3 May 2019 16:09:39 -0700, Jeff Kirsher wrote:  
-> > > From: Alice Michael <alice.michael@intel.com>
-> > >
-> > > This patch introduces "recovery mode" to the i40e driver. It is part
-> > > of a new Any2Any idea of upgrading the firmware. In this approach, it
-> > > is required for the driver to have support for "transition firmware",
-> > > that is used for migrating from structured to flat firmware image. In
-> > > this new, very basic mode, i40e driver must be able to handle
-> > > particular IOCTL calls from the NVM Update Tool and run a small set of
-> > > AQ commands.  
-> > 
-> > What's the "particular IOCTL" you speak of?  This patch adds a fake netdev with
-> > a .set_eeprom callback.  Are you wrapping the AQ commands in the set_eeprom
-> > now?  Or is there some other IOCTL here?  
+CCing John, looks like John's upcoming fix may address this:
+
+bpf: sockmap, only stop/flush strp if it was enabled at some point
+
+On Tue, 07 May 2019 14:06:06 -0700, syzbot wrote:
+> Hello,
 > 
-> Yes.  The NVMUpdate tool uses the ethtool IOCTL to call the
-> driver's .set_eeprom callback.  This then triggers the firmware AQ
-> command.  The fake netdev needs to have ethtool support to finish
-> upgrading the firmware using the eeprom interface. 
-
-To be clear - the .set_eeprom calls are used to carry some marshalled
-commands, not just the raw data to be written into flash?  Right?
-Otherwise your tool wouldn't be necessary.
-
-> > Let me repeat my other question - can the netdev you spawn in
-> > i40e_init_recovery_mode() pass traffic?  
+> syzbot found the following crash on:
 > 
-> No, the device is not expected to pass traffic.  This mode is to
-> allow the NVMUpdate to program the NVM.
+> HEAD commit:    71ae5fc8 Merge tag 'linux-kselftest-5.2-rc1' of git://git...
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=136c06f0a00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=511168bc7720867
+> dashboard link: https://syzkaller.appspot.com/bug?extid=13d91ed9bbcd7dc13230
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17128012a00000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+13d91ed9bbcd7dc13230@syzkaller.appspotmail.com
+> 
+> ------------[ cut here ]------------
+> ODEBUG: assert_init not available (active state 0) object type: timer_list  
+> hint:           (null)
+> WARNING: CPU: 1 PID: 22 at lib/debugobjects.c:325  
+> debug_print_object+0x16a/0x250 lib/debugobjects.c:325
+> Kernel panic - not syncing: panic_on_warn set ...
+> CPU: 1 PID: 22 Comm: kworker/1:1 Not tainted 5.1.0+ #1
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+> Google 01/01/2011
+> Workqueue: events sk_psock_destroy_deferred
+> Call Trace:
+>   __dump_stack lib/dump_stack.c:77 [inline]
+>   dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+>   panic+0x2cb/0x65c kernel/panic.c:214
+>   __warn.cold+0x20/0x45 kernel/panic.c:566
+>   report_bug+0x263/0x2b0 lib/bug.c:186
+>   fixup_bug arch/x86/kernel/traps.c:179 [inline]
+>   fixup_bug arch/x86/kernel/traps.c:174 [inline]
+>   do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
+>   do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
+>   invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:972
+> RIP: 0010:debug_print_object+0x16a/0x250 lib/debugobjects.c:325
+> Code: dd 60 f4 a1 87 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b5 00 00 00 48  
+> 8b 14 dd 60 f4 a1 87 48 c7 c7 00 ea a1 87 e8 44 02 12 fe <0f> 0b 83 05 31  
+> 10 2d 06 01 48 83 c4 20 5b 41 5c 41 5d 41 5e 5d c3
+> RSP: 0018:ffff8880a9a3f970 EFLAGS: 00010086
+> RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+> RDX: 0000000000000000 RSI: ffffffff815aec76 RDI: ffffed1015347f20
+> RBP: ffff8880a9a3f9b0 R08: ffff8880a9a2a5c0 R09: ffffed1015d240f1
+> R10: ffffed1015d240f0 R11: ffff8880ae920787 R12: 0000000000000001
+> R13: ffffffff889ac720 R14: ffffffff81605b60 R15: ffff8880990fdba8
+>   debug_object_assert_init lib/debugobjects.c:694 [inline]
+>   debug_object_assert_init+0x23d/0x2f0 lib/debugobjects.c:665
+>   debug_timer_assert_init kernel/time/timer.c:725 [inline]
+>   debug_assert_init kernel/time/timer.c:770 [inline]
+>   del_timer+0x7c/0x120 kernel/time/timer.c:1192
+>   try_to_grab_pending+0x2d7/0x710 kernel/workqueue.c:1249
+>   __cancel_work_timer+0xc4/0x520 kernel/workqueue.c:3079
+>   cancel_delayed_work_sync+0x1b/0x20 kernel/workqueue.c:3252
+>   strp_done+0x5d/0xf0 net/strparser/strparser.c:526
+>   sk_psock_destroy_deferred+0x3a/0x6c0 net/core/skmsg.c:558
+>   process_one_work+0x98e/0x1790 kernel/workqueue.c:2263
+>   worker_thread+0x98/0xe40 kernel/workqueue.c:2409
+>   kthread+0x357/0x430 kernel/kthread.c:253
+>   ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+> Kernel Offset: disabled
+> Rebooting in 86400 seconds..
+> 
+> 
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this bug, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
 
-Creating this fake netdev which can't pass traffic is quite bad, and
-pointless given that devlink is capable of handling firmware updates.  
