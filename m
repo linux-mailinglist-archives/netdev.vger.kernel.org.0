@@ -2,101 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4BE164F4
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 15:49:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01C0A164F7
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 15:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726674AbfEGNti (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 09:49:38 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:34904 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726295AbfEGNth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 09:49:37 -0400
-Received: by mail-ed1-f68.google.com with SMTP id p26so945765edr.2;
-        Tue, 07 May 2019 06:49:36 -0700 (PDT)
+        id S1726804AbfEGNt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 09:49:56 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42169 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726394AbfEGNt4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 09:49:56 -0400
+Received: by mail-pg1-f194.google.com with SMTP id p6so8338433pgh.9;
+        Tue, 07 May 2019 06:49:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=euemdhHUFLuSuId1RNfwYjKhHGbhd9gRXwryEuN0UN8=;
-        b=Gya7RSBvbDj7ToTPgKhS6yAIXnCX8xm9zep18SKqSe5SUR1WW0paYN3kFGCHu+Kkc6
-         ed5/OlwGHIenGWvC2wror9do3NnU4n6hMDqJ9hhQIFXCqqpBuNOJlH/Sxv80yb+L2bd9
-         lb1lX8u+qVasahpBpBZSi05ly0k0RJSJERSs4c3mmP3wACKt9/72T111HdqTKG2i8LvS
-         z0JVla1ixYxsPpQa7pX20R3l2eEFD/SPABChWG1k0BeuRneH66i1LEwiEHexmnXsy3Ru
-         WY2GS7QigIoHDmXHaQsPCmIhPo3FeM470q7zLGlrAzLaY9G86yp31edMj5hIw2rex6Z3
-         O4GA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=S8BQEP1OV6vKoSe5VDyJlLX4UR1XhupCQW202rhq/sQ=;
+        b=oMQjJcPiNX92IlwTDMAW4qr/DdkOFqHLv0mxlbPfOeLaWsnqFZadYEibjkDIgY2NoM
+         /65COGgPxkzIo+amIzo6LPYgGDGhJxntl4IHC1R/RwjQFVpiP4UXGWuwbHOfyZ8euQcE
+         ir9EJkZF9XcN0WR7nfl/JhEl0+MZHZx/FFJIdaszpfSQ9rsW7hA8LTHBLq1t+IWpekyS
+         iyEd6m3PD3RorhuG5Xmkci0vdJw7KlYnHW5KDkeG+yBLz7q4YH3GU/dqJHBkQriNNSBe
+         xEnRNdM5sxiM7Y2G+ogZwJCOOm3oWbLZc2p+U6WW1oVu9v/vdRNQ/7P9oOscBiCmAEP7
+         h3lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=euemdhHUFLuSuId1RNfwYjKhHGbhd9gRXwryEuN0UN8=;
-        b=eCF5CXmGoIBZ7SKGtuNtpbiC9eVqFOPI+tRbQw/LYUTc9+15Uk8p9D10UyosSmju5y
-         LXZaQ2lTnQI6FzsSXJAVG8GokOfwcXYhTttnr7duKs/OJ7T0w6kKKWM5YoQfBnRNc0Pj
-         bv0Dw7yqdnS+OzK8Imbvb3eeGRiS9StpSKYvyh0q11wYl2jpiDZB56jAyGYZ4t/40vA5
-         foE60fiKo/OOVl2NIzaYtXqPM4UmA1wJNEDuXV8tHoEcMRqC80tdx024ZrzYl9jRSqCj
-         Y094lPHvlEM7iOeopnCGuwHBL2mULkvwyztF9TrDAhJL77Z95g9RnflpTi0nQbZ6T0BP
-         uCNg==
-X-Gm-Message-State: APjAAAWIvmQy94ggctd5FeKgT6lEKzE/ginqv0ZJIVI/rmWcB8EGa1oa
-        CPlXGnVAkPAwrYhRJ9sysgugGsmjc9XMI3bgIKo=
-X-Google-Smtp-Source: APXvYqxrwYWlgdaQeBMp+ljjwiAlV4eVdD+SE5MefsMILZDPoawLtjMFwoNlCkitGwRaPuvwwS7jSO1gQPV7ry1NmLQ=
-X-Received: by 2002:a17:906:6410:: with SMTP id d16mr24602660ejm.75.1557236975656;
- Tue, 07 May 2019 06:49:35 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=S8BQEP1OV6vKoSe5VDyJlLX4UR1XhupCQW202rhq/sQ=;
+        b=n756w1MMj98gfY5/ecpQf2FAz6L8krOHIQ7wUp/jrNrau5HmwyznFnslDXNWE64rbO
+         btBZHJwFFYthqJy513dd76mgKOj4WZ3hUOSn7+KKiqeNR0B4hrPTqbmviGPBi4h5iPIE
+         kL25aBacXwwlJcLeUB6HS04s35B41QgTvFycd3tyKR8DiHS0/hhBWR2v7bcAQcQrXQBB
+         8huiArFRVqKfZ+flRhl+gKr/0eQodjfw0f4pEvLlsXQyj+uO9eRR/GomCBTJ2lz0eDLM
+         tNk/5TFSCNAA3qJyrURUBXcJsFhn1BUtjEOwmBJ0rxTXFINbu+3UfKPlVKYVu3CVDfMq
+         MS3Q==
+X-Gm-Message-State: APjAAAVU3gQ8lqLT6uUiFR+sExke+Gvht5nCTarVGQ7gDSBpYCoc9FU1
+        eola/cnUUyGPY7W0RtLcj2Q=
+X-Google-Smtp-Source: APXvYqwNMrdvjlCOgIU9TBbSh3DwQp1FscE2sA0W7mHk+F+dufo6InfjIlXwfy6OIa5H5Al1dkWeIA==
+X-Received: by 2002:aa7:98c6:: with SMTP id e6mr2436297pfm.191.1557236995744;
+        Tue, 07 May 2019 06:49:55 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id v6sm8275551pgk.77.2019.05.07.06.49.54
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 07 May 2019 06:49:54 -0700 (PDT)
+Date:   Tue, 7 May 2019 06:49:52 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Po Liu <po.liu@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Leo Li <leoyang.li@nxp.com>, Roy Zang <roy.zang@nxp.com>,
+        Mingkai Hu <mingkai.hu@nxp.com>,
+        "deepa.kernel@gmail.com" <deepa.kernel@gmail.com>
+Subject: Re: [PATCH v1] timer:clock:ptp: add support the dynamic posix clock
+ alarm set for ptp
+Message-ID: <20190507134952.uqqxmhinv75actbh@localhost>
+References: <1557032106-28041-1-git-send-email-Po.Liu@nxp.com>
 MIME-Version: 1.0
-References: <1557177887-30446-1-git-send-email-ynezz@true.cz> <1557177887-30446-3-git-send-email-ynezz@true.cz>
-In-Reply-To: <1557177887-30446-3-git-send-email-ynezz@true.cz>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 7 May 2019 16:49:24 +0300
-Message-ID: <CA+h21hqZnr1C5W6qMQMictdSROZvmggjXoYhX+=biEoT4Fs0jQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/4] net: dsa: support of_get_mac_address new
- ERR_PTR error
-To:     =?UTF-8?Q?Petr_=C5=A0tetiar?= <ynezz@true.cz>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1557032106-28041-1-git-send-email-Po.Liu@nxp.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 May 2019 at 00:26, Petr =C5=A0tetiar <ynezz@true.cz> wrote:
->
-> There was NVMEM support added to of_get_mac_address, so it could now
-> return ERR_PTR encoded error values, so we need to adjust all current
-> users of of_get_mac_address to this new fact.
->
-> While at it, remove superfluous is_valid_ether_addr as the MAC address
-> returned from of_get_mac_address is always valid and checked by
-> is_valid_ether_addr anyway.
->
-> Fixes: d01f449c008a ("of_net: add NVMEM support to of_get_mac_address")
-> Signed-off-by: Petr =C5=A0tetiar <ynezz@true.cz>
-> ---
->  net/dsa/slave.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index 316bce9..fe7b6a6 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -1418,7 +1418,7 @@ int dsa_slave_create(struct dsa_port *port)
->                                 NETIF_F_HW_VLAN_CTAG_FILTER;
->         slave_dev->hw_features |=3D NETIF_F_HW_TC;
->         slave_dev->ethtool_ops =3D &dsa_slave_ethtool_ops;
-> -       if (port->mac && is_valid_ether_addr(port->mac))
-> +       if (!IS_ERR_OR_NULL(port->mac))
->                 ether_addr_copy(slave_dev->dev_addr, port->mac);
->         else
->                 eth_hw_addr_inherit(slave_dev, master);
-> --
-> 1.9.1
->
+On Sun, May 05, 2019 at 05:02:05AM +0000, Po Liu wrote:
+> Current kernel code do not support the dynamic posix clock alarm set.
+> This code would support it by the posix timer structure.
+> 
+> 319  const struct k_clock clock_posix_dynamic = {
+> 
+> 320         .clock_getres   = pc_clock_getres,
+> 321         .clock_set      = pc_clock_settime,
+> 322         .clock_get      = pc_clock_gettime,
+> 323         .clock_adj      = pc_clock_adjtime,
+> 324 +       .timer_create   = pc_timer_create,
+> 325 +       .timer_del      = pc_timer_delete,
+> 326 +       .timer_set      = pc_timer_set,
+> 327 +       .timer_arm      = pc_timer_arm,
+> }
+> 
 
-Tested-by: Vladimir Oltean <olteanv@gmail.com>
+Sorry, NAK, since we decided some time ago not to support timer_*
+operations on dynamic clocks.  You get much better application level
+timer performance by synchronizing CLOCK_REALTIME to your PHC and
+using clock_nanosleep() with CLOCK_REALTIME or CLOCK_MONOTONIC.
+
+> This won't change the user space system call code. Normally the user
+> space set alarm by timer_create() and timer_settime(). Reference code
+> are tools/testing/selftests/ptp/testptp.c.
+
+That program still has misleading examples.  Sorry about that.  I'll
+submit a patch to remove them.
+
+> +static int pc_timer_create(struct k_itimer *new_timer)
+> +{
+> +	return 0;
+> +}
+> +
+
+This of course would never work.  Consider what happens when two or
+more timers are created and armed.
+
+Thanks,
+Richard
