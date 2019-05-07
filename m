@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C61E15CA0
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 08:05:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC1AB15931
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:34:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726072AbfEGGFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 02:05:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54118 "EHLO mail.kernel.org"
+        id S1727592AbfEGFeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:34:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54718 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727454AbfEGFeM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:34:12 -0400
+        id S1726718AbfEGFek (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:34:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 52F2C20B7C;
-        Tue,  7 May 2019 05:34:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7156021479;
+        Tue,  7 May 2019 05:34:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207252;
-        bh=5TjZaBYSgceF7iNSbVKKpL0yebG/csYnnmkws1WVf7M=;
+        s=default; t=1557207279;
+        bh=cpAQRyQizKc+uI1xsCT+jLz2R7htXM93DFsEV8hVXZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fEwj/gepjl8acZL51QDfk+GGWTYJi4b1UZuaufoOWy/lc9KzP9bt1H9EBfqNBR5FD
-         peIWreoKooHi8p99I0UDYQlzwAED+Vry0Y4Df0FERvf8pA/C/yD+g0wsmeOowl4rJ2
-         41nMrAk/kXWV1DajQLwFzq93igHSP6YTk/cocERs=
+        b=IggPmiHQhFz/MMju6cpjbzeNvh2Nlo1oqV2L47nthNdfz0D2AU1ND56fXYD++vX8d
+         7PXGBIsF2IMXltpUG+KwpUjyODisb9P+ygsR4+iVrX3DInYry3CZDYMkqkliJseB6V
+         ApJV/3JynkY01VlBK1OsEfbZF3kJwxfGKFZztDKs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 52/99] ocelot: Don't sleep in atomic context (irqs_disabled())
-Date:   Tue,  7 May 2019 01:31:46 -0400
-Message-Id: <20190507053235.29900-52-sashal@kernel.org>
+Cc:     Julian Anastasov <ja@ssi.bg>, Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: [PATCH AUTOSEL 5.0 62/99] ipvs: do not schedule icmp errors from tunnels
+Date:   Tue,  7 May 2019 01:31:56 -0400
+Message-Id: <20190507053235.29900-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053235.29900-1-sashal@kernel.org>
 References: <20190507053235.29900-1-sashal@kernel.org>
@@ -43,45 +45,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Claudiu Manoil <claudiu.manoil@nxp.com>
+From: Julian Anastasov <ja@ssi.bg>
 
-[ Upstream commit a8fd48b50deaa20808bbf0f6685f6f1acba6a64c ]
+[ Upstream commit 0261ea1bd1eb0da5c0792a9119b8655cf33c80a3 ]
 
-Preemption disabled at:
- [<ffff000008cabd54>] dev_set_rx_mode+0x1c/0x38
- Call trace:
- [<ffff00000808a5c0>] dump_backtrace+0x0/0x3d0
- [<ffff00000808a9a4>] show_stack+0x14/0x20
- [<ffff000008e6c0c0>] dump_stack+0xac/0xe4
- [<ffff0000080fe76c>] ___might_sleep+0x164/0x238
- [<ffff0000080fe890>] __might_sleep+0x50/0x88
- [<ffff0000082261e4>] kmem_cache_alloc+0x17c/0x1d0
- [<ffff000000ea0ae8>] ocelot_set_rx_mode+0x108/0x188 [mscc_ocelot_common]
- [<ffff000008cabcf0>] __dev_set_rx_mode+0x58/0xa0
- [<ffff000008cabd5c>] dev_set_rx_mode+0x24/0x38
+We can receive ICMP errors from client or from
+tunneling real server. While the former can be
+scheduled to real server, the latter should
+not be scheduled, they are decapsulated only when
+existing connection is found.
 
-Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
-
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 6044eeffafbe ("ipvs: attempt to schedule icmp packets")
+Signed-off-by: Julian Anastasov <ja@ssi.bg>
+Signed-off-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 2 +-
+ net/netfilter/ipvs/ip_vs_core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 215a45374d7b..0ef95abde6bb 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -613,7 +613,7 @@ static int ocelot_mact_mc_add(struct ocelot_port *port,
- 			      struct netdev_hw_addr *hw_addr)
- {
- 	struct ocelot *ocelot = port->ocelot;
--	struct netdev_hw_addr *ha = kzalloc(sizeof(*ha), GFP_KERNEL);
-+	struct netdev_hw_addr *ha = kzalloc(sizeof(*ha), GFP_ATOMIC);
+diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+index 235205c93e14..df112b27246a 100644
+--- a/net/netfilter/ipvs/ip_vs_core.c
++++ b/net/netfilter/ipvs/ip_vs_core.c
+@@ -1647,7 +1647,7 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 	if (!cp) {
+ 		int v;
  
- 	if (!ha)
- 		return -ENOMEM;
+-		if (!sysctl_schedule_icmp(ipvs))
++		if (ipip || !sysctl_schedule_icmp(ipvs))
+ 			return NF_ACCEPT;
+ 
+ 		if (!ip_vs_try_to_schedule(ipvs, AF_INET, skb, pd, &v, &cp, &ciph))
 -- 
 2.20.1
 
