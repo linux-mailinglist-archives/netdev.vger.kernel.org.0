@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E47351591C
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:34:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB32415CBF
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 08:06:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727332AbfEGFdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:33:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53628 "EHLO mail.kernel.org"
+        id S1726964AbfEGGGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 02:06:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53636 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727316AbfEGFdo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 May 2019 01:33:44 -0400
+        id S1727274AbfEGFdp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:33:45 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9EF5D20C01;
-        Tue,  7 May 2019 05:33:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF23D206A3;
+        Tue,  7 May 2019 05:33:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207223;
-        bh=ptVtqOMVYoCmNDp4VQ6JUp/GpkRIfYIiQsi7nEBA6lM=;
+        s=default; t=1557207224;
+        bh=x5frDouWI3KLfoCg7ukxvQ0uGxS5IGb26ZNCG3OqipY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yf19qSUfp5SdwV/i6ZOQIRErURGB+DvdoIbzkpTrk5O53jnNPGpH1qvRvV/VHAeYz
-         EroZF7oLZj+kbzWMFiaAXzNYKRl+awTRY5eA7kYfXPG4+UnlHYI0NBnWzfNMEBQDKX
-         pVP6uov3baSnzCWYfz2ASakqvzJJUOq9U3xuM80g=
+        b=vUeR+fDJf6Sq9EnI10KsWsOC7v9UByTivJwIpS3mTllKhoXtF3u4YTLc0FMdAU5US
+         /ZU0jETdUww7LHF0yKoCLUsEuReullNUz6xyWwuvu2XE9ldLWcPH3IGeMwikyxr0iP
+         BV0xZzOQ6jBsMVmdL0WUstBF8iuUZzrS+o04+SX8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Denis Bolotin <dbolotin@marvell.com>,
@@ -30,9 +30,9 @@ Cc:     Denis Bolotin <dbolotin@marvell.com>,
         Ariel Elior <aelior@marvell.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 36/99] qed: Fix missing DORQ attentions
-Date:   Tue,  7 May 2019 01:31:30 -0400
-Message-Id: <20190507053235.29900-36-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 37/99] qed: Fix the DORQ's attentions handling
+Date:   Tue,  7 May 2019 01:31:31 -0400
+Message-Id: <20190507053235.29900-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053235.29900-1-sashal@kernel.org>
 References: <20190507053235.29900-1-sashal@kernel.org>
@@ -47,19 +47,19 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Denis Bolotin <dbolotin@marvell.com>
 
-[ Upstream commit d4476b8a6151b2dd86c09b5acec64f66430db55d ]
+[ Upstream commit 0d72c2ac89185f179da1e8a91c40c82f3fa38f0b ]
 
-When the DORQ (doorbell block) is overflowed, all PFs get attentions at the
-same time. If one PF finished handling the attention before another PF even
-started, the second PF might miss the DORQ's attention bit and not handle
-the attention at all.
-If the DORQ attention is missed and the issue is not resolved, another
-attention will not be sent, therefore each attention is treated as a
-potential DORQ attention.
-As a result, the attention callback is called more frequently so the debug
-print was moved to reduce its quantity.
-The number of periodic doorbell recovery handler schedules was reduced
-because it was the previous way to mitigating the missed attention issue.
+Separate the overflow handling from the hardware interrupt status analysis.
+The interrupt status is a single register and is common for all PFs. The
+first PF reading the register is not necessarily the one who overflowed.
+All PFs must check their overflow status on every attention.
+In this change we clear the sticky indication in the attention handler to
+allow doorbells to be processed again as soon as possible, but running
+the doorbell recovery is scheduled for the periodic handler to reduce the
+time spent in the attention handler.
+Checking the need for DORQ flush was changed to "db_bar_no_edpm" because
+qed_edpm_enabled()'s result could change dynamically and might have
+prevented a needed flush.
 
 Signed-off-by: Denis Bolotin <dbolotin@marvell.com>
 Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
@@ -67,90 +67,144 @@ Signed-off-by: Ariel Elior <aelior@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed.h      |  1 +
- drivers/net/ethernet/qlogic/qed/qed_int.c  | 20 ++++++++++++++++++--
- drivers/net/ethernet/qlogic/qed/qed_main.c |  2 +-
- 3 files changed, 20 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed.h     |  3 ++
+ drivers/net/ethernet/qlogic/qed/qed_int.c | 61 +++++++++++++++++------
+ 2 files changed, 48 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
-index d5fece7eb169..07ae600d0f35 100644
+index 07ae600d0f35..f458c9776a89 100644
 --- a/drivers/net/ethernet/qlogic/qed/qed.h
 +++ b/drivers/net/ethernet/qlogic/qed/qed.h
-@@ -436,6 +436,7 @@ struct qed_db_recovery_info {
- 
- 	/* Lock to protect the doorbell recovery mechanism list */
- 	spinlock_t lock;
-+	bool dorq_attn;
- 	u32 db_recovery_counter;
+@@ -431,6 +431,8 @@ struct qed_qm_info {
+ 	u8 num_pf_rls;
  };
  
++#define QED_OVERFLOW_BIT	1
++
+ struct qed_db_recovery_info {
+ 	struct list_head list;
+ 
+@@ -438,6 +440,7 @@ struct qed_db_recovery_info {
+ 	spinlock_t lock;
+ 	bool dorq_attn;
+ 	u32 db_recovery_counter;
++	unsigned long overflow;
+ };
+ 
+ struct storm_stats {
 diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
-index b994f81eb51c..00688f4c0464 100644
+index 00688f4c0464..a7e95f239317 100644
 --- a/drivers/net/ethernet/qlogic/qed/qed_int.c
 +++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
-@@ -436,17 +436,19 @@ static int qed_dorq_attn_cb(struct qed_hwfn *p_hwfn)
- 	struct qed_ptt *p_ptt = p_hwfn->p_dpc_ptt;
+@@ -376,6 +376,9 @@ static int qed_db_rec_flush_queue(struct qed_hwfn *p_hwfn,
+ 	u32 count = QED_DB_REC_COUNT;
+ 	u32 usage = 1;
+ 
++	/* Flush any pending (e)dpms as they may never arrive */
++	qed_wr(p_hwfn, p_ptt, DORQ_REG_DPM_FORCE_ABORT, 0x1);
++
+ 	/* wait for usage to zero or count to run out. This is necessary since
+ 	 * EDPM doorbell transactions can take multiple 64b cycles, and as such
+ 	 * can "split" over the pci. Possibly, the doorbell drop can happen with
+@@ -404,23 +407,24 @@ static int qed_db_rec_flush_queue(struct qed_hwfn *p_hwfn,
+ 
+ int qed_db_rec_handler(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
+ {
+-	u32 overflow;
++	u32 attn_ovfl, cur_ovfl;
  	int rc;
  
--	int_sts = qed_rd(p_hwfn, p_ptt, DORQ_REG_INT_STS);
--	DP_NOTICE(p_hwfn->cdev, "DORQ attention. int_sts was %x\n", int_sts);
-+	p_hwfn->db_recovery_info.dorq_attn = true;
+-	overflow = qed_rd(p_hwfn, p_ptt, DORQ_REG_PF_OVFL_STICKY);
+-	DP_NOTICE(p_hwfn, "PF Overflow sticky 0x%x\n", overflow);
+-	if (!overflow)
++	attn_ovfl = test_and_clear_bit(QED_OVERFLOW_BIT,
++				       &p_hwfn->db_recovery_info.overflow);
++	cur_ovfl = qed_rd(p_hwfn, p_ptt, DORQ_REG_PF_OVFL_STICKY);
++	if (!cur_ovfl && !attn_ovfl)
+ 		return 0;
+ 
+-	if (qed_edpm_enabled(p_hwfn)) {
++	DP_NOTICE(p_hwfn, "PF Overflow sticky: attn %u current %u\n",
++		  attn_ovfl, cur_ovfl);
++
++	if (cur_ovfl && !p_hwfn->db_bar_no_edpm) {
+ 		rc = qed_db_rec_flush_queue(p_hwfn, p_ptt);
+ 		if (rc)
+ 			return rc;
+ 	}
+ 
+-	/* Flush any pending (e)dpm as they may never arrive */
+-	qed_wr(p_hwfn, p_ptt, DORQ_REG_DPM_FORCE_ABORT, 0x1);
+-
+ 	/* Release overflow sticky indication (stop silently dropping everything) */
+ 	qed_wr(p_hwfn, p_ptt, DORQ_REG_PF_OVFL_STICKY, 0x0);
+ 
+@@ -430,13 +434,35 @@ int qed_db_rec_handler(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
+ 	return 0;
+ }
+ 
+-static int qed_dorq_attn_cb(struct qed_hwfn *p_hwfn)
++static void qed_dorq_attn_overflow(struct qed_hwfn *p_hwfn)
+ {
+-	u32 int_sts, first_drop_reason, details, address, all_drops_reason;
+ 	struct qed_ptt *p_ptt = p_hwfn->p_dpc_ptt;
++	u32 overflow;
+ 	int rc;
+ 
+-	p_hwfn->db_recovery_info.dorq_attn = true;
++	overflow = qed_rd(p_hwfn, p_ptt, DORQ_REG_PF_OVFL_STICKY);
++	if (!overflow)
++		goto out;
++
++	/* Run PF doorbell recovery in next periodic handler */
++	set_bit(QED_OVERFLOW_BIT, &p_hwfn->db_recovery_info.overflow);
++
++	if (!p_hwfn->db_bar_no_edpm) {
++		rc = qed_db_rec_flush_queue(p_hwfn, p_ptt);
++		if (rc)
++			goto out;
++	}
++
++	qed_wr(p_hwfn, p_ptt, DORQ_REG_PF_OVFL_STICKY, 0x0);
++out:
++	/* Schedule the handler even if overflow was not detected */
++	qed_periodic_db_rec_start(p_hwfn);
++}
++
++static int qed_dorq_attn_int_sts(struct qed_hwfn *p_hwfn)
++{
++	u32 int_sts, first_drop_reason, details, address, all_drops_reason;
++	struct qed_ptt *p_ptt = p_hwfn->p_dpc_ptt;
  
  	/* int_sts may be zero since all PFs were interrupted for doorbell
  	 * overflow but another one already handled it. Can abort here. If
- 	 * This PF also requires overflow recovery we will be interrupted again.
- 	 * The masked almost full indication may also be set. Ignoring.
- 	 */
-+	int_sts = qed_rd(p_hwfn, p_ptt, DORQ_REG_INT_STS);
- 	if (!(int_sts & ~DORQ_REG_INT_STS_DORQ_FIFO_AFULL))
- 		return 0;
+@@ -475,11 +501,6 @@ static int qed_dorq_attn_cb(struct qed_hwfn *p_hwfn)
+ 			  GET_FIELD(details, QED_DORQ_ATTENTION_SIZE) * 4,
+ 			  first_drop_reason, all_drops_reason);
  
-+	DP_NOTICE(p_hwfn->cdev, "DORQ attention. int_sts was %x\n", int_sts);
-+
- 	/* check if db_drop or overflow happened */
- 	if (int_sts & (DORQ_REG_INT_STS_DB_DROP |
- 		       DORQ_REG_INT_STS_DORQ_FIFO_OVFL_ERR)) {
-@@ -503,6 +505,17 @@ static int qed_dorq_attn_cb(struct qed_hwfn *p_hwfn)
+-		rc = qed_db_rec_handler(p_hwfn, p_ptt);
+-		qed_periodic_db_rec_start(p_hwfn);
+-		if (rc)
+-			return rc;
+-
+ 		/* Clear the doorbell drop details and prepare for next drop */
+ 		qed_wr(p_hwfn, p_ptt, DORQ_REG_DB_DROP_DETAILS_REL, 0);
+ 
+@@ -505,6 +526,14 @@ static int qed_dorq_attn_cb(struct qed_hwfn *p_hwfn)
  	return -EINVAL;
  }
  
-+static void qed_dorq_attn_handler(struct qed_hwfn *p_hwfn)
++static int qed_dorq_attn_cb(struct qed_hwfn *p_hwfn)
 +{
-+	if (p_hwfn->db_recovery_info.dorq_attn)
-+		goto out;
++	p_hwfn->db_recovery_info.dorq_attn = true;
++	qed_dorq_attn_overflow(p_hwfn);
 +
-+	/* Call DORQ callback if the attention was missed */
-+	qed_dorq_attn_cb(p_hwfn);
-+out:
-+	p_hwfn->db_recovery_info.dorq_attn = false;
++	return qed_dorq_attn_int_sts(p_hwfn);
 +}
 +
- /* Instead of major changes to the data-structure, we have a some 'special'
-  * identifiers for sources that changed meaning between adapters.
-  */
-@@ -1076,6 +1089,9 @@ static int qed_int_deassertion(struct qed_hwfn  *p_hwfn,
- 		}
- 	}
- 
-+	/* Handle missed DORQ attention */
-+	qed_dorq_attn_handler(p_hwfn);
-+
- 	/* Clear IGU indication for the deasserted bits */
- 	DIRECT_REG_WR((u8 __iomem *)p_hwfn->regview +
- 				    GTT_BAR0_MAP_REG_IGU_CMD +
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index 6adf5bda9811..26bfcbeebc4c 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -966,7 +966,7 @@ static void qed_update_pf_params(struct qed_dev *cdev,
- 	}
- }
- 
--#define QED_PERIODIC_DB_REC_COUNT		100
-+#define QED_PERIODIC_DB_REC_COUNT		10
- #define QED_PERIODIC_DB_REC_INTERVAL_MS		100
- #define QED_PERIODIC_DB_REC_INTERVAL \
- 	msecs_to_jiffies(QED_PERIODIC_DB_REC_INTERVAL_MS)
+ static void qed_dorq_attn_handler(struct qed_hwfn *p_hwfn)
+ {
+ 	if (p_hwfn->db_recovery_info.dorq_attn)
 -- 
 2.20.1
 
