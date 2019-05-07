@@ -2,69 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 326DF158BA
-	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:05:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2DD5158FE
+	for <lists+netdev@lfdr.de>; Tue,  7 May 2019 07:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbfEGFFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 01:05:22 -0400
-Received: from vulcan.natalenko.name ([104.207.131.136]:56392 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725839AbfEGFFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 01:05:22 -0400
-Received: from mail.natalenko.name (vulcan.natalenko.name [IPv6:fe80::5400:ff:fe0c:dfa0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726614AbfEGFcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 01:32:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52954 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726592AbfEGFcv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 01:32:51 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 1765853D517;
-        Tue,  7 May 2019 07:05:19 +0200 (CEST)
+        by mail.kernel.org (Postfix) with ESMTPSA id 092DB206A3;
+        Tue,  7 May 2019 05:32:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557207170;
+        bh=u2VF2JXohGzCVS0YQxbe4icbtKNKWHD2I4phXbF95dc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EMgGs+98nOX168na4RT7587e3c4UYXjKtOi+5REn6PeLlz2AeiKiDE4V+bBmDwu3l
+         tHxkG82/sHgGvkVINotwQvetmzBRy2mAPVm4dWOonLj/d8zoULq7RieVakLMvju5me
+         GbKJzeDeAW2tQD4yKEP26Q4Q0qfcneeEC/s5xpLQ=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.0 11/99] mac80211: fix unaligned access in mesh table hash function
+Date:   Tue,  7 May 2019 01:31:05 -0400
+Message-Id: <20190507053235.29900-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190507053235.29900-1-sashal@kernel.org>
+References: <20190507053235.29900-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 07 May 2019 07:05:18 +0200
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Jiong Wang <jiong.wang@netronome.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        oss-drivers@netronome.com, linux-kernel@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, valdis@vt.edu
-Subject: Re: [oss-drivers] netronome/nfp/bpf/jit.c cannot be build with -O3
-In-Reply-To: <87mujzutsw.fsf@netronome.com>
-References: <673b885183fb64f1cbb3ed2387524077@natalenko.name>
- <87mujzutsw.fsf@netronome.com>
-Message-ID: <4414f1798ea3c0f70128b7e4caa14edc@natalenko.name>
-X-Sender: oleksandr@natalenko.name
-User-Agent: Roundcube Webmail/1.3.9
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi.
+From: Felix Fietkau <nbd@nbd.name>
 
-On 07.05.2019 00:01, Jiong Wang wrote:
-> I guess it's because constant prop. Could you try the following change 
-> to
-> __emit_shift?
-> 
-> drivers/net/ethernet/netronome/nfp/bpf/jit.c
-> __emit_shift:331
-> -       if (sc == SHF_SC_L_SHF)
-> +       if (sc == SHF_SC_L_SHF && shift)
->                 shift = 32 - shift;
-> 
-> emit_shf_indir is passing "0" as shift to __emit_shift which will
-> eventually be turned into 32 and it was OK because we truncate to 
-> 5-bit,
-> but before truncation, it will overflow the shift mask.
+[ Upstream commit 40586e3fc400c00c11151804dcdc93f8c831c808 ]
 
-Yup, it silences the error for me.
+The pointer to the last four bytes of the address is not guaranteed to be
+aligned, so we need to use __get_unaligned_cpu32 here
 
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/mac80211/mesh_pathtbl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/mac80211/mesh_pathtbl.c b/net/mac80211/mesh_pathtbl.c
+index 88a6d5e18ccc..ac1f5db52994 100644
+--- a/net/mac80211/mesh_pathtbl.c
++++ b/net/mac80211/mesh_pathtbl.c
+@@ -23,7 +23,7 @@ static void mesh_path_free_rcu(struct mesh_table *tbl, struct mesh_path *mpath);
+ static u32 mesh_table_hash(const void *addr, u32 len, u32 seed)
+ {
+ 	/* Use last four bytes of hw addr as hash index */
+-	return jhash_1word(*(u32 *)(addr+2), seed);
++	return jhash_1word(__get_unaligned_cpu32((u8 *)addr + 2), seed);
+ }
+ 
+ static const struct rhashtable_params mesh_rht_params = {
 -- 
-   Oleksandr Natalenko (post-factum)
+2.20.1
+
