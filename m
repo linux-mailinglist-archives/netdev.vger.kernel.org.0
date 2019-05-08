@@ -2,83 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 564C117474
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 11:02:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 534B4174C2
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 11:14:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726967AbfEHJCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 05:02:09 -0400
-Received: from smtp-out.xnet.cz ([178.217.244.18]:35043 "EHLO smtp-out.xnet.cz"
+        id S1727065AbfEHJOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 05:14:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37036 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726481AbfEHJCI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 May 2019 05:02:08 -0400
-Received: from meh.true.cz (meh.true.cz [108.61.167.218])
-        (Authenticated sender: petr@true.cz)
-        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 802DD4819;
-        Wed,  8 May 2019 11:02:05 +0200 (CEST)
-Received: from localhost (meh.true.cz [local])
-        by meh.true.cz (OpenSMTPD) with ESMTPA id 87e01008;
-        Wed, 8 May 2019 11:02:04 +0200 (CEST)
-Date:   Wed, 8 May 2019 11:02:04 +0200
-From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-To:     Rob Herring <robh@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Alban Bedel <albeu@free.fr>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>
-Subject: Re: [PATCH v2 1/4] of_net: Add NVMEM support to of_get_mac_address
-Message-ID: <20190508090204.GN81826@meh.true.cz>
-Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-References: <1556456002-13430-1-git-send-email-ynezz@true.cz>
- <1556456002-13430-2-git-send-email-ynezz@true.cz>
- <20190501201925.GA15495@bogus>
- <20190502090538.GD346@meh.true.cz>
- <CAL_JsqKLgEjgDOHaNHbu7Bqw1gYCBMRcdO_S98nASnCxtinZ=g@mail.gmail.com>
+        id S1726567AbfEHJOY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 May 2019 05:14:24 -0400
+Received: from localhost (unknown [84.241.196.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AC7AE20656;
+        Wed,  8 May 2019 09:14:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557306863;
+        bh=zepv94OHfkba3xbpvBTN7GO3YZ8l+U6nzIqdU9DMmB8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Wa4AAzW6bKcVh7iubvvk3GvJcvX9eh9Ton6QrU6XEE4kYPzzMrW5IHFBOY1vybSPG
+         /wtvTtJVfunzm6H4nT5HQc0T+zSmcxhBr+uYF1athP68gTxTE8SNNLlVwcpysi2lYW
+         IFxa5soU7yPrrlENXIMWDlxa1//6jkZdyOT5fL7A=
+Date:   Wed, 8 May 2019 11:14:19 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Alastair D'Silva <alastair@au1.ibm.com>
+Cc:     alastair@d-silva.org, linux-fbdev@vger.kernel.org,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Petr Mladek <pmladek@suse.com>,
+        David Airlie <airlied@linux.ie>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, devel@driverdev.osuosl.org,
+        linux-scsi@vger.kernel.org, Jassi Brar <jassisinghbrar@gmail.com>,
+        ath10k@lists.infradead.org, intel-gfx@lists.freedesktop.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        linux-fsdevel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        David Laight <David.Laight@aculab.com>,
+        Daniel Vetter <daniel@ffwll.ch>, netdev@vger.kernel.org,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v2 4/7] lib/hexdump.c: Replace ascii bool in
+ hex_dump_to_buffer with flags
+Message-ID: <20190508091419.GA1615@kroah.com>
+References: <20190508070148.23130-1-alastair@au1.ibm.com>
+ <20190508070148.23130-5-alastair@au1.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAL_JsqKLgEjgDOHaNHbu7Bqw1gYCBMRcdO_S98nASnCxtinZ=g@mail.gmail.com>
+In-Reply-To: <20190508070148.23130-5-alastair@au1.ibm.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rob Herring <robh@kernel.org> [2019-05-07 11:06:43]:
-
-Hi,
-
-> > Honestly I don't know if it's necessary to have it, but so far address,
-> > mac-address and local-mac-address properties provide this DT nodes, so I've
-> > simply thought, that it would be good to have it for MAC address from NVMEM as
-> > well in order to stay consistent.
+On Wed, May 08, 2019 at 05:01:44PM +1000, Alastair D'Silva wrote:
+> From: Alastair D'Silva <alastair@d-silva.org>
 > 
-> If you want to be consistent, then fill in 'local-mac-address' with
-> the value from nvmem. We don't need the same thing with a new name
-> added to DT. (TBC, I'm not suggesting you do that here.)
+> In order to support additional features in hex_dump_to_buffer, replace
+> the ascii bool parameter with flags.
+> 
+> Signed-off-by: Alastair D'Silva <alastair@d-silva.org>
+> ---
+>  drivers/gpu/drm/i915/intel_engine_cs.c            |  2 +-
+>  drivers/isdn/hardware/mISDN/mISDNisar.c           |  6 ++++--
+>  drivers/mailbox/mailbox-test.c                    |  2 +-
+>  drivers/net/ethernet/amd/xgbe/xgbe-drv.c          |  2 +-
+>  drivers/net/ethernet/synopsys/dwc-xlgmac-common.c |  2 +-
+>  drivers/net/wireless/ath/ath10k/debug.c           |  3 ++-
+>  drivers/net/wireless/intel/iwlegacy/3945-mac.c    |  2 +-
+>  drivers/platform/chrome/wilco_ec/debugfs.c        |  2 +-
+>  drivers/scsi/scsi_logging.c                       |  8 +++-----
+>  drivers/staging/fbtft/fbtft-core.c                |  2 +-
+>  fs/seq_file.c                                     |  3 ++-
+>  include/linux/printk.h                            |  8 ++++----
+>  lib/hexdump.c                                     | 15 ++++++++-------
+>  lib/test_hexdump.c                                |  5 +++--
+>  14 files changed, 33 insertions(+), 29 deletions(-)
 
-Ok, got it.
+For staging stuff:
 
-> But really, my point with using devm_kzalloc() is just return the
-> data, not store in DT and free it when the driver unbinds. 
-
-Ok, I've simply misunderstood your point, sorry, I'll handle it in the follow
-up fix series, along with the DT documentation update.
-
-> Allocating it with devm_kzalloc AND adding it to DT as you've done in v4
-> leads to 2 entities refcounting the allocation. If the driver unbinds, the
-> buffer is freed, but DT code is still referencing that memory.
-
-Indeed, I did it wrong, will fix that.
-
-> 'nvmem-mac-address' is not a documented property. That would need to
-> be documented before using upstream. Though, for reasons above, I
-> don't think it should be.
-
-Ok, it makes sense now. Thanks for the detailed explanation.
-
--- ynezz
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
