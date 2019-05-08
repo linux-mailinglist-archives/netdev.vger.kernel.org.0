@@ -2,123 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0965C16F81
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 05:36:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3CAD16F8D
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 05:43:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbfEHDgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 23:36:08 -0400
-Received: from mail-it1-f198.google.com ([209.85.166.198]:44382 "EHLO
-        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726590AbfEHDgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 23:36:07 -0400
-Received: by mail-it1-f198.google.com with SMTP id v193so1046546itv.9
-        for <netdev@vger.kernel.org>; Tue, 07 May 2019 20:36:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=5dZSJzVyB2gZ6t0seAHk5Qi3NpAEiExb1GD1A6ohrB8=;
-        b=tc9hocm+mUwJ0TiT02J68wfw90W8xJHEqgmIsqoR396j0cYKDmAzKmaAKkALUzGUns
-         rI9C0S5Z61bXctccps1cTKFU/cLWXHbUY2zdsubw2cB4ERuB8pu2PNF5J2s//ntgsOS4
-         oqAlQlVlrBHATORR23SbSOPXszXr4ti91JvELsWr51whhXoJM+xqKeRdn0gbEe8TvEHd
-         AwY51YR2L+tbAkqJn4DCvSza6JYG0KRgpgZSRYsdxf5zKeTgZtjnmgRj9Dlnoz1c8Smh
-         ZbCbQnP2qEg/n29epRrGrFNl971ix547jEa+r2oy7V+wEJJSJ/PLTSg0QHGCPTU/g0TF
-         3Smg==
-X-Gm-Message-State: APjAAAUD+VRB+VBogl4P5IDoxs3pKyD0tFhuR+WplTYX3JyXybo2Gn4O
-        ngknTTyYPrHaiWDjKRCur80T5IBSAxkSJjJ9/wf80linO1ZG
-X-Google-Smtp-Source: APXvYqyvDopLdusXrW7Wfp1Y5mfs8uWUq8XNTfgSfTejHF8cNKXeZaZUCwr3DFE+0yNkV3zvh+Hm2tCGTH8I1ctUgFdD0idYHzH6
+        id S1727023AbfEHDn0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 May 2019 23:43:26 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45134 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726516AbfEHDnZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 May 2019 23:43:25 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 94D853087944;
+        Wed,  8 May 2019 03:43:25 +0000 (UTC)
+Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 82EFC60C4E;
+        Wed,  8 May 2019 03:43:25 +0000 (UTC)
+Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
+        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 28F5E65D13;
+        Wed,  8 May 2019 03:43:25 +0000 (UTC)
+Date:   Tue, 7 May 2019 23:43:24 -0400 (EDT)
+From:   Jason Wang <jasowang@redhat.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     mst@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        James Bottomley <James.Bottomley@HansenPartnership.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>
+Message-ID: <1430527294.27174562.1557287004441.JavaMail.zimbra@redhat.com>
+In-Reply-To: <20190507154753.GA8809@infradead.org>
+References: <20190507154753.GA8809@infradead.org>
+Subject: Re: [PATCH RFC] vhost: don't use kmap() to log dirty pages
 MIME-Version: 1.0
-X-Received: by 2002:a24:b701:: with SMTP id h1mr1646271itf.178.1557286567110;
- Tue, 07 May 2019 20:36:07 -0700 (PDT)
-Date:   Tue, 07 May 2019 20:36:07 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a573da058858083c@google.com>
-Subject: WARNING in cgroup_exit
-From:   syzbot <syzbot+f14868630901fc6151d3@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bpf@vger.kernel.org, cgroups@vger.kernel.org,
-        daniel@iogearbox.net, hannes@cmpxchg.org, kafai@fb.com,
-        linux-kernel@vger.kernel.org, lizefan@huawei.com,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, tj@kernel.org, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.68.5.20, 10.4.195.23]
+Thread-Topic: vhost: don't use kmap() to log dirty pages
+Thread-Index: K7z0d3UL1bhTV/QW5Sb3gPqIWKhUvg==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Wed, 08 May 2019 03:43:25 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 2019/5/7 下午11:47, Christoph Hellwig wrote:
+> On Mon, May 06, 2019 at 10:23:29PM -0400, Jason Wang wrote:
+>> Note: there're archs (few non popular ones) that don't implement
+>> futex helper, we can't log dirty pages. We can fix them on top or
+>> simply disable LOG_ALL features of vhost.
+>
+> That means vhost now has to depend on HAVE_FUTEX_CMPXCHG to make
+> sure we have a working implementation.
 
-syzbot found the following crash on:
+I found HAVE_FUTEX_CMPXCHG is not a must for arch that has the
+implementation and futex does some kind of runtime detection like:
 
-HEAD commit:    00c3bc00 Add linux-next specific files for 20190507
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=15220ec8a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=63cd766601c6c9fc
-dashboard link: https://syzkaller.appspot.com/bug?extid=f14868630901fc6151d3
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10fcf758a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1202ffa4a00000
+static void __init futex_detect_cmpxchg(void)
+{
+#ifndef CONFIG_HAVE_FUTEX_CMPXCHG
+	u32 curval;
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+f14868630901fc6151d3@syzkaller.appspotmail.com
-
-WARNING: CPU: 0 PID: 8653 at kernel/cgroup/cgroup.c:6008  
-cgroup_exit+0x51a/0x5d0 kernel/cgroup/cgroup.c:6008
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 8653 Comm: syz-executor076 Not tainted 5.1.0-next-20190507 #2
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  panic+0x2cb/0x75a kernel/panic.c:218
-  __warn.cold+0x20/0x47 kernel/panic.c:575
-  report_bug+0x263/0x2b0 lib/bug.c:186
-  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
-  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:972
-RIP: 0010:cgroup_exit+0x51a/0x5d0 kernel/cgroup/cgroup.c:6008
-Code: 00 48 c7 c2 20 7f 6d 87 be d3 01 00 00 48 c7 c7 20 80 6d 87 c6 05 01  
-93 f1 07 01 e8 fb 03 ed ff e9 b1 fb ff ff e8 96 f9 05 00 <0f> 0b e9 75 fc  
-ff ff e8 8a f9 05 00 48 c7 c2 e0 82 6d 87 be 85 02
-RSP: 0018:ffff888086c17a80 EFLAGS: 00010093
-RAX: ffff88808e99a000 RBX: 0000000000000001 RCX: ffffffff816b0b5e
-RDX: 0000000000000000 RSI: ffffffff816b0eea RDI: 0000000000000001
-RBP: ffff888086c17b18 R08: ffff88808e99a000 R09: ffffed1010d82f3e
-R10: ffffed1010d82f3d R11: 0000000000000003 R12: ffff88808e99a000
-R13: ffff8880981c3200 R14: ffff888086c17af0 R15: 1ffff11010d82f52
-  do_exit+0x97a/0x2fa0 kernel/exit.c:889
-  do_group_exit+0x135/0x370 kernel/exit.c:980
-  get_signal+0x425/0x2270 kernel/signal.c:2638
-  do_signal+0x87/0x1900 arch/x86/kernel/signal.c:815
-  exit_to_usermode_loop+0x244/0x2c0 arch/x86/entry/common.c:163
-  prepare_exit_to_usermode arch/x86/entry/common.c:198 [inline]
-  syscall_return_slowpath arch/x86/entry/common.c:276 [inline]
-  do_syscall_64+0x57e/0x670 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4471e9
-Code: e8 3c e6 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 ab 06 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f479f748db8 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
-RAX: fffffffffffffe00 RBX: 00000000006dcc38 RCX: 00000000004471e9
-RDX: 0000000000000000 RSI: 0000000000000080 RDI: 00000000006dcc38
-RBP: 00000000006dcc30 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dcc3c
-R13: 00007ffd1ab0c31f R14: 00007f479f7499c0 R15: 0000000000000001
-Shutting down cpus with NMI
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+	/*
+	 * This will fail and we want it. Some arch implementations do
+	 * runtime detection of the futex_atomic_cmpxchg_inatomic()
+	 * functionality. We want to know that before we call in any
+	 * of the complex code paths. Also we want to prevent
+	 * registration of robust lists in that case. NULL is
+	 * guaranteed to fault and we get -EFAULT on functional
+	 * implementation, the non-functional ones will return
+	 * -ENOSYS.
+	 */
+	if (cmpxchg_futex_value_locked(&curval, NULL, 0, 0) == -EFAULT)
+		futex_cmpxchg_enabled = 1;
+#endif
+}
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+>
+>>  #include <linux/sched/signal.h>
+>>  #include <linux/interval_tree_generic.h>
+>>  #include <linux/nospec.h>
+>> +#include <asm/futex.h>
+>
+> Also please include the futex maintainers to make sure they are fine
+> with this first usage of <asm/futex.h> outside of kernel/futex.c.
+>
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Thanks for ccing them. Will do for next version.
+
+If we decide to go this way, we probably need to move it to uaccess
+for a more generic helper.
+
+>
+>> +static int set_bit_to_user(int nr, u32 __user *addr)
+>>  {
+>>  	unsigned long log = (unsigned long)addr;
+>>  	struct page *page;
+>> +	u32 old_log;
+>>  	int r;
+>>  
+>>  	r = get_user_pages_fast(log, 1, 1, &page);
+>>  	if (r < 0)
+>>  		return r;
+>>  	BUG_ON(r != 1);
+>> +
+>> +	r = futex_atomic_cmpxchg_inatomic(&old_log, addr, 0, 0);
+>> +	if (r < 0)
+>> +		return r;
+>> +
+>> +	old_log |= 1 << nr;
+>> +	r = put_user(old_log, addr);
+>> +	if (r < 0)
+>> +		return r;
+>
+> And this just looks odd to me.  Why do we need the futex call to
+> replace a 0 value with 0?  Why does it still duplicate the
+> put_user?  This doesn't look like actually working code to me.
+
+Yes, this is a bug. Should be something like:
+
+static int set_bit_to_user(int nr, u32 __user *addr)
+{
+        unsigned long log = (unsigned long)addr;
+        struct page *page;
+        u32 old_log, new_log, l;
+        int r;
+
+        r = get_user_pages_fast(log, 1, 1, &page);
+        if (r < 0)
+                return r;
+	BUG_ON(r != 1);
+
+        do {
+                r = get_user(old_log, addr);
+                if (r < 0)
+                        return r;
+                new_log = old_log | (1 << nr);
+		r = futex_atomic_cmpxchg_inatomic(&l, addr, old_log, new_log);
+                if (r < 0)
+                        return r;
+        } while(l != new_log);
+
+	set_page_dirty_lock(page);
+        put_page(page);
+        return 0;
+}
+
+>
+> Also don't we need a pagefault_disable() around
+> futex_atomic_cmpxchg_inatomic?
+
+Since we don't want to deal with pagefault, so the page has been
+pinned before futex_atomic_cmpxchg_inatomic().
+
+Thanks
