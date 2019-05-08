@@ -2,105 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48FFD181B9
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 23:43:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75326181CD
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 23:52:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727220AbfEHVnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 17:43:21 -0400
-Received: from ozlabs.org ([203.11.71.1]:51507 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726506AbfEHVnV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 May 2019 17:43:21 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 44zqj12YVsz9s7h;
-        Thu,  9 May 2019 07:43:16 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1557351797;
-        bh=S79DeqKFsnMK7Z+G0v4i11VpRAQuuvyknUIOHBC/TYM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=YWFEOs2zfM3FpwwcVv96Sgi4t+ZudQflk1EZBkay+G3t9vDvjAv6XvZ6gNIf6PWRs
-         G9PUQtBqiR/vlEiF7c0tQ1H0U1aNmoNpesAmZiElWcaUprnWBodQSQWQkTa9BDjBY+
-         Qu56cD7rHzFAvUYG1kEA2b906rc+Zqi+EtKgdVI22+jvaV4qFk6aSXs0PEUa3UmNme
-         YJWCbtMygZPjua+Aq3/noUBdpUBU2IiaRe4aE+FcGkcC28JHKMF3GhUj/nbOZ4dhDE
-         fz+dCiiNiqLftFxU1sfWSOKIgKs3AVI5yDcw6w2B+rNs8toCi19BmEsKJSGFohvluZ
-         Chtiv/p/sp2dg==
-Date:   Thu, 9 May 2019 07:43:08 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        id S1728576AbfEHVvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 17:51:51 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:36683 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726837AbfEHVvv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 17:51:51 -0400
+Received: by mail-lj1-f193.google.com with SMTP id z1so235853ljb.3;
+        Wed, 08 May 2019 14:51:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Z7zi0z6P4GKEXwWV7x1PGifLNYhn60SR2kPXRCLn8SA=;
+        b=qVEA7XAHx1epY0O1YUS1wsPGzJasjS8UX+IGJ26YFEAOn3JQzBi7TmM038R5zDTG+h
+         ZszIQm+61yj2zvYA6h1zIIm7OPXZPgzpux0kBnje7iqgL+B5S6JXtZapLdcR0E740P7+
+         zW6ncS0hDpKRf+sZwl+EnIi4fXReJMg01sxXO32z79v3wiM/ufGgDIOGsw0OTlcAKScG
+         yyFAPPnZb6IxE+DOiPC17TdQaVxpg/PDXsNWEoqPPzvqQ8+nlc8T0L6NOZ0erkQbZsrR
+         DFNlEa7sUn4QYsv1/vhsVtsCycnIRgcutbmXnnxh0LSknvPKT/1fH+R41pF7API8AX6P
+         tDVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Z7zi0z6P4GKEXwWV7x1PGifLNYhn60SR2kPXRCLn8SA=;
+        b=Ag8EZO9FKlTjH9sDEhIo2ydO9lELUJDwHN26WgjypD0JzdFis6GI6RLWywk9M3Rshk
+         nNglyKUzg3hdsqAAeaQ2zlJfAmAflED3amUrXoXOAni8w2yjkzoY1Pm2FfkfjTDtuWlD
+         Gho5MOTiSgLtYATmnDUHTXIUJqu++V3ks0ESscZHSysrobQEdaVUfbjsd6WdFNHZCQg5
+         ko+5I36/rkUkwa5IjQy8I8+BKSFdHn5TOizvsM6ByAx41TIN5ZlhLJvpEw6iLUj8yFQi
+         fFnJz/sF1TTrpegEMnJwj3B/8141XyWJdMT5f/HVMw1N86pPNeHaQKjF4EG4toZdpq/L
+         4GEw==
+X-Gm-Message-State: APjAAAW6jo4cOxRcvzooFqhBlv4PsOes+7WYXBtrwk+xfNhJCrfFBe9X
+        vKwQtI+AHUb/YN7SX7IkUBoHiUAaN1U=
+X-Google-Smtp-Source: APXvYqy1BOHXERcPEOmNARYdvxiMVQVAnAIuz5fVfu/8YZg4APtrk07GvJAbbs/AkxWcPBD58UzMVA==
+X-Received: by 2002:a2e:8602:: with SMTP id a2mr77270lji.21.1557352309171;
+        Wed, 08 May 2019 14:51:49 -0700 (PDT)
+Received: from localhost.localdomain ([5.164.217.122])
+        by smtp.gmail.com with ESMTPSA id l5sm28279lfh.70.2019.05.08.14.51.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 08 May 2019 14:51:47 -0700 (PDT)
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Vladimir Oltean <olteanv@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: linux-next: Fixes tags need some work in the net tree
-Message-ID: <20190509074308.7c0ade7d@canb.auug.org.au>
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Serge Semin <Sergey.Semin@t-platforms.ru>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/2] net: phy: realtek: Fix RGMII TX/RX-delays initial config of rtl8211(e|f)
+Date:   Thu,  9 May 2019 00:51:13 +0300
+Message-Id: <20190508215115.19802-1-fancer.lancer@gmail.com>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190508012920.13710-1-fancer.lancer@gmail.com>
+References: 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/zd_DhxPtPy7N5zeooSkhzkt"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/zd_DhxPtPy7N5zeooSkhzkt
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+It has been discovered that RX/TX delays of rtl8211e ethernet PHY
+can be configured via a MDIO register hidden in the extension pages
+layout. Particularly the extension page 0xa4 provides a register 0x1c,
+which bits 1 and 2 control the described delays. They are used to
+implement the "rgmii-{id,rxid,txid}" phy-mode support in patch 1.
 
-Hi all,
+The second patch makes sure the rtl8211f TX-delay is configured only
+if RGMII interface mode is specified including the rgmii-rxid one.
+In other cases (most importantly for NA mode) the delays are supposed
+to be preconfigured by some other software or hardware and should be
+left as is without any modification. The similar thing is also done
+for rtl8211e in the patch 1 of this series.
 
-In commit
+Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
 
-  3b2c4f4d63a5 ("net: dsa: sja1105: Don't return a negative in u8 sja1105_s=
-tp_state_get")
+Changelog v3
+- Add this cover-letter.
+- Add Andrew' Reviewed-by tag to patch 1.
+- Accept RGMII_RXID interface mode for rtl8211f and clear the TX_DELAY
+  bit in this case.
+- Initialize ret variable with 0 to prevent the "may be used uninitialized"
+  warning in patch 1.
 
-Fixes tag
+Changelog v4
+- Rebase onto net-next
 
-  Fixes: 640f763f98c2: ("net: dsa: sja1105: Add support for Spanning Tree P=
-rotocol")
 
-has these problem(s):
+Serge Semin (2):
+  net: phy: realtek: Add rtl8211e rx/tx delays config
+  net: phy: realtek: Change TX-delay setting for RGMII modes only
 
-  - the ':' after the SHA1 is unexpected
-    Just use
-	git log -1 --format=3D'Fixes: %h ("%s")'
+ drivers/net/phy/realtek.c | 70 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 66 insertions(+), 4 deletions(-)
 
-In commit
+-- 
+2.21.0
 
-  e9919a24d302 ("fib_rules: return 0 directly if an exactly same rule exist=
-s when NLM_F_EXCL not supplied")
-
-Fixes tag
-
-  Fixes: 153380ec4b9 ("fib_rules: Added NLM_F_EXCL support to fib_nl_newrul=
-e")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/zd_DhxPtPy7N5zeooSkhzkt
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlzTTWwACgkQAVBC80lX
-0GxlCgf/b5yD/Wnlo5qm4dcDRcTmKTnt9HgRU7xWAPTZto5fDLbiUsRkyx4+bZHb
-Z+6+drXkIQxh68OIKmpyA/6NItK7GukC5AwaXwz3cwOu6FbWwjSqw2Jbmc3zr1P1
-BWbiKZd9nZtCer+lobMox4aWMOqXjt8XQLaoXABNhsMSMe/NP4/B0YoyHyuVdBDy
-d2IEdL19ReyQeAMGUjQTBE0QgSsfTP2R933BsoFaODw8ApGMBLIij42M74SuIWs+
-eIt2a+Y0nAVjy2uBZ7sjQfVuhz5s36h5xeweaq70vbdteD0eC2u9tNQENjfblxwB
-HsShBhEhqRPsiCGD0LyavIguYLrAeg==
-=G0pe
------END PGP SIGNATURE-----
-
---Sig_/zd_DhxPtPy7N5zeooSkhzkt--
