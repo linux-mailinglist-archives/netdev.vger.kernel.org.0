@@ -2,144 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0D8017FCA
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 20:29:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F095317F9E
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 20:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728149AbfEHS0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 14:26:45 -0400
-Received: from upbd19pa07.eemsg.mail.mil ([214.24.27.82]:29884 "EHLO
-        upbd19pa07.eemsg.mail.mil" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727974AbfEHS0p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 14:26:45 -0400
-X-Greylist: delayed 608 seconds by postgrey-1.27 at vger.kernel.org; Wed, 08 May 2019 14:26:42 EDT
-X-EEMSG-check-017: 222955656|UPBD19PA07_EEMSG_MP7.csd.disa.mil
-Received: from emsm-gh1-uea10.ncsc.mil ([214.29.60.2])
-  by upbd19pa07.eemsg.mail.mil with ESMTP/TLS/DHE-RSA-AES256-SHA256; 08 May 2019 18:16:30 +0000
+        id S1727725AbfEHSM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 14:12:26 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:43102 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727414AbfEHSMZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 14:12:25 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c6so5690452pfa.10
+        for <netdev@vger.kernel.org>; Wed, 08 May 2019 11:12:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tycho.nsa.gov; i=@tycho.nsa.gov; q=dns/txt;
-  s=tycho.nsa.gov; t=1557339391; x=1588875391;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=YDcVUsMEfD9zsFH26BDz4jKfAef5YIxDGE0n3aaTxrY=;
-  b=Qn2SOAQ9BQLT62sRSkUYJwXtqGPqoBoz9xviwIT5io7ZU72Fqpz5Ws22
-   Klq/bXVqP4YfLF2O6lSftzLoD11a0+l4hiWC2g1HseJI04m8ywOQPz28p
-   bhHgGShgTzf2S0G3fbmFbzgkApfGC3KJPRy+YPrXOe30G9gGaHGuTzEkS
-   m6UibodQE/J/AmVQkCobCGrqOETahHo3JduazorL8/SnScQatXXWdVBNv
-   j0P+Nqkj7XLvniJlamEB0m5lRSDHPczz9zmooJNqYy+dfc8fh6ng4p7n2
-   oCDXmpfrTBRUG+cJ9PnROLDDoCug16hT0+yjgMCft/eeLKwIcw6WNVVrc
-   A==;
-X-IronPort-AV: E=Sophos;i="5.60,446,1549929600"; 
-   d="scan'208";a="23346947"
-IronPort-PHdr: =?us-ascii?q?9a23=3A3OyhPhX0nx8JLDhB1s2/O4j1fTXV8LGtZVwlr6?=
- =?us-ascii?q?E/grcLSJyIuqrYZRWOtadThVPEFb/W9+hDw7KP9fy5ACpQut3Y6SFKWacPfi?=
- =?us-ascii?q?dNsd8RkQ0kDZzNImzAB9muURYHGt9fXkRu5XCxPBsdMs//Y1rPvi/6tmZKSV?=
- =?us-ascii?q?3wOgVvO+v6BJPZgdip2OCu4Z3TZBhDiCagbb9oIxi6sBjdutMVjIZsJao91w?=
- =?us-ascii?q?bFr39VcOlK2G1kIk6ekQzh7cmq5p5j9CpQu/Ml98FeVKjxYro1Q79FAjk4Km?=
- =?us-ascii?q?45/MLkuwXNQguJ/XscT34ZkgFUDAjf7RH1RYn+vy3nvedgwiaaPMn2TbcpWT?=
- =?us-ascii?q?S+6qpgVRHlhDsbOzM/7WrakdJ7gr5Frx29phx/24/Ub5+TNPpiZaPWYNcWSX?=
- =?us-ascii?q?NcUspNSyBNB4WxYIUVD+oFIO1WsY/zqVUTphe6HAWhCufixjpOi3Tr36M1zv?=
- =?us-ascii?q?4hHBnb0gI+EdIAsHfaotv7O6gdU++60KbGwC7fb/5Uwzrx9JTEfx4jrPyKQL?=
- =?us-ascii?q?l+cdDRyU4qFw7dk1uQtZLqPyuV1usTtWiQ8vduVee1hG4jrwF+vDiuzdorh4?=
- =?us-ascii?q?nSm40V0UvJ9Tl5wYkpJd24T1R3Ydi/EJRKrS2aOIx2Qt07TmxupS00yaUGtI?=
- =?us-ascii?q?amcCUFx5kr3R7SZ+Gdf4SW7R/vSvydLSp+iXl4YrywnQyy/lKlyuDkU8m010?=
- =?us-ascii?q?tFoTRdn9nXs3ANywTT6s+aSvth5kuh2SiA1wTU6uxcPUA7j7DbK588wr4rjJ?=
- =?us-ascii?q?YTrUTCETP2mEXxlqOWcFkr+vO05Oj9Z7Xmp5ucO5d1igH4LKsuhtSyDfk3Pw?=
- =?us-ascii?q?UBRWSW+fmw2Kf98UD2XrlGlOA6nrHcsJ/AJMQboqC5AxVS0oYm8xu/FCqp0M?=
- =?us-ascii?q?8DkHkbLFNKZBKHj4/zN1HIO/D3F+2zg1urkDd13/zGJKHuAo3RLnjfl7fsZa?=
- =?us-ascii?q?595FRHxwUty9Bf5olZCqsfL/3uWk/+rsDYAgUlPAyzxubtEM992Z8GWWKTHq?=
- =?us-ascii?q?+ZN7vfsUeS6eIyJ+mBf5cVtyzgK/gh/vLuiHg5mVgHfaa3x5cYdHe4HvF+KU?=
- =?us-ascii?q?WDfXXsmssBEXsNvgcmV+zlllmCUT9VZ3avUKMx/S87CI24AofZXIytg6KO3D?=
- =?us-ascii?q?29HpJIYmBKEFeMEW3nd4+cQfcDdDqSItN9kjwDTbWhTZEu1Q2zuwDk1bpqNf?=
- =?us-ascii?q?TU+iIGupL5ztR15PPclQs09TNqC8SRyWaNT3t7nmkQXT85wLh/oVBhyleEya?=
- =?us-ascii?q?V4n+FXGsJI5/xXUgY6M4XRz/ZkBN/vWgLOZMuJREy6TdWhBDE7VsgxzMMWY0?=
- =?us-ascii?q?ZhB9WiiQjO3y+wDL8Pi7OEGpg08qXG03j1Ocl9ymrG1K8/gFk8WcZPOmimib?=
- =?us-ascii?q?R+9wjXHYLGj0KZl6Oyf6QGwCHN7HuDzXaJvExASg5wULnKXXAFaUvMsNv2/l?=
- =?us-ascii?q?/NQKeuCbs9MwtBz9CNKrBRZ9LykVVGRfHjOMjAbGKrnWe/GwqIyqmQY4rtfm?=
- =?us-ascii?q?VOlBnaXXANlAQUtV+MOA4/TnO5qmjTCj1GD1/jY0rwt+J5rSX/Bnc90gXCSk?=
- =?us-ascii?q?pmzbf9rgYcmPi0U/oO2vcBvyA7pnN/G1PrjPzMDN/VnBZsZKVRZ5sG5V5D0W?=
- =?us-ascii?q?/I/1hmMoeIM7FphllYdR9++UzpyUMkWc17jcE2oSZyn0JJIqWC3QYELmjJ0A?=
- =?us-ascii?q?=3D=3D?=
-X-IPAS-Result: =?us-ascii?q?A2B+AAA9HNNc/wHyM5BkHAEBAQQBAQcEAQGBUwUBAQsBg?=
- =?us-ascii?q?WYqgToBMiiEEJNeAQQGgTWJTI8GgXsJATQBAoQ/AoIIIzYHDgEDAQEBBAEBA?=
- =?us-ascii?q?QEDAQFsKII6KQGCZwEFIwQRQRALDgoCAiYCAlcGAQwGAgEBgl8/gXcUrU58M?=
- =?us-ascii?q?4VHgx2BRoELJwGLTRd4gQeBESeCaz5phmWCWASLF4d8lC8JgguCBpBDBhuVV?=
- =?us-ascii?q?y2IaIMPkUKFMQExgVYrCAIYCCEPgyeCGxeOOyMDMIEGAQGQCAEB?=
-Received: from tarius.tycho.ncsc.mil ([144.51.242.1])
-  by EMSM-GH1-UEA10.NCSC.MIL with ESMTP; 08 May 2019 18:16:29 +0000
-Received: from moss-pluto.infosec.tycho.ncsc.mil (moss-pluto [192.168.25.131])
-        by tarius.tycho.ncsc.mil (8.14.4/8.14.4) with ESMTP id x48IGSvR017971;
-        Wed, 8 May 2019 14:16:28 -0400
-Subject: Re: [PATCH net] selinux: do not report error on connect(AF_UNSPEC)
-To:     Paolo Abeni <pabeni@redhat.com>, Paul Moore <paul@paul-moore.com>
-Cc:     selinux@vger.kernel.org, netdev@vger.kernel.org,
-        Tom Deseyn <tdeseyn@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Richard Haines <richard_c_haines@btinternet.com>
-References: <7301017039d68c920cb9120c035a1a0df3e6b30d.1557322358.git.pabeni@redhat.com>
-From:   Stephen Smalley <sds@tycho.nsa.gov>
-Message-ID: <36e13dc4-be40-d1f6-0be5-32cd4fc38f6e@tycho.nsa.gov>
-Date:   Wed, 8 May 2019 14:12:09 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=wCJ0uBEbeN5m7OwhfIqTVfKRA9yg3BSywm72gL5tYtc=;
+        b=wsBatlo459IDCODbsoAeUZ1w5VSzX/zWMnRZsMC75KoQIXuGe/8T9SpGhTfcL8KnM8
+         LLYiegtCGHpRYE/95I9wLz0eyVhirjDa/twU213DB06FjDUxKXHldP5FY9eCtRfpkTvY
+         cp01TDDXeWUxWPK5eDoXQcCMw3tXNnprcVyrmBHU69MoWsuVMdzhY7oYA1zqSaJ+qIAC
+         1NutanZE/1i+nD6aeBS+SiGx/uYnZVfB2/w4DmpJSHC7kuaFApfa+KU0sv2evSEO8cNv
+         d3w8RZh0BRbtp0Wweltdl2S4yU5PnzTDx40Tt8xCdaKmxIlk3v/nsWT5i0isoqWvo0eB
+         ZuIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wCJ0uBEbeN5m7OwhfIqTVfKRA9yg3BSywm72gL5tYtc=;
+        b=rea6342nvZJpCxfawSTr8Fpw4GWe0BCDe4sJekmAhf7Y/8YH+GreGVUO1v6lSEybDD
+         M4w8TbUp1B3QoeUpdM1utmONocjRrRGR9aVIUlySf0kBXDmHvrbbxMDY9u06qC50uqCM
+         qyjFChAf4wNmM1ubTqG8DejD8k510rBMbOU9jZnu4LP2O1SwaXdl0VSuhVa4nYRIaJ2Q
+         0obY1WwS+lgg8Eq+yx7qiRauXi9L4bu4P02dPK4v6Pp/ZVrAFJ58aahgVfBqmjv8f8M3
+         nh7AbxTb9KIGegiVum+xI/n7e72Zg9TRQOL2a4/eya0z9mrTKhd4i4jzXUAZX5UY3JGB
+         NRMw==
+X-Gm-Message-State: APjAAAWDeXqW/vT3uzzQVjCiUb6Ni0PSmpC5TVlz+ZqCKleeqkMsX6d2
+        6JoDWhRcqu4Rdrfif7ILgl1UJA==
+X-Google-Smtp-Source: APXvYqzmZRY3funcFrq1gslSSOb1zl/07++/0a7qsXOvRXX9wdQbYYnm0S+BqsNJOiVarjCm5blJWg==
+X-Received: by 2002:a63:5cb:: with SMTP id 194mr2527408pgf.294.1557339145274;
+        Wed, 08 May 2019 11:12:25 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id l129sm9555554pfc.61.2019.05.08.11.12.24
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 08 May 2019 11:12:24 -0700 (PDT)
+Date:   Wed, 8 May 2019 11:12:23 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net
+Subject: Re: [PATCH bpf 0/4] bpf: remove __rcu annotations from bpf_prog_array
+Message-ID: <20190508181223.GH1247@mini-arch>
+References: <20190508171845.201303-1-sdf@google.com>
+ <20190508175644.e4k5o6o3cgn6k5lx@ast-mbp>
 MIME-Version: 1.0
-In-Reply-To: <7301017039d68c920cb9120c035a1a0df3e6b30d.1557322358.git.pabeni@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190508175644.e4k5o6o3cgn6k5lx@ast-mbp>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/8/19 9:32 AM, Paolo Abeni wrote:
-> calling connect(AF_UNSPEC) on an already connected TCP socket is an
-> established way to disconnect() such socket. After commit 68741a8adab9
-> ("selinux: Fix ltp test connect-syscall failure") it no longer works
-> and, in the above scenario connect() fails with EAFNOSUPPORT.
+On 05/08, Alexei Starovoitov wrote:
+> On Wed, May 08, 2019 at 10:18:41AM -0700, Stanislav Fomichev wrote:
+> > Right now we are not using rcu api correctly: we pass __rcu pointers
+> > to bpf_prog_array_xyz routines but don't use rcu_dereference on them
+> > (see bpf_prog_array_delete_safe and bpf_prog_array_copy in particular).
+> > Instead of sprinkling rcu_dereferences, let's just get rid of those
+> > __rcu annotations and move rcu handling to a higher level.
+> > 
+> > It looks like all those routines are called from the rcu update
+> > side and we can use simple rcu_dereference_protected to get a
+> > reference that is valid as long as we hold a mutex (i.e. no other
+> > updater can change the pointer, no need for rcu read section and
+> > there should not be a use-after-free problem).
+> > 
+> > To be fair, there is currently no issue with the existing approach
+> > since the calls are mutex-protected, pointer values don't change,
+> > __rcu annotations are ignored. But it's still nice to use proper api.
+> > 
+> > The series fixes the following sparse warnings:
 > 
-> Fix the above falling back to the generic/old code when the address family
-> is not AF_INET{4,6}, but leave the SCTP code path untouched, as it has
-> specific constraints.
-> 
-> Fixes: 68741a8adab9 ("selinux: Fix ltp test connect-syscall failure")
-> Reported-by: Tom Deseyn <tdeseyn@redhat.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
->   security/selinux/hooks.c | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> index c61787b15f27..d82b87c16b0a 100644
-> --- a/security/selinux/hooks.c
-> +++ b/security/selinux/hooks.c
-> @@ -4649,7 +4649,7 @@ static int selinux_socket_connect_helper(struct socket *sock,
->   		struct lsm_network_audit net = {0,};
->   		struct sockaddr_in *addr4 = NULL;
->   		struct sockaddr_in6 *addr6 = NULL;
-> -		unsigned short snum;
-> +		unsigned short snum = 0;
->   		u32 sid, perm;
->   
->   		/* sctp_connectx(3) calls via selinux_sctp_bind_connect()
-> @@ -4674,12 +4674,12 @@ static int selinux_socket_connect_helper(struct socket *sock,
->   			break;
->   		default:
->   			/* Note that SCTP services expect -EINVAL, whereas
-> -			 * others expect -EAFNOSUPPORT.
-> +			 * others must handle this at the protocol level:
-> +			 * connect(AF_UNSPEC) on a connected socket is
-> +			 * a documented way disconnect the socket.
->   			 */
->   			if (sksec->sclass == SECCLASS_SCTP_SOCKET)
->   				return -EINVAL;
-> -			else
-> -				return -EAFNOSUPPORT;
+> Absolutely not.
+> please fix it properly.
+> Removing annotations is not a fix.
+I'm fixing it properly by removing the annotations and moving lifetime
+management to the upper layer. See commits 2-4 where I fix the users, the
+first patch is just the "preparation".
 
-I think we need to return 0 here.  Otherwise, we'll fall through with an 
-uninitialized snum, triggering a random/bogus permission check.
+The users are supposed to do:
 
->   		}
->   
->   		err = sel_netport_sid(sk->sk_protocol, snum, &sid);
-> 
+mutex_lock(&x);
+p = rcu_dereference_protected(prog_array, lockdep_is_held(&x))
+// ...
+// call bpf_prog_array helpers while mutex guarantees that
+// the object referenced by p is valid (i.e. no need for bpf_prog_array
+// helpers to care about rcu lifetime)
+// ...
+mutex_unlock(&x);
 
+What am I missing here?
