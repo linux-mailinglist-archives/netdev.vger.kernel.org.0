@@ -2,176 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D036317E97
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 18:55:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 919CE17ED7
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 19:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728842AbfEHQxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 12:53:45 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:32869 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728744AbfEHQxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 12:53:44 -0400
-Received: by mail-pf1-f193.google.com with SMTP id z28so10808073pfk.0;
-        Wed, 08 May 2019 09:53:43 -0700 (PDT)
+        id S1728946AbfEHRGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 13:06:34 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:45608 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728533AbfEHRGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 13:06:33 -0400
+Received: by mail-pl1-f194.google.com with SMTP id a5so5278292pls.12;
+        Wed, 08 May 2019 10:06:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZwiOMtENvmMkHu78PmaAVyD9pxhAQKB/9ZXuwE9X/ZE=;
-        b=gj0fgpKK5FWw4At3xTt9HipeqnKOZ1XuU8O7cP1a7mBhm1xO5vPUsO/YQY0nJ9mOLa
-         gdt8iwT4fOzAvTVSA/PkEhBINEB6658iHjW4aLjM8RNiM0IIujZCQSuG9836sZqrEHwa
-         10HELt4Tl43c1C9xdu+E13+djSiYUUgeAqdAF65F4IuUlB9diFVPRGJcBFCRcs6FQuqD
-         CT1X4pfaCiD2dXxnX6w1goDhRGBAIPjqlwk/8CRRkE+tv5wCmF1Qv8WA53hVCj/9UQhp
-         g7sVtv3ET4fGD7QVprf0+3NroajKuzI10ucroJxtSdaUoXkUyMVfTFfxa2BqElnZAC0u
-         dQRg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=75HU3h4OsAx80C+4HKmkW9WgCjMZ+3MuLOv2/tSvsf8=;
+        b=jQl6hDH30YowXP4QHSAKi9IE+6WlJEE9nvbFJQjRbUi7SHucchoX5QX0FEPCcs+kkL
+         /jpbzu3fEJoqC4nfdct9P3686RvwnXltHnptuE6rWvUJqv6WrstRah+XYV+aRESaYFn3
+         jFlNYGFTnsq7c6nSR/FxyByvG87taz9YhTSvI6cGnvoO5Qfl5OoZqQTuX8wBXJn+ss9d
+         0U31LGy5ye/WnB3tucJRtX1bxu/FPDmIq6nqHk2nl515S9PzPdxO9m0clWWhIAvzSPyt
+         mkqzEJ8W17t6yXjMve4NC7Px40RyKcqnY7HOmzaicZhAa/EtdMIsysIHDQJ6aZsARyIL
+         N5EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZwiOMtENvmMkHu78PmaAVyD9pxhAQKB/9ZXuwE9X/ZE=;
-        b=NqkN8qT7wQfmLO/LonoDei3gXyTsNWHdW5nbkiTFOnO7Tw30iJTBfgeMohAPNsE1Ng
-         Tr9XLNuKFVtgLQEZIqjhjrTqygtGF4c2ROGMWc48//FFqVtW4I8c+JsBt09GUWxcLYZD
-         y0BOpCBJt4JEd0I1pMqsDkv3qJ7Vm+cNGswYGdMAeN/3VvZw2TpWf+82NdSPg4cjrFYA
-         XwzUx+H+4phqZPAR6YaOXKY2tqAivcgMNw3yk82VzpZAjoqBQv/Flbtnc8mRxZgqB5Bq
-         t3n0SUY8XitkHKDTIzAJ6NMRMyamGh/Ydrb0aibn+AQcuVQ4mNqSmwqPWGfW4ZVZoaF7
-         7PJg==
-X-Gm-Message-State: APjAAAV1YzGCwte6eX8ZajAuj7yLFXZjchCXxAKOcycP8xgnAgfVA/AF
-        WpW5GjYFvqPuIB7rhY7jYiBCii/L
-X-Google-Smtp-Source: APXvYqzZdAGVdxxNWXXjaeqD2KRVv/mZe/e1dFC6cvwzoE9dM6kQnCOPDRcDzvaJCUEhXho5fgLizg==
-X-Received: by 2002:a65:5886:: with SMTP id d6mr48292774pgu.295.1557334423619;
-        Wed, 08 May 2019 09:53:43 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id r138sm35707143pfr.2.2019.05.08.09.53.41
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 08 May 2019 09:53:42 -0700 (PDT)
-Subject: Re: [PATCH v2] netfilter: xt_owner: Add supplementary groups option
-To:     Lukasz Pawelczyk <l.pawelczyk@samsung.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Lukasz Pawelczyk <havner@gmail.com>
-References: <CGME20190508141219eucas1p1e5a899714747b497499976113ea9681f@eucas1p1.samsung.com>
- <20190508141211.4191-1-l.pawelczyk@samsung.com>
- <98f71c64-3887-b715-effb-894224a71ef9@gmail.com>
- <cdba4a3b7f31ae8ece81be270233032fe774bd86.camel@samsung.com>
- <6a6e9754-4f2b-3433-6df0-bbb9d9915582@gmail.com>
- <cf34c829002177e89806e9f7260559aefb3c2ac7.camel@samsung.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <afc200a8-438f-5d73-2236-6d9e4979bb59@gmail.com>
-Date:   Wed, 8 May 2019 09:53:40 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=75HU3h4OsAx80C+4HKmkW9WgCjMZ+3MuLOv2/tSvsf8=;
+        b=Q7LkCV6+EyyNixvR476rE3e8vYCxNayAcWB367Kxpj0EvM/nZzwxaGXRqNFdt3naVz
+         KSgPOQo9Url7jJuHzpcy7ij48TC5tigbGcMn8qw3L8+NHz+S+BlHdqXOOu3mw7Pk2h50
+         Yu3qGUVpbO9a+YZVLMCAQHYXNVB29EcQEo7Ln+rHqCF2BUP/4K8Tu5kf1IukEJbL/86u
+         0pU6yteF3vqtO3pwd8vp4395dAw5EC96v2vn4PY6FQEJ7FDyZn8tjQurfNsKd8sCBQCe
+         UHepYy8uahlQfkr5610KWOzFD3jel0doImWjEQxdmXCbG/oY7ZmpwGB2QMG/ruC2O92M
+         8nVw==
+X-Gm-Message-State: APjAAAXhzS4cFBb+4e4k9FVEbaGw0MVyzrlBJcIsFS+Nk0HyIypwLi2z
+        6Dhj+8xmEJmmdjnqtUN0skDP32xG
+X-Google-Smtp-Source: APXvYqz2ig4LTc8BeA++POHhfq31FLeFbtUnhNuxJeCOWUwYOUw7UcTLduomkOhdm3P5hDWJB/4mKA==
+X-Received: by 2002:a17:902:b489:: with SMTP id y9mr17545441plr.70.1557335193074;
+        Wed, 08 May 2019 10:06:33 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id o10sm26434215pfh.168.2019.05.08.10.06.31
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 08 May 2019 10:06:32 -0700 (PDT)
+Date:   Wed, 8 May 2019 10:06:29 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Po Liu <po.liu@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Leo Li <leoyang.li@nxp.com>, Roy Zang <roy.zang@nxp.com>,
+        Mingkai Hu <mingkai.hu@nxp.com>,
+        "deepa.kernel@gmail.com" <deepa.kernel@gmail.com>
+Subject: Re: [EXT] Re: [PATCH v1] timer:clock:ptp: add support the dynamic
+ posix clock alarm set for ptp
+Message-ID: <20190508170629.me5smui6n7n62x2l@localhost>
+References: <1557032106-28041-1-git-send-email-Po.Liu@nxp.com>
+ <20190507134952.uqqxmhinv75actbh@localhost>
+ <VI1PR04MB51359553C796D25765720FCC92320@VI1PR04MB5135.eurprd04.prod.outlook.com>
+ <20190508143654.uj7266kcbhf744c3@localhost>
 MIME-Version: 1.0
-In-Reply-To: <cf34c829002177e89806e9f7260559aefb3c2ac7.camel@samsung.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190508143654.uj7266kcbhf744c3@localhost>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, May 08, 2019 at 07:36:54AM -0700, Richard Cochran wrote:
+> No the alarm functionality has been removed.  It will not be coming
+> back, unless there are really strong arguments to support it.
 
+Here is some more background:
 
-On 5/8/19 11:56 AM, Lukasz Pawelczyk wrote:
-> On Wed, 2019-05-08 at 08:41 -0700, Eric Dumazet wrote:
->>
->> On 5/8/19 11:25 AM, Lukasz Pawelczyk wrote:
->>> On Wed, 2019-05-08 at 07:58 -0700, Eric Dumazet wrote:
->>>> On 5/8/19 10:12 AM, Lukasz Pawelczyk wrote:
->>>>> The XT_SUPPL_GROUPS flag causes GIDs specified with
->>>>> XT_OWNER_GID to
->>>>> be also checked in the supplementary groups of a process.
->>>>>
->>>>> Signed-off-by: Lukasz Pawelczyk <l.pawelczyk@samsung.com>
->>>>> ---
->>>>>  include/uapi/linux/netfilter/xt_owner.h |  1 +
->>>>>  net/netfilter/xt_owner.c                | 23
->>>>> ++++++++++++++++++++-
->>>>> --
->>>>>  2 files changed, 21 insertions(+), 3 deletions(-)
->>>>>
->>>>> diff --git a/include/uapi/linux/netfilter/xt_owner.h
->>>>> b/include/uapi/linux/netfilter/xt_owner.h
->>>>> index fa3ad84957d5..d646f0dc3466 100644
->>>>> --- a/include/uapi/linux/netfilter/xt_owner.h
->>>>> +++ b/include/uapi/linux/netfilter/xt_owner.h
->>>>> @@ -8,6 +8,7 @@ enum {
->>>>>  	XT_OWNER_UID    = 1 << 0,
->>>>>  	XT_OWNER_GID    = 1 << 1,
->>>>>  	XT_OWNER_SOCKET = 1 << 2,
->>>>> +	XT_SUPPL_GROUPS = 1 << 3,
->>>>>  };
->>>>>  
->>>>>  struct xt_owner_match_info {
->>>>> diff --git a/net/netfilter/xt_owner.c
->>>>> b/net/netfilter/xt_owner.c
->>>>> index 46686fb73784..283a1fb5cc52 100644
->>>>> --- a/net/netfilter/xt_owner.c
->>>>> +++ b/net/netfilter/xt_owner.c
->>>>> @@ -91,11 +91,28 @@ owner_mt(const struct sk_buff *skb, struct
->>>>> xt_action_param *par)
->>>>>  	}
->>>>>  
->>>>>  	if (info->match & XT_OWNER_GID) {
->>>>> +		unsigned int i, match = false;
->>>>>  		kgid_t gid_min = make_kgid(net->user_ns, info-
->>>>>> gid_min);
->>>>>  		kgid_t gid_max = make_kgid(net->user_ns, info-
->>>>>> gid_max);
->>>>> -		if ((gid_gte(filp->f_cred->fsgid, gid_min) &&
->>>>> -		     gid_lte(filp->f_cred->fsgid, gid_max)) ^
->>>>> -		    !(info->invert & XT_OWNER_GID))
->>>>> +		struct group_info *gi = filp->f_cred-
->>>>>> group_info;
->>>>> +
->>>>> +		if (gid_gte(filp->f_cred->fsgid, gid_min) &&
->>>>> +		    gid_lte(filp->f_cred->fsgid, gid_max))
->>>>> +			match = true;
->>>>> +
->>>>> +		if (!match && (info->match & XT_SUPPL_GROUPS)
->>>>> && gi) {
->>>>> +			for (i = 0; i < gi->ngroups; ++i) {
->>>>> +				kgid_t group = gi->gid[i];
->>>>> +
->>>>> +				if (gid_gte(group, gid_min) &&
->>>>> +				    gid_lte(group, gid_max)) {
->>>>> +					match = true;
->>>>> +					break;
->>>>> +				}
->>>>> +			}
->>>>> +		}
->>>>> +
->>>>> +		if (match ^ !(info->invert & XT_OWNER_GID))
->>>>>  			return false;
->>>>>  	}
->>>>>  
->>>>>
->>>>
->>>> How can this be safe on SMP ?
->>>>
->>>
->>> From what I see after the group_info rework some time ago this
->>> struct
->>> is never modified. It's replaced. Would
->>> get_group_info/put_group_info
->>> around the code be enough?
->>
->> What prevents the data to be freed right after you fetch filp-
->>> f_cred->group_info ?
+    commit 3a06c7ac24f9f24ec059cd77c2dbdf7fbfd0aaaf
+    Author: Thomas Gleixner <tglx@linutronix.de>
+    Date:   Tue May 30 23:15:38 2017 +0200
+
+    posix-clocks: Remove interval timer facility and mmap/fasync callbacks
+    
+    The only user of this facility is ptp_clock, which does not implement any of
+    those functions.
+    
+    Remove them to prevent accidental users. Especially the interval timer
+    interfaces are now more or less impossible to implement because the
+    necessary infrastructure has been confined to the core code. Aside of that
+    it's really complex to make these callbacks implemented according to spec
+    as the alarm timer implementation demonstrates. If at all then a nanosleep
+    callback might be a reasonable extension. For now keep just what ptp_clock
+    needs.
+ 
+> Here is the result of a study of a prototype alarm method.  It shows
+> why the hrtimer method is better.
 > 
-> I think the get_group_info() I mentioned above would. group_info seems
-> to always be freed by put_group_info().
+>    https://sourceforge.net/p/linuxptp/mailman/message/35535965/
 
-The data can be freed _before_ get_group_info() is attempted.
+That test was with a PCIe card.  With a SoC that has a PHC as a built
+in peripheral, the hardware solution might outperform hrtimers.
 
-get_group_info() would do a use-after-free
+So you might consider adding clock_nanosleep() for dynamic posix
+clocks.  But your code will have to support multiple users at the same
+time.
 
-You would need something like RCU protection over this stuff,
-this is not really only a netfilter change.
-
-
+Thanks,
+Richard
