@@ -2,118 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD9F17B08
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 15:50:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B49EB17B28
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 15:59:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727220AbfEHNuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 09:50:24 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:37693 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726703AbfEHNuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 09:50:24 -0400
-Received: by mail-qt1-f196.google.com with SMTP id o7so1145199qtp.4;
-        Wed, 08 May 2019 06:50:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Xit8RhNDbpVA/1R0v4T+Cbs1iILUhOMfaqih7cktU/I=;
-        b=K72XMU1ZJFD/RFIn2ydus/nDNl7fhJ4NEB01jDZlqF5AeoQNle5HceTWUkWdM5KVU1
-         yTJi73XiWzYJN5YW+KcUYFNc9x8n0SYZXbqedrmCWsvA2ZlxSqjGtDC3i+YjPwSeJZyr
-         ESB3Huezw+e7zh8H1Ba8lPYR7YU+08k3G+f5xg0ruderVkahWBMzevYc8bkpVSimCH/x
-         3fwHZgnBczITgp9T/odkOsLslVnwaY2PNPsQnvlUqGkpeAFB+le0j9JJV7/p8jnzbVJs
-         Iu3V8LXG/yb8zELbe6aa3DYUu4MpeLinRuptHB2BaTTSrsKbmyFZZ391NkIckHpofr2L
-         SaNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Xit8RhNDbpVA/1R0v4T+Cbs1iILUhOMfaqih7cktU/I=;
-        b=kBoFmShrnqzeNtwFaMAZGRyluv5m6IwJBJRfoWzwDraPNiEeogQnNQ3E4A+7h/8lf7
-         IyWkS9p8IP005sFN3K9jr9WX0ITcvLjwnV5MtORzT5gl3S8Zk/aNmjzgwv6sW7MkNQBV
-         R53VovS0iZmMxfwhZLlF/C9ZaZ6vwEIQqRaCVsOtpyELF4/kAKFgMG1SRyB0P3Gt5Utr
-         S6e0ghSPuW/xZen+QY7dmeDVrg1ESHRaBVCUQKIqIvNQ8ytJBMk9w1wLgQLJot386xN9
-         9mQe1j1TXMWbajVYsnkftdp5vbkR0KiUYu0rmrs9holeOlr6lqG4vMYXEmjhSqH3jeko
-         nfrg==
-X-Gm-Message-State: APjAAAW4qhSk1MoRPRUe01bTjX8NRy7JHuueXi7mi2skHhQeaKpUpQwO
-        KEYyX0UU5MWKi7+cGUzvgSQYGLP/fcY=
-X-Google-Smtp-Source: APXvYqzOu0rm4zfj8/1U1nF+YQnH9VMSJ1Qwn0tFfDJSG1v9b1zbNd0ejPP9CThAeN8FhoyLgJIYiw==
-X-Received: by 2002:ac8:2413:: with SMTP id c19mr31632961qtc.348.1557323423263;
-        Wed, 08 May 2019 06:50:23 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.49.3])
-        by smtp.gmail.com with ESMTPSA id v66sm5693784qkd.62.2019.05.08.06.50.22
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 08 May 2019 06:50:22 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id D7803180C25; Wed,  8 May 2019 10:50:19 -0300 (-03)
-Date:   Wed, 8 May 2019 10:50:19 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Paul Moore <paul@paul-moore.com>, selinux@vger.kernel.org,
-        netdev@vger.kernel.org, Tom Deseyn <tdeseyn@redhat.com>,
-        Richard Haines <richard_c_haines@btinternet.com>
-Subject: Re: [PATCH net] selinux: do not report error on connect(AF_UNSPEC)
-Message-ID: <20190508135019.GJ10916@localhost.localdomain>
-References: <7301017039d68c920cb9120c035a1a0df3e6b30d.1557322358.git.pabeni@redhat.com>
+        id S1727217AbfEHN7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 09:59:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41874 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727054AbfEHN7B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 May 2019 09:59:01 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 5669EAC0C;
+        Wed,  8 May 2019 13:58:59 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 8D157E014E; Wed,  8 May 2019 15:58:58 +0200 (CEST)
+Date:   Wed, 8 May 2019 15:58:58 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jiri Benc <jbenc@redhat.com>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Patrick McHardy <kaber@trash.net>,
+        stefan.sorensen@spectralink.com
+Subject: Re: [PATCH net-next] macvlan: pass get_ts_info and SIOC[SG]HWTSTAMP
+ ioctl to real device
+Message-ID: <20190508135858.GA8780@unicorn.suse.cz>
+References: <20190418033157.irs25halxnemh65y@localhost>
+ <20190418080509.GD5984@localhost>
+ <20190423041817.GE18865@dhcp-12-139.nay.redhat.com>
+ <20190423083141.GA5188@localhost>
+ <20190423091543.GF18865@dhcp-12-139.nay.redhat.com>
+ <20190423093213.GA7246@localhost>
+ <20190425134006.GG18865@dhcp-12-139.nay.redhat.com>
+ <20190506140123.k2kw7apaubvljsa5@localhost>
+ <20190507083559.GD13858@localhost>
+ <20190508014159.GM18865@dhcp-12-139.nay.redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7301017039d68c920cb9120c035a1a0df3e6b30d.1557322358.git.pabeni@redhat.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190508014159.GM18865@dhcp-12-139.nay.redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 08, 2019 at 03:32:51PM +0200, Paolo Abeni wrote:
-> calling connect(AF_UNSPEC) on an already connected TCP socket is an
-> established way to disconnect() such socket. After commit 68741a8adab9
-> ("selinux: Fix ltp test connect-syscall failure") it no longer works
-> and, in the above scenario connect() fails with EAFNOSUPPORT.
+On Wed, May 08, 2019 at 09:41:59AM +0800, Hangbin Liu wrote:
+> On Tue, May 07, 2019 at 10:35:59AM +0200, Miroslav Lichvar wrote:
+> > On Mon, May 06, 2019 at 07:01:23AM -0700, Richard Cochran wrote:
+> > > On Thu, Apr 25, 2019 at 09:40:06PM +0800, Hangbin Liu wrote:
+> > > > Would you please help have a look at it and see which way we should use?
+> > > > Drop SIOCSHWTSTAMP in container or add a filter on macvlan(maybe only in
+> > > > container)?
+> > > 
+> > > I vote for dropping SIOCSHWTSTAMP altogether.  Why?  Because the
+> > > filter idea means that the ioctl will magically succeed or fail, based
+> > > on the unknowable state of the container's host.
+> > 
+> > That's a good point. I agree that SIOCSHWTSTAMP always failing would
+> > be a less surprising behavior than failing only with some specific
+> > configurations.
 > 
-> Fix the above falling back to the generic/old code when the address family
-> is not AF_INET{4,6}, but leave the SCTP code path untouched, as it has
-> specific constraints.
-> 
-> Fixes: 68741a8adab9 ("selinux: Fix ltp test connect-syscall failure")
-> Reported-by: Tom Deseyn <tdeseyn@redhat.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> Thanks for the reply. As net-next is closed now. I will post the fix
+> to net branch after merging finished.
 
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+net-next has been already merged into master and net so if it's a fix,
+you don't have to wait (and you shouldn't).
 
-> ---
->  security/selinux/hooks.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> index c61787b15f27..d82b87c16b0a 100644
-> --- a/security/selinux/hooks.c
-> +++ b/security/selinux/hooks.c
-> @@ -4649,7 +4649,7 @@ static int selinux_socket_connect_helper(struct socket *sock,
->  		struct lsm_network_audit net = {0,};
->  		struct sockaddr_in *addr4 = NULL;
->  		struct sockaddr_in6 *addr6 = NULL;
-> -		unsigned short snum;
-> +		unsigned short snum = 0;
->  		u32 sid, perm;
->  
->  		/* sctp_connectx(3) calls via selinux_sctp_bind_connect()
-> @@ -4674,12 +4674,12 @@ static int selinux_socket_connect_helper(struct socket *sock,
->  			break;
->  		default:
->  			/* Note that SCTP services expect -EINVAL, whereas
-> -			 * others expect -EAFNOSUPPORT.
-> +			 * others must handle this at the protocol level:
-> +			 * connect(AF_UNSPEC) on a connected socket is
-> +			 * a documented way disconnect the socket.
->  			 */
->  			if (sksec->sclass == SECCLASS_SCTP_SOCKET)
->  				return -EINVAL;
-> -			else
-> -				return -EAFNOSUPPORT;
->  		}
->  
->  		err = sel_netport_sid(sk->sk_protocol, snum, &sid);
-> -- 
-> 2.20.1
-> 
+Michal Kubecek
