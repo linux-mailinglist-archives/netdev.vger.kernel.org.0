@@ -2,126 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9778C17B3D
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 16:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC8C217B5B
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 16:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727836AbfEHOCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 10:02:34 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:37821 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726703AbfEHOCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 10:02:34 -0400
-Received: by mail-qt1-f196.google.com with SMTP id o7so1199186qtp.4
-        for <netdev@vger.kernel.org>; Wed, 08 May 2019 07:02:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OMayxOPng3VI9oLdv6LysTsZC2kSXkwJS8Ocn5AZIxo=;
-        b=bF0k9WXe4tmmFE99bq0ToeUzppfIQAWaVmVkMn4cbqhK72GsPFrxQdOu+ch+/yH6Sg
-         QtBKDDHGhLTZcD1nI69edCcSemmSD3qFRW4ScSYX1e5RnpJzt1SHkF/baC/FbLBScaHD
-         7EBPVvTwCqQ93cWA7hwXMv87VG/ziTj0YvdnDc9W/ooRSFMIIsk99ppYAstUMR5n9pQw
-         +aBdt36ZUJjZKr7srL/AcDbQ/sv2olX3PkdagRQwPvO+rwl3C/k3obbglzFlGY0mSVup
-         4TQjxTRsAq1vumYFJwL/I1TsI/EGa2HtOCMI3vA4dgZBCchDXO6e5Ne2JLz51nROSqaq
-         Dvdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OMayxOPng3VI9oLdv6LysTsZC2kSXkwJS8Ocn5AZIxo=;
-        b=epoDyxcBMkjRzS5nnldT+funyIQ2XB0pMMvHZvdaTXDVu9lQkVzeYCmm2Ir0o1OPQW
-         YzxFotv8vPFp+XEn+TWDZRh/5UuShWKOLsECk7wFoEYWDK7jcjz73lgWjlvz6xHT2FCz
-         9EgrnwAL6tZy7ixWArQaQpqiqVgBoUDquHcmtw7ImzEBrJIVP323E7HCL7wmOcopjzSj
-         lhCUCQCSjxiOV7zRYJGrKYA3yIKdDI7krttqyS26JYljIlo6+hjGDUWNb5E2pLOozmFm
-         oG6XkWGiNhu4D8SLzrFP/af8y33eWgu995iju46va3uANCgqG9J97tBpBzGdfnzczL4P
-         2Ngw==
-X-Gm-Message-State: APjAAAV7KoOgkCGy0Ql+bFUB/aUcn6+nWJ3Q7bPKX1h3nW0Zdwipuok7
-        2oR2HfIpJchxr59VLwYkos8fKg==
-X-Google-Smtp-Source: APXvYqxHeJWTP7p8mYSCW0mWVj+xfW6XiMj6pEOAEmyoja5yJE0819A12TLI/OQr4VbaZvhRo5Z86w==
-X-Received: by 2002:ad4:4025:: with SMTP id q5mr30080452qvp.41.1557324153701;
-        Wed, 08 May 2019 07:02:33 -0700 (PDT)
-Received: from [10.0.0.169] ([64.26.149.125])
-        by smtp.googlemail.com with ESMTPSA id v141sm9984636qka.35.2019.05.08.07.02.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 08 May 2019 07:02:32 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 2/3] flow_offload: restore ability to collect
- separate stats per action
-To:     Edward Cree <ecree@solarflare.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Anjali Singhai Jain <anjali.singhai@intel.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-References: <alpine.LFD.2.21.1905031603340.11823@ehc-opti7040.uk.solarflarecom.com>
- <20190504022759.64232fc0@cakuba.netronome.com>
- <db827a95-1042-cf74-1378-8e2eac356e6d@mojatatu.com>
- <1b37d659-5a2b-6130-e8d6-c15d6f57b55e@solarflare.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <ab1f179e-9a91-837b-28c8-81eecbd09e7f@mojatatu.com>
-Date:   Wed, 8 May 2019 10:02:21 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <1b37d659-5a2b-6130-e8d6-c15d6f57b55e@solarflare.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1727896AbfEHOMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 10:12:23 -0400
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:51345 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727679AbfEHOMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 10:12:22 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20190508141221euoutp028cea8ced28b0a2510e24712543729fb8~cupnW9IGe3075530755euoutp02q;
+        Wed,  8 May 2019 14:12:21 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20190508141221euoutp028cea8ced28b0a2510e24712543729fb8~cupnW9IGe3075530755euoutp02q
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1557324741;
+        bh=T+lf+1k8YuKNiyfOassRgPNzGiL/wVazNKrJDOT69BY=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=W0zFkUdemth3RtaYvuq3tc182zvprhIz57wpVSt5F6mqkgSlSpj7vqsNx8m3L1v2T
+         4aUHoxLufsnRblNabTJ3om9Lsa+B+oZJl+MT/XTTDEYjwLaAQI0YRYGyiIdpvQwYTP
+         EBjdnTvpAXraEhCXSu/bPpvC+m/LyXtrNGOkUEJA=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20190508141220eucas1p2df52aaf791210790c3f4cb55e881005f~cupm38-fd2225522255eucas1p2L;
+        Wed,  8 May 2019 14:12:20 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 93.AD.04325.4C3E2DC5; Wed,  8
+        May 2019 15:12:20 +0100 (BST)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20190508141219eucas1p1e5a899714747b497499976113ea9681f~cupmPV-6e0143501435eucas1p11;
+        Wed,  8 May 2019 14:12:19 +0000 (GMT)
+X-AuditID: cbfec7f5-b75ff700000010e5-62-5cd2e3c47158
+Received: from eusync4.samsung.com ( [203.254.199.214]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id FF.9A.04146.3C3E2DC5; Wed,  8
+        May 2019 15:12:19 +0100 (BST)
+Received: from amdc2143.DIGITAL.local ([106.120.51.59]) by
+        eusync4.samsung.com (Oracle Communications Messaging Server 7.0.5.31.0 64bit
+        (built May  5 2014)) with ESMTPA id <0PR6003Y7VGD4K00@eusync4.samsung.com>;
+        Wed, 08 May 2019 15:12:19 +0100 (BST)
+From:   Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Lukasz Pawelczyk <havner@gmail.com>,
+        Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+Subject: [PATCH v2] netfilter: xt_owner: Add supplementary groups option
+Date:   Wed, 08 May 2019 16:12:11 +0200
+Message-id: <20190508141211.4191-1-l.pawelczyk@samsung.com>
+X-Mailer: git-send-email 2.20.1
+MIME-version: 1.0
+Content-transfer-encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrOIsWRmVeSWpSXmKPExsWy7djPc7pHHl+KMXj6kN/i7852Zos551tY
+        LLb1rma0+P9ax+Jy3zRmizOTFjJZXN41h83i2AIxiwnrTrFYTH9zldmBy+N000YWjy0rbzJ5
+        7Jx1l93j7e8TTB59W1Yxehz6voDV4/MmuQD2KC6blNSczLLUIn27BK6M3ZufMRZ856u4vCym
+        gfEDdxcjJ4eEgInEk10r2boYuTiEBFYwSvzbvhHK+cwoseLzCTaYqpNT9rJCJJYxSmz7+4wZ
+        wvnPKLH32jRWkCo2AQOJ7xf2giVEBKYzSaxpeMUIkmAWCJU492g9M4gtLOAhcXt/CwuIzSKg
+        KrFh0zmwGl4Ba4mfO2ezQqyTlzjfu44dIi4o8WPyPRaIOfISB688ZwFZICGwhk2i4/J3ZogG
+        F4nHq5dD2TISnR0HmboYOYDsaomTZyog6jsYJTa+mM0IUWMt8XnSFmaIoXwSk7ZNZ4ao55Xo
+        aBOCKPGQOHxjCxOILSQQK/HgziPGCYySs5CcNAvJSQsYmVYxiqeWFuempxYb56WW6xUn5haX
+        5qXrJefnbmIERvfpf8e/7mDc9yfpEKMAB6MSD2/GoUsxQqyJZcWVuYcYJTiYlUR4r08ECvGm
+        JFZWpRblxxeV5qQWH2KU5mBREuetZngQLSSQnliSmp2aWpBaBJNl4uCUamBs4dq0WufuGpHJ
+        TE67dWZ2ybBO992myb/j57G9x7fv+7qroO7Cg6vz/NjLCgOM53PvcP42m833c4drwxStxES5
+        Pyrr/vj1TjcSuMdzV4WtVNwq5HtvcFTSw+jNHCFM0vdc7G6XN//sn3588szyvbN21dz6rSDr
+        +IO9hSu4guHwhU3+ypZWmXpKLMUZiYZazEXFiQBqMhL56gIAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrKLMWRmVeSWpSXmKPExsVy+t/xa7qHH1+KMeh9YWDxd2c7s8Wc8y0s
+        Ftt6VzNa/H+tY3G5bxqzxZlJC5ksLu+aw2ZxbIGYxYR1p1gspr+5yuzA5XG6aSOLx5aVN5k8
+        ds66y+7x9vcJJo++LasYPQ59X8Dq8XmTXAB7FJdNSmpOZllqkb5dAlfG7s3PGAu+81VcXhbT
+        wPiBu4uRk0NCwETi5JS9rF2MXBxCAksYJT5/3MIM4TQySbx/t48ZpIpNwEDi+4W9YLaIwHQm
+        iT+zhEFsZoFQiWszpoPFhQU8JG7vb2EBsVkEVCU2bDrHCGLzClhL/Nw5mxVim7zE+d517BBx
+        QYkfk++xQMyRlzh45TnLBEaeWUhSs5CkFjAyrWIUSS0tzk3PLTbUK07MLS7NS9dLzs/dxAgM
+        zG3Hfm7ewXhpY/AhRgEORiUe3oxDl2KEWBPLiitzDzFKcDArifBenwgU4k1JrKxKLcqPLyrN
+        SS0+xCjNwaIkztshcDBGSCA9sSQ1OzW1ILUIJsvEwSnVwGhustb7V5j9699Wkmvrniw9U5O1
+        NNZFb7XJbuW/j9gfuEwJmXR0lRx/MFeUw/zKuFnyiclyFUcnSTwV+ChfWSDzvtqBSbbMU33V
+        2h+dejvevD4g5BJTIrtgsyHnh01vk9b8nfXzXofdrjmnzvh6n/xzj4d52dvfq9d7sb88z7zw
+        n/TjDXZbrfyUWIozEg21mIuKEwFBU6/jSAIAAA==
+X-CMS-MailID: 20190508141219eucas1p1e5a899714747b497499976113ea9681f
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190508141219eucas1p1e5a899714747b497499976113ea9681f
+References: <CGME20190508141219eucas1p1e5a899714747b497499976113ea9681f@eucas1p1.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-07 8:27 a.m., Edward Cree wrote:
-> On 06/05/2019 13:41, Jamal Hadi Salim wrote:
->> On 2019-05-04 2:27 a.m., Jakub Kicinski wrote:
->>> On Fri, 3 May 2019 16:06:55 +0100, Edward Cree wrote:
+The XT_SUPPL_GROUPS flag causes GIDs specified with XT_OWNER_GID to
+be also checked in the supplementary groups of a process.
 
-[..]
+Signed-off-by: Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+---
+ include/uapi/linux/netfilter/xt_owner.h |  1 +
+ net/netfilter/xt_owner.c                | 23 ++++++++++++++++++++---
+ 2 files changed, 21 insertions(+), 3 deletions(-)
 
-
-> I don't know much of anything about RTM_GETACTION, but it doesn't appear
->   to be part of the current "tc offload" world, which AIUI is very much
->   centred around cls_flower.  I'm just trying to make counters in
->   cls_flower offload do 'the right thing' (whatever that may be), anything
->   else is out of scope.
-> 
-
-The lazy thing most people have done is essentially assume that
-there is a stat per filter rule. From tc semantics that is an implicit
-"pipe" action (which then carries stats).
-And most times they implement a single action per match. I wouldnt call
-it the 'the right thing'...
-
->> Most H/W i have seen has a global indexed stats table which is
->> shared by different action types (droppers, accept, mirror etc).
->> The specific actions may also have their own tables which also
->> then refer to the 32 bit index used in the stats table[1].
->> So for this to work well, the action will need at minimal to have
->> two indices one that is used in hardware stats table
->> and another that is kernel mapped to identify the attributes. Of
->> course we'll need to have a skip_sw flag etc.
-> I'm not sure I'm parsing this correctly, but are you saying that the
->   index namespace is per-action type?  I.e. a mirred and a drop action
->   could have the same index yet expect to have separate counters?  My
->   approach here has assumed that in such a case they would share their
->   counters.
-
-Yes, the index at tc semantics level is per-action type.
-So "mirred index 1" and "drop index 1" are not the same stats counter.
-Filters on the other hand can share per-action type stats by virtue of
-sharing the same index per-action. e.g
-
-flower match foo action drop index 1
-flower match bar action drop index 1
-
-will share the same stats.
-
-cheers,
-jamal
-
+diff --git a/include/uapi/linux/netfilter/xt_owner.h b/include/uapi/linux/netfilter/xt_owner.h
+index fa3ad84957d5..d646f0dc3466 100644
+--- a/include/uapi/linux/netfilter/xt_owner.h
++++ b/include/uapi/linux/netfilter/xt_owner.h
+@@ -8,6 +8,7 @@ enum {
+ 	XT_OWNER_UID    = 1 << 0,
+ 	XT_OWNER_GID    = 1 << 1,
+ 	XT_OWNER_SOCKET = 1 << 2,
++	XT_SUPPL_GROUPS = 1 << 3,
+ };
+ 
+ struct xt_owner_match_info {
+diff --git a/net/netfilter/xt_owner.c b/net/netfilter/xt_owner.c
+index 46686fb73784..283a1fb5cc52 100644
+--- a/net/netfilter/xt_owner.c
++++ b/net/netfilter/xt_owner.c
+@@ -91,11 +91,28 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 	}
+ 
+ 	if (info->match & XT_OWNER_GID) {
++		unsigned int i, match = false;
+ 		kgid_t gid_min = make_kgid(net->user_ns, info->gid_min);
+ 		kgid_t gid_max = make_kgid(net->user_ns, info->gid_max);
+-		if ((gid_gte(filp->f_cred->fsgid, gid_min) &&
+-		     gid_lte(filp->f_cred->fsgid, gid_max)) ^
+-		    !(info->invert & XT_OWNER_GID))
++		struct group_info *gi = filp->f_cred->group_info;
++
++		if (gid_gte(filp->f_cred->fsgid, gid_min) &&
++		    gid_lte(filp->f_cred->fsgid, gid_max))
++			match = true;
++
++		if (!match && (info->match & XT_SUPPL_GROUPS) && gi) {
++			for (i = 0; i < gi->ngroups; ++i) {
++				kgid_t group = gi->gid[i];
++
++				if (gid_gte(group, gid_min) &&
++				    gid_lte(group, gid_max)) {
++					match = true;
++					break;
++				}
++			}
++		}
++
++		if (match ^ !(info->invert & XT_OWNER_GID))
+ 			return false;
+ 	}
+ 
+-- 
+2.20.1
 
