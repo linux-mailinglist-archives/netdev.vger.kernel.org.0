@@ -2,123 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64D9B17F58
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 19:51:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CB1217F66
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 19:56:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726852AbfEHRvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 13:51:17 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:44161 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726506AbfEHRvR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 13:51:17 -0400
-Received: by mail-pf1-f195.google.com with SMTP id g9so733457pfo.11;
-        Wed, 08 May 2019 10:51:16 -0700 (PDT)
+        id S1727420AbfEHR4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 13:56:48 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38205 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727020AbfEHR4s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 13:56:48 -0400
+Received: by mail-pg1-f193.google.com with SMTP id j26so10468017pgl.5;
+        Wed, 08 May 2019 10:56:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=mU0jCr2GPi1b5hbzLUx4Twx7GHJo/Q+lsHVdxoN16WQ=;
-        b=DSVxsfCoTYlsJiHyH+9Kv4UMbRKGb59U4V+42afB2Ua1B2m1PccT8qdY6QSNXFTH+D
-         ms6d5fJqJTSYDrKENn41Uaq3E1SHvNQSzmWMbRc+++i8waeoUkSIg8X0jUY6Vtoe23WX
-         HhejBRgikCGmXv49MNTI1zHcJb87AxpsdpwRxQEsF9eTug1eUYRkxlbJde++glevtiM4
-         8EtDeuQRUAWlNp9PGNA9vywSWF3Bq1UavwrrIPnL1H/o+CIc9YMGgJ0kuWOJ3lzzWFeR
-         QMqMc5UA6P5qcBE3pbNH/DsKgsveesTaZaLMGk173OabSSRUS84l9i2mTt1jTE7u0cp1
-         GpdQ==
+        bh=nFxXslKvWpp3K6okNpeCRSwS8L+nir0+n1sfLqCOHSw=;
+        b=oUaS2dxg+qoVY/RDq+Cz1xa6K4ladKQxRBz6jkVwn5y8XtQj4bAAlkLmKC4h9cDNx8
+         UVzEwb1NZOj8GG3/UE2udg7pI7jvj/dksIr/8DoPg6HS8qFsgJFSQzosMEyhywY/GhLi
+         BAaZqPkXuhMsFLWQBm1/ZNHKDsMitiWSxaxse9b+xK9GNNLbFKWvST24PXincaN5ZXxP
+         7CknyJeBtHjgqXY6N7bJdcxWVOCQYM+SFi0GBJaBPNPMMwInjNX/LKhetbpW0qU8cOI6
+         dw4qOimJfjm0iCNPJ2ms1I0ceeZKso7ls+qmRsrTO1y7l4Ap/QYvusXGR5jXIWNsFLbk
+         VRhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=mU0jCr2GPi1b5hbzLUx4Twx7GHJo/Q+lsHVdxoN16WQ=;
-        b=RE3gQ5S0E/I02m9Fa8IfhmEll/gc5n7LGokyFXsDS98cogbtOreRlgyhOd8rd4mpYS
-         /tkNWoXLfXaXs9a716aO9vJggR684+OwEeUpVFcj4bGzmnj9sMvKiJJm2Fwa/3cP8fy8
-         hHGd2skyGTmTj7z5AFb1OlqfkHPr/K6sNLz2pdK+HWexUxkZdTM5geb3kmuob7Kzib7B
-         hMqREeAqU4bSUvKfpXlo27BWsvd0fCxG+w4lrofvUo98GfaA1orp/lOsGXJRLMUljdVF
-         ASTWr0c/e7ZB8HuKB0c8NJHPS8Bg0Mxyzq+a2C727L92BBLyFFrRgZJT03PoYmcavBzX
-         5pgA==
-X-Gm-Message-State: APjAAAWsN7Q2kZmZ5ejdshYB+2XfMwX21YUNIjyGaXJMzVGAJB+GcZlY
-        4jKpYLHdLgGXEJ+BmcNy9E4=
-X-Google-Smtp-Source: APXvYqywnMrTGy+V5HxpsShneQGGiggrBPbQibmHxh5kYafR4eYcMMhoReTslDBhJWDH6xWD9RZIJQ==
-X-Received: by 2002:a63:6ac3:: with SMTP id f186mr48202908pgc.326.1557337876471;
-        Wed, 08 May 2019 10:51:16 -0700 (PDT)
+        bh=nFxXslKvWpp3K6okNpeCRSwS8L+nir0+n1sfLqCOHSw=;
+        b=uIw0WrM9WO2Xr5sZAt0JBOUeZNQOlItVuUjp49j9huR4BRp8qwxw1WQw6gEuCM7L9h
+         dnLYGOVo4LjrNNkJHsYEtEavDp7mtG/VeKhEBFxZLFvTLT3LcH+fNs15K76NBBLvTFaa
+         Vx0UJfrhSsiSrO3B04j0zPAqmoHzSIVt5yrnUEYraM+UqwiowZ27bZdm8bvXU5hboTF/
+         iWG9fhuS02MCnLztGzhbhqJfeBWj4EwjHe2ctdXsHNFOn0o+WHlyMu/8cvONFyLMrQFm
+         13LngeH349OZn0hAIJ0Te3edAvaxJiOfPZ80MuthN85VzXsWzcmZRkwU/xwRDK+QWFi5
+         sChA==
+X-Gm-Message-State: APjAAAU6sBsO59MpieLcfGB7GHbCexDdgsGO1jZZ+73uLq/Sfgduzy+1
+        hErT7Slhec0pmVMREKpnMdw=
+X-Google-Smtp-Source: APXvYqxHRc3B8ZkMVFJvaVkHJB6JQHdynDU4WXGexRDZ7CIn5pJPz2gzS5TkE+5Po8gnLKawh53lVw==
+X-Received: by 2002:a63:6b49:: with SMTP id g70mr48834304pgc.176.1557338207709;
+        Wed, 08 May 2019 10:56:47 -0700 (PDT)
 Received: from ast-mbp ([2620:10d:c090:180::cecc])
-        by smtp.gmail.com with ESMTPSA id j184sm710557pge.83.2019.05.08.10.51.14
+        by smtp.gmail.com with ESMTPSA id p2sm41692428pfi.73.2019.05.08.10.56.46
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 08 May 2019 10:51:15 -0700 (PDT)
-Date:   Wed, 8 May 2019 10:51:13 -0700
+        Wed, 08 May 2019 10:56:46 -0700 (PDT)
+Date:   Wed, 8 May 2019 10:56:45 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiong Wang <jiong.wang@netronome.com>
-Cc:     daniel@iogearbox.net, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH v6 bpf-next 01/17] bpf: verifier: offer more accurate
- helper function arg and return type
-Message-ID: <20190508175111.hcbufw22mbksbpca@ast-mbp>
-References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
- <1556880164-10689-2-git-send-email-jiong.wang@netronome.com>
- <20190506155041.ofxsvozqza6xrjep@ast-mbp>
- <87mujx6m4n.fsf@netronome.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net
+Subject: Re: [PATCH bpf 0/4] bpf: remove __rcu annotations from bpf_prog_array
+Message-ID: <20190508175644.e4k5o6o3cgn6k5lx@ast-mbp>
+References: <20190508171845.201303-1-sdf@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87mujx6m4n.fsf@netronome.com>
+In-Reply-To: <20190508171845.201303-1-sdf@google.com>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 08, 2019 at 03:45:12PM +0100, Jiong Wang wrote:
+On Wed, May 08, 2019 at 10:18:41AM -0700, Stanislav Fomichev wrote:
+> Right now we are not using rcu api correctly: we pass __rcu pointers
+> to bpf_prog_array_xyz routines but don't use rcu_dereference on them
+> (see bpf_prog_array_delete_safe and bpf_prog_array_copy in particular).
+> Instead of sprinkling rcu_dereferences, let's just get rid of those
+> __rcu annotations and move rcu handling to a higher level.
 > 
-> I might be misunderstanding your points, please just shout if I am wrong.
+> It looks like all those routines are called from the rcu update
+> side and we can use simple rcu_dereference_protected to get a
+> reference that is valid as long as we hold a mutex (i.e. no other
+> updater can change the pointer, no need for rcu read section and
+> there should not be a use-after-free problem).
 > 
-> Suppose the following BPF code:
+> To be fair, there is currently no issue with the existing approach
+> since the calls are mutex-protected, pointer values don't change,
+> __rcu annotations are ignored. But it's still nice to use proper api.
 > 
->   unsigned helper(unsigned long long, unsigned long long);
->   unsigned long long test(unsigned *a, unsigned int c)
->   {
->     unsigned int b = *a;
->     c += 10;
->     return helper(b, c);
->   }
-> 
-> We get the following instruction sequence by latest llvm
-> (-O2 -mattr=+alu32 -mcpu=v3)
-> 
->   test:
->     1: w1 = *(u32 *)(r1 + 0)
->     2: w2 += 10
->     3: call helper
->     4: exit
-> 
-> Argument Types
-> ===
-> Now instruction 1 and 2 are sub-register defines, and instruction 3, the
-> call, use them implicitly.
-> 
-> Without the introduction of the new ARG_CONST_SIZE32 and
-> ARG_CONST_SIZE32_OR_ZERO, we don't know what should be done with w1 and
-> w2, zero-extend them should be fine for all cases, but could resulting in a
-> few unnecessary zero-extension inserted.
+> The series fixes the following sparse warnings:
 
-I don't think we're on the same page.
-The argument type is _const_.
-In the example above they are not _const_.
-
-> 
-> And that why I introduce these new argument types, without them, there
-> could be more than 10% extra zext inserted on benchmarks like bpf_lxc.
-
-10% extra ? so be it.
-We're talking past each other here.
-I agree with your optimization goal, but I think you're missing
-the safety concerns I'm trying to explain.
-
-> 
-> But for helper functions, they are done by native code which may not follow
-> this convention. For example, on arm32, calling helper functions are just
-> jump to and execute native code. And if the helper returns u32, it just set
-> r0, no clearing of r1 which is the high 32-bit in the register pair
-> modeling eBPF R0.
-
-it's arm32 bug then. All helpers _must_ return 64-bit back to bpf prog
-and _must_ accept 64-bit from bpf prog.
-
+Absolutely not.
+please fix it properly.
+Removing annotations is not a fix.
