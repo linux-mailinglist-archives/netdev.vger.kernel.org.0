@@ -2,105 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D120180A7
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 21:50:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15902180BD
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 21:55:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbfEHTuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 15:50:15 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58807 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726852AbfEHTuP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 May 2019 15:50:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=5DOmx//fzezxXgA6dXN4cXOSgxB/Losdvoy8bCClEOA=; b=oijb849rOm0vwPxJ/7MRCE3fwS
-        OaJ6Z+jCbi0UjJwtOezbYLCkNIRF/My7PBlpqOSQd1Q0yzUQMaOZ9e02lKGkZ1oMGvccaeU+qDsq/
-        I7DkChQVJDsHTk3IENfEkBiXRnzBhPUBqXEk2QjInxyfWs+Hd0NjGiY0dIdDCirEcyKg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hOSZv-0004Mv-45; Wed, 08 May 2019 21:50:11 +0200
-Date:   Wed, 8 May 2019 21:50:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Subject: Re: [PATCH net-next 00/11] net: stmmac: Selftests
-Message-ID: <20190508195011.GK25013@lunn.ch>
-References: <cover.1557300602.git.joabreu@synopsys.com>
+        id S1728167AbfEHTy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 15:54:59 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:38112 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727405AbfEHTy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 15:54:58 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x48JsntP091229;
+        Wed, 8 May 2019 14:54:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1557345289;
+        bh=1HSSbjkn49htu7J0scqHJVwyKQjdVeMq0i/wqOSoiSA=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=dCPKZqPuuemoqejVI5vFQYMSEF9F6ms3xixOLRdNfUTNxCLJgouqYlBH79rsz/95i
+         Avo52K6wEhGJfMI62iEE+sEeyAs9HqTP8/7U9ESZ3QesPMeempSaZuy0r4g9I3yFS5
+         u8USSEIhpbwL88w49J60nncPcHAzy3SvxIOJdxsA=
+Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x48JsnM7056173
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 8 May 2019 14:54:49 -0500
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Wed, 8 May
+ 2019 14:54:49 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Wed, 8 May 2019 14:54:49 -0500
+Received: from [10.250.90.63] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id x48JsmLG035228;
+        Wed, 8 May 2019 14:54:48 -0500
+Subject: Re: [PATCH v11 1/5] can: m_can: Create a m_can platform framework
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, <wg@grandegger.com>,
+        <davem@davemloft.net>
+CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20190319172651.10012-1-dmurphy@ti.com>
+ <8b53474d-9dbf-4b81-defd-1587e022990b@pengutronix.de>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <35d179a7-2682-111e-638b-903559f0974a@ti.com>
+Date:   Wed, 8 May 2019 14:54:56 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1557300602.git.joabreu@synopsys.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <8b53474d-9dbf-4b81-defd-1587e022990b@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 08, 2019 at 09:51:00AM +0200, Jose Abreu wrote:
-> [ Submitting with net-next closed for proper review and testing. ]
+Marc
+
+Thanks for the comments
+
+On 5/8/19 9:35 AM, Marc Kleine-Budde wrote:
+> On 3/19/19 6:26 PM, Dan Murphy wrote:
+>> Create a m_can platform framework that peripheral
+>> devices can register to and use common code and register sets.
+>> The peripheral devices may provide read/write and configuration
+>> support of the IP.
+>>
+>> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
 > 
-> This introduces selftests support in stmmac driver. We add 4 basic sanity
-> checks and MAC loopback support for all cores within the driver. This way
-> more tests can easily be added in the future and can be run in virtually
-> any MAC/GMAC/QoS/XGMAC platform.
+> [...]
 > 
-> Having this we can find regressions and missing features in the driver
-> while at the same time we can check if the IP is correctly working.
+>> -/* m_can private data structure */
+>> -struct m_can_priv {
+>> -	struct can_priv can;	/* must be the first member */
+>> -	struct napi_struct napi;
+>> -	struct net_device *dev;
+>> -	struct device *device;
+>> -	struct clk *hclk;
+>> -	struct clk *cclk;
+>> -	void __iomem *base;
+>> -	u32 irqstatus;
+>> -	int version;
+>> -
+>> -	/* message ram configuration */
+>> -	void __iomem *mram_base;
+>> -	struct mram_cfg mcfg[MRAM_CFG_NUM];
+>> -};
+>> +static u32 m_can_read(struct m_can_priv *priv, enum m_can_reg reg)
+>> +{
+>> +	if (priv->ops->read_reg)
+>> +		return priv->ops->read_reg(priv, reg);
+>> +	else
+>> +		return -EINVAL;
+>> +}
 > 
-> We have been using this for some time now and I do have more tests to
-> submit in the feature. My experience is that although writing the tests
-> adds more development time, the gain results are obvious.
+> How do you plan to check the return value here?
+> What's the difference between a register value of 0xffffffe9 and
+> returning -EINVAL?
 > 
-> I let this feature optional within the driver under a Kconfig option.
+
+Good point.  I could just inline this and return whatever is sent from the callback
+and as you said allow a backtrace to happen if read_reg is invalid.
+
+>>  
+>> -static inline u32 m_can_read(const struct m_can_priv *priv, enum m_can_reg reg)
+>> +static int m_can_write(struct m_can_priv *priv, enum m_can_reg reg, u32 val)
+>>  {
+>> -	return readl(priv->base + reg);
+>> +	if (priv->ops->write_reg)
+>> +		return priv->ops->write_reg(priv, reg, val);
+>> +	else
+>> +		return -EINVAL;
+>>  }
 > 
-> For this series the output result will be something like this
-> (e.g. for dwmac1000):
-> ----
-> # ethtool -t eth0
-> The test result is PASS
-> The test extra info:
-> 1. MAC Loopback                 0
-> 2. PHY Loopback                 -95
-> 3. MMC Counters                 0
-> 4. EEE                          -95
-> 5. Hash Filter MC               0
-> 6. Perfect Filter UC            0
-> 7. Flow Control                 0
+> I don't see anyone checking the return value. Better just dereference
+> the pointer and the kernel will produce a nice backtrace.
+> 
+> Same should be done for all read and write variants.
+> 
 
-Hi Jose
+I will need to go through this and see if there is any caller checking the return.  But
+I think you are correct.  If thats true I will just change this to a void, inline the function
+and allow a backtrace if the callback is null
 
-The man page says:
+Dan
 
-       -t --test
-              Executes adapter selftest on the specified network
-              device. Possible test modes are:
 
-           offline
-                  Perform full set of tests, possibly interrupting
-                  normal operation during the tests,
 
-           online Perform limited set of tests, not interrupting
-                  normal operation,
-
-           external_lb
-                  Perform full set of tests, as for offline, and
-                  additionally an external-loopback test.
-
-The normal operation is interrupted by the tests you carry out
-here. But i don't see any code looking for ETH_TEST_FL_OFFLINE
-
-> (Error code -95 means EOPNOTSUPP in current HW).
-
-How deep do you have to go before you know about EOPNOTSUPP?  It would
-be better to not return the string and result at all. Or patch ethtool
-to call strerror(3).
-
-   Andrew
+> Marc
+> 
