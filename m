@@ -2,78 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C9616EAA
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 03:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B346416EB1
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 03:42:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726476AbfEHBhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 May 2019 21:37:16 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43914 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726378AbfEHBhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 21:37:15 -0400
-Received: by mail-pl1-f193.google.com with SMTP id n8so9062125plp.10;
-        Tue, 07 May 2019 18:37:15 -0700 (PDT)
+        id S1726371AbfEHBmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 May 2019 21:42:11 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37461 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726348AbfEHBmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 May 2019 21:42:11 -0400
+Received: by mail-pf1-f194.google.com with SMTP id g3so9600546pfi.4
+        for <netdev@vger.kernel.org>; Tue, 07 May 2019 18:42:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=DqAU2fl7ueh+wLGHmgeFPur6b2NKTLFLwgdDnl0iz7o=;
-        b=MO+HvV0myiMPsHmpG3R2AIO0a3ZjFX0eCgbEt6mY4qSuagccBK32t5inIuHDp9HFau
-         3p1q/GJkcpn62Ccf7MA1VwZ6I0uHB1LNvYxaXZmC6Od9HpLqBPl8Y8B53PecBxQdf1TC
-         SvAvq57b08Y9shL+gxIr9X+Lqaq8d4q2NsBVKYbbblcCwAeu5RLnNCqNJw1Vpu8RzjOo
-         SiPsJbfzVV1m/AcoDT0/sRUSMcIxCVeWBPMoaCx5DgX9nUooi5560wQ1cJ4zrdDfPnMF
-         G2tXkla2LgKOhfbYOgOCHx/N14q4d3tN+53bG+JM0cI5rv4HxRxJVX2ZuplN6CF4vsC+
-         Qp3g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Wcnpm+PHCZzxi+MBOGiJBuxfnPCd3sd/IFRH+cWSbco=;
+        b=h0M5MFvKNhstSReqMh2rx2OXlm0V+mgkbnD6R7H4IdfYJpsmq7dBuOQ913Ql9Xc+79
+         xNmJYh7Gr3PlpuhhrrYZQO6xdy1sk0xbaMSLDz2iqHmwkN/z7cQlIOt9dK7k9RteqAfv
+         /WxZ9/TgNCSe0F2Lj5Z3uBSoRazxiJxvxYuidP7DSCWabbTAIYmq7ZFsIBRSk7JsgI7M
+         OKX/xodYfSm/PquYFHXrB3SB21pYyOUB4TYZ3VSmY/3aCazhbL9KE0hs7guzoVOW1n6A
+         Fxgay33hSLTC7iX7qbYc0VOsG77Lh6wztSX0gmZnAfb7P4cyj6MgwR3fmGSCR5tqomvb
+         1B3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DqAU2fl7ueh+wLGHmgeFPur6b2NKTLFLwgdDnl0iz7o=;
-        b=FxostBw1L2IKmxmkh0Qu9gyut9uumVZnSmr+O8PrSiLuLARL/xUWuBItkvmVOTTM4K
-         WqsaQooikojXmp0100Yp+m23KQKifZrSQvBdwV1Xw6/X/wCmyBLptGqHWQrKkt+wDhBN
-         jYLabUrtmO90RTH7F5j28Fdt148t+T61LRdNwN6niFCts1Q6r5KRxMObg2YS9mvOVfM9
-         rBB5hq2D6OU7Cq/zW0Cm+EPUCfgR+UV+zbCfMzfZ+IuxzFWvmPB2yYmZBi+k3oKlXQEv
-         mytcEC0TjtjikhXYkXxxw2sa+cF4ZY/GQ8Xmhxs1xIbWPJF7jjpidHXndhGlcGxGLW2n
-         /pNw==
-X-Gm-Message-State: APjAAAWwJLZTHliFlVHAVf8oA9VF2oEs/hG+IszD0u/FO/d5oywTV3xm
-        1iD+dmP3JyJjXgW1f8CxmMU=
-X-Google-Smtp-Source: APXvYqyUb0Zmhd6QOZaIAZ1uHr+F8sup+B/g7gW4L0X9wJOGH/nvbm32RrjiveT9B5wJlOp9LvrHAg==
-X-Received: by 2002:a17:902:4681:: with SMTP id p1mr44007659pld.139.1557279435001;
-        Tue, 07 May 2019 18:37:15 -0700 (PDT)
-Received: from localhost.localdomain (ec2-52-192-173-191.ap-northeast-1.compute.amazonaws.com. [52.192.173.191])
-        by smtp.gmail.com with ESMTPSA id n26sm28235547pfi.165.2019.05.07.18.37.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 07 May 2019 18:37:14 -0700 (PDT)
-From:   Cheng Han <hancheng2009@gmail.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Cheng Han <hancheng2009@gmail.com>
-Subject: [PATCH] dwmac4_prog_mtl_tx_algorithms() missing write operation
-Date:   Wed,  8 May 2019 09:36:57 +0800
-Message-Id: <20190508013657.14766-1-hancheng2009@gmail.com>
-X-Mailer: git-send-email 2.11.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Wcnpm+PHCZzxi+MBOGiJBuxfnPCd3sd/IFRH+cWSbco=;
+        b=F2NGMgZrJM6NS2s5aWS2cvZHrAKnQtI8Mezfme7f8UHpROB1qUtoLHPUvhL/xLb7Tt
+         l+uWtr6mKzU8GjTg5z1McYaCgM0KaReuUFEC6r0NcFy3KjC9AtQFDPhspm5pzuq7ikRo
+         YBPzoVUWa3d9328TnJwCo32oIqXEm3dmm4B629rgxTCZ+QMyYI+nhAYJfmzo/aJrMG5p
+         H5+sar9333iWdTCUElbkP6qgW23NYPcQ+J61t976BlwcPP8969OZgat5g7B2qqJ5cK7r
+         YVButFsU0XXxp4z+wpSn6K7VGrehlCPAZTQ2W/CQqvDUPSZv0iWPTIRVmMHPtFLZc2Pb
+         AZtQ==
+X-Gm-Message-State: APjAAAUNyaAdCE4Ak4uqTmiUpqok/38L/6+xRwPWNik4KygDupAW+WQj
+        9jQXalpqyN3Pvl1/hMaXfO0=
+X-Google-Smtp-Source: APXvYqw6fAvpSd3pGNX0K76JDrQZ29b0rSqdRpPsQLWD0IsRTRf2MV8na8CHg56mgi1e/yZqW5Dp6A==
+X-Received: by 2002:a62:38cc:: with SMTP id f195mr34704661pfa.15.1557279730181;
+        Tue, 07 May 2019 18:42:10 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id i3sm22196571pfa.90.2019.05.07.18.42.06
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 07 May 2019 18:42:09 -0700 (PDT)
+Date:   Wed, 8 May 2019 09:41:59 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Miroslav Lichvar <mlichvar@redhat.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Jiri Benc <jbenc@redhat.com>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Patrick McHardy <kaber@trash.net>,
+        stefan.sorensen@spectralink.com
+Subject: Re: [PATCH net-next] macvlan: pass get_ts_info and SIOC[SG]HWTSTAMP
+ ioctl to real device
+Message-ID: <20190508014159.GM18865@dhcp-12-139.nay.redhat.com>
+References: <20190417205958.6508bda2@redhat.com>
+ <20190418033157.irs25halxnemh65y@localhost>
+ <20190418080509.GD5984@localhost>
+ <20190423041817.GE18865@dhcp-12-139.nay.redhat.com>
+ <20190423083141.GA5188@localhost>
+ <20190423091543.GF18865@dhcp-12-139.nay.redhat.com>
+ <20190423093213.GA7246@localhost>
+ <20190425134006.GG18865@dhcp-12-139.nay.redhat.com>
+ <20190506140123.k2kw7apaubvljsa5@localhost>
+ <20190507083559.GD13858@localhost>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190507083559.GD13858@localhost>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Cheng Han <hancheng2009@gmail.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+On Tue, May 07, 2019 at 10:35:59AM +0200, Miroslav Lichvar wrote:
+> On Mon, May 06, 2019 at 07:01:23AM -0700, Richard Cochran wrote:
+> > On Thu, Apr 25, 2019 at 09:40:06PM +0800, Hangbin Liu wrote:
+> > > Would you please help have a look at it and see which way we should use?
+> > > Drop SIOCSHWTSTAMP in container or add a filter on macvlan(maybe only in
+> > > container)?
+> > 
+> > I vote for dropping SIOCSHWTSTAMP altogether.  Why?  Because the
+> > filter idea means that the ioctl will magically succeed or fail, based
+> > on the unknowable state of the container's host.
+> 
+> That's a good point. I agree that SIOCSHWTSTAMP always failing would
+> be a less surprising behavior than failing only with some specific
+> configurations.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index 7e5d5db..b4bb562 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -192,6 +192,8 @@ static void dwmac4_prog_mtl_tx_algorithms(struct mac_device_info *hw,
- 	default:
- 		break;
- 	}
-+
-+	writel(value, ioaddr + MTL_OPERATION_MODE);
- }
- 
- static void dwmac4_set_mtl_tx_queue_weight(struct mac_device_info *hw,
--- 
-1.9.1
+Thanks for the reply. As net-next is closed now. I will post the fix
+to net branch after merging finished.
 
+Cheers
+Hangbin
