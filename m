@@ -2,137 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0D9417CAD
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 16:58:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0882917D4D
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 17:28:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726889AbfEHO6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 10:58:31 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:35555 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726614AbfEHO6a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 10:58:30 -0400
-Received: by mail-pf1-f195.google.com with SMTP id t87so10060203pfa.2;
-        Wed, 08 May 2019 07:58:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yEQ3QDmG4J4aCqR8TE4zPyewDF8Wu8jUX8cEw4gcVRM=;
-        b=rDQOPtuMVcCa51KDjmVzZagDYZSJ7KpqkKLxG2aJAO67+Y2O0k/47H5A71Q4eOMDOj
-         /cpoNEZB5y+nLbzQ07zHdoyiBOAkA0U5Ku6iUXF+Sb5JCO0w984LdjQ9M8Ll42tq04jO
-         V2TBLFo54V07e8iPelizoBjbldJxs81qzR+m+bhy+VzckVkvLaWWqMjqBtBFRP5nPfCr
-         LZk90P0U2vNIInaVJ2nLlrUB+QRgarTVeisfP2uvlnmohAdiLzuM2sennX9t9qoHCOAn
-         268/ABq1HO20belSNgZGHvJE8WMCbzTtmBv/1bMzHZYDLal/IdAQjJx1N1GUcrt5uCqP
-         ck6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yEQ3QDmG4J4aCqR8TE4zPyewDF8Wu8jUX8cEw4gcVRM=;
-        b=sWtzw0cg/rsbzoKgxmbl6DpzAJAIRiSIh5R0HDFkE7B1Pspih4xF2DSJcZkO0qPqFR
-         zZ3dCFZVKzQlp1WywTjYFEs12glq64eXtIwq4IytSW6KoxZFPPtS2Bad11/0IgY3TkGN
-         +qREnmen+8gw2ZAubsCfWogTIYhPMJcwPgz6mhjueuSvuLhirZe3dlUxqcrviTICGaU+
-         24TtQto1zNcSaYQUB4r28ALw2oLCZDolNj+xW8CH31dGA3nrzCxkeJ5PdpwtWb13OzgZ
-         de2tUwYNIomwXnXyHjxxGqdesTIOKw9NeY+7OA7JDnSBUt7b/NL4AfwdHiFSrjQglcs/
-         uk2Q==
-X-Gm-Message-State: APjAAAWtnfxNxPKAqDhe47Nuxkj7ZAv1LT/tofLZ5XbK98m/nRjoM4HV
-        GspPHw2oFUW4nwpPZuGJFhc=
-X-Google-Smtp-Source: APXvYqzX9tfEM2lwPbl+tJ2jnH/8uKb0388ddWRDbaD3EtJA24j7l+BR6W/1NtQSeMBgWSe/SSUWEw==
-X-Received: by 2002:a63:2b0d:: with SMTP id r13mr47971764pgr.400.1557327510091;
-        Wed, 08 May 2019 07:58:30 -0700 (PDT)
-Received: from [192.168.84.92] (207.sub-166-167-102.myvzw.com. [166.167.102.207])
-        by smtp.gmail.com with ESMTPSA id h6sm11452931pfk.188.2019.05.08.07.58.27
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 08 May 2019 07:58:29 -0700 (PDT)
-Subject: Re: [PATCH v2] netfilter: xt_owner: Add supplementary groups option
-To:     Lukasz Pawelczyk <l.pawelczyk@samsung.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Lukasz Pawelczyk <havner@gmail.com>
-References: <CGME20190508141219eucas1p1e5a899714747b497499976113ea9681f@eucas1p1.samsung.com>
- <20190508141211.4191-1-l.pawelczyk@samsung.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <98f71c64-3887-b715-effb-894224a71ef9@gmail.com>
-Date:   Wed, 8 May 2019 07:58:25 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190508141211.4191-1-l.pawelczyk@samsung.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727211AbfEHP1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 11:27:46 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.20]:32606 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726522AbfEHP1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 11:27:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1557329264;
+        s=strato-dkim-0002; d=fpond.eu;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=PqBZE6NhWzosKKTY8fgyr23SwEQXuP4OhdOutYbtHlU=;
+        b=Xk+MmxPqFdzWgL+aJwhDbNEG+nimQqAILTUL5InFoVdB7I0wxnaW1WusWEbHuGaePB
+        eMmJDk3DcgiNcmXNcGYn5MOq6cbCLW2WyuPzqgQooBOtsNcqJHeJ6JNWCwiODRHjjyJ+
+        ZXjAL7K6nwwoZz7EP5574o8ALg7+/Hzu58ZVz/5ubPAPDwx605H0E6zIpC6w5OEKuKvX
+        nqkqkEU2hMOo1s3nKnxxT6cNyUjyrOsHPbxalt8dJedsJojhacwF8/VHjLSYc2SvF/AE
+        lBDZJ1+Nx2joQmePD33AAB8azkFGWSlXbrFKtTJq10ob4vqHgHtCISCxt9ePv8u4IcPh
+        jO2Q==
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73dmm4I5W0/AvA67Ot4fvR82Fdd8U4C/c="
+X-RZG-CLASS-ID: mo00
+Received: from groucho.site
+        by smtp.strato.de (RZmta 44.18 DYNA|AUTH)
+        with ESMTPSA id y08c83v48FLNUG2
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Wed, 8 May 2019 17:21:23 +0200 (CEST)
+From:   Ulrich Hecht <uli+renesas@fpond.eu>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, wsa@the-dreams.de,
+        horms@verge.net.au, magnus.damm@gmail.com,
+        Ulrich Hecht <uli+renesas@fpond.eu>
+Subject: [PATCH] ravb: implement MTU change while device is up
+Date:   Wed,  8 May 2019 17:21:22 +0200
+Message-Id: <1557328882-24307-1-git-send-email-uli+renesas@fpond.eu>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Uses the same method as various other drivers: shut the device down,
+change the MTU, then bring it back up again.
 
+Tested on Renesas D3 Draak board.
 
-On 5/8/19 10:12 AM, Lukasz Pawelczyk wrote:
-> The XT_SUPPL_GROUPS flag causes GIDs specified with XT_OWNER_GID to
-> be also checked in the supplementary groups of a process.
-> 
-> Signed-off-by: Lukasz Pawelczyk <l.pawelczyk@samsung.com>
-> ---
->  include/uapi/linux/netfilter/xt_owner.h |  1 +
->  net/netfilter/xt_owner.c                | 23 ++++++++++++++++++++---
->  2 files changed, 21 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/uapi/linux/netfilter/xt_owner.h b/include/uapi/linux/netfilter/xt_owner.h
-> index fa3ad84957d5..d646f0dc3466 100644
-> --- a/include/uapi/linux/netfilter/xt_owner.h
-> +++ b/include/uapi/linux/netfilter/xt_owner.h
-> @@ -8,6 +8,7 @@ enum {
->  	XT_OWNER_UID    = 1 << 0,
->  	XT_OWNER_GID    = 1 << 1,
->  	XT_OWNER_SOCKET = 1 << 2,
-> +	XT_SUPPL_GROUPS = 1 << 3,
->  };
->  
->  struct xt_owner_match_info {
-> diff --git a/net/netfilter/xt_owner.c b/net/netfilter/xt_owner.c
-> index 46686fb73784..283a1fb5cc52 100644
-> --- a/net/netfilter/xt_owner.c
-> +++ b/net/netfilter/xt_owner.c
-> @@ -91,11 +91,28 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
->  	}
->  
->  	if (info->match & XT_OWNER_GID) {
-> +		unsigned int i, match = false;
->  		kgid_t gid_min = make_kgid(net->user_ns, info->gid_min);
->  		kgid_t gid_max = make_kgid(net->user_ns, info->gid_max);
-> -		if ((gid_gte(filp->f_cred->fsgid, gid_min) &&
-> -		     gid_lte(filp->f_cred->fsgid, gid_max)) ^
-> -		    !(info->invert & XT_OWNER_GID))
-> +		struct group_info *gi = filp->f_cred->group_info;
-> +
-> +		if (gid_gte(filp->f_cred->fsgid, gid_min) &&
-> +		    gid_lte(filp->f_cred->fsgid, gid_max))
-> +			match = true;
-> +
-> +		if (!match && (info->match & XT_SUPPL_GROUPS) && gi) {
-> +			for (i = 0; i < gi->ngroups; ++i) {
-> +				kgid_t group = gi->gid[i];
-> +
-> +				if (gid_gte(group, gid_min) &&
-> +				    gid_lte(group, gid_max)) {
-> +					match = true;
-> +					break;
-> +				}
-> +			}
-> +		}
-> +
-> +		if (match ^ !(info->invert & XT_OWNER_GID))
->  			return false;
->  	}
->  
-> 
+Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+---
+ drivers/net/ethernet/renesas/ravb_main.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-How can this be safe on SMP ?
-
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index ef8f089..02c247c 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1810,13 +1810,16 @@ static int ravb_do_ioctl(struct net_device *ndev, struct ifreq *req, int cmd)
+ 
+ static int ravb_change_mtu(struct net_device *ndev, int new_mtu)
+ {
+-	if (netif_running(ndev))
+-		return -EBUSY;
++	if (!netif_running(ndev)) {
++		ndev->mtu = new_mtu;
++		netdev_update_features(ndev);
++		return 0;
++	}
+ 
++	ravb_close(ndev);
+ 	ndev->mtu = new_mtu;
+-	netdev_update_features(ndev);
+ 
+-	return 0;
++	return ravb_open(ndev);
+ }
+ 
+ static void ravb_set_rx_csum(struct net_device *ndev, bool enable)
+-- 
+2.7.4
 
