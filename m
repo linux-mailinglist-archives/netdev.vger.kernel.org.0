@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC8C217B5B
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 16:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 970CC17B5E
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 16:12:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727896AbfEHOMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 10:12:23 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:51345 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727679AbfEHOMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 10:12:22 -0400
+        id S1727948AbfEHOMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 10:12:34 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:35672 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726640AbfEHOMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 10:12:33 -0400
 Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20190508141221euoutp028cea8ced28b0a2510e24712543729fb8~cupnW9IGe3075530755euoutp02q;
-        Wed,  8 May 2019 14:12:21 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20190508141221euoutp028cea8ced28b0a2510e24712543729fb8~cupnW9IGe3075530755euoutp02q
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20190508141231euoutp01c57975e0867a09dc5a886098bb643f7c~cupxZU1og1681816818euoutp01f;
+        Wed,  8 May 2019 14:12:31 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20190508141231euoutp01c57975e0867a09dc5a886098bb643f7c~cupxZU1og1681816818euoutp01f
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1557324741;
-        bh=T+lf+1k8YuKNiyfOassRgPNzGiL/wVazNKrJDOT69BY=;
+        s=mail20170921; t=1557324751;
+        bh=HcT/kKx7qWTcawPB58jbZjKM82I9Yt4AKSmqa6m0HDo=;
         h=From:To:Cc:Subject:Date:References:From;
-        b=W0zFkUdemth3RtaYvuq3tc182zvprhIz57wpVSt5F6mqkgSlSpj7vqsNx8m3L1v2T
-         4aUHoxLufsnRblNabTJ3om9Lsa+B+oZJl+MT/XTTDEYjwLaAQI0YRYGyiIdpvQwYTP
-         EBjdnTvpAXraEhCXSu/bPpvC+m/LyXtrNGOkUEJA=
+        b=LNbGYCcnBKUyX3zXjCoEw1+JcO7KoNkt4qDov+kIhspREFDEoAE5Z/F6bQ6Wbqf6f
+         GdD9lWUTdWoSwBt1bOW2pAiGS3oS+Sw5o6SerrrG7J/GFYJjTWDoeNjRyAQO2MNdyd
+         wqtY2prK2VIsUPAJg8dy+yVriQQZeBm6uKMgC98g=
 Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20190508141220eucas1p2df52aaf791210790c3f4cb55e881005f~cupm38-fd2225522255eucas1p2L;
-        Wed,  8 May 2019 14:12:20 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 93.AD.04325.4C3E2DC5; Wed,  8
-        May 2019 15:12:20 +0100 (BST)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
         eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20190508141219eucas1p1e5a899714747b497499976113ea9681f~cupmPV-6e0143501435eucas1p11;
-        Wed,  8 May 2019 14:12:19 +0000 (GMT)
-X-AuditID: cbfec7f5-b75ff700000010e5-62-5cd2e3c47158
+        20190508141231eucas1p1f6c4c3c9cc1273462a006503deb2875d~cupw6AcoQ0145101451eucas1p1y;
+        Wed,  8 May 2019 14:12:31 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id A9.AD.04325.EC3E2DC5; Wed,  8
+        May 2019 15:12:31 +0100 (BST)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20190508141230eucas1p26d81951eba346056fc65751c36befb97~cupwNnHzT2223122231eucas1p2K;
+        Wed,  8 May 2019 14:12:30 +0000 (GMT)
+X-AuditID: cbfec7f5-fbbf09c0000010e5-87-5cd2e3ce936c
 Received: from eusync4.samsung.com ( [203.254.199.214]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id FF.9A.04146.3C3E2DC5; Wed,  8
-        May 2019 15:12:19 +0100 (BST)
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id A8.08.04140.EC3E2DC5; Wed,  8
+        May 2019 15:12:30 +0100 (BST)
 Received: from amdc2143.DIGITAL.local ([106.120.51.59]) by
         eusync4.samsung.com (Oracle Communications Messaging Server 7.0.5.31.0 64bit
-        (built May  5 2014)) with ESMTPA id <0PR6003Y7VGD4K00@eusync4.samsung.com>;
-        Wed, 08 May 2019 15:12:19 +0100 (BST)
+        (built May  5 2014)) with ESMTPA id <0PR6003YHVGR4K00@eusync4.samsung.com>;
+        Wed, 08 May 2019 15:12:30 +0100 (BST)
 From:   Lukasz Pawelczyk <l.pawelczyk@samsung.com>
 To:     Pablo Neira Ayuso <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
@@ -50,59 +50,133 @@ To:     Pablo Neira Ayuso <pablo@netfilter.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Lukasz Pawelczyk <havner@gmail.com>,
         Lukasz Pawelczyk <l.pawelczyk@samsung.com>
-Subject: [PATCH v2] netfilter: xt_owner: Add supplementary groups option
-Date:   Wed, 08 May 2019 16:12:11 +0200
-Message-id: <20190508141211.4191-1-l.pawelczyk@samsung.com>
+Subject: [PATCH v2] extensions: libxt_owner: Add supplementary groups option
+Date:   Wed, 08 May 2019 16:12:25 +0200
+Message-id: <20190508141225.4247-1-l.pawelczyk@samsung.com>
 X-Mailer: git-send-email 2.20.1
 MIME-version: 1.0
 Content-transfer-encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrOIsWRmVeSWpSXmKPExsWy7djPc7pHHl+KMXj6kN/i7852Zos551tY
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrKIsWRmVeSWpSXmKPExsWy7djPc7rnH1+KMbifbvF3ZzuzxZzzLSwW
+        23pXM1r8f61jcblvGrPFmUkLmSwu75rDZnFsgZjFhHWnWCymv7nK7MDlcbppI4vHlpU3mTx2
+        zrrL7vH29wkmj74tqxg9Dn1fwOrxeZNcAHsUl01Kak5mWWqRvl0CV8bpvWcZC5bJVqw6vZS5
+        gfG2eBcjJ4eEgInEzH0NrF2MXBxCAisYJTbt384O4XxmlDj5cyszTNX/vk/MEIlljBITds9i
+        g3D+M0rsWLWfHaSKTcBA4vuFvWBVIgLTmSTWNLxiBEkwC4RKnHu0HmyUsICPxIEVp1hAbBYB
+        VYn3B/eygdi8AtYSO6esZIRYJy9xvncdO0RcUOLH5HssEHPkJQ5eec4CskBCYA2bRPvFv2wQ
+        DS4S3fseQt0qI3F5cjdQEQeQXS1x8kwFRH0Ho8TGF7OhFlhLfJ60hRliKJ/EpG3TmSHqeSU6
+        2oQgTA+JNx1GIKaQQKzEyYsKExglZyE5aBaSgxYwMq1iFE8tLc5NTy02zkst1ytOzC0uzUvX
+        S87P3cQIjOzT/45/3cG470/SIUYBDkYlHt6MQ5dihFgTy4orcw8xSnAwK4nwXp8IFOJNSays
+        Si3Kjy8qzUktPsQozcGiJM5bzfAgWkggPbEkNTs1tSC1CCbLxMEp1cC4aeJEl+wzzzk1lZa+
+        /Bkr6d7hJeQWPXWm5SvlCoZdCz2EeFofN3JtevLMfPe+6GOmKXPPmAuejproPiVvTu5TG6YX
+        voEBt4/MnzBd0I/hzd3EFOtHLjLfe9K32LLcX5yb8PJZ6ALxvDT9vZKr1XYqF6ZIHN2hsmbH
+        WgcXo62fvtiLWxZcL5dRYinOSDTUYi4qTgQADToGaugCAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGLMWRmVeSWpSXmKPExsVy+t/xa7rnHl+KMfi6Qsji7852Zos551tY
         LLb1rma0+P9ax+Jy3zRmizOTFjJZXN41h83i2AIxiwnrTrFYTH9zldmBy+N000YWjy0rbzJ5
-        7Jx1l93j7e8TTB59W1Yxehz6voDV4/MmuQD2KC6blNSczLLUIn27BK6M3ZufMRZ856u4vCym
-        gfEDdxcjJ4eEgInEk10r2boYuTiEBFYwSvzbvhHK+cwoseLzCTaYqpNT9rJCJJYxSmz7+4wZ
-        wvnPKLH32jRWkCo2AQOJ7xf2giVEBKYzSaxpeMUIkmAWCJU492g9M4gtLOAhcXt/CwuIzSKg
-        KrFh0zmwGl4Ba4mfO2ezQqyTlzjfu44dIi4o8WPyPRaIOfISB688ZwFZICGwhk2i4/J3ZogG
-        F4nHq5dD2TISnR0HmboYOYDsaomTZyog6jsYJTa+mM0IUWMt8XnSFmaIoXwSk7ZNZ4ao55Xo
-        aBOCKPGQOHxjCxOILSQQK/HgziPGCYySs5CcNAvJSQsYmVYxiqeWFuempxYb56WW6xUn5haX
-        5qXrJefnbmIERvfpf8e/7mDc9yfpEKMAB6MSD2/GoUsxQqyJZcWVuYcYJTiYlUR4r08ECvGm
-        JFZWpRblxxeV5qQWH2KU5mBREuetZngQLSSQnliSmp2aWpBaBJNl4uCUamBs4dq0WufuGpHJ
-        TE67dWZ2ybBO992myb/j57G9x7fv+7qroO7Cg6vz/NjLCgOM53PvcP42m833c4drwxStxES5
-        Pyrr/vj1TjcSuMdzV4WtVNwq5HtvcFTSw+jNHCFM0vdc7G6XN//sn3588szyvbN21dz6rSDr
-        +IO9hSu4guHwhU3+ypZWmXpKLMUZiYZazEXFiQBqMhL56gIAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrKLMWRmVeSWpSXmKPExsVy+t/xa7qHH1+KMeh9YWDxd2c7s8Wc8y0s
-        Ftt6VzNa/H+tY3G5bxqzxZlJC5ksLu+aw2ZxbIGYxYR1p1gspr+5yuzA5XG6aSOLx5aVN5k8
-        ds66y+7x9vcJJo++LasYPQ59X8Dq8XmTXAB7FJdNSmpOZllqkb5dAlfG7s3PGAu+81VcXhbT
-        wPiBu4uRk0NCwETi5JS9rF2MXBxCAksYJT5/3MIM4TQySbx/t48ZpIpNwEDi+4W9YLaIwHQm
-        iT+zhEFsZoFQiWszpoPFhQU8JG7vb2EBsVkEVCU2bDrHCGLzClhL/Nw5mxVim7zE+d517BBx
-        QYkfk++xQMyRlzh45TnLBEaeWUhSs5CkFjAyrWIUSS0tzk3PLTbUK07MLS7NS9dLzs/dxAgM
-        zG3Hfm7ewXhpY/AhRgEORiUe3oxDl2KEWBPLiitzDzFKcDArifBenwgU4k1JrKxKLcqPLyrN
-        SS0+xCjNwaIkztshcDBGSCA9sSQ1OzW1ILUIJsvEwSnVwGhustb7V5j9699Wkmvrniw9U5O1
-        NNZFb7XJbuW/j9gfuEwJmXR0lRx/MFeUw/zKuFnyiclyFUcnSTwV+ChfWSDzvtqBSbbMU33V
-        2h+dejvevD4g5BJTIrtgsyHnh01vk9b8nfXzXofdrjmnzvh6n/xzj4d52dvfq9d7sb88z7zw
-        n/TjDXZbrfyUWIozEg21mIuKEwFBU6/jSAIAAA==
-X-CMS-MailID: 20190508141219eucas1p1e5a899714747b497499976113ea9681f
+        7Jx1l93j7e8TTB59W1Yxehz6voDV4/MmuQD2KC6blNSczLLUIn27BK6M03vPMhYsk61YdXop
+        cwPjbfEuRk4OCQETif99n5i7GLk4hASWMErMX7KHFcJpZJJ43v2VFaSKTcBA4vuFvcwgtojA
+        dCaJP7OEQWxmgVCJazOmg8WFBXwkDqw4xQJiswioSrw/uJcNxOYVsJbYOWUlI8Q2eYnzvevY
+        IeKCEj8m32OBmCMvcfDKc5YJjDyzkKRmIUktYGRaxSiSWlqcm55bbKRXnJhbXJqXrpecn7uJ
+        ERia24793LKDsetd8CFGAQ5GJR7ejEOXYoRYE8uKK3MPMUpwMCuJ8F6fCBTiTUmsrEotyo8v
+        Ks1JLT7EKM3BoiTO2yFwMEZIID2xJDU7NbUgtQgmy8TBKdXAuNIlujjH4n316R1TGrabL1/2
+        +o16Ye65C+KZl8vyjTNMmbP/iVwI7OLMusp52kZwq36I+rQV8qIpR2eY94m0XObfcjVqyZz5
+        Gzm/LxVgjAl6tOL4mSN/Hv7ofMDWzfC3dIrwG9PyFZI/lDf2riy71y/iPWVLB3/4q+yrs784
+        LJ239f8r7utMM5RYijMSDbWYi4oTAedV1lNJAgAA
+X-CMS-MailID: 20190508141230eucas1p26d81951eba346056fc65751c36befb97
 CMS-TYPE: 201P
-X-CMS-RootMailID: 20190508141219eucas1p1e5a899714747b497499976113ea9681f
-References: <CGME20190508141219eucas1p1e5a899714747b497499976113ea9681f@eucas1p1.samsung.com>
+X-CMS-RootMailID: 20190508141230eucas1p26d81951eba346056fc65751c36befb97
+References: <CGME20190508141230eucas1p26d81951eba346056fc65751c36befb97@eucas1p2.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The XT_SUPPL_GROUPS flag causes GIDs specified with XT_OWNER_GID to
-be also checked in the supplementary groups of a process.
+The --suppl-groups option causes GIDs specified with --gid-owner to be
+also checked in the supplementary groups of a process.
 
 Signed-off-by: Lukasz Pawelczyk <l.pawelczyk@samsung.com>
 ---
- include/uapi/linux/netfilter/xt_owner.h |  1 +
- net/netfilter/xt_owner.c                | 23 ++++++++++++++++++++---
- 2 files changed, 21 insertions(+), 3 deletions(-)
+ extensions/libxt_owner.c           | 13 ++++++++++++-
+ extensions/libxt_owner.man         |  4 ++++
+ include/linux/netfilter/xt_owner.h |  1 +
+ 3 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/netfilter/xt_owner.h b/include/uapi/linux/netfilter/xt_owner.h
-index fa3ad84957d5..d646f0dc3466 100644
---- a/include/uapi/linux/netfilter/xt_owner.h
-+++ b/include/uapi/linux/netfilter/xt_owner.h
-@@ -8,6 +8,7 @@ enum {
+diff --git a/extensions/libxt_owner.c b/extensions/libxt_owner.c
+index 87e4df31..6a97e185 100644
+--- a/extensions/libxt_owner.c
++++ b/extensions/libxt_owner.c
+@@ -56,6 +56,7 @@ enum {
+ 	O_PROCESS,
+ 	O_SESSION,
+ 	O_COMM,
++	O_SUPPL_GROUPS,
+ };
+ 
+ static void owner_mt_help_v0(void)
+@@ -87,7 +88,8 @@ static void owner_mt_help(void)
+ "owner match options:\n"
+ "[!] --uid-owner userid[-userid]      Match local UID\n"
+ "[!] --gid-owner groupid[-groupid]    Match local GID\n"
+-"[!] --socket-exists                  Match if socket exists\n");
++"[!] --socket-exists                  Match if socket exists\n"
++"    --suppl-groups                   Also match supplementary groups set with --gid-owner\n");
+ }
+ 
+ #define s struct ipt_owner_info
+@@ -131,6 +133,8 @@ static const struct xt_option_entry owner_mt_opts[] = {
+ 	 .flags = XTOPT_INVERT},
+ 	{.name = "socket-exists", .id = O_SOCK_EXISTS, .type = XTTYPE_NONE,
+ 	 .flags = XTOPT_INVERT},
++	{.name = "suppl-groups", .id = O_SUPPL_GROUPS, .type = XTTYPE_NONE,
++	 .flags = XTOPT_INVERT},
+ 	XTOPT_TABLEEND,
+ };
+ 
+@@ -275,6 +279,11 @@ static void owner_mt_parse(struct xt_option_call *cb)
+ 			info->invert |= XT_OWNER_SOCKET;
+ 		info->match |= XT_OWNER_SOCKET;
+ 		break;
++	case O_SUPPL_GROUPS:
++		if (!(info->match & XT_OWNER_GID))
++			xtables_param_act(XTF_BAD_VALUE, "owner", "--suppl-groups", "you need to use --gid-owner first");
++		info->match |= XT_SUPPL_GROUPS;
++		break;
+ 	}
+ }
+ 
+@@ -458,6 +467,7 @@ static void owner_mt_print(const void *ip, const struct xt_entry_match *match,
+ 	owner_mt_print_item(info, "owner socket exists", XT_OWNER_SOCKET, numeric);
+ 	owner_mt_print_item(info, "owner UID match",     XT_OWNER_UID,    numeric);
+ 	owner_mt_print_item(info, "owner GID match",     XT_OWNER_GID,    numeric);
++	owner_mt_print_item(info, "incl. suppl. groups", XT_SUPPL_GROUPS, numeric);
+ }
+ 
+ static void
+@@ -490,6 +500,7 @@ static void owner_mt_save(const void *ip, const struct xt_entry_match *match)
+ 	owner_mt_print_item(info, "--socket-exists",  XT_OWNER_SOCKET, true);
+ 	owner_mt_print_item(info, "--uid-owner",      XT_OWNER_UID,    true);
+ 	owner_mt_print_item(info, "--gid-owner",      XT_OWNER_GID,    true);
++	owner_mt_print_item(info, "--suppl-groups",   XT_SUPPL_GROUPS, true);
+ }
+ 
+ static int
+diff --git a/extensions/libxt_owner.man b/extensions/libxt_owner.man
+index 49b58cee..e2479865 100644
+--- a/extensions/libxt_owner.man
++++ b/extensions/libxt_owner.man
+@@ -15,5 +15,9 @@ given user. You may also specify a numerical UID, or an UID range.
+ Matches if the packet socket's file structure is owned by the given group.
+ You may also specify a numerical GID, or a GID range.
+ .TP
++\fB\-\-suppl\-groups\fP
++Causes group(s) specified with \fB\-\-gid-owner\fP to be also checked in the
++supplementary groups of a process.
++.TP
+ [\fB!\fP] \fB\-\-socket\-exists\fP
+ Matches if the packet is associated with a socket.
+diff --git a/include/linux/netfilter/xt_owner.h b/include/linux/netfilter/xt_owner.h
+index 20817617..e5a743b6 100644
+--- a/include/linux/netfilter/xt_owner.h
++++ b/include/linux/netfilter/xt_owner.h
+@@ -7,6 +7,7 @@ enum {
  	XT_OWNER_UID    = 1 << 0,
  	XT_OWNER_GID    = 1 << 1,
  	XT_OWNER_SOCKET = 1 << 2,
@@ -110,42 +184,6 @@ index fa3ad84957d5..d646f0dc3466 100644
  };
  
  struct xt_owner_match_info {
-diff --git a/net/netfilter/xt_owner.c b/net/netfilter/xt_owner.c
-index 46686fb73784..283a1fb5cc52 100644
---- a/net/netfilter/xt_owner.c
-+++ b/net/netfilter/xt_owner.c
-@@ -91,11 +91,28 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
- 	}
- 
- 	if (info->match & XT_OWNER_GID) {
-+		unsigned int i, match = false;
- 		kgid_t gid_min = make_kgid(net->user_ns, info->gid_min);
- 		kgid_t gid_max = make_kgid(net->user_ns, info->gid_max);
--		if ((gid_gte(filp->f_cred->fsgid, gid_min) &&
--		     gid_lte(filp->f_cred->fsgid, gid_max)) ^
--		    !(info->invert & XT_OWNER_GID))
-+		struct group_info *gi = filp->f_cred->group_info;
-+
-+		if (gid_gte(filp->f_cred->fsgid, gid_min) &&
-+		    gid_lte(filp->f_cred->fsgid, gid_max))
-+			match = true;
-+
-+		if (!match && (info->match & XT_SUPPL_GROUPS) && gi) {
-+			for (i = 0; i < gi->ngroups; ++i) {
-+				kgid_t group = gi->gid[i];
-+
-+				if (gid_gte(group, gid_min) &&
-+				    gid_lte(group, gid_max)) {
-+					match = true;
-+					break;
-+				}
-+			}
-+		}
-+
-+		if (match ^ !(info->invert & XT_OWNER_GID))
- 			return false;
- 	}
- 
 -- 
 2.20.1
 
