@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8453717E29
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 18:35:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEF0517E32
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 18:37:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728090AbfEHQfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 12:35:45 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:48646 "EHLO
+        id S1728249AbfEHQhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 12:37:31 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:48674 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726708AbfEHQfp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 12:35:45 -0400
+        with ESMTP id S1727907AbfEHQhb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 12:37:31 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id BB8501401512F;
-        Wed,  8 May 2019 09:35:44 -0700 (PDT)
-Date:   Wed, 08 May 2019 09:35:41 -0700 (PDT)
-Message-Id: <20190508.093541.1274244477886053907.davem@davemloft.net>
-To:     liuhangbin@gmail.com
-Cc:     netdev@vger.kernel.org, mateusz.bajorski@nokia.com,
-        dsa@cumulusnetworks.com
-Subject: Re: [PATCH net] fib_rules: return 0 directly if an exactly same
- rule exists when NLM_F_EXCL not supplied
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 51B4C14015144;
+        Wed,  8 May 2019 09:37:30 -0700 (PDT)
+Date:   Wed, 08 May 2019 09:37:29 -0700 (PDT)
+Message-Id: <20190508.093729.1392898151729084665.davem@davemloft.net>
+To:     fancer.lancer@gmail.com
+Cc:     f.fainelli@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        olteanv@gmail.com, martin.blumenstingl@googlemail.com,
+        Sergey.Semin@t-platforms.ru, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] net: phy: realtek: Fix RGMII TX/RX-delays
+ initial config of rtl8211(e|f)
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190507091118.24324-1-liuhangbin@gmail.com>
-References: <20190507091118.24324-1-liuhangbin@gmail.com>
+In-Reply-To: <20190508012920.13710-1-fancer.lancer@gmail.com>
+References: <20190426212112.5624-1-fancer.lancer@gmail.com>
+        <20190508012920.13710-1-fancer.lancer@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 May 2019 09:35:44 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 May 2019 09:37:30 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
-Date: Tue,  7 May 2019 17:11:18 +0800
+From: Serge Semin <fancer.lancer@gmail.com>
+Date: Wed,  8 May 2019 04:29:18 +0300
 
-> With commit 153380ec4b9 ("fib_rules: Added NLM_F_EXCL support to
-> fib_nl_newrule") we now able to check if a rule already exists. But this
-> only works with iproute2. For other tools like libnl, NetworkManager,
-> it still could add duplicate rules with only NLM_F_CREATE flag, like
+> It has been discovered that RX/TX delays of rtl8211e ethernet PHY
+> can be configured via a MDIO register hidden in the extension pages
+> layout. Particularly the extension page 0xa4 provides a register 0x1c,
+> which bits 1 and 2 control the described delays. They are used to
+> implement the "rgmii-{id,rxid,txid}" phy-mode support in patch 1.
 > 
-> [localhost ~ ]# ip rule
-> 0:      from all lookup local
-> 32766:  from all lookup main
-> 32767:  from all lookup default
-> 100000: from 192.168.7.5 lookup 5
-> 100000: from 192.168.7.5 lookup 5
+> The second patch makes sure the rtl8211f TX-delay is configured only
+> if RGMII interface mode is specified including the rgmii-rxid one.
+> In other cases (most importantly for NA mode) the delays are supposed
+> to be preconfigured by some other software or hardware and should be
+> left as is without any modification. The similar thing is also done
+> for rtl8211e in the patch 1 of this series.
 > 
-> As it doesn't make sense to create two duplicate rules, let's just return
-> 0 if the rule exists.
-> 
-> Fixes: 153380ec4b9 ("fib_rules: Added NLM_F_EXCL support to fib_nl_newrule")
-> Reported-by: Thomas Haller <thaller@redhat.com>
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
 
-Applied and queued up for -stable, thanks.
+These patches do not apply to the current net GIT tree, please respin.
