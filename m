@@ -2,75 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B259617932
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 14:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D40117952
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 14:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728434AbfEHMNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 08:13:36 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:56132 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728031AbfEHMNg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 May 2019 08:13:36 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id DAC28B007655174000B9;
-        Wed,  8 May 2019 20:13:32 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Wed, 8 May 2019
- 20:13:24 +0800
-Subject: Re: [PATCH] net: hns3: remove redundant assignment of l2_hdr to
- itself
-To:     Colin King <colin.king@canonical.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20190508105135.13170-1-colin.king@canonical.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <e4627235-16a8-60be-4e7b-0a7e36df55c9@huawei.com>
-Date:   Wed, 8 May 2019 20:13:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1728489AbfEHMWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 08:22:08 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:46886 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726751AbfEHMWG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 08:22:06 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x48CJBEV086953;
+        Wed, 8 May 2019 12:20:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=Vy0vJPC+R/qK4BTy9W8k2EK+1DkuBwwYmX4Im7RV/1I=;
+ b=rwrtMH5vFY76MnriFuwWJRty7cv6d48ndLvoH9qa0iSpe18cQhaRn84K+EEAZ1el4f/y
+ JYXzNPHiRG6Um3c2LeXmrh0vIUgokB68rrApoaQDWIhQiq3xdWk5gSEBW5t2CsNm+NQD
+ vMj6o0elaMb6F0MU58KC4FWtRSn89CRe22TBfRL7zCGITD8/HSnJoDvmL6xh8b//HGVN
+ 0/+i+9yb5Er16ot7xGaUWYdgVLnSKYTBDh5U+VgaaiAGanyy3YqtlO3+pRPaxxQxAHqK
+ Taf9LSC6aD/fmeyve7zi016PT3fCR2HgfwqDVjH/4iBaBbfLBHPj+ptzQwZZXQN8uHEa Qg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2130.oracle.com with ESMTP id 2s94b63etg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 08 May 2019 12:20:31 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x48CJL8V107697;
+        Wed, 8 May 2019 12:20:30 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 2s94ag20en-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 08 May 2019 12:20:30 +0000
+Received: from abhmp0022.oracle.com (abhmp0022.oracle.com [141.146.116.28])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x48CKNew007185;
+        Wed, 8 May 2019 12:20:24 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 08 May 2019 05:20:22 -0700
+Date:   Wed, 8 May 2019 15:20:10 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, linux-omap@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-tegra@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-usb@vger.kernel.org, kvm@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-mtd@lists.infradead.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org, alsa-devel@alsa-project.org,
+        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com
+Subject: Re: [PATCH 09/16] mmc: sdhci-xenon: use new match_string()
+ helper/macro
+Message-ID: <20190508122010.GC21059@kadam>
+References: <20190508112842.11654-1-alexandru.ardelean@analog.com>
+ <20190508112842.11654-11-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-In-Reply-To: <20190508105135.13170-1-colin.king@canonical.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190508112842.11654-11-alexandru.ardelean@analog.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9250 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=644
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1905080079
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9250 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=665 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1905080079
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/5/8 18:51, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The pointer l2_hdr is being assigned to itself, this is redundant
-> and can be removed.
-> 
-> Addresses-Coverity: ("Evaluation order violation")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> index 18711e0f9bdf..196a3d780dcf 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-> @@ -810,7 +810,7 @@ static int hns3_set_l2l3l4(struct sk_buff *skb, u8 ol4_proto,
->  			   u8 il4_proto, u32 *type_cs_vlan_tso,
->  			   u32 *ol_type_vlan_len_msec)
->  {
-> -	unsigned char *l2_hdr = l2_hdr = skb->data;
-> +	unsigned char *l2_hdr = skb->data;
+On Wed, May 08, 2019 at 02:28:35PM +0300, Alexandru Ardelean wrote:
+> -static const char * const phy_types[] = {
+> -	"emmc 5.0 phy",
+> -	"emmc 5.1 phy"
+> -};
+> -
+>  enum xenon_phy_type_enum {
+>  	EMMC_5_0_PHY,
+>  	EMMC_5_1_PHY,
+>  	NR_PHY_TYPES
 
-Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
+There is no need for NR_PHY_TYPES now so you could remove that as well.
 
-Thanks.
-
->  	u32 l4_proto = ol4_proto;
->  	union l4_hdr_info l4;
->  	union l3_hdr_info l3;
-> 
+regards,
+dan carpenter
 
