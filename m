@@ -2,120 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2904181D2
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 23:52:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D2F318272
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 00:50:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728638AbfEHVwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 17:52:42 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:43259 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726837AbfEHVwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 17:52:42 -0400
-Received: by mail-lf1-f65.google.com with SMTP id u27so13642lfg.10;
-        Wed, 08 May 2019 14:52:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=d18b4qWh4HEgcu9wcn/OtecpmPx7NVhpCmeccDtOwuY=;
-        b=Lt7bJnDBzGiz370T8FOk2I9C3A2+FarSZXJjYhRZatAdfVga39QIRPOOGVnsyGs6uP
-         mOV4+uMPBI94/+dg2apRA2rnZV0pvKqwRRbzT2pltns/+ajxhtxu/Udjtm3T3jLIz0x5
-         oDLdIoHH8kywuRzSOWJyrzbq4FVnZCBmYPKLPUFZo9XhLX4Aq7BzdBpADaE5cCjQIbOu
-         4WYSwc43nkoLYqUBmhZEsx7nLkDjvz4nZlJ1vut4+r4rXQSRQKo7/W2ccHK92kKEP1hd
-         eZwplAFZbCjMypEPqzJtD9kWlTPrwp+MPc6gw5WE+AU4C9CY+z8HThO5W/HGSHSNtSuE
-         Jb+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=d18b4qWh4HEgcu9wcn/OtecpmPx7NVhpCmeccDtOwuY=;
-        b=Jy7gzXMFAInkvXj5q6mUdP4Cib8E1S9gYXlxo2CnbkDla6tyNjKMFlbq/fXX1Gkkkg
-         ux4fKNqY91EhG8YJAmRsgV8aycdYGHB72zdY1635/q0E9YspNMmaaXckHI9FjeLkMA/Y
-         jdnEjiX0MJFd6Elxj2j1nnmEJsq9VmO/6Gd/ySOU1yp93NffhQxiE32ye8JL9IFLIOxa
-         JIjwJ3chwmAAQz7hy8DBhhHksW1ZXaftgq66r35Jkm49y4QPQivPHUT7qllIkLtvYAcz
-         vtgupZW8A8NMwaBZh1XJybFZXMC8AEVHnwk8pwFoTjhwxuE4RwYGdl8OKI3LoXaCUiC0
-         K8YQ==
-X-Gm-Message-State: APjAAAVnM7CK9RB+0VzfR+DGbI5NyZnqUeYRyxQbj1HrLkDnlGiLxG3d
-        sbDEL3bgltOM7u7OfmCXuP4=
-X-Google-Smtp-Source: APXvYqwE86+xTrNYoh9mO07ThJZjjH/w7wrrJMBEcGpcgybBv1dl6BSjQWtEuD9HOyG1Zt8+/h+WyA==
-X-Received: by 2002:a19:189:: with SMTP id 131mr237509lfb.74.1557352360316;
-        Wed, 08 May 2019 14:52:40 -0700 (PDT)
-Received: from localhost.localdomain ([5.164.217.122])
-        by smtp.gmail.com with ESMTPSA id l5sm28279lfh.70.2019.05.08.14.52.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 08 May 2019 14:52:39 -0700 (PDT)
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Serge Semin <Sergey.Semin@t-platforms.ru>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/2] net: phy: realtek: Change TX-delay setting for RGMII modes only
-Date:   Thu,  9 May 2019 00:51:17 +0300
-Message-Id: <20190508215115.19802-3-fancer.lancer@gmail.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190508215115.19802-1-fancer.lancer@gmail.com>
-References: <20190508215115.19802-1-fancer.lancer@gmail.com>
+        id S1727397AbfEHWuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 18:50:23 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:55578 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725910AbfEHWuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 18:50:21 -0400
+Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
+        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x48MgYm7015269
+        for <netdev@vger.kernel.org>; Wed, 8 May 2019 15:50:20 -0700
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0b-00082601.pphosted.com with ESMTP id 2sc50u8q7x-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 08 May 2019 15:50:20 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 8 May 2019 15:50:17 -0700
+Received: by devvm34215.prn1.facebook.com (Postfix, from userid 172786)
+        id 989AA220D8337; Wed,  8 May 2019 15:50:16 -0700 (PDT)
+Smtp-Origin-Hostprefix: devvm
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Hostname: devvm34215.prn1.facebook.com
+To:     <netdev@vger.kernel.org>, <bjorn.topel@intel.com>,
+        <magnus.karlsson@intel.com>, <ast@kernel.org>
+CC:     <kernel-team@fb.com>
+Smtp-Origin-Cluster: prn1c35
+Subject: [PATCH bpf-next 1/2] bpf: Allow bpf_map_lookup_elem() on an xskmap
+Date:   Wed, 8 May 2019 15:50:15 -0700
+Message-ID: <20190508225016.2375828-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-08_12:,,
+ signatures=0
+X-Proofpoint-Spam-Reason: safe
+X-FB-Internal: Safe
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's prone to problems if delay is cleared out for other than RGMII
-modes. So lets set/clear the TX-delay in the config register only
-if actually RGMII-like interface mode is requested. This only
-concerns rtl8211f chips.
+Currently, the AF_XDP code uses a separate map in order to
+determine if an xsk is bound to a queue.  Instead of doing this,
+have bpf_map_lookup_elem() return a boolean indicating whether
+there is a valid entry at the map index.
 
-Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
-
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
-Changelog v3
-- Accept id and rxid interface mode by clearing the TX_DELAY bit
-  in this case.
+ kernel/bpf/verifier.c                             |  6 +++++-
+ kernel/bpf/xskmap.c                               |  2 +-
+ .../selftests/bpf/verifier/prevent_map_lookup.c   | 15 ---------------
+ 3 files changed, 6 insertions(+), 17 deletions(-)
 
-Changelog v4
-- Rebase onto net-next
----
- drivers/net/phy/realtek.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index cfbc0ca61123..761ce3b1e7bd 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -161,12 +161,23 @@ static int rtl8211c_config_init(struct phy_device *phydev)
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 7b05e8938d5c..a8b8ff9ecd90 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -2761,10 +2761,14 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+ 	 * appear.
+ 	 */
+ 	case BPF_MAP_TYPE_CPUMAP:
+-	case BPF_MAP_TYPE_XSKMAP:
+ 		if (func_id != BPF_FUNC_redirect_map)
+ 			goto error;
+ 		break;
++	case BPF_MAP_TYPE_XSKMAP:
++		if (func_id != BPF_FUNC_redirect_map &&
++		    func_id != BPF_FUNC_map_lookup_elem)
++			goto error;
++		break;
+ 	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
+ 	case BPF_MAP_TYPE_HASH_OF_MAPS:
+ 		if (func_id != BPF_FUNC_map_lookup_elem)
+diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
+index 686d244e798d..f6e49237979c 100644
+--- a/kernel/bpf/xskmap.c
++++ b/kernel/bpf/xskmap.c
+@@ -154,7 +154,7 @@ void __xsk_map_flush(struct bpf_map *map)
  
- static int rtl8211f_config_init(struct phy_device *phydev)
+ static void *xsk_map_lookup_elem(struct bpf_map *map, void *key)
  {
--	u16 val = 0;
-+	u16 val;
- 
--	/* enable TX-delay for rgmii-id and rgmii-txid, otherwise disable it */
--	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+	/* enable TX-delay for rgmii-{id,txid}, and disable it for rgmii and
-+	 * rgmii-rxid. The RX-delay can be enabled by the external RXDLY pin.
-+	 */
-+	switch (phydev->interface) {
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+		val = 0;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
- 		val = RTL8211F_TX_DELAY;
-+		break;
-+	default: /* the rest of the modes imply leaving delay as is. */
-+		return 0;
-+	}
- 
- 	return phy_modify_paged(phydev, 0xd08, 0x11, RTL8211F_TX_DELAY, val);
+-	return ERR_PTR(-EOPNOTSUPP);
++	return !!__xsk_map_lookup_elem(map, *(u32 *)key);
  }
+ 
+ static int xsk_map_update_elem(struct bpf_map *map, void *key, void *value,
+diff --git a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c b/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
+index bbdba990fefb..da7a4b37cb98 100644
+--- a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
++++ b/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
+@@ -28,21 +28,6 @@
+ 	.errstr = "cannot pass map_type 18 into func bpf_map_lookup_elem",
+ 	.prog_type = BPF_PROG_TYPE_SOCK_OPS,
+ },
+-{
+-	"prevent map lookup in xskmap",
+-	.insns = {
+-	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
+-	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
+-	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
+-	BPF_LD_MAP_FD(BPF_REG_1, 0),
+-	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
+-	BPF_EXIT_INSN(),
+-	},
+-	.fixup_map_xskmap = { 3 },
+-	.result = REJECT,
+-	.errstr = "cannot pass map_type 17 into func bpf_map_lookup_elem",
+-	.prog_type = BPF_PROG_TYPE_XDP,
+-},
+ {
+ 	"prevent map lookup in stack trace",
+ 	.insns = {
 -- 
-2.21.0
+2.17.1
 
