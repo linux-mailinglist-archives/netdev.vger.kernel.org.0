@@ -2,102 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D40117952
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 14:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 512E11798B
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 14:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728489AbfEHMWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 08:22:08 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:46886 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726751AbfEHMWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 08:22:06 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x48CJBEV086953;
-        Wed, 8 May 2019 12:20:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=Vy0vJPC+R/qK4BTy9W8k2EK+1DkuBwwYmX4Im7RV/1I=;
- b=rwrtMH5vFY76MnriFuwWJRty7cv6d48ndLvoH9qa0iSpe18cQhaRn84K+EEAZ1el4f/y
- JYXzNPHiRG6Um3c2LeXmrh0vIUgokB68rrApoaQDWIhQiq3xdWk5gSEBW5t2CsNm+NQD
- vMj6o0elaMb6F0MU58KC4FWtRSn89CRe22TBfRL7zCGITD8/HSnJoDvmL6xh8b//HGVN
- 0/+i+9yb5Er16ot7xGaUWYdgVLnSKYTBDh5U+VgaaiAGanyy3YqtlO3+pRPaxxQxAHqK
- Taf9LSC6aD/fmeyve7zi016PT3fCR2HgfwqDVjH/4iBaBbfLBHPj+ptzQwZZXQN8uHEa Qg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2130.oracle.com with ESMTP id 2s94b63etg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 08 May 2019 12:20:31 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x48CJL8V107697;
-        Wed, 8 May 2019 12:20:30 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 2s94ag20en-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 08 May 2019 12:20:30 +0000
-Received: from abhmp0022.oracle.com (abhmp0022.oracle.com [141.146.116.28])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x48CKNew007185;
-        Wed, 8 May 2019 12:20:24 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 08 May 2019 05:20:22 -0700
-Date:   Wed, 8 May 2019 15:20:10 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, linux-omap@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-tegra@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-usb@vger.kernel.org, kvm@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-mtd@lists.infradead.org,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, alsa-devel@alsa-project.org,
-        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com
-Subject: Re: [PATCH 09/16] mmc: sdhci-xenon: use new match_string()
- helper/macro
-Message-ID: <20190508122010.GC21059@kadam>
-References: <20190508112842.11654-1-alexandru.ardelean@analog.com>
- <20190508112842.11654-11-alexandru.ardelean@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190508112842.11654-11-alexandru.ardelean@analog.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9250 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=644
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1905080079
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9250 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=665 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1905080079
+        id S1727229AbfEHMjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 08:39:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60706 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726515AbfEHMjP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 May 2019 08:39:15 -0400
+Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 825AA20449;
+        Wed,  8 May 2019 12:39:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557319153;
+        bh=xHZf/Oqd/MfTgtCGtWa0Of8XqjVMhgHhLXQ/RCWa0og=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=L/ky04awj3OM+92XX8sXAgkelTdwQo/U/SDn3fARJQ6sYWScqhXesM7NDiQBQDLI2
+         tfcmuucvGs56FoQoEpl8qWxdJUevBICFgaw+3pqJ++cFqnJK2bAa9HfvmoHUjkpJHN
+         iII7ONJSfXINxuYMH6KOD8bm+DsPDeq/RoVtg+fY=
+Date:   Wed, 8 May 2019 21:39:04 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        linux-kernel@vger.kernel.org,
+        Michal Gregorczyk <michalgr@live.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Mohammad Husain <russoue@gmail.com>,
+        Qais Yousef <qais.yousef@arm.com>,
+        Srinivas Ramana <sramana@codeaurora.org>,
+        duyuchao <yuchao.du@unisoc.com>,
+        Manjo Raja Rao <linux@manojrajarao.com>,
+        Karim Yaghmour <karim.yaghmour@opersys.com>,
+        Tamir Carmeli <carmeli.tamir@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Brendan Gregg <brendan.d.gregg@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>, kernel-team@android.com,
+        bpf@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>
+Subject: Re: [PATCH v2 1/4] bpf: Add support for reading user pointers
+Message-Id: <20190508213904.44de50870a54167cc924034e@kernel.org>
+In-Reply-To: <7e0d07af-79ad-5ff3-74ce-c12b0b9b78cd@iogearbox.net>
+References: <20190506183116.33014-1-joel@joelfernandes.org>
+        <3c6b312c-5763-0d9c-7c2c-436ee41f9be1@iogearbox.net>
+        <20190506195711.GA48323@google.com>
+        <7e0d07af-79ad-5ff3-74ce-c12b0b9b78cd@iogearbox.net>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 08, 2019 at 02:28:35PM +0300, Alexandru Ardelean wrote:
-> -static const char * const phy_types[] = {
-> -	"emmc 5.0 phy",
-> -	"emmc 5.1 phy"
-> -};
-> -
->  enum xenon_phy_type_enum {
->  	EMMC_5_0_PHY,
->  	EMMC_5_1_PHY,
->  	NR_PHY_TYPES
+On Tue, 7 May 2019 01:10:45 +0200
+Daniel Borkmann <daniel@iogearbox.net> wrote:
 
-There is no need for NR_PHY_TYPES now so you could remove that as well.
+> On 05/06/2019 09:57 PM, Joel Fernandes wrote:
+> > On Mon, May 06, 2019 at 09:11:19PM +0200, Daniel Borkmann wrote:
+> >> On 05/06/2019 08:31 PM, Joel Fernandes (Google) wrote:
+> >>> The eBPF based opensnoop tool fails to read the file path string passed
+> >>> to the do_sys_open function. This is because it is a pointer to
+> >>> userspace address and causes an -EFAULT when read with
+> >>> probe_kernel_read. This is not an issue when running the tool on x86 but
+> >>> is an issue on arm64. This patch adds a new bpf function call based
+> >>> which calls the recently proposed probe_user_read function [1].
+> >>> Using this function call from opensnoop fixes the issue on arm64.
+> >>>
+> >>> [1] https://lore.kernel.org/patchwork/patch/1051588/
+> >>>
+> >>> Cc: Michal Gregorczyk <michalgr@live.com>
+> >>> Cc: Adrian Ratiu <adrian.ratiu@collabora.com>
+> >>> Cc: Mohammad Husain <russoue@gmail.com>
+> >>> Cc: Qais Yousef <qais.yousef@arm.com>
+> >>> Cc: Srinivas Ramana <sramana@codeaurora.org>
+> >>> Cc: duyuchao <yuchao.du@unisoc.com>
+> >>> Cc: Manjo Raja Rao <linux@manojrajarao.com>
+> >>> Cc: Karim Yaghmour <karim.yaghmour@opersys.com>
+> >>> Cc: Tamir Carmeli <carmeli.tamir@gmail.com>
+> >>> Cc: Yonghong Song <yhs@fb.com>
+> >>> Cc: Alexei Starovoitov <ast@kernel.org>
+> >>> Cc: Brendan Gregg <brendan.d.gregg@gmail.com>
+> >>> Cc: Masami Hiramatsu <mhiramat@kernel.org>
+> >>> Cc: Peter Ziljstra <peterz@infradead.org>
+> >>> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> >>> Cc: Steven Rostedt <rostedt@goodmis.org>
+> >>> Cc: Kees Cook <keescook@chromium.org>
+> >>> Cc: kernel-team@android.com
+> >>> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> >>> ---
+> >>> Masami, could you carry these patches in the series where are you add
+> >>> probe_user_read function?
+> >>>
+> >>> Previous submissions is here:
+> >>> https://lore.kernel.org/patchwork/patch/1069552/
+> >>> v1->v2: split tools uapi sync into separate commit, added deprecation
+> >>> warning for old bpf_probe_read function.
+> >>
+> >> Please properly submit this series to bpf tree once the base
+> >> infrastructure from Masami is upstream.
+> > 
+> > Could you clarify what do you mean by "properly submit this series to bpf
+> > tree" mean? bpf@vger.kernel.org is CC'd.
+> 
+> Yeah, send the BPF series to bpf@vger.kernel.org once Masami's patches have
+> hit mainline, and we'll then route yours as fixes the usual path through
+> bpf tree.
 
-regards,
-dan carpenter
+OK, then I focus on my series. Keep this series separated.
+Thank you!
 
+> 
+> >> This series here should
+> >> also fix up all current probe read usage under samples/bpf/ and
+> >> tools/testing/selftests/bpf/.
+> > 
+> > Ok. Agreed, will do that.
+> 
+> Great, thanks!
+> Daniel
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
