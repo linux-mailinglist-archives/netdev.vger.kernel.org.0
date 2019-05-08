@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 944AD17AA3
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 15:30:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E0BF17AAE
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 15:33:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727235AbfEHNap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 09:30:45 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:42613 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725778AbfEHNap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 09:30:45 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hOMef-00032b-UV; Wed, 08 May 2019 13:30:42 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH][V3] net: dsa: sja1105: fix check on while loop exit
-Date:   Wed,  8 May 2019 14:30:41 +0100
-Message-Id: <20190508133041.14435-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727881AbfEHNdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 09:33:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:50750 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725778AbfEHNdN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 May 2019 09:33:13 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 2A26C308620F;
+        Wed,  8 May 2019 13:33:13 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.32.181.182])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D9AF360C61;
+        Wed,  8 May 2019 13:33:11 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     selinux@vger.kernel.org, netdev@vger.kernel.org,
+        Tom Deseyn <tdeseyn@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Richard Haines <richard_c_haines@btinternet.com>
+Subject: [PATCH net] selinux: do not report error on connect(AF_UNSPEC)
+Date:   Wed,  8 May 2019 15:32:51 +0200
+Message-Id: <7301017039d68c920cb9120c035a1a0df3e6b30d.1557322358.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Wed, 08 May 2019 13:33:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+calling connect(AF_UNSPEC) on an already connected TCP socket is an
+established way to disconnect() such socket. After commit 68741a8adab9
+("selinux: Fix ltp test connect-syscall failure") it no longer works
+and, in the above scenario connect() fails with EAFNOSUPPORT.
 
-The while-loop exit condition check is not correct; the
-loop should continue if the returns from the function calls are
-negative or the CRC status returns are invalid.  Currently it
-is ignoring the returns from the function calls.  Fix this by
-removing the status return checks and only break from the loop
-at the very end when we know that all the success condtions have
-been met.
+Fix the above falling back to the generic/old code when the address family
+is not AF_INET{4,6}, but leave the SCTP code path untouched, as it has
+specific constraints.
 
-Kudos to Dan Carpenter for describing the correct fix and
-Vladimir Oltean for noting the change to the check on the number
-of retries.
-
-Addresses-Coverity: ("Uninitialized scalar variable")
-Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port L2 switch")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Tested-by: Vladimir Oltean <olteanv@gmail.com>
+Fixes: 68741a8adab9 ("selinux: Fix ltp test connect-syscall failure")
+Reported-by: Tom Deseyn <tdeseyn@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
+ security/selinux/hooks.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-V2: Discard my broken origina fix. Use correct fix as described by
-    Dan Carpenter.
-V3: Remove empty line and check for retries != RETRIES fix.
----
- drivers/net/dsa/sja1105/sja1105_spi.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index 244a94ccfc18..49c5252a8dc6 100644
---- a/drivers/net/dsa/sja1105/sja1105_spi.c
-+++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -466,14 +466,15 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
- 				"invalid, retrying...\n");
- 			continue;
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index c61787b15f27..d82b87c16b0a 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -4649,7 +4649,7 @@ static int selinux_socket_connect_helper(struct socket *sock,
+ 		struct lsm_network_audit net = {0,};
+ 		struct sockaddr_in *addr4 = NULL;
+ 		struct sockaddr_in6 *addr6 = NULL;
+-		unsigned short snum;
++		unsigned short snum = 0;
+ 		u32 sid, perm;
+ 
+ 		/* sctp_connectx(3) calls via selinux_sctp_bind_connect()
+@@ -4674,12 +4674,12 @@ static int selinux_socket_connect_helper(struct socket *sock,
+ 			break;
+ 		default:
+ 			/* Note that SCTP services expect -EINVAL, whereas
+-			 * others expect -EAFNOSUPPORT.
++			 * others must handle this at the protocol level:
++			 * connect(AF_UNSPEC) on a connected socket is
++			 * a documented way disconnect the socket.
+ 			 */
+ 			if (sksec->sclass == SECCLASS_SCTP_SOCKET)
+ 				return -EINVAL;
+-			else
+-				return -EAFNOSUPPORT;
  		}
--	} while (--retries && (status.crcchkl == 1 || status.crcchkg == 1 ||
--		 status.configs == 0 || status.ids == 1));
-+		/* Success! */
-+		break;
-+	} while (--retries);
  
- 	if (!retries) {
- 		rc = -EIO;
- 		dev_err(dev, "Failed to upload config to device, giving up\n");
- 		goto out;
--	} else if (retries != RETRIES - 1) {
-+	} else if (retries != RETRIES) {
- 		dev_info(dev, "Succeeded after %d tried\n", RETRIES - retries);
- 	}
- 
+ 		err = sel_netport_sid(sk->sk_protocol, snum, &sid);
 -- 
 2.20.1
 
