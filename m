@@ -2,70 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2388F178DC
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 13:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E9A917906
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 14:05:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728313AbfEHLuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 07:50:44 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:43048 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727945AbfEHLuo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 07:50:44 -0400
-Received: by mail-qk1-f195.google.com with SMTP id z6so2598983qkl.10
-        for <netdev@vger.kernel.org>; Wed, 08 May 2019 04:50:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ILuFhvHSobbaZ61Z9yuK/cqA3RsgkCbpEkcFgIAzV04=;
-        b=LFgY1KqjHrJzZMScdR6SwQDk/jHUCK+rkvTHmjMdaHQoRz05Jc3umpSkSUKgiM1Pno
-         xtUGB81f/UgNMgWRxpUExKoHdzVlymVvKhYOLNyBeoHidVQV4Fu2tPDtln/S1aQqWwC7
-         eashWqoIhX92850jM6XUIUtrMMrRhGCY+F36toPLJizpuE869nZJPLE5POHpPEnN2rxi
-         Tibq+qwiXiaWS/M4wMAKCOLVy50wYCIsSh+Q4D1ZXKJeIGPj+LDBoky6GVmQAEiQXCNT
-         1DW2vvNmnWcjuQbz4RglxFFWL/vkF59v0j01EWY4A33pzx1vTsiBpVyv0whfYy2G7MRl
-         2Glg==
-X-Gm-Message-State: APjAAAUE0teiP5sx7IF3aNSgrIsW6yDBWA44iMWzylb2uaNZOZt+XFHw
-        jhsSoa2wFYF41DqUZFUR7/tdzA==
-X-Google-Smtp-Source: APXvYqw/MWdlCkD4aez13QH65u02WSZBNk5ZO4nwkw4pcFO6/moSDLKhPxlAykIrFyRxzn7JLISyEw==
-X-Received: by 2002:a05:620a:1449:: with SMTP id i9mr7104388qkl.4.1557316243422;
-        Wed, 08 May 2019 04:50:43 -0700 (PDT)
-Received: from localhost ([177.183.215.2])
-        by smtp.gmail.com with ESMTPSA id k63sm8766688qkf.97.2019.05.08.04.50.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 08 May 2019 04:50:42 -0700 (PDT)
-Date:   Wed, 8 May 2019 08:50:40 -0300
-From:   Flavio Leitner <fbl@redhat.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
+        id S1728426AbfEHMFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 08:05:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58487 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727614AbfEHMFD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 May 2019 08:05:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=I9SBp20TR9YMdcudsmTde2Jybsa8KlVOvbp9rA9Y1q0=; b=50ie19Oq8hRumDeP1PKGF2DiZB
+        PF3jzGZzZmYp2xEU4+zJocpr/BUXydmCng++AAQDaNN/UAcPpAEzRygKViKT9oVf+EMkKyCtFElA7
+        fg064r4pjqI97TEPwrtmGiRXYnK2g37AnI4UCSFIpFq8g+JuPmuxrIpjgCbOcORI4Dyw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hOLJi-0001A3-J4; Wed, 08 May 2019 14:04:58 +0200
+Date:   Wed, 8 May 2019 14:04:58 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] openvswitch: Replace removed NF_NAT_NEEDED with
- IS_ENABLED(CONFIG_NF_NAT)
-Message-ID: <20190508115040.GR3494@p50>
-References: <20190508065232.23400-1-geert@linux-m68k.org>
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+Subject: Re: [PATCH net-next 07/11] net: stmmac: dwmac1000: Also pass control
+ frames while in promisc mode
+Message-ID: <20190508120458.GD30557@lunn.ch>
+References: <cover.1557300602.git.joabreu@synopsys.com>
+ <c6c1449e173dc4805f5fc785f1906e4392ccc66f.1557300602.git.joabreu@synopsys.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190508065232.23400-1-geert@linux-m68k.org>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <c6c1449e173dc4805f5fc785f1906e4392ccc66f.1557300602.git.joabreu@synopsys.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 08, 2019 at 08:52:32AM +0200, Geert Uytterhoeven wrote:
-> Commit 4806e975729f99c7 ("netfilter: replace NF_NAT_NEEDED with
-> IS_ENABLED(CONFIG_NF_NAT)") removed CONFIG_NF_NAT_NEEDED, but a new user
-> popped up afterwards.
-> 
-> Fixes: fec9c271b8f1bde1 ("openvswitch: load and reference the NAT helper.")
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
+On Wed, May 08, 2019 at 09:51:07AM +0200, Jose Abreu wrote:
+> In order for the selftests to run the Flow Control selftest we need to
+> also pass control frames to the stack.
 
-Thanks!
+Hi Jose
 
-Acked-by: Flavio Leitner <fbl@redhat.com>
+Do you mean pause frames?
 
+   Thanks
+	Andrew
