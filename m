@@ -2,152 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E815D16FDE
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 06:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 979BA16FE0
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 06:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727053AbfEHEMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 00:12:54 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:35172 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbfEHEMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 00:12:53 -0400
-Received: by mail-qt1-f195.google.com with SMTP id d20so4156819qto.2
-        for <netdev@vger.kernel.org>; Tue, 07 May 2019 21:12:53 -0700 (PDT)
+        id S1726082AbfEHEQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 00:16:15 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:36674 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725884AbfEHEQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 00:16:14 -0400
+Received: by mail-qk1-f194.google.com with SMTP id c14so285239qke.3
+        for <netdev@vger.kernel.org>; Tue, 07 May 2019 21:16:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Xwhy2yN3rc/R/GaGy+1UFq4MiREMOPekIWW9QNkmDr0=;
-        b=tgAoBP8m6j3FR8dpXKrUiA/YFYg5cwIix6PJoO9oYjn3+FEZ3N3XNAgn8ZY+ubD77+
-         zAOa8af+2QOxQ3FfTcw0JdVQDGs0FpjixyJVGWRuJeigb1YKjhV0wpYN0JosnwOL0JI+
-         9V8j03SwqIwNio3TuGFD5Gp7VvqwQmibDmYsqovEDquEyFF9ANirHnB1iKi3VA/AzwdV
-         vD6k9Z1TZrjZDGC84nsj38BSlDLErRsjI1ep+7nKNwLs7wSV8gnBl/sWnCmvF7Ln+Bmr
-         g+afcDRbQrOL+HsSPgrAOQj9JXBSFb+340B2vhtgL7NaPCVSsv7UA338jb+e0dkDlRIJ
-         ql2w==
-X-Gm-Message-State: APjAAAVdEoqv8PhvIh6G9OshCUh/YCgyUMfM43qpjRPka3a7MrJk2/Dd
-        OeD0RL3ViNrgbTWEmezSSRuCMw==
-X-Google-Smtp-Source: APXvYqx0Vjhjwje7JRCwbHR2bgsffeWuD7uDRdzXBHVgbWnmt5fE0ab1QpEFLunM5VrcyQy1j/ZmKg==
-X-Received: by 2002:ac8:65cf:: with SMTP id t15mr16582014qto.12.1557288772916;
-        Tue, 07 May 2019 21:12:52 -0700 (PDT)
+        bh=IZrISjnTH3+th9zbZuIHlGxFs+vBvqW81DWxpAAqNTI=;
+        b=qwnZdwQMLZ2sGfsU4Xpw9i0LbZAzTX/IaPM+ZNBi6vEvv1Sc60KySHWPvoz3PhnLe2
+         yp3SnzZzaf+65ozho+NRc0kMb2hGY1vzij/8Gm/aaUMH7HKk+mj/s6o+PjK7sdqu+y2M
+         09F1PhbikLO16HBwFd9Uq1SwsbshMHggOmZHgPcb+n+EWv5RCMP9jH+E4IvBNlsmo7+G
+         H55QyrnLxKPK3dTQd0I9G6chVPOh2zhxLh0bluY+ae35Ftctc4Uah1eIpIvVYnZb8iz+
+         LlubHZaHSNEfHFK8cfiReu7XEPz8OR58vhpgKe4uVU34tPEH/AGGqm/yrZRnPfc9HQlq
+         +SsQ==
+X-Gm-Message-State: APjAAAXb3Xxdpk17Ztcy5v9Wmu0k6cEoGgsGPySImIGnxam+M9jm4aio
+        PpURkMnN3JtUDfYMvFu55MeH5g==
+X-Google-Smtp-Source: APXvYqxKO8nO8IbDUZfIm1V2fKJiKjWdF5+sqUr/5SLJTcJm0KkppVJQ2X6//aPr+vTvs/q2nGkvZQ==
+X-Received: by 2002:a05:620a:34b:: with SMTP id t11mr28384109qkm.279.1557288973944;
+        Tue, 07 May 2019 21:16:13 -0700 (PDT)
 Received: from redhat.com (pool-173-76-105-71.bstnma.fios.verizon.net. [173.76.105.71])
-        by smtp.gmail.com with ESMTPSA id j25sm9725830qtc.24.2019.05.07.21.12.50
+        by smtp.gmail.com with ESMTPSA id a7sm1301785qkl.60.2019.05.07.21.16.12
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 07 May 2019 21:12:51 -0700 (PDT)
-Date:   Wed, 8 May 2019 00:12:49 -0400
+        Tue, 07 May 2019 21:16:13 -0700 (PDT)
+Date:   Wed, 8 May 2019 00:16:11 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@infradead.org>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Andrea Arcangeli <aarcange@redhat.com>
-Subject: Re: [PATCH RFC] vhost: don't use kmap() to log dirty pages
-Message-ID: <20190507220526-mutt-send-email-mst@kernel.org>
-References: <1557195809-12373-1-git-send-email-jasowang@redhat.com>
+Cc:     netdev@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: [PATCH net V2] tuntap: synchronize through tfiles array instead
+ of tun->numqueues
+Message-ID: <20190508001518-mutt-send-email-mst@kernel.org>
+References: <1557201816-19945-1-git-send-email-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1557195809-12373-1-git-send-email-jasowang@redhat.com>
+In-Reply-To: <1557201816-19945-1-git-send-email-jasowang@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 06, 2019 at 10:23:29PM -0400, Jason Wang wrote:
-> Vhost log dirty pages directly to a userspace bitmap through GUP and
-> kmap_atomic() since kernel doesn't have a set_bit_to_user()
-> helper. This will cause issues for the arch that has virtually tagged
-> caches. The way to fix is to keep using userspace virtual address.
+On Tue, May 07, 2019 at 12:03:36AM -0400, Jason Wang wrote:
+> When a queue(tfile) is detached through __tun_detach(), we move the
+> last enabled tfile to the position where detached one sit but don't
+> NULL out last position. We expect to synchronize the datapath through
+> tun->numqueues. Unfortunately, this won't work since we're lacking
+> sufficient mechanism to order or synchronize the access to
+> tun->numqueues.
 > 
-> Fortunately, futex has a cmpxchg to userspace memory helper
-> futex_atomic_cmpxchg_inatomic(). So switch to use it to exchange the
-> userspace bitmap with zero, set the bit and then write it back through
-> put_user().
+> To fix this, NULL out the last position during detaching and check
+> RCU protected tfile against NULL instead of checking tun->numqueues in
+> datapath.
 > 
-> Note: there're archs (few non popular ones) that don't implement
-> futex helper, we can't log dirty pages. We can fix them on top or
-> simply disable LOG_ALL features of vhost.
-
-Or implement futex_atomic_cmpxchg using kmap if they don't have
-virtually tagged caches.
-
-> 
-> Cc: Christoph Hellwig <hch@infradead.org>
-> Cc: James Bottomley <James.Bottomley@HansenPartnership.com>
-> Cc: Andrea Arcangeli <aarcange@redhat.com>
-> Fixes: 3a4d5c94e9593 ("vhost_net: a kernel-level virtio server")
+> Cc: YueHaibing <yuehaibing@huawei.com>
+> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> Cc: weiyongjun (A) <weiyongjun1@huawei.com>
+> Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> Fixes: c8d68e6be1c3b ("tuntap: multiqueue support")
 > Signed-off-by: Jason Wang <jasowang@redhat.com>
 > ---
->  drivers/vhost/vhost.c | 27 +++++++++++++++------------
->  1 file changed, 15 insertions(+), 12 deletions(-)
+> Changes from V1:
+> - keep the check in tun_xdp_xmit()
+> ---
+>  drivers/net/tun.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 351af88..9c94c41 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -31,6 +31,7 @@
->  #include <linux/sched/signal.h>
->  #include <linux/interval_tree_generic.h>
->  #include <linux/nospec.h>
-> +#include <asm/futex.h>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index e9ca1c0..32a0b23 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -700,6 +700,8 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
+>  				   tun->tfiles[tun->numqueues - 1]);
+>  		ntfile = rtnl_dereference(tun->tfiles[index]);
+>  		ntfile->queue_index = index;
+> +		rcu_assign_pointer(tun->tfiles[tun->numqueues - 1],
+> +				   NULL);
 >  
->  #include "vhost.h"
+>  		--tun->numqueues;
+>  		if (clean) {
+> @@ -1082,7 +1084,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+>  	tfile = rcu_dereference(tun->tfiles[txq]);
 >  
-> @@ -1692,25 +1693,27 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
->  }
->  EXPORT_SYMBOL_GPL(vhost_dev_ioctl);
+>  	/* Drop packet if interface is not attached */
+> -	if (txq >= tun->numqueues)
+> +	if (!tfile)
+>  		goto drop;
 >  
-> -/* TODO: This is really inefficient.  We need something like get_user()
-> - * (instruction directly accesses the data, with an exception table entry
-> - * returning -EFAULT). See Documentation/x86/exception-tables.txt.
-> - */
-> -static int set_bit_to_user(int nr, void __user *addr)
-> +static int set_bit_to_user(int nr, u32 __user *addr)
->  {
->  	unsigned long log = (unsigned long)addr;
->  	struct page *page;
-> -	void *base;
-> -	int bit = nr + (log % PAGE_SIZE) * 8;
-> +	u32 old_log;
->  	int r;
->  
->  	r = get_user_pages_fast(log, 1, 1, &page);
->  	if (r < 0)
->  		return r;
->  	BUG_ON(r != 1);
-> -	base = kmap_atomic(page);
-> -	set_bit(bit, base);
-> -	kunmap_atomic(base);
-> +
-> +	r = futex_atomic_cmpxchg_inatomic(&old_log, addr, 0, 0);
-> +	if (r < 0)
-> +		return r;
+>  	if (!rcu_dereference(tun->steering_prog))
 
-So I think this is a great idea!
+Hmm don't we need to range check txq?
 
-However one issue here is that futex_atomic_cmpxchg_inatomic will fail if the
-page is swapped out. I suspect we need a variant that blocks the thread
-instead.
 
-> +
-> +	old_log |= 1 << nr;
-> +	r = put_user(old_log, addr);
-> +	if (r < 0)
-> +		return r;
-> +
->  	set_page_dirty_lock(page);
->  	put_page(page);
->  	return 0;
-> @@ -1727,8 +1730,8 @@ static int log_write(void __user *log_base,
->  	write_length += write_address % VHOST_PAGE_SIZE;
->  	for (;;) {
->  		u64 base = (u64)(unsigned long)log_base;
-> -		u64 log = base + write_page / 8;
-> -		int bit = write_page % 8;
-> +		u64 log = base + write_page / 32;
-> +		int bit = write_page % 32;
->  		if ((u64)(unsigned long)log != log)
->  			return -EFAULT;
->  		r = set_bit_to_user(bit, (void __user *)(unsigned long)log);
+> @@ -1313,6 +1315,10 @@ static int tun_xdp_xmit(struct net_device *dev, int n,
+>  
+>  	tfile = rcu_dereference(tun->tfiles[smp_processor_id() %
+>  					    numqueues]);
+> +	if (!tfile) {
+> +		rcu_read_unlock();
+> +		return -ENXIO; /* Caller will free/return all frames */
+> +	}
+>  
+>  	spin_lock(&tfile->tx_ring.producer_lock);
+>  	for (i = 0; i < n; i++) {
 > -- 
 > 1.8.3.1
