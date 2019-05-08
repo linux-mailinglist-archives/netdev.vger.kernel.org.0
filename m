@@ -2,395 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2719917218
-	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 09:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44ECD172D0
+	for <lists+netdev@lfdr.de>; Wed,  8 May 2019 09:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726554AbfEHHC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 03:02:59 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:48352 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726657AbfEHHCy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 03:02:54 -0400
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x48725kf123323
-        for <netdev@vger.kernel.org>; Wed, 8 May 2019 03:02:53 -0400
-Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2sbr22p54r-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 08 May 2019 03:02:53 -0400
-Received: from localhost
-        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <alastair@au1.ibm.com>;
-        Wed, 8 May 2019 08:02:50 +0100
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
-        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 8 May 2019 08:02:41 +0100
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x4872euL55181412
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 8 May 2019 07:02:40 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 130A8AE058;
-        Wed,  8 May 2019 07:02:40 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2C072AE053;
-        Wed,  8 May 2019 07:02:39 +0000 (GMT)
-Received: from ozlabs.au.ibm.com (unknown [9.192.253.14])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  8 May 2019 07:02:39 +0000 (GMT)
-Received: from adsilva.ozlabs.ibm.com (haven.au.ibm.com [9.192.254.114])
-        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ozlabs.au.ibm.com (Postfix) with ESMTPSA id 7E655A03C4;
-        Wed,  8 May 2019 17:02:35 +1000 (AEST)
-From:   "Alastair D'Silva" <alastair@au1.ibm.com>
-To:     alastair@d-silva.org
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-fsdevel@vger.kernel.org
-Subject: [PATCH v2 7/7] lib/hexdump.c: Optionally retain byte ordering
-Date:   Wed,  8 May 2019 17:01:47 +1000
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190508070148.23130-1-alastair@au1.ibm.com>
-References: <20190508070148.23130-1-alastair@au1.ibm.com>
+        id S1727265AbfEHHsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 May 2019 03:48:06 -0400
+Received: from mail-eopbgr80059.outbound.protection.outlook.com ([40.107.8.59]:20547
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726835AbfEHHsG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 May 2019 03:48:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1y9wsMOxo81ylIB2DbAFnZamnOUKFuK0JbOkf/31owc=;
+ b=H6h6Z3Wmcy5KfES7J+/9V8pTzIc4Wv+lsk1M/vBw2Z9RNeOqRuYy00MCWvc3O6fpg7tSFo397g8wZaDlNgB1uDh6PapdqpFU2zPsRc2przii+F1iIrelL4VJlAmMzxku3ZfUHlb/I27llpsbSNY1S0+0OiJ36KRbcguMqgP3Fyg=
+Received: from HE1PR05MB3257.eurprd05.prod.outlook.com (10.170.243.19) by
+ HE1PR05MB3292.eurprd05.prod.outlook.com (10.170.243.30) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1856.10; Wed, 8 May 2019 07:48:00 +0000
+Received: from HE1PR05MB3257.eurprd05.prod.outlook.com
+ ([fe80::3925:eb82:b9fb:5621]) by HE1PR05MB3257.eurprd05.prod.outlook.com
+ ([fe80::3925:eb82:b9fb:5621%4]) with mapi id 15.20.1856.012; Wed, 8 May 2019
+ 07:48:00 +0000
+From:   Tariq Toukan <tariqt@mellanox.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: Take common prefetch code structure
+ into a function
+Thread-Topic: [PATCH net-next 1/2] net: Take common prefetch code structure
+ into a function
+Thread-Index: AQHVAy5s1wNYdeaXF06xxm1purIlqaZexwOAgACsZICAAWruAA==
+Date:   Wed, 8 May 2019 07:48:00 +0000
+Message-ID: <bfc82029-8b74-26f5-35db-034cda3836ad@mellanox.com>
+References: <1557052567-31827-1-git-send-email-tariqt@mellanox.com>
+ <1557052567-31827-2-git-send-email-tariqt@mellanox.com>
+ <20190506165157.6e0f04e6@cakuba.hsd1.ca.comcast.net>
+ <20190507120857.5975c059@carbon>
+In-Reply-To: <20190507120857.5975c059@carbon>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR05CA0044.eurprd05.prod.outlook.com
+ (2603:10a6:208:be::21) To HE1PR05MB3257.eurprd05.prod.outlook.com
+ (2603:10a6:7:35::19)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=tariqt@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [77.127.110.157]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fc3c4729-3f66-46f0-e16e-08d6d3897e38
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:HE1PR05MB3292;
+x-ms-traffictypediagnostic: HE1PR05MB3292:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <HE1PR05MB32925F5DD9BB5650F2C817D2AE320@HE1PR05MB3292.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0031A0FFAF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(396003)(39860400002)(136003)(376002)(346002)(189003)(199004)(6486002)(26005)(66946007)(53936002)(73956011)(478600001)(486006)(476003)(6246003)(2906002)(316002)(53546011)(81166006)(4326008)(14444005)(229853002)(81156014)(186003)(8936002)(3846002)(6306002)(2616005)(102836004)(386003)(6506007)(256004)(25786009)(6116002)(446003)(66066001)(71200400001)(64756008)(99286004)(66446008)(86362001)(66476007)(66556008)(71190400001)(11346002)(6436002)(68736007)(52116002)(54906003)(110136005)(8676002)(6512007)(31686004)(5660300002)(31696002)(966005)(7736002)(14454004)(36756003)(305945005)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB3292;H:HE1PR05MB3257.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: yVrpxJP6VRIa8wlJmPINiNzwGM60HTsyKauVogFunV/nQxlnFeT7S+7MfalU3ZeIJ4npDmYm1TJMzIK2z+XRafusxxESyJQ6cH665de4YQMu4gdbPflPY/YVnYeHL20NxVkdW4aOOcHKMAKvY+yvlDh11ih/wuPwcSGyxEX64GTdgd2U3wZOZsCnXBjd5Z7S1EGXdsV1rJO1yKZOeFgZRLMRiOs5E0PJhkfAmy9vhAF5S2hPa1mWgV6kAH7bLiaIFLIXaWsSCnZ7ggw3FKfV3RaRCcWuby5jqlHYuBaOKBR1yyMhf3/ga712CeLdgBRorBcbudN4Dk/JKvCwQ/PyeuJWUQWwlv0/mpHWrV2PohCZzZHmACPFB+q/as4utr9mOvsABl5Os3Zb0DQd3W+4ROWULcxUXGGKsEmnDV0p8HQ=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5A3AF1DDDE22AC408015179A5F5093C1@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19050807-4275-0000-0000-00000332844E
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19050807-4276-0000-0000-00003841F1F4
-Message-Id: <20190508070148.23130-8-alastair@au1.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-08_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905080046
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc3c4729-3f66-46f0-e16e-08d6d3897e38
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 May 2019 07:48:00.4773
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3292
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alastair D'Silva <alastair@d-silva.org>
-
-The behaviour of hexdump groups is to print the data out as if
-it was a native-endian number.
-
-This patch tweaks the documentation to make this clear, and also
-adds the HEXDUMP_RETAIN_BYTE_ORDER flag to allow groups of
-multiple bytes to be printed without affecting the ordering
-of the printed bytes.
-
-Signed-off-by: Alastair D'Silva <alastair@d-silva.org>
----
- include/linux/printk.h |  1 +
- lib/hexdump.c          | 30 +++++++++++++++++----
- lib/test_hexdump.c     | 60 +++++++++++++++++++++++++++++-------------
- 3 files changed, 68 insertions(+), 23 deletions(-)
-
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index 5231a14e4593..15277d50159c 100644
---- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -488,6 +488,7 @@ enum {
- #define HEXDUMP_2_GRP_SPACES		(1 << 5)
- #define HEXDUMP_4_GRP_SPACES		(1 << 6)
- #define HEXDUMP_8_GRP_SPACES		(1 << 7)
-+#define HEXDUMP_RETAIN_BYTE_ORDER	(1 << 8)
- 
- extern int hex_dump_to_buffer(const void *buf, size_t len, int rowsize,
- 			      int groupsize, char *linebuf, size_t linebuflen,
-diff --git a/lib/hexdump.c b/lib/hexdump.c
-index febd614406d1..bfc9800630ae 100644
---- a/lib/hexdump.c
-+++ b/lib/hexdump.c
-@@ -127,7 +127,8 @@ static void separator_parameters(u64 flags, int groupsize, int *sep_chars,
-  * @buf: data blob to dump
-  * @len: number of bytes in the @buf
-  * @rowsize: number of bytes to print per line; must be a multiple of groupsize
-- * @groupsize: number of bytes to print at a time (1, 2, 4, 8; default = 1)
-+ * @groupsize: number of bytes to convert to a native endian number and print:
-+ * 	       1, 2, 4, 8; default = 1
-  * @linebuf: where to put the converted data
-  * @linebuflen: total size of @linebuf, including space for terminating NUL
-  * @flags: A bitwise OR of the following flags:
-@@ -138,6 +139,9 @@ static void separator_parameters(u64 flags, int groupsize, int *sep_chars,
-  *	HEXDUMP_2_GRP_SPACES:		insert a ' ' after every 2 groups
-  *	HEXDUMP_4_GRP_SPACES:		insert a ' ' after every 4 groups
-  *	HEXDUMP_8_GRP_SPACES:		insert a ' ' after every 8 groups
-+ *	HEXDUMP_RETAIN_BYTE_ORDER:	Retain the byte ordering of groups
-+ *					instead of treating each group as a
-+ *					native-endian number
-  *
-  * hex_dump_to_buffer() works on one "line" of output at a time, converting
-  * <groupsize> bytes of input to hexadecimal (and optionally printable ASCII)
-@@ -171,6 +175,7 @@ int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
- 	int ret;
- 	int sep_chars = 0;
- 	char sep = 0;
-+	bool big_endian = (flags & HEXDUMP_RETAIN_BYTE_ORDER) ? 1 : 0;
- 
- 	if (!is_power_of_2(groupsize) || groupsize > 8)
- 		groupsize = 1;
-@@ -202,10 +207,13 @@ int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
- 		const u64 *ptr8 = buf;
- 
- 		for (j = 0; j < ngroups; j++) {
-+			u64 val = big_endian ?
-+					be64_to_cpu(get_unaligned(ptr8 + j)) :
-+					get_unaligned(ptr8 + j);
- 			ret = snprintf(linebuf + lx, linebuflen - lx,
- 				       "%s%16.16llx",
- 				       j ? group_separator(j, flags) : "",
--				       get_unaligned(ptr8 + j));
-+				       val);
- 			if (ret >= linebuflen - lx)
- 				goto overflow1;
- 			lx += ret;
-@@ -214,10 +222,14 @@ int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
- 		const u32 *ptr4 = buf;
- 
- 		for (j = 0; j < ngroups; j++) {
-+			u32 val = big_endian ?
-+					be32_to_cpu(get_unaligned(ptr4 + j)) :
-+					get_unaligned(ptr4 + j);
-+
- 			ret = snprintf(linebuf + lx, linebuflen - lx,
- 				       "%s%8.8x",
- 				       j ? group_separator(j, flags) : "",
--				       get_unaligned(ptr4 + j));
-+				       val);
- 			if (ret >= linebuflen - lx)
- 				goto overflow1;
- 			lx += ret;
-@@ -226,10 +238,14 @@ int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
- 		const u16 *ptr2 = buf;
- 
- 		for (j = 0; j < ngroups; j++) {
-+			u16 val = big_endian ?
-+					be16_to_cpu(get_unaligned(ptr2 + j)) :
-+					get_unaligned(ptr2 + j);
-+
- 			ret = snprintf(linebuf + lx, linebuflen - lx,
- 				       "%s%4.4x",
- 				       j ? group_separator(j, flags) : "",
--				       get_unaligned(ptr2 + j));
-+				       val);
- 			if (ret >= linebuflen - lx)
- 				goto overflow1;
- 			lx += ret;
-@@ -331,7 +347,8 @@ static void announce_skipped(const char *level, const char *prefix_str,
-  * @prefix_type: controls whether prefix of an offset, address, or none
-  *  is printed (%DUMP_PREFIX_OFFSET, %DUMP_PREFIX_ADDRESS, %DUMP_PREFIX_NONE)
-  * @rowsize: number of bytes to print per line; must be a multiple of groupsize
-- * @groupsize: number of bytes to print at a time (1, 2, 4, 8; default = 1)
-+ * @groupsize: number of bytes to convert to a native endian number and print:
-+ * 	       1, 2, 4, 8; default = 1
-  * @buf: data blob to dump
-  * @len: number of bytes in the @buf
-  * @ascii: include ASCII after the hex output
-@@ -342,6 +359,9 @@ static void announce_skipped(const char *level, const char *prefix_str,
-  *	HEXDUMP_2_GRP_LINES:		insert a '|' after every 2 groups
-  *	HEXDUMP_4_GRP_LINES:		insert a '|' after every 4 groups
-  *	HEXDUMP_8_GRP_LINES:		insert a '|' after every 8 groups
-+ *	HEXDUMP_RETAIN_BYTE_ORDER:	Retain the byte ordering of groups
-+ *					instead of treating each group as a
-+ *					native-endian number
-  *
-  * Given a buffer of u8 data, print_hex_dump() prints a hex + ASCII dump
-  * to the kernel log at the specified kernel log level, with an optional
-diff --git a/lib/test_hexdump.c b/lib/test_hexdump.c
-index ae340c5c1c6f..1e510e934568 100644
---- a/lib/test_hexdump.c
-+++ b/lib/test_hexdump.c
-@@ -98,14 +98,15 @@ static unsigned failed_tests __initdata;
- 
- static void __init test_hexdump_prepare_test(size_t len, int rowsize,
- 					     int groupsize, char *test,
--					     size_t testlen, bool ascii)
-+					     size_t testlen, u64 flags)
- {
- 	char *p;
- 	const char * const *result;
- 	size_t l = len;
- 	int gs = groupsize, rs = rowsize;
- 	unsigned int i;
--	const bool is_be = IS_ENABLED(CONFIG_CPU_BIG_ENDIAN);
-+	const bool is_be = IS_ENABLED(CONFIG_CPU_BIG_ENDIAN) ||
-+			(flags & HEXDUMP_RETAIN_BYTE_ORDER);
- 
- 	if (l > rs)
- 		l = rs;
-@@ -142,7 +143,7 @@ static void __init test_hexdump_prepare_test(size_t len, int rowsize,
- 		p--;
- 
- 	/* ASCII part */
--	if (ascii) {
-+	if (flags & HEXDUMP_ASCII) {
- 		do {
- 			*p++ = ' ';
- 		} while (p < test + rs * 2 + rs / gs + 1);
-@@ -157,7 +158,7 @@ static void __init test_hexdump_prepare_test(size_t len, int rowsize,
- #define TEST_HEXDUMP_BUF_SIZE		(64 * 3 + 2 + 64 + 1)
- 
- static void __init test_hexdump(size_t len, int rowsize, int groupsize,
--				bool ascii)
-+				u64 flags)
- {
- 	char test[TEST_HEXDUMP_BUF_SIZE];
- 	char real[TEST_HEXDUMP_BUF_SIZE];
-@@ -166,11 +167,11 @@ static void __init test_hexdump(size_t len, int rowsize, int groupsize,
- 
- 	memset(real, FILL_CHAR, sizeof(real));
- 	hex_dump_to_buffer(data_b, len, rowsize, groupsize, real, sizeof(real),
--			   ascii ? HEXDUMP_ASCII : 0);
-+			   flags);
- 
- 	memset(test, FILL_CHAR, sizeof(test));
- 	test_hexdump_prepare_test(len, rowsize, groupsize, test, sizeof(test),
--				  ascii);
-+				  flags);
- 
- 	if (memcmp(test, real, TEST_HEXDUMP_BUF_SIZE)) {
- 		pr_err("Len: %zu row: %d group: %d\n", len, rowsize, groupsize);
-@@ -193,7 +194,7 @@ static void __init test_hexdump_set(int rowsize, bool ascii)
- 
- static void __init test_hexdump_overflow(size_t buflen, size_t len,
- 					 int rowsize, int groupsize,
--					 bool ascii)
-+					 u64 flags)
- {
- 	char test[TEST_HEXDUMP_BUF_SIZE];
- 	char buf[TEST_HEXDUMP_BUF_SIZE];
-@@ -205,7 +206,7 @@ static void __init test_hexdump_overflow(size_t buflen, size_t len,
- 	memset(buf, FILL_CHAR, sizeof(buf));
- 
- 	rc = hex_dump_to_buffer(data_b, len, rowsize, groupsize, buf, buflen,
--				ascii ? HEXDUMP_ASCII : 0);
-+				flags);
- 
- 	/*
- 	 * Caller must provide the data length multiple of groupsize. The
-@@ -222,12 +223,12 @@ static void __init test_hexdump_overflow(size_t buflen, size_t len,
- 		  - 1 /* no trailing space */;
- 	}
- 
--	expected_len = (ascii) ? ascii_len : hex_len;
-+	expected_len = (flags & HEXDUMP_ASCII) ? ascii_len : hex_len;
- 
- 	fill_point = min_t(int, expected_len + 1, buflen);
- 	if (buflen) {
- 		test_hexdump_prepare_test(len, rowsize, groupsize, test,
--					  sizeof(test), ascii);
-+					  sizeof(test), flags);
- 		test[fill_point - 1] = '\0';
- 	}
- 	memset(test + fill_point, FILL_CHAR, sizeof(test) - fill_point);
-@@ -237,8 +238,8 @@ static void __init test_hexdump_overflow(size_t buflen, size_t len,
- 	buf[sizeof(buf) - 1] = '\0';
- 
- 	if (!match) {
--		pr_err("rowsize: %u groupsize: %u ascii: %d Len: %zu buflen: %zu strlen: %zu\n",
--			rowsize, groupsize, ascii, len, buflen,
-+		pr_err("rowsize: %u groupsize: %u flags: %llx Len: %zu buflen: %zu strlen: %zu\n",
-+			rowsize, groupsize, flags, len, buflen,
- 			strnlen(buf, sizeof(buf)));
- 		pr_err("Result: %d '%-.*s'\n", rc, (int)buflen, buf);
- 		pr_err("Expect: %d '%-.*s'\n", expected_len, (int)buflen, test);
-@@ -247,7 +248,7 @@ static void __init test_hexdump_overflow(size_t buflen, size_t len,
- 	}
- }
- 
--static void __init test_hexdump_overflow_set(size_t buflen, bool ascii)
-+static void __init test_hexdump_overflow_set(size_t buflen, u64 flags)
- {
- 	unsigned int i = 0;
- 	int rs = (get_random_int() % 4 + 1) * 16;
-@@ -256,7 +257,7 @@ static void __init test_hexdump_overflow_set(size_t buflen, bool ascii)
- 		int gs = 1 << i;
- 		size_t len = get_random_int() % rs + gs;
- 
--		test_hexdump_overflow(buflen, rounddown(len, gs), rs, gs, ascii);
-+		test_hexdump_overflow(buflen, rounddown(len, gs), rs, gs, flags);
- 	} while (i++ < 3);
- }
- 
-@@ -264,20 +265,43 @@ static int __init test_hexdump_init(void)
- {
- 	unsigned int i;
- 	int rowsize;
-+	u64 flags;
- 
-+	flags = 0;
- 	rowsize = (get_random_int() % 4 + 1) * 16;
- 	for (i = 0; i < 16; i++)
--		test_hexdump_set(rowsize, false);
-+		test_hexdump_set(rowsize, flags);
- 
-+	flags = HEXDUMP_ASCII;
- 	rowsize = (get_random_int() % 4 + 1) * 16;
- 	for (i = 0; i < 16; i++)
--		test_hexdump_set(rowsize, true);
-+		test_hexdump_set(rowsize, flags);
- 
-+	flags = HEXDUMP_RETAIN_BYTE_ORDER;
-+	rowsize = (get_random_int() % 2 + 1) * 16;
-+	for (i = 0; i < 16; i++)
-+		test_hexdump_set(rowsize, flags);
-+
-+	flags = HEXDUMP_ASCII | HEXDUMP_RETAIN_BYTE_ORDER;
-+	rowsize = (get_random_int() % 2 + 1) * 16;
-+	for (i = 0; i < 16; i++)
-+		test_hexdump_set(rowsize, flags);
-+
-+	flags = 0;
-+	for (i = 0; i <= TEST_HEXDUMP_BUF_SIZE; i++)
-+		test_hexdump_overflow_set(i, flags);
-+
-+	flags = HEXDUMP_ASCII;
-+	for (i = 0; i <= TEST_HEXDUMP_BUF_SIZE; i++)
-+		test_hexdump_overflow_set(i, flags);
-+
-+	flags = HEXDUMP_RETAIN_BYTE_ORDER;
- 	for (i = 0; i <= TEST_HEXDUMP_BUF_SIZE; i++)
--		test_hexdump_overflow_set(i, false);
-+		test_hexdump_overflow_set(i, flags);
- 
-+	flags = HEXDUMP_ASCII | HEXDUMP_RETAIN_BYTE_ORDER;
- 	for (i = 0; i <= TEST_HEXDUMP_BUF_SIZE; i++)
--		test_hexdump_overflow_set(i, true);
-+		test_hexdump_overflow_set(i, flags);
- 
- 	if (failed_tests == 0)
- 		pr_info("all %u tests passed\n", total_tests);
--- 
-2.21.0
-
+DQoNCk9uIDUvNy8yMDE5IDE6MDggUE0sIEplc3BlciBEYW5nYWFyZCBCcm91ZXIgd3JvdGU6DQo+
+IE9uIE1vbiwgNiBNYXkgMjAxOSAxNjo1MTo1NyAtMDcwMA0KPiBKYWt1YiBLaWNpbnNraSA8amFr
+dWIua2ljaW5za2lAbmV0cm9ub21lLmNvbT4gd3JvdGU6DQo+IA0KPj4gT24gU3VuLCAgNSBNYXkg
+MjAxOSAxMzozNjowNiArMDMwMCwgVGFyaXEgVG91a2FuIHdyb3RlOg0KPj4+IE1hbnkgZGV2aWNl
+IGRyaXZlcnMgdXNlIHRoZSBzYW1lIHByZWZldGNoIGNvZGUgc3RydWN0dXJlIHRvDQo+Pj4gZGVh
+bCB3aXRoIHNtYWxsIEwxIGNhY2hlbGluZSBzaXplLg0KPj4+IFRha2UgdGhpcyBjb2RlIGludG8g
+YSBmdW5jdGlvbiBhbmQgY2FsbCBpdCBmcm9tIHRoZSBkcml2ZXJzLg0KPj4+DQo+Pj4gU3VnZ2Vz
+dGVkLWJ5OiBKYWt1YiBLaWNpbnNraSA8amFrdWIua2ljaW5za2lAbmV0cm9ub21lLmNvbT4NCj4+
+PiBTaWduZWQtb2ZmLWJ5OiBUYXJpcSBUb3VrYW4gPHRhcmlxdEBtZWxsYW5veC5jb20+DQo+Pj4g
+UmV2aWV3ZWQtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0KPj4+IENj
+OiBKZXNwZXIgRGFuZ2FhcmQgQnJvdWVyIDxicm91ZXJAcmVkaGF0LmNvbT4NCj4+DQo+PiBXZSBj
+b3VsZCBiaWtlIHNoZWQgb24gdGhlIG5hbWUgYSBsaXR0bGUgLSBuZXRfcHJlZmV0Y2hfaGVhZGVy
+cygpID8NCj4+IGJ1dCBhdCBsZWFzdCBhIHNob3J0IGtkb2MgZXhwbGFuYXRpb24gZm9yIHRoZSBw
+dXJwb3NlIG9mIHRoaXMgaGVscGVyDQo+PiB3b3VsZCBiZSBnb29kIElNSE8uDQo+IA0KPiBJIHdv
+dWxkIGF0IGxlYXN0IGltcHJvdmUgdGhlIGNvbW1pdCBtZXNzYWdlLiAgQXMgQWxleGFuZGVyIHNv
+IG5pY2VseQ0KPiBleHBsYWluZWRbMV0sIHRoaXMgcHJlZmV0Y2ggcHVycG9zZTogInRoZSAyIHBy
+ZWZldGNoZXMgYXJlIG5lZWRlZCBmb3IgeDg2DQo+IGlmIHlvdSB3YW50IGEgZnVsbCBUQ1Agb3Ig
+SVB2NiBoZWFkZXIgcHVsbGVkIGludG8gdGhlIEwxIGNhY2hlIGZvcg0KPiBpbnN0YW5jZS4iICBB
+bHRob3VnaCwgdGhpcyBpcyBub3QgdHJ1ZSBmb3IgYSBtaW5pbXVtIFRDUC1wYWNrZXQNCj4gRXRo
+KDE0KStJUCgyMCkrVENQKDIwKT01NCBieXRlcy4gQW4gSSBtaXNzaW5nIGFuIGFsaWdubWVudCBp
+biBteSBjYWxjPw0KPiANCj4gWzFdIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL25ldGRldi9DQUtn
+VDBVZUVMM1c0MmVEcVN0OTd4bm4zdFhEdFdNZjRzZFBCeUF0dmJ4PVo3U3g3aFFAbWFpbC5nbWFp
+bC5jb20vDQo+IA0KPiBUaGUgbmFtZSBuZXRfcHJlZmV0Y2hfaGVhZGVycygpIHN1Z2dlc3RlZCBi
+eSBKYWt1YiBtYWtlcyBzZW5zZSwgYXMgdGhpcw0KPiBpbmRpY2F0ZSB0aGF0IHRoaXMgc2hvdWxk
+IGJlIHVzZWQgZm9yIHByZWZldGNoaW5nIHBhY2tldCBoZWFkZXJzLg0KPiANCj4gQXMgQWxleGFu
+ZGVyIGFsc28gZXhwbGFpbmVkLCBJIHdhcyB3cm9uZyBpbiB0aGlua2luZyB0aGUgSFcgRENVIChE
+YXRhDQo+IENhY2hlIFVuaXQpIHByZWZldGNoZXIgd2lsbCBmZXRjaCB0d28gY2FjaGUtbGluZXMg
+YXV0b21hdGljYWxseS4gIEFzDQo+IHRoZSBEQ1UgcHJlZmV0Y2hlciBpcyBhIHN0cmVhbWluZyBw
+cmVmZXRjaGVyLCBhbmQgZG9lc24ndCBzZWUgb3VyDQo+IGFjY2VzcyBwYXR0ZXJuLCB3aGljaCBp
+cyB3aHkgd2UgbmVlZCB0aGlzLg0KPiANCg0KVGhhbmtzIGFsbCBmb3IgeW91ciBjb21tZW50cy4N
+Ckkgd2lsbCBmaXggYW5kIHJlLXNwaW4gb25jZSB0aGUgd2luZG93IHJlLW9wZW5zLg0KDQpUYXJp
+cQ0K
