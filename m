@@ -2,140 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC2D186E1
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 10:40:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EFD21875A
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 11:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726179AbfEIIko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 04:40:44 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55340 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725991AbfEIIko (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 May 2019 04:40:44 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 84BA73086268;
-        Thu,  9 May 2019 08:40:43 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.32.181.182])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8BE7E60BFB;
-        Thu,  9 May 2019 08:40:41 +0000 (UTC)
-Message-ID: <bcfa1b06f277357d89b746a4fced49c0617deef1.camel@redhat.com>
-Subject: Re: [PATCH net] selinux: do not report error on connect(AF_UNSPEC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>, davem@davemloft.net
-Cc:     selinux@vger.kernel.org, netdev@vger.kernel.org,
-        Tom Deseyn <tdeseyn@redhat.com>,
-        Richard Haines <richard_c_haines@btinternet.com>,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Date:   Thu, 09 May 2019 10:40:40 +0200
-In-Reply-To: <CAHC9VhTs+Q4oAiMGkK9QZBJ9G4yY28WFJkc2jjp05DEW1OAhYw@mail.gmail.com>
-References: <7301017039d68c920cb9120c035a1a0df3e6b30d.1557322358.git.pabeni@redhat.com>
-         <36e13dc4-be40-d1f6-0be5-32cd4fc38f6e@tycho.nsa.gov>
-         <83b4adb4-9d8f-848f-d1cc-a4a1f30cee51@tycho.nsa.gov>
-         <20190508182737.GK10916@localhost.localdomain>
-         <0957f30f-07b8-5e2f-ac71-615f511a5eea@tycho.nsa.gov>
-         <CAHC9VhTs+Q4oAiMGkK9QZBJ9G4yY28WFJkc2jjp05DEW1OAhYw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Thu, 09 May 2019 08:40:43 +0000 (UTC)
+        id S1726710AbfEIJBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 05:01:40 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44092 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725892AbfEIJBj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 May 2019 05:01:39 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 9C3FBB6A2;
+        Thu,  9 May 2019 09:01:38 +0000 (UTC)
+From:   Oliver Neukum <oneukum@suse.com>
+To:     petkan@nucleusys.com, netdev@vger.kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH] rtl8150: switch to BIT macro
+Date:   Thu,  9 May 2019 11:01:06 +0200
+Message-Id: <20190509090106.9065-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-05-08 at 17:17 -0400, Paul Moore wrote:
-> On Wed, May 8, 2019 at 2:55 PM Stephen Smalley <sds@tycho.nsa.gov> wrote:
-> > On 5/8/19 2:27 PM, Marcelo Ricardo Leitner wrote:
-> > > On Wed, May 08, 2019 at 02:13:17PM -0400, Stephen Smalley wrote:
-> > > > On 5/8/19 2:12 PM, Stephen Smalley wrote:
-> > > > > On 5/8/19 9:32 AM, Paolo Abeni wrote:
-> > > > > > calling connect(AF_UNSPEC) on an already connected TCP socket is an
-> > > > > > established way to disconnect() such socket. After commit 68741a8adab9
-> > > > > > ("selinux: Fix ltp test connect-syscall failure") it no longer works
-> > > > > > and, in the above scenario connect() fails with EAFNOSUPPORT.
-> > > > > > 
-> > > > > > Fix the above falling back to the generic/old code when the address
-> > > > > > family
-> > > > > > is not AF_INET{4,6}, but leave the SCTP code path untouched, as it has
-> > > > > > specific constraints.
-> > > > > > 
-> > > > > > Fixes: 68741a8adab9 ("selinux: Fix ltp test connect-syscall failure")
-> > > > > > Reported-by: Tom Deseyn <tdeseyn@redhat.com>
-> > > > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > > > > > ---
-> > > > > >    security/selinux/hooks.c | 8 ++++----
-> > > > > >    1 file changed, 4 insertions(+), 4 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> > > > > > index c61787b15f27..d82b87c16b0a 100644
-> > > > > > --- a/security/selinux/hooks.c
-> > > > > > +++ b/security/selinux/hooks.c
-> > > > > > @@ -4649,7 +4649,7 @@ static int
-> > > > > > selinux_socket_connect_helper(struct socket *sock,
-> > > > > >            struct lsm_network_audit net = {0,};
-> > > > > >            struct sockaddr_in *addr4 = NULL;
-> > > > > >            struct sockaddr_in6 *addr6 = NULL;
-> > > > > > -        unsigned short snum;
-> > > > > > +        unsigned short snum = 0;
-> > > > > >            u32 sid, perm;
-> > > > > >            /* sctp_connectx(3) calls via selinux_sctp_bind_connect()
-> > > > > > @@ -4674,12 +4674,12 @@ static int
-> > > > > > selinux_socket_connect_helper(struct socket *sock,
-> > > > > >                break;
-> > > > > >            default:
-> > > > > >                /* Note that SCTP services expect -EINVAL, whereas
-> > > > > > -             * others expect -EAFNOSUPPORT.
-> > > > > > +             * others must handle this at the protocol level:
-> > > > > > +             * connect(AF_UNSPEC) on a connected socket is
-> > > > > > +             * a documented way disconnect the socket.
-> > > > > >                 */
-> > > > > >                if (sksec->sclass == SECCLASS_SCTP_SOCKET)
-> > > > > >                    return -EINVAL;
-> > > > > > -            else
-> > > > > > -                return -EAFNOSUPPORT;
-> > > > > 
-> > > > > I think we need to return 0 here.  Otherwise, we'll fall through with an
-> > > > > uninitialized snum, triggering a random/bogus permission check.
-> > > > 
-> > > > Sorry, I see that you initialize snum above.  Nonetheless, I think the
-> > > > correct behavior here is to skip the check since this is a disconnect, not a
-> > > > connect.
-> > > 
-> > > Skipping the check would make it less controllable. So should it
-> > > somehow re-use shutdown() stuff? It gets very confusing, and after
-> > > all, it still is, in essence, a connect() syscall.
-> > 
-> > The function checks CONNECT permission on entry, before reaching this
-> > point.  This logic is only in preparation for a further check
-> > (NAME_CONNECT) on the port.  In this case, there is no further check to
-> > perform and we can just return.
-> 
-> I agree with Stephen, in the connect(AF_UNSPEC) case the right thing
-> to do is to simply return with no error.
+A bit of housekeeping switching the driver to the BIT()
+macro.
 
-The 'default:' case is catching any address family other than
-INET{4,6}, but I guess you argument still applies - selinux should not
-do name check for unknown protocols ?!?
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+---
+ drivers/net/usb/rtl8150.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-> I would also suggest that since this patch only touches the SELinux
-> code it really should go in via the SELinux tree and not netdev; this
-> will help avoid merge conflicts in the linux-next tree and during the
-> merge window.  I think the right thing to do at this point is to
-> create a revert patch (or have DaveM do it, I'm not sure what he
-> prefers in situations like this) for this commit, make the adjustments
-> that Stephen mentioned and submit them for the SELinux tree.
-
-Sorry, my fault, I sent the email to both MLs for more awareness, I
-should have used a different subject prefix.
-
-@DaveM: if it's ok for you, I'll send a revert for this on netdev and
-I'll send a v2 via the selinux ML, please let me know!
-
-Thank you,
-
-Paolo
+diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+index 59dbdbb5feff..1ed85fba1a7c 100644
+--- a/drivers/net/usb/rtl8150.c
++++ b/drivers/net/usb/rtl8150.c
+@@ -41,7 +41,7 @@
+ #define	ANLP			0x0146
+ #define	AER			0x0148
+ #define CSCR			0x014C  /* This one has the link status */
+-#define CSCR_LINK_STATUS	(1 << 3)
++#define CSCR_LINK_STATUS	BIT(3)
+ 
+ #define	IDR_EEPROM		0x1202
+ 
+@@ -59,20 +59,20 @@
+ 
+ 
+ /* Transmit status register errors */
+-#define TSR_ECOL		(1<<5)
+-#define TSR_LCOL		(1<<4)
+-#define TSR_LOSS_CRS		(1<<3)
+-#define TSR_JBR			(1<<2)
++#define TSR_ECOL		BIT(5)
++#define TSR_LCOL		BIT(4)
++#define TSR_LOSS_CRS		BIT(3)
++#define TSR_JBR			BIT(2)
+ #define TSR_ERRORS		(TSR_ECOL | TSR_LCOL | TSR_LOSS_CRS | TSR_JBR)
+ /* Receive status register errors */
+-#define RSR_CRC			(1<<2)
+-#define RSR_FAE			(1<<1)
++#define RSR_CRC			BIT(2)
++#define RSR_FAE			BIT(1)
+ #define RSR_ERRORS		(RSR_CRC | RSR_FAE)
+ 
+ /* Media status register definitions */
+-#define MSR_DUPLEX		(1<<4)
+-#define MSR_SPEED		(1<<3)
+-#define MSR_LINK		(1<<2)
++#define MSR_DUPLEX		BIT(4)
++#define MSR_SPEED		BIT(3)
++#define MSR_LINK		BIT(2)
+ 
+ /* Interrupt pipe data */
+ #define INT_TSR			0x00
+-- 
+2.16.4
 
