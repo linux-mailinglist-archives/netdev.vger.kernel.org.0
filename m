@@ -2,107 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A23F19599
+	by mail.lfdr.de (Postfix) with ESMTP id B5C6B1959A
 	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 01:14:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726784AbfEIXOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 19:14:21 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:42540 "EHLO
+        id S1726799AbfEIXOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 19:14:23 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:39987 "EHLO
         mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726682AbfEIXOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 19:14:20 -0400
-Received: by mail-qk1-f194.google.com with SMTP id d4so2563480qkc.9
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 16:14:20 -0700 (PDT)
+        with ESMTP id S1726682AbfEIXOW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 19:14:22 -0400
+Received: by mail-qk1-f194.google.com with SMTP id w20so2563417qka.7
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 16:14:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WY786JUPsKK3mzxSVolA6BL813RN1mRtjjSfB5szvts=;
-        b=haf23+IHFoxLOIkPd//GIrtZN7kxHKFgY+oQescUyI0JIszCDwsWNl5otlLH2/e7ob
-         gdNsBHa5KKA1/SFBY1HGAtI/Vx4IwqeJ3qq9ZeNw9ekpLO89NlvD59I/nb4I2Durtj14
-         1L4dto0tDvXUB0C3U/VNgjtR37qhRfxyWYqxsJNhnLh2Ry+vTXb26LfOUO73OxOf1j+9
-         nL5VEtyniGOeyQFz37dwqbx4O3ofJYYiW7xRfThkidJ/wYNLr30Bgmt8TwpeZVZlbJjW
-         2lZitSSp4hcHVYX+X8B/+rKK2poDryRgvqJCAoDAGSLy8ho8lHJiTlOO9i8tC6I3q2nr
-         6OJA==
+        bh=t9f3RnyeqgGYgCMSTk4BszCqgHVmpDgYZ8g4rlw8XyI=;
+        b=us26jr3Sb+bLQLOtZCgOdjCrbVF+3YDz4OI4VRlQZu/0qBEiVVSEHqhw5vwOIJZNOE
+         MoNeDfdToX2FxTeMN3xDEiC/v4nPbiddWRLQT47wufirjM3363E+4JDGx4Qn8tmHdHfJ
+         VHngoLtoatM/5BF6woTmbYZR2qcooxJAVkXN9MVyEGuyD/mFDwLKnqRPWVFrygqmaCxl
+         NvCF9GqJJ5hEOj5vqhZ1qZr18TEx8RtIVLqRN+mfu5E7qEZotNoUakz7QGGb1RVXQn3f
+         xQC6m4/b9XtQxzj8qHeJXiZxVmsp00LNE+YbWaAcSGyXvb5xqfHhRI2RPCKHpAkyoKj+
+         f8NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WY786JUPsKK3mzxSVolA6BL813RN1mRtjjSfB5szvts=;
-        b=IzKysZ75VclndY15TSfWcG9dtdBQbXZ1Bcdkr9s06H/zr2UIy9mP4yj2M5wBJSxLmv
-         CH21ZuZhm5ws+7AaQIfpIldL79Y5+T+VOIlZsDJ11HFY1eGKZ/qe8laY1ysNNbv//Df3
-         j5hP2gSFOt9YQBXk+C0jPQuDnOqYNtFlirOsmGIFFn7N7VtFxdpAxt8xx49MFtkHQBoa
-         ND74dOnJ+uxOrleEm0aNu0N7S1SfYLmNeJ1zCeAySSXtdmR8qUmh4dUDuqhKYJFNoWus
-         5vqdxdFCoggv8mS6a029kYsDx2wOLTDJzU8RVjAvowJhHzSXRerFNFcrzaVYaa6l2kIC
-         Tk8g==
-X-Gm-Message-State: APjAAAWZ5bBsJGzmeyuZGOxcmBj1fOgBaGfwVOj2k1RR8c+xWp9JUkpM
-        BT6SLMyWv3Ly26TMpBo/xt+aPXjepls=
-X-Google-Smtp-Source: APXvYqzkh73Q7CHP/g/aXQLnt4njD0VnGjmKUDXBYNAaszSgK+zlfKhVChJiRpPEm55JCwIyQ8WUWw==
-X-Received: by 2002:a37:4c04:: with SMTP id z4mr6063985qka.312.1557443659685;
-        Thu, 09 May 2019 16:14:19 -0700 (PDT)
+        bh=t9f3RnyeqgGYgCMSTk4BszCqgHVmpDgYZ8g4rlw8XyI=;
+        b=L45qay2gM4ey3het2wVPMZUiuLVcu+4lZAnf4d3NzIqJ56XkN0EfS5VbNqzYmO/zpC
+         AsZYmbOz7JOETRgJc6q+xkeMv+ZqUMTioFLfXS+GDLNPKXSYiRd5HqU1OxYLxJ+6+AHY
+         r11KAj1pGsIWjY9i6bPTwbuVw/6IPSOl7C8Fpepzu8EWSME2DlUzk0abKOXMuzysn8YL
+         h6QUOdbOJXRiCAqsOCNLj05c5vGAVjeeug6UTo/L8Pwk/zGShJEKSPCRSsVQ8iRjsm7j
+         rR13XwfNjP4IF6LYDguGBssOBhCeaKYa52SOwGabWMGWJKlRzxtioUnXtj+u5R/1UUwN
+         TkpQ==
+X-Gm-Message-State: APjAAAUIDcoFcBevssspAx7lu5xtxUVOTLN59nY8X37s0LVSf61ALC/n
+        e8c5TBTZ7Ni6yt4/EbAt2UvtWA==
+X-Google-Smtp-Source: APXvYqw+G64VMa8HnqeOttG9Tp+NZrv22rY9QIC/Io5XHhQ27EasurO+i2/+aGv6gt+c3etsxGnrFA==
+X-Received: by 2002:a37:e507:: with SMTP id e7mr6070334qkg.322.1557443661135;
+        Thu, 09 May 2019 16:14:21 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s42sm2036778qth.45.2019.05.09.16.14.18
+        by smtp.gmail.com with ESMTPSA id s42sm2036778qth.45.2019.05.09.16.14.19
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 May 2019 16:14:19 -0700 (PDT)
+        Thu, 09 May 2019 16:14:20 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vakul Garg <vakul.garg@nxp.com>,
-        Boris Pismenny <borisp@mellanox.com>,
+        Dave Watson <davejwatson@fb.com>,
         Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Subject: [PATCH net 1/2] net/tls: remove set but not used variables
-Date:   Thu,  9 May 2019 16:14:06 -0700
-Message-Id: <20190509231407.25685-2-jakub.kicinski@netronome.com>
+Subject: [PATCH net 2/2] net/tls: handle errors from padding_length()
+Date:   Thu,  9 May 2019 16:14:07 -0700
+Message-Id: <20190509231407.25685-3-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190509231407.25685-1-jakub.kicinski@netronome.com>
 References: <20190509231407.25685-1-jakub.kicinski@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 4504ab0e6eb8 ("net/tls: Inform user space about send buffer availability")
-made us report write_space regardless whether partial record
-push was successful or not.  Remove the now unused return value
-to clean up the following W=1 warning:
+At the time padding_length() is called the record header
+is still part of the message.  If malicious TLS 1.3 peer
+sends an all-zero record padding_length() will stop at
+the record header, and return full length of the data
+including the tail_size.
 
-net/tls/tls_device.c: In function ‘tls_device_write_space’:
-net/tls/tls_device.c:546:6: warning: variable ‘rc’ set but not used [-Wunused-but-set-variable]
-  int rc = 0;
-      ^~
+Subsequent subtraction of prot->overhead_size from rxm->full_len
+will cause rxm->full_len to turn negative.  skb accessors,
+however, will always catch resulting out-of-bounds operation,
+so in practice this fix comes down to returning the correct
+error code.  It also fixes a set but not used warning.
 
-CC: Vakul Garg <vakul.garg@nxp.com>
-CC: Boris Pismenny <borisp@mellanox.com>
+This code was added by commit 130b392c6cd6 ("net: tls: Add tls 1.3 support").
+
+CC: Dave Watson <davejwatson@fb.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 ---
- net/tls/tls_device.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ net/tls/tls_sw.c | 30 ++++++++++++++++++++++--------
+ 1 file changed, 22 insertions(+), 8 deletions(-)
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index ad1580ac097a..ca54a7c7ec81 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -541,14 +541,11 @@ static int tls_device_push_pending_record(struct sock *sk, int flags)
- 
- void tls_device_write_space(struct sock *sk, struct tls_context *ctx)
- {
--	int rc = 0;
--
- 	if (!sk->sk_write_pending && tls_is_partially_sent_record(ctx)) {
- 		gfp_t sk_allocation = sk->sk_allocation;
- 
- 		sk->sk_allocation = GFP_ATOMIC;
--		rc = tls_push_partial_record(sk, ctx,
--					     MSG_DONTWAIT | MSG_NOSIGNAL);
-+		tls_push_partial_record(sk, ctx, MSG_DONTWAIT | MSG_NOSIGNAL);
- 		sk->sk_allocation = sk_allocation;
- 	}
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index c02293fb10e6..d93f83f77864 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -119,23 +119,25 @@ static int skb_nsg(struct sk_buff *skb, int offset, int len)
  }
+ 
+ static int padding_length(struct tls_sw_context_rx *ctx,
+-			  struct tls_context *tls_ctx, struct sk_buff *skb)
++			  struct tls_prot_info *prot, struct sk_buff *skb)
+ {
+ 	struct strp_msg *rxm = strp_msg(skb);
+ 	int sub = 0;
+ 
+ 	/* Determine zero-padding length */
+-	if (tls_ctx->prot_info.version == TLS_1_3_VERSION) {
++	if (prot->version == TLS_1_3_VERSION) {
+ 		char content_type = 0;
+ 		int err;
+ 		int back = 17;
+ 
+ 		while (content_type == 0) {
+-			if (back > rxm->full_len)
++			if (back > rxm->full_len - prot->prepend_size)
+ 				return -EBADMSG;
+ 			err = skb_copy_bits(skb,
+ 					    rxm->offset + rxm->full_len - back,
+ 					    &content_type, 1);
++			if (err)
++				return err;
+ 			if (content_type)
+ 				break;
+ 			sub++;
+@@ -170,9 +172,17 @@ static void tls_decrypt_done(struct crypto_async_request *req, int err)
+ 		tls_err_abort(skb->sk, err);
+ 	} else {
+ 		struct strp_msg *rxm = strp_msg(skb);
+-		rxm->full_len -= padding_length(ctx, tls_ctx, skb);
+-		rxm->offset += prot->prepend_size;
+-		rxm->full_len -= prot->overhead_size;
++		int pad;
++
++		pad = padding_length(ctx, prot, skb);
++		if (pad < 0) {
++			ctx->async_wait.err = pad;
++			tls_err_abort(skb->sk, pad);
++		} else {
++			rxm->full_len -= pad;
++			rxm->offset += prot->prepend_size;
++			rxm->full_len -= prot->overhead_size;
++		}
+ 	}
+ 
+ 	/* After using skb->sk to propagate sk through crypto async callback
+@@ -1478,7 +1488,7 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+ 	struct tls_prot_info *prot = &tls_ctx->prot_info;
+ 	int version = prot->version;
+ 	struct strp_msg *rxm = strp_msg(skb);
+-	int err = 0;
++	int pad, err = 0;
+ 
+ 	if (!ctx->decrypted) {
+ #ifdef CONFIG_TLS_DEVICE
+@@ -1501,7 +1511,11 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+ 			*zc = false;
+ 		}
+ 
+-		rxm->full_len -= padding_length(ctx, tls_ctx, skb);
++		pad = padding_length(ctx, prot, skb);
++		if (pad < 0)
++			return pad;
++
++		rxm->full_len -= pad;
+ 		rxm->offset += prot->prepend_size;
+ 		rxm->full_len -= prot->overhead_size;
+ 		tls_advance_record_sn(sk, &tls_ctx->rx, version);
 -- 
 2.21.0
 
