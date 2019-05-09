@@ -2,81 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6791D1941A
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 23:07:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFAFB194A3
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 23:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726792AbfEIVHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 17:07:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59631 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726108AbfEIVHs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 May 2019 17:07:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=frCvs1qzhj9Qb4HlDyfIcHca4ygcTGupbMC2qr5ruHg=; b=STgpJEkOtD3My/SXktlVs9DUmw
-        SKdf3+IG3Z/JAAsaU4m+kDBLW3Q573Jo1vzKvF4PkjlhiPh7wkTI7uMDGm0V/oY1mXbI+uB8cJafG
-        mwUZntGSICGhfsGAVAvJ/zdeogD2Il4r3qpIqV6AyQFPMK3BjpA+S/8fSmg0X1NU1KB8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hOqGX-0005X4-KN; Thu, 09 May 2019 23:07:45 +0200
-Date:   Thu, 9 May 2019 23:07:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Yuiko Oshino <yuiko.oshino@microchip.com>,
-        netdev@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: net: micrel: confusion about phyids used in driver
-Message-ID: <20190509210745.GD11588@lunn.ch>
-References: <20190509202929.wg3slwnrfhu4f6no@pengutronix.de>
- <da599967-c423-80dd-945d-5b993c041e90@gmail.com>
+        id S1726984AbfEIVaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 17:30:35 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59618 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726219AbfEIVaf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 17:30:35 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hOqca-0007ay-Nx; Thu, 09 May 2019 23:30:32 +0200
+Received: from [178.199.41.31] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hOqca-000J7d-Hy; Thu, 09 May 2019 23:30:32 +0200
+Subject: Re: [PATCH bpf v1] bpf: Fix undefined behavior in narrow load
+ handling
+To:     Krzesimir Nowak <krzesimir@kinvolk.io>, bpf@vger.kernel.org
+Cc:     Alban Crequy <alban@kinvolk.io>,
+        =?UTF-8?Q?Iago_L=c3=b3pez_Galeiras?= <iago@kinvolk.io>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190508160859.4380-1-krzesimir@kinvolk.io>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <46056c60-f106-e539-b614-498cb1e9e3d0@iogearbox.net>
+Date:   Thu, 9 May 2019 23:30:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <20190508160859.4380-1-krzesimir@kinvolk.io>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <da599967-c423-80dd-945d-5b993c041e90@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25444/Thu May  9 09:57:18 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 09, 2019 at 10:55:29PM +0200, Heiner Kallweit wrote:
-> On 09.05.2019 22:29, Uwe Kleine-König wrote:
-> > Hello,
-> > 
-> > I have a board here that has a KSZ8051MLL (datasheet:
-> > http://ww1.microchip.com/downloads/en/DeviceDoc/ksz8051mll.pdf, phyid:
-> > 0x0022155x) assembled. The actual phyid is 0x00221556.
-> > 
-> I think the datasheets are the source of the confusion. If the
-> datasheets for different chips list 0x0022155x as PHYID each, and
-> authors of support for additional chips don't check the existing code,
-> then happens what happened.
-> However it's not a rare exception and not Microchip-specific that
-> sometimes vendors use the same PHYID for different chips.
+On 05/08/2019 06:08 PM, Krzesimir Nowak wrote:
+> Commit 31fd85816dbe ("bpf: permits narrower load from bpf program
+> context fields") made the verifier add AND instructions to clear the
+> unwanted bits with a mask when doing a narrow load. The mask is
+> computed with
 > 
-> And it seems you even missed one: KSZ8795
-> It's a switch and the internal PHY's have id 0x00221550.
+> (1 << size * 8) - 1
 > 
-> If the drivers for the respective chips are actually different then we
-> may change the driver to match the exact model number only.
-> However, if there should be a PHY with e.g. id 0x00221554 out there,
-> it wouldn't be supported any longer and the generic PHY driver would
-> be used (what may work or not).
+> where "size" is the size of the narrow load. When doing a 4 byte load
+> of a an 8 byte field the verifier shifts the literal 1 by 32 places to
+> the left. This results in an overflow of a signed integer, which is an
+> undefined behavior. Typically the computed mask was zero, so the
+> result of the narrow load ended up being zero too.
+> 
+> Cast the literal to long long to avoid overflows. Note that narrow
+> load of the 4 byte fields does not have the undefined behavior,
+> because the load size can only be either 1 or 2 bytes, so shifting 1
+> by 8 or 16 places will not overflow it. And reading 4 bytes would not
+> be a narrow load of a 4 bytes field.
+> 
+> Reviewed-by: Alban Crequy <alban@kinvolk.io>
+> Reviewed-by: Iago LÃ³pez Galeiras <iago@kinvolk.io>
+> Fixes: 31fd85816dbe ("bpf: permits narrower load from bpf program context fields")
+> Cc: Yonghong Song <yhs@fb.com>
+> Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+> ---
+>  kernel/bpf/verifier.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 09d5d972c9ff..950fac024fbb 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -7296,7 +7296,7 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
+>  									insn->dst_reg,
+>  									shift);
+>  				insn_buf[cnt++] = BPF_ALU64_IMM(BPF_AND, insn->dst_reg,
+> -								(1 << size * 8) - 1);
+> +								(1ULL << size * 8) - 1);
+>  			}
 
-Hi Heiner
+Makes sense, good catch & thanks for the fix!
 
-We might also want to take a look at the code which matches a driver
-to a PHY ID. Ideally we want the most specific match when looking at
-the mask. We can then have device specific matches, and then a more
-general fallback match using a wider mask.
+Could you also add a test case to test_verifier.c so we keep track of this?
 
-No idea how to actually implement that :-(
-
-   Andrew
+Thanks,
+Daniel
