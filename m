@@ -2,124 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B75BE18A33
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 15:01:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E0F618A39
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 15:03:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbfEINBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 09:01:48 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:44362 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726448AbfEINBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 09:01:48 -0400
-Received: by mail-io1-f67.google.com with SMTP id f22so1323485iol.11
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 06:01:47 -0700 (PDT)
+        id S1726657AbfEINDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 09:03:08 -0400
+Received: from mail-it1-f195.google.com ([209.85.166.195]:51671 "EHLO
+        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726448AbfEINDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 09:03:07 -0400
+Received: by mail-it1-f195.google.com with SMTP id s3so3392136itk.1
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 06:03:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JVx7ZoW5hiGrgUVoRycI1AsV20RlQNkbPPM427dqnNY=;
-        b=BurrVXPKDJWGamfAcikJ+exlkR0IQkubcyg1vpSZCwjgF3pbzzvL6Q8D3b2+HG8l9x
-         sKIws5nNnFOyoQU2CaLtmyJcYCDI5i9G1UyyRbhInThBu1DC1RbF5jopRm6vbqr08VdS
-         L0mDxm+xSM2o1nQ7M1m+na6LrLoGDzZLrOHWh6woW5byBb+xJrnGXAhBBxuYFQSL+Mhb
-         ZcmTdiaOk4gkNG0j95CXnypMaVHTbeglMvrxkzwR7eHXCgUBN6XkQMQg6eQMXgJUtTcE
-         NkfCLKvWXqeOpRxi7rDVWLYbJBjqeie/uKPo5WDpJsNDVMrHLLZvI+ZgK2lah4k6y9ag
-         X6Ig==
+        bh=lrOhAw0sRCAQ3y5JzhUO9qwjE87PxvqK2URtKLv0dZI=;
+        b=hFsjYOCxC0gr593JRxNG9FrZD5WWeyw4qCbzAmirygOb1W0pVnpIRSc0BHFIeF84Rr
+         Zup0wjcUbalqNiVJcfhmnrrfqNfx9shU03Bcj/oiv0JkM22q/OARveD68F1VNK9cTjU+
+         K6g4IjsA0IxEvoxG5ULyyfj3W7nNNvK2NN75sHZdMvtmuryOMn/qUbdGPzD+GhxIt24m
+         yPeSAITo/1mMTA4DgBDiHoKLJFnYrO959ROHkscm2ABiiPqTq03KQbyx6fMkDV9mipgO
+         bD6xbnkemW9y46LsFKOxo/sHesR40r/GPmATacq2fe3Y7r5eC0ODGhMOfla3cEwquwjW
+         bmuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JVx7ZoW5hiGrgUVoRycI1AsV20RlQNkbPPM427dqnNY=;
-        b=h3RcOpX2MroxypjMvl0W0gtCP+gQJ+h9i+bKvRdAvCCx4L/01Mm+xkiMXc/ENeCZPc
-         THNxekkOxXEYfAHWq42dei2hMOYg8bDGtEPHYAPfFJdXO6RcD1mwHi5JUSFy4DIGGSXF
-         6mcF7sCNPaFOxKf2ocdv4OL/+wO3UbUSi6huMoehG5UGvnW/fvhfzAVcVmT5geieD1Zu
-         k4ccvDw2YefKtezwdbb+6eB4U5n+8upW6AC0S+UuH9QLeUuxtizp5LEgq96CN5in9gFt
-         tAM8duOL0GZo/hW/lZSdd/BqssmkA+kvhtxCgFCqw+sW5hySiqowQg/+lVzU9LzoE6ty
-         0irw==
-X-Gm-Message-State: APjAAAUMJS6d2OmDMPinNn+Lg59Xb3EJ2zLwalY+/95XKOCaygMAZBRV
-        6JuYq20wK8AeljqFy4O3d3TyiBKxidSyKVdlMvhkNg==
-X-Google-Smtp-Source: APXvYqxUuiBLctRM7HeT7BpLXNkcpVG5z/yekVPem8+j0eMDpqkFGqrhfxcubw3nDGgcOF5RhAMdHH+Zis/USw9PiwM=
-X-Received: by 2002:a5e:d60f:: with SMTP id w15mr2152398iom.282.1557406907069;
- Thu, 09 May 2019 06:01:47 -0700 (PDT)
+        bh=lrOhAw0sRCAQ3y5JzhUO9qwjE87PxvqK2URtKLv0dZI=;
+        b=DleG6GFCBf2CjgT4H2KSfkpy9L5GqSKmf7U+GVua2eZI64R/d9qnyAlEzoXLi1BEms
+         F7IuCo98Nt+NDDwmh1Fuzdbog0o7B5foS77RqOya4ewtLHG0mg3o9v3I11KfYXtmXQQM
+         MHTJdiIE88QbJnVrWoDzJUhi6HetNdhfdQrsfGnPXHWhiwmCaKXH+lshPDVu7b60Nvks
+         AYOwHsAVxDOMiWZEYxXee/tt9z96UexvqQ9HCpT4LpNOYA0EYjddI+4SdIJ+kwlU8rzU
+         yo0iXyHv09gikpEGh/hh0NRER5uEtkKVs56E5zi2EOu3zH9bG7/cmEDudliGu1mpaj6N
+         7wNg==
+X-Gm-Message-State: APjAAAW8ttcbS78MW6rWyE3RzgqG9g8PNMgyjjCaQyHgCT6a4feUE83M
+        /HJotSHE5ZeeQRLHftskMcgRCg1kPJWicyLdKR54ow==
+X-Google-Smtp-Source: APXvYqypM/J9GkSNpoEgS1CV7kAoZkYHIvwJjkkGE0RD174ldbjZZlzCy7sGykk2JaOw0C9fRBa5vKmZE5QYCEOfHOQ=
+X-Received: by 2002:a05:660c:38a:: with SMTP id x10mr2828361itj.12.1557406986628;
+ Thu, 09 May 2019 06:03:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <000000000000bc227a0582464e62@google.com> <0000000000003d44980584c6c82a@google.com>
- <BL0PR1501MB20033F21FB21816CC2F50AA49A5E0@BL0PR1501MB2003.namprd15.prod.outlook.com>
-In-Reply-To: <BL0PR1501MB20033F21FB21816CC2F50AA49A5E0@BL0PR1501MB2003.namprd15.prod.outlook.com>
+References: <000000000000afcf18058364e99e@google.com> <0000000000008497eb0583d26f55@google.com>
+In-Reply-To: <0000000000008497eb0583d26f55@google.com>
 From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 9 May 2019 15:01:36 +0200
-Message-ID: <CACT4Y+aYfsTVCo3U9VJcQ2X0456FPtTH+2Sqd_J93CXrqvQhkg@mail.gmail.com>
-Subject: Re: WARNING: locking bug in icmp_send
-To:     Jon Maloy <jon.maloy@ericsson.com>
-Cc:     syzbot <syzbot+ba21d65f55b562432c58@syzkaller.appspotmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
+Date:   Thu, 9 May 2019 15:02:55 +0200
+Message-ID: <CACT4Y+ax0TjkaFLoYZL0jZCdRELA7ajnBaAeSANw-hUP--CqJQ@mail.gmail.com>
+Subject: Re: WARNING: locking bug in __icmp_send
+To:     syzbot <syzbot+173d67242daa7ce45f85@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jon.maloy@ericsson.com>
-Date: Mon, Mar 25, 2019 at 5:34 PM
-To: syzbot, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-syzkaller-bugs@googlegroups.com,
-tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com,
-yoshfuji@linux-ipv6.org
+From: syzbot <syzbot+173d67242daa7ce45f85@syzkaller.appspotmail.com>
+Date: Mon, Mar 11, 2019 at 3:32 PM
+To: <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+<syzkaller-bugs@googlegroups.com>, <yoshfuji@linux-ipv6.org>
 
-> Yet another duplicate of  syzbot+a25307ad099309f1c2b9@syzkaller.appspotmail.com
+> syzbot has bisected this bug to:
 >
-> A fix has been posted.
+> commit 8bafb83eeee2efb8b9b4e9dfd9fb90debe4a2417
+> Author: David S. Miller <davem@davemloft.net>
+> Date:   Fri Mar 30 16:32:00 2018 +0000
 >
-> ///jon
-
-Let's close this too:
-
-#syz fix: tipc: change to check tipc_own_id to return in tipc_net_stop
-
-> > -----Original Message-----
-> > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org>
-> > On Behalf Of syzbot
-> > Sent: 23-Mar-19 19:03
-> > To: davem@davemloft.net; Jon Maloy <jon.maloy@ericsson.com>;
-> > kuznet@ms2.inr.ac.ru; linux-kernel@vger.kernel.org;
-> > netdev@vger.kernel.org; syzkaller-bugs@googlegroups.com; tipc-
-> > discussion@lists.sourceforge.net; ying.xue@windriver.com; yoshfuji@linux-
-> > ipv6.org
-> > Subject: Re: WARNING: locking bug in icmp_send
-> >
-> > syzbot has bisected this bug to:
-> >
-> > commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
-> > Author: Jon Maloy <jon.maloy@ericsson.com>
-> > Date:   Thu Mar 22 19:42:52 2018 +0000
-> >
-> >      tipc: obtain node identity from interface by default
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11b6dc5d200000
-> > start commit:   b5372fe5 exec: load_script: Do not exec truncated interpre..
-> > git tree:       upstream
-> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=13b6dc5d200000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=15b6dc5d200000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=7132344728e7ec3f
-> > dashboard link:
-> > https://syzkaller.appspot.com/bug?extid=ba21d65f55b562432c58
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14c90fa7400000
-> >
-> > Reported-by: syzbot+ba21d65f55b562432c58@syzkaller.appspotmail.com
-> > Fixes: 52dfae5c85a4 ("tipc: obtain node identity from interface by default")
-> >
-> > For information about bisection process see:
-> > https://goo.gl/tpsmEJ#bisection
+>      Merge branch 'stmmac-DWMAC5'
 >
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/BL0PR1501MB20033F21FB21816CC2F50AA49A5E0%40BL0PR1501MB2003.namprd15.prod.outlook.com.
-> For more options, visit https://groups.google.com/d/optout.
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13354d9d200000
+> start commit:   8bafb83e Merge branch 'stmmac-DWMAC5'
+> git tree:       net
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=10b54d9d200000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=17354d9d200000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=73d88a42238825ad
+> dashboard link: https://syzkaller.appspot.com/bug?extid=173d67242daa7ce45f85
+> userspace arch: amd64
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=153d6923200000
+>
+> Reported-by: syzbot+173d67242daa7ce45f85@syzkaller.appspotmail.com
+> Fixes: 8bafb83e ("Merge branch 'stmmac-DWMAC5'")
+
+#syz dup: WARNING: locking bug in icmp_send
+
+https://syzkaller.appspot.com/bug?id=4b9e5e6290e3fdee367ea37949f3bda8d4ec87bd
