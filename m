@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7EE11895C
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 13:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E2F718965
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 14:01:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbfEIL5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 07:57:42 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37191 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725943AbfEIL5m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 07:57:42 -0400
-Received: by mail-pl1-f194.google.com with SMTP id p15so1056683pll.4;
-        Thu, 09 May 2019 04:57:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/+gEI3yaV3GlMf2auut9mO3euCItpGQhrTRtASP99ek=;
-        b=bSU2bw0zzTND+6Nkc9pTgOCkpMWwE7ylxfZwyr3B7sHQE1pdDmaOiJIVZTtV0Q3XL1
-         z+Kp0nr+y5bKXfsOwv9qx0lEge/zL4u9wJw8/8RIfn9XmxMPOCwciKdqaOxb+Pd7xEMw
-         GN9RXrqz2nBITORCC+C9T/yTGKKuuQkd5xQU9dAhZE2zVjFPpp0R6sQwYfjN5LdBLvuI
-         0hj/wAYimrA/1AhQC6bGSvYKXxe7NbLQFEu80fzc4GmVEDmKtuQUMr61izuEwrn87XbS
-         1RTyYmphM54hszmyWrmPOKaCotBqmzFP6WMcZZvXFtxOIOKXtLnjri8+47cWGL58e8Ju
-         DRZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/+gEI3yaV3GlMf2auut9mO3euCItpGQhrTRtASP99ek=;
-        b=JA9Vj3ICVNnpLQJmkmaAP1YudGZq1cN6NcVdDnIHfOUKHXwd5Wbmtquojc97Bcc8Qv
-         f+H1qMiURjZiM010YAo3KgqpqtXu57NYbHtn5hA2urhM1xyhTeAW2m8TiJ1WbpAvWAtM
-         zGRoljYRjmmNZ5nlPk2ItM5DICtgtjdCJatvU+FKf3cY4l6EHoy3OvMJto5mfpKIG/Nd
-         /Z3V2p0ScjGt8lo0puc39xEmPEl4YNf8u1jAeJdYhKSSHY0i5lVYZhWQEPRqCi221x9F
-         Rt7gzyoPb1/Y4ZxIK2Bo5NLjKP7hdA9bdX4SHSZFcxwKA7Dn/U0puUzAB5NQPNJSc9IB
-         deUQ==
-X-Gm-Message-State: APjAAAXE1j0Us2DTtnI+Uk4VzhLj9XO6FCz+XixFTpFCgOah4BrAU43z
-        F8XqD0bxBXzo9kQiJIV6+ETikugk
-X-Google-Smtp-Source: APXvYqyTksCb5lbv7US3nxwHdIQdRplTSv56fx2ksvuoc7mRgE/ObhChKm0LTE8v17wG8M4Md47CZQ==
-X-Received: by 2002:a17:902:2847:: with SMTP id e65mr4416051plb.319.1557403061601;
-        Thu, 09 May 2019 04:57:41 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
-        by smtp.gmail.com with ESMTPSA id a19sm2286539pgm.46.2019.05.09.04.57.38
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 May 2019 04:57:40 -0700 (PDT)
+        id S1726611AbfEIMBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 08:01:16 -0400
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:36139 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726438AbfEIMBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 08:01:16 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20190509120114euoutp02752127f8ce9e4bafc0d01319c3772b72~dAgbCUZhc2136921369euoutp02V
+        for <netdev@vger.kernel.org>; Thu,  9 May 2019 12:01:14 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20190509120114euoutp02752127f8ce9e4bafc0d01319c3772b72~dAgbCUZhc2136921369euoutp02V
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1557403274;
+        bh=qiD6lRtF4wFiAqbHs9VVmyccR0AScqMMNG8nnc7i+Fs=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=nw8h4OMbLeACI14ysETF3yx789i0PTWMGQpPKfuEGPPz6ZYcq5otmRCEJgWWQSlmC
+         bHfVOWEIrNdRJidtJFEcUsZYcyFNVrUWDrIy5+PW9mgd1nXtC54PIS6gz0oI2ROMhq
+         ZAA6cfSriReTeP09CyXz0s1KBrps7tqwCBSIkCek=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20190509120113eucas1p26b764a8af5501d7e96e132f6b02a42b6~dAgaPtk9N2799027990eucas1p2u;
+        Thu,  9 May 2019 12:01:13 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id 1A.D7.04298.98614DC5; Thu,  9
+        May 2019 13:01:13 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20190509120112eucas1p252b59f7cf1bfa4a67a00accd03766bcf~dAgZloE8C2799127991eucas1p2v;
+        Thu,  9 May 2019 12:01:12 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20190509120112eusmtrp1f330e69651b69b5a141efd5eef4a46fc~dAgZXhXro1886318863eusmtrp1D;
+        Thu,  9 May 2019 12:01:12 +0000 (GMT)
+X-AuditID: cbfec7f2-3615e9c0000010ca-18-5cd41689e560
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 03.FB.04140.88614DC5; Thu,  9
+        May 2019 13:01:12 +0100 (BST)
+Received: from amdc2143 (unknown [106.120.51.59]) by eusmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20190509120111eusmtip23fda3d7ae222be3f7c54dbdd80beb0c1~dAgYqpa281332313323eusmtip2C;
+        Thu,  9 May 2019 12:01:11 +0000 (GMT)
+Message-ID: <0510351d1fbd17f11018b7c934fb3a525c265936.camel@samsung.com>
 Subject: Re: [PATCH v2] netfilter: xt_owner: Add supplementary groups option
-To:     Lukasz Pawelczyk <l.pawelczyk@samsung.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
+From:   Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
         Florian Westphal <fw@strlen.de>,
@@ -55,177 +56,91 @@ To:     Lukasz Pawelczyk <l.pawelczyk@samsung.com>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Lukasz Pawelczyk <havner@gmail.com>
-References: <CGME20190508141219eucas1p1e5a899714747b497499976113ea9681f@eucas1p1.samsung.com>
- <20190508141211.4191-1-l.pawelczyk@samsung.com>
- <98f71c64-3887-b715-effb-894224a71ef9@gmail.com>
- <cdba4a3b7f31ae8ece81be270233032fe774bd86.camel@samsung.com>
- <6a6e9754-4f2b-3433-6df0-bbb9d9915582@gmail.com>
- <cf34c829002177e89806e9f7260559aefb3c2ac7.camel@samsung.com>
- <afc200a8-438f-5d73-2236-6d9e4979bb59@gmail.com>
- <cd06d09489cd723b3cc48e42f7cccc21737bfd9e.camel@samsung.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <ffbaeda9-1e0c-f526-15aa-e865fcb4ec95@gmail.com>
-Date:   Thu, 9 May 2019 04:57:38 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+Date:   Thu, 09 May 2019 14:01:10 +0200
+In-Reply-To: <ffbaeda9-1e0c-f526-15aa-e865fcb4ec95@gmail.com>
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-In-Reply-To: <cd06d09489cd723b3cc48e42f7cccc21737bfd9e.camel@samsung.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrLKsWRmVeSWpSXmKPExsWy7djPc7qdYldiDE6/ZrX4u7Od2WLO+RYW
+        i33vz7JZbOtdzWjx/7WOxeW+acwWl3fNYbM4tkDMYsK6UywW099cZXbg8jjdtJHFY8vKm0we
+        O2fdZfd4+/sEk8eh7wtYPT5vkgtgi+KySUnNySxLLdK3S+DKOPHnPUvBNI6K3ueLWRsYl7N1
+        MXJySAiYSHy7tJi5i5GLQ0hgBaPE58nX2UESQgJfGCWO9vNCJD4zSvzYuZkRpmPt9zesEInl
+        QIn9jYwQzjNGid4Nj5hBqngFPCReP9oMVMXBISzgI7HlpQVImE3AQOL7hb1g60QEDjJJdG26
+        DbaOWUBdYunsZhYQm0VAVeLM9j4mEJtTwFbiav8UsLiogK7EjQ3P2CDmC0qcnPmEBaJXXqJ5
+        62ywoRICh9gljm85wwayWELARWLfojSIq4UlXh3fwg5hy0icntzDAlFSLXHyTAVEawejxMYX
+        s6G+tJb4PGkLM0gNs4CmxPpd+hDljhKTP0lBmHwSN94KQhzAJzFp23RmiDCvREebEMQMVYnX
+        e2DmSUt8/LMXar+HxOEbW5gmMCrOQvLKLCSvzEJYu4CReRWjeGppcW56arFhXmq5XnFibnFp
+        Xrpecn7uJkZgIjr97/inHYxfLyUdYhTgYFTi4bXgvxIjxJpYVlyZe4hRgoNZSYT3+sRLMUK8
+        KYmVValF+fFFpTmpxYcYpTlYlMR5qxkeRAsJpCeWpGanphakFsFkmTg4pRoY4yaseteYrHpL
+        a+6/AIee/wmtyueS4ksnTo6+kLM+peHCqrDs7s+qRVH8P84s+Bj4e9Pa1Y//ndupGzfrgZ7o
+        80f78o4Vlt+vtLO5tXGxT8G3Hw1ZB0KenflqNuVdYBPXyh7xGV+uq9U8rFq/1uui0IZdjfL3
+        vCXfb5KfeLVk/kkpScmjy68JP1ZiKc5INNRiLipOBADj8V2QQAMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBIsWRmVeSWpSXmKPExsVy+t/xe7odYldiDLrOsVj83dnObDHnfAuL
+        xb73Z9kstvWuZrT4/1rH4nLfNGaLy7vmsFkcWyBmMWHdKRaL6W+uMjtweZxu2sjisWXlTSaP
+        nbPusnu8/X2CyePQ9wWsHp83yQWwRenZFOWXlqQqZOQXl9gqRRtaGOkZWlroGZlY6hkam8da
+        GZkq6dvZpKTmZJalFunbJehlnPjznqVgGkdF7/PFrA2My9m6GDk5JARMJNZ+f8PaxcjFISSw
+        lFHiV/t2RoiEtMTxAwtZIWxhiT/Xutggip4wSsx7+podJMEr4CHx+tFmoCIODmEBH4ktLy1A
+        wmwCBhLfL+xlBqkXETjIJDHx7XNmkASzgLrE0tnNLCA2i4CqxJntfUwgNqeArcTV/iksEAsW
+        s0isPvKNBaJBU6J1+2+wZaICuhI3Njxjg1gsKHFy5hOoGnmJ5q2zmScwCs5C0jILSdksJGUL
+        GJlXMYqklhbnpucWG+kVJ+YWl+al6yXn525iBMbatmM/t+xg7HoXfIhRgINRiYfXgv9KjBBr
+        YllxZe4hRgkOZiUR3usTL8UI8aYkVlalFuXHF5XmpBYfYjQF+mgis5Rocj4wDeSVxBuaGppb
+        WBqaG5sbm1koifN2CByMERJITyxJzU5NLUgtgulj4uCUamA8eomFd5khI0+CeibL2i/36lZp
+        cp21XF1wMMnmwXWRPdFX/ulwRc6UK6kxXqBzxqXRv1mn3HzmtTdfP+36GWl380pl1P2M3T4h
+        Mrt+LJ725cDiz3Ne1m5NmXqy2+ZCnIHntLhbvuzPlyxu2CPJHc+jsmFX/f+L1a6SEYlzrs5s
+        DjiZ397xTvOEEktxRqKhFnNRcSIAg2lTWMsCAAA=
+X-CMS-MailID: 20190509120112eucas1p252b59f7cf1bfa4a67a00accd03766bcf
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20190508141219eucas1p1e5a899714747b497499976113ea9681f
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190508141219eucas1p1e5a899714747b497499976113ea9681f
+References: <CGME20190508141219eucas1p1e5a899714747b497499976113ea9681f@eucas1p1.samsung.com>
+        <20190508141211.4191-1-l.pawelczyk@samsung.com>
+        <98f71c64-3887-b715-effb-894224a71ef9@gmail.com>
+        <cdba4a3b7f31ae8ece81be270233032fe774bd86.camel@samsung.com>
+        <6a6e9754-4f2b-3433-6df0-bbb9d9915582@gmail.com>
+        <cf34c829002177e89806e9f7260559aefb3c2ac7.camel@samsung.com>
+        <afc200a8-438f-5d73-2236-6d9e4979bb59@gmail.com>
+        <cd06d09489cd723b3cc48e42f7cccc21737bfd9e.camel@samsung.com>
+        <ffbaeda9-1e0c-f526-15aa-e865fcb4ec95@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/9/19 6:47 AM, Lukasz Pawelczyk wrote:
-> On Wed, 2019-05-08 at 09:53 -0700, Eric Dumazet wrote:
->>
->> On 5/8/19 11:56 AM, Lukasz Pawelczyk wrote:
->>> On Wed, 2019-05-08 at 08:41 -0700, Eric Dumazet wrote:
->>>> On 5/8/19 11:25 AM, Lukasz Pawelczyk wrote:
->>>>> On Wed, 2019-05-08 at 07:58 -0700, Eric Dumazet wrote:
->>>>>> On 5/8/19 10:12 AM, Lukasz Pawelczyk wrote:
->>>>>>> The XT_SUPPL_GROUPS flag causes GIDs specified with
->>>>>>> XT_OWNER_GID to
->>>>>>> be also checked in the supplementary groups of a process.
->>>>>>>
->>>>>>> Signed-off-by: Lukasz Pawelczyk <l.pawelczyk@samsung.com>
->>>>>>> ---
->>>>>>>  include/uapi/linux/netfilter/xt_owner.h |  1 +
->>>>>>>  net/netfilter/xt_owner.c                | 23
->>>>>>> ++++++++++++++++++++-
->>>>>>> --
->>>>>>>  2 files changed, 21 insertions(+), 3 deletions(-)
->>>>>>>
->>>>>>> diff --git a/include/uapi/linux/netfilter/xt_owner.h
->>>>>>> b/include/uapi/linux/netfilter/xt_owner.h
->>>>>>> index fa3ad84957d5..d646f0dc3466 100644
->>>>>>> --- a/include/uapi/linux/netfilter/xt_owner.h
->>>>>>> +++ b/include/uapi/linux/netfilter/xt_owner.h
->>>>>>> @@ -8,6 +8,7 @@ enum {
->>>>>>>  	XT_OWNER_UID    = 1 << 0,
->>>>>>>  	XT_OWNER_GID    = 1 << 1,
->>>>>>>  	XT_OWNER_SOCKET = 1 << 2,
->>>>>>> +	XT_SUPPL_GROUPS = 1 << 3,
->>>>>>>  };
->>>>>>>  
->>>>>>>  struct xt_owner_match_info {
->>>>>>> diff --git a/net/netfilter/xt_owner.c
->>>>>>> b/net/netfilter/xt_owner.c
->>>>>>> index 46686fb73784..283a1fb5cc52 100644
->>>>>>> --- a/net/netfilter/xt_owner.c
->>>>>>> +++ b/net/netfilter/xt_owner.c
->>>>>>> @@ -91,11 +91,28 @@ owner_mt(const struct sk_buff *skb,
->>>>>>> struct
->>>>>>> xt_action_param *par)
->>>>>>>  	}
->>>>>>>  
->>>>>>>  	if (info->match & XT_OWNER_GID) {
->>>>>>> +		unsigned int i, match = false;
->>>>>>>  		kgid_t gid_min = make_kgid(net->user_ns, info-
->>>>>>>> gid_min);
->>>>>>>  		kgid_t gid_max = make_kgid(net->user_ns, info-
->>>>>>>> gid_max);
->>>>>>> -		if ((gid_gte(filp->f_cred->fsgid, gid_min) &&
->>>>>>> -		     gid_lte(filp->f_cred->fsgid, gid_max)) ^
->>>>>>> -		    !(info->invert & XT_OWNER_GID))
->>>>>>> +		struct group_info *gi = filp->f_cred-
->>>>>>>> group_info;
->>>>>>> +
->>>>>>> +		if (gid_gte(filp->f_cred->fsgid, gid_min) &&
->>>>>>> +		    gid_lte(filp->f_cred->fsgid, gid_max))
->>>>>>> +			match = true;
->>>>>>> +
->>>>>>> +		if (!match && (info->match & XT_SUPPL_GROUPS)
->>>>>>> && gi) {
->>>>>>> +			for (i = 0; i < gi->ngroups; ++i) {
->>>>>>> +				kgid_t group = gi->gid[i];
->>>>>>> +
->>>>>>> +				if (gid_gte(group, gid_min) &&
->>>>>>> +				    gid_lte(group, gid_max)) {
->>>>>>> +					match = true;
->>>>>>> +					break;
->>>>>>> +				}
->>>>>>> +			}
->>>>>>> +		}
->>>>>>> +
->>>>>>> +		if (match ^ !(info->invert & XT_OWNER_GID))
->>>>>>>  			return false;
->>>>>>>  	}
->>>>>>>  
->>>>>>>
->>>>>>
->>>>>> How can this be safe on SMP ?
->>>>>>
->>>>>
->>>>> From what I see after the group_info rework some time ago this
->>>>> struct
->>>>> is never modified. It's replaced. Would
->>>>> get_group_info/put_group_info
->>>>> around the code be enough?
->>>>
->>>> What prevents the data to be freed right after you fetch filp-
->>>>> f_cred->group_info ?
->>>
->>> I think the get_group_info() I mentioned above would. group_info
->>> seems
->>> to always be freed by put_group_info().
->>
->> The data can be freed _before_ get_group_info() is attempted.
->>
->> get_group_info() would do a use-after-free
->>
->> You would need something like RCU protection over this stuff,
->> this is not really only a netfilter change.
->>
-> 
+On Thu, 2019-05-09 at 04:57 -0700, Eric Dumazet wrote:
 > sk_socket keeps reference to f_cred. f_cred keeps reference to
-> group_info. As long as f_cred is alive and it doesn't seem to be the
-> issue in the owner_mt() function, group_info should be alive as well as
-> far as I can see. Its refcount will go down only when f_cred is freed
-> (put_cred_rcu()).
+> > group_info. As long as f_cred is alive and it doesn't seem to be
+> > the
+> > issue in the owner_mt() function, group_info should be alive as
+> > well as
+> > far as I can see. Its refcount will go down only when f_cred is
+> > freed
+> > (put_cred_rcu()).
+> > 
+> > If there is something I'm missing please correct me.
 > 
-> If there is something I'm missing please correct me.
+> The problem is that you can´t clearly explain why the code is safe :/
+> 
+> Why would get_group_info() be needed then ?
 
-The problem is that you can´t clearly explain why the code is safe :/
+Originally I though it wouldn't, that's why I did not include it in the
+patch. Your question made me doubt that for a second. I also got
+confused a little because the group_info code looked completely
+different a while back, it got reworked and simplified.
 
-Why would get_group_info() be needed then ?
+> 
+> You need to explain this in the changelog, so that future bug hunters
+> do not have
+> to guess.
 
-You need to explain this in the changelog, so that future bug hunters do not have
-to guess.
+Ok, I will.
 
-Note to netfilter maintainers : 
-
-owner_mt() reads sk->sk_socket multiple times, this looks racy to me.
-
-(sock_orphan() could be done in the middle from another cpu)
+-- 
+Lukasz Pawelczyk
+Samsung R&D Institute Poland
+Samsung Electronics
 
 
-diff --git a/net/netfilter/xt_owner.c b/net/netfilter/xt_owner.c
-index 46686fb73784bf71c79282e87e3f01f2c0411f5c..6adfb992bfe1765c57430b4bb98212786086d379 100644
---- a/net/netfilter/xt_owner.c
-+++ b/net/netfilter/xt_owner.c
-@@ -66,8 +66,10 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
-        const struct file *filp;
-        struct sock *sk = skb_to_full_sk(skb);
-        struct net *net = xt_net(par);
-+       struct socket *sock;
- 
--       if (!sk || !sk->sk_socket || !net_eq(net, sock_net(sk)))
-+       sock = sk ? READ_ONCE(sk->sk_socket) : NULL;
-+       if (!sock || !net_eq(net, sock_net(sk)))
-                return (info->match ^ info->invert) == 0;
-        else if (info->match & info->invert & XT_OWNER_SOCKET)
-                /*
-@@ -76,7 +78,7 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
-                 */
-                return false;
- 
--       filp = sk->sk_socket->file;
-+       filp = sock->file;
-        if (filp == NULL)
-                return ((info->match ^ info->invert) &
-                       (XT_OWNER_UID | XT_OWNER_GID)) == 0;
+
