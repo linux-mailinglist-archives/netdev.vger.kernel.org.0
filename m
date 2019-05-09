@@ -2,66 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E98A0184C4
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 07:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5863184DB
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 07:34:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728825AbfEIFOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 01:14:15 -0400
-Received: from relay12.mail.gandi.net ([217.70.178.232]:43967 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726742AbfEIFOP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 01:14:15 -0400
-Received: from bootlin.com (lfbn-tou-1-417-253.w86-206.abo.wanadoo.fr [86.206.242.253])
-        (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 2CD8F200003;
-        Thu,  9 May 2019 05:14:09 +0000 (UTC)
-Date:   Thu, 9 May 2019 07:14:08 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
-        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
-        mw@semihalf.com, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net] net: mvpp2: cls: Add missing NETIF_F_NTUPLE flag
-Message-ID: <20190509071408.23eae42a@bootlin.com>
-In-Reply-To: <20190507102803.09fcb56c@cakuba.hsd1.ca.comcast.net>
-References: <20190507123635.17782-1-maxime.chevallier@bootlin.com>
-        <20190507102803.09fcb56c@cakuba.hsd1.ca.comcast.net>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726817AbfEIFev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 01:34:51 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:36975 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726426AbfEIFev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 01:34:51 -0400
+Received: by mail-pl1-f193.google.com with SMTP id p15so555553pll.4
+        for <netdev@vger.kernel.org>; Wed, 08 May 2019 22:34:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RXCY1+XqtHbOLJq8E56hPM3pFj2+cid6MOn/d5tHqoA=;
+        b=T2Pu50P1yBDzJGjNWYRUHXwf+kttCGOq6Lp+gHJVDNrANal/TkFSqQW9qek8I8zN6e
+         koHA1RY4q6xw1bjZYaaxxwsjticO9i8Ya2zebYNpeJkIAjrqa2UUUCH+S7rSBUg6uvrn
+         2KdIpp64tfHzUP5h9GaBTGRcDS8buAt5VUeUrCd69wILIBLdZXnR9Ui8PUznrAZTURxp
+         Ce+A4CG/xBMGXsckRkVAP/wGpJ1UGkZtViBeqfQALwQHt6kCPyuJMk3d8U/bexzT/PNW
+         Zj/jzvdFSkEuI1bgNZd+kUNcRK4LL21zPQSp9Lces1HAs7UiJqXYIa4Jd8IqClLNet2t
+         U8Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RXCY1+XqtHbOLJq8E56hPM3pFj2+cid6MOn/d5tHqoA=;
+        b=IyLbB1niipaXI+PxYprMaSy1jeRW0h0kjwLxqjUkQq83fyCw4ZBf/iZSD8Lrk68XhY
+         rdTI19rU7yzh+N5pwua75magGho7/kaE+F470habF0imoqPN8QM3BkNbwY37rWwRy72Z
+         Mj3f2DNxi84mTgX165lWxH07+EVav5Khs3zbBj39g9XhIhkseQU34Mq+qv4UPgnRH0hw
+         V00FgCC9A5CZj/L/PR91Je08d3e8MSOSXFXaCYDGfzx/4RH0XdvEBw+IsD7Ur6p/jpXg
+         IOpEzuV6R1bzjP/Phqu+/4I+9pYGHlZVfK8xw2VUsRgvVLjO1NDkUfGvwFHJQ/2n56O7
+         P27g==
+X-Gm-Message-State: APjAAAV8xDSqxYm7QuLYKoE0kLi7S2NQZeEkPhvf64ZsEbL68m8gaetD
+        T1QyaG8B1iVOzOJzTR9DfSB144n0r2VakAW8jc8=
+X-Google-Smtp-Source: APXvYqz1BsT3M86QZI932eV7YgfUzFtdnTDO2CxvuhgEthHj6hHQsEj2p0oSEQ8PPsbybGhCD0UU7vk3wg8Nl9lXi30=
+X-Received: by 2002:a17:902:5983:: with SMTP id p3mr2563963pli.224.1557380091042;
+ Wed, 08 May 2019 22:34:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1557201816-19945-1-git-send-email-jasowang@redhat.com>
+ <CAM_iQpURdiJv9GqkEyk=MPokacvtJVfHUpBb3=6EWA0e1yiTZQ@mail.gmail.com>
+ <a1ef0c0d-d67c-8888-91e6-2819e8c45489@redhat.com> <CAM_iQpVGdduQGdkBn2a+8=VTuZcoTxBdve6+uDHACcDrdtL=Og@mail.gmail.com>
+ <e2c79625-7541-cf58-5729-a5519f36b248@redhat.com>
+In-Reply-To: <e2c79625-7541-cf58-5729-a5519f36b248@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 8 May 2019 22:34:39 -0700
+Message-ID: <CAM_iQpV+FMvXQDO8o9=x90ybT87OWrSthaxt6soJ_Mhug=vSzA@mail.gmail.com>
+Subject: Re: [PATCH net V2] tuntap: synchronize through tfiles array instead
+ of tun->numqueues
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, David,
-
-On Tue, 7 May 2019 10:28:03 -0700
-Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
-
->> -	if (mvpp22_rss_is_supported())
->> +	if (mvpp22_rss_is_supported()) {
->>  		dev->hw_features |= NETIF_F_RXHASH;
->> +		dev->features |= NETIF_F_NTUPLE;  
+On Tue, May 7, 2019 at 7:54 PM Jason Wang <jasowang@redhat.com> wrote:
+> This is only true if you can make sure tfile[tun->numqueues] is not
+> freed. Either my patch or SOCK_RCU_FREE can solve this, but for
+> SOCK_RCU_FREE we need do extra careful audit to make sure it doesn't
+> break someting. So synchronize through pointers in tfiles[] which is
+> already protected by RCU is much more easier. It can make sure no
+> dereference from xmit path after synchornize_net(). And this matches the
+> assumptions of the codes after synchronize_net().
 >
->Hm, why not in hw_features?
 
-Because as of today, there's nothing implemented to disable
-classification offload in the driver, so the feature can't be toggled.
+It is hard to tell which sock_put() matches with this synchronize_net()
+given the call path is complicated.
 
-Is this an issue ? Sorry if I'm doing this wrong, but I didn't see any
-indication that this feature has to be host-writeable.
+With SOCK_RCU_FREE, no such a problem, all sock_put() will be safe.
+So to me SOCK_RCU_FREE is much easier to understand and audit.
 
-I can make so that it's toggle-able, but it's not as straightforward as
-we would think, since the classifier is also used for RSS (so, we can't
-just disable the classifier as a whole, we would have to invalidate
-each registered flow).
-
-Thanks,
-
-Maxime
+Thanks.
