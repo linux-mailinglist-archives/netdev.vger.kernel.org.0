@@ -2,162 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D89321893C
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 13:48:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B64BF18940
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 13:49:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbfEILs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 07:48:28 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:46689 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbfEILs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 07:48:27 -0400
-Received: by mail-qk1-f194.google.com with SMTP id a132so1134265qkb.13
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 04:48:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=HLi5v2fUqq6HS4cjBMmojehwWDeRlzvcfwL2kRg/gr0=;
-        b=UKrdHzHwuPYA2bpGaDBxJQnnqhjtP/ZoIhIs9aPIsp8ghw7PA/Mol/Umzjm5DQTR2I
-         3J+RsgdT10fyiaOeIk0uzlkW+btvUHbQQt1fMAKgQtWTD/DeIQff1Z1FlhwJtDHIwPKe
-         2HcwaZPO3h3aBrUVvuM9G0evxMKs1gGWYQiz6G6EZBeVaVibouCOgT+ZOYPfZjGonb/a
-         ig9p62/gxDdTYnbdP4PXvBdN7pKe7EDePyV6xWivqAxbcWA3hGOcFWWtGBiwPU2SEoDi
-         VlLp4F9Bb5IEA9K3Ydhw40Ov7IaocqMfy21N1KCMQUEThkiTwgkrApp1lxQfxqC9YN97
-         wW3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=HLi5v2fUqq6HS4cjBMmojehwWDeRlzvcfwL2kRg/gr0=;
-        b=GUOR1nWvC3vIRsWUWzfH9xtKCka700tHDbG3n/EAhPsQctl9c9+Q0uJyM0ltkiKgOX
-         5t8yOXVsiqYO/tg8X/qXQBzJdwgZoaacKBma35N6UrpE4Q+kQfpz803AtgmQ4D6ejdHT
-         WxdU15oIWeI+vDUAol5v6oxJp7lpYUEgfy3Yky56rTnZWFEE8DNooYVcWUSVo8DOp/Ls
-         g+R7dtnc3Erm4dL2oZ6hP4rGReF2AmDPD2VTQMcHZThiM9IWU6UdWiN4uvwOkYsyDDU/
-         iHKUS1WRUPE6LTnQz0ELCHw3XKw4upcUjOV0YdpKypKo03TDUaulk7bWuv36me3NdsvU
-         s0nA==
-X-Gm-Message-State: APjAAAU7nNDUqZPe7e20LYPa6OqKuGx/oB6D1lXA4cyG5Bb8A/BjaaGl
-        Eao1rm+F2RjvacQsz09sdVsJBGBkoHN6QO2bTOGNwceU
-X-Google-Smtp-Source: APXvYqzviPNUZvTGhyc56S4ldoFMc1q3ysHhnRpuCJDLsbXOaB7DsJkqgNXuvQtZETh+YNF32p2kmd8v8nmod2EWS7s=
-X-Received: by 2002:a37:5f41:: with SMTP id t62mr2886494qkb.141.1557402506769;
- Thu, 09 May 2019 04:48:26 -0700 (PDT)
+        id S1726540AbfEILtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 07:49:32 -0400
+Received: from www62.your-server.de ([213.133.104.62]:46058 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725961AbfEILtc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 07:49:32 -0400
+Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hOhYE-0001ym-UL; Thu, 09 May 2019 13:49:27 +0200
+Received: from [178.199.41.31] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hOhYE-0000XM-ED; Thu, 09 May 2019 13:49:26 +0200
+Subject: Re: Question about seccomp / bpf
+To:     Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@fb.com>, netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kees Cook <keescook@google.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Jann Horn <jannh@google.com>, Will Drewry <wad@chromium.org>
+References: <CANn89iL_XLb5C-+DY5PRhneZDJv585xfbLtiEVc3-ejzNNXaVg@mail.gmail.com>
+ <20190508230941.6rqccgijqzkxmz4t@ast-mbp>
+ <CANn89iL_1n8Lb5yCEk3ZrBsUtPPWPZ=0BiELUo+jyBWfLfaAzg@mail.gmail.com>
+ <20190509044720.fxlcldi74atev5id@ast-mbp>
+ <CANn89i+v52ktezz5J_0of_EvTUozf86rP1Uh36HpbHf33uzDJg@mail.gmail.com>
+ <CANn89iK8e8ROW8CrtTDq9-_bFeg2MdeqAdjf10i6HiwKuaZi=g@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e525ec9d-df46-4280-b1c8-486a809f61e6@iogearbox.net>
+Date:   Thu, 9 May 2019 13:49:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-References: <20190508225016.2375828-1-jonathan.lemon@gmail.com>
-In-Reply-To: <20190508225016.2375828-1-jonathan.lemon@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 9 May 2019 13:48:13 +0200
-Message-ID: <CAJ+HfNj4NgGQkJOEivuxuohA_+Fa98yD8EmY4acHQqymdUBA4g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: Allow bpf_map_lookup_elem() on an xskmap
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>, kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CANn89iK8e8ROW8CrtTDq9-_bFeg2MdeqAdjf10i6HiwKuaZi=g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25444/Thu May  9 09:57:18 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 9 May 2019 at 01:07, Jonathan Lemon <jonathan.lemon@gmail.com> wrot=
-e:
->
-> Currently, the AF_XDP code uses a separate map in order to
-> determine if an xsk is bound to a queue.  Instead of doing this,
-> have bpf_map_lookup_elem() return a boolean indicating whether
-> there is a valid entry at the map index.
->
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  kernel/bpf/verifier.c                             |  6 +++++-
->  kernel/bpf/xskmap.c                               |  2 +-
->  .../selftests/bpf/verifier/prevent_map_lookup.c   | 15 ---------------
->  3 files changed, 6 insertions(+), 17 deletions(-)
->
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 7b05e8938d5c..a8b8ff9ecd90 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -2761,10 +2761,14 @@ static int check_map_func_compatibility(struct bp=
-f_verifier_env *env,
->          * appear.
->          */
->         case BPF_MAP_TYPE_CPUMAP:
-> -       case BPF_MAP_TYPE_XSKMAP:
->                 if (func_id !=3D BPF_FUNC_redirect_map)
->                         goto error;
->                 break;
-> +       case BPF_MAP_TYPE_XSKMAP:
-> +               if (func_id !=3D BPF_FUNC_redirect_map &&
-> +                   func_id !=3D BPF_FUNC_map_lookup_elem)
-> +                       goto error;
-> +               break;
->         case BPF_MAP_TYPE_ARRAY_OF_MAPS:
->         case BPF_MAP_TYPE_HASH_OF_MAPS:
->                 if (func_id !=3D BPF_FUNC_map_lookup_elem)
-> diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
-> index 686d244e798d..f6e49237979c 100644
-> --- a/kernel/bpf/xskmap.c
-> +++ b/kernel/bpf/xskmap.c
-> @@ -154,7 +154,7 @@ void __xsk_map_flush(struct bpf_map *map)
->
->  static void *xsk_map_lookup_elem(struct bpf_map *map, void *key)
->  {
-> -       return ERR_PTR(-EOPNOTSUPP);
-> +       return !!__xsk_map_lookup_elem(map, *(u32 *)key);
->  }
->
+On 05/09/2019 12:58 PM, Eric Dumazet wrote:
+> On Thu, May 9, 2019 at 3:52 AM Eric Dumazet <edumazet@google.com> wrote:
+>> On Wed, May 8, 2019 at 9:47 PM Alexei Starovoitov
+>> <alexei.starovoitov@gmail.com> wrote:
+>>> On Wed, May 08, 2019 at 04:17:29PM -0700, Eric Dumazet wrote:
+>>>> On Wed, May 8, 2019 at 4:09 PM Alexei Starovoitov
+>>>> <alexei.starovoitov@gmail.com> wrote:
+>>>>> On Wed, May 08, 2019 at 02:21:52PM -0700, Eric Dumazet wrote:
+>>>>>> Hi Alexei and Daniel
+>>>>>>
+>>>>>> I have a question about seccomp.
+>>>>>>
+>>>>>> It seems that after this patch, seccomp no longer needs a helper
+>>>>>> (seccomp_bpf_load())
+>>>>>>
+>>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bd4cf0ed331a275e9bf5a49e6d0fd55dffc551b8
+>>>>>>
+>>>>>> Are we detecting that a particular JIT code needs to call at least one
+>>>>>> function from the kernel at all ?
+>>>>>
+>>>>> Currently we don't track such things and trying very hard to avoid
+>>>>> any special cases for classic vs extended.
+>>>>>
+>>>>>> If the filter contains self-contained code (no call, just inline
+>>>>>> code), then we could use any room in whole vmalloc space,
+>>>>>> not only from the modules (which is something like 2GB total on x86_64)
+>>>>>
+>>>>> I believe there was an effort to make bpf progs and other executable things
+>>>>> to be everywhere too, but I lost the track of it.
+>>>>> It's not that hard to tweak x64 jit to emit 64-bit calls to helpers
+>>>>> when delta between call insn and a helper is more than 32-bit that fits
+>>>>> into call insn. iirc there was even such patch floating around.
+>>>>>
+>>>>> but what motivated you question? do you see 2GB space being full?!
+>>>>
+>>>> A customer seems to hit the limit, with about 75,000 threads,
+>>>> each one having a seccomp filter with 6 pages (plus one guard page
+>>>> given by vmalloc)
+>>>
+>>> Since cbpf doesn't have "fd as a program" concept I suspect
+>>> the same program was loaded 75k times. What a waste of kernel memory.
+>>> And, no, we're not going to extend or fix cbpf for this.
+>>> cbpf is frozen. seccomp needs to start using ebpf.
+>>> It can have one program to secure all threads.
+>>> If necessary single program can be customized via bpf maps
+>>> for each thread.
+>>
+>> Yes,  docker seems to have a very generic implementation and  should
+>> probably be fixed
+>> ( https://github.com/moby/moby/blob/v17.03.2-ce/profiles/seccomp/seccomp.go )
+> 
+> Even if the seccomp program was optimized to a few bytes, it would
+> still consume at least 2 pages in module vmalloc space,
+> so the limit in number of concurrent programs would be around 262,144
+> 
+> We might ask seccomp guys to detect that the same program is used, by
+> maintaining a hash of already loaded ones.
+> ( I see struct seccomp_filter has a @usage refcount_t )
 
-Hmm, enabling lookups has some concerns, so we took the easy path;
-simply disallowing it. Lookups (and returning a socket/fd) from
-userspace might be expensive; allocating a new fd, and such, and on
-the BPF side there's no XDP socket object (yet!).
-
-Your patch makes the lookup return something else than a fd or socket.
-The broader question is, inserting a socket fd and getting back a bool
--- is that ok from a semantic perspective? It's a kind of weird map.
-Are there any other maps that behave in this way? It certainly makes
-the XDP code easier, and you get somewhat better introspection into
-the XSKMAP.
-
-(bpf-next is closed, btw... :-))
-
-
-
-Bj=C3=B6rn
-
->  static int xsk_map_update_elem(struct bpf_map *map, void *key, void *val=
-ue,
-> diff --git a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c b/=
-tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
-> index bbdba990fefb..da7a4b37cb98 100644
-> --- a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
-> +++ b/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
-> @@ -28,21 +28,6 @@
->         .errstr =3D "cannot pass map_type 18 into func bpf_map_lookup_ele=
-m",
->         .prog_type =3D BPF_PROG_TYPE_SOCK_OPS,
->  },
-> -{
-> -       "prevent map lookup in xskmap",
-> -       .insns =3D {
-> -       BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-> -       BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-> -       BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-> -       BPF_LD_MAP_FD(BPF_REG_1, 0),
-> -       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_ele=
-m),
-> -       BPF_EXIT_INSN(),
-> -       },
-> -       .fixup_map_xskmap =3D { 3 },
-> -       .result =3D REJECT,
-> -       .errstr =3D "cannot pass map_type 17 into func bpf_map_lookup_ele=
-m",
-> -       .prog_type =3D BPF_PROG_TYPE_XDP,
-> -},
->  {
->         "prevent map lookup in stack trace",
->         .insns =3D {
-> --
-> 2.17.1
->
++1, that would indeed be worth to pursue as a short term solution.
