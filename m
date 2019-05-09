@@ -2,458 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7BE2186BC
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 10:23:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 829D3186C1
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 10:25:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726572AbfEIIXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 04:23:38 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:36414 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725822AbfEIIXi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 04:23:38 -0400
-Received: by mail-wr1-f68.google.com with SMTP id o4so1715753wra.3
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 01:23:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uCFXdP47F/df3IdZklpXV+xoBFyv9l4yiHFuLyhHRpw=;
-        b=qJdbC3C/Sp+4MB8739zzufiM+9kxap7XN4z6XYXASOO/ia59JlHh24JINKlOhAqFhZ
-         UfZaoja68RIYb4Zoqb/bxOEqYmtlxdwNGVkVcU/W0H6UWBaVWUhnRxeG8wxPQOOYZ7L2
-         rP/nv/ObIzeRfWpGJ3KtPbfVcB5BUq5qCGzKeHMsd+LkCB8oe7E/cUxBxFQ9eeHg4tVK
-         pt7IA1QZ80hVZ4/iRlrxIyOdE1aNSwn7OqQeUtc8t9XuvIBg0PTvtTurLUMX05uImu6a
-         IJm3ceh4a0qBuPMe+kTLbJMyqTJyOiLrFzxqHyrV3/WftPpeVob6297F6QtZQhKAbyvb
-         pXvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uCFXdP47F/df3IdZklpXV+xoBFyv9l4yiHFuLyhHRpw=;
-        b=llKEjeta2eUOohgFBIcescnZDT3EQrD9XYNh5YBMZXWLD70ShdLVh17QgRi9Akbcre
-         wAEniKftPu5YqkxhZ2u4jIP62A4d7i9VYKN2grIRCGZqABXHsiI3W0Zl+pWc7y854ANa
-         ShC1E8oO7M03yiWP/Mg1GIqjEmJvXsYfYlL3NAewRmwpcpxImQO0M9vsYzpJ0uShvE8i
-         Yy/+bVljL+pnfyHhidv5wW0FSHeBT0loPIDoHH2MDKt+CXfHFAIWJ+4gqQJ6apuyIh3X
-         P8jct8CJ7OG6sUP0aLsw9jWYlPrv4silwF+y3swWDEK0zG0hcNDaXXQfMjeCnQzV6MW7
-         OgyQ==
-X-Gm-Message-State: APjAAAUh3AODSrG8nW517rNZ34yoMmrdgRSRJVHdkHZjk+wQ1zwqRCxL
-        99LRz+ewBvYLVpiY/Oiz31KKpw==
-X-Google-Smtp-Source: APXvYqwvlHDs8EVQx5oBILPE8CpChsrWqPAltm2b17awYrVAWKcjYuTnhv/WcLeWVIS3Ldvf3DPS5g==
-X-Received: by 2002:a5d:5282:: with SMTP id c2mr1961812wrv.88.1557390215340;
-        Thu, 09 May 2019 01:23:35 -0700 (PDT)
-Received: from localhost (ip-78-45-164-125.net.upcbroadband.cz. [78.45.164.125])
-        by smtp.gmail.com with ESMTPSA id x17sm1436001wru.27.2019.05.09.01.23.34
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 09 May 2019 01:23:34 -0700 (PDT)
-Date:   Thu, 9 May 2019 10:23:34 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Aya Levin <ayal@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next RFC] Dump SW SQ context as part of tx reporter
-Message-ID: <20190509082334.GD2268@nanopsycho>
-References: <1556547459-7756-1-git-send-email-ayal@mellanox.com>
- <20190507124129.GC2157@nanopsycho>
- <a9cc0437-163c-53a1-92e9-64767e23b585@mellanox.com>
+        id S1726281AbfEIIZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 04:25:19 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:49662 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725822AbfEIIZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 04:25:18 -0400
+Received: from mailhost.synopsys.com (dc2-mailhost1.synopsys.com [10.12.135.161])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id A2061C00FF;
+        Thu,  9 May 2019 08:25:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1557390321; bh=QpFuzC5ceXosrmcLY4vec6CxMTx1UXydL2qAHJ6XHx4=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=Y3Eph6wWsOakV82OSBZQ+TZb86vDoabAKUfRFRcpxMwByuuktGkqUcPMueNSOVnX7
+         c14J4mqG+aatKLi1rhITjC1C2i+vuR/g53SMS3GXg1Z/Yf+JM34Krf3Do8dmrkvUH+
+         X8UZwnRuZBpKi+Cmi17gnuF6lDApp4N4pvKdYKZMkCXTSjfUbjAtXW8DFPFS+aFKkr
+         +b93xqc7DeiIJsHXQLy/Lbv0O4w5zwBPh7L12UdAOFTeErVRkMlFYGu33d1QloB6jc
+         7a8HwEveXm1+FPX62XEtcGdtXEk1CJ3bnkTFbiZnqDXTmlWlUgRreYD3uylL6SSM/p
+         srWzlSxM+dgFw==
+Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 8AEFDA02F0;
+        Thu,  9 May 2019 08:25:16 +0000 (UTC)
+Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
+ us01wehtc1.internal.synopsys.com (10.12.239.235) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 9 May 2019 01:25:16 -0700
+Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
+ by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Thu,
+ 9 May 2019 10:25:14 +0200
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Jose Abreu <Jose.Abreu@synopsys.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+Subject: RE: [PATCH net-next 10/11] net: stmmac: Introduce selftests support
+Thread-Topic: [PATCH net-next 10/11] net: stmmac: Introduce selftests support
+Thread-Index: AQHVBXLbzVq8jQ4wOEqKi4j/REzHDqZh7/UAgACEXjA=
+Date:   Thu, 9 May 2019 08:25:14 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B47AB21@DE02WEMBXB.internal.synopsys.com>
+References: <cover.1557300602.git.joabreu@synopsys.com>
+ <be9099bbf8783b210dc9034a8b82219984f03250.1557300602.git.joabreu@synopsys.com>
+ <20190509022330.GA23758@lunn.ch>
+In-Reply-To: <20190509022330.GA23758@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.107.19.176]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a9cc0437-163c-53a1-92e9-64767e23b585@mellanox.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, May 07, 2019 at 02:58:32PM CEST, ayal@mellanox.com wrote:
->
->
->On 5/7/2019 3:41 PM, Jiri Pirko wrote:
->> Mon, Apr 29, 2019 at 04:17:39PM CEST, ayal@mellanox.com wrote:
->>> TX reporter reports an error on two scenarios:
->>> - TX timeout on a specific tx queue
->>> - TX completion error on a specific send queue
->>> Prior to this patch, no dump data was supported by the tx reporter. This
->>> patch adds support for SW data dump of the related SQ context. The dump
->>> is simply the SQ's raw memory snapshot taken right after the error was
->>> reported, before any recovery procedure was launched. With this
->>> approach, no maintenance is needed as the driver fetch the actual data
->>> according to the layout on which the SQ was compiled with.  By providing
->>> a SW context, one can easily debug error on a given SQ.
->>>
->>> In order to offline translate the raw memory into a human readable
->>> format, the user can use some out-of-kernel scripts which receives as an
->>> input the following:
->>> - Object raw memory
->>> - Driver object compiled with debug info (can be taken/generated at any time from the machine)
->>> - Object name
->>>
->>> An example of such script output can be seen below.
->>> Note: the script is not offered as part of this patch as it do not
->>> belong to the kernel, I just described it in order to grasp the general
->>> idea of how/what can be fetched from SW dump via devlink health.
->>>
->>> The output of the SW dump can be extracted by devlink health command:
->>> $ sudo devlink health dump show pci/0000:00:0b.0 reporter tx.
->>> mlx5e_txqsq: sqn: 6336
->>> memory:
->>>    00 00 00 00 00 00 00 00
->>>    01 00 00 00 00 00 00 00
->>>    00 00 00 00 00 00 00 00
->>>    45 f4 88 cb 09 00 00 00
->>>    00 00 00 00 00 00 00 00
->>>    00 00 00 00 00 00 00 00
->>>    c0 ff ff ff 1f 00 00 00
->>>    f8 18 1e 89 81 88 ff ff
->>>    ...
->>>
->>> script output below, with struct members names and actual values:
->>>
->>> struct  mlx5e_txqsq {
->>> 	short unsigned int         cc 	 0x5 ;
->>> 	unsigned int               dma_fifo_cc 	 0x5 ;
->>> 	struct  net_dim {
->>> 		unsigned char      state 	 0x1 ;
->>> 		struct  net_dim_stats {
->>> 			int        ppms 	 0x0 ;
->>> 			int        bpms 	 0x0 ;
->>> 			int        epms 	 0x0 ;
->>> 		} prev_stats;
->>> 		struct  net_dim_sample {
->>> 			long long int time 	 0x90766ef9d ;
->>> 			unsigned int pkt_ctr 	 0x0 ;
->>> 			unsigned int byte_ctr 	 0x0 ;
->>> 			short unsigned int event_ctr 	 0x0 ;
->>> 		} start_sample;
->>> 		struct  work_struct {
->>> 			struct   {
->>> 				long int counter 	 0x1fffffffc0 ;
->>> 			} data;
->>> 			struct  list_head {
->>> 				struct list_head * next 	 0xffff8881b08998f8 ;
->>> 				struct list_head * prev 	 0xffff8881b08998f8 ;
->>> 			} entry;
->>> 			void       (*func)(struct work_struct *) 	 0xffffffffa02d0e30 ;
->>> 		} work;
->>> 		unsigned char      profile_ix 	 0x60 ;
->>> 		unsigned char      mode 	 0x72 ;
->>> 		unsigned char      tune_state 	 0x35 ;
->>> 		unsigned char      steps_right 	 0xa0 ;
->>> 		unsigned char      steps_left 	 0xff ;
->>> 		unsigned char      tired 	 0xff ;
->>> 	} dim;
->>> 	short unsigned int         pc 	 0x0 ;
->>> 	unsigned int               dma_fifo_pc 	 0x0 ;
->>> 	struct  mlx5e_cq {
->>> 		struct  mlx5_cqwq {
->>> 			struct  mlx5_frag_buf_ctrl {
->>> 				struct mlx5_buf_list * frags 	 0x500000005 ;
->>> 				unsigned int sz_m1 	 0x0 ;
->>> 				short unsigned int frag_sz_m1 	 0x0 ;
->>> 				short unsigned int strides_offset 	 0x0 ;
->>> 				unsigned char log_sz 	 0x0 ;
->>> 				unsigned char log_stride 	 0x0 ;
->>> 				unsigned char log_frag_strides 	 0x0 ;
->>> 			} fbc;
->>> 			__be32 *   db 	 0x0 ;
->>> 			unsigned int cc 	 0x0 ;
->>> 		} wq;
->>> 		short unsigned int event_ctr 	 0x0 ;
->>> 		struct napi_struct * napi 	 0x0 ;
->>> 		struct  mlx5_core_cq {
->>> 			unsigned int cqn 	 0x0 ;
->>> 			int        cqe_sz 	 0x0 ;
->>> 			__be32 *   set_ci_db 	 0xffff8881b1aa4988 ;
->>> 			__be32 *   arm_db 	 0x3f000003ff ;
->>> 			struct mlx5_uars_page * uar 	 0x6060a ;
->>> 			struct  refcount_struct {
->>> 				struct   {
->>> 					int    counter 	 0xa1814500 ;
->>> 				} refs;
->>> 			} refcount;
->>> 			struct  completion {
->>> 				unsigned int done 	 0x5 ;
->>> 				struct  wait_queue_head {
->>> 					struct  spinlock {
->>> 						union   {
->>> 							struct  raw_spinlock {
->>> 								struct  qspinlock {
->>> 									union   {
->>> 										struct   {
->>> 											int                                                    counter 	 0x5 ;
->>> 										} val;
->>> 										struct   {
->>> 											unsigned char                                          locked 	 0x5 ;
->>> 											unsigned char                                          pending 	 0x0 ;
->>> 										} ;
->>> 										struct   {
->>> 											short unsigned int                                     locked_pending 	 0x5 ;
->>> 											short unsigned int                                     tail 	 0x0 ;
->>> 										} ;
->>> 									} ;
->>> 								} raw_lock;
->>> 							} rlock;
->>> 						} ;
->>> 					} lock;
->>> 					struct  list_head {
->>> 						struct list_head * next 	 0xffff8881b089bb88 ;
->>> 						struct list_head * prev 	 0x4000000c0a ;
->>> 					} head;
->>> 				} wait;
->>> 			} free;
->>> 			unsigned int vector 	 0xa1814500 ;
->>> 			unsigned int irqn 	 0xffff8881 ;
->>> 			void       (*comp)(struct mlx5_core_cq *) 	 0xffff8881a1814504 ;
->>> 			void       (*event)(struct mlx5_core_cq *, enum mlx5_event) 	 0xffff8881a2cdea08 ;
->>> 			unsigned int cons_index 	 0x1 ;
->>> 			unsigned int arm_sn 	 0x0 ;
->>> 			struct mlx5_rsc_debug * dbg 	 0x0 ;
->>> 			int        pid 	 0x0 ;
->>> 			struct   {
->>> 				struct  list_head {
->>> 					struct list_head * next 	 0xffffffff ;
->>> 					struct list_head * prev 	 0xffffffffffffffff ;
->>> 				} list;
->>> 				void (*comp)(struct mlx5_core_cq *) 	 0xffffffffa0356940 ;
->>> 				void * priv 	 0x0 ;
->>> 			} tasklet_ctx;
->>> 			int        reset_notify_added 	 0x0 ;
->>> 			struct  list_head {
->>> 				struct list_head * next 	 0xffffffffa0300700 ;
->>> 				struct list_head * prev 	 0xd ;
->>> 			} reset_notify;
->>> 			struct mlx5_eq_comp * eq 	 0x0 ;
->>> 			short unsigned int uid 	 0x9a70 ;
->>> 		} mcq;
->>> 		struct mlx5e_channel * channel 	 0xffff8881b0899a70 ;
->>> 		struct mlx5_core_dev * mdev 	 0x4800000001 ;
->>> 		struct  mlx5_wq_ctrl {
->>> 			struct mlx5_core_dev * mdev 	 0xffffffffa02d5350 ;
->>> 			struct  mlx5_frag_buf {
->>> 				struct mlx5_buf_list * frags 	 0xffffffffa02d5460 ;
->>> 				int npages 	 0x0 ;
->>> 				int size 	 0x5 ;
->>> 				unsigned char page_shift 	 0x8 ;
->>> 			} buf;
->>> 			struct  mlx5_db {
->>> 				__be32 * db 	 0x1c6 ;
->>> 				union   {
->>> 					struct mlx5_db_pgdir * pgdir 	 0x0 ;
->>> 					struct mlx5_ib_user_db_page * user_page 	 0x0 ;
->>> 				} u;
->>> 				long long unsigned int dma 	 0xffff8881b0899ab0 ;
->>> 				int index 	 0x0 ;
->>> 			} db;
->>> 		} wq_ctrl;
->>> 	} cq;
->>> 	struct  mlx5_wq_cyc {
->>> 		struct  mlx5_frag_buf_ctrl {
->>> 			struct mlx5_buf_list * frags 	 0xffff8881a7600160 ;
->>> 			unsigned int sz_m1 	 0xa7600160 ;
->>> 			short unsigned int frag_sz_m1 	 0x8881 ;
->>> 			short unsigned int strides_offset 	 0xffff ;
->>> 			unsigned char log_sz 	 0x88 ;
->>> 			unsigned char log_stride 	 0x49 ;
->>> 			unsigned char log_frag_strides 	 0xaa ;
->>> 		} fbc;
->>> 		__be32 *           db 	 0x1000000000010 ;
->>> 		short unsigned int sz 	 0xc ;
->>> 		short unsigned int wqe_ctr 	 0x0 ;
->>> 		short unsigned int cur_sz 	 0x0 ;
->>> 	} wq;
->>> 	unsigned int               dma_fifo_mask 	 0xa1814500 ;
->>> 	struct mlx5e_sq_stats *    stats 	 0xffff8881a33a0348 ;
->>> 	struct   {
->>> 		struct mlx5e_sq_dma * dma_fifo 	 0x1a1814500 ;
->>> 		struct mlx5e_tx_wqe_info * wqe_info 	 0x14 ;
->>> 	} db;
->>> 	void *                     uar_map 	 0x0 ;
->>> 	struct netdev_queue *      txq 	 0x0 ;
->>> 	unsigned int               sqn 	 0x18c0 ;
->>> 	unsigned char              min_inline_mode 	 0x0 ;
->>> 	struct device *            pdev 	 0x0 ;
->>> 	unsigned int               mkey_be 	 0x0 ;
->>> 	long unsigned int          state 	 0x0 ;
->>> 	struct hwtstamp_config *   tstamp 	 0x0 ;
->>> 	struct mlx5_clock *        clock 	 0xffff8881b1aa6f88 ;
->>> 	struct  mlx5_wq_ctrl {
->>> 		struct mlx5_core_dev * mdev 	 0x3f000003ff ;
->>> 		struct  mlx5_frag_buf {
->>> 			struct mlx5_buf_list * frags 	 0x6060a ;
->>> 			int        npages 	 0xa1814604 ;
->>> 			int        size 	 0xffff8881 ;
->>> 			unsigned char page_shift 	 0x0 ;
->>> 		} buf;
->>> 		struct  mlx5_db {
->>> 			__be32 *   db 	 0xfff ;
->>> 			union   {
->>> 				struct mlx5_db_pgdir * pgdir 	 0x0 ;
->>> 				struct mlx5_ib_user_db_page * user_page 	 0x0 ;
->>> 			} u;
->>> 			long long unsigned int dma 	 0xffff888188440000 ;
->>> 			int        index 	 0x8b074000 ;
->>> 		} db;
->>> 	} wq_ctrl;
->>> 	struct mlx5e_channel *     channel 	 0xffffc9000010d800 ;
->>> 	int                        txq_ix 	 0xa0020180 ;
->>> 	unsigned int               rate_limit 	 0xffff8881 ;
->>> 	struct  work_struct {
->>> 		struct   {
->>> 			long int   counter 	 0x1000018c0 ;
->>> 		} data;
->>> 		struct  list_head {
->>> 			struct list_head * next 	 0xffff8881c32b68e8 ;
->>> 			struct list_head * prev 	 0x800 ;
->>> 		} entry;
->>> 		void               (*func)(struct work_struct *) 	 0x9 ;
->>> 	} recover_work;
->>> } ;
->> 
->> I don't get it. You are dumping live kernel memory? There are already
->> facilities to do that in place. Why to replicate it?
->I am dumping the driver's memory under a lock so I can ensure it's 
->consistency (as appose to /dev/mem)
->vmcore cannot be taken from a live kernel (without crashing).
->I need the memory's snapshot right after the error from the driver's 
->context.
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Thu, May 09, 2019 at 03:23:30
 
-Got it. However, this sounds like a generic problem not specific to
-nic drivers. How other subsystems resolve this (if they do at all)?
+> > +static int stmmac_test_eee(struct stmmac_priv *priv)
+> > +{
+> > +	struct stmmac_extra_stats *initial, *final;
+> > +	int timeout =3D 100;
+> > +	int ret;
+> > +
+> > +	ret =3D stmmac_test_loopback(priv);
+> > +	if (ret)
+> > +		goto out_free_final;
+> > +
+> > +	/* We have no traffic in the line so, sooner or later it will go LPI =
+*/
+> > +	while (--timeout) {
+> > +		memcpy(final, &priv->xstats, sizeof(*final));
+> > +
+> > +		if (final->irq_tx_path_in_lpi_mode_n >
+> > +		    initial->irq_tx_path_in_lpi_mode_n)
+> > +			break;
+> > +		msleep(100);
+> > +	}
+> > +
+> > +	if (!timeout) {
+> > +		ret =3D -ETIMEDOUT;
+> > +		goto out_free_final;
+> > +	}
+>=20
+> Retries would be a better name than timeout.
 
+Ok.
 
+>=20
+> Also, 100 * 100 ms seems like a long time.
 
->Which other tools do you mean?
->> 
->> 
->>>
->>> Signed-off-by: Aya Levin <ayal@mellanox.com>
->>> ---
->>> .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   | 100 +++++++++++++++++++++
->>> 1 file changed, 100 insertions(+)
->>>
->>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
->>> index 476dd97f7f2f..8a39f5525e57 100644
->>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
->>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
->>> @@ -9,6 +9,7 @@
->>>
->>> struct mlx5e_tx_err_ctx {
->>> 	int (*recover)(struct mlx5e_txqsq *sq);
->>> +	int (*dump)(struct mlx5e_txqsq *sq);
->>> 	struct mlx5e_txqsq *sq;
->>> };
->>>
->>> @@ -281,10 +282,109 @@ static int mlx5e_tx_reporter_diagnose(struct devlink_health_reporter *reporter,
->>> 	return err;
->>> }
->>>
->>> +static int mlx5e_tx_reporter_sw_dump_from_ctx(struct mlx5e_priv *priv,
->>> +					      struct mlx5e_txqsq *sq,
->>> +					      struct devlink_fmsg *fmsg)
->>> +{
->>> +	u64 *ptr = (u64 *)sq;
->>> +	int copy, err;
->>> +	int i = 0;
->>> +
->>> +	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
->>> +		return 0;
->>> +
->>> +	err = devlink_fmsg_pair_nest_start(fmsg, "mlx5e_txqsq");
->>> +	if (err)
->>> +		return err;
->>> +
->>> +	err = devlink_fmsg_obj_nest_start(fmsg);
->>> +	if (err)
->>> +		return err;
->>> +
->>> +	err = devlink_fmsg_arr_pair_nest_start(fmsg, "memory");
->>> +	if (err)
->>> +		return err;
->>> +
->>> +	while (i < sizeof(struct mlx5e_txqsq)) {
->>> +		copy = sizeof(u64);
->>> +
->>> +		if (i + copy > sizeof(struct mlx5e_txqsq))
->>> +			copy = sizeof(struct mlx5e_txqsq) - i;
->>> +
->>> +		err = devlink_fmsg_binary_put(fmsg, ptr, copy);
->>> +		if (err)
->>> +			return err;
->>> +		ptr++;
->>> +		i += copy;
->>> +	}
->>> +
->>> +	err = devlink_fmsg_arr_pair_nest_end(fmsg);
->>> +	if (err)
->>> +		return err;
->>> +
->>> +	err = devlink_fmsg_obj_nest_end(fmsg);
->>> +	if (err)
->>> +		return err;
->>> +
->>> +	err = devlink_fmsg_pair_nest_end(fmsg);
->>> +
->>> +	return err;
->>> +}
->>> +
->>> +static int mlx5e_tx_reporter_sw_dump_all(struct mlx5e_priv *priv,
->>> +					 struct devlink_fmsg *fmsg)
->>> +{
->>> +	int i, err = 0;
->>> +
->>> +	mutex_lock(&priv->state_lock);
->>> +
->>> +	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
->>> +		goto unlock;
->>> +
->>> +	err = devlink_fmsg_arr_pair_nest_start(fmsg, "SQs");
->>> +	if (err)
->>> +		goto unlock;
->>> +
->>> +	for (i = 0; i < priv->channels.num * priv->channels.params.num_tc;
->>> +	     i++) {
->>> +		err = devlink_fmsg_obj_nest_start(fmsg);
->>> +		if (err)
->>> +			goto unlock;
->>> +
->>> +		err = mlx5e_tx_reporter_sw_dump_from_ctx(priv, priv->txq2sq[i],
->>> +							 fmsg);
->>> +		if (err)
->>> +			goto unlock;
->>> +
->>> +		err = devlink_fmsg_pair_nest_end(fmsg);
->>> +		if (err)
->>> +			goto unlock;
->>> +	}
->>> +	err = devlink_fmsg_arr_pair_nest_end(fmsg);
->>> +	if (err)
->>> +		goto unlock;
->>> +
->>> +unlock:
->>> +	mutex_unlock(&priv->state_lock);
->>> +	return err;
->>> +}
->>> +
->>> +static int mlx5e_tx_reporter_sw_dump(struct devlink_health_reporter *reporter,
->>> +				     struct devlink_fmsg *fmsg, void *context)
->>> +{
->>> +	struct mlx5e_priv *priv = devlink_health_reporter_priv(reporter);
->>> +	struct mlx5e_tx_err_ctx *err_ctx = context;
->>> +
->>> +	return err_ctx ? mlx5e_tx_reporter_sw_dump_from_ctx(priv, err_ctx->sq,
->>> +							    fmsg) :
->>> +			 mlx5e_tx_reporter_sw_dump_all(priv, fmsg);
->>> +}
->>> +
->>> static const struct devlink_health_reporter_ops mlx5_tx_reporter_ops = {
->>> 		.name = "tx",
->>> 		.recover = mlx5e_tx_reporter_recover,
->>> 		.diagnose = mlx5e_tx_reporter_diagnose,
->>> +		.dump = mlx5e_tx_reporter_sw_dump,
->>> };
->>>
->>> #define MLX5_REPORTER_TX_GRACEFUL_PERIOD 500
->>> -- 
->>> 2.14.1
->>>
+Ah, yeah. I will adjust to 0.5 or maybe 1 sec max.
+
+>=20
+> > +static int stmmac_filter_check(struct stmmac_priv *priv)
+> > +{
+> > +	if (!(priv->dev->flags & IFF_PROMISC))
+> > +		return 0;
+> > +
+> > +	netdev_warn(priv->dev, "Test can't be run in promiscuous mode!\n");
+> > +	return 1;
+>=20
+> Maybe return EOPNOTSUPP here,
+
+Ok.
+
+>=20
+> > +}
+> > +
+> > +static int stmmac_test_hfilt(struct stmmac_priv *priv)
+> > +{
+> > +	unsigned char gd_addr[ETH_ALEN] =3D {0x01, 0x0c, 0xcd, 0x04, 0x00, 0x=
+00};
+> > +	unsigned char bd_addr[ETH_ALEN] =3D {0x06, 0x07, 0x08, 0x09, 0x0a, 0x=
+0b};
+>=20
+> What does gd and bd mean?
+
+Good and Bad :D
+
+>=20
+> > +	struct stmmac_packet_attrs attr =3D { };
+> > +	int ret;
+> > +
+> > +	if (stmmac_filter_check(priv))
+> > +		return -EOPNOTSUPP;
+>=20
+> and just return the error code from the call.
+>=20
+> > +
+> > +	ret =3D dev_mc_add(priv->dev, gd_addr);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	attr.dst =3D gd_addr;
+> > +
+> > +	/* Shall receive packet */
+> > +	ret =3D __stmmac_test_loopback(priv, &attr);
+> > +	if (ret)
+> > +		goto cleanup;
+> > +
+> > +	attr.dst =3D bd_addr;
+> > +
+> > +	/* Shall NOT receive packet */
+> > +	ret =3D __stmmac_test_loopback(priv, &attr);
+> > +	ret =3D !ret;
+>=20
+> What is this test testing? gd is a multicast, where as bd is not.  I
+> expect the hardware treats multicast different to unicast. So it would
+> make more sense to test two different multicast addresses, one which
+> has been added via dev_mc_addr, and one that has not?
+
+Hmm, yeah makes sense. I will adjust.
+
+>=20
+> > +
+> > +cleanup:
+> > +	dev_mc_del(priv->dev, gd_addr);
+> > +	return ret;
+> > +}
+> > +
+> > +static int stmmac_test_pfilt(struct stmmac_priv *priv)
+> > +{
+> > +	unsigned char gd_addr[ETH_ALEN] =3D {0x01, 0x02, 0x03, 0x04, 0x05, 0x=
+06};
+> > +	unsigned char bd_addr[ETH_ALEN] =3D {0x06, 0x07, 0x08, 0x09, 0x0a, 0x=
+0b};
+> > +	struct stmmac_packet_attrs attr =3D { };
+> > +	int ret;
+> > +
+> > +	if (stmmac_filter_check(priv))
+> > +		return -EOPNOTSUPP;
+> > +
+> > +	ret =3D dev_uc_add(priv->dev, gd_addr);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	attr.dst =3D gd_addr;
+> > +
+> > +	/* Shall receive packet */
+> > +	ret =3D __stmmac_test_loopback(priv, &attr);
+> > +	if (ret)
+> > +		goto cleanup;
+>=20
+> gb is a multicast address. Does dev_uc_add() return an error? If it
+> does not we should not expect it to actually work, since a multicast
+> address should not match a unicast address?
+
+It doesn't return an error and it does calls the set_filter callback in=20
+netdev. I will adjust to use unicast address.
+
+> You also seem to be missing a test for adding a unicast address via
+> dev_uc_add() and receiving packets for that address, but not receiving
+> multicast packets.
+
+Hmm, what if interface was already configured to receive Multicast before=20
+running the tests ?
+
+>=20
+> > +static const struct stmmac_test {
+> > +	char name[ETH_GSTRING_LEN];
+> > +	int lb;
+> > +	int (*fn)(struct stmmac_priv *priv);
+> > +} stmmac_selftests[] =3D {
+> > +	{
+> > +		.name =3D "MAC Loopback         ",
+> > +		.lb =3D STMMAC_LOOPBACK_MAC,
+> > +		.fn =3D stmmac_test_loopback,
+>=20
+> stmmac_test_mac_loopback might be a better name.
+
+Ok.
+
+Thanks for the review!
+
+Thanks,
+Jose Miguel Abreu
