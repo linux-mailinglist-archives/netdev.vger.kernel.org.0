@@ -2,117 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A669B18DB2
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 18:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9309718DC4
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 18:13:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726686AbfEIQLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 12:11:15 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:32906 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726469AbfEIQLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 12:11:14 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x49GB3I2109737;
-        Thu, 9 May 2019 11:11:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1557418263;
-        bh=vYDEaMEL5i/DNwQ5MyfpbPCp2Sb+a1ukplyuBk6CKH4=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=OzGwQQg26KKFe+AmQUdYMx98QjB1RGu3PgrhPqXvYyKm26Mv3NaRDPXcHTL7mXMeP
-         LQ+b6mEkie8DmE1RDwwN87tSwkOnMISpGA2wGWTl71xJa+4JwebZW64GrKCHBTUSfG
-         /AFT4pzc5zDN4OWYuWy8WdtYhqQvKmky64H1izz0=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x49GB34G036053
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 9 May 2019 11:11:03 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Thu, 9 May
- 2019 11:11:03 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Thu, 9 May 2019 11:11:03 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id x49GB3HP044771;
-        Thu, 9 May 2019 11:11:03 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>
-CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH v12 5/5] can: m_can: Fix checkpatch issues on existing code
-Date:   Thu, 9 May 2019 11:11:09 -0500
-Message-ID: <20190509161109.10499-5-dmurphy@ti.com>
-X-Mailer: git-send-email 2.21.0.5.gaeb582a983
-In-Reply-To: <20190509161109.10499-1-dmurphy@ti.com>
-References: <20190509161109.10499-1-dmurphy@ti.com>
+        id S1726653AbfEIQNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 12:13:01 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:33080 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726600AbfEIQNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 12:13:00 -0400
+Received: by mail-pl1-f195.google.com with SMTP id y3so1387504plp.0
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 09:13:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zvb1vzfjPyWKpcO6JJQuvbkJPTWrXzIHHsQRRvvsQsA=;
+        b=PHMd8rwnCIhmR086CKxaOrNwg6vg/Ysxu2sGKpS0t/ca+k+jpvMlag1jq0ZsgHG1r5
+         pj2T9TZEZfyUYTeTn+j/pbU6EUKBg4Mpbq2j3ogs1PHdWJpgCNoCABtM3dsqpGlr67Rj
+         nr6oj2kzHjH0U0Zgijiv9jsMJZ2Fw+4A+lKH6/6PUK9oJIduDJtNOabCjFLlPpZw2BcV
+         Qlo03hw39I5VcboHCPWarPAGVmymzxB4pzst+Sg3cNDG5XR5my1++pzyoROnO8+zayzJ
+         0pctdYvHb6BP0xzNHJx5nTc+2/dYiXjJblcUmzZzKKJaPMK/Wu8yFo0jfAfXvFjoOwR1
+         pp/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zvb1vzfjPyWKpcO6JJQuvbkJPTWrXzIHHsQRRvvsQsA=;
+        b=poAo9IRUj0a7cxLMmHXBjeLcwzZHE1F+56fCoXQOhGhS6naI+C/ltYVItkegip5pWR
+         5UpBCVTC+DIAypDlorNVEKISlfb93oqUBb6fhHIIQQHp2VQzeJkPDmmKAkSTBg6+pOdB
+         xCF7FPb7qdcQ4dfGL8BSESh7NLX+Z5dwUWRH45YoZPVE2N9SJdBT6R2huZ+skVocdoyM
+         XHq0Zo805wUI5zMuwnaqQPOlJd/eMHmhh9sOi1SJTCzIrJLkLzPDBVdnz7pgMzYzHgjz
+         qztHFQ1LXpzOl1aFdjvE+BdI8j9XNehVlofZ8id8hpW8L6tCnvcpy6wlcdKR+w37H6Dt
+         vI7A==
+X-Gm-Message-State: APjAAAVZKCxiirzrxGyZ1AefRsALNuHGfUxQiPNHUVKFh7dlqacF/VW0
+        c/kJmnC1E7uRn9SJBCMhPXI=
+X-Google-Smtp-Source: APXvYqzAj7XNdfDHOW7lN/XDWT+BW4JS6d5t5ZMPE6HKivRfeX9SGldCfGsHSA6d3CPdB9sURQ5YXg==
+X-Received: by 2002:a17:902:4a:: with SMTP id 68mr6304970pla.235.1557418380291;
+        Thu, 09 May 2019 09:13:00 -0700 (PDT)
+Received: from [172.20.54.81] ([2620:10d:c090:200::1:931a])
+        by smtp.gmail.com with ESMTPSA id e6sm7712542pfl.115.2019.05.09.09.12.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 May 2019 09:12:59 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Alexei Starovoitov" <ast@kernel.org>, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 1/2] bpf: Allow bpf_map_lookup_elem() on an
+ xskmap
+Date:   Thu, 09 May 2019 09:12:58 -0700
+X-Mailer: MailMate (1.12.4r5594)
+Message-ID: <7974B49C-CC4F-475D-992A-3E5B6480B039@gmail.com>
+In-Reply-To: <CAJ+HfNj4NgGQkJOEivuxuohA_+Fa98yD8EmY4acHQqymdUBA4g@mail.gmail.com>
+References: <20190508225016.2375828-1-jonathan.lemon@gmail.com>
+ <CAJ+HfNj4NgGQkJOEivuxuohA_+Fa98yD8EmY4acHQqymdUBA4g@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix checkpatch issues found during the m_can framework creation.
-The code the issues were in, was in untouched code and these
-changes should be done separately as to not be confused with the
-framework changes.
+On 9 May 2019, at 4:48, Björn Töpel wrote:
 
-Fix these 3 check issues:
-CHECK: Unnecessary parentheses around 'cdev->can.state != CAN_STATE_ERROR_WARNING'
-	if (psr & PSR_EW &&
-	    (cdev->can.state != CAN_STATE_ERROR_WARNING)) {
+> On Thu, 9 May 2019 at 01:07, Jonathan Lemon <jonathan.lemon@gmail.com> 
+> wrote:
+>>
+>> Currently, the AF_XDP code uses a separate map in order to
+>> determine if an xsk is bound to a queue.  Instead of doing this,
+>> have bpf_map_lookup_elem() return a boolean indicating whether
+>> there is a valid entry at the map index.
+>>
+>> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+>> ---
+>>  kernel/bpf/verifier.c                             |  6 +++++-
+>>  kernel/bpf/xskmap.c                               |  2 +-
+>>  .../selftests/bpf/verifier/prevent_map_lookup.c   | 15 
+>> ---------------
+>>  3 files changed, 6 insertions(+), 17 deletions(-)
+>>
+>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+>> index 7b05e8938d5c..a8b8ff9ecd90 100644
+>> --- a/kernel/bpf/verifier.c
+>> +++ b/kernel/bpf/verifier.c
+>> @@ -2761,10 +2761,14 @@ static int 
+>> check_map_func_compatibility(struct bpf_verifier_env *env,
+>>          * appear.
+>>          */
+>>         case BPF_MAP_TYPE_CPUMAP:
+>> -       case BPF_MAP_TYPE_XSKMAP:
+>>                 if (func_id != BPF_FUNC_redirect_map)
+>>                         goto error;
+>>                 break;
+>> +       case BPF_MAP_TYPE_XSKMAP:
+>> +               if (func_id != BPF_FUNC_redirect_map &&
+>> +                   func_id != BPF_FUNC_map_lookup_elem)
+>> +                       goto error;
+>> +               break;
+>>         case BPF_MAP_TYPE_ARRAY_OF_MAPS:
+>>         case BPF_MAP_TYPE_HASH_OF_MAPS:
+>>                 if (func_id != BPF_FUNC_map_lookup_elem)
+>> diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
+>> index 686d244e798d..f6e49237979c 100644
+>> --- a/kernel/bpf/xskmap.c
+>> +++ b/kernel/bpf/xskmap.c
+>> @@ -154,7 +154,7 @@ void __xsk_map_flush(struct bpf_map *map)
+>>
+>>  static void *xsk_map_lookup_elem(struct bpf_map *map, void *key)
+>>  {
+>> -       return ERR_PTR(-EOPNOTSUPP);
+>> +       return !!__xsk_map_lookup_elem(map, *(u32 *)key);
+>>  }
+>>
+>
+> Hmm, enabling lookups has some concerns, so we took the easy path;
+> simply disallowing it. Lookups (and returning a socket/fd) from
+> userspace might be expensive; allocating a new fd, and such, and on
+> the BPF side there's no XDP socket object (yet!).
+>
+> Your patch makes the lookup return something else than a fd or socket.
+> The broader question is, inserting a socket fd and getting back a bool
+> -- is that ok from a semantic perspective? It's a kind of weird map.
+> Are there any other maps that behave in this way? It certainly makes
+> the XDP code easier, and you get somewhat better introspection into
+> the XSKMAP.
 
-CHECK: Unnecessary parentheses around 'cdev->can.state != CAN_STATE_ERROR_PASSIVE'
-	if ((psr & PSR_EP) &&
-	    (cdev->can.state != CAN_STATE_ERROR_PASSIVE)) {
+I simply want to query the map and ask "is there an entry present?",
+but there isn't a separate API for that.  It seems really odd that I'm
+required to duplicate the same logic by using a second map.  I agree 
+that
+there isn't any point in returning an fd or xdp socket object - hence
+the boolean.
 
-CHECK: Unnecessary parentheses around 'cdev->can.state != CAN_STATE_BUS_OFF'
-	if ((psr & PSR_BO) &&
-	    (cdev->can.state != CAN_STATE_BUS_OFF)) {
+The comment inthe verifier does read:
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
+         /* Restrict bpf side of cpumap and xskmap, open when use-cases
+          * appear.
 
-v12 - No Changes - https://lore.kernel.org/patchwork/patch/1052304/
+so I'd say this is a use-case.  :)
 
-v11 - New change to clean up last remaining checkpatch issues on original code.
+The cpumap cpu_map_lookup_elem() function returns the qsize for some
+reason, but it doesn't seem reachable from the verifier.
 
- drivers/net/can/m_can/m_can.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+>
+> (bpf-next is closed, btw... :-))
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 923c53204d7d..ef4282a98fe1 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -733,22 +733,19 @@ static int m_can_handle_state_errors(struct net_device *dev, u32 psr)
- 	struct m_can_classdev *cdev = netdev_priv(dev);
- 	int work_done = 0;
- 
--	if ((psr & PSR_EW) &&
--	    (cdev->can.state != CAN_STATE_ERROR_WARNING)) {
-+	if (psr & PSR_EW && cdev->can.state != CAN_STATE_ERROR_WARNING) {
- 		netdev_dbg(dev, "entered error warning state\n");
- 		work_done += m_can_handle_state_change(dev,
- 						       CAN_STATE_ERROR_WARNING);
- 	}
- 
--	if ((psr & PSR_EP) &&
--	    (cdev->can.state != CAN_STATE_ERROR_PASSIVE)) {
-+	if (psr & PSR_EP && cdev->can.state != CAN_STATE_ERROR_PASSIVE) {
- 		netdev_dbg(dev, "entered error passive state\n");
- 		work_done += m_can_handle_state_change(dev,
- 						       CAN_STATE_ERROR_PASSIVE);
- 	}
- 
--	if ((psr & PSR_BO) &&
--	    (cdev->can.state != CAN_STATE_BUS_OFF)) {
-+	if (psr & PSR_BO && cdev->can.state != CAN_STATE_BUS_OFF) {
- 		netdev_dbg(dev, "entered error bus off state\n");
- 		work_done += m_can_handle_state_change(dev,
- 						       CAN_STATE_BUS_OFF);
+Ah yes, thanks.
 -- 
-2.21.0.5.gaeb582a983
+Jonathan
 
+
+
+>
+>
+>
+> Björn
+>
+>>  static int xsk_map_update_elem(struct bpf_map *map, void *key, void 
+>> *value,
+>> diff --git 
+>> a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c 
+>> b/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
+>> index bbdba990fefb..da7a4b37cb98 100644
+>> --- a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
+>> +++ b/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
+>> @@ -28,21 +28,6 @@
+>>         .errstr = "cannot pass map_type 18 into func 
+>> bpf_map_lookup_elem",
+>>         .prog_type = BPF_PROG_TYPE_SOCK_OPS,
+>>  },
+>> -{
+>> -       "prevent map lookup in xskmap",
+>> -       .insns = {
+>> -       BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
+>> -       BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
+>> -       BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
+>> -       BPF_LD_MAP_FD(BPF_REG_1, 0),
+>> -       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, 
+>> BPF_FUNC_map_lookup_elem),
+>> -       BPF_EXIT_INSN(),
+>> -       },
+>> -       .fixup_map_xskmap = { 3 },
+>> -       .result = REJECT,
+>> -       .errstr = "cannot pass map_type 17 into func 
+>> bpf_map_lookup_elem",
+>> -       .prog_type = BPF_PROG_TYPE_XDP,
+>> -},
+>>  {
+>>         "prevent map lookup in stack trace",
+>>         .insns = {
+>> --
+>> 2.17.1
+>>
