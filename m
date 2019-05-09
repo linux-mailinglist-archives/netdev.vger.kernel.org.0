@@ -2,72 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5978A18CE3
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 17:23:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6688918D6B
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 17:55:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbfEIPXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 11:23:25 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:46436 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726187AbfEIPXY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 May 2019 11:23:24 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id B6E4FAADCA029062E2BF;
-        Thu,  9 May 2019 23:23:22 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 9 May 2019 23:23:14 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Yana Esina <yana.esina@aquantia.com>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH] net: aquantia: fix undefined devm_hwmon_device_register_with_info reference
-Date:   Thu, 9 May 2019 23:32:35 +0800
-Message-ID: <20190509153235.103441-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+        id S1726631AbfEIPzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 11:55:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34678 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726448AbfEIPzp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 May 2019 11:55:45 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8A2B22175B;
+        Thu,  9 May 2019 15:55:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557417343;
+        bh=NOrAsql8acAxQJ2IkLB2utqv/DcLz1GeW+c8nirPTKM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ORIcO+gnPfLC01TfJ/1O90QCHNybXJgAnMhA1VUYIoymxqvB3V+ABMqu9STipa6z/
+         NPFt+/Q+CT8GXzrnnxx8PTSBtDGUPNEkq3W2UkO9hO6JHC4JrOh+CyrqvafFJifeGG
+         pzuOGZJ9YS0y0bwgkwUlSyUZUL/GWZVhmCBlV8v0=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH RFC net-next] netlink: Add support for timestamping messages
+Date:   Thu,  9 May 2019 08:55:42 -0700
+Message-Id: <20190509155542.25494-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.o: In function `aq_drvinfo_init':
-aq_drvinfo.c:(.text+0xe8): undefined reference to `devm_hwmon_device_register_with_info'
+From: David Ahern <dsahern@gmail.com>
 
-Fix it by using #if IS_REACHABLE(CONFIG_HWMON).
+Add support for timestamping netlink messages. If a socket wants a
+timestamp, it is added when the skb clone is queued to the socket.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Allow userspace to know the actual time an event happened. In a
+busy system there can be a long lag between when the event happened
+and when the message is read from the socket. Further, this allows
+separate netlink sockets for various RTNLGRP's where the timestamp
+can be used to sort the messages if needed.
+
+Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c | 5 +++++
- 1 file changed, 5 insertions(+)
+one question I have is whether it would be better to add the timestamp
+when the skb is created so it is the same for all sockets as opposed to
+setting the time per socket.
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c b/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c
-index f5a92b2a5cd6..adad6a7acabe 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c
-@@ -13,6 +13,7 @@
+ net/netlink/af_netlink.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 216ab915dd54..5e29ebfc701e 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1343,6 +1343,8 @@ int netlink_unicast(struct sock *ssk, struct sk_buff *skb,
+ 		return err;
+ 	}
  
- #include "aq_drvinfo.h"
- 
-+#if IS_REACHABLE(CONFIG_HWMON)
- static int aq_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
- 			 u32 attr, int channel, long *value)
- {
-@@ -123,3 +124,7 @@ int aq_drvinfo_init(struct net_device *ndev)
- 
- 	return err;
- }
++	if (sock_flag(sk, SOCK_RCVTSTAMP))
++		__net_timestamp(skb);
+ 	err = netlink_attachskb(sk, skb, &timeo, ssk);
+ 	if (err == 1)
+ 		goto retry;
+@@ -1469,6 +1471,9 @@ static void do_one_broadcast(struct sock *sk,
+ 		p->skb2 = NULL;
+ 		goto out;
+ 	}
 +
-+#else
-+int aq_drvinfo_init(struct net_device *ndev) { return 0; }
-+#endif
++	if (sock_flag(sk, SOCK_RCVTSTAMP))
++		__net_timestamp(p->skb2);
+ 	NETLINK_CB(p->skb2).nsid = peernet2id(sock_net(sk), p->net);
+ 	if (NETLINK_CB(p->skb2).nsid != NETNSA_NSID_NOT_ASSIGNED)
+ 		NETLINK_CB(p->skb2).nsid_is_set = true;
+@@ -1848,6 +1853,47 @@ static void netlink_cmsg_listen_all_nsid(struct sock *sk, struct msghdr *msg,
+ 		 &NETLINK_CB(skb).nsid);
+ }
+ 
++/* based on tcp_recv_timestamp */
++static void netlink_cmsg_timestamp(struct msghdr *msg, struct sk_buff *skb,
++				   struct sock *sk)
++{
++	int new_tstamp;
++
++	if (!skb_get_ktime(skb))
++		return;
++
++	new_tstamp = sock_flag(sk, SOCK_TSTAMP_NEW);
++	if (sock_flag(sk, SOCK_RCVTSTAMPNS)) {
++		if (new_tstamp) {
++			struct __kernel_timespec kts;
++
++			skb_get_new_timestampns(skb, &kts);
++			put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPNS_NEW,
++				 sizeof(kts), &kts);
++		} else {
++			struct timespec ts;
++
++			skb_get_timestampns(skb, &ts);
++			put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPNS_OLD,
++				 sizeof(ts), &ts);
++		}
++	} else {
++		if (new_tstamp) {
++			struct __kernel_sock_timeval stv;
++
++			skb_get_new_timestamp(skb, &stv);
++			put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_NEW,
++				 sizeof(stv), &stv);
++		} else {
++			struct __kernel_old_timeval tv;
++
++			skb_get_timestamp(skb, &tv);
++			put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_OLD,
++				 sizeof(tv), &tv);
++		}
++	}
++}
++
+ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ {
+ 	struct sock *sk = sock->sk;
+@@ -1996,6 +2042,8 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 		netlink_cmsg_recv_pktinfo(msg, skb);
+ 	if (nlk->flags & NETLINK_F_LISTEN_ALL_NSID)
+ 		netlink_cmsg_listen_all_nsid(sk, msg, skb);
++	if (sock_flag(sk, SOCK_RCVTSTAMP))
++		netlink_cmsg_timestamp(msg, skb, sk);
+ 
+ 	memset(&scm, 0, sizeof(scm));
+ 	scm.creds = *NETLINK_CREDS(skb);
 -- 
-2.20.1
+2.11.0
 
