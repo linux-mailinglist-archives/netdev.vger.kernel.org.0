@@ -2,75 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93CFB18444
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 05:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2C99184A6
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 06:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbfEID5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 May 2019 23:57:23 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:34222 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726082AbfEID5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 May 2019 23:57:23 -0400
-Received: by mail-pf1-f196.google.com with SMTP id n19so569725pfa.1
-        for <netdev@vger.kernel.org>; Wed, 08 May 2019 20:57:23 -0700 (PDT)
+        id S1726909AbfEIEr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 00:47:26 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39080 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726902AbfEIEr0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 00:47:26 -0400
+Received: by mail-pg1-f195.google.com with SMTP id w22so532469pgi.6;
+        Wed, 08 May 2019 21:47:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=33xu8LxtjkodshMi7e+4NO67SFyMWTV3ICy1/FAhFrY=;
-        b=mOZxt76IWfko99jQTXFcdf4An8Qg7RYu8krCEifoNrJN34qTSQ6zJuN9n+ucZIFfRm
-         3H1ecyH096JsmtDoVYzitQcMyn6aGFc9Rm+RDB10YTE7Kdn6acidQ/D2brXdRJZRuCEK
-         H6QcyAQcYYN9U7gLWZ4lhw9E//CATMWTphbRPi4CXlPEej/z9NL+0tbxS1Aeq58z6Ga5
-         Cu1RqVvFqUBg6zMrR3vkrsiOmOFx/LcQj9JsUnva1ZL3uxOwGsF+nRU62Ld4fzQ9VfzD
-         GD8QxrkMMHBUbXPIsq77UKKU6LjUx/wiQrP/iDzTChe+bnv0EpzL1qKVxNnrfbuPqjTu
-         9lxQ==
+        bh=Pjs6VzqQNMUZ72aHk2/E5DqfjycX6mBSIAqq4hTXs1U=;
+        b=ksM4/kSgCM1PadG+6R/vDit058pFCL9BwgzRYQ8PiRz9MNywdTQOqf8ToIkA+L2WrG
+         rqa4Gllk30XDuHLKIal5ahlcPmPSAk/Zf7jLNBwlQ+ASPiRwGFeyNCmjrN+ozGR4CtGF
+         pqiaEsA6YTDXw2CfDB9dkpl1Q5+0gPZ9OqfvOuSJhQEUYWQtFcvYS4b7rjuY24b1/6bv
+         /huYqDUMQE28q/fdo2BHBr0D+oGlQ93jgFv+BS5NM1hrVjYxR8pip8D4Yjwlj/8vXPM1
+         YJIr1vHkVY1kgD4q8QNbBOCTDQvN30bgAr1clMxWoP2j0WlQOvszMH4cnXqhl9Z1QohN
+         VWNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=33xu8LxtjkodshMi7e+4NO67SFyMWTV3ICy1/FAhFrY=;
-        b=J8YM+cWo3DPC33jBJVyaqFgzhxGqHQcxR+Fq/hnhOLgoV2SYJt4j69SidXIPH2MWuj
-         I9rpGl/yVjn9k5HMGjHABF/Hm29eOeKwlj0nrQhkqaAh2GAxH/x99hI0hwcJLy9Uven9
-         9NPsi59mcVj9qddUKdTsWZaPPLqJB308ZwvcT5FFeWkoAHMzGHev/x3851KVI/QX7bc9
-         O1I4pOm0tyuaksxYiuq7wG7sAfBWJZC62lCwGdOcNrHa4iV9YE+BMxQxgbvYd3YJFcMP
-         N+PajTRzGcJQBhN/XrLTu9t49QXwV5yCZmTPYv8BH+MhWKSfeGgS6DkzjTzhYSMQfMGn
-         B1Sw==
-X-Gm-Message-State: APjAAAXh633j0a2PL+hXCn4hhP+sB5SbLrJVF2D0wEq5e7afnMTn0NlO
-        pdACt0yiCn3mdLgHdFZKlS0=
-X-Google-Smtp-Source: APXvYqwBtc9MHdg/XW4+zB+wCEd8hh+ZmaGyr7mXzDJbWWcEME0dlMFD37VUXsXTHggrGMzV/MxtlA==
-X-Received: by 2002:a62:164f:: with SMTP id 76mr2055116pfw.172.1557374242385;
-        Wed, 08 May 2019 20:57:22 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id 6sm926372pfd.85.2019.05.08.20.57.21
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 08 May 2019 20:57:21 -0700 (PDT)
-Date:   Wed, 8 May 2019 20:57:19 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Y.b. Lu" <yangbo.lu@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>
-Subject: Re: [PATCH] ptp_qoriq: fix NULL access if ptp dt node missing
-Message-ID: <20190509035719.46sg5wh5eywkpupx@localhost>
-References: <20190509030845.36713-1-yangbo.lu@nxp.com>
+        bh=Pjs6VzqQNMUZ72aHk2/E5DqfjycX6mBSIAqq4hTXs1U=;
+        b=uVboU1N6h++Vs+JPF4bShv8Dmh6b/9i5mC1/J1CRMRs9t8wd4bhnhkpYyKFXa7y2tx
+         8k8Mfqz/D9sAdBZoVWg3QVSq+rGtdcIWWlY1niBdsXU3X4RLc017Cs0dF14JbOoPjtGv
+         zXAXzoanZRh/djNoyX0X5BJzNguRHro2LqWG6Bjh45vKTkzELQtkwJoUJHlrjT5lCKxp
+         g/nOimDd5Cj1v5nz5tka5jqdsg109EL9lkmET9lIh0aHwckKtceUq+50b2oKcWy5CpMt
+         j8M7/q7RVySrRTBAqH7VxNNxBM99X5Hprk5zVDhh37A8iq6FhqKsNxvowEPOZHSJyhf3
+         82BQ==
+X-Gm-Message-State: APjAAAXdkmMEEKotjRac6G5J/afcU8+ZW69hvDZwfMN8o1HKe9zaQl8u
+        G55wViS7koG3+DcV+tgRkbw=
+X-Google-Smtp-Source: APXvYqx39I3H+GpjnS2iByK5MXnGcCMKyqmA6n9KBE4wbDP/W7SgvGZD39CS4k2BnTjK+innsqHuAA==
+X-Received: by 2002:a62:4697:: with SMTP id o23mr2281834pfi.224.1557377245101;
+        Wed, 08 May 2019 21:47:25 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:180::ce1c])
+        by smtp.gmail.com with ESMTPSA id h16sm1479783pfj.114.2019.05.08.21.47.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 08 May 2019 21:47:24 -0700 (PDT)
+Date:   Wed, 8 May 2019 21:47:22 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@google.com>, luto@amacapital.net,
+        jannh@google.com
+Subject: Re: Question about seccomp / bpf
+Message-ID: <20190509044720.fxlcldi74atev5id@ast-mbp>
+References: <CANn89iL_XLb5C-+DY5PRhneZDJv585xfbLtiEVc3-ejzNNXaVg@mail.gmail.com>
+ <20190508230941.6rqccgijqzkxmz4t@ast-mbp>
+ <CANn89iL_1n8Lb5yCEk3ZrBsUtPPWPZ=0BiELUo+jyBWfLfaAzg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190509030845.36713-1-yangbo.lu@nxp.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <CANn89iL_1n8Lb5yCEk3ZrBsUtPPWPZ=0BiELUo+jyBWfLfaAzg@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 09, 2019 at 03:07:12AM +0000, Y.b. Lu wrote:
-> From: Claudiu Manoil <claudiu.manoil@nxp.com>
+On Wed, May 08, 2019 at 04:17:29PM -0700, Eric Dumazet wrote:
+> On Wed, May 8, 2019 at 4:09 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Wed, May 08, 2019 at 02:21:52PM -0700, Eric Dumazet wrote:
+> > > Hi Alexei and Daniel
+> > >
+> > > I have a question about seccomp.
+> > >
+> > > It seems that after this patch, seccomp no longer needs a helper
+> > > (seccomp_bpf_load())
+> > >
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bd4cf0ed331a275e9bf5a49e6d0fd55dffc551b8
+> > >
+> > > Are we detecting that a particular JIT code needs to call at least one
+> > > function from the kernel at all ?
+> >
+> > Currently we don't track such things and trying very hard to avoid
+> > any special cases for classic vs extended.
+> >
+> > > If the filter contains self-contained code (no call, just inline
+> > > code), then we could use any room in whole vmalloc space,
+> > > not only from the modules (which is something like 2GB total on x86_64)
+> >
+> > I believe there was an effort to make bpf progs and other executable things
+> > to be everywhere too, but I lost the track of it.
+> > It's not that hard to tweak x64 jit to emit 64-bit calls to helpers
+> > when delta between call insn and a helper is more than 32-bit that fits
+> > into call insn. iirc there was even such patch floating around.
+> >
+> > but what motivated you question? do you see 2GB space being full?!
 > 
-> Make sure ptp dt node exists before accessing it in case
-> of NULL pointer call trace.
 > 
-> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+> A customer seems to hit the limit, with about 75,000 threads,
+> each one having a seccomp filter with 6 pages (plus one guard page
+> given by vmalloc)
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+Since cbpf doesn't have "fd as a program" concept I suspect
+the same program was loaded 75k times. What a waste of kernel memory.
+And, no, we're not going to extend or fix cbpf for this.
+cbpf is frozen. seccomp needs to start using ebpf.
+It can have one program to secure all threads.
+If necessary single program can be customized via bpf maps
+for each thread.
+
