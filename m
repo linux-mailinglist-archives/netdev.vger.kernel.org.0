@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFEAF18F2B
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 19:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1658818F86
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 19:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726666AbfEIRbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 13:31:09 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:52801 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726640AbfEIRbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 13:31:09 -0400
-Received: by mail-wm1-f68.google.com with SMTP id g26so2358603wmh.2
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 10:31:08 -0700 (PDT)
+        id S1726726AbfEIRoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 13:44:17 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:39873 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726576AbfEIRoR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 13:44:17 -0400
+Received: by mail-qt1-f196.google.com with SMTP id y42so3489252qtk.6
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 10:44:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=Crhk9lcEiYLiah6PZ+aUx1I7QMePtrTkjU5HwUJdRe4=;
-        b=RbLgxNTndfEdtJq/JKfG3xLgs38HGCAyqU3PSwyz+oOwdAAcySUrCSOaARtpMylKT2
-         JIEWcHLpwJ7bFDruKE9WaKHnRsa7O2hhmtHc5ICxd0igomPgSB7StLYT4L7tZtvZnl5o
-         PCmR9INEeCXN3+flYzjsJAXXY0kQbISUKR6XSm6rPwnb68w5cbQVNR+PBl1di1dlF8KK
-         EzwbppKgkGwcisOb+lw/6hbr49kNtQafEpOs6fy+m+JbQo8Owvl4ZSMpQBvWSOCkVWy1
-         wNY+fzQXZ4ZMdSXLrBKw+t3KrPO8wh+bIJH35QzyBmTHRuMjW3AeCXUh/0OYKTdX3NwP
-         SWKg==
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=KjRnhmT+ofw1ihG6SycN5lJ13JxUfKm8g8u5Be8I8Jo=;
+        b=uomjopXeSyPp4+goRblIzyFYhPJ4zmqIOy56TpYceJvIpwT+rnmxd9HvpB/krKNKfs
+         Sv7vRlWipz1gRLd4JQSrQFlGcHUymmpXxVsvz8AQOolH3GZZWnO3JYdrKy67o49WarrQ
+         j4PlArhgDzW2JME7TDKzTzj8yQgigREEUYs8uQgrylFHubqZEHi308YKXKyY4vlwMCO9
+         eaUAcAiekxEjD1foayuBNpnqmn/N/xLyJ/P6bBXntqUh5Qw7XmgGERmrA1DojqAvclNR
+         GQ7ZtGL2bAgKWPMfYfGqIGGiE0vM3hia6lZzus1/oSZQzlX2Y+u9lrSolLW9HTrNbL31
+         ObVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=Crhk9lcEiYLiah6PZ+aUx1I7QMePtrTkjU5HwUJdRe4=;
-        b=gt4a2anuEYS40Wsg0SrDqwjk4+yNxL1dZoK/HC0MT6pqazcPF3C6oNsIF2FseAggpI
-         iAnQpEMn0qTj4x7RQgFx6BeaSPdMaFN8ZcLQ2ImAWv/ze2CqHr+dzImyve/0Fqgp+8ft
-         C9GRGOGXg4BwXOFt8qkc4gqxElKIMKLrucmWVGALnJAdlT1bOHzhAz0jfuKOVexMMHO/
-         OCC5jtPca9vl1LtdQrU9EcUPGPPPXOAa+qD6OkFc/IcTSBSqPsrtFfLdOZHdixXJ7KQW
-         7ZT6PZ4CLk6kxebGaZuxqu6+OL0MzWVOTeAn7Olx/rjMrl8dbR/6KkewLy4eO1Iftsfc
-         P2Hg==
-X-Gm-Message-State: APjAAAVQ/wSHVj5vN7bU4/+js//JnXbCs40Zwmi7Rn/CKaqy9kZOcVp7
-        V95hqdQ4xphtvKMv3usmv8Pvqg==
-X-Google-Smtp-Source: APXvYqwk6LbYk2adh0taZ4rOV2wKkSH1dyL+zGYUThe1eOD7Wggnz8ZSDdldWIfkbJxVLEyxcH4jpg==
-X-Received: by 2002:a1c:ef0c:: with SMTP id n12mr445593wmh.110.1557423067566;
-        Thu, 09 May 2019 10:31:07 -0700 (PDT)
-Received: from LAPTOP-V3S7NLPL (cpc1-cmbg19-2-0-cust104.5-4.cable.virginm.net. [82.27.180.105])
-        by smtp.gmail.com with ESMTPSA id w7sm3696145wmm.16.2019.05.09.10.31.06
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 09 May 2019 10:31:06 -0700 (PDT)
-References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com> <1556880164-10689-2-git-send-email-jiong.wang@netronome.com> <20190506155041.ofxsvozqza6xrjep@ast-mbp> <87mujx6m4n.fsf@netronome.com> <20190508175111.hcbufw22mbksbpca@ast-mbp> <87ef5795b5.fsf@netronome.com>
-User-agent: mu4e 0.9.18; emacs 25.2.2
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     daniel@iogearbox.net, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH v6 bpf-next 01/17] bpf: verifier: offer more accurate helper function arg and return type
-In-reply-to: <87ef5795b5.fsf@netronome.com>
-Date:   Thu, 09 May 2019 18:31:04 +0100
-Message-ID: <87v9yjk013.fsf@netronome.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=KjRnhmT+ofw1ihG6SycN5lJ13JxUfKm8g8u5Be8I8Jo=;
+        b=gWIWgt4/fxYZd6rhFax5AzuLIH3GsUL7Y69jxZE+MWY2d/cfyP6JXcp0udRnbIDkgK
+         8+igrHz59QFkcHc6e+c7PJqV9suyF3x7nMN4STak7x5YLKKGjdMntO/Rl9QJ/BNWUWUG
+         RVBBzqvkJ+nPB6bMrAf0B5TgqmA5zawsMQs09aF5tAaeEhVSkcurjcQXsWK9jdbsoXKT
+         X9ai5qj/rEsweXE0tr2d+LfcxVb4HNzXQ67WRfK6jp39e2j607iErIo8cxIV5f1pc9H4
+         Tw3//EayLj2kVk8Quypti7Cl5dVeZerx67sb8RHyCe1BVDa0NNMRuFQOj6A6AXLjjsC4
+         NXew==
+X-Gm-Message-State: APjAAAUKqyNhTwCJh0OKVHq/Rm01SEmbIW2NP4yxVOV+3Zvlc3h17Fir
+        Dea0UcDNndAEAA8yfB7BO78B4A==
+X-Google-Smtp-Source: APXvYqy8pkXWNSmKg05Fcgu3sFtOScfyZSiZFqRa0Emtapg8Z3/pjH8icrBXOqxj9qzj8Kyny9y/AQ==
+X-Received: by 2002:ac8:2aa4:: with SMTP id b33mr5014097qta.127.1557423856714;
+        Thu, 09 May 2019 10:44:16 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id k65sm1545538qkc.79.2019.05.09.10.44.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 09 May 2019 10:44:16 -0700 (PDT)
+Date:   Thu, 9 May 2019 10:44:03 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
+        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
+        mw@semihalf.com, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net] net: mvpp2: cls: Add missing NETIF_F_NTUPLE flag
+Message-ID: <20190509104403.64c9c45b@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20190509071408.23eae42a@bootlin.com>
+References: <20190507123635.17782-1-maxime.chevallier@bootlin.com>
+        <20190507102803.09fcb56c@cakuba.hsd1.ca.comcast.net>
+        <20190509071408.23eae42a@bootlin.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 9 May 2019 07:14:08 +0200, Maxime Chevallier wrote:
+> Hello Jakub, David,
+> 
+> On Tue, 7 May 2019 10:28:03 -0700
+> Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+> 
+> >> -	if (mvpp22_rss_is_supported())
+> >> +	if (mvpp22_rss_is_supported()) {
+> >>  		dev->hw_features |= NETIF_F_RXHASH;
+> >> +		dev->features |= NETIF_F_NTUPLE;    
+> >
+> >Hm, why not in hw_features?  
+> 
+> Because as of today, there's nothing implemented to disable
+> classification offload in the driver, so the feature can't be toggled.
+> 
+> Is this an issue ? Sorry if I'm doing this wrong, but I didn't see any
+> indication that this feature has to be host-writeable.
 
-Jiong Wang writes:
+No I don't think it's an issue, I was expecting you'd flush all the
+filters when feature is disabled (remove them entirely), I didn't
+expect that to be too hard.
 
-<snip>
+> I can make so that it's toggle-able, but it's not as straightforward as
+> we would think, since the classifier is also used for RSS (so, we can't
+> just disable the classifier as a whole, we would have to invalidate
+> each registered flow).
 
-> At the moment we have single backend hook "bpf_jit_hardware_zext", once a
-> backend enable it, verifier just insert zero extension for all identified
-> alu32 and narrow loads.
->
-> Given verifier analysis info is not pushed down to JIT back-ends, verifier
-> needs more back-end info pushed up from back-ends. Do you think make sense
-> to introduce another hook "bpf_jit_hardware_zext_narrow_load"
+Ack, I don't think disabling the hardware components is required.
+Just remove the existing filters, and don't allow new ones.  
+But no strong feelings here, feel free to repost with:
 
-Maybe just keep the current "bpf_jit_hardware_zext", but let it return
-int/enum instead of bool. Then verifier could know hardware ability through
-the enum value?
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-
-> to at least
-> prevent unnecessary zext inserted for narrowed loads for arches like
-> PowerPC, SPARC?
->
-> The hooks to control verifier zext insertion then becomes two:
->
->   bpf_jit_hardware_zext_alu32
->   bpf_jit_hardware_zext_narrow_load
->
->>> And that why I introduce these new argument types, without them, there
->>> could be more than 10% extra zext inserted on benchmarks like bpf_lxc.
->>
->> 10% extra ? so be it.
->> We're talking past each other here.
->> I agree with your optimization goal, but I think you're missing
->> the safety concerns I'm trying to explain.
->>> But for helper functions, they are done by native code which may not follow
->>> this convention. For example, on arm32, calling helper functions are just
->>> jump to and execute native code. And if the helper returns u32, it just set
->>> r0, no clearing of r1 which is the high 32-bit in the register pair
->>> modeling eBPF R0.
->>
->> it's arm32 bug then. All helpers _must_ return 64-bit back to bpf prog
->> and _must_ accept 64-bit from bpf prog.
-
+if flushing the filters is too much hassle.
