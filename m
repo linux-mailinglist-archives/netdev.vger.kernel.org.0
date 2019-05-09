@@ -2,151 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 622AC195CD
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 01:52:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4285195DD
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 01:55:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726783AbfEIXwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 19:52:00 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37298 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726704AbfEIXwA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 19:52:00 -0400
-Received: by mail-pf1-f193.google.com with SMTP id g3so2150976pfi.4;
-        Thu, 09 May 2019 16:51:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=dnhhdYAshS1GKWhwftArZcRPf6fExExegf04hvxznZI=;
-        b=P6oowXoXsuchZhKZUKH9CGl1p8vBELELW4vdVRDg2Gz31WVfOruo08HebqHTRNv3ep
-         l3ZD0U4kzShIWNOHNGlvD37bA9yiGGqIlRGS/eLW3d/csy9qbbkuhWG0P9u56n547i82
-         c6o4c+d90jxPffCaCU1fD7NlecBnO5tRHdOzJRwu7mEbqtykioUvt/51GWwQJn4oPYyu
-         SRFlswVurR2ovp7BhOQ+J1o8JXKN/mk42H6QypzL0ayBxPVGEiMTO9wTcubuXGYsQXW6
-         Gd6f8QMSbFUfT/EIATb2T5lrzWClEYU7Z2PgpP5PYy3rcIqz31EUwlOLEZw+2CXie41L
-         0+cA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=dnhhdYAshS1GKWhwftArZcRPf6fExExegf04hvxznZI=;
-        b=Lq4X6YULwbR6dh+iIJLVdFs3Gf46JrNORSErVSAjMeCS1dJdmpMrmTg3f/qUUFZ30r
-         InfjBi2ATN2FaSz+Ltkm5uoEhpN+vezD3kTqIZUkiRTxU05OA/VjzPatR+uxsNLKyIyc
-         QjBoze2yM4OeCfOf9pr6tobjcmoCzvfuJYw+3bEtrlPGHw8H3v6noIiyhJXy66dBDwPc
-         8AT1/F6MZg5WuUxYVDxkKg5mHs8R50fbQuCt9Fhz7TW80h75Mia4XqDokVVXak+n2jlG
-         ILQK9vITDdDzJ/3uWs6GzbV78x7I2l1C1gBLMuw5YGVUyuWHMryib2f5zqEj66HWAf8d
-         OBAw==
-X-Gm-Message-State: APjAAAVyrOD6+qzIWS4QR0Ipl4BtzZGDqNupZy2mJmPwtohslbohwBWq
-        6ZJ9AoswBEZDSIPslDpyB6w=
-X-Google-Smtp-Source: APXvYqyn2FEc18kwEwcsK2EyYIxzDsjcVX+updFaKLTYuG4pKJys2qCBprosQhRtFw7czkzclu1Rxw==
-X-Received: by 2002:a63:c64a:: with SMTP id x10mr9404456pgg.195.1557445918490;
-        Thu, 09 May 2019 16:51:58 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:200::bc44])
-        by smtp.gmail.com with ESMTPSA id y3sm4838608pfe.9.2019.05.09.16.51.57
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 May 2019 16:51:57 -0700 (PDT)
-Date:   Thu, 9 May 2019 16:51:56 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@google.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Jann Horn <jannh@google.com>, Will Drewry <wad@chromium.org>
-Subject: Re: Question about seccomp / bpf
-Message-ID: <20190509235154.6h2vbzb2ovwubqtr@ast-mbp>
-References: <CANn89iL_XLb5C-+DY5PRhneZDJv585xfbLtiEVc3-ejzNNXaVg@mail.gmail.com>
- <20190508230941.6rqccgijqzkxmz4t@ast-mbp>
- <CANn89iL_1n8Lb5yCEk3ZrBsUtPPWPZ=0BiELUo+jyBWfLfaAzg@mail.gmail.com>
- <20190509044720.fxlcldi74atev5id@ast-mbp>
- <CANn89i+v52ktezz5J_0of_EvTUozf86rP1Uh36HpbHf33uzDJg@mail.gmail.com>
- <CANn89iK8e8ROW8CrtTDq9-_bFeg2MdeqAdjf10i6HiwKuaZi=g@mail.gmail.com>
- <e525ec9d-df46-4280-b1c8-486a809f61e6@iogearbox.net>
- <20190509233023.jrezshp2aglvoieo@ast-mbp>
- <CANn89iJ+2_5Myyy3HLjxoJa9ZPzDg3a0DQkK2auwoLnWqNWB-A@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iJ+2_5Myyy3HLjxoJa9ZPzDg3a0DQkK2auwoLnWqNWB-A@mail.gmail.com>
-User-Agent: NeoMutt/20180223
+        id S1726819AbfEIXzi convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 9 May 2019 19:55:38 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42962 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726701AbfEIXzi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 19:55:38 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 01C6E14DEA669;
+        Thu,  9 May 2019 16:55:36 -0700 (PDT)
+Date:   Thu, 09 May 2019 16:55:36 -0700 (PDT)
+Message-Id: <20190509.165536.716778200205224094.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT] Networking
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 May 2019 16:55:37 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 09, 2019 at 04:50:12PM -0700, Eric Dumazet wrote:
-> On Thu, May 9, 2019 at 4:30 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Thu, May 09, 2019 at 01:49:25PM +0200, Daniel Borkmann wrote:
-> > > On 05/09/2019 12:58 PM, Eric Dumazet wrote:
-> > > > On Thu, May 9, 2019 at 3:52 AM Eric Dumazet <edumazet@google.com> wrote:
-> > > >> On Wed, May 8, 2019 at 9:47 PM Alexei Starovoitov
-> > > >> <alexei.starovoitov@gmail.com> wrote:
-> > > >>> On Wed, May 08, 2019 at 04:17:29PM -0700, Eric Dumazet wrote:
-> > > >>>> On Wed, May 8, 2019 at 4:09 PM Alexei Starovoitov
-> > > >>>> <alexei.starovoitov@gmail.com> wrote:
-> > > >>>>> On Wed, May 08, 2019 at 02:21:52PM -0700, Eric Dumazet wrote:
-> > > >>>>>> Hi Alexei and Daniel
-> > > >>>>>>
-> > > >>>>>> I have a question about seccomp.
-> > > >>>>>>
-> > > >>>>>> It seems that after this patch, seccomp no longer needs a helper
-> > > >>>>>> (seccomp_bpf_load())
-> > > >>>>>>
-> > > >>>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bd4cf0ed331a275e9bf5a49e6d0fd55dffc551b8
-> > > >>>>>>
-> > > >>>>>> Are we detecting that a particular JIT code needs to call at least one
-> > > >>>>>> function from the kernel at all ?
-> > > >>>>>
-> > > >>>>> Currently we don't track such things and trying very hard to avoid
-> > > >>>>> any special cases for classic vs extended.
-> > > >>>>>
-> > > >>>>>> If the filter contains self-contained code (no call, just inline
-> > > >>>>>> code), then we could use any room in whole vmalloc space,
-> > > >>>>>> not only from the modules (which is something like 2GB total on x86_64)
-> > > >>>>>
-> > > >>>>> I believe there was an effort to make bpf progs and other executable things
-> > > >>>>> to be everywhere too, but I lost the track of it.
-> > > >>>>> It's not that hard to tweak x64 jit to emit 64-bit calls to helpers
-> > > >>>>> when delta between call insn and a helper is more than 32-bit that fits
-> > > >>>>> into call insn. iirc there was even such patch floating around.
-> > > >>>>>
-> > > >>>>> but what motivated you question? do you see 2GB space being full?!
-> > > >>>>
-> > > >>>> A customer seems to hit the limit, with about 75,000 threads,
-> > > >>>> each one having a seccomp filter with 6 pages (plus one guard page
-> > > >>>> given by vmalloc)
-> > > >>>
-> > > >>> Since cbpf doesn't have "fd as a program" concept I suspect
-> > > >>> the same program was loaded 75k times. What a waste of kernel memory.
-> > > >>> And, no, we're not going to extend or fix cbpf for this.
-> > > >>> cbpf is frozen. seccomp needs to start using ebpf.
-> > > >>> It can have one program to secure all threads.
-> > > >>> If necessary single program can be customized via bpf maps
-> > > >>> for each thread.
-> > > >>
-> > > >> Yes,  docker seems to have a very generic implementation and  should
-> > > >> probably be fixed
-> > > >> ( https://github.com/moby/moby/blob/v17.03.2-ce/profiles/seccomp/seccomp.go )
-> > > >
-> > > > Even if the seccomp program was optimized to a few bytes, it would
-> > > > still consume at least 2 pages in module vmalloc space,
-> > > > so the limit in number of concurrent programs would be around 262,144
-> > > >
-> > > > We might ask seccomp guys to detect that the same program is used, by
-> > > > maintaining a hash of already loaded ones.
-> > > > ( I see struct seccomp_filter has a @usage refcount_t )
-> > >
-> > > +1, that would indeed be worth to pursue as a short term solution.
-> >
-> > I'm not sure how that can work. seccomp's prctl accepts a list of insns.
-> > There is no handle.
-> > kernel can keep a hashtable of all progs ever loaded and do a search
-> > in it before loading another one, but that's an ugly hack.
-> 
-> I guess that if such a hack is doable and can save 2GB of memory, then
-> it is an acceptable one.
 
-sounds that user space can and should be fixed first.
+Several bug fixes, many are quick merge-window regression cures:
 
+1) When NLM_F_EXCL is not set, allow same fib rule insertion.  From
+   Hangbin Liu.
+
+2) Several cures in sja1105 DSA driver (while loop exit condition fix,
+   return of negative u8, etc.) from Vladimir Oltean.
+
+3) Handle tx/rx delays in realtek PHY driver properly, from Serge
+   Semin.
+
+4) Double free in cls_matchall, from Pieter Jansen van Vuuren.
+
+5) Disable SIOCSHWTSTAMP in macvlan/vlan containers, from Hangbin Liu.
+
+6) Endainness fixes in aqc111, from Oliver Neukum.
+
+7) Handle errors in packet_init properly, from Haibing Yue.
+
+8) Various W=1 warning fixes in kTLS, from Jakub Kicinski.
+
+Please pull, thanks a lot!
+
+The following changes since commit 80f232121b69cc69a31ccb2b38c1665d770b0710:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next (2019-05-07 22:03:58 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/davem/net 
+
+for you to fetch changes up to 6c9f05441477e29783e8391d06c067e4a3b23d47:
+
+  nfp: add missing kdoc (2019-05-09 16:41:46 -0700)
+
+----------------------------------------------------------------
+Cheng Han (1):
+      dwmac4_prog_mtl_tx_algorithms() missing write operation
+
+Claudiu Manoil (1):
+      ptp_qoriq: fix NULL access if ptp dt node missing
+
+Colin Ian King (3):
+      net: dsa: lantiq: fix spelling mistake "brigde" -> "bridge"
+      net: hns3: remove redundant assignment of l2_hdr to itself
+      net: dsa: sja1105: fix check on while loop exit
+
+David Ahern (1):
+      ipv4: Fix raw socket lookup for local traffic
+
+David S. Miller (4):
+      Merge branch 'phy-realtek-delays'
+      Merge tag 'batadv-net-for-davem-20190509' of git://git.open-mesh.org/linux-merge
+      Merge git://git.kernel.org/.../bpf/bpf
+      Merge branch 'tls-warnings'
+
+Gary Lin (1):
+      docs/btf: fix the missing section marks
+
+Geert Uytterhoeven (1):
+      openvswitch: Replace removed NF_NAT_NEEDED with IS_ENABLED(CONFIG_NF_NAT)
+
+Hangbin Liu (3):
+      fib_rules: return 0 directly if an exactly same rule exists when NLM_F_EXCL not supplied
+      macvlan: disable SIOCSHWTSTAMP in container
+      vlan: disable SIOCSHWTSTAMP in container
+
+Jakub Kicinski (4):
+      net/tcp: use deferred jump label for TCP acked data hook
+      net/tls: remove set but not used variables
+      net/tls: handle errors from padding_length()
+      nfp: add missing kdoc
+
+Jason Wang (2):
+      tuntap: fix dividing by zero in ebpf queue selection
+      tuntap: synchronize through tfiles array instead of tun->numqueues
+
+Jiong Wang (1):
+      nfp: bpf: fix static check error through tightening shift amount adjustment
+
+Kefeng Wang (1):
+      net: aquantia: fix undefined devm_hwmon_device_register_with_info reference
+
+Linus Lüssing (1):
+      batman-adv: mcast: fix multicast tt/tvlv worker locking
+
+Lorenz Bauer (1):
+      selftests: bpf: initialize bpf_object pointers where needed
+
+Oliver Neukum (3):
+      aqc111: fix endianness issue in aqc111_change_mtu
+      aqc111: fix writing to the phy on BE
+      aqc111: fix double endianness swap on BE
+
+Paolo Abeni (1):
+      selinux: do not report error on connect(AF_UNSPEC)
+
+Parthasarathy Bhuvaragan (1):
+      tipc: fix hanging clients using poll with EPOLLOUT flag
+
+Pieter Jansen van Vuuren (2):
+      nfp: reintroduce ndo_get_port_parent_id for representor ports
+      net/sched: avoid double free on matchall reoffload
+
+Serge Semin (2):
+      net: phy: realtek: Add rtl8211e rx/tx delays config
+      net: phy: realtek: Change TX-delay setting for RGMII modes only
+
+Simon Wunderlich (1):
+      batman-adv: Start new development cycle
+
+Vladimir Oltean (1):
+      net: dsa: sja1105: Don't return a negative in u8 sja1105_stp_state_get
+
+Wang Hai (1):
+      net: dsa: sja1105: Make 'sja1105et_regs' and 'sja1105pqrs_regs' static
+
+YueHaibing (1):
+      packet: Fix error path in packet_init
+
+ Documentation/bpf/btf.rst                                 |  2 ++
+ drivers/net/dsa/lantiq_gswip.c                            |  8 ++++----
+ drivers/net/dsa/sja1105/sja1105_main.c                    |  6 +++++-
+ drivers/net/dsa/sja1105/sja1105_spi.c                     | 11 ++++++-----
+ drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c       |  5 +++++
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c           |  2 +-
+ drivers/net/ethernet/netronome/nfp/bpf/jit.c              | 13 ++++++++++++-
+ drivers/net/ethernet/netronome/nfp/ccm.h                  |  2 ++
+ drivers/net/ethernet/netronome/nfp/nfp_net_repr.c         |  1 +
+ drivers/net/ethernet/netronome/nfp/nfp_port.c             | 16 ++++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c         |  2 ++
+ drivers/net/macvlan.c                                     |  2 ++
+ drivers/net/phy/realtek.c                                 | 70 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----
+ drivers/net/tun.c                                         | 14 ++++++++++++--
+ drivers/net/usb/aqc111.c                                  | 31 +++++++++++++++++++++++--------
+ drivers/ptp/ptp_qoriq.c                                   |  3 +++
+ include/net/tcp.h                                         |  2 +-
+ net/8021q/vlan_dev.c                                      |  4 +++-
+ net/batman-adv/main.c                                     |  1 +
+ net/batman-adv/main.h                                     |  2 +-
+ net/batman-adv/multicast.c                                | 11 +++--------
+ net/batman-adv/types.h                                    |  5 +++++
+ net/core/fib_rules.c                                      |  6 +++---
+ net/ipv4/raw.c                                            |  4 ++--
+ net/ipv4/tcp_input.c                                      | 16 +++++++++++-----
+ net/openvswitch/conntrack.c                               |  4 ++--
+ net/packet/af_packet.c                                    | 25 ++++++++++++++++++++-----
+ net/sched/cls_matchall.c                                  |  1 +
+ net/tipc/socket.c                                         |  4 ++--
+ net/tls/tls_device.c                                      |  6 ++----
+ net/tls/tls_sw.c                                          | 30 ++++++++++++++++++++++--------
+ security/selinux/hooks.c                                  |  8 ++++----
+ tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c  |  2 +-
+ tools/testing/selftests/bpf/prog_tests/task_fd_query_tp.c |  2 +-
+ tools/testing/selftests/bpf/prog_tests/tp_attach_query.c  |  3 +++
+ 35 files changed, 250 insertions(+), 74 deletions(-)
