@@ -2,78 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8389418931
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 13:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D89321893C
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 13:48:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbfEILmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 07:42:49 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:2953 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725961AbfEILmt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 May 2019 07:42:49 -0400
-Received: from dggeml406-hub.china.huawei.com (unknown [172.30.72.53])
-        by Forcepoint Email with ESMTP id CB2EC76134EE808CBEE2;
-        Thu,  9 May 2019 19:42:46 +0800 (CST)
-Received: from DGGEML423-HUB.china.huawei.com (10.1.199.40) by
- dggeml406-hub.china.huawei.com (10.3.17.50) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 9 May 2019 19:42:46 +0800
-Received: from DGGEML532-MBS.china.huawei.com ([169.254.7.161]) by
- dggeml423-hub.china.huawei.com ([10.1.199.40]) with mapi id 14.03.0439.000;
- Thu, 9 May 2019 19:42:37 +0800
-From:   "weiyongjun (A)" <weiyongjun1@huawei.com>
-To:     Jason Wang <jasowang@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     yuehaibing <yuehaibing@huawei.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>
-Subject: RE: [PATCH net V3 2/2] tuntap: synchronize through tfiles array
- instead of tun->numqueues
-Thread-Topic: [PATCH net V3 2/2] tuntap: synchronize through tfiles array
- instead of tun->numqueues
-Thread-Index: AQHVBhYoSZ6ZRjg1Y0O4UWjtdsAfSKZirDbg
-Date:   Thu, 9 May 2019 11:42:36 +0000
-Message-ID: <6AADFAC011213A4C87B956458587ADB40221319A@dggeml532-mbs.china.huawei.com>
-References: <1557372018-18544-1-git-send-email-jasowang@redhat.com>
- <1557372018-18544-2-git-send-email-jasowang@redhat.com>
-In-Reply-To: <1557372018-18544-2-git-send-email-jasowang@redhat.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.177.30.138]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1726426AbfEILs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 07:48:28 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:46689 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725961AbfEILs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 07:48:27 -0400
+Received: by mail-qk1-f194.google.com with SMTP id a132so1134265qkb.13
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 04:48:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=HLi5v2fUqq6HS4cjBMmojehwWDeRlzvcfwL2kRg/gr0=;
+        b=UKrdHzHwuPYA2bpGaDBxJQnnqhjtP/ZoIhIs9aPIsp8ghw7PA/Mol/Umzjm5DQTR2I
+         3J+RsgdT10fyiaOeIk0uzlkW+btvUHbQQt1fMAKgQtWTD/DeIQff1Z1FlhwJtDHIwPKe
+         2HcwaZPO3h3aBrUVvuM9G0evxMKs1gGWYQiz6G6EZBeVaVibouCOgT+ZOYPfZjGonb/a
+         ig9p62/gxDdTYnbdP4PXvBdN7pKe7EDePyV6xWivqAxbcWA3hGOcFWWtGBiwPU2SEoDi
+         VlLp4F9Bb5IEA9K3Ydhw40Ov7IaocqMfy21N1KCMQUEThkiTwgkrApp1lxQfxqC9YN97
+         wW3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HLi5v2fUqq6HS4cjBMmojehwWDeRlzvcfwL2kRg/gr0=;
+        b=GUOR1nWvC3vIRsWUWzfH9xtKCka700tHDbG3n/EAhPsQctl9c9+Q0uJyM0ltkiKgOX
+         5t8yOXVsiqYO/tg8X/qXQBzJdwgZoaacKBma35N6UrpE4Q+kQfpz803AtgmQ4D6ejdHT
+         WxdU15oIWeI+vDUAol5v6oxJp7lpYUEgfy3Yky56rTnZWFEE8DNooYVcWUSVo8DOp/Ls
+         g+R7dtnc3Erm4dL2oZ6hP4rGReF2AmDPD2VTQMcHZThiM9IWU6UdWiN4uvwOkYsyDDU/
+         iHKUS1WRUPE6LTnQz0ELCHw3XKw4upcUjOV0YdpKypKo03TDUaulk7bWuv36me3NdsvU
+         s0nA==
+X-Gm-Message-State: APjAAAU7nNDUqZPe7e20LYPa6OqKuGx/oB6D1lXA4cyG5Bb8A/BjaaGl
+        Eao1rm+F2RjvacQsz09sdVsJBGBkoHN6QO2bTOGNwceU
+X-Google-Smtp-Source: APXvYqzviPNUZvTGhyc56S4ldoFMc1q3ysHhnRpuCJDLsbXOaB7DsJkqgNXuvQtZETh+YNF32p2kmd8v8nmod2EWS7s=
+X-Received: by 2002:a37:5f41:: with SMTP id t62mr2886494qkb.141.1557402506769;
+ Thu, 09 May 2019 04:48:26 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20190508225016.2375828-1-jonathan.lemon@gmail.com>
+In-Reply-To: <20190508225016.2375828-1-jonathan.lemon@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 9 May 2019 13:48:13 +0200
+Message-ID: <CAJ+HfNj4NgGQkJOEivuxuohA_+Fa98yD8EmY4acHQqymdUBA4g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Allow bpf_map_lookup_elem() on an xskmap
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>, kernel-team@fb.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYXNvbiBXYW5nIFttYWlsdG86
-amFzb3dhbmdAcmVkaGF0LmNvbV0NCj4gU2VudDogVGh1cnNkYXksIE1heSAwOSwgMjAxOSAxMToy
-MCBBTQ0KPiBUbzogbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2Vy
-bmVsLm9yZw0KPiBDYzogeXVlaGFpYmluZyA8eXVlaGFpYmluZ0BodWF3ZWkuY29tPjsgeGl5b3Uu
-d2FuZ2NvbmdAZ21haWwuY29tOw0KPiB3ZWl5b25nanVuIChBKSA8d2VpeW9uZ2p1bjFAaHVhd2Vp
-LmNvbT47IGVyaWMuZHVtYXpldEBnbWFpbC5jb207DQo+IEphc29uIFdhbmcgPGphc293YW5nQHJl
-ZGhhdC5jb20+DQo+IFN1YmplY3Q6IFtQQVRDSCBuZXQgVjMgMi8yXSB0dW50YXA6IHN5bmNocm9u
-aXplIHRocm91Z2ggdGZpbGVzIGFycmF5IGluc3RlYWQNCj4gb2YgdHVuLT5udW1xdWV1ZXMNCj4g
-DQo+IFdoZW4gYSBxdWV1ZSh0ZmlsZSkgaXMgZGV0YWNoZWQgdGhyb3VnaCBfX3R1bl9kZXRhY2go
-KSwgd2UgbW92ZSB0aGUNCj4gbGFzdCBlbmFibGVkIHRmaWxlIHRvIHRoZSBwb3NpdGlvbiB3aGVy
-ZSBkZXRhY2hlZCBvbmUgc2l0IGJ1dCBkb24ndA0KPiBOVUxMIG91dCBsYXN0IHBvc2l0aW9uLiBX
-ZSBleHBlY3QgdG8gc3luY2hyb25pemUgdGhlIGRhdGFwYXRoIHRocm91Z2gNCj4gdHVuLT5udW1x
-dWV1ZXMuIFVuZm9ydHVuYXRlbHksIHRoaXMgd29uJ3Qgd29yayBzaW5jZSB3ZSdyZSBsYWNraW5n
-DQo+IHN1ZmZpY2llbnQgbWVjaGFuaXNtIHRvIG9yZGVyIG9yIHN5bmNocm9uaXplIHRoZSBhY2Nl
-c3MgdG8NCj4gdHVuLT5udW1xdWV1ZXMuDQo+IA0KPiBUbyBmaXggdGhpcywgTlVMTCBvdXQgdGhl
-IGxhc3QgcG9zaXRpb24gZHVyaW5nIGRldGFjaGluZyBhbmQgY2hlY2sNCj4gUkNVIHByb3RlY3Rl
-ZCB0ZmlsZSBhZ2FpbnN0IE5VTEwgaW5zdGVhZCBvZiBjaGVja2luZyB0dW4tPm51bXF1ZXVlcyBp
-bg0KPiBkYXRhcGF0aC4NCj4gDQo+IENjOiBZdWVIYWliaW5nIDx5dWVoYWliaW5nQGh1YXdlaS5j
-b20+DQo+IENjOiBDb25nIFdhbmcgPHhpeW91Lndhbmdjb25nQGdtYWlsLmNvbT4NCj4gQ2M6IHdl
-aXlvbmdqdW4gKEEpIDx3ZWl5b25nanVuMUBodWF3ZWkuY29tPg0KPiBDYzogRXJpYyBEdW1hemV0
-IDxlcmljLmR1bWF6ZXRAZ21haWwuY29tPg0KPiBGaXhlczogYzhkNjhlNmJlMWMzYiAoInR1bnRh
-cDogbXVsdGlxdWV1ZSBzdXBwb3J0IikNCj4gU2lnbmVkLW9mZi1ieTogSmFzb24gV2FuZyA8amFz
-b3dhbmdAcmVkaGF0LmNvbT4NCj4gLS0tDQo+IENoYW5nZXMgZnJvbSBWMjoNCj4gLSByZXNhbXBs
-ZSBkdXJpbmcgZGV0YWNoIGluIHR1bl94ZHBfeG1pdCgpDQo+IENoYW5nZXMgZnJvbSBWMToNCj4g
-LSBrZWVwIHRoZSBjaGVjayBpbiB0dW5feGRwX3htaXQoKQ0KPiAtLS0NCg0KUmV2aWV3ZWQtYnk6
-IFdlaSBZb25nanVuIDx3ZWl5b25nanVuMUBodWF3ZWkuY29tPg0KDQpUaGFua3MNCg==
+On Thu, 9 May 2019 at 01:07, Jonathan Lemon <jonathan.lemon@gmail.com> wrot=
+e:
+>
+> Currently, the AF_XDP code uses a separate map in order to
+> determine if an xsk is bound to a queue.  Instead of doing this,
+> have bpf_map_lookup_elem() return a boolean indicating whether
+> there is a valid entry at the map index.
+>
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> ---
+>  kernel/bpf/verifier.c                             |  6 +++++-
+>  kernel/bpf/xskmap.c                               |  2 +-
+>  .../selftests/bpf/verifier/prevent_map_lookup.c   | 15 ---------------
+>  3 files changed, 6 insertions(+), 17 deletions(-)
+>
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 7b05e8938d5c..a8b8ff9ecd90 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -2761,10 +2761,14 @@ static int check_map_func_compatibility(struct bp=
+f_verifier_env *env,
+>          * appear.
+>          */
+>         case BPF_MAP_TYPE_CPUMAP:
+> -       case BPF_MAP_TYPE_XSKMAP:
+>                 if (func_id !=3D BPF_FUNC_redirect_map)
+>                         goto error;
+>                 break;
+> +       case BPF_MAP_TYPE_XSKMAP:
+> +               if (func_id !=3D BPF_FUNC_redirect_map &&
+> +                   func_id !=3D BPF_FUNC_map_lookup_elem)
+> +                       goto error;
+> +               break;
+>         case BPF_MAP_TYPE_ARRAY_OF_MAPS:
+>         case BPF_MAP_TYPE_HASH_OF_MAPS:
+>                 if (func_id !=3D BPF_FUNC_map_lookup_elem)
+> diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
+> index 686d244e798d..f6e49237979c 100644
+> --- a/kernel/bpf/xskmap.c
+> +++ b/kernel/bpf/xskmap.c
+> @@ -154,7 +154,7 @@ void __xsk_map_flush(struct bpf_map *map)
+>
+>  static void *xsk_map_lookup_elem(struct bpf_map *map, void *key)
+>  {
+> -       return ERR_PTR(-EOPNOTSUPP);
+> +       return !!__xsk_map_lookup_elem(map, *(u32 *)key);
+>  }
+>
+
+Hmm, enabling lookups has some concerns, so we took the easy path;
+simply disallowing it. Lookups (and returning a socket/fd) from
+userspace might be expensive; allocating a new fd, and such, and on
+the BPF side there's no XDP socket object (yet!).
+
+Your patch makes the lookup return something else than a fd or socket.
+The broader question is, inserting a socket fd and getting back a bool
+-- is that ok from a semantic perspective? It's a kind of weird map.
+Are there any other maps that behave in this way? It certainly makes
+the XDP code easier, and you get somewhat better introspection into
+the XSKMAP.
+
+(bpf-next is closed, btw... :-))
+
+
+
+Bj=C3=B6rn
+
+>  static int xsk_map_update_elem(struct bpf_map *map, void *key, void *val=
+ue,
+> diff --git a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c b/=
+tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
+> index bbdba990fefb..da7a4b37cb98 100644
+> --- a/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
+> +++ b/tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
+> @@ -28,21 +28,6 @@
+>         .errstr =3D "cannot pass map_type 18 into func bpf_map_lookup_ele=
+m",
+>         .prog_type =3D BPF_PROG_TYPE_SOCK_OPS,
+>  },
+> -{
+> -       "prevent map lookup in xskmap",
+> -       .insns =3D {
+> -       BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
+> -       BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
+> -       BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
+> -       BPF_LD_MAP_FD(BPF_REG_1, 0),
+> -       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_ele=
+m),
+> -       BPF_EXIT_INSN(),
+> -       },
+> -       .fixup_map_xskmap =3D { 3 },
+> -       .result =3D REJECT,
+> -       .errstr =3D "cannot pass map_type 17 into func bpf_map_lookup_ele=
+m",
+> -       .prog_type =3D BPF_PROG_TYPE_XDP,
+> -},
+>  {
+>         "prevent map lookup in stack trace",
+>         .insns =3D {
+> --
+> 2.17.1
+>
