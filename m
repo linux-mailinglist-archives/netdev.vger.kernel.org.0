@@ -2,97 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFAFB194A3
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 23:30:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA0751952B
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 00:20:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbfEIVaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 17:30:35 -0400
-Received: from www62.your-server.de ([213.133.104.62]:59618 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726219AbfEIVaf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 17:30:35 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hOqca-0007ay-Nx; Thu, 09 May 2019 23:30:32 +0200
-Received: from [178.199.41.31] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hOqca-000J7d-Hy; Thu, 09 May 2019 23:30:32 +0200
-Subject: Re: [PATCH bpf v1] bpf: Fix undefined behavior in narrow load
- handling
-To:     Krzesimir Nowak <krzesimir@kinvolk.io>, bpf@vger.kernel.org
-Cc:     Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=c3=b3pez_Galeiras?= <iago@kinvolk.io>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190508160859.4380-1-krzesimir@kinvolk.io>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <46056c60-f106-e539-b614-498cb1e9e3d0@iogearbox.net>
-Date:   Thu, 9 May 2019 23:30:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726896AbfEIWUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 18:20:50 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:39999 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726219AbfEIWUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 18:20:50 -0400
+Received: by mail-pl1-f194.google.com with SMTP id b3so1802708plr.7;
+        Thu, 09 May 2019 15:20:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Z1YADLv+X+eTaFOCPRPMkyVNxJwrl9u02E65BW40D5k=;
+        b=lcbJ3zLpdbWPY6o2RCZ4AodP4ic2pzULnGi7IghozPpmKe1z1o67yEB9TIsnQngizS
+         KQgXLqZNB7Ae2D6QTJeoIIqZefMYGYF5wjyAxNmtBeh5ZS633Cqonxv8mDbqMMjSRZDR
+         KNS33bTuluL5H/WFj/xZ8RngtzSlE+Lf1/8paQYrrVKmxaXOoWm8NnMgpEKH6ztlYaad
+         PI4+UUj4as/Xt/f8FdwsSAi1UFvM6iDeS4eALzNNvTEt665rIfZ0LHkKzXP0zOrqi6Dg
+         e2TU2/pqcloLVkFbFoZh4bIvUClKXvQke538xFqKLidb8EG8zEgLTojfB0qEVQCKzKrw
+         6t5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Z1YADLv+X+eTaFOCPRPMkyVNxJwrl9u02E65BW40D5k=;
+        b=gaD0DqIqvzADPn5ow3Y2Y7MOgJCBDoj2xHvIJUPKu15jkqzcBIYwRaCzjikkhtLLW6
+         DhDE4CsOqs7VVSaKTrH+4DrA1YPNECR4Ofqn6c4GOJkb5DMkg1EBbv9+lW4H8TQyye0z
+         ZNe6n3OmBuI0nT7gj2h+VDStHZi7YRSTH5lZtVOPxj7lTlbePnzR0rsJjpvRCNDuRuAa
+         SyivS4b2wKowzGNc9fZ8Ykeh1Wqbrf/LYilDUdoHPAmENeSyGagc3nlNvHYMZfb1BNg9
+         C4nXo/tJnAko/7pH08LdYjuVGF6xF2qJzW+v0MlTt17vgFwmMN+eHe9q7TbUWcBU+0GO
+         MQiA==
+X-Gm-Message-State: APjAAAWnMa10DlnkpuJGs2gIqRTCzVdV9nM5p/HYVgeClmcufFi4z7iD
+        juabw0K+Wm3AKrjb4Coub9k=
+X-Google-Smtp-Source: APXvYqzSmVmq4+FqBEl/cq1bHlnhsA+wSlbzzJZ/8v9nTieYPU4Ln2SpEjRuNj0P80hXDrqRQNAbHg==
+X-Received: by 2002:a17:902:8bca:: with SMTP id r10mr8481101plo.67.1557440449042;
+        Thu, 09 May 2019 15:20:49 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::bc44])
+        by smtp.gmail.com with ESMTPSA id o71sm8197898pfi.174.2019.05.09.15.20.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 May 2019 15:20:47 -0700 (PDT)
+Date:   Thu, 9 May 2019 15:20:46 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        shuah <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net
+Subject: Re: [GIT PULL] Kselftest update for Linux 5.2-rc1
+Message-ID: <20190509222043.b4zn32kuohduzzzr@ast-mbp>
+References: <9b434125-44b6-0e83-4f70-d1fd28752407@linuxfoundation.org>
 MIME-Version: 1.0
-In-Reply-To: <20190508160859.4380-1-krzesimir@kinvolk.io>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25444/Thu May  9 09:57:18 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9b434125-44b6-0e83-4f70-d1fd28752407@linuxfoundation.org>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/08/2019 06:08 PM, Krzesimir Nowak wrote:
-> Commit 31fd85816dbe ("bpf: permits narrower load from bpf program
-> context fields") made the verifier add AND instructions to clear the
-> unwanted bits with a mask when doing a narrow load. The mask is
-> computed with
+On Mon, May 06, 2019 at 10:56:56AM -0600, Shuah Khan wrote:
+> Hi Linus,
 > 
-> (1 << size * 8) - 1
+> Please pull the following Kselftest update for Linux 5.2-rc1
 > 
-> where "size" is the size of the narrow load. When doing a 4 byte load
-> of a an 8 byte field the verifier shifts the literal 1 by 32 places to
-> the left. This results in an overflow of a signed integer, which is an
-> undefined behavior. Typically the computed mask was zero, so the
-> result of the narrow load ended up being zero too.
+> This Kselftest update for Linux 5.2-rc1 consists of
 > 
-> Cast the literal to long long to avoid overflows. Note that narrow
-> load of the 4 byte fields does not have the undefined behavior,
-> because the load size can only be either 1 or 2 bytes, so shifting 1
-> by 8 or 16 places will not overflow it. And reading 4 bytes would not
-> be a narrow load of a 4 bytes field.
+> - fixes to seccomp test, and kselftest framework
+> - cleanups to remove duplicate header defines
+> - fixes to efivarfs "make clean" target
+> - cgroup cleanup path
+> - Moving the IMA kexec_load selftest to selftests/kexec work from
+>   Mimi Johar and Petr Vorel
+> - A framework to kselftest for writing kernel test modules addition
+>   from Tobin C. Harding
 > 
-> Reviewed-by: Alban Crequy <alban@kinvolk.io>
-> Reviewed-by: Iago López Galeiras <iago@kinvolk.io>
-> Fixes: 31fd85816dbe ("bpf: permits narrower load from bpf program context fields")
-> Cc: Yonghong Song <yhs@fb.com>
-> Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> ---
->  kernel/bpf/verifier.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> diff is attached.
 > 
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 09d5d972c9ff..950fac024fbb 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -7296,7 +7296,7 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
->  									insn->dst_reg,
->  									shift);
->  				insn_buf[cnt++] = BPF_ALU64_IMM(BPF_AND, insn->dst_reg,
-> -								(1 << size * 8) - 1);
-> +								(1ULL << size * 8) - 1);
->  			}
+> thanks,
+> -- Shuah
+> 
+> 
+> ----------------------------------------------------------------
+> The following changes since commit 15ade5d2e7775667cf191cf2f94327a4889f8b9d:
+> 
+>   Linux 5.1-rc4 (2019-04-07 14:09:59 -1000)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest
+> tags/linux-kselftest-5.2-rc1
+> 
+> for you to fetch changes up to d917fb876f6eaeeea8a2b620d2a266ce26372f4d:
+> 
+>   selftests: build and run gpio when output directory is the src dir
+> (2019-04-22 17:02:26 -0600)
+> 
+> ----------------------------------------------------------------
+> linux-kselftest-5.2-rc1
+> 
+> This Kselftest update for Linux 5.2-rc1 consists of
+> 
+> - fixes to seccomp test, and kselftest framework
+> - cleanups to remove duplicate header defines
+> - fixes to efivarfs "make clean" target
+> - cgroup cleanup path
+> - Moving the IMA kexec_load selftest to selftests/kexec work from
+>   Mimi Johar and Petr Vorel
+> - A framework to kselftest for writing kernel test modules addition
+>   from Tobin C. Harding
+> 
+> ----------------------------------------------------------------
+> Kees Cook (3):
+>       selftests/seccomp: Handle namespace failures gracefully
+>       selftests/harness: Add 30 second timeout per test
+>       selftests/ipc: Fix msgque compiler warnings
+> 
+> Mathieu Desnoyers (1):
+>       rseq/selftests: Adapt number of threads to the number of detected cpus
+> 
+> Mimi Zohar (9):
+>       selftests/kexec: move the IMA kexec_load selftest to selftests/kexec
+>       selftests/kexec: cleanup the kexec selftest
+>       selftests/kexec: define a set of common functions
+>       selftests/kexec: define common logging functions
+>       selftests/kexec: define "require_root_privileges"
+>       selftests/kexec: kexec_file_load syscall test
+>       selftests/kexec: check kexec_load and kexec_file_load are enabled
+>       selftests/kexec: make kexec_load test independent of IMA being enabled
+>       selftests/kexec: update get_secureboot_mode
+> 
+> Petr Vorel (1):
+>       selftests/kexec: Add missing '=y' to config options
+> 
+> Po-Hsu Lin (1):
+>       selftests/efivarfs: clean up test files from test_create*()
+> 
+> Roman Gushchin (1):
+>       selftests: cgroup: fix cleanup path in test_memcg_subtree_control()
+> 
+> Sabyasachi Gupta (4):
+>       selftest/x86/mpx-dig.c: Remove duplicate header
+>       selftest/timers: Remove duplicate header
+>       selftest/rseq: Remove duplicate header
+>       selftest/gpio: Remove duplicate header
+> 
+> Shuah Khan (2):
+>       selftests: fix headers_install circular dependency
 
-Makes sense, good catch & thanks for the fix!
+Shuah,
 
-Could you also add a test case to test_verifier.c so we keep track of this?
+the commit 8ce72dc32578 ("selftests: fix headers_install circular dependency")
+broke our build/test workflow, since it added:
+  ifneq ($(KBUILD_OUTPUT),)
+          OUTPUT := $(KBUILD_OUTPUT)
+  else
 
-Thanks,
-Daniel
+which means that all of selftests/bpf artifacts are now going into
+main build directory cluttering it with all sorts of .o, generated files
+and executables.
+The end result is humans and scripts can no longer find tests.
+
+For now I hacked it as:
+diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
+index 5979fdc4f36c..caecec7aebde 100644
+--- a/tools/testing/selftests/lib.mk
++++ b/tools/testing/selftests/lib.mk
+@@ -6,12 +6,8 @@ ifeq (0,$(MAKELEVEL))
+     ifneq ($(O),)
+        OUTPUT := $(O)
+     else
+-       ifneq ($(KBUILD_OUTPUT),)
+-               OUTPUT := $(KBUILD_OUTPUT)
+-       else
+-               OUTPUT := $(shell pwd)
+-               DEFAULT_INSTALL_HDR_PATH := 1
+-       endif
++       OUTPUT := $(shell pwd)
++       DEFAULT_INSTALL_HDR_PATH := 1
+     endif
+ endif
+
+bpf developers are doing "cd tools/testing/selftests/bpf; make; ./test_verifier; ..."
+while KBUILD_OUTPUT is also set.
+I don't quite get this 'circular dependency' issue that your commit suppose to address
+but please fix it differently, so bpf developer's workflow is restored and buildbots work again.
+People and scripts depend on it.
+It's even described in Documentation/bpf/bpf_devel_QA.rst
+
+Thanks
+
