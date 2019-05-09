@@ -2,81 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5863184DB
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 07:34:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A63B71856D
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 08:28:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726817AbfEIFev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 01:34:51 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:36975 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726426AbfEIFev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 01:34:51 -0400
-Received: by mail-pl1-f193.google.com with SMTP id p15so555553pll.4
-        for <netdev@vger.kernel.org>; Wed, 08 May 2019 22:34:51 -0700 (PDT)
+        id S1726871AbfEIG2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 02:28:09 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33297 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726683AbfEIG2J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 02:28:09 -0400
+Received: by mail-pf1-f196.google.com with SMTP id z28so767610pfk.0;
+        Wed, 08 May 2019 23:28:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RXCY1+XqtHbOLJq8E56hPM3pFj2+cid6MOn/d5tHqoA=;
-        b=T2Pu50P1yBDzJGjNWYRUHXwf+kttCGOq6Lp+gHJVDNrANal/TkFSqQW9qek8I8zN6e
-         koHA1RY4q6xw1bjZYaaxxwsjticO9i8Ya2zebYNpeJkIAjrqa2UUUCH+S7rSBUg6uvrn
-         2KdIpp64tfHzUP5h9GaBTGRcDS8buAt5VUeUrCd69wILIBLdZXnR9Ui8PUznrAZTURxp
-         Ce+A4CG/xBMGXsckRkVAP/wGpJ1UGkZtViBeqfQALwQHt6kCPyuJMk3d8U/bexzT/PNW
-         Zj/jzvdFSkEuI1bgNZd+kUNcRK4LL21zPQSp9Lces1HAs7UiJqXYIa4Jd8IqClLNet2t
-         U8Ag==
+        h=from:to:cc:subject:date:message-id;
+        bh=kZP2HNmj7RyfgLD/k4GFEwG7diYZHNIz0jKW+sjV7dY=;
+        b=kJdIeVj20YPNax6R//2oL4+3b3zAg9mBiPdQii0EFALNz6nawDXt5ZLFF9JOZOwDbU
+         0PfdrLG7XfldqGaiY7oVxg97+uUgZz1xbEiYa12GlBrR6SF/UCNsY9/B99lJZrKo3+//
+         i5GmTHOiwbaiBXQk3Ko0F+5PrrxAoEozo46fkOHVLQtvzMYNCQcn3Qulfyha5PVcq+qt
+         dkaz56y2FEavnc8tNQ3s7Mkz5Lewnl/LUZaRfE6hhRmQl818L3YgYXydkaKWD9Fgcwip
+         Ncix/w33UNeJyki4pppgmtjKXZNEfCiq/P344YytaRR6VEFqgxqzzAoZzEwO0E7gCgu3
+         0cqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RXCY1+XqtHbOLJq8E56hPM3pFj2+cid6MOn/d5tHqoA=;
-        b=IyLbB1niipaXI+PxYprMaSy1jeRW0h0kjwLxqjUkQq83fyCw4ZBf/iZSD8Lrk68XhY
-         rdTI19rU7yzh+N5pwua75magGho7/kaE+F470habF0imoqPN8QM3BkNbwY37rWwRy72Z
-         Mj3f2DNxi84mTgX165lWxH07+EVav5Khs3zbBj39g9XhIhkseQU34Mq+qv4UPgnRH0hw
-         V00FgCC9A5CZj/L/PR91Je08d3e8MSOSXFXaCYDGfzx/4RH0XdvEBw+IsD7Ur6p/jpXg
-         IOpEzuV6R1bzjP/Phqu+/4I+9pYGHlZVfK8xw2VUsRgvVLjO1NDkUfGvwFHJQ/2n56O7
-         P27g==
-X-Gm-Message-State: APjAAAV8xDSqxYm7QuLYKoE0kLi7S2NQZeEkPhvf64ZsEbL68m8gaetD
-        T1QyaG8B1iVOzOJzTR9DfSB144n0r2VakAW8jc8=
-X-Google-Smtp-Source: APXvYqz1BsT3M86QZI932eV7YgfUzFtdnTDO2CxvuhgEthHj6hHQsEj2p0oSEQ8PPsbybGhCD0UU7vk3wg8Nl9lXi30=
-X-Received: by 2002:a17:902:5983:: with SMTP id p3mr2563963pli.224.1557380091042;
- Wed, 08 May 2019 22:34:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <1557201816-19945-1-git-send-email-jasowang@redhat.com>
- <CAM_iQpURdiJv9GqkEyk=MPokacvtJVfHUpBb3=6EWA0e1yiTZQ@mail.gmail.com>
- <a1ef0c0d-d67c-8888-91e6-2819e8c45489@redhat.com> <CAM_iQpVGdduQGdkBn2a+8=VTuZcoTxBdve6+uDHACcDrdtL=Og@mail.gmail.com>
- <e2c79625-7541-cf58-5729-a5519f36b248@redhat.com>
-In-Reply-To: <e2c79625-7541-cf58-5729-a5519f36b248@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 8 May 2019 22:34:39 -0700
-Message-ID: <CAM_iQpV+FMvXQDO8o9=x90ybT87OWrSthaxt6soJ_Mhug=vSzA@mail.gmail.com>
-Subject: Re: [PATCH net V2] tuntap: synchronize through tfiles array instead
- of tun->numqueues
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        "weiyongjun (A)" <weiyongjun1@huawei.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=kZP2HNmj7RyfgLD/k4GFEwG7diYZHNIz0jKW+sjV7dY=;
+        b=hr5Th+gRUfmtOI33Ys403ag/oRjyGA+Zo9M2DwrkliQktNcrhT4dE4etLogJwUlrht
+         kMOA+igNPfuBBPQlwW9HVEjMXlgbDRLq87km2qowPF7AwceYDHMqHl4RMGFBkx9PDRrJ
+         Ye6gFOf/QPsTv41tZE7Wcu6F8WxpLOZJhs2Y4rovhG5iuQA3JMrUuWRXy0Sd1yWO3nmB
+         EkAPS5ApE6wgGIAJNSBvH6VTZRPLd5/ceJjM/z+LDNWBxpj/5mP9579ftlxteQngWcUK
+         sBkgpC3t0igaMdna7U25y7EH0vrsOmnSwydDpFTif/V9dxx9krAPHRJR3hefPsdrVN/u
+         Bbaw==
+X-Gm-Message-State: APjAAAW+W6o4BsDpjOx0JkqyqXUoKt+AeXZAEcOHXy7ZWVbS3D8e/X8Q
+        9o5FEr5L/5CRs9PWONY+Q9S6inU7lcs=
+X-Google-Smtp-Source: APXvYqzuUjgWDV+BTb9/6AwjOrcKMgWdGbWv5byTg5eDfge6htxau1FAoIeYwTL2yY/Fik3EBfQCzg==
+X-Received: by 2002:a63:4006:: with SMTP id n6mr3290737pga.424.1557383288312;
+        Wed, 08 May 2019 23:28:08 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id w12sm2897779pfj.41.2019.05.08.23.28.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 08 May 2019 23:28:07 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net
+Subject: [PATCH net-next] sctp: remove unused cmd SCTP_CMD_GEN_INIT_ACK
+Date:   Thu,  9 May 2019 14:28:00 +0800
+Message-Id: <fa41cfdb9f8919d1420d12d270d97e3b17a0fb18.1557383280.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 7, 2019 at 7:54 PM Jason Wang <jasowang@redhat.com> wrote:
-> This is only true if you can make sure tfile[tun->numqueues] is not
-> freed. Either my patch or SOCK_RCU_FREE can solve this, but for
-> SOCK_RCU_FREE we need do extra careful audit to make sure it doesn't
-> break someting. So synchronize through pointers in tfiles[] which is
-> already protected by RCU is much more easier. It can make sure no
-> dereference from xmit path after synchornize_net(). And this matches the
-> assumptions of the codes after synchronize_net().
->
+SCTP_CMD_GEN_INIT_ACK was introduced since very beginning, but never
+got used. So remove it.
 
-It is hard to tell which sock_put() matches with this synchronize_net()
-given the call path is complicated.
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ include/net/sctp/command.h |  1 -
+ net/sctp/sm_sideeffect.c   | 11 -----------
+ 2 files changed, 12 deletions(-)
 
-With SOCK_RCU_FREE, no such a problem, all sock_put() will be safe.
-So to me SOCK_RCU_FREE is much easier to understand and audit.
+diff --git a/include/net/sctp/command.h b/include/net/sctp/command.h
+index 6d5beac..b4e8706 100644
+--- a/include/net/sctp/command.h
++++ b/include/net/sctp/command.h
+@@ -48,7 +48,6 @@ enum sctp_verb {
+ 	SCTP_CMD_REPORT_TSN,	/* Record the arrival of a TSN.  */
+ 	SCTP_CMD_GEN_SACK,	/* Send a Selective ACK (maybe).  */
+ 	SCTP_CMD_PROCESS_SACK,	/* Process an inbound SACK.  */
+-	SCTP_CMD_GEN_INIT_ACK,	/* Generate an INIT ACK chunk.  */
+ 	SCTP_CMD_PEER_INIT,	/* Process a INIT from the peer.  */
+ 	SCTP_CMD_GEN_COOKIE_ECHO, /* Generate a COOKIE ECHO chunk. */
+ 	SCTP_CMD_CHUNK_ULP,	/* Send a chunk to the sockets layer.  */
+diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+index 4aa0358..233ee80 100644
+--- a/net/sctp/sm_sideeffect.c
++++ b/net/sctp/sm_sideeffect.c
+@@ -1364,17 +1364,6 @@ static int sctp_cmd_interpreter(enum sctp_event_type event_type,
+ 						      cmd->obj.chunk);
+ 			break;
+ 
+-		case SCTP_CMD_GEN_INIT_ACK:
+-			/* Generate an INIT ACK chunk.  */
+-			new_obj = sctp_make_init_ack(asoc, chunk, GFP_ATOMIC,
+-						     0);
+-			if (!new_obj)
+-				goto nomem;
+-
+-			sctp_add_cmd_sf(commands, SCTP_CMD_REPLY,
+-					SCTP_CHUNK(new_obj));
+-			break;
+-
+ 		case SCTP_CMD_PEER_INIT:
+ 			/* Process a unified INIT from the peer.
+ 			 * Note: Only used during INIT-ACK processing.  If
+-- 
+2.1.0
 
-Thanks.
