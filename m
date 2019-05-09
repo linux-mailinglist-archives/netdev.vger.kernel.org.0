@@ -2,111 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D366E18CE5
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 17:23:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B340B18D04
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 17:32:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726640AbfEIPXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 11:23:50 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43009 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726187AbfEIPXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 11:23:50 -0400
-Received: by mail-qt1-f194.google.com with SMTP id r3so2906230qtp.10
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 08:23:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Z/eturOh5afNaJOq4qaChlqlzinQMKuYlPoIHF4BAeE=;
-        b=QGwQjoY4XHWX3mB1L7Ow0JRiNn4tHIMq7g21jGsMiho5IeUaYQwHp4FZr9JZt+tymL
-         jpdQ9ldmK1SQbbwBosjauChprdfLJtSS8tREp3vdBm65oEcSxK/Pg32ZFzyJlY3f9nHx
-         BPr194gWn9fBx8hbtPWwiv2+27/8unUJjrhnxzBiUPWxKfMeGr6dKZ1eXNzUKtCgdj0V
-         H+1mSoodPw8ldqYPaco3NG6V/dYF7ogGpgpRvzLrX4bnPPsMCRnaA/n2N5aiBzUDkf5a
-         0Ccx/Nc5oDuuOfhFHohSb/Y7Cyc68iE4wM84m1qknqgxuS4qIK9ub7C+rD8R7GKpLlcY
-         v9Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Z/eturOh5afNaJOq4qaChlqlzinQMKuYlPoIHF4BAeE=;
-        b=aIKVcV/9uTadxy4MqrPZUrbVZsHA1wfF3PRpvSamQxskYRxRQMnaTCvVTsRoqptv+M
-         MyS5tXCjBIpFZ6h3Q6XFgF9yetpLLh7ImTK+88FzkW3uWwzviaLnXsuTIvdzCRahvxsY
-         vPWSEKlizALh6qL8HFZlyj9E1s/BMNkuTQ1gsqXYSWyWCutwPaS/P0TnniR3r80HaWvt
-         yjpsjR2Jc7xFYqeljXd82qOxUnLYVKfDQKBwYAbJgSNJ7Bi1sCZVLwkYDmP+rSBCxLbs
-         +nQims+PCrXWQ4ctz7oL4vS/QaY1Cl2FrJmf5rZ9z6JtLisImDdvXVvKxRI5RrjJ9ZOA
-         pe3A==
-X-Gm-Message-State: APjAAAX2LB78VvsMc5TuQkhZgmz31uLgUROHGEST1LtggSRocO9T1NbD
-        HSsFz4aUdeJbpu2jS0xYwlWMvw==
-X-Google-Smtp-Source: APXvYqy/r71ow/vYHPMSRDTvvHv5NlbjNxSEHrMDUFpM8BKRIxK7+WHhTHpwsXZLhI+e1kGGmM4AkA==
-X-Received: by 2002:a0c:d7cc:: with SMTP id g12mr4181464qvj.220.1557415429536;
-        Thu, 09 May 2019 08:23:49 -0700 (PDT)
-Received: from [10.0.0.169] ([64.26.149.125])
-        by smtp.googlemail.com with ESMTPSA id e3sm694449qkn.93.2019.05.09.08.23.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 May 2019 08:23:48 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 2/3] flow_offload: restore ability to collect
- separate stats per action
-To:     Edward Cree <ecree@solarflare.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Anjali Singhai Jain <anjali.singhai@intel.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-References: <alpine.LFD.2.21.1905031603340.11823@ehc-opti7040.uk.solarflarecom.com>
- <20190504022759.64232fc0@cakuba.netronome.com>
- <db827a95-1042-cf74-1378-8e2eac356e6d@mojatatu.com>
- <1b37d659-5a2b-6130-e8d6-c15d6f57b55e@solarflare.com>
- <ab1f179e-9a91-837b-28c8-81eecbd09e7f@mojatatu.com>
- <1c0d0a0a-a74b-c887-d615-0f0c0d2e1b9a@solarflare.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <7d0a0e7b-3b74-d384-75f8-6cde603f81ee@mojatatu.com>
-Date:   Thu, 9 May 2019 11:23:47 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726617AbfEIPcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 11:32:31 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:34152 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726187AbfEIPcb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 11:32:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1557415949;
+        s=strato-dkim-0002; d=fpond.eu;
+        h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=Vtv+jgeVgNdjXl2W9P9Zxp/xrhkh/2eKFcG2rY6WA74=;
+        b=sEfcMevmmDAhtPcKRKtHyUe30rhnkeH91wS4zN34dSBxw93AKg25qax0dBs87qWXWn
+        1usKvuTIS4ako3qwOzIIPoWLS2fKvJSkxxn8l836m9WC+v2pjP5mdEnwqZROuKlsiK+R
+        jngdHjhHy35onU5QXgIcI8hG32/nfTgUNp/+LCZPONbEZK+JmPLTh4pX2/zIy9wTBxyb
+        XHSomfm0jvdfX9ivge2gH00mIRTeeerFai32GqJ6JieCbaoErl7ci1TAB9213/0sJ6zk
+        fAeiZuO5rU89sBRJRicNkPqI/mjnDn7k4QEn8IqAXKdFArC+qSbXquV+nBsZa+N2PAnh
+        3p3A==
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzmt2bYDnKIKaws6YXTsc4="
+X-RZG-CLASS-ID: mo00
+Received: from oxapp01-01.back.ox.d0m.de
+        by smtp-ox.front (RZmta 44.18 AUTH)
+        with ESMTPSA id y08c83v49FWLYBZ
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+        Thu, 9 May 2019 17:32:21 +0200 (CEST)
+Date:   Thu, 9 May 2019 17:32:21 +0200 (CEST)
+From:   Ulrich Hecht <uli@fpond.eu>
+To:     Simon Horman <horms@verge.net.au>
+Cc:     =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, wsa@the-dreams.de, magnus.damm@gmail.com
+Message-ID: <344020243.1186987.1557415941124@webmail.strato.com>
+In-Reply-To: <20190509101020.4ozvazptoy53gh55@verge.net.au>
+References: <1557328882-24307-1-git-send-email-uli+renesas@fpond.eu>
+ <1f7be29e-c85a-d63d-c83f-357a76e8ca45@cogentembedded.com>
+ <20190508165219.GA26309@bigcity.dyn.berto.se>
+ <434070244.1141414.1557385064484@webmail.strato.com>
+ <20190509101020.4ozvazptoy53gh55@verge.net.au>
+Subject: Re: [PATCH] ravb: implement MTU change while device is up
 MIME-Version: 1.0
-In-Reply-To: <1c0d0a0a-a74b-c887-d615-0f0c0d2e1b9a@solarflare.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Priority: 3
+Importance: Medium
+X-Mailer: Open-Xchange Mailer v7.8.4-Rev55
+X-Originating-IP: 85.212.120.228
+X-Originating-Client: open-xchange-appsuite
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-08 1:07 p.m., Edward Cree wrote:
-> On 08/05/2019 15:02, Jamal Hadi Salim wrote:
->> The lazy thing most people have done is essentially assume that
->> there is a stat per filter rule...
->> I wouldnt call it the 'the right thing'
-> Yup, that's why I'm trying to not do that ;-)
 
-Thank you ;->
+> On May 9, 2019 at 12:10 PM Simon Horman <horms@verge.net.au> wrote:
+>=20
+>=20
+> On Thu, May 09, 2019 at 08:57:44AM +0200, Ulrich Hecht wrote:
+> >=20
+> > > On May 8, 2019 at 6:52 PM Niklas S=C3=B6derlund <niklas.soderlund@rag=
+natech.se> wrote:
+> > >=20
+> > >=20
+> > > Hi Sergei,
+> > >=20
+> > > On 2019-05-08 18:59:01 +0300, Sergei Shtylyov wrote:
+> > > > Hello!
+> > > >=20
+> > > > On 05/08/2019 06:21 PM, Ulrich Hecht wrote:
+> > > >=20
+> > > > > Uses the same method as various other drivers: shut the device do=
+wn,
+> > > > > change the MTU, then bring it back up again.
+> > > > >=20
+> > > > > Tested on Renesas D3 Draak board.
+> > > > >=20
+> > > > > Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+> > > >=20
+> > > >    You should have CC'ed me (as an reviewer for the Renesas drivers=
+).
+> >=20
+> > Sorry, will do next time.
+> >=20
+> > > >=20
+> > > >    How about the code below instead?
+> > > >=20
+> > > > =09if (netif_running(ndev))
+> > > > =09=09ravb_close(ndev);
+> > > >=20
+> > > >  =09ndev->mtu =3D new_mtu;
+> > > > =09netdev_update_features(ndev);
+> > >=20
+> > > Is there a need to call netdev_update_features() even if the if is no=
+t=20
+> > > running?
+> >=20
+> > In my testing, it didn't seem so.
+>=20
+> That may be because your testing doesn't cover cases where it would make
+> any difference.
 
-> 
->> Yes, the index at tc semantics level is per-action type.
->> So "mirred index 1" and "drop index 1" are not the same stats counter.
-> Ok, then that kills the design I used here that relied entirely on the
->   index to specify counters.
-> I guess instead I'll have to go with the approach Pablo suggested,
->   passing an array of struct flow_stats in the callback, thus using
->   the index into that array (which corresponds to the index in
->   f->exts->actions) to identify different counters.
-> Which means I will have to change all the existing drivers, which will
->   largely revert (from the drivers' perspective) the change when Pablo
->   took f->exts away from them — they will go back to calling something
->   that looks a lot like tcf_exts_stats_update().
-> However, that'll mean the API has in-tree users, so it might be
->   considered mergeable(?)
+Cases other than changing the MTU while the device is up?
 
-I would say yes, but post the patches and lets have the stakeholders
-chime in.
-Would it be simpler to just restore the f->exts?
-
-
-cheers,
-jamal
+CU
+Uli
