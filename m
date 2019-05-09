@@ -2,76 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0D2618AFE
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 15:52:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C69A18B20
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 16:02:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726590AbfEINwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 09:52:35 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:46934 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726426AbfEINwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 09:52:35 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y11so1351628pfm.13
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 06:52:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8qLMzW5sdCiXr0+VC/BzOUU+cRpa3JTBYUSsmfFfV+A=;
-        b=WYmoO0PZf7Mw9FC4uBg9msl8Dff2BS4ow/w1tSr8+5OS41ns14QveTUnZoW88PcNyq
-         efSrEk4vQIPnP0ivUY/6cBaX/mQ2lzb3ArfXFZ7iXkmwzmxzvPSaWx9FT4f+VtT5iZs1
-         lw6LUlhRXChhqnqFFLbXCJz5QBtGZMecCbqSco6MlKaMuQxnMsKkX/98i01UQJ6peYZk
-         GJT309Rp+WfBupZ3cM1+XDg0ADdmVmttJRpNPjNuxVp+lTwHDHyQfd0VVB5t0uWfQw1s
-         BhTSh1/0xu13R1h3tuVPgXIGHxoS9CN4MhVsUiGiBvOQrDiWgcHTMskwCi2D2nKW8q6J
-         RNUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8qLMzW5sdCiXr0+VC/BzOUU+cRpa3JTBYUSsmfFfV+A=;
-        b=qvkJsjsWx92sF8dUITkhB6TViONneTZSZF0JnII363T+WVpDjc2RhhvI9jN/UhBfDa
-         84awTYDdKV97oxRhwWNErAm0cY+L9QjQpGWvzrW6Yv3Fppu/hLDcmwDKv3fTJpqw1XH5
-         TsTDju9GG1nbe9XALO8M/u1KVZAwma/XRrx9VJ9GcrO+bLIYoveHz4XvUYh7SAl8awla
-         BNvJ99rO/BUkNa7pU6/e62j/k9rAE1zAkI7sGr2T33o39BhH+A0sosqpD4T224+erd2K
-         pY5M9gKJe6KsJAlX2KVi3PJioUA7ECPGhGpAn0Mrf9D+UaiEYkqt/NJd4TxBf4ODwHKm
-         wbrw==
-X-Gm-Message-State: APjAAAWsxQihG1lzrNAVEPmUOWbZCq6wtxFeETBe3EgsnQXAANxMA0cF
-        NiC/7OuzQL0BASa3POoDbao=
-X-Google-Smtp-Source: APXvYqxM+qnT1qm7fo4B78wUjqOZShxyjPiVptC7yNqokc9DqtVrZK7avNTWUNXTjyTD8bNOMFVg3A==
-X-Received: by 2002:a65:6116:: with SMTP id z22mr5752716pgu.50.1557409954577;
-        Thu, 09 May 2019 06:52:34 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id c19sm2565587pgi.42.2019.05.09.06.52.33
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 09 May 2019 06:52:33 -0700 (PDT)
-Date:   Thu, 9 May 2019 06:52:31 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Miroslav Lichvar <mlichvar@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        David Miller <davem@davemloft.net>,
-        stefan.sorensen@spectralink.com
-Subject: Re: [PATCH net] vlan: disable SIOCSHWTSTAMP in container
-Message-ID: <20190509135231.ivchey4lwpk6emte@localhost>
-References: <20190509065507.23991-1-liuhangbin@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190509065507.23991-1-liuhangbin@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+        id S1726705AbfEIOCZ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 9 May 2019 10:02:25 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57984 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726597AbfEIOCY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 May 2019 10:02:24 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id DDBE4AC70;
+        Thu,  9 May 2019 14:02:21 +0000 (UTC)
+Date:   Thu, 9 May 2019 16:02:20 +0200
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] mfd: ioc3: Add driver for SGI IOC3 chip
+Message-Id: <20190509160220.bb5382df931e5bd0972276df@suse.de>
+In-Reply-To: <20190508102313.GG3995@dell>
+References: <20190409154610.6735-1-tbogendoerfer@suse.de>
+        <20190409154610.6735-3-tbogendoerfer@suse.de>
+        <20190508102313.GG3995@dell>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-suse-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 09, 2019 at 02:55:07PM +0800, Hangbin Liu wrote:
-> With NET_ADMIN enabled in container, a normal user could be mapped to
-> root and is able to change the real device's rx filter via ioctl on
-> vlan, which would affect the other ptp process on host. Fix it by
-> disabling SIOCSHWTSTAMP in container.
-> 
-> Fixes: a6111d3c93d0 ("vlan: Pass SIOC[SG]HWTSTAMP ioctls to real device")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+On Wed, 8 May 2019 11:23:13 +0100
+Lee Jones <lee.jones@linaro.org> wrote:
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+> On Tue, 09 Apr 2019, Thomas Bogendoerfer wrote:
+> 
+> > +static u32 crc8_addr(u64 addr)
+> > +{
+> > +	u32 crc = 0;
+> > +	int i;
+> > +
+> > +	for (i = 0; i < 64; i += 8)
+> > +		crc8_byte(&crc, addr >> i);
+> > +	return crc;
+> > +}
+> 
+> Not looked into these in any detail, but are you not able to use the
+> CRC functions already provided by the kernel?
+
+they are using a different polynomial, so I can't use it.
+
+> > +	}
+> > +	pr_err("ioc3: CRC error in NIC address\n");
+> > +}
+> 
+> This all looks like networking code.  If this is the case, it should
+> be moved to drivers/networking or similar.
+
+no it's not. nic stands for number in a can produced by Dallas Semi also
+known under the name 1-Wire (https://en.wikipedia.org/wiki/1-Wire).
+SGI used them to provide partnumber, serialnumber and mac addresses.
+By placing the code to read the NiCs inside ioc3 driver there is no need
+for locking and adding library code for accessing these informations.
+
+> > +static struct resource ioc3_uarta_resources[] = {
+> > +	DEFINE_RES_MEM(offsetof(struct ioc3, sregs.uarta),
+> 
+> You are the first user of offsetof() in MFD.  Could you tell me why
+> it's required please?
+
+to get the offsets of different chip functions out of a struct.
+
+> Please drop all of these and statically create the MFD cells like
+> almost all other MFD drivers do.
+
+I started that way and it blew up the driver and create a bigger mess
+than I wanted to have. What's your concern with my approach ?
+
+I could use static mfd_cell arrays, if there would be a init/startup
+method per cell, which is called before setting up the platform device.
+That way I could do the dynamic setup for ethernet and serial devices.
+
+> > +static void ioc3_create_devices(struct ioc3_priv_data *ipd)
+> > +{
+> > +	struct mfd_cell *cell;
+> > +
+> > +	memset(ioc3_mfd_cells, 0, sizeof(ioc3_mfd_cells));
+> > +	cell = ioc3_mfd_cells;
+> > +
+> > +	if (ipd->info->funcs & IOC3_ETH) {
+> > +		memcpy(ioc3_eth_platform_data.mac_addr, ipd->nic_mac,
+> > +		       sizeof(ioc3_eth_platform_data.mac_addr));
+> 
+> Better to pull the MAC address from within the Ethernet driver.
+
+the NiC where the MAC address is provided is connected to the ioc3
+chip outside of the ethernet register set. And there is another
+NiC connected to the same 1-W bus. So moving reading of the MAC
+address to the ethernet driver duplicates code and adds complexity
+(locking). Again what's your concern here ?
+
+> > +	if (ipd->info->funcs & IOC3_SER) {
+> > +		writel(GPCR_UARTA_MODESEL | GPCR_UARTB_MODESEL,
+> > +			&ipd->regs->gpcr_s);
+> > +		writel(0, &ipd->regs->gppr[6]);
+> > +		writel(0, &ipd->regs->gppr[7]);
+> > +		udelay(100);
+> > +		writel(readl(&ipd->regs->port_a.sscr) & ~SSCR_DMA_EN,
+> > +		       &ipd->regs->port_a.sscr);
+> > +		writel(readl(&ipd->regs->port_b.sscr) & ~SSCR_DMA_EN,
+> > +		       &ipd->regs->port_b.sscr);
+> > +		udelay(1000);
+> 
+> No idea what any of this does.
+> 
+> It looks like it belongs in the serial driver (and needs comments).
+
+it configures the IOC3 chip for serial usage. This is not part of
+the serial register set, so it IMHO belongs in the MFD driver.
+
+> > +	}
+> > +#if defined(CONFIG_SGI_IP27)
+> 
+> What is this?  Can't you obtain this dynamically by probing the H/W?
+
+that's the machine type and the #ifdef CONFIG_xxx are just for saving space,
+when compiled for other machines and it's easy to remove.
+
+> > +	if (ipd->info->irq_offset) {
+> 
+> What does this really signify?
+
+IOC3 ASICs are most of the time connected to a SGI bridge chip. IOC3 can
+provide two interrupt lines, which are wired to the bridge chip. The first
+interrupt is assigned via the PCI core, but since IOC3 is not a PCI multi
+function device the second interrupt must be treated here. And the used
+interrupt line on the bridge chip differs between boards.
+
+Thank you for your review. I'll address all other comments not cited in
+my mail.
+
+Thomas.
+
+-- 
+SUSE Linux GmbH
+GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
+HRB 21284 (AG Nürnberg)
