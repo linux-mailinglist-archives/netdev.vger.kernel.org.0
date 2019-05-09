@@ -2,90 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF0B118CB6
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 17:11:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D366E18CE5
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 17:23:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726644AbfEIPL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 11:11:27 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:33288 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726234AbfEIPL1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 11:11:27 -0400
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id BB66CC00FF;
-        Thu,  9 May 2019 15:11:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1557414680; bh=vpUIv441zlcvFgvrtY0dSx3wjmUWdmvurzo1+Epk2SQ=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=UzyDl4RvEO4K6HowYgZcREjyOIZxJ1Lb9yp6+ABs8ZbabQvXV/Lg+5/2C4Y+RZRgt
-         VVsEzaK6kq4yOH/lFKDNutoLHpix7dSZRvQ0vnVesYfd9JDdLZrz3xUo+qHk/VREci
-         KWpnRqW6QrUwYHO7D9JnfFr72y46gmnWtKfRYMemlkr7i06Z5IqMLacOwJ0b4TSu1+
-         8UKQV1+zF4glrWSf6tpMBMvXqiXFjp7pwc14MKYKhr72lsMLlKOWZNwID+72B62WHS
-         1vte6TlGU43PpjvcErF8haphttbAf+Ag64DdVXsBs6B/bEtq9eRPqWWPeH7pxugHV6
-         7A5YfsgXeZA4g==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id A1403A0072;
-        Thu,  9 May 2019 15:11:25 +0000 (UTC)
-Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Thu, 9 May 2019 08:11:25 -0700
-Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Thu,
- 9 May 2019 17:11:21 +0200
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Jose Abreu <Jose.Abreu@synopsys.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Subject: RE: [PATCH net-next 10/11] net: stmmac: Introduce selftests support
-Thread-Topic: [PATCH net-next 10/11] net: stmmac: Introduce selftests support
-Thread-Index: AQHVBXLbzVq8jQ4wOEqKi4j/REzHDqZh7/UAgACEXjCAACKoAIAAUKrw
-Date:   Thu, 9 May 2019 15:11:21 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B47B3A7@DE02WEMBXB.internal.synopsys.com>
-References: <cover.1557300602.git.joabreu@synopsys.com>
- <be9099bbf8783b210dc9034a8b82219984f03250.1557300602.git.joabreu@synopsys.com>
- <20190509022330.GA23758@lunn.ch>
- <78EB27739596EE489E55E81C33FEC33A0B47AB21@DE02WEMBXB.internal.synopsys.com>
- <20190509122118.GA4889@lunn.ch>
-In-Reply-To: <20190509122118.GA4889@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.107.19.176]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726640AbfEIPXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 11:23:50 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:43009 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726187AbfEIPXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 11:23:50 -0400
+Received: by mail-qt1-f194.google.com with SMTP id r3so2906230qtp.10
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 08:23:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Z/eturOh5afNaJOq4qaChlqlzinQMKuYlPoIHF4BAeE=;
+        b=QGwQjoY4XHWX3mB1L7Ow0JRiNn4tHIMq7g21jGsMiho5IeUaYQwHp4FZr9JZt+tymL
+         jpdQ9ldmK1SQbbwBosjauChprdfLJtSS8tREp3vdBm65oEcSxK/Pg32ZFzyJlY3f9nHx
+         BPr194gWn9fBx8hbtPWwiv2+27/8unUJjrhnxzBiUPWxKfMeGr6dKZ1eXNzUKtCgdj0V
+         H+1mSoodPw8ldqYPaco3NG6V/dYF7ogGpgpRvzLrX4bnPPsMCRnaA/n2N5aiBzUDkf5a
+         0Ccx/Nc5oDuuOfhFHohSb/Y7Cyc68iE4wM84m1qknqgxuS4qIK9ub7C+rD8R7GKpLlcY
+         v9Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Z/eturOh5afNaJOq4qaChlqlzinQMKuYlPoIHF4BAeE=;
+        b=aIKVcV/9uTadxy4MqrPZUrbVZsHA1wfF3PRpvSamQxskYRxRQMnaTCvVTsRoqptv+M
+         MyS5tXCjBIpFZ6h3Q6XFgF9yetpLLh7ImTK+88FzkW3uWwzviaLnXsuTIvdzCRahvxsY
+         vPWSEKlizALh6qL8HFZlyj9E1s/BMNkuTQ1gsqXYSWyWCutwPaS/P0TnniR3r80HaWvt
+         yjpsjR2Jc7xFYqeljXd82qOxUnLYVKfDQKBwYAbJgSNJ7Bi1sCZVLwkYDmP+rSBCxLbs
+         +nQims+PCrXWQ4ctz7oL4vS/QaY1Cl2FrJmf5rZ9z6JtLisImDdvXVvKxRI5RrjJ9ZOA
+         pe3A==
+X-Gm-Message-State: APjAAAX2LB78VvsMc5TuQkhZgmz31uLgUROHGEST1LtggSRocO9T1NbD
+        HSsFz4aUdeJbpu2jS0xYwlWMvw==
+X-Google-Smtp-Source: APXvYqy/r71ow/vYHPMSRDTvvHv5NlbjNxSEHrMDUFpM8BKRIxK7+WHhTHpwsXZLhI+e1kGGmM4AkA==
+X-Received: by 2002:a0c:d7cc:: with SMTP id g12mr4181464qvj.220.1557415429536;
+        Thu, 09 May 2019 08:23:49 -0700 (PDT)
+Received: from [10.0.0.169] ([64.26.149.125])
+        by smtp.googlemail.com with ESMTPSA id e3sm694449qkn.93.2019.05.09.08.23.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 May 2019 08:23:48 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 2/3] flow_offload: restore ability to collect
+ separate stats per action
+To:     Edward Cree <ecree@solarflare.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Anjali Singhai Jain <anjali.singhai@intel.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+References: <alpine.LFD.2.21.1905031603340.11823@ehc-opti7040.uk.solarflarecom.com>
+ <20190504022759.64232fc0@cakuba.netronome.com>
+ <db827a95-1042-cf74-1378-8e2eac356e6d@mojatatu.com>
+ <1b37d659-5a2b-6130-e8d6-c15d6f57b55e@solarflare.com>
+ <ab1f179e-9a91-837b-28c8-81eecbd09e7f@mojatatu.com>
+ <1c0d0a0a-a74b-c887-d615-0f0c0d2e1b9a@solarflare.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <7d0a0e7b-3b74-d384-75f8-6cde603f81ee@mojatatu.com>
+Date:   Thu, 9 May 2019 11:23:47 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
+In-Reply-To: <1c0d0a0a-a74b-c887-d615-0f0c0d2e1b9a@solarflare.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
-Date: Thu, May 09, 2019 at 13:21:18
+On 2019-05-08 1:07 p.m., Edward Cree wrote:
+> On 08/05/2019 15:02, Jamal Hadi Salim wrote:
+>> The lazy thing most people have done is essentially assume that
+>> there is a stat per filter rule...
+>> I wouldnt call it the 'the right thing'
+> Yup, that's why I'm trying to not do that ;-)
 
-> > > You also seem to be missing a test for adding a unicast address via
-> > > dev_uc_add() and receiving packets for that address, but not receivin=
-g
-> > > multicast packets.
-> >=20
-> > Hmm, what if interface was already configured to receive Multicast befo=
-re=20
-> > running the tests ?
->=20
-> The kernel keeps a list of unicast and multicast addresses, which have
-> been added to the filters. You could remove them all, do the test, and
-> then add them back. __dev_mc_unsync(), __dev_mc_sync() etc.
+Thank you ;->
 
-Thanks! I've implemented the "MC Filter" and "UC Filter" tests and due to=20
-that I found another bug in the driver :D
+> 
+>> Yes, the index at tc semantics level is per-action type.
+>> So "mirred index 1" and "drop index 1" are not the same stats counter.
+> Ok, then that kills the design I used here that relied entirely on the
+>   index to specify counters.
+> I guess instead I'll have to go with the approach Pablo suggested,
+>   passing an array of struct flow_stats in the callback, thus using
+>   the index into that array (which corresponds to the index in
+>   f->exts->actions) to identify different counters.
+> Which means I will have to change all the existing drivers, which will
+>   largely revert (from the drivers' perspective) the change when Pablo
+>   took f->exts away from them — they will go back to calling something
+>   that looks a lot like tcf_exts_stats_update().
+> However, that'll mean the API has in-tree users, so it might be
+>   considered mergeable(?)
 
-Thanks,
-Jose Miguel Abreu
+I would say yes, but post the patches and lets have the stakeholders
+chime in.
+Would it be simpler to just restore the f->exts?
+
+
+cheers,
+jamal
