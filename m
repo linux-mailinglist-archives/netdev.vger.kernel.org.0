@@ -2,56 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1049B1890F
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 13:35:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 918671890C
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 13:33:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbfEILfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 07:35:03 -0400
-Received: from a3.inai.de ([88.198.85.195]:49240 "EHLO a3.inai.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726078AbfEILfD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 May 2019 07:35:03 -0400
-X-Greylist: delayed 319 seconds by postgrey-1.27 at vger.kernel.org; Thu, 09 May 2019 07:35:02 EDT
-Received: by a3.inai.de (Postfix, from userid 25121)
-        id 2ECF13BB8A93; Thu,  9 May 2019 13:29:42 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by a3.inai.de (Postfix) with ESMTP id 276843BB6EF8;
-        Thu,  9 May 2019 13:29:42 +0200 (CEST)
-Date:   Thu, 9 May 2019 13:29:42 +0200 (CEST)
-From:   Jan Engelhardt <jengelh@inai.de>
-To:     Lukasz Pawelczyk <l.pawelczyk@samsung.com>
-cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukasz Pawelczyk <havner@gmail.com>
-Subject: Re: [PATCH v2] netfilter: xt_owner: Add supplementary groups
- option
-In-Reply-To: <cd06d09489cd723b3cc48e42f7cccc21737bfd9e.camel@samsung.com>
-Message-ID: <nycvar.YFH.7.76.1905091329090.1916@n3.vanv.qr>
-References: <CGME20190508141219eucas1p1e5a899714747b497499976113ea9681f@eucas1p1.samsung.com>        <20190508141211.4191-1-l.pawelczyk@samsung.com>        <98f71c64-3887-b715-effb-894224a71ef9@gmail.com>        <cdba4a3b7f31ae8ece81be270233032fe774bd86.camel@samsung.com>
-        <6a6e9754-4f2b-3433-6df0-bbb9d9915582@gmail.com>        <cf34c829002177e89806e9f7260559aefb3c2ac7.camel@samsung.com>        <afc200a8-438f-5d73-2236-6d9e4979bb59@gmail.com> <cd06d09489cd723b3cc48e42f7cccc21737bfd9e.camel@samsung.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S1726192AbfEILdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 07:33:16 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:58861 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725872AbfEILdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 07:33:16 -0400
+Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hOhIO-0000V0-Kh; Thu, 09 May 2019 07:33:11 -0400
+Date:   Thu, 9 May 2019 07:32:35 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        davem@davemloft.net
+Subject: Re: [PATCH net-next] sctp: remove unused cmd SCTP_CMD_GEN_INIT_ACK
+Message-ID: <20190509113235.GA12387@hmswarspite.think-freely.org>
+References: <fa41cfdb9f8919d1420d12d270d97e3b17a0fb18.1557383280.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fa41cfdb9f8919d1420d12d270d97e3b17a0fb18.1557383280.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 09, 2019 at 02:28:00PM +0800, Xin Long wrote:
+> SCTP_CMD_GEN_INIT_ACK was introduced since very beginning, but never
+> got used. So remove it.
+> 
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  include/net/sctp/command.h |  1 -
+>  net/sctp/sm_sideeffect.c   | 11 -----------
+>  2 files changed, 12 deletions(-)
+> 
+> diff --git a/include/net/sctp/command.h b/include/net/sctp/command.h
+> index 6d5beac..b4e8706 100644
+> --- a/include/net/sctp/command.h
+> +++ b/include/net/sctp/command.h
+> @@ -48,7 +48,6 @@ enum sctp_verb {
+>  	SCTP_CMD_REPORT_TSN,	/* Record the arrival of a TSN.  */
+>  	SCTP_CMD_GEN_SACK,	/* Send a Selective ACK (maybe).  */
+>  	SCTP_CMD_PROCESS_SACK,	/* Process an inbound SACK.  */
+> -	SCTP_CMD_GEN_INIT_ACK,	/* Generate an INIT ACK chunk.  */
+>  	SCTP_CMD_PEER_INIT,	/* Process a INIT from the peer.  */
+>  	SCTP_CMD_GEN_COOKIE_ECHO, /* Generate a COOKIE ECHO chunk. */
+>  	SCTP_CMD_CHUNK_ULP,	/* Send a chunk to the sockets layer.  */
+> diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+> index 4aa0358..233ee80 100644
+> --- a/net/sctp/sm_sideeffect.c
+> +++ b/net/sctp/sm_sideeffect.c
+> @@ -1364,17 +1364,6 @@ static int sctp_cmd_interpreter(enum sctp_event_type event_type,
+>  						      cmd->obj.chunk);
+>  			break;
+>  
+> -		case SCTP_CMD_GEN_INIT_ACK:
+> -			/* Generate an INIT ACK chunk.  */
+> -			new_obj = sctp_make_init_ack(asoc, chunk, GFP_ATOMIC,
+> -						     0);
+> -			if (!new_obj)
+> -				goto nomem;
+> -
+> -			sctp_add_cmd_sf(commands, SCTP_CMD_REPLY,
+> -					SCTP_CHUNK(new_obj));
+> -			break;
+> -
+>  		case SCTP_CMD_PEER_INIT:
+>  			/* Process a unified INIT from the peer.
+>  			 * Note: Only used during INIT-ACK processing.  If
+> -- 
+> 2.1.0
+> 
+> 
 
-On Thursday 2019-05-09 12:47, Lukasz Pawelczyk wrote:
->> > > > > > index fa3ad84957d5..d646f0dc3466 100644
->> > > > > > --- a/include/uapi/linux/netfilter/xt_owner.h
->> > > > > > +++ b/include/uapi/linux/netfilter/xt_owner.h
->> > > > > > @@ -8,6 +8,7 @@ enum {
->> > > > > >  	XT_OWNER_UID    = 1 << 0,
->> > > > > >  	XT_OWNER_GID    = 1 << 1,
->> > > > > >  	XT_OWNER_SOCKET = 1 << 2,
->> > > > > > +	XT_SUPPL_GROUPS = 1 << 3,
+This is definately a valid cleanup, but I wonder if it wouldn't be better to,
+instead of removing it, to use it.  We have 2 locations where we actually call
+sctp_make_init_ack, and then have to check the return code and abort the
+operation if we get a NULL return.  Would it be a better solution (in the sense
+of keeping our control flow in line with how the rest of the state machine is
+supposed to work), if we didn't just add a SCTP_CMD_GEN_INIT_ACK sideeffect to
+the state machine queue in the locations where we otherwise would call
+sctp_make_init_ack/sctp_add_cmd_sf(...SCTP_CMD_REPLY)?
 
-In keeping with the naming, this should be something like
-XT_OWNER_SUPPL_GROUPS.
+Neil
+
