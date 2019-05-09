@@ -2,70 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81D1219589
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 01:01:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C20E19590
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 01:03:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726855AbfEIXBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 19:01:45 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:35123 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726809AbfEIXBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 19:01:43 -0400
-Received: by mail-lj1-f196.google.com with SMTP id m20so3457377lji.2;
-        Thu, 09 May 2019 16:01:42 -0700 (PDT)
+        id S1726777AbfEIXDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 19:03:10 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:36634 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726694AbfEIXDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 19:03:10 -0400
+Received: by mail-lf1-f67.google.com with SMTP id y10so2759123lfl.3;
+        Thu, 09 May 2019 16:03:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QCAH7KsOk9niJJskOeykDP/4/x+QWrsBEWl5YZqfzGQ=;
-        b=AG1RO7axa+jNvMfMyjCF4bPJoRHT/j76cITgLQd7sc/0MT/trc9thupCxB6jGGI7yo
-         yTTgNYppk8BcR/PRNhCejiqXFZ8y7d6Q7yMGIwY7HUVl4KwH/hI6m+j2bgOcZAr5OrhM
-         V7NcMpiCknzO+RuG0K5PAbjtc2G6dlzfy9w+ISaPIsXk5m72HYZMVzATJETECw3DpqeQ
-         fcrY/VUoH1aho5pyiYVmjwmBUBb9pCcJSFL8GSf80RmUkgB9FV+pDd4ibnI61kLgmYY3
-         nWlVwMou0cSOQNs7tXkOhGk9EDMS/pzw4XHhahoWR6uFMDb24Yo0hvttLEfxfezBhg1j
-         n4+A==
+         :cc:content-transfer-encoding;
+        bh=oZBUuqK9FRm4rLL3g+cukKCfumYsWb0RftYMVko9Qy4=;
+        b=Web1gVxRCsD99aM5spA9w8OVrodnK/QXMUu+GO7hTFGFtVXnimHYazzXF7ejEKNVHp
+         VLZ4m5jX543qtcgz8iohg35mu3IQoP3h74EtMFPA4bwrKe/n8p+JiFoMDB/t+GKlMTOp
+         0g23sx3nGPYdjQbSWz/QA1KRcq/g1VxlnoLNQG5Won85Zg7TCOw9G29knklf/pdP4Td1
+         6XvMHQkgGJ6n56RAC2seCr15fPDbWDSEEA0H1c7KqOgY+GjzoZU+ZgInbU1YdO+oBe2X
+         BfJCFjWvKLAP6b8mSus1DeENn571cWcRotmJhLMuMdIBq9yg+kHsUAs07PA+JBQEGMlO
+         yQxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QCAH7KsOk9niJJskOeykDP/4/x+QWrsBEWl5YZqfzGQ=;
-        b=QQkmXi5FoAxd2F7HeebCrUZQCa2uIbY4edtlUt8BpYLodY2c86vCGTSQ6fO6aVxrr+
-         xt60k62Da+iDGGtyZuVkeJ3VTdk+wcQFXicx6xLSEdBnJvnkBfLEVhzxUcdzA42IOo0v
-         +qGQ+GK/ZPHn1K+vDflWM14EYkNktDarl3PC+s2lIPt//NcDuTMI+W99zCaBDk+W8r1M
-         DXaWT0viQ/xiZdjvKX9gX3cQ2PYq8k1D2NzJjbCTrrHBbtmmcR1mgAJaBksle2vDCNEj
-         8+CLJj93XfW9zkTNJPWsogcq9+rS8ncoirzq/Ys7YygYYBemIm01sIgSaw8+GKeu5dM2
-         2M7Q==
-X-Gm-Message-State: APjAAAV2XYEOzjcefM+8myGS1YPbOjno6Gb9uy2VPuobsHZh+nZQpR/8
-        hNGk0RsZIZZqUfNRYquOkt2glJeO28iGcVTJ2m0=
-X-Google-Smtp-Source: APXvYqykhx77nicQEyVpJNQRqqYO5YWcVTu5AuzdiK3HnSrB1+jyjeKCCvXhnyW02duf/fprn7qsJZ7MHANsLKId2QY=
-X-Received: by 2002:a2e:6c02:: with SMTP id h2mr3761948ljc.103.1557442901356;
- Thu, 09 May 2019 16:01:41 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=oZBUuqK9FRm4rLL3g+cukKCfumYsWb0RftYMVko9Qy4=;
+        b=L002Q9LOfIALRXbWS5Nta2AcgoyfHPq7HU5D7gz5H5TIuDFodCe8hyHp13VFIYT3pp
+         r8vtxtkriL9ZnC2twLYalHiYlopndZRa8N8dWwsmNlIcGFkfAPvpcPVfBjSIP4IIiqo0
+         OrC6zTr5s9J0Yc43udxNlFYzxFTtSvI4lEZz1nrVcV//DGC7752/ULFAfxbV3PvmKKOs
+         CTD9EFI7r7+dOh7aaGy0l+Avs4XPm46tDy7bxwIdoqECGPR3MlS7X2cd05BSIUrPcL/b
+         /8+8RHJVeXIR7aqyeQ4gkP05iLcsSz4/IS8HcgVrkW4ZpGGPCf5JXZc5Om4VnAkUQocQ
+         orbA==
+X-Gm-Message-State: APjAAAVRoU1gNYn8/MgMZb17YYL/u6BDoyp4bUDhKdHP6dUhdSPATwhF
+        9RDv6EcnV1Q7f2ndMrt0IcjqjG/8RWasFZ6UnBr5NA==
+X-Google-Smtp-Source: APXvYqzgdAtLiC1dCf+WIZBVON8ZaYCZCVFIFCASFHnPomN980oo8PrGWI115MmtJhcXgVimq/cUyQPyrVxK/XDYMMI=
+X-Received: by 2002:a19:81d4:: with SMTP id c203mr3923767lfd.160.1557442988272;
+ Thu, 09 May 2019 16:03:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190502154932.14698-1-lmb@cloudflare.com> <20190508164932.28729-1-lmb@cloudflare.com>
- <20190509155600.4yypxncilarbayh4@kafai-mbp>
-In-Reply-To: <20190509155600.4yypxncilarbayh4@kafai-mbp>
+References: <1557247291-9686-1-git-send-email-jiong.wang@netronome.com>
+In-Reply-To: <1557247291-9686-1-git-send-email-jiong.wang@netronome.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 9 May 2019 16:01:29 -0700
-Message-ID: <CAADnVQ+Sr-ecQn7LCq=NOPwfeVT7QD9yy8DmPCPgxTMYKY=JAQ@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] selftests: bpf: initialize bpf_object pointers
- where needed
-To:     Martin Lau <kafai@fb.com>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
+Date:   Thu, 9 May 2019 16:02:56 -0700
+Message-ID: <CAADnVQLjsy4snC85RK53_qQcmikTj+SySZ1ziY-Bw5OTCOadFQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] nfp: bpf: fix static check error through tightening
+ shift amount adjustment
+To:     Jiong Wang <jiong.wang@netronome.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 9, 2019 at 8:56 AM Martin Lau <kafai@fb.com> wrote:
+On Tue, May 7, 2019 at 9:42 AM Jiong Wang <jiong.wang@netronome.com> wrote:
 >
-> On Wed, May 08, 2019 at 05:49:32PM +0100, Lorenz Bauer wrote:
-> > There are a few tests which call bpf_object__close on uninitialized
-> > bpf_object*, which may segfault. Explicitly zero-initialise these pointers
-> > to avoid this.
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
+> NFP shift instruction has something special. If shift direction is left
+> then shift amount of 1 to 31 is specified as 32 minus the amount to shift=
+.
+>
+> But no need to do this for indirect shift which has shift amount be 0. Ev=
+en
+> after we do this subtraction, shift amount 0 will be turned into 32 which
+> will eventually be encoded the same as 0 because only low 5 bits are
+> encoded, but shift amount be 32 will fail the FIELD_PREP check done later
+> on shift mask (0x1f), due to 32 is out of mask range. Such error has been
+> observed when compiling nfp/bpf/jit.c using gcc 8.3 + O3.
+>
+> This issue has started when indirect shift support added after which the
+> incoming shift amount to __emit_shf could be 0, therefore it is at that
+> time shift amount adjustment inside __emit_shf should have been tightened=
+.
+>
+> Fixes: 991f5b3651f6 ("nfp: bpf: support logic indirect shifts (BPF_[L|R]S=
+H | BPF_X)")
+> Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+> Reported-by: Pablo Casc=C3=B3n <pablo.cascon@netronome.com
+> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
 
 Applied. Thanks
