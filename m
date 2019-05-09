@@ -2,93 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E1F19593
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 01:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D216F19598
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 01:14:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbfEIXEe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 9 May 2019 19:04:34 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:41104 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726682AbfEIXEe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 19:04:34 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x49MxMEc001595
-        for <netdev@vger.kernel.org>; Thu, 9 May 2019 16:04:33 -0700
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sctr0gksx-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 16:04:33 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 9 May 2019 16:04:32 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 8CFCB7609CC; Thu,  9 May 2019 16:04:31 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: pull-request: bpf 2019-05-09
-Date:   Thu, 9 May 2019 16:04:31 -0700
-Message-ID: <20190509230431.3084008-1-ast@kernel.org>
-X-Mailer: git-send-email 2.20.0
+        id S1726727AbfEIXOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 19:14:19 -0400
+Received: from mail-qk1-f172.google.com ([209.85.222.172]:38364 "EHLO
+        mail-qk1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726682AbfEIXOT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 19:14:19 -0400
+Received: by mail-qk1-f172.google.com with SMTP id a64so2573244qkg.5
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 16:14:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d0CXdl0SexEGvTBsjhc29e66B4ug+UCxMVXLoUd4CrQ=;
+        b=rf1dl0DtgdJe6D99aOEgLg2gryI+yM13mVXie73LcqFitrQXA+UWolL/ElgoArX3jn
+         NuCCh1Xy7gWad1aOPzzkhRp2W4/Qxwj8LwGTJPFVS7tMgO0L6WTtWYDS79GWRT88Vx0o
+         l0KVtFPp6ZUMb5A/xPG+OIzuKvsnmZdcezySKF1zLxZ6xBGvc7kaF7/PlZq7gNFYkmsr
+         w3Xw6gs+XEF8Up+9zPUpYXcHxdv5rekwCmQ5EPsfwYdU8TfHtud79E7Ax04J/DDFbbSl
+         ZtkPzBQnPQ7VtZuZd4W4QpanvH/WbQ/SuT0+g5a9aLEU1X0vFKTLXz44yQ7KHjKU818R
+         FeTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d0CXdl0SexEGvTBsjhc29e66B4ug+UCxMVXLoUd4CrQ=;
+        b=F9YInpbo0Hzd42vw8U7mj/8/lPDaZq3hCWX3fyT1I7BnC9K83brLfVX9jgJIYjRhS6
+         bft1O3ePmxwtNgWruxl8qYQs407IVQ9NRfJJlDfZAHq6xKA1x2tKVfqYAsjwefAJSWAV
+         dWItW8p6tHIB9ZwHs7zto9SmFirWT6hbjBvKZq7hvs5ryXYDcQ9rXpxDmqjAuGt3Abbi
+         R94wL6/PHrDAKexd0Ep7ZDok48G2VpWa3p4oETe1QAlUSGz4m06kdSqGXIjNya0s2CID
+         bY5YiCjDsQQlSYnO5zxvV4/CFDucw++yllsDeryjemvJoF3IcMCdCX+jfI4YIo3bPjK9
+         Zpmg==
+X-Gm-Message-State: APjAAAXsddWbYbcJcfRz8AM6ZiPRXXoAsIhaPCf7QICQTSmKWKEgUCWB
+        BNAE0CbiflGOps2DJugSrR3oYA==
+X-Google-Smtp-Source: APXvYqxVjBu4DFQbKNrJs2fRaFxVD4uwIu7LESNvVW70t4ARBg7Xcz59PtUSSY3j9z/2OmnCbFSabQ==
+X-Received: by 2002:a37:a490:: with SMTP id n138mr6044990qke.55.1557443658132;
+        Thu, 09 May 2019 16:14:18 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id s42sm2036778qth.45.2019.05.09.16.14.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 May 2019 16:14:17 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net 0/2] net/tls: fix W=1 build warnings
+Date:   Thu,  9 May 2019 16:14:05 -0700
+Message-Id: <20190509231407.25685-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-09_02:,,
- signatures=0
-X-Proofpoint-Spam-Reason: safe
-X-FB-Internal: Safe
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Hi!
 
-The following pull-request contains BPF updates for your *net* tree.
+This small series cleans up two outstanding W=1 build
+warnings in tls code.  Both are set but not used variables.
+The first case looks fairly straightforward.  In the second
+I think it's better to propagate the error code, even if
+not doing some does not lead to a crash with current code.
 
-The main changes are:
+Jakub Kicinski (2):
+  net/tls: remove set but not used variables
+  net/tls: handle errors from padding_length()
 
-1) three small fixes from Gary, Jiong and Lorenz.
+ net/tls/tls_device.c |  5 +----
+ net/tls/tls_sw.c     | 30 ++++++++++++++++++++++--------
+ 2 files changed, 23 insertions(+), 12 deletions(-)
 
-Please consider pulling these changes from:
+-- 
+2.21.0
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-----------------------------------------------------------------
-
-The following changes since commit 494bc1d281b5a9f02a81249fa566d8c7e390c50c:
-
-  net/tcp: use deferred jump label for TCP acked data hook (2019-05-09 11:13:57 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 3ef4641fbf870ee1ecd5f890a54881b7f0e20b90:
-
-  docs/btf: fix the missing section marks (2019-05-09 15:59:59 -0700)
-
-----------------------------------------------------------------
-Gary Lin (1):
-      docs/btf: fix the missing section marks
-
-Jiong Wang (1):
-      nfp: bpf: fix static check error through tightening shift amount adjustment
-
-Lorenz Bauer (1):
-      selftests: bpf: initialize bpf_object pointers where needed
-
- Documentation/bpf/btf.rst                                 |  2 ++
- drivers/net/ethernet/netronome/nfp/bpf/jit.c              | 13 ++++++++++++-
- tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c  |  2 +-
- tools/testing/selftests/bpf/prog_tests/task_fd_query_tp.c |  2 +-
- tools/testing/selftests/bpf/prog_tests/tp_attach_query.c  |  3 +++
- 5 files changed, 19 insertions(+), 3 deletions(-)
