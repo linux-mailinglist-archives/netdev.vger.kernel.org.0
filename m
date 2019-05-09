@@ -2,155 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B642218A26
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 14:58:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75BE18A33
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 15:01:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726687AbfEIM6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 08:58:09 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58594 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726438AbfEIM6J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 May 2019 08:58:09 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 404063087BD2;
-        Thu,  9 May 2019 12:58:08 +0000 (UTC)
-Received: from hp-dl380pg8-02.lab.eng.pek2.redhat.com (hp-dl380pg8-02.lab.eng.pek2.redhat.com [10.73.8.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 97CD462DE;
-        Thu,  9 May 2019 12:58:01 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        James Bottomley <James.Bottomley@HansenPartnership.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>
-Subject: [RFC PATCH V2] vhost: don't use kmap() to log dirty pages
-Date:   Thu,  9 May 2019 08:58:00 -0400
-Message-Id: <1557406680-4087-1-git-send-email-jasowang@redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Thu, 09 May 2019 12:58:08 +0000 (UTC)
+        id S1726701AbfEINBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 09:01:48 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:44362 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726448AbfEINBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 09:01:48 -0400
+Received: by mail-io1-f67.google.com with SMTP id f22so1323485iol.11
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 06:01:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JVx7ZoW5hiGrgUVoRycI1AsV20RlQNkbPPM427dqnNY=;
+        b=BurrVXPKDJWGamfAcikJ+exlkR0IQkubcyg1vpSZCwjgF3pbzzvL6Q8D3b2+HG8l9x
+         sKIws5nNnFOyoQU2CaLtmyJcYCDI5i9G1UyyRbhInThBu1DC1RbF5jopRm6vbqr08VdS
+         L0mDxm+xSM2o1nQ7M1m+na6LrLoGDzZLrOHWh6woW5byBb+xJrnGXAhBBxuYFQSL+Mhb
+         ZcmTdiaOk4gkNG0j95CXnypMaVHTbeglMvrxkzwR7eHXCgUBN6XkQMQg6eQMXgJUtTcE
+         NkfCLKvWXqeOpRxi7rDVWLYbJBjqeie/uKPo5WDpJsNDVMrHLLZvI+ZgK2lah4k6y9ag
+         X6Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JVx7ZoW5hiGrgUVoRycI1AsV20RlQNkbPPM427dqnNY=;
+        b=h3RcOpX2MroxypjMvl0W0gtCP+gQJ+h9i+bKvRdAvCCx4L/01Mm+xkiMXc/ENeCZPc
+         THNxekkOxXEYfAHWq42dei2hMOYg8bDGtEPHYAPfFJdXO6RcD1mwHi5JUSFy4DIGGSXF
+         6mcF7sCNPaFOxKf2ocdv4OL/+wO3UbUSi6huMoehG5UGvnW/fvhfzAVcVmT5geieD1Zu
+         k4ccvDw2YefKtezwdbb+6eB4U5n+8upW6AC0S+UuH9QLeUuxtizp5LEgq96CN5in9gFt
+         tAM8duOL0GZo/hW/lZSdd/BqssmkA+kvhtxCgFCqw+sW5hySiqowQg/+lVzU9LzoE6ty
+         0irw==
+X-Gm-Message-State: APjAAAUMJS6d2OmDMPinNn+Lg59Xb3EJ2zLwalY+/95XKOCaygMAZBRV
+        6JuYq20wK8AeljqFy4O3d3TyiBKxidSyKVdlMvhkNg==
+X-Google-Smtp-Source: APXvYqxUuiBLctRM7HeT7BpLXNkcpVG5z/yekVPem8+j0eMDpqkFGqrhfxcubw3nDGgcOF5RhAMdHH+Zis/USw9PiwM=
+X-Received: by 2002:a5e:d60f:: with SMTP id w15mr2152398iom.282.1557406907069;
+ Thu, 09 May 2019 06:01:47 -0700 (PDT)
+MIME-Version: 1.0
+References: <000000000000bc227a0582464e62@google.com> <0000000000003d44980584c6c82a@google.com>
+ <BL0PR1501MB20033F21FB21816CC2F50AA49A5E0@BL0PR1501MB2003.namprd15.prod.outlook.com>
+In-Reply-To: <BL0PR1501MB20033F21FB21816CC2F50AA49A5E0@BL0PR1501MB2003.namprd15.prod.outlook.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 9 May 2019 15:01:36 +0200
+Message-ID: <CACT4Y+aYfsTVCo3U9VJcQ2X0456FPtTH+2Sqd_J93CXrqvQhkg@mail.gmail.com>
+Subject: Re: WARNING: locking bug in icmp_send
+To:     Jon Maloy <jon.maloy@ericsson.com>
+Cc:     syzbot <syzbot+ba21d65f55b562432c58@syzkaller.appspotmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vhost log dirty pages directly to a userspace bitmap through GUP and
-kmap_atomic() since kernel doesn't have a set_bit_to_user()
-helper. This will cause issues for the arch that has virtually tagged
-caches. The way to fix is to keep using userspace virtual
-address. Fortunately, futex has arch_futex_atomic_op_inuser() which
-could be used for setting a bit to user.
+From: Jon Maloy <jon.maloy@ericsson.com>
+Date: Mon, Mar 25, 2019 at 5:34 PM
+To: syzbot, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
+linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+syzkaller-bugs@googlegroups.com,
+tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com,
+yoshfuji@linux-ipv6.org
 
-Note:
-- There're archs (few non popular ones) that don't implement futex
-  helper, we can't log dirty pages. We can fix them e.g for non
-  virtually tagged archs implement a kmap fallback on top or simply
-  disable LOG_ALL features of vhost.
-- The helper also requires userspace pointer is located at 4-byte
-  boundary, need to check during dirty log setting
+> Yet another duplicate of  syzbot+a25307ad099309f1c2b9@syzkaller.appspotmail.com
+>
+> A fix has been posted.
+>
+> ///jon
 
-Cc: Christoph Hellwig <hch@infradead.org>
-Cc: James Bottomley <James.Bottomley@HansenPartnership.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Darren Hart <dvhart@infradead.org>
-Fixes: 3a4d5c94e9593 ("vhost_net: a kernel-level virtio server")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
-Changes from V1:
-- switch to use arch_futex_atomic_op_inuser()
----
- drivers/vhost/vhost.c | 35 +++++++++++++++++------------------
- 1 file changed, 17 insertions(+), 18 deletions(-)
+Let's close this too:
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 351af88..4e5a004 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -31,6 +31,7 @@
- #include <linux/sched/signal.h>
- #include <linux/interval_tree_generic.h>
- #include <linux/nospec.h>
-+#include <asm/futex.h>
- 
- #include "vhost.h"
- 
-@@ -1652,6 +1653,10 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
- 			r = -EFAULT;
- 			break;
- 		}
-+		if (p & 0x3) {
-+			r = -EINVAL;
-+			break;
-+		}
- 		for (i = 0; i < d->nvqs; ++i) {
- 			struct vhost_virtqueue *vq;
- 			void __user *base = (void __user *)(unsigned long)p;
-@@ -1692,31 +1697,27 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
- }
- EXPORT_SYMBOL_GPL(vhost_dev_ioctl);
- 
--/* TODO: This is really inefficient.  We need something like get_user()
-- * (instruction directly accesses the data, with an exception table entry
-- * returning -EFAULT). See Documentation/x86/exception-tables.txt.
-- */
--static int set_bit_to_user(int nr, void __user *addr)
-+static int set_bit_to_user(int nr, u32 __user *addr)
- {
- 	unsigned long log = (unsigned long)addr;
- 	struct page *page;
--	void *base;
--	int bit = nr + (log % PAGE_SIZE) * 8;
-+	u32 old;
- 	int r;
- 
- 	r = get_user_pages_fast(log, 1, 1, &page);
- 	if (r < 0)
- 		return r;
- 	BUG_ON(r != 1);
--	base = kmap_atomic(page);
--	set_bit(bit, base);
--	kunmap_atomic(base);
-+
-+	r = arch_futex_atomic_op_inuser(FUTEX_OP_ADD, 1 << nr, &old, addr);
-+	/* TODO: fallback to kmap() when -ENOSYS? */
-+
- 	set_page_dirty_lock(page);
- 	put_page(page);
--	return 0;
-+	return r;
- }
- 
--static int log_write(void __user *log_base,
-+static int log_write(u32 __user *log_base,
- 		     u64 write_address, u64 write_length)
- {
- 	u64 write_page = write_address / VHOST_PAGE_SIZE;
-@@ -1726,12 +1727,10 @@ static int log_write(void __user *log_base,
- 		return 0;
- 	write_length += write_address % VHOST_PAGE_SIZE;
- 	for (;;) {
--		u64 base = (u64)(unsigned long)log_base;
--		u64 log = base + write_page / 8;
--		int bit = write_page % 8;
--		if ((u64)(unsigned long)log != log)
--			return -EFAULT;
--		r = set_bit_to_user(bit, (void __user *)(unsigned long)log);
-+		u32 __user *log = log_base + write_page / 32;
-+		int bit = write_page % 32;
-+
-+		r = set_bit_to_user(bit, log);
- 		if (r < 0)
- 			return r;
- 		if (write_length <= VHOST_PAGE_SIZE)
--- 
-1.8.3.1
+#syz fix: tipc: change to check tipc_own_id to return in tipc_net_stop
 
+> > -----Original Message-----
+> > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org>
+> > On Behalf Of syzbot
+> > Sent: 23-Mar-19 19:03
+> > To: davem@davemloft.net; Jon Maloy <jon.maloy@ericsson.com>;
+> > kuznet@ms2.inr.ac.ru; linux-kernel@vger.kernel.org;
+> > netdev@vger.kernel.org; syzkaller-bugs@googlegroups.com; tipc-
+> > discussion@lists.sourceforge.net; ying.xue@windriver.com; yoshfuji@linux-
+> > ipv6.org
+> > Subject: Re: WARNING: locking bug in icmp_send
+> >
+> > syzbot has bisected this bug to:
+> >
+> > commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
+> > Author: Jon Maloy <jon.maloy@ericsson.com>
+> > Date:   Thu Mar 22 19:42:52 2018 +0000
+> >
+> >      tipc: obtain node identity from interface by default
+> >
+> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11b6dc5d200000
+> > start commit:   b5372fe5 exec: load_script: Do not exec truncated interpre..
+> > git tree:       upstream
+> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=13b6dc5d200000
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=15b6dc5d200000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=7132344728e7ec3f
+> > dashboard link:
+> > https://syzkaller.appspot.com/bug?extid=ba21d65f55b562432c58
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14c90fa7400000
+> >
+> > Reported-by: syzbot+ba21d65f55b562432c58@syzkaller.appspotmail.com
+> > Fixes: 52dfae5c85a4 ("tipc: obtain node identity from interface by default")
+> >
+> > For information about bisection process see:
+> > https://goo.gl/tpsmEJ#bisection
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/BL0PR1501MB20033F21FB21816CC2F50AA49A5E0%40BL0PR1501MB2003.namprd15.prod.outlook.com.
+> For more options, visit https://groups.google.com/d/optout.
