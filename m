@@ -2,113 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2C99184A6
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 06:47:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD907184C0
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 07:13:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726909AbfEIEr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 00:47:26 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39080 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726902AbfEIEr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 00:47:26 -0400
-Received: by mail-pg1-f195.google.com with SMTP id w22so532469pgi.6;
-        Wed, 08 May 2019 21:47:25 -0700 (PDT)
+        id S1728589AbfEIFNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 01:13:49 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:45524 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726742AbfEIFNt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 01:13:49 -0400
+Received: by mail-lj1-f193.google.com with SMTP id r76so816712lja.12
+        for <netdev@vger.kernel.org>; Wed, 08 May 2019 22:13:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Pjs6VzqQNMUZ72aHk2/E5DqfjycX6mBSIAqq4hTXs1U=;
-        b=ksM4/kSgCM1PadG+6R/vDit058pFCL9BwgzRYQ8PiRz9MNywdTQOqf8ToIkA+L2WrG
-         rqa4Gllk30XDuHLKIal5ahlcPmPSAk/Zf7jLNBwlQ+ASPiRwGFeyNCmjrN+ozGR4CtGF
-         pqiaEsA6YTDXw2CfDB9dkpl1Q5+0gPZ9OqfvOuSJhQEUYWQtFcvYS4b7rjuY24b1/6bv
-         /huYqDUMQE28q/fdo2BHBr0D+oGlQ93jgFv+BS5NM1hrVjYxR8pip8D4Yjwlj/8vXPM1
-         YJIr1vHkVY1kgD4q8QNbBOCTDQvN30bgAr1clMxWoP2j0WlQOvszMH4cnXqhl9Z1QohN
-         VWNA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ziFPAPis9UqEKW8aSnfoIiAF+SVzl0wIceTxI4Vz1n4=;
+        b=UTRqvsMzZAr/sI+sy91rspoTSWo1uLBhbiQc+0wo/iIchS4ur9+55jEI1fn2FUWKhH
+         pkYsfk2jsQc1jv6sti73A9DRTU1ls+sBKbarvANSZGlfzq5+r1PiHTONXNe77QE/OMo1
+         pNbYpDhU/UfnF+MSuNuq5/DE8dvOlYIWkzk1APAiOHvtArPOAA+kNoB+f1ECmECtJ2/5
+         ja8zlyVd5KYMMke8me8YPVPhUpsX7iDWR+RzYtFS2dAmCFvB7tsZQK1wQOqqgd7I0H0M
+         ePozo/9cMrr9Wirvz0I1cxE8eQZoIayulmIFL8gB2vjW1OXD4lFzEDu5sSsztWDCD+7C
+         kUUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Pjs6VzqQNMUZ72aHk2/E5DqfjycX6mBSIAqq4hTXs1U=;
-        b=uVboU1N6h++Vs+JPF4bShv8Dmh6b/9i5mC1/J1CRMRs9t8wd4bhnhkpYyKFXa7y2tx
-         8k8Mfqz/D9sAdBZoVWg3QVSq+rGtdcIWWlY1niBdsXU3X4RLc017Cs0dF14JbOoPjtGv
-         zXAXzoanZRh/djNoyX0X5BJzNguRHro2LqWG6Bjh45vKTkzELQtkwJoUJHlrjT5lCKxp
-         g/nOimDd5Cj1v5nz5tka5jqdsg109EL9lkmET9lIh0aHwckKtceUq+50b2oKcWy5CpMt
-         j8M7/q7RVySrRTBAqH7VxNNxBM99X5Hprk5zVDhh37A8iq6FhqKsNxvowEPOZHSJyhf3
-         82BQ==
-X-Gm-Message-State: APjAAAXdkmMEEKotjRac6G5J/afcU8+ZW69hvDZwfMN8o1HKe9zaQl8u
-        G55wViS7koG3+DcV+tgRkbw=
-X-Google-Smtp-Source: APXvYqx39I3H+GpjnS2iByK5MXnGcCMKyqmA6n9KBE4wbDP/W7SgvGZD39CS4k2BnTjK+innsqHuAA==
-X-Received: by 2002:a62:4697:: with SMTP id o23mr2281834pfi.224.1557377245101;
-        Wed, 08 May 2019 21:47:25 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:180::ce1c])
-        by smtp.gmail.com with ESMTPSA id h16sm1479783pfj.114.2019.05.08.21.47.23
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ziFPAPis9UqEKW8aSnfoIiAF+SVzl0wIceTxI4Vz1n4=;
+        b=P6BsQZLx82vD8ZBCGtmovcdUOJJHu4CKA4SfqWVfZCpMfGQSWfjmc/nqC6+fSGUKhy
+         OFj8K+O0ZD/LGXp9ZpE9aZHmIBd9IxrUFymV1fhChE5Ep0KB5lOfH2mw9Zg5qQlbMJFS
+         Pk60X//wda+ThUewb6XRh7FN1rBuJwtq1NkPUYB785x7xKv1tTuo4A1y0pRnprpQeM0K
+         5qPjIV/YoaYSVdOpuqsiphE+j6iOuTLMFSHmERDA0yUpDtlK2y5jyLxk1T9n2Jkz+xbP
+         +ohoPTdtQatMk5VMUEre4jmXjHW5xUr79xtCGkuKkgDA6TNKl5FB/gYTx1Aph6Fw/0Zi
+         ha1g==
+X-Gm-Message-State: APjAAAUSeWQDLD3Nh6WUNuTyNMq5M2wLELAtjbt9MwSWhcqSd/KWkV2n
+        DefgnpxCU9uZbPPfKA3Jgy0=
+X-Google-Smtp-Source: APXvYqz+Ok450GFVVm5HeiWKCEeRbGAX69U18Qw4Ov7scTUJcUtII2Zvfmgw7ov7f5MexjyJYDwFYg==
+X-Received: by 2002:a2e:2191:: with SMTP id h17mr939855lji.40.1557378827169;
+        Wed, 08 May 2019 22:13:47 -0700 (PDT)
+Received: from partha-pc.edgeware.tv (94.127.35.102.c.fiberdirekt.net. [94.127.35.102])
+        by smtp.gmail.com with ESMTPSA id 17sm137623lji.2.2019.05.08.22.13.46
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 08 May 2019 21:47:24 -0700 (PDT)
-Date:   Wed, 8 May 2019 21:47:22 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@google.com>, luto@amacapital.net,
-        jannh@google.com
-Subject: Re: Question about seccomp / bpf
-Message-ID: <20190509044720.fxlcldi74atev5id@ast-mbp>
-References: <CANn89iL_XLb5C-+DY5PRhneZDJv585xfbLtiEVc3-ejzNNXaVg@mail.gmail.com>
- <20190508230941.6rqccgijqzkxmz4t@ast-mbp>
- <CANn89iL_1n8Lb5yCEk3ZrBsUtPPWPZ=0BiELUo+jyBWfLfaAzg@mail.gmail.com>
+        Wed, 08 May 2019 22:13:46 -0700 (PDT)
+From:   Parthasarathy Bhuvaragan <parthasarathy.bhuvaragan@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     jon.maloy@ericsson.com, ying.xue@windriver.com,
+        tipc-discussion@lists.sourceforge.net,
+        Parthasarathy Bhuvaragan <parthasarathy.bhuvaragan@gmail.com>,
+        Jon Maloy <jon.maloy@ericsson.se>
+Subject: [PATCH net v1] tipc: fix hanging clients using poll with EPOLLOUT flag
+Date:   Thu,  9 May 2019 07:13:42 +0200
+Message-Id: <20190509051342.6187-1-parthasarathy.bhuvaragan@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iL_1n8Lb5yCEk3ZrBsUtPPWPZ=0BiELUo+jyBWfLfaAzg@mail.gmail.com>
-User-Agent: NeoMutt/20180223
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 08, 2019 at 04:17:29PM -0700, Eric Dumazet wrote:
-> On Wed, May 8, 2019 at 4:09 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Wed, May 08, 2019 at 02:21:52PM -0700, Eric Dumazet wrote:
-> > > Hi Alexei and Daniel
-> > >
-> > > I have a question about seccomp.
-> > >
-> > > It seems that after this patch, seccomp no longer needs a helper
-> > > (seccomp_bpf_load())
-> > >
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bd4cf0ed331a275e9bf5a49e6d0fd55dffc551b8
-> > >
-> > > Are we detecting that a particular JIT code needs to call at least one
-> > > function from the kernel at all ?
-> >
-> > Currently we don't track such things and trying very hard to avoid
-> > any special cases for classic vs extended.
-> >
-> > > If the filter contains self-contained code (no call, just inline
-> > > code), then we could use any room in whole vmalloc space,
-> > > not only from the modules (which is something like 2GB total on x86_64)
-> >
-> > I believe there was an effort to make bpf progs and other executable things
-> > to be everywhere too, but I lost the track of it.
-> > It's not that hard to tweak x64 jit to emit 64-bit calls to helpers
-> > when delta between call insn and a helper is more than 32-bit that fits
-> > into call insn. iirc there was even such patch floating around.
-> >
-> > but what motivated you question? do you see 2GB space being full?!
-> 
-> 
-> A customer seems to hit the limit, with about 75,000 threads,
-> each one having a seccomp filter with 6 pages (plus one guard page
-> given by vmalloc)
+commit 517d7c79bdb398 ("tipc: fix hanging poll() for stream sockets")
+introduced a regression for clients using non-blocking sockets.
+After the commit, we send EPOLLOUT event to the client even in
+TIPC_CONNECTING state. This causes the subsequent send() to fail
+with ENOTCONN, as the socket is still not in TIPC_ESTABLISHED state.
 
-Since cbpf doesn't have "fd as a program" concept I suspect
-the same program was loaded 75k times. What a waste of kernel memory.
-And, no, we're not going to extend or fix cbpf for this.
-cbpf is frozen. seccomp needs to start using ebpf.
-It can have one program to secure all threads.
-If necessary single program can be customized via bpf maps
-for each thread.
+In this commit, we:
+- improve the fix for hanging poll() by replacing sk_data_ready()
+  with sk_state_change() to wake up all clients.
+- revert the faulty updates introduced by commit 517d7c79bdb398
+  ("tipc: fix hanging poll() for stream sockets").
+
+Fixes: 517d7c79bdb398 ("tipc: fix hanging poll() for stream sockets")
+Signed-off-by: Parthasarathy Bhuvaragan <parthasarathy.bhuvaragan@gmail.com>
+Acked-by: Jon Maloy <jon.maloy@ericsson.se>
+---
+ net/tipc/socket.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index b542f14ed444..2851937f6e32 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -734,11 +734,11 @@ static __poll_t tipc_poll(struct file *file, struct socket *sock,
+ 
+ 	switch (sk->sk_state) {
+ 	case TIPC_ESTABLISHED:
+-	case TIPC_CONNECTING:
+ 		if (!tsk->cong_link_cnt && !tsk_conn_cong(tsk))
+ 			revents |= EPOLLOUT;
+ 		/* fall through */
+ 	case TIPC_LISTEN:
++	case TIPC_CONNECTING:
+ 		if (!skb_queue_empty(&sk->sk_receive_queue))
+ 			revents |= EPOLLIN | EPOLLRDNORM;
+ 		break;
+@@ -2041,7 +2041,7 @@ static bool tipc_sk_filter_connect(struct tipc_sock *tsk, struct sk_buff *skb)
+ 			if (msg_data_sz(hdr))
+ 				return true;
+ 			/* Empty ACK-, - wake up sleeping connect() and drop */
+-			sk->sk_data_ready(sk);
++			sk->sk_state_change(sk);
+ 			msg_set_dest_droppable(hdr, 1);
+ 			return false;
+ 		}
+-- 
+2.21.0
 
