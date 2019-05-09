@@ -2,186 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A859418A70
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 15:17:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB6B18A74
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 15:18:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfEINRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 09:17:43 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:34273 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbfEINRn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 09:17:43 -0400
-Received: by mail-lj1-f195.google.com with SMTP id j24so1182338ljg.1
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 06:17:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UK57Qpg2zy+HIHqUbIlgo6gcv45uOIzqG7zicSDKtBQ=;
-        b=r8LYnMZP+CKUWqlfrwW03XnQJjhoy8fJK4DqTxvggeq9uZxsQoqbo05OhI76LDbPJq
-         ohjVdhpSmB6/2Wka7c3GYeHocpjRlo6sOqLOTJGDmT4ZIf6MUHnJ+6CgX4Vaq8j5EdbS
-         ah8Koq5YBbHZMz/xUGjmPw3Z104UIxnVnlZfXQujMTKazRmwixWW9l3PU22jBlG/kCch
-         xZjfB9It4yeaF6ynOTa36XYV0qX4qdLCFg7Yi9bSvWjME9VsZOZ+VYwyARLT07n0WpIu
-         Abq8Wr1SHd4WmQFNR5kYlWMioVV0wN/ZfhvvmvRSSVCXion41zbAwCenVW8XuotSB6YN
-         trPA==
+        id S1726604AbfEINSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 09:18:33 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:41106 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726560AbfEINSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 09:18:32 -0400
+Received: by mail-qt1-f194.google.com with SMTP id c13so2382327qtn.8
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 06:18:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UK57Qpg2zy+HIHqUbIlgo6gcv45uOIzqG7zicSDKtBQ=;
-        b=MHmb7mgQUenGrgbCznxtd8RNJ8qAEMSbS7FV//uU86nUw4c3NhOVrfcYtPpLuGLOUB
-         cqUeezSgFloVZ5PLdu1GYojoU6kOEbtS73XIY2+9CBGawyI3kj930VUfTbKrpDOq9n+0
-         SYHawO7o12IQ/8BVAn/V8yIX6OXVZ6FSNn0I8xtY91YuC5iTekVEClqEAHFIUgUWKNyF
-         PwpwdjzZZohIAldxcuuIXpEyHT8MX8cndZAyeyPVhwcGY699kXz3dWP+HuCvbG06sGau
-         Xz9wAJgYwzMEDiX0qMjsx3KnvgT+TWJ2aifePXCTQ6kRxyRfL69zs52E5lT2xjBze29j
-         mbmA==
-X-Gm-Message-State: APjAAAU3UyzPATNLCtwqm0mOzk+z841bsumubUjf15sxHWy2XK0S9cqN
-        sCbpCsapMOHmbbSEC6CmrRxEibt9/gHNekTQoKAz
-X-Google-Smtp-Source: APXvYqwszAIEgdM6DVZFdOkZQsuXgGBf13AQBZrLVY/OG3of051x8GsXQinLx8o1yLJzSL/WJP/E7xd+TRQDBO7xY6s=
-X-Received: by 2002:a2e:98c6:: with SMTP id s6mr2325854ljj.161.1557407860555;
- Thu, 09 May 2019 06:17:40 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uCSIDRtIChXyP2xLf4vlTl4TN+QeSJxgQq5xMSigZ5w=;
+        b=M6vrSV4QLxR+V6U/r+ca2/B403jFheZI8ZaBlf+ACOn+Euslum3JF8mOw95C4/tDOk
+         2X7a2cVjCw8p0uWq7Y+JqxUBC37Zjd/ZV4DE32I+UW9JIWgZZDkUhPWQF3hsrgx6PViK
+         KpQUoF5YkVunDMmjLzQg1T0UDV+tkG1GT3x+PdpuLAP0t/qMWcsLcqWv0rjWEnbj8azA
+         OhVatc7Ddd8nm/yBlY3ZfJ1rm30bGCnw6NN9vzGjfYqx1fhriVLkLIOuXCHKPRnwtdlS
+         YDcMi6bPjydxg2tHNZ9LokihY2YxR2Zp7/Cb1hVGleGHAyyRupCB7kKm21Ls/ZZukjH/
+         GF5w==
+X-Gm-Message-State: APjAAAUwQcJjpk7h2cBrQUxgQFxmp2ZOQONGsJb4sPjs2PBb+3IiLnTb
+        kiPj0nYv3HAnPYfArVBS4YIHXQ==
+X-Google-Smtp-Source: APXvYqzuWDrp1vNxFhHyIepZh0BlL6Sk73vH5vDNAOlEraLrudzljNETMnRhgraKr8XDV4OMSkjv+w==
+X-Received: by 2002:ac8:610f:: with SMTP id a15mr3462116qtm.257.1557407911523;
+        Thu, 09 May 2019 06:18:31 -0700 (PDT)
+Received: from redhat.com (pool-173-76-105-71.bstnma.fios.verizon.net. [173.76.105.71])
+        by smtp.gmail.com with ESMTPSA id x3sm1232202qtk.75.2019.05.09.06.18.29
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 09 May 2019 06:18:30 -0700 (PDT)
+Date:   Thu, 9 May 2019 09:18:22 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@infradead.org>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>
+Subject: Re: [RFC PATCH V2] vhost: don't use kmap() to log dirty pages
+Message-ID: <20190509090433-mutt-send-email-mst@kernel.org>
+References: <1557406680-4087-1-git-send-email-jasowang@redhat.com>
 MIME-Version: 1.0
-References: <7301017039d68c920cb9120c035a1a0df3e6b30d.1557322358.git.pabeni@redhat.com>
- <36e13dc4-be40-d1f6-0be5-32cd4fc38f6e@tycho.nsa.gov> <83b4adb4-9d8f-848f-d1cc-a4a1f30cee51@tycho.nsa.gov>
- <20190508182737.GK10916@localhost.localdomain> <0957f30f-07b8-5e2f-ac71-615f511a5eea@tycho.nsa.gov>
- <CAHC9VhTs+Q4oAiMGkK9QZBJ9G4yY28WFJkc2jjp05DEW1OAhYw@mail.gmail.com> <bcfa1b06f277357d89b746a4fced49c0617deef1.camel@redhat.com>
-In-Reply-To: <bcfa1b06f277357d89b746a4fced49c0617deef1.camel@redhat.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 9 May 2019 09:17:28 -0400
-Message-ID: <CAHC9VhRjWX5zyJ1F8U7m-=veMLrynUnYp9AW-Bjff-+V_DJ65g@mail.gmail.com>
-Subject: Re: [PATCH net] selinux: do not report error on connect(AF_UNSPEC)
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     davem@davemloft.net, selinux@vger.kernel.org,
-        netdev@vger.kernel.org, Tom Deseyn <tdeseyn@redhat.com>,
-        Richard Haines <richard_c_haines@btinternet.com>,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1557406680-4087-1-git-send-email-jasowang@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 9, 2019 at 4:40 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> On Wed, 2019-05-08 at 17:17 -0400, Paul Moore wrote:
-> > On Wed, May 8, 2019 at 2:55 PM Stephen Smalley <sds@tycho.nsa.gov> wrote:
-> > > On 5/8/19 2:27 PM, Marcelo Ricardo Leitner wrote:
-> > > > On Wed, May 08, 2019 at 02:13:17PM -0400, Stephen Smalley wrote:
-> > > > > On 5/8/19 2:12 PM, Stephen Smalley wrote:
-> > > > > > On 5/8/19 9:32 AM, Paolo Abeni wrote:
-> > > > > > > calling connect(AF_UNSPEC) on an already connected TCP socket is an
-> > > > > > > established way to disconnect() such socket. After commit 68741a8adab9
-> > > > > > > ("selinux: Fix ltp test connect-syscall failure") it no longer works
-> > > > > > > and, in the above scenario connect() fails with EAFNOSUPPORT.
-> > > > > > >
-> > > > > > > Fix the above falling back to the generic/old code when the address
-> > > > > > > family
-> > > > > > > is not AF_INET{4,6}, but leave the SCTP code path untouched, as it has
-> > > > > > > specific constraints.
-> > > > > > >
-> > > > > > > Fixes: 68741a8adab9 ("selinux: Fix ltp test connect-syscall failure")
-> > > > > > > Reported-by: Tom Deseyn <tdeseyn@redhat.com>
-> > > > > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > > > > > > ---
-> > > > > > >    security/selinux/hooks.c | 8 ++++----
-> > > > > > >    1 file changed, 4 insertions(+), 4 deletions(-)
-> > > > > > >
-> > > > > > > diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> > > > > > > index c61787b15f27..d82b87c16b0a 100644
-> > > > > > > --- a/security/selinux/hooks.c
-> > > > > > > +++ b/security/selinux/hooks.c
-> > > > > > > @@ -4649,7 +4649,7 @@ static int
-> > > > > > > selinux_socket_connect_helper(struct socket *sock,
-> > > > > > >            struct lsm_network_audit net = {0,};
-> > > > > > >            struct sockaddr_in *addr4 = NULL;
-> > > > > > >            struct sockaddr_in6 *addr6 = NULL;
-> > > > > > > -        unsigned short snum;
-> > > > > > > +        unsigned short snum = 0;
-> > > > > > >            u32 sid, perm;
-> > > > > > >            /* sctp_connectx(3) calls via selinux_sctp_bind_connect()
-> > > > > > > @@ -4674,12 +4674,12 @@ static int
-> > > > > > > selinux_socket_connect_helper(struct socket *sock,
-> > > > > > >                break;
-> > > > > > >            default:
-> > > > > > >                /* Note that SCTP services expect -EINVAL, whereas
-> > > > > > > -             * others expect -EAFNOSUPPORT.
-> > > > > > > +             * others must handle this at the protocol level:
-> > > > > > > +             * connect(AF_UNSPEC) on a connected socket is
-> > > > > > > +             * a documented way disconnect the socket.
-> > > > > > >                 */
-> > > > > > >                if (sksec->sclass == SECCLASS_SCTP_SOCKET)
-> > > > > > >                    return -EINVAL;
-> > > > > > > -            else
-> > > > > > > -                return -EAFNOSUPPORT;
-> > > > > >
-> > > > > > I think we need to return 0 here.  Otherwise, we'll fall through with an
-> > > > > > uninitialized snum, triggering a random/bogus permission check.
-> > > > >
-> > > > > Sorry, I see that you initialize snum above.  Nonetheless, I think the
-> > > > > correct behavior here is to skip the check since this is a disconnect, not a
-> > > > > connect.
-> > > >
-> > > > Skipping the check would make it less controllable. So should it
-> > > > somehow re-use shutdown() stuff? It gets very confusing, and after
-> > > > all, it still is, in essence, a connect() syscall.
-> > >
-> > > The function checks CONNECT permission on entry, before reaching this
-> > > point.  This logic is only in preparation for a further check
-> > > (NAME_CONNECT) on the port.  In this case, there is no further check to
-> > > perform and we can just return.
-> >
-> > I agree with Stephen, in the connect(AF_UNSPEC) case the right thing
-> > to do is to simply return with no error.
->
-> The 'default:' case is catching any address family other than
-> INET{4,6}, but I guess you argument still applies - selinux should not
-> do name check for unknown protocols ?!?
+On Thu, May 09, 2019 at 08:58:00AM -0400, Jason Wang wrote:
+> Vhost log dirty pages directly to a userspace bitmap through GUP and
+> kmap_atomic() since kernel doesn't have a set_bit_to_user()
+> helper. This will cause issues for the arch that has virtually tagged
+> caches. The way to fix is to keep using userspace virtual
+> address. Fortunately, futex has arch_futex_atomic_op_inuser() which
+> could be used for setting a bit to user.
+> 
+> Note:
+> - There're archs (few non popular ones) that don't implement futex
+>   helper, we can't log dirty pages. We can fix them e.g for non
+>   virtually tagged archs implement a kmap fallback on top or simply
+>   disable LOG_ALL features of vhost.
+> - The helper also requires userspace pointer is located at 4-byte
+>   boundary, need to check during dirty log setting
 
-If the code doesn't understand how to parse the port/"name" info it
-can't really do a useful name_connect check, this is why we return
--EAFNOSUPPORT in the default case (or -EINVAL in the case of SCTP).
-However, the connect/AF_UNSPEC case is a bit of a special case and as
-such I probably needs special handling.
+Why check? Round it down.
 
-My initial thinking is that we should do the AF_UNSPEC check
-immediately after the sock_has_perm() check in
-selinux_socket_connect_helper():
+> Cc: Christoph Hellwig <hch@infradead.org>
+> Cc: James Bottomley <James.Bottomley@HansenPartnership.com>
+> Cc: Andrea Arcangeli <aarcange@redhat.com>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Darren Hart <dvhart@infradead.org>
+> Fixes: 3a4d5c94e9593 ("vhost_net: a kernel-level virtio server")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+> Changes from V1:
+> - switch to use arch_futex_atomic_op_inuser()
+> ---
+>  drivers/vhost/vhost.c | 35 +++++++++++++++++------------------
+>  1 file changed, 17 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 351af88..4e5a004 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -31,6 +31,7 @@
+>  #include <linux/sched/signal.h>
+>  #include <linux/interval_tree_generic.h>
+>  #include <linux/nospec.h>
+> +#include <asm/futex.h>
+>  
+>  #include "vhost.h"
+>  
+> @@ -1652,6 +1653,10 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
+>  			r = -EFAULT;
+>  			break;
+>  		}
+> +		if (p & 0x3) {
+> +			r = -EINVAL;
+> +			break;
+> +		}
+>  		for (i = 0; i < d->nvqs; ++i) {
+>  			struct vhost_virtqueue *vq;
+>  			void __user *base = (void __user *)(unsigned long)p;
 
-       err = sock_has_perm(sk, SOCKET__CONNECT);
-       if (err)
-               return err;
-       if (addrlen < offsetofend(struct sockaddr, sa_family))
-               return -EINVAL;
-       if (address->sa_family == AF_UNSPEC)
-               return 0;
+That's an ABI change and might break some userspace. I don't think
+it's necessary: you are changing individual bits anyway.
 
-... we can then remove the addrlen check from inside the TCP/DCCP/SCTP
-if-true block later in the function.  There is the downside the we are
-now adding some additional code that executes for each connect() call
-(as opposed to just TCP/DCCP/SCTP), but this seems much cleaner from a
-conceptual point of view and I expect the overhead to be in the
-"unmeasurable" range.
+> @@ -1692,31 +1697,27 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
+>  }
+>  EXPORT_SYMBOL_GPL(vhost_dev_ioctl);
+>  
+> -/* TODO: This is really inefficient.  We need something like get_user()
+> - * (instruction directly accesses the data, with an exception table entry
+> - * returning -EFAULT). See Documentation/x86/exception-tables.txt.
+> - */
+> -static int set_bit_to_user(int nr, void __user *addr)
+> +static int set_bit_to_user(int nr, u32 __user *addr)
+>  {
+>  	unsigned long log = (unsigned long)addr;
+>  	struct page *page;
+> -	void *base;
+> -	int bit = nr + (log % PAGE_SIZE) * 8;
+> +	u32 old;
+>  	int r;
+>  
+>  	r = get_user_pages_fast(log, 1, 1, &page);
 
-> > I would also suggest that since this patch only touches the SELinux
-> > code it really should go in via the SELinux tree and not netdev; this
-> > will help avoid merge conflicts in the linux-next tree and during the
-> > merge window.  I think the right thing to do at this point is to
-> > create a revert patch (or have DaveM do it, I'm not sure what he
-> > prefers in situations like this) for this commit, make the adjustments
-> > that Stephen mentioned and submit them for the SELinux tree.
->
-> Sorry, my fault, I sent the email to both MLs for more awareness, I
-> should have used a different subject prefix.
+OK so the trick is that page is pinned so you don't expect
+arch_futex_atomic_op_inuser below to fail.  get_user_pages_fast
+guarantees page is not going away but does it guarantee PTE won't be
+invaidated or write protected?
 
-It's not a big deal for patches this small, but since you're going to
-respin this patch anyway I figured it would be worth mentioning.
-Also, I have no object to posting to multiple MLs when appropriate (it
-seems appropriate here); I think the problem here was the "[PATCH
-net]" which caused DaveM to pull it into his tree.
+>  	if (r < 0)
+>  		return r;
+>  	BUG_ON(r != 1);
+> -	base = kmap_atomic(page);
+> -	set_bit(bit, base);
+> -	kunmap_atomic(base);
+> +
+> +	r = arch_futex_atomic_op_inuser(FUTEX_OP_ADD, 1 << nr, &old, addr);
+> +	/* TODO: fallback to kmap() when -ENOSYS? */
+> +
 
-> @DaveM: if it's ok for you, I'll send a revert for this on netdev and
-> I'll send a v2 via the selinux ML, please let me know!
+Add a comment why this won't fail? Maybe warn on EFAULT?
 
--- 
-paul moore
-www.paul-moore.com
+Also down the road a variant that does not need tricks like this is
+still nice to have.
+
+
+>  	set_page_dirty_lock(page);
+>  	put_page(page);
+> -	return 0;
+> +	return r;
+>  }
+>  
+> -static int log_write(void __user *log_base,
+> +static int log_write(u32 __user *log_base,
+>  		     u64 write_address, u64 write_length)
+>  {
+>  	u64 write_page = write_address / VHOST_PAGE_SIZE;
+> @@ -1726,12 +1727,10 @@ static int log_write(void __user *log_base,
+>  		return 0;
+>  	write_length += write_address % VHOST_PAGE_SIZE;
+>  	for (;;) {
+> -		u64 base = (u64)(unsigned long)log_base;
+> -		u64 log = base + write_page / 8;
+> -		int bit = write_page % 8;
+> -		if ((u64)(unsigned long)log != log)
+> -			return -EFAULT;
+> -		r = set_bit_to_user(bit, (void __user *)(unsigned long)log);
+> +		u32 __user *log = log_base + write_page / 32;
+> +		int bit = write_page % 32;
+> +
+> +		r = set_bit_to_user(bit, log);
+>  		if (r < 0)
+>  			return r;
+>  		if (write_length <= VHOST_PAGE_SIZE)
+> -- 
+> 1.8.3.1
