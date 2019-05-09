@@ -2,96 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA0081859A
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 08:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D90AB1859E
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 08:58:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726549AbfEIGzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 02:55:22 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45083 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725908AbfEIGzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 02:55:21 -0400
-Received: by mail-pg1-f194.google.com with SMTP id i21so685283pgi.12
-        for <netdev@vger.kernel.org>; Wed, 08 May 2019 23:55:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7+Ptc7P71SaU+2c/JY/C+wkHNfadoN+CdfTmH7wR304=;
-        b=UAmlfJYwOOOFSn3oOXeK1GAPPFvtlFfZvob9Qmm9VOifOuslSYE6shlq4ok+gOr5n1
-         6+IlpjgDu9OTTVZr2J9ZNI3mQl1Y4FqEnS8ISx/R/0FfHs6Uzq29zo7DP9exYQ2uqjUA
-         qJUa1DKoHxmcqBmpbFEMjDOmIJFkxiQ1LLKmu4DGdqJ/PEoyG3VD7avxB8jrSgpyh8DW
-         JpjUbzrvTknU1UjswWmhGsZqLitJbdGnzEOr9IUmaq1i6j1+mUtRh+b1qPwa8DFrnmaz
-         6/OnWnuckNxafiskm+3hakIiOTs4x8TtQa+hko3tvhPOtADrDSXlkYvfx0ZqTNi6yRO5
-         ILCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7+Ptc7P71SaU+2c/JY/C+wkHNfadoN+CdfTmH7wR304=;
-        b=l2RVJK93ZDyH8yBJUKF9VLSjmOeHcpNOeQtW13RUdQmedbvUCjX6hKv5qEAFzZBOUX
-         nNMyIDzknlpuLM6Hc2KxTONPU50u6S4422OPv5QRLmkZJ5xkFv1xfLcEfChdvm2zVuL2
-         tB33U1lxEOCDlfsL8Z0mTLmUTrqMJAR8KNRUssuTRm2Pu5sgW7xsMvjQm27rB2lauyz5
-         Q2RPtz1g/9/UsWFl6ztQRriUysiFj+aSfMpjM4N8CGUvB1TBEqbkh3UAV6e1ElCCJtUq
-         GXOtuVptbuzKvG9jskUy6ZjR0cGzX7d+Gwr39DxghwcA/+Ni1Q2FKl5YsF6KLtf9243y
-         lDkg==
-X-Gm-Message-State: APjAAAUSjASyPS0OXx7k+WSpiH2SbK7Bajz3DOfvwm3qXZhft+WjDBz8
-        r6ZTwJm+QJtzWTbVeu/n01CtzdyqH4Q=
-X-Google-Smtp-Source: APXvYqwXwlApzrXJrywmJ+2pdcj5Xib3RgHlfP9nVpMu80df1r1bwbkMYogYelTxRhtor1/zHZjgbw==
-X-Received: by 2002:a63:6849:: with SMTP id d70mr3293393pgc.21.1557384921075;
-        Wed, 08 May 2019 23:55:21 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id d15sm3235615pfm.186.2019.05.08.23.55.18
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 08 May 2019 23:55:20 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        David Miller <davem@davemloft.net>,
-        stefan.sorensen@spectralink.com, Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] vlan: disable SIOCSHWTSTAMP in container
-Date:   Thu,  9 May 2019 14:55:07 +0800
-Message-Id: <20190509065507.23991-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        id S1726234AbfEIG6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 02:58:02 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:30719 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725908AbfEIG6C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 02:58:02 -0400
+X-Greylist: delayed 56007 seconds by postgrey-1.27 at vger.kernel.org; Thu, 09 May 2019 02:58:01 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1557385076;
+        s=strato-dkim-0002; d=fpond.eu;
+        h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=lq2ThzZUgIPEzsVkvFwdCcqObMNuFuqm5D1Xn8exSCQ=;
+        b=QuE7J33khPTmrI8Dg4ivF4LKn9QjsSAUQapNAATB3jETqLskdIN4fQrlfNKSOoloM1
+        89mjeodbQJJAwBBBG2whUzrulDN0xB6luHSlmmp3C+vEjRpzmWbIbfrTNhdNVlM5l9nD
+        SVSoHfYQN0FwRFhkUMTqlRh0G3SoDyaVvoUeryd5vUYO+wd6C2MSTp1sypq4OzPgjgA8
+        9iA0L975ahgeR8XvmwVq5mkVLrUq7ZCykM0zZUbupCjMEA0x/daaPJqSVCTUnwPb1awx
+        ONvieSfljx23oBgTLOUty2yqMw5OdZTwoD6c6oMOY6AaNiVaK7+o4pC+EgoS8nd2FBmE
+        B/dw==
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzmt2bYDnKIKaws6YXTsc4="
+X-RZG-CLASS-ID: mo00
+Received: from oxapp01-01.back.ox.d0m.de
+        by smtp-ox.front (RZmta 44.18 AUTH)
+        with ESMTPSA id y08c83v496viVOV
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+        Thu, 9 May 2019 08:57:44 +0200 (CEST)
+Date:   Thu, 9 May 2019 08:57:44 +0200 (CEST)
+From:   Ulrich Hecht <uli@fpond.eu>
+To:     =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc:     Ulrich Hecht <uli+renesas@fpond.eu>,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, wsa@the-dreams.de, horms@verge.net.au,
+        magnus.damm@gmail.com
+Message-ID: <434070244.1141414.1557385064484@webmail.strato.com>
+In-Reply-To: <20190508165219.GA26309@bigcity.dyn.berto.se>
+References: <1557328882-24307-1-git-send-email-uli+renesas@fpond.eu>
+ <1f7be29e-c85a-d63d-c83f-357a76e8ca45@cogentembedded.com>
+ <20190508165219.GA26309@bigcity.dyn.berto.se>
+Subject: Re: [PATCH] ravb: implement MTU change while device is up
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Priority: 3
+Importance: Medium
+X-Mailer: Open-Xchange Mailer v7.8.4-Rev55
+X-Originating-IP: 85.212.120.228
+X-Originating-Client: open-xchange-appsuite
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With NET_ADMIN enabled in container, a normal user could be mapped to
-root and is able to change the real device's rx filter via ioctl on
-vlan, which would affect the other ptp process on host. Fix it by
-disabling SIOCSHWTSTAMP in container.
 
-Fixes: a6111d3c93d0 ("vlan: Pass SIOC[SG]HWTSTAMP ioctls to real device")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- net/8021q/vlan_dev.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> On May 8, 2019 at 6:52 PM Niklas S=C3=B6derlund <niklas.soderlund@ragnate=
+ch.se> wrote:
+>=20
+>=20
+> Hi Sergei,
+>=20
+> On 2019-05-08 18:59:01 +0300, Sergei Shtylyov wrote:
+> > Hello!
+> >=20
+> > On 05/08/2019 06:21 PM, Ulrich Hecht wrote:
+> >=20
+> > > Uses the same method as various other drivers: shut the device down,
+> > > change the MTU, then bring it back up again.
+> > >=20
+> > > Tested on Renesas D3 Draak board.
+> > >=20
+> > > Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+> >=20
+> >    You should have CC'ed me (as an reviewer for the Renesas drivers).
 
-diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-index f044ae56a313..2a9a60733594 100644
---- a/net/8021q/vlan_dev.c
-+++ b/net/8021q/vlan_dev.c
-@@ -370,10 +370,12 @@ static int vlan_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	ifrr.ifr_ifru = ifr->ifr_ifru;
- 
- 	switch (cmd) {
-+	case SIOCSHWTSTAMP:
-+		if (!net_eq(dev_net(dev), &init_net))
-+			break;
- 	case SIOCGMIIPHY:
- 	case SIOCGMIIREG:
- 	case SIOCSMIIREG:
--	case SIOCSHWTSTAMP:
- 	case SIOCGHWTSTAMP:
- 		if (netif_device_present(real_dev) && ops->ndo_do_ioctl)
- 			err = ops->ndo_do_ioctl(real_dev, &ifrr, cmd);
--- 
-2.19.2
+Sorry, will do next time.
 
+> >=20
+> >    How about the code below instead?
+> >=20
+> > =09if (netif_running(ndev))
+> > =09=09ravb_close(ndev);
+> >=20
+> >  =09ndev->mtu =3D new_mtu;
+> > =09netdev_update_features(ndev);
+>=20
+> Is there a need to call netdev_update_features() even if the if is not=20
+> running?
+
+In my testing, it didn't seem so.
+
+CU
+Uli
