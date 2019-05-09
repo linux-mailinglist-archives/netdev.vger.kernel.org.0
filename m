@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ABC718E44
-	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 18:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 469BC18E46
+	for <lists+netdev@lfdr.de>; Thu,  9 May 2019 18:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726784AbfEIQk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 12:40:29 -0400
-Received: from mail.us.es ([193.147.175.20]:35442 "EHLO mail.us.es"
+        id S1726792AbfEIQkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 12:40:32 -0400
+Received: from mail.us.es ([193.147.175.20]:35534 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726187AbfEIQk3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 May 2019 12:40:29 -0400
+        id S1726777AbfEIQkb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 May 2019 12:40:31 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id E7B571D94A1
-        for <netdev@vger.kernel.org>; Thu,  9 May 2019 18:40:20 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id E1DA31D94BB
+        for <netdev@vger.kernel.org>; Thu,  9 May 2019 18:40:23 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CACEFDA715
-        for <netdev@vger.kernel.org>; Thu,  9 May 2019 18:40:20 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id CBACBDA712
+        for <netdev@vger.kernel.org>; Thu,  9 May 2019 18:40:23 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id ADEFADA71A; Thu,  9 May 2019 18:40:20 +0200 (CEST)
+        id BDCB3DA715; Thu,  9 May 2019 18:40:23 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A5835DA707;
-        Thu,  9 May 2019 18:40:15 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B8B1DDA706;
+        Thu,  9 May 2019 18:40:18 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 09 May 2019 18:40:15 +0200 (CEST)
+ Thu, 09 May 2019 18:40:18 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (unknown [31.4.199.18])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id A60784265A32;
-        Thu,  9 May 2019 18:40:13 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPA id 4453D4265A32;
+        Thu,  9 May 2019 18:40:16 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
@@ -52,9 +52,9 @@ Cc:     davem@davemloft.net, netdev@vger.kernel.org,
         Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
         mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
         julia.lawall@lip6.fr, john.fastabend@gmail.com
-Subject: [PATCH net-next,RFC 1/2] net: flow_offload: add flow_block_cb API
-Date:   Thu,  9 May 2019 18:39:50 +0200
-Message-Id: <20190509163954.13703-2-pablo@netfilter.org>
+Subject: [PATCH net-next,RFC 2/2] netfilter: nf_tables: add hardware offload support
+Date:   Thu,  9 May 2019 18:39:51 +0200
+Message-Id: <20190509163954.13703-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190509163954.13703-1-pablo@netfilter.org>
 References: <20190509163954.13703-1-pablo@netfilter.org>
@@ -64,794 +64,932 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch renames:
+This patch adds hardware offload support for nftables through the
+existing netdev_ops->ndo_setup_tc() interface, the TC_SETUP_CLSFLOWER
+classifier and the flow rule API. This hardware offload support is
+available for the NFPROTO_NETDEV family and the ingress hook.
 
-* struct tcf_block_cb to flow_block_cb.
-* struct tc_block_offload to flow_block_offload.
+Each nftables expression has a new ->offload interface, that is used to
+populate the flow rule object that is attached to the transaction
+object.
 
-And it exposes the flow_block_cb API through net/flow_offload.h. This
-renames the existing codebase to adapt it to this name.
+There is a new per-table NFT_TABLE_F_HW flag, that is set on to offload
+an entire table, including all of its chains.
+
+This patch supports for basic metadata (layer 3 and 4 protocol numbers),
+5-tuple payload matching and the accept/drop actions; this also includes
+basechain hardware offload only.
 
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  22 ++--
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c     |  54 ++++----
- drivers/net/ethernet/netronome/nfp/abm/cls.c       |   2 +-
- drivers/net/ethernet/netronome/nfp/abm/main.h      |   2 +-
- .../net/ethernet/netronome/nfp/flower/offload.c    |  18 +--
- include/net/flow_offload.h                         |  48 +++++++
- include/net/pkt_cls.h                              |  40 +-----
- net/core/flow_offload.c                            |  77 ++++++++++++
- net/dsa/slave.c                                    |   2 +-
- net/sched/cls_api.c                                | 140 +++++----------------
- 10 files changed, 207 insertions(+), 198 deletions(-)
+ include/net/netfilter/nf_tables.h         |  13 ++
+ include/net/netfilter/nf_tables_offload.h |  76 +++++++++++
+ include/uapi/linux/netfilter/nf_tables.h  |   2 +
+ net/netfilter/Makefile                    |   2 +-
+ net/netfilter/nf_tables_api.c             |  16 ++-
+ net/netfilter/nf_tables_offload.c         | 216 ++++++++++++++++++++++++++++++
+ net/netfilter/nft_cmp.c                   |  53 ++++++++
+ net/netfilter/nft_immediate.c             |  31 +++++
+ net/netfilter/nft_meta.c                  |  27 ++++
+ net/netfilter/nft_payload.c               | 187 ++++++++++++++++++++++++++
+ 10 files changed, 620 insertions(+), 3 deletions(-)
+ create mode 100644 include/net/netfilter/nf_tables_offload.h
+ create mode 100644 net/netfilter/nf_tables_offload.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 897ca33496ad..e84d17fa5dce 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -708,10 +708,10 @@ static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
- static int
- mlx5e_rep_indr_setup_tc_block(struct net_device *netdev,
- 			      struct mlx5e_rep_priv *rpriv,
--			      struct tc_block_offload *f)
-+			      struct flow_block_offload *f)
- {
- 	struct mlx5e_rep_indr_block_priv *indr_priv;
--	struct tcf_block_cb *block_cb;
-+	struct flow_block_cb *block_cb;
- 
- 	if (f->binder_type != TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
- 		return -EOPNOTSUPP;
-@@ -731,15 +731,15 @@ mlx5e_rep_indr_setup_tc_block(struct net_device *netdev,
- 		list_add(&indr_priv->list,
- 			 &rpriv->uplink_priv.tc_indr_block_priv_list);
- 
--		block_cb = tcf_block_cb_alloc(f->block_index,
--					      mlx5e_rep_indr_setup_block_cb,
--					      indr_priv, indr_priv,
--					      mlx5e_rep_indr_tc_block_unbind);
-+		block_cb = flow_block_cb_alloc(f->block_index,
-+					       mlx5e_rep_indr_setup_block_cb,
-+					       indr_priv, indr_priv,
-+					       mlx5e_rep_indr_tc_block_unbind);
- 		if (!block_cb) {
- 			list_del(&indr_priv->list);
- 			kfree(indr_priv);
- 		}
--		tcf_block_cb_add(block_cb, f);
-+		flow_block_cb_add(block_cb, f);
- 
- 		return 0;
- 	case TC_BLOCK_UNBIND:
-@@ -747,13 +747,13 @@ mlx5e_rep_indr_setup_tc_block(struct net_device *netdev,
- 		if (!indr_priv)
- 			return -ENOENT;
- 
--		block_cb = tcf_block_cb_lookup(f->block_index,
--					       mlx5e_rep_indr_setup_block_cb,
--					       indr_priv);
-+		block_cb = flow_block_cb_lookup(f->block_index,
-+						mlx5e_rep_indr_setup_block_cb,
-+						indr_priv);
- 		if (!block_cb)
- 			return -ENOENT;
- 
--		tcf_block_cb_remove(block_cb, f);
-+		flow_block_cb_remove(block_cb, f);
- 		return 0;
- 	default:
- 		return -EOPNOTSUPP;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index c5d483b01261..735d6cc56fb3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -1523,22 +1523,22 @@ static void mlxsw_sp_tc_block_flower_release(void *cb_priv)
- 
- static int
- mlxsw_sp_setup_tc_block_flower_bind(struct mlxsw_sp_port *mlxsw_sp_port,
--			            struct tc_block_offload *f, bool ingress)
-+			            struct flow_block_offload *f, bool ingress)
- {
- 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
- 	struct net *net = dev_net(mlxsw_sp_port->dev);
- 	struct mlxsw_sp_acl_block *acl_block;
--	struct tcf_block_cb *block_cb;
-+	struct flow_block_cb *block_cb;
- 	int err;
- 
--	block_cb = tcf_block_cb_lookup(f->block_index,
--				       mlxsw_sp_setup_tc_block_cb_flower,
--				       mlxsw_sp);
-+	block_cb = flow_block_cb_lookup(f->block_index,
-+					mlxsw_sp_setup_tc_block_cb_flower,
-+					mlxsw_sp);
- 	if (!block_cb) {
- 		acl_block = mlxsw_sp_acl_block_create(mlxsw_sp, net);
- 		if (!acl_block)
- 			return -ENOMEM;
--		block_cb = tcf_block_cb_alloc(f->block_index,
-+		block_cb = flow_block_cb_alloc(f->block_index,
- 					      mlxsw_sp_setup_tc_block_cb_flower,
- 					      mlxsw_sp, acl_block,
- 					      mlxsw_sp_tc_block_flower_release);
-@@ -1548,9 +1548,9 @@ mlxsw_sp_setup_tc_block_flower_bind(struct mlxsw_sp_port *mlxsw_sp_port,
- 			goto err_cb_register;
- 		}
- 	} else {
--		acl_block = tcf_block_cb_priv(block_cb);
-+		acl_block = flow_block_cb_priv(block_cb);
- 	}
--	tcf_block_cb_incref(block_cb);
-+	flow_block_cb_incref(block_cb);
- 	err = mlxsw_sp_acl_block_bind(mlxsw_sp, acl_block,
- 				      mlxsw_sp_port, ingress);
- 	if (err)
-@@ -1561,26 +1561,27 @@ mlxsw_sp_setup_tc_block_flower_bind(struct mlxsw_sp_port *mlxsw_sp_port,
- 	else
- 		mlxsw_sp_port->eg_acl_block = acl_block;
- 
--	tcf_block_cb_add(block_cb, f);
-+	flow_block_cb_add(block_cb, f);
- 	return 0;
- 
- err_block_bind:
--	if (!tcf_block_cb_decref(block_cb))
--		tcf_block_cb_free(block_cb);
-+	if (!flow_block_cb_decref(block_cb))
-+		flow_block_cb_free(block_cb);
- err_cb_register:
- 	return err;
- }
- 
- static void
- mlxsw_sp_setup_tc_block_flower_unbind(struct mlxsw_sp_port *mlxsw_sp_port,
--				      struct tc_block_offload *f, bool ingress)
-+				      struct flow_block_offload *f,
-+				      bool ingress)
- {
- 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
- 	struct mlxsw_sp_acl_block *acl_block;
--	struct tcf_block_cb *block_cb;
-+	struct flow_block_cb *block_cb;
- 	int err;
- 
--	block_cb = tcf_block_cb_lookup(f->block_index,
-+	block_cb = flow_block_cb_lookup(f->block_index,
- 				       mlxsw_sp_setup_tc_block_cb_flower,
- 				       mlxsw_sp);
- 	if (!block_cb)
-@@ -1591,17 +1592,17 @@ mlxsw_sp_setup_tc_block_flower_unbind(struct mlxsw_sp_port *mlxsw_sp_port,
- 	else
- 		mlxsw_sp_port->eg_acl_block = NULL;
- 
--	acl_block = tcf_block_cb_priv(block_cb);
-+	acl_block = flow_block_cb_priv(block_cb);
- 	err = mlxsw_sp_acl_block_unbind(mlxsw_sp, acl_block,
- 					mlxsw_sp_port, ingress);
--	if (!err && !tcf_block_cb_decref(block_cb))
--		tcf_block_cb_remove(block_cb, f);
-+	if (!err && !flow_block_cb_decref(block_cb))
-+		flow_block_cb_remove(block_cb, f);
- }
- 
- static int mlxsw_sp_setup_tc_block(struct mlxsw_sp_port *mlxsw_sp_port,
--				   struct tc_block_offload *f)
-+				   struct flow_block_offload *f)
- {
--	struct tcf_block_cb *block_cb;
-+	struct flow_block_cb *block_cb;
- 	tc_setup_cb_t *cb;
- 	bool ingress;
- 	int err;
-@@ -1618,27 +1619,28 @@ static int mlxsw_sp_setup_tc_block(struct mlxsw_sp_port *mlxsw_sp_port,
- 
- 	switch (f->command) {
- 	case TC_BLOCK_BIND:
--		block_cb = tcf_block_cb_alloc(f->block_index, cb, mlxsw_sp_port,
--					 mlxsw_sp_port, NULL);
-+		block_cb = flow_block_cb_alloc(f->block_index, cb,
-+					       mlxsw_sp_port, mlxsw_sp_port,
-+					       NULL);
- 		if (!block_cb)
- 			return -ENOMEM;
- 		err = mlxsw_sp_setup_tc_block_flower_bind(mlxsw_sp_port, f,
- 							  ingress);
- 		if (err) {
--			tcf_block_cb_free(block_cb);
-+			flow_block_cb_free(block_cb);
- 			return err;
- 		}
--		tcf_block_cb_add(block_cb, f);
-+		flow_block_cb_add(block_cb, f);
- 		return 0;
- 	case TC_BLOCK_UNBIND:
- 		mlxsw_sp_setup_tc_block_flower_unbind(mlxsw_sp_port,
- 						      f, ingress);
--		block_cb = tcf_block_cb_lookup(f->block_index, cb,
--					       mlxsw_sp_port);
-+		block_cb = flow_block_cb_lookup(f->block_index, cb,
-+						mlxsw_sp_port);
- 		if (!block_cb)
- 			return -ENOENT;
- 
--		tcf_block_cb_remove(block_cb, f);
-+		flow_block_cb_remove(block_cb, f);
- 		return 0;
- 	default:
- 		return -EOPNOTSUPP;
-diff --git a/drivers/net/ethernet/netronome/nfp/abm/cls.c b/drivers/net/ethernet/netronome/nfp/abm/cls.c
-index 371b800df878..66d46bc616b3 100644
---- a/drivers/net/ethernet/netronome/nfp/abm/cls.c
-+++ b/drivers/net/ethernet/netronome/nfp/abm/cls.c
-@@ -263,7 +263,7 @@ static int nfp_abm_setup_tc_block_cb(enum tc_setup_type type,
- }
- 
- int nfp_abm_setup_cls_block(struct net_device *netdev, struct nfp_repr *repr,
--			    struct tc_block_offload *f)
-+			    struct flow_block_offload *f)
- {
- 	return tcf_setup_block_offload(f, nfp_abm_setup_tc_block_cb, repr, repr,
- 				       true);
-diff --git a/drivers/net/ethernet/netronome/nfp/abm/main.h b/drivers/net/ethernet/netronome/nfp/abm/main.h
-index 49749c60885e..48746c9c6224 100644
---- a/drivers/net/ethernet/netronome/nfp/abm/main.h
-+++ b/drivers/net/ethernet/netronome/nfp/abm/main.h
-@@ -247,7 +247,7 @@ int nfp_abm_setup_tc_mq(struct net_device *netdev, struct nfp_abm_link *alink,
- int nfp_abm_setup_tc_gred(struct net_device *netdev, struct nfp_abm_link *alink,
- 			  struct tc_gred_qopt_offload *opt);
- int nfp_abm_setup_cls_block(struct net_device *netdev, struct nfp_repr *repr,
--			    struct tc_block_offload *opt);
-+			    struct flow_block_offload *opt);
- 
- int nfp_abm_ctrl_read_params(struct nfp_abm_link *alink);
- int nfp_abm_ctrl_find_addrs(struct nfp_abm *abm);
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 4bdfb48c4a3a..a91138ec7175 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -1256,11 +1256,11 @@ static void nfp_flower_setup_indr_tc_release(void *cb_priv)
- 
- static int
- nfp_flower_setup_indr_tc_block(struct net_device *netdev, struct nfp_app *app,
--			       struct tc_block_offload *f)
-+			       struct flow_block_offload *f)
- {
- 	struct nfp_flower_indr_block_cb_priv *cb_priv;
- 	struct nfp_flower_priv *priv = app->priv;
--	struct tcf_block_cb *block_cb;
-+	struct flow_block_cb *block_cb;
- 
- 	if (f->binder_type != TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS &&
- 	    !(f->binder_type == TCF_BLOCK_BINDER_TYPE_CLSACT_EGRESS &&
-@@ -1277,29 +1277,29 @@ nfp_flower_setup_indr_tc_block(struct net_device *netdev, struct nfp_app *app,
- 		cb_priv->app = app;
- 		list_add(&cb_priv->list, &priv->indr_block_cb_priv);
- 
--		block_cb = tcf_block_cb_alloc(f->block_index,
--					      nfp_flower_setup_indr_block_cb,
--					      cb_priv, cb_priv,
--					      nfp_flower_setup_indr_tc_release);
-+		block_cb = flow_block_cb_alloc(f->block_index,
-+					       nfp_flower_setup_indr_block_cb,
-+					       cb_priv, cb_priv,
-+					       nfp_flower_setup_indr_tc_release);
- 		if (!block_cb) {
- 			list_del(&cb_priv->list);
- 			kfree(cb_priv);
- 		}
- 
--		tcf_block_cb_add(block_cb, f);
-+		flow_block_cb_add(block_cb, f);
- 		return 0;
- 	case TC_BLOCK_UNBIND:
- 		cb_priv = nfp_flower_indr_block_cb_priv_lookup(app, netdev);
- 		if (!cb_priv)
- 			return -ENOENT;
- 
--		block_cb = tcf_block_cb_lookup(f->block_index,
-+		block_cb = flow_block_cb_lookup(f->block_index,
- 					       nfp_flower_setup_indr_block_cb,
- 					       cb_priv);
- 		if (!block_cb)
- 			return -ENOENT;
- 
--		tcf_block_cb_remove(block_cb, f);
-+		flow_block_cb_remove(block_cb, f);
- 		return 0;
- 	default:
- 		return -EOPNOTSUPP;
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index d035183c8d03..3136992b11fe 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -200,4 +200,52 @@ static inline void flow_stats_update(struct flow_stats *flow_stats,
- 	flow_stats->lastused	= max_t(u64, flow_stats->lastused, lastused);
- }
- 
-+#include <net/sch_generic.h> /* for tc_setup_cb_t. */
-+
-+enum flow_block_command {
-+	TC_BLOCK_BIND,
-+	TC_BLOCK_UNBIND,
-+};
-+
-+enum flow_block_binder_type {
-+	TCF_BLOCK_BINDER_TYPE_UNSPEC,
-+	TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS,
-+	TCF_BLOCK_BINDER_TYPE_CLSACT_EGRESS,
-+};
-+
-+struct flow_block_offload {
-+	enum flow_block_command command;
-+	enum flow_block_binder_type binder_type;
-+	struct list_head cb_list;
-+	u32 block_index;
-+	struct netlink_ext_ack *extack;
-+};
-+
-+struct flow_block_cb {
-+	struct list_head global_list;
-+	struct list_head list;
-+	tc_setup_cb_t *cb;
-+	void (*release)(void *cb_priv);
-+	void *cb_ident;
-+	void *cb_priv;
-+	u32 block_index;
-+	unsigned int refcnt;
-+};
-+
-+struct flow_block_cb *flow_block_cb_alloc(u32 block_index, tc_setup_cb_t *cb,
-+					  void *cb_ident, void *cb_priv,
-+					  void (*release)(void *cb_priv));
-+void flow_block_cb_free(struct flow_block_cb *block_cb);
-+void *flow_block_cb_priv(struct flow_block_cb *block_cb);
-+struct flow_block_cb *flow_block_cb_lookup(u32 block_index, tc_setup_cb_t *cb,
-+					   void *cb_ident);
-+void flow_block_cb_incref(struct flow_block_cb *block_cb);
-+unsigned int flow_block_cb_decref(struct flow_block_cb *block_cb);
-+void flow_block_cb_add(struct flow_block_cb *block_cb,
-+		       struct flow_block_offload *offload);
-+void flow_block_cb_remove(struct flow_block_cb *block_cb,
-+			  struct flow_block_offload *offload);
-+
-+extern struct list_head flow_block_cb_list;
-+
- #endif /* _NET_FLOW_OFFLOAD_H */
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 097659b61a93..1d952bd30c38 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -25,14 +25,8 @@ struct tcf_walker {
- int register_tcf_proto_ops(struct tcf_proto_ops *ops);
- int unregister_tcf_proto_ops(struct tcf_proto_ops *ops);
- 
--enum tcf_block_binder_type {
--	TCF_BLOCK_BINDER_TYPE_UNSPEC,
--	TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS,
--	TCF_BLOCK_BINDER_TYPE_CLSACT_EGRESS,
--};
--
- struct tcf_block_ext_info {
--	enum tcf_block_binder_type binder_type;
-+	enum flow_block_binder_type binder_type;
- 	tcf_chain_head_change_t *chain_head_change;
- 	void *chain_head_change_priv;
- 	u32 block_index;
-@@ -71,23 +65,6 @@ static inline struct Qdisc *tcf_block_q(struct tcf_block *block)
- 	return block->q;
- }
- 
--struct tcf_block_cb *tcf_block_cb_alloc(u32 block_index, tc_setup_cb_t *cb,
--					void *cb_ident, void *cb_priv,
--					void (*release)(void *cb_priv));
--void tcf_block_cb_free(struct tcf_block_cb *block_cb);
--
--struct tc_block_offload;
--void tcf_block_cb_add(struct tcf_block_cb *block_cb,
--		      struct tc_block_offload *offload);
--void tcf_block_cb_remove(struct tcf_block_cb *block_cb,
--			 struct tc_block_offload *offload);
--
--void *tcf_block_cb_priv(struct tcf_block_cb *block_cb);
--struct tcf_block_cb *tcf_block_cb_lookup(u32 block_index, tc_setup_cb_t *cb,
--					 void *cb_ident);
--void tcf_block_cb_incref(struct tcf_block_cb *block_cb);
--unsigned int tcf_block_cb_decref(struct tcf_block_cb *block_cb);
--
- int __tc_indr_block_cb_register(struct net_device *dev, void *cb_priv,
- 				tc_indr_block_bind_cb_t *cb, void *cb_ident);
- int tc_indr_block_cb_register(struct net_device *dev, void *cb_priv,
-@@ -633,20 +610,9 @@ int tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
- 		     void *type_data, bool err_stop);
- unsigned int tcf_exts_num_actions(struct tcf_exts *exts);
- 
--enum tc_block_command {
--	TC_BLOCK_BIND,
--	TC_BLOCK_UNBIND,
--};
--
--struct tc_block_offload {
--	enum tc_block_command command;
--	enum tcf_block_binder_type binder_type;
--	struct list_head cb_list;
--	u32 block_index;
--	struct netlink_ext_ack *extack;
--};
-+struct flow_block_offload;
- 
--int tcf_setup_block_offload(struct tc_block_offload *f, tc_setup_cb_t *cb,
-+int tcf_setup_block_offload(struct flow_block_offload *f, tc_setup_cb_t *cb,
- 			    void *cb_ident, void *cb_priv, bool ingress_only);
- 
- struct tc_cls_common_offload {
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index c3a00eac4804..63fa0b470227 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -151,3 +151,80 @@ void flow_rule_match_enc_opts(const struct flow_rule *rule,
- 	FLOW_DISSECTOR_MATCH(rule, FLOW_DISSECTOR_KEY_ENC_OPTS, out);
- }
- EXPORT_SYMBOL(flow_rule_match_enc_opts);
-+
-+void *flow_block_cb_priv(struct flow_block_cb *block_cb)
-+{
-+	return block_cb->cb_priv;
-+}
-+EXPORT_SYMBOL(flow_block_cb_priv);
-+
-+LIST_HEAD(flow_block_cb_list);
-+EXPORT_SYMBOL(flow_block_cb_list);
-+
-+struct flow_block_cb *flow_block_cb_lookup(u32 block_index, tc_setup_cb_t *cb,
-+					   void *cb_ident)
-+{	struct flow_block_cb *block_cb;
-+
-+	list_for_each_entry(block_cb, &flow_block_cb_list, list)
-+		if (block_cb->block_index == block_index &&
-+		    block_cb->cb == cb &&
-+		    block_cb->cb_ident == cb_ident)
-+			return block_cb;
-+	return NULL;
-+}
-+EXPORT_SYMBOL(flow_block_cb_lookup);
-+
-+void flow_block_cb_incref(struct flow_block_cb *block_cb)
-+{
-+	block_cb->refcnt++;
-+}
-+EXPORT_SYMBOL(flow_block_cb_incref);
-+
-+unsigned int flow_block_cb_decref(struct flow_block_cb *block_cb)
-+{
-+	return --block_cb->refcnt;
-+}
-+EXPORT_SYMBOL(flow_block_cb_decref);
-+
-+struct flow_block_cb *flow_block_cb_alloc(u32 block_index, tc_setup_cb_t *cb,
-+					  void *cb_ident, void *cb_priv,
-+					  void (*release)(void *cb_priv))
-+{
-+	struct flow_block_cb *block_cb;
-+
-+	block_cb = kzalloc(sizeof(*block_cb), GFP_KERNEL);
-+	if (!block_cb)
-+		return NULL;
-+
-+	block_cb->cb = cb;
-+	block_cb->cb_ident = cb_ident;
-+	block_cb->release = release;
-+	block_cb->cb_priv = cb_priv;
-+	block_cb->block_index = block_index;
-+
-+	return block_cb;
-+}
-+EXPORT_SYMBOL(flow_block_cb_alloc);
-+
-+void flow_block_cb_free(struct flow_block_cb *block_cb)
-+{
-+	if (block_cb->release)
-+		block_cb->release(block_cb->cb_priv);
-+
-+	kfree(block_cb);
-+}
-+EXPORT_SYMBOL(flow_block_cb_free);
-+
-+void flow_block_cb_add(struct flow_block_cb *block_cb,
-+		       struct flow_block_offload *offload)
-+{
-+	list_add(&block_cb->global_list, &offload->cb_list);
-+}
-+EXPORT_SYMBOL(flow_block_cb_add);
-+
-+void flow_block_cb_remove(struct flow_block_cb *block_cb,
-+			  struct flow_block_offload *offload)
-+{
-+	list_move(&block_cb->global_list, &offload->cb_list);
-+}
-+EXPORT_SYMBOL(flow_block_cb_remove);
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 9df447c68493..68a548744399 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -900,7 +900,7 @@ static int dsa_slave_setup_tc_block_cb_eg(enum tc_setup_type type,
- }
- 
- static int dsa_slave_setup_tc_block(struct net_device *dev,
--				    struct tc_block_offload *f)
-+				    struct flow_block_offload *f)
- {
- 	struct tcf_block_cb *block_cb;
- 	tc_setup_cb_t *cb;
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index a54c8aa608d8..391a977f0332 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -31,6 +31,7 @@
- #include <net/netlink.h>
- #include <net/pkt_sched.h>
- #include <net/pkt_cls.h>
-+#include <net/flow_offload.h>
- #include <net/tc_act/tc_pedit.h>
- #include <net/tc_act/tc_mirred.h>
- #include <net/tc_act/tc_vlan.h>
-@@ -712,96 +713,10 @@ static bool tcf_block_offload_in_use(struct tcf_block *block)
- 	return block->offloadcnt;
- }
- 
--struct tcf_block_cb {
--	struct list_head global_list;
--	struct list_head list;
--	tc_setup_cb_t *cb;
--	void (*release)(void *cb_priv);
--	void *cb_ident;
--	void *cb_priv;
--	u32 block_index;
--	unsigned int refcnt;
--};
--
--void *tcf_block_cb_priv(struct tcf_block_cb *block_cb)
--{
--	return block_cb->cb_priv;
--}
--EXPORT_SYMBOL(tcf_block_cb_priv);
--
--static LIST_HEAD(tcf_block_cb_list);
--
--struct tcf_block_cb *tcf_block_cb_lookup(u32 block_index, tc_setup_cb_t *cb,
--					 void *cb_ident)
--{	struct tcf_block_cb *block_cb;
--
--	list_for_each_entry(block_cb, &tcf_block_cb_list, list)
--		if (block_cb->block_index == block_index &&
--		    block_cb->cb == cb &&
--		    block_cb->cb_ident == cb_ident)
--			return block_cb;
--	return NULL;
--}
--EXPORT_SYMBOL(tcf_block_cb_lookup);
--
--void tcf_block_cb_incref(struct tcf_block_cb *block_cb)
--{
--	block_cb->refcnt++;
--}
--EXPORT_SYMBOL(tcf_block_cb_incref);
--
--unsigned int tcf_block_cb_decref(struct tcf_block_cb *block_cb)
--{
--	return --block_cb->refcnt;
--}
--EXPORT_SYMBOL(tcf_block_cb_decref);
--
--struct tcf_block_cb *tcf_block_cb_alloc(u32 block_index, tc_setup_cb_t *cb,
--					void *cb_ident, void *cb_priv,
--					void (*release)(void *cb_priv))
--{
--	struct tcf_block_cb *block_cb;
--
--	block_cb = kzalloc(sizeof(*block_cb), GFP_KERNEL);
--	if (!block_cb)
--		return NULL;
--
--	block_cb->cb = cb;
--	block_cb->cb_ident = cb_ident;
--	block_cb->release = release;
--	block_cb->cb_priv = cb_priv;
--	block_cb->block_index = block_index;
--
--	return block_cb;
--}
--EXPORT_SYMBOL(tcf_block_cb_alloc);
--
--void tcf_block_cb_free(struct tcf_block_cb *block_cb)
--{
--	if (block_cb->release)
--		block_cb->release(block_cb->cb_priv);
--
--	kfree(block_cb);
--}
--EXPORT_SYMBOL(tcf_block_cb_free);
--
--void tcf_block_cb_add(struct tcf_block_cb *block_cb,
--		      struct tc_block_offload *offload)
--{
--	list_add(&block_cb->global_list, &offload->cb_list);
--}
--EXPORT_SYMBOL(tcf_block_cb_add);
--
--void tcf_block_cb_remove(struct tcf_block_cb *block_cb,
--			 struct tc_block_offload *offload)
--{
--	list_move(&block_cb->global_list, &offload->cb_list);
--}
--EXPORT_SYMBOL(tcf_block_cb_remove);
--
--static int tcf_block_bind(struct tcf_block *block, struct tc_block_offload *bo)
-+static int tcf_block_bind(struct tcf_block *block,
-+			  struct flow_block_offload *bo)
- {
--	struct tcf_block_cb *block_cb, *failed_cb;
-+	struct flow_block_cb *block_cb, *failed_cb;
- 	int err, i = 0;
- 
- 	list_for_each_entry(block_cb, &bo->cb_list, global_list) {
-@@ -816,7 +731,7 @@ static int tcf_block_bind(struct tcf_block *block, struct tc_block_offload *bo)
- 		list_add(&block_cb->list, &block->cb_list);
- 		i++;
- 	}
--	list_splice(&bo->cb_list, &tcf_block_cb_list);
-+	list_splice(&bo->cb_list, &flow_block_cb_list);
- 
- 	return 0;
- 
-@@ -836,9 +751,9 @@ static int tcf_block_bind(struct tcf_block *block, struct tc_block_offload *bo)
- }
- 
- static void tcf_block_unbind(struct tcf_block *block,
--			     struct tc_block_offload *bo)
-+			     struct flow_block_offload *bo)
- {
--	struct tcf_block_cb *block_cb, *next;
-+	struct flow_block_cb *block_cb, *next;
- 
- 	list_for_each_entry_safe(block_cb, next, &bo->cb_list, global_list) {
- 		list_del(&block_cb->global_list);
-@@ -847,11 +762,12 @@ static void tcf_block_unbind(struct tcf_block *block,
- 					    tcf_block_offload_in_use(block),
- 					    NULL);
- 		list_del(&block_cb->list);
--		tcf_block_cb_free(block_cb);
-+		flow_block_cb_free(block_cb);
- 	}
- }
- 
--static int tcf_block_setup(struct tcf_block *block, struct tc_block_offload *bo)
-+static int tcf_block_setup(struct tcf_block *block,
-+			   struct flow_block_offload *bo)
- {
- 	int err;
- 
-@@ -871,10 +787,10 @@ static int tcf_block_setup(struct tcf_block *block, struct tc_block_offload *bo)
- 	return err;
- }
- 
--int tcf_setup_block_offload(struct tc_block_offload *f, tc_setup_cb_t *cb,
-+int tcf_setup_block_offload(struct flow_block_offload *f, tc_setup_cb_t *cb,
- 			    void *cb_ident, void *cb_priv, bool ingress_only)
- {
--	struct tcf_block_cb *block_cb;
-+	struct flow_block_cb *block_cb;
- 
- 	if (ingress_only &&
- 	    f->binder_type != TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
-@@ -882,19 +798,19 @@ int tcf_setup_block_offload(struct tc_block_offload *f, tc_setup_cb_t *cb,
- 
- 	switch (f->command) {
- 	case TC_BLOCK_BIND:
--		block_cb = tcf_block_cb_alloc(f->block_index, cb, cb_ident,
--					      cb_priv, NULL);
-+		block_cb = flow_block_cb_alloc(f->block_index, cb, cb_ident,
-+					       cb_priv, NULL);
- 		if (!block_cb)
- 			return -ENOMEM;
- 
--		tcf_block_cb_add(block_cb, f);
-+		flow_block_cb_add(block_cb, f);
- 		return 0;
- 	case TC_BLOCK_UNBIND:
--		block_cb = tcf_block_cb_lookup(f->block_index, cb, cb_ident);
-+		block_cb = flow_block_cb_lookup(f->block_index, cb, cb_ident);
- 		if (!block_cb)
- 			return -ENOENT;
- 
--		tcf_block_cb_remove(block_cb, f);
-+		flow_block_cb_remove(block_cb, f);
- 		return 0;
- 	default:
- 		return -EOPNOTSUPP;
-@@ -1011,9 +927,9 @@ static void tc_indr_block_cb_del(struct tc_indr_block_cb *indr_block_cb)
- 
- static void tc_indr_block_ing_cmd(struct tc_indr_block_dev *indr_dev,
- 				  struct tc_indr_block_cb *indr_block_cb,
--				  enum tc_block_command command)
-+				  enum flow_block_command command)
- {
--	struct tc_block_offload bo = {
-+	struct flow_block_offload bo = {
- 		.command	= command,
- 		.binder_type	= TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS,
- 		.block_index	= indr_dev->block->index,
-@@ -1098,12 +1014,12 @@ EXPORT_SYMBOL_GPL(tc_indr_block_cb_unregister);
- 
- static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
- 			       struct tcf_block_ext_info *ei,
--			       enum tc_block_command command,
-+			       enum flow_block_command command,
- 			       struct netlink_ext_ack *extack)
- {
- 	struct tc_indr_block_cb *indr_block_cb;
- 	struct tc_indr_block_dev *indr_dev;
--	struct tc_block_offload bo = {
-+	struct flow_block_offload bo = {
- 		.command	= command,
- 		.binder_type	= ei->binder_type,
- 		.block_index	= block->index,
-@@ -1127,10 +1043,10 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
- static int tcf_block_offload_cmd(struct tcf_block *block,
- 				 struct net_device *dev,
- 				 struct tcf_block_ext_info *ei,
--				 enum tc_block_command command,
-+				 enum flow_block_command command,
- 				 struct netlink_ext_ack *extack)
- {
--	struct tc_block_offload bo = {};
-+	struct flow_block_offload bo = {};
- 	int err;
- 
- 	bo.command = command;
-@@ -1586,13 +1502,13 @@ static void tcf_block_release(struct Qdisc *q, struct tcf_block *block,
- struct tcf_block_owner_item {
- 	struct list_head list;
- 	struct Qdisc *q;
--	enum tcf_block_binder_type binder_type;
-+	enum flow_block_binder_type binder_type;
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index 2d5a0a1a87b8..8627b5805286 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -160,6 +160,7 @@ struct nft_ctx {
+ 	const struct nlattr * const 	*nla;
+ 	u32				portid;
+ 	u32				seq;
++	u16				flags;
+ 	u8				family;
+ 	u8				level;
+ 	bool				report;
+@@ -734,6 +735,9 @@ enum nft_trans_phase {
+ 	NFT_TRANS_RELEASE
  };
  
- static void
- tcf_block_owner_netif_keep_dst(struct tcf_block *block,
- 			       struct Qdisc *q,
--			       enum tcf_block_binder_type binder_type)
-+			       enum flow_block_binder_type binder_type)
- {
- 	if (block->keep_dst &&
- 	    binder_type != TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS &&
-@@ -1613,7 +1529,7 @@ EXPORT_SYMBOL(tcf_block_netif_keep_dst);
++struct nft_flow_rule;
++struct nft_offload_ctx;
++
+ /**
+  *	struct nft_expr_ops - nf_tables expression operations
+  *
+@@ -776,6 +780,10 @@ struct nft_expr_ops {
+ 						    const struct nft_data **data);
+ 	bool				(*gc)(struct net *net,
+ 					      const struct nft_expr *expr);
++	int				(*offload)(struct nft_offload_ctx *ctx,
++						   struct nft_flow_rule *flow,
++						   const struct nft_expr *expr);
++	u32				offload_flags;
+ 	const struct nft_expr_type	*type;
+ 	void				*data;
+ };
+@@ -958,6 +966,7 @@ struct nft_stats {
+  *	@stats: per-cpu chain stats
+  *	@chain: the chain
+  *	@dev_name: device name that this base chain is attached to (if any)
++ *	@cb_list: list of flow block callbacks (for hardware offload)
+  */
+ struct nft_base_chain {
+ 	struct nf_hook_ops		ops;
+@@ -967,6 +976,7 @@ struct nft_base_chain {
+ 	struct nft_stats __percpu	*stats;
+ 	struct nft_chain		chain;
+ 	char 				dev_name[IFNAMSIZ];
++	struct list_head		cb_list;
+ };
  
- static int tcf_block_owner_add(struct tcf_block *block,
- 			       struct Qdisc *q,
--			       enum tcf_block_binder_type binder_type)
-+			       enum flow_block_binder_type binder_type)
- {
- 	struct tcf_block_owner_item *item;
+ static inline struct nft_base_chain *nft_base_chain(const struct nft_chain *chain)
+@@ -1338,11 +1348,14 @@ struct nft_trans {
  
-@@ -1628,7 +1544,7 @@ static int tcf_block_owner_add(struct tcf_block *block,
+ struct nft_trans_rule {
+ 	struct nft_rule			*rule;
++	struct nft_flow_rule		*flow;
+ 	u32				rule_id;
+ };
  
- static void tcf_block_owner_del(struct tcf_block *block,
- 				struct Qdisc *q,
--				enum tcf_block_binder_type binder_type)
-+				enum flow_block_binder_type binder_type)
- {
- 	struct tcf_block_owner_item *item;
+ #define nft_trans_rule(trans)	\
+ 	(((struct nft_trans_rule *)trans->data)->rule)
++#define nft_trans_flow_rule(trans)	\
++	(((struct nft_trans_rule *)trans->data)->flow)
+ #define nft_trans_rule_id(trans)	\
+ 	(((struct nft_trans_rule *)trans->data)->rule_id)
  
-@@ -3258,7 +3174,7 @@ EXPORT_SYMBOL(tcf_exts_dump_stats);
- int tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
- 		     void *type_data, bool err_stop)
- {
--	struct tcf_block_cb *block_cb;
+diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
+new file mode 100644
+index 000000000000..3196663a10e3
+--- /dev/null
++++ b/include/net/netfilter/nf_tables_offload.h
+@@ -0,0 +1,76 @@
++#ifndef _NET_NF_TABLES_OFFLOAD_H
++#define _NET_NF_TABLES_OFFLOAD_H
++
++#include <net/flow_offload.h>
++#include <net/netfilter/nf_tables.h>
++
++struct nft_offload_reg {
++	u32		key;
++	u32		len;
++	u32		base_offset;
++	u32		offset;
++	struct nft_data	mask;
++};
++
++enum nft_offload_dep_type {
++	NFT_OFFLOAD_DEP_UNSPEC	= 0,
++	NFT_OFFLOAD_DEP_NETWORK,
++	NFT_OFFLOAD_DEP_TRANSPORT,
++};
++
++struct nft_offload_ctx {
++	struct {
++		enum nft_offload_dep_type	type;
++		__be16				l3num;
++		u8				protonum;
++	} dep;
++	unsigned int				num_actions;
++	struct nft_offload_reg			regs[NFT_REG32_15 + 1];
++};
++
++void nft_offload_set_dependency(struct nft_offload_ctx *ctx,
++				enum nft_offload_dep_type type);
++void nft_offload_update_dependency(struct nft_offload_ctx *ctx,
++				   const void *data, u32 len);
++
++struct nft_flow_key {
++	struct flow_dissector_key_basic			basic;
++	union {
++		struct flow_dissector_key_ipv4_addrs	ipv4;
++		struct flow_dissector_key_ipv6_addrs	ipv6;
++	};
++	struct flow_dissector_key_ports			tp;
++	struct flow_dissector_key_ip			ip;
++	struct flow_dissector_key_vlan			vlan;
++	struct flow_dissector_key_eth_addrs		eth_addrs;
++} __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
++
++struct nft_flow_match {
++	struct flow_dissector	dissector;
++	struct nft_flow_key	key;
++	struct nft_flow_key	mask;
++};
++
++struct nft_flow_rule {
++	__be16			proto;
++	struct nft_flow_match	match;
++	struct flow_rule	*rule;
++};
++
++#define NFT_OFFLOAD_F_ACTION	(1 << 0)
++
++struct nft_rule;
++struct nft_flow_rule *nft_flow_rule_create(const struct nft_rule *rule);
++void nft_flow_rule_destroy(struct nft_flow_rule *flow);
++int nft_flow_rule_offload_commit(struct net *net);
++
++#define NFT_OFFLOAD_MATCH(__key, __base, __field, __len, __reg)		\
++	(__reg)->base_offset	=					\
++		offsetof(struct nft_flow_key, __base);			\
++	(__reg)->offset		=					\
++		offsetof(struct nft_flow_key, __base.__field);		\
++	(__reg)->len		= __len;				\
++	(__reg)->key		= __key;				\
++	memset(&(__reg)->mask, 0xff, (__reg)->len);
++
++#endif
+diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
+index 061bb3eb20c3..b69d4e1e0029 100644
+--- a/include/uapi/linux/netfilter/nf_tables.h
++++ b/include/uapi/linux/netfilter/nf_tables.h
+@@ -158,9 +158,11 @@ enum nft_hook_attributes {
+  * enum nft_table_flags - nf_tables table flags
+  *
+  * @NFT_TABLE_F_DORMANT: this table is not active
++ * @NFT_TABLE_F_HW_OFFLOAD: enable hardware offload
+  */
+ enum nft_table_flags {
+ 	NFT_TABLE_F_DORMANT	= 0x1,
++	NFT_TABLE_F_HW_OFFLOAD	= 0x2,
+ };
+ 
+ /**
+diff --git a/net/netfilter/Makefile b/net/netfilter/Makefile
+index 72cca6b48960..46cb1d34e750 100644
+--- a/net/netfilter/Makefile
++++ b/net/netfilter/Makefile
+@@ -78,7 +78,7 @@ nf_tables-objs := nf_tables_core.o nf_tables_api.o nft_chain_filter.o \
+ 		  nf_tables_trace.o nft_immediate.o nft_cmp.o nft_range.o \
+ 		  nft_bitwise.o nft_byteorder.o nft_payload.o nft_lookup.o \
+ 		  nft_dynset.o nft_meta.o nft_rt.o nft_exthdr.o \
+-		  nft_chain_route.o
++		  nft_chain_route.o nf_tables_offload.o
+ 
+ nf_tables_set-objs := nf_tables_set_core.o \
+ 		      nft_set_hash.o nft_set_bitmap.o nft_set_rbtree.o
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index e058273c5dde..9fed3777fe85 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -21,6 +21,7 @@
+ #include <net/netfilter/nf_flow_table.h>
+ #include <net/netfilter/nf_tables_core.h>
+ #include <net/netfilter/nf_tables.h>
++#include <net/netfilter/nf_tables_offload.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+ 
+@@ -100,6 +101,7 @@ static void nft_ctx_init(struct nft_ctx *ctx,
+ 	ctx->nla   	= nla;
+ 	ctx->portid	= NETLINK_CB(skb).portid;
+ 	ctx->report	= nlmsg_report(nlh);
++	ctx->flags	= nlh->nlmsg_flags;
+ 	ctx->seq	= nlh->nlmsg_seq;
+ }
+ 
+@@ -899,7 +901,7 @@ static int nf_tables_newtable(struct net *net, struct sock *nlsk,
+ 
+ 	if (nla[NFTA_TABLE_FLAGS]) {
+ 		flags = ntohl(nla_get_be32(nla[NFTA_TABLE_FLAGS]));
+-		if (flags & ~NFT_TABLE_F_DORMANT)
++		if (flags & ~(NFT_TABLE_F_DORMANT | NFT_TABLE_F_HW_OFFLOAD))
+ 			return -EINVAL;
+ 	}
+ 
+@@ -1662,6 +1664,7 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 
+ 		chain->flags |= NFT_BASE_CHAIN;
+ 		basechain->policy = policy;
++		INIT_LIST_HEAD(&basechain->cb_list);
+ 	} else {
+ 		chain = kzalloc(sizeof(*chain), GFP_KERNEL);
+ 		if (chain == NULL)
+@@ -2631,6 +2634,7 @@ static int nf_tables_newrule(struct net *net, struct sock *nlsk,
+ 	u8 genmask = nft_genmask_next(net);
+ 	struct nft_expr_info *info = NULL;
+ 	int family = nfmsg->nfgen_family;
++	struct nft_flow_rule *flow;
+ 	struct nft_table *table;
+ 	struct nft_chain *chain;
+ 	struct nft_rule *rule, *old_rule = NULL;
+@@ -2777,7 +2781,8 @@ static int nf_tables_newrule(struct net *net, struct sock *nlsk,
+ 
+ 		list_add_tail_rcu(&rule->list, &old_rule->list);
+ 	} else {
+-		if (nft_trans_rule_add(&ctx, NFT_MSG_NEWRULE, rule) == NULL) {
++		trans = nft_trans_rule_add(&ctx, NFT_MSG_NEWRULE, rule);
++		if (!trans) {
+ 			err = -ENOMEM;
+ 			goto err2;
+ 		}
+@@ -2800,6 +2805,11 @@ static int nf_tables_newrule(struct net *net, struct sock *nlsk,
+ 	if (net->nft.validate_state == NFT_VALIDATE_DO)
+ 		return nft_table_validate(net, table);
+ 
++	flow = nft_flow_rule_create(rule);
++	if (IS_ERR(flow))
++		return PTR_ERR(flow);
++
++	nft_trans_flow_rule(trans) = flow;
+ 	return 0;
+ err2:
+ 	nf_tables_rule_release(&ctx, rule);
+@@ -6571,6 +6581,8 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
+ 	if (nf_tables_validate(net) < 0)
+ 		return -EAGAIN;
+ 
++	nft_flow_rule_offload_commit(net);
++
+ 	/* 1.  Allocate space for next generation rules_gen_X[] */
+ 	list_for_each_entry_safe(trans, next, &net->nft.commit_list, list) {
+ 		int ret;
+diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+new file mode 100644
+index 000000000000..064139fc682d
+--- /dev/null
++++ b/net/netfilter/nf_tables_offload.c
+@@ -0,0 +1,216 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/netfilter.h>
++#include <net/flow_offload.h>
++#include <net/netfilter/nf_tables.h>
++#include <net/netfilter/nf_tables_offload.h>
++#include <net/pkt_cls.h>
++
++static struct nft_flow_rule *__nft_flow_rule_create(int num_actions)
++{
++	struct nft_flow_rule *flow;
++
++	flow = kzalloc(sizeof(struct nft_flow_rule), GFP_KERNEL);
++	if (!flow)
++		return NULL;
++
++	flow->rule = flow_rule_alloc(num_actions);
++	if (!flow->rule) {
++		kfree(flow);
++		return NULL;
++	}
++
++	flow->rule->match.dissector	= &flow->match.dissector;
++	flow->rule->match.mask		= &flow->match.mask;
++	flow->rule->match.key		= &flow->match.key;
++
++	return flow;
++}
++
++struct nft_flow_rule *nft_flow_rule_create(const struct nft_rule *rule)
++{
++	struct nft_offload_ctx ctx = {
++		.dep	= {
++			.type	= NFT_OFFLOAD_DEP_UNSPEC,
++		},
++	};
++	struct nft_flow_rule *flow;
++	int num_actions = 0, err;
++	struct nft_expr *expr;
++
++	expr = nft_expr_first(rule);
++	while (expr->ops && expr != nft_expr_last(rule)) {
++		if (expr->ops->offload_flags & NFT_OFFLOAD_F_ACTION)
++			num_actions++;
++
++		expr = nft_expr_next(expr);
++	}
++
++	flow = __nft_flow_rule_create(num_actions);
++	if (!flow)
++		return ERR_PTR(-ENOMEM);
++
++	expr = nft_expr_first(rule);
++	while (expr->ops && expr != nft_expr_last(rule)) {
++		if (!expr->ops->offload) {
++			err = -EOPNOTSUPP;
++			goto err_out;
++		}
++		err = expr->ops->offload(&ctx, flow, expr);
++		if (err < 0)
++			goto err_out;
++
++		expr = nft_expr_next(expr);
++	}
++	flow->proto = ctx.dep.l3num;
++
++	return flow;
++err_out:
++	nft_flow_rule_destroy(flow);
++
++	return ERR_PTR(err);
++}
++
++void nft_flow_rule_destroy(struct nft_flow_rule *flow)
++{
++	kfree(flow->rule);
++	kfree(flow);
++}
++
++void nft_offload_set_dependency(struct nft_offload_ctx *ctx,
++				enum nft_offload_dep_type type)
++{
++	ctx->dep.type = type;
++}
++
++void nft_offload_update_dependency(struct nft_offload_ctx *ctx,
++				   const void *data, u32 len)
++{
++	switch (ctx->dep.type) {
++	case NFT_OFFLOAD_DEP_NETWORK:
++		WARN_ON(len != sizeof(__u16));
++		memcpy(&ctx->dep.l3num, data, sizeof(__u16));
++		break;
++	case NFT_OFFLOAD_DEP_TRANSPORT:
++		WARN_ON(len != sizeof(__u8));
++		memcpy(&ctx->dep.protonum, data, sizeof(__u8));
++		break;
++	default:
++		break;
++	}
++	ctx->dep.type = NFT_OFFLOAD_DEP_UNSPEC;
++}
++
++static void nft_flow_offload_common_init(struct tc_cls_common_offload *common,
++					 struct netlink_ext_ack *extack)
++{
++	common->protocol = htons(ETH_P_IP);
++	common->extack = extack;
++}
++
++static int nft_setup_cb_call(struct nft_base_chain *basechain,
++			     enum tc_setup_type type, void *type_data)
++{
 +	struct flow_block_cb *block_cb;
- 	int ok_count = 0;
- 	int err;
++	int err;
++
++	list_for_each_entry(block_cb, &basechain->cb_list, list) {
++		err = block_cb->cb(type, type_data, block_cb->cb_priv);
++		if (err < 0)
++			return err;
++	}
++	return 0;
++}
++
++static int nft_flow_offload_rule(struct nft_trans *trans,
++				 enum tc_fl_command command)
++{
++	struct nft_rule *rule = nft_trans_rule(trans);
++	struct tc_cls_flower_offload cls_flower = {};
++	struct nft_base_chain *basechain;
++	struct netlink_ext_ack extack;
++
++	if (!nft_is_base_chain(trans->ctx.chain))
++		return -EOPNOTSUPP;
++
++	basechain = nft_base_chain(trans->ctx.chain);
++
++	nft_flow_offload_common_init(&cls_flower.common, &extack);
++	cls_flower.command = command;
++	cls_flower.cookie = (unsigned long) rule;
++	cls_flower.rule = nft_trans_flow_rule(trans)->rule;
++
++	return nft_setup_cb_call(basechain, TC_SETUP_CLSFLOWER, &cls_flower);
++}
++
++static int nft_flow_offload_chain(struct nft_trans *trans,
++				  enum flow_block_command cmd)
++{
++	struct nft_chain *chain = trans->ctx.chain;
++	struct netlink_ext_ack extack = {};
++	struct flow_block_offload bo = {};
++	struct nft_base_chain *basechain;
++	struct net_device *dev;
++	int err;
++
++	if (!nft_is_base_chain(chain))
++		return -EOPNOTSUPP;
++
++	basechain = nft_base_chain(chain);
++	dev = basechain->ops.dev;
++	if (!dev)
++		return -EOPNOTSUPP;
++
++	bo.command = cmd;
++	bo.binder_type = TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
++	bo.block_index = (u32)trans->ctx.chain->handle;
++	bo.extack = &extack;
++	INIT_LIST_HEAD(&bo.cb_list);
++
++	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
++	if (err < 0)
++		return err;
++
++	list_splice(&bo.cb_list, &basechain->cb_list);
++	return 0;
++}
++
++int nft_flow_rule_offload_commit(struct net *net)
++{
++	struct nft_trans *trans;
++	int err = 0;
++
++	list_for_each_entry(trans, &net->nft.commit_list, list) {
++		if (trans->ctx.family != NFPROTO_NETDEV ||
++		    !(trans->ctx.table->flags & NFT_TABLE_F_HW_OFFLOAD))
++			continue;
++
++		switch (trans->msg_type) {
++		case NFT_MSG_NEWCHAIN:
++			err = nft_flow_offload_chain(trans, TC_BLOCK_BIND);
++			break;
++		case NFT_MSG_DELCHAIN:
++			err = nft_flow_offload_chain(trans, TC_BLOCK_UNBIND);
++			break;
++		case NFT_MSG_NEWRULE:
++			if (trans->ctx.flags & NLM_F_REPLACE ||
++			    !(trans->ctx.flags & NLM_F_APPEND))
++				return -EOPNOTSUPP;
++
++			err = nft_flow_offload_rule(trans,
++						    TC_CLSFLOWER_REPLACE);
++			nft_flow_rule_destroy(nft_trans_flow_rule(trans));
++			break;
++		case NFT_MSG_DELRULE:
++			err = nft_flow_offload_rule(trans,
++						    TC_CLSFLOWER_DESTROY);
++			break;
++		}
++
++		if (err)
++			return err;
++	}
++
++	return err;
++}
+diff --git a/net/netfilter/nft_cmp.c b/net/netfilter/nft_cmp.c
+index f9f1fa66a16e..e587ab9afe40 100644
+--- a/net/netfilter/nft_cmp.c
++++ b/net/netfilter/nft_cmp.c
+@@ -15,6 +15,7 @@
+ #include <linux/netfilter.h>
+ #include <linux/netfilter/nf_tables.h>
+ #include <net/netfilter/nf_tables_core.h>
++#include <net/netfilter/nf_tables_offload.h>
+ #include <net/netfilter/nf_tables.h>
  
+ struct nft_cmp_expr {
+@@ -110,12 +111,44 @@ static int nft_cmp_dump(struct sk_buff *skb, const struct nft_expr *expr)
+ 	return -1;
+ }
+ 
++static int __nft_cmp_offload(struct nft_offload_ctx *ctx,
++			     struct nft_flow_rule *flow,
++			     const struct nft_cmp_expr *priv)
++{
++	struct nft_offload_reg *reg = &ctx->regs[priv->sreg];
++	u8 *mask = (u8 *)&flow->match.mask;
++	u8 *key = (u8 *)&flow->match.key;
++
++	if (priv->op != NFT_CMP_EQ)
++		return -EOPNOTSUPP;
++
++	memcpy(key + reg->offset, &priv->data, priv->len);
++	memcpy(mask + reg->offset, &reg->mask, priv->len);
++
++	flow->match.dissector.used_keys |= BIT(reg->key);
++	flow->match.dissector.offset[reg->key] = reg->base_offset;
++
++	nft_offload_update_dependency(ctx, &priv->data, priv->len);
++
++	return 0;
++}
++
++static int nft_cmp_offload(struct nft_offload_ctx *ctx,
++			   struct nft_flow_rule *flow,
++			   const struct nft_expr *expr)
++{
++	const struct nft_cmp_expr *priv = nft_expr_priv(expr);
++
++	return __nft_cmp_offload(ctx, flow, priv);
++}
++
+ static const struct nft_expr_ops nft_cmp_ops = {
+ 	.type		= &nft_cmp_type,
+ 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_cmp_expr)),
+ 	.eval		= nft_cmp_eval,
+ 	.init		= nft_cmp_init,
+ 	.dump		= nft_cmp_dump,
++	.offload	= nft_cmp_offload,
+ };
+ 
+ static int nft_cmp_fast_init(const struct nft_ctx *ctx,
+@@ -146,6 +179,25 @@ static int nft_cmp_fast_init(const struct nft_ctx *ctx,
+ 	return 0;
+ }
+ 
++static int nft_cmp_fast_offload(struct nft_offload_ctx *ctx,
++				struct nft_flow_rule *flow,
++				const struct nft_expr *expr)
++{
++	const struct nft_cmp_fast_expr *priv = nft_expr_priv(expr);
++	struct nft_cmp_expr cmp = {
++		.data	= {
++			.data	= {
++				[0] = priv->data,
++			},
++		},
++		.sreg	= priv->sreg,
++		.len	= priv->len / BITS_PER_BYTE,
++		.op	= NFT_CMP_EQ,
++	};
++
++	return __nft_cmp_offload(ctx, flow, &cmp);
++}
++
+ static int nft_cmp_fast_dump(struct sk_buff *skb, const struct nft_expr *expr)
+ {
+ 	const struct nft_cmp_fast_expr *priv = nft_expr_priv(expr);
+@@ -172,6 +224,7 @@ const struct nft_expr_ops nft_cmp_fast_ops = {
+ 	.eval		= NULL,	/* inlined */
+ 	.init		= nft_cmp_fast_init,
+ 	.dump		= nft_cmp_fast_dump,
++	.offload	= nft_cmp_fast_offload,
+ };
+ 
+ static const struct nft_expr_ops *
+diff --git a/net/netfilter/nft_immediate.c b/net/netfilter/nft_immediate.c
+index 5ec43124cbca..0e34225ccb34 100644
+--- a/net/netfilter/nft_immediate.c
++++ b/net/netfilter/nft_immediate.c
+@@ -16,6 +16,7 @@
+ #include <linux/netfilter/nf_tables.h>
+ #include <net/netfilter/nf_tables_core.h>
+ #include <net/netfilter/nf_tables.h>
++#include <net/netfilter/nf_tables_offload.h>
+ 
+ void nft_immediate_eval(const struct nft_expr *expr,
+ 			struct nft_regs *regs,
+@@ -127,6 +128,34 @@ static int nft_immediate_validate(const struct nft_ctx *ctx,
+ 	return 0;
+ }
+ 
++static int nft_immediate_offload(struct nft_offload_ctx *ctx,
++				 struct nft_flow_rule *flow,
++				 const struct nft_expr *expr)
++{
++	const struct nft_immediate_expr *priv = nft_expr_priv(expr);
++	struct flow_action_entry *entry;
++	const struct nft_data *data;
++
++	if (priv->dreg != NFT_REG_VERDICT)
++		return -EOPNOTSUPP;
++
++	entry = &flow->rule->action.entries[ctx->num_actions++];
++
++	data = &priv->data;
++	switch (data->verdict.code) {
++	case NF_ACCEPT:
++		entry->id = FLOW_ACTION_ACCEPT;
++		break;
++	case NF_DROP:
++		entry->id = FLOW_ACTION_DROP;
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
+ static const struct nft_expr_ops nft_imm_ops = {
+ 	.type		= &nft_imm_type,
+ 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_immediate_expr)),
+@@ -136,6 +165,8 @@ static const struct nft_expr_ops nft_imm_ops = {
+ 	.deactivate	= nft_immediate_deactivate,
+ 	.dump		= nft_immediate_dump,
+ 	.validate	= nft_immediate_validate,
++	.offload	= nft_immediate_offload,
++	.offload_flags	= NFT_OFFLOAD_F_ACTION,
+ };
+ 
+ struct nft_expr_type nft_imm_type __read_mostly = {
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index 987d2d6ce624..24a45a8b9d96 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -24,6 +24,7 @@
+ #include <net/tcp_states.h> /* for TCP_TIME_WAIT */
+ #include <net/netfilter/nf_tables.h>
+ #include <net/netfilter/nf_tables_core.h>
++#include <net/netfilter/nf_tables_offload.h>
+ 
+ #include <uapi/linux/netfilter_bridge.h> /* NF_BR_PRE_ROUTING */
+ 
+@@ -518,6 +519,31 @@ static void nft_meta_set_destroy(const struct nft_ctx *ctx,
+ 		static_branch_dec(&nft_trace_enabled);
+ }
+ 
++static int nft_meta_get_offload(struct nft_offload_ctx *ctx,
++				struct nft_flow_rule *flow,
++				const struct nft_expr *expr)
++{
++	const struct nft_meta *priv = nft_expr_priv(expr);
++	struct nft_offload_reg *reg = &ctx->regs[priv->dreg];
++
++	switch (priv->key) {
++	case NFT_META_PROTOCOL:
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_BASIC, basic, n_proto,
++				  sizeof(__u16), reg);
++		nft_offload_set_dependency(ctx, NFT_OFFLOAD_DEP_NETWORK);
++		break;
++	case NFT_META_L4PROTO:
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_BASIC, basic, ip_proto,
++				  sizeof(__u8), reg);
++		nft_offload_set_dependency(ctx, NFT_OFFLOAD_DEP_TRANSPORT);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
+ static const struct nft_expr_ops nft_meta_get_ops = {
+ 	.type		= &nft_meta_type,
+ 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_meta)),
+@@ -525,6 +551,7 @@ static const struct nft_expr_ops nft_meta_get_ops = {
+ 	.init		= nft_meta_get_init,
+ 	.dump		= nft_meta_get_dump,
+ 	.validate	= nft_meta_get_validate,
++	.offload	= nft_meta_get_offload,
+ };
+ 
+ static const struct nft_expr_ops nft_meta_set_ops = {
+diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
+index 54e15de4b79a..ba337e0982d8 100644
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -18,10 +18,13 @@
+ #include <linux/netfilter/nf_tables.h>
+ #include <net/netfilter/nf_tables_core.h>
+ #include <net/netfilter/nf_tables.h>
++#include <net/netfilter/nf_tables_offload.h>
+ /* For layer 4 checksum field offset. */
+ #include <linux/tcp.h>
+ #include <linux/udp.h>
+ #include <linux/icmpv6.h>
++#include <linux/ip.h>
++#include <linux/ipv6.h>
+ 
+ /* add vlan header into the user buffer for if tag was removed by offloads */
+ static bool
+@@ -153,12 +156,195 @@ static int nft_payload_dump(struct sk_buff *skb, const struct nft_expr *expr)
+ 	return -1;
+ }
+ 
++static int nft_payload_offload_ll(struct nft_offload_ctx *ctx,
++				  struct nft_flow_rule *flow,
++				  const struct nft_payload *priv)
++{
++	struct nft_offload_reg *reg = &ctx->regs[priv->dreg];
++
++	switch (priv->offset) {
++	case offsetof(struct ethhdr, h_source):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_ETH_ADDRS, eth_addrs,
++				  src, ETH_ALEN, reg);
++		break;
++	case offsetof(struct ethhdr, h_dest):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_ETH_ADDRS, eth_addrs,
++				  dst, ETH_ALEN, reg);
++		break;
++	}
++
++	return 0;
++}
++
++static int nft_payload_offload_ip(struct nft_offload_ctx *ctx,
++				  struct nft_flow_rule *flow,
++				  const struct nft_payload *priv)
++{
++	struct nft_offload_reg *reg = &ctx->regs[priv->dreg];
++
++	switch (priv->offset) {
++	case offsetof(struct iphdr, saddr):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4, src,
++				  sizeof(struct in_addr), reg);
++		break;
++	case offsetof(struct iphdr, daddr):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4, dst,
++				  sizeof(struct in_addr), reg);
++		break;
++	case offsetof(struct iphdr, protocol):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_BASIC, basic, ip_proto,
++				  sizeof(__u8), reg);
++		nft_offload_set_dependency(ctx, NFT_OFFLOAD_DEP_TRANSPORT);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
++static int nft_payload_offload_ip6(struct nft_offload_ctx *ctx,
++				  struct nft_flow_rule *flow,
++				  const struct nft_payload *priv)
++{
++	struct nft_offload_reg *reg = &ctx->regs[priv->dreg];
++
++	switch (priv->offset) {
++	case offsetof(struct ipv6hdr, saddr):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_IPV6_ADDRS, ipv6, src,
++				  sizeof(struct in6_addr), reg);
++		break;
++	case offsetof(struct ipv6hdr, daddr):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_IPV6_ADDRS, ipv6, dst,
++				  sizeof(struct in6_addr), reg);
++		break;
++	case offsetof(struct ipv6hdr, nexthdr):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_BASIC, basic, ip_proto,
++				  sizeof(__u8), reg);
++		nft_offload_set_dependency(ctx, NFT_OFFLOAD_DEP_TRANSPORT);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
++static int nft_payload_offload_nh(struct nft_offload_ctx *ctx,
++				  struct nft_flow_rule *flow,
++				  const struct nft_payload *priv)
++{
++	int err;
++
++	switch (ctx->dep.l3num) {
++	case htons(ETH_P_IP):
++		err = nft_payload_offload_ip(ctx, flow, priv);
++		break;
++	case htons(ETH_P_IPV6):
++		err = nft_payload_offload_ip6(ctx, flow, priv);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return err;
++}
++
++static int nft_payload_offload_tcp(struct nft_offload_ctx *ctx,
++				   struct nft_flow_rule *flow,
++				   const struct nft_payload *priv)
++{
++	struct nft_offload_reg *reg = &ctx->regs[priv->dreg];
++
++	switch (priv->offset) {
++	case offsetof(struct tcphdr, source):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_PORTS, tp, src,
++				  sizeof(__be16), reg);
++		break;
++	case offsetof(struct tcphdr, dest):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_PORTS, tp, dst,
++				  sizeof(__be16), reg);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
++static int nft_payload_offload_udp(struct nft_offload_ctx *ctx,
++				   struct nft_flow_rule *flow,
++				   const struct nft_payload *priv)
++{
++	struct nft_offload_reg *reg = &ctx->regs[priv->dreg];
++
++	switch (priv->offset) {
++	case offsetof(struct udphdr, source):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_PORTS, tp, src,
++				  sizeof(__be16), reg);
++		break;
++	case offsetof(struct udphdr, dest):
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_PORTS, tp, dst,
++				  sizeof(__be16), reg);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
++static int nft_payload_offload_th(struct nft_offload_ctx *ctx,
++				  struct nft_flow_rule *flow,
++				  const struct nft_payload *priv)
++{
++	int err;
++
++	switch (ctx->dep.protonum) {
++	case IPPROTO_TCP:
++		err = nft_payload_offload_tcp(ctx, flow, priv);
++		break;
++	case IPPROTO_UDP:
++		err = nft_payload_offload_udp(ctx, flow, priv);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return err;
++}
++
++static int nft_payload_offload(struct nft_offload_ctx *ctx,
++			       struct nft_flow_rule *flow,
++			       const struct nft_expr *expr)
++{
++	const struct nft_payload *priv = nft_expr_priv(expr);
++	int err;
++
++	switch (priv->base) {
++	case NFT_PAYLOAD_LL_HEADER:
++		err = nft_payload_offload_ll(ctx, flow, priv);
++		break;
++	case NFT_PAYLOAD_NETWORK_HEADER:
++		err = nft_payload_offload_nh(ctx, flow, priv);
++		break;
++	case NFT_PAYLOAD_TRANSPORT_HEADER:
++		err = nft_payload_offload_th(ctx, flow, priv);
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++	return err;
++}
++
+ static const struct nft_expr_ops nft_payload_ops = {
+ 	.type		= &nft_payload_type,
+ 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_payload)),
+ 	.eval		= nft_payload_eval,
+ 	.init		= nft_payload_init,
+ 	.dump		= nft_payload_dump,
++	.offload	= nft_payload_offload,
+ };
+ 
+ const struct nft_expr_ops nft_payload_fast_ops = {
+@@ -167,6 +353,7 @@ const struct nft_expr_ops nft_payload_fast_ops = {
+ 	.eval		= nft_payload_eval,
+ 	.init		= nft_payload_init,
+ 	.dump		= nft_payload_dump,
++	.offload	= nft_payload_offload,
+ };
+ 
+ static inline void nft_csum_replace(__sum16 *sum, __wsum fsum, __wsum tsum)
 -- 
 2.11.0
 
