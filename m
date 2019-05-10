@@ -2,101 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DB271A212
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 19:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6931A2B6
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 19:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727873AbfEJRBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 13:01:09 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33208 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727796AbfEJRBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 13:01:09 -0400
-Received: by mail-qt1-f196.google.com with SMTP id m32so4350215qtf.0
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 10:01:08 -0700 (PDT)
+        id S1727709AbfEJRzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 13:55:41 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:36709 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727562AbfEJRzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 13:55:41 -0400
+Received: by mail-qk1-f194.google.com with SMTP id c14so4224965qke.3
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 10:55:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=VRFwCStrPTcDuGWHYqKRGwK0QteT1eytgvDU9OCPpjI=;
-        b=NZZ1I1eQkLXQ6xCXGOH14awUR/k7MvBdw6v3BAAPDHX3EBR+eTaus2RO/lQR2HpiKd
-         9K+PRt2HqRoj7noZakib9DWItNHq7efiA1yqIp9DKDD1HNuuOs2ztL/ZtsYrA0EzhIVT
-         X9luWvzn4ExEFiCm+Y9dK+2xtVSE6UKH9+5g/mEnrwUIKlumctcgNYQ8sC80boCjuWIQ
-         uSlCyYF+dynU7Teeq8505VRV6MhDnDFvKJti2oi0DtENzPv2LRg8okzvhwtzDMdZLrYd
-         qQZGI/reRfLiuOSfBdnv4+ra2hVMvKnkXSQMfCqu4lZPv5aADwyoaaxZQ8n7YcIP3nMW
-         dNYA==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=Pjc7l4cVahv8WsgQQ1dlgXdKB0M3SKzEnmMux5cswH8=;
+        b=oWcIecvHXeseYAEw32+WyP3f9E41xvVl2Wzdh9O/MAxPmTaIqAmXw3eUsFIKO0M7tA
+         yn/PgBGtN2kEYoInMv7mDnUTfLjHq/6Us4x0OJYnQHvBMpdQoyRxgi2v668P9P57uORt
+         cWrL7bNUlDVXVuSqCCworXQRXUTrLeaFFG86AgDuOM845amDN5c8ec10jyTPpMffXKtb
+         8C6OHTVGInxsXAOV7DjloBRcUUx079iSGRwOIqtxiIntptze+f9FHZb536niv3cfenRH
+         7mP2cwkbrVfm178I85RGRfsEv4M/Rd8jlFbmtAlQuzme2KRbVE62wYIOuhcsq8v0dwK4
+         E56A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=VRFwCStrPTcDuGWHYqKRGwK0QteT1eytgvDU9OCPpjI=;
-        b=nvdIsET6tEBgayuvwHU3l9VWY1RTHZYdCd3HA0U53RkRSkXd9hG0bTHDSfCNgQIoBN
-         sPBLqrk8JURT3h9+7NOvNB84n6HC9Kb8q36hQhrze/BIlUTVrPrevam3oeyJ6Qj4dGjq
-         aSdfWvhkJrGGBNP/Fq7QL2sX+0+J7arBIY1WuWMllmONWbR4La9JI/IXGlV4bqAbdia7
-         2QtrO9Wgw6UB+9b9gUgE0ygFIQB2S1eD5YM7aGa/I/OuUWYQ5kXMbzjPbskAluhvkHoa
-         DvkbnDx9B9TCTknTgCbuMFpQRH5Fk80YnmXE0f892rV5e0RyWkp1VstffC4G7rNXxAEB
-         PdkQ==
-X-Gm-Message-State: APjAAAVNaw32vAQeFjUxarJkbIStw9JAUw6Ta5OnwqCp9zJTAPBNPfX6
-        PnLg++zYJWk65+M1MwJqdWOr+w==
-X-Google-Smtp-Source: APXvYqyaSudbfKSzos3kVglffl0DKyyh0N26yZWHJaVk7acO/4CrH1FzAIUEynwgwv+aujKc02D6lQ==
-X-Received: by 2002:ac8:342e:: with SMTP id u43mr3929573qtb.319.1557507668150;
-        Fri, 10 May 2019 10:01:08 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id x65sm2854001qke.58.2019.05.10.10.01.07
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 10 May 2019 10:01:08 -0700 (PDT)
-Date:   Fri, 10 May 2019 10:00:54 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-Subject: Re: [bpf PATCH v4 1/4] bpf: tls, implement unhash to avoid
- transition out of ESTABLISHED
-Message-ID: <20190510100054.29f7235c@cakuba.netronome.com>
-In-Reply-To: <155746426913.20677.2783358822817593806.stgit@john-XPS-13-9360>
-References: <155746412544.20677.8888193135689886027.stgit@john-XPS-13-9360>
-        <155746426913.20677.2783358822817593806.stgit@john-XPS-13-9360>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=Pjc7l4cVahv8WsgQQ1dlgXdKB0M3SKzEnmMux5cswH8=;
+        b=sChG7lxv539LNSV+OaRzFjIXOrv9mTItA2AoQKeZNTLTXJ4T4XHWs3SdYAApcAJH73
+         Vi8x1b//SXGWR7wliBLfcZxj/tyDH62OwqBYgrfM3OC3B5WEhVf8PjWAq0yg+EtymRjw
+         uYi0araUGMh4Ugc0vzVBIdd3TiS1Akz8dZrUjQsps3GpTSQb6sggn6MyP5hsQFDo4cSu
+         MTonY2PNnqd1B+lkSU9tFmgwyLlcygXGtF6iRdPX6ylFPZvqyUumd+UeNqSftlpilib5
+         fdIV0y6iOFA9WPnTAvoWjL0P66PnYVeTLXicIT0cBliMkk3/ISUHD6CdWxSkbzhFlrNq
+         7n+w==
+X-Gm-Message-State: APjAAAUERJWSjdV+y9EOB2AjwnHztnONhDmm0TWPEFVttWuXXnlCTsYU
+        Pbt9mzKkMOACEDszMjjsxgBA8w==
+X-Google-Smtp-Source: APXvYqyqeFpVF40xdtSrt/lEUs78Yj8gqjHRGrDAU6A2yLchu7mgWpBWc4Z5ZzuLvg3OZ46Vv/sKBg==
+X-Received: by 2002:a05:620a:13c9:: with SMTP id g9mr9647730qkl.307.1557510940573;
+        Fri, 10 May 2019 10:55:40 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-49-251.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.49.251])
+        by smtp.gmail.com with ESMTPSA id d41sm3679482qta.22.2019.05.10.10.55.38
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 10 May 2019 10:55:39 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1hP9kA-0006Y9-Gw; Fri, 10 May 2019 14:55:38 -0300
+Date:   Fri, 10 May 2019 14:55:38 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+Subject: Re: [net-next][PATCH v2 1/2] rds: handle unsupported rdma request to
+ fs dax memory
+Message-ID: <20190510175538.GB13038@ziepe.ca>
+References: <1556581040-4812-1-git-send-email-santosh.shilimkar@oracle.com>
+ <1556581040-4812-2-git-send-email-santosh.shilimkar@oracle.com>
+ <20190510125431.GA15434@ziepe.ca>
+ <8b00b41c-bbc5-7584-e5cf-519b0d9100c5@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8b00b41c-bbc5-7584-e5cf-519b0d9100c5@oracle.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 09 May 2019 21:57:49 -0700, John Fastabend wrote:
-> @@ -2042,12 +2060,14 @@ void tls_sw_free_resources_tx(struct sock *sk)
->  	if (atomic_read(&ctx->encrypt_pending))
->  		crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
->  
-> -	release_sock(sk);
-> +	if (locked)
-> +		release_sock(sk);
->  	cancel_delayed_work_sync(&ctx->tx_work.work);
+On Fri, May 10, 2019 at 09:11:24AM -0700, Santosh Shilimkar wrote:
+> On 5/10/2019 5:54 AM, Jason Gunthorpe wrote:
+> > On Mon, Apr 29, 2019 at 04:37:19PM -0700, Santosh Shilimkar wrote:
+> > > From: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+> > > 
+> > > RDS doesn't support RDMA on memory apertures that require On Demand
+> > > Paging (ODP), such as FS DAX memory. User applications can try to use
+> > > RDS to perform RDMA over such memories and since it doesn't report any
+> > > failure, it can lead to unexpected issues like memory corruption when
+> > > a couple of out of sync file system operations like ftruncate etc. are
+> > > performed.
+> > 
+> > This comment doesn't make any sense..
+> > 
+> > > The patch adds a check so that such an attempt to RDMA to/from memory
+> > > apertures requiring ODP will fail.
+> > > 
+> > > Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
+> > > Reviewed-tested-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+> > > Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+> > > Signed-off-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+> > >   net/rds/rdma.c | 5 +++--
+> > >   1 file changed, 3 insertions(+), 2 deletions(-)
+> > > 
+> > > diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+> > > index 182ab84..e0a6b72 100644
+> > > +++ b/net/rds/rdma.c
+> > > @@ -158,8 +158,9 @@ static int rds_pin_pages(unsigned long user_addr, unsigned int nr_pages,
+> > >   {
+> > >   	int ret;
+> > > -	ret = get_user_pages_fast(user_addr, nr_pages, write, pages);
+> > > -
+> > > +	/* get_user_pages return -EOPNOTSUPP for fs_dax memory */
+> > > +	ret = get_user_pages_longterm(user_addr, nr_pages,
+> > > +				      write, pages, NULL);
+> > 
+> > GUP is supposed to fully work on DAX filesystems.
+> > 
+> Above comment has typo. Should have been
+> get_user_pages_longterm return -EOPNOTSUPP.
+> 
+> > You only need to switch to the long term version if the duration of
+> > the GUP is under control of user space - ie it may last forever.
+> > 
+> > Short duration pins in the kernel do not need long term.
+> > 
+> Thats true but the intention here is to use the long term version
+> which does check for the FS DAX memory. Instead of calling direct
+> accessor to check DAX memory region, longterm version of the API
+> is used
+> 
+> > At a minimum the commit message needs re-writing to properly explain
+> > the motivation here.
+> > 
+> Commit is actually trying to describe the motivation describing more of
+> issues of not making the call fail. The code comment typo was
+> misleading.
 
-So in the splat I got (on a slightly hacked up kernel) it seemed like
-unhash may be called in atomic context:
+Every single sentence in the commit message is wrong
 
-[  783.232150]  tls_sk_proto_unhash+0x72/0x110 [tls]
-[  783.237497]  tcp_set_state+0x484/0x640
-[  783.241776]  ? __sk_mem_reduce_allocated+0x72/0x4a0
-[  783.247317]  ? tcp_recv_timestamp+0x5c0/0x5c0
-[  783.252265]  ? tcp_write_queue_purge+0xa6a/0x1180
-[  783.257614]  tcp_done+0xac/0x260
-[  783.261309]  tcp_reset+0xbe/0x350
-[  783.265101]  tcp_validate_incoming+0xd9d/0x1530
-
-I may have been unclear off-list, I only tested the patch no longer
-crashes the offload :(
-
-> -	lock_sock(sk);
-> +	if (locked)
-> +		lock_sock(sk);
->  
->  	/* Tx whatever records we can transmit and abandon the rest */
-> -	tls_tx_records(sk, -1);
-> +	tls_tx_records(sk, tls_ctx, -1);
->  
->  	/* Free up un-sent records in tx_list. First, free
->  	 * the partially sent record if any at head of tx_list.
-
+Jason
