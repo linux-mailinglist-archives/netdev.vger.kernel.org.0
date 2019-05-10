@@ -2,167 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFA5F19B5D
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 12:16:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6905219BDD
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 12:50:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727703AbfEJKQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 06:16:40 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:41484 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727684AbfEJKQj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 06:16:39 -0400
-Received: by mail-lj1-f196.google.com with SMTP id k8so4593736lja.8
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 03:16:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qz+stYvXt7DnxyGh7w2UEW303G1y2SoHoxPZJae/GgA=;
-        b=jLHV+nOhTml6xqZeVSzwc8Wu8aDqJTmcu1Xv7gtwHbztumGmVTSlGpEcC1BS8n9Sv4
-         2H5IImNYZB0Fa1OcQIKTkaU6oyD100CqNorY1NofmoQOu41UADw2RdE4iB3RHoikSuLR
-         OZTZ/eYaplomf/r5/xNQg4wR3U6oH//MXvNqk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qz+stYvXt7DnxyGh7w2UEW303G1y2SoHoxPZJae/GgA=;
-        b=IGdRWKhdAU7RF5MsMdp9zIpTwddJqw78Yd8aTZySZz5ipZAiKmasctsMj6zXryysIi
-         6r5zVvJWlhlEbMVHf9DlSpRMBtRPlMPeMwAxGNxLlkNxLGRuMC4Tz5chapeL/eArkRo/
-         /OcKRI//b8l/9hdk3A7yzi3tCDLJ4UGxG0MkOx7HilVi/8XJwMk6Q8NJYIOBiHsREfGk
-         Had7fn75Bji44TTdP1tabQp24vLYryKUhkZHSyDU7SCZwywpSdu3/Zs+5zd71GljgzPj
-         IxiVenwvbLGcQ9CyZfBpkRXk6I7S4VfuuXzbEgdl++vH5mrL8rqyefrRtOVyPryKsnxI
-         5iSA==
-X-Gm-Message-State: APjAAAU71d+JgKxpyNmqlqxg4LDtWPadnYf0upJkQ89fqR9HsHNpWCTQ
-        S3d+eCvTU+9gQsOGXDF4zM3yVue+9+lshd4/MUnwAA==
-X-Google-Smtp-Source: APXvYqxGXgs/6KhQqz1+ig2tFI4SGxRD1Qo6e9m8IPG4d3RCWwLFaRHWCGd9SwM3a0SNYMyWbs4n3I5o6loG8UaIouE=
-X-Received: by 2002:a2e:74f:: with SMTP id i15mr5309596ljd.156.1557483397071;
- Fri, 10 May 2019 03:16:37 -0700 (PDT)
+        id S1727141AbfEJKt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 06:49:58 -0400
+Received: from mail-eopbgr10042.outbound.protection.outlook.com ([40.107.1.42]:52548
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727025AbfEJKt6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 May 2019 06:49:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9pNz6vNP2CsDC2k5YiEyT4zvoIV6DNq7AWeZpJwsLVk=;
+ b=F/02K0aN+/75HHTloxL54k82gHZ/vgRC1y7T1LSm+7DLxBdijegNUzqFMA4c9bekAZ+cAyZYBXRcgX4Q/VOYgxAyTOWqfCSSei5fsU5D2e2tMF5Cc0PJjU7Ke0Y/McvyT3HmUZ5Dfxzmi0JJRGWY3l4c939B0DAxVUqgZsAmYqU=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.138.152) by
+ DB7PR04MB4220.eurprd04.prod.outlook.com (52.135.131.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1856.12; Fri, 10 May 2019 10:49:53 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::dcff:11e1:ab70:bb81]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::dcff:11e1:ab70:bb81%5]) with mapi id 15.20.1878.022; Fri, 10 May 2019
+ 10:49:53 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH V3 0/7] can: flexcan: add CAN FD support for i.MX8
+Thread-Topic: [PATCH V3 0/7] can: flexcan: add CAN FD support for i.MX8
+Thread-Index: AQHVBx4ZJVETzfIIYUuGFrAohCJp6g==
+Date:   Fri, 10 May 2019 10:49:53 +0000
+Message-ID: <20190510104639.15170-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR01CA0105.apcprd01.prod.exchangelabs.com
+ (2603:1096:3:15::31) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:36::24)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cddd029b-ac9f-41ce-3525-08d6d5353b61
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB7PR04MB4220;
+x-ms-traffictypediagnostic: DB7PR04MB4220:
+x-microsoft-antispam-prvs: <DB7PR04MB42208EBF689B85616B9D56C0E60C0@DB7PR04MB4220.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0033AAD26D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(396003)(136003)(366004)(39860400002)(346002)(189003)(199004)(64756008)(73956011)(3846002)(66556008)(66476007)(53936002)(66446008)(66946007)(6116002)(8936002)(50226002)(6512007)(81156014)(305945005)(25786009)(386003)(102836004)(6506007)(2906002)(6486002)(4326008)(81166006)(6436002)(8676002)(66066001)(4744005)(5660300002)(476003)(316002)(99286004)(52116002)(256004)(14444005)(36756003)(110136005)(54906003)(14454004)(478600001)(186003)(86362001)(26005)(7736002)(2616005)(71190400001)(71200400001)(486006)(68736007)(1076003)(2501003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4220;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: sCaU+aOX9GnwnrxVk0o8tomQZp8n8egLrZP1FAoRnnrzdSQV4XYaZw41hFspV8YImtm7GcKFHznGDClDNSg9kZeHOu/dW2Aomi57ia+pM4h/9XUEM6hih8TA59k+HFzrW2IB3OyEjAVVK9q0MFyVVz66RgD8rUFQikstMT7PCUn00QS180M5E0SPGhszrqGVhHeas0JHzjiEqCi557sZ6T3+pbA+Z0+dTIelzneDhM++OQMLyM1gYlMAimVPw3dYU+VIYn0RjMA7X+D/Rs5SmcdRUj666ehgrZ5eB0XmINlK1sHiICggnW4Ip/VWa1MJYTABQZoziChL+q5c2QbR84BK64NeqVkmJ2ptWnYqHp+5/BxobdUW7r8413cKZ5nc3My3v3PYRINYjJXx12DCMwOX8vzBQQhbd8DLo+vDLi4=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20190508160859.4380-1-krzesimir@kinvolk.io> <46056c60-f106-e539-b614-498cb1e9e3d0@iogearbox.net>
-In-Reply-To: <46056c60-f106-e539-b614-498cb1e9e3d0@iogearbox.net>
-From:   Krzesimir Nowak <krzesimir@kinvolk.io>
-Date:   Fri, 10 May 2019 12:16:25 +0200
-Message-ID: <CAGGp+cFVt_i29Sr07ZJC5zdxTuuwcc02yVy5y03=DXSB6NEr0g@mail.gmail.com>
-Subject: Re: [PATCH bpf v1] bpf: Fix undefined behavior in narrow load handling
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cddd029b-ac9f-41ce-3525-08d6d5353b61
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2019 10:49:53.1066
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4220
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 9, 2019 at 11:30 PM Daniel Borkmann <daniel@iogearbox.net> wrot=
-e:
->
-> On 05/08/2019 06:08 PM, Krzesimir Nowak wrote:
-> > Commit 31fd85816dbe ("bpf: permits narrower load from bpf program
-> > context fields") made the verifier add AND instructions to clear the
-> > unwanted bits with a mask when doing a narrow load. The mask is
-> > computed with
-> >
-> > (1 << size * 8) - 1
-> >
-> > where "size" is the size of the narrow load. When doing a 4 byte load
-> > of a an 8 byte field the verifier shifts the literal 1 by 32 places to
-> > the left. This results in an overflow of a signed integer, which is an
-> > undefined behavior. Typically the computed mask was zero, so the
-> > result of the narrow load ended up being zero too.
-> >
-> > Cast the literal to long long to avoid overflows. Note that narrow
-> > load of the 4 byte fields does not have the undefined behavior,
-> > because the load size can only be either 1 or 2 bytes, so shifting 1
-> > by 8 or 16 places will not overflow it. And reading 4 bytes would not
-> > be a narrow load of a 4 bytes field.
-> >
-> > Reviewed-by: Alban Crequy <alban@kinvolk.io>
-> > Reviewed-by: Iago L=C3=B3pez Galeiras <iago@kinvolk.io>
-> > Fixes: 31fd85816dbe ("bpf: permits narrower load from bpf program conte=
-xt fields")
-> > Cc: Yonghong Song <yhs@fb.com>
-> > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> > ---
-> >  kernel/bpf/verifier.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 09d5d972c9ff..950fac024fbb 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -7296,7 +7296,7 @@ static int convert_ctx_accesses(struct bpf_verifi=
-er_env *env)
-> >                                                                       i=
-nsn->dst_reg,
-> >                                                                       s=
-hift);
-> >                               insn_buf[cnt++] =3D BPF_ALU64_IMM(BPF_AND=
-, insn->dst_reg,
-> > -                                                             (1 << siz=
-e * 8) - 1);
-> > +                                                             (1ULL << =
-size * 8) - 1);
-> >                       }
->
-> Makes sense, good catch & thanks for the fix!
->
-> Could you also add a test case to test_verifier.c so we keep track of thi=
-s?
->
-> Thanks,
-> Daniel
-
-Hi,
-
-A test for it is a bit tricky. I only found two 64bit fields that can
-be loaded narrowly - `sample_period` and `addr` in `struct
-bpf_perf_event_data`, so in theory I could have a test like follows:
-
-{
-    "32bit loads of a 64bit field (both least and most significant words)",
-    .insns =3D {
-    BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1, offsetof(struct
-bpf_perf_event_data, addr)),
-    BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1, offsetof(struct
-bpf_perf_event_data, addr) + 4),
-    BPF_MOV64_IMM(BPF_REG_0, 0),
-    BPF_EXIT_INSN(),
-    },
-    .result =3D ACCEPT,
-    .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
-},
-
-The test like this would check that the program is not rejected, but
-it wasn't an issue. The test does not check if the verifier has
-transformed the narrow reads properly. Ideally the BPF program would
-do something like this:
-
-/* let's assume that low and high variables get their values from narrow lo=
-ad */
-__u64 low =3D (__u32)perf_event->addr;
-__u64 high =3D (__u32)(perf_event->addr >> 32);
-__u64 addr =3D low | (high << 32);
-
-return addr !=3D perf_event->addr;
-
-But the test_verifier.c won't be able to run this, because
-BPF_PROG_TYPE_PERF_EVENT programs are not supported by the
-bpf_test_run_prog function.
-
-Any hints how to proceed here?
-
-Cheers,
-Krzesimir
---=20
-Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
-Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago L=
-=C3=B3pez Galeiras
-Registergericht/Court of registration: Amtsgericht Charlottenburg
-Registernummer/Registration number: HRB 171414 B
-Ust-ID-Nummer/VAT ID number: DE302207000
+SGkgTWFyYywNCg0KU3RlZmFuLWdhYnJpZWwgTWlyZWEgd2FzIHN1Y2Nlc3NmdWxseSB2YWxpZGF0
+ZWQgdGhpcyBwYXRjaCBzZXQgb24gYW4gUzMyVjIzNA0KYmFzZWQgYm9hcmQsIGFuZCBJIGhhdmUg
+aW1wcm92ZWQgdGhlIGRyaXZlciB3aXRoIGhpcyB2YWx1YWJsZSBmZWVkYmFjay4NCg0KSSBhbHNv
+IHNwbGl0IHRoZSBwYXRjaCBzZXQgaW50byBzbWFsbCBwYXJ0aWNsZSBzaXplIHRoYXQgd2lsbCBl
+YXN5IHlvdXINCnBhdGNoIHJldmlldy4NCg0KUmVnYXJkcywNCkpvYWtpbSBaaGFuZw0KDQpEb25n
+IEFpc2hlbmcgKDMpOg0KICBjYW46IGZsZXhjYW46IGltcHJvdmUgYml0dGltaW5nIHNldHRpbmcg
+Zm9yIGZkIG1vZGUNCiAgY2FuOiBmbGV4Y2FuOiBhZGQgQ0FORkQgQlJTIHN1cHBvcnQNCiAgY2Fu
+OiBmbGV4Y2FuOiBhZGQgaW14OHFtIHN1cHBvcnQNCg0KSm9ha2ltIFpoYW5nICg0KToNCiAgY2Fu
+OiBmbGV4Y2FuOiBhbGxvY2F0ZSBza2IgaW4gbWFpbGJveF9yZWFkDQogIGNhbjogZmxleGNhbjog
+dXNlIHN0cnVjdCBjYW5mZF9mcmFtZSBmb3Igbm9ybWFsIENBTiBmcmFtZQ0KICBjYW46IGZsZXhj
+YW46IGFkZCBDQU4gRkQgbW9kZSBzdXBwb3J0DQogIGNhbjogZmxleGNhbjogYWRkIElTTyBDQU4g
+RkQgZmVhdHVyZSBzdXBwb3J0DQoNCiBkcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jICAgICAgfCAy
+ODMgKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tDQogZHJpdmVycy9uZXQvY2FuL3J4
+LW9mZmxvYWQuYyAgIHwgIDMzICsrLS0NCiBpbmNsdWRlL2xpbnV4L2Nhbi9yeC1vZmZsb2FkLmgg
+fCAgIDUgKy0NCiAzIGZpbGVzIGNoYW5nZWQsIDI1NSBpbnNlcnRpb25zKCspLCA2NiBkZWxldGlv
+bnMoLSkNCg0KLS0gDQoyLjE3LjENCg0K
