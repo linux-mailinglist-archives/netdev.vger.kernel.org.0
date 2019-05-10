@@ -2,359 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0136919FFA
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 17:18:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 565EF1A0C1
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 17:55:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727584AbfEJPR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 11:17:58 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:34164 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727353AbfEJPR6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 11:17:58 -0400
-Received: by mail-ot1-f66.google.com with SMTP id l17so5919221otq.1
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 08:17:57 -0700 (PDT)
+        id S1727907AbfEJPyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 11:54:52 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41243 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727469AbfEJPyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 11:54:52 -0400
+Received: by mail-pf1-f196.google.com with SMTP id l132so3444428pfc.8
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 08:54:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q0AdmB2Ribb69WZgIXem/aSFpim7bXdsvKjI28i23gE=;
-        b=rZqCvDmT0+AXssSXGnAA9AJw4wXWq874vYPoin+DMy3r6gawNMT7DWg6746jroDd/x
-         sShBCQugXHw07kkMFceLr/UxI/pxoZ5WZtwQ4UbYA6fQJvyA4a/wVn+YBudMiG+YRTO9
-         pyBj7zp8vJV5aGsfXO35kFOT1AzQt8+v17OrM=
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R+L/q0eBmRC66UxN3KjFp1ob/k3wh1/Zp6NlpOqRHNY=;
+        b=0KQEPROFS06bgTJD5PfPoeA9dftwOx19I/YNH6mNvJ/HYd8qCbVYh6U0p6jUyR2MLF
+         MElCjO6WBVDuBioubVGJP4inf2Drg4gw7Jo3YQymtKISxo+JrrIurEyg7NpZkb0EyGbd
+         2ne/ZypCIoHVs/5x7TQImOtP+xOQkGmLou6P9p5gXQyEqo3pe+G/DX9Xet1j2QnfJx0k
+         Vjvb/jFIXFNQEBQOnNvazeRQCjic8zGI+87EOrkt4NB7LMCqphAR9jW6ET36xyKqhd83
+         bDujyS6FlzHKfjN/qdknmpKFFRVncUGFNDm1lnfUrixYVEcKoC3bDqACqOQXP2dkSMXa
+         anYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q0AdmB2Ribb69WZgIXem/aSFpim7bXdsvKjI28i23gE=;
-        b=gz9tq8C2rLXTmKBJ+TxbjzYyagFnrTqXZVtD9+0Miq+KOGTXyW4XKB80Oktmz0IElj
-         721sldhaTOp4LETXsS2no2VSEcKhiZ81BmqJjcqdJKXmAX3PKGzBYRnpVCjuG64/pHES
-         0nGgmzZ/eFz7CET4RmFGIxKlmqpMu7Ja9dewjRZloUVkVrfuFelIpfRV+3d/69wxBz0Y
-         6417iP21NawtndofOFQsF/Lo++XrCyZgh+bugJDjox4q+LMoRPL3bRMB3NC2gdGCef1o
-         nMqHm+Sc5b2f8mxgv+cdLEWJVf/Cm5uJVcMUT/DtRwyeQVzLtglhuqpFo+JL2iXUYgI4
-         4FrA==
-X-Gm-Message-State: APjAAAWqt2C5EqDE8gEqDD+LBlhV2A2ykHhYSZmgrjSgn9ZLOMW/eNPE
-        ARPKGGTvAMzueDaBm9HQKE96TkfCIf4qYYgm6N7zpW9Z59QhfQ==
-X-Google-Smtp-Source: APXvYqyFt5GxmW1MZA2favbnaGcALb5mA4MoHVzSPHzcHbrwxbVk/7uXhgi8vvAQlXavsk2qquYwokltZ6a5lIXnf1M=
-X-Received: by 2002:a9d:5e15:: with SMTP id d21mr7540040oti.138.1557501476705;
- Fri, 10 May 2019 08:17:56 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R+L/q0eBmRC66UxN3KjFp1ob/k3wh1/Zp6NlpOqRHNY=;
+        b=ZOKWSMtAECrcuso9ORdhVmjm4YmQM4i7WWadFNECAeT3elWPQy768GQR7c9AOCWSCC
+         5YSMxav8GIxTIa6tiWiv4OCS4sHmedbzhW+j4s/JQ3G4vwzKUSSq8dc7q1MbhGfbn0Vr
+         YMC3M5WJ+kGcuDdv9EBPYulpsl0kY2A+yAawWB2WzYej79vlMQwEI0zLFsEWs495yjbw
+         0Vy0Le85rYnrn+3LXWjKf72t+okQKtupSrgVYPG/b/sp6Gf5Ws9FJAbnLqWQ7BvMZN1c
+         SJu7IUQl0CltOhv7ruDiWrp5W28b80I601W/QWBWGzgfX9PFv0RakDl2aYmWTJEQ5PLo
+         vGFA==
+X-Gm-Message-State: APjAAAUY5p8/xgPNaUXXA3pBaVd6nE+2T72e6VMcGjyOB2qzdQFvUate
+        +VidjdeBjMelRyfdbNC+nzbBVhwfVV4=
+X-Google-Smtp-Source: APXvYqwX2oaus3nwsNUj0tqpBABgn+lqsn44yxLAH5MPqkle4Uhffg0wn6gfTedA+om9MVfX3AbMhA==
+X-Received: by 2002:a63:fb01:: with SMTP id o1mr14555300pgh.135.1557503690192;
+        Fri, 10 May 2019 08:54:50 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id d15sm11828935pgf.22.2019.05.10.08.54.49
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 10 May 2019 08:54:50 -0700 (PDT)
+Date:   Fri, 10 May 2019 08:54:42 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [ANNOUNCE] iproute2 5.1.0
+Message-ID: <20190510085442.5fac679e@hermes.lan>
 MIME-Version: 1.0
-References: <20190510043723.3359135-1-andriin@fb.com> <CACAyw9_9Q4CPzPm-ikMyMMmWR56u+5c7RpW-7o0YBG5JoheF2A@mail.gmail.com>
- <CAEf4BzafBqC63EW8Pf8Du4McL9veOU_SUOHoE9_94zTv9r1XJg@mail.gmail.com>
-In-Reply-To: <CAEf4BzafBqC63EW8Pf8Du4McL9veOU_SUOHoE9_94zTv9r1XJg@mail.gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Fri, 10 May 2019 16:17:45 +0100
-Message-ID: <CACAyw99Rpmn1=jgOJfbvBsTfTn2txK1mFcbYhMCtLq1_OtD7Pw@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: detect supported kernel BTF features and
- sanitize BTF
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 May 2019 at 15:16, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> On Fri, May 10, 2019 at 2:46 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> >
-> > On Fri, 10 May 2019 at 05:37, Andrii Nakryiko <andriin@fb.com> wrote:
-> > >
-> > > Depending on used versions of libbpf, Clang, and kernel, it's possible to
-> > > have valid BPF object files with valid BTF information, that still won't
-> > > load successfully due to Clang emitting newer BTF features (e.g.,
-> > > BTF_KIND_FUNC, .BTF.ext's line_info/func_info, BTF_KIND_DATASEC, etc), that
-> > > are not yet supported by older kernel.
-> >
-> > For sys_bpf, we ignore a zero tail in struct bpf_attr, which gives us
-> > backwards / forwards compatibility
-> > as long as the user doesn't use the new fields.
-> > Do we need a similar mechanism for BTF? Is it possible to discard
-> > unknown types at load time?
->
-> Unfortunately, unknown BTF types can be intermixed with older, known
-> BTF types, so it's not as simple as trimming at the end of data. Also,
-> to skip some type, you have to know which kind of type is it, as we
-> don't explicitly encode the length of BTF type descriptor. So it's
-> just impossible to do from kernel side.
+Iproute 5.1 has been released.
 
-That's a really good point. I stumbled on the same problem when writing a BTF
-PoC in Go. Doesn't this mean that libbpf itself suffers from this
-problem as well?
-If I upgrade my clang, it might emit BTF that libbpf can't understand, and we're
-back to square one.
+Download:
+    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.1.0.tar.=
+gz
 
-Would it be possible to add such type_length to the format?
+Repository for upcoming release: 5.2
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
 
->
-> >
-> > >
-> > > This patch adds detection of BTF features and sanitizes BPF object's BTF
-> > > by substituting various supported BTF kinds, which have compatible layout:
-> > >   - BTF_KIND_FUNC -> BTF_KIND_TYPEDEF
-> > >   - BTF_KIND_FUNC_PROTO -> BTF_KIND_ENUM
-> > >   - BTF_KIND_VAR -> BTF_KIND_INT
-> > >   - BTF_KIND_DATASEC -> BTF_KIND_STRUCT
-> > >
-> > > Replacement is done in such a way as to preserve as much information as
-> > > possible (names, sizes, etc) where possible without violating kernel's
-> > > validation rules.
-> > >
-> > > Reported-by: Alexei Starovoitov <ast@fb.com>
-> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > ---
-> > >  tools/lib/bpf/libbpf.c | 185 ++++++++++++++++++++++++++++++++++++++++-
-> > >  1 file changed, 184 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > > index 11a65db4b93f..0813c4ad5d11 100644
-> > > --- a/tools/lib/bpf/libbpf.c
-> > > +++ b/tools/lib/bpf/libbpf.c
-> > > @@ -128,6 +128,10 @@ struct bpf_capabilities {
-> > >         __u32 name:1;
-> > >         /* v5.2: kernel support for global data sections. */
-> > >         __u32 global_data:1;
-> > > +       /* BTF_KIND_FUNC and BTF_KIND_FUNC_PROTO support */
-> > > +       __u32 btf_func:1;
-> > > +       /* BTF_KIND_VAR and BTF_KIND_DATASEC support */
-> > > +       __u32 btf_datasec:1;
-> > >  };
-> > >
-> > >  /*
-> > > @@ -1021,6 +1025,81 @@ static bool section_have_execinstr(struct bpf_object *obj, int idx)
-> > >         return false;
-> > >  }
-> > >
-> > > +static void bpf_object__sanitize_btf(struct bpf_object *obj)
-> > > +{
-> > > +#define BTF_INFO_ENC(kind, kind_flag, vlen) \
-> > > +       ((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
-> > > +#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
-> > > +       ((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
-> > > +
-> > > +       bool has_datasec = obj->caps.btf_datasec;
-> > > +       bool has_func = obj->caps.btf_func;
-> > > +       struct btf *btf = obj->btf;
-> > > +       struct btf_type *t;
-> > > +       int i, j, vlen;
-> > > +       __u16 kind;
-> > > +
-> > > +       if (!obj->btf || (has_func && has_datasec))
-> > > +               return;
-> > > +
-> > > +       for (i = 1; i <= btf__get_nr_types(btf); i++) {
-> > > +               t = (struct btf_type *)btf__type_by_id(btf, i);
-> > > +               kind = BTF_INFO_KIND(t->info);
-> > > +
-> > > +               if (!has_datasec && kind == BTF_KIND_VAR) {
-> > > +                       /* replace VAR with INT */
-> > > +                       t->info = BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
-> > > +                       t->size = sizeof(int);
-> > > +                       *(int *)(t+1) = BTF_INT_ENC(0, 0, 32);
-> > > +               } else if (!has_datasec && kind == BTF_KIND_DATASEC) {
-> > > +                       /* replace DATASEC with STRUCT */
-> > > +                       struct btf_var_secinfo *v = (void *)(t + 1);
-> > > +                       struct btf_member *m = (void *)(t + 1);
-> > > +                       struct btf_type *vt;
-> > > +                       char *name;
-> > > +
-> > > +                       name = (char *)btf__name_by_offset(btf, t->name_off);
-> > > +                       while (*name) {
-> > > +                               if (*name == '.')
-> > > +                                       *name = '_';
-> > > +                               name++;
-> > > +                       }
-> > > +
-> > > +                       vlen = BTF_INFO_VLEN(t->info);
-> > > +                       t->info = BTF_INFO_ENC(BTF_KIND_STRUCT, 0, vlen);
-> > > +                       for (j = 0; j < vlen; j++, v++, m++) {
-> > > +                               /* order of field assignments is important */
-> > > +                               m->offset = v->offset * 8;
-> > > +                               m->type = v->type;
-> > > +                               /* preserve variable name as member name */
-> > > +                               vt = (void *)btf__type_by_id(btf, v->type);
-> > > +                               m->name_off = vt->name_off;
-> > > +                       }
-> > > +               } else if (!has_func && kind == BTF_KIND_FUNC_PROTO) {
-> > > +                       /* replace FUNC_PROTO with ENUM */
-> > > +                       vlen = BTF_INFO_VLEN(t->info);
-> > > +                       t->info = BTF_INFO_ENC(BTF_KIND_ENUM, 0, vlen);
-> > > +                       t->size = sizeof(__u32); /* kernel enforced */
-> > > +               } else if (!has_func && kind == BTF_KIND_FUNC) {
-> > > +                       /* replace FUNC with TYPEDEF */
-> > > +                       t->info = BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0);
-> > > +               }
-> > > +       }
-> > > +#undef BTF_INFO_ENC
-> > > +#undef BTF_INT_ENC
-> > > +}
-> > > +
-> > > +static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
-> > > +{
-> > > +       if (!obj->btf_ext)
-> > > +               return;
-> > > +
-> > > +       if (!obj->caps.btf_func) {
-> > > +               btf_ext__free(obj->btf_ext);
-> > > +               obj->btf_ext = NULL;
-> > > +       }
-> > > +}
-> > > +
-> > >  static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
-> > >  {
-> > >         Elf *elf = obj->efile.elf;
-> > > @@ -1164,8 +1243,10 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
-> > >                         obj->btf = NULL;
-> > >                 } else {
-> > >                         err = btf__finalize_data(obj, obj->btf);
-> > > -                       if (!err)
-> > > +                       if (!err) {
-> > > +                               bpf_object__sanitize_btf(obj);
-> > >                                 err = btf__load(obj->btf);
-> > > +                       }
-> > >                         if (err) {
-> > >                                 pr_warning("Error finalizing and loading %s into kernel: %d. Ignored and continue.\n",
-> > >                                            BTF_ELF_SEC, err);
-> > > @@ -1187,6 +1268,8 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
-> > >                                            BTF_EXT_ELF_SEC,
-> > >                                            PTR_ERR(obj->btf_ext));
-> > >                                 obj->btf_ext = NULL;
-> > > +                       } else {
-> > > +                               bpf_object__sanitize_btf_ext(obj);
-> > >                         }
-> > >                 }
-> > >         }
-> > > @@ -1556,12 +1639,112 @@ bpf_object__probe_global_data(struct bpf_object *obj)
-> > >         return 0;
-> > >  }
-> > >
-> > > +static int try_load_btf(const char *raw_types, size_t types_len,
-> > > +                       const char *str_sec, size_t str_len)
-> > > +{
-> > > +       char buf[1024];
-> > > +       struct btf_header hdr = {
-> > > +               .magic = BTF_MAGIC,
-> > > +               .version = BTF_VERSION,
-> > > +               .hdr_len = sizeof(struct btf_header),
-> > > +               .type_len = types_len,
-> > > +               .str_off = types_len,
-> > > +               .str_len = str_len,
-> > > +       };
-> > > +       int btf_fd, btf_len;
-> > > +       __u8 *raw_btf;
-> > > +
-> > > +       btf_len = hdr.hdr_len + hdr.type_len + hdr.str_len;
-> > > +       raw_btf = malloc(btf_len);
-> > > +       if (!raw_btf)
-> > > +               return -ENOMEM;
-> > > +
-> > > +       memcpy(raw_btf, &hdr, sizeof(hdr));
-> > > +       memcpy(raw_btf + hdr.hdr_len, raw_types, hdr.type_len);
-> > > +       memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
-> > > +
-> > > +       btf_fd = bpf_load_btf(raw_btf, btf_len, buf, 1024, 0);
-> > > +       if (btf_fd < 0) {
-> > > +               free(raw_btf);
-> > > +               return 0;
-> > > +       }
-> > > +
-> > > +       close(btf_fd);
-> > > +       free(raw_btf);
-> > > +       return 1;
-> > > +}
-> > > +
-> > > +#define BTF_INFO_ENC(kind, kind_flag, vlen) \
-> > > +       ((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
-> > > +#define BTF_TYPE_ENC(name, info, size_or_type) (name), (info), (size_or_type)
-> > > +#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
-> > > +       ((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
-> > > +#define BTF_TYPE_INT_ENC(name, encoding, bits_offset, bits, sz) \
-> > > +       BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_INT, 0, 0), sz), \
-> > > +       BTF_INT_ENC(encoding, bits_offset, bits)
-> > > +#define BTF_PARAM_ENC(name, type) (name), (type)
-> > > +#define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
-> > > +static int bpf_object__probe_btf_func(struct bpf_object *obj)
-> > > +{
-> > > +       const char strs[] = "\0int\0x\0a";
-> > > +       /* void x(int a) {} */
-> > > +       __u32 types[] = {
-> > > +               /* int */
-> > > +               BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
-> > > +               /* FUNC_PROTO */                                /* [2] */
-> > > +               BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 1), 0),
-> > > +               BTF_PARAM_ENC(7, 1),
-> > > +               /* FUNC x */                                    /* [3] */
-> > > +               BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
-> > > +       };
-> > > +       int res;
-> > > +
-> > > +       res = try_load_btf((char *)types, sizeof(types), strs, sizeof(strs));
-> > > +       if (res < 0)
-> > > +               return res;
-> > > +       if (res > 0)
-> > > +               obj->caps.btf_func = 1;
-> > > +       return 0;
-> > > +}
-> > > +
-> > > +static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
-> > > +{
-> > > +       const char strs[] = "\0x\0.data";
-> > > +       /* static int a; */
-> > > +       __u32 types[] = {
-> > > +               /* int */
-> > > +               BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
-> > > +               /* VAR x */                                     /* [2] */
-> > > +               BTF_TYPE_ENC(1, BTF_INFO_ENC(BTF_KIND_VAR, 0, 0), 1),
-> > > +               BTF_VAR_STATIC,
-> > > +               /* DATASEC val */                               /* [3] */
-> > > +               BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
-> > > +               BTF_VAR_SECINFO_ENC(2, 0, 4),
-> > > +       };
-> > > +       int res;
-> > > +
-> > > +       res = try_load_btf((char *)&types, sizeof(types), strs, sizeof(strs));
-> > > +       if (res < 0)
-> > > +               return res;
-> > > +       if (res > 0)
-> > > +               obj->caps.btf_datasec = 1;
-> > > +       return 0;
-> > > +}
-> > > +#undef BTF_INFO_ENC
-> > > +#undef BTF_TYPE_ENC
-> > > +#undef BTF_INT_ENC
-> > > +#undef BTF_TYPE_INT_ENC
-> > > +#undef BTF_PARAM_ENC
-> > > +#undef BTF_VAR_SECINFO_ENC
-> > > +
-> > >  static int
-> > >  bpf_object__probe_caps(struct bpf_object *obj)
-> > >  {
-> > >         int (*probe_fn[])(struct bpf_object *obj) = {
-> > >                 bpf_object__probe_name,
-> > >                 bpf_object__probe_global_data,
-> > > +               bpf_object__probe_btf_func,
-> > > +               bpf_object__probe_btf_datasec,
-> > >         };
-> > >         int i, ret;
-> > >
-> > > --
-> > > 2.17.1
-> > >
-> >
-> >
-> > --
-> > Lorenz Bauer  |  Systems Engineer
-> > 25 Lavington St., London SE1 0NZ
-> >
-> > www.cloudflare.com
+And future release (net-next):
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
 
+Most of the new features for this release are in the devlink and rdma utili=
+ties.
+And most of the bug fixes are in fixing the output format glitches
+that resulted from converting most of the tools to have JSON
+output.
 
+Thanks for all the contributions.
 
--- 
-Lorenz Bauer  |  Systems Engineer
-25 Lavington St., London SE1 0NZ
+Report problems (or enhancements) to the netdev@vger.kernel.org mailing lis=
+t.
 
-www.cloudflare.com
+---
+
+Aya Levin (11):
+      devlink: Refactor validation of finding required arguments
+      devlink: Fix print of uint64_t
+      devlink: Fix boolean JSON print
+      devlink: Add helper functions for name and value separately
+      devlink: Add devlink health show command
+      devlink: Add devlink health recover command
+      devlink: Add devlink health diagnose command
+      devlink: Add devlink health dump show command
+      devlink: Add devlink health dump clear command
+      devlink: Add devlink health set command
+      devlink: Add devlink-health man page
+
+Benedict Wong (1):
+      xfrm: add option to hide keys in state output
+
+Beniamino Galvani (1):
+      ip: add missing space after 'external' in detailed mode
+
+Bj=C3=B6rn T=C3=B6pel (1):
+      ss: add AF_XDP support
+
+Cong Wang (1):
+      tc: add hit counter for matchall
+
+David Ahern (7):
+      Update kernel headers
+      Update kernel headers and add xdp_diag.h
+      Update kernel headers
+      ll_map: Add function to remove link cache entry by index
+      ip link: Drop cache entry on any changes
+      Improve batch and dump times by caching link lookups
+      Update kernel headers
+
+Davide Caratti (3):
+      tc: full JSON support for 'bpf' actions
+      tc: add 'kind' property to 'csum' action
+      use print_{,h}hu instead of print_uint when format specifier is %{,h}=
+hu
+
+Eyal Birger (1):
+      ip xfrm: support setting/printing XFRMA_IF_ID attribute in states/pol=
+icies
+
+Ido Schimmel (1):
+      devlink: Fix monitor command
+
+Jakub Kicinski (3):
+      devlink: report cell size
+      devlink: add info subcommand
+      devlink: add support for updating device flash
+
+Leon Romanovsky (22):
+      clang-format: add configuration file
+      rdma: Add unbound workqueue to list of poll context types
+      rdma: update uapi headers
+      rdma: Remove duplicated print code
+      rdma: Provide unique indexes for all visible objects
+      rdma: Provide parent context index for all objects except CM_ID
+      rdma: Move resource PD logic to separate file
+      rdma: Refactor out resource MR logic to separate file
+      rdma: Move out resource CQ logic to separate file
+      rdma: Move out resource CM-ID logic to separate file
+      rdma: Move resource QP logic to separate file
+      rdma: Properly mark RDMAtool license
+      rdma: Simplify code to reuse existing functions
+      rdma: Simplify CM_ID print code
+      rdma: Refactor CQ prints
+      rdma: Move MR code to be suitable for per-line parsing
+      rdma: Place PD parsing print routine into separate function
+      rdma: Move QP code to separate function
+      rdma: Unify netlink attribute checks prior to prints
+      rdma: Perform single .doit call to query specific objects
+      rdma: Provide and reuse filter functions
+      rdma: Add the prefix for driver attributes
+
+Leslie Monis (2):
+      tc: pie: change maximum integer value of tc_pie_xstats->prob
+      tc: pie: update man page
+
+Matt Ellison (1):
+      ip: support for xfrm interfaces
+
+Matteo Croce (1):
+      netns: add subcommand to attach an existing network namespace
+
+Nikolay Aleksandrov (6):
+      ip: xstats: add json output support
+      ip: bridge: add xstats json support
+      ip: bond: add xstats support
+      bridge: mdb: restore valid json output
+      bridge: vlan: fix standard stats output
+      ip: mroute: add fflush to print_mroute
+
+Phil Sutter (1):
+      ip-xfrm: Respect family in deleteall and list commands
+
+Ralf Baechle (1):
+      ip: display netrom link type
+
+Roopa Prabhu (1):
+      bridge: fdb: add support for src_vni option
+
+Stephen Hemminger (10):
+      tc: replace left side comparison
+      rdma: update uapi headers from 5.1-rc1
+      uapi: add CAKE FWMARK
+      uapi: in6.h add router alert isolate
+      uapi: bpf add set_ce
+      man: break long lines in man page sources
+      ip: fix typo in iplink_vlan usage message
+      uapi: update bpf.h
+      tc/ematch: fix deprecated yacc warning
+      v5.1.0
+
+Thomas Haller (4):
+      iprule: avoid printing extra space after gateway for nat action
+      iprule: avoid trailing space in print_rule() after printing protocol
+      iprule: refactor print_rule() to use leading space before printing at=
+tribute
+      iprule: always print realms keyword for rule
+
+Tobias Jungel (1):
+      ip: bridge: add mcast to unicast config flag
+
+Toke H=C3=B8iland-J=C3=B8rgensen (1):
+      q_cake: Add support for setting the fwmark option
+
+Zhiqiang Liu (1):
+      ipnetns: use-after-free problem in get_netnsid_from_name func
+
