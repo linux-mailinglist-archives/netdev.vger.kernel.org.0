@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 217F519DA0
+	by mail.lfdr.de (Postfix) with ESMTP id 8C03F19DA1
 	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 15:00:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727682AbfEJM7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 08:59:19 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:47204 "EHLO mx1.redhat.com"
+        id S1727714AbfEJM7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 08:59:23 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:35852 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727611AbfEJM7S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 May 2019 08:59:18 -0400
+        id S1727695AbfEJM7W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 May 2019 08:59:22 -0400
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5AB393082B46;
-        Fri, 10 May 2019 12:59:18 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 6DD4EC04D30D;
+        Fri, 10 May 2019 12:59:21 +0000 (UTC)
 Received: from steredhat.redhat.com (ovpn-117-202.ams2.redhat.com [10.36.117.202])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 874C15D717;
-        Fri, 10 May 2019 12:59:15 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D01805D70D;
+        Fri, 10 May 2019 12:59:18 +0000 (UTC)
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -27,85 +27,155 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         Stefan Hajnoczi <stefanha@redhat.com>,
         Jason Wang <jasowang@redhat.com>
-Subject: [PATCH v2 4/8] vsock/virtio: reduce credit update messages
-Date:   Fri, 10 May 2019 14:58:39 +0200
-Message-Id: <20190510125843.95587-5-sgarzare@redhat.com>
+Subject: [PATCH v2 5/8] vhost/vsock: split packets to send using multiple buffers
+Date:   Fri, 10 May 2019 14:58:40 +0200
+Message-Id: <20190510125843.95587-6-sgarzare@redhat.com>
 In-Reply-To: <20190510125843.95587-1-sgarzare@redhat.com>
 References: <20190510125843.95587-1-sgarzare@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Fri, 10 May 2019 12:59:18 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Fri, 10 May 2019 12:59:21 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to reduce the number of credit update messages,
-we send them only when the space available seen by the
-transmitter is less than VIRTIO_VSOCK_MAX_PKT_BUF_SIZE.
+If the packets to sent to the guest are bigger than the buffer
+available, we can split them, using multiple buffers and fixing
+the length in the packet header.
+This is safe since virtio-vsock supports only stream sockets.
 
 Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- include/linux/virtio_vsock.h            |  1 +
- net/vmw_vsock/virtio_transport_common.c | 16 +++++++++++++---
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ drivers/vhost/vsock.c                   | 51 +++++++++++++++++++------
+ net/vmw_vsock/virtio_transport_common.c | 15 ++++++--
+ 2 files changed, 52 insertions(+), 14 deletions(-)
 
-diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-index fb5954fc85c8..84b72026d327 100644
---- a/include/linux/virtio_vsock.h
-+++ b/include/linux/virtio_vsock.h
-@@ -41,6 +41,7 @@ struct virtio_vsock_sock {
- 	/* Protected by rx_lock */
- 	u32 buf_alloc;
- 	u32 fwd_cnt;
-+	u32 last_fwd_cnt;
- 	u32 rx_bytes;
- 	struct list_head rx_queue;
- };
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 7964e2daee09..fb731d09f5f1 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -94,7 +94,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 		struct iov_iter iov_iter;
+ 		unsigned out, in;
+ 		size_t nbytes;
+-		size_t len;
++		size_t iov_len, payload_len;
+ 		int head;
+ 
+ 		spin_lock_bh(&vsock->send_pkt_list_lock);
+@@ -139,8 +139,24 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 			break;
+ 		}
+ 
+-		len = iov_length(&vq->iov[out], in);
+-		iov_iter_init(&iov_iter, READ, &vq->iov[out], in, len);
++		iov_len = iov_length(&vq->iov[out], in);
++		if (iov_len < sizeof(pkt->hdr)) {
++			virtio_transport_free_pkt(pkt);
++			vq_err(vq, "Buffer len [%zu] too small\n", iov_len);
++			break;
++		}
++
++		iov_iter_init(&iov_iter, READ, &vq->iov[out], in, iov_len);
++		payload_len = pkt->len - pkt->off;
++
++		/* If the packet is greater than the space available in the
++		 * buffer, we split it using multiple buffers.
++		 */
++		if (payload_len > iov_len - sizeof(pkt->hdr))
++			payload_len = iov_len - sizeof(pkt->hdr);
++
++		/* Set the correct length in the header */
++		pkt->hdr.len = cpu_to_le32(payload_len);
+ 
+ 		nbytes = copy_to_iter(&pkt->hdr, sizeof(pkt->hdr), &iov_iter);
+ 		if (nbytes != sizeof(pkt->hdr)) {
+@@ -149,16 +165,34 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 			break;
+ 		}
+ 
+-		nbytes = copy_to_iter(pkt->buf, pkt->len, &iov_iter);
+-		if (nbytes != pkt->len) {
++		nbytes = copy_to_iter(pkt->buf + pkt->off, payload_len,
++				      &iov_iter);
++		if (nbytes != payload_len) {
+ 			virtio_transport_free_pkt(pkt);
+ 			vq_err(vq, "Faulted on copying pkt buf\n");
+ 			break;
+ 		}
+ 
+-		vhost_add_used(vq, head, sizeof(pkt->hdr) + pkt->len);
++		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
+ 		added = true;
+ 
++		/* Deliver to monitoring devices all correctly transmitted
++		 * packets.
++		 */
++		virtio_transport_deliver_tap_pkt(pkt);
++
++		pkt->off += payload_len;
++
++		/* If we didn't send all the payload we can requeue the packet
++		 * to send it with the next available buffer.
++		 */
++		if (pkt->off < pkt->len) {
++			spin_lock_bh(&vsock->send_pkt_list_lock);
++			list_add(&pkt->list, &vsock->send_pkt_list);
++			spin_unlock_bh(&vsock->send_pkt_list_lock);
++			continue;
++		}
++
+ 		if (pkt->reply) {
+ 			int val;
+ 
+@@ -169,11 +203,6 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 				restart_tx = true;
+ 		}
+ 
+-		/* Deliver to monitoring devices all correctly transmitted
+-		 * packets.
+-		 */
+-		virtio_transport_deliver_tap_pkt(pkt);
+-
+ 		virtio_transport_free_pkt(pkt);
+ 	}
+ 	if (added)
 diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index f2e4e128bc86..b61fd5e29a1f 100644
+index b61fd5e29a1f..3f313bcd6a26 100644
 --- a/net/vmw_vsock/virtio_transport_common.c
 +++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -247,6 +247,7 @@ static void virtio_transport_dec_rx_pkt(struct virtio_vsock_sock *vvs, u32 len)
- void virtio_transport_inc_tx_pkt(struct virtio_vsock_sock *vvs, struct virtio_vsock_pkt *pkt)
- {
- 	spin_lock_bh(&vvs->rx_lock);
-+	vvs->last_fwd_cnt = vvs->fwd_cnt;
- 	pkt->hdr.fwd_cnt = cpu_to_le32(vvs->fwd_cnt);
- 	pkt->hdr.buf_alloc = cpu_to_le32(vvs->buf_alloc);
- 	spin_unlock_bh(&vvs->rx_lock);
-@@ -297,6 +298,7 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
- 	struct virtio_vsock_sock *vvs = vsk->trans;
- 	struct virtio_vsock_buf *buf;
- 	size_t bytes, total = 0;
-+	u32 free_space;
- 	int err = -EFAULT;
+@@ -135,8 +135,17 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
+ 	struct virtio_vsock_pkt *pkt = opaque;
+ 	struct af_vsockmon_hdr *hdr;
+ 	struct sk_buff *skb;
++	size_t payload_len;
++	void *payload_buf;
  
- 	spin_lock_bh(&vvs->rx_lock);
-@@ -327,11 +329,19 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
- 			virtio_transport_free_buf(buf);
- 		}
- 	}
-+
-+	free_space = vvs->buf_alloc - (vvs->fwd_cnt - vvs->last_fwd_cnt);
-+
- 	spin_unlock_bh(&vvs->rx_lock);
- 
--	/* Send a credit pkt to peer */
--	virtio_transport_send_credit_update(vsk, VIRTIO_VSOCK_TYPE_STREAM,
--					    NULL);
-+	/* We send a credit update only when the space available seen
-+	 * by the transmitter is less than VIRTIO_VSOCK_MAX_PKT_BUF_SIZE
+-	skb = alloc_skb(sizeof(*hdr) + sizeof(pkt->hdr) + pkt->len,
++	/* A packet could be split to fit the RX buffer, so we can retrieve
++	 * the payload length from the header and the buffer pointer taking
++	 * care of the offset in the original packet.
 +	 */
-+	if (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE) {
-+		virtio_transport_send_credit_update(vsk,
-+						    VIRTIO_VSOCK_TYPE_STREAM,
-+						    NULL);
-+	}
++	payload_len = le32_to_cpu(pkt->hdr.len);
++	payload_buf = pkt->buf + pkt->off;
++
++	skb = alloc_skb(sizeof(*hdr) + sizeof(pkt->hdr) + payload_len,
+ 			GFP_ATOMIC);
+ 	if (!skb)
+ 		return NULL;
+@@ -176,8 +185,8 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
  
- 	return total;
+ 	skb_put_data(skb, &pkt->hdr, sizeof(pkt->hdr));
  
+-	if (pkt->len) {
+-		skb_put_data(skb, pkt->buf, pkt->len);
++	if (payload_len) {
++		skb_put_data(skb, payload_buf, payload_len);
+ 	}
+ 
+ 	return skb;
 -- 
 2.20.1
 
