@@ -2,215 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 565EF1A0C1
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 17:55:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 410701A0F5
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 18:06:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727907AbfEJPyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 11:54:52 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41243 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727469AbfEJPyw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 11:54:52 -0400
-Received: by mail-pf1-f196.google.com with SMTP id l132so3444428pfc.8
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 08:54:51 -0700 (PDT)
+        id S1727531AbfEJQGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 12:06:35 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:40096 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727471AbfEJQGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 12:06:35 -0400
+Received: by mail-qt1-f196.google.com with SMTP id k24so2219581qtq.7
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 09:06:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R+L/q0eBmRC66UxN3KjFp1ob/k3wh1/Zp6NlpOqRHNY=;
-        b=0KQEPROFS06bgTJD5PfPoeA9dftwOx19I/YNH6mNvJ/HYd8qCbVYh6U0p6jUyR2MLF
-         MElCjO6WBVDuBioubVGJP4inf2Drg4gw7Jo3YQymtKISxo+JrrIurEyg7NpZkb0EyGbd
-         2ne/ZypCIoHVs/5x7TQImOtP+xOQkGmLou6P9p5gXQyEqo3pe+G/DX9Xet1j2QnfJx0k
-         Vjvb/jFIXFNQEBQOnNvazeRQCjic8zGI+87EOrkt4NB7LMCqphAR9jW6ET36xyKqhd83
-         bDujyS6FlzHKfjN/qdknmpKFFRVncUGFNDm1lnfUrixYVEcKoC3bDqACqOQXP2dkSMXa
-         anYQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=QlEbz1UU6RimL/g44BhPuE7AbiMAwgftKU2T1TcTDq4=;
+        b=VE0bOgo1VRq3HRsM8afxXruMVSbWJNxNKvC4zIVq5pE8ijg+NFWZR7DmkMqPsv8Cdd
+         5wSOClNF/Bx7ZJ9QDKi63Ka4kCQXbMLNKMrwDP0yDlgCIXX9YJ4m8swS05JM2qoIQz6j
+         cIOu5g0kdx3Y0pgofjOq3CIXxnvTTnS5W/kjbkA42p2UqRNhGPYaaUTAXshgQ7tOYNxK
+         kX+nm74VVZU9NYEWTLXUErDoA5e68tlqZxlYLFjDUISrNiRbcCIgd1fnLwKcOl0SHEhg
+         ecesQgP8FD+ZwPNhadDrtmHfONUxBAI9BNAM7ximUeAXxyvD+KBeRnGNotePJg2W+JSa
+         T0QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R+L/q0eBmRC66UxN3KjFp1ob/k3wh1/Zp6NlpOqRHNY=;
-        b=ZOKWSMtAECrcuso9ORdhVmjm4YmQM4i7WWadFNECAeT3elWPQy768GQR7c9AOCWSCC
-         5YSMxav8GIxTIa6tiWiv4OCS4sHmedbzhW+j4s/JQ3G4vwzKUSSq8dc7q1MbhGfbn0Vr
-         YMC3M5WJ+kGcuDdv9EBPYulpsl0kY2A+yAawWB2WzYej79vlMQwEI0zLFsEWs495yjbw
-         0Vy0Le85rYnrn+3LXWjKf72t+okQKtupSrgVYPG/b/sp6Gf5Ws9FJAbnLqWQ7BvMZN1c
-         SJu7IUQl0CltOhv7ruDiWrp5W28b80I601W/QWBWGzgfX9PFv0RakDl2aYmWTJEQ5PLo
-         vGFA==
-X-Gm-Message-State: APjAAAUY5p8/xgPNaUXXA3pBaVd6nE+2T72e6VMcGjyOB2qzdQFvUate
-        +VidjdeBjMelRyfdbNC+nzbBVhwfVV4=
-X-Google-Smtp-Source: APXvYqwX2oaus3nwsNUj0tqpBABgn+lqsn44yxLAH5MPqkle4Uhffg0wn6gfTedA+om9MVfX3AbMhA==
-X-Received: by 2002:a63:fb01:: with SMTP id o1mr14555300pgh.135.1557503690192;
-        Fri, 10 May 2019 08:54:50 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id d15sm11828935pgf.22.2019.05.10.08.54.49
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 10 May 2019 08:54:50 -0700 (PDT)
-Date:   Fri, 10 May 2019 08:54:42 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [ANNOUNCE] iproute2 5.1.0
-Message-ID: <20190510085442.5fac679e@hermes.lan>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=QlEbz1UU6RimL/g44BhPuE7AbiMAwgftKU2T1TcTDq4=;
+        b=XpNrTV6ek6fjMA8ik5YBOpJ5bffM8pU2KSyHRmv3RBcX4rsdawuf17MSiuifJreuqN
+         Chj5nI4DSZtF8OkGfE8lZSwH3kGkVWeETov7XfWyCj/xjaLUXXajskm108UBNyIlXaGs
+         r4HOZNSTQBXwI+1i/C5iTJuQdVZKWVfzxBCNeo3Jh4GMzmjjerRCt1BAZem1SOayF4La
+         d1yzVzNrf7SvCAt3IWxu9fG6mFV0yWgx6y4JpIuor/pwQSrKLmf9Iw5614vacsMHY/IQ
+         xTZ4+Q0cR+Jb5NWWUKePz9Bnr37q/DlfDbJfoYRbo0ZVbhO+SjkR3IZPRTht2KJF36n7
+         WdRA==
+X-Gm-Message-State: APjAAAUy9R8UeYhykt8+Cyeq1QdghqAyIsiaKVfPQkGIm2rEZEzFLAFi
+        kM/jC6h8gZRFNrXdSpJiJLPq/w==
+X-Google-Smtp-Source: APXvYqzrQxl2Ej8R+kD6SfM9t67Ocp5SQ2SjOJ9YRuGIpi7r0hFf8DKXVbzslX8wbU/V9trysS3RWg==
+X-Received: by 2002:ac8:2e38:: with SMTP id r53mr10256693qta.192.1557504394290;
+        Fri, 10 May 2019 09:06:34 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id e37sm4055278qte.23.2019.05.10.09.06.33
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 10 May 2019 09:06:34 -0700 (PDT)
+Date:   Fri, 10 May 2019 09:06:19 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, Dave Watson <davejwatson@fb.com>,
+        Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+Subject: Re: [PATCH net 2/2] net/tls: handle errors from padding_length()
+Message-ID: <20190510090619.6ce8d85c@cakuba.netronome.com>
+In-Reply-To: <5cd587cc179c0_61292af501ab05c4ae@john-XPS-13-9360.notmuch>
+References: <20190509231407.25685-1-jakub.kicinski@netronome.com>
+        <20190509231407.25685-3-jakub.kicinski@netronome.com>
+        <5cd587cc179c0_61292af501ab05c4ae@john-XPS-13-9360.notmuch>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Iproute 5.1 has been released.
+On Fri, 10 May 2019 07:16:44 -0700, John Fastabend wrote:
+> Jakub Kicinski wrote:
+> > At the time padding_length() is called the record header
+> > is still part of the message.  If malicious TLS 1.3 peer
+> > sends an all-zero record padding_length() will stop at
+> > the record header, and return full length of the data
+> > including the tail_size.
+> > 
+> > Subsequent subtraction of prot->overhead_size from rxm->full_len
+> > will cause rxm->full_len to turn negative.  skb accessors,
+> > however, will always catch resulting out-of-bounds operation,
+> > so in practice this fix comes down to returning the correct
+> > error code.  It also fixes a set but not used warning.  
+> 
+> In practice returning incorrect error codes to users can confuse
+> applications though so this seems important. I've observed apps
+> hang with wrong codes for example and this error seems to be pushed
+> all the way up to sw_recvmsg.
+> 
+> > 
+> > This code was added by commit 130b392c6cd6 ("net: tls: Add tls 1.3 support").
+> > 
+> > CC: Dave Watson <davejwatson@fb.com>
+> > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+> > ---  
+> 
+> Looks good to me but one question below,
 
-Download:
-    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.1.0.tar.=
-gz
+Thanks for the reviews!
 
-Repository for upcoming release: 5.2
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+> >  	/* After using skb->sk to propagate sk through crypto async callback
+> > @@ -1478,7 +1488,7 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+> >  	struct tls_prot_info *prot = &tls_ctx->prot_info;
+> >  	int version = prot->version;
+> >  	struct strp_msg *rxm = strp_msg(skb);
+> > -	int err = 0;
+> > +	int pad, err = 0;
+> >  
+> >  	if (!ctx->decrypted) {
+> >  #ifdef CONFIG_TLS_DEVICE
+> > @@ -1501,7 +1511,11 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+> >  			*zc = false;
+> >  		}
+> >  
+> > -		rxm->full_len -= padding_length(ctx, tls_ctx, skb);
+> > +		pad = padding_length(ctx, prot, skb);
+> > +		if (pad < 0)
+> > +			return pad;
+> > +  
+> 
+> Need to review a bit closer on my side, but do we need to do any cleanup
+> if this fails? It looks like the other padding_length call sites will
+> but here we eventually return directly to recvmsg.
 
-And future release (net-next):
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
+Please double check my thinking, but not as far as I could tell.  
+At this point we must have a decrypted frame, meaning no async
+operation can be in progress on this skb.  And since the error 
+will kill the connection, we don't have to worry about advancing
+the record sequence number etc.
 
-Most of the new features for this release are in the devlink and rdma utili=
-ties.
-And most of the bug fixes are in fixing the output format glitches
-that resulted from converting most of the tools to have JSON
-output.
-
-Thanks for all the contributions.
-
-Report problems (or enhancements) to the netdev@vger.kernel.org mailing lis=
-t.
-
----
-
-Aya Levin (11):
-      devlink: Refactor validation of finding required arguments
-      devlink: Fix print of uint64_t
-      devlink: Fix boolean JSON print
-      devlink: Add helper functions for name and value separately
-      devlink: Add devlink health show command
-      devlink: Add devlink health recover command
-      devlink: Add devlink health diagnose command
-      devlink: Add devlink health dump show command
-      devlink: Add devlink health dump clear command
-      devlink: Add devlink health set command
-      devlink: Add devlink-health man page
-
-Benedict Wong (1):
-      xfrm: add option to hide keys in state output
-
-Beniamino Galvani (1):
-      ip: add missing space after 'external' in detailed mode
-
-Bj=C3=B6rn T=C3=B6pel (1):
-      ss: add AF_XDP support
-
-Cong Wang (1):
-      tc: add hit counter for matchall
-
-David Ahern (7):
-      Update kernel headers
-      Update kernel headers and add xdp_diag.h
-      Update kernel headers
-      ll_map: Add function to remove link cache entry by index
-      ip link: Drop cache entry on any changes
-      Improve batch and dump times by caching link lookups
-      Update kernel headers
-
-Davide Caratti (3):
-      tc: full JSON support for 'bpf' actions
-      tc: add 'kind' property to 'csum' action
-      use print_{,h}hu instead of print_uint when format specifier is %{,h}=
-hu
-
-Eyal Birger (1):
-      ip xfrm: support setting/printing XFRMA_IF_ID attribute in states/pol=
-icies
-
-Ido Schimmel (1):
-      devlink: Fix monitor command
-
-Jakub Kicinski (3):
-      devlink: report cell size
-      devlink: add info subcommand
-      devlink: add support for updating device flash
-
-Leon Romanovsky (22):
-      clang-format: add configuration file
-      rdma: Add unbound workqueue to list of poll context types
-      rdma: update uapi headers
-      rdma: Remove duplicated print code
-      rdma: Provide unique indexes for all visible objects
-      rdma: Provide parent context index for all objects except CM_ID
-      rdma: Move resource PD logic to separate file
-      rdma: Refactor out resource MR logic to separate file
-      rdma: Move out resource CQ logic to separate file
-      rdma: Move out resource CM-ID logic to separate file
-      rdma: Move resource QP logic to separate file
-      rdma: Properly mark RDMAtool license
-      rdma: Simplify code to reuse existing functions
-      rdma: Simplify CM_ID print code
-      rdma: Refactor CQ prints
-      rdma: Move MR code to be suitable for per-line parsing
-      rdma: Place PD parsing print routine into separate function
-      rdma: Move QP code to separate function
-      rdma: Unify netlink attribute checks prior to prints
-      rdma: Perform single .doit call to query specific objects
-      rdma: Provide and reuse filter functions
-      rdma: Add the prefix for driver attributes
-
-Leslie Monis (2):
-      tc: pie: change maximum integer value of tc_pie_xstats->prob
-      tc: pie: update man page
-
-Matt Ellison (1):
-      ip: support for xfrm interfaces
-
-Matteo Croce (1):
-      netns: add subcommand to attach an existing network namespace
-
-Nikolay Aleksandrov (6):
-      ip: xstats: add json output support
-      ip: bridge: add xstats json support
-      ip: bond: add xstats support
-      bridge: mdb: restore valid json output
-      bridge: vlan: fix standard stats output
-      ip: mroute: add fflush to print_mroute
-
-Phil Sutter (1):
-      ip-xfrm: Respect family in deleteall and list commands
-
-Ralf Baechle (1):
-      ip: display netrom link type
-
-Roopa Prabhu (1):
-      bridge: fdb: add support for src_vni option
-
-Stephen Hemminger (10):
-      tc: replace left side comparison
-      rdma: update uapi headers from 5.1-rc1
-      uapi: add CAKE FWMARK
-      uapi: in6.h add router alert isolate
-      uapi: bpf add set_ce
-      man: break long lines in man page sources
-      ip: fix typo in iplink_vlan usage message
-      uapi: update bpf.h
-      tc/ematch: fix deprecated yacc warning
-      v5.1.0
-
-Thomas Haller (4):
-      iprule: avoid printing extra space after gateway for nat action
-      iprule: avoid trailing space in print_rule() after printing protocol
-      iprule: refactor print_rule() to use leading space before printing at=
-tribute
-      iprule: always print realms keyword for rule
-
-Tobias Jungel (1):
-      ip: bridge: add mcast to unicast config flag
-
-Toke H=C3=B8iland-J=C3=B8rgensen (1):
-      q_cake: Add support for setting the fwmark option
-
-Zhiqiang Liu (1):
-      ipnetns: use-after-free problem in get_netnsid_from_name func
-
+> > +		rxm->full_len -= pad;
+> >  		rxm->offset += prot->prepend_size;
+> >  		rxm->full_len -= prot->overhead_size;
+> >  		tls_advance_record_sn(sk, &tls_ctx->rx, version);
+> > -- 
+> > 2.21.0
+> >   
