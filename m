@@ -2,130 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E77271A444
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 23:04:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E675E1A451
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 23:10:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728121AbfEJVEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 17:04:12 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:34170 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727677AbfEJVEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 17:04:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Jf3Pm2zDnOWtkQJIjcun0b5bQQ/YocTgtQI3kHh8yL8=; b=GhV0V2JAEAawViKkY2SVXycQp
-        58sa/lOsnxvAUOPJJLwRr/I8dd7Ihx7veCwvg8HSVDid0w1bxTWQxO9ld3u9kJ4TeLvjT5STWzKgh
-        JwdJuf6ZyMdgYq3BlFo1cjdTTsaDxzbnEhsX6f4kFkqCb5F2kXmWT+d02TYv8vGzLzn3OuPPvFz05
-        euU2PhPA1MsdnyG7/1nULM/rmfE6P05SIzOuX7te0snM7apPxN9SeZaN6wsBVbWT4SToHKYlp+Y6y
-        YStPU+T41v/E6t8AtAKkX2b9TZ/RlMoFwsAQ36hnJF5BwGPmpLYsu8p9GXJvKtC7PpQWRPLU7e/y1
-        uOten5YrA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:55748)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hPCgZ-0007uW-EE; Fri, 10 May 2019 22:04:07 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hPCgX-0004lU-SF; Fri, 10 May 2019 22:04:05 +0100
-Date:   Fri, 10 May 2019 22:04:05 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vicente Bergas <vicencb@gmail.com>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: net: phy: realtek: regression, kernel null pointer dereference
-Message-ID: <20190510210405.tehgan2s5rhimihc@shell.armlinux.org.uk>
-References: <16f75ff4-e3e3-4d96-b084-e772e3ce1c2b@gmail.com>
+        id S1727943AbfEJVKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 17:10:55 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:33725 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727835AbfEJVKz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 17:10:55 -0400
+Received: by mail-qt1-f195.google.com with SMTP id m32so5240984qtf.0
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 14:10:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=THcUwxzIuREArOc+zLL1sHNL/ieDsk0mHKvpJQeplds=;
+        b=ucPlXOjkUvujI5+CcmJa1q+/PYuGeLz9CG6YtF32opv1CmO1yRuzS3NzVoMC7niovr
+         Bj3aRZcK59Z2Hy1NEL979UF3psm6P64vsVqhBrDpNe16WvadkkC/TM0+V+TPK0YWuA0I
+         CHawRHfs2f7wDq9ltXmIHBzawWgfWEfRSAkAWtC59trFt1bF7xjVW+Q+qhVuMjGaObpc
+         9ZQg2+jG4sayCezw3gdgEG2TgCRZja1XaFh9BycNJgSHi4WU0cy3EqeOURkReZhJ6lAS
+         kXaXHDHqZELD1AbTDwZp0GdNdhppWPMqX9cJEEvaC6VSXmz4hgZP6G8hBkl/WzIqCBYJ
+         nIoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=THcUwxzIuREArOc+zLL1sHNL/ieDsk0mHKvpJQeplds=;
+        b=HgNLzTDuVr7X6bEo3i1ZnQ5MdgNRrXHafcdvV4hOyo0BtSvP2ikfWaQ+1Ydfgdi01Y
+         wc1SIHeXOXZfBDmbNXIEH7XOnHJq18qm1Nm7AxqBtKk4o6yKfZPsC76eJomh3eEy3vAM
+         mP3E6i6tsf5VH/Ols128EADOZbCP6kVNDF9S9brw1ySrvEevn/VFQzHFXjBU5MxnhsUc
+         aKOrtEUVlg2C3nJm4s9OyTSea0qDdXwNnJGQbSnPzdMvjqvCIY4dDHp2FRua58vyJEue
+         doMTcw/JAzEz8+fWVtsygehOCDmcyv3qY3AbDO53GlJbBgKXRcd2/pWv2Msrd30l/3s/
+         Vywg==
+X-Gm-Message-State: APjAAAWaFKACKkL02K9S9Jx1uYwmrYu4SZxeK+6FwRqyW8rBBXBAX47/
+        rsRg62drdqIlnBms1iKQY8t+yFxcqiAaHOFUrxc=
+X-Google-Smtp-Source: APXvYqxEc8q1+A8w9K6RL7Egc1KNIBJc0e2EmABHfU223/ns+uTMVivsAEoUAwiIzhwMeKupo5eTJA4kYWAOfDyCfqw=
+X-Received: by 2002:aed:2196:: with SMTP id l22mr11786455qtc.226.1557522654565;
+ Fri, 10 May 2019 14:10:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <16f75ff4-e3e3-4d96-b084-e772e3ce1c2b@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20190510184150.1671773-1-andriin@fb.com> <20190510201315.jrzt2yo2pchbckda@ast-mbp>
+In-Reply-To: <20190510201315.jrzt2yo2pchbckda@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 10 May 2019 14:10:43 -0700
+Message-ID: <CAEf4BzbmPwDqZBoKWK+L9VfKj1O=sC-RogzvT53jNEGMVMeZ2A@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf] libbpf: detect supported kernel BTF features and
+ sanitize BTF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 10, 2019 at 05:05:13PM +0200, Vicente Bergas wrote:
-> Hello,
-> there is a regression on linux v5.1-9573-gb970afcfcabd with a kernel null
-> pointer dereference.
-> The issue is the commit f81dadbcf7fd067baf184b63c179fc392bdb226e
->  net: phy: realtek: Add rtl8211e rx/tx delays config
-> which uncovered a bug in phy-core when attempting to call
->  phydev->drv->read_page
-> which can be null.
-> The patch to drivers/net/phy/phy-core.c below fixes the kernel null pointer
-> dereference. After applying the patch, there is still no network. I have
-> also tested the patch to drivers/net/phy/realtek.c, but no success. The
-> system hangs forever while initializing eth0.
+On Fri, May 10, 2019 at 1:13 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, May 10, 2019 at 11:41:50AM -0700, Andrii Nakryiko wrote:
+> > Depending on used versions of libbpf, Clang, and kernel, it's possible to
+> > have valid BPF object files with valid BTF information, that still won't
+> > load successfully due to Clang emitting newer BTF features (e.g.,
+> > BTF_KIND_FUNC, .BTF.ext's line_info/func_info, BTF_KIND_DATASEC, etc), that
+> > are not yet supported by older kernel.
+> >
+> > This patch adds detection of BTF features and sanitizes BPF object's BTF
+> > by substituting various supported BTF kinds, which have compatible layout:
+> >   - BTF_KIND_FUNC -> BTF_KIND_TYPEDEF
+> >   - BTF_KIND_FUNC_PROTO -> BTF_KIND_ENUM
+> >   - BTF_KIND_VAR -> BTF_KIND_INT
+> >   - BTF_KIND_DATASEC -> BTF_KIND_STRUCT
+> >
+> > Replacement is done in such a way as to preserve as much information as
+> > possible (names, sizes, etc) where possible without violating kernel's
+> > validation rules.
+> >
+> > v1->v2:
+> >   - add internal libbpf_util.h w/ common stuff
+> >   - switch SK storage BTF to use new libbpf__probe_raw_btf()
+> >
+> > Reported-by: Alexei Starovoitov <ast@fb.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ...
+> > diff --git a/tools/lib/bpf/libbpf_util.h b/tools/lib/bpf/libbpf_util.h
+> > index da94c4cb2e4d..319e744eb33a 100644
+> > --- a/tools/lib/bpf/libbpf_util.h
+> > +++ b/tools/lib/bpf/libbpf_util.h
+> > @@ -57,4 +57,16 @@ do {                               \
+> >  } /* extern "C" */
+> >  #endif
+> >
+> > +#define BTF_INFO_ENC(kind, kind_flag, vlen) \
+> > +     ((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
+> > +#define BTF_TYPE_ENC(name, info, size_or_type) (name), (info), (size_or_type)
+> > +#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
+> > +     ((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
+> > +#define BTF_TYPE_INT_ENC(name, encoding, bits_offset, bits, sz) \
+> > +     BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_INT, 0, 0), sz), \
+> > +     BTF_INT_ENC(encoding, bits_offset, bits)
+> > +#define BTF_MEMBER_ENC(name, type, bits_offset) (name), (type), (bits_offset)
+> > +#define BTF_PARAM_ENC(name, type) (name), (type)
+> > +#define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
+>
+> hmm. why are those needed in libbpf_util.h ?
+> I thought the goal is move them into libbpf_internal.h
+> and not to expose to users?
 
-You're not supposed to call these functions unless you provide the page
-read/write page functions.  The fact that this code has crept in shows
-that the patch adding the call to phy_select_page() in the realtek
-driver was patently never tested, which, IMHO is bad software
-engineering practice.  No, it's not even engineering practice, it's
-an untested hack.
-
-I don't see any point in adding run-time checks - that will only add
-additional code, and we lose the backtrace.  The resulting oops from
-trying to use these will give a backtrace and show exactly where the
-problem is, including which driver is at fault.
-
-The answer is... fix the driver to provide the required functions
-before attempting to use an interface that requires said functions!
-
-> 
-> Any suggestions?
-> 
-> Regards,
->  Vicenç.
-> 
-> --- a/drivers/net/phy/phy-core.c
-> +++ b/drivers/net/phy/phy-core.c
-> @@ -648,11 +648,17 @@
-> 
-> static int __phy_read_page(struct phy_device *phydev)
-> {
-> +	if (!phydev->drv->read_page)
-> +		return -EOPNOTSUPP;
-> +	
-> 	return phydev->drv->read_page(phydev);
-> }
-> 
-> static int __phy_write_page(struct phy_device *phydev, int page)
-> {
-> +	if (!phydev->drv->write_page)
-> +		return -EOPNOTSUPP;
-> +
-> 	return phydev->drv->write_page(phydev, page);
-> }
-> --- a/drivers/net/phy/realtek.c
-> +++ b/drivers/net/phy/realtek.c
-> @@ -214,8 +214,10 @@
-> 	 * for details).
-> 	 */
-> 	oldpage = phy_select_page(phydev, 0x7);
-> -	if (oldpage < 0)
-> -		goto err_restore_page;
-> +	if (oldpage < 0) {
-> +		dev_warn(&phydev->mdio.dev, "Unable to set rgmii delays\n");
-> +		return 0;
-> +	}
-> 
-> 	ret = phy_write(phydev, RTL821x_EXT_PAGE_SELECT, 0xa4);
-> 	if (ret)
-> 
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Oh... Sorry, my bad, leftover from previous refactoring... Looks like
+there will be v3.
