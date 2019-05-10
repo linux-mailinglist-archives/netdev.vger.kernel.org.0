@@ -2,193 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC2219CB9
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 13:32:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9D2A19CDF
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 13:46:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727249AbfEJLcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 07:32:04 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:36581 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727097AbfEJLcE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 07:32:04 -0400
-Received: from localhost (lfbn-1-10718-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id AB47024000E;
-        Fri, 10 May 2019 11:31:56 +0000 (UTC)
-Date:   Fri, 10 May 2019 13:31:55 +0200
-From:   Maxime Ripard <maxime.ripard@bootlin.com>
-To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-Cc:     Andy Duan <fugang.duan@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "john@phrozen.org" <john@phrozen.org>,
-        "bgolaszewski@baylibre.com" <bgolaszewski@baylibre.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alban Bedel <albeu@free.fr>, devicetree@vger.kernel.org
-Subject: Re: [PATCH net 0/3] add property "nvmem_macaddr_swap" to swap
- macaddr bytes order
-Message-ID: <20190510113155.mvpuhe4yzxdaanei@flea>
-References: <1557476567-17397-4-git-send-email-fugang.duan@nxp.com>
- <1557476567-17397-3-git-send-email-fugang.duan@nxp.com>
- <1557476567-17397-2-git-send-email-fugang.duan@nxp.com>
- <1557476567-17397-1-git-send-email-fugang.duan@nxp.com>
- <20190510112822.GT81826@meh.true.cz>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="xg7fylka47a3m4qs"
-Content-Disposition: inline
-In-Reply-To: <20190510112822.GT81826@meh.true.cz>
-User-Agent: NeoMutt/20180716
+        id S1727210AbfEJLqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 07:46:31 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:57232 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727079AbfEJLqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 07:46:31 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20190510114628euoutp01b49eab63e9f71968c4b7e8119aba6dfa~dT80at1JQ1858118581euoutp01i;
+        Fri, 10 May 2019 11:46:28 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20190510114628euoutp01b49eab63e9f71968c4b7e8119aba6dfa~dT80at1JQ1858118581euoutp01i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1557488788;
+        bh=sAYgRsBUjpJp0qTA3ifq8squgPrBoWwQtxswIlARtRM=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=FRBEPPErTlLsbK4UQ1aMkP83pf0G5vtZrv9mTttFmXaaMroTJKrHvvAzdoTY5sxKe
+         CkTG5Y9iGW77P3OOkpDm7LHuMaBRby49hAozsEOX467cj6Vdm1bfCmPbuwotw9EMcR
+         3tnKmLJAEBorSAcMoyGFMpMUp07Mb+ktSJhttCuY=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20190510114628eucas1p23184b6e27317f65fa9398e4402585694~dT8z-YXaK1072710727eucas1p2u;
+        Fri, 10 May 2019 11:46:28 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id 76.FB.04298.39465DC5; Fri, 10
+        May 2019 12:46:27 +0100 (BST)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20190510114627eucas1p25476833d2d375b113353741c18aecd92~dT8zVFDaW1928319283eucas1p27;
+        Fri, 10 May 2019 11:46:27 +0000 (GMT)
+X-AuditID: cbfec7f2-f2dff700000010ca-71-5cd56493a8f5
+Received: from eusync3.samsung.com ( [203.254.199.213]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 3C.4F.04146.39465DC5; Fri, 10
+        May 2019 12:46:27 +0100 (BST)
+Received: from amdc2143.DIGITAL.local ([106.120.51.59]) by
+        eusync3.samsung.com (Oracle Communications Messaging Server 7.0.5.31.0 64bit
+        (built May  5 2014)) with ESMTPA id <0PRA004DQE1CEA60@eusync3.samsung.com>;
+        Fri, 10 May 2019 12:46:27 +0100 (BST)
+From:   Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Lukasz Pawelczyk <havner@gmail.com>,
+        Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+Subject: [PATCH v3] netfilter: xt_owner: Add supplementary groups option
+Date:   Fri, 10 May 2019 13:46:22 +0200
+Message-id: <20190510114622.831-1-l.pawelczyk@samsung.com>
+X-Mailer: git-send-email 2.20.1
+MIME-version: 1.0
+Content-transfer-encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrIIsWRmVeSWpSXmKPExsWy7djPc7qTU67GGBzaqW3xd2c7s8Wc8y0s
+        Ftt6VzNa/H+tY3G5bxqzxZlJC5ksLu+aw2ZxbIGYxYR1p1gspr+5yuzA5XG6aSOLx5aVN5k8
+        ds66y+7x9vcJJo++LasYPQ59X8Dq8XmTXAB7FJdNSmpOZllqkb5dAlfG24lrmAv2CVV09G5l
+        a2A8ytfFyMEhIWAi8WiLTBcjF4eQwApGibcn7jJ1MXICOZ8ZJe5894WpuXi9AqJmGaPEsqkP
+        WCGc/4wS7QdfsoI0sAkYSHy/sJcZJCEiMJ1JYk3DK0aQBLNAqMS5R+uZQWxhAQ+JKxNfs4JM
+        ZRFQlTi5hAskzCtgJTHl5zuwEgkBeYnzvevYIeKCEj8m32OBGCMvcfDKcxaImjVsEk8+hUEc
+        5yLRfJoHIiwj0dlxkAkiXC1x8gzYzRICHYwSG1/MZoSosZb4PGkLM8RIPolJ26YzQ9TzSnS0
+        CUGUeEhMmHqaHSQsJBArsfdCwQRGyVlI7pmF5J4FjEyrGMVTS4tz01OLDfNSy/WKE3OLS/PS
+        9ZLzczcxAiP69L/jn3Ywfr2UdIhRgINRiYfXgv9KjBBrYllxZe4hRgkOZiUR3iIdoBBvSmJl
+        VWpRfnxRaU5q8SFGaQ4WJXHeaoYH0UIC6YklqdmpqQWpRTBZJg5OqQbGaXca986o/v3k7YEn
+        p7p5dthqaDz/JXBA4MbXQz837l9QqNW+XXi752+Fnyusf73/Vy/NcP7yCzZX2fUKujE/mPP7
+        LopJXN3/qoHroFrUhO//dy2wsbzC0yx7n3Ox82c+voJVJ/5JNjBM88kJmxpx8cXJi9vXeyvG
+        vNx56FDalGieZY5Lz0SaX1RiKc5INNRiLipOBABtnahb5AIAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCLMWRmVeSWpSXmKPExsVy+t/xq7qTU67GGKw8J2Dxd2c7s8Wc8y0s
+        Ftt6VzNa/H+tY3G5bxqzxZlJC5ksLu+aw2ZxbIGYxYR1p1gspr+5yuzA5XG6aSOLx5aVN5k8
+        ds66y+7x9vcJJo++LasYPQ59X8Dq8XmTXAB7FJdNSmpOZllqkb5dAlfG24lrmAv2CVV09G5l
+        a2A8ytfFyMEhIWAicfF6RRcjF4eQwBJGiW1HZjBBOI1MEtdOXWLtYuTkYBMwkPh+YS8ziC0i
+        MJ1J4s8sYRCbWSBU4tqM6WBxYQEPiSsTX7OCDGURUJU4uYQLJMwrYCUx5ec7sBIJAXmJ873r
+        2CHighI/Jt9jgRgjL3HwynOWCYw8s5CkZiFJLWBkWsUoklpanJueW2yoV5yYW1yal66XnJ+7
+        iREYltuO/dy8g/HSxuBDjAIcjEo8vBMEr8QIsSaWFVfmHmKU4GBWEuEt0gEK8aYkVlalFuXH
+        F5XmpBYfYpTmYFES5+0QOBgjJJCeWJKanZpakFoEk2Xi4JRqYOwxvusnJfStsbY4kt2B2zDf
+        VWY2154pv8wvaWSteWS+78yr9Cn8tXP3tBozBpfaNtVHha0XecRVtVabKdhw3lFryU5e7XQX
+        /eQpbpufCYT+nr7hm6XfsVdLGyrDZzpJWlX4R6wV4ujXm8woVsOSn/I2ftUOXu2wo48f8Ols
+        2LDG4HzfZIZsJZbijERDLeai4kQAsBtk9UcCAAA=
+X-CMS-MailID: 20190510114627eucas1p25476833d2d375b113353741c18aecd92
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190510114627eucas1p25476833d2d375b113353741c18aecd92
+References: <CGME20190510114627eucas1p25476833d2d375b113353741c18aecd92@eucas1p2.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The XT_OWNER_SUPPL_GROUPS flag causes GIDs specified with XT_OWNER_GID
+to be also checked in the supplementary groups of a process.
 
---xg7fylka47a3m4qs
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+f_cred->group_info cannot be modified during its lifetime and f_cred
+holds a reference to it so it's safe to use.
 
-On Fri, May 10, 2019 at 01:28:22PM +0200, Petr =C5=A0tetiar wrote:
-> Andy Duan <fugang.duan@nxp.com> [2019-05-10 08:23:58]:
->
-> Hi Andy,
->
-> you've probably forget to Cc some maintainers and mailing lists, so I'm
-> adding them now to the Cc loop. This patch series should be posted against
-> net-next tree as per netdev FAQ[0], but you've to wait little bit as
-> net-next is currently closed for the new submissions and you would need to
-> resend it anyway.
->
-> 0. https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html
->
-> > ethernet controller driver call .of_get_mac_address() to get
-> > the mac address from devictree tree, if these properties are
-> > not present, then try to read from nvmem. i.MX6x/7D/8MQ/8MM
-> > platforms ethernet MAC address read from nvmem ocotp eFuses,
-> > but it requires to swap the six bytes order.
->
-> Thanks for bringing up this topic, as I would like to extend the
-> functionality as well, but I'm still unsure how to tackle this and where,
-> so I'll (ab)use this opportunity to bring other use cases I would like to
-> cover in the future, so we could better understand the needs.
->
-> This reverse byte order format/layout is one of a few other storage forma=
-ts
-> currently used by vendors, some other (creative) vendors are currently
-> providing MAC addresses in NVMEMs as ASCII text in following two formats
-> (hexdump -C /dev/mtdX):
->
->  a) 0090FEC9CBE5 - MAC address stored as ASCII without colon between octe=
-ts
->
->   00000090  57 2e 4c 41 4e 2e 4d 41  43 2e 41 64 64 72 65 73  |W.LAN.MAC.=
-Addres|
->   000000a0  73 3d 30 30 39 30 46 45  43 39 43 42 45 35 00 48  |s=3D0090FE=
-C9CBE5.H|
->   000000b0  57 2e 4c 41 4e 2e 32 47  2e 30 2e 4d 41 43 2e 41  |W.LAN.2G.0=
-=2EMAC.A|
->
->   (From https://github.com/openwrt/openwrt/pull/1448#issuecomment-4424766=
-95)
->
->  b) D4:EE:07:33:6C:20 - MAC address stored as ASCII with colon between oc=
-tets
->
->   00000180  66 61 63 5f 6d 61 63 20  3d 20 44 34 3a 45 45 3a  |fac_mac =
-=3D D4:EE:|
->   00000190  30 37 3a 33 33 3a 36 43  3a 32 30 0a 42 44 49 4e  |07:33:6C:2=
-0.BDIN|
->
->   (From https://github.com/openwrt/openwrt/pull/1906#issuecomment-4838819=
-11)
->
-> > The patch set is to add property "nvmem_macaddr_swap" to swap
-> > macaddr bytes order.
->
-> so it would allow following DT construct (simplified):
->
->  &eth0 {
-> 	nvmem-cells =3D <&eth0_addr>;
-> 	nvmem-cell-names =3D "mac-address";
-> 	nvmem_macaddr_swap;
->  };
->
-> I'm not sure about the `nvmem_macaddr_swap` property name, as currently t=
-here
-> are no other properties with underscores, so it should be probably named =
-as
-> `nvmem-macaddr-swap`. DT specs permits use of the underscores, but the
-> estabilished convention is probably prefered.
->
-> In order to cover all above mentioned use cases, it would make more sense
-> to add a description of the MAC address layout to the DT and use this
-> information to properly postprocess the NVMEM content into usable MAC
-> address?
->
-> Something like this?
->
->  - nvmem-cells: phandle, reference to an nvmem node for the MAC address
->  - nvmem-cell-names: string, should be "mac-address" if nvmem is to be us=
-ed
->  - nvmem-mac-address-layout: string, specifies MAC address storage layout.
->    Supported values are: "binary", "binary-swapped", "ascii", "ascii-deli=
-mited".
->    "binary" is the default.
->
-> Or perhaps something like this?
->
->  - nvmem-cells: phandle, reference to an nvmem node for the MAC address
->  - nvmem-cell-names: string, should be any of the supported values.
->    Supported values are: "mac-address", "mac-address-swapped",
->    "mac-address-ascii", "mac-address-ascii-delimited".
->
-> I'm more inclined towards the first proposed solution, as I would like to
-> propose MAC address octet incrementation feature in the future, so it wou=
-ld
-> become:
->
->  - nvmem-cells: phandle, reference to an nvmem node for the MAC address
->  - nvmem-cell-names: string, should be "mac-address" if nvmem is to be us=
-ed
->  - nvmem-mac-address-layout: string, specifies MAC address storage layout.
->    Supported values are: "binary", "binary-swapped", "ascii", "ascii-deli=
-mited".
->    "binary" is the default.
->  - nvmem-mac-address-increment: number, value by which should be
->    incremented MAC address octet, could be negative value as well.
->  - nvmem-mac-address-increment-octet: number, valid values 0-5, default i=
-s 5.
->    Specifies MAC address octet used for `nvmem-mac-address-increment`.
->
-> What do you think?
+Signed-off-by: Lukasz Pawelczyk <l.pawelczyk@samsung.com>
+---
 
-It looks to me that it should be abstracted away by the nvmem
-interface and done at the provider level, not the customer.
+Changes from v2:
+ - XT_SUPPL_GROUPS -> XT_OWNER_SUPPL_GROUPS
+ - clarified group_info usage in the commit log
+    
+Changes from v1:
+ - complementary -> supplementary
 
-Maxime
+ include/uapi/linux/netfilter/xt_owner.h |  7 ++++---
+ net/netfilter/xt_owner.c                | 23 ++++++++++++++++++++---
+ 2 files changed, 24 insertions(+), 6 deletions(-)
 
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+diff --git a/include/uapi/linux/netfilter/xt_owner.h b/include/uapi/linux/netfilter/xt_owner.h
+index fa3ad84957d5..9e98c09eda32 100644
+--- a/include/uapi/linux/netfilter/xt_owner.h
++++ b/include/uapi/linux/netfilter/xt_owner.h
+@@ -5,9 +5,10 @@
+ #include <linux/types.h>
+ 
+ enum {
+-	XT_OWNER_UID    = 1 << 0,
+-	XT_OWNER_GID    = 1 << 1,
+-	XT_OWNER_SOCKET = 1 << 2,
++	XT_OWNER_UID          = 1 << 0,
++	XT_OWNER_GID          = 1 << 1,
++	XT_OWNER_SOCKET       = 1 << 2,
++	XT_OWNER_SUPPL_GROUPS = 1 << 3,
+ };
+ 
+ struct xt_owner_match_info {
+diff --git a/net/netfilter/xt_owner.c b/net/netfilter/xt_owner.c
+index 46686fb73784..a8784502aca6 100644
+--- a/net/netfilter/xt_owner.c
++++ b/net/netfilter/xt_owner.c
+@@ -91,11 +91,28 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 	}
+ 
+ 	if (info->match & XT_OWNER_GID) {
++		unsigned int i, match = false;
+ 		kgid_t gid_min = make_kgid(net->user_ns, info->gid_min);
+ 		kgid_t gid_max = make_kgid(net->user_ns, info->gid_max);
+-		if ((gid_gte(filp->f_cred->fsgid, gid_min) &&
+-		     gid_lte(filp->f_cred->fsgid, gid_max)) ^
+-		    !(info->invert & XT_OWNER_GID))
++		struct group_info *gi = filp->f_cred->group_info;
++
++		if (gid_gte(filp->f_cred->fsgid, gid_min) &&
++		    gid_lte(filp->f_cred->fsgid, gid_max))
++			match = true;
++
++		if (!match && (info->match & XT_OWNER_SUPPL_GROUPS) && gi) {
++			for (i = 0; i < gi->ngroups; ++i) {
++				kgid_t group = gi->gid[i];
++
++				if (gid_gte(group, gid_min) &&
++				    gid_lte(group, gid_max)) {
++					match = true;
++					break;
++				}
++			}
++		}
++
++		if (match ^ !(info->invert & XT_OWNER_GID))
+ 			return false;
+ 	}
+ 
+-- 
+2.20.1
 
---xg7fylka47a3m4qs
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXNVhKwAKCRDj7w1vZxhR
-xW6WAQC5BaOlbc8rImc96obCpWFXRy6rg/HK1V3t2q+QJZpRzgD/ZEzsTCcJVAhb
-x0FLM/3sx8KSCTdckqFIpGJxGQflhQ8=
-=Lc8s
------END PGP SIGNATURE-----
-
---xg7fylka47a3m4qs--
