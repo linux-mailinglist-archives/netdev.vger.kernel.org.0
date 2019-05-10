@@ -2,76 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C6441A20F
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 18:59:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DB271A212
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 19:01:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727861AbfEJQ70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 12:59:26 -0400
-Received: from secvs01.rockwellcollins.com ([205.175.225.240]:27534 "EHLO
-        secvs01.rockwellcollins.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727796AbfEJQ70 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 12:59:26 -0400
-X-RC-All-From: , 205.175.225.60, No hostname, robert.mccabe@rockwellcollins.com,
- "robert.mccabe" <robert.mccabe@rockwellcollins.com>, , 
-X-RC-Attachments: , ,
-X-RC-RemoteIP: 205.175.225.60
-X-RC-RemoteHost: No hostname
-X-RC-IP-Hostname: secip01.rockwellcollins.com
-X-RC-IP-MID: 278634083
-X-RC-IP-Group: GOOGLE_RELAYED
-X-RC-IP-Policy: $GOOGLE_RELAYED
-X-RC-IP-SBRS: None
-Received: from unknown (HELO mail-pf1-f199.google.com) ([205.175.225.60])
-  by secvs01.rockwellcollins.com with ESMTP/TLS/AES128-GCM-SHA256; 10 May 2019 11:59:25 -0500
-Received: by mail-pf1-f199.google.com with SMTP id i123so4522919pfb.19
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 09:59:25 -0700 (PDT)
+        id S1727873AbfEJRBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 13:01:09 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:33208 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727796AbfEJRBJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 13:01:09 -0400
+Received: by mail-qt1-f196.google.com with SMTP id m32so4350215qtf.0
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 10:01:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=VRFwCStrPTcDuGWHYqKRGwK0QteT1eytgvDU9OCPpjI=;
+        b=NZZ1I1eQkLXQ6xCXGOH14awUR/k7MvBdw6v3BAAPDHX3EBR+eTaus2RO/lQR2HpiKd
+         9K+PRt2HqRoj7noZakib9DWItNHq7efiA1yqIp9DKDD1HNuuOs2ztL/ZtsYrA0EzhIVT
+         X9luWvzn4ExEFiCm+Y9dK+2xtVSE6UKH9+5g/mEnrwUIKlumctcgNYQ8sC80boCjuWIQ
+         uSlCyYF+dynU7Teeq8505VRV6MhDnDFvKJti2oi0DtENzPv2LRg8okzvhwtzDMdZLrYd
+         qQZGI/reRfLiuOSfBdnv4+ra2hVMvKnkXSQMfCqu4lZPv5aADwyoaaxZQ8n7YcIP3nMW
+         dNYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=qCM2LTAoRdxdGnv1zix4bkNP0NUwPgqPAhkr/QIl0uM=;
-        b=aGE0EAteMzYdtdGK92J8z0G8vI55Qx82CZ0hNYVS19SzGSfQSNv42u6zFo+UFbibQK
-         DP1cueUl2X8+TGEvOQqPBDib6v5D6d2GBpEYkeXY3Z1Oq7keiXA9hb+jUOcSdJ2++W0+
-         laeKojFL3LKOtpWRIZcq/p5O04K+9V8Xxfsm2/tAqd9GM3CkoiCD4FnsAMvltuj+fzYg
-         sHUUhtqQCcT1AqjaSk91gXgTjBS5Bb03GujhQMjXhSLWky8Xl0mddc6HnBCJiEe8UDKH
-         7VC9NbA5txyx2sZC2LhXTl6DiU1yGg4tnpjyo2qXD1OzpBIAGsEVRd+pLO1SXVRZy4XZ
-         kpMQ==
-X-Gm-Message-State: APjAAAXvm7nAzT59M0fX7oRkxybj4jauGl4Dvox3f7a0U4xNmJCk3sgR
-        jZLV3M+3m4fHTnfzcD4G7nZp5QIDPMW2mpOarAXxwSZHuo64e+51q5UGkQ+gTBvk/sbYfRXmkcG
-        EsQtOHPRpRHt0h0HT+3hAPSQwmSfxm1V6X8WU3Fp1OgNInozQ510=
-X-Received: by 2002:a63:295:: with SMTP id 143mr15057802pgc.279.1557507564300;
-        Fri, 10 May 2019 09:59:24 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyUeNOVVvxhkR6XanQRg3/P7Z9hDI7uYFVDM4xjlOQrmS9eAulNR19VzFbrRTvsEhNNGlSI+STSivR09mLUrl4=
-X-Received: by 2002:a63:295:: with SMTP id 143mr15057743pgc.279.1557507563874;
- Fri, 10 May 2019 09:59:23 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=VRFwCStrPTcDuGWHYqKRGwK0QteT1eytgvDU9OCPpjI=;
+        b=nvdIsET6tEBgayuvwHU3l9VWY1RTHZYdCd3HA0U53RkRSkXd9hG0bTHDSfCNgQIoBN
+         sPBLqrk8JURT3h9+7NOvNB84n6HC9Kb8q36hQhrze/BIlUTVrPrevam3oeyJ6Qj4dGjq
+         aSdfWvhkJrGGBNP/Fq7QL2sX+0+J7arBIY1WuWMllmONWbR4La9JI/IXGlV4bqAbdia7
+         2QtrO9Wgw6UB+9b9gUgE0ygFIQB2S1eD5YM7aGa/I/OuUWYQ5kXMbzjPbskAluhvkHoa
+         DvkbnDx9B9TCTknTgCbuMFpQRH5Fk80YnmXE0f892rV5e0RyWkp1VstffC4G7rNXxAEB
+         PdkQ==
+X-Gm-Message-State: APjAAAVNaw32vAQeFjUxarJkbIStw9JAUw6Ta5OnwqCp9zJTAPBNPfX6
+        PnLg++zYJWk65+M1MwJqdWOr+w==
+X-Google-Smtp-Source: APXvYqyaSudbfKSzos3kVglffl0DKyyh0N26yZWHJaVk7acO/4CrH1FzAIUEynwgwv+aujKc02D6lQ==
+X-Received: by 2002:ac8:342e:: with SMTP id u43mr3929573qtb.319.1557507668150;
+        Fri, 10 May 2019 10:01:08 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id x65sm2854001qke.58.2019.05.10.10.01.07
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 10 May 2019 10:01:08 -0700 (PDT)
+Date:   Fri, 10 May 2019 10:00:54 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>
+Subject: Re: [bpf PATCH v4 1/4] bpf: tls, implement unhash to avoid
+ transition out of ESTABLISHED
+Message-ID: <20190510100054.29f7235c@cakuba.netronome.com>
+In-Reply-To: <155746426913.20677.2783358822817593806.stgit@john-XPS-13-9360>
+References: <155746412544.20677.8888193135689886027.stgit@john-XPS-13-9360>
+        <155746426913.20677.2783358822817593806.stgit@john-XPS-13-9360>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-From:   "robert.mccabe" <robert.mccabe@rockwellcollins.com>
-Date:   Fri, 10 May 2019 11:59:13 -0500
-Message-ID: <CAA0ESdpYVxx6Ra94hV=1RWH1+OZHFG3_7B-bpEicgwHiYvTczg@mail.gmail.com>
-Subject: Question about setting custom STAB
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Awhile ago I submitted this iproute2 patch:
-https://patchwork.ozlabs.org/patch/784165/
+On Thu, 09 May 2019 21:57:49 -0700, John Fastabend wrote:
+> @@ -2042,12 +2060,14 @@ void tls_sw_free_resources_tx(struct sock *sk)
+>  	if (atomic_read(&ctx->encrypt_pending))
+>  		crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
+>  
+> -	release_sock(sk);
+> +	if (locked)
+> +		release_sock(sk);
+>  	cancel_delayed_work_sync(&ctx->tx_work.work);
 
-And the corresponding kernel patch:
-https://patchwork.ozlabs.org/patch/783696/
+So in the splat I got (on a slightly hacked up kernel) it seemed like
+unhash may be called in atomic context:
 
-To allow the setting of arbitrary qdisc size table so that the packet
-scheduler code in __qdisc_calculate_pkt_len charges the correct
-bandwidth per my custom link layer.  These patches were not applied
-because the reviewers didn't like that I added another enumeration to
-the kernel's UAPI:  TC_LINKLAYER_CUSTOM.
+[  783.232150]  tls_sk_proto_unhash+0x72/0x110 [tls]
+[  783.237497]  tcp_set_state+0x484/0x640
+[  783.241776]  ? __sk_mem_reduce_allocated+0x72/0x4a0
+[  783.247317]  ? tcp_recv_timestamp+0x5c0/0x5c0
+[  783.252265]  ? tcp_write_queue_purge+0xa6a/0x1180
+[  783.257614]  tcp_done+0xac/0x260
+[  783.261309]  tcp_reset+0xbe/0x350
+[  783.265101]  tcp_validate_incoming+0xd9d/0x1530
 
-My question is: why is the setting of the STAB not exposed to
-userspace applications?  This seems to be a powerful feature that is
-more generic than hard-coding the STABs for TC_LINKLAYER_ETHERNET and
-TC_LINK_LAYER_ATM.  Or maybe I'm missing something and there is
-mechanism to do this without my iproute2 patch?
+I may have been unclear off-list, I only tested the patch no longer
+crashes the offload :(
 
-P.S. Sorry for the apparent spam.  My previous email's "From:" address
-was messed up.
+> -	lock_sock(sk);
+> +	if (locked)
+> +		lock_sock(sk);
+>  
+>  	/* Tx whatever records we can transmit and abandon the rest */
+> -	tls_tx_records(sk, -1);
+> +	tls_tx_records(sk, tls_ctx, -1);
+>  
+>  	/* Free up un-sent records in tx_list. First, free
+>  	 * the partially sent record if any at head of tx_list.
+
