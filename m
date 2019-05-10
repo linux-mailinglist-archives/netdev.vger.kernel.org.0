@@ -2,72 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3969197C2
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 06:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18096197D6
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 06:57:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727015AbfEJEsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 00:48:17 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53178 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725904AbfEJEsQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 May 2019 00:48:16 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id A5604308339A;
-        Fri, 10 May 2019 04:48:16 +0000 (UTC)
-Received: from [10.72.12.54] (ovpn-12-54.pek2.redhat.com [10.72.12.54])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7CE635C296;
-        Fri, 10 May 2019 04:48:10 +0000 (UTC)
-Subject: Re: [RFC PATCH V2] vhost: don't use kmap() to log dirty pages
-From:   Jason Wang <jasowang@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@infradead.org>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>
-References: <1557406680-4087-1-git-send-email-jasowang@redhat.com>
- <20190509090433-mutt-send-email-mst@kernel.org>
- <d6d69a36-9a3a-2a21-924e-97fdcc6e6733@redhat.com>
-Message-ID: <fa6444aa-9c46-22f0-204a-c7592dc5bd51@redhat.com>
-Date:   Fri, 10 May 2019 12:48:12 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726910AbfEJE5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 00:57:44 -0400
+Received: from mail-it1-f195.google.com ([209.85.166.195]:34667 "EHLO
+        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725927AbfEJE5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 00:57:44 -0400
+Received: by mail-it1-f195.google.com with SMTP id p18so6687703itm.1;
+        Thu, 09 May 2019 21:57:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=XhD9AaJrk/ZyvLQSA+mEVn0uGSnJUWc1fc9BTMSCrwM=;
+        b=WFf1QRwjZitDJiFwf5SSd6VRXgPpT1FyuQqnNl12/MK+7V/3k6Nh94bFcCfU6JRaZL
+         hUkcFlke/G/b73IzCfP24FL9/jdzPJnnbliuXY006wiAoZ9oegAxI/HHW+KRaBfzxADY
+         bS4qmNDtNn6+RU6wifViVwhs71hlDW/QJlGVMUC8YnDb6hx0ljfA/lFtPGNEs6XZjsfJ
+         SJpjMl791NN8WiuNazPYTmGxAZVF4nMjgl7lzK/HGb+mTGsSH/bMkJDcuFclLVa3Ks3r
+         TLsHflQuOWDkaPwCQfUeONHrBU+ZrM6wjd63roQTYA6JBHfq+bnt3XCtBcTbhgRB2UlR
+         J+SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=XhD9AaJrk/ZyvLQSA+mEVn0uGSnJUWc1fc9BTMSCrwM=;
+        b=H+xyWOnGBZRQjmEiULeqzdKwUcPmubAK9Ld0+2XLpwlusDIM6aV7r13sxQTfBYY8vU
+         mKFdYw4GuByeg+RVszFqric0UcmysKATl1mQ7bcHal210vNXPkFa2oeCAPOXCuJQ493f
+         mpLEb7pYqMedxVU4g2AQ3RSiNnJBYCVO4sR9rfsEWGFFHDKasLPf12FHmjc04Cplfngw
+         9BT6qM3vhuhn7pDtxEcBZf00CUBTUFpao1fWFlxBSYyZnOorgIfbBoJZw2hv0V/lB9bM
+         +P41MQgbICd8NQ8LrEufbZZFXdMzrAUIk8D18F+hzrBE7qk1TsHlKcOrwSE0TG368wem
+         fAEw==
+X-Gm-Message-State: APjAAAXUVR1+FVyWNN7n96Y4zdF+tnH2TY9J7ILbSmbREOYvc23mmoki
+        dUU3AkI7+Hk65XzCt/nyFq0=
+X-Google-Smtp-Source: APXvYqxqwl6d1B2CbgzohwOi8dWqwdy3NAMR+oyoFhYATMz1PzrDkNtgt8W13HqLV0h6v2RCK9Dkyw==
+X-Received: by 2002:a02:1cc1:: with SMTP id c184mr6214614jac.97.1557464263195;
+        Thu, 09 May 2019 21:57:43 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id w132sm2051083itb.30.2019.05.09.21.57.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 May 2019 21:57:41 -0700 (PDT)
+Subject: [bpf PATCH v4 0/4] sockmap/ktls fixes
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     jakub.kicinski@netronome.com, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Date:   Thu, 09 May 2019 21:57:30 -0700
+Message-ID: <155746412544.20677.8888193135689886027.stgit@john-XPS-13-9360>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-In-Reply-To: <d6d69a36-9a3a-2a21-924e-97fdcc6e6733@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Fri, 10 May 2019 04:48:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Series of fixes for sockmap and ktls, see patches for descriptions.
 
-On 2019/5/10 上午10:59, Jason Wang wrote:
->>>
->>>         r = get_user_pages_fast(log, 1, 1, &page);
->> OK so the trick is that page is pinned so you don't expect
->> arch_futex_atomic_op_inuser below to fail.  get_user_pages_fast
->> guarantees page is not going away but does it guarantee PTE won't be
->> invaidated or write protected?
->
->
-> Good point, then I think we probably need to do manual fixup through 
-> fixup_user_fault() if arch_futex_atomic_op_in_user() fail. 
+v2: fix build issue for CONFIG_TLS_DEVICE and fixup couple comments
+    from Jakub
+
+v3: fix issue where release could call unhash resulting in a use after
+    free. Now we detach the ulp pointer before calling into destroy
+    or unhash. This way if we get a callback into unhash from destroy
+    path there is no ulp to access. The fallout is we must pass the
+    ctx into the functions rather than use the sk lookup in each
+    routine. This is probably better anyways.
+
+v4: move unhash routine to TLS_SW only, hardware offloads need to
+    keep ctx around long enough to free in-flight context. We will
+    need a follow up fix for this.
+
+---
+
+John Fastabend (4):
+      bpf: tls, implement unhash to avoid transition out of ESTABLISHED
+      bpf: sockmap, only stop/flush strp if it was enabled at some point
+      bpf: sockmap remove duplicate queue free
+      bpf: sockmap fix msg->sg.size account on ingress skb
 
 
-This looks like a overkill, we don't need to atomic environment here 
-actually. Instead, just keep pagefault enabled should work. So just 
-introduce arch_futex_atomic_op_inuser_inatomic() variant with pagefault 
-disabled there just for futex should be sufficient.
+ include/net/tls.h    |   28 +++++++---
+ net/core/skmsg.c     |    7 ++-
+ net/ipv4/tcp_bpf.c   |    2 -
+ net/tls/tls_device.c |   10 ++--
+ net/tls/tls_main.c   |   82 ++++++++++++++++++++---------
+ net/tls/tls_sw.c     |  140 +++++++++++++++++++++++++++++---------------------
+ 6 files changed, 166 insertions(+), 103 deletions(-)
 
-Thanks
-
+--
+Signature
