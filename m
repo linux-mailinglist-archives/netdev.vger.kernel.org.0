@@ -2,236 +2,458 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0890C1A509
-	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 00:00:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EFD41A50A
+	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 00:00:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728062AbfEJWAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 18:00:03 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33824 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727835AbfEJWAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 18:00:03 -0400
-Received: by mail-wr1-f65.google.com with SMTP id f7so9375535wrq.1
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 15:00:01 -0700 (PDT)
+        id S1728140AbfEJWA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 18:00:26 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46412 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727835AbfEJWAZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 18:00:25 -0400
+Received: by mail-pg1-f195.google.com with SMTP id t187so3605685pgb.13
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 15:00:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=S8PloTCWpykTgsKBLPi+hnLD/gkacrbOIS5uMp0Gj+s=;
-        b=wUop3N8PPBWWFD8v/byZL3+s9WKmMj+5xhfLHhrSLTH3uzzxMWR7jDJ1zWMW31IKaQ
-         tIE+FPwN3u0rCbG5TSryrzlD0u/1gtVi2YKUVxsusaCA9j8Im8/6+SYuCyn4ykrdPj1M
-         HnhtA3+vReUYUxMU/ivEvjUbl3KjXG+J49ma1r5p6yBObaRRgOklqzbqH3xDgQkIs5n9
-         Wy/AxAJODPsLiIzuDLRcHdHHf3W1SAmCfD7aVEn9MylyNjS8Sji/hIXLH+Dj/Zn7rfBm
-         3JXAKCzLxliSmgTQTbbD445ml1gAd7Ym9iVdCcIEuX+khTP+inkrdyiazsGA45d3gFnP
-         zpxw==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=mZVlHWP81LnrfGk9YE04o+GXaRGCtibmtMJQG2IgEKk=;
+        b=y9h0xCXnkFdPjHzTD3zcvFcdUDb3kIzhTVvHf+FkjvbaaS3Qu5B8OQds1fB171aIQn
+         cl/ZoKGRRfCBet0h7dfra2XqSzKneGFdo2/9aDjegY2UJVnQJY11QlWB6zu57m08bozG
+         tMvYjoREWe1Q38rCsrOofZmE0Pf2V53PIcssrqOUREGnd9P1ux/0EOZ2gNdc9EEDU7Yy
+         Xq1kNAoz5CLoew+bA/lhWJsfoTzkr5O1+B8B2BMVxkPYvyF4HTFdGzS7W4OV2kL5SNHz
+         Q/kmN5MRUF7MbbCa9AONN5k7drbwQg9/OFAUK7N4BVlDePRgfKPWlEDVZKNuMeJoHxit
+         nBzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=S8PloTCWpykTgsKBLPi+hnLD/gkacrbOIS5uMp0Gj+s=;
-        b=tnULkCasxiCrN53FsyGJjUmrga4yQfdhiQG92cpj7f2wzVb4/GXxnmLsdxjbSGR9jq
-         aku6EpY/m/p57Q+K02qPY72xzib1Xk8YpDojnmB1Fhoq3E9dGppj1n2IlAUO3ECDCI+v
-         Sxgj0TNY6pTcbCNQf4zVfcvuBtIa0Gv49iPJPul/qnSbkEhqHCfVhzp5UDbLUitBj5cC
-         Nb1l2BHxbnLmkDyLTXl3gfEY/hKt35OehCkvGtqwIsahoE2dK/X7efSZhEwhGjDJn+uC
-         iW+uzYDnyx108UB5IysOPXAwVb4KMbzL4AYUlvP5osEX6uUJejg/aTXV8bTJfJBti5Cm
-         Xi/Q==
-X-Gm-Message-State: APjAAAW5BjkXdaSQDuFXtoLnnmJVG7/f8Gx9Lupi8fN49EMGNu9Gkabx
-        vXboOLaYFWLGhlcGlj2sJhuJxw==
-X-Google-Smtp-Source: APXvYqzWybQ+Kf4t2VT1DAg1v89sSFCTCgH9R/Lq0e/pXL3u9gUdtwPpKNOM7YIiKqmazbmjdhdosw==
-X-Received: by 2002:adf:e309:: with SMTP id b9mr9025245wrj.135.1557525600478;
-        Fri, 10 May 2019 15:00:00 -0700 (PDT)
-Received: from LAPTOP-V3S7NLPL (cpc1-cmbg19-2-0-cust104.5-4.cable.virginm.net. [82.27.180.105])
-        by smtp.gmail.com with ESMTPSA id d4sm15953058wrf.7.2019.05.10.14.59.59
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=mZVlHWP81LnrfGk9YE04o+GXaRGCtibmtMJQG2IgEKk=;
+        b=nSIUBPo4Iy/sd2aR6D4nc1VYIfS0yyFH6qOekUbob4vsq8c7cXC6qpbw5+GfLGUWT+
+         bSNLPhIh2lkCmIlC9HTI8viNZBecASGy0q+hoyHGsxGHxEeFPylUla0jvIO70EHGsVf1
+         FmLxLEgmfrjYp0BXPdtFDaabVcxDznWgQNfwoVnZKWA+X9lHxjJWH7PHtmhNVrRo++jp
+         joK3MNKFqGKz6iR4MO5XJrmuy4gT+NoIXkdD7/gpmweltrQSY0ad5ePO6doa9U2m9mTR
+         1SiUY3WNyaLAqEZUjDYQehf0aUyMJl5yMTUT3vRaMfceOfJrDsLiuCH+XAV2H7/Kl0kb
+         LrMw==
+X-Gm-Message-State: APjAAAW2jXZ/0lT+5Nw8cgaHvp0fTgP4k94rUuKKsWS2Pjb1mH9hPL7L
+        udhmxivt+Qc4BxTeCGq+Vnc0dw==
+X-Google-Smtp-Source: APXvYqyEPfz7uE0naadBY0/nreB5oWij3aoltDbil9SvocH3tbSA3+TXPGdAPIcxr4YCUsKzOxYp0A==
+X-Received: by 2002:a63:7989:: with SMTP id u131mr7791407pgc.180.1557525624560;
+        Fri, 10 May 2019 15:00:24 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id v64sm8383550pfv.106.2019.05.10.15.00.23
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 10 May 2019 14:59:59 -0700 (PDT)
-References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com> <1556880164-10689-2-git-send-email-jiong.wang@netronome.com> <20190506155041.ofxsvozqza6xrjep@ast-mbp> <87mujx6m4n.fsf@netronome.com> <20190508175111.hcbufw22mbksbpca@ast-mbp> <87ef5795b5.fsf@netronome.com> <20190510015352.6w6fghcthtjj74pl@ast-mbp> <87sgtmk8yj.fsf@netronome.com> <20190510201022.63wqdqxljahguzk3@ast-mbp>
-User-agent: mu4e 0.9.18; emacs 25.2.2
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiong Wang <jiong.wang@netronome.com>, daniel@iogearbox.net,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH v6 bpf-next 01/17] bpf: verifier: offer more accurate helper function arg and return type
-In-reply-to: <20190510201022.63wqdqxljahguzk3@ast-mbp>
-Date:   Fri, 10 May 2019 22:59:55 +0100
-Message-ID: <87a7fuezs4.fsf@netronome.com>
+        Fri, 10 May 2019 15:00:23 -0700 (PDT)
+Date:   Fri, 10 May 2019 15:00:23 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [PATCH v3 bpf] libbpf: detect supported kernel BTF features and
+ sanitize BTF
+Message-ID: <20190510220023.GJ1247@mini-arch>
+References: <20190510211315.2086535-1-andriin@fb.com>
+ <20190510213600.GI1247@mini-arch>
+ <CAEf4BzZD1=S0hcg7wj0_LqggcVn_6SDWzy3ZqS=rGbf0Q_s5+Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZD1=S0hcg7wj0_LqggcVn_6SDWzy3ZqS=rGbf0Q_s5+Q@mail.gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 05/10, Andrii Nakryiko wrote:
+> On Fri, May 10, 2019 at 2:36 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> >
+> > On 05/10, Andrii Nakryiko wrote:
+> > > Depending on used versions of libbpf, Clang, and kernel, it's possible to
+> > > have valid BPF object files with valid BTF information, that still won't
+> > > load successfully due to Clang emitting newer BTF features (e.g.,
+> > > BTF_KIND_FUNC, .BTF.ext's line_info/func_info, BTF_KIND_DATASEC, etc), that
+> > > are not yet supported by older kernel.
+> > >
+> > > This patch adds detection of BTF features and sanitizes BPF object's BTF
+> > > by substituting various supported BTF kinds, which have compatible layout:
+> > >   - BTF_KIND_FUNC -> BTF_KIND_TYPEDEF
+> > >   - BTF_KIND_FUNC_PROTO -> BTF_KIND_ENUM
+> > >   - BTF_KIND_VAR -> BTF_KIND_INT
+> > >   - BTF_KIND_DATASEC -> BTF_KIND_STRUCT
+> > >
+> > > Replacement is done in such a way as to preserve as much information as
+> > > possible (names, sizes, etc) where possible without violating kernel's
+> > > validation rules.
+> > >
+> > > v2->v3:
+> > >   - remove duplicate #defines from libbpf_util.h
+> > >
+> > > v1->v2:
+> > >   - add internal libbpf_internal.h w/ common stuff
+> > How is libbpf_internal.h different from libbpf_util.h? libbpf_util.h
+> > looks pretty "internal" to me. Maybe use that one instead?
+> 
+> It's not anymore. It's included from xsk.h, which is not internal, so
+> libbpf_util.h was recently exposed as public as well.
+But I still don't see any LIBBPF_API exported functions in libbpf_util.h.
+It looks like the usage is still mostly (only?) internal. The barrier
+stuff is for internal usage as well.
 
-Alexei Starovoitov writes:
+Also, why do think your new probe helper should be internal? I guess
+that at some point bpftool might use it to probe and dump BTF features
+as well.
 
-> On Fri, May 10, 2019 at 09:30:28AM +0100, Jiong Wang wrote:
->> 
->> Alexei Starovoitov writes:
->> 
->> > On Thu, May 09, 2019 at 01:32:30PM +0100, Jiong Wang wrote:
->> >> 
->> >> Alexei Starovoitov writes:
->> >> 
->> >> > On Wed, May 08, 2019 at 03:45:12PM +0100, Jiong Wang wrote:
->> >> >> 
->> >> >> I might be misunderstanding your points, please just shout if I am wrong.
->> >> >> 
->> >> >> Suppose the following BPF code:
->> >> >> 
->> >> >>   unsigned helper(unsigned long long, unsigned long long);
->> >> >>   unsigned long long test(unsigned *a, unsigned int c)
->> >> >>   {
->> >> >>     unsigned int b = *a;
->> >> >>     c += 10;
->> >> >>     return helper(b, c);
->> >> >>   }
->> >> >> 
->> >> >> We get the following instruction sequence by latest llvm
->> >> >> (-O2 -mattr=+alu32 -mcpu=v3)
->> >> >> 
->> >> >>   test:
->> >> >>     1: w1 = *(u32 *)(r1 + 0)
->> >> >>     2: w2 += 10
->> >> >>     3: call helper
->> >> >>     4: exit
->> >> >> 
->> >> >> Argument Types
->> >> >> ===
->> >> >> Now instruction 1 and 2 are sub-register defines, and instruction 3, the
->> >> >> call, use them implicitly.
->> >> >> 
->> >> >> Without the introduction of the new ARG_CONST_SIZE32 and
->> >> >> ARG_CONST_SIZE32_OR_ZERO, we don't know what should be done with w1 and
->> >> >> w2, zero-extend them should be fine for all cases, but could resulting in a
->> >> >> few unnecessary zero-extension inserted.
->> >> >
->> >> > I don't think we're on the same page.
->> >> > The argument type is _const_.
->> >> > In the example above they are not _const_.
->> >> 
->> >> Right, have read check_func_arg + check_helper_mem_access again.
->> >> 
->> >> Looks like ARG_CONST_SIZE* are designed for describing memory access size
->> >> for things like bounds checking. It must be a constant for stack access,
->> >> otherwise prog will be rejected, but it looks to me variables are allowed
->> >> for pkt/map access.
->> >> 
->> >> But pkt/map has extra range info. So, indeed, ARG_CONST_SIZE32* are
->> >> unnecessary, the width could be figured out through the range.
->> >> 
->> >> Will just drop this patch in next version.
->> >> 
->> >> And sorry for repeating it again, I am still concerned on the issue
->> >> described at https://www.spinics.net/lists/netdev/msg568678.html.
->> >> 
->> >> To be simple, zext insertion is based on eBPF ISA and assumes all
->> >> sub-register defines from alu32 or narrow loads need it if the underlying
->> >
->> > It's not an assumption. It's a requirement. If JIT is not zeroing
->> > upper 32-bits after 32-bit alu or narrow load it's a bug.
->> >
->> >> hardware arches don't do it. However, some arches support hardware zext
->> >> partially. For example, PowerPC, SPARC etc are 64-bit arches, while they
->> >> don't do hardware zext on alu32, they do it for narrow loads. And RISCV is
->> >> even more special, some alu32 has hardware zext, some don't.
->> >> 
->> >> At the moment we have single backend hook "bpf_jit_hardware_zext", once a
->> >> backend enable it, verifier just insert zero extension for all identified
->> >> alu32 and narrow loads.
->> >> 
->> >> Given verifier analysis info is not pushed down to JIT back-ends, verifier
->> >> needs more back-end info pushed up from back-ends. Do you think make sense
->> >> to introduce another hook "bpf_jit_hardware_zext_narrow_load" to at least
->> >> prevent unnecessary zext inserted for narrowed loads for arches like
->> >> PowerPC, SPARC?
->> >> 
->> >> The hooks to control verifier zext insertion then becomes two:
->> >> 
->> >>   bpf_jit_hardware_zext_alu32
->> >>   bpf_jit_hardware_zext_narrow_load
->> >
->> > and what to do with other combinations?
->> > Like in some cases narrow load on particular arch will be zero extended
->> > by hw and if it's misaligned or some other condition then it will not be? 
->> > It doesn't feel that we can enumerate all such combinations.
->> 
->> Yes, and above narrow_load is just an example. As mentioned, behaviour on
->> alu32 also diverse on some arches.
->> 
->> > It feels 'bpf_jit_hardware_zext' backend hook isn't quite working.
->> 
->> It is still useful for x86_64 and aarch64 to disable verifier insertion
->> pass completely. But then perhaps should be renamed into
->> "bpf_jit_verifier_zext". Returning false means verifier should disable the
->> insertion completely.
->
-> I think the name is too cryptic.
-> May be call it bpf_jit_needs_zext ?
+I also see us copying around all the BTF_XXX macros, I brought this up for
+some selftest patches and now we have a single place for BTX_XXX macros
+in selftests (tools/testing/selftests/test_bpf.h).
+Maybe they should belong to libbpf instead?
 
-Ack.
-
-> x64/arm64 will set it false and the rest to true ?
-
-Ack.
-
->> > It optimizes out some zext, but may be adding unnecessary extra zexts.
->> 
->> This is exactly my concern.
->> 
->> > May be it should be a global flag from the verifier unidirectional to JITs
->> > that will say "the verifier inserted MOV32 where necessary. JIT doesn't
->> > need to do zext manually".
->> > And then JITs will remove MOV32 when hw does it automatically.
->> > Removal should be easy, since such insn will be right after corresponding
->> > alu32 or narrow load.
->> 
->> OK, so you mean do a simple peephole to combine insns. JIT looks forward
->> the next insn, if it is mov32 with dst_src == src_reg, then skip it. And
->> only do this when jitting a sub-register write eBPF insn and there is
->> hardware zext support.
->> 
->> I guess such special mov32 won't be generated by compiler that it won't be
->> jump destination hence skip it is safe.
->> 
->> For zero extension insertion part of this set, I am going to do the
->> following changes in next version:
->> 
->>   1. verifier inserts special "mov32" (dst_reg == src_reg) as "zext".
->>      JIT could still save zext for the other "mov32", but should always do
->>      zext for this special "mov32".
->
-> May be used mov32 with imm==1 as indicator that such mov32 is special?
-
-OK, will go with it.
-
->
->>   2. rename 'bpf_jit_hardware_zext' to 'bpf_jit_verifier_zext' which
->>      returns false at default to disable zext insertion.
->>   3. JITs want verifier zext override bpf_jit_verifier_zext to return
->>      true and should skip unnecessary mov32 as described above.
->> 
->> Looks good?
->
-> Kinda makes sense, but when x64/arm64 are saying 'dont do zext'
-> what verifier suppose to do? It will still do the analysis
-> and liveness marks, but only mov32 won't be inserted?
-
-Yes. The analysis part is still enabled, it is quite integrated with
-existing liveness tracking infrastructure, and is not heavy.
-
-zext insertion part is disabled.
-
-> I guess that's fine, since BPF_F_TEST_RND_HI32 will use
-> the results of the analysis?
-
-Yes, hi32 poisoning needs it.
-
-> Please double check that BPF_F_TEST_RND_HI32 poisoning works on
-> 32-bit archs too.
-
-OK. I don't have 32-bit host env at the moment, but will try to sort this
-out.
-
-Regards,
-Jiong
+> 
+> >
+> > >   - switch SK storage BTF to use new libbpf__probe_raw_btf()
+> > >
+> > > Reported-by: Alexei Starovoitov <ast@fb.com>
+> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > ---
+> > >  tools/lib/bpf/libbpf.c          | 130 +++++++++++++++++++++++++++++++-
+> > >  tools/lib/bpf/libbpf_internal.h |  27 +++++++
+> > >  tools/lib/bpf/libbpf_probes.c   |  73 ++++++++++--------
+> > >  3 files changed, 197 insertions(+), 33 deletions(-)
+> > >  create mode 100644 tools/lib/bpf/libbpf_internal.h
+> > >
+> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > index 11a65db4b93f..7e3b79d7c25f 100644
+> > > --- a/tools/lib/bpf/libbpf.c
+> > > +++ b/tools/lib/bpf/libbpf.c
+> > > @@ -44,6 +44,7 @@
+> > >  #include "btf.h"
+> > >  #include "str_error.h"
+> > >  #include "libbpf_util.h"
+> > > +#include "libbpf_internal.h"
+> > >
+> > >  #ifndef EM_BPF
+> > >  #define EM_BPF 247
+> > > @@ -128,6 +129,10 @@ struct bpf_capabilities {
+> > >       __u32 name:1;
+> > >       /* v5.2: kernel support for global data sections. */
+> > >       __u32 global_data:1;
+> > > +     /* BTF_KIND_FUNC and BTF_KIND_FUNC_PROTO support */
+> > > +     __u32 btf_func:1;
+> > > +     /* BTF_KIND_VAR and BTF_KIND_DATASEC support */
+> > > +     __u32 btf_datasec:1;
+> > >  };
+> > >
+> > >  /*
+> > > @@ -1021,6 +1026,74 @@ static bool section_have_execinstr(struct bpf_object *obj, int idx)
+> > >       return false;
+> > >  }
+> > >
+> > > +static void bpf_object__sanitize_btf(struct bpf_object *obj)
+> > > +{
+> > > +     bool has_datasec = obj->caps.btf_datasec;
+> > > +     bool has_func = obj->caps.btf_func;
+> > > +     struct btf *btf = obj->btf;
+> > > +     struct btf_type *t;
+> > > +     int i, j, vlen;
+> > > +     __u16 kind;
+> > > +
+> > > +     if (!obj->btf || (has_func && has_datasec))
+> > > +             return;
+> > > +
+> > > +     for (i = 1; i <= btf__get_nr_types(btf); i++) {
+> > > +             t = (struct btf_type *)btf__type_by_id(btf, i);
+> > > +             kind = BTF_INFO_KIND(t->info);
+> > > +
+> > > +             if (!has_datasec && kind == BTF_KIND_VAR) {
+> > > +                     /* replace VAR with INT */
+> > > +                     t->info = BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
+> > > +                     t->size = sizeof(int);
+> > > +                     *(int *)(t+1) = BTF_INT_ENC(0, 0, 32);
+> > > +             } else if (!has_datasec && kind == BTF_KIND_DATASEC) {
+> > > +                     /* replace DATASEC with STRUCT */
+> > > +                     struct btf_var_secinfo *v = (void *)(t + 1);
+> > > +                     struct btf_member *m = (void *)(t + 1);
+> > > +                     struct btf_type *vt;
+> > > +                     char *name;
+> > > +
+> > > +                     name = (char *)btf__name_by_offset(btf, t->name_off);
+> > > +                     while (*name) {
+> > > +                             if (*name == '.')
+> > > +                                     *name = '_';
+> > > +                             name++;
+> > > +                     }
+> > > +
+> > > +                     vlen = BTF_INFO_VLEN(t->info);
+> > > +                     t->info = BTF_INFO_ENC(BTF_KIND_STRUCT, 0, vlen);
+> > > +                     for (j = 0; j < vlen; j++, v++, m++) {
+> > > +                             /* order of field assignments is important */
+> > > +                             m->offset = v->offset * 8;
+> > > +                             m->type = v->type;
+> > > +                             /* preserve variable name as member name */
+> > > +                             vt = (void *)btf__type_by_id(btf, v->type);
+> > > +                             m->name_off = vt->name_off;
+> > > +                     }
+> > > +             } else if (!has_func && kind == BTF_KIND_FUNC_PROTO) {
+> > > +                     /* replace FUNC_PROTO with ENUM */
+> > > +                     vlen = BTF_INFO_VLEN(t->info);
+> > > +                     t->info = BTF_INFO_ENC(BTF_KIND_ENUM, 0, vlen);
+> > > +                     t->size = sizeof(__u32); /* kernel enforced */
+> > > +             } else if (!has_func && kind == BTF_KIND_FUNC) {
+> > > +                     /* replace FUNC with TYPEDEF */
+> > > +                     t->info = BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0);
+> > > +             }
+> > > +     }
+> > > +}
+> > > +
+> > > +static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
+> > > +{
+> > > +     if (!obj->btf_ext)
+> > > +             return;
+> > > +
+> > > +     if (!obj->caps.btf_func) {
+> > > +             btf_ext__free(obj->btf_ext);
+> > > +             obj->btf_ext = NULL;
+> > > +     }
+> > > +}
+> > > +
+> > >  static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+> > >  {
+> > >       Elf *elf = obj->efile.elf;
+> > > @@ -1164,8 +1237,10 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+> > >                       obj->btf = NULL;
+> > >               } else {
+> > >                       err = btf__finalize_data(obj, obj->btf);
+> > > -                     if (!err)
+> > > +                     if (!err) {
+> > > +                             bpf_object__sanitize_btf(obj);
+> > >                               err = btf__load(obj->btf);
+> > > +                     }
+> > >                       if (err) {
+> > >                               pr_warning("Error finalizing and loading %s into kernel: %d. Ignored and continue.\n",
+> > >                                          BTF_ELF_SEC, err);
+> > > @@ -1187,6 +1262,8 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+> > >                                          BTF_EXT_ELF_SEC,
+> > >                                          PTR_ERR(obj->btf_ext));
+> > >                               obj->btf_ext = NULL;
+> > > +                     } else {
+> > > +                             bpf_object__sanitize_btf_ext(obj);
+> > >                       }
+> > >               }
+> > >       }
+> > > @@ -1556,12 +1633,63 @@ bpf_object__probe_global_data(struct bpf_object *obj)
+> > >       return 0;
+> > >  }
+> > >
+> > > +static int bpf_object__probe_btf_func(struct bpf_object *obj)
+> > > +{
+> > > +     const char strs[] = "\0int\0x\0a";
+> > > +     /* void x(int a) {} */
+> > > +     __u32 types[] = {
+> > > +             /* int */
+> > > +             BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
+> > > +             /* FUNC_PROTO */                                /* [2] */
+> > > +             BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 1), 0),
+> > > +             BTF_PARAM_ENC(7, 1),
+> > > +             /* FUNC x */                                    /* [3] */
+> > > +             BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
+> > > +     };
+> > > +     int res;
+> > > +
+> > > +     res = libbpf__probe_raw_btf((char *)types, sizeof(types),
+> > > +                                 strs, sizeof(strs));
+> > > +     if (res < 0)
+> > > +             return res;
+> > > +     if (res > 0)
+> > > +             obj->caps.btf_func = 1;
+> > > +     return 0;
+> > > +}
+> > > +
+> > > +static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
+> > > +{
+> > > +     const char strs[] = "\0x\0.data";
+> > > +     /* static int a; */
+> > > +     __u32 types[] = {
+> > > +             /* int */
+> > > +             BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
+> > > +             /* VAR x */                                     /* [2] */
+> > > +             BTF_TYPE_ENC(1, BTF_INFO_ENC(BTF_KIND_VAR, 0, 0), 1),
+> > > +             BTF_VAR_STATIC,
+> > > +             /* DATASEC val */                               /* [3] */
+> > > +             BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
+> > > +             BTF_VAR_SECINFO_ENC(2, 0, 4),
+> > > +     };
+> > > +     int res;
+> > > +
+> > > +     res = libbpf__probe_raw_btf((char *)types, sizeof(types),
+> > > +                                 strs, sizeof(strs));
+> > > +     if (res < 0)
+> > > +             return res;
+> > > +     if (res > 0)
+> > > +             obj->caps.btf_datasec = 1;
+> > > +     return 0;
+> > > +}
+> > > +
+> > >  static int
+> > >  bpf_object__probe_caps(struct bpf_object *obj)
+> > >  {
+> > >       int (*probe_fn[])(struct bpf_object *obj) = {
+> > >               bpf_object__probe_name,
+> > >               bpf_object__probe_global_data,
+> > > +             bpf_object__probe_btf_func,
+> > > +             bpf_object__probe_btf_datasec,
+> > >       };
+> > >       int i, ret;
+> > >
+> > > diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+> > > new file mode 100644
+> > > index 000000000000..789e435b5900
+> > > --- /dev/null
+> > > +++ b/tools/lib/bpf/libbpf_internal.h
+> > > @@ -0,0 +1,27 @@
+> > > +/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+> > > +
+> > > +/*
+> > > + * Internal libbpf helpers.
+> > > + *
+> > > + * Copyright (c) 2019 Facebook
+> > > + */
+> > > +
+> > > +#ifndef __LIBBPF_LIBBPF_INTERNAL_H
+> > > +#define __LIBBPF_LIBBPF_INTERNAL_H
+> > > +
+> > > +#define BTF_INFO_ENC(kind, kind_flag, vlen) \
+> > > +     ((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
+> > > +#define BTF_TYPE_ENC(name, info, size_or_type) (name), (info), (size_or_type)
+> > > +#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
+> > > +     ((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
+> > > +#define BTF_TYPE_INT_ENC(name, encoding, bits_offset, bits, sz) \
+> > > +     BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_INT, 0, 0), sz), \
+> > > +     BTF_INT_ENC(encoding, bits_offset, bits)
+> > > +#define BTF_MEMBER_ENC(name, type, bits_offset) (name), (type), (bits_offset)
+> > > +#define BTF_PARAM_ENC(name, type) (name), (type)
+> > > +#define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
+> > > +
+> > > +int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
+> > > +                       const char *str_sec, size_t str_len);
+> > > +
+> > > +#endif /* __LIBBPF_LIBBPF_INTERNAL_H */
+> > > diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
+> > > index a2c64a9ce1a6..5e2aa83f637a 100644
+> > > --- a/tools/lib/bpf/libbpf_probes.c
+> > > +++ b/tools/lib/bpf/libbpf_probes.c
+> > > @@ -15,6 +15,7 @@
+> > >
+> > >  #include "bpf.h"
+> > >  #include "libbpf.h"
+> > > +#include "libbpf_internal.h"
+> > >
+> > >  static bool grep(const char *buffer, const char *pattern)
+> > >  {
+> > > @@ -132,21 +133,43 @@ bool bpf_probe_prog_type(enum bpf_prog_type prog_type, __u32 ifindex)
+> > >       return errno != EINVAL && errno != EOPNOTSUPP;
+> > >  }
+> > >
+> > > -static int load_btf(void)
+> > > +int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
+> > > +                       const char *str_sec, size_t str_len)
+> > >  {
+> > > -#define BTF_INFO_ENC(kind, kind_flag, vlen) \
+> > > -     ((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
+> > > -#define BTF_TYPE_ENC(name, info, size_or_type) \
+> > > -     (name), (info), (size_or_type)
+> > > -#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
+> > > -     ((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
+> > > -#define BTF_TYPE_INT_ENC(name, encoding, bits_offset, bits, sz) \
+> > > -     BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_INT, 0, 0), sz), \
+> > > -     BTF_INT_ENC(encoding, bits_offset, bits)
+> > > -#define BTF_MEMBER_ENC(name, type, bits_offset) \
+> > > -     (name), (type), (bits_offset)
+> > > -
+> > > -     const char btf_str_sec[] = "\0bpf_spin_lock\0val\0cnt\0l";
+> > > +     struct btf_header hdr = {
+> > > +             .magic = BTF_MAGIC,
+> > > +             .version = BTF_VERSION,
+> > > +             .hdr_len = sizeof(struct btf_header),
+> > > +             .type_len = types_len,
+> > > +             .str_off = types_len,
+> > > +             .str_len = str_len,
+> > > +     };
+> > > +     int btf_fd, btf_len;
+> > > +     __u8 *raw_btf;
+> > > +
+> > > +     btf_len = hdr.hdr_len + hdr.type_len + hdr.str_len;
+> > > +     raw_btf = malloc(btf_len);
+> > > +     if (!raw_btf)
+> > > +             return -ENOMEM;
+> > > +
+> > > +     memcpy(raw_btf, &hdr, sizeof(hdr));
+> > > +     memcpy(raw_btf + hdr.hdr_len, raw_types, hdr.type_len);
+> > > +     memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
+> > > +
+> > > +     btf_fd = bpf_load_btf(raw_btf, btf_len, NULL, 0, false);
+> > > +     if (btf_fd < 0) {
+> > > +             free(raw_btf);
+> > > +             return 0;
+> > > +     }
+> > > +
+> > > +     close(btf_fd);
+> > > +     free(raw_btf);
+> > > +     return 1;
+> > > +}
+> > > +
+> > > +static int load_sk_storage_btf(void)
+> > > +{
+> > > +     const char strs[] = "\0bpf_spin_lock\0val\0cnt\0l";
+> > >       /* struct bpf_spin_lock {
+> > >        *   int val;
+> > >        * };
+> > > @@ -155,7 +178,7 @@ static int load_btf(void)
+> > >        *   struct bpf_spin_lock l;
+> > >        * };
+> > >        */
+> > > -     __u32 btf_raw_types[] = {
+> > > +     __u32 types[] = {
+> > >               /* int */
+> > >               BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
+> > >               /* struct bpf_spin_lock */                      /* [2] */
+> > > @@ -166,23 +189,9 @@ static int load_btf(void)
+> > >               BTF_MEMBER_ENC(19, 1, 0), /* int cnt; */
+> > >               BTF_MEMBER_ENC(23, 2, 32),/* struct bpf_spin_lock l; */
+> > >       };
+> > > -     struct btf_header btf_hdr = {
+> > > -             .magic = BTF_MAGIC,
+> > > -             .version = BTF_VERSION,
+> > > -             .hdr_len = sizeof(struct btf_header),
+> > > -             .type_len = sizeof(btf_raw_types),
+> > > -             .str_off = sizeof(btf_raw_types),
+> > > -             .str_len = sizeof(btf_str_sec),
+> > > -     };
+> > > -     __u8 raw_btf[sizeof(struct btf_header) + sizeof(btf_raw_types) +
+> > > -                  sizeof(btf_str_sec)];
+> > > -
+> > > -     memcpy(raw_btf, &btf_hdr, sizeof(btf_hdr));
+> > > -     memcpy(raw_btf + sizeof(btf_hdr), btf_raw_types, sizeof(btf_raw_types));
+> > > -     memcpy(raw_btf + sizeof(btf_hdr) + sizeof(btf_raw_types),
+> > > -            btf_str_sec, sizeof(btf_str_sec));
+> > >
+> > > -     return bpf_load_btf(raw_btf, sizeof(raw_btf), 0, 0, 0);
+> > > +     return libbpf__probe_raw_btf((char *)types, sizeof(types),
+> > > +                                  strs, sizeof(strs));
+> > >  }
+> > >
+> > >  bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex)
+> > > @@ -222,7 +231,7 @@ bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex)
+> > >               value_size = 8;
+> > >               max_entries = 0;
+> > >               map_flags = BPF_F_NO_PREALLOC;
+> > > -             btf_fd = load_btf();
+> > > +             btf_fd = load_sk_storage_btf();
+> > >               if (btf_fd < 0)
+> > >                       return false;
+> > >               break;
+> > > --
+> > > 2.17.1
+> > >
