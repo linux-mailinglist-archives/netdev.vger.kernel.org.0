@@ -2,421 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9D91A45E
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 23:13:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98AC21A469
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 23:19:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728022AbfEJVNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 17:13:51 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:43114 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727767AbfEJVNv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 17:13:51 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x4ALDMAD028150
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 14:13:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=PiMlBa0ab5E4k1tBUVnt96h48v0mLWeEPpnKjlDQUWk=;
- b=f5TOs6NIq59KGY5cliWht843I56NeF0suxmhiA5wUpyVdlLuyuZJssYqBo09AlRouXHg
- E0IFgwAkNGQlUqhz91oYQzgbQxP+1UYLTrz8/d2tqTl91yvOl7J1shPoz/EYHsP/xBFr
- 8OnriWou0LiGiF/HUWEr6lVneDhwCBiIfIA= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0089730.ppops.net with ESMTP id 2sd67etqdu-18
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 14:13:48 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Fri, 10 May 2019 14:13:17 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id BF4CF8627E0; Fri, 10 May 2019 14:13:16 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@fb.com>,
-        <yhs@fb.com>, <daniel@iogearbox.net>
-CC:     Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v3 bpf] libbpf: detect supported kernel BTF features and sanitize BTF
-Date:   Fri, 10 May 2019 14:13:15 -0700
-Message-ID: <20190510211315.2086535-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1728086AbfEJVS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 17:18:58 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:40900 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727767AbfEJVS5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 17:18:57 -0400
+Received: by mail-wr1-f67.google.com with SMTP id h4so9286465wre.7;
+        Fri, 10 May 2019 14:18:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:mime-version:message-id:in-reply-to
+         :references:user-agent:content-transfer-encoding;
+        bh=bYllTi8jpDtNJjUd5zBBxw0HJVYPX6WhjtOSbLVC9b8=;
+        b=uGTioTFAOlBRUIV9IXvNX/QeqP63v4+loXn+2+k/hmbMtFdvpylHSwf3J4H+Gra4+7
+         pnYUYPEKjnBduDg3UbHxBv1uUKRcoxMJIvRx7NOVyS9Tjyi8icSTkE1RnXQwTUMh7yWm
+         E7D5DQFNcQDGZX6E2Ig0XHuunIry7ODDjuXQ1a0uLwCM/SGcYOveguQRUds+9oU+IoOP
+         RzuAmkRGzkj+TURvEdP3Hoxb7Yxu7vQCz2W2n0YraqRIWQ+clLN92y1sipnZX7KC+ub5
+         V/lGYWYDn6CWw5pYU0ubfQUTDFo3qe4z018qv7GShty/pZFxRjSC3VZesnkIVg9A0+xW
+         8I/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:mime-version:message-id
+         :in-reply-to:references:user-agent:content-transfer-encoding;
+        bh=bYllTi8jpDtNJjUd5zBBxw0HJVYPX6WhjtOSbLVC9b8=;
+        b=hsBNGAldOXHrLOuciPXQOdMwsRd5RIUD9HYsnBMdzf8geHgm12XwvPcAOmgLG9Xro5
+         hfActVKom5Z37/30VLHEEH5Jv5G7H6c5cqFKJcn+MBUz5uuumLAHl4clHyEtwC2qXAAN
+         hl8FaOp2uupMwOaNoCCyrpY/4bSVyV2+vqgErKcbi9KOV8BZzkJL77A5l5zuSdzE9DN8
+         9x/qQmKneNrAq62sX9RlY6voafU0VSC9WMijEBGsa/7p1cST//6+e6CVZjeszfTr4s/P
+         TA9aLKjWPdtnA6HsUnqkG3iBsEpaXVonCfz4z6s6HRYuF/IGv0LI7dmTB7IhHaWlJC8Z
+         znsg==
+X-Gm-Message-State: APjAAAU7UXnSnwFOlpDNFVpRH/ZeLa8RKdkrzgb4ZZCjCxpLd/pSE5jX
+        0y887P2MVg26SusUlG24ifxz/C1IxP+6eA==
+X-Google-Smtp-Source: APXvYqxdKLKEcgkJmKn3wJW070jw9Ue+FcwQ6Lk76nd2n+zLdpS24Y7Za/Ng9w80gjOMRSU9OqW0LQ==
+X-Received: by 2002:a5d:4e8d:: with SMTP id e13mr1852856wru.299.1557523135851;
+        Fri, 10 May 2019 14:18:55 -0700 (PDT)
+Received: from localhost ([92.59.185.54])
+        by smtp.gmail.com with ESMTPSA id l18sm3451729wrv.38.2019.05.10.14.18.54
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 10 May 2019 14:18:55 -0700 (PDT)
+From:   Vicente Bergas <vicencb@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: net: phy: realtek: regression, kernel null pointer dereference
+Date:   Fri, 10 May 2019 23:18:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-10_14:,,
- signatures=0
-X-Proofpoint-Spam-Reason: safe
-X-FB-Internal: Safe
+Message-ID: <e9265e58-1038-4194-a8de-f52f5bc3a7d8@gmail.com>
+In-Reply-To: <742a2235-4571-aa7d-af90-14c708205c6f@gmail.com>
+References: <16f75ff4-e3e3-4d96-b084-e772e3ce1c2b@gmail.com>
+ <742a2235-4571-aa7d-af90-14c708205c6f@gmail.com>
+User-Agent: Trojita
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Depending on used versions of libbpf, Clang, and kernel, it's possible to
-have valid BPF object files with valid BTF information, that still won't
-load successfully due to Clang emitting newer BTF features (e.g.,
-BTF_KIND_FUNC, .BTF.ext's line_info/func_info, BTF_KIND_DATASEC, etc), that
-are not yet supported by older kernel.
+On Friday, May 10, 2019 10:28:06 PM CEST, Heiner Kallweit wrote:
+> On 10.05.2019 17:05, Vicente Bergas wrote:
+>> Hello,
+>> there is a regression on linux v5.1-9573-gb970afcfcabd with a kernel null
+>> pointer dereference.
+>> The issue is the commit f81dadbcf7fd067baf184b63c179fc392bdb226e
+>>  net: phy: realtek: Add rtl8211e rx/tx delays config ...
+> The page operation callbacks are missing in the RTL8211E driver.
+> I just submitted a fix adding these callbacks to few Realtek PHY drivers
+> including RTl8211E. This should fix the issue.
 
-This patch adds detection of BTF features and sanitizes BPF object's BTF
-by substituting various supported BTF kinds, which have compatible layout:
-  - BTF_KIND_FUNC -> BTF_KIND_TYPEDEF
-  - BTF_KIND_FUNC_PROTO -> BTF_KIND_ENUM
-  - BTF_KIND_VAR -> BTF_KIND_INT
-  - BTF_KIND_DATASEC -> BTF_KIND_STRUCT
+Thanks for fixing it so fast!
 
-Replacement is done in such a way as to preserve as much information as
-possible (names, sizes, etc) where possible without violating kernel's
-validation rules.
+> Nevertheless your proposed patch looks good to me, just one small change
+> would be needed and it should be splitted.
 
-v2->v3:
-  - remove duplicate #defines from libbpf_util.h
+The diff on the first mail was just to show which steps i did to debug the
+issue, it was not intended to be applied.
 
-v1->v2:
-  - add internal libbpf_internal.h w/ common stuff
-  - switch SK storage BTF to use new libbpf__probe_raw_btf()
+Regards,
+  Vicen=C3=A7.
 
-Reported-by: Alexei Starovoitov <ast@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/libbpf.c          | 130 +++++++++++++++++++++++++++++++-
- tools/lib/bpf/libbpf_internal.h |  27 +++++++
- tools/lib/bpf/libbpf_probes.c   |  73 ++++++++++--------
- 3 files changed, 197 insertions(+), 33 deletions(-)
- create mode 100644 tools/lib/bpf/libbpf_internal.h
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 11a65db4b93f..7e3b79d7c25f 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -44,6 +44,7 @@
- #include "btf.h"
- #include "str_error.h"
- #include "libbpf_util.h"
-+#include "libbpf_internal.h"
- 
- #ifndef EM_BPF
- #define EM_BPF 247
-@@ -128,6 +129,10 @@ struct bpf_capabilities {
- 	__u32 name:1;
- 	/* v5.2: kernel support for global data sections. */
- 	__u32 global_data:1;
-+	/* BTF_KIND_FUNC and BTF_KIND_FUNC_PROTO support */
-+	__u32 btf_func:1;
-+	/* BTF_KIND_VAR and BTF_KIND_DATASEC support */
-+	__u32 btf_datasec:1;
- };
- 
- /*
-@@ -1021,6 +1026,74 @@ static bool section_have_execinstr(struct bpf_object *obj, int idx)
- 	return false;
- }
- 
-+static void bpf_object__sanitize_btf(struct bpf_object *obj)
-+{
-+	bool has_datasec = obj->caps.btf_datasec;
-+	bool has_func = obj->caps.btf_func;
-+	struct btf *btf = obj->btf;
-+	struct btf_type *t;
-+	int i, j, vlen;
-+	__u16 kind;
-+
-+	if (!obj->btf || (has_func && has_datasec))
-+		return;
-+
-+	for (i = 1; i <= btf__get_nr_types(btf); i++) {
-+		t = (struct btf_type *)btf__type_by_id(btf, i);
-+		kind = BTF_INFO_KIND(t->info);
-+
-+		if (!has_datasec && kind == BTF_KIND_VAR) {
-+			/* replace VAR with INT */
-+			t->info = BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
-+			t->size = sizeof(int);
-+			*(int *)(t+1) = BTF_INT_ENC(0, 0, 32);
-+		} else if (!has_datasec && kind == BTF_KIND_DATASEC) {
-+			/* replace DATASEC with STRUCT */
-+			struct btf_var_secinfo *v = (void *)(t + 1);
-+			struct btf_member *m = (void *)(t + 1);
-+			struct btf_type *vt;
-+			char *name;
-+
-+			name = (char *)btf__name_by_offset(btf, t->name_off);
-+			while (*name) {
-+				if (*name == '.')
-+					*name = '_';
-+				name++;
-+			}
-+
-+			vlen = BTF_INFO_VLEN(t->info);
-+			t->info = BTF_INFO_ENC(BTF_KIND_STRUCT, 0, vlen);
-+			for (j = 0; j < vlen; j++, v++, m++) {
-+				/* order of field assignments is important */
-+				m->offset = v->offset * 8;
-+				m->type = v->type;
-+				/* preserve variable name as member name */
-+				vt = (void *)btf__type_by_id(btf, v->type);
-+				m->name_off = vt->name_off;
-+			}
-+		} else if (!has_func && kind == BTF_KIND_FUNC_PROTO) {
-+			/* replace FUNC_PROTO with ENUM */
-+			vlen = BTF_INFO_VLEN(t->info);
-+			t->info = BTF_INFO_ENC(BTF_KIND_ENUM, 0, vlen);
-+			t->size = sizeof(__u32); /* kernel enforced */
-+		} else if (!has_func && kind == BTF_KIND_FUNC) {
-+			/* replace FUNC with TYPEDEF */
-+			t->info = BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0);
-+		}
-+	}
-+}
-+
-+static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
-+{
-+	if (!obj->btf_ext)
-+		return;
-+
-+	if (!obj->caps.btf_func) {
-+		btf_ext__free(obj->btf_ext);
-+		obj->btf_ext = NULL;
-+	}
-+}
-+
- static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
- {
- 	Elf *elf = obj->efile.elf;
-@@ -1164,8 +1237,10 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
- 			obj->btf = NULL;
- 		} else {
- 			err = btf__finalize_data(obj, obj->btf);
--			if (!err)
-+			if (!err) {
-+				bpf_object__sanitize_btf(obj);
- 				err = btf__load(obj->btf);
-+			}
- 			if (err) {
- 				pr_warning("Error finalizing and loading %s into kernel: %d. Ignored and continue.\n",
- 					   BTF_ELF_SEC, err);
-@@ -1187,6 +1262,8 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
- 					   BTF_EXT_ELF_SEC,
- 					   PTR_ERR(obj->btf_ext));
- 				obj->btf_ext = NULL;
-+			} else {
-+				bpf_object__sanitize_btf_ext(obj);
- 			}
- 		}
- 	}
-@@ -1556,12 +1633,63 @@ bpf_object__probe_global_data(struct bpf_object *obj)
- 	return 0;
- }
- 
-+static int bpf_object__probe_btf_func(struct bpf_object *obj)
-+{
-+	const char strs[] = "\0int\0x\0a";
-+	/* void x(int a) {} */
-+	__u32 types[] = {
-+		/* int */
-+		BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
-+		/* FUNC_PROTO */                                /* [2] */
-+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 1), 0),
-+		BTF_PARAM_ENC(7, 1),
-+		/* FUNC x */                                    /* [3] */
-+		BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
-+	};
-+	int res;
-+
-+	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
-+				    strs, sizeof(strs));
-+	if (res < 0)
-+		return res;
-+	if (res > 0)
-+		obj->caps.btf_func = 1;
-+	return 0;
-+}
-+
-+static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
-+{
-+	const char strs[] = "\0x\0.data";
-+	/* static int a; */
-+	__u32 types[] = {
-+		/* int */
-+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
-+		/* VAR x */                                     /* [2] */
-+		BTF_TYPE_ENC(1, BTF_INFO_ENC(BTF_KIND_VAR, 0, 0), 1),
-+		BTF_VAR_STATIC,
-+		/* DATASEC val */                               /* [3] */
-+		BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
-+		BTF_VAR_SECINFO_ENC(2, 0, 4),
-+	};
-+	int res;
-+
-+	res = libbpf__probe_raw_btf((char *)types, sizeof(types),
-+				    strs, sizeof(strs));
-+	if (res < 0)
-+		return res;
-+	if (res > 0)
-+		obj->caps.btf_datasec = 1;
-+	return 0;
-+}
-+
- static int
- bpf_object__probe_caps(struct bpf_object *obj)
- {
- 	int (*probe_fn[])(struct bpf_object *obj) = {
- 		bpf_object__probe_name,
- 		bpf_object__probe_global_data,
-+		bpf_object__probe_btf_func,
-+		bpf_object__probe_btf_datasec,
- 	};
- 	int i, ret;
- 
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-new file mode 100644
-index 000000000000..789e435b5900
---- /dev/null
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -0,0 +1,27 @@
-+/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-+
-+/*
-+ * Internal libbpf helpers.
-+ *
-+ * Copyright (c) 2019 Facebook
-+ */
-+
-+#ifndef __LIBBPF_LIBBPF_INTERNAL_H
-+#define __LIBBPF_LIBBPF_INTERNAL_H
-+
-+#define BTF_INFO_ENC(kind, kind_flag, vlen) \
-+	((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
-+#define BTF_TYPE_ENC(name, info, size_or_type) (name), (info), (size_or_type)
-+#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
-+	((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
-+#define BTF_TYPE_INT_ENC(name, encoding, bits_offset, bits, sz) \
-+	BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_INT, 0, 0), sz), \
-+	BTF_INT_ENC(encoding, bits_offset, bits)
-+#define BTF_MEMBER_ENC(name, type, bits_offset) (name), (type), (bits_offset)
-+#define BTF_PARAM_ENC(name, type) (name), (type)
-+#define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
-+
-+int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
-+			  const char *str_sec, size_t str_len);
-+
-+#endif /* __LIBBPF_LIBBPF_INTERNAL_H */
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index a2c64a9ce1a6..5e2aa83f637a 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -15,6 +15,7 @@
- 
- #include "bpf.h"
- #include "libbpf.h"
-+#include "libbpf_internal.h"
- 
- static bool grep(const char *buffer, const char *pattern)
- {
-@@ -132,21 +133,43 @@ bool bpf_probe_prog_type(enum bpf_prog_type prog_type, __u32 ifindex)
- 	return errno != EINVAL && errno != EOPNOTSUPP;
- }
- 
--static int load_btf(void)
-+int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
-+			  const char *str_sec, size_t str_len)
- {
--#define BTF_INFO_ENC(kind, kind_flag, vlen) \
--	((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
--#define BTF_TYPE_ENC(name, info, size_or_type) \
--	(name), (info), (size_or_type)
--#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
--	((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
--#define BTF_TYPE_INT_ENC(name, encoding, bits_offset, bits, sz) \
--	BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_INT, 0, 0), sz), \
--	BTF_INT_ENC(encoding, bits_offset, bits)
--#define BTF_MEMBER_ENC(name, type, bits_offset) \
--	(name), (type), (bits_offset)
--
--	const char btf_str_sec[] = "\0bpf_spin_lock\0val\0cnt\0l";
-+	struct btf_header hdr = {
-+		.magic = BTF_MAGIC,
-+		.version = BTF_VERSION,
-+		.hdr_len = sizeof(struct btf_header),
-+		.type_len = types_len,
-+		.str_off = types_len,
-+		.str_len = str_len,
-+	};
-+	int btf_fd, btf_len;
-+	__u8 *raw_btf;
-+
-+	btf_len = hdr.hdr_len + hdr.type_len + hdr.str_len;
-+	raw_btf = malloc(btf_len);
-+	if (!raw_btf)
-+		return -ENOMEM;
-+
-+	memcpy(raw_btf, &hdr, sizeof(hdr));
-+	memcpy(raw_btf + hdr.hdr_len, raw_types, hdr.type_len);
-+	memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
-+
-+	btf_fd = bpf_load_btf(raw_btf, btf_len, NULL, 0, false);
-+	if (btf_fd < 0) {
-+		free(raw_btf);
-+		return 0;
-+	}
-+
-+	close(btf_fd);
-+	free(raw_btf);
-+	return 1;
-+}
-+
-+static int load_sk_storage_btf(void)
-+{
-+	const char strs[] = "\0bpf_spin_lock\0val\0cnt\0l";
- 	/* struct bpf_spin_lock {
- 	 *   int val;
- 	 * };
-@@ -155,7 +178,7 @@ static int load_btf(void)
- 	 *   struct bpf_spin_lock l;
- 	 * };
- 	 */
--	__u32 btf_raw_types[] = {
-+	__u32 types[] = {
- 		/* int */
- 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
- 		/* struct bpf_spin_lock */                      /* [2] */
-@@ -166,23 +189,9 @@ static int load_btf(void)
- 		BTF_MEMBER_ENC(19, 1, 0), /* int cnt; */
- 		BTF_MEMBER_ENC(23, 2, 32),/* struct bpf_spin_lock l; */
- 	};
--	struct btf_header btf_hdr = {
--		.magic = BTF_MAGIC,
--		.version = BTF_VERSION,
--		.hdr_len = sizeof(struct btf_header),
--		.type_len = sizeof(btf_raw_types),
--		.str_off = sizeof(btf_raw_types),
--		.str_len = sizeof(btf_str_sec),
--	};
--	__u8 raw_btf[sizeof(struct btf_header) + sizeof(btf_raw_types) +
--		     sizeof(btf_str_sec)];
--
--	memcpy(raw_btf, &btf_hdr, sizeof(btf_hdr));
--	memcpy(raw_btf + sizeof(btf_hdr), btf_raw_types, sizeof(btf_raw_types));
--	memcpy(raw_btf + sizeof(btf_hdr) + sizeof(btf_raw_types),
--	       btf_str_sec, sizeof(btf_str_sec));
- 
--	return bpf_load_btf(raw_btf, sizeof(raw_btf), 0, 0, 0);
-+	return libbpf__probe_raw_btf((char *)types, sizeof(types),
-+				     strs, sizeof(strs));
- }
- 
- bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex)
-@@ -222,7 +231,7 @@ bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex)
- 		value_size = 8;
- 		max_entries = 0;
- 		map_flags = BPF_F_NO_PREALLOC;
--		btf_fd = load_btf();
-+		btf_fd = load_sk_storage_btf();
- 		if (btf_fd < 0)
- 			return false;
- 		break;
--- 
-2.17.1
+> The change to phy-core I would consider a fix and it should be fine to
+> submit it to net (net-next is closed currently).
+>
+> Adding the warning to the Realtek driver is fine, but this would be
+> something for net-next once it's open again.
+>
+>> Regards,
+>>  Vicen=C3=A7.
+>>=20
+> Heiner
+>
+>> --- a/drivers/net/phy/phy-core.c
+>> +++ b/drivers/net/phy/phy-core.c
+>> @@ -648,11 +648,17 @@
+>>=20
+>> static int __phy_read_page(struct phy_device *phydev)
+>> { ...
+>
+> Here phydev_warn() should be used.
+>
+>> +        return 0;
+>> +    }
+>>=20
+>>     ret =3D phy_write(phydev, RTL821x_EXT_PAGE_SELECT, 0xa4);
+>>     if (ret)
 
