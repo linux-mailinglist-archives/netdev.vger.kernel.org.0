@@ -2,241 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF82619640
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 03:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAFAD19650
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 03:53:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726765AbfEJBmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 21:42:13 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:46103 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726776AbfEJBmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 21:42:12 -0400
-Received: by mail-io1-f65.google.com with SMTP id q21so22965iog.13
-        for <netdev@vger.kernel.org>; Thu, 09 May 2019 18:42:12 -0700 (PDT)
+        id S1726853AbfEJBx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 21:53:58 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:35476 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726765AbfEJBx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 21:53:58 -0400
+Received: by mail-pf1-f193.google.com with SMTP id t87so2303136pfa.2;
+        Thu, 09 May 2019 18:53:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YjvQjrdVS12KY32f62rBMl2y5YxKM5lRaU2cGrqTrlY=;
-        b=iQXPM6HlBuCAcDh6qqvlr1iMhuawK9DDIaZJgwlFecOZTdaFhUEEopeiLjTqGdYcey
-         Ei+XzihcT61RgeaYzQI8ihN+pomcyT6VgWelpRhqjGfxYGBOnwKt2lEKYPta21DiotKo
-         tEMsFOnNMbCGKNObds/QESqwLjvSTa0J4C/wc=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=imHmjd3FjLPkdyNzm2S8aV5NU8a+XaJpO3Z+38YTWEQ=;
+        b=o0SVgpc8f+XqwILolMc9q+PIph8+IZIYY7i9dNM71N/sC+ZK/4r584yrzVBLkH3HUY
+         7m9Yhq7LF5dce3iJa+AXeYua5lOkul8g8zU8Xvs4i/gRplNJ/66yuUOuTdUiekTOea0f
+         fFFZBQZZ4b41luFJn6btVY2GNWACXSXtIzScS0c/cpYQfy0oZ0VVGYONRujAFIF6bBRP
+         mNmGtMqIBqzVFFMc9smIDo7r8xWg1roRdPmdKyDItqjy+DhcoZ3WytxIdOd1DW12UGgg
+         gJsYBp/sfp8bMkOUqYbEDlvBkYGpRELqknARHpVBAGxCKW0u6E3Jvgd7I135t5kmcRg/
+         ICCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YjvQjrdVS12KY32f62rBMl2y5YxKM5lRaU2cGrqTrlY=;
-        b=pMYLe5vUsHUTt8KpRDNr0roULCza610SQXPS5NQPMKUlga6/ClwsjRgfXqQeGSFtEv
-         L5vz0a3nLW3qmVVwRfyFWCp2YTETmN0n3WpuPWciytoyDaYVYT47yPBRBsjuZX7+J70u
-         FDAsNll+shRvSjGxcG8wcplVDD99MG/3+EBuvnxHxaMub5A3q3YJsAIZ/vXIlSRr4sD/
-         ocmo5l8Z4iDGz7m89vzeVIoJWFnPx4l64SLwWU4ZMBXDZPrLQZiZtVDePO/0US9wHiAN
-         u7PM2fZsds/KaiUuTxFxemHmL/goJHbXq7iVxZ0RpgZ0oHfWrrC8iYzuJyYa24BmYMdZ
-         TNRg==
-X-Gm-Message-State: APjAAAUQDlaU5aCwGzyARGFhKxBArOYoas+hcrkONYtjHSLwEHVhfmTO
-        wTqcsBCJzOp9QEsjiyT/hP7ULxPVxBA=
-X-Google-Smtp-Source: APXvYqzYZc7zA5KXM4nSFp5KXYZWaf+8QXVrppBmQYFU7NPIxJ+f773wIi+yyx89xJfucyYfyuz+4A==
-X-Received: by 2002:a5d:9d4f:: with SMTP id k15mr5260994iok.100.1557452531643;
-        Thu, 09 May 2019 18:42:11 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id m25sm1796887iti.24.2019.05.09.18.42.10
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=imHmjd3FjLPkdyNzm2S8aV5NU8a+XaJpO3Z+38YTWEQ=;
+        b=uRV04zz3PUDBjjm0vVhmgMU2ODHDh2LB7GJzjxZZKO32avCW3eeTw4Wfwpj8NKBn+N
+         aHTPQuKSwVkGhA4Vx/6JWWW7FpoupKfvlAWSLlNuqd8P5xVpKL3opeXMHyeDFXsm1sdb
+         Bg+wNxRX19TniTu+a+4b6Egoeic5U7WaXb1zLORgBXBfcpkm0ygKxoshaDwF4PHX/Job
+         oxim1s92UFGaDx/AR3SMcEi1lrw1a4aoRM9XyXCs2FLKPni4Pvs9risrFFr2fa6B09Dn
+         Iy7pXn+beUf0/LTTNvCmw5ijgSudHX4/VNSD6Cycl74/QwRoPduCu+mjZiDIL4rnXKZM
+         rfBg==
+X-Gm-Message-State: APjAAAVISBXN8QuNt4WchcQs3UwidQqZi6J4GpABkjgg2IIRwfwO86Aa
+        b4cCEs2uGg7q26Hbp6Obrs8=
+X-Google-Smtp-Source: APXvYqwBsfYMM2SooMccb8lxVymGcDKm5fkyy7QjNiDt/XYB8LIp0ZdUqHA0sTcWO1qX4fSUUOJQ0g==
+X-Received: by 2002:aa7:99dd:: with SMTP id v29mr10433184pfi.252.1557453236880;
+        Thu, 09 May 2019 18:53:56 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::bc44])
+        by smtp.gmail.com with ESMTPSA id e6sm9064876pfl.115.2019.05.09.18.53.55
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 May 2019 18:42:10 -0700 (PDT)
-Subject: Re: [GIT PULL] Kselftest update for Linux 5.2-rc1
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        shuah <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, Shuah Khan <skhan@linuxfoundation.org>
-References: <9b434125-44b6-0e83-4f70-d1fd28752407@linuxfoundation.org>
- <20190509222043.b4zn32kuohduzzzr@ast-mbp>
- <dd983d42-d148-372d-3e57-b97c313d58b9@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <28072ca5-f7c8-f16d-6881-aec3e8b61ae8@linuxfoundation.org>
-Date:   Thu, 9 May 2019 19:42:09 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        Thu, 09 May 2019 18:53:56 -0700 (PDT)
+Date:   Thu, 9 May 2019 18:53:54 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jiong Wang <jiong.wang@netronome.com>
+Cc:     daniel@iogearbox.net, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH v6 bpf-next 01/17] bpf: verifier: offer more accurate
+ helper function arg and return type
+Message-ID: <20190510015352.6w6fghcthtjj74pl@ast-mbp>
+References: <1556880164-10689-1-git-send-email-jiong.wang@netronome.com>
+ <1556880164-10689-2-git-send-email-jiong.wang@netronome.com>
+ <20190506155041.ofxsvozqza6xrjep@ast-mbp>
+ <87mujx6m4n.fsf@netronome.com>
+ <20190508175111.hcbufw22mbksbpca@ast-mbp>
+ <87ef5795b5.fsf@netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <dd983d42-d148-372d-3e57-b97c313d58b9@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ef5795b5.fsf@netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/19 4:40 PM, Shuah Khan wrote:
-> On 5/9/19 4:20 PM, Alexei Starovoitov wrote:
->> On Mon, May 06, 2019 at 10:56:56AM -0600, Shuah Khan wrote:
->>> Hi Linus,
->>>
->>> Please pull the following Kselftest update for Linux 5.2-rc1
->>>
->>> This Kselftest update for Linux 5.2-rc1 consists of
->>>
->>> - fixes to seccomp test, and kselftest framework
->>> - cleanups to remove duplicate header defines
->>> - fixes to efivarfs "make clean" target
->>> - cgroup cleanup path
->>> - Moving the IMA kexec_load selftest to selftests/kexec work from
->>>    Mimi Johar and Petr Vorel
->>> - A framework to kselftest for writing kernel test modules addition
->>>    from Tobin C. Harding
->>>
->>> diff is attached.
->>>
->>> thanks,
->>> -- Shuah
->>>
->>>
->>> ----------------------------------------------------------------
->>> The following changes since commit 
->>> 15ade5d2e7775667cf191cf2f94327a4889f8b9d:
->>>
->>>    Linux 5.1-rc4 (2019-04-07 14:09:59 -1000)
->>>
->>> are available in the Git repository at:
->>>
->>>    git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest
->>> tags/linux-kselftest-5.2-rc1
->>>
->>> for you to fetch changes up to d917fb876f6eaeeea8a2b620d2a266ce26372f4d:
->>>
->>>    selftests: build and run gpio when output directory is the src dir
->>> (2019-04-22 17:02:26 -0600)
->>>
->>> ----------------------------------------------------------------
->>> linux-kselftest-5.2-rc1
->>>
->>> This Kselftest update for Linux 5.2-rc1 consists of
->>>
->>> - fixes to seccomp test, and kselftest framework
->>> - cleanups to remove duplicate header defines
->>> - fixes to efivarfs "make clean" target
->>> - cgroup cleanup path
->>> - Moving the IMA kexec_load selftest to selftests/kexec work from
->>>    Mimi Johar and Petr Vorel
->>> - A framework to kselftest for writing kernel test modules addition
->>>    from Tobin C. Harding
->>>
->>> ----------------------------------------------------------------
->>> Kees Cook (3):
->>>        selftests/seccomp: Handle namespace failures gracefully
->>>        selftests/harness: Add 30 second timeout per test
->>>        selftests/ipc: Fix msgque compiler warnings
->>>
->>> Mathieu Desnoyers (1):
->>>        rseq/selftests: Adapt number of threads to the number of 
->>> detected cpus
->>>
->>> Mimi Zohar (9):
->>>        selftests/kexec: move the IMA kexec_load selftest to 
->>> selftests/kexec
->>>        selftests/kexec: cleanup the kexec selftest
->>>        selftests/kexec: define a set of common functions
->>>        selftests/kexec: define common logging functions
->>>        selftests/kexec: define "require_root_privileges"
->>>        selftests/kexec: kexec_file_load syscall test
->>>        selftests/kexec: check kexec_load and kexec_file_load are enabled
->>>        selftests/kexec: make kexec_load test independent of IMA being 
->>> enabled
->>>        selftests/kexec: update get_secureboot_mode
->>>
->>> Petr Vorel (1):
->>>        selftests/kexec: Add missing '=y' to config options
->>>
->>> Po-Hsu Lin (1):
->>>        selftests/efivarfs: clean up test files from test_create*()
->>>
->>> Roman Gushchin (1):
->>>        selftests: cgroup: fix cleanup path in 
->>> test_memcg_subtree_control()
->>>
->>> Sabyasachi Gupta (4):
->>>        selftest/x86/mpx-dig.c: Remove duplicate header
->>>        selftest/timers: Remove duplicate header
->>>        selftest/rseq: Remove duplicate header
->>>        selftest/gpio: Remove duplicate header
->>>
->>> Shuah Khan (2):
->>>        selftests: fix headers_install circular dependency
->>
->> Shuah,
->>
->> the commit 8ce72dc32578 ("selftests: fix headers_install circular 
->> dependency")
->> broke our build/test workflow, since it added:
->>    ifneq ($(KBUILD_OUTPUT),)
->>            OUTPUT := $(KBUILD_OUTPUT)
->>    else
->>
->> which means that all of selftests/bpf artifacts are now going into
->> main build directory cluttering it with all sorts of .o, generated files
->> and executables.
->> The end result is humans and scripts can no longer find tests.
+On Thu, May 09, 2019 at 01:32:30PM +0100, Jiong Wang wrote:
+> 
+> Alexei Starovoitov writes:
+> 
+> > On Wed, May 08, 2019 at 03:45:12PM +0100, Jiong Wang wrote:
+> >> 
+> >> I might be misunderstanding your points, please just shout if I am wrong.
+> >> 
+> >> Suppose the following BPF code:
+> >> 
+> >>   unsigned helper(unsigned long long, unsigned long long);
+> >>   unsigned long long test(unsigned *a, unsigned int c)
+> >>   {
+> >>     unsigned int b = *a;
+> >>     c += 10;
+> >>     return helper(b, c);
+> >>   }
+> >> 
+> >> We get the following instruction sequence by latest llvm
+> >> (-O2 -mattr=+alu32 -mcpu=v3)
+> >> 
+> >>   test:
+> >>     1: w1 = *(u32 *)(r1 + 0)
+> >>     2: w2 += 10
+> >>     3: call helper
+> >>     4: exit
+> >> 
+> >> Argument Types
+> >> ===
+> >> Now instruction 1 and 2 are sub-register defines, and instruction 3, the
+> >> call, use them implicitly.
+> >> 
+> >> Without the introduction of the new ARG_CONST_SIZE32 and
+> >> ARG_CONST_SIZE32_OR_ZERO, we don't know what should be done with w1 and
+> >> w2, zero-extend them should be fine for all cases, but could resulting in a
+> >> few unnecessary zero-extension inserted.
+> >
+> > I don't think we're on the same page.
+> > The argument type is _const_.
+> > In the example above they are not _const_.
+> 
+> Right, have read check_func_arg + check_helper_mem_access again.
+> 
+> Looks like ARG_CONST_SIZE* are designed for describing memory access size
+> for things like bounds checking. It must be a constant for stack access,
+> otherwise prog will be rejected, but it looks to me variables are allowed
+> for pkt/map access.
+> 
+> But pkt/map has extra range info. So, indeed, ARG_CONST_SIZE32* are
+> unnecessary, the width could be figured out through the range.
+> 
+> Will just drop this patch in next version.
+> 
+> And sorry for repeating it again, I am still concerned on the issue
+> described at https://www.spinics.net/lists/netdev/msg568678.html.
+> 
+> To be simple, zext insertion is based on eBPF ISA and assumes all
+> sub-register defines from alu32 or narrow loads need it if the underlying
 
-bpf build fails with the above commit. However, even without it, I am
-seeing bpf objects going to tools/testing/selftests/bpf
+It's not an assumption. It's a requirement. If JIT is not zeroing
+upper 32-bits after 32-bit alu or narrow load it's a bug.
 
-I reverted the commit and ran your use-case:
+> hardware arches don't do it. However, some arches support hardware zext
+> partially. For example, PowerPC, SPARC etc are 64-bit arches, while they
+> don't do hardware zext on alu32, they do it for narrow loads. And RISCV is
+> even more special, some alu32 has hardware zext, some don't.
+> 
+> At the moment we have single backend hook "bpf_jit_hardware_zext", once a
+> backend enable it, verifier just insert zero extension for all identified
+> alu32 and narrow loads.
+> 
+> Given verifier analysis info is not pushed down to JIT back-ends, verifier
+> needs more back-end info pushed up from back-ends. Do you think make sense
+> to introduce another hook "bpf_jit_hardware_zext_narrow_load" to at least
+> prevent unnecessary zext inserted for narrowed loads for arches like
+> PowerPC, SPARC?
+> 
+> The hooks to control verifier zext insertion then becomes two:
+> 
+>   bpf_jit_hardware_zext_alu32
+>   bpf_jit_hardware_zext_narrow_load
 
-export KBUILD_OUTPUT=/tmp/kselftest_bpf
-cd tools/testing/selftests/bpf/
-make
-./test_verifier
+and what to do with other combinations?
+Like in some cases narrow load on particular arch will be zero extended
+by hw and if it's misaligned or some other condition then it will not be?
+It doesn't feel that we can enumerate all such combinations.
+It feels 'bpf_jit_hardware_zext' backend hook isn't quite working.
+It optimizes out some zext, but may be adding unnecessary extra zexts.
 
-I see bpf objects in tools/testing/selftests/bpf/ and I can run the
-test.
-
-What am I missing? The only way ./test_verifier would work is if
-test_verifier is in tools/testing/selftests/bpf/
-
-I am curious what you are actually seeing with this commit?
-
-With the 8ce72dc32578
-
-What I see is - if KBUILD_OUTPUT directory is missing, then the make
-just fails and the following diff fixes that problem:
-
-diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-index 098dd0065fb1..074ce7d26a9d 100644
---- a/tools/testing/selftests/lib.mk
-+++ b/tools/testing/selftests/lib.mk
-@@ -13,6 +13,7 @@ ifeq (0,$(MAKELEVEL))
-                 DEFAULT_INSTALL_HDR_PATH := 1
-         endif
-      endif
-+$(shell mkdir -p $(OUTPUT))
-  endif
-  selfdir = $(realpath $(dir $(filter %/lib.mk,$(MAKEFILE_LIST))))
-
-
-Now when I run
-
-cd tools/testing/selftests/bpf/
-make
-./test_verifier
-
-bpf objects end up in /tmp/kselftest_bpf
-
-which is what should happen when KBUILD_OUPUT is set.
-
-But now ./test_verifier won't work, because it isn't in the
-cd tools/testing/selftests/bpf/
-
-Could it be that with  commit 8ce72dc32578, bpf objects are ending
-up in the KBUILD_OUPUT dir and ./test_verifier won't work because
-your workflow is looking for it in tools/testing/selftests/bpf/?
-
-If this is the case, then the workfolow will be to run the
-test_verifier from KBUILD_OUPUT dir.
-
-I am trying understand the problem so I can fix it. I know I need
-the above diff.
-
-
-thanks,
--- Shuah
-
+May be it should be a global flag from the verifier unidirectional to JITs
+that will say "the verifier inserted MOV32 where necessary. JIT doesn't
+need to do zext manually".
+And then JITs will remove MOV32 when hw does it automatically.
+Removal should be easy, since such insn will be right after corresponding
+alu32 or narrow load.
 
