@@ -2,192 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4285195DD
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 01:55:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0775195E2
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 02:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726819AbfEIXzi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 9 May 2019 19:55:38 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42962 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726701AbfEIXzi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 19:55:38 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 01C6E14DEA669;
-        Thu,  9 May 2019 16:55:36 -0700 (PDT)
-Date:   Thu, 09 May 2019 16:55:36 -0700 (PDT)
-Message-Id: <20190509.165536.716778200205224094.davem@davemloft.net>
-To:     torvalds@linux-foundation.org
-CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT] Networking
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 May 2019 16:55:37 -0700 (PDT)
+        id S1726806AbfEJAAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 May 2019 20:00:35 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40147 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726694AbfEJAAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 20:00:34 -0400
+Received: by mail-pg1-f194.google.com with SMTP id d31so2027984pgl.7;
+        Thu, 09 May 2019 17:00:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=dChVqTviUJZkhAEyGEloPZUsbHeVi+nAadOc17lt/xI=;
+        b=F8YiX69wMj6uWvqG2gj8rKD+5JmXiGDvRhtfdWy7mtV4/+PV9t2Gswew4nGi+VrSMw
+         VP+qiGJpDxrx17QBJQYFkLDpPg6Fdd0PceCoPIXyh1/7Rkk9G65Nc3Fmd6a6/2WrtLja
+         N53kTp0zZWxOEAw0sTOGCrvxsng/iIjvQ521OoNTKoVdjLz8zsTHW/q0IkJZTZygapzj
+         govaj2K6lqprTecx4biOocaOEUBt/DaMXbNZ0R7UKsrVf4sr8UDCkjRTv7f+ZF6hly2M
+         atatsJ0iDQ4SSC06pbmOTDDFMtU1puaTBZp84W/FVFpOiKM6NgaTl6STaSR+5FULa9I5
+         XQyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=dChVqTviUJZkhAEyGEloPZUsbHeVi+nAadOc17lt/xI=;
+        b=LaHPBeqcmNAyt6DeRGaaH3IBkPJsH/22xbnrVNCllQ/nMUCO4UkgluGUDBVaYcITHL
+         A+bwZb1NzRUMs+4M7k/PlkpOCuA8aeBS0xKSdj6kXk95PGf79qTUOJ1NKyFNWUqF3H2v
+         MYPJXC08jRl7btl52+2tWA7rjVu7PzKHnyA1Vy8203X+JVp49tE5Pi7HdGAKcecd1lRp
+         19qzs3MEhpuKu/1GGYI4bXk827/YkWxfDxiCn4sgSQgn6nAGznz3T5p5kvq7fSRV8edJ
+         usnnjcNw++2Hx58JCq68+pIrKPnZfhbpIIA5zTGcbvBQT70gPKaGEO2bgCv5iCW7xmYC
+         M1Gg==
+X-Gm-Message-State: APjAAAVJs7qZFfdD1jjfhns1usXrySv8f1PQc3XXb7+aRyVcbWc1LSnN
+        GHJIXFF9MeI3kEokVT3xeIA=
+X-Google-Smtp-Source: APXvYqy/JgDoQjdsf4op7BILs++mEfq/winhdVwvj+maESKvfRaXlBFJOw539wdBqfKBpU78/4H/Rw==
+X-Received: by 2002:a63:1d05:: with SMTP id d5mr9280001pgd.157.1557446433356;
+        Thu, 09 May 2019 17:00:33 -0700 (PDT)
+Received: from ip-172-31-29-54.us-west-2.compute.internal (ec2-34-219-153-187.us-west-2.compute.amazonaws.com. [34.219.153.187])
+        by smtp.gmail.com with ESMTPSA id u7sm4342389pfu.157.2019.05.09.17.00.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 May 2019 17:00:32 -0700 (PDT)
+Date:   Fri, 10 May 2019 00:00:30 +0000
+From:   Alakesh Haloi <alakesh.haloi@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] selftests/bpf: Fix compile warning in bpf selftest
+Message-ID: <20190510000030.GA81841@ip-172-31-29-54.us-west-2.compute.internal>
+References: <20190507231224.GA3787@ip-172-31-29-54.us-west-2.compute.internal>
+ <CAADnVQ+e6TW9cH6yDmRSG5pRHXJiZajcx_q9SoPQi1keDROh-g@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAADnVQ+e6TW9cH6yDmRSG5pRHXJiZajcx_q9SoPQi1keDROh-g@mail.gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 09, 2019 at 01:51:54PM -0700, Alexei Starovoitov wrote:
+> On Tue, May 7, 2019 at 4:12 PM Alakesh Haloi <alakesh.haloi@gmail.com> wrote:
+> >
+> > This fixes the following compile time warning
+> >
+> > flow_dissector_load.c: In function ‘detach_program’:
+> > flow_dissector_load.c:55:19: warning: format not a string literal and no format arguments [-Wformat-security]
+> >    error(1, errno, command);
+> >                    ^~~~~~~
+> > Signed-off-by: Alakesh Haloi <alakesh.haloi@gmail.com>
+> > ---
+> >  tools/testing/selftests/bpf/flow_dissector_load.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/flow_dissector_load.c b/tools/testing/selftests/bpf/flow_dissector_load.c
+> > index 77cafa66d048..7136ab9ffa73 100644
+> > --- a/tools/testing/selftests/bpf/flow_dissector_load.c
+> > +++ b/tools/testing/selftests/bpf/flow_dissector_load.c
+> > @@ -52,7 +52,7 @@ static void detach_program(void)
+> >         sprintf(command, "rm -r %s", cfg_pin_path);
+> >         ret = system(command);
+> >         if (ret)
+> > -               error(1, errno, command);
+> > +               error(1, errno, "%s", command);
+> >  }
+> 
+> it was fixed month ago.
+The warning is seen in mainline. I did not try bpf tree. Looks like it
+is fixed there. 
 
-Several bug fixes, many are quick merge-window regression cures:
-
-1) When NLM_F_EXCL is not set, allow same fib rule insertion.  From
-   Hangbin Liu.
-
-2) Several cures in sja1105 DSA driver (while loop exit condition fix,
-   return of negative u8, etc.) from Vladimir Oltean.
-
-3) Handle tx/rx delays in realtek PHY driver properly, from Serge
-   Semin.
-
-4) Double free in cls_matchall, from Pieter Jansen van Vuuren.
-
-5) Disable SIOCSHWTSTAMP in macvlan/vlan containers, from Hangbin Liu.
-
-6) Endainness fixes in aqc111, from Oliver Neukum.
-
-7) Handle errors in packet_init properly, from Haibing Yue.
-
-8) Various W=1 warning fixes in kTLS, from Jakub Kicinski.
-
-Please pull, thanks a lot!
-
-The following changes since commit 80f232121b69cc69a31ccb2b38c1665d770b0710:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next (2019-05-07 22:03:58 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/davem/net 
-
-for you to fetch changes up to 6c9f05441477e29783e8391d06c067e4a3b23d47:
-
-  nfp: add missing kdoc (2019-05-09 16:41:46 -0700)
-
-----------------------------------------------------------------
-Cheng Han (1):
-      dwmac4_prog_mtl_tx_algorithms() missing write operation
-
-Claudiu Manoil (1):
-      ptp_qoriq: fix NULL access if ptp dt node missing
-
-Colin Ian King (3):
-      net: dsa: lantiq: fix spelling mistake "brigde" -> "bridge"
-      net: hns3: remove redundant assignment of l2_hdr to itself
-      net: dsa: sja1105: fix check on while loop exit
-
-David Ahern (1):
-      ipv4: Fix raw socket lookup for local traffic
-
-David S. Miller (4):
-      Merge branch 'phy-realtek-delays'
-      Merge tag 'batadv-net-for-davem-20190509' of git://git.open-mesh.org/linux-merge
-      Merge git://git.kernel.org/.../bpf/bpf
-      Merge branch 'tls-warnings'
-
-Gary Lin (1):
-      docs/btf: fix the missing section marks
-
-Geert Uytterhoeven (1):
-      openvswitch: Replace removed NF_NAT_NEEDED with IS_ENABLED(CONFIG_NF_NAT)
-
-Hangbin Liu (3):
-      fib_rules: return 0 directly if an exactly same rule exists when NLM_F_EXCL not supplied
-      macvlan: disable SIOCSHWTSTAMP in container
-      vlan: disable SIOCSHWTSTAMP in container
-
-Jakub Kicinski (4):
-      net/tcp: use deferred jump label for TCP acked data hook
-      net/tls: remove set but not used variables
-      net/tls: handle errors from padding_length()
-      nfp: add missing kdoc
-
-Jason Wang (2):
-      tuntap: fix dividing by zero in ebpf queue selection
-      tuntap: synchronize through tfiles array instead of tun->numqueues
-
-Jiong Wang (1):
-      nfp: bpf: fix static check error through tightening shift amount adjustment
-
-Kefeng Wang (1):
-      net: aquantia: fix undefined devm_hwmon_device_register_with_info reference
-
-Linus L�ssing (1):
-      batman-adv: mcast: fix multicast tt/tvlv worker locking
-
-Lorenz Bauer (1):
-      selftests: bpf: initialize bpf_object pointers where needed
-
-Oliver Neukum (3):
-      aqc111: fix endianness issue in aqc111_change_mtu
-      aqc111: fix writing to the phy on BE
-      aqc111: fix double endianness swap on BE
-
-Paolo Abeni (1):
-      selinux: do not report error on connect(AF_UNSPEC)
-
-Parthasarathy Bhuvaragan (1):
-      tipc: fix hanging clients using poll with EPOLLOUT flag
-
-Pieter Jansen van Vuuren (2):
-      nfp: reintroduce ndo_get_port_parent_id for representor ports
-      net/sched: avoid double free on matchall reoffload
-
-Serge Semin (2):
-      net: phy: realtek: Add rtl8211e rx/tx delays config
-      net: phy: realtek: Change TX-delay setting for RGMII modes only
-
-Simon Wunderlich (1):
-      batman-adv: Start new development cycle
-
-Vladimir Oltean (1):
-      net: dsa: sja1105: Don't return a negative in u8 sja1105_stp_state_get
-
-Wang Hai (1):
-      net: dsa: sja1105: Make 'sja1105et_regs' and 'sja1105pqrs_regs' static
-
-YueHaibing (1):
-      packet: Fix error path in packet_init
-
- Documentation/bpf/btf.rst                                 |  2 ++
- drivers/net/dsa/lantiq_gswip.c                            |  8 ++++----
- drivers/net/dsa/sja1105/sja1105_main.c                    |  6 +++++-
- drivers/net/dsa/sja1105/sja1105_spi.c                     | 11 ++++++-----
- drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.c       |  5 +++++
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c           |  2 +-
- drivers/net/ethernet/netronome/nfp/bpf/jit.c              | 13 ++++++++++++-
- drivers/net/ethernet/netronome/nfp/ccm.h                  |  2 ++
- drivers/net/ethernet/netronome/nfp/nfp_net_repr.c         |  1 +
- drivers/net/ethernet/netronome/nfp/nfp_port.c             | 16 ++++++++++++++++
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c         |  2 ++
- drivers/net/macvlan.c                                     |  2 ++
- drivers/net/phy/realtek.c                                 | 70 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----
- drivers/net/tun.c                                         | 14 ++++++++++++--
- drivers/net/usb/aqc111.c                                  | 31 +++++++++++++++++++++++--------
- drivers/ptp/ptp_qoriq.c                                   |  3 +++
- include/net/tcp.h                                         |  2 +-
- net/8021q/vlan_dev.c                                      |  4 +++-
- net/batman-adv/main.c                                     |  1 +
- net/batman-adv/main.h                                     |  2 +-
- net/batman-adv/multicast.c                                | 11 +++--------
- net/batman-adv/types.h                                    |  5 +++++
- net/core/fib_rules.c                                      |  6 +++---
- net/ipv4/raw.c                                            |  4 ++--
- net/ipv4/tcp_input.c                                      | 16 +++++++++++-----
- net/openvswitch/conntrack.c                               |  4 ++--
- net/packet/af_packet.c                                    | 25 ++++++++++++++++++++-----
- net/sched/cls_matchall.c                                  |  1 +
- net/tipc/socket.c                                         |  4 ++--
- net/tls/tls_device.c                                      |  6 ++----
- net/tls/tls_sw.c                                          | 30 ++++++++++++++++++++++--------
- security/selinux/hooks.c                                  |  8 ++++----
- tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c  |  2 +-
- tools/testing/selftests/bpf/prog_tests/task_fd_query_tp.c |  2 +-
- tools/testing/selftests/bpf/prog_tests/tp_attach_query.c  |  3 +++
- 35 files changed, 250 insertions(+), 74 deletions(-)
+Thanks
+-Alakesh
