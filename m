@@ -2,90 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58A5719AB5
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 11:36:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB1B419AD6
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 11:39:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727410AbfEJJf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 05:35:56 -0400
-Received: from smtp-out.xnet.cz ([178.217.244.18]:33330 "EHLO smtp-out.xnet.cz"
+        id S1727238AbfEJJjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 05:39:06 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59686 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727397AbfEJJfz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 May 2019 05:35:55 -0400
-Received: from meh.true.cz (meh.true.cz [108.61.167.218])
-        (Authenticated sender: petr@true.cz)
-        by smtp-out.xnet.cz (Postfix) with ESMTPSA id D30F2434E;
-        Fri, 10 May 2019 11:35:51 +0200 (CEST)
-Received: by meh.true.cz (OpenSMTPD) with ESMTP id 608a6a61;
-        Fri, 10 May 2019 11:35:50 +0200 (CEST)
-From:   =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
-To:     netdev@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>,
-        linux-wireless@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 5/5] net: wireless: mt76: fix similar warning reported by kbuild test robot
-Date:   Fri, 10 May 2019 11:35:18 +0200
-Message-Id: <1557480918-9627-6-git-send-email-ynezz@true.cz>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1557480918-9627-1-git-send-email-ynezz@true.cz>
-References: <1557480918-9627-1-git-send-email-ynezz@true.cz>
+        id S1727111AbfEJJjG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 May 2019 05:39:06 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8BFFF3082B02;
+        Fri, 10 May 2019 09:39:06 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.32.181.182])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 964141001E65;
+        Fri, 10 May 2019 09:39:05 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     selinux@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
+        David Miller <davem@davemloft.net>
+Subject: [PATCH net v2] Revert "selinux: do not report error on connect(AF_UNSPEC)"
+Date:   Fri, 10 May 2019 11:37:58 +0200
+Message-Id: <bc0123c474c2c581d673ddf753f7ff75ecf9dc71.1557480936.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Fri, 10 May 2019 09:39:06 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes following (similar) warning reported by kbuild test robot:
+This reverts commit c7e0d6cca86581092cbbf2cd868b3601495554cf.
 
- In function ‘memcpy’,
-  inlined from ‘smsc75xx_init_mac_address’ at drivers/net/usb/smsc75xx.c:778:3,
-  inlined from ‘smsc75xx_bind’ at drivers/net/usb/smsc75xx.c:1501:2:
-  ./include/linux/string.h:355:9: warning: argument 2 null where non-null expected [-Wnonnull]
-  return __builtin_memcpy(p, q, size);
-         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  drivers/net/usb/smsc75xx.c: In function ‘smsc75xx_bind’:
-  ./include/linux/string.h:355:9: note: in a call to built-in function ‘__builtin_memcpy’
+It was agreed a slightly different fix via the selinux tree.
 
-I've replaced the offending memcpy with ether_addr_copy, because I'm
-100% sure, that of_get_mac_address can't return NULL as it returns valid
-pointer or ERR_PTR encoded value, nothing else.
+v1 -> v2:
+ - use the correct reverted commit hash
 
-I'm hesitant to just change IS_ERR into IS_ERR_OR_NULL check, as this
-would make the warning disappear also, but it would be confusing to
-check for impossible return value just to make a compiler happy.
-
-I'm now changing all occurencies of memcpy to ether_addr_copy after the
-of_get_mac_address call, as it's very likely, that we're going to get
-similar reports from kbuild test robot in the future.
-
-Fixes: d31a36b5f407 ("net: wireless: support of_get_mac_address new ERR_PTR error")
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Petr Štetiar <ynezz@true.cz>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- drivers/net/wireless/mediatek/mt76/eeprom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Note: this is targeting the 'net' tree
+---
+ security/selinux/hooks.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/eeprom.c b/drivers/net/wireless/mediatek/mt76/eeprom.c
-index 04964937a3af..b7a49ae6b327 100644
---- a/drivers/net/wireless/mediatek/mt76/eeprom.c
-+++ b/drivers/net/wireless/mediatek/mt76/eeprom.c
-@@ -95,7 +95,7 @@
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index d82b87c16b0a..c61787b15f27 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -4649,7 +4649,7 @@ static int selinux_socket_connect_helper(struct socket *sock,
+ 		struct lsm_network_audit net = {0,};
+ 		struct sockaddr_in *addr4 = NULL;
+ 		struct sockaddr_in6 *addr6 = NULL;
+-		unsigned short snum = 0;
++		unsigned short snum;
+ 		u32 sid, perm;
  
- 	mac = of_get_mac_address(np);
- 	if (!IS_ERR(mac))
--		memcpy(dev->macaddr, mac, ETH_ALEN);
-+		ether_addr_copy(dev->macaddr, mac);
- #endif
+ 		/* sctp_connectx(3) calls via selinux_sctp_bind_connect()
+@@ -4674,12 +4674,12 @@ static int selinux_socket_connect_helper(struct socket *sock,
+ 			break;
+ 		default:
+ 			/* Note that SCTP services expect -EINVAL, whereas
+-			 * others must handle this at the protocol level:
+-			 * connect(AF_UNSPEC) on a connected socket is
+-			 * a documented way disconnect the socket.
++			 * others expect -EAFNOSUPPORT.
+ 			 */
+ 			if (sksec->sclass == SECCLASS_SCTP_SOCKET)
+ 				return -EINVAL;
++			else
++				return -EAFNOSUPPORT;
+ 		}
  
- 	if (!is_valid_ether_addr(dev->macaddr)) {
+ 		err = sel_netport_sid(sk->sk_protocol, snum, &sid);
 -- 
-1.9.1
+2.20.1
 
