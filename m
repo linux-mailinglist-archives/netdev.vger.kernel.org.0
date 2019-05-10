@@ -2,329 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE2519AE6
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 11:46:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFA5F19B5D
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 12:16:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727280AbfEJJqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 05:46:06 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:34039 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727160AbfEJJqF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 05:46:05 -0400
-Received: by mail-ot1-f65.google.com with SMTP id l17so5038299otq.1
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 02:46:04 -0700 (PDT)
+        id S1727703AbfEJKQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 06:16:40 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:41484 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727684AbfEJKQj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 06:16:39 -0400
+Received: by mail-lj1-f196.google.com with SMTP id k8so4593736lja.8
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 03:16:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
+        d=kinvolk.io; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Sgf6/Y0UrQwr/GHU2maYyg/BfKDCw3g4VFByGLRwIiY=;
-        b=LBpEDVI7whBRF2VOskAKkiKyZeBOjMwMz5aePVInr0jalUjLwgy8KSJ2oa12Dx2kKF
-         3w0rXa/2x67nOAizalC4Fy1jOQMS3tmZ6pqchAWWG4N6bWHsLSZfx6AIPl8dXp4a2M3H
-         TwD+o8MAX6Sh/9JoSZS8N8DJhw+M7S1BE3Z+s=
+         :cc:content-transfer-encoding;
+        bh=qz+stYvXt7DnxyGh7w2UEW303G1y2SoHoxPZJae/GgA=;
+        b=jLHV+nOhTml6xqZeVSzwc8Wu8aDqJTmcu1Xv7gtwHbztumGmVTSlGpEcC1BS8n9Sv4
+         2H5IImNYZB0Fa1OcQIKTkaU6oyD100CqNorY1NofmoQOu41UADw2RdE4iB3RHoikSuLR
+         OZTZ/eYaplomf/r5/xNQg4wR3U6oH//MXvNqk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Sgf6/Y0UrQwr/GHU2maYyg/BfKDCw3g4VFByGLRwIiY=;
-        b=npYDdew/eq1EaMaJd0P+FgaM9imfk2CMQorBp2bxKawQdYRxQ0bPmxttBmwnHfV1Vq
-         w8L0HzJZGtvjDZGx7uOOiALe3MGK/DHHXKIu0zec1DfqEtbQAwj93Ly/vO0uZafgZ4LA
-         0YRmzPkzfleAyhpZhJTFrW3VT1mou8z+BAJ9APy9YV+y8Q6/XoMiMlFHOWTjWPlPmS71
-         qNVPA10pRbTu7ttS5KYVjDa/n+2NceQiia0yZqfFe8PuRDKn9D1GEE5b9f2fY1o5NS+l
-         EE6TBgvoV4qkUNl5uDc2tmTJCq/WzU/ztt7SEV+PiPfGpB6K2Jy22gXdsRTVG0aj0tqk
-         Y1aQ==
-X-Gm-Message-State: APjAAAXCdM7IQYwCCIOCieEhIYF+HfdJsu+IE8GXM2+QW9D+aSvEt2RA
-        wfHBPx7mFQJJNVHZgPQSib1ATdQqOvNcTP2ceshXmg==
-X-Google-Smtp-Source: APXvYqxS3BHgUGVkhumKxSed4443GmY/zHdlFcdt5tg0QXna6de51aUarqZoyxty23M5JpEO0iQUjn7381mzQFf0Le8=
-X-Received: by 2002:a9d:694a:: with SMTP id p10mr6289641oto.61.1557481564554;
- Fri, 10 May 2019 02:46:04 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qz+stYvXt7DnxyGh7w2UEW303G1y2SoHoxPZJae/GgA=;
+        b=IGdRWKhdAU7RF5MsMdp9zIpTwddJqw78Yd8aTZySZz5ipZAiKmasctsMj6zXryysIi
+         6r5zVvJWlhlEbMVHf9DlSpRMBtRPlMPeMwAxGNxLlkNxLGRuMC4Tz5chapeL/eArkRo/
+         /OcKRI//b8l/9hdk3A7yzi3tCDLJ4UGxG0MkOx7HilVi/8XJwMk6Q8NJYIOBiHsREfGk
+         Had7fn75Bji44TTdP1tabQp24vLYryKUhkZHSyDU7SCZwywpSdu3/Zs+5zd71GljgzPj
+         IxiVenwvbLGcQ9CyZfBpkRXk6I7S4VfuuXzbEgdl++vH5mrL8rqyefrRtOVyPryKsnxI
+         5iSA==
+X-Gm-Message-State: APjAAAU71d+JgKxpyNmqlqxg4LDtWPadnYf0upJkQ89fqR9HsHNpWCTQ
+        S3d+eCvTU+9gQsOGXDF4zM3yVue+9+lshd4/MUnwAA==
+X-Google-Smtp-Source: APXvYqxGXgs/6KhQqz1+ig2tFI4SGxRD1Qo6e9m8IPG4d3RCWwLFaRHWCGd9SwM3a0SNYMyWbs4n3I5o6loG8UaIouE=
+X-Received: by 2002:a2e:74f:: with SMTP id i15mr5309596ljd.156.1557483397071;
+ Fri, 10 May 2019 03:16:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190510043723.3359135-1-andriin@fb.com>
-In-Reply-To: <20190510043723.3359135-1-andriin@fb.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Fri, 10 May 2019 10:45:53 +0100
-Message-ID: <CACAyw9_9Q4CPzPm-ikMyMMmWR56u+5c7RpW-7o0YBG5JoheF2A@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: detect supported kernel BTF features and
- sanitize BTF
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>, yhs@fb.com
+References: <20190508160859.4380-1-krzesimir@kinvolk.io> <46056c60-f106-e539-b614-498cb1e9e3d0@iogearbox.net>
+In-Reply-To: <46056c60-f106-e539-b614-498cb1e9e3d0@iogearbox.net>
+From:   Krzesimir Nowak <krzesimir@kinvolk.io>
+Date:   Fri, 10 May 2019 12:16:25 +0200
+Message-ID: <CAGGp+cFVt_i29Sr07ZJC5zdxTuuwcc02yVy5y03=DXSB6NEr0g@mail.gmail.com>
+Subject: Re: [PATCH bpf v1] bpf: Fix undefined behavior in narrow load handling
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, Alban Crequy <alban@kinvolk.io>,
+        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 May 2019 at 05:37, Andrii Nakryiko <andriin@fb.com> wrote:
+On Thu, May 9, 2019 at 11:30 PM Daniel Borkmann <daniel@iogearbox.net> wrot=
+e:
 >
-> Depending on used versions of libbpf, Clang, and kernel, it's possible to
-> have valid BPF object files with valid BTF information, that still won't
-> load successfully due to Clang emitting newer BTF features (e.g.,
-> BTF_KIND_FUNC, .BTF.ext's line_info/func_info, BTF_KIND_DATASEC, etc), that
-> are not yet supported by older kernel.
+> On 05/08/2019 06:08 PM, Krzesimir Nowak wrote:
+> > Commit 31fd85816dbe ("bpf: permits narrower load from bpf program
+> > context fields") made the verifier add AND instructions to clear the
+> > unwanted bits with a mask when doing a narrow load. The mask is
+> > computed with
+> >
+> > (1 << size * 8) - 1
+> >
+> > where "size" is the size of the narrow load. When doing a 4 byte load
+> > of a an 8 byte field the verifier shifts the literal 1 by 32 places to
+> > the left. This results in an overflow of a signed integer, which is an
+> > undefined behavior. Typically the computed mask was zero, so the
+> > result of the narrow load ended up being zero too.
+> >
+> > Cast the literal to long long to avoid overflows. Note that narrow
+> > load of the 4 byte fields does not have the undefined behavior,
+> > because the load size can only be either 1 or 2 bytes, so shifting 1
+> > by 8 or 16 places will not overflow it. And reading 4 bytes would not
+> > be a narrow load of a 4 bytes field.
+> >
+> > Reviewed-by: Alban Crequy <alban@kinvolk.io>
+> > Reviewed-by: Iago L=C3=B3pez Galeiras <iago@kinvolk.io>
+> > Fixes: 31fd85816dbe ("bpf: permits narrower load from bpf program conte=
+xt fields")
+> > Cc: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+> > ---
+> >  kernel/bpf/verifier.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 09d5d972c9ff..950fac024fbb 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -7296,7 +7296,7 @@ static int convert_ctx_accesses(struct bpf_verifi=
+er_env *env)
+> >                                                                       i=
+nsn->dst_reg,
+> >                                                                       s=
+hift);
+> >                               insn_buf[cnt++] =3D BPF_ALU64_IMM(BPF_AND=
+, insn->dst_reg,
+> > -                                                             (1 << siz=
+e * 8) - 1);
+> > +                                                             (1ULL << =
+size * 8) - 1);
+> >                       }
+>
+> Makes sense, good catch & thanks for the fix!
+>
+> Could you also add a test case to test_verifier.c so we keep track of thi=
+s?
+>
+> Thanks,
+> Daniel
 
-For sys_bpf, we ignore a zero tail in struct bpf_attr, which gives us
-backwards / forwards compatibility
-as long as the user doesn't use the new fields.
-Do we need a similar mechanism for BTF? Is it possible to discard
-unknown types at load time?
+Hi,
 
->
-> This patch adds detection of BTF features and sanitizes BPF object's BTF
-> by substituting various supported BTF kinds, which have compatible layout:
->   - BTF_KIND_FUNC -> BTF_KIND_TYPEDEF
->   - BTF_KIND_FUNC_PROTO -> BTF_KIND_ENUM
->   - BTF_KIND_VAR -> BTF_KIND_INT
->   - BTF_KIND_DATASEC -> BTF_KIND_STRUCT
->
-> Replacement is done in such a way as to preserve as much information as
-> possible (names, sizes, etc) where possible without violating kernel's
-> validation rules.
->
-> Reported-by: Alexei Starovoitov <ast@fb.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/libbpf.c | 185 ++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 184 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 11a65db4b93f..0813c4ad5d11 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -128,6 +128,10 @@ struct bpf_capabilities {
->         __u32 name:1;
->         /* v5.2: kernel support for global data sections. */
->         __u32 global_data:1;
-> +       /* BTF_KIND_FUNC and BTF_KIND_FUNC_PROTO support */
-> +       __u32 btf_func:1;
-> +       /* BTF_KIND_VAR and BTF_KIND_DATASEC support */
-> +       __u32 btf_datasec:1;
->  };
->
->  /*
-> @@ -1021,6 +1025,81 @@ static bool section_have_execinstr(struct bpf_object *obj, int idx)
->         return false;
->  }
->
-> +static void bpf_object__sanitize_btf(struct bpf_object *obj)
-> +{
-> +#define BTF_INFO_ENC(kind, kind_flag, vlen) \
-> +       ((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
-> +#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
-> +       ((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
-> +
-> +       bool has_datasec = obj->caps.btf_datasec;
-> +       bool has_func = obj->caps.btf_func;
-> +       struct btf *btf = obj->btf;
-> +       struct btf_type *t;
-> +       int i, j, vlen;
-> +       __u16 kind;
-> +
-> +       if (!obj->btf || (has_func && has_datasec))
-> +               return;
-> +
-> +       for (i = 1; i <= btf__get_nr_types(btf); i++) {
-> +               t = (struct btf_type *)btf__type_by_id(btf, i);
-> +               kind = BTF_INFO_KIND(t->info);
-> +
-> +               if (!has_datasec && kind == BTF_KIND_VAR) {
-> +                       /* replace VAR with INT */
-> +                       t->info = BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
-> +                       t->size = sizeof(int);
-> +                       *(int *)(t+1) = BTF_INT_ENC(0, 0, 32);
-> +               } else if (!has_datasec && kind == BTF_KIND_DATASEC) {
-> +                       /* replace DATASEC with STRUCT */
-> +                       struct btf_var_secinfo *v = (void *)(t + 1);
-> +                       struct btf_member *m = (void *)(t + 1);
-> +                       struct btf_type *vt;
-> +                       char *name;
-> +
-> +                       name = (char *)btf__name_by_offset(btf, t->name_off);
-> +                       while (*name) {
-> +                               if (*name == '.')
-> +                                       *name = '_';
-> +                               name++;
-> +                       }
-> +
-> +                       vlen = BTF_INFO_VLEN(t->info);
-> +                       t->info = BTF_INFO_ENC(BTF_KIND_STRUCT, 0, vlen);
-> +                       for (j = 0; j < vlen; j++, v++, m++) {
-> +                               /* order of field assignments is important */
-> +                               m->offset = v->offset * 8;
-> +                               m->type = v->type;
-> +                               /* preserve variable name as member name */
-> +                               vt = (void *)btf__type_by_id(btf, v->type);
-> +                               m->name_off = vt->name_off;
-> +                       }
-> +               } else if (!has_func && kind == BTF_KIND_FUNC_PROTO) {
-> +                       /* replace FUNC_PROTO with ENUM */
-> +                       vlen = BTF_INFO_VLEN(t->info);
-> +                       t->info = BTF_INFO_ENC(BTF_KIND_ENUM, 0, vlen);
-> +                       t->size = sizeof(__u32); /* kernel enforced */
-> +               } else if (!has_func && kind == BTF_KIND_FUNC) {
-> +                       /* replace FUNC with TYPEDEF */
-> +                       t->info = BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0);
-> +               }
-> +       }
-> +#undef BTF_INFO_ENC
-> +#undef BTF_INT_ENC
-> +}
-> +
-> +static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
-> +{
-> +       if (!obj->btf_ext)
-> +               return;
-> +
-> +       if (!obj->caps.btf_func) {
-> +               btf_ext__free(obj->btf_ext);
-> +               obj->btf_ext = NULL;
-> +       }
-> +}
-> +
->  static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
->  {
->         Elf *elf = obj->efile.elf;
-> @@ -1164,8 +1243,10 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
->                         obj->btf = NULL;
->                 } else {
->                         err = btf__finalize_data(obj, obj->btf);
-> -                       if (!err)
-> +                       if (!err) {
-> +                               bpf_object__sanitize_btf(obj);
->                                 err = btf__load(obj->btf);
-> +                       }
->                         if (err) {
->                                 pr_warning("Error finalizing and loading %s into kernel: %d. Ignored and continue.\n",
->                                            BTF_ELF_SEC, err);
-> @@ -1187,6 +1268,8 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
->                                            BTF_EXT_ELF_SEC,
->                                            PTR_ERR(obj->btf_ext));
->                                 obj->btf_ext = NULL;
-> +                       } else {
-> +                               bpf_object__sanitize_btf_ext(obj);
->                         }
->                 }
->         }
-> @@ -1556,12 +1639,112 @@ bpf_object__probe_global_data(struct bpf_object *obj)
->         return 0;
->  }
->
-> +static int try_load_btf(const char *raw_types, size_t types_len,
-> +                       const char *str_sec, size_t str_len)
-> +{
-> +       char buf[1024];
-> +       struct btf_header hdr = {
-> +               .magic = BTF_MAGIC,
-> +               .version = BTF_VERSION,
-> +               .hdr_len = sizeof(struct btf_header),
-> +               .type_len = types_len,
-> +               .str_off = types_len,
-> +               .str_len = str_len,
-> +       };
-> +       int btf_fd, btf_len;
-> +       __u8 *raw_btf;
-> +
-> +       btf_len = hdr.hdr_len + hdr.type_len + hdr.str_len;
-> +       raw_btf = malloc(btf_len);
-> +       if (!raw_btf)
-> +               return -ENOMEM;
-> +
-> +       memcpy(raw_btf, &hdr, sizeof(hdr));
-> +       memcpy(raw_btf + hdr.hdr_len, raw_types, hdr.type_len);
-> +       memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
-> +
-> +       btf_fd = bpf_load_btf(raw_btf, btf_len, buf, 1024, 0);
-> +       if (btf_fd < 0) {
-> +               free(raw_btf);
-> +               return 0;
-> +       }
-> +
-> +       close(btf_fd);
-> +       free(raw_btf);
-> +       return 1;
-> +}
-> +
-> +#define BTF_INFO_ENC(kind, kind_flag, vlen) \
-> +       ((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
-> +#define BTF_TYPE_ENC(name, info, size_or_type) (name), (info), (size_or_type)
-> +#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
-> +       ((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
-> +#define BTF_TYPE_INT_ENC(name, encoding, bits_offset, bits, sz) \
-> +       BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_INT, 0, 0), sz), \
-> +       BTF_INT_ENC(encoding, bits_offset, bits)
-> +#define BTF_PARAM_ENC(name, type) (name), (type)
-> +#define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
-> +static int bpf_object__probe_btf_func(struct bpf_object *obj)
-> +{
-> +       const char strs[] = "\0int\0x\0a";
-> +       /* void x(int a) {} */
-> +       __u32 types[] = {
-> +               /* int */
-> +               BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
-> +               /* FUNC_PROTO */                                /* [2] */
-> +               BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 1), 0),
-> +               BTF_PARAM_ENC(7, 1),
-> +               /* FUNC x */                                    /* [3] */
-> +               BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
-> +       };
-> +       int res;
-> +
-> +       res = try_load_btf((char *)types, sizeof(types), strs, sizeof(strs));
-> +       if (res < 0)
-> +               return res;
-> +       if (res > 0)
-> +               obj->caps.btf_func = 1;
-> +       return 0;
-> +}
-> +
-> +static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
-> +{
-> +       const char strs[] = "\0x\0.data";
-> +       /* static int a; */
-> +       __u32 types[] = {
-> +               /* int */
-> +               BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
-> +               /* VAR x */                                     /* [2] */
-> +               BTF_TYPE_ENC(1, BTF_INFO_ENC(BTF_KIND_VAR, 0, 0), 1),
-> +               BTF_VAR_STATIC,
-> +               /* DATASEC val */                               /* [3] */
-> +               BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
-> +               BTF_VAR_SECINFO_ENC(2, 0, 4),
-> +       };
-> +       int res;
-> +
-> +       res = try_load_btf((char *)&types, sizeof(types), strs, sizeof(strs));
-> +       if (res < 0)
-> +               return res;
-> +       if (res > 0)
-> +               obj->caps.btf_datasec = 1;
-> +       return 0;
-> +}
-> +#undef BTF_INFO_ENC
-> +#undef BTF_TYPE_ENC
-> +#undef BTF_INT_ENC
-> +#undef BTF_TYPE_INT_ENC
-> +#undef BTF_PARAM_ENC
-> +#undef BTF_VAR_SECINFO_ENC
-> +
->  static int
->  bpf_object__probe_caps(struct bpf_object *obj)
->  {
->         int (*probe_fn[])(struct bpf_object *obj) = {
->                 bpf_object__probe_name,
->                 bpf_object__probe_global_data,
-> +               bpf_object__probe_btf_func,
-> +               bpf_object__probe_btf_datasec,
->         };
->         int i, ret;
->
-> --
-> 2.17.1
->
+A test for it is a bit tricky. I only found two 64bit fields that can
+be loaded narrowly - `sample_period` and `addr` in `struct
+bpf_perf_event_data`, so in theory I could have a test like follows:
 
+{
+    "32bit loads of a 64bit field (both least and most significant words)",
+    .insns =3D {
+    BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1, offsetof(struct
+bpf_perf_event_data, addr)),
+    BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1, offsetof(struct
+bpf_perf_event_data, addr) + 4),
+    BPF_MOV64_IMM(BPF_REG_0, 0),
+    BPF_EXIT_INSN(),
+    },
+    .result =3D ACCEPT,
+    .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
+},
 
--- 
-Lorenz Bauer  |  Systems Engineer
-25 Lavington St., London SE1 0NZ
+The test like this would check that the program is not rejected, but
+it wasn't an issue. The test does not check if the verifier has
+transformed the narrow reads properly. Ideally the BPF program would
+do something like this:
 
-www.cloudflare.com
+/* let's assume that low and high variables get their values from narrow lo=
+ad */
+__u64 low =3D (__u32)perf_event->addr;
+__u64 high =3D (__u32)(perf_event->addr >> 32);
+__u64 addr =3D low | (high << 32);
+
+return addr !=3D perf_event->addr;
+
+But the test_verifier.c won't be able to run this, because
+BPF_PROG_TYPE_PERF_EVENT programs are not supported by the
+bpf_test_run_prog function.
+
+Any hints how to proceed here?
+
+Cheers,
+Krzesimir
+--=20
+Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
+Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago L=
+=C3=B3pez Galeiras
+Registergericht/Court of registration: Amtsgericht Charlottenburg
+Registernummer/Registration number: HRB 171414 B
+Ust-ID-Nummer/VAT ID number: DE302207000
