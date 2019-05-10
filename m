@@ -2,113 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 205AF19F34
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 16:34:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1134619F8E
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 16:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728002AbfEJOeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 10:34:21 -0400
-Received: from mga14.intel.com ([192.55.52.115]:32461 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727248AbfEJOeT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 May 2019 10:34:19 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 May 2019 07:34:16 -0700
-X-ExtLoop1: 1
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.86])
-  by orsmga002.jf.intel.com with ESMTP; 10 May 2019 07:34:08 -0700
-Received: from andy by smile with local (Exim 4.92)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1hP6b9-0004Sg-Pc; Fri, 10 May 2019 17:34:07 +0300
-Date:   Fri, 10 May 2019 17:34:07 +0300
-From:   "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>
-To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-rpi-kernel@lists.infradead.org" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "linux-rockchip@lists.infradead.org" 
-        <linux-rockchip@lists.infradead.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH 03/16] lib,treewide: add new match_string() helper/macro
-Message-ID: <20190510143407.GA9224@smile.fi.intel.com>
-References: <20190508112842.11654-1-alexandru.ardelean@analog.com>
- <20190508112842.11654-5-alexandru.ardelean@analog.com>
- <20190508131128.GL9224@smile.fi.intel.com>
- <20190508131856.GB10138@kroah.com>
- <b2440bc9485456a7a90a488c528997587b22088b.camel@analog.com>
- <4df165bc4247e60aa4952fd55cb0c77e60712767.camel@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4df165bc4247e60aa4952fd55cb0c77e60712767.camel@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727332AbfEJOvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 10:51:40 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37291 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727144AbfEJOvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 10:51:39 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 7so1824626wmo.2
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 07:51:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=6LGGcB7ZoPAoJ3CF1IjStAUcu9/Mb+1LvT//iHSLJhs=;
+        b=DLQQWjKiwiTwGj2DwxxjmShlz8xhm2ovlp8+dQkRhT7W6kcvhBO3OnAgikNrcTqt9w
+         F7dDKuG8l3mE50AWnFvFsf7vBiLYUkNYq/r6dyqOuX4hhtT40DmusCW9szx4MXy9TWce
+         7Vh1qh5RS6gd3Y5J1pEN1cYEO6ic303myPb9Rr8vt94QlbBhG75QIB97nDIcSQ0FQkTQ
+         TAWJ8Y9akSRWqCzUujh5BxOX7D71x49Q98Wg9lqrPYj6umojEjH3D9NfPy/nTybGulmP
+         6hkKP6PogUGlhJW5pG4DUR4vHCq+f8ENkis4I6+ImQ4VY5hgpvoyZ4kWW6kI2OmyQHQO
+         v/bA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6LGGcB7ZoPAoJ3CF1IjStAUcu9/Mb+1LvT//iHSLJhs=;
+        b=RT8xwhDSnK/ckRY8inGd4ul5mx2Y15OnaO5ch4GD9Ig2EIp0G5yCYhNfriaOlpC0a0
+         9xsx3Cj0oZZb1KPj63URN/5UlSTZ8wkxjrNvT8LVO6+X3SXI41QSDRD0LAovqBlJJEVR
+         RbO1PaBOsOC+zMfBTkOZMya6JAKx10UadksT7cxET1q1BksttPubaoQwA87MOxrPjHtu
+         5mAACCkl6VyOXBbBHnY1wFJZWA8g3CGg6zSzCq21cSEjRbM8KB63aSD0aOBu6HRw6xq1
+         ccJzJ8MJItH8stSGgicP7SWd3G9Pi7svmeX86TKs/XXZ7JywC9gARDp2yVIWvAiwM1GQ
+         BBUA==
+X-Gm-Message-State: APjAAAUkVmbqJH4PkuyDg2ZKeQqOAUjaAe9ixDamFXGqfw89SQAtu6vn
+        mheMwLnk+BvpeyPhipISgMUySg==
+X-Google-Smtp-Source: APXvYqyh6upZS93umpI5UrYbS8EhdgsUkxY5yhuViGPT+LDNS7iXSt9BqZfXOZvA1t9bYjdNYTsEDg==
+X-Received: by 2002:a7b:cb85:: with SMTP id m5mr7598655wmi.75.1557499897880;
+        Fri, 10 May 2019 07:51:37 -0700 (PDT)
+Received: from reblochon.netronome.com ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id p17sm7561027wrg.92.2019.05.10.07.51.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 10 May 2019 07:51:37 -0700 (PDT)
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Yonghong Song <yhs@fb.com>
+Subject: [PATCH bpf 0/4] bpf: fix documentation for BPF helper functions
+Date:   Fri, 10 May 2019 15:51:21 +0100
+Message-Id: <20190510145125.8416-1-quentin.monnet@netronome.com>
+X-Mailer: git-send-email 2.14.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 10, 2019 at 09:15:27AM +0000, Ardelean, Alexandru wrote:
-> On Wed, 2019-05-08 at 16:22 +0300, Alexandru Ardelean wrote:
-> > On Wed, 2019-05-08 at 15:18 +0200, Greg KH wrote:
-> > > On Wed, May 08, 2019 at 04:11:28PM +0300, Andy Shevchenko wrote:
-> > > > On Wed, May 08, 2019 at 02:28:29PM +0300, Alexandru Ardelean wrote:
+Another round of fixes for the doc in the BPF UAPI header, which can be
+turned into a manual page. First patch is the most important, as it fixes
+parsing for the bpf_strtoul() helper doc. Following patches are formatting
+fixes (nitpicks, mostly). The last one updates the copy of the header,
+located under tools/.
 
-> > > > Can you split include/linux/ change from the rest?
-> > > 
-> > > That would break the build, why do you want it split out?  This makes
-> > > sense all as a single patch to me.
-> > > 
-> > 
-> > Not really.
-> > It would be just be the new match_string() helper/macro in a new commit.
-> > And the conversions of the simple users of match_string() (the ones using
-> > ARRAY_SIZE()) in another commit.
-> > 
-> 
-> I should have asked in my previous reply.
-> Leave this as-is or re-formulate in 2 patches ?
+Quentin Monnet (4):
+  bpf: fix script for generating man page on BPF helpers
+  bpf: fix recurring typo in documentation for BPF helpers
+  bpf: fix minor issues in documentation for BPF helpers.
+  tools: bpf: synchronise BPF UAPI header with tools
 
-Depends on on what you would like to spend your time: collecting Acks for all
-pieces in treewide patch or send new API first followed up by per driver /
-module update in next cycle.
-
-I also have no strong preference.
-And I think it's good to add Heikki Krogerus to Cc list for both patch series,
-since he is the author of sysfs variant and may have something to comment on
-the rest.
+ include/uapi/linux/bpf.h       | 145 +++++++++++++++++++++--------------------
+ scripts/bpf_helpers_doc.py     |   8 +--
+ tools/include/uapi/linux/bpf.h | 145 +++++++++++++++++++++--------------------
+ 3 files changed, 154 insertions(+), 144 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.14.1
 
