@@ -2,124 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1201974D
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 06:15:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E136197B7
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 06:37:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726914AbfEJEN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 00:13:56 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:56600 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726132AbfEJEN4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 00:13:56 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4A42por020633
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 00:13:55 -0400
-Received: from e36.co.us.ibm.com (e36.co.us.ibm.com [32.97.110.154])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2scwp38h0c-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 00:13:55 -0400
-Received: from localhost
-        by e36.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <tlfalcon@linux.ibm.com>;
-        Fri, 10 May 2019 05:13:54 +0100
-Received: from b03cxnp08025.gho.boulder.ibm.com (9.17.130.17)
-        by e36.co.us.ibm.com (192.168.1.136) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Fri, 10 May 2019 05:13:52 +0100
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x4A4DoeJ54395108
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 10 May 2019 04:13:50 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7B2886E050;
-        Fri, 10 May 2019 04:13:50 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E6CCE6E04E;
-        Fri, 10 May 2019 04:13:49 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.80.213.250])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 10 May 2019 04:13:49 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     julietk@linux.ibm.com, Thomas Falcon <tlfalcon@linux.ibm.com>
-Subject: [PATCH net] net/ibmvnic: Update carrier state after link state change
-Date:   Thu,  9 May 2019 23:13:44 -0500
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1557461624-21959-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <1557461624-21959-1-git-send-email-tlfalcon@linux.ibm.com>
-X-TM-AS-GCONF: 00
-x-cbid: 19051004-0020-0000-0000-00000EE63281
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011080; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000285; SDB=6.01201127; UDB=6.00630283; IPR=6.00982022;
- MB=3.00026822; MTD=3.00000008; XFM=3.00000015; UTC=2019-05-10 04:13:53
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19051004-0021-0000-0000-000065C3DC55
-Message-Id: <1557461624-21959-2-git-send-email-tlfalcon@linux.ibm.com>
+        id S1726949AbfEJEhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 00:37:34 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35780 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726907AbfEJEhe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 00:37:34 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4A4XBdS001188
+        for <netdev@vger.kernel.org>; Thu, 9 May 2019 21:37:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=EqYT+9L31dIrnbPraGziZNkdXZCOBSrIHR6fY2+lzhg=;
+ b=WkFAOIQzSQ63LIUobLn8tBVvbOBuqlN77Usp1N5vIJDGwf/n1CzOl52G04/JDU0JOecc
+ Sjn0tq42BuXAvMMyEpGxS+zxhsiqkqcIXcq4AQ0HVq9+g4TDfmaPmGaR0/q9lEh+UY45
+ WwnZXBd40DrBj9Vn3rkQWPkG/pbPFWSgYCc= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2scv04h331-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 09 May 2019 21:37:33 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 9 May 2019 21:37:32 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id A0B108625AE; Thu,  9 May 2019 21:37:31 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <daniel@iogearbox.net>, <ast@fb.com>,
+        <yhs@fb.com>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf] libbpf: detect supported kernel BTF features and sanitize BTF
+Date:   Thu, 9 May 2019 21:37:23 -0700
+Message-ID: <20190510043723.3359135-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
+MIME-Version: 1.0
+Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-09_02:,,
  signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905100027
+X-Proofpoint-Spam-Reason: safe
+X-FB-Internal: Safe
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only set the device carrier state to on after receiving an up link
-state indication from the underlying adapter. Likewise, if a down
-link indication is receieved, update the carrier state accordingly.
-This fix ensures that accurate carrier state is reported by the driver
-following a link state update by the underlying adapter.
+Depending on used versions of libbpf, Clang, and kernel, it's possible to
+have valid BPF object files with valid BTF information, that still won't
+load successfully due to Clang emitting newer BTF features (e.g.,
+BTF_KIND_FUNC, .BTF.ext's line_info/func_info, BTF_KIND_DATASEC, etc), that
+are not yet supported by older kernel.
 
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+This patch adds detection of BTF features and sanitizes BPF object's BTF
+by substituting various supported BTF kinds, which have compatible layout:
+  - BTF_KIND_FUNC -> BTF_KIND_TYPEDEF
+  - BTF_KIND_FUNC_PROTO -> BTF_KIND_ENUM
+  - BTF_KIND_VAR -> BTF_KIND_INT
+  - BTF_KIND_DATASEC -> BTF_KIND_STRUCT
+
+Replacement is done in such a way as to preserve as much information as
+possible (names, sizes, etc) where possible without violating kernel's
+validation rules.
+
+Reported-by: Alexei Starovoitov <ast@fb.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ tools/lib/bpf/libbpf.c | 185 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 184 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index faee60914874..13c9562e2cc6 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1111,7 +1111,6 @@ static int ibmvnic_open(struct net_device *netdev)
- 	}
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 11a65db4b93f..0813c4ad5d11 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -128,6 +128,10 @@ struct bpf_capabilities {
+ 	__u32 name:1;
+ 	/* v5.2: kernel support for global data sections. */
+ 	__u32 global_data:1;
++	/* BTF_KIND_FUNC and BTF_KIND_FUNC_PROTO support */
++	__u32 btf_func:1;
++	/* BTF_KIND_VAR and BTF_KIND_DATASEC support */
++	__u32 btf_datasec:1;
+ };
  
- 	rc = __ibmvnic_open(netdev);
--	netif_carrier_on(netdev);
- 
- 	return rc;
+ /*
+@@ -1021,6 +1025,81 @@ static bool section_have_execinstr(struct bpf_object *obj, int idx)
+ 	return false;
  }
-@@ -1864,8 +1863,6 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 	    adapter->reset_reason != VNIC_RESET_CHANGE_PARAM)
- 		call_netdevice_notifiers(NETDEV_NOTIFY_PEERS, netdev);
  
--	netif_carrier_on(netdev);
--
++static void bpf_object__sanitize_btf(struct bpf_object *obj)
++{
++#define BTF_INFO_ENC(kind, kind_flag, vlen) \
++	((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
++#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
++	((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
++
++	bool has_datasec = obj->caps.btf_datasec;
++	bool has_func = obj->caps.btf_func;
++	struct btf *btf = obj->btf;
++	struct btf_type *t;
++	int i, j, vlen;
++	__u16 kind;
++
++	if (!obj->btf || (has_func && has_datasec))
++		return;
++
++	for (i = 1; i <= btf__get_nr_types(btf); i++) {
++		t = (struct btf_type *)btf__type_by_id(btf, i);
++		kind = BTF_INFO_KIND(t->info);
++
++		if (!has_datasec && kind == BTF_KIND_VAR) {
++			/* replace VAR with INT */
++			t->info = BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
++			t->size = sizeof(int);
++			*(int *)(t+1) = BTF_INT_ENC(0, 0, 32);
++		} else if (!has_datasec && kind == BTF_KIND_DATASEC) {
++			/* replace DATASEC with STRUCT */
++			struct btf_var_secinfo *v = (void *)(t + 1);
++			struct btf_member *m = (void *)(t + 1);
++			struct btf_type *vt;
++			char *name;
++
++			name = (char *)btf__name_by_offset(btf, t->name_off);
++			while (*name) {
++				if (*name == '.')
++					*name = '_';
++				name++;
++			}
++
++			vlen = BTF_INFO_VLEN(t->info);
++			t->info = BTF_INFO_ENC(BTF_KIND_STRUCT, 0, vlen);
++			for (j = 0; j < vlen; j++, v++, m++) {
++				/* order of field assignments is important */
++				m->offset = v->offset * 8;
++				m->type = v->type;
++				/* preserve variable name as member name */
++				vt = (void *)btf__type_by_id(btf, v->type);
++				m->name_off = vt->name_off;
++			}
++		} else if (!has_func && kind == BTF_KIND_FUNC_PROTO) {
++			/* replace FUNC_PROTO with ENUM */
++			vlen = BTF_INFO_VLEN(t->info);
++			t->info = BTF_INFO_ENC(BTF_KIND_ENUM, 0, vlen);
++			t->size = sizeof(__u32); /* kernel enforced */
++		} else if (!has_func && kind == BTF_KIND_FUNC) {
++			/* replace FUNC with TYPEDEF */
++			t->info = BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0);
++		}
++	}
++#undef BTF_INFO_ENC
++#undef BTF_INT_ENC
++}
++
++static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
++{
++	if (!obj->btf_ext)
++		return;
++
++	if (!obj->caps.btf_func) {
++		btf_ext__free(obj->btf_ext);
++		obj->btf_ext = NULL;
++	}
++}
++
+ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+ {
+ 	Elf *elf = obj->efile.elf;
+@@ -1164,8 +1243,10 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+ 			obj->btf = NULL;
+ 		} else {
+ 			err = btf__finalize_data(obj, obj->btf);
+-			if (!err)
++			if (!err) {
++				bpf_object__sanitize_btf(obj);
+ 				err = btf__load(obj->btf);
++			}
+ 			if (err) {
+ 				pr_warning("Error finalizing and loading %s into kernel: %d. Ignored and continue.\n",
+ 					   BTF_ELF_SEC, err);
+@@ -1187,6 +1268,8 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
+ 					   BTF_EXT_ELF_SEC,
+ 					   PTR_ERR(obj->btf_ext));
+ 				obj->btf_ext = NULL;
++			} else {
++				bpf_object__sanitize_btf_ext(obj);
+ 			}
+ 		}
+ 	}
+@@ -1556,12 +1639,112 @@ bpf_object__probe_global_data(struct bpf_object *obj)
  	return 0;
  }
  
-@@ -1935,8 +1932,6 @@ static int do_hard_reset(struct ibmvnic_adapter *adapter,
- 		return 0;
- 	}
++static int try_load_btf(const char *raw_types, size_t types_len,
++			const char *str_sec, size_t str_len)
++{
++	char buf[1024];
++	struct btf_header hdr = {
++		.magic = BTF_MAGIC,
++		.version = BTF_VERSION,
++		.hdr_len = sizeof(struct btf_header),
++		.type_len = types_len,
++		.str_off = types_len,
++		.str_len = str_len,
++	};
++	int btf_fd, btf_len;
++	__u8 *raw_btf;
++
++	btf_len = hdr.hdr_len + hdr.type_len + hdr.str_len;
++	raw_btf = malloc(btf_len);
++	if (!raw_btf)
++		return -ENOMEM;
++
++	memcpy(raw_btf, &hdr, sizeof(hdr));
++	memcpy(raw_btf + hdr.hdr_len, raw_types, hdr.type_len);
++	memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
++
++	btf_fd = bpf_load_btf(raw_btf, btf_len, buf, 1024, 0);
++	if (btf_fd < 0) {
++		free(raw_btf);
++		return 0;
++	}
++
++	close(btf_fd);
++	free(raw_btf);
++	return 1;
++}
++
++#define BTF_INFO_ENC(kind, kind_flag, vlen) \
++	((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
++#define BTF_TYPE_ENC(name, info, size_or_type) (name), (info), (size_or_type)
++#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
++	((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
++#define BTF_TYPE_INT_ENC(name, encoding, bits_offset, bits, sz) \
++	BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_INT, 0, 0), sz), \
++	BTF_INT_ENC(encoding, bits_offset, bits)
++#define BTF_PARAM_ENC(name, type) (name), (type)
++#define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
++static int bpf_object__probe_btf_func(struct bpf_object *obj)
++{
++	const char strs[] = "\0int\0x\0a";
++	/* void x(int a) {} */
++	__u32 types[] = {
++		/* int */
++		BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
++		/* FUNC_PROTO */                                /* [2] */
++		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 1), 0),
++		BTF_PARAM_ENC(7, 1),
++		/* FUNC x */                                    /* [3] */
++		BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
++	};
++	int res;
++
++	res = try_load_btf((char *)types, sizeof(types), strs, sizeof(strs));
++	if (res < 0)
++		return res;
++	if (res > 0)
++		obj->caps.btf_func = 1;
++	return 0;
++}
++
++static int bpf_object__probe_btf_datasec(struct bpf_object *obj)
++{
++	const char strs[] = "\0x\0.data";
++	/* static int a; */
++	__u32 types[] = {
++		/* int */
++		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
++		/* VAR x */                                     /* [2] */
++		BTF_TYPE_ENC(1, BTF_INFO_ENC(BTF_KIND_VAR, 0, 0), 1),
++		BTF_VAR_STATIC,
++		/* DATASEC val */                               /* [3] */
++		BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
++		BTF_VAR_SECINFO_ENC(2, 0, 4),
++	};
++	int res;
++
++	res = try_load_btf((char *)&types, sizeof(types), strs, sizeof(strs));
++	if (res < 0)
++		return res;
++	if (res > 0)
++		obj->caps.btf_datasec = 1;
++	return 0;
++}
++#undef BTF_INFO_ENC
++#undef BTF_TYPE_ENC
++#undef BTF_INT_ENC
++#undef BTF_TYPE_INT_ENC
++#undef BTF_PARAM_ENC
++#undef BTF_VAR_SECINFO_ENC
++
+ static int
+ bpf_object__probe_caps(struct bpf_object *obj)
+ {
+ 	int (*probe_fn[])(struct bpf_object *obj) = {
+ 		bpf_object__probe_name,
+ 		bpf_object__probe_global_data,
++		bpf_object__probe_btf_func,
++		bpf_object__probe_btf_datasec,
+ 	};
+ 	int i, ret;
  
--	netif_carrier_on(netdev);
--
- 	return 0;
- }
- 
-@@ -4480,6 +4475,10 @@ static void ibmvnic_handle_crq(union ibmvnic_crq *crq,
- 		    crq->link_state_indication.phys_link_state;
- 		adapter->logical_link_state =
- 		    crq->link_state_indication.logical_link_state;
-+		if (adapter->phys_link_state && adapter->logical_link_state)
-+			netif_carrier_on(netdev);
-+		else
-+			netif_carrier_off(netdev);
- 		break;
- 	case CHANGE_MAC_ADDR_RSP:
- 		netdev_dbg(netdev, "Got MAC address change Response\n");
 -- 
-2.12.3
+2.17.1
 
