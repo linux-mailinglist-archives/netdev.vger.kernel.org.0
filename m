@@ -2,138 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 205601A57D
-	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 01:03:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD981A579
+	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 01:00:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728029AbfEJXDS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 10 May 2019 19:03:18 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:53366 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727828AbfEJXDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 19:03:18 -0400
-Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1hPEXq-0007TQ-89; Fri, 10 May 2019 23:03:14 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 9C4A664558; Fri, 10 May 2019 15:53:29 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 95071A6E12;
-        Fri, 10 May 2019 15:53:29 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jarod Wilson <jarod@redhat.com>
-cc:     linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] bonding: fix arp_validate toggling in active-backup mode
-In-reply-to: <20190510215709.19162-1-jarod@redhat.com>
-References: <20190510215709.19162-1-jarod@redhat.com>
-Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
-   message dated "Fri, 10 May 2019 17:57:09 -0400."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <26674.1557528809.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Fri, 10 May 2019 15:53:29 -0700
-Message-ID: <26675.1557528809@famine>
+        id S1727957AbfEJXA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 19:00:28 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:35294 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726862AbfEJXA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 19:00:28 -0400
+Received: by mail-pl1-f201.google.com with SMTP id x5so4530674pll.2
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 16:00:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=jco5PLy+8J9k+x4i/mg08hrd7SanJhCfc2NnQwxAQmw=;
+        b=abo5SQeO6nBWkT3vkAvcoBbIZcyCDgjlfY0RxKA8d38MINFAVRYz8b2lscPbW0eJXc
+         H5+4vcFRCpGBkJ2GdMEUXacsUoR4fLjmnqpJSfplc74hw4gU7UuASmTMLt+N/LKjgjgO
+         JgI6Y3306uAjBsBm8G8RNojBeQcch6l+j10ZB23oBeoYlm9SIE23o9d3vF2Q/cPu+ekp
+         i5QimYpSIGlh1apd9xMHwH/z88Q2lbOUoh1meRWt5VJLmiAKZSPBiLKq7Sm8FVBnVLrk
+         tRT8Gc9TSnZbLEWNZMheQ/YmS2NdMMf+qhkSkBHnq666Lf+DtvTbVlLJW+hz0T7SduF4
+         ATSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=jco5PLy+8J9k+x4i/mg08hrd7SanJhCfc2NnQwxAQmw=;
+        b=ZzHxMu4mpN2c2Brea063Gx2daWpRhEFfaFNmNoqE2leD7Nm6UK10iZ+/UZF0JACRjj
+         tk1EoEAVvwbVrtntlE/lWXeBJKSgfEE9+eyuw8UHNYYa7PSUbv999seRs92TDKqrr6nr
+         rmnHnULMV6yyS0aoh50C6tSxl5ps25lUhOmo4I/jysm+ZWsXPITM3ZGRETEQil4zovP/
+         2fsPTxMganChfMyF1svgShsDpFyh4ajjEYfHJWfDbmSQy45RfKNYomkjBYg5fF6+seXD
+         RSTkPHUeOnsH+JmxUVaZuHeLClMqJx1UULcGafqEv6gh4jrkAGDpel8eM6DyKqpvPKKv
+         XUHg==
+X-Gm-Message-State: APjAAAWANQytMFfZQ+C+eSeZFl2ufxptG3K4A9f/W1b3QAOik3AM46gA
+        ylcGMsKhhUshAi+mUc0tYlQrDN5+rkA=
+X-Google-Smtp-Source: APXvYqy2rhSIavsNNr5TEe9OYTWE1v+yroR7RPMnxKLeFgO04oX+NbEhw+At73bGfHwjJKER2zev+7oppRw=
+X-Received: by 2002:a63:1e4d:: with SMTP id p13mr16696155pgm.125.1557529227309;
+ Fri, 10 May 2019 16:00:27 -0700 (PDT)
+Date:   Fri, 10 May 2019 16:00:19 -0700
+Message-Id: <20190510230019.137937-1-ycheng@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
+Subject: [PATCH net] tcp: fix retrans timestamp on passive Fast Open
+From:   Yuchung Cheng <ycheng@google.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, ncardwell@google.com,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jarod Wilson <jarod@redhat.com> wrote:
+Commit 3844718c20d0 ("tcp: properly track retry time on
+passive Fast Open") sets the start of SYNACK retransmission
+time on passive Fast Open in "retrans_stamp". However the
+timestamp is not reset upon the handshake has completed. As a
+result, future data packet retransmission may not update it in
+tcp_retransmit_skb(). This may lead to socket aborting earlier
+unexpectedly by retransmits_timed_out() since retrans_stamp remains
+the SYNACK rtx time.
 
->There's currently a problem with toggling arp_validate on and off with an
->active-backup bond. At the moment, you can start up a bond, like so:
->
->modprobe bonding mode=1 arp_interval=100 arp_validate=0 arp_ip_targets=192.168.1.1
->ip link set bond0 down
->echo "ens4f0" > /sys/class/net/bond0/bonding/slaves
->echo "ens4f1" > /sys/class/net/bond0/bonding/slaves
->ip link set bond0 up
->ip addr add 192.168.1.2/24 dev bond0
->
->Pings to 192.168.1.1 work just fine. Now turn on arp_validate:
->
->echo 1 > /sys/class/net/bond0/bonding/arp_validate
->
->Pings to 192.168.1.1 continue to work just fine. Now when you go to turn
->arp_validate off again, the link falls flat on it's face:
->
->echo 0 > /sys/class/net/bond0/bonding/arp_validate
->dmesg
->...
->[133191.911987] bond0: Setting arp_validate to none (0)
->[133194.257793] bond0: bond_should_notify_peers: slave ens4f0
->[133194.258031] bond0: link status definitely down for interface ens4f0, disabling it
->[133194.259000] bond0: making interface ens4f1 the new active one
->[133197.330130] bond0: link status definitely down for interface ens4f1, disabling it
->[133197.331191] bond0: now running without any active interface!
->
->The problem lies in bond_options.c, where passing in arp_validate=0
->results in bond->recv_probe getting set to NULL. This flies directly in
->the face of commit 3fe68df97c7f, which says we need to set recv_probe =
->bond_arp_recv, even if we're not using arp_validate. Said commit fixed
->this in bond_option_arp_interval_set, but missed that we can get to that
->same state in bond_option_arp_validate_set as well.
->
->One solution would be to universally set recv_probe = bond_arp_recv here
->as well, but I don't think bond_option_arp_validate_set has any business
->touching recv_probe at all, and that should be left to the arp_interval
->code, so we can just make things much tidier here.
->
->Fixes: 3fe68df97c7f ("bonding: always set recv_probe to bond_arp_rcv in arp monitor")
+This bug only manifests on passive TFO sender that a) suffered
+SYNACK timeout and then b) stalls on very first loss recovery. Any
+successful loss recovery would reset the timestamp to avoid this
+issue.
 
-	Is the above Fixes: tag correct?  3fe68df97c7f is not the source
-of the erroneous logic being removed, which was introduced by
-
-commit 29c4948293bfc426e52a921f4259eb3676961e81
-Author: sfeldma@cumulusnetworks.com <sfeldma@cumulusnetworks.com>
-Date:   Thu Dec 12 14:10:38 2013 -0800
-
-    bonding: add arp_validate netlink support
-
-	Regardless of which Fixes: is correct, the patch itself looks
-fine to me:
-
-Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-
-	-J
-
-
->CC: Jay Vosburgh <j.vosburgh@gmail.com>
->CC: Veaceslav Falico <vfalico@gmail.com>
->CC: Andy Gospodarek <andy@greyhouse.net>
->CC: "David S. Miller" <davem@davemloft.net>
->CC: netdev@vger.kernel.org
->Signed-off-by: Jarod Wilson <jarod@redhat.com>
->---
-> drivers/net/bonding/bond_options.c | 7 -------
-> 1 file changed, 7 deletions(-)
->
->diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
->index da1fc17295d9..b996967af8d9 100644
->--- a/drivers/net/bonding/bond_options.c
->+++ b/drivers/net/bonding/bond_options.c
->@@ -1098,13 +1098,6 @@ static int bond_option_arp_validate_set(struct bonding *bond,
-> {
-> 	netdev_dbg(bond->dev, "Setting arp_validate to %s (%llu)\n",
-> 		   newval->string, newval->value);
->-
->-	if (bond->dev->flags & IFF_UP) {
->-		if (!newval->value)
->-			bond->recv_probe = NULL;
->-		else if (bond->params.arp_interval)
->-			bond->recv_probe = bond_arp_rcv;
->-	}
-> 	bond->params.arp_validate = newval->value;
-> 
-> 	return 0;
->-- 
->2.20.1
->
-
+Fixes: 3844718c20d0 ("tcp: properly track retry time on passive Fast Open")
+Signed-off-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: Neal Cardwell <ncardwell@google.com>
 ---
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+ net/ipv4/tcp_input.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 20f6fac5882e..cf69f50855ea 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6024,6 +6024,9 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
+ {
+ 	tcp_try_undo_loss(sk, false);
++
++	/* Reset rtx states to prevent spurious retransmits_timed_out() */
++	tcp_sk(sk)->retrans_stamp = 0;
+ 	inet_csk(sk)->icsk_retransmits = 0;
+ 
+ 	/* Once we leave TCP_SYN_RECV or TCP_FIN_WAIT_1,
+-- 
+2.21.0.1020.gf2820cf01a-goog
+
