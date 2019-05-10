@@ -2,112 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D2119879
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 08:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1236F198CB
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 09:14:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727152AbfEJGhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 02:37:14 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:44810 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726873AbfEJGhN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 02:37:13 -0400
-Received: by mail-pf1-f195.google.com with SMTP id g9so2662609pfo.11;
-        Thu, 09 May 2019 23:37:12 -0700 (PDT)
+        id S1727010AbfEJHOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 03:14:23 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42946 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726855AbfEJHOX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 03:14:23 -0400
+Received: by mail-wr1-f65.google.com with SMTP id l2so6385131wrb.9
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 00:14:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=tZpDbbxPQIQaiTEJ/QF3eG59ACeQtX21Wr99/jZNM7o=;
-        b=r59rDHqtOd7p+7W9lwVnV5p8DCUR6qGWm1fA+Se52beD9X8hdi5gXvUCA/jU5nhPDl
-         WF3brRF3Y+iKrRQCfzoL7srTYKFWGrF4/+JKPn2GZDDQMP4Y32QZVWgJ8fpzz4JHDC/j
-         UxJliP3I3+QfBu346rmvtNAiw8aEa1KrCRxRBDErVdos5adye4rfGww0oten6Smdy2Cj
-         oRf6DSnhVd+Y6RzhNRsT2Nb/KrQ6xDm+2pd9qCCNTDMNtvZgf8j7kRKGEcMUqsJRXHGV
-         /FycWZVKTUm+USwcg0lSigbRGpnzCfKUYsrXV5HD2U4o1IWUz3kIm9Cr1Z6V51X6yv0X
-         4HPg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=8vhSJYdbDo4hmcaw9TnoN03bZbsoMDpBUCHFXbyR/K4=;
+        b=MFqL+9+X0sm8BkKpuJx1bVMj4iTTj/Co1wnnjYzzhiHXTtgGQdpFJ/jOyFJkcjjGiS
+         O5eaPpK9+JlbuRLuiSKOoGvBPP86sklq5AD0KwT1ldvyhMHhMwxCIBlvxDBAwQb/Q+ci
+         XBFmNosme4K+SuuHyNh5RsTZv1HUlgjYsiovIfM0NeQr8BaSP2364n+F+GtyKJi1ybSN
+         Q/PG0iYZ9HoThBZAuRlFlUX1O13V+gGaP8V9mr6onT7QJMnsx334A6+F8d9sO/z41M2l
+         SrW0gJRpTQlS/y2rD5B41QSK3T8NMVLmCtklijPr55KNtgO4ZPpfpqKFBCM6dRD43NGw
+         38pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=tZpDbbxPQIQaiTEJ/QF3eG59ACeQtX21Wr99/jZNM7o=;
-        b=o8qNj3xgEwnmTliR1dgcmSsIgabDiB48PR/bKu3qYkeqqrP3S7DqY4ekTsZWbtwDaU
-         3SHTjplOcRo4lp2nOLaMnxafxuMREZRcHfTrvQMK84xJc+rHCyyker/ONZfnuvZEOzOs
-         JgcwslPXGLoWPdGzmlokmrLOKfGVMRrmMnPn/EgOl9ICTaGBJQBSvCkZyVvG89+UHK0w
-         GBoYkgQ+rrJwsulm2tDwuPV5WMeeTwtJSRUHScX+F0RHVaTBgBWqRy9ypCCeeFtFQnu7
-         xGR1j7qPmPoK87kcH9oZ+xKijpFDya2bDuw/k4m3igXSAcPtkPBkzrTPjU/tDi/pUh+l
-         4+lw==
-X-Gm-Message-State: APjAAAVbfGLXmDEeaWxM1ERhu366o6KIDMqeqGS8NpctOzZKVLPH/4qQ
-        cZl0aS7tsDnvthd8m7YpMs8=
-X-Google-Smtp-Source: APXvYqyTPtOYvxSUX3bbrvCZ4KxRbJM8QDJZj2fhpRLkLZL3C4WBC0szcESYnw8qQPdTbioxaatmIw==
-X-Received: by 2002:a63:2124:: with SMTP id h36mr11608289pgh.186.1557470232308;
-        Thu, 09 May 2019 23:37:12 -0700 (PDT)
-Received: from bridge.localdomain ([119.28.31.106])
-        by smtp.gmail.com with ESMTPSA id v6sm4469263pgi.88.2019.05.09.23.37.08
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 May 2019 23:37:11 -0700 (PDT)
-From:   Wenbin Zeng <wenbin.zeng@gmail.com>
-X-Google-Original-From: Wenbin Zeng <wenbinzeng@tencent.com>
-To:     bfields@fieldses.org, viro@zeniv.linux.org.uk, davem@davemloft.net
-Cc:     jlayton@kernel.org, trond.myklebust@hammerspace.com,
-        anna.schumaker@netapp.com, wenbinzeng@tencent.com,
-        dsahern@gmail.com, nicolas.dichtel@6wind.com, willy@infradead.org,
-        edumazet@google.com, jakub.kicinski@netronome.com,
-        tyhicks@canonical.com, chuck.lever@oracle.com, neilb@suse.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-nfs@vger.kernel.org
-Subject: [PATCH v2 3/3] auth_gss: fix deadlock that blocks rpcsec_gss_exit_net when use-gss-proxy==1
-Date:   Fri, 10 May 2019 14:36:03 +0800
-Message-Id: <1557470163-30071-4-git-send-email-wenbinzeng@tencent.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1557470163-30071-1-git-send-email-wenbinzeng@tencent.com>
-References: <1556692945-3996-1-git-send-email-wenbinzeng@tencent.com>
- <1557470163-30071-1-git-send-email-wenbinzeng@tencent.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=8vhSJYdbDo4hmcaw9TnoN03bZbsoMDpBUCHFXbyR/K4=;
+        b=rDvtQg6ktZxnMGAYJKDYgIEiqDmuibt8t9T/TPk6Snk1LBhBmyCDmj4TXj11OlgXCI
+         fX2/x+cqpDhIzKq9vRXoNLXripZ8aG1rb9vATfrguGzd+BKQRRxF8TeFoh25o5umCGWw
+         PyknYsYdOnRf9TT5Qeqwf3vt/ByiKMlMKbm6d5NyvpzzoZz3m+VVzradj+X7+A25ndVi
+         aNQoJMoZ9aK60jIIwFln/6qz0IWhqd+YVEScF9AiSH97L3jZo1BsJ/78ji/maoqAHsCf
+         ZPPMwrFBGmv6OqJMtaC1pqgLw1LQftvlvBDV7435gmPtOtaATeTWZfnLmBDgQkIp2xRT
+         QhUQ==
+X-Gm-Message-State: APjAAAUfwiuK7JLeoD7D+RBBUKcqC7bxiOHTp0UdHo2uJ2ynd4EzjAw9
+        ypA1J1Su9R87oGytj+T3b54aqQ==
+X-Google-Smtp-Source: APXvYqy69mm3aXgNaBk9C+3iR8OkVvrFzyQEUwiMhFLr8AJ5XTD2ckTjNjPH+iiVTrKXhGZnZj3hgg==
+X-Received: by 2002:a05:6000:1250:: with SMTP id j16mr6226051wrx.200.1557472461889;
+        Fri, 10 May 2019 00:14:21 -0700 (PDT)
+Received: from dell ([2.27.167.43])
+        by smtp.gmail.com with ESMTPSA id l16sm1856711wrb.40.2019.05.10.00.14.20
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 10 May 2019 00:14:21 -0700 (PDT)
+Date:   Fri, 10 May 2019 08:14:19 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] mfd: ioc3: Add driver for SGI IOC3 chip
+Message-ID: <20190510071419.GB7321@dell>
+References: <20190409154610.6735-1-tbogendoerfer@suse.de>
+ <20190409154610.6735-3-tbogendoerfer@suse.de>
+ <20190508102313.GG3995@dell>
+ <20190509160220.bb5382df931e5bd0972276df@suse.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190509160220.bb5382df931e5bd0972276df@suse.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When use-gss-proxy is set to 1, write_gssp() creates a rpc client in
-gssp_rpc_create(), this increases netns refcount by 2, these refcounts are
-supposed to be released in rpcsec_gss_exit_net(), but it will never happen
-because rpcsec_gss_exit_net() is triggered only when netns refcount gets
-to 0, specifically:
-    refcount=0 -> cleanup_net() -> ops_exit_list -> rpcsec_gss_exit_net
-It is a deadlock situation here, refcount will never get to 0 unless
-rpcsec_gss_exit_net() is called.
+On Thu, 09 May 2019, Thomas Bogendoerfer wrote:
 
-This fix introduced a new callback i.e. evict in struct proc_ns_operations,
-which is called in nsfs_evict. Moving rpcsec_gss_exit_net to evict path
-gives it a chance to get called and avoids the above deadlock situation.
+> On Wed, 8 May 2019 11:23:13 +0100
+> Lee Jones <lee.jones@linaro.org> wrote:
+> 
+> > On Tue, 09 Apr 2019, Thomas Bogendoerfer wrote:
+> > 
+> > > +static u32 crc8_addr(u64 addr)
+> > > +{
+> > > +	u32 crc = 0;
+> > > +	int i;
+> > > +
+> > > +	for (i = 0; i < 64; i += 8)
+> > > +		crc8_byte(&crc, addr >> i);
+> > > +	return crc;
+> > > +}
+> > 
+> > Not looked into these in any detail, but are you not able to use the
+> > CRC functions already provided by the kernel?
+> 
+> they are using a different polynomial, so I can't use it.
 
-Signed-off-by: Wenbin Zeng <wenbinzeng@tencent.com>
----
- net/sunrpc/auth_gss/auth_gss.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Would it be worth moving support out to somewhere more central so
+others can use this "polynomial"?
 
-diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
-index 3fd56c0..3e6bd59 100644
---- a/net/sunrpc/auth_gss/auth_gss.c
-+++ b/net/sunrpc/auth_gss/auth_gss.c
-@@ -2136,14 +2136,17 @@ static __net_init int rpcsec_gss_init_net(struct net *net)
- 	return gss_svc_init_net(net);
- }
- 
--static __net_exit void rpcsec_gss_exit_net(struct net *net)
-+static void rpcsec_gss_evict_net(struct net *net)
- {
--	gss_svc_shutdown_net(net);
-+	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
-+
-+	if (sn->gssp_clnt)
-+		gss_svc_shutdown_net(net);
- }
- 
- static struct pernet_operations rpcsec_gss_net_ops = {
- 	.init = rpcsec_gss_init_net,
--	.exit = rpcsec_gss_exit_net,
-+	.evict = rpcsec_gss_evict_net,
- };
- 
- /*
+> > > +	}
+> > > +	pr_err("ioc3: CRC error in NIC address\n");
+> > > +}
+> > 
+> > This all looks like networking code.  If this is the case, it should
+> > be moved to drivers/networking or similar.
+> 
+> no it's not. nic stands for number in a can produced by Dallas Semi also
+> known under the name 1-Wire (https://en.wikipedia.org/wiki/1-Wire).
+> SGI used them to provide partnumber, serialnumber and mac addresses.
+> By placing the code to read the NiCs inside ioc3 driver there is no need
+> for locking and adding library code for accessing these informations.
+
+Great.  So it looks like you should be using this, no?
+
+  drivers/base/regmap/regmap-w1.c
+
+> > > +static struct resource ioc3_uarta_resources[] = {
+> > > +	DEFINE_RES_MEM(offsetof(struct ioc3, sregs.uarta),
+> > 
+> > You are the first user of offsetof() in MFD.  Could you tell me why
+> > it's required please?
+> 
+> to get the offsets of different chip functions out of a struct.
+
+I can see what it does on a coding level.
+
+What are you using it for in practical/real terms?
+
+Why wouldn't any other MFD driver require this, but you do?
+
+> > Please drop all of these and statically create the MFD cells like
+> > almost all other MFD drivers do.
+> 
+> I started that way and it blew up the driver and create a bigger mess
+> than I wanted to have. What's your concern with my approach ?
+> 
+> I could use static mfd_cell arrays, if there would be a init/startup
+> method per cell, which is called before setting up the platform device.
+> That way I could do the dynamic setup for ethernet and serial devices.
+
+You can set platform data later.  There are plenty of examples of
+this in the MFD subsystem.  Statically define what you can, and add
+the dynamic stuff later.
+
+> > > +static void ioc3_create_devices(struct ioc3_priv_data *ipd)
+> > > +{
+> > > +	struct mfd_cell *cell;
+> > > +
+> > > +	memset(ioc3_mfd_cells, 0, sizeof(ioc3_mfd_cells));
+> > > +	cell = ioc3_mfd_cells;
+> > > +
+> > > +	if (ipd->info->funcs & IOC3_ETH) {
+> > > +		memcpy(ioc3_eth_platform_data.mac_addr, ipd->nic_mac,
+> > > +		       sizeof(ioc3_eth_platform_data.mac_addr));
+> > 
+> > Better to pull the MAC address from within the Ethernet driver.
+> 
+> the NiC where the MAC address is provided is connected to the ioc3
+> chip outside of the ethernet register set. And there is another
+> NiC connected to the same 1-W bus. So moving reading of the MAC
+> address to the ethernet driver duplicates code and adds complexity
+> (locking). Again what's your concern here ?
+
+Does this go away if you use the already provided 1-wire API?
+
+> > > +	if (ipd->info->funcs & IOC3_SER) {
+> > > +		writel(GPCR_UARTA_MODESEL | GPCR_UARTB_MODESEL,
+> > > +			&ipd->regs->gpcr_s);
+> > > +		writel(0, &ipd->regs->gppr[6]);
+> > > +		writel(0, &ipd->regs->gppr[7]);
+> > > +		udelay(100);
+> > > +		writel(readl(&ipd->regs->port_a.sscr) & ~SSCR_DMA_EN,
+> > > +		       &ipd->regs->port_a.sscr);
+> > > +		writel(readl(&ipd->regs->port_b.sscr) & ~SSCR_DMA_EN,
+> > > +		       &ipd->regs->port_b.sscr);
+> > > +		udelay(1000);
+> > 
+> > No idea what any of this does.
+> > 
+> > It looks like it belongs in the serial driver (and needs comments).
+> 
+> it configures the IOC3 chip for serial usage. This is not part of
+> the serial register set, so it IMHO belongs in the MFD driver.
+
+So it does serial things, but doesn't belong in the serial driver?
+
+Could you please go into a bit more detail as to why you think that?
+
+Why is it better here?
+
+It's also totally unreadable by the way!
+
+> > > +	}
+> > > +#if defined(CONFIG_SGI_IP27)
+> > 
+> > What is this?  Can't you obtain this dynamically by probing the H/W?
+> 
+> that's the machine type and the #ifdef CONFIG_xxx are just for saving space,
+> when compiled for other machines and it's easy to remove.
+
+Please find other ways to save the space.  #ifery can get very messy,
+very quickly and is almost always avoidable.
+
+> > > +	if (ipd->info->irq_offset) {
+> > 
+> > What does this really signify?
+> 
+> IOC3 ASICs are most of the time connected to a SGI bridge chip. IOC3 can
+> provide two interrupt lines, which are wired to the bridge chip. The first
+> interrupt is assigned via the PCI core, but since IOC3 is not a PCI multi
+> function device the second interrupt must be treated here. And the used
+> interrupt line on the bridge chip differs between boards.
+
+Please provide a MACRO, function or something else which results in
+more readable code.  Whatever you choose to use, please add this text
+above, it will be helpful for future readers.
+
+> Thank you for your review. I'll address all other comments not cited in
+> my mail.
+
+NP
+
 -- 
-1.8.3.1
-
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
