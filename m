@@ -2,97 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A0AB19746
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 06:00:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD681974C
+	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 06:15:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726949AbfEJD7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 May 2019 23:59:31 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:35519 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726916AbfEJD7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 May 2019 23:59:31 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6EEE121448;
-        Thu,  9 May 2019 23:59:30 -0400 (EDT)
-Received: from imap37 ([10.202.2.87])
-  by compute5.internal (MEProxy); Thu, 09 May 2019 23:59:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tobin.cc; h=
-        mime-version:message-id:in-reply-to:references:date:from:to:cc
-        :subject:content-type; s=fm3; bh=7JuLeiITaoq/ZdIt1bv+Coe9tJr2OvJ
-        fGTrs9RPOvKA=; b=QRaNsKU2yIFWnd/ZcyvstDBPG7JdMj/uZvV58FYXS1/qgZ/
-        pFjkIspYzXP0CJ4/47U+xJZMPEZKUS2q1F4bfrTEgfx9ceAZDLGqMq8WVNho4GZR
-        2AH336rmuPHe1/EapseaOMx2jk7lQWGdp/Ia8awBScSIaknC7pWAFbuwm6fV5JOY
-        oi9NYWd6ZQ0WaUHhI6r+626ZTXR5asnCJofbp8RN7xs5xsiBuVfQjxv7ywvVKVTj
-        7+ogtpeyqUQaIazvZCAf3u1HfhQkGlVvFa2y48yPO1+S9Zn84JwJoViRyIB42aZW
-        y3D7MqqyojeuNe/xSSw5M7d33wqBLEdAr4KEOPw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=7JuLei
-        ITaoq/ZdIt1bv+Coe9tJr2OvJfGTrs9RPOvKA=; b=fER8xRcxPuMQVq7d781NQf
-        7qk5hbsWy87SFgiYTTjqKaiSR80OiLs4BGjRXiYX/lTE4JowdVdrFVHrbjw+m1iy
-        GEwzSWoaUGqWmXziyTSBmKcu0HGx4Z6gd2CPPL2iXgNdYVG44AmiyXhrvndfoLEp
-        dimkft4Mkv5PKoB4v0K4ynQyAx8W0Y3tahbjxm0iUvwo6q9ihqikIcVmB/stxBcE
-        iBIrPDBRV/jelcvZZx2g3C7ZFFRIOHbNod1fuyHUH9p3/6IcJE8wFgeg2Iz1cMYJ
-        2mduFcXfHw1bYf1AnBIshWennh/4tFzQ/UygESH9QF4duYmnxlAhXFS/rp4Vec1A
-        ==
-X-ME-Sender: <xms:IffUXLKs1PxeMlJcyslS9XYcxfU9IyiGrrnME7Q7Aeh0sL99WZUUSg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrkeeigddukeegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdluddtmdenucfjughrpefofgggkfgjfhffhffvufgtsehttdertder
-    redtnecuhfhrohhmpedfvfhosghinhcuvedrucfjrghrughinhhgfdcuoehmvgesthhosg
-    hinhdrtggtqeenucfrrghrrghmpehmrghilhhfrhhomhepmhgvsehtohgsihhnrdgttgen
-    ucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:IffUXFITYSJnV5Km32SOewfsCeQBDQYnDocZ7tHH0yPqvHnnt__Riw>
-    <xmx:IffUXBXckfp4QVCM_OTahE55kPgggfzKkRq2ZctN_KktKVX-H2D2Og>
-    <xmx:IffUXPjbC_0wfjf34LaWFoccroQRPJmUwzDhx13DLwwY_kUEBYxRUQ>
-    <xmx:IvfUXHRW36MRVD_2Gt5PBeloWC8_tNxfCkKrHDAF-W8LUz33EM2rWQ>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id A399FDEC1A; Thu,  9 May 2019 23:59:29 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.1.6-449-gfb3fc5a-fmstable-20190430v1
-Mime-Version: 1.0
-Message-Id: <8446e80f-49e5-4792-900f-49aa61165644@www.fastmail.com>
-In-Reply-To: <20190509203501.310a477c@hermes.lan>
-References: <20190510025212.10109-1-tobin@kernel.org>
- <20190510025702.GA10709@eros.localdomain>
- <20190509203501.310a477c@hermes.lan>
-Date:   Thu, 09 May 2019 23:59:01 -0400
-From:   "Tobin C. Harding" <me@tobin.cc>
-To:     "Stephen Hemminger" <stephen@networkplumber.org>,
-        "Tobin C. Harding" <tobin@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Roopa Prabhu" <roopa@cumulusnetworks.com>,
-        "Nikolay Aleksandrov" <nikolay@cumulusnetworks.com>,
-        "Tyler Hicks" <tyhicks@canonical.com>,
-        bridge@lists.linux-foundation.org,
-        "Network Development" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2] bridge: Fix error path for kobject_init_and_add()
-Content-Type: text/plain
+        id S1726675AbfEJENy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 00:13:54 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:49124 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726132AbfEJENy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 00:13:54 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4A42vVB073305
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 00:13:53 -0400
+Received: from e34.co.us.ibm.com (e34.co.us.ibm.com [32.97.110.152])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2scvyn9ucq-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 00:13:53 -0400
+Received: from localhost
+        by e34.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <tlfalcon@linux.ibm.com>;
+        Fri, 10 May 2019 05:13:52 +0100
+Received: from b03cxnp07029.gho.boulder.ibm.com (9.17.130.16)
+        by e34.co.us.ibm.com (192.168.1.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Fri, 10 May 2019 05:13:50 +0100
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x4A4DnDl24445060
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 10 May 2019 04:13:49 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F2FEB6E053;
+        Fri, 10 May 2019 04:13:48 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 67ED86E056;
+        Fri, 10 May 2019 04:13:48 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.80.213.250])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri, 10 May 2019 04:13:48 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     julietk@linux.ibm.com, Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: [PATCH net] net/ibmvnic: Update MAC address settings after adapter reset
+Date:   Thu,  9 May 2019 23:13:43 -0500
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+x-cbid: 19051004-0016-0000-0000-000009B00DB3
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011080; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000285; SDB=6.01201127; UDB=6.00630282; IPR=6.00982022;
+ MB=3.00026822; MTD=3.00000008; XFM=3.00000015; UTC=2019-05-10 04:13:51
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19051004-0017-0000-0000-00004327DC21
+Message-Id: <1557461624-21959-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-09_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905100027
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+It was discovered in testing that the underlying hardware MAC
+address will revert to initial settings following a device reset,
+but the driver fails to resend the current OS MAC settings. This
+oversight can result in dropped packets should the scenario occur.
+Fix this by informing hardware of current MAC address settings 
+following any adapter initialization or resets.
 
+Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 53 ++++++++++++++++++++------------------
+ drivers/net/ethernet/ibm/ibmvnic.h |  2 --
+ 2 files changed, 28 insertions(+), 27 deletions(-)
 
-On Fri, May 10, 2019, at 13:35, Stephen Hemminger wrote:
-> On Fri, 10 May 2019 12:57:02 +1000
-> "Tobin C. Harding" <tobin@kernel.org> wrote:
-> 
-> > On Fri, May 10, 2019 at 12:52:12PM +1000, Tobin C. Harding wrote:
-> > 
-> > Please ignore - I forgot about netdev procedure and the merge window.
-> > My bad.
-> > 
-> > Will re-send when you are open.
-> > 
-> > thanks,
-> > Tobin.
-> 
-> That only applies to new features,  bug fixes are allowed all the time.
-> Also please dont send networking stuff to the greater linux-kernel mailing list.
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index b398d6c94dbd..faee60914874 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -118,7 +118,7 @@ static int init_sub_crq_irqs(struct ibmvnic_adapter *adapter);
+ static int ibmvnic_init(struct ibmvnic_adapter *);
+ static int ibmvnic_reset_init(struct ibmvnic_adapter *);
+ static void release_crq_queue(struct ibmvnic_adapter *);
+-static int __ibmvnic_set_mac(struct net_device *netdev, struct sockaddr *p);
++static int __ibmvnic_set_mac(struct net_device *, u8 *);
+ static int init_crq_queue(struct ibmvnic_adapter *adapter);
+ static int send_query_phys_parms(struct ibmvnic_adapter *adapter);
+ 
+@@ -849,11 +849,7 @@ static int ibmvnic_login(struct net_device *netdev)
+ 		}
+ 	} while (retry);
+ 
+-	/* handle pending MAC address changes after successful login */
+-	if (adapter->mac_change_pending) {
+-		__ibmvnic_set_mac(netdev, &adapter->desired.mac);
+-		adapter->mac_change_pending = false;
+-	}
++	__ibmvnic_set_mac(netdev, adapter->mac_addr);
+ 
+ 	return 0;
+ }
+@@ -1686,28 +1682,40 @@ static void ibmvnic_set_multi(struct net_device *netdev)
+ 	}
+ }
+ 
+-static int __ibmvnic_set_mac(struct net_device *netdev, struct sockaddr *p)
++static int __ibmvnic_set_mac(struct net_device *netdev, u8 *dev_addr)
+ {
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+-	struct sockaddr *addr = p;
+ 	union ibmvnic_crq crq;
+ 	int rc;
+ 
+-	if (!is_valid_ether_addr(addr->sa_data))
+-		return -EADDRNOTAVAIL;
++	if (!is_valid_ether_addr(dev_addr)) {
++		rc = -EADDRNOTAVAIL;
++		goto err;
++	}
+ 
+ 	memset(&crq, 0, sizeof(crq));
+ 	crq.change_mac_addr.first = IBMVNIC_CRQ_CMD;
+ 	crq.change_mac_addr.cmd = CHANGE_MAC_ADDR;
+-	ether_addr_copy(&crq.change_mac_addr.mac_addr[0], addr->sa_data);
++	ether_addr_copy(&crq.change_mac_addr.mac_addr[0], dev_addr);
+ 
+ 	init_completion(&adapter->fw_done);
+ 	rc = ibmvnic_send_crq(adapter, &crq);
+-	if (rc)
+-		return rc;
++	if (rc) {
++		rc = -EIO;
++		goto err;
++	}
++
+ 	wait_for_completion(&adapter->fw_done);
+ 	/* netdev->dev_addr is changed in handle_change_mac_rsp function */
+-	return adapter->fw_done_rc ? -EIO : 0;
++	if (adapter->fw_done_rc) {
++		rc = -EIO;
++		goto err;
++	}
++
++	return 0;
++err:
++	ether_addr_copy(adapter->mac_addr, netdev->dev_addr);
++	return rc;
+ }
+ 
+ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
+@@ -1716,13 +1724,10 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
+ 	struct sockaddr *addr = p;
+ 	int rc;
+ 
+-	if (adapter->state == VNIC_PROBED) {
+-		memcpy(&adapter->desired.mac, addr, sizeof(struct sockaddr));
+-		adapter->mac_change_pending = true;
+-		return 0;
+-	}
+-
+-	rc = __ibmvnic_set_mac(netdev, addr);
++	rc = 0;
++	ether_addr_copy(adapter->mac_addr, addr->sa_data);
++	if (adapter->state != VNIC_PROBED)
++		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
+ 
+ 	return rc;
+ }
+@@ -3937,8 +3942,8 @@ static int handle_change_mac_rsp(union ibmvnic_crq *crq,
+ 		dev_err(dev, "Error %ld in CHANGE_MAC_ADDR_RSP\n", rc);
+ 		goto out;
+ 	}
+-	memcpy(netdev->dev_addr, &crq->change_mac_addr_rsp.mac_addr[0],
+-	       ETH_ALEN);
++	ether_addr_copy(netdev->dev_addr,
++			&crq->change_mac_addr_rsp.mac_addr[0]);
+ out:
+ 	complete(&adapter->fw_done);
+ 	return rc;
+@@ -4852,8 +4857,6 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	init_completion(&adapter->init_done);
+ 	adapter->resetting = false;
+ 
+-	adapter->mac_change_pending = false;
+-
+ 	do {
+ 		rc = init_crq_queue(adapter);
+ 		if (rc) {
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index cffdac372a33..dcf2eb6d9290 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -969,7 +969,6 @@ struct ibmvnic_tunables {
+ 	u64 rx_entries;
+ 	u64 tx_entries;
+ 	u64 mtu;
+-	struct sockaddr mac;
+ };
+ 
+ struct ibmvnic_adapter {
+@@ -1091,7 +1090,6 @@ struct ibmvnic_adapter {
+ 	bool resetting;
+ 	bool napi_enabled, from_passive_init;
+ 
+-	bool mac_change_pending;
+ 	bool failover_pending;
+ 	bool force_reset_recovery;
+ 
+-- 
+2.12.3
 
-Oh cool, thanks.
