@@ -2,47 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18EA61A897
-	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 19:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCB031A899
+	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 19:02:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbfEKRC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 May 2019 13:02:27 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42010 "EHLO
+        id S1727384AbfEKRCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 May 2019 13:02:35 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42018 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725945AbfEKRC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 13:02:27 -0400
+        with ESMTP id S1725945AbfEKRCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 13:02:35 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B5E841478DBF3;
-        Sat, 11 May 2019 10:02:26 -0700 (PDT)
-Date:   Sat, 11 May 2019 10:02:24 -0700 (PDT)
-Message-Id: <20190511.100224.1253633990588650004.davem@davemloft.net>
-To:     hkallweit1@gmail.com
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phy: realtek: fix double page ops in generic
- Realtek driver
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 847161478DBF3;
+        Sat, 11 May 2019 10:02:34 -0700 (PDT)
+Date:   Sat, 11 May 2019 10:02:34 -0700 (PDT)
+Message-Id: <20190511.100234.2036927312468388445.davem@davemloft.net>
+To:     hofrat@osadl.org
+Cc:     aneela@codeaurora.org, gregkh@linuxfoundation.org,
+        anshuman.khandual@arm.com, david@redhat.com, arnd@arndb.de,
+        johannes.berg@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2] net: qrtr: use protocol endiannes variable
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <c2c9f3c6-81c4-7c27-8989-10331bb69dc6@gmail.com>
-References: <c2c9f3c6-81c4-7c27-8989-10331bb69dc6@gmail.com>
+In-Reply-To: <1557536193-11949-1-git-send-email-hofrat@osadl.org>
+References: <1557536193-11949-1-git-send-email-hofrat@osadl.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 11 May 2019 10:02:26 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 11 May 2019 10:02:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Date: Sat, 11 May 2019 07:44:48 +0200
+From: Nicholas Mc Guire <hofrat@osadl.org>
+Date: Sat, 11 May 2019 02:56:33 +0200
 
-> When adding missing callbacks I missed that one had them set already.
-> Interesting that the compiler didn't complain.
+> sparse was unable to verify endiannes correctness due to reassignment
+> from le32_to_cpu to the same variable - fix this warning up by providing
+> a proper __le32 type and initializing it. This is not actually fixing
+> any bug - rather just addressing the sparse warning.
 > 
-> Fixes: daf3ddbe11a2 ("net: phy: realtek: add missing page operations")
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
 
 Applied.
