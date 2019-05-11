@@ -2,47 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 335DA1A27A
-	for <lists+netdev@lfdr.de>; Fri, 10 May 2019 19:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7B01A798
+	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 12:46:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727879AbfEJRi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 13:38:27 -0400
-Received: from imcorp.com.vn ([118.69.230.116]:27465 "EHLO imc2.imcorp.com.vn"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727144AbfEJRi0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 May 2019 13:38:26 -0400
-X-Greylist: delayed 391 seconds by postgrey-1.27 at vger.kernel.org; Fri, 10 May 2019 13:38:26 EDT
-Received: from User (103.207.39.104) by MBX1.imcorp.com.vn (192.168.109.34)
- with Microsoft SMTP Server (TLS) id 15.0.1320.4; Sat, 11 May 2019 00:31:38
- +0700
-Reply-To: <gordon992277@outlook.com>
-From:   Gordon Chang <chlee@myamts.net>
-Subject: 8/05/2019
-Date:   Sat, 11 May 2019 02:21:21 -0700
+        id S1728526AbfEKKqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 May 2019 06:46:08 -0400
+Received: from troy.ispgateway.de ([134.119.253.98]:42512 "EHLO
+        troy.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728512AbfEKKqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 06:46:08 -0400
+X-Greylist: delayed 401 seconds by postgrey-1.27 at vger.kernel.org; Sat, 11 May 2019 06:46:08 EDT
+Received: (qmail 6201 invoked from network); 11 May 2019 10:39:26 -0000
+Received: from unknown (HELO troy.ispgateway.de) (127.0.0.1)
+  by localhost with SMTP; 11 May 2019 10:39:26 -0000
+Received: (from u422174@localhost)
+        by troy.ispgateway.de (8.14.9/8.13.6/Submit) id x4BAdMPZ006164;
+        Sat, 11 May 2019 12:39:22 +0200
+To:     netdev@vger.kernel.org
+Subject: Creamy Concept "Invest in mining cryptocurrency $ 5000 once and get passive income of $ 7000 per month"
+X-DFOptimize: BUFfRE5PRAUeGBgbHR51HxgaHBwFXU9IWU9DXk9EBUlYT0tHUwdJRURJT1peWQRERgVdWgdDRElGX05PWQVJRktZWQdaQlpHS0NGT1gEWkJa
+Date:   Sat, 11 May 2019 10:39:21 +0000
+From:   Creamy Concept <info@creamy-concepts.nl>
+Reply-To: info@creamy-concepts.nl
+Message-ID: <93cb510403fd062f90f706b930bf5ecd@www.creamy-concepts.nl>
+X-Mailer: WPMailSMTP/Mailer/mail 1.4.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-X-MSMail-Priority: Normal
-X-Mailer: Microsoft Outlook Express 6.00.2600.0000
-X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
-Message-ID: <aecf5116898049fab0a6b68a6526bd2e@MBX1.imcorp.com.vn>
-To:     Undisclosed recipients:;
-X-ClientProxiedBy: CAS2.imcorp.com.vn (192.168.108.77) To MBX1.imcorp.com.vn
- (192.168.109.34)
-X-KSE-ServerInfo: MBX1.imcorp.com.vn, 9
-X-KSE-AntiSpam-Interceptor-Info: license violation
-X-KSE-Antivirus-Attachment-Filter-Interceptor-Info: license violation
-X-KSE-Antivirus-Attachment-Filter-Interceptor-Info: license violation
+Content-Type: text/plain; charset=UTF-8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Van: ClintonAvell <netdev@vger.kernel.org>
+Onderwerp: Invest in mining cryptocurrency $ 5000 once and get passive income of $ 7000 per month
 
-I apologize if this email comes as a surprise to you. I have a business proposal that will be of great benefit to both of us.
-If you are willing to discuss further on this matter, I expect you reply promptly so that I will give you further details.
-Best Regards,
+Bericht inhoud:
+Invest $ 5,000 in Bitcoin once and get $ 7,000 passive income per month: http://corta.co/investminingcrypto56278
 
-Gordon
+--
+Deze e-mail is verzonden vanuit het contactformulier op Creamy Concept http://creamy-concepts.nl
+
