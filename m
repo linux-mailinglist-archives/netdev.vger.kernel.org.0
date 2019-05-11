@@ -2,104 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD9541A6D0
-	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 08:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 411731A72C
+	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 10:27:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728298AbfEKGNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 May 2019 02:13:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:56832 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726840AbfEKGNB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 May 2019 02:13:01 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 18448307CDC7;
-        Sat, 11 May 2019 06:13:01 +0000 (UTC)
-Received: from Hades.local (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8D65B17A72;
-        Sat, 11 May 2019 06:12:59 +0000 (UTC)
-Subject: Re: [PATCH] bonding: fix arp_validate toggling in active-backup mode
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20190510215709.19162-1-jarod@redhat.com>
- <26675.1557528809@famine>
-From:   Jarod Wilson <jarod@redhat.com>
-Message-ID: <2033e768-9e35-ac89-c526-4c28fc3f747e@redhat.com>
-Date:   Sat, 11 May 2019 02:12:58 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.6.1
+        id S1728464AbfEKI1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 May 2019 04:27:11 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:35817 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728424AbfEKI1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 04:27:10 -0400
+Received: by mail-wr1-f68.google.com with SMTP id w12so10133884wrp.2
+        for <netdev@vger.kernel.org>; Sat, 11 May 2019 01:27:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=SdcIkrLxlvfbUBZr0Qh6I0nrjoSmAfdYaMwVRnCWFzs=;
+        b=sG69/cv2W67xyI0tp4pFPxms2fKUUSad1I+R+FQMAfWZA6f2IIqPuYyMfTXMSv/xwk
+         +4n6VZA/0QcHgL+Ffo2th/m8TyAZ+7WKRj2onI4tR6T1W7e6dnhG1Zyo5Gp0bf8Mm/hD
+         tNQS0v/QClToA5a3LnacB0pmk7b2NQJt8Vc4JOft3L9+cv85WD2y7nxVk8ddisHhQ24t
+         2JDiee4WqEZXJitnkDJ6GXjYu+JLBT2ICEK1nI1it5AeqwX7oqhVhT2DPF6zbgZpVlFZ
+         gUex0VbVwbCgyHXxDctLNrMEiPFZ2y6wjv/cKlt5jLEOU4IxzuZ+u0supa3zupn84DuV
+         DCyQ==
+X-Gm-Message-State: APjAAAV9gCSBPRrZuWpE2zWKQePYqgs6XNBMr8aJ4tpf+yXZz3rhOdUL
+        Qp0YF6Ool1TQog5+l7hwzfKf0A==
+X-Google-Smtp-Source: APXvYqyj/9N4bztXCrHILbAbwp3dJCqyNjuLPc0pwjnIPNQl6TcYclEpkJFlN8NEOxoqcXldXr0PfA==
+X-Received: by 2002:a5d:49c1:: with SMTP id t1mr10376967wrs.247.1557563228981;
+        Sat, 11 May 2019 01:27:08 -0700 (PDT)
+Received: from steredhat.homenet.telecomitalia.it (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
+        by smtp.gmail.com with ESMTPSA id g10sm8043541wrw.80.2019.05.11.01.27.07
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 11 May 2019 01:27:08 -0700 (PDT)
+Date:   Sat, 11 May 2019 10:27:05 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, mst@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        stefanha@redhat.com, jasowang@redhat.com
+Subject: Re: [PATCH v2 2/8] vsock/virtio: free packets during the socket
+ release
+Message-ID: <20190511082705.t62d3rfbgibc4zxi@steredhat.homenet.telecomitalia.it>
+References: <20190510125843.95587-1-sgarzare@redhat.com>
+ <20190510125843.95587-3-sgarzare@redhat.com>
+ <20190510.152008.1902268386064871188.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <26675.1557528809@famine>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Sat, 11 May 2019 06:13:01 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190510.152008.1902268386064871188.davem@davemloft.net>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/10/19 6:53 PM, Jay Vosburgh wrote:
-> Jarod Wilson <jarod@redhat.com> wrote:
+On Fri, May 10, 2019 at 03:20:08PM -0700, David Miller wrote:
+> From: Stefano Garzarella <sgarzare@redhat.com>
+> Date: Fri, 10 May 2019 14:58:37 +0200
 > 
->> There's currently a problem with toggling arp_validate on and off with an
->> active-backup bond. At the moment, you can start up a bond, like so:
->>
->> modprobe bonding mode=1 arp_interval=100 arp_validate=0 arp_ip_targets=192.168.1.1
->> ip link set bond0 down
->> echo "ens4f0" > /sys/class/net/bond0/bonding/slaves
->> echo "ens4f1" > /sys/class/net/bond0/bonding/slaves
->> ip link set bond0 up
->> ip addr add 192.168.1.2/24 dev bond0
->>
->> Pings to 192.168.1.1 work just fine. Now turn on arp_validate:
->>
->> echo 1 > /sys/class/net/bond0/bonding/arp_validate
->>
->> Pings to 192.168.1.1 continue to work just fine. Now when you go to turn
->> arp_validate off again, the link falls flat on it's face:
->>
->> echo 0 > /sys/class/net/bond0/bonding/arp_validate
->> dmesg
->> ...
->> [133191.911987] bond0: Setting arp_validate to none (0)
->> [133194.257793] bond0: bond_should_notify_peers: slave ens4f0
->> [133194.258031] bond0: link status definitely down for interface ens4f0, disabling it
->> [133194.259000] bond0: making interface ens4f1 the new active one
->> [133197.330130] bond0: link status definitely down for interface ens4f1, disabling it
->> [133197.331191] bond0: now running without any active interface!
->>
->> The problem lies in bond_options.c, where passing in arp_validate=0
->> results in bond->recv_probe getting set to NULL. This flies directly in
->> the face of commit 3fe68df97c7f, which says we need to set recv_probe =
->> bond_arp_recv, even if we're not using arp_validate. Said commit fixed
->> this in bond_option_arp_interval_set, but missed that we can get to that
->> same state in bond_option_arp_validate_set as well.
->>
->> One solution would be to universally set recv_probe = bond_arp_recv here
->> as well, but I don't think bond_option_arp_validate_set has any business
->> touching recv_probe at all, and that should be left to the arp_interval
->> code, so we can just make things much tidier here.
->>
->> Fixes: 3fe68df97c7f ("bonding: always set recv_probe to bond_arp_rcv in arp monitor")
+> > @@ -827,12 +827,20 @@ static bool virtio_transport_close(struct vsock_sock *vsk)
+> >  
+> >  void virtio_transport_release(struct vsock_sock *vsk)
+> >  {
+> > +	struct virtio_vsock_sock *vvs = vsk->trans;
+> > +	struct virtio_vsock_buf *buf;
+> >  	struct sock *sk = &vsk->sk;
+> >  	bool remove_sock = true;
+> >  
+> >  	lock_sock(sk);
+> >  	if (sk->sk_type == SOCK_STREAM)
+> >  		remove_sock = virtio_transport_close(vsk);
+> > +	while (!list_empty(&vvs->rx_queue)) {
+> > +		buf = list_first_entry(&vvs->rx_queue,
+> > +				       struct virtio_vsock_buf, list);
 > 
-> 	Is the above Fixes: tag correct?  3fe68df97c7f is not the source
-> of the erroneous logic being removed, which was introduced by
-> 
-> commit 29c4948293bfc426e52a921f4259eb3676961e81
-> Author: sfeldma@cumulusnetworks.com <sfeldma@cumulusnetworks.com>
-> Date:   Thu Dec 12 14:10:38 2013 -0800
-> 
->      bonding: add arp_validate netlink support
+> Please use list_for_each_entry_safe().
 
-I wasn't entirely sure that was the best choice for Fixes either, it was 
-sort of more "Augments the Fix in", so I'd certainly have no objection 
-to changing the Fixes tag to the earlier commit instead.
+Thanks for the review, I'll change it in the v3.
 
--- 
-Jarod Wilson
-jarod@redhat.com
+Cheers,
+Stefano
