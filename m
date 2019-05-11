@@ -2,88 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 215481A6AF
-	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 06:37:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26D2D1A6BA
+	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 07:45:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726502AbfEKEhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 May 2019 00:37:35 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:46753 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725990AbfEKEhf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 00:37:35 -0400
-Received: by mail-pg1-f194.google.com with SMTP id t187so3944358pgb.13;
-        Fri, 10 May 2019 21:37:34 -0700 (PDT)
+        id S1726461AbfEKFo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 May 2019 01:44:58 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:36385 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725865AbfEKFo6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 01:44:58 -0400
+Received: by mail-wr1-f66.google.com with SMTP id o4so9894152wra.3
+        for <netdev@vger.kernel.org>; Fri, 10 May 2019 22:44:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=UYukucv8TKh0+v5GWyB7Tlv7mRIdfVYQX3Glv66VIQw=;
-        b=BhTadKgUSYSyuSbjvV9r4iNRI9v6kX/UK39XJ6XUzwsLKQFarLP3R2ffrIqpL/UfvY
-         LdS0aPn6WOMM197Bs4sRrdOksUTFwP3/kW4nfCPCT3X3r1/sW53fUZZZW5nuz2AtSmnG
-         zd+ScySCXp4uFNnD0Cav+h+yLjRms0Df9hs3dw0n0yrh+9YK5NUl/wtxbxlZnb6EJ2PN
-         Bqya/lBp5UU/E7r9fYR0djIHMxA4pwj4I5ggPCtHUpCUZN0HBqb5p1dQEXlIKQAsDF7Q
-         okG0HdHtFFZo3mFFCsX/ISy0vSkny7VJVb3Znro211qyro2pDwJZdtOnYeTu1L6YTsUa
-         VkNQ==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=Zk+RhgfYFLoxJJTssSaqDGIuzBBb22lnPAtxJ/+urKY=;
+        b=g//5UevowWQl/giYNmOq3MaSb4GKUsESJF9CV9WNhePXuqhcCj3YSqlJ7XS62EJdg2
+         yjM6kLmEqP2cFh2vmt25vTKUPesdDUO0bWNtqb3Zw0lwSOpldPXJaAEahjdL8BL5C+h8
+         BAOGgmQIyfM45dKIZCWBT5Uw1+0V2J9sy/3flnKotNUB4TxFiOJznsee2njWsJiHszhn
+         Mr9K0PhCPsnKISGvEopTzWUqBE2IBN9SEIt6IEBU1VcH1//hZiETS+Ei1yr1Bi/lF7L9
+         12r5CjL8cvQtjw394jw8BUQFNpSo6rF1o3ygcX3hk8i39Wyno7QENaW/OgVUMvt5mAwd
+         w6QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=UYukucv8TKh0+v5GWyB7Tlv7mRIdfVYQX3Glv66VIQw=;
-        b=RIGp1GqfF+1JAwQIaZnzb7nCX2LyCkn2N3UPJwjV2PRjruCG/6px/jNotq/2rwse6v
-         qcbJV7sLvvGzkSI/FAyE8DqyM05r632f5DdajflzNUBjk1RyAo1L0gyn3eoozKrr6K4r
-         xwiCNqr8/ZutxB1byQQMR7QkBCzmkcJHiLXe71qc4eiUkNYeCUZgnWtqlZd63oenF5Eu
-         9cIraDFgL+oKNa5SbNO6Hms6yW6qtdEq27iJK9HkuTsatujNrvOV+pVd63tk4K01/vYz
-         Jy6FoX0lYPeIzl+9XfPgzR+F1OjXMUJlL2yQDnOeJ3n8lLL3zW026rf/Vj6D6v13G85A
-         SL5A==
-X-Gm-Message-State: APjAAAUCc3qrXwKmWGgf/2pIjeJ66Wcv8Ii3654C3C4UVbnh87wDOoEC
-        Z+GL9oJ/V7VYmz/hlEp2ELYeAf2Z
-X-Google-Smtp-Source: APXvYqw25vH295BAqDckkGeVfGTzE/+V28snDGJNVNL9f9vsLkAH4tpdjb1EN2gNru1RZ7tfD/49Dw==
-X-Received: by 2002:a63:ee10:: with SMTP id e16mr12005281pgi.207.1557549454123;
-        Fri, 10 May 2019 21:37:34 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:180::b64b])
-        by smtp.gmail.com with ESMTPSA id z66sm9656243pfz.83.2019.05.10.21.37.32
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=Zk+RhgfYFLoxJJTssSaqDGIuzBBb22lnPAtxJ/+urKY=;
+        b=g4VROGzhnKa+XVrdbwBljcBCuz7f3z2bk8HTclLnfH6tE/9jbLkSpAt75qQMhD1W/Z
+         NyP3qlCzy2c2ZsSXy5ly9HsCYjwDByxe0YDjNKbtZlnvoKkC/U5xl+InAcsFpGm4WBTn
+         X9JGNMrFP8GhdJFdVU59o88ChfhMIq66w6jQ+2Sibh3HAeZNxuWxXMsx2oYgbpVaIWv9
+         8id34eYYAqba2BOVsao/Pc7KUof/5jCihhqejhMXx37Hwvf4uUipWCE8LM9v7FObk/ZU
+         2iP/OUc/Swsj7J02rkJx3A/XSaiS1dwxCWQ25IcRhbWnVHszr4Ui2qLS6LRpFurK+sDV
+         rVww==
+X-Gm-Message-State: APjAAAX1DFai9+vGLBUiSO+/Hlp7VJ9a8RSjOP8oQYqeRmnKr4EbRP/n
+        iKCqz59qgN9nB/alsk+EJA91lqkuGtQ=
+X-Google-Smtp-Source: APXvYqxiQ2xux6GygpiVzrHrMvlnUNqArguaheAp7mYqmlBZB44eeT2LISZcyNomYTX1rVlhzxD1jA==
+X-Received: by 2002:a5d:4a87:: with SMTP id o7mr9985237wrq.207.1557553496464;
+        Fri, 10 May 2019 22:44:56 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bd4:5700:b0bf:edb1:2b4b:6ef1? (p200300EA8BD45700B0BFEDB12B4B6EF1.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:b0bf:edb1:2b4b:6ef1])
+        by smtp.googlemail.com with ESMTPSA id t6sm7120917wmt.8.2019.05.10.22.44.55
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 10 May 2019 21:37:33 -0700 (PDT)
-Date:   Fri, 10 May 2019 21:37:31 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     shuah@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        torvalds@linux-foundation.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] selftests: fix bpf build/test workflow regression when
- KBUILD_OUTPUT is set
-Message-ID: <20190511043729.3o4enh35lrmne3kd@ast-mbp>
-References: <20190511025249.32678-1-skhan@linuxfoundation.org>
+        Fri, 10 May 2019 22:44:55 -0700 (PDT)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] net: phy: realtek: fix double page ops in generic Realtek
+ driver
+Message-ID: <c2c9f3c6-81c4-7c27-8989-10331bb69dc6@gmail.com>
+Date:   Sat, 11 May 2019 07:44:48 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190511025249.32678-1-skhan@linuxfoundation.org>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 10, 2019 at 08:52:49PM -0600, Shuah Khan wrote:
-> commit 8ce72dc32578 ("selftests: fix headers_install circular dependency")
-> broke bpf build/test workflow. When KBUILD_OUTPUT is set, bpf objects end
-> up in KBUILD_OUTPUT build directory instead of in ../selftests/bpf.
-> 
-> The following bpf workflow breaks when it can't find the test_verifier:
-> 
-> cd tools/testing/selftests/bpf; make; ./test_verifier;
-> 
-> Fix it to set OUTPUT only when it is undefined in lib.mk. It didn't need
-> to be set in the first place.
-> 
-> Fixes: commit 8ce72dc32578 ("selftests: fix headers_install circular dependency")
-> 
-> Reported-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+When adding missing callbacks I missed that one had them set already.
+Interesting that the compiler didn't complain.
 
-'git am' couldn't apply this patch because "sha1 information is lacking",
-but the patch itself looks good.
-Acked-by: Alexei Starovoitov <ast@kernel.org>
-Thanks for the quick fix.
+Fixes: daf3ddbe11a2 ("net: phy: realtek: add missing page operations")
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/realtek.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 29ce07312..4988ccea6 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -332,8 +332,6 @@ static struct phy_driver realtek_drvs[] = {
+ 		.resume		= genphy_resume,
+ 		.read_page	= rtl821x_read_page,
+ 		.write_page	= rtl821x_write_page,
+-		.read_page	= rtl821x_read_page,
+-		.write_page	= rtl821x_write_page,
+ 	}, {
+ 		PHY_ID_MATCH_EXACT(0x001cc961),
+ 		.name		= "RTL8366RB Gigabit Ethernet",
+-- 
+2.21.0
 
