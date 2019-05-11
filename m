@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F12CC1A956
-	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 22:03:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F101A95A
+	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 22:16:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726400AbfEKUCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 May 2019 16:02:46 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33712 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726045AbfEKUCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 16:02:44 -0400
-Received: by mail-qt1-f195.google.com with SMTP id m32so7491577qtf.0;
-        Sat, 11 May 2019 13:02:43 -0700 (PDT)
+        id S1726260AbfEKUQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 May 2019 16:16:11 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53130 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725911AbfEKUQL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 16:16:11 -0400
+Received: by mail-wm1-f65.google.com with SMTP id y3so1004174wmm.2
+        for <netdev@vger.kernel.org>; Sat, 11 May 2019 13:16:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lswjGdiyj2dRYacSr6F7O5W7w6MrJgdYsNd/5b6rmjQ=;
-        b=VuLdLiNIFkIfbhT68czo43pudFcyaU4bnCZarpCQHY1v/kMt1GjtvdZ6R+ZJx3XzK7
-         2zZjDDlc98id1xfs+XXwqIDGWJwWE6CxK/8/C7HjWf0om9ESKKkE9R6ZIHUrgvXblaEH
-         QwvHkeFr9CDGSKS/d9ITpmvDjJnVRd2RJFwCQIoh5+AxVjFXsv71c4bHxJPn5RPz/8p4
-         kKmDdn5rSJ6Wfd3MTLy4kLduTbP5vwcrkil+0CblPzC1cgyX1hVikkQ7aUC7CWXfVrWe
-         luzjcc0gJT7WntXZDoYcHpTOwZU7SVka+RpEUDb5NtzV9WwJ3zajLDq/2U5Tyb/hyFpH
-         D+0w==
+        h=from:to:cc:subject:date:message-id;
+        bh=hpO6TU3D/wUn9J5rBZ8ayU5V/PLYkIM00zTu2Xz4J1s=;
+        b=Vto9ILSJdXgaKg2VmfO+ZyXL2+OqI9GnJ42kitCA5oAaXNCphvHlJL18mHIX4fB0li
+         gYZc17KT9JmPlBEdOZrVzREyouGkyWJPbAHb11daGegDUv5pcmLuqDnfG7Q0tGF5728s
+         6/df5QPP9gvS9eTRj78HJTw63mWmpkjnubEFnflmr3mTNNshWG39OmLlJnUysr/z8L7T
+         +B1HaqBFOUBKBX3t4ZW+v8Cx0G6RdfV3LlEpiVcOKIJbuT3ryxt6Uyuzrv8ntd+X2de2
+         qjWUJqFvvxHx+ENELyb90Lr8aCyKRQ6KjvPrBad9OuXw51O53sjxrMxWnYi4PzvCGwq2
+         lLYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lswjGdiyj2dRYacSr6F7O5W7w6MrJgdYsNd/5b6rmjQ=;
-        b=JOORI3yOttWfsAEuCJ6VfodynqG+X0ben6YIVBPNWpr8ZR9eijmXABjX08ffh8axQZ
-         n6JTSXHb51/7oZaEBszXsOfmANdrq+JeCDZX7in8R5ZAlEFoRrI8fwHmxIo9ICbbsJ5X
-         592O34ilbEPYL+DBP0uoGvcou42QT9TMBkE3Hp5fnBwhJeXm64I46YnH3DoQsXa5x30y
-         p0SpjZy6KAe1wIKWoEhWrb+Czk/0+JlQpQy7W0cJJi4OHx3sRA8pl95OtRk2pRcR3iDR
-         eErrAK/L3FfoPAF2nFHxKbvA1Sn8fLeWj0T/dVO053RX4wzZjto2dL62yNFSlPm4D57G
-         p0EA==
-X-Gm-Message-State: APjAAAVN28q+Nd/z8WiI3mxX2lbcZLmpqTPOzJF6eHlsJ8s7owuBDNbl
-        6oukMx+NjKxyUkCmdaWypJw=
-X-Google-Smtp-Source: APXvYqxVdYA4tW955Zbn2lnEeNVqbxQGjc1G4Y5NCP9sl0MmzM3MqNdU45CcS6K6kIUwPbQJCEG0jA==
-X-Received: by 2002:ac8:38e1:: with SMTP id g30mr16293087qtc.108.1557604963300;
-        Sat, 11 May 2019 13:02:43 -0700 (PDT)
-Received: from gmail.com (pool-74-104-133-20.bstnma.fios.verizon.net. [74.104.133.20])
-        by smtp.gmail.com with ESMTPSA id r47sm6938872qtc.14.2019.05.11.13.02.41
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 11 May 2019 13:02:42 -0700 (PDT)
-Date:   Sat, 11 May 2019 16:02:35 -0400
-From:   Sowmini Varadhan <sowmini05@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jason Gunthorpe <jgg@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Doug Ledford <dledford@redhat.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: Annoying gcc / rdma / networking warnings
-Message-ID: <20190511200235.GA257@gmail.com>
-References: <CAHk-=whbuwm5FbkPSfftZ3oHMWw43ZNFXqvW1b6KFMEj5wBipA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whbuwm5FbkPSfftZ3oHMWw43ZNFXqvW1b6KFMEj5wBipA@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=hpO6TU3D/wUn9J5rBZ8ayU5V/PLYkIM00zTu2Xz4J1s=;
+        b=hI5/LcEGatPYtZY7S3hfFBXaJ4qUuqwHhM5lpGUY6g3qeY7ZH86hlqEzS/3y26aS+/
+         xgONAHkR/nPn5q5FBBEoYIwFzjd60QK57qjD4QDOau7NDRdFcLUgb2idCu4Wx5Uh0DYI
+         qtrrNVAnHbpBC7Zkg8yqskvJoe6T3Pl1LPq3qsCL2fGeBHgGz9RHU2wdd0sEx4t8mQUu
+         kziRmiTAip5grWG03HTTgCrK7Z1h9FDZ7AdqaE+Zys9J0mCznp5I+vqBxKrXsPtrP0bS
+         wKPt20Y6czY2LYfqQrszfWlglMV4jlfpVjmDKpHsRI/HYzlyveu/AnCpwDsghUYnubbV
+         rxBQ==
+X-Gm-Message-State: APjAAAXr34J0LA9rItSk5UpdiM0yAY/3LgNVyE7SwWTYn7Gi5SkByoyI
+        5FFD2DcDe8kITQVn4TEJ8ng=
+X-Google-Smtp-Source: APXvYqzWA0WTClSmOQucMWLp66/brQmDg3aHo11Tg5pSEBDGwniiFUJt1gRL5ERkDBdGv2f7QAkYAA==
+X-Received: by 2002:a05:600c:506:: with SMTP id i6mr11310303wmc.3.1557605769235;
+        Sat, 11 May 2019 13:16:09 -0700 (PDT)
+Received: from localhost.localdomain (5-12-225-227.residential.rdsnet.ro. [5.12.225.227])
+        by smtp.gmail.com with ESMTPSA id c20sm11853275wre.28.2019.05.11.13.16.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 11 May 2019 13:16:08 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net 0/3] Fix a bug and avoid dangerous usage patterns
+Date:   Sat, 11 May 2019 23:14:44 +0300
+Message-Id: <20190511201447.15662-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On (05/11/19 12:52), Linus Torvalds wrote:
-> 
-> So David, arguably the kernel "struct sockaddr" is simply wrong, if it
-> can't contain a "struct sockaddr_in6". No? Is extending it a huge
-> problem for other users that don't need it (mainly stack, I assume..)?
+Making DSA use the sk_buff control block was my idea during the
+'Traffic-support-for-SJA1105-DSA-driver' patchset, and I had also
+introduced a series of macro helpers that turned out to not be so
+helpful:
 
-The ipv6 working group came up with sockaddr_storage to solve this.
-See RFC 2553. However, in practice, since sizeof(struct sockaddr_storage)
-is much larger than simply creating a union of sockaddr_in and sockaaddr_in6,
-most userspace networking applications will do the latter.
+1. DSA_SKB_ZERO() zeroizes the 48-byte skb->cb area, but due to the high
+   performance impact in the hotpath it was only intended to be called
+   from the timestamping path. But it turns out that not zeroizing it
+   has uncovered the reading of an uninitialized member field of
+   DSA_SKB_CB, so in the future just be careful about what needs
+   initialization and remove this macro.
+2. DSA_SKB_CLONE() contains a flaw in its body definition (originally
+   put there to silence checkpatch.pl) and is unusable at this point
+   (will only cause NPE's when used). So remove it.
+3. For DSA_SKB_COPY() the same performance considerations apply as above
+   and therefore it's best to prune this function before it reaches a
+   stable kernel and potentially any users.
 
-The strucut sockaddr is the mereely the generic pointer cast
-that is expected to be used for the common posix fucntions like
-bind/connect etc.
+Vladimir Oltean (3):
+  net: dsa: Initialize DSA_SKB_CB(skb)->deferred_xmit variable
+  net: dsa: Remove dangerous DSA_SKB_CLONE() macro
+  net: dsa: Remove the now unused DSA_SKB_CB_COPY() macro
 
-> Also equally arguably, the rdma code could just use a "struct
-> sockaddr_in6 for this use and avoid the gcc issue, couldn't it? It has
+ include/net/dsa.h | 15 ---------------
+ net/dsa/slave.c   |  2 ++
+ 2 files changed, 2 insertions(+), 15 deletions(-)
 
-Yes, that would be the right solution.
-
---Sowmini
+-- 
+2.17.1
 
