@@ -2,59 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 016821A810
-	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 16:20:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D881A813
+	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 16:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728573AbfEKOUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 May 2019 10:20:36 -0400
-Received: from fallback19.mail.ru ([185.5.136.251]:57070 "EHLO
-        fallback19.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726147AbfEKOUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 10:20:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mail.ru; s=mail2;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:To:Message-ID:From:Date; bh=FN/q1hr/tM87MQE0xJdrDcOJIWlqNJHJRe0XfAubm8k=;
-        b=l0XGBfmP6lOSEUZtNY52yknk/NRB0+6g8oy+IkvqLkfGlYEwGrWqI0ZeuOqQIR9jk1mek1O7j4J6PHx7b6B9s6wDuapwufH2KM6Q9pnpRU1nceY28t7gdIbrBoKLGgljcCXRsEauy4LMMR4wnAHuWP6b+oAux14nivEW211v+WA=;
-Received: from [10.161.22.27] (port=57584 helo=smtp57.i.mail.ru)
-        by fallback19.m.smailru.net with esmtp (envelope-from <sciposts-translations@mail.ru>)
-        id 1hPSrZ-0005pp-5i
-        for netdev@vger.kernel.org; Sat, 11 May 2019 17:20:33 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mail.ru; s=mail2;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:To:Message-ID:From:Date; bh=FN/q1hr/tM87MQE0xJdrDcOJIWlqNJHJRe0XfAubm8k=;
-        b=l0XGBfmP6lOSEUZtNY52yknk/NRB0+6g8oy+IkvqLkfGlYEwGrWqI0ZeuOqQIR9jk1mek1O7j4J6PHx7b6B9s6wDuapwufH2KM6Q9pnpRU1nceY28t7gdIbrBoKLGgljcCXRsEauy4LMMR4wnAHuWP6b+oAux14nivEW211v+WA=;
-Received: by smtp57.i.mail.ru with esmtpa (envelope-from <sciposts-translations@mail.ru>)
-        id 1hPSrX-0000Wg-9H
-        for netdev@vger.kernel.org; Sat, 11 May 2019 17:20:31 +0300
-Date:   Sat, 11 May 2019 17:20:30 +0300
-From:   sciposts-translations <sciposts-translations@mail.ru>
-Organization: Home
-X-Priority: 3 (Normal)
-Message-ID: <935246499.20190511172030@mail.ru>
-To:     netdev@vger.kernel.org
-Subject: please help with broken link
+        id S1728610AbfEKOYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 May 2019 10:24:09 -0400
+Received: from nbd.name ([46.4.11.11]:58496 "EHLO nbd.name"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726147AbfEKOYJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 May 2019 10:24:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6D8lHhlPnErlwBUUg7pykhDXuLB10RpnRmnHan5006c=; b=M6sOyTv2Vw0yg/RJTR8macl6dL
+        Ts1wn7fHpqTg9blYEtrdghH4NTRvSy3Gnxm8pytbHCfVeDpsrgJXszmhz+FsOnCOXqRgL3xZfKc1f
+        FsUHZxSaN5GGZ4fzVv19MRS8/BYG8RhDht/W3brnmRaTr3y+R5pVtajyPKDrvcbiUTVQ=;
+Received: from p54ae9c89.dip0.t-ipconnect.de ([84.174.156.137] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1hPSuy-0005td-Hp; Sat, 11 May 2019 16:24:04 +0200
+Subject: Re: [PATCH] mt76: mt7615: Make mt7615_irq_handler static
+To:     YueHaibing <yuehaibing@huawei.com>, lorenzo.bianconi83@gmail.com,
+        ryder.lee@mediatek.com, royluo@google.com, kvalo@codeaurora.org,
+        matthias.bgg@gmail.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-wireless@vger.kernel.org
+References: <20190504102247.43720-1-yuehaibing@huawei.com>
+From:   Felix Fietkau <nbd@nbd.name>
+Openpgp: preference=signencrypt
+Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
+ mQGiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
+ ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
+ Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
+ AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
+ vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
+ wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
+ TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
+ l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwbQcRmVsaXggRmll
+ dGthdSA8bmJkQG5iZC5uYW1lPohgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
+ HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
+ VrwYTIThkTlQuQINBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
+ CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
+ VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
+ Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
+ DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
+ wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
+ f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
+ aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
+ FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
+ TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabiEkE
+ GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
+ RjMaxwtSdaCKMw3j33ZbsWS4
+Message-ID: <eb17d602-ab87-2d75-7d82-acbf93ede150@nbd.name>
+Date:   Sat, 11 May 2019 16:24:03 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20190504102247.43720-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-77F55803: 3FFC80838138E3AB5A78504BD2AC2941D39E519F2B0D219755CEE1350FE47CED79A0425BE6AC919DCE87129B5579234F
-X-7FA49CB5: 0D63561A33F958A5D786C1540A20C3C065200ECE08F6011F7A842972785E5FD38941B15DA834481FA18204E546F3947C2FFDA4F57982C5F4F6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8BF1175FABE1C0F9B6A471835C12D1D977C4224003CC8364767815B9869FA544D8D32BA5DBAC0009BE9E8FC8737B5C2249EC3416319FD9A0113AA81AA40904B5D9CF19DD082D7633A093541453170D46FCD81D268191BDAD3D78DA827A17800CE72DE1265ABAE48027CD04E86FAF290E2DBBC930A3941E20C675ECD9A6C639B01B78DA827A17800CE7F317D05A500D253153E7A4522C77625775ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC8519DC0BE04022C72727F269C8F02392CD5571747095F342E88FB05168BE4CE3AF
-X-Mailru-Sender: BE4925689EF173E82FE0398C3DA73A9E8396AB85763B94EF66805BC0AF735F5A495628AADBE66F423954ECE80EA8D5AB755135DE64E8B790FF3BC47B075380FB27D4A70824A6E6AB4F5011048DD08C05EFE346E21D85B2C6FB9DA34A632D951321100C7A637FF0720D4ABDE8C577C2ED
-X-Mras: OK
-X-77F55803: 6AF0DA0BABFA9FDB7F9F52485CB584D7271FD7DF62800FDCD5267EE2B6DB537F9A4545DC08982F5D44CDD9D172E9805AF247DB605F6C93C8
-X-7FA49CB5: 0D63561A33F958A5F0D5E7B227EE44ED9F7999A32DBAA3012E899DE97C0F60208941B15DA834481FA18204E546F3947C2FFDA4F57982C5F4F6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8BF1175FABE1C0F9B6A471835C12D1D977C4224003CC836476C0CAF46E325F83A50BF2EBBBDD9D6B0F2AF38021CC9F462D574AF45C6390F7469DAA53EE0834AAEE
-X-Mailru-Sender: A5480F10D64C9005032BDE78ED4CC6ECFA786B9891A69A289A4545DC08982F5DCB0114F4C3D1B6D7640E4EC5D106A926DDBB79867CC2C1ECB1B79CA1474D62713D4353693375F44A047B3F2B3EF60FF90B4B50B6090D9B184472A4E4F552B15E62F87B7200F944B0AE208404248635DF
-X-Mras: OK
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I had wrote some letters but no answer
+On 2019-05-04 12:22, YueHaibing wrote:
+> Fix sparse warning:
+> 
+> drivers/net/wireless/mediatek/mt76/mt7615/pci.c:37:13:
+>  warning: symbol 'mt7615_irq_handler' was not declared. Should it be static?
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Applied, thanks.
 
-Can I send you a new link of my translation of your article
-http://www.candelatech.com/~greear/vlan.html
-
-Hungarian  - not working
-
-May I send a new link?
-
-Thank you
-
+- Felix
