@@ -2,209 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 708131A65E
-	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 04:53:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A94F31A66D
+	for <lists+netdev@lfdr.de>; Sat, 11 May 2019 05:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728325AbfEKCxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 May 2019 22:53:03 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:45142 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728449AbfEKCxC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 May 2019 22:53:02 -0400
-Received: by mail-io1-f67.google.com with SMTP id b3so5988262iob.12
-        for <netdev@vger.kernel.org>; Fri, 10 May 2019 19:53:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QNZoChIf2lg8703PWLK0D4vhE3dgoghA+HjSLMHNtYc=;
-        b=aM7BCxyUBYM95MqIGVpU2RewLKHldN5lkU0Fb48xw4JGT/s2zA6M2yZ35jAU1dyXyj
-         qONocOLi+p5NvUTr9p4bz2tnECsRMsHMNTEcdidRor4E+dEG7Dff/NuK1NXd+AGevM3h
-         7ybeoqD6/YVwWFmNwlHDSwdRxpBbtfYKU0Cmg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QNZoChIf2lg8703PWLK0D4vhE3dgoghA+HjSLMHNtYc=;
-        b=nsqeF6f/5Qw4BrAv7idMndMt2bf8C0gJvFHQmDNM2p9Ic5cUvVCcD7u14n9fFutbPz
-         zMRClq2Ge2+IfdHLzCIGJyf49ipeJ+26OexoaBUtplljRa9mf3fvEqee7ANLtQk5HJ73
-         zM7mULMkGQyJ00j3XE5uPjyP1ftAu9AsQt7/5lmglyd3q2uZChPUP8zgmR6Z/ChXCqHf
-         Yi+9sqDf1FhuaBUonKsxvXYDCLXySx1nMxC+fbYq6EgtRlYn2pE++jeVSC06w6Dl4HVb
-         sMn+P5LmDtT/MB+gQ8wc96w3WB7aFb8i6in1KIY9mqiw7cAxQaUcyW2EQzz8WS3fs1XJ
-         zZdA==
-X-Gm-Message-State: APjAAAX9ZfT425U4noNg5bBHEU7yzTDNqprJWeakNYvzN3VcgcnqS5s9
-        KCXRyu3wvUT278kdzftVdDheyA==
-X-Google-Smtp-Source: APXvYqxe4QgzEQeuJSwnU5rTv1AAsOgXkua44aeiqHQt+sJIUfj6qnNliRkc7znEWLRMNiwf94S/Og==
-X-Received: by 2002:a05:6602:1d6:: with SMTP id w22mr154210iot.215.1557543181638;
-        Fri, 10 May 2019 19:53:01 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id c3sm2206061iob.80.2019.05.10.19.53.00
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 10 May 2019 19:53:00 -0700 (PDT)
-Subject: Re: [GIT PULL] Kselftest update for Linux 5.2-rc1
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        shuah <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, skhan@linuxfoundation.org
-References: <9b434125-44b6-0e83-4f70-d1fd28752407@linuxfoundation.org>
- <20190509222043.b4zn32kuohduzzzr@ast-mbp>
- <dd983d42-d148-372d-3e57-b97c313d58b9@linuxfoundation.org>
- <28072ca5-f7c8-f16d-6881-aec3e8b61ae8@linuxfoundation.org>
- <20190510021750.bxjda2wbuj3hdml7@ast-mbp>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <6da7fa0f-5da8-9274-3781-edd31a4c3043@linuxfoundation.org>
-Date:   Fri, 10 May 2019 20:53:00 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190510021750.bxjda2wbuj3hdml7@ast-mbp>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1728348AbfEKD47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 May 2019 23:56:59 -0400
+Received: from mail-eopbgr1300121.outbound.protection.outlook.com ([40.107.130.121]:29024
+        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726038AbfEKD47 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 May 2019 23:56:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
+ b=M+AZrEH1pzffRIluNPfvKVpvGEbRZjYZ7U0BArkiSxXDX2YbWkmkMbiVUgYN3885tagxtVzSyq+n8QrKUFQovxK5Wyc/jRLejCIm0XyiTrm+xGbVdx2GTCTaivGgTn98/DoYPHFyHpsRWcbr2ENKsKKY/IDmNXk0vHIW1SS4kcg=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=testarcselector01;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/o9ZuAf4kk90Wx3KPTIRfArq8OzkhLWeEOumezWrWgY=;
+ b=r7vLnHHYATqSyMqsXmLjsA8mHJG3llOz5SyjQtCH0TWWSuVqvVAH1dT8oVuVu9B9Vv9n7YqYA4MskvivarwbYmRKUBxZQ7WKtxKAXEhVBiuxJVCr+Ba4O4sHI4kU4IKlTCZ6NWBdkpgncsX0u0UNTkpF9Rm/Qs0F+SpotFw7YTM=
+ARC-Authentication-Results: i=1; test.office365.com
+ 1;spf=none;dmarc=none;dkim=none;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/o9ZuAf4kk90Wx3KPTIRfArq8OzkhLWeEOumezWrWgY=;
+ b=bi2+BqDDVsFPRxNI8jc6gY4lmDHyFEUnyl5WsUxpuBINQFa2bPU4ThjyhEcjNHZRsrbd2uF4So61DhNrcEczecmxEx23UNAnk1s8Cq0lm9Tr3B8ew8z+ZN9txOvjcwjOVV+7Qw3AC/CzOAAYTiQ8vTlYQodGAOYaOLYHsrgvd7k=
+Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM (10.170.189.13) by
+ PU1P153MB0155.APCP153.PROD.OUTLOOK.COM (10.170.189.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.4; Sat, 11 May 2019 03:56:49 +0000
+Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
+ ([fe80::dc7e:e62f:efc9:8564]) by PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
+ ([fe80::dc7e:e62f:efc9:8564%4]) with mapi id 15.20.1900.002; Sat, 11 May 2019
+ 03:56:49 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Sunil Muthuswamy <sunilmut@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Michael Kelley <mikelley@microsoft.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] hv_sock: Fix data loss upon socket close
+Thread-Topic: [PATCH] hv_sock: Fix data loss upon socket close
+Thread-Index: AdUF8eO/rXjnGSU+Q+iHOcDDYgexQQBncSCg
+Date:   Sat, 11 May 2019 03:56:49 +0000
+Message-ID: <PU1P153MB01695C88469F32B9ECC7657EBF0D0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
+References: <BN6PR21MB0465168DEA6CABA910832A5BC0320@BN6PR21MB0465.namprd21.prod.outlook.com>
+In-Reply-To: <BN6PR21MB0465168DEA6CABA910832A5BC0320@BN6PR21MB0465.namprd21.prod.outlook.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-05-11T03:56:45.2460723Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=cd20b9e0-8a1f-4bd1-b9b3-e337b3c76db0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=decui@microsoft.com; 
+x-originating-ip: [2601:600:a280:1760:d471:db70:ecbb:48f6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 08289d13-b47e-4b62-e9a0-08d6d5c4b217
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:PU1P153MB0155;
+x-ms-traffictypediagnostic: PU1P153MB0155:
+x-microsoft-antispam-prvs: <PU1P153MB0155F2C137B2804686A4E2AFBF0D0@PU1P153MB0155.APCP153.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 00342DD5BC
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39860400002)(376002)(136003)(346002)(366004)(199004)(189003)(14444005)(476003)(446003)(486006)(76116006)(11346002)(25786009)(10290500003)(478600001)(74316002)(71190400001)(229853002)(256004)(71200400001)(52536014)(66476007)(66946007)(9686003)(55016002)(8936002)(66556008)(86362001)(53936002)(66446008)(6246003)(4326008)(14454004)(1511001)(5660300002)(64756008)(305945005)(7736002)(8676002)(81166006)(81156014)(86612001)(73956011)(22452003)(33656002)(6506007)(102836004)(54906003)(316002)(110136005)(99286004)(10090500001)(2906002)(76176011)(7696005)(46003)(8990500004)(68736007)(6436002)(186003)(6636002)(6116002);DIR:OUT;SFP:1102;SCL:1;SRVR:PU1P153MB0155;H:PU1P153MB0169.APCP153.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: qFNcQHn3xvfmKC0nktRX7otKf9x/Md63EyiTAS+aEJzMZu1pOOIpBWy6kNdEksxKXwZjrYB1Bc9NAdTCQppHVLCioDWh/V54o4oOryCpX1m1pnV1//Kw1Y6x5on+z132npgSK5rXm3E9Ly2ZMeOt1s4cfFTOmzMh+95STyMYSdGSiaK2/I6OixBBUjVxQJR7FofG8o0beAbLJybIT0PbvRzqI1Pu8YvCudwy8pxZqZeaQIOgfIbFg6S4VWsyByQrL+iNCm81MX5RKEJvunF64w5nCEgZO6wF5HmvWGws5lOPncmBpSgr9aNHLSxTR5uedQErUGb1WglECSnrcPLM3L+/pidim0IhVMz+qgYcA0Rhu6fd3hyUiTcn0mbDxiM7xV5aWNeSZPMk98fCmf+gaHMDrA5iLmtQocMB4mTMfdk=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08289d13-b47e-4b62-e9a0-08d6d5c4b217
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 May 2019 03:56:49.3404
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0155
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/19 8:17 PM, Alexei Starovoitov wrote:
-> On Thu, May 09, 2019 at 07:42:09PM -0600, Shuah Khan wrote:
->> On 5/9/19 4:40 PM, Shuah Khan wrote:
->>> On 5/9/19 4:20 PM, Alexei Starovoitov wrote:
->>>> On Mon, May 06, 2019 at 10:56:56AM -0600, Shuah Khan wrote:
->>>>> Hi Linus,
->>>>>
->>>>> Please pull the following Kselftest update for Linux 5.2-rc1
->>>>>
->>>>> This Kselftest update for Linux 5.2-rc1 consists of
->>>>>
->>>>> - fixes to seccomp test, and kselftest framework
->>>>> - cleanups to remove duplicate header defines
->>>>> - fixes to efivarfs "make clean" target
->>>>> - cgroup cleanup path
->>>>> - Moving the IMA kexec_load selftest to selftests/kexec work from
->>>>>     Mimi Johar and Petr Vorel
->>>>> - A framework to kselftest for writing kernel test modules addition
->>>>>     from Tobin C. Harding
->>>>>
->>>>> diff is attached.
->>>>>
->>>>> thanks,
->>>>> -- Shuah
->>>>>
->>>>>
->>>>> ----------------------------------------------------------------
->>>>> The following changes since commit
->>>>> 15ade5d2e7775667cf191cf2f94327a4889f8b9d:
->>>>>
->>>>>     Linux 5.1-rc4 (2019-04-07 14:09:59 -1000)
->>>>>
->>>>> are available in the Git repository at:
->>>>>
->>>>>     git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest
->>>>> tags/linux-kselftest-5.2-rc1
->>>>>
->>>>> for you to fetch changes up to d917fb876f6eaeeea8a2b620d2a266ce26372f4d:
->>>>>
->>>>>     selftests: build and run gpio when output directory is the src dir
->>>>> (2019-04-22 17:02:26 -0600)
->>>>>
->>>>> ----------------------------------------------------------------
->>>>> linux-kselftest-5.2-rc1
->>>>>
->>>>> This Kselftest update for Linux 5.2-rc1 consists of
->>>>>
->>>>> - fixes to seccomp test, and kselftest framework
->>>>> - cleanups to remove duplicate header defines
->>>>> - fixes to efivarfs "make clean" target
->>>>> - cgroup cleanup path
->>>>> - Moving the IMA kexec_load selftest to selftests/kexec work from
->>>>>     Mimi Johar and Petr Vorel
->>>>> - A framework to kselftest for writing kernel test modules addition
->>>>>     from Tobin C. Harding
->>>>>
->>>>> ----------------------------------------------------------------
->>>>> Kees Cook (3):
->>>>>         selftests/seccomp: Handle namespace failures gracefully
->>>>>         selftests/harness: Add 30 second timeout per test
->>>>>         selftests/ipc: Fix msgque compiler warnings
->>>>>
->>>>> Mathieu Desnoyers (1):
->>>>>         rseq/selftests: Adapt number of threads to the number of
->>>>> detected cpus
->>>>>
->>>>> Mimi Zohar (9):
->>>>>         selftests/kexec: move the IMA kexec_load selftest to
->>>>> selftests/kexec
->>>>>         selftests/kexec: cleanup the kexec selftest
->>>>>         selftests/kexec: define a set of common functions
->>>>>         selftests/kexec: define common logging functions
->>>>>         selftests/kexec: define "require_root_privileges"
->>>>>         selftests/kexec: kexec_file_load syscall test
->>>>>         selftests/kexec: check kexec_load and kexec_file_load are enabled
->>>>>         selftests/kexec: make kexec_load test independent of IMA
->>>>> being enabled
->>>>>         selftests/kexec: update get_secureboot_mode
->>>>>
->>>>> Petr Vorel (1):
->>>>>         selftests/kexec: Add missing '=y' to config options
->>>>>
->>>>> Po-Hsu Lin (1):
->>>>>         selftests/efivarfs: clean up test files from test_create*()
->>>>>
->>>>> Roman Gushchin (1):
->>>>>         selftests: cgroup: fix cleanup path in
->>>>> test_memcg_subtree_control()
->>>>>
->>>>> Sabyasachi Gupta (4):
->>>>>         selftest/x86/mpx-dig.c: Remove duplicate header
->>>>>         selftest/timers: Remove duplicate header
->>>>>         selftest/rseq: Remove duplicate header
->>>>>         selftest/gpio: Remove duplicate header
->>>>>
->>>>> Shuah Khan (2):
->>>>>         selftests: fix headers_install circular dependency
->>>>
->>>> Shuah,
->>>>
->>>> the commit 8ce72dc32578 ("selftests: fix headers_install circular
->>>> dependency")
->>>> broke our build/test workflow, since it added:
->>>>     ifneq ($(KBUILD_OUTPUT),)
->>>>             OUTPUT := $(KBUILD_OUTPUT)
->>>>     else
->>>>
->>>> which means that all of selftests/bpf artifacts are now going into
->>>> main build directory cluttering it with all sorts of .o, generated files
->>>> and executables.
->>>> The end result is humans and scripts can no longer find tests.
->>
->> bpf build fails with the above commit. However, even without it, I am
->> seeing bpf objects going to tools/testing/selftests/bpf
->>
->> I reverted the commit and ran your use-case:
->>
->> export KBUILD_OUTPUT=/tmp/kselftest_bpf
->> cd tools/testing/selftests/bpf/
->> make
->> ./test_verifier
->>
->> I see bpf objects in tools/testing/selftests/bpf/ and I can run the
->> test.
->>
->> What am I missing? The only way ./test_verifier would work is if
->> test_verifier is in tools/testing/selftests/bpf/
-> 
-> That's the point. All artifacts should be in tools/testing/selftests/bpf/
-> if 'make' was done there regardless of KBUILD_OUTPUT.
-> 
+> From: Sunil Muthuswamy <sunilmut@microsoft.com>
+> Sent: Wednesday, May 8, 2019 4:11 PM
+>
+> Currently, when a hvsock socket is closed, the socket is shutdown and
+> immediately a RST is sent. There is no wait for the FIN packet to arrive
+> from the other end. This can lead to data loss since the connection is
+> terminated abruptly. This can manifest easily in cases of a fast guest
+> hvsock writer and a much slower host hvsock reader. Essentially hvsock is
+> not following the proper STREAM(TCP) closing handshake mechanism.
 
-Alexei,
+Hi Sunil,
+It looks to me the above description is inaccurate.
 
-Thanks for reporting the problem. Fix is on the way. Please test and let
-me know if it works for you. I verified bpf build/test workflow with
-and without KBUILD_OUTPUT set.
+In the upstream Linux kernel, closing a hv_sock file descriptor may hang
+in vmbus_hvsock_device_unregister() -> msleep(), until the host side of
+the connection is closed. This is bad and should be fixed, but I don't thin=
+k
+the current code can cause data loss: when Linux calls hvs_destruct() ->
+vmbus_hvsock_device_unregister() -> vmbus_device_unregister() -> ...
+-> vmbus_close() to close the channel, Linux knows the host app has
+already called close(), and normally that means the host app has
+received all the data from the connection.
 
-thanks,
--- Shuah
+BTW, technically speaking, in hv_sock there is no RST packet, while there
+is indeed a payload_len=3D=3D0 packet, which is similar to TCP FIN.
+
+I think by saying "a RST is sent" you mean Linux VM closes the channel.
+
+> The fix involves adding support for the delayed close of hvsock, which is
+> in-line with other socket providers such as virtio.
+
+With this "delayed close" patch, Linux's close() won't hang until the host
+also closes the connection. This is good!
+
+> While closing, the
+> socket waits for a constant timeout, for the FIN packet to arrive from th=
+e
+> other end. On timeout, it will terminate the connection (i.e a RST).
+
+As I mentioned above, I suppose the "RST" means Linux closes the channel.
+
+When Linux closes a connection, the FIN packet is written into the shared
+guest-to-host channel ringbuffer immediately, so the host is able to see it
+immediately, but the real question is: what if the host kernel and/or host =
+app
+can not (timely) receive the data from the ringbuffer, inclding the FIN?
+
+Does the host kernel guarantee it *always* timely fetches/caches all the
+data from a connection, even if the host app has not accept()'d the
+conection, or the host app is reading from the connection too slowly?
+
+If the host doesn't guarantee that, then even with this patch there is stil=
+l
+a chance Linux can time out, and close the channel before the host
+finishes receiving all the data.
+
+I'm curious how Windows guest implements the "async close"?
+Does Windows guest also use the same timeout strategy here? If yes,
+what's the timeout value used?
+
+> diff --git a/net/vmw_vsock/hyperv_transport.c
+> b/net/vmw_vsock/hyperv_transport.c
+> index a827547..62b986d 100644
+
+Sorry, I need more time to review the rest of patch. Will try to reply ASAP=
+.
+
+> -static int hvs_update_recv_data(struct hvsock *hvs)
+> +static int hvs_update_recv_data(struct vsock_sock *vsk)
+>  {
+>       struct hvs_recv_buf *recv_buf;
+>       u32 payload_len;
+> +     struct hvsock *hvs =3D vsk->trans;
+>
+>       recv_buf =3D (struct hvs_recv_buf *)(hvs->recv_desc + 1);
+>       payload_len =3D recv_buf->hdr.data_size;
+> @@ -543,8 +591,12 @@ static int hvs_update_recv_data(struct hvsock *hvs)
+>       if (payload_len > HVS_MTU_SIZE)
+>               return -EIO;
+>
+> -     if (payload_len =3D=3D 0)
+> +     /* Peer shutdown */
+> +     if (payload_len =3D=3D 0) {
+> +             struct sock *sk =3D sk_vsock(vsk);
+>               hvs->vsk->peer_shutdown |=3D SEND_SHUTDOWN;
+> +             sk->sk_state_change(sk);
+> +     }
+
+Can you please explain why we need to call this sk->sk_state_change()?
+
+When we call hvs_update_recv_data(), we hold the lock_sock(sk) lock, and we
+know there is at least one byte to read. Since we hold the lock, the other
+code paths, which normally are also requried to acquire the lock before
+checking vsk->peer_shutdown, can not race with us.
+
+Thanks,
+-- Dexuan
