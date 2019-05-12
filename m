@@ -2,90 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E9111AA2C
-	for <lists+netdev@lfdr.de>; Sun, 12 May 2019 05:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2141AACD
+	for <lists+netdev@lfdr.de>; Sun, 12 May 2019 07:53:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726369AbfELDul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 May 2019 23:50:41 -0400
-Received: from mail-it1-f194.google.com ([209.85.166.194]:54393 "EHLO
-        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726124AbfELDuk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 May 2019 23:50:40 -0400
-Received: by mail-it1-f194.google.com with SMTP id a190so15384028ite.4;
-        Sat, 11 May 2019 20:50:40 -0700 (PDT)
+        id S1726031AbfELFxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 May 2019 01:53:02 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:50237 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725913AbfELFxC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 May 2019 01:53:02 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f204so5356432wme.0;
+        Sat, 11 May 2019 22:53:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KOEOI6gIRHaf5FORd84rjIs4AdvD824fbBk5i+JcVC4=;
-        b=sp/d354XUziiUlWOFirNHHht+x2j4uJyHrHkiJTJu8duyD4CJ4hl+tBgzolY4WdYUF
-         FcN3Y3QiUHGNEO92Q2ivtn0quwPpEBkMtSvjeYlWzGZnnv1N9AvTQcZKg6SknS01X4dx
-         Zv3BH6yW12uflvYmJhS7YkA/tv0uMq3yb1pu06m7RnYq0KER7eRia2dQQw8QzUr/j22t
-         ugsphAV7bCJQm2Qb32Sth8zgpPI6hvBYiNBCPzppTlN3tIP65VdGvjt+cw59ndSZ5yrT
-         2SE2CnteyZD5tU32mLVZjH52PJU2xcSk6fhVtGDRAap3w1FmeqwVH+NY6TtgfcPIVaFG
-         JZDA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/yoEWXCHXPaRx0PqNfws8qCTvbAQ70w4QTJcFwL7+sA=;
+        b=EmI5kLAjJ25FE5inIjdlys1i0lzCFjvfD6AeUrllMnzKXKC9TuRTU3+2zpWiHorAGV
+         /OEFTjoIypMAdY0U+8DKtXwNhrMF1SV2nkFu8DJr89n3i7/sTUrmd5Ii2HeoWWnf4Z0/
+         b3iiqgTzw3De0F+ZzdRQzOVyX7Xx7OQtn6RLR5qaZ2Q/4cVdJrXYNksQhuvBw1WV8dRK
+         gKBtHwrlxAkPLr4knHTZKjW5CZ/0kfCevM2IxYQOk9IggPrbg3xkpmTdZ3YOXNxoITmq
+         LayjVDpv57db9UIRucfEutAIzZQ+SJfSjsig2o8nXsqHDnvJUp1e3OnO1dLzapZevY8T
+         bdRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KOEOI6gIRHaf5FORd84rjIs4AdvD824fbBk5i+JcVC4=;
-        b=JzEhZ/alnmzg9UV/EcWIwAayH2pNc4tJ5yqELWnTaya0HwE1YKn6Jq7wZkV+1CN5UN
-         9aBGEv51gVyFN/Lpa5QPmt8HEdpfCXBSQ5cOCfM+EH/axw3khhgBOpN+05urJ+GQImi8
-         4wGFLkIUmm+IshglGkKMVkrEOT0KSQ6oh+CN6ApMU3bNCc+6jiVQgOF1kuxEyAxAor91
-         vwlJL0cDEmFh2rXFjqrBSytuwVqBUMPxxj+uEoW5c/nLejGvhXd1TKPWgiPzmxJA4yrr
-         f1m51g65SuYLmUCovdYho20Fu+0hAFKMp/6TjcPWkTl4A+XdJU2bXL9EOt58W8TefWI+
-         646w==
-X-Gm-Message-State: APjAAAV2ykV4fJ8p925Z9nBaXrlTCa6cmRIfYEYNn50J6PDNVp0y0ehx
-        jxA7icrA/xK48lxiKq1EHuY=
-X-Google-Smtp-Source: APXvYqxtTdajmXEk7zEWki12uocFR3Eg8/Dsh5oU+jKO+JRTGnIwUcHTfehdKW27tlPY6Wv0Xkf4mw==
-X-Received: by 2002:a24:3f85:: with SMTP id d127mr13281932ita.38.1557633039846;
-        Sat, 11 May 2019 20:50:39 -0700 (PDT)
-Received: from localhost.localdomain (c-73-243-191-173.hsd1.co.comcast.net. [73.243.191.173])
-        by smtp.gmail.com with ESMTPSA id k76sm4248746ita.6.2019.05.11.20.50.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 11 May 2019 20:50:38 -0700 (PDT)
-From:   Kelsey Skunberg <skunberg.kelsey@gmail.com>
-To:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     skhan@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Kelsey Skunberg <skunberg.kelsey@gmail.com>
-Subject: [PATCH] selftests: bpf: Add files generated when compiled to .gitignore
-Date:   Sat, 11 May 2019 21:50:09 -0600
-Message-Id: <20190512035009.25451-1-skunberg.kelsey@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/yoEWXCHXPaRx0PqNfws8qCTvbAQ70w4QTJcFwL7+sA=;
+        b=HgdM7v5iS39WyYRNgVOGA/8Hobnf6sPASzgnb16R4E2wkfhDsdXS3c6XeGa8+G/1hB
+         h3EDbC5cyTv+/Gx62gccXGLKlY9KE7GgVl3z+ZXUhTfKkTgagJXWZrMoipcGc9bL8Bwd
+         t9ELh6Z+rgApEuJrmNBE7TxAu/5hVUR7aIbX3NBAZR37RdiucbQeDaAxHjXjTUtVqUxt
+         DLmgMa4hgb/bTqEnquK8gUREO/2I/AFko0K0xo13eN6Vyd9R/pRIrvT69YCjKSRlGo1L
+         INdPL+Ah/JOiPVXz5ryYQF+mex1st69sjNKDZGaPmcvgZfdmzbVzJiCKcdd9zNnrajqe
+         Bvuw==
+X-Gm-Message-State: APjAAAWaJsX1b/3Fh5H4dYd8EN48QzMf2484KyBgFcFijTQF/E82a5TJ
+        BGZuT4Ta6Mtia001PYxOyUG2I4gSSuLO4A09Ojs=
+X-Google-Smtp-Source: APXvYqzbTZ9sZtZCtUDS6JA1fkhVULqexYGVmeAY8jqnnCoAjiVuVPdlRr8QzeMHIphCazeRwZpdBZfUbmhphZb5ME8=
+X-Received: by 2002:a7b:c652:: with SMTP id q18mr2911492wmk.57.1557640380368;
+ Sat, 11 May 2019 22:53:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <fa41cfdb9f8919d1420d12d270d97e3b17a0fb18.1557383280.git.lucien.xin@gmail.com>
+ <20190509113235.GA12387@hmswarspite.think-freely.org> <20190509.093913.1261211226773919507.davem@davemloft.net>
+ <20190510112718.GA4902@hmswarspite.think-freely.org>
+In-Reply-To: <20190510112718.GA4902@hmswarspite.think-freely.org>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Sun, 12 May 2019 13:52:48 +0800
+Message-ID: <CADvbK_f3cmHB+gcY-h6df06kMbB8eB4oiXdL7A8BvxNqVF2aJw@mail.gmail.com>
+Subject: Re: [PATCH net-next] sctp: remove unused cmd SCTP_CMD_GEN_INIT_ACK
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     David Miller <davem@davemloft.net>,
+        network dev <netdev@vger.kernel.org>,
+        linux-sctp@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following files are generated when /selftests/bpf/ is compiled and
-should be added to .gitignore:
+On Fri, May 10, 2019 at 7:27 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+>
+> On Thu, May 09, 2019 at 09:39:13AM -0700, David Miller wrote:
+> > From: Neil Horman <nhorman@tuxdriver.com>
+> > Date: Thu, 9 May 2019 07:32:35 -0400
+> >
+> > > This is definately a valid cleanup, but I wonder if it wouldn't be better to,
+> > > instead of removing it, to use it.  We have 2 locations where we actually call
+> > > sctp_make_init_ack, and then have to check the return code and abort the
+> > > operation if we get a NULL return.  Would it be a better solution (in the sense
+> > > of keeping our control flow in line with how the rest of the state machine is
+> > > supposed to work), if we didn't just add a SCTP_CMD_GEN_INIT_ACK sideeffect to
+> > > the state machine queue in the locations where we otherwise would call
+> > > sctp_make_init_ack/sctp_add_cmd_sf(...SCTP_CMD_REPLY)?
+I think they didn't do that, as the new INIT_ACK needs to add unk_param from
+the err_chunk which is allocated and freed in those two places
+sctp_sf_do_5_1B_init()/sctp_sf_do_unexpected_init().
 
-	- libbpf.pc
-	- libbpf.so.0
-	- libbpf.so.0.0.3
+It looks not good to pass that err_chunk as a param to the state machine.
 
-Signed-off-by: Kelsey Skunberg <skunberg.kelsey@gmail.com>
----
- tools/testing/selftests/bpf/.gitignore | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index 41e8a689aa77..ceb11f98fe4f 100644
---- a/tools/testing/selftests/bpf/.gitignore
-+++ b/tools/testing/selftests/bpf/.gitignore
-@@ -32,3 +32,6 @@ test_tcpnotify_user
- test_libbpf
- test_tcp_check_syncookie_user
- alu32
-+libbpf.pc
-+libbpf.so.0
-+libbpf.so.0.0.3
---
-2.20.1
-
+> >
+> > Also, net-next is closed 8-)
+> >
+> Details, details :)
+>
+So everytime before posting a patch on net-next,
+I should check http://vger.kernel.org/~davem/net-next.html first, right?
