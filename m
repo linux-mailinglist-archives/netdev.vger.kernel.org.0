@@ -2,96 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA0651ABD4
-	for <lists+netdev@lfdr.de>; Sun, 12 May 2019 12:40:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4711ABFE
+	for <lists+netdev@lfdr.de>; Sun, 12 May 2019 14:19:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726547AbfELKj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 May 2019 06:39:56 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39178 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726287AbfELKjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 May 2019 06:39:55 -0400
-Received: by mail-pg1-f195.google.com with SMTP id w22so5232848pgi.6;
-        Sun, 12 May 2019 03:39:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=J+6QUVyYBF5lWD9wtMqwXAgFCRK24LyY/PhNjYfKEtg=;
-        b=oNBJcmCxy2e7dI8WCDab4i09uYG7p6SRkZ3IbdviGVG4PmcIUMF4hP48LYGm+vG0+L
-         DV/cH8CZdK3rFmptb/7FsjEKC6VQ3FMclm5ENAKfE3LlPWQyEmluNtoNuhIqT2qJO2nk
-         jp32R21t0zfsN/PtpXhLY7JgcuzQytiBpfcBcTfLkrC8qpCheN341cgwbu/t+skQXU1K
-         H2IFmSKf0/mFtcij3G2zjR9I3ikMFYia2tRpIJRCsBapMq/AC2ptNBlppkFuYoc+poBm
-         2tvhvhHxoO56FIrfOaPXjavFRclVpeUijutiNGZwAxaERmNUbmXLcnkEaNR+f96T+AVL
-         lTwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=J+6QUVyYBF5lWD9wtMqwXAgFCRK24LyY/PhNjYfKEtg=;
-        b=rpiw5spPeNhTOFTHBsR9fTLe5IP4gk7KP+rklIaL7IlA3HDpHZvFuDjPaoutj5VXcy
-         2Z6IXodXSk9xZ+/Ouc0gFkLuuDvciGEekCRWbd1hw0oow+akhBQ+FyOWNcu9blV7vSHT
-         TXwB5PLzmouq7OmErGo+SX1trlOPmYgej7XffqJh9RB9Vegi1E465iMIuxl//Tb31Pt6
-         PEgTTgBlkqxGX8uXfiFnBPo+xr15HGtzoDa9r5fDikdtJNhMYkiV22kD/Xjk+e3FNboH
-         hjApRHPwa17dXVL5mqcY2T8/tH29ut76hxVHw394ifBq8LLh0fAN7m2J8jtKXK0B81ua
-         lprQ==
-X-Gm-Message-State: APjAAAWXx6OkahJfS/X/MN8vmZwX+OISHENXx3qonc82JHpY54LxPaG0
-        wIDazqA4BQnV6CbgLTMVHAkCqrOI
-X-Google-Smtp-Source: APXvYqwyHLvo5k0jx3qm/DuyeUygkLREdCFDAJbCQBBUOP+j3Ri2dRtUnGwVwlecsvSdPhp9R/DLDw==
-X-Received: by 2002:a62:704a:: with SMTP id l71mr27005311pfc.32.1557657595183;
-        Sun, 12 May 2019 03:39:55 -0700 (PDT)
-Received: from hari-Inspiron-1545 ([183.83.92.73])
-        by smtp.gmail.com with ESMTPSA id n18sm30463079pfi.48.2019.05.12.03.39.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 12 May 2019 03:39:54 -0700 (PDT)
-Date:   Sun, 12 May 2019 16:09:49 +0530
-From:   Hariprasad Kelam <hariprasad.kelam@gmail.com>
-To:     Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        "David S. Miller" <davem@davemloft.net>, dccp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: dccp : proto: remove Unneeded variable "err"
-Message-ID: <20190512103949.GA2554@hari-Inspiron-1545>
+        id S1726667AbfELMTR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 12 May 2019 08:19:17 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:41817 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726536AbfELMTQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 May 2019 08:19:16 -0400
+Received: from localhost (unknown [109.190.253.16])
+        (Authenticated sender: maxime.ripard@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 50D68200003;
+        Sun, 12 May 2019 12:19:11 +0000 (UTC)
+Date:   Sun, 12 May 2019 14:19:10 +0200
+From:   Maxime Ripard <maxime.ripard@bootlin.com>
+To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+Cc:     Andy Duan <fugang.duan@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "john@phrozen.org" <john@phrozen.org>,
+        "bgolaszewski@baylibre.com" <bgolaszewski@baylibre.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alban Bedel <albeu@free.fr>, devicetree@vger.kernel.org
+Subject: Re: NVMEM address DT post processing [Was: Re: [PATCH net 0/3] add
+ property "nvmem_macaddr_swap" to swap macaddr bytes order]
+Message-ID: <20190512121910.432t2vncvmpu26qg@flea>
+References: <1557476567-17397-4-git-send-email-fugang.duan@nxp.com>
+ <1557476567-17397-3-git-send-email-fugang.duan@nxp.com>
+ <1557476567-17397-2-git-send-email-fugang.duan@nxp.com>
+ <1557476567-17397-1-git-send-email-fugang.duan@nxp.com>
+ <20190510112822.GT81826@meh.true.cz>
+ <20190510113155.mvpuhe4yzxdaanei@flea>
+ <20190511144444.GU81826@meh.true.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20190511144444.GU81826@meh.true.cz>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix below issue reported by coccicheck
+On Sat, May 11, 2019 at 04:44:44PM +0200, Petr Štetiar wrote:
+> So something like this?
+>
+> diff --git a/Documentation/devicetree/bindings/nvmem/nvmem.txt b/Documentation/devicetree/bindings/nvmem/nvmem.txt
+> index fd06c09b822b..d781e47b049d 100644
+> --- a/Documentation/devicetree/bindings/nvmem/nvmem.txt
+> +++ b/Documentation/devicetree/bindings/nvmem/nvmem.txt
+> @@ -1,12 +1,14 @@
+>  = NVMEM(Non Volatile Memory) Data Device Tree Bindings =
+>
+>  This binding is intended to represent the location of hardware
+> -configuration data stored in NVMEMs like eeprom, efuses and so on.
+> +configuration data stored in NVMEMs like eeprom, efuses and so on. This
+> +binding provides some basic transformation of the stored data as well.
+>
+>  On a significant proportion of boards, the manufacturer has stored
+>  some data on NVMEM, for the OS to be able to retrieve these information
+>  and act upon it. Obviously, the OS has to know about where to retrieve
+> -these data from, and where they are stored on the storage device.
+> +these data from, where they are stored on the storage device and how to
+> +postprocess them.
+>
+>  This document is here to document this.
+>
+> @@ -29,6 +31,19 @@ Optional properties:
+>  bits:  Is pair of bit location and number of bits, which specifies offset
+>         in bit and number of bits within the address range specified by reg property.
+>         Offset takes values from 0-7.
+> +byte-indices: array, encoded as an arbitrary number of (offset, length) pairs,
+> +            within the address range specified by reg property. Each pair is
+> +            then processed with byte-transform in order to produce single u8
+> +            sized byte.
+> +byte-transform: string, specifies the transformation which should be applied
+> +              to every byte-indices pair in order to produce usable u8 sized byte,
+> +              possible values are "none", "ascii" and "bcd". Default is "none".
+> +byte-adjust: number, value by which should be adjusted resulting output byte at
+> +           byte-adjust-at offset.
+> +byte-adjust-at: number, specifies offset of resulting output byte which should be
+> +              adjusted by byte-adjust value, default is 0.
+> +byte-result-swap: boolean, specifies if the resulting output bytes should be
+> +                swapped prior to return
+>
+>  For example:
+>
+> @@ -59,6 +74,36 @@ For example:
+>                 ...
+>         };
+>
+> +Another example where we've MAC address for eth1 stored in the NOR EEPROM as
+> +following sequence of bytes (output of hexdump -C /dev/mtdX):
+> +
+> + 00000180  66 61 63 5f 6d 61 63 20  3d 20 44 34 3a 45 45 3a  |fac_mac = D4:EE:|
+> + 00000190  30 37 3a 33 33 3a 36 43  3a 32 30 0a 42 44 49 4e  |07:33:6C:20.BDIN|
+> +
+> +Which means, that MAC address is stored in EEPROM as D4:EE:07:33:6C:20, so
+> +ASCII delimited by colons, but we can't use this MAC address directly as
+> +there's only one MAC address stored in the EEPROM and we need to increment last
+> +octet/byte in this address in order to get usable MAC address for eth1 device.
+> +
+> + eth1_addr: eth-mac-addr@18a {
+> +     reg = <0x18a 0x11>;
+> +     byte-indices = < 0 2
+> +                      3 2
+> +                      6 2
+> +                      9 2
+> +                     12 2
+> +                     15 2>;
+> +     byte-transform = "ascii";
+> +     byte-increment = <1>;
+> +     byte-increment-at = <5>;
+> +     byte-result-swap;
+> + };
+> +
+> + &eth1 {
+> +     nvmem-cells = <&eth1_addr>;
+> +     nvmem-cell-names = "mac-address";
+> + };
+> +
 
+Something along those lines yes. I'm not sure why in your example the
+cell doesn't start at the mac address itself, instead of starting at
+the key + having to specify an offset though. The reg property is the
+offset already.
 
-net/dccp/proto.c:266:5-8: Unneeded variable: "err". Return "0" on line
-310
+Maxime
 
-Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
----
- net/dccp/proto.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-index 0e2f71a..5dd85ec 100644
---- a/net/dccp/proto.c
-+++ b/net/dccp/proto.c
-@@ -263,7 +263,6 @@ int dccp_disconnect(struct sock *sk, int flags)
- 	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct inet_sock *inet = inet_sk(sk);
- 	struct dccp_sock *dp = dccp_sk(sk);
--	int err = 0;
- 	const int old_state = sk->sk_state;
- 
- 	if (old_state != DCCP_CLOSED)
-@@ -307,7 +306,7 @@ int dccp_disconnect(struct sock *sk, int flags)
- 	WARN_ON(inet->inet_num && !icsk->icsk_bind_hash);
- 
- 	sk->sk_error_report(sk);
--	return err;
-+	return 0;
- }
- 
- EXPORT_SYMBOL_GPL(dccp_disconnect);
--- 
-2.7.4
-
+--
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
