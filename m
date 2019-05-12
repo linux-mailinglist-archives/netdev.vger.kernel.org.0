@@ -2,101 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 626CA1AB06
-	for <lists+netdev@lfdr.de>; Sun, 12 May 2019 09:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 359071AB07
+	for <lists+netdev@lfdr.de>; Sun, 12 May 2019 09:34:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbfELHed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 May 2019 03:34:33 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:42422 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726128AbfELHed (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 May 2019 03:34:33 -0400
-Received: by mail-wr1-f67.google.com with SMTP id l2so11811017wrb.9
-        for <netdev@vger.kernel.org>; Sun, 12 May 2019 00:34:32 -0700 (PDT)
+        id S1726441AbfELHec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 May 2019 03:34:32 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:33257 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725934AbfELHec (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 May 2019 03:34:32 -0400
+Received: by mail-io1-f67.google.com with SMTP id z4so7708815iol.0;
+        Sun, 12 May 2019 00:34:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=d7sSxRVqA8rpoJpHM55bvCBo8kEXHBET8gLdu4SoA2o=;
-        b=QgJMbrd2QkXXFi6N3hEyZyuXUHHYMe41Y49a15hCZSV94FIqr9/G+VOpNB9f3Q6cVZ
-         MdpEqNR2KiE2iMRCykBgTZv7ZOZJ5wNzEeg9OrkrPF9d/FLEKzOqK5U7CRh6gYLsuoZh
-         3THz2AC3danPZNVWlJ8POM+h+PoUPpt1Xs2TC5abRycG9OdcP0UWrbYOXh65NlbgkZiP
-         n0dyM94HDz573/Y+iUQRRoil1pSqGJn1U1vVd9dPmlzK9+fZUyYyGVFzu/Kf12am5lfx
-         PQv3o/5KlitAzg1IVeAmsQxpd074wWcSHcO4iHIWc0q4mvc4KugBWH7sbrKBI4zt72YV
-         JDkw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=yjV02L2Lg3a4KlZGcmCrXQyj1lmIeRP5Nl2cbSpRQtQ=;
+        b=ec7zXk/3kB5xKZFXO7ghYMObJD2vDhiie5L6wEyXGc5DPQ7HrdDFgNO7dAczlOhZgp
+         RknzyV0qdWHtXChfP7UxdEYrOhFaDnw38F2lsg2nU9Bt5ijzEUOK0q8EDlnLLKW+A9iQ
+         JTF7fd5p33kEff5F1C6JkcifgRglY2GXHuBSkOwBLHe6Px6od3/hd4aeZfbMeK8pk/Lz
+         a2kTXrHCC5ht0s5qKYsQ4i4KcaddBWvngjb40oiQ2tZSJT2P/FlPVxivfBk7o79VZVn5
+         QWsCfiDbKSJcnoN9r3ifkzA8CndClrNCF4L8y26/+HVue72bJJMyV51y3mTTGkj4n90w
+         nEZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=d7sSxRVqA8rpoJpHM55bvCBo8kEXHBET8gLdu4SoA2o=;
-        b=uPoTMXGHtgQSFwXbSMdIIhbl7an51CVWkn3Hd0WuLxkM6dn2obuOO8ZeqRo5NfhieI
-         zT0T+d8EsMv0fko/coEBCpVDtgptoT7P5LX1bDUMsiwfEPxJaz5ngBednLkPZRNevWWU
-         gPn1LBZFbrS0v8zn90EqwN9av9p8R3mp4w0y43WzKoA2zSH8mEJrejy7fbZSr4GYT8YA
-         jhlCDP5E6O1A7S8nqSv+76fWrID1lZYnLRUcO5nLJP8oPxnvmMWzckOSfrxaViMqu+Cq
-         KfpFduqDFd0Io+Utc47XsNfLn5J7fUCfjrVZIkMF0KeWh+ua27zD+idgQT5nplfcfZw8
-         WNCg==
-X-Gm-Message-State: APjAAAXQ/mk7v1OwAP/r7f3drmX6FGcayX/l25BpTi3b0/VEtcd6yoGN
-        huR1qLellCrltnvMCxZEDwk=
-X-Google-Smtp-Source: APXvYqx7W6og2OfRFEDNmOqXuHdkhnH6O12kcwF1h84yKRQb0j70jL8MyXwHOEgnpYH/QRHPgwdWYw==
-X-Received: by 2002:a05:6000:10c4:: with SMTP id b4mr701248wrx.145.1557646471390;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=yjV02L2Lg3a4KlZGcmCrXQyj1lmIeRP5Nl2cbSpRQtQ=;
+        b=T2stuB9JhmsLD79sLA+OgiEVi6Werq8b9IA9AULRFBWrifIVViYdmpa+DxwU5BV8bw
+         rcbYrPQhLoabBRovFroawe0TTwniASUm6mu9+mMY2rTDwv/HMAw4ZdmXfK9PoOvIkd0a
+         LbyovrH+68BHdMc/6m6vM1PP/GQam28DHkQQf1NkfTuGOpjFN1q1SSTOANJz8j/HRHDX
+         2y2YizyiTBq1QYgP76MGK1qqhWgOZyGNNk+st2ntmn9g0MOznn4tdc+V43nLqtwWhcsl
+         eIja0930/Pn0tqTXt8ggNRPTkZxKWaJR/MuOUswM/wtkLJFMuKSth1Pe2VgUuVProXvF
+         oqRQ==
+X-Gm-Message-State: APjAAAUoeW7oq7+EIIJDFJu9e8t6i6X9Nra3sm9E2VVam57AmguzZwRx
+        I7skOsp4UPpvte6zXdqDdfc=
+X-Google-Smtp-Source: APXvYqyPZFH7bWLi/IU+f0IdofbSTKGIKNbMTby9HJW92Dh1CNAI3XYselYUqh8yG0gtiOVWp6+xmA==
+X-Received: by 2002:a5e:9518:: with SMTP id r24mr12103223ioj.218.1557646471624;
         Sun, 12 May 2019 00:34:31 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd4:5700:9c27:51d8:9ed5:dad3? (p200300EA8BD457009C2751D89ED5DAD3.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:9c27:51d8:9ed5:dad3])
-        by smtp.googlemail.com with ESMTPSA id r3sm7124972wrn.5.2019.05.12.00.34.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+Received: from asus (c-73-243-191-173.hsd1.co.comcast.net. [73.243.191.173])
+        by smtp.gmail.com with ESMTPSA id y62sm4833926ita.15.2019.05.12.00.34.30
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
         Sun, 12 May 2019 00:34:30 -0700 (PDT)
-Subject: Re: [Regression] "net: phy: realtek: Add rtl8211e rx/tx delays
- config" breaks rk3328-roc-cc networking
-To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Serge Semin <Sergey.Semin@t-platforms.ru>,
-        netdev@vger.kernel.org,
-        "linux-rockchip@lists.infradead.org" 
-        <linux-rockchip@lists.infradead.org>
-References: <066a0d38-2c64-7a1e-d176-04341f0cb6d7@gmail.com>
- <20190512023754.GK4889@lunn.ch>
- <ae62419b-53f1-395d-eb0e-66d138d294a8@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <4c6ef3f1-a2c7-f2da-3f2a-cd28624007f8@gmail.com>
-Date:   Sun, 12 May 2019 09:34:24 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+Date:   Sun, 12 May 2019 01:34:29 -0600
+From:   Kelsey Skunberg <skunberg.kelsey@gmail.com>
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        skhan@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH] selftests: bpf: Add files generated when compiled to
+ .gitignore
+Message-ID: <20190512073427.GA10811@asus>
+References: <20190512035009.25451-1-skunberg.kelsey@gmail.com>
+ <20190512062907.GL1247@mini-arch>
 MIME-Version: 1.0
-In-Reply-To: <ae62419b-53f1-395d-eb0e-66d138d294a8@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190512062907.GL1247@mini-arch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.05.2019 04:50, Peter Geis wrote:
-> On 5/11/2019 10:37 PM, Andrew Lunn wrote:
->> On Sat, May 11, 2019 at 07:17:08PM -0400, Peter Geis wrote:
->>> Good Evening,
->>>
->>> Commit f81dadbcf7fd067baf184b63c179fc392bdb226e "net: phy: realtek: Add
->>> rtl8211e rx/tx delays config" breaks networking completely on the
->>> rk3328-roc-cc.
->>> Reverting the offending commit solves the problem.
->>
->> Hi Peter
->>
->> The fix should be in net, and will soon make its way upwards.
->>
->>      Andrew
->>
+On Sat, May 11, 2019 at 11:29:07PM -0700, Stanislav Fomichev wrote:
+> On 05/11, Kelsey Skunberg wrote:
+> > The following files are generated when /selftests/bpf/ is compiled and
+> > should be added to .gitignore:
+> > 
+> > 	- libbpf.pc
+> > 	- libbpf.so.0
+> > 	- libbpf.so.0.0.3
+> > 
+> > Signed-off-by: Kelsey Skunberg <skunberg.kelsey@gmail.com>
+> > ---
+> >  tools/testing/selftests/bpf/.gitignore | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
+> > index 41e8a689aa77..ceb11f98fe4f 100644
+> > --- a/tools/testing/selftests/bpf/.gitignore
+> > +++ b/tools/testing/selftests/bpf/.gitignore
+> > @@ -32,3 +32,6 @@ test_tcpnotify_user
+> >  test_libbpf
+> >  test_tcp_check_syncookie_user
+> >  alu32
+> > +libbpf.pc
 > 
-> 
-> Good Evening,
-> 
-> Thanks, is there a link to the patch so I may test it?
-> 
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=daf3ddbe11a2ff74c95bc814df8e5fe3201b4cb5
+> [..]
+> > +libbpf.so.0
+> > +libbpf.so.0.0.3
+> How about libbpf.so.* so we don't have to update it on every release?
+>
 
-> Peter
-> 
-Heiner
+That seems logical. Updated in v2. I appreciate the feedback!
+
+Cheers,
+Kelsey
+
+> > --
+> > 2.20.1
+> > 
