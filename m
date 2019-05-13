@@ -2,89 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09E171B804
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 16:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 177A91B911
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 16:50:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730189AbfEMOUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 10:20:08 -0400
-Received: from mail-it1-f195.google.com ([209.85.166.195]:40452 "EHLO
-        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730152AbfEMOUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 10:20:07 -0400
-Received: by mail-it1-f195.google.com with SMTP id g71so20532540ita.5;
-        Mon, 13 May 2019 07:20:07 -0700 (PDT)
+        id S1730701AbfEMOuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 10:50:55 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:40503 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727870AbfEMOuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 10:50:55 -0400
+Received: by mail-wr1-f67.google.com with SMTP id h4so15640026wre.7
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 07:50:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=sXjcZAGx/RpTcazRtKGemnEzej0TeSnJcmicvFWVu4Q=;
-        b=S73SiI9lAA7RrOb3X/PjH9wnihNO9U1lablWceDVIXOquRMQsGC1bO7y8yg7/PzZ/r
-         VdmsdHlo4fE3IJ2trn63+Lwr6jWGNOR3iEOfetmEEpbaIkPlsFgz4Goj7sCCSNNmR0BD
-         Zk7RMbm/gO1I2WWJM/vWiJP2uDPg9cbFbf9tBa/T/NvMY0xd0PgSVdBSlmrycaYJeapN
-         kHJ41G3pimy0w2hieukhkFp53k+fA4Zh9kxUH8D5rshuGyS6WNembrnK0N1FGDcF8HSM
-         HrGFK0HRayDMCZVvEa2hM0j3Ct9pRzLRhMBZBkQq/RXQvR7VNQc3aKqexDQb4wJA7f+T
-         ppNA==
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LRsiwlVwOPSBAWjnCxisvwPttK23yh/T0P20h9T04IQ=;
+        b=jRLmtHJws94T0h3afLklbh/N4XJMd8wn9xnbTHcHKrv2EUkJf1bnYfMVJsYG6HyT7S
+         GrkMe9F2id6BIIZTqdS+HZ2n8AClQcC23rgVwcFUsWVB7mLq7ZGYEtMTsta/XWIBNa06
+         5ZaaOlIRnZMc7cXD3QwLa1jLhcp6Ms+A3U/oE+9kUTy80vYbq0f8qKBbNfoi+gB91qQ4
+         peaHZxyYkXq/7ICMGmOg87CGdtugaCI2UmngMrijk/eyIJRKWnPM2YmM3rEDKBOLYguC
+         g5X/3bMPsw4Rjf8CQEMlXckw9LdydYET7ZJDUIT8fJEGiuCDAgj4hNhfrHbl4PIjvP6G
+         WdTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=sXjcZAGx/RpTcazRtKGemnEzej0TeSnJcmicvFWVu4Q=;
-        b=lS+k7Io+MFsoy5FINEqYCKbg7cFVKY8vUlgKI5gDo+Gj0gF9tZE8voKriKDjPNy8Oy
-         jOAd0f/dEsng9Q8TMlJsgB+W9rOAKwmHfcRrPADyAZs43h3rwMzQwBJ6hi6nzl7G6rxo
-         SQMvZdEaLLlIbAVdQQP/xBYg8zZAxfMOq0qjbb07cT/VJ+i2YfWA6zpetScPY6x+dSU8
-         kYx5YfHl/yd88NCLPdS5hBJreol0T/MfGvr3FzTF1wckdDL5WgLHfthc/gzjvijvQQpR
-         WXXJ/MIA26pYinwYkGhGcyCPRg/+WHQtuvHFeElS0dhlSAZ0VUy2hUZC4NVBByrnPBx2
-         aLMA==
-X-Gm-Message-State: APjAAAU5FxN8QcgynWRQw8BLSGjlBgueFCoaiHrVR/PPs6pC5dc4rqcm
-        G/msKvW6ftoi4n88LMcjTQA=
-X-Google-Smtp-Source: APXvYqycSis09rSUOTEEsQy62HmByDrbwJtKdc9PC0Bz+xtKFq2/h+ZwJS7IAOCGlCfyesocY4bJUQ==
-X-Received: by 2002:a05:660c:552:: with SMTP id w18mr697748itk.26.1557757206905;
-        Mon, 13 May 2019 07:20:06 -0700 (PDT)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id i141sm6272314ite.20.2019.05.13.07.20.00
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=LRsiwlVwOPSBAWjnCxisvwPttK23yh/T0P20h9T04IQ=;
+        b=srEE8qqerejfrrX9yM9JcLAXpxPmgOgzauMtEGLhBoXIEarCBE3rImJ7ZlzhGiKuJJ
+         5ycgvO8HiBuD3ZYC5bb/+oDwNMzweUEbLAakda0hml4/7RLdpPFRHINuwkw3m9CWO5IP
+         vmTIw3qrLuOhDpEP3Gt6a9wm6dTBQa/SJ7TGXX3pQs6ycZwmjTW8NRA3CbsbKVMKejRh
+         r83CeRtpZwo1R3XSCD/SCPJPuOPAg435j5Go36FsyDW+iAJd8926pXDq4c2ojWhVY+to
+         6b/2u2GD3Cq2m4ryuMYSc6xdrsUx9lNpIhNazc1TySkSn7uBmlgy/eGLCkm6PiCurmre
+         fLUw==
+X-Gm-Message-State: APjAAAXMPfPj5RaMt+siEaq1ovGRNQ+OFVBoYJz8Opt6IGPvD6qBja+b
+        iGEBuiDjbcakMo3epYk13ZNgFw==
+X-Google-Smtp-Source: APXvYqzqCvVbKHO3PO+J8IKSIqPRFXpTwsMNTNQ8D1yTwCDdQQrWrVxm4r3dwKSTFOXSs9QyijSUEQ==
+X-Received: by 2002:adf:e845:: with SMTP id d5mr19574707wrn.154.1557759053283;
+        Mon, 13 May 2019 07:50:53 -0700 (PDT)
+Received: from ?IPv6:2a01:e35:8b63:dc30:d07d:5e75:4e14:205c? ([2a01:e35:8b63:dc30:d07d:5e75:4e14:205c])
+        by smtp.gmail.com with ESMTPSA id c20sm16856362wre.28.2019.05.13.07.50.52
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 13 May 2019 07:20:06 -0700 (PDT)
-Subject: [bpf PATCH 3/3] bpf: sockmap fix msg->sg.size account on ingress skb
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     jakub.kicinski@netronome.com, ast@kernel.org, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        john.fastabend@gmail.com
-Date:   Mon, 13 May 2019 07:19:55 -0700
-Message-ID: <155775719541.22311.9144799183119218586.stgit@john-XPS-13-9360>
-In-Reply-To: <155775710768.22311.15370233730402405518.stgit@john-XPS-13-9360>
-References: <155775710768.22311.15370233730402405518.stgit@john-XPS-13-9360>
-User-Agent: StGit/0.17.1-dirty
+        Mon, 13 May 2019 07:50:52 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net v2] rtnetlink: always put ILFA_LINK for links with a
+ link-netnsid
+To:     Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org
+Cc:     Dan Winship <danw@redhat.com>
+References: <d5c4710117d390e0f204b7046483727daf452233.1557755096.git.sd@queasysnail.net>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <b89367f0-18d5-61b2-2572-b1e5b4588d8d@6wind.com>
+Date:   Mon, 13 May 2019 16:50:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <d5c4710117d390e0f204b7046483727daf452233.1557755096.git.sd@queasysnail.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When converting a skb to msg->sg we forget to set the size after the
-latest ktls/tls code conversion. This patch can be reached by doing
-a redir into ingress path from BPF skb sock recv hook. Then trying to
-read the size fails.
+Le 13/05/2019 à 15:47, Sabrina Dubroca a écrit :
+> Currently, nla_put_iflink() doesn't put the IFLA_LINK attribute when
+> iflink == ifindex.
+> 
+> In some cases, a device can be created in a different netns with the
+> same ifindex as its parent. That device will not dump its IFLA_LINK
+> attribute, which can confuse some userspace software that expects it.
+> For example, if the last ifindex created in init_net and foo are both
+> 8, these commands will trigger the issue:
+> 
+>     ip link add parent type dummy                   # ifindex 9
+>     ip link add link parent netns foo type macvlan  # ifindex 9 in ns foo
+> 
+> So, in case a device puts the IFLA_LINK_NETNSID attribute in a dump,
+> always put the IFLA_LINK attribute as well.
+> 
+> Thanks to Dan Winship for analyzing the original OpenShift bug down to
+> the missing netlink attribute.
+> 
+> Analyzed-by: Dan Winship <danw@redhat.com>
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+I would say:
+Fixes: 5e6700b3bf98 ("sit: add support of x-netns")
 
-Fix this by setting the size.
+Because before this patch, there was no device with an iflink that can be put in
+another netns.
 
-Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- net/core/skmsg.c |    1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 49d1efa329d7..93bffaad2135 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -411,6 +411,7 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb)
- 	sk_mem_charge(sk, skb->len);
- 	copied = skb->len;
- 	msg->sg.start = 0;
-+	msg->sg.size = copied;
- 	msg->sg.end = num_sge == MAX_MSG_FRAGS ? 0 : num_sge;
- 	msg->skb = skb;
- 
-
+Regards,
+Nicolas
