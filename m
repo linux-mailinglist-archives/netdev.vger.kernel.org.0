@@ -2,129 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 519DE1B315
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 11:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79F8B1B357
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 11:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728678AbfEMJmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 05:42:10 -0400
-Received: from mail.us.es ([193.147.175.20]:50994 "EHLO mail.us.es"
+        id S1728125AbfEMJ4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 05:56:38 -0400
+Received: from mail.us.es ([193.147.175.20]:34078 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728633AbfEMJmJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 05:42:09 -0400
+        id S1727458AbfEMJ4i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 05:56:38 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 2EFBF3066A7
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 11:42:07 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id 375C14DE723
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 11:56:36 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 10EE4DA7A5
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 11:42:07 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 28427DA708
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 11:56:36 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 0BCC2DA7A3; Mon, 13 May 2019 11:42:07 +0200 (CEST)
+        id 123EADA717; Mon, 13 May 2019 11:56:36 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 46703DA7B8;
-        Mon, 13 May 2019 11:42:04 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id EC435DA702;
+        Mon, 13 May 2019 11:56:33 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 13 May 2019 11:42:01 +0200 (CEST)
+ Mon, 13 May 2019 11:56:33 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 0F6F64067441;
-        Mon, 13 May 2019 11:42:04 +0200 (CEST)
-Date:   Mon, 13 May 2019 11:42:03 +0200
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id BA1884265A31;
+        Mon, 13 May 2019 11:56:33 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     linmiaohe <linmiaohe@huawei.com>
-Cc:     kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dsahern@gmail.com, Mingfangsen <mingfangsen@huawei.com>
-Subject: Re: [PATCH v3] net: netfilter: Fix rpfilter dropping vrf packets by
- mistake
-Message-ID: <20190513094203.atnko3xbim5hzb7y@salvia>
-References: <212e4feb-39de-2627-9948-bbb117ff4d4e@huawei.com>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 00/13] Netfilter fixes for net
+Date:   Mon, 13 May 2019 11:56:17 +0200
+Message-Id: <20190513095630.32443-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <212e4feb-39de-2627-9948-bbb117ff4d4e@huawei.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 25, 2019 at 09:43:53PM +0800, linmiaohe wrote:
-> From: Miaohe Lin <linmiaohe@huawei.com>
-> 
-> When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
-> ipv4/ipv6 packets will be dropped because in device is
-> vrf but out device is an enslaved device. So failed with
-> the check of the rpfilter.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  net/ipv4/netfilter/ipt_rpfilter.c  |  1 +
->  net/ipv6/netfilter/ip6t_rpfilter.c | 10 +++++++++-
->  2 files changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv4/netfilter/ipt_rpfilter.c b/net/ipv4/netfilter/ipt_rpfilter.c
-> index 0b10d8812828..6e07cd0ecbec 100644
-> --- a/net/ipv4/netfilter/ipt_rpfilter.c
-> +++ b/net/ipv4/netfilter/ipt_rpfilter.c
-> @@ -81,6 +81,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
->  	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
->  	flow.flowi4_tos = RT_TOS(iph->tos);
->  	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
-> +	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
-> 
->  	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par), info->flags) ^ invert;
->  }
-> diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
-> index c3c6b09acdc4..a28c81322148 100644
-> --- a/net/ipv6/netfilter/ip6t_rpfilter.c
-> +++ b/net/ipv6/netfilter/ip6t_rpfilter.c
-> @@ -58,7 +58,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
->  	if (rpfilter_addr_linklocal(&iph->saddr)) {
->  		lookup_flags |= RT6_LOOKUP_F_IFACE;
->  		fl6.flowi6_oif = dev->ifindex;
-> -	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
-> +	} else if (((flags & XT_RPFILTER_LOOSE) == 0) ||
-> +		   (netif_is_l3_master(dev)) ||
-> +		   (netif_is_l3_slave(dev)))
->  		fl6.flowi6_oif = dev->ifindex;
-> 
->  	rt = (void *)ip6_route_lookup(net, &fl6, skb, lookup_flags);
-> @@ -73,6 +75,12 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
->  		goto out;
->  	}
-> 
-> +	if (netif_is_l3_master(dev)) {
-> +		dev = dev_get_by_index_rcu(dev_net(dev), IP6CB(skb)->iif);
-> +		if (!dev)
-> +			goto out;
-> +	}
+Hi David,
 
-Suggestion: Could you just call l3mdev_master_ifindex_rcu() when
-invoking rpfilter_lookup_reverse6() ?
+The following patchset contains Netfilter fixes for net:
 
-diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
-index c3c6b09acdc4..ce64ff5d6fb6 100644
---- a/net/ipv6/netfilter/ip6t_rpfilter.c
-+++ b/net/ipv6/netfilter/ip6t_rpfilter.c
-@@ -101,7 +101,8 @@ static bool rpfilter_mt(const struct sk_buff *skb,
-struct xt_action_param *par)
-        if (unlikely(saddrtype == IPV6_ADDR_ANY))
-                return true ^ invert; /* not routable: forward path will drop it */
- 
--       return rpfilter_lookup_reverse6(xt_net(par), skb, xt_in(par),
-+       return rpfilter_lookup_reverse6(xt_net(par), skb,
-+                                       l3mdev_master_ifindex_rcu(xt_in(par)),
-                                        info->flags) ^ invert;
- }
+1) Postpone chain policy update to drop after transaction is complete,
+   from Florian Westphal.
+
+2) Add entry to flowtable after confirmation to fix UDP flows with
+   packets going in one single direction.
+
+3) Reference count leak in dst object, from Taehee Yoo.
+
+4) Check for TTL field in flowtable datapath, from Taehee Yoo.
+
+5) Fix h323 conntrack helper due to incorrect boundary check,
+   from Jakub Jankowski.
+
+6) Fix incorrect rcu dereference when fetching basechain stats,
+   from Florian Westphal.
+
+7) Missing error check when adding new entries to flowtable,
+   from Taehee Yoo.
+
+8) Use version field in nfnetlink message to honor the nfgen_family
+   field, from Kristian Evensen.
+
+9) Remove incorrect configuration check for CONFIG_NF_CONNTRACK_IPV6,
+   from Subash Abhinov Kasiviswanathan.
+
+10) Prevent dying entries from being added to the flowtable,
+    from Taehee Yoo.
+
+11) Don't hit WARN_ON() with malformed blob in ebtables with
+    trailing data after last rule, reported by syzbot, patch
+    from Florian Westphal.
+
+12) Remove NFT_CT_TIMEOUT enumeration, never used in the kernel
+    code.
+
+13) Fix incorrect definition for NFT_LOGLEVEL_MAX, from Florian
+    Westphal.
+
+This batch comes with a conflict that can be fixed with this patch:
+
+diff --cc include/uapi/linux/netfilter/nf_tables.h
+index 7bdb234f3d8c,f0cf7b0f4f35..505393c6e959
+--- a/include/uapi/linux/netfilter/nf_tables.h
++++ b/include/uapi/linux/netfilter/nf_tables.h
+@@@ -966,6 -966,8 +966,7 @@@ enum nft_socket_keys 
+   * @NFT_CT_DST_IP: conntrack layer 3 protocol destination (IPv4 address)
+   * @NFT_CT_SRC_IP6: conntrack layer 3 protocol source (IPv6 address)
+   * @NFT_CT_DST_IP6: conntrack layer 3 protocol destination (IPv6 address)
+ - * @NFT_CT_TIMEOUT: connection tracking timeout policy assigned to conntrack
++  * @NFT_CT_ID: conntrack id
+   */
+  enum nft_ct_keys {
+  	NFT_CT_STATE,
+@@@ -991,6 -993,8 +992,7 @@@
+  	NFT_CT_DST_IP,
+  	NFT_CT_SRC_IP6,
+  	NFT_CT_DST_IP6,
+ -	NFT_CT_TIMEOUT,
++ 	NFT_CT_ID,
+  	__NFT_CT_MAX
+  };
+  #define NFT_CT_MAX		(__NFT_CT_MAX - 1)
+
+That replaces the unused NFT_CT_TIMEOUT definition by NFT_CT_ID. If you prefer,
+I can also solve this conflict here, just let me know.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks!
+
+----------------------------------------------------------------
+
+The following changes since commit 6c0afef5fb0c27758f4d52b2210c61b6bd8b4470:
+
+  ipv6/flowlabel: wait rcu grace period before put_pid() (2019-04-29 23:30:13 -0400)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 92285a079eedfe104a773a7c4293f77a01f456fb:
+
+  netfilter: nf_tables: correct NFT_LOGLEVEL_MAX value (2019-05-12 21:08:04 +0200)
+
+----------------------------------------------------------------
+Florian Westphal (4):
+      netfilter: nf_tables: delay chain policy update until transaction is complete
+      netfilter: nf_tables: fix base chain stat rcu_dereference usage
+      netfilter: ebtables: CONFIG_COMPAT: reject trailing data after last rule
+      netfilter: nf_tables: correct NFT_LOGLEVEL_MAX value
+
+Jakub Jankowski (1):
+      netfilter: nf_conntrack_h323: restore boundary check correctness
+
+Kristian Evensen (1):
+      netfilter: ctnetlink: Resolve conntrack L3-protocol flush regression
+
+Pablo Neira Ayuso (2):
+      netfilter: nft_flow_offload: add entry to flowtable after confirmation
+      netfilter: nf_tables: remove NFT_CT_TIMEOUT
+
+Subash Abhinov Kasiviswanathan (1):
+      netfilter: nf_conntrack_h323: Remove deprecated config check
+
+Taehee Yoo (4):
+      netfilter: nf_flow_table: fix netdev refcnt leak
+      netfilter: nf_flow_table: check ttl value in flow offload data path
+      netfilter: nf_flow_table: fix missing error check for rhashtable_insert_fast
+      netfilter: nf_flow_table: do not flow offload deleted conntrack entries
+
+ include/uapi/linux/netfilter/nf_tables.h |  4 +--
+ net/bridge/netfilter/ebtables.c          |  4 ++-
+ net/netfilter/nf_conntrack_h323_asn1.c   |  2 +-
+ net/netfilter/nf_conntrack_h323_main.c   | 11 ++----
+ net/netfilter/nf_conntrack_netlink.c     |  2 +-
+ net/netfilter/nf_flow_table_core.c       | 34 +++++++++++++-----
+ net/netfilter/nf_flow_table_ip.c         |  6 ++++
+ net/netfilter/nf_tables_api.c            | 59 +++++++++++++++++++++++++-------
+ net/netfilter/nft_flow_offload.c         |  4 +--
+ 9 files changed, 89 insertions(+), 37 deletions(-)
+
