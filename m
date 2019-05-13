@@ -2,72 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 499351BA1A
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 17:31:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D4551BA2E
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 17:36:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731144AbfEMPbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 11:31:31 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:39263 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728760AbfEMPbb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 11:31:31 -0400
-Received: by mail-oi1-f196.google.com with SMTP id v2so6223549oie.6;
-        Mon, 13 May 2019 08:31:30 -0700 (PDT)
+        id S1731398AbfEMPgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 11:36:14 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:39020 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729793AbfEMPgO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 11:36:14 -0400
+Received: by mail-lj1-f194.google.com with SMTP id a10so3426255ljf.6
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 08:36:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aBobX/gRQlSguqoBZZQLy/K1F4tBo5qMszjuejS20Co=;
+        b=gBlt9XMxpnYqx/4cyDasaIs3y4oMCc99NXC9pZof4vo3wRkQsQuOQBAmGySmbeIsnT
+         pGlcYsS4yR9ytTI6FC1eSjbPpj8iz4s9dZBkDcrSiPAPC7OMzW0Rt0OqIJrPgtasoPCC
+         r1LwRRJMyGIeT5nK+1RtGNaHi07nNrgYKip5lk0MdY8M8i+ortxgZcPNOlwIaF3i2knk
+         k8J9A+Kc8GGfGKhqh/R2ogQFyXVw8qLb70PRA9fmxiriz2JDhlOr9Yn/Kz/5CvFVx+L4
+         /j+HRZj4hBADoWB5wd5ni0jZq65JQozmkv8mwyQYZgxiIQZjdhUkU1QQujGdGVWS5gX9
+         Rbrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FQOvA5KjBthgKljzqlnSntKijRM8U0Ek6cEPPxoji2E=;
-        b=dejvX3breHRwN4An7TpReSHW8TXjWs1CDVBdaS2zxh+csl32wVGpgDTZeh313Lsjg8
-         DuRpONS5wb+S7v38+97IoNelvANeWjk11K4rzDBeKVQe6v6vuqFSuklnTGdmZAbwqRWj
-         nUS3xPtdSTbWzHf7kOu/IjHWKHuPNf3eiXOoB7aRiNUHCWR6jE286F9zlxF+QXgpTQUF
-         5hnTGcHhj9i7G2HpcVyg4J/pro/r0JY5Cz0LxngoW4oG0gYp/PtI6tJbGxTLxa6W/aSn
-         6w+iCXo6qenCGGYhYtdNQeMQEVZqgqn9mZYeonxE8IrVAmuo1IYdn2v06SUrsZTD3BJ/
-         T8Xw==
-X-Gm-Message-State: APjAAAVvDkrKMdhqr2KmxfFHaEgg6HPzch3uJ/9l/egqJonqaxvOMsxN
-        trdnI2V6TVYRL/pCL1xi2g==
-X-Google-Smtp-Source: APXvYqxPKZmpbo13eB03kaNp94tcGk2ZoALh5Nztcx9t9oH7y8OmpU0lAQiB2QW59q7pBEcpnxc4+Q==
-X-Received: by 2002:aca:3b43:: with SMTP id i64mr13910509oia.121.1557761490019;
-        Mon, 13 May 2019 08:31:30 -0700 (PDT)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id o5sm5136964otl.44.2019.05.13.08.31.29
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 13 May 2019 08:31:29 -0700 (PDT)
-Date:   Mon, 13 May 2019 10:31:28 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Rocky Liao <rjliao@codeaurora.org>
-Cc:     robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org,
-        johan.hedberg@gmail.com, thierry.escande@linaro.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, bgodavar@codeaurora.org,
-        Rocky Liao <rjliao@codeaurora.org>
-Subject: Re: [PATCH v4 2/2] dt-bindings: net: bluetooth: Add device property
- firmware-name for QCA6174
-Message-ID: <20190513153128.GA5455@bogus>
-References: <1554888476-17560-1-git-send-email-rjliao@codeaurora.org>
- <1557631185-5167-1-git-send-email-rjliao@codeaurora.org>
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=aBobX/gRQlSguqoBZZQLy/K1F4tBo5qMszjuejS20Co=;
+        b=ZZ57yh3hiCLyoOD2lwn0MuFcVgDgsFKJsps1bFBiFhClpzs3HS6399cQQWn98f1Kp9
+         1yJQFzSkW1NCdjwreCU6QTbJ0wU+Q3sUJV6AfGns4Rge4vZOHUtmE9Zo9unIiBcpkWOV
+         m0d2EOnSDSHxFol1UXjRgwID0rkMDTXlMas3k4u8NfmCmhwdTJQlZSGoylwVC9l9aEFA
+         e+9puOfju9Hi3xCDmR47YVPgOkjWqkcpnswaRrYxZDFBclsWjP4GbvVRPsflZI11spsY
+         XLP5hkjOhvivRNM7W8y96isdiWyTBZpIYqfHQ9NSQPMowZsoUsOKYazpYB+gWgzfR1a1
+         3ttA==
+X-Gm-Message-State: APjAAAU6e6q6VK6LHIZN6DBTI77WLttcl8sEY5ckei4HMle+yxW566ym
+        idqZp40GmfUvafzIHgRyFSeHKA==
+X-Google-Smtp-Source: APXvYqx7EAgiVp7E/GNOloy5P70soEYmNXt7Mr3QGKLLM+PPeltgJmRtjYkCOSVI8X18cOxFkFgHYw==
+X-Received: by 2002:a2e:9713:: with SMTP id r19mr14381849lji.189.1557761772644;
+        Mon, 13 May 2019 08:36:12 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([31.173.81.227])
+        by smtp.gmail.com with ESMTPSA id t23sm711845lfk.9.2019.05.13.08.36.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 13 May 2019 08:36:11 -0700 (PDT)
+Subject: Re: [PATCH] net: ethernet: stmmac: dwmac-sun8i: enable support of
+ unicast filtering
+To:     Corentin Labbe <clabbe@baylibre.com>, alexandre.torgue@st.com,
+        davem@davemloft.net, joabreu@synopsys.com,
+        maxime.ripard@bootlin.com, peppe.cavallaro@st.com, wens@csie.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-sunxi@googlegroups.com
+References: <1557752799-9989-1-git-send-email-clabbe@baylibre.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <a4c3f91a-cad2-29f8-841f-df1a0fee0781@cogentembedded.com>
+Date:   Mon, 13 May 2019 18:36:10 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1557631185-5167-1-git-send-email-rjliao@codeaurora.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1557752799-9989-1-git-send-email-clabbe@baylibre.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 12 May 2019 11:19:45 +0800, Rocky Liao wrote:
-> This patch adds an optional device property "firmware-name" to allow the
-> driver to load customized nvm firmware file based on this property.
-> 
-> Signed-off-by: Rocky Liao <rjliao@codeaurora.org>
-> ---
-> Changes in v4:
->   * rebased the code base and merge with latest code
-> ---
->  Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+Hello!
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+On 05/13/2019 04:06 PM, Corentin Labbe wrote:
+
+> When adding more MAC address to a dwmac-sun8i interface, the device goes
+
+   Addresses?
+
+> directly in promiscuous mode.
+> This is due to IFF_UNICAST_FLT missing flag.
+> 
+> So since the hardware support unicast filtering, let's add IFF_UNICAST_FLT.
+> 
+> Fixes: 9f93ac8d4085 ("net-next: stmmac: Add dwmac-sun8i")
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+[...]
+
+MBR, Sergei
