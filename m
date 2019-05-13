@@ -2,203 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 429151BBCF
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 19:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 125651BBDD
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 19:25:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731609AbfEMRX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 13:23:27 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:37581 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730187AbfEMRX1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 13:23:27 -0400
-Received: by mail-wr1-f68.google.com with SMTP id e15so3796533wrs.4
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 10:23:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=aOc6CBKw+RVeeMdGwIxa6uCL3lFsOT0Lwgti+Fi6e58=;
-        b=akFPKTF4T9RJeSJ9mlCcGxydT7b3uiDLwHoC5a81f0uYmnakkYIQdkFoFFNSE1ibRL
-         OtunftV9S3osxTj2nGd3j6uivSgs7ONU7V25Z5a2zP3Z9kSicZDYtgPjFxcjf9QjNItI
-         ZT3FqMABeWZmGkxm5YHxiO78OzaXoEjrVbZIUOntc1QFweGjqVEUIgRveeKcVW1xZiD/
-         UMsh5biWChSexHQNHtNWOuk2bcBgiLpcq0VXtNdSxEH4ZmMIKGyH52uroxgv+V2KTJIA
-         XFwUiR+UmsX2cfLkKnf+FVx6xc4dk9FrEXd1F/J62tEdhOU2+n1xJBMS56lgrtN17HMT
-         gksw==
-X-Gm-Message-State: APjAAAU+Dk+4t/3YONQ6s4oiOmjTL/NWYC2FS688YeB8ssamIx1ysIh2
-        ujmGU6p+nnkGNyF1ywYptzNSfw==
-X-Google-Smtp-Source: APXvYqyGLQfQ9qgYBMhBOROA3KDzQZd+2RzOsjvMydbObvwkA2lyVoOmT5x005cmHKCzFX+X+nkBqQ==
-X-Received: by 2002:adf:b35e:: with SMTP id k30mr2281815wrd.178.1557768205296;
-        Mon, 13 May 2019 10:23:25 -0700 (PDT)
-Received: from steredhat (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
-        by smtp.gmail.com with ESMTPSA id s7sm13859054wrn.84.2019.05.13.10.23.24
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 13 May 2019 10:23:24 -0700 (PDT)
-Date:   Mon, 13 May 2019 19:23:22 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH v2 1/8] vsock/virtio: limit the memory used per-socket
-Message-ID: <20190513172322.vcgenx7xk4v6r2ay@steredhat>
-References: <20190510125843.95587-1-sgarzare@redhat.com>
- <20190510125843.95587-2-sgarzare@redhat.com>
- <3b275b52-63d9-d260-1652-8e8bf7dd679f@redhat.com>
+        id S1731661AbfEMRZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 13:25:35 -0400
+Received: from usa-sjc-mx-foss1.foss.arm.com ([217.140.101.70]:34204 "EHLO
+        foss.arm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730184AbfEMRZc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 13:25:32 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C55FE341;
+        Mon, 13 May 2019 10:25:31 -0700 (PDT)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.72.51.249])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 03D353F6C4;
+        Mon, 13 May 2019 10:25:29 -0700 (PDT)
+Date:   Mon, 13 May 2019 18:25:27 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        bpf <bpf@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATCH net] flow_dissector: disable preemption around BPF calls
+Message-ID: <20190513172527.GB16567@lakrids.cambridge.arm.com>
+References: <20190513163855.225489-1-edumazet@google.com>
+ <20190513171745.GA16567@lakrids.cambridge.arm.com>
+ <CANn89iJzsUbLXB_M5UZr2ieNyQdGHsKPFzqeQFGtKtL8d9pu0Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3b275b52-63d9-d260-1652-8e8bf7dd679f@redhat.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <CANn89iJzsUbLXB_M5UZr2ieNyQdGHsKPFzqeQFGtKtL8d9pu0Q@mail.gmail.com>
+User-Agent: Mutt/1.11.1+11 (2f07cb52) (2018-12-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 13, 2019 at 05:58:53PM +0800, Jason Wang wrote:
+On Mon, May 13, 2019 at 10:20:19AM -0700, 'Eric Dumazet' via syzkaller wrote:
+> On Mon, May 13, 2019 at 10:17 AM Mark Rutland <mark.rutland@arm.com> wrote:
+> >
+> > On Mon, May 13, 2019 at 09:38:55AM -0700, 'Eric Dumazet' via syzkaller wrote:
+> > > Various things in eBPF really require us to disable preemption
+> > > before running an eBPF program.
+> >
+> > Is that true for all eBPF uses? I note that we don't disable preemption
+> > in the lib/test_bpf.c module, for example.
+> >
+> > If it's a general requirement, perhaps it's worth an assertion within
+> > BPF_PROG_RUN()?
 > 
-> On 2019/5/10 下午8:58, Stefano Garzarella wrote:
-> > Since virtio-vsock was introduced, the buffers filled by the host
-> > and pushed to the guest using the vring, are directly queued in
-> > a per-socket list avoiding to copy it.
-> > These buffers are preallocated by the guest with a fixed
-> > size (4 KB).
-> > 
-> > The maximum amount of memory used by each socket should be
-> > controlled by the credit mechanism.
-> > The default credit available per-socket is 256 KB, but if we use
-> > only 1 byte per packet, the guest can queue up to 262144 of 4 KB
-> > buffers, using up to 1 GB of memory per-socket. In addition, the
-> > guest will continue to fill the vring with new 4 KB free buffers
-> > to avoid starvation of other sockets.
-> > 
-> > This patch solves this issue copying the payload in a new buffer.
-> > Then it is queued in the per-socket list, and the 4KB buffer used
-> > by the host is freed.
-> > 
-> > In this way, the memory used by each socket respects the credit
-> > available, and we still avoid starvation, paying the cost of an
-> > extra memory copy. When the buffer is completely full we do a
-> > "zero-copy", moving the buffer directly in the per-socket list.
+> The assertion is already there :)
 > 
-> 
-> I wonder in the long run we should use generic socket accouting mechanism
-> provided by kernel (e.g socket, skb, sndbuf, recvbug, truesize) instead of
-> vsock specific thing to avoid duplicating efforts.
+> This is how syzbot triggered the report.
 
-I agree, the idea is to switch to sk_buff but this should require an huge
-change. If we will use the virtio-net datapath, it will become simpler.
+Ah! :)
 
-> 
-> 
-> > 
-> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > ---
-> >   drivers/vhost/vsock.c                   |  2 +
-> >   include/linux/virtio_vsock.h            |  8 +++
-> >   net/vmw_vsock/virtio_transport.c        |  1 +
-> >   net/vmw_vsock/virtio_transport_common.c | 95 ++++++++++++++++++-------
-> >   4 files changed, 81 insertions(+), 25 deletions(-)
-> > 
-> > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> > index bb5fc0e9fbc2..7964e2daee09 100644
-> > --- a/drivers/vhost/vsock.c
-> > +++ b/drivers/vhost/vsock.c
-> > @@ -320,6 +320,8 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
-> >   		return NULL;
-> >   	}
-> > +	pkt->buf_len = pkt->len;
-> > +
-> >   	nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
-> >   	if (nbytes != pkt->len) {
-> >   		vq_err(vq, "Expected %u byte payload, got %zu bytes\n",
-> > diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-> > index e223e2632edd..345f04ee9193 100644
-> > --- a/include/linux/virtio_vsock.h
-> > +++ b/include/linux/virtio_vsock.h
-> > @@ -54,9 +54,17 @@ struct virtio_vsock_pkt {
-> >   	void *buf;
-> >   	u32 len;
-> >   	u32 off;
-> > +	u32 buf_len;
-> >   	bool reply;
-> >   };
-> > +struct virtio_vsock_buf {
-> > +	struct list_head list;
-> > +	void *addr;
-> > +	u32 len;
-> > +	u32 off;
-> > +};
-> > +
-> >   struct virtio_vsock_pkt_info {
-> >   	u32 remote_cid, remote_port;
-> >   	struct vsock_sock *vsk;
-> > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-> > index 15eb5d3d4750..af1d2ce12f54 100644
-> > --- a/net/vmw_vsock/virtio_transport.c
-> > +++ b/net/vmw_vsock/virtio_transport.c
-> > @@ -280,6 +280,7 @@ static void virtio_vsock_rx_fill(struct virtio_vsock *vsock)
-> >   			break;
-> >   		}
-> > +		pkt->buf_len = buf_len;
-> >   		pkt->len = buf_len;
-> >   		sg_init_one(&hdr, &pkt->hdr, sizeof(pkt->hdr));
-> > diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-> > index 602715fc9a75..0248d6808755 100644
-> > --- a/net/vmw_vsock/virtio_transport_common.c
-> > +++ b/net/vmw_vsock/virtio_transport_common.c
-> > @@ -65,6 +65,9 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
-> >   		pkt->buf = kmalloc(len, GFP_KERNEL);
-> >   		if (!pkt->buf)
-> >   			goto out_pkt;
-> > +
-> > +		pkt->buf_len = len;
-> > +
-> >   		err = memcpy_from_msg(pkt->buf, info->msg, len);
-> >   		if (err)
-> >   			goto out;
-> > @@ -86,6 +89,46 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
-> >   	return NULL;
-> >   }
-> > +static struct virtio_vsock_buf *
-> > +virtio_transport_alloc_buf(struct virtio_vsock_pkt *pkt, bool zero_copy)
-> > +{
-> > +	struct virtio_vsock_buf *buf;
-> > +
-> > +	if (pkt->len == 0)
-> > +		return NULL;
-> > +
-> > +	buf = kzalloc(sizeof(*buf), GFP_KERNEL);
-> > +	if (!buf)
-> > +		return NULL;
-> > +
-> > +	/* If the buffer in the virtio_vsock_pkt is full, we can move it to
-> > +	 * the new virtio_vsock_buf avoiding the copy, because we are sure that
-> > +	 * we are not use more memory than that counted by the credit mechanism.
-> > +	 */
-> > +	if (zero_copy && pkt->len == pkt->buf_len) {
-> > +		buf->addr = pkt->buf;
-> > +		pkt->buf = NULL;
-> > +	} else {
-> 
-> 
-> Is the copy still needed if we're just few bytes less? We meet similar issue
-> for virito-net, and virtio-net solve this by always copy first 128bytes for
-> big packets.
-> 
-> See receive_big()
-
-I'm seeing, It is more sophisticated.
-IIUC, virtio-net allocates a sk_buff with 128 bytes of buffer, then copies the
-first 128 bytes, then adds the buffer used to receive the packet as a frag to
-the skb.
-
-Do you suggest to implement something similar, or for now we can use my
-approach and if we will merge the datapath we can reuse the virtio-net
-approach?
+I also see I'm wrong about test_bpf.c, so sorry for the noise on both
+counts!
 
 Thanks,
-Stefano
+Mark.
