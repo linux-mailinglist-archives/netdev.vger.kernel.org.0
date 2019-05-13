@@ -2,96 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 465A61B716
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 15:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9235C1B73A
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 15:42:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730140AbfEMNdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 09:33:38 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:35674 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728566AbfEMNdi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 09:33:38 -0400
-Received: by mail-pg1-f193.google.com with SMTP id h1so6805779pgs.2;
-        Mon, 13 May 2019 06:33:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=dHB+2UT2SbFOUCgxQjFqk9pofSt4ba6bP6xlRWy9uz8=;
-        b=KuXvSRMYMKGzAylOkSf6HZsrUBzZMXGa86X+6uv3efqmd+6ImnKgro2FqOsBr2V44w
-         ELvJmk5nJEWhJjUmtdgHpYgUtNfZ1Fk9TKFzXNxMzQess1GQ3XObF0QfDHbhIEVtUUFB
-         dN2jQ3JgzsRrAGO49aEiYDrL956oBcs/o8kEoz46lQ2CSCQ6Eyrduhiiacr9lLcvUdvF
-         1NDIALBson6SKLJeebv1XRoNFMdl1sMLIoh1OPwXVBeOsbVacm8W/E7Ms9BxuWbWwOPk
-         Ab7BfgP9UmGxW2nVDG/z4uuffyE+gF6CsnxG7iF//EdmqheaG8SZwcVypUAUcZYNl2zo
-         CbSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=dHB+2UT2SbFOUCgxQjFqk9pofSt4ba6bP6xlRWy9uz8=;
-        b=XiQ1SA6Kn8pHx4KuaPC633+HRy6da5+R+IDK6Qe+Lt/xjvBEeqrTk6LrGlL2hV3spu
-         6vA+kQEcoUf+ZBtDjoUzqDeyazZSS9yzUPkmVhKA1aYc8sHnhOFIJIHwBpQ+5Ky4NtFi
-         goAQyPmEBtyLhhlou1n5VJp3bwLp8C61GQ5njPTZ/yBZ/9buoICSsEp+XeeNlVtqQf4z
-         84GcDozcaIFvrZ5Xn/PoPyGTgYom4hZ/Yjmr8D5a7nkDlSh93hR76sgU19E1CAmyL6U9
-         bLbewU6Juw5Ioyv+Ynv7pUS57HJrIaUfy8GnBH81z6Qrm41E1kncgvVR4iqXDI6mlWxD
-         lvxA==
-X-Gm-Message-State: APjAAAXU5sZBB7Z8E+fh0HZD9A1hiC4Uhy8mC8mKQcYnZuM+58FVqd3f
-        VIZwT+fk5Yw1QhNivGPVTnI=
-X-Google-Smtp-Source: APXvYqzCHEBbsQ9j/TAQ9YLva9rBRXDXM3fwxild9xMkA+ykPkX3PCo9l3kUOGRoDUw95ZR47IUmEw==
-X-Received: by 2002:a62:1c06:: with SMTP id c6mr22162703pfc.168.1557754417788;
-        Mon, 13 May 2019 06:33:37 -0700 (PDT)
-Received: from localhost (36-225-62-102.dynamic-ip.hinet.net. [36.225.62.102])
-        by smtp.gmail.com with ESMTPSA id h6sm28582717pfk.188.2019.05.13.06.33.36
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 13 May 2019 06:33:37 -0700 (PDT)
-From:   Cyrus Lien <cyruslien@gmail.com>
-X-Google-Original-From: Cyrus Lien <cyrus.lien@canonical.com>
-To:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
-        Sara Sharon <sara.sharon@intel.com>,
-        Golan Ben Ami <golan.ben.ami@intel.com>,
-        Lior Cohen <lior2.cohen@intel.com>,
-        Shaul Triebitz <shaul.triebitz@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Cyrus Lien <cyrus.lien@canonical.com>
-Subject: [PATCH] iwlwifi: trans: fix killer series loadded incorrect firmware
-Date:   Mon, 13 May 2019 21:33:35 +0800
-Message-Id: <20190513133335.14536-1-cyrus.lien@canonical.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729736AbfEMNmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 09:42:15 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:32896 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725866AbfEMNmO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 09:42:14 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9F2D43082E6A;
+        Mon, 13 May 2019 13:42:14 +0000 (UTC)
+Received: from bistromath.localdomain (unknown [10.40.205.249])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E32845D9C9;
+        Mon, 13 May 2019 13:42:08 +0000 (UTC)
+Date:   Mon, 13 May 2019 15:42:06 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org, Dan Winship <danw@redhat.com>
+Subject: Re: [PATCH net] rtnetlink: always put ILFA_LINK for links with a
+ link-netnsid
+Message-ID: <20190513134206.GA13340@bistromath.localdomain>
+References: <8b128a64bba02b9d3b703e22f9ec4e7f3803255f.1557751584.git.sd@queasysnail.net>
+ <a9ba6631-4403-67e0-152a-b2d85aa70d72@6wind.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a9ba6631-4403-67e0-152a-b2d85aa70d72@6wind.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Mon, 13 May 2019 13:42:14 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Killer series loadded IWL_22000_HR_B_FW_PRE prefixed firmware instead
-IWL_CC_A_FW_PRE prefixed firmware.
+2019-05-13, 15:17:33 +0200, Nicolas Dichtel wrote:
+> Le 13/05/2019 à 15:01, Sabrina Dubroca a écrit :
+> > Currently, nla_put_iflink() doesn't put the IFLA_LINK attribute when
+> > iflink == ifindex.
+> > 
+> > In some cases, a device can be created in a different netns with the
+> > same ifindex as its parent. That device will not dump its IFLA_LINK
+> > attribute, which can confuse some userspace software that expects it.
+> > For example, if the last ifindex created in init_net and foo are both
+> > 8, these commands will trigger the issue:
+> > 
+> >     ip link add parent type dummy                   # ifindex 9
+> >     ip link add link parent netns foo type macvlan  # ifindex 9 in ns foo
+> > 
+> > So, in case a device puts the IFLA_LINK_NETNSID attribute in a dump,
+> > always put the IFLA_LINK attribute as well.
+> > 
+> > Thanks to Dan Winship for analyzing the original OpenShift bug down to
+> > the missing netlink attribute.
+> Good catch.
+> 
+> > 
+> > Analyzed-by: Dan Winship <danw@redhat.com>
+> > Fixes: a54acb3a6f85 ("dev: introduce dev_get_iflink()")
+> I don't agree with the Fixes tag. The test 'iflink != ifindex' is here at least
+> since the beginning of the git history.
 
-Add killer series to the check logic as iwl_ax200_cfg_cc.
+Hmpf, right, now that I re-blamed, I see. I don't know why I stopped
+on your patch, sorry.
 
-Signed-off-by: Cyrus Lien <cyrus.lien@canonical.com>
----
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> > Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+> Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-index 79c1dc05f948..576c2186b6bf 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-@@ -3565,7 +3565,9 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
- 		}
- 	} else if (CSR_HW_RF_ID_TYPE_CHIP_ID(trans->hw_rf_id) ==
- 		   CSR_HW_RF_ID_TYPE_CHIP_ID(CSR_HW_RF_ID_TYPE_HR) &&
--		   (trans->cfg != &iwl_ax200_cfg_cc ||
-+		   ((trans->cfg != &iwl_ax200_cfg_cc &&
-+		     trans->cfg != &killer1650x_2ax_cfg &&
-+		     trans->cfg != &killer1650w_2ax_cfg) ||
- 		    trans->hw_rev == CSR_HW_REV_TYPE_QNJ_B0)) {
- 		u32 hw_status;
- 
+Thanks!
+
+I'll repost with a correct Fixes tag and your Ack.
+
 -- 
-2.17.1
-
+Sabrina
