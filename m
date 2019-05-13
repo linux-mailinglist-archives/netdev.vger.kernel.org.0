@@ -2,78 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68AF41B35E
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 11:56:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78BE01B37D
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 12:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728815AbfEMJ4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 05:56:49 -0400
-Received: from mail.us.es ([193.147.175.20]:34206 "EHLO mail.us.es"
+        id S1727814AbfEMJ7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 05:59:03 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:44718 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728717AbfEMJ4r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 05:56:47 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 066904DE722
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 11:56:46 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E96A5DA714
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 11:56:45 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id DEF3DDA709; Mon, 13 May 2019 11:56:45 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E06F9DA701;
-        Mon, 13 May 2019 11:56:43 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 13 May 2019 11:56:43 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (sys.soleta.eu [212.170.55.40])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id A945B4265A31;
-        Mon, 13 May 2019 11:56:43 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 13/13] netfilter: nf_tables: correct NFT_LOGLEVEL_MAX value
-Date:   Mon, 13 May 2019 11:56:30 +0200
-Message-Id: <20190513095630.32443-14-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190513095630.32443-1-pablo@netfilter.org>
-References: <20190513095630.32443-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727339AbfEMJ7D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 05:59:03 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9FE77307D861;
+        Mon, 13 May 2019 09:59:02 +0000 (UTC)
+Received: from [10.72.12.49] (ovpn-12-49.pek2.redhat.com [10.72.12.49])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A9E56B8DA;
+        Mon, 13 May 2019 09:58:54 +0000 (UTC)
+Subject: Re: [PATCH v2 1/8] vsock/virtio: limit the memory used per-socket
+To:     Stefano Garzarella <sgarzare@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>
+References: <20190510125843.95587-1-sgarzare@redhat.com>
+ <20190510125843.95587-2-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <3b275b52-63d9-d260-1652-8e8bf7dd679f@redhat.com>
+Date:   Mon, 13 May 2019 17:58:53 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <20190510125843.95587-2-sgarzare@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Mon, 13 May 2019 09:59:02 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
 
-should be same as NFT_LOGLEVEL_AUDIT, so use -, not +.
+On 2019/5/10 下午8:58, Stefano Garzarella wrote:
+> Since virtio-vsock was introduced, the buffers filled by the host
+> and pushed to the guest using the vring, are directly queued in
+> a per-socket list avoiding to copy it.
+> These buffers are preallocated by the guest with a fixed
+> size (4 KB).
+>
+> The maximum amount of memory used by each socket should be
+> controlled by the credit mechanism.
+> The default credit available per-socket is 256 KB, but if we use
+> only 1 byte per packet, the guest can queue up to 262144 of 4 KB
+> buffers, using up to 1 GB of memory per-socket. In addition, the
+> guest will continue to fill the vring with new 4 KB free buffers
+> to avoid starvation of other sockets.
+>
+> This patch solves this issue copying the payload in a new buffer.
+> Then it is queued in the per-socket list, and the 4KB buffer used
+> by the host is freed.
+>
+> In this way, the memory used by each socket respects the credit
+> available, and we still avoid starvation, paying the cost of an
+> extra memory copy. When the buffer is completely full we do a
+> "zero-copy", moving the buffer directly in the per-socket list.
 
-Fixes: 7eced5ab5a73 ("netfilter: nf_tables: add NFT_LOGLEVEL_* enumeration and use it")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/uapi/linux/netfilter/nf_tables.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
-index 92bb1e2b2425..7bdb234f3d8c 100644
---- a/include/uapi/linux/netfilter/nf_tables.h
-+++ b/include/uapi/linux/netfilter/nf_tables.h
-@@ -1134,7 +1134,7 @@ enum nft_log_level {
- 	NFT_LOGLEVEL_AUDIT,
- 	__NFT_LOGLEVEL_MAX
- };
--#define NFT_LOGLEVEL_MAX	(__NFT_LOGLEVEL_MAX + 1)
-+#define NFT_LOGLEVEL_MAX	(__NFT_LOGLEVEL_MAX - 1)
- 
- /**
-  * enum nft_queue_attributes - nf_tables queue expression netlink attributes
--- 
-2.11.0
+I wonder in the long run we should use generic socket accouting 
+mechanism provided by kernel (e.g socket, skb, sndbuf, recvbug, 
+truesize) instead of vsock specific thing to avoid duplicating efforts.
 
+
+>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>   drivers/vhost/vsock.c                   |  2 +
+>   include/linux/virtio_vsock.h            |  8 +++
+>   net/vmw_vsock/virtio_transport.c        |  1 +
+>   net/vmw_vsock/virtio_transport_common.c | 95 ++++++++++++++++++-------
+>   4 files changed, 81 insertions(+), 25 deletions(-)
+>
+> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> index bb5fc0e9fbc2..7964e2daee09 100644
+> --- a/drivers/vhost/vsock.c
+> +++ b/drivers/vhost/vsock.c
+> @@ -320,6 +320,8 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+>   		return NULL;
+>   	}
+>   
+> +	pkt->buf_len = pkt->len;
+> +
+>   	nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
+>   	if (nbytes != pkt->len) {
+>   		vq_err(vq, "Expected %u byte payload, got %zu bytes\n",
+> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+> index e223e2632edd..345f04ee9193 100644
+> --- a/include/linux/virtio_vsock.h
+> +++ b/include/linux/virtio_vsock.h
+> @@ -54,9 +54,17 @@ struct virtio_vsock_pkt {
+>   	void *buf;
+>   	u32 len;
+>   	u32 off;
+> +	u32 buf_len;
+>   	bool reply;
+>   };
+>   
+> +struct virtio_vsock_buf {
+> +	struct list_head list;
+> +	void *addr;
+> +	u32 len;
+> +	u32 off;
+> +};
+> +
+>   struct virtio_vsock_pkt_info {
+>   	u32 remote_cid, remote_port;
+>   	struct vsock_sock *vsk;
+> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+> index 15eb5d3d4750..af1d2ce12f54 100644
+> --- a/net/vmw_vsock/virtio_transport.c
+> +++ b/net/vmw_vsock/virtio_transport.c
+> @@ -280,6 +280,7 @@ static void virtio_vsock_rx_fill(struct virtio_vsock *vsock)
+>   			break;
+>   		}
+>   
+> +		pkt->buf_len = buf_len;
+>   		pkt->len = buf_len;
+>   
+>   		sg_init_one(&hdr, &pkt->hdr, sizeof(pkt->hdr));
+> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+> index 602715fc9a75..0248d6808755 100644
+> --- a/net/vmw_vsock/virtio_transport_common.c
+> +++ b/net/vmw_vsock/virtio_transport_common.c
+> @@ -65,6 +65,9 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
+>   		pkt->buf = kmalloc(len, GFP_KERNEL);
+>   		if (!pkt->buf)
+>   			goto out_pkt;
+> +
+> +		pkt->buf_len = len;
+> +
+>   		err = memcpy_from_msg(pkt->buf, info->msg, len);
+>   		if (err)
+>   			goto out;
+> @@ -86,6 +89,46 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
+>   	return NULL;
+>   }
+>   
+> +static struct virtio_vsock_buf *
+> +virtio_transport_alloc_buf(struct virtio_vsock_pkt *pkt, bool zero_copy)
+> +{
+> +	struct virtio_vsock_buf *buf;
+> +
+> +	if (pkt->len == 0)
+> +		return NULL;
+> +
+> +	buf = kzalloc(sizeof(*buf), GFP_KERNEL);
+> +	if (!buf)
+> +		return NULL;
+> +
+> +	/* If the buffer in the virtio_vsock_pkt is full, we can move it to
+> +	 * the new virtio_vsock_buf avoiding the copy, because we are sure that
+> +	 * we are not use more memory than that counted by the credit mechanism.
+> +	 */
+> +	if (zero_copy && pkt->len == pkt->buf_len) {
+> +		buf->addr = pkt->buf;
+> +		pkt->buf = NULL;
+> +	} else {
+
+
+Is the copy still needed if we're just few bytes less? We meet similar 
+issue for virito-net, and virtio-net solve this by always copy first 
+128bytes for big packets.
+
+See receive_big().
+
+Thanks
+
+
+> +		buf->addr = kmalloc(pkt->len, GFP_KERNEL);
+> +		if (!buf->addr) {
+> +			kfree(buf);
+> +			return NULL;
+> +		}
+> +
+> +		memcpy(buf->addr, pkt->buf, pkt->len);
+> +	}
+> +
+> +	buf->len = pkt->len;
+> +
+> +	return buf;
+> +}
+> +
+> +static void virtio_transport_free_buf(struct virtio_vsock_buf *buf)
+> +{
+> +	kfree(buf->addr);
+> +	kfree(buf);
+> +}
+> +
+>   /* Packet capture */
+>   static struct sk_buff *virtio_transport_build_skb(void *opaque)
+>   {
+> @@ -190,17 +233,15 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+>   	return virtio_transport_get_ops()->send_pkt(pkt);
+>   }
+>   
+> -static void virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
+> -					struct virtio_vsock_pkt *pkt)
+> +static void virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs, u32 len)
+>   {
+> -	vvs->rx_bytes += pkt->len;
+> +	vvs->rx_bytes += len;
+>   }
+>   
+> -static void virtio_transport_dec_rx_pkt(struct virtio_vsock_sock *vvs,
+> -					struct virtio_vsock_pkt *pkt)
+> +static void virtio_transport_dec_rx_pkt(struct virtio_vsock_sock *vvs, u32 len)
+>   {
+> -	vvs->rx_bytes -= pkt->len;
+> -	vvs->fwd_cnt += pkt->len;
+> +	vvs->rx_bytes -= len;
+> +	vvs->fwd_cnt += len;
+>   }
+>   
+>   void virtio_transport_inc_tx_pkt(struct virtio_vsock_sock *vvs, struct virtio_vsock_pkt *pkt)
+> @@ -254,36 +295,36 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+>   				   size_t len)
+>   {
+>   	struct virtio_vsock_sock *vvs = vsk->trans;
+> -	struct virtio_vsock_pkt *pkt;
+> +	struct virtio_vsock_buf *buf;
+>   	size_t bytes, total = 0;
+>   	int err = -EFAULT;
+>   
+>   	spin_lock_bh(&vvs->rx_lock);
+>   	while (total < len && !list_empty(&vvs->rx_queue)) {
+> -		pkt = list_first_entry(&vvs->rx_queue,
+> -				       struct virtio_vsock_pkt, list);
+> +		buf = list_first_entry(&vvs->rx_queue,
+> +				       struct virtio_vsock_buf, list);
+>   
+>   		bytes = len - total;
+> -		if (bytes > pkt->len - pkt->off)
+> -			bytes = pkt->len - pkt->off;
+> +		if (bytes > buf->len - buf->off)
+> +			bytes = buf->len - buf->off;
+>   
+>   		/* sk_lock is held by caller so no one else can dequeue.
+>   		 * Unlock rx_lock since memcpy_to_msg() may sleep.
+>   		 */
+>   		spin_unlock_bh(&vvs->rx_lock);
+>   
+> -		err = memcpy_to_msg(msg, pkt->buf + pkt->off, bytes);
+> +		err = memcpy_to_msg(msg, buf->addr + buf->off, bytes);
+>   		if (err)
+>   			goto out;
+>   
+>   		spin_lock_bh(&vvs->rx_lock);
+>   
+>   		total += bytes;
+> -		pkt->off += bytes;
+> -		if (pkt->off == pkt->len) {
+> -			virtio_transport_dec_rx_pkt(vvs, pkt);
+> -			list_del(&pkt->list);
+> -			virtio_transport_free_pkt(pkt);
+> +		buf->off += bytes;
+> +		if (buf->off == buf->len) {
+> +			virtio_transport_dec_rx_pkt(vvs, buf->len);
+> +			list_del(&buf->list);
+> +			virtio_transport_free_buf(buf);
+>   		}
+>   	}
+>   	spin_unlock_bh(&vvs->rx_lock);
+> @@ -841,20 +882,24 @@ virtio_transport_recv_connected(struct sock *sk,
+>   {
+>   	struct vsock_sock *vsk = vsock_sk(sk);
+>   	struct virtio_vsock_sock *vvs = vsk->trans;
+> +	struct virtio_vsock_buf *buf;
+>   	int err = 0;
+>   
+>   	switch (le16_to_cpu(pkt->hdr.op)) {
+>   	case VIRTIO_VSOCK_OP_RW:
+>   		pkt->len = le32_to_cpu(pkt->hdr.len);
+> -		pkt->off = 0;
+> +		buf = virtio_transport_alloc_buf(pkt, true);
+>   
+> -		spin_lock_bh(&vvs->rx_lock);
+> -		virtio_transport_inc_rx_pkt(vvs, pkt);
+> -		list_add_tail(&pkt->list, &vvs->rx_queue);
+> -		spin_unlock_bh(&vvs->rx_lock);
+> +		if (buf) {
+> +			spin_lock_bh(&vvs->rx_lock);
+> +			virtio_transport_inc_rx_pkt(vvs, pkt->len);
+> +			list_add_tail(&buf->list, &vvs->rx_queue);
+> +			spin_unlock_bh(&vvs->rx_lock);
+>   
+> -		sk->sk_data_ready(sk);
+> -		return err;
+> +			sk->sk_data_ready(sk);
+> +		}
+> +
+> +		break;
+>   	case VIRTIO_VSOCK_OP_CREDIT_UPDATE:
+>   		sk->sk_write_space(sk);
+>   		break;
