@@ -2,128 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6315E1B426
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 12:37:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79BCF1B429
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 12:41:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728342AbfEMKhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 06:37:25 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:45229 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfEMKhY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 06:37:24 -0400
-Received: by mail-lj1-f194.google.com with SMTP id r76so10420899lja.12;
-        Mon, 13 May 2019 03:37:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aTszH/rrIqRd+889JyaS6QLIAk9G7S5fntVRB8ONBec=;
-        b=PeI3cZlBkbqlBnHvn2uQf7Y7isXC6lBVcopSIaQsdeS2Wjgy0WIxGKtkXtAPrPVgwU
-         l5Vp38X/DuaKydEmLnd6DT62/GyIDQrCEdqhQImgCj02MJej6IuNNQazI9VqlyS/hjOP
-         jv60lEZ89W8Cm1fnr6RG05+VrTyfabjUBP1EwP5NO0z6KFLwBKdxaogCh+KJaZuZfDH9
-         hPldnlg6uO6x3/RwJsAqdkxmTwyC/qPijLC42iSrkuUUd0QkwrkRAovc5DLtl9dSwFjE
-         mBhkDTBVBW829CgjqvyVbOR2glajFlUvwh/+7BNtXlupnY5RKiQBIXiBScekxnvJTLrU
-         K0PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aTszH/rrIqRd+889JyaS6QLIAk9G7S5fntVRB8ONBec=;
-        b=Ww2Yz+69oHL9P9U+yRLtU6tva+J7aso9BsjFFwlC3YDpg5rNcJqsSYnOrTqSYgLNKi
-         RMd4n5Gv9GJbFj3VAiGlA0BhGM3Ct+0ujqtpYqO4oBLZyQxkUCbSemrdk0zpckI4YBli
-         F4O6+YhYjrjp0P5V/FkTO36/bFvdC1l74b6zRA4gJGpj/eJ8ZqnBTCTg2SCw9c9DUFDx
-         /MB+VZGBIauwMW9/8J734s1+gq1A2aqovFAZWNIffwLtkn5i2nVGXpYT0BjN0ipk4FhF
-         sBsFZiMCz+uDY9BXRJP8XkxmKPGlYXZH3O30n5cSSpYX0KbqpVZ6dzwM0puVnzofXrIA
-         6aSw==
-X-Gm-Message-State: APjAAAVm6aTSVGGkvUHhpp4w055GvvOJ3rbmnE7oS8nEisnI11aak1+x
-        gsiUGyr3ch+OzwGEeVA3jF4=
-X-Google-Smtp-Source: APXvYqz+DcvSkaF/KGXA9PrpDf4JlAX1JCdP3TF/QNID6KRL7O35hZBlUWEwtOb2EnEjLfhOhZkLSg==
-X-Received: by 2002:a2e:8744:: with SMTP id q4mr1399659ljj.172.1557743842464;
-        Mon, 13 May 2019 03:37:22 -0700 (PDT)
-Received: from mobilestation ([5.164.217.122])
-        by smtp.gmail.com with ESMTPSA id n26sm2774596lfi.90.2019.05.13.03.37.21
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 13 May 2019 03:37:21 -0700 (PDT)
-Date:   Mon, 13 May 2019 13:37:19 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        id S1729082AbfEMKk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 06:40:59 -0400
+Received: from mail.us.es ([193.147.175.20]:41432 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727272AbfEMKk5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 06:40:57 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id E2939E5A44
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 12:40:54 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C2CC2DA78D
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 12:40:54 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id BF1F1DA78C; Mon, 13 May 2019 12:40:54 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7D7EDDA701;
+        Mon, 13 May 2019 12:40:45 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 13 May 2019 12:40:35 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 228C8406740D;
+        Mon, 13 May 2019 12:40:32 +0200 (CEST)
+Date:   Mon, 13 May 2019 12:40:31 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jagdish Motwani <Jagdish.Motwani@Sophos.com>
+Cc:     Jagdish Motwani <j.k.motwani@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Serge Semin <Sergey.Semin@t-platforms.ru>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] net: phy: realtek: Add rtl8211e rx/tx delays
- config
-Message-ID: <20190513103717.yvwfrwsvkovw4w6y@mobilestation>
-References: <20190426093010.9609-1-fancer.lancer@gmail.com>
- <20190426212112.5624-1-fancer.lancer@gmail.com>
- <20190513054132.GA7563@roeck-us.net>
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] netfilter: nf_queue:fix reinject verdict handling
+Message-ID: <20190513104031.np2ollc6njuof2s2@salvia>
+References: <20190508183114.7507-1-j.k.motwani@gmail.com>
+ <20190513092211.isxyzpytenvocbx2@salvia>
+ <CWXP265MB1464BCF96C61A8FD47619AE59E0F0@CWXP265MB1464.GBRP265.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190513054132.GA7563@roeck-us.net>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <CWXP265MB1464BCF96C61A8FD47619AE59E0F0@CWXP265MB1464.GBRP265.PROD.OUTLOOK.COM>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Guenter,
+On Mon, May 13, 2019 at 10:36:51AM +0000, Jagdish Motwani wrote:
+> Hi Pablo,
+> 
+> The case I am referring to is : If there are more than 1  hooks
+> returning NF_QUEUE verdict.  When the first queue reinjects the
+> packet, 'nf_reinject' starts traversing hooks with hook_index (i).
+> However if it again receives a NF_QUEUE verdict (by some other
+> netfilter hook), it queue with the wrong hook_index.  So, when the
+> second queue reinjects the packet, it re-executes some hooks in
+> between the first 2 hooks.
 
-On Sun, May 12, 2019 at 10:41:32PM -0700, Guenter Roeck wrote:
-> Hi,
-> 
-> On Sat, Apr 27, 2019 at 12:21:11AM +0300, Serge Semin wrote:
-> > There are two chip pins named TXDLY and RXDLY which actually adds the 2ns
-> > delays to TXC and RXC for TXD/RXD latching. Alas this is the only
-> > documented info regarding the RGMII timing control configurations the PHY
-> > provides. It turns out the same settings can be setup via MDIO registers
-> > hidden in the extension pages layout. Particularly the extension page 0xa4
-> > provides a register 0x1c, which bits 1 and 2 control the described delays.
-> > They are used to implement the "rgmii-{id,rxid,txid}" phy-mode.
-> > 
-> > The hidden RGMII configs register utilization was found in the rtl8211e
-> > U-boot driver:
-> > https://elixir.bootlin.com/u-boot/v2019.01/source/drivers/net/phy/realtek.c#L99
-> > 
-> > There is also a freebsd-folks discussion regarding this register:
-> > https://reviews.freebsd.org/D13591
-> > 
-> > It confirms that the register bits field must control the so called
-> > configuration pins described in the table 12-13 of the official PHY
-> > datasheet:
-> > 8:6 = PHY Address
-> > 5:4 = Auto-Negotiation
-> > 3 = Interface Mode Select
-> > 2 = RX Delay
-> > 1 = TX Delay
-> > 0 = SELRGV
-> > 
-> > Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> 
-> This patch results in a crash when running arm:ast2500-evb in qemu.
-> 
-> [    4.894572] [00000000] *pgd=00000000
-> [    4.895329] Internal error: Oops: 80000005 [#1] ARM
-> [    4.896066] CPU: 0 PID: 1 Comm: swapper Not tainted 5.1.0-09698-g1fb3b52 #1
-> [    4.896364] Hardware name: Generic DT based system
-> [    4.896823] PC is at 0x0
-> [    4.897037] LR is at phy_select_page+0x3c/0x7c
-> 
-> Debugging shows that phydev->drv->write_page and phydev->drv->read_page
-> are NULL, so the crash isn't entirely surprising.
-> 
-> What I don't understand is how this can work in the first place.
-> The modified entry in realtek_drvs[] doesn't have read_page/write_page
-> functions defined, yet rtl8211e_config_init() depends on it.
-> What am I missing here ?
-> 
-> Thanks,
-> Guenter
+Please, include this description in the patch. And thanks for
+explaining.
 
-Thanks for sending the report. The problem has already been fixed in the net:
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=daf3ddbe11a2ff74c95bc814df8e5fe3201b4cb5
+> Thanks, I will mark :  Fixes: 960632ece694 ("netfilter: convert hook list to an array") and update the description also.
 
--Sergey
+Thanks, will wait for v2.
