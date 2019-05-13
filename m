@@ -2,98 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5E31B715
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 15:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 465A61B716
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 15:33:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730124AbfEMNdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 09:33:13 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46435 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728222AbfEMNdN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 09:33:13 -0400
-Received: by mail-wr1-f66.google.com with SMTP id r7so14667193wrr.13;
-        Mon, 13 May 2019 06:33:12 -0700 (PDT)
+        id S1730140AbfEMNdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 09:33:38 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:35674 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728566AbfEMNdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 09:33:38 -0400
+Received: by mail-pg1-f193.google.com with SMTP id h1so6805779pgs.2;
+        Mon, 13 May 2019 06:33:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:mime-version:message-id:in-reply-to
-         :references:user-agent:content-transfer-encoding;
-        bh=teT375bO6TJ8glZjydOwAY1PQ/QgD84rQrsAfXP4vYM=;
-        b=TbTWE556Lo3wxRG7VbC3OZetVO/UnrGPx2+xtcqDSVDPd2cD79JA0gf5S+HfVRaqxk
-         NCQ7zSu8RqSrA4ZGmeGY3OGdJzcGJymPm3rXWrhXa+a5fMqAfPcQB9bjNo9SpWSvO+7G
-         ygnOsun5B+yaBj4X51i6+vdawVyG3f10MyPdXEYl+FdYgXby4n2LMaijNIraPD2ySZMv
-         vuqPs/3KxzlOwb0bfsq24FoEubLiBm2yMf1zcszXVrHWQL9I9vCjuM62yEVnlZDve/NU
-         bqHYn/N9aua4Y6EmKkfgX0fb0UbYJwBvUb4RDgbmN8ooPNV3yaCRtW3bIVr6d3CSMsuZ
-         aqqg==
+        h=from:to:cc:subject:date:message-id;
+        bh=dHB+2UT2SbFOUCgxQjFqk9pofSt4ba6bP6xlRWy9uz8=;
+        b=KuXvSRMYMKGzAylOkSf6HZsrUBzZMXGa86X+6uv3efqmd+6ImnKgro2FqOsBr2V44w
+         ELvJmk5nJEWhJjUmtdgHpYgUtNfZ1Fk9TKFzXNxMzQess1GQ3XObF0QfDHbhIEVtUUFB
+         dN2jQ3JgzsRrAGO49aEiYDrL956oBcs/o8kEoz46lQ2CSCQ6Eyrduhiiacr9lLcvUdvF
+         1NDIALBson6SKLJeebv1XRoNFMdl1sMLIoh1OPwXVBeOsbVacm8W/E7Ms9BxuWbWwOPk
+         Ab7BfgP9UmGxW2nVDG/z4uuffyE+gF6CsnxG7iF//EdmqheaG8SZwcVypUAUcZYNl2zo
+         CbSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:mime-version:message-id
-         :in-reply-to:references:user-agent:content-transfer-encoding;
-        bh=teT375bO6TJ8glZjydOwAY1PQ/QgD84rQrsAfXP4vYM=;
-        b=AwS3N7IR3iL0A/Jw4HM+PITf+jF2RWq5zlW9EWEU87/xXnkqwIfyVs34i/aZXybUWa
-         b6mEwm5cV9m5WBmIffzRq71RLd22U7Ao9ZDxUyDAbBM3NIpmEcqZ7j0G1bd93u0jgb37
-         WfXBX5ukrZIwRegVD3m57YMEJTtyXN6AJfpEchF62RBnsFAuNCOrlKXBfQ5tSdiz5ENX
-         w1Fdbkn+yrEsMPJXWUfIbuWj+mh1WUqcMkuW7LehnmvUhlXPgVVFW2628OEwO+5/AB3C
-         kdlquVHJsHsYRHDVZnzjvGGHiXfrVJ55R/7wdd3hDehvmjudlU3rkxnlYeQOrR5xOpcJ
-         oTMQ==
-X-Gm-Message-State: APjAAAVIMbx+3PTRUAvGHCw4HYiWIKTmJe86VSPoaQ7PaqLaFPfGKLF2
-        +YyeW9aSk6el69hPgTBKFlI=
-X-Google-Smtp-Source: APXvYqwYtUSX9zu79tdi0kPPiamTeGqSrAqroxqOyT5KkeJwOle8naEnnh3aNM1yNp5qiaYgPXEKxw==
-X-Received: by 2002:adf:d4d0:: with SMTP id w16mr16976954wrk.244.1557754391619;
-        Mon, 13 May 2019 06:33:11 -0700 (PDT)
-Received: from localhost ([92.59.185.54])
-        by smtp.gmail.com with ESMTPSA id z9sm15423480wma.39.2019.05.13.06.33.09
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 13 May 2019 06:33:10 -0700 (PDT)
-From:   Vicente Bergas <vicencb@gmail.com>
-To:     Serge Semin <fancer.lancer@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, <g@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: net: phy: realtek: regression, kernel null pointer dereference
-Date:   Mon, 13 May 2019 15:33:08 +0200
-MIME-Version: 1.0
-Message-ID: <0c90c9cd-880b-4834-86db-f3e61c91c5f4@gmail.com>
-In-Reply-To: <20190513130131.jiommbisqvydmzgw@mobilestation>
-References: <16f75ff4-e3e3-4d96-b084-e772e3ce1c2b@gmail.com>
- <742a2235-4571-aa7d-af90-14c708205c6f@gmail.com>
- <11446b0b-c8a4-4e5f-bfa0-0892b500f467@gmail.com>
- <61831f43-3b24-47d9-ec6f-15be6a4568c5@gmail.com>
- <0f16b2c5-ef2a-42a1-acdc-08fa9971b347@gmail.com>
- <20190513102941.4ocb3tz3wmh3pj4t@mobilestation>
- <20190513105104.af7d7n337lxqac63@mobilestation>
- <cf1e81d9-6f91-41fe-a390-b9688e5707f7@gmail.com>
- <20190513124225.odm3shcfo3tsq6xk@mobilestation>
- <20190513125103.GC28969@lunn.ch>
- <20190513130131.jiommbisqvydmzgw@mobilestation>
-User-Agent: Trojita
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dHB+2UT2SbFOUCgxQjFqk9pofSt4ba6bP6xlRWy9uz8=;
+        b=XiQ1SA6Kn8pHx4KuaPC633+HRy6da5+R+IDK6Qe+Lt/xjvBEeqrTk6LrGlL2hV3spu
+         6vA+kQEcoUf+ZBtDjoUzqDeyazZSS9yzUPkmVhKA1aYc8sHnhOFIJIHwBpQ+5Ky4NtFi
+         goAQyPmEBtyLhhlou1n5VJp3bwLp8C61GQ5njPTZ/yBZ/9buoICSsEp+XeeNlVtqQf4z
+         84GcDozcaIFvrZ5Xn/PoPyGTgYom4hZ/Yjmr8D5a7nkDlSh93hR76sgU19E1CAmyL6U9
+         bLbewU6Juw5Ioyv+Ynv7pUS57HJrIaUfy8GnBH81z6Qrm41E1kncgvVR4iqXDI6mlWxD
+         lvxA==
+X-Gm-Message-State: APjAAAXU5sZBB7Z8E+fh0HZD9A1hiC4Uhy8mC8mKQcYnZuM+58FVqd3f
+        VIZwT+fk5Yw1QhNivGPVTnI=
+X-Google-Smtp-Source: APXvYqzCHEBbsQ9j/TAQ9YLva9rBRXDXM3fwxild9xMkA+ykPkX3PCo9l3kUOGRoDUw95ZR47IUmEw==
+X-Received: by 2002:a62:1c06:: with SMTP id c6mr22162703pfc.168.1557754417788;
+        Mon, 13 May 2019 06:33:37 -0700 (PDT)
+Received: from localhost (36-225-62-102.dynamic-ip.hinet.net. [36.225.62.102])
+        by smtp.gmail.com with ESMTPSA id h6sm28582717pfk.188.2019.05.13.06.33.36
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 13 May 2019 06:33:37 -0700 (PDT)
+From:   Cyrus Lien <cyruslien@gmail.com>
+X-Google-Original-From: Cyrus Lien <cyrus.lien@canonical.com>
+To:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        Golan Ben Ami <golan.ben.ami@intel.com>,
+        Lior Cohen <lior2.cohen@intel.com>,
+        Shaul Triebitz <shaul.triebitz@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Cyrus Lien <cyrus.lien@canonical.com>
+Subject: [PATCH] iwlwifi: trans: fix killer series loadded incorrect firmware
+Date:   Mon, 13 May 2019 21:33:35 +0800
+Message-Id: <20190513133335.14536-1-cyrus.lien@canonical.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday, May 13, 2019 3:01:33 PM CEST, Serge Semin wrote:
-> On Mon, May 13, 2019 at 02:51:03PM +0200, Andrew Lunn wrote:
->>> Ahh, I see. Then using lock-less version of the access=20
->>> methods must fix the
->>> problem. You could try something like this:
->>=20
->> Kunihiko Hayash is way ahead of you.
->>=20
->> =09 Andrew
->
-> I wouldn't say that five hours is "way ahead". But if something=20
-> fixes a bug in
-> a patch it would be good to be have the original author being Cc'ed.
->
-> Vincente, here is a link to the patch, that fixes the problem.
-> https://lkml.org/lkml/2019/5/13/43
->
-> -Segey
+Killer series loadded IWL_22000_HR_B_FW_PRE prefixed firmware instead
+IWL_CC_A_FW_PRE prefixed firmware.
 
-Tested and working OK now.
-Thanks for the link.
-Rgds.
+Add killer series to the check logic as iwl_ax200_cfg_cc.
+
+Signed-off-by: Cyrus Lien <cyrus.lien@canonical.com>
+---
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index 79c1dc05f948..576c2186b6bf 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -3565,7 +3565,9 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
+ 		}
+ 	} else if (CSR_HW_RF_ID_TYPE_CHIP_ID(trans->hw_rf_id) ==
+ 		   CSR_HW_RF_ID_TYPE_CHIP_ID(CSR_HW_RF_ID_TYPE_HR) &&
+-		   (trans->cfg != &iwl_ax200_cfg_cc ||
++		   ((trans->cfg != &iwl_ax200_cfg_cc &&
++		     trans->cfg != &killer1650x_2ax_cfg &&
++		     trans->cfg != &killer1650w_2ax_cfg) ||
+ 		    trans->hw_rev == CSR_HW_REV_TYPE_QNJ_B0)) {
+ 		u32 hw_status;
+ 
+-- 
+2.17.1
+
