@@ -2,77 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 892B51BB1B
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 18:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BBEB1BB1D
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 18:39:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730611AbfEMQiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 12:38:55 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:39848 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728167AbfEMQiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 12:38:55 -0400
-Received: by mail-pl1-f194.google.com with SMTP id g9so6750492plm.6
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 09:38:55 -0700 (PDT)
+        id S1730624AbfEMQjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 12:39:00 -0400
+Received: from mail-qk1-f201.google.com ([209.85.222.201]:46081 "EHLO
+        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728167AbfEMQjA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 12:39:00 -0400
+Received: by mail-qk1-f201.google.com with SMTP id k6so13328541qkf.13
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 09:38:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CY2iW5dxUiiw4vTthzbLv0iBRh+H+Ldd6sWlh00UwlE=;
-        b=YA44uv8nf7hOd1kAw5TIFmF9bANlmuSc+1fVBa7aVharWepyPTSOf9m6tVAldu3ZG7
-         gWmFVwlErSR87fAC6Izbw9gDOJpBZXOqcaQ2J90dztAQkoN03VDTeHyxus+Bx03X/orZ
-         Nesi51AyU3yLxt+kD+lwzsxUtiLiUEc0+/8HJqlckuZ+qeecv/m+51xquBJ6am1Hiq7L
-         kYTM8yb7Qn2hOZOkZKSc7zQ5k4M20m4yy2I4StpKHcR7PK4bC/uLRZl2ZHkp8QCS8A3a
-         d/OxzqdAQPujg7CV9Nyyy3eaGP76MdUyUFxnKunx2OewREiRCW8mTc1r/GdDyoIRzYgs
-         9GXw==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=0j3OK6hF4mf82yxPJIwgHpqW3ZFmvyPeHIUEaQWbhx0=;
+        b=EWPfO5gkQSHCK1fZ6D9STjcKrGg8ME4f7p45bRBK292gX1nMCLrHbysOSnwAEGilcU
+         zCI2ayNa1BA2BsCy0+CiwKqrZtqMC8uaq9mFHlXfCJc7Nm89m70sfox5gifW70utcpyR
+         TjbsLiUInYTs3DVIdmXUOd/WZcJjoNYOJX3/pJYYuGCjuI6cU3VWTvdwE6Hg4rGwoRJn
+         YVJfSoRqivxXfsaUK2kgzAa5kZ7XwGvg23lEs4d+WWOlqBsLGMPoqlLg8rbUbyWRHJEo
+         gB+DWHFIJbiDjJwgBaiLnB66dApj3olZRUSaupjxzs29OX/nwoE1Mw/ttwFmAQWDPhQR
+         /W5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=CY2iW5dxUiiw4vTthzbLv0iBRh+H+Ldd6sWlh00UwlE=;
-        b=jAjtBIYVPP7AvzCGk0Eb0N/05XaUiihzsDCk3By5hCly5KWLf0185cook3jXbQMmae
-         oT9FR/AaoMgWqN/fln3+Mc97vdgrCYtYygUaPus4yVemmWyL0ORYtAhQLARo7vc7rXNR
-         a89S84cLKrUo3imT5iwrS3/XxlJ0R66RHUXeKNelidv1s52NgFcBp20liZAuQa7vSR18
-         iCinO+Af/cu4UsvC5Iu41gLCtGhh096djD5++HN6o/228v39OngwvsWj99fXETa3Z12x
-         24vPG833XT7xJ+R46cToIHywFK+E+9IKAkkooxZrqQXh0FhMoI/cHwu8t3jufQ8hOpWo
-         KPAA==
-X-Gm-Message-State: APjAAAXh0btoXPQ3KYt/nYqTDT2XHfEF/ky+VpPd7wG6YxUun/ZQ7jNg
-        a1087uOafZnUriTHqVsefGA=
-X-Google-Smtp-Source: APXvYqz9YB8dCVnCD2P7Okm/8wYVxNIki4XWvhmg0mf3SG186gYGlvZccbD1OQtd1KauAwwjjw2CgQ==
-X-Received: by 2002:a17:902:2947:: with SMTP id g65mr12780758plb.115.1557765534728;
-        Mon, 13 May 2019 09:38:54 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:5dd:49d5:5580:adf5? ([2601:282:800:fd80:5dd:49d5:5580:adf5])
-        by smtp.googlemail.com with ESMTPSA id e24sm2450566pgl.94.2019.05.13.09.38.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 13 May 2019 09:38:53 -0700 (PDT)
-Subject: Re: [PATCH net v2] rtnetlink: always put ILFA_LINK for links with a
- link-netnsid
-To:     nicolas.dichtel@6wind.com, Sabrina Dubroca <sd@queasysnail.net>,
-        netdev@vger.kernel.org
-Cc:     Dan Winship <danw@redhat.com>
-References: <d5c4710117d390e0f204b7046483727daf452233.1557755096.git.sd@queasysnail.net>
- <9974090c-5124-b3a1-1290-ac9efc4569c4@gmail.com>
- <83ffac16-f03a-acd7-815a-0b952c0ef951@6wind.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0ae8a852-ddb7-20a2-1da6-75d5ad503e61@gmail.com>
-Date:   Mon, 13 May 2019 10:38:52 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <83ffac16-f03a-acd7-815a-0b952c0ef951@6wind.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=0j3OK6hF4mf82yxPJIwgHpqW3ZFmvyPeHIUEaQWbhx0=;
+        b=SRhS7D+3VQrD0osMR8knvd+HYD9TS6ZH1kGIm6HWEhSsvy34hoO6WaKDWwz1hXz3pI
+         DiRPNELWQo0weaiEE4ZCv/ByCQ3IqtpSivgxiRGa/gvS3IT2sRyb++cnFMMXRziNV6ES
+         q3QLtvUxXr2Igp9B5MKJhwNBdC/j3KFiFPiARCevskJsDkU4HJZwNI9S+T46elub7Ih2
+         d9dUtnaz3R4eb4wdN17Q+NfO5X3ZTF5pLvEWmfeona367vvWzVlw7XkQRFODLnOk3GLc
+         gATusfORDpE6uVXq1nOLJnqHetaRFmbcAK2jiBwANHbAvLZ1tq0GikzlPbNWf3PTX8nz
+         iWPg==
+X-Gm-Message-State: APjAAAU3r4naxMgJ4dIg8wDniVApxfBu7zg5jcD1TYtGx/u2Xtd7FEdT
+        ESqJbrOY2Xmt1yPfZ7WQfTk/KKC2XfbhTg==
+X-Google-Smtp-Source: APXvYqzH2sRpHn8wHkU95Zy4b/nQttKfsEu55iUoaGmbAGVh9TDjACHMoKeX9UniSpUjK/3jaDS3YTTj15R16A==
+X-Received: by 2002:ac8:3231:: with SMTP id x46mr24584388qta.328.1557765539082;
+ Mon, 13 May 2019 09:38:59 -0700 (PDT)
+Date:   Mon, 13 May 2019 09:38:55 -0700
+Message-Id: <20190513163855.225489-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
+Subject: [PATCH net] flow_dissector: disable preemption around BPF calls
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        bpf <bpf@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/13/19 9:18 AM, Nicolas Dichtel wrote:
-> Adding this attribute may change the output of 'ip link'.
-> See this patch for example:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=95ec655bc465
-> 
-> 
+Various things in eBPF really require us to disable preemption
+before running an eBPF program.
 
-I figured that would be the response, but wanted to make sure.
+syzbot reported :
+
+BUG: assuming atomic context at net/core/flow_dissector.c:737
+in_atomic(): 0, irqs_disabled(): 0, pid: 24710, name: syz-executor.3
+2 locks held by syz-executor.3/24710:
+ #0: 00000000e81a4bf1 (&tfile->napi_mutex){+.+.}, at: tun_get_user+0x168e/0x3ff0 drivers/net/tun.c:1850
+ #1: 00000000254afebd (rcu_read_lock){....}, at: __skb_flow_dissect+0x1e1/0x4bb0 net/core/flow_dissector.c:822
+CPU: 1 PID: 24710 Comm: syz-executor.3 Not tainted 5.1.0+ #6
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ __cant_sleep kernel/sched/core.c:6165 [inline]
+ __cant_sleep.cold+0xa3/0xbb kernel/sched/core.c:6142
+ bpf_flow_dissect+0xfe/0x390 net/core/flow_dissector.c:737
+ __skb_flow_dissect+0x362/0x4bb0 net/core/flow_dissector.c:853
+ skb_flow_dissect_flow_keys_basic include/linux/skbuff.h:1322 [inline]
+ skb_probe_transport_header include/linux/skbuff.h:2500 [inline]
+ skb_probe_transport_header include/linux/skbuff.h:2493 [inline]
+ tun_get_user+0x2cfe/0x3ff0 drivers/net/tun.c:1940
+ tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2037
+ call_write_iter include/linux/fs.h:1872 [inline]
+ do_iter_readv_writev+0x5fd/0x900 fs/read_write.c:693
+ do_iter_write fs/read_write.c:970 [inline]
+ do_iter_write+0x184/0x610 fs/read_write.c:951
+ vfs_writev+0x1b3/0x2f0 fs/read_write.c:1015
+ do_writev+0x15b/0x330 fs/read_write.c:1058
+ __do_sys_writev fs/read_write.c:1131 [inline]
+ __se_sys_writev fs/read_write.c:1128 [inline]
+ __x64_sys_writev+0x75/0xb0 fs/read_write.c:1128
+ do_syscall_64+0x103/0x670 arch/x86/entry/common.c:298
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Petar Penkov <ppenkov@google.com>
+Cc: Stanislav Fomichev <sdf@google.com>
+---
+ net/core/flow_dissector.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 9ca784c592ac8c9c58282289a81889fbe4658a9e..548f39dde30711ac5be9e921993a6d8e53f74161 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -734,7 +734,9 @@ bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
+ 	flow_keys->nhoff = nhoff;
+ 	flow_keys->thoff = flow_keys->nhoff;
+ 
++	preempt_disable();
+ 	result = BPF_PROG_RUN(prog, ctx);
++	preempt_enable();
+ 
+ 	flow_keys->nhoff = clamp_t(u16, flow_keys->nhoff, nhoff, hlen);
+ 	flow_keys->thoff = clamp_t(u16, flow_keys->thoff,
+-- 
+2.21.0.1020.gf2820cf01a-goog
+
