@@ -2,98 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75BE61BF36
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 23:46:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 475641BF38
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 23:47:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726422AbfEMVqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 17:46:54 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37700 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726174AbfEMVqy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 17:46:54 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6BD5685363;
-        Mon, 13 May 2019 21:46:53 +0000 (UTC)
-Received: from bistromath.localdomain (unknown [10.40.205.249])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 44CB35D71E;
-        Mon, 13 May 2019 21:46:49 +0000 (UTC)
-Date:   Mon, 13 May 2019 23:46:48 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     netdev@vger.kernel.org, Dan Winship <danw@redhat.com>
-Subject: Re: [PATCH net v2] rtnetlink: always put ILFA_LINK for links with a
- link-netnsid
-Message-ID: <20190513214648.GA29270@bistromath.localdomain>
-References: <d5c4710117d390e0f204b7046483727daf452233.1557755096.git.sd@queasysnail.net>
- <b89367f0-18d5-61b2-2572-b1e5b4588d8d@6wind.com>
- <20190513150812.GA18478@bistromath.localdomain>
- <771b21d6-3b1e-c118-2907-5b5782f7cb92@6wind.com>
+        id S1726529AbfEMVrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 17:47:07 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:38682 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726174AbfEMVrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 17:47:06 -0400
+Received: by mail-io1-f69.google.com with SMTP id b16so10925126iot.5
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 14:47:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=/rlXrbp2H3OAY3betgl/KXmyzA7uwrYXbBzE74HvkWI=;
+        b=ltzGiAyu+IGEjR2TXqTcrKtryu8kTCyxiVEe7OQMTO1mKZVTSMcpcLeV4+/+wteX9Q
+         221arvyKt/sb7nRCY8vN/00VPA49qUCbk+uUEBjO6XoVBGEixBisCjyRyf5G10QwlB+3
+         mv9cYCtd7qXhUmmljM1pDKFTi4bbEnoDR0SXjiyHqzIhREei0WjSZzwxPn378LHeZgb7
+         8zQRxX01Zc5kEtFSR4JO9VUEwq/IkNY2yU0yjWokmgQXFC1Zpe7DUXHHGscxtgT9Qug+
+         v6EXBFJLBxijvjNGcuT/sMsvMHlfS5w4hu6jlXZ3ESi+hLdwMbrFYoR+bAHQsleoKCrr
+         GbdA==
+X-Gm-Message-State: APjAAAUZanwsGOtTtE/F0cqH+GDSCKQoKYiUSUVb2nHlIAYZlA/CjFob
+        dmM5+1v55Qr7bTBMi1kyqpXVCeopTWqinX9xQr/0rgRZuYke
+X-Google-Smtp-Source: APXvYqx0tfheyALe0R0WL1ND66kOetDpP0PLCnkZdEC2Q+JJHHiHVsg9RwDEklEWW6G6HUVlcmqdcZTvwH5hvim2hbDvrJ497DGJ
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <771b21d6-3b1e-c118-2907-5b5782f7cb92@6wind.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Mon, 13 May 2019 21:46:53 +0000 (UTC)
+X-Received: by 2002:a05:660c:ac3:: with SMTP id k3mr997600itl.79.1557784025621;
+ Mon, 13 May 2019 14:47:05 -0700 (PDT)
+Date:   Mon, 13 May 2019 14:47:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007bee9b0588cbdb77@google.com>
+Subject: net boot error: WARNING: workqueue cpumask: online intersect >
+ possible intersect
+From:   syzbot <syzbot+e7d5400c7ea466bf6c81@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-05-13, 17:13:36 +0200, Nicolas Dichtel wrote:
-> Le 13/05/2019 à 17:08, Sabrina Dubroca a écrit :
-> > 2019-05-13, 16:50:51 +0200, Nicolas Dichtel wrote:
-> >> Le 13/05/2019 à 15:47, Sabrina Dubroca a écrit :
-> >>> Currently, nla_put_iflink() doesn't put the IFLA_LINK attribute when
-> >>> iflink == ifindex.
-> >>>
-> >>> In some cases, a device can be created in a different netns with the
-> >>> same ifindex as its parent. That device will not dump its IFLA_LINK
-> >>> attribute, which can confuse some userspace software that expects it.
-> >>> For example, if the last ifindex created in init_net and foo are both
-> >>> 8, these commands will trigger the issue:
-> >>>
-> >>>     ip link add parent type dummy                   # ifindex 9
-> >>>     ip link add link parent netns foo type macvlan  # ifindex 9 in ns foo
-> >>>
-> >>> So, in case a device puts the IFLA_LINK_NETNSID attribute in a dump,
-> >>> always put the IFLA_LINK attribute as well.
-> >>>
-> >>> Thanks to Dan Winship for analyzing the original OpenShift bug down to
-> >>> the missing netlink attribute.
-> >>>
-> >>> Analyzed-by: Dan Winship <danw@redhat.com>
-> >>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> >> I would say:
-> >> Fixes: 5e6700b3bf98 ("sit: add support of x-netns")
-> >>
-> >> Because before this patch, there was no device with an iflink that can be put in
-> >> another netns.
-> > 
-> > That tells us how far back we might want to backport this fix, but not
-> > which commit introduced the bug. I think Fixes should refer to the
-> > introduction of the faulty code, not to what patch made it visible (if
-> > we can find both).
-> No sure to follow you. The problem you describe cannot happen before commit
-> 5e6700b3bf98, so there cannot be a "faulty" patch before that commit.
+Hello,
 
-What about macvlan devices?
+syzbot found the following crash on:
 
-From commit b863ceb7ddce ("[NET]: Add macvlan driver"):
+HEAD commit:    d4c26eb6 net: ethernet: stmmac: dwmac-sun8i: enable suppor..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=1467a174a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=de3262a7df18d5ca
+dashboard link: https://syzkaller.appspot.com/bug?extid=e7d5400c7ea466bf6c81
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-static int macvlan_init(struct net_device *dev)
-{
-...
-        dev->iflink             = lowerdev->ifindex;
-...
-}
+Unfortunately, I don't have any reproducer for this crash yet.
 
-vlan devices also had an iflink assigned since commit ddd7bf9fe4e5.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+e7d5400c7ea466bf6c81@syzkaller.appspotmail.com
 
-What am I missing?
+smpboot: CPU0: Intel(R) Xeon(R) CPU @ 2.30GHz (family: 0x6, model: 0x3f,  
+stepping: 0x0)
+Performance Events: unsupported p6 CPU model 63 no PMU driver, software  
+events only.
+rcu: Hierarchical SRCU implementation.
+NMI watchdog: Perf NMI watchdog permanently disabled
+smp: Bringing up secondary CPUs ...
+x86: Booting SMP configuration:
+.... node  #0, CPUs:      #1
+smp: Brought up 2 nodes, 2 CPUs
+smpboot: Max logical packages: 1
+smpboot: Total of 2 processors activated (9200.00 BogoMIPS)
+devtmpfs: initialized
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns:  
+19112604462750000 ns
+futex hash table entries: 512 (order: 4, 65536 bytes)
+xor: automatically using best checksumming function   avx
+PM: RTC time: 19:42:27, date: 2019-05-13
+NET: Registered protocol family 16
+audit: initializing netlink subsys (disabled)
+cpuidle: using governor menu
+ACPI: bus type PCI registered
+dca service started, version 1.12.1
+PCI: Using configuration type 1 for base access
+WARNING: workqueue cpumask: online intersect > possible intersect
+HugeTLB registered 1.00 GiB page size, pre-allocated 0 pages
+HugeTLB registered 2.00 MiB page size, pre-allocated 0 pages
+cryptd: max_cpu_qlen set to 1000
+raid6: avx2x4   gen() 11252 MB/s
+raid6: avx2x4   xor()  6726 MB/s
+raid6: avx2x2   gen()  7021 MB/s
+raid6: avx2x2   xor()  3931 MB/s
+raid6: avx2x1   gen()  4150 MB/s
+raid6: avx2x1   xor()  2274 MB/s
+raid6: sse2x4   gen()  5782 MB/s
+raid6: sse2x4   xor()  3445 MB/s
+raid6: sse2x2   gen()  3614 MB/s
+raid6: sse2x2   xor()  2050 MB/s
+raid6: sse2x1   gen()  1853 MB/s
+raid6: sse2x1   xor()  1076 MB/s
+raid6: using algorithm avx2x4 gen() 11252 MB/s
+raid6: .... xor() 6726 MB/s, rmw enabled
+raid6: using avx2x2 recovery algorithm
+ACPI: Added _OSI(Module Device)
+ACPI: Added _OSI(Processor Device)
+ACPI: Added _OSI(3.0 _SCP Extensions)
+ACPI: Added _OSI(Processor Aggregator Device)
+ACPI: Added _OSI(Linux-Dell-Video)
+ACPI: Added _OSI(Linux-Lenovo-NV-HDMI-Audio)
+ACPI: Added _OSI(Linux-HPI-Hybrid-Graphics)
+ACPI: 2 ACPI AML tables successfully acquired and loaded
+ACPI: Interpreter enabled
+ACPI: (supports S0 S3 S4 S5)
+ACPI: Using IOAPIC for interrupt routing
+PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and  
+report a bug
+ACPI: Enabled 16 GPEs in block 00 to 0F
+ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
+acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI]
+acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended  
+PCI configuration space under this bridge.
+PCI host bridge to bus 0000:00
+pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+pci_bus 0000:00: root bus resource [mem 0xc0000000-0xfebfffff window]
+pci_bus 0000:00: root bus resource [bus 00-ff]
+pci 0000:00:01.3: quirk: [io  0xb000-0xb03f] claimed by PIIX4 ACPI
+ACPI: PCI Interrupt Link [LNKA] (IRQs 5 *10 11)
+ACPI: PCI Interrupt Link [LNKB] (IRQs 5 *10 11)
+ACPI: PCI Interrupt Link [LNKC] (IRQs 5 10 *11)
+ACPI: PCI Interrupt Link [LNKD] (IRQs 5 10 *11)
+ACPI: PCI Interrupt Link [LNKS] (IRQs *9)
+vgaarb: loaded
+SCSI subsystem initialized
+ACPI: bus type USB registered
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+media: Linux media interface: v0.10
+videodev: Linux video capture interface: v2.00
+pps_core: LinuxPPS API ver. 1 registered
+pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti  
+<giometti@linux.it>
+PTP clock support registered
+EDAC MC: Ver: 3.0.0
+Advanced Linux Sound Architecture Driver Initialized.
+PCI: Using ACPI for IRQ routing
+Bluetooth: Core ver 2.22
+NET: Registered protocol family 31
+Bluetooth: HCI device and connection manager initialized
+Bluetooth: HCI socket layer initialized
+Bluetooth: L2CAP socket layer initialized
+Bluetooth: SCO socket layer initialized
+NET: Registered protocol family 8
+NET: Registered protocol family 20
+NetLabel: Initializing
+NetLabel:  domain hash size = 128
+NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+NetLabel:  unlabeled traffic allowed by default
+nfc: nfc_init: NFC Core ver 0.1
+NET: Registered protocol family 39
+clocksource: Switched to clocksource kvm-clock
+VFS: Disk quotas dquot_6.6.0
+VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+FS-Cache: Loaded
+*** VALIDATE hugetlbfs ***
+CacheFiles: Loaded
+TOMOYO: 2.6.0
+Profile 0 (used by '<kernel>') is not defined.
+Userland tools for TOMOYO 2.6 must be installed and policy must be  
+initialized.
+Please see https://tomoyo.osdn.jp/2.6/ for more information.
 
--- 
-Sabrina
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
