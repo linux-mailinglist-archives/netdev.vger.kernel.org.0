@@ -2,55 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A9111BB6D
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 19:00:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E27DB1BB75
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 19:01:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731011AbfEMRA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 13:00:28 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:40174 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728822AbfEMRA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 13:00:27 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id DB8D214E27EBA;
-        Mon, 13 May 2019 10:00:26 -0700 (PDT)
-Date:   Mon, 13 May 2019 10:00:26 -0700 (PDT)
-Message-Id: <20190513.100026.93486365176104585.davem@davemloft.net>
-To:     clabbe@baylibre.com
-Cc:     alexandre.torgue@st.com, joabreu@synopsys.com,
-        maxime.ripard@bootlin.com, peppe.cavallaro@st.com, wens@csie.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-sunxi@googlegroups.com
-Subject: Re: [PATCH] net: ethernet: stmmac: dwmac-sun8i: enable support of
- unicast filtering
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1557752799-9989-1-git-send-email-clabbe@baylibre.com>
-References: <1557752799-9989-1-git-send-email-clabbe@baylibre.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 13 May 2019 10:00:27 -0700 (PDT)
+        id S1731221AbfEMRBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 13:01:49 -0400
+Received: from mga04.intel.com ([192.55.52.120]:13979 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728822AbfEMRBr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 13:01:47 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 May 2019 10:01:16 -0700
+X-ExtLoop1: 1
+Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
+  by orsmga008.jf.intel.com with ESMTP; 13 May 2019 10:01:16 -0700
+Received: from orsmsx125.amr.corp.intel.com (10.22.240.125) by
+ ORSMSX102.amr.corp.intel.com (10.22.225.129) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Mon, 13 May 2019 10:01:15 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
+ ORSMSX125.amr.corp.intel.com ([169.254.3.172]) with mapi id 14.03.0415.000;
+ Mon, 13 May 2019 10:01:15 -0700
+From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mroos@linux.ee" <mroos@linux.ee>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+CC:     "namit@vmware.com" <namit@vmware.com>
+Subject: Re: bpf VM_FLUSH_RESET_PERMS breaks sparc64 boot
+Thread-Topic: bpf VM_FLUSH_RESET_PERMS breaks sparc64 boot
+Thread-Index: AQHVCZRjj+cySzbkfEOvygRTeV/vmqZpvREA
+Date:   Mon, 13 May 2019 17:01:15 +0000
+Message-ID: <b8493de00d9973f6f054814ed69d146b29207d3e.camel@intel.com>
+References: <4401874b-31b9-42a0-31bd-32bef5b36f2a@linux.ee>
+In-Reply-To: <4401874b-31b9-42a0-31bd-32bef5b36f2a@linux.ee>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.54.75.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <65999923B50E844DB7DCAA10933EAB82@intel.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
-Date: Mon, 13 May 2019 13:06:39 +0000
-
-> When adding more MAC address to a dwmac-sun8i interface, the device goes
-> directly in promiscuous mode.
-> This is due to IFF_UNICAST_FLT missing flag.
-> 
-> So since the hardware support unicast filtering, let's add IFF_UNICAST_FLT.
-> 
-> Fixes: 9f93ac8d4085 ("net-next: stmmac: Add dwmac-sun8i")
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-
-Applied with s/address/addresses/
-
-Thanks.
+T24gTW9uLCAyMDE5LTA1LTEzIGF0IDE3OjAxICswMzAwLCBNZWVsaXMgUm9vcyB3cm90ZToNCj4g
+SSB0ZXN0ZWQgeWVzdGVyZGF5cyA1LjIgZGV2ZWwgZ2l0IGFuZCBpdCBmYWlsZWQgdG8gYm9vdCBv
+biBteSBTdW4gRmlyZSBWNDQ1DQo+ICg0eCBVbHRyYVNwYXJjIElJSSkuIEluaXQgaXMgc3RhcnRl
+ZCBhbmQgaXQgaGFuZ3MgdGhlcmU6DQo+IA0KPiBbICAgMzguNDE0NDM2XSBSdW4gL3NiaW4vaW5p
+dCBhcyBpbml0IHByb2Nlc3MNCj4gWyAgIDM4LjUzMDcxMV0gcmFuZG9tOiBmYXN0IGluaXQgZG9u
+ZQ0KPiBbICAgMzkuNTgwNjc4XSBzeXN0ZW1kWzFdOiBJbnNlcnRlZCBtb2R1bGUgJ2F1dG9mczQn
+DQo+IFsgICAzOS43MjE1NzddIHN5c3RlbWRbMV06IHN5c3RlbWQgMjQxIHJ1bm5pbmcgaW4gc3lz
+dGVtIG1vZGUuICgrUEFNICtBVURJVA0KPiArU0VMSU5VWCArSU1BICtBUFBBUk1PUiArU01BQ0sg
+K1NZU1ZJTklUICtVVE1QICtMSUJDUllQVFNFVFVQICtHQ1JZUFQgK0dOVVRMUw0KPiArQUNMICtY
+WiArTFo0IC1TRUNDT01QICtCTEtJRCArRUxGVVRJTFMgK0tNT0QgLUlETjIgK0lETiAtUENSRTIg
+ZGVmYXVsdC0NCj4gaGllcmFyY2h5PWh5YnJpZCkNCj4gWyAgIDQwLjAyODA2OF0gc3lzdGVtZFsx
+XTogRGV0ZWN0ZWQgYXJjaGl0ZWN0dXJlIHNwYXJjNjQuDQo+IA0KPiBXZWxjb21lIHRvIERlYmlh
+biBHTlUvTGludXggMTAgKGJ1c3RlcikhDQo+IA0KPiBbICAgNDAuMTY4NzEzXSBzeXN0ZW1kWzFd
+OiBTZXQgaG9zdG5hbWUgdG8gPHY0NDU+Lg0KPiBbICAgNjEuMzE4MDM0XSByY3U6IElORk86IHJj
+dV9zY2hlZCBkZXRlY3RlZCBzdGFsbHMgb24gQ1BVcy90YXNrczoNCj4gWyAgIDYxLjQwMzAzOV0g
+cmN1OiAgICAgMS0uLi4hOiAoMCB0aWNrcyB0aGlzIEdQKQ0KPiBpZGxlPTYwMi8xLzB4NDAwMDAw
+MDAwMDAwMDAwMCBzb2Z0aXJxPTg1Lzg1IGZxcz0xDQo+IFsgICA2MS41MjY3ODBdIHJjdTogICAg
+IChkZXRlY3RlZCBieSAzLCB0PTUyNTIgamlmZmllcywgZz0tOTY3LCBxPTIyOCkNCj4gWyAgIDYx
+LjYxMzAzN10gICBDUFVbICAxXTogVFNUQVRFWzAwMDAwMDAwODAwMDE2MDJdIFRQQ1swMDAwMDAw
+MDAwNDNmMmI4XQ0KPiBUTlBDWzAwMDAwMDAwMDA0M2YyYmNdIFRBU0tbc3lzdGVtZC1mc3RhYi1n
+OjkwXQ0KPiBbICAgNjEuNzY2ODI4XSAgICAgICAgICAgICAgVFBDW3NtcF9zeW5jaHJvbml6ZV90
+aWNrX2NsaWVudCsweDE4LzB4MTgwXQ0KPiBPN1tfX2RvX211bm1hcCsweDIwNC8weDNlMF0gSTdb
+eGNhbGxfc3luY190aWNrKzB4MWMvMHgyY10NCj4gUlBDW3BhZ2VfZXZpY3RhYmxlKzB4NC8weDYw
+XQ0KPiBbICAgNjEuOTY2ODA3XSByY3U6IHJjdV9zY2hlZCBrdGhyZWFkIHN0YXJ2ZWQgZm9yIDUy
+NTAgamlmZmllcyEgZy05NjcgZjB4MA0KPiBSQ1VfR1BfV0FJVF9GUVMoNSkgLT5zdGF0ZT0weDQw
+MiAtPmNwdT0yDQo+IFsgICA2Mi4xMTMwNThdIHJjdTogUkNVIGdyYWNlLXBlcmlvZCBrdGhyZWFk
+IHN0YWNrIGR1bXA6DQo+IFsgICA2Mi4xODU1NThdIHJjdV9zY2hlZCAgICAgICBJICAgIDAgICAg
+MTAgICAgICAyIDB4MDYwMDAwMDANCj4gWyAgIDYyLjI2NDMxMl0gQ2FsbCBUcmFjZToNCj4gWyAg
+IDYyLjI5OTMxNl0gIFswMDAwMDAwMDAwOTJhMWZjXSBzY2hlZHVsZSsweDFjLzB4ODANCj4gWyAg
+IDYyLjM2ODA3MV0gIFswMDAwMDAwMDAwOTJkM2ZjXSBzY2hlZHVsZV90aW1lb3V0KzB4MTNjLzB4
+MjgwDQo+IFsgICA2Mi40NDkzMjhdICBbMDAwMDAwMDAwMDRiNmM2NF0gcmN1X2dwX2t0aHJlYWQr
+MHg0YzQvMHhhNDANCj4gWyAgIDYyLjUyODA3N10gIFswMDAwMDAwMDAwNDdlOTVjXSBrdGhyZWFk
+KzB4ZmMvMHgxMjANCj4gWyAgIDYyLjU5NjgzM10gIFswMDAwMDAwMDAwNDA2MGE0XSByZXRfZnJv
+bV9mb3JrKzB4MWMvMHgyYw0KPiBbICAgNjIuNjcxODMxXSAgWzAwMDAwMDAwMDAwMDAwMDBdICAg
+ICAgICAgICAobnVsbCkNCj4gDQo+IDUuMS4wIHdvcmtlZCBmaW5lLiBJIGJpc2VjdGVkIGl0IHRv
+IHRoZSBmb2xsb3dpbmcgY29tbWl0Og0KPiANCj4gZDUzZDJmNzhjZWFkYmEwODFmYzc3ODU1NzA3
+OThjM2M4ZDUwYTcxOCBpcyB0aGUgZmlyc3QgYmFkIGNvbW1pdA0KPiBjb21taXQgZDUzZDJmNzhj
+ZWFkYmEwODFmYzc3ODU1NzA3OThjM2M4ZDUwYTcxOA0KPiBBdXRob3I6IFJpY2sgRWRnZWNvbWJl
+IDxyaWNrLnAuZWRnZWNvbWJlQGludGVsLmNvbT4NCj4gRGF0ZTogICBUaHUgQXByIDI1IDE3OjEx
+OjM4IDIwMTkgLTA3MDANCj4gDQo+ICAgICAgYnBmOiBVc2Ugdm1hbGxvYyBzcGVjaWFsIGZsYWcN
+Cj4gICAgICANCj4gICAgICBVc2UgbmV3IGZsYWcgVk1fRkxVU0hfUkVTRVRfUEVSTVMgZm9yIGhh
+bmRsaW5nIGZyZWVpbmcgb2Ygc3BlY2lhbA0KPiAgICAgIHBlcm1pc3Npb25lZCBtZW1vcnkgaW4g
+dm1hbGxvYyBhbmQgcmVtb3ZlIHBsYWNlcyB3aGVyZSBtZW1vcnkgd2FzIHNldCBSVw0KPiAgICAg
+IGJlZm9yZSBmcmVlaW5nIHdoaWNoIGlzIG5vIGxvbmdlciBuZWVkZWQuIERvbid0IHRyYWNrIGlm
+IHRoZSBtZW1vcnkgaXMgUk8NCj4gICAgICBhbnltb3JlIGJlY2F1c2UgaXQgaXMgbm93IHRyYWNr
+ZWQgaW4gdm1hbGxvYy4NCj4gICAgICANCj4gICAgICBTaWduZWQtb2ZmLWJ5OiBSaWNrIEVkZ2Vj
+b21iZSA8cmljay5wLmVkZ2Vjb21iZUBpbnRlbC5jb20+DQo+ICAgICAgU2lnbmVkLW9mZi1ieTog
+UGV0ZXIgWmlqbHN0cmEgKEludGVsKSA8cGV0ZXJ6QGluZnJhZGVhZC5vcmc+DQo+ICAgICAgQ2M6
+IDxha3BtQGxpbnV4LWZvdW5kYXRpb24ub3JnPg0KPiAgICAgIENjOiA8YXJkLmJpZXNoZXV2ZWxA
+bGluYXJvLm9yZz4NCj4gICAgICBDYzogPGRlbmVlbi50LmRvY2tAaW50ZWwuY29tPg0KPiAgICAg
+IENjOiA8a2VybmVsLWhhcmRlbmluZ0BsaXN0cy5vcGVud2FsbC5jb20+DQo+ICAgICAgQ2M6IDxr
+cmlzdGVuQGxpbnV4LmludGVsLmNvbT4NCj4gICAgICBDYzogPGxpbnV4X2R0aUBpY2xvdWQuY29t
+Pg0KPiAgICAgIENjOiA8d2lsbC5kZWFjb25AYXJtLmNvbT4NCj4gICAgICBDYzogQWxleGVpIFN0
+YXJvdm9pdG92IDxhc3RAa2VybmVsLm9yZz4NCj4gICAgICBDYzogQW5keSBMdXRvbWlyc2tpIDxs
+dXRvQGtlcm5lbC5vcmc+DQo+ICAgICAgQ2M6IEJvcmlzbGF2IFBldGtvdiA8YnBAYWxpZW44LmRl
+Pg0KPiAgICAgIENjOiBEYW5pZWwgQm9ya21hbm4gPGRhbmllbEBpb2dlYXJib3gubmV0Pg0KPiAg
+ICAgIENjOiBEYXZlIEhhbnNlbiA8ZGF2ZS5oYW5zZW5AbGludXguaW50ZWwuY29tPg0KPiAgICAg
+IENjOiBILiBQZXRlciBBbnZpbiA8aHBhQHp5dG9yLmNvbT4NCj4gICAgICBDYzogTGludXMgVG9y
+dmFsZHMgPHRvcnZhbGRzQGxpbnV4LWZvdW5kYXRpb24ub3JnPg0KPiAgICAgIENjOiBOYWRhdiBB
+bWl0IDxuYWRhdi5hbWl0QGdtYWlsLmNvbT4NCj4gICAgICBDYzogUmlrIHZhbiBSaWVsIDxyaWVs
+QHN1cnJpZWwuY29tPg0KPiAgICAgIENjOiBUaG9tYXMgR2xlaXhuZXIgPHRnbHhAbGludXRyb25p
+eC5kZT4NCj4gICAgICBMaW5rOiBodHRwczovL2xrbWwua2VybmVsLm9yZy9yLzIwMTkwNDI2MDAx
+MTQzLjQ5ODMtMTktbmFtaXRAdm13YXJlLmNvbQ0KPiAgICAgIFNpZ25lZC1vZmYtYnk6IEluZ28g
+TW9sbmFyIDxtaW5nb0BrZXJuZWwub3JnPg0KPiANCj4gOjA0MDAwMCAwNDAwMDAgNTgwNjZkZTUz
+MTA3ZWFiMDcwNTM5OGI1ZDBjNDA3NDI0YzEzOGE4Ng0KPiA3YTEzNDVkNDNjNGNhY2VlNjBiOTEz
+NTg5OWI3NzVlY2RiNTRlYTdlIE0gICAgICBpbmNsdWRlDQo+IDowNDAwMDAgMDQwMDAwIGQwMjY5
+MmNmNTdhMzU5MDU2YjM0ZTYzNmQwZjEwMmQzN2RlNWIyNjQNCj4gODFjNGMyYzY0MDhiNjhlYjU1
+NTY3M2JkM2YwYmMzMDcxZGIxZjdlZCBNICAgICAga2VybmVsDQo+IA0KVGhhbmtzLCBJJ2xsIHNl
+ZSBpZiBJIGNhbiByZXByb2R1Y2UuDQoNClJpY2sNCg==
