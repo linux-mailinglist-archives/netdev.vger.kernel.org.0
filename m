@@ -2,74 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9441D1B12D
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 09:30:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 015691B13C
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 09:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbfEMHah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 03:30:37 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:57399 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbfEMHah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 03:30:37 -0400
-X-Originating-IP: 90.88.28.253
-Received: from mc-bl-xps13.lan (aaubervilliers-681-1-86-253.w90-88.abo.wanadoo.fr [90.88.28.253])
-        (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 94B8F1BF208;
-        Mon, 13 May 2019 07:30:33 +0000 (UTC)
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
-        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
-        mw@semihalf.com, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net v2] net: mvpp2: cls: Add missing NETIF_F_NTUPLE flag
-Date:   Mon, 13 May 2019 09:30:33 +0200
-Message-Id: <20190513073033.15015-1-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.20.1
+        id S1728054AbfEMHgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 03:36:00 -0400
+Received: from ushosting.nmnhosting.com ([66.55.73.32]:37960 "EHLO
+        ushosting.nmnhosting.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727347AbfEMHf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 03:35:59 -0400
+Received: from mail2.nmnhosting.com (unknown [202.169.106.97])
+        by ushosting.nmnhosting.com (Postfix) with ESMTPS id 231832DC0069;
+        Mon, 13 May 2019 03:35:57 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=d-silva.org;
+        s=201810a; t=1557732958;
+        bh=aa+i95blYOSxhGwoRx9zFnMo5oG4XUfXT748BNmFJIU=;
+        h=From:To:Cc:References:In-Reply-To:Subject:Date:From;
+        b=aSet9rLYykQxcyXFS2GF9u8JjdaPfKwlu1qpX3Ek5B3X+zmGgF+1WtmJH8QDHUKVR
+         POJW18jnNWqKlc9WV/y9wswfLzQAdORTjoBGt6wbLb+XQzz+YSA8YT8exQIamI1hKA
+         NgBZZqdAOIFcj5X4mKMcpOALzVECo4ayuE60g+CPH7CvPt6lSOfmFpWRNnpn+wYPF4
+         P6SqYrz3uRsFocaNWbLb6GRXp8TE8CKtYMYUEeB/QfMAnGJ7U/FZrL/hYqxDE0ryBG
+         /8/mtlXRqGs0pBJCO5WKEQDm1lzWRXt40l8YPyEBjUBm/McmvG1Iafbx2EfRhysC43
+         vKIF2BpJNTxkposUCWaXgJuoNekulC6f7wlHUlNkNooeQHpAKXYuClI/ikmvCrnCff
+         Vy/fK7azMrun4S9M5k0UdX9IUayiM9Y1AVv1iAHjIJrMhP8ELgeNkTypKa35MyJMjx
+         LmIQVy3zVwlAOW1mMnZhrLapo90FKO26dOcJq140LOTx0ZahhIuR6KISKy+FuwYBfp
+         cNemDFNeNEkfGRWxw0VhCsOArzkI9iJJSDwhVYx2DI4O1xJX2kFEObBeq4rx25ClRK
+         PDCjVeuymuPU3aUBQKrJtdTxur1fcbH6SvSnl3OKtvCVGly9Za8zstBXG1KdRUNuvp
+         kOJclMVcOxeDGLfkA1Mcr7AQ=
+Received: from Hawking (ntp.lan [10.0.1.1])
+        (authenticated bits=0)
+        by mail2.nmnhosting.com (8.15.2/8.15.2) with ESMTPSA id x4D7ZjC4057687
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 13 May 2019 17:35:46 +1000 (AEST)
+        (envelope-from alastair@d-silva.org)
+From:   "Alastair D'Silva" <alastair@d-silva.org>
+To:     "'Geert Uytterhoeven'" <geert@linux-m68k.org>,
+        "'Alastair D'Silva'" <alastair@au1.ibm.com>
+Cc:     "'Jani Nikula'" <jani.nikula@linux.intel.com>,
+        "'Joonas Lahtinen'" <joonas.lahtinen@linux.intel.com>,
+        "'Rodrigo Vivi'" <rodrigo.vivi@intel.com>,
+        "'David Airlie'" <airlied@linux.ie>,
+        "'Daniel Vetter'" <daniel@ffwll.ch>,
+        "'Dan Carpenter'" <dan.carpenter@oracle.com>,
+        "'Karsten Keil'" <isdn@linux-pingi.de>,
+        "'Jassi Brar'" <jassisinghbrar@gmail.com>,
+        "'Tom Lendacky'" <thomas.lendacky@amd.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        "'Jose Abreu'" <Jose.Abreu@synopsys.com>,
+        "'Kalle Valo'" <kvalo@codeaurora.org>,
+        "'Stanislaw Gruszka'" <sgruszka@redhat.com>,
+        "'Benson Leung'" <bleung@chromium.org>,
+        "'Enric Balletbo i Serra'" <enric.balletbo@collabora.com>,
+        "'James E.J. Bottomley'" <jejb@linux.ibm.com>,
+        "'Martin K. Petersen'" <martin.petersen@oracle.com>,
+        "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>,
+        "'Alexander Viro'" <viro@zeniv.linux.org.uk>,
+        "'Petr Mladek'" <pmladek@suse.com>,
+        "'Sergey Senozhatsky'" <sergey.senozhatsky@gmail.com>,
+        "'Steven Rostedt'" <rostedt@goodmis.org>,
+        "'David Laight'" <David.Laight@aculab.com>,
+        "'Andrew Morton'" <akpm@linux-foundation.org>,
+        "'Intel Graphics Development'" <intel-gfx@lists.freedesktop.org>,
+        "'DRI Development'" <dri-devel@lists.freedesktop.org>,
+        "'Linux Kernel Mailing List'" <linux-kernel@vger.kernel.org>,
+        "'netdev'" <netdev@vger.kernel.org>, <ath10k@lists.infradead.org>,
+        "'linux-wireless'" <linux-wireless@vger.kernel.org>,
+        "'scsi'" <linux-scsi@vger.kernel.org>,
+        "'Linux Fbdev development list'" <linux-fbdev@vger.kernel.org>,
+        "'driverdevel'" <devel@driverdev.osuosl.org>,
+        "'Linux FS Devel'" <linux-fsdevel@vger.kernel.org>
+References: <20190508070148.23130-1-alastair@au1.ibm.com> <20190508070148.23130-4-alastair@au1.ibm.com> <CAMuHMdVefYTgHzGKBc0ebku1z8V3wsM0ydN+6-S2nFKaB8eH_Q@mail.gmail.com>
+In-Reply-To: <CAMuHMdVefYTgHzGKBc0ebku1z8V3wsM0ydN+6-S2nFKaB8eH_Q@mail.gmail.com>
+Subject: RE: [PATCH v2 3/7] lib/hexdump.c: Optionally suppress lines of repeated bytes
+Date:   Mon, 13 May 2019 17:35:47 +1000
+Message-ID: <04de01d5095e$7f6af730$7e40e590$@d-silva.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: en-au
+Thread-Index: AQGz7QD7bMLLz3XdMyQiMIIzLY+D4AJkmwv+AXBy99KmjDiokA==
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail2.nmnhosting.com [10.0.1.20]); Mon, 13 May 2019 17:35:53 +1000 (AEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that the mvpp2 driver supports classification offloading, we must
-add the NETIF_F_NTUPLE to the features list.
+> -----Original Message-----
+> From: Geert Uytterhoeven <geert@linux-m68k.org>
+> Sent: Monday, 13 May 2019 5:01 PM
+> To: Alastair D'Silva <alastair@au1.ibm.com>
+> Cc: alastair@d-silva.org; Jani Nikula <jani.nikula@linux.intel.com>; =
+Joonas
+> Lahtinen <joonas.lahtinen@linux.intel.com>; Rodrigo Vivi
+> <rodrigo.vivi@intel.com>; David Airlie <airlied@linux.ie>; Daniel =
+Vetter
+> <daniel@ffwll.ch>; Dan Carpenter <dan.carpenter@oracle.com>; Karsten
+> Keil <isdn@linux-pingi.de>; Jassi Brar <jassisinghbrar@gmail.com>; Tom
+> Lendacky <thomas.lendacky@amd.com>; David S. Miller
+> <davem@davemloft.net>; Jose Abreu <Jose.Abreu@synopsys.com>; Kalle
+> Valo <kvalo@codeaurora.org>; Stanislaw Gruszka <sgruszka@redhat.com>;
+> Benson Leung <bleung@chromium.org>; Enric Balletbo i Serra
+> <enric.balletbo@collabora.com>; James E.J. Bottomley
+> <jejb@linux.ibm.com>; Martin K. Petersen <martin.petersen@oracle.com>;
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Alexander Viro
+> <viro@zeniv.linux.org.uk>; Petr Mladek <pmladek@suse.com>; Sergey
+> Senozhatsky <sergey.senozhatsky@gmail.com>; Steven Rostedt
+> <rostedt@goodmis.org>; David Laight <David.Laight@aculab.com>; Andrew
+> Morton <akpm@linux-foundation.org>; Intel Graphics Development <intel-
+> gfx@lists.freedesktop.org>; DRI Development <dri-
+> devel@lists.freedesktop.org>; Linux Kernel Mailing List <linux-
+> kernel@vger.kernel.org>; netdev <netdev@vger.kernel.org>;
+> ath10k@lists.infradead.org; linux-wireless =
+<linux-wireless@vger.kernel.org>;
+> scsi <linux-scsi@vger.kernel.org>; Linux Fbdev development list =
+<linux-
+> fbdev@vger.kernel.org>; driverdevel <devel@driverdev.osuosl.org>; =
+Linux
+> FS Devel <linux-fsdevel@vger.kernel.org>
+> Subject: Re: [PATCH v2 3/7] lib/hexdump.c: Optionally suppress lines =
+of
+> repeated bytes
+>=20
+> Hi Alastair,
+>=20
+> Thanks for your patch!
 
-Since the current code doesn't allow disabling the feature, we don't set
-the flag in dev->hw_features.
+And thanks for your politeness :)
 
-Fixes: 90b509b39ac9 ("net: mvpp2: cls: Add Classification offload support")
-Reported-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
----
-V2: Rebased on latest -net, added Jakub's Ack, gave more details in the
-    commit log about not adding the flag in hw_features.
+>=20
+> On Wed, May 8, 2019 at 9:04 AM Alastair D'Silva <alastair@au1.ibm.com>
+> wrote:
+> > From: Alastair D'Silva <alastair@d-silva.org>
+> >
+> > Some buffers may only be partially filled with useful data, while =
+the
+> > rest is padded (typically with 0x00 or 0xff).
+> >
+> > This patch introduces a flag to allow the supression of lines of
+> > repeated bytes,
+>=20
+> Given print_hex_dump() operates on entities of groupsize (1, 2, 4, or =
+8)
+> bytes, wouldn't it make more sense to consider repeated groups instead =
+of
+> repeated bytes?
 
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Maybe, it would mean that subsequent addresses may not be a multiple of =
+rowsize though, which is useful.
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 56d43d9b43ef..d38952eb7aa9 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -5058,8 +5058,10 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 	dev->hw_features |= features | NETIF_F_RXCSUM | NETIF_F_GRO |
- 			    NETIF_F_HW_VLAN_CTAG_FILTER;
- 
--	if (mvpp22_rss_is_supported())
-+	if (mvpp22_rss_is_supported()) {
- 		dev->hw_features |= NETIF_F_RXHASH;
-+		dev->features |= NETIF_F_NTUPLE;
-+	}
- 
- 	if (port->pool_long->id == MVPP2_BM_JUMBO && port->id != 0) {
- 		dev->features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
--- 
-2.20.1
+> > which are replaced with '** Skipped %u bytes of value 0x%x **'
+>=20
+> Using a custom message instead of just "*", like "hexdump" uses, will =
+require
+> preprocessing the output when recovering the original binary data by
+> feeding it to e.g. "xxd".
+> This may sound worse than it is, though, as I never got "xxd" to work =
+without
+> preprocessing anyway ;-)
+
+I think showing the details of the skipped values is useful when reading =
+the output directly. In situations where binary extracts are desired, =
+the feature can always be disabled.
+
+--=20
+Alastair D'Silva           mob: 0423 762 819
+skype: alastair_dsilva     msn: alastair@d-silva.org
+blog: http://alastair.d-silva.org    Twitter: @EvilDeece
+
+
 
