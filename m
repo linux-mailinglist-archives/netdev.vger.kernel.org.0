@@ -2,120 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 057401BEEE
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 23:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ACA31BEEA
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 23:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbfEMVCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 17:02:42 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:45783 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbfEMVCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 17:02:41 -0400
-Received: by mail-pl1-f194.google.com with SMTP id a5so7060434pls.12
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 14:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=RyYeiTkXVG6rOzRfWLj4K86vKbyG5AHSg6mr8z5PfUE=;
-        b=lrqk6UdUat1UwUQfIm/0l/kpxCLpTYDzDaI47rkR4Cu5NMm4+PrCWKTg6oDlmkVmY9
-         E/e8pOkS437aCyHc/6yHw7v6j9DWuYP2XYZDlduFZUUhQOdL07hOLJCE4+JDdjt3UoE3
-         y94tec1GcGFsHydW2Qar+mK66L0lUW3SQqDnLw/ZdoPbNgvZ+PrlAmAVNCbBhskbDc14
-         GCMDR6A9biCoZ3E2/h/ZIfJjtaE8f1hRwnD1vrzvwVU8SYlSoJeXcZvJZh0RsoZTb1YE
-         XiJnJMVh/SGPsEAHmwUYzrLd/bidmMFekwQa/Lf16sgoTZZ4jvFzbiBwERbXJha0QLL6
-         JwAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=RyYeiTkXVG6rOzRfWLj4K86vKbyG5AHSg6mr8z5PfUE=;
-        b=HTANL+iK3ehA4SrGLpt1+MWZPql+ecXtFIDSMcKnzk3ciaFRMepUwe5HeXF8JE9Gw3
-         OofFzfk6xjfuq8cwHnrOLiInD+uakoLXtLuQVUD/GyLaDcbe208+0Mi8++2Re7F//Cw2
-         EROC/sixDDwqcU/SFQlN1ApQ8qa0g05swd/5x8eba9kFC46rJrIf1cXiD434vh3QLdAJ
-         2GJ9uLjX7uMnpGdxIgqg1X4dvkw/6uvCiTh/+m55PY4eHRgYYeGc0BEFj31KIamfEf9g
-         3JmWYs7ksZg8FD8DVKbWh7WaI8MZO93/kXH//wqe2/S3Mg09mT1FECR246kQJ2+m5Mmj
-         ePOw==
-X-Gm-Message-State: APjAAAUoa0kcF6cI7VV6r9SuvM3HsnOmXaHQlANIHftyoPPXZrN0ypPU
-        WWyh2vnFrdFUX3icTycbohGhqA==
-X-Google-Smtp-Source: APXvYqwK4VuHRPYHhNYnmgegXEvj3Fnde6rs8rzHmcBVo10rxY0/+vu6Lxl3+6BYt5bsM5pP00la+w==
-X-Received: by 2002:a17:902:b58a:: with SMTP id a10mr4120130pls.83.1557781361143;
-        Mon, 13 May 2019 14:02:41 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id y3sm19251992pfe.9.2019.05.13.14.02.40
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 13 May 2019 14:02:40 -0700 (PDT)
-Date:   Mon, 13 May 2019 14:02:39 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Petar Penkov <ppenkov@google.com>
-Subject: Re: [PATCH bpf 1/2] flow_dissector: support
- FLOW_DISSECTOR_KEY_ETH_ADDRS with BPF
-Message-ID: <20190513210239.GC24057@mini-arch>
-References: <20190513185402.220122-1-sdf@google.com>
- <CAF=yD-LO6o=uZ-aT-J9uPiBcO4f2Zc9uyGZ+f7M7mPtRSB44gA@mail.gmail.com>
+        id S1726286AbfEMVBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 17:01:37 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:40218 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbfEMVBh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 17:01:37 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id x4DL1QOD114594;
+        Mon, 13 May 2019 16:01:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1557781286;
+        bh=/2YunYeZgtX9isacNDSmuvnU5VTml5eXOQXlaf/FIoM=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=mKPNG7TMzeYbL2OFHlInm3QHvc5p7ViVccl3rbSR+4iKmbjLv+gzI/C+gW7XuwZyP
+         6mYwfnqjO+/io1dEsOcRV/VTpztiFy9pVZzZ3ouFeGdWO+W21t0McBkf1Nnevh0Sml
+         RcAn3avguKA3lHhmhl3bBLYeQuSZkDhpBJFTrEGg=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x4DL1Qn5123360
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 13 May 2019 16:01:26 -0500
+Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Mon, 13
+ May 2019 16:01:25 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Mon, 13 May 2019 16:01:25 -0500
+Received: from [158.218.117.39] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id x4DL1PXN052692;
+        Mon, 13 May 2019 16:01:25 -0500
+Subject: Re: [PATCH net-next v1 0/4] net/sched: taprio change schedules
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        <netdev@vger.kernel.org>
+CC:     <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <olteanv@gmail.com>, <timo.koskiahde@tttech.com>
+References: <20190429224833.18208-1-vinicius.gomes@intel.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <aff2f1e8-99fa-8828-0127-73a1e6a98d35@ti.com>
+Date:   Mon, 13 May 2019 17:05:12 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF=yD-LO6o=uZ-aT-J9uPiBcO4f2Zc9uyGZ+f7M7mPtRSB44gA@mail.gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190429224833.18208-1-vinicius.gomes@intel.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/13, Willem de Bruijn wrote:
-> On Mon, May 13, 2019 at 3:53 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > If we have a flow dissector BPF program attached to the namespace,
-> > FLOW_DISSECTOR_KEY_ETH_ADDRS won't trigger because we exit early.
-> 
-> I suppose that this is true for a variety of keys? For instance, also
-> FLOW_DISSECTOR_KEY_IPV4_ADDRS.
-I though the intent was to support most of the basic stuff (eth/ip/tcp/udp)
-without any esoteric protocols. Not sure about FLOW_DISSECTOR_KEY_IPV4_ADDRS,
-looks like we support that (except FLOW_DISSECTOR_KEY_TIPC part).
+Hi Vinicius,
 
-> We originally intended BPF flow dissection for all paths except
-> tc_flower. As that catches all the vulnerable cases on the ingress
-> path on the one hand and it is infeasible to support all the
-> flower features, now and future. I think that is the real fix.
-Sorry, didn't get what you meant by the real fix.
-Don't care about tc_flower? Just support a minimal set of features
-needed by selftests?
-
-> >
-> > Handle FLOW_DISSECTOR_KEY_ETH_ADDRS before BPF and only if we have
-> > an skb (used by tc-flower only).
-> >
-> > Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  net/core/flow_dissector.c | 23 ++++++++++++-----------
-> >  1 file changed, 12 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-> > index 9ca784c592ac..ba76d9168c8b 100644
-> > --- a/net/core/flow_dissector.c
-> > +++ b/net/core/flow_dissector.c
-> > @@ -825,6 +825,18 @@ bool __skb_flow_dissect(const struct net *net,
-> >                         else if (skb->sk)
-> >                                 net = sock_net(skb->sk);
-> >                 }
-> > +
-> > +               if (dissector_uses_key(flow_dissector,
-> > +                                      FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
-> > +                       struct ethhdr *eth = eth_hdr(skb);
+On 04/29/2019 06:48 PM, Vinicius Costa Gomes wrote:
+> Hi,
 > 
-> Here as well as in the original patch: is it safe to just cast to
-> eth_hdr? In the same file, __skb_flow_dissect_gre does test for
-> (encapsulated) protocol first.
-Good question, I guess the assumption here is that
-FLOW_DISSECTOR_KEY_ETH_ADDRS is only used by tc_flower and the appropriate
-checks should be there as well.
-It's probably better to check skb->proto here though.
+> Changes from RFC:
+>   - Removed the patches for taprio offloading, because of the lack of
+>     in-tree user >   - Updated the links to point to the PATCH version of this series;
+> 
+> Original cover letter:
+> 
+> Overview
+> --------
+> 
+> This RFC has two objectives, it adds support for changing the running
+> schedules during "runtime", explained in more detail later, and
+> proposes an interface between taprio and the drivers for hardware
+> offloading.
+> 
+> These two different features are presented together so it's clear what
+> the "final state" would look like. But after the RFC stage, they can
+> be proposed (and reviewed) separately.
+> 
+> Changing the schedules without disrupting traffic is important for
+> handling dynamic use cases, for example, when streams are
+> added/removed and when the network configuration changes.
+> 
+> Hardware offloading support allows schedules to be more precise and
+> have lower resource usage.
+> 
+> 
+> Changing schedules
+> ------------------
+> 
+> The same as the other interfaces we proposed, we try to use the same
+> concepts as the IEEE 802.1Q-2018 specification. So, for changing
+> schedules, there are an "oper" (operational) and an "admin" schedule.
+> The "admin" schedule is mutable and not in use, the "oper" schedule is
+> immutable and is in use.
+> 
+> That is, when the user first adds an schedule it is in the "admin"
+> state, and it becomes "oper" when its base-time (basically when it
+> starts) is reached.
+> 
+> What this means is that now it's possible to create taprio with a schedule:
+> 
+> $ tc qdisc add dev IFACE parent root handle 100 taprio \
+>        num_tc 3 \
+>        map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+>        queues 1@0 1@1 2@2 \
+>        base-time 10000000 \
+>        sched-entry S 03 300000 \
+>        sched-entry S 02 300000 \
+>        sched-entry S 06 400000 \
+>        clockid CLOCK_TAI
+>        
+> And then, later, after the previous schedule is "promoted" to "oper",
+> add a new ("admin") schedule to be used some time later:
+> 
+> $ tc qdisc change dev IFACE parent root handle 100 taprio \
+>        base-time 1553121866000000000 \
+>        sched-entry S 02 500000 \
+>        sched-entry S 0f 400000 \
+>        clockid CLOCK_TAI
+> 
+> When enabling the ability to change schedules, it makes sense to add
+> two more defined knobs to schedules: "cycle-time" allows to truncate a
+> cycle to some value, so it repeats after a well-defined value;
+> "cycle-time-extension" controls how much an entry can be extended if
+> it's the last one before the change of schedules, the reason is to
+> avoid a very small cycle when transitioning from a schedule to
+> another.
+> 
+> With these, taprio in the software mode should provide a fairly
+> complete implementation of what's defined in the Enhancements for
+> Scheduled Traffic parts of the specification.
+> 
+> 
+> Hardware offload
+> ----------------
+> 
+> Some workloads require better guarantees from their schedules than
+> what's provided by the software implementation. This series proposes
+> an interface for configuring schedules into compatible network
+> controllers.
+> 
+> This part is proposed together with the support for changing
+> schedules, because it raises questions like, should the "qdisc" side
+> be responsible of providing visibility into the schedules or should it
+> be the driver?
+> 
+> In this proposal, the driver is called passing the new schedule as
+> soon as it is validated, and the "core" qdisc takes care of displaying
+> (".dump()") the correct schedules at all times. It means that some
+> logic would need to be duplicated in the driver, if the hardware
+> doesn't have support for multiple schedules. But as taprio doesn't
+> have enough information about the underlying controller to know how
+> much in advance a schedule needs to be informed to the hardware, it
+> feels like a fair compromise.
+> 
+> The hardware offloading part of this proposal also tries to define an
+> interface for frame-preemption and how it interacts with the
+> scheduling of traffic, see Section 8.6.8.4 of IEEE 802.1Q-2018 for
+> more information.
+> 
+> One important difference between the qdisc interface and the
+> qdisc-driver interface, is that the "gate mask" on the qdisc side
+> references traffic classes, that is bit 0 of the gate mask means
+> Traffic Class 0, and in the driver interface, it specifies the queues,
+> that is bit 0 means queue 0. That is to say that taprio converts the
+> references to traffic classes to references to queues before sending
+> the offloading request to the driver.
+> 
+> 
+> Request for help
+> ----------------
+> 
+> I would like that interested driver maintainers could take a look at
+> the proposed interface and see if it's going to be too awkward for any
+> particular device. Also, pointers to available documentation would be
+> appreciated. The idea here is to start a discussion so we can have an
+> interface that would work for multiple vendors.
+> 
+> 
+> Links
+> -----
+> 
+> kernel patches:
+> https://github.com/vcgomes/net-next/tree/taprio-add-support-for-change-v3
+> 
+> iproute2 patches:
+> https://github.com/vcgomes/iproute2/tree/taprio-add-support-for-change-v3
+> 
+> 
+> 
+> Vinicius Costa Gomes (4):
+>    taprio: Fix potencial use of invalid memory during dequeue()
+>    taprio: Add support adding an admin schedule
+>    taprio: Add support for setting the cycle-time manually
+>    taprio: Add support for cycle-time-extension
+> 
+>   include/uapi/linux/pkt_sched.h |  13 +
+>   net/sched/sch_taprio.c         | 605 ++++++++++++++++++++++-----------
+>   2 files changed, 412 insertions(+), 206 deletions(-)
+> 
+Ok. I saw this one after I replied to your RFC. So I will pull v3 of
+your branch instead of v2 for my investigation.
+
+Thanks and regards,
+
+Murali
