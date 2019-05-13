@@ -2,139 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3AD61B4B3
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 13:16:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B98C91B51F
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 13:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728777AbfEMLQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 07:16:17 -0400
-Received: from smtp-out.xnet.cz ([178.217.244.18]:31903 "EHLO smtp-out.xnet.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727970AbfEMLQR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 07:16:17 -0400
-Received: from meh.true.cz (meh.true.cz [108.61.167.218])
-        (Authenticated sender: petr@true.cz)
-        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 3DCB23F5A;
-        Mon, 13 May 2019 13:16:14 +0200 (CEST)
-Received: from localhost (meh.true.cz [local])
-        by meh.true.cz (OpenSMTPD) with ESMTPA id 8168cc0a;
-        Mon, 13 May 2019 13:16:12 +0200 (CEST)
-Date:   Mon, 13 May 2019 13:16:12 +0200
-From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Maxime Ripard <maxime.ripard@bootlin.com>,
-        Andy Duan <fugang.duan@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "john@phrozen.org" <john@phrozen.org>,
-        "bgolaszewski@baylibre.com" <bgolaszewski@baylibre.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alban Bedel <albeu@free.fr>, devicetree@vger.kernel.org
-Subject: Re: NVMEM address DT post processing [Was: Re: [PATCH net 0/3] add
- property "nvmem_macaddr_swap" to swap macaddr bytes order]
-Message-ID: <20190513111612.GA21475@meh.true.cz>
-Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-References: <1557476567-17397-4-git-send-email-fugang.duan@nxp.com>
- <1557476567-17397-3-git-send-email-fugang.duan@nxp.com>
- <1557476567-17397-2-git-send-email-fugang.duan@nxp.com>
- <1557476567-17397-1-git-send-email-fugang.duan@nxp.com>
- <20190510112822.GT81826@meh.true.cz>
- <20190510113155.mvpuhe4yzxdaanei@flea>
- <20190511144444.GU81826@meh.true.cz>
- <547abcff-103a-13b8-f42a-c0bd1d910bbc@linaro.org>
- <20190513090700.GW81826@meh.true.cz>
- <8cee0086-7459-24c7-82f9-d559527df6e6@linaro.org>
+        id S1728967AbfEMLix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 07:38:53 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7632 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728566AbfEMLiw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 07:38:52 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id DBD484AAB01C23B5EE89;
+        Mon, 13 May 2019 19:38:50 +0800 (CST)
+Received: from [127.0.0.1] (10.177.216.125) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Mon, 13 May 2019
+ 19:38:48 +0800
+Subject: Re: [PATCH net-next] ipv4: Add support to disable icmp timestamp
+To:     Michal Kubecek <mkubecek@suse.cz>, <netdev@vger.kernel.org>
+References: <1557711193-7284-1-git-send-email-chenweilong@huawei.com>
+ <20190513074928.GC22349@unicorn.suse.cz>
+CC:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>
+From:   Weilong Chen <chenweilong@huawei.com>
+Message-ID: <676bcfba-7688-1466-4340-458941aa9258@huawei.com>
+Date:   Mon, 13 May 2019 19:38:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8cee0086-7459-24c7-82f9-d559527df6e6@linaro.org>
+In-Reply-To: <20190513074928.GC22349@unicorn.suse.cz>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.216.125]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Srinivas Kandagatla <srinivas.kandagatla@linaro.org> [2019-05-13 11:06:48]:
 
-> On 13/05/2019 10:07, Petr Štetiar wrote:
-> > Srinivas Kandagatla <srinivas.kandagatla@linaro.org> [2019-05-13 09:25:55]:
-> > 
-> > > My initial idea was to add compatible strings to the cell so that most of
-> > > the encoding information can be derived from it. For example if the encoding
-> > > representing in your example is pretty standard or vendor specific we could
-> > > just do with a simple compatible like below:
-> > 
-> > that vendor/compatible list would be quite long[1], there are hundreds of
-> 
-> You are right just vendor list could be very long, but I was hoping that the
-> post-processing would fall in some categories which can be used in
-> compatible string.
-> 
-> Irrespective of which we need to have some sort of compatible string to
-> enable nvmem core to know that there is some form of post processing to be
-> done on the cells!. Without which there is a danger of continuing to adding
-> new properties to the cell bindings which have no relation to each other.
+On 2019/5/13 15:49, Michal Kubecek wrote:
+> On Mon, May 13, 2019 at 09:33:13AM +0800, Weilong Chen wrote:
+>> The remote host answers to an ICMP timestamp request.
+>> This allows an attacker to know the time and date on your host.
+>
+> Why is that a problem? If it is, does it also mean that it is a security
+> problem to have your time in sync (because then the attacker doesn't
+> even need ICMP timestamps to know the time and date on your host)?
+>
+It's a low risk vulnerability(CVE-1999-0524). TCP has 
+net.ipv4.tcp_timestamps = 0 to disable it.
 
-makes sense, so something like this would be acceptable?
+>> This path is an another way contrast to iptables rules:
+>> iptables -A input -p icmp --icmp-type timestamp-request -j DROP
+>> iptables -A output -p icmp --icmp-type timestamp-reply -j DROP
+>>
+>> Default is disabled to improve security.
+>
+> If we need a sysctl for this (and I'm not convinced we do), I would
+> prefer preserving current behaviour by default.
+>
+Firewall is not applied to all scenarios.
 
- eth1_addr: eth-mac-addr@18a {
-     /* or rather linux,nvmem-post-process ? */
-     compatible = "openwrt,nvmem-post-process";
-     reg = <0x189 0x11>;
-     indices = < 0 2
-                 3 2
-                 6 2
-                 9 2
-                12 2
-                15 2>;
-     transform = "ascii";
-     increment = <1>;
-     increment-at = <5>;
-     result-swap;
- };
+> Michal Kubecek
+>
+> .
+>
 
- &eth1 {
-     nvmem-cells = <&eth1_addr>;
-     nvmem-cell-names = "mac-address";
- };
+thanks.
 
-> > was very compeling as it would kill two birds with one stone (fix outstanding
-> > MTD/NVMEM OF clash as well[2]),
-> 
-> Changes to nvmem dt bindings have been already rejected, for this more
-> discussion at: https://lore.kernel.org/patchwork/patch/936312/
-
-I know, I've re-read this thread several times, but it's still unclear to me,
-how this should be approached in order to be accepted by you and by DT
-maintainers as well.
-
-Anyway, to sum it up, from your point of view, following is fine?
-
- flash@0 {
-    partitions {
-        art: partition@ff0000 {
-            nvmem_dev: nvmem-cells {
-                compatible = "nvmem-cells";
-                eth1_addr: eth-mac-addr@189 {
-                    compatible = "openwrt,nvmem-post-process";
-                    reg = <0x189 0x6>;
-                    increment = <1>;
-                    increment-at = <5>;
-                    result-swap;
-                };
-            };
-        };
-    };
- };
-
- &eth1 {
-    nvmem = <&nvmem_dev>;
-    nvmem-cells = <&eth1_addr>;
-    nvmem-cell-names = "mac-address";
- };
-
--- ynezz
