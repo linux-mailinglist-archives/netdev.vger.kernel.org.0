@@ -2,167 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E331C1AFFC
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 07:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C45951B008
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 07:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727500AbfEMF1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 01:27:55 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57516 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725970AbfEMF1z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 01:27:55 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 13DF085362;
-        Mon, 13 May 2019 05:27:54 +0000 (UTC)
-Received: from hp-dl380pg8-02.lab.eng.pek2.redhat.com (hp-dl380pg8-02.lab.eng.pek2.redhat.com [10.73.8.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 367401822B;
-        Mon, 13 May 2019 05:27:47 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        James Bottomley <James.Bottomley@HansenPartnership.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>
-Subject: [PATCH net] vhost: don't use kmap() to log dirty pages
-Date:   Mon, 13 May 2019 01:27:45 -0400
-Message-Id: <1557725265-63525-1-git-send-email-jasowang@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Mon, 13 May 2019 05:27:54 +0000 (UTC)
+        id S1727561AbfEMFlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 01:41:36 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41108 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725970AbfEMFlg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 01:41:36 -0400
+Received: by mail-pf1-f193.google.com with SMTP id l132so6553250pfc.8;
+        Sun, 12 May 2019 22:41:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aCaoOWPqDDX+3hpBqnVqcL0Uhf6k/UKUWdAr6R3F48s=;
+        b=VflfWz/VROYd7ymaP2XVUVW+tTvdHPURtK0nla14oBKFXwZZa06BUHVa6ApP5l7nwA
+         uzis0GwOIGuvkPiUT4/pFTBmRIFcLs2TN2/NpAZrVswTFODr+HKaxdl3nOS5Vb2f/wHo
+         tZGuLUbQ0u1rv31xeYwxsj9/G+Zft/KRlMk+e7QSufi+p7zh98MZZaNiX8LZ/4xOqA6s
+         E8QamL3rKo4nYSvRUeHKuUhxXvOvkOMcR83M7DXwJRyOej9aqOeFZ9uNQdiCpBsMorcN
+         agGddVW5IbNg8Rj26+JyNV/A1pc+VxMloT3XTaZcNjpve0txv7pnYuPPbzr+Ltglcyj5
+         TNiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aCaoOWPqDDX+3hpBqnVqcL0Uhf6k/UKUWdAr6R3F48s=;
+        b=aF64rI8YM9gZxrJzLbxK2UjJexCsbxQY10cg667RCcKF1MaXJ7CEh2rABdOp/9WGcT
+         I9n/nML8lZ5TbTQhfobR/RGh/7W4KOpBHlwck4YmzKZTYeLI1HNKUQOBwfUj2Uokggmb
+         pv2/YVmPoXxURmfKSPNCQM75gEtmyK3r7S8uRzIQQ9x7HygMnMerJg9a5mH+O9dNy1jh
+         tVEZVL3W1bjpjWwOdeifLunldaldALehnqEIWOxmvs1m31GMgvgPr3rfc5f+VUtmH3jh
+         DFAcIFqvSWqmxMhc9KVzDhPQQTrmUK50TrhxpEaJVd7l6TPQ+gKCoOd+Q9LS/9ijo/QX
+         mtIQ==
+X-Gm-Message-State: APjAAAVyZuVDY/3l5lZZ6CA4T/vym5ZjcKhl17Y3Jwf9Ze8+TrDMbX9E
+        s4pBrmpZF13GLSHKnI/5yjU=
+X-Google-Smtp-Source: APXvYqxS6fc4K5+cDgkhyfj7Q+/qCqvCl5927SZa5DSzJKp6ehNSKUAPMqNSOf0PESrZe9HygcAozA==
+X-Received: by 2002:a63:1316:: with SMTP id i22mr28826114pgl.274.1557726095696;
+        Sun, 12 May 2019 22:41:35 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id b16sm19417106pfd.12.2019.05.12.22.41.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 12 May 2019 22:41:34 -0700 (PDT)
+Date:   Sun, 12 May 2019 22:41:32 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Serge Semin <fancer.lancer@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Serge Semin <Sergey.Semin@t-platforms.ru>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] net: phy: realtek: Add rtl8211e rx/tx delays
+ config
+Message-ID: <20190513054132.GA7563@roeck-us.net>
+References: <20190426093010.9609-1-fancer.lancer@gmail.com>
+ <20190426212112.5624-1-fancer.lancer@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190426212112.5624-1-fancer.lancer@gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vhost log dirty pages directly to a userspace bitmap through GUP and
-kmap_atomic() since kernel doesn't have a set_bit_to_user()
-helper. This will cause issues for the arch that has virtually tagged
-caches. The way to fix is to keep using userspace virtual
-address. Fortunately, futex has arch_futex_atomic_op_inuser() which
-could be used for setting a bit to user.
+Hi,
 
-Note there're several cases that futex helper can fail e.g a page
-fault or the arch that doesn't have the support. For those cases, a
-simplified get_user()/put_user() pair protected by a global mutex is
-provided as a fallback. The fallback may lead false positive that
-userspace may see more dirty pages.
+On Sat, Apr 27, 2019 at 12:21:11AM +0300, Serge Semin wrote:
+> There are two chip pins named TXDLY and RXDLY which actually adds the 2ns
+> delays to TXC and RXC for TXD/RXD latching. Alas this is the only
+> documented info regarding the RGMII timing control configurations the PHY
+> provides. It turns out the same settings can be setup via MDIO registers
+> hidden in the extension pages layout. Particularly the extension page 0xa4
+> provides a register 0x1c, which bits 1 and 2 control the described delays.
+> They are used to implement the "rgmii-{id,rxid,txid}" phy-mode.
+> 
+> The hidden RGMII configs register utilization was found in the rtl8211e
+> U-boot driver:
+> https://elixir.bootlin.com/u-boot/v2019.01/source/drivers/net/phy/realtek.c#L99
+> 
+> There is also a freebsd-folks discussion regarding this register:
+> https://reviews.freebsd.org/D13591
+> 
+> It confirms that the register bits field must control the so called
+> configuration pins described in the table 12-13 of the official PHY
+> datasheet:
+> 8:6 = PHY Address
+> 5:4 = Auto-Negotiation
+> 3 = Interface Mode Select
+> 2 = RX Delay
+> 1 = TX Delay
+> 0 = SELRGV
+> 
+> Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Cc: Christoph Hellwig <hch@infradead.org>
-Cc: James Bottomley <James.Bottomley@HansenPartnership.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Darren Hart <dvhart@infradead.org>
-Fixes: 3a4d5c94e9593 ("vhost_net: a kernel-level virtio server")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
-Changes from RFC V2:
-- drop GUP and provide get_user()/put_user() fallbacks
-- round down log_base
-Changes from RFC V1:
-- switch to use arch_futex_atomic_op_inuser()
----
- drivers/vhost/vhost.c | 54 ++++++++++++++++++++++++++++-----------------------
- 1 file changed, 30 insertions(+), 24 deletions(-)
+This patch results in a crash when running arm:ast2500-evb in qemu.
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 351af88..7fa05ba 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -31,6 +31,7 @@
- #include <linux/sched/signal.h>
- #include <linux/interval_tree_generic.h>
- #include <linux/nospec.h>
-+#include <asm/futex.h>
- 
- #include "vhost.h"
- 
-@@ -43,6 +44,8 @@
- MODULE_PARM_DESC(max_iotlb_entries,
- 	"Maximum number of iotlb entries. (default: 2048)");
- 
-+static DEFINE_MUTEX(vhost_log_lock);
-+
- enum {
- 	VHOST_MEMORY_F_LOG = 0x1,
- };
-@@ -1692,28 +1695,31 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
- }
- EXPORT_SYMBOL_GPL(vhost_dev_ioctl);
- 
--/* TODO: This is really inefficient.  We need something like get_user()
-- * (instruction directly accesses the data, with an exception table entry
-- * returning -EFAULT). See Documentation/x86/exception-tables.txt.
-- */
--static int set_bit_to_user(int nr, void __user *addr)
-+static int set_bit_to_user(int nr, u32 __user *addr)
- {
--	unsigned long log = (unsigned long)addr;
--	struct page *page;
--	void *base;
--	int bit = nr + (log % PAGE_SIZE) * 8;
-+	u32 old;
- 	int r;
- 
--	r = get_user_pages_fast(log, 1, 1, &page);
--	if (r < 0)
--		return r;
--	BUG_ON(r != 1);
--	base = kmap_atomic(page);
--	set_bit(bit, base);
--	kunmap_atomic(base);
--	set_page_dirty_lock(page);
--	put_page(page);
-+	r = arch_futex_atomic_op_inuser(FUTEX_OP_OR, 1 << nr, &old, addr);
-+	if (r) {
-+		/* Fallback through get_user()/put_user(), this may
-+		 * lead false positive that userspace may see more
-+		 * dirty pages. A mutex is used to synchronize log
-+		 * access between vhost threads.
-+		 */
-+		mutex_lock(&vhost_log_lock);
-+		r = get_user(old, addr);
-+		if (r)
-+			goto err;
-+		r = put_user(old | 1 << nr, addr);
-+		if (r)
-+			goto err;
-+		mutex_unlock(&vhost_log_lock);
-+	}
- 	return 0;
-+err:
-+	mutex_unlock(&vhost_log_lock);
-+	return r;
- }
- 
- static int log_write(void __user *log_base,
-@@ -1725,13 +1731,13 @@ static int log_write(void __user *log_base,
- 	if (!write_length)
- 		return 0;
- 	write_length += write_address % VHOST_PAGE_SIZE;
-+	log_base = (void __user *)((u64)log_base & ~0x3ULL);
-+	write_page += ((u64)log_base & 0x3ULL) * 8;
- 	for (;;) {
--		u64 base = (u64)(unsigned long)log_base;
--		u64 log = base + write_page / 8;
--		int bit = write_page % 8;
--		if ((u64)(unsigned long)log != log)
--			return -EFAULT;
--		r = set_bit_to_user(bit, (void __user *)(unsigned long)log);
-+		u32 __user *log = (u32 __user *)log_base + write_page / 32;
-+		int bit = write_page % 32;
-+
-+		r = set_bit_to_user(bit, log);
- 		if (r < 0)
- 			return r;
- 		if (write_length <= VHOST_PAGE_SIZE)
--- 
-1.8.3.1
+[    4.894572] [00000000] *pgd=00000000
+[    4.895329] Internal error: Oops: 80000005 [#1] ARM
+[    4.896066] CPU: 0 PID: 1 Comm: swapper Not tainted 5.1.0-09698-g1fb3b52 #1
+[    4.896364] Hardware name: Generic DT based system
+[    4.896823] PC is at 0x0
+[    4.897037] LR is at phy_select_page+0x3c/0x7c
 
+Debugging shows that phydev->drv->write_page and phydev->drv->read_page
+are NULL, so the crash isn't entirely surprising.
+
+What I don't understand is how this can work in the first place.
+The modified entry in realtek_drvs[] doesn't have read_page/write_page
+functions defined, yet rtl8211e_config_init() depends on it.
+What am I missing here ?
+
+Thanks,
+Guenter
