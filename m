@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F05CD1BEE7
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 22:58:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18CD51BEE9
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 22:58:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726421AbfEMU6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 16:58:08 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:36637 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726295AbfEMU6I (ORCPT
+        id S1726521AbfEMU6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 16:58:20 -0400
+Received: from mail-it1-f198.google.com ([209.85.166.198]:52386 "EHLO
+        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726302AbfEMU6I (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 16:58:08 -0400
-Received: by mail-io1-f70.google.com with SMTP id i195so10873440ioa.3
+Received: by mail-it1-f198.google.com with SMTP id 73so645099itl.2
         for <netdev@vger.kernel.org>; Mon, 13 May 2019 13:58:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=bbGsyPpaPzBM/2LeZrsP+CQSLlhkVQRC0w3/i0bfAZs=;
-        b=XzwBwVy89FPBk8R20CA2U96arhYcHxPxOkhly3vQ6ds9rKSFFfq7PpRN3qapQCM3dM
-         qMknkRjELevvUwoCIfaPKPIlaHrltaekhdWdIR4IzvMTPgMLXKg1IsEB8VqesWQmHvfI
-         Ity1kGOl51elpsvDydCa1iFqnNN34Oq9QigAm0tE+bFVm7/yK97HOUFYgTpPsbq4LO+H
-         KMJAzN3w7rY8+z2G6glQcwqW/xDdMITfigm3k36oxEGZUy4fXhAELCoYmJw4a1uC/K/U
-         FIkJHUypUiVwVmqMNHXxbstQqWyrwUU7WgtNxLdqeufoQW1ShwIQXXirpnqgcHkgf1Yi
-         GZhA==
-X-Gm-Message-State: APjAAAV5/EPIHAxylXKMV6zu17EwASKBlzwCOHYKejMV7sS87G6UCizb
-        9u0xrfd5NVjmygRldSoS2jzrBLAefWs9cSU478QeZfDZPxXP
-X-Google-Smtp-Source: APXvYqyal4BVY8eGkmcKUSs4p7GjFVJitkTebTiUaDtzzCWWtf3YNtbYp8LKGJLuxuQsZ8L4ekjpISXkQvUpz2G7DlHk8Q2Fj616
+        bh=Yslc7EmeKC8FFaT5ARJWUZkiHPlpgWxz3eAXZXWm3jg=;
+        b=KQpekXfOt5lKuzZqW98XKLqrEyXJVDAxCatp2S9qBBzf+RUbHP9JrKHkTVlIPBR57X
+         6lU+lM3WrWvMJ8Y/fruNi//X1Ay+t4YxAaRqWJMLgrUMFL1DmLEXfrmk/gSfv1x1I6Cq
+         ImWYmmY8fi4rW3GFXip4psmCGpk3uglkEETYmvpuF8P6A5rRdnD4U1X2W4Utrwnq0cRG
+         3Xvrjp0D61ouFAdoSwBq5kxWJdmLR3jDg+jHQkhNMiTtjDWNZ44NP7fujPL5aOoQ8+uF
+         ZFutK3fZd1pH5v5pjdtDfOuTELvSGDclXz5VzkNBZqMISlfu962jyshhgMDoA76CgViC
+         e7YQ==
+X-Gm-Message-State: APjAAAVe7Mx8nCqOuYRoNX0kDsjDekk7L2OcraQ42VAdkBHTlj03EKpP
+        A9dnMd0uNMASksGDlG7EeneOhJ5sMsmmNDmHirn6L9/jS9kb
+X-Google-Smtp-Source: APXvYqzmYh0+rsZO3817u2bIOtvmrHkIKrv+CLRwlj6z2rZPuksRRdS5HdfBg4rSereA1hv1PaUfu5Ku+eko8mowqnj2vs1UxCGj
 MIME-Version: 1.0
-X-Received: by 2002:a02:2b1d:: with SMTP id h29mr20228540jaa.76.1557781087290;
+X-Received: by 2002:a02:1d07:: with SMTP id 7mr20456365jaj.122.1557781087590;
  Mon, 13 May 2019 13:58:07 -0700 (PDT)
 Date:   Mon, 13 May 2019 13:58:07 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000588f3c0588cb2c2c@google.com>
-Subject: net-next boot error: WARNING: workqueue cpumask: online intersect >
+Message-ID: <0000000000005d36430588cb2cff@google.com>
+Subject: bpf boot error: WARNING: workqueue cpumask: online intersect >
  possible intersect
-From:   syzbot <syzbot+65b0bbc931abd6bd3b37@syzkaller.appspotmail.com>
+From:   syzbot <syzbot+224b7c6385b8ab8d2a32@syzkaller.appspotmail.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
@@ -48,17 +48,17 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    b970afcf Merge tag 'powerpc-5.2-1' of ssh://gitolite.kerne..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1306c794a00000
+HEAD commit:    69dda13f Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+git tree:       bpf
+console output: https://syzkaller.appspot.com/x/log.txt?x=152a7100a00000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=de3262a7df18d5ca
-dashboard link: https://syzkaller.appspot.com/bug?extid=65b0bbc931abd6bd3b37
+dashboard link: https://syzkaller.appspot.com/bug?extid=224b7c6385b8ab8d2a32
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
 Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+65b0bbc931abd6bd3b37@syzkaller.appspotmail.com
+Reported-by: syzbot+224b7c6385b8ab8d2a32@syzkaller.appspotmail.com
 
 smpboot: CPU0: Intel(R) Xeon(R) CPU @ 2.30GHz (family: 0x6, model: 0x3f,  
 stepping: 0x0)
@@ -77,7 +77,7 @@ clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns:
 19112604462750000 ns
 futex hash table entries: 512 (order: 4, 65536 bytes)
 xor: automatically using best checksumming function   avx
-PM: RTC time: 19:04:00, date: 2019-05-13
+PM: RTC time: 19:27:05, date: 2019-05-13
 NET: Registered protocol family 16
 audit: initializing netlink subsys (disabled)
 cpuidle: using governor menu
@@ -88,20 +88,20 @@ WARNING: workqueue cpumask: online intersect > possible intersect
 HugeTLB registered 1.00 GiB page size, pre-allocated 0 pages
 HugeTLB registered 2.00 MiB page size, pre-allocated 0 pages
 cryptd: max_cpu_qlen set to 1000
-raid6: avx2x4   gen() 11639 MB/s
-raid6: avx2x4   xor()  6528 MB/s
-raid6: avx2x2   gen()  7202 MB/s
-raid6: avx2x2   xor()  3845 MB/s
-raid6: avx2x1   gen()  3930 MB/s
-raid6: avx2x1   xor()  2222 MB/s
-raid6: sse2x4   gen()  5948 MB/s
-raid6: sse2x4   xor()  3449 MB/s
-raid6: sse2x2   gen()  3919 MB/s
-raid6: sse2x2   xor()  2021 MB/s
-raid6: sse2x1   gen()  1838 MB/s
-raid6: sse2x1   xor()  1127 MB/s
-raid6: using algorithm avx2x4 gen() 11639 MB/s
-raid6: .... xor() 6528 MB/s, rmw enabled
+raid6: avx2x4   gen() 11340 MB/s
+raid6: avx2x4   xor()  6833 MB/s
+raid6: avx2x2   gen()  7098 MB/s
+raid6: avx2x2   xor()  3920 MB/s
+raid6: avx2x1   gen()  4157 MB/s
+raid6: avx2x1   xor()  2283 MB/s
+raid6: sse2x4   gen()  5797 MB/s
+raid6: sse2x4   xor()  3486 MB/s
+raid6: sse2x2   gen()  3562 MB/s
+raid6: sse2x2   xor()  2030 MB/s
+raid6: sse2x1   gen()  1947 MB/s
+raid6: sse2x1   xor()  1072 MB/s
+raid6: using algorithm avx2x4 gen() 11340 MB/s
+raid6: .... xor() 6833 MB/s, rmw enabled
 raid6: using avx2x2 recovery algorithm
 ACPI: Added _OSI(Module Device)
 ACPI: Added _OSI(Processor Device)
