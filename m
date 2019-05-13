@@ -2,149 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 181DA1B40E
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 12:29:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 166D91B430
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 12:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728463AbfEMK3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 06:29:48 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:43601 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728395AbfEMK3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 06:29:48 -0400
-Received: by mail-lf1-f67.google.com with SMTP id u27so8609794lfg.10;
-        Mon, 13 May 2019 03:29:46 -0700 (PDT)
+        id S1729102AbfEMKnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 06:43:12 -0400
+Received: from mx5.sophos.com ([195.171.192.119]:35977 "EHLO mx5.sophos.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727272AbfEMKnL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 06:43:11 -0400
+X-Greylist: delayed 372 seconds by postgrey-1.27 at vger.kernel.org; Mon, 13 May 2019 06:43:09 EDT
+Received: from mx5.sophos.com (localhost.localdomain [127.0.0.1])
+        by localhost (Postfix) with SMTP id BC1E5F38C8;
+        Mon, 13 May 2019 11:36:55 +0100 (BST)
+Received: from abn-exch5a.green.sophos (unknown [10.224.64.44])
+        by mx5.sophos.com (Postfix) with ESMTPS id 9D884F375D;
+        Mon, 13 May 2019 11:36:55 +0100 (BST)
+Received: from abn-exch4c.green.sophos (10.224.64.39) by
+ abn-exch5a.green.sophos (10.224.64.45) with Microsoft SMTP Server (TLS) id
+ 15.0.1293.2; Mon, 13 May 2019 11:36:54 +0100
+Received: from abn-exch5a.green.sophos (10.224.64.44) by
+ abn-exch4c.green.sophos (10.224.64.39) with Microsoft SMTP Server (TLS) id
+ 15.0.1293.2; Mon, 13 May 2019 11:36:52 +0100
+Received: from GBR01-CWL-obe.outbound.protection.outlook.com (104.47.20.52) by
+ abn-exch5a.green.sophos (10.224.64.44) with Microsoft SMTP Server (TLS) id
+ 15.0.1293.2 via Frontend Transport; Mon, 13 May 2019 11:36:52 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=ev9He8WIP0KFq4NY0aQ6H+a/tWRxRZKB/excb3oOMU4=;
-        b=h93ew2GIej/nb5FvDaxvCU81MKw8hVhRlLnq/cdo21uphQzeKDmjsAyFc10JcthoCd
-         wti7ndPmFhYhoCdl4R1uq+TYRLsi32+xB5e2Wta2zwj/cHFvNB+rCD+tEMhG9Hb3Pwkg
-         QXuZfEzAb5mKOm6d8/tW+U80jTBHyh5RqGXyxpm6JLW+DnpIRl2KjdBVIgNZAS7ZBak6
-         l3fNrTW4Z9JRPdRlETQ+wYiICPR6x57TqeopFqQatq87Q9vKzmbgK9ja2Fg8pRA7NnfG
-         6P5af69gjE3NvsT8ggpQFdDtu/MyEQ9bOxy2K9FyhD0isU9UO5vE1aNeNNQsEXoBnAg9
-         Wkuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=ev9He8WIP0KFq4NY0aQ6H+a/tWRxRZKB/excb3oOMU4=;
-        b=az2bqyw0zL8ixQYdfl9ekvf/48EiGaiLjQHEo+FUjofR+gDWZXVPp9OV0O+PSPOd9c
-         +3rkEfdsrZ/n9eb+Ayfrb2LEqokk4cve4NhnTM++MYdAeOc3E413U5IlGkgNOGeq9xbk
-         CcI7MM8CA/wVBmtC10PW0QT3Dzw0EXsC5dajs/v22Y9nHUj0ZUwIuFxSl1eQ3wG3Kn03
-         J9pKeu4P3ARQ9a/7eUz+gBFHhb3iYkt2VkAJDAhzeI5fz+qRF84QvYnjAJFYgXZgu5TV
-         DK3YRtyAFRLpT7Anf3IRGCoWVYHiJo/HLllnuc8Wbyx4M/IccCOIJxE+ygg4iVQYHXQD
-         OQbw==
-X-Gm-Message-State: APjAAAX81WLGQFtZEQRDG+Ywzb77Gd4rcfF1Y1tXvORcHSelUn5TgUMx
-        CC/H9qbhuMK453XrqMa5VZk=
-X-Google-Smtp-Source: APXvYqxOYS4oX+yFe9eKc8O/cfCoUfwOBWae5+0G6pgMSsuJfH/uASlFKUjsj0yRPQxJFuWS01Q7wA==
-X-Received: by 2002:a19:a412:: with SMTP id q18mr12957578lfc.142.1557743385498;
-        Mon, 13 May 2019 03:29:45 -0700 (PDT)
-Received: from mobilestation ([5.164.217.122])
-        by smtp.gmail.com with ESMTPSA id j10sm3646535lfc.45.2019.05.13.03.29.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 13 May 2019 03:29:44 -0700 (PDT)
-Date:   Mon, 13 May 2019 13:29:42 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Vicente Bergas <vicencb@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: net: phy: realtek: regression, kernel null pointer dereference
-Message-ID: <20190513102941.4ocb3tz3wmh3pj4t@mobilestation>
-References: <16f75ff4-e3e3-4d96-b084-e772e3ce1c2b@gmail.com>
- <742a2235-4571-aa7d-af90-14c708205c6f@gmail.com>
- <11446b0b-c8a4-4e5f-bfa0-0892b500f467@gmail.com>
- <61831f43-3b24-47d9-ec6f-15be6a4568c5@gmail.com>
- <0f16b2c5-ef2a-42a1-acdc-08fa9971b347@gmail.com>
+ d=sophosapps.onmicrosoft.com; s=selector2-sophosapps-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ayMU9qBzLBcWoaFXnWug/xjIsNgYb4uRwNcwU8qXbSE=;
+ b=YEjvP2QY4yqhxzxG/HSeI/psqrnkrVvvEk8O/IM2UecFhdsKYBWOsFMFAXiabVL408xglCO0wlCNT70dpvVq1e/cEpWFI7fq+6A+kZM0FsRIs0h4rNTviMrhIqZHLiPCEHcktc/FiDeY4Ggn26L6L6HKv09dk9l/EKH48RwowkE=
+Received: from CWXP265MB1464.GBRP265.PROD.OUTLOOK.COM (20.176.48.15) by
+ CWXP265MB0775.GBRP265.PROD.OUTLOOK.COM (10.166.155.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1878.21; Mon, 13 May 2019 10:36:51 +0000
+Received: from CWXP265MB1464.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::11bf:3c6:d636:8591]) by CWXP265MB1464.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::11bf:3c6:d636:8591%5]) with mapi id 15.20.1878.024; Mon, 13 May 2019
+ 10:36:51 +0000
+From:   Jagdish Motwani <Jagdish.Motwani@Sophos.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jagdish Motwani <j.k.motwani@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net] netfilter: nf_queue:fix reinject verdict handling
+Thread-Topic: [PATCH net] netfilter: nf_queue:fix reinject verdict handling
+Thread-Index: AQHVBcxgq4KNCrDWoUOMWqDhWMYmkaZozxeAgAARJ/A=
+Date:   Mon, 13 May 2019 10:36:51 +0000
+Message-ID: <CWXP265MB1464BCF96C61A8FD47619AE59E0F0@CWXP265MB1464.GBRP265.PROD.OUTLOOK.COM>
+References: <20190508183114.7507-1-j.k.motwani@gmail.com>
+ <20190513092211.isxyzpytenvocbx2@salvia>
+In-Reply-To: <20190513092211.isxyzpytenvocbx2@salvia>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Jagdish.Motwani@Sophos.com; 
+x-originating-ip: [125.19.12.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9a31426d-79aa-4dd0-6f4a-08d6d78ee911
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:CWXP265MB0775;
+x-ms-traffictypediagnostic: CWXP265MB0775:
+x-microsoft-antispam-prvs: <CWXP265MB0775674DCB638FE28708D73A9E0F0@CWXP265MB0775.GBRP265.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-forefront-prvs: 0036736630
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(136003)(396003)(39860400002)(346002)(376002)(13464003)(199004)(189003)(51234002)(478600001)(6436002)(14444005)(68736007)(71200400001)(71190400001)(102836004)(7736002)(55016002)(305945005)(2906002)(66066001)(229853002)(52536014)(3846002)(6116002)(256004)(7696005)(81156014)(110136005)(8676002)(74316002)(53546011)(6506007)(54906003)(4326008)(81166006)(76176011)(9686003)(86362001)(476003)(14454004)(8936002)(25786009)(6246003)(486006)(99286004)(73956011)(446003)(26005)(5660300002)(33656002)(11346002)(64756008)(186003)(66446008)(66556008)(66946007)(66476007)(53936002)(76116006)(316002)(72206003);DIR:OUT;SFP:1101;SCL:1;SRVR:CWXP265MB0775;H:CWXP265MB1464.GBRP265.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: Sophos.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: XW4qhJrjAsW6CsUO+QxlvLcBZ3XYujvPWdcKsA1S0ufUEb10Sj2vYZRWeOrdLBsxKvvohi5xZOCxjU4evj8eabL/etVukOZHLs7WO/3S4yQT0PlhZY84CLK9izQ2DCEh5lvn5IFJB1GGOc7uX5uYN3/3n0EGhyGS82rBrGW6TUhc1c8ZWqVdeI689tZCmmLVvZfO/BLdOri02K9U4C/5xZkM+MtSOIa05CMbIsd3KGVnEXU5uZGoagW/hKEklYW1rrHG1WzlYSP+4lQSipW/ZIG0oDkcbd/l985Z9cNXm/LCiT1mL54nsLvP6aSu9vYGNsyzVKCR+rd/jU2xU5Eo+AePwwLtIQzBdqVd+ot7TOYscCxQUgP96emknk6z3ZpnnaOnjGCnQkTVibSbfybxkcQDjDkz0sfOZBw5Uf9pCUU=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0f16b2c5-ef2a-42a1-acdc-08fa9971b347@gmail.com>
-User-Agent: NeoMutt/20180716
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a31426d-79aa-4dd0-6f4a-08d6d78ee911
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 May 2019 10:36:51.4016
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 358a41ff-46d9-49d3-a297-370d894eae6a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWXP265MB0775
+X-OriginatorOrg: sophos.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sophos.com; h=from:to:cc:subject:date:message-id:references:in-reply-to:content-type:content-transfer-encoding:mime-version; s=global; bh=ayMU9qBzLBcWoaFXnWug/xjIsNgYb4uRwNcwU8qXbSE=; b=VPKigIOPZArOA4gGzdTxf8p9pXioL4Qr2u4Vk+Kx5IN5VNatabFmvBTCkqn6MGztD5Bnem+I1ed9kbymkS3zBEZGGnCtPV5luAN6cqqfyVwfde5dMS/c3QIyK+ugZcUh/rrqEiRp3VcVTSwpzf22taXZwEcFfOdWNeYhM+6WnPA=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Vincente,
+Hi Pablo,
 
-On Sat, May 11, 2019 at 05:06:04PM +0200, Vicente Bergas wrote:
-> On Saturday, May 11, 2019 4:56:56 PM CEST, Heiner Kallweit wrote:
-> > On 11.05.2019 16:46, Vicente Bergas wrote:
-> > > On Friday, May 10, 2019 10:28:06 PM CEST, Heiner Kallweit wrote:
-> > > > On 10.05.2019 17:05, Vicente Bergas wrote: ...
-> > > 
-> > > Hello Heiner,
-> > > just tried your patch and indeed the NPE is gone. But still no network...
-> > > The MAC <-> PHY link was working before, so, maybe the rgmii delays
-> > > are not
-> > > correctly configured.
-> > 
-> > That's a question to the author of the original patch. My patch was just
-> > meant to fix the NPE. In which configuration are you using the RTL8211E?
-> > As a standalone PHY (with which MAC/driver?) or is it the integrated PHY
-> > in a member of the RTL8168 family?
-> 
-> It is the one on the Sapphire board, so is connected to the MAC on the
-> RK3399 SoC. It is on page 8 of the schematics:
-> http://dl.vamrs.com/products/sapphire_excavator/RK_SAPPHIRE_SOCBOARD_RK3399_LPDDR3D178P232SD8_V12_20161109HXS.pdf
-> 
+The case I am referring to is : If there are more than 1  hooks returning N=
+F_QUEUE verdict.
+When the first queue reinjects the packet, 'nf_reinject' starts traversing =
+hooks with hook_index (i).
+However if it again receives a NF_QUEUE verdict (by some other netfilter ho=
+ok), it queue with the wrong hook_index.
+So, when the second queue reinjects the packet, it re-executes some hooks i=
+n between the first 2 hooks.
 
-Thanks for sending this bug report.
+Thanks, I will mark :  Fixes: 960632ece694 ("netfilter: convert hook list t=
+o an array") and update the description also.
 
-As I said in the commit-message. The idea of this patch is to provide a way
-to setup the RGMII delays in the PHY drivers (similar to the most of the PHY
-drivers). Before this commit phy-mode dts-node hadn't been taked into account
-by the PHY driver, so any PHY-delay setups provided via external pins strapping
-were accepted as is. But now rtl8211e phy-mode is parsed as follows:
-phy-mode="rgmii" - delays aren't set by PHY (current dts setting in rk3399-sapphire.dtsi)
-phy-mode="rgmii-id" - both RX and TX delays are setup on the PHY side,
-phy-mode="rgmii-rxid" - only RX delay is setup on the PHY side,
-phy-mode="rgmii-txid" - only TX delay is setup on the PHY side.
+Regards,
+Jagdish
+-----Original Message-----
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+Sent: Monday, May 13, 2019 2:52 PM
+To: Jagdish Motwani <j.k.motwani@gmail.com>
+Cc: netdev@vger.kernel.org; Jagdish Motwani <Jagdish.Motwani@Sophos.com>; J=
+ozsef Kadlecsik <kadlec@blackhole.kfki.hu>; Florian Westphal <fw@strlen.de>=
+; David S. Miller <davem@davemloft.net>; netfilter-devel@vger.kernel.org; c=
+oreteam@netfilter.org; linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] netfilter: nf_queue:fix reinject verdict handling
 
-It means, that now matter what the rtl8211e TXDLY/RXDLY pins are grounded or pulled
-high, the delays are going to be setup in accordance with the dts phy-mode settings,
-which is supposed to reflect the real hardware setup.
+Hi Jagdish,
 
-So since you get the problem with MAC<->PHY link, it means your dts-file didn't provide a
-correct interface mode. Indeed seeing the sheet on page 7 in the sepphire pdf-file your
-rtl8211e PHY is setup to have TXDLY/RXDLY being pulled high, which means to add 2ns delays
-by the PHY. This setup corresponds to phy-mode="rgmii-id". As soon as you set it this way
-in the rk3399 dts-file, the MAC-PHY link shall work correctly as before.
 
--Sergey
+On Thu, May 09, 2019 at 12:01:14AM +0530, Jagdish Motwani wrote:
+> From: Jagdish Motwani <jagdish.motwani@sophos.com>
+>
+> In case of more than 1 nf_queues, hooks between them are being
+> executed more than once.
 
-> > Serge: The issue with the NPE gave a hint already that you didn't test your
-> > patch. Was your patch based on an actual issue on some board and did you
-> > test it? We may have to consider reverting the patch.
-> > 
-> > > With this change it is back to working:
-> > > --- a/drivers/net/phy/realtek.c
-> > > +++ b/drivers/net/phy/realtek.c
-> > > @@ -300,7 +300,6 @@
-> > >     }, {
-> > >         PHY_ID_MATCH_EXACT(0x001cc915),
-> > >         .name        = "RTL8211E Gigabit Ethernet",
-> > > -        .config_init    = &rtl8211e_config_init,
-> > >         .ack_interrupt    = &rtl821x_ack_interrupt,
-> > >         .config_intr    = &rtl8211e_config_intr,
-> > >         .suspend    = genphy_suspend,
-> > > That is basically reverting the patch.
-> > > 
-> > > Regards,
-> > >  Vicenç.
-> > > 
-> > > > Nevertheless your proposed patch looks good to me, just one small change
-> > > > would be needed and it should be splitted.
-> > > > 
-> > > > The change to phy-core I would consider a fix and it should be fine to
-> > > > submit it to net (net-next is closed currently).
-> > > > 
-> > > > Adding the warning to the Realtek driver is fine, but this would be ...
-> 
+This refers to NF_REPEAT, correct?
+
+I think this broke with 960632ece6949. If so, it would be good to add the f=
+ollowing tag to this patch then. It's useful for robots collecting fixes fo=
+r -stable kernels.
+
+Fixes: 960632ece694 ("netfilter: convert hook list to an array")
+
+> Signed-off-by: Jagdish Motwani <jagdish.motwani@sophos.com>
+
+Thanks.
+
+________________________________
+
+Sophos Technologies Private Limited Regd. Office: Sophos House, Saigulshan =
+Complex, Beside White House, Panchvati Cross Road, Ahmedabad - 380006, Guja=
+rat, India CIN: U72200GJ2006PTC047857
+
+Sophos Ltd, a company registered in England and Wales number 2096520, The P=
+entagon, Abingdon Science Park, Abingdon, OX14 3YP, United Kingdom.
+
