@@ -2,92 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C00721BBFA
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 19:32:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E94841BC3D
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 19:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731786AbfEMRcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 13:32:11 -0400
-Received: from mail-yw1-f74.google.com ([209.85.161.74]:46893 "EHLO
-        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728708AbfEMRcK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 13:32:10 -0400
-Received: by mail-yw1-f74.google.com with SMTP id 201so26230856ywr.13
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 10:32:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=mzcL6jNjDjcF3QWivV+dxb1wcI4GCI2i0yikAROHGQ8=;
-        b=d6/TwV8rmdeBITnutzv9eKXw4V9AxOj/UdcxN+VkNw6YFkYR8ZpewtaM1b6q8SVzbO
-         N9YbD14MS5LXxUwVOibKbFWiESH8NChOXzV/dUEbFQ1QZTnRJQ137UNxF/irMp2tqNLC
-         gR+ov+5Ck/v6VoperNtEq/IxDtJVRQmQeBrlur8/CIJSULvQyPn8OfGRyPlPKRj1dy8P
-         GBHSCY3XnCseK7Ks8WdeN+gJtxR4sGD6GNdT9+y0c5MQy40bnHpnWprrvKUs+9ZK0W6Z
-         herhR28Cd9dmYmB60Dlh57hi7v7RKbAcdpN4tbTf5ao8oImfsROPB7bzoHUNAJR7PrRQ
-         hHuw==
+        id S1731885AbfEMRvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 13:51:44 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37417 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731870AbfEMRvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 13:51:43 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 7so235471wmo.2
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 10:51:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=mzcL6jNjDjcF3QWivV+dxb1wcI4GCI2i0yikAROHGQ8=;
-        b=ncnuSSEhvjNve9baiyXfFUJFjfAGBm3uTmuq1yrqWYJVWPfVPFeOFQgx8nqCAMwPzu
-         YnFC6R+LR7Ptmk0yXi03gyxRTd9bbHTrR5i2YoHarD0MAivXfDZETnT0lihH0z4kaOV0
-         nnaMud4lbYu9HzcjLmwN3C/vxD2hk4iNRpV092/Z9RPC/jCVYgRncGJRIzc11cbHrbwv
-         6E7T1iiDu2hYe3/I62KX3e0KsSSpTIZaTPXvpgHZZOluYZyw+CrwxjjtlZbVnExPC/mB
-         I9etDaqDNnuLbgz6pnpO2pLGWRLw8nS/O87Rtdt6xDPVQpp6MbFs0W9CXBoK1v0WFJU1
-         mAgw==
-X-Gm-Message-State: APjAAAWLGMucaeiTFWoSTB5/WKX7XdkC+ObXSw2hm5esnI9VSRcP2Q1S
-        fiGUAiDcgY0ESa2O/LQIGRB05sObTu4=
-X-Google-Smtp-Source: APXvYqxu/wK7h5vGy/yzJ1ZdrS8/hxZ2QCNBucLdqnl8KfVzCH2wrmVD59caWiOw0V0ZZyvIMyVWkTz19Jc=
-X-Received: by 2002:a25:2ac6:: with SMTP id q189mr14046078ybq.310.1557768729989;
- Mon, 13 May 2019 10:32:09 -0700 (PDT)
-Date:   Mon, 13 May 2019 10:32:05 -0700
-Message-Id: <20190513173205.212181-1-ycheng@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
-Subject: [PATCH v2 net] tcp: fix retrans timestamp on passive Fast Open
-From:   Yuchung Cheng <ycheng@google.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ncardwell@google.com,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=YywBhd718B/DKtpyrTe7ekQZi7NNkVMxHXFs5r/UkzU=;
+        b=giMGNO77lMfa2Yjjcn/nldB4iuTB2tsi4iRp/1NGC1n9qo0OMsjJGYgJr3dCbIqqnw
+         qcM0DcJ2v9x9mOqr7IbP9pxyXuZC1wHswHWSphij0xeQ7ngmDdSdGfa/aATAnP2YYDOs
+         BpTgDT6EsOhh5M6ltTnPcb+VuOOcitvMw01yVLG1ymG27KiJFwSJeAwYueHIIJGtVXBr
+         1ada063C3+Xt5UHIhWbnsp+QA894gEWO/y8FXrVMOYPASVEPDHXNpeu0sbYhpsS9fHLc
+         KvUAqL7eCzca+ltpxXSaifGvKaKPhYWjUPamfYy+B0v+ElijQm/zXWaDR7s59rxbcPfy
+         emNw==
+X-Gm-Message-State: APjAAAWmbT0vSkxp7dD3J3Oj/Gs2Hkzg3JwSGgm/yMPAJUEu80RwAGr3
+        gLjKnu4JR9S6pAX+YYjlppzvmg==
+X-Google-Smtp-Source: APXvYqwIUwuqMl8h+g4rfizOwGvKS5bfbCa0CnOcHXmQACgAyWBKmcpVwSB4wHSIlaL+ZzJ2dbSatQ==
+X-Received: by 2002:a1c:f910:: with SMTP id x16mr16414740wmh.114.1557769902025;
+        Mon, 13 May 2019 10:51:42 -0700 (PDT)
+Received: from steredhat (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
+        by smtp.gmail.com with ESMTPSA id y40sm14326745wrd.96.2019.05.13.10.51.40
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 13 May 2019 10:51:41 -0700 (PDT)
+Date:   Mon, 13 May 2019 19:51:38 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [PATCH v2 7/8] vsock/virtio: increase RX buffer size to 64 KiB
+Message-ID: <20190513175138.4yycad2xi65komw6@steredhat>
+References: <20190510125843.95587-1-sgarzare@redhat.com>
+ <20190510125843.95587-8-sgarzare@redhat.com>
+ <bf0416f1-0e69-722d-75ce-3d101e6d7d71@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <bf0416f1-0e69-722d-75ce-3d101e6d7d71@redhat.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit c7d13c8faa74 ("tcp: properly track retry time on
-passive Fast Open") sets the start of SYNACK retransmission
-time on passive Fast Open in "retrans_stamp". However the
-timestamp is not reset upon the handshake has completed. As a
-result, future data packet retransmission may not update it in
-tcp_retransmit_skb(). This may lead to socket aborting earlier
-unexpectedly by retransmits_timed_out() since retrans_stamp remains
-the SYNACK rtx time.
+On Mon, May 13, 2019 at 06:01:52PM +0800, Jason Wang wrote:
+> 
+> On 2019/5/10 下午8:58, Stefano Garzarella wrote:
+> > In order to increase host -> guest throughput with large packets,
+> > we can use 64 KiB RX buffers.
+> > 
+> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > ---
+> >   include/linux/virtio_vsock.h | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+> > index 84b72026d327..5a9d25be72df 100644
+> > --- a/include/linux/virtio_vsock.h
+> > +++ b/include/linux/virtio_vsock.h
+> > @@ -10,7 +10,7 @@
+> >   #define VIRTIO_VSOCK_DEFAULT_MIN_BUF_SIZE	128
+> >   #define VIRTIO_VSOCK_DEFAULT_BUF_SIZE		(1024 * 256)
+> >   #define VIRTIO_VSOCK_DEFAULT_MAX_BUF_SIZE	(1024 * 256)
+> > -#define VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE	(1024 * 4)
+> > +#define VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE	(1024 * 64)
+> >   #define VIRTIO_VSOCK_MAX_BUF_SIZE		0xFFFFFFFFUL
+> >   #define VIRTIO_VSOCK_MAX_PKT_BUF_SIZE		(1024 * 64)
+> 
+> 
+> We probably don't want such high order allocation. It's better to switch to
+> use order 0 pages in this case. See add_recvbuf_big() for virtio-net. If we
+> get datapath unified, we will get more stuffs set.
 
-This bug only manifests on passive TFO sender that a) suffered
-SYNACK timeout and then b) stalls on very first loss recovery. Any
-successful loss recovery would reset the timestamp to avoid this
-issue.
+IIUC, you are suggesting to allocate only pages and put them in a
+scatterlist, then add them to the virtqueue.
 
-Fixes: c7d13c8faa74 ("tcp: properly track retry time on passive Fast Open")
-Signed-off-by: Yuchung Cheng <ycheng@google.com>
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
----
- net/ipv4/tcp_input.c | 3 +++
- 1 file changed, 3 insertions(+)
+Is it correct?
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 20f6fac5882e..cf69f50855ea 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6024,6 +6024,9 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
- {
- 	tcp_try_undo_loss(sk, false);
-+
-+	/* Reset rtx states to prevent spurious retransmits_timed_out() */
-+	tcp_sk(sk)->retrans_stamp = 0;
- 	inet_csk(sk)->icsk_retransmits = 0;
- 
- 	/* Once we leave TCP_SYN_RECV or TCP_FIN_WAIT_1,
--- 
-2.21.0.1020.gf2820cf01a-goog
+The issue that I have here, is that the virtio-vsock guest driver, see
+virtio_vsock_rx_fill(), allocates a struct virtio_vsock_pkt that
+contains the room for the header, then allocates the buffer for the payload.
+At this point it fills the scatterlist with the &virtio_vsock_pkt.hdr and the
+buffer for the payload.
 
+Changing this will require several modifications, and if we get datapath
+unified, I'm not sure it's worth it.
+Of course, if we leave the datapaths separated, I'd like to do that later.
+
+What do you think?
+
+Thanks,
+Stefano
