@@ -2,120 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0A271B695
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 15:01:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DD0E1B6B1
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 15:07:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729143AbfEMNBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 09:01:54 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36442 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727850AbfEMNBx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 09:01:53 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6CB9A307D863;
-        Mon, 13 May 2019 13:01:53 +0000 (UTC)
-Received: from hog.localdomain, (unknown [10.40.205.80])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C0C855C206;
-        Mon, 13 May 2019 13:01:42 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Dan Winship <danw@redhat.com>
-Subject: [PATCH net] rtnetlink: always put ILFA_LINK for links with a link-netnsid
-Date:   Mon, 13 May 2019 15:01:57 +0200
-Message-Id: <8b128a64bba02b9d3b703e22f9ec4e7f3803255f.1557751584.git.sd@queasysnail.net>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Mon, 13 May 2019 13:01:53 +0000 (UTC)
+        id S1730070AbfEMNG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 09:06:59 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34933 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728554AbfEMNG7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 09:06:59 -0400
+Received: by mail-wm1-f67.google.com with SMTP id q15so9619794wmj.0
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 06:06:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=CXM/sAS6gtztrX2ItBHaQh/rCG7OOeN6BL0gyVWj5Hs=;
+        b=GslG7+cZPvOdOZdTWehD3qyjIhEDcW2T5HIFyOCJTkkfLxc+l2hF9kWZo9gGxKg4Vr
+         YQOKf4PSb4ovF9se5btS2Jix6wf/siXTKB4yos83DlZOxnHPh2PzMbJMct/NZU/4NUkm
+         MPi+6cotGwhzHe7X2TycUvGBfdwS9wWD1n391CFVkHQ/A6JdBJOysmr5ofHJEkX2rts/
+         5OhlR7r+1fvMZ/So59hGa3lgmD2Jo8zuRhVf/oBoQjiEpa7cji8C9JGEzAzJyhIEhbkx
+         aLEeaeEKTpBTRvmL5eASQeQCBPGQvECRfhHzD7Bz+pJWAbTtVwu0Ft8rFek8NP1ULEB2
+         /d/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=CXM/sAS6gtztrX2ItBHaQh/rCG7OOeN6BL0gyVWj5Hs=;
+        b=eZ3SzMjpLVcvmX5wXePF0gv/MOViWe8u0uhdyLdeuDXTpZihzpbNmioLU+cvOFyzt0
+         U/lGzZYOduu1bfOuggm+hLsYmSAS5FsYS3Z/6GPwY5L8U3/EfOWEGp+2JYlCyGP0PB0R
+         GTOc8LGV23I/VRx+RRXIen/gCbyxdzP5HzB/7Z4Zk+vZayRdIO4dBCH3HDqp3LWFYZN5
+         innZ1ffktUqRD7U/KSt8u6Bf6wwNiaeyFzOLSUeFNhgQuNWOihkSry/tJ60/gPj6uQ8c
+         AS6p34ZNlEPZ7CNiVmAI9FfHKQsbPNi5SJQLQ5jg1moB5l6P7EK0nHBPE9MJGTY2ySjw
+         XAkg==
+X-Gm-Message-State: APjAAAW/1Zb0CGSHdkZMo7k1htj+fpw/Os1itEcb4kZWrupptdyXPFmq
+        T+nvzJxbXJN24f08dJvXi/nV7A==
+X-Google-Smtp-Source: APXvYqzBz5EitlkDpf/Id1MzoeK9OnY9qfX/brhrBMq59YPXLx9oj7yX4jc4dlI7NopLVr++jeUGwg==
+X-Received: by 2002:a1c:4083:: with SMTP id n125mr11793765wma.54.1557752817725;
+        Mon, 13 May 2019 06:06:57 -0700 (PDT)
+Received: from localhost.localdomain ([51.15.160.169])
+        by smtp.googlemail.com with ESMTPSA id m17sm15699206wmc.6.2019.05.13.06.06.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 13 May 2019 06:06:56 -0700 (PDT)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     alexandre.torgue@st.com, davem@davemloft.net, joabreu@synopsys.com,
+        maxime.ripard@bootlin.com, peppe.cavallaro@st.com, wens@csie.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-sunxi@googlegroups.com, Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH] net: ethernet: stmmac: dwmac-sun8i: enable support of unicast filtering
+Date:   Mon, 13 May 2019 13:06:39 +0000
+Message-Id: <1557752799-9989-1-git-send-email-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, nla_put_iflink() doesn't put the IFLA_LINK attribute when
-iflink == ifindex.
+When adding more MAC address to a dwmac-sun8i interface, the device goes
+directly in promiscuous mode.
+This is due to IFF_UNICAST_FLT missing flag.
 
-In some cases, a device can be created in a different netns with the
-same ifindex as its parent. That device will not dump its IFLA_LINK
-attribute, which can confuse some userspace software that expects it.
-For example, if the last ifindex created in init_net and foo are both
-8, these commands will trigger the issue:
+So since the hardware support unicast filtering, let's add IFF_UNICAST_FLT.
 
-    ip link add parent type dummy                   # ifindex 9
-    ip link add link parent netns foo type macvlan  # ifindex 9 in ns foo
-
-So, in case a device puts the IFLA_LINK_NETNSID attribute in a dump,
-always put the IFLA_LINK attribute as well.
-
-Thanks to Dan Winship for analyzing the original OpenShift bug down to
-the missing netlink attribute.
-
-Analyzed-by: Dan Winship <danw@redhat.com>
-Fixes: a54acb3a6f85 ("dev: introduce dev_get_iflink()")
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Fixes: 9f93ac8d4085 ("net-next: stmmac: Add dwmac-sun8i")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- net/core/rtnetlink.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 2bd12afb9297..adcc045952c2 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -1496,14 +1496,15 @@ static int put_master_ifindex(struct sk_buff *skb, struct net_device *dev)
- 	return ret;
- }
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index ac19bf62db70..9d3112beb19f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -1018,6 +1018,8 @@ static struct mac_device_info *sun8i_dwmac_setup(void *ppriv)
+ 	mac->mac = &sun8i_dwmac_ops;
+ 	mac->dma = &sun8i_dwmac_dma_ops;
  
--static int nla_put_iflink(struct sk_buff *skb, const struct net_device *dev)
-+static int nla_put_iflink(struct sk_buff *skb, const struct net_device *dev,
-+			  bool force)
- {
- 	int ifindex = dev_get_iflink(dev);
- 
--	if (dev->ifindex == ifindex)
--		return 0;
-+	if (force || dev->ifindex != ifindex)
-+		return nla_put_u32(skb, IFLA_LINK, ifindex);
- 
--	return nla_put_u32(skb, IFLA_LINK, ifindex);
-+	return 0;
- }
- 
- static noinline_for_stack int nla_put_ifalias(struct sk_buff *skb,
-@@ -1520,6 +1521,8 @@ static int rtnl_fill_link_netnsid(struct sk_buff *skb,
- 				  const struct net_device *dev,
- 				  struct net *src_net)
- {
-+	bool put_iflink = false;
++	priv->dev->priv_flags |= IFF_UNICAST_FLT;
 +
- 	if (dev->rtnl_link_ops && dev->rtnl_link_ops->get_link_net) {
- 		struct net *link_net = dev->rtnl_link_ops->get_link_net(dev);
- 
-@@ -1528,10 +1531,12 @@ static int rtnl_fill_link_netnsid(struct sk_buff *skb,
- 
- 			if (nla_put_s32(skb, IFLA_LINK_NETNSID, id))
- 				return -EMSGSIZE;
-+
-+			put_iflink = true;
- 		}
- 	}
- 
--	return 0;
-+	return nla_put_iflink(skb, dev, put_iflink);
- }
- 
- static int rtnl_fill_link_af(struct sk_buff *skb,
-@@ -1617,7 +1622,6 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
- #ifdef CONFIG_RPS
- 	    nla_put_u32(skb, IFLA_NUM_RX_QUEUES, dev->num_rx_queues) ||
- #endif
--	    nla_put_iflink(skb, dev) ||
- 	    put_master_ifindex(skb, dev) ||
- 	    nla_put_u8(skb, IFLA_CARRIER, netif_carrier_ok(dev)) ||
- 	    (dev->qdisc &&
+ 	/* The loopback bit seems to be re-set when link change
+ 	 * Simply mask it each time
+ 	 * Speed 10/100/1000 are set in BIT(2)/BIT(3)
 -- 
 2.21.0
 
