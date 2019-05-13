@@ -2,69 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E453A1BB8F
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 19:10:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F65D1BBA4
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 19:17:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731282AbfEMRKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 13:10:25 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:50755 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731261AbfEMRKZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 13:10:25 -0400
-Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1hQET0-0005K9-0o; Mon, 13 May 2019 17:10:22 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 000C75FF13; Mon, 13 May 2019 10:10:19 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id ED5F6A6E12;
-        Mon, 13 May 2019 10:10:19 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     David Miller <davem@davemloft.net>
-cc:     jarod@redhat.com, linux-kernel@vger.kernel.org, vfalico@gmail.com,
-        andy@greyhouse.net, netdev@vger.kernel.org
-Subject: Re: [PATCH] bonding: fix arp_validate toggling in active-backup mode
-In-reply-to: <20190513.094632.2251179341102416171.davem@davemloft.net>
-References: <26675.1557528809@famine> <2033e768-9e35-ac89-c526-4c28fc3f747e@redhat.com> <6720.1557765810@famine> <20190513.094632.2251179341102416171.davem@davemloft.net>
-Comments: In-reply-to David Miller <davem@davemloft.net>
-   message dated "Mon, 13 May 2019 09:46:32 -0700."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1730247AbfEMRRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 13:17:55 -0400
+Received: from foss.arm.com ([217.140.101.70]:33992 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728118AbfEMRRz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 13:17:55 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 64BF2341;
+        Mon, 13 May 2019 10:17:54 -0700 (PDT)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.72.51.249])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 96BA13F6C4;
+        Mon, 13 May 2019 10:17:52 -0700 (PDT)
+Date:   Mon, 13 May 2019 18:17:46 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        bpf <bpf@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATCH net] flow_dissector: disable preemption around BPF calls
+Message-ID: <20190513171745.GA16567@lakrids.cambridge.arm.com>
+References: <20190513163855.225489-1-edumazet@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7471.1557767419.1@famine>
-Date:   Mon, 13 May 2019 10:10:19 -0700
-Message-ID: <7472.1557767419@famine>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190513163855.225489-1-edumazet@google.com>
+User-Agent: Mutt/1.11.1+11 (2f07cb52) (2018-12-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller <davem@davemloft.net> wrote:
+On Mon, May 13, 2019 at 09:38:55AM -0700, 'Eric Dumazet' via syzkaller wrote:
+> Various things in eBPF really require us to disable preemption
+> before running an eBPF program.
 
->From: Jay Vosburgh <jay.vosburgh@canonical.com>
->Date: Mon, 13 May 2019 09:43:30 -0700
->
->> 	That would be my preference, as the 29c4948293bf commit looks to
->> be the change actually being fixed.
->
->Sorry I pushed the original commit message out :-(
->
->But isn't the Fixes: tag he choose the one where the logic actually
->causes problems?  That's kind of my real criteria for Fixes: tags.
+Is that true for all eBPF uses? I note that we don't disable preemption
+in the lib/test_bpf.c module, for example.
 
-	I don't think so.  It looks like the problem being fixed here
-(clearing recv_probe when we shouldn't) was introduced at 29c4948293bf,
-but was not the only place the same problem existed.  3fe68df97c7f fixed
-the other occurrences of this problem, but missed the specific one added
-by 29c4948293bf, which is now fixed by this patch.
+If it's a general requirement, perhaps it's worth an assertion within
+BPF_PROG_RUN()?
 
-	In any event, both of the commits in question are old enough
-that it's kind of moot, as -stable will presumably get the right thing
-regardless.
+Thanks,
+Mark.
 
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+> 
+> syzbot reported :
+> 
+> BUG: assuming atomic context at net/core/flow_dissector.c:737
+> in_atomic(): 0, irqs_disabled(): 0, pid: 24710, name: syz-executor.3
+> 2 locks held by syz-executor.3/24710:
+>  #0: 00000000e81a4bf1 (&tfile->napi_mutex){+.+.}, at: tun_get_user+0x168e/0x3ff0 drivers/net/tun.c:1850
+>  #1: 00000000254afebd (rcu_read_lock){....}, at: __skb_flow_dissect+0x1e1/0x4bb0 net/core/flow_dissector.c:822
+> CPU: 1 PID: 24710 Comm: syz-executor.3 Not tainted 5.1.0+ #6
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+>  __cant_sleep kernel/sched/core.c:6165 [inline]
+>  __cant_sleep.cold+0xa3/0xbb kernel/sched/core.c:6142
+>  bpf_flow_dissect+0xfe/0x390 net/core/flow_dissector.c:737
+>  __skb_flow_dissect+0x362/0x4bb0 net/core/flow_dissector.c:853
+>  skb_flow_dissect_flow_keys_basic include/linux/skbuff.h:1322 [inline]
+>  skb_probe_transport_header include/linux/skbuff.h:2500 [inline]
+>  skb_probe_transport_header include/linux/skbuff.h:2493 [inline]
+>  tun_get_user+0x2cfe/0x3ff0 drivers/net/tun.c:1940
+>  tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2037
+>  call_write_iter include/linux/fs.h:1872 [inline]
+>  do_iter_readv_writev+0x5fd/0x900 fs/read_write.c:693
+>  do_iter_write fs/read_write.c:970 [inline]
+>  do_iter_write+0x184/0x610 fs/read_write.c:951
+>  vfs_writev+0x1b3/0x2f0 fs/read_write.c:1015
+>  do_writev+0x15b/0x330 fs/read_write.c:1058
+>  __do_sys_writev fs/read_write.c:1131 [inline]
+>  __se_sys_writev fs/read_write.c:1128 [inline]
+>  __x64_sys_writev+0x75/0xb0 fs/read_write.c:1128
+>  do_syscall_64+0x103/0x670 arch/x86/entry/common.c:298
+>  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> 
+> Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Cc: Petar Penkov <ppenkov@google.com>
+> Cc: Stanislav Fomichev <sdf@google.com>
+> ---
+>  net/core/flow_dissector.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+> index 9ca784c592ac8c9c58282289a81889fbe4658a9e..548f39dde30711ac5be9e921993a6d8e53f74161 100644
+> --- a/net/core/flow_dissector.c
+> +++ b/net/core/flow_dissector.c
+> @@ -734,7 +734,9 @@ bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
+>  	flow_keys->nhoff = nhoff;
+>  	flow_keys->thoff = flow_keys->nhoff;
+>  
+> +	preempt_disable();
+>  	result = BPF_PROG_RUN(prog, ctx);
+> +	preempt_enable();
+>  
+>  	flow_keys->nhoff = clamp_t(u16, flow_keys->nhoff, nhoff, hlen);
+>  	flow_keys->thoff = clamp_t(u16, flow_keys->thoff,
+> -- 
+> 2.21.0.1020.gf2820cf01a-goog
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "syzkaller" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller/20190513163855.225489-1-edumazet%40google.com.
+> For more options, visit https://groups.google.com/d/optout.
