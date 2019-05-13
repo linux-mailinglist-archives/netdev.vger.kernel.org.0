@@ -2,183 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 475641BF38
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 23:47:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B5A31BF52
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 00:01:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726529AbfEMVrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 17:47:07 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:38682 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726174AbfEMVrG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 17:47:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id b16so10925126iot.5
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 14:47:05 -0700 (PDT)
+        id S1726532AbfEMWBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 18:01:08 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42015 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726413AbfEMWBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 18:01:07 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 145so7454476pgg.9;
+        Mon, 13 May 2019 15:01:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=BmohReTs8oe9mx36kGEB4VnDpcgr/j26VHR2MYQ6DXc=;
+        b=Ju4mEqg8x5eYk6CHoWmkkEfGCg7glF/eJ8cLf3NnG25GPVs9B9/psWZdZWH0Z2S7C3
+         zz5mZ6JLp+tIFy6KJHdOtQzMJaGn278yLc2K79fcb/bZhgEz2GNOT7IhC40LbtBGGU84
+         IpS7AUKD5pgT3cSTg14JOTk48rIXnqAZL5QhUSIzFe8aH51Ti54BG64SLU9fx1dGhhqW
+         pflESkGO1KdHsf2TYVyLIlFY021oxyEbi1rlpM0BnVUJniWtGFq65e1YAQpw4L9jWdjY
+         1AVe1WQAyQ6VaTs17k7fMnAT11oitfyiM96miZe3FhB7u5Q+NA4iFtEFKDc0/CrLAS8d
+         aWPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=/rlXrbp2H3OAY3betgl/KXmyzA7uwrYXbBzE74HvkWI=;
-        b=ltzGiAyu+IGEjR2TXqTcrKtryu8kTCyxiVEe7OQMTO1mKZVTSMcpcLeV4+/+wteX9Q
-         221arvyKt/sb7nRCY8vN/00VPA49qUCbk+uUEBjO6XoVBGEixBisCjyRyf5G10QwlB+3
-         mv9cYCtd7qXhUmmljM1pDKFTi4bbEnoDR0SXjiyHqzIhREei0WjSZzwxPn378LHeZgb7
-         8zQRxX01Zc5kEtFSR4JO9VUEwq/IkNY2yU0yjWokmgQXFC1Zpe7DUXHHGscxtgT9Qug+
-         v6EXBFJLBxijvjNGcuT/sMsvMHlfS5w4hu6jlXZ3ESi+hLdwMbrFYoR+bAHQsleoKCrr
-         GbdA==
-X-Gm-Message-State: APjAAAUZanwsGOtTtE/F0cqH+GDSCKQoKYiUSUVb2nHlIAYZlA/CjFob
-        dmM5+1v55Qr7bTBMi1kyqpXVCeopTWqinX9xQr/0rgRZuYke
-X-Google-Smtp-Source: APXvYqx0tfheyALe0R0WL1ND66kOetDpP0PLCnkZdEC2Q+JJHHiHVsg9RwDEklEWW6G6HUVlcmqdcZTvwH5hvim2hbDvrJ497DGJ
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BmohReTs8oe9mx36kGEB4VnDpcgr/j26VHR2MYQ6DXc=;
+        b=YTyBMKoGmCIPGv2qN+m+CaQYJI/7UEsKPnxxwDjcR3UaDuu8vUEwiuf91kZXesakJv
+         XsQNf1p4Y3fOdZHihd2Z1jeBGzIiV6QbTb8UUQH2WkNKjPyoPserdRtiH0aZZNeXfJns
+         jueOZfC/VZOasl8MXwHtuY4VuDA64mQFi56YrsSIWE+BOXfBltKjbFOkFjnNN+J554ST
+         AlKE4BUY7MmlcS3qhIqN/OHhe60MdbDxvFV7ncblEyypKX50CkljF3ZJlBzf11Z4xmOn
+         nFkR/dTWf7m04pKbDeFh70zXCYuYytb5d8oKILEL2ImnMK91Wnyhht1B5Lr9P6KGVets
+         7qGA==
+X-Gm-Message-State: APjAAAXe26yl1KBWNmmbHvocnsWZQU70CnpnUd3hFbpSNJEGVbnnhvZm
+        xFIL1/U9+bht3WsTqS1DBEc=
+X-Google-Smtp-Source: APXvYqy81lzMO2bK11iOnpqqTUPG1iup+4E7SDIPadrSejRVtOHbQHeJx+VL6icdi3oI011wIa7fdg==
+X-Received: by 2002:a63:cf0d:: with SMTP id j13mr35216766pgg.433.1557784867236;
+        Mon, 13 May 2019 15:01:07 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:5dd:49d5:5580:adf5? ([2601:282:800:fd80:5dd:49d5:5580:adf5])
+        by smtp.googlemail.com with ESMTPSA id q27sm10385684pfg.49.2019.05.13.15.01.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 13 May 2019 15:01:06 -0700 (PDT)
+Subject: Re: getneigh: add nondump to retrieve single entry
+To:     mcmahon@arista.com, davem@davemloft.net, roopa@cumulusnetworks.com,
+        christian@brauner.io, khlebnikov@yandex-team.ru,
+        lzgrablic@arista.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mowat@arista.com, dmia@arista.com
+References: <mcmahon@arista.com> <20190513160335.24128-1-mcmahon@arista.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d05e56d5-2677-3c03-7a25-df2ca2681a75@gmail.com>
+Date:   Mon, 13 May 2019 16:01:04 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:660c:ac3:: with SMTP id k3mr997600itl.79.1557784025621;
- Mon, 13 May 2019 14:47:05 -0700 (PDT)
-Date:   Mon, 13 May 2019 14:47:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007bee9b0588cbdb77@google.com>
-Subject: net boot error: WARNING: workqueue cpumask: online intersect >
- possible intersect
-From:   syzbot <syzbot+e7d5400c7ea466bf6c81@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20190513160335.24128-1-mcmahon@arista.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 5/13/19 10:03 AM, mcmahon@arista.com wrote:
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index 30f6fd8f68e0..981f1568710b 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> +static int neigh_find_fill(struct neigh_table *tbl, const void *pkey,
+> +                           struct net_device *dev, struct sk_buff *skb, u32 pid,
+> +                           u32 seq)
+> +{
+> +	struct neighbour *neigh;
+> +	int key_len = tbl->key_len;
+> +	u32 hash_val;
+> +	struct neigh_hash_table *nht;
+> +	int err;
 
-syzbot found the following crash on:
+reverse xmas tree ordering
 
-HEAD commit:    d4c26eb6 net: ethernet: stmmac: dwmac-sun8i: enable suppor..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=1467a174a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=de3262a7df18d5ca
-dashboard link: https://syzkaller.appspot.com/bug?extid=e7d5400c7ea466bf6c81
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+...
 
-Unfortunately, I don't have any reproducer for this crash yet.
+> +static int neigh_get(struct sk_buff *skb, struct nlmsghdr *nlh)
+> +{
+> +	struct net *net = sock_net(skb->sk);
+> +	struct ndmsg *ndm;
+> +	struct nlattr *dst_attr;
+> +	struct neigh_table *tbl;
+> +	struct net_device *dev = NULL;
+> +
+> +	ASSERT_RTNL();
+> +	if (nlmsg_len(nlh) < sizeof(*ndm))
+> +		return -EINVAL;
+> +
+> +	dst_attr = nlmsg_find_attr(nlh, sizeof(*ndm), NDA_DST);
+> +	if (dst_attr == NULL)
+> +		return -EINVAL;
+> +
+> +	ndm = nlmsg_data(nlh);
+> +	if (ndm->ndm_ifindex) {
+> +		dev = __dev_get_by_index(net, ndm->ndm_ifindex);
+> +		if (dev == NULL)
+> +			return -ENODEV;
+> +	}
+> +
+> +	read_lock(&neigh_tbl_lock);
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+e7d5400c7ea466bf6c81@syzkaller.appspotmail.com
+this patch is clearly for a MUCH older kernel than 5.2 (like 3.18
+maybe?) as that lock no longer exists.
 
-smpboot: CPU0: Intel(R) Xeon(R) CPU @ 2.30GHz (family: 0x6, model: 0x3f,  
-stepping: 0x0)
-Performance Events: unsupported p6 CPU model 63 no PMU driver, software  
-events only.
-rcu: Hierarchical SRCU implementation.
-NMI watchdog: Perf NMI watchdog permanently disabled
-smp: Bringing up secondary CPUs ...
-x86: Booting SMP configuration:
-.... node  #0, CPUs:      #1
-smp: Brought up 2 nodes, 2 CPUs
-smpboot: Max logical packages: 1
-smpboot: Total of 2 processors activated (9200.00 BogoMIPS)
-devtmpfs: initialized
-clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns:  
-19112604462750000 ns
-futex hash table entries: 512 (order: 4, 65536 bytes)
-xor: automatically using best checksumming function   avx
-PM: RTC time: 19:42:27, date: 2019-05-13
-NET: Registered protocol family 16
-audit: initializing netlink subsys (disabled)
-cpuidle: using governor menu
-ACPI: bus type PCI registered
-dca service started, version 1.12.1
-PCI: Using configuration type 1 for base access
-WARNING: workqueue cpumask: online intersect > possible intersect
-HugeTLB registered 1.00 GiB page size, pre-allocated 0 pages
-HugeTLB registered 2.00 MiB page size, pre-allocated 0 pages
-cryptd: max_cpu_qlen set to 1000
-raid6: avx2x4   gen() 11252 MB/s
-raid6: avx2x4   xor()  6726 MB/s
-raid6: avx2x2   gen()  7021 MB/s
-raid6: avx2x2   xor()  3931 MB/s
-raid6: avx2x1   gen()  4150 MB/s
-raid6: avx2x1   xor()  2274 MB/s
-raid6: sse2x4   gen()  5782 MB/s
-raid6: sse2x4   xor()  3445 MB/s
-raid6: sse2x2   gen()  3614 MB/s
-raid6: sse2x2   xor()  2050 MB/s
-raid6: sse2x1   gen()  1853 MB/s
-raid6: sse2x1   xor()  1076 MB/s
-raid6: using algorithm avx2x4 gen() 11252 MB/s
-raid6: .... xor() 6726 MB/s, rmw enabled
-raid6: using avx2x2 recovery algorithm
-ACPI: Added _OSI(Module Device)
-ACPI: Added _OSI(Processor Device)
-ACPI: Added _OSI(3.0 _SCP Extensions)
-ACPI: Added _OSI(Processor Aggregator Device)
-ACPI: Added _OSI(Linux-Dell-Video)
-ACPI: Added _OSI(Linux-Lenovo-NV-HDMI-Audio)
-ACPI: Added _OSI(Linux-HPI-Hybrid-Graphics)
-ACPI: 2 ACPI AML tables successfully acquired and loaded
-ACPI: Interpreter enabled
-ACPI: (supports S0 S3 S4 S5)
-ACPI: Using IOAPIC for interrupt routing
-PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and  
-report a bug
-ACPI: Enabled 16 GPEs in block 00 to 0F
-ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
-acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI]
-acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended  
-PCI configuration space under this bridge.
-PCI host bridge to bus 0000:00
-pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
-pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
-pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
-pci_bus 0000:00: root bus resource [mem 0xc0000000-0xfebfffff window]
-pci_bus 0000:00: root bus resource [bus 00-ff]
-pci 0000:00:01.3: quirk: [io  0xb000-0xb03f] claimed by PIIX4 ACPI
-ACPI: PCI Interrupt Link [LNKA] (IRQs 5 *10 11)
-ACPI: PCI Interrupt Link [LNKB] (IRQs 5 *10 11)
-ACPI: PCI Interrupt Link [LNKC] (IRQs 5 10 *11)
-ACPI: PCI Interrupt Link [LNKD] (IRQs 5 10 *11)
-ACPI: PCI Interrupt Link [LNKS] (IRQs *9)
-vgaarb: loaded
-SCSI subsystem initialized
-ACPI: bus type USB registered
-usbcore: registered new interface driver usbfs
-usbcore: registered new interface driver hub
-usbcore: registered new device driver usb
-media: Linux media interface: v0.10
-videodev: Linux video capture interface: v2.00
-pps_core: LinuxPPS API ver. 1 registered
-pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti  
-<giometti@linux.it>
-PTP clock support registered
-EDAC MC: Ver: 3.0.0
-Advanced Linux Sound Architecture Driver Initialized.
-PCI: Using ACPI for IRQ routing
-Bluetooth: Core ver 2.22
-NET: Registered protocol family 31
-Bluetooth: HCI device and connection manager initialized
-Bluetooth: HCI socket layer initialized
-Bluetooth: L2CAP socket layer initialized
-Bluetooth: SCO socket layer initialized
-NET: Registered protocol family 8
-NET: Registered protocol family 20
-NetLabel: Initializing
-NetLabel:  domain hash size = 128
-NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
-NetLabel:  unlabeled traffic allowed by default
-nfc: nfc_init: NFC Core ver 0.1
-NET: Registered protocol family 39
-clocksource: Switched to clocksource kvm-clock
-VFS: Disk quotas dquot_6.6.0
-VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
-FS-Cache: Loaded
-*** VALIDATE hugetlbfs ***
-CacheFiles: Loaded
-TOMOYO: 2.6.0
-Profile 0 (used by '<kernel>') is not defined.
-Userland tools for TOMOYO 2.6 must be installed and policy must be  
-initialized.
-Please see https://tomoyo.osdn.jp/2.6/ for more information.
+> +	for (tbl = neigh_tables; tbl; tbl = tbl->next) {
+> +		struct sk_buff *nskb;
+> +		int err;
+> +
+> +		if (tbl->family != ndm->ndm_family)
+> +			continue;
 
+Use neigh_find_table.
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+You need to update the patch to top of net-next tree and re-work the
+locking. Run tests with RCU and lock debugging enabled to make sure you
+have it right.
