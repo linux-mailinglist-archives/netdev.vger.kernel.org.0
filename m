@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F7431B7FC
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 16:19:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D5D1B800
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 16:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730159AbfEMOTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 10:19:32 -0400
-Received: from mail-it1-f196.google.com ([209.85.166.196]:35312 "EHLO
-        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728867AbfEMOTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 10:19:32 -0400
-Received: by mail-it1-f196.google.com with SMTP id u186so20584420ith.0;
-        Mon, 13 May 2019 07:19:31 -0700 (PDT)
+        id S1730183AbfEMOTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 10:19:50 -0400
+Received: from mail-it1-f195.google.com ([209.85.166.195]:51920 "EHLO
+        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728867AbfEMOTu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 10:19:50 -0400
+Received: by mail-it1-f195.google.com with SMTP id s3so20556399itk.1;
+        Mon, 13 May 2019 07:19:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=5ar/GHBOf+NmAxnd5M+Y72KZr2xiJVin2jhQ9wQRufY=;
-        b=MIn5gviIX98B2+dKu/+kvdsZE0fw0ri2MSNm1BNiqB60ImYsMj4Y97sk6JmWHkRFmu
-         R1X3srjNhYoWL+WCcymbHO3AO02wPsZCKO9pcwELBxzlpmxHfJBlri1rcnP6ipuIkOsO
-         fgGlvGIYQQ/7R4/HOPbvTG+lne8U9nG98cqRByq35hIkZ/rJ6RQMiJ36ZZJadte4cRb2
-         g3hKnsN2EkgbdAIz9/t/JV9lXCmKZyQSB9ARW6X9Ry+zXXOR1jEYWyfhx94qv+UTpDos
-         Cx5Tl05gURPiORBoF8Gtf+txqdTqXkBPgZzIuulezeX5vpja3Ovbqx9IPJazhBY4KI5i
-         2u2Q==
+        bh=mP8S+aTEH0TfrmSoHVNIm1wecVOgLyl9+6N0y5RZVwA=;
+        b=sD60AhmSoRIY0JXnr0SM/7gusABIvZPmhkoRRIeGoch/0+HU4ASxY6RDI8+hzxwK69
+         3u4AoX3VE8LcaOh+AyOCw10mHCY+9i44k1+eCmDpJRAdsRLFpzkfOB6mF1m6uFBGxf1S
+         9kDDkDxAxmXSHW5segy2MotM1AsesCpVDqaLneOWG0hwj1I2qcG7AOkp7yDewRhXrVYI
+         suvTo/OXhtaGcSlZyAvKyiFQlcL7tTvS6qVQWwqWhx4tG0K9lABKnc2RIToerBzgFevf
+         WkWxy1crG8Aajt8XweJcDXDbhUguUj0tTRIxEluAhTdtqqPzxR6M+FWuds+m5FI766ND
+         Ihrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=5ar/GHBOf+NmAxnd5M+Y72KZr2xiJVin2jhQ9wQRufY=;
-        b=RZsjdavlvNguciHOrhcBIiSBy/a+tCIC8hVGEr4ascnEndoE4S/MNb3rZki540+ZW/
-         kawHgQgsDDl/pP986iGyqLiOO/T8NC52PZpXHwB2YP4fWdzt9hSKQewt2Th4/6wzBdit
-         MBhXh0kkdjhbKGZQLFaOBEXozuhqWs6/2KE/eHAI6pi4At0Cm7/dQz73OxsZEDeaYlnV
-         f6wB6jtEfX67Vt8fWb8NmhIRO5v1OlNlBq7+P4ekozmIskQ8LpFv+Hov+E8F8hjWoS19
-         zFMDccAVv7EGMhmWfIWWt5cBNjUPC29e+uiLj3APRkPy5Bq/m+9epZjrB86IuzpIi7Fs
-         4hpA==
-X-Gm-Message-State: APjAAAUc/LIqhJeNSmqueyw1NXwQxXQBZOV/ntVQ5mSS3S2mL4IZDTkY
-        WFqQ7lzZyezHBAmsiN+T9JA=
-X-Google-Smtp-Source: APXvYqxPASelMTITDuArZo7INFkbT/o+sSHzn0JMcxStPCvM1oEJ8zjczT+Wa3gDH79nZQ0OOyRJlA==
-X-Received: by 2002:a24:d486:: with SMTP id x128mr15651248itg.80.1557757171337;
-        Mon, 13 May 2019 07:19:31 -0700 (PDT)
+        bh=mP8S+aTEH0TfrmSoHVNIm1wecVOgLyl9+6N0y5RZVwA=;
+        b=OOn5NlThGbZM2tb9LbogSebpVaPEAJIfZFnl2/aBD5Jd48D2iSPR6gVlkj2JbpG1ZC
+         5u5VSvh/dzwmAeY4mbn3yiL3hvf6HHLEdNN/qM+eUMGPdTPsZr+TkTpnopdfJUcBydZ0
+         GV3j59ofWLFkDzNv3SXfNZMmYJtXoO6E+QjYw1vHdtV6ktnmIsvXVIoTruu7dVPJDRFS
+         M9GY/jGHICG38/nbYaPd98DtjDPGux8aCYZB+WqNBlkb9S6O+rfzaaHVREiIE7hQCQC+
+         h6vRm+Gxju4+JRr6F0yA8wYGObjie0V8c7m1WryCn0jWRygy3qPggArDb+6DPjZLUk8g
+         NGoQ==
+X-Gm-Message-State: APjAAAV4lNMLqw0E8t3X3mOb4YBLnV/3MxztEkd4ZdcUg8T9sRg9VIvQ
+        HSVMAkWZF+L+mRXt4Spj5nU=
+X-Google-Smtp-Source: APXvYqzcIwR2eabWCVAuF+3jNKhdqAJ0aMLvfc3Ai6vcjjGN9GxAvp8TZo3vZUoY7nYL4rMJocYMSQ==
+X-Received: by 2002:a24:69c3:: with SMTP id e186mr17620837itc.37.1557757189414;
+        Mon, 13 May 2019 07:19:49 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id x23sm4546357iob.57.2019.05.13.07.19.24
+        by smtp.gmail.com with ESMTPSA id p16sm4376186ioh.6.2019.05.13.07.19.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 13 May 2019 07:19:30 -0700 (PDT)
-Subject: [bpf PATCH 1/3] bpf: sockmap,
- only stop/flush strp if it was enabled at some point
+        Mon, 13 May 2019 07:19:48 -0700 (PDT)
+Subject: [bpf PATCH 2/3] bpf: sockmap remove duplicate queue free
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     jakub.kicinski@netronome.com, ast@kernel.org, daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com
-Date:   Mon, 13 May 2019 07:19:19 -0700
-Message-ID: <155775715979.22311.14369835450992570068.stgit@john-XPS-13-9360>
+Date:   Mon, 13 May 2019 07:19:37 -0700
+Message-ID: <155775717732.22311.13248108248808306711.stgit@john-XPS-13-9360>
 In-Reply-To: <155775710768.22311.15370233730402405518.stgit@john-XPS-13-9360>
 References: <155775710768.22311.15370233730402405518.stgit@john-XPS-13-9360>
 User-Agent: StGit/0.17.1-dirty
@@ -63,62 +62,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we try to call strp_done on a parser that has never been
-initialized, because the sockmap user is only using TX side for
-example we get the following error.
+In tcp bpf remove we free the cork list and purge the ingress msg
+list. However we do this before the ref count reaches zero so it
+could be possible some other access is in progress. In this case
+(tcp close and/or tcp_unhash) we happen to also hold the sock
+lock so no path exists but lets fix it otherwise it is extremely
+fragile and breaks the reference counting rules. Also we already
+check the cork list and ingress msg queue and free them once the
+ref count reaches zero so its wasteful to check twice.
 
-
-  [  883.422081] WARNING: CPU: 1 PID: 208 at kernel/workqueue.c:3030 __flush_work+0x1ca/0x1e0
-  ...
-  [  883.422095] Workqueue: events sk_psock_destroy_deferred
-  [  883.422097] RIP: 0010:__flush_work+0x1ca/0x1e0
-
-
-This had been wrapped in a 'if (psock->parser.enabled)' logic which
-was broken because the strp_done() was never actually being called
-because we do a strp_stop() earlier in the tear down logic will
-set parser.enabled to false. This could result in a use after free
-if work was still in the queue and was resolved by the patch here,
-1d79895aef18f ("sk_msg: Always cancel strp work before freeing the
-psock"). However, calling strp_stop(), done by the patch marked in
-the fixes tag, only is useful if we never initialized a strp parser
-program and never initialized the strp to start with. Because if
-we had initialized a stream parser strp_stop() would have been called
-by sk_psock_drop() earlier in the tear down process.  By forcing the
-strp to stop we get past the WARNING in strp_done that checks
-the stopped flag but calling cancel_work_sync on work that has never
-been initialized is also wrong and generates the warning above.
-
-To fix check if the parser program exists. If the program exists
-then the strp work has been initialized and must be sync'd and
-cancelled before free'ing any structures. If no program exists we
-never initialized the stream parser in the first place so skip the
-sync/cancel logic implemented by strp_done.
-
-Finally, remove the strp_done its not needed and in the case where we are using the
-stream parser has already been called.
-
-Fixes: e8e3437762ad9 ("bpf: Stop the psock parser before canceling its work")
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/core/skmsg.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_bpf.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index cc94d921476c..49d1efa329d7 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -554,8 +554,10 @@ static void sk_psock_destroy_deferred(struct work_struct *gc)
- 	struct sk_psock *psock = container_of(gc, struct sk_psock, gc);
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 1bb7321a256d..4a619c85daed 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -528,8 +528,6 @@ static void tcp_bpf_remove(struct sock *sk, struct sk_psock *psock)
+ {
+ 	struct sk_psock_link *link;
  
- 	/* No sk_callback_lock since already detached. */
--	strp_stop(&psock->parser.strp);
--	strp_done(&psock->parser.strp);
-+
-+	/* Parser has been stopped */
-+	if (psock->progs.skb_parser)
-+		strp_done(&psock->parser.strp);
- 
- 	cancel_work_sync(&psock->work);
- 
+-	sk_psock_cork_free(psock);
+-	__sk_psock_purge_ingress_msg(psock);
+ 	while ((link = sk_psock_link_pop(psock))) {
+ 		sk_psock_unlink(sk, link);
+ 		sk_psock_free_link(link);
 
