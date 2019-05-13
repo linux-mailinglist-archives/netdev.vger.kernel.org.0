@@ -2,113 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DB991B0CD
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 09:07:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 677A81B127
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 09:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727590AbfEMHHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 03:07:08 -0400
-Received: from mail-it1-f200.google.com ([209.85.166.200]:53087 "EHLO
-        mail-it1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726877AbfEMHHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 03:07:06 -0400
-Received: by mail-it1-f200.google.com with SMTP id 73so11407886itl.2
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 00:07:05 -0700 (PDT)
+        id S1727999AbfEMH3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 03:29:17 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:36574 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727462AbfEMH3Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 03:29:16 -0400
+Received: by mail-lf1-f65.google.com with SMTP id y10so8237128lfl.3;
+        Mon, 13 May 2019 00:29:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=ANO0xXt34tqA+PC94Xi+g11/uy5YRgvNnUqPc1rWV1I=;
+        b=VZRyLpmzKnZG6EsvA2UZxgEYUc+G6nSBCAkhL6gCFeFmPqi6KnE+6ZVxO9HlhnvQd6
+         EjsDXQA/9rLECwZk6DGV6oDUo3a6u7/2nQfByi1Aicw7k/Al6/xYusC/vFkoraN59Dou
+         WuC/YfJrSWzukZFXNKJG4nv81eHXDJ6ig4TxM4OqDBCha3E+HWjDEkT/CZuZ0ZdRndcW
+         2lMk099OqhW4lvcL7Ec6GRPR1kwSnerOX1E8H+aQnLnKvPDGjH2KSPvmBJxdCIfcV85k
+         VzGRYDKoiQ537JeySD5pvAhDCERIRrqNZX3aLwuXulnR0xijZD/fUBVh8qeTocEeu6cA
+         iitg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=HS7eXqtSjToahbF+8YGfUVULm5QmPVdr7jt+lugTFD0=;
-        b=dQFHbH6uhIpb43FqRpjUXqN0xKQF8FOGvA0YA54hSWhPGNqtl9zIusPIVDbY7TS2lv
-         YDP5BHwDkR8iBoIa5b/xjPxAEed9vsM0oohBxg9t1RbdkykMpi2DoTuGIFdIvxoDbO6D
-         9V82+KmIdNt2yWmSLDnlyNN/RKSBwn0esGRe25/Fom6UNxB1un8KLD43yL3PHHEhkUti
-         C8Pb9T6tPABIjCpzE8b0aszdrucUgFYcIkyJ7KjELxsqnbQbAkGbOYRNkMGwXdsPCb9p
-         vtFkIRR7r8sj8bffAIuAhqJv7L4vZhif26igW6GdTjPcQBV5fPmuGzUzTnhEXJe1F9ka
-         4dsQ==
-X-Gm-Message-State: APjAAAW/X1mdzFpsL9VI/lzXzU0JK9hnQeCgv445K1pi0uE21a5QGOup
-        AaXbK4JuiIC/bm7tKDh8O2KrNNJf6dqS5zH179fdVHpD+U0i
-X-Google-Smtp-Source: APXvYqxaG5duQ7HGiFc3gBEuHKSxI56NFqET64FcR9HPXB9WBzlCxAVv84TLU/32UsUNJ0ZOe+9LaDT6i+7In6KbmbgvVFdOkeY2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=ANO0xXt34tqA+PC94Xi+g11/uy5YRgvNnUqPc1rWV1I=;
+        b=cijKIXxk42DT9Y+R26XRdoqymAWLkY9FRTW1L7JXFrnLezb9LMd8UYxiWpIRcykniT
+         ReHeeyOUCIBqGKbPJPc6DLBwk94D+9dRCoLWt86xdl7o1mpqbv0lYt0iHiPBOujSL/Ug
+         j5PCRzTd3iWoDyIfm1Sd+4aurCMZAXup9i6GCwi22lE2N6sniE57kaBwphANdXmnhzLV
+         o6+jMzv4gd2Ffp6H04mqORLCoonObuse4xpsfTq83M5AMgiiGMxhQA6WqQCWsnl+/PJE
+         1VCPPV+Lh2eTy86SUMTVeqOFxycD0Xy11uA1bUmc2jqf0AmqEC3XJCShkuSdfNezb3Rx
+         Hzug==
+X-Gm-Message-State: APjAAAUQlLM+NSt4lJZ7ow8jM6Ps35eI5Qi3mo5ee5Yjzf2kOJFlFuaQ
+        SFLC90+kdUCbH8nEV6cALHI=
+X-Google-Smtp-Source: APXvYqxAPS2YNy9oUsYW8yeuuGGTIJp5tmtOJUBhMiJQhfu9QTP/3KsRjsvSFCh79P5VphfigYY94w==
+X-Received: by 2002:ac2:4857:: with SMTP id 23mr9993431lfy.158.1557732553706;
+        Mon, 13 May 2019 00:29:13 -0700 (PDT)
+Received: from mobilestation ([5.164.217.122])
+        by smtp.gmail.com with ESMTPSA id y24sm3063412lfg.33.2019.05.13.00.29.12
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 13 May 2019 00:29:12 -0700 (PDT)
+Date:   Mon, 13 May 2019 10:29:10 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Vicente Bergas <vicencb@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: net: phy: realtek: regression, kernel null pointer dereference
+Message-ID: <20190513072909.behzxeisc7l3nprq@mobilestation>
+References: <16f75ff4-e3e3-4d96-b084-e772e3ce1c2b@gmail.com>
+ <742a2235-4571-aa7d-af90-14c708205c6f@gmail.com>
+ <11446b0b-c8a4-4e5f-bfa0-0892b500f467@gmail.com>
+ <61831f43-3b24-47d9-ec6f-15be6a4568c5@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:8585:: with SMTP id d5mr18222190jai.69.1557731225226;
- Mon, 13 May 2019 00:07:05 -0700 (PDT)
-Date:   Mon, 13 May 2019 00:07:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000055d6590588bf90bf@google.com>
-Subject: linux-next test error: WARNING in remove_proc_entry
-From:   syzbot <syzbot+4887e9dd9042fae2a9c2@syzkaller.appspotmail.com>
-To:     anna.schumaker@netapp.com, bfields@fieldses.org,
-        davem@davemloft.net, jlayton@kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        trond.myklebust@hammerspace.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <61831f43-3b24-47d9-ec6f-15be6a4568c5@gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello Heiner and net-folks,
 
-syzbot found the following crash on:
+On Sat, May 11, 2019 at 04:56:56PM +0200, Heiner Kallweit wrote:
+> On 11.05.2019 16:46, Vicente Bergas wrote:
+> > On Friday, May 10, 2019 10:28:06 PM CEST, Heiner Kallweit wrote:
+> >> On 10.05.2019 17:05, Vicente Bergas wrote:
+> >>> Hello,
+> >>> there is a regression on linux v5.1-9573-gb970afcfcabd with a kernel null
+> >>> pointer dereference.
+> >>> The issue is the commit f81dadbcf7fd067baf184b63c179fc392bdb226e
+> >>>  net: phy: realtek: Add rtl8211e rx/tx delays config ...
+> >> The page operation callbacks are missing in the RTL8211E driver.
+> >> I just submitted a fix adding these callbacks to few Realtek PHY drivers
+> >> including RTl8211E. This should fix the issue.
+> > 
+> > Hello Heiner,
+> > just tried your patch and indeed the NPE is gone. But still no network...
+> > The MAC <-> PHY link was working before, so, maybe the rgmii delays are not
+> > correctly configured.
+> 
+> That's a question to the author of the original patch. My patch was just
+> meant to fix the NPE. In which configuration are you using the RTL8211E?
+> As a standalone PHY (with which MAC/driver?) or is it the integrated PHY
+> in a member of the RTL8168 family?
+> 
+> Serge: The issue with the NPE gave a hint already that you didn't test your
+> patch. Was your patch based on an actual issue on some board and did you
+> test it? We may have to consider reverting the patch.
+> 
 
-HEAD commit:    04c4b677 Add linux-next specific files for 20190513
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=10a413c8a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b8e08a763b62ad3a
-dashboard link: https://syzkaller.appspot.com/bug?extid=4887e9dd9042fae2a9c2
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+I'm sorry for the problems the patch caused. My fault I couldn't predict the
+paged-operations weren't defined for the E-revision of the PHY.
 
-Unfortunately, I don't have any reproducer for this crash yet.
+Regarding the patch tests. As I mention in the patchset discussions, the patch
+was ported from earlier versions of the kernel. In particular I created it for
+kernels 4.4 and 4.9, where paged-operations weren't introduced. So when I moved
+it to the modern kernel I found the paged operations availability and decided to
+use them, which simplified the code providing a ready-to-use interface to access
+the PHY' extension pages. I also found they were defined in the driver with
+"rtl821x_" prefix and mistakenly decided, that they were also used for any
+rtl-like device. That's where I let the bug to creep in.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+4887e9dd9042fae2a9c2@syzkaller.appspotmail.com
+Regarding the MAC-PHY link. Without this functionality our custom board of
+MAC and rtl8211e PHY doesn't provide a fully supported network, because the
+RXDLY and TXDLY pins are grounded so there is no a simple way to set the
+RGMII delays on the PHY side.
 
-------------[ cut here ]------------
-remove_proc_entry: removing non-empty directory 'net/rpc', leaking at  
-least 'use-gss-proxy'
-WARNING: CPU: 0 PID: 26 at fs/proc/generic.c:681  
-remove_proc_entry+0x367/0x410 fs/proc/generic.c:681
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 26 Comm: kworker/u4:2 Not tainted 5.1.0-next-20190513 #6
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  panic+0x2cb/0x75a kernel/panic.c:218
-  __warn.cold+0x20/0x47 kernel/panic.c:575
-  report_bug+0x263/0x2b0 lib/bug.c:186
-  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
-  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:972
-RIP: 0010:remove_proc_entry+0x367/0x410 fs/proc/generic.c:681
-Code: 00 00 00 48 89 fa 48 c1 ea 03 80 3c 02 00 75 4c 49 8b 95 d0 00 00 00  
-48 c7 c6 80 85 97 87 48 c7 c7 00 85 97 87 e8 c7 b1 6d ff <0f> 0b e9 4b fe  
-ff ff e8 6d 54 d4 ff e9 b5 fd ff ff e8 23 55 d4 ff
-RSP: 0018:ffff8880a9a8fb10 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 1ffff11015351f64 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815b20a6 RDI: ffffed1015351f54
-RBP: ffff8880a9a8fbc0 R08: ffff8880a9a7c6c0 R09: ffff8880a9a7cfb0
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff888099b87280
-R13: ffff8880a55c77c0 R14: ffff888099b87330 R15: dffffc0000000000
-  rpc_proc_exit+0x3e/0x50 net/sunrpc/stats.c:335
-  sunrpc_exit_net+0x187/0x2d0 net/sunrpc/sunrpc_syms.c:73
-  ops_exit_list.isra.0+0xb0/0x160 net/core/net_namespace.c:153
-  cleanup_net+0x3fb/0x960 net/core/net_namespace.c:552
-  process_one_work+0x98e/0x1790 kernel/workqueue.c:2268
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2414
-  kthread+0x357/0x430 kernel/kthread.c:254
-  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+Concerning the MAC-PHY link problem Vincente found I'll respond to the
+corresponding email in three hours.
 
+-Sergey
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > With this change it is back to working:
+> > --- a/drivers/net/phy/realtek.c
+> > +++ b/drivers/net/phy/realtek.c
+> > @@ -300,7 +300,6 @@
+> >     }, {
+> >         PHY_ID_MATCH_EXACT(0x001cc915),
+> >         .name        = "RTL8211E Gigabit Ethernet",
+> > -        .config_init    = &rtl8211e_config_init,
+> >         .ack_interrupt    = &rtl821x_ack_interrupt,
+> >         .config_intr    = &rtl8211e_config_intr,
+> >         .suspend    = genphy_suspend,
+> > That is basically reverting the patch.
+> > 
+> > Regards,
+> >  Vicenç.
+> > 
+> >> Nevertheless your proposed patch looks good to me, just one small change
+> >> would be needed and it should be splitted.
+> >>
+> >> The change to phy-core I would consider a fix and it should be fine to
+> >> submit it to net (net-next is closed currently).
+> >>
+> >> Adding the warning to the Realtek driver is fine, but this would be
+> >> something for net-next once it's open again.
+> >>
+> >>> Regards,
+> >>>  Vicenç.
+> >>>
+> >> Heiner
+> >>
+> >>> --- a/drivers/net/phy/phy-core.c
+> >>> +++ b/drivers/net/phy/phy-core.c
+> >>> @@ -648,11 +648,17 @@
+> >>>
+> >>> static int __phy_read_page(struct phy_device *phydev)
+> >>> { ...
+> >>
+> >> Here phydev_warn() should be used.
+> >>
+> >>> +        return 0;
+> >>> +    }
+> >>>
+> >>>     ret = phy_write(phydev, RTL821x_EXT_PAGE_SELECT, 0xa4);
+> >>>     if (ret)
+> > 
+> > 
+> 
