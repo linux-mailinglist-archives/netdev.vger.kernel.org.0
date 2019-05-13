@@ -2,102 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 322221BC42
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 19:52:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C67E51BC96
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 20:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731903AbfEMRwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 13:52:17 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42995 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731830AbfEMRwR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 13:52:17 -0400
-Received: by mail-pf1-f196.google.com with SMTP id 13so7587559pfw.9;
-        Mon, 13 May 2019 10:52:16 -0700 (PDT)
+        id S1732239AbfEMSD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 14:03:59 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45022 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730110AbfEMSD6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 14:03:58 -0400
+Received: by mail-pg1-f193.google.com with SMTP id z16so7142760pgv.11;
+        Mon, 13 May 2019 11:03:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gG0BeH3aPQX6+9LO5Ic0rQpmKN+xGb6eZVLaTkbtrKc=;
-        b=Udd90F4h0zCNNnbXAe+164TapFQw71wxN7u8OpVilQLDN2CAyCa7LF+znZakjhxeHJ
-         2JNP4csDk4coCIrwSntcXc7HRFk72zS6MDtQs17ck3OeABYzwTrOmjYSOO1FRP7r3Z71
-         V9FnaLbUX0Yt3I69Ps7TGVrNefJHEQXjk/7+NIvvHLL5hf2+PRpnlaIYL/Nylna7eMN7
-         AG4ljkSarqeOGZ+JhxAQLeV3fBotXHZqJN1izwapxqEe8bHMwfGmTW6C/I4PfGGHAWAy
-         v22WoTAIVlvcfWu63bevXOkut85yEw/+hlcHIqhXTpB+ybvIjJSmyI4hWW9vd8g9MhKL
-         0vJA==
+        h=from:to:cc:subject:date:message-id;
+        bh=ntNFmfAba/mtS6B9QOAxkZnKC/SuijUpSJOLnJWUe5A=;
+        b=gIf/diVYLQfpHWD0bPwsMkLoCo/1aSXhQgBUgpK9jlngeTA1XXV5av+aM4OaFB/UWe
+         eRWGg9nFUKJp/afRbt6nwQCcMxEmkYgQFhmqHSm5Ciu+Kky2GEDIwVZmWs8O9TwP3/3K
+         Gw817R2tmS/YwyQDdqXGcMBWRW0WjAkF9/fGq44woj+ScRnsd3LPtFDKFOiqf2LQNNkE
+         tj14cqoVEv3yKvXaopgQ5hwrLCS4ejGojQX0dAT1CI8ji7WG5BdyUezJTLGuqwAJX7Kq
+         2RtRU5Lp0+yvKa5+25g6rR0qndigsOp1eQ9vIeNvG5JVRe8PUiz89iyOYrFKMgCbxfIZ
+         8trw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gG0BeH3aPQX6+9LO5Ic0rQpmKN+xGb6eZVLaTkbtrKc=;
-        b=ImvKp6BAfi0hSn97LgFywtif5CLxO1xGyOT5+RW7bm+kPqGt9weMTZ5B7rE8hcR1eV
-         3OLylDydWZloJSKrDsi7Q1m5OU/IY5O8/EJ+aAyt/v/Wv6MnJIDRmvvpy4gunu4lg92X
-         K5ewSKNkh3TdHVCyoeREb3EFBhy6XVeuOrguYhPvFOod7Bd4EbvtoaMH8ibfpvN5UFbd
-         EtWSIEMgPhcgX7aQ+dHI0yuYhaeGyyUt9nV2xT3SecowdKT+V6Nhx+qppcTYSYx7Y56Z
-         FFBqJMzo5K0/6PhB250umyOkvgzFZPH/X04UWpvY6yEz95j5zOF42gP6GqESfGNrRaWt
-         cGFA==
-X-Gm-Message-State: APjAAAXE7/h8wdGElwIh81r5D+hCkVKsGJnWzcySZr4o9BctkBzwGkrm
-        BSbd9c4SzTe2+Mb2JLaGcya6LxFh
-X-Google-Smtp-Source: APXvYqxseWYBCRfSGJpzKVqfYOLwGQPN63KyKSEflyxw90tRLNWj/yCNvcE0oWLz6A9qW1LfWTDtfA==
-X-Received: by 2002:a65:610b:: with SMTP id z11mr12844675pgu.204.1557769936363;
-        Mon, 13 May 2019 10:52:16 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id r138sm25380068pfr.2.2019.05.13.10.52.14
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Mon, 13 May 2019 10:52:15 -0700 (PDT)
-Subject: Re: [PATCH net] flow_dissector: disable preemption around BPF calls
-To:     Mark Rutland <mark.rutland@arm.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Stanislav Fomichev <sdf@google.com>
-References: <20190513163855.225489-1-edumazet@google.com>
- <20190513171745.GA16567@lakrids.cambridge.arm.com>
- <CANn89iJzsUbLXB_M5UZr2ieNyQdGHsKPFzqeQFGtKtL8d9pu0Q@mail.gmail.com>
- <20190513172527.GB16567@lakrids.cambridge.arm.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <49f8b98e-c717-c1c4-893d-cddccca3b887@gmail.com>
-Date:   Mon, 13 May 2019 10:52:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190513172527.GB16567@lakrids.cambridge.arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ntNFmfAba/mtS6B9QOAxkZnKC/SuijUpSJOLnJWUe5A=;
+        b=kH1mZe6pnuUWd6x0RzTGn5y6eaBg+hBk15ecQ8N/lWFyxUAJzFJ3TG/Ii1ZZKn+pe7
+         RRDuZHk/MRYtVV6//fNLHUG0KCgqK72DSIsFKkdKjxiVRtPj9PIUj69sKxwbHybfENSG
+         /zatbhTbS6u02yV8daU1/JclRxPVPFPy9H6Yk89cboboDJjETpU8Q6EACuRTfv5zHVh+
+         5WZRd572+nKaQHDL4cx6QRxcUbhAm8vP93fhiqZu3ASFZEsJ2HtfplhB0UShWDZhXgu2
+         wtolyvaRanCnYQ6eo+mhLnVMSS1Vz2E9g3c3YBqBIZJPuysNnAIqKqoCGEbAFv7iKpYs
+         tjdg==
+X-Gm-Message-State: APjAAAW5/sUo5nCKt5dO4nXdRpvm/ED4OmygN8JyDCpRPMzg36TNtgUI
+        kxN+gkb3fC6fd9xOETljuZs79rnebBClFg==
+X-Google-Smtp-Source: APXvYqzjeQclPcaH8//c6qT10PD1AHbrExP8TVeAi7n4n7gf1ut02OR69C+9hxoCIbog8za5Wzt7nA==
+X-Received: by 2002:a65:448b:: with SMTP id l11mr32453167pgq.185.1557770637532;
+        Mon, 13 May 2019 11:03:57 -0700 (PDT)
+Received: from localhost.localdomain ([122.179.175.43])
+        by smtp.googlemail.com with ESMTPSA id z6sm1076096pfr.135.2019.05.13.11.03.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 13 May 2019 11:03:56 -0700 (PDT)
+From:   Jagdish Motwani <j.k.motwani@gmail.com>
+To:     netdev@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     j.k.motwani@gmail.com,
+        Jagdish Motwani <jagdish.motwani@sophos.com>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v2] netfilter: nf_queue:fix reinject verdict handling
+Date:   Mon, 13 May 2019 23:32:25 +0530
+Message-Id: <20190513180225.5186-1-j.k.motwani@gmail.com>
+X-Mailer: git-send-email 2.9.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch fixes netfilter hook traversal when there are more than 1 hooks
+returning NF_QUEUE verdict. When the first queue reinjects the packet,
+'nf_reinject' starts traversing hooks with a proper hook_index. However, if it
+again receives a NF_QUEUE verdict (by some other netfilter hook), it queues the
+packet with a wrong hook_index. So, when the second queue reinjects the packet,
+it re-executes hooks in between.
 
+Fixes: 960632ece694 ("netfilter: convert hook list to an array")
+Signed-off-by: Jagdish Motwani <jagdish.motwani@sophos.com>
+---
+ net/netfilter/nf_queue.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On 5/13/19 10:25 AM, Mark Rutland wrote:
-> On Mon, May 13, 2019 at 10:20:19AM -0700, 'Eric Dumazet' via syzkaller wrote:
->> On Mon, May 13, 2019 at 10:17 AM Mark Rutland <mark.rutland@arm.com> wrote:
->>>
->>> On Mon, May 13, 2019 at 09:38:55AM -0700, 'Eric Dumazet' via syzkaller wrote:
->>>> Various things in eBPF really require us to disable preemption
->>>> before running an eBPF program.
->>>
->>> Is that true for all eBPF uses? I note that we don't disable preemption
->>> in the lib/test_bpf.c module, for example.
->>>
->>> If it's a general requirement, perhaps it's worth an assertion within
->>> BPF_PROG_RUN()?
->>
->> The assertion is already there :)
->>
->> This is how syzbot triggered the report.
-> 
-> Ah! :)
-> 
-> I also see I'm wrong about test_bpf.c, so sorry for the noise on both
-> counts!
-
-No worries, thanks for reviewing !
+diff --git a/net/netfilter/nf_queue.c b/net/netfilter/nf_queue.c
+index 9dc1d6e..b5b2be5 100644
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
+@@ -255,6 +255,7 @@ static unsigned int nf_iterate(struct sk_buff *skb,
+ repeat:
+ 		verdict = nf_hook_entry_hookfn(hook, skb, state);
+ 		if (verdict != NF_ACCEPT) {
++			*index = i;
+ 			if (verdict != NF_REPEAT)
+ 				return verdict;
+ 			goto repeat;
+-- 
+2.9.5
 
