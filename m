@@ -2,117 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 275581B0A3
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 09:01:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DB991B0CD
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 09:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727710AbfEMHB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 03:01:28 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:39924 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbfEMHB2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 03:01:28 -0400
-Received: by mail-vs1-f67.google.com with SMTP id m1so184649vsr.6;
-        Mon, 13 May 2019 00:01:26 -0700 (PDT)
+        id S1727590AbfEMHHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 03:07:08 -0400
+Received: from mail-it1-f200.google.com ([209.85.166.200]:53087 "EHLO
+        mail-it1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726877AbfEMHHG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 03:07:06 -0400
+Received: by mail-it1-f200.google.com with SMTP id 73so11407886itl.2
+        for <netdev@vger.kernel.org>; Mon, 13 May 2019 00:07:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KZeUlM9HFwsoPba3BedCeGi13MK+EsvDzCuCOHnSeSU=;
-        b=tglJ4xUOY7AZqgm0J8qMlTgm8HcXbatXI4c0qw4kxx2eIKQaxlfamPWrr06J46KUnC
-         qbOK5/l66Y4TcNMDhVeOHjm/Wb0cQwFSLnKm7F4iARBf4Bppwx4RZm6cCtIlSa34TReW
-         kVIuxnm3ez2Xa/nOtwRbm4IyBdFLCDn9NMl7iT5cDE0vRwKR17KTeaHQSop/azJh+kpa
-         hJ2OwH3DEy01tDeqMRKI6DqnWwFObs1DqMpnaU/5SUkUjjf3P5WeNCaSA/6mlh9IHVT2
-         uS9KpxvpuV5TcbVJSiiawVoOVDTztxxNg9gJZUPFJKPMSu+SwW3FSaAyWaibGXrgMXxs
-         dgpA==
-X-Gm-Message-State: APjAAAXw3ro/WseG2ulbzPbD6Ov146oenYie8FJUch304PR/260M9twJ
-        Mw1YLLu6yPRLU/0021rH+LzC4Yy1cgcwT8jtA48=
-X-Google-Smtp-Source: APXvYqxs4U9cC6qSMiyVDwFNxNbvddkvfAvZ+WOBelGbmcS7WwGSJect4/Alo1+2rHfzk8JgMisDv2BcZmORdVLPpig=
-X-Received: by 2002:a67:770f:: with SMTP id s15mr4419527vsc.11.1557730886319;
- Mon, 13 May 2019 00:01:26 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=HS7eXqtSjToahbF+8YGfUVULm5QmPVdr7jt+lugTFD0=;
+        b=dQFHbH6uhIpb43FqRpjUXqN0xKQF8FOGvA0YA54hSWhPGNqtl9zIusPIVDbY7TS2lv
+         YDP5BHwDkR8iBoIa5b/xjPxAEed9vsM0oohBxg9t1RbdkykMpi2DoTuGIFdIvxoDbO6D
+         9V82+KmIdNt2yWmSLDnlyNN/RKSBwn0esGRe25/Fom6UNxB1un8KLD43yL3PHHEhkUti
+         C8Pb9T6tPABIjCpzE8b0aszdrucUgFYcIkyJ7KjELxsqnbQbAkGbOYRNkMGwXdsPCb9p
+         vtFkIRR7r8sj8bffAIuAhqJv7L4vZhif26igW6GdTjPcQBV5fPmuGzUzTnhEXJe1F9ka
+         4dsQ==
+X-Gm-Message-State: APjAAAW/X1mdzFpsL9VI/lzXzU0JK9hnQeCgv445K1pi0uE21a5QGOup
+        AaXbK4JuiIC/bm7tKDh8O2KrNNJf6dqS5zH179fdVHpD+U0i
+X-Google-Smtp-Source: APXvYqxaG5duQ7HGiFc3gBEuHKSxI56NFqET64FcR9HPXB9WBzlCxAVv84TLU/32UsUNJ0ZOe+9LaDT6i+7In6KbmbgvVFdOkeY2
 MIME-Version: 1.0
-References: <20190508070148.23130-1-alastair@au1.ibm.com> <20190508070148.23130-4-alastair@au1.ibm.com>
-In-Reply-To: <20190508070148.23130-4-alastair@au1.ibm.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 13 May 2019 09:01:14 +0200
-Message-ID: <CAMuHMdVefYTgHzGKBc0ebku1z8V3wsM0ydN+6-S2nFKaB8eH_Q@mail.gmail.com>
-Subject: Re: [PATCH v2 3/7] lib/hexdump.c: Optionally suppress lines of
- repeated bytes
-To:     "Alastair D'Silva" <alastair@au1.ibm.com>
-Cc:     alastair@d-silva.org, Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Laight <David.Laight@aculab.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Linux FS Devel <linux-fsdevel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a02:8585:: with SMTP id d5mr18222190jai.69.1557731225226;
+ Mon, 13 May 2019 00:07:05 -0700 (PDT)
+Date:   Mon, 13 May 2019 00:07:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000055d6590588bf90bf@google.com>
+Subject: linux-next test error: WARNING in remove_proc_entry
+From:   syzbot <syzbot+4887e9dd9042fae2a9c2@syzkaller.appspotmail.com>
+To:     anna.schumaker@netapp.com, bfields@fieldses.org,
+        davem@davemloft.net, jlayton@kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        trond.myklebust@hammerspace.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alastair,
+Hello,
 
-Thanks for your patch!
+syzbot found the following crash on:
 
-On Wed, May 8, 2019 at 9:04 AM Alastair D'Silva <alastair@au1.ibm.com> wrote:
-> From: Alastair D'Silva <alastair@d-silva.org>
->
-> Some buffers may only be partially filled with useful data, while the rest
-> is padded (typically with 0x00 or 0xff).
->
-> This patch introduces a flag to allow the supression of lines of repeated
-> bytes,
+HEAD commit:    04c4b677 Add linux-next specific files for 20190513
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=10a413c8a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8e08a763b62ad3a
+dashboard link: https://syzkaller.appspot.com/bug?extid=4887e9dd9042fae2a9c2
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-Given print_hex_dump() operates on entities of groupsize (1, 2, 4, or 8)
-bytes, wouldn't it make more sense to consider repeated groups instead
-of repeated bytes?
+Unfortunately, I don't have any reproducer for this crash yet.
 
-> which are replaced with '** Skipped %u bytes of value 0x%x **'
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+4887e9dd9042fae2a9c2@syzkaller.appspotmail.com
 
-Using a custom message instead of just "*", like "hexdump" uses, will
-require preprocessing the output when recovering the original binary
-data by feeding it to e.g. "xxd".
-This may sound worse than it is, though, as I never got "xxd" to work
-without preprocessing anyway ;-)
+------------[ cut here ]------------
+remove_proc_entry: removing non-empty directory 'net/rpc', leaking at  
+least 'use-gss-proxy'
+WARNING: CPU: 0 PID: 26 at fs/proc/generic.c:681  
+remove_proc_entry+0x367/0x410 fs/proc/generic.c:681
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 26 Comm: kworker/u4:2 Not tainted 5.1.0-next-20190513 #6
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  panic+0x2cb/0x75a kernel/panic.c:218
+  __warn.cold+0x20/0x47 kernel/panic.c:575
+  report_bug+0x263/0x2b0 lib/bug.c:186
+  fixup_bug arch/x86/kernel/traps.c:179 [inline]
+  fixup_bug arch/x86/kernel/traps.c:174 [inline]
+  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
+  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
+  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:972
+RIP: 0010:remove_proc_entry+0x367/0x410 fs/proc/generic.c:681
+Code: 00 00 00 48 89 fa 48 c1 ea 03 80 3c 02 00 75 4c 49 8b 95 d0 00 00 00  
+48 c7 c6 80 85 97 87 48 c7 c7 00 85 97 87 e8 c7 b1 6d ff <0f> 0b e9 4b fe  
+ff ff e8 6d 54 d4 ff e9 b5 fd ff ff e8 23 55 d4 ff
+RSP: 0018:ffff8880a9a8fb10 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 1ffff11015351f64 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815b20a6 RDI: ffffed1015351f54
+RBP: ffff8880a9a8fbc0 R08: ffff8880a9a7c6c0 R09: ffff8880a9a7cfb0
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff888099b87280
+R13: ffff8880a55c77c0 R14: ffff888099b87330 R15: dffffc0000000000
+  rpc_proc_exit+0x3e/0x50 net/sunrpc/stats.c:335
+  sunrpc_exit_net+0x187/0x2d0 net/sunrpc/sunrpc_syms.c:73
+  ops_exit_list.isra.0+0xb0/0x160 net/core/net_namespace.c:153
+  cleanup_net+0x3fb/0x960 net/core/net_namespace.c:552
+  process_one_work+0x98e/0x1790 kernel/workqueue.c:2268
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2414
+  kthread+0x357/0x430 kernel/kthread.c:254
+  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-    $ cat $(type -p unhexdump)
-    #!/bin/sh
-    sed 's/^[0-9a-f]*//' $1 | xxd -r -p | dd conv=swab
 
-Gr{oetje,eeting}s,
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
