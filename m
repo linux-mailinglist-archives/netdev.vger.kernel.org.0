@@ -2,134 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F78E1BF18
-	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 23:26:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F2091BF1B
+	for <lists+netdev@lfdr.de>; Mon, 13 May 2019 23:26:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726521AbfEMV0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 17:26:36 -0400
-Received: from mail-eopbgr720126.outbound.protection.outlook.com ([40.107.72.126]:38338
-        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726338AbfEMV0f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 17:26:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=impinj.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uHCP/IgkV9JDW9zD/gfQRZzVOinUXUNC1+l5QFJO3yc=;
- b=EJt4a/jy8C0NVFsv72bxJGk80QR2MHY3CPwUvyaRiOWja7V7n3xfeS48JfW1nrmo4evDy8AoE9uzLJZibVZ0pTv3aOe1YWxj7GD4kDcab4sYMFJwfTsl4TQpuKtKyUNi9N5KdzQCqzWCIpvC+TAk2bq3+mhgebJScYgWysxvCi4=
-Received: from MWHPR0601MB3708.namprd06.prod.outlook.com (10.167.236.38) by
- MWHPR0601MB3609.namprd06.prod.outlook.com (10.167.236.11) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1878.21; Mon, 13 May 2019 21:26:28 +0000
-Received: from MWHPR0601MB3708.namprd06.prod.outlook.com
- ([fe80::b496:85ab:4cb0:5876]) by MWHPR0601MB3708.namprd06.prod.outlook.com
- ([fe80::b496:85ab:4cb0:5876%2]) with mapi id 15.20.1878.024; Mon, 13 May 2019
- 21:26:28 +0000
-From:   Trent Piepho <tpiepho@impinj.com>
-To:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 5/5] net: phy: dp83867: Use unsigned variables to store
- unsigned properties
-Thread-Topic: [PATCH 5/5] net: phy: dp83867: Use unsigned variables to store
- unsigned properties
-Thread-Index: AQHVB3nKLczzbyv1Ekyx8+zOFp2aoKZlvT2AgAAe/wCAA6E4AIAABBwAgAAJa4CAAAsdgA==
-Date:   Mon, 13 May 2019 21:26:28 +0000
-Message-ID: <1557782787.4229.36.camel@impinj.com>
-References: <20190510214550.18657-1-tpiepho@impinj.com>
-         <20190510214550.18657-5-tpiepho@impinj.com>
-         <49c6afc4-6c5b-51c9-74ab-9a6e8c2460a5@gmail.com>
-         <3a42c0cc-4a4b-e168-c03e-1cc13bd2f5d4@gmail.com>
-         <1557777496.4229.13.camel@impinj.com>
-         <b246b18d-5523-7b8b-9cd0-b8ccb8a511e9@gmail.com>
-         <20190513204641.GA12345@lunn.ch>
-In-Reply-To: <20190513204641.GA12345@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=tpiepho@impinj.com; 
-x-originating-ip: [216.207.205.253]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fab894f7-5ce2-4222-b5d1-08d6d7e9a91b
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:MWHPR0601MB3609;
-x-ms-traffictypediagnostic: MWHPR0601MB3609:
-x-microsoft-antispam-prvs: <MWHPR0601MB3609250789FD7E70D648A187D30F0@MWHPR0601MB3609.namprd06.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0036736630
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(396003)(136003)(366004)(39850400004)(189003)(199004)(476003)(229853002)(76176011)(486006)(68736007)(2616005)(2501003)(4326008)(102836004)(8676002)(103116003)(8936002)(81166006)(14454004)(478600001)(81156014)(53936002)(6506007)(71190400001)(71200400001)(446003)(6246003)(11346002)(5660300002)(91956017)(14444005)(73956011)(76116006)(2906002)(256004)(66476007)(66556008)(64756008)(66446008)(66946007)(26005)(86362001)(36756003)(6486002)(316002)(54906003)(110136005)(6436002)(3846002)(305945005)(7736002)(66066001)(6512007)(99286004)(6116002)(186003)(25786009);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR0601MB3609;H:MWHPR0601MB3708.namprd06.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: impinj.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: iRUPLiIFK/snASSFPfbpzsTJ3dVh9qs7MV8NSw8VWi/k71L/b8d4B7oEj7mTopXJHsCqNTIYrCcGiLLbIEpAHVcHNHUBqJbweE2t/PNE6qXkDWLw7jv6FCtzh4AYQSbs++fOC/3DqW0y/o91ETLkpuFXk7G9N5wMvmUf7FnCLMWp9t2g+u12qKlfVRQCYtHMC9pIcXLLWFVQjziRB3q9MHY/uI1PWjGPNtpEEd0M9Mzh5XAh1bCzADv/ZsfH5LMirOKFEEFERvod7vuhjq9OxautB59XZnEg2UkByqUjkRk5mm74NXg0M9oW5s2+MFP+cp5alRkSmjn9iMaFkmko3Rw/XrwzNSu6V9SENG2db80LTVdAuOvnxZbbmuhXvah+rdHJ5HgsjQOarn7OUguW8mCnBwzzapzjUoDI1bXAxlQ=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BBD6CD64ABF63E4DB485EB55C500E53B@namprd06.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726571AbfEMV0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 17:26:39 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:58894 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726338AbfEMV0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 17:26:38 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id C9649602B7; Mon, 13 May 2019 21:26:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1557782796;
+        bh=e8LbiSB5Vy/aCdEzxSU89H8YcBojAjPigXyBPa/Iw9A=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=KmnhCz6Nd1j/g/IDuSSApERg5QKciYNKxy4AcyJQcxLuPfJ0SFH2FR59OWNhmtvke
+         rlwg4nXl68q04dbthLjlj7slXOGNcNJvXFMYR/TnrSKTSPbXNg9SGBHMKCfmBuuxJG
+         rm+shag35Ak/GrvtQFd7Itp5ndu1MAlRWag/I9z4=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from [192.168.142.6] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: clew@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 34E0B605FC;
+        Mon, 13 May 2019 21:26:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1557782795;
+        bh=e8LbiSB5Vy/aCdEzxSU89H8YcBojAjPigXyBPa/Iw9A=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=fIjyRT0P2d0/nk72mKRNK0C46M7X2gDgA+OlNJaJ3byJNS+jL3iNHrCF9dU/fJqFm
+         jy2jYAUz9EZjwEe+/GfjGmmO34ZRYbzZW+D5Aqng6t/QT+lbn+r7mzML6VuLdhwjbR
+         4Kc4O0zDK1GZCRMxfnN3YUihe/WJPQ7shsN2ZVdg=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 34E0B605FC
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=clew@codeaurora.org
+Subject: Re: [PATCH 2/5] net: qrtr: Implement outgoing flow control
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Arun Kumar Neelakantam <aneela@codeaurora.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+References: <20190508060643.30936-1-bjorn.andersson@linaro.org>
+ <20190508060643.30936-3-bjorn.andersson@linaro.org>
+From:   Chris Lew <clew@codeaurora.org>
+Message-ID: <81db3bc9-613a-8999-61ca-a340944750ca@codeaurora.org>
+Date:   Mon, 13 May 2019 14:26:34 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: impinj.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fab894f7-5ce2-4222-b5d1-08d6d7e9a91b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 May 2019 21:26:28.1699
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 6de70f0f-7357-4529-a415-d8cbb7e93e5e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR0601MB3609
+In-Reply-To: <20190508060643.30936-3-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTA1LTEzIGF0IDIyOjQ2ICswMjAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
-PiA+IFBlcmhhcHMgeW91IGNvdWxkIHRlbGwgbWUgaWYgdGhlIGFwcHJvYWNoIEkndmUgdGFrZW4g
-aW4gcGF0Y2ggMywgDQo+ID4gPiAiQWRkIGFiaWxpdHkgdG8gZGlzYWJsZSBvdXRwdXQgY2xvY2si
-LCBhbmQgcGF0Y2ggNCwgIkRpc2FibGUgdHgvcngNCj4gPiA+IGRlbGF5IHdoZW4gbm90IGNvbmZp
-Z3VyZWQiLCBhcmUgY29uc2lkZXJlZCBhY2NlcHRhYmxlPyAgSSBjYW4gY29uY2VpdmUNCj4gPiA+
-IG9mIGFyZ3VtZW50cyBmb3IgYWx0ZXJuYXRlIGFwcHJvYWNoZXMuICBJIHdvdWxkIGxpa2UgdG8g
-YWRkIHN1cHBvcnQgZm9yDQo+ID4gPiAgdGhlc2UgaW50byB1LWJvb3QgdG9vLCBidXQgdHlwaWNh
-bGx5IHUtYm9vdCBmb2xsb3dzIHRoZSBrZXJuZWwgRFQNCj4gPiA+IGJpbmRpbmdzLCBzbyBJIHdh
-bnQgdG8gZmluYWxpemUgdGhlIGtlcm5lbCBEVCBzZW1hbnRpY3MgYmVmb3JlIHNlbmRpbmcNCj4g
-PiA+IHBhdGNoZXMgdG8gdS1ib290Lg0KPiA+ID4gDQo+ID4gDQo+ID4gSSBsYWNrIGV4cGVyaWVu
-Y2Ugd2l0aCB0aGVzZSBUSSBQSFkncy4gTWF5YmUgQW5kcmV3IG9yIEZsb3JpYW4gY2FuIGFkdmlz
-ZS4NCj4gDQo+IEhpIFRyZW50DQo+IA0KPiBJIGFscmVhZHkgZGVsZXRlZCB0aGUgcGF0Y2hlcy4g
-Rm9yIHBhdGNoIDM6DQo+IA0KPiArIAkgIGlmIChkcDgzODY3LT5jbGtfb3V0cHV0X3NlbCA+IERQ
-ODM4NjdfQ0xLX09fU0VMX1JFRl9DTEsgJiYNCj4gKwkgICAgICAgICBkcDgzODY3LT5jbGtfb3V0
-cHV0X3NlbCAhPSBEUDgzODY3X0NMS19PX1NFTF9PRkYpIHsNCj4gKwkJIAlwaHlkZXZfZXJyKHBo
-eWRldiwgInRpLGNsay1vdXRwdXQtc2VsIHZhbHVlICV1IG91dCBvZiByYW5nZVxuIiwNCj4gKwkJ
-CQkgICBkcDgzODY3LT5jbGtfb3V0cHV0X3NlbCk7DQo+ICsJCQlyZXR1cm4gLUVJTlZBTDsNCj4g
-KwkJICAgICAgfQ0KPiANCj4gVGhpcyBsYXN0IGJpdCBsb29rcyBvZGQuIElmIGl0IGlzIG5vdCBP
-RkYsIGl0IGlzIGludmFsaWQ/DQoNClRoZSB2YWxpZCB2YWx1ZXMgYXJlIGluIHRoZSByYW5nZSAw
-IHRvIERQODM4NjdfQ0xLX09fU0VMX1JFRl9DTEsgYW5kDQphbHNvIERQODM4NjdfQ0xLX09fU0VM
-X09GRi4gIFRodXMgaW52YWxpZCB2YWx1ZXMgYXJlIHRob3NlIGdyZWF0ZXIgdGhhbg0KRFA4Mzg2
-N19DTEtfT19TRUxfUkVGX0NMSyB3aGljaCBhcmUgbm90IERQODM4NjdfQ0xLX09fU0VMX09GRi4N
-Cg0KPiANCj4gQXJlIHRoZXJlIGFueSBpbiB0cmVlIHVzZXJzIG9mIERQODM4NjdfQ0xLX09fU0VM
-X1JFRl9DTEs/IFdlIGhhdmUgdG8NCj4gYmUgY2FyZWZ1bCBjaGFuZ2luZyBpdHMgbWVhbmluZy4g
-QnV0IGlmIG5vYm9keSBpcyBhY3R1YWxseSB1c2luZyBpdC4uLg0KDQpOb3BlLiAgSSBkb3VidCB0
-aGlzIHdpbGwgYWZmZWN0IGFueW9uZS4gIFRoZXknZCBuZWVkIHRvIHN0cmFwIHRoZSBwaHkNCnRv
-IGdldCBhIGRpZmZlcmVudCBjb25maWd1cmF0aW9uLCBhbmQgdGhlIGV4cGxpY2l0bHkgYWRkIGEg
-cHJvcGVydHksDQp3aGljaCBpc24ndCBpbiB0aGUgZXhhbXBsZSBEVFMgZmlsZXMsIHRvIGNoYW5n
-ZSB0aGUgY29uZmlndXJhdGlvbiB0bw0Kc29tZXRoaW5nIHRoZXkgZGlkbid0IHdhbnQsIGFuZCB0
-aGVuIGRlcGVuZCBvbiBhIGRyaXZlciBidWcgaWdub3JpbmcNCnRoZSBlcnJvbmVvdXMgc2V0dGlu
-ZyB0aGV5IGFkZGVkLg0KDQo+IFBhdGNoIDQ6DQo+IA0KPiBUaGlzIGlzIGhhcmRlci4gSWRlYWxs
-eSB3ZSB3YW50IHRvIGZpeCB0aGlzLiBBdCBzb21lIHBvaW50LCBzb21lYm9keQ0KPiBpcyBnb2lu
-ZyB0byB3YW50ICdyZ21paScgdG8gYWN0dWFsbHkgbWVhbiAncmdtaWknLCBiZWNhdXNlIHRoYXQg
-aXMNCj4gd2hhdCB0aGVpciBoYXJkd2FyZSBuZWVkcy4NCj4gDQo+IENvdWxkIHlvdSBhZGQgYSBX
-QVJOX09OKCkgZm9yICdyZ21paScgYnV0IHRoZSBQSFkgaXMgYWN0dWFsbHkgYWRkaW5nIGENCj4g
-ZGVsYXk/IEFuZCBhZGQgYSBjb21tZW50IGFib3V0IHNldHRpbmcgdGhlIGNvcnJlY3QgdGhpbmcg
-aW4gZGV2aWNlDQo+IHRyZWU/ICBIb3BlZnVsbHkgd2Ugd2lsbCB0aGVuIGdldCBwYXRjaGVzIGNv
-cnJlY3RpbmcgRFQgYmxvYnMuIEFuZCBpZg0KPiB3ZSBsYXRlciBkbyBuZWVkIHRvIGZpeCAncmdt
-aWknLCB3ZSB3aWxsIGJyZWFrIGxlc3MgYm9hcmQuDQoNClllcyBJIGNhbiBkbyB0aGlzLiAgU2hv
-dWxkIGl0IHdhcm4gb24gYW55IHVzZSBvZiAicmdtaWkiPyAgSWYgc28sIGhvdw0Kd291bGQgc29t
-ZW9uZSBtYWtlIHRoZSB3YXJuaW5nIGdvIGF3YXkgaWYgdGhleSBhY3R1YWxseSB3YW50IHJnbWlp
-IG1vZGUNCndpdGggbm8gZGVsYXk/DQoNCkkgc3VzcGVjdCBoc2RrLmR0cyBpcyBhbiBleGFtcGxl
-IG9mIGFuIGluLXRyZWUgYnJva2VuIGJvYXJkIHRoYXQgdXNlcw0KInJnbWlpIiB3b3VsZCBpdCBz
-aG91bGQgaGF2ZSB1c2VkICJyZ21paS1pZCIuICBVbmZvcnR1bmF0ZWx5LCBwaHkgZHRzDQpub2Rl
-cyBkb24ndCB1c3VhbGx5IHByb3ZpZGUgYSBjb21wYXRpYmxlIHRoYXQgaWRlbnRpZmllcyB0aGUg
-cGh5LCB1c2luZw0KaW5zdGVhZCBydW4tdGltZSBhdXRvLWRldGVjdGlvbiBiYXNlZCBvbiBQSFkg
-aWQgcmVnaXN0ZXJzLCBzbyB0aGVyZSdzDQpubyB3YXkgdG8gdGVsbCBmcm9tIHRoZSBkdHMgZmls
-ZXMgd2hhdCBib2FyZHMgdXNlIHRoaXMgcGh5IHVubGVzcyB0aGV5DQphbHNvIHNwZWNpZnkgb25l
-IG9mIHRoZSBwaHkgc3BlY2lmaWMgcHJvcGVydGllcy4gIFdoaWNoIGlzIGhvdyBJIGZvdW5kDQpo
-c2RrLmR0cyAoYW5kIG5vIG90aGVyIGJvYXJkcykuDQo=
+
+
+On 5/7/2019 11:06 PM, Bjorn Andersson wrote:
+> In order to prevent overconsumption of resources on the remote side QRTR
+> implements a flow control mechanism.
+> 
+> The mechanism works by the sender keeping track of the number of
+> outstanding unconfirmed messages that has been transmitted to a
+> particular node/port pair.
+> 
+> Upon count reaching a low watermark (L) the confirm_rx bit is set in the
+> outgoing message and when the count reaching a high watermark (H)
+> transmission will be blocked upon the reception of a resume_tx message
+> from the remote, that resets the counter to 0.
+> 
+> This guarantees that there will be at most 2H - L messages in flight.
+> Values chosen for L and H are 5 and 10 respectively.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>   net/qrtr/qrtr.c | 143 +++++++++++++++++++++++++++++++++++++++++++++---
+>   1 file changed, 136 insertions(+), 7 deletions(-)
+> 
+> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+> index 07a35362fba2..62abd622618d 100644
+> --- a/net/qrtr/qrtr.c
+> +++ b/net/qrtr/qrtr.c
+> @@ -16,6 +16,7 @@
+>   #include <linux/qrtr.h>
+>   #include <linux/termios.h>	/* For TIOCINQ/OUTQ */
+>   #include <linux/numa.h>
+> +#include <linux/wait.h>
+>   
+>   #include <net/sock.h>
+>   
+> @@ -121,6 +122,9 @@ static DEFINE_MUTEX(qrtr_port_lock);
+>    * @ep: endpoint
+>    * @ref: reference count for node
+>    * @nid: node id
+> + * @qrtr_tx_flow: tree with tx counts per flow
+> + * @resume_tx: waiters for a resume tx from the remote
+> + * @qrtr_tx_lock: lock for qrtr_tx_flow
+>    * @rx_queue: receive queue
+>    * @work: scheduled work struct for recv work
+>    * @item: list item for broadcast list
+> @@ -131,11 +135,26 @@ struct qrtr_node {
+>   	struct kref ref;
+>   	unsigned int nid;
+>   
+> +	struct radix_tree_root qrtr_tx_flow;
+> +	struct wait_queue_head resume_tx;
+> +	struct mutex qrtr_tx_lock; /* for qrtr_tx_flow */
+> +
+>   	struct sk_buff_head rx_queue;
+>   	struct work_struct work;
+>   	struct list_head item;
+>   };
+>   
+> +/**
+> + * struct qrtr_tx_flow - tx flow control
+> + * @pending: number of waiting senders
+> + */
+> +struct qrtr_tx_flow {
+> +	atomic_t pending;
+> +};
+> +
+> +#define QRTR_TX_FLOW_HIGH	10
+> +#define QRTR_TX_FLOW_LOW	5
+> +
+>   static int qrtr_local_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+>   			      int type, struct sockaddr_qrtr *from,
+>   			      struct sockaddr_qrtr *to);
+> @@ -150,7 +169,9 @@ static int qrtr_bcast_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+>    */
+>   static void __qrtr_node_release(struct kref *kref)
+>   {
+> +	struct radix_tree_iter iter;
+>   	struct qrtr_node *node = container_of(kref, struct qrtr_node, ref);
+> +	void __rcu **slot;
+>   
+>   	if (node->nid != QRTR_EP_NID_AUTO)
+>   		radix_tree_delete(&qrtr_nodes, node->nid);
+> @@ -158,6 +179,12 @@ static void __qrtr_node_release(struct kref *kref)
+>   	list_del(&node->item);
+>   	mutex_unlock(&qrtr_node_lock);
+>   
+> +	/* Free tx flow counters */
+> +	radix_tree_for_each_slot(slot, &node->qrtr_tx_flow, &iter, 0) {
+> +		radix_tree_iter_delete(&node->qrtr_tx_flow, &iter, slot);
+> +		kfree(*slot);
+> +	}
+> +
+>   	skb_queue_purge(&node->rx_queue);
+>   	kfree(node);
+>   }
+> @@ -178,15 +205,106 @@ static void qrtr_node_release(struct qrtr_node *node)
+>   	kref_put_mutex(&node->ref, __qrtr_node_release, &qrtr_node_lock);
+>   }
+>   
+> +/**
+> + * qrtr_tx_resume() - reset flow control counter
+> + * @node:	qrtr_node that the QRTR_TYPE_RESUME_TX packet arrived on
+> + * @skb:	resume_tx packet
+> + */
+> +static void qrtr_tx_resume(struct qrtr_node *node, struct sk_buff *skb)
+> +{
+> +	struct qrtr_ctrl_pkt *pkt = (struct qrtr_ctrl_pkt *)skb->data;
+> +	struct qrtr_tx_flow *flow;
+> +	unsigned long key;
+> +	u64 remote_node = le32_to_cpu(pkt->client.node);
+> +	u32 remote_port = le32_to_cpu(pkt->client.port);
+> +
+> +	key = remote_node << 32 | remote_port;
+> +
+> +	flow = radix_tree_lookup(&node->qrtr_tx_flow, key);
+> +	if (flow)
+> +		atomic_set(&flow->pending, 0);
+> +
+> +	wake_up_interruptible_all(&node->resume_tx);
+> +
+> +	consume_skb(skb);
+> +}
+> +
+> +/**
+> + * qrtr_tx_wait() - flow control for outgoing packets
+> + * @node:	qrtr_node that the packet is to be send to
+> + * @dest_node:	node id of the destination
+> + * @dest_port:	port number of the destination
+> + * @type:	type of message
+> + *
+> + * The flow control scheme is based around the low and high "watermarks". When
+> + * the low watermark is passed the confirm_rx flag is set on the outgoing
+> + * message, which will trigger the remote to send a control message of the type
+> + * QRTR_TYPE_RESUME_TX to reset the counter. If the high watermark is hit
+> + * further transmision should be paused.
+> + *
+> + * Return: 1 if confirm_rx should be set, 0 otherwise or errno failure
+> + */
+> +static int qrtr_tx_wait(struct qrtr_node *node, int dest_node, int dest_port,
+> +			int type)
+> +{
+> +	struct qrtr_tx_flow *flow;
+> +	unsigned long key = (u64)dest_node << 32 | dest_port;
+> +	int confirm_rx = 0;
+> +	int ret;
+> +
+> +	/* Never set confirm_rx on non-data packets */
+> +	if (type != QRTR_TYPE_DATA)
+> +		return 0;
+> +
+> +	mutex_lock(&node->qrtr_tx_lock);
+> +	flow = radix_tree_lookup(&node->qrtr_tx_flow, key);
+> +	if (!flow) {
+> +		flow = kzalloc(sizeof(*flow), GFP_KERNEL);
+> +		if (!flow)
+> +			confirm_rx = 1;
+> +		else
+> +			radix_tree_insert(&node->qrtr_tx_flow, key, flow);
+> +	}
+> +	mutex_unlock(&node->qrtr_tx_lock);
+> +
+> +	for (;;) {
+> +		ret = wait_event_interruptible(node->resume_tx,
+> +					       atomic_read(&flow->pending) < QRTR_TX_FLOW_HIGH ||
+> +					       !node->ep);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (!node->ep)
+> +			return -EPIPE;
+> +
+> +		mutex_lock(&node->qrtr_tx_lock);
+> +		if (atomic_read(&flow->pending) < QRTR_TX_FLOW_HIGH) {
+> +			confirm_rx = atomic_inc_return(&flow->pending) == QRTR_TX_FLOW_LOW;
+> +			mutex_unlock(&node->qrtr_tx_lock);
+> +			break;
+> +		}
+> +		mutex_unlock(&node->qrtr_tx_lock);
+> +	}
+> +
+> +	return confirm_rx;
+> +}
+> +
+>   /* Pass an outgoing packet socket buffer to the endpoint driver. */
+>   static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+>   			     int type, struct sockaddr_qrtr *from,
+>   			     struct sockaddr_qrtr *to)
+>   {
+>   	struct qrtr_hdr_v1 *hdr;
+> +	int confirm_rx;
+>   	size_t len = skb->len;
+>   	int rc = -ENODEV;
+>   
+> +	confirm_rx = qrtr_tx_wait(node, to->sq_node, to->sq_port, type);
+> +	if (confirm_rx < 0) {
+> +		kfree_skb(skb);
+> +		return confirm_rx;
+> +	}
+> +
+>   	hdr = skb_push(skb, sizeof(*hdr));
+>   	hdr->version = cpu_to_le32(QRTR_PROTO_VER_1);
+>   	hdr->type = cpu_to_le32(type);
+> @@ -201,7 +319,7 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+>   	}
+>   
+>   	hdr->size = cpu_to_le32(len);
+> -	hdr->confirm_rx = 0;
+> +	hdr->confirm_rx = !!confirm_rx;
+>   
+>   	skb_put_padto(skb, ALIGN(len, 4));
+>   
+
+We had issues where the underlying transport layer failed to send the 
+packet but flow control count wasn't adjusted. Eventually we couldn't
+send to that remote port if the packet with the control flag bit was
+dropped by the transport.
+
+> @@ -318,7 +436,8 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
+>   	if (len != ALIGN(size, 4) + hdrlen)
+>   		goto err;
+>   
+> -	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA)
+> +	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
+> +	    cb->type != QRTR_TYPE_RESUME_TX)
+>   		goto err;
+>   
+>   	skb_put_data(skb, data + hdrlen, size);
+> @@ -377,14 +496,18 @@ static void qrtr_node_rx_work(struct work_struct *work)
+>   
+>   		qrtr_node_assign(node, cb->src_node);
+>   
+> -		ipc = qrtr_port_lookup(cb->dst_port);
+> -		if (!ipc) {
+> -			kfree_skb(skb);
+> +		if (cb->type == QRTR_TYPE_RESUME_TX) {
+> +			qrtr_tx_resume(node, skb);
+>   		} else {
+> -			if (sock_queue_rcv_skb(&ipc->sk, skb))
+> +			ipc = qrtr_port_lookup(cb->dst_port);
+> +			if (!ipc) {
+>   				kfree_skb(skb);
+> +			} else {
+> +				if (sock_queue_rcv_skb(&ipc->sk, skb))
+> +					kfree_skb(skb);
+>   
+> -			qrtr_port_put(ipc);
+> +				qrtr_port_put(ipc);
+> +			}
+>   		}
+>   	}
+>   }
+> @@ -415,6 +538,9 @@ int qrtr_endpoint_register(struct qrtr_endpoint *ep, unsigned int nid)
+>   	node->nid = QRTR_EP_NID_AUTO;
+>   	node->ep = ep;
+>   
+> +	INIT_RADIX_TREE(&node->qrtr_tx_flow, GFP_KERNEL);
+> +	init_waitqueue_head(&node->resume_tx);
+> +
+>   	qrtr_node_assign(node, nid);
+>   
+>   	mutex_lock(&qrtr_node_lock);
+> @@ -449,6 +575,9 @@ void qrtr_endpoint_unregister(struct qrtr_endpoint *ep)
+>   		qrtr_local_enqueue(NULL, skb, QRTR_TYPE_BYE, &src, &dst);
+>   	}
+>   
+> +	/* Wake up any transmitters waiting for resume-tx from the node */
+> +	wake_up_interruptible_all(&node->resume_tx);
+> +
+>   	qrtr_node_release(node);
+>   	ep->node = NULL;
+>   }
+> 
+
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
