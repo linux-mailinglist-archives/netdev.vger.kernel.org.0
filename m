@@ -2,144 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B32C1C8C9
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 14:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F06B61C8DB
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 14:34:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbfENMcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 08:32:20 -0400
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:46819 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbfENMcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 08:32:19 -0400
-X-Originating-IP: 90.88.28.253
-Received: from bootlin.com (aaubervilliers-681-1-86-253.w90-88.abo.wanadoo.fr [90.88.28.253])
-        (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 1E1F924000F;
-        Tue, 14 May 2019 12:32:12 +0000 (UTC)
-Date:   Tue, 14 May 2019 14:32:12 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Marcin Wojtas <mw@semihalf.com>
-Cc:     Yanko Kaneti <yaneti@declera.com>, netdev <netdev@vger.kernel.org>,
-        Matteo Croce <mcroce@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Luka Perkov <luka.perkov@sartura.hr>
-Subject: Re: mvpp2:  oops on first received packet
-Message-ID: <20190514143212.5abaf995@bootlin.com>
-In-Reply-To: <20190514121948.4def4872@carbon>
-References: <856dc9462c31bc9f102940c61f94db1f44574733.camel@declera.com>
-        <20190514121948.4def4872@carbon>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726425AbfENMes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 08:34:48 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35405 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbfENMes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 08:34:48 -0400
+Received: by mail-pg1-f196.google.com with SMTP id h1so8581691pgs.2;
+        Tue, 14 May 2019 05:34:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=aGu1f+RrnUPQT+gHJR7zuBRu3GeHB/WJgEjaROthtGg=;
+        b=Z7pnFkGAH2BlUDH3+FhIH0sOO38syFyZBNQ8mewx3bzSMfHIZauAYn7CRsxJ1BYS49
+         CcQHC7TjzP84vvbTkkmKHpbuPh7s5PrGgSZ9OAeY1R+helnNcLmQgRix200T8eD7tYi+
+         0k2Vrgkb/yz4TyEoRv1oF+YJyeh4Z0pI2EKVe448kCeuyq/uFpR74wy6rPfMX8/Rcy9l
+         rYLw+AZTi+CduC7I9ErJv6pZENbrXAPFHyVnkyF2PDSiKOI7F+/v5tHd+BNmkKAi0s3T
+         ur4hi/kKaBRYzw2rBEnFiUkF+JDg2ECWXSHrNJ49YhM1bqFB7F9jkmgPYS0tKqxDKg5W
+         vg+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=aGu1f+RrnUPQT+gHJR7zuBRu3GeHB/WJgEjaROthtGg=;
+        b=OA8jpmaoTVLj3dn0NRpqWlQedB2+8pHeP3h7pEpXR+CV2BJU44zjmbLLtNETTZdYyV
+         iZBNPLE+YV1HraB81hyhDfYUiD0zuYWzWMAEpdBdcUkG8CAK9T9XL2yi+BHaz81QwhIP
+         QljahR9PuKqKAiz+pMDIREr50zdlprA/t9AFERAM8wcQfWOz7nJghGoJJQH2KTBjkk7U
+         JLls3wwf9OZZahPOyInIxVFZGgE4EDI39PPl6KlxgwkAYDcuva4ZkTykYSwlF4nNTO1h
+         fCv1t964DfMhyCupdXSASltoo8/xwU207AtGAJYACQsIfN1T4CUWUNEKVBWLOseHCM30
+         lasQ==
+X-Gm-Message-State: APjAAAUD9MvFDYeF5Wmlge9C7EENamNq+9YthYu0S+sA9PSMNtVd5Bq/
+        sU3A9Mri+ting7yBZOZU1bYnw/XH
+X-Google-Smtp-Source: APXvYqzxHQFvg7B1IoR9HrYpc+EV3zMUO+76rqpp/XVWBMUrpldAgOKUQpKy1Q8NRcFwZME2iPGndQ==
+X-Received: by 2002:a62:3501:: with SMTP id c1mr41146426pfa.184.1557837287163;
+        Tue, 14 May 2019 05:34:47 -0700 (PDT)
+Received: from oslab.tsinghua.edu.cn ([2402:f000:4:72:808::3ca])
+        by smtp.gmail.com with ESMTPSA id g17sm20699149pfk.55.2019.05.14.05.34.44
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 14 May 2019 05:34:46 -0700 (PDT)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] rtlwifi: Fix null-pointer dereferences in error handling code of rtl_pci_probe()
+Date:   Tue, 14 May 2019 20:34:39 +0800
+Message-Id: <20190514123439.10524-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yanko,
+*BUG 1:
+In rtl_pci_probe(), when rtlpriv->cfg->ops->init_sw_vars() fails,
+rtl_deinit_core() in the error handling code is executed.
+rtl_deinit_core() calls rtl_free_entries_from_scan_list(), which uses
+rtlpriv->scan_list.list in list_for_each_entry_safe(), but it has been
+initialized. Thus a null-pointer dereference occurs.
+The reason is that rtlpriv->scan_list.list is initialized by
+INIT_LIST_HEAD() in rtl_init_core(), which has not been called.
 
->On Tue, 14 May 2019 10:29:31 +0300
->Yanko Kaneti <yaneti@declera.com> wrote:
->
->> Hello,
->> 
->> I am trying to get some Fedora working on the MACCHIATObin SingleShot
->> and I am getting an OOPS on what seems to be the first received packet
->> on the gigabit port.
->> 
->> I've tried both 5.0.x stable and 5.1.1 with the same result.  
->
->> mvpp2 f4000000.ethernet eth2: Link is Up - 1Gbps/Full - flow control rx/tx
->> IPv6: ADDRCONF(NETDEV_CHANGE): eth2: link becomes ready
->> page:ffff7e0001ff1000 count:0 mapcount:0 mapping:0000000000000000 index:0x0
->> flags: 0x1fffe000000000()
->> raw: 001fffe000000000 ffff7e0001ff1008 ffff7e0001ff1008 0000000000000000
->> raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
->> page dumped because: VM_BUG_ON_PAGE(page_ref_count(page) == 0)  
->
->Looks like a page refcnt bug (trying to free a page with already have
->zero refcnt).
+To fix this bug, rtl_deinit_core() should not be called when
+rtlpriv->cfg->ops->init_sw_vars() fails.
 
-This looks like another issue that was reported here, where the cause
-was in the EFI firmware :
+*BUG 2:
+In rtl_pci_probe(), rtl_init_core() can fail when rtl_regd_init() in
+this function fails, and rtlpriv->scan_list.list has not been
+initialized by INIT_LIST_HEAD(). Then, rtl_deinit_core() in the error
+handling code of rtl_pci_probe() is executed. Finally, a null-pointer
+dereference occurs due to the same reason of the above bug.
 
-https://lore.kernel.org/netdev/6355174d-4ab6-595d-17db-311bce607aef@arm.com/
+To fix this bug, the initialization of lists in rtl_init_core() are
+performed before the call to rtl_regd_init().
 
-Can you give some details on the version of the firmware you have and
-if you are using EFI or uboot ?
+These bugs are found by a runtime fuzzing tool named FIZZER written by
+us.
 
-Maybe Marcin could confirm this is the same issue as what happened in
-this thread.
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/base.c | 15 ++++++++-------
+ drivers/net/wireless/realtek/rtlwifi/pci.c  |  4 ++--
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
-Thanks,
+diff --git a/drivers/net/wireless/realtek/rtlwifi/base.c b/drivers/net/wireless/realtek/rtlwifi/base.c
+index 217d2a7a43c7..b3f341ec3710 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/base.c
++++ b/drivers/net/wireless/realtek/rtlwifi/base.c
+@@ -526,8 +526,14 @@ int rtl_init_core(struct ieee80211_hw *hw)
+ 	/* <2> rate control register */
+ 	hw->rate_control_algorithm = "rtl_rc";
+ 
++	/* <3> init list */
++	INIT_LIST_HEAD(&rtlpriv->entry_list);
++	INIT_LIST_HEAD(&rtlpriv->scan_list.list);
++	skb_queue_head_init(&rtlpriv->tx_report.queue);
++	skb_queue_head_init(&rtlpriv->c2hcmd_queue);
++
+ 	/*
+-	 * <3> init CRDA must come after init
++	 * <4> init CRDA must come after init
+ 	 * mac80211 hw  in _rtl_init_mac80211.
+ 	 */
+ 	if (rtl_regd_init(hw, rtl_reg_notifier)) {
+@@ -535,7 +541,7 @@ int rtl_init_core(struct ieee80211_hw *hw)
+ 		return 1;
+ 	}
+ 
+-	/* <4> locks */
++	/* <5> locks */
+ 	mutex_init(&rtlpriv->locks.conf_mutex);
+ 	mutex_init(&rtlpriv->locks.ips_mutex);
+ 	mutex_init(&rtlpriv->locks.lps_mutex);
+@@ -550,11 +556,6 @@ int rtl_init_core(struct ieee80211_hw *hw)
+ 	spin_lock_init(&rtlpriv->locks.cck_and_rw_pagea_lock);
+ 	spin_lock_init(&rtlpriv->locks.fw_ps_lock);
+ 	spin_lock_init(&rtlpriv->locks.iqk_lock);
+-	/* <5> init list */
+-	INIT_LIST_HEAD(&rtlpriv->entry_list);
+-	INIT_LIST_HEAD(&rtlpriv->scan_list.list);
+-	skb_queue_head_init(&rtlpriv->tx_report.queue);
+-	skb_queue_head_init(&rtlpriv->c2hcmd_queue);
+ 
+ 	rtlmac->link_state = MAC80211_NOLINK;
+ 
+diff --git a/drivers/net/wireless/realtek/rtlwifi/pci.c b/drivers/net/wireless/realtek/rtlwifi/pci.c
+index 48ca52102cef..864cb76230c4 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/pci.c
++++ b/drivers/net/wireless/realtek/rtlwifi/pci.c
+@@ -2267,7 +2267,7 @@ int rtl_pci_probe(struct pci_dev *pdev,
+ 	if (rtlpriv->cfg->ops->init_sw_vars(hw)) {
+ 		pr_err("Can't init_sw_vars\n");
+ 		err = -ENODEV;
+-		goto fail3;
++		goto fail2;
+ 	}
+ 	rtlpriv->cfg->ops->init_sw_leds(hw);
+-- 
+2.17.0
 
-Maxime
-
->> ------------[ cut here ]------------
->> kernel BUG at include/linux/mm.h:547!
->> Internal error: Oops - BUG: 0 [#1] SMP
->> Modules linked in: crct10dif_ce ghash_ce spi_orion i2c_mux_pca954x i2c_mux sfp mdio_i2c omap_rng mvpp2 armada_thermal phylink marvell sbsa_gwdt mvmdio vfat fat mmc_block rtc_armada38x sdhci_xenon_driver phy_generic sdhci_pltfm xhci_plat_hcd ahci_platform phy_mvebu_cp110_comphy i2c_mv64xxx sdhci fuse
->> Process swapper/0 (pid: 0, stack limit = 0x0000000058631e79)
->> CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.1.1-300.fc30.aarch64 #1
->> Hardware name: Marvell mvebu_armada-8k/mvebu_armada-8k, BIOS 2019.04 04/18/2019
->> pstate: 40400005 (nZcv daif +PAN -UAO)
->> pc : page_frag_free+0x74/0xa0
->> lr : page_frag_free+0x74/0xa0
->> sp : ffff000010003a60
->> x29: ffff000010003a60 x28: ffff0000117e5480 
->> x27: 0000000000000000 x26: 0000000000000000 
->> x25: ffff80007fc40462 x24: ffff80007fc40458 
->> x23: ffff80007fc40450 x22: ffff0000117dbc00 
->> x21: ffff8001356c2a00 x20: ffff80007fc404c0 
->> x19: ffff80007fc40400 x18: 0000000000000000 
->> x17: 0000000000000000 x16: 0000000000000000 
->> x15: 0000000000000010 x14: ffffffffffffffff 
->> x13: ffff00009000375f x12: ffff000010003767 
->> x11: ffff000011679000 x10: ffff000010eb6428 
->> x9 : ffff00001185a000 x8 : 00000000000001c7 
->> x7 : 0000000000000015 x6 : 0000000000000001 
->> x5 : 0000000000000000 x4 : ffff80013f72a190 
->> x3 : ffff80013f730488 x2 : ffff80013f72a190 
->> x1 : 0000000000000000 x0 : 000000000000003e 
->> Call trace:
->>  page_frag_free+0x74/0xa0
->>  skb_free_head+0x28/0x48
->>  skb_release_data+0x13c/0x178
->>  skb_release_all+0x30/0x40
->>  consume_skb+0x38/0xc8
->>  arp_process+0x2d0/0x6e0
->>  arp_rcv+0x100/0x178
->>  __netif_receive_skb_one_core+0x50/0x60
->>  __netif_receive_skb+0x28/0x70
->>  netif_receive_skb_internal+0x44/0xd0
->>  napi_gro_receive+0x198/0x1c8
->>  mvpp2_rx+0x1f8/0x500 [mvpp2]
->>  mvpp2_poll+0x150/0x1e8 [mvpp2]
->>  napi_poll+0xb4/0x250
->>  net_rx_action+0xbc/0x1b0
->>  __do_softirq+0x138/0x334
->>  irq_exit+0xc0/0xe0
->>  __handle_domain_irq+0x70/0xc0
->>  gic_handle_irq+0x58/0xa8
->>  el1_irq+0xf0/0x1c0
->>  arch_cpu_idle+0x3c/0x1c8
->>  default_idle_call+0x20/0x3c
->>  cpuidle_idle_call+0x140/0x190
->>  do_idle+0xb0/0x108
->>  cpu_startup_entry+0x2c/0x30
->>  rest_init+0xc0/0xcc
->>  arch_call_rest_init+0x14/0x1c
->>  start_kernel+0x4ac/0x4c0
->> Code: aa0203e0 d0006101 91226021 9400cf32 (d4210000) 
->> ---[ end trace 267606a8b5fb06cb ]---
->> Kernel panic - not syncing: Fatal exception in interrupt
->> SMP: stopping secondary CPUs
->> Kernel Offset: disabled
->> CPU features: 0x002,21006000
->> Memory Limit: none
->> ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---  
->
->
