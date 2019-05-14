@@ -2,114 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A98851C3DD
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 09:36:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 554F11C3D6
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 09:32:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726568AbfENHgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 03:36:14 -0400
-Received: from mail.bix.bg ([193.105.196.21]:40129 "HELO mail.bix.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-        id S1726324AbfENHgO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 03:36:14 -0400
-X-Greylist: delayed 401 seconds by postgrey-1.27 at vger.kernel.org; Tue, 14 May 2019 03:36:13 EDT
-Received: (qmail 24142 invoked from network); 14 May 2019 07:29:31 -0000
-Received: from d2.declera.com (212.116.131.122)
-  by indigo.declera.com with SMTP; 14 May 2019 07:29:31 -0000
-Message-ID: <856dc9462c31bc9f102940c61f94db1f44574733.camel@declera.com>
-Subject: mvpp2:  oops on first received packet
-From:   Yanko Kaneti <yaneti@declera.com>
-To:     netdev <netdev@vger.kernel.org>
-Date:   Tue, 14 May 2019 10:29:31 +0300
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.33.1 (3.33.1-1.fc31) 
+        id S1726495AbfENHcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 03:32:36 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52599 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726429AbfENHcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 03:32:36 -0400
+Received: by mail-wm1-f66.google.com with SMTP id y3so1668757wmm.2
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 00:32:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2BFyXqonKKLqgfMXLB8iohnEvkSe7GrOc8jcuONaa7Q=;
+        b=IIgxfjJMBB985j2UYnxxMoU49Y1FnHXeafKsE4o+k/NR6aS+H1aOmnjWUzPa92sK+y
+         xxl+6VBsDc1NKTAsK0IGgxB306w/MsdmGDVk9AGFtihE31jOU/yfwgSXtC6kWz9LREJJ
+         9v71O+FFCnhgBFjKMrKW0i68xdyrOfWUf7SGVk0LGiGX3ajvee/dX0+hjW5624EO6YG0
+         9Bpuvk0g+2Aow1cys5yWl/p8beXfh+uat5TzoJrh3R1QD2BSiqEK0cUYDoZZVaJa45aq
+         CjUZv35P8UQGjRopMCJqMhNJqqQhFo+b/JnXCoaO70g4NXQI8FTCs4P7vPwTxUkX4EcR
+         w5QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=2BFyXqonKKLqgfMXLB8iohnEvkSe7GrOc8jcuONaa7Q=;
+        b=ezPCggolQ8cBN535j/Xev1cWWEac1FYAYYYpPWcw7baB9ZXDgSbJzrvXCh2c5UqayN
+         1WxXIkN7QesEPEblXBKjpTZ1T/+L/7Z4vQ8vVbkkpi7g1EniPwZz+jB7m+8X3XCcl4Bc
+         skCkJSyKPAk0Xe+YFoemMoSZl/nBRZ/KTdPgmRaj9X5t3crBG261wc7HZbSwLnzF1bQV
+         1aIKy1wsvPYD5A3uZn7/fISE0L+si68gpyMR/bI1siaqmCm5YPQgWAPB1Q48AoKx04EB
+         /iwvj7xvpboSk8tQlcL5tGduHejqMz8HC3TlDyqBFjCkbdnyc5ITDGNdWGs0TWnj5BMm
+         q6/A==
+X-Gm-Message-State: APjAAAWqS5CkujSekOeEl4Q9LRF7XKZTDwaIA4KLQ8llqXQnQKkFt/Dg
+        v7xQT08hmELcQqHSJdhhJGFzc14nEa0=
+X-Google-Smtp-Source: APXvYqxvcbAOvOBUOPDoGtn7ABcXEiFTnhxZQP0AEtob+baMVqme3v9W1UC+GcuImpxIllLIzm6n5w==
+X-Received: by 2002:a1c:e702:: with SMTP id e2mr4798191wmh.38.1557819153551;
+        Tue, 14 May 2019 00:32:33 -0700 (PDT)
+Received: from ?IPv6:2a01:e35:8b63:dc30:64b3:e115:e5ef:6e9d? ([2a01:e35:8b63:dc30:64b3:e115:e5ef:6e9d])
+        by smtp.gmail.com with ESMTPSA id c131sm1973665wma.31.2019.05.14.00.32.32
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 14 May 2019 00:32:32 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net v2] rtnetlink: always put ILFA_LINK for links with a
+ link-netnsid
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     netdev@vger.kernel.org, Dan Winship <danw@redhat.com>
+References: <d5c4710117d390e0f204b7046483727daf452233.1557755096.git.sd@queasysnail.net>
+ <b89367f0-18d5-61b2-2572-b1e5b4588d8d@6wind.com>
+ <20190513150812.GA18478@bistromath.localdomain>
+ <771b21d6-3b1e-c118-2907-5b5782f7cb92@6wind.com>
+ <20190513214648.GA29270@bistromath.localdomain>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <65c8778c-9be9-c81f-5a9b-13e070ca38da@6wind.com>
+Date:   Tue, 14 May 2019 09:32:32 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20190513214648.GA29270@bistromath.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Le 13/05/2019 à 23:46, Sabrina Dubroca a écrit :
+> 2019-05-13, 17:13:36 +0200, Nicolas Dichtel wrote:
+>> Le 13/05/2019 à 17:08, Sabrina Dubroca a écrit :
+>>> 2019-05-13, 16:50:51 +0200, Nicolas Dichtel wrote:
+>>>> Le 13/05/2019 à 15:47, Sabrina Dubroca a écrit :
+>>>>> Currently, nla_put_iflink() doesn't put the IFLA_LINK attribute when
+>>>>> iflink == ifindex.
+>>>>>
+>>>>> In some cases, a device can be created in a different netns with the
+>>>>> same ifindex as its parent. That device will not dump its IFLA_LINK
+>>>>> attribute, which can confuse some userspace software that expects it.
+>>>>> For example, if the last ifindex created in init_net and foo are both
+>>>>> 8, these commands will trigger the issue:
+>>>>>
+>>>>>     ip link add parent type dummy                   # ifindex 9
+>>>>>     ip link add link parent netns foo type macvlan  # ifindex 9 in ns foo
+>>>>>
+>>>>> So, in case a device puts the IFLA_LINK_NETNSID attribute in a dump,
+>>>>> always put the IFLA_LINK attribute as well.
+>>>>>
+>>>>> Thanks to Dan Winship for analyzing the original OpenShift bug down to
+>>>>> the missing netlink attribute.
+>>>>>
+>>>>> Analyzed-by: Dan Winship <danw@redhat.com>
+>>>>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+>>>> I would say:
+>>>> Fixes: 5e6700b3bf98 ("sit: add support of x-netns")
+>>>>
+>>>> Because before this patch, there was no device with an iflink that can be put in
+>>>> another netns.
+>>>
+>>> That tells us how far back we might want to backport this fix, but not
+>>> which commit introduced the bug. I think Fixes should refer to the
+>>> introduction of the faulty code, not to what patch made it visible (if
+>>> we can find both).
+>> No sure to follow you. The problem you describe cannot happen before commit
+>> 5e6700b3bf98, so there cannot be a "faulty" patch before that commit.
+> 
+> What about macvlan devices?
+> 
+> From commit b863ceb7ddce ("[NET]: Add macvlan driver"):
+> 
+> static int macvlan_init(struct net_device *dev)
+> {
+> ...
+>         dev->iflink             = lowerdev->ifindex;
+> ...
+> }
+> 
+> vlan devices also had an iflink assigned since commit ddd7bf9fe4e5.
+> 
+> What am I missing?
+You miss the fact that netns have been introduced after both commits.
 
-I am trying to get some Fedora working on the MACCHIATObin SingleShot
-and I am getting an OOPS on what seems to be the first received packet
-on the gigabit port.
+What about this one?
+Fixes: d8a5ec672768 ("[NET]: netlink support for moving devices between network
+namespaces.")
 
-I've tried both 5.0.x stable and 5.1.1 with the same result.
-Otherwise the port seems to work fine in u-boot (also latest from the
-the fedora variety)
 
--Yanko
 
-..
-mvpp2 f4000000.ethernet eth2: Link is Up - 1Gbps/Full - flow control rx/tx
-IPv6: ADDRCONF(NETDEV_CHANGE): eth2: link becomes ready
-page:ffff7e0001ff1000 count:0 mapcount:0 mapping:0000000000000000 index:0x0
-flags: 0x1fffe000000000()
-raw: 001fffe000000000 ffff7e0001ff1008 ffff7e0001ff1008 0000000000000000
-raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: VM_BUG_ON_PAGE(page_ref_count(page) == 0)
-------------[ cut here ]------------
-kernel BUG at include/linux/mm.h:547!
-Internal error: Oops - BUG: 0 [#1] SMP
-Modules linked in: crct10dif_ce ghash_ce spi_orion i2c_mux_pca954x i2c_mux sfp mdio_i2c omap_rng mvpp2 armada_thermal phylink marvell sbsa_gwdt mvmdio vfat fat mmc_block rtc_armada38x sdhci_xenon_driver phy_generic sdhci_pltfm xhci_plat_hcd ahci_platform phy_mvebu_cp110_comphy i2c_mv64xxx sdhci fuse
-Process swapper/0 (pid: 0, stack limit = 0x0000000058631e79)
-CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.1.1-300.fc30.aarch64 #1
-Hardware name: Marvell mvebu_armada-8k/mvebu_armada-8k, BIOS 2019.04 04/18/2019
-pstate: 40400005 (nZcv daif +PAN -UAO)
-pc : page_frag_free+0x74/0xa0
-lr : page_frag_free+0x74/0xa0
-sp : ffff000010003a60
-x29: ffff000010003a60 x28: ffff0000117e5480 
-x27: 0000000000000000 x26: 0000000000000000 
-x25: ffff80007fc40462 x24: ffff80007fc40458 
-x23: ffff80007fc40450 x22: ffff0000117dbc00 
-x21: ffff8001356c2a00 x20: ffff80007fc404c0 
-x19: ffff80007fc40400 x18: 0000000000000000 
-x17: 0000000000000000 x16: 0000000000000000 
-x15: 0000000000000010 x14: ffffffffffffffff 
-x13: ffff00009000375f x12: ffff000010003767 
-x11: ffff000011679000 x10: ffff000010eb6428 
-x9 : ffff00001185a000 x8 : 00000000000001c7 
-x7 : 0000000000000015 x6 : 0000000000000001 
-x5 : 0000000000000000 x4 : ffff80013f72a190 
-x3 : ffff80013f730488 x2 : ffff80013f72a190 
-x1 : 0000000000000000 x0 : 000000000000003e 
-Call trace:
- page_frag_free+0x74/0xa0
- skb_free_head+0x28/0x48
- skb_release_data+0x13c/0x178
- skb_release_all+0x30/0x40
- consume_skb+0x38/0xc8
- arp_process+0x2d0/0x6e0
- arp_rcv+0x100/0x178
- __netif_receive_skb_one_core+0x50/0x60
- __netif_receive_skb+0x28/0x70
- netif_receive_skb_internal+0x44/0xd0
- napi_gro_receive+0x198/0x1c8
- mvpp2_rx+0x1f8/0x500 [mvpp2]
- mvpp2_poll+0x150/0x1e8 [mvpp2]
- napi_poll+0xb4/0x250
- net_rx_action+0xbc/0x1b0
- __do_softirq+0x138/0x334
- irq_exit+0xc0/0xe0
- __handle_domain_irq+0x70/0xc0
- gic_handle_irq+0x58/0xa8
- el1_irq+0xf0/0x1c0
- arch_cpu_idle+0x3c/0x1c8
- default_idle_call+0x20/0x3c
- cpuidle_idle_call+0x140/0x190
- do_idle+0xb0/0x108
- cpu_startup_entry+0x2c/0x30
- rest_init+0xc0/0xcc
- arch_call_rest_init+0x14/0x1c
- start_kernel+0x4ac/0x4c0
-Code: aa0203e0 d0006101 91226021 9400cf32 (d4210000) 
----[ end trace 267606a8b5fb06cb ]---
-Kernel panic - not syncing: Fatal exception in interrupt
-SMP: stopping secondary CPUs
-Kernel Offset: disabled
-CPU features: 0x002,21006000
-Memory Limit: none
----[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
-
+Regards,
+Nicolas
