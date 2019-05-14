@@ -2,116 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 323581C0B5
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 04:36:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DBF61C0CC
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 05:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726616AbfENCg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 22:36:26 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7640 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726566AbfENCg0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 22:36:26 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 4B46641F71638D10AA08;
-        Tue, 14 May 2019 10:36:24 +0800 (CST)
-Received: from localhost (10.175.101.78) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 14 May 2019
- 10:36:18 +0800
-From:   Weilong Chen <chenweilong@huawei.com>
-To:     <chenweilong@huawei.com>, <davem@davemloft.net>,
-        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>
-CC:     <netdev@vger.kernel.org>
-Subject: [PATCH net-next v2] ipv4: Add support to disable icmp timestamp
-Date:   Tue, 14 May 2019 10:56:54 +0800
-Message-ID: <1557802614-51040-1-git-send-email-chenweilong@huawei.com>
-X-Mailer: git-send-email 1.8.3
+        id S1726626AbfENDBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 23:01:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34727 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726533AbfENDBC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 23:01:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=G3zxPkEx8xFAbyKPcWX048WseX1r8i9WLN8ua6tPwmc=; b=tSmoC5EMuNCDWWJh44SydrloQ7
+        GgY0QYJRcyXdrf2nbti5fSz9evr36xmIFcXYj7FBobiupdZJC8N8lt2mzYEuJ+KIakZO5OKHh219H
+        0Nx/WfMMc2wY0dS/wXCbGu1GEZk3WafJTguYGrM8KbxuCaRLTMO7VrYG/AOl+wqfWPKM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hQNfs-000604-5y; Tue, 14 May 2019 05:00:16 +0200
+Date:   Tue, 14 May 2019 05:00:16 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     Jose Abreu <joabreu@synopsys.com>, davem@davemloft.net,
+        jianguo.zhang@mediatek.com,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yt.shen@mediatek.com, linux-mediatek@lists.infradead.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [v2, PATCH 0/4] fix some bugs in stmmac
+Message-ID: <20190514030016.GA19642@lunn.ch>
+References: <1557800933-30759-1-git-send-email-biao.huang@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.78]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1557800933-30759-1-git-send-email-biao.huang@mediatek.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The remote host answers to an ICMP timestamp request.
-This allows an attacker to know the time and date on your host.
+On Tue, May 14, 2019 at 10:28:49AM +0800, Biao Huang wrote:
+> changes in v2:                                                                  
+>         1. update rx_tail_addr as Jose's comment                                
+>         2. changes clk_csr condition as Alex's proposition                      
+>         3. remove init lines in dwmac-mediatek, get clk_csr from dts instead.   
 
-This path is an another way contrast to iptables rules:
-iptables -A input -p icmp --icmp-type timestamp-request -j DROP
-iptables -A output -p icmp --icmp-type timestamp-reply -j DROP
+Hi Biao
 
-Default is enabled.
+Since these are fixes, could you provide a Fixes: tag for each one?
 
-enable:
-	sysctl -w net.ipv4.icmp_timestamp_enable=1
-disable
-	sysctl -w net.ipv4.icmp_timestamp_enable=0
-testing:
-	hping3 --icmp --icmp-ts -V $IPADDR
-
-Signed-off-by: Weilong Chen <chenweilong@huawei.com>
----
- include/net/ip.h           | 2 ++
- net/ipv4/icmp.c            | 5 +++++
- net/ipv4/sysctl_net_ipv4.c | 8 ++++++++
- 3 files changed, 15 insertions(+)
-
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 2d3cce7..71840e4 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -718,6 +718,8 @@ bool icmp_global_allow(void);
- extern int sysctl_icmp_msgs_per_sec;
- extern int sysctl_icmp_msgs_burst;
- 
-+extern int sysctl_icmp_timestamp_enable;
-+
- #ifdef CONFIG_PROC_FS
- int ip_misc_proc_init(void);
- #endif
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index f3a5893..5010541 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -232,6 +232,7 @@ static inline void icmp_xmit_unlock(struct sock *sk)
- 
- int sysctl_icmp_msgs_per_sec __read_mostly = 1000;
- int sysctl_icmp_msgs_burst __read_mostly = 50;
-+int sysctl_icmp_timestamp_enable __read_mostly = 1;
- 
- static struct {
- 	spinlock_t	lock;
-@@ -953,6 +954,10 @@ static bool icmp_echo(struct sk_buff *skb)
- static bool icmp_timestamp(struct sk_buff *skb)
- {
- 	struct icmp_bxm icmp_param;
-+
-+	if (!sysctl_icmp_timestamp_enable)
-+		goto out_err;
-+
- 	/*
- 	 *	Too short.
- 	 */
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 875867b..1fe467e 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -544,6 +544,14 @@ static struct ctl_table ipv4_table[] = {
- 		.extra1		= &zero,
- 	},
- 	{
-+		.procname	= "icmp_timestamp_enable",
-+		.data		= &sysctl_icmp_timestamp_enable,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec_minmax,
-+		.extra1		= &zero,
-+	},
-+	{
- 		.procname	= "udp_mem",
- 		.data		= &sysctl_udp_mem,
- 		.maxlen		= sizeof(sysctl_udp_mem),
--- 
-2.7.4
-
+Thanks
+	Andrew
