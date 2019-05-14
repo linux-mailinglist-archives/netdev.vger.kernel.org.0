@@ -2,81 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05E891C11A
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 05:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEC1E1C17C
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 06:42:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726790AbfENDmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 23:42:21 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:51028 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726651AbfENDmV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 23:42:21 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D405D3092667;
-        Tue, 14 May 2019 03:42:20 +0000 (UTC)
-Received: from [10.72.12.59] (ovpn-12-59.pek2.redhat.com [10.72.12.59])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2679E608AB;
-        Tue, 14 May 2019 03:42:12 +0000 (UTC)
-Subject: Re: [PATCH net] vhost: don't use kmap() to log dirty pages
-To:     David Miller <davem@davemloft.net>
-Cc:     mst@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hch@infradead.org,
-        James.Bottomley@HansenPartnership.com, aarcange@redhat.com,
-        tglx@linutronix.de, mingo@redhat.com, peterz@infradead.org,
-        dvhart@infradead.org
-References: <1557725265-63525-1-git-send-email-jasowang@redhat.com>
- <20190513.094218.1962516460150696760.davem@davemloft.net>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c8369a44-f4e0-4132-b470-cca7a044bb02@redhat.com>
-Date:   Tue, 14 May 2019 11:42:11 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726134AbfENEmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 00:42:17 -0400
+Received: from mail-it1-f194.google.com ([209.85.166.194]:39892 "EHLO
+        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725562AbfENEmR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 00:42:17 -0400
+Received: by mail-it1-f194.google.com with SMTP id 9so2646132itf.4;
+        Mon, 13 May 2019 21:42:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=OK+amOIyoJqoqKtJQ8fZgnv70LQ09z+QT/CtisP33vA=;
+        b=CkJevJMHG3DdojgneEqgpSlVEXQ37TfODb/h8CqSiAEVrLOZPv8A3fw13LV+ZAtFSS
+         JBOPiQUAnNnqgyTg5oWVpNThm6q8ul2ZsBHSg7tiiEnBF9F7JiOFVoDz+FJORULv+Kce
+         ykPV57bD0R5OPnJtIDIG4T+KOs595ErbNfF39VCxnd88Fy72s6EGm6NB1zOZCt/pn2bp
+         SFRIt2CryJJMAN6w4l6vuPUT2Jr4J1t2ErfUiYCm/lcxGFhC+n7N0TdhFHYTpvt0Kyk9
+         NLO9naZF1/Z+PYyw1vNbq8XYTNoVgInGzmWmPT+hjHH9Zx+xIFJqUU5U+vBN3YcP6vlG
+         7azA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=OK+amOIyoJqoqKtJQ8fZgnv70LQ09z+QT/CtisP33vA=;
+        b=r6aaWx7Fv4mOrV62i4QmrXsUZjgD/DSSyADMUrwa3ZPpfVcy76uPZOm9dPXsRlZKbI
+         XI/d75L3FBLLseFJd7BrSp2KHLBUKbKivCrV1jkNsRklcPBQqn4A+hB0Qo4UaFiDr5cv
+         REMqa5Efnpf5VRT8rHkjJmA3TWPrZBndfLSUipEV6xpvVlMtkE+beFuamf17trTPXhaP
+         BMcd3Lpl7PqWT3jGcxS6ey24KeQmx1ZUVQpXvupE7HUT60qW0c9l0u3YE6CgYvTtyqZm
+         whmOPB/6udOvaSTIATY3WggRrlRA1+i7aWel6mp+tbsARsm/CHEGA4e5JcB6s8TMdfF+
+         zozA==
+X-Gm-Message-State: APjAAAUMYFpgMRwRrvPo6KX16pBa4r6yDpnkPtes661v+wroqQKdC0Hm
+        iTM0Xj9DIvpcmCOaBMT7qmr9C+Kc/7Q=
+X-Google-Smtp-Source: APXvYqw8jHakmSmdEon2t+dwXLuxZIJwyxhTyGr8bCIcsyfoXksr0nNZpu8ulFNNIAcokFlwCfeb+Q==
+X-Received: by 2002:a02:37d7:: with SMTP id r206mr22245076jar.127.1557808936273;
+        Mon, 13 May 2019 21:42:16 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id g13sm5605818iom.46.2019.05.13.21.42.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 13 May 2019 21:42:15 -0700 (PDT)
+Subject: [bpf PATCH] net: tcp_bpf,
+ correctly handle DONT_WAIT flags and timeo == 0
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Date:   Mon, 13 May 2019 21:42:03 -0700
+Message-ID: <155780892372.10726.16677541867391282805.stgit@john-XPS-13-9360>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-In-Reply-To: <20190513.094218.1962516460150696760.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Tue, 14 May 2019 03:42:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The tcp_bpf_wait_data() routine needs to check timeo != 0 before
+calling sk_wait_event() otherwise we may see unexpected stalls
+on receiver.
 
-On 2019/5/14 上午12:42, David Miller wrote:
-> From: Jason Wang <jasowang@redhat.com>
-> Date: Mon, 13 May 2019 01:27:45 -0400
->
->> Vhost log dirty pages directly to a userspace bitmap through GUP and
->> kmap_atomic() since kernel doesn't have a set_bit_to_user()
->> helper. This will cause issues for the arch that has virtually tagged
->> caches. The way to fix is to keep using userspace virtual
->> address. Fortunately, futex has arch_futex_atomic_op_inuser() which
->> could be used for setting a bit to user.
->>
->> Note there're several cases that futex helper can fail e.g a page
->> fault or the arch that doesn't have the support. For those cases, a
->> simplified get_user()/put_user() pair protected by a global mutex is
->> provided as a fallback. The fallback may lead false positive that
->> userspace may see more dirty pages.
->>
->> Cc: Christoph Hellwig <hch@infradead.org>
->> Cc: James Bottomley <James.Bottomley@HansenPartnership.com>
->> Cc: Andrea Arcangeli <aarcange@redhat.com>
->> Cc: Thomas Gleixner <tglx@linutronix.de>
->> Cc: Ingo Molnar <mingo@redhat.com>
->> Cc: Peter Zijlstra <peterz@infradead.org>
->> Cc: Darren Hart <dvhart@infradead.org>
->> Fixes: 3a4d5c94e9593 ("vhost_net: a kernel-level virtio server")
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> I want to see a review from Michael for this change before applying.
+Arika did all the leg work here I just formaatted, posted and ran
+a few tests.
 
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+Reported-by: Arika Chen <eaglesora@gmail.com>
+Suggested-by: Arika Chen <eaglesora@gmail.com>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+---
+ net/ipv4/tcp_bpf.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-No problem, since kbuild spotted an issue. Let me post V2.
-
-Thanks
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 1bb7321a256d..27206b2064db 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -27,7 +27,10 @@ static int tcp_bpf_wait_data(struct sock *sk, struct sk_psock *psock,
+ 			     int flags, long timeo, int *err)
+ {
+ 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+-	int ret;
++	int ret = 0;
++
++	if (!timeo)
++		return ret;
+ 
+ 	add_wait_queue(sk_sleep(sk), &wait);
+ 	sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
 
