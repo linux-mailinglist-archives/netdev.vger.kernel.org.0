@@ -2,72 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FD9D1C355
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 08:39:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F6211C47D
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 10:13:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbfENGjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 02:39:53 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:36332 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725866AbfENGjw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 02:39:52 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 425E271A0A9898DCDD33;
-        Tue, 14 May 2019 14:39:49 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Tue, 14 May 2019
- 14:39:39 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <ubraun@linux.ibm.com>,
-        <kgraul@linux.ibm.com>, <hwippel@linux.ibm.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-s390@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] net/smc: Fix error path in smc_init
-Date:   Tue, 14 May 2019 14:39:21 +0800
-Message-ID: <20190514063921.41088-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1726060AbfENINt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 04:13:49 -0400
+Received: from hostingweb31-40.netsons.net ([89.40.174.40]:35076 "EHLO
+        hostingweb31-40.netsons.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725916AbfENINs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 04:13:48 -0400
+X-Greylist: delayed 3524 seconds by postgrey-1.27 at vger.kernel.org; Tue, 14 May 2019 04:13:47 EDT
+Received: from [109.168.11.45] (port=57606 helo=pc-ceresoli.dev.aim)
+        by hostingweb31.netsons.net with esmtpa (Exim 4.91)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1hQReJ-00CXfS-Gn; Tue, 14 May 2019 09:14:55 +0200
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+To:     netdev@vger.kernel.org
+Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: macb: fix error format in dev_err()
+Date:   Tue, 14 May 2019 09:14:50 +0200
+Message-Id: <20190514071450.27760-1-luca@lucaceresoli.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If register_pernet_subsys success in smc_init,
-we should cleanup it in case any other error.
+Errors are negative numbers. Using %u shows them as very large positive
+numbers such as 4294967277 that don't make sense. Use the %d format
+instead, and get a much nicer -19.
 
-Fixes: 64e28b52c7a6 (net/smc: add pnet table namespace support")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
 ---
- net/smc/af_smc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/cadence/macb_main.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 6f869ef..7d3207f 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2019,7 +2019,7 @@ static int __init smc_init(void)
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index c049410bc888..bebd9b1aeb64 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -3343,7 +3343,7 @@ static int macb_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 		if (!err)
+ 			err = -ENODEV;
  
- 	rc = smc_pnet_init();
- 	if (rc)
--		return rc;
-+		goto out_pernet_subsys;
+-		dev_err(&pdev->dev, "failed to get macb_clk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to get macb_clk (%d)\n", err);
+ 		return err;
+ 	}
  
- 	rc = smc_llc_init();
- 	if (rc) {
-@@ -2070,6 +2070,9 @@ static int __init smc_init(void)
- 	proto_unregister(&smc_proto);
- out_pnet:
- 	smc_pnet_exit();
-+out_pernet_subsys:
-+	unregister_pernet_subsys(&smc_net_ops);
-+
- 	return rc;
- }
+@@ -3352,7 +3352,7 @@ static int macb_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 		if (!err)
+ 			err = -ENODEV;
+ 
+-		dev_err(&pdev->dev, "failed to get hclk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to get hclk (%d)\n", err);
+ 		return err;
+ 	}
+ 
+@@ -3370,31 +3370,31 @@ static int macb_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 
+ 	err = clk_prepare_enable(*pclk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable pclk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable pclk (%d)\n", err);
+ 		return err;
+ 	}
+ 
+ 	err = clk_prepare_enable(*hclk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable hclk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable hclk (%d)\n", err);
+ 		goto err_disable_pclk;
+ 	}
+ 
+ 	err = clk_prepare_enable(*tx_clk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable tx_clk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable tx_clk (%d)\n", err);
+ 		goto err_disable_hclk;
+ 	}
+ 
+ 	err = clk_prepare_enable(*rx_clk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable rx_clk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable rx_clk (%d)\n", err);
+ 		goto err_disable_txclk;
+ 	}
+ 
+ 	err = clk_prepare_enable(*tsu_clk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable tsu_clk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable tsu_clk (%d)\n", err);
+ 		goto err_disable_rxclk;
+ 	}
+ 
+@@ -3868,7 +3868,7 @@ static int at91ether_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 
+ 	err = clk_prepare_enable(*pclk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable pclk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable pclk (%d)\n", err);
+ 		return err;
+ 	}
  
 -- 
-1.8.3.1
-
+2.21.0
 
