@@ -2,124 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 843BA1CB12
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 16:57:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F6101CB82
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 17:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726407AbfENO5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 10:57:22 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40946 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725854AbfENO5W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 10:57:22 -0400
-Received: by mail-wr1-f66.google.com with SMTP id h4so19603611wre.7
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 07:57:21 -0700 (PDT)
+        id S1726441AbfENPMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 11:12:39 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:40702 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbfENPMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 11:12:39 -0400
+Received: by mail-pg1-f195.google.com with SMTP id d31so8785980pgl.7;
+        Tue, 14 May 2019 08:12:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=G7His5KcVqi9kclJutiM1FAAK2hRmQuy58jfnCXc4K4=;
-        b=ep9j6gGEFfyteSBR+XYYyYtFle7zv+d93YY5K3kRvnvMlGhmotlnKETMYAXvJuPHrS
-         IQQMQId1okgrCeB+9Ztg9ERLhuWlnBxJlBhdK/w+evfGXZtammEMKLixEg/fpL5VhFYs
-         D75Yei3XPzZRbs0g9fYkcqRngSoDJ2CmXS/+L3u+v6lyUJejR+38sNoGS0hr6U9jLKeu
-         AnJMULKF6K12vnGqH1mgy9EvJTYEHHDm+9U9Mf+p/uro+uyXyyEhcdkL4jU/LN7X0RNV
-         weFxf4FeqNxzj50Cgg5Bh1rotSRaHNeY56NEOlEv2+VQGkc/z1jgSFe9Vz6XJYj78R39
-         NVpw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=dm8dUNxqFzjXYzf0vGZtO+jODptjt86dBovZ/zou7XQ=;
+        b=sogj6wWy95JqrPPufFa+ZSyM7IOQfJmlJr4GYywOR6eOQdPqHFZ6EfId0QvBNb1FAx
+         x1IRKOkT4GfhS3SWhu7Vl5OUFq3MLKk+5Ysakj0zr0x0K+aVue6tyQAPgMfyCP6RGEFK
+         ON0wqym0Nwd0PMVTgKgReyrTMahF1xi4cj54OL1pf2/mZX2w/eOyjeOc203lT+ClvnDj
+         SMrPgnSwAv29eSBMKljzyeV4yfmOS+/OJGqyqtbjtY7L/e+mT3o5mddhpxSjIcyw3Pud
+         RJQ4P7PkhndIa5v+1lOOZzKcHGImyWrspw1/bYi6jm0S+91VLtoe5HmcAMuvqfGTPi38
+         hrMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=G7His5KcVqi9kclJutiM1FAAK2hRmQuy58jfnCXc4K4=;
-        b=IfVijrDOQiH36EiBR9mJ13UhFiBe6zt6W1XA4tn+pzydsQnRl6uuiJpDy10gpXTzC6
-         Hylz2YzIePGQLrm500ulAgMPrBCQrRfP+e2zKmkNE/1kgqLPq660Fukaa3ARRuUs5nYQ
-         zmj6zMri8W5ZMU30aZAmHJxPh2J1fcdbbeq7u+Eo24/PVpCPJxKE6mz62eio+Nayek4K
-         9NBYZk5XSOZ5Fl/5ye+tMEdNmlSDJ/RtmyuJhoDLLXw0f/4XiAWlc97DbHDWR52ZfSBy
-         zRCg5wQl/tWb8tLpQgsNrngzomf1b/rGwMJbU+WqIrJvA8nZig4McSGKYjtlYbhrVAjB
-         tLrw==
-X-Gm-Message-State: APjAAAV6TyH1t76Rr3LWXeD6zNodWHC8SoDvhVg2B+riJ57pE7EUt/ZY
-        qAJKrAFlVREySFFHyixI4NBitA==
-X-Google-Smtp-Source: APXvYqxxEnhyLRJB/npVQgobjuw2ph6/BCHfLX2eTq6ePsh1GtYHQYm598iVM23FYSHcQ85gReFj+A==
-X-Received: by 2002:adf:edce:: with SMTP id v14mr18965373wro.94.1557845840705;
-        Tue, 14 May 2019 07:57:20 -0700 (PDT)
-Received: from localhost (ip-89-177-139-111.net.upcbroadband.cz. [89.177.139.111])
-        by smtp.gmail.com with ESMTPSA id d72sm1546097wmd.12.2019.05.14.07.57.20
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 14 May 2019 07:57:20 -0700 (PDT)
-Date:   Tue, 14 May 2019 16:57:19 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, thomas.lendacky@amd.com,
-        f.fainelli@gmail.com, ariel.elior@cavium.com,
-        michael.chan@broadcom.com, santosh@chelsio.com,
-        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
-        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
-        idosch@mellanox.com, jakub.kicinski@netronome.com,
-        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
-        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
-        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
-        julia.lawall@lip6.fr, john.fastabend@gmail.com
-Subject: Re: [PATCH net-next,RFC 1/2] net: flow_offload: add flow_block_cb API
-Message-ID: <20190514145719.GE2238@nanopsycho>
-References: <20190509163954.13703-1-pablo@netfilter.org>
- <20190509163954.13703-2-pablo@netfilter.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190509163954.13703-2-pablo@netfilter.org>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dm8dUNxqFzjXYzf0vGZtO+jODptjt86dBovZ/zou7XQ=;
+        b=f3vrzNvtsa+4OhboNaItqqCLykRWP1tpSKKmrnbwri3C4DXIKLwNbcTH7nRpNNAw+V
+         7uIofNRCiCmI9CI4F4sUj/Kfsqycz2dGOXNeGGjg11tLRw+W44ei767mG2cGDhNVS9aJ
+         SBTrMYCY/F0t0IBTU+S3l378ioEeXT2M/s8v4mBC1MJrErgtuqa1I0oKjLzc7R0nRkFq
+         xkbf3mU9hUOkeVnRK9Ntf04qtHoo7OKK5seeygN0Tdt0WcFOzc8iZz9pZP8/ulblfyoo
+         3pCcrrtjCHqFw55x0MEUw6+Hcmo9DdAnruKDUyQ13HQMWWekp40r/O8K4dCGYiXPfG2A
+         CXug==
+X-Gm-Message-State: APjAAAUVgo/FJ9ZNUqXmKu7YEU20DcXBRh8hEPptpBGG0uxY7UszlcxY
+        Bzq+7HkSuMU6tkfFS3BUiTI=
+X-Google-Smtp-Source: APXvYqzAyPFaPbFrljCpc0Bf0GPmNvStDgQwNXkbonx+P0pHd5cQafypjlEVkHS4KfhQ1Uhk+l0Amg==
+X-Received: by 2002:a63:27c3:: with SMTP id n186mr35491171pgn.189.1557846758716;
+        Tue, 14 May 2019 08:12:38 -0700 (PDT)
+Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn (89.208.248.35.16clouds.com. [89.208.248.35])
+        by smtp.googlemail.com with ESMTPSA id i65sm25426594pgc.3.2019.05.14.08.12.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 14 May 2019 08:12:38 -0700 (PDT)
+From:   Fuqian Huang <huangfq.daxian@gmail.com>
+Cc:     Fuqian Huang <huangfq.daxian@gmail.com>,
+        Chas Williams <3chas3@gmail.com>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] atm: iphase: Avoid copying pointers to user space.
+Date:   Tue, 14 May 2019 23:11:59 +0800
+Message-Id: <20190514151205.5143-1-huangfq.daxian@gmail.com>
+X-Mailer: git-send-email 2.11.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, May 09, 2019 at 06:39:50PM CEST, pablo@netfilter.org wrote:
->This patch renames:
->
->* struct tcf_block_cb to flow_block_cb.
->* struct tc_block_offload to flow_block_offload.
->
->And it exposes the flow_block_cb API through net/flow_offload.h. This
->renames the existing codebase to adapt it to this name.
->
->Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+When ia_cmds.sub_cmd is MEMDUMP_DEV in ia_ioctl,
+nullify the pointer fields of iadev before copying
+the whole structure to user space.
 
-[...]
+Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
+---
+ drivers/atm/iphase.c | 73 +++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 70 insertions(+), 3 deletions(-)
 
-	
->+
->+void *flow_block_cb_priv(struct flow_block_cb *block_cb)
->+{
->+	return block_cb->cb_priv;
->+}
->+EXPORT_SYMBOL(flow_block_cb_priv);
->+
->+LIST_HEAD(flow_block_cb_list);
->+EXPORT_SYMBOL(flow_block_cb_list);
+diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
+index 5278c57dce73..3ca73625fb1a 100644
+--- a/drivers/atm/iphase.c
++++ b/drivers/atm/iphase.c
+@@ -2746,11 +2746,71 @@ static int ia_change_qos(struct atm_vcc *vcc, struct atm_qos *qos, int flags)
+ 	IF_EVENT(printk(">ia_change_qos\n");)  
+ 	return 0;  
+ }  
++
++static void ia_nullify_pointers(IADEV *src, IADEV *dest)
++{
++	memset(dest, 0, sizeof(IADEV));
++	dest->tx_dma_q.qlen = src->tx_dma_q.qlen;
++	dest->tx_dma_q.lock = src->tx_dma_q.lock;
++	dest->tx_backlog.qlen = src->tx_backlog.qlen;
++	dest->tx_backlog.lock = src->tx_backlog.lock;
++	dest->tx_lock = src->tx_lock;
++	dest->tx_return_q.data.timestamp = src->tx_return_q.data.timestamp;
++	dest->close_pending = src->close_pending;
++	dest->close_wait.lock = src->close_wait.lock;
++	dest->timeout_wait.lock = src->timeout_wait.lock;
++	dest->num_tx_desc = src->num_tx_desc;
++	dest->tx_buf_sz = src->tx_buf_sz;
++	dest->rate_limit = src->rate_limit;
++	dest->tx_cell_cnt = src->tx_cell_cnt;
++	dest->tx_pkt_cnt = src->tx_pkt_cnt;
++	dest->rx_dma_q.qlen = src->rx_dma_q.qlen;
++	dest->rx_dma_q.lock = src->rx_dma_q.lock;
++	dest->rx_lock = src->rx_lock;
++	dest->num_rx_desc = src->num_rx_desc;
++	dest->rx_buf_sz = src->rx_buf_sz;
++	dest->rxing = src->rxing;
++	dest->rx_pkt_ram = src->rx_pkt_ram;
++	dest->rx_tmp_cnt = src->rx_tmp_cnt;
++	dest->rx_tmp_jif = src->rx_tmp_jif;
++	dest->drop_rxpkt = src->drop_rxpkt;
++	dest->drop_rxcell = src->drop_rxcell;
++	dest->rx_cell_cnt = src->rx_cell_cnt;
++	dest->rx_pkt_cnt = src->rx_pkt_cnt;
++	dest->mem = src->mem;
++	dest->real_base = src->real_base;
++	dest->pci_map_size = src->pci_map_size;
++	dest->irq = src->irq;
++	dest->bus = src->bus;
++	dest->dev_fn = src->dev_fn;
++	dest->phy_type = src->phy_type;
++	dest->num_vc = src->num_vc;
++	dest->memSize = src->memSize;
++	dest->memType = src->memType;
++	dest->ffL = src->ffL;
++	dest->rfL = src->rfL;
++	dest->carrier_detect = src->carrier_detect;
++	dest->tx_dma_cnt = src->tx_dma_cnt;
++	dest->rx_dma_cnt = src->rx_dma_cnt;
++	dest->NumEnabledCBR = src->NumEnabledCBR;
++	dest->rx_mark_cnt = src->rx_mark_cnt;
++	dest->CbrTotEntries = src->CbrTotEntries;
++	dest->CbrRemEntries = src->CbrRemEntries;
++	dest->CbrEntryPt = src->CbrEntryPt;
++	dest->Granularity = src->Granularity;
++	dest->sum_mcr = src->sum_mcr;
++	dest->sum_cbr = src->sum_cbr;
++	dest->LineRate = src->LineRate;
++	dest->n_abr = src->n_abr;
++	dest->host_tcq_wr = src->host_tcq_wr;
++	dest->tx_dle_dma = src->tx_dle_dma;
++	dest->rx_dle_dma = src->rx_dle_dma;
++}
+   
+ static int ia_ioctl(struct atm_dev *dev, unsigned int cmd, void __user *arg)  
+ {  
+    IA_CMDBUF ia_cmds;
+-   IADEV *iadev;
++   IADEV *iadev, *output;
+    int i, board;
+    u16 __user *tmps;
+    IF_EVENT(printk(">ia_ioctl\n");)  
+@@ -2769,8 +2829,15 @@ static int ia_ioctl(struct atm_dev *dev, unsigned int cmd, void __user *arg)
+ 	switch (ia_cmds.sub_cmd) {
+        	  case MEMDUMP_DEV:     
+ 	     if (!capable(CAP_NET_ADMIN)) return -EPERM;
+-	     if (copy_to_user(ia_cmds.buf, iadev, sizeof(IADEV)))
+-                return -EFAULT;
++	     output = kmalloc(sizeof(IADEV), GFP_KERNEL);
++	     if (!output)
++		     return -ENOMEM;
++	     ia_nullify_pointers(iadev, output);
++	     if (copy_to_user(ia_cmds.buf, output, sizeof(IADEV))) {
++		     kfree(output);
++		     return -EFAULT;
++	     }
++	     kfree(output);
+              ia_cmds.status = 0;
+              break;
+           case MEMDUMP_SEGREG:
+-- 
+2.11.0
 
-I don't understand, why is this exported?
-
-
->+
->+struct flow_block_cb *flow_block_cb_lookup(u32 block_index, tc_setup_cb_t *cb,
->+					   void *cb_ident)
-
-2 namespaces may have the same block_index, yet it is completely
-unrelated block. The cb_ident
-
-
->+{	struct flow_block_cb *block_cb;
->+
->+	list_for_each_entry(block_cb, &flow_block_cb_list, list)
->+		if (block_cb->block_index == block_index &&
->+		    block_cb->cb == cb &&
->+		    block_cb->cb_ident == cb_ident)
->+			return block_cb;
->+	return NULL;
->+}
->+EXPORT_SYMBOL(flow_block_cb_lookup);
-
-[...]
