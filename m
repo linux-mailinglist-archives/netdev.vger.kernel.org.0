@@ -2,484 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 644151C830
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 14:07:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 449A01C83A
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 14:10:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726272AbfENMHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 08:07:55 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:40157 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726036AbfENMHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 08:07:54 -0400
-Received: by mail-wr1-f67.google.com with SMTP id h4so18937006wre.7
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 05:07:53 -0700 (PDT)
+        id S1726369AbfENMKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 08:10:45 -0400
+Received: from mail-wr1-f49.google.com ([209.85.221.49]:43031 "EHLO
+        mail-wr1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726036AbfENMKp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 08:10:45 -0400
+Received: by mail-wr1-f49.google.com with SMTP id r4so18917128wro.10
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 05:10:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=oOkyA+CbGmT5z5VaEw+B7DPFpCVz7Ip+Sd0ZCZOkU70=;
-        b=UdnLZJt1nXwWhgbAwUviyJYLze7iV0QaR+hkhgptwBxsxvijr+sibmMaHF5HJzRy2+
-         7iHWYD77UM89QlzKha7dFkbrS06M9wUede+x85HOU5URrs0mRAhtebqW/d08EtefMedm
-         NycI/DNvN4TUW5LJSqQb9HGo2eoANdPYdpSEb+Z2UarKCD6vaCMZGRsTq3wPQE7sqwbp
-         JAJ4KCwlp8d9g7Gv3p4ctnIKGGgj1MOCfbI1ju/3ebWwsMczHzn3EvdlYdF5Y3NFZEzx
-         3PTOyxx7+Yo37/Xg9m3R0iMnMz32sOJrAJIUajh22clKdeHEN7/N9wGpc5sCvivbvcKm
-         JVrQ==
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=g44TdQyR7Yn7TL6DU3Y83p6mvX6Hp2k3jXyhfQ84eIE=;
+        b=AD3o0ekl9iGQqnoUoMGd4yptErkqcYgNKPuQWw48kcIOkPhaTDPW+A1sqjZEzF/xgi
+         yCnNCsXtavN5vCBPpwEAuuKZXsoDBX9TWJuc4KsVtW/qq43Ks1wK6hMGuC7oXr6Zi3Gv
+         eew8Vyx4MfM64Sxh0Ye6qXIGFdBR6twZmWmKhsspkfLtOTA+7sOkQd6PUUPh0YIvQnsC
+         WT+fRmn9tFdTLqXOhG/lCqMYUdgkrVnzDQSAxK8SmXsWEQtRI1nXR8/Fv4DW8nwAvanj
+         5nKC3BqIH0g3sOk6c3I/Y9nrNb1lMnAHYYhmn3mrPpZDgfUBPCCLVherJWKiGGM+Cabp
+         3zDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oOkyA+CbGmT5z5VaEw+B7DPFpCVz7Ip+Sd0ZCZOkU70=;
-        b=DiCpNH1lWMYG9AD/Q8l1pcQ2zEAoLHZlLsdNuSx5jcjRurguYSNPDSgKoGKmg2weV1
-         zWDej6dmqEZQ8N969K/bSTo8Z+qB4O/eb7MEJUATnMBBImK2ufPy6iNAtekXBF8aNZ8o
-         nwasZxAgcELdqq169eHnW8FuGGY3N3CRK11JtbAYt8sT5o9Ag/xtGaERa8Ii0qbYJyQk
-         OrtsQWu0E4i3j4vus0N5CQ6SaCwqo0xp14JpAZ5UTpwTYRKLs9HfuPl8NrNVCuqCgBa9
-         yoHTAvpgJgajTLSNrDEfSdBklBefyhKtcT6eLnE/ei4uuyeV9yKiCUwPZeqjckSkx9Px
-         KI4A==
-X-Gm-Message-State: APjAAAXo8pNmc7ZIUl4fp8wVrDF77/pHl2G/7UzmGixqzY9tQuhOIgQx
-        cHfF9/hBpsXgQikLD8yiDyCbkw==
-X-Google-Smtp-Source: APXvYqyV091YEphqNuhE0f6kwQ30ibJOZDuSSI3IxVCcwWrcdeFkkZ6eHmHPKQ+/G7z+rmwfUiOr9A==
-X-Received: by 2002:adf:cc8d:: with SMTP id p13mr9293359wrj.114.1557835672364;
-        Tue, 14 May 2019 05:07:52 -0700 (PDT)
-Received: from localhost (ip-89-177-139-111.net.upcbroadband.cz. [89.177.139.111])
-        by smtp.gmail.com with ESMTPSA id i25sm4461969wmb.46.2019.05.14.05.07.51
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 14 May 2019 05:07:51 -0700 (PDT)
-Date:   Tue, 14 May 2019 14:07:51 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Aya Levin <ayal@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next RFC] Dump SW SQ context as part of tx reporter
-Message-ID: <20190514120751.GD2238@nanopsycho>
-References: <1556547459-7756-1-git-send-email-ayal@mellanox.com>
- <20190507124129.GC2157@nanopsycho>
- <a9cc0437-163c-53a1-92e9-64767e23b585@mellanox.com>
- <20190509082334.GD2268@nanopsycho>
- <2306cc76-8110-2d55-be7e-0617bfc0d316@mellanox.com>
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=g44TdQyR7Yn7TL6DU3Y83p6mvX6Hp2k3jXyhfQ84eIE=;
+        b=PNpQwo2bZkfXXljnXpCOEsxz+tqJJn/kfCtczOOVLwYV+x3srnnMQPsFSwjPpYYTUw
+         ums8eJVWh/QGmgRpr06KVA2TT/HVAawY8XuO2RcomjOX06D/C9nxXntNyNdPSaMnE3PJ
+         VrTJUBQf+1BdgGpeWwPXxJDVCWCgzSBWrrlRsPY+i3ft8YzUlQJG5BcAR1Y/0FhpheIu
+         cyNYYno8UHkstRJ1tpl67Cw810rYNsPhSPuDwGkp4seufWFxq1KFjxwoqZhkjJN8NbCj
+         UUhZX2vjwUEnp28XYq9RiBlSpJJ6q+n2i4mmUFpgtcVf/ENHDcEHIDTq1yZOwGnovrHk
+         l+xg==
+X-Gm-Message-State: APjAAAXBUi0ILkO9c5odwSa6iOGKKtsMlUpFC5t6lATuxWAwhrWHfohF
+        BsVAPl/RWglM202HSSqslstUzg==
+X-Google-Smtp-Source: APXvYqxY16+7eJcQnr8tllCEhdBo7uI3yWM57Gni9aDO4al2eKZ2OwM9fzorF2PuECBcW6n0kpriCg==
+X-Received: by 2002:adf:e902:: with SMTP id f2mr21615923wrm.301.1557835843341;
+        Tue, 14 May 2019 05:10:43 -0700 (PDT)
+Received: from ?IPv6:2a01:e35:8b63:dc30:64b3:e115:e5ef:6e9d? ([2a01:e35:8b63:dc30:64b3:e115:e5ef:6e9d])
+        by smtp.gmail.com with ESMTPSA id v5sm39957201wra.83.2019.05.14.05.10.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 14 May 2019 05:10:42 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net v2] rtnetlink: always put ILFA_LINK for links with a
+ link-netnsid
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     netdev@vger.kernel.org, Dan Winship <danw@redhat.com>
+References: <d5c4710117d390e0f204b7046483727daf452233.1557755096.git.sd@queasysnail.net>
+ <b89367f0-18d5-61b2-2572-b1e5b4588d8d@6wind.com>
+ <20190513150812.GA18478@bistromath.localdomain>
+ <771b21d6-3b1e-c118-2907-5b5782f7cb92@6wind.com>
+ <20190513214648.GA29270@bistromath.localdomain>
+ <65c8778c-9be9-c81f-5a9b-13e070ca38da@6wind.com>
+ <20190514080127.GA17749@bistromath.localdomain>
+ <7c8880b4-86a0-c4b0-4b92-136b2ab790db@6wind.com>
+ <20190514102415.GA24722@bistromath.localdomain>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <73fcdf4c-5c0e-31c6-66fd-9419d6d7c1e5@6wind.com>
+Date:   Tue, 14 May 2019 14:10:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2306cc76-8110-2d55-be7e-0617bfc0d316@mellanox.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190514102415.GA24722@bistromath.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, May 12, 2019 at 10:37:35AM CEST, ayal@mellanox.com wrote:
->
->
->On 5/9/2019 11:23 AM, Jiri Pirko wrote:
->> Tue, May 07, 2019 at 02:58:32PM CEST, ayal@mellanox.com wrote:
->>>
->>>
->>> On 5/7/2019 3:41 PM, Jiri Pirko wrote:
->>>> Mon, Apr 29, 2019 at 04:17:39PM CEST, ayal@mellanox.com wrote:
->>>>> TX reporter reports an error on two scenarios:
->>>>> - TX timeout on a specific tx queue
->>>>> - TX completion error on a specific send queue
->>>>> Prior to this patch, no dump data was supported by the tx reporter. This
->>>>> patch adds support for SW data dump of the related SQ context. The dump
->>>>> is simply the SQ's raw memory snapshot taken right after the error was
->>>>> reported, before any recovery procedure was launched. With this
->>>>> approach, no maintenance is needed as the driver fetch the actual data
->>>>> according to the layout on which the SQ was compiled with.  By providing
->>>>> a SW context, one can easily debug error on a given SQ.
->>>>>
->>>>> In order to offline translate the raw memory into a human readable
->>>>> format, the user can use some out-of-kernel scripts which receives as an
->>>>> input the following:
->>>>> - Object raw memory
->>>>> - Driver object compiled with debug info (can be taken/generated at any time from the machine)
->>>>> - Object name
->>>>>
->>>>> An example of such script output can be seen below.
->>>>> Note: the script is not offered as part of this patch as it do not
->>>>> belong to the kernel, I just described it in order to grasp the general
->>>>> idea of how/what can be fetched from SW dump via devlink health.
->>>>>
->>>>> The output of the SW dump can be extracted by devlink health command:
->>>>> $ sudo devlink health dump show pci/0000:00:0b.0 reporter tx.
->>>>> mlx5e_txqsq: sqn: 6336
->>>>> memory:
->>>>>     00 00 00 00 00 00 00 00
->>>>>     01 00 00 00 00 00 00 00
->>>>>     00 00 00 00 00 00 00 00
->>>>>     45 f4 88 cb 09 00 00 00
->>>>>     00 00 00 00 00 00 00 00
->>>>>     00 00 00 00 00 00 00 00
->>>>>     c0 ff ff ff 1f 00 00 00
->>>>>     f8 18 1e 89 81 88 ff ff
->>>>>     ...
->>>>>
->>>>> script output below, with struct members names and actual values:
->>>>>
->>>>> struct  mlx5e_txqsq {
->>>>> 	short unsigned int         cc 	 0x5 ;
->>>>> 	unsigned int               dma_fifo_cc 	 0x5 ;
->>>>> 	struct  net_dim {
->>>>> 		unsigned char      state 	 0x1 ;
->>>>> 		struct  net_dim_stats {
->>>>> 			int        ppms 	 0x0 ;
->>>>> 			int        bpms 	 0x0 ;
->>>>> 			int        epms 	 0x0 ;
->>>>> 		} prev_stats;
->>>>> 		struct  net_dim_sample {
->>>>> 			long long int time 	 0x90766ef9d ;
->>>>> 			unsigned int pkt_ctr 	 0x0 ;
->>>>> 			unsigned int byte_ctr 	 0x0 ;
->>>>> 			short unsigned int event_ctr 	 0x0 ;
->>>>> 		} start_sample;
->>>>> 		struct  work_struct {
->>>>> 			struct   {
->>>>> 				long int counter 	 0x1fffffffc0 ;
->>>>> 			} data;
->>>>> 			struct  list_head {
->>>>> 				struct list_head * next 	 0xffff8881b08998f8 ;
->>>>> 				struct list_head * prev 	 0xffff8881b08998f8 ;
->>>>> 			} entry;
->>>>> 			void       (*func)(struct work_struct *) 	 0xffffffffa02d0e30 ;
->>>>> 		} work;
->>>>> 		unsigned char      profile_ix 	 0x60 ;
->>>>> 		unsigned char      mode 	 0x72 ;
->>>>> 		unsigned char      tune_state 	 0x35 ;
->>>>> 		unsigned char      steps_right 	 0xa0 ;
->>>>> 		unsigned char      steps_left 	 0xff ;
->>>>> 		unsigned char      tired 	 0xff ;
->>>>> 	} dim;
->>>>> 	short unsigned int         pc 	 0x0 ;
->>>>> 	unsigned int               dma_fifo_pc 	 0x0 ;
->>>>> 	struct  mlx5e_cq {
->>>>> 		struct  mlx5_cqwq {
->>>>> 			struct  mlx5_frag_buf_ctrl {
->>>>> 				struct mlx5_buf_list * frags 	 0x500000005 ;
->>>>> 				unsigned int sz_m1 	 0x0 ;
->>>>> 				short unsigned int frag_sz_m1 	 0x0 ;
->>>>> 				short unsigned int strides_offset 	 0x0 ;
->>>>> 				unsigned char log_sz 	 0x0 ;
->>>>> 				unsigned char log_stride 	 0x0 ;
->>>>> 				unsigned char log_frag_strides 	 0x0 ;
->>>>> 			} fbc;
->>>>> 			__be32 *   db 	 0x0 ;
->>>>> 			unsigned int cc 	 0x0 ;
->>>>> 		} wq;
->>>>> 		short unsigned int event_ctr 	 0x0 ;
->>>>> 		struct napi_struct * napi 	 0x0 ;
->>>>> 		struct  mlx5_core_cq {
->>>>> 			unsigned int cqn 	 0x0 ;
->>>>> 			int        cqe_sz 	 0x0 ;
->>>>> 			__be32 *   set_ci_db 	 0xffff8881b1aa4988 ;
->>>>> 			__be32 *   arm_db 	 0x3f000003ff ;
->>>>> 			struct mlx5_uars_page * uar 	 0x6060a ;
->>>>> 			struct  refcount_struct {
->>>>> 				struct   {
->>>>> 					int    counter 	 0xa1814500 ;
->>>>> 				} refs;
->>>>> 			} refcount;
->>>>> 			struct  completion {
->>>>> 				unsigned int done 	 0x5 ;
->>>>> 				struct  wait_queue_head {
->>>>> 					struct  spinlock {
->>>>> 						union   {
->>>>> 							struct  raw_spinlock {
->>>>> 								struct  qspinlock {
->>>>> 									union   {
->>>>> 										struct   {
->>>>> 											int                                                    counter 	 0x5 ;
->>>>> 										} val;
->>>>> 										struct   {
->>>>> 											unsigned char                                          locked 	 0x5 ;
->>>>> 											unsigned char                                          pending 	 0x0 ;
->>>>> 										} ;
->>>>> 										struct   {
->>>>> 											short unsigned int                                     locked_pending 	 0x5 ;
->>>>> 											short unsigned int                                     tail 	 0x0 ;
->>>>> 										} ;
->>>>> 									} ;
->>>>> 								} raw_lock;
->>>>> 							} rlock;
->>>>> 						} ;
->>>>> 					} lock;
->>>>> 					struct  list_head {
->>>>> 						struct list_head * next 	 0xffff8881b089bb88 ;
->>>>> 						struct list_head * prev 	 0x4000000c0a ;
->>>>> 					} head;
->>>>> 				} wait;
->>>>> 			} free;
->>>>> 			unsigned int vector 	 0xa1814500 ;
->>>>> 			unsigned int irqn 	 0xffff8881 ;
->>>>> 			void       (*comp)(struct mlx5_core_cq *) 	 0xffff8881a1814504 ;
->>>>> 			void       (*event)(struct mlx5_core_cq *, enum mlx5_event) 	 0xffff8881a2cdea08 ;
->>>>> 			unsigned int cons_index 	 0x1 ;
->>>>> 			unsigned int arm_sn 	 0x0 ;
->>>>> 			struct mlx5_rsc_debug * dbg 	 0x0 ;
->>>>> 			int        pid 	 0x0 ;
->>>>> 			struct   {
->>>>> 				struct  list_head {
->>>>> 					struct list_head * next 	 0xffffffff ;
->>>>> 					struct list_head * prev 	 0xffffffffffffffff ;
->>>>> 				} list;
->>>>> 				void (*comp)(struct mlx5_core_cq *) 	 0xffffffffa0356940 ;
->>>>> 				void * priv 	 0x0 ;
->>>>> 			} tasklet_ctx;
->>>>> 			int        reset_notify_added 	 0x0 ;
->>>>> 			struct  list_head {
->>>>> 				struct list_head * next 	 0xffffffffa0300700 ;
->>>>> 				struct list_head * prev 	 0xd ;
->>>>> 			} reset_notify;
->>>>> 			struct mlx5_eq_comp * eq 	 0x0 ;
->>>>> 			short unsigned int uid 	 0x9a70 ;
->>>>> 		} mcq;
->>>>> 		struct mlx5e_channel * channel 	 0xffff8881b0899a70 ;
->>>>> 		struct mlx5_core_dev * mdev 	 0x4800000001 ;
->>>>> 		struct  mlx5_wq_ctrl {
->>>>> 			struct mlx5_core_dev * mdev 	 0xffffffffa02d5350 ;
->>>>> 			struct  mlx5_frag_buf {
->>>>> 				struct mlx5_buf_list * frags 	 0xffffffffa02d5460 ;
->>>>> 				int npages 	 0x0 ;
->>>>> 				int size 	 0x5 ;
->>>>> 				unsigned char page_shift 	 0x8 ;
->>>>> 			} buf;
->>>>> 			struct  mlx5_db {
->>>>> 				__be32 * db 	 0x1c6 ;
->>>>> 				union   {
->>>>> 					struct mlx5_db_pgdir * pgdir 	 0x0 ;
->>>>> 					struct mlx5_ib_user_db_page * user_page 	 0x0 ;
->>>>> 				} u;
->>>>> 				long long unsigned int dma 	 0xffff8881b0899ab0 ;
->>>>> 				int index 	 0x0 ;
->>>>> 			} db;
->>>>> 		} wq_ctrl;
->>>>> 	} cq;
->>>>> 	struct  mlx5_wq_cyc {
->>>>> 		struct  mlx5_frag_buf_ctrl {
->>>>> 			struct mlx5_buf_list * frags 	 0xffff8881a7600160 ;
->>>>> 			unsigned int sz_m1 	 0xa7600160 ;
->>>>> 			short unsigned int frag_sz_m1 	 0x8881 ;
->>>>> 			short unsigned int strides_offset 	 0xffff ;
->>>>> 			unsigned char log_sz 	 0x88 ;
->>>>> 			unsigned char log_stride 	 0x49 ;
->>>>> 			unsigned char log_frag_strides 	 0xaa ;
->>>>> 		} fbc;
->>>>> 		__be32 *           db 	 0x1000000000010 ;
->>>>> 		short unsigned int sz 	 0xc ;
->>>>> 		short unsigned int wqe_ctr 	 0x0 ;
->>>>> 		short unsigned int cur_sz 	 0x0 ;
->>>>> 	} wq;
->>>>> 	unsigned int               dma_fifo_mask 	 0xa1814500 ;
->>>>> 	struct mlx5e_sq_stats *    stats 	 0xffff8881a33a0348 ;
->>>>> 	struct   {
->>>>> 		struct mlx5e_sq_dma * dma_fifo 	 0x1a1814500 ;
->>>>> 		struct mlx5e_tx_wqe_info * wqe_info 	 0x14 ;
->>>>> 	} db;
->>>>> 	void *                     uar_map 	 0x0 ;
->>>>> 	struct netdev_queue *      txq 	 0x0 ;
->>>>> 	unsigned int               sqn 	 0x18c0 ;
->>>>> 	unsigned char              min_inline_mode 	 0x0 ;
->>>>> 	struct device *            pdev 	 0x0 ;
->>>>> 	unsigned int               mkey_be 	 0x0 ;
->>>>> 	long unsigned int          state 	 0x0 ;
->>>>> 	struct hwtstamp_config *   tstamp 	 0x0 ;
->>>>> 	struct mlx5_clock *        clock 	 0xffff8881b1aa6f88 ;
->>>>> 	struct  mlx5_wq_ctrl {
->>>>> 		struct mlx5_core_dev * mdev 	 0x3f000003ff ;
->>>>> 		struct  mlx5_frag_buf {
->>>>> 			struct mlx5_buf_list * frags 	 0x6060a ;
->>>>> 			int        npages 	 0xa1814604 ;
->>>>> 			int        size 	 0xffff8881 ;
->>>>> 			unsigned char page_shift 	 0x0 ;
->>>>> 		} buf;
->>>>> 		struct  mlx5_db {
->>>>> 			__be32 *   db 	 0xfff ;
->>>>> 			union   {
->>>>> 				struct mlx5_db_pgdir * pgdir 	 0x0 ;
->>>>> 				struct mlx5_ib_user_db_page * user_page 	 0x0 ;
->>>>> 			} u;
->>>>> 			long long unsigned int dma 	 0xffff888188440000 ;
->>>>> 			int        index 	 0x8b074000 ;
->>>>> 		} db;
->>>>> 	} wq_ctrl;
->>>>> 	struct mlx5e_channel *     channel 	 0xffffc9000010d800 ;
->>>>> 	int                        txq_ix 	 0xa0020180 ;
->>>>> 	unsigned int               rate_limit 	 0xffff8881 ;
->>>>> 	struct  work_struct {
->>>>> 		struct   {
->>>>> 			long int   counter 	 0x1000018c0 ;
->>>>> 		} data;
->>>>> 		struct  list_head {
->>>>> 			struct list_head * next 	 0xffff8881c32b68e8 ;
->>>>> 			struct list_head * prev 	 0x800 ;
->>>>> 		} entry;
->>>>> 		void               (*func)(struct work_struct *) 	 0x9 ;
->>>>> 	} recover_work;
->>>>> } ;
->>>>
->>>> I don't get it. You are dumping live kernel memory? There are already
->>>> facilities to do that in place. Why to replicate it?
->>> I am dumping the driver's memory under a lock so I can ensure it's
->>> consistency (as appose to /dev/mem)
->>> vmcore cannot be taken from a live kernel (without crashing).
->>> I need the memory's snapshot right after the error from the driver's
->>> context.
->> 
->> Got it. However, this sounds like a generic problem not specific to
->> nic drivers. How other subsystems resolve this (if they do at all)?
->> 
->> 
->Correct, this is a suggested debugging solution for a generic problem: 
->enabling the user of a run time memory snapshot for kernel modules (at a 
->given error event). My research shows that other subsystems deal with 
->errors either by panicking (too much) or by debug/log prints (too little).
->This solution is (a) low in maintenance (b) consistent in memory (c) has 
->small performance impact (d) use an existing infra-structure between the 
->kernel module and the user space.
-
-I'm still convinced that dumping kernel memory over devlink health dump
-is a good idea :/
+Le 14/05/2019 à 12:24, Sabrina Dubroca a écrit :
+[snip]
+> Yes, that's possible although quite unlikely. I'll go with d8a5ec672768.
+> 
+Agreed.
 
 
->It might be ported to other subsystems using their own user-space vs. 
->kernel tools. Regardless of how the memory output was generated to the 
->user, the parsing script can work on it.
-
-Could you share the script? How is it going to be distributed?
-
-
->
->> 
->>> Which other tools do you mean?
->>>>
->>>>
->>>>>
->>>>> Signed-off-by: Aya Levin <ayal@mellanox.com>
->>>>> ---
->>>>> .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   | 100 +++++++++++++++++++++
->>>>> 1 file changed, 100 insertions(+)
->>>>>
->>>>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
->>>>> index 476dd97f7f2f..8a39f5525e57 100644
->>>>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
->>>>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
->>>>> @@ -9,6 +9,7 @@
->>>>>
->>>>> struct mlx5e_tx_err_ctx {
->>>>> 	int (*recover)(struct mlx5e_txqsq *sq);
->>>>> +	int (*dump)(struct mlx5e_txqsq *sq);
->>>>> 	struct mlx5e_txqsq *sq;
->>>>> };
->>>>>
->>>>> @@ -281,10 +282,109 @@ static int mlx5e_tx_reporter_diagnose(struct devlink_health_reporter *reporter,
->>>>> 	return err;
->>>>> }
->>>>>
->>>>> +static int mlx5e_tx_reporter_sw_dump_from_ctx(struct mlx5e_priv *priv,
->>>>> +					      struct mlx5e_txqsq *sq,
->>>>> +					      struct devlink_fmsg *fmsg)
->>>>> +{
->>>>> +	u64 *ptr = (u64 *)sq;
->>>>> +	int copy, err;
->>>>> +	int i = 0;
->>>>> +
->>>>> +	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
->>>>> +		return 0;
->>>>> +
->>>>> +	err = devlink_fmsg_pair_nest_start(fmsg, "mlx5e_txqsq");
->>>>> +	if (err)
->>>>> +		return err;
->>>>> +
->>>>> +	err = devlink_fmsg_obj_nest_start(fmsg);
->>>>> +	if (err)
->>>>> +		return err;
->>>>> +
->>>>> +	err = devlink_fmsg_arr_pair_nest_start(fmsg, "memory");
->>>>> +	if (err)
->>>>> +		return err;
->>>>> +
->>>>> +	while (i < sizeof(struct mlx5e_txqsq)) {
->>>>> +		copy = sizeof(u64);
->>>>> +
->>>>> +		if (i + copy > sizeof(struct mlx5e_txqsq))
->>>>> +			copy = sizeof(struct mlx5e_txqsq) - i;
->>>>> +
->>>>> +		err = devlink_fmsg_binary_put(fmsg, ptr, copy);
->>>>> +		if (err)
->>>>> +			return err;
->>>>> +		ptr++;
->>>>> +		i += copy;
->>>>> +	}
->>>>> +
->>>>> +	err = devlink_fmsg_arr_pair_nest_end(fmsg);
->>>>> +	if (err)
->>>>> +		return err;
->>>>> +
->>>>> +	err = devlink_fmsg_obj_nest_end(fmsg);
->>>>> +	if (err)
->>>>> +		return err;
->>>>> +
->>>>> +	err = devlink_fmsg_pair_nest_end(fmsg);
->>>>> +
->>>>> +	return err;
->>>>> +}
->>>>> +
->>>>> +static int mlx5e_tx_reporter_sw_dump_all(struct mlx5e_priv *priv,
->>>>> +					 struct devlink_fmsg *fmsg)
->>>>> +{
->>>>> +	int i, err = 0;
->>>>> +
->>>>> +	mutex_lock(&priv->state_lock);
->>>>> +
->>>>> +	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
->>>>> +		goto unlock;
->>>>> +
->>>>> +	err = devlink_fmsg_arr_pair_nest_start(fmsg, "SQs");
->>>>> +	if (err)
->>>>> +		goto unlock;
->>>>> +
->>>>> +	for (i = 0; i < priv->channels.num * priv->channels.params.num_tc;
->>>>> +	     i++) {
->>>>> +		err = devlink_fmsg_obj_nest_start(fmsg);
->>>>> +		if (err)
->>>>> +			goto unlock;
->>>>> +
->>>>> +		err = mlx5e_tx_reporter_sw_dump_from_ctx(priv, priv->txq2sq[i],
->>>>> +							 fmsg);
->>>>> +		if (err)
->>>>> +			goto unlock;
->>>>> +
->>>>> +		err = devlink_fmsg_pair_nest_end(fmsg);
->>>>> +		if (err)
->>>>> +			goto unlock;
->>>>> +	}
->>>>> +	err = devlink_fmsg_arr_pair_nest_end(fmsg);
->>>>> +	if (err)
->>>>> +		goto unlock;
->>>>> +
->>>>> +unlock:
->>>>> +	mutex_unlock(&priv->state_lock);
->>>>> +	return err;
->>>>> +}
->>>>> +
->>>>> +static int mlx5e_tx_reporter_sw_dump(struct devlink_health_reporter *reporter,
->>>>> +				     struct devlink_fmsg *fmsg, void *context)
->>>>> +{
->>>>> +	struct mlx5e_priv *priv = devlink_health_reporter_priv(reporter);
->>>>> +	struct mlx5e_tx_err_ctx *err_ctx = context;
->>>>> +
->>>>> +	return err_ctx ? mlx5e_tx_reporter_sw_dump_from_ctx(priv, err_ctx->sq,
->>>>> +							    fmsg) :
->>>>> +			 mlx5e_tx_reporter_sw_dump_all(priv, fmsg);
->>>>> +}
->>>>> +
->>>>> static const struct devlink_health_reporter_ops mlx5_tx_reporter_ops = {
->>>>> 		.name = "tx",
->>>>> 		.recover = mlx5e_tx_reporter_recover,
->>>>> 		.diagnose = mlx5e_tx_reporter_diagnose,
->>>>> +		.dump = mlx5e_tx_reporter_sw_dump,
->>>>> };
->>>>>
->>>>> #define MLX5_REPORTER_TX_GRACEFUL_PERIOD 500
->>>>> -- 
->>>>> 2.14.1
->>>>>
+Thank you,
+Nicolas
