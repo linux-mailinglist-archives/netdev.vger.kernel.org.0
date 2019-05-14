@@ -2,215 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 574291CDFD
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 19:30:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B2B1CE34
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 19:45:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbfENRaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 13:30:05 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:40185 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726303AbfENRaE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 13:30:04 -0400
-Received: by mail-pg1-f193.google.com with SMTP id d31so8961867pgl.7
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 10:30:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KtqzIcfvyjWfCppcmwgXKJrfBqEm0TfW3CNu9uOKaGo=;
-        b=lJDQc3gp0wheeLyWKlN+gq1oLh2K/CjohmsgdhHgGWsRbDnGOe4/OptMAaBX77RQls
-         M8zlnFz9vv3fdx4NzybAU8WsGBddg8so4E1+oMWi9L1oIK/ugv+ESZ71XGIFdUN1JEcu
-         O2P2ga6riZVmVf9Au5cSwdgHchao3OuYq+Yoq2dpjILmFPoQ2khW7hk0hNnamOMhPhz3
-         c2EkoEDB2r6XFNsDZf2i5+fYxc13oHHpHC++XUdpZ6lxpl0kebkVMixvK7gb9GkHOcW3
-         tycuIm0viyO+tlDN03xPnc+CnASO8Oi+kc9/n5mQ4wNduNLrSJAOScmDqsX/nt1JiIJQ
-         u3RA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KtqzIcfvyjWfCppcmwgXKJrfBqEm0TfW3CNu9uOKaGo=;
-        b=J37gh5MrIYNMnZ5fbSfFDdBwbOl5DcoFPFFsMaQHGdwPNHxCJz7JSt4IHzqvz4Wehk
-         qAEDB/TU+1vzogcGFVC0BWsMwth+Gmp849K4OpX7UTfAQv6mgQdBSxSxBYnr+6zDBn2f
-         qPKS3Yh6wUAoZn8qZTKPq4Rj26GHx1XFAJX3UlLcPKQWnyPlhGuOzD1RO4SgS94xmeC6
-         dqMe+aSjN+uSHUrUSqBl296mRzBkUHdDcvGGn5Appwcy27IkzqJPNOXcONdI/AB9H1Vm
-         gt/CM5BBEem8JnOybTglB+hjBW4CL4WzgPEG1taRJRUPaMZnbjSm6R/0pPY8ZXHBiCwN
-         rMCA==
-X-Gm-Message-State: APjAAAV76VxukHsYilJPr3ak+sRA1KhYV9mGl7WKMC4uR4apiglM50Wu
-        CI6bwP/3tYlOXA2xR91XFjgqAg==
-X-Google-Smtp-Source: APXvYqzrkE3oHPekEFXbvKa+hG7Kj9SLxzKXWGb2ShUyiiVwn9f0gKnw56HTj6sVRKOYvUzeQhNG4w==
-X-Received: by 2002:a62:3381:: with SMTP id z123mr43451690pfz.42.1557855003726;
-        Tue, 14 May 2019 10:30:03 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id s134sm29297456pfc.110.2019.05.14.10.30.02
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 14 May 2019 10:30:03 -0700 (PDT)
-Date:   Tue, 14 May 2019 10:30:02 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf 0/4] bpf: remove __rcu annotations from bpf_prog_array
-Message-ID: <20190514173002.GB10244@mini-arch>
-References: <20190508171845.201303-1-sdf@google.com>
- <20190508175644.e4k5o6o3cgn6k5lx@ast-mbp>
- <20190508181223.GH1247@mini-arch>
- <20190513185724.GB24057@mini-arch>
- <CAADnVQLX3EcbW=iVxjsjO38M3Lqw5TfCcZtmbnt1DJwDvp64dA@mail.gmail.com>
+        id S1726971AbfENRoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 13:44:54 -0400
+Received: from smtp-out.xnet.cz ([178.217.244.18]:44072 "EHLO smtp-out.xnet.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726229AbfENRox (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 May 2019 13:44:53 -0400
+Received: from meh.true.cz (meh.true.cz [108.61.167.218])
+        (Authenticated sender: petr@true.cz)
+        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 015434A99;
+        Tue, 14 May 2019 19:44:48 +0200 (CEST)
+Received: from localhost (meh.true.cz [local])
+        by meh.true.cz (OpenSMTPD) with ESMTPA id 07473968;
+        Tue, 14 May 2019 19:44:47 +0200 (CEST)
+Date:   Tue, 14 May 2019 19:44:47 +0200
+From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     Maxime Ripard <maxime.ripard@bootlin.com>,
+        Andy Duan <fugang.duan@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "john@phrozen.org" <john@phrozen.org>,
+        "bgolaszewski@baylibre.com" <bgolaszewski@baylibre.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alban Bedel <albeu@free.fr>, devicetree@vger.kernel.org
+Subject: Re: NVMEM address DT post processing [Was: Re: [PATCH net 0/3] add
+ property "nvmem_macaddr_swap" to swap macaddr bytes order]
+Message-ID: <20190514174447.GE93050@meh.true.cz>
+Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+References: <1557476567-17397-2-git-send-email-fugang.duan@nxp.com>
+ <1557476567-17397-1-git-send-email-fugang.duan@nxp.com>
+ <20190510112822.GT81826@meh.true.cz>
+ <20190510113155.mvpuhe4yzxdaanei@flea>
+ <20190511144444.GU81826@meh.true.cz>
+ <547abcff-103a-13b8-f42a-c0bd1d910bbc@linaro.org>
+ <20190513090700.GW81826@meh.true.cz>
+ <8cee0086-7459-24c7-82f9-d559527df6e6@linaro.org>
+ <20190513111612.GA21475@meh.true.cz>
+ <0c6cb9d4-2da1-00be-b527-5891b8b030a8@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAADnVQLX3EcbW=iVxjsjO38M3Lqw5TfCcZtmbnt1DJwDvp64dA@mail.gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0c6cb9d4-2da1-00be-b527-5891b8b030a8@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/14, Alexei Starovoitov wrote:
-> On Mon, May 13, 2019 at 11:57 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> >
-> > On 05/08, Stanislav Fomichev wrote:
-> > > On 05/08, Alexei Starovoitov wrote:
-> > > > On Wed, May 08, 2019 at 10:18:41AM -0700, Stanislav Fomichev wrote:
-> > > > > Right now we are not using rcu api correctly: we pass __rcu pointers
-> > > > > to bpf_prog_array_xyz routines but don't use rcu_dereference on them
-> > > > > (see bpf_prog_array_delete_safe and bpf_prog_array_copy in particular).
-> > > > > Instead of sprinkling rcu_dereferences, let's just get rid of those
-> > > > > __rcu annotations and move rcu handling to a higher level.
-> > > > >
-> > > > > It looks like all those routines are called from the rcu update
-> > > > > side and we can use simple rcu_dereference_protected to get a
-> > > > > reference that is valid as long as we hold a mutex (i.e. no other
-> > > > > updater can change the pointer, no need for rcu read section and
-> > > > > there should not be a use-after-free problem).
-> > > > >
-> > > > > To be fair, there is currently no issue with the existing approach
-> > > > > since the calls are mutex-protected, pointer values don't change,
-> > > > > __rcu annotations are ignored. But it's still nice to use proper api.
-> > > > >
-> > > > > The series fixes the following sparse warnings:
-> > > >
-> > > > Absolutely not.
-> > > > please fix it properly.
-> > > > Removing annotations is not a fix.
-> > > I'm fixing it properly by removing the annotations and moving lifetime
-> > > management to the upper layer. See commits 2-4 where I fix the users, the
-> > > first patch is just the "preparation".
-> > >
-> > > The users are supposed to do:
-> > >
-> > > mutex_lock(&x);
-> > > p = rcu_dereference_protected(prog_array, lockdep_is_held(&x))
-> > > // ...
-> > > // call bpf_prog_array helpers while mutex guarantees that
-> > > // the object referenced by p is valid (i.e. no need for bpf_prog_array
-> > > // helpers to care about rcu lifetime)
-> > > // ...
-> > > mutex_unlock(&x);
-> > >
-> > > What am I missing here?
-> >
-> > Just to give you my perspective on why current api with __rcu annotations
-> > is working, but not optimal (even if used from the rcu read section).
-> >
-> > Sample code:
-> >
-> >         struct bpf_prog_array __rcu *progs = <comes from somewhere>;
-> >         int n;
-> >
-> >         rcu_read_lock();
-> >         n = bpf_prog_array_length(progs);
-> >         if (n > 0) {
-> >           // do something with __rcu progs
-> >           do_something(progs);
-> >         }
-> >         rcu_read_unlock();
-> >
-> > Since progs is __rcu annotated, do_something() would need to do
-> > rcu_dereference again and it might get a different value compared to
-> > whatever bpf_prog_array_free got while doing its dereference.
+Srinivas Kandagatla <srinivas.kandagatla@linaro.org> [2019-05-14 16:13:22]:
+
+> On 13/05/2019 12:16, Petr Štetiar wrote:
+> > Srinivas Kandagatla <srinivas.kandagatla@linaro.org> [2019-05-13 11:06:48]:
+> > 
+> > > On 13/05/2019 10:07, Petr Štetiar wrote:
+> > > > Srinivas Kandagatla <srinivas.kandagatla@linaro.org> [2019-05-13 09:25:55]:
+> > > > 
+> > > > > My initial idea was to add compatible strings to the cell so that most of
+> > > > > the encoding information can be derived from it. For example if the encoding
+> > > > > representing in your example is pretty standard or vendor specific we could
+> > > > > just do with a simple compatible like below:
+> > > > 
+> > > > that vendor/compatible list would be quite long[1], there are hundreds of
+> > > 
+> > > You are right just vendor list could be very long, but I was hoping that the
+> > > post-processing would fall in some categories which can be used in
+> > > compatible string.
+> > > 
+> > > Irrespective of which we need to have some sort of compatible string to
+> > > enable nvmem core to know that there is some form of post processing to be
+> > > done on the cells!. Without which there is a danger of continuing to adding
+> > > new properties to the cell bindings which have no relation to each other.
+> > 
+> > makes sense, so something like this would be acceptable?
+> > 
+> >   eth1_addr: eth-mac-addr@18a {
+> >       /* or rather linux,nvmem-post-process ? */
+> >       compatible = "openwrt,nvmem-post-process";
 > 
-> correct and I believe the code deals with it fine.
-> cnt could be different between two calls.
-Yes, currently there is no problem, all users of these apis
-are fine because they are holding a mutex (and are hence in the rcu update
-path, i.e. the pointer can't change and they have a consistent view
-between the calls).
-
-For example, we currently have:
-
-	int n1, n2;
-	mutex_lock(&x);
-	n1 = bpf_prog_array_length(progs);
-	n2 = bpf_prog_array_length(progs);
-	// n1 is guaranteed to be the same as n2 as long as we
-	// hold a mutex; single updater only
-	...
-	mutex_unlock(&x);
-
-Versus:
-
-	rcu_read_lock();
-	n1 = bpf_prog_array_length(progs);
-	n2 = bpf_prog_array_length(progs);
-	// n1 and n2 can be different; rcu_read_lock is all about
-	// lifetime
-	...
-	rcu_read_unlock();
-
-But, as I said, we don't use those __rcu annotated bpf_prog_array
-routines in the rcu read section, so we are fine.
-
-(I'm just showing that potentially there might be a problem if we don't move
-rcu management away from bpf_prog_array routines and if someone
-decides to call them under rcu_read_lock).
-
-> > A better way is not to deal with rcu inside those helpers and let
-> > higher layers do that:
-> >
-> >         struct bpf_prog_array __rcu *progs = <comes from somewhere>;
-> >         struct bpf_prog_array *p;
-> >         int n;
-> >
-> >         rcu_read_lock();
-> >         p = rcu_dereference(p);
-> >         n = bpf_prog_array_length(p);
-> >         if (n > 0) {
-> >           do_something(p); // do_something sees the same p as bpf_prog_array_length
-> >         }
-> >         rcu_read_unlock();
-> >
-> > What do you think?
+> I don't think this would be a correct compatible string to use here.
+> Before we decide on naming, I would like to understand bit more on what are
+> the other possible forms of storing mac address,
+> Here is what I found,
 > 
-> I'm not sure that generically applicable.
-> Which piece of code do you have in mind for such refactoring?
-All existing callers of (take a look at patches 2-4):
+> Type 1: Octets in ASCII without delimiters. (Swapped/non-Swapped)
+> Type 2: Octets in ASCII with delimiters like (":", ",", ".", "-"... so on)
+> (Swapped/non-Swapped)
+> Type 3: Is the one which stores mac address in Type1/2 but this has to be
+> incremented to be used on other instances of eth.
+> 
+> Did I miss anything?
 
-* bpf_prog_array_free
-* bpf_prog_array_length
-* bpf_prog_array_copy_to_user
-* bpf_prog_array_delete_safe
-* bpf_prog_array_copy_info
-* bpf_prog_array_copy
+Type 4: Octets as bytes/u8, swapped/non-swapped
 
-They are:
+Currently just type4-non-swapped is supported. Support for type4-swapped was
+goal of this patch series.
 
-* perf event bpf attach/detach/query (under bpf_event_mutex)
-* cgroup attach/detach/query (management of cgroup_bpf->effective, under
-  cgroup_mutex)
-* lirc bpf attach/detach/query (under ir_raw_handler_lock)
+I've simply tried to avoid using mac-address for the compatible as this
+provider could be reused by other potential nvmem consumers. The question is,
+how much abstracted it should be then.
 
-Nobody uses these apis in the rcu read section, so we can remove the
-annotations and use rcu_dereference_protected on the higher layer.
+> My suggestion for type1 and type2 would be something like this, as long as
+> its okay with DT maintainers
+> 
+> eth1_addr: eth-mac-addr@18a {
+> 	compatible = "ascii-mac-address";
+> 	reg = <0x18a 2>, <0x192 2>, <0x196 2>, <0x200 2>, <0x304 2>, <0x306 2>;
+> 	swap-mac-address;
+> 	delimiter = ":";
+> };
 
-Side bonus is that we can also remove __rcu from cgroup_bpf.inactive
-(which is just a temp storage and not updated in the rcu fashion) and
-from old_array in activate_effective_progs (which is an on-stack
-array and, I guess, only has __rcu annotation to satisfy sparse).
+with this reg array, you don't need the delimiter property anymore, do you?
 
-So nothing is changing functionality-wise, but it becomes a bit easier
-to reason about by being more explicit with rcu api.
+> For type 3:
+>
+> This sounds like very much vendor specific optimization thing which am not
+> 100% sure atm.  If dt maintainers are okay, may be we can add an increment
+> in the "ascii-mac-address" binding itself.
+> 
+> Do you think "increment-at " would ever change?
+
+Currently there's just one such real world use case in OpenWrt tree[1].
+Probably some vendor decided to increment 4th octet.
+
+> This [1] is what I had suggested at the end, where in its possible to add
+> provider node with its own custom bindings. In above example nvmem_dev would
+> be a proper nvmem provider.
+
+Ok, thanks.
+
+1. https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=target/linux/ath79/dts/ar9331_embeddedwireless_dorin.dts;h=43bec35fa2860fe4d52880ad24ff7c56f5060a0a;hb=HEAD#l109
+
+-- ynezz
