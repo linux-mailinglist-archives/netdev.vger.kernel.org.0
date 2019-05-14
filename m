@@ -2,127 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8171E573
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 01:08:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B79E1E577
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 01:12:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbfENXIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 19:08:00 -0400
-Received: from mail.us.es ([193.147.175.20]:52362 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726339AbfENXH7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 19:07:59 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 0F68FF27A2
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 01:07:57 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 00143DA707
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 01:07:57 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id E4870DA701; Wed, 15 May 2019 01:07:56 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 76B67DA708;
-        Wed, 15 May 2019 01:07:54 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 15 May 2019 01:07:54 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 1C3104265A31;
-        Wed, 15 May 2019 01:07:54 +0200 (CEST)
-Date:   Wed, 15 May 2019 01:07:53 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, thomas.lendacky@amd.com,
-        f.fainelli@gmail.com, ariel.elior@cavium.com,
-        michael.chan@broadcom.com, santosh@chelsio.com,
-        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
-        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
-        idosch@mellanox.com, jakub.kicinski@netronome.com,
-        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
-        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
-        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
-        julia.lawall@lip6.fr, john.fastabend@gmail.com
-Subject: Re: [PATCH net-next,RFC 1/2] net: flow_offload: add flow_block_cb API
-Message-ID: <20190514230753.mb7iu4pbswrb4be7@salvia>
-References: <20190509163954.13703-1-pablo@netfilter.org>
- <20190509163954.13703-2-pablo@netfilter.org>
- <20190514145719.GE2238@nanopsycho>
+        id S1726513AbfENXMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 19:12:30 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:32954 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726330AbfENXM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 19:12:29 -0400
+Received: by mail-qt1-f193.google.com with SMTP id m32so1183681qtf.0
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 16:12:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=qwfVSoUFHa8Rn5eUy3cOUVtpFRfHSRogOsbxIdQ0ERA=;
+        b=X16+d55xMtxuVlx/9WFAojQlFVjTDZUiGJIb/Ec5AIJ1ybrFBJcqE12rUZiU1kk/Gd
+         PPTEyBTYZzfvWJpLmHRok6jPZKtobVI41MErBPzDcw/h4XzNR/MQDMq7oonxf1PVft8y
+         9G2S8t2DzLztHOpr4rGSpOxZfCCLsyWqHih2iKFY/RYoFjAmqy8nADtJfmXyZTDQUG2J
+         uVefdfMf1SpgVmu5cZgWYSmXeILqxh6K/bnoX4cshSvWjDbTqplt2kGfZ4NBTTBotlNA
+         usTcYtDprPElTNB9fJlGtjbR/Y5x/FMiSBRZPY8TvUU4bOPzLHn225jQrJWwieX+rhU8
+         fm7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=qwfVSoUFHa8Rn5eUy3cOUVtpFRfHSRogOsbxIdQ0ERA=;
+        b=UkoR2IWfRGWU5orUsVsgFyZ2TtmqYh3Zflf2OWsOHenoCFyAdM07Fgr5+IVDeleCYv
+         IkXmLflt7K5OU0s/Xf0+hsnVYckD1VNZddQqluxlHorssFAFlEwU0xnhNYV1lLf7Jizi
+         rxKaTn3QkEelzpKDkS2MxWBMjTZjHG0eeXx7/5XKfDAcswvRVONZeK7+I4yMzEdG5Ph0
+         1nK+opTE/BLB1nRMc7eBy/dFJV9sW81YmDWfvXEYpO/Al9JS3k/V/dga5CMjjvt4UQ+N
+         jy/FXw1Fzj56huW+9ev0LzfaBa91aXlO2yvYdienyi6wAuB3XHjgnkPoSW3FnlV71X4E
+         Ww6w==
+X-Gm-Message-State: APjAAAWygoLlsMQxL8I+m7q0oWoByGJIVNdGtY6NFXZKhT6Fbf2vCvTT
+        7jNBGpYkBX2jxjGDYFkeH5Q0jmcLk1U=
+X-Google-Smtp-Source: APXvYqzSvCRy1xLPAa1S4syO7RFTQ5S5Kglv6gCohNsA6RQsgSppQsAxgZm4TpPkRY2s+xhfNNcEIw==
+X-Received: by 2002:a0c:9350:: with SMTP id e16mr28618880qve.119.1557875548976;
+        Tue, 14 May 2019 16:12:28 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 22sm137947qkl.4.2019.05.14.16.12.28
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 14 May 2019 16:12:28 -0700 (PDT)
+Date:   Tue, 14 May 2019 16:12:08 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        pieter.jansenvanvuuren@netronome.com, john.hurley@netronome.com
+Subject: Re: [PATCH net] nfp: flower: add rcu locks when accessing netdev
+ for tunnels
+Message-ID: <20190514161208.302791de@cakuba.netronome.com>
+In-Reply-To: <20190514.160339.393345500614325.davem@davemloft.net>
+References: <20190514212819.7789-1-jakub.kicinski@netronome.com>
+        <20190514.160339.393345500614325.davem@davemloft.net>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190514145719.GE2238@nanopsycho>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 14, 2019 at 04:57:19PM +0200, Jiri Pirko wrote:
-> Thu, May 09, 2019 at 06:39:50PM CEST, pablo@netfilter.org wrote:
-> >This patch renames:
-> >
-> >* struct tcf_block_cb to flow_block_cb.
-> >* struct tc_block_offload to flow_block_offload.
-> >
-> >And it exposes the flow_block_cb API through net/flow_offload.h. This
-> >renames the existing codebase to adapt it to this name.
-> >
-> >Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+On Tue, 14 May 2019 16:03:39 -0700 (PDT), David Miller wrote:
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Date: Tue, 14 May 2019 14:28:19 -0700
 > 
-> [...]
+> > From: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
+> > 
+> > Add rcu locks when accessing netdev when processing route request
+> > and tunnel keep alive messages received from hardware.
+> > 
+> > Fixes: 8e6a9046b66a ("nfp: flower vxlan neighbour offload")
+> > Fixes: 856f5b135758 ("nfp: flower vxlan neighbour keep-alive")
+> > Signed-off-by: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
+> > Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > Reviewed-by: John Hurley <john.hurley@netronome.com>  
 > 
-> 	
-> >+
-> >+void *flow_block_cb_priv(struct flow_block_cb *block_cb)
-> >+{
-> >+	return block_cb->cb_priv;
-> >+}
-> >+EXPORT_SYMBOL(flow_block_cb_priv);
-> >+
-> >+LIST_HEAD(flow_block_cb_list);
-> >+EXPORT_SYMBOL(flow_block_cb_list);
-> 
-> I don't understand, why is this exported?
+> Applied and queued up for -stable.
 
-Will stop exposing this in the next patchset version.
-
-> >+
-> >+struct flow_block_cb *flow_block_cb_lookup(u32 block_index, tc_setup_cb_t *cb,
-> >+					   void *cb_ident)
-> 
-> 2 namespaces may have the same block_index, yet it is completely
-> unrelated block. The cb_ident
-
-Yes, a struct netns parameter here for flow_block_cb_lookup() is
-needed. I will also add a possible_net_t field to store this in the
-flow_block_cb object so we can just stay with one single list for all
-net namespaces by now.
-
-Thanks.
-
-> >+{	struct flow_block_cb *block_cb;
-> >+
-> >+	list_for_each_entry(block_cb, &flow_block_cb_list, list)
-> >+		if (block_cb->block_index == block_index &&
-> >+		    block_cb->cb == cb &&
-> >+		    block_cb->cb_ident == cb_ident)
-> >+			return block_cb;
-> >+	return NULL;
-> >+}
-> >+EXPORT_SYMBOL(flow_block_cb_lookup);
-> 
-> [...]
+Thank you, FWIW for stable there may be a slight conflict because the
+nfp_app_dev_get() call was recently renamed from nfp_app_repr_get().
