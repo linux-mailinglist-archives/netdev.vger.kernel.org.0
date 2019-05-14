@@ -2,88 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 033D51D05B
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 22:15:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FD9A1D063
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 22:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726449AbfENUPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 16:15:10 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:41097 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726036AbfENUPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 16:15:09 -0400
-Received: by mail-lj1-f196.google.com with SMTP id k8so415251lja.8
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 13:15:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=evUJ73BNRpNMChjJ0udr79nRnFaauyNKnbrQ2DObhvY=;
-        b=D6/iPMQbhzRS0aI7BTNFpNB4YoUJADt8Ti1/WfMtLQfUfXn5OafIHLBBhNXTlYZ1gz
-         DYcNbg5JBhwVoZHLv0rcd7NyqRXROADjGWcRkBwpY9RhO78pKHNaqFdKzvAISH+G7hDs
-         UJmfU0Iv/aFLQNAXyTg8RS7DJllIsw5rtKzme3fPWTpr5TCOhqM18ZPPWoDxCm8IHsv4
-         W7CNYby0lDONJO+pCSibHDriKKBTjzJDNXumCGsVpG8PTygW8nPjXcLcst171WO+y+aO
-         CKblkE1azP1KM65xkBWfPvyG+9SesG7RtNcvc/S3F/6DK0hAy9Xpyweh6Y1IOwh8iqG+
-         wzWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=evUJ73BNRpNMChjJ0udr79nRnFaauyNKnbrQ2DObhvY=;
-        b=qgvZOKlImBw72wVVZ4XS6CnGX48A3tkhW+meot78KGUeTGloHf0ItHF2woo/YMc10+
-         wDdGtajn+o+Nhvol2naH7GKNONz/U5H4cDo/43b2DHheiadG+khX8eEsTIsi8/bcn27p
-         713Ua02BlHUMoyy7QCzTSJE68tHmZY41J49MZGm1z9eKZdeyQoCLoMRr+qHtR5vCdnn9
-         coXIQKQ/6io7+r5RIHnD5Cy/JQMk7sZNkMdaA0+mvlWmXzrrT20Bc4YnZzW5aQadaEdI
-         A3MEl/NbYHptXaZiR3kZPEJVh4P63vfU9XFRZC0kEN6OKYwSkAURUASsbrxcZcnPP+P8
-         5v1w==
-X-Gm-Message-State: APjAAAWOa8CV0pwcrz68gWcuFAqzE4duDOizYmvJ3r0u/ne1ihyBa8Q2
-        75i4C2PPLFOFUB8FutO4OR1YwnUR2mLQ9SXEZjV77g==
-X-Google-Smtp-Source: APXvYqwXW/RjbA2gJfiYMd/owlxSn2vSUQfsqIoqP/GB/V8/8cJJ06qIyvKsgMjoAY14AAb4sCv9JdUYXSYqoVCmXHc=
-X-Received: by 2002:a2e:80d5:: with SMTP id r21mr6619410ljg.43.1557864907702;
- Tue, 14 May 2019 13:15:07 -0700 (PDT)
+        id S1726281AbfENUQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 16:16:15 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:33480 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726254AbfENUQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 16:16:15 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id 6C49FB40080;
+        Tue, 14 May 2019 20:16:13 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 14 May
+ 2019 13:16:09 -0700
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net 0/2] flow_offload: fix CVLAN support
+To:     David Miller <davem@davemloft.net>
+CC:     Jiri Pirko <jiri@mellanox.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        <netdev@vger.kernel.org>, Jianbo Liu <jianbol@mellanox.com>
+Message-ID: <6ba9ac10-411c-aa04-a8fc-f4c7172fa75e@solarflare.com>
+Date:   Tue, 14 May 2019 21:16:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190514114412.30604-1-leon@kernel.org> <20190514114412.30604-3-leon@kernel.org>
-In-Reply-To: <20190514114412.30604-3-leon@kernel.org>
-From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
-Date:   Tue, 14 May 2019 13:14:56 -0700
-Message-ID: <CALzJLG8R-MMef5_y37p=dh4iOG2Bt7=AKNq+3+uTg5=cgbDRRg@mail.gmail.com>
-Subject: Re: [PATCH mlx5-next 2/2] net/mlx5: Set completion EQs as shared resources
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24612.005
+X-TM-AS-Result: No-0.541900-4.000000-10
+X-TMASE-MatchedRID: FHOCjPwihtzVF+EKi1OPX7BZAi3nrnzbWYZREwIGtxkR5h9YeZuu7Z3w
+        TAj7CwR8Uz44CZW4mpzWTqibVjLaWiYKstYBxVaGuwdUMMznEA9XjjsM2/DfxntTo0P1ssT+wBI
+        zUVtFoCLsY8uquIgVespN/dr1JrlFedTACv7eJKKcVWc2a+/ju8bMPJyz6yYwmyiLZetSf8nJ4y
+        0wP1A6AAOkBnb8H8GWDV8DVAd6AO/dB/CxWTRRuzBqYATSOgWjPwm4lxkNOPBiw2cDbdtYOrWCA
+        1qXuAgVMvBP6ImpyZTUyTExUBeyzoCFPU/E+Umm3lRUVT8UoKcBgwFk9mwxL89Q/jQtJRYvMcKp
+        Xuu/1jVAMwW4rY/0WO2hZq8RbsdETdnyMokJ1HRyBhhCd0s8837cGd19dSFd
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10-0.541900-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24612.005
+X-MDID: 1557864974-MBtN5FoGtYLn
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 14, 2019 at 4:44 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> From: Yishai Hadas <yishaih@mellanox.com>
->
-> Mark completion EQs as shared resources so that they can be used by CQs
-> with uid != 0.
->
-> Fixes: 7efce3691d33 ("IB/mlx5: Add obj create and destroy functionality")
-> Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
-> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/eq.c | 3 +++
->  include/linux/mlx5/mlx5_ifc.h                | 2 +-
->  2 files changed, 4 insertions(+), 1 deletion(-)
->
+When the flow_offload infrastructure was added, CVLAN matches weren't
+ plumbed through, and flow_rule_match_vlan() was incorrectly called in
+ the mlx5 driver when populating CVLAN match information.  This series
+ adds flow_rule_match_cvlan(), and uses it in the mlx5 code.
+Both patches should also go to 5.1 stable.
 
-Hi leon,
+Edward Cree (1):
+  flow_offload: support CVLAN match
 
-I see the patch is marked for mlx5-next,
-As we spoke earlier, let's push this directly to rdma-next and skip
-mlx5-next, we will need to reset the branch soon, so let's keep it
-clean.
+Jianbo Liu (1):
+  net/mlx5e: Fix calling wrong function to get inner vlan key and mask
 
-Thanks,
-Saeed
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
+ include/net/flow_offload.h                      | 2 ++
+ net/core/flow_offload.c                         | 7 +++++++
+ 3 files changed, 10 insertions(+), 1 deletion(-)
+
