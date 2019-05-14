@@ -2,82 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AE091D119
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 23:12:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F7D61D11E
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 23:14:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbfENVMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 17:12:41 -0400
-Received: from mail-oi1-f202.google.com ([209.85.167.202]:38162 "EHLO
-        mail-oi1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbfENVMk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 17:12:40 -0400
-Received: by mail-oi1-f202.google.com with SMTP id 7so190425oie.5
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 14:12:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=f4HloUjiQjHr3SUwk4xw1iDaHpvfypDo+dWu4ub0D+0=;
-        b=lbqQA+/roB+NGcMKRsBPTxAX3UnGLFutoQsaIbPCUy/dl61OTM4A4waSp4cIh7BmWZ
-         FRyLPWnVmHGOUZO1ZxzkFWO2sigyRVhdfNjZBzDstPAdsNeXDKbq7IofpFzjGrc1e2Xa
-         S1EoHeKUkdHtPFHDLBhsp+u16C3mZU+cHdCXwLalXja2oTivUUo5+XQyn35YSs1qOhgG
-         v04gyApmmXzFCr9JtlAtZNm+DteGh4kbElbudxNIVtbHb4A3HMN3bqcUrOHaX5WOSOJS
-         IpLc3th2aHTMEP9R+k1cmljO4JbWizXZdcWI71S87R/XV2E8Sti1V9cF1XgWxoRmYo1+
-         7/wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=f4HloUjiQjHr3SUwk4xw1iDaHpvfypDo+dWu4ub0D+0=;
-        b=lgOyn0ppUqQuclbotKSytC6LvNoTWiZRrvhncUpnq6A9J+kasQrbSSkwJSjp9iIz9m
-         13tLwyNFmbkcrS1ZAkvL0QA34AmqZnt+dWTpWQWJiNmRFzRXkn3PdE3/fuoMVBoy8GRk
-         UUxeAvMoQE/2PBt7vC7mqJh2GGQ/V/FnZVwSdCFUod4xefF8XuO6SW4c9nqvJrgJxp/J
-         ozrBlFfJRMbLmp4/VW5Bzsn+hFJENU1ci0U85o8kEbW6/yXu0WjSVLSpytlFxxLFSof6
-         P7LC0UEjPCQVLRmGcF8u3mzeUyI/DTCXzfZOq5an9cPPEs6Wu1/QGvWpb0oj4DkMBaZY
-         V3zA==
-X-Gm-Message-State: APjAAAVWqd+yQYpkZCL4O5k8fbT5o6h30wcDAPu1qYJ0jd/5gMGEOsEp
-        hTPDSMQjb5fHq5jKCwbezTEBP+dY6OJAg/MimkVU20btq+SssmDCdS0lBmoi/z86/x7zRcjfMC4
-        76jKWyTpQQ84QsqsA6513epVI2bMtVqBitjxKMJJqHKBYV6XklZ893w==
-X-Google-Smtp-Source: APXvYqyYiCp5DjnGAGHgrnNj6QVVU3tpJjkbXwVF4DaNh3Y34av5Dx+2S3jwV2YxuYPaxPcL0EY6wNM=
-X-Received: by 2002:aca:da82:: with SMTP id r124mr4192393oig.49.1557868359634;
- Tue, 14 May 2019 14:12:39 -0700 (PDT)
-Date:   Tue, 14 May 2019 14:12:34 -0700
-In-Reply-To: <20190514211234.25097-1-sdf@google.com>
-Message-Id: <20190514211234.25097-2-sdf@google.com>
-Mime-Version: 1.0
-References: <20190514211234.25097-1-sdf@google.com>
-X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
-Subject: [PATCH bpf 2/2] selftests/bpf: add prog detach to flow_dissector test
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726528AbfENVOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 17:14:12 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:53330 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726211AbfENVOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 17:14:11 -0400
+Received: from cpc129250-craw9-2-0-cust139.know.cable.virginm.net ([82.43.126.140] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hQekQ-0003ZL-OY; Tue, 14 May 2019 21:14:06 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] libertas/libertas_tf: fix spelling mistake "Donwloading" -> "Downloading"
+Date:   Tue, 14 May 2019 22:14:06 +0100
+Message-Id: <20190514211406.6353-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case we are not running in a namespace (which we don't do by default),
-let's try to detach the bpf program that we use for eth_get_headlen tests.
+From: Colin Ian King <colin.king@canonical.com>
 
-Fixes: 0905beec9f52 ("selftests/bpf: run flow dissector tests in skb-less mode")
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
+There is are two spelling mistakes in lbtf_deb_usb2 messages, fix these.
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- tools/testing/selftests/bpf/prog_tests/flow_dissector.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/marvell/libertas/if_usb.c    | 2 +-
+ drivers/net/wireless/marvell/libertas_tf/if_usb.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-index d40cee07a224..fbd1d88a6095 100644
---- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-+++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-@@ -264,5 +264,6 @@ void test_flow_dissector(void)
- 		CHECK_FLOW_KEYS(tests[i].name, flow_keys, tests[i].keys);
- 	}
+diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
+index 220dcdee8d2b..1d06fa564e28 100644
+--- a/drivers/net/wireless/marvell/libertas/if_usb.c
++++ b/drivers/net/wireless/marvell/libertas/if_usb.c
+@@ -367,7 +367,7 @@ static int if_usb_send_fw_pkt(struct if_usb_card *cardp)
+ 			     cardp->fwseqnum, cardp->totalbytes);
+ 	} else if (fwdata->hdr.dnldcmd == cpu_to_le32(FW_HAS_LAST_BLOCK)) {
+ 		lbs_deb_usb2(&cardp->udev->dev, "Host has finished FW downloading\n");
+-		lbs_deb_usb2(&cardp->udev->dev, "Donwloading FW JUMP BLOCK\n");
++		lbs_deb_usb2(&cardp->udev->dev, "Downloading FW JUMP BLOCK\n");
  
-+	bpf_prog_detach(prog_fd, BPF_FLOW_DISSECTOR);
- 	bpf_object__close(obj);
- }
+ 		cardp->fwfinalblk = 1;
+ 	}
+diff --git a/drivers/net/wireless/marvell/libertas_tf/if_usb.c b/drivers/net/wireless/marvell/libertas_tf/if_usb.c
+index a4b9ede70705..38f77b1a02ca 100644
+--- a/drivers/net/wireless/marvell/libertas_tf/if_usb.c
++++ b/drivers/net/wireless/marvell/libertas_tf/if_usb.c
+@@ -319,7 +319,7 @@ static int if_usb_send_fw_pkt(struct if_usb_card *cardp)
+ 	} else if (fwdata->hdr.dnldcmd == cpu_to_le32(FW_HAS_LAST_BLOCK)) {
+ 		lbtf_deb_usb2(&cardp->udev->dev,
+ 			"Host has finished FW downloading\n");
+-		lbtf_deb_usb2(&cardp->udev->dev, "Donwloading FW JUMP BLOCK\n");
++		lbtf_deb_usb2(&cardp->udev->dev, "Downloading FW JUMP BLOCK\n");
+ 
+ 		/* Host has finished FW downloading
+ 		 * Donwloading FW JUMP BLOCK
 -- 
-2.21.0.1020.gf2820cf01a-goog
+2.20.1
 
