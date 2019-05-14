@@ -2,217 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B86671C0CD
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 05:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FA941C0DF
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 05:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726753AbfENDBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 23:01:12 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:21854 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726387AbfENDBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 23:01:11 -0400
-X-UUID: b36ef4d0821f4f448c642b4e9be2fe76-20190514
-X-UUID: b36ef4d0821f4f448c642b4e9be2fe76-20190514
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (mhqrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 1315209358; Tue, 14 May 2019 11:00:59 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Tue, 14 May 2019 11:00:51 +0800
-Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Tue, 14 May 2019 11:00:51 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     Jose Abreu <joabreu@synopsys.com>, <davem@davemloft.net>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
-        <biao.huang@mediatek.com>, <jianguo.zhang@mediatek.comi>,
-        <boon.leong.ong@intel.com>
-Subject: [v2, PATCH] net: stmmac: add support for hash table size 128/256 in dwmac4
-Date:   Tue, 14 May 2019 11:00:43 +0800
-Message-ID: <1557802843-31718-2-git-send-email-biao.huang@mediatek.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <1557802843-31718-1-git-send-email-biao.huang@mediatek.com>
-References: <1557802843-31718-1-git-send-email-biao.huang@mediatek.com>
+        id S1726727AbfENDZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 23:25:45 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34954 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726327AbfENDZo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 23:25:44 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id D9C6530832C8;
+        Tue, 14 May 2019 03:25:43 +0000 (UTC)
+Received: from [10.72.12.59] (ovpn-12-59.pek2.redhat.com [10.72.12.59])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6C01E5C1B4;
+        Tue, 14 May 2019 03:25:36 +0000 (UTC)
+Subject: Re: [PATCH v2 1/8] vsock/virtio: limit the memory used per-socket
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>
+References: <20190510125843.95587-1-sgarzare@redhat.com>
+ <20190510125843.95587-2-sgarzare@redhat.com>
+ <3b275b52-63d9-d260-1652-8e8bf7dd679f@redhat.com>
+ <20190513172322.vcgenx7xk4v6r2ay@steredhat>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <f834c9e9-5d0e-8ebb-44e0-6d99b6284e5c@redhat.com>
+Date:   Tue, 14 May 2019 11:25:34 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+In-Reply-To: <20190513172322.vcgenx7xk4v6r2ay@steredhat>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Tue, 14 May 2019 03:25:44 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. get hash table size in hw feature reigster, and add support
-for taller hash table(128/256) in dwmac4.
-2. only clear PR/HMC/PM bits of GMAC_PACKET_FILTER, to avoid
-side effect to functions of other bits.
 
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
----
- drivers/net/ethernet/stmicro/stmmac/common.h      |    7 +--
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h      |    4 +-
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |   50 ++++++++++++---------
- drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c  |    1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    4 ++
- 5 files changed, 40 insertions(+), 26 deletions(-)
+On 2019/5/14 上午1:23, Stefano Garzarella wrote:
+> On Mon, May 13, 2019 at 05:58:53PM +0800, Jason Wang wrote:
+>> On 2019/5/10 下午8:58, Stefano Garzarella wrote:
+>>> Since virtio-vsock was introduced, the buffers filled by the host
+>>> and pushed to the guest using the vring, are directly queued in
+>>> a per-socket list avoiding to copy it.
+>>> These buffers are preallocated by the guest with a fixed
+>>> size (4 KB).
+>>>
+>>> The maximum amount of memory used by each socket should be
+>>> controlled by the credit mechanism.
+>>> The default credit available per-socket is 256 KB, but if we use
+>>> only 1 byte per packet, the guest can queue up to 262144 of 4 KB
+>>> buffers, using up to 1 GB of memory per-socket. In addition, the
+>>> guest will continue to fill the vring with new 4 KB free buffers
+>>> to avoid starvation of her sockets.
+>>>
+>>> This patch solves this issue copying the payload in a new buffer.
+>>> Then it is queued in the per-socket list, and the 4KB buffer used
+>>> by the host is freed.
+>>>
+>>> In this way, the memory used by each socket respects the credit
+>>> available, and we still avoid starvation, paying the cost of an
+>>> extra memory copy. When the buffer is completely full we do a
+>>> "zero-copy", moving the buffer directly in the per-socket list.
+>>
+>> I wonder in the long run we should use generic socket accouting mechanism
+>> provided by kernel (e.g socket, skb, sndbuf, recvbug, truesize) instead of
+>> vsock specific thing to avoid duplicating efforts.
+> I agree, the idea is to switch to sk_buff but this should require an huge
+> change. If we will use the virtio-net datapath, it will become simpler.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 272b9ca6..709dcec 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -335,6 +335,7 @@ struct dma_features {
- 	/* 802.3az - Energy-Efficient Ethernet (EEE) */
- 	unsigned int eee;
- 	unsigned int av;
-+	unsigned int hash_tb_sz;
- 	unsigned int tsoen;
- 	/* TX and RX csum */
- 	unsigned int tx_coe;
-@@ -427,9 +428,9 @@ struct mac_device_info {
- 	struct mii_regs mii;	/* MII register Addresses */
- 	struct mac_link link;
- 	void __iomem *pcsr;     /* vpointer to device CSRs */
--	int multicast_filter_bins;
--	int unicast_filter_entries;
--	int mcast_bits_log2;
-+	unsigned int multicast_filter_bins;
-+	unsigned int unicast_filter_entries;
-+	unsigned int mcast_bits_log2;
- 	unsigned int rx_csum;
- 	unsigned int pcs;
- 	unsigned int pmt;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index eb013d5..a5eb7df 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -18,8 +18,7 @@
- /*  MAC registers */
- #define GMAC_CONFIG			0x00000000
- #define GMAC_PACKET_FILTER		0x00000008
--#define GMAC_HASH_TAB_0_31		0x00000010
--#define GMAC_HASH_TAB_32_63		0x00000014
-+#define GMAC_HASH_TAB(x)		(0x10 + x * 4)
- #define GMAC_RX_FLOW_CTRL		0x00000090
- #define GMAC_QX_TX_FLOW_CTRL(x)		(0x70 + x * 4)
- #define GMAC_TXQ_PRTY_MAP0		0x98
-@@ -181,6 +180,7 @@ enum power_event {
- #define GMAC_HW_FEAT_MIISEL		BIT(0)
- 
- /* MAC HW features1 bitmap */
-+#define GMAC_HW_HASH_TB_SZ		GENMASK(25, 24)
- #define GMAC_HW_FEAT_AVSEL		BIT(20)
- #define GMAC_HW_TSOEN			BIT(18)
- #define GMAC_HW_TXFIFOSIZE		GENMASK(10, 6)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index 7e5d5db..1f682ec 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -401,41 +401,49 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
- 			      struct net_device *dev)
- {
- 	void __iomem *ioaddr = (void __iomem *)dev->base_addr;
--	unsigned int value = 0;
-+	unsigned int value;
-+	int numhashregs = (hw->multicast_filter_bins >> 5);
-+	int mcbitslog2 = hw->mcast_bits_log2;
-+	int i;
-+
-+	value = readl(ioaddr + GMAC_PACKET_FILTER);
-+	value &= ~GMAC_PACKET_FILTER_PR;
-+	value &= ~GMAC_PACKET_FILTER_HMC;
-+	value &= ~GMAC_PACKET_FILTER_PM;
- 
- 	if (dev->flags & IFF_PROMISC) {
--		value = GMAC_PACKET_FILTER_PR;
-+		value |= GMAC_PACKET_FILTER_PR;
- 	} else if ((dev->flags & IFF_ALLMULTI) ||
--			(netdev_mc_count(dev) > HASH_TABLE_SIZE)) {
-+		   (netdev_mc_count(dev) > hw->multicast_filter_bins)) {
- 		/* Pass all multi */
--		value = GMAC_PACKET_FILTER_PM;
--		/* Set the 64 bits of the HASH tab. To be updated if taller
--		 * hash table is used
--		 */
--		writel(0xffffffff, ioaddr + GMAC_HASH_TAB_0_31);
--		writel(0xffffffff, ioaddr + GMAC_HASH_TAB_32_63);
-+		value |= GMAC_PACKET_FILTER_PM;
-+		/* Set all the bits of the HASH tab */
-+		for (i = 0; i < numhashregs; i++)
-+			writel(0xffffffff, ioaddr + GMAC_HASH_TAB(i));
- 	} else if (!netdev_mc_empty(dev)) {
--		u32 mc_filter[2];
-+		u32 mc_filter[8];
- 		struct netdev_hw_addr *ha;
- 
- 		/* Hash filter for multicast */
--		value = GMAC_PACKET_FILTER_HMC;
-+		value |= GMAC_PACKET_FILTER_HMC;
- 
- 		memset(mc_filter, 0, sizeof(mc_filter));
- 		netdev_for_each_mc_addr(ha, dev) {
--			/* The upper 6 bits of the calculated CRC are used to
--			 * index the content of the Hash Table Reg 0 and 1.
-+			/* The upper n bits of the calculated CRC are used to
-+			 * index the contents of the hash table. The number of
-+			 * bits used depends on the hardware configuration
-+			 * selected at core configuration time.
- 			 */
--			int bit_nr =
--				(bitrev32(~crc32_le(~0, ha->addr, 6)) >> 26);
--			/* The most significant bit determines the register
--			 * to use while the other 5 bits determines the bit
--			 * within the selected register
-+			int bit_nr = bitrev32(~crc32_le(~0, ha->addr,
-+					ETH_ALEN)) >> (32 - mcbitslog2);
-+			/* The most significant bit determines the register to
-+			 * use (H/L) while the other 5 bits determine the bit
-+			 * within the register.
- 			 */
--			mc_filter[bit_nr >> 5] |= (1 << (bit_nr & 0x1F));
-+			mc_filter[bit_nr >> 5] |= (1 << (bit_nr & 0x1f));
- 		}
--		writel(mc_filter[0], ioaddr + GMAC_HASH_TAB_0_31);
--		writel(mc_filter[1], ioaddr + GMAC_HASH_TAB_32_63);
-+		for (i = 0; i < numhashregs; i++)
-+			writel(mc_filter[i], ioaddr + GMAC_HASH_TAB(i));
- 	}
- 
- 	/* Handle multiple unicast addresses */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-index edb6053..59afb53 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-@@ -354,6 +354,7 @@ static void dwmac4_get_hw_feature(void __iomem *ioaddr,
- 
- 	/* MAC HW feature1 */
- 	hw_cap = readl(ioaddr + GMAC_HW_FEATURE1);
-+	dma_cap->hash_tb_sz = (hw_cap & GMAC_HW_HASH_TB_SZ) >> 24;
- 	dma_cap->av = (hw_cap & GMAC_HW_FEAT_AVSEL) >> 20;
- 	dma_cap->tsoen = (hw_cap & GMAC_HW_TSOEN) >> 18;
- 	/* RX and TX FIFO sizes are encoded as log2(n / 128). Undo that by
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 97c5e1a..1971f9f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4159,6 +4159,10 @@ static int stmmac_hw_init(struct stmmac_priv *priv)
- 		priv->plat->enh_desc = priv->dma_cap.enh_desc;
- 		priv->plat->pmt = priv->dma_cap.pmt_remote_wake_up;
- 		priv->hw->pmt = priv->plat->pmt;
-+		if (priv->dma_cap.hash_tb_sz) {
-+			priv->hw->multicast_filter_bins = BIT(priv->dma_cap.hash_tb_sz) * 32;
-+			priv->hw->mcast_bits_log2 = ilog2(priv->hw->multicast_filter_bins);
-+		}
- 
- 		/* TXCOE doesn't work in thresh DMA mode */
- 		if (priv->plat->force_thresh_dma_mode)
--- 
-1.7.9.5
 
+Yes, unix domain socket is one example that uses general skb and socket 
+structure. And we probably need some kind of socket pair on host. Using 
+socket can also simplify the unification with vhost-net which depends on 
+the socket proto_ops to work. I admit it's a huge change probably, we 
+can do it gradually.
+
+
+>>
+>>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>>> ---
+>>>    drivers/vhost/vsock.c                   |  2 +
+>>>    include/linux/virtio_vsock.h            |  8 +++
+>>>    net/vmw_vsock/virtio_transport.c        |  1 +
+>>>    net/vmw_vsock/virtio_transport_common.c | 95 ++++++++++++++++++-------
+>>>    4 files changed, 81 insertions(+), 25 deletions(-)
+>>>
+>>> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+>>> index bb5fc0e9fbc2..7964e2daee09 100644
+>>> --- a/drivers/vhost/vsock.c
+>>> +++ b/drivers/vhost/vsock.c
+>>> @@ -320,6 +320,8 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+>>>    		return NULL;
+>>>    	}
+>>> +	pkt->buf_len = pkt->len;
+>>> +
+>>>    	nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
+>>>    	if (nbytes != pkt->len) {
+>>>    		vq_err(vq, "Expected %u byte payload, got %zu bytes\n",
+>>> diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>>> index e223e2632edd..345f04ee9193 100644
+>>> --- a/include/linux/virtio_vsock.h
+>>> +++ b/include/linux/virtio_vsock.h
+>>> @@ -54,9 +54,17 @@ struct virtio_vsock_pkt {
+>>>    	void *buf;
+>>>    	u32 len;
+>>>    	u32 off;
+>>> +	u32 buf_len;
+>>>    	bool reply;
+>>>    };
+>>> +struct virtio_vsock_buf {
+>>> +	struct list_head list;
+>>> +	void *addr;
+>>> +	u32 len;
+>>> +	u32 off;
+>>> +};
+>>> +
+>>>    struct virtio_vsock_pkt_info {
+>>>    	u32 remote_cid, remote_port;
+>>>    	struct vsock_sock *vsk;
+>>> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+>>> index 15eb5d3d4750..af1d2ce12f54 100644
+>>> --- a/net/vmw_vsock/virtio_transport.c
+>>> +++ b/net/vmw_vsock/virtio_transport.c
+>>> @@ -280,6 +280,7 @@ static void virtio_vsock_rx_fill(struct virtio_vsock *vsock)
+>>>    			break;
+>>>    		}
+>>> +		pkt->buf_len = buf_len;
+>>>    		pkt->len = buf_len;
+>>>    		sg_init_one(&hdr, &pkt->hdr, sizeof(pkt->hdr));
+>>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>>> index 602715fc9a75..0248d6808755 100644
+>>> --- a/net/vmw_vsock/virtio_transport_common.c
+>>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>>> @@ -65,6 +65,9 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
+>>>    		pkt->buf = kmalloc(len, GFP_KERNEL);
+>>>    		if (!pkt->buf)
+>>>    			goto out_pkt;
+>>> +
+>>> +		pkt->buf_len = len;
+>>> +
+>>>    		err = memcpy_from_msg(pkt->buf, info->msg, len);
+>>>    		if (err)
+>>>    			goto out;
+>>> @@ -86,6 +89,46 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
+>>>    	return NULL;
+>>>    }
+>>> +static struct virtio_vsock_buf *
+>>> +virtio_transport_alloc_buf(struct virtio_vsock_pkt *pkt, bool zero_copy)
+>>> +{
+>>> +	struct virtio_vsock_buf *buf;
+>>> +
+>>> +	if (pkt->len == 0)
+>>> +		return NULL;
+>>> +
+>>> +	buf = kzalloc(sizeof(*buf), GFP_KERNEL);
+>>> +	if (!buf)
+>>> +		return NULL;
+>>> +
+>>> +	/* If the buffer in the virtio_vsock_pkt is full, we can move it to
+>>> +	 * the new virtio_vsock_buf avoiding the copy, because we are sure that
+>>> +	 * we are not use more memory than that counted by the credit mechanism.
+>>> +	 */
+>>> +	if (zero_copy && pkt->len == pkt->buf_len) {
+>>> +		buf->addr = pkt->buf;
+>>> +		pkt->buf = NULL;
+>>> +	} else {
+>>
+>> Is the copy still needed if we're just few bytes less? We meet similar issue
+>> for virito-net, and virtio-net solve this by always copy first 128bytes for
+>> big packets.
+>>
+>> See receive_big()
+> I'm seeing, It is more sophisticated.
+> IIUC, virtio-net allocates a sk_buff with 128 bytes of buffer, then copies the
+> first 128 bytes, then adds the buffer used to receive the packet as a frag to
+> the skb.
+
+
+Yes and the point is if the packet is smaller than 128 bytes the pages 
+will be recycled.
+
+
+>
+> Do you suggest to implement something similar, or for now we can use my
+> approach and if we will merge the datapath we can reuse the virtio-net
+> approach?
+
+
+I think we need a better threshold. If I understand the patch correctly, 
+we will do copy unless the packet is 64K when guest is doing receiving. 
+1 byte packet is indeed a problem, but we need to solve it without 
+losing too much performance.
+
+Thanks
+
+
+>
+> Thanks,
+> Stefano
