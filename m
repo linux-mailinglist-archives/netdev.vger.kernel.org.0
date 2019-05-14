@@ -2,120 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 616D41C452
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 10:01:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79C2D1C47F
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 10:15:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726246AbfENIBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 04:01:42 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44110 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725899AbfENIBm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 04:01:42 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 865C5C05FBD7;
-        Tue, 14 May 2019 08:01:39 +0000 (UTC)
-Received: from bistromath.localdomain (unknown [10.40.205.249])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B69875D721;
-        Tue, 14 May 2019 08:01:30 +0000 (UTC)
-Date:   Tue, 14 May 2019 10:01:27 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     netdev@vger.kernel.org, Dan Winship <danw@redhat.com>
-Subject: Re: [PATCH net v2] rtnetlink: always put ILFA_LINK for links with a
- link-netnsid
-Message-ID: <20190514080127.GA17749@bistromath.localdomain>
-References: <d5c4710117d390e0f204b7046483727daf452233.1557755096.git.sd@queasysnail.net>
- <b89367f0-18d5-61b2-2572-b1e5b4588d8d@6wind.com>
- <20190513150812.GA18478@bistromath.localdomain>
- <771b21d6-3b1e-c118-2907-5b5782f7cb92@6wind.com>
- <20190513214648.GA29270@bistromath.localdomain>
- <65c8778c-9be9-c81f-5a9b-13e070ca38da@6wind.com>
+        id S1726058AbfENIPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 04:15:48 -0400
+Received: from mail-wr1-f47.google.com ([209.85.221.47]:43860 "EHLO
+        mail-wr1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbfENIPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 04:15:48 -0400
+Received: by mail-wr1-f47.google.com with SMTP id r4so18065343wro.10
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 01:15:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=fo831Rv+pGwZxOpXpL7A74tnI9dct76ZpcdoJOpQoH4=;
+        b=oj6QI0b7fL79UfqKLwKknXVEflgNMoE+gbcQahAnWe+8buAIyrzfjha3g7bKeTTtOa
+         Tr33j1t+GkraY1TifqaKXlDgPr0ge84jczgPomI21UHCElpK+DuU8hwfAlkQAmnmjyIc
+         1w/uCZ47lkwEJUBXXU5Rze65b+roztmznuTpuk9mC2bUjTFawMgykDv2KNsPG3f/JoBB
+         e92Pn5Z5vw/ziBjM/vrXo0xBKlIWBhc4rEnA4oiO2sI5AIPorTabhqfGkTVWE0s9pmS/
+         4lA5ye5NNKckHnSZobxDkllMBsDuVMhL6hQPR60YrjaAwClPZDzwa/7OdLmppEHf/Ghw
+         zh1g==
+X-Gm-Message-State: APjAAAVWAzZuio/Bouh7nqp4TrHNO0X/cMlU9KdV1DCSlTT6Q6Joz58C
+        EmNJG+SWrDV6EmOq+mDpBzKepTroiJc=
+X-Google-Smtp-Source: APXvYqzXUED3YY24fAx2pL2x5N9aovdW3hN1e2c8peRKnX7PnV1Xr4S9W7T/CpgIgrFl04rQNaxefw==
+X-Received: by 2002:adf:f5d1:: with SMTP id k17mr19973852wrp.281.1557821746594;
+        Tue, 14 May 2019 01:15:46 -0700 (PDT)
+Received: from steredhat (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
+        by smtp.gmail.com with ESMTPSA id c20sm19255377wre.28.2019.05.14.01.15.45
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 14 May 2019 01:15:45 -0700 (PDT)
+Date:   Tue, 14 May 2019 10:15:43 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Jorgen Hansen <jhansen@vmware.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [RFC] vsock: proposal to support multiple transports at runtime
+Message-ID: <20190514081543.f6nphcilgjuemlet@steredhat>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <65c8778c-9be9-c81f-5a9b-13e070ca38da@6wind.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Tue, 14 May 2019 08:01:41 +0000 (UTC)
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-05-14, 09:32:32 +0200, Nicolas Dichtel wrote:
-> Le 13/05/2019 à 23:46, Sabrina Dubroca a écrit :
-> > 2019-05-13, 17:13:36 +0200, Nicolas Dichtel wrote:
-> >> Le 13/05/2019 à 17:08, Sabrina Dubroca a écrit :
-> >>> 2019-05-13, 16:50:51 +0200, Nicolas Dichtel wrote:
-> >>>> Le 13/05/2019 à 15:47, Sabrina Dubroca a écrit :
-> >>>>> Currently, nla_put_iflink() doesn't put the IFLA_LINK attribute when
-> >>>>> iflink == ifindex.
-> >>>>>
-> >>>>> In some cases, a device can be created in a different netns with the
-> >>>>> same ifindex as its parent. That device will not dump its IFLA_LINK
-> >>>>> attribute, which can confuse some userspace software that expects it.
-> >>>>> For example, if the last ifindex created in init_net and foo are both
-> >>>>> 8, these commands will trigger the issue:
-> >>>>>
-> >>>>>     ip link add parent type dummy                   # ifindex 9
-> >>>>>     ip link add link parent netns foo type macvlan  # ifindex 9 in ns foo
-> >>>>>
-> >>>>> So, in case a device puts the IFLA_LINK_NETNSID attribute in a dump,
-> >>>>> always put the IFLA_LINK attribute as well.
-> >>>>>
-> >>>>> Thanks to Dan Winship for analyzing the original OpenShift bug down to
-> >>>>> the missing netlink attribute.
-> >>>>>
-> >>>>> Analyzed-by: Dan Winship <danw@redhat.com>
-> >>>>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> >>>> I would say:
-> >>>> Fixes: 5e6700b3bf98 ("sit: add support of x-netns")
-> >>>>
-> >>>> Because before this patch, there was no device with an iflink that can be put in
-> >>>> another netns.
-> >>>
-> >>> That tells us how far back we might want to backport this fix, but not
-> >>> which commit introduced the bug. I think Fixes should refer to the
-> >>> introduction of the faulty code, not to what patch made it visible (if
-> >>> we can find both).
-> >> No sure to follow you. The problem you describe cannot happen before commit
-> >> 5e6700b3bf98, so there cannot be a "faulty" patch before that commit.
-> > 
-> > What about macvlan devices?
-> > 
-> > From commit b863ceb7ddce ("[NET]: Add macvlan driver"):
-> > 
-> > static int macvlan_init(struct net_device *dev)
-> > {
-> > ...
-> >         dev->iflink             = lowerdev->ifindex;
-> > ...
-> > }
-> > 
-> > vlan devices also had an iflink assigned since commit ddd7bf9fe4e5.
-> > 
-> > What am I missing?
-> You miss the fact that netns have been introduced after both commits.
+Hi guys,
+I'm currently interested on implement a multi-transport support for VSOCK in
+order to handle nested VMs.
 
-Ah, right.
+As Stefan suggested me, I started to look at this discussion:
+https://lkml.org/lkml/2017/8/17/551
+Below I tried to summarize a proposal for a discussion, following the ideas
+from Dexuan, Jorgen, and Stefan.
 
-> What about this one?
-> Fixes: d8a5ec672768 ("[NET]: netlink support for moving devices between network
-> namespaces.")
 
-Nice. Now I think the bug can't really trigger unless one of these
-commits are present:
+We can define two types of transport that we have to handle at the same time
+(e.g. in a nested VM we would have both types of transport running together):
 
-aa79e66eee5d ("net: Make ifindex generation per-net namespace")
-9c7dafbfab15 ("net: Allow to create links with given ifindex")
+- 'host side transport', it runs in the host and it is used to communicate with
+  the guests of a specific hypervisor (KVM, VMWare or HyperV)
 
-I'll use those two as Fixes tags for v3, unless you want something
-different.
+  Should we support multiple 'host side transport' running at the same time?
 
-Thanks,
+- 'guest side transport'. it runs in the guest and it is used to communicate
+  with the host transport
 
--- 
-Sabrina
+
+The main goal is to find a way to decide what transport use in these cases:
+1. connect() / sendto()
+
+	a. use the 'host side transport', if the destination is the guest
+	   (dest_cid > VMADDR_CID_HOST).
+	   If we want to support multiple 'host side transport' running at the
+	   same time, we should assign CIDs uniquely across all transports.
+	   In this way, a packet generated by the host side will get directed
+	   to the appropriate transport based on the CID
+
+	b. use the 'guest side transport', if the destination is the host
+	   (dest_cid == VMADDR_CID_HOST)
+
+
+2. listen() / recvfrom()
+
+	a. use the 'host side transport', if the socket is bound to
+	   VMADDR_CID_HOST, or it is bound to VMADDR_CID_ANY and there is no
+	   guest transport.
+	   We could also define a new VMADDR_CID_LISTEN_FROM_GUEST in order to
+	   address this case.
+	   If we want to support multiple 'host side transport' running at the
+	   same time, we should find a way to allow an application to bound a
+	   specific host transport (e.g. adding new VMADDR_CID_LISTEN_FROM_KVM,
+	   VMADDR_CID_LISTEN_FROM_VMWARE, VMADDR_CID_LISTEN_FROM_HYPERV)
+
+	b. use the 'guest side transport', if the socket is bound to local CID
+	   different from the VMADDR_CID_HOST (guest CID get with
+	   IOCTL_VM_SOCKETS_GET_LOCAL_CID), or it is bound to VMADDR_CID_ANY
+	   (to be backward compatible).
+	   Also in this case, we could define a new VMADDR_CID_LISTEN_FROM_HOST.
+
+Thanks in advance for your comments and suggestions.
+
+Cheers,
+Stefano
