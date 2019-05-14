@@ -2,116 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C73D31C79A
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 13:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A365B1C7CC
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 13:28:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726709AbfENLPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 07:15:47 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:56480 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726680AbfENLPq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 07:15:46 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4EBDT1C120280
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 07:15:45 -0400
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2sftxjc8fy-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 07:13:36 -0400
-Received: from localhost
-        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <ubraun@linux.ibm.com>;
-        Tue, 14 May 2019 12:13:24 +0100
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
-        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 14 May 2019 12:13:22 +0100
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x4EBDK8Y42270900
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 May 2019 11:13:20 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CB811A4040;
-        Tue, 14 May 2019 11:13:20 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 841B6A404D;
-        Tue, 14 May 2019 11:13:20 +0000 (GMT)
-Received: from oc5311105230.ibm.com (unknown [9.152.224.97])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 14 May 2019 11:13:20 +0000 (GMT)
-Subject: Re: [PATCH] net/smc: Fix error path in smc_init
-To:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
-        kgraul@linux.ibm.com, hwippel@linux.ibm.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org
-References: <20190514063921.41088-1-yuehaibing@huawei.com>
-From:   Ursula Braun <ubraun@linux.ibm.com>
-Openpgp: preference=signencrypt
-Date:   Tue, 14 May 2019 13:13:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190514063921.41088-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=utf-8
+        id S1726248AbfENL2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 07:28:45 -0400
+Received: from mail-eopbgr10055.outbound.protection.outlook.com ([40.107.1.55]:38348
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725893AbfENL2p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 May 2019 07:28:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vshpto2hufvQXaWIe+iXjaoAAOPZQ0pLLHslaRYs/Yw=;
+ b=rQzKq18wAzbqTzG+/jWko72E4TjhpC0/4YSzMZEgp4shJNf0Ta3+YlySnMw/8ZdSEQyCx/Mvl6JRcMHB0k/E00dfApG+aT0atTSk89zRcIvBC/fV4IqdYMn7Ffq2DZ3paBQBJfi93Rli4FkOaL0y3OQZR51sDs22IvE7k1Rll0k=
+Received: from DBBPR05MB6283.eurprd05.prod.outlook.com (20.179.40.84) by
+ DBBPR05MB6586.eurprd05.prod.outlook.com (20.179.44.85) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1878.20; Tue, 14 May 2019 11:28:41 +0000
+Received: from DBBPR05MB6283.eurprd05.prod.outlook.com
+ ([fe80::41c9:f567:314b:c042]) by DBBPR05MB6283.eurprd05.prod.outlook.com
+ ([fe80::41c9:f567:314b:c042%4]) with mapi id 15.20.1900.010; Tue, 14 May 2019
+ 11:28:41 +0000
+From:   Tariq Toukan <tariqt@mellanox.com>
+To:     wangyunjian <wangyunjian@huawei.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Tariq Toukan <tariqt@mellanox.com>,
+        "xudingke@huawei.com" <xudingke@huawei.com>
+Subject: Re: [PATCH net] net/mlx4_core: Change the error print to info print
+Thread-Topic: [PATCH net] net/mlx4_core: Change the error print to info print
+Thread-Index: AQHVCkS1h3DH9LtXmkOvosoY4d4dWaZqe86A
+Date:   Tue, 14 May 2019 11:28:41 +0000
+Message-ID: <e68afdbd-49eb-f75a-a6a2-177e873217ab@mellanox.com>
+References: <1557831799-15220-1-git-send-email-wangyunjian@huawei.com>
+In-Reply-To: <1557831799-15220-1-git-send-email-wangyunjian@huawei.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-x-cbid: 19051411-0012-0000-0000-0000031B819B
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19051411-0013-0000-0000-000021541946
-Message-Id: <73b00d55-dbab-a4d0-97e9-121ce810f012@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-14_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905140082
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM6P194CA0090.EURP194.PROD.OUTLOOK.COM
+ (2603:10a6:209:8f::31) To DBBPR05MB6283.eurprd05.prod.outlook.com
+ (2603:10a6:10:c1::20)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=tariqt@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 268b9930-b323-43f8-5eea-08d6d85f50d4
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DBBPR05MB6586;
+x-ms-traffictypediagnostic: DBBPR05MB6586:
+x-microsoft-antispam-prvs: <DBBPR05MB6586859C3D499AD4C3CD25C3AE080@DBBPR05MB6586.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:590;
+x-forefront-prvs: 0037FD6480
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(396003)(346002)(39860400002)(136003)(376002)(199004)(189003)(25786009)(4326008)(71200400001)(99286004)(2501003)(478600001)(52116002)(54906003)(110136005)(71190400001)(53936002)(4744005)(86362001)(14454004)(76176011)(5660300002)(6512007)(8936002)(8676002)(81166006)(81156014)(6246003)(7736002)(6436002)(5024004)(6486002)(305945005)(2906002)(31696002)(6116002)(36756003)(66066001)(31686004)(316002)(229853002)(3846002)(26005)(386003)(53546011)(102836004)(66446008)(486006)(186003)(66946007)(66476007)(73956011)(14444005)(68736007)(66556008)(64756008)(6506007)(11346002)(2616005)(476003)(256004)(446003);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6586;H:DBBPR05MB6283.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: CNEV5+dpTSk/6a+/aN7boXr76JvuaUWmJoaez2Jk6OPsAQxHWM+q01La/IWpz6fHSrCl/Dt+/bw/IE8PyRLTr5q6HALv7QycqA8WprD7xFlqZmCKptJ0mMy/VSciGZscP6B8c4RBXZqeNt45e+YaAU8oft+usuzSmovJ7zG1OzUwdFA/RvgzF4btHLlNQn5n57k9jhPNadoo9enIHtG9XgUmzR9zugvh5DWRE6smBSoI5TvWuEvYQRMVUewtxNvEpb8n7RqPDzM29j+WssPsRqjwA+yU+P9CfA0U+bMx4rbFzIYXQmEguKftvkUjAw8WbVcL5WYqLmdgaZc1q1gUp+TIT5iyykrWv/MvAQYLYHAKBoqirM8ZkyWgvRrnWpKfHz3c1ikBlPnLeLDfXXTfQD8vwrnoKyzaXYzzNMnWCtY=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <AF266BCC3F93874A8AF085DB12B5914D@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 268b9930-b323-43f8-5eea-08d6d85f50d4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 May 2019 11:28:41.1213
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6586
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/14/19 8:39 AM, YueHaibing wrote:
-> If register_pernet_subsys success in smc_init,
-> we should cleanup it in case any other error.
-> 
-
-Thanks, looks good. Your patch will be part of our next patch
-submission.
-
-Regards, Ursula
-
-> Fixes: 64e28b52c7a6 (net/smc: add pnet table namespace support")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  net/smc/af_smc.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index 6f869ef..7d3207f 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -2019,7 +2019,7 @@ static int __init smc_init(void)
->  
->  	rc = smc_pnet_init();
->  	if (rc)
-> -		return rc;
-> +		goto out_pernet_subsys;
->  
->  	rc = smc_llc_init();
->  	if (rc) {
-> @@ -2070,6 +2070,9 @@ static int __init smc_init(void)
->  	proto_unregister(&smc_proto);
->  out_pnet:
->  	smc_pnet_exit();
-> +out_pernet_subsys:
-> +	unregister_pernet_subsys(&smc_net_ops);
-> +
->  	return rc;
->  }
->  
-> 
-
+DQoNCk9uIDUvMTQvMjAxOSAyOjAzIFBNLCB3YW5neXVuamlhbiB3cm90ZToNCj4gRnJvbTogWXVu
+amlhbiBXYW5nIDx3YW5neXVuamlhbkBodWF3ZWkuY29tPg0KPiANCj4gVGhlIGVycm9yIHByaW50
+IHdpdGhpbiBtbHg0X2Zsb3dfc3RlZXJfcHJvbWlzY19hZGQoKSBzaG91bGQNCj4gYmUgYSBpbmZv
+IHByaW50Lg0KPiANCj4gRml4ZXM6IDU5MmU0OWRkYTgxMiAoJ25ldC9tbHg0OiBJbXBsZW1lbnQg
+cHJvbWlzY3VvdXMgbW9kZSB3aXRoIGRldmljZSBtYW5hZ2VkIGZsb3ctc3RlZXJpbmcnKQ0KPiBT
+aWduZWQtb2ZmLWJ5OiBZdW5qaWFuIFdhbmcgPHdhbmd5dW5qaWFuQGh1YXdlaS5jb20+DQo+IC0t
+LQ0KPiAgIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDQvbWNnLmMgfCAyICstDQo+
+ICAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NC9tY2cuYyBiL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDQvbWNnLmMNCj4gaW5kZXggZmZlZDJkNC4u
+OWM0ODE4MiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4
+NC9tY2cuYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg0L21jZy5j
+DQo+IEBAIC0xNDkyLDcgKzE0OTIsNyBAQCBpbnQgbWx4NF9mbG93X3N0ZWVyX3Byb21pc2NfYWRk
+KHN0cnVjdCBtbHg0X2RldiAqZGV2LCB1OCBwb3J0LA0KPiAgIAlydWxlLnBvcnQgPSBwb3J0Ow0K
+PiAgIAlydWxlLnFwbiA9IHFwbjsNCj4gICAJSU5JVF9MSVNUX0hFQUQoJnJ1bGUubGlzdCk7DQo+
+IC0JbWx4NF9lcnIoZGV2LCAiZ29pbmcgcHJvbWlzYyBvbiAleFxuIiwgcG9ydCk7DQo+ICsJbWx4
+NF9pbmZvKGRldiwgImdvaW5nIHByb21pc2Mgb24gJXhcbiIsIHBvcnQpOw0KPiAgIA0KPiAgIAly
+ZXR1cm4gIG1seDRfZmxvd19hdHRhY2goZGV2LCAmcnVsZSwgcmVnaWRfcCk7DQo+ICAgfQ0KPiAN
+Cg0KTEdUTS4NClJldmlld2VkLWJ5OiBUYXJpcSBUb3VrYW4gPHRhcmlxdEBtZWxsYW5veC5jb20+
+DQoNClRoYW5rcywNClRhcmlxDQo=
