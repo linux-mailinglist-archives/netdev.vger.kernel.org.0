@@ -2,32 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E39021C1E0
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 07:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3743F1C2A8
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 07:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbfENFd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 01:33:58 -0400
-Received: from paleale.coelho.fi ([176.9.41.70]:54216 "EHLO
+        id S1726927AbfENF4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 01:56:15 -0400
+Received: from paleale.coelho.fi ([176.9.41.70]:54234 "EHLO
         farmhouse.coelho.fi" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725935AbfENFd6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 01:33:58 -0400
+        with ESMTP id S1726813AbfENF4O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 01:56:14 -0400
 Received: from 91-156-6-193.elisa-laajakaista.fi ([91.156.6.193] helo=redipa)
         by farmhouse.coelho.fi with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <luca@coelho.fi>)
-        id 1hQQ4T-0007fL-Pu; Tue, 14 May 2019 08:33:49 +0300
-Message-ID: <befa7d4791e2031ca86cd2e0d4721d166b0f38db.camel@coelho.fi>
-Subject: Re: [PATCH] net: wireless: iwlwifi: Fix double-free problems in
- iwl_req_fw_callback()
+        id 1hQQQ2-0007gE-IC; Tue, 14 May 2019 08:56:06 +0300
+Message-ID: <7b920ce3237faf87e57160a4c6727b87ec9bb1b0.camel@coelho.fi>
+Subject: Re: [PATCH] iwlwifi: trans: fix killer series loadded incorrect
+ firmware
 From:   Luca Coelho <luca@coelho.fi>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, johannes.berg@intel.com,
-        emmanuel.grumbach@intel.com, linuxwifi@intel.com,
-        kvalo@codeaurora.org, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+To:     Cyrus Lien <cyruslien@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        Golan Ben Ami <golan.ben.ami@intel.com>,
+        Lior Cohen <lior2.cohen@intel.com>,
+        Shaul Triebitz <shaul.triebitz@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Tue, 14 May 2019 08:33:47 +0300
-In-Reply-To: <20190504093305.19360-1-baijiaju1990@gmail.com>
-References: <20190504093305.19360-1-baijiaju1990@gmail.com>
+Cc:     Cyrus Lien <cyrus.lien@canonical.com>
+Date:   Tue, 14 May 2019 08:56:05 +0300
+In-Reply-To: <20190513133335.14536-1-cyrus.lien@canonical.com>
+References: <20190513133335.14536-1-cyrus.lien@canonical.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.30.5-1 
 MIME-Version: 1.0
@@ -37,41 +46,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2019-05-04 at 17:33 +0800, Jia-Ju Bai wrote:
-> In the error handling code of iwl_req_fw_callback(),
-> iwl_dealloc_ucode()
-> is called to free data. In iwl_drv_stop(), iwl_dealloc_ucode() is
-> called
-> again, which can cause double-free problems.
+On Mon, 2019-05-13 at 21:33 +0800, Cyrus Lien wrote:
+> Killer series loadded IWL_22000_HR_B_FW_PRE prefixed firmware instead
+> IWL_CC_A_FW_PRE prefixed firmware.
 > 
-> To fix this bug, the call to iwl_dealloc_ucode() in
-> iwl_req_fw_callback() is deleted.
+> Add killer series to the check logic as iwl_ax200_cfg_cc.
 > 
-> This bug is found by a runtime fuzzing tool named FIZZER written by
-> us.
-> 
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> Signed-off-by: Cyrus Lien <cyrus.lien@canonical.com>
 > ---
->  drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 1 -
->  1 file changed, 1 deletion(-)
+>  drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-> b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-> index 689a65b11cc3..4fd1737d768b 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-> @@ -1579,7 +1579,6 @@ static void iwl_req_fw_callback(const struct
-> firmware *ucode_raw, void *context)
->  	goto free;
->  
->   out_free_fw:
-> -	iwl_dealloc_ucode(drv);
->  	release_firmware(ucode_raw);
->   out_unbind:
->  	complete(&drv->request_firmware_complete);
+> diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+> b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+> index 79c1dc05f948..576c2186b6bf 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+> @@ -3565,7 +3565,9 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct
+> pci_dev *pdev,
+>  		}
+>  	} else if (CSR_HW_RF_ID_TYPE_CHIP_ID(trans->hw_rf_id) ==
+>  		   CSR_HW_RF_ID_TYPE_CHIP_ID(CSR_HW_RF_ID_TYPE_HR) &&
+> -		   (trans->cfg != &iwl_ax200_cfg_cc ||
+> +		   ((trans->cfg != &iwl_ax200_cfg_cc &&
+> +		     trans->cfg != &killer1650x_2ax_cfg &&
+> +		     trans->cfg != &killer1650w_2ax_cfg) ||
+>  		    trans->hw_rev == CSR_HW_REV_TYPE_QNJ_B0)) {
+>  		u32 hw_status;
+> 
 
-Thanks! Applied to our internal tree and will reach the mainline
-following our normal upstreaming process.
+Thanks for your patch, Cyrus! We already have an identical patch in our
+internal tree and it will reach the mainline soon.
 
 --
 Cheers,
