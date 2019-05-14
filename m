@@ -2,92 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 687CF1C442
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 09:59:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 616D41C452
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 10:01:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726201AbfENH7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 03:59:08 -0400
-Received: from www62.your-server.de ([213.133.104.62]:53778 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725866AbfENH7I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 03:59:08 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hQSL1-0002k6-Hz; Tue, 14 May 2019 09:59:03 +0200
-Received: from [178.199.41.31] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hQSL1-000Xav-C8; Tue, 14 May 2019 09:59:03 +0200
-Subject: Re: [PATCH bpf 1/3] bpf: add map_lookup_elem_sys_only for lookups
- from syscall side
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        bpf@vger.kernel.org, Networking <netdev@vger.kernel.org>
-References: <cover.1557789256.git.daniel@iogearbox.net>
- <505e5dfeea6ab7dd3719bb9863fc50e7595e06ed.1557789256.git.daniel@iogearbox.net>
- <CAEf4BzZc_8FfHKA0rEvgx8T0xRWQp-2scm1N+nwroXi5enDh_g@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <76dde419-7204-0aa0-3251-f52c2c15be85@iogearbox.net>
-Date:   Tue, 14 May 2019 09:59:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726246AbfENIBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 04:01:42 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:44110 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725899AbfENIBm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 May 2019 04:01:42 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 865C5C05FBD7;
+        Tue, 14 May 2019 08:01:39 +0000 (UTC)
+Received: from bistromath.localdomain (unknown [10.40.205.249])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B69875D721;
+        Tue, 14 May 2019 08:01:30 +0000 (UTC)
+Date:   Tue, 14 May 2019 10:01:27 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org, Dan Winship <danw@redhat.com>
+Subject: Re: [PATCH net v2] rtnetlink: always put ILFA_LINK for links with a
+ link-netnsid
+Message-ID: <20190514080127.GA17749@bistromath.localdomain>
+References: <d5c4710117d390e0f204b7046483727daf452233.1557755096.git.sd@queasysnail.net>
+ <b89367f0-18d5-61b2-2572-b1e5b4588d8d@6wind.com>
+ <20190513150812.GA18478@bistromath.localdomain>
+ <771b21d6-3b1e-c118-2907-5b5782f7cb92@6wind.com>
+ <20190513214648.GA29270@bistromath.localdomain>
+ <65c8778c-9be9-c81f-5a9b-13e070ca38da@6wind.com>
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzZc_8FfHKA0rEvgx8T0xRWQp-2scm1N+nwroXi5enDh_g@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25448/Mon May 13 09:57:34 2019)
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <65c8778c-9be9-c81f-5a9b-13e070ca38da@6wind.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Tue, 14 May 2019 08:01:41 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/14/2019 07:04 AM, Andrii Nakryiko wrote:
-> On Mon, May 13, 2019 at 4:20 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>
->> Add a callback map_lookup_elem_sys_only() that map implementations
->> could use over map_lookup_elem() from system call side in case the
->> map implementation needs to handle the latter differently than from
->> the BPF data path. If map_lookup_elem_sys_only() is set, this will
->> be preferred pick for map lookups out of user space. This hook is
-> 
-> This is kind of surprising behavior  w/ preferred vs default lookup
-> code path. Why the desired behavior can't be achieved with an extra
-> flag, similar to BPF_F_LOCK? It seems like it will be more explicit,
-> more extensible and more generic approach, avoiding duplication of
-> lookup semantics.
+2019-05-14, 09:32:32 +0200, Nicolas Dichtel wrote:
+> Le 13/05/2019 à 23:46, Sabrina Dubroca a écrit :
+> > 2019-05-13, 17:13:36 +0200, Nicolas Dichtel wrote:
+> >> Le 13/05/2019 à 17:08, Sabrina Dubroca a écrit :
+> >>> 2019-05-13, 16:50:51 +0200, Nicolas Dichtel wrote:
+> >>>> Le 13/05/2019 à 15:47, Sabrina Dubroca a écrit :
+> >>>>> Currently, nla_put_iflink() doesn't put the IFLA_LINK attribute when
+> >>>>> iflink == ifindex.
+> >>>>>
+> >>>>> In some cases, a device can be created in a different netns with the
+> >>>>> same ifindex as its parent. That device will not dump its IFLA_LINK
+> >>>>> attribute, which can confuse some userspace software that expects it.
+> >>>>> For example, if the last ifindex created in init_net and foo are both
+> >>>>> 8, these commands will trigger the issue:
+> >>>>>
+> >>>>>     ip link add parent type dummy                   # ifindex 9
+> >>>>>     ip link add link parent netns foo type macvlan  # ifindex 9 in ns foo
+> >>>>>
+> >>>>> So, in case a device puts the IFLA_LINK_NETNSID attribute in a dump,
+> >>>>> always put the IFLA_LINK attribute as well.
+> >>>>>
+> >>>>> Thanks to Dan Winship for analyzing the original OpenShift bug down to
+> >>>>> the missing netlink attribute.
+> >>>>>
+> >>>>> Analyzed-by: Dan Winship <danw@redhat.com>
+> >>>>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> >>>> I would say:
+> >>>> Fixes: 5e6700b3bf98 ("sit: add support of x-netns")
+> >>>>
+> >>>> Because before this patch, there was no device with an iflink that can be put in
+> >>>> another netns.
+> >>>
+> >>> That tells us how far back we might want to backport this fix, but not
+> >>> which commit introduced the bug. I think Fixes should refer to the
+> >>> introduction of the faulty code, not to what patch made it visible (if
+> >>> we can find both).
+> >> No sure to follow you. The problem you describe cannot happen before commit
+> >> 5e6700b3bf98, so there cannot be a "faulty" patch before that commit.
+> > 
+> > What about macvlan devices?
+> > 
+> > From commit b863ceb7ddce ("[NET]: Add macvlan driver"):
+> > 
+> > static int macvlan_init(struct net_device *dev)
+> > {
+> > ...
+> >         dev->iflink             = lowerdev->ifindex;
+> > ...
+> > }
+> > 
+> > vlan devices also had an iflink assigned since commit ddd7bf9fe4e5.
+> > 
+> > What am I missing?
+> You miss the fact that netns have been introduced after both commits.
 
-For lookup from syscall side, this is possible of course. Given the
-current situation breaks heuristic with any walks of the LRU map, I
-presume you are saying something like an opt-in flag such as
-BPF_F_MARK_USED would be more useful? I was thinking about something
-like this initially, but then I couldn't come up with a concrete use
-case where it's needed/useful today for user space. Given that, my
-preference was to only add such flag wait until there is an actual
-need for it, and in any case, it is trivial to add it later on. Do
-you have a concrete need for it today that would justify such flag?
+Ah, right.
 
-> E.g., for LRU map, with flag on lookup, one can decide whether lookup
-> from inside BPF program (not just from syscall side!) should modify
-> LRU ordering or not, simply by specifying extra flag. Am I missing
-> some complication that prevents us from doing it that way?
+> What about this one?
+> Fixes: d8a5ec672768 ("[NET]: netlink support for moving devices between network
+> namespaces.")
 
-For programs it's a bit tricky. The BPF call interface is ...
+Nice. Now I think the bug can't really trigger unless one of these
+commits are present:
 
-  BPF_CALL_2(bpf_map_lookup_elem, struct bpf_map *, map, void *, key)
+aa79e66eee5d ("net: Make ifindex generation per-net namespace")
+9c7dafbfab15 ("net: Allow to create links with given ifindex")
 
-... meaning verifier does not care what argument 3 and beyond contains.
-From BPF context/pov, it could also be uninitialized register. This would
-mean, we'd need to add a BPF_CALL_3(bpf_map_lookup_elem2, ...) interface
-which programs would use instead (and to not break existing ones), or
-some other new helper call that gets a map value argument to unmark the
-element from LRU side. While all doable one way or another although bit
-hacky, we should probably clarify and understand the use case for it
-first, thus brings me back to the last question from above paragraph.
+I'll use those two as Fixes tags for v3, unless you want something
+different.
 
 Thanks,
-Daniel
+
+-- 
+Sabrina
