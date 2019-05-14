@@ -2,166 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC681C95D
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 15:25:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FB611CA04
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 16:06:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbfENNZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 09:25:41 -0400
-Received: from mail.bix.bg ([193.105.196.21]:57377 "HELO mail.bix.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-        id S1726216AbfENNZh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 09:25:37 -0400
-Received: (qmail 17209 invoked from network); 14 May 2019 13:25:36 -0000
-Received: from d2.declera.com (212.116.131.122)
-  by indigo.declera.com with SMTP; 14 May 2019 13:25:36 -0000
-Message-ID: <d9f15f5266bcf748dfe2bc937c9cdaa22ccc2764.camel@declera.com>
-Subject: Re: mvpp2:  oops on first received packet
-From:   Yanko Kaneti <yaneti@declera.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Marcin Wojtas <mw@semihalf.com>
-Cc:     netdev <netdev@vger.kernel.org>, Matteo Croce <mcroce@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Luka Perkov <luka.perkov@sartura.hr>
-Date:   Tue, 14 May 2019 16:25:36 +0300
-In-Reply-To: <20190514143212.5abaf995@bootlin.com>
-References: <856dc9462c31bc9f102940c61f94db1f44574733.camel@declera.com>
-         <20190514121948.4def4872@carbon> <20190514143212.5abaf995@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.33.1 (3.33.1-1.fc31) 
+        id S1726387AbfENOFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 10:05:52 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:36250 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726221AbfENOFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 10:05:52 -0400
+Received: by mail-wr1-f66.google.com with SMTP id s17so2916082wru.3
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 07:05:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=HFrxKRJ5HNStlbUTQZyFY7J10wCh/Ba3Wo5fQJBjPyQ=;
+        b=GS3pZxdIURHPf8w/COarHAYYPyZNOGpYNUhNBpnKrH56Pq4TKJKmu4rDAz0qHOm493
+         ujSgJeZELeDRlg5Bzen736+xXwfei+JY8RCNGANmPWFYL+0hiApN5dHpLXqTZSu6y8bv
+         c4Py00SIGhk9lnH0sulLvwp1I0Dug6D8uMUXY+L/DHzLvzmTOtvqfXak4JQZB/EjRzXl
+         ldFGRuwmgFkcJMBH1CzKF32Okd3f8mKnf3V8LB/hKCmhsWbswb8Y5BhPlKk2Ndixgtfp
+         GmepfBsKPKlsxnkc3TsVMS1xvdlFwdc/LOCVCfn7OfdKvYCWlo99wiGfROK3T4bsQGWn
+         mKuA==
+X-Gm-Message-State: APjAAAU2ShRrtgWGRZ38H+t1U/AEjdkEq/ZeFb5Gi9gxbGEDZZNsB2MJ
+        2gzvbNwJkDpMwVXA+gOfKtG6gw==
+X-Google-Smtp-Source: APXvYqw125K8xwI4XsobgwXdSL1K0hlf2aXA2HtrmE4RRFWiK7i4AUBOj5YqSNVzCFCZhGhmte/4UQ==
+X-Received: by 2002:adf:eb44:: with SMTP id u4mr22038936wrn.83.1557842751050;
+        Tue, 14 May 2019 07:05:51 -0700 (PDT)
+Received: from linux.home (2a01cb05850ddf00045dd60e6368f84b.ipv6.abo.wanadoo.fr. [2a01:cb05:850d:df00:45d:d60e:6368:f84b])
+        by smtp.gmail.com with ESMTPSA id x187sm3488139wmb.33.2019.05.14.07.05.49
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 14 May 2019 07:05:50 -0700 (PDT)
+Date:   Tue, 14 May 2019 16:05:48 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     davem@davemloft.net, paulus@samba.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] ppp: deflate: Fix possible crash in deflate_init
+Message-ID: <20190514140547.GA25993@linux.home>
+References: <20190514074300.42588-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190514074300.42588-1-yuehaibing@huawei.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-05-14 at 14:32 +0200, Maxime Chevallier wrote:
-> Hi Yanko,
+On Tue, May 14, 2019 at 03:43:00PM +0800, YueHaibing wrote:
 > 
-> > On Tue, 14 May 2019 10:29:31 +0300
-> > Yanko Kaneti <yaneti@declera.com> wrote:
-> > 
-> > > Hello,
-> > > 
-> > > I am trying to get some Fedora working on the MACCHIATObin SingleShot
-> > > and I am getting an OOPS on what seems to be the first received packet
-> > > on the gigabit port.
-> > > 
-> > > I've tried both 5.0.x stable and 5.1.1 with the same result.  
-> > > mvpp2 f4000000.ethernet eth2: Link is Up - 1Gbps/Full - flow control rx/tx
-> > > IPv6: ADDRCONF(NETDEV_CHANGE): eth2: link becomes ready
-> > > page:ffff7e0001ff1000 count:0 mapcount:0 mapping:0000000000000000 index:0x0
-> > > flags: 0x1fffe000000000()
-> > > raw: 001fffe000000000 ffff7e0001ff1008 ffff7e0001ff1008 0000000000000000
-> > > raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-> > > page dumped because: VM_BUG_ON_PAGE(page_ref_count(page) == 0)  
-> > 
-> > Looks like a page refcnt bug (trying to free a page with already have
-> > zero refcnt).
+> If ppp_deflate fails to register in deflate_init,
+> module initialization failed out, however
+> ppp_deflate_draft may has been regiestred and not
+> unregistered before return.
+> Then the seconed modprobe will trigger crash like this.
 > 
-> This looks like another issue that was reported here, where the cause
-> was in the EFI firmware :
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  drivers/net/ppp/ppp_deflate.c | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
 > 
-> https://lore.kernel.org/netdev/6355174d-4ab6-595d-17db-311bce607aef@arm.com/
-> 
-> Can you give some details on the version of the firmware you have and
-> if you are using EFI or uboot ?
-
-
-I am booting a UEFI enabled uboot as built by Fedora , wrapped around by
-the Marvell ATF, v18.12 , also tried with 17.10 without a difference.
-From an SD card. 4G memory DIMM as supplied by SolidRun.
-
-Uboot in fedora is currently at 2019-04, with a number of uefi patches
-you can see here:
-https://src.fedoraproject.org/rpms/uboot-tools/tree/master
-I belive all of the patches are about teaching uboot about the generic
-distro agnostic UEFI setup and not something to do with memory or board
-config.
-
-I've also tried uboot master + distro agnostic patches with the same
-result.
-
-My PAGE_SIZE is the Fedora default 4096. Fedora 30 aarch kernels and
-userspace unmodified.
-
-My general interest is about running unmodified Fedora on this board.
-I am not sure if uboot or EDK2 with the marvell build instructions is
-the best way to go about it.
-
-Thanks 
-Yanko
-> 
-> Maybe Marcin could confirm this is the same issue as what happened in
-> this thread.
-> 
-> Thanks,
-> 
-> Maxime
-> 
-> > > ------------[ cut here ]------------
-> > > kernel BUG at include/linux/mm.h:547!
-> > > Internal error: Oops - BUG: 0 [#1] SMP
-> > > Modules linked in: crct10dif_ce ghash_ce spi_orion i2c_mux_pca954x i2c_mux sfp mdio_i2c omap_rng mvpp2 armada_thermal phylink marvell sbsa_gwdt mvmdio vfat fat mmc_block rtc_armada38x sdhci_xenon_driver phy_generic sdhci_pltfm xhci_plat_hcd ahci_platform phy_mvebu_cp110_comphy i2c_mv64xxx sdhci fuse
-> > > Process swapper/0 (pid: 0, stack limit = 0x0000000058631e79)
-> > > CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.1.1-300.fc30.aarch64 #1
-> > > Hardware name: Marvell mvebu_armada-8k/mvebu_armada-8k, BIOS 2019.04 04/18/2019
-> > > pstate: 40400005 (nZcv daif +PAN -UAO)
-> > > pc : page_frag_free+0x74/0xa0
-> > > lr : page_frag_free+0x74/0xa0
-> > > sp : ffff000010003a60
-> > > x29: ffff000010003a60 x28: ffff0000117e5480 
-> > > x27: 0000000000000000 x26: 0000000000000000 
-> > > x25: ffff80007fc40462 x24: ffff80007fc40458 
-> > > x23: ffff80007fc40450 x22: ffff0000117dbc00 
-> > > x21: ffff8001356c2a00 x20: ffff80007fc404c0 
-> > > x19: ffff80007fc40400 x18: 0000000000000000 
-> > > x17: 0000000000000000 x16: 0000000000000000 
-> > > x15: 0000000000000010 x14: ffffffffffffffff 
-> > > x13: ffff00009000375f x12: ffff000010003767 
-> > > x11: ffff000011679000 x10: ffff000010eb6428 
-> > > x9 : ffff00001185a000 x8 : 00000000000001c7 
-> > > x7 : 0000000000000015 x6 : 0000000000000001 
-> > > x5 : 0000000000000000 x4 : ffff80013f72a190 
-> > > x3 : ffff80013f730488 x2 : ffff80013f72a190 
-> > > x1 : 0000000000000000 x0 : 000000000000003e 
-> > > Call trace:
-> > >  page_frag_free+0x74/0xa0
-> > >  skb_free_head+0x28/0x48
-> > >  skb_release_data+0x13c/0x178
-> > >  skb_release_all+0x30/0x40
-> > >  consume_skb+0x38/0xc8
-> > >  arp_process+0x2d0/0x6e0
-> > >  arp_rcv+0x100/0x178
-> > >  __netif_receive_skb_one_core+0x50/0x60
-> > >  __netif_receive_skb+0x28/0x70
-> > >  netif_receive_skb_internal+0x44/0xd0
-> > >  napi_gro_receive+0x198/0x1c8
-> > >  mvpp2_rx+0x1f8/0x500 [mvpp2]
-> > >  mvpp2_poll+0x150/0x1e8 [mvpp2]
-> > >  napi_poll+0xb4/0x250
-> > >  net_rx_action+0xbc/0x1b0
-> > >  __do_softirq+0x138/0x334
-> > >  irq_exit+0xc0/0xe0
-> > >  __handle_domain_irq+0x70/0xc0
-> > >  gic_handle_irq+0x58/0xa8
-> > >  el1_irq+0xf0/0x1c0
-> > >  arch_cpu_idle+0x3c/0x1c8
-> > >  default_idle_call+0x20/0x3c
-> > >  cpuidle_idle_call+0x140/0x190
-> > >  do_idle+0xb0/0x108
-> > >  cpu_startup_entry+0x2c/0x30
-> > >  rest_init+0xc0/0xcc
-> > >  arch_call_rest_init+0x14/0x1c
-> > >  start_kernel+0x4ac/0x4c0
-> > > Code: aa0203e0 d0006101 91226021 9400cf32 (d4210000) 
-> > > ---[ end trace 267606a8b5fb06cb ]---
-> > > Kernel panic - not syncing: Fatal exception in interrupt
-> > > SMP: stopping secondary CPUs
-> > > Kernel Offset: disabled
-> > > CPU features: 0x002,21006000
-> > > Memory Limit: none
-> > > ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---  
-
+> diff --git a/drivers/net/ppp/ppp_deflate.c b/drivers/net/ppp/ppp_deflate.c
+> index b5edc7f..2829efe 100644
+> --- a/drivers/net/ppp/ppp_deflate.c
+> +++ b/drivers/net/ppp/ppp_deflate.c
+> @@ -610,12 +610,16 @@ static void z_incomp(void *arg, unsigned char *ibuf, int icnt)
+>  
+>  static int __init deflate_init(void)
+>  {
+> -        int answer = ppp_register_compressor(&ppp_deflate);
+> -        if (answer == 0)
+> -                printk(KERN_INFO
+> -		       "PPP Deflate Compression module registered\n");
+> +	int answer;
+> +
+> +	answer = ppp_register_compressor(&ppp_deflate);
+> +	if (answer)
+> +		return answer;
+> +
+> +	pr_info("PPP Deflate Compression module registered\n");
+>  	ppp_register_compressor(&ppp_deflate_draft);
+> -        return answer;
+> +
+> +	return 0;
+>  }
+>  
+I'd be cleaner to also check for ppp_deflate_draft registration failure
+IMHO (and print the log line only if both compressors get registered
+successfully).
