@@ -2,56 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E0381CA70
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 16:33:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CFE41CAA5
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 16:43:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726098AbfENOdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 10:33:24 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39036 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725928AbfENOdY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 10:33:24 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1351C307C94F;
-        Tue, 14 May 2019 14:33:16 +0000 (UTC)
-Received: from localhost (ovpn-200-27.brq.redhat.com [10.40.200.27])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E24155C5BB;
-        Tue, 14 May 2019 14:33:12 +0000 (UTC)
-Date:   Tue, 14 May 2019 16:33:08 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Mikael Magnusson <mikael.kernel@lists.m7n.se>
-Cc:     Wei Wang <weiwan@google.com>, David Ahern <dsahern@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: IPv6 PMTU discovery fails with source-specific routing
-Message-ID: <20190514163308.2f870f27@redhat.com>
-In-Reply-To: <CAEA6p_AddQqy+v+LUT6gsqOC31RhMkVnZPLja8a4n9XQmK8TRA@mail.gmail.com>
-References: <71e7331f-d528-430e-f880-e995ff53d362@lists.m7n.se>
-        <2667a075-7a51-d1e0-c4e7-cf0d011784b9@gmail.com>
-        <CAEA6p_AddQqy+v+LUT6gsqOC31RhMkVnZPLja8a4n9XQmK8TRA@mail.gmail.com>
-Organization: Red Hat
+        id S1726591AbfENOnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 10:43:05 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8191 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726025AbfENOnE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 May 2019 10:43:04 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id CDB0D1582A9B13AFE968;
+        Tue, 14 May 2019 22:42:59 +0800 (CST)
+Received: from [127.0.0.1] (10.177.31.96) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Tue, 14 May 2019
+ 22:42:55 +0800
+Subject: Re: [PATCH] ppp: deflate: Fix possible crash in deflate_init
+To:     Guillaume Nault <gnault@redhat.com>
+References: <20190514074300.42588-1-yuehaibing@huawei.com>
+ <20190514140547.GA25993@linux.home>
+CC:     <davem@davemloft.net>, <paulus@samba.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+From:   YueHaibing <yuehaibing@huawei.com>
+Message-ID: <f276c92f-f112-ed47-30c6-d41211804eb7@huawei.com>
+Date:   Tue, 14 May 2019 22:42:54 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190514140547.GA25993@linux.home>
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 14 May 2019 14:33:24 +0000 (UTC)
+X-Originating-IP: [10.177.31.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 May 2019 23:12:31 -0700
-Wei Wang <weiwan@google.com> wrote:
+On 2019/5/14 22:05, Guillaume Nault wrote:
+> On Tue, May 14, 2019 at 03:43:00PM +0800, YueHaibing wrote:
+>>
+>> If ppp_deflate fails to register in deflate_init,
+>> module initialization failed out, however
+>> ppp_deflate_draft may has been regiestred and not
+>> unregistered before return.
+>> Then the seconed modprobe will trigger crash like this.
+>>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>> ---
+>>  drivers/net/ppp/ppp_deflate.c | 14 +++++++++-----
+>>  1 file changed, 9 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/net/ppp/ppp_deflate.c b/drivers/net/ppp/ppp_deflate.c
+>> index b5edc7f..2829efe 100644
+>> --- a/drivers/net/ppp/ppp_deflate.c
+>> +++ b/drivers/net/ppp/ppp_deflate.c
+>> @@ -610,12 +610,16 @@ static void z_incomp(void *arg, unsigned char *ibuf, int icnt)
+>>  
+>>  static int __init deflate_init(void)
+>>  {
+>> -        int answer = ppp_register_compressor(&ppp_deflate);
+>> -        if (answer == 0)
+>> -                printk(KERN_INFO
+>> -		       "PPP Deflate Compression module registered\n");
+>> +	int answer;
+>> +
+>> +	answer = ppp_register_compressor(&ppp_deflate);
+>> +	if (answer)
+>> +		return answer;
+>> +
+>> +	pr_info("PPP Deflate Compression module registered\n");
+>>  	ppp_register_compressor(&ppp_deflate_draft);
+>> -        return answer;
+>> +
+>> +	return 0;
+>>  }
+>>  
+> I'd be cleaner to also check for ppp_deflate_draft registration failure
+> IMHO (and print the log line only if both compressors get registered
+> successfully).
 
-> Thanks Mikael for reporting this issue. And thanks David for the bisection.
-> Let me spend some time to reproduce it and see what is going on.
+Ok, will send v2 to do that, thanks!
 
-Mikael, by the way, once this is sorted out, it would be nice if you
-could add your test as a case in tools/testing/selftests/net/pmtu.sh --
-you could probably reuse all the setup parts that are already
-implemented there.
+> 
+> .
+> 
 
--- 
-Stefano
