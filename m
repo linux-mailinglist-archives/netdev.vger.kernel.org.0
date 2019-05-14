@@ -2,58 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84D091CEAB
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 20:09:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23CC51CF78
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 20:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727264AbfENSJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 14:09:23 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56536 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726229AbfENSJX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 14:09:23 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5049E14ACC55E;
-        Tue, 14 May 2019 11:09:22 -0700 (PDT)
-Date:   Tue, 14 May 2019 11:09:19 -0700 (PDT)
-Message-Id: <20190514.110919.1280826013505735007.davem@davemloft.net>
-To:     Jose.Abreu@synopsys.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Joao.Pinto@synopsys.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, clabbe.montjoie@gmail.com, andrew@lunn.ch
-Subject: Re: [RFC net-next v2 00/14] net: stmmac: Selftests
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1557848472.git.joabreu@synopsys.com>
-References: <cover.1557848472.git.joabreu@synopsys.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 14 May 2019 11:09:22 -0700 (PDT)
+        id S1727661AbfENS5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 14:57:18 -0400
+Received: from mail.maddes.net ([62.75.236.153]:42647 "EHLO mail.maddes.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727262AbfENS5S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 May 2019 14:57:18 -0400
+X-Greylist: delayed 484 seconds by postgrey-1.27 at vger.kernel.org; Tue, 14 May 2019 14:57:17 EDT
+Received: from www.maddes.net (zulu1959.startdedicated.de [62.75.236.153])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mail.maddes.net (Postfix) with ESMTPSA id 9621A4043E
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 20:49:12 +0200 (CEST)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Tue, 14 May 2019 20:49:12 +0200
+From:   "M. Buecher" <maddes+kernel@maddes.net>
+To:     netdev@vger.kernel.org
+Subject: IP-Aliasing for IPv6?
+Message-ID: <5c3590c1568251d0f92b61138b7a7f10@maddes.net>
+X-Sender: maddes+kernel@maddes.net
+User-Agent: Roundcube Webmail/1.1.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jose Abreu <Jose.Abreu@synopsys.com>
-Date: Tue, 14 May 2019 17:45:22 +0200
+Preamble: I'm just a network hobbyist at home, so please bear with me if 
+something in this mail is "stupid" from an expert's point of view.
 
-> [ Submitting with net-next closed for proper review and testing. ]
-> 
-> This introduces selftests support in stmmac driver. We add 9 basic sanity
-> checks and MAC loopback support for all cores within the driver. This way
-> more tests can easily be added in the future and can be run in virtually
-> any MAC/GMAC/QoS/XGMAC platform.
-> 
-> Having this we can find regressions and missing features in the driver
-> while at the same time we can check if the IP is correctly working.
-> 
-> We have been using this for some time now and I do have more tests to
-> submit in the feature. My experience is that although writing the tests
-> adds more development time, the gain results are obvious.
-> 
-> I let this feature optional within the driver under a Kconfig option.
+According to the documentation [1] "IP-Aliasing" is an obsolete way to 
+manage multiple IP[v4]-addresses/masks on an interface.
+For having multiple IP[v4]-addresses on an interface this is absolutely 
+true.
 
-Generally, this series looks fine to me.
+For me "IP-Aliasing" is still a valid, good and easy way to "group" ip 
+addresses to run multiple instances of the same service with different 
+IPs via virtual interfaces on a single physical NIC.
+
+Short story:
+I recently added IPv6 to my LAN setup and recognized that IP-Aliasing is 
+not support by the kernel.
+Could IP-Aliasing support for IPv6 be added to the kernel?
+
+Long story:
+I tried to find out how to do virtual network interfaces "The Right Way 
+(tm)" nowadays.
+So I came across MACVLAN, IPVLAN and alike on the internet, mostly in 
+conjunction with containers or VMs.
+But MACVLAN/IPVLAN do not provide the same usability as "IP-Aliasing", 
+e.g. user needs to learn a lot about network infrastructre, sysctl 
+settings, forwarding, etc.
+They also do not provide the same functionality, e.g. the virtual 
+interfaces cannot reach their parent interface.
+
+In my tests with MACVLAN (bridge)/IPVLAN (L2) pinging between parent and 
+virtual devices with `ping -I <device> <target ip>` failed for IPv4 and 
+IPV6.
+Pinging from outside MACVLAN worked fine for IPv4 but not IPv6, while 
+IPVLAN failed also for pinging with IPv4 to the virtual interfaces. 
+Pinging to outside only worked from the parent device.
+Unfortunately I could not find any source on the internet that describes 
+how to setup MACVLAN/IPVLAN and their surroundings correctly for a 
+single machine. It seems they are just used for containers and VMs.
+
+If it is possible to setup MACVLAN/IPVLAN that they can reach and also 
+can be reached from their parent device, other virtual devices and from 
+outside, then please guide me to the right direction or provide links. 
+Would be much appreciated.
+Otherwise I would like to see IP-Aliasing for IPv6.
+
+Hope to stimulate further thoughts and thanks for reading
+Matthias "Maddes" Bücher
+
+[1] https://www.kernel.org/doc/html/latest/networking/alias.html
+
