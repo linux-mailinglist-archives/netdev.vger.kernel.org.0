@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 769A51C0FE
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 05:38:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B5C01C0FF
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 05:38:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbfENDhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726804AbfENDhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 13 May 2019 23:37:40 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:60003 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726677AbfENDhj (ORCPT
+Received: from mailgw02.mediatek.com ([210.61.82.184]:56571 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726672AbfENDhj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 23:37:39 -0400
-X-UUID: 3e8f6e16f38e4db2badf82b5f7f493f0-20190514
-X-UUID: 3e8f6e16f38e4db2badf82b5f7f493f0-20190514
-Received: from mtkmrs01.mediatek.inc [(172.21.131.159)] by mailgw01.mediatek.com
+X-UUID: 7e7b64bdd5c743cca87edf23b68a1ce2-20190514
+X-UUID: 7e7b64bdd5c743cca87edf23b68a1ce2-20190514
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
         (mhqrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 990929432; Tue, 14 May 2019 11:37:32 +0800
+        with ESMTP id 1437643664; Tue, 14 May 2019 11:37:32 +0800
 Received: from mtkcas09.mediatek.inc (172.21.101.178) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Tue, 14 May 2019 11:37:29 +0800
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Tue, 14 May 2019 11:37:30 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas09.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Tue, 14 May 2019 11:37:29 +0800
+ Transport; Tue, 14 May 2019 11:37:30 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     Jose Abreu <joabreu@synopsys.com>
 CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -36,46 +36,66 @@ CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
         <biao.huang@mediatek.com>, <jianguo.zhang@mediatek.comi>,
         <boon.leong.ong@intel.com>
-Subject: [v3, PATCH 1/4] net: stmmac: update rx tail pointer register to fix rx dma hang issue.
-Date:   Tue, 14 May 2019 11:37:23 +0800
-Message-ID: <1557805046-306-2-git-send-email-biao.huang@mediatek.com>
+Subject: [v3, PATCH 2/4] net: stmmac: fix csr_clk can't be zero issue
+Date:   Tue, 14 May 2019 11:37:24 +0800
+Message-ID: <1557805046-306-3-git-send-email-biao.huang@mediatek.com>
 X-Mailer: git-send-email 1.7.9.5
 In-Reply-To: <1557805046-306-1-git-send-email-biao.huang@mediatek.com>
 References: <1557805046-306-1-git-send-email-biao.huang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-TM-SNTS-SMTP: E088786E60850BAFA2F416078B4746A1156CA15658EC3916A3A3E2ED30BAED4A2000:8
 X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we will not update the receive descriptor tail pointer in
-stmmac_rx_refill. Rx dma will think no available descriptors and stop
-once received packets exceed DMA_RX_SIZE, so that the rx only test will fail.
+The specific clk_csr value can be zero, and
+stmmac_clk is necessary for MDC clock which can be set dynamically.
+So, change the condition from plat->clk_csr to plat->stmmac_clk to
+fix clk_csr can't be zero issue.
 
-Update the receive tail pointer in stmmac_rx_refill to add more descriptors
-to the rx channel, so packets can be received continually
-
-Fixes: 54139cf3bb33 ("net: stmmac: adding multiple buffers for rx")
+Fixes: cd7201f477b9 ("stmmac: MDC clock dynamically based on the csr clock input")
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |    6 +++---
+ .../net/ethernet/stmicro/stmmac/stmmac_platform.c  |    5 ++++-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 97c5e1a..906f2be 100644
+index 906f2be..a905b63 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3336,6 +3336,7 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
- 		entry = STMMAC_GET_ENTRY(entry, DMA_RX_SIZE);
- 	}
- 	rx_q->dirty_rx = entry;
-+	stmmac_set_rx_tail_ptr(priv, priv->ioaddr, rx_q->rx_tail_addr, queue);
- }
+@@ -4374,10 +4374,10 @@ int stmmac_dvr_probe(struct device *device,
+ 	 * set the MDC clock dynamically according to the csr actual
+ 	 * clock input.
+ 	 */
+-	if (!priv->plat->clk_csr)
+-		stmmac_clk_csr_set(priv);
+-	else
++	if (priv->plat->clk_csr >= 0)
+ 		priv->clk_csr = priv->plat->clk_csr;
++	else
++		stmmac_clk_csr_set(priv);
  
- /**
+ 	stmmac_check_pcs_mode(priv);
+ 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index 3031f2b..f45bfbe 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -408,7 +408,10 @@ struct plat_stmmacenet_data *
+ 	/* Default to phy auto-detection */
+ 	plat->phy_addr = -1;
+ 
+-	/* Get clk_csr from device tree */
++	/* Default to get clk_csr from stmmac_clk_crs_set(),
++	 * or get clk_csr from device tree.
++	 */
++	plat->clk_csr = -1;
+ 	of_property_read_u32(np, "clk_csr", &plat->clk_csr);
+ 
+ 	/* "snps,phy-addr" is not a standard property. Mark it as deprecated
 -- 
 1.7.9.5
 
