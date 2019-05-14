@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E671A1CC20
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 17:46:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBCE01CC1E
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 17:46:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726529AbfENPpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 11:45:42 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:36290 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726036AbfENPpl (ORCPT
+        id S1726557AbfENPpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 11:45:43 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:35770 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726044AbfENPpl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 11:45:41 -0400
 Received: from mailhost.synopsys.com (dc2-mailhost2.synopsys.com [10.12.135.162])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 9A30CC00DA;
-        Tue, 14 May 2019 15:45:45 +0000 (UTC)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 59AF1C0174;
+        Tue, 14 May 2019 15:45:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1557848745; bh=rTO3jYQQfgYc76eeKdZOIoPwkE+L6QFDgaMJpWlGQbg=;
+        t=1557848731; bh=Ky3auTImAfe37zrIkXpYgTd4Sk3t6wEQs0RE5Rcse8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=czIxVLvoEUvEjen11EzK641m2Pi9oTFVBgRIPZQo2sXTAqZqSHvIFiB3cSoaw6vcb
-         417MoIutfC/oZ1Kej+PMy0yvtABkdE8NliYmGJTad4BKMywZIpc+mZVLh3i5b4WUf8
-         S3D/XZ/dyXzcQRAgCr3SxaWybCjVX6hp4TjdPSoh0SuNj+Iy6hF1IzSKQ9eMqD1cMn
-         K6plJSmiVjZlYSoaPWZHq3um2qWHtiOltW88EuFA3utfMjP4WlEza8XHJmFdWYjLlG
-         uAt5qvsuzGzeG+XJc3Vdk+QpJb00eXIscXxSzqViB8i3HFaWDGZCVaCp8MT4GmhF8J
-         iq2NIBzKK7uiw==
-Received: from de02.synopsys.com (germany.internal.synopsys.com [10.225.17.21])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 11093A0245;
+        b=HPhNvCZiExgGYqGUf6fV6Zhe7k4V7e9KGiMNj4lLHxmp3KlqKOngpSyFxj24/yPQg
+         T2vpxJOhD768iSiNs28K0Xm33Nsf3vH8wwotw6AKzW/R93NqN5F0dzTaRsiTO5rBHE
+         wEoKeizaqLSea5A9vwWNL2Szf/3VPKk+YZAhhagfUe+AyqdaAvzWZTxSn4ex7UWOcM
+         K8iqlXrVcA93JU5cvFoynz2xZ8xI+KDcWHOfJz0ipq6SEoAUtFZECxSAC9YVmQlzJI
+         ndcDEfBWTglM7rnQ0bDMvpTGuXlRJYteGhvjhAPJV77G4FTswQbXlOEFYoskDh77SO
+         QkvKrHXjvNM2w==
+Received: from de02.synopsys.com (de02.internal.synopsys.com [10.225.17.21])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 10FABA0242;
         Tue, 14 May 2019 15:45:39 +0000 (UTC)
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by de02.synopsys.com (Postfix) with ESMTP id 20B543EA0D;
+        by de02.synopsys.com (Postfix) with ESMTP id 2F0D23EA14;
         Tue, 14 May 2019 17:45:39 +0200 (CEST)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         Corentin Labbe <clabbe.montjoie@gmail.com>
-Subject: [RFC net-next v2 01/14] net: stmmac: Add MAC loopback callback to HWIF
-Date:   Tue, 14 May 2019 17:45:23 +0200
-Message-Id: <25320f72f6ddcd63a0eaf46824cd2aafb54b0050.1557848472.git.joabreu@synopsys.com>
+Subject: [RFC net-next v2 02/14] net: stmmac: dwmac100: Add MAC loopback support
+Date:   Tue, 14 May 2019 17:45:24 +0200
+Message-Id: <74f003170161809eb914504c18311eaf7b0a617a.1557848472.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1557848472.git.joabreu@synopsys.com>
 References: <cover.1557848472.git.joabreu@synopsys.com>
@@ -53,9 +53,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for the addition of selftests support for stmmac we add a
-new callback to HWIF that can be used to set the controller in loopback
-mode.
+In preparation for the addition of stmmac selftests we implement the MAC
+loopback callback in dwmac100 core.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 Cc: Joao Pinto <jpinto@synopsys.com>
@@ -64,31 +63,40 @@ Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
 Cc: Alexandre Torgue <alexandre.torgue@st.com>
 Cc: Corentin Labbe <clabbe.montjoie@gmail.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/hwif.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 5bb00234d961..9a000dc31d9e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -324,6 +324,8 @@ struct stmmac_ops {
- 	int (*flex_pps_config)(void __iomem *ioaddr, int index,
- 			       struct stmmac_pps_cfg *cfg, bool enable,
- 			       u32 sub_second_inc, u32 systime_flags);
-+	/* Loopback for selftests */
-+	void (*set_mac_loopback)(void __iomem *ioaddr, bool enable);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c
+index b735143987e1..d621b5189c41 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c
+@@ -160,6 +160,18 @@ static void dwmac100_pmt(struct mac_device_info *hw, unsigned long mode)
+ 	return;
+ }
+ 
++static void dwmac100_set_mac_loopback(void __iomem *ioaddr, bool enable)
++{
++	u32 value = readl(ioaddr + MAC_CONTROL);
++
++	if (enable)
++		value |= MAC_CONTROL_OM;
++	else
++		value &= ~MAC_CONTROL_OM;
++
++	writel(value, ioaddr + MAC_CONTROL);
++}
++
+ const struct stmmac_ops dwmac100_ops = {
+ 	.core_init = dwmac100_core_init,
+ 	.set_mac = stmmac_set_mac,
+@@ -171,6 +183,7 @@ const struct stmmac_ops dwmac100_ops = {
+ 	.pmt = dwmac100_pmt,
+ 	.set_umac_addr = dwmac100_set_umac_addr,
+ 	.get_umac_addr = dwmac100_get_umac_addr,
++	.set_mac_loopback = dwmac100_set_mac_loopback,
  };
  
- #define stmmac_core_init(__priv, __args...) \
-@@ -392,6 +394,8 @@ struct stmmac_ops {
- 	stmmac_do_callback(__priv, mac, rxp_config, __args)
- #define stmmac_flex_pps_config(__priv, __args...) \
- 	stmmac_do_callback(__priv, mac, flex_pps_config, __args)
-+#define stmmac_set_mac_loopback(__priv, __args...) \
-+	stmmac_do_void_callback(__priv, mac, set_mac_loopback, __args)
- 
- /* PTP and HW Timer helpers */
- struct stmmac_hwtimestamp {
+ int dwmac100_setup(struct stmmac_priv *priv)
 -- 
 2.7.4
 
