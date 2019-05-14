@@ -2,84 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 839E61C95E
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 15:27:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEAFE1C956
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 15:23:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726148AbfENN06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 09:26:58 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48368 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725854AbfENN06 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 09:26:58 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id AB97AAD36;
-        Tue, 14 May 2019 13:26:56 +0000 (UTC)
-Message-ID: <1557839644.11261.4.camel@suse.com>
-Subject: Re: [PATCH 2/3] aqc111: fix writing to the phy on BE
-From:   Oliver Neukum <oneukum@suse.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Date:   Tue, 14 May 2019 15:14:04 +0200
-In-Reply-To: <cd6754c6-8384-a65c-1c0e-0e3d2eaaa66b@aquantia.com>
-References: <20190509090818.9257-1-oneukum@suse.com>
-         <20190509090818.9257-2-oneukum@suse.com>
-         <cd6754c6-8384-a65c-1c0e-0e3d2eaaa66b@aquantia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.26.6 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726283AbfENNXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 09:23:31 -0400
+Received: from hostingweb31-40.netsons.net ([89.40.174.40]:39837 "EHLO
+        hostingweb31-40.netsons.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726246AbfENNXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 09:23:30 -0400
+Received: from [109.168.11.45] (port=60568 helo=pc-ceresoli.dev.aim)
+        by hostingweb31.netsons.net with esmtpa (Exim 4.91)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1hQXOp-00FJWI-FG; Tue, 14 May 2019 15:23:19 +0200
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+To:     netdev@vger.kernel.org
+Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org,
+        "Nicolas . Ferre" <Nicolas.Ferre@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Soren Brinkmann <soren.brinkmann@xilinx.com>,
+        Cyrille Pitchen <cyrille.pitchen@atmel.com>,
+        "shubhrajyoti . datta @ xilinx . com" <shubhrajyoti.datta@xilinx.com>,
+        Harini Katakam <harini.katakam@xilinx.com>
+Subject: [PATCH net RESEND] net: macb: fix error format in dev_err()
+Date:   Tue, 14 May 2019 15:23:07 +0200
+Message-Id: <20190514132307.15311-1-luca@lucaceresoli.net>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Di, 2019-05-14 at 12:11 +0000, Igor Russkikh wrote:
-> On 09.05.2019 12:08, Oliver Neukum wrote:
-> > When writing to the phy on BE architectures an internal data structure
-> > was directly given, leading to it being byte swapped in the wrong
-> > way for the CPU in 50% of all cases. A temporary buffer must be used.
-> > 
-> > Signed-off-by: Oliver Neukum <oneukum@suse.com>
-> > ---
-> >  drivers/net/usb/aqc111.c | 23 +++++++++++++++++------
-> >  1 file changed, 17 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
-> > index 408df2d335e3..599d560a8450 100644
-> > --- a/drivers/net/usb/aqc111.c
-> > +++ b/drivers/net/usb/aqc111.c
-> > @@ -320,6 +320,7 @@ static int aqc111_get_link_ksettings(struct net_device *net,
-> >  static void aqc111_set_phy_speed(struct usbnet *dev, u8 autoneg, u16 speed)
-> >  {
-> >  	struct aqc111_data *aqc111_data = dev->driver_priv;
-> > +	u32 phy_on_the_wire;
-> >  
-> >  	aqc111_data->phy_cfg &= ~AQ_ADV_MASK;
-> >  	aqc111_data->phy_cfg |= AQ_PAUSE;
-> > @@ -361,7 +362,8 @@ static void aqc111_set_phy_speed(struct usbnet *dev, u8 autoneg, u16 speed)
-> >  		}
-> >  	}
-> >  
-> > -	aqc111_write32_cmd(dev, AQ_PHY_OPS, 0, 0, &aqc111_data->phy_cfg);
-> > +	phy_on_the_wire = aqc111_data->phy_cfg;
-> > +	aqc111_write32_cmd(dev, AQ_PHY_OPS, 0, 0, &phy_on_the_wire);
-> 
-> Hi Oliver,
-> 
-> I see all write32_cmd and write16_cmd are using a temporary variable to do an
-> internal cpu_to_le32. Why this extra temporary storage is needed?
-> 
-> The question is actually for both 2nd and third patch.
-> In all the cases BE machine will store temporary bswap conversion in tmp
-> variable and will not actually touch actual field.
+Errors are negative numbers. Using %u shows them as very large positive
+numbers such as 4294967277 that don't make sense. Use the %d format
+instead, and get a much nicer -19.
 
-Hi,
+Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
+Fixes: b48e0bab142f ("net: macb: Migrate to devm clock interface")
+Fixes: 93b31f48b3ba ("net/macb: unify clock management")
+Fixes: 421d9df0628b ("net/macb: merge at91_ether driver into macb driver")
+Fixes: aead88bd0e99 ("net: ethernet: macb: Add support for rx_clk")
+Fixes: f5473d1d44e4 ("net: macb: Support clock management for tsu_clk")
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-I am most terribly sorry. I overlooked the copy. Shall I revert or will
-you.
+---
 
-	Sorry
-		Oliver
+No content change. Resending with 'net' in the subject and with Fixes: tags
+as suggested by Andrew Lunn. There are many because the error was added
+once and replicated while adding more dev_err() lines. Also adding
+Acked/Reviewed-by: tags got in the meanwhile.
+---
+ drivers/net/ethernet/cadence/macb_main.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index c049410bc888..bebd9b1aeb64 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -3343,7 +3343,7 @@ static int macb_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 		if (!err)
+ 			err = -ENODEV;
+ 
+-		dev_err(&pdev->dev, "failed to get macb_clk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to get macb_clk (%d)\n", err);
+ 		return err;
+ 	}
+ 
+@@ -3352,7 +3352,7 @@ static int macb_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 		if (!err)
+ 			err = -ENODEV;
+ 
+-		dev_err(&pdev->dev, "failed to get hclk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to get hclk (%d)\n", err);
+ 		return err;
+ 	}
+ 
+@@ -3370,31 +3370,31 @@ static int macb_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 
+ 	err = clk_prepare_enable(*pclk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable pclk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable pclk (%d)\n", err);
+ 		return err;
+ 	}
+ 
+ 	err = clk_prepare_enable(*hclk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable hclk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable hclk (%d)\n", err);
+ 		goto err_disable_pclk;
+ 	}
+ 
+ 	err = clk_prepare_enable(*tx_clk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable tx_clk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable tx_clk (%d)\n", err);
+ 		goto err_disable_hclk;
+ 	}
+ 
+ 	err = clk_prepare_enable(*rx_clk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable rx_clk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable rx_clk (%d)\n", err);
+ 		goto err_disable_txclk;
+ 	}
+ 
+ 	err = clk_prepare_enable(*tsu_clk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable tsu_clk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable tsu_clk (%d)\n", err);
+ 		goto err_disable_rxclk;
+ 	}
+ 
+@@ -3868,7 +3868,7 @@ static int at91ether_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 
+ 	err = clk_prepare_enable(*pclk);
+ 	if (err) {
+-		dev_err(&pdev->dev, "failed to enable pclk (%u)\n", err);
++		dev_err(&pdev->dev, "failed to enable pclk (%d)\n", err);
+ 		return err;
+ 	}
+ 
+-- 
+2.21.0
 
