@@ -2,146 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8652B1CCD4
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 18:21:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3641CD0F
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 18:33:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726279AbfENQVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 12:21:01 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45470 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726084AbfENQVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 12:21:01 -0400
-Received: by mail-wr1-f65.google.com with SMTP id b18so9934721wrq.12
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 09:21:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=BOCFSrhgfdaeCsPqx/9Z23ucW5WFX+NmToiNV2PrBeE=;
-        b=MgAq25z5JUla64JBPuMe8Kfv4XTa3Nbyhv1AvXoiBc+5+ZMdcRHkUfIexM9JRTEeZn
-         QpQ/Kqb364JdVkJY79ZSPHGmujbQGnOFe0P0klexQIZTDeVo2vp9Qg0QbtWBocxNcFW2
-         Vx2CVgHsCioWrPhHfnKyzj7W15X7/WBH1RQ24Neko/9QwyNXwEMvTAZVobnh55hh9idw
-         NE+RSvb2z5Mq8YtLqlDRhw+Ip6SjG402PwfgjCPR9OBVcPm1wt4E/3uO8e/KeTx2rFk5
-         Atm/nZy7WTu9Z5nq8eQNKCD55VclKwSwKO+XJp6FhoEyo3VW+PoytUpcbrVoQUkX/cQi
-         DiMg==
-X-Gm-Message-State: APjAAAX5i+opFzy3rP7qRs9CJR16dCM5USf9RU4LzLDLacNBgzVkxFHX
-        AUcdq+4qBg9PJJ6PnmTn1EWlRA==
-X-Google-Smtp-Source: APXvYqyscd4jQz6/42rGahRh0erb6xOt/MMNshG64dkL9Ee+1e2OY4Rd80gvnBFmXC+AkJhQaflnLg==
-X-Received: by 2002:adf:afcd:: with SMTP id y13mr21348543wrd.270.1557850859484;
-        Tue, 14 May 2019 09:20:59 -0700 (PDT)
-Received: from steredhat (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
-        by smtp.gmail.com with ESMTPSA id g3sm4407851wmf.9.2019.05.14.09.20.58
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 14 May 2019 09:20:58 -0700 (PDT)
-Date:   Tue, 14 May 2019 18:20:56 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH v2 7/8] vsock/virtio: increase RX buffer size to 64 KiB
-Message-ID: <20190514162056.5aotcuzsi6e6wya7@steredhat>
-References: <20190510125843.95587-1-sgarzare@redhat.com>
- <20190510125843.95587-8-sgarzare@redhat.com>
- <bf0416f1-0e69-722d-75ce-3d101e6d7d71@redhat.com>
- <20190513175138.4yycad2xi65komw6@steredhat>
- <fd934a4c-f7d2-8a04-ed93-a3b690ed0d79@redhat.com>
+        id S1726501AbfENQde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 12:33:34 -0400
+Received: from mail-eopbgr710116.outbound.protection.outlook.com ([40.107.71.116]:30064
+        "EHLO NAM05-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725916AbfENQde (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 May 2019 12:33:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
+ b=n6yu42hNqY9kJZH2RkFdvXpq3zTNXwlFD8bVCI0ADlVC79rj/X8r95deFBF77hHuwLo7eS+1/47Tap2yT04R52sDrqvTeVJK9EOZrERweV/ABYn1V1O5R/Z1Xl4WPvz5cRFtZWlifx9uVEjliWxR8anKQugL4OrH5jKkvhPNav4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=testarcselector01;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NiH8zCCzbu4NQwIEpbSEw7d2wyZvBG2xJrmVaiko/Ck=;
+ b=Ur5RLhFvzmUx+5syU5JVBlFc0F3pn4lU9gYJ4WI6PJyTMALrnS/Ji3ryYohpqYg9mGi4AEGQgHSckQe9d1t/QYJ1dccTdrltp6qE5thMt+gpGL7LhZJpPVb+jpcf795PodhMyD0ciY1ZpIZAYY2RIkIAtvcIhAF7+w6PGAGdn+I=
+ARC-Authentication-Results: i=1; test.office365.com
+ 1;spf=none;dmarc=none;dkim=none;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NiH8zCCzbu4NQwIEpbSEw7d2wyZvBG2xJrmVaiko/Ck=;
+ b=MUmY58H/NaX+/DvkTZPna/UqSHsfwPCwMkbgQrvexwOctFX/7h6hl6j+pwrr1f/ANUk7X//jQsLO5kPI+aXgzq0PJ8vFVVF6LUfToYk4JrtVavWGowUZDO3arb1Q9fBxcJ3XqfuTdA0PACtpSe3cauJA22Ga+0DD1M8fUX/+UTU=
+Received: from BN6PR21MB0465.namprd21.prod.outlook.com (2603:10b6:404:b2::15)
+ by BN6PR21MB0147.namprd21.prod.outlook.com (2603:10b6:404:93::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1922.1; Tue, 14 May
+ 2019 16:33:31 +0000
+Received: from BN6PR21MB0465.namprd21.prod.outlook.com
+ ([fe80::6cf3:89fb:af21:b168]) by BN6PR21MB0465.namprd21.prod.outlook.com
+ ([fe80::6cf3:89fb:af21:b168%12]) with mapi id 15.20.1922.002; Tue, 14 May
+ 2019 16:33:31 +0000
+From:   Sunil Muthuswamy <sunilmut@microsoft.com>
+To:     David Miller <davem@davemloft.net>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "sashal@kernel.org" <sashal@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] hv_sock: Fix data loss upon socket close
+Thread-Topic: [PATCH] hv_sock: Fix data loss upon socket close
+Thread-Index: AdUF8eO/rXjnGSU+Q+iHOcDDYgexQQAuARSAAPIX9VA=
+Date:   Tue, 14 May 2019 16:33:31 +0000
+Message-ID: <BN6PR21MB0465DAEFE2237970A511699FC0080@BN6PR21MB0465.namprd21.prod.outlook.com>
+References: <BN6PR21MB0465168DEA6CABA910832A5BC0320@BN6PR21MB0465.namprd21.prod.outlook.com>
+ <20190509.135809.630741953977432246.davem@davemloft.net>
+In-Reply-To: <20190509.135809.630741953977432246.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=sunilmut@microsoft.com; 
+x-originating-ip: [2001:4898:80e8:7:f8d4:c8e7:5ebf:2c16]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6a9d6478-4b6d-4253-e4ad-08d6d889e6f7
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:BN6PR21MB0147;
+x-ms-traffictypediagnostic: BN6PR21MB0147:
+x-microsoft-antispam-prvs: <BN6PR21MB0147B2F2FC98AF053F34DC8DC0080@BN6PR21MB0147.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0037FD6480
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(979002)(376002)(366004)(136003)(346002)(39860400002)(396003)(13464003)(199004)(189003)(81166006)(7696005)(256004)(14444005)(186003)(8936002)(76176011)(6916009)(71200400001)(102836004)(71190400001)(6506007)(7736002)(6116002)(81156014)(53546011)(478600001)(305945005)(6246003)(99286004)(316002)(10290500003)(22452003)(229853002)(68736007)(25786009)(4326008)(6436002)(66476007)(66556008)(14454004)(76116006)(64756008)(73956011)(66446008)(476003)(66946007)(33656002)(52396003)(8676002)(46003)(486006)(53936002)(54906003)(2906002)(4744005)(9686003)(86612001)(86362001)(8990500004)(10090500001)(52536014)(446003)(11346002)(55016002)(74316002)(5660300002)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1102;SCL:1;SRVR:BN6PR21MB0147;H:BN6PR21MB0465.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: P5yz1nNo17AmGTD4FuYhN03+3Kla7K5eZDMqNwKbgaZarBgcHpio6mXg6pzDJZum7QU/RoBwep8nzCgVzC0pMz/exmFUkkTNPLgoVaPA874v75qfKn/Mi7YCHm61GD84cKFJ09eJhlvCzLU8S0ce3348X2qPfzuP0cQb5DI7ajije4LmHkPmdaT2w5AMx5DzdqLz+uCmSLM/7s/jdZ77Rm1jMfuRlD96gA0e4MsgJyqEwiISzbSCrCcDEXukhmqe9Vah4H9MQQzCLtJfz340QboBEOSlNSdUZqfshn+wvDCmLeOFM9w7QbcTwXuPIjGG8ulHmPczJ17eq08H/i3Pr0uFOomUyfd/9H9ANwVdgBGWQ6aFc3s3yivd/FcKHpp0qu2nQKMDF7Nxs2kIbYVvPbYbkR8kIjTZPhY7h+Tp12o=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fd934a4c-f7d2-8a04-ed93-a3b690ed0d79@redhat.com>
-User-Agent: NeoMutt/20180716
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a9d6478-4b6d-4253-e4ad-08d6d889e6f7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 May 2019 16:33:31.3896
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sunilmut@ntdev.microsoft.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR21MB0147
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 14, 2019 at 11:38:05AM +0800, Jason Wang wrote:
-> 
-> On 2019/5/14 上午1:51, Stefano Garzarella wrote:
-> > On Mon, May 13, 2019 at 06:01:52PM +0800, Jason Wang wrote:
-> > > On 2019/5/10 下午8:58, Stefano Garzarella wrote:
-> > > > In order to increase host -> guest throughput with large packets,
-> > > > we can use 64 KiB RX buffers.
-> > > > 
-> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > > ---
-> > > >    include/linux/virtio_vsock.h | 2 +-
-> > > >    1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-> > > > index 84b72026d327..5a9d25be72df 100644
-> > > > --- a/include/linux/virtio_vsock.h
-> > > > +++ b/include/linux/virtio_vsock.h
-> > > > @@ -10,7 +10,7 @@
-> > > >    #define VIRTIO_VSOCK_DEFAULT_MIN_BUF_SIZE	128
-> > > >    #define VIRTIO_VSOCK_DEFAULT_BUF_SIZE		(1024 * 256)
-> > > >    #define VIRTIO_VSOCK_DEFAULT_MAX_BUF_SIZE	(1024 * 256)
-> > > > -#define VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE	(1024 * 4)
-> > > > +#define VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE	(1024 * 64)
-> > > >    #define VIRTIO_VSOCK_MAX_BUF_SIZE		0xFFFFFFFFUL
-> > > >    #define VIRTIO_VSOCK_MAX_PKT_BUF_SIZE		(1024 * 64)
-> > > 
-> > > We probably don't want such high order allocation. It's better to switch to
-> > > use order 0 pages in this case. See add_recvbuf_big() for virtio-net. If we
-> > > get datapath unified, we will get more stuffs set.
-> > IIUC, you are suggesting to allocate only pages and put them in a
-> > scatterlist, then add them to the virtqueue.
-> > 
-> > Is it correct?
-> 
-> 
-> Yes since you are using:
-> 
->                 pkt->buf = kmalloc(buf_len, GFP_KERNEL);
->                 if (!pkt->buf) {
->                         virtio_transport_free_pkt(pkt);
->                         break;
->                 }
-> 
-> This is likely to fail when the memory is fragmented which is kind of
-> fragile.
-> 
-> 
 
-Thanks for pointing that out.
 
-> > 
-> > The issue that I have here, is that the virtio-vsock guest driver, see
-> > virtio_vsock_rx_fill(), allocates a struct virtio_vsock_pkt that
-> > contains the room for the header, then allocates the buffer for the payload.
-> > At this point it fills the scatterlist with the &virtio_vsock_pkt.hdr and the
-> > buffer for the payload.
-> 
-> 
-> This part should be fine since what is needed is just adding more pages to
-> sg[] and call virtuqeueu_add_sg().
-> 
-> 
-
-Yes, I agree.
-
-> > 
-> > Changing this will require several modifications, and if we get datapath
-> > unified, I'm not sure it's worth it.
-> > Of course, if we leave the datapaths separated, I'd like to do that later.
-> > 
-> > What do you think?
-> 
-> 
-> For the driver it self, it should not be hard. But I think you mean the
-> issue of e.g virtio_vsock_pkt itself which doesn't support sg. For short
-> time, maybe we can use kvec instead.
-
-I'll try to use kvec in the virtio_vsock_pkt.
-
-Since this struct is shared also with the host driver (vhost-vsock),
-I hope the changes could be limited, otherwise we can remove the last 2
-patches of the series for now, leaving the RX buffer size to 4KB.
-
-Thanks,
-Stefano
+> -----Original Message-----
+> From: linux-hyperv-owner@vger.kernel.org <linux-hyperv-owner@vger.kernel.=
+org> On Behalf Of David Miller
+> Sent: Thursday, May 9, 2019 1:58 PM
+> To: Sunil Muthuswamy <sunilmut@microsoft.com>
+> Cc: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.=
+com>; Stephen Hemminger
+> <sthemmin@microsoft.com>; sashal@kernel.org; Dexuan Cui <decui@microsoft.=
+com>; Michael Kelley <mikelley@microsoft.com>;
+> netdev@vger.kernel.org; linux-hyperv@vger.kernel.org; linux-kernel@vger.k=
+ernel.org
+> Subject: Re: [PATCH] hv_sock: Fix data loss upon socket close
+>=20
+> From: Sunil Muthuswamy <sunilmut@microsoft.com>
+> Date: Wed, 8 May 2019 23:10:35 +0000
+>=20
+> > +static inline void hvs_shutdown_lock_held(struct hvsock *hvs, int mode=
+)
+>=20
+> Please do not use the inline keyword in foo.c files, let the compiler dec=
+ide.
+>=20
+Thanks, will fix in the next version.
+> Also, longer term thing, I notice that vsock_remove_socket() is very
+> inefficient locking-wise.  It takes the table lock to do the placement
+> test, and takes it again to do the removal.  Might even be racy.
+Agreed. The check & remove should be done as an atomic operation.
+This can be taken up as a separate patch.
