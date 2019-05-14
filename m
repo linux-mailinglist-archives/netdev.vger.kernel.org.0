@@ -2,119 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9011CB45
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 17:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 843BA1CB12
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 16:57:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbfENPAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 11:00:03 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7644 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725854AbfENPAD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 11:00:03 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 80CFEE82291E955F230C;
-        Tue, 14 May 2019 22:56:11 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Tue, 14 May 2019
- 22:56:04 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <paulus@samba.org>, <gnault@redhat.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH v2] ppp: deflate: Fix possible crash in deflate_init
-Date:   Tue, 14 May 2019 22:55:32 +0800
-Message-ID: <20190514145532.21932-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
-In-Reply-To: <20190514074300.42588-1-yuehaibing@huawei.com>
-References: <20190514074300.42588-1-yuehaibing@huawei.com>
+        id S1726407AbfENO5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 10:57:22 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40946 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbfENO5W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 10:57:22 -0400
+Received: by mail-wr1-f66.google.com with SMTP id h4so19603611wre.7
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 07:57:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=G7His5KcVqi9kclJutiM1FAAK2hRmQuy58jfnCXc4K4=;
+        b=ep9j6gGEFfyteSBR+XYYyYtFle7zv+d93YY5K3kRvnvMlGhmotlnKETMYAXvJuPHrS
+         IQQMQId1okgrCeB+9Ztg9ERLhuWlnBxJlBhdK/w+evfGXZtammEMKLixEg/fpL5VhFYs
+         D75Yei3XPzZRbs0g9fYkcqRngSoDJ2CmXS/+L3u+v6lyUJejR+38sNoGS0hr6U9jLKeu
+         AnJMULKF6K12vnGqH1mgy9EvJTYEHHDm+9U9Mf+p/uro+uyXyyEhcdkL4jU/LN7X0RNV
+         weFxf4FeqNxzj50Cgg5Bh1rotSRaHNeY56NEOlEv2+VQGkc/z1jgSFe9Vz6XJYj78R39
+         NVpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=G7His5KcVqi9kclJutiM1FAAK2hRmQuy58jfnCXc4K4=;
+        b=IfVijrDOQiH36EiBR9mJ13UhFiBe6zt6W1XA4tn+pzydsQnRl6uuiJpDy10gpXTzC6
+         Hylz2YzIePGQLrm500ulAgMPrBCQrRfP+e2zKmkNE/1kgqLPq660Fukaa3ARRuUs5nYQ
+         zmj6zMri8W5ZMU30aZAmHJxPh2J1fcdbbeq7u+Eo24/PVpCPJxKE6mz62eio+Nayek4K
+         9NBYZk5XSOZ5Fl/5ye+tMEdNmlSDJ/RtmyuJhoDLLXw0f/4XiAWlc97DbHDWR52ZfSBy
+         zRCg5wQl/tWb8tLpQgsNrngzomf1b/rGwMJbU+WqIrJvA8nZig4McSGKYjtlYbhrVAjB
+         tLrw==
+X-Gm-Message-State: APjAAAV6TyH1t76Rr3LWXeD6zNodWHC8SoDvhVg2B+riJ57pE7EUt/ZY
+        qAJKrAFlVREySFFHyixI4NBitA==
+X-Google-Smtp-Source: APXvYqxxEnhyLRJB/npVQgobjuw2ph6/BCHfLX2eTq6ePsh1GtYHQYm598iVM23FYSHcQ85gReFj+A==
+X-Received: by 2002:adf:edce:: with SMTP id v14mr18965373wro.94.1557845840705;
+        Tue, 14 May 2019 07:57:20 -0700 (PDT)
+Received: from localhost (ip-89-177-139-111.net.upcbroadband.cz. [89.177.139.111])
+        by smtp.gmail.com with ESMTPSA id d72sm1546097wmd.12.2019.05.14.07.57.20
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 14 May 2019 07:57:20 -0700 (PDT)
+Date:   Tue, 14 May 2019 16:57:19 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, thomas.lendacky@amd.com,
+        f.fainelli@gmail.com, ariel.elior@cavium.com,
+        michael.chan@broadcom.com, santosh@chelsio.com,
+        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
+        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
+        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
+        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
+        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
+        julia.lawall@lip6.fr, john.fastabend@gmail.com
+Subject: Re: [PATCH net-next,RFC 1/2] net: flow_offload: add flow_block_cb API
+Message-ID: <20190514145719.GE2238@nanopsycho>
+References: <20190509163954.13703-1-pablo@netfilter.org>
+ <20190509163954.13703-2-pablo@netfilter.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190509163954.13703-2-pablo@netfilter.org>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BUG: unable to handle kernel paging request at ffffffffa018f000
-PGD 3270067 P4D 3270067 PUD 3271063 PMD 2307eb067 PTE 0
-Oops: 0000 [#1] PREEMPT SMP
-CPU: 0 PID: 4138 Comm: modprobe Not tainted 5.1.0-rc7+ #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.9.3-0-ge2fc41e-prebuilt.qemu-project.org 04/01/2014
-RIP: 0010:ppp_register_compressor+0x3e/0xd0 [ppp_generic]
-Code: 98 4a 3f e2 48 8b 15 c1 67 00 00 41 8b 0c 24 48 81 fa 40 f0 19 a0
-75 0e eb 35 48 8b 12 48 81 fa 40 f0 19 a0 74
-RSP: 0018:ffffc90000d93c68 EFLAGS: 00010287
-RAX: ffffffffa018f000 RBX: ffffffffa01a3000 RCX: 000000000000001a
-RDX: ffff888230c750a0 RSI: 0000000000000000 RDI: ffffffffa019f000
-RBP: ffffc90000d93c80 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffffffa0194080
-R13: ffff88822ee1a700 R14: 0000000000000000 R15: ffffc90000d93e78
-FS:  00007f2339557540(0000) GS:ffff888237a00000(0000)
-knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffa018f000 CR3: 000000022bde4000 CR4: 00000000000006f0
-Call Trace:
- ? 0xffffffffa01a3000
- deflate_init+0x11/0x1000 [ppp_deflate]
- ? 0xffffffffa01a3000
- do_one_initcall+0x6c/0x3cc
- ? kmem_cache_alloc_trace+0x248/0x3b0
- do_init_module+0x5b/0x1f1
- load_module+0x1db1/0x2690
- ? m_show+0x1d0/0x1d0
- __do_sys_finit_module+0xc5/0xd0
- __x64_sys_finit_module+0x15/0x20
- do_syscall_64+0x6b/0x1d0
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
+Thu, May 09, 2019 at 06:39:50PM CEST, pablo@netfilter.org wrote:
+>This patch renames:
+>
+>* struct tcf_block_cb to flow_block_cb.
+>* struct tc_block_offload to flow_block_offload.
+>
+>And it exposes the flow_block_cb API through net/flow_offload.h. This
+>renames the existing codebase to adapt it to this name.
+>
+>Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 
-If ppp_deflate fails to register in deflate_init,
-module initialization failed out, however
-ppp_deflate_draft may has been regiestred and not
-unregistered before return.
-Then the seconed modprobe will trigger crash like this.
+[...]
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
-v2: also check ppp_deflate_draft registration
----
- drivers/net/ppp/ppp_deflate.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+	
+>+
+>+void *flow_block_cb_priv(struct flow_block_cb *block_cb)
+>+{
+>+	return block_cb->cb_priv;
+>+}
+>+EXPORT_SYMBOL(flow_block_cb_priv);
+>+
+>+LIST_HEAD(flow_block_cb_list);
+>+EXPORT_SYMBOL(flow_block_cb_list);
 
-diff --git a/drivers/net/ppp/ppp_deflate.c b/drivers/net/ppp/ppp_deflate.c
-index b5edc7f..685e875 100644
---- a/drivers/net/ppp/ppp_deflate.c
-+++ b/drivers/net/ppp/ppp_deflate.c
-@@ -610,12 +610,20 @@ static void z_incomp(void *arg, unsigned char *ibuf, int icnt)
- 
- static int __init deflate_init(void)
- {
--        int answer = ppp_register_compressor(&ppp_deflate);
--        if (answer == 0)
--                printk(KERN_INFO
--		       "PPP Deflate Compression module registered\n");
--	ppp_register_compressor(&ppp_deflate_draft);
--        return answer;
-+	int rc;
-+
-+	rc = ppp_register_compressor(&ppp_deflate);
-+	if (rc)
-+		return rc;
-+
-+	rc = ppp_register_compressor(&ppp_deflate_draft);
-+	if (rc) {
-+		ppp_unregister_compressor(&ppp_deflate);
-+		return rc;
-+	}
-+
-+	pr_info("PPP Deflate Compression module registered\n");
-+	return 0;
- }
- 
- static void __exit deflate_cleanup(void)
--- 
-1.8.3.1
+I don't understand, why is this exported?
 
 
+>+
+>+struct flow_block_cb *flow_block_cb_lookup(u32 block_index, tc_setup_cb_t *cb,
+>+					   void *cb_ident)
+
+2 namespaces may have the same block_index, yet it is completely
+unrelated block. The cb_ident
+
+
+>+{	struct flow_block_cb *block_cb;
+>+
+>+	list_for_each_entry(block_cb, &flow_block_cb_list, list)
+>+		if (block_cb->block_index == block_index &&
+>+		    block_cb->cb == cb &&
+>+		    block_cb->cb_ident == cb_ident)
+>+			return block_cb;
+>+	return NULL;
+>+}
+>+EXPORT_SYMBOL(flow_block_cb_lookup);
+
+[...]
