@@ -2,194 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C45A1C038
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 02:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF1601C04A
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 03:15:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbfENAzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 20:55:24 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44778 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726750AbfENAzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 20:55:24 -0400
-Received: by mail-qt1-f195.google.com with SMTP id f24so12663507qtk.11
-        for <netdev@vger.kernel.org>; Mon, 13 May 2019 17:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=pUBFTG3mMVYxmSF25knkwovcz+vklh44Q18Z6S9OSMc=;
-        b=MEimntidxOkQd50CgVh8V2VxRsFvKBoAstt85gad8xJKVyOeEoV11zNRiqblSvAjiq
-         1QMi0NcKTVMLI1kA/Ti0gtw7ZFby3wLfPdAYxMEersXhqvV0bIM4WNTeqPD3JVn0eq3L
-         fXCzgi2TPzX1K+d0wwQ8aa0i+RPNEWdCQhRT0tVOFlu9oLDteHUUwFB6fGSD9P5kO5Fy
-         QMPfyLpS3waf7LwPmFKhZOL+oGi8jEkKE5cOJIomUMyRcDSV7JsDlyP/y0jWzDqj9i00
-         VlzwONALu4JbkW8pjGfZbB2qrLpPHFJKoEUZRXHhDVxONQG1nfBbKJzOdnph7/mfKImg
-         wP8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=pUBFTG3mMVYxmSF25knkwovcz+vklh44Q18Z6S9OSMc=;
-        b=ZACWTjE3vSuXjhpAomneerKxLoqyc0tBySB04bL2/fNXweLPYfROQEQiz5JwM9hNsZ
-         2da/SAGuAlWxnPEXTyAi9pR2WGhxIA9J1wDRQ2pTaEDLnr+zasCjqu0lDMx8+Ab4WA1e
-         UPuRyc0JvIbXH6Awsb58ZEdwauHiBtWWcny3Z89ucmlz+wSdY8FhV6runTgnyE6sGfsL
-         +j8rviE7+mBRXgltYkpv6fU8m9V6uUL3Q+kZq3NFStEG4Q5LrGX8Cgv06RXTqK1g7ly8
-         XSUB3pz97yW9Bkl2Ef/bJ8479G5ywlCOBSM/zpDNJhwZixO+0515Qw1RcW3VwCdnIriz
-         tlxQ==
-X-Gm-Message-State: APjAAAW7h1TdTwzWBu5wr9jzR9TdE7P8/s78E9da1cz/cGGbKeREJZYS
-        EfzLlgQkWKRsSS4gJC/kJZAYqfRjDYM=
-X-Google-Smtp-Source: APXvYqyBUTx5Iw2WP9ZH7PL2DyEW9PA/PLDHy2q3fM6GCCJLcIjrlSwisidKRxN8NrlAM44YqdEpjA==
-X-Received: by 2002:ac8:4304:: with SMTP id z4mr18655245qtm.275.1557795322864;
-        Mon, 13 May 2019 17:55:22 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-49-251.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.49.251])
-        by smtp.gmail.com with ESMTPSA id r47sm11534911qtc.14.2019.05.13.17.55.22
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 13 May 2019 17:55:22 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1hQLiz-0008Kd-Jd; Mon, 13 May 2019 21:55:21 -0300
-Date:   Mon, 13 May 2019 21:55:21 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Doug Ledford <dledford@redhat.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: [PATCH v2] RDMA: Directly cast the sockaddr union to sockaddr
-Message-ID: <20190514005521.GA18085@ziepe.ca>
+        id S1726581AbfENBPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 21:15:09 -0400
+Received: from mga14.intel.com ([192.55.52.115]:16484 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726233AbfENBPJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 May 2019 21:15:09 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 May 2019 18:15:08 -0700
+X-ExtLoop1: 1
+Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
+  by fmsmga008.fm.intel.com with ESMTP; 13 May 2019 18:15:08 -0700
+Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
+ ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Mon, 13 May 2019 18:15:08 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
+ ORSMSX157.amr.corp.intel.com ([169.254.9.37]) with mapi id 14.03.0415.000;
+ Mon, 13 May 2019 18:15:07 -0700
+From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mroos@linux.ee" <mroos@linux.ee>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "namit@vmware.com" <namit@vmware.com>
+Subject: Re: bpf VM_FLUSH_RESET_PERMS breaks sparc64 boot
+Thread-Topic: bpf VM_FLUSH_RESET_PERMS breaks sparc64 boot
+Thread-Index: AQHVCZRjj+cySzbkfEOvygRTeV/vmqZpvREAgACJ/AA=
+Date:   Tue, 14 May 2019 01:15:07 +0000
+Message-ID: <102313756736cf8b34b36b1025102e2b75d16426.camel@intel.com>
+References: <4401874b-31b9-42a0-31bd-32bef5b36f2a@linux.ee>
+         <b8493de00d9973f6f054814ed69d146b29207d3e.camel@intel.com>
+In-Reply-To: <b8493de00d9973f6f054814ed69d146b29207d3e.camel@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.54.75.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0FE5689AC872BB429F5B5826E7DAE2D5@intel.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-gcc 9 now does allocation size tracking and thinks that passing the member
-of a union and then accessing beyond that member's bounds is an overflow.
-
-Instead of using the union member, use the entire union with a cast to
-get to the sockaddr. gcc will now know that the memory extends the full
-size of the union.
-
-Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
----
- drivers/infiniband/core/addr.c           | 16 ++++++++--------
- drivers/infiniband/hw/ocrdma/ocrdma_ah.c |  5 ++---
- drivers/infiniband/hw/ocrdma/ocrdma_hw.c |  5 ++---
- 3 files changed, 12 insertions(+), 14 deletions(-)
-
-I missed the ocrdma files in the v1
-
-We can revisit what to do with that repetitive union after the merge
-window, but this simple patch will eliminate the warnings for now.
-
-Linus, I'll send this as a PR tomorrow - there is also a bug fix for
-the rdma-netlink changes posted that should go too.
-
-Thanks,
-Jason
-
-diff --git a/drivers/infiniband/core/addr.c b/drivers/infiniband/core/addr.c
-index ba01b90c04e775..2f7d14159841f8 100644
---- a/drivers/infiniband/core/addr.c
-+++ b/drivers/infiniband/core/addr.c
-@@ -731,8 +731,8 @@ int roce_resolve_route_from_path(struct sa_path_rec *rec,
- 	if (rec->roce.route_resolved)
- 		return 0;
- 
--	rdma_gid2ip(&sgid._sockaddr, &rec->sgid);
--	rdma_gid2ip(&dgid._sockaddr, &rec->dgid);
-+	rdma_gid2ip((struct sockaddr *)&sgid, &rec->sgid);
-+	rdma_gid2ip((struct sockaddr *)&dgid, &rec->dgid);
- 
- 	if (sgid._sockaddr.sa_family != dgid._sockaddr.sa_family)
- 		return -EINVAL;
-@@ -743,7 +743,7 @@ int roce_resolve_route_from_path(struct sa_path_rec *rec,
- 	dev_addr.net = &init_net;
- 	dev_addr.sgid_attr = attr;
- 
--	ret = addr_resolve(&sgid._sockaddr, &dgid._sockaddr,
-+	ret = addr_resolve((struct sockaddr *)&sgid, (struct sockaddr *)&dgid,
- 			   &dev_addr, false, true, 0);
- 	if (ret)
- 		return ret;
-@@ -815,22 +815,22 @@ int rdma_addr_find_l2_eth_by_grh(const union ib_gid *sgid,
- 	struct rdma_dev_addr dev_addr;
- 	struct resolve_cb_context ctx;
- 	union {
--		struct sockaddr     _sockaddr;
- 		struct sockaddr_in  _sockaddr_in;
- 		struct sockaddr_in6 _sockaddr_in6;
- 	} sgid_addr, dgid_addr;
- 	int ret;
- 
--	rdma_gid2ip(&sgid_addr._sockaddr, sgid);
--	rdma_gid2ip(&dgid_addr._sockaddr, dgid);
-+	rdma_gid2ip((struct sockaddr *)&sgid_addr, sgid);
-+	rdma_gid2ip((struct sockaddr *)&dgid_addr, dgid);
- 
- 	memset(&dev_addr, 0, sizeof(dev_addr));
- 	dev_addr.net = &init_net;
- 	dev_addr.sgid_attr = sgid_attr;
- 
- 	init_completion(&ctx.comp);
--	ret = rdma_resolve_ip(&sgid_addr._sockaddr, &dgid_addr._sockaddr,
--			      &dev_addr, 1000, resolve_cb, true, &ctx);
-+	ret = rdma_resolve_ip((struct sockaddr *)&sgid_addr,
-+			      (struct sockaddr *)&dgid_addr, &dev_addr, 1000,
-+			      resolve_cb, true, &ctx);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/infiniband/hw/ocrdma/ocrdma_ah.c b/drivers/infiniband/hw/ocrdma/ocrdma_ah.c
-index 1d4ea135c28f2a..8d3e36d548aae9 100644
---- a/drivers/infiniband/hw/ocrdma/ocrdma_ah.c
-+++ b/drivers/infiniband/hw/ocrdma/ocrdma_ah.c
-@@ -83,7 +83,6 @@ static inline int set_av_attr(struct ocrdma_dev *dev, struct ocrdma_ah *ah,
- 	struct iphdr ipv4;
- 	const struct ib_global_route *ib_grh;
- 	union {
--		struct sockaddr     _sockaddr;
- 		struct sockaddr_in  _sockaddr_in;
- 		struct sockaddr_in6 _sockaddr_in6;
- 	} sgid_addr, dgid_addr;
-@@ -133,9 +132,9 @@ static inline int set_av_attr(struct ocrdma_dev *dev, struct ocrdma_ah *ah,
- 		ipv4.tot_len = htons(0);
- 		ipv4.ttl = ib_grh->hop_limit;
- 		ipv4.protocol = nxthdr;
--		rdma_gid2ip(&sgid_addr._sockaddr, sgid);
-+		rdma_gid2ip((struct sockaddr *)&sgid_addr, sgid);
- 		ipv4.saddr = sgid_addr._sockaddr_in.sin_addr.s_addr;
--		rdma_gid2ip(&dgid_addr._sockaddr, &ib_grh->dgid);
-+		rdma_gid2ip((struct sockaddr*)&dgid_addr, &ib_grh->dgid);
- 		ipv4.daddr = dgid_addr._sockaddr_in.sin_addr.s_addr;
- 		memcpy((u8 *)ah->av + eth_sz, &ipv4, sizeof(struct iphdr));
- 	} else {
-diff --git a/drivers/infiniband/hw/ocrdma/ocrdma_hw.c b/drivers/infiniband/hw/ocrdma/ocrdma_hw.c
-index 32674b291f60da..5127e2ea4bdd2d 100644
---- a/drivers/infiniband/hw/ocrdma/ocrdma_hw.c
-+++ b/drivers/infiniband/hw/ocrdma/ocrdma_hw.c
-@@ -2499,7 +2499,6 @@ static int ocrdma_set_av_params(struct ocrdma_qp *qp,
- 	u16 vlan_id = 0xFFFF;
- 	u8 mac_addr[6], hdr_type;
- 	union {
--		struct sockaddr     _sockaddr;
- 		struct sockaddr_in  _sockaddr_in;
- 		struct sockaddr_in6 _sockaddr_in6;
- 	} sgid_addr, dgid_addr;
-@@ -2542,8 +2541,8 @@ static int ocrdma_set_av_params(struct ocrdma_qp *qp,
- 
- 	hdr_type = rdma_gid_attr_network_type(sgid_attr);
- 	if (hdr_type == RDMA_NETWORK_IPV4) {
--		rdma_gid2ip(&sgid_addr._sockaddr, &sgid_attr->gid);
--		rdma_gid2ip(&dgid_addr._sockaddr, &grh->dgid);
-+		rdma_gid2ip((struct sockaddr *)&sgid_addr, &sgid_attr->gid);
-+		rdma_gid2ip((struct sockaddr *)&dgid_addr, &grh->dgid);
- 		memcpy(&cmd->params.dgid[0],
- 		       &dgid_addr._sockaddr_in.sin_addr.s_addr, 4);
- 		memcpy(&cmd->params.sgid[0],
--- 
-2.21.0
-
+T24gTW9uLCAyMDE5LTA1LTEzIGF0IDEwOjAxIC0wNzAwLCBSaWNrIEVkZ2Vjb21iZSB3cm90ZToN
+Cj4gT24gTW9uLCAyMDE5LTA1LTEzIGF0IDE3OjAxICswMzAwLCBNZWVsaXMgUm9vcyB3cm90ZToN
+Cj4gPiBJIHRlc3RlZCB5ZXN0ZXJkYXlzIDUuMiBkZXZlbCBnaXQgYW5kIGl0IGZhaWxlZCB0byBi
+b290IG9uIG15IFN1biBGaXJlIFY0NDUNCj4gPiAoNHggVWx0cmFTcGFyYyBJSUkpLiBJbml0IGlz
+IHN0YXJ0ZWQgYW5kIGl0IGhhbmdzIHRoZXJlOg0KPiA+IA0KPiA+IFsgICAzOC40MTQ0MzZdIFJ1
+biAvc2Jpbi9pbml0IGFzIGluaXQgcHJvY2Vzcw0KPiA+IFsgICAzOC41MzA3MTFdIHJhbmRvbTog
+ZmFzdCBpbml0IGRvbmUNCj4gPiBbICAgMzkuNTgwNjc4XSBzeXN0ZW1kWzFdOiBJbnNlcnRlZCBt
+b2R1bGUgJ2F1dG9mczQnDQo+ID4gWyAgIDM5LjcyMTU3N10gc3lzdGVtZFsxXTogc3lzdGVtZCAy
+NDEgcnVubmluZyBpbiBzeXN0ZW0gbW9kZS4gKCtQQU0gK0FVRElUDQo+ID4gK1NFTElOVVggK0lN
+QSArQVBQQVJNT1IgK1NNQUNLICtTWVNWSU5JVCArVVRNUCArTElCQ1JZUFRTRVRVUCArR0NSWVBU
+DQo+ID4gK0dOVVRMUw0KPiA+ICtBQ0wgK1haICtMWjQgLVNFQ0NPTVAgK0JMS0lEICtFTEZVVElM
+UyArS01PRCAtSUROMiArSUROIC1QQ1JFMiBkZWZhdWx0LQ0KPiA+IGhpZXJhcmNoeT1oeWJyaWQp
+DQo+ID4gWyAgIDQwLjAyODA2OF0gc3lzdGVtZFsxXTogRGV0ZWN0ZWQgYXJjaGl0ZWN0dXJlIHNw
+YXJjNjQuDQo+ID4gDQo+ID4gV2VsY29tZSB0byBEZWJpYW4gR05VL0xpbnV4IDEwIChidXN0ZXIp
+IQ0KPiA+IA0KPiA+IFsgICA0MC4xNjg3MTNdIHN5c3RlbWRbMV06IFNldCBob3N0bmFtZSB0byA8
+djQ0NT4uDQo+ID4gWyAgIDYxLjMxODAzNF0gcmN1OiBJTkZPOiByY3Vfc2NoZWQgZGV0ZWN0ZWQg
+c3RhbGxzIG9uIENQVXMvdGFza3M6DQo+ID4gWyAgIDYxLjQwMzAzOV0gcmN1OiAgICAgMS0uLi4h
+OiAoMCB0aWNrcyB0aGlzIEdQKQ0KPiA+IGlkbGU9NjAyLzEvMHg0MDAwMDAwMDAwMDAwMDAwIHNv
+ZnRpcnE9ODUvODUgZnFzPTENCj4gPiBbICAgNjEuNTI2NzgwXSByY3U6ICAgICAoZGV0ZWN0ZWQg
+YnkgMywgdD01MjUyIGppZmZpZXMsIGc9LTk2NywgcT0yMjgpDQo+ID4gWyAgIDYxLjYxMzAzN10g
+ICBDUFVbICAxXTogVFNUQVRFWzAwMDAwMDAwODAwMDE2MDJdIFRQQ1swMDAwMDAwMDAwNDNmMmI4
+XQ0KPiA+IFROUENbMDAwMDAwMDAwMDQzZjJiY10gVEFTS1tzeXN0ZW1kLWZzdGFiLWc6OTBdDQo+
+ID4gWyAgIDYxLjc2NjgyOF0gICAgICAgICAgICAgIFRQQ1tzbXBfc3luY2hyb25pemVfdGlja19j
+bGllbnQrMHgxOC8weDE4MF0NCj4gPiBPN1tfX2RvX211bm1hcCsweDIwNC8weDNlMF0gSTdbeGNh
+bGxfc3luY190aWNrKzB4MWMvMHgyY10NCj4gPiBSUENbcGFnZV9ldmljdGFibGUrMHg0LzB4NjBd
+DQo+ID4gWyAgIDYxLjk2NjgwN10gcmN1OiByY3Vfc2NoZWQga3RocmVhZCBzdGFydmVkIGZvciA1
+MjUwIGppZmZpZXMhIGctOTY3IGYweDANCj4gPiBSQ1VfR1BfV0FJVF9GUVMoNSkgLT5zdGF0ZT0w
+eDQwMiAtPmNwdT0yDQo+ID4gWyAgIDYyLjExMzA1OF0gcmN1OiBSQ1UgZ3JhY2UtcGVyaW9kIGt0
+aHJlYWQgc3RhY2sgZHVtcDoNCj4gPiBbICAgNjIuMTg1NTU4XSByY3Vfc2NoZWQgICAgICAgSSAg
+ICAwICAgIDEwICAgICAgMiAweDA2MDAwMDAwDQo+ID4gWyAgIDYyLjI2NDMxMl0gQ2FsbCBUcmFj
+ZToNCj4gPiBbICAgNjIuMjk5MzE2XSAgWzAwMDAwMDAwMDA5MmExZmNdIHNjaGVkdWxlKzB4MWMv
+MHg4MA0KPiA+IFsgICA2Mi4zNjgwNzFdICBbMDAwMDAwMDAwMDkyZDNmY10gc2NoZWR1bGVfdGlt
+ZW91dCsweDEzYy8weDI4MA0KPiA+IFsgICA2Mi40NDkzMjhdICBbMDAwMDAwMDAwMDRiNmM2NF0g
+cmN1X2dwX2t0aHJlYWQrMHg0YzQvMHhhNDANCj4gPiBbICAgNjIuNTI4MDc3XSAgWzAwMDAwMDAw
+MDA0N2U5NWNdIGt0aHJlYWQrMHhmYy8weDEyMA0KPiA+IFsgICA2Mi41OTY4MzNdICBbMDAwMDAw
+MDAwMDQwNjBhNF0gcmV0X2Zyb21fZm9yaysweDFjLzB4MmMNCj4gPiBbICAgNjIuNjcxODMxXSAg
+WzAwMDAwMDAwMDAwMDAwMDBdICAgICAgICAgICAobnVsbCkNCj4gPiANCj4gPiA1LjEuMCB3b3Jr
+ZWQgZmluZS4gSSBiaXNlY3RlZCBpdCB0byB0aGUgZm9sbG93aW5nIGNvbW1pdDoNCj4gPiANCj4g
+PiBkNTNkMmY3OGNlYWRiYTA4MWZjNzc4NTU3MDc5OGMzYzhkNTBhNzE4IGlzIHRoZSBmaXJzdCBi
+YWQgY29tbWl0DQo+ID4gY29tbWl0IGQ1M2QyZjc4Y2VhZGJhMDgxZmM3Nzg1NTcwNzk4YzNjOGQ1
+MGE3MTgNCj4gPiBBdXRob3I6IFJpY2sgRWRnZWNvbWJlIDxyaWNrLnAuZWRnZWNvbWJlQGludGVs
+LmNvbT4NCj4gPiBEYXRlOiAgIFRodSBBcHIgMjUgMTc6MTE6MzggMjAxOSAtMDcwMA0KPiA+IA0K
+PiA+ICAgICAgYnBmOiBVc2Ugdm1hbGxvYyBzcGVjaWFsIGZsYWcNCj4gPiAgICAgIA0KPiA+ICAg
+ICAgVXNlIG5ldyBmbGFnIFZNX0ZMVVNIX1JFU0VUX1BFUk1TIGZvciBoYW5kbGluZyBmcmVlaW5n
+IG9mIHNwZWNpYWwNCj4gPiAgICAgIHBlcm1pc3Npb25lZCBtZW1vcnkgaW4gdm1hbGxvYyBhbmQg
+cmVtb3ZlIHBsYWNlcyB3aGVyZSBtZW1vcnkgd2FzIHNldA0KPiA+IFJXDQo+ID4gICAgICBiZWZv
+cmUgZnJlZWluZyB3aGljaCBpcyBubyBsb25nZXIgbmVlZGVkLiBEb24ndCB0cmFjayBpZiB0aGUg
+bWVtb3J5IGlzDQo+ID4gUk8NCj4gPiAgICAgIGFueW1vcmUgYmVjYXVzZSBpdCBpcyBub3cgdHJh
+Y2tlZCBpbiB2bWFsbG9jLg0KPiA+ICAgICAgDQo+ID4gICAgICBTaWduZWQtb2ZmLWJ5OiBSaWNr
+IEVkZ2Vjb21iZSA8cmljay5wLmVkZ2Vjb21iZUBpbnRlbC5jb20+DQo+ID4gICAgICBTaWduZWQt
+b2ZmLWJ5OiBQZXRlciBaaWpsc3RyYSAoSW50ZWwpIDxwZXRlcnpAaW5mcmFkZWFkLm9yZz4NCj4g
+PiAgICAgIENjOiA8YWtwbUBsaW51eC1mb3VuZGF0aW9uLm9yZz4NCj4gPiAgICAgIENjOiA8YXJk
+LmJpZXNoZXV2ZWxAbGluYXJvLm9yZz4NCj4gPiAgICAgIENjOiA8ZGVuZWVuLnQuZG9ja0BpbnRl
+bC5jb20+DQo+ID4gICAgICBDYzogPGtlcm5lbC1oYXJkZW5pbmdAbGlzdHMub3BlbndhbGwuY29t
+Pg0KPiA+ICAgICAgQ2M6IDxrcmlzdGVuQGxpbnV4LmludGVsLmNvbT4NCj4gPiAgICAgIENjOiA8
+bGludXhfZHRpQGljbG91ZC5jb20+DQo+ID4gICAgICBDYzogPHdpbGwuZGVhY29uQGFybS5jb20+
+DQo+ID4gICAgICBDYzogQWxleGVpIFN0YXJvdm9pdG92IDxhc3RAa2VybmVsLm9yZz4NCj4gPiAg
+ICAgIENjOiBBbmR5IEx1dG9taXJza2kgPGx1dG9Aa2VybmVsLm9yZz4NCj4gPiAgICAgIENjOiBC
+b3Jpc2xhdiBQZXRrb3YgPGJwQGFsaWVuOC5kZT4NCj4gPiAgICAgIENjOiBEYW5pZWwgQm9ya21h
+bm4gPGRhbmllbEBpb2dlYXJib3gubmV0Pg0KPiA+ICAgICAgQ2M6IERhdmUgSGFuc2VuIDxkYXZl
+LmhhbnNlbkBsaW51eC5pbnRlbC5jb20+DQo+ID4gICAgICBDYzogSC4gUGV0ZXIgQW52aW4gPGhw
+YUB6eXRvci5jb20+DQo+ID4gICAgICBDYzogTGludXMgVG9ydmFsZHMgPHRvcnZhbGRzQGxpbnV4
+LWZvdW5kYXRpb24ub3JnPg0KPiA+ICAgICAgQ2M6IE5hZGF2IEFtaXQgPG5hZGF2LmFtaXRAZ21h
+aWwuY29tPg0KPiA+ICAgICAgQ2M6IFJpayB2YW4gUmllbCA8cmllbEBzdXJyaWVsLmNvbT4NCj4g
+PiAgICAgIENjOiBUaG9tYXMgR2xlaXhuZXIgPHRnbHhAbGludXRyb25peC5kZT4NCj4gPiAgICAg
+IExpbms6IGh0dHBzOi8vbGttbC5rZXJuZWwub3JnL3IvMjAxOTA0MjYwMDExNDMuNDk4My0xOS1u
+YW1pdEB2bXdhcmUuY29tDQo+ID4gICAgICBTaWduZWQtb2ZmLWJ5OiBJbmdvIE1vbG5hciA8bWlu
+Z29Aa2VybmVsLm9yZz4NCj4gPiANCj4gPiA6MDQwMDAwIDA0MDAwMCA1ODA2NmRlNTMxMDdlYWIw
+NzA1Mzk4YjVkMGM0MDc0MjRjMTM4YTg2DQo+ID4gN2ExMzQ1ZDQzYzRjYWNlZTYwYjkxMzU4OTli
+Nzc1ZWNkYjU0ZWE3ZSBNICAgICAgaW5jbHVkZQ0KPiA+IDowNDAwMDAgMDQwMDAwIGQwMjY5MmNm
+NTdhMzU5MDU2YjM0ZTYzNmQwZjEwMmQzN2RlNWIyNjQNCj4gPiA4MWM0YzJjNjQwOGI2OGViNTU1
+NjczYmQzZjBiYzMwNzFkYjFmN2VkIE0gICAgICBrZXJuZWwNCj4gPiANCj4gDQo+IFRoYW5rcywg
+SSdsbCBzZWUgaWYgSSBjYW4gcmVwcm9kdWNlLg0KPiANCj4gUmljaw0KDQpJJ20gaGF2aW5nIHRy
+b3VibGUgZ2V0dGluZyBEZWJpYW4gQnVzdGVyIHVwIGFuZCBydW5uaW5nIG9uIHFlbXUtc3lzdGVt
+LQ0Kc3BhcmM2NCBhbmQgc28gaGF2ZW4ndCBiZWVuIGFibGUgdG8gcmVwcm9kdWNlLiBJcyB0aGlz
+IGN1cnJlbnRseSB3b3JraW5nIGZvcg0KcGVvcGxlPw0KDQpUaGlzIHBhdGNoIGludm9sdmVzIHJl
+LXNldHRpbmcgbWVtb3J5IHBlcm1pc3Npb25zIHdoZW4gZnJlZWluZyBleGVjdXRhYmxlDQptZW1v
+cnkuIEl0IGxvb2tzIGxpa2UgU3BhcmM2NCBMaW51eCBkb2Vzbid0IGhhdmUgc3VwcG9ydCBmb3Ig
+dGhlIHNldF9tZW1vcnlfKCkNCmZ1bmN0aW9ucyBzbyB0aGF0IHBhcnQgc2hvdWxkbid0IGJlIGNo
+YW5naW5nIGFueXRoaW5nLiBUaGUgbWFpbiBvdGhlciB0aGluZyB0aGF0DQppcyBjaGFuZ2VkIGhl
+cmUgaXMgYWx3YXlzIGRvaW5nIGEgVExCIGZsdXNoIGluIHZmcmVlIHdoZW4gdGhlIEJQRiBKSVRz
+IGFyZQ0KZnJlZWQuIEl0IHdpbGwgYWxyZWFkeSBzb21ldGltZXMgaGFwcGVuIHNvIHRoYXQgc2hv
+dWxkbid0IGJlIHRvbyBkaWZmZXJlbnQNCmVpdGhlci4NCg0KU28gaXQgZG9lc24ndCBzZWVtIGV4
+dHJhIGVzcGVjaWFsbHkgbGlrZWx5IHRvIGNhdXNlIGEgc3BhcmMgc3BlY2lmaWMgcHJvYmxlbQ0K
+dGhhdCBJIGNhbiBzZWUuIElzIHRoZXJlIGFueSBjaGFuY2UgdGhpcyBpcyBhbiBpbnRlcm1pdHRl
+bnQgaXNzdWU/DQoNCkFsdGVybmF0aXZlbHksIHdlIGNvdWxkIG1heWJlIGp1c3QgZXhlbXB0IGFy
+Y2hpdGVjdHVyZXMgd2l0aCBubyBzZXRfbWVtb3J5XygpDQppbXBsZW1lbnRhdGlvbnMgZnJvbSB0
+aGlzIG5ldyBiZWhhdmlvci4gVGhhdCB3b3VsZCB1bmZvcnR1bmF0ZWx5IGxvc2UgdGhlDQpiZW5l
+Zml0cyBmb3IgYXJjaGl0ZWN0dXJlcyB3aXRoIG5vIHNldF9tZW1vcnlfKCkncyBidXQgdGhhdCBo
+YXZlIGV4ZWN1dGFibGUNCnBlcm1pc3Npb24gYml0cy4NCg0KQnV0IHRoZW4gdGhpcyBwYXRjaCB3
+b3VsZCBoYXZlIG5vIGVmZmVjdCBvbiBzcGFyYzY0IGFuZCB3b3VsZCBwb3NzaWJseSByZXNvbHZl
+DQppdCB3aXRob3V0IHJlYWxseSBkZWJ1Z2dpbmcgaXQuDQoNClRoYW5rcywNCg0KUmljaw0K
