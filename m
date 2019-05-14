@@ -2,154 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 485791C3CA
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 09:24:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A98851C3DD
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 09:36:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbfENHYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 03:24:16 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:64662 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbfENHYQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 03:24:16 -0400
-Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
-  Nicolas.Ferre@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="Nicolas.Ferre@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa2.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa2.microchip.iphmx.com; spf=Pass smtp.mailfrom=Nicolas.Ferre@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
-X-IronPort-AV: E=Sophos;i="5.60,467,1549954800"; 
-   d="scan'208";a="33027039"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 14 May 2019 00:24:15 -0700
-Received: from NAM05-DM3-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.76.49) with Microsoft SMTP Server (TLS) id
- 14.3.352.0; Tue, 14 May 2019 00:24:04 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector1-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Mj/17vUNWUDyqVec96UZVHVD14D6vp/DKaBx2tvwpVM=;
- b=W2TgjKjtivYyRkbDbdc5at+VhmQPq2KJfhPJTorus3J6TB1FX8NMzPb+B/jLg/CU+lnqjW0r8nZoRZF76/oHYuW+ATRiuys/J5yDqxPAMF5J7WFgSB0TNlvVhq9+SPwu18/f402MRPEdzLM9mINmrpPKGgltLeoo4O4utTInrJg=
-Received: from DM5PR11MB1658.namprd11.prod.outlook.com (10.172.36.9) by
- DM5PR11MB1849.namprd11.prod.outlook.com (10.175.90.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1878.24; Tue, 14 May 2019 07:24:02 +0000
-Received: from DM5PR11MB1658.namprd11.prod.outlook.com
- ([fe80::11ae:9a85:a3d:f722]) by DM5PR11MB1658.namprd11.prod.outlook.com
- ([fe80::11ae:9a85:a3d:f722%8]) with mapi id 15.20.1878.024; Tue, 14 May 2019
- 07:24:02 +0000
-From:   <Nicolas.Ferre@microchip.com>
-To:     <luca@lucaceresoli.net>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH] net: macb: fix error format in dev_err()
-Thread-Topic: [PATCH] net: macb: fix error format in dev_err()
-Thread-Index: AQHVCiU4ThIIVTJw1Ey4CFSnWt1LDaZqN7AA
-Date:   Tue, 14 May 2019 07:24:02 +0000
-Message-ID: <775ea7ee-f879-149a-8a60-97635a2cd218@microchip.com>
-References: <20190514071450.27760-1-luca@lucaceresoli.net>
-In-Reply-To: <20190514071450.27760-1-luca@lucaceresoli.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: BYAPR04CA0034.namprd04.prod.outlook.com
- (2603:10b6:a03:40::47) To DM5PR11MB1658.namprd11.prod.outlook.com
- (2603:10b6:4:8::9)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [94.177.32.154]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: abdf06a0-cd3b-4820-c008-08d6d83d23b2
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:DM5PR11MB1849;
-x-ms-traffictypediagnostic: DM5PR11MB1849:
-x-microsoft-antispam-prvs: <DM5PR11MB1849E28B382124E03FDD74D2E0080@DM5PR11MB1849.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:765;
-x-forefront-prvs: 0037FD6480
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(376002)(366004)(39860400002)(346002)(136003)(199004)(189003)(229853002)(6506007)(386003)(476003)(6436002)(6512007)(31686004)(2616005)(102836004)(446003)(31696002)(53546011)(66066001)(86362001)(11346002)(71190400001)(256004)(71200400001)(26005)(486006)(4326008)(6246003)(2501003)(68736007)(6486002)(53936002)(186003)(8936002)(107886003)(36756003)(76176011)(2906002)(99286004)(5660300002)(54906003)(110136005)(81156014)(25786009)(73956011)(66946007)(52116002)(66556008)(66476007)(66446008)(64756008)(478600001)(14454004)(6116002)(81166006)(14444005)(316002)(305945005)(3846002)(72206003)(8676002)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR11MB1849;H:DM5PR11MB1658.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microchip.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: UKbCpzJZIEZvmXhy8nWxxlaupGkhj3Vi3POTej6fGSMz5iAxTrC4muznmFGm6fU6BEtRSNWkphSsmqgkGhFj7JK38sopQfEHIbz3RSYrMuRv0j41rD06NE2+SctA+4fJaaEri1bVkztyjEAOwxrdWApGT85/O2umUh4ZTkcBgrK2PLPI/LHufAHVoy2huKY/ii+Id1COcTxwlOIpL9Qzfhm1ZRXeQCeQAuHLpvdsc9wUUbu+C4NWNTTD1/046QGryp3f0a/XVccR/+w7lVs1cazJJ0kw6c1RpGjXBnYxIdzVknagKvipmNLOAi/VqPLeqsCr/U+rymZi13rCQJfoQ6HsjlQZNF0chH1MaiwL+79XktrLG52ZeDzNFghtCpU6YbKaeglDlQ+EH4oV/Lw80hUq/CBt7oUlELMB4Q7XexM=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <398B1A0F0F35F64687BFA9C51DFFDEF4@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726568AbfENHgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 03:36:14 -0400
+Received: from mail.bix.bg ([193.105.196.21]:40129 "HELO mail.bix.bg"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
+        id S1726324AbfENHgO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 May 2019 03:36:14 -0400
+X-Greylist: delayed 401 seconds by postgrey-1.27 at vger.kernel.org; Tue, 14 May 2019 03:36:13 EDT
+Received: (qmail 24142 invoked from network); 14 May 2019 07:29:31 -0000
+Received: from d2.declera.com (212.116.131.122)
+  by indigo.declera.com with SMTP; 14 May 2019 07:29:31 -0000
+Message-ID: <856dc9462c31bc9f102940c61f94db1f44574733.camel@declera.com>
+Subject: mvpp2:  oops on first received packet
+From:   Yanko Kaneti <yaneti@declera.com>
+To:     netdev <netdev@vger.kernel.org>
+Date:   Tue, 14 May 2019 10:29:31 +0300
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.33.1 (3.33.1-1.fc31) 
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: abdf06a0-cd3b-4820-c008-08d6d83d23b2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 May 2019 07:24:02.5307
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1849
-X-OriginatorOrg: microchip.com
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTQvMDUvMjAxOSBhdCAwOToxNCwgTHVjYSBDZXJlc29saSB3cm90ZToNCj4gRXh0ZXJuYWwg
-RS1NYWlsDQo+IA0KPiANCj4gRXJyb3JzIGFyZSBuZWdhdGl2ZSBudW1iZXJzLiBVc2luZyAldSBz
-aG93cyB0aGVtIGFzIHZlcnkgbGFyZ2UgcG9zaXRpdmUNCj4gbnVtYmVycyBzdWNoIGFzIDQyOTQ5
-NjcyNzcgdGhhdCBkb24ndCBtYWtlIHNlbnNlLiBVc2UgdGhlICVkIGZvcm1hdA0KPiBpbnN0ZWFk
-LCBhbmQgZ2V0IGEgbXVjaCBuaWNlciAtMTkuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBMdWNhIENl
-cmVzb2xpIDxsdWNhQGx1Y2FjZXJlc29saS5uZXQ+DQoNCkluZGVlZCENCkFja2VkLWJ5OiBOaWNv
-bGFzIEZlcnJlIDxuaWNvbGFzLmZlcnJlQG1pY3JvY2hpcC5jb20+DQoNCj4gLS0tDQo+ICAgZHJp
-dmVycy9uZXQvZXRoZXJuZXQvY2FkZW5jZS9tYWNiX21haW4uYyB8IDE2ICsrKysrKysrLS0tLS0t
-LS0NCj4gICAxIGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCA4IGRlbGV0aW9ucygtKQ0K
-PiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWlu
-LmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9jYWRlbmNlL21hY2JfbWFpbi5jDQo+IGluZGV4IGMw
-NDk0MTBiYzg4OC4uYmViZDliMWFlYjY0IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9jYWRlbmNlL21hY2JfbWFpbi5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Nh
-ZGVuY2UvbWFjYl9tYWluLmMNCj4gQEAgLTMzNDMsNyArMzM0Myw3IEBAIHN0YXRpYyBpbnQgbWFj
-Yl9jbGtfaW5pdChzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2LCBzdHJ1Y3QgY2xrICoqcGNs
-aywNCj4gICAJCWlmICghZXJyKQ0KPiAgIAkJCWVyciA9IC1FTk9ERVY7DQo+ICAgDQo+IC0JCWRl
-dl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCB0byBnZXQgbWFjYl9jbGsgKCV1KVxuIiwgZXJyKTsN
-Cj4gKwkJZGV2X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIGdldCBtYWNiX2NsayAoJWQpXG4i
-LCBlcnIpOw0KPiAgIAkJcmV0dXJuIGVycjsNCj4gICAJfQ0KPiAgIA0KPiBAQCAtMzM1Miw3ICsz
-MzUyLDcgQEAgc3RhdGljIGludCBtYWNiX2Nsa19pbml0KHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2Ug
-KnBkZXYsIHN0cnVjdCBjbGsgKipwY2xrLA0KPiAgIAkJaWYgKCFlcnIpDQo+ICAgCQkJZXJyID0g
-LUVOT0RFVjsNCj4gICANCj4gLQkJZGV2X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIGdldCBo
-Y2xrICgldSlcbiIsIGVycik7DQo+ICsJCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCB0byBn
-ZXQgaGNsayAoJWQpXG4iLCBlcnIpOw0KPiAgIAkJcmV0dXJuIGVycjsNCj4gICAJfQ0KPiAgIA0K
-PiBAQCAtMzM3MCwzMSArMzM3MCwzMSBAQCBzdGF0aWMgaW50IG1hY2JfY2xrX2luaXQoc3RydWN0
-IHBsYXRmb3JtX2RldmljZSAqcGRldiwgc3RydWN0IGNsayAqKnBjbGssDQo+ICAgDQo+ICAgCWVy
-ciA9IGNsa19wcmVwYXJlX2VuYWJsZSgqcGNsayk7DQo+ICAgCWlmIChlcnIpIHsNCj4gLQkJZGV2
-X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSBwY2xrICgldSlcbiIsIGVycik7DQo+
-ICsJCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCB0byBlbmFibGUgcGNsayAoJWQpXG4iLCBl
-cnIpOw0KPiAgIAkJcmV0dXJuIGVycjsNCj4gICAJfQ0KPiAgIA0KPiAgIAllcnIgPSBjbGtfcHJl
-cGFyZV9lbmFibGUoKmhjbGspOw0KPiAgIAlpZiAoZXJyKSB7DQo+IC0JCWRldl9lcnIoJnBkZXYt
-PmRldiwgImZhaWxlZCB0byBlbmFibGUgaGNsayAoJXUpXG4iLCBlcnIpOw0KPiArCQlkZXZfZXJy
-KCZwZGV2LT5kZXYsICJmYWlsZWQgdG8gZW5hYmxlIGhjbGsgKCVkKVxuIiwgZXJyKTsNCj4gICAJ
-CWdvdG8gZXJyX2Rpc2FibGVfcGNsazsNCj4gICAJfQ0KPiAgIA0KPiAgIAllcnIgPSBjbGtfcHJl
-cGFyZV9lbmFibGUoKnR4X2Nsayk7DQo+ICAgCWlmIChlcnIpIHsNCj4gLQkJZGV2X2VycigmcGRl
-di0+ZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSB0eF9jbGsgKCV1KVxuIiwgZXJyKTsNCj4gKwkJZGV2
-X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSB0eF9jbGsgKCVkKVxuIiwgZXJyKTsN
-Cj4gICAJCWdvdG8gZXJyX2Rpc2FibGVfaGNsazsNCj4gICAJfQ0KPiAgIA0KPiAgIAllcnIgPSBj
-bGtfcHJlcGFyZV9lbmFibGUoKnJ4X2Nsayk7DQo+ICAgCWlmIChlcnIpIHsNCj4gLQkJZGV2X2Vy
-cigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSByeF9jbGsgKCV1KVxuIiwgZXJyKTsNCj4g
-KwkJZGV2X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSByeF9jbGsgKCVkKVxuIiwg
-ZXJyKTsNCj4gICAJCWdvdG8gZXJyX2Rpc2FibGVfdHhjbGs7DQo+ICAgCX0NCj4gICANCj4gICAJ
-ZXJyID0gY2xrX3ByZXBhcmVfZW5hYmxlKCp0c3VfY2xrKTsNCj4gICAJaWYgKGVycikgew0KPiAt
-CQlkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8gZW5hYmxlIHRzdV9jbGsgKCV1KVxuIiwg
-ZXJyKTsNCj4gKwkJZGV2X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSB0c3VfY2xr
-ICglZClcbiIsIGVycik7DQo+ICAgCQlnb3RvIGVycl9kaXNhYmxlX3J4Y2xrOw0KPiAgIAl9DQo+
-ICAgDQo+IEBAIC0zODY4LDcgKzM4NjgsNyBAQCBzdGF0aWMgaW50IGF0OTFldGhlcl9jbGtfaW5p
-dChzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2LCBzdHJ1Y3QgY2xrICoqcGNsaywNCj4gICAN
-Cj4gICAJZXJyID0gY2xrX3ByZXBhcmVfZW5hYmxlKCpwY2xrKTsNCj4gICAJaWYgKGVycikgew0K
-PiAtCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8gZW5hYmxlIHBjbGsgKCV1KVxuIiwg
-ZXJyKTsNCj4gKwkJZGV2X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIGVuYWJsZSBwY2xrICgl
-ZClcbiIsIGVycik7DQo+ICAgCQlyZXR1cm4gZXJyOw0KPiAgIAl9DQo+ICAgDQo+IA0KDQoNCi0t
-IA0KTmljb2xhcyBGZXJyZQ0K
+Hello,
+
+I am trying to get some Fedora working on the MACCHIATObin SingleShot
+and I am getting an OOPS on what seems to be the first received packet
+on the gigabit port.
+
+I've tried both 5.0.x stable and 5.1.1 with the same result.
+Otherwise the port seems to work fine in u-boot (also latest from the
+the fedora variety)
+
+-Yanko
+
+..
+mvpp2 f4000000.ethernet eth2: Link is Up - 1Gbps/Full - flow control rx/tx
+IPv6: ADDRCONF(NETDEV_CHANGE): eth2: link becomes ready
+page:ffff7e0001ff1000 count:0 mapcount:0 mapping:0000000000000000 index:0x0
+flags: 0x1fffe000000000()
+raw: 001fffe000000000 ffff7e0001ff1008 ffff7e0001ff1008 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: VM_BUG_ON_PAGE(page_ref_count(page) == 0)
+------------[ cut here ]------------
+kernel BUG at include/linux/mm.h:547!
+Internal error: Oops - BUG: 0 [#1] SMP
+Modules linked in: crct10dif_ce ghash_ce spi_orion i2c_mux_pca954x i2c_mux sfp mdio_i2c omap_rng mvpp2 armada_thermal phylink marvell sbsa_gwdt mvmdio vfat fat mmc_block rtc_armada38x sdhci_xenon_driver phy_generic sdhci_pltfm xhci_plat_hcd ahci_platform phy_mvebu_cp110_comphy i2c_mv64xxx sdhci fuse
+Process swapper/0 (pid: 0, stack limit = 0x0000000058631e79)
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.1.1-300.fc30.aarch64 #1
+Hardware name: Marvell mvebu_armada-8k/mvebu_armada-8k, BIOS 2019.04 04/18/2019
+pstate: 40400005 (nZcv daif +PAN -UAO)
+pc : page_frag_free+0x74/0xa0
+lr : page_frag_free+0x74/0xa0
+sp : ffff000010003a60
+x29: ffff000010003a60 x28: ffff0000117e5480 
+x27: 0000000000000000 x26: 0000000000000000 
+x25: ffff80007fc40462 x24: ffff80007fc40458 
+x23: ffff80007fc40450 x22: ffff0000117dbc00 
+x21: ffff8001356c2a00 x20: ffff80007fc404c0 
+x19: ffff80007fc40400 x18: 0000000000000000 
+x17: 0000000000000000 x16: 0000000000000000 
+x15: 0000000000000010 x14: ffffffffffffffff 
+x13: ffff00009000375f x12: ffff000010003767 
+x11: ffff000011679000 x10: ffff000010eb6428 
+x9 : ffff00001185a000 x8 : 00000000000001c7 
+x7 : 0000000000000015 x6 : 0000000000000001 
+x5 : 0000000000000000 x4 : ffff80013f72a190 
+x3 : ffff80013f730488 x2 : ffff80013f72a190 
+x1 : 0000000000000000 x0 : 000000000000003e 
+Call trace:
+ page_frag_free+0x74/0xa0
+ skb_free_head+0x28/0x48
+ skb_release_data+0x13c/0x178
+ skb_release_all+0x30/0x40
+ consume_skb+0x38/0xc8
+ arp_process+0x2d0/0x6e0
+ arp_rcv+0x100/0x178
+ __netif_receive_skb_one_core+0x50/0x60
+ __netif_receive_skb+0x28/0x70
+ netif_receive_skb_internal+0x44/0xd0
+ napi_gro_receive+0x198/0x1c8
+ mvpp2_rx+0x1f8/0x500 [mvpp2]
+ mvpp2_poll+0x150/0x1e8 [mvpp2]
+ napi_poll+0xb4/0x250
+ net_rx_action+0xbc/0x1b0
+ __do_softirq+0x138/0x334
+ irq_exit+0xc0/0xe0
+ __handle_domain_irq+0x70/0xc0
+ gic_handle_irq+0x58/0xa8
+ el1_irq+0xf0/0x1c0
+ arch_cpu_idle+0x3c/0x1c8
+ default_idle_call+0x20/0x3c
+ cpuidle_idle_call+0x140/0x190
+ do_idle+0xb0/0x108
+ cpu_startup_entry+0x2c/0x30
+ rest_init+0xc0/0xcc
+ arch_call_rest_init+0x14/0x1c
+ start_kernel+0x4ac/0x4c0
+Code: aa0203e0 d0006101 91226021 9400cf32 (d4210000) 
+---[ end trace 267606a8b5fb06cb ]---
+Kernel panic - not syncing: Fatal exception in interrupt
+SMP: stopping secondary CPUs
+Kernel Offset: disabled
+CPU features: 0x002,21006000
+Memory Limit: none
+---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+
