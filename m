@@ -2,92 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ADDA1C90D
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 14:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10EEB1C910
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 14:55:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726036AbfENMza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 08:55:30 -0400
-Received: from mailrelay4-1.pub.mailoutpod1-cph3.one.com ([46.30.210.185]:56124
-        "EHLO mailrelay4-1.pub.mailoutpod1-cph3.one.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725916AbfENMza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 08:55:30 -0400
+        id S1726143AbfENMzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 08:55:41 -0400
+Received: from mail-pf1-f172.google.com ([209.85.210.172]:38926 "EHLO
+        mail-pf1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725901AbfENMzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 08:55:41 -0400
+Received: by mail-pf1-f172.google.com with SMTP id z26so9109731pfg.6;
+        Tue, 14 May 2019 05:55:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=haabendal.dk; s=20140924;
-        h=content-type:mime-version:message-id:date:references:in-reply-to:subject:cc:
-         to:from:from;
-        bh=Wa3jMi9KJqQDLWw1Eka2Kg0cxZh4xKk+W+ZTUzGIaG4=;
-        b=oxSmO0LUNg00fuse7wmhh0Fuyyv2SvcOl1hI7vbPECEGfOV7VZgHlGPL9+zifZn/c3jfCVy5y6YlM
-         XlnOoVjElTVY1N5teGwZlLP3Bo+SZrIgD8+pq6wAPeRiijAZwE2B6ML4xOYeVqx8Mei3K3Jbilp+tb
-         +L9lmrDeJgI+EaFQ=
-X-HalOne-Cookie: 1b0e2f114696488111d802a7184ddba9a359d67a
-X-HalOne-ID: 4e568cd5-7645-11e9-abc4-d0431ea8bb10
-Received: from localhost (unknown [193.163.1.7])
-        by mailrelay4.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
-        id 4e568cd5-7645-11e9-abc4-d0431ea8bb10;
-        Tue, 14 May 2019 12:39:25 +0000 (UTC)
-From:   Esben Haabendal <esben@haabendal.dk>
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] mfd: ioc3: Add driver for SGI IOC3 chip
-In-Reply-To: <20190409154610.6735-3-tbogendoerfer@suse.de> (Thomas Bogendoerfers's message of "Tue, 9 Apr 2019 17:46:06 +0200")
-References: <20190409154610.6735-1-tbogendoerfer@suse.de>
-        <20190409154610.6735-3-tbogendoerfer@suse.de>
-        <20190508102313.GG3995@dell>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
-Date:   Tue, 14 May 2019 14:39:25 +0200
-Message-ID: <87mujpky6a.fsf@haabendal.dk>
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=ivZhgPRsPy6zp/Syvj+/ZJXkxMnZ4T63yw6MhGlwYzE=;
+        b=JN2Ml9ScBqjHNWc9zRtLejdGxae7BOkPMYS4IOIeUnoP3MW6aAhM5SBookEpMuPxtP
+         wbV/8hox/6OqR0R3+Epm8UF9Vol7K7GOwFbsnhz799RrpMSErUcTifjUdEGHUCvVbdLO
+         d53ZITZA+H7yEVOryslcCJ6u58RNdGDnceVTdKs0ntSBNyK3l0Mn1UXkzKiixx+SCuaj
+         vEPQnATAIm9h/iugReWnJs6qNB8G4EAf8HWGSlvk5NJoosJeu78bdwe7UUXM79QZRpek
+         1za2QAsF4xPOXf7M/a+2HuZFzRWrqG5PVDE3pFTJbT/jfWwJKaD8pY6f2oaEvpgB33gt
+         LTKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=ivZhgPRsPy6zp/Syvj+/ZJXkxMnZ4T63yw6MhGlwYzE=;
+        b=l/ysB74JhSVWs/Yim1ddifmS3HU9lwVtHukTQe1vADGVE2S4FhNsrdDq419WUSvbce
+         QNjCJrwopOfYl4NcNDSuGwYTWFqcSsKyTQ+oYWicF9GQ5UKJ8e9Jx/god8d54u0P8x7e
+         xkUHpoZKZut1sMkIUnfQN5CcMhNc2eFHvjatvotC8jPURDJOrm2n8I9HNMSt892YZfrp
+         3TLzOZjD+074YZqwWJWZ2p6lLysw8ExQ4lrayVfAvHn1QLG6sK6l1bC5PcotCdyv9ZG1
+         10HoQhUuATK1l/H3idQ1tG6/GhpADvMGfn6U4ORP9kg9atqVqhsVSm92zbh/gdtXzg11
+         ZYxw==
+X-Gm-Message-State: APjAAAUxxtPyuhJy5W6QyORPl8/Hgnkxn9rcHuRcGbrz9/YMkykHIlDd
+        zGAuNHRP/+ujQptpvhIAlTJIE/aq
+X-Google-Smtp-Source: APXvYqzNz4IDjwn58z8svv4G9wGQ2kABhyMAAlmhdQpO1zfYwpiDGDQdox4hI0aqvB2rMXuKVLKHLQ==
+X-Received: by 2002:a62:e101:: with SMTP id q1mr40766334pfh.160.1557838540166;
+        Tue, 14 May 2019 05:55:40 -0700 (PDT)
+Received: from ?IPv6:2402:f000:1:1501:200:5efe:166.111.71.27? ([2402:f000:1:1501:200:5efe:a66f:471b])
+        by smtp.gmail.com with ESMTPSA id 125sm9051773pge.45.2019.05.14.05.55.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 14 May 2019 05:55:39 -0700 (PDT)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [BUG] rtlwifi: Resource leaks in error handling code of
+ rtl_pci_probe()
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Message-ID: <508009c2-6ebf-6c11-1f52-ef488c70ce32@gmail.com>
+Date:   Tue, 14 May 2019 20:55:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 09 Apr 2019, Thomas Bogendoerfer wrote:
-> 
-> diff --git a/drivers/net/ethernet/sgi/ioc3-eth.c b/drivers/net/ethernet/sgi/ioc3-eth.c
-> index 358e66b81926..21fe722ebcd8 100644
-> --- a/drivers/net/ethernet/sgi/ioc3-eth.c
-> +++ b/drivers/net/ethernet/sgi/ioc3-eth.c
->  
->  [ ... ]
->  
-> -	err = pci_request_regions(pdev, "ioc3");
+In rtl_pci_probe(), rtl_pci_init() allocates some resources, such as:
+_rtl_pci_init_trx_ring
+   _rtl_pci_init_rx_ring
+     _rtl_pci_init_rx_ring
+       pci_zalloc_consistent() -- resource
+       _rtl_pci_init_one_rxdesc
+         dev_alloc_skb() -- resource
 
-Why are you dropping the call to pci_request_regions()?  Shouldn't you
-do something similar in the new mfd driver?
+_rtl_pci_init_trx_ring
+   _rtl_pci_init_tx_ring
+     pci_zalloc_consistent() -- resource
 
-When you are use the the BAR 0 resource as mem_base argument to
-mfd_add_devices() later on, it will be split into child resources for
-the child devices, but they will not be related to the IORESOURCE_MEM
-root tree (iomem_resource) anymore.  I don't think that is how it is
-supposed to be done, as it will allow random other drivers to request
-the exact same memory area.
+When ieee80211_register_hw() or rtl_pci_intr_mode_decide() fails, these 
+resources are not released in error handling code.
 
-How/where is the memory resources inserted in the root IORESOURCE_MEM
-resource (iomem_resource)?  Or is it allowed to use resources without
-inserting it into the root tree?
+A possible fix is to call rtl_pci_deinit() in error handling code, but I 
+am not sure whether this is correct.
+Thus, I only report the bugs.
 
-> +	SET_NETDEV_DEV(dev, &pdev->dev);
-> +	ip = netdev_priv(dev);
-> +	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	ip->regs = ioremap(r->start, resource_size(r));
-> +	r = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> +	ip->ssram = ioremap(r->start, resource_size(r));
+These bugs are found by a runtime fuzzing tool named FIZZER written by us.
 
-Maybe use devm_platform_ioremap_resource() instead, which handles both
-platform_get_resource() and ioremap() in one call..
 
-/Esben
+Best wishes,
+Jia-Ju Bai
