@@ -2,122 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F3641CD0F
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 18:33:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A70DC1CD15
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 18:34:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726501AbfENQde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 12:33:34 -0400
-Received: from mail-eopbgr710116.outbound.protection.outlook.com ([40.107.71.116]:30064
-        "EHLO NAM05-BY2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725916AbfENQde (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 12:33:34 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=n6yu42hNqY9kJZH2RkFdvXpq3zTNXwlFD8bVCI0ADlVC79rj/X8r95deFBF77hHuwLo7eS+1/47Tap2yT04R52sDrqvTeVJK9EOZrERweV/ABYn1V1O5R/Z1Xl4WPvz5cRFtZWlifx9uVEjliWxR8anKQugL4OrH5jKkvhPNav4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NiH8zCCzbu4NQwIEpbSEw7d2wyZvBG2xJrmVaiko/Ck=;
- b=Ur5RLhFvzmUx+5syU5JVBlFc0F3pn4lU9gYJ4WI6PJyTMALrnS/Ji3ryYohpqYg9mGi4AEGQgHSckQe9d1t/QYJ1dccTdrltp6qE5thMt+gpGL7LhZJpPVb+jpcf795PodhMyD0ciY1ZpIZAYY2RIkIAtvcIhAF7+w6PGAGdn+I=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NiH8zCCzbu4NQwIEpbSEw7d2wyZvBG2xJrmVaiko/Ck=;
- b=MUmY58H/NaX+/DvkTZPna/UqSHsfwPCwMkbgQrvexwOctFX/7h6hl6j+pwrr1f/ANUk7X//jQsLO5kPI+aXgzq0PJ8vFVVF6LUfToYk4JrtVavWGowUZDO3arb1Q9fBxcJ3XqfuTdA0PACtpSe3cauJA22Ga+0DD1M8fUX/+UTU=
-Received: from BN6PR21MB0465.namprd21.prod.outlook.com (2603:10b6:404:b2::15)
- by BN6PR21MB0147.namprd21.prod.outlook.com (2603:10b6:404:93::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1922.1; Tue, 14 May
- 2019 16:33:31 +0000
-Received: from BN6PR21MB0465.namprd21.prod.outlook.com
- ([fe80::6cf3:89fb:af21:b168]) by BN6PR21MB0465.namprd21.prod.outlook.com
- ([fe80::6cf3:89fb:af21:b168%12]) with mapi id 15.20.1922.002; Tue, 14 May
- 2019 16:33:31 +0000
-From:   Sunil Muthuswamy <sunilmut@microsoft.com>
-To:     David Miller <davem@davemloft.net>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "sashal@kernel.org" <sashal@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] hv_sock: Fix data loss upon socket close
-Thread-Topic: [PATCH] hv_sock: Fix data loss upon socket close
-Thread-Index: AdUF8eO/rXjnGSU+Q+iHOcDDYgexQQAuARSAAPIX9VA=
-Date:   Tue, 14 May 2019 16:33:31 +0000
-Message-ID: <BN6PR21MB0465DAEFE2237970A511699FC0080@BN6PR21MB0465.namprd21.prod.outlook.com>
-References: <BN6PR21MB0465168DEA6CABA910832A5BC0320@BN6PR21MB0465.namprd21.prod.outlook.com>
- <20190509.135809.630741953977432246.davem@davemloft.net>
-In-Reply-To: <20190509.135809.630741953977432246.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=sunilmut@microsoft.com; 
-x-originating-ip: [2001:4898:80e8:7:f8d4:c8e7:5ebf:2c16]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6a9d6478-4b6d-4253-e4ad-08d6d889e6f7
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:BN6PR21MB0147;
-x-ms-traffictypediagnostic: BN6PR21MB0147:
-x-microsoft-antispam-prvs: <BN6PR21MB0147B2F2FC98AF053F34DC8DC0080@BN6PR21MB0147.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0037FD6480
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(979002)(376002)(366004)(136003)(346002)(39860400002)(396003)(13464003)(199004)(189003)(81166006)(7696005)(256004)(14444005)(186003)(8936002)(76176011)(6916009)(71200400001)(102836004)(71190400001)(6506007)(7736002)(6116002)(81156014)(53546011)(478600001)(305945005)(6246003)(99286004)(316002)(10290500003)(22452003)(229853002)(68736007)(25786009)(4326008)(6436002)(66476007)(66556008)(14454004)(76116006)(64756008)(73956011)(66446008)(476003)(66946007)(33656002)(52396003)(8676002)(46003)(486006)(53936002)(54906003)(2906002)(4744005)(9686003)(86612001)(86362001)(8990500004)(10090500001)(52536014)(446003)(11346002)(55016002)(74316002)(5660300002)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1102;SCL:1;SRVR:BN6PR21MB0147;H:BN6PR21MB0465.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: P5yz1nNo17AmGTD4FuYhN03+3Kla7K5eZDMqNwKbgaZarBgcHpio6mXg6pzDJZum7QU/RoBwep8nzCgVzC0pMz/exmFUkkTNPLgoVaPA874v75qfKn/Mi7YCHm61GD84cKFJ09eJhlvCzLU8S0ce3348X2qPfzuP0cQb5DI7ajije4LmHkPmdaT2w5AMx5DzdqLz+uCmSLM/7s/jdZ77Rm1jMfuRlD96gA0e4MsgJyqEwiISzbSCrCcDEXukhmqe9Vah4H9MQQzCLtJfz340QboBEOSlNSdUZqfshn+wvDCmLeOFM9w7QbcTwXuPIjGG8ulHmPczJ17eq08H/i3Pr0uFOomUyfd/9H9ANwVdgBGWQ6aFc3s3yivd/FcKHpp0qu2nQKMDF7Nxs2kIbYVvPbYbkR8kIjTZPhY7h+Tp12o=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726394AbfENQey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 12:34:54 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:42580 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725916AbfENQey (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 12:34:54 -0400
+Received: by mail-qk1-f195.google.com with SMTP id d4so10674909qkc.9;
+        Tue, 14 May 2019 09:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/7gaeJYCOtWCIvoQvIfzhGeThP2BdCxa7jC4qIRZJ3o=;
+        b=WH6E4Wpa1kEuiCBSbaE6kFm1HBAQjTOiifF6SDMisU5TpWs9CZ0mm7w1c7Q9cvC12h
+         DBBN180bdTEKMLxO3TjqDaOmeRJnXCeVGF9UNJkLJU70YRHE8SXEs1whXkU9SviaxM9v
+         hxcDs2ksJdNFilGX+noM4VhtZjvYbGq065/D4PXYm4gMngC3Ih4VLyCDKUfqaJCQJ8fh
+         UYE4THMCS8dWaH4BEcwx8cDfo/Fdyx5tiJgyK+jf0/opt9IXjyvJ1pm70UOgHkaFNMm1
+         2UrcNE3PMijywulOR36NL9miVQud3BG18dOdAjrgKkcoG6RwaMBMcMTsE/leuPvn4CQr
+         1OEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/7gaeJYCOtWCIvoQvIfzhGeThP2BdCxa7jC4qIRZJ3o=;
+        b=XJ4yFJTa+3xiVcxmLZQAJx15jQ3AyIiFcOJ4aZhKH5btf8OeA3sQS9IaqhR7r14JSD
+         pB4KpTa0m6u1EG5bGcJYNrwJM8adTf4qBw3dOwICxooswCUkNqlUiDG03p6r3Tl4XKfz
+         iC8MQi1VGb86DwEU/CX6pQrBgM4YflaPKLi3qBeZLV1FsHg1Cy5IlU6oRSk83J4ZjZsV
+         WIiCHH7+YzjyeQ59EjBemJxpgP3OegrNOMGPy6DoA30L+XicM1oqN35Ee90/aGmnHro2
+         9WvaGxa4kPnCsf+b9r5odh8ezLpUV+Z/11nW8AdFBCVst9//2gBj86TARreagL6YLr9q
+         0sjg==
+X-Gm-Message-State: APjAAAXYp3MCYI2T0jAOCgeMMfRRKvDlUhJhpN8pvrnb8x9ccHgxpqa8
+        pgBuP/+6sET/aU56Sc/QJ0nKLmWcX713XvXzxYi5z6rlmXNh6g==
+X-Google-Smtp-Source: APXvYqyUki6Uak7QQDo5UhLsZ7eRpE796uqD5LHnXOWUCIJuwHUt6x5EayBs3Uk73DcsvqO01YhmELEOa76cfBklSas=
+X-Received: by 2002:a37:72c7:: with SMTP id n190mr27180656qkc.189.1557851693196;
+ Tue, 14 May 2019 09:34:53 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a9d6478-4b6d-4253-e4ad-08d6d889e6f7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 May 2019 16:33:31.3896
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sunilmut@ntdev.microsoft.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR21MB0147
+References: <cover.1557789256.git.daniel@iogearbox.net> <505e5dfeea6ab7dd3719bb9863fc50e7595e06ed.1557789256.git.daniel@iogearbox.net>
+ <CAEf4BzZc_8FfHKA0rEvgx8T0xRWQp-2scm1N+nwroXi5enDh_g@mail.gmail.com> <76dde419-7204-0aa0-3251-f52c2c15be85@iogearbox.net>
+In-Reply-To: <76dde419-7204-0aa0-3251-f52c2c15be85@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 14 May 2019 09:34:41 -0700
+Message-ID: <CAEf4BzZ_c3srGXfX5RvPPSoibeyiz0a6042sU0=Kx7XmZp3-Cg@mail.gmail.com>
+Subject: Re: [PATCH bpf 1/3] bpf: add map_lookup_elem_sys_only for lookups
+ from syscall side
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        bpf@vger.kernel.org, Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, May 14, 2019 at 12:59 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 05/14/2019 07:04 AM, Andrii Nakryiko wrote:
+> > On Mon, May 13, 2019 at 4:20 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >>
+> >> Add a callback map_lookup_elem_sys_only() that map implementations
+> >> could use over map_lookup_elem() from system call side in case the
+> >> map implementation needs to handle the latter differently than from
+> >> the BPF data path. If map_lookup_elem_sys_only() is set, this will
+> >> be preferred pick for map lookups out of user space. This hook is
+> >
+> > This is kind of surprising behavior  w/ preferred vs default lookup
+> > code path. Why the desired behavior can't be achieved with an extra
+> > flag, similar to BPF_F_LOCK? It seems like it will be more explicit,
+> > more extensible and more generic approach, avoiding duplication of
+> > lookup semantics.
+>
+> For lookup from syscall side, this is possible of course. Given the
+> current situation breaks heuristic with any walks of the LRU map, I
+> presume you are saying something like an opt-in flag such as
+> BPF_F_MARK_USED would be more useful? I was thinking about something
 
+To preserve existing semantics, it would be opt-out
+BPF_F_DONT_MARK_USED, if you don't want to update LRU, so that
+existing use cases don't break.
 
-> -----Original Message-----
-> From: linux-hyperv-owner@vger.kernel.org <linux-hyperv-owner@vger.kernel.=
-org> On Behalf Of David Miller
-> Sent: Thursday, May 9, 2019 1:58 PM
-> To: Sunil Muthuswamy <sunilmut@microsoft.com>
-> Cc: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.=
-com>; Stephen Hemminger
-> <sthemmin@microsoft.com>; sashal@kernel.org; Dexuan Cui <decui@microsoft.=
-com>; Michael Kelley <mikelley@microsoft.com>;
-> netdev@vger.kernel.org; linux-hyperv@vger.kernel.org; linux-kernel@vger.k=
-ernel.org
-> Subject: Re: [PATCH] hv_sock: Fix data loss upon socket close
->=20
-> From: Sunil Muthuswamy <sunilmut@microsoft.com>
-> Date: Wed, 8 May 2019 23:10:35 +0000
->=20
-> > +static inline void hvs_shutdown_lock_held(struct hvsock *hvs, int mode=
-)
->=20
-> Please do not use the inline keyword in foo.c files, let the compiler dec=
-ide.
->=20
-Thanks, will fix in the next version.
-> Also, longer term thing, I notice that vsock_remove_socket() is very
-> inefficient locking-wise.  It takes the table lock to do the placement
-> test, and takes it again to do the removal.  Might even be racy.
-Agreed. The check & remove should be done as an atomic operation.
-This can be taken up as a separate patch.
+> like this initially, but then I couldn't come up with a concrete use
+> case where it's needed/useful today for user space. Given that, my
+> preference was to only add such flag wait until there is an actual
+> need for it, and in any case, it is trivial to add it later on. Do
+> you have a concrete need for it today that would justify such flag?
+
+So my concern was with having two ops for lookup for maps
+(map_lookup_elem() and map_lookup_elem_sys_only()) which for existing
+use cases differ only in whether we are reordering LRU on lookup or
+not, which felt like would be cleaner to solve with extending
+ops->map_lookup_elem() to accept flags. But now I realize that there
+are important implementation limitations preventing doing this cleanly
+and efficiently, so I rescind my proposal.
+
+>
+> > E.g., for LRU map, with flag on lookup, one can decide whether lookup
+> > from inside BPF program (not just from syscall side!) should modify
+> > LRU ordering or not, simply by specifying extra flag. Am I missing
+> > some complication that prevents us from doing it that way?
+>
+> For programs it's a bit tricky. The BPF call interface is ...
+>
+>   BPF_CALL_2(bpf_map_lookup_elem, struct bpf_map *, map, void *, key)
+>
+> ... meaning verifier does not care what argument 3 and beyond contains.
+> From BPF context/pov, it could also be uninitialized register. This would
+> mean, we'd need to add a BPF_CALL_3(bpf_map_lookup_elem2, ...) interface
+> which programs would use instead (and to not break existing ones), or
+> some other new helper call that gets a map value argument to unmark the
+> element from LRU side. While all doable one way or another although bit
+> hacky, we should probably clarify and understand the use case for it
+> first, thus brings me back to the last question from above paragraph.
+
+Yeah, if we wanted to expose this functionality from BPF side right
+now, we'd have to add new helper w/ extra flags arg. As I mentioned
+above, though, I assumed it wouldn't be too hard to make existing
+BPF_CALL_2(bpf_map_lookup_elem, struct bpf_map *, map, void *, key)
+translate to map->ops->map_lookup_elem(key, 0 /* flags */), filling in
+default flags = 0 value, but apparently that's not that simple (and
+will hurt performance).
+
+>
+> Thanks,
+> Daniel
