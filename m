@@ -2,62 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DBF61C0CC
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 05:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84C711C0C9
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 05:01:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbfENDBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 May 2019 23:01:03 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34727 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726533AbfENDBC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 May 2019 23:01:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=G3zxPkEx8xFAbyKPcWX048WseX1r8i9WLN8ua6tPwmc=; b=tSmoC5EMuNCDWWJh44SydrloQ7
-        GgY0QYJRcyXdrf2nbti5fSz9evr36xmIFcXYj7FBobiupdZJC8N8lt2mzYEuJ+KIakZO5OKHh219H
-        0Nx/WfMMc2wY0dS/wXCbGu1GEZk3WafJTguYGrM8KbxuCaRLTMO7VrYG/AOl+wqfWPKM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hQNfs-000604-5y; Tue, 14 May 2019 05:00:16 +0200
-Date:   Tue, 14 May 2019 05:00:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     Jose Abreu <joabreu@synopsys.com>, davem@davemloft.net,
-        jianguo.zhang@mediatek.com,
+        id S1726690AbfENDBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 May 2019 23:01:04 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:63043 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726387AbfENDBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 May 2019 23:01:04 -0400
+X-UUID: af5e15beccf84fb7ab8bb6ae5dbf458c-20190514
+X-UUID: af5e15beccf84fb7ab8bb6ae5dbf458c-20190514
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (mhqrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 1626085022; Tue, 14 May 2019 11:00:53 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Tue, 14 May 2019 11:00:51 +0800
+Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Tue, 14 May 2019 11:00:50 +0800
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     Jose Abreu <joabreu@synopsys.com>, <davem@davemloft.net>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yt.shen@mediatek.com, linux-mediatek@lists.infradead.org,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [v2, PATCH 0/4] fix some bugs in stmmac
-Message-ID: <20190514030016.GA19642@lunn.ch>
-References: <1557800933-30759-1-git-send-email-biao.huang@mediatek.com>
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
+        <biao.huang@mediatek.com>, <jianguo.zhang@mediatek.comi>,
+        <boon.leong.ong@intel.com>
+Subject: [v2, PATCH] add some features in stmmac
+Date:   Tue, 14 May 2019 11:00:42 +0800
+Message-ID: <1557802843-31718-1-git-send-email-biao.huang@mediatek.com>
+X-Mailer: git-send-email 1.7.9.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1557800933-30759-1-git-send-email-biao.huang@mediatek.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain
+X-TM-SNTS-SMTP: 7892806FA5617C579E8B0AFF4DE23E520B0F3533254FF1AFAE9D24DC087D60F92000:8
+X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 14, 2019 at 10:28:49AM +0800, Biao Huang wrote:
-> changes in v2:                                                                  
->         1. update rx_tail_addr as Jose's comment                                
->         2. changes clk_csr condition as Alex's proposition                      
->         3. remove init lines in dwmac-mediatek, get clk_csr from dts instead.   
+Changes in v2:                                                                  
+        1. reverse Christmas tree order in dwmac4_set_filter                    
+        2. remove clause 45 patch, waiting for cl45 patch from Boon Leong       
+v1:                                                                             
+This series add some features in stmmac driver.                                 
+        1. add support for hash table size 128/256                              
+        2. add mdio clause 45 access from mac device for dwmac4.                
+                                                                                
+Biao Huang (1):                                                                 
+  net: stmmac: add support for hash table size 128/256 in dwmac4                
+                                                                                
+ drivers/net/ethernet/stmicro/stmmac/common.h      |    7 +--                   
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h      |    4 +-                    
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |   50 ++++++++++++--------- 
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c  |    1 +                     
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    4 ++                    
+ 5 files changed, 40 insertions(+), 26 deletions(-)                             
+                                                                                
+--                                                                              
+1.7.9.5
 
-Hi Biao
-
-Since these are fixes, could you provide a Fixes: tag for each one?
-
-Thanks
-	Andrew
