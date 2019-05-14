@@ -2,142 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC751CFD3
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 21:25:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B25D91CFF8
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 21:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbfENTZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 15:25:31 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:38131 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726013AbfENTZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 15:25:30 -0400
-Received: by mail-qk1-f195.google.com with SMTP id a64so5298787qkg.5
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 12:25:30 -0700 (PDT)
+        id S1726174AbfENTdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 15:33:38 -0400
+Received: from mail-io1-f50.google.com ([209.85.166.50]:34342 "EHLO
+        mail-io1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726013AbfENTdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 15:33:38 -0400
+Received: by mail-io1-f50.google.com with SMTP id g84so244678ioa.1
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 12:33:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=KGcQ9upC29gYa4IvVNB87+RZG37gSQZLhYRKnsdq/QU=;
-        b=bYM7ZfDp2uyEwMRdAYGgW1UMkTQBI1XJSNiLk0bjPhoCi78+HQrKbdoeWOJcuqGomf
-         6dZ3Hmp4hYZYf2j1gzRJOFLW+uKLzutlwe/Fxuv0SIqZWsK2ILOwjR/lN11/ulXuJKgE
-         hLrq9z7xfO1WB9cK1ZCLt8jh4Q6jExUIiLEjPyMSrSfg8YrBpBwUiTT+iKKxjT8D054V
-         TZiKEoZkrlQjv3yDxjPWXNG2izGQUrRRFF7HUh9mInJk7/ijFtr9Pi6cEttPcM1u/A/m
-         ltUIUJ26tsQNXAxVMgFrmgvJ1iobNUwK3KZsZkNXtG2EP8EpMb7MsIvRNPGgvMTeE5GR
-         fH8A==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yF9D7RyTc74v56sXOIKGpWiiTOyUHJ8PD6rDSoCbYe0=;
+        b=TB4T9ZHKSWr+9ofptOWs8J7Fj5h6A4eyQru/3X+iIdg9YaWZ29AyxvadBAKWNkwstf
+         mcNKZzCZiSlK2Jhb2ppq1X4YdZlFucdFoG4hzfny9gZ4/6nV9n3Nm5UvQ+d3PrOJbgCC
+         zXjrTeijJtxquqFbrpuYRmW6H+JiEF9+B3iE2+jVI5zB8nCoIGXcc9hB7TjxP7nhBSrL
+         yPEjY2pNaVHSOUfaZkqG2ADa5AJP94SdmZdswcHz0nR7IxDyoMJEnqNHEKZMdT+GOZD0
+         jfmvDLwTUZCNJz4er9mco8pEcGp5Lo2XtKA1bl8+Nqcrulu6dVz4/1R+865ake1tWa8q
+         8DkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=KGcQ9upC29gYa4IvVNB87+RZG37gSQZLhYRKnsdq/QU=;
-        b=g9sThO1Z+rHg9o1/mTCBwrpKhgCIdqGFB0+siJWWM88/vnUk5yIZvVlmiLIhU9F4Jj
-         Md8T8iOY0DYtf0VG/26Uz+HEToC4D/OLQT44snzFg4YYLnJvXSfXnYQZvyTAqfVkTI/m
-         y2PHohOCM2FRivNPgJ/1xDvX1CKkNIVwKrZQc/xubBrg2dD0jf7AWUKacMxsDrBMwCAs
-         poWvesOawzEz0MrIsbjMJA8/v5C8h2XQELY5CfnNPvyuvNjha52lzAN58izz8j0/Naa/
-         ZKIhDhzxIwlUMEUXZT/Ywz7dJBk/daHfHYrEaD4/IcoYwSIMyI3ZQXV4+99oMjsq/FIT
-         mO9A==
-X-Gm-Message-State: APjAAAXnFHqMx/cpuTjXCM4QmwarLN8zOV1cgXp1e6k1hBucSR2v0Tbg
-        k9J4K+He+7T/E64vJH4CFZrveg==
-X-Google-Smtp-Source: APXvYqzERwp4vgEjaoTLtN65oy2xv6PWcLZSxjMr1K1/3w/5NNxyQxqNR336BTtj0/TQaFIv5HjabQ==
-X-Received: by 2002:ae9:e30e:: with SMTP id v14mr30149993qkf.91.1557861929556;
-        Tue, 14 May 2019 12:25:29 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j26sm3061100qtj.70.2019.05.14.12.25.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 14 May 2019 12:25:29 -0700 (PDT)
-Date:   Tue, 14 May 2019 12:25:09 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     NeilBrown <neilb@suse.com>
-Cc:     Thomas Graf <tgraf@suug.ch>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 2/5] rhashtable: reorder some inline functions and
- macros.
-Message-ID: <20190514122509.46ab191a@cakuba.netronome.com>
-In-Reply-To: <155503392797.17793.15780367123758287135.stgit@noble.brown>
-References: <155503371949.17793.8266195008003399968.stgit@noble.brown>
-        <155503392797.17793.15780367123758287135.stgit@noble.brown>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yF9D7RyTc74v56sXOIKGpWiiTOyUHJ8PD6rDSoCbYe0=;
+        b=ivdImlvcRF9xqkRGBwqWFPevNXpTIphQDEhYMV2+YIUhSC+n2I4uG2BMos/xhJIu1H
+         9p/9PoPR/Jh7q/8eDQMcCaCSAvARzD5FYukW1Jy0RFByqm9a+5hZtHBVDuJR5QnBUtL6
+         9ITaTDQy1oHQFg2hXU7CXMmp8uVJDPEkclZTVWhSTOeaffiWvUNgDF+nyrpEozA7ykvI
+         0LcSxJaIfgXvDtt9xrP6kdAjk1WO5W02rHKcyDuvtq8/2A8XY4fi+yW3HYdaeiU/6B5d
+         mK7JXqK6mtX0Ypd2x9xcG0oMgUHBJXCzIugrezl09GuVYuDgKTUDZxDaF/5CvUfuJj1R
+         fqZQ==
+X-Gm-Message-State: APjAAAWskfVUxRWqLfWYX0Siszpp9Lq1quF4b+efv9QJQSQ6Kh2Ak3Bf
+        4xRp+I70YnGNQMcy+ucjuxHFiQq3Je+gruwOHzXeqQ==
+X-Google-Smtp-Source: APXvYqyMgmB4b3VLXZCANCsNAeTblu+5sJNO8dBl8Elk0lnNF2muvtY5tUpX31b9um++Ol11/j/e/Zv42xHj1FuhcoY=
+X-Received: by 2002:a5d:9cc9:: with SMTP id w9mr20851514iow.287.1557862417288;
+ Tue, 14 May 2019 12:33:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <71e7331f-d528-430e-f880-e995ff53d362@lists.m7n.se>
+ <2667a075-7a51-d1e0-c4e7-cf0d011784b9@gmail.com> <CAEA6p_AddQqy+v+LUT6gsqOC31RhMkVnZPLja8a4n9XQmK8TRA@mail.gmail.com>
+ <20190514163308.2f870f27@redhat.com>
+In-Reply-To: <20190514163308.2f870f27@redhat.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Tue, 14 May 2019 12:33:25 -0700
+Message-ID: <CAEA6p_Cs7ExpRtTHeTXFFwLEF27zs6_fFOMVN7cgWUuA3=M1rA@mail.gmail.com>
+Subject: Re: IPv6 PMTU discovery fails with source-specific routing
+To:     Stefano Brivio <sbrivio@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Cc:     Mikael Magnusson <mikael.kernel@lists.m7n.se>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 12 Apr 2019 11:52:08 +1000, NeilBrown wrote:
-> This patch only moves some code around, it doesn't
-> change the code at all.
-> A subsequent patch will benefit from this as it needs
-> to add calls to functions which are now defined before the
-> call-site, but weren't before.
-> 
-> Signed-off-by: NeilBrown <neilb@suse.com>
+I think the bug is because when creating exceptions, src_addr is not
+always set even though fib6_info is in the subtree. (because of
+rt6_is_gw_or_nonexthop() check)
+However, when looking up for exceptions, we always set src_addr to the
+passed in flow->src_addr if fib6_info is in the subtree. That causes
+the exception lookup to fail.
+I will make it consistent.
+However, I don't quite understand the following logic in ip6_rt_cache_alloc():
+        if (!rt6_is_gw_or_nonexthop(ort)) {
+                if (ort->fib6_dst.plen != 128 &&
+                    ipv6_addr_equal(&ort->fib6_dst.addr, daddr))
+                        rt->rt6i_flags |= RTF_ANYCAST;
+#ifdef CONFIG_IPV6_SUBTREES
+                if (rt->rt6i_src.plen && saddr) {
+                        rt->rt6i_src.addr = *saddr;
+                        rt->rt6i_src.plen = 128;
+                }
+#endif
+        }
+Why do we need to check that the route is not gateway and has next hop
+for updating rt6i_src? I checked the git history and it seems this
+part was there from very early on (with some refactor in between)...
 
-Hi Neil, I think this patch introduces as slew of sparse warnigns:
 
-include/linux/rhashtable.h:724:23: warning: incorrect type in argument 2 (different address spaces)
-include/linux/rhashtable.h:724:23:    expected struct rhash_lock_head **bkt
-include/linux/rhashtable.h:724:23:    got struct rhash_lock_head [noderef] <asn:4>**[assigned] bkt
-include/linux/rhashtable.h:728:33: warning: incorrect type in argument 2 (different address spaces)
-include/linux/rhashtable.h:728:33:    expected struct rhash_lock_head **bkt
-include/linux/rhashtable.h:728:33:    got struct rhash_lock_head [noderef] <asn:4>**[assigned] bkt
-include/linux/rhashtable.h:760:41: warning: incorrect type in argument 2 (different address spaces)
-include/linux/rhashtable.h:760:41:    expected struct rhash_lock_head **bkt
-include/linux/rhashtable.h:760:41:    got struct rhash_lock_head [noderef] <asn:4>**[assigned] bkt
-include/linux/rhashtable.h:801:25: warning: incorrect type in argument 2 (different address spaces)
-include/linux/rhashtable.h:801:25:    expected struct rhash_lock_head **bkt
-include/linux/rhashtable.h:801:25:    got struct rhash_lock_head [noderef] <asn:4>**[assigned] bkt
-include/linux/rhashtable.h:1003:23: warning: incorrect type in argument 2 (different address spaces)
-include/linux/rhashtable.h:1003:23:    expected struct rhash_lock_head **bkt
-include/linux/rhashtable.h:1003:23:    got struct rhash_lock_head [noderef] <asn:4>**[assigned] bkt
-include/linux/rhashtable.h:1047:41: warning: incorrect type in argument 2 (different address spaces)
-include/linux/rhashtable.h:1047:41:    expected struct rhash_lock_head **bkt
-include/linux/rhashtable.h:1047:41:    got struct rhash_lock_head [noderef] <asn:4>**[assigned] bkt
-include/linux/rhashtable.h:1054:25: warning: incorrect type in argument 2 (different address spaces)
-include/linux/rhashtable.h:1054:25:    expected struct rhash_lock_head **bkt
-include/linux/rhashtable.h:1054:25:    got struct rhash_lock_head [noderef] <asn:4>**[assigned] bkt
+From: Stefano Brivio <sbrivio@redhat.com>
+Date: Tue, May 14, 2019 at 7:33 AM
+To: Mikael Magnusson
+Cc: Wei Wang, David Ahern, Linux Kernel Network Developers, Martin KaFai Lau
 
-Is there any chance to get those fixed?  Presumably a __force would be
-appropriate?  Maybe like this?
-
-diff --git a/include/linux/rhashtable.h b/include/linux/rhashtable.h
-index f7714d3b46bd..997017a85032 100644
---- a/include/linux/rhashtable.h
-+++ b/include/linux/rhashtable.h
-@@ -325,27 +325,28 @@ static inline struct rhash_lock_head __rcu **rht_bucket_insert(
-  */
- 
- static inline void rht_lock(struct bucket_table *tbl,
--                           struct rhash_lock_head **bkt)
-+                           struct rhash_lock_head __rcu **bkt)
- {
-+
-        local_bh_disable();
--       bit_spin_lock(0, (unsigned long *)bkt);
-+       bit_spin_lock(0, (unsigned long __force *)bkt);
-        lock_map_acquire(&tbl->dep_map);
- }
- 
- static inline void rht_lock_nested(struct bucket_table *tbl,
--                                  struct rhash_lock_head **bucket,
-+                                  struct rhash_lock_head __rcu **bkt,
-                                   unsigned int subclass)
- {
-        local_bh_disable();
--       bit_spin_lock(0, (unsigned long *)bucket);
-+       bit_spin_lock(0, (unsigned long __force *)bkt);
-        lock_acquire_exclusive(&tbl->dep_map, subclass, 0, NULL, _THIS_IP_);
- }
- 
- static inline void rht_unlock(struct bucket_table *tbl,
--                             struct rhash_lock_head **bkt)
-+                             struct rhash_lock_head __rcu **bkt)
- {
-        lock_map_release(&tbl->dep_map);
--       bit_spin_unlock(0, (unsigned long *)bkt);
-+       bit_spin_unlock(0, (unsigned long __force *)bkt);
-        local_bh_enable();
- }
- 
+> On Mon, 13 May 2019 23:12:31 -0700
+> Wei Wang <weiwan@google.com> wrote:
+>
+> > Thanks Mikael for reporting this issue. And thanks David for the bisection.
+> > Let me spend some time to reproduce it and see what is going on.
+>
+> Mikael, by the way, once this is sorted out, it would be nice if you
+> could add your test as a case in tools/testing/selftests/net/pmtu.sh --
+> you could probably reuse all the setup parts that are already
+> implemented there.
+>
+> --
+> Stefano
