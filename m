@@ -2,173 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F45C1CCD0
-	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 18:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8652B1CCD4
+	for <lists+netdev@lfdr.de>; Tue, 14 May 2019 18:21:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726151AbfENQUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 12:20:05 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:40200 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbfENQUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 12:20:05 -0400
-Received: by mail-lf1-f67.google.com with SMTP id h13so12347523lfc.7
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 09:20:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=clB+SahS3gJKRiiVQIyrl7Mbn0eMpEEUNpUrzTj0aPE=;
-        b=qKB9spCfQf0/8FEQiOGUmwuXYhmi8ntqTTZ6Dvom9TYTRhu5lbXVdfqX7NFtv7TXlU
-         7Wpk58UKDyLUv26ZfqxM1FuCDcHFXABHAVlSSLU6OEP5/pZjBpM5TRk9kPamvf0Z67cI
-         ClyPh80CMn7nJiCats3MJspR5xCQ0ZL+DqDmpx7ipV97Zw3R2p50KRq6j2/sNfvuduz6
-         iT3ORcbc6RIhkK/eGArf1zfJNPgyDqlOp91axdFXM04u19D2u9X/El1lg7y+fzz1P9Sd
-         rG3ZsHrkf/oAONEd4nFatLxbNe75MIkA9YIYUMFMfb95s7kVx2VQZuw2PoOhRUWlB9Vg
-         grmw==
+        id S1726279AbfENQVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 12:21:01 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:45470 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726084AbfENQVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 12:21:01 -0400
+Received: by mail-wr1-f65.google.com with SMTP id b18so9934721wrq.12
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 09:21:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=clB+SahS3gJKRiiVQIyrl7Mbn0eMpEEUNpUrzTj0aPE=;
-        b=OLMYNHBhPotMJVvdu3UXR3L/yj5Ao58hXDpRets2kaRrsk4Tq84TiW6Dl9DiU/N4J6
-         6uGQQ9+LrAtWIwNVzeI111bk+bLtENYgrrNNaXgCPZFfaQa9HrsZvDHUqNOu8X2bNfxl
-         hcTSGLFFzq/JS7y/BzOvBw/iTOK3iRFtw6xx3s9gSp+njswMDxbXPAG3GyoS94BWwzoW
-         wcMGudhho/GCSPheRpJfEeOBT4HR+iBV/UYQPhEbi2VbNK+QN8LW/wbcAPCh4pxtwNgl
-         W8v2lOJyYDLH9sRa1tPfIRfJqfyFMPwUuYvO6W5mAw95FFCsV2b+7F7s+XXRq+g6NnVd
-         qlpw==
-X-Gm-Message-State: APjAAAVH/bPzm1gQGQaj1c90JbgEwJUMGDEqUgn1R4jAc0HBwvSKAGd6
-        oDXH/CI7eb5I+LmmJVvKfpszEJPC7Us=
-X-Google-Smtp-Source: APXvYqy/1o09JTdfn0CjUgelKKkqWFD0tvyLafiCMYndDP1oDbKWoHksDQkBR7yWyO6EjBhAVkMfow==
-X-Received: by 2002:a19:5507:: with SMTP id n7mr18338828lfe.140.1557850802402;
-        Tue, 14 May 2019 09:20:02 -0700 (PDT)
-Received: from mobilestation ([5.164.217.122])
-        by smtp.gmail.com with ESMTPSA id n8sm3835969lfe.15.2019.05.14.09.20.00
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 14 May 2019 09:20:01 -0700 (PDT)
-Date:   Tue, 14 May 2019 19:19:58 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Serge Semin <Sergey.Semin@t-platforms.ru>,
-        netdev@vger.kernel.org,
-        "linux-rockchip@lists.infradead.org" 
-        <linux-rockchip@lists.infradead.org>
-Subject: Re: [Regression] "net: phy: realtek: Add rtl8211e rx/tx delays
- config" breaks rk3328-roc-cc networking
-Message-ID: <20190514161957.yq7mw3wccuie6rr3@mobilestation>
-References: <066a0d38-2c64-7a1e-d176-04341f0cb6d7@gmail.com>
- <20190512023754.GK4889@lunn.ch>
- <ae62419b-53f1-395d-eb0e-66d138d294a8@gmail.com>
- <4c6ef3f1-a2c7-f2da-3f2a-cd28624007f8@gmail.com>
- <CAMdYzYqcg3EXhLguTti2hP-0VVi_vX0XvoDSzTCC84p9aSp7Lg@mail.gmail.com>
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=BOCFSrhgfdaeCsPqx/9Z23ucW5WFX+NmToiNV2PrBeE=;
+        b=MgAq25z5JUla64JBPuMe8Kfv4XTa3Nbyhv1AvXoiBc+5+ZMdcRHkUfIexM9JRTEeZn
+         QpQ/Kqb364JdVkJY79ZSPHGmujbQGnOFe0P0klexQIZTDeVo2vp9Qg0QbtWBocxNcFW2
+         Vx2CVgHsCioWrPhHfnKyzj7W15X7/WBH1RQ24Neko/9QwyNXwEMvTAZVobnh55hh9idw
+         NE+RSvb2z5Mq8YtLqlDRhw+Ip6SjG402PwfgjCPR9OBVcPm1wt4E/3uO8e/KeTx2rFk5
+         Atm/nZy7WTu9Z5nq8eQNKCD55VclKwSwKO+XJp6FhoEyo3VW+PoytUpcbrVoQUkX/cQi
+         DiMg==
+X-Gm-Message-State: APjAAAX5i+opFzy3rP7qRs9CJR16dCM5USf9RU4LzLDLacNBgzVkxFHX
+        AUcdq+4qBg9PJJ6PnmTn1EWlRA==
+X-Google-Smtp-Source: APXvYqyscd4jQz6/42rGahRh0erb6xOt/MMNshG64dkL9Ee+1e2OY4Rd80gvnBFmXC+AkJhQaflnLg==
+X-Received: by 2002:adf:afcd:: with SMTP id y13mr21348543wrd.270.1557850859484;
+        Tue, 14 May 2019 09:20:59 -0700 (PDT)
+Received: from steredhat (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
+        by smtp.gmail.com with ESMTPSA id g3sm4407851wmf.9.2019.05.14.09.20.58
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 14 May 2019 09:20:58 -0700 (PDT)
+Date:   Tue, 14 May 2019 18:20:56 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [PATCH v2 7/8] vsock/virtio: increase RX buffer size to 64 KiB
+Message-ID: <20190514162056.5aotcuzsi6e6wya7@steredhat>
+References: <20190510125843.95587-1-sgarzare@redhat.com>
+ <20190510125843.95587-8-sgarzare@redhat.com>
+ <bf0416f1-0e69-722d-75ce-3d101e6d7d71@redhat.com>
+ <20190513175138.4yycad2xi65komw6@steredhat>
+ <fd934a4c-f7d2-8a04-ed93-a3b690ed0d79@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAMdYzYqcg3EXhLguTti2hP-0VVi_vX0XvoDSzTCC84p9aSp7Lg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fd934a4c-f7d2-8a04-ed93-a3b690ed0d79@redhat.com>
 User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Peter
-
-On Tue, May 14, 2019 at 07:53:21AM -0400, Peter Geis wrote:
-> On Sun, May 12, 2019 at 3:34 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >
-> > On 12.05.2019 04:50, Peter Geis wrote:
-> > > On 5/11/2019 10:37 PM, Andrew Lunn wrote:
-> > >> On Sat, May 11, 2019 at 07:17:08PM -0400, Peter Geis wrote:
-> > >>> Good Evening,
-> > >>>
-> > >>> Commit f81dadbcf7fd067baf184b63c179fc392bdb226e "net: phy: realtek: Add
-> > >>> rtl8211e rx/tx delays config" breaks networking completely on the
-> > >>> rk3328-roc-cc.
-> > >>> Reverting the offending commit solves the problem.
-> > >>
-> > >> Hi Peter
-> > >>
-> > >> The fix should be in net, and will soon make its way upwards.
-> > >>
-> > >>      Andrew
-> > >>
-> > >
-> > >
-> > > Good Evening,
-> > >
-> > > Thanks, is there a link to the patch so I may test it?
-> > >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=daf3ddbe11a2ff74c95bc814df8e5fe3201b4cb5
-> >
-> > > Peter
-> > >
-> > Heiner
+On Tue, May 14, 2019 at 11:38:05AM +0800, Jason Wang wrote:
 > 
-> This patch does correct the error message on boot, however networking
-> is still completely broken.
-> The current error is as follows:
+> On 2019/5/14 上午1:51, Stefano Garzarella wrote:
+> > On Mon, May 13, 2019 at 06:01:52PM +0800, Jason Wang wrote:
+> > > On 2019/5/10 下午8:58, Stefano Garzarella wrote:
+> > > > In order to increase host -> guest throughput with large packets,
+> > > > we can use 64 KiB RX buffers.
+> > > > 
+> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > > > ---
+> > > >    include/linux/virtio_vsock.h | 2 +-
+> > > >    1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+> > > > index 84b72026d327..5a9d25be72df 100644
+> > > > --- a/include/linux/virtio_vsock.h
+> > > > +++ b/include/linux/virtio_vsock.h
+> > > > @@ -10,7 +10,7 @@
+> > > >    #define VIRTIO_VSOCK_DEFAULT_MIN_BUF_SIZE	128
+> > > >    #define VIRTIO_VSOCK_DEFAULT_BUF_SIZE		(1024 * 256)
+> > > >    #define VIRTIO_VSOCK_DEFAULT_MAX_BUF_SIZE	(1024 * 256)
+> > > > -#define VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE	(1024 * 4)
+> > > > +#define VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE	(1024 * 64)
+> > > >    #define VIRTIO_VSOCK_MAX_BUF_SIZE		0xFFFFFFFFUL
+> > > >    #define VIRTIO_VSOCK_MAX_PKT_BUF_SIZE		(1024 * 64)
+> > > 
+> > > We probably don't want such high order allocation. It's better to switch to
+> > > use order 0 pages in this case. See add_recvbuf_big() for virtio-net. If we
+> > > get datapath unified, we will get more stuffs set.
+> > IIUC, you are suggesting to allocate only pages and put them in a
+> > scatterlist, then add them to the virtqueue.
+> > 
+> > Is it correct?
 > 
-> [  121.829375] kworker/3:1     D    0    67      2 0x00000028
-> [  121.829398] Workqueue: events linkwatch_event
-> [  121.829403] Call trace:
-> [  121.829412]  __switch_to+0xb8/0x1a8
-> [  121.829420]  __schedule+0x220/0x560
-> [  121.829423]  schedule+0x38/0xd8
-> [  121.829429]  schedule_preempt_disabled+0x20/0x38
-> [  121.829435]  __mutex_lock.isra.1+0x1c4/0x500
-> [  121.829438]  __mutex_lock_slowpath+0x10/0x18
-> [  121.829443]  mutex_lock+0x2c/0x38
-> [  121.829449]  rtnl_lock+0x14/0x20
-> [  121.829453]  linkwatch_event+0xc/0x38
-> [  121.829461]  process_one_work+0x1e0/0x320
-> [  121.829466]  worker_thread+0x40/0x428
-> [  121.829473]  kthread+0x120/0x128
-> [  121.829476]  ret_from_fork+0x10/0x18
-> [  121.829533] INFO: task NetworkManager:1833 blocked for more than 61 seconds.
-> [  121.830160]       Not tainted
-> 5.1.0-next-20190510test-00009-g3ed182aaa670-dirty #55
-> [  121.830831] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
-> disables this message.
-> [  121.831589] NetworkManager  D    0  1833      1 0x00000028
-> [  121.831601] Call trace:
-> [  121.831614]  __switch_to+0xb8/0x1a8
-> [  121.831623]  __schedule+0x220/0x560
-> [  121.831631]  schedule+0x38/0xd8
-> [  121.831639]  schedule_preempt_disabled+0x20/0x38
-> [  121.831647]  __mutex_lock.isra.1+0x1c4/0x500
-> [  121.831666]  __mutex_lock_slowpath+0x10/0x18
-> [  121.831671]  mutex_lock+0x2c/0x38
-> [  121.831687]  mdiobus_write+0x40/0x80
-> [  121.831698]  rtl8211e_config_init+0x60/0xa0 [realtek]
-> [  121.831706]  phy_init_hw+0x54/0x70
-> [  121.831714]  phy_attach_direct+0xd4/0x250
-> [  121.831720]  phy_connect_direct+0x20/0x70
-> [  121.831728]  phy_connect+0x54/0xa0
-> [  121.831741]  stmmac_init_phy+0x17c/0x200
-> [  121.831748]  stmmac_open+0x124/0xac0
-> [  121.831759]  __dev_open+0xd8/0x158
-> [  121.831762]  __dev_change_flags+0x164/0x1c8
-> [  121.831766]  dev_change_flags+0x20/0x60
-> [  121.831774]  do_setlink+0x288/0xba8
-> [  121.831778]  __rtnl_newlink+0x5cc/0x6e8
-> [  121.831783]  rtnl_newlink+0x48/0x70
-> [  121.831786]  rtnetlink_rcv_msg+0x120/0x368
-> [  121.831807]  netlink_rcv_skb+0x58/0x118
-> [  121.831811]  rtnetlink_rcv+0x14/0x20
-> [  121.831816]  netlink_unicast+0x180/0x1f8
-> [  121.831822]  netlink_sendmsg+0x190/0x330
-> [  121.831837]  sock_sendmsg+0x3c/0x58
-> [  121.831844]  ___sys_sendmsg+0x268/0x2a0
-> [  121.831849]  __sys_sendmsg+0x68/0xb8
-> [  121.831855]  __arm64_sys_sendmsg+0x20/0x28
-> [  121.831864]  el0_svc_common.constprop.0+0x7c/0xe8
-> [  121.831870]  el0_svc_handler+0x28/0x78
-> [  121.831875]  el0_svc+0x8/0xc
+> 
+> Yes since you are using:
+> 
+>                 pkt->buf = kmalloc(buf_len, GFP_KERNEL);
+>                 if (!pkt->buf) {
+>                         virtio_transport_free_pkt(pkt);
+>                         break;
+>                 }
+> 
+> This is likely to fail when the memory is fragmented which is kind of
+> fragile.
+> 
+> 
 
-Thanks for sending the report. The fix has already been found and applied
-to the net-next:
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=dffe7d2e04670ff98e4dacf258df30446e2e80d4
+Thanks for pointing that out.
 
--Sergey
+> > 
+> > The issue that I have here, is that the virtio-vsock guest driver, see
+> > virtio_vsock_rx_fill(), allocates a struct virtio_vsock_pkt that
+> > contains the room for the header, then allocates the buffer for the payload.
+> > At this point it fills the scatterlist with the &virtio_vsock_pkt.hdr and the
+> > buffer for the payload.
+> 
+> 
+> This part should be fine since what is needed is just adding more pages to
+> sg[] and call virtuqeueu_add_sg().
+> 
+> 
+
+Yes, I agree.
+
+> > 
+> > Changing this will require several modifications, and if we get datapath
+> > unified, I'm not sure it's worth it.
+> > Of course, if we leave the datapaths separated, I'd like to do that later.
+> > 
+> > What do you think?
+> 
+> 
+> For the driver it self, it should not be hard. But I think you mean the
+> issue of e.g virtio_vsock_pkt itself which doesn't support sg. For short
+> time, maybe we can use kvec instead.
+
+I'll try to use kvec in the virtio_vsock_pkt.
+
+Since this struct is shared also with the host driver (vhost-vsock),
+I hope the changes could be limited, otherwise we can remove the last 2
+patches of the series for now, leaving the RX buffer size to 4KB.
+
+Thanks,
+Stefano
