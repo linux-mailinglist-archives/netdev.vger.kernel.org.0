@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A08C1F3DD
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 14:20:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E6F1EDBD
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 13:13:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727673AbfEOLBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 07:01:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58314 "EHLO mail.kernel.org"
+        id S1729899AbfEOLNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 07:13:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48566 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727092AbfEOLBR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 May 2019 07:01:17 -0400
+        id S1729893AbfEOLM6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 May 2019 07:12:58 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1C4632173C;
-        Wed, 15 May 2019 11:01:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7FDAE20843;
+        Wed, 15 May 2019 11:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557918076;
-        bh=Ae834Yg6qZ5u8T4XF6JHp9pzGVNBWpmWOlqXab3Qssk=;
+        s=default; t=1557918778;
+        bh=u50O49oQS7s8YGZIlFL2PkOJScnC2MTMSTTj0YGQ9UM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zN9ohaIHmKvlYsvzKGfky4pvE1FGYZv14RlTnMGKn8WDX+N+03ZIx62AauWQRDNRX
-         6jpfDWToY4MKgCLnuPDk5GEC1q9IE2vFTFm6/h42SYo1s88gQsugjzI+QdSWi3F4zk
-         83cw4J6YF9/+AvyYNWSif8K+qJUcqP2eX3STgApU=
+        b=NMAuUXfjX6qrro7oFBPhxokwYNTAMLDXk7Fmp7IuJJBKX1zK9cbPXBJG+v6KZoYQB
+         D2SoE/TE9DAMn9LO1js1eeBwyRxlIAkJeTwHaz1ENUfOtGHBVJef94GFSjzW2dUig9
+         oQy65fu5IQV0VlYER65P8bmByycxUKSRwzvevqfc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -32,12 +32,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Jarod Wilson <jarod@redhat.com>,
         Jay Vosburgh <jay.vosburgh@canonical.com>
-Subject: [PATCH 3.18 83/86] bonding: fix arp_validate toggling in active-backup mode
-Date:   Wed, 15 May 2019 12:56:00 +0200
-Message-Id: <20190515090656.025421215@linuxfoundation.org>
+Subject: [PATCH 4.4 263/266] bonding: fix arp_validate toggling in active-backup mode
+Date:   Wed, 15 May 2019 12:56:10 +0200
+Message-Id: <20190515090731.914332614@linuxfoundation.org>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190515090642.339346723@linuxfoundation.org>
-References: <20190515090642.339346723@linuxfoundation.org>
+In-Reply-To: <20190515090722.696531131@linuxfoundation.org>
+References: <20190515090722.696531131@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -106,7 +106,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/net/bonding/bond_options.c
 +++ b/drivers/net/bonding/bond_options.c
-@@ -1032,13 +1032,6 @@ static int bond_option_arp_validate_set(
+@@ -1066,13 +1066,6 @@ static int bond_option_arp_validate_set(
  {
  	netdev_info(bond->dev, "Setting arp_validate to %s (%llu)\n",
  		    newval->string, newval->value);
