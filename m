@@ -2,160 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70B141E65F
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 02:46:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D38BB1E66D
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 02:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726229AbfEOAqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 20:46:40 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:39329 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbfEOAqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 20:46:39 -0400
-Received: by mail-pl1-f193.google.com with SMTP id g9so424258plm.6
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 17:46:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=i7y6/ejK2urGPctAL/H113eH1s8qU67tOf4447QHG8M=;
-        b=GGhJ80LAk/9ThTyci2GoeY9xikP8xqinRKiQ+FU6Ey2jaANDtnBYYDpen4uhGJEg0q
-         PTzlK3SBJ1gZoK6qkv/n3rrJpvU+O5qummejkRZYpOSr4IfxlFD39FdRaJBRkTjeiDOt
-         lWnrV0NvukT2HbfaBJh8ftH31I5VeXf1IF7w+3De1Jbtt67EDt2+av+hYD3Z4LoW6A9x
-         qMxVyVIAt9f1vWeht9xSAim/WVPydl/u8IVuOmo1GandC9byRdlrJYm5sHO3i9w2bS//
-         W4ZA0mM3LBCW0a48NDh+dAdKgKjaEPl6Ma4LBPwjxQoShZAzFDRo5ACLZXAcEdklSwh0
-         9r3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=i7y6/ejK2urGPctAL/H113eH1s8qU67tOf4447QHG8M=;
-        b=Abz+XUucHkxt+aDRnjnjATymqvhDd+AeZf2BccOMQeVmCQ2quL15URPpPR6XnUMIa+
-         +8xUtUw7gph25Q6bSBmWIumIbSdWYreIYJS+siY0mL1AZdgzwzCGbwmLTzTmo1Yi/Dse
-         hFBxomsvAMvVw3t1WrvGMzxZrA1/jvC2RkPNe69Ijl86x9qSVclgMaa0bchTGYo2y7MB
-         npona7ZlqT1pL7O/3dPN9Nr099ODrv5MV7pZmsJ4wHaJAOtJlq8yi1ncNolge/2DO3KG
-         I2g2FemUM4iOq0WzGhpo+2WtfX7TZLnaAYYVxvhtZOmYj0Y+NGm7BL3YnEkPIiwVhhHi
-         3Y/w==
-X-Gm-Message-State: APjAAAVWbqJhglc7mZIHiQjZbEDu5WmkXcgR+q9FORjWpRTHC4JSE4L9
-        BdVzNMjvXLUTDUzlWnYdiU0=
-X-Google-Smtp-Source: APXvYqzhOlnWmwOFKWo/grS8J+u+jYwjDK8OkZvpdghm40DTgPHIVv/AybnZazwloGSCXvTZhwcFgA==
-X-Received: by 2002:a17:902:2a28:: with SMTP id i37mr38958752plb.47.1557881198708;
-        Tue, 14 May 2019 17:46:38 -0700 (PDT)
-Received: from weiwan0.svl.corp.google.com ([2620:15c:2c4:201:9310:64cb:677b:dcba])
-        by smtp.gmail.com with ESMTPSA id q10sm271486pgh.93.2019.05.14.17.46.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 May 2019 17:46:37 -0700 (PDT)
-From:   Wei Wang <tracywwnj@gmail.com>
-To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Martin KaFai Lau <kafai@fb.com>, Wei Wang <weiwan@google.com>,
-        Mikael Magnusson <mikael.kernel@lists.m7n.se>,
-        David Ahern <dsahern@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net] ipv6: fix src addr routing with the exception table
-Date:   Tue, 14 May 2019 17:46:10 -0700
-Message-Id: <20190515004610.102519-1-tracywwnj@gmail.com>
-X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
+        id S1726400AbfEOA4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 20:56:09 -0400
+Received: from mail-eopbgr680101.outbound.protection.outlook.com ([40.107.68.101]:2023
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726044AbfEOA4J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 May 2019 20:56:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
+ b=oigbJS5dK74b905sNEydOXIN6tydKwbQDM2tyvsjzANd+SqC+RRy/ZoyaI2kNVu5EQFFBvUQyVzqlHeX49kGS74Kw+jVRSRkMqBALsLmKiOMzm3EZVGaG8L/fYHNQHLjSry46Ve9Hp21U4R+NmtAIL0o4sRJ8HZ4kpK3NDuYAJ0=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=testarcselector01;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bkdc3/5BuBGXEIH/Fh/sVpiIPNxeNgPy74/riz32xzc=;
+ b=OV/7lCVUBV0SuEfW0NVWuZD/hvltmWhihk7QfuF9p6fLKqmedxcMvw3wZluPoiT1s59BxqatF+Yh+9YiLzgUocohLJJAozWZsb9qV1xIi6FZpb7GQnzmcMSF/32ZwSX60Jlg6h+INuaYeC9YD8ZG4AF2SXapJiFxhFcThOH9pkI=
+ARC-Authentication-Results: i=1; test.office365.com
+ 1;spf=none;dmarc=none;dkim=none;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bkdc3/5BuBGXEIH/Fh/sVpiIPNxeNgPy74/riz32xzc=;
+ b=IYo5F4rbvs6NtIrkoFMLQswIoCtx1TXOeOaGQ9Fn3AlzPYdudFvxGC8A9c8KiblXz4VLo1WXkU454gqy8p9UInAmL5sqXe6clnx/ZrtWltUeZfvAghJzoGMICsweXTm04uolyNtZUKavdBwosA48JFwE7xcreW49jYlMDAcxj2Q=
+Received: from BN6PR21MB0465.namprd21.prod.outlook.com (2603:10b6:404:b2::15)
+ by BN6PR21MB0179.namprd21.prod.outlook.com (2603:10b6:404:94::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1922.4; Wed, 15 May
+ 2019 00:56:05 +0000
+Received: from BN6PR21MB0465.namprd21.prod.outlook.com
+ ([fe80::6cf3:89fb:af21:b168]) by BN6PR21MB0465.namprd21.prod.outlook.com
+ ([fe80::6cf3:89fb:af21:b168%12]) with mapi id 15.20.1922.002; Wed, 15 May
+ 2019 00:56:05 +0000
+From:   Sunil Muthuswamy <sunilmut@microsoft.com>
+To:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] hv_sock: Add support for delayed close
+Thread-Topic: [PATCH v2] hv_sock: Add support for delayed close
+Thread-Index: AdUKtaBXG33lHE0AQU2ynJ9GbZ74Uw==
+Date:   Wed, 15 May 2019 00:56:05 +0000
+Message-ID: <BN6PR21MB0465043C08E519774EE73E99C0090@BN6PR21MB0465.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=sunilmut@microsoft.com; 
+x-originating-ip: [2001:4898:80e8:7:f8d4:c8e7:5ebf:2c16]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 96ff9b84-c6ac-46dd-4022-08d6d8d01c3f
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:BN6PR21MB0179;
+x-ms-traffictypediagnostic: BN6PR21MB0179:
+x-microsoft-antispam-prvs: <BN6PR21MB01793379E5425F94C748387FC0090@BN6PR21MB0179.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0038DE95A2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(136003)(366004)(376002)(396003)(39860400002)(199004)(189003)(476003)(76116006)(86612001)(99286004)(86362001)(73956011)(46003)(55016002)(7696005)(9686003)(8936002)(2906002)(8676002)(81166006)(6436002)(186003)(66446008)(81156014)(14444005)(1511001)(66946007)(66476007)(66556008)(64756008)(256004)(52396003)(102836004)(316002)(6506007)(486006)(6116002)(7736002)(54906003)(25786009)(478600001)(4326008)(68736007)(53936002)(10090500001)(71200400001)(71190400001)(22452003)(110136005)(52536014)(33656002)(14454004)(305945005)(6636002)(74316002)(10290500003)(5660300002)(8990500004);DIR:OUT;SFP:1102;SCL:1;SRVR:BN6PR21MB0179;H:BN6PR21MB0465.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: iMQye8ecMFwkXmGJoaKXfahKuEUVQgAeu4N0GVn5XeC23Q2zOiCFv1wP4DkrCDyYF3YE0QySQpvh4s6eJJA3twrvxwwWXCEb+ePlSOnXX+QLAJIyUGmo3ks53cqIHR6rgNWAWrioxsSdHaR/RaMY3ql/yRnvXDvwEI7Vvsmau6BNs4FBRW/7mAQjJW32tutVt64+dBcuoQVUcZ+5eAxjWfWCYfi1SY70JK59kFTZN8IrM7uwCoQwosHRxt37SE+eO8uKRfRfe5E0FN2NKtqxMzstta4Ov4fv9COnsXgLFkxABde+EMEdMtAKZxRQaMkuKL+cd3x+HVwQYw67lIyUmN/hydrIWQhAvLXNiIqvBTz6WY9gjoWP3nEo3znzl/zIz8G8oDtlfA5mtCBqoM5gIVwskVPnFyAdmBhNdLh/YPU=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96ff9b84-c6ac-46dd-4022-08d6d8d01c3f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 May 2019 00:56:05.5466
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sunilmut@ntdev.microsoft.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR21MB0179
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Wang <weiwan@google.com>
+Currently, hvsock does not implement any delayed or background close
+logic. Whenever the hvsock socket is closed, a FIN is sent to the peer, and
+the last reference to the socket is dropped, which leads to a call to
+.destruct where the socket can hang indefinitely waiting for the peer to
+close it's side. The can cause the user application to hang in the close()
+call.
 
-When inserting route cache into the exception table, the key is
-generated with both src_addr and dest_addr with src addr routing.
-However, current logic always assumes the src_addr used to generate the
-key is a /128 host address. This is not true in the following scenarios:
-1. When the route is a gateway route or does not have next hop.
-   (rt6_is_gw_or_nonexthop() == false)
-2. When calling ip6_rt_cache_alloc(), saddr is passed in as NULL.
-This means, when looking for a route cache in the exception table, we
-have to do the lookup twice: first time with the passed in /128 host
-address, second time with the src_addr stored in fib6_info.
+This change implements proper STREAM(TCP) closing handshake mechanism by
+sending the FIN to the peer and the waiting for the peer's FIN to arrive
+for a given timeout. On timeout, it will try to terminate the connection
+(i.e. a RST). This is in-line with other socket providers such as virtio.
 
-This solves the pmtu discovery issue reported by Mikael Magnusson where
-a route cache with a lower mtu info is created for a gateway route with
-src addr. However, the lookup code is not able to find this route cache.
+This change does not address the hang in the vmbus_hvsock_device_unregister
+where it waits indefinitely for the host to rescind the channel. That
+should be taken up as a separate fix.
 
-Fixes: 2b760fcf5cfb ("ipv6: hook up exception table to store dst cache")
-Reported-by: Mikael Magnusson <mikael.kernel@lists.m7n.se>
-Bisected-by: David Ahern <dsahern@gmail.com>
-Signed-off-by: Wei Wang <weiwan@google.com>
-Acked-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Sunil Muthuswamy <sunilmut@microsoft.com>
 ---
- net/ipv6/route.c | 33 ++++++++++++++++++++++++++++-----
- 1 file changed, 28 insertions(+), 5 deletions(-)
+Changes since v1:
+- Updated the title and description to better reflect the change. The title
+was previously called 'hv_sock: Fix data loss upon socket close'
+- Removed the sk_state_change call to keep the fix focused.
+- Removed 'inline' keyword from the .c file and letting compiler do it.
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 23a20d62daac..c36900a07a78 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -1574,23 +1574,36 @@ static struct rt6_info *rt6_find_cached_rt(const struct fib6_result *res,
- 	struct rt6_exception *rt6_ex;
- 	struct rt6_info *ret = NULL;
- 
--	bucket = rcu_dereference(res->f6i->rt6i_exception_bucket);
--
- #ifdef CONFIG_IPV6_SUBTREES
- 	/* fib6i_src.plen != 0 indicates f6i is in subtree
- 	 * and exception table is indexed by a hash of
- 	 * both fib6_dst and fib6_src.
--	 * Otherwise, the exception table is indexed by
--	 * a hash of only fib6_dst.
-+	 * However, the src addr used to create the hash
-+	 * might not be exactly the passed in saddr which
-+	 * is a /128 addr from the flow.
-+	 * So we need to use f6i->fib6_src to redo lookup
-+	 * if the passed in saddr does not find anything.
-+	 * (See the logic in ip6_rt_cache_alloc() on how
-+	 * rt->rt6i_src is updated.)
- 	 */
- 	if (res->f6i->fib6_src.plen)
- 		src_key = saddr;
-+find_ex:
- #endif
-+	bucket = rcu_dereference(res->f6i->rt6i_exception_bucket);
- 	rt6_ex = __rt6_find_exception_rcu(&bucket, daddr, src_key);
- 
- 	if (rt6_ex && !rt6_check_expired(rt6_ex->rt6i))
- 		ret = rt6_ex->rt6i;
- 
-+#ifdef CONFIG_IPV6_SUBTREES
-+	/* Use fib6_src as src_key and redo lookup */
-+	if (!ret && src_key == saddr) {
-+		src_key = &res->f6i->fib6_src.addr;
-+		goto find_ex;
-+	}
-+#endif
+ net/vmw_vsock/hyperv_transport.c | 108 ++++++++++++++++++++++++++++-------=
+----
+ 1 file changed, 77 insertions(+), 31 deletions(-)
+
+diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transp=
+ort.c
+index a827547..982a8dc 100644
+--- a/net/vmw_vsock/hyperv_transport.c
++++ b/net/vmw_vsock/hyperv_transport.c
+@@ -35,6 +35,9 @@
+ /* The MTU is 16KB per the host side's design */
+ #define HVS_MTU_SIZE		(1024 * 16)
+=20
++/* How long to wait for graceful shutdown of a connection */
++#define HVS_CLOSE_TIMEOUT (8 * HZ)
 +
- 	return ret;
+ struct vmpipe_proto_header {
+ 	u32 pkt_type;
+ 	u32 data_size;
+@@ -305,19 +308,32 @@ static void hvs_channel_cb(void *ctx)
+ 		sk->sk_write_space(sk);
  }
- 
-@@ -2683,12 +2696,22 @@ u32 ip6_mtu_from_fib6(const struct fib6_result *res,
- #ifdef CONFIG_IPV6_SUBTREES
- 	if (f6i->fib6_src.plen)
- 		src_key = saddr;
-+find_ex:
- #endif
+=20
+-static void hvs_close_connection(struct vmbus_channel *chan)
++static void hvs_do_close_lock_held(struct vsock_sock *vsk,
++				   bool cancel_timeout)
+ {
+-	struct sock *sk =3D get_per_channel_state(chan);
+-	struct vsock_sock *vsk =3D vsock_sk(sk);
 -
- 	bucket = rcu_dereference(f6i->rt6i_exception_bucket);
- 	rt6_ex = __rt6_find_exception_rcu(&bucket, daddr, src_key);
- 	if (rt6_ex && !rt6_check_expired(rt6_ex->rt6i))
- 		mtu = dst_metric_raw(&rt6_ex->rt6i->dst, RTAX_MTU);
-+#ifdef CONFIG_IPV6_SUBTREES
-+	/* Similar logic as in rt6_find_cached_rt().
-+	 * We need to use f6i->fib6_src to redo lookup in exception
-+	 * table if saddr did not yield any result.
-+	 */
-+	else if (src_key == saddr) {
-+		src_key = &f6i->fib6_src.addr;
-+		goto find_ex;
+-	lock_sock(sk);
++	struct sock *sk =3D sk_vsock(vsk);
+=20
+-	sk->sk_state =3D TCP_CLOSE;
+ 	sock_set_flag(sk, SOCK_DONE);
+-	vsk->peer_shutdown |=3D SEND_SHUTDOWN | RCV_SHUTDOWN;
+-
++	vsk->peer_shutdown =3D SHUTDOWN_MASK;
++	if (vsock_stream_has_data(vsk) <=3D 0)
++		sk->sk_state =3D TCP_CLOSING;
+ 	sk->sk_state_change(sk);
++	if (vsk->close_work_scheduled &&
++	    (!cancel_timeout || cancel_delayed_work(&vsk->close_work))) {
++		vsk->close_work_scheduled =3D false;
++		vsock_remove_sock(vsk);
+=20
++		/* Release the reference taken while scheduling the timeout */
++		sock_put(sk);
 +	}
-+#endif
- 
- 	if (likely(!mtu)) {
- 		struct net_device *dev = nh->fib_nh_dev;
--- 
-2.21.0.1020.gf2820cf01a-goog
++}
++
++static void hvs_close_connection(struct vmbus_channel *chan)
++{
++	struct sock *sk =3D get_per_channel_state(chan);
++
++	lock_sock(sk);
++	hvs_do_close_lock_held(vsock_sk(sk), true);
+ 	release_sock(sk);
+ }
+=20
+@@ -452,50 +468,80 @@ static int hvs_connect(struct vsock_sock *vsk)
+ 	return vmbus_send_tl_connect_request(&h->vm_srv_id, &h->host_srv_id);
+ }
+=20
++static void hvs_shutdown_lock_held(struct hvsock *hvs, int mode)
++{
++	struct vmpipe_proto_header hdr;
++
++	if (hvs->fin_sent || !hvs->chan)
++		return;
++
++	/* It can't fail: see hvs_channel_writable_bytes(). */
++	(void)hvs_send_data(hvs->chan, (struct hvs_send_buf *)&hdr, 0);
++	hvs->fin_sent =3D true;
++}
++
+ static int hvs_shutdown(struct vsock_sock *vsk, int mode)
+ {
+ 	struct sock *sk =3D sk_vsock(vsk);
+-	struct vmpipe_proto_header hdr;
+-	struct hvs_send_buf *send_buf;
+-	struct hvsock *hvs;
+=20
+ 	if (!(mode & SEND_SHUTDOWN))
+ 		return 0;
+=20
+ 	lock_sock(sk);
++	hvs_shutdown_lock_held(vsk->trans, mode);
++	release_sock(sk);
++	return 0;
++}
+=20
+-	hvs =3D vsk->trans;
+-	if (hvs->fin_sent)
+-		goto out;
+-
+-	send_buf =3D (struct hvs_send_buf *)&hdr;
++static void hvs_close_timeout(struct work_struct *work)
++{
++	struct vsock_sock *vsk =3D
++		container_of(work, struct vsock_sock, close_work.work);
++	struct sock *sk =3D sk_vsock(vsk);
+=20
+-	/* It can't fail: see hvs_channel_writable_bytes(). */
+-	(void)hvs_send_data(hvs->chan, send_buf, 0);
++	sock_hold(sk);
++	lock_sock(sk);
++	if (!sock_flag(sk, SOCK_DONE))
++		hvs_do_close_lock_held(vsk, false);
+=20
+-	hvs->fin_sent =3D true;
+-out:
++	vsk->close_work_scheduled =3D false;
+ 	release_sock(sk);
+-	return 0;
++	sock_put(sk);
+ }
+=20
+-static void hvs_release(struct vsock_sock *vsk)
++/* Returns true, if it is safe to remove socket; false otherwise */
++static bool hvs_close_lock_held(struct vsock_sock *vsk)
+ {
+ 	struct sock *sk =3D sk_vsock(vsk);
+-	struct hvsock *hvs =3D vsk->trans;
+-	struct vmbus_channel *chan;
+=20
+-	lock_sock(sk);
++	if (!(sk->sk_state =3D=3D TCP_ESTABLISHED ||
++	      sk->sk_state =3D=3D TCP_CLOSING))
++		return true;
+=20
+-	sk->sk_state =3D TCP_CLOSING;
+-	vsock_remove_sock(vsk);
++	if ((sk->sk_shutdown & SHUTDOWN_MASK) !=3D SHUTDOWN_MASK)
++		hvs_shutdown_lock_held(vsk->trans, SHUTDOWN_MASK);
+=20
+-	release_sock(sk);
++	if (sock_flag(sk, SOCK_DONE))
++		return true;
+=20
+-	chan =3D hvs->chan;
+-	if (chan)
+-		hvs_shutdown(vsk, RCV_SHUTDOWN | SEND_SHUTDOWN);
++	/* This reference will be dropped by the delayed close routine */
++	sock_hold(sk);
++	INIT_DELAYED_WORK(&vsk->close_work, hvs_close_timeout);
++	vsk->close_work_scheduled =3D true;
++	schedule_delayed_work(&vsk->close_work, HVS_CLOSE_TIMEOUT);
++	return false;
++}
+=20
++static void hvs_release(struct vsock_sock *vsk)
++{
++	struct sock *sk =3D sk_vsock(vsk);
++	bool remove_sock;
++
++	lock_sock(sk);
++	remove_sock =3D hvs_close_lock_held(vsk);
++	release_sock(sk);
++	if (remove_sock)
++		vsock_remove_sock(vsk);
+ }
+=20
+ static void hvs_destruct(struct vsock_sock *vsk)
+--=20
+2.7.4
 
