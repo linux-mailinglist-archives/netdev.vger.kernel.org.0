@@ -2,69 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BACD01F8AB
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 18:30:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E04271F8BD
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 18:36:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727059AbfEOQar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 12:30:47 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36404 "EHLO vps0.lunn.ch"
+        id S1726709AbfEOQgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 12:36:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33164 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726283AbfEOQaq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 May 2019 12:30:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=/jgEMIDy5Z7SXmgem/4x43oE0NiOTmkQaryEL2fpU6g=; b=LSfV+8kuk724zsZ7GaOEH0wQxN
-        nM45NKzWj5vBTGbOlN7A81onmdgpFcubESpROzn+uU9Ht7TKd3EtEZeXpW7+JbyPI62W+ebFf14NM
-        rrUhvBBTQP+7ZT96irl1DCKe3p0gBZ2VEeGmJdd8b+F+ldEfKiWJnOkf3DEwQwazb4IE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hQwnh-0008VA-9Z; Wed, 15 May 2019 18:30:41 +0200
-Date:   Wed, 15 May 2019 18:30:41 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Dinh Nguyen <dinguyen@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, joabreu@synopsys.com,
-        Wei Liang Lim <wei.liang.lim@intel.com>
-Subject: Re: [PATCH net-next] net: stmmac: socfpga: add RMII phy mode
-Message-ID: <20190515163041.GB24455@lunn.ch>
-References: <20190515144631.5490-1-dinguyen@kernel.org>
- <20190515152407.GA24455@lunn.ch>
- <cbe79f88-2f4c-a5bc-7dcd-e1dac253a787@gmail.com>
+        id S1726584AbfEOQga (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 May 2019 12:36:30 -0400
+Received: from localhost (unknown [37.142.3.125])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 54BB72082E;
+        Wed, 15 May 2019 16:36:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557938190;
+        bh=fCWOmMbYwBQjYpMUOZu+jCfA4EruupzyVhAEZXgIrgA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Vl4rPNMIsxH2DcxFK2owU3okuYZCpInKI99vk4sctLlCNg7BZhhHibDPCniiSF8RS
+         ixCupc9hSrdnfljl/6k+yWflkSx3qFAFZHpzJhfqBdzBncW5+Kj9HVTHC1EH6vtKcV
+         a0cGXjLOZAAKMxhb+r/GLYVh4DRkm1Efd7O513bQ=
+Date:   Wed, 15 May 2019 19:36:26 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Yuval Shaia <yuval.shaia@oracle.com>
+Cc:     RDMA mailing list <linux-rdma@vger.kernel.org>,
+        linux-netdev <netdev@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Doug Ledford <dledford@redhat.com>
+Subject: Re: CFP: 4th RDMA Mini-Summit at LPC 2019
+Message-ID: <20190515163626.GO5225@mtr-leonro.mtl.com>
+References: <20190514122321.GH6425@mtr-leonro.mtl.com>
+ <20190515153050.GB2356@lap1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cbe79f88-2f4c-a5bc-7dcd-e1dac253a787@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190515153050.GB2356@lap1>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 15, 2019 at 09:18:15AM -0700, Florian Fainelli wrote:
-> On 5/15/19 8:24 AM, Andrew Lunn wrote:
-> >> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-> >> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-> >> @@ -251,6 +251,9 @@ static int socfpga_dwmac_set_phy_mode(struct socfpga_dwmac *dwmac)
-> >>  	case PHY_INTERFACE_MODE_SGMII:
-> >>  		val = SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII;
-> >>  		break;
-> >> +	case PHY_INTERFACE_MODE_RMII:
-> >> +		val = SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII;
-> >> +		break;
-> > 
-> > What about PHY_INTERFACE_MODE_RMII_ID, PHY_INTERFACE_MODE_RMII_RXID,
-> > PHY_INTERFACE_MODE_RMII_TXID?
-> 
-> RMII is reduced MII not Reduced Gigabit MII (RGMII), which still
-> operates at MII speed, therefore no concept of internal deal for RX/TX
-> data lines, the change looks fine to me.
+On Wed, May 15, 2019 at 06:30:51PM +0300, Yuval Shaia wrote:
+> On Tue, May 14, 2019 at 03:23:21PM +0300, Leon Romanovsky wrote:
+> > This is a call for proposals for the 4th RDMA mini-summit at the Linux
+> > Plumbers Conference in Lisbon, Portugal, which will be happening on
+> > September 9-11h, 2019.
+> >
+> > We are looking for topics with focus on active audience discussions
+> > and problem solving. The preferable topic is up to 30 minutes with
+> > 3-5 slides maximum.
+>
+> Abstract: Expand the virtio portfolio with RDMA
+>
+> Description:
+> Data center backends use more and more RDMA or RoCE devices and more and
+> more software runs in virtualized environment.
+> There is a need for a standard to enable RDMA/RoCE on Virtual Machines.
+> Virtio is the optimal solution since is the de-facto para-virtualizaton
+> technology and also because the Virtio specification allows Hardware
+> Vendors to support Virtio protocol natively in order to achieve bare metal
+> performance.
+> This talk addresses challenges in defining the RDMA/RoCE Virtio
+> Specification and a look forward on possible implementation techniques.
 
-Upps, yes. Missed the missing G!
+Yuval,
 
-Sorry  for the noise.
+Who is going to implement it?
 
-       Andrew
+Thanks
+
+>
+> >
+> > This year, the LPC will include netdev track too and it is
+> > collocated with Kernel Summit, such timing makes an excellent
+> > opportunity to drive cross-tree solutions.
+> >
+> > BTW, RDMA is not accepted yet as a track in LPC, but let's think
+> > positive and start collect topics.
+> >
+> > Thanks
