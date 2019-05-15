@@ -2,87 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F45D1F94D
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 19:25:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B11FC1F94F
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 19:25:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726753AbfEORZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 13:25:26 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37515 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbfEORZZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 13:25:25 -0400
-Received: by mail-wr1-f66.google.com with SMTP id e15so395835wrs.4
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 10:25:24 -0700 (PDT)
+        id S1726575AbfEORZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 13:25:46 -0400
+Received: from mail-it1-f196.google.com ([209.85.166.196]:37948 "EHLO
+        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725974AbfEORZp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 13:25:45 -0400
+Received: by mail-it1-f196.google.com with SMTP id i63so1439988ita.3
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 10:25:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Mnbgsvv0+v3ed1ICCYvV1mQaTOqWRaKNioYBw4eCU5c=;
-        b=pkQ/V/4b04/QyosPJRnZjR9u95Ty2dqBhXWf8Q/8z15MuNlNC1EEvB8m8WLg0DMyok
-         2MsSIZrc4IlhtXI9AV3GhN1nLx4bphNdylK3CAEJwc8jIHvXaR5g3AtnqekaYg2dB9Ht
-         zgMhR6UB49QzXQNE5o0oyjoORXsfhQ3fVhr+d8sC+HRMa2z+3byyDZ7x1u4i49k9iqyS
-         3XDYTlbotS7rFrBSkxBlul1cO0cldlYBJRqOm7+CUJ9G66pxD99vj/lGqPX9dj2obIGF
-         jTAvkQtpSNHP6RRi30W5FrmlVqmWvOrWN0QBXS3TfBwkU7tjUZmul3UYycZMeSdcoErm
-         KUrA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dUqHljIkmoS4uLSIJM7lES1LRDI6mWEO7H0dEFpgbJ0=;
+        b=dweZqXlO/nzk30cinM91GKlEW4zAm4r1vf+X6WiDR/HWp9ORaHI5Rtz15Zeni4WR33
+         pbaO0K78gOCESPqGePQdYFNfz6Ohh1fNJqHqoor/RQbhuQK+MmjysxbFHmAuEenmY/1l
+         CC5QB5D6sXMyC+fHVG1yzsNfbVdl4DmW5feqZiinA+zVQE6ZK4nrGmOX4rURAANYY+6G
+         40LE8OOak9fzSFadqSqEC+WSQwAm+zryfat/XwexOy6bcksw6gsU3NyX/MD50x4em9Sy
+         DTVGnMOF+/qDsbnLxZJAYNoRs9vbmcFUTrS4IJBsH13AjiKzFPo4AZ9900yXTbTCjQrS
+         6Ofg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Mnbgsvv0+v3ed1ICCYvV1mQaTOqWRaKNioYBw4eCU5c=;
-        b=FS08PCuAvLIXBf6TLj6IgAPoUgwmZ+xnJ7J1pgWeRpNRQKMlrLrlz+FlF4cSXC+ngW
-         9ZAv1bHq5CPnHHOHyzn95O+GvkKnpVuh6TeOWrVY7fzVIc2MGfwnHemH0bCAI/Ef8jRh
-         4puv8Zpx+o9yQD00Hz+9NSFfFMZ4t0UVh3pN06Ng9Axd3qE7EZZn8YfoSAQLbonHnr2F
-         kNhst3tlfT5B+5Wp/cnX0bWW3eMZMPDM1yKbdF+5ZsQs0ojqOJD5OnwM25rgjEZT8GY5
-         aeRw078xYi4HOi52XpHhefml6SN1E2aLW+10ZmRM07s3rAeA6t2PmArJOC69ruz37Q+3
-         JeDQ==
-X-Gm-Message-State: APjAAAX8SZUc7P99+IlnVUpQGwFdT9HPh70JAI2v9WRXalahVXduDD31
-        JYTuNr/GQJpxgAGJcDTX7I4=
-X-Google-Smtp-Source: APXvYqwsuoAeujTaDWQYfkALXVWYY8auSt7pswK6ot8j6YyTvAvrWjttdSzp3HVx2NbYI80/iSfMbA==
-X-Received: by 2002:adf:d4c8:: with SMTP id w8mr20379992wrk.2.1557941124136;
-        Wed, 15 May 2019 10:25:24 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd4:5700:19b8:f19b:746e:bed2? (p200300EA8BD4570019B8F19B746EBED2.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:19b8:f19b:746e:bed2])
-        by smtp.googlemail.com with ESMTPSA id l12sm2083295wmj.0.2019.05.15.10.25.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 May 2019 10:25:23 -0700 (PDT)
-Subject: Re: [PATCH v2] net: phy: aquantia: readd XGMII support for AQR107
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin-cristian Bucur <madalin.bucur@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "davem@davemloft.net" <davem@davemloft.net>
-References: <VI1PR04MB556702627553CF4C8B65EE9FEC090@VI1PR04MB5567.eurprd04.prod.outlook.com>
- <a7ba6f22-066e-5ab0-c42f-c275db579f32@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <459eba93-e499-a78b-4318-907748033ccf@gmail.com>
-Date:   Wed, 15 May 2019 19:25:14 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dUqHljIkmoS4uLSIJM7lES1LRDI6mWEO7H0dEFpgbJ0=;
+        b=RaQOuJ/b3dyQVm/AoCrVvCKB9i4wsozLDx5E0zI3X+PJCnfOPVb2t19RkLu9ANA+WS
+         MWDjByjL/W5bdbcre0Ft4ojP9N5qhkksfVLH1JGW5dzmEnPp7zagv5/AQqqW0DxtuLYC
+         TfyguVtiwLStqIqBz50S+IEvS+yHwlfB5qT0EX5E+rBGs5MA78KdyWaB6WTOPc1BDr8h
+         KpHgDXz+fspnk4L2ot69kfbnJx9XNN2YrZRo4MrwfRsRD6uTxRpdUMRqeZlJq8sIyiUe
+         xQYIp0h96baGSxFDQ+VeR9gBSPu2s1X4yJINhu+KieoZSN/qeWxPNmZgV6YE8tQ+gbgN
+         Wceg==
+X-Gm-Message-State: APjAAAWEASD78D5APajRYraV4PMnAJ1NCSq1GZ5E9/b++xBE9hjncC3R
+        SC3t/j8JFQgAhcAAjAE0aXYd4jZDGiqMV8vNAqbNjA==
+X-Google-Smtp-Source: APXvYqzvTGtRFUPO09O+MSP7+7VFZWTSvPWr8qgdEmQIwOfsA95OeJ1WWCRbJ4k+kqXSTSnbT5s51bIx/+D0i4cC620=
+X-Received: by 2002:a24:eb09:: with SMTP id h9mr9806562itj.14.1557941144710;
+ Wed, 15 May 2019 10:25:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <a7ba6f22-066e-5ab0-c42f-c275db579f32@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190515004610.102519-1-tracywwnj@gmail.com> <fdded637-fd19-bcab-87aa-b71ca8158735@gmail.com>
+ <95d844f2-1be2-83b9-1910-e90ad3d2b28d@gmail.com>
+In-Reply-To: <95d844f2-1be2-83b9-1910-e90ad3d2b28d@gmail.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Wed, 15 May 2019 10:25:33 -0700
+Message-ID: <CAEA6p_B8-zBPxzcNSdpK+2U2eOU0efQBSu1dMx3sEV7r1+c8oA@mail.gmail.com>
+Subject: Re: [PATCH net] ipv6: fix src addr routing with the exception table
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Wei Wang <tracywwnj@gmail.com>, David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mikael Magnusson <mikael.kernel@lists.m7n.se>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15.05.2019 18:19, Florian Fainelli wrote:
-> On 5/15/19 8:07 AM, Madalin-cristian Bucur wrote:
->> XGMII interface mode no longer works on AQR107 after the recent changes,
->> adding back support.
->>
->> Fixes: 570c8a7d5303 ("net: phy: aquantia: check for supported interface modes in config_init")
->>
->> Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
-> 
-> Just so you know for future submissions, there is no need for a newline
-> between your Fixes: and Signed-off-by: tag, it's just a normal tag.
-> 
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-I checked the datasheet and AQR107 doesn't support XGMII. It supports USXGMII,
-maybe XGMII is used as workaround because phy_interface_t doesn't cover
-USXGMII yet. If it makes the board work again, I think using XGMII is fine for
-now. But we should add USXGMII and the remove this workaround.
+>
+> What about rt6_remove_exception_rt?
+>
+> You can add a 'cache' hook to ip/iproute.c to delete the cached routes
+> and verify that it works. I seem to have misplaced my patch to do it.
+I don't think rt6_remove_exception_rt() needs any change.
+It is because it gets the route cache rt6_info as the input parameter,
+not specific saddr or daddr from a flow or a packet.
+It is guaranteed that the hash used in the exception table is
+generated from rt6_info->rt6i_dst and rt6_info->rt6i_src.
+
+For the case where user tries to delete a cache route, ip6_route_del()
+calls rt6_find_cached_rt() to find the cached route first. And
+rt6_find_cached_rt() is taken care of to find the cached route
+according to both passed in src addr and f6i->fib6_src.
+So I think we are good here.
+
+From: David Ahern <dsahern@gmail.com>
+Date: Wed, May 15, 2019 at 9:38 AM
+To: Wei Wang, David Miller, <netdev@vger.kernel.org>
+Cc: Martin KaFai Lau, Wei Wang, Mikael Magnusson, Eric Dumazet
+
+> On 5/15/19 9:56 AM, David Ahern wrote:
+> > You can add a 'cache' hook to ip/iproute.c to delete the cached routes
+> > and verify that it works. I seem to have misplaced my patch to do it.
+>
+> found it.
