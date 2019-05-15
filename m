@@ -2,98 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88EDD1F954
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 19:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C16FA1F956
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 19:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726948AbfEOR20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 13:28:26 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:41219 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725974AbfEOR20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 13:28:26 -0400
-Received: by mail-io1-f67.google.com with SMTP id a17so216113iot.8
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 10:28:25 -0700 (PDT)
+        id S1726742AbfEOR3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 13:29:20 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:35071 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725974AbfEOR3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 13:29:20 -0400
+Received: by mail-qk1-f194.google.com with SMTP id c15so511463qkl.2
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 10:29:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WlIMyRG4YJqP0vk9O0W1JQ8KLqSQ0azls/+XSHD3NWU=;
-        b=pw02QbVO0AaALIODt1zoqqiL/ErqCUG2ekfTPSQQaPfRG3HzTkhFBTKTEEyV+g22ZL
-         6LmzewEhv4UV7SlQ8mQW+NJ8z558Zow6F3HDCUlcjs37tbJab4vg36TWkhSNMqf/o5w9
-         +qwyrUKvTAzZN4J9hys11sXYH8jhgH8D/IQ79Y3K7Lw11KelNW4cyKcpCYjBuZIYOB7P
-         dNfMxmFw4FN8Hj5HKmbxnoTYhffRtU3kuWdoun5H3mp6tA3O26FWo6DlrnboLyfKaCQv
-         OMrifkNdcxg0ckEoUox2o8c9b7deKE7+BcfkUCTgWMn2XlhurggvH895KK9xln8eX4Bo
-         VwXQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0KMMvqJVQqCqSBFWrZt2YUrSROx7ZY7DgCNV4xuJCCM=;
+        b=sd+gpOYE/ZU+DZTVYmi6dsxb92e9yLpa/uKsdcmfjXRWXU0/n1w7FlYiPF3fMFUxDv
+         K5bhHzRBdoKCyKXObxyxoOxtBcsB1C7PPLjm+m7dzlWVjcaKOVaYuyndzwLwxwcK0U14
+         Q833mLo6fjc//Lnv5Q92+M9Zrq74mAvccaoLUcRrzLgz0RwEh4qD3fMn7WgqYp3fkIIW
+         HPWYoJyEOmU5KcSekKivjtePkjXRSAVl1HEKyPCOgc15z9zqhQXrMUudaYn79/YDSbii
+         oYGIbY6xzQSwIeqW4snGskMyAjMVR5tPRdhDavCu2ebGENNdioGHqMCvUm+KvHEm8vKC
+         GxPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WlIMyRG4YJqP0vk9O0W1JQ8KLqSQ0azls/+XSHD3NWU=;
-        b=F9Z+iTHuWC0+2IOoMANAVRmRGfzVtTPcA1iViGAcU6sfSNlG6/jz/WZnILtMTphPSF
-         E8E1OdPnz0FE7If5+5sKyeLoeb/EVb/GKqZymbwuU6qGCsg8VFkQCfuNBkPSx6xLh8qo
-         +fWbN8Z3G2aBRXEDbXOmhUC94GzYMWILCxDXnRHvqtQnuD7bdeXI+l8suzBVksHkk2dv
-         KwsVmRdznl/yfsK1XcuSDa9D0yPtmJDsu50sJyVU6DWB4mwSaimumRXuwsQ/nkXjjC3f
-         lRQ+Rzp+vdC9HTnYXGd0ZqV1aZlq7m25wCn9RpJGYzbZ8RlyjuriwWAow7SHZ8Nlc8yR
-         B0uQ==
-X-Gm-Message-State: APjAAAV0bh0XaOwGSTDRcywrB7buOARIX4VfrNa2U/sT2cxL35smgnt+
-        LJkaDrxYt008vfpc2DVxr9V2AOWe3VsyUwMCFizCZA==
-X-Google-Smtp-Source: APXvYqwIMTTrFh3FzTtAqQoXY/lX4L7mlpJ5JnIsPIHB1/vlY0o17fCpY+I+XT9ZboKXSYYtGXnMoalKDUduS2NEN3I=
-X-Received: by 2002:a5d:9cc9:: with SMTP id w9mr24347345iow.287.1557941305355;
- Wed, 15 May 2019 10:28:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0KMMvqJVQqCqSBFWrZt2YUrSROx7ZY7DgCNV4xuJCCM=;
+        b=Fr+tofxTzlUP9vyWkSY8xSbJ2/nWzlc83mMHgc5QvRsmulwlrwrC2lfPHppVQ0EzYn
+         0Px7Ohsl1mgMIyy8y1LlzBsaCMIzf2BTHOLs/eVJxUvSZ+Gl7AGc7oUBVgtDCXNMXRwo
+         DcCLJrrg04LVi443uMhhv38qKXhDnsw4XbNPXs8hxaYc4EXL1nSLX5fZiAHoy6YjrSv0
+         xG9T2lRzZmPLBHB3Vvj7MOMta9TXYMfvc0/jlwSkyhTyfbhoP/ot8K4Chwt3oN1cFcAg
+         8ulukNfgT7SV09IB9ti6In9hgSy6ELbcFiXUDV90qytABiT1Najgxlc57RZnXFXITe2G
+         9uyQ==
+X-Gm-Message-State: APjAAAUWilvvm35KBk/twRAzUVy4P8Nq1Lv99PyxMEO7V6MaYVMo/II1
+        lcE3h0T+8ELM2jBxG86yJoCm1uDc
+X-Google-Smtp-Source: APXvYqyK6caC1Y9/cSAlvGU+lo2b48oMm193D/fYGktMmA0Dwt52A0Z/UyZXbSYgA5JHtfNft/NANA==
+X-Received: by 2002:a37:a387:: with SMTP id m129mr34294947qke.39.1557941359178;
+        Wed, 15 May 2019 10:29:19 -0700 (PDT)
+Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
+        by smtp.gmail.com with ESMTPSA id a1sm1629421qth.69.2019.05.15.10.29.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 15 May 2019 10:29:18 -0700 (PDT)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net] net: test nouarg before dereferencing zerocopy pointers
+Date:   Wed, 15 May 2019 13:29:16 -0400
+Message-Id: <20190515172916.143166-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
 MIME-Version: 1.0
-References: <20190515004610.102519-1-tracywwnj@gmail.com> <fdded637-fd19-bcab-87aa-b71ca8158735@gmail.com>
- <95d844f2-1be2-83b9-1910-e90ad3d2b28d@gmail.com> <CAEA6p_B8-zBPxzcNSdpK+2U2eOU0efQBSu1dMx3sEV7r1+c8oA@mail.gmail.com>
-In-Reply-To: <CAEA6p_B8-zBPxzcNSdpK+2U2eOU0efQBSu1dMx3sEV7r1+c8oA@mail.gmail.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Wed, 15 May 2019 10:28:14 -0700
-Message-ID: <CAEA6p_D0-dT4a-wqz7DMq8dSNbESRkj40ESTTxdnbPar-0N90g@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: fix src addr routing with the exception table
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Wei Wang <tracywwnj@gmail.com>, David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mikael Magnusson <mikael.kernel@lists.m7n.se>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Wang <weiwan@google.com>
-Date: Wed, May 15, 2019 at 10:25 AM
-To: David Ahern
-Cc: Wei Wang, David Miller, Linux Kernel Network Developers, Martin
-KaFai Lau, Mikael Magnusson, Eric Dumazet
+From: Willem de Bruijn <willemb@google.com>
 
-> >
-> > What about rt6_remove_exception_rt?
-> >
-> > You can add a 'cache' hook to ip/iproute.c to delete the cached routes
-> > and verify that it works. I seem to have misplaced my patch to do it.
-> I don't think rt6_remove_exception_rt() needs any change.
-> It is because it gets the route cache rt6_info as the input parameter,
-> not specific saddr or daddr from a flow or a packet.
-> It is guaranteed that the hash used in the exception table is
-> generated from rt6_info->rt6i_dst and rt6_info->rt6i_src.
->
-> For the case where user tries to delete a cache route, ip6_route_del()
-> calls rt6_find_cached_rt() to find the cached route first. And
-> rt6_find_cached_rt() is taken care of to find the cached route
-> according to both passed in src addr and f6i->fib6_src.
-> So I think we are good here.
->
-> From: David Ahern <dsahern@gmail.com>
-> Date: Wed, May 15, 2019 at 9:38 AM
-> To: Wei Wang, David Miller, <netdev@vger.kernel.org>
-> Cc: Martin KaFai Lau, Wei Wang, Mikael Magnusson, Eric Dumazet
->
-> > On 5/15/19 9:56 AM, David Ahern wrote:
-> > > You can add a 'cache' hook to ip/iproute.c to delete the cached routes
-> > > and verify that it works. I seem to have misplaced my patch to do it.
-> >
-> > found it.
+Zerocopy skbs without completion notification were added for packet
+sockets with PACKET_TX_RING user buffers. Those signal completion
+through the TP_STATUS_USER bit in the ring. Zerocopy annotation was
+added only to avoid premature notification after clone or orphan, by
+triggering a copy on these paths for these packets.
 
-Thanks. I patched it to iproute2 and tried it.
-The route cache is removed by doing:
-ip netns exec a ./ip -6 route del fd01::c from fd00::a cache
+The mechanism had to define a special "no-uarg" mode because packet
+sockets already use skb_uarg(skb) == skb_shinfo(skb)->destructor_arg
+for a different pointer.
+
+Before deferencing skb_uarg(skb), verify that it is a real pointer.
+
+Fixes: 5cd8d46ea1562 ("packet: copy user buffers before orphan or clone")
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ include/linux/skbuff.h | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 6d58fa8a65fde..2ee5e63195c02 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1434,10 +1434,12 @@ static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy)
+ 	struct ubuf_info *uarg = skb_zcopy(skb);
+ 
+ 	if (uarg) {
+-		if (uarg->callback == sock_zerocopy_callback) {
++		if (skb_zcopy_is_nouarg(skb)) {
++			/* no notification callback */
++		} else if (uarg->callback == sock_zerocopy_callback) {
+ 			uarg->zerocopy = uarg->zerocopy && zerocopy;
+ 			sock_zerocopy_put(uarg);
+-		} else if (!skb_zcopy_is_nouarg(skb)) {
++		} else {
+ 			uarg->callback(uarg, zerocopy);
+ 		}
+ 
+@@ -2691,7 +2693,8 @@ static inline int skb_orphan_frags(struct sk_buff *skb, gfp_t gfp_mask)
+ {
+ 	if (likely(!skb_zcopy(skb)))
+ 		return 0;
+-	if (skb_uarg(skb)->callback == sock_zerocopy_callback)
++	if (!skb_zcopy_is_nouarg(skb) &&
++	    skb_uarg(skb)->callback == sock_zerocopy_callback)
+ 		return 0;
+ 	return skb_copy_ubufs(skb, gfp_mask);
+ }
+-- 
+2.21.0.1020.gf2820cf01a-goog
+
