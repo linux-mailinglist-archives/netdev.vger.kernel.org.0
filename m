@@ -2,98 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFADF1F723
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 17:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 470711F72F
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 17:11:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727562AbfEOPHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 11:07:52 -0400
-Received: from mail-eopbgr40060.outbound.protection.outlook.com ([40.107.4.60]:19639
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726583AbfEOPHv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 May 2019 11:07:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JPyHAVn1yjamIRuJl5bdRhc2MQ4we7qEF5t+Xy+R750=;
- b=ZIsTzJBn9u5MQpKHxe0JtyqnMpwA9kKJmpLymI4YskqGLXloAeIIA0kNZcZkS60I2uh+Tz7KXRm73n6YF6JDB4zVpUQ3tpbqhuGrSkVyQda11t5QqokNt5V+lGdVbs41YpORTKbJG7Gkn7G2wp7DGt+hl12mjSfCrrB3vWGxEcA=
-Received: from VI1PR04MB5567.eurprd04.prod.outlook.com (20.178.123.21) by
- VI1PR04MB5344.eurprd04.prod.outlook.com (52.134.123.159) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.16; Wed, 15 May 2019 15:07:44 +0000
-Received: from VI1PR04MB5567.eurprd04.prod.outlook.com
- ([fe80::8fa:dc19:e4c0:4dfb]) by VI1PR04MB5567.eurprd04.prod.outlook.com
- ([fe80::8fa:dc19:e4c0:4dfb%8]) with mapi id 15.20.1900.010; Wed, 15 May 2019
- 15:07:44 +0000
-From:   Madalin-cristian Bucur <madalin.bucur@nxp.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: [PATCH v2] net: phy: aquantia: readd XGMII support for AQR107
-Thread-Topic: [PATCH v2] net: phy: aquantia: readd XGMII support for AQR107
-Thread-Index: AdULL9hzIkv6Hx5KRamBgupmL9w78Q==
-Date:   Wed, 15 May 2019 15:07:44 +0000
-Message-ID: <VI1PR04MB556702627553CF4C8B65EE9FEC090@VI1PR04MB5567.eurprd04.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=madalin.bucur@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5c8e40c7-63f6-4d31-d9bb-08d6d94715b8
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR04MB5344;
-x-ms-traffictypediagnostic: VI1PR04MB5344:
-x-microsoft-antispam-prvs: <VI1PR04MB53444E5E1B1CB5863A258AE2EC090@VI1PR04MB5344.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4303;
-x-forefront-prvs: 0038DE95A2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(136003)(366004)(396003)(376002)(346002)(189003)(199004)(53936002)(6436002)(2906002)(73956011)(2501003)(54906003)(14454004)(316002)(5640700003)(99286004)(9686003)(74316002)(4744005)(478600001)(86362001)(33656002)(2351001)(55016002)(5660300002)(8936002)(305945005)(81156014)(8676002)(1730700003)(81166006)(66066001)(476003)(52536014)(66446008)(64756008)(66556008)(76116006)(7736002)(66476007)(68736007)(66946007)(486006)(6916009)(186003)(26005)(7696005)(71190400001)(71200400001)(6116002)(3846002)(102836004)(4326008)(256004)(6506007)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5344;H:VI1PR04MB5567.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: kmBLsnoO64+VpCxtHYfo/GTXihMGpOaCbkHo/KpXJRvYdkR1sqrRomxqysFAuHpVV19xX4X9/fGTc/MRcA0U3kCrT3vuXVJqnI0cpBxjfFsyCrf8HPUigVpXQNvmTEHdmckiNxI2bd8/xoX3nPDuqfjWSBw92Fo649yUXpcC7qlbsvjuqq2ao97GwNp0LDyY3r0wgT8hjLVWr4E5qcZ66Gj4lJBEf6jLI0r6ni5bBXihnMsffI5i16J7soMvBn0vDgSGePsElCP02B/YMbOJcKfCykNT2XFPvhs6Salp59iTt5vzMxD7JNl1748I+lRblGIt2JiyDW0T8pgyoDxxZER3tlLiHI/JgW6wU5FJZs2Hb1a7PO9+yoAqHrDIlz41lH+kYQOQ9ezioiKmDxjlNRTledJhziEcxDsCi0aKzwE=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727120AbfEOPL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 11:11:26 -0400
+Received: from mail-oi1-f172.google.com ([209.85.167.172]:35353 "EHLO
+        mail-oi1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726754AbfEOPLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 11:11:25 -0400
+Received: by mail-oi1-f172.google.com with SMTP id a132so42020oib.2
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 08:11:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=3NoCXueKsAI2+4kycfY7uvfN1L740AYv9J3U5pgxWIk=;
+        b=jAh0kk+8gLrlvgEXShcnqr0rstKFhgGsiKwugYF4AhFNyeNZ1BtOd+1hZgjMOjMBPa
+         v6stJYN2BQJRuBIhVTpg8EBHMFFHC8+v2BIf++si3j1+AN5CmgNwayXL2HLlO42QuPj/
+         I1VKW6yq4v1fbYQ6jgYfD4lV9+rGjqq0k732s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=3NoCXueKsAI2+4kycfY7uvfN1L740AYv9J3U5pgxWIk=;
+        b=K8ZYWJ4vz+Ophsbz4WowXapdeGTTUAvee5y/iNbr6zbIvqF15JFBYXE410B7xQhlS5
+         aiOXhgc5ey//Nffpu3oeO1gCrK89iJLmKhN/qEKsu6R9UOkxllOP2xEVLeu5bJahAPP/
+         OrVB43W8JySMT/HY6vitxgcyySQ2KGPWI4h8jS2/l4gKh+y1izSpMxV/u8yHW3pXaCHa
+         LszpYyIyumCyPSc50jAjg+cQFJPQbjmq1LzW178ng1EWejSgaVL5fUPFnpe0fv4Q5sVV
+         4YzPJczkraeB074AlrVeP008KLRpMS5Cc5DAcTwHBiy2Bas5MZBV3kw3X33XHJspl6gu
+         vnHQ==
+X-Gm-Message-State: APjAAAX8sVvocf2NdDBBzhYJBdVYJRkMklM77oAhPDtF8niWO3tOv8rd
+        3gOeLocml3mGZJxOwZ5BVgqeckasRWa1By3r5h1+sEA8ryRhxw==
+X-Google-Smtp-Source: APXvYqyi9G1HMN9f5BdZcjC/P5ryJJTq1yAT0Q94r0BzaKZmCNpee9Vw6NcX/mPlzQhJRum44jp/6Z3kcAioHlki1hk=
+X-Received: by 2002:aca:f0f:: with SMTP id 15mr73559oip.78.1557933084276; Wed,
+ 15 May 2019 08:11:24 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c8e40c7-63f6-4d31-d9bb-08d6d94715b8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 May 2019 15:07:44.8624
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5344
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Wed, 15 May 2019 16:11:13 +0100
+Message-ID: <CACAyw98+qycmpQzKupquhkxbvWK4OFyDuuLMBNROnfWMZxUWeA@mail.gmail.com>
+Subject: RFC: Fixing SK_REUSEPORT from sk_lookup_* helpers
+To:     Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org
+Cc:     Joe Stringer <joe@isovalent.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XGMII interface mode no longer works on AQR107 after the recent changes,
-adding back support.
+In the BPF-based TPROXY session with Joe Stringer [1], I mentioned
+that the sk_lookup_* helpers currently return inconsistent results if
+SK_REUSEPORT programs are in play.
 
-Fixes: 570c8a7d5303 ("net: phy: aquantia: check for supported interface mod=
-es in config_init")
+SK_REUSEPORT programs are a hook point in inet_lookup. They get access
+to the full packet
+that triggered the look up. To support this, inet_lookup gained a new
+skb argument to provide such context. If skb is NULL, the SK_REUSEPORT
+program is skipped and instead the socket is selected by its hash.
 
-Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
----
- drivers/net/phy/aquantia_main.c | 1 +
- 1 file changed, 1 insertion(+)
+The first problem is that not all callers to inet_lookup from BPF have
+an skb, e.g. XDP. This means that a look up from XDP gives an
+incorrect result. For now that is not a huge problem. However, once we
+get sk_assign as proposed by Joe, we can end up circumventing
+SK_REUSEPORT.
 
-diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_mai=
-n.c
-index eed4fe3d871f..0fedd28fdb6e 100644
---- a/drivers/net/phy/aquantia_main.c
-+++ b/drivers/net/phy/aquantia_main.c
-@@ -487,6 +487,7 @@ static int aqr107_config_init(struct phy_device *phydev=
-)
- 	/* Check that the PHY interface type is compatible */
- 	if (phydev->interface !=3D PHY_INTERFACE_MODE_SGMII &&
- 	    phydev->interface !=3D PHY_INTERFACE_MODE_2500BASEX &&
-+	    phydev->interface !=3D PHY_INTERFACE_MODE_XGMII &&
- 	    phydev->interface !=3D PHY_INTERFACE_MODE_10GKR)
- 		return -ENODEV;
-=20
---=20
-2.1.0
+At the conference, someone suggested using a similar approach to the
+work done on the flow dissector by Stanislav: create a dedicated
+context sk_reuseport which can either take an skb or a plain pointer.
+Patch up load_bytes to deal with both. Pass the context to
+inet_lookup.
+
+This is when we hit the second problem: using the skb or XDP context
+directly is incorrect, because it assumes that the relevant protocol
+headers are at the start of the buffer. In our use case, the correct
+headers are at an offset since we're inspecting encapsulated packets.
+
+The best solution I've come up with is to steal 17 bits from the flags
+argument to sk_lookup_*, 1 bit for BPF_F_HEADERS_AT_OFFSET, 16bit for
+the offset itself.
+
+Thoughts?
+
+1: http://vger.kernel.org/bpfconf2019.html#session-7
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
