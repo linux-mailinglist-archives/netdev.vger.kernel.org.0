@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB3BC1F855
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 18:18:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5E211F857
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 18:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727063AbfEOQS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 12:18:26 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36424 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725953AbfEOQS0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 12:18:26 -0400
-Received: by mail-wr1-f66.google.com with SMTP id s17so185382wru.3
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 09:18:24 -0700 (PDT)
+        id S1726732AbfEOQS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 12:18:58 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:54965 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725953AbfEOQS5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 12:18:57 -0400
+Received: by mail-wm1-f66.google.com with SMTP id i3so637218wml.4
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 09:18:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=uO01zz+sc+Y9zOhIkUzLE2zvz2GEqQnae4lnjBcc+go=;
-        b=mHME1ikzxj877KcwnFfU6QpUgmNxCH3G/5s4M5PImSjFZ6nyH62EjcisyQcCMfLG96
-         tDXYLA3y+KtFGV+7Jk2yUCZhVmHqYg6cv3r4RYDgZ05xqukbt2SE+MymNelSif3pW2We
-         FT8MzirIiHIeUeK1vfcdyBY2efsJn7a3C33RdevaEKw5FFv4zZv722opvC9OSRuiSCIG
-         t656RWpy7yFC78FMw+xqTHIFiOeUdx2eBuyYFT1JVa5lloWLCFG7qFWMckpR4eNewYNQ
-         dHonQGXt4j18EeXTM9xU21jKe+oIQZa0m7abpv+jH3P3yRm6xkmIUsXsLsolbw9/NqyB
-         dVzA==
+        bh=o8yoP0e/nb2zADRkjMO4p6z7iDBUOegBVzvbftiHhVI=;
+        b=fE8+K0chHlWJN9/XTBdCC0Jrtd6y0LqwZytSd9BDXYZmQBHUACbq/+7yucvB9/G6tN
+         kC0W8g2dOjKwt1yXTTCgURCAuALImm6cl45i++ECfL+/ozySymDtsZI1APNojZyVmBHJ
+         pMEtwl19fmQ+lR8WfJtuSi2btaVSB7D187Mr4QnGXpY70l4itPXIo/T8W0pmcOOEuMcS
+         h9Pr5fWUMN0ivTmW50x7mNwE9F7rxvComeEuaL+NrRQ6q8J1q+gr9ADXTIY591Q352Ik
+         tINYBGfyQs0N+zezzqXya3YjgnMaqCAOjHKNRPKKno+FkW6FR2iTpNo0pZI11bbI/FyJ
+         GqWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=uO01zz+sc+Y9zOhIkUzLE2zvz2GEqQnae4lnjBcc+go=;
-        b=WNTqGJhpZoSOeSBWkV5/lEegGqEhEqWXI3rcC1iMKgJ8X7wxeqKJ+8XV03TokR5Bve
-         Zbu8rzWjHTqJo+9TI1zHIO5g87SUsu1d0vuQfX1jCoQd2Qet8fpjvgehL4GcfygjmRnC
-         1lUeNLMmZU4wbaA46iElyBvHd3jIEPGqTqpGGofJ9jkqkoPqRvAXXDZaq01v3mRSTZqx
-         JLIpgZTXlQUbDjUgpF5wqgx7thWxvY9oiKsaDJW0oLUXBu8zPFKjJV3ajC26FeNC60w8
-         yL/EGVHsolaWg6N/9gvzgE5M+E7AfjqJHaU3gD1hYPEh5KUoSFILHHRhheIystKLdmQt
-         fmbg==
-X-Gm-Message-State: APjAAAWVei8++d+a0SAwpUxHstSkCCxF8tuLPwt9L+Rfgi1reFVkPFnO
-        RBra+aTwYDD5e1Vr8RtJVlg=
-X-Google-Smtp-Source: APXvYqxsYk3v2/DuIngMWSrqr0jLy247IH1G9+n3zD3/z/bXuTmRsUtT7oD87LKvaO78TyTGi2Hd2A==
-X-Received: by 2002:adf:e2c3:: with SMTP id d3mr26762319wrj.189.1557937103671;
-        Wed, 15 May 2019 09:18:23 -0700 (PDT)
+        bh=o8yoP0e/nb2zADRkjMO4p6z7iDBUOegBVzvbftiHhVI=;
+        b=f6BO1rE4Nc0q7bOxD5XRFT7DyLiudkk48Wvi/c7fUIAAj4f13J92jZBI/Z8Jnqohwi
+         Nt3WWN5HlRUBmct82euhqYAZ/c2Xwgd9TEBAZ19QdGq+hfmq1mnx2Ux/+aQcsoKC5iUb
+         w49xuMdXK9OChVsKPzcacYVarlrc0DS/tpVGjMG1bZeVRORcOFOUlxZwHxPJ1jiZbueo
+         ZNbOLZVTbU9NXsV5a8iN6EJyyctCQlmIuEJTCvqLZVCKdueGoBydDI/5H+ztnS5SEdYK
+         8WEQ4xpN8BpP9fTis5d1emNMIq6vE/W5g0Wa3y2QgNBcJKQqzHj9OX3uSHH5r7itcZK8
+         pyRw==
+X-Gm-Message-State: APjAAAUNGsfoZZtHsysfmbW4Jf2DehWaxMH6BFfjU5OIFkj/YddEqsx4
+        Fuw/dokEgEAc2FgeGhNgi/0T+VMp
+X-Google-Smtp-Source: APXvYqywPXLXycSFw8Vdj0E2TUuvUXzHetetgvrR9lsEDc64S2/5M0yp+0AVcCK5aYz9GIcQTq/A7w==
+X-Received: by 2002:a1c:a711:: with SMTP id q17mr23015527wme.146.1557937134917;
+        Wed, 15 May 2019 09:18:54 -0700 (PDT)
 Received: from [10.67.49.52] ([192.19.223.250])
-        by smtp.googlemail.com with ESMTPSA id y7sm5516588wrg.45.2019.05.15.09.18.21
+        by smtp.googlemail.com with ESMTPSA id s11sm4011008wrb.71.2019.05.15.09.18.53
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 May 2019 09:18:23 -0700 (PDT)
+        Wed, 15 May 2019 09:18:54 -0700 (PDT)
 Subject: Re: [PATCH net-next] net: stmmac: socfpga: add RMII phy mode
-To:     Andrew Lunn <andrew@lunn.ch>, Dinh Nguyen <dinguyen@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, joabreu@synopsys.com,
+To:     Dinh Nguyen <dinguyen@kernel.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, joabreu@synopsys.com,
         Wei Liang Lim <wei.liang.lim@intel.com>
 References: <20190515144631.5490-1-dinguyen@kernel.org>
- <20190515152407.GA24455@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -108,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <cbe79f88-2f4c-a5bc-7dcd-e1dac253a787@gmail.com>
-Date:   Wed, 15 May 2019 09:18:15 -0700
+Message-ID: <06d02106-786b-c19a-013b-548ae04b5901@gmail.com>
+Date:   Wed, 15 May 2019 09:18:51 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190515152407.GA24455@lunn.ch>
+In-Reply-To: <20190515144631.5490-1-dinguyen@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,22 +121,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/15/19 8:24 AM, Andrew Lunn wrote:
->> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
->> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
->> @@ -251,6 +251,9 @@ static int socfpga_dwmac_set_phy_mode(struct socfpga_dwmac *dwmac)
->>  	case PHY_INTERFACE_MODE_SGMII:
->>  		val = SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII;
->>  		break;
->> +	case PHY_INTERFACE_MODE_RMII:
->> +		val = SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII;
->> +		break;
+On 5/15/19 7:46 AM, Dinh Nguyen wrote:
+> Add option for enabling RMII phy mode.
 > 
-> What about PHY_INTERFACE_MODE_RMII_ID, PHY_INTERFACE_MODE_RMII_RXID,
-> PHY_INTERFACE_MODE_RMII_TXID?
+> Signed-off-by: Wei Liang Lim <wei.liang.lim@intel.com>
+> Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 
-RMII is reduced MII not Reduced Gigabit MII (RGMII), which still
-operates at MII speed, therefore no concept of internal deal for RX/TX
-data lines, the change looks fine to me.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
