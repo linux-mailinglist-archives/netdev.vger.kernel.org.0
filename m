@@ -2,110 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5D161EE59
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 13:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 081B51F023
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 13:41:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731097AbfEOLU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 07:20:26 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:36882 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730723AbfEOLUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 07:20:24 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 92DA761215; Wed, 15 May 2019 11:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1557919223;
-        bh=gT9Zsd4mm/mksa2ZcTTNqgNLgRWHQcjN3/GXq1JPhV4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mvv9nKYr8MjayA4vtg5xhNrl25S81Y5LaNNmr9f/7DcDQCYR+1cJxufh9spenDnxa
-         OnmG17wjkhtOszue3T3ccBy93/jUrs7eJrog63VxAUh5nalbJNLUP+Js8xFZTiUHWy
-         CXpSGA1gFpCF4xP+R1ppD+cagq+72SFQs4yH1DAU=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
-Received: from rocky-HP-EliteBook-8460p.wlan.qualcomm.com (tpe-colo-wan-fw-bordernet.qualcomm.com [103.229.16.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: rjliao@codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7E9CD60A24;
-        Wed, 15 May 2019 11:20:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1557919220;
-        bh=gT9Zsd4mm/mksa2ZcTTNqgNLgRWHQcjN3/GXq1JPhV4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GEYhs9TRg3yB8UwwjmZdn7YqF7dQRRj48V0Ji1aNTIRSbVkkYWV1/QEfjc/XZwMnG
-         La4vtAoQOK5F863CrLBKdi3D+18PcEILyx5MLlM3OMdftWW21MVVva8CaibF1Msvmf
-         QT6taReYVpmTRGmZQEtYJRKysUtjm3+1MGaqBDK4=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7E9CD60A24
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=rjliao@codeaurora.org
-From:   Rocky Liao <rjliao@codeaurora.org>
-To:     robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org,
-        johan.hedberg@gmail.com, thierry.escande@linaro.org
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, bgodavar@codeaurora.org,
-        c-hbandi@codeaurora.org, Rocky Liao <rjliao@codeaurora.org>
-Subject: [PATCH v5 2/2] dt-bindings: net: bluetooth: Add device property firmware-name for QCA6174
-Date:   Wed, 15 May 2019 19:20:03 +0800
-Message-Id: <1557919203-11055-1-git-send-email-rjliao@codeaurora.org>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1557631185-5167-1-git-send-email-rjliao@codeaurora.org>
-References: <1557631185-5167-1-git-send-email-rjliao@codeaurora.org>
+        id S1732778AbfEOLk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 07:40:58 -0400
+Received: from forwardcorp1o.mail.yandex.net ([95.108.205.193]:40668 "EHLO
+        forwardcorp1o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732491AbfEOLk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 07:40:57 -0400
+Received: from mxbackcorp1o.mail.yandex.net (mxbackcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::301])
+        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 225C12E0464;
+        Wed, 15 May 2019 14:40:54 +0300 (MSK)
+Received: from smtpcorp1j.mail.yandex.net (smtpcorp1j.mail.yandex.net [2a02:6b8:0:1619::137])
+        by mxbackcorp1o.mail.yandex.net (nwsmtp/Yandex) with ESMTP id 08gEU9pJ8f-er0GLCfw;
+        Wed, 15 May 2019 14:40:54 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1557920454; bh=OSHZ1+IwIacwVlIgWbLEW2/VGId4KBozS/H+7QUKVY0=;
+        h=Message-ID:Date:To:From:Subject;
+        b=V5lqzoByyCilaEh1pURelX2t3ayYGtJn4oGqQJB0r26wOsNxalgH/GtFCbT40cmct
+         nZe9YLXlz7duPOMJCDloVh0zRUQ7Z76bVTWUmSJD10XP0aqopsDZ+VUZ4qsKx93mdi
+         OLGDd+vYSKm6wxxXMXRej09kinTtg2NGl8xxyzr8=
+Authentication-Results: mxbackcorp1o.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from dynamic-red.dhcp.yndx.net (dynamic-red.dhcp.yndx.net [2a02:6b8:0:40c:ed19:3833:7ce1:2324])
+        by smtpcorp1j.mail.yandex.net (nwsmtp/Yandex) with ESMTPSA id cPqsRtmpGc-er8ePror;
+        Wed, 15 May 2019 14:40:53 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+Subject: [PATCH] net: bpfilter: fallback to netfilter if failed to load
+ bpfilter kernel module
+From:   Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Date:   Wed, 15 May 2019 14:40:52 +0300
+Message-ID: <155792045295.940.7526963251434168966.stgit@buzz>
+User-Agent: StGit/0.17.1-dirty
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds an optional device property "firmware-name" to allow the
-driver to load customized nvm firmware file based on this property.
+If bpfilter is not available return ENOPROTOOPT to fallback to netfilter.
 
-Signed-off-by: Rocky Liao <rjliao@codeaurora.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
-Changes in v5:
-  * Made the change applicable to the wcn399x series chip sets
----
- Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 4 ++++
- 1 file changed, 4 insertions(+)
+Function request_module() returns both errors and userspace exit codes.
+Just ignore them. Rechecking bpfilter_ops is enough.
 
-diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
-index 7ef6118..68b67d9 100644
---- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
-+++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
-@@ -17,6 +17,7 @@ Optional properties for compatible string qcom,qca6174-bt:
+Fixes: d2ba09c17a06 ("net: add skeleton of bpfilter kernel module")
+Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+---
+ net/ipv4/bpfilter/sockopt.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/bpfilter/sockopt.c b/net/ipv4/bpfilter/sockopt.c
+index 15427163a041..0480918bfc7c 100644
+--- a/net/ipv4/bpfilter/sockopt.c
++++ b/net/ipv4/bpfilter/sockopt.c
+@@ -30,13 +30,11 @@ static int bpfilter_mbox_request(struct sock *sk, int optname,
+ 	mutex_lock(&bpfilter_ops.lock);
+ 	if (!bpfilter_ops.sockopt) {
+ 		mutex_unlock(&bpfilter_ops.lock);
+-		err = request_module("bpfilter");
++		request_module("bpfilter");
+ 		mutex_lock(&bpfilter_ops.lock);
  
-  - enable-gpios: gpio specifier used to enable chip
-  - clocks: clock provided to the controller (SUSCLK_32KHZ)
-+ - firmware-name: specify the name of nvm firmware to load
- 
- Required properties for compatible string qcom,wcn399x-bt:
- 
-@@ -28,6 +29,7 @@ Required properties for compatible string qcom,wcn399x-bt:
- Optional properties for compatible string qcom,wcn399x-bt:
- 
-  - max-speed: see Documentation/devicetree/bindings/serial/slave-device.txt
-+ - firmware-name: specify the name of nvm firmware to load
- 
- Examples:
- 
-@@ -40,6 +42,7 @@ serial@7570000 {
- 
- 		enable-gpios = <&pm8994_gpios 19 GPIO_ACTIVE_HIGH>;
- 		clocks = <&divclk4>;
-+		firmware-name = "nvm_00440302.bin";
- 	};
- };
- 
-@@ -52,5 +55,6 @@ serial@898000 {
- 		vddrf-supply = <&vreg_l17a_1p3>;
- 		vddch0-supply = <&vreg_l25a_3p3>;
- 		max-speed = <3200000>;
-+		firmware-name = "crnv21.bin";
- 	};
- };
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+-		if (err)
+-			goto out;
+ 		if (!bpfilter_ops.sockopt) {
+-			err = -ECHILD;
++			err = -ENOPROTOOPT;
+ 			goto out;
+ 		}
+ 	}
 
