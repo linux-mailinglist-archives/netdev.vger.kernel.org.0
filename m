@@ -2,148 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EFD71E9FD
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 10:22:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB63D1EA27
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 10:31:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbfEOIWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 04:22:40 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51764 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725871AbfEOIWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 04:22:40 -0400
-Received: by mail-wm1-f66.google.com with SMTP id o189so1651551wmb.1
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 01:22:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=PPQSJiwlVW1PE92NeJWVh3dDEhwcNImDy2Q5NEYn4yo=;
-        b=AvERmFi3aCIUVTz3zM79zS8qs1INSIkmU3AeIrb1/f2S7YdEMMkcsjhB8Cb3qWjxwI
-         3r3Mg3FufjTk+v7MLGv7bs0xzOJfOeI88pXfFdvFUeuqIbHqYN0r7ckL7rGFvWjlhKZk
-         IvjlFyUC/U/0Ba7H0aR4hPjY2wmGI259veFkCGSFjbkv6e6NBqK29OaRCYToVA85dqt2
-         aXUuNooKYHQ2eeIoq4kD0WylCKw4cMs8Pnd/NawSrjp+61akU7QIzNxsUpGZqG/46bXL
-         rr7NSuxw460J4naQY0OREz8GByXAi0pPobe2vy4//dk9aM6IPfeWbmvDrsYJIxKxfnka
-         q7xg==
-X-Gm-Message-State: APjAAAU98OG3VrWBQNtYcBPKt9JdXRY6Su8U9GXv5NC2yIN+eaz7BkNF
-        Hg0HofU17Q3UAltBhzw5+a8f1g==
-X-Google-Smtp-Source: APXvYqwpXrWkAROlq0ytsK33r1VNVYl9awseeDiyNlDpFhZC69GGaWDX1zimAMr2LLpZz2MeWmJqQg==
-X-Received: by 2002:a1c:2104:: with SMTP id h4mr21953640wmh.146.1557908557541;
-        Wed, 15 May 2019 01:22:37 -0700 (PDT)
-Received: from steredhat (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
-        by smtp.gmail.com with ESMTPSA id y184sm1579251wmg.7.2019.05.15.01.22.35
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 15 May 2019 01:22:36 -0700 (PDT)
-Date:   Wed, 15 May 2019 10:22:33 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH v2 7/8] vsock/virtio: increase RX buffer size to 64 KiB
-Message-ID: <20190515082233.iqaibtfdoblijb5z@steredhat>
-References: <20190510125843.95587-1-sgarzare@redhat.com>
- <20190510125843.95587-8-sgarzare@redhat.com>
- <bf0416f1-0e69-722d-75ce-3d101e6d7d71@redhat.com>
- <20190513175138.4yycad2xi65komw6@steredhat>
- <fd934a4c-f7d2-8a04-ed93-a3b690ed0d79@redhat.com>
- <20190514162056.5aotcuzsi6e6wya7@steredhat>
- <646275c5-3530-f428-98da-56da99d72fe1@redhat.com>
+        id S1726511AbfEOIbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 04:31:01 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:46746 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725871AbfEOIbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 04:31:00 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 30BA760A44; Wed, 15 May 2019 08:30:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1557909059;
+        bh=/6iQfefvwB3aF9Eii6gwvwIkY97uzt4IVPj/JgnNfU4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nVIhqfsndPjGOd6gwkFyjNTkkC4wpnl7lVZ0bNHTm4M9BRsBYy7Cy6pupY9GlmIng
+         U1AEY+noCnWGjbyGN0nT15tvaBVzF3FntAolHEzM9uQhOnB7hsoTTfqHQfNx7gZ4AD
+         D+9R4LJb7BYoJeL9rort+bTMu10co+5F6WfaZKVs=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id A2C966029B;
+        Wed, 15 May 2019 08:30:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1557909057;
+        bh=/6iQfefvwB3aF9Eii6gwvwIkY97uzt4IVPj/JgnNfU4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=X2XEiWxfa5MXpb2hIitCu25ye7WUCrv61p0EE9parA3DpD2QiXW2K4q0/iaw/6QbH
+         /L9XQa/i5ycnmB9DKJtyhv7DnIe8MQScdiKttSUqe6SRhjKEgzJ1LOaz+1jUXq4xHR
+         qXBWyhNiHf3G0tXB5g8LB+Cbjs0JkqVoa6iyOxQM=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <646275c5-3530-f428-98da-56da99d72fe1@redhat.com>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 15 May 2019 16:30:57 +0800
+From:   Rocky Liao <rjliao@codeaurora.org>
+To:     Balakrishna Godavarthi <bgodavar@codeaurora.org>
+Cc:     robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org,
+        johan.hedberg@gmail.com, thierry.escande@linaro.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, hemtang@codeaurora.org,
+        linux-bluetooth-owner@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] Bluetooth: hci_qca: Load customized NVM based on
+ the device property
+In-Reply-To: <50debf59532279fa0d0bf7156b48831a@codeaurora.org>
+References: <1554888451-17518-1-git-send-email-rjliao@codeaurora.org>
+ <1557631148-5120-1-git-send-email-rjliao@codeaurora.org>
+ <50debf59532279fa0d0bf7156b48831a@codeaurora.org>
+Message-ID: <a92f2c0a52643840ca88ef82889aa7f2@codeaurora.org>
+X-Sender: rjliao@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 15, 2019 at 10:50:43AM +0800, Jason Wang wrote:
-> 
-> On 2019/5/15 上午12:20, Stefano Garzarella wrote:
-> > On Tue, May 14, 2019 at 11:38:05AM +0800, Jason Wang wrote:
-> > > On 2019/5/14 上午1:51, Stefano Garzarella wrote:
-> > > > On Mon, May 13, 2019 at 06:01:52PM +0800, Jason Wang wrote:
-> > > > > On 2019/5/10 下午8:58, Stefano Garzarella wrote:
-> > > > > > In order to increase host -> guest throughput with large packets,
-> > > > > > we can use 64 KiB RX buffers.
-> > > > > > 
-> > > > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > > > > ---
-> > > > > >     include/linux/virtio_vsock.h | 2 +-
-> > > > > >     1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > > > 
-> > > > > > diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-> > > > > > index 84b72026d327..5a9d25be72df 100644
-> > > > > > --- a/include/linux/virtio_vsock.h
-> > > > > > +++ b/include/linux/virtio_vsock.h
-> > > > > > @@ -10,7 +10,7 @@
-> > > > > >     #define VIRTIO_VSOCK_DEFAULT_MIN_BUF_SIZE	128
-> > > > > >     #define VIRTIO_VSOCK_DEFAULT_BUF_SIZE		(1024 * 256)
-> > > > > >     #define VIRTIO_VSOCK_DEFAULT_MAX_BUF_SIZE	(1024 * 256)
-> > > > > > -#define VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE	(1024 * 4)
-> > > > > > +#define VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE	(1024 * 64)
-> > > > > >     #define VIRTIO_VSOCK_MAX_BUF_SIZE		0xFFFFFFFFUL
-> > > > > >     #define VIRTIO_VSOCK_MAX_PKT_BUF_SIZE		(1024 * 64)
-> > > > > We probably don't want such high order allocation. It's better to switch to
-> > > > > use order 0 pages in this case. See add_recvbuf_big() for virtio-net. If we
-> > > > > get datapath unified, we will get more stuffs set.
-> > > > IIUC, you are suggesting to allocate only pages and put them in a
-> > > > scatterlist, then add them to the virtqueue.
-> > > > 
-> > > > Is it correct?
-> > > 
-> > > Yes since you are using:
-> > > 
-> > >                  pkt->buf = kmalloc(buf_len, GFP_KERNEL);
-> > >                  if (!pkt->buf) {
-> > >                          virtio_transport_free_pkt(pkt);
-> > >                          break;
-> > >                  }
-> > > 
-> > > This is likely to fail when the memory is fragmented which is kind of
-> > > fragile.
-> > > 
-> > > 
-> > Thanks for pointing that out.
-> > 
-> > > > The issue that I have here, is that the virtio-vsock guest driver, see
-> > > > virtio_vsock_rx_fill(), allocates a struct virtio_vsock_pkt that
-> > > > contains the room for the header, then allocates the buffer for the payload.
-> > > > At this point it fills the scatterlist with the &virtio_vsock_pkt.hdr and the
-> > > > buffer for the payload.
-> > > 
-> > > This part should be fine since what is needed is just adding more pages to
-> > > sg[] and call virtuqeueu_add_sg().
-> > > 
-> > > 
-> > Yes, I agree.
-> > 
-> > > > Changing this will require several modifications, and if we get datapath
-> > > > unified, I'm not sure it's worth it.
-> > > > Of course, if we leave the datapaths separated, I'd like to do that later.
-> > > > 
-> > > > What do you think?
-> > > 
-> > > For the driver it self, it should not be hard. But I think you mean the
-> > > issue of e.g virtio_vsock_pkt itself which doesn't support sg. For short
-> > > time, maybe we can use kvec instead.
-> > I'll try to use kvec in the virtio_vsock_pkt.
-> > 
-> > Since this struct is shared also with the host driver (vhost-vsock),
-> > I hope the changes could be limited, otherwise we can remove the last 2
-> > patches of the series for now, leaving the RX buffer size to 4KB.
-> 
-> 
-> Yes and if it introduces too much changes, maybe we can do the 64KB buffer
-> in the future with the conversion of using skb where supports page frag
-> natively.
+Hi Bala,
 
-Yes, I completely agree!
+On 2019-05-15 13:32, Balakrishna Godavarthi wrote:
+> Hi Rocky,
+> 
+> On 2019-05-12 08:49, Rocky Liao wrote:
+>> QCA BTSOC NVM is a customized firmware file and different vendors may
+>> want to have different BTSOC configuration (e.g. Configure SCO over 
+>> PCM
+>> or I2S, Setting Tx power, etc.) via this file. This patch will allow
+>> vendors to download different NVM firmware file by reading a device
+>> property "firmware-name".
+>> 
+>> Signed-off-by: Rocky Liao <rjliao@codeaurora.org>
+>> ---
+>> Changes in v4:
+>>   * rebased the code base and merge with latest code
+>> ---
+>>  drivers/bluetooth/btqca.c   | 14 ++++++++++----
+>>  drivers/bluetooth/btqca.h   |  6 ++++--
+>>  drivers/bluetooth/hci_qca.c | 19 ++++++++++++++++++-
+>>  3 files changed, 32 insertions(+), 7 deletions(-)
+>> 
+>> diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
+>> index cc12eec..0ea690a 100644
+>> --- a/drivers/bluetooth/btqca.c
+>> +++ b/drivers/bluetooth/btqca.c
+>> @@ -332,7 +332,8 @@ int qca_set_bdaddr_rome(struct hci_dev *hdev,
+>> const bdaddr_t *bdaddr)
+>>  EXPORT_SYMBOL_GPL(qca_set_bdaddr_rome);
+>> 
+>>  int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+>> -		   enum qca_btsoc_type soc_type, u32 soc_ver)
+>> +		   enum qca_btsoc_type soc_type, u32 soc_ver,
+>> +		   const char *firmware_name)
+>>  {
+>>  	struct rome_config config;
+>>  	int err;
+>> @@ -368,9 +369,14 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t 
+>> baudrate,
+>>  	if (qca_is_wcn399x(soc_type))
+>>  		snprintf(config.fwname, sizeof(config.fwname),
+>>  			 "qca/crnv%02x.bin", rom_ver);
+>> -	else
+>> -		snprintf(config.fwname, sizeof(config.fwname),
+>> -			 "qca/nvm_%08x.bin", soc_ver);
+>> +	else {
+>> +		if (firmware_name)
+>> +			snprintf(config.fwname, sizeof(config.fwname),
+>> +				 "qca/%s", firmware_name);
+>> +		else
+>> +			snprintf(config.fwname, sizeof(config.fwname),
+>> +				 "qca/nvm_%08x.bin", soc_ver);
+>> +	}
+>> 
+> [Bala]: Can you make this change  applicable to the wcn399x series
+> chip sets too.
+> 
+>        something like this
+> 
+>        if (qca_is_wcn399x(soc_type) && !firmware_name)
+>          snprintf(config.fwname, sizeof(config.fwname),
+>               "qca/crnv%02x.bin", rom_ver);
+>       elseif (firmware_name)
+>          snprintf(config.fwname, sizeof(config.fwname),
+>             "qca/%s", firmware_name);
+>       else
+>         snprintf(config.fwname, sizeof(config.fwname),
+>               "qca/nvm_%08x.bin", soc_ver);
+> 
+> 
+>>  	err = qca_download_firmware(hdev, &config);
+>>  	if (err < 0) {
+>> diff --git a/drivers/bluetooth/btqca.h b/drivers/bluetooth/btqca.h
+>> index 4c4fe2b..8c037bb 100644
+>> --- a/drivers/bluetooth/btqca.h
+>> +++ b/drivers/bluetooth/btqca.h
+>> @@ -140,7 +140,8 @@ enum qca_btsoc_type {
+>> 
+>>  int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t 
+>> *bdaddr);
+>>  int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+>> -		   enum qca_btsoc_type soc_type, u32 soc_ver);
+>> +		   enum qca_btsoc_type soc_type, u32 soc_ver,
+>> +		   const char *firmware_name);
+>>  int qca_read_soc_version(struct hci_dev *hdev, u32 *soc_version);
+>>  int qca_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr);
+>>  static inline bool qca_is_wcn399x(enum qca_btsoc_type soc_type)
+>> @@ -155,7 +156,8 @@ static inline int qca_set_bdaddr_rome(struct
+>> hci_dev *hdev, const bdaddr_t *bdad
+>>  }
+>> 
+>>  static inline int qca_uart_setup(struct hci_dev *hdev, uint8_t 
+>> baudrate,
+>> -				 enum qca_btsoc_type soc_type, u32 soc_ver)
+>> +				 enum qca_btsoc_type soc_type, u32 soc_ver,
+>> +				 const char *firmware_name)
+>>  {
+>>  	return -EOPNOTSUPP;
+>>  }
+>> diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+>> index 57322c4..9590602 100644
+>> --- a/drivers/bluetooth/hci_qca.c
+>> +++ b/drivers/bluetooth/hci_qca.c
+>> @@ -169,6 +169,7 @@ struct qca_serdev {
+>>  	struct qca_power *bt_power;
+>>  	u32 init_speed;
+>>  	u32 oper_speed;
+>> +	const char *firmware_name;
+>>  };
+>> 
+>>  static int qca_power_setup(struct hci_uart *hu, bool on);
+>> @@ -190,6 +191,17 @@ static enum qca_btsoc_type qca_soc_type(struct
+>> hci_uart *hu)
+>>  	return soc_type;
+>>  }
+>> 
+>> +static const char *qca_get_firmware_name(struct hci_uart *hu)
+>> +{
+>> +	if (hu->serdev) {
+>> +		struct qca_serdev *qsd = serdev_device_get_drvdata(hu->serdev);
+>> +
+>> +		return qsd->firmware_name;
+>> +	} else {
+>> +		return NULL;
+>> +	}
+>> +}
+>> +
+>>  static void __serial_clock_on(struct tty_struct *tty)
+>>  {
+>>  	/* TODO: Some chipset requires to enable UART clock on client
+>> @@ -1195,6 +1207,7 @@ static int qca_setup(struct hci_uart *hu)
+>>  	struct qca_data *qca = hu->priv;
+>>  	unsigned int speed, qca_baudrate = QCA_BAUDRATE_115200;
+>>  	enum qca_btsoc_type soc_type = qca_soc_type(hu);
+>> +	const char *firmware_name = qca_get_firmware_name(hu);
+>>  	int ret;
+>>  	int soc_ver = 0;
+>> 
+>> @@ -1245,7 +1258,8 @@ static int qca_setup(struct hci_uart *hu)
+>> 
+>>  	bt_dev_info(hdev, "QCA controller version 0x%08x", soc_ver);
+>>  	/* Setup patch / NVM configurations */
+>> -	ret = qca_uart_setup(hdev, qca_baudrate, soc_type, soc_ver);
+>> +	ret = qca_uart_setup(hdev, qca_baudrate, soc_type, soc_ver,
+>> +			firmware_name);
+>>  	if (!ret) {
+>>  		set_bit(QCA_IBS_ENABLED, &qca->flags);
+>>  		qca_debugfs_init(hdev);
+>> @@ -1477,6 +1491,9 @@ static int qca_serdev_probe(struct serdev_device 
+>> *serdev)
+>>  			return PTR_ERR(qcadev->bt_en);
+>>  		}
+>> 
+>> +		device_property_read_string(&serdev->dev, "firmware-name",
+>> +					 &qcadev->firmware_name);
+>> +
+>>  		qcadev->susclk = devm_clk_get(&serdev->dev, NULL);
+>>  		if (IS_ERR(qcadev->susclk)) {
+>>  			dev_err(&serdev->dev, "failed to acquire clk\n");
 
-Thanks,
-Stefano
+OK, will make the change and send out the updated version soon.
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,
+a Linux Foundation Collaborative Project
