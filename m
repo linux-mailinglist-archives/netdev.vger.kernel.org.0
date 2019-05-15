@@ -2,125 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACE0F1FC5E
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 23:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4670C1FC66
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 23:46:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbfEOVmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 17:42:39 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57960 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726780AbfEOVmi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 May 2019 17:42:38 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E1A46AD47;
-        Wed, 15 May 2019 21:42:36 +0000 (UTC)
-From:   NeilBrown <neilb@suse.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>, davem@davemloft.net
-Date:   Thu, 16 May 2019 07:42:29 +1000
-Cc:     herbert@gondor.apana.org.au, tgraf@suug.ch, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: Re: [PATCH net] rhashtable: fix sparse RCU warnings on bit lock in bucket pointer
-In-Reply-To: <20190515205501.17810-1-jakub.kicinski@netronome.com>
-References: <20190515205501.17810-1-jakub.kicinski@netronome.com>
-Message-ID: <87sgtfwg1m.fsf@notabene.neil.brown.name>
+        id S1727434AbfEOVqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 17:46:03 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38190 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726833AbfEOVqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 17:46:03 -0400
+Received: by mail-qt1-f193.google.com with SMTP id d13so1560821qth.5
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 14:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=CxvbzMmpFZKCZQrQpPZlOyX2uSYjnK1WHB0Mu1JYc0M=;
+        b=0ZXSezWejE0cywXdKuYQCQ11X7PsPCAx37NYYV2CfX9/p5x7b9UB57iSnNK1b3xDpg
+         aOMWrEYIeVccVgnt9YFUzD5ro2w+lrKcXnxzJy2EmPc5AWTgAM5LuGmK0NK6XPPL9rXv
+         Ae4dCSIPn/Bufb3raRFMcAjqsHa6YM1Are8URdyjB7PuglCJraDNoag82GWBSpwx9sgp
+         nU0gB58HZ5KJ5BOwYPW8LEwtqvldpOZ26jFM+37wkBlBRePAkCVLqAZznd36k+tKM070
+         YipiZDGA0ut4o/yy0/PS0Rbe/9357kAo0+6x2cRpff1dM8YFTlgkfaOoNIY4cRs542eH
+         vK/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=CxvbzMmpFZKCZQrQpPZlOyX2uSYjnK1WHB0Mu1JYc0M=;
+        b=NftM1YdNntjWscXQKKzjT/92RSY/UYcQz1umhD30m11xtMTqy35h8oS927szx2nMv6
+         77GDx79Fd9Oes07Gcy6J4yF2jFwTPerC4pjvWzpz45qXXJugXkKcZUknd/580B5A2THN
+         LiYRqnhlQb3eecIY1NTZ2mZOY58eHxlJbSKyqYFtnPgsTJAwtTE6eoL7suJv/RzlVICP
+         64jCoNSIomK++FnpKfYq7GHHisHYtWP3AQP6397IzVg/tlEjnDR8NzYx6YeweIM9b8eG
+         a7aQdfjUF6ndyN+ZYt2wO9Ceo6lEneDtrBb6GnZUePOmusVFh1iOhGdXoYQnf83l/xUx
+         B7lA==
+X-Gm-Message-State: APjAAAXUxvvcNdN1A1vgVR9ePGzD+Bysa8ZFk/8ta5yACmSryLmKLSSz
+        bbKKRyFWCJAb4wB4ItXIAjivGA==
+X-Google-Smtp-Source: APXvYqw8CWhpLfaEMuaBeEoKwDffLp9ZpXjQCPPNhUlQ6xYspR4xI7Yyd1yexfhCdgMhGZvdpTJnAw==
+X-Received: by 2002:ac8:1205:: with SMTP id x5mr21766241qti.284.1557956762150;
+        Wed, 15 May 2019 14:46:02 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id p8sm2228633qta.24.2019.05.15.14.46.00
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 15 May 2019 14:46:02 -0700 (PDT)
+Date:   Wed, 15 May 2019 14:45:37 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Krzesimir Nowak <krzesimir@kinvolk.io>
+Cc:     bpf@vger.kernel.org, iago@kinvolk.io, alban@kinvolk.io,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrey Ignatov <rdna@fb.com>, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf v1 2/3] selftests/bpf: Print a message when tester
+ could not run a program
+Message-ID: <20190515144537.57f559e7@cakuba.netronome.com>
+In-Reply-To: <20190515134731.12611-3-krzesimir@kinvolk.io>
+References: <20190515134731.12611-1-krzesimir@kinvolk.io>
+        <20190515134731.12611-3-krzesimir@kinvolk.io>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha256; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, May 15 2019, Jakub Kicinski wrote:
-
-> Since the bit_spin_lock() operations don't actually dereference
-> the pointer, it's fine to forcefully drop the RCU annotation.
-> This fixes 7 sparse warnings per include site.
->
-> Fixes: 8f0db018006a ("rhashtable: use bit_spin_locks to protect hash buck=
-et.")
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Reviewed-by: Simon Horman <simon.horman@netronome.com>
-
-Hi, sorry for not responding to your initial post, but I'm otherwise
-engaged this week and cannot give it any real time.  I don't object to
-this patch, but I'll try to have a proper look next week, if only to
-find out how I didn't get the warnings, as I was testing with sparse.
-
-Thanks,
-NeilBrown
-
-
+On Wed, 15 May 2019 15:47:27 +0200, Krzesimir Nowak wrote:
+> This prints a message when the error is about program type being not
+> supported by the test runner or because of permissions problem. This
+> is to see if the program we expected to run was actually executed.
+> 
+> The messages are open-coded because strerror(ENOTSUPP) returns
+> "Unknown error 524".
+> 
+> Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
 > ---
->  include/linux/rhashtable.h | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->
-> diff --git a/include/linux/rhashtable.h b/include/linux/rhashtable.h
-> index f7714d3b46bd..bea1e0440ab4 100644
-> --- a/include/linux/rhashtable.h
-> +++ b/include/linux/rhashtable.h
-> @@ -325,27 +325,27 @@ static inline struct rhash_lock_head __rcu **rht_bu=
-cket_insert(
->   */
->=20=20
->  static inline void rht_lock(struct bucket_table *tbl,
-> -			    struct rhash_lock_head **bkt)
-> +			    struct rhash_lock_head __rcu **bkt)
->  {
->  	local_bh_disable();
-> -	bit_spin_lock(0, (unsigned long *)bkt);
-> +	bit_spin_lock(0, (unsigned long __force *)bkt);
->  	lock_map_acquire(&tbl->dep_map);
->  }
->=20=20
->  static inline void rht_lock_nested(struct bucket_table *tbl,
-> -				   struct rhash_lock_head **bucket,
-> +				   struct rhash_lock_head __rcu **bkt,
->  				   unsigned int subclass)
->  {
->  	local_bh_disable();
-> -	bit_spin_lock(0, (unsigned long *)bucket);
-> +	bit_spin_lock(0, (unsigned long __force *)bkt);
->  	lock_acquire_exclusive(&tbl->dep_map, subclass, 0, NULL, _THIS_IP_);
->  }
->=20=20
->  static inline void rht_unlock(struct bucket_table *tbl,
-> -			      struct rhash_lock_head **bkt)
-> +			      struct rhash_lock_head __rcu **bkt)
->  {
->  	lock_map_release(&tbl->dep_map);
-> -	bit_spin_unlock(0, (unsigned long *)bkt);
-> +	bit_spin_unlock(0, (unsigned long __force *)bkt);
->  	local_bh_enable();
->  }
->=20=20
-> --=20
-> 2.21.0
+>  tools/testing/selftests/bpf/test_verifier.c | 17 +++++++++++++----
+>  1 file changed, 13 insertions(+), 4 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+> index ccd896b98cac..bf0da03f593b 100644
+> --- a/tools/testing/selftests/bpf/test_verifier.c
+> +++ b/tools/testing/selftests/bpf/test_verifier.c
+> @@ -825,11 +825,20 @@ static int do_prog_test_run(int fd_prog, bool unpriv, uint32_t expected_val,
+>  				tmp, &size_tmp, &retval, NULL);
+>  	if (unpriv)
+>  		set_admin(false);
+> -	if (err && errno != 524/*ENOTSUPP*/ && errno != EPERM) {
+> -		printf("Unexpected bpf_prog_test_run error ");
+> -		return err;
+> +	if (err) {
+> +		switch (errno) {
+> +		case 524/*ENOTSUPP*/:
+> +			printf("Did not run the program (not supported) ");
+> +			return 0;
+> +		case EPERM:
+> +			printf("Did not run the program (no permission) ");
+> +			return 0;
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+Perhaps use strerror(errno)?
 
------BEGIN PGP SIGNATURE-----
+> +		default:
+> +			printf("Unexpected bpf_prog_test_run error ");
+> +			return err;
+> +		}
+>  	}
+> -	if (!err && retval != expected_val &&
+> +	if (retval != expected_val &&
+>  	    expected_val != POINTER_VALUE) {
+>  		printf("FAIL retval %d != %d ", retval, expected_val);
+>  		return 1;
 
-iQIzBAEBCAAdFiEEG8Yp69OQ2HB7X0l6Oeye3VZigbkFAlzch8UACgkQOeye3VZi
-gbkcwRAAv99R791bdigGPksDIxC3uvl7DOoxRzXaDz6YZE0cwuSmjJutIB7nwRab
-tsqY/E76pvrV+dQT1UVLz2vL0Rc8DBy9ZDkLLNB+R/aKSn67pV0PgwTa2d1nUzXF
-giQwJH19RT9rIjhFXQXusuNlekXGa4Y8ex0xUKRw8tPcNwSKjiiLDtj6LMMRtMJE
-FL5qze8gCoin8bs1Y/ITA/7GVpWx0KJ8MeNq4jsIrXuXNd/RRi5rJpSIRufvchR/
-RZ8adexrxQqxn7vnsScGRhLUN0Bnz8ovStnSKVp5Xqfmwy8FC+dE3nytHdSyTJ4f
-KCy3Gg0cykDNbhouHe8dksAwSct+CEooJdERCw0wYxFc1PanU/qtv51Fn8Um0qvM
-uIDqmkrMiw3HEXjPho1Ed4OgctqNCWuzVvnPgVBSeH+gNRDipwPZKOyVDlS2TM5H
-89GRrfzhqCsn6Rrb5qlgFnZ3neqpSykHLBh+Eg2xsSawRx/dmeaHWgv25aiJ3kQt
-enHfDeSz0I4eTzR2iM9cQIiXic06GzcA9egey408m53J6CusckN7RfhgPR+j1PtV
-bI6g9GRofxaMA74qFpZykf5MqSJPgaPMrUv1eSBz1ME0OGBfcEiYID2ZftegI1gP
-jBl+wVPfuzKkF2YzhNAU+9+jqJQVGWj11XkpKdPGSMT1vZqZRJw=
-=n61K
------END PGP SIGNATURE-----
---=-=-=--
