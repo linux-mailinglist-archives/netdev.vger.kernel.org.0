@@ -2,63 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A831F95B
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 19:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DD9D1F960
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 19:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbfEORac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 13:30:32 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37078 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725974AbfEORab (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 13:30:31 -0400
-Received: by mail-wr1-f66.google.com with SMTP id e15so412244wrs.4
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 10:30:30 -0700 (PDT)
+        id S1726715AbfEORdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 13:33:00 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36577 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725974AbfEORdA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 13:33:00 -0400
+Received: by mail-pg1-f196.google.com with SMTP id a3so131533pgb.3
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 10:32:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ywFTEFDJ4d8F9ck+MFm9E0yBMQ/X3TskODhptxKjJ5Q=;
-        b=NuMjXeLFvtW64g4FzVI3OAlY0WbSTaZX1hDxFXCQmyLGSQq/1gcwFWV55YIolF+xlF
-         gqyaXZzUpXYFZ49TQYV/R+6b4UsiOYfeSY1d5gALTiSASV1XcMhuOTPl6QW0udrorCgM
-         RWG8KC226iE4xfDSE6v5XAG4BKVV6ZLse2pRqfVDFrjK96mYTSTiauoCwgk0v8C10ZAN
-         kegieH5w2CUWXPGahRbPBUQK254cn7lfDsGxS12h9Lz8VsTE55hWoQt35VMeqTTu4zFh
-         +fl+y3K45XDdCM5CpFmPF6J28aMSjPA4G6zI7cQ5xh0QBJnjZCVSGfhz+L0onN+ZMSiN
-         X5NA==
+        bh=AR9NJqIMmeNs55j/Mref7Xtr2XcqFLe9lLT9Z/QVWls=;
+        b=uR+hG6xsZ8gMCq4H8jolmsKLhMPmkl+8cL3nK0lEt5CBJ+hbeBBYCNnGkimUIlFOAD
+         UPhYssWtbHI7cR3MxV20Y+uOE7j3mIlH5bZztLhZ3STuTNrQXpSMewAHxTK7YSBWnjKU
+         97NsfgmKlUmcfwoGvCx0PiyAjTU5eNBQWfG4m4SirkV7BY+5sEcu+fu5rC5UtIA8Dzub
+         zDoeGVAPvejR7qcLiN1aOQ9CC35aIYRWIxGlMqNPPENJp4ZNOT9cvhu5DQFW/juwX+pw
+         7rj5IVGq5qdhKthhKw7sYssHsYg9u5+d5aHSSMqYCztJPn/juBrOkQ572CECv+UQ5FPM
+         nXMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ywFTEFDJ4d8F9ck+MFm9E0yBMQ/X3TskODhptxKjJ5Q=;
-        b=KKFZ4gaB9eELkEV68WLLQvyOHrVY7ioBdmnUo52TbQxgd85PMr4JPHsTD/y/nwRKEO
-         5fMZ6mIVerI3tumluMj2AjM5x4ef7xzNkQVDZRVEmBZjcfDWgce2xVYExp6zugsBTfJg
-         QoHencG81hiOx42ZC8azY/9xkwg+w1nEkxayYTEfH+2qs8uiXrUmRa26Me9GmG737exR
-         2uhyC7WeElQl0OkBzMJyCQMOFZ6wGIK0wbSY7DAv+Qh/vNRM5eoI4jMsPnJGkV5ibhoR
-         VuOx1gRMQUeufmOyk1IYD+tSH0nC3TqViTSg+Eie0v3mXQDhmM3/xpbuqfJ8bHlD9qQw
-         P9Qw==
-X-Gm-Message-State: APjAAAVCDscAFoTiHRrowIUxqgUCXCCbmZnfIMjwOjQl7BOZY9QeUCnE
-        You5TEoVj6+jTY7yUwMXBifMFsIaKG0=
-X-Google-Smtp-Source: APXvYqwKg03JK/JDeEY07mSqWMXASA1urUmyoniZTX9yk2fDMtf/2jxz7Ln1ZLqCHqN9qZzW6m3orA==
-X-Received: by 2002:a5d:688f:: with SMTP id h15mr16375308wru.44.1557941429985;
-        Wed, 15 May 2019 10:30:29 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd4:5700:19b8:f19b:746e:bed2? (p200300EA8BD4570019B8F19B746EBED2.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:19b8:f19b:746e:bed2])
-        by smtp.googlemail.com with ESMTPSA id v5sm5357498wra.83.2019.05.15.10.30.29
+        bh=AR9NJqIMmeNs55j/Mref7Xtr2XcqFLe9lLT9Z/QVWls=;
+        b=YGEz/pAJMGqN24+V41Akggx0zDnGpzKMH1MClZh1UMuGC6h5yZZ9Wt6B1M01yWUKb/
+         GzIZIOzcNyWik3hQEwJBGiwIMrKMt9XKOBSSrbAytvryatE8C+n6Z4JZQffHDqeMveml
+         clXdVH6BvpOTVCki9UVXZULhMpjZGxRZqGjxtg/Gm2ya+OlqJEPABGbbMyvjpDPI6AzU
+         Alq9DQT/TBr7LhZSbBq3VbOn+NYbVcbghFWL+/JhmRfnCvMT1HpWpx8iIUgxyA7aLpKI
+         fGSNLxQfTyu9awdFh7foijCMiu4ZjBCXCc6W3p3e3jCRxECdBqtGqyPZkFk1BjljCUDw
+         xF/w==
+X-Gm-Message-State: APjAAAVLicFQuI2CIh78quf0DM/TgTz4bgCrjUwQIWPeG//06rGmbZn3
+        bxCBLN08AGse/6dD2JdvFC0=
+X-Google-Smtp-Source: APXvYqxFkuAyX3OhfmLVboobse9Fp6GJbwEsj7QvrHLtutB55GWMscypERvqjMYpqyUaQwXUXg0Q8w==
+X-Received: by 2002:a63:785:: with SMTP id 127mr42917377pgh.230.1557941579445;
+        Wed, 15 May 2019 10:32:59 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:81dc:8ee9:edb2:6ea? ([2601:282:800:fd80:81dc:8ee9:edb2:6ea])
+        by smtp.googlemail.com with ESMTPSA id x17sm4241642pgh.47.2019.05.15.10.32.58
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 May 2019 10:30:29 -0700 (PDT)
-Subject: Re: FW: [PATCH] net: phy: aquantia: readd XGMII support for AQR107
-To:     Madalin-cristian Bucur <madalin.bucur@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "davem@davemloft.net" <davem@davemloft.net>
-References: <VI1PR04MB5567F06E7A9B5CC8B2E4854CEC090@VI1PR04MB5567.eurprd04.prod.outlook.com>
- <VI1PR04MB5567FAF88B84E9C77B93A40EEC090@VI1PR04MB5567.eurprd04.prod.outlook.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <31722d85-7b01-3516-1b12-bf2be5c9cf71@gmail.com>
-Date:   Wed, 15 May 2019 19:30:22 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        Wed, 15 May 2019 10:32:58 -0700 (PDT)
+Subject: Re: [PATCH net] ipv6: fix src addr routing with the exception table
+To:     Wei Wang <weiwan@google.com>
+Cc:     Wei Wang <tracywwnj@gmail.com>, David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mikael Magnusson <mikael.kernel@lists.m7n.se>,
+        Eric Dumazet <edumazet@google.com>
+References: <20190515004610.102519-1-tracywwnj@gmail.com>
+ <fdded637-fd19-bcab-87aa-b71ca8158735@gmail.com>
+ <95d844f2-1be2-83b9-1910-e90ad3d2b28d@gmail.com>
+ <CAEA6p_B8-zBPxzcNSdpK+2U2eOU0efQBSu1dMx3sEV7r1+c8oA@mail.gmail.com>
+ <CAEA6p_D0-dT4a-wqz7DMq8dSNbESRkj40ESTTxdnbPar-0N90g@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a1fa84e7-e474-9488-ddc5-e139ab1f2e05@gmail.com>
+Date:   Wed, 15 May 2019 11:32:57 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <VI1PR04MB5567FAF88B84E9C77B93A40EEC090@VI1PR04MB5567.eurprd04.prod.outlook.com>
+In-Reply-To: <CAEA6p_D0-dT4a-wqz7DMq8dSNbESRkj40ESTTxdnbPar-0N90g@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,29 +72,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15.05.2019 10:46, Madalin-cristian Bucur wrote:
-> XGMII interface mode no longer works on AQR107 after the recent changes,
-> adding back support.
+On 5/15/19 11:28 AM, Wei Wang wrote:
+> From: Wei Wang <weiwan@google.com>
+> Date: Wed, May 15, 2019 at 10:25 AM
+> To: David Ahern
+> Cc: Wei Wang, David Miller, Linux Kernel Network Developers, Martin
+> KaFai Lau, Mikael Magnusson, Eric Dumazet
 > 
-I'd like to check the configuration of the system with the AQR107.
-Which board is it, and which DT config is used?
+>>>
+>>> What about rt6_remove_exception_rt?
+>>>
+>>> You can add a 'cache' hook to ip/iproute.c to delete the cached routes
+>>> and verify that it works. I seem to have misplaced my patch to do it.
+>> I don't think rt6_remove_exception_rt() needs any change.
+>> It is because it gets the route cache rt6_info as the input parameter,
+>> not specific saddr or daddr from a flow or a packet.
+>> It is guaranteed that the hash used in the exception table is
+>> generated from rt6_info->rt6i_dst and rt6_info->rt6i_src.
+>>
+>> For the case where user tries to delete a cache route, ip6_route_del()
+>> calls rt6_find_cached_rt() to find the cached route first. And
+>> rt6_find_cached_rt() is taken care of to find the cached route
+>> according to both passed in src addr and f6i->fib6_src.
+>> So I think we are good here.
+>>
+>> From: David Ahern <dsahern@gmail.com>
+>> Date: Wed, May 15, 2019 at 9:38 AM
+>> To: Wei Wang, David Miller, <netdev@vger.kernel.org>
+>> Cc: Martin KaFai Lau, Wei Wang, Mikael Magnusson, Eric Dumazet
+>>
+>>> On 5/15/19 9:56 AM, David Ahern wrote:
+>>>> You can add a 'cache' hook to ip/iproute.c to delete the cached routes
+>>>> and verify that it works. I seem to have misplaced my patch to do it.
+>>>
+>>> found it.
+> 
+> Thanks. I patched it to iproute2 and tried it.
+> The route cache is removed by doing:
+> ip netns exec a ./ip -6 route del fd01::c from fd00::a cache 
+> 
 
-> Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
-> ---
->  drivers/net/phy/aquantia_main.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
-> index eed4fe3d871f..0fedd28fdb6e 100644
-> --- a/drivers/net/phy/aquantia_main.c
-> +++ b/drivers/net/phy/aquantia_main.c
-> @@ -487,6 +487,7 @@ static int aqr107_config_init(struct phy_device *phydev)
->  	/* Check that the PHY interface type is compatible */
->  	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
->  	    phydev->interface != PHY_INTERFACE_MODE_2500BASEX &&
-> +	    phydev->interface != PHY_INTERFACE_MODE_XGMII &&
->  	    phydev->interface != PHY_INTERFACE_MODE_10GKR)
->  		return -ENODEV;
->  
-> 
+you have to pass in a device. The first line in ip6_del_cached_rt:
 
+if (cfg->fc_ifindex && rt->dst.dev->ifindex != cfg->fc_ifindex)
+                goto out;
+
+'ip route get' is one way to check if it has been deleted. We really
+need to add support for dumping exception routes.
