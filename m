@@ -2,172 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91DC21E6F7
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 04:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C16E51E6FA
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 04:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726339AbfEOCzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 22:55:44 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58264 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726201AbfEOCzo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 May 2019 22:55:44 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 97B25308123F;
-        Wed, 15 May 2019 02:55:43 +0000 (UTC)
-Received: from [10.72.12.103] (ovpn-12-103.pek2.redhat.com [10.72.12.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C576608A6;
-        Wed, 15 May 2019 02:55:36 +0000 (UTC)
-Subject: Re: [PATCH net] vhost: don't use kmap() to log dirty pages
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@infradead.org>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>
-References: <1557725265-63525-1-git-send-email-jasowang@redhat.com>
- <20190514181150-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <d4b64662-42b3-3ac3-0019-92935acb6bc7@redhat.com>
-Date:   Wed, 15 May 2019 10:55:35 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726449AbfEOC4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 22:56:39 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:35989 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726218AbfEOC4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 22:56:38 -0400
+Received: by mail-pg1-f195.google.com with SMTP id a3so571222pgb.3
+        for <netdev@vger.kernel.org>; Tue, 14 May 2019 19:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9kqRrsb++I0tVWKRUhKyYkTTZ79beQ5XiFr2tm4fXGg=;
+        b=U/GuCKuLv0GYA0b2ZYYNgEW1VQTtESo1ytzGpUW6kAGFzfRs7tUMuw90tLk4Zy7Q8Z
+         IKyx4Rg/OULhyxTKzIdYiQggiIthiElOtVoJ23r5srnHOh1j6r/xBkIGj0pD5RTwpNF5
+         7TdbqnVk0+EX8pliMdOY7LkFdBrEGskbtb0qYhBHcutC9fNnjzAw2DcX/y24M5ALj5rP
+         givk9LY3gLiwfYSioy9DkJma+BLcmK1NNOAXlP3lDT8U3OKAufpEHj29D6e+or+qubA0
+         WpQHdmo16hY4jev+OkLdezQkqDpWYiOJU4nfpik9cmgn2ml4QTVtpEdcnonhoaybUD5h
+         +T9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9kqRrsb++I0tVWKRUhKyYkTTZ79beQ5XiFr2tm4fXGg=;
+        b=XjXbOTlQKiT64Wd90ZsmDpmTmdzGk4l3b7ldfp/T4AfhP6+UgbogDyi6NZzc76Y05+
+         +QqJ9O1uPawKAcQgDnzKesofPzJZ50MmeLD9B+DyUMsoAUiiv10PjgXoGk5L4RZRB6gF
+         7F71IH8+CuQRWZLSAkuUGGFAOyX68Lc7te+rGBGFET3IAu9KyZOZe7DCU/yojFt72K6P
+         kgwGQp8h/Nfe9625xT+9Qk7KA8Q17uKquuku1ZfQtybninnEk3c2GsAFz0yIqQAh5vRc
+         idsRdwAe8onIMFpFQAIOojkwUeeampbt8FQ/AjEKobIym54BTC55ujzpdmYvFShGzRtn
+         gDsQ==
+X-Gm-Message-State: APjAAAUOYBi/AxmKtcgmwLwIPmHMrcdol2PeLVRIIIo3Lt7e37OEj7f4
+        iGK1sfciC1qEFDX5TZ0XYb2E0Q==
+X-Google-Smtp-Source: APXvYqzdPymztt59JMUNleYEqUbzDYVsx7mCTKC9cg/A90es9XlqLNTr11m2a8yQ1JhssNNINOnrXg==
+X-Received: by 2002:a65:554d:: with SMTP id t13mr41127593pgr.171.1557888998050;
+        Tue, 14 May 2019 19:56:38 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id s18sm550594pgg.64.2019.05.14.19.56.37
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 14 May 2019 19:56:37 -0700 (PDT)
+Date:   Tue, 14 May 2019 19:56:36 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf 0/4] bpf: remove __rcu annotations from bpf_prog_array
+Message-ID: <20190515025636.GE10244@mini-arch>
+References: <20190508181223.GH1247@mini-arch>
+ <20190513185724.GB24057@mini-arch>
+ <CAADnVQLX3EcbW=iVxjsjO38M3Lqw5TfCcZtmbnt1DJwDvp64dA@mail.gmail.com>
+ <20190514173002.GB10244@mini-arch>
+ <20190514174523.myybhjzfhmxdycgf@ast-mbp>
+ <20190514175332.GC10244@mini-arch>
+ <CAADnVQLAJ77XS8vfdnszHsw_KcmzrMDvPH0UxVXORN-wjc=rWQ@mail.gmail.com>
+ <20190515021144.GD10244@mini-arch>
+ <CAADnVQ+LPLfdfkv2otb6HRPeQiiDyr4ZO04B--vrXT_Tu=-9xQ@mail.gmail.com>
+ <5ed25b81-fdd0-d707-f012-736fe6269a72@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190514181150-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Wed, 15 May 2019 02:55:43 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5ed25b81-fdd0-d707-f012-736fe6269a72@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 05/14, Eric Dumazet wrote:
+> 
+> 
+> On 5/14/19 7:27 PM, Alexei Starovoitov wrote:
+> 
+> > what about activate_effective_progs() ?
+> > I wouldn't want to lose the annotation there.
+> > but then array_free will lose it?
+It would not have have it because the input is the result of
+bpf_prog_array_alloc() which returns kmalloc'd pointer (and
+is not bound to an rcu section).
 
-On 2019/5/15 上午6:16, Michael S. Tsirkin wrote:
-> On Mon, May 13, 2019 at 01:27:45AM -0400, Jason Wang wrote:
->> Vhost log dirty pages directly to a userspace bitmap through GUP and
->> kmap_atomic() since kernel doesn't have a set_bit_to_user()
->> helper. This will cause issues for the arch that has virtually tagged
->> caches. The way to fix is to keep using userspace virtual
->> address. Fortunately, futex has arch_futex_atomic_op_inuser() which
->> could be used for setting a bit to user.
->>
->> Note there're several cases that futex helper can fail e.g a page
->> fault or the arch that doesn't have the support. For those cases, a
->> simplified get_user()/put_user() pair protected by a global mutex is
->> provided as a fallback. The fallback may lead false positive that
->> userspace may see more dirty pages.
->>
->> Cc: Christoph Hellwig<hch@infradead.org>
->> Cc: James Bottomley<James.Bottomley@HansenPartnership.com>
->> Cc: Andrea Arcangeli<aarcange@redhat.com>
->> Cc: Thomas Gleixner<tglx@linutronix.de>
->> Cc: Ingo Molnar<mingo@redhat.com>
->> Cc: Peter Zijlstra<peterz@infradead.org>
->> Cc: Darren Hart<dvhart@infradead.org>
->> Fixes: 3a4d5c94e9593 ("vhost_net: a kernel-level virtio server")
->> Signed-off-by: Jason Wang<jasowang@redhat.com>
->> ---
->> Changes from RFC V2:
->> - drop GUP and provide get_user()/put_user() fallbacks
->> - round down log_base
->> Changes from RFC V1:
->> - switch to use arch_futex_atomic_op_inuser()
->> ---
->>   drivers/vhost/vhost.c | 54 ++++++++++++++++++++++++++++-----------------------
->>   1 file changed, 30 insertions(+), 24 deletions(-)
->>
->> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
->> index 351af88..7fa05ba 100644
->> --- a/drivers/vhost/vhost.c
->> +++ b/drivers/vhost/vhost.c
->> @@ -31,6 +31,7 @@
->>   #include <linux/sched/signal.h>
->>   #include <linux/interval_tree_generic.h>
->>   #include <linux/nospec.h>
->> +#include <asm/futex.h>
->>   
->>   #include "vhost.h"
->>   
->> @@ -43,6 +44,8 @@
->>   MODULE_PARM_DESC(max_iotlb_entries,
->>   	"Maximum number of iotlb entries. (default: 2048)");
->>   
->> +static DEFINE_MUTEX(vhost_log_lock);
->> +
->>   enum {
->>   	VHOST_MEMORY_F_LOG = 0x1,
->>   };
->> @@ -1692,28 +1695,31 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
->>   }
->>   EXPORT_SYMBOL_GPL(vhost_dev_ioctl);
->>   
->> -/* TODO: This is really inefficient.  We need something like get_user()
->> - * (instruction directly accesses the data, with an exception table entry
->> - * returning -EFAULT). See Documentation/x86/exception-tables.txt.
->> - */
->> -static int set_bit_to_user(int nr, void __user *addr)
->> +static int set_bit_to_user(int nr, u32 __user *addr)
->>   {
->> -	unsigned long log = (unsigned long)addr;
->> -	struct page *page;
->> -	void *base;
->> -	int bit = nr + (log % PAGE_SIZE) * 8;
->> +	u32 old;
->>   	int r;
->>   
->> -	r = get_user_pages_fast(log, 1, 1, &page);
->> -	if (r < 0)
->> -		return r;
->> -	BUG_ON(r != 1);
->> -	base = kmap_atomic(page);
->> -	set_bit(bit, base);
->> -	kunmap_atomic(base);
->> -	set_page_dirty_lock(page);
->> -	put_page(page);
->> +	r = arch_futex_atomic_op_inuser(FUTEX_OP_OR, 1 << nr, &old, addr);
->> +	if (r) {
->> +		/* Fallback through get_user()/put_user(), this may
->> +		 * lead false positive that userspace may see more
->> +		 * dirty pages. A mutex is used to synchronize log
->> +		 * access between vhost threads.
->> +		 */
->> +		mutex_lock(&vhost_log_lock);
->> +		r = get_user(old, addr);
->> +		if (r)
->> +			goto err;
->> +		r = put_user(old | 1 << nr, addr);
->> +		if (r)
->> +			goto err;
->> +		mutex_unlock(&vhost_log_lock);
->> +	}
-> Problem is, we always said it's atomic.
->
-> This trick will work if userspace only clears bits
-> in the log, but won't if it sets bits in the log.
-> E.g. reusing the log structure for vhost-user
-> will have exactly this effect.
->
+> > in some cases it's called without mutex in a destruction path.
+Hm, can you point me to this place? I think I checked every path,
+maybe I missed something subtle. I'll double check.
 
-Ok, I admit this is an issue.
+> > also how do you propose to solve different 'mtx' in
+> > lockdep_is_held(&mtx)); ?
+> > passing it through the call chain is imo not clean.
+Every caller would know which mutex protects it. As Eric said below,
+I'm adding a bunch of xxx_dereference macros that hardcode mutex, like
+the existing rtnl_dereference.
 
-Then I think maybe we can simply fallback to a u8 put_user() which is 
-guaranteed to be atomic like:
-
-put_user(0xF, addr);
-
-Then we may at most have 7 more dirty pages to be seen by guest. 
-Consider futex helper is implemented is most architectures and it's 
-likely to succeed. It should be acceptable.
-
-Does this make sense?
-
-Thanks
-
+> Usage of RCU api in BPF is indeed a bit strange and lacks lockdep support.
+> 
+> Looking at bpf_prog_array_copy_core() for example, it looks like the __rcu
+> in the first argument is not needed, since the caller must have done the proper dereference already,
+> and the caller knows which mutex is protecting its rcu_dereference_protected() for the writer sides.
+> 
+> bpf_prog_array_copy_core() should manipulate standard pointers, with no __rcu stuff.
+> 
+> The analogy in net/ are probably the rtnl_dereference() users.
