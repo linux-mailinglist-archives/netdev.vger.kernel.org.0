@@ -2,80 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C73DF1F493
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 14:39:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 730011F496
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 14:39:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726607AbfEOMjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 08:39:39 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:49933 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726392AbfEOMjj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 08:39:39 -0400
-Received: from bootlin.com (aaubervilliers-681-1-43-46.w90-88.abo.wanadoo.fr [90.88.161.46])
-        (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 8EA3C24000E;
-        Wed, 15 May 2019 12:39:36 +0000 (UTC)
-Date:   Wed, 15 May 2019 14:39:36 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: dsa: using multi-gbps speeds on CPU port
-Message-ID: <20190515143936.524acd4e@bootlin.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727070AbfEOMjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 08:39:52 -0400
+Received: from foss.arm.com ([217.140.101.70]:43738 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726635AbfEOMjv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 May 2019 08:39:51 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C2262374;
+        Wed, 15 May 2019 05:39:50 -0700 (PDT)
+Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 219443F71E;
+        Wed, 15 May 2019 05:39:48 -0700 (PDT)
+Subject: Re: [PATCH] arm64: do_csum: implement accelerated scalar version
+To:     David Laight <David.Laight@ACULAB.COM>,
+        'Will Deacon' <will.deacon@arm.com>
+Cc:     Zhangshaokun <zhangshaokun@hisilicon.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "huanglingyan (A)" <huanglingyan2@huawei.com>,
+        "steve.capper@arm.com" <steve.capper@arm.com>
+References: <20190218230842.11448-1-ard.biesheuvel@linaro.org>
+ <d7a16ebd-073f-f50e-9651-68606d10b01c@hisilicon.com>
+ <20190412095243.GA27193@fuggles.cambridge.arm.com>
+ <41b30c72-c1c5-14b2-b2e1-3507d552830d@arm.com>
+ <20190515094704.GC24357@fuggles.cambridge.arm.com>
+ <6e755b2daaf341128cb3b54f36172442@AcuMS.aculab.com>
+ <3d4fdbb5-7c7f-9331-187e-14c09dd1c18d@arm.com>
+ <9f72aecd99e74c1a939df6562ed9c18c@AcuMS.aculab.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <083f8222-971c-0d8e-4650-0d88b193e316@arm.com>
+Date:   Wed, 15 May 2019 13:39:47 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <9f72aecd99e74c1a939df6562ed9c18c@AcuMS.aculab.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello everyone,
+On 15/05/2019 12:13, David Laight wrote:
+> From: Robin Murphy
+>> Sent: 15 May 2019 11:58
+>> To: David Laight; 'Will Deacon'
+>> Cc: Zhangshaokun; Ard Biesheuvel; linux-arm-kernel@lists.infradead.org; netdev@vger.kernel.org;
+>> ilias.apalodimas@linaro.org; huanglingyan (A); steve.capper@arm.com
+>> Subject: Re: [PATCH] arm64: do_csum: implement accelerated scalar version
+>>
+>> On 15/05/2019 11:15, David Laight wrote:
+>>> ...
+>>>>> 	ptr = (u64 *)(buff - offset);
+>>>>> 	shift = offset * 8;
+>>>>>
+>>>>> 	/*
+>>>>> 	 * Head: zero out any excess leading bytes. Shifting back by the same
+>>>>> 	 * amount should be at least as fast as any other way of handling the
+>>>>> 	 * odd/even alignment, and means we can ignore it until the very end.
+>>>>> 	 */
+>>>>> 	data = *ptr++;
+>>>>> #ifdef __LITTLE_ENDIAN
+>>>>> 	data = (data >> shift) << shift;
+>>>>> #else
+>>>>> 	data = (data << shift) >> shift;
+>>>>> #endif
+>>>
+>>> I suspect that
+>>> #ifdef __LITTLE_ENDIAN
+>>> 	data &= ~0ull << shift;
+>>> #else
+>>> 	data &= ~0ull >> shift;
+>>> #endif
+>>> is likely to be better.
+>>
+>> Out of interest, better in which respects? For the A64 ISA at least,
+>> that would take 3 instructions plus an additional scratch register, e.g.:
+>>
+>> 	MOV	x2, #~0
+>> 	LSL	x2, x2, x1
+>> 	AND	x0, x0, x1
 
-I'm working on a setup where I have a 88e6390X DSA switch connected to
-a CPU (an armada 8040) with 2500BaseX and RXAUI interfaces (we only use
-one at a time).
+[That should have been "AND x0, x1, x2", obviously...]
 
-I'm facing a limitation with the current way to represent that link,
-where we use a fixed-link description in the CPU port, like this :
+>>
+>> (alternatively "AND x0, x0, x1 LSL x2" to save 4 bytes of code, but that
+>> will typically take as many cycles if not more than just pipelining the
+>> two 'simple' ALU instructions)
+>>
+>> Whereas the original is just two shift instruction in-place.
+>>
+>> 	LSR	x0, x0, x1
+>> 	LSL	x0, x0, x1
+>>
+>> If the operation were repeated, the constant generation could certainly
+>> be amortised over multiple subsequent ANDs for a net win, but that isn't
+>> the case here.
+> 
+> On a superscaler processor you reduce the register dependency
+> chain by one instruction.
+> The original code is pretty much a single dependency chain so
+> you are likely to be able to generate the mask 'for free'.
 
-...
-switch0: switch0@1 {
-	...
-	port@0 {
-		reg = <0>;
-		label = "cpu";
-		ethernet = <&eth0>;
-		phy-mode = "2500base-x";
-		fixed-link {
-			speed = <2500>;
-			full-duplex;
-		};
-	};
-};
-...
-
-In this scenario, the dsa core will try to create a PHY emulating the
-fixed-link on the DSA port side. This can't work with link speeds above
-1Gbps, since we don't have any emulation for these PHYs, which would be
-using C45 MMDs.
-
-We could add support to emulate these modes, but I think there were some
-discussions about using phylink to support these higher speed fixed-link
-modes, instead of using PHY emulation.
-
-However using phylink in master DSA ports seems to be a bit tricky,
-since master ports don't have a dedicated net_device, and instead
-reference the CPU-side netdevice (if I understood correctly).
-
-I'll be happy to help on that, but before prototyping anything, I wanted
-to have your thougts on this, and see if you had any plans.
+Gotcha, although 'free' still means additional I$ and register rename 
+footprint, vs. (typically) just 1 extra cycle to forward an ALU result. 
+It's an interesting consideration, but in our case there are almost 
+certainly far more little in-order cores out in the wild than big OoO 
+ones, and the double-shift will always be objectively better for those.
 
 Thanks,
-
-Maxime
+Robin.
