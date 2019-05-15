@@ -2,105 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21DFC1FB4B
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 21:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 932B51FB95
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 22:41:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726619AbfEOT4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 15:56:45 -0400
-Received: from mail-qk1-f173.google.com ([209.85.222.173]:38371 "EHLO
-        mail-qk1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726124AbfEOT4o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 15:56:44 -0400
-Received: by mail-qk1-f173.google.com with SMTP id a64so813152qkg.5
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 12:56:44 -0700 (PDT)
+        id S1726667AbfEOUlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 16:41:44 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:40842 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726170AbfEOUln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 16:41:43 -0400
+Received: by mail-qt1-f194.google.com with SMTP id k24so1339420qtq.7
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 13:41:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=appleguru.org; s=google;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=ReVUZJquNh3ZzRIL0hn5F4n1AxAwgMI8r6Dj77/5CUs=;
-        b=cWcmbIHigDOoqD+mu4ohQS0CWZgKkrHE+Ngqz9aQZV8yRRrwZBdyd5qt/4aW8Z3X47
-         MwWzrUaAaYorWCozq8DG0nwfZ/4b/rED3Og4nACqsPstFvfXRfyqyQ/Ns33TjWW10Mr/
-         eMsjgN1RCCw++1CxUPqGS0Tg0hSqDMJHNZ3LI=
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fj95LpG/T5lp9QUHcKy9Zc7wFXy6v5uz96uLnf8ta0c=;
+        b=G924ggcDRUT1SLpBQ6qWFkbMgisr9JdV7w77CT50YZIV95QZg66skm9B+4vnSWrz/5
+         SkElprZaobmaFJK9o7+OnJP85J8wz6KO9gjHXu+iLBV7PMCoOQeE74rffpIC745GC3pP
+         G7u66Gu29NJNDmqDHUvEoTV10X3WVQnex5uH5dxFNTh6LHkUTnZod9fV37PL9pIEgWdK
+         19rLNQcXG+D8uY+iDC5/4V18HBUnHLsB/S2zI71S5ayGhcAn8jQaH7jVZGN3AjndmpC9
+         0EReim2/S9dHbCFzZO2IL/gbo9nEdwFfIQqbaE2JvXBJODc7SdDaVeynvEj0OVx6CFul
+         SoiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=ReVUZJquNh3ZzRIL0hn5F4n1AxAwgMI8r6Dj77/5CUs=;
-        b=NL9XE55fskx04rQYKyrFzznh61ioWs9bQejkd36J4YB4ghBdB+4aJ39hMCbq3/D+pH
-         AWdExWHuT5EwD2z7sQfvt9/Kja214fNRhXcHLdD6hLCTQregz97qF5lcVmOGl+VVmn4U
-         AxHEoVZDHBCKCqJt9PzLyU7aksw4KAdhzGTmtWTqAFn+s6aAFIdPiebFX/HzuwljGer+
-         zfDrAGlYcWu+S93B1jsEcSueidQP4ykgh2MXkAITcX+bLSeTc2b0QYpgtCM2dwicaKDm
-         zR+XTsqwHNuBymStd2rKKai3HxBa3eYg1dFTzgoA+5X2BdU5vhPkDjYRQRATAzGeVzYu
-         p8Qg==
-X-Gm-Message-State: APjAAAVYeSLooeit9kMTPvsoNb8zNhzv7snYsYfUbcEn5D1r9UwgsVCQ
-        drukCYEkJcq4ytywqlgX8OEKfcarwEs=
-X-Google-Smtp-Source: APXvYqyV+QhmMpA+4G6mr4gRLBC6/1tDLoyQk8kQkEbpT+ofsjqAqpKUEbozQ/rV091ZgMV14NtYag==
-X-Received: by 2002:a37:aac6:: with SMTP id t189mr35981538qke.158.1557950203893;
-        Wed, 15 May 2019 12:56:43 -0700 (PDT)
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com. [209.85.160.174])
-        by smtp.gmail.com with ESMTPSA id g41sm1527165qte.79.2019.05.15.12.56.43
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 May 2019 12:56:43 -0700 (PDT)
-Received: by mail-qt1-f174.google.com with SMTP id k24so1172692qtq.7
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 12:56:43 -0700 (PDT)
-X-Received: by 2002:a0c:c781:: with SMTP id k1mr35926126qvj.133.1557950202891;
- Wed, 15 May 2019 12:56:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fj95LpG/T5lp9QUHcKy9Zc7wFXy6v5uz96uLnf8ta0c=;
+        b=RidvmcrpVZhVvkMNY7sHyWBKfBWhQTrPdqN/73afU7FnmE21u/URBOM8MzJmVnmlBp
+         wdKpgwmJ2VPYSUjy2rUiu0Hs6G3Ap53iNS17OZfosfHS/UTOSgooQWzHl5WfGtEotlEr
+         MOyvOtDOwU1Pv/lEpFp92ipO/wQ2xLo7/C3ffCHe1fHRFlonhHkVaIrW32icw8qwRSy3
+         DQzpEnNyUMdDY2rj8HrMZ3vlMxpg9Dfawm4K+JFIkWo4IyDSI4PuMrvqBAwBSLtzmmYk
+         z+88xIb6CE7tQp/QbZbVzU2LJoz5MmVLf059GRmVp9ARFA35ES0IzXKlRp9U35z4MZkL
+         b8Yg==
+X-Gm-Message-State: APjAAAWXRwtS6GhMT3mX6NW2ptLT7KluUpsXQC4ZvbTke1jS5/jlvWNy
+        WtyZP5aKcqw/y4LUxRwQ2HNNzw==
+X-Google-Smtp-Source: APXvYqx7N9OFhcR6LhdIiDnN44tRMVFofFSW6zrhbHSQvAam7CrbvA02T5aG1JXvjsVteIMYC20K0w==
+X-Received: by 2002:ac8:338a:: with SMTP id c10mr38701775qtb.41.1557952902891;
+        Wed, 15 May 2019 13:41:42 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t6sm1732172qkt.25.2019.05.15.13.41.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 15 May 2019 13:41:42 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        alexei.starovoitov@gmail.com, davejwatson@fb.com,
+        john.fastabend@gmail.com, vakul.garg@nxp.com, borisp@mellanox.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net 0/3] Documentation: tls: add offload documentation
+Date:   Wed, 15 May 2019 13:41:20 -0700
+Message-Id: <20190515204123.5955-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-From:   Adam Urban <adam.urban@appleguru.org>
-Date:   Wed, 15 May 2019 15:56:32 -0400
-X-Gmail-Original-Message-ID: <CABUuw65R3or9HeHsMT_isVx1f-7B6eCPPdr+bNR6f6wbKPnHOQ@mail.gmail.com>
-Message-ID: <CABUuw65R3or9HeHsMT_isVx1f-7B6eCPPdr+bNR6f6wbKPnHOQ@mail.gmail.com>
-Subject: Kernel UDP behavior with missing destinations
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have an application where we are use sendmsg() to send (lots of)
-UDP packets to multiple destinations over a single socket, repeatedly,
-and at a pretty constant rate using IPv4.
+Hi!
 
-In some cases, some of these destinations are no longer present on the
-network, but we continue sending data to them anyways. The missing
-devices are usually a temporary situation, but can last for
-days/weeks/months.
+This set adds documentation for TLS offload. It starts
+by making the networking documentation a little easier
+to navigate by hiding driver docs a little deeper.
+It then RSTifys the existing Kernel TLS documentation.
+Last but not least TLS offload documentation is added.
+This should help vendors navigate the TLS offload, and
+help ensure different implementations stay aligned from
+user perspective.
 
-We are seeing an issue where packets sent even to destinations that
-are present on the network are getting dropped while the kernel
-performs arp updates.
+---
+Dave, this just documents existing code, so I ventured
+to post during the merge window, not 100% sure it is
+appropriate at this stage..
 
-We see a -1 EAGAIN (Resource temporarily unavailable) return value
-from the sendmsg() call when this is happening:
+Jakub Kicinski (3):
+  Documentation: net: move device drivers docs to a submenu
+  Documentation: tls: RSTify the ktls documentation
+  Documentation: add TLS offload documentation
 
-sendmsg(72, {msg_name(16)={sa_family=AF_INET, sin_port=htons(1234),
-sin_addr=inet_addr("10.1.2.3")}, msg_iov(1)=[{"\4\1"..., 96}],
-msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = -1 EAGAIN (Resource
-temporarily unavailable)
+ .../networking/device_drivers/index.rst       |  30 ++
+ Documentation/networking/index.rst            |  16 +-
+ .../networking/tls-offload-layers.svg         |   1 +
+ .../networking/tls-offload-reorder-bad.svg    |   1 +
+ .../networking/tls-offload-reorder-good.svg   |   1 +
+ Documentation/networking/tls-offload.rst      | 438 ++++++++++++++++++
+ Documentation/networking/{tls.txt => tls.rst} |  44 +-
+ 7 files changed, 505 insertions(+), 26 deletions(-)
+ create mode 100644 Documentation/networking/device_drivers/index.rst
+ create mode 100644 Documentation/networking/tls-offload-layers.svg
+ create mode 100644 Documentation/networking/tls-offload-reorder-bad.svg
+ create mode 100644 Documentation/networking/tls-offload-reorder-good.svg
+ create mode 100644 Documentation/networking/tls-offload.rst
+ rename Documentation/networking/{tls.txt => tls.rst} (88%)
 
-Looking at packet captures, during this time you see the kernel arping
-for the devices that aren't on the network, timing out, arping again,
-timing out, and then finally arping a 3rd time before setting the
-INCOMPLETE state again (very briefly being in a FAILED state).
+-- 
+2.21.0
 
-"Good" packets don't start going out again until the 3rd timeout
-happens, and then they go out for about 1s until the 3s delay from ARP
-happens again.
-
-Interestingly, this isn't an all or nothing situation. With only a few
-(2-3) devices missing, we don't run into this "blocking" situation and
-data always goes out. But once 4 or more devices are missing, it
-happens. Setting static ARP entries for the missing supplies, even if
-they are bogus, resolves the issue, but of course results in packets
-with a bogus destination going out on the wire instead of getting
-dropped by the kernel.
-
-Can anyone explain why this is happening? I have tried tuning the
-unres_qlen sysctl without effect and will next try to set the
-MSG_DONTWAIT socket option to try and see if that helps. But I want to
-make sure I understand what is going on.
-
-Are there any parameters we can tune so that UDP packets sent to
-INCOMPLETE destinations are immediately dropped? What's the best way
-to prevent a socket from being unavailable while arp operations are
-happening (assuming arp is the cause)?
