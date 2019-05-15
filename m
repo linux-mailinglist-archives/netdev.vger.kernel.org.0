@@ -2,182 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FFB71F9A4
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 19:57:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7BD81F9B3
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 20:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbfEOR5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 13:57:07 -0400
-Received: from mail-eopbgr770095.outbound.protection.outlook.com ([40.107.77.95]:4762
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726335AbfEOR5G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 May 2019 13:57:06 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=t3wIvKhkv9eJ1rpa9bt/luEJpPsdSp6A7ZXbGg3SB8NZZNy/4RP0b65yewkj+rx5Bl1rzHWkwZFUj7TXPUlo33r8n1Kam06JRk4Hq2dRA5Yjd4rCstSPRE9XpLU7Ueo/NAaJfYp8ncDxED2N/yIzgkKNqhJFRuREU0Try17vOSw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
+        id S1727358AbfEOSGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 14:06:21 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:49330 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726335AbfEOSGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 14:06:21 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4FI3jDn025702;
+        Wed, 15 May 2019 11:06:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=emXuN0Oj004aHVjq9wiQYaRe1OK+HZJvOpI9HBGOH5M=;
+ b=HTnHmWrtZFan9I7V+J2YCXPwbG390YWViDllDrYlJCab8exmQFw8aq8iHx4QzLif33k4
+ zfzGkl/ws2krYhRqDmbPLTnyLwEosuepckORIplf4V9SemUn19SwhgdgUwIp2V+WwZr8
+ hCcyanybHQCBjaBm3STDG23q8tdD1tJRrFs= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sgjyxh5e0-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 15 May 2019 11:06:10 -0700
+Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
+ prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Wed, 15 May 2019 11:06:07 -0700
+Received: from NAM03-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Wed, 15 May 2019 11:06:07 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9ef4P6pzQOpNQXloGuF6Ndhg1TNnNKhrC0Rm352yidE=;
- b=Zpgmnygb3IijdKtnw7sp8vO291bHXfrbkEkm7lmSEEi7WtTc7YC5zBRV8FY2OQYy1ihoQVTjXF6ocqsOERNtQaEl+J8VewG5MBWeHM/OKn+JMCM6LDm9scQusmqhujWBHqJfQ6Us+AkvogHO/CKAIJprn4JjUAnRYCfy1kaZlGE=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9ef4P6pzQOpNQXloGuF6Ndhg1TNnNKhrC0Rm352yidE=;
- b=D0eAwtXJb4YsMw3l04cO1/PEMVSsc8AWKqY/nNopv+5Y4KRJZ5JhLIh9HKIihdlSkHX2xUjJDwylKCQHX9mNwektwm+uN3H+97SQsG6tdhHrDSRmJhO4xg+j0tUcV436ZTSjADklQui03YT5DjSzv4kNkDbaBImEqCXU/cyGr4w=
-Received: from BYAPR21MB1336.namprd21.prod.outlook.com (2603:10b6:a03:115::18)
- by BYAPR21MB1174.namprd21.prod.outlook.com (2603:10b6:a03:104::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1922.6; Wed, 15 May
- 2019 17:57:04 +0000
-Received: from BYAPR21MB1336.namprd21.prod.outlook.com
- ([fe80::d8a5:74b5:c527:f9b2]) by BYAPR21MB1336.namprd21.prod.outlook.com
- ([fe80::d8a5:74b5:c527:f9b2%3]) with mapi id 15.20.1922.002; Wed, 15 May 2019
- 17:57:04 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>
-Subject: RE: [RFC 1/2] netvsc: invoke xdp_generic from VF frame handler
-Thread-Topic: [RFC 1/2] netvsc: invoke xdp_generic from VF frame handler
-Thread-Index: AQHVCvSxPa1tDZX3c0upfd5eitLuyKZsddLggAACegCAAACZwA==
-Date:   Wed, 15 May 2019 17:57:03 +0000
-Message-ID: <BYAPR21MB133676EA954F27FED27D34FACA090@BYAPR21MB1336.namprd21.prod.outlook.com>
-References: <20190515080319.15514-1-sthemmin@microsoft.com>
-        <20190515080319.15514-2-sthemmin@microsoft.com>
-        <BYAPR21MB133640B374769CDF84685C03CA090@BYAPR21MB1336.namprd21.prod.outlook.com>
- <20190515105330.4b955e7d@hermes.lan>
-In-Reply-To: <20190515105330.4b955e7d@hermes.lan>
+ bh=emXuN0Oj004aHVjq9wiQYaRe1OK+HZJvOpI9HBGOH5M=;
+ b=cT8tNXL/Upu/6qGG/m9xBM96Exe5lAdMohNZRHNA9WFO2Hnd0ZLPO1U0f2Rhc5VPD9J3kKn4SixCSn3YxbbOvBn7ld7xj6Y9lHDThjM6NMMrA8GXb3c6jHld2GH0Bum+NT+oY/eEeLEQ1kaRZ6gQSht55UOVTBU4otP0I13jMmo=
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.255.19) by
+ MWHPR15MB1470.namprd15.prod.outlook.com (10.173.234.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1878.22; Wed, 15 May 2019 18:06:06 +0000
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::c1c6:4833:1762:cf29]) by MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::c1c6:4833:1762:cf29%7]) with mapi id 15.20.1878.024; Wed, 15 May 2019
+ 18:06:06 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Wei Wang <weiwan@google.com>
+CC:     Stefano Brivio <sbrivio@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Mikael Magnusson <mikael.kernel@lists.m7n.se>,
+        "Linux Kernel Network Developers" <netdev@vger.kernel.org>
+Subject: Re: IPv6 PMTU discovery fails with source-specific routing
+Thread-Topic: IPv6 PMTU discovery fails with source-specific routing
+Thread-Index: AQHVCcIoB8QGRT3FL0iSjpfHnIY8CqZp+KyAgAAr1oCAAIvfAIAAU+aAgAF57QA=
+Date:   Wed, 15 May 2019 18:06:06 +0000
+Message-ID: <20190515180604.sgz4omfwhcgfn6t3@kafai-mbp>
+References: <71e7331f-d528-430e-f880-e995ff53d362@lists.m7n.se>
+ <2667a075-7a51-d1e0-c4e7-cf0d011784b9@gmail.com>
+ <CAEA6p_AddQqy+v+LUT6gsqOC31RhMkVnZPLja8a4n9XQmK8TRA@mail.gmail.com>
+ <20190514163308.2f870f27@redhat.com>
+ <CAEA6p_Cs7ExpRtTHeTXFFwLEF27zs6_fFOMVN7cgWUuA3=M1rA@mail.gmail.com>
+In-Reply-To: <CAEA6p_Cs7ExpRtTHeTXFFwLEF27zs6_fFOMVN7cgWUuA3=M1rA@mail.gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-05-15T17:57:02.6839821Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=6d337ef3-c908-41ed-b36c-9e01ce247f4e;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=haiyangz@microsoft.com; 
-x-originating-ip: [96.61.92.94]
+x-clientproxiedby: MWHPR02CA0020.namprd02.prod.outlook.com
+ (2603:10b6:300:4b::30) To MWHPR15MB1790.namprd15.prod.outlook.com
+ (2603:10b6:301:4e::19)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::3:f9cc]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 902f7749-3943-41ca-38f4-08d6d95ebd14
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:BYAPR21MB1174;
-x-ms-traffictypediagnostic: BYAPR21MB1174:
-x-microsoft-antispam-prvs: <BYAPR21MB117486DC4137E9F1E38DCD0ECA090@BYAPR21MB1174.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-office365-filtering-correlation-id: 92b2fd22-08c1-4e3c-b9e6-08d6d9600008
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:MWHPR15MB1470;
+x-ms-traffictypediagnostic: MWHPR15MB1470:
+x-microsoft-antispam-prvs: <MWHPR15MB147062B7AD023A43FF5F097ED5090@MWHPR15MB1470.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 0038DE95A2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(136003)(366004)(376002)(346002)(189003)(199004)(13464003)(51914003)(52536014)(316002)(6246003)(53936002)(8676002)(54906003)(4326008)(6436002)(68736007)(10090500001)(33656002)(14444005)(52396003)(74316002)(55016002)(256004)(7696005)(22452003)(107886003)(486006)(76176011)(26005)(73956011)(86362001)(76116006)(25786009)(9686003)(186003)(71190400001)(8990500004)(66946007)(8936002)(6506007)(66556008)(66476007)(476003)(64756008)(229853002)(6916009)(86612001)(478600001)(66446008)(11346002)(53546011)(66066001)(10290500003)(2906002)(102836004)(81156014)(81166006)(7736002)(305945005)(71200400001)(14454004)(6116002)(446003)(99286004)(5660300002)(3846002)(41533002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR21MB1174;H:BYAPR21MB1336.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(346002)(39860400002)(396003)(366004)(376002)(136003)(199004)(189003)(64756008)(66556008)(66446008)(66476007)(73956011)(66946007)(316002)(256004)(5660300002)(6486002)(229853002)(6512007)(9686003)(6436002)(7736002)(478600001)(305945005)(52116002)(1076003)(6506007)(68736007)(53546011)(386003)(102836004)(14454004)(81156014)(6916009)(8676002)(8936002)(33716001)(99286004)(54906003)(81166006)(6116002)(71200400001)(11346002)(476003)(25786009)(4326008)(53936002)(46003)(76176011)(6246003)(446003)(71190400001)(2906002)(86362001)(486006)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1470;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: DoHtrVUPd1AgM3Zb4P+pkvY8zGKfNK8qhhimvZ4yhMmmBd/Xwz5srCsveQrdTS8iU/vcoJHEYIvHP5JR5+6lZWAdZukXRjWSfuXj86omvZpEJVlK9QPIzs71Rns0zL89+Qvz8M+ISqoUT+TecbHEeCAsWOJKJP4U+c/TP9QVkqvmfMNXQERuQ46bbAzDmdbF8TgDcv7EM1kjIBYakFDbIY8Oibki3oBDciJ+8AQ+Ky5ujVJoeUwTr5zCvVnWBsGnbKTPBMizUSyGnA4qHmRuql/S1w4vF5J5jGf7N9wvTgIoGXYZVi/mV0V8lGLEF8yRWGtUTMNBpvjiDcWfDVvFn40PGDqxIa6j+rxdY/NPQPKVWonPmBwmFv//gSqF869uPWyIAuaM9JlHiM12xaGc7EvWq7AL9ModaWNeX6FeQf8=
+x-microsoft-antispam-message-info: pdEjAy1ZlacAj0OdEZzTx5mcsYEvxoUGsPuIPSF/nFPU96XFlTjrJdhJL/VbGqjsg1+HUgTKKisTe4JLHOYeY/1mKxTeTFsKzfT95DTPnWikDiNcsQUFfzTJ4fKs+5uiEOGeg6Lr4ov2EzR9zqyvyLvCtnG0lG30r2+enT84SKs7OLRowwaZ1yQ0uf/O15bs5oUdMQRd5XDyBiiOu0ZlUeRlV6HclbLQsLhuktppqlZnGI20FzoHuytd5w/iOjy4DfAuPJZXOsNRaQ6zob8gu/OA/VKM1uMz7d7/Ac1ORQSHSoEuet5M8seZ/QBEtq3aR9GYI5yoLSxb0SsR9S4DkxYMnpnbGtdyE69fMFrjo0QOOuyl6DfCqI0vk9IuRsFbz/+RsEXPP/c5jAU76NH8BcdDnSZ+Py/zW2CVtswjvvM=
 Content-Type: text/plain; charset="us-ascii"
+Content-ID: <23D9421EBDEC3D448B58411B4EF7EDC9@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 902f7749-3943-41ca-38f4-08d6d95ebd14
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 May 2019 17:57:04.0194
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92b2fd22-08c1-4e3c-b9e6-08d6d9600008
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 May 2019 18:06:06.4847
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: haiyangz@microsoft.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR21MB1174
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1470
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-15_12:,,
+ signatures=0
+X-Proofpoint-Spam-Reason: safe
+X-FB-Internal: Safe
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, May 14, 2019 at 12:33:25PM -0700, Wei Wang wrote:
+> I think the bug is because when creating exceptions, src_addr is not
+> always set even though fib6_info is in the subtree. (because of
+> rt6_is_gw_or_nonexthop() check)
+> However, when looking up for exceptions, we always set src_addr to the
+> passed in flow->src_addr if fib6_info is in the subtree. That causes
+> the exception lookup to fail.
+> I will make it consistent.
+> However, I don't quite understand the following logic in ip6_rt_cache_all=
+oc():
+>         if (!rt6_is_gw_or_nonexthop(ort)) {
+>                 if (ort->fib6_dst.plen !=3D 128 &&
+>                     ipv6_addr_equal(&ort->fib6_dst.addr, daddr))
+>                         rt->rt6i_flags |=3D RTF_ANYCAST;
+> #ifdef CONFIG_IPV6_SUBTREES
+>                 if (rt->rt6i_src.plen && saddr) {
+>                         rt->rt6i_src.addr =3D *saddr;
+>                         rt->rt6i_src.plen =3D 128;
+>                 }
+> #endif
+>         }
+> Why do we need to check that the route is not gateway and has next hop
+> for updating rt6i_src? I checked the git history and it seems this
+> part was there from very early on (with some refactor in between)...
+I also failed to understand the RTF_GATEWAY check.  The earliest related
+commit seems to be c440f1609b65 ("ipv6: Do not depend on rt->n in ip6_pol_r=
+oute().")
 
+How was it working when the exception route was in the tree?
 
-> -----Original Message-----
-> From: Stephen Hemminger <stephen@networkplumber.org>
-> Sent: Wednesday, May 15, 2019 1:54 PM
-> To: Haiyang Zhang <haiyangz@microsoft.com>
-> Cc: KY Srinivasan <kys@microsoft.com>; davem@davemloft.net;
-> netdev@vger.kernel.org; Stephen Hemminger <sthemmin@microsoft.com>
-> Subject: Re: [RFC 1/2] netvsc: invoke xdp_generic from VF frame handler
 >=20
-> On Wed, 15 May 2019 17:50:25 +0000
-> Haiyang Zhang <haiyangz@microsoft.com> wrote:
 >=20
-> > > -----Original Message-----
-> > > From: Stephen Hemminger <stephen@networkplumber.org>
-> > > Sent: Wednesday, May 15, 2019 4:03 AM
-> > > To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
-> > > <haiyangz@microsoft.com>; davem@davemloft.net
-> > > Cc: netdev@vger.kernel.org; Stephen Hemminger
-> <sthemmin@microsoft.com>
-> > > Subject: [RFC 1/2] netvsc: invoke xdp_generic from VF frame handler
-> > >
-> > > XDP generic does not work correctly with the Hyper-V/Azure netvsc dev=
-ice
-> > > because of packet processing order. Only packets on the synthetic pat=
-h get
-> > > seen by the XDP program. The VF device packets are not seen.
-> > >
-> > > By the time the packets that arrive on the VF are handled by netvsc a=
-fter
-> the
-> > > first pass of XDP generic (on the VF) has already been done.
-> > >
-> > > A fix for the netvsc device is to do this in the VF packet handler.
-> > > by directly calling do_xdp_generic() if XDP program is present on the
-> parent
-> > > device.
-> > >
-> > > A riskier but maybe better alternative would be to do this netdev cor=
-e code
-> > > after the receive handler is invoked (if RX_HANDLER_ANOTHER is return=
-ed).
-> > >
-> > > Fixes: 0c195567a8f6 ("netvsc: transparent VF management")
-> > > Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
-> > > ---
-> > >  drivers/net/hyperv/netvsc_drv.c | 6 ++++++
-> > >  1 file changed, 6 insertions(+)
-> > >
-> > > diff --git a/drivers/net/hyperv/netvsc_drv.c
-> b/drivers/net/hyperv/netvsc_drv.c
-> > > index 06393b215102..bb0fc1869bde 100644
-> > > --- a/drivers/net/hyperv/netvsc_drv.c
-> > > +++ b/drivers/net/hyperv/netvsc_drv.c
-> > > @@ -1999,9 +1999,15 @@ static rx_handler_result_t
-> > > netvsc_vf_handle_frame(struct sk_buff **pskb)
-> > >  	struct net_device_context *ndev_ctx =3D netdev_priv(ndev);
-> > >  	struct netvsc_vf_pcpu_stats *pcpu_stats
-> > >  		 =3D this_cpu_ptr(ndev_ctx->vf_stats);
-> > > +	struct bpf_prog *xdp_prog;
-> > >
-> > >  	skb->dev =3D ndev;
-> > >
-> > > +	xdp_prog =3D rcu_dereference(ndev->xdp_prog);
-> > > +	if (xdp_prog &&
-> > > +	    do_xdp_generic(xdp_prog, skb) !=3D XDP_PASS)
-> > > +		return RX_HANDLER_CONSUMED;
-> >
-> > Looks fine overall.
-> >
-> > The function do_xdp_generic() already checks NULL on xdp_prog,
-> > so we don't need to check it in our code.
-> >
-> > int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb)
-> > {
-> >         if (xdp_prog) {
-> >
+> From: Stefano Brivio <sbrivio@redhat.com>
+> Date: Tue, May 14, 2019 at 7:33 AM
+> To: Mikael Magnusson
+> Cc: Wei Wang, David Ahern, Linux Kernel Network Developers, Martin KaFai =
+Lau
 >=20
-> The null check in the netvsc code was just an minor optimization
-> to avoid unnecessary function call in fast path.
-
-Thanks for the explanation.
-
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
+> > On Mon, 13 May 2019 23:12:31 -0700
+> > Wei Wang <weiwan@google.com> wrote:
+> >
+> > > Thanks Mikael for reporting this issue. And thanks David for the bise=
+ction.
+> > > Let me spend some time to reproduce it and see what is going on.
+> >
+> > Mikael, by the way, once this is sorted out, it would be nice if you
+> > could add your test as a case in tools/testing/selftests/net/pmtu.sh --
+> > you could probably reuse all the setup parts that are already
+> > implemented there.
+> >
+> > --
+> > Stefano
