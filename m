@@ -2,54 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3321F81C
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 18:04:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 595711F82E
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 18:09:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726447AbfEOQEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 12:04:02 -0400
-Received: from canardo.mork.no ([148.122.252.1]:39073 "EHLO canardo.mork.no"
+        id S1726964AbfEOQJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 12:09:01 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:41310 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726168AbfEOQEB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 May 2019 12:04:01 -0400
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x4FG3xGQ029126
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 15 May 2019 18:03:59 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1557936239; bh=CEhGt63r3bUpl88fvbMEnMJJ7GaDnh3h0szbCq2k8t8=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=Nn+rg1Apk4n42d117cW3USgr0GWAeazs7Ro0q1EVS+R/rm3HZIXrIdbJO5+8e22cP
-         +Py0oEFPPw+2ZpY2ShzIVwa6HDu1fSmioe3iQXZF3y/XagmMvtNjC829c9MFN5WjK5
-         gKsU/OAlX/C1xXdAwYS4f5o46Nvu1KM+V9/DkiJo=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.89)
-        (envelope-from <bjorn@mork.no>)
-        id 1hQwNr-0008WB-CK; Wed, 15 May 2019 18:03:59 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Daniele Palmas <dnlplm@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: add Telit 0x1260 and 0x1261 compositions
-Organization: m
-References: <1557934183-8469-1-git-send-email-dnlplm@gmail.com>
-Date:   Wed, 15 May 2019 18:03:59 +0200
-In-Reply-To: <1557934183-8469-1-git-send-email-dnlplm@gmail.com> (Daniele
-        Palmas's message of "Wed, 15 May 2019 17:29:43 +0200")
-Message-ID: <87ftpfd7rk.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.100.3 at canardo
-X-Virus-Status: Clean
+        id S1726511AbfEOQJB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 May 2019 12:09:01 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4ECA71A00E6;
+        Wed, 15 May 2019 18:08:59 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 42C6A1A002F;
+        Wed, 15 May 2019 18:08:59 +0200 (CEST)
+Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 14395205F4;
+        Wed, 15 May 2019 18:08:59 +0200 (CEST)
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH net 1/3] enetc: Fix NULL dma address unmap for Tx BD extensions
+Date:   Wed, 15 May 2019 19:08:56 +0300
+Message-Id: <1557936538-23691-1-git-send-email-claudiu.manoil@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniele Palmas <dnlplm@gmail.com> writes:
+For the unlikely case of TxBD extensions (i.e. ptp)
+the driver tries to unmap the tx_swbd corresponding
+to the extension, which is bogus as it has no buffer
+attached.
 
-> Added support for Telit LE910Cx 0x1260 and 0x1261 compositions.
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+---
+ drivers/net/ethernet/freescale/enetc/enetc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Thanks.
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 5bb9eb35d76d..491475d87736 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -313,7 +313,9 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+ 	while (bds_to_clean && tx_frm_cnt < ENETC_DEFAULT_TX_WORK) {
+ 		bool is_eof = !!tx_swbd->skb;
+ 
+-		enetc_unmap_tx_buff(tx_ring, tx_swbd);
++		if (likely(tx_swbd->dma))
++			enetc_unmap_tx_buff(tx_ring, tx_swbd);
++
+ 		if (is_eof) {
+ 			napi_consume_skb(tx_swbd->skb, napi_budget);
+ 			tx_swbd->skb = NULL;
+-- 
+2.17.1
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
