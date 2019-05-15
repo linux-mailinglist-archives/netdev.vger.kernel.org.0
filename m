@@ -2,109 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C16E51E6FA
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 04:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAEE31E6FD
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 04:57:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726449AbfEOC4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 May 2019 22:56:39 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:35989 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbfEOC4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 May 2019 22:56:38 -0400
-Received: by mail-pg1-f195.google.com with SMTP id a3so571222pgb.3
-        for <netdev@vger.kernel.org>; Tue, 14 May 2019 19:56:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=9kqRrsb++I0tVWKRUhKyYkTTZ79beQ5XiFr2tm4fXGg=;
-        b=U/GuCKuLv0GYA0b2ZYYNgEW1VQTtESo1ytzGpUW6kAGFzfRs7tUMuw90tLk4Zy7Q8Z
-         IKyx4Rg/OULhyxTKzIdYiQggiIthiElOtVoJ23r5srnHOh1j6r/xBkIGj0pD5RTwpNF5
-         7TdbqnVk0+EX8pliMdOY7LkFdBrEGskbtb0qYhBHcutC9fNnjzAw2DcX/y24M5ALj5rP
-         givk9LY3gLiwfYSioy9DkJma+BLcmK1NNOAXlP3lDT8U3OKAufpEHj29D6e+or+qubA0
-         WpQHdmo16hY4jev+OkLdezQkqDpWYiOJU4nfpik9cmgn2ml4QTVtpEdcnonhoaybUD5h
-         +T9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9kqRrsb++I0tVWKRUhKyYkTTZ79beQ5XiFr2tm4fXGg=;
-        b=XjXbOTlQKiT64Wd90ZsmDpmTmdzGk4l3b7ldfp/T4AfhP6+UgbogDyi6NZzc76Y05+
-         +QqJ9O1uPawKAcQgDnzKesofPzJZ50MmeLD9B+DyUMsoAUiiv10PjgXoGk5L4RZRB6gF
-         7F71IH8+CuQRWZLSAkuUGGFAOyX68Lc7te+rGBGFET3IAu9KyZOZe7DCU/yojFt72K6P
-         kgwGQp8h/Nfe9625xT+9Qk7KA8Q17uKquuku1ZfQtybninnEk3c2GsAFz0yIqQAh5vRc
-         idsRdwAe8onIMFpFQAIOojkwUeeampbt8FQ/AjEKobIym54BTC55ujzpdmYvFShGzRtn
-         gDsQ==
-X-Gm-Message-State: APjAAAUOYBi/AxmKtcgmwLwIPmHMrcdol2PeLVRIIIo3Lt7e37OEj7f4
-        iGK1sfciC1qEFDX5TZ0XYb2E0Q==
-X-Google-Smtp-Source: APXvYqzdPymztt59JMUNleYEqUbzDYVsx7mCTKC9cg/A90es9XlqLNTr11m2a8yQ1JhssNNINOnrXg==
-X-Received: by 2002:a65:554d:: with SMTP id t13mr41127593pgr.171.1557888998050;
-        Tue, 14 May 2019 19:56:38 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id s18sm550594pgg.64.2019.05.14.19.56.37
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 14 May 2019 19:56:37 -0700 (PDT)
-Date:   Tue, 14 May 2019 19:56:36 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf 0/4] bpf: remove __rcu annotations from bpf_prog_array
-Message-ID: <20190515025636.GE10244@mini-arch>
-References: <20190508181223.GH1247@mini-arch>
- <20190513185724.GB24057@mini-arch>
- <CAADnVQLX3EcbW=iVxjsjO38M3Lqw5TfCcZtmbnt1DJwDvp64dA@mail.gmail.com>
- <20190514173002.GB10244@mini-arch>
- <20190514174523.myybhjzfhmxdycgf@ast-mbp>
- <20190514175332.GC10244@mini-arch>
- <CAADnVQLAJ77XS8vfdnszHsw_KcmzrMDvPH0UxVXORN-wjc=rWQ@mail.gmail.com>
- <20190515021144.GD10244@mini-arch>
- <CAADnVQ+LPLfdfkv2otb6HRPeQiiDyr4ZO04B--vrXT_Tu=-9xQ@mail.gmail.com>
- <5ed25b81-fdd0-d707-f012-736fe6269a72@gmail.com>
+        id S1726460AbfEOC5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 May 2019 22:57:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54030 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726218AbfEOC5d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 May 2019 22:57:33 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 319FF307D93E;
+        Wed, 15 May 2019 02:57:33 +0000 (UTC)
+Received: from [10.72.12.103] (ovpn-12-103.pek2.redhat.com [10.72.12.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D27A5608A6;
+        Wed, 15 May 2019 02:57:28 +0000 (UTC)
+Subject: Re: [PATCH net] vhost_net: fix possible infinite loop
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ppandit@redhat.com
+References: <1556177599-56248-1-git-send-email-jasowang@redhat.com>
+ <20190425131021-mutt-send-email-mst@kernel.org>
+ <f4b4ff70-d64f-c3fb-fe2e-97ef6c55bda0@redhat.com>
+ <999ef863-2994-e0c0-fbb1-a6e92de3fd24@redhat.com>
+ <20190512125959-mutt-send-email-mst@kernel.org>
+ <a0d99d7a-2323-a6a8-262d-9fdc5d926384@redhat.com>
+ <20190514173016-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <4b51161e-37b1-cf76-d418-1574b8f6e73b@redhat.com>
+Date:   Wed, 15 May 2019 10:57:27 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5ed25b81-fdd0-d707-f012-736fe6269a72@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190514173016-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Wed, 15 May 2019 02:57:33 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/14, Eric Dumazet wrote:
-> 
-> 
-> On 5/14/19 7:27 PM, Alexei Starovoitov wrote:
-> 
-> > what about activate_effective_progs() ?
-> > I wouldn't want to lose the annotation there.
-> > but then array_free will lose it?
-It would not have have it because the input is the result of
-bpf_prog_array_alloc() which returns kmalloc'd pointer (and
-is not bound to an rcu section).
 
-> > in some cases it's called without mutex in a destruction path.
-Hm, can you point me to this place? I think I checked every path,
-maybe I missed something subtle. I'll double check.
+On 2019/5/15 上午5:39, Michael S. Tsirkin wrote:
+> Let me try to explain again.
+> At the moment how does handle_tx_copy exit?
+> It's for(;;) so you know you need to look for a break.
+>
+> When reading code you also notice there's a goto done
+> which could exit the loop. if you scan forward
+> you notice that it does not.
+> This is confusing, but oh well. Worth fixing maybe ...
+>
+> Now you add the next round check.
+> And there is also special code that
+> detects whether you exited with break
+> and whenever you did it acts specially.
+>
+> Yea it works. But I think it's clearer if we
+> just make things obvious.
+> If we want something to happen on error then
+>
+> 	if (error)
+> 		handle
+> 		break
+>
+> is imho clearer than
+>
+> 	flag = true
+> 	if (error)
+> 		break
+> 	flag = false
+>
+>
+> if (flag)
+> 	handle
+>
+> in partucular - less branches on data path.
+>
+> you point out code duplication correctly,
+> but we can solve it just by adding functions.
+> like i suggested.
 
-> > also how do you propose to solve different 'mtx' in
-> > lockdep_is_held(&mtx)); ?
-> > passing it through the call chain is imo not clean.
-Every caller would know which mutex protects it. As Eric said below,
-I'm adding a bunch of xxx_dereference macros that hardcode mutex, like
-the existing rtnl_dereference.
 
-> Usage of RCU api in BPF is indeed a bit strange and lacks lockdep support.
-> 
-> Looking at bpf_prog_array_copy_core() for example, it looks like the __rcu
-> in the first argument is not needed, since the caller must have done the proper dereference already,
-> and the caller knows which mutex is protecting its rcu_dereference_protected() for the writer sides.
-> 
-> bpf_prog_array_copy_core() should manipulate standard pointers, with no __rcu stuff.
-> 
-> The analogy in net/ are probably the rtnl_dereference() users.
+Ok, I think I get you.
+
+Will try in next version.
+
+Thanks
+
