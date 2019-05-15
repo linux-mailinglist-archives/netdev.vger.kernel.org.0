@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E6F1EDBD
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 13:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9CB21F109
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 13:54:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729899AbfEOLNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 07:13:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48566 "EHLO mail.kernel.org"
+        id S1730640AbfEOLTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 07:19:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57598 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729893AbfEOLM6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 May 2019 07:12:58 -0400
+        id S1730109AbfEOLTv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 May 2019 07:19:51 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7FDAE20843;
-        Wed, 15 May 2019 11:12:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3C0A52166E;
+        Wed, 15 May 2019 11:19:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557918778;
-        bh=u50O49oQS7s8YGZIlFL2PkOJScnC2MTMSTTj0YGQ9UM=;
+        s=default; t=1557919190;
+        bh=svzfr6ww1SG7IFsfc8tDxKlG+G/RnbdZqTMRIy6WTvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NMAuUXfjX6qrro7oFBPhxokwYNTAMLDXk7Fmp7IuJJBKX1zK9cbPXBJG+v6KZoYQB
-         D2SoE/TE9DAMn9LO1js1eeBwyRxlIAkJeTwHaz1ENUfOtGHBVJef94GFSjzW2dUig9
-         oQy65fu5IQV0VlYER65P8bmByycxUKSRwzvevqfc=
+        b=Wq7yXbkQ4Vd6Pfc+Mqr7IU/UHMtmGLwkMjgmc3NzIvu7d0I9othUeQRSE4WMy8WhZ
+         iTp9+FB+doRec/ke7hpCEilHYPjI1PeVvKS50jzsM+f5aMQa6ytjefF3jzCF6xiMcH
+         nUD8dso1/uAUjQNJraXyX3HkpOF+5LhSZhHU+iJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -32,12 +32,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Jarod Wilson <jarod@redhat.com>,
         Jay Vosburgh <jay.vosburgh@canonical.com>
-Subject: [PATCH 4.4 263/266] bonding: fix arp_validate toggling in active-backup mode
-Date:   Wed, 15 May 2019 12:56:10 +0200
-Message-Id: <20190515090731.914332614@linuxfoundation.org>
+Subject: [PATCH 4.14 099/115] bonding: fix arp_validate toggling in active-backup mode
+Date:   Wed, 15 May 2019 12:56:19 +0200
+Message-Id: <20190515090706.340590100@linuxfoundation.org>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190515090722.696531131@linuxfoundation.org>
-References: <20190515090722.696531131@linuxfoundation.org>
+In-Reply-To: <20190515090659.123121100@linuxfoundation.org>
+References: <20190515090659.123121100@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -101,15 +101,17 @@ Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_options.c |    7 -------
+ drivers/net/bonding/bond_options.c | 7 -------
  1 file changed, 7 deletions(-)
 
+diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+index 4d5d01cb8141..80867bd8f44c 100644
 --- a/drivers/net/bonding/bond_options.c
 +++ b/drivers/net/bonding/bond_options.c
-@@ -1066,13 +1066,6 @@ static int bond_option_arp_validate_set(
+@@ -1098,13 +1098,6 @@ static int bond_option_arp_validate_set(struct bonding *bond,
  {
- 	netdev_info(bond->dev, "Setting arp_validate to %s (%llu)\n",
- 		    newval->string, newval->value);
+ 	netdev_dbg(bond->dev, "Setting arp_validate to %s (%llu)\n",
+ 		   newval->string, newval->value);
 -
 -	if (bond->dev->flags & IFF_UP) {
 -		if (!newval->value)
@@ -120,5 +122,8 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	bond->params.arp_validate = newval->value;
  
  	return 0;
+-- 
+2.20.1
+
 
 
