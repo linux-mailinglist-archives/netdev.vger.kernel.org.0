@@ -2,184 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D6B71F25C
-	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 14:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F6DE1F44E
+	for <lists+netdev@lfdr.de>; Wed, 15 May 2019 14:26:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729840AbfEOMDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 08:03:10 -0400
-Received: from forwardcorp1p.mail.yandex.net ([77.88.29.217]:37698 "EHLO
-        forwardcorp1p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730124AbfEOMDI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 08:03:08 -0400
-X-Greylist: delayed 442 seconds by postgrey-1.27 at vger.kernel.org; Wed, 15 May 2019 08:03:06 EDT
-Received: from mxbackcorp1g.mail.yandex.net (mxbackcorp1g.mail.yandex.net [IPv6:2a02:6b8:0:1402::301])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id D738C2E0ABC;
-        Wed, 15 May 2019 14:55:42 +0300 (MSK)
-Received: from smtpcorp1o.mail.yandex.net (smtpcorp1o.mail.yandex.net [2a02:6b8:0:1a2d::30])
-        by mxbackcorp1g.mail.yandex.net (nwsmtp/Yandex) with ESMTP id 7Uaf6EnKr8-tgsS7u6u;
-        Wed, 15 May 2019 14:55:42 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1557921342; bh=CfT2mw9Voryfx7z4pzvbGxS8fdbuS8Bjj6c0PWDezKs=;
-        h=Message-ID:Date:To:From:Subject;
-        b=J2Ynm2oDP1Lw2/V1Y9ufeN0W22FUMXnolWMJrZE6QZQ3N9yRRA+POCOF3gWyPv2d7
-         JlSLIwIdfa3ZsjusBfq51I9nYvXGu0NIorP9fsPGzs+NUcDwaazaG0SrYIc13KDJE9
-         AgFvJ6E+avYNVjR2T1fMO4kxaFzu/iFhiWAqq5MY=
-Authentication-Results: mxbackcorp1g.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from dynamic-red.dhcp.yndx.net (dynamic-red.dhcp.yndx.net [2a02:6b8:0:40c:ed19:3833:7ce1:2324])
-        by smtpcorp1o.mail.yandex.net (nwsmtp/Yandex) with ESMTPSA id GGfHxKOueD-tglO5KqC;
-        Wed, 15 May 2019 14:55:42 +0300
+        id S1726736AbfEOM0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 08:26:19 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:42700 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726652AbfEOM0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 08:26:19 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 1B6DC6072E; Wed, 15 May 2019 12:26:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1557923178;
+        bh=9MqGVcO6uYUQ2aNqwWZf4c/ySF737WfbAu840JeYXQE=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=h+LrIjbWVYhw3DeNZQ3ebZLBfDoaCcSwaAkgVBr+WjcDi6/pdKVXYH/hDqwJr8wh6
+         6/34sreNw60+j4YjrQzsE9t1rEej5Gg+Z/EeTPep8kEPD7hZVKUSFgGRo5flyhD6ZL
+         qTzYz+ADMjkDjQVP/g+Nix1HohRAsnmdLFtBzADE=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from [10.204.79.15] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-Subject: [PATCH RFC] proc/meminfo: add NetBuffers counter for socket buffers
-From:   Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        (No client certificate requested)
+        (Authenticated sender: mojha@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 37937607F4;
+        Wed, 15 May 2019 12:26:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1557923177;
+        bh=9MqGVcO6uYUQ2aNqwWZf4c/ySF737WfbAu840JeYXQE=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=SfllZBh9wAj1akKJtLKrDfIvh8upprGZG7nEkfm+T67WrefhLWfdeXAnwBwndDmHB
+         T4HKEhkJHBfAyjJXBd7c26dXsLtxVf2j+KyqyyqYm9Ip4M2bV0hsPU/G0079fZl3ml
+         GuX/HBVcME0N78YkxKntfJgJaUt3+cjMN3KAcLFI=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 37937607F4
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=mojha@codeaurora.org
+Subject: Re: [PATCH] libertas/libertas_tf: fix spelling mistake "Donwloading"
+ -> "Downloading"
+To:     Colin King <colin.king@canonical.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Date:   Wed, 15 May 2019 14:55:41 +0300
-Message-ID: <155792134187.1641.3858215257559626632.stgit@buzz>
-User-Agent: StGit/0.17.1-dirty
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190514211406.6353-1-colin.king@canonical.com>
+From:   Mukesh Ojha <mojha@codeaurora.org>
+Message-ID: <2661269b-7404-5534-05e1-b3b963dc2036@codeaurora.org>
+Date:   Wed, 15 May 2019 17:56:11 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20190514211406.6353-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Socket buffers always were dark-matter that lives by its own rules.
-This patch adds line NetBuffers that exposes most common kinds of them.
 
-TCP and UDP are most important species.
-SCTP is added as example of modular protocol.
-UNIX have no memory counter for now, should be easy to add.
+On 5/15/2019 2:44 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+>
+> There is are two spelling mistakes in lbtf_deb_usb2 messages, fix these.
+>
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
 
-Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
----
- fs/proc/meminfo.c  |    5 ++++-
- include/linux/mm.h |    6 ++++++
- mm/page_alloc.c    |    3 ++-
- net/core/sock.c    |   20 ++++++++++++++++++++
- net/sctp/socket.c  |    2 +-
- 5 files changed, 33 insertions(+), 3 deletions(-)
+Cheers,
+-Mukesh
 
-diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-index 7bc14716fc5d..0ee2300a916d 100644
---- a/fs/proc/meminfo.c
-+++ b/fs/proc/meminfo.c
-@@ -41,6 +41,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
- 	unsigned long sreclaimable, sunreclaim, misc_reclaimable;
- 	unsigned long kernel_stack_kb, page_tables, percpu_pages;
- 	unsigned long anon_pages, file_pages, swap_cached;
-+	unsigned long net_buffers;
- 	long kernel_misc;
- 	int lru;
- 
-@@ -66,12 +67,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
- 	kernel_stack_kb = global_zone_page_state(NR_KERNEL_STACK_KB);
- 	page_tables = global_zone_page_state(NR_PAGETABLE);
- 	percpu_pages = pcpu_nr_pages();
-+	net_buffers = total_netbuffer_pages();
- 
- 	/* all other kinds of kernel memory allocations */
- 	kernel_misc = i.totalram - i.freeram - anon_pages - file_pages
- 		      - sreclaimable - sunreclaim - misc_reclaimable
- 		      - (kernel_stack_kb >> (PAGE_SHIFT - 10))
--		      - page_tables - percpu_pages;
-+		      - page_tables - percpu_pages - net_buffers;
- 	if (kernel_misc < 0)
- 		kernel_misc = 0;
- 
-@@ -137,6 +139,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
- 	show_val_kb(m, "VmallocUsed:    ", 0ul);
- 	show_val_kb(m, "VmallocChunk:   ", 0ul);
- 	show_val_kb(m, "Percpu:         ", percpu_pages);
-+	show_val_kb(m, "NetBuffers:     ", net_buffers);
- 	show_val_kb(m, "KernelMisc:     ", kernel_misc);
- 
- #ifdef CONFIG_MEMORY_FAILURE
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 0e8834ac32b7..d0a58355bfb7 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -2254,6 +2254,12 @@ extern void si_meminfo_node(struct sysinfo *val, int nid);
- extern unsigned long arch_reserved_kernel_pages(void);
- #endif
- 
-+#ifdef CONFIG_NET
-+extern unsigned long total_netbuffer_pages(void);
-+#else
-+static inline unsigned long total_netbuffer_pages(void) { return 0; }
-+#endif
-+
- extern __printf(3, 4)
- void warn_alloc(gfp_t gfp_mask, nodemask_t *nodemask, const char *fmt, ...);
- 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 3b13d3914176..fcdd7c6e72b9 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5166,7 +5166,7 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- 		" active_file:%lu inactive_file:%lu isolated_file:%lu\n"
- 		" unevictable:%lu dirty:%lu writeback:%lu unstable:%lu\n"
- 		" slab_reclaimable:%lu slab_unreclaimable:%lu\n"
--		" mapped:%lu shmem:%lu pagetables:%lu bounce:%lu\n"
-+		" mapped:%lu shmem:%lu pagetables:%lu bounce:%lu net_buffers:%lu\n"
- 		" free:%lu free_pcp:%lu free_cma:%lu\n",
- 		global_node_page_state(NR_ACTIVE_ANON),
- 		global_node_page_state(NR_INACTIVE_ANON),
-@@ -5184,6 +5184,7 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- 		global_node_page_state(NR_SHMEM),
- 		global_zone_page_state(NR_PAGETABLE),
- 		global_zone_page_state(NR_BOUNCE),
-+		total_netbuffer_pages(),
- 		global_zone_page_state(NR_FREE_PAGES),
- 		free_pcp,
- 		global_zone_page_state(NR_FREE_CMA_PAGES));
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 75b1c950b49f..dfca4e024b74 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -142,6 +142,7 @@
- #include <trace/events/sock.h>
- 
- #include <net/tcp.h>
-+#include <net/udp.h>
- #include <net/busy_poll.h>
- 
- static DEFINE_MUTEX(proto_list_mutex);
-@@ -3573,3 +3574,22 @@ bool sk_busy_loop_end(void *p, unsigned long start_time)
- }
- EXPORT_SYMBOL(sk_busy_loop_end);
- #endif /* CONFIG_NET_RX_BUSY_POLL */
-+
-+#if IS_ENABLED(CONFIG_IP_SCTP)
-+atomic_long_t sctp_memory_allocated;
-+EXPORT_SYMBOL_GPL(sctp_memory_allocated);
-+#endif
-+
-+unsigned long total_netbuffer_pages(void)
-+{
-+	unsigned long ret = 0;
-+
-+#if IS_ENABLED(CONFIG_IP_SCTP)
-+	ret += atomic_long_read(&sctp_memory_allocated);
-+#endif
-+#ifdef CONFIG_INET
-+	ret += atomic_long_read(&tcp_memory_allocated);
-+	ret += atomic_long_read(&udp_memory_allocated);
-+#endif
-+	return ret;
-+}
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index e4e892cc5644..9d11afdeeae4 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -107,7 +107,7 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
- 			     enum sctp_socket_type type);
- 
- static unsigned long sctp_memory_pressure;
--static atomic_long_t sctp_memory_allocated;
-+extern atomic_long_t sctp_memory_allocated;
- struct percpu_counter sctp_sockets_allocated;
- 
- static void sctp_enter_memory_pressure(struct sock *sk)
-
+> ---
+>   drivers/net/wireless/marvell/libertas/if_usb.c    | 2 +-
+>   drivers/net/wireless/marvell/libertas_tf/if_usb.c | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
+> index 220dcdee8d2b..1d06fa564e28 100644
+> --- a/drivers/net/wireless/marvell/libertas/if_usb.c
+> +++ b/drivers/net/wireless/marvell/libertas/if_usb.c
+> @@ -367,7 +367,7 @@ static int if_usb_send_fw_pkt(struct if_usb_card *cardp)
+>   			     cardp->fwseqnum, cardp->totalbytes);
+>   	} else if (fwdata->hdr.dnldcmd == cpu_to_le32(FW_HAS_LAST_BLOCK)) {
+>   		lbs_deb_usb2(&cardp->udev->dev, "Host has finished FW downloading\n");
+> -		lbs_deb_usb2(&cardp->udev->dev, "Donwloading FW JUMP BLOCK\n");
+> +		lbs_deb_usb2(&cardp->udev->dev, "Downloading FW JUMP BLOCK\n");
+>   
+>   		cardp->fwfinalblk = 1;
+>   	}
+> diff --git a/drivers/net/wireless/marvell/libertas_tf/if_usb.c b/drivers/net/wireless/marvell/libertas_tf/if_usb.c
+> index a4b9ede70705..38f77b1a02ca 100644
+> --- a/drivers/net/wireless/marvell/libertas_tf/if_usb.c
+> +++ b/drivers/net/wireless/marvell/libertas_tf/if_usb.c
+> @@ -319,7 +319,7 @@ static int if_usb_send_fw_pkt(struct if_usb_card *cardp)
+>   	} else if (fwdata->hdr.dnldcmd == cpu_to_le32(FW_HAS_LAST_BLOCK)) {
+>   		lbtf_deb_usb2(&cardp->udev->dev,
+>   			"Host has finished FW downloading\n");
+> -		lbtf_deb_usb2(&cardp->udev->dev, "Donwloading FW JUMP BLOCK\n");
+> +		lbtf_deb_usb2(&cardp->udev->dev, "Downloading FW JUMP BLOCK\n");
+>   
+>   		/* Host has finished FW downloading
+>   		 * Donwloading FW JUMP BLOCK
