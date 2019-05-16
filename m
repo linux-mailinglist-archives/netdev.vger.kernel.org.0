@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C015721000
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 23:28:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 200842100B
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 23:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728358AbfEPV24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 17:28:56 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:33518 "EHLO
+        id S1728705AbfEPVdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 17:33:47 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:33576 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726619AbfEPV2z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 17:28:55 -0400
+        with ESMTP id S1727108AbfEPVdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 17:33:47 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5A33912D6C929;
-        Thu, 16 May 2019 14:28:55 -0700 (PDT)
-Date:   Thu, 16 May 2019 14:28:55 -0700 (PDT)
-Message-Id: <20190516.142855.2191010163394598687.davem@davemloft.net>
-To:     dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, sbrivio@redhat.com, dsahern@gmail.com
-Subject: Re: [PATCH net] selftests: pmtu.sh: Remove quotes around commands
- in setup_xfrm
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9C64112D8E1E1;
+        Thu, 16 May 2019 14:33:46 -0700 (PDT)
+Date:   Thu, 16 May 2019 14:33:46 -0700 (PDT)
+Message-Id: <20190516.143346.1283734330002616092.davem@davemloft.net>
+To:     tracywwnj@gmail.com
+Cc:     netdev@vger.kernel.org, kafai@fb.com, weiwan@google.com,
+        mikael.kernel@lists.m7n.se, dsahern@gmail.com, edumazet@google.com
+Subject: Re: [PATCH v3 net] ipv6: fix src addr routing with the exception
+ table
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190516174131.19473-1-dsahern@kernel.org>
-References: <20190516174131.19473-1-dsahern@kernel.org>
+In-Reply-To: <20190516203054.13066-1-tracywwnj@gmail.com>
+References: <20190516203054.13066-1-tracywwnj@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 16 May 2019 14:28:55 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 16 May 2019 14:33:46 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
-Date: Thu, 16 May 2019 10:41:31 -0700
+From: Wei Wang <tracywwnj@gmail.com>
+Date: Thu, 16 May 2019 13:30:54 -0700
 
-> From: David Ahern <dsahern@gmail.com>
+> From: Wei Wang <weiwan@google.com>
 > 
-> The first command in setup_xfrm is failing resulting in the test getting
-> skipped:
+> When inserting route cache into the exception table, the key is
+> generated with both src_addr and dest_addr with src addr routing.
+> However, current logic always assumes the src_addr used to generate the
+> key is a /128 host address. This is not true in the following scenarios:
+> 1. When the route is a gateway route or does not have next hop.
+>    (rt6_is_gw_or_nonexthop() == false)
+> 2. When calling ip6_rt_cache_alloc(), saddr is passed in as NULL.
+> This means, when looking for a route cache in the exception table, we
+> have to do the lookup twice: first time with the passed in /128 host
+> address, second time with the src_addr stored in fib6_info.
 > 
-> + ip netns exec ns-B ip -6 xfrm state add src fd00:1::a dst fd00:1::b spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' 0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode tunnel
-> + out=RTNETLINK answers: Function not implemented
-> ...
->   xfrm6 not supported
-> TEST: vti6: PMTU exceptions                                         [SKIP]
->   xfrm4 not supported
-> TEST: vti4: PMTU exceptions                                         [SKIP]
-> ...
+> This solves the pmtu discovery issue reported by Mikael Magnusson where
+> a route cache with a lower mtu info is created for a gateway route with
+> src addr. However, the lookup code is not able to find this route cache.
 > 
-> The setup command started failing when the run_cmd option was added.
-> Removing the quotes fixes the problem:
-> ...
-> TEST: vti6: PMTU exceptions                                         [ OK ]
-> TEST: vti4: PMTU exceptions                                         [ OK ]
-> ...
-> 
-> Fixes: 56490b623aa0 ("selftests: Add debugging options to pmtu.sh")
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+> Fixes: 2b760fcf5cfb ("ipv6: hook up exception table to store dst cache")
+> Reported-by: Mikael Magnusson <mikael.kernel@lists.m7n.se>
+> Bisected-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: Wei Wang <weiwan@google.com>
 
-Applied, thanks David.
+Applied and queued up for -stable.
