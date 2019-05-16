@@ -2,165 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F14521112
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 01:38:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 084322111B
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 01:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727386AbfEPXie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 19:38:34 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:37637 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726523AbfEPXid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 19:38:33 -0400
-Received: by mail-lj1-f196.google.com with SMTP id h19so4656194ljj.4;
-        Thu, 16 May 2019 16:38:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GUuOEz8juDhOu95jUkjd8QJYFBh95YYaplr9Vdt6ZIM=;
-        b=lmWel7zW6gqNP5GswizjIQkzodJ3rNjuaqA41HGNaml08R7YlShSH+9s13TkX6nwzM
-         nNv+wLrFxXAg2FAeEFk+hzTxYKJQsL7MVUPq37+DSQz4P0VKISxQlhtc9XsxLsuifiL3
-         emozHvVVi5Y/zkKrVFMcrpsbHFnNItSBIZJbUSAmkxTyCIKhM65rC6wqwYtJnsDC1gW9
-         gvYCHncY2Ohfa+vRn7wSkerVKnasnM2XJQlhQOFX+xDM53pbUeBBiuFVpQMMbtyQ+k5T
-         mUdaM7CQRtxSSqJabARA833/8rl+GbI5sgA3exoi6hJ0yJ0WRWTdV5LIUIjt/F9TAGJQ
-         68Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GUuOEz8juDhOu95jUkjd8QJYFBh95YYaplr9Vdt6ZIM=;
-        b=tE0glVkidsNu1TE9/OHX6v6LpcAG0Im71jB8Y7ZuPBB2LgCypI3/VptUC2UhxYJ+EA
-         z6tMp0bzVp08F777YuJaXJXNtiOcFtWG/TVTeAmTkX4wyLQccq4PpE4yC6rFX3wUc9nx
-         /arRUHimMIGmfcQTaWECVO/jDkZerPqXZJ6sOUbcXaaMRFyEd3LEkIMwT91qUps4b7RS
-         G2HURC/DRZXB2rMFIN6xFcmgJNb0Gg15bB87pAbHnDD6HbCnGrgw5PDeOdPWhVwQTBVy
-         43dnYjoAlyzV4Pihn3szB5MoAWh5Vux4gDHV5zRokcbIbQ1Mt86bg/n6h87VRCAHj87T
-         5VNQ==
-X-Gm-Message-State: APjAAAXG0TJujIV6X10MCJTPtumf+KXxcmBjVVbByMY2kw7jJzPmr726
-        6jF5EkTtRGJK5cC21iQ8ObcGkieBmBjY+X30wvY=
-X-Google-Smtp-Source: APXvYqxXmMlh2iVNRCs5zzUm5/yAw1ErxUwNDVzUAz1u2VaNAyrA5KXmcpksiOdFCT+uKAmCPUZ3hLQ+VJqY34yImA4=
-X-Received: by 2002:a05:651c:1056:: with SMTP id x22mr5576609ljm.45.1558049910731;
- Thu, 16 May 2019 16:38:30 -0700 (PDT)
+        id S1727441AbfEPXuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 19:50:12 -0400
+Received: from mga03.intel.com ([134.134.136.65]:62001 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726523AbfEPXuM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 19:50:12 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 May 2019 16:50:11 -0700
+X-ExtLoop1: 1
+Received: from samudral-mobl1.amr.corp.intel.com (HELO [134.134.177.51]) ([134.134.177.51])
+  by orsmga001.jf.intel.com with ESMTP; 16 May 2019 16:50:11 -0700
+Subject: Re: [RFC bpf-next 0/7] busy poll support for AF_XDP sockets
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jonathan Lemon <bsd@fb.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+References: <1556786363-28743-1-git-send-email-magnus.karlsson@intel.com>
+ <20190506163135.blyqrxitmk5yrw7c@ast-mbp>
+ <CAJ8uoz2MFtoXwuhAp5A0teMmwU2v623pHf2k0WSFi0kovJYjtw@mail.gmail.com>
+ <20190507182435.6f2toprk7jus6jid@ast-mbp>
+ <CAJ8uoz24HWGfGBNhz4c-kZjYELJQ+G3FcELVEo205xd1CirpqQ@mail.gmail.com>
+ <CAJ8uoz1i72MOk711wLX18zmgo9JS+ztzSYAx0YS0VKxkbvod-w@mail.gmail.com>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <6ce758d1-e646-c7c2-bc02-6911c9b7d6ce@intel.com>
+Date:   Thu, 16 May 2019 16:50:11 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <CACAyw98+qycmpQzKupquhkxbvWK4OFyDuuLMBNROnfWMZxUWeA@mail.gmail.com>
- <CADa=RyyuAOupK7LOydQiNi6tx2ELOgD+bdu+DHh3xF0dDxw_gw@mail.gmail.com>
- <CACAyw9_EGRob4VG0-G4PN9QS_xB5GoDMBB6mPXR-WcPnrFCuLg@mail.gmail.com> <20190516203325.uhg7c5sr45od7lzm@ast-mbp>
-In-Reply-To: <20190516203325.uhg7c5sr45od7lzm@ast-mbp>
-From:   Nitin Hande <nitin.hande@gmail.com>
-Date:   Thu, 16 May 2019 16:38:19 -0700
-Message-ID: <CAGUcTrqnrE+9BGsuc3sf_DpzsD01wP6h3PbK3-u6hk=6wM0zGg@mail.gmail.com>
-Subject: Re: RFC: Fixing SK_REUSEPORT from sk_lookup_* helpers
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Joe Stringer <joe@isovalent.com>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, edumazet@google.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAJ8uoz1i72MOk711wLX18zmgo9JS+ztzSYAx0YS0VKxkbvod-w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 16, 2019 at 2:57 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, May 16, 2019 at 09:41:34AM +0100, Lorenz Bauer wrote:
-> > On Wed, 15 May 2019 at 18:16, Joe Stringer <joe@isovalent.com> wrote:
-> > >
-> > > On Wed, May 15, 2019 at 8:11 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> > > >
-> > > > In the BPF-based TPROXY session with Joe Stringer [1], I mentioned
-> > > > that the sk_lookup_* helpers currently return inconsistent results if
-> > > > SK_REUSEPORT programs are in play.
-> > > >
-> > > > SK_REUSEPORT programs are a hook point in inet_lookup. They get access
-> > > > to the full packet
-> > > > that triggered the look up. To support this, inet_lookup gained a new
-> > > > skb argument to provide such context. If skb is NULL, the SK_REUSEPORT
-> > > > program is skipped and instead the socket is selected by its hash.
-> > > >
-> > > > The first problem is that not all callers to inet_lookup from BPF have
-> > > > an skb, e.g. XDP. This means that a look up from XDP gives an
-> > > > incorrect result. For now that is not a huge problem. However, once we
-> > > > get sk_assign as proposed by Joe, we can end up circumventing
-> > > > SK_REUSEPORT.
-> > >
-> > > To clarify a bit, the reason this is a problem is that a
-> > > straightforward implementation may just consider passing the skb
-> > > context into the sk_lookup_*() and through to the inet_lookup() so
-> > > that it would run the SK_REUSEPORT BPF program for socket selection on
-> > > the skb when the packet-path BPF program performs the socket lookup.
-> > > However, as this paragraph describes, the skb context is not always
-> > > available.
-> > >
-> > > > At the conference, someone suggested using a similar approach to the
-> > > > work done on the flow dissector by Stanislav: create a dedicated
-> > > > context sk_reuseport which can either take an skb or a plain pointer.
-> > > > Patch up load_bytes to deal with both. Pass the context to
-> > > > inet_lookup.
-> > > >
-> > > > This is when we hit the second problem: using the skb or XDP context
-> > > > directly is incorrect, because it assumes that the relevant protocol
-> > > > headers are at the start of the buffer. In our use case, the correct
-> > > > headers are at an offset since we're inspecting encapsulated packets.
-> > > >
-> > > > The best solution I've come up with is to steal 17 bits from the flags
-> > > > argument to sk_lookup_*, 1 bit for BPF_F_HEADERS_AT_OFFSET, 16bit for
-> > > > the offset itself.
-> > >
-> > > FYI there's also the upper 32 bits of the netns_id parameter, another
-> > > option would be to steal 16 bits from there.
-> >
-> > Or len, which is only 16 bits realistically. The offset doesn't really fit into
-> > either of them very well, using flags seemed the cleanest to me.
-> > Is there some best practice around this?
-> >
-> > >
-> > > > Thoughts?
-> > >
-> > > Internally with skbs, we use `skb_pull()` to manage header offsets,
-> > > could we do something similar with `bpf_xdp_adjust_head()` prior to
-> > > the call to `bpf_sk_lookup_*()`?
-> >
-> > That would only work if it retained the contents of the skipped
-> > buffer, and if there
-> > was a way to undo the adjustment later. We're doing the sk_lookup to
-> > decide whether to
-> > accept or forward the packet, so at the point of the call we might still need
-> > that data. Is that feasible with skb / XDP ctx?
->
-> While discussing the solution for reuseport I propose to use
-> progs/test_select_reuseport_kern.c as an example of realistic program.
-> It reads tcp/udp header directly via ctx->data or via bpf_skb_load_bytes()
-> including payload after the header.
-> It also uses bpf_skb_load_bytes_relative() to fetch IP.
-> I think if we're fixing the sk_lookup from XDP the above program
-> would need to work.
->
-> And I think we can make it work by adding new requirement that
-> 'struct bpf_sock_tuple *' argument to bpf_sk_lookup_* must be
-> a pointer to the packet and not a pointer to bpf program stack.
-> Then helper can construct a fake skb and assign
-> fake_skb->data = &bpf_sock_tuple_arg.sport
-> It can check that struct bpf_sock_tuple * pointer is within 100-ish bytes
-> from xdp->data and within xdp->data_end
-> This way the reuseport program's assumption that ctx->data points to tcp/udp
-> will be preserved and it can access it all including payload.
->
-> This approach doesn't need to mess with xdp_adjust_head and adjust uapi to pass length.
-> Existing progs/test_sk_lookup_kern.c will magically start working with XDP
-> even when reuseport prog is attached.
-> Thoughts?
+On 5/16/2019 5:37 AM, Magnus Karlsson wrote:
+> 
+> After a number of surprises and issues in the driver here are now the
+> first set of results. 64 byte packets at 40Gbit/s line rate. All
+> results in Mpps. Note that I just used my local system and kernel build
+> for these numbers so they are not performance tuned. Jesper would
+> likely get better results on his setup :-). Explanation follows after
+> the table.
+> 
+>                                        Applications
+> method  cores  irqs        txpush        rxdrop      l2fwd
+> ---------------------------------------------------------------
+> r-t-c     2     y           35.9          11.2        8.6
+> poll      2     y           34.2           9.4        8.3
+> r-t-c     1     y           18.1           N/A        6.2
+> poll      1     y           14.6           8.4        5.9
+> busypoll  2     y           31.9          10.5        7.9
+> busypoll  1     y           21.5           8.7        6.2
+> busypoll  1     n           22.0          10.3        7.3
+> 
+> r-t-c = Run-to-completion, the mode where we in Rx uses no syscalls
+>          and only spin on the pointers in the ring.
+> poll = Use the regular syscall poll()
+> busypoll = Use the regular syscall poll() in busy-poll mode. The RFC I
+>             sent out.
+> 
+> cores == 2 means that softirq/ksoftirqd is one a different core from
+>             the application. 2 cores are consumed in total.
+> cores == 1 means that both softirq/ksoftirqd and the application runs
+>             on the same core. Only 1 core is used in total.
+> 
+> irqs == 'y' is the normal case. irqs == 'n' means that I have created a
+>          new napi context with the AF_XDP queues inside that does not
+>          have any interrupts associated with it. No other traffic goes
+>          to this napi context.
+> 
+> N/A = This combination does not make sense since the application will
+>        not yield due to run-to-completion without any syscalls
+>        whatsoever. It works, but it crawls in the 30 Kpps
+>        range. Creating huge rings would help, but did not do that.
+> 
+> The applications are the ones from the xdpsock sample application in
+> samples/bpf/.
+> 
+> Some things I had to do to get these results:
+> 
+> * The current buffer allocation scheme in i40e where we continuously
+>    try to access the fill queue until we find some entries, is not
+>    effective if we are on a single core. Instead, we try once and call
+>    a function that sets a flag. This flag is then checked in the xsk
+>    poll code, and if it is set we schedule napi so that it can try to
+>    allocate some buffers from the fill ring again. Note that this flag
+>    has to propagate all the way to user space so that the application
+>    knows that it has to call poll(). I currently set a flag in the Rx
+>    ring to indicate that the application should call poll() to resume
+>    the driver. This is similar to what the io_uring in the storage
+>    subsystem does. It is not enough to return POLLERR from poll() as
+>    that will only work for the case when we are using poll(). But I do
+>    that as well.
+> 
+> * Implemented Sridhar's suggestion on adding busy_loop_end callbacks
+>    that terminate the busy poll loop if the Rx queue is empty or the Tx
+>    queue is full.
+> 
+> * There is a race in the setup code in i40e when it is used with
+>    busy-poll. The fact that busy-poll calls the napi_busy_loop code
+>    before interrupts have been registered and enabled seems to trigger
+>    some bug where nothing gets transmitted. This only happens for
+>    busy-poll. Poll and run-to-completion only enters the napi loop of
+>    i40e by interrupts and only then after interrupts have been enabled,
+>    which is the last thing that is done after setup. I have just worked
+>    around it by introducing a sleep(1) in the application for these
+>    experiments. Ugly, but should not impact the numbers, I believe.
+> 
+> * The 1 core case is sensitive to the amount of work done reported
+>    from the driver. This was not correct in the XDP code of i40e and
+>    let to bad performance. Now it reports the correct values for
+>    Rx. Note that i40e does not honor the napi budget on Tx and sets
+>    that to 256, and these are not reported back to the napi
+>    library.
+> 
+> Some observations:
+> 
+> * Cannot really explain the drop in performance for txpush when going
+>    from 2 cores to 1. As stated before, the reporting of Tx work is not
+>    really propagated to the napi infrastructure. Tried reporting this
+>    in a correct manner (completely ignoring Rx for this experiment) but
+>    the results were the same. Will dig deeper into this to screen out
+>    any stupid mistakes.
+> 
+> * With the fixes above, all my driver processing is in softirq for 1
+>    core. It never goes over to ksoftirqd. Previously when work was
+>    reported incorrectly, this was the case. I would have liked
+>    ksoftirqd to take over as that would have been more like a separate
+>    thread. How to accomplish this? There might still be some reporting
+>    problem in the driver that hinders this, but actually think it is
+>    more correct now.
+> 
+> * Looking at the current results for a single core, busy poll provides
+>    a 40% boost for Tx but only 5% for Rx. But if I instead create a
+>    napi context without any interrupt associated with it and drive that
+>    from busy-poll, I get a 15% - 20% performance improvement for Rx. Tx
+>    increases only marginally from the 40% improvement as there are few
+>    interrupts on Tx due to the completion interrupt bit being set quite
+>    infrequently. One question I have is: what am I breaking by creating
+>    a napi context not used by anyone else, only AF_XDP, that does not
+>    have an interrupt associated with it?
+> 
+> Todo:
+> 
+> * Explain the drop in Tx push when going from 2 cores to 1.
+> 
+> * Really run a separate thread for kernel processing instead of softirq.
+> 
+> * What other experiments would you like to see?
 
-I like this approach. A fake_skb approach will normalize the bpf_sk_lookup_*()
-API peering into the kernel API between TC and XDP invocation. Just one question
-that comes, I remember one of the comments I received during my XDP commit
-was the stateless nature of XDP services and providing a fake_skb may bring
-some potential side-effects to the desire of statelessness. Is that
-still a possibility?
-How do we guard against it?
+Thanks for sharing the results.
+For busypoll tests, i guess you may have increased the busypoll budget 
+to 64.
+What is the busypoll timeout you are using?
+Can you try a test that skips calling bpf program for queues that are 
+associated with af-xdp socket? I remember seeing a significant bump in
+rxdrop performance with this change.
+The other overhead i saw was with the dma_sync_single calls in the driver.
 
 Thanks
-Nitin
-
->
+Sridhar
