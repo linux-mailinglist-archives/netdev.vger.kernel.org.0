@@ -2,42 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7642820632
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:59:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 626EC204F6
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:43:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728133AbfEPLsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 07:48:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47968 "EHLO mail.kernel.org"
+        id S1727530AbfEPLj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 07:39:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47978 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727505AbfEPLj4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 07:39:56 -0400
+        id S1727515AbfEPLj5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 07:39:57 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D8AB02168B;
-        Thu, 16 May 2019 11:39:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2C5DE20833;
+        Thu, 16 May 2019 11:39:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558006795;
-        bh=IU7dbmBet8D7PQiNPsgkIHhkDL7DlqrrB8YRpyNY6hA=;
+        s=default; t=1558006797;
+        bh=FRsqlhJ86Xm8rM/DwoFwEN6ZtybTAK/8JYVVl1LB7Jc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sx9PssXZBFlyahF6DfN2rlE7Xua/F2JgFIYrsYqonFH89jKNmjIxv1pBLvaNd3OLp
-         weYGG4pmg3cKlmsXR1o9y2gjUeV5udq/wsOrXfRmnJESEoxpi8hxROjg/FvQ6LpxMK
-         GGtD+JmGBxQOfGaHDRQ8NPQ62jSxDLRoN4C7MkLc=
+        b=RjOzhcxVFbJ6YsQSnknxsttbT39p8jMNQmzhoNu/lNp81FMFy7yhQCex/3CiI9fWV
+         RYSk/b85O4DaARKDtt0DLWWjv0RjEtaUfKwVauJkVRNV4bTFFaE4kdjE/wUnY17i5+
+         pmzPk8d9IkB0n7QI+5HX3MrNnvVo4oiup7L3wkPs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bhagavathi Perumal S <bperumal@codeaurora.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 18/34] mac80211: Fix kernel panic due to use of txq after free
-Date:   Thu, 16 May 2019 07:39:15 -0400
-Message-Id: <20190516113932.8348-18-sashal@kernel.org>
+Cc:     Kangjie Lu <kjlu@umn.edu>, Mukesh Ojha <mojha@codeaurora.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.0 19/34] net: ieee802154: fix missing checks for regmap_update_bits
+Date:   Thu, 16 May 2019 07:39:16 -0400
+Message-Id: <20190516113932.8348-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190516113932.8348-1-sashal@kernel.org>
 References: <20190516113932.8348-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,41 +44,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bhagavathi Perumal S <bperumal@codeaurora.org>
+From: Kangjie Lu <kjlu@umn.edu>
 
-[ Upstream commit f1267cf3c01b12e0f843fb6a7450a7f0b2efab8a ]
+[ Upstream commit 22e8860cf8f777fbf6a83f2fb7127f682a8e9de4 ]
 
-The txq of vif is added to active_txqs list for ATF TXQ scheduling
-in the function ieee80211_queue_skb(), but it was not properly removed
-before freeing the txq object. It was causing use after free of the txq
-objects from the active_txqs list, result was kernel panic
-due to invalid memory access.
+regmap_update_bits could fail and deserves a check.
 
-Fix kernel invalid memory access by properly removing txq object
-from active_txqs list before free the object.
+The patch adds the checks and if it fails, returns its error
+code upstream.
 
-Signed-off-by: Bhagavathi Perumal S <bperumal@codeaurora.org>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Kangjie Lu <kjlu@umn.edu>
+Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/iface.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ieee802154/mcr20a.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
-index 4a6ff1482a9ff..02d2e6f11e936 100644
---- a/net/mac80211/iface.c
-+++ b/net/mac80211/iface.c
-@@ -1908,6 +1908,9 @@ void ieee80211_if_remove(struct ieee80211_sub_if_data *sdata)
- 	list_del_rcu(&sdata->list);
- 	mutex_unlock(&sdata->local->iflist_mtx);
+diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
+index c589f5ae75bb5..8bb53ec8d9cf2 100644
+--- a/drivers/net/ieee802154/mcr20a.c
++++ b/drivers/net/ieee802154/mcr20a.c
+@@ -533,6 +533,8 @@ mcr20a_start(struct ieee802154_hw *hw)
+ 	dev_dbg(printdev(lp), "no slotted operation\n");
+ 	ret = regmap_update_bits(lp->regmap_dar, DAR_PHY_CTRL1,
+ 				 DAR_PHY_CTRL1_SLOTTED, 0x0);
++	if (ret < 0)
++		return ret;
  
-+	if (sdata->vif.txq)
-+		ieee80211_txq_purge(sdata->local, to_txq_info(sdata->vif.txq));
-+
- 	synchronize_rcu();
+ 	/* enable irq */
+ 	enable_irq(lp->spi->irq);
+@@ -540,11 +542,15 @@ mcr20a_start(struct ieee802154_hw *hw)
+ 	/* Unmask SEQ interrupt */
+ 	ret = regmap_update_bits(lp->regmap_dar, DAR_PHY_CTRL2,
+ 				 DAR_PHY_CTRL2_SEQMSK, 0x0);
++	if (ret < 0)
++		return ret;
  
- 	if (sdata->dev) {
+ 	/* Start the RX sequence */
+ 	dev_dbg(printdev(lp), "start the RX sequence\n");
+ 	ret = regmap_update_bits(lp->regmap_dar, DAR_PHY_CTRL1,
+ 				 DAR_PHY_CTRL1_XCVSEQ_MASK, MCR20A_XCVSEQ_RX);
++	if (ret < 0)
++		return ret;
+ 
+ 	return 0;
+ }
 -- 
 2.20.1
 
