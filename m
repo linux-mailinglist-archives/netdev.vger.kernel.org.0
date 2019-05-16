@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C7D420727
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 14:44:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53BA720768
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 14:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727398AbfEPMod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 08:44:33 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:34806 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726911AbfEPMod (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 08:44:33 -0400
-Received: from penelope.horms.nl (ip4dab7138.direct-adsl.nl [77.171.113.56])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id E2E9C25AD69;
-        Thu, 16 May 2019 22:44:30 +1000 (AEST)
-Received: by penelope.horms.nl (Postfix, from userid 7100)
-        id D590EE216B9; Thu, 16 May 2019 14:44:28 +0200 (CEST)
-Date:   Thu, 16 May 2019 14:44:28 +0200
-From:   Simon Horman <horms@verge.net.au>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Doug Ledford <dledford@redhat.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2] RDMA: Directly cast the sockaddr union to sockaddr
-Message-ID: <20190516124428.hytvkwfltfi24lrv@verge.net.au>
-References: <20190514005521.GA18085@ziepe.ca>
+        id S1727322AbfEPM6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 08:58:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37225 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726427AbfEPM6C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 08:58:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=k5pbD5kNkKeKh6Y1AUdtZmslH/u5KZj8aj+X+d85ieo=; b=U1FheUMGauXkx7nMMSlKuK/84q
+        umMEwujxE49i2QKqUDrr+eLMIFUs7D+sbZsoYCjVrUUEN9K5gcrestTsoFr1cPYHmrSC0uNOei8w4
+        coXtXIKLTcyUbvbaeMfnoPdhrxl0LLEJktF6PYx81dyWqMLhlOVWnOrAL2nYvBXTVjm0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hRFxQ-00037Q-Ai; Thu, 16 May 2019 14:58:00 +0200
+Date:   Thu, 16 May 2019 14:58:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: dsa: using multi-gbps speeds on CPU port
+Message-ID: <20190516125800.GC14298@lunn.ch>
+References: <20190515143936.524acd4e@bootlin.com>
+ <20190515132701.GD23276@lunn.ch>
+ <20190515160214.1aa5c7d9@bootlin.com>
+ <35daa9e7-8b97-35dd-bc95-bab57ef401cd@gmail.com>
+ <20190515161931.ul2fmkfxmyumfli5@shell.armlinux.org.uk>
+ <CA+h21hp5aX00jtj5bSkig1jGY8JHAsKwGp+584jbOw3k82Z5KA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190514005521.GA18085@ziepe.ca>
-Organisation: Horms Solutions BV
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <CA+h21hp5aX00jtj5bSkig1jGY8JHAsKwGp+584jbOw3k82Z5KA@mail.gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 13, 2019 at 09:55:21PM -0300, Jason Gunthorpe wrote:
-> gcc 9 now does allocation size tracking and thinks that passing the member
-> of a union and then accessing beyond that member's bounds is an overflow.
-> 
-> Instead of using the union member, use the entire union with a cast to
-> get to the sockaddr. gcc will now know that the memory extends the full
-> size of the union.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
-> ---
->  drivers/infiniband/core/addr.c           | 16 ++++++++--------
->  drivers/infiniband/hw/ocrdma/ocrdma_ah.c |  5 ++---
->  drivers/infiniband/hw/ocrdma/ocrdma_hw.c |  5 ++---
->  3 files changed, 12 insertions(+), 14 deletions(-)
-> 
-> I missed the ocrdma files in the v1
-> 
-> We can revisit what to do with that repetitive union after the merge
-> window, but this simple patch will eliminate the warnings for now.
-> 
-> Linus, I'll send this as a PR tomorrow - there is also a bug fix for
-> the rdma-netlink changes posted that should go too.
+> My basic idea is to interface a Raspberry Pi-like board to a dumb
+> "switch evaluation board" which has only the Ethernet ports and the
+> SPI/whatever control interface exposed. The DSA CPU/master port combo
+> in this case would go through a Cat5 cable, which is not going to pan
+> out very well currently because both the RPi-side PHY and the switch
+> board-side PHY need some massaging from their respective drivers. Both
+> PHYs are C22.
 
-<2c>
-I would be very happy to see this revisited in such a way
-that some use is made of the C type system (instead of casts).
-</2c>
+Hi Vladimir
+
+There are a number of boards like this, back to back PHYs. But they
+all have the switch PHY strapped so they start on power on and
+auto-negotiate. DSA then just works.
+
+    Andrew
