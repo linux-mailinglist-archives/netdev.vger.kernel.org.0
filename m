@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1BF920F5B
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 21:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94D4120F5D
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 21:53:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726820AbfEPTuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 15:50:20 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:34023 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726519AbfEPTuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 15:50:19 -0400
-Received: by mail-lj1-f195.google.com with SMTP id j24so4249768ljg.1;
-        Thu, 16 May 2019 12:50:18 -0700 (PDT)
+        id S1726955AbfEPTxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 15:53:38 -0400
+Received: from mail-io1-f51.google.com ([209.85.166.51]:34688 "EHLO
+        mail-io1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726519AbfEPTxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 15:53:38 -0400
+Received: by mail-io1-f51.google.com with SMTP id g84so3625876ioa.1
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 12:53:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KSYFmnA9eWWLhRZS08HYOCsYCy2SOuZ4e0aM+KE0WVc=;
-        b=ANoFkUZ5sAwab5YdVJ0Xm2+8cDq5G/jPbZGJ7r6qhzsp+4oxAlT2wAqJBJAeFSRSqe
-         +WY2OHOviCdRockUMRL9Zwzi5dBoQIEjxW1Z2XHmHolwZuTiEoO77CpuX9vD/aYGMkQR
-         ZSnG9I7MxxWHbkb74p0AxLkQha0UAdJ3tRc8IyaRfdb5BNoIAjhGSLjkKnwWPK+VttX5
-         SVvRlCfqYCL3/aWsSZ3y7BluJIIOb2C3Tqn8zMbl0mDXplsVCEBQFdCw73xePoZVPol+
-         7h65ekuzls9ZIEcy3aUgKz1ZEdhPNx4FKD1FJc3DT66T2T8PXdqAWcCXjqnxEbqDZgel
-         kmyA==
+        d=chromium.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=dp78Ngm8ZHs/cemhwNrpTJXKKOXhDXvmWqZmMj1etsk=;
+        b=jRjli4nQ7kewt2x9Qr25qkGmvl+O03aIsVJjS7GbXNdtkHpcIpRtqI0O3T3NvGV/n5
+         +CEOb5fXrPH+UdQpvOhKxnc/WZTGSvMCyAFaTWPeze3pw6su0jFz6z9e983Po81HMCjX
+         4xEtaDoZapWrIiavnd8SC4XNO0yo9vgclmw4U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KSYFmnA9eWWLhRZS08HYOCsYCy2SOuZ4e0aM+KE0WVc=;
-        b=BCVB7MQ85SR6Dibb5P2/n9Zed+qSTTcK1MNKp/ZFNp6dnjtudz3hfgbolDKySTMYWD
-         WnFxY8eSOkg2ezxQXjH820ypdn3+FH04d+3vg4btVIzJp4kdei/SdaysX1ZktU4UuFry
-         bE3DUnO2SSxgYUvqLyPuMn2WXorc1JT2NCq/9zPv8E7MD0Nlisl91JJ2q5vWDfCWB10p
-         +uwV75bgl67MgEf/CqTdgbOd/xKhf9BXWnxoOEZbfLb487au0g53kKR5m2JG2v2p+qYM
-         jRZAlyDRrQHlbjeTNyW3N/Lw8x9PQjsUpx0hbGXC+/FtILIGhsiYPhJEOT47kF3zHde3
-         qNYA==
-X-Gm-Message-State: APjAAAVNGxNBOecrhqe/Q0k0ZIOdcmPbSluj2iNWgqlfhTUgmxRBwu3e
-        U9Ee567vsSvhcBOKjhRHOmqcvd7Cz2WAO9AJCTY=
-X-Google-Smtp-Source: APXvYqz/LEs1QdSNRfkt+ypL+QM5F568mGeQcYUfzZeAMEjhGP4XuGG0PdcYZLPcOShkWOGJd3v4F/jjK27Xx0NtDgo=
-X-Received: by 2002:a2e:a294:: with SMTP id k20mr19646012lja.118.1558036217477;
- Thu, 16 May 2019 12:50:17 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=dp78Ngm8ZHs/cemhwNrpTJXKKOXhDXvmWqZmMj1etsk=;
+        b=c1p8pZM28hGTvv9+9K5HBjt1gvPNWoG5ZvmB5I0D+JMFyO9wn5/KdTK+Wqi8AF3IEG
+         8891WEXD46E9g+ffAXLtWXoPs/oZt0VIYoYS5hyOvktcEoKzhC31xQmQ+4klyYWjA+WD
+         rF04UzQjJG4aggn5J4QHk0JMYE0pIudr4dKvkrg0ejJDy5jncVPe00LkRRSVAQluiotR
+         vvTbCxCwjVwfGPnay5r5mVDnMofiDDV2a9G8KjkJd8edrKgwhDpjT8bhJFANaZbP/Okk
+         Jr51hSLIQVa6CHJSy8N1FDxBM6pSjik+g2nxkWk1IywFkyKc4fuYjAr0uYZtpfz6nRnD
+         smoQ==
+X-Gm-Message-State: APjAAAU7TEvuvMTJU6aOKxcTzz9ugad2uHQq1YKcLplhJCUe0xKrAUZP
+        f4UP7b+OieYtTx5aWZyxwIT2dnQr/z0dsE0oCF5MuP2L8aE=
+X-Google-Smtp-Source: APXvYqwOT8vprzQrtwLrWk0C8LJ5BSqSgjcou3Vao+h5RsWc1lPXeJigWi+PMdvwrE1lg1BQ7u8wG3E+0leZsr+BjOI=
+X-Received: by 2002:a6b:c0c6:: with SMTP id q189mr31403350iof.283.1558036416516;
+ Thu, 16 May 2019 12:53:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190516033927.2425057-1-andriin@fb.com>
-In-Reply-To: <20190516033927.2425057-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 16 May 2019 12:50:05 -0700
-Message-ID: <CAADnVQLgL5NNbMjxUHhh1ydABTUnv2jrmah-hsweF0fPu0AY9w@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: move logging helpers into libbpf_internal.h
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
+From:   Paul Stewart <pstew@chromium.org>
+Date:   Thu, 16 May 2019 12:53:25 -0700
+Message-ID: <CAMcMvsgiebYeAc7csDog=j4cj9h2_QdLm7dO=7hU5BOceN6anw@mail.gmail.com>
+Subject: ixgbe device for Intel C3508
+To:     netdev@vger.kernel.org
+Cc:     andrewx.bowers@intel.com, jeffrey.t.kirsher@intel.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 15, 2019 at 8:39 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> libbpf_util.h header was recently exposed as public as a dependency of
-> xsk.h. In addition to memory barriers, it contained logging helpers,
-> which are not supposed to be exposed. This patch moves those into
-> libbpf_internal.h, which is kept as an internal header.
->
-> Cc: Stanislav Fomichev <sdf@google.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Fixes: 7080da890984 ("libbpf: add libbpf_util.h to header install.")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+I was pleased to fine that the ixgbe driver had good support for the
+10GBit interfaces on the Atom C3708 device I was using.  However, the
+same is not true of the 2.5GBit interfaces on the Atom C3508.  The PCI
+IDs on these interfaces are very similar -- 8086:15cf on the C3508 vs
+8086:15ce on the C3708.  Modifying the ixgbe driver to simply treat
+8086:15cf almost works -- the 4 Ethernet interfaces are discovered and
+*something* happens when I plug in a Gigiabit ethernet cable into the
+SFP port:
 
-Applied. Thanks
+[  269.233242] ixgbe 0000:0c:00.0 eth1: NIC Link is Up 1 Gbps, Flow Control: RX/
+TX
+[  269.240733] IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+[  269.337230] ixgbe 0000:0c:00.0 eth1: NIC Link is Down
+[  289.682588] ixgbe 0000:0c:00.1 eth2: detected SFP+: 6
+[  392.859888] ixgbe 0000:0c:00.0: removed PHC on eth1
+[  393.497099] ixgbe 0000:0c:00.1: removed PHC on eth2
+[  394./MA257214] ixgbe 0000:0d:00.0: removed PHC on eth3
+[  394.867122] ixgbe 0000:0d:00.1 eth4: NIC Link is Up 1 Gbps, Flow
+Control: RX/TX
+[  394.889384] ixgbe 0000:0d:00.1: removed PHC on eth4
+
+Clearly not all is well, as could be expected -- I'm sure there's a
+real reason why these are separate PCI IDs.   Is there someone out
+there that can point me at docs I can use to support the device
+myself, or does anyone know if support is coming?  Should this device
+be considered an X550 or is this a different device fundamentally
+(should I not use the Intel X550 docs as a reference, if I were to
+hunt down some documentation about the difference between these
+parts?)
