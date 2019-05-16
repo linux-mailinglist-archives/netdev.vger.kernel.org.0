@@ -2,105 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFB2220A2B
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 16:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A713220A8F
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 17:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727461AbfEPOw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 10:52:28 -0400
-Received: from mail-eopbgr690046.outbound.protection.outlook.com ([40.107.69.46]:20462
-        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727336AbfEPOw1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 10:52:27 -0400
+        id S1726790AbfEPPCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 11:02:08 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:41267 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726692AbfEPPCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 11:02:08 -0400
+Received: by mail-pg1-f194.google.com with SMTP id z3so1696175pgp.8
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 08:02:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=AQUANTIA1COM.onmicrosoft.com; s=selector1-AQUANTIA1COM-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yR/LnftyhlmUovwWOykFOhgJA6p0NmY4Iny21P9tL9A=;
- b=MMq0lhqrvpUclbapkX4Jzsrw9vyHk2KZ+rm9b43puBEWCa6gb8cIqCOzPo16Dlkd1tANpwkBv5AwR3PiYFak6zc1zk6xsnFb8jMn8VvSF28uF+FpEFUPFMbZ3y0SuRUWYS8iIK/djQvVATMpa/9GFfOl9I13PvLNz9Io9kl9h70=
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (20.178.230.149) by
- DM6PR11MB3659.namprd11.prod.outlook.com (20.178.231.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.16; Thu, 16 May 2019 14:52:25 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::512d:4596:4513:424a]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::512d:4596:4513:424a%5]) with mapi id 15.20.1900.010; Thu, 16 May 2019
- 14:52:25 +0000
-From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
-To:     "David S . Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>
-Subject: [PATCH net 3/3] aqc111: cleanup mtu related logic
-Thread-Topic: [PATCH net 3/3] aqc111: cleanup mtu related logic
-Thread-Index: AQHVC/b5+ylLZ20+E0GGzjBtQfjRwA==
-Date:   Thu, 16 May 2019 14:52:25 +0000
-Message-ID: <c24be8a514fbb2cc903c9a8ba69f9d461ec042f0.1558017386.git.igor.russkikh@aquantia.com>
-References: <cover.1558017386.git.igor.russkikh@aquantia.com>
-In-Reply-To: <cover.1558017386.git.igor.russkikh@aquantia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1P195CA0010.EURP195.PROD.OUTLOOK.COM (2603:10a6:3:fd::20)
- To DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Igor.Russkikh@aquantia.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.17.1
-x-originating-ip: [95.79.108.179]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 186384cf-5db4-4cd3-4802-08d6da0e1ba2
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:DM6PR11MB3659;
-x-ms-traffictypediagnostic: DM6PR11MB3659:
-x-microsoft-antispam-prvs: <DM6PR11MB36590ACD2701E847BA99D8D7980A0@DM6PR11MB3659.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 0039C6E5C5
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39850400004)(136003)(346002)(396003)(376002)(189003)(199004)(53936002)(6436002)(99286004)(54906003)(316002)(118296001)(14454004)(2906002)(50226002)(6512007)(6486002)(73956011)(478600001)(86362001)(5660300002)(8936002)(305945005)(66066001)(102836004)(72206003)(476003)(81166006)(2616005)(11346002)(36756003)(66446008)(64756008)(66556008)(7736002)(68736007)(446003)(81156014)(66476007)(8676002)(3846002)(76176011)(26005)(6916009)(44832011)(52116002)(71190400001)(71200400001)(107886003)(66946007)(6116002)(486006)(256004)(186003)(4326008)(14444005)(386003)(6506007)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR11MB3659;H:DM6PR11MB3625.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: aquantia.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: V1J/7EgQVQdJy5B0LRZOFsFfdWkPGxbcruWbtM88WX8/tGHnh2CPiHbf9oKYVXSvkxtmWGuY7ClLs6RJNfQUBIy/GwPqNT4QnO8ep6OxKxiN5sg4YjTtPeq8bajBOYsSyECADfaWUWzamvpUAy3XwuYkce5ZfpFrjrF2V4rZBWtxbp8yZPuscs+POIJrXDMpQiNGj/5Ca6iHeAWRYU+cX/aJYdqf3hLlrEQQ1lPMvMtff50iANbDDVRZmF6XkgUJau34NpLmh1sI53VULTtW7BAyUHdRL/o1FnKK+MmCgHDzR+WbLbZtIAWz+zlb3vqzoQyqLL90pQ2q9pzhKJydqrAyFkSDwtCSGlNNcl5OnFiTvPQ2WDDgSQVsxUh575z8vqhw8L8Opli+Y0mdLJEoMDbfoCDUkMXzlyvQiFMx0zc=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oQIpgPhDeITrfem6Q9vBqAlxsSxn7on1qPD5WhUkuCI=;
+        b=LMAW81YACJdH8lc+yV5UY1LirSNlYfT9l1J2qKri2wpTcmoAU9SDnoH2zpM5WbxCnE
+         2/9PLRXsO7fUMinhHqWqSiCqJVnPhgyZrZ0d+a1YjAByq8LsG31xYJlwl2yr0z3UT+qo
+         +3vFKRc/eUGJbtShTPZgACEu7W/FyTLIen/k6l0JaBtNtxUuctQz0CwjpVpffeVzqu7S
+         Jtk/9K/U8Zhy5V98n9hu+GRpku1mX6+527yEuV3IedymVi75DPIAJDsaGlC94UO2CvAu
+         dyQfEz4Tl5IjDJ850qwWZ8abgsOWtCOvBZ/6S/v7onvIyrBDR5QMkklwVdooGjD0qpPS
+         Edbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oQIpgPhDeITrfem6Q9vBqAlxsSxn7on1qPD5WhUkuCI=;
+        b=T4IG5vTpAk8+fN0bRnE0ESutnrlS+pDlGNCjvtT175khxlVydfqt6vY7idUioEzSR9
+         XXn4vVFdtiLnB8Y3gxBSnSif2Hun14/3nhoqUzFd9VIxHpJyS9Wg3yF5rWnlCwBWZ1vV
+         Er/QimcKm971B0dCsonCVQR/fOnYoZiuujjkpzZNFxRE5vEt7tCmtiI59bJ8gnKWR2PQ
+         GYlCD0pjO7bOK1U7PbP9O7Lqqmo0vAsuJVM6ZppOJydg2HLEaC6OCYIHAuQNx07GCoSZ
+         T8cNrctAnp2ZKRvZBfkk9WiFFEqaq1ySWZsxTZkxo+2aTlf+Tkc9fDQRi2Wkvyw7CD3Z
+         7ARA==
+X-Gm-Message-State: APjAAAUeS971ACP0OV+Y/st+bZkB0+S0NKWKWAnY8kNW2v926BxkBRz+
+        Z8ijoP2dXPjIVKmHg2G3wbQ=
+X-Google-Smtp-Source: APXvYqxGQqDHRIdTzHVX1+dV1gRWPGachM7tli5SzQOBSJ7Q66L5NwtEZui43HpzbS4u+1uqen+ARg==
+X-Received: by 2002:a62:ac0c:: with SMTP id v12mr54077669pfe.59.1558018927172;
+        Thu, 16 May 2019 08:02:07 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:9983:b39:b7ee:6ed6? ([2601:282:800:fd80:9983:b39:b7ee:6ed6])
+        by smtp.googlemail.com with ESMTPSA id z4sm6952379pfa.142.2019.05.16.08.02.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 16 May 2019 08:02:05 -0700 (PDT)
+Subject: Re: [PATCH net] ipv6: prevent possible fib6 leaks
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Wei Wang <weiwan@google.com>, Martin Lau <kafai@fb.com>
+References: <20190516023952.28943-1-edumazet@google.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <40038728-de12-ecb9-b382-2f6433f83d50@gmail.com>
+Date:   Thu, 16 May 2019 09:02:02 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 186384cf-5db4-4cd3-4802-08d6da0e1ba2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2019 14:52:25.2068
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3659
+In-Reply-To: <20190516023952.28943-1-edumazet@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T3JpZ2luYWwgZml4IGI4YjI3NzUyNWU5ZCB3YXMgZG9uZSB1bmRlciBpbXByZXNzaW9uIHRoYXQg
-aW52YWxpZCBkYXRhDQpjb3VsZCBiZSB3cml0dGVuIGZvciBtdHUgY29uZmlndXJhdGlvbiBoaWdo
-ZXIgdGhhdCAxNjMzNC4NCg0KQnV0IHRoZSBoaWdoIGxpbWl0IHdpbGwgYW55d2F5IGJlIHJlamVj
-dGVkIG15IG1heF9tdHUgY2hlY2sgaW4gY2FsbGVyLg0KVGh1cywgbWFrZSB0aGUgY29kZSBjbGVh
-bmVyIGFuZCBhbGxvdyBpdCBkb2luZyB0aGUgY29uZmlndXJhdGlvbiB3aXRob3V0DQpjaGVja2lu
-ZyBmb3IgbWF4aW11bSBtdHUgdmFsdWUuDQoNCkZpeGVzOiBiOGIyNzc1MjVlOWQgKCJhcWMxMTE6
-IGZpeCBlbmRpYW5uZXNzIGlzc3VlIGluIGFxYzExMV9jaGFuZ2VfbXR1IikNClNpZ25lZC1vZmYt
-Ynk6IElnb3IgUnVzc2tpa2ggPGlnb3IucnVzc2tpa2hAYXF1YW50aWEuY29tPg0KLS0tDQogZHJp
-dmVycy9uZXQvdXNiL2FxYzExMS5jIHwgNiArKy0tLS0NCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNl
-cnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvdXNi
-L2FxYzExMS5jIGIvZHJpdmVycy9uZXQvdXNiL2FxYzExMS5jDQppbmRleCA0MDhkZjJkMzM1ZTMu
-LjdlNDQxMTA3NDZkZCAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L3VzYi9hcWMxMTEuYw0KKysr
-IGIvZHJpdmVycy9uZXQvdXNiL2FxYzExMS5jDQpAQCAtNDM3LDcgKzQzNyw3IEBAIHN0YXRpYyBp
-bnQgYXFjMTExX2NoYW5nZV9tdHUoc3RydWN0IG5ldF9kZXZpY2UgKm5ldCwgaW50IG5ld19tdHUp
-DQogCWFxYzExMV93cml0ZTE2X2NtZChkZXYsIEFRX0FDQ0VTU19NQUMsIFNGUl9NRURJVU1fU1RB
-VFVTX01PREUsDQogCQkJICAgMiwgJnJlZzE2KTsNCiANCi0JaWYgKGRldi0+bmV0LT5tdHUgPiAx
-MjUwMCAmJiBkZXYtPm5ldC0+bXR1IDw9IDE2MzM0KSB7DQorCWlmIChkZXYtPm5ldC0+bXR1ID4g
-MTI1MDApIHsNCiAJCW1lbWNweShidWYsICZBUUMxMTFfQlVMS0lOX1NJWkVbMl0sIDUpOw0KIAkJ
-LyogUlggYnVsayBjb25maWd1cmF0aW9uICovDQogCQlhcWMxMTFfd3JpdGVfY21kKGRldiwgQVFf
-QUNDRVNTX01BQywgU0ZSX1JYX0JVTEtJTl9RQ1RSTCwNCkBAIC00NTEsMTAgKzQ1MSw4IEBAIHN0
-YXRpYyBpbnQgYXFjMTExX2NoYW5nZV9tdHUoc3RydWN0IG5ldF9kZXZpY2UgKm5ldCwgaW50IG5l
-d19tdHUpDQogCQlyZWcxNiA9IDB4MTAyMDsNCiAJZWxzZSBpZiAoZGV2LT5uZXQtPm10dSA8PSAx
-MjUwMCkNCiAJCXJlZzE2ID0gMHgxNDIwOw0KLQllbHNlIGlmIChkZXYtPm5ldC0+bXR1IDw9IDE2
-MzM0KQ0KLQkJcmVnMTYgPSAweDFBMjA7DQogCWVsc2UNCi0JCXJldHVybiAwOw0KKwkJcmVnMTYg
-PSAweDFBMjA7DQogDQogCWFxYzExMV93cml0ZTE2X2NtZChkZXYsIEFRX0FDQ0VTU19NQUMsIFNG
-Ul9QQVVTRV9XQVRFUkxWTF9MT1csDQogCQkJICAgMiwgJnJlZzE2KTsNCi0tIA0KMi4xNy4xDQoN
-Cg==
+On 5/15/19 8:39 PM, Eric Dumazet wrote:
+> At ipv6 route dismantle, fib6_drop_pcpu_from() is responsible
+> for finding all percpu routes and set their ->from pointer
+> to NULL, so that fib6_ref can reach its expected value (1).
+> 
+> The problem right now is that other cpus can still catch the
+> route being deleted, since there is no rcu grace period
+> between the route deletion and call to fib6_drop_pcpu_from()
+> 
+> This can leak the fib6 and associated resources, since no
+> notifier will take care of removing the last reference(s).
+> 
+> I decided to add another boolean (fib6_destroying) instead
+> of reusing/renaming exception_bucket_flushed to ease stable backports,
+> and properly document the memory barriers used to implement this fix.
+> 
+> This patch has been co-developped with Wei Wang.
+> 
+> Fixes: 93531c674315 ("net/ipv6: separate handling of FIB entries from dst based routes")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Cc: Wei Wang <weiwan@google.com>
+> Cc: David Ahern <dsahern@gmail.com>
+> Cc: Martin Lau <kafai@fb.com>
+> ---
+>  include/net/ip6_fib.h |  3 ++-
+>  net/ipv6/ip6_fib.c    | 12 +++++++++---
+>  net/ipv6/route.c      |  7 +++++++
+>  3 files changed, 18 insertions(+), 4 deletions(-)
+> 
+
+Reviewed-by: David Ahern <dsahern@gmail.com>
+
+Thanks, Eric. Attaching 'from' to rt6_info makes v6 much more
+complicated than ipv4.
