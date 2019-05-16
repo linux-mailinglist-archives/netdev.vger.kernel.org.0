@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 332F8205A6
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:58:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFC832064C
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:59:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726955AbfEPLjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 07:39:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47650 "EHLO mail.kernel.org"
+        id S1728262AbfEPLtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 07:49:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726260AbfEPLjg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726537AbfEPLjg (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 16 May 2019 07:39:36 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6306F20833;
-        Thu, 16 May 2019 11:39:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B418F20848;
+        Thu, 16 May 2019 11:39:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558006774;
-        bh=n5drNTJVsfBprc1U7u/JfOyJbqlXK0RHi11OOIakdPc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tbQMozbTp4WRf64puoqKFzJBzb8HUlTfifEUaWI0H9V7MI3RqiBPkp+rLhfgjyFOj
-         n9WOstvOV6jTQXn7Qidrnq9ktBf3zZLGaHa010g5c3H7eMyWvOc180yhByAzIxewu7
-         lsKr7g0ALFs/1rdHIUcCEpjs14+Nw2BkDROhboKM=
+        s=default; t=1558006775;
+        bh=3K/FjV1bSJVKX0ZHFJUpwhBItnqUc+nb/Ox3a5YrYR8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DNaDlDtkHJBmNZvkP40vB/eifLkXJxknsedY4tZ6qYnK25zT+drtxUcx3udVpMBUU
+         CQDrdR7HhlXYuX080ySd1oiURulLtj+KV++vcUF00+PVnsfKxw/v7dCtnZi7jHCgig
+         aXDR3/1oDzuj0kp22DGU4mK0/XgKNBxAFhzd4Mlo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+Cc:     Myungho Jung <mhjungk@gmail.com>,
+        syzbot+b69368fd933c6c592f4c@syzkaller.appspotmail.com,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 01/34] xfrm: policy: Fix out-of-bound array accesses in __xfrm_policy_unlink
-Date:   Thu, 16 May 2019 07:38:58 -0400
-Message-Id: <20190516113932.8348-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 02/34] xfrm: Reset secpath in xfrm failure
+Date:   Thu, 16 May 2019 07:38:59 -0400
+Message-Id: <20190516113932.8348-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190516113932.8348-1-sashal@kernel.org>
+References: <20190516113932.8348-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,89 +44,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Myungho Jung <mhjungk@gmail.com>
 
-[ Upstream commit b805d78d300bcf2c83d6df7da0c818b0fee41427 ]
+[ Upstream commit 6ed69184ed9c43873b8a1ee721e3bf3c08c2c6be ]
 
-UBSAN report this:
+In esp4_gro_receive() and esp6_gro_receive(), secpath can be allocated
+without adding xfrm state to xvec. Then, sp->xvec[sp->len - 1] would
+fail and result in dereferencing invalid pointer in esp4_gso_segment()
+and esp6_gso_segment(). Reset secpath if xfrm function returns error.
 
-UBSAN: Undefined behaviour in net/xfrm/xfrm_policy.c:1289:24
-index 6 is out of range for type 'unsigned int [6]'
-CPU: 1 PID: 0 Comm: swapper/1 Not tainted 4.4.162-514.55.6.9.x86_64+ #13
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
- 0000000000000000 1466cf39b41b23c9 ffff8801f6b07a58 ffffffff81cb35f4
- 0000000041b58ab3 ffffffff83230f9c ffffffff81cb34e0 ffff8801f6b07a80
- ffff8801f6b07a20 1466cf39b41b23c9 ffffffff851706e0 ffff8801f6b07ae8
-Call Trace:
- <IRQ>  [<ffffffff81cb35f4>] __dump_stack lib/dump_stack.c:15 [inline]
- <IRQ>  [<ffffffff81cb35f4>] dump_stack+0x114/0x1a0 lib/dump_stack.c:51
- [<ffffffff81d94225>] ubsan_epilogue+0x12/0x8f lib/ubsan.c:164
- [<ffffffff81d954db>] __ubsan_handle_out_of_bounds+0x16e/0x1b2 lib/ubsan.c:382
- [<ffffffff82a25acd>] __xfrm_policy_unlink+0x3dd/0x5b0 net/xfrm/xfrm_policy.c:1289
- [<ffffffff82a2e572>] xfrm_policy_delete+0x52/0xb0 net/xfrm/xfrm_policy.c:1309
- [<ffffffff82a3319b>] xfrm_policy_timer+0x30b/0x590 net/xfrm/xfrm_policy.c:243
- [<ffffffff813d3927>] call_timer_fn+0x237/0x990 kernel/time/timer.c:1144
- [<ffffffff813d8e7e>] __run_timers kernel/time/timer.c:1218 [inline]
- [<ffffffff813d8e7e>] run_timer_softirq+0x6ce/0xb80 kernel/time/timer.c:1401
- [<ffffffff8120d6f9>] __do_softirq+0x299/0xe10 kernel/softirq.c:273
- [<ffffffff8120e676>] invoke_softirq kernel/softirq.c:350 [inline]
- [<ffffffff8120e676>] irq_exit+0x216/0x2c0 kernel/softirq.c:391
- [<ffffffff82c5edab>] exiting_irq arch/x86/include/asm/apic.h:652 [inline]
- [<ffffffff82c5edab>] smp_apic_timer_interrupt+0x8b/0xc0 arch/x86/kernel/apic/apic.c:926
- [<ffffffff82c5c985>] apic_timer_interrupt+0xa5/0xb0 arch/x86/entry/entry_64.S:735
- <EOI>  [<ffffffff81188096>] ? native_safe_halt+0x6/0x10 arch/x86/include/asm/irqflags.h:52
- [<ffffffff810834d7>] arch_safe_halt arch/x86/include/asm/paravirt.h:111 [inline]
- [<ffffffff810834d7>] default_idle+0x27/0x430 arch/x86/kernel/process.c:446
- [<ffffffff81085f05>] arch_cpu_idle+0x15/0x20 arch/x86/kernel/process.c:437
- [<ffffffff8132abc3>] default_idle_call+0x53/0x90 kernel/sched/idle.c:92
- [<ffffffff8132b32d>] cpuidle_idle_call kernel/sched/idle.c:156 [inline]
- [<ffffffff8132b32d>] cpu_idle_loop kernel/sched/idle.c:251 [inline]
- [<ffffffff8132b32d>] cpu_startup_entry+0x60d/0x9a0 kernel/sched/idle.c:299
- [<ffffffff8113e119>] start_secondary+0x3c9/0x560 arch/x86/kernel/smpboot.c:245
-
-The issue is triggered as this:
-
-xfrm_add_policy
-    -->verify_newpolicy_info  //check the index provided by user with XFRM_POLICY_MAX
-			      //In my case, the index is 0x6E6BB6, so it pass the check.
-    -->xfrm_policy_construct  //copy the user's policy and set xfrm_policy_timer
-    -->xfrm_policy_insert
-	--> __xfrm_policy_link //use the orgin dir, in my case is 2
-	--> xfrm_gen_index   //generate policy index, there is 0x6E6BB6
-
-then xfrm_policy_timer be fired
-
-xfrm_policy_timer
-   --> xfrm_policy_id2dir  //get dir from (policy index & 7), in my case is 6
-   --> xfrm_policy_delete
-      --> __xfrm_policy_unlink //access policy_count[dir], trigger out of range access
-
-Add xfrm_policy_id2dir check in verify_newpolicy_info, make sure the computed dir is
-valid, to fix the issue.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: e682adf021be ("xfrm: Try to honor policy index if it's supplied by user")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: 7785bba299a8 ("esp: Add a software GRO codepath")
+Reported-by: syzbot+b69368fd933c6c592f4c@syzkaller.appspotmail.com
+Signed-off-by: Myungho Jung <mhjungk@gmail.com>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_user.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/esp4_offload.c | 8 +++++---
+ net/ipv6/esp6_offload.c | 8 +++++---
+ 2 files changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index a131f9ff979e1..8d4d52fd457b2 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -1424,7 +1424,7 @@ static int verify_newpolicy_info(struct xfrm_userpolicy_info *p)
- 	ret = verify_policy_dir(p->dir);
- 	if (ret)
- 		return ret;
--	if (p->index && ((p->index & XFRM_POLICY_MAX) != p->dir))
-+	if (p->index && (xfrm_policy_id2dir(p->index) != p->dir))
- 		return -EINVAL;
+diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
+index 8756e0e790d2a..d3170a8001b2a 100644
+--- a/net/ipv4/esp4_offload.c
++++ b/net/ipv4/esp4_offload.c
+@@ -52,13 +52,13 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
+ 			goto out;
  
- 	return 0;
+ 		if (sp->len == XFRM_MAX_DEPTH)
+-			goto out;
++			goto out_reset;
+ 
+ 		x = xfrm_state_lookup(dev_net(skb->dev), skb->mark,
+ 				      (xfrm_address_t *)&ip_hdr(skb)->daddr,
+ 				      spi, IPPROTO_ESP, AF_INET);
+ 		if (!x)
+-			goto out;
++			goto out_reset;
+ 
+ 		sp->xvec[sp->len++] = x;
+ 		sp->olen++;
+@@ -66,7 +66,7 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
+ 		xo = xfrm_offload(skb);
+ 		if (!xo) {
+ 			xfrm_state_put(x);
+-			goto out;
++			goto out_reset;
+ 		}
+ 	}
+ 
+@@ -82,6 +82,8 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
+ 	xfrm_input(skb, IPPROTO_ESP, spi, -2);
+ 
+ 	return ERR_PTR(-EINPROGRESS);
++out_reset:
++	secpath_reset(skb);
+ out:
+ 	skb_push(skb, offset);
+ 	NAPI_GRO_CB(skb)->same_flow = 0;
+diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
+index d46b4eb645c2e..cb99f6fb79b79 100644
+--- a/net/ipv6/esp6_offload.c
++++ b/net/ipv6/esp6_offload.c
+@@ -74,13 +74,13 @@ static struct sk_buff *esp6_gro_receive(struct list_head *head,
+ 			goto out;
+ 
+ 		if (sp->len == XFRM_MAX_DEPTH)
+-			goto out;
++			goto out_reset;
+ 
+ 		x = xfrm_state_lookup(dev_net(skb->dev), skb->mark,
+ 				      (xfrm_address_t *)&ipv6_hdr(skb)->daddr,
+ 				      spi, IPPROTO_ESP, AF_INET6);
+ 		if (!x)
+-			goto out;
++			goto out_reset;
+ 
+ 		sp->xvec[sp->len++] = x;
+ 		sp->olen++;
+@@ -88,7 +88,7 @@ static struct sk_buff *esp6_gro_receive(struct list_head *head,
+ 		xo = xfrm_offload(skb);
+ 		if (!xo) {
+ 			xfrm_state_put(x);
+-			goto out;
++			goto out_reset;
+ 		}
+ 	}
+ 
+@@ -109,6 +109,8 @@ static struct sk_buff *esp6_gro_receive(struct list_head *head,
+ 	xfrm_input(skb, IPPROTO_ESP, spi, -2);
+ 
+ 	return ERR_PTR(-EINPROGRESS);
++out_reset:
++	secpath_reset(skb);
+ out:
+ 	skb_push(skb, offset);
+ 	NAPI_GRO_CB(skb)->same_flow = 0;
 -- 
 2.20.1
 
