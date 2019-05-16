@@ -2,88 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 419A220ABC
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 17:10:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 799D820AF3
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 17:19:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727628AbfEPPKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 11:10:03 -0400
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:43893 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726703AbfEPPKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 11:10:02 -0400
-Received: by mail-pf1-f201.google.com with SMTP id t1so2375216pfa.10
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 08:10:01 -0700 (PDT)
+        id S1726955AbfEPPTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 11:19:49 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:38451 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726717AbfEPPTs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 11:19:48 -0400
+Received: by mail-qt1-f196.google.com with SMTP id d13so4342838qth.5
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 08:19:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=DpNV65Youz9rtc8RuhOsGHbzi/Opb6nleTtFSXR4wv8=;
-        b=qql+K+dP4wNE/y9ZEucaXINUF/Z4M6NBeukNVTXr81jKbprC7T+11/ClqRk0Ozb0We
-         gmfGqAEyLVuFwfO5ZyjleyM7/i4DNcYjChR4Ujpr9Xs2CkESUKRVSf/V7XpeTfKhnIkc
-         OcXl6BS8foTBRVm+lM/1kX2A9WFTg1SAwoDXRL4S3akrSHXBED7WjYlS1fSnDZcHQ3/K
-         wx8Sp4KKtW5RYZDXPFjsd9uLeJoDoDltBbg0YLvCPEXdTnWJHhqYuCJyhfuKPamudBQS
-         gCmcyXJ/yDTJbyje331GYchOfT9JnN0o4dQog31w5DQA2jmrFOLJHrgjLzTeAPiL97Ma
-         YVyw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=KK3Pd8lOysuRFXC3TKFpzSjVytnncVCclOV4UYrlRT8=;
+        b=eXI40U3U+bO6qCq85gJZF6MMaSQQYqjHq4A0LzLJ1JM2eyk0qhepE5PBXyemPITfwp
+         Y3tnuYlFP4bNZ1S+cckn5Xr0Z9nRf5LpP3BXhedcXxVxLNU51eiwrg500wB8E11A7r5Q
+         lnNrbMPfFWzgGspXUkLVHHzokkCr/9XXLu1W55hl6qATIyPKaG/TE8AVCC/kJPfm+lxd
+         cAWYq9V5YUdtsf+M0Pc+KbFf6m2gx5OcNKbLshqacpYmZuFVeVH+L37MqWZO/cQ3b/qK
+         Aw+dElTdDaTQRxY0cyzsxNsZFiBPXrCeClET6EI7qpj4DeV39M+3+I3zHPkYdv7sBuWu
+         wjmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=DpNV65Youz9rtc8RuhOsGHbzi/Opb6nleTtFSXR4wv8=;
-        b=t6JIiGNcrqOZMkGw8eYTgZ/0tCXCdg8qLT9RKY367DUiL49TZ37/mHqIXpFaoWRbz3
-         IODhaeZEwH0H/BE2ggV0waac+Wt+3kVZXeI6S7+S/QKRYqyRssU2OWGQ7foXEdMT1SfX
-         avztGBnwf07/7OT30txsLaLxs1TfuDSuz+ydmf9X3gvsa/7eARrMrnXDmW9cmgk426ag
-         jTij2UNYE/Dx8Mc6iZDtu8mnn3GRcvw3UxKIs5/6jy5oAJc93hKE/JVBpM2MpnN7VcHe
-         Uii6HD446SaADXmp9omWXJ5p4hjqDME4+FTkL6okFowcJUl1yrH8/PT/fKb5AuYCn9Qe
-         ppBw==
-X-Gm-Message-State: APjAAAWPN/duIuSJgAdopb64OpHd5+45hUbNUN5/Jb7C/wvJGz5Qrap4
-        ZWxLUo2XGaO6/Z0LAUB+bQm+0uW04dwtYw==
-X-Google-Smtp-Source: APXvYqyNu22fSY+DSnxbH++feELYlCDdzGluynCJ8Z1di8r5em/wpb+/GNtGMWSa+/I1OHtfosOD3Z5Obx1yCA==
-X-Received: by 2002:a63:b90a:: with SMTP id z10mr9889531pge.257.1558019401285;
- Thu, 16 May 2019 08:10:01 -0700 (PDT)
-Date:   Thu, 16 May 2019 08:09:57 -0700
-Message-Id: <20190516150957.217157-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
-Subject: [PATCH net] net: avoid weird emergency message
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=KK3Pd8lOysuRFXC3TKFpzSjVytnncVCclOV4UYrlRT8=;
+        b=ZSk5hr6PgpeZHWigqV5KZeRwo9H57TPbu6wnUNAklC5YVJU1Pf7aPfjnRbMgMLOS3w
+         ltXqEWC+OaaAHCp3OglBr/EivxP+U4DxK+sZ+sRpaIBWlienAL4OBjcTYt2SJ0zyXb1P
+         F8yt2yrpS875TgaT6oCY/iqGJQr6DrirRUW8CF5BNY/b/8HSMkCoyiATu5D5zYVr+EMT
+         sYgEKbetRX7GcQkWxt7vLqJwGgQrC3L30UGv8BPY52L/UYNmEbnih64hyFt/yT9jTfWv
+         y2qXL1DplAFyEVZlmoAiI2pTFXG9bKNPlT8+05mLsArsqB/CjcogHN/nqJoVzOSJipgY
+         fjsg==
+X-Gm-Message-State: APjAAAU3SxaSb0M23bE4Vi1r9SLzxPliZPCYJWJMz/pikKN9yIA7VNmb
+        ZE7crsAL8JWxsoEzZQFVIig/HQ==
+X-Google-Smtp-Source: APXvYqxMzEpz+dsRmYo1K3zLULjYp9FbmuSOcLO4o4ee1c3loTLiMT2uNgp/9yjfucjVIeXx9hQIGA==
+X-Received: by 2002:a0c:878e:: with SMTP id 14mr41612347qvj.103.1558019987852;
+        Thu, 16 May 2019 08:19:47 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id x47sm3295469qth.68.2019.05.16.08.19.46
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 16 May 2019 08:19:47 -0700 (PDT)
+Date:   Thu, 16 May 2019 08:19:21 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     davem@davemloft.net, tgraf@suug.ch, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, neilb@suse.com,
+        Simon Horman <simon.horman@netronome.com>
+Subject: Re: [PATCH net] rhashtable: fix sparse RCU warnings on bit lock in
+ bucket pointer
+Message-ID: <20190516081921.75f9d9af@cakuba.netronome.com>
+In-Reply-To: <20190516051622.b4x6hlkuevof4jzr@gondor.apana.org.au>
+References: <20190515205501.17810-1-jakub.kicinski@netronome.com>
+        <20190516051622.b4x6hlkuevof4jzr@gondor.apana.org.au>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When host is under high stress, it is very possible thread
-running netdev_wait_allrefs() returns from msleep(250)
-10 seconds late.
+On Thu, 16 May 2019 13:16:23 +0800, Herbert Xu wrote:
+> On Wed, May 15, 2019 at 01:55:01PM -0700, Jakub Kicinski wrote:
+> > Since the bit_spin_lock() operations don't actually dereference
+> > the pointer, it's fine to forcefully drop the RCU annotation.
+> > This fixes 7 sparse warnings per include site.
+> > 
+> > Fixes: 8f0db018006a ("rhashtable: use bit_spin_locks to protect hash bucket.")
+> > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > Reviewed-by: Simon Horman <simon.horman@netronome.com>  
+> 
+> I don't think this is the right fix.  We should remove the __rcu
+> marker from the opaque type rhash_lock_head since it cannot be
+> directly dereferenced.
+> 
+> I'm working on a fix to this.
 
-This leads to these messages in the syslog :
+Make sense, anything that clears the warnings is fine with me :)
 
-[...] unregister_netdevice: waiting for syz_tun to become free. Usage count = 0
-
-If the device refcount is zero, the wait is over.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 108ac8137b9be8bc7041b3e49e09c25eeb891d8f..b6b8505cfb3e2394f74b41b8e01055c697ad384b 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8927,7 +8927,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
- 
- 		refcnt = netdev_refcnt_read(dev);
- 
--		if (time_after(jiffies, warning_time + 10 * HZ)) {
-+		if (refcnt && time_after(jiffies, warning_time + 10 * HZ)) {
- 			pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
- 				 dev->name, refcnt);
- 			warning_time = jiffies;
--- 
-2.21.0.1020.gf2820cf01a-goog
-
+Thanks!
