@@ -2,83 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 649C9200AD
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 09:52:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44C4820171
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 10:41:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726542AbfEPHwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 03:52:40 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:46016 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726363AbfEPHwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 03:52:40 -0400
-Received: from mailhost.synopsys.com (dc2-mailhost2.synopsys.com [10.12.135.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 3A78FC2634;
-        Thu, 16 May 2019 07:52:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1557993149; bh=9PSf5qStiTiN7G0Rs+TvXW44EQP+VkAyDeSi/WBBYs4=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=a0eafnwhQSLULa6CClpPs+c41eTX/3jFVvLiyys9gpmyen1udET+zciQrygX8MxY+
-         jFHJYUvZq8vjZIC9Uf6kOuTXCZlAsjPIk7umk9KgAy1w9y28IJm3n6gBoSAdZG80my
-         sgZ8IoI0WWslHe061Oy3ueAoeRwpQceerAf/RLD1KTXaUmreqe2cbCq9ImOEVLkGMS
-         ySly7yH5XEjqIwqYGODnZOhMHzmxq7DW9hDrfDzXvkf7xaIaXK8xo8q+VaM8ynRcre
-         yyQO80WUz/2MZV5LcYuMhpu5N3MOXc6I5qBahNwAjeqyMzZiPF489oDf8C8sRKx9eu
-         IgZ95SATvTv+A==
-Received: from US01WXQAHTC1.internal.synopsys.com (us01wxqahtc1.internal.synopsys.com [10.12.238.230])
-        (using TLSv1.2 with cipher AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 2B4E3A0095;
-        Thu, 16 May 2019 07:52:34 +0000 (UTC)
-Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
- US01WXQAHTC1.internal.synopsys.com (10.12.238.230) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Thu, 16 May 2019 00:52:34 -0700
-Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Thu,
- 16 May 2019 09:52:31 +0200
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: RE: [RFC net-next v2 00/14] net: stmmac: Selftests
-Thread-Topic: [RFC net-next v2 00/14] net: stmmac: Selftests
-Thread-Index: AQHVCmwZe0pPTbFIM0O0cHECuOY9LqZsURgAgAER6JA=
-Date:   Thu, 16 May 2019 07:52:32 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B9216D0@DE02WEMBXB.internal.synopsys.com>
-References: <cover.1557848472.git.joabreu@synopsys.com>
- <20190515172922.GA30321@Red>
-In-Reply-To: <20190515172922.GA30321@Red>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.107.19.176]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726707AbfEPIlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 04:41:46 -0400
+Received: from mail-oi1-f180.google.com ([209.85.167.180]:35165 "EHLO
+        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725975AbfEPIlq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 04:41:46 -0400
+Received: by mail-oi1-f180.google.com with SMTP id a132so1931927oib.2
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 01:41:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E7URQpqMRyJOHlh00wQzzB82hDaRhAqYNSSQIhhGFnA=;
+        b=ZoZwWfKmd9kqWwuTbOwUF7OlC2wI+DEecPoIwGYwywNPz7zOIqoIJdNOvEkXQOd8Bd
+         JsUQpF/GzlgeEr7Pp6EZUVVi2u6hrCTk1bopmgwX527k4THv7tIoYS2MkUFSwWffbCFz
+         FaX09lKzejJ7bMQ3+SMyK51nsKxyZJPGcDm+M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E7URQpqMRyJOHlh00wQzzB82hDaRhAqYNSSQIhhGFnA=;
+        b=Z2QBYjd5SNR9YUyMGDA1X7nmPvgiUMX4KhpHRhfCP+C/nnXscbtoWooPMMAb1bMQoX
+         zursqu6+HXNurkceA+FTXy9IFiq5lcMnJHB4MzzUWbQsP1DCeofrbzNZsFJ0sF63isSz
+         7p7KatQbZVR3tCyNnro/zZCLSkqUpdOQK6Ne+XlwYtXHjrH8QZk7LvZs2dYeuzfbNZhX
+         a9hYHR6ZbPHkfbQAHaSFNjLSKEHbph22ayx/8c1Uh7GGcOAIS51YFYSRPEDNUig2Xqo5
+         Vo+Q8oItsoboDWOvDD6ytKi6VJlPkwlEL2OsZP4QTszTrC24l0ta9bajfCb+AFd54Y6B
+         tv2Q==
+X-Gm-Message-State: APjAAAU4bNByxijXqwtQV5iAJhkptzBT7iPHnx84zlIG7Fh6cmq0QHcr
+        czuUv3h8sRfFQ/tJcN4WXlUCWlmzlAIX//aaxyCcqQ==
+X-Google-Smtp-Source: APXvYqyWlRXKxPPbvyCDXC+HEhunukaK4wtzpCin7lUaYtQnjVPT+nuUnL+AlDuJcTiliSowfyySqFJKyXbhBEJJtk4=
+X-Received: by 2002:aca:3111:: with SMTP id x17mr9628187oix.172.1557996105614;
+ Thu, 16 May 2019 01:41:45 -0700 (PDT)
 MIME-Version: 1.0
+References: <CACAyw98+qycmpQzKupquhkxbvWK4OFyDuuLMBNROnfWMZxUWeA@mail.gmail.com>
+ <CADa=RyyuAOupK7LOydQiNi6tx2ELOgD+bdu+DHh3xF0dDxw_gw@mail.gmail.com>
+In-Reply-To: <CADa=RyyuAOupK7LOydQiNi6tx2ELOgD+bdu+DHh3xF0dDxw_gw@mail.gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 16 May 2019 09:41:34 +0100
+Message-ID: <CACAyw9_EGRob4VG0-G4PN9QS_xB5GoDMBB6mPXR-WcPnrFCuLg@mail.gmail.com>
+Subject: Re: RFC: Fixing SK_REUSEPORT from sk_lookup_* helpers
+To:     Joe Stringer <joe@isovalent.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Corentin Labbe <clabbe.montjoie@gmail.com>
-Date: Wed, May 15, 2019 at 18:29:22
+On Wed, 15 May 2019 at 18:16, Joe Stringer <joe@isovalent.com> wrote:
+>
+> On Wed, May 15, 2019 at 8:11 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+> >
+> > In the BPF-based TPROXY session with Joe Stringer [1], I mentioned
+> > that the sk_lookup_* helpers currently return inconsistent results if
+> > SK_REUSEPORT programs are in play.
+> >
+> > SK_REUSEPORT programs are a hook point in inet_lookup. They get access
+> > to the full packet
+> > that triggered the look up. To support this, inet_lookup gained a new
+> > skb argument to provide such context. If skb is NULL, the SK_REUSEPORT
+> > program is skipped and instead the socket is selected by its hash.
+> >
+> > The first problem is that not all callers to inet_lookup from BPF have
+> > an skb, e.g. XDP. This means that a look up from XDP gives an
+> > incorrect result. For now that is not a huge problem. However, once we
+> > get sk_assign as proposed by Joe, we can end up circumventing
+> > SK_REUSEPORT.
+>
+> To clarify a bit, the reason this is a problem is that a
+> straightforward implementation may just consider passing the skb
+> context into the sk_lookup_*() and through to the inet_lookup() so
+> that it would run the SK_REUSEPORT BPF program for socket selection on
+> the skb when the packet-path BPF program performs the socket lookup.
+> However, as this paragraph describes, the skb context is not always
+> available.
+>
+> > At the conference, someone suggested using a similar approach to the
+> > work done on the flow dissector by Stanislav: create a dedicated
+> > context sk_reuseport which can either take an skb or a plain pointer.
+> > Patch up load_bytes to deal with both. Pass the context to
+> > inet_lookup.
+> >
+> > This is when we hit the second problem: using the skb or XDP context
+> > directly is incorrect, because it assumes that the relevant protocol
+> > headers are at the start of the buffer. In our use case, the correct
+> > headers are at an offset since we're inspecting encapsulated packets.
+> >
+> > The best solution I've come up with is to steal 17 bits from the flags
+> > argument to sk_lookup_*, 1 bit for BPF_F_HEADERS_AT_OFFSET, 16bit for
+> > the offset itself.
+>
+> FYI there's also the upper 32 bits of the netns_id parameter, another
+> option would be to steal 16 bits from there.
 
-> I will try to investigate the MMC failure. Does -1 (vs other -EXXXX) is t=
-he right error code to return from the driver ?
+Or len, which is only 16 bits realistically. The offset doesn't really fit into
+either of them very well, using flags seemed the cleanest to me.
+Is there some best practice around this?
 
-Thank you for testing!
+>
+> > Thoughts?
+>
+> Internally with skbs, we use `skb_pull()` to manage header offsets,
+> could we do something similar with `bpf_xdp_adjust_head()` prior to
+> the call to `bpf_sk_lookup_*()`?
 
-Yes, I will fix to return a valid error code.
+That would only work if it retained the contents of the skipped
+buffer, and if there
+was a way to undo the adjustment later. We're doing the sk_lookup to
+decide whether to
+accept or forward the packet, so at the point of the call we might still need
+that data. Is that feasible with skb / XDP ctx?
 
-As per MMC failure this can be due to your HW not having all MMC counters=20
-available. Can you please remove all if conditions in stmmac_test_mmc()=20
-and just leave the "mmc_tx_framecount_g" check ?
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
-Thanks,
-Jose Miguel Abreu
+www.cloudflare.com
