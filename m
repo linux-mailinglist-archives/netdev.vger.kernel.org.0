@@ -2,146 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB33F1FDF5
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 05:14:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3549D1FE3B
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 05:39:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726324AbfEPDOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 23:14:44 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7652 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726157AbfEPDOn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 May 2019 23:14:43 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id D8D70AD0CB65ACE202E0;
-        Thu, 16 May 2019 11:14:41 +0800 (CST)
-Received: from [127.0.0.1] (10.74.221.148) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 16 May 2019
- 11:14:35 +0800
-Subject: Re: [PATCH] arm64: do_csum: implement accelerated scalar version
-To:     Will Deacon <will.deacon@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>
-References: <20190218230842.11448-1-ard.biesheuvel@linaro.org>
- <d7a16ebd-073f-f50e-9651-68606d10b01c@hisilicon.com>
- <20190412095243.GA27193@fuggles.cambridge.arm.com>
- <41b30c72-c1c5-14b2-b2e1-3507d552830d@arm.com>
- <20190515094704.GC24357@fuggles.cambridge.arm.com>
-CC:     Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <ilias.apalodimas@linaro.org>,
-        "huanglingyan (A)" <huanglingyan2@huawei.com>,
-        <steve.capper@arm.com>
-From:   Zhangshaokun <zhangshaokun@hisilicon.com>
-Message-ID: <440eb674-0e59-a97e-4a90-0026e2327069@hisilicon.com>
-Date:   Thu, 16 May 2019 11:14:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.1.1
+        id S1726393AbfEPDjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 May 2019 23:39:33 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44518 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726190AbfEPDjd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 23:39:33 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4G3U4iK027744
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 20:39:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=CmSHyn6HPrP5p18KmBFlKUCdl/W/+J+Wgl33L/LR0kM=;
+ b=iaEUTPuNAMP+f5n3BU7/xfF3qE3zyhEVmd1vjvJO8CE/o1nDPgoTaIquYO7h2OT5bTom
+ 9D8PtkS9tZWOEkQE3IZ0CS5v8QW26dYdEd+75Yhak1G0zCSeaXan5glWO8MnfoDY9QqF
+ V1XIn69LqQbqywbMmJusrLb9sfZpj0FVwlc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sgrjehfe9-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 20:39:31 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 15 May 2019 20:39:29 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 860C28627FA; Wed, 15 May 2019 20:39:28 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <ast@fb.com>
+CC:     Andrii Nakryiko <andriin@fb.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf] libbpf: move logging helpers into libbpf_internal.h
+Date:   Wed, 15 May 2019 20:39:27 -0700
+Message-ID: <20190516033927.2425057-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <20190515094704.GC24357@fuggles.cambridge.arm.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.221.148]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-16_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=886 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905160023
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Will,
+libbpf_util.h header was recently exposed as public as a dependency of
+xsk.h. In addition to memory barriers, it contained logging helpers,
+which are not supposed to be exposed. This patch moves those into
+libbpf_internal.h, which is kept as an internal header.
 
-On 2019/5/15 17:47, Will Deacon wrote:
-> On Mon, Apr 15, 2019 at 07:18:22PM +0100, Robin Murphy wrote:
->> On 12/04/2019 10:52, Will Deacon wrote:
->>> I'm waiting for Robin to come back with numbers for a C implementation.
->>>
->>> Robin -- did you get anywhere with that?
->>
->> Still not what I would call finished, but where I've got so far (besides an
->> increasingly elaborate test rig) is as below - it still wants some unrolling
->> in the middle to really fly (and actual testing on BE), but the worst-case
->> performance already equals or just beats this asm version on Cortex-A53 with
->> GCC 7 (by virtue of being alignment-insensitive and branchless except for
->> the loop). Unfortunately, the advantage of C code being instrumentable does
->> also come around to bite me...
-> 
-> Is there any interest from anybody in spinning a proper patch out of this?
-> Shaokun?
+Cc: Stanislav Fomichev <sdf@google.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Fixes: 7080da890984 ("libbpf: add libbpf_util.h to header install.")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/btf.c             |  2 +-
+ tools/lib/bpf/libbpf.c          |  1 -
+ tools/lib/bpf/libbpf_internal.h | 13 +++++++++++++
+ tools/lib/bpf/libbpf_util.h     | 13 -------------
+ tools/lib/bpf/xsk.c             |  2 +-
+ 5 files changed, 15 insertions(+), 16 deletions(-)
 
-HiSilicon's Kunpeng920(Hi1620) benefits from do_csum optimization, if Ard and
-Robin are ok, Lingyan or I can try to do it.
-Of course, if any guy posts the patch, we are happy to test it.
-Any will be ok.
-
-Thanks,
-Shaokun
-
-> 
-> Will
-> 
->> /* Looks dumb, but generates nice-ish code */
->> static u64 accumulate(u64 sum, u64 data)
->> {
->> 	__uint128_t tmp = (__uint128_t)sum + data;
->> 	return tmp + (tmp >> 64);
->> }
->>
->> unsigned int do_csum_c(const unsigned char *buff, int len)
->> {
->> 	unsigned int offset, shift, sum, count;
->> 	u64 data, *ptr;
->> 	u64 sum64 = 0;
->>
->> 	offset = (unsigned long)buff & 0x7;
->> 	/*
->> 	 * This is to all intents and purposes safe, since rounding down cannot
->> 	 * result in a different page or cache line being accessed, and @buff
->> 	 * should absolutely not be pointing to anything read-sensitive.
->> 	 * It does, however, piss off KASAN...
->> 	 */
->> 	ptr = (u64 *)(buff - offset);
->> 	shift = offset * 8;
->>
->> 	/*
->> 	 * Head: zero out any excess leading bytes. Shifting back by the same
->> 	 * amount should be at least as fast as any other way of handling the
->> 	 * odd/even alignment, and means we can ignore it until the very end.
->> 	 */
->> 	data = *ptr++;
->> #ifdef __LITTLE_ENDIAN
->> 	data = (data >> shift) << shift;
->> #else
->> 	data = (data << shift) >> shift;
->> #endif
->> 	count = 8 - offset;
->>
->> 	/* Body: straightforward aligned loads from here on... */
->> 	//TODO: fancy stuff with larger strides and uint128s?
->> 	while(len > count) {
->> 		sum64 = accumulate(sum64, data);
->> 		data = *ptr++;
->> 		count += 8;
->> 	}
->> 	/*
->> 	 * Tail: zero any over-read bytes similarly to the head, again
->> 	 * preserving odd/even alignment.
->> 	 */
->> 	shift = (count - len) * 8;
->> #ifdef __LITTLE_ENDIAN
->> 	data = (data << shift) >> shift;
->> #else
->> 	data = (data >> shift) << shift;
->> #endif
->> 	sum64 = accumulate(sum64, data);
->>
->> 	/* Finally, folding */
->> 	sum64 += (sum64 >> 32) | (sum64 << 32);
->> 	sum = sum64 >> 32;
->> 	sum += (sum >> 16) | (sum << 16);
->> 	if (offset & 1)
->> 		return (u16)swab32(sum);
->>
->> 	return sum >> 16;
->> }
-> 
-> .
-> 
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index 75eaf10b9e1a..03348c4d6bd4 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -11,7 +11,7 @@
+ #include "btf.h"
+ #include "bpf.h"
+ #include "libbpf.h"
+-#include "libbpf_util.h"
++#include "libbpf_internal.h"
+ 
+ #define max(a, b) ((a) > (b) ? (a) : (b))
+ #define min(a, b) ((a) < (b) ? (a) : (b))
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 3562b6ef5fdc..197b574406b3 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -43,7 +43,6 @@
+ #include "bpf.h"
+ #include "btf.h"
+ #include "str_error.h"
+-#include "libbpf_util.h"
+ #include "libbpf_internal.h"
+ 
+ #ifndef EM_BPF
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index 789e435b5900..f3025b4d90e1 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -21,6 +21,19 @@
+ #define BTF_PARAM_ENC(name, type) (name), (type)
+ #define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
+ 
++extern void libbpf_print(enum libbpf_print_level level,
++			 const char *format, ...)
++	__attribute__((format(printf, 2, 3)));
++
++#define __pr(level, fmt, ...)	\
++do {				\
++	libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__);	\
++} while (0)
++
++#define pr_warning(fmt, ...)	__pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
++#define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
++#define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
++
+ int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
+ 			  const char *str_sec, size_t str_len);
+ 
+diff --git a/tools/lib/bpf/libbpf_util.h b/tools/lib/bpf/libbpf_util.h
+index da94c4cb2e4d..59c779c5790c 100644
+--- a/tools/lib/bpf/libbpf_util.h
++++ b/tools/lib/bpf/libbpf_util.h
+@@ -10,19 +10,6 @@
+ extern "C" {
+ #endif
+ 
+-extern void libbpf_print(enum libbpf_print_level level,
+-			 const char *format, ...)
+-	__attribute__((format(printf, 2, 3)));
+-
+-#define __pr(level, fmt, ...)	\
+-do {				\
+-	libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__);	\
+-} while (0)
+-
+-#define pr_warning(fmt, ...)	__pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
+-#define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
+-#define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
+-
+ /* Use these barrier functions instead of smp_[rw]mb() when they are
+  * used in a libbpf header file. That way they can be built into the
+  * application that uses libbpf.
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index a3d1a302bc9c..38667b62f1fe 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -29,7 +29,7 @@
+ 
+ #include "bpf.h"
+ #include "libbpf.h"
+-#include "libbpf_util.h"
++#include "libbpf_internal.h"
+ #include "xsk.h"
+ 
+ #ifndef SOL_XDP
+-- 
+2.17.1
 
