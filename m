@@ -2,57 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 332AB20670
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 14:00:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C7BA206A1
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 14:04:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727429AbfEPLx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 07:53:57 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:38248 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726723AbfEPLx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 07:53:57 -0400
-Received: by mail-wr1-f67.google.com with SMTP id d18so3068849wrs.5
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 04:53:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=X+gSRjgYs94FNqRE261SakaEbBtJb3kkWe8LB1/42jE=;
-        b=j4J25OUxz9yKwxYpUwLw8duMN4RI55xte8ipW+f5E4DytyceoKunw9W7EZU/h3YDZk
-         YcKrgPrklNQ9Uq/MMT/w5ng+nFB7xtADKG4YlplTC4RVFfE0TGZ1PqQGxZrDuiQX1etZ
-         nkP+gn8eKusLpTvxsDJpKWZ0EZkitCa1Ubd+dn3rCOd6TuVRIo1pKqqKoLTc7JiEc1io
-         uG0+a1vcLeBaLAJFkzEZFW0NKR1ITk+eScQHHbPWwLclAaolWxXxz5029Ojd8YFxyBF9
-         IjzhwdaBvThlv260rGr/NFPROEFWO2KxSNZXnrFjYFnT03qD1nmk6lZM3FIMEeHaWTL1
-         U5QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=X+gSRjgYs94FNqRE261SakaEbBtJb3kkWe8LB1/42jE=;
-        b=COuJT1ieIyDrTcOM8r8xg0VZc0a+4hDfljFfrURmZsmhOGIroDJpwXnGc0zbRNBxAZ
-         XKuU8fywNah4tnQOSeRyoqbKy7Dm/ZYez/vdQEKbCnKNymCBFLsB8uvbdAioam6iFqyC
-         orfKbjM3/LboNl5JLRtkF0VMz8Wb9wAhqSuw0bnxfOeVOjEg8Izo6xBU4WGDOAVG5n/Q
-         EaZPrzENDjldNFUeeDT1xyrs1OfGW5t45+vcZKcLrAG2G2Hkr7N0c+xrHvmZSgcYo78k
-         FZ3jta4PQaR9z5Pi1GPiG1WvxLF6yCSaoe7xBR2Y9RFlRM9W1AGbr6Wwlg8QSsjYfTHS
-         T9EQ==
-X-Gm-Message-State: APjAAAV7TgH+FbTMKa2hvn8GknxWCa7vpIlx2xvk5C1p2XxCx1RPpUVF
-        NTjVjD7Q4+Zhrl/ODKZmZg+dqQ==
-X-Google-Smtp-Source: APXvYqzUrgf7BPu5F+Il6XSdk7L8Nmju3j9XIspb6tdOG9w4lIjtKgMKLieBBSHMEuP+ER8K29W2fA==
-X-Received: by 2002:adf:e686:: with SMTP id r6mr18585644wrm.90.1558007634757;
-        Thu, 16 May 2019 04:53:54 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id i25sm6365758wmb.46.2019.05.16.04.53.54
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 16 May 2019 04:53:54 -0700 (PDT)
-Date:   Thu, 16 May 2019 13:53:53 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Aya Levin <ayal@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S1727113AbfEPMEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 08:04:34 -0400
+Received: from mail-eopbgr40061.outbound.protection.outlook.com ([40.107.4.61]:23300
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727015AbfEPMEc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 08:04:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ouqtJSIhNN6njEO6vTdi2Cx24ycyp+jYDT1F1B8P0Es=;
+ b=PbedRU6F21K2hDxo9f+f06i4i9Qbk0C6DKQkyIeWq0o0jtC1w9dxmdLDXkCsKBnJAcaypB3ggdtafJcMAHsLi9mfQHxsQReCFP+KoCLLn7X0YxSC4fYy8khmUkZxzYc0SVfWApQImQXwOjBGRZCE6KnmnVSsZqMLlrTxRgGUuyQ=
+Received: from AM0PR05MB5089.eurprd05.prod.outlook.com (20.177.41.153) by
+ AM0PR05MB6194.eurprd05.prod.outlook.com (20.178.112.15) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.17; Thu, 16 May 2019 12:02:50 +0000
+Received: from AM0PR05MB5089.eurprd05.prod.outlook.com
+ ([fe80::4d74:8969:23d9:85c3]) by AM0PR05MB5089.eurprd05.prod.outlook.com
+ ([fe80::4d74:8969:23d9:85c3%6]) with mapi id 15.20.1878.024; Thu, 16 May 2019
+ 12:02:50 +0000
+From:   Aya Levin <ayal@mellanox.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Eran Ben Elisha <eranbe@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         Jiri Pirko <jiri@mellanox.com>
 Subject: Re: [PATCH net-next RFC] Dump SW SQ context as part of tx reporter
-Message-ID: <20190516115353.GA2178@nanopsycho.orion>
+Thread-Topic: [PATCH net-next RFC] Dump SW SQ context as part of tx reporter
+Thread-Index: AQHU/pZYnyLGqTM5xEOXiNRSU0YqZKZfpzWAgAA3CoCAAqWQAIAE7TAAgAMtIoCAAu1YgIAAM2uAgAACfIA=
+Date:   Thu, 16 May 2019 12:02:49 +0000
+Message-ID: <f95707a3-ff53-3a6c-5fa1-1b0fd44d8f38@mellanox.com>
 References: <1556547459-7756-1-git-send-email-ayal@mellanox.com>
  <20190507124129.GC2157@nanopsycho>
  <a9cc0437-163c-53a1-92e9-64767e23b585@mellanox.com>
@@ -60,439 +43,350 @@ References: <1556547459-7756-1-git-send-email-ayal@mellanox.com>
  <2306cc76-8110-2d55-be7e-0617bfc0d316@mellanox.com>
  <20190514120751.GD2238@nanopsycho>
  <ef0a0ead-9576-00e4-ea4f-4870aea978f4@mellanox.com>
+ <20190516115353.GA2178@nanopsycho.orion>
+In-Reply-To: <20190516115353.GA2178@nanopsycho.orion>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR0202CA0012.eurprd02.prod.outlook.com
+ (2603:10a6:208:1::25) To AM0PR05MB5089.eurprd05.prod.outlook.com
+ (2603:10a6:208:cd::25)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ayal@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 66fffa97-502e-42dd-caa5-08d6d9f66ac6
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB6194;
+x-ms-traffictypediagnostic: AM0PR05MB6194:
+x-microsoft-antispam-prvs: <AM0PR05MB6194FB5A7DEA22C146B57E38B00A0@AM0PR05MB6194.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4125;
+x-forefront-prvs: 0039C6E5C5
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(366004)(39860400002)(136003)(376002)(346002)(199004)(189003)(386003)(76176011)(53546011)(6246003)(229853002)(4326008)(66556008)(99286004)(73956011)(66946007)(8936002)(64756008)(66446008)(14454004)(66476007)(81166006)(81156014)(6486002)(52116002)(8676002)(6436002)(26005)(102836004)(6916009)(486006)(71190400001)(476003)(71200400001)(2616005)(107886003)(11346002)(446003)(6506007)(305945005)(186003)(6116002)(3846002)(53936002)(36756003)(2906002)(478600001)(31686004)(54906003)(31696002)(68736007)(86362001)(256004)(14444005)(66066001)(316002)(5660300002)(25786009)(6512007)(53946003)(30864003)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6194;H:AM0PR05MB5089.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: xASnl6zq0nadN0o/aoIyohggWpBtSBqFXSlIUsxWzKw9RUCziIF+Exh3nltI0N3/Vq7pkQdF84BiR3hjnzEZZgV1OkV+LBWV4GLUni4SSfPOHAldeWUx59DDj8gI/O6NR4NUI6VDQGgxPNUP+IPQzkoAxlGyVKsXGmiiz0zsY5q71RNPzw5St0iOVs/SERcOe6NXrdjHEhIpFE9Fv3QvtJzwr6npDIllt29GwojIcLbtwfQpsC5cdRxB0v8OAzVcU4BO8bnIlCxvs46ShUsD96vOKjpgYBquOk/JG8H/1ipHIBa/WnG3S+3+Z3d5Gd9uCOzXlJMoBHm4Zsx0ZHnGQ0D3zhMT3+JBqpSKQV2WSPDlsJ4JoGbN1/djOhR9prhKXcGWkZRip6dh9X+CZl5tL0t3MKeQ9akncwhV9P9ImmQ=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <73ED91CBC3E66E4899408011B62B8FA1@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ef0a0ead-9576-00e4-ea4f-4870aea978f4@mellanox.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66fffa97-502e-42dd-caa5-08d6d9f66ac6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2019 12:02:49.9776
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6194
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, May 16, 2019 at 10:49:54AM CEST, ayal@mellanox.com wrote:
->
->
->On 5/14/2019 3:07 PM, Jiri Pirko wrote:
->> Sun, May 12, 2019 at 10:37:35AM CEST, ayal@mellanox.com wrote:
->>>
->>>
->>> On 5/9/2019 11:23 AM, Jiri Pirko wrote:
->>>> Tue, May 07, 2019 at 02:58:32PM CEST, ayal@mellanox.com wrote:
->>>>>
->>>>>
->>>>> On 5/7/2019 3:41 PM, Jiri Pirko wrote:
->>>>>> Mon, Apr 29, 2019 at 04:17:39PM CEST, ayal@mellanox.com wrote:
->>>>>>> TX reporter reports an error on two scenarios:
->>>>>>> - TX timeout on a specific tx queue
->>>>>>> - TX completion error on a specific send queue
->>>>>>> Prior to this patch, no dump data was supported by the tx reporter. This
->>>>>>> patch adds support for SW data dump of the related SQ context. The dump
->>>>>>> is simply the SQ's raw memory snapshot taken right after the error was
->>>>>>> reported, before any recovery procedure was launched. With this
->>>>>>> approach, no maintenance is needed as the driver fetch the actual data
->>>>>>> according to the layout on which the SQ was compiled with.  By providing
->>>>>>> a SW context, one can easily debug error on a given SQ.
->>>>>>>
->>>>>>> In order to offline translate the raw memory into a human readable
->>>>>>> format, the user can use some out-of-kernel scripts which receives as an
->>>>>>> input the following:
->>>>>>> - Object raw memory
->>>>>>> - Driver object compiled with debug info (can be taken/generated at any time from the machine)
->>>>>>> - Object name
->>>>>>>
->>>>>>> An example of such script output can be seen below.
->>>>>>> Note: the script is not offered as part of this patch as it do not
->>>>>>> belong to the kernel, I just described it in order to grasp the general
->>>>>>> idea of how/what can be fetched from SW dump via devlink health.
->>>>>>>
->>>>>>> The output of the SW dump can be extracted by devlink health command:
->>>>>>> $ sudo devlink health dump show pci/0000:00:0b.0 reporter tx.
->>>>>>> mlx5e_txqsq: sqn: 6336
->>>>>>> memory:
->>>>>>>      00 00 00 00 00 00 00 00
->>>>>>>      01 00 00 00 00 00 00 00
->>>>>>>      00 00 00 00 00 00 00 00
->>>>>>>      45 f4 88 cb 09 00 00 00
->>>>>>>      00 00 00 00 00 00 00 00
->>>>>>>      00 00 00 00 00 00 00 00
->>>>>>>      c0 ff ff ff 1f 00 00 00
->>>>>>>      f8 18 1e 89 81 88 ff ff
->>>>>>>      ...
->>>>>>>
->>>>>>> script output below, with struct members names and actual values:
->>>>>>>
->>>>>>> struct  mlx5e_txqsq {
->>>>>>> 	short unsigned int         cc 	 0x5 ;
->>>>>>> 	unsigned int               dma_fifo_cc 	 0x5 ;
->>>>>>> 	struct  net_dim {
->>>>>>> 		unsigned char      state 	 0x1 ;
->>>>>>> 		struct  net_dim_stats {
->>>>>>> 			int        ppms 	 0x0 ;
->>>>>>> 			int        bpms 	 0x0 ;
->>>>>>> 			int        epms 	 0x0 ;
->>>>>>> 		} prev_stats;
->>>>>>> 		struct  net_dim_sample {
->>>>>>> 			long long int time 	 0x90766ef9d ;
->>>>>>> 			unsigned int pkt_ctr 	 0x0 ;
->>>>>>> 			unsigned int byte_ctr 	 0x0 ;
->>>>>>> 			short unsigned int event_ctr 	 0x0 ;
->>>>>>> 		} start_sample;
->>>>>>> 		struct  work_struct {
->>>>>>> 			struct   {
->>>>>>> 				long int counter 	 0x1fffffffc0 ;
->>>>>>> 			} data;
->>>>>>> 			struct  list_head {
->>>>>>> 				struct list_head * next 	 0xffff8881b08998f8 ;
->>>>>>> 				struct list_head * prev 	 0xffff8881b08998f8 ;
->>>>>>> 			} entry;
->>>>>>> 			void       (*func)(struct work_struct *) 	 0xffffffffa02d0e30 ;
->>>>>>> 		} work;
->>>>>>> 		unsigned char      profile_ix 	 0x60 ;
->>>>>>> 		unsigned char      mode 	 0x72 ;
->>>>>>> 		unsigned char      tune_state 	 0x35 ;
->>>>>>> 		unsigned char      steps_right 	 0xa0 ;
->>>>>>> 		unsigned char      steps_left 	 0xff ;
->>>>>>> 		unsigned char      tired 	 0xff ;
->>>>>>> 	} dim;
->>>>>>> 	short unsigned int         pc 	 0x0 ;
->>>>>>> 	unsigned int               dma_fifo_pc 	 0x0 ;
->>>>>>> 	struct  mlx5e_cq {
->>>>>>> 		struct  mlx5_cqwq {
->>>>>>> 			struct  mlx5_frag_buf_ctrl {
->>>>>>> 				struct mlx5_buf_list * frags 	 0x500000005 ;
->>>>>>> 				unsigned int sz_m1 	 0x0 ;
->>>>>>> 				short unsigned int frag_sz_m1 	 0x0 ;
->>>>>>> 				short unsigned int strides_offset 	 0x0 ;
->>>>>>> 				unsigned char log_sz 	 0x0 ;
->>>>>>> 				unsigned char log_stride 	 0x0 ;
->>>>>>> 				unsigned char log_frag_strides 	 0x0 ;
->>>>>>> 			} fbc;
->>>>>>> 			__be32 *   db 	 0x0 ;
->>>>>>> 			unsigned int cc 	 0x0 ;
->>>>>>> 		} wq;
->>>>>>> 		short unsigned int event_ctr 	 0x0 ;
->>>>>>> 		struct napi_struct * napi 	 0x0 ;
->>>>>>> 		struct  mlx5_core_cq {
->>>>>>> 			unsigned int cqn 	 0x0 ;
->>>>>>> 			int        cqe_sz 	 0x0 ;
->>>>>>> 			__be32 *   set_ci_db 	 0xffff8881b1aa4988 ;
->>>>>>> 			__be32 *   arm_db 	 0x3f000003ff ;
->>>>>>> 			struct mlx5_uars_page * uar 	 0x6060a ;
->>>>>>> 			struct  refcount_struct {
->>>>>>> 				struct   {
->>>>>>> 					int    counter 	 0xa1814500 ;
->>>>>>> 				} refs;
->>>>>>> 			} refcount;
->>>>>>> 			struct  completion {
->>>>>>> 				unsigned int done 	 0x5 ;
->>>>>>> 				struct  wait_queue_head {
->>>>>>> 					struct  spinlock {
->>>>>>> 						union   {
->>>>>>> 							struct  raw_spinlock {
->>>>>>> 								struct  qspinlock {
->>>>>>> 									union   {
->>>>>>> 										struct   {
->>>>>>> 											int                                                    counter 	 0x5 ;
->>>>>>> 										} val;
->>>>>>> 										struct   {
->>>>>>> 											unsigned char                                          locked 	 0x5 ;
->>>>>>> 											unsigned char                                          pending 	 0x0 ;
->>>>>>> 										} ;
->>>>>>> 										struct   {
->>>>>>> 											short unsigned int                                     locked_pending 	 0x5 ;
->>>>>>> 											short unsigned int                                     tail 	 0x0 ;
->>>>>>> 										} ;
->>>>>>> 									} ;
->>>>>>> 								} raw_lock;
->>>>>>> 							} rlock;
->>>>>>> 						} ;
->>>>>>> 					} lock;
->>>>>>> 					struct  list_head {
->>>>>>> 						struct list_head * next 	 0xffff8881b089bb88 ;
->>>>>>> 						struct list_head * prev 	 0x4000000c0a ;
->>>>>>> 					} head;
->>>>>>> 				} wait;
->>>>>>> 			} free;
->>>>>>> 			unsigned int vector 	 0xa1814500 ;
->>>>>>> 			unsigned int irqn 	 0xffff8881 ;
->>>>>>> 			void       (*comp)(struct mlx5_core_cq *) 	 0xffff8881a1814504 ;
->>>>>>> 			void       (*event)(struct mlx5_core_cq *, enum mlx5_event) 	 0xffff8881a2cdea08 ;
->>>>>>> 			unsigned int cons_index 	 0x1 ;
->>>>>>> 			unsigned int arm_sn 	 0x0 ;
->>>>>>> 			struct mlx5_rsc_debug * dbg 	 0x0 ;
->>>>>>> 			int        pid 	 0x0 ;
->>>>>>> 			struct   {
->>>>>>> 				struct  list_head {
->>>>>>> 					struct list_head * next 	 0xffffffff ;
->>>>>>> 					struct list_head * prev 	 0xffffffffffffffff ;
->>>>>>> 				} list;
->>>>>>> 				void (*comp)(struct mlx5_core_cq *) 	 0xffffffffa0356940 ;
->>>>>>> 				void * priv 	 0x0 ;
->>>>>>> 			} tasklet_ctx;
->>>>>>> 			int        reset_notify_added 	 0x0 ;
->>>>>>> 			struct  list_head {
->>>>>>> 				struct list_head * next 	 0xffffffffa0300700 ;
->>>>>>> 				struct list_head * prev 	 0xd ;
->>>>>>> 			} reset_notify;
->>>>>>> 			struct mlx5_eq_comp * eq 	 0x0 ;
->>>>>>> 			short unsigned int uid 	 0x9a70 ;
->>>>>>> 		} mcq;
->>>>>>> 		struct mlx5e_channel * channel 	 0xffff8881b0899a70 ;
->>>>>>> 		struct mlx5_core_dev * mdev 	 0x4800000001 ;
->>>>>>> 		struct  mlx5_wq_ctrl {
->>>>>>> 			struct mlx5_core_dev * mdev 	 0xffffffffa02d5350 ;
->>>>>>> 			struct  mlx5_frag_buf {
->>>>>>> 				struct mlx5_buf_list * frags 	 0xffffffffa02d5460 ;
->>>>>>> 				int npages 	 0x0 ;
->>>>>>> 				int size 	 0x5 ;
->>>>>>> 				unsigned char page_shift 	 0x8 ;
->>>>>>> 			} buf;
->>>>>>> 			struct  mlx5_db {
->>>>>>> 				__be32 * db 	 0x1c6 ;
->>>>>>> 				union   {
->>>>>>> 					struct mlx5_db_pgdir * pgdir 	 0x0 ;
->>>>>>> 					struct mlx5_ib_user_db_page * user_page 	 0x0 ;
->>>>>>> 				} u;
->>>>>>> 				long long unsigned int dma 	 0xffff8881b0899ab0 ;
->>>>>>> 				int index 	 0x0 ;
->>>>>>> 			} db;
->>>>>>> 		} wq_ctrl;
->>>>>>> 	} cq;
->>>>>>> 	struct  mlx5_wq_cyc {
->>>>>>> 		struct  mlx5_frag_buf_ctrl {
->>>>>>> 			struct mlx5_buf_list * frags 	 0xffff8881a7600160 ;
->>>>>>> 			unsigned int sz_m1 	 0xa7600160 ;
->>>>>>> 			short unsigned int frag_sz_m1 	 0x8881 ;
->>>>>>> 			short unsigned int strides_offset 	 0xffff ;
->>>>>>> 			unsigned char log_sz 	 0x88 ;
->>>>>>> 			unsigned char log_stride 	 0x49 ;
->>>>>>> 			unsigned char log_frag_strides 	 0xaa ;
->>>>>>> 		} fbc;
->>>>>>> 		__be32 *           db 	 0x1000000000010 ;
->>>>>>> 		short unsigned int sz 	 0xc ;
->>>>>>> 		short unsigned int wqe_ctr 	 0x0 ;
->>>>>>> 		short unsigned int cur_sz 	 0x0 ;
->>>>>>> 	} wq;
->>>>>>> 	unsigned int               dma_fifo_mask 	 0xa1814500 ;
->>>>>>> 	struct mlx5e_sq_stats *    stats 	 0xffff8881a33a0348 ;
->>>>>>> 	struct   {
->>>>>>> 		struct mlx5e_sq_dma * dma_fifo 	 0x1a1814500 ;
->>>>>>> 		struct mlx5e_tx_wqe_info * wqe_info 	 0x14 ;
->>>>>>> 	} db;
->>>>>>> 	void *                     uar_map 	 0x0 ;
->>>>>>> 	struct netdev_queue *      txq 	 0x0 ;
->>>>>>> 	unsigned int               sqn 	 0x18c0 ;
->>>>>>> 	unsigned char              min_inline_mode 	 0x0 ;
->>>>>>> 	struct device *            pdev 	 0x0 ;
->>>>>>> 	unsigned int               mkey_be 	 0x0 ;
->>>>>>> 	long unsigned int          state 	 0x0 ;
->>>>>>> 	struct hwtstamp_config *   tstamp 	 0x0 ;
->>>>>>> 	struct mlx5_clock *        clock 	 0xffff8881b1aa6f88 ;
->>>>>>> 	struct  mlx5_wq_ctrl {
->>>>>>> 		struct mlx5_core_dev * mdev 	 0x3f000003ff ;
->>>>>>> 		struct  mlx5_frag_buf {
->>>>>>> 			struct mlx5_buf_list * frags 	 0x6060a ;
->>>>>>> 			int        npages 	 0xa1814604 ;
->>>>>>> 			int        size 	 0xffff8881 ;
->>>>>>> 			unsigned char page_shift 	 0x0 ;
->>>>>>> 		} buf;
->>>>>>> 		struct  mlx5_db {
->>>>>>> 			__be32 *   db 	 0xfff ;
->>>>>>> 			union   {
->>>>>>> 				struct mlx5_db_pgdir * pgdir 	 0x0 ;
->>>>>>> 				struct mlx5_ib_user_db_page * user_page 	 0x0 ;
->>>>>>> 			} u;
->>>>>>> 			long long unsigned int dma 	 0xffff888188440000 ;
->>>>>>> 			int        index 	 0x8b074000 ;
->>>>>>> 		} db;
->>>>>>> 	} wq_ctrl;
->>>>>>> 	struct mlx5e_channel *     channel 	 0xffffc9000010d800 ;
->>>>>>> 	int                        txq_ix 	 0xa0020180 ;
->>>>>>> 	unsigned int               rate_limit 	 0xffff8881 ;
->>>>>>> 	struct  work_struct {
->>>>>>> 		struct   {
->>>>>>> 			long int   counter 	 0x1000018c0 ;
->>>>>>> 		} data;
->>>>>>> 		struct  list_head {
->>>>>>> 			struct list_head * next 	 0xffff8881c32b68e8 ;
->>>>>>> 			struct list_head * prev 	 0x800 ;
->>>>>>> 		} entry;
->>>>>>> 		void               (*func)(struct work_struct *) 	 0x9 ;
->>>>>>> 	} recover_work;
->>>>>>> } ;
->>>>>>
->>>>>> I don't get it. You are dumping live kernel memory? There are already
->>>>>> facilities to do that in place. Why to replicate it?
->>>>> I am dumping the driver's memory under a lock so I can ensure it's
->>>>> consistency (as appose to /dev/mem)
->>>>> vmcore cannot be taken from a live kernel (without crashing).
->>>>> I need the memory's snapshot right after the error from the driver's
->>>>> context.
->>>>
->>>> Got it. However, this sounds like a generic problem not specific to
->>>> nic drivers. How other subsystems resolve this (if they do at all)?
->>>>
->>>>
->>> Correct, this is a suggested debugging solution for a generic problem:
->>> enabling the user of a run time memory snapshot for kernel modules (at a
->>> given error event). My research shows that other subsystems deal with
->>> errors either by panicking (too much) or by debug/log prints (too little).
->>> This solution is (a) low in maintenance (b) consistent in memory (c) has
->>> small performance impact (d) use an existing infra-structure between the
->>> kernel module and the user space.
->> 
->> I'm still convinced that dumping kernel memory over devlink health dump
->> is a good idea :/
->> 
->> 
->>> It might be ported to other subsystems using their own user-space vs.
->>> kernel tools. Regardless of how the memory output was generated to the
->>> user, the parsing script can work on it.
->> 
->> Could you share the script? How is it going to be distributed?
->I thought that the script should be in a available on Mellanox website. 
-
-:(
-
-
->The script is still pending review but I will be happy to share it when 
->its ready.
->> 
->> 
->>>
->>>>
->>>>> Which other tools do you mean?
->>>>>>
->>>>>>
->>>>>>>
->>>>>>> Signed-off-by: Aya Levin <ayal@mellanox.com>
->>>>>>> ---
->>>>>>> .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   | 100 +++++++++++++++++++++
->>>>>>> 1 file changed, 100 insertions(+)
->>>>>>>
->>>>>>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
->>>>>>> index 476dd97f7f2f..8a39f5525e57 100644
->>>>>>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
->>>>>>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
->>>>>>> @@ -9,6 +9,7 @@
->>>>>>>
->>>>>>> struct mlx5e_tx_err_ctx {
->>>>>>> 	int (*recover)(struct mlx5e_txqsq *sq);
->>>>>>> +	int (*dump)(struct mlx5e_txqsq *sq);
->>>>>>> 	struct mlx5e_txqsq *sq;
->>>>>>> };
->>>>>>>
->>>>>>> @@ -281,10 +282,109 @@ static int mlx5e_tx_reporter_diagnose(struct devlink_health_reporter *reporter,
->>>>>>> 	return err;
->>>>>>> }
->>>>>>>
->>>>>>> +static int mlx5e_tx_reporter_sw_dump_from_ctx(struct mlx5e_priv *priv,
->>>>>>> +					      struct mlx5e_txqsq *sq,
->>>>>>> +					      struct devlink_fmsg *fmsg)
->>>>>>> +{
->>>>>>> +	u64 *ptr = (u64 *)sq;
->>>>>>> +	int copy, err;
->>>>>>> +	int i = 0;
->>>>>>> +
->>>>>>> +	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
->>>>>>> +		return 0;
->>>>>>> +
->>>>>>> +	err = devlink_fmsg_pair_nest_start(fmsg, "mlx5e_txqsq");
->>>>>>> +	if (err)
->>>>>>> +		return err;
->>>>>>> +
->>>>>>> +	err = devlink_fmsg_obj_nest_start(fmsg);
->>>>>>> +	if (err)
->>>>>>> +		return err;
->>>>>>> +
->>>>>>> +	err = devlink_fmsg_arr_pair_nest_start(fmsg, "memory");
->>>>>>> +	if (err)
->>>>>>> +		return err;
->>>>>>> +
->>>>>>> +	while (i < sizeof(struct mlx5e_txqsq)) {
->>>>>>> +		copy = sizeof(u64);
->>>>>>> +
->>>>>>> +		if (i + copy > sizeof(struct mlx5e_txqsq))
->>>>>>> +			copy = sizeof(struct mlx5e_txqsq) - i;
->>>>>>> +
->>>>>>> +		err = devlink_fmsg_binary_put(fmsg, ptr, copy);
->>>>>>> +		if (err)
->>>>>>> +			return err;
->>>>>>> +		ptr++;
->>>>>>> +		i += copy;
->>>>>>> +	}
->>>>>>> +
->>>>>>> +	err = devlink_fmsg_arr_pair_nest_end(fmsg);
->>>>>>> +	if (err)
->>>>>>> +		return err;
->>>>>>> +
->>>>>>> +	err = devlink_fmsg_obj_nest_end(fmsg);
->>>>>>> +	if (err)
->>>>>>> +		return err;
->>>>>>> +
->>>>>>> +	err = devlink_fmsg_pair_nest_end(fmsg);
->>>>>>> +
->>>>>>> +	return err;
->>>>>>> +}
->>>>>>> +
->>>>>>> +static int mlx5e_tx_reporter_sw_dump_all(struct mlx5e_priv *priv,
->>>>>>> +					 struct devlink_fmsg *fmsg)
->>>>>>> +{
->>>>>>> +	int i, err = 0;
->>>>>>> +
->>>>>>> +	mutex_lock(&priv->state_lock);
->>>>>>> +
->>>>>>> +	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
->>>>>>> +		goto unlock;
->>>>>>> +
->>>>>>> +	err = devlink_fmsg_arr_pair_nest_start(fmsg, "SQs");
->>>>>>> +	if (err)
->>>>>>> +		goto unlock;
->>>>>>> +
->>>>>>> +	for (i = 0; i < priv->channels.num * priv->channels.params.num_tc;
->>>>>>> +	     i++) {
->>>>>>> +		err = devlink_fmsg_obj_nest_start(fmsg);
->>>>>>> +		if (err)
->>>>>>> +			goto unlock;
->>>>>>> +
->>>>>>> +		err = mlx5e_tx_reporter_sw_dump_from_ctx(priv, priv->txq2sq[i],
->>>>>>> +							 fmsg);
->>>>>>> +		if (err)
->>>>>>> +			goto unlock;
->>>>>>> +
->>>>>>> +		err = devlink_fmsg_pair_nest_end(fmsg);
->>>>>>> +		if (err)
->>>>>>> +			goto unlock;
->>>>>>> +	}
->>>>>>> +	err = devlink_fmsg_arr_pair_nest_end(fmsg);
->>>>>>> +	if (err)
->>>>>>> +		goto unlock;
->>>>>>> +
->>>>>>> +unlock:
->>>>>>> +	mutex_unlock(&priv->state_lock);
->>>>>>> +	return err;
->>>>>>> +}
->>>>>>> +
->>>>>>> +static int mlx5e_tx_reporter_sw_dump(struct devlink_health_reporter *reporter,
->>>>>>> +				     struct devlink_fmsg *fmsg, void *context)
->>>>>>> +{
->>>>>>> +	struct mlx5e_priv *priv = devlink_health_reporter_priv(reporter);
->>>>>>> +	struct mlx5e_tx_err_ctx *err_ctx = context;
->>>>>>> +
->>>>>>> +	return err_ctx ? mlx5e_tx_reporter_sw_dump_from_ctx(priv, err_ctx->sq,
->>>>>>> +							    fmsg) :
->>>>>>> +			 mlx5e_tx_reporter_sw_dump_all(priv, fmsg);
->>>>>>> +}
->>>>>>> +
->>>>>>> static const struct devlink_health_reporter_ops mlx5_tx_reporter_ops = {
->>>>>>> 		.name = "tx",
->>>>>>> 		.recover = mlx5e_tx_reporter_recover,
->>>>>>> 		.diagnose = mlx5e_tx_reporter_diagnose,
->>>>>>> +		.dump = mlx5e_tx_reporter_sw_dump,
->>>>>>> };
->>>>>>>
->>>>>>> #define MLX5_REPORTER_TX_GRACEFUL_PERIOD 500
->>>>>>> -- 
->>>>>>> 2.14.1
->>>>>>>
+DQoNCk9uIDUvMTYvMjAxOSAyOjUzIFBNLCBKaXJpIFBpcmtvIHdyb3RlOg0KPiBUaHUsIE1heSAx
+NiwgMjAxOSBhdCAxMDo0OTo1NEFNIENFU1QsIGF5YWxAbWVsbGFub3guY29tIHdyb3RlOg0KPj4N
+Cj4+DQo+PiBPbiA1LzE0LzIwMTkgMzowNyBQTSwgSmlyaSBQaXJrbyB3cm90ZToNCj4+PiBTdW4s
+IE1heSAxMiwgMjAxOSBhdCAxMDozNzozNUFNIENFU1QsIGF5YWxAbWVsbGFub3guY29tIHdyb3Rl
+Og0KPj4+Pg0KPj4+Pg0KPj4+PiBPbiA1LzkvMjAxOSAxMToyMyBBTSwgSmlyaSBQaXJrbyB3cm90
+ZToNCj4+Pj4+IFR1ZSwgTWF5IDA3LCAyMDE5IGF0IDAyOjU4OjMyUE0gQ0VTVCwgYXlhbEBtZWxs
+YW5veC5jb20gd3JvdGU6DQo+Pj4+Pj4NCj4+Pj4+Pg0KPj4+Pj4+IE9uIDUvNy8yMDE5IDM6NDEg
+UE0sIEppcmkgUGlya28gd3JvdGU6DQo+Pj4+Pj4+IE1vbiwgQXByIDI5LCAyMDE5IGF0IDA0OjE3
+OjM5UE0gQ0VTVCwgYXlhbEBtZWxsYW5veC5jb20gd3JvdGU6DQo+Pj4+Pj4+PiBUWCByZXBvcnRl
+ciByZXBvcnRzIGFuIGVycm9yIG9uIHR3byBzY2VuYXJpb3M6DQo+Pj4+Pj4+PiAtIFRYIHRpbWVv
+dXQgb24gYSBzcGVjaWZpYyB0eCBxdWV1ZQ0KPj4+Pj4+Pj4gLSBUWCBjb21wbGV0aW9uIGVycm9y
+IG9uIGEgc3BlY2lmaWMgc2VuZCBxdWV1ZQ0KPj4+Pj4+Pj4gUHJpb3IgdG8gdGhpcyBwYXRjaCwg
+bm8gZHVtcCBkYXRhIHdhcyBzdXBwb3J0ZWQgYnkgdGhlIHR4IHJlcG9ydGVyLiBUaGlzDQo+Pj4+
+Pj4+PiBwYXRjaCBhZGRzIHN1cHBvcnQgZm9yIFNXIGRhdGEgZHVtcCBvZiB0aGUgcmVsYXRlZCBT
+USBjb250ZXh0LiBUaGUgZHVtcA0KPj4+Pj4+Pj4gaXMgc2ltcGx5IHRoZSBTUSdzIHJhdyBtZW1v
+cnkgc25hcHNob3QgdGFrZW4gcmlnaHQgYWZ0ZXIgdGhlIGVycm9yIHdhcw0KPj4+Pj4+Pj4gcmVw
+b3J0ZWQsIGJlZm9yZSBhbnkgcmVjb3ZlcnkgcHJvY2VkdXJlIHdhcyBsYXVuY2hlZC4gV2l0aCB0
+aGlzDQo+Pj4+Pj4+PiBhcHByb2FjaCwgbm8gbWFpbnRlbmFuY2UgaXMgbmVlZGVkIGFzIHRoZSBk
+cml2ZXIgZmV0Y2ggdGhlIGFjdHVhbCBkYXRhDQo+Pj4+Pj4+PiBhY2NvcmRpbmcgdG8gdGhlIGxh
+eW91dCBvbiB3aGljaCB0aGUgU1Egd2FzIGNvbXBpbGVkIHdpdGguICBCeSBwcm92aWRpbmcNCj4+
+Pj4+Pj4+IGEgU1cgY29udGV4dCwgb25lIGNhbiBlYXNpbHkgZGVidWcgZXJyb3Igb24gYSBnaXZl
+biBTUS4NCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBJbiBvcmRlciB0byBvZmZsaW5lIHRyYW5zbGF0ZSB0
+aGUgcmF3IG1lbW9yeSBpbnRvIGEgaHVtYW4gcmVhZGFibGUNCj4+Pj4+Pj4+IGZvcm1hdCwgdGhl
+IHVzZXIgY2FuIHVzZSBzb21lIG91dC1vZi1rZXJuZWwgc2NyaXB0cyB3aGljaCByZWNlaXZlcyBh
+cyBhbg0KPj4+Pj4+Pj4gaW5wdXQgdGhlIGZvbGxvd2luZzoNCj4+Pj4+Pj4+IC0gT2JqZWN0IHJh
+dyBtZW1vcnkNCj4+Pj4+Pj4+IC0gRHJpdmVyIG9iamVjdCBjb21waWxlZCB3aXRoIGRlYnVnIGlu
+Zm8gKGNhbiBiZSB0YWtlbi9nZW5lcmF0ZWQgYXQgYW55IHRpbWUgZnJvbSB0aGUgbWFjaGluZSkN
+Cj4+Pj4+Pj4+IC0gT2JqZWN0IG5hbWUNCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBBbiBleGFtcGxlIG9m
+IHN1Y2ggc2NyaXB0IG91dHB1dCBjYW4gYmUgc2VlbiBiZWxvdy4NCj4+Pj4+Pj4+IE5vdGU6IHRo
+ZSBzY3JpcHQgaXMgbm90IG9mZmVyZWQgYXMgcGFydCBvZiB0aGlzIHBhdGNoIGFzIGl0IGRvIG5v
+dA0KPj4+Pj4+Pj4gYmVsb25nIHRvIHRoZSBrZXJuZWwsIEkganVzdCBkZXNjcmliZWQgaXQgaW4g
+b3JkZXIgdG8gZ3Jhc3AgdGhlIGdlbmVyYWwNCj4+Pj4+Pj4+IGlkZWEgb2YgaG93L3doYXQgY2Fu
+IGJlIGZldGNoZWQgZnJvbSBTVyBkdW1wIHZpYSBkZXZsaW5rIGhlYWx0aC4NCj4+Pj4+Pj4+DQo+
+Pj4+Pj4+PiBUaGUgb3V0cHV0IG9mIHRoZSBTVyBkdW1wIGNhbiBiZSBleHRyYWN0ZWQgYnkgZGV2
+bGluayBoZWFsdGggY29tbWFuZDoNCj4+Pj4+Pj4+ICQgc3VkbyBkZXZsaW5rIGhlYWx0aCBkdW1w
+IHNob3cgcGNpLzAwMDA6MDA6MGIuMCByZXBvcnRlciB0eC4NCj4+Pj4+Pj4+IG1seDVlX3R4cXNx
+OiBzcW46IDYzMzYNCj4+Pj4+Pj4+IG1lbW9yeToNCj4+Pj4+Pj4+ICAgICAgIDAwIDAwIDAwIDAw
+IDAwIDAwIDAwIDAwDQo+Pj4+Pj4+PiAgICAgICAwMSAwMCAwMCAwMCAwMCAwMCAwMCAwMA0KPj4+
+Pj4+Pj4gICAgICAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCj4+Pj4+Pj4+ICAgICAgIDQ1IGY0
+IDg4IGNiIDA5IDAwIDAwIDAwDQo+Pj4+Pj4+PiAgICAgICAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
+MA0KPj4+Pj4+Pj4gICAgICAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCj4+Pj4+Pj4+ICAgICAg
+IGMwIGZmIGZmIGZmIDFmIDAwIDAwIDAwDQo+Pj4+Pj4+PiAgICAgICBmOCAxOCAxZSA4OSA4MSA4
+OCBmZiBmZg0KPj4+Pj4+Pj4gICAgICAgLi4uDQo+Pj4+Pj4+Pg0KPj4+Pj4+Pj4gc2NyaXB0IG91
+dHB1dCBiZWxvdywgd2l0aCBzdHJ1Y3QgbWVtYmVycyBuYW1lcyBhbmQgYWN0dWFsIHZhbHVlczoN
+Cj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBzdHJ1Y3QgIG1seDVlX3R4cXNxIHsNCj4+Pj4+Pj4+IAlzaG9y
+dCB1bnNpZ25lZCBpbnQgICAgICAgICBjYyAJIDB4NSA7DQo+Pj4+Pj4+PiAJdW5zaWduZWQgaW50
+ICAgICAgICAgICAgICAgZG1hX2ZpZm9fY2MgCSAweDUgOw0KPj4+Pj4+Pj4gCXN0cnVjdCAgbmV0
+X2RpbSB7DQo+Pj4+Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICBzdGF0ZSAJIDB4MSA7DQo+Pj4+
+Pj4+PiAJCXN0cnVjdCAgbmV0X2RpbV9zdGF0cyB7DQo+Pj4+Pj4+PiAJCQlpbnQgICAgICAgIHBw
+bXMgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJaW50ICAgICAgICBicG1zIAkgMHgwIDsNCj4+Pj4+Pj4+
+IAkJCWludCAgICAgICAgZXBtcyAJIDB4MCA7DQo+Pj4+Pj4+PiAJCX0gcHJldl9zdGF0czsNCj4+
+Pj4+Pj4+IAkJc3RydWN0ICBuZXRfZGltX3NhbXBsZSB7DQo+Pj4+Pj4+PiAJCQlsb25nIGxvbmcg
+aW50IHRpbWUgCSAweDkwNzY2ZWY5ZCA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgcGt0X2N0
+ciAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgYnl0ZV9jdHIgCSAweDAgOw0KPj4+
+Pj4+Pj4gCQkJc2hvcnQgdW5zaWduZWQgaW50IGV2ZW50X2N0ciAJIDB4MCA7DQo+Pj4+Pj4+PiAJ
+CX0gc3RhcnRfc2FtcGxlOw0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgIHdvcmtfc3RydWN0IHsNCj4+Pj4+
+Pj4+IAkJCXN0cnVjdCAgIHsNCj4+Pj4+Pj4+IAkJCQlsb25nIGludCBjb3VudGVyIAkgMHgxZmZm
+ZmZmZmMwIDsNCj4+Pj4+Pj4+IAkJCX0gZGF0YTsNCj4+Pj4+Pj4+IAkJCXN0cnVjdCAgbGlzdF9o
+ZWFkIHsNCj4+Pj4+Pj4+IAkJCQlzdHJ1Y3QgbGlzdF9oZWFkICogbmV4dCAJIDB4ZmZmZjg4ODFi
+MDg5OThmOCA7DQo+Pj4+Pj4+PiAJCQkJc3RydWN0IGxpc3RfaGVhZCAqIHByZXYgCSAweGZmZmY4
+ODgxYjA4OTk4ZjggOw0KPj4+Pj4+Pj4gCQkJfSBlbnRyeTsNCj4+Pj4+Pj4+IAkJCXZvaWQgICAg
+ICAgKCpmdW5jKShzdHJ1Y3Qgd29ya19zdHJ1Y3QgKikgCSAweGZmZmZmZmZmYTAyZDBlMzAgOw0K
+Pj4+Pj4+Pj4gCQl9IHdvcms7DQo+Pj4+Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICBwcm9maWxl
+X2l4IAkgMHg2MCA7DQo+Pj4+Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICBtb2RlIAkgMHg3MiA7
+DQo+Pj4+Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICB0dW5lX3N0YXRlIAkgMHgzNSA7DQo+Pj4+
+Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICBzdGVwc19yaWdodCAJIDB4YTAgOw0KPj4+Pj4+Pj4g
+CQl1bnNpZ25lZCBjaGFyICAgICAgc3RlcHNfbGVmdCAJIDB4ZmYgOw0KPj4+Pj4+Pj4gCQl1bnNp
+Z25lZCBjaGFyICAgICAgdGlyZWQgCSAweGZmIDsNCj4+Pj4+Pj4+IAl9IGRpbTsNCj4+Pj4+Pj4+
+IAlzaG9ydCB1bnNpZ25lZCBpbnQgICAgICAgICBwYyAJIDB4MCA7DQo+Pj4+Pj4+PiAJdW5zaWdu
+ZWQgaW50ICAgICAgICAgICAgICAgZG1hX2ZpZm9fcGMgCSAweDAgOw0KPj4+Pj4+Pj4gCXN0cnVj
+dCAgbWx4NWVfY3Egew0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgIG1seDVfY3F3cSB7DQo+Pj4+Pj4+PiAJ
+CQlzdHJ1Y3QgIG1seDVfZnJhZ19idWZfY3RybCB7DQo+Pj4+Pj4+PiAJCQkJc3RydWN0IG1seDVf
+YnVmX2xpc3QgKiBmcmFncyAJIDB4NTAwMDAwMDA1IDsNCj4+Pj4+Pj4+IAkJCQl1bnNpZ25lZCBp
+bnQgc3pfbTEgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCXNob3J0IHVuc2lnbmVkIGludCBmcmFnX3N6
+X20xIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCQlzaG9ydCB1bnNpZ25lZCBpbnQgc3RyaWRlc19vZmZz
+ZXQgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCXVuc2lnbmVkIGNoYXIgbG9nX3N6IAkgMHgwIDsNCj4+
+Pj4+Pj4+IAkJCQl1bnNpZ25lZCBjaGFyIGxvZ19zdHJpZGUgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJ
+CXVuc2lnbmVkIGNoYXIgbG9nX2ZyYWdfc3RyaWRlcyAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQl9IGZi
+YzsNCj4+Pj4+Pj4+IAkJCV9fYmUzMiAqICAgZGIgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJdW5zaWdu
+ZWQgaW50IGNjIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJfSB3cTsNCj4+Pj4+Pj4+IAkJc2hvcnQgdW5z
+aWduZWQgaW50IGV2ZW50X2N0ciAJIDB4MCA7DQo+Pj4+Pj4+PiAJCXN0cnVjdCBuYXBpX3N0cnVj
+dCAqIG5hcGkgCSAweDAgOw0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgIG1seDVfY29yZV9jcSB7DQo+Pj4+
+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgY3FuIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCWludCAgICAgICAg
+Y3FlX3N6IAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCV9fYmUzMiAqICAgc2V0X2NpX2RiIAkgMHhmZmZm
+ODg4MWIxYWE0OTg4IDsNCj4+Pj4+Pj4+IAkJCV9fYmUzMiAqICAgYXJtX2RiIAkgMHgzZjAwMDAw
+M2ZmIDsNCj4+Pj4+Pj4+IAkJCXN0cnVjdCBtbHg1X3VhcnNfcGFnZSAqIHVhciAJIDB4NjA2MGEg
+Ow0KPj4+Pj4+Pj4gCQkJc3RydWN0ICByZWZjb3VudF9zdHJ1Y3Qgew0KPj4+Pj4+Pj4gCQkJCXN0
+cnVjdCAgIHsNCj4+Pj4+Pj4+IAkJCQkJaW50ICAgIGNvdW50ZXIgCSAweGExODE0NTAwIDsNCj4+
+Pj4+Pj4+IAkJCQl9IHJlZnM7DQo+Pj4+Pj4+PiAJCQl9IHJlZmNvdW50Ow0KPj4+Pj4+Pj4gCQkJ
+c3RydWN0ICBjb21wbGV0aW9uIHsNCj4+Pj4+Pj4+IAkJCQl1bnNpZ25lZCBpbnQgZG9uZSAJIDB4
+NSA7DQo+Pj4+Pj4+PiAJCQkJc3RydWN0ICB3YWl0X3F1ZXVlX2hlYWQgew0KPj4+Pj4+Pj4gCQkJ
+CQlzdHJ1Y3QgIHNwaW5sb2NrIHsNCj4+Pj4+Pj4+IAkJCQkJCXVuaW9uICAgew0KPj4+Pj4+Pj4g
+CQkJCQkJCXN0cnVjdCAgcmF3X3NwaW5sb2NrIHsNCj4+Pj4+Pj4+IAkJCQkJCQkJc3RydWN0ICBx
+c3BpbmxvY2sgew0KPj4+Pj4+Pj4gCQkJCQkJCQkJdW5pb24gICB7DQo+Pj4+Pj4+PiAJCQkJCQkJ
+CQkJc3RydWN0ICAgew0KPj4+Pj4+Pj4gCQkJCQkJCQkJCQlpbnQgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY291bnRlciAJIDB4NSA7DQo+Pj4+Pj4+
+PiAJCQkJCQkJCQkJfSB2YWw7DQo+Pj4+Pj4+PiAJCQkJCQkJCQkJc3RydWN0ICAgew0KPj4+Pj4+
+Pj4gCQkJCQkJCQkJCQl1bnNpZ25lZCBjaGFyICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgbG9ja2VkIAkgMHg1IDsNCj4+Pj4+Pj4+IAkJCQkJCQkJCQkJdW5zaWduZWQg
+Y2hhciAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBlbmRpbmcgCSAw
+eDAgOw0KPj4+Pj4+Pj4gCQkJCQkJCQkJCX0gOw0KPj4+Pj4+Pj4gCQkJCQkJCQkJCXN0cnVjdCAg
+IHsNCj4+Pj4+Pj4+IAkJCQkJCQkJCQkJc2hvcnQgdW5zaWduZWQgaW50ICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIGxvY2tlZF9wZW5kaW5nIAkgMHg1IDsNCj4+Pj4+Pj4+IAkJ
+CQkJCQkJCQkJc2hvcnQgdW5zaWduZWQgaW50ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIHRhaWwgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCQkJCQkJCX0gOw0KPj4+Pj4+Pj4gCQkJ
+CQkJCQkJfSA7DQo+Pj4+Pj4+PiAJCQkJCQkJCX0gcmF3X2xvY2s7DQo+Pj4+Pj4+PiAJCQkJCQkJ
+fSBybG9jazsNCj4+Pj4+Pj4+IAkJCQkJCX0gOw0KPj4+Pj4+Pj4gCQkJCQl9IGxvY2s7DQo+Pj4+
+Pj4+PiAJCQkJCXN0cnVjdCAgbGlzdF9oZWFkIHsNCj4+Pj4+Pj4+IAkJCQkJCXN0cnVjdCBsaXN0
+X2hlYWQgKiBuZXh0IAkgMHhmZmZmODg4MWIwODliYjg4IDsNCj4+Pj4+Pj4+IAkJCQkJCXN0cnVj
+dCBsaXN0X2hlYWQgKiBwcmV2IAkgMHg0MDAwMDAwYzBhIDsNCj4+Pj4+Pj4+IAkJCQkJfSBoZWFk
+Ow0KPj4+Pj4+Pj4gCQkJCX0gd2FpdDsNCj4+Pj4+Pj4+IAkJCX0gZnJlZTsNCj4+Pj4+Pj4+IAkJ
+CXVuc2lnbmVkIGludCB2ZWN0b3IgCSAweGExODE0NTAwIDsNCj4+Pj4+Pj4+IAkJCXVuc2lnbmVk
+IGludCBpcnFuIAkgMHhmZmZmODg4MSA7DQo+Pj4+Pj4+PiAJCQl2b2lkICAgICAgICgqY29tcCko
+c3RydWN0IG1seDVfY29yZV9jcSAqKSAJIDB4ZmZmZjg4ODFhMTgxNDUwNCA7DQo+Pj4+Pj4+PiAJ
+CQl2b2lkICAgICAgICgqZXZlbnQpKHN0cnVjdCBtbHg1X2NvcmVfY3EgKiwgZW51bSBtbHg1X2V2
+ZW50KSAJIDB4ZmZmZjg4ODFhMmNkZWEwOCA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgY29u
+c19pbmRleCAJIDB4MSA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgYXJtX3NuIAkgMHgwIDsN
+Cj4+Pj4+Pj4+IAkJCXN0cnVjdCBtbHg1X3JzY19kZWJ1ZyAqIGRiZyAJIDB4MCA7DQo+Pj4+Pj4+
+PiAJCQlpbnQgICAgICAgIHBpZCAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQlzdHJ1Y3QgICB7DQo+Pj4+
+Pj4+PiAJCQkJc3RydWN0ICBsaXN0X2hlYWQgew0KPj4+Pj4+Pj4gCQkJCQlzdHJ1Y3QgbGlzdF9o
+ZWFkICogbmV4dCAJIDB4ZmZmZmZmZmYgOw0KPj4+Pj4+Pj4gCQkJCQlzdHJ1Y3QgbGlzdF9oZWFk
+ICogcHJldiAJIDB4ZmZmZmZmZmZmZmZmZmZmZiA7DQo+Pj4+Pj4+PiAJCQkJfSBsaXN0Ow0KPj4+
+Pj4+Pj4gCQkJCXZvaWQgKCpjb21wKShzdHJ1Y3QgbWx4NV9jb3JlX2NxICopIAkgMHhmZmZmZmZm
+ZmEwMzU2OTQwIDsNCj4+Pj4+Pj4+IAkJCQl2b2lkICogcHJpdiAJIDB4MCA7DQo+Pj4+Pj4+PiAJ
+CQl9IHRhc2tsZXRfY3R4Ow0KPj4+Pj4+Pj4gCQkJaW50ICAgICAgICByZXNldF9ub3RpZnlfYWRk
+ZWQgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJc3RydWN0ICBsaXN0X2hlYWQgew0KPj4+Pj4+Pj4gCQkJ
+CXN0cnVjdCBsaXN0X2hlYWQgKiBuZXh0IAkgMHhmZmZmZmZmZmEwMzAwNzAwIDsNCj4+Pj4+Pj4+
+IAkJCQlzdHJ1Y3QgbGlzdF9oZWFkICogcHJldiAJIDB4ZCA7DQo+Pj4+Pj4+PiAJCQl9IHJlc2V0
+X25vdGlmeTsNCj4+Pj4+Pj4+IAkJCXN0cnVjdCBtbHg1X2VxX2NvbXAgKiBlcSAJIDB4MCA7DQo+
+Pj4+Pj4+PiAJCQlzaG9ydCB1bnNpZ25lZCBpbnQgdWlkIAkgMHg5YTcwIDsNCj4+Pj4+Pj4+IAkJ
+fSBtY3E7DQo+Pj4+Pj4+PiAJCXN0cnVjdCBtbHg1ZV9jaGFubmVsICogY2hhbm5lbCAJIDB4ZmZm
+Zjg4ODFiMDg5OWE3MCA7DQo+Pj4+Pj4+PiAJCXN0cnVjdCBtbHg1X2NvcmVfZGV2ICogbWRldiAJ
+IDB4NDgwMDAwMDAwMSA7DQo+Pj4+Pj4+PiAJCXN0cnVjdCAgbWx4NV93cV9jdHJsIHsNCj4+Pj4+
+Pj4+IAkJCXN0cnVjdCBtbHg1X2NvcmVfZGV2ICogbWRldiAJIDB4ZmZmZmZmZmZhMDJkNTM1MCA7
+DQo+Pj4+Pj4+PiAJCQlzdHJ1Y3QgIG1seDVfZnJhZ19idWYgew0KPj4+Pj4+Pj4gCQkJCXN0cnVj
+dCBtbHg1X2J1Zl9saXN0ICogZnJhZ3MgCSAweGZmZmZmZmZmYTAyZDU0NjAgOw0KPj4+Pj4+Pj4g
+CQkJCWludCBucGFnZXMgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCWludCBzaXplIAkgMHg1IDsNCj4+
+Pj4+Pj4+IAkJCQl1bnNpZ25lZCBjaGFyIHBhZ2Vfc2hpZnQgCSAweDggOw0KPj4+Pj4+Pj4gCQkJ
+fSBidWY7DQo+Pj4+Pj4+PiAJCQlzdHJ1Y3QgIG1seDVfZGIgew0KPj4+Pj4+Pj4gCQkJCV9fYmUz
+MiAqIGRiIAkgMHgxYzYgOw0KPj4+Pj4+Pj4gCQkJCXVuaW9uICAgew0KPj4+Pj4+Pj4gCQkJCQlz
+dHJ1Y3QgbWx4NV9kYl9wZ2RpciAqIHBnZGlyIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCQkJc3RydWN0
+IG1seDVfaWJfdXNlcl9kYl9wYWdlICogdXNlcl9wYWdlIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCQl9
+IHU7DQo+Pj4+Pj4+PiAJCQkJbG9uZyBsb25nIHVuc2lnbmVkIGludCBkbWEgCSAweGZmZmY4ODgx
+YjA4OTlhYjAgOw0KPj4+Pj4+Pj4gCQkJCWludCBpbmRleCAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQl9
+IGRiOw0KPj4+Pj4+Pj4gCQl9IHdxX2N0cmw7DQo+Pj4+Pj4+PiAJfSBjcTsNCj4+Pj4+Pj4+IAlz
+dHJ1Y3QgIG1seDVfd3FfY3ljIHsNCj4+Pj4+Pj4+IAkJc3RydWN0ICBtbHg1X2ZyYWdfYnVmX2N0
+cmwgew0KPj4+Pj4+Pj4gCQkJc3RydWN0IG1seDVfYnVmX2xpc3QgKiBmcmFncyAJIDB4ZmZmZjg4
+ODFhNzYwMDE2MCA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgc3pfbTEgCSAweGE3NjAwMTYw
+IDsNCj4+Pj4+Pj4+IAkJCXNob3J0IHVuc2lnbmVkIGludCBmcmFnX3N6X20xIAkgMHg4ODgxIDsN
+Cj4+Pj4+Pj4+IAkJCXNob3J0IHVuc2lnbmVkIGludCBzdHJpZGVzX29mZnNldCAJIDB4ZmZmZiA7
+DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBjaGFyIGxvZ19zeiAJIDB4ODggOw0KPj4+Pj4+Pj4gCQkJ
+dW5zaWduZWQgY2hhciBsb2dfc3RyaWRlIAkgMHg0OSA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBj
+aGFyIGxvZ19mcmFnX3N0cmlkZXMgCSAweGFhIDsNCj4+Pj4+Pj4+IAkJfSBmYmM7DQo+Pj4+Pj4+
+PiAJCV9fYmUzMiAqICAgICAgICAgICBkYiAJIDB4MTAwMDAwMDAwMDAxMCA7DQo+Pj4+Pj4+PiAJ
+CXNob3J0IHVuc2lnbmVkIGludCBzeiAJIDB4YyA7DQo+Pj4+Pj4+PiAJCXNob3J0IHVuc2lnbmVk
+IGludCB3cWVfY3RyIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJc2hvcnQgdW5zaWduZWQgaW50IGN1cl9z
+eiAJIDB4MCA7DQo+Pj4+Pj4+PiAJfSB3cTsNCj4+Pj4+Pj4+IAl1bnNpZ25lZCBpbnQgICAgICAg
+ICAgICAgICBkbWFfZmlmb19tYXNrIAkgMHhhMTgxNDUwMCA7DQo+Pj4+Pj4+PiAJc3RydWN0IG1s
+eDVlX3NxX3N0YXRzICogICAgc3RhdHMgCSAweGZmZmY4ODgxYTMzYTAzNDggOw0KPj4+Pj4+Pj4g
+CXN0cnVjdCAgIHsNCj4+Pj4+Pj4+IAkJc3RydWN0IG1seDVlX3NxX2RtYSAqIGRtYV9maWZvIAkg
+MHgxYTE4MTQ1MDAgOw0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgbWx4NWVfdHhfd3FlX2luZm8gKiB3cWVf
+aW5mbyAJIDB4MTQgOw0KPj4+Pj4+Pj4gCX0gZGI7DQo+Pj4+Pj4+PiAJdm9pZCAqICAgICAgICAg
+ICAgICAgICAgICAgdWFyX21hcCAJIDB4MCA7DQo+Pj4+Pj4+PiAJc3RydWN0IG5ldGRldl9xdWV1
+ZSAqICAgICAgdHhxIAkgMHgwIDsNCj4+Pj4+Pj4+IAl1bnNpZ25lZCBpbnQgICAgICAgICAgICAg
+ICBzcW4gCSAweDE4YzAgOw0KPj4+Pj4+Pj4gCXVuc2lnbmVkIGNoYXIgICAgICAgICAgICAgIG1p
+bl9pbmxpbmVfbW9kZSAJIDB4MCA7DQo+Pj4+Pj4+PiAJc3RydWN0IGRldmljZSAqICAgICAgICAg
+ICAgcGRldiAJIDB4MCA7DQo+Pj4+Pj4+PiAJdW5zaWduZWQgaW50ICAgICAgICAgICAgICAgbWtl
+eV9iZSAJIDB4MCA7DQo+Pj4+Pj4+PiAJbG9uZyB1bnNpZ25lZCBpbnQgICAgICAgICAgc3RhdGUg
+CSAweDAgOw0KPj4+Pj4+Pj4gCXN0cnVjdCBod3RzdGFtcF9jb25maWcgKiAgIHRzdGFtcCAJIDB4
+MCA7DQo+Pj4+Pj4+PiAJc3RydWN0IG1seDVfY2xvY2sgKiAgICAgICAgY2xvY2sgCSAweGZmZmY4
+ODgxYjFhYTZmODggOw0KPj4+Pj4+Pj4gCXN0cnVjdCAgbWx4NV93cV9jdHJsIHsNCj4+Pj4+Pj4+
+IAkJc3RydWN0IG1seDVfY29yZV9kZXYgKiBtZGV2IAkgMHgzZjAwMDAwM2ZmIDsNCj4+Pj4+Pj4+
+IAkJc3RydWN0ICBtbHg1X2ZyYWdfYnVmIHsNCj4+Pj4+Pj4+IAkJCXN0cnVjdCBtbHg1X2J1Zl9s
+aXN0ICogZnJhZ3MgCSAweDYwNjBhIDsNCj4+Pj4+Pj4+IAkJCWludCAgICAgICAgbnBhZ2VzIAkg
+MHhhMTgxNDYwNCA7DQo+Pj4+Pj4+PiAJCQlpbnQgICAgICAgIHNpemUgCSAweGZmZmY4ODgxIDsN
+Cj4+Pj4+Pj4+IAkJCXVuc2lnbmVkIGNoYXIgcGFnZV9zaGlmdCAJIDB4MCA7DQo+Pj4+Pj4+PiAJ
+CX0gYnVmOw0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgIG1seDVfZGIgew0KPj4+Pj4+Pj4gCQkJX19iZTMy
+ICogICBkYiAJIDB4ZmZmIDsNCj4+Pj4+Pj4+IAkJCXVuaW9uICAgew0KPj4+Pj4+Pj4gCQkJCXN0
+cnVjdCBtbHg1X2RiX3BnZGlyICogcGdkaXIgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCXN0cnVjdCBt
+bHg1X2liX3VzZXJfZGJfcGFnZSAqIHVzZXJfcGFnZSAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQl9IHU7
+DQo+Pj4+Pj4+PiAJCQlsb25nIGxvbmcgdW5zaWduZWQgaW50IGRtYSAJIDB4ZmZmZjg4ODE4ODQ0
+MDAwMCA7DQo+Pj4+Pj4+PiAJCQlpbnQgICAgICAgIGluZGV4IAkgMHg4YjA3NDAwMCA7DQo+Pj4+
+Pj4+PiAJCX0gZGI7DQo+Pj4+Pj4+PiAJfSB3cV9jdHJsOw0KPj4+Pj4+Pj4gCXN0cnVjdCBtbHg1
+ZV9jaGFubmVsICogICAgIGNoYW5uZWwgCSAweGZmZmZjOTAwMDAxMGQ4MDAgOw0KPj4+Pj4+Pj4g
+CWludCAgICAgICAgICAgICAgICAgICAgICAgIHR4cV9peCAJIDB4YTAwMjAxODAgOw0KPj4+Pj4+
+Pj4gCXVuc2lnbmVkIGludCAgICAgICAgICAgICAgIHJhdGVfbGltaXQgCSAweGZmZmY4ODgxIDsN
+Cj4+Pj4+Pj4+IAlzdHJ1Y3QgIHdvcmtfc3RydWN0IHsNCj4+Pj4+Pj4+IAkJc3RydWN0ICAgew0K
+Pj4+Pj4+Pj4gCQkJbG9uZyBpbnQgICBjb3VudGVyIAkgMHgxMDAwMDE4YzAgOw0KPj4+Pj4+Pj4g
+CQl9IGRhdGE7DQo+Pj4+Pj4+PiAJCXN0cnVjdCAgbGlzdF9oZWFkIHsNCj4+Pj4+Pj4+IAkJCXN0
+cnVjdCBsaXN0X2hlYWQgKiBuZXh0IAkgMHhmZmZmODg4MWMzMmI2OGU4IDsNCj4+Pj4+Pj4+IAkJ
+CXN0cnVjdCBsaXN0X2hlYWQgKiBwcmV2IAkgMHg4MDAgOw0KPj4+Pj4+Pj4gCQl9IGVudHJ5Ow0K
+Pj4+Pj4+Pj4gCQl2b2lkICAgICAgICAgICAgICAgKCpmdW5jKShzdHJ1Y3Qgd29ya19zdHJ1Y3Qg
+KikgCSAweDkgOw0KPj4+Pj4+Pj4gCX0gcmVjb3Zlcl93b3JrOw0KPj4+Pj4+Pj4gfSA7DQo+Pj4+
+Pj4+DQo+Pj4+Pj4+IEkgZG9uJ3QgZ2V0IGl0LiBZb3UgYXJlIGR1bXBpbmcgbGl2ZSBrZXJuZWwg
+bWVtb3J5PyBUaGVyZSBhcmUgYWxyZWFkeQ0KPj4+Pj4+PiBmYWNpbGl0aWVzIHRvIGRvIHRoYXQg
+aW4gcGxhY2UuIFdoeSB0byByZXBsaWNhdGUgaXQ/DQo+Pj4+Pj4gSSBhbSBkdW1waW5nIHRoZSBk
+cml2ZXIncyBtZW1vcnkgdW5kZXIgYSBsb2NrIHNvIEkgY2FuIGVuc3VyZSBpdCdzDQo+Pj4+Pj4g
+Y29uc2lzdGVuY3kgKGFzIGFwcG9zZSB0byAvZGV2L21lbSkNCj4+Pj4+PiB2bWNvcmUgY2Fubm90
+IGJlIHRha2VuIGZyb20gYSBsaXZlIGtlcm5lbCAod2l0aG91dCBjcmFzaGluZykuDQo+Pj4+Pj4g
+SSBuZWVkIHRoZSBtZW1vcnkncyBzbmFwc2hvdCByaWdodCBhZnRlciB0aGUgZXJyb3IgZnJvbSB0
+aGUgZHJpdmVyJ3MNCj4+Pj4+PiBjb250ZXh0Lg0KPj4+Pj4NCj4+Pj4+IEdvdCBpdC4gSG93ZXZl
+ciwgdGhpcyBzb3VuZHMgbGlrZSBhIGdlbmVyaWMgcHJvYmxlbSBub3Qgc3BlY2lmaWMgdG8NCj4+
+Pj4+IG5pYyBkcml2ZXJzLiBIb3cgb3RoZXIgc3Vic3lzdGVtcyByZXNvbHZlIHRoaXMgKGlmIHRo
+ZXkgZG8gYXQgYWxsKT8NCj4+Pj4+DQo+Pj4+Pg0KPj4+PiBDb3JyZWN0LCB0aGlzIGlzIGEgc3Vn
+Z2VzdGVkIGRlYnVnZ2luZyBzb2x1dGlvbiBmb3IgYSBnZW5lcmljIHByb2JsZW06DQo+Pj4+IGVu
+YWJsaW5nIHRoZSB1c2VyIG9mIGEgcnVuIHRpbWUgbWVtb3J5IHNuYXBzaG90IGZvciBrZXJuZWwg
+bW9kdWxlcyAoYXQgYQ0KPj4+PiBnaXZlbiBlcnJvciBldmVudCkuIE15IHJlc2VhcmNoIHNob3dz
+IHRoYXQgb3RoZXIgc3Vic3lzdGVtcyBkZWFsIHdpdGgNCj4+Pj4gZXJyb3JzIGVpdGhlciBieSBw
+YW5pY2tpbmcgKHRvbyBtdWNoKSBvciBieSBkZWJ1Zy9sb2cgcHJpbnRzICh0b28gbGl0dGxlKS4N
+Cj4+Pj4gVGhpcyBzb2x1dGlvbiBpcyAoYSkgbG93IGluIG1haW50ZW5hbmNlIChiKSBjb25zaXN0
+ZW50IGluIG1lbW9yeSAoYykgaGFzDQo+Pj4+IHNtYWxsIHBlcmZvcm1hbmNlIGltcGFjdCAoZCkg
+dXNlIGFuIGV4aXN0aW5nIGluZnJhLXN0cnVjdHVyZSBiZXR3ZWVuIHRoZQ0KPj4+PiBrZXJuZWwg
+bW9kdWxlIGFuZCB0aGUgdXNlciBzcGFjZS4NCj4+Pg0KPj4+IEknbSBzdGlsbCBjb252aW5jZWQg
+dGhhdCBkdW1waW5nIGtlcm5lbCBtZW1vcnkgb3ZlciBkZXZsaW5rIGhlYWx0aCBkdW1wDQo+Pj4g
+aXMgYSBnb29kIGlkZWEgOi8NCj4+Pg0KPj4+DQo+Pj4+IEl0IG1pZ2h0IGJlIHBvcnRlZCB0byBv
+dGhlciBzdWJzeXN0ZW1zIHVzaW5nIHRoZWlyIG93biB1c2VyLXNwYWNlIHZzLg0KPj4+PiBrZXJu
+ZWwgdG9vbHMuIFJlZ2FyZGxlc3Mgb2YgaG93IHRoZSBtZW1vcnkgb3V0cHV0IHdhcyBnZW5lcmF0
+ZWQgdG8gdGhlDQo+Pj4+IHVzZXIsIHRoZSBwYXJzaW5nIHNjcmlwdCBjYW4gd29yayBvbiBpdC4N
+Cj4+Pg0KPj4+IENvdWxkIHlvdSBzaGFyZSB0aGUgc2NyaXB0PyBIb3cgaXMgaXQgZ29pbmcgdG8g
+YmUgZGlzdHJpYnV0ZWQ/DQo+PiBJIHRob3VnaHQgdGhhdCB0aGUgc2NyaXB0IHNob3VsZCBiZSBp
+biBhIGF2YWlsYWJsZSBvbiBNZWxsYW5veCB3ZWJzaXRlLg0KPiANCj4gOigNCkRvIHlvdSB0aGlu
+ayBpdCBiZWxvbmdzIHVuZGVyIGtlcm5lbC9zY3JpcHRzPw0KPiANCj4gDQo+PiBUaGUgc2NyaXB0
+IGlzIHN0aWxsIHBlbmRpbmcgcmV2aWV3IGJ1dCBJIHdpbGwgYmUgaGFwcHkgdG8gc2hhcmUgaXQg
+d2hlbg0KPj4gaXRzIHJlYWR5Lg0KPj4+DQo+Pj4NCj4+Pj4NCj4+Pj4+DQo+Pj4+Pj4gV2hpY2gg
+b3RoZXIgdG9vbHMgZG8geW91IG1lYW4/DQo+Pj4+Pj4+DQo+Pj4+Pj4+DQo+Pj4+Pj4+Pg0KPj4+
+Pj4+Pj4gU2lnbmVkLW9mZi1ieTogQXlhIExldmluIDxheWFsQG1lbGxhbm94LmNvbT4NCj4+Pj4+
+Pj4+IC0tLQ0KPj4+Pj4+Pj4gLi4uL2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi9yZXBv
+cnRlcl90eC5jICAgfCAxMDAgKysrKysrKysrKysrKysrKysrKysrDQo+Pj4+Pj4+PiAxIGZpbGUg
+Y2hhbmdlZCwgMTAwIGluc2VydGlvbnMoKykNCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuL3JlcG9ydGVyX3R4
+LmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4vcmVwb3J0ZXJf
+dHguYw0KPj4+Pj4+Pj4gaW5kZXggNDc2ZGQ5N2Y3ZjJmLi44YTM5ZjU1MjVlNTcgMTAwNjQ0DQo+
+Pj4+Pj4+PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4v
+cmVwb3J0ZXJfdHguYw0KPj4+Pj4+Pj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFu
+b3gvbWx4NS9jb3JlL2VuL3JlcG9ydGVyX3R4LmMNCj4+Pj4+Pj4+IEBAIC05LDYgKzksNyBAQA0K
+Pj4+Pj4+Pj4NCj4+Pj4+Pj4+IHN0cnVjdCBtbHg1ZV90eF9lcnJfY3R4IHsNCj4+Pj4+Pj4+IAlp
+bnQgKCpyZWNvdmVyKShzdHJ1Y3QgbWx4NWVfdHhxc3EgKnNxKTsNCj4+Pj4+Pj4+ICsJaW50ICgq
+ZHVtcCkoc3RydWN0IG1seDVlX3R4cXNxICpzcSk7DQo+Pj4+Pj4+PiAJc3RydWN0IG1seDVlX3R4
+cXNxICpzcTsNCj4+Pj4+Pj4+IH07DQo+Pj4+Pj4+Pg0KPj4+Pj4+Pj4gQEAgLTI4MSwxMCArMjgy
+LDEwOSBAQCBzdGF0aWMgaW50IG1seDVlX3R4X3JlcG9ydGVyX2RpYWdub3NlKHN0cnVjdCBkZXZs
+aW5rX2hlYWx0aF9yZXBvcnRlciAqcmVwb3J0ZXIsDQo+Pj4+Pj4+PiAJcmV0dXJuIGVycjsNCj4+
+Pj4+Pj4+IH0NCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiArc3RhdGljIGludCBtbHg1ZV90eF9yZXBvcnRl
+cl9zd19kdW1wX2Zyb21fY3R4KHN0cnVjdCBtbHg1ZV9wcml2ICpwcml2LA0KPj4+Pj4+Pj4gKwkJ
+CQkJICAgICAgc3RydWN0IG1seDVlX3R4cXNxICpzcSwNCj4+Pj4+Pj4+ICsJCQkJCSAgICAgIHN0
+cnVjdCBkZXZsaW5rX2Ztc2cgKmZtc2cpDQo+Pj4+Pj4+PiArew0KPj4+Pj4+Pj4gKwl1NjQgKnB0
+ciA9ICh1NjQgKilzcTsNCj4+Pj4+Pj4+ICsJaW50IGNvcHksIGVycjsNCj4+Pj4+Pj4+ICsJaW50
+IGkgPSAwOw0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwlpZiAoIXRlc3RfYml0KE1MWDVFX1NUQVRF
+X09QRU5FRCwgJnByaXYtPnN0YXRlKSkNCj4+Pj4+Pj4+ICsJCXJldHVybiAwOw0KPj4+Pj4+Pj4g
+Kw0KPj4+Pj4+Pj4gKwllcnIgPSBkZXZsaW5rX2Ztc2dfcGFpcl9uZXN0X3N0YXJ0KGZtc2csICJt
+bHg1ZV90eHFzcSIpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJcmV0dXJuIGVy
+cjsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJZXJyID0gZGV2bGlua19mbXNnX29ial9uZXN0X3N0
+YXJ0KGZtc2cpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJcmV0dXJuIGVycjsN
+Cj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJZXJyID0gZGV2bGlua19mbXNnX2Fycl9wYWlyX25lc3Rf
+c3RhcnQoZm1zZywgIm1lbW9yeSIpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJ
+cmV0dXJuIGVycjsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJd2hpbGUgKGkgPCBzaXplb2Yoc3Ry
+dWN0IG1seDVlX3R4cXNxKSkgew0KPj4+Pj4+Pj4gKwkJY29weSA9IHNpemVvZih1NjQpOw0KPj4+
+Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwkJaWYgKGkgKyBjb3B5ID4gc2l6ZW9mKHN0cnVjdCBtbHg1ZV90
+eHFzcSkpDQo+Pj4+Pj4+PiArCQkJY29weSA9IHNpemVvZihzdHJ1Y3QgbWx4NWVfdHhxc3EpIC0g
+aTsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJCWVyciA9IGRldmxpbmtfZm1zZ19iaW5hcnlfcHV0
+KGZtc2csIHB0ciwgY29weSk7DQo+Pj4+Pj4+PiArCQlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJCXJl
+dHVybiBlcnI7DQo+Pj4+Pj4+PiArCQlwdHIrKzsNCj4+Pj4+Pj4+ICsJCWkgKz0gY29weTsNCj4+
+Pj4+Pj4+ICsJfQ0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwllcnIgPSBkZXZsaW5rX2Ztc2dfYXJy
+X3BhaXJfbmVzdF9lbmQoZm1zZyk7DQo+Pj4+Pj4+PiArCWlmIChlcnIpDQo+Pj4+Pj4+PiArCQly
+ZXR1cm4gZXJyOw0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwllcnIgPSBkZXZsaW5rX2Ztc2dfb2Jq
+X25lc3RfZW5kKGZtc2cpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJcmV0dXJu
+IGVycjsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJZXJyID0gZGV2bGlua19mbXNnX3BhaXJfbmVz
+dF9lbmQoZm1zZyk7DQo+Pj4+Pj4+PiArDQo+Pj4+Pj4+PiArCXJldHVybiBlcnI7DQo+Pj4+Pj4+
+PiArfQ0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gK3N0YXRpYyBpbnQgbWx4NWVfdHhfcmVwb3J0ZXJf
+c3dfZHVtcF9hbGwoc3RydWN0IG1seDVlX3ByaXYgKnByaXYsDQo+Pj4+Pj4+PiArCQkJCQkgc3Ry
+dWN0IGRldmxpbmtfZm1zZyAqZm1zZykNCj4+Pj4+Pj4+ICt7DQo+Pj4+Pj4+PiArCWludCBpLCBl
+cnIgPSAwOw0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwltdXRleF9sb2NrKCZwcml2LT5zdGF0ZV9s
+b2NrKTsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJaWYgKCF0ZXN0X2JpdChNTFg1RV9TVEFURV9P
+UEVORUQsICZwcml2LT5zdGF0ZSkpDQo+Pj4+Pj4+PiArCQlnb3RvIHVubG9jazsNCj4+Pj4+Pj4+
+ICsNCj4+Pj4+Pj4+ICsJZXJyID0gZGV2bGlua19mbXNnX2Fycl9wYWlyX25lc3Rfc3RhcnQoZm1z
+ZywgIlNRcyIpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJZ290byB1bmxvY2s7
+DQo+Pj4+Pj4+PiArDQo+Pj4+Pj4+PiArCWZvciAoaSA9IDA7IGkgPCBwcml2LT5jaGFubmVscy5u
+dW0gKiBwcml2LT5jaGFubmVscy5wYXJhbXMubnVtX3RjOw0KPj4+Pj4+Pj4gKwkgICAgIGkrKykg
+ew0KPj4+Pj4+Pj4gKwkJZXJyID0gZGV2bGlua19mbXNnX29ial9uZXN0X3N0YXJ0KGZtc2cpOw0K
+Pj4+Pj4+Pj4gKwkJaWYgKGVycikNCj4+Pj4+Pj4+ICsJCQlnb3RvIHVubG9jazsNCj4+Pj4+Pj4+
+ICsNCj4+Pj4+Pj4+ICsJCWVyciA9IG1seDVlX3R4X3JlcG9ydGVyX3N3X2R1bXBfZnJvbV9jdHgo
+cHJpdiwgcHJpdi0+dHhxMnNxW2ldLA0KPj4+Pj4+Pj4gKwkJCQkJCQkgZm1zZyk7DQo+Pj4+Pj4+
+PiArCQlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJCWdvdG8gdW5sb2NrOw0KPj4+Pj4+Pj4gKw0KPj4+
+Pj4+Pj4gKwkJZXJyID0gZGV2bGlua19mbXNnX3BhaXJfbmVzdF9lbmQoZm1zZyk7DQo+Pj4+Pj4+
+PiArCQlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJCWdvdG8gdW5sb2NrOw0KPj4+Pj4+Pj4gKwl9DQo+
+Pj4+Pj4+PiArCWVyciA9IGRldmxpbmtfZm1zZ19hcnJfcGFpcl9uZXN0X2VuZChmbXNnKTsNCj4+
+Pj4+Pj4+ICsJaWYgKGVycikNCj4+Pj4+Pj4+ICsJCWdvdG8gdW5sb2NrOw0KPj4+Pj4+Pj4gKw0K
+Pj4+Pj4+Pj4gK3VubG9jazoNCj4+Pj4+Pj4+ICsJbXV0ZXhfdW5sb2NrKCZwcml2LT5zdGF0ZV9s
+b2NrKTsNCj4+Pj4+Pj4+ICsJcmV0dXJuIGVycjsNCj4+Pj4+Pj4+ICt9DQo+Pj4+Pj4+PiArDQo+
+Pj4+Pj4+PiArc3RhdGljIGludCBtbHg1ZV90eF9yZXBvcnRlcl9zd19kdW1wKHN0cnVjdCBkZXZs
+aW5rX2hlYWx0aF9yZXBvcnRlciAqcmVwb3J0ZXIsDQo+Pj4+Pj4+PiArCQkJCSAgICAgc3RydWN0
+IGRldmxpbmtfZm1zZyAqZm1zZywgdm9pZCAqY29udGV4dCkNCj4+Pj4+Pj4+ICt7DQo+Pj4+Pj4+
+PiArCXN0cnVjdCBtbHg1ZV9wcml2ICpwcml2ID0gZGV2bGlua19oZWFsdGhfcmVwb3J0ZXJfcHJp
+dihyZXBvcnRlcik7DQo+Pj4+Pj4+PiArCXN0cnVjdCBtbHg1ZV90eF9lcnJfY3R4ICplcnJfY3R4
+ID0gY29udGV4dDsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJcmV0dXJuIGVycl9jdHggPyBtbHg1
+ZV90eF9yZXBvcnRlcl9zd19kdW1wX2Zyb21fY3R4KHByaXYsIGVycl9jdHgtPnNxLA0KPj4+Pj4+
+Pj4gKwkJCQkJCQkgICAgZm1zZykgOg0KPj4+Pj4+Pj4gKwkJCSBtbHg1ZV90eF9yZXBvcnRlcl9z
+d19kdW1wX2FsbChwcml2LCBmbXNnKTsNCj4+Pj4+Pj4+ICt9DQo+Pj4+Pj4+PiArDQo+Pj4+Pj4+
+PiBzdGF0aWMgY29uc3Qgc3RydWN0IGRldmxpbmtfaGVhbHRoX3JlcG9ydGVyX29wcyBtbHg1X3R4
+X3JlcG9ydGVyX29wcyA9IHsNCj4+Pj4+Pj4+IAkJLm5hbWUgPSAidHgiLA0KPj4+Pj4+Pj4gCQku
+cmVjb3ZlciA9IG1seDVlX3R4X3JlcG9ydGVyX3JlY292ZXIsDQo+Pj4+Pj4+PiAJCS5kaWFnbm9z
+ZSA9IG1seDVlX3R4X3JlcG9ydGVyX2RpYWdub3NlLA0KPj4+Pj4+Pj4gKwkJLmR1bXAgPSBtbHg1
+ZV90eF9yZXBvcnRlcl9zd19kdW1wLA0KPj4+Pj4+Pj4gfTsNCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiAj
+ZGVmaW5lIE1MWDVfUkVQT1JURVJfVFhfR1JBQ0VGVUxfUEVSSU9EIDUwMA0KPj4+Pj4+Pj4gLS0g
+DQo+Pj4+Pj4+PiAyLjE0LjENCj4+Pj4+Pj4+DQo=
