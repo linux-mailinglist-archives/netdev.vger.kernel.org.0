@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C37B20646
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:59:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA577205AB
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:58:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728062AbfEPLtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 07:49:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47740 "EHLO mail.kernel.org"
+        id S1727350AbfEPLjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 07:39:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47758 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727181AbfEPLjk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 07:39:40 -0400
+        id S1727281AbfEPLjl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 07:39:41 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5B52C20848;
-        Thu, 16 May 2019 11:39:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A0ADF20881;
+        Thu, 16 May 2019 11:39:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558006779;
-        bh=3o7ZG68lcEI6A9g1XplUAMFIlx0aRHpJVx0LSfzZZUc=;
+        s=default; t=1558006780;
+        bh=aQokrNKL2F9nZIKzs30rU6NFz5S1en7AJ/Gqrbbssmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XD1bYvQE80mHaYwa1Zz0uHG78OSEWbrtvvSf/3AJaJo+Pq5bPrEomNmP0b+8a8XfQ
-         lmPyy+DtOR3m8LUmKIqMl6Ex87Pbu7+X8vw+wuEuExFyFJ9ZC94LM2wDsVGjXdSDUc
-         fJcm1gKHefesjQYvyDysoIfe0s4tcuYVK+1+Bw7k=
+        b=0CG5HVf7s6l2omXvtIS65oSTaKEurbYmF2VG5oLdptPXbmRYIvjobcF5ISi4wlEGZ
+         9CmrGlmBKSDCvP8DI7nDQ/1gCOPwvM0mu8vKamCxz+Y0PKRysjJMbBA09tnNOv4QOp
+         Dh9MnUQTzr02LepKx/tGpOLaosz3pLA2vGWp4NVw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+0bf0519d6e0de15914fe@syzkaller.appspotmail.com,
+Cc:     Sabrina Dubroca <sd@queasysnail.net>,
         Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 05/34] xfrm: clean up xfrm protocol checks
-Date:   Thu, 16 May 2019 07:39:02 -0400
-Message-Id: <20190516113932.8348-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 06/34] esp4: add length check for UDP encapsulation
+Date:   Thu, 16 May 2019 07:39:03 -0400
+Message-Id: <20190516113932.8348-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190516113932.8348-1-sashal@kernel.org>
 References: <20190516113932.8348-1-sashal@kernel.org>
@@ -45,137 +43,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <xiyou.wangcong@gmail.com>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-[ Upstream commit dbb2483b2a46fbaf833cfb5deb5ed9cace9c7399 ]
+[ Upstream commit 8dfb4eba4100e7cdd161a8baef2d8d61b7a7e62e ]
 
-In commit 6a53b7593233 ("xfrm: check id proto in validate_tmpl()")
-I introduced a check for xfrm protocol, but according to Herbert
-IPSEC_PROTO_ANY should only be used as a wildcard for lookup, so
-it should be removed from validate_tmpl().
+esp_output_udp_encap can produce a length that doesn't fit in the 16
+bits of a UDP header's length field. In that case, we'll send a
+fragmented packet whose length is larger than IP_MAX_MTU (resulting in
+"Oversized IP packet" warnings on receive) and with a bogus UDP
+length.
 
-And, IPSEC_PROTO_ANY is expected to only match 3 IPSec-specific
-protocols, this is why xfrm_state_flush() could still miss
-IPPROTO_ROUTING, which leads that those entries are left in
-net->xfrm.state_all before exit net. Fix this by replacing
-IPSEC_PROTO_ANY with zero.
+To prevent this, add a length check to esp_output_udp_encap and return
+ -EMSGSIZE on failure.
 
-This patch also extracts the check from validate_tmpl() to
-xfrm_id_proto_valid() and uses it in parse_ipsecrequest().
-With this, no other protocols should be added into xfrm.
+This seems to be older than git history.
 
-Fixes: 6a53b7593233 ("xfrm: check id proto in validate_tmpl()")
-Reported-by: syzbot+0bf0519d6e0de15914fe@syzkaller.appspotmail.com
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/xfrm.h      | 17 +++++++++++++++++
- net/ipv6/xfrm6_tunnel.c |  2 +-
- net/key/af_key.c        |  4 +++-
- net/xfrm/xfrm_state.c   |  2 +-
- net/xfrm/xfrm_user.c    | 14 +-------------
- 5 files changed, 23 insertions(+), 16 deletions(-)
+ net/ipv4/esp4.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 85386becbaea2..902437dfbce77 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1404,6 +1404,23 @@ static inline int xfrm_state_kern(const struct xfrm_state *x)
- 	return atomic_read(&x->tunnel_users);
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index 10e809b296ec8..fb065a8937ea2 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -226,7 +226,7 @@ static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
+ 	tail[plen - 1] = proto;
  }
  
-+static inline bool xfrm_id_proto_valid(u8 proto)
-+{
-+	switch (proto) {
-+	case IPPROTO_AH:
-+	case IPPROTO_ESP:
-+	case IPPROTO_COMP:
-+#if IS_ENABLED(CONFIG_IPV6)
-+	case IPPROTO_ROUTING:
-+	case IPPROTO_DSTOPTS:
-+#endif
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+/* IPSEC_PROTO_ANY only matches 3 IPsec protocols, 0 could match all. */
- static inline int xfrm_id_proto_match(u8 proto, u8 userproto)
+-static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
++static int esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
  {
- 	return (!userproto || proto == userproto ||
-diff --git a/net/ipv6/xfrm6_tunnel.c b/net/ipv6/xfrm6_tunnel.c
-index 12cb3aa990af4..d9e5f6808811a 100644
---- a/net/ipv6/xfrm6_tunnel.c
-+++ b/net/ipv6/xfrm6_tunnel.c
-@@ -345,7 +345,7 @@ static void __net_exit xfrm6_tunnel_net_exit(struct net *net)
- 	unsigned int i;
+ 	int encap_type;
+ 	struct udphdr *uh;
+@@ -234,6 +234,7 @@ static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, stru
+ 	__be16 sport, dport;
+ 	struct xfrm_encap_tmpl *encap = x->encap;
+ 	struct ip_esp_hdr *esph = esp->esph;
++	unsigned int len;
  
- 	xfrm_flush_gc();
--	xfrm_state_flush(net, IPSEC_PROTO_ANY, false, true);
-+	xfrm_state_flush(net, 0, false, true);
+ 	spin_lock_bh(&x->lock);
+ 	sport = encap->encap_sport;
+@@ -241,11 +242,14 @@ static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, stru
+ 	encap_type = encap->encap_type;
+ 	spin_unlock_bh(&x->lock);
  
- 	for (i = 0; i < XFRM6_TUNNEL_SPI_BYADDR_HSIZE; i++)
- 		WARN_ON_ONCE(!hlist_empty(&xfrm6_tn->spi_byaddr[i]));
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 5651c29cb5bd0..4af1e1d60b9f2 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1951,8 +1951,10 @@ parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_ipsecrequest *rq)
++	len = skb->len + esp->tailen - skb_transport_offset(skb);
++	if (len + sizeof(struct iphdr) >= IP_MAX_MTU)
++		return -EMSGSIZE;
++
+ 	uh = (struct udphdr *)esph;
+ 	uh->source = sport;
+ 	uh->dest = dport;
+-	uh->len = htons(skb->len + esp->tailen
+-		  - skb_transport_offset(skb));
++	uh->len = htons(len);
+ 	uh->check = 0;
  
- 	if (rq->sadb_x_ipsecrequest_mode == 0)
- 		return -EINVAL;
-+	if (!xfrm_id_proto_valid(rq->sadb_x_ipsecrequest_proto))
-+		return -EINVAL;
+ 	switch (encap_type) {
+@@ -262,6 +266,8 @@ static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, stru
  
--	t->id.proto = rq->sadb_x_ipsecrequest_proto; /* XXX check proto */
-+	t->id.proto = rq->sadb_x_ipsecrequest_proto;
- 	if ((mode = pfkey_mode_to_xfrm(rq->sadb_x_ipsecrequest_mode)) < 0)
- 		return -EINVAL;
- 	t->mode = mode;
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 1bb971f46fc6f..178baaa037e5b 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -2384,7 +2384,7 @@ void xfrm_state_fini(struct net *net)
+ 	*skb_mac_header(skb) = IPPROTO_UDP;
+ 	esp->esph = esph;
++
++	return 0;
+ }
  
- 	flush_work(&net->xfrm.state_hash_work);
- 	flush_work(&xfrm_state_gc_work);
--	xfrm_state_flush(net, IPSEC_PROTO_ANY, false, true);
-+	xfrm_state_flush(net, 0, false, true);
+ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
+@@ -275,8 +281,12 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 	int tailen = esp->tailen;
  
- 	WARN_ON(!list_empty(&net->xfrm.state_all));
+ 	/* this is non-NULL only with UDP Encapsulation */
+-	if (x->encap)
+-		esp_output_udp_encap(x, skb, esp);
++	if (x->encap) {
++		int err = esp_output_udp_encap(x, skb, esp);
++
++		if (err < 0)
++			return err;
++	}
  
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 8d4d52fd457b2..6916931b1de1c 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -1513,20 +1513,8 @@ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family)
- 			return -EINVAL;
- 		}
- 
--		switch (ut[i].id.proto) {
--		case IPPROTO_AH:
--		case IPPROTO_ESP:
--		case IPPROTO_COMP:
--#if IS_ENABLED(CONFIG_IPV6)
--		case IPPROTO_ROUTING:
--		case IPPROTO_DSTOPTS:
--#endif
--		case IPSEC_PROTO_ANY:
--			break;
--		default:
-+		if (!xfrm_id_proto_valid(ut[i].id.proto))
- 			return -EINVAL;
--		}
--
- 	}
- 
- 	return 0;
+ 	if (!skb_cloned(skb)) {
+ 		if (tailen <= skb_tailroom(skb)) {
 -- 
 2.20.1
 
