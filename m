@@ -2,144 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2043020F45
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 21:39:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1A3B20F3D
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 21:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727002AbfEPTj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 15:39:29 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:46422 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726586AbfEPTj3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 15:39:29 -0400
-Received: by mail-pl1-f194.google.com with SMTP id r18so2097033pls.13
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 12:39:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=q3Sc2bYTOMX9x9F10NDJA8Z1DJ79L26F5cnWTqd039U=;
-        b=puTeR5ZVNHLcPh8eoeCR08ggai6OKiG5UmKLDFeIfTkMkRIjaNo4PIl8X29VA4E+Ns
-         8qs8bCeAhcwJwt/u/ovCQdXFN8sLsyuIyDCMcJ0BdC1cukFxRep7e8qGs0bm1pbCfVxc
-         ixvbu03saUr6RqAmg7O1AYRVG2ppZRoaPuJZiD9vYF/98CFWTb0iT7CLMeTsD2EEbzRp
-         cd+VUegJJ9rCrjrbPYm5Ilq7CJBQR9A8RRSPqzcCclGp4uW3ariMCjzUHmq9333Vo+bz
-         1ZcIxT1c1EghMMP3mNwJidFGiHOQWYS4BK6FJHLxECwmyMQ0rmVNKJsksowFAMaimFdR
-         l1zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=q3Sc2bYTOMX9x9F10NDJA8Z1DJ79L26F5cnWTqd039U=;
-        b=AdkU+z6hFizeixKTlrOtKg1gRNC0BrIK2xnRAWA21i9mAcUF2KrYhlXJF+7+7BAUc8
-         jmS+NIIo6wXk1H+DZldN7KwaHOwFdRjlughwxlUNo8YqLJNQolx83vBC9+TL5JaDFPB9
-         ORiomIp0lKbkfH1+yQpYSgAdF90R054ILM4jnFgveLyhPWaXAsf/4Jny9qDcO7olcnXE
-         7czezFfUWmsKsDYXIodeIAuqf10u7AinKa2pJsXkoNZ+1yanP1AUuQCeXjoDcTQg0NPP
-         f5HY+fL/L2fUTHbGoQBrERAefUW3mk/dv1RNZ4kPqqe5SPUWKY159tCl81VPCMaBvQyT
-         Lj3g==
-X-Gm-Message-State: APjAAAXeJTE+AwVdGB3ljhuAS5JOzk4wmzsu/hI23/czoffYJoBgu3P+
-        amBxKLekRTKppB2745dKHP0=
-X-Google-Smtp-Source: APXvYqxBqeXUyq1teaFa4fkKWIbtPycOJ/8SYD+RwPaZw9KfckkCybp6FqgpqOzHetVbXGCCHJVtow==
-X-Received: by 2002:a17:902:2d03:: with SMTP id o3mr16750459plb.309.1558035182134;
-        Thu, 16 May 2019 12:33:02 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:200::1:4894])
-        by smtp.gmail.com with ESMTPSA id x17sm7839076pgh.47.2019.05.16.12.33.00
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 May 2019 12:33:01 -0700 (PDT)
-Date:   Thu, 16 May 2019 12:32:59 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Boris Pismenny <borisp@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
-        "davejwatson@fb.com" <davejwatson@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "vakul.garg@nxp.com" <vakul.garg@nxp.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: Re: [PATCH net 3/3] Documentation: add TLS offload documentation
-Message-ID: <20190516193257.2edzss37shzfrm6v@ast-mbp>
-References: <20190515204123.5955-1-jakub.kicinski@netronome.com>
- <20190515204123.5955-4-jakub.kicinski@netronome.com>
- <2ca1ad39-b2a1-7f40-4bf6-69a1c9f13cc0@mellanox.com>
- <20190516105652.36c81a1a@cakuba.netronome.com>
- <CAADnVQ+eFX8S2go=SeQ9kdP_3yGckHF-_Aevv7x+EbJQgsCgmw@mail.gmail.com>
- <20190516114203.6b8ca20b@cakuba.netronome.com>
+        id S1727002AbfEPTfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 15:35:30 -0400
+Received: from mga05.intel.com ([192.55.52.43]:16787 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726586AbfEPTfa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 15:35:30 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 May 2019 12:35:29 -0700
+X-ExtLoop1: 1
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by fmsmga008.fm.intel.com with ESMTP; 16 May 2019 12:35:29 -0700
+Message-ID: <9be117dc6e818ab83376cd8e0f79dbfaaf193aa9.camel@intel.com>
+Subject: Re: [PATCH] igb: add parameter to ignore nvm checksum validation
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Reply-To: jeffrey.t.kirsher@intel.com
+To:     Nikunj Kela <nkela@cisco.com>
+Cc:     xe-linux-external@cisco.com,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 16 May 2019 12:35:27 -0700
+In-Reply-To: <1557357269-9498-1-git-send-email-nkela@cisco.com>
+References: <1557357269-9498-1-git-send-email-nkela@cisco.com>
+Organization: Intel
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-z4gzyTVe/RxHVRF6YPc2"
+User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190516114203.6b8ca20b@cakuba.netronome.com>
-User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 16, 2019 at 11:42:03AM -0700, Jakub Kicinski wrote:
-> On Thu, 16 May 2019 11:13:47 -0700, Alexei Starovoitov wrote:
-> > On Thu, May 16, 2019 at 10:57 AM Jakub Kicinski wrote:
-> > >
-> > >   The preferred method of reporting the Layer 4 (TCP) checksum offload
-> > >   for packets decrypted by the device is to update the checksum field
-> > >   to the correct value for clear text and report CHECKSUM_UNNECESSARY
-> > >   or CHECKSUM_COMPLETE computed over clear text. However, the exact
-> > >   semantics of RX checksum offload when NIC performs data modification
-> > >   are not clear and subject to change.  
-> > 
-> > when host is consuming the tcp stream I don't see the value of
-> > tcp checksum on top tls.
-> > In that sense CHECKSUM_UNNECESSARY is fine and no
-> > need to update checksum field.
-> > Even in case of sockmap and tcp stream redirect it is still fine.
-> > Only the tcp payload being redirected to a different tcp socket
-> > and the headers are gone.
-> > So imo in all cases CHECKSUM_UNNECESSARY is fine
-> > even without adjustment to checksum field.
-> 
-> No question that CHECKSUM_UNNECESSARY currently works.  
-> But it's not "entirely" correct without the header fixup?
-> Device modifies the data - it should fix up the checksum.
 
-I think it's an interesting angle to discuss.
-Though ktls in hw is done per packet many key fields of ip/tcp headers
-are fully processed. socket is selected and payload is decrypted.
-imo it is better to state that such headers have been 'consumed' by hw.
-Where 'consumed' would mean that hw did what network layering suppose to do
-and the stack should not look at them (because they can contain garbage).
-(in that sense it's fine to keep csum unadjusted. imo it's ok to zero-out IP too)
-Such decrypted skb is essentially a wrapper of payload plus
-left-over headers passed to the stack.
-I think it makes sense to clarify which headers have been consumed/processed.
-Like: IP4/6+protocol+port+csum - processed, whereas
-tcp bits, dscp, ecn are still valid and have to be processed by the stack.
+--=-z4gzyTVe/RxHVRF6YPc2
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> I was trying (unsuccessfully) to hint at the fact that it's okay 
-> today to leave the checksum be, but at the same time if someone 
-> is designing new HW or has the ability to fix this up in microcode
-> I think the TCP csum should be fixed..
+On Wed, 2019-05-08 at 23:14 +0000, Nikunj Kela wrote:
+> Some of the broken NICs don't have EEPROM programmed correctly. It
+> results
+> in probe to fail. This change adds a module parameter that can be
+> used to
+> ignore nvm checksum validation.
+>=20
+> Cc: xe-linux-external@cisco.com
+> Signed-off-by: Nikunj Kela <nkela@cisco.com>
+> ---
+>  drivers/net/ethernet/intel/igb/igb_main.c | 28
+> ++++++++++++++++++++++------
+>  1 file changed, 22 insertions(+), 6 deletions(-)
 
-I don't think so. hw should work together with the stack
-instead of being 'inline transparent decryption box'.
-If hw decrypts stuff and adjusts csum it would imply that stack
-will see completely valid headers. It would also imply that
-the stack must check csum.
-That doesn't seem right from trust point of view.
+NAK for two reasons.  First, module parameters are not desirable
+because their individual to one driver and a global solution should be
+found so that all networking device drivers can use the solution.  This
+will keep the interface to change/setup/modify networking drivers
+consistent for all drivers.
 
-> 
-> Maybe like this?
-> 
->   The preferred method of reporting the Layer 4 (TCP) checksum offload
->   for packets decrypted by the device is to update the checksum field
->   to the correct value for clear text and report CHECKSUM_UNNECESSARY
->   or CHECKSUM_COMPLETE computed over clear text. 
-> 
->   Some existing devices may report CHECKSUM_UNNECESSARY without fixing
->   the checksum field, which currently functions correctly but is not
->   in line with the exact semantics of RX checksum offload. Such devices
->   must make sure that RXCSUM offload is always enabled for TLS offloaded
->   flows.
+Second and more importantly, if your NIC is broken, fix it.  Do not try
+and create a software workaround so that you can continue to use a
+broken NIC.  There are methods/tools available to properly reprogram
+the EEPROM on a NIC, which is the right solution for your issue.
 
-I don't like it for the reasons above.
+--=-z4gzyTVe/RxHVRF6YPc2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
-> > Obviously the hw/firmware should have checked tcp csum before doing decrypt.
-> 
-> Ah, that is definitely worth stating, will add!
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAlzdu38ACgkQ5W/vlVpL
+7c7ZxA/+PPTvaNQhtRytI+u56SLmQrJVgitUmXA5alK0EjlDbd8qdyb18SqLryUv
+IwdXvVKa4L9IwiH7szS10YNgzDDxHB4y5EXWRI3xQvguf7gsTwujOcIyMXGRJAhY
+3bHsOXmMYdwQHosm7iybtUyNjwYLS3BUqVCpUl5FvXgZnpSNqmHpCP8T/Lx0Rr+D
+LeM2w5Q0g8IVVhXGPEhaVsI4QYFekfLBWAJpv/5vT9DTqmIUILssRGbNe2OMopb3
+VCLaCRGbs3e9v8BMtRd5pU7F/Joo5g8zaHOtyGeUFkd4+zFD7STlrNAlbtQsi5no
+SSwdCCDuljlQkCKiLrutlsuOEJstaN0Ix8bOx8RiMW20asDf76GSGBUbZxDDpjew
+VCBrzNSbI/vFC8vSdDyWMB0LyuC7ZTCD39nrHyqTJazogkPjEH7usUs93MqHoJ1l
+3Iv1WQgThHl9r0aZYQw4/DzJ3triye2iDnyZ8d2gjlwxA124BFtJumPDzGfKwjJq
+U+GfCkYZ4CIbJS3VorNW8bSFvRVMc5ZM3xW2rnvUIXUILwTC6ziUdaOrvAqye58k
+VV5FWfE7N6/0ntbQ5vAS5xaP6L1xCCi/Zd5jNzYrc/I0+WIlG0q49lY31KHfLIW0
+Y5fKAAKkEu7HY442WEWhJZViQtDSgAkxrX/5Z4BpkCtiaRBdn8Q=
+=4Goj
+-----END PGP SIGNATURE-----
+
+--=-z4gzyTVe/RxHVRF6YPc2--
+
