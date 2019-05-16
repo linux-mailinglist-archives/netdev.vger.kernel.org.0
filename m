@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA577205AB
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:58:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E2A320644
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:59:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727350AbfEPLjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 07:39:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47758 "EHLO mail.kernel.org"
+        id S1727911AbfEPLtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 07:49:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47784 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727281AbfEPLjl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 07:39:41 -0400
+        id S1727323AbfEPLjm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 07:39:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A0ADF20881;
-        Thu, 16 May 2019 11:39:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CAF4A2089E;
+        Thu, 16 May 2019 11:39:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558006780;
-        bh=aQokrNKL2F9nZIKzs30rU6NFz5S1en7AJ/Gqrbbssmo=;
+        s=default; t=1558006781;
+        bh=Y/d90KxI5yg16CDsboELRhVC+mwoMNNnrNRWxrVu71I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0CG5HVf7s6l2omXvtIS65oSTaKEurbYmF2VG5oLdptPXbmRYIvjobcF5ISi4wlEGZ
-         9CmrGlmBKSDCvP8DI7nDQ/1gCOPwvM0mu8vKamCxz+Y0PKRysjJMbBA09tnNOv4QOp
-         Dh9MnUQTzr02LepKx/tGpOLaosz3pLA2vGWp4NVw=
+        b=FEYQTekzErjMpJSn6cH1KuITJw3BSq27i/O3c3jBB4r3lPZGpoBgYtgGcZmSOpXlz
+         EpzMIMnimTz4B1oVgEjsD0zKmpBu5n8Y3Q7W21r3xBEsGoS8RnUTqqEcKaSOzJqc8I
+         oAGAODMPz8Etx7hX1KBc2jTOT334CYKTTbqvGiJQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
+Cc:     Martin Willi <martin@strongswan.org>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 06/34] esp4: add length check for UDP encapsulation
-Date:   Thu, 16 May 2019 07:39:03 -0400
-Message-Id: <20190516113932.8348-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 07/34] xfrm: Honor original L3 slave device in xfrmi policy lookup
+Date:   Thu, 16 May 2019 07:39:04 -0400
+Message-Id: <20190516113932.8348-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190516113932.8348-1-sashal@kernel.org>
 References: <20190516113932.8348-1-sashal@kernel.org>
@@ -43,90 +43,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
+From: Martin Willi <martin@strongswan.org>
 
-[ Upstream commit 8dfb4eba4100e7cdd161a8baef2d8d61b7a7e62e ]
+[ Upstream commit 025c65e119bf58b610549ca359c9ecc5dee6a8d2 ]
 
-esp_output_udp_encap can produce a length that doesn't fit in the 16
-bits of a UDP header's length field. In that case, we'll send a
-fragmented packet whose length is larger than IP_MAX_MTU (resulting in
-"Oversized IP packet" warnings on receive) and with a bogus UDP
-length.
+If an xfrmi is associated to a vrf layer 3 master device,
+xfrm_policy_check() fails after traffic decapsulation. The input
+interface is replaced by the layer 3 master device, and hence
+xfrmi_decode_session() can't match the xfrmi anymore to satisfy
+policy checking.
 
-To prevent this, add a length check to esp_output_udp_encap and return
- -EMSGSIZE on failure.
+Extend ingress xfrmi lookup to honor the original layer 3 slave
+device, allowing xfrm interfaces to operate within a vrf domain.
 
-This seems to be older than git history.
-
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
+Signed-off-by: Martin Willi <martin@strongswan.org>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/esp4.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+ include/net/xfrm.h        |  3 ++-
+ net/xfrm/xfrm_interface.c | 17 ++++++++++++++---
+ net/xfrm/xfrm_policy.c    |  2 +-
+ 3 files changed, 17 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 10e809b296ec8..fb065a8937ea2 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -226,7 +226,7 @@ static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
- 	tail[plen - 1] = proto;
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 902437dfbce77..c9b0b2b5d672f 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -295,7 +295,8 @@ struct xfrm_replay {
+ };
+ 
+ struct xfrm_if_cb {
+-	struct xfrm_if	*(*decode_session)(struct sk_buff *skb);
++	struct xfrm_if	*(*decode_session)(struct sk_buff *skb,
++					   unsigned short family);
+ };
+ 
+ void xfrm_if_register_cb(const struct xfrm_if_cb *ifcb);
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index dbb3c1945b5c9..85fec98676d34 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -70,17 +70,28 @@ static struct xfrm_if *xfrmi_lookup(struct net *net, struct xfrm_state *x)
+ 	return NULL;
  }
  
--static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
-+static int esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
+-static struct xfrm_if *xfrmi_decode_session(struct sk_buff *skb)
++static struct xfrm_if *xfrmi_decode_session(struct sk_buff *skb,
++					    unsigned short family)
  {
- 	int encap_type;
- 	struct udphdr *uh;
-@@ -234,6 +234,7 @@ static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, stru
- 	__be16 sport, dport;
- 	struct xfrm_encap_tmpl *encap = x->encap;
- 	struct ip_esp_hdr *esph = esp->esph;
-+	unsigned int len;
+ 	struct xfrmi_net *xfrmn;
+-	int ifindex;
+ 	struct xfrm_if *xi;
++	int ifindex = 0;
  
- 	spin_lock_bh(&x->lock);
- 	sport = encap->encap_sport;
-@@ -241,11 +242,14 @@ static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, stru
- 	encap_type = encap->encap_type;
- 	spin_unlock_bh(&x->lock);
+ 	if (!secpath_exists(skb) || !skb->dev)
+ 		return NULL;
  
-+	len = skb->len + esp->tailen - skb_transport_offset(skb);
-+	if (len + sizeof(struct iphdr) >= IP_MAX_MTU)
-+		return -EMSGSIZE;
-+
- 	uh = (struct udphdr *)esph;
- 	uh->source = sport;
- 	uh->dest = dport;
--	uh->len = htons(skb->len + esp->tailen
--		  - skb_transport_offset(skb));
-+	uh->len = htons(len);
- 	uh->check = 0;
- 
- 	switch (encap_type) {
-@@ -262,6 +266,8 @@ static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, stru
- 
- 	*skb_mac_header(skb) = IPPROTO_UDP;
- 	esp->esph = esph;
-+
-+	return 0;
- }
- 
- int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
-@@ -275,8 +281,12 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
- 	int tailen = esp->tailen;
- 
- 	/* this is non-NULL only with UDP Encapsulation */
--	if (x->encap)
--		esp_output_udp_encap(x, skb, esp);
-+	if (x->encap) {
-+		int err = esp_output_udp_encap(x, skb, esp);
-+
-+		if (err < 0)
-+			return err;
++	switch (family) {
++	case AF_INET6:
++		ifindex = inet6_sdif(skb);
++		break;
++	case AF_INET:
++		ifindex = inet_sdif(skb);
++		break;
 +	}
++	if (!ifindex)
++		ifindex = skb->dev->ifindex;
++
+ 	xfrmn = net_generic(xs_net(xfrm_input_state(skb)), xfrmi_net_id);
+-	ifindex = skb->dev->ifindex;
  
- 	if (!skb_cloned(skb)) {
- 		if (tailen <= skb_tailroom(skb)) {
+ 	for_each_xfrmi_rcu(xfrmn->xfrmi[0], xi) {
+ 		if (ifindex == xi->dev->ifindex &&
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 8d1a898d0ba56..a6b58df7a70f6 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3313,7 +3313,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 	ifcb = xfrm_if_get_cb();
+ 
+ 	if (ifcb) {
+-		xi = ifcb->decode_session(skb);
++		xi = ifcb->decode_session(skb, family);
+ 		if (xi) {
+ 			if_id = xi->p.if_id;
+ 			net = xi->net;
 -- 
 2.20.1
 
