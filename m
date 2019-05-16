@@ -2,106 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84EC01FF7D
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 08:26:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B10A41FFE1
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 08:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726486AbfEPG0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 02:26:30 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:32946 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726221AbfEPG0a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 02:26:30 -0400
-Received: by mail-lj1-f195.google.com with SMTP id w1so2005410ljw.0;
-        Wed, 15 May 2019 23:26:28 -0700 (PDT)
+        id S1726447AbfEPG4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 02:56:19 -0400
+Received: from mail-ed1-f52.google.com ([209.85.208.52]:37340 "EHLO
+        mail-ed1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726319AbfEPG4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 02:56:19 -0400
+Received: by mail-ed1-f52.google.com with SMTP id w37so3629883edw.4
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 23:56:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=wopevyOfrVcNgrs2OlRoJkSg1GME6xrc5gzsawzKoi4=;
-        b=u4Bs2ZR9I5NiC3tUkHwro0NaNYQTer2meRxQ1f7i3QntTO6Uxe3PIsdl0hPJq7/tvI
-         M4B9EalKq9eNCu7yK11e4OMIUCijrug2sTK9bWnm8qOF/eCn5OhtdHlsAMFOwW1ALlSO
-         vy3GmdKhcLgEUeOCutt1snzGpRtLBTlvCCh+ERJkgFyanEBzuWG0auDZiJH+YlcvDlwq
-         GOE7+0VY4aJI1hBAApc60LM33uCYXFd5Qj3zvkaT86rgZqXLyoUxqdioV6hO+vZGn4mq
-         WrlCcXJa1Z7O/yDs4zOvrqJlQfMpfNhTHv6Wk1Qnm2xJmTNOtUrlBa9PX6u4x74aA0KF
-         dlfA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v9f62nITeY4BysFMjwoONHrB8ht9661GUCQagdWwpSc=;
+        b=OFhVYwBHBx6xaL4XZ6ZhtQUHU6O6KRTNN1UR0kWbVy4A8lSdwAqa5MAqt/BaTxpjyF
+         3AB7U08449/6V0v7EfKz90Mgk0NCZvM+21GU+PWuKrzt2B7T5NXTuMNUmtgo9SFmY11j
+         pWTjk/liNy82rkOI5citIwJ9/xLE3PT9lA1KF1ec5mqDhrWHp9ud8MAQWvdgPa0eCrEi
+         pNDCi8pZkQS24OOWn0Ll7q8kGd95i+r2Zg2CaxF9UpVPV5b08GoXmbIocXfbG/bNx6nN
+         whJon0zK0sYjdFht+fM527rnzPQXUOebUZFJo84FcU1HXFZOQFoKr6XKkXU8Y3itGL9C
+         s4yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=wopevyOfrVcNgrs2OlRoJkSg1GME6xrc5gzsawzKoi4=;
-        b=KZ8YWAzkXAWPLOh0djEKeedZql/C2T+hs1NOYVmr5c7j6zYDruiEHdlfjAwh1Z3am8
-         rH68O7Gscn+4Jn2ZDDaP+PR4Pv+r974Fji0vRgRUrNToRLgBS+VFbU5Wkiy7Njr9cd0u
-         AQ8nDp7DRLg25MCxxgcbYHqBQJ1sLQaQZcidJ9JJZ2ZA+JMsi2+fEk4W1N8afnednyvx
-         NByx1GxJ57HZZ4wZl0DKyf1qOLkayDmazZGPi7otAQ8wCqWSrNwB2ncs402VO8pLK2F6
-         UMxXpJN2VWdT3byFHZynfM3f92agjBBXNbRMbPM93maYppa8APt/uPoIjgGozIqDcmr3
-         OmVw==
-X-Gm-Message-State: APjAAAUKqPARZAFQQEoqUjKnvB7UTNmNvlt2hDSbz3YyItgFEtkHa5bv
-        jUFTLeSiO2+TSFxTliPH3ug=
-X-Google-Smtp-Source: APXvYqxmhwMESExMgBx/ncLaEXSu/aignZEYzcIQ7Rj5rRdJ0TG1Bikq8bj5GIrD/1hxKwfDs98pQQ==
-X-Received: by 2002:a05:651c:150:: with SMTP id c16mr22906662ljd.65.1557987987979;
-        Wed, 15 May 2019 23:26:27 -0700 (PDT)
-Received: from [10.17.182.20] (ll-22.209.223.85.sovam.net.ua. [85.223.209.22])
-        by smtp.gmail.com with ESMTPSA id j10sm882748lfc.45.2019.05.15.23.26.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 May 2019 23:26:27 -0700 (PDT)
-Subject: Re: [Xen-devel] [PATCH] xen/netfront: Remove unneeded .resume
- callback
-To:     Anchal Agarwal <anchalag@amzn.com>,
-        "Oleksandr_Andrushchenko@epam.com" <Oleksandr_Andrushchenko@epam.com>
-Cc:     Anchal Agarwal <anchalag@amazon.com>,
-        Munehisa Kamata <kamatam@amazon.com>,
-        Julien Grall <julien.grall@arm.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Volodymyr Babchuk <Volodymyr_Babchuk@epam.com>,
-        Artem Mygaiev <Artem_Mygaiev@epam.com>
-References: <6205819a-af39-8cd8-db87-f3fe047ff064@gmail.com>
- <ecc825e6-89d3-bbd5-5243-5cc66fa93045@oracle.com>
- <b55d4f90-100c-7a2a-9651-c99c06953465@gmail.com>
- <09afcdca-258f-e5ca-5c31-b7fd079eb213@oracle.com>
- <3e868e7a-4872-e8ab-fd2c-90917ad6d593@arm.com>
- <d709d185-5345-c463-3fd1-e711f954e58a@gmail.com>
- <435369ba-ad3b-1d3a-c2f4-babe8bb6189c@amazon.com>
- <fde362d0-dd48-9c9a-e71a-8fb158909551@epam.com>
- <20190325173011.GA20277@kaos-source-ops-60001.pdx1.amazon.com>
- <f5e824de-da57-9574-3813-2668f2932a6e@gmail.com>
- <20190328231928.GA5172@kaos-source-ops-60001.pdx1.amazon.com>
-From:   Oleksandr Andrushchenko <andr2000@gmail.com>
-Message-ID: <48fedb13-5af2-e7cf-d182-0f2bb385dda2@gmail.com>
-Date:   Thu, 16 May 2019 09:26:25 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v9f62nITeY4BysFMjwoONHrB8ht9661GUCQagdWwpSc=;
+        b=N/zqSG4HMoBhU0KujbYhl2czL+4ysK77KMqhURMqRMMt9h6BOSXq+UdYgtShCDpBd5
+         el14jtoUenAR4q5Jj9G95UbwsJDhSJxs0+44P98Ia7qY6yxWehK0D6N/S5XUCoRiyJYf
+         DKE33181/aR1HA8I3JAMFJ6xDIk8YulOMX9D9fpF7ianRu0DAkyUnjpC/690rspolxXn
+         XCEnHLXzjQt9/yEhamOVCjIYBMynw9gqKdCNXFm1voo8Zm1M3C9hvNi/g7ab2vM7AMCv
+         oIYVO8WojPG4uKgp85MogUW8v76YUX2mrZFPenrM9Sz6ht9Jo695Nchvf8B0mNdYqO8g
+         3BBw==
+X-Gm-Message-State: APjAAAWuzYer6I2y9UhaNEod2BXu4SHvNzk3WDGO1U7VpI1LpSMVIQJA
+        AzUfKICVW6ekmidSuseJUrUujZ27Ne4NLzcVVuM=
+X-Google-Smtp-Source: APXvYqy8oFI1HCxNAc9zuXpitUzW924ySU+X2eQAc5vUR054ln5wIF8S2aHPS4/hfQmKgeVkjKOFx2/xursx1XxmUyY=
+X-Received: by 2002:a50:9264:: with SMTP id j33mr47031057eda.125.1557989777103;
+ Wed, 15 May 2019 23:56:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190328231928.GA5172@kaos-source-ops-60001.pdx1.amazon.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20190515143936.524acd4e@bootlin.com> <20190515132701.GD23276@lunn.ch>
+ <20190515160214.1aa5c7d9@bootlin.com> <35daa9e7-8b97-35dd-bc95-bab57ef401cd@gmail.com>
+ <20190515161931.ul2fmkfxmyumfli5@shell.armlinux.org.uk>
+In-Reply-To: <20190515161931.ul2fmkfxmyumfli5@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 16 May 2019 09:56:06 +0300
+Message-ID: <CA+h21hp5aX00jtj5bSkig1jGY8JHAsKwGp+584jbOw3k82Z5KA@mail.gmail.com>
+Subject: Re: dsa: using multi-gbps speeds on CPU port
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, Anchal!
-
-On 3/29/19 1:19 AM, Anchal Agarwal wrote:
-[snip]
->>>> Great, could you please let us know what is the progress and further plans
->>>> on that, so we do not work on the same code and can coordinate our
->>>> efforts somehow? Anchal, could you please shed some light on this?
->>> Looks like my previous email did not make it to mailing list. May be some issues with my
->>> email server settings. Giving it another shot.
->>> Yes, I am working on those patches and plan to re-post them in an effort to upstream.
->> This is really great, looking forward to it: any date in your mind
->> when this can happen?
-> Not a specific date but may be in few weeks. I am currently swamped at work.
+On Wed, 15 May 2019 at 19:19, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
 >
-Any progress on this?
+> On Wed, May 15, 2019 at 09:09:26AM -0700, Florian Fainelli wrote:
+> > Vladimir mentioned a few weeks ago that he is considering adding support
+> > for PHYLIB and PHYLINK to run without a net_device instance, you two
+> > should probably coordinate with each other and make sure both of your
+> > requirements (which are likely the same) get addressed.
+>
+> I don't see how that's sane unless we just replace the "netdevice" in
+> there with an opaque "void *" and lose the typechecking.
+>
+> That then means we'd need to eradicate all the messages therein, since
+> we can't use netdev_*() functions to print.
+>
+> Then there's the patches I still have, that were rejected, and have had
+> no progress to get SFP working on 88x3310 - I'm just not bothering to
+> push them due to the rejection, and the lack of any ideas how to
+> approach this problem.  So we have the Macchiatobin which has now been
+> around for quite some time with SFP+ slots that are not particularly
+> functional with mainline kernels (but hey, I don't care, because they
+> work for me, because I have the patches that work!)
+>
+> You all know where that is, I've tried pointing it out several times...
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> According to speedtest.net: 11.9Mbps down 500kbps up
 
-Thank you,
-Oleksandr
+I'm unfortunately not up to speed yet on what has been tried so far,
+but I do plan to start prototyping the idea soon and I'll probably
+find your patches then.
+My basic idea is to interface a Raspberry Pi-like board to a dumb
+"switch evaluation board" which has only the Ethernet ports and the
+SPI/whatever control interface exposed. The DSA CPU/master port combo
+in this case would go through a Cat5 cable, which is not going to pan
+out very well currently because both the RPi-side PHY and the switch
+board-side PHY need some massaging from their respective drivers. Both
+PHYs are C22.
+A rough idea of what I'm actually planning to do at:
+https://www.spinics.net/lists/netdev/msg569087.html
+
+-Vladimir
