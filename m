@@ -2,113 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92AF620DAC
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 19:03:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E97220DB9
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 19:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728793AbfEPRDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 13:03:20 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:44749 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727210AbfEPRDT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 13:03:19 -0400
-Received: by mail-pg1-f195.google.com with SMTP id z16so1849216pgv.11
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 10:03:19 -0700 (PDT)
+        id S1727018AbfEPRLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 13:11:08 -0400
+Received: from mail-it1-f193.google.com ([209.85.166.193]:34652 "EHLO
+        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726622AbfEPRLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 13:11:08 -0400
+Received: by mail-it1-f193.google.com with SMTP id p18so8761671itm.1;
+        Thu, 16 May 2019 10:11:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rWBPoxSBCFyoquf40F4fxRrlZ4eMuCB4vMLWv5G+HUM=;
-        b=Q3YxJ5f0Y+1+mvDAldCMbWmR8KwBMHsCCPMmDYFlCjCRFCMxOvNvaFcEYruWDoouMW
-         Lxsbm9CO5hUd6Yy1Km2IVo5Z6YjP+9wNX+wIFUADgnrbVfNIfWWjGsSjqChCPancTnVN
-         9T8Urx0RpIzc5URZiGpjLXtpEQwn7zIuo0NdbSxmiIb41npgzRAn41yR7IcsWcN+cTjK
-         Jw3rfbWiWrKaieqRjaH/7V+DYZJynlJKkl+wsh8XxYIF4z6FHGfSz/4iZbzv9NwLZP9L
-         IGi84X6XyI+1uyfuKcoCSVV4vwAo3TRn0IMq2JNGDqvP8L1BzHn+HBaefonLvzlT3I+t
-         o57w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fVgWvZJjJ7LZA6VDcloEmUFXOAPk1PT27/O6DPevuoo=;
+        b=A4cqwo2yL1aggG4lM417VaU73zIpyeM1JjIhVvoca22iROz0Rlp4JkwF+l0tcZeRU+
+         3+/RLh0apRqAa6TC+fZnZ/vzZQXIXvYc0uxWamp3t2JDBCPJqR4uZxXZoDrTEQt3V0h3
+         apC3rfKagNzxS8t9W7GpQVZUM14DEvJ6em2On5JgFIleMe6XaucvT2+gj6XD31lWSXFG
+         tf9UzCkGKwohIZTJQn3wXJMIgufC3/YdqtvVM1ZkNBk0XVkt4V2JFg3wERawxT9QC7Q/
+         Y5vmhlJ51f8TBXO5/yelUaLZZ+CpUVZflfnBNj+Qm4Eabnr3iLcuAr5b4kRdnbl90MHZ
+         s4bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rWBPoxSBCFyoquf40F4fxRrlZ4eMuCB4vMLWv5G+HUM=;
-        b=t6WZ9SDKZT1fCLI/Wl0Yfkwk9XwGZXiiXpf7LYy16yuIqUVv5VHPCxKpenN9An0soh
-         1DvVI75Om3L6ptan1a6BeF0wmbzu1x+45Gwp7OjPWX+CJwoRIH9U5I4xMdVmGl49HIvn
-         i5haq/X862bPFSksVv2Q5nslPyLsIJ825lgORqQOuXQ1O9E9BuNhQGlAlIxS6fFWPqXf
-         QSG1Ic/OddXrLW29kLU+IAhTZQsDdSt34ATooP0IFns/UDtp+m3osdKS6VgCV95klKY7
-         1nbutv1WAEQ6yOi+gcMcHGSn8HYCRMY8muoXiIisMpIg+UVaNHHCBQXt93Ywr0nhr2l9
-         xLcQ==
-X-Gm-Message-State: APjAAAXvYxborvSGzxqMmLEBYJpiZBg/MOpoKxXj46KQF7xhMVP1fsNp
-        tzKUSt5MwIr6gldsoya4kCesu+fG
-X-Google-Smtp-Source: APXvYqxJ7NdWr1V46lW1l0JAZPMFk6RKLgTSJKCGVbzSvIURq6UyDRMh9LcolGL+BzmHYGC/AEMdTA==
-X-Received: by 2002:a63:6bc3:: with SMTP id g186mr39061323pgc.21.1558026198768;
-        Thu, 16 May 2019 10:03:18 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id e78sm14356310pfh.134.2019.05.16.10.03.16
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 May 2019 10:03:17 -0700 (PDT)
-Subject: Re: Kernel UDP behavior with missing destinations
-To:     Adam Urban <adam.urban@appleguru.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
-References: <CABUuw65R3or9HeHsMT_isVx1f-7B6eCPPdr+bNR6f6wbKPnHOQ@mail.gmail.com>
- <CAF=yD-Kdb4UrgzOJmeEhiqmeKndb9-X5WwttR-X4xd5m7DE5Dw@mail.gmail.com>
- <0d50023e-0a3b-b92b-59d6-39d0c02fa182@gmail.com>
- <18aefee7-4c47-d330-c6c1-7d1442551fa6@gmail.com>
- <CABUuw67crf5yb0G_KRR94WLBP8YYLgABBgv1SFW0SvKB_ntK4w@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <1f6a6c3f-d723-4739-da77-58a55cfa2170@gmail.com>
-Date:   Thu, 16 May 2019 10:03:16 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fVgWvZJjJ7LZA6VDcloEmUFXOAPk1PT27/O6DPevuoo=;
+        b=C3p5PcxWPig68cbPR2ughJKZOexhcDiMw5NcW4eRMM/tCcoEvwp5Tqmk+vq3qoOoA3
+         shyhPfjyFnb6ih9PaXB1R0lGA46adGOgzYSRJOJBWKsHF4Ow4PeMIoCdLthUe6vRY9EM
+         dFt0sEXmCAnsADseO7hpZrMeZ6vtC9YblUur04nWlR1Rmk/XRCCwEIlo7XoJM6AxniCH
+         1VRXPIEcwelobEkbBt8QHwlI3NZSu977kRYBnXNsIqsvvGGYr2WTNaz7Qt6fPWvt8UWR
+         bHHxmxoyaoNpU0I+56RMyLwBKS7PLJkNrPfFFBVYU/FkM53RbOwijVI56sRz4jVRrtJk
+         Jnpg==
+X-Gm-Message-State: APjAAAV2G+gF/mvdiVTrqmRKoWGPbwOkdagZ75ga/MuW+ea8qb5UCUNk
+        87lw96LZJmc0dxJUaOmwxEB0kpwgFS8OEHFqzVg3W/Z0uQHDbA==
+X-Google-Smtp-Source: APXvYqy3m/oJMUKJD6ooOIYSw+QkNQB7gPWB3BwHZsKTSVtISBUaJfBt4qSiwurxdEPWDJsoE4o0ba753ipNvnpzweE=
+X-Received: by 2002:a02:7410:: with SMTP id o16mr32812026jac.87.1558026666868;
+ Thu, 16 May 2019 10:11:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CABUuw67crf5yb0G_KRR94WLBP8YYLgABBgv1SFW0SvKB_ntK4w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190502171636.3yquioe3gcwsxlus@csclub.uwaterloo.ca>
+ <CAKgT0Ufk8LXMb9vVWfvgbjbQFKAuenncf95pfkA0P1t-3+Ni_g@mail.gmail.com>
+ <20190502175513.ei7kjug3az6fe753@csclub.uwaterloo.ca> <20190502185250.vlsainugtn6zjd6p@csclub.uwaterloo.ca>
+ <CAKgT0Uc_YVzns+26-TL+hhmErqG4_w4evRqLCaa=7nME7Zq+Vg@mail.gmail.com>
+ <20190503151421.akvmu77lghxcouni@csclub.uwaterloo.ca> <CAKgT0UcV2wCr6iUYktZ+Bju_GNpXKzR=M+NLfKhUsw4bsJSiyA@mail.gmail.com>
+ <20190503205935.bg45rsso5jjj3gnx@csclub.uwaterloo.ca> <20190513165547.alkkgcsdelaznw6v@csclub.uwaterloo.ca>
+ <CAKgT0Uf_nqZtCnHmC=-oDFz-3PuSM6=30BvJSDiAgzK062OY6w@mail.gmail.com> <20190514163443.glfjva3ofqcy7lbg@csclub.uwaterloo.ca>
+In-Reply-To: <20190514163443.glfjva3ofqcy7lbg@csclub.uwaterloo.ca>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 16 May 2019 10:10:55 -0700
+Message-ID: <CAKgT0UdPDyCBsShQVwwE5C8fBKkMcfS6_S5m3T7JP-So9fzVgA@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec packets
+To:     Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Content-Type: multipart/mixed; boundary="00000000000007a1700589045a5b"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--00000000000007a1700589045a5b
+Content-Type: text/plain; charset="UTF-8"
 
+On Tue, May 14, 2019 at 9:34 AM Lennart Sorensen
+<lsorense@csclub.uwaterloo.ca> wrote:
+>
+> On Mon, May 13, 2019 at 12:04:00PM -0700, Alexander Duyck wrote:
+> > So I recreated the first packet you listed via text2pcap, replayed it
+> > on my test system via tcpreplay, updated my configuration to 12
+> > queues, and used the 2 hash keys you listed. I ended up seeing the
+> > traffic bounce between queues 4 and 8 with an X710 I had to test with
+> > when I was changing the key value.
+> >
+> > Unfortunately I don't have an X722 to test with. I'm suspecting that
+> > there may be some difference in the RSS setup, specifically it seems
+> > like values in the PFQF_HENA register were changed for the X722 part
+> > that may be causing the issues we are seeing.
+> >
+> > I will see if I can get someone from the networking division to take a
+> > look at this since I don't have access to the part in question nor a
+> > datasheet for it so I am not sure if I can help much more.
+>
+> Great.  I hope someone can figure this out because it is working very
+> badly so far.
+>
+> --
+> Len Sorensen
 
-On 5/16/19 9:32 AM, Adam Urban wrote:
-> Eric, thanks. Increasing wmem_default from 229376 to 2293760 indeed
-> makes the issue go away on my test bench. What's a good way to
-> determine the optimal value here? I assume this is in bytes and needs
-> to be large enough so that the SO_SNDBUF doesn't fill up before the
-> kernel drops the packets. How often does that happen?
+So I was sent a link to the datasheet for the part and I have a
+working theory that what we may be seeing is a problem in the firmware
+for the part.
 
-You have to count the max number of arp queues your UDP socket could hit.
+Can you try applying the attached patch and send the output from the
+dmesg? Specifically I would want anything with the name "i40e" in it.
+What I am looking for is something like the following:
+[  294.383416] i40e 0000:81:00.1: fw 5.0.40043 api 1.5 nvm 5.04 0x800024cd 0.0.0
+[  294.675039] i40e 0000:81:00.1: MAC address: 68:05:ca:37:c7:99
+[  294.685941] i40e 0000:81:00.1: flow_type: 63 input_mask:0x0000000000004000
+[  294.686056] i40e 0000:81:00.1: flow_type: 46 input_mask:0x0007fff800000000
+[  294.686170] i40e 0000:81:00.1: flow_type: 45 input_mask:0x0007fff800000000
+[  294.686284] i40e 0000:81:00.1: flow_type: 44 input_mask:0x0007ffff80000000
+[  294.686399] i40e 0000:81:00.1: flow_type: 43 input_mask:0x0007fffe00000000
+[  294.686513] i40e 0000:81:00.1: flow_type: 41 input_mask:0x0007fffe00000000
+[  294.686628] i40e 0000:81:00.1: flow_type: 36 input_mask:0x0001801800000000
+[  294.686743] i40e 0000:81:00.1: flow_type: 35 input_mask:0x0001801800000000
+[  294.686858] i40e 0000:81:00.1: flow_type: 34 input_mask:0x0001801f80000000
+[  294.686973] i40e 0000:81:00.1: flow_type: 33 input_mask:0x0001801e00000000
+[  294.687087] i40e 0000:81:00.1: flow_type: 31 input_mask:0x0001801e00000000
+[  294.691906] i40e 0000:81:00.1 ens5f1: renamed from eth0
+[  294.711173] i40e 0000:81:00.1 ens5f1: NIC Link is Up, 10 Gbps Full
+Duplex, Flow Control: None
+[  294.759061] i40e 0000:81:00.1: PCI-Express: Speed 8.0GT/s Width x8
+[  294.863363] i40e 0000:81:00.1: Features: PF-id[1] VFs: 32 VSIs: 34
+QP: 32 RSS FD_ATR FD_SB NTUPLE VxLAN Geneve PTP VEPA
 
-Say this number is X
+With that we can tell what flow types are enabled, and what input
+fields are enabled for each flow type. My suspicion is that we may see
+the two new types added to X722 for UDP, 29 and 30, may not match type
+31 which is the current flow type supported on the X710.
 
-Then wmem_default should be set  to X * unres_qlen_bytes + Y
+I have included a copy inline below in case the patch is stripped,
+however I suspect it will not apply cleanly as the mail client I am
+using usually ends up causing white space mangling by replacing tabs
+with spaces.
 
-With Y =  229376  (the default  wmem_default)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c
+b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 65c2b9d2652b..0c93859f8184 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -10998,6 +10998,15 @@ static int i40e_pf_config_rss(struct i40e_pf *pf)
+                ((u64)i40e_read_rx_ctl(hw, I40E_PFQF_HENA(1)) << 32);
+        hena |= i40e_pf_get_default_rss_hena(pf);
 
-Then, you might need to increase the qdisc limits.
++       for (ret = 64; ret--;) {
++               if (!(hena & (1ull << ret)))
++                       continue;
++               dev_info(&pf->pdev->dev, "flow_type: %d
+input_mask:0x%08x%08x\n",
++                        ret,
++                        i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, ret)),
++                        i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, ret)));
++       }
++
+        i40e_write_rx_ctl(hw, I40E_PFQF_HENA(0), (u32)hena);
+        i40e_write_rx_ctl(hw, I40E_PFQF_HENA(1), (u32)(hena >> 32));
 
-If no arp queue is active, all UDP packets could be in the qdisc and might hit sooner
-the qdisc limit, thus dropping packets on the qdisc.
+--00000000000007a1700589045a5b
+Content-Type: text/x-patch; charset="US-ASCII"; name="i40e-debug-hash-inputs.patch"
+Content-Disposition: attachment; filename="i40e-debug-hash-inputs.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_jvqw89g40>
+X-Attachment-Id: f_jvqw89g40
 
-(This is assuming your UDP application can blast packets at a rate above the link rate)
-
-> 
-> On Thu, May 16, 2019 at 12:14 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->>
->>
->> On 5/16/19 9:05 AM, Eric Dumazet wrote:
->>
->>> We probably should add a ttl on arp queues.
->>>
->>> neigh_probe() could do that quite easily.
->>>
->>
->> Adam, all you need to do is to increase UDP socket sndbuf.
->>
->> Either by increasing /proc/sys/net/core/wmem_default
->>
->> or using setsockopt( ... SO_SNDBUF ... )
->>
+aTQwZTogRGVidWcgaGFzaCBpbnB1dHMKCkZyb206IEFsZXhhbmRlciBEdXljayA8YWxleGFuZGVy
+LmguZHV5Y2tAbGludXguaW50ZWwuY29tPgoKCi0tLQogZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50
+ZWwvaTQwZS9pNDBlX21haW4uYyB8ICAgIDkgKysrKysrKysrCiAxIGZpbGUgY2hhbmdlZCwgOSBp
+bnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaTQw
+ZS9pNDBlX21haW4uYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2k0MGUvaTQwZV9tYWlu
+LmMKaW5kZXggNjVjMmI5ZDI2NTJiLi4wYzkzODU5ZjgxODQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
+bmV0L2V0aGVybmV0L2ludGVsL2k0MGUvaTQwZV9tYWluLmMKKysrIGIvZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvaW50ZWwvaTQwZS9pNDBlX21haW4uYwpAQCAtMTA5OTgsNiArMTA5OTgsMTUgQEAgc3Rh
+dGljIGludCBpNDBlX3BmX2NvbmZpZ19yc3Moc3RydWN0IGk0MGVfcGYgKnBmKQogCQkoKHU2NClp
+NDBlX3JlYWRfcnhfY3RsKGh3LCBJNDBFX1BGUUZfSEVOQSgxKSkgPDwgMzIpOwogCWhlbmEgfD0g
+aTQwZV9wZl9nZXRfZGVmYXVsdF9yc3NfaGVuYShwZik7CiAKKwlmb3IgKHJldCA9IDY0OyByZXQt
+LTspIHsKKwkJaWYgKCEoaGVuYSAmICgxdWxsIDw8IHJldCkpKQorCQkJY29udGludWU7CisJCWRl
+dl9pbmZvKCZwZi0+cGRldi0+ZGV2LCAiZmxvd190eXBlOiAlZCBpbnB1dF9tYXNrOjB4JTA4eCUw
+OHhcbiIsCisJCQkgcmV0LAorCQkJIGk0MGVfcmVhZF9yeF9jdGwoaHcsIEk0MEVfR0xRRl9IQVNI
+X0lOU0VUKDEsIHJldCkpLAorCQkJIGk0MGVfcmVhZF9yeF9jdGwoaHcsIEk0MEVfR0xRRl9IQVNI
+X0lOU0VUKDAsIHJldCkpKTsKKwl9CisKIAlpNDBlX3dyaXRlX3J4X2N0bChodywgSTQwRV9QRlFG
+X0hFTkEoMCksICh1MzIpaGVuYSk7CiAJaTQwZV93cml0ZV9yeF9jdGwoaHcsIEk0MEVfUEZRRl9I
+RU5BKDEpLCAodTMyKShoZW5hID4+IDMyKSk7CiAK
+--00000000000007a1700589045a5b--
