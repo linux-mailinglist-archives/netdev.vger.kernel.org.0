@@ -2,141 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2518120DC4
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 19:16:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB2B20DC6
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 19:17:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbfEPRQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 13:16:45 -0400
-Received: from mail-eopbgr1320094.outbound.protection.outlook.com ([40.107.132.94]:36690
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726578AbfEPRQo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 13:16:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=dTXynS4C7t6AzNtTCYdIX9JS2qW0uJaqV4HfG6ij1/xTVKx3dNZzuoTt78RV5kOxlgAauqwvHMgOKPLCkzttADThXDBvnhqQbEzTR1zGRh/Vf+fYiIiT4g12kNGyjnlBXBQtCdvWY8d83eGNp2D5xCn3V0vIn9OGAA0cQAXJho8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JlvleVwL/PkxyXeqGxFMjgmuDx9G4jJSjxN+URBf1/E=;
- b=cjibX3d07fZm8zfLmHnd987U0IH4Amq9GJCmIQS78pzk2XMsAYxHoxCcHLEZ4pmL2ZaVp8BbqoNwIrrjMEFouymvh4kv64vnlYYDOcngPprVPjACzmqBih7e8iXNjqzAIemOkWIkKh7IZho273Vkb26eMofQTCAdtUSrbI0zVTo=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JlvleVwL/PkxyXeqGxFMjgmuDx9G4jJSjxN+URBf1/E=;
- b=KNGxdyGdtR5TIDu+jqapajqjJIENcZAL8NZRFpAC/CfqxO6KDD6DCjH1QG7tRpcagRGYPyYgJLqHUurZ3jgLBPwgPSlcAkNzP4gVcL63b61cl52BhsVUTtZVjTu9tvFB2vR3J9zOD2KPSyZ2F9RlR85pzHfK2/3aEEJUybHkf7A=
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM (10.170.189.13) by
- PU1P153MB0138.APCP153.PROD.OUTLOOK.COM (10.170.188.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.4; Thu, 16 May 2019 17:16:38 +0000
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
- ([fe80::dc7e:e62f:efc9:8564]) by PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
- ([fe80::dc7e:e62f:efc9:8564%4]) with mapi id 15.20.1922.002; Thu, 16 May 2019
- 17:16:38 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Sunil Muthuswamy <sunilmut@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michael Kelley <mikelley@microsoft.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2] hv_sock: Add support for delayed close
-Thread-Topic: [PATCH v2] hv_sock: Add support for delayed close
-Thread-Index: AdUKtaBXG33lHE0AQU2ynJ9GbZ74UwA3pTOgAB0ubQA=
-Date:   Thu, 16 May 2019 17:16:37 +0000
-Message-ID: <PU1P153MB01693DB2206CD639AF356DBDBF0A0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
-References: <BN6PR21MB0465043C08E519774EE73E99C0090@BN6PR21MB0465.namprd21.prod.outlook.com>
- <PU1P153MB01698261307593C5D58AAF4FBF0A0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
-In-Reply-To: <PU1P153MB01698261307593C5D58AAF4FBF0A0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-05-16T04:34:19.9899242Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=a52563af-82a7-4a5f-aed5-227da8f0af23;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=decui@microsoft.com; 
-x-originating-ip: [2601:600:a280:1760:e49c:a88d:95f1:67ea]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a1c6e5aa-7702-436c-15da-08d6da22417d
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:PU1P153MB0138;
-x-ms-traffictypediagnostic: PU1P153MB0138:
-x-microsoft-antispam-prvs: <PU1P153MB0138FE878ABA1CA15D92C613BF0A0@PU1P153MB0138.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0039C6E5C5
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(346002)(136003)(396003)(39860400002)(189003)(199004)(186003)(99286004)(486006)(1511001)(102836004)(74316002)(46003)(54906003)(229853002)(256004)(11346002)(316002)(110136005)(22452003)(6436002)(8990500004)(33656002)(14444005)(476003)(446003)(2940100002)(7736002)(478600001)(52536014)(81156014)(68736007)(305945005)(81166006)(5660300002)(8936002)(8676002)(10290500003)(6636002)(2906002)(6116002)(66446008)(73956011)(66476007)(66556008)(64756008)(76116006)(4326008)(9686003)(86612001)(86362001)(6246003)(71190400001)(71200400001)(53936002)(66946007)(6506007)(14454004)(55016002)(25786009)(76176011)(7696005)(10090500001);DIR:OUT;SFP:1102;SCL:1;SRVR:PU1P153MB0138;H:PU1P153MB0169.APCP153.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: b+Rxn/rcFA584RGkYnU4XQfQABVYHFdZFqfiaJSyKHvrqKFlSPSQrbMy58Yf5rXjCiLO/W9xCPBxAg/0OhmfB/SAD3ER+G+viSlFB2/Vdrcsnx7wYEClrTF9WOEOaGUhgMoefOBvFKjIOd0XnEwXDDARglTrNONYGSpXBqnYx5h9E2m2GiQjuwJHSZn/R72aMEBZP4okXCEjmliggArQM7s2CsnbipmnrguI1nAM1NOlC8dl3vurBsKtMN+b/rH7gS+wrWzmmvx8CJpr8xbWcijJ41JySit5QV96mZ5BEhmBAloDdj9t7uzFUPc6KAiTYpZqNjnyoxiL41MiIQ3P5OTXPhO9R9XN5rDn8FS3pomD7MAImQ6WSWJ2His1g83mFWl7u5C++kumtdnebIv+ZzJvOlaXxTdpgXSTVnV81nk=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727247AbfEPRRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 13:17:35 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38902 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726578AbfEPRRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 13:17:35 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x4GH92XY015672
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 10:17:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=iDVF7nPvDmjgI1zFsB5sLrGh7+JT4O38A+kRr4BUbcg=;
+ b=RKc3QlcoUgWNTbdv5zqJpC1ShcSPt0Cxa9/cedRedJ9jhnmVz2divUOc28k4r5TtFAuK
+ MlFRscPbAxilKZbk3RbafW4NOULXjBq/335I5N4j2448xOhROeE3Es9BvjGhHX0ix+MF
+ ruMfAD2uzwY2sU4S0vV1Ti6Dk3PjE+55xE8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2sha70gg1h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 10:17:33 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 16 May 2019 10:17:32 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id E3C03370155A; Thu, 16 May 2019 10:17:31 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Yonghong Song <yhs@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] tools/bpftool: move set_max_rlimit() before __bpf_object__open_xattr()
+Date:   Thu, 16 May 2019 10:17:31 -0700
+Message-ID: <20190516171731.2320976-1-yhs@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1c6e5aa-7702-436c-15da-08d6da22417d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2019 17:16:37.7736
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: decui@microsoft.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0138
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-16_14:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905160109
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: linux-hyperv-owner@vger.kernel.org
-> <linux-hyperv-owner@vger.kernel.org> On Behalf Of Dexuan Cui
-> Sent: Wednesday, May 15, 2019 9:34 PM
-> ...
+For a host which has a lower rlimit for max locked memory (e.g., 64KB),
+the following error occurs in one of our production systems:
+  # /usr/sbin/bpftool prog load /paragon/pods/52877437/home/mark.o \
+    /sys/fs/bpf/paragon_mark_21 type cgroup/skb \
+    map idx 0 pinned /sys/fs/bpf/paragon_map_21
+  libbpf: Error in bpf_object__probe_name():Operation not permitted(1).
+    Couldn't load basic 'r0 = 0' BPF program.
+  Error: failed to open object file
 
-Hi Sunil,
-To make it clear, your patch itself is good, and I was just talking about
-the next change we're going to make. Once we make the next change,
-IMO we need a further patch to schedule hvs_close_timeout() to the new
-single-threaded workqueue rather than the global "system_wq".
+The reason is due to low locked memory during bpf_object__probe_name()
+which probes whether program name is supported in kernel or not
+during __bpf_object__open_xattr().
 
-> Next, we're going to remove the "channel->rescind" check in
-> vmbus_hvsock_device_unregister() -- when doing that, IMO we need to
-> fix a potential race revealed by the schedule_delayed_work() in this
-> patch:
->=20
-> When hvs_close_timeout() finishes, the "sk" struct has been freed, but
-> vmbus_onoffer_rescind() -> channel->chn_rescind_callback(), i.e.
-> hvs_close_connection(), may be still running and referencing the "chan"
-> and "sk" structs (), which should no longer be referenced when
-> hvs_close_timeout() finishes, i.e. "get_per_channel_state(chan)" is no
-> longer safe. The problem is: currently there is no sync mechanism
-> between vmbus_onoffer_rescind() and hvs_close_timeout().
->=20
-> The race is a real issue only after we remove the "channel->rescind"
-> in vmbus_hvsock_device_unregister().
+bpftool program load already tries to relax mlock rlimit before
+bpf_object__load(). Let us move set_max_rlimit() before
+__bpf_object__open_xattr(), which fixed the issue here.
 
-A correction: IMO the race is real even for the current code, i.e. without
-your patch: in vmbus_onoffer_rescind(), between we set channel->rescind
-and we call channel->chn_rescind_callback(), the channel may have been
-freed by vmbus_hvsock_device_unregister().
+Fixes: 47eff61777c7 ("bpf, libbpf: introduce bpf_object__probe_caps to test BPF capabilities")
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ tools/bpf/bpftool/prog.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-This race window is small and I guess that's why we never noticed it.
-
-> I guess we need to introduce a new single-threaded workqueue in the
-> vmbus driver, and offload both vmbus_onoffer_rescind() and
-> hvs_close_timeout() onto the new workqueue.
-=20
-Thanks,
--- Dexuan
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index fc495b27f0fc..26336bad0442 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -879,6 +879,8 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 		}
+ 	}
+ 
++	set_max_rlimit();
++
+ 	obj = __bpf_object__open_xattr(&attr, bpf_flags);
+ 	if (IS_ERR_OR_NULL(obj)) {
+ 		p_err("failed to open object file");
+@@ -958,8 +960,6 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 		goto err_close_obj;
+ 	}
+ 
+-	set_max_rlimit();
+-
+ 	err = bpf_object__load(obj);
+ 	if (err) {
+ 		p_err("failed to load object file");
+-- 
+2.17.1
 
