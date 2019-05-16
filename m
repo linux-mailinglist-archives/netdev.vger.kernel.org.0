@@ -2,72 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8155920EDB
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 20:42:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FEF020EE1
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 20:43:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727811AbfEPSmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 14:42:19 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:34121 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726546AbfEPSmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 14:42:18 -0400
-Received: by mail-lf1-f68.google.com with SMTP id v18so3452349lfi.1;
-        Thu, 16 May 2019 11:42:17 -0700 (PDT)
+        id S1727854AbfEPSnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 14:43:17 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:37014 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726546AbfEPSnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 14:43:16 -0400
+Received: by mail-lj1-f194.google.com with SMTP id h19so4054600ljj.4;
+        Thu, 16 May 2019 11:43:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=NgjfAedEEfK/VbhjQWXMYlxY2gifU8riB1qnOlScHZc=;
-        b=NfICAbgMNkq5GbTuaHN6UaR8aHW9QqFRcOoD4uBFCSwlUMZ3Vk7ZnqIMOwiUB7s0x9
-         r/m7v5HyH1GeH7U2Ocv64zdFS+7hkhByniJDw8AQsqaI5LQS6y1QUa4YMe2vrlYz07+B
-         iIarCbU7EOxz+pH/nUu1HXfUCbdnd3Br9kr8p+tn+WNhcLCVEGQItDcwEd7oOOKikozH
-         SWU2po8N6iq1fCRuOvLMRvoud40xV3Ai/GQ9sRwSwEBuknuYHGXciM5iVncl/KZ0re+z
-         o1DSlD7qSWq/N+klQ0C4IUYcyYkOBQGjmZHsjPmXxydUz0exoaQJkVgfT+Fza7oRDa/n
-         USDA==
+        bh=unVG59VzBSYO4iOVXWL7fSEnwAhYhvevqAGHSVFtITs=;
+        b=JzXCeX1bZ1ONHAEBSxYaRxUvqfPdgB39LOqzBGggD1p4Y7zZFtKKJoFFiDoun3nS3c
+         1V3qUE/ds+HnbVRGYOWzTArmY9yvKrCT1q4aSK27OJLN1MtvREOrKrj/PjiGyc+xZ09/
+         sGsMWCWtB/6kdzX/1kTY5K5vHLpMRa3qWUtkpb7290pgZF+Ehn93gzVtH1G1GBhfUko8
+         0tXIhenPwkO6Oa4FK7Qzu08vuZ6AlKSXTO5igrr/8nA7/W2sF4Gk6qmwyrPpOqR4JIvZ
+         RwAFK8PmfXQWHLs/C33C1JIL9MAQCrpu6kGpcZPDFb0wgv3y1uEXLGybFFRYF890hX5U
+         wbGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=NgjfAedEEfK/VbhjQWXMYlxY2gifU8riB1qnOlScHZc=;
-        b=La1ZspGInnzdiC0mytyZ4YtvbQg9UehzN3zuN9JNnHLV9R9F4S0VGy0DTu3nVV2EEP
-         UFw9xgps8Bs5ZMDGQPQLeKF1j0TW5Jdon25U6C2lPk4ImQHlSKdDdnbFbSQhitSmLvMA
-         EkZjRu6VHkpSfu0uAN/k9zCFWrPS0S4yBCyFTUdNlAbRBJtFawx9FstjO1onCukSMyqv
-         bL6NZKikrBe7FgvLEIgBhYrHW3lzMhkW6pGVxujX8mWK+OwDz2I412aM3MbGHrqoI/Pd
-         Z+KMpavj3RBOUDig48Pak0M7zg5Yp9yGrrMl+77n58oaHECI/iHiCBf85ipgE1apM7Q1
-         rngQ==
-X-Gm-Message-State: APjAAAUkUfbFMCpukLrRoxg1Gn9CndIqeLsc9JY0zvXfTsw1/75+1nBS
-        +dKalOilH6LkqGjwIX2yq6XTDz/G3y3q7J1nkBA=
-X-Google-Smtp-Source: APXvYqz3r4u9fC7ON91VxOiV1eFCnZlFApsOLkbfGJR0Je6B8fzSITrw8AOGIhCopVk1fU6Y+LlUV0g2dvPqO201sY8=
-X-Received: by 2002:a19:81d4:: with SMTP id c203mr24931469lfd.160.1558032136729;
- Thu, 16 May 2019 11:42:16 -0700 (PDT)
+        bh=unVG59VzBSYO4iOVXWL7fSEnwAhYhvevqAGHSVFtITs=;
+        b=g6JbNr9rSQoJL4nSbkwXUvNQGxNa6SxutRi+cU0DexETnDLw74j4mJQfop3d4NbrFK
+         F3o01pSizuqb89CzxkT7Q/krkTuYz9bwOKJM5teZxnVaU+4ILBw1IMBqZevv0MQHmAMp
+         IE+NXOjqLfSKOGJC0rW23gds/iTtiri8yubV2T+YLO2vgpA30nVCUnNpKnRJtLuZ/CJ9
+         P36NpFYYmybgeRAYCo32LDw5oXvgfO71Z5LQ6wA29ob5A3M1M/plV9agboXnFhpAxbMF
+         WOFutqCxI7TMFqo7/XtwWEkpX9oX2lYJz6EvxwNspxH/gd4sSWJ1MvbOptWaUuc3L/xI
+         CPVw==
+X-Gm-Message-State: APjAAAVsLMdKmZtOn3JX491s4JzzJgPAsk1wtYMvQtXsGC45DPFnFvSm
+        nM+y74lxfa1ol8YZPRoQWF6/W8j9zhQczAOQ9d4=
+X-Google-Smtp-Source: APXvYqxBDW9EwLKEM/loJ6ILDsGQzYnaLEazK9HiGiufleeEQCm+KRHOQSULmCZ4eO6rpb5lcU85bhL9Y8KiDYPaGX4=
+X-Received: by 2002:a2e:9f44:: with SMTP id v4mr3078676ljk.85.1558032194378;
+ Thu, 16 May 2019 11:43:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190516164657.225320-1-sdf@google.com>
-In-Reply-To: <20190516164657.225320-1-sdf@google.com>
+References: <20190516112105.12887-1-mrostecki@opensuse.org>
+In-Reply-To: <20190516112105.12887-1-mrostecki@opensuse.org>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 16 May 2019 11:42:05 -0700
-Message-ID: <CAADnVQLgUNpX1Bm5bHk-xUhZCZNU-mDAbftYNQJ4X+g-ZHWDMg@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests/bpf: add test_sysctl and map_tests/tests.h
- to .gitignore
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
+Date:   Thu, 16 May 2019 11:43:03 -0700
+Message-ID: <CAADnVQLFrZyjbFb6o0YezLyqGBKcsiT=jVGfwDaupGLvgLp31A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/2] Move bpf_printk to bpf_helpers.h
+To:     Michal Rostecki <mrostecki@opensuse.org>
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiong Wang <jiong.wang@netronome.com>,
+        Mathieu Xhonneux <m.xhonneux@gmail.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 16, 2019 at 9:47 AM Stanislav Fomichev <sdf@google.com> wrote:
+On Thu, May 16, 2019 at 4:21 AM Michal Rostecki <mrostecki@opensuse.org> wrote:
 >
-> Missing files are:
-> * tools/testing/selftests/bpf/map_tests/tests.h - autogenerated
-> * tools/testing/selftests/bpf/test_sysctl - binary
->
-> Fixes: 51a0e301a563 ("bpf: Add BPF_MAP_TYPE_SK_STORAGE test to test_maps")
-> Fixes: 1f5fa9ab6e2e ("selftests/bpf: Test BPF_CGROUP_SYSCTL")
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> This series of patches move the commonly used bpf_printk macro to
+> bpf_helpers.h which is already included in all BPF programs which
+> defined that macro on their own.
 
-Applied. Thanks
+makes sense, but it needs to wait until bpf-next reopens.
