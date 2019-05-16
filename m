@@ -2,209 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C968F20E8A
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 20:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A15E420E95
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 20:24:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727938AbfEPSV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 14:21:27 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:35382 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726648AbfEPSV1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 14:21:27 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x4GIKjoZ004285;
-        Thu, 16 May 2019 21:20:45 +0300
-Date:   Thu, 16 May 2019 21:20:45 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     YueHaibing <yuehaibing@huawei.com>
-cc:     davem@davemloft.net, wensong@linux-vs.org, horms@verge.net.au,
-        pablo@netfilter.org, kadlec@blackhole.kfki.hu, fw@strlen.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
-Subject: Re: [PATCH] ipvs: Fix use-after-free in ip_vs_in
-In-Reply-To: <20190515093614.21176-1-yuehaibing@huawei.com>
-Message-ID: <alpine.LFD.2.21.1905162106550.3687@ja.home.ssi.bg>
-References: <20190515093614.21176-1-yuehaibing@huawei.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1727628AbfEPSYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 14:24:24 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:51712 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726317AbfEPSYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 14:24:24 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4GI8U6H143431;
+        Thu, 16 May 2019 18:24:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2018-07-02;
+ bh=4j7nl/lugVcYOJ2ZZ2mkpxLy+WU9GL+7H5/DNu1fn4w=;
+ b=jD24ko3288p4jxSg0KdkSXk5QRL+8ITbrN1fFTG1ndonwanqb9zRJ3QuDQd7Ulnt/to+
+ hDtzUJo7c/sE6dXLrG+Ck3gW6TgEomkdu1XYeSbIyXx8XTPUwiEDEXQrVasQZ7QdY1/P
+ 55hLe19pAImiloK4I+WAh03CQvHRzrhfZ7WIwXgHkz2AnSsMw7HPsiMvdqmKleEAzNvf
+ RJsTcE96Zqnne09E0Ps6Ylk4cckM3NCKFWFIme2qN2YDqWTDy9VLvPTXnfv/o2GhBrlO
+ c8TenLJy6A5F2qnE4Ez1pqzYFBEZqtdPlhxczCZDf9HPZF9g/oEy3Jz21ycWOjNW9QQW iA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2130.oracle.com with ESMTP id 2sdkwe5ha6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 16 May 2019 18:24:14 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4GINOnv086365;
+        Thu, 16 May 2019 18:24:13 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 2sgp335rws-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 16 May 2019 18:24:13 +0000
+Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x4GIO8bE032421;
+        Thu, 16 May 2019 18:24:09 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 16 May 2019 11:24:08 -0700
+Date:   Thu, 16 May 2019 21:24:00 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Mark Salyzyn <salyzyn@android.com>,
+        Andrea Parri <andrea.parri@amarulasolutions.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        Allen Pais <allen.pais@oracle.com>,
+        Young Xiao <YangX92@hotmail.com>
+Subject: [PATCH] Bluetooth: hidp: NUL terminate a string in the compat ioctl
+Message-ID: <20190516182400.GA8270@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9259 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1905160115
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9259 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1905160114
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This change is similar to commit a1616a5ac99e ("Bluetooth: hidp: fix
+buffer overflow") but for the compat ioctl.  We take a string from the
+user and forgot to ensure that it's NUL terminated.
 
-	Hello,
+I have also changed the strncpy() in to strscpy() in hidp_setup_hid().
+The difference is the strncpy() doesn't necessarily NUL terminate the
+destination string.  Either change would fix the problem but it's nice
+to take a belt and suspenders approach and do both.
 
-On Wed, 15 May 2019, YueHaibing wrote:
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ net/bluetooth/hidp/core.c | 2 +-
+ net/bluetooth/hidp/sock.c | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-> BUG: KASAN: use-after-free in ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
-> Read of size 4 at addr ffff8881e9b26e2c by task sshd/5603
-> 
-> CPU: 0 PID: 5603 Comm: sshd Not tainted 4.19.39+ #30
-> Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-> Call Trace:
->  dump_stack+0x71/0xab
->  print_address_description+0x6a/0x270
->  kasan_report+0x179/0x2c0
->  ? ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
->  ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
->  ? tcp_in_window+0xfe0/0xfe0 [nf_conntrack]
->  ? ip_vs_in_icmp+0xcc0/0xcc0 [ip_vs]
->  ? ipt_do_table+0x4f1/0xad0 [ip_tables]
->  ? ip_vs_out+0x126/0x8f0 [ip_vs]
->  ? common_interrupt+0xa/0xf
->  ip_vs_in+0xd8/0x170 [ip_vs]
->  ? ip_vs_in.part.29+0xd20/0xd20 [ip_vs]
->  ? nf_nat_ipv4_fn+0x21/0xc0 [nf_nat_ipv4]
->  ? nf_nat_packet+0x4b/0x90 [nf_nat]
->  ? nf_nat_ipv4_local_fn+0xf9/0x160 [nf_nat_ipv4]
->  ? ip_vs_remote_request4+0x50/0x50 [ip_vs]
->  nf_hook_slow+0x5f/0xe0
->  ? sock_write_iter+0x121/0x1c0
->  __ip_local_out+0x1d5/0x250
->  ? ip_finish_output+0x430/0x430
->  ? ip_forward_options+0x2d0/0x2d0
->  ? ip_copy_addrs+0x2d/0x40
->  ? __ip_queue_xmit+0x2ca/0x730
->  ip_local_out+0x19/0x60
->  __tcp_transmit_skb+0xba1/0x14f0
->  ? __tcp_select_window+0x330/0x330
->  ? pvclock_clocksource_read+0xd1/0x180
->  ? kvm_sched_clock_read+0xd/0x20
->  ? sched_clock+0x5/0x10
->  ? sched_clock_cpu+0x18/0x100
->  tcp_write_xmit+0x41f/0x1ed0
->  ? _copy_from_iter_full+0xca/0x340
->  __tcp_push_pending_frames+0x52/0x140
->  tcp_sendmsg_locked+0x787/0x1600
->  ? __wake_up_common_lock+0x80/0x130
->  ? tcp_sendpage+0x60/0x60
->  ? remove_wait_queue+0x84/0xb0
->  ? mutex_unlock+0x1d/0x40
->  ? n_tty_read+0x4f7/0xd20
->  ? check_stack_object+0x21/0x60
->  ? inet_sk_set_state+0xb0/0xb0
->  tcp_sendmsg+0x27/0x40
->  sock_sendmsg+0x6d/0x80
->  sock_write_iter+0x121/0x1c0
->  ? sock_sendmsg+0x80/0x80
->  ? ldsem_up_read+0x13/0x40
->  ? iov_iter_init+0x77/0xb0
->  __vfs_write+0x23e/0x370
->  ? kernel_read+0xa0/0xa0
->  ? do_vfs_ioctl+0x134/0x900
->  ? __set_current_blocked+0x7e/0x90
->  ? __audit_syscall_entry+0x18e/0x1f0
->  ? ktime_get_coarse_real_ts64+0x51/0x70
->  vfs_write+0xe7/0x230
->  ksys_write+0xa1/0x120
->  ? __ia32_sys_read+0x50/0x50
->  ? __audit_syscall_exit+0x3ce/0x450
->  do_syscall_64+0x73/0x200
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x7ff6f6147c60
-> Code: 73 01 c3 48 8b 0d 28 12 2d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 5d 73 2d 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83
-> RSP: 002b:00007ffd772ead18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> RAX: ffffffffffffffda RBX: 0000000000000034 RCX: 00007ff6f6147c60
-> RDX: 0000000000000034 RSI: 000055df30a31270 RDI: 0000000000000003
-> RBP: 000055df30a31270 R08: 0000000000000000 R09: 0000000000000000
-> R10: 00007ffd772ead70 R11: 0000000000000246 R12: 00007ffd772ead74
-> R13: 00007ffd772eae20 R14: 00007ffd772eae24 R15: 000055df2f12ddc0
-> 
-> Allocated by task 6052:
->  kasan_kmalloc+0xa0/0xd0
->  __kmalloc+0x10a/0x220
->  ops_init+0x97/0x190
->  register_pernet_operations+0x1ac/0x360
->  register_pernet_subsys+0x24/0x40
->  0xffffffffc0ea016d
->  do_one_initcall+0x8b/0x253
->  do_init_module+0xe3/0x335
->  load_module+0x2fc0/0x3890
->  __do_sys_finit_module+0x192/0x1c0
->  do_syscall_64+0x73/0x200
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Freed by task 6067:
->  __kasan_slab_free+0x130/0x180
->  kfree+0x90/0x1a0
->  ops_free_list.part.7+0xa6/0xc0
->  unregister_pernet_operations+0x18b/0x1f0
->  unregister_pernet_subsys+0x1d/0x30
->  ip_vs_cleanup+0x1d/0xd2f [ip_vs]
->  __x64_sys_delete_module+0x20c/0x300
->  do_syscall_64+0x73/0x200
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> The buggy address belongs to the object at ffff8881e9b26600 which belongs to the cache kmalloc-4096 of size 4096
-> The buggy address is located 2092 bytes inside of 4096-byte region [ffff8881e9b26600, ffff8881e9b27600)
-> The buggy address belongs to the page:
-> page:ffffea0007a6c800 count:1 mapcount:0 mapping:ffff888107c0e600 index:0x0 compound_mapcount: 0
-> flags: 0x17ffffc0008100(slab|head)
-> raw: 0017ffffc0008100 dead000000000100 dead000000000200 ffff888107c0e600
-> raw: 0000000000000000 0000000080070007 00000001ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
-> 
-> Memory state around the buggy address:
->  ffff8881e9b26d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff8881e9b26d80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> >ffff8881e9b26e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                                   ^
->  ffff8881e9b26e80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff8881e9b26f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> 
-> while unregistering ipvs module, ops_free_list calls
-> __ip_vs_cleanup, then nf_unregister_net_hooks be called to
-> do remove nf hook entries. It need a RCU period to finish,
-> however net->ipvs is set to NULL immediately, which will
-> trigger NULL pointer dereference when a packet is hooked
-> and handled by ip_vs_in where net->ipvs is dereferenced.
-> 
-> Another scene is ops_free_list call ops_free to free the
-> net_generic directly while __ip_vs_cleanup finished, then
-> calling ip_vs_in will triggers use-after-free.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: efe41606184e ("ipvs: convert to use pernet nf_hook api")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  net/netfilter/ipvs/ip_vs_core.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-> index 1445755..33205db 100644
-> --- a/net/netfilter/ipvs/ip_vs_core.c
-> +++ b/net/netfilter/ipvs/ip_vs_core.c
-> @@ -2320,6 +2320,7 @@ static void __net_exit __ip_vs_cleanup(struct net *net)
->  	ip_vs_control_net_cleanup(ipvs);
->  	ip_vs_estimator_net_cleanup(ipvs);
->  	IP_VS_DBG(2, "ipvs netns %d released\n", ipvs->gen);
-> +	synchronize_net();
-
-	Grace period in net_exit handler should be avoided.
-It can be added to ip_vs_cleanup() but may be we have to
-reorder the operations, so that we can have single grace
-period. Note that ip_vs_conn_cleanup() already includes
-rcu_barrier() and we can use it to split the cleanups to
-two steps: 1: unregister hooks (__ip_vs_dev_cleanup) to
-stop traffic and 2: cleanups when traffic is stopped.
-
-	Note that the problem should be only when module
-is removed, the case with netns exit in cleanup_net()
-should not cause problem.
-
-	I'll have more time this weekend to reorganize the
-code...
-
->  	net->ipvs = NULL;
->  }
->  
-> -- 
-> 2.7.4
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
+index a442e21f3894..5abd423b55fa 100644
+--- a/net/bluetooth/hidp/core.c
++++ b/net/bluetooth/hidp/core.c
+@@ -775,7 +775,7 @@ static int hidp_setup_hid(struct hidp_session *session,
+ 	hid->version = req->version;
+ 	hid->country = req->country;
+ 
+-	strncpy(hid->name, req->name, sizeof(hid->name));
++	strscpy(hid->name, req->name, sizeof(hid->name));
+ 
+ 	snprintf(hid->phys, sizeof(hid->phys), "%pMR",
+ 		 &l2cap_pi(session->ctrl_sock->sk)->chan->src);
+diff --git a/net/bluetooth/hidp/sock.c b/net/bluetooth/hidp/sock.c
+index 2151913892ce..03be6a4baef3 100644
+--- a/net/bluetooth/hidp/sock.c
++++ b/net/bluetooth/hidp/sock.c
+@@ -192,6 +192,7 @@ static int hidp_sock_compat_ioctl(struct socket *sock, unsigned int cmd, unsigne
+ 		ca.version = ca32.version;
+ 		ca.flags = ca32.flags;
+ 		ca.idle_to = ca32.idle_to;
++		ca32.name[sizeof(ca32.name) - 1] = '\0';
+ 		memcpy(ca.name, ca32.name, 128);
+ 
+ 		csock = sockfd_lookup(ca.ctrl_sock, &err);
+-- 
+2.20.1
