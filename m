@@ -2,89 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C8220832
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 15:31:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA23A209D2
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 16:33:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727455AbfEPNbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 09:31:17 -0400
-Received: from mail-eopbgr20047.outbound.protection.outlook.com ([40.107.2.47]:29879
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726528AbfEPNbQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 09:31:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NCgt6aJ4FHdlBcWirefvbkbgnsQtFRXZ5rwvzDoRq4A=;
- b=VtBsh4pw73zPcebTqr+K3LTT6av4XRu4pvrHG6n5g6mnY69fPIinhCh/CJwMZhVsj3xNufODKjMqFcmuAUNx/xNPMm4JZKc9PYPL16KkDBwm2aSEpRy6eypfqzufa4u5OdJMzroi3/HBOslQXpLNy+IpAbF8Lvvmbl6umQbmN20=
-Received: from VI1PR04MB4880.eurprd04.prod.outlook.com (20.177.49.153) by
- VI1PR04MB5742.eurprd04.prod.outlook.com (20.178.127.84) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.16; Thu, 16 May 2019 13:31:12 +0000
-Received: from VI1PR04MB4880.eurprd04.prod.outlook.com
- ([fe80::d9de:1be3:e7e6:757f]) by VI1PR04MB4880.eurprd04.prod.outlook.com
- ([fe80::d9de:1be3:e7e6:757f%3]) with mapi id 15.20.1900.010; Thu, 16 May 2019
- 13:31:12 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     "Y.b. Lu" <yangbo.lu@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
+        id S1727532AbfEPOc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 10:32:56 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:32897 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726909AbfEPOcz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 10:32:55 -0400
+Received: by mail-pf1-f194.google.com with SMTP id z28so1965344pfk.0;
+        Thu, 16 May 2019 07:32:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=XzcXovfk6M1ai4anrssUPYvlW9XMFBcxcOHWl/n19fA=;
+        b=mpBn4/QyUX+VBAJzrHdoOr4Ad0i8Vtss/xr/1aGBYMSMYRM38x690fr4c49BWISrCR
+         x1C0XvYrLp94EcjPAL7UdrifA5iGEK/8z5Eo6ILMmgHz+G7RDSRW9kST0+80tOPLXPHM
+         RHfp7btATaGqhESrp6jpJ+6hJZQcwFnKuQAMmdez4LKsMZbRAE+iZXkKJ0NfBhXrlNGc
+         6g+4jAgAMDbSrfFFVemOgSzaWWW7D7jwW+J9PUqk1gYzVTJg2+0PZzYPQEQ8Te7+hZ0I
+         7VjNkNrJZ7kOKxSSo4JBD5d2Uw//x5evUgme/5HUUsgKd/xxuZtDnGiTqgmC5+t733dE
+         7DZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XzcXovfk6M1ai4anrssUPYvlW9XMFBcxcOHWl/n19fA=;
+        b=sJBvDs/GmcgOTdF4PAQbds2YGc7naxY0oYsFydSQlpnQwtTX5C/iPCMsKhl7LLcrSd
+         stnaHS7ld4xqdORJV4vkza7JVPg+h+wtP6tlANjkGqVE9bjVKZ8VTN0CHP2NzWKo24Pt
+         J7q1hTHKZyzQIrX5v2Hgeb1LJcX71DUU2iGWX5AfYJYJIPC6n269sYdaLw9aGCfNYuf9
+         xO7+3pCIQxzOGXH4jfsJil+akQ7pZDAFfP9q1zdUtrjkHWAQVo6g4jYzIalg7fS1Z5jI
+         5C5KmTRiPtJwJGCpslesqzgX73HwXM3QZfQpKqq+PjBEU+wmcLsEAzOf+f5IR9lsF0mp
+         8NPA==
+X-Gm-Message-State: APjAAAU24A0ysVAxRB1lQcFA6FsGDkP/7uffSa9LhcASPKbelyCeKMza
+        h7/WKVZeshYrOoWGVtEqeAI=
+X-Google-Smtp-Source: APXvYqzCXMn1ygqP4NyyZ/WRS34wxQXP4/PQuk+YoCmahtN9410BzLInVWqebP+iI0+rdPUeeWVPVw==
+X-Received: by 2002:aa7:87c3:: with SMTP id i3mr53019103pfo.85.1558017175090;
+        Thu, 16 May 2019 07:32:55 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id s198sm8312079pfs.34.2019.05.16.07.32.53
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 16 May 2019 07:32:54 -0700 (PDT)
+Date:   Thu, 16 May 2019 07:32:51 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Y.b. Lu" <yangbo.lu@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         David Miller <davem@davemloft.net>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
         Shawn Guo <shawnguo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/3] enetc: add hardware timestamping support
-Thread-Topic: [PATCH 1/3] enetc: add hardware timestamping support
-Thread-Index: AQHVC84BpTq18Sng3k254t8Y+2yCUKZtu0bw
-Date:   Thu, 16 May 2019 13:31:12 +0000
-Message-ID: <VI1PR04MB4880C3E6D24AB7A53887D9C9960A0@VI1PR04MB4880.eurprd04.prod.outlook.com>
+Subject: Re: [PATCH 1/3] enetc: add hardware timestamping support
+Message-ID: <20190516143251.akbt3ns6ue2jrhl5@localhost>
 References: <20190516100028.48256-1-yangbo.lu@nxp.com>
  <20190516100028.48256-2-yangbo.lu@nxp.com>
-In-Reply-To: <20190516100028.48256-2-yangbo.lu@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=claudiu.manoil@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: af669eba-f862-4790-fd83-08d6da02c36d
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR04MB5742;
-x-ms-traffictypediagnostic: VI1PR04MB5742:
-x-microsoft-antispam-prvs: <VI1PR04MB5742891663A18BB2EDD4A25F960A0@VI1PR04MB5742.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 0039C6E5C5
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(346002)(396003)(39860400002)(136003)(376002)(13464003)(199004)(189003)(55016002)(478600001)(6436002)(9686003)(3846002)(4326008)(6116002)(53936002)(64756008)(256004)(33656002)(73956011)(66476007)(66556008)(71190400001)(66946007)(66446008)(76116006)(2906002)(110136005)(6246003)(71200400001)(446003)(2501003)(229853002)(7696005)(76176011)(54906003)(66066001)(26005)(74316002)(102836004)(305945005)(44832011)(486006)(7736002)(6506007)(25786009)(86362001)(99286004)(81156014)(81166006)(186003)(5660300002)(14454004)(11346002)(476003)(68736007)(8936002)(8676002)(316002)(4744005)(52536014);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5742;H:VI1PR04MB4880.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Q10LGT+o1yOJVNPfES/wALUGZNVQgjpq5dbbFUJqf6iH9Ce5/oZPyEMdzsp18cQoFOYY/APOeEV/dk1/gtl4pBnjdmEkMBEc+wkkLX2tK4PsPSy+/6SPdBVODYy7AJ0LF4CELj6ooPLwGDufgrPMrFUi9yYn+T199Yi6vm0LrYF7fz5k4Z3Lhx2mQv5Yj4zkDzK7LevvHbKUSIgznRk5QTfUQRsify8LwA7lSNFEmuqDW7QKM7YKbkrodEVfKF49eBGOajuFdd6u4m1C3fzXBhf5SSQ3tCgYEHvmHLsGsGIH28acyBv/YEXHxr9iQ4Yob/Hxnc6sn0lwVrC5zMTpeQL+SmhYIymtZIT+nupYVU2KbDa2uRaCv/9kiwlX1IVhLrIf1bPg1++kClgZsTqm0tasPbEjLCvYzuKaf5AT9h4=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af669eba-f862-4790-fd83-08d6da02c36d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2019 13:31:12.2079
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5742
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190516100028.48256-2-yangbo.lu@nxp.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogWS5iLiBMdQ0KWy4uLl0NCj5TdWJq
-ZWN0OiBbUEFUQ0ggMS8zXSBlbmV0YzogYWRkIGhhcmR3YXJlIHRpbWVzdGFtcGluZyBzdXBwb3J0
-DQo+DQpbLi4uXQ0KDQpIaSBZYW5nYm8sDQoNClRoZXNlIGVuZXRjIHBhdGNoZXMgdGFyZ2V0aW5n
-IG5ldC1uZXh0IHdpbGwgaGF2ZSB0byBiZSByZWJhc2VkIG9uDQp0aGUgbGF0ZXN0IGVuZXRjIG5l
-dC5naXQgY29tbWl0cywgb3RoZXJ3aXNlIHRoZXJlIHdpbGwgYmUgc29tZSBtZXJnZQ0KY29uZmxp
-Y3RzIGZvciBlbmV0Yy5jIGFuZCBlbmV0Y19ldGh0b29sLmMuDQpUaGFua3MsDQpDbGF1ZGl1DQoN
-CnNlZQ0KMjJmYjQzZjM2MDA2ICJlbmV0YzogQWRkIG1pc3NpbmcgbGluayBzdGF0ZSBpbmZvIGZv
-ciBldGh0b29sIg0KZjRhMGJlODRkNzNlICJlbmV0YzogRml4IE5VTEwgZG1hIGFkZHJlc3MgdW5t
-YXAgZm9yIFR4IEJEIGV4dGVuc2lvbnMiDQoNCg==
+On Thu, May 16, 2019 at 09:59:08AM +0000, Y.b. Lu wrote:
+
+> +config FSL_ENETC_HW_TIMESTAMPING
+> +	bool "ENETC hardware timestamping support"
+> +	depends on FSL_ENETC || FSL_ENETC_VF
+> +	help
+> +	  Enable hardware timestamping support on the Ethernet packets
+> +	  using the SO_TIMESTAMPING API. Because the RX BD ring dynamic
+> +	  allocation hasn't been supported and it's too expensive to use
+
+s/it's/it is/
+
+> +	  extended RX BDs if timestamping isn't used, the option was used
+> +	  to control hardware timestamping/extended RX BDs to be enabled
+> +	  or not.
+
+..., this option enables extended RX BDs in order to support hardware
+timestamping.
+
+>  static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+>  {
+>  	struct net_device *ndev = tx_ring->ndev;
+> +	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+>  	int tx_frm_cnt = 0, tx_byte_cnt = 0;
+>  	struct enetc_tx_swbd *tx_swbd;
+> +	union enetc_tx_bd *txbd;
+> +	bool do_tstamp;
+>  	int i, bds_to_clean;
+> +	u64 tstamp = 0;
+
+Please keep in reverse Christmas tree order as much as possible:
+
+	union enetc_tx_bd *txbd;
+	int i, bds_to_clean;
+	bool do_tstamp;
+	u64 tstamp = 0;
+  
+>  	i = tx_ring->next_to_clean;
+>  	tx_swbd = &tx_ring->tx_swbd[i];
+>  	bds_to_clean = enetc_bd_ready_count(tx_ring, i);
+>  
+> +	do_tstamp = false;
+> +
+>  	while (bds_to_clean && tx_frm_cnt < ENETC_DEFAULT_TX_WORK) {
+>  		bool is_eof = !!tx_swbd->skb;
+>  
+> +		if (unlikely(tx_swbd->check_wb)) {
+> +			txbd = ENETC_TXBD(*tx_ring, i);
+> +
+> +			if (!(txbd->flags & ENETC_TXBD_FLAGS_W))
+> +				goto no_wb;
+> +
+> +			if (tx_swbd->do_tstamp) {
+> +				enetc_get_tx_tstamp(&priv->si->hw, txbd,
+> +						    &tstamp);
+> +				do_tstamp = true;
+> +			}
+> +		}
+> +no_wb:
+
+This goto seems strange and unnecessary.  How about this instead?
+
+			if (txbd->flags & ENETC_TXBD_FLAGS_W &&
+			    tx_swbd->do_tstamp) {
+				enetc_get_tx_tstamp(&priv->si->hw, txbd, &tstamp);
+				do_tstamp = true;
+			}
+
+>  		enetc_unmap_tx_buff(tx_ring, tx_swbd);
+>  		if (is_eof) {
+> +			if (unlikely(do_tstamp)) {
+> +				enetc_tstamp_tx(tx_swbd->skb, tstamp);
+> +				do_tstamp = false;
+> +			}
+>  			napi_consume_skb(tx_swbd->skb, napi_budget);
+>  			tx_swbd->skb = NULL;
+>  		}
+> @@ -167,6 +169,11 @@ struct enetc_cls_rule {
+>  
+>  #define ENETC_MAX_BDR_INT	2 /* fixed to max # of available cpus */
+>  
+> +enum enetc_hw_features {
+
+This is a poor choice of name.  It sounds like it describes HW
+capabilities, but you use it to track whether a feature is requested
+at run time.
+
+> +	ENETC_F_RX_TSTAMP	= BIT(0),
+> +	ENETC_F_TX_TSTAMP	= BIT(1),
+> +};
+> +
+>  struct enetc_ndev_priv {
+>  	struct net_device *ndev;
+>  	struct device *dev; /* dma-mapping device */
+> @@ -178,6 +185,7 @@ struct enetc_ndev_priv {
+>  	u16 rx_bd_count, tx_bd_count;
+>  
+>  	u16 msg_enable;
+> +	int hw_features;
+
+This is also poorly named.  How about "tstamp_request" instead?
+
+>  
+>  	struct enetc_bdr *tx_ring[16];
+>  	struct enetc_bdr *rx_ring[16];
+
+Thanks,
+Richard
