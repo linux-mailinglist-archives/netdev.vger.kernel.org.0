@@ -2,277 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E062048D
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:25:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 332F8205A6
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:58:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727281AbfEPLVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 07:21:51 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34038 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726383AbfEPLVu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 07:21:50 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 6D8EAAEC6;
-        Thu, 16 May 2019 11:21:48 +0000 (UTC)
-From:   Michal Rostecki <mrostecki@opensuse.org>
-Cc:     Michal Rostecki <mrostecki@opensuse.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Jiong Wang <jiong.wang@netronome.com>,
-        Mathieu Xhonneux <m.xhonneux@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next 2/2] samples: bpf: Do not define bpf_printk macro
-Date:   Thu, 16 May 2019 13:20:58 +0200
-Message-Id: <20190516112105.12887-3-mrostecki@opensuse.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190516112105.12887-1-mrostecki@opensuse.org>
-References: <20190516112105.12887-1-mrostecki@opensuse.org>
+        id S1726955AbfEPLjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 07:39:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47650 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726260AbfEPLjg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 07:39:36 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6306F20833;
+        Thu, 16 May 2019 11:39:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1558006774;
+        bh=n5drNTJVsfBprc1U7u/JfOyJbqlXK0RHi11OOIakdPc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tbQMozbTp4WRf64puoqKFzJBzb8HUlTfifEUaWI0H9V7MI3RqiBPkp+rLhfgjyFOj
+         n9WOstvOV6jTQXn7Qidrnq9ktBf3zZLGaHa010g5c3H7eMyWvOc180yhByAzIxewu7
+         lsKr7g0ALFs/1rdHIUcCEpjs14+Nw2BkDROhboKM=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.0 01/34] xfrm: policy: Fix out-of-bound array accesses in __xfrm_policy_unlink
+Date:   Thu, 16 May 2019 07:38:58 -0400
+Message-Id: <20190516113932.8348-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpf_printk macro was moved to bpf_helpers.h which is included in all
-example programs.
+From: YueHaibing <yuehaibing@huawei.com>
 
-Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
+[ Upstream commit b805d78d300bcf2c83d6df7da0c818b0fee41427 ]
+
+UBSAN report this:
+
+UBSAN: Undefined behaviour in net/xfrm/xfrm_policy.c:1289:24
+index 6 is out of range for type 'unsigned int [6]'
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 4.4.162-514.55.6.9.x86_64+ #13
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+ 0000000000000000 1466cf39b41b23c9 ffff8801f6b07a58 ffffffff81cb35f4
+ 0000000041b58ab3 ffffffff83230f9c ffffffff81cb34e0 ffff8801f6b07a80
+ ffff8801f6b07a20 1466cf39b41b23c9 ffffffff851706e0 ffff8801f6b07ae8
+Call Trace:
+ <IRQ>  [<ffffffff81cb35f4>] __dump_stack lib/dump_stack.c:15 [inline]
+ <IRQ>  [<ffffffff81cb35f4>] dump_stack+0x114/0x1a0 lib/dump_stack.c:51
+ [<ffffffff81d94225>] ubsan_epilogue+0x12/0x8f lib/ubsan.c:164
+ [<ffffffff81d954db>] __ubsan_handle_out_of_bounds+0x16e/0x1b2 lib/ubsan.c:382
+ [<ffffffff82a25acd>] __xfrm_policy_unlink+0x3dd/0x5b0 net/xfrm/xfrm_policy.c:1289
+ [<ffffffff82a2e572>] xfrm_policy_delete+0x52/0xb0 net/xfrm/xfrm_policy.c:1309
+ [<ffffffff82a3319b>] xfrm_policy_timer+0x30b/0x590 net/xfrm/xfrm_policy.c:243
+ [<ffffffff813d3927>] call_timer_fn+0x237/0x990 kernel/time/timer.c:1144
+ [<ffffffff813d8e7e>] __run_timers kernel/time/timer.c:1218 [inline]
+ [<ffffffff813d8e7e>] run_timer_softirq+0x6ce/0xb80 kernel/time/timer.c:1401
+ [<ffffffff8120d6f9>] __do_softirq+0x299/0xe10 kernel/softirq.c:273
+ [<ffffffff8120e676>] invoke_softirq kernel/softirq.c:350 [inline]
+ [<ffffffff8120e676>] irq_exit+0x216/0x2c0 kernel/softirq.c:391
+ [<ffffffff82c5edab>] exiting_irq arch/x86/include/asm/apic.h:652 [inline]
+ [<ffffffff82c5edab>] smp_apic_timer_interrupt+0x8b/0xc0 arch/x86/kernel/apic/apic.c:926
+ [<ffffffff82c5c985>] apic_timer_interrupt+0xa5/0xb0 arch/x86/entry/entry_64.S:735
+ <EOI>  [<ffffffff81188096>] ? native_safe_halt+0x6/0x10 arch/x86/include/asm/irqflags.h:52
+ [<ffffffff810834d7>] arch_safe_halt arch/x86/include/asm/paravirt.h:111 [inline]
+ [<ffffffff810834d7>] default_idle+0x27/0x430 arch/x86/kernel/process.c:446
+ [<ffffffff81085f05>] arch_cpu_idle+0x15/0x20 arch/x86/kernel/process.c:437
+ [<ffffffff8132abc3>] default_idle_call+0x53/0x90 kernel/sched/idle.c:92
+ [<ffffffff8132b32d>] cpuidle_idle_call kernel/sched/idle.c:156 [inline]
+ [<ffffffff8132b32d>] cpu_idle_loop kernel/sched/idle.c:251 [inline]
+ [<ffffffff8132b32d>] cpu_startup_entry+0x60d/0x9a0 kernel/sched/idle.c:299
+ [<ffffffff8113e119>] start_secondary+0x3c9/0x560 arch/x86/kernel/smpboot.c:245
+
+The issue is triggered as this:
+
+xfrm_add_policy
+    -->verify_newpolicy_info  //check the index provided by user with XFRM_POLICY_MAX
+			      //In my case, the index is 0x6E6BB6, so it pass the check.
+    -->xfrm_policy_construct  //copy the user's policy and set xfrm_policy_timer
+    -->xfrm_policy_insert
+	--> __xfrm_policy_link //use the orgin dir, in my case is 2
+	--> xfrm_gen_index   //generate policy index, there is 0x6E6BB6
+
+then xfrm_policy_timer be fired
+
+xfrm_policy_timer
+   --> xfrm_policy_id2dir  //get dir from (policy index & 7), in my case is 6
+   --> xfrm_policy_delete
+      --> __xfrm_policy_unlink //access policy_count[dir], trigger out of range access
+
+Add xfrm_policy_id2dir check in verify_newpolicy_info, make sure the computed dir is
+valid, to fix the issue.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: e682adf021be ("xfrm: Try to honor policy index if it's supplied by user")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/bpf/hbm_kern.h             | 12 +++---------
- samples/bpf/hbm_out_kern.c         |  2 ++
- samples/bpf/tcp_basertt_kern.c     |  7 -------
- samples/bpf/tcp_bufs_kern.c        |  7 -------
- samples/bpf/tcp_clamp_kern.c       |  7 -------
- samples/bpf/tcp_cong_kern.c        |  7 -------
- samples/bpf/tcp_iw_kern.c          |  7 -------
- samples/bpf/tcp_rwnd_kern.c        |  7 -------
- samples/bpf/tcp_synrto_kern.c      |  7 -------
- samples/bpf/tcp_tos_reflect_kern.c |  7 -------
- samples/bpf/xdp_sample_pkts_kern.c |  7 -------
- 11 files changed, 5 insertions(+), 72 deletions(-)
+ net/xfrm/xfrm_user.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/samples/bpf/hbm_kern.h b/samples/bpf/hbm_kern.h
-index c5635d924193..0ac6823abbb7 100644
---- a/samples/bpf/hbm_kern.h
-+++ b/samples/bpf/hbm_kern.h
-@@ -30,16 +30,8 @@
- #define ALLOW_PKT	1
- #define TCP_ECN_OK	1
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index a131f9ff979e1..8d4d52fd457b2 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -1424,7 +1424,7 @@ static int verify_newpolicy_info(struct xfrm_userpolicy_info *p)
+ 	ret = verify_policy_dir(p->dir);
+ 	if (ret)
+ 		return ret;
+-	if (p->index && ((p->index & XFRM_POLICY_MAX) != p->dir))
++	if (p->index && (xfrm_policy_id2dir(p->index) != p->dir))
+ 		return -EINVAL;
  
-+#ifndef HBM_DEBUG
- #define HBM_DEBUG 0  // Set to 1 to enable debugging
--#if HBM_DEBUG
--#define bpf_printk(fmt, ...)					\
--({								\
--	char ____fmt[] = fmt;					\
--	bpf_trace_printk(____fmt, sizeof(____fmt),		\
--			 ##__VA_ARGS__);			\
--})
--#else
--#define bpf_printk(fmt, ...)
- #endif
- 
- #define INITIAL_CREDIT_PACKETS	100
-@@ -102,7 +94,9 @@ static __always_inline void hbm_get_pkt_info(struct __sk_buff *skb,
- 
- static __always_inline void hbm_init_vqueue(struct hbm_vqueue *qdp, int rate)
- {
-+#if HBM_DEBUG
- 		bpf_printk("Initializing queue_state, rate:%d\n", rate * 128);
-+#endif
- 		qdp->lasttime = bpf_ktime_get_ns();
- 		qdp->credit = INIT_CREDIT;
- 		qdp->rate = rate * 128;
-diff --git a/samples/bpf/hbm_out_kern.c b/samples/bpf/hbm_out_kern.c
-index f806863d0b79..4374583b4242 100644
---- a/samples/bpf/hbm_out_kern.c
-+++ b/samples/bpf/hbm_out_kern.c
-@@ -111,9 +111,11 @@ int _hbm_out_cg(struct __sk_buff *skb)
- 	// Check if we should update rate
- 	if (qsp != NULL && (qsp->rate * 128) != qdp->rate) {
- 		qdp->rate = qsp->rate * 128;
-+#if HBM_DEBUG
- 		bpf_printk("Updating rate: %d (1sec:%llu bits)\n",
- 			   (int)qdp->rate,
- 			   CREDIT_PER_NS(1000000000, qdp->rate) * 8);
-+#endif
- 	}
- 
- 	// Set flags (drop, congestion, cwr)
-diff --git a/samples/bpf/tcp_basertt_kern.c b/samples/bpf/tcp_basertt_kern.c
-index 6ef1625e8b2c..9dba48c2b920 100644
---- a/samples/bpf/tcp_basertt_kern.c
-+++ b/samples/bpf/tcp_basertt_kern.c
-@@ -21,13 +21,6 @@
- 
- #define DEBUG 1
- 
--#define bpf_printk(fmt, ...)					\
--({								\
--	       char ____fmt[] = fmt;				\
--	       bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				##__VA_ARGS__);			\
--})
--
- SEC("sockops")
- int bpf_basertt(struct bpf_sock_ops *skops)
- {
-diff --git a/samples/bpf/tcp_bufs_kern.c b/samples/bpf/tcp_bufs_kern.c
-index e03e204739fa..af8486f33771 100644
---- a/samples/bpf/tcp_bufs_kern.c
-+++ b/samples/bpf/tcp_bufs_kern.c
-@@ -22,13 +22,6 @@
- 
- #define DEBUG 1
- 
--#define bpf_printk(fmt, ...)					\
--({								\
--	       char ____fmt[] = fmt;				\
--	       bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				##__VA_ARGS__);			\
--})
--
- SEC("sockops")
- int bpf_bufs(struct bpf_sock_ops *skops)
- {
-diff --git a/samples/bpf/tcp_clamp_kern.c b/samples/bpf/tcp_clamp_kern.c
-index a0dc2d254aca..26c0fd091f3c 100644
---- a/samples/bpf/tcp_clamp_kern.c
-+++ b/samples/bpf/tcp_clamp_kern.c
-@@ -22,13 +22,6 @@
- 
- #define DEBUG 1
- 
--#define bpf_printk(fmt, ...)					\
--({								\
--	       char ____fmt[] = fmt;				\
--	       bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				##__VA_ARGS__);			\
--})
--
- SEC("sockops")
- int bpf_clamp(struct bpf_sock_ops *skops)
- {
-diff --git a/samples/bpf/tcp_cong_kern.c b/samples/bpf/tcp_cong_kern.c
-index 4fd3ca979a06..6d4dc4c7dd1e 100644
---- a/samples/bpf/tcp_cong_kern.c
-+++ b/samples/bpf/tcp_cong_kern.c
-@@ -21,13 +21,6 @@
- 
- #define DEBUG 1
- 
--#define bpf_printk(fmt, ...)					\
--({								\
--	       char ____fmt[] = fmt;				\
--	       bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				##__VA_ARGS__);			\
--})
--
- SEC("sockops")
- int bpf_cong(struct bpf_sock_ops *skops)
- {
-diff --git a/samples/bpf/tcp_iw_kern.c b/samples/bpf/tcp_iw_kern.c
-index 9b139ec69560..da61d53378b3 100644
---- a/samples/bpf/tcp_iw_kern.c
-+++ b/samples/bpf/tcp_iw_kern.c
-@@ -22,13 +22,6 @@
- 
- #define DEBUG 1
- 
--#define bpf_printk(fmt, ...)					\
--({								\
--	       char ____fmt[] = fmt;				\
--	       bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				##__VA_ARGS__);			\
--})
--
- SEC("sockops")
- int bpf_iw(struct bpf_sock_ops *skops)
- {
-diff --git a/samples/bpf/tcp_rwnd_kern.c b/samples/bpf/tcp_rwnd_kern.c
-index cc71ee96e044..d011e38b80d2 100644
---- a/samples/bpf/tcp_rwnd_kern.c
-+++ b/samples/bpf/tcp_rwnd_kern.c
-@@ -21,13 +21,6 @@
- 
- #define DEBUG 1
- 
--#define bpf_printk(fmt, ...)					\
--({								\
--	       char ____fmt[] = fmt;				\
--	       bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				##__VA_ARGS__);			\
--})
--
- SEC("sockops")
- int bpf_rwnd(struct bpf_sock_ops *skops)
- {
-diff --git a/samples/bpf/tcp_synrto_kern.c b/samples/bpf/tcp_synrto_kern.c
-index ca87ed34f896..720d1950322d 100644
---- a/samples/bpf/tcp_synrto_kern.c
-+++ b/samples/bpf/tcp_synrto_kern.c
-@@ -21,13 +21,6 @@
- 
- #define DEBUG 1
- 
--#define bpf_printk(fmt, ...)					\
--({								\
--	       char ____fmt[] = fmt;				\
--	       bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				##__VA_ARGS__);			\
--})
--
- SEC("sockops")
- int bpf_synrto(struct bpf_sock_ops *skops)
- {
-diff --git a/samples/bpf/tcp_tos_reflect_kern.c b/samples/bpf/tcp_tos_reflect_kern.c
-index de788be6f862..369faca70a15 100644
---- a/samples/bpf/tcp_tos_reflect_kern.c
-+++ b/samples/bpf/tcp_tos_reflect_kern.c
-@@ -20,13 +20,6 @@
- 
- #define DEBUG 1
- 
--#define bpf_printk(fmt, ...)					\
--({								\
--	       char ____fmt[] = fmt;				\
--	       bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				##__VA_ARGS__);			\
--})
--
- SEC("sockops")
- int bpf_basertt(struct bpf_sock_ops *skops)
- {
-diff --git a/samples/bpf/xdp_sample_pkts_kern.c b/samples/bpf/xdp_sample_pkts_kern.c
-index f7ca8b850978..6c7c7e0aaeda 100644
---- a/samples/bpf/xdp_sample_pkts_kern.c
-+++ b/samples/bpf/xdp_sample_pkts_kern.c
-@@ -7,13 +7,6 @@
- #define SAMPLE_SIZE 64ul
- #define MAX_CPUS 128
- 
--#define bpf_printk(fmt, ...)					\
--({								\
--	       char ____fmt[] = fmt;				\
--	       bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				##__VA_ARGS__);			\
--})
--
- struct bpf_map_def SEC("maps") my_map = {
- 	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
- 	.key_size = sizeof(int),
+ 	return 0;
 -- 
-2.21.0
+2.20.1
 
