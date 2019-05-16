@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9C132051C
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:43:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78946205ED
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 13:59:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728052AbfEPLlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 07:41:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49824 "EHLO mail.kernel.org"
+        id S1728406AbfEPLor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 07:44:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49868 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728027AbfEPLlM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 07:41:12 -0400
+        id S1728039AbfEPLlN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 07:41:13 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0839F216F4;
-        Thu, 16 May 2019 11:41:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1C7D321734;
+        Thu, 16 May 2019 11:41:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558006871;
-        bh=ARSnX5PfxluCo5dLGHRAKnhNTvSby6tcAwW2X3WgoCA=;
+        s=default; t=1558006872;
+        bh=TGj+4uaJ3lGRFyAsMhM3426CTNm6c6P5RmP0oZ+25Qs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IozY+mCxoltI1rGqIBOnvlNY9JOWrgjBEPKyRnVuvl8L6GOfz7TMy21b6UCR721bY
-         Xfs3+4PXyL5HCIcyJDTfnl0gmXHZ0024ZVt+VIUD3MX3WByENyAAXITrDkplMH5gfB
-         9T436MHWPsTbvZkXXxoufDe6FT1eEsGNWC6pnqgE=
+        b=OKXDOUnQiheFD+2l60OSidxca+z7yBL45blQpT2QrGb6t504ZUfL8gfIc2deb8d62
+         lSekDStUSMsiy3ShVE4+wtFZiC2KGPmctRMvFI8L6MzolT3dGLWbp6Wuct928n+2ns
+         Afq5rWhgke5/hcyrps6UKHorjY8dB0omSByzaONc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jeremy Sowden <jeremy@azazel.net>,
+Cc:     Sabrina Dubroca <sd@queasysnail.net>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 03/16] vti4: ipip tunnel deregistration fixes.
-Date:   Thu, 16 May 2019 07:40:54 -0400
-Message-Id: <20190516114107.8963-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 04/16] esp4: add length check for UDP encapsulation
+Date:   Thu, 16 May 2019 07:40:55 -0400
+Message-Id: <20190516114107.8963-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190516114107.8963-1-sashal@kernel.org>
 References: <20190516114107.8963-1-sashal@kernel.org>
@@ -43,48 +43,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeremy Sowden <jeremy@azazel.net>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-[ Upstream commit 5483844c3fc18474de29f5d6733003526e0a9f78 ]
+[ Upstream commit 8dfb4eba4100e7cdd161a8baef2d8d61b7a7e62e ]
 
-If tunnel registration failed during module initialization, the module
-would fail to deregister the IPPROTO_COMP protocol and would attempt to
-deregister the tunnel.
+esp_output_udp_encap can produce a length that doesn't fit in the 16
+bits of a UDP header's length field. In that case, we'll send a
+fragmented packet whose length is larger than IP_MAX_MTU (resulting in
+"Oversized IP packet" warnings on receive) and with a bogus UDP
+length.
 
-The tunnel was not deregistered during module-exit.
+To prevent this, add a length check to esp_output_udp_encap and return
+ -EMSGSIZE on failure.
 
-Fixes: dd9ee3444014e ("vti4: Fix a ipip packet processing bug in 'IPCOMP' virtual tunnel")
-Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
+This seems to be older than git history.
+
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_vti.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ipv4/esp4.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
-index 306603a7f3514..c07065b7e3b0e 100644
---- a/net/ipv4/ip_vti.c
-+++ b/net/ipv4/ip_vti.c
-@@ -663,9 +663,9 @@ static int __init vti_init(void)
- 	return err;
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index d30285c5d52dd..c8e32f167ebbf 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -205,7 +205,7 @@ static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
+ 	tail[plen - 1] = proto;
+ }
  
- rtnl_link_failed:
--	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
--xfrm_tunnel_failed:
- 	xfrm4_tunnel_deregister(&ipip_handler, AF_INET);
-+xfrm_tunnel_failed:
-+	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
- xfrm_proto_comp_failed:
- 	xfrm4_protocol_deregister(&vti_ah4_protocol, IPPROTO_AH);
- xfrm_proto_ah_failed:
-@@ -680,6 +680,7 @@ static int __init vti_init(void)
- static void __exit vti_fini(void)
+-static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
++static int esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
  {
- 	rtnl_link_unregister(&vti_link_ops);
-+	xfrm4_tunnel_deregister(&ipip_handler, AF_INET);
- 	xfrm4_protocol_deregister(&vti_ipcomp4_protocol, IPPROTO_COMP);
- 	xfrm4_protocol_deregister(&vti_ah4_protocol, IPPROTO_AH);
- 	xfrm4_protocol_deregister(&vti_esp4_protocol, IPPROTO_ESP);
+ 	int encap_type;
+ 	struct udphdr *uh;
+@@ -213,6 +213,7 @@ static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, stru
+ 	__be16 sport, dport;
+ 	struct xfrm_encap_tmpl *encap = x->encap;
+ 	struct ip_esp_hdr *esph = esp->esph;
++	unsigned int len;
+ 
+ 	spin_lock_bh(&x->lock);
+ 	sport = encap->encap_sport;
+@@ -220,11 +221,14 @@ static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, stru
+ 	encap_type = encap->encap_type;
+ 	spin_unlock_bh(&x->lock);
+ 
++	len = skb->len + esp->tailen - skb_transport_offset(skb);
++	if (len + sizeof(struct iphdr) >= IP_MAX_MTU)
++		return -EMSGSIZE;
++
+ 	uh = (struct udphdr *)esph;
+ 	uh->source = sport;
+ 	uh->dest = dport;
+-	uh->len = htons(skb->len + esp->tailen
+-		  - skb_transport_offset(skb));
++	uh->len = htons(len);
+ 	uh->check = 0;
+ 
+ 	switch (encap_type) {
+@@ -241,6 +245,8 @@ static void esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, stru
+ 
+ 	*skb_mac_header(skb) = IPPROTO_UDP;
+ 	esp->esph = esph;
++
++	return 0;
+ }
+ 
+ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
+@@ -254,8 +260,12 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 	int tailen = esp->tailen;
+ 
+ 	/* this is non-NULL only with UDP Encapsulation */
+-	if (x->encap)
+-		esp_output_udp_encap(x, skb, esp);
++	if (x->encap) {
++		int err = esp_output_udp_encap(x, skb, esp);
++
++		if (err < 0)
++			return err;
++	}
+ 
+ 	if (!skb_cloned(skb)) {
+ 		if (tailen <= skb_tailroom(skb)) {
 -- 
 2.20.1
 
