@@ -2,49 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57C6E20FFF
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 23:27:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C015721000
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 23:28:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728369AbfEPV1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 17:27:45 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:33508 "EHLO
+        id S1728358AbfEPV24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 17:28:56 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:33518 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726619AbfEPV1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 17:27:45 -0400
+        with ESMTP id S1726619AbfEPV2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 17:28:55 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7B8E212D6C7DF;
-        Thu, 16 May 2019 14:27:44 -0700 (PDT)
-Date:   Thu, 16 May 2019 14:27:44 -0700 (PDT)
-Message-Id: <20190516.142744.1107545161556108780.davem@davemloft.net>
-To:     george_davis@mentor.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sysctl: cleanup net_sysctl_init error exit paths
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5A33912D6C929;
+        Thu, 16 May 2019 14:28:55 -0700 (PDT)
+Date:   Thu, 16 May 2019 14:28:55 -0700 (PDT)
+Message-Id: <20190516.142855.2191010163394598687.davem@davemloft.net>
+To:     dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, sbrivio@redhat.com, dsahern@gmail.com
+Subject: Re: [PATCH net] selftests: pmtu.sh: Remove quotes around commands
+ in setup_xfrm
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1558020189-16843-1-git-send-email-george_davis@mentor.com>
-References: <1558020189-16843-1-git-send-email-george_davis@mentor.com>
+In-Reply-To: <20190516174131.19473-1-dsahern@kernel.org>
+References: <20190516174131.19473-1-dsahern@kernel.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 16 May 2019 14:27:44 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 16 May 2019 14:28:55 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "George G. Davis" <george_davis@mentor.com>
-Date: Thu, 16 May 2019 11:23:08 -0400
+From: David Ahern <dsahern@kernel.org>
+Date: Thu, 16 May 2019 10:41:31 -0700
 
-> Unwind net_sysctl_init error exit goto spaghetti code
+> From: David Ahern <dsahern@gmail.com>
 > 
-> Suggested-by: Joshua Frkuska <joshua_frkuska@mentor.com>
-> Signed-off-by: George G. Davis <george_davis@mentor.com>
+> The first command in setup_xfrm is failing resulting in the test getting
+> skipped:
+> 
+> + ip netns exec ns-B ip -6 xfrm state add src fd00:1::a dst fd00:1::b spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' 0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode tunnel
+> + out=RTNETLINK answers: Function not implemented
+> ...
+>   xfrm6 not supported
+> TEST: vti6: PMTU exceptions                                         [SKIP]
+>   xfrm4 not supported
+> TEST: vti4: PMTU exceptions                                         [SKIP]
+> ...
+> 
+> The setup command started failing when the run_cmd option was added.
+> Removing the quotes fixes the problem:
+> ...
+> TEST: vti6: PMTU exceptions                                         [ OK ]
+> TEST: vti4: PMTU exceptions                                         [ OK ]
+> ...
+> 
+> Fixes: 56490b623aa0 ("selftests: Add debugging options to pmtu.sh")
+> Signed-off-by: David Ahern <dsahern@gmail.com>
 
-Cleanups are not appropriate until the net-next tree opens back up.
-
-So please resubmit at that time.
-
-Thank you.
+Applied, thanks David.
