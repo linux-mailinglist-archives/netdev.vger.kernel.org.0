@@ -2,138 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBAEC20D08
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 18:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CF2320CE7
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 18:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727091AbfEPQas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 12:30:48 -0400
-Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.20]:16045 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726659AbfEPQar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 12:30:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1558024245;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=FQma3RmWDS8VYLqxGeNcHo7p5BwbUBC6TbpAzjFKweQ=;
-        b=Ud+R7juj9V8dW3YGjEnsvVemVWpTSAe/JKmdSHKUJ3VPz29qFZOWciGQcrJCkNGmNd
-        VaRHYTN2JNaDub3HR0xARyMf8CvOl6KC/GYCYeclzP2h8FuKMIv4gJTFSTG2YyxfMpSg
-        vY2yIlke5jCNtYCVQcOGzAgbNhoJlVlW/Mx8aYn4dS6tnEBCy/keyzYCEN6viyyA1dvM
-        lGpW+NZ/ItGEyFbNCAL0x+lPXFLJcowNttFNUBnOmZLaNBy+2P3NHJ3p4xKCBKYUZymT
-        e0rgk/KapagHXdKhhhDiBAHxE1lbrKdR3a707Jg6wv0RyMrGZX43wOYux8n8Dfdmcxxs
-        fI0w==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJUMh6kkRA"
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.1.200]
-        by smtp.strato.de (RZmta 44.18 DYNA|AUTH)
-        with ESMTPSA id q0b361v4GGOjEiy
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Thu, 16 May 2019 18:24:45 +0200 (CEST)
-Subject: Re: [PATCH] can: gw: Fix error path of cgw_module_init
-To:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
-        mkl@pengutronix.de
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org
-References: <20190516155435.42376-1-yuehaibing@huawei.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <5e833f8b-537b-f4b0-4d7d-489936026cca@hartkopp.net>
-Date:   Thu, 16 May 2019 18:24:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190516155435.42376-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727078AbfEPQ01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 12:26:27 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38593 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726314AbfEPQ00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 12:26:26 -0400
+Received: by mail-pf1-f195.google.com with SMTP id b76so2114635pfb.5
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 09:26:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id;
+        bh=f/KHCvDR+SBKa6qaHAVkNzxGGYoccY4KNMLdYCFmFWo=;
+        b=agctd/ms6N4SKZWP+jMIkoBL/WSzvbz40eQE3l4dI2hwRVlm1ok8bilXWymEMgHaXv
+         +QAgrGo85kAoukAVYvVGKhxpNrz+S5jccXW+c3q8wFqb6n02Akfjp4GTtnfFN7Bo7HXk
+         16pHx24Uncdf8ddVCWBTIfKJrkjeLyNZ0b8Gych7duwnZQWaptWvKLRRAkCZWtGJI8Gh
+         UBhTRizblSATbYvNSg59gboed5YyAgAfT3uVWK+ZI9uEJcn49EvGJEWZojIxaQBiYudH
+         myv4VyuwYH44EhKgVTBjEED20BftWUT00t23zx/1MSFStbu5fmQe116RDnXhkmzrMPC0
+         g5HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=f/KHCvDR+SBKa6qaHAVkNzxGGYoccY4KNMLdYCFmFWo=;
+        b=n8hCBug6Ji+eKHHjESp3O7F/vO4PXb85TT7s9nATH+yGVgIeW7dhKn+TNW6lWkO3Ww
+         MOsxacv2lmzorPjxgMjGcYGRrc3JZ2SKMhP9SOrwjyzlACRw4esMIeAos2D4bhAzFPbL
+         shUVErCFlci5n9AUGXlC3+ozBYF+vtwfG1THO6Ht1BuQ9KW2P8ITG3DaQ6eYi8bh+PJ7
+         flox5hDt/ITDSWPv9S5HaaOfLzhXTFpes2vjsRbmQckBQhGrh2fBjo9hCaGrhnJrNtlY
+         39wNr9RmXJugq4WLlihqyfUKaxa6AYs3MGrzQ6NAs28NXFKRNl2cRyk/QpK8WWVHD6rO
+         icyw==
+X-Gm-Message-State: APjAAAXUBbNmEEaQTv8OLw1wK6kg3Hb24nFBVmq7nSilN2FwA7zNKQb7
+        IgEDo1VzgyiOjDno2OOV40QXnAGlnaM=
+X-Google-Smtp-Source: APXvYqzfrgmM9Bv+rjxSNzLKkchPva8apY1JZzgwnOjq1YJGqUPbo4UoyiXF0yK+1UBXwcvC04yQWg==
+X-Received: by 2002:aa7:8b12:: with SMTP id f18mr54672173pfd.178.1558023985172;
+        Thu, 16 May 2019 09:26:25 -0700 (PDT)
+Received: from sc9-mailhost2.vmware.com ([66.170.99.2])
+        by smtp.gmail.com with ESMTPSA id z7sm6842092pgh.81.2019.05.16.09.26.24
+        for <netdev@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 16 May 2019 09:26:24 -0700 (PDT)
+From:   William Tu <u9012063@gmail.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH net] net: ip6_gre: access skb data after skb_cow_head()
+Date:   Thu, 16 May 2019 09:25:48 -0700
+Message-Id: <1558023948-9428-1-git-send-email-u9012063@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When increases the headroom, skb's pointer might get re-allocated.
+Fix it by moving skb_cow_head before accessing the skb->data pointer.
 
+Fixes: 01b8d064d58b4 ("net: ip6_gre: Request headroom in __gre6_xmit()")
+Reported-by: Haichao Ma <haichaom@vmware.com>
+Signed-off-by: William Tu <u9012063@gmail.com>
+---
+ net/ipv6/ip6_gre.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On 16.05.19 17:54, YueHaibing wrote:
-> This patch fix error path for cgw_module_init
-> to avoid possible crash if some error occurs.
-> 
-> Fixes: c1aabdf379bc ("can-gw: add netlink based CAN routing")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 655e46b227f9..90b2b129b105 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -714,6 +714,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 	struct ip6_tnl *tunnel = netdev_priv(dev);
+ 	__be16 protocol;
+ 
++	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
++		return -ENOMEM;
++
+ 	if (dev->type == ARPHRD_ETHER)
+ 		IPCB(skb)->flags = 0;
+ 
+@@ -722,9 +725,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 	else
+ 		fl6->daddr = tunnel->parms.raddr;
+ 
+-	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
+-		return -ENOMEM;
+-
+ 	/* Push GRE header. */
+ 	protocol = (dev->type == ARPHRD_ETHER) ? htons(ETH_P_TEB) : proto;
+ 
+-- 
+2.7.4
 
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-
-Thanks!
-
-> ---
->   net/can/gw.c | 46 +++++++++++++++++++++++++++++++---------------
->   1 file changed, 31 insertions(+), 15 deletions(-)
-> 
-> diff --git a/net/can/gw.c b/net/can/gw.c
-> index 53859346..8b53ec7 100644
-> --- a/net/can/gw.c
-> +++ b/net/can/gw.c
-> @@ -1046,32 +1046,48 @@ static __init int cgw_module_init(void)
->   	pr_info("can: netlink gateway (rev " CAN_GW_VERSION ") max_hops=%d\n",
->   		max_hops);
->   
-> -	register_pernet_subsys(&cangw_pernet_ops);
-> +	ret = register_pernet_subsys(&cangw_pernet_ops);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = -ENOMEM;
->   	cgw_cache = kmem_cache_create("can_gw", sizeof(struct cgw_job),
->   				      0, 0, NULL);
-> -
->   	if (!cgw_cache)
-> -		return -ENOMEM;
-> +		goto out_cache_create;
->   
->   	/* set notifier */
->   	notifier.notifier_call = cgw_notifier;
-> -	register_netdevice_notifier(&notifier);
-> +	ret = register_netdevice_notifier(&notifier);
-> +	if (ret)
-> +		goto out_register_notifier;
->   
->   	ret = rtnl_register_module(THIS_MODULE, PF_CAN, RTM_GETROUTE,
->   				   NULL, cgw_dump_jobs, 0);
-> -	if (ret) {
-> -		unregister_netdevice_notifier(&notifier);
-> -		kmem_cache_destroy(cgw_cache);
-> -		return -ENOBUFS;
-> -	}
-> -
-> -	/* Only the first call to rtnl_register_module can fail */
-> -	rtnl_register_module(THIS_MODULE, PF_CAN, RTM_NEWROUTE,
-> -			     cgw_create_job, NULL, 0);
-> -	rtnl_register_module(THIS_MODULE, PF_CAN, RTM_DELROUTE,
-> -			     cgw_remove_job, NULL, 0);
-> +	if (ret)
-> +		goto out_rtnl_register1;
-> +
-> +	ret = rtnl_register_module(THIS_MODULE, PF_CAN, RTM_NEWROUTE,
-> +				   cgw_create_job, NULL, 0);
-> +	if (ret)
-> +		goto out_rtnl_register2;
-> +	ret = rtnl_register_module(THIS_MODULE, PF_CAN, RTM_DELROUTE,
-> +				   cgw_remove_job, NULL, 0);
-> +	if (ret)
-> +		goto out_rtnl_register2;
->   
->   	return 0;
-> +
-> +out_rtnl_register2:
-> +	rtnl_unregister_all(PF_CAN);
-> +out_rtnl_register1:
-> +	unregister_netdevice_notifier(&notifier);
-> +out_register_notifier:
-> +	kmem_cache_destroy(cgw_cache);
-> +out_cache_create:
-> +	unregister_pernet_subsys(&cangw_pernet_ops);
-> +
-> +	return ret;
->   }
->   
->   static __exit void cgw_module_exit(void)
-> 
