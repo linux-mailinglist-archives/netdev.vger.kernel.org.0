@@ -2,117 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B421FFF7
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 09:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C60011FFFD
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 09:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbfEPHIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 03:08:37 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35893 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726393AbfEPHIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 03:08:36 -0400
-Received: by mail-wr1-f66.google.com with SMTP id s17so2070612wru.3
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 00:08:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2QFBfiR8VI/6EkQt+vuqBNOU1C/FdNF/sGlGiprXM9A=;
-        b=YLeHLmyDO3khIOxhvjTk68vsZH0JaaSOZzt+GfRtjrN1TNZcudrRctMHXng4SS/I7c
-         3ItI/rd0s3Eoi+kPhKrI2HrJrdrT90pCI/wmZLAFLGzYC6p+7yYigRrND97KiNcD39cq
-         iIQPE8naS4uZ8NkUszg/ct3o8kx/QAvMPiGhM6Paz3kPfzxxi4vhv86gIgDwEi1to/vq
-         YuvricyLSzuluVPsYEw0CWuRjqW+idqwg0N1SPL2SLFZlY98CvD02sD4V3pk0j4aKVDk
-         ZaPKkk3EADEkefVkBJcuFyPP0qXK5+KMGAZaJVQX9ywfYRdFPDlT+yQtlOqU5QHNbiSL
-         h7vw==
-X-Gm-Message-State: APjAAAWD9cVtn5VMgKqMtHiOA17gPU2/Ihh42BC9vRG5y+LvHjr+0jXV
-        9jPZn2hJ/BhQW0VDyZxxTPw8jg==
-X-Google-Smtp-Source: APXvYqw/XTuFioPhzaxrGOO8i0SgiDZ+sf087TBN/7+xA54JWipsUns+nX80rrXU1SpsZxTYHNrcCg==
-X-Received: by 2002:adf:8184:: with SMTP id 4mr30276940wra.27.1557990514979;
-        Thu, 16 May 2019 00:08:34 -0700 (PDT)
-Received: from [192.168.1.105] (bzq-79-181-17-143.red.bezeqint.net. [79.181.17.143])
-        by smtp.gmail.com with ESMTPSA id s10sm3062588wrt.66.2019.05.16.00.08.33
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 May 2019 00:08:34 -0700 (PDT)
-Subject: Re: CFP: 4th RDMA Mini-Summit at LPC 2019
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Yuval Shaia <yuval.shaia@oracle.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        linux-netdev <netdev@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Doug Ledford <dledford@redhat.com>,
-        Marcel Apfelbaum <marcel.apfelbaum@gmail.com>
-References: <20190514122321.GH6425@mtr-leonro.mtl.com>
- <20190515153050.GB2356@lap1> <20190515163626.GO5225@mtr-leonro.mtl.com>
- <20190515181537.GA5720@lap1>
-From:   Kamal Heib <kheib@redhat.com>
-Message-ID: <df639315-e13c-9a20-caf5-a66b009a8aa1@redhat.com>
-Date:   Thu, 16 May 2019 10:08:32 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190515181537.GA5720@lap1>
-Content-Type: text/plain; charset=utf-8
+        id S1726739AbfEPHKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 03:10:46 -0400
+Received: from mail01.preh.com ([80.149.130.22]:31508 "EHLO mail01.preh.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726319AbfEPHKq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 03:10:46 -0400
+From:   Kloetzke Jan <Jan.Kloetzke@preh.de>
+To:     "davem@davemloft.net" <davem@davemloft.net>,
+        "oneukum@suse.com" <oneukum@suse.com>
+CC:     "jan@kloetzke.net" <jan@kloetzke.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH v2] usbnet: fix kernel crash after disconnect
+Thread-Topic: [PATCH v2] usbnet: fix kernel crash after disconnect
+Thread-Index: AQHU/18dyV1WEybtp0WgCkArhegqtKZcDN8AgAGbOgCAD6SEgA==
+Date:   Thu, 16 May 2019 07:10:30 +0000
+Message-ID: <1557990629.19453.7.camel@preh.de>
+References: <1556563688.20085.31.camel@suse.com>
+         <20190430141440.9469-1-Jan.Kloetzke@preh.de>
+         <20190505.004556.492323065607253635.davem@davemloft.net>
+         <1557130666.12778.3.camel@suse.com>
+In-Reply-To: <1557130666.12778.3.camel@suse.com>
+Accept-Language: de-DE, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-tm-snts-smtp: CD001CF085DFE775677F9BE5A836228302ED75D7614BA2027CD81CD33F5F1FEF2000:8
+x-exclaimer-md-config: 142fe46c-4d13-4ac1-9970-1f36f118897a
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6E1D6F6A821CE24589B802D64EFA922E@preh.de>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=preh.de; s=key1; c=relaxed/relaxed;
+ h=from:to:cc:subject:date:message-id:references:content-type:mime-version;
+ bh=HDjNlSGE1pTbaN6s5Om8695edfLLIhm71aZmgJAjO2E=;
+ b=kZYWIs4EZuot34elPr1rGsqg4H3PS2mTzoi1qB2cJ7SNCHKSSxopR4JYxLc2pp3AVYQIIUvF+FGp
+        OwQCryEkx65/3ZvoFuPMRf67/B4ONhl8s8uSNKoJyX2NGsEm9Oyw0jO5g6+uMVt5EU+EKNT3zDCy
+        MAMhTT6YOoReLBNbOyRLQUHfTnAViQYofql2kEChxUYPxVmES3zEysViKeIu0TNTiLpak7n6RwNX
+        kgnaghX1T3rbSGDomkcTkPbNCddQSkST9GylZhdH7vVlHC7E+BTENCkW5DzLxne++zRWJPrq48oj
+        QgRObLnHSmB6/O4NmdyTQTqOdstUp0uRaZlD+Q==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/15/19 9:15 PM, Yuval Shaia wrote:
-> On Wed, May 15, 2019 at 07:36:26PM +0300, Leon Romanovsky wrote:
->> On Wed, May 15, 2019 at 06:30:51PM +0300, Yuval Shaia wrote:
->>> On Tue, May 14, 2019 at 03:23:21PM +0300, Leon Romanovsky wrote:
->>>> This is a call for proposals for the 4th RDMA mini-summit at the Linux
->>>> Plumbers Conference in Lisbon, Portugal, which will be happening on
->>>> September 9-11h, 2019.
->>>>
->>>> We are looking for topics with focus on active audience discussions
->>>> and problem solving. The preferable topic is up to 30 minutes with
->>>> 3-5 slides maximum.
->>>
->>> Abstract: Expand the virtio portfolio with RDMA
->>>
->>> Description:
->>> Data center backends use more and more RDMA or RoCE devices and more and
->>> more software runs in virtualized environment.
->>> There is a need for a standard to enable RDMA/RoCE on Virtual Machines.
->>> Virtio is the optimal solution since is the de-facto para-virtualizaton
->>> technology and also because the Virtio specification allows Hardware
->>> Vendors to support Virtio protocol natively in order to achieve bare metal
->>> performance.
->>> This talk addresses challenges in defining the RDMA/RoCE Virtio
->>> Specification and a look forward on possible implementation techniques.
->>
->> Yuval,
->>
->> Who is going to implement it?
->>
->> Thanks
-> 
-> It is going to be an open source effort by an open source contributors.
-> Probably as with qemu-pvrdma it would be me and Marcel and i have an
-> unofficial approval from extra person that gave promise to join (can't say
-> his name but since he is also on this list then he welcome to raise a
-> hand).
-
-That person is me.
-Leon: Is Mellanox willing to join too?
-
-> I also recall once someone from Mellanox wanted to join but not sure about
-> his availability now.
-> 
->>
->>>
->>>>
->>>> This year, the LPC will include netdev track too and it is
->>>> collocated with Kernel Summit, such timing makes an excellent
->>>> opportunity to drive cross-tree solutions.
->>>>
->>>> BTW, RDMA is not accepted yet as a track in LPC, but let's think
->>>> positive and start collect topics.
->>>>
->>>> Thanks
+QW0gTW9udGFnLCBkZW4gMDYuMDUuMjAxOSwgMTA6MTcgKzAyMDAgc2NocmllYiBPbGl2ZXIgTmV1
+a3VtOg0KPiBPbiBTbywgMjAxOS0wNS0wNSBhdCAwMDo0NSAtMDcwMCwgRGF2aWQgTWlsbGVyIHdy
+b3RlOg0KPiA+IEZyb206IEtsb2V0emtlIEphbiA8SmFuLktsb2V0emtlQHByZWguZGU+DQo+ID4g
+RGF0ZTogVHVlLCAzMCBBcHIgMjAxOSAxNDoxNTowNyArMDAwMA0KPiA+IA0KPiA+ID4gQEAgLTE0
+MzEsNiArMTQzMiwxMSBAQCBuZXRkZXZfdHhfdCB1c2JuZXRfc3RhcnRfeG1pdCAoc3RydWN0IHNr
+X2J1ZmYgKnNrYiwNCj4gPiA+ICAgICAgICAgICAgICAgc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgm
+ZGV2LT50eHEubG9jaywgZmxhZ3MpOw0KPiA+ID4gICAgICAgICAgICAgICBnb3RvIGRyb3A7DQo+
+ID4gPiAgICAgICB9DQo+ID4gPiArICAgICBpZiAoV0FSTl9PTihuZXRpZl9xdWV1ZV9zdG9wcGVk
+KG5ldCkpKSB7DQo+ID4gPiArICAgICAgICAgICAgIHVzYl9hdXRvcG1fcHV0X2ludGVyZmFjZV9h
+c3luYyhkZXYtPmludGYpOw0KPiA+ID4gKyAgICAgICAgICAgICBzcGluX3VubG9ja19pcnFyZXN0
+b3JlKCZkZXYtPnR4cS5sb2NrLCBmbGFncyk7DQo+ID4gPiArICAgICAgICAgICAgIGdvdG8gZHJv
+cDsNCj4gPiA+ICsgICAgIH0NCj4gPiANCj4gPiBJZiB0aGlzIGlzIGtub3duIHRvIGhhcHBlbiBh
+bmQgaXMgZXhwZWN0ZWQsIHRoZW4gd2Ugc2hvdWxkIG5vdCB3YXJuLg0KPiA+IA0KPiANCj4gSGks
+DQo+IA0KPiB5ZXMgdGhpcyBpcyB0aGUgcG9pbnQuIENhbiBuZG9fc3RhcnRfeG1pdCgpIGFuZCBu
+ZG9fc3RvcCgpIHJhY2U/DQo+IElmIG5vdCwgd2h5IGRvZXMgdGhlIHBhdGNoIGZpeCB0aGUgb2Jz
+ZXJ2ZWQgaXNzdWUgYW5kIHdoYXQNCj4gcHJldmVudHMgdGhlIHJhY2U/IFNvbWV0aGluZyBpcyBu
+b3QgY2xlYXIgaGVyZS4NCg0KRGF2ZSwgY291bGQgeW91IHNoZWQgc29tZSBsaWdodCBvbiBPbGl2
+ZXJzIHF1ZXN0aW9uPyBJZiB0aGUgcmFjZSBjYW4NCmhhcHBlbiB0aGVuIHdlIGNhbiBzdGljayB0
+byB2MSBiZWNhdXNlIHRoZSBXQVJOX09OIGlzIGluZGVlZCBwb2ludGxlc3MuDQpPdGhlcndpc2Ug
+aXQncyBub3QgY2xlYXIgd2h5IGl0IG1hZGUgdGhlIHByb2JsZW0gZ28gYXdheSBmb3IgdXMgYW5k
+IHYyDQptYXkgYmUgdGhlIGJldHRlciBvcHRpb24uLi4NCg0KUmVnYXJkcywNCkphbg==
