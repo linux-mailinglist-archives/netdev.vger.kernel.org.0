@@ -2,97 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E3C720072
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 09:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3769320080
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 09:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726609AbfEPHlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 03:41:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57808 "EHLO mail.kernel.org"
+        id S1726707AbfEPHrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 03:47:52 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:57004 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726363AbfEPHlw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 03:41:52 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726363AbfEPHrw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 03:47:52 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2852220862;
-        Thu, 16 May 2019 07:41:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557992511;
-        bh=YxyX6cGFHGzUuS+MPekODxndLWwuptJrstJIadn93Cw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ajxoLS7uh1rWobeFTo2ZiS03AbFavD9ncUtOH+zdyqFe5p7LaaNfV/Ks6syk/dl7d
-         wtaWmqleS0+KHqYQUCGsL/w+EZx3zgGGyVCQQrIQ5QIJs6lLuHEea8pw/Ta+RJdNmu
-         h1ovR2ukDmDKhxuid31DamzwvAa+Ec7+WWYwFMnc=
-Date:   Thu, 16 May 2019 10:41:48 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Kamal Heib <kheib@redhat.com>
-Cc:     Yuval Shaia <yuval.shaia@oracle.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        linux-netdev <netdev@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Doug Ledford <dledford@redhat.com>,
-        Marcel Apfelbaum <marcel.apfelbaum@gmail.com>
-Subject: Re: CFP: 4th RDMA Mini-Summit at LPC 2019
-Message-ID: <20190516074148.GV5225@mtr-leonro.mtl.com>
-References: <20190514122321.GH6425@mtr-leonro.mtl.com>
- <20190515153050.GB2356@lap1>
- <20190515163626.GO5225@mtr-leonro.mtl.com>
- <20190515181537.GA5720@lap1>
- <df639315-e13c-9a20-caf5-a66b009a8aa1@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <df639315-e13c-9a20-caf5-a66b009a8aa1@redhat.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+        by mx1.redhat.com (Postfix) with ESMTPS id DFD143082B6B;
+        Thu, 16 May 2019 07:47:51 +0000 (UTC)
+Received: from hp-dl380pg8-02.lab.eng.pek2.redhat.com (hp-dl380pg8-02.lab.eng.pek2.redhat.com [10.73.8.12])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 10A8998BB;
+        Thu, 16 May 2019 07:47:44 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     pbonzini@redhat.com, stefanha@redhat.com
+Subject: [PATCH net 0/4] Prevent vhost kthread from hogging CPU
+Date:   Thu, 16 May 2019 03:47:38 -0400
+Message-Id: <1557992862-27320-1-git-send-email-jasowang@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Thu, 16 May 2019 07:47:51 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 16, 2019 at 10:08:32AM +0300, Kamal Heib wrote:
->
->
-> On 5/15/19 9:15 PM, Yuval Shaia wrote:
-> > On Wed, May 15, 2019 at 07:36:26PM +0300, Leon Romanovsky wrote:
-> >> On Wed, May 15, 2019 at 06:30:51PM +0300, Yuval Shaia wrote:
-> >>> On Tue, May 14, 2019 at 03:23:21PM +0300, Leon Romanovsky wrote:
-> >>>> This is a call for proposals for the 4th RDMA mini-summit at the Linux
-> >>>> Plumbers Conference in Lisbon, Portugal, which will be happening on
-> >>>> September 9-11h, 2019.
-> >>>>
-> >>>> We are looking for topics with focus on active audience discussions
-> >>>> and problem solving. The preferable topic is up to 30 minutes with
-> >>>> 3-5 slides maximum.
-> >>>
-> >>> Abstract: Expand the virtio portfolio with RDMA
-> >>>
-> >>> Description:
-> >>> Data center backends use more and more RDMA or RoCE devices and more and
-> >>> more software runs in virtualized environment.
-> >>> There is a need for a standard to enable RDMA/RoCE on Virtual Machines.
-> >>> Virtio is the optimal solution since is the de-facto para-virtualizaton
-> >>> technology and also because the Virtio specification allows Hardware
-> >>> Vendors to support Virtio protocol natively in order to achieve bare metal
-> >>> performance.
-> >>> This talk addresses challenges in defining the RDMA/RoCE Virtio
-> >>> Specification and a look forward on possible implementation techniques.
-> >>
-> >> Yuval,
-> >>
-> >> Who is going to implement it?
-> >>
-> >> Thanks
-> >
-> > It is going to be an open source effort by an open source contributors.
-> > Probably as with qemu-pvrdma it would be me and Marcel and i have an
-> > unofficial approval from extra person that gave promise to join (can't say
-> > his name but since he is also on this list then he welcome to raise a
-> > hand).
->
-> That person is me.
-> Leon: Is Mellanox willing to join too?
+Hi:
 
-I have no mandate to publicly commit to any future plans
-on behalf of my employer.
+This series try to prvernt a guest triggerable CPU hogging through
+vhost kthread. This is done by introducing and checking the weight
+after each requrest. The patch has been tested with reproducer of
+vsock and virtio-net. Only compile test is done for vhost-scsi.
 
-Thanks
+Please review.
+
+This addresses CVE-2019-3900.
+
+Jason Wang (4):
+  vhost: introduce vhost_exceeds_weight()
+  vhost_net: fix possible infinite loop
+  vhost: vsock: add weight support
+  vhost: scsi: add weight support
+
+ drivers/vhost/net.c   | 41 ++++++++++++++---------------------------
+ drivers/vhost/scsi.c  | 21 ++++++++++++++-------
+ drivers/vhost/vhost.c | 20 +++++++++++++++++++-
+ drivers/vhost/vhost.h |  5 ++++-
+ drivers/vhost/vsock.c | 28 +++++++++++++++++++++-------
+ 5 files changed, 72 insertions(+), 43 deletions(-)
+
+-- 
+1.8.3.1
+
