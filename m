@@ -2,154 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A1620FA0
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 22:33:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F90420FC3
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 22:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727980AbfEPUdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 16:33:31 -0400
-Received: from mail-pg1-f179.google.com ([209.85.215.179]:44283 "EHLO
-        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726449AbfEPUdb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 16:33:31 -0400
-Received: by mail-pg1-f179.google.com with SMTP id z16so2102253pgv.11;
-        Thu, 16 May 2019 13:33:30 -0700 (PDT)
+        id S1727509AbfEPUvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 16:51:11 -0400
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:44969 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726762AbfEPUvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 16:51:11 -0400
+Received: by mail-pg1-f201.google.com with SMTP id b24so2857973pgh.11
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 13:51:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ZheUGwXBNVLqlL//FsUplo6XwqwZRJY+3Dp+4i44uSM=;
-        b=ctrN9JyIetnM5gr5rJzwThYzDNSLMgbeEZAJlyHb+vypjnqTdLhPk21arwiW9lkwpo
-         XAyuPNKlXiqwR4NeKjsrofg5w23UXZKebrnwxMSCqKYorhs2cT5JniMFaFFT644pyhLJ
-         sX7eCrGNGwZNzmiahP3KCsGIix+GnJNPw6xexb3wsFyWDhAFEJfm1WKpkhnobmpTkL6m
-         m0arjMML81PJ+QJ1d7ub0LFj/0TvzsIVCsalQEGg348+ZRAILmr7iFihKNtojeju+/eS
-         C7+pU4BoQNW25pBRMyGtj1h97Xr12BXU4gj5gqR1E8LMtWEfY5xB8NyLdCuHAAKGS5yg
-         FFkw==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=O0A3Y6O8QZ1jZo/IAcyQwbrOJctQs0ZeB/K1vYWmuBI=;
+        b=V3SH9UWTXhecnBvY9y5BQamRei5+qE2Sfjc4eidha3qPpIUKiFC2Za/3ErpPsnlN8W
+         2+YfB6DRHUxK86SVsJQ6HjeCgq/V+ywqPMuLW2kErg8FmTPzKnWZu3K3jboTADUzrV+/
+         zJHSv1CG9E1NrqB6ZtXofWvgyI/BMJDpbHgRgfXupGEBoOI6rca9n+8JFme6U3Z9NyOf
+         sil6q/xnC5ZppxoSW1dAZmXM51G91MNKXOu/ApqMaUGTEpL7g+Qw9gm8nm9uYsS0SrzG
+         WOp24BXJeHc9i1WyrUKHdAnHDB8xbzO44RPj+JlDVuyfvKCTZDppOjyT6w8dy5JqtqQe
+         uo/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZheUGwXBNVLqlL//FsUplo6XwqwZRJY+3Dp+4i44uSM=;
-        b=Noq3dHIkwEbrrg1HPiX9o8UknWmjmDmMDTMcgYcmlByGovuFCj2e1CIEq147cCQDUa
-         uGLen/k3/UkudXXSm2TCz0QiUIO8jTGdbFYH60LCPyf3LRiWsn/7JEiYpqiwlliqIXC8
-         +BenLju/waZqCE8kjFF4JEHhsQuyJJasWVljDZVGoPPuBZZ0A1UjrV3aCcYMANzaHeXy
-         Wvudym/+862eBkvoWTUyV8LQrCV1aw1IzE9n/fsxw8KIskMoQdn5UGj1VSEtSN5j+iIg
-         I6C2ZzuKpIV23Sqa5mdqmn9Kct6u9BG59bzX0ez2V43zVXDYKoSKBC79LSlKrifXy1aS
-         eXTg==
-X-Gm-Message-State: APjAAAVBUU7Sfl9Lj1NepXSgTU33gEqVg6fdiLQE2rhuvEr8RqdaYcUb
-        Zo/X3rWVf9FH6UMl1psNK78=
-X-Google-Smtp-Source: APXvYqxSDzdZbR0Sk7+BW+Xb4pKVOsys5qz62dyKEeXjmz+CT8c5b/uj/3Py3QMTUNwiVMHgaVE/3Q==
-X-Received: by 2002:a63:88c7:: with SMTP id l190mr52545336pgd.244.1558038809883;
-        Thu, 16 May 2019 13:33:29 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:200::1:4894])
-        by smtp.gmail.com with ESMTPSA id 194sm2970534pgd.33.2019.05.16.13.33.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 May 2019 13:33:29 -0700 (PDT)
-Date:   Thu, 16 May 2019 13:33:27 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Joe Stringer <joe@isovalent.com>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        kafai@fb.com, daniel@iogearbox.net, edumazet@google.com
-Subject: Re: RFC: Fixing SK_REUSEPORT from sk_lookup_* helpers
-Message-ID: <20190516203325.uhg7c5sr45od7lzm@ast-mbp>
-References: <CACAyw98+qycmpQzKupquhkxbvWK4OFyDuuLMBNROnfWMZxUWeA@mail.gmail.com>
- <CADa=RyyuAOupK7LOydQiNi6tx2ELOgD+bdu+DHh3xF0dDxw_gw@mail.gmail.com>
- <CACAyw9_EGRob4VG0-G4PN9QS_xB5GoDMBB6mPXR-WcPnrFCuLg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACAyw9_EGRob4VG0-G4PN9QS_xB5GoDMBB6mPXR-WcPnrFCuLg@mail.gmail.com>
-User-Agent: NeoMutt/20180223
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=O0A3Y6O8QZ1jZo/IAcyQwbrOJctQs0ZeB/K1vYWmuBI=;
+        b=WiZ/iZ6/szt59/VCOJFNXyNznM7TFqlpSrF6mG1fTKDe9fcu0WD2sosbFL4hWTE5nM
+         FhNZDKu2Bfr935CUr6/adCb8S/YfjFebmlxmPzp06baff8/RnzTUPcT5QfWmXCxpSW2h
+         ZBXtICCiKonpGbgkv+xTYf5ymyoKTaI5meOC0TNjEZdmTwPHQF/VaoMY9yiPotXJKp9i
+         XpGzG/S1eTnOdwIOdwEIkp3G/trKX+WgG6JCBjQN9/oPTQK8oB8bTVRoaCDMx0mSJYQr
+         MamVCIgmiBMKBzFF4phObWovLcp0p0V1SKQAyoW+SbNRRq5Ov/RnZ4VScFtElGUA9B6m
+         dBoA==
+X-Gm-Message-State: APjAAAUd1Vs0Z5gID4xT5l9KaKMhLHtVjRKV9AH3PC+NkGgJZAV+AkZe
+        /WwSPeBxHZRZTWeBo5XRiK5i7hHLHN79Tcg=
+X-Google-Smtp-Source: APXvYqwf41flQIat3KOIsyjjpw5N63ZvcHDik9EhfhYXCkBPgjXrtlDQs2OKDmjNAjHU9uyT/bCBM5OoUqnw6s4=
+X-Received: by 2002:a63:7552:: with SMTP id f18mr49259106pgn.234.1558039869914;
+ Thu, 16 May 2019 13:51:09 -0700 (PDT)
+Date:   Thu, 16 May 2019 13:51:07 -0700
+Message-Id: <20190516205107.222003-1-jemoreira@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
+Subject: [PATCH RESEND] vsock/virtio: Initialize core virtio vsock before
+ registering the driver
+From:   "Jorge E. Moreira" <jemoreira@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kernel-team@android.com, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 16, 2019 at 09:41:34AM +0100, Lorenz Bauer wrote:
-> On Wed, 15 May 2019 at 18:16, Joe Stringer <joe@isovalent.com> wrote:
-> >
-> > On Wed, May 15, 2019 at 8:11 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> > >
-> > > In the BPF-based TPROXY session with Joe Stringer [1], I mentioned
-> > > that the sk_lookup_* helpers currently return inconsistent results if
-> > > SK_REUSEPORT programs are in play.
-> > >
-> > > SK_REUSEPORT programs are a hook point in inet_lookup. They get access
-> > > to the full packet
-> > > that triggered the look up. To support this, inet_lookup gained a new
-> > > skb argument to provide such context. If skb is NULL, the SK_REUSEPORT
-> > > program is skipped and instead the socket is selected by its hash.
-> > >
-> > > The first problem is that not all callers to inet_lookup from BPF have
-> > > an skb, e.g. XDP. This means that a look up from XDP gives an
-> > > incorrect result. For now that is not a huge problem. However, once we
-> > > get sk_assign as proposed by Joe, we can end up circumventing
-> > > SK_REUSEPORT.
-> >
-> > To clarify a bit, the reason this is a problem is that a
-> > straightforward implementation may just consider passing the skb
-> > context into the sk_lookup_*() and through to the inet_lookup() so
-> > that it would run the SK_REUSEPORT BPF program for socket selection on
-> > the skb when the packet-path BPF program performs the socket lookup.
-> > However, as this paragraph describes, the skb context is not always
-> > available.
-> >
-> > > At the conference, someone suggested using a similar approach to the
-> > > work done on the flow dissector by Stanislav: create a dedicated
-> > > context sk_reuseport which can either take an skb or a plain pointer.
-> > > Patch up load_bytes to deal with both. Pass the context to
-> > > inet_lookup.
-> > >
-> > > This is when we hit the second problem: using the skb or XDP context
-> > > directly is incorrect, because it assumes that the relevant protocol
-> > > headers are at the start of the buffer. In our use case, the correct
-> > > headers are at an offset since we're inspecting encapsulated packets.
-> > >
-> > > The best solution I've come up with is to steal 17 bits from the flags
-> > > argument to sk_lookup_*, 1 bit for BPF_F_HEADERS_AT_OFFSET, 16bit for
-> > > the offset itself.
-> >
-> > FYI there's also the upper 32 bits of the netns_id parameter, another
-> > option would be to steal 16 bits from there.
-> 
-> Or len, which is only 16 bits realistically. The offset doesn't really fit into
-> either of them very well, using flags seemed the cleanest to me.
-> Is there some best practice around this?
-> 
-> >
-> > > Thoughts?
-> >
-> > Internally with skbs, we use `skb_pull()` to manage header offsets,
-> > could we do something similar with `bpf_xdp_adjust_head()` prior to
-> > the call to `bpf_sk_lookup_*()`?
-> 
-> That would only work if it retained the contents of the skipped
-> buffer, and if there
-> was a way to undo the adjustment later. We're doing the sk_lookup to
-> decide whether to
-> accept or forward the packet, so at the point of the call we might still need
-> that data. Is that feasible with skb / XDP ctx?
+Avoid a race in which static variables in net/vmw_vsock/af_vsock.c are
+accessed (while handling interrupts) before they are initialized.
 
-While discussing the solution for reuseport I propose to use
-progs/test_select_reuseport_kern.c as an example of realistic program.
-It reads tcp/udp header directly via ctx->data or via bpf_skb_load_bytes()
-including payload after the header.
-It also uses bpf_skb_load_bytes_relative() to fetch IP.
-I think if we're fixing the sk_lookup from XDP the above program
-would need to work.
+[    4.201410] BUG: unable to handle kernel paging request at ffffffffffffffe8
+[    4.207829] IP: vsock_addr_equals_addr+0x3/0x20
+[    4.211379] PGD 28210067 P4D 28210067 PUD 28212067 PMD 0
+[    4.211379] Oops: 0000 [#1] PREEMPT SMP PTI
+[    4.211379] Modules linked in:
+[    4.211379] CPU: 1 PID: 30 Comm: kworker/1:1 Not tainted 4.14.106-419297-gd7e28cc1f241 #1
+[    4.211379] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
+[    4.211379] Workqueue: virtio_vsock virtio_transport_rx_work
+[    4.211379] task: ffffa3273d175280 task.stack: ffffaea1800e8000
+[    4.211379] RIP: 0010:vsock_addr_equals_addr+0x3/0x20
+[    4.211379] RSP: 0000:ffffaea1800ebd28 EFLAGS: 00010286
+[    4.211379] RAX: 0000000000000002 RBX: 0000000000000000 RCX: ffffffffb94e42f0
+[    4.211379] RDX: 0000000000000400 RSI: ffffffffffffffe0 RDI: ffffaea1800ebdd0
+[    4.211379] RBP: ffffaea1800ebd58 R08: 0000000000000001 R09: 0000000000000001
+[    4.211379] R10: 0000000000000000 R11: ffffffffb89d5d60 R12: ffffaea1800ebdd0
+[    4.211379] R13: 00000000828cbfbf R14: 0000000000000000 R15: ffffaea1800ebdc0
+[    4.211379] FS:  0000000000000000(0000) GS:ffffa3273fd00000(0000) knlGS:0000000000000000
+[    4.211379] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    4.211379] CR2: ffffffffffffffe8 CR3: 000000002820e001 CR4: 00000000001606e0
+[    4.211379] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    4.211379] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    4.211379] Call Trace:
+[    4.211379]  ? vsock_find_connected_socket+0x6c/0xe0
+[    4.211379]  virtio_transport_recv_pkt+0x15f/0x740
+[    4.211379]  ? detach_buf+0x1b5/0x210
+[    4.211379]  virtio_transport_rx_work+0xb7/0x140
+[    4.211379]  process_one_work+0x1ef/0x480
+[    4.211379]  worker_thread+0x312/0x460
+[    4.211379]  kthread+0x132/0x140
+[    4.211379]  ? process_one_work+0x480/0x480
+[    4.211379]  ? kthread_destroy_worker+0xd0/0xd0
+[    4.211379]  ret_from_fork+0x35/0x40
+[    4.211379] Code: c7 47 08 00 00 00 00 66 c7 07 28 00 c7 47 08 ff ff ff ff c7 47 04 ff ff ff ff c3 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 8b 47 08 <3b> 46 08 75 0a 8b 47 04 3b 46 04 0f 94 c0 c3 31 c0 c3 90 66 2e
+[    4.211379] RIP: vsock_addr_equals_addr+0x3/0x20 RSP: ffffaea1800ebd28
+[    4.211379] CR2: ffffffffffffffe8
+[    4.211379] ---[ end trace f31cc4a2e6df3689 ]---
+[    4.211379] Kernel panic - not syncing: Fatal exception in interrupt
+[    4.211379] Kernel Offset: 0x37000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[    4.211379] Rebooting in 5 seconds..
 
-And I think we can make it work by adding new requirement that
-'struct bpf_sock_tuple *' argument to bpf_sk_lookup_* must be
-a pointer to the packet and not a pointer to bpf program stack.
-Then helper can construct a fake skb and assign
-fake_skb->data = &bpf_sock_tuple_arg.sport
-It can check that struct bpf_sock_tuple * pointer is within 100-ish bytes
-from xdp->data and within xdp->data_end
-This way the reuseport program's assumption that ctx->data points to tcp/udp
-will be preserved and it can access it all including payload.
+Fixes: 22b5c0b63f32 ("vsock/virtio: fix kernel panic after device hot-unplug")
+Cc: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: Stefano Garzarella <sgarzare@redhat.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: kvm@vger.kernel.org
+Cc: virtualization@lists.linux-foundation.org
+Cc: netdev@vger.kernel.org
+Cc: kernel-team@android.com
+Cc: stable@vger.kernel.org [4.9+]
+Signed-off-by: Jorge E. Moreira <jemoreira@google.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+---
+ net/vmw_vsock/virtio_transport.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-This approach doesn't need to mess with xdp_adjust_head and adjust uapi to pass length.
-Existing progs/test_sk_lookup_kern.c will magically start working with XDP
-even when reuseport prog is attached.
-Thoughts?
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index 15eb5d3d4750..96ab344f17bb 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -702,28 +702,27 @@ static int __init virtio_vsock_init(void)
+ 	if (!virtio_vsock_workqueue)
+ 		return -ENOMEM;
+ 
+-	ret = register_virtio_driver(&virtio_vsock_driver);
++	ret = vsock_core_init(&virtio_transport.transport);
+ 	if (ret)
+ 		goto out_wq;
+ 
+-	ret = vsock_core_init(&virtio_transport.transport);
++	ret = register_virtio_driver(&virtio_vsock_driver);
+ 	if (ret)
+-		goto out_vdr;
++		goto out_vci;
+ 
+ 	return 0;
+ 
+-out_vdr:
+-	unregister_virtio_driver(&virtio_vsock_driver);
++out_vci:
++	vsock_core_exit();
+ out_wq:
+ 	destroy_workqueue(virtio_vsock_workqueue);
+ 	return ret;
+-
+ }
+ 
+ static void __exit virtio_vsock_exit(void)
+ {
+-	vsock_core_exit();
+ 	unregister_virtio_driver(&virtio_vsock_driver);
++	vsock_core_exit();
+ 	destroy_workqueue(virtio_vsock_workqueue);
+ }
+ 
+-- 
+2.21.0.1020.gf2820cf01a-goog
 
