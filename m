@@ -2,112 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 590F520A14
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 16:48:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7AAD20A27
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 16:52:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726889AbfEPOsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 10:48:14 -0400
-Received: from mail-ed1-f42.google.com ([209.85.208.42]:38862 "EHLO
-        mail-ed1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726736AbfEPOsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 10:48:13 -0400
-Received: by mail-ed1-f42.google.com with SMTP id w11so5656951edl.5
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 07:48:12 -0700 (PDT)
+        id S1727163AbfEPOwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 10:52:22 -0400
+Received: from mail-eopbgr690082.outbound.protection.outlook.com ([40.107.69.82]:49017
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726736AbfEPOwV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 10:52:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PWkMgEFWXWrp3MS64NoHr7Gqf9GYgzhG77S2ki9Xa20=;
-        b=r6Ou/S2oMXgyTaTKLGQe6us0e2qCxuWdFo2wyPXg/123pvc8G6fI6vMwLCozZ3ouv7
-         JEepcjPqKGurB6mSJQSnNoMuvVTFDLXAu4iXaaJ46eda5FCDSQV77jKzfqz9Mpii9XhV
-         W5Unc1clKeOaugOG2dFeohRDMXkFpFRyJFWlkhFa9BPKnpGmxtKfZMNdNS9VOWsnOwV1
-         jAekKQP4mfjANzG3ouZ5U4Is/xuZiWCA/8Mase/rrhVgKE+rcRwUqh6+ctcaB67C5Lvw
-         m3Ir9929K2Vx3EZVqW7Qr2nT4JCIULOWo5dedd/NVcE6X8hOHukL63SLjdZ4kp4IZeto
-         0bNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PWkMgEFWXWrp3MS64NoHr7Gqf9GYgzhG77S2ki9Xa20=;
-        b=DDV8LDrsCAXN0pKsDhATNq3FaSBM9/PAnv27wtvo0q3yld+7wV4S+WnvZLigFHI8N9
-         P5FODoKtvl/weq7p03ixtc6J9LUlKdmHtQuatnCVkl+B20Vi67tCeTfeBIonpR3ioQnK
-         qRGZEraoxqloPQH8oXt6m2QifvEoKgaMt7gcmaBS1OkKLPAh7WYeihFfDUYgnj/zRDGl
-         V63FcOgs3ttSeEoQZKUZJr1Dgn/5AXGaowDqlmja7PQPNthpOW14ojjMD7BOcfi74VOG
-         FOnVg5W+kp8NvX6aztj62MNu1bQX/kLBE09tyq+VTDZANKtA4P38mWGWOQYDHRtw8b5+
-         pctg==
-X-Gm-Message-State: APjAAAWB3w+lFqLB0FUFignUH2v/F6YOm413I3yxWZqefVeWInXVggBd
-        lsUhEHbjGvXTlYgmVR/FTOzP694Ul/5eGHmvqSg=
-X-Google-Smtp-Source: APXvYqx2Mkvlg8Dv4B0VRFqq+ZqNHlFTs8l/tD/TniFV2rrW3ZQMaue7np+D9oqso/N0Hwd/vyFjwrgbMx4ZsYXeick=
-X-Received: by 2002:a17:906:5e50:: with SMTP id b16mr16771531eju.287.1558018092001;
- Thu, 16 May 2019 07:48:12 -0700 (PDT)
+ d=AQUANTIA1COM.onmicrosoft.com; s=selector1-AQUANTIA1COM-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cIIdObAOted1+rjqWzICMsPRRNqK5OdW5/2CrPjOX/k=;
+ b=sIPg0QfPe9Be94tPhGsu4whVpaFgMPQ4oXsEhjLE+pZHC7LbnpT/7ZZebc4hEsYQu77dFUWE2FnhKcG5hFff29YADdLngjpoNY3jvuOK6FhHQ1ouI+LUVRXysLMp+j2XmEwvKLMS9P8lphB6aQNbLORcpxzyIqbwSkJ9exV0qXA=
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (20.178.230.149) by
+ DM6PR11MB3659.namprd11.prod.outlook.com (20.178.231.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.16; Thu, 16 May 2019 14:52:18 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::512d:4596:4513:424a]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::512d:4596:4513:424a%5]) with mapi id 15.20.1900.010; Thu, 16 May 2019
+ 14:52:18 +0000
+From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
+To:     "David S . Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
+        Igor Russkikh <Igor.Russkikh@aquantia.com>
+Subject: [PATCH net 0/3] aqc111: revert endianess fixes and cleanup mtu logic
+Thread-Topic: [PATCH net 0/3] aqc111: revert endianess fixes and cleanup mtu
+ logic
+Thread-Index: AQHVC/b1PV+w2kCA3k+U61CtBuK4Pw==
+Date:   Thu, 16 May 2019 14:52:18 +0000
+Message-ID: <cover.1558017386.git.igor.russkikh@aquantia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: HE1P195CA0010.EURP195.PROD.OUTLOOK.COM (2603:10a6:3:fd::20)
+ To DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Igor.Russkikh@aquantia.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.17.1
+x-originating-ip: [95.79.108.179]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6432c361-cf2f-4503-ee65-08d6da0e1791
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:DM6PR11MB3659;
+x-ms-traffictypediagnostic: DM6PR11MB3659:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <DM6PR11MB365944108E39A80581DF65BC980A0@DM6PR11MB3659.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 0039C6E5C5
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39850400004)(136003)(346002)(396003)(376002)(189003)(199004)(53936002)(6436002)(4744005)(99286004)(54906003)(316002)(14454004)(2906002)(6306002)(50226002)(6512007)(6486002)(73956011)(966005)(478600001)(86362001)(5660300002)(8936002)(305945005)(66066001)(102836004)(72206003)(476003)(81166006)(2616005)(36756003)(66446008)(64756008)(66556008)(7736002)(68736007)(81156014)(66476007)(8676002)(3846002)(26005)(6916009)(44832011)(52116002)(71190400001)(71200400001)(107886003)(66946007)(6116002)(486006)(256004)(186003)(4326008)(386003)(6506007)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR11MB3659;H:DM6PR11MB3625.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: aquantia.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: AUnRD++7MJhwa1yh/eRfeb0/oSBmC/LqFT4t6WFqTcR6q4I7GlTr00Ghltj1+AFiOmylRJ1Cr7fIWex9Uq5JXe633vilguJrmAgnen2gSVdiwbnv0Ko8BGFdDAjpJmx+Gey/MdWQC90oVk4r+Z0F/VeZ621cRHH2geWYBtUxOOhdW2MrrD1r9N7r6vaFGg5kTeAYPNoiBg5dqz15xgpSyknqBW4m3ZO7idPt87LSfkEAslZC4UViVFIU1Iecr5mRzQKlsIf6RZh/5oY1k2kUxqGflkTNyIjQzqBcMdC5lgq/fULPM08ckk7ON9dBoUtZk3Vy5sG6F8uXUlwFz88Hd9dSt3cvpnHSNf5QLIHOtgSL++rjNMyl+ThIFmYcZLbBXSRP0BAmNpjYCaapF2WK/QnOdXJPg8rwWW64Sow6wZo=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CABUuw65R3or9HeHsMT_isVx1f-7B6eCPPdr+bNR6f6wbKPnHOQ@mail.gmail.com>
-In-Reply-To: <CABUuw65R3or9HeHsMT_isVx1f-7B6eCPPdr+bNR6f6wbKPnHOQ@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 16 May 2019 10:47:35 -0400
-Message-ID: <CAF=yD-Kdb4UrgzOJmeEhiqmeKndb9-X5WwttR-X4xd5m7DE5Dw@mail.gmail.com>
-Subject: Re: Kernel UDP behavior with missing destinations
-To:     Adam Urban <adam.urban@appleguru.org>
-Cc:     Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: aquantia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6432c361-cf2f-4503-ee65-08d6da0e1791
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2019 14:52:18.4258
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3659
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 15, 2019 at 3:57 PM Adam Urban <adam.urban@appleguru.org> wrote:
->
-> We have an application where we are use sendmsg() to send (lots of)
-> UDP packets to multiple destinations over a single socket, repeatedly,
-> and at a pretty constant rate using IPv4.
->
-> In some cases, some of these destinations are no longer present on the
-> network, but we continue sending data to them anyways. The missing
-> devices are usually a temporary situation, but can last for
-> days/weeks/months.
->
-> We are seeing an issue where packets sent even to destinations that
-> are present on the network are getting dropped while the kernel
-> performs arp updates.
->
-> We see a -1 EAGAIN (Resource temporarily unavailable) return value
-> from the sendmsg() call when this is happening:
->
-> sendmsg(72, {msg_name(16)={sa_family=AF_INET, sin_port=htons(1234),
-> sin_addr=inet_addr("10.1.2.3")}, msg_iov(1)=[{"\4\1"..., 96}],
-> msg_controllen=0, msg_flags=0}, MSG_NOSIGNAL) = -1 EAGAIN (Resource
-> temporarily unavailable)
->
-> Looking at packet captures, during this time you see the kernel arping
-> for the devices that aren't on the network, timing out, arping again,
-> timing out, and then finally arping a 3rd time before setting the
-> INCOMPLETE state again (very briefly being in a FAILED state).
->
-> "Good" packets don't start going out again until the 3rd timeout
-> happens, and then they go out for about 1s until the 3s delay from ARP
-> happens again.
->
-> Interestingly, this isn't an all or nothing situation. With only a few
-> (2-3) devices missing, we don't run into this "blocking" situation and
-> data always goes out. But once 4 or more devices are missing, it
-> happens. Setting static ARP entries for the missing supplies, even if
-> they are bogus, resolves the issue, but of course results in packets
-> with a bogus destination going out on the wire instead of getting
-> dropped by the kernel.
->
-> Can anyone explain why this is happening? I have tried tuning the
-> unres_qlen sysctl without effect and will next try to set the
-> MSG_DONTWAIT socket option to try and see if that helps. But I want to
-> make sure I understand what is going on.
->
-> Are there any parameters we can tune so that UDP packets sent to
-> INCOMPLETE destinations are immediately dropped? What's the best way
-> to prevent a socket from being unavailable while arp operations are
-> happening (assuming arp is the cause)?
-
-Sounds like hitting SO_SNDBUF limit due to datagrams being held on the
-neighbor queue. Especially since the issue occurs only as the number
-of unreachable destinations exceeds some threshold. Does
-/proc/net/stat/ndisc_cache show unresolved_discards? Increasing
-unres_qlen may make matters only worse if more datagrams can get
-queued. See also the branch on NUD_INCOMPLETE in __neigh_event_send.
+SGVsbG8hDQoNClRoaXMgcmV2ZXJ0cyBuby1vcCBjb21taXRzIGFzIGl0IHdhcyBkaXNjdXNzZWQ6
+DQoNCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL25ldGRldi8xNTU3ODM5NjQ0LjExMjYxLjQuY2Ft
+ZWxAc3VzZS5jb20vDQoNCkZpcnN0IGFuZCBzZWNvbmQgb3JpZ2luYWwgcGF0Y2hlcyBhcmUgYWxy
+ZWFkeSBkcm9wcGVkIGZyb20gc3RhYmxlLA0KTm8gbmVlZCB0byBzdGFibGUtcXVldWUgdGhlIHRo
+aXJkIHBhdGNoIGFzIGl0IGhhcyBubyBmdW5jdGlvbmFsIGltcGFjdCwNCmp1c3QgYSBsb2dpYyBj
+bGVhbnVwLg0KDQpJZ29yIFJ1c3NraWtoICgzKToNCiAgUmV2ZXJ0ICJhcWMxMTE6IGZpeCBkb3Vi
+bGUgZW5kaWFubmVzcyBzd2FwIG9uIEJFIg0KICBSZXZlcnQgImFxYzExMTogZml4IHdyaXRpbmcg
+dG8gdGhlIHBoeSBvbiBCRSINCiAgYXFjMTExOiBjbGVhbnVwIG10dSByZWxhdGVkIGxvZ2ljDQoN
+CiBkcml2ZXJzL25ldC91c2IvYXFjMTExLmMgfCAzNSArKysrKysrKysrLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLQ0KIDEgZmlsZSBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCAyNSBkZWxldGlv
+bnMoLSkNCg0KLS0gDQoyLjE3LjENCg0K
