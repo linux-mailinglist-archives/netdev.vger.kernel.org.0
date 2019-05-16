@@ -2,132 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31DFB20B17
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 17:25:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7849620B47
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 17:31:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727698AbfEPPZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 11:25:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49597 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726692AbfEPPZj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 11:25:39 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 71315306641B;
-        Thu, 16 May 2019 15:25:38 +0000 (UTC)
-Received: from localhost (ovpn-117-183.ams2.redhat.com [10.36.117.183])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 23C4D60851;
-        Thu, 16 May 2019 15:25:34 +0000 (UTC)
-Date:   Thu, 16 May 2019 16:25:33 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v2 1/8] vsock/virtio: limit the memory used per-socket
-Message-ID: <20190516152533.GB29808@stefanha-x1.localdomain>
-References: <20190510125843.95587-1-sgarzare@redhat.com>
- <20190510125843.95587-2-sgarzare@redhat.com>
+        id S1727793AbfEPPa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 11:30:56 -0400
+Received: from mail-eopbgr60076.outbound.protection.outlook.com ([40.107.6.76]:2534
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726692AbfEPPa4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 11:30:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zjFRyEF+r0iSm1zpGNwtiNGlavM9lqkbECsXY5mbnGU=;
+ b=FrUYVidze5zm2O89CUtq2ZsNDAsxldldwYTNn0VJ5AmFyAIzvQBZPvF7My9S8UglrpXZygdqJDpaY9T4K4cmreMocJt0IkT6qmEgnt6oHhbPRPaTiDNinEZMeYs/BjMn9eRwU0aQ0j/sdwfINuSMNYcvNKVkJ4DGbUpJuUc1uTY=
+Received: from VI1PR04MB4880.eurprd04.prod.outlook.com (20.177.49.153) by
+ VI1PR04MB3165.eurprd04.prod.outlook.com (10.170.229.27) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1878.22; Thu, 16 May 2019 15:30:51 +0000
+Received: from VI1PR04MB4880.eurprd04.prod.outlook.com
+ ([fe80::d9de:1be3:e7e6:757f]) by VI1PR04MB4880.eurprd04.prod.outlook.com
+ ([fe80::d9de:1be3:e7e6:757f%3]) with mapi id 15.20.1900.010; Thu, 16 May 2019
+ 15:30:51 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/3] enetc: add hardware timestamping support
+Thread-Topic: [PATCH 1/3] enetc: add hardware timestamping support
+Thread-Index: AQHVC84BpTq18Sng3k254t8Y+2yCUKZt0N+AgAAFuTA=
+Date:   Thu, 16 May 2019 15:30:51 +0000
+Message-ID: <VI1PR04MB4880B9B346D29E0EFC715D28960A0@VI1PR04MB4880.eurprd04.prod.outlook.com>
+References: <20190516100028.48256-1-yangbo.lu@nxp.com>
+ <20190516100028.48256-2-yangbo.lu@nxp.com>
+ <20190516143251.akbt3ns6ue2jrhl5@localhost>
+In-Reply-To: <20190516143251.akbt3ns6ue2jrhl5@localhost>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=claudiu.manoil@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2fa7ec64-6c2e-45da-664a-08d6da137ac7
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR04MB3165;
+x-ms-traffictypediagnostic: VI1PR04MB3165:
+x-microsoft-antispam-prvs: <VI1PR04MB3165156301F587BBBD657544960A0@VI1PR04MB3165.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0039C6E5C5
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(396003)(366004)(376002)(346002)(39860400002)(189003)(199004)(52314003)(13464003)(71190400001)(305945005)(71200400001)(99286004)(66476007)(66066001)(66556008)(66946007)(6246003)(64756008)(6436002)(66446008)(54906003)(229853002)(14444005)(256004)(33656002)(5660300002)(52536014)(68736007)(73956011)(76116006)(53936002)(110136005)(6636002)(3846002)(6116002)(44832011)(14454004)(25786009)(102836004)(6506007)(186003)(478600001)(446003)(8936002)(26005)(11346002)(81156014)(8676002)(81166006)(2906002)(7736002)(7696005)(486006)(76176011)(4326008)(476003)(74316002)(316002)(9686003)(55016002)(86362001)(309714004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB3165;H:VI1PR04MB4880.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: F9kOkM3tBf8cdsXeggI+RmydGsnaTZrqfv+IYg13HxmUYCvD5KwThJ21Kd6El58ZM/TwgNQXwzX2XpDjWzQ7bhjpjAh3ptlEuNfE5j6pJSls1McnBHjVFbQk1a/VuzmYIdT6ooOP3/EgSSXh+XU6VhaWQnjTNilsOrhXvTXow02cEwokCJwj4X6SnamL154kb23/eNlnkQMsALD7SiQyQo6PdHMmCS2PwzLdZJVABUrm5u6pWR/zH6Jlt6utIidtFAhHi9BgdtYyCGEH3KVcCpDM6TGDpSFlT5xzj24hY4kwberlXCrDmRydgFEb3cSCU7FjDDmPxIch/+7ArwskPHEE/+b1l78OAVEPTS/ZIbNXDl4Tp5sbFbU0Y30IbsuG8LWCtYSEfui20uDbv1/s58viIvLBb+XwrI00q8jn7kQ=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="qcHopEYAB45HaUaB"
-Content-Disposition: inline
-In-Reply-To: <20190510125843.95587-2-sgarzare@redhat.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Thu, 16 May 2019 15:25:38 +0000 (UTC)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2fa7ec64-6c2e-45da-664a-08d6da137ac7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2019 15:30:51.6417
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3165
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---qcHopEYAB45HaUaB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>-----Original Message-----
+>From: Richard Cochran <richardcochran@gmail.com>
+>Sent: Thursday, May 16, 2019 5:33 PM
+>To: Y.b. Lu <yangbo.lu@nxp.com>
+>Cc: netdev@vger.kernel.org; David Miller <davem@davemloft.net>; Claudiu
+>Manoil <claudiu.manoil@nxp.com>; Shawn Guo <shawnguo@kernel.org>; Rob
+>Herring <robh+dt@kernel.org>; devicetree@vger.kernel.org; linux-arm-
+>kernel@lists.infradead.org; linux-kernel@vger.kernel.org
+>Subject: Re: [PATCH 1/3] enetc: add hardware timestamping support
+>
+>On Thu, May 16, 2019 at 09:59:08AM +0000, Y.b. Lu wrote:
+>
+[...]
+>
+>>  static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_bud=
+get)
+>>  {
+>>  	struct net_device *ndev =3D tx_ring->ndev;
+>> +	struct enetc_ndev_priv *priv =3D netdev_priv(ndev);
+>>  	int tx_frm_cnt =3D 0, tx_byte_cnt =3D 0;
+>>  	struct enetc_tx_swbd *tx_swbd;
+>> +	union enetc_tx_bd *txbd;
+>> +	bool do_tstamp;
+>>  	int i, bds_to_clean;
+>> +	u64 tstamp =3D 0;
+>
+>Please keep in reverse Christmas tree order as much as possible:
 
-On Fri, May 10, 2019 at 02:58:36PM +0200, Stefano Garzarella wrote:
-> +struct virtio_vsock_buf {
+For the xmass tree part, Yangbo, better move the priv and txbd declarations
+inside the scope of the if() {} block where they are actually used, i.e.:
 
-Please add a comment describing the purpose of this struct and to
-differentiate its use from struct virtio_vsock_pkt.
+		if (unlikely(tx_swbd->check_wb)) {
+			struct enetc_ndev_priv *priv =3D netdev_priv(ndev);
+			union enetc_tx_bd *txbd;
+			[...]
+		}
 
-> +static struct virtio_vsock_buf *
-> +virtio_transport_alloc_buf(struct virtio_vsock_pkt *pkt, bool zero_copy)
-> +{
-> +	struct virtio_vsock_buf *buf;
-> +
-> +	if (pkt->len =3D=3D 0)
-> +		return NULL;
-> +
-> +	buf =3D kzalloc(sizeof(*buf), GFP_KERNEL);
-> +	if (!buf)
-> +		return NULL;
-> +
-> +	/* If the buffer in the virtio_vsock_pkt is full, we can move it to
-> +	 * the new virtio_vsock_buf avoiding the copy, because we are sure that
-> +	 * we are not use more memory than that counted by the credit mechanism.
-> +	 */
-> +	if (zero_copy && pkt->len =3D=3D pkt->buf_len) {
-> +		buf->addr =3D pkt->buf;
-> +		pkt->buf =3D NULL;
-> +	} else {
-> +		buf->addr =3D kmalloc(pkt->len, GFP_KERNEL);
+>
+>	union enetc_tx_bd *txbd;
+>	int i, bds_to_clean;
+>	bool do_tstamp;
+>	u64 tstamp =3D 0;
+>
+>>  	i =3D tx_ring->next_to_clean;
+>>  	tx_swbd =3D &tx_ring->tx_swbd[i];
+>>  	bds_to_clean =3D enetc_bd_ready_count(tx_ring, i);
+>>
+>> +	do_tstamp =3D false;
+>> +
+>>  	while (bds_to_clean && tx_frm_cnt < ENETC_DEFAULT_TX_WORK) {
+>>  		bool is_eof =3D !!tx_swbd->skb;
+>>
+>> +		if (unlikely(tx_swbd->check_wb)) {
+>> +			txbd =3D ENETC_TXBD(*tx_ring, i);
+>> +
+>> +			if (!(txbd->flags & ENETC_TXBD_FLAGS_W))
+>> +				goto no_wb;
+>> +
+>> +			if (tx_swbd->do_tstamp) {
+>> +				enetc_get_tx_tstamp(&priv->si->hw, txbd,
+>> +						    &tstamp);
+>> +				do_tstamp =3D true;
+>> +			}
+>> +		}
+>> +no_wb:
+>
+>This goto seems strange and unnecessary.  How about this instead?
+>
+>			if (txbd->flags & ENETC_TXBD_FLAGS_W &&
+>			    tx_swbd->do_tstamp) {
+>				enetc_get_tx_tstamp(&priv->si->hw, txbd, &tstamp);
+>				do_tstamp =3D true;
+>			}
+>
 
-buf and buf->addr could be allocated in a single call, though I'm not
-sure how big an optimization this is.
+Absolutely, somehow I missed this.  I guess the intention was to be able to=
+ support multiple
+if() blocks for the writeback case (W flag set) but the code is much better=
+ off without the goto.
 
-> @@ -841,20 +882,24 @@ virtio_transport_recv_connected(struct sock *sk,
->  {
->  	struct vsock_sock *vsk =3D vsock_sk(sk);
->  	struct virtio_vsock_sock *vvs =3D vsk->trans;
-> +	struct virtio_vsock_buf *buf;
->  	int err =3D 0;
-> =20
->  	switch (le16_to_cpu(pkt->hdr.op)) {
->  	case VIRTIO_VSOCK_OP_RW:
->  		pkt->len =3D le32_to_cpu(pkt->hdr.len);
-> -		pkt->off =3D 0;
-> +		buf =3D virtio_transport_alloc_buf(pkt, true);
-> =20
-> -		spin_lock_bh(&vvs->rx_lock);
-> -		virtio_transport_inc_rx_pkt(vvs, pkt);
-> -		list_add_tail(&pkt->list, &vvs->rx_queue);
-> -		spin_unlock_bh(&vvs->rx_lock);
-> +		if (buf) {
-> +			spin_lock_bh(&vvs->rx_lock);
-> +			virtio_transport_inc_rx_pkt(vvs, pkt->len);
-> +			list_add_tail(&buf->list, &vvs->rx_queue);
-> +			spin_unlock_bh(&vvs->rx_lock);
-> =20
-> -		sk->sk_data_ready(sk);
-> -		return err;
-> +			sk->sk_data_ready(sk);
-> +		}
+>>  		enetc_unmap_tx_buff(tx_ring, tx_swbd);
+>>  		if (is_eof) {
+>> +			if (unlikely(do_tstamp)) {
+>> +				enetc_tstamp_tx(tx_swbd->skb, tstamp);
+>> +				do_tstamp =3D false;
+>> +			}
+>>  			napi_consume_skb(tx_swbd->skb, napi_budget);
+>>  			tx_swbd->skb =3D NULL;
+>>  		}
+>> @@ -167,6 +169,11 @@ struct enetc_cls_rule {
+>>
+>>  #define ENETC_MAX_BDR_INT	2 /* fixed to max # of available cpus */
+>>
+>> +enum enetc_hw_features {
+>
+>This is a poor choice of name.  It sounds like it describes HW
+>capabilities, but you use it to track whether a feature is requested
+>at run time.
+>
+>> +	ENETC_F_RX_TSTAMP	=3D BIT(0),
+>> +	ENETC_F_TX_TSTAMP	=3D BIT(1),
+>> +};
+>> +
+>>  struct enetc_ndev_priv {
+>>  	struct net_device *ndev;
+>>  	struct device *dev; /* dma-mapping device */
+>> @@ -178,6 +185,7 @@ struct enetc_ndev_priv {
+>>  	u16 rx_bd_count, tx_bd_count;
+>>
+>>  	u16 msg_enable;
+>> +	int hw_features;
+>
+>This is also poorly named.  How about "tstamp_request" instead?
+>
 
-The return value of this function isn't used but the code still makes an
-effort to return errors.  Please return -ENOMEM when buf =3D=3D NULL.
+This ndev_priv variable was intended to gather flags for all the active h/w=
+ related
+features, i.e. keeping count of what h/w offloads are enabled for the curre=
+nt device
+(at least for those that don't have already a netdev_features_t flag).
+I wouldn't waste an int for 2 timestamp flags, I'd rather have a more gener=
+ic name.
+Maybe active_offloads then?
 
-If you'd like to remove the return value that's fine too, but please do
-it for the whole function to be consistent.
+Anyway, the name can be changed later too, when other offloads will be adde=
+d.
 
---qcHopEYAB45HaUaB
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAlzdgO0ACgkQnKSrs4Gr
-c8i2BQf/SKch1qy6NDC+HDYgEJxI8sLacx7MgcaTqQGmvc29mZInkaMMDj88G6T/
-LGW/vJZ1x1ZPrLx+fKiNOs82ZIiiHhLy8HGEjuu8eMW+YYk0y8QPu7QPsxRV2IaG
-u7gSGPxdUKUvGVejNWyqo5/mW2kZOLaMg0Z5zTghUhZ9hLyBQAU5UwvdqVICnedh
-1IYkF86rZrfKQFZCv/X5Q7IwRvg1lHZyYjTyqUBomc2z1tAk4t1NrMT3LDhLD1XZ
-dnUdBc5bBVspwArnAl9P4Uag0Gjh8yjEp0S7ITrZI58G6tilDb3cncv9w+nRvQks
-EY4F99igT+SAp97NrMrIW0E/MZjnOw==
-=gdG0
------END PGP SIGNATURE-----
-
---qcHopEYAB45HaUaB--
+Thanks,
+Claudiu
