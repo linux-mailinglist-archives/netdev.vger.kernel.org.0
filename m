@@ -2,166 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3549D1FE3B
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 05:39:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 651451FE4D
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 06:16:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726393AbfEPDjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 May 2019 23:39:33 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44518 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726190AbfEPDjd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 May 2019 23:39:33 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4G3U4iK027744
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 20:39:32 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=CmSHyn6HPrP5p18KmBFlKUCdl/W/+J+Wgl33L/LR0kM=;
- b=iaEUTPuNAMP+f5n3BU7/xfF3qE3zyhEVmd1vjvJO8CE/o1nDPgoTaIquYO7h2OT5bTom
- 9D8PtkS9tZWOEkQE3IZ0CS5v8QW26dYdEd+75Yhak1G0zCSeaXan5glWO8MnfoDY9QqF
- V1XIn69LqQbqywbMmJusrLb9sfZpj0FVwlc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sgrjehfe9-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 15 May 2019 20:39:31 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 15 May 2019 20:39:29 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 860C28627FA; Wed, 15 May 2019 20:39:28 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <ast@fb.com>
-CC:     Andrii Nakryiko <andriin@fb.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf] libbpf: move logging helpers into libbpf_internal.h
-Date:   Wed, 15 May 2019 20:39:27 -0700
-Message-ID: <20190516033927.2425057-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1726247AbfEPEQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 00:16:03 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:43390 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725818AbfEPEQD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 00:16:03 -0400
+Received: by mail-io1-f67.google.com with SMTP id v7so1445985iob.10
+        for <netdev@vger.kernel.org>; Wed, 15 May 2019 21:16:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QLiMXQioZ20aDL1JBasJ8pUI6TPP8CYeQvbRGTDRhe8=;
+        b=NdEC5f4chTPvnhsVZla+hDSqZwcG8uPkxZ0aN7wepqW07VsBn8fDxQnaqGOaDPpr3A
+         rpvZ2ffJQTbyOwtgyRjXFaveWVfvYMB5FL6NgVNBTUnbrsF1uNuSSnnLoq6UAVKOg/AG
+         QIwCmBcFf6KeVNrPtGM0LyAxdLoga01n9+41VAelXrUfL/n9pFth/oXZX620O8EESQ+B
+         EVy9kZXu7AvZyn5DPuz/ozqn5IfoemqFahprnrx6+uMFqk1lsy5DE9BfdCC04gKgYM5u
+         0pWgGDbBRiQF6C39p3LKR+C9XOZnB0TZQRiJgRPxakMDdDNerOy/ewkSNsMZI1njkfU3
+         eYNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QLiMXQioZ20aDL1JBasJ8pUI6TPP8CYeQvbRGTDRhe8=;
+        b=fgC7FGloAYGQq7TMO9IaIxw3wFR+ETHNlLzdiptSJYAv/xGKTXx7vncRCWjTYmJxVv
+         GVEnhB0jABG5Ch++pMn0NdH5Q7khXzPES64fQhdL4F33bVlMV/BZxjZf2UjKl7501/Bo
+         4KKkDR8F+lba+jYpNvRObIVvVaHg1zeH+UdTFeYUapWBxM8K8LPp/8ZdssNwfRt4LKBA
+         OaXTTznyVslZPLjQtYUc5EchbYaG8p4Y3PoJxIUTsnICfcaLIdtrIK/Ssihtj2tp4ULl
+         c5zY39yK/7EyEG8rsejI7azbdZzoXsN+QgfYyMgqFOrb4/Y8ReY5YjhaFwMIY+tn+8OR
+         BApQ==
+X-Gm-Message-State: APjAAAX9Hb5P3xrq6bnOITsH7AfZa+O6zoXd5c5W67tZ/zkqem9t84+C
+        VGDsYasV14YynTkJ3tP//LGXMdY8EftVNwL1Ay6PGg==
+X-Google-Smtp-Source: APXvYqx0FSBoongb7HVM5hlH7DU/UowbnN9FWN4cK5veK8zcrf4TeeJPr4K6ACXYcGN2Qvbr8ZK1YcW5ni4Dk4K7YwE=
+X-Received: by 2002:a6b:d81a:: with SMTP id y26mr29917053iob.122.1557980162085;
+ Wed, 15 May 2019 21:16:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-16_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=886 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905160023
-X-FB-Internal: deliver
+References: <20190516023952.28943-1-edumazet@google.com>
+In-Reply-To: <20190516023952.28943-1-edumazet@google.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Wed, 15 May 2019 21:15:50 -0700
+Message-ID: <CAEA6p_CWuuQk0KxZ=yf+TuNdSUWq1zD0gtejUVyzczinBot8JA@mail.gmail.com>
+Subject: Re: [PATCH net] ipv6: prevent possible fib6 leaks
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        David Ahern <dsahern@gmail.com>, Martin Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-libbpf_util.h header was recently exposed as public as a dependency of
-xsk.h. In addition to memory barriers, it contained logging helpers,
-which are not supposed to be exposed. This patch moves those into
-libbpf_internal.h, which is kept as an internal header.
+On Wed, May 15, 2019 at 7:40 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> At ipv6 route dismantle, fib6_drop_pcpu_from() is responsible
+> for finding all percpu routes and set their ->from pointer
+> to NULL, so that fib6_ref can reach its expected value (1).
+>
+> The problem right now is that other cpus can still catch the
+> route being deleted, since there is no rcu grace period
+> between the route deletion and call to fib6_drop_pcpu_from()
+>
+> This can leak the fib6 and associated resources, since no
+> notifier will take care of removing the last reference(s).
+>
+> I decided to add another boolean (fib6_destroying) instead
+> of reusing/renaming exception_bucket_flushed to ease stable backports,
+> and properly document the memory barriers used to implement this fix.
+>
+> This patch has been co-developped with Wei Wang.
+>
+> Fixes: 93531c674315 ("net/ipv6: separate handling of FIB entries from dst based routes")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Cc: Wei Wang <weiwan@google.com>
+> Cc: David Ahern <dsahern@gmail.com>
+> Cc: Martin Lau <kafai@fb.com>
+> ---
+Thanks for the fix Eric.
 
-Cc: Stanislav Fomichev <sdf@google.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Fixes: 7080da890984 ("libbpf: add libbpf_util.h to header install.")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/btf.c             |  2 +-
- tools/lib/bpf/libbpf.c          |  1 -
- tools/lib/bpf/libbpf_internal.h | 13 +++++++++++++
- tools/lib/bpf/libbpf_util.h     | 13 -------------
- tools/lib/bpf/xsk.c             |  2 +-
- 5 files changed, 15 insertions(+), 16 deletions(-)
+Acked-by: Wei Wang <weiwan@google.com>
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 75eaf10b9e1a..03348c4d6bd4 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -11,7 +11,7 @@
- #include "btf.h"
- #include "bpf.h"
- #include "libbpf.h"
--#include "libbpf_util.h"
-+#include "libbpf_internal.h"
- 
- #define max(a, b) ((a) > (b) ? (a) : (b))
- #define min(a, b) ((a) < (b) ? (a) : (b))
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 3562b6ef5fdc..197b574406b3 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -43,7 +43,6 @@
- #include "bpf.h"
- #include "btf.h"
- #include "str_error.h"
--#include "libbpf_util.h"
- #include "libbpf_internal.h"
- 
- #ifndef EM_BPF
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 789e435b5900..f3025b4d90e1 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -21,6 +21,19 @@
- #define BTF_PARAM_ENC(name, type) (name), (type)
- #define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
- 
-+extern void libbpf_print(enum libbpf_print_level level,
-+			 const char *format, ...)
-+	__attribute__((format(printf, 2, 3)));
-+
-+#define __pr(level, fmt, ...)	\
-+do {				\
-+	libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__);	\
-+} while (0)
-+
-+#define pr_warning(fmt, ...)	__pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
-+#define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
-+#define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
-+
- int libbpf__probe_raw_btf(const char *raw_types, size_t types_len,
- 			  const char *str_sec, size_t str_len);
- 
-diff --git a/tools/lib/bpf/libbpf_util.h b/tools/lib/bpf/libbpf_util.h
-index da94c4cb2e4d..59c779c5790c 100644
---- a/tools/lib/bpf/libbpf_util.h
-+++ b/tools/lib/bpf/libbpf_util.h
-@@ -10,19 +10,6 @@
- extern "C" {
- #endif
- 
--extern void libbpf_print(enum libbpf_print_level level,
--			 const char *format, ...)
--	__attribute__((format(printf, 2, 3)));
--
--#define __pr(level, fmt, ...)	\
--do {				\
--	libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__);	\
--} while (0)
--
--#define pr_warning(fmt, ...)	__pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
--#define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
--#define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
--
- /* Use these barrier functions instead of smp_[rw]mb() when they are
-  * used in a libbpf header file. That way they can be built into the
-  * application that uses libbpf.
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index a3d1a302bc9c..38667b62f1fe 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -29,7 +29,7 @@
- 
- #include "bpf.h"
- #include "libbpf.h"
--#include "libbpf_util.h"
-+#include "libbpf_internal.h"
- #include "xsk.h"
- 
- #ifndef SOL_XDP
--- 
-2.17.1
-
+>  include/net/ip6_fib.h |  3 ++-
+>  net/ipv6/ip6_fib.c    | 12 +++++++++---
+>  net/ipv6/route.c      |  7 +++++++
+>  3 files changed, 18 insertions(+), 4 deletions(-)
+>
+> diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
+> index 40105738e2f6b8e37adac1ff46879ce6c09381b8..525f701653ca69596b941f5f3b4a438d634c4e6c 100644
+> --- a/include/net/ip6_fib.h
+> +++ b/include/net/ip6_fib.h
+> @@ -167,7 +167,8 @@ struct fib6_info {
+>                                         dst_nocount:1,
+>                                         dst_nopolicy:1,
+>                                         dst_host:1,
+> -                                       unused:3;
+> +                                       fib6_destroying:1,
+> +                                       unused:2;
+>
+>         struct fib6_nh                  fib6_nh;
+>         struct rcu_head                 rcu;
+> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+> index 08e0390e001c270ae21013f3fd3ef3bf2a52e039..008421b550c6bfd449665aa5e7ba5505fcabe53d 100644
+> --- a/net/ipv6/ip6_fib.c
+> +++ b/net/ipv6/ip6_fib.c
+> @@ -904,6 +904,12 @@ static void fib6_drop_pcpu_from(struct fib6_info *f6i,
+>  {
+>         int cpu;
+>
+> +       /* Make sure rt6_make_pcpu_route() wont add other percpu routes
+> +        * while we are cleaning them here.
+> +        */
+> +       f6i->fib6_destroying = 1;
+> +       mb(); /* paired with the cmpxchg() in rt6_make_pcpu_route() */
+> +
+>         /* release the reference to this fib entry from
+>          * all of its cached pcpu routes
+>          */
+> @@ -927,6 +933,9 @@ static void fib6_purge_rt(struct fib6_info *rt, struct fib6_node *fn,
+>  {
+>         struct fib6_table *table = rt->fib6_table;
+>
+> +       if (rt->rt6i_pcpu)
+> +               fib6_drop_pcpu_from(rt, table);
+> +
+>         if (refcount_read(&rt->fib6_ref) != 1) {
+>                 /* This route is used as dummy address holder in some split
+>                  * nodes. It is not leaked, but it still holds other resources,
+> @@ -948,9 +957,6 @@ static void fib6_purge_rt(struct fib6_info *rt, struct fib6_node *fn,
+>                         fn = rcu_dereference_protected(fn->parent,
+>                                     lockdep_is_held(&table->tb6_lock));
+>                 }
+> -
+> -               if (rt->rt6i_pcpu)
+> -                       fib6_drop_pcpu_from(rt, table);
+>         }
+>  }
+>
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index 23a20d62daac29e3252725b8cf95d1d1c2b567c4..27c0cc5d9d30e3689ebe6b8428cd4c586669d808 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -1295,6 +1295,13 @@ static struct rt6_info *rt6_make_pcpu_route(struct net *net,
+>         prev = cmpxchg(p, NULL, pcpu_rt);
+>         BUG_ON(prev);
+>
+> +       if (res->f6i->fib6_destroying) {
+> +               struct fib6_info *from;
+> +
+> +               from = xchg((__force struct fib6_info **)&pcpu_rt->from, NULL);
+> +               fib6_info_release(from);
+> +       }
+> +
+>         return pcpu_rt;
+>  }
+>
+> --
+> 2.21.0.1020.gf2820cf01a-goog
+>
