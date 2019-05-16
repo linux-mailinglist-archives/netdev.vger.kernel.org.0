@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26D7621059
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 23:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFF8A2105F
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 23:54:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728897AbfEPVy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 17:54:29 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:46243 "EHLO
+        id S1728922AbfEPVyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 17:54:33 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43416 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728884AbfEPVy2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 17:54:28 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y11so2517269pfm.13
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 14:54:28 -0700 (PDT)
+        with ESMTP id S1728896AbfEPVy3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 17:54:29 -0400
+Received: by mail-pf1-f196.google.com with SMTP id c6so2521403pfa.10
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 14:54:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jW23EVTaONU8fGl2rO/gh8exrFRja4BdXSBKXyg60v0=;
-        b=zZ6dq6JYsNCTLilh4tdiqHrmv23xzcGSKF4r/LqIMcfbTyNphvxWoH9D2upjSAHuz0
-         e9u/x6/0LdA6y7vansZpzlI25i5pXMmuex74Y0zuhc6kkxgG5UXePl8Mkqw3MZEb8Q1K
-         fpPH7OlTG6MWtYaTTmh1Q6NAkCjEC7go7jEA+EP+cYezRte27zS3LRUfH1ymuFXKM6Ke
-         iComxjPK+RX3NZgq4QGr3wNs4OgEzYvkfQeLDUFWkEIJ8b9TGMDeD+6DZN+ec7zigPMM
-         kC6e8ypK+ANYfp2gFTL+W4KOxbt/pHRiS3C2Km5XDfUepuALZA8Fk6lE5mVizH7wd791
-         WrNA==
+        bh=1E3N0zT9A+r2im6QpOgDPD+XgR8M/OLuBEDLlf3Z7+c=;
+        b=gHkbTo/dzg62EsHuFOEqzE4zD0Awx6QMgcAVIz/QDckgP8FbVYM+OnrKQVNxdWE0gX
+         QKCSUSA/5MtU2Sh8txLOvLtyG4AbSahniQnaAFLf/nYHtbFzkha6QBUUHIwqdaAQ4Kgk
+         1deRntqeIqPhsdF+aTx7HcXFte1XoPJz3t73ctR67DoLXakKCZLv/0Fvy4UTaf48V38i
+         Qg4zypj/7GDSaP8zDKz2rHdFXDEB4hsddy7VtJ1Yu/ZTEN49nhygcMkJCpvXO+L2Z5pw
+         tCDFBuEKrBZaZMCL2KnVBs5qRKvhGlpGEP/Pss70wox83tzVtngnivANiEWDIb2Bt53s
+         z9iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jW23EVTaONU8fGl2rO/gh8exrFRja4BdXSBKXyg60v0=;
-        b=ix50LFqIq8ht82v5mvaAdzT/PMjzGdRKHHVDTQo7iPQNmly89dnAM50bp2iVy6Dr35
-         ocaSYyiXCsbILUZiWlgfIxybWSUtfkmXJFl+YRHR2/tNuUPc1wa0yHUg0tr2ESb3/M1F
-         x7VEpqeEgeTd8nUqaSllun6bjeN+3ET+wFk4sBb/a968EQBAjvnkVFlct/BvoJ7I+SQc
-         rzQbhPL2u9KWdcmVhIbHdWE5d04DMTOFJH/3DIGBphOij222r9RTYVUpn6h66P/9ePIk
-         PA4MF5cmUN4zFyDbHpR3g2RkfUnMHHhq53FzocaRE3H4GMNu82MXXFXwzY/6C10LTg5S
-         VZDQ==
-X-Gm-Message-State: APjAAAWbo834jNiMHQX8qqMVK3Af423OmkBw9oaALysU94Fh/79O1fee
-        EFPmXfhgmAdivRqIHJWNq3PNrgXjCjw=
-X-Google-Smtp-Source: APXvYqx2B9kBrdR04F1t4i1XgaAah3bmKTotNbx3FQ2RNR9kO4Y5NeCwckRaxlUBDkYf1mqjeiOSIg==
-X-Received: by 2002:a62:1b8a:: with SMTP id b132mr56143116pfb.19.1558043667786;
-        Thu, 16 May 2019 14:54:27 -0700 (PDT)
+        bh=1E3N0zT9A+r2im6QpOgDPD+XgR8M/OLuBEDLlf3Z7+c=;
+        b=C12u8w6fjGcQ+AyIZ4iLkE/YYpuKcPrDJb0OHWboBx4iveEtT50eoLyj+ofk3cGV/p
+         Xfc0v7zTjN1DbkmGBAFHQtHNrQ8XNs5Exd4eBzrYZkpW9Qg61jfIk2zMn+M/0Ql0Q0va
+         g1EA3VnFN9Zh4fcstFQ3Zp1iy4fec0gdV1/sTbmphHpray2JBCcu0R/2qWokVauhLche
+         QfbuZYJwwnL5YG+YB8oytBrNZo23LHywllK25Rb52Ixj8oB0t4dH9slYQ18dt0Lalfyq
+         N6boAsCsj9mqfSVGXvgjhFFlMWu1GX3k7Uxczf5dswHBPeTLHlN4PTKeEc2QAdjSfDZN
+         Sdrw==
+X-Gm-Message-State: APjAAAXWmzX3daLCWsdfMH7IJ5vgicP4Z3K4alEyBhFezpagLcyTnKlC
+        5ee6t4z28fLLwxbJHdMn+NlBHQ2R974=
+X-Google-Smtp-Source: APXvYqyFTs+tyVssS57cMOZTZJEMcnxAqM0IxUaMpyARtuJ/MrI3oWy5+iENt2ct906kPow0o/zKJw==
+X-Received: by 2002:a62:528b:: with SMTP id g133mr56806059pfb.246.1558043668893;
+        Thu, 16 May 2019 14:54:28 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id d15sm19842506pfm.186.2019.05.16.14.54.26
+        by smtp.gmail.com with ESMTPSA id d15sm19842506pfm.186.2019.05.16.14.54.27
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 May 2019 14:54:26 -0700 (PDT)
+        Thu, 16 May 2019 14:54:28 -0700 (PDT)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     xdp-newbies@vger.kernel.org, bpf@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>
-Subject: [PATCH net 1/3] netvsc: unshare skb in VF rx handler
-Date:   Thu, 16 May 2019 14:54:21 -0700
-Message-Id: <20190516215423.14185-2-sthemmin@microsoft.com>
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Jason Wang <jasowang@redhat.com>
+Subject: [PATCH net 2/3] net: core: generic XDP support for stacked device
+Date:   Thu, 16 May 2019 14:54:22 -0700
+Message-Id: <20190516215423.14185-3-sthemmin@microsoft.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190516215423.14185-1-sthemmin@microsoft.com>
 References: <20190516215423.14185-1-sthemmin@microsoft.com>
@@ -62,37 +63,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The netvsc VF skb handler should make sure that skb is not
-shared. Similar logic already exists in bonding and team device
-drivers.
+When a device is stacked like (team, bonding, failsafe or netvsc) the
+XDP generic program for the parent device is not called.  In these
+cases, the rx handler changes skb->dev to its own in the receive
+handler, and returns RX_HANDLER_ANOTHER.  Fix this by calling
+do_xdp_generic if necessary before starting another round.
 
-This is not an issue in practice because the VF devicex
-does not send up shared skb's. But the netvsc driver
-should do the right thing if it did.
+Review of all the places RX_HANDLER_ANOTHER is returned
+show that the current devices do correctly change skb->dev.
 
-Fixes: 0c195567a8f6 ("netvsc: transparent VF management")
+There was an older patch that got abandoned that did the
+same thing, this is just a rewrite.
+
+Suggested-by: Jason Wang <jasowang@redhat.com>
+Fixes: d445516966dc ("net: xdp: support xdp generic on virtual devices")
 Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
 ---
- drivers/net/hyperv/netvsc_drv.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/core/dev.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 06393b215102..9873b8679f81 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2000,6 +2000,12 @@ static rx_handler_result_t netvsc_vf_handle_frame(struct sk_buff **pskb)
- 	struct netvsc_vf_pcpu_stats *pcpu_stats
- 		 = this_cpu_ptr(ndev_ctx->vf_stats);
- 
-+	skb = skb_share_check(skb, GFP_ATOMIC);
-+	if (unlikely(!skb))
-+		return RX_HANDLER_CONSUMED;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 108ac8137b9b..9165fd3c9e90 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4921,6 +4921,16 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
+ 			ret = NET_RX_SUCCESS;
+ 			goto out;
+ 		case RX_HANDLER_ANOTHER:
++			if (static_branch_unlikely(&generic_xdp_needed_key)) {
++				struct bpf_prog *xdp_prog;
 +
-+	*pskb = skb;
-+
- 	skb->dev = ndev;
- 
- 	u64_stats_update_begin(&pcpu_stats->syncp);
++				xdp_prog = rcu_dereference(skb->dev->xdp_prog);
++				ret = do_xdp_generic(xdp_prog, skb);
++				if (ret != XDP_PASS) {
++					ret = NET_RX_SUCCESS;
++					goto out;
++				}
++			}
+ 			goto another_round;
+ 		case RX_HANDLER_EXACT:
+ 			deliver_exact = true;
 -- 
 2.20.1
 
