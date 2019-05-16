@@ -2,391 +2,554 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C7BA206A1
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 14:04:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B90582070F
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 14:38:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbfEPMEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 08:04:34 -0400
-Received: from mail-eopbgr40061.outbound.protection.outlook.com ([40.107.4.61]:23300
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727015AbfEPMEc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 08:04:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ouqtJSIhNN6njEO6vTdi2Cx24ycyp+jYDT1F1B8P0Es=;
- b=PbedRU6F21K2hDxo9f+f06i4i9Qbk0C6DKQkyIeWq0o0jtC1w9dxmdLDXkCsKBnJAcaypB3ggdtafJcMAHsLi9mfQHxsQReCFP+KoCLLn7X0YxSC4fYy8khmUkZxzYc0SVfWApQImQXwOjBGRZCE6KnmnVSsZqMLlrTxRgGUuyQ=
-Received: from AM0PR05MB5089.eurprd05.prod.outlook.com (20.177.41.153) by
- AM0PR05MB6194.eurprd05.prod.outlook.com (20.178.112.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.17; Thu, 16 May 2019 12:02:50 +0000
-Received: from AM0PR05MB5089.eurprd05.prod.outlook.com
- ([fe80::4d74:8969:23d9:85c3]) by AM0PR05MB5089.eurprd05.prod.outlook.com
- ([fe80::4d74:8969:23d9:85c3%6]) with mapi id 15.20.1878.024; Thu, 16 May 2019
- 12:02:50 +0000
-From:   Aya Levin <ayal@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next RFC] Dump SW SQ context as part of tx reporter
-Thread-Topic: [PATCH net-next RFC] Dump SW SQ context as part of tx reporter
-Thread-Index: AQHU/pZYnyLGqTM5xEOXiNRSU0YqZKZfpzWAgAA3CoCAAqWQAIAE7TAAgAMtIoCAAu1YgIAAM2uAgAACfIA=
-Date:   Thu, 16 May 2019 12:02:49 +0000
-Message-ID: <f95707a3-ff53-3a6c-5fa1-1b0fd44d8f38@mellanox.com>
-References: <1556547459-7756-1-git-send-email-ayal@mellanox.com>
- <20190507124129.GC2157@nanopsycho>
- <a9cc0437-163c-53a1-92e9-64767e23b585@mellanox.com>
- <20190509082334.GD2268@nanopsycho>
- <2306cc76-8110-2d55-be7e-0617bfc0d316@mellanox.com>
- <20190514120751.GD2238@nanopsycho>
- <ef0a0ead-9576-00e4-ea4f-4870aea978f4@mellanox.com>
- <20190516115353.GA2178@nanopsycho.orion>
-In-Reply-To: <20190516115353.GA2178@nanopsycho.orion>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM0PR0202CA0012.eurprd02.prod.outlook.com
- (2603:10a6:208:1::25) To AM0PR05MB5089.eurprd05.prod.outlook.com
- (2603:10a6:208:cd::25)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ayal@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 66fffa97-502e-42dd-caa5-08d6d9f66ac6
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB6194;
-x-ms-traffictypediagnostic: AM0PR05MB6194:
-x-microsoft-antispam-prvs: <AM0PR05MB6194FB5A7DEA22C146B57E38B00A0@AM0PR05MB6194.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-forefront-prvs: 0039C6E5C5
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(366004)(39860400002)(136003)(376002)(346002)(199004)(189003)(386003)(76176011)(53546011)(6246003)(229853002)(4326008)(66556008)(99286004)(73956011)(66946007)(8936002)(64756008)(66446008)(14454004)(66476007)(81166006)(81156014)(6486002)(52116002)(8676002)(6436002)(26005)(102836004)(6916009)(486006)(71190400001)(476003)(71200400001)(2616005)(107886003)(11346002)(446003)(6506007)(305945005)(186003)(6116002)(3846002)(53936002)(36756003)(2906002)(478600001)(31686004)(54906003)(31696002)(68736007)(86362001)(256004)(14444005)(66066001)(316002)(5660300002)(25786009)(6512007)(53946003)(30864003)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6194;H:AM0PR05MB5089.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: xASnl6zq0nadN0o/aoIyohggWpBtSBqFXSlIUsxWzKw9RUCziIF+Exh3nltI0N3/Vq7pkQdF84BiR3hjnzEZZgV1OkV+LBWV4GLUni4SSfPOHAldeWUx59DDj8gI/O6NR4NUI6VDQGgxPNUP+IPQzkoAxlGyVKsXGmiiz0zsY5q71RNPzw5St0iOVs/SERcOe6NXrdjHEhIpFE9Fv3QvtJzwr6npDIllt29GwojIcLbtwfQpsC5cdRxB0v8OAzVcU4BO8bnIlCxvs46ShUsD96vOKjpgYBquOk/JG8H/1ipHIBa/WnG3S+3+Z3d5Gd9uCOzXlJMoBHm4Zsx0ZHnGQ0D3zhMT3+JBqpSKQV2WSPDlsJ4JoGbN1/djOhR9prhKXcGWkZRip6dh9X+CZl5tL0t3MKeQ9akncwhV9P9ImmQ=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <73ED91CBC3E66E4899408011B62B8FA1@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726742AbfEPMiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 08:38:04 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:46959 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726513AbfEPMiE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 08:38:04 -0400
+Received: by mail-ot1-f66.google.com with SMTP id j49so3206868otc.13;
+        Thu, 16 May 2019 05:38:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=riuvu3PEmbb/kSaGHhJHl67EXuzhC/tSZ1ipV0WRxuE=;
+        b=n7BeFSPgkXb9X2iqyZQtczufPX6gufDaMmS2pxg16HaThzQ1fwXpmIr0w0poR8BHPY
+         +x6VSpQaUKfznZJV/Z9SsxwgViukOhuBmUIkbOD7C7qJFfCbBrfYKyDn5TkTVxbGgM2d
+         5HjS7nf+yE5qFejBFu01BfSd7SLfiP1S61EF+tiYe82xzDzSCelphb+xznXYCWJxdIVu
+         E9/cx6hN9HsYeOGRFsHqpOYZWBTwjjSe7gJ5wQfGkJeU+PFtKx1aj/euqjcoEIsoUhxN
+         4FqZgZgIhkn5jakJG5gwNss7bzpUEamFteaob9xgn+IqJUq3wljDMI4MlHfl3BnKbFG+
+         pwww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=riuvu3PEmbb/kSaGHhJHl67EXuzhC/tSZ1ipV0WRxuE=;
+        b=n+68bIwYAuBhskTqaadRscW6ekadNuvXFRVxOpLukYUCoqDOxkxgBM3ZCFQ/ONdQlh
+         eF8OLdmgYBoFt+1J2ptYGch3h9Z+ihbcxq4BzVv2fdJ/ovOS7mJYnopjqHMreryVp8O8
+         T+G181Arerzr0pvh8MzX+7BnJWLjZCU1esoeLJaqZ5/mb2wbaD0QDdHZAiorvSxCNj53
+         ZVDateL/nRt4VjZGR6zk1ysxvIBtfy3uo6gOO7UG1obnoS/sCUlwiNZMJRdOQcXM6qY7
+         CxVg89px5CVt+r2MMmmR/BnbuANkvqd1go4LD/ocLGWyLFoUVKViWnAlU5n5PfCRhi7Y
+         +rRw==
+X-Gm-Message-State: APjAAAWuqqeRBdBlRCppCe62jQekKdw7NlRtcmKnD4HgrhFf9Ufy6QEZ
+        6V/Bs1GgJ6JUV/mtJ+eznd64hBzd3Xj0hdwhSNo=
+X-Google-Smtp-Source: APXvYqxfTNpUd4hfnR163SdHANVeygFUDwFXC5oQzHdcgRQCxJ2arepYryo979jQK42TBo4Gmv9ijSuYWHZrI8EsB3Y=
+X-Received: by 2002:a9d:4e12:: with SMTP id p18mr10537995otf.374.1558010282903;
+ Thu, 16 May 2019 05:38:02 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66fffa97-502e-42dd-caa5-08d6d9f66ac6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2019 12:02:49.9776
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6194
+References: <1556786363-28743-1-git-send-email-magnus.karlsson@intel.com>
+ <20190506163135.blyqrxitmk5yrw7c@ast-mbp> <CAJ8uoz2MFtoXwuhAp5A0teMmwU2v623pHf2k0WSFi0kovJYjtw@mail.gmail.com>
+ <20190507182435.6f2toprk7jus6jid@ast-mbp> <CAJ8uoz24HWGfGBNhz4c-kZjYELJQ+G3FcELVEo205xd1CirpqQ@mail.gmail.com>
+In-Reply-To: <CAJ8uoz24HWGfGBNhz4c-kZjYELJQ+G3FcELVEo205xd1CirpqQ@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Thu, 16 May 2019 14:37:51 +0200
+Message-ID: <CAJ8uoz1i72MOk711wLX18zmgo9JS+ztzSYAx0YS0VKxkbvod-w@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/7] busy poll support for AF_XDP sockets
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jonathan Lemon <bsd@fb.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDUvMTYvMjAxOSAyOjUzIFBNLCBKaXJpIFBpcmtvIHdyb3RlOg0KPiBUaHUsIE1heSAx
-NiwgMjAxOSBhdCAxMDo0OTo1NEFNIENFU1QsIGF5YWxAbWVsbGFub3guY29tIHdyb3RlOg0KPj4N
-Cj4+DQo+PiBPbiA1LzE0LzIwMTkgMzowNyBQTSwgSmlyaSBQaXJrbyB3cm90ZToNCj4+PiBTdW4s
-IE1heSAxMiwgMjAxOSBhdCAxMDozNzozNUFNIENFU1QsIGF5YWxAbWVsbGFub3guY29tIHdyb3Rl
-Og0KPj4+Pg0KPj4+Pg0KPj4+PiBPbiA1LzkvMjAxOSAxMToyMyBBTSwgSmlyaSBQaXJrbyB3cm90
-ZToNCj4+Pj4+IFR1ZSwgTWF5IDA3LCAyMDE5IGF0IDAyOjU4OjMyUE0gQ0VTVCwgYXlhbEBtZWxs
-YW5veC5jb20gd3JvdGU6DQo+Pj4+Pj4NCj4+Pj4+Pg0KPj4+Pj4+IE9uIDUvNy8yMDE5IDM6NDEg
-UE0sIEppcmkgUGlya28gd3JvdGU6DQo+Pj4+Pj4+IE1vbiwgQXByIDI5LCAyMDE5IGF0IDA0OjE3
-OjM5UE0gQ0VTVCwgYXlhbEBtZWxsYW5veC5jb20gd3JvdGU6DQo+Pj4+Pj4+PiBUWCByZXBvcnRl
-ciByZXBvcnRzIGFuIGVycm9yIG9uIHR3byBzY2VuYXJpb3M6DQo+Pj4+Pj4+PiAtIFRYIHRpbWVv
-dXQgb24gYSBzcGVjaWZpYyB0eCBxdWV1ZQ0KPj4+Pj4+Pj4gLSBUWCBjb21wbGV0aW9uIGVycm9y
-IG9uIGEgc3BlY2lmaWMgc2VuZCBxdWV1ZQ0KPj4+Pj4+Pj4gUHJpb3IgdG8gdGhpcyBwYXRjaCwg
-bm8gZHVtcCBkYXRhIHdhcyBzdXBwb3J0ZWQgYnkgdGhlIHR4IHJlcG9ydGVyLiBUaGlzDQo+Pj4+
-Pj4+PiBwYXRjaCBhZGRzIHN1cHBvcnQgZm9yIFNXIGRhdGEgZHVtcCBvZiB0aGUgcmVsYXRlZCBT
-USBjb250ZXh0LiBUaGUgZHVtcA0KPj4+Pj4+Pj4gaXMgc2ltcGx5IHRoZSBTUSdzIHJhdyBtZW1v
-cnkgc25hcHNob3QgdGFrZW4gcmlnaHQgYWZ0ZXIgdGhlIGVycm9yIHdhcw0KPj4+Pj4+Pj4gcmVw
-b3J0ZWQsIGJlZm9yZSBhbnkgcmVjb3ZlcnkgcHJvY2VkdXJlIHdhcyBsYXVuY2hlZC4gV2l0aCB0
-aGlzDQo+Pj4+Pj4+PiBhcHByb2FjaCwgbm8gbWFpbnRlbmFuY2UgaXMgbmVlZGVkIGFzIHRoZSBk
-cml2ZXIgZmV0Y2ggdGhlIGFjdHVhbCBkYXRhDQo+Pj4+Pj4+PiBhY2NvcmRpbmcgdG8gdGhlIGxh
-eW91dCBvbiB3aGljaCB0aGUgU1Egd2FzIGNvbXBpbGVkIHdpdGguICBCeSBwcm92aWRpbmcNCj4+
-Pj4+Pj4+IGEgU1cgY29udGV4dCwgb25lIGNhbiBlYXNpbHkgZGVidWcgZXJyb3Igb24gYSBnaXZl
-biBTUS4NCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBJbiBvcmRlciB0byBvZmZsaW5lIHRyYW5zbGF0ZSB0
-aGUgcmF3IG1lbW9yeSBpbnRvIGEgaHVtYW4gcmVhZGFibGUNCj4+Pj4+Pj4+IGZvcm1hdCwgdGhl
-IHVzZXIgY2FuIHVzZSBzb21lIG91dC1vZi1rZXJuZWwgc2NyaXB0cyB3aGljaCByZWNlaXZlcyBh
-cyBhbg0KPj4+Pj4+Pj4gaW5wdXQgdGhlIGZvbGxvd2luZzoNCj4+Pj4+Pj4+IC0gT2JqZWN0IHJh
-dyBtZW1vcnkNCj4+Pj4+Pj4+IC0gRHJpdmVyIG9iamVjdCBjb21waWxlZCB3aXRoIGRlYnVnIGlu
-Zm8gKGNhbiBiZSB0YWtlbi9nZW5lcmF0ZWQgYXQgYW55IHRpbWUgZnJvbSB0aGUgbWFjaGluZSkN
-Cj4+Pj4+Pj4+IC0gT2JqZWN0IG5hbWUNCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBBbiBleGFtcGxlIG9m
-IHN1Y2ggc2NyaXB0IG91dHB1dCBjYW4gYmUgc2VlbiBiZWxvdy4NCj4+Pj4+Pj4+IE5vdGU6IHRo
-ZSBzY3JpcHQgaXMgbm90IG9mZmVyZWQgYXMgcGFydCBvZiB0aGlzIHBhdGNoIGFzIGl0IGRvIG5v
-dA0KPj4+Pj4+Pj4gYmVsb25nIHRvIHRoZSBrZXJuZWwsIEkganVzdCBkZXNjcmliZWQgaXQgaW4g
-b3JkZXIgdG8gZ3Jhc3AgdGhlIGdlbmVyYWwNCj4+Pj4+Pj4+IGlkZWEgb2YgaG93L3doYXQgY2Fu
-IGJlIGZldGNoZWQgZnJvbSBTVyBkdW1wIHZpYSBkZXZsaW5rIGhlYWx0aC4NCj4+Pj4+Pj4+DQo+
-Pj4+Pj4+PiBUaGUgb3V0cHV0IG9mIHRoZSBTVyBkdW1wIGNhbiBiZSBleHRyYWN0ZWQgYnkgZGV2
-bGluayBoZWFsdGggY29tbWFuZDoNCj4+Pj4+Pj4+ICQgc3VkbyBkZXZsaW5rIGhlYWx0aCBkdW1w
-IHNob3cgcGNpLzAwMDA6MDA6MGIuMCByZXBvcnRlciB0eC4NCj4+Pj4+Pj4+IG1seDVlX3R4cXNx
-OiBzcW46IDYzMzYNCj4+Pj4+Pj4+IG1lbW9yeToNCj4+Pj4+Pj4+ICAgICAgIDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIDAwDQo+Pj4+Pj4+PiAgICAgICAwMSAwMCAwMCAwMCAwMCAwMCAwMCAwMA0KPj4+
-Pj4+Pj4gICAgICAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCj4+Pj4+Pj4+ICAgICAgIDQ1IGY0
-IDg4IGNiIDA5IDAwIDAwIDAwDQo+Pj4+Pj4+PiAgICAgICAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MA0KPj4+Pj4+Pj4gICAgICAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCj4+Pj4+Pj4+ICAgICAg
-IGMwIGZmIGZmIGZmIDFmIDAwIDAwIDAwDQo+Pj4+Pj4+PiAgICAgICBmOCAxOCAxZSA4OSA4MSA4
-OCBmZiBmZg0KPj4+Pj4+Pj4gICAgICAgLi4uDQo+Pj4+Pj4+Pg0KPj4+Pj4+Pj4gc2NyaXB0IG91
-dHB1dCBiZWxvdywgd2l0aCBzdHJ1Y3QgbWVtYmVycyBuYW1lcyBhbmQgYWN0dWFsIHZhbHVlczoN
-Cj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBzdHJ1Y3QgIG1seDVlX3R4cXNxIHsNCj4+Pj4+Pj4+IAlzaG9y
-dCB1bnNpZ25lZCBpbnQgICAgICAgICBjYyAJIDB4NSA7DQo+Pj4+Pj4+PiAJdW5zaWduZWQgaW50
-ICAgICAgICAgICAgICAgZG1hX2ZpZm9fY2MgCSAweDUgOw0KPj4+Pj4+Pj4gCXN0cnVjdCAgbmV0
-X2RpbSB7DQo+Pj4+Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICBzdGF0ZSAJIDB4MSA7DQo+Pj4+
-Pj4+PiAJCXN0cnVjdCAgbmV0X2RpbV9zdGF0cyB7DQo+Pj4+Pj4+PiAJCQlpbnQgICAgICAgIHBw
-bXMgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJaW50ICAgICAgICBicG1zIAkgMHgwIDsNCj4+Pj4+Pj4+
-IAkJCWludCAgICAgICAgZXBtcyAJIDB4MCA7DQo+Pj4+Pj4+PiAJCX0gcHJldl9zdGF0czsNCj4+
-Pj4+Pj4+IAkJc3RydWN0ICBuZXRfZGltX3NhbXBsZSB7DQo+Pj4+Pj4+PiAJCQlsb25nIGxvbmcg
-aW50IHRpbWUgCSAweDkwNzY2ZWY5ZCA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgcGt0X2N0
-ciAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgYnl0ZV9jdHIgCSAweDAgOw0KPj4+
-Pj4+Pj4gCQkJc2hvcnQgdW5zaWduZWQgaW50IGV2ZW50X2N0ciAJIDB4MCA7DQo+Pj4+Pj4+PiAJ
-CX0gc3RhcnRfc2FtcGxlOw0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgIHdvcmtfc3RydWN0IHsNCj4+Pj4+
-Pj4+IAkJCXN0cnVjdCAgIHsNCj4+Pj4+Pj4+IAkJCQlsb25nIGludCBjb3VudGVyIAkgMHgxZmZm
-ZmZmZmMwIDsNCj4+Pj4+Pj4+IAkJCX0gZGF0YTsNCj4+Pj4+Pj4+IAkJCXN0cnVjdCAgbGlzdF9o
-ZWFkIHsNCj4+Pj4+Pj4+IAkJCQlzdHJ1Y3QgbGlzdF9oZWFkICogbmV4dCAJIDB4ZmZmZjg4ODFi
-MDg5OThmOCA7DQo+Pj4+Pj4+PiAJCQkJc3RydWN0IGxpc3RfaGVhZCAqIHByZXYgCSAweGZmZmY4
-ODgxYjA4OTk4ZjggOw0KPj4+Pj4+Pj4gCQkJfSBlbnRyeTsNCj4+Pj4+Pj4+IAkJCXZvaWQgICAg
-ICAgKCpmdW5jKShzdHJ1Y3Qgd29ya19zdHJ1Y3QgKikgCSAweGZmZmZmZmZmYTAyZDBlMzAgOw0K
-Pj4+Pj4+Pj4gCQl9IHdvcms7DQo+Pj4+Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICBwcm9maWxl
-X2l4IAkgMHg2MCA7DQo+Pj4+Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICBtb2RlIAkgMHg3MiA7
-DQo+Pj4+Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICB0dW5lX3N0YXRlIAkgMHgzNSA7DQo+Pj4+
-Pj4+PiAJCXVuc2lnbmVkIGNoYXIgICAgICBzdGVwc19yaWdodCAJIDB4YTAgOw0KPj4+Pj4+Pj4g
-CQl1bnNpZ25lZCBjaGFyICAgICAgc3RlcHNfbGVmdCAJIDB4ZmYgOw0KPj4+Pj4+Pj4gCQl1bnNp
-Z25lZCBjaGFyICAgICAgdGlyZWQgCSAweGZmIDsNCj4+Pj4+Pj4+IAl9IGRpbTsNCj4+Pj4+Pj4+
-IAlzaG9ydCB1bnNpZ25lZCBpbnQgICAgICAgICBwYyAJIDB4MCA7DQo+Pj4+Pj4+PiAJdW5zaWdu
-ZWQgaW50ICAgICAgICAgICAgICAgZG1hX2ZpZm9fcGMgCSAweDAgOw0KPj4+Pj4+Pj4gCXN0cnVj
-dCAgbWx4NWVfY3Egew0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgIG1seDVfY3F3cSB7DQo+Pj4+Pj4+PiAJ
-CQlzdHJ1Y3QgIG1seDVfZnJhZ19idWZfY3RybCB7DQo+Pj4+Pj4+PiAJCQkJc3RydWN0IG1seDVf
-YnVmX2xpc3QgKiBmcmFncyAJIDB4NTAwMDAwMDA1IDsNCj4+Pj4+Pj4+IAkJCQl1bnNpZ25lZCBp
-bnQgc3pfbTEgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCXNob3J0IHVuc2lnbmVkIGludCBmcmFnX3N6
-X20xIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCQlzaG9ydCB1bnNpZ25lZCBpbnQgc3RyaWRlc19vZmZz
-ZXQgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCXVuc2lnbmVkIGNoYXIgbG9nX3N6IAkgMHgwIDsNCj4+
-Pj4+Pj4+IAkJCQl1bnNpZ25lZCBjaGFyIGxvZ19zdHJpZGUgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJ
-CXVuc2lnbmVkIGNoYXIgbG9nX2ZyYWdfc3RyaWRlcyAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQl9IGZi
-YzsNCj4+Pj4+Pj4+IAkJCV9fYmUzMiAqICAgZGIgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJdW5zaWdu
-ZWQgaW50IGNjIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJfSB3cTsNCj4+Pj4+Pj4+IAkJc2hvcnQgdW5z
-aWduZWQgaW50IGV2ZW50X2N0ciAJIDB4MCA7DQo+Pj4+Pj4+PiAJCXN0cnVjdCBuYXBpX3N0cnVj
-dCAqIG5hcGkgCSAweDAgOw0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgIG1seDVfY29yZV9jcSB7DQo+Pj4+
-Pj4+PiAJCQl1bnNpZ25lZCBpbnQgY3FuIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCWludCAgICAgICAg
-Y3FlX3N6IAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCV9fYmUzMiAqICAgc2V0X2NpX2RiIAkgMHhmZmZm
-ODg4MWIxYWE0OTg4IDsNCj4+Pj4+Pj4+IAkJCV9fYmUzMiAqICAgYXJtX2RiIAkgMHgzZjAwMDAw
-M2ZmIDsNCj4+Pj4+Pj4+IAkJCXN0cnVjdCBtbHg1X3VhcnNfcGFnZSAqIHVhciAJIDB4NjA2MGEg
-Ow0KPj4+Pj4+Pj4gCQkJc3RydWN0ICByZWZjb3VudF9zdHJ1Y3Qgew0KPj4+Pj4+Pj4gCQkJCXN0
-cnVjdCAgIHsNCj4+Pj4+Pj4+IAkJCQkJaW50ICAgIGNvdW50ZXIgCSAweGExODE0NTAwIDsNCj4+
-Pj4+Pj4+IAkJCQl9IHJlZnM7DQo+Pj4+Pj4+PiAJCQl9IHJlZmNvdW50Ow0KPj4+Pj4+Pj4gCQkJ
-c3RydWN0ICBjb21wbGV0aW9uIHsNCj4+Pj4+Pj4+IAkJCQl1bnNpZ25lZCBpbnQgZG9uZSAJIDB4
-NSA7DQo+Pj4+Pj4+PiAJCQkJc3RydWN0ICB3YWl0X3F1ZXVlX2hlYWQgew0KPj4+Pj4+Pj4gCQkJ
-CQlzdHJ1Y3QgIHNwaW5sb2NrIHsNCj4+Pj4+Pj4+IAkJCQkJCXVuaW9uICAgew0KPj4+Pj4+Pj4g
-CQkJCQkJCXN0cnVjdCAgcmF3X3NwaW5sb2NrIHsNCj4+Pj4+Pj4+IAkJCQkJCQkJc3RydWN0ICBx
-c3BpbmxvY2sgew0KPj4+Pj4+Pj4gCQkJCQkJCQkJdW5pb24gICB7DQo+Pj4+Pj4+PiAJCQkJCQkJ
-CQkJc3RydWN0ICAgew0KPj4+Pj4+Pj4gCQkJCQkJCQkJCQlpbnQgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY291bnRlciAJIDB4NSA7DQo+Pj4+Pj4+
-PiAJCQkJCQkJCQkJfSB2YWw7DQo+Pj4+Pj4+PiAJCQkJCQkJCQkJc3RydWN0ICAgew0KPj4+Pj4+
-Pj4gCQkJCQkJCQkJCQl1bnNpZ25lZCBjaGFyICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgbG9ja2VkIAkgMHg1IDsNCj4+Pj4+Pj4+IAkJCQkJCQkJCQkJdW5zaWduZWQg
-Y2hhciAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBlbmRpbmcgCSAw
-eDAgOw0KPj4+Pj4+Pj4gCQkJCQkJCQkJCX0gOw0KPj4+Pj4+Pj4gCQkJCQkJCQkJCXN0cnVjdCAg
-IHsNCj4+Pj4+Pj4+IAkJCQkJCQkJCQkJc2hvcnQgdW5zaWduZWQgaW50ICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIGxvY2tlZF9wZW5kaW5nIAkgMHg1IDsNCj4+Pj4+Pj4+IAkJ
-CQkJCQkJCQkJc2hvcnQgdW5zaWduZWQgaW50ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIHRhaWwgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCQkJCQkJCX0gOw0KPj4+Pj4+Pj4gCQkJ
-CQkJCQkJfSA7DQo+Pj4+Pj4+PiAJCQkJCQkJCX0gcmF3X2xvY2s7DQo+Pj4+Pj4+PiAJCQkJCQkJ
-fSBybG9jazsNCj4+Pj4+Pj4+IAkJCQkJCX0gOw0KPj4+Pj4+Pj4gCQkJCQl9IGxvY2s7DQo+Pj4+
-Pj4+PiAJCQkJCXN0cnVjdCAgbGlzdF9oZWFkIHsNCj4+Pj4+Pj4+IAkJCQkJCXN0cnVjdCBsaXN0
-X2hlYWQgKiBuZXh0IAkgMHhmZmZmODg4MWIwODliYjg4IDsNCj4+Pj4+Pj4+IAkJCQkJCXN0cnVj
-dCBsaXN0X2hlYWQgKiBwcmV2IAkgMHg0MDAwMDAwYzBhIDsNCj4+Pj4+Pj4+IAkJCQkJfSBoZWFk
-Ow0KPj4+Pj4+Pj4gCQkJCX0gd2FpdDsNCj4+Pj4+Pj4+IAkJCX0gZnJlZTsNCj4+Pj4+Pj4+IAkJ
-CXVuc2lnbmVkIGludCB2ZWN0b3IgCSAweGExODE0NTAwIDsNCj4+Pj4+Pj4+IAkJCXVuc2lnbmVk
-IGludCBpcnFuIAkgMHhmZmZmODg4MSA7DQo+Pj4+Pj4+PiAJCQl2b2lkICAgICAgICgqY29tcCko
-c3RydWN0IG1seDVfY29yZV9jcSAqKSAJIDB4ZmZmZjg4ODFhMTgxNDUwNCA7DQo+Pj4+Pj4+PiAJ
-CQl2b2lkICAgICAgICgqZXZlbnQpKHN0cnVjdCBtbHg1X2NvcmVfY3EgKiwgZW51bSBtbHg1X2V2
-ZW50KSAJIDB4ZmZmZjg4ODFhMmNkZWEwOCA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgY29u
-c19pbmRleCAJIDB4MSA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgYXJtX3NuIAkgMHgwIDsN
-Cj4+Pj4+Pj4+IAkJCXN0cnVjdCBtbHg1X3JzY19kZWJ1ZyAqIGRiZyAJIDB4MCA7DQo+Pj4+Pj4+
-PiAJCQlpbnQgICAgICAgIHBpZCAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQlzdHJ1Y3QgICB7DQo+Pj4+
-Pj4+PiAJCQkJc3RydWN0ICBsaXN0X2hlYWQgew0KPj4+Pj4+Pj4gCQkJCQlzdHJ1Y3QgbGlzdF9o
-ZWFkICogbmV4dCAJIDB4ZmZmZmZmZmYgOw0KPj4+Pj4+Pj4gCQkJCQlzdHJ1Y3QgbGlzdF9oZWFk
-ICogcHJldiAJIDB4ZmZmZmZmZmZmZmZmZmZmZiA7DQo+Pj4+Pj4+PiAJCQkJfSBsaXN0Ow0KPj4+
-Pj4+Pj4gCQkJCXZvaWQgKCpjb21wKShzdHJ1Y3QgbWx4NV9jb3JlX2NxICopIAkgMHhmZmZmZmZm
-ZmEwMzU2OTQwIDsNCj4+Pj4+Pj4+IAkJCQl2b2lkICogcHJpdiAJIDB4MCA7DQo+Pj4+Pj4+PiAJ
-CQl9IHRhc2tsZXRfY3R4Ow0KPj4+Pj4+Pj4gCQkJaW50ICAgICAgICByZXNldF9ub3RpZnlfYWRk
-ZWQgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJc3RydWN0ICBsaXN0X2hlYWQgew0KPj4+Pj4+Pj4gCQkJ
-CXN0cnVjdCBsaXN0X2hlYWQgKiBuZXh0IAkgMHhmZmZmZmZmZmEwMzAwNzAwIDsNCj4+Pj4+Pj4+
-IAkJCQlzdHJ1Y3QgbGlzdF9oZWFkICogcHJldiAJIDB4ZCA7DQo+Pj4+Pj4+PiAJCQl9IHJlc2V0
-X25vdGlmeTsNCj4+Pj4+Pj4+IAkJCXN0cnVjdCBtbHg1X2VxX2NvbXAgKiBlcSAJIDB4MCA7DQo+
-Pj4+Pj4+PiAJCQlzaG9ydCB1bnNpZ25lZCBpbnQgdWlkIAkgMHg5YTcwIDsNCj4+Pj4+Pj4+IAkJ
-fSBtY3E7DQo+Pj4+Pj4+PiAJCXN0cnVjdCBtbHg1ZV9jaGFubmVsICogY2hhbm5lbCAJIDB4ZmZm
-Zjg4ODFiMDg5OWE3MCA7DQo+Pj4+Pj4+PiAJCXN0cnVjdCBtbHg1X2NvcmVfZGV2ICogbWRldiAJ
-IDB4NDgwMDAwMDAwMSA7DQo+Pj4+Pj4+PiAJCXN0cnVjdCAgbWx4NV93cV9jdHJsIHsNCj4+Pj4+
-Pj4+IAkJCXN0cnVjdCBtbHg1X2NvcmVfZGV2ICogbWRldiAJIDB4ZmZmZmZmZmZhMDJkNTM1MCA7
-DQo+Pj4+Pj4+PiAJCQlzdHJ1Y3QgIG1seDVfZnJhZ19idWYgew0KPj4+Pj4+Pj4gCQkJCXN0cnVj
-dCBtbHg1X2J1Zl9saXN0ICogZnJhZ3MgCSAweGZmZmZmZmZmYTAyZDU0NjAgOw0KPj4+Pj4+Pj4g
-CQkJCWludCBucGFnZXMgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCWludCBzaXplIAkgMHg1IDsNCj4+
-Pj4+Pj4+IAkJCQl1bnNpZ25lZCBjaGFyIHBhZ2Vfc2hpZnQgCSAweDggOw0KPj4+Pj4+Pj4gCQkJ
-fSBidWY7DQo+Pj4+Pj4+PiAJCQlzdHJ1Y3QgIG1seDVfZGIgew0KPj4+Pj4+Pj4gCQkJCV9fYmUz
-MiAqIGRiIAkgMHgxYzYgOw0KPj4+Pj4+Pj4gCQkJCXVuaW9uICAgew0KPj4+Pj4+Pj4gCQkJCQlz
-dHJ1Y3QgbWx4NV9kYl9wZ2RpciAqIHBnZGlyIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCQkJc3RydWN0
-IG1seDVfaWJfdXNlcl9kYl9wYWdlICogdXNlcl9wYWdlIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJCQl9
-IHU7DQo+Pj4+Pj4+PiAJCQkJbG9uZyBsb25nIHVuc2lnbmVkIGludCBkbWEgCSAweGZmZmY4ODgx
-YjA4OTlhYjAgOw0KPj4+Pj4+Pj4gCQkJCWludCBpbmRleCAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQl9
-IGRiOw0KPj4+Pj4+Pj4gCQl9IHdxX2N0cmw7DQo+Pj4+Pj4+PiAJfSBjcTsNCj4+Pj4+Pj4+IAlz
-dHJ1Y3QgIG1seDVfd3FfY3ljIHsNCj4+Pj4+Pj4+IAkJc3RydWN0ICBtbHg1X2ZyYWdfYnVmX2N0
-cmwgew0KPj4+Pj4+Pj4gCQkJc3RydWN0IG1seDVfYnVmX2xpc3QgKiBmcmFncyAJIDB4ZmZmZjg4
-ODFhNzYwMDE2MCA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBpbnQgc3pfbTEgCSAweGE3NjAwMTYw
-IDsNCj4+Pj4+Pj4+IAkJCXNob3J0IHVuc2lnbmVkIGludCBmcmFnX3N6X20xIAkgMHg4ODgxIDsN
-Cj4+Pj4+Pj4+IAkJCXNob3J0IHVuc2lnbmVkIGludCBzdHJpZGVzX29mZnNldCAJIDB4ZmZmZiA7
-DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBjaGFyIGxvZ19zeiAJIDB4ODggOw0KPj4+Pj4+Pj4gCQkJ
-dW5zaWduZWQgY2hhciBsb2dfc3RyaWRlIAkgMHg0OSA7DQo+Pj4+Pj4+PiAJCQl1bnNpZ25lZCBj
-aGFyIGxvZ19mcmFnX3N0cmlkZXMgCSAweGFhIDsNCj4+Pj4+Pj4+IAkJfSBmYmM7DQo+Pj4+Pj4+
-PiAJCV9fYmUzMiAqICAgICAgICAgICBkYiAJIDB4MTAwMDAwMDAwMDAxMCA7DQo+Pj4+Pj4+PiAJ
-CXNob3J0IHVuc2lnbmVkIGludCBzeiAJIDB4YyA7DQo+Pj4+Pj4+PiAJCXNob3J0IHVuc2lnbmVk
-IGludCB3cWVfY3RyIAkgMHgwIDsNCj4+Pj4+Pj4+IAkJc2hvcnQgdW5zaWduZWQgaW50IGN1cl9z
-eiAJIDB4MCA7DQo+Pj4+Pj4+PiAJfSB3cTsNCj4+Pj4+Pj4+IAl1bnNpZ25lZCBpbnQgICAgICAg
-ICAgICAgICBkbWFfZmlmb19tYXNrIAkgMHhhMTgxNDUwMCA7DQo+Pj4+Pj4+PiAJc3RydWN0IG1s
-eDVlX3NxX3N0YXRzICogICAgc3RhdHMgCSAweGZmZmY4ODgxYTMzYTAzNDggOw0KPj4+Pj4+Pj4g
-CXN0cnVjdCAgIHsNCj4+Pj4+Pj4+IAkJc3RydWN0IG1seDVlX3NxX2RtYSAqIGRtYV9maWZvIAkg
-MHgxYTE4MTQ1MDAgOw0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgbWx4NWVfdHhfd3FlX2luZm8gKiB3cWVf
-aW5mbyAJIDB4MTQgOw0KPj4+Pj4+Pj4gCX0gZGI7DQo+Pj4+Pj4+PiAJdm9pZCAqICAgICAgICAg
-ICAgICAgICAgICAgdWFyX21hcCAJIDB4MCA7DQo+Pj4+Pj4+PiAJc3RydWN0IG5ldGRldl9xdWV1
-ZSAqICAgICAgdHhxIAkgMHgwIDsNCj4+Pj4+Pj4+IAl1bnNpZ25lZCBpbnQgICAgICAgICAgICAg
-ICBzcW4gCSAweDE4YzAgOw0KPj4+Pj4+Pj4gCXVuc2lnbmVkIGNoYXIgICAgICAgICAgICAgIG1p
-bl9pbmxpbmVfbW9kZSAJIDB4MCA7DQo+Pj4+Pj4+PiAJc3RydWN0IGRldmljZSAqICAgICAgICAg
-ICAgcGRldiAJIDB4MCA7DQo+Pj4+Pj4+PiAJdW5zaWduZWQgaW50ICAgICAgICAgICAgICAgbWtl
-eV9iZSAJIDB4MCA7DQo+Pj4+Pj4+PiAJbG9uZyB1bnNpZ25lZCBpbnQgICAgICAgICAgc3RhdGUg
-CSAweDAgOw0KPj4+Pj4+Pj4gCXN0cnVjdCBod3RzdGFtcF9jb25maWcgKiAgIHRzdGFtcCAJIDB4
-MCA7DQo+Pj4+Pj4+PiAJc3RydWN0IG1seDVfY2xvY2sgKiAgICAgICAgY2xvY2sgCSAweGZmZmY4
-ODgxYjFhYTZmODggOw0KPj4+Pj4+Pj4gCXN0cnVjdCAgbWx4NV93cV9jdHJsIHsNCj4+Pj4+Pj4+
-IAkJc3RydWN0IG1seDVfY29yZV9kZXYgKiBtZGV2IAkgMHgzZjAwMDAwM2ZmIDsNCj4+Pj4+Pj4+
-IAkJc3RydWN0ICBtbHg1X2ZyYWdfYnVmIHsNCj4+Pj4+Pj4+IAkJCXN0cnVjdCBtbHg1X2J1Zl9s
-aXN0ICogZnJhZ3MgCSAweDYwNjBhIDsNCj4+Pj4+Pj4+IAkJCWludCAgICAgICAgbnBhZ2VzIAkg
-MHhhMTgxNDYwNCA7DQo+Pj4+Pj4+PiAJCQlpbnQgICAgICAgIHNpemUgCSAweGZmZmY4ODgxIDsN
-Cj4+Pj4+Pj4+IAkJCXVuc2lnbmVkIGNoYXIgcGFnZV9zaGlmdCAJIDB4MCA7DQo+Pj4+Pj4+PiAJ
-CX0gYnVmOw0KPj4+Pj4+Pj4gCQlzdHJ1Y3QgIG1seDVfZGIgew0KPj4+Pj4+Pj4gCQkJX19iZTMy
-ICogICBkYiAJIDB4ZmZmIDsNCj4+Pj4+Pj4+IAkJCXVuaW9uICAgew0KPj4+Pj4+Pj4gCQkJCXN0
-cnVjdCBtbHg1X2RiX3BnZGlyICogcGdkaXIgCSAweDAgOw0KPj4+Pj4+Pj4gCQkJCXN0cnVjdCBt
-bHg1X2liX3VzZXJfZGJfcGFnZSAqIHVzZXJfcGFnZSAJIDB4MCA7DQo+Pj4+Pj4+PiAJCQl9IHU7
-DQo+Pj4+Pj4+PiAJCQlsb25nIGxvbmcgdW5zaWduZWQgaW50IGRtYSAJIDB4ZmZmZjg4ODE4ODQ0
-MDAwMCA7DQo+Pj4+Pj4+PiAJCQlpbnQgICAgICAgIGluZGV4IAkgMHg4YjA3NDAwMCA7DQo+Pj4+
-Pj4+PiAJCX0gZGI7DQo+Pj4+Pj4+PiAJfSB3cV9jdHJsOw0KPj4+Pj4+Pj4gCXN0cnVjdCBtbHg1
-ZV9jaGFubmVsICogICAgIGNoYW5uZWwgCSAweGZmZmZjOTAwMDAxMGQ4MDAgOw0KPj4+Pj4+Pj4g
-CWludCAgICAgICAgICAgICAgICAgICAgICAgIHR4cV9peCAJIDB4YTAwMjAxODAgOw0KPj4+Pj4+
-Pj4gCXVuc2lnbmVkIGludCAgICAgICAgICAgICAgIHJhdGVfbGltaXQgCSAweGZmZmY4ODgxIDsN
-Cj4+Pj4+Pj4+IAlzdHJ1Y3QgIHdvcmtfc3RydWN0IHsNCj4+Pj4+Pj4+IAkJc3RydWN0ICAgew0K
-Pj4+Pj4+Pj4gCQkJbG9uZyBpbnQgICBjb3VudGVyIAkgMHgxMDAwMDE4YzAgOw0KPj4+Pj4+Pj4g
-CQl9IGRhdGE7DQo+Pj4+Pj4+PiAJCXN0cnVjdCAgbGlzdF9oZWFkIHsNCj4+Pj4+Pj4+IAkJCXN0
-cnVjdCBsaXN0X2hlYWQgKiBuZXh0IAkgMHhmZmZmODg4MWMzMmI2OGU4IDsNCj4+Pj4+Pj4+IAkJ
-CXN0cnVjdCBsaXN0X2hlYWQgKiBwcmV2IAkgMHg4MDAgOw0KPj4+Pj4+Pj4gCQl9IGVudHJ5Ow0K
-Pj4+Pj4+Pj4gCQl2b2lkICAgICAgICAgICAgICAgKCpmdW5jKShzdHJ1Y3Qgd29ya19zdHJ1Y3Qg
-KikgCSAweDkgOw0KPj4+Pj4+Pj4gCX0gcmVjb3Zlcl93b3JrOw0KPj4+Pj4+Pj4gfSA7DQo+Pj4+
-Pj4+DQo+Pj4+Pj4+IEkgZG9uJ3QgZ2V0IGl0LiBZb3UgYXJlIGR1bXBpbmcgbGl2ZSBrZXJuZWwg
-bWVtb3J5PyBUaGVyZSBhcmUgYWxyZWFkeQ0KPj4+Pj4+PiBmYWNpbGl0aWVzIHRvIGRvIHRoYXQg
-aW4gcGxhY2UuIFdoeSB0byByZXBsaWNhdGUgaXQ/DQo+Pj4+Pj4gSSBhbSBkdW1waW5nIHRoZSBk
-cml2ZXIncyBtZW1vcnkgdW5kZXIgYSBsb2NrIHNvIEkgY2FuIGVuc3VyZSBpdCdzDQo+Pj4+Pj4g
-Y29uc2lzdGVuY3kgKGFzIGFwcG9zZSB0byAvZGV2L21lbSkNCj4+Pj4+PiB2bWNvcmUgY2Fubm90
-IGJlIHRha2VuIGZyb20gYSBsaXZlIGtlcm5lbCAod2l0aG91dCBjcmFzaGluZykuDQo+Pj4+Pj4g
-SSBuZWVkIHRoZSBtZW1vcnkncyBzbmFwc2hvdCByaWdodCBhZnRlciB0aGUgZXJyb3IgZnJvbSB0
-aGUgZHJpdmVyJ3MNCj4+Pj4+PiBjb250ZXh0Lg0KPj4+Pj4NCj4+Pj4+IEdvdCBpdC4gSG93ZXZl
-ciwgdGhpcyBzb3VuZHMgbGlrZSBhIGdlbmVyaWMgcHJvYmxlbSBub3Qgc3BlY2lmaWMgdG8NCj4+
-Pj4+IG5pYyBkcml2ZXJzLiBIb3cgb3RoZXIgc3Vic3lzdGVtcyByZXNvbHZlIHRoaXMgKGlmIHRo
-ZXkgZG8gYXQgYWxsKT8NCj4+Pj4+DQo+Pj4+Pg0KPj4+PiBDb3JyZWN0LCB0aGlzIGlzIGEgc3Vn
-Z2VzdGVkIGRlYnVnZ2luZyBzb2x1dGlvbiBmb3IgYSBnZW5lcmljIHByb2JsZW06DQo+Pj4+IGVu
-YWJsaW5nIHRoZSB1c2VyIG9mIGEgcnVuIHRpbWUgbWVtb3J5IHNuYXBzaG90IGZvciBrZXJuZWwg
-bW9kdWxlcyAoYXQgYQ0KPj4+PiBnaXZlbiBlcnJvciBldmVudCkuIE15IHJlc2VhcmNoIHNob3dz
-IHRoYXQgb3RoZXIgc3Vic3lzdGVtcyBkZWFsIHdpdGgNCj4+Pj4gZXJyb3JzIGVpdGhlciBieSBw
-YW5pY2tpbmcgKHRvbyBtdWNoKSBvciBieSBkZWJ1Zy9sb2cgcHJpbnRzICh0b28gbGl0dGxlKS4N
-Cj4+Pj4gVGhpcyBzb2x1dGlvbiBpcyAoYSkgbG93IGluIG1haW50ZW5hbmNlIChiKSBjb25zaXN0
-ZW50IGluIG1lbW9yeSAoYykgaGFzDQo+Pj4+IHNtYWxsIHBlcmZvcm1hbmNlIGltcGFjdCAoZCkg
-dXNlIGFuIGV4aXN0aW5nIGluZnJhLXN0cnVjdHVyZSBiZXR3ZWVuIHRoZQ0KPj4+PiBrZXJuZWwg
-bW9kdWxlIGFuZCB0aGUgdXNlciBzcGFjZS4NCj4+Pg0KPj4+IEknbSBzdGlsbCBjb252aW5jZWQg
-dGhhdCBkdW1waW5nIGtlcm5lbCBtZW1vcnkgb3ZlciBkZXZsaW5rIGhlYWx0aCBkdW1wDQo+Pj4g
-aXMgYSBnb29kIGlkZWEgOi8NCj4+Pg0KPj4+DQo+Pj4+IEl0IG1pZ2h0IGJlIHBvcnRlZCB0byBv
-dGhlciBzdWJzeXN0ZW1zIHVzaW5nIHRoZWlyIG93biB1c2VyLXNwYWNlIHZzLg0KPj4+PiBrZXJu
-ZWwgdG9vbHMuIFJlZ2FyZGxlc3Mgb2YgaG93IHRoZSBtZW1vcnkgb3V0cHV0IHdhcyBnZW5lcmF0
-ZWQgdG8gdGhlDQo+Pj4+IHVzZXIsIHRoZSBwYXJzaW5nIHNjcmlwdCBjYW4gd29yayBvbiBpdC4N
-Cj4+Pg0KPj4+IENvdWxkIHlvdSBzaGFyZSB0aGUgc2NyaXB0PyBIb3cgaXMgaXQgZ29pbmcgdG8g
-YmUgZGlzdHJpYnV0ZWQ/DQo+PiBJIHRob3VnaHQgdGhhdCB0aGUgc2NyaXB0IHNob3VsZCBiZSBp
-biBhIGF2YWlsYWJsZSBvbiBNZWxsYW5veCB3ZWJzaXRlLg0KPiANCj4gOigNCkRvIHlvdSB0aGlu
-ayBpdCBiZWxvbmdzIHVuZGVyIGtlcm5lbC9zY3JpcHRzPw0KPiANCj4gDQo+PiBUaGUgc2NyaXB0
-IGlzIHN0aWxsIHBlbmRpbmcgcmV2aWV3IGJ1dCBJIHdpbGwgYmUgaGFwcHkgdG8gc2hhcmUgaXQg
-d2hlbg0KPj4gaXRzIHJlYWR5Lg0KPj4+DQo+Pj4NCj4+Pj4NCj4+Pj4+DQo+Pj4+Pj4gV2hpY2gg
-b3RoZXIgdG9vbHMgZG8geW91IG1lYW4/DQo+Pj4+Pj4+DQo+Pj4+Pj4+DQo+Pj4+Pj4+Pg0KPj4+
-Pj4+Pj4gU2lnbmVkLW9mZi1ieTogQXlhIExldmluIDxheWFsQG1lbGxhbm94LmNvbT4NCj4+Pj4+
-Pj4+IC0tLQ0KPj4+Pj4+Pj4gLi4uL2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi9yZXBv
-cnRlcl90eC5jICAgfCAxMDAgKysrKysrKysrKysrKysrKysrKysrDQo+Pj4+Pj4+PiAxIGZpbGUg
-Y2hhbmdlZCwgMTAwIGluc2VydGlvbnMoKykNCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuL3JlcG9ydGVyX3R4
-LmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4vcmVwb3J0ZXJf
-dHguYw0KPj4+Pj4+Pj4gaW5kZXggNDc2ZGQ5N2Y3ZjJmLi44YTM5ZjU1MjVlNTcgMTAwNjQ0DQo+
-Pj4+Pj4+PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4v
-cmVwb3J0ZXJfdHguYw0KPj4+Pj4+Pj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFu
-b3gvbWx4NS9jb3JlL2VuL3JlcG9ydGVyX3R4LmMNCj4+Pj4+Pj4+IEBAIC05LDYgKzksNyBAQA0K
-Pj4+Pj4+Pj4NCj4+Pj4+Pj4+IHN0cnVjdCBtbHg1ZV90eF9lcnJfY3R4IHsNCj4+Pj4+Pj4+IAlp
-bnQgKCpyZWNvdmVyKShzdHJ1Y3QgbWx4NWVfdHhxc3EgKnNxKTsNCj4+Pj4+Pj4+ICsJaW50ICgq
-ZHVtcCkoc3RydWN0IG1seDVlX3R4cXNxICpzcSk7DQo+Pj4+Pj4+PiAJc3RydWN0IG1seDVlX3R4
-cXNxICpzcTsNCj4+Pj4+Pj4+IH07DQo+Pj4+Pj4+Pg0KPj4+Pj4+Pj4gQEAgLTI4MSwxMCArMjgy
-LDEwOSBAQCBzdGF0aWMgaW50IG1seDVlX3R4X3JlcG9ydGVyX2RpYWdub3NlKHN0cnVjdCBkZXZs
-aW5rX2hlYWx0aF9yZXBvcnRlciAqcmVwb3J0ZXIsDQo+Pj4+Pj4+PiAJcmV0dXJuIGVycjsNCj4+
-Pj4+Pj4+IH0NCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiArc3RhdGljIGludCBtbHg1ZV90eF9yZXBvcnRl
-cl9zd19kdW1wX2Zyb21fY3R4KHN0cnVjdCBtbHg1ZV9wcml2ICpwcml2LA0KPj4+Pj4+Pj4gKwkJ
-CQkJICAgICAgc3RydWN0IG1seDVlX3R4cXNxICpzcSwNCj4+Pj4+Pj4+ICsJCQkJCSAgICAgIHN0
-cnVjdCBkZXZsaW5rX2Ztc2cgKmZtc2cpDQo+Pj4+Pj4+PiArew0KPj4+Pj4+Pj4gKwl1NjQgKnB0
-ciA9ICh1NjQgKilzcTsNCj4+Pj4+Pj4+ICsJaW50IGNvcHksIGVycjsNCj4+Pj4+Pj4+ICsJaW50
-IGkgPSAwOw0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwlpZiAoIXRlc3RfYml0KE1MWDVFX1NUQVRF
-X09QRU5FRCwgJnByaXYtPnN0YXRlKSkNCj4+Pj4+Pj4+ICsJCXJldHVybiAwOw0KPj4+Pj4+Pj4g
-Kw0KPj4+Pj4+Pj4gKwllcnIgPSBkZXZsaW5rX2Ztc2dfcGFpcl9uZXN0X3N0YXJ0KGZtc2csICJt
-bHg1ZV90eHFzcSIpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJcmV0dXJuIGVy
-cjsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJZXJyID0gZGV2bGlua19mbXNnX29ial9uZXN0X3N0
-YXJ0KGZtc2cpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJcmV0dXJuIGVycjsN
-Cj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJZXJyID0gZGV2bGlua19mbXNnX2Fycl9wYWlyX25lc3Rf
-c3RhcnQoZm1zZywgIm1lbW9yeSIpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJ
-cmV0dXJuIGVycjsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJd2hpbGUgKGkgPCBzaXplb2Yoc3Ry
-dWN0IG1seDVlX3R4cXNxKSkgew0KPj4+Pj4+Pj4gKwkJY29weSA9IHNpemVvZih1NjQpOw0KPj4+
-Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwkJaWYgKGkgKyBjb3B5ID4gc2l6ZW9mKHN0cnVjdCBtbHg1ZV90
-eHFzcSkpDQo+Pj4+Pj4+PiArCQkJY29weSA9IHNpemVvZihzdHJ1Y3QgbWx4NWVfdHhxc3EpIC0g
-aTsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJCWVyciA9IGRldmxpbmtfZm1zZ19iaW5hcnlfcHV0
-KGZtc2csIHB0ciwgY29weSk7DQo+Pj4+Pj4+PiArCQlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJCXJl
-dHVybiBlcnI7DQo+Pj4+Pj4+PiArCQlwdHIrKzsNCj4+Pj4+Pj4+ICsJCWkgKz0gY29weTsNCj4+
-Pj4+Pj4+ICsJfQ0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwllcnIgPSBkZXZsaW5rX2Ztc2dfYXJy
-X3BhaXJfbmVzdF9lbmQoZm1zZyk7DQo+Pj4+Pj4+PiArCWlmIChlcnIpDQo+Pj4+Pj4+PiArCQly
-ZXR1cm4gZXJyOw0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwllcnIgPSBkZXZsaW5rX2Ztc2dfb2Jq
-X25lc3RfZW5kKGZtc2cpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJcmV0dXJu
-IGVycjsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJZXJyID0gZGV2bGlua19mbXNnX3BhaXJfbmVz
-dF9lbmQoZm1zZyk7DQo+Pj4+Pj4+PiArDQo+Pj4+Pj4+PiArCXJldHVybiBlcnI7DQo+Pj4+Pj4+
-PiArfQ0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gK3N0YXRpYyBpbnQgbWx4NWVfdHhfcmVwb3J0ZXJf
-c3dfZHVtcF9hbGwoc3RydWN0IG1seDVlX3ByaXYgKnByaXYsDQo+Pj4+Pj4+PiArCQkJCQkgc3Ry
-dWN0IGRldmxpbmtfZm1zZyAqZm1zZykNCj4+Pj4+Pj4+ICt7DQo+Pj4+Pj4+PiArCWludCBpLCBl
-cnIgPSAwOw0KPj4+Pj4+Pj4gKw0KPj4+Pj4+Pj4gKwltdXRleF9sb2NrKCZwcml2LT5zdGF0ZV9s
-b2NrKTsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJaWYgKCF0ZXN0X2JpdChNTFg1RV9TVEFURV9P
-UEVORUQsICZwcml2LT5zdGF0ZSkpDQo+Pj4+Pj4+PiArCQlnb3RvIHVubG9jazsNCj4+Pj4+Pj4+
-ICsNCj4+Pj4+Pj4+ICsJZXJyID0gZGV2bGlua19mbXNnX2Fycl9wYWlyX25lc3Rfc3RhcnQoZm1z
-ZywgIlNRcyIpOw0KPj4+Pj4+Pj4gKwlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJZ290byB1bmxvY2s7
-DQo+Pj4+Pj4+PiArDQo+Pj4+Pj4+PiArCWZvciAoaSA9IDA7IGkgPCBwcml2LT5jaGFubmVscy5u
-dW0gKiBwcml2LT5jaGFubmVscy5wYXJhbXMubnVtX3RjOw0KPj4+Pj4+Pj4gKwkgICAgIGkrKykg
-ew0KPj4+Pj4+Pj4gKwkJZXJyID0gZGV2bGlua19mbXNnX29ial9uZXN0X3N0YXJ0KGZtc2cpOw0K
-Pj4+Pj4+Pj4gKwkJaWYgKGVycikNCj4+Pj4+Pj4+ICsJCQlnb3RvIHVubG9jazsNCj4+Pj4+Pj4+
-ICsNCj4+Pj4+Pj4+ICsJCWVyciA9IG1seDVlX3R4X3JlcG9ydGVyX3N3X2R1bXBfZnJvbV9jdHgo
-cHJpdiwgcHJpdi0+dHhxMnNxW2ldLA0KPj4+Pj4+Pj4gKwkJCQkJCQkgZm1zZyk7DQo+Pj4+Pj4+
-PiArCQlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJCWdvdG8gdW5sb2NrOw0KPj4+Pj4+Pj4gKw0KPj4+
-Pj4+Pj4gKwkJZXJyID0gZGV2bGlua19mbXNnX3BhaXJfbmVzdF9lbmQoZm1zZyk7DQo+Pj4+Pj4+
-PiArCQlpZiAoZXJyKQ0KPj4+Pj4+Pj4gKwkJCWdvdG8gdW5sb2NrOw0KPj4+Pj4+Pj4gKwl9DQo+
-Pj4+Pj4+PiArCWVyciA9IGRldmxpbmtfZm1zZ19hcnJfcGFpcl9uZXN0X2VuZChmbXNnKTsNCj4+
-Pj4+Pj4+ICsJaWYgKGVycikNCj4+Pj4+Pj4+ICsJCWdvdG8gdW5sb2NrOw0KPj4+Pj4+Pj4gKw0K
-Pj4+Pj4+Pj4gK3VubG9jazoNCj4+Pj4+Pj4+ICsJbXV0ZXhfdW5sb2NrKCZwcml2LT5zdGF0ZV9s
-b2NrKTsNCj4+Pj4+Pj4+ICsJcmV0dXJuIGVycjsNCj4+Pj4+Pj4+ICt9DQo+Pj4+Pj4+PiArDQo+
-Pj4+Pj4+PiArc3RhdGljIGludCBtbHg1ZV90eF9yZXBvcnRlcl9zd19kdW1wKHN0cnVjdCBkZXZs
-aW5rX2hlYWx0aF9yZXBvcnRlciAqcmVwb3J0ZXIsDQo+Pj4+Pj4+PiArCQkJCSAgICAgc3RydWN0
-IGRldmxpbmtfZm1zZyAqZm1zZywgdm9pZCAqY29udGV4dCkNCj4+Pj4+Pj4+ICt7DQo+Pj4+Pj4+
-PiArCXN0cnVjdCBtbHg1ZV9wcml2ICpwcml2ID0gZGV2bGlua19oZWFsdGhfcmVwb3J0ZXJfcHJp
-dihyZXBvcnRlcik7DQo+Pj4+Pj4+PiArCXN0cnVjdCBtbHg1ZV90eF9lcnJfY3R4ICplcnJfY3R4
-ID0gY29udGV4dDsNCj4+Pj4+Pj4+ICsNCj4+Pj4+Pj4+ICsJcmV0dXJuIGVycl9jdHggPyBtbHg1
-ZV90eF9yZXBvcnRlcl9zd19kdW1wX2Zyb21fY3R4KHByaXYsIGVycl9jdHgtPnNxLA0KPj4+Pj4+
-Pj4gKwkJCQkJCQkgICAgZm1zZykgOg0KPj4+Pj4+Pj4gKwkJCSBtbHg1ZV90eF9yZXBvcnRlcl9z
-d19kdW1wX2FsbChwcml2LCBmbXNnKTsNCj4+Pj4+Pj4+ICt9DQo+Pj4+Pj4+PiArDQo+Pj4+Pj4+
-PiBzdGF0aWMgY29uc3Qgc3RydWN0IGRldmxpbmtfaGVhbHRoX3JlcG9ydGVyX29wcyBtbHg1X3R4
-X3JlcG9ydGVyX29wcyA9IHsNCj4+Pj4+Pj4+IAkJLm5hbWUgPSAidHgiLA0KPj4+Pj4+Pj4gCQku
-cmVjb3ZlciA9IG1seDVlX3R4X3JlcG9ydGVyX3JlY292ZXIsDQo+Pj4+Pj4+PiAJCS5kaWFnbm9z
-ZSA9IG1seDVlX3R4X3JlcG9ydGVyX2RpYWdub3NlLA0KPj4+Pj4+Pj4gKwkJLmR1bXAgPSBtbHg1
-ZV90eF9yZXBvcnRlcl9zd19kdW1wLA0KPj4+Pj4+Pj4gfTsNCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiAj
-ZGVmaW5lIE1MWDVfUkVQT1JURVJfVFhfR1JBQ0VGVUxfUEVSSU9EIDUwMA0KPj4+Pj4+Pj4gLS0g
-DQo+Pj4+Pj4+PiAyLjE0LjENCj4+Pj4+Pj4+DQo=
+On Wed, May 8, 2019 at 2:10 PM Magnus Karlsson
+<magnus.karlsson@gmail.com> wrote:
+>
+> On Tue, May 7, 2019 at 8:24 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Tue, May 07, 2019 at 01:51:45PM +0200, Magnus Karlsson wrote:
+> > > On Mon, May 6, 2019 at 6:33 PM Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > On Thu, May 02, 2019 at 10:39:16AM +0200, Magnus Karlsson wrote:
+> > > > > This RFC proposes to add busy-poll support to AF_XDP sockets. Wit=
+h
+> > > > > busy-poll, the driver is executed in process context by calling t=
+he
+> > > > > poll() syscall. The main advantage with this is that all processi=
+ng
+> > > > > occurs on a single core. This eliminates the core-to-core cache
+> > > > > transfers that occur between the application and the softirqd
+> > > > > processing on another core, that occurs without busy-poll. From a
+> > > > > systems point of view, it also provides an advatage that we do no=
+t
+> > > > > have to provision extra cores in the system to handle
+> > > > > ksoftirqd/softirq processing, as all processing is done on the si=
+ngle
+> > > > > core that executes the application. The drawback of busy-poll is =
+that
+> > > > > max throughput seen from a single application will be lower (due =
+to
+> > > > > the syscall), but on a per core basis it will often be higher as
+> > > > > the normal mode runs on two cores and busy-poll on a single one.
+> > > > >
+> > > > > The semantics of busy-poll from the application point of view are=
+ the
+> > > > > following:
+> > > > >
+> > > > > * The application is required to call poll() to drive rx and tx
+> > > > >   processing. There is no guarantee that softirq and interrupts w=
+ill
+> > > > >   do this for you. This is in contrast with the current
+> > > > >   implementations of busy-poll that are opportunistic in the sens=
+e
+> > > > >   that packets might be received/transmitted by busy-poll or
+> > > > >   softirqd. (In this patch set, softirq/ksoftirqd will kick in at=
+ high
+> > > > >   loads just as the current opportunistic implementations, but I =
+would
+> > > > >   like to get to a point where this is not the case for busy-poll
+> > > > >   enabled XDP sockets, as this slows down performance considerabl=
+y and
+> > > > >   starts to use one more core for the softirq processing. The end=
+ goal
+> > > > >   is for only poll() to drive the napi loop when busy-poll is ena=
+bled
+> > > > >   on an AF_XDP socket. More about this later.)
+> > > > >
+> > > > > * It should be enabled on a per socket basis. No global enablemen=
+t, i.e.
+> > > > >   the XDP socket busy-poll will not care about the current
+> > > > >   /proc/sys/net/core/busy_poll and busy_read global enablement
+> > > > >   mechanisms.
+> > > > >
+> > > > > * The batch size (how many packets that are processed every time =
+the
+> > > > >   napi function in the driver is called, i.e. the weight paramete=
+r)
+> > > > >   should be configurable. Currently, the busy-poll size of AF_INE=
+T
+> > > > >   sockets is set to 8, but for AF_XDP sockets this is too small a=
+s the
+> > > > >   amount of processing per packet is much smaller with AF_XDP. Th=
+is
+> > > > >   should be configurable on a per socket basis.
+> > > > >
+> > > > > * If you put multiple AF_XDP busy-poll enabled sockets into a pol=
+l()
+> > > > >   call the napi contexts of all of them should be executed. This =
+is in
+> > > > >   contrast to the AF_INET busy-poll that quits after the fist one=
+ that
+> > > > >   finds any packets. We need all napi contexts to be executed due=
+ to
+> > > > >   the first requirement in this list. The behaviour we want is mu=
+ch more
+> > > > >   like regular sockets in that all of them are checked in the pol=
+l
+> > > > >   call.
+> > > > >
+> > > > > * Should be possible to mix AF_XDP busy-poll sockets with any oth=
+er
+> > > > >   sockets including busy-poll AF_INET ones in a single poll() cal=
+l
+> > > > >   without any change to semantics or the behaviour of any of thos=
+e
+> > > > >   socket types.
+> > > > >
+> > > > > * As suggested by Maxim Mikityanskiy, poll() will in the busy-pol=
+l
+> > > > >   mode return POLLERR if the fill ring is empty or the completion
+> > > > >   queue is full.
+> > > > >
+> > > > > Busy-poll support is enabled by calling a new setsockopt called
+> > > > > XDP_BUSY_POLL_BATCH_SIZE that takes batch size as an argument. A =
+value
+> > > > > between 1 and NAPI_WEIGHT (64) will turn it on, 0 will turn it of=
+f and
+> > > > > any other value will return an error.
+> > > > >
+> > > > > A typical packet processing rxdrop loop with busy-poll will look =
+something
+> > > > > like this:
+> > > > >
+> > > > > for (i =3D 0; i < num_socks; i++) {
+> > > > >     fds[i].fd =3D xsk_socket__fd(xsks[i]->xsk);
+> > > > >     fds[i].events =3D POLLIN;
+> > > > > }
+> > > > >
+> > > > > for (;;) {
+> > > > >     ret =3D poll(fds, num_socks, 0);
+> > > > >     if (ret <=3D 0)
+> > > > >             continue;
+> > > > >
+> > > > >     for (i =3D 0; i < num_socks; i++)
+> > > > >         rx_drop(xsks[i], fds); /* The actual application */
+> > > > > }
+> > > > >
+> > > > > Need some advice around this issue please:
+> > > > >
+> > > > > In this patch set, softirq/ksoftirqd will kick in at high loads a=
+nd
+> > > > > render the busy poll support useless as the execution is now happ=
+ening
+> > > > > in the same way as without busy-poll support. Everything works fr=
+om an
+> > > > > application perspective but this defeats the purpose of the suppo=
+rt
+> > > > > and also consumes an extra core. What I would like to accomplish =
+when
+> > > >
+> > > > Not sure what you mean by 'extra core' .
+> > > > The above poll+rx_drop is executed for every af_xdp socket
+> > > > and there are N cpus processing exactly N af_xdp sockets.
+> > > > Where is 'extra core'?
+> > > > Are you suggesting a model where single core will be busy-polling
+> > > > all af_xdp sockets? and then waking processing threads?
+> > > > or single core will process all sockets?
+> > > > I think the af_xdp model should be flexible and allow easy out-of-t=
+he-box
+> > > > experience, but it should be optimized for 'ideal' user that
+> > > > does the-right-thing from max packet-per-second point of view.
+> > > > I thought we've already converged on the model where af_xdp hw rx q=
+ueues
+> > > > bind one-to-one to af_xdp sockets and user space pins processing
+> > > > threads one-to-one to af_xdp sockets on corresponding cpus...
+> > > > If so that's the model to optimize for on the kernel side
+> > > > while keeping all other user configurations functional.
+> > > >
+> > > > > XDP socket busy-poll is enabled is that softirq/ksoftirq is never
+> > > > > invoked for the traffic that goes to this socket. This way, we wo=
+uld
+> > > > > get better performance on a per core basis and also get the same
+> > > > > behaviour independent of load.
+> > > >
+> > > > I suspect separate rx kthreads of af_xdp socket processing is neces=
+sary
+> > > > with and without busy-poll exactly because of 'high load' case
+> > > > you've described.
+> > > > If we do this additional rx-kthread model why differentiate
+> > > > between busy-polling and polling?
+> > > >
+> > > > af_xdp rx queue is completely different form stack rx queue because
+> > > > of target dma address setup.
+> > > > Using stack's napi ksoftirqd threads for processing af_xdp queues c=
+reates
+> > > > the fairness issues. Isn't it better to have separate kthreads for =
+them
+> > > > and let scheduler deal with fairness among af_xdp processing and st=
+ack?
+> > >
+> > > When using ordinary poll() on an AF_XDP socket, the application will
+> > > run on one core and the driver processing will run on another in
+> > > softirq/ksoftirqd context. (Either due to explicit core and irq
+> > > pinning or due to the scheduler or irqbalance moving the two threads
+> > > apart.) In AF_XDP busy-poll mode of this RFC, I would like the
+> > > application and the driver processing to occur on a single core, thus
+> > > there is no "extra" driver core involved that need to be taken into
+> > > account when sizing and/or provisioning the system. The napi context
+> > > is in this mode invoked from syscall context when executing the poll
+> > > syscall from the application.
+> > >
+> > > Executing the app and the driver on the same core could of course be
+> > > accomplished already today by pinning the application and the driver
+> > > interrupt to the same core, but that would not be that efficient due
+> > > to context switching between the two.
+> >
+> > Have you benchmarked it?
+> > I don't think context switch will be that noticable when kpti is off.
+> > napi processes 64 packets descriptors and switches back to user to
+> > do payload processing of these packets.
+> > I would think that the same job is on two different cores would be
+> > a bit more performant with user code consuming close to 100%
+> > and softirq is single digit %. Say it's 10%.
+> > I believe combining the two on single core is not 100 + 10 since
+> > there is no cache bouncing. So Mpps from two cores setup will
+> > reduce by 2-3% instead of 10%.
+> > There is a cost of going to sleep and being woken up from poll(),
+> > but 64 packets is probably large enough number to amortize.
+> > If not, have you tried to bump napi budget to say 256 for af_xdp rx que=
+ues?
+> > Busy-poll avoids sleep/wakeup overhead and probably can make
+> > this scheme work with lower batching (like 64), but fundamentally
+> > they're the same thing.
+> > I'm not saying that we shouldn't do busy-poll. I'm saying it's
+> > complimentary, but in all cases single core per af_xdp rq queue
+> > with user thread pinning is preferred.
+> >
+> > > A more efficient way would be to
+> > > call the napi loop from within the poll() syscall when you are inside
+> > > the kernel anyway. This is what the classical busy-poll mechanism
+> > > operating on AF_INET sockets does. Inside the poll() call, it execute=
+s
+> > > the napi context of the driver until it finds a packet (if it is rx)
+> > > and then returns to the application that then processes the packets. =
+I
+> > > would like to adopt something quite similar for AF_XDP sockets. (Some
+> > > of the differences can be found at the top of the original post.)
+> > >
+> > > From an API point of view with busy-poll of AF_XDP sockets, the user
+> > > would bind to a queue number and taskset its application to a specifi=
+c
+> > > core and both the app and the driver execution would only occur on
+> > > that core. This is in my mind simpler than with regular poll or AF_XD=
+P
+> > > using no syscalls on rx (i.e. current state), in which you bind to a
+> > > queue, taskset your application to a core and then you also have to
+> > > take care to route the interrupt of the queue you bound to to another
+> > > core that will execute the driver part in the kernel. So the model is
+> > > in both cases still one core - one socket - one napi. (Users can of
+> > > course create multiple sockets in an app if they desire.)
+> > >
+> > > The main reasons I would like to introduce busy-poll for AF_XDP
+> > > sockets are:
+> > >
+> > > * It is simpler to provision, see arguments above. Both application
+> > >   and driver runs efficiently on the same core.
+> > >
+> > > * It is faster (on a per core basis) since we do not have any core to
+> > >   core communication. All header and descriptor transfers between
+> > >   kernel and application are core local which is much
+> > >   faster. Scalability will also be better. E.g., 64 bytes desc + 64
+> > >   bytes packet header =3D 128 bytes per packet less on the interconne=
+ct
+> > >   between cores. At 20 Mpps/core, this is ~20Gbit/s and with 20 cores
+> > >   this will be ~400Gbit/s of interconnect traffic less with busy-poll=
+.
+> >
+> > exactly. don't make cpu do this core-to-core stuff.
+> > pin one rx to one core.
+> >
+> > > * It provides a way to seamlessly replace user-space drivers in DPDK
+> > >   with Linux drivers in kernel space. (Do not think I have to argue
+> > >   why this is a good idea on this list ;-).) The DPDK model is that
+> > >   application and driver run on the same core since they are both in
+> > >   user space. If we can provide the same model (both running
+> > >   efficiently on the same core, NOT drivers in user-space) with
+> > >   AF_XDP, it is easy for DPDK users to make the switch. Compare this
+> > >   to the current way where there are both application cores and
+> > >   driver/ksoftirqd cores. If a systems builder had 12 cores in his
+> > >   appliance box and they had 12 instances of a DPDK app, one on each
+> > >   core, how would he/she reason when repartitioning between
+> > >   application and driver cores? 8 application cores and 4 driver
+> > >   cores, or 6 of each? Maybe it is also packet dependent? Etc. Much
+> > >   simpler to migrate if we had an efficient way to run both of them o=
+n
+> > >   the same core.
+> > >
+> > > Why no interrupt? That should have been: no interrupts enabled to
+> > > start with. We would like to avoid interrupts as much as possible
+> > > since when they trigger, we will revert to the non busy-poll model,
+> > > i.e. processing on two separate cores, and the advantages from above
+> > > will disappear. How to accomplish this?
+> > >
+> > > * One way would be to create a napi context with the queue we have
+> > >   bound to but with no interrupt associated with it, or it being
+> > >   disabled. The socket would in that case only be able to receive and
+> > >   send packets when calling the poll() syscall. If you do not call
+> > >   poll(), you do not get any packets, nor are any packets sent. It
+> > >   would only be possible to support this with a poll() timeout value
+> > >   of zero. This would have the best performance
+> > >
+> > > * Maybe we could support timeout values >0 by re-enabling the interru=
+pt
+> > >   at some point. When calling poll(), the core would invoke the napi
+> > >   context repeatedly with the interrupt of that napi disabled until i=
+t
+> > >   found a packet, but max for a period of time up until the busy poll
+> > >   timeout (like regular busy poll today does). If that times out, we
+> > >   go up to the regular timeout of the poll() call and enable
+> > >   interrupts of the queue associated with the napi and put the proces=
+s
+> > >   to sleep. Once woken up by an interrupt, the interrupt of the napi
+> > >   would be disabled again and control returned to the application. We
+> > >   would with this scheme process the vast majority of packets locally
+> > >   on a core with interrupts disabled and with good performance and
+> > >   only when we have low load and are sleeping/waiting in poll would w=
+e
+> > >   process some packets using interrupts on the core that the
+> > >   interrupt has been bound to.
+> >
+> > I think both 'no interrupt' solutions are challenging for users.
+> > Stack rx queues and af_xdp rx queues should look almost the same from
+> > napi point of view. Stack -> normal napi in softirq. af_xdp -> new kthr=
+ead
+> > to work with both poll and busy-poll. The only difference between
+> > poll and busy-poll will be the running context: new kthread vs user tas=
+k.
+> > If busy-poll drained the queue then new kthread napi has no work to do.
+> > No irq approach could be marginally faster, but more error prone.
+> > With new kthread the user space will still work in all configuration.
+> > Even when single user task is processing many af_xdp sockets.
+> >
+> > I'm proposing new kthread only partially for performance reasons, but
+> > mainly to avoid sharing stack rx and af_xdp queues within the same soft=
+irq.
+> > Currently we share softirqd for stack napis for all NICs in the system,
+> > but af_xdp depends on isolated processing.
+> > Ideally we have rss into N queues for stack and rss into M af_xdp socke=
+ts.
+> > The same host will be receive traffic on both.
+> > Even if we rss stack queues to one set of cpus and af_xdp on another cp=
+us
+> > softirqds are doing work on all cpus.
+> > A burst of 64 packets on stack queues or some other work in softirqd
+> > will spike the latency for af_xdp queues if softirq is shared.
+> > Hence the proposal for new napi_kthreads:
+> > - user creates af_xdp socket and binds to _CPU_ X then
+> > - driver allocates single af_xdp rq queue (queue ID doesn't need to be =
+exposed)
+> > - spawns kthread pinned to cpu X
+> > - configures irq for that af_xdp queue to fire on cpu X
+> > - user space with the help of libbpf pins its processing thread to that=
+ cpu X
+> > - repeat above for as many af_xdp sockets as there as cpus
+> >   (its also ok to pick the same cpu X for different af_xdp socket
+> >   then new kthread is shared)
+> > - user space configures hw to RSS to these set of af_xdp sockets.
+> >   since ethtool api is a mess I propose to use af_xdp api to do this rs=
+s config
+> >
+> > imo that would be the simplest and performant way of using af_xdp.
+> > All configuration apis are under libbpf (or libxdp if we choose to fork=
+ it)
+> > End result is one af_xdp rx queue - one napi - one kthread - one user t=
+hread.
+> > All pinned to the same cpu with irq on that cpu.
+> > Both poll and busy-poll approaches will not bounce data between cpus.
+> > No 'shadow' queues to speak of and should solve the issues that
+> > folks were bringing up in different threads.
+> > How crazy does it sound?
+>
+> Actually, it sounds remarkably sane :-). It will create something
+> quite similar to what I have been wanting, but you take it at least
+> two steps further. Did not think about introducing a separate kthread
+> as a potential solution, and the user space configuration of RSS (and
+> maybe other flow steering mechanisms) from AF_XDP Bj=C3=B6rn and I have
+> only been loosely talking about. Anyway, I am producing performance
+> numbers for the options that we have talked about. I will get back to
+> you with them as soon as I have them and we can continue the
+> discussions based on those.
+>
+> Thanks: Magnus
+
+After a number of surprises and issues in the driver here are now the
+first set of results. 64 byte packets at 40Gbit/s line rate. All
+results in Mpps. Note that I just used my local system and kernel build
+for these numbers so they are not performance tuned. Jesper would
+likely get better results on his setup :-). Explanation follows after
+the table.
+
+                                      Applications
+method  cores  irqs        txpush        rxdrop      l2fwd
+---------------------------------------------------------------
+r-t-c     2     y           35.9          11.2        8.6
+poll      2     y           34.2           9.4        8.3
+r-t-c     1     y           18.1           N/A        6.2
+poll      1     y           14.6           8.4        5.9
+busypoll  2     y           31.9          10.5        7.9
+busypoll  1     y           21.5           8.7        6.2
+busypoll  1     n           22.0          10.3        7.3
+
+r-t-c =3D Run-to-completion, the mode where we in Rx uses no syscalls
+        and only spin on the pointers in the ring.
+poll =3D Use the regular syscall poll()
+busypoll =3D Use the regular syscall poll() in busy-poll mode. The RFC I
+           sent out.
+
+cores =3D=3D 2 means that softirq/ksoftirqd is one a different core from
+           the application. 2 cores are consumed in total.
+cores =3D=3D 1 means that both softirq/ksoftirqd and the application runs
+           on the same core. Only 1 core is used in total.
+
+irqs =3D=3D 'y' is the normal case. irqs =3D=3D 'n' means that I have creat=
+ed a
+        new napi context with the AF_XDP queues inside that does not
+        have any interrupts associated with it. No other traffic goes
+        to this napi context.
+
+N/A =3D This combination does not make sense since the application will
+      not yield due to run-to-completion without any syscalls
+      whatsoever. It works, but it crawls in the 30 Kpps
+      range. Creating huge rings would help, but did not do that.
+
+The applications are the ones from the xdpsock sample application in
+samples/bpf/.
+
+Some things I had to do to get these results:
+
+* The current buffer allocation scheme in i40e where we continuously
+  try to access the fill queue until we find some entries, is not
+  effective if we are on a single core. Instead, we try once and call
+  a function that sets a flag. This flag is then checked in the xsk
+  poll code, and if it is set we schedule napi so that it can try to
+  allocate some buffers from the fill ring again. Note that this flag
+  has to propagate all the way to user space so that the application
+  knows that it has to call poll(). I currently set a flag in the Rx
+  ring to indicate that the application should call poll() to resume
+  the driver. This is similar to what the io_uring in the storage
+  subsystem does. It is not enough to return POLLERR from poll() as
+  that will only work for the case when we are using poll(). But I do
+  that as well.
+
+* Implemented Sridhar's suggestion on adding busy_loop_end callbacks
+  that terminate the busy poll loop if the Rx queue is empty or the Tx
+  queue is full.
+
+* There is a race in the setup code in i40e when it is used with
+  busy-poll. The fact that busy-poll calls the napi_busy_loop code
+  before interrupts have been registered and enabled seems to trigger
+  some bug where nothing gets transmitted. This only happens for
+  busy-poll. Poll and run-to-completion only enters the napi loop of
+  i40e by interrupts and only then after interrupts have been enabled,
+  which is the last thing that is done after setup. I have just worked
+  around it by introducing a sleep(1) in the application for these
+  experiments. Ugly, but should not impact the numbers, I believe.
+
+* The 1 core case is sensitive to the amount of work done reported
+  from the driver. This was not correct in the XDP code of i40e and
+  let to bad performance. Now it reports the correct values for
+  Rx. Note that i40e does not honor the napi budget on Tx and sets
+  that to 256, and these are not reported back to the napi
+  library.
+
+Some observations:
+
+* Cannot really explain the drop in performance for txpush when going
+  from 2 cores to 1. As stated before, the reporting of Tx work is not
+  really propagated to the napi infrastructure. Tried reporting this
+  in a correct manner (completely ignoring Rx for this experiment) but
+  the results were the same. Will dig deeper into this to screen out
+  any stupid mistakes.
+
+* With the fixes above, all my driver processing is in softirq for 1
+  core. It never goes over to ksoftirqd. Previously when work was
+  reported incorrectly, this was the case. I would have liked
+  ksoftirqd to take over as that would have been more like a separate
+  thread. How to accomplish this? There might still be some reporting
+  problem in the driver that hinders this, but actually think it is
+  more correct now.
+
+* Looking at the current results for a single core, busy poll provides
+  a 40% boost for Tx but only 5% for Rx. But if I instead create a
+  napi context without any interrupt associated with it and drive that
+  from busy-poll, I get a 15% - 20% performance improvement for Rx. Tx
+  increases only marginally from the 40% improvement as there are few
+  interrupts on Tx due to the completion interrupt bit being set quite
+  infrequently. One question I have is: what am I breaking by creating
+  a napi context not used by anyone else, only AF_XDP, that does not
+  have an interrupt associated with it?
+
+Todo:
+
+* Explain the drop in Tx push when going from 2 cores to 1.
+
+* Really run a separate thread for kernel processing instead of softirq.
+
+* What other experiments would you like to see?
+
+/Magnus
