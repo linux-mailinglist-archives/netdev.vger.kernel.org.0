@@ -2,104 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A713220A8F
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 17:02:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 419A220ABC
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 17:10:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726790AbfEPPCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 11:02:08 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:41267 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726692AbfEPPCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 11:02:08 -0400
-Received: by mail-pg1-f194.google.com with SMTP id z3so1696175pgp.8
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 08:02:07 -0700 (PDT)
+        id S1727628AbfEPPKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 11:10:03 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:43893 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726703AbfEPPKC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 11:10:02 -0400
+Received: by mail-pf1-f201.google.com with SMTP id t1so2375216pfa.10
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 08:10:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oQIpgPhDeITrfem6Q9vBqAlxsSxn7on1qPD5WhUkuCI=;
-        b=LMAW81YACJdH8lc+yV5UY1LirSNlYfT9l1J2qKri2wpTcmoAU9SDnoH2zpM5WbxCnE
-         2/9PLRXsO7fUMinhHqWqSiCqJVnPhgyZrZ0d+a1YjAByq8LsG31xYJlwl2yr0z3UT+qo
-         +3vFKRc/eUGJbtShTPZgACEu7W/FyTLIen/k6l0JaBtNtxUuctQz0CwjpVpffeVzqu7S
-         Jtk/9K/U8Zhy5V98n9hu+GRpku1mX6+527yEuV3IedymVi75DPIAJDsaGlC94UO2CvAu
-         dyQfEz4Tl5IjDJ850qwWZ8abgsOWtCOvBZ/6S/v7onvIyrBDR5QMkklwVdooGjD0qpPS
-         Edbg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=DpNV65Youz9rtc8RuhOsGHbzi/Opb6nleTtFSXR4wv8=;
+        b=qql+K+dP4wNE/y9ZEucaXINUF/Z4M6NBeukNVTXr81jKbprC7T+11/ClqRk0Ozb0We
+         gmfGqAEyLVuFwfO5ZyjleyM7/i4DNcYjChR4Ujpr9Xs2CkESUKRVSf/V7XpeTfKhnIkc
+         OcXl6BS8foTBRVm+lM/1kX2A9WFTg1SAwoDXRL4S3akrSHXBED7WjYlS1fSnDZcHQ3/K
+         wx8Sp4KKtW5RYZDXPFjsd9uLeJoDoDltBbg0YLvCPEXdTnWJHhqYuCJyhfuKPamudBQS
+         gCmcyXJ/yDTJbyje331GYchOfT9JnN0o4dQog31w5DQA2jmrFOLJHrgjLzTeAPiL97Ma
+         YVyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oQIpgPhDeITrfem6Q9vBqAlxsSxn7on1qPD5WhUkuCI=;
-        b=T4IG5vTpAk8+fN0bRnE0ESutnrlS+pDlGNCjvtT175khxlVydfqt6vY7idUioEzSR9
-         XXn4vVFdtiLnB8Y3gxBSnSif2Hun14/3nhoqUzFd9VIxHpJyS9Wg3yF5rWnlCwBWZ1vV
-         Er/QimcKm971B0dCsonCVQR/fOnYoZiuujjkpzZNFxRE5vEt7tCmtiI59bJ8gnKWR2PQ
-         GYlCD0pjO7bOK1U7PbP9O7Lqqmo0vAsuJVM6ZppOJydg2HLEaC6OCYIHAuQNx07GCoSZ
-         T8cNrctAnp2ZKRvZBfkk9WiFFEqaq1ySWZsxTZkxo+2aTlf+Tkc9fDQRi2Wkvyw7CD3Z
-         7ARA==
-X-Gm-Message-State: APjAAAUeS971ACP0OV+Y/st+bZkB0+S0NKWKWAnY8kNW2v926BxkBRz+
-        Z8ijoP2dXPjIVKmHg2G3wbQ=
-X-Google-Smtp-Source: APXvYqxGQqDHRIdTzHVX1+dV1gRWPGachM7tli5SzQOBSJ7Q66L5NwtEZui43HpzbS4u+1uqen+ARg==
-X-Received: by 2002:a62:ac0c:: with SMTP id v12mr54077669pfe.59.1558018927172;
-        Thu, 16 May 2019 08:02:07 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:9983:b39:b7ee:6ed6? ([2601:282:800:fd80:9983:b39:b7ee:6ed6])
-        by smtp.googlemail.com with ESMTPSA id z4sm6952379pfa.142.2019.05.16.08.02.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 May 2019 08:02:05 -0700 (PDT)
-Subject: Re: [PATCH net] ipv6: prevent possible fib6 leaks
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=DpNV65Youz9rtc8RuhOsGHbzi/Opb6nleTtFSXR4wv8=;
+        b=t6JIiGNcrqOZMkGw8eYTgZ/0tCXCdg8qLT9RKY367DUiL49TZ37/mHqIXpFaoWRbz3
+         IODhaeZEwH0H/BE2ggV0waac+Wt+3kVZXeI6S7+S/QKRYqyRssU2OWGQ7foXEdMT1SfX
+         avztGBnwf07/7OT30txsLaLxs1TfuDSuz+ydmf9X3gvsa/7eARrMrnXDmW9cmgk426ag
+         jTij2UNYE/Dx8Mc6iZDtu8mnn3GRcvw3UxKIs5/6jy5oAJc93hKE/JVBpM2MpnN7VcHe
+         Uii6HD446SaADXmp9omWXJ5p4hjqDME4+FTkL6okFowcJUl1yrH8/PT/fKb5AuYCn9Qe
+         ppBw==
+X-Gm-Message-State: APjAAAWPN/duIuSJgAdopb64OpHd5+45hUbNUN5/Jb7C/wvJGz5Qrap4
+        ZWxLUo2XGaO6/Z0LAUB+bQm+0uW04dwtYw==
+X-Google-Smtp-Source: APXvYqyNu22fSY+DSnxbH++feELYlCDdzGluynCJ8Z1di8r5em/wpb+/GNtGMWSa+/I1OHtfosOD3Z5Obx1yCA==
+X-Received: by 2002:a63:b90a:: with SMTP id z10mr9889531pge.257.1558019401285;
+ Thu, 16 May 2019 08:10:01 -0700 (PDT)
+Date:   Thu, 16 May 2019 08:09:57 -0700
+Message-Id: <20190516150957.217157-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
+Subject: [PATCH net] net: avoid weird emergency message
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Wei Wang <weiwan@google.com>, Martin Lau <kafai@fb.com>
-References: <20190516023952.28943-1-edumazet@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <40038728-de12-ecb9-b382-2f6433f83d50@gmail.com>
-Date:   Thu, 16 May 2019 09:02:02 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190516023952.28943-1-edumazet@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/15/19 8:39 PM, Eric Dumazet wrote:
-> At ipv6 route dismantle, fib6_drop_pcpu_from() is responsible
-> for finding all percpu routes and set their ->from pointer
-> to NULL, so that fib6_ref can reach its expected value (1).
-> 
-> The problem right now is that other cpus can still catch the
-> route being deleted, since there is no rcu grace period
-> between the route deletion and call to fib6_drop_pcpu_from()
-> 
-> This can leak the fib6 and associated resources, since no
-> notifier will take care of removing the last reference(s).
-> 
-> I decided to add another boolean (fib6_destroying) instead
-> of reusing/renaming exception_bucket_flushed to ease stable backports,
-> and properly document the memory barriers used to implement this fix.
-> 
-> This patch has been co-developped with Wei Wang.
-> 
-> Fixes: 93531c674315 ("net/ipv6: separate handling of FIB entries from dst based routes")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Cc: Wei Wang <weiwan@google.com>
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Martin Lau <kafai@fb.com>
-> ---
->  include/net/ip6_fib.h |  3 ++-
->  net/ipv6/ip6_fib.c    | 12 +++++++++---
->  net/ipv6/route.c      |  7 +++++++
->  3 files changed, 18 insertions(+), 4 deletions(-)
-> 
+When host is under high stress, it is very possible thread
+running netdev_wait_allrefs() returns from msleep(250)
+10 seconds late.
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+This leads to these messages in the syslog :
 
-Thanks, Eric. Attaching 'from' to rt6_info makes v6 much more
-complicated than ipv4.
+[...] unregister_netdevice: waiting for syz_tun to become free. Usage count = 0
+
+If the device refcount is zero, the wait is over.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 108ac8137b9be8bc7041b3e49e09c25eeb891d8f..b6b8505cfb3e2394f74b41b8e01055c697ad384b 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8927,7 +8927,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+ 
+ 		refcnt = netdev_refcnt_read(dev);
+ 
+-		if (time_after(jiffies, warning_time + 10 * HZ)) {
++		if (refcnt && time_after(jiffies, warning_time + 10 * HZ)) {
+ 			pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
+ 				 dev->name, refcnt);
+ 			warning_time = jiffies;
+-- 
+2.21.0.1020.gf2820cf01a-goog
+
