@@ -2,116 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1C0220CDA
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 18:21:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBAEC20D08
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 18:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbfEPQVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 12:21:46 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:41714 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbfEPQVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 12:21:46 -0400
-Received: by mail-lj1-f196.google.com with SMTP id k8so3638408lja.8
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 09:21:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2e5Do/kWandKX1Zbza7sapR2anoZAP3eXmyFdlVoIKA=;
-        b=ArCqLQ+mQc4Jf+7VG1OdMWx31L6sOXF2Y4z/qL7fxHo0l/XOMLxlZhFvmSO9hV7WSy
-         6RJy27G0BLy0i2xPqrJIdetwNB9Q4Spb89sBui0GkTfheyp1uV6bp0C+WzQPpw197YmW
-         Dt+Sg/qBSz6e625LoIace3EjYmevysKHUexhc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2e5Do/kWandKX1Zbza7sapR2anoZAP3eXmyFdlVoIKA=;
-        b=fuDjxhqeKPnvCHJBb+7+gZAQEWBdyRC0767d7n/1ijU6kLDwCiF6m7cGM+ZHAxEktO
-         7NRU/h1spKBI7NuPoLHtrOARrNL8KWCMPxTfwj21xLV1kbVbh8S4u0uH51+5+eQk0vOM
-         1VxYPmR1a8O75+9rSdlRQeVGVSSnbcDHJj6IKyGlcIZ3tFaal6nOfbBGb1TXTN+xZJya
-         biza4L0ZwdE1mxHj8mKHsE2j+m46w1a8dkIyHqj5kalO9cACWiD8+ehyQ1Dbyuuqp1mw
-         OTufb5ms8s4KaaQ3osAz3LlV5n+rSIoG0hW/Uuur+f4DuSMp2j8L467BWDJsK43Dl8Mj
-         Q/ww==
-X-Gm-Message-State: APjAAAVYdJGKLGCEbLpVbAZQzJHpfL9OcZ24WbKFIyAPfke/t7tdHQVF
-        tvTEQW6m27/74kA/EEC9fEkgPoeiDYk+EkEk+QY88A==
-X-Google-Smtp-Source: APXvYqyqHiyH4AeBft1evepIQq8xBjLJiWFn//O/FH36CylnD2Em3MeZL1D22OC+4X2lB0bbci0VypEz679vdXG/w5Q=
-X-Received: by 2002:a2e:88ce:: with SMTP id a14mr18017256ljk.122.1558023704266;
- Thu, 16 May 2019 09:21:44 -0700 (PDT)
+        id S1727091AbfEPQas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 12:30:48 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.20]:16045 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726659AbfEPQar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 12:30:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1558024245;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=FQma3RmWDS8VYLqxGeNcHo7p5BwbUBC6TbpAzjFKweQ=;
+        b=Ud+R7juj9V8dW3YGjEnsvVemVWpTSAe/JKmdSHKUJ3VPz29qFZOWciGQcrJCkNGmNd
+        VaRHYTN2JNaDub3HR0xARyMf8CvOl6KC/GYCYeclzP2h8FuKMIv4gJTFSTG2YyxfMpSg
+        vY2yIlke5jCNtYCVQcOGzAgbNhoJlVlW/Mx8aYn4dS6tnEBCy/keyzYCEN6viyyA1dvM
+        lGpW+NZ/ItGEyFbNCAL0x+lPXFLJcowNttFNUBnOmZLaNBy+2P3NHJ3p4xKCBKYUZymT
+        e0rgk/KapagHXdKhhhDiBAHxE1lbrKdR3a707Jg6wv0RyMrGZX43wOYux8n8Dfdmcxxs
+        fI0w==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJUMh6kkRA"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.1.200]
+        by smtp.strato.de (RZmta 44.18 DYNA|AUTH)
+        with ESMTPSA id q0b361v4GGOjEiy
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Thu, 16 May 2019 18:24:45 +0200 (CEST)
+Subject: Re: [PATCH] can: gw: Fix error path of cgw_module_init
+To:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
+        mkl@pengutronix.de
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org
+References: <20190516155435.42376-1-yuehaibing@huawei.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <5e833f8b-537b-f4b0-4d7d-489936026cca@hartkopp.net>
+Date:   Thu, 16 May 2019 18:24:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190515134731.12611-1-krzesimir@kinvolk.io> <20190515134731.12611-3-krzesimir@kinvolk.io>
- <20190515144537.57f559e7@cakuba.netronome.com> <CAGGp+cGN+YYVjJee5ba84HstSrHGurBvwmKmzNsFRvb344Df3A@mail.gmail.com>
- <20190516085035.3cdb0ae6@cakuba.netronome.com>
-In-Reply-To: <20190516085035.3cdb0ae6@cakuba.netronome.com>
-From:   Krzesimir Nowak <krzesimir@kinvolk.io>
-Date:   Thu, 16 May 2019 18:21:32 +0200
-Message-ID: <CAGGp+cEFxzbH-8vnSAK3sZkM-u3WN4HGnkYvhFwBp85yVtD7Xg@mail.gmail.com>
-Subject: Re: [PATCH bpf v1 2/3] selftests/bpf: Print a message when tester
- could not run a program
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     bpf@vger.kernel.org,
-        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
-        "Alban Crequy (Kinvolk)" <alban@kinvolk.io>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrey Ignatov <rdna@fb.com>, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190516155435.42376-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 16, 2019 at 5:51 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Thu, 16 May 2019 11:29:39 +0200, Krzesimir Nowak wrote:
-> > > > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/te=
-sting/selftests/bpf/test_verifier.c
-> > > > index ccd896b98cac..bf0da03f593b 100644
-> > > > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > > > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > > > @@ -825,11 +825,20 @@ static int do_prog_test_run(int fd_prog, bool=
- unpriv, uint32_t expected_val,
-> > > >                               tmp, &size_tmp, &retval, NULL);
-> > > >       if (unpriv)
-> > > >               set_admin(false);
-> > > > -     if (err && errno !=3D 524/*ENOTSUPP*/ && errno !=3D EPERM) {
-> > > > -             printf("Unexpected bpf_prog_test_run error ");
-> > > > -             return err;
-> > > > +     if (err) {
-> > > > +             switch (errno) {
-> > > > +             case 524/*ENOTSUPP*/:
-> > > > +                     printf("Did not run the program (not supporte=
-d) ");
-> > > > +                     return 0;
-> > > > +             case EPERM:
-> > > > +                     printf("Did not run the program (no permissio=
-n) ");
-> > > > +                     return 0;
-> > >
-> > > Perhaps use strerror(errno)?
-> >
-> > As I said in the commit message, I open-coded those messages because
-> > strerror for ENOTSUPP returns "Unknown error 524".
->
-> Ah, sorry, missed that.  I wonder if that's something worth addressing
-> in libc, since the BPF subsystem uses ENOTSUPP a lot.
 
-The "not supported" errno situation seems to be a mess. There is an
-ENOTSUP define in libc. ENOTSUP is usually defined to be EOPNOTSUPP
-(taken from kernel), which in turn seems to have a different value
-(95) than kernel's ENOTSUPP (524). Adding ENOTSUPP (with two Ps) to
-libc would only add to the confusion. So it's kind of meh and I guess
-people just moved on with workarounds.
 
---=20
-Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
-Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago L=
-=C3=B3pez Galeiras
-Registergericht/Court of registration: Amtsgericht Charlottenburg
-Registernummer/Registration number: HRB 171414 B
-Ust-ID-Nummer/VAT ID number: DE302207000
+On 16.05.19 17:54, YueHaibing wrote:
+> This patch fix error path for cgw_module_init
+> to avoid possible crash if some error occurs.
+> 
+> Fixes: c1aabdf379bc ("can-gw: add netlink based CAN routing")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+
+Thanks!
+
+> ---
+>   net/can/gw.c | 46 +++++++++++++++++++++++++++++++---------------
+>   1 file changed, 31 insertions(+), 15 deletions(-)
+> 
+> diff --git a/net/can/gw.c b/net/can/gw.c
+> index 53859346..8b53ec7 100644
+> --- a/net/can/gw.c
+> +++ b/net/can/gw.c
+> @@ -1046,32 +1046,48 @@ static __init int cgw_module_init(void)
+>   	pr_info("can: netlink gateway (rev " CAN_GW_VERSION ") max_hops=%d\n",
+>   		max_hops);
+>   
+> -	register_pernet_subsys(&cangw_pernet_ops);
+> +	ret = register_pernet_subsys(&cangw_pernet_ops);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = -ENOMEM;
+>   	cgw_cache = kmem_cache_create("can_gw", sizeof(struct cgw_job),
+>   				      0, 0, NULL);
+> -
+>   	if (!cgw_cache)
+> -		return -ENOMEM;
+> +		goto out_cache_create;
+>   
+>   	/* set notifier */
+>   	notifier.notifier_call = cgw_notifier;
+> -	register_netdevice_notifier(&notifier);
+> +	ret = register_netdevice_notifier(&notifier);
+> +	if (ret)
+> +		goto out_register_notifier;
+>   
+>   	ret = rtnl_register_module(THIS_MODULE, PF_CAN, RTM_GETROUTE,
+>   				   NULL, cgw_dump_jobs, 0);
+> -	if (ret) {
+> -		unregister_netdevice_notifier(&notifier);
+> -		kmem_cache_destroy(cgw_cache);
+> -		return -ENOBUFS;
+> -	}
+> -
+> -	/* Only the first call to rtnl_register_module can fail */
+> -	rtnl_register_module(THIS_MODULE, PF_CAN, RTM_NEWROUTE,
+> -			     cgw_create_job, NULL, 0);
+> -	rtnl_register_module(THIS_MODULE, PF_CAN, RTM_DELROUTE,
+> -			     cgw_remove_job, NULL, 0);
+> +	if (ret)
+> +		goto out_rtnl_register1;
+> +
+> +	ret = rtnl_register_module(THIS_MODULE, PF_CAN, RTM_NEWROUTE,
+> +				   cgw_create_job, NULL, 0);
+> +	if (ret)
+> +		goto out_rtnl_register2;
+> +	ret = rtnl_register_module(THIS_MODULE, PF_CAN, RTM_DELROUTE,
+> +				   cgw_remove_job, NULL, 0);
+> +	if (ret)
+> +		goto out_rtnl_register2;
+>   
+>   	return 0;
+> +
+> +out_rtnl_register2:
+> +	rtnl_unregister_all(PF_CAN);
+> +out_rtnl_register1:
+> +	unregister_netdevice_notifier(&notifier);
+> +out_register_notifier:
+> +	kmem_cache_destroy(cgw_cache);
+> +out_cache_create:
+> +	unregister_pernet_subsys(&cangw_pernet_ops);
+> +
+> +	return ret;
+>   }
+>   
+>   static __exit void cgw_module_exit(void)
+> 
