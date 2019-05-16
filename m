@@ -2,46 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B48BE20D4A
-	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 18:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B20D120D4D
+	for <lists+netdev@lfdr.de>; Thu, 16 May 2019 18:47:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728497AbfEPQpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 12:45:39 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:58010 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728490AbfEPQpj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 12:45:39 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8D506148FE64A;
-        Thu, 16 May 2019 09:45:38 -0700 (PDT)
-Date:   Thu, 16 May 2019 09:45:35 -0700 (PDT)
-Message-Id: <20190516.094535.44468004372549234.davem@davemloft.net>
-To:     herbert@gondor.apana.org.au
-Cc:     jakub.kicinski@netronome.com, tgraf@suug.ch,
-        netdev@vger.kernel.org, oss-drivers@netronome.com, neilb@suse.com,
-        simon.horman@netronome.com
-Subject: Re: [PATCH 0/2] rhashtable: Fix sparse warnings
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190516071859.uijycusyfqcs7tc7@gondor.apana.org.au>
-References: <20190515205501.17810-1-jakub.kicinski@netronome.com>
-        <20190516051622.b4x6hlkuevof4jzr@gondor.apana.org.au>
-        <20190516071859.uijycusyfqcs7tc7@gondor.apana.org.au>
-X-Mailer: Mew version 6.8 on Emacs 26.1
+        id S1728618AbfEPQrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 12:47:01 -0400
+Received: from mail-oi1-f201.google.com ([209.85.167.201]:37904 "EHLO
+        mail-oi1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728610AbfEPQrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 12:47:01 -0400
+Received: by mail-oi1-f201.google.com with SMTP id 7so1680505oie.5
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 09:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=VRRoQgT2pSAeSBNdY+Ic0qvRHWDT7jPstuRbjVm+VUM=;
+        b=gIHWeF95y5G0LC4OqfE6q+iPD+UYeh1Ct0xJXWIHapebxYYJo45B6sJkLEcH8511ic
+         1QC5GCQ7k8GooxA9yDxPqisqMXAZZigStN2OzTtVdiUFji1laiphQT2M0JsM8I0Zfk/s
+         FZaza5PGfLD2ms6eHS8jNAP6pWGJ0xnddtmpOhXnhsHrWhlxfck8DDOZaTgGiU5/saPG
+         QH0HwpT6xnfwH7VtCBOUUGQMT4PiKZkwSBMht/Gm/4PgW2XwznE9Ylx8jjhoBwjBLeLQ
+         mOR4fs/Lmpwd3vM0IRnDMPiPHLZyivpmcIgxgp+edE0aXx4PasateSSbnkRLWiqS7xWx
+         Rhxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=VRRoQgT2pSAeSBNdY+Ic0qvRHWDT7jPstuRbjVm+VUM=;
+        b=oMZXYbcUgGLdiI7RBUqMpREceX6bHX14kpuy44+zMuVORMmwXPQ8KME4NoMbRt4Bg5
+         Ogd9qDoxvuF0GJRZH6FQKIZdISnRD846UxlVbZ7F4XiTsbBpWXa9s/yBv6KkpA1Kvk9U
+         srehQDfvkg59WzvMi67HAMih3Zdh80mf1FhxZ54qGhnpMu0ATEGNLmZf1waN+Gmz0ix5
+         xI4Wd+98Fid7Ss+xu1G6mqwmnI9TcXQuNRyT0WElgNXozRYud3TBARhYdR4gA0zWZCBo
+         BxnLf6+jwKmg+IEdNwuv4vdQ34nYNf/+QaxkQ/S9e8qfJCc3J/HM5QQdMgYCXNHIgF8y
+         GSZQ==
+X-Gm-Message-State: APjAAAXXGiJaqmH5o4AQVwLNf46sWzC91CKKE53RDjuAgZk+0kKLbiNN
+        gP0UqfX3VSoq3LFS3O2J6+SdkZQ3uQKJedYPfOt/LLQrG3iMRe7JfhMctxLTXUFlBrCTBdIZlAC
+        +/RoP5ATyRQBfnGcSfTkscEWVqFLB1h9BMFfW8WgD3DQWNrEr/0+XRw==
+X-Google-Smtp-Source: APXvYqw/lUesacHjsLEtrBm64TCjuF4CLaab6gxB1pVwoRiIsAF9wdNtMabD+bf5c5yHMoHzMb+z15k=
+X-Received: by 2002:aca:5785:: with SMTP id l127mr10150621oib.48.1558025220100;
+ Thu, 16 May 2019 09:47:00 -0700 (PDT)
+Date:   Thu, 16 May 2019 09:46:57 -0700
+Message-Id: <20190516164657.225320-1-sdf@google.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 16 May 2019 09:45:38 -0700 (PDT)
+X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
+Subject: [PATCH bpf] selftests/bpf: add test_sysctl and map_tests/tests.h to .gitignore
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
-Date: Thu, 16 May 2019 15:18:59 +0800
+Missing files are:
+* tools/testing/selftests/bpf/map_tests/tests.h - autogenerated
+* tools/testing/selftests/bpf/test_sysctl - binary
 
-> This patch series fixes all the sparse warnings.
+Fixes: 51a0e301a563 ("bpf: Add BPF_MAP_TYPE_SK_STORAGE test to test_maps")
+Fixes: 1f5fa9ab6e2e ("selftests/bpf: Test BPF_CGROUP_SYSCTL")
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ tools/testing/selftests/bpf/.gitignore           | 1 +
+ tools/testing/selftests/bpf/map_tests/.gitignore | 1 +
+ 2 files changed, 2 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/map_tests/.gitignore
 
-Series applied, thanks Herbert.
+diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
+index a877803e4ba8..dd5d69529382 100644
+--- a/tools/testing/selftests/bpf/.gitignore
++++ b/tools/testing/selftests/bpf/.gitignore
+@@ -31,6 +31,7 @@ test_section_names
+ test_tcpnotify_user
+ test_libbpf
+ test_tcp_check_syncookie_user
++test_sysctl
+ alu32
+ libbpf.pc
+ libbpf.so.*
+diff --git a/tools/testing/selftests/bpf/map_tests/.gitignore b/tools/testing/selftests/bpf/map_tests/.gitignore
+new file mode 100644
+index 000000000000..45984a364647
+--- /dev/null
++++ b/tools/testing/selftests/bpf/map_tests/.gitignore
+@@ -0,0 +1 @@
++tests.h
+-- 
+2.21.0.1020.gf2820cf01a-goog
+
