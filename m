@@ -2,229 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D179021D25
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 20:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52DBB21D34
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 20:20:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729177AbfEQSKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 14:10:22 -0400
-Received: from mail-pl1-f174.google.com ([209.85.214.174]:35775 "EHLO
-        mail-pl1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726532AbfEQSKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 14:10:22 -0400
-Received: by mail-pl1-f174.google.com with SMTP id g5so3702101plt.2
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 11:10:21 -0700 (PDT)
+        id S1727106AbfEQSUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 14:20:32 -0400
+Received: from mail-qt1-f172.google.com ([209.85.160.172]:39770 "EHLO
+        mail-qt1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726295AbfEQSUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 14:20:31 -0400
+Received: by mail-qt1-f172.google.com with SMTP id y42so9093703qtk.6
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 11:20:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nJxEfZSCUIIX0nFwUq4Ss3I9aodiXQl+a4Vhs4ru7QI=;
-        b=Bc+UIN4qaSjuwstbY34FOItCRCxTsxyfTzvgZwAqkup3ctujjwBl/yyaFrTxCn7HNC
-         wWwUGl7T9rcntVCpseMNMJ322Lhj5nkA7B8XVwZUCLm6ctHnkKiUSwjDFWAL8oL4ndEg
-         VWLDtELX4/NJjBoBj02mMnhD9LgiuLKmhMFmk9fgVBeS1geq7+OY6/mfHbaDElbwFYFM
-         yjc8ISGUcayZfAl1qsYHt86d7rIP2RA+YszFTh8X5bW77oC4w7kQDHSNNZ8ZpHnjywlL
-         qkbPYvowjyhKMZ4k7N7EcXLfWef0RHuqoWyjvXre14MSUafEHx3hsvyT3NMSnAsSPTkF
-         PMfQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=sAuzu7oFu+qgNmzIjkw1268TiMptRYFG0uw1EQFtauA=;
+        b=xJcVbcT/ku6Ma7TbNCUJZtzkKOiQiMNWgUXCDorUoEFatNEv83AdZrxzt0iGHShLb8
+         muT+QryZjZ0j8N1fyfLdVAuFeWUM1aDnyD63SapNlvs3azOsKaefLXby0LtxdbWqQvn1
+         sDZCp+W/uIaPTFq3ChgXEN703x+9r/9ras8QIM1bY9b+nyigMrSwTB8bgTXHMMm9eNat
+         Ud5hinsvxBLdyLXVr4yE91/wYmVnG/sV401CFfGReKC1H5oFG1mlNZro2Q/ZEfOa32zy
+         gU8ywI6X96IAdNVAm4YIghAB7jK8EjHHm6uyKSBi6e8hrPZhTTkA/ZWs5GRhhcS+xUk3
+         4dzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=nJxEfZSCUIIX0nFwUq4Ss3I9aodiXQl+a4Vhs4ru7QI=;
-        b=Q/tPrL+OLzGUWVIEevfRWwrK/HsrljbDFCb1Yk3GvMx9ABdjRyt1N4Gy1pcSU+bv6q
-         cZkyW8DzUO2j3cB8t4LH0jgo8mnBbiLjHj0j7iV1I4auh6Bp0yLHFD4JF+ly+GaFZ/7N
-         yaOKzEZD8Q8F01NEhySZ/x6/yO96thQrMdcYiTFxpYD1ztt7KHgCXUniu8rMHCcZFnCW
-         k5d9o43sGJkrFJxoTMsKolONkA5rtl0koC1/CpC6KIXHCGm5TLRI9elk7xfcb7u57wKt
-         ViJqtfpgNEcIhvrOsIU7L/OdXiXoVFUmuerP5kFJMyOLHWvVtjXZLjau0gVaprDu9T/J
-         WaNw==
-X-Gm-Message-State: APjAAAVuC4V0jSKPcQKQlBp4OtFvPRyiwhKihdGLKNVjrIJ1V/EuH58W
-        KVeJGR3g0F0TTk/623+Fn+D+lrXW
-X-Google-Smtp-Source: APXvYqzJCkdNA0B3teJlnTVEYJher/SS0KX6OlsDLJ7UILRl3b39KtuNs/M6bMrZpeyDm9n1yDtEFA==
-X-Received: by 2002:a17:902:bc8a:: with SMTP id bb10mr1282202plb.310.1558116620514;
-        Fri, 17 May 2019 11:10:20 -0700 (PDT)
-Received: from [10.67.49.52] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id u38sm27338211pgn.73.2019.05.17.11.10.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 May 2019 11:10:19 -0700 (PDT)
-Subject: Re: dsa: using multi-gbps speeds on CPU port
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <20190515143936.524acd4e@bootlin.com>
- <20190515132701.GD23276@lunn.ch> <20190515160214.1aa5c7d9@bootlin.com>
- <35daa9e7-8b97-35dd-bc95-bab57ef401cd@gmail.com>
- <20190517171038.36d921a5@bootlin.com>
- <VI1PR0402MB2800630F0E9CCBE6A3FBCFBEE00B0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
- <20190517180322.wwjthwdyiyrgpbxg@shell.armlinux.org.uk>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <a022fdab-5a44-ddeb-e06a-f14352ef54b4@gmail.com>
-Date:   Fri, 17 May 2019 11:10:10 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=sAuzu7oFu+qgNmzIjkw1268TiMptRYFG0uw1EQFtauA=;
+        b=HHXAt26fs/Gc0gh8v1vNYTIvVSYyv9YAFbl9RjkPT/VRxVdkMoU1e91jH2nos3MO6c
+         WD0+/AN7CRquZ/4IDqIn69nFJqs0dDhw5M82/PmEjsvljuaEMbm4csZl4vcymlghR7J5
+         PcUf8jHztjcMQN+akGEk2d21gHNZh/+UGVuYvuPxE8JXE3aUu0dMHrHN1PHreGyhXSS3
+         j4QLvGsk5Wj5ruutaFeJZtYP5JEuLEKeNi/Df72g7oMnbwHxrLdw1jXOF0fRomm7rwG+
+         vXO1wgmnje3XVkfknYiOPkCrPXEvqRloH9WJ1kZ2C/5zpGWeVA2+PyD4YefYFmIJ3hmi
+         B3zA==
+X-Gm-Message-State: APjAAAXFNgBSsTyKPYrkJrG14dN8a/oI1+GFlfe+PgiP70mEE5yLgzVF
+        /YzAIe4SCWgdaDZQ3JWfET29xQ==
+X-Google-Smtp-Source: APXvYqx3o5PlXHLDnKp5ovqh2Wht3158BUbDxFKtBy1D+ieys+NofN3ySCmgU1RjLqAEKv64s+/WLw==
+X-Received: by 2002:a0c:954e:: with SMTP id m14mr3808077qvm.184.1558117230757;
+        Fri, 17 May 2019 11:20:30 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 139sm4649275qkm.27.2019.05.17.11.20.29
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 17 May 2019 11:20:30 -0700 (PDT)
+Date:   Fri, 17 May 2019 11:20:03 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, Jonathan Lemon <bsd@fb.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Subject: Re: [RFC bpf-next 0/7] busy poll support for AF_XDP sockets
+Message-ID: <20190517112003.02b130b2@cakuba.netronome.com>
+In-Reply-To: <CAJ8uoz1i72MOk711wLX18zmgo9JS+ztzSYAx0YS0VKxkbvod-w@mail.gmail.com>
+References: <1556786363-28743-1-git-send-email-magnus.karlsson@intel.com>
+        <20190506163135.blyqrxitmk5yrw7c@ast-mbp>
+        <CAJ8uoz2MFtoXwuhAp5A0teMmwU2v623pHf2k0WSFi0kovJYjtw@mail.gmail.com>
+        <20190507182435.6f2toprk7jus6jid@ast-mbp>
+        <CAJ8uoz24HWGfGBNhz4c-kZjYELJQ+G3FcELVEo205xd1CirpqQ@mail.gmail.com>
+        <CAJ8uoz1i72MOk711wLX18zmgo9JS+ztzSYAx0YS0VKxkbvod-w@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20190517180322.wwjthwdyiyrgpbxg@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gNS8xNy8xOSAxMTowMyBBTSwgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IGFkbWluIHdy
-b3RlOg0KPiBPbiBGcmksIE1heSAxNywgMjAxOSBhdCAwNTozNzowMFBNICswMDAwLCBJb2Fu
-YSBDaW9ybmVpIHdyb3RlOg0KPj4+IFN1YmplY3Q6IFJlOiBkc2E6IHVzaW5nIG11bHRpLWdi
-cHMgc3BlZWRzIG9uIENQVSBwb3J0DQo+Pj4NCj4+PiBIaSBldmVyeW9uZSwNCj4+Pg0KPj4+
-IE9uIFdlZCwgMTUgTWF5IDIwMTkgMDk6MDk6MjYgLTA3MDANCj4+PiBGbG9yaWFuIEZhaW5l
-bGxpIDxmLmZhaW5lbGxpQGdtYWlsLmNvbT4gd3JvdGU6DQo+Pj4NCj4+Pj4gT24gNS8xNS8x
-OSA3OjAyIEFNLCBNYXhpbWUgQ2hldmFsbGllciB3cm90ZToNCj4+Pj4+IEhpIEFuZHJldywN
-Cj4+Pj4+DQo+Pj4+PiBPbiBXZWQsIDE1IE1heSAyMDE5IDE1OjI3OjAxICswMjAwDQo+Pj4+
-PiBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+IHdyb3RlOg0KPj4+Pj4NCj4+Pj4+PiBJ
-IHRoaW5rIHlvdSBhcmUgZ2V0dGluZyB5b3VyIHRlcm1pbm9sb2d5IHdyb25nLiAnbWFzdGVy
-JyBpcyBldGgwIGluDQo+Pj4+Pj4gdGhlIGV4YW1wbGUgeW91IGdhdmUgYWJvdmUuIENQVSBh
-bmQgRFNBIHBvcnRzIGRvbid0IGhhdmUgbmV0ZGV2DQo+Pj4+Pj4gc3RydWN0dXJlcywgYW5k
-IHNvIGFueSBQSFkgdXNlZCB3aXRoIHRoZW0gaXMgbm90IGNvcnJlY3RlZCB0byBhDQo+Pj4+
-Pj4gbmV0ZGV2Lg0KPj4+Pj4NCj4+Pj4+IEFoIHllcyBzb3JyeSwgSSdtIHN0aWxsIGluIHRo
-ZSBwcm9jZXNzIG9mIGdldHRpbmcgZmFtaWxpYXIgd2l0aCB0aGUNCj4+Pj4+IGludGVybmFs
-cyBvZiBEU0EgOi8NCj4+Pj4+DQo+Pj4+Pj4+IEknbGwgYmUgaGFwcHkgdG8gaGVscCBvbiB0
-aGF0LCBidXQgYmVmb3JlIHByb3RvdHlwaW5nIGFueXRoaW5nLCBJIHdhbnRlZA0KPj4+Pj4+
-PiB0byBoYXZlIHlvdXIgdGhvdWd0cyBvbiB0aGlzLCBhbmQgc2VlIGlmIHlvdSBoYWQgYW55
-IHBsYW5zLg0KPj4+Pj4+DQo+Pj4+Pj4gVGhlcmUgYXJlIHR3byBkaWZmZXJlbnQgaXNzdWVz
-IGhlcmUuDQo+Pj4+Pj4NCj4+Pj4+PiAxKSBJcyB1c2luZyBhIGZpeGVkLWxpbmsgb24gYSBD
-UFUgb3IgRFNBIHBvcnQgdGhlIHJpZ2h0IHdheSB0byBkbyB0aGlzPw0KPj4+Pj4+IDIpIE1h
-a2luZyBmaXhlZC1saW5rIHN1cHBvcnQgPiAxRy4NCj4+Pj4+Pg0KPj4+Pj4+IFRoZSByZWFz
-b24gaSBkZWNpZGVkIHRvIHVzZSBmaXhlZC1saW5rIG9uIENQVSBhbmQgRFNBIHBvcnRzIGlz
-IHRoYXQNCj4+Pj4+PiB3ZSBhbHJlYWR5IGhhdmUgYWxsIHRoZSBjb2RlIG5lZWRlZCB0byBj
-b25maWd1cmUgYSBwb3J0LCBhbmQgYW4gQVBJDQo+Pj4+Pj4gdG8gZG8gaXQsIHRoZSBhZGp1
-c3RfbGluaygpIGNhbGxiYWNrLiBUaGluZ3MgaGF2ZSBtb3ZlZCBvbiBzaW5jZQ0KPj4+Pj4+
-IHRoZW4sIGFuZCB3ZSBub3cgaGF2ZSBhbiBhZGRpdGlvbmFsIEFQSSwgLnBoeWxpbmtfbWFj
-X2NvbmZpZygpLiBJdA0KPj4+Pj4+IG1pZ2h0IGJlIGJldHRlciB0byBkaXJlY3RseSB1c2Ug
-dGhhdC4gSWYgdGhlcmUgaXMgYSBtYXgtc3BlZWQNCj4+Pj4+PiBwcm9wZXJ0eSwgY3JlYXRl
-IGEgcGh5bGlua19saW5rX3N0YXRlIHN0cnVjdHVyZSwgd2hpY2ggaGFzIG5vDQo+Pj4+Pj4g
-cmVmZXJlbmNlIHRvIGEgbmV0ZGV2LCBhbmQgcGFzcyBpdCB0byAucGh5bGlua19tYWNfY29u
-ZmlnKCkuDQo+Pj4+Pj4NCj4+Pj4+PiBJdCBpcyBqdXN0IGFuIGlkZWEsIGJ1dCBtYXliZSB5
-b3UgY291bGQgaW52ZXN0aWdhdGUgaWYgdGhhdCB3b3VsZA0KPj4+Pj4+IHdvcmsuDQo+Pj4N
-Cj4+PiBJJ3ZlIHF1aWNrbHkgcHJvdG90eXBlZCBhbmQgdGVzdGVkIHRoaXMgc29sdXRpb24s
-IGFuZCBiZXNpZGVzIGEgZmV3IHR3ZWFrcyB0aGF0DQo+Pj4gYXJlIG5lZWRlZCBvbiB0aGUg
-bXY4OGU2eHh4IGRyaXZlciBzaWRlLCBpdCB3b3JrcyBmaW5lLg0KPj4+DQo+Pj4gSSdsbCBw
-b3N0IGFuIFJGQyB3aXRoIHRoaXMgc2hvcnRseSwgc28gdGhhdCB5b3UgY2FuIHNlZSB3aGF0
-IGl0IGxvb2tzIGxpa2UuDQo+Pj4NCj4+PiBBcyBSdXNzZWxsIHNhaWQsIHRoZXJlIHdhc24n
-dCBhbnl0aGluZyBuZWVkZWQgb24gdGhlIG1hc3RlciBpbnRlcmZhY2Ugc2lkZS4NCj4+Pg0K
-Pj4+Pg0KPj4+PiBWbGFkaW1pciBtZW50aW9uZWQgYSBmZXcgd2Vla3MgYWdvIHRoYXQgaGUg
-aXMgY29uc2lkZXJpbmcgYWRkaW5nDQo+Pj4+IHN1cHBvcnQgZm9yIFBIWUxJQiBhbmQgUEhZ
-TElOSyB0byBydW4gd2l0aG91dCBhIG5ldF9kZXZpY2UgaW5zdGFuY2UsDQo+Pj4+IHlvdSB0
-d28gc2hvdWxkIHByb2JhYmx5IGNvb3JkaW5hdGUgd2l0aCBlYWNoIG90aGVyIGFuZCBtYWtl
-IHN1cmUgYm90aA0KPj4+PiBvZiB5b3VyIHJlcXVpcmVtZW50cyAod2hpY2ggYXJlIGxpa2Vs
-eSB0aGUgc2FtZSkgZ2V0IGFkZHJlc3NlZC4NCj4+Pg0KPj4+IFRoYXQgd291bGQgaGVscCBh
-IGxvdCBzb2x2aW5nIHRoaXMgaXNzdWUgaW5kZWVkLCBJJ2xsIGJlIGhhcHB5IHRvIGhlbHAg
-b24gdGhhdCwNCj4+PiB0aGFua3MgZm9yIHRoZSB0aXAgIQ0KPj4+DQo+Pj4gTWF4aW1lDQo+
-Pj4NCj4+DQo+PiBIaSBNYXhpbWUsDQo+Pg0KPj4gSSBhbSBjdXJyZW50bHkgbWFpbnRhaW5p
-bmcgc29tZSBkcml2ZXJzIGZvciBGcmVlc2NhbGUvTlhQIERQQUEyIEV0aGVybmV0LiBUaGlz
-IGFyY2hpdGVjdHVyZSBoYXMgYSBtYW5hZ2VtZW50IGZpcm13YXJlIHRoYXQgYWJzdHJhY3Rz
-IGFuZCBzaW1wbGlmaWVzIHRoZSBoYXJkd2FyZSBjb25maWd1cmF0aW9uIGludG8gYSBzbyBj
-YWxsZWQgb2JqZWN0IG1vZGVsLiBEUEFBMiBpcyBhIGxpdHRsZSB0b28gbW9kdWxhciBhbmQg
-eW91IGhhdmUgdGhlIGNvbmNlcHQgb2YgYSBuZXR3b3JrIGludGVyZmFjZSBvYmplY3QgKERQ
-TkkpIHdoaWNoIGlzIGNvbXBsZXRlbHkgc2VsZi1jb250YWluZWQgYW5kIHNlcGFyYXRlIGZy
-b20gdGhlIGhhcmR3YXJlIHBvcnQgaXRzZWxmIChEUE1BQykuIFlvdSBjYW4gY29ubmVjdCBE
-UE5JcyB0byBEUE1BQ3MgYnV0IGFsc28gRFBOSXMgdG8gb25lIGFub3RoZXIuIFRoZSBkcGFh
-Mi1ldGggZHJpdmVyIGNvbmNlcHR1YWxseSBoYW5kbGVzIGEgRFBOSSBvYmplY3QuIEFtb25n
-IG90aGVyIHRoaW5ncywgdGhlIG1hbmFnZW1lbnQgZmlybXdhcmUgcHJlc2VudHMgdGhlIGxp
-bmsgc3RhdGUgaW5mb3JtYXRpb24gdG8gdGhlIERQTkkgb2JqZWN0IGFzIGFic3RyYWN0IGFz
-IHBvc3NpYmxlIChzcGVlZCwgZHVwbGV4LCB1cC9kb3duIGV0Yy4pLiBUaGUgZmlybXdhcmUg
-Z2F0aGVycyB0aGlzIGluZm9ybWF0aW9uIGZyb20gd2hvbWV2ZXIgdGhlIERQTkkgaXMgY29u
-bmVjdGVkIHRvLiBTaW5jZSB0aGUgZmlybXdhcmUgY2FuJ3QgcmV1c2UgTGludXggUEhZIGRy
-aXZlcnMgZHVlIHRvIGluY29tcGF0aWJsZSBsaWNlbnNpbmcsIHdlIG5lZWQgYW5vdGhlciBk
-cml2ZXIgd2hpY2ggYWN0cyBhcyBnbHVlIGxvZ2ljIGJldHdlZW4gdGhlIFBIWSBkcml2ZXJz
-IGFuZCB0aGUgZmlybXdhcmUuIFRoaXMgaXMgdGhlIG91dC1vZi10cmVlIGRwbWFjIGRyaXZl
-ciB0aGF0IG5vdGlmaWVzIHRoZSBmaXJtd2FyZSBvZiBhbnkgZXh0ZXJuYWwgUEhZIGV2ZW50
-cy4gQXQgdGhlIGVuZCBvZiB0aGUgZGF5LCB0aGUgZHBhYTItZXRoIGRyaXZlciBnZXRzIG5v
-dGlmaWVkIG9mIHRoZXNlIGV4dGVybmFsIFBIWSBldmVudHMgYWZ0ZXIgdGhlIGZpcm13YXJl
-IGl0c2VsZiBpcyBub3RpZmllZCBhbmQgcmFpc2VzIGFuIGludGVycnVwdCBsaW5lLiANCj4+
-DQo+PiBUbyBzdGFydCB0aGUgUEhZIHN0YXRlIG1hY2hpbmUgZm9yIGEgcG9ydCwgdGhlIGRw
-bWFjIGRyaXZlciBtdXN0IGZhYnJpY2F0ZSBhIG5ldGRldmljZSB3aGljaCBpdCBkb2VzIG5v
-dCByZWdpc3RlciB3aXRoIHRoZSBzdGFjay4gT25lIHdvdWxkLCBvZiBjb3Vyc2UsIHN1Z2dl
-c3QgdG8gbW92ZSB0aGUgUEhZIG1hbmFnZW1lbnQgZGlyZWN0bHkgaW50byB0aGUgZHBhYTIt
-ZXRoIGRyaXZlci4gQnV0IHRoZSBmaXJtd2FyZSdzIEFCSSBpcyBhbHJlYWR5IHN0YWJsZSBh
-bmQgYmVzaWRlcywgaXQgaXMgbm90IGRlc2lyYWJsZSB0byBncmFudCBNRElPIGFjY2VzcyB0
-byB1c2VycyBvZiB0aGUgRFBOSSBvYmplY3QuDQo+Pg0KPj4gT2J2aW91c2x5LCB0aGF0IGZh
-a2UgbmV0ZGV2aWNlIGhhcyB0byBnbyBiZWZvcmUgdGhlIGRwbWFjIGRyaXZlciBzZWVzIG1h
-aW5saW5lLiBXaGF0IHlvdSBndXlzIGFyZSBwcm9wb3NpbmcgKHRoZSBwaHlsaW5rL25ldGRl
-diBkZWNvdXBsaW5nKSB3b3VsZCBhbHNvIGJlbmVmaXQgb3VyIHNjZW5hcmlvLiBJIHRhbGtl
-ZCB0byBWbGFkaW1pciBhbmQgd2UnbGwgbWFrZSBzdXJlIHRoYXQgd2hhdGV2ZXIgd29ya3Mg
-Zm9yIHVzIGlzIGFsc28gYmVuZWZpdGluZyB0aGUgRFNBIGNwdS9jYXNjYWRlIHBvcnQuIEhv
-cGVmdWxseSB3ZSdsbCBoYXZlIHNvbWUgcGF0Y2hlcyBlYXJseSBuZXh0IHdlZWsuDQo+IA0K
-PiBGb3IgU0ZQLCBJJ3ZlIGFscmVhZHkgcmVtb3ZlZCBtdWNoIG9mIHRoZSBuZXRkZXYgYml0
-cyBmcm9tIHRoYXQgbGF5ZXIsDQo+IGJ1dCBJIGRvbid0IHNlZSBhbnkgd2F5IHRvIHJlYWxs
-eSBnZXQgcmlkIG9mIGl0IGZyb20gcGh5bGluayAtIHdlIG5lZWQNCj4gYWNjZXNzIHRvIHRo
-ZSBuZXRkZXYgc3RhdGUgdGhlcmUgdG8ga25vdyB3aGF0IHRoZSBjYXJyaWVyIHN0YXRlIGlz
-IGZvcg0KPiB0aGUgbmV0ZGV2IChwaHlsaW5rIHRyYWNrcyB0aGF0IHN0YXRlIGFuZCBtYW5h
-Z2VzIHRoZSBjYXJyaWVyIHN0YXRlIG9uDQo+IGJlaGFsZiBvZiB0aGUgTUFDIGRyaXZlci4p
-DQoNCldlIGNhbiBtYWtlIHRoYXQgYSBjYWxsYmFjayB0aGF0IGlzIG9wdGlvbmFsIGluIGNh
-c2UgeW91IHdhbnQgdG8gdXNlIGENClBIWUxJTksgaW5zdGFuY2Ugd2l0aG91dCBhIGJhY2tp
-bmcgbmV0X2RldmljZS4gSWYgeW91IHBhc3MgYSB2YWxpZA0KbmV0X2RldmljZSBwb2ludGVy
-LCB0aGVuIHdlIGRlZmF1bHQgdG8gbmV0aWZfY2Fycmllcl9vaygpLCBlbHNlIHRoZQ0KY2Fs
-bGVyIG9mIHBoeWxpbmtfY3JlYXRlKCkgKHdoaWNoIHdvdWxkIGhhdmUgdG8gYmUgcmVuYW1l
-ZCwgb3IgZXhwb3NlZA0Kd2l0aCBhbiBhZGRpdGlvbmFsIGFyZ3VtZW50LCBzYXkgcGh5bGlu
-a19jcmVhdGVfY2IoKSkgbmVlZHMgdG8gcHJvdmlkZSBpdC4NCi0tIA0KRmxvcmlhbg0K
+On Thu, 16 May 2019 14:37:51 +0200, Magnus Karlsson wrote:
+>                                       Applications
+> method  cores  irqs        txpush        rxdrop      l2fwd
+> ---------------------------------------------------------------
+> r-t-c     2     y           35.9          11.2        8.6
+> poll      2     y           34.2           9.4        8.3
+> r-t-c     1     y           18.1           N/A        6.2
+> poll      1     y           14.6           8.4        5.9
+> busypoll  2     y           31.9          10.5        7.9
+> busypoll  1     y           21.5           8.7        6.2
+> busypoll  1     n           22.0          10.3        7.3
+
+Thanks for the numbers!  One question that keeps coming to my mind 
+is how do the cases compare on zero drop performance?
+
+When I was experimenting with AF_XDP it seemed to be slightly more
+prone to dropping packets than expected.  I wonder if you're seeing
+a similar thing (well drops or back pressure to the traffic generator)?
+Perhaps the single core busy poll would make a difference there?
