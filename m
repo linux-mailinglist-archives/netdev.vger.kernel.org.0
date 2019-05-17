@@ -2,107 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F36F21E88
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 21:43:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAC1621EFD
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 22:19:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729699AbfEQTie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 15:38:34 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:37827 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729709AbfEQTid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 15:38:33 -0400
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <mgr@pengutronix.de>)
-        id 1hRigY-0003jA-Tt; Fri, 17 May 2019 21:38:30 +0200
-Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <mgr@pengutronix.de>)
-        id 1hRigY-0004Vp-0s; Fri, 17 May 2019 21:38:30 +0200
-Date:   Fri, 17 May 2019 21:38:30 +0200
-From:   Michael Grzeschik <mgr@pengutronix.de>
-To:     "Kenton, Stephen M." <skenton@ou.edu>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: ARCNET Contemporary Controls PCI20EX PCIe Card
-Message-ID: <20190517193829.effwzuu4pfjlp7rn@pengutronix.de>
-References: <be572630-98e4-95bc-f50a-e711ded62526@ou.edu>
+        id S1728426AbfEQUTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 16:19:40 -0400
+Received: from frisell.zx2c4.com ([192.95.5.64]:47677 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727792AbfEQUTi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 May 2019 16:19:38 -0400
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 4e655bfc
+        for <netdev@vger.kernel.org>;
+        Fri, 17 May 2019 19:50:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=9xioJq60hFkxFle/QJZQWb03L3M=; b=gwDnMJ
+        CbGND5KrQDu5/L++8zUH5TZK6/T1gWaCn7dRB7tAQqVonq2AOhuFaT4/udCujYbF
+        liDO434eVJvC8lnZBe6AxmQv+gwRePZ82XlxuDG1BB/TdNAmAwtrU8NHnBdZTT0+
+        v5p+q4JfRHxrqz7wQ0OFm9v4a3qQl4LXuPFRMkzBOTlb3Pdn2Vwpr2rSVwCekcTc
+        D0ugER64in6qB4MikB82NgjodOl3oyIlCGko69/GmyRvPHu8Y5DMyNclFdcWgVot
+        8Hg2dZVGujRLwYhq5MNApti4zvk8zUusLrDYdbLnooCsu2M1zN3B1ORo5Twu5a5v
+        zqsi+twINc5LPdIA==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7edf6390 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Fri, 17 May 2019 19:50:38 +0000 (UTC)
+Received: by mail-oi1-f173.google.com with SMTP id w144so6034540oie.12
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 13:19:36 -0700 (PDT)
+X-Gm-Message-State: APjAAAVNMyu63Uz3qIDEXQuU3bymmBxlKk03KHHh7FtZskx6iz8l0SFh
+        ZJyfvls3CgPqzcFVYLhKMXfyxAfYs08rqrMyYg0=
+X-Google-Smtp-Source: APXvYqwnbWbIwdBrKSzbLS0Q2QnjOl68xkojwUuJNj+6VnTE4BB963yKHERogMPqF3mwpEo5z90p1L9PibSDubQRVpc=
+X-Received: by 2002:aca:eb50:: with SMTP id j77mr15484339oih.52.1558124374909;
+ Fri, 17 May 2019 13:19:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="bzclpkknxrqdijaw"
-Content-Disposition: inline
-In-Reply-To: <be572630-98e4-95bc-f50a-e711ded62526@ou.edu>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 21:36:02 up  1:54, 19 users,  load average: 0.16, 0.12, 0.10
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mgr@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <LaeckvP--3-1@tutanota.com> <CAHmME9pwgfN5J=k-2-H0cLWrHSMO2+LHk=Lnfe7qcsewue2Kxw@mail.gmail.com>
+ <2e6749cb-3a7a-242a-bd60-5fa7a8e724db@gmail.com> <20190517103543.149e9c6c@hermes.lan>
+ <5c899e85-ab00-f13b-7651-e157d9837505@gmail.com>
+In-Reply-To: <5c899e85-ab00-f13b-7651-e157d9837505@gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 17 May 2019 22:19:23 +0200
+X-Gmail-Original-Message-ID: <CAHmME9qHfDywJHhwjqqJ-8vDDdaqpGYHWDG7LTvQZ+f5b2UVng@mail.gmail.com>
+Message-ID: <CAHmME9qHfDywJHhwjqqJ-8vDDdaqpGYHWDG7LTvQZ+f5b2UVng@mail.gmail.com>
+Subject: Re: 5.1 `ip route get addr/cidr` regression
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        emersonbernier@tutanota.com, Netdev <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        David Miller <davem@davemloft.net>, piraty1@inbox.ru
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, May 17, 2019 at 7:39 PM David Ahern <dsahern@gmail.com> wrote:
+> Not sure why Jason is not seeing that. Really odd that he hits the error
+> AND does not get a message back since it requires an updated ip command
+> to set the strict checking flag and that command understands extack.
+> Perhaps no libmnl?
 
---bzclpkknxrqdijaw
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, May 17, 2019 at 07:03:19PM +0000, Kenton, Stephen M. wrote:
-> I've got some old optical (as in eyeglasses) equipment that only talks=20
-> over ARCNET that I want to get up and running. The PEX PCIe-to-PCI=20
-> bridge is on the card with the SMC COM20022 and lspci sees them
->=20
-> 02:00.0 PCI bridge [0604]: PLX Technology, Inc. PEX 8111 PCI
-> Express-to-PCI Bridge [10b5:8111] (rev 21)
-> 03:04.0 Network controller [0280]: Contemporary Controls Device
-> [1571:a0e4] (rev aa)
->   =A0=A0=A0 Subsystem: Contemporary Controls Device [1571:a0e4]
->=20
-> I just pulled the current kernel source and 1571:a0e4 does not seem to be=
- supported by the driver.
->=20
-> Before I start trying to invent wheels, is/has anyone else looking in thi=
-s area?
-
-Hi,
-
-you should probably add a new entry into com20020pci_id_table
-with the mentioned id 1571:a0e4 in drivers/net/arcnet/com20020-pci.c
-and try how far you will come.
-
-Regards,
-Michael
-
---=20
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---bzclpkknxrqdijaw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAlzfDa8ACgkQC+njFXoe
-LGTPpg/7B6Ii5bBE1CCUomj/+qbtZIUGCSDs8KRnEOiKDtopmjG3d3j0VUjlfSu7
-IPaY5gnNNRQRX5fb/9UY544yZSB7yWLzMv0opvgqbqnfTvoHNcLNoAlmdM/ddJNJ
-DsTz1OoEppMOVUGE0vF679oSqkZUGR6IIZbJgu0k+yZgA8H9MOScDBQ+0pIbBs2b
-k7AmzTsrBLvWOz/cdjqA+lbPgKxBC58H6xv1MKPinXGuwLDNQntxhuBPSkkziM8Q
-5pb6ZpURsZY0wptTJyqxOoZtH3LQMELfhu5kBMmC8DZkDr8VzqbyOwmt3AlQdYu6
-Ec/UeWO2al2CbS7GE7twdREG8U2RgVE12O7Cy/9YJbxIFqYvw5hKMs1WNBKHKJt/
-3O9Cl7t/uk/eJWwBdFPBfmYm1TODMHgKs/jjw3U7woVOYuKglBPxBubYT/Ja42hW
-JChO434wi3PG6gpd1Auer4BLCGDLzwXfmVa7dN7AdXQ6YgpLa8SVkYTUmtA5eCE/
-M1Z0ZRBGnNgFyRC3TeQxlSqy7VEbczbtAL6vFIT7JfHmdDoemSodxzM8psXc3rGe
-JEmCxdNkpqyQB8iKKVLpIH3US9aYXSCs+TAT85kt4x8+maoHWhoBIu9b+WXn1i8O
-L3k6oZYpq4WbJMjbKgnLRs76gnUXkezH9A09ntn7yDkk+3BuySo=
-=H2/A
------END PGP SIGNATURE-----
-
---bzclpkknxrqdijaw--
+Right, no libmnl. This is coming out of the iproute2 compiled for the
+tests at https://www.wireguard.com/build-status/ which are pretty
+minimal. Extact support would be kind of useful for diagnostics, and
+wg(8) already uses it, so I can probably put that in my build system.
