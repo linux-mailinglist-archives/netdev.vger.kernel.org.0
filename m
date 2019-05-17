@@ -2,218 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B31B211EC
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 04:05:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F9221220
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 04:39:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727510AbfEQCF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 22:05:26 -0400
-Received: from mail-eopbgr700121.outbound.protection.outlook.com ([40.107.70.121]:49504
-        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        id S1727379AbfEQCj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 22:39:27 -0400
+Received: from mail-eopbgr50066.outbound.protection.outlook.com ([40.107.5.66]:63618
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725933AbfEQCF0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 22:05:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=oaD0OKdQakdJbTnW2aCeFhDI0+WcIsExaqqhFjlOwzrH1o/FJF2fMTE5ycXAZhSdVnpBJzNcOTzqfEA/cYy/uTs8+k6EOj8g7Ws8M9uTO4ar5vrEBnMCcSMRdt8JwqFtHtHFvUETNcAnocsxGZK2NiW//Q4JYGGmg1yo1GL5Mz4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
+        id S1726757AbfEQCj1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 22:39:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6seYDAJhRAxsLWd/YATLjL2+Zn1TrxIrD9kjcSa7tJ0=;
- b=T4atCcJs+eo/HGca7E+cfu7W36ff4Xw1mmJpn43fjNBxvopyvEc9zYP3AjWKYPs3nQOVBsI90EqTiE/TL78Y2TR1HZuTAB/41HaA6yXU8BBrCqFWrOZHQSiI1wBBzGI5FDbaiaZmCRoiSHof13miHAf+IdjOuQEjpUgzACbwOSM=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6seYDAJhRAxsLWd/YATLjL2+Zn1TrxIrD9kjcSa7tJ0=;
- b=F4gUCN21S0MYjowiQ0YFUExdc1f50ET6Ev1GlJTy+qeMUyp/wtlkCuN/i22v3ULKGX9oEFoxTElrkQsD6uey7wRgCNyTRmH3oTVvV+6NlHP5PaTL2WC/zZNtiEMMiccP5SoGW2VZK8Y7kpoyRmtXVMXq4+PuiBB2khRf6CL/x1E=
-Received: from BN6PR21MB0465.namprd21.prod.outlook.com (2603:10b6:404:b2::15)
- by BN6PR21MB0756.namprd21.prod.outlook.com (2603:10b6:404:9c::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P256) id 15.20.1922.1; Fri, 17
- May 2019 02:05:23 +0000
-Received: from BN6PR21MB0465.namprd21.prod.outlook.com
- ([fe80::6cf3:89fb:af21:b168]) by BN6PR21MB0465.namprd21.prod.outlook.com
- ([fe80::6cf3:89fb:af21:b168%12]) with mapi id 15.20.1922.002; Fri, 17 May
- 2019 02:05:23 +0000
-From:   Sunil Muthuswamy <sunilmut@microsoft.com>
-To:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH] hv_sock: perf: loop in send() to maximize bandwidth
-Thread-Topic: [PATCH] hv_sock: perf: loop in send() to maximize bandwidth
-Thread-Index: AdUMVBbujvPfmRv4TlunnQ+yORJc9Q==
-Date:   Fri, 17 May 2019 02:05:22 +0000
-Message-ID: <BN6PR21MB046557834D46216464A6BA08C00B0@BN6PR21MB0465.namprd21.prod.outlook.com>
+ bh=q2nD5Bty3W0oZDV/VI3phhaI9K0+GDVvg8ZnfJWHV8w=;
+ b=Ek+N51cmvGDMDFHTZg+1wIfdlo+KFZ7MB+zGLXahY53HS5TEncwOa38oDwsNK9gNvNKhBXszOZKoLq+zPy6a12p/fwAuN62jrSnHYTagPRz1l3dO9pr4+fXA6Y/yXDb7k1dWyNw+s4autYun6VhGaKcUTtqwojcX1XVT8cnzSH8=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.138.152) by
+ DB7PR04MB5210.eurprd04.prod.outlook.com (20.176.236.30) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.17; Fri, 17 May 2019 02:39:10 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::bd02:a611:1f0:daac]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::bd02:a611:1f0:daac%6]) with mapi id 15.20.1900.010; Fri, 17 May 2019
+ 02:39:10 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH] can: flexcan: fix deadlock when using self wakeup
+Thread-Topic: [PATCH] can: flexcan: fix deadlock when using self wakeup
+Thread-Index: AQHVDFm06ozNDmulK0GLXWOup5sGAQ==
+Date:   Fri, 17 May 2019 02:39:10 +0000
+Message-ID: <20190517023652.19285-1-qiangqing.zhang@nxp.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR01CA0112.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::16) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:36::24)
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=sunilmut@microsoft.com; 
-x-originating-ip: [2001:4898:80e8:8:56d:b927:3a9:15b7]
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e8b63975-2324-4060-f372-08d6da6c1f13
+x-ms-office365-filtering-correlation-id: 401ceef7-fc65-40b0-96df-08d6da70d704
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:BN6PR21MB0756;
-x-ms-traffictypediagnostic: BN6PR21MB0756:
-x-microsoft-antispam-prvs: <BN6PR21MB0756DAD9ABF7607C8BF589E0C00B0@BN6PR21MB0756.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB7PR04MB5210;
+x-ms-traffictypediagnostic: DB7PR04MB5210:
+x-microsoft-antispam-prvs: <DB7PR04MB5210DB1874FB7037D752730CE60B0@DB7PR04MB5210.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-forefront-prvs: 0040126723
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(346002)(396003)(366004)(136003)(376002)(199004)(189003)(4326008)(9686003)(14454004)(8936002)(10290500003)(86612001)(86362001)(55016002)(25786009)(71190400001)(71200400001)(478600001)(66446008)(5660300002)(52536014)(64756008)(256004)(73956011)(66476007)(76116006)(66946007)(66556008)(68736007)(33656002)(81156014)(81166006)(53936002)(54906003)(486006)(476003)(46003)(186003)(6506007)(99286004)(7696005)(7736002)(316002)(6116002)(6436002)(22452003)(10090500001)(1511001)(74316002)(8676002)(110136005)(2906002)(8990500004)(52396003)(6636002)(305945005)(102836004)(14963001);DIR:OUT;SFP:1102;SCL:1;SRVR:BN6PR21MB0756;H:BN6PR21MB0465.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(39860400002)(366004)(136003)(376002)(346002)(189003)(199004)(54906003)(110136005)(66556008)(68736007)(99286004)(64756008)(66476007)(256004)(386003)(66446008)(52116002)(7736002)(66946007)(81166006)(8936002)(305945005)(6486002)(2501003)(73956011)(6512007)(8676002)(81156014)(71200400001)(71190400001)(6436002)(5024004)(14444005)(2616005)(14454004)(316002)(6116002)(476003)(486006)(50226002)(25786009)(53936002)(66066001)(26005)(102836004)(6506007)(3846002)(4326008)(478600001)(186003)(5660300002)(36756003)(2906002)(1076003)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5210;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: rIyhcgFVMPuFv0rZh7zWjIo+2pKVF2pxVtRrbFcmJ1UQVpwycJOWTTalb8EH5NL5rfiTt+TaBTFNjuCbLyxOCDx+nBGGn7rPRkjbbUpQRpAVb2n9cFQTOCmEIm1dqwfbhIepPrXgWQQ7FOyZ/nRrXBqnjYXKuXQHfHryirMcXVWkk8H4s7visfWJgYoxDWnfNAmh8B0WhiqfRN3ASQ5y55DLAQk1Ukwl/xWznUIuEWV8ervYGBILzUorhsW3bdeXT4Lys8y5JrFLhnPgYOw1eQLJB/Hj4DERB6R+Xzq5vaZB9VzlejsZTOC2CZw6diFJEUNwFAU9J400eZMGP8qqJO/ZrdY1ILd1arWtZl8DZFfdJZJfpcS/6EicyIvpZ5UnuSPGbdePLViRJvV47Qpj4dm28qFClSI5lHx2B2EhloM=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: ZW6JKS9El9w8U2nbTSqU6x9dVBSLZAJAKS/q+yXDfSiWEVF/tCmnoKd1S+BVL4iuiow3KabDbLDLqHhTmnLY9eAhOR+BD3RTLRuq/8wgPm5uJ3I9tT2VellRMVCzUHn0FbM1SqZy2Iu4loIjjlX2nRFlO2RWuTiQsPpWJUMTmwQV7amFFnu9luzsWqfqVE3WDdxrmYoUOp+ghLt1k/E+9sD0v9zAk8kELtRPTl3Kz77Fn6UzCsUqO2fZqmJt0/EYaP3sJjxqMQBn/dNjkijzx1RQ1ZvEyqP+B+/2j88kff4XfZjEP9UJhUjn0VR3BbzK1f849sDRtdxyMeHb9cDfyilENhv9Y4YjEpZuTDsQ8EZ0V5CUf3Px05FeJNvj5B36w4+8zy1liLfIG319qCjNQTmfzyH0HSxQslhErm7y6ew=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e8b63975-2324-4060-f372-08d6da6c1f13
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2019 02:05:22.2930
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 401ceef7-fc65-40b0-96df-08d6da70d704
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2019 02:39:10.3095
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sunilmut@ntdev.microsoft.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR21MB0756
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5210
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the hv_sock send() iterates once over the buffer, puts data into
-the VMBUS channel and returns. It doesn't maximize on the case when there
-is a simultaneous reader draining data from the channel. In such a case,
-the send() can maximize the bandwidth (and consequently minimize the cpu
-cycles) by iterating until the channel is found to be full.
-
-Perf data:
-Total Data Transfer: 10GB/iteration
-Single threaded reader/writer, Linux hvsocket writer with Windows hvsocket
-reader
-Packet size: 64KB
-CPU sys time was captured using the 'time' command for the writer to send
-10GB of data.
-'Send Buffer Loop' is with the patch applied.
-The values below are over 10 iterations.
-
-|--------------------------------------------------------|
-|        |        Current        |   Send Buffer Loop    |
-|--------------------------------------------------------|
-|        | Throughput | CPU sys  | Throughput | CPU sys  |
-|        | (MB/s)     | time (s) | (MB/s)     | time (s) |
-|--------------------------------------------------------|
-| Min    |     407    |   7.048  |    401     |  5.958   |
-|--------------------------------------------------------|
-| Max    |     455    |   7.563  |    542     |  6.993   |
-|--------------------------------------------------------|
-| Avg    |     440    |   7.411  |    451     |  6.639   |
-|--------------------------------------------------------|
-| Median |     446    |   7.417  |    447     |  6.761   |
-|--------------------------------------------------------|
-
-Observation:
-1. The avg throughput doesn't really change much with this change for this
-scenario. This is most probably because the bottleneck on throughput is
-somewhere else.
-2. The average system (or kernel) cpu time goes down by 10%+ with this
-change, for the same amount of data transfer.
-
-Signed-off-by: Sunil Muthuswamy <sunilmut@microsoft.com>
----
- net/vmw_vsock/hyperv_transport.c | 45 +++++++++++++++++++++++++++---------=
-----
- 1 file changed, 31 insertions(+), 14 deletions(-)
-
-diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transp=
-ort.c
-index 982a8dc..7c13032 100644
---- a/net/vmw_vsock/hyperv_transport.c
-+++ b/net/vmw_vsock/hyperv_transport.c
-@@ -55,8 +55,9 @@ struct hvs_recv_buf {
- };
-=20
- /* We can send up to HVS_MTU_SIZE bytes of payload to the host, but let's =
-use
-- * a small size, i.e. HVS_SEND_BUF_SIZE, to minimize the dynamically-alloc=
-ated
-- * buffer, because tests show there is no significant performance differen=
-ce.
-+ * a smaller size, i.e. HVS_SEND_BUF_SIZE, to maximize concurrency between=
- the
-+ * guest and the host processing as one VMBUS packet is the smallest proce=
-ssing
-+ * unit.
-  *
-  * Note: the buffer can be eliminated in the future when we add new VMBus
-  * ringbuffer APIs that allow us to directly copy data from userspace buff=
-er
-@@ -644,7 +645,9 @@ static ssize_t hvs_stream_enqueue(struct vsock_sock *vs=
-k, struct msghdr *msg,
- 	struct hvsock *hvs =3D vsk->trans;
- 	struct vmbus_channel *chan =3D hvs->chan;
- 	struct hvs_send_buf *send_buf;
--	ssize_t to_write, max_writable, ret;
-+	ssize_t to_write, max_writable;
-+	ssize_t ret =3D 0;
-+	ssize_t bytes_written =3D 0;
-=20
- 	BUILD_BUG_ON(sizeof(*send_buf) !=3D PAGE_SIZE_4K);
-=20
-@@ -652,20 +655,34 @@ static ssize_t hvs_stream_enqueue(struct vsock_sock *=
-vsk, struct msghdr *msg,
- 	if (!send_buf)
- 		return -ENOMEM;
-=20
--	max_writable =3D hvs_channel_writable_bytes(chan);
--	to_write =3D min_t(ssize_t, len, max_writable);
--	to_write =3D min_t(ssize_t, to_write, HVS_SEND_BUF_SIZE);
--
--	ret =3D memcpy_from_msg(send_buf->data, msg, to_write);
--	if (ret < 0)
--		goto out;
-+	/* Reader(s) could be draining data from the channel as we write.
-+	 * Maximize bandwidth, by iterating until the channel is found to be
-+	 * full.
-+	 */
-+	while (len) {
-+		max_writable =3D hvs_channel_writable_bytes(chan);
-+		if (!max_writable)
-+			break;
-+		to_write =3D min_t(ssize_t, len, max_writable);
-+		to_write =3D min_t(ssize_t, to_write, HVS_SEND_BUF_SIZE);
-+		/* memcpy_from_msg is safe for loop as it advances the offsets
-+		 * within the message iterator.
-+		 */
-+		ret =3D memcpy_from_msg(send_buf->data, msg, to_write);
-+		if (ret < 0)
-+			goto out;
-=20
--	ret =3D hvs_send_data(hvs->chan, send_buf, to_write);
--	if (ret < 0)
--		goto out;
-+		ret =3D hvs_send_data(hvs->chan, send_buf, to_write);
-+		if (ret < 0)
-+			goto out;
-=20
--	ret =3D to_write;
-+		bytes_written +=3D to_write;
-+		len -=3D to_write;
-+	}
- out:
-+	/* If any data has been sent, return that */
-+	if (bytes_written)
-+		ret =3D bytes_written;
- 	kfree(send_buf);
- 	return ret;
- }
---=20
-2.7.4
-
+QXMgcmVwcm90ZWQgYnkgU2VhbiBOeWVramFlciBiZWxsb3c6DQpXaGVuIHN1c3BlbmRpbmcsIHdo
+ZW4gdGhlcmUgaXMgc3RpbGwgY2FuIHRyYWZmaWMgb24gdGhlDQppbnRlcmZhY2VzIHRoZSBmbGV4
+Y2FuIGltbWVkaWF0ZWx5IHdha2VzIHRoZSBwbGF0Zm9ybSBhZ2Fpbi4NCkFzIGl0IHNob3VsZCA6
+LSkNCkJ1dCBpdCB0aHJvd3MgdGhpcyBlcnJvciBtc2c6DQpbIDMxNjkuMzc4NjYxXSBQTTogbm9p
+cnEgc3VzcGVuZCBvZiBkZXZpY2VzIGZhaWxlZA0KDQpPbiB0aGUgd2F5IGRvd24gdG8gc3VzcGVu
+ZCB0aGUgaW50ZXJmYWNlIHRoYXQgdGhyb3dzIHRoZSBlcnJvcg0KbWVzc2FnZSBkb2VzIGNhbGwg
+ZmxleGNhbl9zdXNwZW5kIGJ1dCBmYWlscyB0byBjYWxsDQpmbGV4Y2FuX25vaXJxX3N1c3BlbmQu
+DQpUaGF0IG1lYW5zIHRoZSBmbGV4Y2FuX2VudGVyX3N0b3BfbW9kZSBpcyBjYWxsZWQsIGJ1dCBv
+biB0aGUgd2F5DQpvdXQgb2Ygc3VzcGVuZCB0aGUgZHJpdmVyIG9ubHkgY2FsbHMgZmxleGNhbl9y
+ZXN1bWUgYW5kIHNraXBzDQpmbGV4Y2FuX25vaXJxX3Jlc3VtZSwgdGh1cyBpdCBkb2Vzbid0IGNh
+bGwgZmxleGNhbl9leGl0X3N0b3BfbW9kZS4NClRoaXMgbGVhdmVzIHRoZSBmbGV4Y2FuIGluIHN0
+b3AgbW9kZSwgYW5kIHdpdGggdGhlIGN1cnJlbnQgZHJpdmVyDQppdCBjYW4ndCByZWNvdmVyIGZy
+b20gdGhpcyBldmVuIHdpdGggYSBzb2Z0IHJlYm9vdCwgaXQgcmVxdWlyZXMgYQ0KaGFyZCByZWJv
+b3QuDQoNCkZpeGVzOiBkZTM1NzhjMTk4YzYgKCJjYW46IGZsZXhjYW46IGFkZCBzZWxmIHdha2V1
+cCBzdXBwb3J0IikNCg0KVGhpcyBwYXRjaCBpbnRlbmRzIHRvIGZpeCB0aGUgaXNzdWUsIGFuZCBh
+bHNvIGFkZCBjb21tZW50IHRvIGV4cGxhaW4gdGhlDQp3YWtldXAgZmxvdy4NCg0KU2lnbmVkLW9m
+Zi1ieTogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT4NCi0tLQ0KIGRyaXZl
+cnMvbmV0L2Nhbi9mbGV4Y2FuLmMgfCAxNyArKysrKysrKysrKysrKysrKw0KIDEgZmlsZSBjaGFu
+Z2VkLCAxNyBpbnNlcnRpb25zKCspDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9jYW4vZmxl
+eGNhbi5jIGIvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0KaW5kZXggZTM1MDgzZmYzMWVlLi42
+ZmJjZTQ3M2E4YzcgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jDQorKysg
+Yi9kcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jDQpAQCAtMjg2LDYgKzI4Niw3IEBAIHN0cnVjdCBm
+bGV4Y2FuX3ByaXYgew0KIAljb25zdCBzdHJ1Y3QgZmxleGNhbl9kZXZ0eXBlX2RhdGEgKmRldnR5
+cGVfZGF0YTsNCiAJc3RydWN0IHJlZ3VsYXRvciAqcmVnX3hjZWl2ZXI7DQogCXN0cnVjdCBmbGV4
+Y2FuX3N0b3BfbW9kZSBzdG07DQorCWJvb2wgaW5fc3RvcF9tb2RlOw0KIA0KIAkvKiBSZWFkIGFu
+ZCBXcml0ZSBBUElzICovDQogCXUzMiAoKnJlYWQpKHZvaWQgX19pb21lbSAqYWRkcik7DQpAQCAt
+MTY1Myw2ICsxNjU0LDcgQEAgc3RhdGljIGludCBfX21heWJlX3VudXNlZCBmbGV4Y2FuX3N1c3Bl
+bmQoc3RydWN0IGRldmljZSAqZGV2aWNlKQ0KIAkJaWYgKGRldmljZV9tYXlfd2FrZXVwKGRldmlj
+ZSkpIHsNCiAJCQllbmFibGVfaXJxX3dha2UoZGV2LT5pcnEpOw0KIAkJCWZsZXhjYW5fZW50ZXJf
+c3RvcF9tb2RlKHByaXYpOw0KKwkJCXByaXYtPmluX3N0b3BfbW9kZSA9IHRydWU7DQogCQl9IGVs
+c2Ugew0KIAkJCWVyciA9IGZsZXhjYW5fY2hpcF9kaXNhYmxlKHByaXYpOw0KIAkJCWlmIChlcnIp
+DQpAQCAtMTY3OSw2ICsxNjgxLDExIEBAIHN0YXRpYyBpbnQgX19tYXliZV91bnVzZWQgZmxleGNh
+bl9yZXN1bWUoc3RydWN0IGRldmljZSAqZGV2aWNlKQ0KIAkJbmV0aWZfZGV2aWNlX2F0dGFjaChk
+ZXYpOw0KIAkJbmV0aWZfc3RhcnRfcXVldWUoZGV2KTsNCiAJCWlmIChkZXZpY2VfbWF5X3dha2V1
+cChkZXZpY2UpKSB7DQorCQkJaWYgKHByaXYtPmluX3N0b3BfbW9kZSkgew0KKwkJCQlmbGV4Y2Fu
+X2VuYWJsZV93YWtldXBfaXJxKHByaXYsIGZhbHNlKTsNCisJCQkJZmxleGNhbl9leGl0X3N0b3Bf
+bW9kZShwcml2KTsNCisJCQkJcHJpdi0+aW5fc3RvcF9tb2RlID0gZmFsc2U7DQorCQkJfQ0KIAkJ
+CWRpc2FibGVfaXJxX3dha2UoZGV2LT5pcnEpOw0KIAkJfSBlbHNlIHsNCiAJCQllcnIgPSBwbV9y
+dW50aW1lX2ZvcmNlX3Jlc3VtZShkZXZpY2UpOw0KQEAgLTE3MTUsNiArMTcyMiwxMSBAQCBzdGF0
+aWMgaW50IF9fbWF5YmVfdW51c2VkIGZsZXhjYW5fbm9pcnFfc3VzcGVuZChzdHJ1Y3QgZGV2aWNl
+ICpkZXZpY2UpDQogCXN0cnVjdCBuZXRfZGV2aWNlICpkZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2
+aWNlKTsNCiAJc3RydWN0IGZsZXhjYW5fcHJpdiAqcHJpdiA9IG5ldGRldl9wcml2KGRldik7DQog
+DQorCS8qIE5lZWQgZW5hYmxlIHdha2V1cCBpbnRlcnJ1cHQgaW4gbm9pcnEgc3VzcGVuZCBzdGFn
+ZS4gT3RoZXJ3aXNlLA0KKwkgKiBpdCB3aWxsIHRyaWdnZXIgY29udGludW91c2x5IHdha2V1cCBp
+bnRlcnJ1cHQgaWYgdGhlIHdha2V1cCBldmVudA0KKwkgKiBjb21lcyBiZWZvcmUgbm9pcnEgc3Vz
+cGVuZCBzdGFnZSwgYW5kIHNpbXVsdGFuZW91c2x5IGluIGhhcyBlbnRlcg0KKwkgKiB0aGUgc3Rv
+cCBtb2RlLg0KKwkgKi8NCiAJaWYgKG5ldGlmX3J1bm5pbmcoZGV2KSAmJiBkZXZpY2VfbWF5X3dh
+a2V1cChkZXZpY2UpKQ0KIAkJZmxleGNhbl9lbmFibGVfd2FrZXVwX2lycShwcml2LCB0cnVlKTsN
+CiANCkBAIC0xNzI2LDkgKzE3MzgsMTQgQEAgc3RhdGljIGludCBfX21heWJlX3VudXNlZCBmbGV4
+Y2FuX25vaXJxX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXZpY2UpDQogCXN0cnVjdCBuZXRfZGV2
+aWNlICpkZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2aWNlKTsNCiAJc3RydWN0IGZsZXhjYW5fcHJp
+diAqcHJpdiA9IG5ldGRldl9wcml2KGRldik7DQogDQorCS8qIE5lZWQgZXhpdCBzdG9wIG1vZGUg
+aW4gbm9pcnEgcmVzdW1lIHN0YWdlLiBPdGhlcndpc2UsIGl0IHdpbGwNCisJICogdHJpZ2dlciBj
+b250aW51b3VzbHkgd2FrZXVwIGludGVycnVwdCBpZiB0aGUgd2FrZXVwIGV2ZW50IGNvbWVzLA0K
+KwkgKiBhbmQgc2ltdWx0YW5lb3VzbHkgaXQgaGFzIHN0aWxsIGluIHN0b3AgbW9kZS4NCisJICov
+DQogCWlmIChuZXRpZl9ydW5uaW5nKGRldikgJiYgZGV2aWNlX21heV93YWtldXAoZGV2aWNlKSkg
+ew0KIAkJZmxleGNhbl9lbmFibGVfd2FrZXVwX2lycShwcml2LCBmYWxzZSk7DQogCQlmbGV4Y2Fu
+X2V4aXRfc3RvcF9tb2RlKHByaXYpOw0KKwkJcHJpdi0+aW5fc3RvcF9tb2RlID0gZmFsc2U7DQog
+CX0NCiANCiAJcmV0dXJuIDA7DQotLSANCjIuMTcuMQ0KDQo=
