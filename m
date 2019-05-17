@@ -2,178 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80C0D21F17
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 22:33:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 788DB21F1A
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 22:34:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbfEQUcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 16:32:41 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:44837 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726757AbfEQUcl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 16:32:41 -0400
-Received: by mail-pf1-f195.google.com with SMTP id g9so4191910pfo.11
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 13:32:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Pkjjm2IPHEDZQ8vle/ofNfsB0sZa7wj3k6gVceCDCiA=;
-        b=lUK9iUI4m15cUG0MX9JUMy8PEaNCYVAlgOU3o44wcswXLQHi7Ka/+dsraw16vHMg7k
-         TjX/yAvc+I36zqzzh9zbReGqdE2o/yYTsSOckgbBcblRMZIDTWUsROIbMSIx90cdt9LL
-         MO/l8tFzDNXF44+bLoUQp+KMzpMnneWvaHjoSuDcMB50L33QNzVFwKtguCx9WD8kz8bY
-         vmNIz7JyE3IRZd7iXWCrFZlIj0/aSKd1mTIzopRpObyIwO/j+FO0RKkxKu88BdfflTJl
-         xCbT0lEwpDi3lPoWkPx1sbJHLn9HOMX40xaGchERVyRrr5JhVclds/iYgz4BRZoh3IK5
-         zfFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Pkjjm2IPHEDZQ8vle/ofNfsB0sZa7wj3k6gVceCDCiA=;
-        b=H1n06Hev66QDHhRKKya/RKP1f9C3FLQIem38EG96wFFCEsBijTrwz5NGSVQh/wvmnd
-         IFFU41mybMJxpDXtcBRv9GGngjYmFereOQyGajwjJBPbrIsCgX0jwGBgin9Q0iU/h/2A
-         O76EvrKZPLu+sPyLqEajMJeJ3TEmp2rQ5PfUyDzLrkhVR5308MS+29qjrw4jfduLQ2Nx
-         1UkGbTZn+YooDoNYN32AnaAEPKy0HboXWAPi69Kbs5v+p1Z9hj/aFUz39gscD5r55HGB
-         n6cKQ9nE3r0yORr8Y/SJQRTj2stJMi09ubmpiSHuZzZR+5NjR0qcpdHAyUVKIQ5Pv2Hr
-         3VPw==
-X-Gm-Message-State: APjAAAVpHHNn0L0WuVzlqhpsI+T4pk2OChCnjgtbNPi1sp0hOb5CAWoR
-        0sANz24OTY9VslZ+1OYTlQZrv4G5
-X-Google-Smtp-Source: APXvYqzSGe/Y3ys8U2aZThcktAjtLHIjZ8UzcnfC/l/5IFe8lJ4DNVlvT8vpiNin6xLhD09LdmIFpw==
-X-Received: by 2002:a62:5b81:: with SMTP id p123mr64807031pfb.158.1558125160227;
-        Fri, 17 May 2019 13:32:40 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
-        by smtp.gmail.com with ESMTPSA id t18sm15538028pgm.69.2019.05.17.13.32.38
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 May 2019 13:32:39 -0700 (PDT)
-Subject: Re: [PATCH net-next RFC] ipv6: elide flowlabel check if no exclusive
- leases exist
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     Willem de Bruijn <willemb@google.com>
-References: <20190517155625.117835-1-willemdebruijn.kernel@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d7502d42-207b-177e-8f2b-f6645feff051@gmail.com>
-Date:   Fri, 17 May 2019 13:32:33 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190517155625.117835-1-willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1727770AbfEQUeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 16:34:16 -0400
+Received: from mail-eopbgr50049.outbound.protection.outlook.com ([40.107.5.49]:20901
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726757AbfEQUeQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 May 2019 16:34:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t4MCPgfrm2A5TkzCD2lu6r6mD1zverZVhRMloD0Zy88=;
+ b=e78jBHRiaYdWhdlaHQ7R7SzKj30wcrfSMawJE87WnIUZO57kGzihINcQQgmGRxjcBkRyTcze17UBnF2kBG+g+rk8zc/l7IP6vsyxG4seXFx1cLki/FCLyHoR2xTF8dFZU7SzGoK8w+mArWD3KMOXshZgNl9bN5uqhnE9ecXI82E=
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
+ DB8PR05MB5932.eurprd05.prod.outlook.com (20.179.9.20) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.17; Fri, 17 May 2019 20:34:13 +0000
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::7159:5f3a:906:6aab]) by DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::7159:5f3a:906:6aab%7]) with mapi id 15.20.1900.010; Fri, 17 May 2019
+ 20:34:13 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "wenxu@ucloud.cn" <wenxu@ucloud.cn>, Roi Dayan <roid@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2] net/mlx5e: Add bonding device for indr block to
+ offload the packet received from bonding device
+Thread-Topic: [PATCH v2] net/mlx5e: Add bonding device for indr block to
+ offload the packet received from bonding device
+Thread-Index: AQHVDJF5FWVnYyzo6UCV+YsYkW6mZKZvxqGA
+Date:   Fri, 17 May 2019 20:34:13 +0000
+Message-ID: <4702c2da4a5a8a065f36c5414fa4057ba9f12883.camel@mellanox.com>
+References: <1558084668-21203-1-git-send-email-wenxu@ucloud.cn>
+In-Reply-To: <1558084668-21203-1-git-send-email-wenxu@ucloud.cn>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9a0fb112-50b3-4ebf-cf4d-08d6db070626
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB5932;
+x-ms-traffictypediagnostic: DB8PR05MB5932:
+x-microsoft-antispam-prvs: <DB8PR05MB59320EF7AB15A98F187406D1BE0B0@DB8PR05MB5932.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0040126723
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(396003)(376002)(39860400002)(346002)(136003)(51914003)(189003)(199004)(8676002)(4326008)(110136005)(36756003)(6436002)(71190400001)(3846002)(6116002)(2906002)(6486002)(53936002)(76116006)(71200400001)(229853002)(316002)(14454004)(99286004)(66066001)(5660300002)(6506007)(6636002)(6246003)(81156014)(6512007)(91956017)(81166006)(76176011)(102836004)(66556008)(64756008)(476003)(2616005)(66446008)(25786009)(486006)(66946007)(2501003)(73956011)(256004)(11346002)(118296001)(305945005)(446003)(26005)(8936002)(58126008)(7736002)(86362001)(478600001)(68736007)(186003)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB5932;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: wy19GMyHAs0iJ7VJdVygbyxjuRegGjkqRd3UlYkBwfJoJjCGTKHBflVIRpdJsm2sZWksvnN1KP9LFCJnwNzNVsLwr/xfuW0FhPlDO+ErkMPJpNeexcNpnupjnHnd/9qKbLah4CUgLQkS6j+V61HMcnYRAQyabQKQEKSvU17ssdQwnuTPMwE+wli6hfcE5gsaxSHGAPaJkZCrp20rSrdRBWt5a5GYCbF16urEvNV410u/OiAKgQ8iC7asrzTaGhXrW6bVqTywmRSdkCZDSMAOhwYcV1Q+WwLOIf8gqmnsbCA/eR0JF2t65nLLxxWWkxwWC7Wn6tG+VIZqFfReSBdkWYYwwdaMfCeVLqy6/V7NQNW0/3qWRtvO35qIZ5R9vGGc3VMLTymYXuTtKaabpfgq5Zczl5obTLaxhFl0PNnnv18=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <85C4F3153E71404CA118374F8FDA853A@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a0fb112-50b3-4ebf-cf4d-08d6db070626
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2019 20:34:13.3364
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB5932
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/17/19 8:56 AM, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
-> 
-> Processes can request ipv6 flowlabels with cmsg IPV6_FLOWINFO.
-> If not set, by default an autogenerated flowlabel is selected.
-> 
-> Explicit flowlabels require a control operation per label plus a
-> datapath check on every connection (every datagram if unconnected).
-> 
-> This is particularly expensive on unconnected sockets with many
-> connections, such as QUIC.
-> 
-> In the common case, where no lease is exclusive, the check can be
-> safely elided, as both lease request and check trivially succeed.
-> Indeed, autoflowlabel does the same (even with exclusive leases).
-> 
-> Elide the check if no process has requested an exclusive lease.
-> 
-> This is an optimization. Robust applications still have to revert to
-> requesting leases if the fast path fails due to an exclusive lease.
-> 
-> This is decidedly an RFC patch:
-> - need to update all fl6_sock_lookup callers, not just udp
-> - behavior should be per-netns isolated
-> 
-> Other approaches considered:
-> - a single "get all flowlabels, non-exclusive" flowlabel get request
->   if set, elide fl6_sock_lookup and fail exclusive lease requests
-> 
-> - sysctls (only useful if on by default, with static_branch)
->   A) "non-exclusive mode", failing all exclusive lease requests:
->      processes already have to be robust against lease failure
->   B) just bypass check in fl6_sock_lookup, like autoflowlabel
-> 
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> ---
->  include/net/ipv6.h       | 11 +++++++++++
->  net/ipv6/ip6_flowlabel.c |  6 ++++++
->  net/ipv6/udp.c           |  8 ++++----
->  3 files changed, 21 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-> index daf80863d3a50..8881cee572410 100644
-> --- a/include/net/ipv6.h
-> +++ b/include/net/ipv6.h
-> @@ -17,6 +17,7 @@
->  #include <linux/hardirq.h>
->  #include <linux/jhash.h>
->  #include <linux/refcount.h>
-> +#include <linux/jump_label.h>
->  #include <net/if_inet6.h>
->  #include <net/ndisc.h>
->  #include <net/flow.h>
-> @@ -343,7 +344,17 @@ static inline void txopt_put(struct ipv6_txoptions *opt)
->  		kfree_rcu(opt, rcu);
->  }
->  
-> +extern struct static_key_false ipv6_flowlabel_exclusive;
->  struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label);
-> +static inline struct ip6_flowlabel *fl6_sock_verify(struct sock *sk,
-> +						    __be32 label)
-> +{
-> +	if (static_branch_unlikely(&ipv6_flowlabel_exclusive))
-> +		return fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
-> +
-> +	return NULL;
-> +}
-> +
->  struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
->  					 struct ip6_flowlabel *fl,
->  					 struct ipv6_txoptions *fopt);
-> diff --git a/net/ipv6/ip6_flowlabel.c b/net/ipv6/ip6_flowlabel.c
-> index be5f3d7ceb966..d5f4233b04e0c 100644
-> --- a/net/ipv6/ip6_flowlabel.c
-> +++ b/net/ipv6/ip6_flowlabel.c
-> @@ -57,6 +57,8 @@ static DEFINE_SPINLOCK(ip6_fl_lock);
->  
->  static DEFINE_SPINLOCK(ip6_sk_fl_lock);
->  
-> +DEFINE_STATIC_KEY_FALSE(ipv6_flowlabel_exclusive);
-> +
->  #define for_each_fl_rcu(hash, fl)				\
->  	for (fl = rcu_dereference_bh(fl_ht[(hash)]);		\
->  	     fl != NULL;					\
-> @@ -98,6 +100,8 @@ static void fl_free_rcu(struct rcu_head *head)
->  {
->  	struct ip6_flowlabel *fl = container_of(head, struct ip6_flowlabel, rcu);
->  
-> +	if (fl->share != IPV6_FL_S_NONE && fl->share != IPV6_FL_S_ANY)
-> +		static_branch_dec(&ipv6_flowlabel_exclusive);
-
-static_branch_dec() can not be invoked from a rcu call back.
-
->  	if (fl->share == IPV6_FL_S_PROCESS)
->  		put_pid(fl->owner.pid);
->  	kfree(fl->opt);
-> @@ -423,6 +427,8 @@ fl_create(struct net *net, struct sock *sk, struct in6_flowlabel_req *freq,
->  	}
->  	fl->dst = freq->flr_dst;
->  	atomic_set(&fl->users, 1);
-> +	if (fl->share != IPV6_FL_S_ANY)
-> +		static_branch_inc(&ipv6_flowlabel_exclusive);
-
-
-Can this be used by unpriv users ?
-
-If yes, then you want to use static_key_false_deferred instead
-
-
+T24gRnJpLCAyMDE5LTA1LTE3IGF0IDE3OjE3ICswODAwLCB3ZW54dUB1Y2xvdWQuY24gd3JvdGU6
+DQo+IEZyb206IHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+DQo+IA0KPiBUaGUgbWx4NWUgc3VwcG9y
+dCB0aGUgbGFnIG1vZGUuIFdoZW4gYWRkIG1seF9wMCBhbmQgbWx4X3AxIHRvIGJvbmQwLg0KPiBw
+YWNrZXQgcmVjZWl2ZWQgZnJvbSBtbHhfcDAgb3IgbWx4X3AxIGFuZCBpbiB0aGUgaW5ncmVzcyB0
+YyBmbG93ZXINCj4gZm9yd2FyZCB0byB2ZjAuIFRoZSB0YyBydWxlIGNhbid0IGJlIG9mZmxvYWRl
+ZCBiZWNhdXNlIHRoZXJlIGlzDQo+IG5vIGluZHJfcmVnaXN0ZXJfYmxvY2sgZm9yIHRoZSBib25k
+aW5nIGRldmljZS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+
+DQoNCkhpIFdlbnh1LCB0aGFua3MgZm9yIHRoZSBwYXRjaA0KDQpJIHdvdWxkIGxpa2UgdG8gd2Fp
+dCBmb3Igc29tZSBmZWVkYmFjayBmcm9tIFJvaSBhbmQgaGlzIHRlYW0sIA0KR3V5cyBjYW4geW91
+IHBsZWFzZSBwcm92aWRlIGZlZWRiYWNrID8NCg0KVGhhbmtzLA0KU2FlZWQNCg0KPiAtLS0NCj4g
+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yZXAuYyB8IDEgKw0K
+PiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jDQo+IGIvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jDQo+IGluZGV4IDkxZTI0
+ZjEuLjEzNGZhMGIgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94
+L21seDUvY29yZS9lbl9yZXAuYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5v
+eC9tbHg1L2NvcmUvZW5fcmVwLmMNCj4gQEAgLTc5Niw2ICs3OTYsNyBAQCBzdGF0aWMgaW50IG1s
+eDVlX25pY19yZXBfbmV0ZGV2aWNlX2V2ZW50KHN0cnVjdA0KPiBub3RpZmllcl9ibG9jayAqbmIs
+DQo+ICAJc3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldiA9IG5ldGRldl9ub3RpZmllcl9pbmZvX3Rv
+X2RldihwdHIpOw0KPiAgDQo+ICAJaWYgKCFtbHg1ZV90Y190dW5fZGV2aWNlX3RvX29mZmxvYWQo
+cHJpdiwgbmV0ZGV2KSAmJg0KPiArCSAgICAhbmV0aWZfaXNfYm9uZF9tYXN0ZXIobmV0ZGV2KSAm
+Jg0KPiAgCSAgICAhaXNfdmxhbl9kZXYobmV0ZGV2KSkNCj4gIAkJcmV0dXJuIE5PVElGWV9PSzsN
+Cj4gIA0K
