@@ -2,180 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1C6021C98
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:37:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A728E21C9F
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:39:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728594AbfEQRhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 13:37:08 -0400
-Received: from mail-eopbgr50052.outbound.protection.outlook.com ([40.107.5.52]:47590
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728435AbfEQRhH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 May 2019 13:37:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=syOdPAq77alf0HUSnVFK4c8S5hXkdncAXMeN3//5SJM=;
- b=KpjcdgRPyvqmJYVu+o1vk1CkvF653PcFWbKLU8oVTFIAv2NHwUAFiANN74zKGvuA0Tne1tzMCxzUx8cEFoNwKwFNWATZOzPx6pEJOchwHFlznmnmSXXOWvAX7TSNmb6mUHfoo/qIinUE/P7Y2ORGJ9yQ0dwW1nG+q+QMX06xYPM=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB2863.eurprd04.prod.outlook.com (10.175.20.18) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.16; Fri, 17 May 2019 17:37:00 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::f494:9fa1:ebae:6053]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::f494:9fa1:ebae:6053%8]) with mapi id 15.20.1900.010; Fri, 17 May 2019
- 17:37:00 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-CC:     Vivien Didelot <vivien.didelot@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: RE: dsa: using multi-gbps speeds on CPU port
-Thread-Topic: dsa: using multi-gbps speeds on CPU port
-Thread-Index: AQHVCxtHwkM2fCsHq0SrAIkT4cyjraZsLYqAgAAJ1wCAACOKAIADFDwAgAADH0A=
-Date:   Fri, 17 May 2019 17:37:00 +0000
-Message-ID: <VI1PR0402MB2800630F0E9CCBE6A3FBCFBEE00B0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <20190515143936.524acd4e@bootlin.com>
-        <20190515132701.GD23276@lunn.ch>
-        <20190515160214.1aa5c7d9@bootlin.com>
-        <35daa9e7-8b97-35dd-bc95-bab57ef401cd@gmail.com>
- <20190517171038.36d921a5@bootlin.com>
-In-Reply-To: <20190517171038.36d921a5@bootlin.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 43c3c4d6-a216-462f-f241-08d6daee444c
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB2863;
-x-ms-traffictypediagnostic: VI1PR0402MB2863:
-x-microsoft-antispam-prvs: <VI1PR0402MB286363BC4F80C165BA2DBB54E00B0@VI1PR0402MB2863.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0040126723
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(136003)(396003)(376002)(346002)(366004)(53754006)(51914003)(199004)(189003)(110136005)(478600001)(71190400001)(71200400001)(26005)(8676002)(6246003)(44832011)(81156014)(81166006)(53936002)(7696005)(256004)(68736007)(186003)(305945005)(486006)(6506007)(7736002)(76116006)(33656002)(102836004)(54906003)(14444005)(11346002)(446003)(476003)(99286004)(76176011)(5660300002)(2906002)(8936002)(64756008)(52536014)(74316002)(25786009)(6116002)(6436002)(66066001)(3846002)(86362001)(66476007)(66446008)(4326008)(14454004)(55016002)(66556008)(7416002)(229853002)(316002)(66946007)(73956011)(9686003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB2863;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: mVfMiq3GbpdsQeDgTpU09+vVp4JZZDK1izgooj1OZz6U9+Kggzetd71cjMEbvACy0Q9WWZ8eu1Ja26ahAFHAeFTiPU6guSyy63gvDypLa8ZA4SfVeVeikMyKFYLKjTyWj66N5a3PKIG/Woo7cVNSryE0Iot4N69Ebz5FjeauTVRjwfPk+vMEHTDKHB4irkMn83XUPMFLFP0xe5o0Cd0L4D3lq2w4s1/zdWZ9/ojvnJOClr3j5TDocijoTRJaz8AQTYqhbZTRVAfTNRors7pIBJIKaGjXTmET3Am+LSObmGehroySmDqjsexIalCTl0Ep2CRC5GIMQXW5SjsJgg20LNrbYzKkywdnQfF2Mfb8PNCT8NeNM/jAbyRvZAiST68SXzrAkzubuxWwmFlH/jATNC7LN4/nnseXHLASdXXf9og=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728619AbfEQRjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 13:39:09 -0400
+Received: from mail-pg1-f172.google.com ([209.85.215.172]:42064 "EHLO
+        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726078AbfEQRjJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 13:39:09 -0400
+Received: by mail-pg1-f172.google.com with SMTP id 145so3608006pgg.9
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 10:39:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=D+aN70SgzRALpJpl2VsJZKK09FAd3fwSCUoNgjkW5ao=;
+        b=jOeMx09IaIGEKN/kLh3DAAY2p8NaqE8Ou4nfVhewXWtQ3gB2kVwu7i992EaFjxcrUz
+         MB+kxEKSRtpfPlM8vq/eO+oos9lKKYEvgiekJV65XZYjUZkB1NdwEPoowWBFRQr3FyVD
+         Hzl37tA9wo8nrjHl/a1CAHWohxM5EygireytqJ/a2VZ2RreAD6DSipcVjinS5ocHSv2+
+         LpFXBmXCgX8dzE0NMhRdbnkrQVjcGNCitU4tmzCai4etaowTNxq9Vz6WBIn0pYQ2tBsh
+         nroUu0Ju2aC9VZHxA54JWystPKTFtvcOl0lF7Bby0iJVZXy85pI/LCBNHbkcePNZK9J4
+         zL6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=D+aN70SgzRALpJpl2VsJZKK09FAd3fwSCUoNgjkW5ao=;
+        b=F+pHyeoz0CKMYuiL1DGAYPW2vWUQc5vHJl5Z5+R8zalG10UDh9CfrjpfWAglKoMm7a
+         vjDdbwWRqB2s8dZSzRXmfCp96FRBkncfxuumaIFhkE64S0P053XMqo1uPrhE4Ye3DsG8
+         b3LkahogY5ImDzGzQhAe9fgOZxI0msGvbzbNmnGMEyIypZSog9DMPqgg7stq44ZXnr56
+         Q0/b43pXoeuuIvFeXsMy0s49o4414BHglcoqMK7NQjnWpaxnVQyUZBWRmHP0lg6XUi+h
+         Fcj6iYuNrHM1PDxz1V20bH5ohUTyLT/WDCc2HQIHB5MsUDFneYvflvWqW/SuUqJIQegg
+         vkAg==
+X-Gm-Message-State: APjAAAV+uIt+WJ6rpZO20BBi0wZF8lXwsSzKAXEavbSFQIlpvu+S17YH
+        pU09hwFyisXv645Cf3q+SDs=
+X-Google-Smtp-Source: APXvYqyoQ9Pq8vzIPQ2jlNYROySCvQn0MCvFl+/O5K1lOZtolr5glQKUSjthDWlixtRlAlwCRpQrMw==
+X-Received: by 2002:a62:470e:: with SMTP id u14mr62823663pfa.31.1558114748781;
+        Fri, 17 May 2019 10:39:08 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:743c:f418:8a94:7ec7? ([2601:282:800:fd80:743c:f418:8a94:7ec7])
+        by smtp.googlemail.com with ESMTPSA id x18sm13509126pfj.17.2019.05.17.10.39.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 May 2019 10:39:07 -0700 (PDT)
+Subject: Re: 5.1 `ip route get addr/cidr` regression
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        emersonbernier@tutanota.com, Netdev <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        David Miller <davem@davemloft.net>, piraty1@inbox.ru
+References: <LaeckvP--3-1@tutanota.com>
+ <CAHmME9pwgfN5J=k-2-H0cLWrHSMO2+LHk=Lnfe7qcsewue2Kxw@mail.gmail.com>
+ <2e6749cb-3a7a-242a-bd60-5fa7a8e724db@gmail.com>
+ <20190517103543.149e9c6c@hermes.lan>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5c899e85-ab00-f13b-7651-e157d9837505@gmail.com>
+Date:   Fri, 17 May 2019 11:39:05 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 43c3c4d6-a216-462f-f241-08d6daee444c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2019 17:37:00.1858
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2863
+In-Reply-To: <20190517103543.149e9c6c@hermes.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: dsa: using multi-gbps speeds on CPU port
->=20
-> Hi everyone,
->=20
-> On Wed, 15 May 2019 09:09:26 -0700
-> Florian Fainelli <f.fainelli@gmail.com> wrote:
->=20
-> >On 5/15/19 7:02 AM, Maxime Chevallier wrote:
-> >> Hi Andrew,
-> >>
-> >> On Wed, 15 May 2019 15:27:01 +0200
-> >> Andrew Lunn <andrew@lunn.ch> wrote:
-> >>
-> >>> I think you are getting your terminology wrong. 'master' is eth0 in
-> >>> the example you gave above. CPU and DSA ports don't have netdev
-> >>> structures, and so any PHY used with them is not corrected to a
-> >>> netdev.
-> >>
-> >> Ah yes sorry, I'm still in the process of getting familiar with the
-> >> internals of DSA :/
-> >>
-> >>>> I'll be happy to help on that, but before prototyping anything, I wa=
-nted
-> >>>> to have your thougts on this, and see if you had any plans.
-> >>>
-> >>> There are two different issues here.
-> >>>
-> >>> 1) Is using a fixed-link on a CPU or DSA port the right way to do thi=
-s?
-> >>> 2) Making fixed-link support > 1G.
-> >>>
-> >>> The reason i decided to use fixed-link on CPU and DSA ports is that
-> >>> we already have all the code needed to configure a port, and an API
-> >>> to do it, the adjust_link() callback. Things have moved on since
-> >>> then, and we now have an additional API, .phylink_mac_config(). It
-> >>> might be better to directly use that. If there is a max-speed
-> >>> property, create a phylink_link_state structure, which has no
-> >>> reference to a netdev, and pass it to .phylink_mac_config().
-> >>>
-> >>> It is just an idea, but maybe you could investigate if that would
-> >>> work.
->=20
-> I've quickly prototyped and tested this solution, and besides a few tweak=
-s that
-> are needed on the mv88e6xxx driver side, it works fine.
->=20
-> I'll post an RFC with this shortly, so that you can see what it looks lik=
-e.
->=20
-> As Russell said, there wasn't anything needed on the master interface sid=
-e.
->=20
-> >
-> >Vladimir mentioned a few weeks ago that he is considering adding
-> >support for PHYLIB and PHYLINK to run without a net_device instance,
-> >you two should probably coordinate with each other and make sure both
-> >of your requirements (which are likely the same) get addressed.
->=20
-> That would help a lot solving this issue indeed, I'll be happy to help on=
- that,
-> thanks for the tip !
->=20
-> Maxime
->=20
+On 5/17/19 11:35 AM, Stephen Hemminger wrote:
+> On Fri, 17 May 2019 09:17:51 -0600
+> David Ahern <dsahern@gmail.com> wrote:
+> 
+>> On 5/17/19 4:22 AM, Jason A. Donenfeld wrote:
+>>> Hi,
+>>>
+>>> I'm back now and catching up with a lot of things. A few people have
+>>> mentioned to me that wg-quick(8), a bash script that makes a bunch of
+>>> iproute2 invocations, appears to be broken on 5.1. I've distilled the
+>>> behavior change down to the following.
+>>>
+>>> Behavior on 5.0:
+>>>
+>>> + ip link add wg0 type dummy
+>>> + ip address add 192.168.50.2/24 dev wg0
+>>> + ip link set mtu 1420 up dev wg0
+>>> + ip route get 192.168.50.0/24
+>>> broadcast 192.168.50.0 dev wg0 src 192.168.50.2 uid 0
+>>>    cache <local,brd>
+>>>
+>>> Behavior on 5.1:
+>>>
+>>> + ip link add wg0 type dummy
+>>> + ip address add 192.168.50.2/24 dev wg0
+>>> + ip link set mtu 1420 up dev wg0
+>>> + ip route get 192.168.50.0/24
+>>> RTNETLINK answers: Invalid argument  
+>>
+>> This is a 5.1 change.
+>> a00302b607770 ("net: ipv4: route: perform strict checks also for doit
+>> handlers")
+>>
+>> Basically, the /24 is unexpected. I'll send a patch.
+>>
+>>>
+>>> Upon investigating, I'm not sure that `ip route get` was ever suitable
+>>> for getting details on a particular route. So I'll adjust the  
+>>
+>> 'ip route get <prefix> fibmatch' will show the fib entry.
+>>
+> 
+> If you want to keep the error, the kernel should send additional
+> extack as to reason. EINVAL is not user friendly...
+> 
 
-Hi Maxime,
+The kernel does set an extack for all EINVAL in this code path.
 
-I am currently maintaining some drivers for Freescale/NXP DPAA2 Ethernet. T=
-his architecture has a management firmware that abstracts and simplifies th=
-e hardware configuration into a so called object model. DPAA2 is a little t=
-oo modular and you have the concept of a network interface object (DPNI) wh=
-ich is completely self-contained and separate from the hardware port itself=
- (DPMAC). You can connect DPNIs to DPMACs but also DPNIs to one another. Th=
-e dpaa2-eth driver conceptually handles a DPNI object. Among other things, =
-the management firmware presents the link state information to the DPNI obj=
-ect as abstract as possible (speed, duplex, up/down etc.). The firmware gat=
-hers this information from whomever the DPNI is connected to. Since the fir=
-mware can't reuse Linux PHY drivers due to incompatible licensing, we need =
-another driver which acts as glue logic between the PHY drivers and the fir=
-mware. This is the out-of-tree dpmac driver that notifies the firmware of a=
-ny external PHY events. At the end of the day, the dpaa2-eth driver gets no=
-tified of these external PHY events after the firmware itself is notified a=
-nd raises an interrupt line.=20
-
-To start the PHY state machine for a port, the dpmac driver must fabricate =
-a netdevice which it does not register with the stack. One would, of course=
-, suggest to move the PHY management directly into the dpaa2-eth driver. Bu=
-t the firmware's ABI is already stable and besides, it is not desirable to =
-grant MDIO access to users of the DPNI object.
-
-Obviously, that fake netdevice has to go before the dpmac driver sees mainl=
-ine. What you guys are proposing (the phylink/netdev decoupling) would also=
- benefit our scenario. I talked to Vladimir and we'll make sure that whatev=
-er works for us is also benefiting the DSA cpu/cascade port. Hopefully we'l=
-l have some patches early next week.
-
--Ioana
+Not sure why Jason is not seeing that. Really odd that he hits the error
+AND does not get a message back since it requires an updated ip command
+to set the strict checking flag and that command understands extack.
+Perhaps no libmnl?
