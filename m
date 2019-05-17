@@ -2,195 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52B2B21D06
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 20:04:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D73C21CEC
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:57:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728973AbfEQSED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 14:04:03 -0400
-Received: from hermes.domdv.de ([193.102.202.1]:2322 "EHLO hermes.domdv.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727769AbfEQSED (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 May 2019 14:04:03 -0400
-X-Greylist: delayed 413 seconds by postgrey-1.27 at vger.kernel.org; Fri, 17 May 2019 14:04:03 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=domdv.de;
-         s=dk3; h=Content-Transfer-Encoding:MIME-Version:Content-Type:Date:To:From:
-        Subject:Message-ID:Sender:Reply-To:Cc:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=tS8/wF0KypYyVJGjN3LQMmEsHOFNYxOzKbUDPJioPs0=; b=arc415LBnzEQkvD5I0cDgU+afx
-        hhMTwbSvxnkHMuIX3X1EoQ/PMzeS6EMtH45Hyu4o29bVOtSPVOMqCrPL+ogBmuJqW566B2G0VFnfz
-        7qDghdBe4tg5h77tD4J3sKj8kNdctamddON0i4dRRDFKa5O1V4pAq0SLrCWowKE8QgJI=;
-Received: from [fd06:8443:81a1:74b0::212] (port=2508 helo=castor.lan.domdv.de)
-        by zeus.domdv.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.91)
-        (envelope-from <ast@domdv.de>)
-        id 1hRh6S-0005JY-BM; Fri, 17 May 2019 19:57:08 +0200
-Received: from woody.lan.domdv.de ([10.1.9.28] helo=host028-server-9.lan.domdv.de)
-        by castor.lan.domdv.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.91)
-        (envelope-from <ast@domdv.de>)
-        id 1hRh5r-0004NA-4q; Fri, 17 May 2019 19:56:31 +0200
-Message-ID: <ff7870a3e65285760b96370a9cdac14dd09405de.camel@domdv.de>
-Subject: [PATCH] Fix MACsec kernel panics, oopses and bugs
-From:   Andreas Steinmetz <ast@domdv.de>
-To:     netdev@vger.kernel.org
-Date:   Fri, 17 May 2019 19:56:44 +0200
-Organization: D.O.M. Datenverarbeitung GmbH
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 
+        id S1728719AbfEQR5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 13:57:32 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7659 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727585AbfEQR5c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 May 2019 13:57:32 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 855CDEEBB4425080DA30;
+        Sat, 18 May 2019 01:57:28 +0800 (CST)
+Received: from [127.0.0.1] (10.184.191.73) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Sat, 18 May 2019
+ 01:57:22 +0800
+To:     <jon.maloy@ericsson.com>, <ying.xue@windriver.com>,
+        <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        <tipc-discussion@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <zhoukang7@huawei.com>,
+        <mingfangsen@huawei.com>, <wangxiaogang3@huawei.com>,
+        <mousuanming@huawei.com>
+From:   hujunwei <hujunwei4@huawei.com>
+Subject: [PATCH v2] tipc: fix modprobe tipc failed after switch order of
+ device registration
+Message-ID: <4da8084e-372b-8301-e04f-b780ff4826b3@huawei.com>
+Date:   Sat, 18 May 2019 01:57:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.191.73]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MACsec causes oopses followed by a kernel panic when attached directly or indirectly to a bridge. It causes erroneous
-checksum messages when attached to vxlan. When I did investigate I did find skb leaks, apparent skb mis-handling and
-superfluous code. The attached patch fixes all MACsec misbehaviour I could find. As I am no kernel developer somebody
-with sufficient kernel network knowledge should verify and correct the patch where necessary.
+From: Junwei Hu <hujunwei4@huawei.com>
 
-Signed-off-by: Andreas Steinmetz <ast@domdv.de>
+Error message printed:
+modprobe: ERROR: could not insert 'tipc': Address family not
+supported by protocol.
+when modprobe tipc after the following patch: switch order of
+device registration, commit 7e27e8d6130c
+("tipc: switch order of device registration to fix a crash")
 
---- linux.orig/drivers/net/macsec.c	2019-05-17 11:00:13.631121950 +0200
-+++ linux/drivers/net/macsec.c	2019-05-17 18:41:41.333119772 +0200
-@@ -911,6 +911,9 @@ static void macsec_decrypt_done(struct c
- 			    macsec_extra_len(macsec_skb_cb(skb)->has_sci));
- 	macsec_reset_skb(skb, macsec->secy.netdev);
- 
-+	/* FIXME: any better way to prevent calls to netdev_rx_csum_fault? */
-+	skb->csum_complete_sw = 1;
+Because sock_create_kern(net, AF_TIPC, ...) called by
+tipc_topsrv_create_listener() in the initialization process
+of tipc_init_net(), so tipc_socket_init() must be execute before that.
+Meanwhile, tipc_net_id need to be initialized when sock_create()
+called, and tipc_socket_init() is no need to be called for each namespace.
+
+I add a variable tipc_topsrv_net_ops, and split the
+register_pernet_subsys() of tipc into two parts, and split
+tipc_socket_init() with initialization of pernet params.
+
+By the way, I fixed resources rollback error when tipc_bcast_init()
+failed in tipc_init_net().
+
+Fixes: 7e27e8d6130c
+("tipc: switch order of device registration to fix a crash")
+Signed-off-by: Junwei Hu <hujunwei4@huawei.com>
+Reported-by: Wang Wang <wangwang2@huawei.com>
+Reviewed-by: Kang Zhou <zhoukang7@huawei.com>
+Reviewed-by: Suanming Mou <mousuanming@huawei.com>
+---
+V1->V2:
+- split the register_pernet_subsys() of tipc into two parts
+---
+ net/tipc/core.c   | 18 ++++++++++++------
+ net/tipc/subscr.h |  5 +++--
+ net/tipc/topsrv.c | 14 ++++++++++++--
+ 3 files changed, 27 insertions(+), 10 deletions(-)
+
+diff --git a/net/tipc/core.c b/net/tipc/core.c
+index ddd2e0f67c07..ed536c05252a 100644
+--- a/net/tipc/core.c
++++ b/net/tipc/core.c
+@@ -77,9 +77,6 @@ static int __net_init tipc_init_net(struct net *net)
+ 		goto out_nametbl;
+
+ 	INIT_LIST_HEAD(&tn->dist_queue);
+-	err = tipc_topsrv_start(net);
+-	if (err)
+-		goto out_subscr;
+
+ 	err = tipc_bcast_init(net);
+ 	if (err)
+@@ -88,8 +85,6 @@ static int __net_init tipc_init_net(struct net *net)
+ 	return 0;
+
+ out_bclink:
+-	tipc_bcast_stop(net);
+-out_subscr:
+ 	tipc_nametbl_stop(net);
+ out_nametbl:
+ 	tipc_sk_rht_destroy(net);
+@@ -99,7 +94,6 @@ static int __net_init tipc_init_net(struct net *net)
+
+ static void __net_exit tipc_exit_net(struct net *net)
+ {
+-	tipc_topsrv_stop(net);
+ 	tipc_net_stop(net);
+ 	tipc_bcast_stop(net);
+ 	tipc_nametbl_stop(net);
+@@ -113,6 +107,11 @@ static struct pernet_operations tipc_net_ops = {
+ 	.size = sizeof(struct tipc_net),
+ };
+
++static struct pernet_operations tipc_topsrv_net_ops = {
++	.init = tipc_topsrv_init_net,
++	.exit = tipc_topsrv_exit_net,
++};
 +
- 	len = skb->len;
- 	if (gro_cells_receive(&macsec->gro_cells, skb) == NET_RX_SUCCESS)
- 		count_rx(dev, len);
-@@ -938,9 +941,6 @@ static struct sk_buff *macsec_decrypt(st
- 	u16 icv_len = secy->icv_len;
- 
- 	macsec_skb_cb(skb)->valid = false;
--	skb = skb_share_check(skb, GFP_ATOMIC);
--	if (!skb)
--		return ERR_PTR(-ENOMEM);
- 
- 	ret = skb_cow_data(skb, 0, &trailer);
- 	if (unlikely(ret < 0)) {
-@@ -972,11 +972,6 @@ static struct sk_buff *macsec_decrypt(st
- 
- 		aead_request_set_crypt(req, sg, sg, len, iv);
- 		aead_request_set_ad(req, macsec_hdr_len(macsec_skb_cb(skb)->has_sci));
--		skb = skb_unshare(skb, GFP_ATOMIC);
--		if (!skb) {
--			aead_request_free(req);
--			return ERR_PTR(-ENOMEM);
--		}
- 	} else {
- 		/* integrity only: all headers + data authenticated */
- 		aead_request_set_crypt(req, sg, sg, icv_len, iv);
-@@ -1102,20 +1097,12 @@ static rx_handler_result_t macsec_handle
- 		return RX_HANDLER_PASS;
- 	}
- 
--	skb = skb_unshare(skb, GFP_ATOMIC);
--	if (!skb) {
--		*pskb = NULL;
--		return RX_HANDLER_CONSUMED;
--	}
--
- 	pulled_sci = pskb_may_pull(skb, macsec_extra_len(true));
- 	if (!pulled_sci) {
- 		if (!pskb_may_pull(skb, macsec_extra_len(false)))
- 			goto drop_direct;
- 	}
- 
--	hdr = macsec_ethhdr(skb);
--
- 	/* Frames with a SecTAG that has the TCI E bit set but the C
- 	 * bit clear are discarded, as this reserved encoding is used
- 	 * to identify frames with a SecTAG that are not to be
-@@ -1130,6 +1117,12 @@ static rx_handler_result_t macsec_handle
- 			goto drop_direct;
- 	}
- 
-+	skb = skb_unshare(skb, GFP_ATOMIC);
-+	if (!skb)
-+		return RX_HANDLER_CONSUMED;
+ static int __init tipc_init(void)
+ {
+ 	int err;
+@@ -143,6 +142,10 @@ static int __init tipc_init(void)
+ 	if (err)
+ 		goto out_socket;
+
++	err = register_pernet_subsys(&tipc_topsrv_net_ops);
++	if (err)
++		goto out_pernet_topsrv;
 +
-+	hdr = macsec_ethhdr(skb);
+ 	err = tipc_bearer_setup();
+ 	if (err)
+ 		goto out_bearer;
+@@ -150,6 +153,8 @@ static int __init tipc_init(void)
+ 	pr_info("Started in single node mode\n");
+ 	return 0;
+ out_bearer:
++	unregister_pernet_subsys(&tipc_topsrv_net_ops);
++out_pernet_topsrv:
+ 	tipc_socket_stop();
+ out_socket:
+ 	unregister_pernet_subsys(&tipc_net_ops);
+@@ -167,6 +172,7 @@ static int __init tipc_init(void)
+ static void __exit tipc_exit(void)
+ {
+ 	tipc_bearer_cleanup();
++	unregister_pernet_subsys(&tipc_topsrv_net_ops);
+ 	tipc_socket_stop();
+ 	unregister_pernet_subsys(&tipc_net_ops);
+ 	tipc_netlink_stop();
+diff --git a/net/tipc/subscr.h b/net/tipc/subscr.h
+index d793b4343885..aa015c233898 100644
+--- a/net/tipc/subscr.h
++++ b/net/tipc/subscr.h
+@@ -77,8 +77,9 @@ void tipc_sub_report_overlap(struct tipc_subscription *sub,
+ 			     u32 found_lower, u32 found_upper,
+ 			     u32 event, u32 port, u32 node,
+ 			     u32 scope, int must);
+-int tipc_topsrv_start(struct net *net);
+-void tipc_topsrv_stop(struct net *net);
 +
- 	/* ethernet header is part of crypto processing */
- 	skb_push(skb, ETH_HLEN);
- 
-@@ -1213,22 +1206,22 @@ static rx_handler_result_t macsec_handle
- 
- 	/* Disabled && !changed text => skip validation */
- 	if (hdr->tci_an & MACSEC_TCI_C ||
--	    secy->validate_frames != MACSEC_VALIDATE_DISABLED)
-+	    secy->validate_frames != MACSEC_VALIDATE_DISABLED) {
- 		skb = macsec_decrypt(skb, dev, rx_sa, sci, secy);
- 
--	if (IS_ERR(skb)) {
--		/* the decrypt callback needs the reference */
--		if (PTR_ERR(skb) != -EINPROGRESS) {
--			macsec_rxsa_put(rx_sa);
--			macsec_rxsc_put(rx_sc);
-+		if (IS_ERR(skb)) {
-+			/* the decrypt callback needs the reference */
-+			if (PTR_ERR(skb) != -EINPROGRESS) {
-+				macsec_rxsa_put(rx_sa);
-+				macsec_rxsc_put(rx_sc);
-+			}
-+			rcu_read_unlock();
-+			return RX_HANDLER_CONSUMED;
- 		}
--		rcu_read_unlock();
--		*pskb = NULL;
--		return RX_HANDLER_CONSUMED;
--	}
- 
--	if (!macsec_post_decrypt(skb, secy, pn))
--		goto drop;
-+		if (!macsec_post_decrypt(skb, secy, pn))
-+			goto drop;
-+	}
- 
- deliver:
- 	macsec_finalize_skb(skb, secy->icv_len,
-@@ -1239,6 +1232,9 @@ deliver:
- 		macsec_rxsa_put(rx_sa);
- 	macsec_rxsc_put(rx_sc);
- 
-+	/* FIXME: any better way to prevent calls to netdev_rx_csum_fault? */
-+	skb->csum_complete_sw = 1;
-+
- 	ret = gro_cells_receive(&macsec->gro_cells, skb);
- 	if (ret == NET_RX_SUCCESS)
- 		count_rx(dev, skb->len);
-@@ -1247,7 +1243,6 @@ deliver:
- 
- 	rcu_read_unlock();
- 
--	*pskb = NULL;
- 	return RX_HANDLER_CONSUMED;
- 
- drop:
-@@ -1257,7 +1252,6 @@ drop_nosa:
- 	rcu_read_unlock();
- drop_direct:
- 	kfree_skb(skb);
--	*pskb = NULL;
- 	return RX_HANDLER_CONSUMED;
- 
- nosci:
-@@ -1303,8 +1297,8 @@ nosci:
- 	}
- 
- 	rcu_read_unlock();
--	*pskb = skb;
--	return RX_HANDLER_PASS;
-+	kfree_skb(skb);
-+	return RX_HANDLER_CONSUMED;
++int __net_init tipc_topsrv_init_net(struct net *net);
++void __net_exit tipc_topsrv_exit_net(struct net *net);
+
+ void tipc_sub_put(struct tipc_subscription *subscription);
+ void tipc_sub_get(struct tipc_subscription *subscription);
+diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
+index b45932d78004..f345662890a6 100644
+--- a/net/tipc/topsrv.c
++++ b/net/tipc/topsrv.c
+@@ -635,7 +635,7 @@ static void tipc_topsrv_work_stop(struct tipc_topsrv *s)
+ 	destroy_workqueue(s->send_wq);
  }
- 
- static struct crypto_aead *macsec_alloc_tfm(char *key, int key_len, int icv_len)
+
+-int tipc_topsrv_start(struct net *net)
++static int tipc_topsrv_start(struct net *net)
+ {
+ 	struct tipc_net *tn = tipc_net(net);
+ 	const char name[] = "topology_server";
+@@ -668,7 +668,7 @@ int tipc_topsrv_start(struct net *net)
+ 	return ret;
+ }
+
+-void tipc_topsrv_stop(struct net *net)
++static void tipc_topsrv_stop(struct net *net)
+ {
+ 	struct tipc_topsrv *srv = tipc_topsrv(net);
+ 	struct socket *lsock = srv->listener;
+@@ -693,3 +693,13 @@ void tipc_topsrv_stop(struct net *net)
+ 	idr_destroy(&srv->conn_idr);
+ 	kfree(srv);
+ }
++
++int __net_init tipc_topsrv_init_net(struct net *net)
++{
++	return tipc_topsrv_start(net);
++}
++
++void __net_exit tipc_topsrv_exit_net(struct net *net)
++{
++	tipc_topsrv_stop(net);
++}
+-- 
+2.21.GIT
 
