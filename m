@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A728E21C9F
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:39:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25A5621CAB
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728619AbfEQRjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 13:39:09 -0400
-Received: from mail-pg1-f172.google.com ([209.85.215.172]:42064 "EHLO
-        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726078AbfEQRjJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 13:39:09 -0400
-Received: by mail-pg1-f172.google.com with SMTP id 145so3608006pgg.9
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 10:39:09 -0700 (PDT)
+        id S1728603AbfEQRke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 13:40:34 -0400
+Received: from mail-pg1-f170.google.com ([209.85.215.170]:40030 "EHLO
+        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbfEQRke (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 13:40:34 -0400
+Received: by mail-pg1-f170.google.com with SMTP id d30so3616281pgm.7
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 10:40:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=D+aN70SgzRALpJpl2VsJZKK09FAd3fwSCUoNgjkW5ao=;
-        b=jOeMx09IaIGEKN/kLh3DAAY2p8NaqE8Ou4nfVhewXWtQ3gB2kVwu7i992EaFjxcrUz
-         MB+kxEKSRtpfPlM8vq/eO+oos9lKKYEvgiekJV65XZYjUZkB1NdwEPoowWBFRQr3FyVD
-         Hzl37tA9wo8nrjHl/a1CAHWohxM5EygireytqJ/a2VZ2RreAD6DSipcVjinS5ocHSv2+
-         LpFXBmXCgX8dzE0NMhRdbnkrQVjcGNCitU4tmzCai4etaowTNxq9Vz6WBIn0pYQ2tBsh
-         nroUu0Ju2aC9VZHxA54JWystPKTFtvcOl0lF7Bby0iJVZXy85pI/LCBNHbkcePNZK9J4
-         zL6w==
+        bh=f+h7KtrjUufXIT7Cjc42Rx1nLj7O8oysy2iGaOZIGMg=;
+        b=qVGAzCf0ZUMIkAPP9VRXdV8lrEjRBCq/3saBnaPiRhA5u3cr7RLTYG/m85Aesd6xTc
+         llNoeaRpZFwuLzK5Gejf9K3a6tVeZUiWUnJ7awoi7uHbJWX5EMqYVY3xrkVmwJVuBBbL
+         L3RDlFpMGvJeCM7qvhFEfncNatCmYm5L7zlJnvbEZsOgsWAltHc4MG/I6DeGpdUMPGCF
+         wGujmgJJ4YrvwRFrxcIEAq/QwnC8FyrV6fAkyG7aWTR89irUCXR1b5IvaB+pyRj9ETe4
+         pchyHXRSfypJIijHL1ISA+jYy+9v4Yz+hil1t/c+5CPpKdJWEwGNZoeExhVX+JVC9J40
+         VqAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=D+aN70SgzRALpJpl2VsJZKK09FAd3fwSCUoNgjkW5ao=;
-        b=F+pHyeoz0CKMYuiL1DGAYPW2vWUQc5vHJl5Z5+R8zalG10UDh9CfrjpfWAglKoMm7a
-         vjDdbwWRqB2s8dZSzRXmfCp96FRBkncfxuumaIFhkE64S0P053XMqo1uPrhE4Ye3DsG8
-         b3LkahogY5ImDzGzQhAe9fgOZxI0msGvbzbNmnGMEyIypZSog9DMPqgg7stq44ZXnr56
-         Q0/b43pXoeuuIvFeXsMy0s49o4414BHglcoqMK7NQjnWpaxnVQyUZBWRmHP0lg6XUi+h
-         Fcj6iYuNrHM1PDxz1V20bH5ohUTyLT/WDCc2HQIHB5MsUDFneYvflvWqW/SuUqJIQegg
-         vkAg==
-X-Gm-Message-State: APjAAAV+uIt+WJ6rpZO20BBi0wZF8lXwsSzKAXEavbSFQIlpvu+S17YH
-        pU09hwFyisXv645Cf3q+SDs=
-X-Google-Smtp-Source: APXvYqyoQ9Pq8vzIPQ2jlNYROySCvQn0MCvFl+/O5K1lOZtolr5glQKUSjthDWlixtRlAlwCRpQrMw==
-X-Received: by 2002:a62:470e:: with SMTP id u14mr62823663pfa.31.1558114748781;
-        Fri, 17 May 2019 10:39:08 -0700 (PDT)
+        bh=f+h7KtrjUufXIT7Cjc42Rx1nLj7O8oysy2iGaOZIGMg=;
+        b=KTry0EE6SJVciuFXIfRifa9de5/JBso4Lv8TRi2/edZO3x6wurR++m58AQkfWM/YRZ
+         fqW0jUJ0r4Zj881CP6jrxfUPOMVRodHZJtxX+n3v0tb/CgmorvJtIepbz7qBPGau3pk1
+         W5/bEvvDncIH9kQ1OMhKPRZiteNr3tapKGRlg0ItA61B8AY3iRgJFHkIHwOOdc9galcm
+         Rs5HZLRDJYbV2Vlk27cuQ6EL6QeYiCGXtIbdFnjFu4jhQuxjlnsYMXQbvbOC2L3ybJd1
+         govaQJWxCyaIme6JMBoKd9pAgKdbPEk57T7mtUYxu7OTMXw6nhq2V52wXRa5PRbTq9OH
+         r3VA==
+X-Gm-Message-State: APjAAAVRU4Z/IxypIVtCJIQ675Np3hAMwCUz+qy3+PynJ4dwHjROfGw9
+        nD1tozKRFi4b8lqqorGvxK0=
+X-Google-Smtp-Source: APXvYqzscOqvEBSqUZyjROqV8TdA5n3vhhDljDwNz+VcIBR3eUOM//q0UKBhbv+bGaK7X5VYo92ncQ==
+X-Received: by 2002:a63:8b4b:: with SMTP id j72mr58006853pge.318.1558114833607;
+        Fri, 17 May 2019 10:40:33 -0700 (PDT)
 Received: from ?IPv6:2601:282:800:fd80:743c:f418:8a94:7ec7? ([2601:282:800:fd80:743c:f418:8a94:7ec7])
-        by smtp.googlemail.com with ESMTPSA id x18sm13509126pfj.17.2019.05.17.10.39.07
+        by smtp.googlemail.com with ESMTPSA id j10sm11036111pfa.37.2019.05.17.10.40.32
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 May 2019 10:39:07 -0700 (PDT)
+        Fri, 17 May 2019 10:40:32 -0700 (PDT)
 Subject: Re: 5.1 `ip route get addr/cidr` regression
 To:     Stephen Hemminger <stephen@networkplumber.org>
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
@@ -56,8 +56,8 @@ References: <LaeckvP--3-1@tutanota.com>
  <2e6749cb-3a7a-242a-bd60-5fa7a8e724db@gmail.com>
  <20190517103543.149e9c6c@hermes.lan>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5c899e85-ab00-f13b-7651-e157d9837505@gmail.com>
-Date:   Fri, 17 May 2019 11:39:05 -0600
+Message-ID: <36bbeecd-3df5-bc90-696f-7f03bceda36c@gmail.com>
+Date:   Fri, 17 May 2019 11:40:31 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
  Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
@@ -104,21 +104,7 @@ On 5/17/19 11:35 AM, Stephen Hemminger wrote:
 >> handlers")
 >>
 >> Basically, the /24 is unexpected. I'll send a patch.
->>
->>>
->>> Upon investigating, I'm not sure that `ip route get` was ever suitable
->>> for getting details on a particular route. So I'll adjust the  
->>
->> 'ip route get <prefix> fibmatch' will show the fib entry.
->>
-> 
-> If you want to keep the error, the kernel should send additional
-> extack as to reason. EINVAL is not user friendly...
-> 
 
-The kernel does set an extack for all EINVAL in this code path.
+oh, and I think changing iproute2 to ignore the /24 and always set to 32
+is better than changing the kernel to allow a prefix length that is ignored.
 
-Not sure why Jason is not seeing that. Really odd that he hits the error
-AND does not get a message back since it requires an updated ip command
-to set the strict checking flag and that command understands extack.
-Perhaps no libmnl?
