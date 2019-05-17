@@ -2,210 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A49623353
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 14:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6AC21C62
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732671AbfETMPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 08:15:43 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:52035 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732661AbfETMPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 08:15:43 -0400
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1hShCd-00068Y-Nb; Mon, 20 May 2019 14:15:39 +0200
-Received: from [IPv6:2003:c7:711:c6f5:3de8:d0f0:b5f9:2a7d] (unknown [IPv6:2003:c7:711:c6f5:3de8:d0f0:b5f9:2a7d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D7E8D40ED63;
-        Fri, 17 May 2019 17:18:54 +0000 (UTC)
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
-        "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Aisheng Dong <aisheng.dong@nxp.com>
-References: <20190517023652.19285-1-qiangqing.zhang@nxp.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [PATCH] can: flexcan: fix deadlock when using self wakeup
-Message-ID: <39410a95-0eb9-d266-7210-920fa5198a23@pengutronix.de>
-Date:   Fri, 17 May 2019 19:18:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727494AbfEQRXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 13:23:21 -0400
+Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:34527 "EHLO
+        caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725932AbfEQRXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 13:23:20 -0400
+Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
+        id C53C646380B; Fri, 17 May 2019 13:23:17 -0400 (EDT)
+Date:   Fri, 17 May 2019 13:23:17 -0400
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec
+ packets
+Message-ID: <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca>
+References: <CAKgT0UcV2wCr6iUYktZ+Bju_GNpXKzR=M+NLfKhUsw4bsJSiyA@mail.gmail.com>
+ <20190503205935.bg45rsso5jjj3gnx@csclub.uwaterloo.ca>
+ <20190513165547.alkkgcsdelaznw6v@csclub.uwaterloo.ca>
+ <CAKgT0Uf_nqZtCnHmC=-oDFz-3PuSM6=30BvJSDiAgzK062OY6w@mail.gmail.com>
+ <20190514163443.glfjva3ofqcy7lbg@csclub.uwaterloo.ca>
+ <CAKgT0UdPDyCBsShQVwwE5C8fBKkMcfS6_S5m3T7JP-So9fzVgA@mail.gmail.com>
+ <20190516183407.qswotwyjwtjqfdqm@csclub.uwaterloo.ca>
+ <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca>
+ <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com>
+ <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190517023652.19285-1-qiangqing.zhang@nxp.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="Go4NWz52i4MJ57IbARzPbBbqTrUyn2OAk"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Go4NWz52i4MJ57IbARzPbBbqTrUyn2OAk
-Content-Type: multipart/mixed; boundary="Jv1LKUKsFIPlukbQg0P091Jh5uZXhkcE7";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>,
- "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>, "wg@grandegger.com"
- <wg@grandegger.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- Aisheng Dong <aisheng.dong@nxp.com>
-Message-ID: <39410a95-0eb9-d266-7210-920fa5198a23@pengutronix.de>
-Subject: Re: [PATCH] can: flexcan: fix deadlock when using self wakeup
-References: <20190517023652.19285-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20190517023652.19285-1-qiangqing.zhang@nxp.com>
+On Fri, May 17, 2019 at 09:42:19AM -0700, Alexander Duyck wrote:
+> So the patch below/attached should resolve the issues you are seeing
+> with your system in terms of UDPv4 RSS. What you should see with this
+> patch is the first function to come up will display some "update input
+> mask" messages, and then the remaining functions shouldn't make any
+> noise about it since the registers being updated are global to the
+> device.
+> 
+> If you can test this and see if it resolves the UDPv4 RSS issues I
+> would appreciate it.
+> 
+> Thanks.
+> 
+> - Alex
+> 
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c
+> b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> index 65c2b9d2652b..c0a7f66babd9 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> @@ -10998,6 +10998,58 @@ static int i40e_pf_config_rss(struct i40e_pf *pf)
+>                 ((u64)i40e_read_rx_ctl(hw, I40E_PFQF_HENA(1)) << 32);
+>         hena |= i40e_pf_get_default_rss_hena(pf);
+> 
+> +       for (ret = 64; ret--;) {
+> +               u64 hash_inset_orig, hash_inset_update;
+> +
+> +               if (!(hena & (1ull << ret)))
+> +                       continue;
+> +
+> +               /* Read initial input set value for flow type */
+> +               hash_inset_orig = i40e_read_rx_ctl(hw,
+> I40E_GLQF_HASH_INSET(1, ret));
+> +               hash_inset_orig <<= 32;
+> +               hash_inset_orig |= i40e_read_rx_ctl(hw,
+> I40E_GLQF_HASH_INSET(0, ret));
+> +
+> +               /* Copy value so we can compare later */
+> +               hash_inset_update = hash_inset_orig;
+> +
+> +               /* We should be looking at either the entire IPv6 or IPv4
+> +                * mask being set. If only part of the IPv6 mask is set, but
+> +                * the IPv4 mask is not then we have a garbage mask value
+> +                * and need to reset it.
+> +                */
+> +               switch (hash_inset_orig & I40E_L3_V6_SRC_MASK) {
+> +               case I40E_L3_V6_SRC_MASK:
+> +               case I40E_L3_SRC_MASK:
+> +               case 0:
+> +                       break;
+> +               default:
+> +                       hash_inset_update &= ~I40E_L3_V6_SRC_MASK;
+> +                       hash_inset_update |= I40E_L3_SRC_MASK;
+> +               }
+> +
+> +               switch (hash_inset_orig & I40E_L3_V6_DST_MASK) {
+> +               case I40E_L3_V6_DST_MASK:
+> +               case I40E_L3_DST_MASK:
+> +               case 0:
+> +                       break;
+> +               default:
+> +                       hash_inset_update &= ~I40E_L3_V6_DST_MASK;
+> +                       hash_inset_update |= I40E_L3_DST_MASK;
+> +               }
+> +
+> +               if (hash_inset_update != hash_inset_orig) {
+> +                       dev_warn(&pf->pdev->dev,
+> +                                "flow type: %d update input mask
+> from:0x%016llx, to:0x%016llx\n",
+> +                                ret,
+> +                                hash_inset_orig, hash_inset_update);
+> +                       i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, ret),
+> +                                         (u32)hash_inset_update);
+> +                       hash_inset_update >>= 32;
+> +                       i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, ret),
+> +                                         (u32)hash_inset_update);
+> +               }
+> +       }
+> +
+>         i40e_write_rx_ctl(hw, I40E_PFQF_HENA(0), (u32)hena);
+>         i40e_write_rx_ctl(hw, I40E_PFQF_HENA(1), (u32)(hena >> 32));
 
---Jv1LKUKsFIPlukbQg0P091Jh5uZXhkcE7
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
+> i40e: Debug hash inputs
+> 
+> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> 
+> 
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_main.c |   52 +++++++++++++++++++++++++++
+>  1 file changed, 52 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> index 65c2b9d2652b..c0a7f66babd9 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> @@ -10998,6 +10998,58 @@ static int i40e_pf_config_rss(struct i40e_pf *pf)
+>  		((u64)i40e_read_rx_ctl(hw, I40E_PFQF_HENA(1)) << 32);
+>  	hena |= i40e_pf_get_default_rss_hena(pf);
+>  
+> +	for (ret = 64; ret--;) {
+> +		u64 hash_inset_orig, hash_inset_update;
+> +
+> +		if (!(hena & (1ull << ret)))
+> +			continue;
+> +
+> +		/* Read initial input set value for flow type */
+> +		hash_inset_orig = i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, ret));
+> +		hash_inset_orig <<= 32;
+> +		hash_inset_orig |= i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, ret));
+> +
+> +		/* Copy value so we can compare later */
+> +		hash_inset_update = hash_inset_orig;
+> +
+> +		/* We should be looking at either the entire IPv6 or IPv4
+> +		 * mask being set. If only part of the IPv6 mask is set, but
+> +		 * the IPv4 mask is not then we have a garbage mask value
+> +		 * and need to reset it.
+> +		 */
+> +		switch (hash_inset_orig & I40E_L3_V6_SRC_MASK) {
+> +		case I40E_L3_V6_SRC_MASK:
+> +		case I40E_L3_SRC_MASK:
+> +		case 0:
+> +			break;
+> +		default:
+> +			hash_inset_update &= ~I40E_L3_V6_SRC_MASK;
+> +			hash_inset_update |= I40E_L3_SRC_MASK;
+> +		}
+> +
+> +		switch (hash_inset_orig & I40E_L3_V6_DST_MASK) {
+> +		case I40E_L3_V6_DST_MASK:
+> +		case I40E_L3_DST_MASK:
+> +		case 0:
+> +			break;
+> +		default:
+> +			hash_inset_update &= ~I40E_L3_V6_DST_MASK;
+> +			hash_inset_update |= I40E_L3_DST_MASK;
+> +		}
+> +
+> +		if (hash_inset_update != hash_inset_orig) {
+> +			dev_warn(&pf->pdev->dev,
+> +				 "flow type: %d update input mask from:0x%016llx, to:0x%016llx\n",
+> +				 ret,
+> +				 hash_inset_orig, hash_inset_update);
+> +			i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, ret),
+> +					  (u32)hash_inset_update);
+> +			hash_inset_update >>= 32;
+> +			i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, ret),
+> +					  (u32)hash_inset_update);
+> +		}
+> +	}
+> +
+>  	i40e_write_rx_ctl(hw, I40E_PFQF_HENA(0), (u32)hena);
+>  	i40e_write_rx_ctl(hw, I40E_PFQF_HENA(1), (u32)(hena >> 32));
+>  
 
-On 5/17/19 4:39 AM, Joakim Zhang wrote:
-> As reproted by Sean Nyekjaer bellow:
-> When suspending, when there is still can traffic on the
-> interfaces the flexcan immediately wakes the platform again.
-> As it should :-)
-> But it throws this error msg:
-> [ 3169.378661] PM: noirq suspend of devices failed
->=20
-> On the way down to suspend the interface that throws the error
-> message does call flexcan_suspend but fails to call
-> flexcan_noirq_suspend.
-> That means the flexcan_enter_stop_mode is called, but on the way
-> out of suspend the driver only calls flexcan_resume and skips
-> flexcan_noirq_resume, thus it doesn't call flexcan_exit_stop_mode.
-> This leaves the flexcan in stop mode, and with the current driver
-> it can't recover from this even with a soft reboot, it requires a
-> hard reboot.
->=20
-> Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
->=20
-> This patch intends to fix the issue, and also add comment to explain th=
-e
-> wakeup flow.
->=20
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+OK I applied that and see this:
 
-The existing self wakeup support:
+i40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
+i40e: Copyright (c) 2013 - 2014 Intel Corporation.
+i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
+i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
+i40e 0000:3d:00.0: flow type: 36 update input mask from:0x0006060000000000, to:0x0001801800000000
+i40e 0000:3d:00.0: flow type: 35 update input mask from:0x0006060000000000, to:0x0001801800000000
+i40e 0000:3d:00.0: flow type: 34 update input mask from:0x0006060780000000, to:0x0001801f80000000
+i40e 0000:3d:00.0: flow type: 33 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: flow type: 32 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: flow type: 31 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: flow type: 30 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: flow type: 29 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: Features: PF-id[0] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
+i40e 0000:3d:00.1: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
+i40e 0000:3d:00.1: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+i40e 0000:3d:00.1: MAC address: a4:bf:01:4e:0c:88
+i40e 0000:3d:00.1: Features: PF-id[1] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
+i40e 0000:3d:00.1 eth2: NIC Link is Up, 1000 Mbps Full Duplex, Flow Control: None
 
-| de3578c198c6 ("can: flexcan: add self wakeup support")
+Unfortunately (much to my disappointment, I hoped it would work) I see
+no change in behaviour.
 
-looks broken to me.
-
-According to the data sheet:
-
-> To enter stop mode, the CPU should manually assert a global Stop Mode
-> request (see the CAN1_STOP_REQ and CAN2_STOP_REQ bit in the register
-> IOMUXC_GPR4) and check the acknowledgement asserted by the FlexCAN
-> (see the CAN1_STOP_ACK and CAN2_STOP_ACK in the register
-> IOMUXC_GPR4). The CPU must only consider the FlexCAN in Stop Mode
-> when both request and acknowledgement conditions are satisfied.
-you have to poll for the acknowledgement, which is not done in the
-driver. Please fix that first.
-
-As far as I understand the documentation the suspend() and resume
-functions should be symmetric. If they are, you shouldn't need the
-in_stop_mode hack.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
-
-
---Jv1LKUKsFIPlukbQg0P091Jh5uZXhkcE7--
-
---Go4NWz52i4MJ57IbARzPbBbqTrUyn2OAk
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAlze7PMACgkQWsYho5Hk
-nSDxPgf/f6dRbgpAnPasidRj//IFjHpbV5QV76Sfq0jpxJhRtmHbfdKs0z6Ww2cI
-dR0YZilm0+5WSvRR58DzVO/JXep6cwbgr/vvYeSf7LFAXiF8+HIatsmf+//XygyS
-YNb8CIZDvFGwcSdFqqjkyO51+QSNB/ZjoLya2TauqveMBZCuyGp7r0toZN1a0MXY
-Lhcn8SXgye4sVXrePnXDuiTbirKRH4UYjXaV27Ej4iA+kCXo+bX4NxMgm7jD7nkN
-lSs/xD578w/dLd7C0Fpdn38MNXNBB86TSQL1M/HEGazbzcA56gdb70+9SfpEjxsw
-5lGoSwAOkFOQsHE19x2826vU2kN+mg==
-=c7E1
------END PGP SIGNATURE-----
-
---Go4NWz52i4MJ57IbARzPbBbqTrUyn2OAk--
+-- 
+Len Sorensen
