@@ -2,56 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D742621A13
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 16:53:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 510D621A56
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729132AbfEQOxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 10:53:01 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44069 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728968AbfEQOxB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 10:53:01 -0400
-Received: by mail-pf1-f193.google.com with SMTP id g9so3791537pfo.11
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 07:53:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=k861ZzcXOI7SlsZz3F755giJdwTPf49mrIy7dM2Cg60=;
-        b=wn5Giblwh/qXwIqxrp2HWzBy2g4S3DGFffnmEVq6N0kuRT8R+hh8DbbKSV7LQEBXSt
-         YzQZx/E0kjvDzmCAwdNddJhIdtiYYEEOZNAPlSUUpSPL628OSR/0lsNmEtBxkjAZp82u
-         bNAvZ/qaCgnWST9G2Y6899Iz35pnVxTHMTSeqwd4KnZ6aKYYRH2ooA2gvNGAjLBJ1nth
-         JgNlzS4bubYG3vG+KwIkeQEEfJS4+BUxvUJVV3ajOJ3n9WczqWFjxeqhZq8OY1peV12N
-         V30BllbAuGzgBNWmQ+1hMfzoYJDfV+dbidzRSWBftEj8DEYvskkGZuENtrtZM2+2smsE
-         tVxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=k861ZzcXOI7SlsZz3F755giJdwTPf49mrIy7dM2Cg60=;
-        b=G6vH0xXt8gogt+++LNEY4VmgXCuPf6T7nFS4yTO8l/5VjlDcvVxKM8AdHQLixsbLFX
-         b6N+oYm16F5W2DSh2T1JKC1ZXmT6L5rFkD4o2WtffO9/tKiShcW08o+Ohh+PS4xXOBBh
-         xBTq1t4QaumrvfGuic19cTJi+9fXf8h+bZKRHiauBCIZgfLed3ne1YGk0j7vnMXtHyGM
-         gzgryuhFGDKoKGDExG3VFL/+mqr06Z9cpYsap+5Oc8lZggrqon7IUbaVqzMVq8zFSGtj
-         ljzjmANUhta5Zg9/TzxIKLLnRbyWd0ONEMsbEgBHVUQiUIBORGi7irmZ+dcNUflZ3Ld5
-         UbUA==
-X-Gm-Message-State: APjAAAXBzY7hJoHWDzrUfsizzKX5BT6pPMggc/6ApClfp6oG6BqnQnIF
-        zTTkuaYp4c06v8ErWtKuInqGJ2B7QcI=
-X-Google-Smtp-Source: APXvYqzZq3gvOysbnEbehuZi88/LTrgsyFyiQg2XZY3c3XgBU20xpjqDf2tjt234u9heY5SEwfox8w==
-X-Received: by 2002:aa7:81ca:: with SMTP id c10mr11984921pfn.163.1558104780205;
-        Fri, 17 May 2019 07:53:00 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 37sm13193688pgn.21.2019.05.17.07.52.59
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 17 May 2019 07:53:00 -0700 (PDT)
-Date:   Fri, 17 May 2019 07:52:53 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCH iproute2-next] treewide: refactor help messages
-Message-ID: <20190517075253.3a40f48f@hermes.lan>
-In-Reply-To: <20190517133828.2977-1-mcroce@redhat.com>
-References: <20190517133828.2977-1-mcroce@redhat.com>
+        id S1729213AbfEQPKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 11:10:45 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:45321 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729162AbfEQPKp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 11:10:45 -0400
+X-Originating-IP: 90.88.22.185
+Received: from bootlin.com (aaubervilliers-681-1-80-185.w90-88.abo.wanadoo.fr [90.88.22.185])
+        (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 2A9B01BF20B;
+        Fri, 17 May 2019 15:10:38 +0000 (UTC)
+Date:   Fri, 17 May 2019 17:10:38 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: dsa: using multi-gbps speeds on CPU port
+Message-ID: <20190517171038.36d921a5@bootlin.com>
+In-Reply-To: <35daa9e7-8b97-35dd-bc95-bab57ef401cd@gmail.com>
+References: <20190515143936.524acd4e@bootlin.com>
+        <20190515132701.GD23276@lunn.ch>
+        <20190515160214.1aa5c7d9@bootlin.com>
+        <35daa9e7-8b97-35dd-bc95-bab57ef401cd@gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,39 +42,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 May 2019 15:38:28 +0200
-Matteo Croce <mcroce@redhat.com> wrote:
+Hi everyone,
 
-> Every tool in the iproute2 package have one or more function to show
-> an help message to the user. Some of these functions print the help
-> line by line with a series of printf call, e.g. ip/xfrm_state.c does
-> 60 fprintf calls.
-> If we group all the calls to a single one and just concatenate strings,
-> we save a lot of libc calls and thus object size. The size difference
-> of the compiled binaries calculated with bloat-o-meter is:
-> 
->         ip/ip:
->         add/remove: 0/0 grow/shrink: 5/15 up/down: 103/-4796 (-4693)
->         Total: Before=672591, After=667898, chg -0.70%
->         ip/rtmon:
->         add/remove: 0/0 grow/shrink: 0/1 up/down: 0/-54 (-54)
->         Total: Before=48879, After=48825, chg -0.11%
->         tc/tc:
->         add/remove: 0/2 grow/shrink: 31/10 up/down: 882/-6133 (-5251)
->         Total: Before=351912, After=346661, chg -1.49%
->         bridge/bridge:
->         add/remove: 0/0 grow/shrink: 0/1 up/down: 0/-459 (-459)
->         Total: Before=70502, After=70043, chg -0.65%
->         misc/lnstat:
->         add/remove: 0/1 grow/shrink: 1/0 up/down: 48/-486 (-438)
->         Total: Before=9960, After=9522, chg -4.40%
->         tipc/tipc:
->         add/remove: 0/0 grow/shrink: 1/1 up/down: 18/-62 (-44)
->         Total: Before=79182, After=79138, chg -0.06%
-> 
-> While at it, indent some strings which were starting at column 0,
-> and use tabs where possible, to have a consistent style across helps.
-> 
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+On Wed, 15 May 2019 09:09:26 -0700
+Florian Fainelli <f.fainelli@gmail.com> wrote:
 
-Looks good thanks, I had been doing this bit by bit over time.
+>On 5/15/19 7:02 AM, Maxime Chevallier wrote:
+>> Hi Andrew,
+>> 
+>> On Wed, 15 May 2019 15:27:01 +0200
+>> Andrew Lunn <andrew@lunn.ch> wrote:
+>>   
+>>> I think you are getting your terminology wrong. 'master' is eth0 in
+>>> the example you gave above. CPU and DSA ports don't have netdev
+>>> structures, and so any PHY used with them is not corrected to a
+>>> netdev.  
+>> 
+>> Ah yes sorry, I'm still in the process of getting familiar with the
+>> internals of DSA :/
+>>   
+>>>> I'll be happy to help on that, but before prototyping anything, I wanted
+>>>> to have your thougts on this, and see if you had any plans.    
+>>>
+>>> There are two different issues here.
+>>>
+>>> 1) Is using a fixed-link on a CPU or DSA port the right way to do this?
+>>> 2) Making fixed-link support > 1G.
+>>>
+>>> The reason i decided to use fixed-link on CPU and DSA ports is that we
+>>> already have all the code needed to configure a port, and an API to do
+>>> it, the adjust_link() callback. Things have moved on since then, and
+>>> we now have an additional API, .phylink_mac_config(). It might be
+>>> better to directly use that. If there is a max-speed property, create
+>>> a phylink_link_state structure, which has no reference to a netdev,
+>>> and pass it to .phylink_mac_config().
+>>>
+>>> It is just an idea, but maybe you could investigate if that would
+>>> work.  
+
+I've quickly prototyped and tested this solution, and besides a few
+tweaks that are needed on the mv88e6xxx driver side, it works fine.
+
+I'll post an RFC with this shortly, so that you can see what it looks
+like.
+
+As Russell said, there wasn't anything needed on the master interface
+side.
+
+>
+>Vladimir mentioned a few weeks ago that he is considering adding support
+>for PHYLIB and PHYLINK to run without a net_device instance, you two
+>should probably coordinate with each other and make sure both of your
+>requirements (which are likely the same) get addressed.
+
+That would help a lot solving this issue indeed, I'll be happy to help
+on that, thanks for the tip !
+
+Maxime
+
+
+-- 
+Maxime Chevallier, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
