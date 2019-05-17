@@ -2,78 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8A1E21A8A
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:27:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B21D21B08
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729295AbfEQP1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 11:27:38 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:60604 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729226AbfEQP1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 11:27:38 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 5BC37A40059;
-        Fri, 17 May 2019 15:27:35 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 17 May
- 2019 08:27:30 -0700
-Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
- statistics
-From:   Edward Cree <ecree@solarflare.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>
-CC:     netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Vishal Kulkarni <vishal@chelsio.com>
-References: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
-Message-ID: <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
-Date:   Fri, 17 May 2019 16:27:29 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1729226AbfEQP4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 11:56:33 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:35284 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728664AbfEQP4d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 11:56:33 -0400
+Received: by mail-qk1-f193.google.com with SMTP id c15so4763935qkl.2
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 08:56:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mJzwOKW1MucKATd8FsdFb6vNGDwJpslTYAonmnF5XNE=;
+        b=VHEUPiKn4bN/ynqShJFY8QP9CIFJFZz13kLOYkhncFar197i+73jtlL4TpbZDgdnj1
+         R3JcQZ5ZhABcwwO2lANHKCUbb6lbAkM6nzZnRoDcTTorOMnYV+ENR3MEppu8kWhPKfxD
+         ADA/8KOU3PibTx8O1c06fYcL+K7ZXFwL6vV/lpHPZOnWWi5rFFKAltOX8Toz5ebAkmfu
+         IAGRIXfPmFvLOGTblPB4fU9YXvOCFWbC7GwSyOeGf8mrmI+JGANCQEw+5e3kkJVIJcPX
+         2Rq42vd/mxmnv1FDezug+/9zgbyrYRbgKsroec4GWIjp82/VmQpM0NJYd2QNzlDST8so
+         L5qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mJzwOKW1MucKATd8FsdFb6vNGDwJpslTYAonmnF5XNE=;
+        b=t9PA+eKJ63QT14L+FHdUdqzZOs8ZgJanCLhcNYGIuGbpHg4Ek+6yBwFX4+ias3bmfc
+         u5oVWDQ1My0iaea/gu11OWoaQQI36vGLYtNtMFnOMBU+VcTLroZbDztEAEg1v6nhdxPr
+         +gt1VRfD1sg4PZG7ON1Oek9tTZNWcQ7Pnq9iKRLG4N/eG2iZKl331ZVXyhmnvtZ3d5S2
+         6hJPqGzyVZPc2E4wv5LG5RUYLy2KECqq/ICthvk/RErzpktgo0gNtDABAhVjj3eK+750
+         uB9yl1kWbLl1fc5CtQlO1f36q8x9P87ZUmj+4xetJJbC7nhNx+/C7a83Jpm7NCYvsV54
+         cnTA==
+X-Gm-Message-State: APjAAAUlg0pNncdsf8nJ/6U9nDLCzA2HSBSitMPQ4G6gCmW+zKrvJ3sw
+        aJSReCubpVGydzxO0DpOlkBFd7Gq
+X-Google-Smtp-Source: APXvYqw0vAunI/0fnMxSvvZQoLzlofBf/6XmWIPWgIvpkRUPMYNb+gkjcHdBRbo3b4l4ckldOKXIdg==
+X-Received: by 2002:a37:e402:: with SMTP id y2mr40240123qkf.200.1558108591415;
+        Fri, 17 May 2019 08:56:31 -0700 (PDT)
+Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
+        by smtp.gmail.com with ESMTPSA id l127sm3977582qkc.81.2019.05.17.08.56.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 May 2019 08:56:30 -0700 (PDT)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net-next RFC] ipv6: elide flowlabel check if no exclusive leases exist
+Date:   Fri, 17 May 2019 11:56:25 -0400
+Message-Id: <20190517155625.117835-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
 MIME-Version: 1.0
-In-Reply-To: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24618.005
-X-TM-AS-Result: No-8.071200-4.000000-10
-X-TMASE-MatchedRID: csPTYAMX1+HmLzc6AOD8DfHkpkyUphL9vMRNh9hLjFk7sEw6V/IotDvP
-        gRKDYJk/vFPDC9SycIVbEmPF90VeXtSefNlpHYem8VqfAfqY2ixwm7Nn/lGhVpiQXtm0V8JT8fN
-        7z08uSw0Rz/FZ0QZ4tzJ0z+s/u8Dbo/Rz4V77tuRRUg+O1TsbkpAoP2KG7EfPmbdPE3zcujhOZz
-        QThoQIn1psiiCQIKZH3B7MhNx6/Ye/WXZS/HqJ2gtuKBGekqUpOlxBO2IcOBYl3b04NMBHZ17p2
-        5XJX5+mk1UO+EQtugnU+n3R2tGJiMAp6oII12UcQwymtxuJ6y0=
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--8.071200-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24618.005
-X-MDID: 1558106857-3OLdFj8Ohanv
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/05/2019 20:39, Edward Cree wrote:
-> A point for discussion: would it be better if, instead of the tcfa_index
->  (for which the driver has to know the rules about which flow_action
->  types share a namespace), we had some kind of globally unique cookie?
->  In the same way that rule->cookie is really a pointer, could we use the
->  address of the TC-internal data structure representing the action?  Do
->  rules that share an action all point to the same struct tc_action in
->  their tcf_exts, for instance?
-A quick test showed that, indeed, they do; I'm now leaning towards the
- approach of adding "unsigned long cookie" to struct flow_action_entry
- and populating it with (unsigned long)act in tc_setup_flow_action().
-Pablo, how do the two options interact with your netfilter offload?  I'm
- guessing it's easier for you to find a unique pointer than to generate
- a unique u32 action_index for each action.  I'm also assuming that
- netfilter doesn't have a notion of shared actions.
+From: Willem de Bruijn <willemb@google.com>
 
--Ed
+Processes can request ipv6 flowlabels with cmsg IPV6_FLOWINFO.
+If not set, by default an autogenerated flowlabel is selected.
+
+Explicit flowlabels require a control operation per label plus a
+datapath check on every connection (every datagram if unconnected).
+
+This is particularly expensive on unconnected sockets with many
+connections, such as QUIC.
+
+In the common case, where no lease is exclusive, the check can be
+safely elided, as both lease request and check trivially succeed.
+Indeed, autoflowlabel does the same (even with exclusive leases).
+
+Elide the check if no process has requested an exclusive lease.
+
+This is an optimization. Robust applications still have to revert to
+requesting leases if the fast path fails due to an exclusive lease.
+
+This is decidedly an RFC patch:
+- need to update all fl6_sock_lookup callers, not just udp
+- behavior should be per-netns isolated
+
+Other approaches considered:
+- a single "get all flowlabels, non-exclusive" flowlabel get request
+  if set, elide fl6_sock_lookup and fail exclusive lease requests
+
+- sysctls (only useful if on by default, with static_branch)
+  A) "non-exclusive mode", failing all exclusive lease requests:
+     processes already have to be robust against lease failure
+  B) just bypass check in fl6_sock_lookup, like autoflowlabel
+
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ include/net/ipv6.h       | 11 +++++++++++
+ net/ipv6/ip6_flowlabel.c |  6 ++++++
+ net/ipv6/udp.c           |  8 ++++----
+ 3 files changed, 21 insertions(+), 4 deletions(-)
+
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index daf80863d3a50..8881cee572410 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -17,6 +17,7 @@
+ #include <linux/hardirq.h>
+ #include <linux/jhash.h>
+ #include <linux/refcount.h>
++#include <linux/jump_label.h>
+ #include <net/if_inet6.h>
+ #include <net/ndisc.h>
+ #include <net/flow.h>
+@@ -343,7 +344,17 @@ static inline void txopt_put(struct ipv6_txoptions *opt)
+ 		kfree_rcu(opt, rcu);
+ }
+ 
++extern struct static_key_false ipv6_flowlabel_exclusive;
+ struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label);
++static inline struct ip6_flowlabel *fl6_sock_verify(struct sock *sk,
++						    __be32 label)
++{
++	if (static_branch_unlikely(&ipv6_flowlabel_exclusive))
++		return fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
++
++	return NULL;
++}
++
+ struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
+ 					 struct ip6_flowlabel *fl,
+ 					 struct ipv6_txoptions *fopt);
+diff --git a/net/ipv6/ip6_flowlabel.c b/net/ipv6/ip6_flowlabel.c
+index be5f3d7ceb966..d5f4233b04e0c 100644
+--- a/net/ipv6/ip6_flowlabel.c
++++ b/net/ipv6/ip6_flowlabel.c
+@@ -57,6 +57,8 @@ static DEFINE_SPINLOCK(ip6_fl_lock);
+ 
+ static DEFINE_SPINLOCK(ip6_sk_fl_lock);
+ 
++DEFINE_STATIC_KEY_FALSE(ipv6_flowlabel_exclusive);
++
+ #define for_each_fl_rcu(hash, fl)				\
+ 	for (fl = rcu_dereference_bh(fl_ht[(hash)]);		\
+ 	     fl != NULL;					\
+@@ -98,6 +100,8 @@ static void fl_free_rcu(struct rcu_head *head)
+ {
+ 	struct ip6_flowlabel *fl = container_of(head, struct ip6_flowlabel, rcu);
+ 
++	if (fl->share != IPV6_FL_S_NONE && fl->share != IPV6_FL_S_ANY)
++		static_branch_dec(&ipv6_flowlabel_exclusive);
+ 	if (fl->share == IPV6_FL_S_PROCESS)
+ 		put_pid(fl->owner.pid);
+ 	kfree(fl->opt);
+@@ -423,6 +427,8 @@ fl_create(struct net *net, struct sock *sk, struct in6_flowlabel_req *freq,
+ 	}
+ 	fl->dst = freq->flr_dst;
+ 	atomic_set(&fl->users, 1);
++	if (fl->share != IPV6_FL_S_ANY)
++		static_branch_inc(&ipv6_flowlabel_exclusive);
+ 	switch (fl->share) {
+ 	case IPV6_FL_S_EXCL:
+ 	case IPV6_FL_S_ANY:
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 07fa579dfb96c..859a1cbd54906 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1331,8 +1331,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		if (np->sndflow) {
+ 			fl6.flowlabel = sin6->sin6_flowinfo&IPV6_FLOWINFO_MASK;
+ 			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
+-				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-				if (!flowlabel)
++				flowlabel = fl6_sock_verify(sk, fl6.flowlabel);
++				if (IS_ERR(flowlabel))
+ 					return -EINVAL;
+ 			}
+ 		}
+@@ -1383,8 +1383,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			return err;
+ 		}
+ 		if ((fl6.flowlabel&IPV6_FLOWLABEL_MASK) && !flowlabel) {
+-			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
+-			if (!flowlabel)
++			flowlabel = fl6_sock_verify(sk, fl6.flowlabel);
++			if (IS_ERR(flowlabel))
+ 				return -EINVAL;
+ 		}
+ 		if (!(opt->opt_nflen|opt->opt_flen))
+-- 
+2.21.0.1020.gf2820cf01a-goog
+
