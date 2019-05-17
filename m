@@ -2,203 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 694EE2144C
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 09:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92FFF214D1
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 09:51:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728085AbfEQHbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 03:31:16 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:39360 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727361AbfEQHbP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 May 2019 03:31:15 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x4H7UTUr005700;
-        Fri, 17 May 2019 10:30:30 +0300
-Date:   Fri, 17 May 2019 10:30:29 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     YueHaibing <yuehaibing@huawei.com>
-cc:     davem@davemloft.net, wensong@linux-vs.org, horms@verge.net.au,
-        pablo@netfilter.org, kadlec@blackhole.kfki.hu, fw@strlen.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
-Subject: Re: [PATCH] ipvs: Fix use-after-free in ip_vs_in
-In-Reply-To: <20190515093614.21176-1-yuehaibing@huawei.com>
-Message-ID: <alpine.LFD.2.21.1905171015040.2233@ja.home.ssi.bg>
-References: <20190515093614.21176-1-yuehaibing@huawei.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1728007AbfEQHvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 03:51:12 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:36797 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727800AbfEQHvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 03:51:12 -0400
+Received: by mail-ot1-f66.google.com with SMTP id c3so5929195otr.3;
+        Fri, 17 May 2019 00:51:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=U9oH5zgqh3zpp40PKo4eEAEpI7FgiHZimUGddStME5M=;
+        b=MPwh2JP86Vz+CsDB/z0A51HXXpQqde+3lt2paGtNQ2TVlVYmFbumUP/KpTb1q1Gn1y
+         AApL87ZAnutDLndWe2/25fah0qkLE5Ya2igtHKPl2cNj1y18IF3EWYaLuNXGGOL7LSv/
+         yGP60oBHuExVKw+IZvb+6g6P039UMSXm3PqslaH7PtQdUCZ4ffmGOPXrDFplbERMVlb8
+         STFv+rH2SMvmolRzls73fphwpfiytyo5HxvwXRD/wIypBJ6TY4L+63yk1OMZStyUjDqW
+         O6UmU6m+tzF89wvthPJK7uIF6kiY97/NzlH0YNgnVv50JzElhQT3BiWP/qe6iePr6JRs
+         vmvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=U9oH5zgqh3zpp40PKo4eEAEpI7FgiHZimUGddStME5M=;
+        b=lw4Nw6Y8BTxouiko3rkTnVVfxaNyjlLu84GDTEk3PhoukxWdv2UeUQ/DGLPqf5s81r
+         VxYwfpkjZ+gi/1ETNGo32n5y64t/OXm9V0QbF0FTO/QIL+lJ52MHUCSaEkYE56PqxO5/
+         CYyNHttkXVWYc4pID0aP+McTRL41C0OFXZpsw8U3lUeN/ko/akRbtkF9OyhS2KwgrRyu
+         7RBDhQgd1HYThWv47TS84gRbyKAR1m+q1UGNje82/ZNnhpmvuVHzdtmHBxPVly0YoaRU
+         P/5EFlBBf5n10gTqUwyVnru0STCVaY9cntgQDXD8TMsZ3gvBDID1S44nhX/kG+3ZTJ8N
+         GjGA==
+X-Gm-Message-State: APjAAAVXdO0wU47zxJGqBcMXm9qhL5uX5RogiJdBm5Rcyh1ZLPVxhn+b
+        Ifzl1G6W9yFfeqOJECi6uXjHDAzzrPRFQ5/mV0o=
+X-Google-Smtp-Source: APXvYqwARXsHpa4DXXxSbDjzRx6Itj5+X24TyVPJBV8ARCraJWUC1c3KXIRHDcrarHVIAiDnrKpyJciTdZ9vHIHahio=
+X-Received: by 2002:a9d:30d3:: with SMTP id r19mr22022165otg.39.1558079471048;
+ Fri, 17 May 2019 00:51:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <1556786363-28743-1-git-send-email-magnus.karlsson@intel.com>
+ <20190506163135.blyqrxitmk5yrw7c@ast-mbp> <CAJ8uoz2MFtoXwuhAp5A0teMmwU2v623pHf2k0WSFi0kovJYjtw@mail.gmail.com>
+ <20190507182435.6f2toprk7jus6jid@ast-mbp> <CAJ8uoz24HWGfGBNhz4c-kZjYELJQ+G3FcELVEo205xd1CirpqQ@mail.gmail.com>
+ <CAJ8uoz1i72MOk711wLX18zmgo9JS+ztzSYAx0YS0VKxkbvod-w@mail.gmail.com> <6ce758d1-e646-c7c2-bc02-6911c9b7d6ce@intel.com>
+In-Reply-To: <6ce758d1-e646-c7c2-bc02-6911c9b7d6ce@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 17 May 2019 09:50:59 +0200
+Message-ID: <CAJ8uoz1qTNe66XJMLSr4y91zKwysXEJY0odZzJCLwFN2b-B+gw@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/7] busy poll support for AF_XDP sockets
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jonathan Lemon <bsd@fb.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, May 17, 2019 at 1:50 AM Samudrala, Sridhar
+<sridhar.samudrala@intel.com> wrote:
+>
+> On 5/16/2019 5:37 AM, Magnus Karlsson wrote:
+> >
+> > After a number of surprises and issues in the driver here are now the
+> > first set of results. 64 byte packets at 40Gbit/s line rate. All
+> > results in Mpps. Note that I just used my local system and kernel build
+> > for these numbers so they are not performance tuned. Jesper would
+> > likely get better results on his setup :-). Explanation follows after
+> > the table.
+> >
+> >                                        Applications
+> > method  cores  irqs        txpush        rxdrop      l2fwd
+> > ---------------------------------------------------------------
+> > r-t-c     2     y           35.9          11.2        8.6
+> > poll      2     y           34.2           9.4        8.3
+> > r-t-c     1     y           18.1           N/A        6.2
+> > poll      1     y           14.6           8.4        5.9
+> > busypoll  2     y           31.9          10.5        7.9
+> > busypoll  1     y           21.5           8.7        6.2
+> > busypoll  1     n           22.0          10.3        7.3
+> >
+> > r-t-c =3D Run-to-completion, the mode where we in Rx uses no syscalls
+> >          and only spin on the pointers in the ring.
+> > poll =3D Use the regular syscall poll()
+> > busypoll =3D Use the regular syscall poll() in busy-poll mode. The RFC =
+I
+> >             sent out.
+> >
+> > cores =3D=3D 2 means that softirq/ksoftirqd is one a different core fro=
+m
+> >             the application. 2 cores are consumed in total.
+> > cores =3D=3D 1 means that both softirq/ksoftirqd and the application ru=
+ns
+> >             on the same core. Only 1 core is used in total.
+> >
+> > irqs =3D=3D 'y' is the normal case. irqs =3D=3D 'n' means that I have c=
+reated a
+> >          new napi context with the AF_XDP queues inside that does not
+> >          have any interrupts associated with it. No other traffic goes
+> >          to this napi context.
+> >
+> > N/A =3D This combination does not make sense since the application will
+> >        not yield due to run-to-completion without any syscalls
+> >        whatsoever. It works, but it crawls in the 30 Kpps
+> >        range. Creating huge rings would help, but did not do that.
+> >
+> > The applications are the ones from the xdpsock sample application in
+> > samples/bpf/.
+> >
+> > Some things I had to do to get these results:
+> >
+> > * The current buffer allocation scheme in i40e where we continuously
+> >    try to access the fill queue until we find some entries, is not
+> >    effective if we are on a single core. Instead, we try once and call
+> >    a function that sets a flag. This flag is then checked in the xsk
+> >    poll code, and if it is set we schedule napi so that it can try to
+> >    allocate some buffers from the fill ring again. Note that this flag
+> >    has to propagate all the way to user space so that the application
+> >    knows that it has to call poll(). I currently set a flag in the Rx
+> >    ring to indicate that the application should call poll() to resume
+> >    the driver. This is similar to what the io_uring in the storage
+> >    subsystem does. It is not enough to return POLLERR from poll() as
+> >    that will only work for the case when we are using poll(). But I do
+> >    that as well.
+> >
+> > * Implemented Sridhar's suggestion on adding busy_loop_end callbacks
+> >    that terminate the busy poll loop if the Rx queue is empty or the Tx
+> >    queue is full.
+> >
+> > * There is a race in the setup code in i40e when it is used with
+> >    busy-poll. The fact that busy-poll calls the napi_busy_loop code
+> >    before interrupts have been registered and enabled seems to trigger
+> >    some bug where nothing gets transmitted. This only happens for
+> >    busy-poll. Poll and run-to-completion only enters the napi loop of
+> >    i40e by interrupts and only then after interrupts have been enabled,
+> >    which is the last thing that is done after setup. I have just worked
+> >    around it by introducing a sleep(1) in the application for these
+> >    experiments. Ugly, but should not impact the numbers, I believe.
+> >
+> > * The 1 core case is sensitive to the amount of work done reported
+> >    from the driver. This was not correct in the XDP code of i40e and
+> >    let to bad performance. Now it reports the correct values for
+> >    Rx. Note that i40e does not honor the napi budget on Tx and sets
+> >    that to 256, and these are not reported back to the napi
+> >    library.
+> >
+> > Some observations:
+> >
+> > * Cannot really explain the drop in performance for txpush when going
+> >    from 2 cores to 1. As stated before, the reporting of Tx work is not
+> >    really propagated to the napi infrastructure. Tried reporting this
+> >    in a correct manner (completely ignoring Rx for this experiment) but
+> >    the results were the same. Will dig deeper into this to screen out
+> >    any stupid mistakes.
+> >
+> > * With the fixes above, all my driver processing is in softirq for 1
+> >    core. It never goes over to ksoftirqd. Previously when work was
+> >    reported incorrectly, this was the case. I would have liked
+> >    ksoftirqd to take over as that would have been more like a separate
+> >    thread. How to accomplish this? There might still be some reporting
+> >    problem in the driver that hinders this, but actually think it is
+> >    more correct now.
+> >
+> > * Looking at the current results for a single core, busy poll provides
+> >    a 40% boost for Tx but only 5% for Rx. But if I instead create a
+> >    napi context without any interrupt associated with it and drive that
+> >    from busy-poll, I get a 15% - 20% performance improvement for Rx. Tx
+> >    increases only marginally from the 40% improvement as there are few
+> >    interrupts on Tx due to the completion interrupt bit being set quite
+> >    infrequently. One question I have is: what am I breaking by creating
+> >    a napi context not used by anyone else, only AF_XDP, that does not
+> >    have an interrupt associated with it?
+> >
+> > Todo:
+> >
+> > * Explain the drop in Tx push when going from 2 cores to 1.
+> >
+> > * Really run a separate thread for kernel processing instead of softirq=
+.
+> >
+> > * What other experiments would you like to see?
+>
+> Thanks for sharing the results.
+> For busypoll tests, i guess you may have increased the busypoll budget
+> to 64.
 
-	Hello,
+Yes, I am using a batch size of 64 for all experiments as the
+NAPI_POLL_WEIGHT is also 64. Note that the i40e driver batches 256
+packets on Tx as it does not care what the budget parameter is in the
+NAPI function. Rx is according to budget though.
 
-On Wed, 15 May 2019, YueHaibing wrote:
+> What is the busypoll timeout you are using?
 
-> BUG: KASAN: use-after-free in ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
-> Read of size 4 at addr ffff8881e9b26e2c by task sshd/5603
-> 
-> CPU: 0 PID: 5603 Comm: sshd Not tainted 4.19.39+ #30
-> Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-> Call Trace:
->  dump_stack+0x71/0xab
->  print_address_description+0x6a/0x270
->  kasan_report+0x179/0x2c0
->  ? ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
->  ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
->  ? tcp_in_window+0xfe0/0xfe0 [nf_conntrack]
->  ? ip_vs_in_icmp+0xcc0/0xcc0 [ip_vs]
->  ? ipt_do_table+0x4f1/0xad0 [ip_tables]
->  ? ip_vs_out+0x126/0x8f0 [ip_vs]
->  ? common_interrupt+0xa/0xf
->  ip_vs_in+0xd8/0x170 [ip_vs]
->  ? ip_vs_in.part.29+0xd20/0xd20 [ip_vs]
->  ? nf_nat_ipv4_fn+0x21/0xc0 [nf_nat_ipv4]
->  ? nf_nat_packet+0x4b/0x90 [nf_nat]
->  ? nf_nat_ipv4_local_fn+0xf9/0x160 [nf_nat_ipv4]
->  ? ip_vs_remote_request4+0x50/0x50 [ip_vs]
->  nf_hook_slow+0x5f/0xe0
->  ? sock_write_iter+0x121/0x1c0
->  __ip_local_out+0x1d5/0x250
->  ? ip_finish_output+0x430/0x430
->  ? ip_forward_options+0x2d0/0x2d0
->  ? ip_copy_addrs+0x2d/0x40
->  ? __ip_queue_xmit+0x2ca/0x730
->  ip_local_out+0x19/0x60
->  __tcp_transmit_skb+0xba1/0x14f0
->  ? __tcp_select_window+0x330/0x330
->  ? pvclock_clocksource_read+0xd1/0x180
->  ? kvm_sched_clock_read+0xd/0x20
->  ? sched_clock+0x5/0x10
->  ? sched_clock_cpu+0x18/0x100
->  tcp_write_xmit+0x41f/0x1ed0
->  ? _copy_from_iter_full+0xca/0x340
->  __tcp_push_pending_frames+0x52/0x140
->  tcp_sendmsg_locked+0x787/0x1600
->  ? __wake_up_common_lock+0x80/0x130
->  ? tcp_sendpage+0x60/0x60
->  ? remove_wait_queue+0x84/0xb0
->  ? mutex_unlock+0x1d/0x40
->  ? n_tty_read+0x4f7/0xd20
->  ? check_stack_object+0x21/0x60
->  ? inet_sk_set_state+0xb0/0xb0
->  tcp_sendmsg+0x27/0x40
->  sock_sendmsg+0x6d/0x80
->  sock_write_iter+0x121/0x1c0
->  ? sock_sendmsg+0x80/0x80
->  ? ldsem_up_read+0x13/0x40
->  ? iov_iter_init+0x77/0xb0
->  __vfs_write+0x23e/0x370
->  ? kernel_read+0xa0/0xa0
->  ? do_vfs_ioctl+0x134/0x900
->  ? __set_current_blocked+0x7e/0x90
->  ? __audit_syscall_entry+0x18e/0x1f0
->  ? ktime_get_coarse_real_ts64+0x51/0x70
->  vfs_write+0xe7/0x230
->  ksys_write+0xa1/0x120
->  ? __ia32_sys_read+0x50/0x50
->  ? __audit_syscall_exit+0x3ce/0x450
->  do_syscall_64+0x73/0x200
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x7ff6f6147c60
-> Code: 73 01 c3 48 8b 0d 28 12 2d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 5d 73 2d 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83
-> RSP: 002b:00007ffd772ead18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> RAX: ffffffffffffffda RBX: 0000000000000034 RCX: 00007ff6f6147c60
-> RDX: 0000000000000034 RSI: 000055df30a31270 RDI: 0000000000000003
-> RBP: 000055df30a31270 R08: 0000000000000000 R09: 0000000000000000
-> R10: 00007ffd772ead70 R11: 0000000000000246 R12: 00007ffd772ead74
-> R13: 00007ffd772eae20 R14: 00007ffd772eae24 R15: 000055df2f12ddc0
-> 
-> Allocated by task 6052:
->  kasan_kmalloc+0xa0/0xd0
->  __kmalloc+0x10a/0x220
->  ops_init+0x97/0x190
->  register_pernet_operations+0x1ac/0x360
->  register_pernet_subsys+0x24/0x40
->  0xffffffffc0ea016d
->  do_one_initcall+0x8b/0x253
->  do_init_module+0xe3/0x335
->  load_module+0x2fc0/0x3890
->  __do_sys_finit_module+0x192/0x1c0
->  do_syscall_64+0x73/0x200
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Freed by task 6067:
->  __kasan_slab_free+0x130/0x180
->  kfree+0x90/0x1a0
->  ops_free_list.part.7+0xa6/0xc0
->  unregister_pernet_operations+0x18b/0x1f0
->  unregister_pernet_subsys+0x1d/0x30
->  ip_vs_cleanup+0x1d/0xd2f [ip_vs]
->  __x64_sys_delete_module+0x20c/0x300
->  do_syscall_64+0x73/0x200
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> The buggy address belongs to the object at ffff8881e9b26600 which belongs to the cache kmalloc-4096 of size 4096
-> The buggy address is located 2092 bytes inside of 4096-byte region [ffff8881e9b26600, ffff8881e9b27600)
-> The buggy address belongs to the page:
-> page:ffffea0007a6c800 count:1 mapcount:0 mapping:ffff888107c0e600 index:0x0 compound_mapcount: 0
-> flags: 0x17ffffc0008100(slab|head)
-> raw: 0017ffffc0008100 dead000000000100 dead000000000200 ffff888107c0e600
-> raw: 0000000000000000 0000000080070007 00000001ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
-> 
-> Memory state around the buggy address:
->  ffff8881e9b26d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff8881e9b26d80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> >ffff8881e9b26e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                                   ^
->  ffff8881e9b26e80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff8881e9b26f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> 
-> while unregistering ipvs module, ops_free_list calls
-> __ip_vs_cleanup, then nf_unregister_net_hooks be called to
-> do remove nf hook entries. It need a RCU period to finish,
-> however net->ipvs is set to NULL immediately, which will
-> trigger NULL pointer dereference when a packet is hooked
-> and handled by ip_vs_in where net->ipvs is dereferenced.
-> 
-> Another scene is ops_free_list call ops_free to free the
-> net_generic directly while __ip_vs_cleanup finished, then
-> calling ip_vs_in will triggers use-after-free.
+0, as I am slamming the system as hard as I can with packets. The CPU
+is always at close to 100% due to this and there is always something
+to do. With a busy-poll timeout value of 100, I see a performance
+degradation between 2% (slowest rx) - 7% (fastest tx). But any other
+value than 0 for the busy-poll timeout does not make much sense when I
+am running the driver and the application on the same core. I am
+better off trying to get into softirq/ksoftirqd quicker to get some
+new packets and/or send my Tx ones.
 
-	OK, can you instead test and post a patch that moves
-nf_unregister_net_hooks from __ip_vs_cleanup() to
-__ip_vs_dev_cleanup()? You can add commit efe41606184e
-in Fixes line. There is rcu_barrier() in unregister_pernet_device ->
-unregister_pernet_operations that will do the needed grace
-period.
+Regular poll() has a timeout value in the poll() syscall of 1000, as
+it needs to yield to the driver processing. With 0 there are, to my
+surprise, some performance improvements of a couple of percent.
+Looking at the code, the code path for a 0 timeout is shorter which
+might explain this.
 
-	In a followup patch for net-next I'll drop the
-ipvs->enable flag and will move the nf_register_net_hooks()
-call to ip_vs_add_service() just before the 'svc = kzalloc'
-part. So, for now you do not need to move nf_register_net_hooks.
-As result, hooks will be registered when there are IPVS rules.
+> Can you try a test that skips calling bpf program for queues that are
+> associated with af-xdp socket? I remember seeing a significant bump in
+> rxdrop performance with this change.
 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: efe41606184e ("ipvs: convert to use pernet nf_hook api")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  net/netfilter/ipvs/ip_vs_core.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-> index 1445755..33205db 100644
-> --- a/net/netfilter/ipvs/ip_vs_core.c
-> +++ b/net/netfilter/ipvs/ip_vs_core.c
-> @@ -2320,6 +2320,7 @@ static void __net_exit __ip_vs_cleanup(struct net *net)
->  	ip_vs_control_net_cleanup(ipvs);
->  	ip_vs_estimator_net_cleanup(ipvs);
->  	IP_VS_DBG(2, "ipvs netns %d released\n", ipvs->gen);
-> +	synchronize_net();
->  	net->ipvs = NULL;
->  }
+Bj=C3=B6rn is working on this. This should improve performance much more
+than busy-poll in my mind.
 
-Regards
+> The other overhead i saw was with the dma_sync_single calls in the driver=
+.
 
---
-Julian Anastasov <ja@ssi.bg>
+I will do a "perf top" and check out the bottlenecks in more detail.
+
+Thanks: Magnus
+
+> Thanks
+> Sridhar
