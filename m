@@ -2,204 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F0082122B
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 04:44:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F68421243
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 04:47:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727418AbfEQCoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 22:44:00 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:45924 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725933AbfEQCoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 22:44:00 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id BE28960DAB; Fri, 17 May 2019 02:43:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1558061038;
-        bh=K09d6YzJWvbZaW19iYpFFDTHSzDhNF1cUlPnNgBKhOo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TiM3+9qmx+F+cCs7e55viOMwtufHDuCtCpYNFU/3gShPWNNDtHS1jDpixGpdBUWmk
-         kzxUOJCoi3wB5VoNTPHIzDH490cLCiMiPVf5bqsdfevTVKKgreNJ99stkZ0ZC8bHfM
-         vB657rOH0gKxAIBLMp/6G93CfuJQPp5GeXpjYFNQ=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by smtp.codeaurora.org (Postfix) with ESMTP id 62D12608BA;
-        Fri, 17 May 2019 02:43:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1558061037;
-        bh=K09d6YzJWvbZaW19iYpFFDTHSzDhNF1cUlPnNgBKhOo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LMHW0afmhkGjjbhlr62+MD/NgYRESdt0KDZV/lyHlNjlRccO8aI5mWkGD4dD0SmbN
-         ze1pbXA7MkWEkOYbdpfM4SFtqnRSslMkYrbZ68TYcg4ctiG9HCantHtYx/kvFTf9rE
-         usHSdeOI5+X7cvKTQC7jB2Mk1oGl0jM7j7W3XErA=
+        id S1727540AbfEQCra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 22:47:30 -0400
+Received: from mail-eopbgr50084.outbound.protection.outlook.com ([40.107.5.84]:11397
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727195AbfEQCr3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 22:47:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CD6MChlbZekd1equpKfzVu8H8N10MkSGemB6SGyuDYs=;
+ b=SO7RnzZ+PihBH/OVWh2IzGQC7nbo6mkcg6lGEBsrShpLj4x08Q8LW+qXc4OWIJSgrc5S0mi/sIJ7FDtfl/Ho1nU3RGeybi0IJkg9FSvZedMEUdHZcp+4K7mzLvtRkli2nEdZB09CvjqCxv8LcayEwgMtbZqkx/bmqJDVqtfMF6s=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.138.152) by
+ DB7PR04MB5484.eurprd04.prod.outlook.com (20.178.105.145) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.16; Fri, 17 May 2019 02:47:24 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::bd02:a611:1f0:daac]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::bd02:a611:1f0:daac%6]) with mapi id 15.20.1900.010; Fri, 17 May 2019
+ 02:47:24 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] can: flexcan: fix deadlock when using self wakeup
+Thread-Topic: [PATCH] can: flexcan: fix deadlock when using self wakeup
+Thread-Index: AQHVDFm06ozNDmulK0GLXWOup5sGAaZumuVg
+Date:   Fri, 17 May 2019 02:47:24 +0000
+Message-ID: <DB7PR04MB46182799A768197CC7CEA9D0E60B0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+References: <20190517023652.19285-1-qiangqing.zhang@nxp.com>
+In-Reply-To: <20190517023652.19285-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 30231ab2-c9ff-4c35-ca81-08d6da71fdc5
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB7PR04MB5484;
+x-ms-traffictypediagnostic: DB7PR04MB5484:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <DB7PR04MB5484E8562FE06D13EC11A07FE60B0@DB7PR04MB5484.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0040126723
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(366004)(396003)(136003)(39860400002)(13464003)(189003)(199004)(71200400001)(6436002)(6116002)(71190400001)(76116006)(5024004)(4326008)(53936002)(102836004)(14444005)(81156014)(5660300002)(3846002)(81166006)(256004)(6306002)(25786009)(86362001)(33656002)(8936002)(66066001)(229853002)(476003)(110136005)(486006)(68736007)(478600001)(446003)(52536014)(74316002)(2906002)(11346002)(316002)(8676002)(966005)(305945005)(7696005)(54906003)(2501003)(99286004)(73956011)(66476007)(66446008)(64756008)(66556008)(9686003)(55016002)(66946007)(7736002)(186003)(26005)(6246003)(53546011)(14454004)(76176011)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5484;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: RmWk8iBdajp1Ohe2REN+rbop3XoCBdrNabRnYHuxnMcfey6u7ahJwek03pzDdKMVz3hHPb5vbFbTgwkJpN/QatNzKWPhEfILjOx15Ib8NhrNU8idsc0cwqkBlLbm+7qbn8rHptbzJvsWVs2uruUAO5UJA/iPYmdmnKuskzAxBWNMOGSov5S9+BsJx0LROj5tzdIkmFhydIIt4FodFvKtn6apjEv0UrnrXRco98ChfEixUOY5srzKrdqLySK2Ov0fcO5J4facZaE/KxxHfcUAHpQtALGHwkCFA0g987IQLFbvTrZIiH3UO9AYNduOhTSVW1uUemuXFvOdrFKZ09HGI9l6huiPZljiZiGxpE0WOhjZlQ9UANh6aUNmHWeUPQPYunMx7vmQ4tr3I88XWu0I1qxpWD5Dbhouxpcb3D4Amak=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Fri, 17 May 2019 08:13:57 +0530
-From:   Balakrishna Godavarthi <bgodavar@codeaurora.org>
-To:     Rocky Liao <rjliao@codeaurora.org>
-Cc:     robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org,
-        johan.hedberg@gmail.com, thierry.escande@linaro.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, c-hbandi@codeaurora.org,
-        Hemantg <hemantg@codeaurora.org>
-Subject: Re: [PATCH v5 1/2] Bluetooth: hci_qca: Load customized NVM based on
- the device property
-In-Reply-To: <1557919161-11010-1-git-send-email-rjliao@codeaurora.org>
-References: <1557631148-5120-1-git-send-email-rjliao@codeaurora.org>
- <1557919161-11010-1-git-send-email-rjliao@codeaurora.org>
-Message-ID: <178d2a3454399cfad0e61e72a13ea19a@codeaurora.org>
-X-Sender: bgodavar@codeaurora.org
-User-Agent: Roundcube Webmail/1.2.5
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30231ab2-c9ff-4c35-ca81-08d6da71fdc5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2019 02:47:24.2471
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5484
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rocky,
-
-On 2019-05-15 16:49, Rocky Liao wrote:
-> QCA BTSOC NVM is a customized firmware file and different vendors may
-> want to have different BTSOC configuration (e.g. Configure SCO over PCM
-> or I2S, Setting Tx power, etc.) via this file. This patch will allow
-> vendors to download different NVM firmware file by reading a device
-> property "firmware-name".
-> 
-> Signed-off-by: Rocky Liao <rjliao@codeaurora.org>
-> ---
-> Changes in v5:
->   * Made the change applicable to the wcn399x series chip sets
-> ---
->  drivers/bluetooth/btqca.c   |  8 ++++++--
->  drivers/bluetooth/btqca.h   |  6 ++++--
->  drivers/bluetooth/hci_qca.c | 19 ++++++++++++++++++-
->  3 files changed, 28 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
-> index cc12eec..a78b80e 100644
-> --- a/drivers/bluetooth/btqca.c
-> +++ b/drivers/bluetooth/btqca.c
-> @@ -332,7 +332,8 @@ int qca_set_bdaddr_rome(struct hci_dev *hdev,
-> const bdaddr_t *bdaddr)
->  EXPORT_SYMBOL_GPL(qca_set_bdaddr_rome);
-> 
->  int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
-> -		   enum qca_btsoc_type soc_type, u32 soc_ver)
-> +		   enum qca_btsoc_type soc_type, u32 soc_ver,
-> +		   const char *firmware_name)
->  {
->  	struct rome_config config;
->  	int err;
-> @@ -365,7 +366,10 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t 
-> baudrate,
-> 
->  	/* Download NVM configuration */
->  	config.type = TLV_TYPE_NVM;
-> -	if (qca_is_wcn399x(soc_type))
-> +	if (firmware_name)
-> +		snprintf(config.fwname, sizeof(config.fwname),
-> +			 "qca/%s", firmware_name);
-> +	else if (qca_is_wcn399x(soc_type))
->  		snprintf(config.fwname, sizeof(config.fwname),
->  			 "qca/crnv%02x.bin", rom_ver);
->  	else
-> diff --git a/drivers/bluetooth/btqca.h b/drivers/bluetooth/btqca.h
-> index 4c4fe2b..8c037bb 100644
-> --- a/drivers/bluetooth/btqca.h
-> +++ b/drivers/bluetooth/btqca.h
-> @@ -140,7 +140,8 @@ enum qca_btsoc_type {
-> 
->  int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t *bdaddr);
->  int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
-> -		   enum qca_btsoc_type soc_type, u32 soc_ver);
-> +		   enum qca_btsoc_type soc_type, u32 soc_ver,
-> +		   const char *firmware_name);
->  int qca_read_soc_version(struct hci_dev *hdev, u32 *soc_version);
->  int qca_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr);
->  static inline bool qca_is_wcn399x(enum qca_btsoc_type soc_type)
-> @@ -155,7 +156,8 @@ static inline int qca_set_bdaddr_rome(struct
-> hci_dev *hdev, const bdaddr_t *bdad
->  }
-> 
->  static inline int qca_uart_setup(struct hci_dev *hdev, uint8_t 
-> baudrate,
-> -				 enum qca_btsoc_type soc_type, u32 soc_ver)
-> +				 enum qca_btsoc_type soc_type, u32 soc_ver,
-> +				 const char *firmware_name)
->  {
->  	return -EOPNOTSUPP;
->  }
-> diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-> index 57322c4..9590602 100644
-> --- a/drivers/bluetooth/hci_qca.c
-> +++ b/drivers/bluetooth/hci_qca.c
-> @@ -169,6 +169,7 @@ struct qca_serdev {
->  	struct qca_power *bt_power;
->  	u32 init_speed;
->  	u32 oper_speed;
-> +	const char *firmware_name;
->  };
-> 
->  static int qca_power_setup(struct hci_uart *hu, bool on);
-> @@ -190,6 +191,17 @@ static enum qca_btsoc_type qca_soc_type(struct
-> hci_uart *hu)
->  	return soc_type;
->  }
-> 
-> +static const char *qca_get_firmware_name(struct hci_uart *hu)
-> +{
-> +	if (hu->serdev) {
-> +		struct qca_serdev *qsd = serdev_device_get_drvdata(hu->serdev);
-> +
-> +		return qsd->firmware_name;
-> +	} else {
-> +		return NULL;
-> +	}
-> +}
-> +
->  static void __serial_clock_on(struct tty_struct *tty)
->  {
->  	/* TODO: Some chipset requires to enable UART clock on client
-> @@ -1195,6 +1207,7 @@ static int qca_setup(struct hci_uart *hu)
->  	struct qca_data *qca = hu->priv;
->  	unsigned int speed, qca_baudrate = QCA_BAUDRATE_115200;
->  	enum qca_btsoc_type soc_type = qca_soc_type(hu);
-> +	const char *firmware_name = qca_get_firmware_name(hu);
->  	int ret;
->  	int soc_ver = 0;
-> 
-> @@ -1245,7 +1258,8 @@ static int qca_setup(struct hci_uart *hu)
-> 
->  	bt_dev_info(hdev, "QCA controller version 0x%08x", soc_ver);
->  	/* Setup patch / NVM configurations */
-> -	ret = qca_uart_setup(hdev, qca_baudrate, soc_type, soc_ver);
-> +	ret = qca_uart_setup(hdev, qca_baudrate, soc_type, soc_ver,
-> +			firmware_name);
->  	if (!ret) {
->  		set_bit(QCA_IBS_ENABLED, &qca->flags);
->  		qca_debugfs_init(hdev);
-> @@ -1477,6 +1491,9 @@ static int qca_serdev_probe(struct serdev_device 
-> *serdev)
->  			return PTR_ERR(qcadev->bt_en);
->  		}
-> 
-> +		device_property_read_string(&serdev->dev, "firmware-name",
-> +					 &qcadev->firmware_name);
-> +
->  		qcadev->susclk = devm_clk_get(&serdev->dev, NULL);
->  		if (IS_ERR(qcadev->susclk)) {
->  			dev_err(&serdev->dev, "failed to acquire clk\n");
-
-Thanks for doing it for wcn399x series too.
-
-Change look fine to me.
-
-Reviewed-by: Balakrishna Godavarthi <bgodavar@codeaurora.org>
--- 
-Regards
-Balakrishna.
+DQpIaSBNYXJjLA0KDQpTZWFuIE55ZWtqYWVyIHJlcG9ydGVkIHRoZSBpc3N1ZSwgYnV0IHRoZSBm
+aXggaXMgaW5jb3JyZWN0Lg0KaHR0cHM6Ly93d3cuc3Bpbmljcy5uZXQvbGlzdHMvbGludXgtY2Fu
+L21zZzAxNDQ3Lmh0bWwNCg0KQ291bGQgeW91IGhlbHAgdG8gYWRkIFNlYW4gTnlla2phZXIgdG8g
+dGhpcyB0aHJlYWQgYXMgSSBjYW4ndCBnZXQgdGhlIGVtYWlsIGFkZHJlc3MuDQpZb3UgY2FuIGFk
+ZCB0aGUgIlJlcG9ydGVkLWJ5IiB0YWcgaWYgeW91IHBpY2sgdXAgdGhlIHBhdGNoLg0KDQpUaGFu
+a3MgYSBsb3QhDQoNCkJlc3QgUmVnYXJkcywNCkpvYWtpbSBaaGFuZw0KDQo+IC0tLS0tT3JpZ2lu
+YWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEpvYWtpbSBaaGFuZw0KPiBTZW50OiAyMDE55bm0Neac
+iDE35pelIDEwOjM5DQo+IFRvOiBta2xAcGVuZ3V0cm9uaXguZGU7IGxpbnV4LWNhbkB2Z2VyLmtl
+cm5lbC5vcmcNCj4gQ2M6IGRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyB3Z0BncmFu
+ZGVnZ2VyLmNvbTsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgSm9ha2ltIFpoYW5nIDxxaWFu
+Z3FpbmcuemhhbmdAbnhwLmNvbT4NCj4gU3ViamVjdDogW1BBVENIXSBjYW46IGZsZXhjYW46IGZp
+eCBkZWFkbG9jayB3aGVuIHVzaW5nIHNlbGYgd2FrZXVwDQo+IA0KPiBBcyByZXByb3RlZCBieSBT
+ZWFuIE55ZWtqYWVyIGJlbGxvdzoNCj4gV2hlbiBzdXNwZW5kaW5nLCB3aGVuIHRoZXJlIGlzIHN0
+aWxsIGNhbiB0cmFmZmljIG9uIHRoZSBpbnRlcmZhY2VzIHRoZSBmbGV4Y2FuDQo+IGltbWVkaWF0
+ZWx5IHdha2VzIHRoZSBwbGF0Zm9ybSBhZ2Fpbi4NCj4gQXMgaXQgc2hvdWxkIDotKQ0KPiBCdXQg
+aXQgdGhyb3dzIHRoaXMgZXJyb3IgbXNnOg0KPiBbIDMxNjkuMzc4NjYxXSBQTTogbm9pcnEgc3Vz
+cGVuZCBvZiBkZXZpY2VzIGZhaWxlZA0KPiANCj4gT24gdGhlIHdheSBkb3duIHRvIHN1c3BlbmQg
+dGhlIGludGVyZmFjZSB0aGF0IHRocm93cyB0aGUgZXJyb3IgbWVzc2FnZSBkb2VzDQo+IGNhbGwg
+ZmxleGNhbl9zdXNwZW5kIGJ1dCBmYWlscyB0byBjYWxsIGZsZXhjYW5fbm9pcnFfc3VzcGVuZC4N
+Cj4gVGhhdCBtZWFucyB0aGUgZmxleGNhbl9lbnRlcl9zdG9wX21vZGUgaXMgY2FsbGVkLCBidXQg
+b24gdGhlIHdheSBvdXQgb2YNCj4gc3VzcGVuZCB0aGUgZHJpdmVyIG9ubHkgY2FsbHMgZmxleGNh
+bl9yZXN1bWUgYW5kIHNraXBzIGZsZXhjYW5fbm9pcnFfcmVzdW1lLA0KPiB0aHVzIGl0IGRvZXNu
+J3QgY2FsbCBmbGV4Y2FuX2V4aXRfc3RvcF9tb2RlLg0KPiBUaGlzIGxlYXZlcyB0aGUgZmxleGNh
+biBpbiBzdG9wIG1vZGUsIGFuZCB3aXRoIHRoZSBjdXJyZW50IGRyaXZlciBpdCBjYW4ndA0KPiBy
+ZWNvdmVyIGZyb20gdGhpcyBldmVuIHdpdGggYSBzb2Z0IHJlYm9vdCwgaXQgcmVxdWlyZXMgYSBo
+YXJkIHJlYm9vdC4NCj4gDQo+IEZpeGVzOiBkZTM1NzhjMTk4YzYgKCJjYW46IGZsZXhjYW46IGFk
+ZCBzZWxmIHdha2V1cCBzdXBwb3J0IikNCj4gDQo+IFRoaXMgcGF0Y2ggaW50ZW5kcyB0byBmaXgg
+dGhlIGlzc3VlLCBhbmQgYWxzbyBhZGQgY29tbWVudCB0byBleHBsYWluIHRoZQ0KPiB3YWtldXAg
+Zmxvdy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEpvYWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5n
+QG54cC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYyB8IDE3ICsrKysr
+KysrKysrKysrKysrDQo+ICAxIGZpbGUgY2hhbmdlZCwgMTcgaW5zZXJ0aW9ucygrKQ0KPiANCj4g
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMgYi9kcml2ZXJzL25ldC9jYW4v
+ZmxleGNhbi5jIGluZGV4DQo+IGUzNTA4M2ZmMzFlZS4uNmZiY2U0NzNhOGM3IDEwMDY0NA0KPiAt
+LS0gYS9kcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2Nhbi9m
+bGV4Y2FuLmMNCj4gQEAgLTI4Niw2ICsyODYsNyBAQCBzdHJ1Y3QgZmxleGNhbl9wcml2IHsNCj4g
+IAljb25zdCBzdHJ1Y3QgZmxleGNhbl9kZXZ0eXBlX2RhdGEgKmRldnR5cGVfZGF0YTsNCj4gIAlz
+dHJ1Y3QgcmVndWxhdG9yICpyZWdfeGNlaXZlcjsNCj4gIAlzdHJ1Y3QgZmxleGNhbl9zdG9wX21v
+ZGUgc3RtOw0KPiArCWJvb2wgaW5fc3RvcF9tb2RlOw0KPiANCj4gIAkvKiBSZWFkIGFuZCBXcml0
+ZSBBUElzICovDQo+ICAJdTMyICgqcmVhZCkodm9pZCBfX2lvbWVtICphZGRyKTsNCj4gQEAgLTE2
+NTMsNiArMTY1NCw3IEBAIHN0YXRpYyBpbnQgX19tYXliZV91bnVzZWQgZmxleGNhbl9zdXNwZW5k
+KHN0cnVjdA0KPiBkZXZpY2UgKmRldmljZSkNCj4gIAkJaWYgKGRldmljZV9tYXlfd2FrZXVwKGRl
+dmljZSkpIHsNCj4gIAkJCWVuYWJsZV9pcnFfd2FrZShkZXYtPmlycSk7DQo+ICAJCQlmbGV4Y2Fu
+X2VudGVyX3N0b3BfbW9kZShwcml2KTsNCj4gKwkJCXByaXYtPmluX3N0b3BfbW9kZSA9IHRydWU7
+DQo+ICAJCX0gZWxzZSB7DQo+ICAJCQllcnIgPSBmbGV4Y2FuX2NoaXBfZGlzYWJsZShwcml2KTsN
+Cj4gIAkJCWlmIChlcnIpDQo+IEBAIC0xNjc5LDYgKzE2ODEsMTEgQEAgc3RhdGljIGludCBfX21h
+eWJlX3VudXNlZCBmbGV4Y2FuX3Jlc3VtZShzdHJ1Y3QNCj4gZGV2aWNlICpkZXZpY2UpDQo+ICAJ
+CW5ldGlmX2RldmljZV9hdHRhY2goZGV2KTsNCj4gIAkJbmV0aWZfc3RhcnRfcXVldWUoZGV2KTsN
+Cj4gIAkJaWYgKGRldmljZV9tYXlfd2FrZXVwKGRldmljZSkpIHsNCj4gKwkJCWlmIChwcml2LT5p
+bl9zdG9wX21vZGUpIHsNCj4gKwkJCQlmbGV4Y2FuX2VuYWJsZV93YWtldXBfaXJxKHByaXYsIGZh
+bHNlKTsNCj4gKwkJCQlmbGV4Y2FuX2V4aXRfc3RvcF9tb2RlKHByaXYpOw0KPiArCQkJCXByaXYt
+PmluX3N0b3BfbW9kZSA9IGZhbHNlOw0KPiArCQkJfQ0KPiAgCQkJZGlzYWJsZV9pcnFfd2FrZShk
+ZXYtPmlycSk7DQo+ICAJCX0gZWxzZSB7DQo+ICAJCQllcnIgPSBwbV9ydW50aW1lX2ZvcmNlX3Jl
+c3VtZShkZXZpY2UpOyBAQCAtMTcxNSw2DQo+ICsxNzIyLDExIEBAIHN0YXRpYyBpbnQgX19tYXli
+ZV91bnVzZWQgZmxleGNhbl9ub2lycV9zdXNwZW5kKHN0cnVjdCBkZXZpY2UNCj4gKmRldmljZSkN
+Cj4gIAlzdHJ1Y3QgbmV0X2RldmljZSAqZGV2ID0gZGV2X2dldF9kcnZkYXRhKGRldmljZSk7DQo+
+ICAJc3RydWN0IGZsZXhjYW5fcHJpdiAqcHJpdiA9IG5ldGRldl9wcml2KGRldik7DQo+IA0KPiAr
+CS8qIE5lZWQgZW5hYmxlIHdha2V1cCBpbnRlcnJ1cHQgaW4gbm9pcnEgc3VzcGVuZCBzdGFnZS4g
+T3RoZXJ3aXNlLA0KPiArCSAqIGl0IHdpbGwgdHJpZ2dlciBjb250aW51b3VzbHkgd2FrZXVwIGlu
+dGVycnVwdCBpZiB0aGUgd2FrZXVwIGV2ZW50DQo+ICsJICogY29tZXMgYmVmb3JlIG5vaXJxIHN1
+c3BlbmQgc3RhZ2UsIGFuZCBzaW11bHRhbmVvdXNseSBpbiBoYXMgZW50ZXINCj4gKwkgKiB0aGUg
+c3RvcCBtb2RlLg0KPiArCSAqLw0KPiAgCWlmIChuZXRpZl9ydW5uaW5nKGRldikgJiYgZGV2aWNl
+X21heV93YWtldXAoZGV2aWNlKSkNCj4gIAkJZmxleGNhbl9lbmFibGVfd2FrZXVwX2lycShwcml2
+LCB0cnVlKTsNCj4gDQo+IEBAIC0xNzI2LDkgKzE3MzgsMTQgQEAgc3RhdGljIGludCBfX21heWJl
+X3VudXNlZA0KPiBmbGV4Y2FuX25vaXJxX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXZpY2UpDQo+
+ICAJc3RydWN0IG5ldF9kZXZpY2UgKmRldiA9IGRldl9nZXRfZHJ2ZGF0YShkZXZpY2UpOw0KPiAg
+CXN0cnVjdCBmbGV4Y2FuX3ByaXYgKnByaXYgPSBuZXRkZXZfcHJpdihkZXYpOw0KPiANCj4gKwkv
+KiBOZWVkIGV4aXQgc3RvcCBtb2RlIGluIG5vaXJxIHJlc3VtZSBzdGFnZS4gT3RoZXJ3aXNlLCBp
+dCB3aWxsDQo+ICsJICogdHJpZ2dlciBjb250aW51b3VzbHkgd2FrZXVwIGludGVycnVwdCBpZiB0
+aGUgd2FrZXVwIGV2ZW50IGNvbWVzLA0KPiArCSAqIGFuZCBzaW11bHRhbmVvdXNseSBpdCBoYXMg
+c3RpbGwgaW4gc3RvcCBtb2RlLg0KPiArCSAqLw0KPiAgCWlmIChuZXRpZl9ydW5uaW5nKGRldikg
+JiYgZGV2aWNlX21heV93YWtldXAoZGV2aWNlKSkgew0KPiAgCQlmbGV4Y2FuX2VuYWJsZV93YWtl
+dXBfaXJxKHByaXYsIGZhbHNlKTsNCj4gIAkJZmxleGNhbl9leGl0X3N0b3BfbW9kZShwcml2KTsN
+Cj4gKwkJcHJpdi0+aW5fc3RvcF9tb2RlID0gZmFsc2U7DQo+ICAJfQ0KPiANCj4gIAlyZXR1cm4g
+MDsNCj4gLS0NCj4gMi4xNy4xDQoNCg==
