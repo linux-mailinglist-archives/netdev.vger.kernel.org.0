@@ -2,65 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA48621D9E
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 20:45:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0AB221D86
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 20:39:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727160AbfEQSpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 14:45:11 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:37624 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725933AbfEQSpL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 14:45:11 -0400
-Received: from uucp by smtp.tuxdriver.com with local-rmail (Exim 4.63)
-        (envelope-from <linville@tuxdriver.com>)
-        id 1hRhqv-0004OF-V3
-        for netdev@vger.kernel.org; Fri, 17 May 2019 14:45:10 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by localhost.localdomain (8.15.2/8.14.6) with ESMTP id x4HIb9Mg031750
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 14:37:09 -0400
-Received: (from linville@localhost)
-        by localhost.localdomain (8.15.2/8.15.2/Submit) id x4HIb1aO031749
-        for netdev@vger.kernel.org; Fri, 17 May 2019 14:37:01 -0400
-Date:   Fri, 17 May 2019 14:37:01 -0400
-From:   "John W. Linville" <linville@tuxdriver.com>
-To:     netdev@vger.kernel.org
-Subject: ethtool 5.1 released
-Message-ID: <20190517183700.GA30699@tuxdriver.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.11.3 (2019-02-01)
+        id S1726964AbfEQSjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 14:39:37 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:46288 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725933AbfEQSjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 14:39:36 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 434B613F18502;
+        Fri, 17 May 2019 11:39:36 -0700 (PDT)
+Date:   Fri, 17 May 2019 11:39:24 -0700 (PDT)
+Message-Id: <20190517.113924.1441508070379690525.davem@davemloft.net>
+To:     swkhack@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: caif: fix the value of size argument of snprintf
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190517075922.29123-1-swkhack@gmail.com>
+References: <20190517075922.29123-1-swkhack@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 17 May 2019 11:39:36 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ethtool version 5.1 has been released.
+From: Weikang shi <swkhack@gmail.com>
+Date: Fri, 17 May 2019 15:59:22 +0800
 
-Home page: https://www.kernel.org/pub/software/network/ethtool/
-Download link:
-https://www.kernel.org/pub/software/network/ethtool/ethtool-5.1.tar.xz
+> From: swkhack <swkhack@gmail.com>
+> 
+> Because the function snprintf write at most size bytes(including the
+> null byte).So the value of the argument size need not to minus one.
+> 
+> Signed-off-by: swkhack <swkhack@gmail.com>
 
-Release notes:
-
-        * Feature: Add support for 200Gbps (50Gbps per lane) link mode
-        * Feature: simplify handling of PHY tunable downshift
-        * Feature: add support for PHY tunable Fast Link Down
-        * Feature: add PHY Fast Link Down tunable to man page
-        * Feature: Add a 'start N' option when specifying the Rx flow hash indirection table.
-        * Feature: Add bash-completion script
-        * Feature: add 10000baseR_FEC link mode name
-        * Fix: qsfp: fix special value comparison
-        * Feature: move option parsing related code into function
-        * Feature: move cmdline_coalesce out of do_scoalesce
-        * Feature: introduce new ioctl for per-queue settings
-        * Feature: support per-queue sub command --show-coalesce
-        * Feature: support per-queue sub command --coalesce
-        * Fix: fix up dump_coalesce output to match actual option names
-        * Feature: fec: add pretty dump
-
-John
--- 
-John W. Linville		Someday the world will need a hero, and you
-linville@tuxdriver.com			might be all we have.  Be ready.
-
+Applied.
