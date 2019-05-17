@@ -2,71 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0364D21A79
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8A1E21A8A
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:27:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729237AbfEQPXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 11:23:02 -0400
-Received: from frisell.zx2c4.com ([192.95.5.64]:43935 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728749AbfEQPXB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 May 2019 11:23:01 -0400
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 7f8079fd
-        for <netdev@vger.kernel.org>;
-        Fri, 17 May 2019 14:54:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=8t8JW19XTOO5GYISDvuSiehwnUA=; b=pLFnA6
-        ZD+qqKBCwHtnrpOzlM5VKIyyKOkiKIfCIDGc8R5WASbp7cXjVSj52CbMq6vrxA+T
-        R4Ny+vZI+418/ZDIidyRkgp0SR3m0f3bIEtOgMzI2/dLPM6+rhs58OkU6yawtbcs
-        05N+O13RpTJBlEtjsH3aphiWqy5UAWXk6CLXjiZrrkg+y4BUW550vidVmDAlv2LC
-        9KtGLpRz8A/EvSwCdQ8zDn1SHBR4ksQvxRIyjC8GLT4kBcz3VRNgYATotdw6c8MX
-        QvTSVvnr41DydNBUBj/IVTKmU2G+OFiP67ZjLAZmhJ/LqCURevKIHS1PSZp3/33V
-        5YoTsnzr5liqWccg==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3cacca3f (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Fri, 17 May 2019 14:54:03 +0000 (UTC)
-Received: by mail-ot1-f43.google.com with SMTP id n14so7096746otk.2
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 08:22:59 -0700 (PDT)
-X-Gm-Message-State: APjAAAUNyfozgcZzplJGdgRyl7zx+YgLf/aYCEGGtYUB4QnV0VWGkbvN
-        Ybf3rgeWv8rG2bwigw3hpcxy6DPMXELxJwWHU3k=
-X-Google-Smtp-Source: APXvYqzale5Ci/OcT0HY35fSe9jAzes8uOhcDFKyNEm0caIGLdfFgsceP8E+YI12ZJOryvMJhdMkjQ8ZmbFZO1Mkp24=
-X-Received: by 2002:a9d:4e08:: with SMTP id p8mr34137738otf.243.1558106578876;
- Fri, 17 May 2019 08:22:58 -0700 (PDT)
+        id S1729295AbfEQP1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 11:27:38 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:60604 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729226AbfEQP1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 11:27:38 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 5BC37A40059;
+        Fri, 17 May 2019 15:27:35 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 17 May
+ 2019 08:27:30 -0700
+Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
+ statistics
+From:   Edward Cree <ecree@solarflare.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "Pablo Neira Ayuso" <pablo@netfilter.org>,
+        David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+References: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
+Message-ID: <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
+Date:   Fri, 17 May 2019 16:27:29 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <LaeckvP--3-1@tutanota.com> <CAHmME9pwgfN5J=k-2-H0cLWrHSMO2+LHk=Lnfe7qcsewue2Kxw@mail.gmail.com>
- <20190517141709.GA25473@unicorn.suse.cz> <cb462836-a8d3-b8d8-fe3f-42186ade769e@gmail.com>
-In-Reply-To: <cb462836-a8d3-b8d8-fe3f-42186ade769e@gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 17 May 2019 17:22:47 +0200
-X-Gmail-Original-Message-ID: <CAHmME9q+wmMQV_g6NvG6dM8XCm5xvshZrJiwLAHeS0FTywsLOA@mail.gmail.com>
-Message-ID: <CAHmME9q+wmMQV_g6NvG6dM8XCm5xvshZrJiwLAHeS0FTywsLOA@mail.gmail.com>
-Subject: Re: 5.1 `ip route get addr/cidr` regression
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, Netdev <netdev@vger.kernel.org>,
-        emersonbernier@tutanota.com,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        David Miller <davem@davemloft.net>, piraty1@inbox.ru
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24618.005
+X-TM-AS-Result: No-8.071200-4.000000-10
+X-TMASE-MatchedRID: csPTYAMX1+HmLzc6AOD8DfHkpkyUphL9vMRNh9hLjFk7sEw6V/IotDvP
+        gRKDYJk/vFPDC9SycIVbEmPF90VeXtSefNlpHYem8VqfAfqY2ixwm7Nn/lGhVpiQXtm0V8JT8fN
+        7z08uSw0Rz/FZ0QZ4tzJ0z+s/u8Dbo/Rz4V77tuRRUg+O1TsbkpAoP2KG7EfPmbdPE3zcujhOZz
+        QThoQIn1psiiCQIKZH3B7MhNx6/Ye/WXZS/HqJ2gtuKBGekqUpOlxBO2IcOBYl3b04NMBHZ17p2
+        5XJX5+mk1UO+EQtugnU+n3R2tGJiMAp6oII12UcQwymtxuJ6y0=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.071200-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24618.005
+X-MDID: 1558106857-3OLdFj8Ohanv
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 17, 2019 at 5:21 PM David Ahern <dsahern@gmail.com> wrote:
->
-> On 5/17/19 8:17 AM, Michal Kubecek wrote:
-> > AFAIK the purpose of 'ip route get' always was to let the user check
-> > the result of a route lookup, i.e. "what route would be used if I sent
-> > a packet to an address". To be honest I would have to check how exactly
-> > was "ip route get <addr>/<prefixlen>" implemented before.
-> >
->
-> The prefixlen was always silently ignored. We are trying to clean up
-> this 'silent ignoring' just hitting a few speed bumps.
+On 15/05/2019 20:39, Edward Cree wrote:
+> A point for discussion: would it be better if, instead of the tcfa_index
+>  (for which the driver has to know the rules about which flow_action
+>  types share a namespace), we had some kind of globally unique cookie?
+>  In the same way that rule->cookie is really a pointer, could we use the
+>  address of the TC-internal data structure representing the action?  Do
+>  rules that share an action all point to the same struct tc_action in
+>  their tcf_exts, for instance?
+A quick test showed that, indeed, they do; I'm now leaning towards the
+ approach of adding "unsigned long cookie" to struct flow_action_entry
+ and populating it with (unsigned long)act in tc_setup_flow_action().
+Pablo, how do the two options interact with your netfilter offload?  I'm
+ guessing it's easier for you to find a unique pointer than to generate
+ a unique u32 action_index for each action.  I'm also assuming that
+ netfilter doesn't have a notion of shared actions.
 
-Indeed what we were after has always been, `ip route show dev <dev>
-match <addr>/<prefixlen>`, and the old positive return value from `ip
-route get` wasn't always correct for what we were using it for. So
-mostly the breakage exposed another bug here.
+-Ed
