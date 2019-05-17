@@ -2,80 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD22321A73
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:21:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0364D21A79
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:23:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729044AbfEQPU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 11:20:59 -0400
-Received: from mail-pl1-f172.google.com ([209.85.214.172]:40786 "EHLO
-        mail-pl1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728749AbfEQPU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 11:20:59 -0400
-Received: by mail-pl1-f172.google.com with SMTP id g69so3495794plb.7
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 08:20:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8PJgrsi7mXw+GNRwKnEf+V+7tXYpja9lhxlXD/raQ0M=;
-        b=bw9AbL4NL5CjJMxORRB46xB6sgxkeVX9JDkyZ0/s7wvxdvQusQ4+B+t6D8YvMa6pop
-         GzdONThKaMQMIAjPd9hjDsuAEm50fIY1O2gl3KVaaj4mYNwKkbyaCN+mTFBY9Dp3ZOC9
-         zyhcQ+/D6/SryIfFsCsarIWpjUBofFO25xStAXIuQ3Wy7LmIZVk/wQoH1Hflg+3QHKNN
-         2GY51LHSfTIrgnZZn3KQ/nz/ztG6P1BC4xMc0Xx6MuhzA4RMaY0TEgTSB/CvLTV2e7Y9
-         A6QDBto2aDjtDZ0JVyv7yKgckkB2GXkzZusPj9eZSjXlErHR3YFhUHsqYDgxG+21pfXp
-         k4Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8PJgrsi7mXw+GNRwKnEf+V+7tXYpja9lhxlXD/raQ0M=;
-        b=tiPphXdrsv8NGIAVmKQfH8rEtQvF/fbCPOYoW0g78iX4KVY0+h+yGdxSPxvVH4RHsc
-         zCQ5tQkcFtQC97DwOh/1+4ZVM546of/Xq3hygwGmt7pvPhgJZO4TIFqlR0FJmw2vR1wX
-         SUmzah+khu4RVNBWoM2qkqmLXRARUVWaeCj/UEKA4uH9m07Ojv5S1DygJm9O+67owvIU
-         d5b6SF/O34n91aWzs9k504/N5HWi5aF+XwQ87RfSqrszQChqXpOwkidxCr5l8RUokr0Q
-         pWO9gjK+Z8AU1sXhE1yoSBsIkS6Q1yDgxEUuofgdzXTE8z8u5T1si/lZ82jVxKb5RlIk
-         wYYQ==
-X-Gm-Message-State: APjAAAUYn5XSIsLN2mTJlhuAr/0gJB5UsjQ2hfFsSVV+gynGEhIsIMfW
-        4gphA/XC41vwHbctn/cICPc=
-X-Google-Smtp-Source: APXvYqzePvHMAXboW5Zvj8+bNzJIsJw+2LEUIzOTwHNpRc2vHXkU/IWQonKRV/H1U7DR79KyOwTn9g==
-X-Received: by 2002:a17:902:6a4:: with SMTP id 33mr15554281plh.338.1558106458884;
-        Fri, 17 May 2019 08:20:58 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:743c:f418:8a94:7ec7? ([2601:282:800:fd80:743c:f418:8a94:7ec7])
-        by smtp.googlemail.com with ESMTPSA id p81sm11992309pfa.26.2019.05.17.08.20.57
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 May 2019 08:20:57 -0700 (PDT)
+        id S1729237AbfEQPXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 11:23:02 -0400
+Received: from frisell.zx2c4.com ([192.95.5.64]:43935 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728749AbfEQPXB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 May 2019 11:23:01 -0400
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 7f8079fd
+        for <netdev@vger.kernel.org>;
+        Fri, 17 May 2019 14:54:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=8t8JW19XTOO5GYISDvuSiehwnUA=; b=pLFnA6
+        ZD+qqKBCwHtnrpOzlM5VKIyyKOkiKIfCIDGc8R5WASbp7cXjVSj52CbMq6vrxA+T
+        R4Ny+vZI+418/ZDIidyRkgp0SR3m0f3bIEtOgMzI2/dLPM6+rhs58OkU6yawtbcs
+        05N+O13RpTJBlEtjsH3aphiWqy5UAWXk6CLXjiZrrkg+y4BUW550vidVmDAlv2LC
+        9KtGLpRz8A/EvSwCdQ8zDn1SHBR4ksQvxRIyjC8GLT4kBcz3VRNgYATotdw6c8MX
+        QvTSVvnr41DydNBUBj/IVTKmU2G+OFiP67ZjLAZmhJ/LqCURevKIHS1PSZp3/33V
+        5YoTsnzr5liqWccg==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3cacca3f (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Fri, 17 May 2019 14:54:03 +0000 (UTC)
+Received: by mail-ot1-f43.google.com with SMTP id n14so7096746otk.2
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 08:22:59 -0700 (PDT)
+X-Gm-Message-State: APjAAAUNyfozgcZzplJGdgRyl7zx+YgLf/aYCEGGtYUB4QnV0VWGkbvN
+        Ybf3rgeWv8rG2bwigw3hpcxy6DPMXELxJwWHU3k=
+X-Google-Smtp-Source: APXvYqzale5Ci/OcT0HY35fSe9jAzes8uOhcDFKyNEm0caIGLdfFgsceP8E+YI12ZJOryvMJhdMkjQ8ZmbFZO1Mkp24=
+X-Received: by 2002:a9d:4e08:: with SMTP id p8mr34137738otf.243.1558106578876;
+ Fri, 17 May 2019 08:22:58 -0700 (PDT)
+MIME-Version: 1.0
+References: <LaeckvP--3-1@tutanota.com> <CAHmME9pwgfN5J=k-2-H0cLWrHSMO2+LHk=Lnfe7qcsewue2Kxw@mail.gmail.com>
+ <20190517141709.GA25473@unicorn.suse.cz> <cb462836-a8d3-b8d8-fe3f-42186ade769e@gmail.com>
+In-Reply-To: <cb462836-a8d3-b8d8-fe3f-42186ade769e@gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 17 May 2019 17:22:47 +0200
+X-Gmail-Original-Message-ID: <CAHmME9q+wmMQV_g6NvG6dM8XCm5xvshZrJiwLAHeS0FTywsLOA@mail.gmail.com>
+Message-ID: <CAHmME9q+wmMQV_g6NvG6dM8XCm5xvshZrJiwLAHeS0FTywsLOA@mail.gmail.com>
 Subject: Re: 5.1 `ip route get addr/cidr` regression
-To:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, Netdev <netdev@vger.kernel.org>,
         emersonbernier@tutanota.com,
         Stephen Hemminger <stephen@networkplumber.org>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         David Miller <davem@davemloft.net>, piraty1@inbox.ru
-References: <LaeckvP--3-1@tutanota.com>
- <CAHmME9pwgfN5J=k-2-H0cLWrHSMO2+LHk=Lnfe7qcsewue2Kxw@mail.gmail.com>
- <20190517141709.GA25473@unicorn.suse.cz>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <cb462836-a8d3-b8d8-fe3f-42186ade769e@gmail.com>
-Date:   Fri, 17 May 2019 09:20:56 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190517141709.GA25473@unicorn.suse.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/17/19 8:17 AM, Michal Kubecek wrote:
-> AFAIK the purpose of 'ip route get' always was to let the user check
-> the result of a route lookup, i.e. "what route would be used if I sent
-> a packet to an address". To be honest I would have to check how exactly
-> was "ip route get <addr>/<prefixlen>" implemented before.
-> 
+On Fri, May 17, 2019 at 5:21 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 5/17/19 8:17 AM, Michal Kubecek wrote:
+> > AFAIK the purpose of 'ip route get' always was to let the user check
+> > the result of a route lookup, i.e. "what route would be used if I sent
+> > a packet to an address". To be honest I would have to check how exactly
+> > was "ip route get <addr>/<prefixlen>" implemented before.
+> >
+>
+> The prefixlen was always silently ignored. We are trying to clean up
+> this 'silent ignoring' just hitting a few speed bumps.
 
-The prefixlen was always silently ignored. We are trying to clean up
-this 'silent ignoring' just hitting a few speed bumps.
+Indeed what we were after has always been, `ip route show dev <dev>
+match <addr>/<prefixlen>`, and the old positive return value from `ip
+route get` wasn't always correct for what we were using it for. So
+mostly the breakage exposed another bug here.
