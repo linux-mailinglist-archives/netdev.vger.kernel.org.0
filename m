@@ -2,135 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44E1B21FE8
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 23:51:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37F2121FE9
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 23:52:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727994AbfEQVvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 17:51:52 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:40036 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727239AbfEQVvw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 17:51:52 -0400
-Received: by mail-pf1-f193.google.com with SMTP id u17so4295551pfn.7;
-        Fri, 17 May 2019 14:51:51 -0700 (PDT)
+        id S1728819AbfEQVwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 17:52:38 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:46258 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727239AbfEQVwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 17:52:38 -0400
+Received: by mail-yw1-f65.google.com with SMTP id a130so3283842ywe.13
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 14:52:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vKTywSie20PHVC+gh3ALmwP1wNcXOGPfZhP6bhLQuLg=;
-        b=AFWZIX9SpWdoJ+jkt6VyXA7FgBbBpVlj5cEIBtlFAUKj4eQEsCPhK/l6iqZWZN2M9a
-         +xZraq+SMdPEYEZtZT1BRQrLOxd4SIivN6kecQcDIctFbfBOmFkhObmx7cMzYOykiehp
-         1d/hQ4jqkYrU8p4jfWIdYaDoIQw4z7re1kVnNM5gpjlVpOE2fWfK8JUt7VV/d0h492FK
-         jpdG1C1NK7Mh/lxCNhT5RmBKvFrbWxvJg4GoHoxVbcpoSSlKyuING0CJb47OaNV5ssTB
-         A46gQcpPfXYS/ju61utxO6r1nKNy704lf2A2+xkO33uH6oUi492lRUl/2yu07njc+4WX
-         z2Vw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wYhIuig+VV+/+TgW3Np1E7BSK8Yo1fG48iNAXRoWo3k=;
+        b=V8MWRHbpu3lcQ7QvpaSfH0+yqfoII+XCW+xe3gMY6H2+0MUorJDMW3lV4iNSEJkBLg
+         oBZ9AtGDhP3sEM+Xddp37jIzqQclE8Fgt95hQBF1I2jWiYlSyd1hwa6LFCXnVin+3/Nd
+         yqf5Uqby9k9fxVWMB6asZv9DtoLMQTlUIxTgQDrI8dFr5Of8oWpMvK4PUq/dYsTmTimr
+         6zrN3eDUKsufWh2IaBazwdb+CvdpJtlGi1hYha3OKx74BPV4g7asN2aDyqiFweuE+QOS
+         SgLzqZU5uTm8M5j/EVsvMj0GhZ554m78V+MV9hNj2ugL/MtlI1R3y1B5tc2GxRHc26lN
+         FS1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vKTywSie20PHVC+gh3ALmwP1wNcXOGPfZhP6bhLQuLg=;
-        b=dDzVRUR92KuLwfhGJUIIKAXbFMhL6WB+pC92+raW92FeoAR6njLxY2ZGHytXX3OtpI
-         NpiBX/i+cCucdeCRw2qDKz5AfnE5ycUcksVCuZ9WDEDyY7ZoCokmEVkpU4ppsqqU42Ti
-         GcNa4pQY2Nqx8q8RXEpUy6HlG7h3m+9qxvzeJ7C0Oq9/9MVldmzuUdbm3FtJmvZzq2oq
-         dhMlg6JIXFNzIW5Yy/KPk314yU/yov6CeKG7ISwv0vpItr+oPXrCPgg1S2xhPJ/c4nsD
-         5MrbksGRcAbWGZ0AV9uozMQd9E4nlBGUxKdPRZiQIPj5xBfYYZuh9nc6nOnP5KWDQGmb
-         Jd1g==
-X-Gm-Message-State: APjAAAVyKo+YsX74Z1u5E+fqhkz33X+vTDouV/GEdZ11v0wOQaquOtio
-        MIYqmP/5hr5oie2kbN+wNNU=
-X-Google-Smtp-Source: APXvYqxtr3rvkPAN7bisoVJOG3FCjvRT171MsV4nnVbCh1CvWumqd1A8T2Avg+su4rkzlYPcY0cIng==
-X-Received: by 2002:a62:7608:: with SMTP id r8mr62372435pfc.190.1558129911485;
-        Fri, 17 May 2019 14:51:51 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
-        by smtp.gmail.com with ESMTPSA id i7sm5132014pfo.19.2019.05.17.14.51.49
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 May 2019 14:51:50 -0700 (PDT)
-Subject: Re: [PATCH bpf] bpf: Check sk_fullsock() before returning from
- bpf_sk_lookup()
-To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
-        Joe Stringer <joe@isovalent.com>
-References: <20190517212117.2792415-1-kafai@fb.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <6dc01cb7-cdd4-8a71-b602-0052b7aadfb7@gmail.com>
-Date:   Fri, 17 May 2019 14:51:48 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wYhIuig+VV+/+TgW3Np1E7BSK8Yo1fG48iNAXRoWo3k=;
+        b=rNW4D/0nULT1tLPiLwYQAD5DWnopJXcjrGRV/QEhHmMS6k4uC9B9gdHCezrGBNMFwt
+         +L0Utz/QHhbSNRpyl1iIKWGA106dClLFYyCOtapXEhEeMLRtCMhv5d8kllCydiW4Gtyi
+         9XxSHRS2UQmgjygEFK77ssnXHXKv2ShV9wGxTg7WpKPQnzg2+dGBJK0btw7CpGfCjDeK
+         NE5pvuvVFiwfwcib6/CY3g8sfCN3oi3Wun4gYcYzERFsNJ/Xm3d2KVhEmgZ8OKp4OJtH
+         8O4tYhWUOa8Ar3miLzZlRLu+mSQm7JQAiEekXNbCaRN9V11NdIecKRuKP+mL9Zv7fglh
+         OJHA==
+X-Gm-Message-State: APjAAAVB5gqUq6OlrNM4jZlqz5BTcdm1DXFbdNwmc1NgvhMfhVhG1daH
+        PBBzXIGiul/+gNLkT3favTX2KkaS
+X-Google-Smtp-Source: APXvYqz7wlvsll42xjW22W3oOXPlJ5nlrCPAU6NVsbuX8K4NfqzkSj+XE1E6ocz+Lh3dD/EOCpa1Bg==
+X-Received: by 2002:a81:a0c8:: with SMTP id x191mr25837483ywg.67.1558129956812;
+        Fri, 17 May 2019 14:52:36 -0700 (PDT)
+Received: from mail-yw1-f52.google.com (mail-yw1-f52.google.com. [209.85.161.52])
+        by smtp.gmail.com with ESMTPSA id o1sm870010ywo.79.2019.05.17.14.52.35
+        for <netdev@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 May 2019 14:52:35 -0700 (PDT)
+Received: by mail-yw1-f52.google.com with SMTP id w18so3286032ywa.12
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 14:52:35 -0700 (PDT)
+X-Received: by 2002:a0d:f8c2:: with SMTP id i185mr11915941ywf.494.1558129955332;
+ Fri, 17 May 2019 14:52:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190517212117.2792415-1-kafai@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190517155625.117835-1-willemdebruijn.kernel@gmail.com> <d7502d42-207b-177e-8f2b-f6645feff051@gmail.com>
+In-Reply-To: <d7502d42-207b-177e-8f2b-f6645feff051@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 17 May 2019 17:51:58 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSe62ZxhDAfiuPvF7k53WOj1Mzi-3iYUjQA_JFM_LNUvCQ@mail.gmail.com>
+Message-ID: <CA+FuTSe62ZxhDAfiuPvF7k53WOj1Mzi-3iYUjQA_JFM_LNUvCQ@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC] ipv6: elide flowlabel check if no exclusive
+ leases exist
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, May 17, 2019 at 4:32 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 5/17/19 8:56 AM, Willem de Bruijn wrote:
+> > From: Willem de Bruijn <willemb@google.com>
+> >
+> > Processes can request ipv6 flowlabels with cmsg IPV6_FLOWINFO.
+> > If not set, by default an autogenerated flowlabel is selected.
+> >
+> > Explicit flowlabels require a control operation per label plus a
+> > datapath check on every connection (every datagram if unconnected).
+> >
+> > This is particularly expensive on unconnected sockets with many
+> > connections, such as QUIC.
+> >
+> > In the common case, where no lease is exclusive, the check can be
+> > safely elided, as both lease request and check trivially succeed.
+> > Indeed, autoflowlabel does the same (even with exclusive leases).
+> >
+> > Elide the check if no process has requested an exclusive lease.
+> >
+> > This is an optimization. Robust applications still have to revert to
+> > requesting leases if the fast path fails due to an exclusive lease.
+> >
+> > This is decidedly an RFC patch:
+> > - need to update all fl6_sock_lookup callers, not just udp
+> > - behavior should be per-netns isolated
+> >
+> > Other approaches considered:
+> > - a single "get all flowlabels, non-exclusive" flowlabel get request
+> >   if set, elide fl6_sock_lookup and fail exclusive lease requests
+> >
+> > - sysctls (only useful if on by default, with static_branch)
+> >   A) "non-exclusive mode", failing all exclusive lease requests:
+> >      processes already have to be robust against lease failure
+> >   B) just bypass check in fl6_sock_lookup, like autoflowlabel
+> >
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > ---
+> >  include/net/ipv6.h       | 11 +++++++++++
+> >  net/ipv6/ip6_flowlabel.c |  6 ++++++
+> >  net/ipv6/udp.c           |  8 ++++----
+> >  3 files changed, 21 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+> > index daf80863d3a50..8881cee572410 100644
+> > --- a/include/net/ipv6.h
+> > +++ b/include/net/ipv6.h
+> > @@ -17,6 +17,7 @@
+> >  #include <linux/hardirq.h>
+> >  #include <linux/jhash.h>
+> >  #include <linux/refcount.h>
+> > +#include <linux/jump_label.h>
+> >  #include <net/if_inet6.h>
+> >  #include <net/ndisc.h>
+> >  #include <net/flow.h>
+> > @@ -343,7 +344,17 @@ static inline void txopt_put(struct ipv6_txoptions *opt)
+> >               kfree_rcu(opt, rcu);
+> >  }
+> >
+> > +extern struct static_key_false ipv6_flowlabel_exclusive;
+> >  struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label);
+> > +static inline struct ip6_flowlabel *fl6_sock_verify(struct sock *sk,
+> > +                                                 __be32 label)
+> > +{
+> > +     if (static_branch_unlikely(&ipv6_flowlabel_exclusive))
+> > +             return fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
+> > +
+> > +     return NULL;
+> > +}
+> > +
+> >  struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
+> >                                        struct ip6_flowlabel *fl,
+> >                                        struct ipv6_txoptions *fopt);
+> > diff --git a/net/ipv6/ip6_flowlabel.c b/net/ipv6/ip6_flowlabel.c
+> > index be5f3d7ceb966..d5f4233b04e0c 100644
+> > --- a/net/ipv6/ip6_flowlabel.c
+> > +++ b/net/ipv6/ip6_flowlabel.c
+> > @@ -57,6 +57,8 @@ static DEFINE_SPINLOCK(ip6_fl_lock);
+> >
+> >  static DEFINE_SPINLOCK(ip6_sk_fl_lock);
+> >
+> > +DEFINE_STATIC_KEY_FALSE(ipv6_flowlabel_exclusive);
+> > +
+> >  #define for_each_fl_rcu(hash, fl)                            \
+> >       for (fl = rcu_dereference_bh(fl_ht[(hash)]);            \
+> >            fl != NULL;                                        \
+> > @@ -98,6 +100,8 @@ static void fl_free_rcu(struct rcu_head *head)
+> >  {
+> >       struct ip6_flowlabel *fl = container_of(head, struct ip6_flowlabel, rcu);
+> >
+> > +     if (fl->share != IPV6_FL_S_NONE && fl->share != IPV6_FL_S_ANY)
+> > +             static_branch_dec(&ipv6_flowlabel_exclusive);
+>
+> static_branch_dec() can not be invoked from a rcu call back.
+>
+> >       if (fl->share == IPV6_FL_S_PROCESS)
+> >               put_pid(fl->owner.pid);
+> >       kfree(fl->opt);
+> > @@ -423,6 +427,8 @@ fl_create(struct net *net, struct sock *sk, struct in6_flowlabel_req *freq,
+> >       }
+> >       fl->dst = freq->flr_dst;
+> >       atomic_set(&fl->users, 1);
+> > +     if (fl->share != IPV6_FL_S_ANY)
+> > +             static_branch_inc(&ipv6_flowlabel_exclusive);
+>
+>
+> Can this be used by unpriv users ?
+>
+> If yes, then you want to use static_key_false_deferred instead
 
-
-On 5/17/19 2:21 PM, Martin KaFai Lau wrote:
-> The BPF_FUNC_sk_lookup_xxx helpers return RET_PTR_TO_SOCKET_OR_NULL.
-> Meaning a fullsock ptr and its fullsock's fields in bpf_sock can be
-> accessed, e.g. type, protocol, mark and priority.
-> Some new helper, like bpf_sk_storage_get(), also expects
-> ARG_PTR_TO_SOCKET is a fullsock.
-> 
-> bpf_sk_lookup() currently calls sk_to_full_sk() before returning.
-> However, the ptr returned from sk_to_full_sk() is not guaranteed
-> to be a fullsock.  For example, it cannot get a fullsock if sk
-> is in TCP_TIME_WAIT.
-> 
-> This patch checks for sk_fullsock() before returning. If it is not
-> a fullsock, sock_gen_put() is called if needed and then returns NULL.
-> 
-> Fixes: 6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
-> Cc: Joe Stringer <joe@isovalent.com>
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
->  net/core/filter.c | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 55bfc941d17a..85def5a20aaf 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -5337,8 +5337,14 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
->  	struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
->  					   ifindex, proto, netns_id, flags);
->  
-> -	if (sk)
-> +	if (sk) {
->  		sk = sk_to_full_sk(sk);
-> +		if (!sk_fullsock(sk)) {
-> +			if (!sock_flag(sk, SOCK_RCU_FREE))
-> +				sock_gen_put(sk);
-
-This looks a bit convoluted/weird.
-
-What about telling/asking __bpf_skc_lookup() to not return a non fullsock instead ?
-
-> +			return NULL;
-> +		}
-> +	}
->  
->  	return sk;
->  }
-> @@ -5369,8 +5375,14 @@ bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
->  	struct sock *sk = bpf_skc_lookup(skb, tuple, len, proto, netns_id,
->  					 flags);
->  
-> -	if (sk)
-> +	if (sk) {
->  		sk = sk_to_full_sk(sk);
-> +		if (!sk_fullsock(sk)) {
-> +			if (!sock_flag(sk, SOCK_RCU_FREE))
-> +				sock_gen_put(sk);
-> +			return NULL;
-> +		}
-> +	}
->  
->  	return sk;
->  }
-> 
+Ah of course. Yes, any user can exercise this API. Thanks, Eric. I'll
+take a look at both points.
