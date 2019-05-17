@@ -2,112 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E91D521318
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 06:30:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 735C221325
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 06:34:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727879AbfEQEaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 00:30:24 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:48292 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727731AbfEQEaW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 May 2019 00:30:22 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8D11F3086224;
-        Fri, 17 May 2019 04:30:22 +0000 (UTC)
-Received: from hp-dl380pg8-02.lab.eng.pek2.redhat.com (hp-dl380pg8-02.lab.eng.pek2.redhat.com [10.73.8.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DDD0F1001E61;
-        Fri, 17 May 2019 04:30:15 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     pbonzini@redhat.com, stefanha@redhat.com
-Subject: [PATCH V2 4/4] vhost: scsi: add weight support
-Date:   Fri, 17 May 2019 00:29:52 -0400
-Message-Id: <1558067392-11740-5-git-send-email-jasowang@redhat.com>
-In-Reply-To: <1558067392-11740-1-git-send-email-jasowang@redhat.com>
-References: <1558067392-11740-1-git-send-email-jasowang@redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Fri, 17 May 2019 04:30:22 +0000 (UTC)
+        id S1727431AbfEQEeQ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 17 May 2019 00:34:16 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:35780 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726078AbfEQEeQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 00:34:16 -0400
+Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
+        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4H4Qkhm030303
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 21:34:15 -0700
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0b-00082601.pphosted.com with ESMTP id 2sh7c8b285-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 21:34:15 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 16 May 2019 21:34:14 -0700
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 7F6A5760DF6; Thu, 16 May 2019 21:34:11 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] selftests/bpf: fix bpf_get_current_task
+Date:   Thu, 16 May 2019 21:34:11 -0700
+Message-ID: <20190517043411.3796806-1-ast@kernel.org>
+X-Mailer: git-send-email 2.20.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-17_02:,,
+ signatures=0
+X-Proofpoint-Spam-Reason: safe
+X-FB-Internal: Safe
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch will check the weight and exit the loop if we exceeds the
-weight. This is useful for preventing scsi kthread from hogging cpu
-which is guest triggerable.
+Fix bpf_get_current_task() declaration.
 
-This addresses CVE-2019-3900.
-
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>
-Fixes: 057cbf49a1f0 ("tcm_vhost: Initial merge for vhost level target fabric driver")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- drivers/vhost/scsi.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ tools/testing/selftests/bpf/bpf_helpers.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
-index d830579..3a59f47 100644
---- a/drivers/vhost/scsi.c
-+++ b/drivers/vhost/scsi.c
-@@ -918,7 +918,7 @@ static void vhost_scsi_submission_work(struct work_struct *work)
- 	struct iov_iter in_iter, prot_iter, data_iter;
- 	u64 tag;
- 	u32 exp_data_len, data_direction;
--	int ret, prot_bytes;
-+	int ret, prot_bytes, c = 0;
- 	u16 lun;
- 	u8 task_attr;
- 	bool t10_pi = vhost_has_feature(vq, VIRTIO_SCSI_F_T10_PI);
-@@ -938,7 +938,7 @@ static void vhost_scsi_submission_work(struct work_struct *work)
- 
- 	vhost_disable_notify(&vs->dev, vq);
- 
--	for (;;) {
-+	do {
- 		ret = vhost_scsi_get_desc(vs, vq, &vc);
- 		if (ret)
- 			goto err;
-@@ -1118,7 +1118,7 @@ static void vhost_scsi_submission_work(struct work_struct *work)
- 			break;
- 		else if (ret == -EIO)
- 			vhost_scsi_send_bad_target(vs, vq, vc.head, vc.out);
--	}
-+	} while (likely(!vhost_exceeds_weight(vq, ++c, 0)));
- out:
- 	mutex_unlock(&vq->mutex);
- }
-@@ -1177,7 +1177,7 @@ static void vhost_scsi_submission_work(struct work_struct *work)
- 	} v_req;
- 	struct vhost_scsi_ctx vc;
- 	size_t typ_size;
--	int ret;
-+	int ret, c = 0;
- 
- 	mutex_lock(&vq->mutex);
- 	/*
-@@ -1191,7 +1191,7 @@ static void vhost_scsi_submission_work(struct work_struct *work)
- 
- 	vhost_disable_notify(&vs->dev, vq);
- 
--	for (;;) {
-+	do {
- 		ret = vhost_scsi_get_desc(vs, vq, &vc);
- 		if (ret)
- 			goto err;
-@@ -1270,7 +1270,7 @@ static void vhost_scsi_submission_work(struct work_struct *work)
- 			break;
- 		else if (ret == -EIO)
- 			vhost_scsi_send_bad_target(vs, vq, vc.head, vc.out);
--	}
-+	} while (likely(!vhost_exceeds_weight(vq, ++c, 0)));
- out:
- 	mutex_unlock(&vq->mutex);
- }
+diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
+index 6e80b66d7fb1..5f6f9e7aba2a 100644
+--- a/tools/testing/selftests/bpf/bpf_helpers.h
++++ b/tools/testing/selftests/bpf/bpf_helpers.h
+@@ -278,7 +278,7 @@ static int (*bpf_skb_change_type)(void *ctx, __u32 type) =
+ 	(void *) BPF_FUNC_skb_change_type;
+ static unsigned int (*bpf_get_hash_recalc)(void *ctx) =
+ 	(void *) BPF_FUNC_get_hash_recalc;
+-static unsigned long long (*bpf_get_current_task)(void *ctx) =
++static unsigned long long (*bpf_get_current_task)(void) =
+ 	(void *) BPF_FUNC_get_current_task;
+ static int (*bpf_skb_change_tail)(void *ctx, __u32 len, __u64 flags) =
+ 	(void *) BPF_FUNC_skb_change_tail;
 -- 
-1.8.3.1
+2.20.0
 
