@@ -2,100 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 788DB21F1A
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 22:34:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC30621F2C
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 22:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727770AbfEQUeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 16:34:16 -0400
-Received: from mail-eopbgr50049.outbound.protection.outlook.com ([40.107.5.49]:20901
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726757AbfEQUeQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 May 2019 16:34:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t4MCPgfrm2A5TkzCD2lu6r6mD1zverZVhRMloD0Zy88=;
- b=e78jBHRiaYdWhdlaHQ7R7SzKj30wcrfSMawJE87WnIUZO57kGzihINcQQgmGRxjcBkRyTcze17UBnF2kBG+g+rk8zc/l7IP6vsyxG4seXFx1cLki/FCLyHoR2xTF8dFZU7SzGoK8w+mArWD3KMOXshZgNl9bN5uqhnE9ecXI82E=
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
- DB8PR05MB5932.eurprd05.prod.outlook.com (20.179.9.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.17; Fri, 17 May 2019 20:34:13 +0000
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::7159:5f3a:906:6aab]) by DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::7159:5f3a:906:6aab%7]) with mapi id 15.20.1900.010; Fri, 17 May 2019
- 20:34:13 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "wenxu@ucloud.cn" <wenxu@ucloud.cn>, Roi Dayan <roid@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2] net/mlx5e: Add bonding device for indr block to
- offload the packet received from bonding device
-Thread-Topic: [PATCH v2] net/mlx5e: Add bonding device for indr block to
- offload the packet received from bonding device
-Thread-Index: AQHVDJF5FWVnYyzo6UCV+YsYkW6mZKZvxqGA
-Date:   Fri, 17 May 2019 20:34:13 +0000
-Message-ID: <4702c2da4a5a8a065f36c5414fa4057ba9f12883.camel@mellanox.com>
-References: <1558084668-21203-1-git-send-email-wenxu@ucloud.cn>
-In-Reply-To: <1558084668-21203-1-git-send-email-wenxu@ucloud.cn>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9a0fb112-50b3-4ebf-cf4d-08d6db070626
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB5932;
-x-ms-traffictypediagnostic: DB8PR05MB5932:
-x-microsoft-antispam-prvs: <DB8PR05MB59320EF7AB15A98F187406D1BE0B0@DB8PR05MB5932.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0040126723
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(396003)(376002)(39860400002)(346002)(136003)(51914003)(189003)(199004)(8676002)(4326008)(110136005)(36756003)(6436002)(71190400001)(3846002)(6116002)(2906002)(6486002)(53936002)(76116006)(71200400001)(229853002)(316002)(14454004)(99286004)(66066001)(5660300002)(6506007)(6636002)(6246003)(81156014)(6512007)(91956017)(81166006)(76176011)(102836004)(66556008)(64756008)(476003)(2616005)(66446008)(25786009)(486006)(66946007)(2501003)(73956011)(256004)(11346002)(118296001)(305945005)(446003)(26005)(8936002)(58126008)(7736002)(86362001)(478600001)(68736007)(186003)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB5932;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: wy19GMyHAs0iJ7VJdVygbyxjuRegGjkqRd3UlYkBwfJoJjCGTKHBflVIRpdJsm2sZWksvnN1KP9LFCJnwNzNVsLwr/xfuW0FhPlDO+ErkMPJpNeexcNpnupjnHnd/9qKbLah4CUgLQkS6j+V61HMcnYRAQyabQKQEKSvU17ssdQwnuTPMwE+wli6hfcE5gsaxSHGAPaJkZCrp20rSrdRBWt5a5GYCbF16urEvNV410u/OiAKgQ8iC7asrzTaGhXrW6bVqTywmRSdkCZDSMAOhwYcV1Q+WwLOIf8gqmnsbCA/eR0JF2t65nLLxxWWkxwWC7Wn6tG+VIZqFfReSBdkWYYwwdaMfCeVLqy6/V7NQNW0/3qWRtvO35qIZ5R9vGGc3VMLTymYXuTtKaabpfgq5Zczl5obTLaxhFl0PNnnv18=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <85C4F3153E71404CA118374F8FDA853A@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728958AbfEQUqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 16:46:03 -0400
+Received: from iolanthe.rowland.org ([192.131.102.54]:42384 "HELO
+        iolanthe.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S1728268AbfEQUqC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 16:46:02 -0400
+Received: (qmail 7470 invoked by uid 2102); 17 May 2019 16:46:01 -0400
+Received: from localhost (sendmail-bs@127.0.0.1)
+  by localhost with SMTP; 17 May 2019 16:46:01 -0400
+Date:   Fri, 17 May 2019 16:46:01 -0400 (EDT)
+From:   Alan Stern <stern@rowland.harvard.edu>
+X-X-Sender: stern@iolanthe.rowland.org
+To:     Christian Lamparter <chunkeey@gmail.com>
+cc:     Oliver Neukum <oneukum@suse.com>,
+        syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>,
+        <kvalo@codeaurora.org>, <davem@davemloft.net>,
+        <andreyknvl@google.com>, <syzkaller-bugs@googlegroups.com>,
+        <chunkeey@googlemail.com>, <linux-kernel@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Michael Wu <flamingice@sourmilk.net>
+Subject: Re: KASAN: use-after-free Read in p54u_load_firmware_cb
+In-Reply-To: <5014675.0cgHOJIxtM@debian64>
+Message-ID: <Pine.LNX.4.44L0.1905171644110.1430-100000@iolanthe.rowland.org>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a0fb112-50b3-4ebf-cf4d-08d6db070626
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2019 20:34:13.3364
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB5932
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDE5LTA1LTE3IGF0IDE3OjE3ICswODAwLCB3ZW54dUB1Y2xvdWQuY24gd3JvdGU6
-DQo+IEZyb206IHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+DQo+IA0KPiBUaGUgbWx4NWUgc3VwcG9y
-dCB0aGUgbGFnIG1vZGUuIFdoZW4gYWRkIG1seF9wMCBhbmQgbWx4X3AxIHRvIGJvbmQwLg0KPiBw
-YWNrZXQgcmVjZWl2ZWQgZnJvbSBtbHhfcDAgb3IgbWx4X3AxIGFuZCBpbiB0aGUgaW5ncmVzcyB0
-YyBmbG93ZXINCj4gZm9yd2FyZCB0byB2ZjAuIFRoZSB0YyBydWxlIGNhbid0IGJlIG9mZmxvYWRl
-ZCBiZWNhdXNlIHRoZXJlIGlzDQo+IG5vIGluZHJfcmVnaXN0ZXJfYmxvY2sgZm9yIHRoZSBib25k
-aW5nIGRldmljZS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+
-DQoNCkhpIFdlbnh1LCB0aGFua3MgZm9yIHRoZSBwYXRjaA0KDQpJIHdvdWxkIGxpa2UgdG8gd2Fp
-dCBmb3Igc29tZSBmZWVkYmFjayBmcm9tIFJvaSBhbmQgaGlzIHRlYW0sIA0KR3V5cyBjYW4geW91
-IHBsZWFzZSBwcm92aWRlIGZlZWRiYWNrID8NCg0KVGhhbmtzLA0KU2FlZWQNCg0KPiAtLS0NCj4g
-IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yZXAuYyB8IDEgKw0K
-PiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jDQo+IGIvZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5jDQo+IGluZGV4IDkxZTI0
-ZjEuLjEzNGZhMGIgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94
-L21seDUvY29yZS9lbl9yZXAuYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5v
-eC9tbHg1L2NvcmUvZW5fcmVwLmMNCj4gQEAgLTc5Niw2ICs3OTYsNyBAQCBzdGF0aWMgaW50IG1s
-eDVlX25pY19yZXBfbmV0ZGV2aWNlX2V2ZW50KHN0cnVjdA0KPiBub3RpZmllcl9ibG9jayAqbmIs
-DQo+ICAJc3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldiA9IG5ldGRldl9ub3RpZmllcl9pbmZvX3Rv
-X2RldihwdHIpOw0KPiAgDQo+ICAJaWYgKCFtbHg1ZV90Y190dW5fZGV2aWNlX3RvX29mZmxvYWQo
-cHJpdiwgbmV0ZGV2KSAmJg0KPiArCSAgICAhbmV0aWZfaXNfYm9uZF9tYXN0ZXIobmV0ZGV2KSAm
-Jg0KPiAgCSAgICAhaXNfdmxhbl9kZXYobmV0ZGV2KSkNCj4gIAkJcmV0dXJuIE5PVElGWV9PSzsN
-Cj4gIA0K
+On Fri, 17 May 2019, Christian Lamparter wrote:
+
+> On Monday, May 13, 2019 3:28:30 PM CEST Oliver Neukum wrote:
+> > On Mo, 2019-05-13 at 03:23 -0700, syzbot wrote:
+> > > syzbot has found a reproducer for the following crash on:
+> > > 
+> > > HEAD commit:    43151d6c usb-fuzzer: main usb gadget fuzzer driver
+> > > git tree:       https://github.com/google/kasan.git usb-fuzzer
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=16b64110a00000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=4183eeef650d1234
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=200d4bb11b23d929335f
+> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1634c900a00000
+> > > 
+> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > Reported-by: syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com
+> > > 
+> > > usb 1-1: config 0 descriptor??
+> > > usb 1-1: reset high-speed USB device number 2 using dummy_hcd
+> > > usb 1-1: device descriptor read/64, error -71
+> > > usb 1-1: Using ep0 maxpacket: 8
+> > > usb 1-1: Loading firmware file isl3887usb
+> > > usb 1-1: Direct firmware load for isl3887usb failed with error -2
+> > > usb 1-1: Firmware not found.
+> > > ==================================================================
+> > > BUG: KASAN: use-after-free in p54u_load_firmware_cb.cold+0x97/0x13a  
+> > > drivers/net/wireless/intersil/p54/p54usb.c:936
+> > > Read of size 8 at addr ffff88809803f588 by task kworker/1:0/17
+> > 
+> > Hi,
+> > 
+> > it looks to me as if refcounting is broken.
+> > You should have a usb_put_dev() in p54u_load_firmware_cb() or in
+> > p54u_disconnect(), but not both.
+> 
+> There's more to that refcounting that meets the eye. Do you see that
+> request_firmware_nowait() in the driver? That's the async firmware
+> request call that get's completed by the p54u_load_firmware_cb()
+> So what's happening here is that the driver has to be protected
+> against rmmod when the driver is waiting for request_firmware_nowait
+> to "finally" callback, which depending on the system can be up to 
+> 60 seconds.
+> 
+> Now, what seems to be odd is that it's at line 936
+> > > BUG: KASAN: use-after-free in p54u_load_firmware_cb.cold+0x97/0x13a  
+> > > drivers/net/wireless/intersil/p54/p54usb.c:936
+> 
+> because if you put it in context:
+> 
+> |
+> |static void p54u_load_firmware_cb(const struct firmware *firmware,
+> |				  void *context)
+> |{
+> |	struct p54u_priv *priv = context;
+> |	struct usb_device *udev = priv->udev;
+> |	int err;
+> |
+> |	complete(&priv->fw_wait_load);
+> |	if (firmware) {
+> |		priv->fw = firmware;
+> |		err = p54u_start_ops(priv);
+> |	} else {
+> |		err = -ENOENT;
+> |		dev_err(&udev->dev, "Firmware not found.\n");
+> |	}
+> |
+> |	if (err) {
+> |>>	>>	struct device *parent = priv->udev->dev.parent; <<<<-- 936 is here
+> |
+> |		dev_err(&udev->dev, "failed to initialize device (%d)\n", err);
+> |
+> |		if (parent)
+> |			device_lock(parent);
+> |
+> |		device_release_driver(&udev->dev);
+> |		/*
+> |		 * At this point p54u_disconnect has already freed
+> |		 * the "priv" context. Do not use it anymore!
+> |		 */
+> |		priv = NULL;
+> |
+> |		if (parent)
+> |			device_unlock(parent);
+> |	}
+> |
+> |	usb_put_dev(udev);
+> |}
+> 
+> it seems very out of place, because at that line the device is still bound to
+> the driver! Only with device_release_driver in line 942, I could see that
+> something woulb be aray... !BUT! that's why we do have the extra
+> usb_get_dev(udev) in p54u_load_firmware() so we can do the usb_put_dev(udev) in
+> line 953 to ensure that nothing (like the rmmod I talked above) will interfere
+> until everything is done.
+> 
+> I've no idea what's wrong here, is gcc 9.0 aggressivly reording the put? Or is
+> something else going on with the sanitizers? Because this report does look
+> dogdy there!
+> 
+> (Note: p54usb has !strategic! dev_err/infos in place right around the
+> usb_get_dev/usb_put_dev so we can sort of tell the refvalue of the udev
+> and it all seems to be correct from what I can gleam) 
+
+I agree; it doesn't seem to make sense.  The nice thing about syzbot, 
+though, is you can ask it to run a debugging test for you.  Let's start 
+by making sure that the faulty address really is &udev->dev.parent.
+
+Alan
+
+
+#syz test: https://github.com/google/kasan.git usb-fuzzer
+
+ drivers/net/wireless/intersil/p54/p54usb.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+Index: usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+===================================================================
+--- usb-devel.orig/drivers/net/wireless/intersil/p54/p54usb.c
++++ usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+@@ -923,6 +923,7 @@ static void p54u_load_firmware_cb(const
+ 	struct usb_device *udev = priv->udev;
+ 	int err;
+ 
++	pr_info("%s: priv->udev = %px\n", __func__, udev);
+ 	complete(&priv->fw_wait_load);
+ 	if (firmware) {
+ 		priv->fw = firmware;
+@@ -969,6 +970,8 @@ static int p54u_load_firmware(struct iee
+ 	if (i < 0)
+ 		return i;
+ 
++	dev_info(udev, "%s: udev @ %px, dev.parent @ %px\n",
++			__func__, udev, &udev->dev.parent);
+ 	dev_info(&priv->udev->dev, "Loading firmware file %s\n",
+ 	       p54u_fwlist[i].fw);
+ 
+
