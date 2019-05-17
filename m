@@ -2,80 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51326213A9
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 08:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E177213BF
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 08:31:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727590AbfEQGVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 02:21:38 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:33640 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726871AbfEQGVi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 02:21:38 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4H6KHGE012878
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 23:21:37 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=1zM4i+9DBcU+/2vrPgNzYIEolzSQQ7YcSOPhfZYz4qE=;
- b=kEJmT5qSv5vITrKw4nwt6h8qlxKMA9HJhFTWuHUff9b4qRsX4HF7GsSI6FlfdujrWdcn
- YZWo2OXwzptGYf0qdpRvpn3l6rfcLzOIX0gN+PTkvd/wIjmu+ZkJiguHGx47d7hPrc6u
- OezEzhIyzwpKb8V1IQbhSQy2NEoloroKEtQ= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2she371snc-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 23:21:37 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 16 May 2019 23:21:36 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id A39518617A7; Thu, 16 May 2019 23:21:35 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
-CC:     Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf] bpftool: fix BTF raw dump of FWD's fwd_kind
-Date:   Thu, 16 May 2019 23:21:29 -0700
-Message-ID: <20190517062129.2786346-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1727940AbfEQGby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 02:31:54 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:37434 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727218AbfEQGbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 02:31:53 -0400
+Received: by mail-qk1-f195.google.com with SMTP id d10so3839895qko.4;
+        Thu, 16 May 2019 23:31:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W31gkYOGw781FNC6CVGSMH2gW6sCoEah9gyo6dY5h3I=;
+        b=Ne1FnTZA8Jjy+KB2fJI+EtXYhTUuB7eEXAfALB4rjWVH9szrbDDdCkvvmbzvYs24Oo
+         V54zTImsr4l6MITqM7Q3KcvH13RVpE9pDbEyzS7cZ522FXrlxGZyuBj/03oyMcSPdCci
+         0KviDXX3JN2uXJq+CDh4WqNwHnDDCxG2lXzPn05U8DQbJSp/TrVMN7zU5U6jxqdf1rS5
+         jfLmFqjka7mPoiEU6j7LBVVPOR8wAXN2yzuMwTGXLRdtJ59cYGIJdn1o6KNyZm+rcNQt
+         1XS8/1P+eZTfET8LLxQUvedU7SdnyiaAItxgYEEggVOXVwMh6IcFCT1sHdA+sZmao2wP
+         cQEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W31gkYOGw781FNC6CVGSMH2gW6sCoEah9gyo6dY5h3I=;
+        b=nH/uYNfi5DboonqbtpY+kitIyN7hpRBtcuZifTqbphKZQrCUsZbQQFX1KQgSWCqU2J
+         NlC0RooqQocOFsHEs1h1KB4QH0f3AhGmm7VGdhrI8Zy8KH+yuQnYSKlNCK21+nrdGgKg
+         Srt/8FcBRUadwOFM7PzWtl6ZcU9BJ1mI2ACOGN9aFaPKEECuYpXAEfBUY1WFSRSjp5Fb
+         1dqGy8w6t1vdlszFfTTnBE7E45JQ/TEcsK5RgdT5Pi/AeDsoCxi6dFAIa7bXSCc3vENF
+         yU0CEBZDgYyboUWMKMdM3kRJ0/GEKBTI+JF3WPwV2/Qvr5WUdbnYM/o1BYlqZE5fVu5v
+         Oukg==
+X-Gm-Message-State: APjAAAXS7+OreQGbURbPKeuwT1AnMwJakf2o7nGIqQ7ZSMywQwC8AwAB
+        zBLEc0Re6QIAIEU8rN7etRmUvuE56FYuahWOcQU=
+X-Google-Smtp-Source: APXvYqxXwws5bqmaIvXOcAcbw/nna4oe3VtmdFA7L/tg7fs2ToWjrTJV+cYO1CxcDfpx3kPh32/k35ETEhgynqKiG1U=
+X-Received: by 2002:a37:ac11:: with SMTP id e17mr37603354qkm.339.1558074712697;
+ Thu, 16 May 2019 23:31:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-17_03:,,
- signatures=0
-X-Proofpoint-Spam-Reason: safe
-X-FB-Internal: Safe
+References: <20190517043411.3796806-1-ast@kernel.org>
+In-Reply-To: <20190517043411.3796806-1-ast@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 16 May 2019 23:31:41 -0700
+Message-ID: <CAEf4BzbQDoAZGEEkO7uHWhuYZxnqACk_X=h9f08ZvQA853MA=w@mail.gmail.com>
+Subject: Re: [PATCH bpf] selftests/bpf: fix bpf_get_current_task
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     davem@davemloft.net, Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kflag bit determines whether FWD is for struct or union. Use that bit.
+On Thu, May 16, 2019 at 9:34 PM Alexei Starovoitov <ast@kernel.org> wrote:
+>
+> Fix bpf_get_current_task() declaration.
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-Fixes: c93cc69004df ("bpftool: add ability to dump BTF types")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/btf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-index 58a2cd002a4b..7317438ecd9e 100644
---- a/tools/bpf/bpftool/btf.c
-+++ b/tools/bpf/bpftool/btf.c
-@@ -208,8 +208,8 @@ static int dump_btf_type(const struct btf *btf, __u32 id,
- 		break;
- 	}
- 	case BTF_KIND_FWD: {
--		const char *fwd_kind = BTF_INFO_KIND(t->info) ? "union"
--							      : "struct";
-+		const char *fwd_kind = BTF_INFO_KFLAG(t->info) ? "union"
-+							       : "struct";
- 
- 		if (json_output)
- 			jsonw_string_field(w, "fwd_kind", fwd_kind);
--- 
-2.17.1
-
+> ---
+>  tools/testing/selftests/bpf/bpf_helpers.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
+> index 6e80b66d7fb1..5f6f9e7aba2a 100644
+> --- a/tools/testing/selftests/bpf/bpf_helpers.h
+> +++ b/tools/testing/selftests/bpf/bpf_helpers.h
+> @@ -278,7 +278,7 @@ static int (*bpf_skb_change_type)(void *ctx, __u32 type) =
+>         (void *) BPF_FUNC_skb_change_type;
+>  static unsigned int (*bpf_get_hash_recalc)(void *ctx) =
+>         (void *) BPF_FUNC_get_hash_recalc;
+> -static unsigned long long (*bpf_get_current_task)(void *ctx) =
+> +static unsigned long long (*bpf_get_current_task)(void) =
+>         (void *) BPF_FUNC_get_current_task;
+>  static int (*bpf_skb_change_tail)(void *ctx, __u32 len, __u64 flags) =
+>         (void *) BPF_FUNC_skb_change_tail;
+> --
+> 2.20.0
+>
