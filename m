@@ -2,94 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C3E92117B
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 02:53:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 352202119F
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 03:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727765AbfEQAxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 20:53:36 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:44985 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726901AbfEQAxg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 20:53:36 -0400
-Received: by mail-pl1-f194.google.com with SMTP id c5so2445791pll.11
-        for <netdev@vger.kernel.org>; Thu, 16 May 2019 17:53:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=ST4CWYDkh00CffN4lvMYzTylWYrogSWsm37LLMdcgu8=;
-        b=XgtfirqoQEzKN22sgji1Ygr3CLjwej2ztadA1uum6yFeX7pQiZumFd8dJBszqya+c6
-         erLTAyFLWN43SQxSX63EP5Bw3mF/Vs8Q6U/r5wlw0GD6QppiZPN0q2bU/w+JYqxc6ous
-         n7iySIegfzqlCwNQH1nApoW/itBZaLI1AzOQn7274oczy9s9QDookLLcfj3PbOvBNPuw
-         Le31kPbAuhH+iixaDtoLgCWLBKkjZGfUfgj08f8lx0B2wfCD4kh1OBZIR2h+Do2uZm58
-         yxfOAuQuTcf57S9SWh/VFWrBeYxPVj1Wh9ugwQHG3jTIaZGydYxhR0QuElREIY/7R8gv
-         Qyxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=ST4CWYDkh00CffN4lvMYzTylWYrogSWsm37LLMdcgu8=;
-        b=MDp+5VJVA+AplIYUfAl4F+rx3bXfoZQuQPRBUd3TaQ9VH0C6us7AyrWSXANm1bToR4
-         Ih8TxKgOG+gzLot1TbT7UiIHgohftzRfbzra/S4expq7VrDOKjyVlq4SjM6iXx3C+mbu
-         dMf2OoWXvHHWziM8R2karF6f9Lmm2yfOvlEQZJ4KBW/BN3yX/dxRi2Djeumzul+V6OtT
-         3Y0ZCrYiksDNOukTXIj3s/dMqXLvoQCpNs1f95ILmR5h07BliqVZzNXTeeH+sANKA1J4
-         qgyw9ncya3VfKZec1TV+2Bey7gZvFsE43v16OoGyaOpqJfeASYF93x6ch2ymuffQ109S
-         dang==
-X-Gm-Message-State: APjAAAXqTcT5RXtP3JCVqpi/5BcSfQmC2PGVHOLAHzNiSm+AozmlTLK5
-        T6JUX6dEQMulhEfyGOznE30=
-X-Google-Smtp-Source: APXvYqws5ve2eqQ2W5/lchRAf3kmAHt57Ink8gKSi2Pm/JHmIHAewNeqjy8VUYwcIGsFt+MNMKy92g==
-X-Received: by 2002:a17:902:e785:: with SMTP id cp5mr34841847plb.167.1558054415913;
-        Thu, 16 May 2019 17:53:35 -0700 (PDT)
-Received: from fcb2.mtv.corp.google.com ([2620:0:1000:1612:a82:fb4f:909:5b6a])
-        by smtp.gmail.com with ESMTPSA id j22sm7990242pfi.139.2019.05.16.17.53.34
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 May 2019 17:53:35 -0700 (PDT)
-Subject: Re: [PATCH bpf] bpf: relax inode permission check for retrieving bpf
- program
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Chenbo Feng <fengc@google.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-References: <20190515024257.36838-1-fengc@google.com>
- <CAADnVQJ6Ezugas2OE1UqMHJP_L-G0LEt1KFCYPE5xLFmF+BXLw@mail.gmail.com>
-From:   Chenbo Feng <chenbofeng.kernel@gmail.com>
-Message-ID: <a6f447ba-4d75-2b9b-380d-8c3a01a0a9d4@gmail.com>
-Date:   Thu, 16 May 2019 17:53:34 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726454AbfEQBKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 21:10:42 -0400
+Received: from alln-iport-3.cisco.com ([173.37.142.90]:29054 "EHLO
+        alln-iport-3.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725929AbfEQBKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 21:10:41 -0400
+X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 May 2019 21:10:40 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=1954; q=dns/txt; s=iport;
+  t=1558055440; x=1559265040;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CdtFlPdIxBflewxo8eZNJ3cZUeGIx4ZiQQJbr+jUzY4=;
+  b=MceW4XnmB1ay+HdRTwqFEDWmfPqAWu2W2AyGtD1iK893bX8AwH1WyEUf
+   P6h9GSmP6+tvlpm4Lpve/frfOI9eLsX1ETBOU9T9f1jyQuybz0R1lH6J8
+   GGBPt6DTLRTetgAc25jTB54Hs496j00hguRi4pR0+LK7J2Ko/swGF2SYC
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.60,477,1549929600"; 
+   d="scan'208";a="277980231"
+Received: from alln-core-11.cisco.com ([173.36.13.133])
+  by alln-iport-3.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 17 May 2019 01:03:33 +0000
+Received: from zorba ([10.24.21.190])
+        by alln-core-11.cisco.com (8.15.2/8.15.2) with ESMTPS id x4H13VMX014537
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 17 May 2019 01:03:32 GMT
+Date:   Thu, 16 May 2019 18:03:30 -0700
+From:   Daniel Walker <danielwa@cisco.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "Nikunj Kela (nkela)" <nkela@cisco.com>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] igb: add parameter to ignore nvm checksum validation
+Message-ID: <20190517010330.2wynopuhsqycqzuq@zorba>
+References: <1557357269-9498-1-git-send-email-nkela@cisco.com>
+ <9be117dc6e818ab83376cd8e0f79dbfaaf193aa9.camel@intel.com>
+ <76B41175-0CEE-466C-91BF-89A1CA857061@cisco.com>
+ <4469196a-0705-5459-8aca-3f08e9889d61@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQJ6Ezugas2OE1UqMHJP_L-G0LEt1KFCYPE5xLFmF+BXLw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4469196a-0705-5459-8aca-3f08e9889d61@gmail.com>
+User-Agent: NeoMutt/20170609 (1.8.3)
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Outbound-SMTP-Client: 10.24.21.190, [10.24.21.190]
+X-Outbound-Node: alln-core-11.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 16, 2019 at 03:02:18PM -0700, Florian Fainelli wrote:
+> On 5/16/19 12:55 PM, Nikunj Kela (nkela) wrote:
+> > 
+> > 
+> > On 5/16/19, 12:35 PM, "Jeff Kirsher" <jeffrey.t.kirsher@intel.com> wrote:
+> > 
+> >     On Wed, 2019-05-08 at 23:14 +0000, Nikunj Kela wrote:
+> >    >> Some of the broken NICs don't have EEPROM programmed correctly. It
+> >    >> results
+> >    >> in probe to fail. This change adds a module parameter that can be
+> >    >> used to
+> >    >> ignore nvm checksum validation.
+> >    >> 
+> >    >> Cc: xe-linux-external@cisco.com
+> >    >> Signed-off-by: Nikunj Kela <nkela@cisco.com>
+> >    >> ---
+> >    >>  drivers/net/ethernet/intel/igb/igb_main.c | 28
+> >    >> ++++++++++++++++++++++------
+> >    >>  1 file changed, 22 insertions(+), 6 deletions(-)
+> >     
+> >     >NAK for two reasons.  First, module parameters are not desirable
+> >     >because their individual to one driver and a global solution should be
+> >     >found so that all networking device drivers can use the solution.  This
+> >     >will keep the interface to change/setup/modify networking drivers
+> >     >consistent for all drivers.
+> > 
+> >     
+> >     >Second and more importantly, if your NIC is broken, fix it.  Do not try
+> >     >and create a software workaround so that you can continue to use a
+> >     >broken NIC.  There are methods/tools available to properly reprogram
+> >     >the EEPROM on a NIC, which is the right solution for your issue.
+> > 
+> > I am proposing this as a debug parameter. Obviously, we need to fix EEPROM but this helps us continuing the development while manufacturing fixes NIC.
+> 
+> Then why even bother with sending this upstream?
 
-On 5/16/19 11:35 AM, Alexei Starovoitov wrote:
-> On Tue, May 14, 2019 at 7:43 PM Chenbo Feng <fengc@google.com> wrote:
->> For iptable module to load a bpf program from a pinned location, it
->> only retrieve a loaded program and cannot change the program content so
->> requiring a write permission for it might not be necessary.
->> Also when adding or removing an unrelated iptable rule, it might need to
->> flush and reload the xt_bpf related rules as well and triggers the inode
->> permission check. It might be better to remove the write premission
->> check for the inode so we won't need to grant write access to all the
->> processes that flush and restore iptables rules.
->>
->> Signed-off-by: Chenbo Feng <fengc@google.com>
-> Applied. The fix makes sense to me.
+It seems rather drastic to disable the entire driver because the checksum
+doesn't match. It really should be a warning, even a big warning, to let people
+know something is wrong, but disabling the whole driver doesn't make sense.
 
-Thanks for accepting it Alexei, could you also queue it up for the 
-stable as well?
-
-
-Chenbo Feng
-
+Daniel
