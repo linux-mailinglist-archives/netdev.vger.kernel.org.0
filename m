@@ -2,226 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C6AC21C62
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:25:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD0E221C8E
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:35:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727494AbfEQRXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 13:23:21 -0400
-Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:34527 "EHLO
-        caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725932AbfEQRXU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 13:23:20 -0400
-Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
-        id C53C646380B; Fri, 17 May 2019 13:23:17 -0400 (EDT)
-Date:   Fri, 17 May 2019 13:23:17 -0400
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
-Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec
- packets
-Message-ID: <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca>
-References: <CAKgT0UcV2wCr6iUYktZ+Bju_GNpXKzR=M+NLfKhUsw4bsJSiyA@mail.gmail.com>
- <20190503205935.bg45rsso5jjj3gnx@csclub.uwaterloo.ca>
- <20190513165547.alkkgcsdelaznw6v@csclub.uwaterloo.ca>
- <CAKgT0Uf_nqZtCnHmC=-oDFz-3PuSM6=30BvJSDiAgzK062OY6w@mail.gmail.com>
- <20190514163443.glfjva3ofqcy7lbg@csclub.uwaterloo.ca>
- <CAKgT0UdPDyCBsShQVwwE5C8fBKkMcfS6_S5m3T7JP-So9fzVgA@mail.gmail.com>
- <20190516183407.qswotwyjwtjqfdqm@csclub.uwaterloo.ca>
- <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca>
- <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com>
- <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
+        id S1728542AbfEQRfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 13:35:19 -0400
+Received: from mail-pl1-f170.google.com ([209.85.214.170]:39280 "EHLO
+        mail-pl1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728451AbfEQRfT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 13:35:19 -0400
+Received: by mail-pl1-f170.google.com with SMTP id g9so3647680plm.6
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 10:35:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DIWndCfk+aQUjakVUo4IgrZ25DQY5Y/41wEuVppCQ0E=;
+        b=NXjsHUsVO58r9CzEOKzu9dwRvhnKfOrFLejVgtLh5cik75yRHn8BwZBfl3KCgySIyv
+         HkjCpexLkXTqci9rb2Vx+TewNGvNSwpCn1YutiScFm02Gv/eFRy2OMAx8FmhzKnOi0xy
+         s0+BPbEGFKpBaRVDxj8tnPIqQJG0FmQBo16sRcTTK7aNb7MQ0BtTH9thKp7miNYAWO85
+         FAi90Fd7H7ypoeFr98vbzWA7c/cdtJKJ9j7CRizZoHL8Dx6+dRhpWcAaZnJ60ID7Be4k
+         L5/ZvtvWCmRXSNib2iBjbjCIZ+x6ZzAkaame2TmW+nGN3EOztS7QDHFj3goAvElZhnm9
+         vkZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DIWndCfk+aQUjakVUo4IgrZ25DQY5Y/41wEuVppCQ0E=;
+        b=PRJc3uk8NQnDwNBfqX4WYNqoEEVKzh4/MbzMnJLChkRPUC3jPpZs6tv2PxRZ40KsFJ
+         h4AEgNu4/N78JpF75GEOwZSYwx7c8SgnT4fcXxCCwdlqGznjmFtPQLrTYmslNBuLhes7
+         gLzF9DH8k7o9svEgqRBWNc15ocXQxNyqdQiAYFuInlySg/CG94lx8eKvAvR1yaVhz1Dk
+         b76FJb30JBxRfhkOJUtVzhe+VoRkBoVVQf23aenysQvIXnDrvjJimjGQIoizWmdh6Vq0
+         BqJmn9YXYW0toXDxKD/o1XYc9EXUS9v0wvClAnFHX1QVBr92/x8W55SLpHrD1KzuNJd7
+         zTHw==
+X-Gm-Message-State: APjAAAX4XKS8fI9Eg4cmvhJKAwSpNJcE53mLChWauwJTOwxGMiQey5pR
+        LGtJsOx5/VzE5QNz6vW3dyYFp5I8
+X-Google-Smtp-Source: APXvYqx/xV4AexvGA0amlY5dhsvb0YWXs6y7yPhXriAAaHz4kN5tF2JNyrxTwj57v+hgm4LWf/P5Fw==
+X-Received: by 2002:a17:902:8c82:: with SMTP id t2mr50245117plo.256.1558114518917;
+        Fri, 17 May 2019 10:35:18 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:743c:f418:8a94:7ec7? ([2601:282:800:fd80:743c:f418:8a94:7ec7])
+        by smtp.googlemail.com with ESMTPSA id k192sm8632715pga.20.2019.05.17.10.35.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 May 2019 10:35:17 -0700 (PDT)
+Subject: Re: [iproute2 2/3] tc: jsonify tbf qdisc parameters
+To:     Nir Weiner <nir.weiner@oracle.com>, netdev@vger.kernel.org
+Cc:     liran.alon@oracle.com
+References: <20190506161840.30919-1-nir.weiner@oracle.com>
+ <20190506161840.30919-3-nir.weiner@oracle.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a60c8e21-28bf-294c-7e3d-612493346bbb@gmail.com>
+Date:   Fri, 17 May 2019 11:35:16 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
+In-Reply-To: <20190506161840.30919-3-nir.weiner@oracle.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 17, 2019 at 09:42:19AM -0700, Alexander Duyck wrote:
-> So the patch below/attached should resolve the issues you are seeing
-> with your system in terms of UDPv4 RSS. What you should see with this
-> patch is the first function to come up will display some "update input
-> mask" messages, and then the remaining functions shouldn't make any
-> noise about it since the registers being updated are global to the
-> device.
-> 
-> If you can test this and see if it resolves the UDPv4 RSS issues I
-> would appreciate it.
-> 
-> Thanks.
-> 
-> - Alex
-> 
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c
-> b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> index 65c2b9d2652b..c0a7f66babd9 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> @@ -10998,6 +10998,58 @@ static int i40e_pf_config_rss(struct i40e_pf *pf)
->                 ((u64)i40e_read_rx_ctl(hw, I40E_PFQF_HENA(1)) << 32);
->         hena |= i40e_pf_get_default_rss_hena(pf);
-> 
-> +       for (ret = 64; ret--;) {
-> +               u64 hash_inset_orig, hash_inset_update;
-> +
-> +               if (!(hena & (1ull << ret)))
-> +                       continue;
-> +
-> +               /* Read initial input set value for flow type */
-> +               hash_inset_orig = i40e_read_rx_ctl(hw,
-> I40E_GLQF_HASH_INSET(1, ret));
-> +               hash_inset_orig <<= 32;
-> +               hash_inset_orig |= i40e_read_rx_ctl(hw,
-> I40E_GLQF_HASH_INSET(0, ret));
-> +
-> +               /* Copy value so we can compare later */
-> +               hash_inset_update = hash_inset_orig;
-> +
-> +               /* We should be looking at either the entire IPv6 or IPv4
-> +                * mask being set. If only part of the IPv6 mask is set, but
-> +                * the IPv4 mask is not then we have a garbage mask value
-> +                * and need to reset it.
-> +                */
-> +               switch (hash_inset_orig & I40E_L3_V6_SRC_MASK) {
-> +               case I40E_L3_V6_SRC_MASK:
-> +               case I40E_L3_SRC_MASK:
-> +               case 0:
-> +                       break;
-> +               default:
-> +                       hash_inset_update &= ~I40E_L3_V6_SRC_MASK;
-> +                       hash_inset_update |= I40E_L3_SRC_MASK;
-> +               }
-> +
-> +               switch (hash_inset_orig & I40E_L3_V6_DST_MASK) {
-> +               case I40E_L3_V6_DST_MASK:
-> +               case I40E_L3_DST_MASK:
-> +               case 0:
-> +                       break;
-> +               default:
-> +                       hash_inset_update &= ~I40E_L3_V6_DST_MASK;
-> +                       hash_inset_update |= I40E_L3_DST_MASK;
-> +               }
-> +
-> +               if (hash_inset_update != hash_inset_orig) {
-> +                       dev_warn(&pf->pdev->dev,
-> +                                "flow type: %d update input mask
-> from:0x%016llx, to:0x%016llx\n",
-> +                                ret,
-> +                                hash_inset_orig, hash_inset_update);
-> +                       i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, ret),
-> +                                         (u32)hash_inset_update);
-> +                       hash_inset_update >>= 32;
-> +                       i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, ret),
-> +                                         (u32)hash_inset_update);
-> +               }
-> +       }
-> +
->         i40e_write_rx_ctl(hw, I40E_PFQF_HENA(0), (u32)hena);
->         i40e_write_rx_ctl(hw, I40E_PFQF_HENA(1), (u32)(hena >> 32));
+On 5/6/19 10:18 AM, Nir Weiner wrote:
 
-> i40e: Debug hash inputs
-> 
-> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> 
-> 
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_main.c |   52 +++++++++++++++++++++++++++
->  1 file changed, 52 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> index 65c2b9d2652b..c0a7f66babd9 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> @@ -10998,6 +10998,58 @@ static int i40e_pf_config_rss(struct i40e_pf *pf)
->  		((u64)i40e_read_rx_ctl(hw, I40E_PFQF_HENA(1)) << 32);
->  	hena |= i40e_pf_get_default_rss_hena(pf);
->  
-> +	for (ret = 64; ret--;) {
-> +		u64 hash_inset_orig, hash_inset_update;
-> +
-> +		if (!(hena & (1ull << ret)))
-> +			continue;
-> +
-> +		/* Read initial input set value for flow type */
-> +		hash_inset_orig = i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, ret));
-> +		hash_inset_orig <<= 32;
-> +		hash_inset_orig |= i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, ret));
-> +
-> +		/* Copy value so we can compare later */
-> +		hash_inset_update = hash_inset_orig;
-> +
-> +		/* We should be looking at either the entire IPv6 or IPv4
-> +		 * mask being set. If only part of the IPv6 mask is set, but
-> +		 * the IPv4 mask is not then we have a garbage mask value
-> +		 * and need to reset it.
-> +		 */
-> +		switch (hash_inset_orig & I40E_L3_V6_SRC_MASK) {
-> +		case I40E_L3_V6_SRC_MASK:
-> +		case I40E_L3_SRC_MASK:
-> +		case 0:
-> +			break;
-> +		default:
-> +			hash_inset_update &= ~I40E_L3_V6_SRC_MASK;
-> +			hash_inset_update |= I40E_L3_SRC_MASK;
-> +		}
-> +
-> +		switch (hash_inset_orig & I40E_L3_V6_DST_MASK) {
-> +		case I40E_L3_V6_DST_MASK:
-> +		case I40E_L3_DST_MASK:
-> +		case 0:
-> +			break;
-> +		default:
-> +			hash_inset_update &= ~I40E_L3_V6_DST_MASK;
-> +			hash_inset_update |= I40E_L3_DST_MASK;
-> +		}
-> +
-> +		if (hash_inset_update != hash_inset_orig) {
-> +			dev_warn(&pf->pdev->dev,
-> +				 "flow type: %d update input mask from:0x%016llx, to:0x%016llx\n",
-> +				 ret,
-> +				 hash_inset_orig, hash_inset_update);
-> +			i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, ret),
-> +					  (u32)hash_inset_update);
-> +			hash_inset_update >>= 32;
-> +			i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, ret),
-> +					  (u32)hash_inset_update);
-> +		}
-> +	}
-> +
->  	i40e_write_rx_ctl(hw, I40E_PFQF_HENA(0), (u32)hena);
->  	i40e_write_rx_ctl(hw, I40E_PFQF_HENA(1), (u32)(hena >> 32));
->  
+>  	if (prate64) {
+> -		fprintf(f, "peakrate %s ", sprint_rate(prate64, b1));
+> +		print_string(PRINT_ANY, "peakrate", "peakrate %s ", sprint_rate(prate64, b1));
+>  		if (qopt->mtu || qopt->peakrate.mpu) {
+>  			mtu = tc_calc_xmitsize(prate64, qopt->mtu);
+>  			if (show_details) {
+>  				fprintf(f, "mtu %s/%u mpu %s ", sprint_size(mtu, b1),
+>  					1<<qopt->peakrate.cell_log, sprint_size(qopt->peakrate.mpu, b2));
 
-OK I applied that and see this:
 
-i40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
-i40e: Copyright (c) 2013 - 2014 Intel Corporation.
-i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
-i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
-i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
-i40e 0000:3d:00.0: flow type: 36 update input mask from:0x0006060000000000, to:0x0001801800000000
-i40e 0000:3d:00.0: flow type: 35 update input mask from:0x0006060000000000, to:0x0001801800000000
-i40e 0000:3d:00.0: flow type: 34 update input mask from:0x0006060780000000, to:0x0001801f80000000
-i40e 0000:3d:00.0: flow type: 33 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: flow type: 32 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: flow type: 31 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: flow type: 30 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: flow type: 29 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: Features: PF-id[0] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
-i40e 0000:3d:00.1: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
-i40e 0000:3d:00.1: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
-i40e 0000:3d:00.1: MAC address: a4:bf:01:4e:0c:88
-i40e 0000:3d:00.1: Features: PF-id[1] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
-i40e 0000:3d:00.1 eth2: NIC Link is Up, 1000 Mbps Full Duplex, Flow Control: None
+The fprintf under show_details should be converted as well. This applies
+to patch 1 as well.
 
-Unfortunately (much to my disappointment, I hoped it would work) I see
-no change in behaviour.
-
--- 
-Len Sorensen
+And, please add example output to each patch.
