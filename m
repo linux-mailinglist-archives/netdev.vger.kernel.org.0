@@ -2,82 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD0E221C8E
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:35:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B54FA21C93
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:35:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728542AbfEQRfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 13:35:19 -0400
-Received: from mail-pl1-f170.google.com ([209.85.214.170]:39280 "EHLO
-        mail-pl1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728451AbfEQRfT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 13:35:19 -0400
-Received: by mail-pl1-f170.google.com with SMTP id g9so3647680plm.6
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 10:35:19 -0700 (PDT)
+        id S1728566AbfEQRfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 13:35:53 -0400
+Received: from mail-pg1-f174.google.com ([209.85.215.174]:42965 "EHLO
+        mail-pg1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728551AbfEQRfw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 13:35:52 -0400
+Received: by mail-pg1-f174.google.com with SMTP id 145so3603384pgg.9
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 10:35:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DIWndCfk+aQUjakVUo4IgrZ25DQY5Y/41wEuVppCQ0E=;
-        b=NXjsHUsVO58r9CzEOKzu9dwRvhnKfOrFLejVgtLh5cik75yRHn8BwZBfl3KCgySIyv
-         HkjCpexLkXTqci9rb2Vx+TewNGvNSwpCn1YutiScFm02Gv/eFRy2OMAx8FmhzKnOi0xy
-         s0+BPbEGFKpBaRVDxj8tnPIqQJG0FmQBo16sRcTTK7aNb7MQ0BtTH9thKp7miNYAWO85
-         FAi90Fd7H7ypoeFr98vbzWA7c/cdtJKJ9j7CRizZoHL8Dx6+dRhpWcAaZnJ60ID7Be4k
-         L5/ZvtvWCmRXSNib2iBjbjCIZ+x6ZzAkaame2TmW+nGN3EOztS7QDHFj3goAvElZhnm9
-         vkZw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GfCDm8sUKy3R6j2sDtGbVs2+WjATZEuKgyEXc8pGzDA=;
+        b=DYFujcpnR73nKQG6ZvlHKnQOnML4yf8OUuJaVezO/Dxtp2m66FZ+WCWhnVbvYNMCX5
+         MSNMq2jI91f2nTg7Ck11DrELBNAQAjpINkrVaRRYjw4gqLQu306pwLq9PAclAjVZWGdD
+         e1htNLiqhQv+na0etoPEOV0KlvLzEMjqpVDA3ta/2yTW4TgqEa1OUJIvWnyn6AfBCwrc
+         yfIYiVnDADnb9Ary5TzDdHKy/JkYsE2qpGd8yFXWyivXtNRkmFF75a1zN/TuhZbgBe8d
+         7czV2nr5SrZyasEuFGTpqyMFqW0NjEvBZA4cRNC5TTWTn7zh9ROctZN3H1snSwMKa+Y9
+         VioQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DIWndCfk+aQUjakVUo4IgrZ25DQY5Y/41wEuVppCQ0E=;
-        b=PRJc3uk8NQnDwNBfqX4WYNqoEEVKzh4/MbzMnJLChkRPUC3jPpZs6tv2PxRZ40KsFJ
-         h4AEgNu4/N78JpF75GEOwZSYwx7c8SgnT4fcXxCCwdlqGznjmFtPQLrTYmslNBuLhes7
-         gLzF9DH8k7o9svEgqRBWNc15ocXQxNyqdQiAYFuInlySg/CG94lx8eKvAvR1yaVhz1Dk
-         b76FJb30JBxRfhkOJUtVzhe+VoRkBoVVQf23aenysQvIXnDrvjJimjGQIoizWmdh6Vq0
-         BqJmn9YXYW0toXDxKD/o1XYc9EXUS9v0wvClAnFHX1QVBr92/x8W55SLpHrD1KzuNJd7
-         zTHw==
-X-Gm-Message-State: APjAAAX4XKS8fI9Eg4cmvhJKAwSpNJcE53mLChWauwJTOwxGMiQey5pR
-        LGtJsOx5/VzE5QNz6vW3dyYFp5I8
-X-Google-Smtp-Source: APXvYqx/xV4AexvGA0amlY5dhsvb0YWXs6y7yPhXriAAaHz4kN5tF2JNyrxTwj57v+hgm4LWf/P5Fw==
-X-Received: by 2002:a17:902:8c82:: with SMTP id t2mr50245117plo.256.1558114518917;
-        Fri, 17 May 2019 10:35:18 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:743c:f418:8a94:7ec7? ([2601:282:800:fd80:743c:f418:8a94:7ec7])
-        by smtp.googlemail.com with ESMTPSA id k192sm8632715pga.20.2019.05.17.10.35.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 May 2019 10:35:17 -0700 (PDT)
-Subject: Re: [iproute2 2/3] tc: jsonify tbf qdisc parameters
-To:     Nir Weiner <nir.weiner@oracle.com>, netdev@vger.kernel.org
-Cc:     liran.alon@oracle.com
-References: <20190506161840.30919-1-nir.weiner@oracle.com>
- <20190506161840.30919-3-nir.weiner@oracle.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a60c8e21-28bf-294c-7e3d-612493346bbb@gmail.com>
-Date:   Fri, 17 May 2019 11:35:16 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GfCDm8sUKy3R6j2sDtGbVs2+WjATZEuKgyEXc8pGzDA=;
+        b=euA4D3fkPML3y57rS6E8T3RmfAfptCr/hdrJVJ4Vg0t7RhWlxGaVc1ix/YleHrxOAP
+         FWjbQb98xZt8YHY+TLLTwxDIQT7tVvTe3utnOs/IXrglFNzcax6PBuGEFGCZKinlbj4p
+         /Kjm89VrnEyCq1WdfmZal61sI5fGvucWoVqie08+w7SSmvRzNn011enNKNaRgR77xkZN
+         0OpGOBmmXLs2u8eWjje9/DhsL0fyIrqtKRpyA6BVVDJicuV9P1FhpJaix4FKB4SgPAIa
+         jj5C1RDMIjX02iN+bBxJBI2mjR+vkrQEfd8I76hB/+eYxxdKkUYD+No1PdQqCpsf8FI9
+         eDeA==
+X-Gm-Message-State: APjAAAWSzoimDG0eiAxzg/Yk3tCuKzrTRBTqZAkVJKzzfL/DMzEoXZPK
+        JmXIlsxV3urN9T93nX6uNUvbyA==
+X-Google-Smtp-Source: APXvYqxhmcI8pO/7KvLUTsf6PAIj4oE4umK/nyMO/HvSZh7yTIgsuXc6G0XLSeje2THOtb/dvcazPw==
+X-Received: by 2002:aa7:9a95:: with SMTP id w21mr42624587pfi.248.1558114551856;
+        Fri, 17 May 2019 10:35:51 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id z66sm12580295pfz.83.2019.05.17.10.35.51
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 17 May 2019 10:35:51 -0700 (PDT)
+Date:   Fri, 17 May 2019 10:35:43 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        emersonbernier@tutanota.com, Netdev <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        David Miller <davem@davemloft.net>, piraty1@inbox.ru
+Subject: Re: 5.1 `ip route get addr/cidr` regression
+Message-ID: <20190517103543.149e9c6c@hermes.lan>
+In-Reply-To: <2e6749cb-3a7a-242a-bd60-5fa7a8e724db@gmail.com>
+References: <LaeckvP--3-1@tutanota.com>
+        <CAHmME9pwgfN5J=k-2-H0cLWrHSMO2+LHk=Lnfe7qcsewue2Kxw@mail.gmail.com>
+        <2e6749cb-3a7a-242a-bd60-5fa7a8e724db@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190506161840.30919-3-nir.weiner@oracle.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/6/19 10:18 AM, Nir Weiner wrote:
+On Fri, 17 May 2019 09:17:51 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
->  	if (prate64) {
-> -		fprintf(f, "peakrate %s ", sprint_rate(prate64, b1));
-> +		print_string(PRINT_ANY, "peakrate", "peakrate %s ", sprint_rate(prate64, b1));
->  		if (qopt->mtu || qopt->peakrate.mpu) {
->  			mtu = tc_calc_xmitsize(prate64, qopt->mtu);
->  			if (show_details) {
->  				fprintf(f, "mtu %s/%u mpu %s ", sprint_size(mtu, b1),
->  					1<<qopt->peakrate.cell_log, sprint_size(qopt->peakrate.mpu, b2));
+> On 5/17/19 4:22 AM, Jason A. Donenfeld wrote:
+> > Hi,
+> > 
+> > I'm back now and catching up with a lot of things. A few people have
+> > mentioned to me that wg-quick(8), a bash script that makes a bunch of
+> > iproute2 invocations, appears to be broken on 5.1. I've distilled the
+> > behavior change down to the following.
+> > 
+> > Behavior on 5.0:
+> > 
+> > + ip link add wg0 type dummy
+> > + ip address add 192.168.50.2/24 dev wg0
+> > + ip link set mtu 1420 up dev wg0
+> > + ip route get 192.168.50.0/24
+> > broadcast 192.168.50.0 dev wg0 src 192.168.50.2 uid 0
+> >    cache <local,brd>
+> > 
+> > Behavior on 5.1:
+> > 
+> > + ip link add wg0 type dummy
+> > + ip address add 192.168.50.2/24 dev wg0
+> > + ip link set mtu 1420 up dev wg0
+> > + ip route get 192.168.50.0/24
+> > RTNETLINK answers: Invalid argument  
+> 
+> This is a 5.1 change.
+> a00302b607770 ("net: ipv4: route: perform strict checks also for doit
+> handlers")
+> 
+> Basically, the /24 is unexpected. I'll send a patch.
+> 
+> > 
+> > Upon investigating, I'm not sure that `ip route get` was ever suitable
+> > for getting details on a particular route. So I'll adjust the  
+> 
+> 'ip route get <prefix> fibmatch' will show the fib entry.
+> 
 
-
-The fprintf under show_details should be converted as well. This applies
-to patch 1 as well.
-
-And, please add example output to each patch.
+If you want to keep the error, the kernel should send additional
+extack as to reason. EINVAL is not user friendly...
