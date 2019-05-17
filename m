@@ -2,106 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 510D621A56
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6CC221A57
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729213AbfEQPKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 11:10:45 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:45321 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729162AbfEQPKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 11:10:45 -0400
-X-Originating-IP: 90.88.22.185
-Received: from bootlin.com (aaubervilliers-681-1-80-185.w90-88.abo.wanadoo.fr [90.88.22.185])
-        (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 2A9B01BF20B;
-        Fri, 17 May 2019 15:10:38 +0000 (UTC)
-Date:   Fri, 17 May 2019 17:10:38 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: dsa: using multi-gbps speeds on CPU port
-Message-ID: <20190517171038.36d921a5@bootlin.com>
-In-Reply-To: <35daa9e7-8b97-35dd-bc95-bab57ef401cd@gmail.com>
-References: <20190515143936.524acd4e@bootlin.com>
-        <20190515132701.GD23276@lunn.ch>
-        <20190515160214.1aa5c7d9@bootlin.com>
-        <35daa9e7-8b97-35dd-bc95-bab57ef401cd@gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1729215AbfEQPLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 11:11:31 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49618 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728407AbfEQPLb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 May 2019 11:11:31 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id C0D2E3DBC2
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 15:11:30 +0000 (UTC)
+Received: from ocho.redhat.com (ovpn-116-46.ams2.redhat.com [10.36.116.46])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0BB435D9C4;
+        Fri, 17 May 2019 15:11:28 +0000 (UTC)
+From:   Patrick Talbert <ptalbert@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     ptalbert@redhat.com
+Subject: [PATCH] net: Treat sock->sk_drops as an unsigned int when printing
+Date:   Fri, 17 May 2019 17:11:28 +0200
+Message-Id: <20190517151128.14444-1-ptalbert@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Fri, 17 May 2019 15:11:30 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi everyone,
+Currently, procfs socket stats format sk_drops as a signed int (%d). For large
+values this will cause a negative number to be printed.
 
-On Wed, 15 May 2019 09:09:26 -0700
-Florian Fainelli <f.fainelli@gmail.com> wrote:
+We know the drop count can never be a negative so change the format specifier to
+%u.
 
->On 5/15/19 7:02 AM, Maxime Chevallier wrote:
->> Hi Andrew,
->> 
->> On Wed, 15 May 2019 15:27:01 +0200
->> Andrew Lunn <andrew@lunn.ch> wrote:
->>   
->>> I think you are getting your terminology wrong. 'master' is eth0 in
->>> the example you gave above. CPU and DSA ports don't have netdev
->>> structures, and so any PHY used with them is not corrected to a
->>> netdev.  
->> 
->> Ah yes sorry, I'm still in the process of getting familiar with the
->> internals of DSA :/
->>   
->>>> I'll be happy to help on that, but before prototyping anything, I wanted
->>>> to have your thougts on this, and see if you had any plans.    
->>>
->>> There are two different issues here.
->>>
->>> 1) Is using a fixed-link on a CPU or DSA port the right way to do this?
->>> 2) Making fixed-link support > 1G.
->>>
->>> The reason i decided to use fixed-link on CPU and DSA ports is that we
->>> already have all the code needed to configure a port, and an API to do
->>> it, the adjust_link() callback. Things have moved on since then, and
->>> we now have an additional API, .phylink_mac_config(). It might be
->>> better to directly use that. If there is a max-speed property, create
->>> a phylink_link_state structure, which has no reference to a netdev,
->>> and pass it to .phylink_mac_config().
->>>
->>> It is just an idea, but maybe you could investigate if that would
->>> work.  
+Signed-off-by: Patrick Talbert <ptalbert@redhat.com>
+---
+ net/ipv4/ping.c          | 2 +-
+ net/ipv4/raw.c           | 2 +-
+ net/ipv4/udp.c           | 2 +-
+ net/ipv6/datagram.c      | 2 +-
+ net/netlink/af_netlink.c | 2 +-
+ net/phonet/socket.c      | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
 
-I've quickly prototyped and tested this solution, and besides a few
-tweaks that are needed on the mv88e6xxx driver side, it works fine.
-
-I'll post an RFC with this shortly, so that you can see what it looks
-like.
-
-As Russell said, there wasn't anything needed on the master interface
-side.
-
->
->Vladimir mentioned a few weeks ago that he is considering adding support
->for PHYLIB and PHYLINK to run without a net_device instance, you two
->should probably coordinate with each other and make sure both of your
->requirements (which are likely the same) get addressed.
-
-That would help a lot solving this issue indeed, I'll be happy to help
-on that, thanks for the tip !
-
-Maxime
-
-
+diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+index 7ccb5f87f70b..834be7daeb32 100644
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -1113,7 +1113,7 @@ static void ping_v4_format_sock(struct sock *sp, struct seq_file *f,
+ 	__u16 srcp = ntohs(inet->inet_sport);
+ 
+ 	seq_printf(f, "%5d: %08X:%04X %08X:%04X"
+-		" %02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %d",
++		" %02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %u",
+ 		bucket, src, srcp, dest, destp, sp->sk_state,
+ 		sk_wmem_alloc_get(sp),
+ 		sk_rmem_alloc_get(sp),
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index dc91c27bb788..0e482f07b37f 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -1076,7 +1076,7 @@ static void raw_sock_seq_show(struct seq_file *seq, struct sock *sp, int i)
+ 	      srcp  = inet->inet_num;
+ 
+ 	seq_printf(seq, "%4d: %08X:%04X %08X:%04X"
+-		" %02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %d\n",
++		" %02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %u\n",
+ 		i, src, srcp, dest, destp, sp->sk_state,
+ 		sk_wmem_alloc_get(sp),
+ 		sk_rmem_alloc_get(sp),
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 3c58ba02af7d..8fb250ed53d4 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2883,7 +2883,7 @@ static void udp4_format_sock(struct sock *sp, struct seq_file *f,
+ 	__u16 srcp	  = ntohs(inet->inet_sport);
+ 
+ 	seq_printf(f, "%5d: %08X:%04X %08X:%04X"
+-		" %02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %d",
++		" %02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %u",
+ 		bucket, src, srcp, dest, destp, sp->sk_state,
+ 		sk_wmem_alloc_get(sp),
+ 		udp_rqueue_get(sp),
+diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
+index ee4a4e54d016..f07fb24f4ba1 100644
+--- a/net/ipv6/datagram.c
++++ b/net/ipv6/datagram.c
+@@ -1034,7 +1034,7 @@ void __ip6_dgram_sock_seq_show(struct seq_file *seq, struct sock *sp,
+ 	src   = &sp->sk_v6_rcv_saddr;
+ 	seq_printf(seq,
+ 		   "%5d: %08X%08X%08X%08X:%04X %08X%08X%08X%08X:%04X "
+-		   "%02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %d\n",
++		   "%02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %u\n",
+ 		   bucket,
+ 		   src->s6_addr32[0], src->s6_addr32[1],
+ 		   src->s6_addr32[2], src->s6_addr32[3], srcp,
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 216ab915dd54..718a97d5f1fd 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2642,7 +2642,7 @@ static int netlink_seq_show(struct seq_file *seq, void *v)
+ 		struct sock *s = v;
+ 		struct netlink_sock *nlk = nlk_sk(s);
+ 
+-		seq_printf(seq, "%pK %-3d %-10u %08x %-8d %-8d %-5d %-8d %-8d %-8lu\n",
++		seq_printf(seq, "%pK %-3d %-10u %08x %-8d %-8d %-5d %-8d %-8u %-8lu\n",
+ 			   s,
+ 			   s->sk_protocol,
+ 			   nlk->portid,
+diff --git a/net/phonet/socket.c b/net/phonet/socket.c
+index 30187990257f..2567af2fbd6f 100644
+--- a/net/phonet/socket.c
++++ b/net/phonet/socket.c
+@@ -607,7 +607,7 @@ static int pn_sock_seq_show(struct seq_file *seq, void *v)
+ 		struct pn_sock *pn = pn_sk(sk);
+ 
+ 		seq_printf(seq, "%2d %04X:%04X:%02X %02X %08X:%08X %5d %lu "
+-			"%d %pK %d",
++			"%d %pK %u",
+ 			sk->sk_protocol, pn->sobject, pn->dobject,
+ 			pn->resource, sk->sk_state,
+ 			sk_wmem_alloc_get(sk), sk_rmem_alloc_get(sk),
 -- 
-Maxime Chevallier, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
+2.18.1
+
