@@ -2,126 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A46B6211D7
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 03:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B31B211EC
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 04:05:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727124AbfEQBsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 21:48:50 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:45910 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725933AbfEQBsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 21:48:50 -0400
-Received: by mail-pf1-f195.google.com with SMTP id s11so2791771pfm.12;
-        Thu, 16 May 2019 18:48:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wuDXc+IXQGay7e3fD99hwMFa7JXXaUv+8T7wwPWp5iw=;
-        b=UEhjmF6eiDf58glo5/r876Y/ZolFULRbkk4VMEerl0DrtWonfVbR+RTc96v+okNHcj
-         7wamKkA+9HKjOp+wrsYIJz2wySZqlYdMp+5HDJcjl36bwS02ua8+99qAb1SgQ+ZgatTm
-         sQOEdsXswqGj8Fpub9rZdEo9cGvJZ4tucFK3KsMgQe7ABts5tjh73KpInbj0/0SzlCfp
-         qhrmPOshGBnOHTHaCYBmcOF3MW+pfEIMZsy9vBqi6C0mXow/FgJfAcVd7ZMvtQdExY+h
-         osqj9vqt/LjXLi6CuAy/oszppueVG5zZreArQcxPZQcc57UPrRxxmOTya6YaQn75cWAL
-         QZ4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wuDXc+IXQGay7e3fD99hwMFa7JXXaUv+8T7wwPWp5iw=;
-        b=DKO8ZE7SkoX3DLz08elZ7qsCJ9HNJxJkv1jQucm8O6BMEweZ1S8okDXWXRIzaMaO1J
-         xM/O4/FAHxtBAbHjF9rwvsKGJ2eZu86DONxVqW403uziIVyE+kFrjeKt+4fzU6Rq6JYi
-         8UHXqS1BuybcGb/uyLu0BuZ2rVbAKTfqnv2uUsmXBdZzRNOlxE+x7woKF/yk2jDhwJOl
-         FyzwxAPHkPar9Dr/yD9MXgzUrOYIMC/lO82Xbxw/OakIvfUyNr+n7M+GpISvJ50+7+W3
-         CsTckhurVsyVwHvpTgRs/Ejh5f3olaEYXNeSXN+wDqHVvKBWjLNf8bTGEhxPbB4uBPMK
-         a2rw==
-X-Gm-Message-State: APjAAAVGgkft8H3q7TSJtDGL6V+vaajKBUI8/5liAUnJpOO/7sqPnG3m
-        wso9SOh/KNoh0gXCmCHFVCxPre6B
-X-Google-Smtp-Source: APXvYqzemz/xV7mTxS06IPnyybDyeoue+wEcoMxhSLWRmNonKjhneN4QQeH2TlSUMZp4+19UN8DTrg==
-X-Received: by 2002:aa7:8186:: with SMTP id g6mr58368552pfi.126.1558057728807;
-        Thu, 16 May 2019 18:48:48 -0700 (PDT)
-Received: from [10.230.28.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j19sm8403874pfr.155.2019.05.16.18.48.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 May 2019 18:48:47 -0700 (PDT)
-Subject: Re: [PATCH] igb: add parameter to ignore nvm checksum validation
-To:     Daniel Walker <danielwa@cisco.com>
-Cc:     "Nikunj Kela (nkela)" <nkela@cisco.com>,
-        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
-        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
+        id S1727510AbfEQCF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 22:05:26 -0400
+Received: from mail-eopbgr700121.outbound.protection.outlook.com ([40.107.70.121]:49504
+        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725933AbfEQCF0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 May 2019 22:05:26 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
+ b=oaD0OKdQakdJbTnW2aCeFhDI0+WcIsExaqqhFjlOwzrH1o/FJF2fMTE5ycXAZhSdVnpBJzNcOTzqfEA/cYy/uTs8+k6EOj8g7Ws8M9uTO4ar5vrEBnMCcSMRdt8JwqFtHtHFvUETNcAnocsxGZK2NiW//Q4JYGGmg1yo1GL5Mz4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=testarcselector01;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6seYDAJhRAxsLWd/YATLjL2+Zn1TrxIrD9kjcSa7tJ0=;
+ b=T4atCcJs+eo/HGca7E+cfu7W36ff4Xw1mmJpn43fjNBxvopyvEc9zYP3AjWKYPs3nQOVBsI90EqTiE/TL78Y2TR1HZuTAB/41HaA6yXU8BBrCqFWrOZHQSiI1wBBzGI5FDbaiaZmCRoiSHof13miHAf+IdjOuQEjpUgzACbwOSM=
+ARC-Authentication-Results: i=1; test.office365.com
+ 1;spf=none;dmarc=none;dkim=none;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6seYDAJhRAxsLWd/YATLjL2+Zn1TrxIrD9kjcSa7tJ0=;
+ b=F4gUCN21S0MYjowiQ0YFUExdc1f50ET6Ev1GlJTy+qeMUyp/wtlkCuN/i22v3ULKGX9oEFoxTElrkQsD6uey7wRgCNyTRmH3oTVvV+6NlHP5PaTL2WC/zZNtiEMMiccP5SoGW2VZK8Y7kpoyRmtXVMXq4+PuiBB2khRf6CL/x1E=
+Received: from BN6PR21MB0465.namprd21.prod.outlook.com (2603:10b6:404:b2::15)
+ by BN6PR21MB0756.namprd21.prod.outlook.com (2603:10b6:404:9c::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P256) id 15.20.1922.1; Fri, 17
+ May 2019 02:05:23 +0000
+Received: from BN6PR21MB0465.namprd21.prod.outlook.com
+ ([fe80::6cf3:89fb:af21:b168]) by BN6PR21MB0465.namprd21.prod.outlook.com
+ ([fe80::6cf3:89fb:af21:b168%12]) with mapi id 15.20.1922.002; Fri, 17 May
+ 2019 02:05:23 +0000
+From:   Sunil Muthuswamy <sunilmut@microsoft.com>
+To:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <1557357269-9498-1-git-send-email-nkela@cisco.com>
- <9be117dc6e818ab83376cd8e0f79dbfaaf193aa9.camel@intel.com>
- <76B41175-0CEE-466C-91BF-89A1CA857061@cisco.com>
- <4469196a-0705-5459-8aca-3f08e9889d61@gmail.com>
- <20190517010330.2wynopuhsqycqzuq@zorba>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <bd9e6a93-c8e8-a90e-25b0-26ccbf65b7c4@gmail.com>
-Date:   Thu, 16 May 2019 18:48:43 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190517010330.2wynopuhsqycqzuq@zorba>
-Content-Type: text/plain; charset=utf-8
+Subject: [PATCH] hv_sock: perf: loop in send() to maximize bandwidth
+Thread-Topic: [PATCH] hv_sock: perf: loop in send() to maximize bandwidth
+Thread-Index: AdUMVBbujvPfmRv4TlunnQ+yORJc9Q==
+Date:   Fri, 17 May 2019 02:05:22 +0000
+Message-ID: <BN6PR21MB046557834D46216464A6BA08C00B0@BN6PR21MB0465.namprd21.prod.outlook.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=sunilmut@microsoft.com; 
+x-originating-ip: [2001:4898:80e8:8:56d:b927:3a9:15b7]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e8b63975-2324-4060-f372-08d6da6c1f13
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:BN6PR21MB0756;
+x-ms-traffictypediagnostic: BN6PR21MB0756:
+x-microsoft-antispam-prvs: <BN6PR21MB0756DAD9ABF7607C8BF589E0C00B0@BN6PR21MB0756.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0040126723
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(346002)(396003)(366004)(136003)(376002)(199004)(189003)(4326008)(9686003)(14454004)(8936002)(10290500003)(86612001)(86362001)(55016002)(25786009)(71190400001)(71200400001)(478600001)(66446008)(5660300002)(52536014)(64756008)(256004)(73956011)(66476007)(76116006)(66946007)(66556008)(68736007)(33656002)(81156014)(81166006)(53936002)(54906003)(486006)(476003)(46003)(186003)(6506007)(99286004)(7696005)(7736002)(316002)(6116002)(6436002)(22452003)(10090500001)(1511001)(74316002)(8676002)(110136005)(2906002)(8990500004)(52396003)(6636002)(305945005)(102836004)(14963001);DIR:OUT;SFP:1102;SCL:1;SRVR:BN6PR21MB0756;H:BN6PR21MB0465.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: rIyhcgFVMPuFv0rZh7zWjIo+2pKVF2pxVtRrbFcmJ1UQVpwycJOWTTalb8EH5NL5rfiTt+TaBTFNjuCbLyxOCDx+nBGGn7rPRkjbbUpQRpAVb2n9cFQTOCmEIm1dqwfbhIepPrXgWQQ7FOyZ/nRrXBqnjYXKuXQHfHryirMcXVWkk8H4s7visfWJgYoxDWnfNAmh8B0WhiqfRN3ASQ5y55DLAQk1Ukwl/xWznUIuEWV8ervYGBILzUorhsW3bdeXT4Lys8y5JrFLhnPgYOw1eQLJB/Hj4DERB6R+Xzq5vaZB9VzlejsZTOC2CZw6diFJEUNwFAU9J400eZMGP8qqJO/ZrdY1ILd1arWtZl8DZFfdJZJfpcS/6EicyIvpZ5UnuSPGbdePLViRJvV47Qpj4dm28qFClSI5lHx2B2EhloM=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8b63975-2324-4060-f372-08d6da6c1f13
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2019 02:05:22.2930
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sunilmut@ntdev.microsoft.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR21MB0756
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Currently, the hv_sock send() iterates once over the buffer, puts data into
+the VMBUS channel and returns. It doesn't maximize on the case when there
+is a simultaneous reader draining data from the channel. In such a case,
+the send() can maximize the bandwidth (and consequently minimize the cpu
+cycles) by iterating until the channel is found to be full.
 
+Perf data:
+Total Data Transfer: 10GB/iteration
+Single threaded reader/writer, Linux hvsocket writer with Windows hvsocket
+reader
+Packet size: 64KB
+CPU sys time was captured using the 'time' command for the writer to send
+10GB of data.
+'Send Buffer Loop' is with the patch applied.
+The values below are over 10 iterations.
 
-On 5/16/2019 6:03 PM, Daniel Walker wrote:
-> On Thu, May 16, 2019 at 03:02:18PM -0700, Florian Fainelli wrote:
->> On 5/16/19 12:55 PM, Nikunj Kela (nkela) wrote:
->>>
->>>
->>> On 5/16/19, 12:35 PM, "Jeff Kirsher" <jeffrey.t.kirsher@intel.com> wrote:
->>>
->>>     On Wed, 2019-05-08 at 23:14 +0000, Nikunj Kela wrote:
->>>    >> Some of the broken NICs don't have EEPROM programmed correctly. It
->>>    >> results
->>>    >> in probe to fail. This change adds a module parameter that can be
->>>    >> used to
->>>    >> ignore nvm checksum validation.
->>>    >> 
->>>    >> Cc: xe-linux-external@cisco.com
->>>    >> Signed-off-by: Nikunj Kela <nkela@cisco.com>
->>>    >> ---
->>>    >>  drivers/net/ethernet/intel/igb/igb_main.c | 28
->>>    >> ++++++++++++++++++++++------
->>>    >>  1 file changed, 22 insertions(+), 6 deletions(-)
->>>     
->>>     >NAK for two reasons.  First, module parameters are not desirable
->>>     >because their individual to one driver and a global solution should be
->>>     >found so that all networking device drivers can use the solution.  This
->>>     >will keep the interface to change/setup/modify networking drivers
->>>     >consistent for all drivers.
->>>
->>>     
->>>     >Second and more importantly, if your NIC is broken, fix it.  Do not try
->>>     >and create a software workaround so that you can continue to use a
->>>     >broken NIC.  There are methods/tools available to properly reprogram
->>>     >the EEPROM on a NIC, which is the right solution for your issue.
->>>
->>> I am proposing this as a debug parameter. Obviously, we need to fix EEPROM but this helps us continuing the development while manufacturing fixes NIC.
->>
->> Then why even bother with sending this upstream?
-> 
-> It seems rather drastic to disable the entire driver because the checksum
-> doesn't match. It really should be a warning, even a big warning, to let people
-> know something is wrong, but disabling the whole driver doesn't make sense.
+|--------------------------------------------------------|
+|        |        Current        |   Send Buffer Loop    |
+|--------------------------------------------------------|
+|        | Throughput | CPU sys  | Throughput | CPU sys  |
+|        | (MB/s)     | time (s) | (MB/s)     | time (s) |
+|--------------------------------------------------------|
+| Min    |     407    |   7.048  |    401     |  5.958   |
+|--------------------------------------------------------|
+| Max    |     455    |   7.563  |    542     |  6.993   |
+|--------------------------------------------------------|
+| Avg    |     440    |   7.411  |    451     |  6.639   |
+|--------------------------------------------------------|
+| Median |     446    |   7.417  |    447     |  6.761   |
+|--------------------------------------------------------|
 
-You could generate a random Ethernet MAC address if you don't have a
-valid one, a lot of drivers do that, and that's a fairly reasonable
-behavior. At some point in your product development someone will
-certainly verify that the provisioned MAC address matches the network
-interface's MAC address.
--- 
-Florian
+Observation:
+1. The avg throughput doesn't really change much with this change for this
+scenario. This is most probably because the bottleneck on throughput is
+somewhere else.
+2. The average system (or kernel) cpu time goes down by 10%+ with this
+change, for the same amount of data transfer.
+
+Signed-off-by: Sunil Muthuswamy <sunilmut@microsoft.com>
+---
+ net/vmw_vsock/hyperv_transport.c | 45 +++++++++++++++++++++++++++---------=
+----
+ 1 file changed, 31 insertions(+), 14 deletions(-)
+
+diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transp=
+ort.c
+index 982a8dc..7c13032 100644
+--- a/net/vmw_vsock/hyperv_transport.c
++++ b/net/vmw_vsock/hyperv_transport.c
+@@ -55,8 +55,9 @@ struct hvs_recv_buf {
+ };
+=20
+ /* We can send up to HVS_MTU_SIZE bytes of payload to the host, but let's =
+use
+- * a small size, i.e. HVS_SEND_BUF_SIZE, to minimize the dynamically-alloc=
+ated
+- * buffer, because tests show there is no significant performance differen=
+ce.
++ * a smaller size, i.e. HVS_SEND_BUF_SIZE, to maximize concurrency between=
+ the
++ * guest and the host processing as one VMBUS packet is the smallest proce=
+ssing
++ * unit.
+  *
+  * Note: the buffer can be eliminated in the future when we add new VMBus
+  * ringbuffer APIs that allow us to directly copy data from userspace buff=
+er
+@@ -644,7 +645,9 @@ static ssize_t hvs_stream_enqueue(struct vsock_sock *vs=
+k, struct msghdr *msg,
+ 	struct hvsock *hvs =3D vsk->trans;
+ 	struct vmbus_channel *chan =3D hvs->chan;
+ 	struct hvs_send_buf *send_buf;
+-	ssize_t to_write, max_writable, ret;
++	ssize_t to_write, max_writable;
++	ssize_t ret =3D 0;
++	ssize_t bytes_written =3D 0;
+=20
+ 	BUILD_BUG_ON(sizeof(*send_buf) !=3D PAGE_SIZE_4K);
+=20
+@@ -652,20 +655,34 @@ static ssize_t hvs_stream_enqueue(struct vsock_sock *=
+vsk, struct msghdr *msg,
+ 	if (!send_buf)
+ 		return -ENOMEM;
+=20
+-	max_writable =3D hvs_channel_writable_bytes(chan);
+-	to_write =3D min_t(ssize_t, len, max_writable);
+-	to_write =3D min_t(ssize_t, to_write, HVS_SEND_BUF_SIZE);
+-
+-	ret =3D memcpy_from_msg(send_buf->data, msg, to_write);
+-	if (ret < 0)
+-		goto out;
++	/* Reader(s) could be draining data from the channel as we write.
++	 * Maximize bandwidth, by iterating until the channel is found to be
++	 * full.
++	 */
++	while (len) {
++		max_writable =3D hvs_channel_writable_bytes(chan);
++		if (!max_writable)
++			break;
++		to_write =3D min_t(ssize_t, len, max_writable);
++		to_write =3D min_t(ssize_t, to_write, HVS_SEND_BUF_SIZE);
++		/* memcpy_from_msg is safe for loop as it advances the offsets
++		 * within the message iterator.
++		 */
++		ret =3D memcpy_from_msg(send_buf->data, msg, to_write);
++		if (ret < 0)
++			goto out;
+=20
+-	ret =3D hvs_send_data(hvs->chan, send_buf, to_write);
+-	if (ret < 0)
+-		goto out;
++		ret =3D hvs_send_data(hvs->chan, send_buf, to_write);
++		if (ret < 0)
++			goto out;
+=20
+-	ret =3D to_write;
++		bytes_written +=3D to_write;
++		len -=3D to_write;
++	}
+ out:
++	/* If any data has been sent, return that */
++	if (bytes_written)
++		ret =3D bytes_written;
+ 	kfree(send_buf);
+ 	return ret;
+ }
+--=20
+2.7.4
+
