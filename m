@@ -2,124 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5984E2116F
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 02:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C3E92117B
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 02:53:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727765AbfEQArm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 May 2019 20:47:42 -0400
-Received: from mail-eopbgr1310094.outbound.protection.outlook.com ([40.107.131.94]:57216
-        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727709AbfEQArl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 May 2019 20:47:41 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=kJPl7b+IGGMt+DCN9+JAOG+iraKdyNBnLYedq+4eKRXNYKO/bKG1u1Lbeo6k/F6uJVn4iUySbNy+UYQ81T5sLdwE/KvKCZKS2hgaFBI5ogZ0aOhDmN/Fqd3j5604rSgCRxtymWYKmSuBk+6MK01BRuT9s8ELOlva73BM8a68g+4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dFGZkSISXDkX/8g6Qz6QbcxO/Igk3YEgRWTs8QYGavA=;
- b=Mmyp5mgvjTrYELaMJV3ndWq5GgYKZpuKjgGN9DefiY2DugydqsW4pvdWWwq1V66kcM0DpSwcL1aAX18L+FMoeRhm+o6Pp9rXV82yxpWmGepKS9bCkggT3mJhMwgqKygkvmBPhCIZ9T6OKPUiDiokvBNe6SoWcuXNSEM9b0IGDLM=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dFGZkSISXDkX/8g6Qz6QbcxO/Igk3YEgRWTs8QYGavA=;
- b=cL3lXi5N5QnNF2k0pnN264+AyfmvhtGLh6r+6mcn20mYnQZgQnUwgjIgKnhQygyCCiUZT79kJhwHPmecSI7KnRwt4+Cxb1gEaUSgEfGALmNxR6M68X6vHHHcrLv9Vs/Q3KUnSIoAqglSwlzhAEheVTZ7accYoKI5U3lpN+0al6U=
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM (10.170.189.13) by
- PU1P153MB0204.APCP153.PROD.OUTLOOK.COM (52.133.194.151) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.4; Fri, 17 May 2019 00:47:31 +0000
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
- ([fe80::dc7e:e62f:efc9:8564]) by PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
- ([fe80::dc7e:e62f:efc9:8564%4]) with mapi id 15.20.1922.002; Fri, 17 May 2019
- 00:47:31 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Sunil Muthuswamy <sunilmut@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michael Kelley <mikelley@microsoft.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] hv_sock: perf: Allow the socket buffer size options to
- influence the actual socket buffers
-Thread-Topic: [PATCH] hv_sock: perf: Allow the socket buffer size options to
- influence the actual socket buffers
-Thread-Index: AdULT8Ri+kxJVj56RXiGnzXz8jUENAA+hb4g
-Date:   Fri, 17 May 2019 00:47:31 +0000
-Message-ID: <PU1P153MB01695A75877953399C4E94A6BF0B0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
-References: <BN6PR21MB046528E2099CDE2C6C2200A7C00B0@BN6PR21MB0465.namprd21.prod.outlook.com>
-In-Reply-To: <BN6PR21MB046528E2099CDE2C6C2200A7C00B0@BN6PR21MB0465.namprd21.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-05-17T00:47:28.7028353Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=9d1c7d48-1283-4379-a578-6f8b90e813bb;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=decui@microsoft.com; 
-x-originating-ip: [2601:600:a280:1760:e49c:a88d:95f1:67ea]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b8367752-20a8-4c71-5725-08d6da613e87
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:PU1P153MB0204;
-x-ms-traffictypediagnostic: PU1P153MB0204:
-x-microsoft-antispam-prvs: <PU1P153MB0204715DB77BB38412A66D6FBF0B0@PU1P153MB0204.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 0040126723
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(979002)(366004)(396003)(346002)(39860400002)(136003)(376002)(199004)(189003)(1511001)(446003)(22452003)(316002)(99286004)(486006)(46003)(476003)(11346002)(102836004)(14454004)(8936002)(81166006)(8676002)(81156014)(6116002)(9686003)(2906002)(10090500001)(68736007)(8990500004)(33656002)(110136005)(54906003)(7696005)(6506007)(5660300002)(186003)(76176011)(229853002)(7736002)(10290500003)(305945005)(6636002)(66556008)(6436002)(25786009)(55016002)(64756008)(4326008)(478600001)(66476007)(76116006)(66446008)(73956011)(66946007)(86612001)(52536014)(71190400001)(71200400001)(86362001)(74316002)(53936002)(6246003)(256004)(4744005)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1102;SCL:1;SRVR:PU1P153MB0204;H:PU1P153MB0169.APCP153.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: JZmv+FERqA8X8Cha2vgtxjRCTR4d/UTpT3l7HZhKPnQGe2gVDOptkK+JUjGXOfKIcZOLC/KB3Cg3LwEdMrfWpAkXndzj2J8S0fR13yfZdabrBv2muAS6MkccPGmlfxXhDDN8XcKwT5zzgxTKxPW+K5XcJ4GkAcNDi8/xnOVA75SF+NIKcykctKZut1Rk19qf94UQQsHaWdj4W0qxS8el4cnlHD+PkSUr3tMN3sup9HofITkuO4wabhfJgyh1oULLzkmgtaLjgWbouzKUZh9nOnpG9s0UxWMJybyz78FVEy4w5oI/TM9Yap8E4P/tpcFs/mAt7wFq0yVFuhYTC8cXSI0sTzm/BellAtE6JvPB0UY7BbynrgE9pja6/rOMzfPivn2Jas5gljmq6rehZgWSuVbiDYE4jQZUwC7SP40VJ+o=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727765AbfEQAxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 May 2019 20:53:36 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:44985 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726901AbfEQAxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 May 2019 20:53:36 -0400
+Received: by mail-pl1-f194.google.com with SMTP id c5so2445791pll.11
+        for <netdev@vger.kernel.org>; Thu, 16 May 2019 17:53:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=ST4CWYDkh00CffN4lvMYzTylWYrogSWsm37LLMdcgu8=;
+        b=XgtfirqoQEzKN22sgji1Ygr3CLjwej2ztadA1uum6yFeX7pQiZumFd8dJBszqya+c6
+         erLTAyFLWN43SQxSX63EP5Bw3mF/Vs8Q6U/r5wlw0GD6QppiZPN0q2bU/w+JYqxc6ous
+         n7iySIegfzqlCwNQH1nApoW/itBZaLI1AzOQn7274oczy9s9QDookLLcfj3PbOvBNPuw
+         Le31kPbAuhH+iixaDtoLgCWLBKkjZGfUfgj08f8lx0B2wfCD4kh1OBZIR2h+Do2uZm58
+         yxfOAuQuTcf57S9SWh/VFWrBeYxPVj1Wh9ugwQHG3jTIaZGydYxhR0QuElREIY/7R8gv
+         Qyxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=ST4CWYDkh00CffN4lvMYzTylWYrogSWsm37LLMdcgu8=;
+        b=MDp+5VJVA+AplIYUfAl4F+rx3bXfoZQuQPRBUd3TaQ9VH0C6us7AyrWSXANm1bToR4
+         Ih8TxKgOG+gzLot1TbT7UiIHgohftzRfbzra/S4expq7VrDOKjyVlq4SjM6iXx3C+mbu
+         dMf2OoWXvHHWziM8R2karF6f9Lmm2yfOvlEQZJ4KBW/BN3yX/dxRi2Djeumzul+V6OtT
+         3Y0ZCrYiksDNOukTXIj3s/dMqXLvoQCpNs1f95ILmR5h07BliqVZzNXTeeH+sANKA1J4
+         qgyw9ncya3VfKZec1TV+2Bey7gZvFsE43v16OoGyaOpqJfeASYF93x6ch2ymuffQ109S
+         dang==
+X-Gm-Message-State: APjAAAXqTcT5RXtP3JCVqpi/5BcSfQmC2PGVHOLAHzNiSm+AozmlTLK5
+        T6JUX6dEQMulhEfyGOznE30=
+X-Google-Smtp-Source: APXvYqws5ve2eqQ2W5/lchRAf3kmAHt57Ink8gKSi2Pm/JHmIHAewNeqjy8VUYwcIGsFt+MNMKy92g==
+X-Received: by 2002:a17:902:e785:: with SMTP id cp5mr34841847plb.167.1558054415913;
+        Thu, 16 May 2019 17:53:35 -0700 (PDT)
+Received: from fcb2.mtv.corp.google.com ([2620:0:1000:1612:a82:fb4f:909:5b6a])
+        by smtp.gmail.com with ESMTPSA id j22sm7990242pfi.139.2019.05.16.17.53.34
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 16 May 2019 17:53:35 -0700 (PDT)
+Subject: Re: [PATCH bpf] bpf: relax inode permission check for retrieving bpf
+ program
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Chenbo Feng <fengc@google.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+References: <20190515024257.36838-1-fengc@google.com>
+ <CAADnVQJ6Ezugas2OE1UqMHJP_L-G0LEt1KFCYPE5xLFmF+BXLw@mail.gmail.com>
+From:   Chenbo Feng <chenbofeng.kernel@gmail.com>
+Message-ID: <a6f447ba-4d75-2b9b-380d-8c3a01a0a9d4@gmail.com>
+Date:   Thu, 16 May 2019 17:53:34 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8367752-20a8-4c71-5725-08d6da613e87
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2019 00:47:31.1715
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: decui@microsoft.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0204
+In-Reply-To: <CAADnVQJ6Ezugas2OE1UqMHJP_L-G0LEt1KFCYPE5xLFmF+BXLw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Sunil Muthuswamy <sunilmut@microsoft.com>
-> Sent: Thursday, May 16, 2019 5:17 PM
->=20
-> Currently, the hv_sock buffer size is static and can't scale to the
-> bandwidth requirements of the application. This change allows the
-> applications to influence the socket buffer sizes using the SO_SNDBUF and
-> the SO_RCVBUF socket options.
->=20
-> Few interesting points to note:
-> 1. Since the VMBUS does not allow a resize operation of the ring size, th=
-e
-> socket buffer size option should be set prior to establishing the
-> connection for it to take effect.
-> 2. Setting the socket option comes with the cost of that much memory bein=
-g
-> reserved/allocated by the kernel, for the lifetime of the connection.
 
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
+On 5/16/19 11:35 AM, Alexei Starovoitov wrote:
+> On Tue, May 14, 2019 at 7:43 PM Chenbo Feng <fengc@google.com> wrote:
+>> For iptable module to load a bpf program from a pinned location, it
+>> only retrieve a loaded program and cannot change the program content so
+>> requiring a write permission for it might not be necessary.
+>> Also when adding or removing an unrelated iptable rule, it might need to
+>> flush and reload the xt_bpf related rules as well and triggers the inode
+>> permission check. It might be better to remove the write premission
+>> check for the inode so we won't need to grant write access to all the
+>> processes that flush and restore iptables rules.
+>>
+>> Signed-off-by: Chenbo Feng <fengc@google.com>
+> Applied. The fix makes sense to me.
 
-The patch looks good to me. Thanks, Sunil!
+Thanks for accepting it Alexei, could you also queue it up for the 
+stable as well?
 
-Thanks,
--- Dexuan
+
+Chenbo Feng
+
