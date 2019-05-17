@@ -2,206 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D73C21CEC
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:57:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88DA521CEE
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 19:58:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728719AbfEQR5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 13:57:32 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7659 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727585AbfEQR5c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 May 2019 13:57:32 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 855CDEEBB4425080DA30;
-        Sat, 18 May 2019 01:57:28 +0800 (CST)
-Received: from [127.0.0.1] (10.184.191.73) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Sat, 18 May 2019
- 01:57:22 +0800
-To:     <jon.maloy@ericsson.com>, <ying.xue@windriver.com>,
-        <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        <tipc-discussion@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <zhoukang7@huawei.com>,
-        <mingfangsen@huawei.com>, <wangxiaogang3@huawei.com>,
-        <mousuanming@huawei.com>
-From:   hujunwei <hujunwei4@huawei.com>
-Subject: [PATCH v2] tipc: fix modprobe tipc failed after switch order of
- device registration
-Message-ID: <4da8084e-372b-8301-e04f-b780ff4826b3@huawei.com>
-Date:   Sat, 18 May 2019 01:57:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1728971AbfEQR57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 13:57:59 -0400
+Received: from mail-pg1-f170.google.com ([209.85.215.170]:37759 "EHLO
+        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728225AbfEQR57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 13:57:59 -0400
+Received: by mail-pg1-f170.google.com with SMTP id n27so1041920pgm.4
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 10:57:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GQhTEoubL5u/s5MAGDlSjAkNwB+IrqwkSDi3TLpfhmg=;
+        b=gBOFR5daek1qs5dmfIfmaycIC96fXV9DCXEjQnw2KlxeyIlFVbd3/NRZJGwcrcAhpb
+         sWAqmRMccodCU/UQpKSmcVxocmUiIVg6ZsTCsfBiFILkYTAie1iWnzInrpfUd5nyevXT
+         sWFgCIjF3gRTpUH1dDLWa2TzCeYaivo8qBtubGP7QI6oFkIZNP2cebUhs4rLbkX9Qu7N
+         rDddVByT/mzfiBRO78Y5mJPgzLhMJnk/HLsiQ6u5xDaTWZKLBTpGwaZIrqA3kkNc5DF9
+         zFHVCmOyflBklZYkT7RK03hCuLCwYjreKjbQdO2ER2t/OuSGou8mD82h5VLA0w8MLzlU
+         YZBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GQhTEoubL5u/s5MAGDlSjAkNwB+IrqwkSDi3TLpfhmg=;
+        b=E6bKWKewcMffXgw9pCepc24JWaRjTEkWlltvvrEtPiFtP9CvgzTIaQc2KEABV58ivc
+         1PS1/ayK4xRTenQhztV+0HDLb0br1ZJBfIioXMzNSpvS1gWqmWlXCl6FolBkrj/8cqju
+         UVWdgiWcvzA5DJ0DmjmcH15KIy8Xq75iWRkLfgJPEEF2dD5rlX/TXWtd/xraBj9pgPBu
+         tzigcjLfwzD4eX8fFpDqV8N2sV/suQpr//rUp9D3Bg83B5c2KYONnpiSvVS0cUV5TIEc
+         XeHo5+OtcMkCUIM45IMsnhZzKxS0rajZRtCr5fGcZuE+++cpxjlAbFowsqFeYt439fwF
+         SAhg==
+X-Gm-Message-State: APjAAAWI+S0/mvkYD/G2J/JQ6OYv/Fj1cJvhm8moBFwZXy44QLsuxh3G
+        w4h8CQkqlENejhkScspsoHSCvw==
+X-Google-Smtp-Source: APXvYqxXbFRl7ft/pUxb3WpdkHcwTHlIkKa8DmlmHffbsx2ghqZh0bI9P0mMq/0k425tfZdbi18BiQ==
+X-Received: by 2002:a63:1f04:: with SMTP id f4mr58500995pgf.423.1558115878998;
+        Fri, 17 May 2019 10:57:58 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id k6sm11746366pfi.86.2019.05.17.10.57.58
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 17 May 2019 10:57:58 -0700 (PDT)
+Date:   Fri, 17 May 2019 10:57:51 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Nir Weiner <nir.weiner@oracle.com>, netdev@vger.kernel.org,
+        liran.alon@oracle.com
+Subject: Re: [iproute2 2/3] tc: jsonify tbf qdisc parameters
+Message-ID: <20190517105751.7d5a7907@hermes.lan>
+In-Reply-To: <a60c8e21-28bf-294c-7e3d-612493346bbb@gmail.com>
+References: <20190506161840.30919-1-nir.weiner@oracle.com>
+        <20190506161840.30919-3-nir.weiner@oracle.com>
+        <a60c8e21-28bf-294c-7e3d-612493346bbb@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.191.73]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Junwei Hu <hujunwei4@huawei.com>
+On Fri, 17 May 2019 11:35:16 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-Error message printed:
-modprobe: ERROR: could not insert 'tipc': Address family not
-supported by protocol.
-when modprobe tipc after the following patch: switch order of
-device registration, commit 7e27e8d6130c
-("tipc: switch order of device registration to fix a crash")
+> On 5/6/19 10:18 AM, Nir Weiner wrote:
+> 
+> >  	if (prate64) {
+> > -		fprintf(f, "peakrate %s ", sprint_rate(prate64, b1));
+> > +		print_string(PRINT_ANY, "peakrate", "peakrate %s ", sprint_rate(prate64, b1));
+> >  		if (qopt->mtu || qopt->peakrate.mpu) {
+> >  			mtu = tc_calc_xmitsize(prate64, qopt->mtu);
+> >  			if (show_details) {
+> >  				fprintf(f, "mtu %s/%u mpu %s ", sprint_size(mtu, b1),
+> >  					1<<qopt->peakrate.cell_log, sprint_size(qopt->peakrate.mpu, b2));  
+> 
+> 
+> The fprintf under show_details should be converted as well. This applies
+> to patch 1 as well.
+> 
+> And, please add example output to each patch.
 
-Because sock_create_kern(net, AF_TIPC, ...) called by
-tipc_topsrv_create_listener() in the initialization process
-of tipc_init_net(), so tipc_socket_init() must be execute before that.
-Meanwhile, tipc_net_id need to be initialized when sock_create()
-called, and tipc_socket_init() is no need to be called for each namespace.
-
-I add a variable tipc_topsrv_net_ops, and split the
-register_pernet_subsys() of tipc into two parts, and split
-tipc_socket_init() with initialization of pernet params.
-
-By the way, I fixed resources rollback error when tipc_bcast_init()
-failed in tipc_init_net().
-
-Fixes: 7e27e8d6130c
-("tipc: switch order of device registration to fix a crash")
-Signed-off-by: Junwei Hu <hujunwei4@huawei.com>
-Reported-by: Wang Wang <wangwang2@huawei.com>
-Reviewed-by: Kang Zhou <zhoukang7@huawei.com>
-Reviewed-by: Suanming Mou <mousuanming@huawei.com>
----
-V1->V2:
-- split the register_pernet_subsys() of tipc into two parts
----
- net/tipc/core.c   | 18 ++++++++++++------
- net/tipc/subscr.h |  5 +++--
- net/tipc/topsrv.c | 14 ++++++++++++--
- 3 files changed, 27 insertions(+), 10 deletions(-)
-
-diff --git a/net/tipc/core.c b/net/tipc/core.c
-index ddd2e0f67c07..ed536c05252a 100644
---- a/net/tipc/core.c
-+++ b/net/tipc/core.c
-@@ -77,9 +77,6 @@ static int __net_init tipc_init_net(struct net *net)
- 		goto out_nametbl;
-
- 	INIT_LIST_HEAD(&tn->dist_queue);
--	err = tipc_topsrv_start(net);
--	if (err)
--		goto out_subscr;
-
- 	err = tipc_bcast_init(net);
- 	if (err)
-@@ -88,8 +85,6 @@ static int __net_init tipc_init_net(struct net *net)
- 	return 0;
-
- out_bclink:
--	tipc_bcast_stop(net);
--out_subscr:
- 	tipc_nametbl_stop(net);
- out_nametbl:
- 	tipc_sk_rht_destroy(net);
-@@ -99,7 +94,6 @@ static int __net_init tipc_init_net(struct net *net)
-
- static void __net_exit tipc_exit_net(struct net *net)
- {
--	tipc_topsrv_stop(net);
- 	tipc_net_stop(net);
- 	tipc_bcast_stop(net);
- 	tipc_nametbl_stop(net);
-@@ -113,6 +107,11 @@ static struct pernet_operations tipc_net_ops = {
- 	.size = sizeof(struct tipc_net),
- };
-
-+static struct pernet_operations tipc_topsrv_net_ops = {
-+	.init = tipc_topsrv_init_net,
-+	.exit = tipc_topsrv_exit_net,
-+};
-+
- static int __init tipc_init(void)
- {
- 	int err;
-@@ -143,6 +142,10 @@ static int __init tipc_init(void)
- 	if (err)
- 		goto out_socket;
-
-+	err = register_pernet_subsys(&tipc_topsrv_net_ops);
-+	if (err)
-+		goto out_pernet_topsrv;
-+
- 	err = tipc_bearer_setup();
- 	if (err)
- 		goto out_bearer;
-@@ -150,6 +153,8 @@ static int __init tipc_init(void)
- 	pr_info("Started in single node mode\n");
- 	return 0;
- out_bearer:
-+	unregister_pernet_subsys(&tipc_topsrv_net_ops);
-+out_pernet_topsrv:
- 	tipc_socket_stop();
- out_socket:
- 	unregister_pernet_subsys(&tipc_net_ops);
-@@ -167,6 +172,7 @@ static int __init tipc_init(void)
- static void __exit tipc_exit(void)
- {
- 	tipc_bearer_cleanup();
-+	unregister_pernet_subsys(&tipc_topsrv_net_ops);
- 	tipc_socket_stop();
- 	unregister_pernet_subsys(&tipc_net_ops);
- 	tipc_netlink_stop();
-diff --git a/net/tipc/subscr.h b/net/tipc/subscr.h
-index d793b4343885..aa015c233898 100644
---- a/net/tipc/subscr.h
-+++ b/net/tipc/subscr.h
-@@ -77,8 +77,9 @@ void tipc_sub_report_overlap(struct tipc_subscription *sub,
- 			     u32 found_lower, u32 found_upper,
- 			     u32 event, u32 port, u32 node,
- 			     u32 scope, int must);
--int tipc_topsrv_start(struct net *net);
--void tipc_topsrv_stop(struct net *net);
-+
-+int __net_init tipc_topsrv_init_net(struct net *net);
-+void __net_exit tipc_topsrv_exit_net(struct net *net);
-
- void tipc_sub_put(struct tipc_subscription *subscription);
- void tipc_sub_get(struct tipc_subscription *subscription);
-diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
-index b45932d78004..f345662890a6 100644
---- a/net/tipc/topsrv.c
-+++ b/net/tipc/topsrv.c
-@@ -635,7 +635,7 @@ static void tipc_topsrv_work_stop(struct tipc_topsrv *s)
- 	destroy_workqueue(s->send_wq);
- }
-
--int tipc_topsrv_start(struct net *net)
-+static int tipc_topsrv_start(struct net *net)
- {
- 	struct tipc_net *tn = tipc_net(net);
- 	const char name[] = "topology_server";
-@@ -668,7 +668,7 @@ int tipc_topsrv_start(struct net *net)
- 	return ret;
- }
-
--void tipc_topsrv_stop(struct net *net)
-+static void tipc_topsrv_stop(struct net *net)
- {
- 	struct tipc_topsrv *srv = tipc_topsrv(net);
- 	struct socket *lsock = srv->listener;
-@@ -693,3 +693,13 @@ void tipc_topsrv_stop(struct net *net)
- 	idr_destroy(&srv->conn_idr);
- 	kfree(srv);
- }
-+
-+int __net_init tipc_topsrv_init_net(struct net *net)
-+{
-+	return tipc_topsrv_start(net);
-+}
-+
-+void __net_exit tipc_topsrv_exit_net(struct net *net)
-+{
-+	tipc_topsrv_stop(net);
-+}
--- 
-2.21.GIT
-
+One trick I used was scanning for all calls to fprintf(f and replacing them
