@@ -2,189 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B21D21B08
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 17:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE62A21BB1
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 18:36:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729226AbfEQP4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 11:56:33 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:35284 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728664AbfEQP4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 11:56:33 -0400
-Received: by mail-qk1-f193.google.com with SMTP id c15so4763935qkl.2
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 08:56:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mJzwOKW1MucKATd8FsdFb6vNGDwJpslTYAonmnF5XNE=;
-        b=VHEUPiKn4bN/ynqShJFY8QP9CIFJFZz13kLOYkhncFar197i+73jtlL4TpbZDgdnj1
-         R3JcQZ5ZhABcwwO2lANHKCUbb6lbAkM6nzZnRoDcTTorOMnYV+ENR3MEppu8kWhPKfxD
-         ADA/8KOU3PibTx8O1c06fYcL+K7ZXFwL6vV/lpHPZOnWWi5rFFKAltOX8Toz5ebAkmfu
-         IAGRIXfPmFvLOGTblPB4fU9YXvOCFWbC7GwSyOeGf8mrmI+JGANCQEw+5e3kkJVIJcPX
-         2Rq42vd/mxmnv1FDezug+/9zgbyrYRbgKsroec4GWIjp82/VmQpM0NJYd2QNzlDST8so
-         L5qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mJzwOKW1MucKATd8FsdFb6vNGDwJpslTYAonmnF5XNE=;
-        b=t9PA+eKJ63QT14L+FHdUdqzZOs8ZgJanCLhcNYGIuGbpHg4Ek+6yBwFX4+ias3bmfc
-         u5oVWDQ1My0iaea/gu11OWoaQQI36vGLYtNtMFnOMBU+VcTLroZbDztEAEg1v6nhdxPr
-         +gt1VRfD1sg4PZG7ON1Oek9tTZNWcQ7Pnq9iKRLG4N/eG2iZKl331ZVXyhmnvtZ3d5S2
-         6hJPqGzyVZPc2E4wv5LG5RUYLy2KECqq/ICthvk/RErzpktgo0gNtDABAhVjj3eK+750
-         uB9yl1kWbLl1fc5CtQlO1f36q8x9P87ZUmj+4xetJJbC7nhNx+/C7a83Jpm7NCYvsV54
-         cnTA==
-X-Gm-Message-State: APjAAAUlg0pNncdsf8nJ/6U9nDLCzA2HSBSitMPQ4G6gCmW+zKrvJ3sw
-        aJSReCubpVGydzxO0DpOlkBFd7Gq
-X-Google-Smtp-Source: APXvYqw0vAunI/0fnMxSvvZQoLzlofBf/6XmWIPWgIvpkRUPMYNb+gkjcHdBRbo3b4l4ckldOKXIdg==
-X-Received: by 2002:a37:e402:: with SMTP id y2mr40240123qkf.200.1558108591415;
-        Fri, 17 May 2019 08:56:31 -0700 (PDT)
-Received: from willemb1.nyc.corp.google.com ([2620:0:1003:315:3fa1:a34c:1128:1d39])
-        by smtp.gmail.com with ESMTPSA id l127sm3977582qkc.81.2019.05.17.08.56.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 May 2019 08:56:30 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next RFC] ipv6: elide flowlabel check if no exclusive leases exist
-Date:   Fri, 17 May 2019 11:56:25 -0400
-Message-Id: <20190517155625.117835-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
+        id S1726901AbfEQQgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 12:36:51 -0400
+Received: from alln-iport-6.cisco.com ([173.37.142.93]:22096 "EHLO
+        alln-iport-6.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbfEQQgv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 12:36:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=4235; q=dns/txt; s=iport;
+  t=1558111011; x=1559320611;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MRsfiVUXzKrb3WUopDCNh+ul+4ofhNdmm2stHa5/lDY=;
+  b=i50W31UvbkmiKJUAjsRVRV87pCW7QhfHOW9+ehjKKGXFQtOZyHH3u3Kr
+   etqH9d+pujggwDN5tK4sKKrq7+s0uaRWOnZck8Yq9edlMmq9nQH9sgOMO
+   eD8vhfkl6J/L+I2s57DyqZkXRiCRKGPO4M78EcOj3nYUliukMpyzRCFv+
+   g=;
+X-IronPort-AV: E=Sophos;i="5.60,480,1549929600"; 
+   d="scan'208";a="277494728"
+Received: from alln-core-7.cisco.com ([173.36.13.140])
+  by alln-iport-6.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 17 May 2019 16:36:51 +0000
+Received: from zorba ([10.24.25.58])
+        by alln-core-7.cisco.com (8.15.2/8.15.2) with ESMTPS id x4HGamkm004388
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 17 May 2019 16:36:50 GMT
+Date:   Fri, 17 May 2019 09:36:43 -0700
+From:   Daniel Walker <danielwa@cisco.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "Nikunj Kela (nkela)" <nkela@cisco.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [Intel-wired-lan] [PATCH] igb: add parameter to ignore nvm
+ checksum validation
+Message-ID: <20190517163643.7tlch7xqplxohoq7@zorba>
+References: <1557357269-9498-1-git-send-email-nkela@cisco.com>
+ <9be117dc6e818ab83376cd8e0f79dbfaaf193aa9.camel@intel.com>
+ <76B41175-0CEE-466C-91BF-89A1CA857061@cisco.com>
+ <4469196a-0705-5459-8aca-3f08e9889d61@gmail.com>
+ <20190517010330.2wynopuhsqycqzuq@zorba>
+ <bd9e6a93-c8e8-a90e-25b0-26ccbf65b7c4@gmail.com>
+ <CAKgT0Uev7sfpOOhusAg9jFLkFeE9JtTntyTd0aAHz2db69L13g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0Uev7sfpOOhusAg9jFLkFeE9JtTntyTd0aAHz2db69L13g@mail.gmail.com>
+User-Agent: NeoMutt/20170609 (1.8.3)
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Outbound-SMTP-Client: 10.24.25.58, [10.24.25.58]
+X-Outbound-Node: alln-core-7.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
-
-Processes can request ipv6 flowlabels with cmsg IPV6_FLOWINFO.
-If not set, by default an autogenerated flowlabel is selected.
-
-Explicit flowlabels require a control operation per label plus a
-datapath check on every connection (every datagram if unconnected).
-
-This is particularly expensive on unconnected sockets with many
-connections, such as QUIC.
-
-In the common case, where no lease is exclusive, the check can be
-safely elided, as both lease request and check trivially succeed.
-Indeed, autoflowlabel does the same (even with exclusive leases).
-
-Elide the check if no process has requested an exclusive lease.
-
-This is an optimization. Robust applications still have to revert to
-requesting leases if the fast path fails due to an exclusive lease.
-
-This is decidedly an RFC patch:
-- need to update all fl6_sock_lookup callers, not just udp
-- behavior should be per-netns isolated
-
-Other approaches considered:
-- a single "get all flowlabels, non-exclusive" flowlabel get request
-  if set, elide fl6_sock_lookup and fail exclusive lease requests
-
-- sysctls (only useful if on by default, with static_branch)
-  A) "non-exclusive mode", failing all exclusive lease requests:
-     processes already have to be robust against lease failure
-  B) just bypass check in fl6_sock_lookup, like autoflowlabel
-
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- include/net/ipv6.h       | 11 +++++++++++
- net/ipv6/ip6_flowlabel.c |  6 ++++++
- net/ipv6/udp.c           |  8 ++++----
- 3 files changed, 21 insertions(+), 4 deletions(-)
-
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index daf80863d3a50..8881cee572410 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -17,6 +17,7 @@
- #include <linux/hardirq.h>
- #include <linux/jhash.h>
- #include <linux/refcount.h>
-+#include <linux/jump_label.h>
- #include <net/if_inet6.h>
- #include <net/ndisc.h>
- #include <net/flow.h>
-@@ -343,7 +344,17 @@ static inline void txopt_put(struct ipv6_txoptions *opt)
- 		kfree_rcu(opt, rcu);
- }
+On Fri, May 17, 2019 at 08:16:34AM -0700, Alexander Duyck wrote:
+> On Thu, May 16, 2019 at 6:48 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+> >
+> >
+> >
+> > On 5/16/2019 6:03 PM, Daniel Walker wrote:
+> > > On Thu, May 16, 2019 at 03:02:18PM -0700, Florian Fainelli wrote:
+> > >> On 5/16/19 12:55 PM, Nikunj Kela (nkela) wrote:
+> > >>>
+> > >>>
+> > >>> On 5/16/19, 12:35 PM, "Jeff Kirsher" <jeffrey.t.kirsher@intel.com> wrote:
+> > >>>
+> > >>>     On Wed, 2019-05-08 at 23:14 +0000, Nikunj Kela wrote:
+> > >>>    >> Some of the broken NICs don't have EEPROM programmed correctly. It
+> > >>>    >> results
+> > >>>    >> in probe to fail. This change adds a module parameter that can be
+> > >>>    >> used to
+> > >>>    >> ignore nvm checksum validation.
+> > >>>    >>
+> > >>>    >> Cc: xe-linux-external@cisco.com
+> > >>>    >> Signed-off-by: Nikunj Kela <nkela@cisco.com>
+> > >>>    >> ---
+> > >>>    >>  drivers/net/ethernet/intel/igb/igb_main.c | 28
+> > >>>    >> ++++++++++++++++++++++------
+> > >>>    >>  1 file changed, 22 insertions(+), 6 deletions(-)
+> > >>>
+> > >>>     >NAK for two reasons.  First, module parameters are not desirable
+> > >>>     >because their individual to one driver and a global solution should be
+> > >>>     >found so that all networking device drivers can use the solution.  This
+> > >>>     >will keep the interface to change/setup/modify networking drivers
+> > >>>     >consistent for all drivers.
+> > >>>
+> > >>>
+> > >>>     >Second and more importantly, if your NIC is broken, fix it.  Do not try
+> > >>>     >and create a software workaround so that you can continue to use a
+> > >>>     >broken NIC.  There are methods/tools available to properly reprogram
+> > >>>     >the EEPROM on a NIC, which is the right solution for your issue.
+> > >>>
+> > >>> I am proposing this as a debug parameter. Obviously, we need to fix EEPROM but this helps us continuing the development while manufacturing fixes NIC.
+> > >>
+> > >> Then why even bother with sending this upstream?
+> > >
+> > > It seems rather drastic to disable the entire driver because the checksum
+> > > doesn't match. It really should be a warning, even a big warning, to let people
+> > > know something is wrong, but disabling the whole driver doesn't make sense.
+> >
+> > You could generate a random Ethernet MAC address if you don't have a
+> > valid one, a lot of drivers do that, and that's a fairly reasonable
+> > behavior. At some point in your product development someone will
+> > certainly verify that the provisioned MAC address matches the network
+> > interface's MAC address.
+> > --
+> > Florian
+> 
+> The thing is the EEPROM contains much more than just the MAC address.
+> There ends up being configuration for some of the PCIe interface in
+> the hardware as well as PHY configuration. If that is somehow mangled
+> we shouldn't be bringing up the part because there are one or more
+> pieces of the device configuration that are likely wrong.
+> 
+> The checksum is being used to make sure the EEPROM is valid, without
+> that we would need to go through and validate each individual section
+> of the EEPROM before enabling the the portions of the device related
+> to it. The concern is that this will become a slippery slope where we
+> eventually have to code all the configuration of the EEPROM into the
+> driver itself.
  
-+extern struct static_key_false ipv6_flowlabel_exclusive;
- struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk, __be32 label);
-+static inline struct ip6_flowlabel *fl6_sock_verify(struct sock *sk,
-+						    __be32 label)
-+{
-+	if (static_branch_unlikely(&ipv6_flowlabel_exclusive))
-+		return fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
-+
-+	return NULL;
-+}
-+
- struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
- 					 struct ip6_flowlabel *fl,
- 					 struct ipv6_txoptions *fopt);
-diff --git a/net/ipv6/ip6_flowlabel.c b/net/ipv6/ip6_flowlabel.c
-index be5f3d7ceb966..d5f4233b04e0c 100644
---- a/net/ipv6/ip6_flowlabel.c
-+++ b/net/ipv6/ip6_flowlabel.c
-@@ -57,6 +57,8 @@ static DEFINE_SPINLOCK(ip6_fl_lock);
- 
- static DEFINE_SPINLOCK(ip6_sk_fl_lock);
- 
-+DEFINE_STATIC_KEY_FALSE(ipv6_flowlabel_exclusive);
-+
- #define for_each_fl_rcu(hash, fl)				\
- 	for (fl = rcu_dereference_bh(fl_ht[(hash)]);		\
- 	     fl != NULL;					\
-@@ -98,6 +100,8 @@ static void fl_free_rcu(struct rcu_head *head)
- {
- 	struct ip6_flowlabel *fl = container_of(head, struct ip6_flowlabel, rcu);
- 
-+	if (fl->share != IPV6_FL_S_NONE && fl->share != IPV6_FL_S_ANY)
-+		static_branch_dec(&ipv6_flowlabel_exclusive);
- 	if (fl->share == IPV6_FL_S_PROCESS)
- 		put_pid(fl->owner.pid);
- 	kfree(fl->opt);
-@@ -423,6 +427,8 @@ fl_create(struct net *net, struct sock *sk, struct in6_flowlabel_req *freq,
- 	}
- 	fl->dst = freq->flr_dst;
- 	atomic_set(&fl->users, 1);
-+	if (fl->share != IPV6_FL_S_ANY)
-+		static_branch_inc(&ipv6_flowlabel_exclusive);
- 	switch (fl->share) {
- 	case IPV6_FL_S_EXCL:
- 	case IPV6_FL_S_ANY:
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 07fa579dfb96c..859a1cbd54906 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1331,8 +1331,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		if (np->sndflow) {
- 			fl6.flowlabel = sin6->sin6_flowinfo&IPV6_FLOWINFO_MASK;
- 			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
--				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--				if (!flowlabel)
-+				flowlabel = fl6_sock_verify(sk, fl6.flowlabel);
-+				if (IS_ERR(flowlabel))
- 					return -EINVAL;
- 			}
- 		}
-@@ -1383,8 +1383,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 			return err;
- 		}
- 		if ((fl6.flowlabel&IPV6_FLOWLABEL_MASK) && !flowlabel) {
--			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
--			if (!flowlabel)
-+			flowlabel = fl6_sock_verify(sk, fl6.flowlabel);
-+			if (IS_ERR(flowlabel))
- 				return -EINVAL;
- 		}
- 		if (!(opt->opt_nflen|opt->opt_flen))
--- 
-2.21.0.1020.gf2820cf01a-goog
 
+I don't think you can say because the checksum is valid that all data contained
+inside is also valid. You can have a valid checksum , and someone screwed up the
+data prior to the checksum getting computed.
+
+
+> We need to make the checksum a hard stop. If the part is broken then
+> it needs to be addressed. Workarounds just end up being used and
+> forgotten, which makes it that much harder to support the product.
+> Better to mark the part as being broken, and get it fixed now, than to
+> have parts start shipping that require workarounds in order to
+> function.o
+
+I don't think it's realistic to define the development process for large
+corporations like Cisco, or like what your doing , to define the development
+process for all corporations and products which may use intel parts. It's better
+to be flexible.
+
+Daniel
