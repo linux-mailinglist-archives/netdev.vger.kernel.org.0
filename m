@@ -2,49 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E6921D92
-	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 20:41:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C5F821D96
+	for <lists+netdev@lfdr.de>; Fri, 17 May 2019 20:42:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728007AbfEQSk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 14:40:56 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:46298 "EHLO
+        id S1728264AbfEQSlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 14:41:16 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:46306 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726740AbfEQSkz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 14:40:55 -0400
+        with ESMTP id S1726740AbfEQSlQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 14:41:16 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1B6AF13F18517;
-        Fri, 17 May 2019 11:40:55 -0700 (PDT)
-Date:   Fri, 17 May 2019 11:40:54 -0700 (PDT)
-Message-Id: <20190517.114054.1205743428379284975.davem@davemloft.net>
-To:     philippe.mazenauer@outlook.de
-Cc:     lee.jones@linaro.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] lib: Correct comment of prandom_seed
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4710F13F18517;
+        Fri, 17 May 2019 11:41:15 -0700 (PDT)
+Date:   Fri, 17 May 2019 11:41:14 -0700 (PDT)
+Message-Id: <20190517.114114.617879749254144661.davem@davemloft.net>
+To:     hujunwei4@huawei.com
+Cc:     jon.maloy@ericsson.com, ying.xue@windriver.com,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, mingfangsen@huawei.com,
+        zhoukang7@huawei.com, mousuanming@huawei.com
+Subject: Re: [PATCH] tipc: fix modprobe tipc failed after switch order of
+ device registration
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <AM0PR07MB44176BAB0BA6ACAAA8C6DC88FD0B0@AM0PR07MB4417.eurprd07.prod.outlook.com>
-References: <AM0PR07MB44176BAB0BA6ACAAA8C6DC88FD0B0@AM0PR07MB4417.eurprd07.prod.outlook.com>
+In-Reply-To: <efa87f26-8766-ac92-ccaa-23a6992bd32a@huawei.com>
+References: <efa87f26-8766-ac92-ccaa-23a6992bd32a@huawei.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 17 May 2019 11:40:55 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 17 May 2019 11:41:15 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Philippe Mazenauer <philippe.mazenauer@outlook.de>
-Date: Fri, 17 May 2019 10:44:44 +0000
+From: hujunwei <hujunwei4@huawei.com>
+Date: Fri, 17 May 2019 19:27:34 +0800
 
-> Variable 'entropy' was wrongly documented as 'seed', changed comment to
-> reflect actual variable name.
+> From: Junwei Hu <hujunwei4@huawei.com>
 > 
-> ../lib/random32.c:179: warning: Function parameter or member 'entropy' not described in 'prandom_seed'
-> ../lib/random32.c:179: warning: Excess function parameter 'seed' description in 'prandom_seed'
+> Error message printed:
+> modprobe: ERROR: could not insert 'tipc': Address family not
+> supported by protocol.
+> when modprobe tipc after the following patch: switch order of
+> device registration, commit 7e27e8d6130c
+> ("tipc: switch order of device registration to fix a crash")
 > 
-> Signed-off-by: Philippe Mazenauer <philippe.mazenauer@outlook.de>
+> Because sock_create_kern(net, AF_TIPC, ...) is called by
+> tipc_topsrv_create_listener() in the initialization process
+> of tipc_net_ops, tipc_socket_init() must be execute before that.
+> 
+> I move tipc_socket_init() into function tipc_init_net().
+> 
+> Fixes: 7e27e8d6130c
+> ("tipc: switch order of device registration to fix a crash")
+> Signed-off-by: Junwei Hu <hujunwei4@huawei.com>
+> Reported-by: Wang Wang <wangwang2@huawei.com>
+> Reviewed-by: Kang Zhou <zhoukang7@huawei.com>
+> Reviewed-by: Suanming Mou <mousuanming@huawei.com>
 
 Applied.
