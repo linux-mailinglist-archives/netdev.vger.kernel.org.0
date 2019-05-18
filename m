@@ -2,162 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1512E22438
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 19:19:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 078CC22445
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 19:36:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727260AbfERRS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 13:18:57 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:42462 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727073AbfERRS5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 13:18:57 -0400
-Received: by mail-pl1-f193.google.com with SMTP id x15so4762871pln.9
-        for <netdev@vger.kernel.org>; Sat, 18 May 2019 10:18:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=lInakaH9QIJV2qyTcHK9vy8+So0EobhrfMkTeL58g00=;
-        b=qtHSZPLPznbImALkmN2FBZIz4O+T+RKgAdwpltbsjoobbCkfcB1Jl/6+7Tstsc8l+d
-         8dxP1VvUIDh45pvv2DeQU+UudRkBSaWmD3IQsH14wPR96NikKq7qdM050+jIbYJyXem9
-         F7P/23llmD/DuTFm2v2rz+9ZCdKiB23WQD8AfCIldtIfwR5CoCyKxhOyDQQ+J/enFadU
-         KJr7wa2iU8sysixF9jjLSF4I05eZAtCeeJ876hMXIo1In87zvb10xbxm1c4BprhxscR+
-         n7LJB6RmeaMqfKX/1F9ahBC1WeItsr/DpOZlDtgGIPk5TFhhJjUU4r8h+t9GF9OFEIw/
-         1cag==
+        id S1728105AbfERRgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 13:36:01 -0400
+Received: from mail-it1-f199.google.com ([209.85.166.199]:35721 "EHLO
+        mail-it1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729342AbfERRgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 13:36:01 -0400
+Received: by mail-it1-f199.google.com with SMTP id m188so9710740ita.0
+        for <netdev@vger.kernel.org>; Sat, 18 May 2019 10:36:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=lInakaH9QIJV2qyTcHK9vy8+So0EobhrfMkTeL58g00=;
-        b=mveu6wYUvn9iWYPMYiNVgNvvwMhZSETkcS75j4yh3C/q42Vf7/0kqtRttu9PVI6bUD
-         wMKFt+sAhMBq2wzkDffc2uAkVy5PLnWtW+NAx8HgH/hPvvt1Zp+4a6H2KTNChy3iqYEU
-         PxwsGWU0JqbYqZMQHBSE/I/Wjm/7tkmxsWAZQmtrSaBeZ2J2Lw4WSlds7pjo10gELg1o
-         D0QttkoFZZDwdxrU0SvdFnduSGOjBTe0bkBxUuO/+PdTmrRamk0acKgxXoRaz7qc9KEg
-         CeGnn4Jva16/dXDjHY7XkCPxKgF6QakJerYM/WwPp5+iSbtSQWxFF5ceIVNpTLCY7mFW
-         mTjQ==
-X-Gm-Message-State: APjAAAUAUGkHdx/1T8k4ZmyGRdRxHg3NQc1XqitwquDW//jyP8pnpBr3
-        V3mfhyZZJejPopfbha1GhxjPPg==
-X-Google-Smtp-Source: APXvYqwcmysrVwi8eDDoMIdmDMADJBNZKuxiO7AjctFjBc75iOz2YhLkLlg3S/MX0lMnU+XgHh2a7A==
-X-Received: by 2002:a17:902:683:: with SMTP id 3mr22168356plh.209.1558199936948;
-        Sat, 18 May 2019 10:18:56 -0700 (PDT)
-Received: from ?IPv6:2601:646:c200:1ef2:752c:b986:3395:75e0? ([2601:646:c200:1ef2:752c:b986:3395:75e0])
-        by smtp.gmail.com with ESMTPSA id q193sm18551512pfc.52.2019.05.18.10.18.54
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 18 May 2019 10:18:55 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v2] net: Add UNIX_DIAG_UID to Netlink UNIX socket diagnostics.
-From:   Andy Lutomirski <luto@amacapital.net>
-X-Mailer: iPhone Mail (16E227)
-In-Reply-To: <20190518034820.16500-1-felipe@felipegasper.com>
-Date:   Sat, 18 May 2019 10:18:54 -0700
-Cc:     davem@davemloft.net, viro@zeniv.linux.org.uk,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-api@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <6CDA54A5-56FF-4B42-B6F5-762E72C3FC3B@amacapital.net>
-References: <20190518034820.16500-1-felipe@felipegasper.com>
-To:     Felipe Gasper <felipe@felipegasper.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=1CvcmZSlB35QHwFTvpa0OM2vzXbECFOPgO/fzHPp5Ac=;
+        b=Xne79QqMb2Zj7fSANh6iYnjK4QQOjpJgqa30cVUfsq2w5fqIiFeS9c8niY9kX1lICC
+         YOzBfNGOnrl/X8pNVHS4PCH6vDrc0zx7J6aVVcZKUNiI8h0MFSxNJeQ094fbJCnCTXVm
+         NuK4g6730g1X1AsaysUoVeKFEYTcgsyv5Z/RLhcHcHjovPSeYVHYc7gfCy0skjJjLVgt
+         ROJMiFghys24p/UZGwMCBa0JQs8E14amI8tUMrqiHqDqI57PxwOQ9vK6KtS2r+a7a2SW
+         0JjIQRf/lXuX2MUtJgnOM0anh+FW0AHFS+lyRWnP2mZ3bU7u37r6ZP+KFXjA6kKenTnZ
+         P3MQ==
+X-Gm-Message-State: APjAAAUHJwh00nnriE6S4XASvTo4PdH9roXsOKNwCnJWI0Dzq8ypoUYV
+        JnKznJSEkIVn+O4E9XI+WAwaK0joHImLbb0Kz9EdU3UVaIRE
+X-Google-Smtp-Source: APXvYqzV8JeqBUYGAkEVFE/5tCLRs4BmMrMFHmykStvb7KmZgsRjuQCv2kRQa4EwNhkn41ukasbGIvtLxrHG8k6Baekq06RWo1k4
+MIME-Version: 1.0
+X-Received: by 2002:a5e:d703:: with SMTP id v3mr30942144iom.197.1558200960160;
+ Sat, 18 May 2019 10:36:00 -0700 (PDT)
+Date:   Sat, 18 May 2019 10:36:00 -0700
+In-Reply-To: <Pine.LNX.4.44L0.1905181300440.10594-100000@netrider.rowland.org>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b8203405892cee43@google.com>
+Subject: Re: KASAN: use-after-free Read in p54u_load_firmware_cb
+From:   syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, chunkeey@gmail.com, chunkeey@googlemail.com,
+        davem@davemloft.net, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        oneukum@suse.com, stern@rowland.harvard.edu,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot has tested the proposed patch but the reproducer still triggered  
+crash:
+KASAN: use-after-free Read in usb_driver_release_interface
+
+usb 1-1: Loading firmware file isl3887usb
+usb 1-1: Direct firmware load for isl3887usb failed with error -2
+usb 1-1: Firmware not found.
+p54usb 1-1:0.143: failed to initialize device (-2)
+==================================================================
+BUG: KASAN: use-after-free in usb_driver_release_interface+0x16b/0x190  
+drivers/usb/core/driver.c:584
+Read of size 8 at addr ffff88808fc31218 by task kworker/0:1/12
+
+CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.1.0-rc3-g43151d6-dirty #1
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: events request_firmware_work_func
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0xe8/0x16e lib/dump_stack.c:113
+  print_address_description+0x6c/0x236 mm/kasan/report.c:187
+  kasan_report.cold+0x1a/0x3c mm/kasan/report.c:317
+  usb_driver_release_interface+0x16b/0x190 drivers/usb/core/driver.c:584
+  p54u_load_firmware_cb+0x390/0x420  
+drivers/net/wireless/intersil/p54/p54usb.c:948
+  request_firmware_work_func+0x12d/0x249  
+drivers/base/firmware_loader/main.c:785
+  process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
+  worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
+  kthread+0x313/0x420 kernel/kthread.c:253
+  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+
+Allocated by task 12:
+  set_track mm/kasan/common.c:87 [inline]
+  __kasan_kmalloc mm/kasan/common.c:497 [inline]
+  __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:470
+  kmalloc include/linux/slab.h:547 [inline]
+  kzalloc include/linux/slab.h:742 [inline]
+  usb_set_configuration+0x2e0/0x1740 drivers/usb/core/message.c:1846
+  generic_probe+0xa2/0xda drivers/usb/core/generic.c:210
+  usb_probe_device+0xc0/0x150 drivers/usb/core/driver.c:266
+  really_probe+0x2da/0xb10 drivers/base/dd.c:509
+  driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
+  __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
+  bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
+  __device_attach+0x223/0x3a0 drivers/base/dd.c:844
+  bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
+  device_add+0xad2/0x16e0 drivers/base/core.c:2106
+  usb_new_device.cold+0x537/0xccf drivers/usb/core/hub.c:2534
+  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
+  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
+  port_event drivers/usb/core/hub.c:5350 [inline]
+  hub_event+0x138e/0x3b00 drivers/usb/core/hub.c:5432
+  process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
+  worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
+  kthread+0x313/0x420 kernel/kthread.c:253
+  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+
+Freed by task 5394:
+  set_track mm/kasan/common.c:87 [inline]
+  __kasan_slab_free+0x130/0x180 mm/kasan/common.c:459
+  slab_free_hook mm/slub.c:1429 [inline]
+  slab_free_freelist_hook+0x5e/0x140 mm/slub.c:1456
+  slab_free mm/slub.c:3003 [inline]
+  kfree+0xce/0x290 mm/slub.c:3958
+  device_release+0x7d/0x210 drivers/base/core.c:1064
+  kobject_cleanup lib/kobject.c:662 [inline]
+  kobject_release lib/kobject.c:691 [inline]
+  kref_put include/linux/kref.h:67 [inline]
+  kobject_put+0x1df/0x4f0 lib/kobject.c:708
+  put_device+0x21/0x30 drivers/base/core.c:2205
+  usb_disable_device+0x309/0x790 drivers/usb/core/message.c:1244
+  usb_disconnect+0x298/0x870 drivers/usb/core/hub.c:2197
+  hub_port_connect drivers/usb/core/hub.c:4940 [inline]
+  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
+  port_event drivers/usb/core/hub.c:5350 [inline]
+  hub_event+0xcd2/0x3b00 drivers/usb/core/hub.c:5432
+  process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
+  worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
+  kthread+0x313/0x420 kernel/kthread.c:253
+  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+
+The buggy address belongs to the object at ffff88808fc31100
+  which belongs to the cache kmalloc-2k of size 2048
+The buggy address is located 280 bytes inside of
+  2048-byte region [ffff88808fc31100, ffff88808fc31900)
+The buggy address belongs to the page:
+page:ffffea00023f0c00 count:1 mapcount:0 mapping:ffff88812c3f4800 index:0x0  
+compound_mapcount: 0
+flags: 0xfff00000010200(slab|head)
+raw: 00fff00000010200 dead000000000100 dead000000000200 ffff88812c3f4800
+raw: 0000000000000000 00000000000f000f 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff88808fc31100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88808fc31180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff88808fc31200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                             ^
+  ffff88808fc31280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88808fc31300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
-> On May 17, 2019, at 8:48 PM, Felipe Gasper <felipe@felipegasper.com> wrote=
-:
->=20
-> Author: Felipe Gasper <felipe@felipegasper.com>
-> Date:   Fri May 17 16:54:40 2019 -0500
->=20
->   net: Add UNIX_DIAG_UID to Netlink UNIX socket diagnostics.
->=20
->   This adds the ability for Netlink to report a socket=E2=80=99s UID along=
- with the
->   other UNIX diagnostic information that is already available. This will
->   allow diagnostic tools greater insight into which users control which so=
-cket.
->=20
->   Signed-off-by: Felipe Gasper <felipe@felipegasper.com>
->=20
-> diff --git a/include/uapi/linux/unix_diag.h b/include/uapi/linux/unix_diag=
-.h
-> index 5c502fd..a198857 100644
-> --- a/include/uapi/linux/unix_diag.h
-> +++ b/include/uapi/linux/unix_diag.h
-> @@ -20,6 +20,7 @@ struct unix_diag_req {
-> #define UDIAG_SHOW_ICONS    0x00000008    /* show pending connections */
-> #define UDIAG_SHOW_RQLEN    0x00000010    /* show skb receive queue len */=
+Tested on:
 
-> #define UDIAG_SHOW_MEMINFO    0x00000020    /* show memory info of a socke=
-t */
-> +#define UDIAG_SHOW_UID        0x00000040    /* show socket's UID */
->=20
-> struct unix_diag_msg {
->    __u8    udiag_family;
-> @@ -40,6 +41,7 @@ enum {
->    UNIX_DIAG_RQLEN,
->    UNIX_DIAG_MEMINFO,
->    UNIX_DIAG_SHUTDOWN,
-> +    UNIX_DIAG_UID,
->=20
->    __UNIX_DIAG_MAX,
-> };
-> diff --git a/net/unix/diag.c b/net/unix/diag.c
-> index 3183d9b..e40f348 100644
-> --- a/net/unix/diag.c
-> +++ b/net/unix/diag.c
-> @@ -4,9 +4,11 @@
-> #include <linux/unix_diag.h>
-> #include <linux/skbuff.h>
-> #include <linux/module.h>
-> +#include <linux/uidgid.h>
-> #include <net/netlink.h>
-> #include <net/af_unix.h>
-> #include <net/tcp_states.h>
-> +#include <net/sock.h>
->=20
-> static int sk_diag_dump_name(struct sock *sk, struct sk_buff *nlskb)
-> {
-> @@ -110,6 +112,12 @@ static int sk_diag_show_rqlen(struct sock *sk, struct=
- sk_buff *nlskb)
->    return nla_put(nlskb, UNIX_DIAG_RQLEN, sizeof(rql), &rql);
-> }
->=20
-> +static int sk_diag_dump_uid(struct sock *sk, struct sk_buff *nlskb)
-> +{
-> +    uid_t uid =3D from_kuid_munged(sk_user_ns(sk), sock_i_uid(sk));
-> +    return nla_put(nlskb, UNIX_DIAG_UID, sizeof(uid_t), &uid);
+commit:         43151d6c usb-fuzzer: main usb gadget fuzzer driver
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=148b9428a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4183eeef650d1234
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=17642018a00000
 
-This still looks wrong. You=E2=80=99re reporting the uid of the socket as se=
-en by that socket.  Presumably you actually want the uid of the socket as se=
-en by the *diagnostic* socket. This might be sk_user_ns(nlskb->sk).
-
-You can test this with a command like unshare -U -r nc -l 12345 run as no -r=
-oot. Then run you user diagnostic tool to find the uid of the socket. It sho=
-uld not be zero. Similarly, if you run unshare -U -r bash and then open a so=
-cket and run your diagnostic tool, both from that same session, you should s=
-ee 0 as the uid since bash and all its children think they=E2=80=99re uid 0.=
-
-
-> +}
-
-> +
-> static int sk_diag_fill(struct sock *sk, struct sk_buff *skb, struct unix_=
-diag_req *req,
->        u32 portid, u32 seq, u32 flags, int sk_ino)
-> {
-> @@ -156,6 +164,10 @@ static int sk_diag_fill(struct sock *sk, struct sk_bu=
-ff *skb, struct unix_diag_r
->    if (nla_put_u8(skb, UNIX_DIAG_SHUTDOWN, sk->sk_shutdown))
->        goto out_nlmsg_trim;
->=20
-> +    if ((req->udiag_show & UDIAG_SHOW_UID) &&
-> +        sk_diag_dump_uid(sk, skb))
-> +        goto out_nlmsg_trim;
-> +
->    nlmsg_end(skb, nlh);
->    return 0;
->=20
