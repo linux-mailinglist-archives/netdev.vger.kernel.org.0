@@ -2,203 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B527C2248E
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 21:05:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15FF7224C4
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 22:11:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729903AbfERTFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 15:05:50 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:37136 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728088AbfERTFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 15:05:50 -0400
-Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4IJ3rxA024214;
-        Sat, 18 May 2019 12:05:27 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=5MpBUY+R49QGVVhsMrB5jvmm+YABkW8VZbDVp4wml9w=;
- b=eJ7SVU9199qV9tlLjeRHD9YN2YkNYLCyFhJMZfnAwCbCiAAzIOuYXhcx+EFf+K81z1ip
- 0nbsYhXXRmT2bq2kEUESLTXjcimFGLk7AU+8lfnOsBkPZ8FrXR+XfkqdYBpwq8wc9ox/
- tOKUaopjBLEKMUybqlEvo/mhO8HsAvH6Z+8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sjdbps80j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 18 May 2019 12:05:27 -0700
-Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
- ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sat, 18 May 2019 12:05:26 -0700
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Sat, 18 May 2019 12:05:26 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5MpBUY+R49QGVVhsMrB5jvmm+YABkW8VZbDVp4wml9w=;
- b=ikbbCCn1cpHQ9LiTbFHXsGzsDhuu53VA5yVjIhUF5WjB+6fZ+iuzU5fVaLOvAoqQgA+tieELYEg0LgG8XKLTpwsDVz20GPCDuKEoQTTZQNmJuZt4BRuFCIL8O+mMdV1DzdcOjYUpWIqnT0xL7Q8SvTjEI8f/iDtAbvoutedP7s4=
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.255.19) by
- MWHPR15MB1807.namprd15.prod.outlook.com (10.174.255.135) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.17; Sat, 18 May 2019 19:05:24 +0000
-Received: from MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::c1c6:4833:1762:cf29]) by MWHPR15MB1790.namprd15.prod.outlook.com
- ([fe80::c1c6:4833:1762:cf29%7]) with mapi id 15.20.1878.024; Sat, 18 May 2019
- 19:05:24 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Joe Stringer <joe@isovalent.com>
-CC:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf] bpf: Check sk_fullsock() before returning from
- bpf_sk_lookup()
-Thread-Topic: [PATCH bpf] bpf: Check sk_fullsock() before returning from
- bpf_sk_lookup()
-Thread-Index: AQHVDPaOeeOfSvW6REiskICtB640KaZv24YAgAACyICAAVmeAIAAB20A
-Date:   Sat, 18 May 2019 19:05:24 +0000
-Message-ID: <20190518190520.53mrvat4c4y6cnbf@kafai-mbp>
-References: <20190517212117.2792415-1-kafai@fb.com>
- <6dc01cb7-cdd4-8a71-b602-0052b7aadfb7@gmail.com>
- <20190517220145.pkpkt7f5b72vvfyk@kafai-mbp>
- <CADa=RyxisbcVeXL7yq6o02XOgWd87QCzq-6zDXRnm9RoD2WM=A@mail.gmail.com>
-In-Reply-To: <CADa=RyxisbcVeXL7yq6o02XOgWd87QCzq-6zDXRnm9RoD2WM=A@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: BYAPR04CA0007.namprd04.prod.outlook.com
- (2603:10b6:a03:40::20) To MWHPR15MB1790.namprd15.prod.outlook.com
- (2603:10b6:301:4e::19)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::9b5e]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: aa36a721-f067-4e33-cb0c-08d6dbc3c7d5
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:MWHPR15MB1807;
-x-ms-traffictypediagnostic: MWHPR15MB1807:
-x-microsoft-antispam-prvs: <MWHPR15MB1807C8C2D34912F93F3BF8D9D5040@MWHPR15MB1807.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 0041D46242
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(346002)(136003)(39860400002)(376002)(396003)(366004)(199004)(189003)(11346002)(8936002)(54906003)(81166006)(7736002)(5660300002)(8676002)(305945005)(6916009)(99286004)(476003)(486006)(6246003)(81156014)(446003)(256004)(71190400001)(71200400001)(14444005)(86362001)(229853002)(316002)(68736007)(14454004)(6116002)(52116002)(2906002)(6486002)(66946007)(102836004)(46003)(1076003)(386003)(53936002)(6436002)(478600001)(53546011)(186003)(33716001)(9686003)(73956011)(6512007)(6506007)(25786009)(66476007)(66556008)(64756008)(4326008)(66446008)(76176011)(21314003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1807;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: U3Ar5z9bGWs4N5cN8ru5TDcMfES1iclPc4Yy4/HheuJHna85E/xmyY3B959btV7k7Uhmw5Kg69yMGpWTOGFTlivK/hej1h7NsL3wj1bnet+ubHot4ZREf6vO+cdwGuvMezQIjj6AN1VD44/MRUWibibaIdBCw0tk5ga+aySLbMYg950YQVppRhP/F1woRtjukqUBnAgqQQBcta73+04vJ/awrQ0MpwNZEni0fKNs9lzUcv9hZaoMY+GFjTwUoLVB/8ATfFf5bM8IiFZAS5hy0/BzKMNuT41Lel/Eb29itIvd3KvwxMmLpVCF99W5scCRVpfJEHCsHSu0M1RZWVNspxnoHyOEMvMtsBmq+vwS4XNqddpPps+9Vd0nUjUIq3GIMRFTZfVt9e/1XhTp50k9KlNp4M1kC+1FmWgTBoJgdFY=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <CF1E0EFF791FF5489B7D8616243C055E@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1729206AbfERULb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 16:11:31 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:36963 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbfERULb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 16:11:31 -0400
+Received: by mail-wr1-f65.google.com with SMTP id e15so10433065wrs.4;
+        Sat, 18 May 2019 13:11:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7Ed+VZRB6xkgrgm66qqD4/H342rN7RabjGvrm7K/6mU=;
+        b=JjYaUCgpVuSXPLOwmEyvo1GlS2LUE0ybl2+yUcJFMc8ajsDJAM6SImyOtQrDl6TwbU
+         /obfSiP+J3A6ia3rGEobGHzc7JMvgZdpW5KGds1ETDlMcDK5RlWqU5a3TTnKk4/qgSIJ
+         hOSHXNVSru4DFXyq581K/u2NIG6qUhkFGXPCJMs/977gPS2HABsLD+uIerKVudRUL/mO
+         a0ioQdo3oZAnIP32BHAbYVSLmXasz+XtS8BZsdQ7WBaQVw8qv05On5fQaBvv23QweFls
+         ku3lv0SjbesX7a3xuH+9cItRWUxNM1tBFGKNLQR5OfZ2oae2jbxUMExbDbAoLend5G11
+         WzPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7Ed+VZRB6xkgrgm66qqD4/H342rN7RabjGvrm7K/6mU=;
+        b=L3YqW73YraWh0vPcLyFNrJjGKWL1WGujOhLdStH2zsyDvQCCzb1RuprxF2TrWLzNGJ
+         tADefi1sueatzJPGt3LTbLM9n8ce2hbKbSXJfahzK/+IDXWojB53EypUF7ZlrLWJDH8Z
+         tO7MNJudi7b4vXnvaoAM76IRUlk6F6gIc/JbEuBtMKD31NEmlptaccFw40WcG9SkdZZg
+         N53CLjeq2cIdKLkhoLFdo77rYY5kFemVHIXRgEMUXKK/EbWJ5/XLMacWwLoJKjB3BgM5
+         GNiTTzJDAXkbu79Lfi5DhMsnFW4EtaWfgD5GSQKMvZ5SFNoG2zGB03eq0Vg+bbvdn28j
+         S3ow==
+X-Gm-Message-State: APjAAAW2Eb0/8wPQSUQBjMI03Gych939ARYXrCPJ+tsDEJUEsAn0Ek2p
+        Bt9uJeHLmKKi9ptyplZhTTE=
+X-Google-Smtp-Source: APXvYqzxhJMpsHTuk8Du+YvpVpK0p6Y81VoYMKDS1dVytZvR5NJ2LH25CPr9jqBkE2ZrxaUtHFOWLA==
+X-Received: by 2002:a5d:4e46:: with SMTP id r6mr39171782wrt.290.1558210287808;
+        Sat, 18 May 2019 13:11:27 -0700 (PDT)
+Received: from debian64.daheim (p4FD0962E.dip0.t-ipconnect.de. [79.208.150.46])
+        by smtp.gmail.com with ESMTPSA id u11sm4067405wrn.1.2019.05.18.13.11.26
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 18 May 2019 13:11:27 -0700 (PDT)
+Received: from localhost.daheim ([127.0.0.1] helo=debian64.localnet)
+        by debian64.daheim with esmtp (Exim 4.92)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1hS5fy-00024r-Df; Sat, 18 May 2019 22:11:26 +0200
+From:   Christian Lamparter <chunkeey@gmail.com>
+To:     Alan Stern <stern@rowland.harvard.edu>
+Cc:     syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>,
+        andreyknvl@google.com, chunkeey@googlemail.com,
+        davem@davemloft.net, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        oneukum@suse.com, syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: use-after-free Read in p54u_load_firmware_cb
+Date:   Sat, 18 May 2019 22:11:26 +0200
+Message-ID: <1715066.X1OYgGOCOL@debian64>
+In-Reply-To: <Pine.LNX.4.44L0.1905181346380.10594-100000@netrider.rowland.org>
+References: <Pine.LNX.4.44L0.1905181346380.10594-100000@netrider.rowland.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa36a721-f067-4e33-cb0c-08d6dbc3c7d5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2019 19:05:24.2410
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1807
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-18_16:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=835 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905180138
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 18, 2019 at 08:38:46AM -1000, Joe Stringer wrote:
-> On Fri, May 17, 2019, 12:02 Martin Lau <kafai@fb.com> wrote:
->=20
-> > On Fri, May 17, 2019 at 02:51:48PM -0700, Eric Dumazet wrote:
-> > >
-> > >
-> > > On 5/17/19 2:21 PM, Martin KaFai Lau wrote:
-> > > > The BPF_FUNC_sk_lookup_xxx helpers return RET_PTR_TO_SOCKET_OR_NULL=
-.
-> > > > Meaning a fullsock ptr and its fullsock's fields in bpf_sock can be
-> > > > accessed, e.g. type, protocol, mark and priority.
-> > > > Some new helper, like bpf_sk_storage_get(), also expects
-> > > > ARG_PTR_TO_SOCKET is a fullsock.
-> > > >
-> > > > bpf_sk_lookup() currently calls sk_to_full_sk() before returning.
-> > > > However, the ptr returned from sk_to_full_sk() is not guaranteed
-> > > > to be a fullsock.  For example, it cannot get a fullsock if sk
-> > > > is in TCP_TIME_WAIT.
-> > > >
-> > > > This patch checks for sk_fullsock() before returning. If it is not
-> > > > a fullsock, sock_gen_put() is called if needed and then returns NUL=
-L.
-> > > >
-> > > > Fixes: 6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
-> > > > Cc: Joe Stringer <joe@isovalent.com>
-> > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > > > ---
-> > > >  net/core/filter.c | 16 ++++++++++++++--
-> > > >  1 file changed, 14 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > > index 55bfc941d17a..85def5a20aaf 100644
-> > > > --- a/net/core/filter.c
-> > > > +++ b/net/core/filter.c
-> > > > @@ -5337,8 +5337,14 @@ __bpf_sk_lookup(struct sk_buff *skb, struct
-> > bpf_sock_tuple *tuple, u32 len,
-> > > >     struct sock *sk =3D __bpf_skc_lookup(skb, tuple, len, caller_ne=
-t,
-> > > >                                        ifindex, proto, netns_id,
-> > flags);
-> > > >
-> > > > -   if (sk)
-> > > > +   if (sk) {
-> > > >             sk =3D sk_to_full_sk(sk);
-> > > > +           if (!sk_fullsock(sk)) {
-> > > > +                   if (!sock_flag(sk, SOCK_RCU_FREE))
-> > > > +                           sock_gen_put(sk);
-> > >
-> > > This looks a bit convoluted/weird.
-> > >
-> > > What about telling/asking __bpf_skc_lookup() to not return a non
-> > fullsock instead ?
-> > It is becausee some other helpers, like BPF_FUNC_skc_lookup_tcp,
-> > can return non fullsock
-> >
->=20
-> FYI this is necessary for finding a transparently proxied socket for a
-> non-local connection (tproxy use case).
-You meant it is necessary to return a non fullsock from the
-BPF_FUNC_sk_lookup_xxx helpers?
+Hello,
 
->=20
->=20
-> > >
-> > > > +                   return NULL;
-> > > > +           }
-> > > > +   }
-> > > >
-> > > >     return sk;
-> > > >  }
-> > > > @@ -5369,8 +5375,14 @@ bpf_sk_lookup(struct sk_buff *skb, struct
-> > bpf_sock_tuple *tuple, u32 len,
-> > > >     struct sock *sk =3D bpf_skc_lookup(skb, tuple, len, proto, netn=
-s_id,
-> > > >                                      flags);
-> > > >
-> > > > -   if (sk)
-> > > > +   if (sk) {
-> > > >             sk =3D sk_to_full_sk(sk);
-> > > > +           if (!sk_fullsock(sk)) {
-> > > > +                   if (!sock_flag(sk, SOCK_RCU_FREE))
-> > > > +                           sock_gen_put(sk);
-> > > > +                   return NULL;
-> > > > +           }
-> > > > +   }
-> > > >
-> > > >     return sk;
-> > > >  }
-> > > >
-> >
+On Saturday, May 18, 2019 7:49:49 PM CEST you wrote:
+> On Sat, 18 May 2019, syzbot wrote:
+> > 
+> > syzbot has tested the proposed patch but the reproducer still triggered  
+> > crash:
+> > KASAN: use-after-free Read in usb_driver_release_interface
+> > 
+> > usb 1-1: Loading firmware file isl3887usb
+> > usb 1-1: Direct firmware load for isl3887usb failed with error -2
+> > usb 1-1: Firmware not found.
+> > p54usb 1-1:0.143: failed to initialize device (-2)
+> > ==================================================================
+> > BUG: KASAN: use-after-free in usb_driver_release_interface+0x16b/0x190  
+> > drivers/usb/core/driver.c:584
+> > Read of size 8 at addr ffff88808fc31218 by task kworker/0:1/12
+> 
+> Now the bad access is in a different place.  That's a good sign.
+> In this case it indicates that although udev is still hanging around, 
+> intf has already been freed.  We really should acquire a reference to 
+> it instead.
+> 
+> Alan Stern
+
+Thanks. I can confirm that it works with the real ISL3887 
+hardware as well. Can you please spin up a patch or how
+should this be continued?
+
+Cheers,
+Christian 
+
+>  drivers/net/wireless/intersil/p54/p54usb.c |   43 ++++++++++++-----------------
+>  1 file changed, 18 insertions(+), 25 deletions(-)
+> 
+> Index: usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+> ===================================================================
+> --- usb-devel.orig/drivers/net/wireless/intersil/p54/p54usb.c
+> +++ usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+> @@ -33,6 +33,8 @@ MODULE_ALIAS("prism54usb");
+>  MODULE_FIRMWARE("isl3886usb");
+>  MODULE_FIRMWARE("isl3887usb");
+>  
+> +static struct usb_driver p54u_driver;
+> +
+>  /*
+>   * Note:
+>   *
+> @@ -921,9 +923,9 @@ static void p54u_load_firmware_cb(const
+>  {
+>  	struct p54u_priv *priv = context;
+>  	struct usb_device *udev = priv->udev;
+> +	struct usb_interface *intf = priv->intf;
+>  	int err;
+>  
+> -	complete(&priv->fw_wait_load);
+>  	if (firmware) {
+>  		priv->fw = firmware;
+>  		err = p54u_start_ops(priv);
+> @@ -932,26 +934,22 @@ static void p54u_load_firmware_cb(const
+>  		dev_err(&udev->dev, "Firmware not found.\n");
+>  	}
+>  
+> -	if (err) {
+> -		struct device *parent = priv->udev->dev.parent;
+> -
+> -		dev_err(&udev->dev, "failed to initialize device (%d)\n", err);
+> -
+> -		if (parent)
+> -			device_lock(parent);
+> +	complete(&priv->fw_wait_load);
+> +	/*
+> +	 * At this point p54u_disconnect may have already freed
+> +	 * the "priv" context. Do not use it anymore!
+> +	 */
+> +	priv = NULL;
+>  
+> -		device_release_driver(&udev->dev);
+> -		/*
+> -		 * At this point p54u_disconnect has already freed
+> -		 * the "priv" context. Do not use it anymore!
+> -		 */
+> -		priv = NULL;
+> +	if (err) {
+> +		dev_err(&intf->dev, "failed to initialize device (%d)\n", err);
+>  
+> -		if (parent)
+> -			device_unlock(parent);
+> +		usb_lock_device(udev);
+> +		usb_driver_release_interface(&p54u_driver, intf);
+> +		usb_unlock_device(udev);
+>  	}
+>  
+> -	usb_put_dev(udev);
+> +	usb_put_intf(intf);
+>  }
+>  
+>  static int p54u_load_firmware(struct ieee80211_hw *dev,
+> @@ -972,14 +970,14 @@ static int p54u_load_firmware(struct iee
+>  	dev_info(&priv->udev->dev, "Loading firmware file %s\n",
+>  	       p54u_fwlist[i].fw);
+>  
+> -	usb_get_dev(udev);
+> +	usb_get_intf(intf);
+>  	err = request_firmware_nowait(THIS_MODULE, 1, p54u_fwlist[i].fw,
+>  				      device, GFP_KERNEL, priv,
+>  				      p54u_load_firmware_cb);
+>  	if (err) {
+>  		dev_err(&priv->udev->dev, "(p54usb) cannot load firmware %s "
+>  					  "(%d)!\n", p54u_fwlist[i].fw, err);
+> -		usb_put_dev(udev);
+> +		usb_put_intf(intf);
+>  	}
+>  
+>  	return err;
+> @@ -1011,8 +1009,6 @@ static int p54u_probe(struct usb_interfa
+>  	skb_queue_head_init(&priv->rx_queue);
+>  	init_usb_anchor(&priv->submitted);
+>  
+> -	usb_get_dev(udev);
+> -
+>  	/* really lazy and simple way of figuring out if we're a 3887 */
+>  	/* TODO: should just stick the identification in the device table */
+>  	i = intf->altsetting->desc.bNumEndpoints;
+> @@ -1053,10 +1049,8 @@ static int p54u_probe(struct usb_interfa
+>  		priv->upload_fw = p54u_upload_firmware_net2280;
+>  	}
+>  	err = p54u_load_firmware(dev, intf);
+> -	if (err) {
+> -		usb_put_dev(udev);
+> +	if (err)
+>  		p54_free_common(dev);
+> -	}
+>  	return err;
+>  }
+>  
+> @@ -1072,7 +1066,6 @@ static void p54u_disconnect(struct usb_i
+>  	wait_for_completion(&priv->fw_wait_load);
+>  	p54_unregister_common(dev);
+>  
+> -	usb_put_dev(interface_to_usbdev(intf));
+>  	release_firmware(priv->fw);
+>  	p54_free_common(dev);
+>  }
+> 
+> 
+
+
+
+
