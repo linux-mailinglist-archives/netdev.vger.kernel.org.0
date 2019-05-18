@@ -2,90 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 344B32215A
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 05:19:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61F0222169
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 05:48:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727818AbfERDRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 23:17:23 -0400
-Received: from m97188.mail.qiye.163.com ([220.181.97.188]:15437 "EHLO
-        smtp.qiye.163.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727183AbfERDRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 23:17:23 -0400
-Received: from [192.168.1.5] (unknown [58.38.1.117])
-        by smtp.qiye.163.com (Hmail) with ESMTPA id 8CC3696399C;
-        Sat, 18 May 2019 11:17:21 +0800 (CST)
-Subject: Re: [PATCH v2] net/mlx5e: Add bonding device for indr block to
- offload the packet received from bonding device
-To:     Mark Bloch <markb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1558084668-21203-1-git-send-email-wenxu@ucloud.cn>
- <1129938e-2dff-9aed-5a76-f438e3e7ea15@mellanox.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <2b7bb0a4-d697-2a7e-fa02-399f1368d809@ucloud.cn>
-Date:   Sat, 18 May 2019 11:17:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1728391AbfERDsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 23:48:23 -0400
+Received: from web1.siteocity.com ([67.227.147.204]:44760 "EHLO
+        web1.siteocity.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbfERDsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 23:48:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=felipegasper.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jC2pzib8Rq8RDjX2koQw8+8PZ+U/nFGIGBi9LwADKV0=; b=Y1BmTae6ZDK4oj5rbucA28kWmF
+        4ntpgJeqsTbTcdu4KLgb1HeFk/8tN7C8LhYK+9KCjlEQqiO9NqRHzKgZGPFrKD0G0AbunVkmUiXWz
+        FDkX82sTi8Mx6YVQOvLhxIk3O13WB8O6ZREewvD3Xil2JwF1Z4oovA9aXE2530gbMDn3WzAwwNCmO
+        JyUcO/VRnCPQ1E3cQHM8OgQBrtgbSHwGkaa2CcqoJkwnHCg+sH7oCX5zbLSXEUJWnwYsE2w7/4AHN
+        5yfNPmDnyTtipB+rvwTCC4yGIB3ZJNfkAbmb/STKetFO1pNuTSfjCy8ik+vx9uiU3N1FQHIQx6v5k
+        Zco85oYw==;
+Received: from fgasper by web1.siteocity.com with local (Exim 4.92)
+        (envelope-from <fgasper@web1.siteocity.com>)
+        id 1hRqKa-0004Vm-BF; Fri, 17 May 2019 22:48:21 -0500
+From:   Felipe Gasper <felipe@felipegasper.com>
+To:     davem@davemloft.net, viro@zeniv.linux.org.uk,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-api@vger.kernel.org
+Subject: [PATCH v2] net: Add UNIX_DIAG_UID to Netlink UNIX socket diagnostics.
+Date:   Fri, 17 May 2019 22:48:20 -0500
+Message-Id: <20190518034820.16500-1-felipe@felipegasper.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <1129938e-2dff-9aed-5a76-f438e3e7ea15@mellanox.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kIGBQJHllBWVZKVUJDSUtLS0hOS0JOSUpOWVdZKFlBSUI3V1ktWUFJV1
-        kJDhceCFlBWTU0KTY6NyQpLjc#WQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PRg6MTo*FDg*GC46LkJJIS88
-        GRYwCglVSlVKTk5DSk9CT09KQ0tJVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWU5DVUhD
-        VUpVSkpMWVdZCAFZQUhIT0k3Bg++
-X-HM-Tid: 0a6ac8f1a8cb20bckuqy8cc3696399c
+X-OutGoing-Spam-Status: No, score=0.0
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - web1.siteocity.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [1438 994] / [47 12]
+X-AntiAbuse: Sender Address Domain - web1.siteocity.com
+X-Get-Message-Sender-Via: web1.siteocity.com: authenticated_id: fgasper/from_h
+X-Authenticated-Sender: web1.siteocity.com: felipe@felipegasper.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: /home/fgasper
+X-From-Rewrite: unmodified, already matched
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Author: Felipe Gasper <felipe@felipegasper.com>
+Date:   Fri May 17 16:54:40 2019 -0500
 
-在 2019/5/18 6:11, Mark Bloch 写道:
->
-> On 5/17/19 2:17 AM, wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> The mlx5e support the lag mode. When add mlx_p0 and mlx_p1 to bond0.
->> packet received from mlx_p0 or mlx_p1 and in the ingress tc flower
->> forward to vf0. The tc rule can't be offloaded because there is
->> no indr_register_block for the bonding device.
->>
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> ---
->>  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
->> index 91e24f1..134fa0b 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
->> @@ -796,6 +796,7 @@ static int mlx5e_nic_rep_netdevice_event(struct notifier_block *nb,
->>  	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
->>  
->>  	if (!mlx5e_tc_tun_device_to_offload(priv, netdev) &&
->> +	    !netif_is_bond_master(netdev) &&
-> I'm not that familiar with this code path, but shouldn't you check the mlx5e
-> netdevices are slaves of the bond device (what if you have multiple
-> bond devices in the system?)
+   net: Add UNIX_DIAG_UID to Netlink UNIX socket diagnostics.
 
-The bonding device is not simlilar with vlan device,  when vlan device is register, the real device is defintived.  But the when the bonding device is register, there maybe not slave device.
+   This adds the ability for Netlink to report a socket’s UID along with the
+   other UNIX diagnostic information that is already available. This will
+   allow diagnostic tools greater insight into which users control which socket.
 
-As the following codes. Any NETDEV_REGISTER EVENT will do indr register block.
+   Signed-off-by: Felipe Gasper <felipe@felipegasper.com>
 
-    if (!mlx5e_tc_tun_device_to_offload(priv, netdev) &&
-        !netif_is_bond_master(netdev) &&
-        !is_vlan_dev(netdev))
-        return NOTIFY_OK;
-
-    switch (event) {
-    case NETDEV_REGISTER:
-        mlx5e_rep_indr_register_block(rpriv, netdev);
-
->>  	    !is_vlan_dev(netdev))
->>  		return NOTIFY_OK;
->>  
->>
-> Mark
+diff --git a/include/uapi/linux/unix_diag.h b/include/uapi/linux/unix_diag.h
+index 5c502fd..a198857 100644
+--- a/include/uapi/linux/unix_diag.h
++++ b/include/uapi/linux/unix_diag.h
+@@ -20,6 +20,7 @@ struct unix_diag_req {
+ #define UDIAG_SHOW_ICONS	0x00000008	/* show pending connections */
+ #define UDIAG_SHOW_RQLEN	0x00000010	/* show skb receive queue len */
+ #define UDIAG_SHOW_MEMINFO	0x00000020	/* show memory info of a socket */
++#define UDIAG_SHOW_UID		0x00000040	/* show socket's UID */
+ 
+ struct unix_diag_msg {
+ 	__u8	udiag_family;
+@@ -40,6 +41,7 @@ enum {
+ 	UNIX_DIAG_RQLEN,
+ 	UNIX_DIAG_MEMINFO,
+ 	UNIX_DIAG_SHUTDOWN,
++	UNIX_DIAG_UID,
+ 
+ 	__UNIX_DIAG_MAX,
+ };
+diff --git a/net/unix/diag.c b/net/unix/diag.c
+index 3183d9b..e40f348 100644
+--- a/net/unix/diag.c
++++ b/net/unix/diag.c
+@@ -4,9 +4,11 @@
+ #include <linux/unix_diag.h>
+ #include <linux/skbuff.h>
+ #include <linux/module.h>
++#include <linux/uidgid.h>
+ #include <net/netlink.h>
+ #include <net/af_unix.h>
+ #include <net/tcp_states.h>
++#include <net/sock.h>
+ 
+ static int sk_diag_dump_name(struct sock *sk, struct sk_buff *nlskb)
+ {
+@@ -110,6 +112,12 @@ static int sk_diag_show_rqlen(struct sock *sk, struct sk_buff *nlskb)
+ 	return nla_put(nlskb, UNIX_DIAG_RQLEN, sizeof(rql), &rql);
+ }
+ 
++static int sk_diag_dump_uid(struct sock *sk, struct sk_buff *nlskb)
++{
++	uid_t uid = from_kuid_munged(sk_user_ns(sk), sock_i_uid(sk));
++	return nla_put(nlskb, UNIX_DIAG_UID, sizeof(uid_t), &uid);
++}
++
+ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb, struct unix_diag_req *req,
+ 		u32 portid, u32 seq, u32 flags, int sk_ino)
+ {
+@@ -156,6 +164,10 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb, struct unix_diag_r
+ 	if (nla_put_u8(skb, UNIX_DIAG_SHUTDOWN, sk->sk_shutdown))
+ 		goto out_nlmsg_trim;
+ 
++	if ((req->udiag_show & UDIAG_SHOW_UID) &&
++	    sk_diag_dump_uid(sk, skb))
++		goto out_nlmsg_trim;
++
+ 	nlmsg_end(skb, nlh);
+ 	return 0;
+ 
