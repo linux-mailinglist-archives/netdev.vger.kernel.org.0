@@ -2,60 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 951BB22458
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 19:51:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4AB122462
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 20:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729517AbfERRvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 13:51:50 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:58516 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726050AbfERRvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 13:51:50 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C611214DD9232;
-        Sat, 18 May 2019 10:51:48 -0700 (PDT)
-Date:   Sat, 18 May 2019 10:51:48 -0700 (PDT)
-Message-Id: <20190518.105148.796052200759156053.davem@davemloft.net>
-To:     jemoreira@google.com
-Cc:     linux-kernel@vger.kernel.org, stefanha@redhat.com,
-        sgarzare@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kernel-team@android.com, stable@vger.kernel.org
-Subject: Re: [PATCH RESEND] vsock/virtio: Initialize core virtio vsock
- before registering the driver
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190516205107.222003-1-jemoreira@google.com>
-References: <20190516205107.222003-1-jemoreira@google.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 18 May 2019 10:51:49 -0700 (PDT)
+        id S1728990AbfERSE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 14:04:26 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39037 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728283AbfERSE0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 May 2019 14:04:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=EamXuXRf8C8VugpDQZfo1yXC6WBa01lWzmt8JR/aU3A=; b=viU181nRdae4GmN860gGcr7KuE
+        XEXcTn7e0oY2ybdkPErIU7OJBBBViYGWNEAr0jqsG9wETpN9TfkQOW3yRmHGm0oE1WEEsK/kya9vY
+        pcHj/7txY13vG9ug6ZJKLKFCYJrBdVNtIDz8U7BXLL+pnfioWAdR366KZy3DRTl5/1fM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hS3h0-0007Pn-LQ; Sat, 18 May 2019 20:04:22 +0200
+Date:   Sat, 18 May 2019 20:04:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Schmitz <schmitzmic@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, sfr@canb.auug.org.au
+Subject: Re: [PATCH v2] net: phy: rename Asix Electronics PHY driver
+Message-ID: <20190518180422.GA28414@lunn.ch>
+References: <20190514105649.512267cd@canb.auug.org.au>
+ <1558142095-20307-1-git-send-email-schmitzmic@gmail.com>
+ <20190518142010.GL14298@lunn.ch>
+ <cebbb214-c79f-ab7c-8238-0bc0576ddfbd@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cebbb214-c79f-ab7c-8238-0bc0576ddfbd@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jorge E. Moreira" <jemoreira@google.com>
-Date: Thu, 16 May 2019 13:51:07 -0700
+> My apologies - I had hoped that as a bugfix. this could go straight to net.
 
-> Avoid a race in which static variables in net/vmw_vsock/af_vsock.c are
-> accessed (while handling interrupts) before they are initialized.
- ...
-> Fixes: 22b5c0b63f32 ("vsock/virtio: fix kernel panic after device hot-unplug")
-> Cc: Stefan Hajnoczi <stefanha@redhat.com>
-> Cc: Stefano Garzarella <sgarzare@redhat.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: kvm@vger.kernel.org
-> Cc: virtualization@lists.linux-foundation.org
-> Cc: netdev@vger.kernel.org
-> Cc: kernel-team@android.com
-> Cc: stable@vger.kernel.org [4.9+]
-> Signed-off-by: Jorge E. Moreira <jemoreira@google.com>
-> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Ah, O.K. You then need to put "PATCH net" to make it clear this is for
+net.
 
-Applied and queued up for -stable, thanks.
+	Andrew
