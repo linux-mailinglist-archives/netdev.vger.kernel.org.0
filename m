@@ -2,69 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41AB622399
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 16:15:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA3B52239E
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 16:20:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729432AbfEROPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 10:15:15 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38947 "EHLO vps0.lunn.ch"
+        id S1729485AbfEROUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 10:20:15 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38950 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727594AbfEROPO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 May 2019 10:15:14 -0400
+        id S1727594AbfEROUO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 May 2019 10:20:14 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=vxxOG4cgMteauDySbGtDK/NXhJ11L9YPT09u3ikHPG4=; b=mOGxjCQaZiIvy9wAyAvWyfhMjY
-        HmsxsRwgpnHZipAOZiVubrnBmMNdz65OgrOMQstQFUuvakotatlwLgxkTjyJCKG3/+77ERCGsp2QU
-        lM9XpB8h1RUS6Am+pqGxLVm4WqkdfCkVlSSooVLBt3+4lSToOK+SWc64rgoDPBLNr+jo=;
+        bh=q/Or2e3m1CSnpWQWrS5RqQhooXZfxL6gF3q5sD6ymVI=; b=s7V1oY+OMAA2Z29dmp8X4Egb1Y
+        EADoQ4/ks3lx8LGwhQKnZNZcIQ1Xj9aolG19w0gXB19eb2dVwd2RnLmd/QPOG7O4RNaYBa6k3pbNw
+        xRN5372FSpDwy4qCCo9jNFqk1u0wDwKxk2bnhrX3655/qRcoC04/Hu6PspYuMS4LtwiI=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hS06y-0006Ek-HJ; Sat, 18 May 2019 16:14:56 +0200
-Date:   Sat, 18 May 2019 16:14:56 +0200
+        id 1hS0C2-0006I1-4e; Sat, 18 May 2019 16:20:10 +0200
+Date:   Sat, 18 May 2019 16:20:10 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH V5] net: phy: tja11xx: Add TJA11xx PHY driver
-Message-ID: <20190518141456.GK14298@lunn.ch>
-References: <20190517235123.32261-1-marex@denx.de>
+To:     Michael Schmitz <schmitzmic@gmail.com>
+Cc:     netdev@vger.kernel.org, netdev@vger.kernel-org, schmitz@debian.org,
+        davem@davemloft.net, sfr@canb.auug.org.au
+Subject: Re: [PATCH v2] net: phy: rename Asix Electronics PHY driver
+Message-ID: <20190518142010.GL14298@lunn.ch>
+References: <20190514105649.512267cd@canb.auug.org.au>
+ <1558142095-20307-1-git-send-email-schmitzmic@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190517235123.32261-1-marex@denx.de>
+In-Reply-To: <1558142095-20307-1-git-send-email-schmitzmic@gmail.com>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 18, 2019 at 01:51:23AM +0200, Marek Vasut wrote:
-> Add driver for the NXP TJA1100 and TJA1101 PHYs. These PHYs are special
-> BroadRReach 100BaseT1 PHYs used in automotive.
+On Sat, May 18, 2019 at 01:14:55PM +1200, Michael Schmitz wrote:
+> Commit 31dd83b96641 ("net-next: phy: new Asix Electronics PHY driver")
+> introduced a new PHY driver drivers/net/phy/asix.c that causes a module
+> name conflict with a pre-existiting driver (drivers/net/usb/asix.c).
+> 
+> The PHY driver is used by the X-Surf 100 ethernet card driver, and loaded
+> by that driver via its PHY ID. A rename of the driver looks unproblematic.
+> 
+> Rename PHY driver to ax88796b.c in order to resolve name conflict.
+> 
+> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+> Fixes: 31dd83b96641 ("net-next: phy: new Asix Electronics PHY driver")
+> ---
+> 
+> Changes from v1:
+> 
+> - merge into single commit (suggested by Andrew Lunn)
 
-Hi Marek
+Hi Michael
 
-> +	}, {
-> +		PHY_ID_MATCH_MODEL(PHY_ID_TJA1101),
-> +		.name		= "NXP TJA1101",
-> +		.features       = PHY_BASIC_T1_FEATURES,
+There is a flag you can pass to git which will make it issue a rename,
+rather than delete and then add. That will make the patch much
+smaller.
 
-One thing i would like to do before this patch goes in is define
-ETHTOOL_LINK_MODE_100baseT1_Full_BIT in ethtool.h, and use it here.
-We could not do it earlier because were ran out of bits. But with
-PHYLIB now using bitmaps, rather than u32, we can.
+net-next is closed at the moment.
 
-Once net-next reopens i will submit a patch adding it.
+http://vger.kernel.org/~davem/net-next.html
 
-I also see in the data sheet we should be able to correct detect its
-features using register 15. So we should extend
-genphy_read_abilities(). That will allow us to avoid changing
-PHY_BASIC_T1_FEATURES and possibly breaking backwards compatibility of
-other T1 PHY which currently say they are plain 100BaseT.
+Once it reopens, please send a v3, and it will be merged.
 
-      Andrew
+Thanks
+	Andrew
