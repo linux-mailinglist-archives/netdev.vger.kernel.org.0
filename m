@@ -2,110 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E27D622451
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 19:48:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A4E222453
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 19:49:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728551AbfERRsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 13:48:46 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:42173 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726050AbfERRsp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 13:48:45 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 13so5196383pfw.9
-        for <netdev@vger.kernel.org>; Sat, 18 May 2019 10:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=LkIvKlb+w5xwl210BHrFRXDJzm2c3bLDj4FUb8ioGtQ=;
-        b=o6sPS90FSCxkfVCsdt3OhYkbkyEo5IpE5CpG7NUvcHBu+IvN1d818/cavKsej2SRDQ
-         fQBait5GVr7ZjOsINe/vuWMWz6/2ocfN2N6KyxqtUz7GYOI0etGR7AeU5J06JjYOVmfm
-         rVFiiHr9md3s2cO4FxyVKAgpDdprOWmQqI44Ts0fNgf83hRE6OeX2j9Hht604Q3IAHLb
-         j7F87ugvIOzOMXBJZofwn9Tan9Dkw5tDvAY3pQMBTBQ8hAe5wf3lryakonHpm6c+MvVt
-         jWQzA5E/g/qyMypiuBQ02rxNFcSU/8GhjCEoeStLGrX4z3p8voR8Kts1B1D6Kuc4hLA2
-         vI2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=LkIvKlb+w5xwl210BHrFRXDJzm2c3bLDj4FUb8ioGtQ=;
-        b=bi6U9H3uAWf1mF/Uw5cLFgh+KoBCxhnOKvzZUZSEf9HujygOiKi2Ct7qZZVHVywEs+
-         zaEjhYhOsmwNTUGuHtnB7x9JdMVKhYEqDR1tcnTcJrO1wIT0iAs2Yy/mtmYGbHuNatbd
-         0xpg4IX5BzmxOrfAusQpAAG4EY0gWCwXocTCg+SkxU9S/gi0m3mnK5TNVgNg0ZyrH3zv
-         b0vd8/ISqdJnFMGOOSjB6ggSRYbXTGv3b2WyWa8iqkgZxpPcGbj25ZA9aorfXKkL/oHR
-         UgafnUwA1+LHVvDpebnlj2bSLwNv/u3zyu/8GYJPuffCz7wn4hfzwI7v8geikskB42a/
-         QMPw==
-X-Gm-Message-State: APjAAAULjveA8lMJ7RjM15QLfemlx0uYz5lcPh4wRf8tyGLdcGKT9cly
-        +B59dRf17sA/R8vSv4wHovz4rjrJ
-X-Google-Smtp-Source: APXvYqzLChn8mxZBL1w4RdV+78CEORF+Fi0mhPK/zSOUfR4z/fnKNPy818DIbLq/4P8DCkWN6fS7AA==
-X-Received: by 2002:a63:2325:: with SMTP id j37mr64306703pgj.137.1558201725375;
-        Sat, 18 May 2019 10:48:45 -0700 (PDT)
-Received: from [192.168.1.101] (122-58-182-39-adsl.sparkbb.co.nz. [122.58.182.39])
-        by smtp.gmail.com with ESMTPSA id l141sm16732654pfd.24.2019.05.18.10.48.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 18 May 2019 10:48:44 -0700 (PDT)
-Subject: Re: [PATCH v2] net: phy: rename Asix Electronics PHY driver
-To:     Andrew Lunn <andrew@lunn.ch>
-References: <20190514105649.512267cd@canb.auug.org.au>
- <1558142095-20307-1-git-send-email-schmitzmic@gmail.com>
- <20190518142010.GL14298@lunn.ch>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, sfr@canb.auug.org.au
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <cebbb214-c79f-ab7c-8238-0bc0576ddfbd@gmail.com>
-Date:   Sun, 19 May 2019 05:48:40 +1200
-User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
- Icedove/45.4.0
+        id S1729747AbfERRtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 13:49:50 -0400
+Received: from netrider.rowland.org ([192.131.102.5]:40901 "HELO
+        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S1729481AbfERRtu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 13:49:50 -0400
+Received: (qmail 11573 invoked by uid 500); 18 May 2019 13:49:49 -0400
+Received: from localhost (sendmail-bs@127.0.0.1)
+  by localhost with SMTP; 18 May 2019 13:49:49 -0400
+Date:   Sat, 18 May 2019 13:49:49 -0400 (EDT)
+From:   Alan Stern <stern@rowland.harvard.edu>
+X-X-Sender: stern@netrider.rowland.org
+To:     syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>
+cc:     andreyknvl@google.com, <chunkeey@gmail.com>,
+        <chunkeey@googlemail.com>, <davem@davemloft.net>,
+        <kvalo@codeaurora.org>, <linux-kernel@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <oneukum@suse.com>,
+        <syzkaller-bugs@googlegroups.com>
+Subject: Re: KASAN: use-after-free Read in p54u_load_firmware_cb
+In-Reply-To: <000000000000b8203405892cee43@google.com>
+Message-ID: <Pine.LNX.4.44L0.1905181346380.10594-100000@netrider.rowland.org>
 MIME-Version: 1.0
-In-Reply-To: <20190518142010.GL14298@lunn.ch>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Sat, 18 May 2019, syzbot wrote:
 
-Am 19.05.2019 um 02:20 schrieb Andrew Lunn:
-> On Sat, May 18, 2019 at 01:14:55PM +1200, Michael Schmitz wrote:
->> Commit 31dd83b96641 ("net-next: phy: new Asix Electronics PHY driver")
->> introduced a new PHY driver drivers/net/phy/asix.c that causes a module
->> name conflict with a pre-existiting driver (drivers/net/usb/asix.c).
->>
->> The PHY driver is used by the X-Surf 100 ethernet card driver, and loaded
->> by that driver via its PHY ID. A rename of the driver looks unproblematic.
->>
->> Rename PHY driver to ax88796b.c in order to resolve name conflict.
->>
->> Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
->> Fixes: 31dd83b96641 ("net-next: phy: new Asix Electronics PHY driver")
->> ---
->>
->> Changes from v1:
->>
->> - merge into single commit (suggested by Andrew Lunn)
->
-> Hi Michael
->
-> There is a flag you can pass to git which will make it issue a rename,
-> rather than delete and then add. That will make the patch much
-> smaller.
+> Hello,
+> 
+> syzbot has tested the proposed patch but the reproducer still triggered  
+> crash:
+> KASAN: use-after-free Read in usb_driver_release_interface
+> 
+> usb 1-1: Loading firmware file isl3887usb
+> usb 1-1: Direct firmware load for isl3887usb failed with error -2
+> usb 1-1: Firmware not found.
+> p54usb 1-1:0.143: failed to initialize device (-2)
+> ==================================================================
+> BUG: KASAN: use-after-free in usb_driver_release_interface+0x16b/0x190  
+> drivers/usb/core/driver.c:584
+> Read of size 8 at addr ffff88808fc31218 by task kworker/0:1/12
 
-Thanks, will do.
+Now the bad access is in a different place.  That's a good sign.
+In this case it indicates that although udev is still hanging around, 
+intf has already been freed.  We really should acquire a reference to 
+it instead.
 
-> net-next is closed at the moment.
+Alan Stern
 
-My apologies - I had hoped that as a bugfix. this could go straight to net.
 
-Cheers,
+#syz test: https://github.com/google/kasan.git usb-fuzzer
 
-	Michael
+ drivers/net/wireless/intersil/p54/p54usb.c |   43 ++++++++++++-----------------
+ 1 file changed, 18 insertions(+), 25 deletions(-)
 
->
-> http://vger.kernel.org/~davem/net-next.html
->
-> Once it reopens, please send a v3, and it will be merged.
->
-> Thanks
-> 	Andrew
->
+Index: usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+===================================================================
+--- usb-devel.orig/drivers/net/wireless/intersil/p54/p54usb.c
++++ usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+@@ -33,6 +33,8 @@ MODULE_ALIAS("prism54usb");
+ MODULE_FIRMWARE("isl3886usb");
+ MODULE_FIRMWARE("isl3887usb");
+ 
++static struct usb_driver p54u_driver;
++
+ /*
+  * Note:
+  *
+@@ -921,9 +923,9 @@ static void p54u_load_firmware_cb(const
+ {
+ 	struct p54u_priv *priv = context;
+ 	struct usb_device *udev = priv->udev;
++	struct usb_interface *intf = priv->intf;
+ 	int err;
+ 
+-	complete(&priv->fw_wait_load);
+ 	if (firmware) {
+ 		priv->fw = firmware;
+ 		err = p54u_start_ops(priv);
+@@ -932,26 +934,22 @@ static void p54u_load_firmware_cb(const
+ 		dev_err(&udev->dev, "Firmware not found.\n");
+ 	}
+ 
+-	if (err) {
+-		struct device *parent = priv->udev->dev.parent;
+-
+-		dev_err(&udev->dev, "failed to initialize device (%d)\n", err);
+-
+-		if (parent)
+-			device_lock(parent);
++	complete(&priv->fw_wait_load);
++	/*
++	 * At this point p54u_disconnect may have already freed
++	 * the "priv" context. Do not use it anymore!
++	 */
++	priv = NULL;
+ 
+-		device_release_driver(&udev->dev);
+-		/*
+-		 * At this point p54u_disconnect has already freed
+-		 * the "priv" context. Do not use it anymore!
+-		 */
+-		priv = NULL;
++	if (err) {
++		dev_err(&intf->dev, "failed to initialize device (%d)\n", err);
+ 
+-		if (parent)
+-			device_unlock(parent);
++		usb_lock_device(udev);
++		usb_driver_release_interface(&p54u_driver, intf);
++		usb_unlock_device(udev);
+ 	}
+ 
+-	usb_put_dev(udev);
++	usb_put_intf(intf);
+ }
+ 
+ static int p54u_load_firmware(struct ieee80211_hw *dev,
+@@ -972,14 +970,14 @@ static int p54u_load_firmware(struct iee
+ 	dev_info(&priv->udev->dev, "Loading firmware file %s\n",
+ 	       p54u_fwlist[i].fw);
+ 
+-	usb_get_dev(udev);
++	usb_get_intf(intf);
+ 	err = request_firmware_nowait(THIS_MODULE, 1, p54u_fwlist[i].fw,
+ 				      device, GFP_KERNEL, priv,
+ 				      p54u_load_firmware_cb);
+ 	if (err) {
+ 		dev_err(&priv->udev->dev, "(p54usb) cannot load firmware %s "
+ 					  "(%d)!\n", p54u_fwlist[i].fw, err);
+-		usb_put_dev(udev);
++		usb_put_intf(intf);
+ 	}
+ 
+ 	return err;
+@@ -1011,8 +1009,6 @@ static int p54u_probe(struct usb_interfa
+ 	skb_queue_head_init(&priv->rx_queue);
+ 	init_usb_anchor(&priv->submitted);
+ 
+-	usb_get_dev(udev);
+-
+ 	/* really lazy and simple way of figuring out if we're a 3887 */
+ 	/* TODO: should just stick the identification in the device table */
+ 	i = intf->altsetting->desc.bNumEndpoints;
+@@ -1053,10 +1049,8 @@ static int p54u_probe(struct usb_interfa
+ 		priv->upload_fw = p54u_upload_firmware_net2280;
+ 	}
+ 	err = p54u_load_firmware(dev, intf);
+-	if (err) {
+-		usb_put_dev(udev);
++	if (err)
+ 		p54_free_common(dev);
+-	}
+ 	return err;
+ }
+ 
+@@ -1072,7 +1066,6 @@ static void p54u_disconnect(struct usb_i
+ 	wait_for_completion(&priv->fw_wait_load);
+ 	p54_unregister_common(dev);
+ 
+-	usb_put_dev(interface_to_usbdev(intf));
+ 	release_firmware(priv->fw);
+ 	p54_free_common(dev);
+ }
+
