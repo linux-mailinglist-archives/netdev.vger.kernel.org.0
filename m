@@ -2,155 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17A84223FB
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 17:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD2A022400
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 17:59:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729416AbfERPuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 11:50:02 -0400
-Received: from mail-it1-f198.google.com ([209.85.166.198]:43635 "EHLO
-        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729330AbfERPuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 11:50:02 -0400
-Received: by mail-it1-f198.google.com with SMTP id z66so9465081itc.8
-        for <netdev@vger.kernel.org>; Sat, 18 May 2019 08:50:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=XQeWzljs1DH6t0S4944Drg1GlykramoA+3gl7La3QNE=;
-        b=WBkLy64qfnn4R54S8yxDqRlUXi8ZleKbftlrQYzqX86rGd6YV+e1cB6VuSQDKHmIHi
-         VoB5S28aCRMm3Gw0+DfJCMIvBmoIm8AEiXejFsk6nv6U4J/Bisoz1bmcUDCoQcL+Zz5c
-         zrT9atifs3dzlAt65aU6OnEeQQpOyXSSwGBacAyUd94P7mkr8nLh8bVIRWyqu9DvWl/F
-         pd5r996qDAJzQYS7f2TFpj7jxzcfXZ+sMm/sSPBt+pP01X2pvbgR/np0Gqp2xOPiM0rw
-         ozrR4wPVxuJ5/aG4HuswMrYrBYcwSpDL9iqEMUuRIumUN9Efc14QIQOTCbG44Zvun1AL
-         EeTQ==
-X-Gm-Message-State: APjAAAXerleAnFR1ekHV+DMJA5wDej75aJOvf5ddHcx37llwDlHwrzAo
-        sM6KlZ+CNAJ/ASYfFPK0Ln7hjxwHyWxldVxGO7XK06J5zozb
-X-Google-Smtp-Source: APXvYqw51fcH2Q6KSLNH5ltgMkDrRqU7TnuRZxCa6WlIJ2EhuAlm1c5bT30xYyjUbYZ5qPm8WvvdjptFx/es420dPOWE+4cY4Yux
+        id S1729366AbfERP7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 11:59:17 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:46313 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727380AbfERP7Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 11:59:16 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 82AEF292AC;
+        Sat, 18 May 2019 11:59:13 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sat, 18 May 2019 11:59:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=8/aba0WZWsSOBkgC1
+        59wW8EbpviZQFREeGsZYcR7i8o=; b=iRJ1FcYDGZMzHADb+vqwlXXVAw5lT5Jmh
+        N80JJanMfggBXJuMC50zJ2QnzjX3PUYSNtXFEB/8yfsLOAzdf05uhbw3sO5I++xn
+        b5uZEjIJVm3V7htGWrzxJCQOa8ZPCNCNvMyR+qCiQGSrN/0DmRNq0C92qLR3cSu4
+        yfVSGi2vJ27BSQrRC7aQIpxLHLlt3Iz8698wwu+qQonVGPDs61ZSRUsh9M4mC4HJ
+        B9e5Sit7Bp1+nv4AM1zWc3WnreZzEXLPsawg3xrBmij6y1+aUJp7N5ZmjVWrS7iK
+        ciasB5uz0Cqj2blvmATn+Axxux2A5aiLoJF7S0nSmG7Ng4Pd/MpVQ==
+X-ME-Sender: <xms:0SvgXE07ZEj-e1tuXj7medrRRFnLgHkdJjviuB9KwpcgziownhFJGg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddtgedgieelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppedutdelrdeihedrfeefrddufedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:0SvgXGr1It4iBiPTgHAUjDydRmc2PNYDM1iS_QyyAgbD9GhfU1-7lA>
+    <xmx:0SvgXJ0SII6TqJ0ETYlJsPr08SCRTknQ19Kx5bwwHEu4JLTcqZIc2Q>
+    <xmx:0SvgXLzRaT6RsJxDYmXTTbkgJGKT4D408G9oDWuNJbEhe9wO6ZuZew>
+    <xmx:0SvgXH3qf9seN0xJfhhbQZl-uyt4x5JKQCRRLpMqLEbJiN2ukGVYwA>
+Received: from splinter.mtl.com (bzq-109-65-33-130.red.bezeqint.net [109.65.33.130])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 6A0C98005C;
+        Sat, 18 May 2019 11:59:11 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, vadimp@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net 0/2] mlxsw: Two port module fixes
+Date:   Sat, 18 May 2019 18:58:27 +0300
+Message-Id: <20190518155829.31055-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Received: by 2002:a02:412:: with SMTP id 18mr5592188jab.82.1558194600923;
- Sat, 18 May 2019 08:50:00 -0700 (PDT)
-Date:   Sat, 18 May 2019 08:50:00 -0700
-In-Reply-To: <Pine.LNX.4.44L0.1905181045400.7855-100000@netrider.rowland.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000add98105892b73ec@google.com>
-Subject: Re: KASAN: use-after-free Read in p54u_load_firmware_cb
-From:   syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, chunkeey@gmail.com, chunkeey@googlemail.com,
-        davem@davemloft.net, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        oneukum@suse.com, stern@rowland.harvard.edu,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Ido Schimmel <idosch@mellanox.com>
 
-syzbot has tested the proposed patch but the reproducer still triggered  
-crash:
-KASAN: slab-out-of-bounds Read in p54u_load_firmware_cb
+Patch #1 fixes driver initialization failure on old ASICs due to
+unsupported register access. This is fixed by first testing if the
+register is supported.
 
-usb 6-1: Direct firmware load for isl3887usb failed with error -2
-p54u_load_firmware_cb: priv->udev = ffff88809ad5bb80
-usb 6-1: Firmware not found.
-==================================================================
-BUG: KASAN: slab-out-of-bounds in p54u_load_firmware_cb+0x3c9/0x45f  
-drivers/net/wireless/intersil/p54/p54usb.c:937
-Read of size 8 at addr ffff88809abab588 by task kworker/1:8/5526
+Patch #2 fixes reading of certain modules' EEPROM. The problem and
+solution are explained in detail in the commit message.
 
-CPU: 1 PID: 5526 Comm: kworker/1:8 Not tainted 5.1.0-rc3-g43151d6-dirty #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events request_firmware_work_func
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0xe8/0x16e lib/dump_stack.c:113
-  print_address_description+0x6c/0x236 mm/kasan/report.c:187
-  kasan_report.cold+0x1a/0x3c mm/kasan/report.c:317
-  p54u_load_firmware_cb+0x3c9/0x45f  
-drivers/net/wireless/intersil/p54/p54usb.c:937
-  request_firmware_work_func+0x12d/0x249  
-drivers/base/firmware_loader/main.c:785
-  process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
-  worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
-  kthread+0x313/0x420 kernel/kthread.c:253
-  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+Please consider both patches for stable.
 
-Allocated by task 5503:
-  set_track mm/kasan/common.c:87 [inline]
-  __kasan_kmalloc mm/kasan/common.c:497 [inline]
-  __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:470
-  slab_post_alloc_hook mm/slab.h:437 [inline]
-  slab_alloc_node mm/slub.c:2756 [inline]
-  __kmalloc_node_track_caller+0xf3/0x320 mm/slub.c:4372
-  __kmalloc_reserve.isra.0+0x3e/0xf0 net/core/skbuff.c:140
-  __alloc_skb+0xf4/0x5a0 net/core/skbuff.c:208
-  alloc_skb include/linux/skbuff.h:1058 [inline]
-  netlink_alloc_large_skb net/netlink/af_netlink.c:1182 [inline]
-  netlink_sendmsg+0x8db/0xcd0 net/netlink/af_netlink.c:1900
-  sock_sendmsg_nosec net/socket.c:651 [inline]
-  sock_sendmsg+0xda/0x130 net/socket.c:661
-  ___sys_sendmsg+0x80b/0x930 net/socket.c:2260
-  __sys_sendmsg+0xf1/0x1b0 net/socket.c:2298
-  do_syscall_64+0xcf/0x4f0 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+Vadim Pasternak (2):
+  mlxsw: core: Prevent QSFP module initialization for old hardware
+  mlxsw: core: Prevent reading unsupported slave address from SFP EEPROM
 
-Freed by task 5503:
-  set_track mm/kasan/common.c:87 [inline]
-  __kasan_slab_free+0x130/0x180 mm/kasan/common.c:459
-  slab_free_hook mm/slub.c:1429 [inline]
-  slab_free_freelist_hook+0x5e/0x140 mm/slub.c:1456
-  slab_free mm/slub.c:3003 [inline]
-  kfree+0xce/0x290 mm/slub.c:3958
-  skb_free_head+0x90/0xb0 net/core/skbuff.c:557
-  skb_release_data+0x543/0x8b0 net/core/skbuff.c:577
-  skb_release_all+0x4b/0x60 net/core/skbuff.c:631
-  __kfree_skb net/core/skbuff.c:645 [inline]
-  consume_skb net/core/skbuff.c:705 [inline]
-  consume_skb+0xc5/0x2f0 net/core/skbuff.c:699
-  netlink_unicast_kernel net/netlink/af_netlink.c:1311 [inline]
-  netlink_unicast+0x4e2/0x690 net/netlink/af_netlink.c:1336
-  netlink_sendmsg+0x810/0xcd0 net/netlink/af_netlink.c:1925
-  sock_sendmsg_nosec net/socket.c:651 [inline]
-  sock_sendmsg+0xda/0x130 net/socket.c:661
-  ___sys_sendmsg+0x80b/0x930 net/socket.c:2260
-  __sys_sendmsg+0xf1/0x1b0 net/socket.c:2298
-  do_syscall_64+0xcf/0x4f0 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+ drivers/net/ethernet/mellanox/mlxsw/core.c     |  6 ++++++
+ drivers/net/ethernet/mellanox/mlxsw/core.h     |  2 ++
+ drivers/net/ethernet/mellanox/mlxsw/core_env.c | 18 ++++++++++++++++--
+ .../net/ethernet/mellanox/mlxsw/core_hwmon.c   |  3 +++
+ .../net/ethernet/mellanox/mlxsw/core_thermal.c |  6 ++++++
+ 5 files changed, 33 insertions(+), 2 deletions(-)
 
-The buggy address belongs to the object at ffff88809abab180
-  which belongs to the cache kmalloc-1k of size 1024
-The buggy address is located 8 bytes to the right of
-  1024-byte region [ffff88809abab180, ffff88809abab580)
-The buggy address belongs to the page:
-page:ffffea00026aea00 count:1 mapcount:0 mapping:ffff88812c3f4a00 index:0x0  
-compound_mapcount: 0
-flags: 0xfff00000010200(slab|head)
-raw: 00fff00000010200 dead000000000100 dead000000000200 ffff88812c3f4a00
-raw: 0000000000000000 00000000000e000e 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff88809abab480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff88809abab500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff88809abab580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                       ^
-  ffff88809abab600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff88809abab680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
-Tested on:
-
-commit:         43151d6c usb-fuzzer: main usb gadget fuzzer driver
-git tree:       https://github.com/google/kasan.git usb-fuzzer
-console output: https://syzkaller.appspot.com/x/log.txt?x=108a0108a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4183eeef650d1234
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1292f852a00000
+-- 
+2.20.1
 
