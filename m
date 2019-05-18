@@ -2,121 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC27E221AA
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 07:11:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 490CF221E7
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 08:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725947AbfERFJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 01:09:25 -0400
-Received: from mail-eopbgr50041.outbound.protection.outlook.com ([40.107.5.41]:49314
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725268AbfERFJY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 May 2019 01:09:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+9XpXqIjFnoKok80DhvXvy+JFd4K8tX6u2kZnbNXi+k=;
- b=VL6WFtXXZktlRIJ2Pzd/ESV0RroT3SKuggrZti+WiiyrMBe5n1+SHhjYxOMs6aU6ATza37xWLfQMaa6p39yOtSlq+OO79nNQjCzTkX5YBkYBbbFCeBJ4Aw7ukYiJF2Mmdn54JgVB/zmwp7lp87IcNYo6T/8y5KRUA1qtsz/lBNM=
-Received: from AM0PR05MB4403.eurprd05.prod.outlook.com (52.134.125.139) by
- AM0PR05MB4211.eurprd05.prod.outlook.com (52.134.126.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.18; Sat, 18 May 2019 05:09:20 +0000
-Received: from AM0PR05MB4403.eurprd05.prod.outlook.com
- ([fe80::9d94:3e29:d61d:f79f]) by AM0PR05MB4403.eurprd05.prod.outlook.com
- ([fe80::9d94:3e29:d61d:f79f%5]) with mapi id 15.20.1900.010; Sat, 18 May 2019
- 05:09:20 +0000
-From:   Mark Bloch <markb@mellanox.com>
-To:     wenxu <wenxu@ucloud.cn>, Saeed Mahameed <saeedm@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2] net/mlx5e: Add bonding device for indr block to
- offload the packet received from bonding device
-Thread-Topic: [PATCH v2] net/mlx5e: Add bonding device for indr block to
- offload the packet received from bonding device
-Thread-Index: AQHVDJI54U3U/3hROkOwo7IesqXmtKZv4csAgABVbwCAAB7MAA==
-Date:   Sat, 18 May 2019 05:09:19 +0000
-Message-ID: <16f1a1c9-a02b-e17d-dd95-71c525f8c1be@mellanox.com>
-References: <1558084668-21203-1-git-send-email-wenxu@ucloud.cn>
- <1129938e-2dff-9aed-5a76-f438e3e7ea15@mellanox.com>
- <2b7bb0a4-d697-2a7e-fa02-399f1368d809@ucloud.cn>
-In-Reply-To: <2b7bb0a4-d697-2a7e-fa02-399f1368d809@ucloud.cn>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR05CA0099.namprd05.prod.outlook.com
- (2603:10b6:104:1::25) To AM0PR05MB4403.eurprd05.prod.outlook.com
- (2603:10a6:208:65::11)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=markb@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [104.156.100.52]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a18a9fea-e605-4045-7882-08d6db4efb88
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4211;
-x-ms-traffictypediagnostic: AM0PR05MB4211:
-x-microsoft-antispam-prvs: <AM0PR05MB42110D9131EBBBA5DDDD676AD2040@AM0PR05MB4211.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-forefront-prvs: 0041D46242
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(136003)(366004)(39860400002)(396003)(189003)(199004)(110136005)(99286004)(68736007)(186003)(36756003)(66066001)(5660300002)(71190400001)(71200400001)(86362001)(8676002)(26005)(53546011)(6506007)(76176011)(31696002)(52116002)(316002)(81156014)(81166006)(8936002)(7736002)(386003)(6636002)(6486002)(478600001)(6436002)(25786009)(476003)(102836004)(2616005)(11346002)(256004)(486006)(446003)(4326008)(6246003)(66446008)(66476007)(3846002)(229853002)(6116002)(2906002)(6512007)(53936002)(31686004)(64756008)(66556008)(66946007)(14454004)(73956011)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4211;H:AM0PR05MB4403.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ZOaOYVkltBE6iIs9yhAk6rQiE9jGFAypqkrmMb57jNLBDHACH2uqcjSpEB2yxZDVsvCbboLNU7atES/d5iK6PdhFeOB7juf5OodcboGubUlP7p+wszYPcMNLTLklthL3FGoQZp8zZo1ZM4bQGq3N+5me+/9SItxo4moURGDPPL0b7SiiDneGaFmel0u6aDDNI/KDi5TH6zshEqG/PbYdV23DZM6LZdbZrvN5n3y8TFKHbumriXVwnAZ2nQ8DidI5/jqkKYTQBL/mo8KIUvJUEwiaYQZIswffMtn6zbowblJsyPFqkCtwXtEEhdMZWXHbRPa5VPdLIcxWWg0J7329IzRZ84h//xgwI0qOqyQNeq2N8+k0Ebsv3usnS+pjt0y/GwMeR9KH2Kk3uKDbaaU9V2D1gBs7fLzMrY8Idj+t4jU=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <FAD37A080844344B9F571E17E66078BC@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727108AbfERGwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 02:52:06 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:40224 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725468AbfERGwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 02:52:06 -0400
+Received: by mail-io1-f72.google.com with SMTP id d24so7167626iob.7
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 23:52:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=TwUoesgSEecXhR/vJBArd4elSaGTejiqfQvMTKi9FuM=;
+        b=eJSM3bivuu8P0Esnt8JJiIi/u3JjiFQkFqOI6bn1kNFnyeHBj+23EC34zPAH/ZOcyG
+         Feo9my+ufMhWmZ8v6SGbMmi15w3alt97lykRSo7kWXy0xDC38jkxVQO/LYwJgRsrL91a
+         UFANZPV9hR2Z7ynXrutwQFgHtgbKMSocHfLOG+oJLXtQLUGqfvHVawRpMYwDXLtPw0Q7
+         vFIbrD3YiHchDMMRKlIirndqEkbxBwDDdOU58mwZY7j1wkBznVXrgDVQb4ClTEUT+0zT
+         BcNBLtL0QdYLmT6Na0cIZzOULdB7Qe6V52Y2e32AGEWWoZp/1XRgFY6ZK1JIePQu+/2S
+         mRgw==
+X-Gm-Message-State: APjAAAXVIHqdMIthPh8M7fJzXiHAyB9X9ut7aA5Rz8+gmCJqIU6+SVyA
+        UHF5iI1iNpB7cWeBH7JWJZ662EAVDqR03pD4T4wlNCLvNtFr
+X-Google-Smtp-Source: APXvYqyeKvi4NJniW+mpxjebxABk/bhxB6U3pnpaWGRmSa7da5sBiDbxf5fAnGq2tWPHJq2BcSgmmlHbIKG8W7rHe+/fY3KAqf3h
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a18a9fea-e605-4045-7882-08d6db4efb88
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2019 05:09:20.0916
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4211
+X-Received: by 2002:a6b:ef07:: with SMTP id k7mr33835519ioh.276.1558162325333;
+ Fri, 17 May 2019 23:52:05 -0700 (PDT)
+Date:   Fri, 17 May 2019 23:52:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e76a90058923eff3@google.com>
+Subject: BUG: corrupted list in proto_register
+From:   syzbot <syzbot+7bc2817ec0ed18de9079@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jon.maloy@ericsson.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDUvMTcvMjAxOSAyMDoxNywgd2VueHUgd3JvdGU6DQo+IA0KPiDlnKggMjAxOS81LzE4
-IDY6MTEsIE1hcmsgQmxvY2gg5YaZ6YGTOg0KPj4NCj4+IE9uIDUvMTcvMTkgMjoxNyBBTSwgd2Vu
-eHVAdWNsb3VkLmNuIHdyb3RlOg0KPj4+IEZyb206IHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+DQo+
-Pj4NCj4+PiBUaGUgbWx4NWUgc3VwcG9ydCB0aGUgbGFnIG1vZGUuIFdoZW4gYWRkIG1seF9wMCBh
-bmQgbWx4X3AxIHRvIGJvbmQwLg0KPj4+IHBhY2tldCByZWNlaXZlZCBmcm9tIG1seF9wMCBvciBt
-bHhfcDEgYW5kIGluIHRoZSBpbmdyZXNzIHRjIGZsb3dlcg0KPj4+IGZvcndhcmQgdG8gdmYwLiBU
-aGUgdGMgcnVsZSBjYW4ndCBiZSBvZmZsb2FkZWQgYmVjYXVzZSB0aGVyZSBpcw0KPj4+IG5vIGlu
-ZHJfcmVnaXN0ZXJfYmxvY2sgZm9yIHRoZSBib25kaW5nIGRldmljZS4NCj4+Pg0KPj4+IFNpZ25l
-ZC1vZmYtYnk6IHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+DQo+Pj4gLS0tDQo+Pj4gIGRyaXZlcnMv
-bmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9yZXAuYyB8IDEgKw0KPj4+ICAxIGZp
-bGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykNCj4+Pg0KPj4+IGRpZmYgLS1naXQgYS9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmMgYi9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmMNCj4+PiBpbmRleCA5MWUyNGYxLi4x
-MzRmYTBiIDEwMDY0NA0KPj4+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21s
-eDUvY29yZS9lbl9yZXAuYw0KPj4+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94
-L21seDUvY29yZS9lbl9yZXAuYw0KPj4+IEBAIC03OTYsNiArNzk2LDcgQEAgc3RhdGljIGludCBt
-bHg1ZV9uaWNfcmVwX25ldGRldmljZV9ldmVudChzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5iLA0K
-Pj4+ICAJc3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldiA9IG5ldGRldl9ub3RpZmllcl9pbmZvX3Rv
-X2RldihwdHIpOw0KPj4+ICANCj4+PiAgCWlmICghbWx4NWVfdGNfdHVuX2RldmljZV90b19vZmZs
-b2FkKHByaXYsIG5ldGRldikgJiYNCj4+PiArCSAgICAhbmV0aWZfaXNfYm9uZF9tYXN0ZXIobmV0
-ZGV2KSAmJg0KPj4gSSdtIG5vdCB0aGF0IGZhbWlsaWFyIHdpdGggdGhpcyBjb2RlIHBhdGgsIGJ1
-dCBzaG91bGRuJ3QgeW91IGNoZWNrIHRoZSBtbHg1ZQ0KPj4gbmV0ZGV2aWNlcyBhcmUgc2xhdmVz
-IG9mIHRoZSBib25kIGRldmljZSAod2hhdCBpZiB5b3UgaGF2ZSBtdWx0aXBsZQ0KPj4gYm9uZCBk
-ZXZpY2VzIGluIHRoZSBzeXN0ZW0/KQ0KPiANCj4gVGhlIGJvbmRpbmcgZGV2aWNlIGlzIG5vdCBz
-aW1saWxhciB3aXRoIHZsYW4gZGV2aWNlLMKgIHdoZW4gdmxhbiBkZXZpY2UgaXMgcmVnaXN0ZXIs
-IHRoZSByZWFsIGRldmljZSBpcyBkZWZpbnRpdmVkLsKgIEJ1dCB0aGUgd2hlbiB0aGUgYm9uZGlu
-ZyBkZXZpY2UgaXMgcmVnaXN0ZXIsIHRoZXJlIG1heWJlIG5vdCBzbGF2ZSBkZXZpY2UuDQoNCkkg
-a25vdyBob3cgYm9uZGluZyB3b3JrcywgdGhhdCdzIHdoeSBJIGFza2VkIHdoYXQgSSBhc2tlZC4N
-Ckl0IHNlZW1zIHRoZXJlIGlzIGEgcGllY2Ugb2YgY29kZSBtaXNzaW5nIHdoaWNoIGZpbHRlcnMg
-dGhlIHJ1bGVzIChwcm9iYWJseSBpbiBtbHg1ZV9jb25maWd1cmVfZmxvd2VyKCkpDQogDQo+IA0K
-PiBBcyB0aGUgZm9sbG93aW5nIGNvZGVzLiBBbnkgTkVUREVWX1JFR0lTVEVSIEVWRU5UIHdpbGwg
-ZG8gaW5kciByZWdpc3RlciBibG9jay4NCj4gDQo+IMKgwqDCoCBpZiAoIW1seDVlX3RjX3R1bl9k
-ZXZpY2VfdG9fb2ZmbG9hZChwcml2LCBuZXRkZXYpICYmDQo+IMKgwqDCoMKgwqDCoMKgICFuZXRp
-Zl9pc19ib25kX21hc3RlcihuZXRkZXYpICYmDQo+IMKgwqDCoMKgwqDCoMKgICFpc192bGFuX2Rl
-dihuZXRkZXYpKQ0KPiDCoMKgwqDCoMKgwqDCoCByZXR1cm4gTk9USUZZX09LOw0KPiANCj4gwqDC
-oMKgIHN3aXRjaCAoZXZlbnQpIHsNCj4gwqDCoMKgIGNhc2UgTkVUREVWX1JFR0lTVEVSOg0KPiDC
-oMKgwqDCoMKgwqDCoCBtbHg1ZV9yZXBfaW5kcl9yZWdpc3Rlcl9ibG9jayhycHJpdiwgbmV0ZGV2
-KTsNCj4gDQo+Pj4gIAkgICAgIWlzX3ZsYW5fZGV2KG5ldGRldikpDQo+Pj4gIAkJcmV0dXJuIE5P
-VElGWV9PSzsNCj4+PiAgDQo+Pj4NCj4+IE1hcmsNCg0KTWFyaw0K
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    532b0f7e tipc: fix modprobe tipc failed after switch order..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=12665fe8a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=82f0809e8f0a8c87
+dashboard link: https://syzkaller.appspot.com/bug?extid=7bc2817ec0ed18de9079
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+7bc2817ec0ed18de9079@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:29!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 9479 Comm: syz-executor.2 Not tainted 5.1.0+ #18
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:__list_add_valid.cold+0x26/0x3c lib/list_debug.c:29
+Code: 56 ff ff ff 4c 89 e1 48 c7 c7 20 4c a3 87 e8 00 60 25 fe 0f 0b 48 89  
+f2 4c 89 e1 4c 89 ee 48 c7 c7 60 4d a3 87 e8 e9 5f 25 fe <0f> 0b 48 89 f1  
+48 c7 c7 e0 4c a3 87 4c 89 e6 e8 d5 5f 25 fe 0f 0b
+RSP: 0018:ffff8880747afb88 EFLAGS: 00010282
+RAX: 0000000000000058 RBX: ffffffff89544920 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815afbe6 RDI: ffffed100e8f5f63
+RBP: ffff8880747afba0 R08: 0000000000000058 R09: ffffed1015d26011
+R10: ffffed1015d26010 R11: ffff8880ae930087 R12: ffffffff89544ab0
+R13: ffffffff89544ab0 R14: ffffffff89544ab0 R15: ffffffff89544a50
+FS:  00000000018b2940(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f88f7dac000 CR3: 0000000072fc7000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  __list_add include/linux/list.h:60 [inline]
+  list_add include/linux/list.h:79 [inline]
+  proto_register+0x459/0x8e0 net/core/sock.c:3385
+  tipc_socket_init+0x1c/0x70 net/tipc/socket.c:3241
+  tipc_init_net+0x32a/0x5b0 net/tipc/core.c:71
+  ops_init+0xb6/0x410 net/core/net_namespace.c:129
+  setup_net+0x2d3/0x740 net/core/net_namespace.c:315
+  copy_net_ns+0x1df/0x340 net/core/net_namespace.c:438
+  create_new_namespaces+0x400/0x7b0 kernel/nsproxy.c:107
+  unshare_nsproxy_namespaces+0xc2/0x200 kernel/nsproxy.c:206
+  ksys_unshare+0x440/0x980 kernel/fork.c:2664
+  __do_sys_unshare kernel/fork.c:2732 [inline]
+  __se_sys_unshare kernel/fork.c:2730 [inline]
+  __x64_sys_unshare+0x31/0x40 kernel/fork.c:2730
+  do_syscall_64+0x103/0x680 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x45b897
+Code: 00 00 00 b8 63 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 ad 8d fb ff c3  
+66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 10 01 00 00 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 8d 8d fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffc2b108368 EFLAGS: 00000206 ORIG_RAX: 0000000000000110
+RAX: ffffffffffffffda RBX: 000000000073c988 RCX: 000000000045b897
+RDX: 0000000000000000 RSI: 00007ffc2b108310 RDI: 0000000040000000
+RBP: 00000000000000f8 R08: 0000000000000000 R09: 0000000000000005
+R10: 0000000000000000 R11: 0000000000000206 R12: 0000000000414ab0
+R13: 0000000000414b40 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace e4cbbfc7878b1973 ]---
+RIP: 0010:__list_add_valid.cold+0x26/0x3c lib/list_debug.c:29
+Code: 56 ff ff ff 4c 89 e1 48 c7 c7 20 4c a3 87 e8 00 60 25 fe 0f 0b 48 89  
+f2 4c 89 e1 4c 89 ee 48 c7 c7 60 4d a3 87 e8 e9 5f 25 fe <0f> 0b 48 89 f1  
+48 c7 c7 e0 4c a3 87 4c 89 e6 e8 d5 5f 25 fe 0f 0b
+RSP: 0018:ffff8880747afb88 EFLAGS: 00010282
+RAX: 0000000000000058 RBX: ffffffff89544920 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815afbe6 RDI: ffffed100e8f5f63
+RBP: ffff8880747afba0 R08: 0000000000000058 R09: ffffed1015d26011
+R10: ffffed1015d26010 R11: ffff8880ae930087 R12: ffffffff89544ab0
+R13: ffffffff89544ab0 R14: ffffffff89544ab0 R15: ffffffff89544a50
+FS:  00000000018b2940(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fe45a0c89b8 CR3: 0000000072fc7000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
