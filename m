@@ -2,33 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C6D522407
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 18:12:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A37FA2240E
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 18:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729509AbfERQMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 12:12:20 -0400
-Received: from sobre.alvarezp.com ([173.230.155.94]:52292 "EHLO
+        id S1729465AbfERQRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 12:17:19 -0400
+Received: from sobre.alvarezp.com ([173.230.155.94]:52300 "EHLO
         sobre.alvarezp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729289AbfERQMU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 12:12:20 -0400
-X-Greylist: delayed 324 seconds by postgrey-1.27 at vger.kernel.org; Sat, 18 May 2019 12:12:12 EDT
+        with ESMTP id S1729181AbfERQRT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 12:17:19 -0400
 Received: from [192.168.15.65] (unknown [189.205.206.165])
-        by sobre.alvarezp.com (Postfix) with ESMTPSA id D60201E2B8;
-        Sat, 18 May 2019 11:06:47 -0500 (CDT)
+        by sobre.alvarezp.com (Postfix) with ESMTPSA id 7832C2189E;
+        Sat, 18 May 2019 11:07:09 -0500 (CDT)
 To:     Mirko Lindner <mlindner@marvell.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
-        =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>
-From:   Octavio Alvarez <octallk1@alvarezp.org>
-Subject: PROBLEM: [1/2] Marvell 88E8040 (sky2) stopped working
+        Thomas Gleixner <tglx@linutronix.de>
 Cc:     netdev@vger.kernel.org
-Message-ID: <26edfbe4-3c62-184b-b4cc-3d89f21ae394@alvarezp.org>
-Date:   Sat, 18 May 2019 11:06:46 -0500
+From:   Octavio Alvarez <octallk1@alvarezp.org>
+Subject: PROBLEM: [2/2] Marvell 88E8040 (sky2) fails after hibernation
+Message-ID: <aba1c363-92de-66d7-4aac-b555f398e70a@alvarezp.org>
+Date:   Sat, 18 May 2019 11:07:08 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.5.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Language: uk-UA
-Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -41,76 +40,101 @@ that I am also adding the commit author.
 
 [1] https://www.kernel.org/doc/html/v5.1/admin-guide/reporting-bugs.html
 
-PROBLEM: [1/2] Marvell 88E8040 (sky2) stopped working
+PROBLEM: [2/2] Marvell 88E8040 (sky2) fails after hibernation
+
+It occurs since 4.14.
 
 [1.] One line summary of the problem:
-Marvell 88E8040 (sky2) stopped working.
+Marvell 88E8040 (sky2) fails after hibernation.
 
 [2.] Full description of the problem/report:
-Marvell 88E8040 (sky2) stopped working.
+Marvell 88E8040 (sky2) fails after hibernation.
+
+Hibernating the machine and bringing it back does not properly bring back
+the Marvell NIC. Most of the time a module reload does not help.
 
 Problem starts on the following commit:
 
-$ git show a51645f70f6384ae3329551750f7f502cb8de5fc --
-drivers/net/ethernet/marvell/sky2.c
-commit a51645f70f6384ae3329551750f7f502cb8de5fc (refs/bisect/bad)
-Author: Petr Štetiar <ynezz@true.cz>
-Date:   Mon May 6 23:27:04 2019 +0200
+$ PAGER= git show bc976233a872c0f20f018fb1e89264a541584e25
+commit bc976233a872c0f20f018fb1e89264a541584e25
+Author: Thomas Gleixner <tglx@linutronix.de>
+Date:   Fri Dec 29 10:47:22 2017 +0100
 
-    net: ethernet: support of_get_mac_address new ERR_PTR error
+    genirq/msi, x86/vector: Prevent reservation mode for non maskable MSI
 
-    There was NVMEM support added to of_get_mac_address, so it could now
-    return ERR_PTR encoded error values, so we need to adjust all current
-    users of of_get_mac_address to this new fact.
+    The new reservation mode for interrupts assigns a dummy vector when the
+    interrupt is allocated and assigns a real vector when the interrupt is
+    requested. The reservation mode prevents vector pressure when
+devices with
+    a large amount of queues/interrupts are initialized, but only a minimal
+    subset of those queues/interrupts is actually used.
 
-    While at it, remove superfluous is_valid_ether_addr as the MAC address
-    returned from of_get_mac_address is always valid and checked by
-    is_valid_ether_addr anyway.
+    This mode has an issue with MSI interrupts which cannot be masked.
+If the
+    driver is not careful or the hardware emits an interrupt before the
+device
+    irq is requestd by the driver then the interrupt ends up on the dummy
+    vector as a spurious interrupt which can cause malfunction of the
+device or
+    in the worst case a lockup of the machine.
 
-    Fixes: d01f449c008a ("of_net: add NVMEM support to of_get_mac_address")
-    Signed-off-by: Petr Štetiar <ynezz@true.cz>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Change the logic for the reservation mode so that the early
+activation of
+    MSI interrupts checks whether:
 
-diff --git a/drivers/net/ethernet/marvell/sky2.c
-b/drivers/net/ethernet/marvell/sky2.c
-index 8b3495ee2b6e..c4050ec594f4 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4808,7 +4808,7 @@ static struct net_device *sky2_init_netdev(struct
-sky2_hw *hw, unsigned port,
-         * 2) from internal registers set by bootloader
-         */
-        iap = of_get_mac_address(hw->pdev->dev.of_node);
--       if (iap)
-+       if (!IS_ERR(iap))
-                memcpy(dev->dev_addr, iap, ETH_ALEN);
-        else
-                memcpy_fromio(dev->dev_addr, hw->regs + B2_MAC_1 + port * 8,
+     - the device is a PCI/MSI device
+     - the reservation mode of the underlying irqdomain is activated
+     - PCI/MSI masking is globally enabled
+     - the PCI/MSI device uses either MSI-X, which supports masking, or
+       MSI with the maskbit supported.
 
-If I use one commit before, my card works again, albeit with a problem that
-I reported separately, in which it does not work after returning from
-hibernation. I am reporting that one along with this one as problem 2/2.
+    If one of those conditions is false, then clear the reservation mode
+flag
+    in the irq data of the interrupt and invoke
+irq_domain_activate_irq() with
+    the reserve argument cleared. In the x86 vector code, clear the
+can_reserve
+    flag in the vector allocation data so a subsequent free_irq() won't
+create
+    the same situation again. The interrupt stays assigned to a real vector
+    until pci_disable_msi() is invoked and all allocations are undone.
 
-Last night I pulled from master and it still does not work, even after
-this commit:
+    Fixes: 4900be83602b ("x86/vector/msi: Switch to global reservation
+mode")
+    Reported-by: Alexandru Chirvasitu <achirvasub@gmail.com>
+    Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+    Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+    Tested-by: Alexandru Chirvasitu <achirvasub@gmail.com>
+    Tested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+    Cc: Dou Liyang <douly.fnst@cn.fujitsu.com>
+    Cc: Pavel Machek <pavel@ucw.cz>
+    Cc: Maciej W. Rozycki <macro@linux-mips.org>
+    Cc: Mikael Pettersson <mikpelinux@gmail.com>
+    Cc: Josh Poulson <jopoulso@microsoft.com>
+    Cc: Mihai Costache <v-micos@microsoft.com>
+    Cc: Stephen Hemminger <sthemmin@microsoft.com>
+    Cc: Marc Zyngier <marc.zyngier@arm.com>
+    Cc: linux-pci@vger.kernel.org
+    Cc: Haiyang Zhang <haiyangz@microsoft.com>
+    Cc: Dexuan Cui <decui@microsoft.com>
+    Cc: Simon Xiao <sixiao@microsoft.com>
+    Cc: Saeed Mahameed <saeedm@mellanox.com>
+    Cc: Jork Loeser <Jork.Loeser@microsoft.com>
+    Cc: Bjorn Helgaas <bhelgaas@google.com>
+    Cc: devel@linuxdriverproject.org
+    Cc: KY Srinivasan <kys@microsoft.com>
+    Cc: Alan Cox <alan@linux.intel.com>
+    Cc: Sakari Ailus <sakari.ailus@intel.com>,
+    Cc: linux-media@vger.kernel.org
+    Link: https://lkml.kernel.org/r/alpine.DEB.2.20.1712291406420.1899@nanos
+    Link: https://lkml.kernel.org/r/alpine.DEB.2.20.1712291409460.1899@nanos
 
-[2d2924af9688] net: ethernet: fix similar warning reported by kbuild
-test robot
-diff --git a/drivers/net/ethernet/marvell/sky2.c
-b/drivers/net/ethernet/marvell/sky2.c
-index 9d070cca3e9e..5adf307fbbfd 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4805,7 +4805,7 @@ static struct net_device *sky2_init_netdev(struct
-sky2_hw *hw, unsigned port,
- 	 */
- 	iap = of_get_mac_address(hw->pdev->dev.of_node);
- 	if (!IS_ERR(iap))
--		memcpy(dev->dev_addr, iap, ETH_ALEN);
-+		ether_addr_copy(dev->dev_addr, iap);
- 	else
- 		memcpy_fromio(dev->dev_addr, hw->regs + B2_MAC_1 + port * 8,
- 			      ETH_ALEN);
+If I use one commit before, my card does not fail after hibernation.
+
+Please note that the kernel version I am reporting is not the latest commit
+because the current version is affected by another bug that made my card
+so I cannot test this bug anymore. I am reporting that one along with this
+one as problem 1/2.
 
 [3.] Keywords (i.e., modules, networking, kernel):
 sky2, networking, marvell
@@ -118,8 +142,8 @@ sky2, networking, marvell
 [4.] Kernel information
 
 [4.1.] Kernel version (from /proc/version):
-Linux version 5.1.0-12511-g72cf0b07418a (alvarezp@alvarezp-samsung) (gcc
-version 8.3.0 (Debian 8.3.0-6)) #10 SMP Sat May 18 00:22:05 CDT 2019
+Linux version 5.1.0-rc7-02029-g5503a6889f72 (alvarezp@alvarezp-samsung)
+(gcc version 8.3.0 (Debian 8.3.0-6)) #9 SMP Fri May 17 22:14:35 CDT 2019
 
 [4.2.] Kernel .config file:
 #
@@ -8867,114 +8891,23 @@ CONFIG_UNWINDER_ORC=y
 # CONFIG_UNWINDER_GUESS is not set
 
 [5.] Most recent kernel version which did not have the bug:
-I think 5.0 was still ok.
+
+$ git describe --contains bc976233a872c0f20f018fb1e89264a541584e25
+v4.15-rc6~7^2
+
+I understand that 4.14 is the last known good released version.
+
 
 [6.] Output of Oops.. message (if applicable) with symbolic information
      resolved (see Documentation/admin-guide/bug-hunting.rst)
-[    1.447809] BUG: kernel NULL pointer dereference, address:
-0000000000000000
-[    1.447896] #PF: supervisor read access in kernel mode
-[    1.447978] #PF: error_code(0x0000) - not-present page
-[    1.448061] PGD 0 P4D 0
-[    1.448138] Oops: 0000 [#1] SMP PTI
-[    1.448219] CPU: 3 PID: 123 Comm: systemd-udevd Tainted: G
-E     5.1.0-12511-g72cf0b07418a #10
-[    1.448337] Hardware name: SAMSUNG ELECTRONICS CO., LTD.
-R530/R730/R540              /R530/R730/R540              , BIOS
-08JV.M029.20100621.hkk 06/21/2010
-[    1.448476] RIP: 0010:sky2_init_netdev+0x221/0x2e0 [sky2]
-[    1.448561] Code: 83 d0 00 00 00 0f b6 85 98 01 00 00 83 c0 49 3c 02
-19 c0 25 b4 e2 ff ff 05 28 23 00 00 89 83 40 02 00 00 48 8b 83 28 03 00
-00 <8b> 14 25 00 00 00 00 89 10 0f b7 14 25 04 00 00 00 66 89 50 04 48
-[    1.448733] RSP: 0018:ffffaa0140ecfa38 EFLAGS: 00010203
-[    1.448815] RAX: ffff98c391c16970 RBX: ffff98c38b723000 RCX:
-0000000000000020
-[    1.448899] RDX: 00000000000002e8 RSI: 0000008000000000 RDI:
-00000000ffffffff
-[    1.448985] RBP: ffff98c38af53c00 R08: 0000000000000006 R09:
-ffff98c393403200
-[    1.449071] R10: 000000000000016c R11: 000000000000016c R12:
-0000000000000001
-[    1.449157] R13: 0000000000000000 R14: 0000000000000000 R15:
-ffff98c38af53c00
-[    1.449244] FS:  00007f904dd698c0(0000) GS:ffff98c393b80000(0000)
-knlGS:0000000000000000
-[    1.449357] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    1.449441] CR2: 0000000000000000 CR3: 000000020b150003 CR4:
-00000000000206e0
-[    1.449531] Call Trace:
-[    1.449615]  sky2_probe+0x42b/0x790 [sky2]
-[    1.449702]  ? __kernfs_new_node+0x16d/0x1d0
-[    1.449785]  ? _cond_resched+0x15/0x30
-[    1.449869]  local_pci_probe+0x42/0x80
-[    1.449951]  pci_device_probe+0x112/0x190
-[    1.450033]  really_probe+0xef/0x390
-[    1.450109]  driver_probe_device+0xb4/0x100
-[    1.450189]  device_driver_attach+0x4f/0x60
-[    1.450270]  __driver_attach+0x86/0x140
-[    1.450351]  ? device_driver_attach+0x60/0x60
-[    1.450436]  bus_for_each_dev+0x77/0xc0
-[    1.450516]  ? klist_add_tail+0x3b/0x70
-[    1.450597]  bus_add_driver+0x14a/0x1e0
-[    1.450678]  ? 0xffffffffc01fd000
-[    1.450757]  driver_register+0x6b/0xb0
-[    1.450835]  ? 0xffffffffc01fd000
-[    1.450919]  do_one_initcall+0x46/0x1f4
-[    1.451001]  ? free_unref_page_commit+0x91/0x100
-[    1.451084]  ? _cond_resched+0x15/0x30
-[    1.451162]  ? kmem_cache_alloc_trace+0x15b/0x1c0
-[    1.451247]  do_init_module+0x5a/0x220
-[    1.451326]  load_module+0x2181/0x2410
-[    1.451408]  ? __do_sys_finit_module+0xa8/0x110
-[    1.451487]  __do_sys_finit_module+0xa8/0x110
-[    1.451572]  do_syscall_64+0x55/0x110
-[    1.451653]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[    1.451738] RIP: 0033:0x7f904e5d42a9
-[    1.451817] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00
-48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f
-05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 6b 0c 00 f7 d8 64 89 01 48
-[    1.451981] RSP: 002b:00007ffd4ae3cd78 EFLAGS: 00000246 ORIG_RAX:
-0000000000000139
-[    1.452092] RAX: ffffffffffffffda RBX: 000056419fd19f20 RCX:
-00007f904e5d42a9
-[    1.452180] RDX: 0000000000000000 RSI: 00007f904e4d8cad RDI:
-0000000000000005
-[    1.452267] RBP: 00007f904e4d8cad R08: 0000000000000000 R09:
-000056419fd05d30
-[    1.452351] R10: 0000000000000005 R11: 0000000000000246 R12:
-0000000000000000
-[    1.452440] R13: 000056419fd153f0 R14: 0000000000020000 R15:
-000056419fd19f20
-[    1.452530] Modules linked in: ehci_pci(E+) ehci_hcd(E) lpc_ich(E)
-scsi_mod(E) i2c_i801(E+) sky2(E+) usbcore(E) fan(E) thermal(E+) fjes(E-)
-video(E)
-[    1.452670] CR2: 0000000000000000
-[    1.452771] ---[ end trace ad7cf881c9be3849 ]---
-[    1.452855] RIP: 0010:sky2_init_netdev+0x221/0x2e0 [sky2]
-[    1.452940] Code: 83 d0 00 00 00 0f b6 85 98 01 00 00 83 c0 49 3c 02
-19 c0 25 b4 e2 ff ff 05 28 23 00 00 89 83 40 02 00 00 48 8b 83 28 03 00
-00 <8b> 14 25 00 00 00 00 89 10 0f b7 14 25 04 00 00 00 66 89 50 04 48
-[    1.453107] RSP: 0018:ffffaa0140ecfa38 EFLAGS: 00010203
-[    1.453190] RAX: ffff98c391c16970 RBX: ffff98c38b723000 RCX:
-0000000000000020
-[    1.453272] RDX: 00000000000002e8 RSI: 0000008000000000 RDI:
-00000000ffffffff
-[    1.453356] RBP: ffff98c38af53c00 R08: 0000000000000006 R09:
-ffff98c393403200
-[    1.453439] R10: 000000000000016c R11: 000000000000016c R12:
-0000000000000001
-[    1.453531] R13: 0000000000000000 R14: 0000000000000000 R15:
-ffff98c38af53c00
-[    1.453635] FS:  00007f904dd698c0(0000) GS:ffff98c393b80000(0000)
-knlGS:0000000000000000
-[    1.453763] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    1.453863] CR2: 0000000000000000 CR3: 000000020b150003 CR4:
-00000000000206e0
 
+I don't have this, sorry.
 
 [7.] A small shell script or example program which triggers the
      problem (if possible)
-Sorry, the problem appears on rebooting and logging in.
+
+Sorry, the problem requires pressing the power button to make the system
+hibernate.
 
 [8.] Environment
 
@@ -8983,8 +8916,8 @@ $ awk -f scripts/ver_linux
 If some fields are empty or look unusual you may have an old version.
 Compare to the current minimal requirements in Documentation/Changes.
 
-Linux alvarezp-samsung 5.1.0-12511-g72cf0b07418a #10 SMP Sat May 18
-00:22:05 CDT 2019 x86_64 GNU/Linux
+Linux alvarezp-samsung 5.1.0-rc7-02029-g5503a6889f72 #9 SMP Fri May 17
+22:14:35 CDT 2019 x86_64 GNU/Linux
 
 GNU Make            	4.2.1
 Binutils            	2.32
@@ -9146,21 +9079,22 @@ address sizes	: 36 bits physical, 48 bits virtual
 power management:
 
 [8.3.] Module information (from /proc/modules):
+
 $ cat /proc/modules
 ctr 16384 3 - Live 0x0000000000000000 (E)
 ccm 20480 9 - Live 0x0000000000000000 (E)
 fuse 135168 3 - Live 0x0000000000000000 (E)
 pci_stub 16384 1 - Live 0x0000000000000000 (E)
-nf_tables 155648 0 - Live 0x0000000000000000 (E)
 vboxpci 28672 0 - Live 0x0000000000000000 (OE)
 vboxnetadp 28672 0 - Live 0x0000000000000000 (OE)
+nf_tables 155648 0 - Live 0x0000000000000000 (E)
 vboxnetflt 32768 0 - Live 0x0000000000000000 (OE)
-vboxdrv 499712 3 vboxpci,vboxnetadp,vboxnetflt, Live 0x0000000000000000 (OE)
+vboxdrv 495616 3 vboxpci,vboxnetadp,vboxnetflt, Live 0x0000000000000000 (OE)
+nf_conntrack_netlink 53248 0 - Live 0x0000000000000000 (E)
 cpufreq_conservative 16384 0 - Live 0x0000000000000000 (E)
+nf_conntrack 159744 1 nf_conntrack_netlink, Live 0x0000000000000000 (E)
 cpufreq_powersave 20480 0 - Live 0x0000000000000000 (E)
 cpufreq_userspace 20480 0 - Live 0x0000000000000000 (E)
-nf_conntrack_netlink 53248 0 - Live 0x0000000000000000 (E)
-nf_conntrack 159744 1 nf_conntrack_netlink, Live 0x0000000000000000 (E)
 nf_defrag_ipv6 24576 1 nf_conntrack, Live 0x0000000000000000 (E)
 nf_defrag_ipv4 16384 1 nf_conntrack, Live 0x0000000000000000 (E)
 libcrc32c 16384 1 nf_conntrack, Live 0x0000000000000000 (E)
@@ -9178,59 +9112,59 @@ media 57344 4 uvcvideo,videobuf2_v4l2,videobuf2_common,videodev, Live
 0x0000000000000000 (E)
 snd_hda_codec_hdmi 69632 1 - Live 0x0000000000000000 (E)
 snd_hda_codec_realtek 126976 1 - Live 0x0000000000000000 (E)
-arc4 16384 2 - Live 0x0000000000000000 (E)
 snd_hda_codec_generic 90112 1 snd_hda_codec_realtek, Live
 0x0000000000000000 (E)
 ledtrig_audio 16384 2 snd_hda_codec_realtek,snd_hda_codec_generic, Live
 0x0000000000000000 (E)
 intel_powerclamp 20480 0 - Live 0x0000000000000000 (E)
-ath9k 135168 0 - Live 0x0000000000000000 (E)
-ath9k_common 20480 1 ath9k, Live 0x0000000000000000 (E)
 kvm_intel 278528 0 - Live 0x0000000000000000 (E)
-ath9k_hw 483328 2 ath9k,ath9k_common, Live 0x0000000000000000 (E)
+kvm 737280 1 kvm_intel, Live 0x0000000000000000 (E)
+irqbypass 16384 1 kvm, Live 0x0000000000000000 (E)
+arc4 16384 2 - Live 0x0000000000000000 (E)
+i915 1794048 12 - Live 0x0000000000000000 (E)
+ath9k 135168 0 - Live 0x0000000000000000 (E)
+intel_cstate 16384 0 - Live 0x0000000000000000 (E)
 snd_hda_intel 49152 3 - Live 0x0000000000000000 (E)
+joydev 28672 0 - Live 0x0000000000000000 (E)
 snd_hda_codec 155648 4
 snd_hda_codec_hdmi,snd_hda_codec_realtek,snd_hda_codec_generic,snd_hda_intel,
 Live 0x0000000000000000 (E)
-kvm 741376 1 kvm_intel, Live 0x0000000000000000 (E)
+drm_kms_helper 208896 1 i915, Live 0x0000000000000000 (E)
+ath9k_common 20480 1 ath9k, Live 0x0000000000000000 (E)
+ath9k_hw 483328 2 ath9k,ath9k_common, Live 0x0000000000000000 (E)
 snd_hda_core 102400 5
 snd_hda_codec_hdmi,snd_hda_codec_realtek,snd_hda_codec_generic,snd_hda_intel,snd_hda_codec,
 Live 0x0000000000000000 (E)
+intel_uncore 135168 0 - Live 0x0000000000000000 (E)
+drm 487424 8 i915,drm_kms_helper, Live 0x0000000000000000 (E)
+serio_raw 20480 0 - Live 0x0000000000000000 (E)
+pcc_cpufreq 20480 0 - Live 0x0000000000000000 (E)
+pcspkr 16384 0 - Live 0x0000000000000000 (E)
+i2c_algo_bit 16384 1 i915, Live 0x0000000000000000 (E)
+evdev 28672 24 - Live 0x0000000000000000 (E)
 snd_hwdep 16384 1 snd_hda_codec, Live 0x0000000000000000 (E)
-irqbypass 16384 1 kvm, Live 0x0000000000000000 (E)
 ath 36864 3 ath9k,ath9k_common,ath9k_hw, Live 0x0000000000000000 (E)
-joydev 28672 0 - Live 0x0000000000000000 (E)
+acpi_cpufreq 28672 1 - Live 0x0000000000000000 (E)
+iTCO_wdt 16384 0 - Live 0x0000000000000000 (E)
 snd_pcm 118784 4
 snd_hda_codec_hdmi,snd_hda_intel,snd_hda_codec,snd_hda_core, Live
 0x0000000000000000 (E)
-serio_raw 20480 0 - Live 0x0000000000000000 (E)
-mac80211 851968 1 ath9k, Live 0x0000000000000000 (E)
-pcspkr 16384 0 - Live 0x0000000000000000 (E)
-evdev 28672 24 - Live 0x0000000000000000 (E)
-i915 1867776 12 - Live 0x0000000000000000 (E)
-intel_cstate 16384 0 - Live 0x0000000000000000 (E)
+mac80211 847872 1 ath9k, Live 0x0000000000000000 (E)
 snd_timer 40960 1 snd_pcm, Live 0x0000000000000000 (E)
-cfg80211 811008 4 ath9k,ath9k_common,ath,mac80211, Live
-0x0000000000000000 (E)
-intel_uncore 139264 0 - Live 0x0000000000000000 (E)
+sg 36864 0 - Live 0x0000000000000000 (E)
 snd 98304 14
 snd_hda_codec_hdmi,snd_hda_codec_realtek,snd_hda_codec_generic,snd_hda_intel,snd_hda_codec,snd_hwdep,snd_pcm,snd_timer,
 Live 0x0000000000000000 (E)
-drm_kms_helper 217088 1 i915, Live 0x0000000000000000 (E)
-drm 520192 8 i915,drm_kms_helper, Live 0x0000000000000000 (E)
-sg 40960 0 - Live 0x0000000000000000 (E)
-soundcore 16384 1 snd, Live 0x0000000000000000 (E)
-samsung_laptop 24576 0 - Live 0x0000000000000000 (E)
-rfkill 28672 4 cfg80211,samsung_laptop, Live 0x0000000000000000 (E)
-iTCO_wdt 16384 0 - Live 0x0000000000000000 (E)
-iTCO_vendor_support 16384 1 iTCO_wdt, Live 0x0000000000000000 (E)
-i2c_algo_bit 16384 1 i915, Live 0x0000000000000000 (E)
+cfg80211 811008 4 ath9k,ath9k_common,ath,mac80211, Live
+0x0000000000000000 (E)
 intel_ips 28672 0 - Live 0x0000000000000000 (E)
+samsung_laptop 24576 0 - Live 0x0000000000000000 (E)
+iTCO_vendor_support 16384 1 iTCO_wdt, Live 0x0000000000000000 (E)
+soundcore 16384 1 snd, Live 0x0000000000000000 (E)
+rfkill 28672 4 cfg80211,samsung_laptop, Live 0x0000000000000000 (E)
 button 20480 0 - Live 0x0000000000000000 (E)
 battery 20480 0 - Live 0x0000000000000000 (E)
-pcc_cpufreq 20480 0 - Live 0x0000000000000000 (E)
 ac 16384 0 - Live 0x0000000000000000 (E)
-acpi_cpufreq 28672 1 - Live 0x0000000000000000 (E)
 binfmt_misc 24576 1 - Live 0x0000000000000000 (E)
 coretemp 20480 0 - Live 0x0000000000000000 (E)
 loop 36864 0 - Live 0x0000000000000000 (E)
@@ -9249,28 +9183,29 @@ jbd2 126976 1 ext4, Live 0x0000000000000000 (E)
 uas 28672 0 - Live 0x0000000000000000 (E)
 usb_storage 77824 1 uas, Live 0x0000000000000000 (E)
 sr_mod 28672 0 - Live 0x0000000000000000 (E)
-sd_mod 57344 3 - Live 0x0000000000000000 (E)
 cdrom 73728 1 sr_mod, Live 0x0000000000000000 (E)
+sd_mod 57344 3 - Live 0x0000000000000000 (E)
 hid_generic 16384 0 - Live 0x0000000000000000 (E)
 usbhid 65536 0 - Live 0x0000000000000000 (E)
 hid 139264 2 hid_generic,usbhid, Live 0x0000000000000000 (E)
 ahci 40960 3 - Live 0x0000000000000000 (E)
 libahci 40960 1 ahci, Live 0x0000000000000000 (E)
+libata 274432 2 ahci,libahci, Live 0x0000000000000000 (E)
+ehci_pci 20480 0 - Live 0x0000000000000000 (E)
+ehci_hcd 98304 1 ehci_pci, Live 0x0000000000000000 (E)
 crc32c_intel 24576 2 - Live 0x0000000000000000 (E)
 psmouse 176128 0 - Live 0x0000000000000000 (E)
-ehci_pci 20480 0 - Live 0x0000000000000000 (E)
-libata 274432 2 ahci,libahci, Live 0x0000000000000000 (E)
-ehci_hcd 98304 1 ehci_pci, Live 0x0000000000000000 (E)
-lpc_ich 28672 0 - Live 0x0000000000000000 (E)
-scsi_mod 245760 6 sg,uas,usb_storage,sr_mod,sd_mod,libata, Live
+scsi_mod 241664 6 sg,uas,usb_storage,sr_mod,sd_mod,libata, Live
 0x0000000000000000 (E)
 i2c_i801 32768 0 - Live 0x0000000000000000 (E)
-sky2 94208 1 - Loading 0x0000000000000000 (E+)
+sky2 73728 0 - Live 0x0000000000000000 (E)
+lpc_ich 28672 0 - Live 0x0000000000000000 (E)
 usbcore 299008 6 uvcvideo,uas,usb_storage,usbhid,ehci_pci,ehci_hcd, Live
 0x0000000000000000 (E)
-fan 20480 0 - Live 0x0000000000000000 (E)
 thermal 20480 0 - Live 0x0000000000000000 (E)
+fan 20480 0 - Live 0x0000000000000000 (E)
 video 49152 2 i915,samsung_laptop, Live 0x0000000000000000 (E)
+
 
 [8.4.] Loaded driver and hardware information (/proc/ioports, /proc/iomem)
 
@@ -9347,6 +9282,9 @@ $ cat /proc/iomem
 00000000-00000000 : Reserved
   00000000-00000000 : System ROM
 00000000-00000000 : System RAM
+  00000000-00000000 : Kernel code
+  00000000-00000000 : Kernel data
+  00000000-00000000 : Kernel bss
 00000000-00000000 : Reserved
 00000000-00000000 : System RAM
 00000000-00000000 : Reserved
@@ -9418,13 +9356,10 @@ $ cat /proc/iomem
 00000000-00000000 : System RAM
 00000000-00000000 : Reserved
 00000000-00000000 : System RAM
-  00000000-00000000 : Kernel code
-  00000000-00000000 : Kernel data
-  00000000-00000000 : Kernel bss
 00000000-00000000 : Reserved
 00000000-00000000 : System RAM
 00000000-00000000 : System RAM
-
+*
 
 [8.5.] PCI information ('lspci -vvv' as root)
 $ sudo lspci -vvvv
@@ -9446,13 +9381,13 @@ Stepping- SERR- FastB2B- DisINTx+
 	Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=fast >TAbort- <TAbort-
 <MAbort- >SERR- <PERR- INTx-
 	Latency: 0
-	Interrupt: pin A routed to IRQ 28
+	Interrupt: pin A routed to IRQ 29
 	Region 0: Memory at fc000000 (64-bit, non-prefetchable) [size=4M]
 	Region 2: Memory at e0000000 (64-bit, prefetchable) [size=256M]
 	Region 4: I/O ports at 1800 [size=8]
 	[virtual] Expansion ROM at 000c0000 [disabled] [size=128K]
 	Capabilities: [90] MSI: Enable+ Count=1/1 Maskable- 64bit-
-		Address: fee02004  Data: 4025
+		Address: fee02004  Data: 4024
 	Capabilities: [d0] Power Management version 2
 		Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA PME(D0-,D1-,D2-,D3hot-,D3cold-)
 		Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
@@ -9493,14 +9428,14 @@ Stepping- SERR+ FastB2B- DisINTx+
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
 <MAbort- >SERR- <PERR- INTx-
 	Latency: 0, Cache Line Size: 64 bytes
-	Interrupt: pin A routed to IRQ 29
+	Interrupt: pin A routed to IRQ 30
 	Region 0: Memory at fc700000 (64-bit, non-prefetchable) [size=16K]
 	Capabilities: [50] Power Management version 2
 		Flags: PMEClk- DSI- D1- D2- AuxCurrent=55mA
 PME(D0+,D1-,D2-,D3hot+,D3cold+)
 		Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
 	Capabilities: [60] MSI: Enable+ Count=1/1 Maskable- 64bit+
-		Address: 00000000fee02004  Data: 4024
+		Address: 00000000fee04004  Data: 4024
 	Capabilities: [70] Express (v1) Root Complex Integrated Endpoint, MSI 00
 		DevCap:	MaxPayload 128 bytes, PhantFunc 0
 			ExtTag- RBE-
@@ -9762,7 +9697,7 @@ Stepping- SERR- FastB2B- DisINTx+
 	Status: Cap+ 66MHz+ UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-
 <TAbort- <MAbort- >SERR- <PERR- INTx-
 	Latency: 0
-	Interrupt: pin B routed to IRQ 27
+	Interrupt: pin B routed to IRQ 28
 	Region 0: I/O ports at 1818 [size=8]
 	Region 1: I/O ports at 180c [size=4]
 	Region 2: I/O ports at 1810 [size=8]
@@ -9882,18 +9817,18 @@ MalfTLP+ ECRC- UnsupReq- ACSViol-
 Fast Ethernet Controller
 	Subsystem: Samsung Electronics Co Ltd R730 Laptop
 	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
-Stepping- SERR+ FastB2B- DisINTx-
+Stepping- SERR+ FastB2B- DisINTx+
 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
 <MAbort- >SERR- <PERR- INTx-
 	Latency: 0, Cache Line Size: 64 bytes
-	Interrupt: pin A routed to IRQ 19
+	Interrupt: pin A routed to IRQ 27
 	Region 0: Memory at fc600000 (64-bit, non-prefetchable) [size=16K]
 	Region 2: I/O ports at 4000 [size=256]
 	Capabilities: [48] Power Management version 3
 		Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=0mA PME(D0+,D1+,D2+,D3hot+,D3cold+)
 		Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
-	Capabilities: [5c] MSI: Enable- Count=1/1 Maskable- 64bit+
-		Address: 0000000000000000  Data: 0000
+	Capabilities: [5c] MSI: Enable+ Count=1/1 Maskable- 64bit+
+		Address: 00000000fee04004  Data: 4023
 	Capabilities: [c0] Express (v2) Legacy Endpoint, MSI 00
 		DevCap:	MaxPayload 128 bytes, PhantFunc 0, Latency L0s unlimited, L1
 unlimited
@@ -10002,11 +9937,9 @@ cat: /proc/scsi/scsi: No such file or directory
 
 [X.] Other notes, patches, fixes, workarounds:
 $ sudo dmesg | grep -i sky2
-[    1.441500] sky2: driver version 1.30
-[    1.447402] sky2 0000:06:00.0: Yukon-2 FE+ chip revision 0
-[    1.448476] RIP: 0010:sky2_init_netdev+0x221/0x2e0 [sky2]
-[    1.449615]  sky2_probe+0x42b/0x790 [sky2]
-[    1.452530] Modules linked in: ehci_pci(E+) ehci_hcd(E) lpc_ich(E)
-scsi_mod(E) i2c_i801(E+) sky2(E+) usbcore(E) fan(E) thermal(E+) fjes(E-)
-video(E)
-[    1.452855] RIP: 0010:sky2_init_netdev+0x221/0x2e0 [sky2]
+[    1.590257] sky2: driver version 1.30
+[    1.590704] sky2 0000:06:00.0: Yukon-2 FE+ chip revision 0
+[    1.598330] sky2 0000:06:00.0 eth0: addr e8:11:32:8d:86:49
+[   50.587329] sky2 0000:06:00.0 eth0: enabling interface
+[   52.256216] sky2 0000:06:00.0 eth0: Link is up at 100 Mbps, full
+duplex, flow control rx
