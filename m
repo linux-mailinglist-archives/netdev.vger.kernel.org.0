@@ -2,89 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40CA3223CB
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 17:13:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A84223FB
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 17:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729310AbfERPNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 11:13:40 -0400
-Received: from netrider.rowland.org ([192.131.102.5]:49361 "HELO
-        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with SMTP id S1728783AbfERPNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 11:13:40 -0400
-Received: (qmail 8434 invoked by uid 500); 18 May 2019 11:13:39 -0400
-Received: from localhost (sendmail-bs@127.0.0.1)
-  by localhost with SMTP; 18 May 2019 11:13:39 -0400
-Date:   Sat, 18 May 2019 11:13:39 -0400 (EDT)
-From:   Alan Stern <stern@rowland.harvard.edu>
-X-X-Sender: stern@netrider.rowland.org
-To:     syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>
-cc:     andreyknvl@google.com, <chunkeey@gmail.com>,
-        <chunkeey@googlemail.com>, <davem@davemloft.net>,
-        <kvalo@codeaurora.org>,
-        Kernel development list <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        <syzkaller-bugs@googlegroups.com>
-Subject: Re: KASAN: use-after-free Read in p54u_load_firmware_cb
-In-Reply-To: <00000000000009fcff05891bae0a@google.com>
-Message-ID: <Pine.LNX.4.44L0.1905181045400.7855-100000@netrider.rowland.org>
+        id S1729416AbfERPuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 11:50:02 -0400
+Received: from mail-it1-f198.google.com ([209.85.166.198]:43635 "EHLO
+        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729330AbfERPuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 11:50:02 -0400
+Received: by mail-it1-f198.google.com with SMTP id z66so9465081itc.8
+        for <netdev@vger.kernel.org>; Sat, 18 May 2019 08:50:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=XQeWzljs1DH6t0S4944Drg1GlykramoA+3gl7La3QNE=;
+        b=WBkLy64qfnn4R54S8yxDqRlUXi8ZleKbftlrQYzqX86rGd6YV+e1cB6VuSQDKHmIHi
+         VoB5S28aCRMm3Gw0+DfJCMIvBmoIm8AEiXejFsk6nv6U4J/Bisoz1bmcUDCoQcL+Zz5c
+         zrT9atifs3dzlAt65aU6OnEeQQpOyXSSwGBacAyUd94P7mkr8nLh8bVIRWyqu9DvWl/F
+         pd5r996qDAJzQYS7f2TFpj7jxzcfXZ+sMm/sSPBt+pP01X2pvbgR/np0Gqp2xOPiM0rw
+         ozrR4wPVxuJ5/aG4HuswMrYrBYcwSpDL9iqEMUuRIumUN9Efc14QIQOTCbG44Zvun1AL
+         EeTQ==
+X-Gm-Message-State: APjAAAXerleAnFR1ekHV+DMJA5wDej75aJOvf5ddHcx37llwDlHwrzAo
+        sM6KlZ+CNAJ/ASYfFPK0Ln7hjxwHyWxldVxGO7XK06J5zozb
+X-Google-Smtp-Source: APXvYqw51fcH2Q6KSLNH5ltgMkDrRqU7TnuRZxCa6WlIJ2EhuAlm1c5bT30xYyjUbYZ5qPm8WvvdjptFx/es420dPOWE+4cY4Yux
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Received: by 2002:a02:412:: with SMTP id 18mr5592188jab.82.1558194600923;
+ Sat, 18 May 2019 08:50:00 -0700 (PDT)
+Date:   Sat, 18 May 2019 08:50:00 -0700
+In-Reply-To: <Pine.LNX.4.44L0.1905181045400.7855-100000@netrider.rowland.org>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000add98105892b73ec@google.com>
+Subject: Re: KASAN: use-after-free Read in p54u_load_firmware_cb
+From:   syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, chunkeey@gmail.com, chunkeey@googlemail.com,
+        davem@davemloft.net, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        oneukum@suse.com, stern@rowland.harvard.edu,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 May 2019, syzbot wrote:
+Hello,
 
-> Hello,
-> 
-> syzbot tried to test the proposed patch but build/boot failed:
+syzbot has tested the proposed patch but the reproducer still triggered  
+crash:
+KASAN: slab-out-of-bounds Read in p54u_load_firmware_cb
 
-Drat.  Mistake in the patch.  Let's try again.
+usb 6-1: Direct firmware load for isl3887usb failed with error -2
+p54u_load_firmware_cb: priv->udev = ffff88809ad5bb80
+usb 6-1: Firmware not found.
+==================================================================
+BUG: KASAN: slab-out-of-bounds in p54u_load_firmware_cb+0x3c9/0x45f  
+drivers/net/wireless/intersil/p54/p54usb.c:937
+Read of size 8 at addr ffff88809abab588 by task kworker/1:8/5526
 
-Incidentally, as far as I can tell there's no point in having the
-usb_get_dev() in p54u_probe() and usb_put_dev() in p54u_disconnect().  
-The device structure is guaranteed not to be deallocated while a driver
-is bound to any of its interfaces, so taking an extra reference won't
-make any difference.
+CPU: 1 PID: 5526 Comm: kworker/1:8 Not tainted 5.1.0-rc3-g43151d6-dirty #1
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: events request_firmware_work_func
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0xe8/0x16e lib/dump_stack.c:113
+  print_address_description+0x6c/0x236 mm/kasan/report.c:187
+  kasan_report.cold+0x1a/0x3c mm/kasan/report.c:317
+  p54u_load_firmware_cb+0x3c9/0x45f  
+drivers/net/wireless/intersil/p54/p54usb.c:937
+  request_firmware_work_func+0x12d/0x249  
+drivers/base/firmware_loader/main.c:785
+  process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
+  worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
+  kthread+0x313/0x420 kernel/kthread.c:253
+  ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
 
-On the other hand, I do see some problems in the firmware-load
-callback.  First, it calls device_release_driver() without first
-checking that the interface is still bound to the p54u driver.  
-Second, it shouldn't call device_release_driver() at all -- it should
-call usb_driver_release_interface().  It doesn't want to unbind the USB
-device's driver; it wants to unbind the interface's driver.  And third,
-to do this it needs to acquire udev's device lock, not the lock for
-udev's parent.
+Allocated by task 5503:
+  set_track mm/kasan/common.c:87 [inline]
+  __kasan_kmalloc mm/kasan/common.c:497 [inline]
+  __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:470
+  slab_post_alloc_hook mm/slab.h:437 [inline]
+  slab_alloc_node mm/slub.c:2756 [inline]
+  __kmalloc_node_track_caller+0xf3/0x320 mm/slub.c:4372
+  __kmalloc_reserve.isra.0+0x3e/0xf0 net/core/skbuff.c:140
+  __alloc_skb+0xf4/0x5a0 net/core/skbuff.c:208
+  alloc_skb include/linux/skbuff.h:1058 [inline]
+  netlink_alloc_large_skb net/netlink/af_netlink.c:1182 [inline]
+  netlink_sendmsg+0x8db/0xcd0 net/netlink/af_netlink.c:1900
+  sock_sendmsg_nosec net/socket.c:651 [inline]
+  sock_sendmsg+0xda/0x130 net/socket.c:661
+  ___sys_sendmsg+0x80b/0x930 net/socket.c:2260
+  __sys_sendmsg+0xf1/0x1b0 net/socket.c:2298
+  do_syscall_64+0xcf/0x4f0 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-Alan Stern
+Freed by task 5503:
+  set_track mm/kasan/common.c:87 [inline]
+  __kasan_slab_free+0x130/0x180 mm/kasan/common.c:459
+  slab_free_hook mm/slub.c:1429 [inline]
+  slab_free_freelist_hook+0x5e/0x140 mm/slub.c:1456
+  slab_free mm/slub.c:3003 [inline]
+  kfree+0xce/0x290 mm/slub.c:3958
+  skb_free_head+0x90/0xb0 net/core/skbuff.c:557
+  skb_release_data+0x543/0x8b0 net/core/skbuff.c:577
+  skb_release_all+0x4b/0x60 net/core/skbuff.c:631
+  __kfree_skb net/core/skbuff.c:645 [inline]
+  consume_skb net/core/skbuff.c:705 [inline]
+  consume_skb+0xc5/0x2f0 net/core/skbuff.c:699
+  netlink_unicast_kernel net/netlink/af_netlink.c:1311 [inline]
+  netlink_unicast+0x4e2/0x690 net/netlink/af_netlink.c:1336
+  netlink_sendmsg+0x810/0xcd0 net/netlink/af_netlink.c:1925
+  sock_sendmsg_nosec net/socket.c:651 [inline]
+  sock_sendmsg+0xda/0x130 net/socket.c:661
+  ___sys_sendmsg+0x80b/0x930 net/socket.c:2260
+  __sys_sendmsg+0xf1/0x1b0 net/socket.c:2298
+  do_syscall_64+0xcf/0x4f0 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+The buggy address belongs to the object at ffff88809abab180
+  which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 8 bytes to the right of
+  1024-byte region [ffff88809abab180, ffff88809abab580)
+The buggy address belongs to the page:
+page:ffffea00026aea00 count:1 mapcount:0 mapping:ffff88812c3f4a00 index:0x0  
+compound_mapcount: 0
+flags: 0xfff00000010200(slab|head)
+raw: 00fff00000010200 dead000000000100 dead000000000200 ffff88812c3f4a00
+raw: 0000000000000000 00000000000e000e 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff88809abab480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88809abab500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff88809abab580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                       ^
+  ffff88809abab600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88809abab680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
-#syz test: https://github.com/google/kasan.git usb-fuzzer
+Tested on:
 
- drivers/net/wireless/intersil/p54/p54usb.c |    3 +++
- 1 file changed, 3 insertions(+)
-
-Index: usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
-===================================================================
---- usb-devel.orig/drivers/net/wireless/intersil/p54/p54usb.c
-+++ usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
-@@ -923,6 +923,7 @@ static void p54u_load_firmware_cb(const
- 	struct usb_device *udev = priv->udev;
- 	int err;
- 
-+	pr_info("%s: priv->udev = %px\n", __func__, udev);
- 	complete(&priv->fw_wait_load);
- 	if (firmware) {
- 		priv->fw = firmware;
-@@ -969,6 +970,8 @@ static int p54u_load_firmware(struct iee
- 	if (i < 0)
- 		return i;
- 
-+	dev_info(&udev->dev, "%s: udev @ %px, dev.parent @ %px\n",
-+			__func__, udev, &udev->dev.parent);
- 	dev_info(&priv->udev->dev, "Loading firmware file %s\n",
- 	       p54u_fwlist[i].fw);
+commit:         43151d6c usb-fuzzer: main usb gadget fuzzer driver
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=108a0108a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4183eeef650d1234
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1292f852a00000
 
