@@ -2,50 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4AB122462
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 20:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F2522466
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 20:10:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728990AbfERSE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 14:04:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39037 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728283AbfERSE0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 May 2019 14:04:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=EamXuXRf8C8VugpDQZfo1yXC6WBa01lWzmt8JR/aU3A=; b=viU181nRdae4GmN860gGcr7KuE
-        XEXcTn7e0oY2ybdkPErIU7OJBBBViYGWNEAr0jqsG9wETpN9TfkQOW3yRmHGm0oE1WEEsK/kya9vY
-        pcHj/7txY13vG9ug6ZJKLKFCYJrBdVNtIDz8U7BXLL+pnfioWAdR366KZy3DRTl5/1fM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hS3h0-0007Pn-LQ; Sat, 18 May 2019 20:04:22 +0200
-Date:   Sat, 18 May 2019 20:04:22 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Schmitz <schmitzmic@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, sfr@canb.auug.org.au
-Subject: Re: [PATCH v2] net: phy: rename Asix Electronics PHY driver
-Message-ID: <20190518180422.GA28414@lunn.ch>
-References: <20190514105649.512267cd@canb.auug.org.au>
- <1558142095-20307-1-git-send-email-schmitzmic@gmail.com>
- <20190518142010.GL14298@lunn.ch>
- <cebbb214-c79f-ab7c-8238-0bc0576ddfbd@gmail.com>
+        id S1729752AbfERSJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 14:09:56 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:39021 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729169AbfERSJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 14:09:56 -0400
+Received: by mail-yw1-f65.google.com with SMTP id w21so4091548ywd.6
+        for <netdev@vger.kernel.org>; Sat, 18 May 2019 11:09:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qKwzC7+9dFa3APPTisEwxUdLiJEcokybHIkZLdfOQgU=;
+        b=HP7uv2G7guSKmSVG8Z2PpC8Q+y2qv/S3jM8lQOSq9E99UtkRMLaGCEbmDtZmmoTKcM
+         QsW3HaNs5Tk7fgkVGcrd9zXcUelxRpyODQASlHI5iOlWQgWWLe2MRIWPFjN29t3xBQ2q
+         RL3ZJZ2LCdn5+vlWgchQhwy6oIZBPpu74IygxLQZmRjHIFNdljrHw6D8I3io0p/TBdH6
+         nxVTHk8LTLglio3bcxaIXANCsFPUCU+C6NRxvHlDh+GMOWfK84aD07IiJbv3x/xCt7cg
+         0AChUF9PLPlwcR6AORccDuXoMAsLg9GgjF/D2RHJu7T6sLUIwM/uHv453rPenfwkfNEz
+         wyjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qKwzC7+9dFa3APPTisEwxUdLiJEcokybHIkZLdfOQgU=;
+        b=VGi21esxT6fhMeCqFKCbVpsNqAkWE/OfPBnnAiskNqCds5vXeGXH09wJy/UxhXVL1v
+         jeC0VVfiw/0lb7n7QewJyuw82xsBY3N+1Vfgxa4vFPvSEXHDfM3SBxKxhsrhRSF7NEXb
+         RuVOuoQQus0Obfl05TOEwquq+qTjZdH0qi+5zoW9lDiLYfgMbkcghWNd5p25LMgc1NRY
+         Bu0FdbagXxgmr79bH0ikjBl5XhRO8V9b0Z81Uhl2gKRultD3KgT65q98UKrNdAK0+Q8P
+         Z9CKR1H/FJHarPcGAqvC53InIyPRUeAXdohfNc6NKZ3gXiyCIAT++Lm57Zn9tlkUJPA2
+         gMQQ==
+X-Gm-Message-State: APjAAAWIKAVY0X6R5FcWYJXfHnbCxJcWgIKItYucX+srSY3oYTIxL+k0
+        Ate4FgHAzj0S1E5XzxjNW8kVrU5B
+X-Google-Smtp-Source: APXvYqzeoyzhW1h+ik5An7CIg5lClafRpTYkn6mkWDEb4+61PBRi/xzzLRTFOhjpjllylf6VgGyuxg==
+X-Received: by 2002:a81:b649:: with SMTP id h9mr14257339ywk.233.1558202994279;
+        Sat, 18 May 2019 11:09:54 -0700 (PDT)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id i66sm3785705ywa.29.2019.05.18.11.09.52
+        for <netdev@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 18 May 2019 11:09:52 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id a3so788572ybr.6
+        for <netdev@vger.kernel.org>; Sat, 18 May 2019 11:09:52 -0700 (PDT)
+X-Received: by 2002:a25:6ec1:: with SMTP id j184mr7425869ybc.441.1558202991919;
+ Sat, 18 May 2019 11:09:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cebbb214-c79f-ab7c-8238-0bc0576ddfbd@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <00000000000014e65905892486ab@google.com>
+In-Reply-To: <00000000000014e65905892486ab@google.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sat, 18 May 2019 14:09:15 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeM5qzyf_D+70Xe5k=3d+dYp2WyVZC-YM=K4=9kCCst6A@mail.gmail.com>
+Message-ID: <CA+FuTSeM5qzyf_D+70Xe5k=3d+dYp2WyVZC-YM=K4=9kCCst6A@mail.gmail.com>
+Subject: Re: INFO: trying to register non-static key in rhashtable_walk_enter
+To:     syzbot <syzbot+1e8114b61079bfe9cbc5@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>, jon.maloy@ericsson.com,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net,
+        Ying Xue <ying.xue@windriver.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>, hujunwei4@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> My apologies - I had hoped that as a bugfix. this could go straight to net.
+On Sat, May 18, 2019 at 3:34 AM syzbot
+<syzbot+1e8114b61079bfe9cbc5@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following crash on:
+>
+> HEAD commit:    510e2ced ipv6: fix src addr routing with the exception table
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15b7e608a00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=82f0809e8f0a8c87
+> dashboard link: https://syzkaller.appspot.com/bug?extid=1e8114b61079bfe9cbc5
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+>
+> Unfortunately, I don't have any reproducer for this crash yet.
+>
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+1e8114b61079bfe9cbc5@syzkaller.appspotmail.com
+>
+> INFO: trying to register non-static key.
+> the code is fine but needs lockdep annotation.
 
-Ah, O.K. You then need to put "PATCH net" to make it clear this is for
-net.
+All these five rhashtable_walk_enter probably have the same root cause.
 
-	Andrew
+Bisected to commit 7e27e8d6130c (" tipc: switch order of device
+registration to fix a crash"). Reverting that fixes it.
+
+Before the commit, tipc_init succeeds. After the commit it fails at
+register_pernet_subsys(&tipc_net_ops) due to error in
+
+  tipc_init_net
+    tipc_topsrv_start
+      tipc_topsrv_create_listener
+        sock_create_kern
+
+On a related note, in tipc_topsrv_start srv is also not freed on later
+error paths.
