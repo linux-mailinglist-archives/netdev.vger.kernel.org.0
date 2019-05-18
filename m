@@ -2,254 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 650022211F
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 03:15:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D611D22121
+	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 03:17:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728024AbfERBPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 May 2019 21:15:02 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:39932 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727260AbfERBPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 21:15:02 -0400
-Received: by mail-pl1-f196.google.com with SMTP id g9so4093912plm.6
-        for <netdev@vger.kernel.org>; Fri, 17 May 2019 18:15:01 -0700 (PDT)
+        id S1728459AbfERBRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 May 2019 21:17:31 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45880 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727450AbfERBRb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 May 2019 21:17:31 -0400
+Received: by mail-pg1-f193.google.com with SMTP id i21so4054931pgi.12
+        for <netdev@vger.kernel.org>; Fri, 17 May 2019 18:17:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references:to;
-        bh=a/YWlBQAaMsMP46Bem0O65dvMh/6zNAC0LweOl3PBGo=;
-        b=YBO/fOKYWggoGVZsPmscz7sNW0B2vAQq9K5Fm3XOyMr4DPiyAgUhWJPErpnpID/tkm
-         7Bkbd39LIOyWYfjlnKrLwx3SRuHAM+4dIi0U3BDDAJjOlrFKqEWzPLC9IAOJEb13X9sY
-         IWgHMQepeRI4WAjBH6mLq0KGF3JOJPiDK20ebrrojWlVtuGisDyMgd6Zj9zpxtHFHAjo
-         tV3/BB2rz5LAtpTFEiMdZw4CUwRy5Tb38Z/O3r9IoKJxTAr9bGXUlvRSNIyWHu7OnuYx
-         2+0y6tOlcCajF0C/2uEppP2KIDm+PYbXQRYASgeafUtIzusBj1PyhhLMp8UC8M/xLaRv
-         dxig==
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=ufPK5KfqnyNHGrSx9X8kkrjj9OPNGBEp/1EOBqKYf6s=;
+        b=vHW1w4CBzOakP6qXjSYDNd7lbMmE+cc3z08b+flhEPgC566zT1LANvFV2G6eccempD
+         B1cYeRi6J19sYIr8YN59oKW/JFpIg8qaSwIrFl4+5pgyIcTVPDC/eDMDi/4eFAHW2n8H
+         ibnJ3LIg6I6hIo69Thii1vrnU6/8HWFRy7Ag88Z5P9cTOGgYhao2f3IluC7vTnrrCGiB
+         YwKtnID2ZDAEjmjWHrtSDvlfMQu/DKYgXQsEOXT6Kf017gQG692mE5MOAcKy1B5rsFBk
+         LIhIIEGHVbMCrLIYi7TmVWM2WoszDojhKMZJVBewKEvZoKg9jnozLObkltNTvS/naMeO
+         dX2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:to;
-        bh=a/YWlBQAaMsMP46Bem0O65dvMh/6zNAC0LweOl3PBGo=;
-        b=dSFfe+8iCr6E8QvJQ0n85MoWRmQG7fJ1iKFH1q5tV8D9jRAqGXMg3aok9DI7vkWcqE
-         s8z2CYspfHRvfLBNRqH8w1rckPlSIxMI03JZveVdNRIEEy0KBwHgvUpx+8A6d4SmhpJX
-         m4zisInRJvx0ystACLhYZFVbwgfCQMmtzmW5LuFfT/sVtKpawPNSyzgacpuSp7niT74G
-         ZcLZ7vwrXdnArVmhqNhIC34ORSTdQEnpMykKulA2kCeYR1gasj3KnVgtIyeTHSyaoaUu
-         8ZXXmNnONSjdLmVmMAYVJpgLFm8zqSBoUek0NtgEhXB5n6TIiWZcBFkz/wRqB10iF3rD
-         hbLQ==
-X-Gm-Message-State: APjAAAXyhp+VWnd1/aPo5vP4pvxWynkd3hsgr4QVZJV2UiroZVmhmFnw
-        cN5gUeWzwgPMV5S8YVscIhk=
-X-Google-Smtp-Source: APXvYqyv3LTzEUxkB0fisiWaY4ZAv9E8LOqkq0WjQEPRvCB15yA1BjKqAL647N3TVqKVLPlPDGEOJA==
-X-Received: by 2002:a17:902:2bc9:: with SMTP id l67mr24126622plb.171.1558142101406;
-        Fri, 17 May 2019 18:15:01 -0700 (PDT)
-Received: from xplor.waratah.dyndns.org (122-58-182-39-adsl.sparkbb.co.nz. [122.58.182.39])
-        by smtp.gmail.com with ESMTPSA id v2sm9299850pgr.2.2019.05.17.18.15.00
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Fri, 17 May 2019 18:15:00 -0700 (PDT)
-Received: by xplor.waratah.dyndns.org (Postfix, from userid 1000)
-        id C9158360079; Sat, 18 May 2019 13:14:56 +1200 (NZST)
-From:   Michael Schmitz <schmitzmic@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     schmitz@debian.org, Michael Schmitz <schmitzmic@gmail.com>,
-        andrew@lunn.ch, davem@davemloft.net, sfr@canb.auug.org.au
-Subject: [PATCH v2] net: phy: rename Asix Electronics PHY driver
-Date:   Sat, 18 May 2019 13:14:55 +1200
-Message-Id: <1558142095-20307-1-git-send-email-schmitzmic@gmail.com>
-X-Mailer: git-send-email 1.7.0.4
-In-Reply-To: <20190514105649.512267cd@canb.auug.org.au>
+        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=ufPK5KfqnyNHGrSx9X8kkrjj9OPNGBEp/1EOBqKYf6s=;
+        b=WLjqDQk5Bdo/Fho1Hq2s3cdOqRd9An1sewf73pyIkpI16qHAnaBGXE6YUisMLfegUv
+         amKgdr4xAlGWOnkrIuU5pEUon6JENO5zv23XCSBiqfjF5t2UJBz6ozQY0QsU3UEs3k9k
+         t0KBrXlXoqR4bsTtajUS9cSRHP4Mbrnp9DUdiKI1ShMAf/q+Xl/afdn8NPZgXM551L63
+         AKrfWj1CLMtA5d2rIy+yR3f6mVSn2SYNh2QtayyFeksGNW6c6nU5mQ8Y6k4jnkhliaWt
+         TOuAh823zMwo8dtI7Trx54GCstM3ZSA8h6MWRozYhB0Uis7UeWOJz/hPBYlwR/63diDt
+         +nZA==
+X-Gm-Message-State: APjAAAWkxF3Ch2nMB9RQS2isnx/MaEMn+b8OS8TxxoMZ6XlRdmff5U15
+        2y3IVqbIALWEQ0oLTXIZ1xI=
+X-Google-Smtp-Source: APXvYqwNFtwQLB+rfjtwSdtrQQ7dLZYegYrIqcbE0/5Y8vm7qolAfZbcBve0GMwjUyNBN4Qbkdl2gA==
+X-Received: by 2002:a63:4c15:: with SMTP id z21mr16643006pga.395.1558142250751;
+        Fri, 17 May 2019 18:17:30 -0700 (PDT)
+Received: from [192.168.1.101] (122-58-182-39-adsl.sparkbb.co.nz. [122.58.182.39])
+        by smtp.gmail.com with ESMTPSA id i7sm5430497pfo.19.2019.05.17.18.17.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 May 2019 18:17:30 -0700 (PDT)
+Subject: Re: [PATCH 0/3] resolve module name conflict for asix PHY and USB
+ modules
+To:     Andrew Lunn <andrew@lunn.ch>
 References: <20190514105649.512267cd@canb.auug.org.au>
-To:     netdev@vger.kernel-org
+ <1558124718-19209-1-git-send-email-schmitzmic@gmail.com>
+ <20190517212002.GA22024@lunn.ch>
+Cc:     netdev@vger.kernel.org, sfr@canb.auug.org.au, davem@davemloft.net
+From:   Michael Schmitz <schmitzmic@gmail.com>
+Message-ID: <cf0f6da1-efd5-1d28-0141-5082f8b2bea1@gmail.com>
+Date:   Sat, 18 May 2019 13:17:25 +1200
+User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
+ Icedove/45.4.0
+MIME-Version: 1.0
+In-Reply-To: <20190517212002.GA22024@lunn.ch>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 31dd83b96641 ("net-next: phy: new Asix Electronics PHY driver")
-introduced a new PHY driver drivers/net/phy/asix.c that causes a module
-name conflict with a pre-existiting driver (drivers/net/usb/asix.c).
+Thanks Andrew,
 
-The PHY driver is used by the X-Surf 100 ethernet card driver, and loaded
-by that driver via its PHY ID. A rename of the driver looks unproblematic.
+makes perfect sense - patch resent.
 
-Rename PHY driver to ax88796b.c in order to resolve name conflict.
+Cheers,
 
-Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
-Fixes: 31dd83b96641 ("net-next: phy: new Asix Electronics PHY driver")
----
+	Michael
 
-Changes from v1:
-
-- merge into single commit (suggested by Andrew Lunn)
----
- drivers/net/ethernet/8390/Kconfig |  2 +-
- drivers/net/phy/Kconfig           |  2 +-
- drivers/net/phy/Makefile          |  2 +-
- drivers/net/phy/asix.c            | 57 ---------------------------------------
- drivers/net/phy/ax88796b.c        | 57 +++++++++++++++++++++++++++++++++++++++
- 5 files changed, 60 insertions(+), 60 deletions(-)
-
-diff --git a/drivers/net/ethernet/8390/Kconfig b/drivers/net/ethernet/8390/Kconfig
-index f2f0264..443b34e 100644
---- a/drivers/net/ethernet/8390/Kconfig
-+++ b/drivers/net/ethernet/8390/Kconfig
-@@ -49,7 +49,7 @@ config XSURF100
- 	tristate "Amiga XSurf 100 AX88796/NE2000 clone support"
- 	depends on ZORRO
- 	select AX88796
--	select ASIX_PHY
-+	select AX88796B_PHY
- 	help
- 	  This driver is for the Individual Computers X-Surf 100 Ethernet
- 	  card (based on the Asix AX88796 chip). If you have such a card,
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index d629971..5496e5c 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -253,7 +253,7 @@ config AQUANTIA_PHY
- 	---help---
- 	  Currently supports the Aquantia AQ1202, AQ2104, AQR105, AQR405
- 
--config ASIX_PHY
-+config AX88796B_PHY
- 	tristate "Asix PHYs"
- 	help
- 	  Currently supports the Asix Electronics PHY found in the X-Surf 100
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index 27d7f9f..5b5c866 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -52,7 +52,7 @@ ifdef CONFIG_HWMON
- aquantia-objs			+= aquantia_hwmon.o
- endif
- obj-$(CONFIG_AQUANTIA_PHY)	+= aquantia.o
--obj-$(CONFIG_ASIX_PHY)		+= asix.o
-+obj-$(CONFIG_AX88796B_PHY)	+= ax88796b.o
- obj-$(CONFIG_AT803X_PHY)	+= at803x.o
- obj-$(CONFIG_BCM63XX_PHY)	+= bcm63xx.o
- obj-$(CONFIG_BCM7XXX_PHY)	+= bcm7xxx.o
-diff --git a/drivers/net/phy/asix.c b/drivers/net/phy/asix.c
-deleted file mode 100644
-index 79bf7ef..0000000
---- a/drivers/net/phy/asix.c
-+++ /dev/null
-@@ -1,57 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0+
--/* Driver for Asix PHYs
-- *
-- * Author: Michael Schmitz <schmitzmic@gmail.com>
-- */
--#include <linux/kernel.h>
--#include <linux/errno.h>
--#include <linux/init.h>
--#include <linux/module.h>
--#include <linux/mii.h>
--#include <linux/phy.h>
--
--#define PHY_ID_ASIX_AX88796B		0x003b1841
--
--MODULE_DESCRIPTION("Asix PHY driver");
--MODULE_AUTHOR("Michael Schmitz <schmitzmic@gmail.com>");
--MODULE_LICENSE("GPL");
--
--/**
-- * asix_soft_reset - software reset the PHY via BMCR_RESET bit
-- * @phydev: target phy_device struct
-- *
-- * Description: Perform a software PHY reset using the standard
-- * BMCR_RESET bit and poll for the reset bit to be cleared.
-- * Toggle BMCR_RESET bit off to accommodate broken AX8796B PHY implementation
-- * such as used on the Individual Computers' X-Surf 100 Zorro card.
-- *
-- * Returns: 0 on success, < 0 on failure
-- */
--static int asix_soft_reset(struct phy_device *phydev)
--{
--	int ret;
--
--	/* Asix PHY won't reset unless reset bit toggles */
--	ret = phy_write(phydev, MII_BMCR, 0);
--	if (ret < 0)
--		return ret;
--
--	return genphy_soft_reset(phydev);
--}
--
--static struct phy_driver asix_driver[] = { {
--	.phy_id		= PHY_ID_ASIX_AX88796B,
--	.name		= "Asix Electronics AX88796B",
--	.phy_id_mask	= 0xfffffff0,
--	/* PHY_BASIC_FEATURES */
--	.soft_reset	= asix_soft_reset,
--} };
--
--module_phy_driver(asix_driver);
--
--static struct mdio_device_id __maybe_unused asix_tbl[] = {
--	{ PHY_ID_ASIX_AX88796B, 0xfffffff0 },
--	{ }
--};
--
--MODULE_DEVICE_TABLE(mdio, asix_tbl);
-diff --git a/drivers/net/phy/ax88796b.c b/drivers/net/phy/ax88796b.c
-new file mode 100644
-index 0000000..79bf7ef
---- /dev/null
-+++ b/drivers/net/phy/ax88796b.c
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/* Driver for Asix PHYs
-+ *
-+ * Author: Michael Schmitz <schmitzmic@gmail.com>
-+ */
-+#include <linux/kernel.h>
-+#include <linux/errno.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/mii.h>
-+#include <linux/phy.h>
-+
-+#define PHY_ID_ASIX_AX88796B		0x003b1841
-+
-+MODULE_DESCRIPTION("Asix PHY driver");
-+MODULE_AUTHOR("Michael Schmitz <schmitzmic@gmail.com>");
-+MODULE_LICENSE("GPL");
-+
-+/**
-+ * asix_soft_reset - software reset the PHY via BMCR_RESET bit
-+ * @phydev: target phy_device struct
-+ *
-+ * Description: Perform a software PHY reset using the standard
-+ * BMCR_RESET bit and poll for the reset bit to be cleared.
-+ * Toggle BMCR_RESET bit off to accommodate broken AX8796B PHY implementation
-+ * such as used on the Individual Computers' X-Surf 100 Zorro card.
-+ *
-+ * Returns: 0 on success, < 0 on failure
-+ */
-+static int asix_soft_reset(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	/* Asix PHY won't reset unless reset bit toggles */
-+	ret = phy_write(phydev, MII_BMCR, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	return genphy_soft_reset(phydev);
-+}
-+
-+static struct phy_driver asix_driver[] = { {
-+	.phy_id		= PHY_ID_ASIX_AX88796B,
-+	.name		= "Asix Electronics AX88796B",
-+	.phy_id_mask	= 0xfffffff0,
-+	/* PHY_BASIC_FEATURES */
-+	.soft_reset	= asix_soft_reset,
-+} };
-+
-+module_phy_driver(asix_driver);
-+
-+static struct mdio_device_id __maybe_unused asix_tbl[] = {
-+	{ PHY_ID_ASIX_AX88796B, 0xfffffff0 },
-+	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(mdio, asix_tbl);
--- 
-1.9.1
-
+Am 18.05.2019 um 09:20 schrieb Andrew Lunn:
+> On Sat, May 18, 2019 at 08:25:15AM +1200, Michael Schmitz wrote:
+>> Haven't heard back in a while, so here goes:
+>>
+>> Commit 31dd83b96641 ("net-next: phy: new Asix Electronics PHY driver")
+>> introduced a new PHY driver drivers/net/phy/asix.c that causes a module
+>> name conflict with a pre-existiting driver (drivers/net/usb/asix.c).
+>>
+>> The PHY driver is used by the X-Surf 100 ethernet card driver, and loaded
+>> by that driver via its PHY ID. A rename of the driver looks unproblematic.
+>>
+>> Rename PHY driver to ax88796b.c in order to resolve name conflict.
+>
+> Hi Michael
+>
+> Please just use git mv and do it all one patch. It then makes it clear
+> you have not changed the driver, just renamed it.
+>
+> Thanks
+> 	Andrew
+>
