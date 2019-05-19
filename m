@@ -2,209 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 256FA22773
-	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 19:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A81322869
+	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 20:45:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbfESREY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 May 2019 13:04:24 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:53536 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725777AbfESREX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 May 2019 13:04:23 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 6CEBF1A028E709A6FC32;
-        Sun, 19 May 2019 17:13:54 +0800 (CST)
-Received: from [127.0.0.1] (10.184.191.73) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Sun, 19 May 2019
- 17:13:47 +0800
-To:     <davem@davemloft.net>, <willemdebruijn.kernel@gmail.com>,
-        <jon.maloy@ericsson.com>, <ying.xue@windriver.com>,
-        <sfr@canb.auug.org.au>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        <mingfangsen@huawei.com>
-From:   hujunwei <hujunwei4@huawei.com>
-Subject: [PATCH v3] tipc: fix modprobe tipc failed after switch order of
- device registration
-Message-ID: <529aff15-5f3a-1bf1-76fa-691911ff6170@huawei.com>
-Date:   Sun, 19 May 2019 17:13:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727030AbfESSpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 May 2019 14:45:46 -0400
+Received: from mail-it1-f198.google.com ([209.85.166.198]:51149 "EHLO
+        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726062AbfESSpq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 May 2019 14:45:46 -0400
+Received: by mail-it1-f198.google.com with SMTP id o128so12047373ita.0
+        for <netdev@vger.kernel.org>; Sun, 19 May 2019 11:45:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=M1TghxkZ2cqK/XU0n2a61ItohSKPfNjC9hEQzfL0wnc=;
+        b=coMRJw+4vgLRperCZlbh3tAV3RVxKUTXpxwrYA0BGE8GAt5oIcWBfHwoqqETW99CJ0
+         h2Js3TLrbIPPOa9mQkpWgeNYGZnzUuTAPvhXiSpT1D5jPNbyOxu0daPvzJxKmz6H0kfR
+         ZMRtZg6BvIlbZH0wofIRWj6eSXDIiJY6NRgf51dD/vymnjkGv/V1dE+ESzZ6a0/WN9+n
+         2Oh6KlQMlkrMIz4CtmfQqqomDypxR++w9p0e2wLFpn8P70jXpA2D+WyztozVz2elVt94
+         fMo+b3noK5aQlOkg2P0vqfLHhDWYj4vnzFq/0jBEch1fqVKWTr3IXFHDP1czEbBmxdPY
+         svSA==
+X-Gm-Message-State: APjAAAVdzf/KlAlac6YN9c6QWPjWOIcL4M45xm/OhKRhOJNF+EtYBSc/
+        +cJZ7BaKwmXV6ZKPca8O9e5CNzpdHKOc2CDYMYcrSmqMU9Ob
+X-Google-Smtp-Source: APXvYqwJMvHP1nHjqR08pleCqoffj1JzDsim7beyXZUNubPpMK3yQh38HPUVLvyiIJD+FgMh1dtC7AoKpHKqET2ojtRwpjpVGXez
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.191.73]
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a05:6638:221:: with SMTP id f1mr41655686jaq.1.1558258025060;
+ Sun, 19 May 2019 02:27:05 -0700 (PDT)
+Date:   Sun, 19 May 2019 02:27:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000d60e405893a38f0@google.com>
+Subject: general protection fault in rhashtable_walk_enter
+From:   syzbot <syzbot+153641db1759e576ec8e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jon.maloy@ericsson.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Junwei Hu <hujunwei4@huawei.com>
+Hello,
 
-Error message printed:
-modprobe: ERROR: could not insert 'tipc': Address family not
-supported by protocol.
-when modprobe tipc after the following patch: switch order of
-device registration, commit 7e27e8d6130c
-("tipc: switch order of device registration to fix a crash")
+syzbot found the following crash on:
 
-Because sock_create_kern(net, AF_TIPC, ...) called by
-tipc_topsrv_create_listener() in the initialization process
-of tipc_init_net(), so tipc_socket_init() must be execute before that.
-Meanwhile, tipc_net_id need to be initialized when sock_create()
-called, and tipc_socket_init() is no need to be called for each namespace.
+HEAD commit:    b1d6682e Add linux-next specific files for 20190517
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1022b8bca00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d3758876561d8cec
+dashboard link: https://syzkaller.appspot.com/bug?extid=153641db1759e576ec8e
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-I add a variable tipc_topsrv_net_ops, and split the
-register_pernet_subsys() of tipc into two parts, and split
-tipc_socket_init() with initialization of pernet params.
+Unfortunately, I don't have any reproducer for this crash yet.
 
-By the way, I fixed resources rollback error when tipc_bcast_init()
-failed in tipc_init_net().
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+153641db1759e576ec8e@syzkaller.appspotmail.com
 
-Fixes: 7e27e8d6130c
-("tipc: switch order of device registration to fix a crash")
-Signed-off-by: Junwei Hu <hujunwei4@huawei.com>
-Reported-by: Wang Wang <wangwang2@huawei.com>
-Reported-by: syzbot+1e8114b61079bfe9cbc5@syzkaller.appspotmail.com
-Reviewed-by: Kang Zhou <zhoukang7@huawei.com>
-Reviewed-by: Suanming Mou <mousuanming@huawei.com>
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 2377 Comm: syz-executor.0 Not tainted 5.1.0-next-20190517 #17
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:strlen+0x1f/0xa0 lib/string.c:516
+Code: 00 66 2e 0f 1f 84 00 00 00 00 00 48 b8 00 00 00 00 00 fc ff df 55 48  
+89 fa 48 89 e5 48 c1 ea 03 41 54 49 89 fc 53 48 83 ec 08 <0f> b6 04 02 48  
+89 fa 83 e2 07 38 d0 7f 04 84 c0 75 4d 41 80 3c 24
+RSP: 0018:ffff88803eacf488 EFLAGS: 00010096
+RAX: dffffc0000000000 RBX: ffff8880a4dba828 RCX: 0000000000000000
+RDX: 00000000200002ce RSI: ffff888093223440 RDI: 0000000100001674
+RBP: ffff88803eacf4a0 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffed1015d06bdf R11: 0000000000000001 R12: 0000000100001674
+R13: 0000000000000000 R14: ffff888093223440 R15: ffff88803eacf570
+FS:  00007fa96d643700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000738000 CR3: 00000000a8324000 CR4: 00000000001426f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  trace_event_get_offsets_lock_acquire include/trace/events/lock.h:13  
+[inline]
+  perf_trace_lock_acquire+0xb9/0x530 include/trace/events/lock.h:13
+  trace_lock_acquire include/trace/events/lock.h:13 [inline]
+  lock_acquire+0x299/0x3f0 kernel/locking/lockdep.c:4301
+  __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+  _raw_spin_lock+0x2f/0x40 kernel/locking/spinlock.c:151
+  spin_lock include/linux/spinlock.h:338 [inline]
+  rhashtable_walk_enter+0xf9/0x390 lib/rhashtable.c:669
+  __tipc_dump_start+0x1fa/0x3c0 net/tipc/socket.c:3414
+  tipc_dump_start+0x70/0x90 net/tipc/socket.c:3396
+  __netlink_dump_start+0x4f8/0x7d0 net/netlink/af_netlink.c:2351
+  netlink_dump_start include/linux/netlink.h:226 [inline]
+  tipc_sock_diag_handler_dump+0x1d9/0x270 net/tipc/diag.c:91
+  __sock_diag_cmd net/core/sock_diag.c:232 [inline]
+  sock_diag_rcv_msg+0x319/0x410 net/core/sock_diag.c:263
+  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2486
+  sock_diag_rcv+0x2b/0x40 net/core/sock_diag.c:274
+  netlink_unicast_kernel net/netlink/af_netlink.c:1311 [inline]
+  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1337
+  netlink_sendmsg+0x8a5/0xd60 net/netlink/af_netlink.c:1926
+  sock_sendmsg_nosec net/socket.c:660 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:671
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2292
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2330
+  __do_sys_sendmsg net/socket.c:2339 [inline]
+  __se_sys_sendmsg net/socket.c:2337 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2337
+  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x458da9
+Code: ad b8 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 7b b8 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fa96d642c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000458da9
+RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000004
+RBP: 000000000073bf00 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa96d6436d4
+R13: 00000000004c6790 R14: 00000000004db3e8 R15: 00000000ffffffff
+Modules linked in:
+---[ end trace 88f78024ddc40fcd ]---
+RIP: 0010:strlen+0x1f/0xa0 lib/string.c:516
+Code: 00 66 2e 0f 1f 84 00 00 00 00 00 48 b8 00 00 00 00 00 fc ff df 55 48  
+89 fa 48 89 e5 48 c1 ea 03 41 54 49 89 fc 53 48 83 ec 08 <0f> b6 04 02 48  
+89 fa 83 e2 07 38 d0 7f 04 84 c0 75 4d 41 80 3c 24
+RSP: 0018:ffff88803eacf488 EFLAGS: 00010096
+RAX: dffffc0000000000 RBX: ffff8880a4dba828 RCX: 0000000000000000
+RDX: 00000000200002ce RSI: ffff888093223440 RDI: 0000000100001674
+RBP: ffff88803eacf4a0 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffed1015d06bdf R11: 0000000000000001 R12: 0000000100001674
+R13: 0000000000000000 R14: ffff888093223440 R15: ffff88803eacf570
+FS:  00007fa96d643700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000738000 CR3: 00000000a8324000 CR4: 00000000001426f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
 ---
-V1->V2:
-- split the register_pernet_subsys() of tipc into two parts
-V2->V3:
-- update Reported-by
----
- net/tipc/core.c   | 18 ++++++++++++------
- net/tipc/subscr.h |  5 +++--
- net/tipc/topsrv.c | 14 ++++++++++++--
- 3 files changed, 27 insertions(+), 10 deletions(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/tipc/core.c b/net/tipc/core.c
-index ddd2e0f67c07..ed536c05252a 100644
---- a/net/tipc/core.c
-+++ b/net/tipc/core.c
-@@ -77,9 +77,6 @@ static int __net_init tipc_init_net(struct net *net)
- 		goto out_nametbl;
-
- 	INIT_LIST_HEAD(&tn->dist_queue);
--	err = tipc_topsrv_start(net);
--	if (err)
--		goto out_subscr;
-
- 	err = tipc_bcast_init(net);
- 	if (err)
-@@ -88,8 +85,6 @@ static int __net_init tipc_init_net(struct net *net)
- 	return 0;
-
- out_bclink:
--	tipc_bcast_stop(net);
--out_subscr:
- 	tipc_nametbl_stop(net);
- out_nametbl:
- 	tipc_sk_rht_destroy(net);
-@@ -99,7 +94,6 @@ static int __net_init tipc_init_net(struct net *net)
-
- static void __net_exit tipc_exit_net(struct net *net)
- {
--	tipc_topsrv_stop(net);
- 	tipc_net_stop(net);
- 	tipc_bcast_stop(net);
- 	tipc_nametbl_stop(net);
-@@ -113,6 +107,11 @@ static struct pernet_operations tipc_net_ops = {
- 	.size = sizeof(struct tipc_net),
- };
-
-+static struct pernet_operations tipc_topsrv_net_ops = {
-+	.init = tipc_topsrv_init_net,
-+	.exit = tipc_topsrv_exit_net,
-+};
-+
- static int __init tipc_init(void)
- {
- 	int err;
-@@ -143,6 +142,10 @@ static int __init tipc_init(void)
- 	if (err)
- 		goto out_socket;
-
-+	err = register_pernet_subsys(&tipc_topsrv_net_ops);
-+	if (err)
-+		goto out_pernet_topsrv;
-+
- 	err = tipc_bearer_setup();
- 	if (err)
- 		goto out_bearer;
-@@ -150,6 +153,8 @@ static int __init tipc_init(void)
- 	pr_info("Started in single node mode\n");
- 	return 0;
- out_bearer:
-+	unregister_pernet_subsys(&tipc_topsrv_net_ops);
-+out_pernet_topsrv:
- 	tipc_socket_stop();
- out_socket:
- 	unregister_pernet_subsys(&tipc_net_ops);
-@@ -167,6 +172,7 @@ static int __init tipc_init(void)
- static void __exit tipc_exit(void)
- {
- 	tipc_bearer_cleanup();
-+	unregister_pernet_subsys(&tipc_topsrv_net_ops);
- 	tipc_socket_stop();
- 	unregister_pernet_subsys(&tipc_net_ops);
- 	tipc_netlink_stop();
-diff --git a/net/tipc/subscr.h b/net/tipc/subscr.h
-index d793b4343885..aa015c233898 100644
---- a/net/tipc/subscr.h
-+++ b/net/tipc/subscr.h
-@@ -77,8 +77,9 @@ void tipc_sub_report_overlap(struct tipc_subscription *sub,
- 			     u32 found_lower, u32 found_upper,
- 			     u32 event, u32 port, u32 node,
- 			     u32 scope, int must);
--int tipc_topsrv_start(struct net *net);
--void tipc_topsrv_stop(struct net *net);
-+
-+int __net_init tipc_topsrv_init_net(struct net *net);
-+void __net_exit tipc_topsrv_exit_net(struct net *net);
-
- void tipc_sub_put(struct tipc_subscription *subscription);
- void tipc_sub_get(struct tipc_subscription *subscription);
-diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
-index b45932d78004..f345662890a6 100644
---- a/net/tipc/topsrv.c
-+++ b/net/tipc/topsrv.c
-@@ -635,7 +635,7 @@ static void tipc_topsrv_work_stop(struct tipc_topsrv *s)
- 	destroy_workqueue(s->send_wq);
- }
-
--int tipc_topsrv_start(struct net *net)
-+static int tipc_topsrv_start(struct net *net)
- {
- 	struct tipc_net *tn = tipc_net(net);
- 	const char name[] = "topology_server";
-@@ -668,7 +668,7 @@ int tipc_topsrv_start(struct net *net)
- 	return ret;
- }
-
--void tipc_topsrv_stop(struct net *net)
-+static void tipc_topsrv_stop(struct net *net)
- {
- 	struct tipc_topsrv *srv = tipc_topsrv(net);
- 	struct socket *lsock = srv->listener;
-@@ -693,3 +693,13 @@ void tipc_topsrv_stop(struct net *net)
- 	idr_destroy(&srv->conn_idr);
- 	kfree(srv);
- }
-+
-+int __net_init tipc_topsrv_init_net(struct net *net)
-+{
-+	return tipc_topsrv_start(net);
-+}
-+
-+void __net_exit tipc_topsrv_exit_net(struct net *net)
-+{
-+	tipc_topsrv_stop(net);
-+}
--- 
-2.21.GIT
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
