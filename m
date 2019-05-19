@@ -2,137 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22FA3225AB
-	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 03:38:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2821B225AE
+	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 03:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729541AbfESBir (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 21:38:47 -0400
-Received: from web1.siteocity.com ([67.227.147.204]:40642 "EHLO
-        web1.siteocity.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727287AbfESBiq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 21:38:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=felipegasper.com; s=default; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=LHUYI5r/brNCMF1zXddbN6oSe+nBsFtr2AD/KlWPiRo=; b=qxcnOWjW58Pvk7n0wlmZqlhrgt
-        lR0IcMmHspnA/iZ9a3vzYlz+wWkI0fc4u1UAT44DG/9XuiQG1U3dzjHyQNNSVOnMSJSTkgtm+flOl
-        MIvEYtUVRrGMSXirBXLPfiiDW+IrnMaXFw7abQHkaE9fYmhIDX8o/ILbCDS3JV3AdZYdit3iqfRqE
-        4zJgi/LxVfNo+rUUeQmxkUtuXtWQUkGn01k9TDAkX9xy/BjijX2K32BdPHmbj03Nlv/gCd4gYtL+7
-        UBfXl3cBgCAffw2JcRhOAT0h+4CWhx6eviUYgbX/kl2uy6+H3Dcg9bqwG4PYdLGLRouayz5y0PfTb
-        tmfSRrFA==;
-Received: from fgasper by web1.siteocity.com with local (Exim 4.92)
-        (envelope-from <fgasper@web1.siteocity.com>)
-        id 1hSAmd-0005Rm-Sh; Sat, 18 May 2019 20:38:44 -0500
-From:   Felipe Gasper <felipe@felipegasper.com>
-To:     davem@davemloft.net, viro@zeniv.linux.org.uk,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-api@vger.kernel.org
-Subject: [PATCH v3] net: Add UNIX_DIAG_UID to Netlink UNIX socket diagnostics.
-Date:   Sat, 18 May 2019 20:38:39 -0500
-Message-Id: <20190519013839.20355-1-felipe@felipegasper.com>
-X-Mailer: git-send-email 2.21.0
+        id S1729493AbfESBxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 21:53:02 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:45122 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727331AbfESBxC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 May 2019 21:53:02 -0400
+Received: by mail-lf1-f68.google.com with SMTP id n22so7796431lfe.12
+        for <netdev@vger.kernel.org>; Sat, 18 May 2019 18:53:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8ZVu/rDaXk4xxhCgGNgQKL8+MF9tQJRxjPPLagihVpE=;
+        b=NPbaNApd7jHuJEJNLu6WS9NXXqx+Urkklz31NhyH3NG8UCRWevdRYLUC1l8Goa1K+x
+         haXbVsyVbPZukWXGsyYzi3g7VY1j/xd7o0qrSTRRf213U8MXGqtgqvGTgtEeBzv+9ROy
+         av9hjGdMD5S7YHeIjPVcmHOzmVAWTGPrYJNYBoEmeLZ7ffnzJ3Ij9A/rZA8V5Fgzl5wB
+         NAvG+J9RHkuC/UjzidY0B8P0JMjcIyur280l+C0tXPTtgLgeWTs3MaztLNBcoOylIrLo
+         Tq3vXKA6BELG2lR8p2dV+uAqIa8LpW0GN7xpYwjCIU+qX6HOWXuHQg2DopDsebR9+AHU
+         alXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8ZVu/rDaXk4xxhCgGNgQKL8+MF9tQJRxjPPLagihVpE=;
+        b=ikl7YsWD47aPhtyIE2REpu+68L0eplSn+VLeYloqYlaOrsg5tvMJ4sMbfg8+a6O3I3
+         T9G/EQLQSIA+f9OvIC68W1+JdPZssjRPJMX5h6evalOkf64FRpzpgFCExx3e6Gr2G5LN
+         MteqYl/k9AtZ8yvixAn6b8OXHH6N8mdwRBxcYb3jLqtiA9UQvfan28J5LQCIchn1r9R5
+         RCmEz9BNGVHDpF+92FVpPzoz8xVoC/jJc07FYygfBuVH3H+N/6eqyOAZTV2C39dEfb9D
+         Z26KEnXl7oP50auqeExGnJerVzxZyAp7WuLsP/HXM8zm7XdyJNHtAZ7a5CWhMbwzTVdp
+         2mqg==
+X-Gm-Message-State: APjAAAUGB+/YrgVgu3UbtO2J2cvOnn0gReB51x/XvhUllCKwi9rQ5w5u
+        BiMdQguVLPf6HksJHazwzQYtpqk/yolpBXdGq3ZwAg==
+X-Google-Smtp-Source: APXvYqxBLnfaECJVcHDfVcRR4rNEGIZ+KxGrIOIYKVdl+pAxoPdvcdHhRd5ePG8gqf1jrsYMqM5XPCFfQcxf5YLvY6A=
+X-Received: by 2002:a19:6a0c:: with SMTP id u12mr6963468lfu.109.1558230779757;
+ Sat, 18 May 2019 18:52:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-OutGoing-Spam-Status: No, score=0.0
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - web1.siteocity.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [1438 994] / [47 12]
-X-AntiAbuse: Sender Address Domain - web1.siteocity.com
-X-Get-Message-Sender-Via: web1.siteocity.com: authenticated_id: fgasper/from_h
-X-Authenticated-Sender: web1.siteocity.com: felipe@felipegasper.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: /home/fgasper
-X-From-Rewrite: unmodified, already matched
+References: <20190517212117.2792415-1-kafai@fb.com> <6dc01cb7-cdd4-8a71-b602-0052b7aadfb7@gmail.com>
+ <20190517220145.pkpkt7f5b72vvfyk@kafai-mbp> <CADa=RyxisbcVeXL7yq6o02XOgWd87QCzq-6zDXRnm9RoD2WM=A@mail.gmail.com>
+ <20190518190520.53mrvat4c4y6cnbf@kafai-mbp>
+In-Reply-To: <20190518190520.53mrvat4c4y6cnbf@kafai-mbp>
+From:   Joe Stringer <joe@isovalent.com>
+Date:   Sat, 18 May 2019 18:52:48 -0700
+Message-ID: <CADa=RyxfhK+XhAwf_C_an=+RnsQCPCXV23Qrwk-3OC1oLdHM=A@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: Check sk_fullsock() before returning from bpf_sk_lookup()
+To:     Martin Lau <kafai@fb.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, bpf@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Author: Felipe Gasper <felipe@felipegasper.com>
-Date:   Sat May 18 20:04:40 2019 -0500
+On Sat, May 18, 2019, 09:05 Martin Lau <kafai@fb.com> wrote:
+>
+> On Sat, May 18, 2019 at 08:38:46AM -1000, Joe Stringer wrote:
+> > On Fri, May 17, 2019, 12:02 Martin Lau <kafai@fb.com> wrote:
+> >
+> > > On Fri, May 17, 2019 at 02:51:48PM -0700, Eric Dumazet wrote:
+> > > >
+> > > >
+> > > > On 5/17/19 2:21 PM, Martin KaFai Lau wrote:
+> > > > > The BPF_FUNC_sk_lookup_xxx helpers return RET_PTR_TO_SOCKET_OR_NULL.
+> > > > > Meaning a fullsock ptr and its fullsock's fields in bpf_sock can be
+> > > > > accessed, e.g. type, protocol, mark and priority.
+> > > > > Some new helper, like bpf_sk_storage_get(), also expects
+> > > > > ARG_PTR_TO_SOCKET is a fullsock.
+> > > > >
+> > > > > bpf_sk_lookup() currently calls sk_to_full_sk() before returning.
+> > > > > However, the ptr returned from sk_to_full_sk() is not guaranteed
+> > > > > to be a fullsock.  For example, it cannot get a fullsock if sk
+> > > > > is in TCP_TIME_WAIT.
+> > > > >
+> > > > > This patch checks for sk_fullsock() before returning. If it is not
+> > > > > a fullsock, sock_gen_put() is called if needed and then returns NULL.
+> > > > >
+> > > > > Fixes: 6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
+> > > > > Cc: Joe Stringer <joe@isovalent.com>
+> > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > ---
+> > > > >  net/core/filter.c | 16 ++++++++++++++--
+> > > > >  1 file changed, 14 insertions(+), 2 deletions(-)
+> > > > >
+> > > > > diff --git a/net/core/filter.c b/net/core/filter.c
+> > > > > index 55bfc941d17a..85def5a20aaf 100644
+> > > > > --- a/net/core/filter.c
+> > > > > +++ b/net/core/filter.c
+> > > > > @@ -5337,8 +5337,14 @@ __bpf_sk_lookup(struct sk_buff *skb, struct
+> > > bpf_sock_tuple *tuple, u32 len,
+> > > > >     struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
+> > > > >                                        ifindex, proto, netns_id,
+> > > flags);
+> > > > >
+> > > > > -   if (sk)
+> > > > > +   if (sk) {
+> > > > >             sk = sk_to_full_sk(sk);
+> > > > > +           if (!sk_fullsock(sk)) {
+> > > > > +                   if (!sock_flag(sk, SOCK_RCU_FREE))
+> > > > > +                           sock_gen_put(sk);
+> > > >
+> > > > This looks a bit convoluted/weird.
+> > > >
+> > > > What about telling/asking __bpf_skc_lookup() to not return a non
+> > > fullsock instead ?
+> > > It is becausee some other helpers, like BPF_FUNC_skc_lookup_tcp,
+> > > can return non fullsock
+> > >
+> >
+> > FYI this is necessary for finding a transparently proxied socket for a
+> > non-local connection (tproxy use case).
+> You meant it is necessary to return a non fullsock from the
+> BPF_FUNC_sk_lookup_xxx helpers?
 
-   net: Add UNIX_DIAG_UID to Netlink UNIX socket diagnostics.
+Yes, that's what I want to associate with the skb so that the delivery
+to the SO_TRANSPARENT is received properly.
 
-   This adds the ability for Netlink to report a socket's UID along with the
-   other UNIX diagnostic information that is already available. This will
-   allow diagnostic tools greater insight into which users control which
-   socket.
+For the first packet of a connection, we look up the socket using the
+tproxy socket port as the destination, and deliver the packet there.
+The SO_TRANSPARENT logic then kicks in and sends back the ack and
+creates the non-full sock for the connection tuple, which can be
+entirely unrelated to local addresses or ports.
 
-   To test this, do the following as a non-root user:
+For the second forward-direction packet, (ie ACK in 3-way handshake)
+then we must deliver the packet to this non-full sock as that's what
+is negotiating the proxied connection. If you look up using the packet
+tuple then get the full sock from it, it will go back to the
+SO_TRANSPARENT parent socket. Delivering the ACK there will result in
+a RST being sent back, because the SO_TRANSPARENT socket is just there
+to accept new connections for connections to be proxied. So this is
+the case where I need the non-full sock.
 
-        unshare -U -r bash
-        nc -l -U user.socket.$$ &
-
-   .. and verify from within that same session that Netlink UNIX socket
-   diagnostics report the socket's UID as 0. Also verify that Netlink UNIX
-   socket diagnostics report the socket's UID as the user's UID from an
-   unprivileged process in a different session. Verify the same from
-   a root process.
-
-   Signed-off-by: Felipe Gasper <felipe@felipegasper.com>
-
-diff --git a/include/uapi/linux/unix_diag.h b/include/uapi/linux/unix_diag.h
-index 5c502fd..a198857 100644
---- a/include/uapi/linux/unix_diag.h
-+++ b/include/uapi/linux/unix_diag.h
-@@ -20,6 +20,7 @@ struct unix_diag_req {
- #define UDIAG_SHOW_ICONS	0x00000008	/* show pending connections */
- #define UDIAG_SHOW_RQLEN	0x00000010	/* show skb receive queue len */
- #define UDIAG_SHOW_MEMINFO	0x00000020	/* show memory info of a socket */
-+#define UDIAG_SHOW_UID		0x00000040	/* show socket's UID */
- 
- struct unix_diag_msg {
- 	__u8	udiag_family;
-@@ -40,6 +41,7 @@ enum {
- 	UNIX_DIAG_RQLEN,
- 	UNIX_DIAG_MEMINFO,
- 	UNIX_DIAG_SHUTDOWN,
-+	UNIX_DIAG_UID,
- 
- 	__UNIX_DIAG_MAX,
- };
-diff --git a/net/unix/diag.c b/net/unix/diag.c
-index 3183d9b..e40f348 100644
---- a/net/unix/diag.c
-+++ b/net/unix/diag.c
-@@ -4,9 +4,11 @@
- #include <linux/unix_diag.h>
- #include <linux/skbuff.h>
- #include <linux/module.h>
-+#include <linux/uidgid.h>
- #include <net/netlink.h>
- #include <net/af_unix.h>
- #include <net/tcp_states.h>
-+#include <net/sock.h>
- 
- static int sk_diag_dump_name(struct sock *sk, struct sk_buff *nlskb)
- {
-@@ -110,6 +112,12 @@ static int sk_diag_show_rqlen(struct sock *sk, struct sk_buff *nlskb)
- 	return nla_put(nlskb, UNIX_DIAG_RQLEN, sizeof(rql), &rql);
- }
- 
-+static int sk_diag_dump_uid(struct sock *sk, struct sk_buff *nlskb)
-+{
-+	uid_t uid = from_kuid_munged(sk_user_ns(nlskb->sk), sock_i_uid(sk));
-+	return nla_put(nlskb, UNIX_DIAG_UID, sizeof(uid_t), &uid);
-+}
-+
- static int sk_diag_fill(struct sock *sk, struct sk_buff *skb, struct unix_diag_req *req,
- 		u32 portid, u32 seq, u32 flags, int sk_ino)
- {
-@@ -156,6 +164,10 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb, struct unix_diag_r
- 	if (nla_put_u8(skb, UNIX_DIAG_SHUTDOWN, sk->sk_shutdown))
- 		goto out_nlmsg_trim;
- 
-+	if ((req->udiag_show & UDIAG_SHOW_UID) &&
-+	    sk_diag_dump_uid(sk, skb))
-+		goto out_nlmsg_trim;
-+
- 	nlmsg_end(skb, nlh);
- 	return 0;
- 
+(In practice, the lookup logic attempts the packet tuple first then if
+that fails, uses the tproxy port for lookup to achieve the above).
