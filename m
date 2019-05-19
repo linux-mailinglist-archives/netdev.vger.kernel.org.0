@@ -2,57 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EF8B22872
-	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 20:51:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D36122877
+	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 21:01:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbfESSvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 May 2019 14:51:31 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:34089 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726436AbfESSvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 May 2019 14:51:31 -0400
-Received: by mail-pg1-f193.google.com with SMTP id c13so5688624pgt.1
-        for <netdev@vger.kernel.org>; Sun, 19 May 2019 11:51:31 -0700 (PDT)
+        id S1727383AbfESTB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 May 2019 15:01:26 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:32811 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726542AbfESTBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 May 2019 15:01:25 -0400
+Received: by mail-pg1-f194.google.com with SMTP id h17so5698177pgv.0
+        for <netdev@vger.kernel.org>; Sun, 19 May 2019 12:01:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=snVSccL/g5/3VjQbFQWWeEdO0X3Tn7Z02WtSfT8gC4E=;
-        b=KOqSfn2TEcn7I+rykidhylNFj80cMmM6u+725tV03qqaTVSqWAcs7Q0TGCaLSXt19W
-         nSMQQ5yJZk+aQWReTQTtHVOvSL62pNptRpvv5YlbrwRLD9Di7zBXYwNmONPVvef/gDNS
-         qCpnpgMDdQXFWLQ6TC9be80V+e7U9oj8t22sGsMroeN+UcjftDWFjeFHOnjKoLTqdHZf
-         B+tQwV+CWWz+2NCz0nHtzgU67fkHOzHbWn3i949TErIgvS9K/4/X3w6rCsde6wFqB/3T
-         0+i3ZNHUSVWqSjCCbdAulqoiaK20oMnz+bxKk6CCDajueYOJNWqjQKqH4/q2Y0Djx1JZ
-         3FoA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jW23EVTaONU8fGl2rO/gh8exrFRja4BdXSBKXyg60v0=;
+        b=ozrAcyT0DpFtEMYykTdhJbaq66KrzCAXKUFjhOLB6dzNeGwggFwc56RbIt/G7DA7IW
+         M/rItzMyRXrr1YWAA9gEUgIjPS2/IZYOtgquWDTPcOGMCesGJhlfAtsdM3AmJMoStidX
+         UG8cOB3AP0ZIfOj1JoJ7+BLkc9leWofJbqyqzm1nb4jY0/EO8DfnuLFbOR7m7M545TBr
+         6SXhfosIzl5Jz6BNc5h1qqlxlgTk7KpE5cAxf0VUYWAxAn9TtNp6OgRudSg/2dJgXzQe
+         3wNqZg4XVFOSobHHfP5Yyge9R6Rn7EhRdQtKSXcfqhL7Hdz+MiCKzPE/n4yt9E3zIbUi
+         J6pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=snVSccL/g5/3VjQbFQWWeEdO0X3Tn7Z02WtSfT8gC4E=;
-        b=Yrqnmo0xLVmEph91X/PiH4/jbyaDoXPaJKboADMVhgeeXZx9m8u3olz2BJSUgrNzAD
-         CESHVnG0AhnEhsES1mVg9VhkGy6Ays8SGhzu3vYXYhgHR2FlSKCMcIOrTO/t4ZNtQo+T
-         3kfzRfwxNAMQDcDEO5Qao2HyjwLh0vZwBIrfjSGN/APwxmkE4sqb+GIAKw0ek4QXO7Ag
-         x77VbKQCMoSelIaJB8bpnEMPhqZxvCEt9R1QhBoCT7suIOX9MBrya3Ea2y8REm2sI2u4
-         LeRyq17LBxqYvvldR56XBjWpqtjbrI+GxCWDcCcjdQb09JGd15ppmSdf7fVhQgbDj3kk
-         YhxA==
-X-Gm-Message-State: APjAAAUVR0MYysOHq8dCxGuED5S684x6Hs6A5l3veuOFCdzXftTt0r9n
-        VOnqSCMfPVeXzMHo1oJPJHX2xkuf3NQ=
-X-Google-Smtp-Source: APXvYqyM1t20YTUzYTzVxR3DfuC+MZRju4hp7/a+q1wejy6bTEywFj6NDLWou73xRc7ZKAYzgwTS+w==
-X-Received: by 2002:a62:1a51:: with SMTP id a78mr70917175pfa.133.1558235449704;
-        Sat, 18 May 2019 20:10:49 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jW23EVTaONU8fGl2rO/gh8exrFRja4BdXSBKXyg60v0=;
+        b=iNpUtmkQkfNsziOO/XGusgXcV+cX01aENkrUhd5YVmTQhne542cb7imEePMzjldeH8
+         AU3fdK/Q2ROKkHPhI0giGYc7l1Qjxs3dGArTOuGhB3blMDEO4VRTH+0fIe2dhFqcyC09
+         FFxM73ZNc/3x9fnyFGPrYpzMNnTQAqBxmClhX6mJaeH4AFB4SIMCni0pkeqfn/AZQRJT
+         Iq+WdmzGMBKDDip619Jiw+KNjqCLvFNSPDkpjymbcKrOBArWWWnDQWqUUCz5/DG2OXb0
+         9HcM/OEVpLuYnjTZ32JyK+dItVbFgRpiE7Ao8bXvmr+8wVEvDvRuCBJqawtwgGDmuDql
+         GWRg==
+X-Gm-Message-State: APjAAAUzjKVKitw+j0KRh3y9kqqoFFOz6m1dmWZM0Ri+tX2VcqEPgrpY
+        LinBtnjiNqtKri5MwpdbBUa88R2Xox8=
+X-Google-Smtp-Source: APXvYqxRzJW84pUeaYRcQIKBpl3JDeUa6cqWfgZ5OSUgwQndPN6hm0wQ7j5J8ZS2QG7aTVmpTFX33A==
+X-Received: by 2002:a62:fc56:: with SMTP id e83mr19902876pfh.27.1558235451125;
+        Sat, 18 May 2019 20:10:51 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id s80sm39049604pfs.117.2019.05.18.20.10.48
+        by smtp.gmail.com with ESMTPSA id s80sm39049604pfs.117.2019.05.18.20.10.49
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 18 May 2019 20:10:48 -0700 (PDT)
+        Sat, 18 May 2019 20:10:49 -0700 (PDT)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     xdp-newbies@vger.kernel.org, bpf@vger.kernel.org,
         Stephen Hemminger <sthemmin@microsoft.com>
-Subject: [PATCH v2 net 0/2] XDP generic related fixes
-Date:   Sat, 18 May 2019 20:10:44 -0700
-Message-Id: <20190519031046.4049-1-sthemmin@microsoft.com>
+Subject: [PATCH v2 net 1/2] netvsc: unshare skb in VF rx handler
+Date:   Sat, 18 May 2019 20:10:45 -0700
+Message-Id: <20190519031046.4049-2-sthemmin@microsoft.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190519031046.4049-1-sthemmin@microsoft.com>
+References: <20190519031046.4049-1-sthemmin@microsoft.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -60,23 +62,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This set of patches came about while investigating XDP
-generic on Azure. The split brain nature of the accelerated
-networking exposed issues with the stack device model.
+The netvsc VF skb handler should make sure that skb is not
+shared. Similar logic already exists in bonding and team device
+drivers.
 
-The real fix is in the second patch which is a redo
-of earlier patch from Jason Wang.
+This is not an issue in practice because the VF devicex
+does not send up shared skb's. But the netvsc driver
+should do the right thing if it did.
 
-v2 - hold off the comment fixes for net-next
+Fixes: 0c195567a8f6 ("netvsc: transparent VF management")
+Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
+---
+ drivers/net/hyperv/netvsc_drv.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Stephen Hemminger (2):
-  netvsc: unshare skb in VF rx handler
-  net: core: generic XDP support for stacked device
-
- drivers/net/hyperv/netvsc_drv.c |  6 ++++++
- net/core/dev.c                  | 10 ++++++++++
- 2 files changed, 16 insertions(+)
-
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 06393b215102..9873b8679f81 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -2000,6 +2000,12 @@ static rx_handler_result_t netvsc_vf_handle_frame(struct sk_buff **pskb)
+ 	struct netvsc_vf_pcpu_stats *pcpu_stats
+ 		 = this_cpu_ptr(ndev_ctx->vf_stats);
+ 
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb))
++		return RX_HANDLER_CONSUMED;
++
++	*pskb = skb;
++
+ 	skb->dev = ndev;
+ 
+ 	u64_stats_update_begin(&pcpu_stats->syncp);
 -- 
 2.20.1
 
