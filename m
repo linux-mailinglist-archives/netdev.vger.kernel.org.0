@@ -2,89 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC93422551
-	for <lists+netdev@lfdr.de>; Sat, 18 May 2019 23:58:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39CD122592
+	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 02:27:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729434AbfERV6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 May 2019 17:58:07 -0400
-Received: from smtp-out.xnet.cz ([178.217.244.18]:36093 "EHLO smtp-out.xnet.cz"
+        id S1727740AbfESAWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 May 2019 20:22:25 -0400
+Received: from mail.us.es ([193.147.175.20]:37246 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727958AbfERV6H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 May 2019 17:58:07 -0400
-Received: from meh.true.cz (meh.true.cz [108.61.167.218])
-        (Authenticated sender: petr@true.cz)
-        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 40AA84047;
-        Sat, 18 May 2019 23:58:04 +0200 (CEST)
-Received: from localhost (meh.true.cz [local])
-        by meh.true.cz (OpenSMTPD) with ESMTPA id f66b25c1;
-        Sat, 18 May 2019 23:58:02 +0200 (CEST)
-Date:   Sat, 18 May 2019 23:58:02 +0200
-From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-To:     Octavio Alvarez <octallk1@alvarezp.org>
-Cc:     Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Subject: Re: PROBLEM: [1/2] Marvell 88E8040 (sky2) stopped working
-Message-ID: <20190518215802.GI63920@meh.true.cz>
-Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-References: <26edfbe4-3c62-184b-b4cc-3d89f21ae394@alvarezp.org>
+        id S1727037AbfESAWY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 May 2019 20:22:24 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 51C0DFB448
+        for <netdev@vger.kernel.org>; Sun, 19 May 2019 02:22:21 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 44AAEDA701
+        for <netdev@vger.kernel.org>; Sun, 19 May 2019 02:22:21 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 28F9BDA709; Sun, 19 May 2019 02:22:21 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D2B01DA704;
+        Sun, 19 May 2019 02:22:18 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 19 May 2019 02:22:18 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id AFB174265A32;
+        Sun, 19 May 2019 02:22:18 +0200 (CEST)
+Date:   Sun, 19 May 2019 02:22:18 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
+ statistics
+Message-ID: <20190519002218.b6bcz224jkrof7c4@salvia>
+References: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
+ <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <26edfbe4-3c62-184b-b4cc-3d89f21ae394@alvarezp.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Octavio,
+On Fri, May 17, 2019 at 04:27:29PM +0100, Edward Cree wrote:
+> On 15/05/2019 20:39, Edward Cree wrote:
+[...]
+> Pablo, how do the two options interact with your netfilter offload?  I'm
+>  guessing it's easier for you to find a unique pointer than to generate
+>  a unique u32 action_index for each action.  I'm also assuming that
+>  netfilter doesn't have a notion of shared actions.
 
-> PROBLEM: [1/2] Marvell 88E8040 (sky2) stopped working
+It has that shared actions concept, see:
 
-I'm sorry, that I've ruined your day.
+https://netfilter.org/projects/nfacct/
 
-> Linux version 5.1.0-12511-g72cf0b07418a (alvarezp@alvarezp-samsung)
-
-What do I need to do/apply in order to get the same source tree with
-72cf0b07418a hash? I'm not able to find that commit.
-
-> [    1.447809] BUG: kernel NULL pointer dereference, address:
-> 0000000000000000
-
-Interesting.
-
-> [    1.448476] RIP: 0010:sky2_init_netdev+0x221/0x2e0 [sky2]
-
- gdb drivers/net/ethernet/marvell/sky2.o
- >>> l *sky2_init_netdev+0x221
- 0x828a is in sky2_init_netdev (./include/linux/etherdevice.h:124).
- 119	 * By definition the broadcast address is also a multicast address.
- 120	 */
- 121	static inline bool is_multicast_ether_addr(const u8 *addr)
- 122	{
- 123	#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
- 124		u32 a = *(const u32 *)addr;
- 125	#else
- 126		u16 a = *(const u16 *)addr;
- 127	#endif
- 128	#ifdef __BIG_ENDIAN
-
-> --- a/drivers/net/ethernet/marvell/sky2.c
-> +++ b/drivers/net/ethernet/marvell/sky2.c
-> @@ -4808,7 +4808,7 @@ static struct net_device *sky2_init_netdev(struct
-> sky2_hw *hw, unsigned port,
->          * 2) from internal registers set by bootloader
->          */
->         iap = of_get_mac_address(hw->pdev->dev.of_node);
-> -       if (iap)
-> +       if (!IS_ERR(iap))
-
-I'm just shooting out of the blue, as I don't have currently any rational
-explanation for that now, but could you please change the line above to
-following:
-
-          if (!IS_ERR_OR_NULL(iap))
-
-try again and report back? Thanks!
-
--- ynezz
+Have a look at 'nfacct' in iptables-extensions(8) manpage.
