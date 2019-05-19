@@ -2,178 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DD7F22768
-	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 19:01:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C48C322823
+	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 19:57:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbfESRBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 May 2019 13:01:06 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:36148 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726482AbfESRBG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 May 2019 13:01:06 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x4JA9OiJ007435;
-        Sun, 19 May 2019 13:09:25 +0300
-Date:   Sun, 19 May 2019 13:09:24 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     YueHaibing <yuehaibing@huawei.com>
-cc:     davem@davemloft.net, wensong@linux-vs.org, horms@verge.net.au,
-        pablo@netfilter.org, kadlec@blackhole.kfki.hu, fw@strlen.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
-Subject: Re: [PATCH v2] ipvs: Fix use-after-free in ip_vs_in
-In-Reply-To: <20190517143149.17016-1-yuehaibing@huawei.com>
-Message-ID: <alpine.LFD.2.21.1905191258160.2448@ja.home.ssi.bg>
-References: <alpine.LFD.2.21.1905171015040.2233@ja.home.ssi.bg> <20190517143149.17016-1-yuehaibing@huawei.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1729432AbfESR5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 May 2019 13:57:44 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:35307 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727456AbfESR5o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 May 2019 13:57:44 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 456KzD0wGPz9s9N;
+        Sun, 19 May 2019 21:48:07 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1558266489;
+        bh=dcC4Pl+dHTN4EvIbHGnWnpvX6DS3gAolTE3f1YRjrzY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TnCPjyTJKKehfukzj3YXNqKAv0YWzLCmXdxeqUvfUMPt7/kwhq+W8imQEkKDZRi1J
+         145c4USmrWAWlzDtyB+ZHrw51yvM30n18+r89fYnrEu94CdvUWQp1XiwVxDbwSGcsS
+         hJktgFqQcCAFZaaLR5UchBV8+FJ69xg83BRBDTdcEqpSZUKn0NBPQYOidhyOr+xeC2
+         zToVavSokFd1ZKj4165ksjGo5fksPa+xesicy+97csBV32SZlbsBMIG6CFWEfObMqS
+         g9sPYD4Y/wn+0E6JHp99j9Yr5dclOispVc7RK7pydBsf+4U/unn/DrrhrMs88iO13/
+         cuOZoPyItvHnA==
+Date:   Sun, 19 May 2019 21:48:05 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Junwei Hu <hujunwei4@huawei.com>
+Cc:     <davem@davemloft.net>, <willemdebruijn.kernel@gmail.com>,
+        <jon.maloy@ericsson.com>, <ying.xue@windriver.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        <mingfangsen@huawei.com>
+Subject: Re: [PATCH v3] tipc: fix modprobe tipc failed after switch order of
+ device registration
+Message-ID: <20190519214805.520960ec@canb.auug.org.au>
+In-Reply-To: <529aff15-5f3a-1bf1-76fa-691911ff6170@huawei.com>
+References: <529aff15-5f3a-1bf1-76fa-691911ff6170@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/.5WpHUFo45lAAiLWKH8ATXt"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/.5WpHUFo45lAAiLWKH8ATXt
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-	Hello,
+Hi,
 
-On Fri, 17 May 2019, YueHaibing wrote:
+On Sun, 19 May 2019 17:13:45 +0800 hujunwei <hujunwei4@huawei.com> wrote:
+>
+> Fixes: 7e27e8d6130c
+> ("tipc: switch order of device registration to fix a crash")
 
-> BUG: KASAN: use-after-free in ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
-> Read of size 4 at addr ffff8881e9b26e2c by task sshd/5603
-> 
-> CPU: 0 PID: 5603 Comm: sshd Not tainted 4.19.39+ #30
-> Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-> Call Trace:
->  dump_stack+0x71/0xab
->  print_address_description+0x6a/0x270
->  kasan_report+0x179/0x2c0
->  ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
->  ip_vs_in+0xd8/0x170 [ip_vs]
->  nf_hook_slow+0x5f/0xe0
->  __ip_local_out+0x1d5/0x250
->  ip_local_out+0x19/0x60
->  __tcp_transmit_skb+0xba1/0x14f0
->  tcp_write_xmit+0x41f/0x1ed0
->  ? _copy_from_iter_full+0xca/0x340
->  __tcp_push_pending_frames+0x52/0x140
->  tcp_sendmsg_locked+0x787/0x1600
->  ? tcp_sendpage+0x60/0x60
->  ? inet_sk_set_state+0xb0/0xb0
->  tcp_sendmsg+0x27/0x40
->  sock_sendmsg+0x6d/0x80
->  sock_write_iter+0x121/0x1c0
->  ? sock_sendmsg+0x80/0x80
->  __vfs_write+0x23e/0x370
->  vfs_write+0xe7/0x230
->  ksys_write+0xa1/0x120
->  ? __ia32_sys_read+0x50/0x50
->  ? __audit_syscall_exit+0x3ce/0x450
->  do_syscall_64+0x73/0x200
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x7ff6f6147c60
-> Code: 73 01 c3 48 8b 0d 28 12 2d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 5d 73 2d 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83
-> RSP: 002b:00007ffd772ead18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> RAX: ffffffffffffffda RBX: 0000000000000034 RCX: 00007ff6f6147c60
-> RDX: 0000000000000034 RSI: 000055df30a31270 RDI: 0000000000000003
-> RBP: 000055df30a31270 R08: 0000000000000000 R09: 0000000000000000
-> R10: 00007ffd772ead70 R11: 0000000000000246 R12: 00007ffd772ead74
-> R13: 00007ffd772eae20 R14: 00007ffd772eae24 R15: 000055df2f12ddc0
-> 
-> Allocated by task 6052:
->  kasan_kmalloc+0xa0/0xd0
->  __kmalloc+0x10a/0x220
->  ops_init+0x97/0x190
->  register_pernet_operations+0x1ac/0x360
->  register_pernet_subsys+0x24/0x40
->  0xffffffffc0ea016d
->  do_one_initcall+0x8b/0x253
->  do_init_module+0xe3/0x335
->  load_module+0x2fc0/0x3890
->  __do_sys_finit_module+0x192/0x1c0
->  do_syscall_64+0x73/0x200
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Freed by task 6067:
->  __kasan_slab_free+0x130/0x180
->  kfree+0x90/0x1a0
->  ops_free_list.part.7+0xa6/0xc0
->  unregister_pernet_operations+0x18b/0x1f0
->  unregister_pernet_subsys+0x1d/0x30
->  ip_vs_cleanup+0x1d/0xd2f [ip_vs]
->  __x64_sys_delete_module+0x20c/0x300
->  do_syscall_64+0x73/0x200
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> The buggy address belongs to the object at ffff8881e9b26600 which belongs to the cache kmalloc-4096 of size 4096
-> The buggy address is located 2092 bytes inside of 4096-byte region [ffff8881e9b26600, ffff8881e9b27600)
-> The buggy address belongs to the page:
-> page:ffffea0007a6c800 count:1 mapcount:0 mapping:ffff888107c0e600 index:0x0 compound_mapcount: 0
-> flags: 0x17ffffc0008100(slab|head)
-> raw: 0017ffffc0008100 dead000000000100 dead000000000200 ffff888107c0e600
-> raw: 0000000000000000 0000000080070007 00000001ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
-> 
-> while unregistering ipvs module, ops_free_list calls
-> __ip_vs_cleanup, then nf_unregister_net_hooks be called to
-> do remove nf hook entries. It need a RCU period to finish,
-> however net->ipvs is set to NULL immediately, which will
-> trigger NULL pointer dereference when a packet is hooked
-> and handled by ip_vs_in where net->ipvs is dereferenced.
-> 
-> Another scene is ops_free_list call ops_free to free the
-> net_generic directly while __ip_vs_cleanup finished, then
-> calling ip_vs_in will triggers use-after-free.
-> 
-> This patch moves nf_unregister_net_hooks from __ip_vs_cleanup()
-> to __ip_vs_dev_cleanup(),  where rcu_barrier() is called by
-> unregister_pernet_device -> unregister_pernet_operations,
-> that will do the needed grace period.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: efe41606184e ("ipvs: convert to use pernet nf_hook api")
-> Suggested-by: Julian Anastasov <ja@ssi.bg>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Please don't split Fixes tags over more than one line.  It is OK if
+they are too long.
+--=20
+Cheers,
+Stephen Rothwell
 
-	Looks good to me, thanks!
+--Sig_/.5WpHUFo45lAAiLWKH8ATXt
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-Acked-by: Julian Anastasov <ja@ssi.bg>
+-----BEGIN PGP SIGNATURE-----
 
-	It should restore the order of unregistrations before
-the mentioned commit and to ensure grace period before stopping
-the traffic and unregistering ipvs_core_ops where traffic is not
-expected.
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlzhQnUACgkQAVBC80lX
+0Gz93gf/Vl/AGezDCSew9ABACA7mqAhzq73iHXkBVJFBpNUTn8crMYerkjeykLnY
+5Phbbqa41q6jAt9zw0mPS808Xx5pkkI8sg+JmCXe6bSxvLd5WMZAF6j10ijNk5x8
+HzwHEoXHg+wfh4hh8MDPXAIIYjkdgPgu+euSivoxjWBiZWL6qk8BMPMK/JR83M/f
+GVxOFsjAtXYJTA0Dubw4jY6so0VSwyuYqMQ5DJ7tG4uWetoSyIf+86FqGIjXBwW/
+IBYQA2V3HI6xoidvK4+4J/9l/Y1nMi4dbQBD1qz6mnCb39T95bMJeLbHuYdv6JZd
+Yp+0FPJiJjzJu3NOD2RIDYMmeTeVeQ==
+=KmgI
+-----END PGP SIGNATURE-----
 
-> ---
-> v2: fix by moving nf_unregister_net_hooks from __ip_vs_cleanup() to __ip_vs_dev_cleanup()
-> ---
->  net/netfilter/ipvs/ip_vs_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-> index 14457551bcb4..8ebf21149ec3 100644
-> --- a/net/netfilter/ipvs/ip_vs_core.c
-> +++ b/net/netfilter/ipvs/ip_vs_core.c
-> @@ -2312,7 +2312,6 @@ static void __net_exit __ip_vs_cleanup(struct net *net)
->  {
->  	struct netns_ipvs *ipvs = net_ipvs(net);
->  
-> -	nf_unregister_net_hooks(net, ip_vs_ops, ARRAY_SIZE(ip_vs_ops));
->  	ip_vs_service_net_cleanup(ipvs);	/* ip_vs_flush() with locks */
->  	ip_vs_conn_net_cleanup(ipvs);
->  	ip_vs_app_net_cleanup(ipvs);
-> @@ -2327,6 +2326,7 @@ static void __net_exit __ip_vs_dev_cleanup(struct net *net)
->  {
->  	struct netns_ipvs *ipvs = net_ipvs(net);
->  	EnterFunction(2);
-> +	nf_unregister_net_hooks(net, ip_vs_ops, ARRAY_SIZE(ip_vs_ops));
->  	ipvs->enable = 0;	/* Disable packet reception */
->  	smp_wmb();
->  	ip_vs_sync_net_cleanup(ipvs);
-> -- 
-> 2.20.1
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+--Sig_/.5WpHUFo45lAAiLWKH8ATXt--
