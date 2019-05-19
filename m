@@ -2,121 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB16522997
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 02:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43173227F4
+	for <lists+netdev@lfdr.de>; Sun, 19 May 2019 19:46:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728931AbfETAqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 May 2019 20:46:39 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:8213 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726923AbfETAqj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 May 2019 20:46:39 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id D97A9D9289DAA879527E;
-        Sun, 19 May 2019 16:55:46 +0800 (CST)
-Received: from [127.0.0.1] (10.184.191.73) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Sun, 19 May 2019
- 16:55:43 +0800
-Subject: Re: INFO: trying to register non-static key in rhashtable_walk_enter
-To:     David Miller <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>
-CC:     <syzbot+1e8114b61079bfe9cbc5@syzkaller.appspotmail.com>,
-        <jon.maloy@ericsson.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>,
-        <tipc-discussion@lists.sourceforge.net>, <ying.xue@windriver.com>,
-        <dvyukov@google.com>, <edumazet@google.com>
-References: <00000000000014e65905892486ab@google.com>
- <CA+FuTSeM5qzyf_D+70Xe5k=3d+dYp2WyVZC-YM=K4=9kCCst6A@mail.gmail.com>
- <CA+FuTSct1p1tYAWdsWOgQT7AHoFbdgoT=gA1tQ3nii_85k9bFA@mail.gmail.com>
- <20190518.131257.1124207773533732758.davem@davemloft.net>
-From:   hujunwei <hujunwei4@huawei.com>
-Message-ID: <ad7739b9-0b90-d704-ebc0-08e77a1c7d5e@huawei.com>
-Date:   Sun, 19 May 2019 16:55:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190518.131257.1124207773533732758.davem@davemloft.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.191.73]
-X-CFilter-Loop: Reflected
+        id S1728118AbfESRqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 May 2019 13:46:32 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:43824 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727444AbfESRqc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 May 2019 13:46:32 -0400
+Received: by mail-pl1-f195.google.com with SMTP id gn7so1451796plb.10
+        for <netdev@vger.kernel.org>; Sun, 19 May 2019 10:46:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=siH0h08bo+poMfukgf+UGGSFOKy0KYXUk3xeaWxbyWE=;
+        b=I4TkRwAT64red0QDk3HQlz4iknuK2VcaB3gY746KtgtKKeEIukghgr6mLLkx2yAGdq
+         KiqZX7dJH3xObqbNjO0NEwfoQfSF5M9uWK5pSmpYwHm1wMt+PQOx0PAtfTlNYY5fhdRA
+         vIdtrXLJcvkyAI88hfyaLPjvZw3v8gWM0qMoRnTi8+oJk7yR2c2AL7Ii4uHrRJZrFMfs
+         oIWUQl8HmVA9hHIkshQSkaEr29CNKraPopZTslvZtrPdIJwGwMtzOQnwLznf5Jv4033a
+         mjqVMxrqQfYR/Ob0X3R90t+6keAmUIRpT+qDkFGe5HmXqr70UZd4AT+bj43cRvbefS5+
+         TjKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=siH0h08bo+poMfukgf+UGGSFOKy0KYXUk3xeaWxbyWE=;
+        b=mIlv9HO4OeRFCevi0DeiY/994WAUCk3XHvyH7p77U7qCE2wHKVcYtJSfTJ95TDokgB
+         pHgmIsEpOklsW3sjE1EQBFUC3IVDa3nX5g4svssf+l4QPwoyobnLtk7vzYfK9RTWB5O1
+         NVar0+HZCEh1lesLIofV1nc4a5bfU3KMedevsro2sX3W2QWtib2xNFGUKW535f7HcMGQ
+         OnaqdscbgkfHPR+lrXua5rJt6KIQ8rKnhUyemcc7V9AAAppZd/j6i59usVMzqMIopa+h
+         GOO9efdBKMYNMpC5tYroE4ZyWcfX/tbf9H48Aem7Hk2l/gKW1ipVpzn+HI5RonKJkXjE
+         MGUA==
+X-Gm-Message-State: APjAAAXMkt4k2YDogS1Fb/pcsnadKSYaS/VXjfVwHWJzrnl4oOHRuLTb
+        97F5NiAofe0iQNcvV5fCM4soDRQ3Dmc=
+X-Google-Smtp-Source: APXvYqw/xuSSVEMCdtHOfEIrw3lwtN0X44TShs9bJNA7LDieetozQN6K8S9mmoW3H9VqF3p0A1isVQ==
+X-Received: by 2002:a17:902:e60a:: with SMTP id cm10mr60970246plb.316.1558256838378;
+        Sun, 19 May 2019 02:07:18 -0700 (PDT)
+Received: from localhost.localdomain (220-135-242-219.HINET-IP.hinet.net. [220.135.242.219])
+        by smtp.googlemail.com with ESMTPSA id u134sm21544917pfc.61.2019.05.19.02.07.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 19 May 2019 02:07:17 -0700 (PDT)
+From:   Chang-Hsien Tsai <luke.tw@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, luke.tw@gmail.com
+Subject: [PATCH] samples: bpf: fix: change the buffer size for read()
+Date:   Sun, 19 May 2019 09:05:44 +0000
+Message-Id: <20190519090544.26971-1-luke.tw@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+If the trace for read is larger than 4096,
+the return value sz will be 4096.
+This results in off-by-one error on buf.
 
+    static char buf[4096];
+    ssize_t sz;
 
-On 2019/5/19 4:12, David Miller wrote:
-> From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Date: Sat, 18 May 2019 14:19:07 -0400
-> 
->> On Sat, May 18, 2019 at 2:09 PM Willem de Bruijn
->> <willemdebruijn.kernel@gmail.com> wrote:
->>>
->>> On Sat, May 18, 2019 at 3:34 AM syzbot
->>> <syzbot+1e8114b61079bfe9cbc5@syzkaller.appspotmail.com> wrote:
->>>>
->>>> Hello,
->>>>
->>>> syzbot found the following crash on:
->>>>
->>>> HEAD commit:    510e2ced ipv6: fix src addr routing with the exception table
->>>> git tree:       net
->>>> console output: https://syzkaller.appspot.com/x/log.txt?x=15b7e608a00000
->>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=82f0809e8f0a8c87
->>>> dashboard link: https://syzkaller.appspot.com/bug?extid=1e8114b61079bfe9cbc5
->>>> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
->>>>
->>>> Unfortunately, I don't have any reproducer for this crash yet.
->>>>
->>>> IMPORTANT: if you fix the bug, please add the following tag to the commit:
->>>> Reported-by: syzbot+1e8114b61079bfe9cbc5@syzkaller.appspotmail.com
->>>>
->>>> INFO: trying to register non-static key.
->>>> the code is fine but needs lockdep annotation.
->>>
->>> All these five rhashtable_walk_enter probably have the same root cause.
->>>
->>> Bisected to commit 7e27e8d6130c (" tipc: switch order of device
->>> registration to fix a crash"). Reverting that fixes it.
->>>
->>> Before the commit, tipc_init succeeds. After the commit it fails at
->>> register_pernet_subsys(&tipc_net_ops) due to error in
->>>
->>>   tipc_init_net
->>>     tipc_topsrv_start
->>>       tipc_topsrv_create_listener
->>>         sock_create_kern
->>>
->>> On a related note, in tipc_topsrv_start srv is also not freed on later
->>> error paths.
->>
->> and tipc_topsrv_stop is not called in tipc_init_net on later error paths.
-> 
-> This was gonna get fixed by:
-> 
-> 532b0f7ece4cb2ffd24dc723ddf55242d1188e5e
-> tipc: fix modprobe tipc failed after switch order of device registration
-> 
-> I think...
-> 
-> But I reverted because they were still fiddling around with the fix.
-> 
-> This looks really bad at this point and I'm likely to revert 7e27e8d6130c
-> because it creates so many more bugs than it fixes :-////
-> 
-> .
-> 
-Hi, David
-I am really sorry for this, just as you said, this bug fixed by:
-532b0f7ece4cb2ffd24dc723ddf55242d1188e5e
-tipc: fix modprobe tipc failed after switch order of device registration.
+    sz = read(trace_fd, buf, sizeof(buf));
+    if (sz > 0) {
+        buf[sz] = 0;
+        puts(buf);
+    }
 
-I verified the patch v2 works fine, inclue use namespaces together.
-I will update syzbot report in patch v3.
+Signed-off-by: Chang-Hsien Tsai <luke.tw@gmail.com>
+---
+ samples/bpf/bpf_load.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards,
-Junwei
+diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
+index eae7b635343d..d4da90070b58 100644
+--- a/samples/bpf/bpf_load.c
++++ b/samples/bpf/bpf_load.c
+@@ -678,7 +678,7 @@ void read_trace_pipe(void)
+ 		static char buf[4096];
+ 		ssize_t sz;
+ 
+-		sz = read(trace_fd, buf, sizeof(buf));
++		sz = read(trace_fd, buf, sizeof(buf)-1);
+ 		if (sz > 0) {
+ 			buf[sz] = 0;
+ 			puts(buf);
+-- 
+2.17.1
 
