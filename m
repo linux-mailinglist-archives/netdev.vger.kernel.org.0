@@ -2,86 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E019923624
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 14:46:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C26237A6
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 15:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390331AbfETMn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 08:43:26 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:43999 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389397AbfETM2z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 08:28:55 -0400
-Received: by mail-pg1-f196.google.com with SMTP id f25so189909pgv.10;
-        Mon, 20 May 2019 05:28:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=hB3PHyrs53San/vhDwKRpRyPdI0a/I1a2f3pjFTkUE4=;
-        b=Dj6rxER+7wkxWxh9ncQ8235KU6jkkd6A60sumII2etXOJfRWzKRMI+PilghA5nj4EG
-         jRr+1A3Q7sDU1MIUwj5Ln1rQmAzYMjqW0wXbeHqt4fmdseaVwTVi4djbj/JdjOHxFNLR
-         pyamqSgmB1aFeaW4Z9n8kmVJrpWDvw1Gn/4nn8Lw1A7aA3SSsppCi4fWPgJqbclRf4Sl
-         7d6v4T7sX1kRHyCxbwC8lhdpDbY9e3DOsZZvvNdVzKJ+o/XDxhaPYlbxIeGMfuge4vUa
-         ArvAoihzT4Y3V9a1Sw7sbFd9GWzgmA1HCuzhhHJY+2JaYHiwq5IXOugEoKcGvJ+AtYlC
-         VJxg==
+        id S2391557AbfETMxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 08:53:04 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34226 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391548AbfETMxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 08:53:03 -0400
+Received: by mail-qt1-f194.google.com with SMTP id h1so16148100qtp.1
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 05:53:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=hB3PHyrs53San/vhDwKRpRyPdI0a/I1a2f3pjFTkUE4=;
-        b=I7sQpabtCwB/Lsz/eCdLSbectA4U2npASBlXeL4ttTNk97BxjFRZoSIdIOHyD75tA6
-         Ujvf3Pt6APhLV2OmgF6/TP6siQ3ZXnYMSFno1mb6xIcmXUE764pcHW09NXPz8FiqSdRm
-         iur64syb55wJDi+dY4dWgHiMfyNaJBibe/nndTpoj0Bm8qWhvgg7ES8QX6IE82tewG1x
-         AGbm5ewEbm72fPARGoezOIOuSlluAmbA+Zme7n/xkLpzsxQrI4Nx6Do+QDpY4F284kFn
-         r5wYIwH+WtETQhVScmBWWpV7OpnlOI4PcZm8IcBi/lhrPWD898YW1eURnuMtf4IAJDom
-         PohA==
-X-Gm-Message-State: APjAAAXmFFMhfddaPAyJYothzyp3XrkhfZgq3VzAISj0kQ5jA16wnhu/
-        PjkVqv9cL6maolktBMZDImI=
-X-Google-Smtp-Source: APXvYqwaLDrWw7c0Fs1bKjKOaDP5fyg9p7qm+2PKXEbMZux7rZ1ZmgUv7+LmqyKVykIc0nPFeA/87Q==
-X-Received: by 2002:a63:7909:: with SMTP id u9mr68890137pgc.223.1558355334363;
-        Mon, 20 May 2019 05:28:54 -0700 (PDT)
-Received: from localhost ([43.224.245.181])
-        by smtp.gmail.com with ESMTPSA id s2sm16226302pfe.105.2019.05.20.05.28.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 05:28:53 -0700 (PDT)
-From:   Weitao Hou <houweitaoo@gmail.com>
-To:     arend.vanspriel@broadcom.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
-        wright.feng@cypress.com, kvalo@codeaurora.org, davem@davemloft.net,
-        houweitaoo@gmail.com, rafal@milecki.pl
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] brcmfmac: fix typos in code comments
-Date:   Mon, 20 May 2019 20:28:25 +0800
-Message-Id: <20190520122825.981-1-houweitaoo@gmail.com>
-X-Mailer: git-send-email 2.18.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FNAZcWqflA9IRxmObxU4/lbcnrS1uyVvwLBkqQKN8z8=;
+        b=dX+8aRe3p33lu01SImk7+b/y+G19iBx74ngoUBKnx7xxnfI4JGOMGYAR9vGI5hNznj
+         jKGzAZow81JShheoCtAOHBxPB91koRlpf1DiXMQCScLEpA2ZY0+BNKE2m+G+ppjYCoyB
+         udpzRNiVWVdBy7I8QIpJmg2kJl+PkAM1s/mJHOe3fuxpn3VaqPXCjmNZKn/QiQOfyunb
+         o9usnO0yZAOs29rBOQGNOIaFvjyFJlnfWbDonyobeordEOWQCe8VgFqqPHJgX67qWvSI
+         b49Q5uqPc47y4Q8YRecx8N6B0jXNu+spZM3Rpvz+bKVobrlmhxN0mO03p/Uehj7lpaN9
+         9RUg==
+X-Gm-Message-State: APjAAAVXnr5l4op4dX28o5pSTsw94Us/yryXvvIRH9U2eP197CW0KFLs
+        5MdazDnCaqlpI3iW4CRlqIo42Q==
+X-Google-Smtp-Source: APXvYqxZc3EADFrIKvZtBidjDNyX7MfQHCtBgDMnAiOTyPCPBnueOwuGeJwhQyllR7iNwwTq6Wygtw==
+X-Received: by 2002:ac8:2ea1:: with SMTP id h30mr21686178qta.333.1558356782974;
+        Mon, 20 May 2019 05:53:02 -0700 (PDT)
+Received: from redhat.com (pool-173-76-105-71.bstnma.fios.verizon.net. [173.76.105.71])
+        by smtp.gmail.com with ESMTPSA id v3sm13052762qtc.97.2019.05.20.05.53.01
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 20 May 2019 05:53:01 -0700 (PDT)
+Date:   Mon, 20 May 2019 08:52:59 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pbonzini@redhat.com, stefanha@redhat.com
+Subject: Re: [PATCH V2 0/4] Prevent vhost kthread from hogging CPU
+Message-ID: <20190520085207-mutt-send-email-mst@kernel.org>
+References: <1558067392-11740-1-git-send-email-jasowang@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1558067392-11740-1-git-send-email-jasowang@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fix lengh to length
+On Fri, May 17, 2019 at 12:29:48AM -0400, Jason Wang wrote:
+> Hi:
+> 
+> This series try to prevent a guest triggerable CPU hogging through
+> vhost kthread. This is done by introducing and checking the weight
+> after each requrest. The patch has been tested with reproducer of
+> vsock and virtio-net. Only compile test is done for vhost-scsi.
+> 
+> Please review.
+> This addresses CVE-2019-3900.
 
-Signed-off-by: Weitao Hou <houweitaoo@gmail.com>
----
-- fix prefix
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+OK I think we should clean this code some more but given
+it's a CVE fix maybe it's best to do as a patch on top.
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
-index 8ea27489734e..edd2f09613d8 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
-@@ -314,7 +314,7 @@ brcmf_create_bsscfg(s32 bsscfgidx, char *name, char *data, u32 datalen,
- 		return brcmf_create_iovar(name, data, datalen, buf, buflen);
- 
- 	prefixlen = strlen(prefix);
--	namelen = strlen(name) + 1; /* lengh of iovar  name + null */
-+	namelen = strlen(name) + 1; /* length of iovar  name + null */
- 	iolen = prefixlen + namelen + sizeof(bsscfgidx_le) + datalen;
- 
- 	if (buflen < iolen) {
--- 
-2.18.0
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
+Dave do you want to merge this or should I?
+
+> 
+> Changs from V1:
+> - fix user-ater-free in vosck patch
+> 
+> Jason Wang (4):
+>   vhost: introduce vhost_exceeds_weight()
+>   vhost_net: fix possible infinite loop
+>   vhost: vsock: add weight support
+>   vhost: scsi: add weight support
+> 
+>  drivers/vhost/net.c   | 41 ++++++++++++++---------------------------
+>  drivers/vhost/scsi.c  | 21 ++++++++++++++-------
+>  drivers/vhost/vhost.c | 20 +++++++++++++++++++-
+>  drivers/vhost/vhost.h |  5 ++++-
+>  drivers/vhost/vsock.c | 28 +++++++++++++++++++++-------
+>  5 files changed, 72 insertions(+), 43 deletions(-)
+> 
+> -- 
+> 1.8.3.1
