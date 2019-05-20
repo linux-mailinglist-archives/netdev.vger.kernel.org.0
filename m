@@ -2,226 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45B90238DC
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 15:54:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D5A32396D
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 16:09:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390491AbfETNyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 09:54:13 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:44808 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390418AbfETNyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 09:54:11 -0400
-Received: by mail-io1-f67.google.com with SMTP id f22so11033332iol.11
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 06:54:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qTfgXH2ZXOT0rZW+kdJ3acNhah3zg+9vblvPOMdBQ14=;
-        b=v3cHBs+JVLGbaW7f+X68Q7SNESSu2ea1qt0XE5rwqRRjB1H+pvrtWDxfUH0AEFsQJq
-         +l0yHFwkErTYtnhtH/d87kocoecxvwNEuzEn3ZgwG54OEKQbv0vupQIsVRPhY7yvwsrg
-         Wepwos5OEehfTrvI6BJ3/HL98x9ItLBsiW4ABMW4s6cvh29x/nQal4rB5atykq3D+fXq
-         o2pcQA2VJz1bqrOD16+M33W2hVMyjFGHKcFIAqkJWBAVwu8iMyTEbfFoqlPUfckbLVWB
-         VNrr2RSoVbQp421gKP4231PwDa78wGcYfQJlvT3qi89msxZU19CRvpv0TxKB6B20v7/K
-         HE1A==
+        id S1732720AbfETOJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 10:09:45 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:36241 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731278AbfETOJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 10:09:45 -0400
+Received: by mail-wm1-f67.google.com with SMTP id j187so13214443wmj.1
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 07:09:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qTfgXH2ZXOT0rZW+kdJ3acNhah3zg+9vblvPOMdBQ14=;
-        b=W1/wRmBDd+HilSKzzb5tsrweLJbSKC8MpnH5hyNY7W6fqjSxvv0apMGC4zDPnRKCcr
-         +7AvoYEybqmLxuA0F3mZ+uZxjyRtxScJ3ndLAz4T6TvFb0htyZsGc76GC4MlSmIDPMXx
-         8GFXJkRgvA4GsPRMxZpynUJ4esXbKwwRvzQOS1AkQ2aLt/u4IGvYGI3P3dZ0v9kTqHJl
-         hvCdasfB96DKntR10XG2cQnLbmYf/E7A2rVEYeKhWy3ElpYyhDjj0fznLq56mJSNZW9a
-         Gw3lPKRnBmO+NGSaB5mZ8MqG+7zHCT7tGB58BZ1BkAmTI0t6/7YgNghHG1NTvHveMFDq
-         SAcg==
-X-Gm-Message-State: APjAAAViZMNeJotzAvsI/Hg8JBC4ZGUgUTEpoYy+gmJOME+KU3u0zj2L
-        n4U9946wpbnNwk9VU5V06y9Uog==
-X-Google-Smtp-Source: APXvYqw+Dh6IdcQx6woJU//JReMZ8LVIygVjAfQCtJfQq3P/b8mcrruZxt3mXsn8gRe41T3YpWrDpA==
-X-Received: by 2002:a05:6602:2049:: with SMTP id z9mr14847619iod.46.1558360450147;
-        Mon, 20 May 2019 06:54:10 -0700 (PDT)
-Received: from localhost.localdomain (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
-        by smtp.gmail.com with ESMTPSA id n17sm6581185ioa.0.2019.05.20.06.54.09
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 06:54:09 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     arnd@arndb.de, subashab@codeaurora.org, david.brown@linaro.org,
-        agross@kernel.org, davem@davemloft.net
-Cc:     bjorn.andersson@linaro.org, ilias.apalodimas@linaro.org,
-        cpratapa@codeaurora.org, syadagir@codeaurora.org,
-        evgreen@chromium.org, benchan@google.com, ejcaruso@google.com,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 8/8] net: introduce "include/linux/if_rmnet.h"
-Date:   Mon, 20 May 2019 08:53:54 -0500
-Message-Id: <20190520135354.18628-9-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190520135354.18628-1-elder@linaro.org>
-References: <20190520135354.18628-1-elder@linaro.org>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=lPfvXgySRybnahLKkw4smuzyEidEfCcqkiUhMgN/vwA=;
+        b=sEQZsmnxde2EZoaWrkYctDIshNJkuaCMatEPBmIq8XP6VIvdvhA8/5p3iMQJ80YQVX
+         7kT7TcUUwyQGfUPKu7stgt3EWyuCIJIgZqndf/0ptu6D2xVHamVKy8DFTm2ksEcRYmk3
+         bLo2PpTdVyI1P0Sc1vBc0KVbC7d0pEYDNv50c2gX9jnpVccyMxCTTlNgJI3w+9bAx0Ld
+         0vsH7gfYBUKu7a5v0EbkmMyNN7ztRWz76tUYoUpSl5iYSUij8yJCMs22oaw2pt8qi7Cw
+         wqhfqFST5lnyNL+5Iqdj4R4l6jkgyuKxWenK3DgbCyE5w1IBF8DIT6qx/T2Jvflh8hJa
+         LqtA==
+X-Gm-Message-State: APjAAAWkqSo62WIpAuQw7jTxeyV78TX/fEf9rtAs5610IBpIr7wb58rb
+        ahc/FnhO56DYgO1Te99eF5aTfQ==
+X-Google-Smtp-Source: APXvYqz5GtHhBy4enUvwmz8hwk6SwMqQAZEOLjJc2ksdwfdlVMTlaXmqw84HWQ8a69KXG5cbK4bQ/w==
+X-Received: by 2002:a1c:9904:: with SMTP id b4mr31424112wme.1.1558361381659;
+        Mon, 20 May 2019 07:09:41 -0700 (PDT)
+Received: from steredhat (host151-251-static.12-87-b.business.telecomitalia.it. [87.12.251.151])
+        by smtp.gmail.com with ESMTPSA id i18sm9268216wml.33.2019.05.20.07.09.39
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 20 May 2019 07:09:40 -0700 (PDT)
+Date:   Mon, 20 May 2019 16:09:38 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [PATCH v2 0/8] vsock/virtio: optimizations to increase the
+ throughput
+Message-ID: <20190520140938.f26g6jsepfpwspsy@steredhat>
+References: <20190510125843.95587-1-sgarzare@redhat.com>
+ <08c7e0aa-d90d-e0ff-a68c-0e182d077ab2@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <08c7e0aa-d90d-e0ff-a68c-0e182d077ab2@redhat.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The IPA driver requires some (but not all) symbols defined in
-"drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h".  Create a new
-public header file "include/linux/if_rmnet.h" and move the needed
-definitions there.
+On Mon, May 13, 2019 at 05:33:40PM +0800, Jason Wang wrote:
+> 
+> On 2019/5/10 下午8:58, Stefano Garzarella wrote:
+> > While I was testing this new series (v2) I discovered an huge use of memory
+> > and a memory leak in the virtio-vsock driver in the guest when I sent
+> > 1-byte packets to the guest.
+> > 
+> > These issues are present since the introduction of the virtio-vsock
+> > driver. I added the patches 1 and 2 to fix them in this series in order
+> > to better track the performance trends.
+> > 
+> > v1: https://patchwork.kernel.org/cover/10885431/
+> > 
+> > v2:
+> > - Add patch 1 to limit the memory usage
+> > - Add patch 2 to avoid memory leak during the socket release
+> > - Add patch 3 to fix locking of fwd_cnt and buf_alloc
+> > - Patch 4: fix 'free_space' type (u32 instead of s64) [Stefan]
+> > - Patch 5: Avoid integer underflow of iov_len [Stefan]
+> > - Patch 5: Fix packet capture in order to see the exact packets that are
+> >             delivered. [Stefan]
+> > - Add patch 8 to make the RX buffer size tunable [Stefan]
+> > 
+> > Below are the benchmarks step by step. I used iperf3 [1] modified with VSOCK
+> > support.
+> > As Micheal suggested in the v1, I booted host and guest with 'nosmap', and I
+> > added a column with virtio-net+vhost-net performance.
+> > 
+> > A brief description of patches:
+> > - Patches 1+2: limit the memory usage with an extra copy and avoid memory leak
+> > - Patches 3+4: fix locking and reduce the number of credit update messages sent
+> >                 to the transmitter
+> > - Patches 5+6: allow the host to split packets on multiple buffers and use
+> >                 VIRTIO_VSOCK_MAX_PKT_BUF_SIZE as the max packet size allowed
+> > - Patches 7+8: increase RX buffer size to 64 KiB
+> > 
+> >                      host -> guest [Gbps]
+> > pkt_size before opt  p 1+2    p 3+4    p 5+6    p 7+8       virtio-net + vhost
+> >                                                                       TCP_NODELAY
+> > 64         0.068     0.063    0.130    0.131    0.128         0.188     0.187
+> > 256        0.274     0.236    0.392    0.338    0.282         0.749     0.654
+> > 512        0.531     0.457    0.862    0.725    0.602         1.419     1.414
+> > 1K         0.954     0.827    1.591    1.598    1.548         2.599     2.640
+> > 2K         1.783     1.543    3.731    3.637    3.469         4.530     4.754
+> > 4K         3.332     3.436    7.164    7.124    6.494         7.738     7.696
+> > 8K         5.792     5.530   11.653   11.787   11.444        12.307    11.850
+> > 16K        8.405     8.462   16.372   16.855   17.562        16.936    16.954
+> > 32K       14.208    13.669   18.945   20.009   23.128        21.980    23.015
+> > 64K       21.082    18.893   20.266   20.903   30.622        27.290    27.383
+> > 128K      20.696    20.148   20.112   21.746   32.152        30.446    30.990
+> > 256K      20.801    20.589   20.725   22.685   34.721        33.151    32.745
+> > 512K      21.220    20.465   20.432   22.106   34.496        36.847    31.096
+> > 
+> >                      guest -> host [Gbps]
+> > pkt_size before opt  p 1+2    p 3+4    p 5+6    p 7+8       virtio-net + vhost
+> >                                                                       TCP_NODELAY
+> > 64         0.089     0.091    0.120    0.115    0.117         0.274     0.272
+> > 256        0.352     0.354    0.452    0.445    0.451         1.085     1.136
+> > 512        0.705     0.704    0.893    0.858    0.898         2.131     1.882
+> > 1K         1.394     1.433    1.721    1.669    1.691         3.984     3.576
+> > 2K         2.818     2.874    3.316    3.249    3.303         6.719     6.359
+> > 4K         5.293     5.397    6.129    5.933    6.082        10.105     9.860
+> > 8K         8.890     9.151   10.990   10.545   10.519        15.239    14.868
+> > 16K       11.444    11.018   12.074   15.255   15.577        20.551    20.848
+> > 32K       11.229    10.875   10.857   24.401   25.227        26.294    26.380
+> > 64K       10.832    10.545   10.816   39.487   39.616        34.996    32.041
+> > 128K      10.435    10.241   10.500   39.813   40.012        38.379    35.055
+> > 256K      10.263     9.866    9.845   34.971   35.143        36.559    37.232
+> > 512K      10.224    10.060   10.092   35.469   34.627        34.963    33.401
+> > 
+> > As Stefan suggested in the v1, this time I measured also the efficiency in this
+> > way:
+> >      efficiency = Mbps / (%CPU_Host + %CPU_Guest)
+> > 
+> > The '%CPU_Guest' is taken inside the VM. I know that it is not the best way,
+> > but it's provided for free from iperf3 and could be an indication.
+> > 
+> >          host -> guest efficiency [Mbps / (%CPU_Host + %CPU_Guest)]
+> > pkt_size before opt  p 1+2    p 3+4    p 5+6    p 7+8       virtio-net + vhost
+> >                                                                       TCP_NODELAY
+> > 64          0.94      0.59     3.96     4.06     4.09          2.82      2.11
+> > 256         2.62      2.50     6.45     6.09     5.81          9.64      8.73
+> > 512         5.16      4.87    13.16    12.39    11.67         17.83     17.76
+> > 1K          9.16      8.85    24.98    24.97    25.01         32.57     32.04
+> > 2K         17.41     17.03    49.09    48.59    49.22         55.31     57.14
+> > 4K         32.99     33.62    90.80    90.98    91.72         91.79     91.40
+> > 8K         58.51     59.98   153.53   170.83   167.31        137.51    132.85
+> > 16K        89.32     95.29   216.98   264.18   260.95        176.05    176.05
+> > 32K       152.94    167.10   285.75   387.02   360.81        215.49    226.30
+> > 64K       250.38    307.20   317.65   489.53   472.70        238.97    244.27
+> > 128K      327.99    335.24   335.76   523.71   486.41        253.29    260.86
+> > 256K      327.06    334.24   338.64   533.76   509.85        267.78    266.22
+> > 512K      337.36    330.61   334.95   512.90   496.35        280.42    241.43
+> > 
+> >          guest -> host efficiency [Mbps / (%CPU_Host + %CPU_Guest)]
+> > pkt_size before opt  p 1+2    p 3+4    p 5+6    p 7+8       virtio-net + vhost
+> >                                                                       TCP_NODELAY
+> > 64          0.90      0.91     1.37     1.32     1.35          2.15      2.13
+> > 256         3.59      3.55     5.23     5.19     5.29          8.50      8.89
+> > 512         7.19      7.08    10.21     9.95    10.38         16.74     14.71
+> > 1K         14.15     14.34    19.85    19.06    19.33         31.44     28.11
+> > 2K         28.44     29.09    37.78    37.18    37.49         53.07     50.63
+> > 4K         55.37     57.60    71.02    69.27    70.97         81.56     79.32
+> > 8K        105.58    100.45   111.95   124.68   123.61        120.85    118.66
+> > 16K       141.63    138.24   137.67   187.41   190.20        160.43    163.00
+> > 32K       147.56    143.09   138.48   296.41   301.04        214.64    223.94
+> > 64K       144.81    143.27   138.49   433.98   462.26        298.86    269.71
+> > 128K      150.14    147.99   146.85   511.36   514.29        350.17    298.09
+> > 256K      156.69    152.25   148.69   542.19   549.97        326.42    333.32
+> > 512K      157.29    153.35   152.22   546.52   533.24        315.55    302.27
+> > 
+> > [1] https://github.com/stefano-garzarella/iperf/
+> 
+> 
+> Hi:
+> 
+> Do you have any explanation that vsock is better here? Is this because of
+> the mergeable buffer? If you, we need test with mrg_rxbuf=off.
+> 
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- .../ethernet/qualcomm/rmnet/rmnet_handlers.c  |  1 +
- .../net/ethernet/qualcomm/rmnet/rmnet_map.h   | 31 -------------
- .../qualcomm/rmnet/rmnet_map_command.c        |  1 +
- .../ethernet/qualcomm/rmnet/rmnet_map_data.c  |  1 +
- .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   |  1 +
- include/linux/if_rmnet.h                      | 45 +++++++++++++++++++
- 6 files changed, 49 insertions(+), 31 deletions(-)
- create mode 100644 include/linux/if_rmnet.h
+Hi Jason,
+I tried to disable the mergeable buffer but I had even worst performance
+with virtio-net.
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-index 5fff6c78ecd5..8e00e14f4ac9 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-@@ -18,6 +18,7 @@
- #include <linux/netdev_features.h>
- #include <linux/if_arp.h>
- #include <net/sock.h>
-+#include <linux/if_rmnet.h>
- #include "rmnet_private.h"
- #include "rmnet_config.h"
- #include "rmnet_vnd.h"
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-index 775b98d34e94..d101cabb04c3 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-@@ -39,37 +39,6 @@ enum rmnet_map_commands {
- 	RMNET_MAP_COMMAND_ENUM_LENGTH
- };
- 
--struct rmnet_map_header {
--	u8  cmd_pad_len;	/* RMNET_MAP_* */
--	u8  mux_id;
--	__be16 pkt_len;
--}  __aligned(1);
--
--#define RMNET_MAP_CMD_FMASK		GENMASK(0, 0)   /* 0: data; 1: cmd */
--#define RMNET_MAP_RESERVED_FMASK	GENMASK(1, 1)
--#define RMNET_MAP_PAD_LEN_FMASK		GENMASK(7, 2)
--
--struct rmnet_map_dl_csum_trailer {
--	u8  reserved1;
--	u8  flags;		/* RMNET_MAP_DL_* */
--	__be16 csum_start_offset;
--	__be16 csum_length;
--	__be16 csum_value;
--} __aligned(1);
--
--#define RMNET_MAP_DL_CSUM_VALID_FMASK	GENMASK(0, 0)
--#define RMNET_MAP_DL_RESERVED_FMASK	GENMASK(7, 1)
--
--struct rmnet_map_ul_csum_header {
--	__be16 csum_start_offset;
--	__be16 csum_info;	/* RMNET_MAP_UL_* */
--} __aligned(1);
--
--/* NOTE:  These field masks are defined in CPU byte order */
--#define RMNET_MAP_UL_CSUM_INSERT_FMASK	GENMASK(13, 0)
--#define RMNET_MAP_UL_CSUM_UDP_FMASK	GENMASK(14, 14)   /* 0: IP; 1: UDP */
--#define RMNET_MAP_UL_CSUM_ENABLED_FMASK	GENMASK(15, 15)
--
- #define RMNET_MAP_COMMAND_REQUEST     0
- #define RMNET_MAP_COMMAND_ACK         1
- #define RMNET_MAP_COMMAND_UNSUPPORTED 2
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
-index f675f47c3495..6832c5939cae 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
-@@ -11,6 +11,7 @@
-  */
- 
- #include <linux/netdevice.h>
-+#include <linux/if_rmnet.h>
- #include "rmnet_config.h"
- #include "rmnet_map.h"
- #include "rmnet_private.h"
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index 61b7dbab2056..370aee7402e0 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -18,6 +18,7 @@
- #include <linux/ip.h>
- #include <linux/ipv6.h>
- #include <net/ip6_checksum.h>
-+#include <linux/if_rmnet.h>
- #include "rmnet_config.h"
- #include "rmnet_map.h"
- #include "rmnet_private.h"
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-index d11c16aeb19a..6b39d4d8e523 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-@@ -17,6 +17,7 @@
- #include <linux/etherdevice.h>
- #include <linux/if_arp.h>
- #include <net/pkt_sched.h>
-+#include <linux/if_rmnet.h>
- #include "rmnet_config.h"
- #include "rmnet_handlers.h"
- #include "rmnet_private.h"
-diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
-new file mode 100644
-index 000000000000..ae60472ecc79
---- /dev/null
-+++ b/include/linux/if_rmnet.h
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+/* Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
-+ * Copyright (C) 2019 Linaro Ltd.
-+ */
-+#ifndef _LINUX_IF_RMNET_H_
-+#define _LINUX_IF_RMNET_H_
-+
-+#include <linux/types.h>
-+
-+/* Header structure that precedes packets in ETH_P_MAP protocol */
-+struct rmnet_map_header {
-+	u8  cmd_pad_len;	/* RMNET_MAP_* */
-+	u8  mux_id;
-+	__be16 pkt_len;
-+}  __aligned(1);
-+
-+#define RMNET_MAP_CMD_FMASK		GENMASK(0, 0)   /* 0: data; 1: cmd */
-+#define RMNET_MAP_RESERVED_FMASK	GENMASK(1, 1)
-+#define RMNET_MAP_PAD_LEN_FMASK		GENMASK(7, 2)
-+
-+/* Checksum offload metadata header for outbound packets*/
-+struct rmnet_map_ul_csum_header {
-+	__be16 csum_start_offset;
-+	__be16 csum_info;	/* RMNET_MAP_UL_* */
-+} __aligned(1);
-+
-+/* NOTE:  These field masks are defined in CPU byte order */
-+#define RMNET_MAP_UL_CSUM_INSERT_FMASK	GENMASK(13, 0)
-+#define RMNET_MAP_UL_CSUM_UDP_FMASK	GENMASK(14, 14)   /* 0: IP; 1: UDP */
-+#define RMNET_MAP_UL_CSUM_ENABLED_FMASK	GENMASK(15, 15)
-+
-+/* Checksum offload metadata trailer for inbound packets */
-+struct rmnet_map_dl_csum_trailer {
-+	u8  reserved1;
-+	u8  flags;		/* RMNET_MAP_DL_* */
-+	__be16 csum_start_offset;
-+	__be16 csum_length;
-+	__be16 csum_value;
-+} __aligned(1);
-+
-+#define RMNET_MAP_DL_CSUM_VALID_FMASK	GENMASK(0, 0)
-+#define RMNET_MAP_DL_RESERVED_FMASK	GENMASK(7, 1)
-+
-+#endif /* _LINUX_IF_RMNET_H_ */
--- 
-2.20.1
+Do you think the differences could be related to the TCP/IP stack?
 
+Thanks,
+Stefano
