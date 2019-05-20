@@ -2,121 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63B9423F7A
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 19:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91BC323F87
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 19:54:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726566AbfETRwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 13:52:03 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55488 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726282AbfETRwC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 13:52:02 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 90F1514EC46B1;
-        Mon, 20 May 2019 10:52:00 -0700 (PDT)
-Date:   Mon, 20 May 2019 10:51:59 -0700 (PDT)
-Message-Id: <20190520.105159.1094490201484427551.davem@davemloft.net>
-To:     o.rempel@pengutronix.de
-Cc:     paul.burton@mips.com, ralf@linux-mips.org, jhogan@kernel.org,
-        robh+dt@kernel.org, jcliburn@gmail.com, chris.snook@gmail.com,
-        mark.rutland@arm.com, kernel@pengutronix.de,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, john@phrozen.org, nbd@nbd.name,
-        netdev@vger.kernel.org, andrew@lunn.ch, gch981213@gmail.com,
-        info@freifunk-bad-gandersheim.net
-Subject: Re: [PATCH v5 3/3] net: ethernet: add ag71xx driver
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190520070716.23668-4-o.rempel@pengutronix.de>
-References: <20190520070716.23668-1-o.rempel@pengutronix.de>
-        <20190520070716.23668-4-o.rempel@pengutronix.de>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 May 2019 10:52:01 -0700 (PDT)
+        id S1726677AbfETRyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 13:54:11 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:43459 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbfETRyL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 13:54:11 -0400
+Received: by mail-oi1-f195.google.com with SMTP id t187so10651857oie.10;
+        Mon, 20 May 2019 10:54:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+TT7VxpiGJ92MYdiwp3Ymg21i+ktD/aUk1T7VpGbYWU=;
+        b=o6/ke7DkM42v4VU2Pc/qn1wtld8P7VZklPINruRFPm4Jj+fd3QtQ+yvHwYsMa2i3MZ
+         dDKmeFB+vNlbzV6m8jVMGITMpO4p/rz2HsIHTRMLeGbkp4yUJmIhxJiGFO+sfq5k7WSp
+         IzsIMYmJkh/rP3rzAeUdl9iEzWmz/+gbjcM1HLg0oqusbu2oCqpHk0uYAZr99ivCjsdy
+         2jUefsQbU1jfABN1ThxdBfjmmlXesNHha3EoVam/CnW876hedtfx0mNepGOrdWstUIWY
+         sfF/I0yWNUF1F8VNSAxMq+RKsrlOYTSojkdo3gVicMuqvLcfY4ypKj8RoClEDKs81syJ
+         gjCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+TT7VxpiGJ92MYdiwp3Ymg21i+ktD/aUk1T7VpGbYWU=;
+        b=X2m/32yPLzC/KX4RHNFNWEL7gnHi2AVEi80caQpQDAvR3ouSCKnYbHdS7hY778NOI7
+         ILp6HqpGUpkgr/qro9up6QV8FxmnihzxyqcJlqW7KcbV5SkB4jZmq6uoa97Vve3+iILs
+         gPVr7RFFFTHqFmIwn5CNQyenfD/Qtfd34DqEbmWShtowh7VN4WAM3fL+VsRz5Xy8n1Qo
+         zhv8hlQaRj+VHU8SD2vzll/4fDkz7Bzp6PeEVWoqN1fm0OI8peGhzlSVbVmU97CXrKv7
+         VeCSC5ccOkaSe/KumfQpnuNFyUwiEpNFGKzjxrm0OVG3woi9Ci8lsmtKpcpEzH4qW11a
+         OOHw==
+X-Gm-Message-State: APjAAAX84o3GScvXFLUJjH2UTLbs/Saiung5eSDGckNrpURTcIxOXj88
+        R4WjtCM4Cs/4b/tu1NZY5sB1HO7rlyjoGO0CwOU=
+X-Google-Smtp-Source: APXvYqxTveKpT4B4VuQk3T31UTuVi5i9NCYogPnEhi5gmvdQ9hdPvMLDCpVuSmJVfLt4VV/et7aCi+C62sNpPoI70Zs=
+X-Received: by 2002:aca:ab04:: with SMTP id u4mr271445oie.15.1558374850489;
+ Mon, 20 May 2019 10:54:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190520143450.2143-1-narmstrong@baylibre.com> <20190520143450.2143-3-narmstrong@baylibre.com>
+In-Reply-To: <20190520143450.2143-3-narmstrong@baylibre.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 20 May 2019 19:53:59 +0200
+Message-ID: <CAFBinCADC4ZxHGpyUEiN-VvNph-CN82rgWCLu6qGVjYbwjrn1g@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: stmmac: dwmac-meson8b: update with SPDX
+ Licence identifier
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-Date: Mon, 20 May 2019 09:07:16 +0200
-
-> +struct ag71xx_buf {
-> +	union {
-> +		struct sk_buff *skb;
-> +		void *rx_buf;
-> +	};
-> +	union {
-> +		dma_addr_t dma_addr;
-> +		unsigned int len;
-> +	};
-> +};
-
-I find this double union very confusing.
-
-When using unions you should make it strictly clear which members are used
-together, at what times, and in which situations.
-
-Therefore, please use something like anonymous structures to group the
-members that are used together at the same time, something like:
-
-struct ag71xx_buf {
-	union {
-		struct {
-			struct sk_buff *skb;
-			dma_addr_t dma_addr;
-		} tx;
-		struct {
-			void *rx_buf;
-			unsigned int len;
-		} rx;
-};
-
-Or at the very least add a very big comment that explains the use of
-the union members.
-
-> +static int ag71xx_mdio_mii_read(struct mii_bus *bus, int addr, int reg)
-> +{
-> +	struct ag71xx *ag = bus->priv;
-> +	struct net_device *ndev = ag->ndev;
-> +	int err, val;
-
-Reverse christmas tree here please.
-
-> +static int ag71xx_mdio_mii_write(struct mii_bus *bus, int addr, int reg,
-> +				 u16 val)
-> +{
-> +	struct ag71xx *ag = bus->priv;
-> +	struct net_device *ndev = ag->ndev;
-> +
-
-Likewise.
-
-> +static int ag71xx_mdio_probe(struct ag71xx *ag)
-> +{
-> +	static struct mii_bus *mii_bus;
-> +	struct device *dev = &ag->pdev->dev;
-> +	struct device_node *np = dev->of_node;
-> +	struct net_device *ndev = ag->ndev;
-> +	int err;
-
-Likewise.
-
-> +static int ag71xx_tx_packets(struct ag71xx *ag, bool flush)
-> +{
-> +	struct ag71xx_ring *ring = &ag->tx_ring;
-> +	struct net_device *ndev = ag->ndev;
-> +	bool dma_stuck = false;
-> +	int ring_mask = BIT(ring->order) - 1;
-> +	int ring_size = BIT(ring->order);
-> +	int sent = 0;
-> +	int bytes_compl = 0;
-> +	int n = 0;
-
-Likewise.
-
-And so on, and so forth, for the rest of this file.
+On Mon, May 20, 2019 at 4:35 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
+>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
