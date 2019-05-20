@@ -2,64 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7484C22990
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 02:34:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E74229C7
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 03:58:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729807AbfETAeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 May 2019 20:34:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39485 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727682AbfETAeH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 May 2019 20:34:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=QJ1zlmiUwkwG5fWJeQtvywIkCnEFUS1im+V7yvPnneo=; b=w07pfqMWRp5S6YyWg40sQaWds5
-        MpevLIUi3S0QIbW3VGyK0XeAGb9+EOFTwh+yaX+wP7NNdsuYR1KUhHodyKxyljCiNdk4Ob1Fi13Cx
-        04ti23myNThFJ1fYuKtr1YT9xXjAQEnhxbZ1efA1lhwzeyGDImLf+wvZ05j2B9V2aXGs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hSWFa-00019D-85; Mon, 20 May 2019 02:33:58 +0200
-Date:   Mon, 20 May 2019 02:33:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Paul Burton <paul.burton@mips.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        James Hogan <jhogan@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org,
-        Chuanhong Guo <gch981213@gmail.com>,
-        info@freifunk-bad-gandersheim.net
-Subject: Re: [PATCH v4 3/3] net: ethernet: add ag71xx driver
-Message-ID: <20190520003358.GB1695@lunn.ch>
-References: <20190519080304.5811-1-o.rempel@pengutronix.de>
- <20190519080304.5811-4-o.rempel@pengutronix.de>
+        id S1726786AbfETB6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 May 2019 21:58:40 -0400
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:46701 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725769AbfETB6j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 May 2019 21:58:39 -0400
+X-Greylist: delayed 303 seconds by postgrey-1.27 at vger.kernel.org; Sun, 19 May 2019 21:58:36 EDT
+Received: from [192.168.1.4] (unknown [116.234.7.137])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id EE9135C18F3;
+        Mon, 20 May 2019 09:53:28 +0800 (CST)
+From:   wenxu <wenxu@ucloud.cn>
+Subject: Bug or mis configuration for mlx5e lag and multipath
+To:     Roi Dayan <roid@mellanox.com>, Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <678285cb-0821-405a-57ae-0d72e96f9ef7@ucloud.cn>
+Date:   Mon, 20 May 2019 09:53:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190519080304.5811-4-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kIGBQJHllBWUlVQkNOQkJCQ0lJTUpNTkNZV1koWUFJQjdXWS1ZQUlXWQ
+        kOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OAg6Hyo*Szg8CC43MQM4MTgM
+        MEIKCgxVSlVKTk5DSEpMSUtCSE9IVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
+        SE9VTFVKSExZV1kIAVlBSEJPTDcG
+X-HM-Tid: 0a6ad2f195f22087kuqyee9135c18f3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +config AG71XX
-> +	tristate "Atheros AR7XXX/AR9XXX built-in ethernet mac support"
-> +	depends on ATH79
-> +	select PHYLIB
-> +	select MDIO_BITBANG
+Hi Roi & Saeed,
 
-I don't see any need for MDIO_BITBANG.
+I just test the mlx5e lag and mutipath feature. There are some suituation the outgoing can't be offloaded.
 
-  Andrew
+ovs configureation as following.
+
+# ovs-vsctl show
+dfd71dfb-6e22-423e-b088-d2022103af6b
+    Bridge "br0"
+        Port "mlx_pf0vf0"
+            Interface "mlx_pf0vf0"
+        Port gre
+            Interface gre
+                type: gre
+                options: {key="1000", local_ip="172.168.152.75", remote_ip="172.168.152.241"}
+        Port "br0"
+            Interface "br0"
+                type: internal
+
+set the mlx5e driver:
+
+
+modprobe mlx5_core
+echo 0 > /sys/class/net/eth2/device/sriov_numvfs
+echo 0 > /sys/class/net/eth3/device/sriov_numvfs
+echo 2 > /sys/class/net/eth2/device/sriov_numvfs
+echo 2 > /sys/class/net/eth3/device/sriov_numvfs
+lspci -nn | grep Mellanox
+echo 0000:81:00.2 > /sys/bus/pci/drivers/mlx5_core/unbind
+echo 0000:81:00.3 > /sys/bus/pci/drivers/mlx5_core/unbind
+echo 0000:81:03.6 > /sys/bus/pci/drivers/mlx5_core/unbind
+echo 0000:81:03.7 > /sys/bus/pci/drivers/mlx5_core/unbind
+
+devlink dev eswitch set pci/0000:81:00.0  mode switchdev encap enable
+devlink dev eswitch set pci/0000:81:00.1  mode switchdev encap enable
+
+modprobe bonding mode=802.3ad miimon=100 lacp_rate=1
+ip l del dev bond0
+ifconfig mlx_p0 down
+ifconfig mlx_p1 down
+ip l add dev bond0 type bond mode 802.3ad
+ifconfig bond0 172.168.152.75/24 up
+echo 1 > /sys/class/net/bond0/bonding/xmit_hash_policy
+ip l set dev mlx_p0 master bond0
+ip l set dev mlx_p1 master bond0
+ifconfig mlx_p0 up
+ifconfig mlx_p1 up
+
+systemctl start openvswitch
+ovs-vsctl set Open_vSwitch . other_config:hw-offload=true
+systemctl restart openvswitch
+
+
+mlx_pf0vf0 is assigned to vm. The tc rule show in_hw
+
+# tc filter ls dev mlx_pf0vf0 ingress
+filter protocol ip pref 2 flower
+filter protocol ip pref 2 flower handle 0x1
+  dst_mac 8e:c0:bd:bf:72:c3
+  src_mac 52:54:00:00:12:75
+  eth_type ipv4
+  ip_tos 0/3
+  ip_flags nofrag
+  in_hw
+    action order 1: tunnel_key set
+    src_ip 172.168.152.75
+    dst_ip 172.168.152.241
+    key_id 1000 pipe
+    index 2 ref 1 bind 1
+ 
+    action order 2: mirred (Egress Redirect to device gre_sys) stolen
+     index 2 ref 1 bind 1
+
+In the vm:  the mlx5e driver enable xps default (by the way I think it is better not enable xps in default kernel can select queue by each flow),  in the lag mode different vf queue associate with hw PF.
+
+with command taskset -c 2 ping 10.0.0.241
+
+the packet can be offloaded , the outgoing pf is mlx_p0
+
+but with command taskset -c 1 ping 10.0.0.241
+
+the packet can't be offloaded, I can capture the packet on the mlx_pf0vf0, the outgoing pf is mlx_p1. Althrough the tc flower rule show in_hw
+
+
+I check with the driver  both mlx_pf0vf0 and peer(mlx_p1) install the tc rule success
+
+I think it's a problem of lag mode. Or I miss some configureation?
+
+
+BR
+
+wenxu
+
+
+
+
+
