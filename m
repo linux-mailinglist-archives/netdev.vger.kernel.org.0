@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D29824039
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:24:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B155124045
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:25:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726012AbfETSYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 14:24:06 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39612 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbfETSYF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:24:05 -0400
-Received: by mail-pg1-f195.google.com with SMTP id w22so7163874pgi.6
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 11:24:05 -0700 (PDT)
+        id S1726061AbfETSZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 14:25:49 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45598 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725601AbfETSZt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:25:49 -0400
+Received: by mail-pf1-f196.google.com with SMTP id s11so7608710pfm.12
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 11:25:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=p5PGq7quaJ4YwD2HT7JA6gFjt/BB8aCX9Yo+srq7+CA=;
-        b=Q74ieeFz3B8wiM+o5j1Fm9nLayCTkjq31ZtE+xE5aPd0ow8S8xOoY4m/8TOfRdSeaW
-         xKZeaQc1X2WWSXjyiAmjtZ8OsiH/vm4yVjBowhNPHsOfa1lVJjiQ6cRbt6MEq5TVHHw3
-         dM62mu7rcXFP7bYLjE+5kvTWM5cQEmxavOkq5/l8UnNjjxYTanPKj/gxgiAHRDt5n6Ec
-         ARIXJV7Pp8Qs07JQK99Mb211pYAb4rJrTQN/EcEjQmhHGvAL6pxWCnINtr9MfzV0VTdc
-         fYhSdsffjwYofX3GMLOcO2eDzmWKkHA+RktHMGxsQ2jnik2Qh8KP9K+PF6qEIIV4pM4V
-         h4Bw==
+        bh=joptTuc1aajry2rGWYDBF9TOxDgWiMya13v2q9uPqUY=;
+        b=VZLxolGe1dqi2moBfIY27DEAVG/cPAuFHbqkUrBaM+ahnGzc7qN9m452P3pGXI1/wT
+         hxIR3rbm1FYOBo6w7uOC5MMni9Jc5cY85wLW40OnN5tJa+gfa330PPS8hDEqZb9LRW1+
+         KtTpNSVe0zUIgQyZMK6qgJiZguakGB140CoH+xe4fsku5PdQNU7BBNaK20FMUIZXyWjL
+         RAQYXtV5HzyjOJfiDFTjs17wS29FjgBsHJQi4U9wU7IbjQdZDJp3H1gzbWcfkEQvwIyT
+         eXEToUb5TRydK7kHPXFr26eO08YRe+4S9hgQ/5mAeXTYu6Sp0UlaMwDwgGjVm5zpouVN
+         78Rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=p5PGq7quaJ4YwD2HT7JA6gFjt/BB8aCX9Yo+srq7+CA=;
-        b=lTkmWhlaEyYSZJoBCzeD+qlRGFSNLaUTb53osyPc3apZONcsL116FSjVcHnE9ScBrX
-         G1SGhWOJwOED3KdlufW1VirvkUSw+DN8KTcpPX4IxN8d/CWobVNaA6rNvPZIAwzZN7SH
-         U4PDl5H8m34gV27ZqdZWGikhG4NJriMcYTdHZ5YOv79kAj2I6poA3clXZg/nIkB+1d9F
-         X0lDhpZ0pWF+CYQXIFGEiElnQ5RqMNYnMBSeQELpsQgwD3sK34z92901azz4pp0XLg3Z
-         DFbtnMXMkkNTZnd198Jmo0uEXr/yGKH7bdvTNhFBHFoE5cIz9xIQb+zqm6VoNixZal8a
-         aEsw==
-X-Gm-Message-State: APjAAAX2kU1SLzIKjiO3whAHZhfkpXzGTemuvAsg986dniCs5JYMQ1wh
-        mDgNK7xS/t0C7oLS/4aQuEheWAU9
-X-Google-Smtp-Source: APXvYqxI/2LqvsWNIg1pB2uzJ8tMw5uDJ951L7mJM17al8vQ930o5Bm1EnWugTIzQ/pt7JvD71FRYQ==
-X-Received: by 2002:aa7:9a99:: with SMTP id w25mr42501663pfi.249.1558376644757;
-        Mon, 20 May 2019 11:24:04 -0700 (PDT)
+        bh=joptTuc1aajry2rGWYDBF9TOxDgWiMya13v2q9uPqUY=;
+        b=E0xJPm6kguLt5URz9x9y5JstMrJXAbkECBytW2LFSsZrATryj3ooudBRjWya7Avk7v
+         l/zM7gEFjbenbWG/myMRv03v95AmPZLoRja08GO0smHEKYlTMTo7ZBABErYaU/VvZRQg
+         HIdfb5AZv7Tg75lj19myB0UlrO6g61E/p1+hDUYYIXiNxTn5gmLATOx20K8XbJ8liVNZ
+         ru5nlBKhmYYHmi1Gj1yjY+GxxwKlrHRLEQGWxxMWBIC2o7JmI5tJ8s43eI1C6bT2jWzt
+         13MXj+deAaIk0UOg7t/3Qujt43BeRD5beEemRgtDUQsWM0Y8fxaCTsN4Ks5tO2jAfVOl
+         TSUQ==
+X-Gm-Message-State: APjAAAVyCqbGb0dxydZRYRSFPqGcA4hCjWfUY14+iOVY8u0ZWJcMgycd
+        21ZT0B95jf7PvNRyqXpZCV60l3NO
+X-Google-Smtp-Source: APXvYqwsLSm9n1uCyKPsmd7Cxr1sCVQrm3aW4UOspR5gHI8VAr/g3gcCJ+S8Nx5MLkniGk/mUwCyeQ==
+X-Received: by 2002:aa7:99c7:: with SMTP id v7mr82493907pfi.103.1558376747817;
+        Mon, 20 May 2019 11:25:47 -0700 (PDT)
 Received: from [10.67.49.52] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b3sm32090931pfr.146.2019.05.20.11.24.03
+        by smtp.googlemail.com with ESMTPSA id q14sm19546365pgg.10.2019.05.20.11.25.46
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 11:24:04 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/4] net: sfp: add mandatory attach/detach
- methods for sfp buses
+        Mon, 20 May 2019 11:25:47 -0700 (PDT)
+Subject: Re: [PATCH net-next 4/4] net: sfp: remove sfp-bus use of netdevs
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
 References: <20190520152134.qyka5t7c2i7drk4a@shell.armlinux.org.uk>
- <E1hSk79-0000w6-9j@rmk-PC.armlinux.org.uk>
+ <E1hSk7E-0000wD-LS@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -110,12 +109,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <f01afe1d-3001-2e1f-15d8-d00c67ed4502@gmail.com>
-Date:   Mon, 20 May 2019 11:24:02 -0700
+Message-ID: <6aba8ca1-9ea2-3c2b-aadb-979791235817@gmail.com>
+Date:   Mon, 20 May 2019 11:25:45 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <E1hSk79-0000w6-9j@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1hSk7E-0000wD-LS@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -125,11 +124,10 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 5/20/19 8:22 AM, Russell King wrote:
-> Add attach and detach methods for SFP buses, which will allow us to get
-> rid of the netdev storage in sfp-bus.
+> The sfp-bus code now no longer has any use for the network device
+> structure, so remove its use.
 > 
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>--
 Florian
