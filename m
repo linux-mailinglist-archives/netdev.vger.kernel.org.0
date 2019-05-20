@@ -2,131 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D117E2402A
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5026224034
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:22:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbfETSUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 14:20:36 -0400
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:36099 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727361AbfETSUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:20:35 -0400
-Received: by mail-vs1-f66.google.com with SMTP id l20so9521439vsp.3
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 11:20:35 -0700 (PDT)
+        id S1726169AbfETSWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 14:22:30 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:43434 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726076AbfETSW3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:22:29 -0400
+Received: by mail-pl1-f194.google.com with SMTP id gn7so2921975plb.10
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 11:22:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cEsXYaOHHpFfqvOIf/R9j2mgz7hkA3ZSG0hiHjJfsfQ=;
-        b=oYB6QTOAyrW+xrurBLaMKPFnUo9r8uSNIw0B5/zqa2y0TSIR3nr+FiEhLSwmdmx4XT
-         PSW8n6oIFIvgbr1Q8u1FLhEjC2pMWGPcFrxz9D/vDnrjHb6YxdngV4/rsvj4XVMkiS7u
-         zji43e+I4SpiwFIfKB7pf85C9sv2FuOd9EGRk=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lji14khKcDDqzYAAh5Wr9Y8p8gBUJCBIYD68CXawWek=;
+        b=uWVz+gfAR6JBmOwjE/KUqHBw4gPfYsE3uEJ0Hvjqqwjph+GRJmH0UKQstJEeScamBN
+         7zPDcOgAaUWSlt8vkIvWkNr2WcjhCchpXuVzwQ7i6PRQgDWkeM6E33cDcAfbOHfsW7nS
+         +z66RX520ZA/uV/DwpO+y/BMZUjrDUmY0gdOmVVvEU+qrRakd2flSAf1564/8SGVXNZE
+         lInQZR4btrOK8YkWOnp6u4qOA5ARVYjuqIQ2ZHQTYHwg6rTnvCtr3mPiPv43Pngevaj+
+         247ErkBHXwQFFe2ZxQd4zxbefzbtNPIzH/pjPJy7J1rEEzrF3w8OzcymQCTSla0WgQY2
+         KDjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cEsXYaOHHpFfqvOIf/R9j2mgz7hkA3ZSG0hiHjJfsfQ=;
-        b=uS1KRXEKITLG69G2TuB5Ug1HBBG78JHLDp48c7MSmUESkvmcdEggNJOZhbHrX33Vry
-         IDLhq+9fAiy+eQ8WyBlmaf7OzThcCuivNPkQSqQastSB18JcXSJwvkRxEoxrEpSyHzqt
-         ufu3O25J1PVZvCXrjx/fwpc9EPdZFLEF7KqBNGO5Mzm70ZC5kc3R+rIf0Az+Qqe40cxQ
-         ldFyeAePsNZlQHHPQp4IcrKbjsV5YbXxvNynj/fcxAoDtRy9yAAJZVXWkfiaxrFAdk02
-         z1QX8ypW2FoPhFSkITgPbDshv3xlNqkT/Q3TIpIrGgvj+mcF9mm++19sFeu95E4H3Woy
-         qklQ==
-X-Gm-Message-State: APjAAAX6nBS3kpzbZnlpIxww0IrPq37PhfA9RHjsu9h/7nWf+2zMb6Ab
-        kMMxDSHAwDKlcXPaFPiH4SAy8gxW5Wc=
-X-Google-Smtp-Source: APXvYqy0Y79Ok7F1DskAPEWH/nBRyj6Vcf7XPeLaNMKMOn6j4U0r07wDlGuDkpnAhwT68WOXqdB1Dw==
-X-Received: by 2002:a67:e9cd:: with SMTP id q13mr9836048vso.129.1558376434822;
-        Mon, 20 May 2019 11:20:34 -0700 (PDT)
-Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com. [209.85.222.53])
-        by smtp.gmail.com with ESMTPSA id g135sm7685139vkd.51.2019.05.20.11.20.34
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 11:20:34 -0700 (PDT)
-Received: by mail-ua1-f53.google.com with SMTP id l14so868465uah.8
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 11:20:34 -0700 (PDT)
-X-Received: by 2002:a9f:24a3:: with SMTP id 32mr13553176uar.109.1558376433588;
- Mon, 20 May 2019 11:20:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190517225420.176893-1-dianders@chromium.org>
- <20190517225420.176893-2-dianders@chromium.org> <e3f54bcb-8d10-1336-1458-2bd11cfc1010@broadcom.com>
-In-Reply-To: <e3f54bcb-8d10-1336-1458-2bd11cfc1010@broadcom.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 20 May 2019 11:20:22 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Uvc1wUQe-W1Jvm_gQ722pFm2a4OWvJDNVtkyQynFe4Gw@mail.gmail.com>
-Message-ID: <CAD=FV=Uvc1wUQe-W1Jvm_gQ722pFm2a4OWvJDNVtkyQynFe4Gw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] brcmfmac: re-enable command decode in sdio_aos for
- BRCM 4354
-To:     Arend Van Spriel <arend.vanspriel@broadcom.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Double Lo <double.lo@cypress.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Madhan Mohan R <madhanmohan.r@cypress.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        Franky Lin <franky.lin@broadcom.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        brcm80211-dev-list@cypress.com, YueHaibing <yuehaibing@huawei.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=lji14khKcDDqzYAAh5Wr9Y8p8gBUJCBIYD68CXawWek=;
+        b=RKHV1V90Aqbltk37HkSyKCHnpNaDLxuckuQyoEFpqbdmUdRUxoKK3sBL9bwHyXgFvK
+         Hb+hLqtEk0rpNCooJqBUrRcD9qUiYwZuyUfo0G5MWWbSzr0goFduHGqHaS+3HGzAEHmP
+         92QNCGd0v6Lx7tHf9pqg2ygE5DLBaHWfcSJDuFT7taQAn2lb4XY8ZJUXrJgBufg/j1mk
+         oibBkddAFNtQSxPpKd0dk+569O3tGMOdMO084Kk472iHAwKVWNNKnHMYYBxVJqYJSGES
+         7siDWcTdWc8HI2zE8vFavhzghvdogLt4q4BOJqR1QA/FzC3Q9jlz0L81AEyv/pI5Px1I
+         JvVA==
+X-Gm-Message-State: APjAAAXVhxE+d6dTDMDZBVCVQ3fJLGkvn67AUw98Oo2RSWUEYD/cvcMW
+        0fIPM8EIdzFhoNG08cMJwKJNBDPk
+X-Google-Smtp-Source: APXvYqwu2Jo0XVT0oIG8JHZSQCIjB1/9jvC5NvqujsYY6Iz+K9QAALPWqXhf4LQsLU6JG9nWI0KYfg==
+X-Received: by 2002:a17:902:b782:: with SMTP id e2mr77911390pls.228.1558376548632;
+        Mon, 20 May 2019 11:22:28 -0700 (PDT)
+Received: from [10.67.49.52] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id j10sm19675679pgk.37.2019.05.20.11.22.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 20 May 2019 11:22:27 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/4] net: phylink: support for link gpio
+ interrupt
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+References: <20190520152134.qyka5t7c2i7drk4a@shell.armlinux.org.uk>
+ <E1hSk6y-0000vs-Pj@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <a1bde03d-cd12-3f77-8e93-eed276f2bbdb@gmail.com>
+Date:   Mon, 20 May 2019 11:22:21 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <E1hSk6y-0000vs-Pj@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 5/20/19 8:22 AM, Russell King wrote:
+> Add support for using GPIO interrupts with a fixed-link GPIO rather than
+> polling the GPIO every second and invoking the phylink resolution.  This
+> avoids unnecessary calls to mac_config().
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-On Mon, May 20, 2019 at 1:09 AM Arend Van Spriel
-<arend.vanspriel@broadcom.com> wrote:
->
-> On 5/18/2019 12:54 AM, Douglas Anderson wrote:
-> > In commit 29f6589140a1 ("brcmfmac: disable command decode in
-> > sdio_aos") we disabled something called "command decode in sdio_aos"
-> > for a whole bunch of Broadcom SDIO WiFi parts.
-> >
-> > After that patch landed I find that my kernel log on
-> > rk3288-veyron-minnie and rk3288-veyron-speedy is filled with:
-> >    brcmfmac: brcmf_sdio_bus_sleep: error while changing bus sleep state -110
-> >
-> > This seems to happen every time the Broadcom WiFi transitions out of
-> > sleep mode.  Reverting the part of the commit that affects the WiFi on
-> > my boards fixes the problem for me, so that's what this patch does.
->
-> This sounds very similar to the issue we had during integration of wifi
-> on rk3288 chromebooks years ago.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-I'm working on those same Chromebooks.  ;-)  I'm working on trying to
-make them well on newer kernels.
+Just one comment, see below:
 
-...but I guess you're saying that the problem faced by the people who
-wanted commit 29f6589140a1 ("brcmfmac: disable command decode in
-sdio_aos") are similar to the problems we saw in the past on those
-Chromebooks.  I'd tend to agree.  In general it's difficult to get a
-SD Host Controller to be fully robust in the fact of any/all errors on
-the bus.  While dw_mmc is pretty robust these days I'm assuming that
-some other host controllers aren't.
+[snip]
 
+> -	if (pl->link_an_mode == MLO_AN_FIXED && !IS_ERR(pl->link_gpio))
+> -		del_timer_sync(&pl->link_poll);
+> +	del_timer_sync(&pl->link_poll);
 
-> > Note that, in general, the justification in the original commit seemed
-> > a little weak.  It looked like someone was testing on a SD card
-> > controller that would sometimes die if there were CRC errors on the
-> > bus.  This used to happen back in early days of dw_mmc (the controller
-> > on my boards), but we fixed it.  Disabling a feature on all boards
-> > just because one SD card controller is broken seems bad.  ...so
-> > instead of just this patch possibly the right thing to do is to fully
-> > revert the original commit.
->
-> I am leaning towards a full revert, but let's wait for more background info.
-
-I'd be fine with a full revert too.  Presumably that will break
-someone but maybe they need to come up with a better solution?
-
--Doug
+Removing a timer that was only set-up if pl->link_an_mode ==
+MLO_AN_FIXED probably does not hurt, but this breaks symmetry a bit here.
+-- 
+Florian
