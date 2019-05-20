@@ -2,32 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D37624477
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 01:39:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2369224472
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 01:39:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727177AbfETXjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 19:39:05 -0400
+        id S1727275AbfETXjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 19:39:06 -0400
 Received: from mga03.intel.com ([134.134.136.65]:25217 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725681AbfETXjF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727216AbfETXjF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 20 May 2019 19:39:05 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 May 2019 16:39:04 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 May 2019 16:39:05 -0700
 X-ExtLoop1: 1
 Received: from rpedgeco-mobl.amr.corp.intel.com (HELO localhost.intel.com) ([10.254.114.95])
-  by fmsmga008.fm.intel.com with ESMTP; 20 May 2019 16:39:03 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 20 May 2019 16:39:04 -0700
 From:   Rick Edgecombe <rick.p.edgecombe@intel.com>
 To:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         sparclinux@vger.kernel.org, linux-mm@kvack.org,
         netdev@vger.kernel.org, luto@amacapital.net
 Cc:     dave.hansen@intel.com, namit@vmware.com, davem@davemloft.net,
+        Rick Edgecombe <redgecombe.lkml@gmail.com>,
+        Meelis Roos <mroos@linux.ee>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>
-Subject: [PATCH v2 0/2] Fix issues with vmalloc flush flag
-Date:   Mon, 20 May 2019 16:38:39 -0700
-Message-Id: <20190520233841.17194-1-rick.p.edgecombe@intel.com>
+Subject: [PATCH v2 1/2] vmalloc: Fix calculation of direct map addr range
+Date:   Mon, 20 May 2019 16:38:40 -0700
+Message-Id: <20190520233841.17194-2-rick.p.edgecombe@intel.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190520233841.17194-1-rick.p.edgecombe@intel.com>
+References: <20190520233841.17194-1-rick.p.edgecombe@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -35,31 +41,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These two patches address issues with the recently added
-VM_FLUSH_RESET_PERMS vmalloc flag. It is now split into two patches, which
-made sense to me, but can split it further if desired.
+From: Rick Edgecombe <redgecombe.lkml@gmail.com>
 
-Patch 1 is the most critical and addresses an issue that could cause a
-crash on x86.
+The calculation of the direct map address range to flush was wrong.
+This could cause problems on x86 if a RO direct map alias ever got loaded
+into the TLB. This shouldn't normally happen, but it could cause the
+permissions to remain RO on the direct map alias, and then the page
+would return from the page allocator to some other component as RO and
+cause a crash.
 
-Patch 2 is to try to reduce the work done in the free operation to push
-it to allocation time where it would be more expected. This shouldn't be
-a big issue most of the time, but I thought it was slightly better.
+So fix fix the address range calculation so the flush will include the
+direct map range.
 
-v2->v3:
- - Split into two patches
+Fixes: 868b104d7379 ("mm/vmalloc: Add flag for freeing of special permsissions")
+Cc: Meelis Roos <mroos@linux.ee>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Nadav Amit <namit@vmware.com>
+Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+---
+ mm/vmalloc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-v1->v2:
- - Update commit message with more detail
- - Fix flush end range on !CONFIG_ARCH_HAS_SET_DIRECT_MAP case
-
-Rick Edgecombe (2):
-  vmalloc: Fix calculation of direct map addr range
-  vmalloc: Remove work as from vfree path
-
- mm/vmalloc.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
-
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index c42872ed82ac..836888ae01f6 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -2159,9 +2159,10 @@ static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
+ 	 * the vm_unmap_aliases() flush includes the direct map.
+ 	 */
+ 	for (i = 0; i < area->nr_pages; i++) {
+-		if (page_address(area->pages[i])) {
++		addr = (unsigned long)page_address(area->pages[i]);
++		if (addr) {
+ 			start = min(addr, start);
+-			end = max(addr, end);
++			end = max(addr + PAGE_SIZE, end);
+ 		}
+ 	}
+ 
 -- 
 2.20.1
 
