@@ -2,165 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4586B242CA
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 23:23:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D2F242CD
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 23:24:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726384AbfETVXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 17:23:32 -0400
-Received: from mail-it1-f195.google.com ([209.85.166.195]:53898 "EHLO
-        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726026AbfETVXc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 17:23:32 -0400
-Received: by mail-it1-f195.google.com with SMTP id m141so1453384ita.3
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 14:23:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nOkJzLKyCI/W8fuopzDIMnbGuxkwQsHCMqTJ6kkCpPM=;
-        b=FpleFIPYsNw0MpvUnTfK2Qi3gOgwp+kxp6Kl2y1X9RMamUYkWrBDZY0lHb1yW8umIF
-         zoHKvCKRsw52CeID2Fhbx6nfXdCDlf2rdqWKj2IyskmR0sI6ySsqz0dctkSEWet7mam+
-         wca0T1uriusnq8SQ9hNLO40oHz8lhbJGimgnlKIuzeBbvbh33ljjWdQKRdRP5KNZYJhc
-         GkzbK5GhVpj+QI+VdqDxSJP4E/ITb2qBv0hcoITsXKRyJUjP62kJkKEPhUxpz1NzUvAo
-         wLxjD8W4TcdnApbwGKQ+66NIdIkUTvGkaByCGTheJWKlc06dPX0QslcrPmayxO0/TKic
-         y7Sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nOkJzLKyCI/W8fuopzDIMnbGuxkwQsHCMqTJ6kkCpPM=;
-        b=tXyldyhJK5Cr4Qy8JGwge9ywdCYCwJr9bvmYJgBBZDxZLiKJgtHyXMhR5aFjHBFunx
-         bq8kJX/qRVVpBhbwmuaRF48Zti/OYYyhzI57NmOE7H7sBL2SijuF/VCAfqm2NsKGorjA
-         k2kOIBT+1diwAyw0B0+8C1c5QX3J3dnbMIKm3PIzFy+rqA0+5CSLBvDAsoEA8PaxAQM+
-         jnFpeY7TJwPqqwaHH7c+BUh3Rbm57XIUuWN8W5WzqcqITPSiO1GTz/szdLxhzsbX9rvs
-         Gd97fPZNRRzAmq99HJlbOByt+i4JrRRRt73tq5jrEabeq1FoVLSMpBG35VfswsOYGjuj
-         WA1w==
-X-Gm-Message-State: APjAAAXat4/LjbF9/1aV7nSBaXBh1LBNfjyzgNG3A8yq2ng8X0spOKND
-        UkFKo8rjwHOIZiPydqu8sxG6mw==
-X-Google-Smtp-Source: APXvYqyuWKfuF4pl19MX2Hjx3MvenfjGOM4mF47wYdhXdTq7PfbQtjHzVAnYM9QfcT4RecS+smrpbw==
-X-Received: by 2002:a02:62ce:: with SMTP id d197mr3658837jac.91.1558387410957;
-        Mon, 20 May 2019 14:23:30 -0700 (PDT)
-Received: from [172.22.22.26] (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
-        by smtp.googlemail.com with ESMTPSA id i13sm423199itb.9.2019.05.20.14.23.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 14:23:30 -0700 (PDT)
-Subject: Re: [PATCH 1/8] net: qualcomm: rmnet: fix struct rmnet_map_header
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Cc:     arnd@arndb.de, david.brown@linaro.org, agross@kernel.org,
-        davem@davemloft.net, bjorn.andersson@linaro.org,
-        ilias.apalodimas@linaro.org, cpratapa@codeaurora.org,
-        syadagir@codeaurora.org, evgreen@chromium.org, benchan@google.com,
-        ejcaruso@google.com, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20190520135354.18628-1-elder@linaro.org>
- <20190520135354.18628-2-elder@linaro.org>
- <b0edef36555877350cfbab2248f8baac@codeaurora.org>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <81fd1e01-b8e3-f86a-fcc9-2bcbc51bd679@linaro.org>
-Date:   Mon, 20 May 2019 16:23:28 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <b0edef36555877350cfbab2248f8baac@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
+        id S1726859AbfETVYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 17:24:00 -0400
+Received: from mail-eopbgr80040.outbound.protection.outlook.com ([40.107.8.40]:44326
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725978AbfETVYA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 May 2019 17:24:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V4Bzgh6jFP4BozxOfe5GzcUSkK2NodxkXKO9fhMxSMU=;
+ b=Fm/Wm/PaV0z19/ODvTNOS9IiEMtVVpovy3xALexBKv44IN24wNlp4omPIAUVJljBL4ZSL+g7WfmIu6d+sokUpSzyF07vEaEfKoFydQvRGwUBrWYvF8fhYOUOKmRp5hHEBtvmM11Dsn6b5QnveX+xX8jXE2XgWTMFjTQ6gPJfDJM=
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
+ DB8PR05MB6011.eurprd05.prod.outlook.com (20.179.11.203) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.16; Mon, 20 May 2019 21:23:56 +0000
+Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::7159:5f3a:906:6aab]) by DB8PR05MB5898.eurprd05.prod.outlook.com
+ ([fe80::7159:5f3a:906:6aab%7]) with mapi id 15.20.1900.020; Mon, 20 May 2019
+ 21:23:56 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Gavi Teitz <gavi@mellanox.com>,
+        "wenxu@ucloud.cn" <wenxu@ucloud.cn>, Roi Dayan <roid@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jianbo Liu <jianbol@mellanox.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net/mlx5e: restrict the real_dev of vlan device is the
+ same as uplink device
+Thread-Topic: [PATCH] net/mlx5e: restrict the real_dev of vlan device is the
+ same as uplink device
+Thread-Index: AQHVCwCZ1GHvPCVNAk+Rb9K0gcDQ16ZvyNyAgABvmYCAAc9+gIAChrIA
+Date:   Mon, 20 May 2019 21:23:55 +0000
+Message-ID: <31ed08fab7192eb4c2703430cd7650478b3759d5.camel@mellanox.com>
+References: <1557912345-14649-1-git-send-email-wenxu@ucloud.cn>
+         <32affe9e97f26ff1c7b5993255a6783533fe6bff.camel@mellanox.com>
+         <e22c5097-028e-2e23-b1e9-0d7098802d1f@ucloud.cn>
+         <a5ee3798-1cd8-198d-ec85-da11444770f8@mellanox.com>
+In-Reply-To: <a5ee3798-1cd8-198d-ec85-da11444770f8@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5a945cc3-03d4-43a0-6e3c-08d6dd697729
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB6011;
+x-ms-traffictypediagnostic: DB8PR05MB6011:
+x-microsoft-antispam-prvs: <DB8PR05MB6011F3E18B316D642F3165DDBE060@DB8PR05MB6011.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 004395A01C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(39860400002)(376002)(346002)(366004)(136003)(199004)(189003)(3846002)(53936002)(6116002)(76176011)(478600001)(102836004)(6506007)(14454004)(53546011)(305945005)(6436002)(81166006)(14444005)(256004)(7736002)(8676002)(71200400001)(71190400001)(99286004)(81156014)(8936002)(66476007)(6636002)(118296001)(91956017)(76116006)(2906002)(66446008)(64756008)(66946007)(66556008)(73956011)(6512007)(66066001)(58126008)(68736007)(26005)(186003)(229853002)(25786009)(2501003)(5660300002)(6486002)(6246003)(4326008)(110136005)(36756003)(11346002)(446003)(2616005)(86362001)(486006)(316002)(476003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB6011;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: TFMmewKL/DpfoE781HR1pS6R7A7dwXaZUKegLbbVWTVExLc9Nd/DLQprJDHazS//vdvPHOAJ2+142K43kJdZDBLjlhdvpAVX0aDrkSp83hOFrtL4Z3xCl8kSKwK/Z3gGoOzVJ7+DVdaQDASxkGptNcVymXmmH1IlSB2nMwlPU6IqocVxu2ullpy/LvVLmFq+DQUv4j/ZSDuJrviRskP96r8Ja5H3Ynxbo5gkPZTRDXTCLOqwMcd908mx06XqHave0K2v/pIeKq3hsBuiTRoXQILEmw7usFcCfYeTn/J1pINCIrjbzjZQvhGVvfh/+3tVmjW1Yx90cVxptWaU0wvTe5OWQN9mZwJ8EB+E5BA7+jf3ebK/4PFOs3OkEX0H31ZYJDjM8omyzHmRMZ02lWVQRpqOmgBJmlFI+wrOP9s2eSQ=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5D9CB560F68A7B489BEC0AD295133443@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a945cc3-03d4-43a0-6e3c-08d6dd697729
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2019 21:23:55.8743
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6011
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/20/19 3:11 PM, Subash Abhinov Kasiviswanathan wrote:
-> On 2019-05-20 07:53, Alex Elder wrote:
->> The C bit-fields in the first byte of the rmnet_map_header structure
->> are defined in the wrong order.  The first byte should be formatted
->> this way:
->>                  +------- reserved_bit
->>                  | +----- cd_bit
->>                  | |
->>                  v v
->>     +-----------+-+-+
->>     |  pad_len  |R|C|
->>     +-----------+-+-+
->>      7 6 5 4 3 2 1 0  <-- bit position
->>
->> But the C bit-fields that define the first byte are defined this way:
->>     u8 pad_len:6;
->>     u8 reserved_bit:1;
->>     u8 cd_bit:1;
->>
-> 
-> If the above illustration is supposed to be in network byte order,
-> then it is wrong. The documentation has the definition for the MAP
-> packet.
-
-Network *bit* order is irrelevant to the host.  Host memory is
-byte addressable only, and bit 0 is the low-order bit.
-
-> Packet format -
-> 
-> Bit             0             1           2-7      8 - 15           16 - 31
-> Function   Command / Data   Reserved     Pad   Multiplexer ID    Payload length
-> Bit            32 - x
-> Function     Raw  Bytes
-
-I don't know how to interpret this.  Are you saying that the low-
-order bit of the first byte is the command/data flag?  Or is it
-the high-order bit of the first byte?
-
-I'm saying that what I observed when building the code was that
-as originally defined, the cd_bit field was the high-order bit
-(bit 7) of the first byte, which I understand to be wrong.
-
-If you are telling me that the command/data flag resides at bit
-7 of the first byte, I will update the field masks in a later
-patch in this series to reflect that.
-
-> The driver was written assuming that the host was running ARM64, so
-> the structs are little endian. (I should have made it compatible
-> with big and little endian earlier so that is my fault).
-
-Little endian and big endian have no bearing on the host's
-interpretation of bits within a byte.
-
-Please clarify.  I want the patches to be correct, and what
-you're explaining doesn't really straighten things out for me.
-
-					-Alex
-
-> In any case, this patch on its own will break the data operation on
-> ARM64, so it needs to be folded with other patches.
-> 
->> And although this isn't portable, I can state that when I build it
->> the result puts the bit-fields in the wrong location (e.g., the
->> cd_bit is in bit position 7, when it should be position 0).
->>
->> Fix this by reordering the definitions of these struct members.
->> Upcoming patches will reimplement these definitions portably.
->>
->> Signed-off-by: Alex Elder <elder@linaro.org>
->> ---
->>  drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
->> b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
->> index 884f1f52dcc2..b1ae9499c0b2 100644
->> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
->> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
->> @@ -40,9 +40,9 @@ enum rmnet_map_commands {
->>  };
->>
->>  struct rmnet_map_header {
->> -    u8  pad_len:6;
->> -    u8  reserved_bit:1;
->>      u8  cd_bit:1;
->> +    u8  reserved_bit:1;
->> +    u8  pad_len:6;
->>      u8  mux_id;
->>      __be16 pkt_len;
->>  }  __aligned(1);
-> 
-
+T24gU3VuLCAyMDE5LTA1LTE5IGF0IDA2OjQ5ICswMDAwLCBSb2kgRGF5YW4gd3JvdGU6DQo+IA0K
+PiBPbiAxOC8wNS8yMDE5IDA2OjEwLCB3ZW54dSB3cm90ZToNCj4gPiBUaGVyZSB3aWxsIGJlIG11
+bHRpcGxlIHZsYW4gZGV2aWNlIHdoaWNoIG1heWJlIG5vdCBiZWxvbmcgdG8gdGhlDQo+ID4gdXBs
+aW5rIHJlcCBkZXZpY2UsIHNvIHdlbiBjYW4gbGltaXQgaXQNCj4gPiANCj4gPiDlnKggMjAxOS81
+LzE4IDQ6MzAsIFNhZWVkIE1haGFtZWVkIOWGmemBkzoNCj4gPiA+IE9uIFdlZCwgMjAxOS0wNS0x
+NSBhdCAxNzoyNSArMDgwMCwgd2VueHVAdWNsb3VkLmNuIHdyb3RlOg0KPiA+ID4gPiBGcm9tOiB3
+ZW54dSA8d2VueHVAdWNsb3VkLmNuPg0KPiA+ID4gPiANCj4gPiA+ID4gV2hlbiByZWdpc3RlciBp
+bmRyIGJsb2NrIGZvciB2bGFuIGRldmljZSwgaXQgc2hvdWxkIGNoZWNrIHRoZQ0KPiA+ID4gPiBy
+ZWFsX2Rldg0KPiA+ID4gPiBvZiB2bGFuIGRldmljZSBpcyBzYW1lIGFzIHVwbGluayBkZXZpY2Uu
+IE9yIGl0IHdpbGwgc2V0IG9mZmxvYWQNCj4gPiA+ID4gcnVsZQ0KPiA+ID4gPiB0byBtbHg1ZSB3
+aGljaCB3aWxsIG5ldmVyIGhpdC4NCj4gPiA+ID4gDQo+ID4gPiBJIHdvdWxkIGltcHJvdmUgdGhl
+IGNvbW1pdCBtZXNzYWdlLCBpdCBpcyBub3QgcmVhbGx5IGNsZWFyIHRvIG1lDQo+ID4gPiB3aGF0
+DQo+ID4gPiBpcyBnb2luZyBvbiBoZXJlLg0KPiA+ID4gDQo+ID4gPiBBbnl3YXkgUm9pIGFuZCB0
+ZWFtLCBjYW4geW91IHBsZWFzZSBwcm92aWRlIGZlZWRiYWNrIC4uDQo+ID4gPiANCj4gPiA+ID4g
+U2lnbmVkLW9mZi1ieTogd2VueHUgPHdlbnh1QHVjbG91ZC5jbj4NCj4gPiA+ID4gLS0tDQo+ID4g
+PiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmMgfCAy
+ICstDQo+ID4gPiA+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24o
+LSkNCj4gPiA+ID4gDQo+ID4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9t
+ZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmMNCj4gPiA+ID4gYi9kcml2ZXJzL25ldC9ldGhlcm5l
+dC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fcmVwLmMNCj4gPiA+ID4gaW5kZXggOTFlMjRmMS4uYTM5
+ZmRhYyAxMDA2NDQNCj4gPiA+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gv
+bWx4NS9jb3JlL2VuX3JlcC5jDQo+ID4gPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21l
+bGxhbm94L21seDUvY29yZS9lbl9yZXAuYw0KPiA+ID4gPiBAQCAtNzk2LDcgKzc5Niw3IEBAIHN0
+YXRpYyBpbnQNCj4gPiA+ID4gbWx4NWVfbmljX3JlcF9uZXRkZXZpY2VfZXZlbnQoc3RydWN0DQo+
+ID4gPiA+IG5vdGlmaWVyX2Jsb2NrICpuYiwNCj4gPiA+ID4gIAlzdHJ1Y3QgbmV0X2RldmljZSAq
+bmV0ZGV2ID0NCj4gPiA+ID4gbmV0ZGV2X25vdGlmaWVyX2luZm9fdG9fZGV2KHB0cik7DQo+ID4g
+PiA+ICANCj4gPiA+ID4gIAlpZiAoIW1seDVlX3RjX3R1bl9kZXZpY2VfdG9fb2ZmbG9hZChwcml2
+LCBuZXRkZXYpICYmDQo+ID4gPiA+IC0JICAgICFpc192bGFuX2RldihuZXRkZXYpKQ0KPiA+ID4g
+PiArCSAgICAhKGlzX3ZsYW5fZGV2KG5ldGRldikgJiYgdmxhbl9kZXZfcmVhbF9kZXYobmV0ZGV2
+KQ0KPiA+ID4gPiA9PQ0KPiA+ID4gPiBycHJpdi0+bmV0ZGV2KSkNCj4gPiA+ID4gIAkJcmV0dXJu
+IE5PVElGWV9PSzsNCj4gPiA+ID4gIA0KPiA+ID4gPiAgCXN3aXRjaCAoZXZlbnQpIHsNCj4gDQo+
+IHRoYW5rcyENCj4gDQo+IHlvdSBzaG91bGQgYWRkIGEgZml4ZXMgbGluZQ0KPiBGaXhlczogMzVh
+NjA1ZGIxNjhjICgibmV0L21seDVlOiBPZmZsb2FkIFRDIGUtc3dpdGNoIHJ1bGVzIHdpdGgNCj4g
+aW5ncmVzcyBWTEFOIGRldmljZSIpDQo+IA0KPiBiZXNpZGUgdGhhdCBhbGwgZ29vZC4NCj4gUmV2
+aWV3ZWQtYnk6IFJvaSBEYXlhbiA8cm9pZEBtZWxsYW5veC5jb20+DQo+IA0KPiANCg0KQXBwbGll
+ZCB0byBuZXQtbWx4NSBhbmQgYWRkZWQgdGhlIEZpeGVzIGxpbmUuDQpUaGFua3MgIQ0K
