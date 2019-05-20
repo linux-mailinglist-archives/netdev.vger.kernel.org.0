@@ -2,151 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 242F6240C2
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 21:00:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5D2C240D3
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 21:02:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726198AbfETTAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 15:00:03 -0400
-Received: from mx0a-00191d01.pphosted.com ([67.231.149.140]:41748 "EHLO
-        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725989AbfETTAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 15:00:03 -0400
-Received: from pps.filterd (m0049297.ppops.net [127.0.0.1])
-        by m0049297.ppops.net-00191d01. (8.16.0.27/8.16.0.27) with SMTP id x4KIuAuf036735;
-        Mon, 20 May 2019 15:00:01 -0400
-Received: from alpi155.enaf.aldc.att.com (sbcsmtp7.sbc.com [144.160.229.24])
-        by m0049297.ppops.net-00191d01. with ESMTP id 2sm1801byc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 20 May 2019 15:00:01 -0400
-Received: from enaf.aldc.att.com (localhost [127.0.0.1])
-        by alpi155.enaf.aldc.att.com (8.14.5/8.14.5) with ESMTP id x4KJ00r8027643;
-        Mon, 20 May 2019 15:00:00 -0400
-Received: from zlp27129.vci.att.com (zlp27129.vci.att.com [135.66.87.42])
-        by alpi155.enaf.aldc.att.com (8.14.5/8.14.5) with ESMTP id x4KIxsoe027547
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 20 May 2019 14:59:54 -0400
-Received: from zlp27129.vci.att.com (zlp27129.vci.att.com [127.0.0.1])
-        by zlp27129.vci.att.com (Service) with ESMTP id F0A5340392B7;
-        Mon, 20 May 2019 18:59:53 +0000 (GMT)
-Received: from mlpi432.sfdc.sbc.com (unknown [144.151.223.11])
-        by zlp27129.vci.att.com (Service) with ESMTP id CBF1B40392A9;
-        Mon, 20 May 2019 18:59:53 +0000 (GMT)
-Received: from sfdc.sbc.com (localhost [127.0.0.1])
-        by mlpi432.sfdc.sbc.com (8.14.5/8.14.5) with ESMTP id x4KIxrfE029899;
-        Mon, 20 May 2019 14:59:53 -0400
-Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
-        by mlpi432.sfdc.sbc.com (8.14.5/8.14.5) with ESMTP id x4KIxlo6029717;
-        Mon, 20 May 2019 14:59:47 -0400
-Received: from [10.156.47.136] (unknown [10.156.47.136])
-        by mail.eng.vyatta.net (Postfix) with ESMTPA id 668FC360065;
-        Mon, 20 May 2019 11:59:46 -0700 (PDT)
-Reply-To: mmanning@vyatta.att-mail.com
-Subject: Re: [PATCH net] net/ipv6: Reinstate ping/traceroute use with source
- address in VRF
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-References: <20190520084041.10393-1-mmanning@vyatta.att-mail.com>
- <1d14e6d9-5cac-064d-aa4e-bad667516c75@gmail.com>
-From:   Mike Manning <mmanning@vyatta.att-mail.com>
-Message-ID: <712e7529-a171-043c-f809-d55c3219a863@vyatta.att-mail.com>
-Date:   Mon, 20 May 2019 19:59:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726090AbfETTCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 15:02:48 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:42061 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725989AbfETTCs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 15:02:48 -0400
+Received: by mail-qt1-f193.google.com with SMTP id j53so17581180qta.9
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 12:02:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=rSimkDm7XMtWGp3CbOhN2eq+HKNAn7462rh6jCkBk6Q=;
+        b=HIM88p6vgQ9IEbg4sS/gShSZpe4RFYUyRtMREj36fVAyInhSa8kek9M+khgOl1n8rV
+         G0qtGjjm6X0IZuS5lS64lZbE8pTbGXKNlgXzt83mSiPFmtcpukF/RFJ5oNJvBc2oua5Z
+         z68UYK1qu9KmGuI0T9wusMJFSKcub3fJWokfcGsOiOCXOcQAqZgqfTk3G1r3H5615ofw
+         DP43lSHBGekugvLloGEpWpQwggKRDD4Z+78spy/lfyIxo8aRsXOT+8UKmk/ftm3qkZaL
+         phCqaPPo4cSBSY0Qkp8PRv9UOPj8aqC+Pk1EDPlT4G5vKS7HbWn02s4GRgHP49G+t8us
+         Rukg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=rSimkDm7XMtWGp3CbOhN2eq+HKNAn7462rh6jCkBk6Q=;
+        b=Htz8vfLO8l/VUNzaGNrtP1D5xD+vyXdD4Qb33mVhrtWBnPSLrWot15OI9GgLaF3uww
+         ck0ewL6Xr9lHuHZQ4SPyKBtKhSsfkjJtoxR8Ce5cuOMmRifRaVbL1smaH+bvqhbIrtF7
+         YXvQSMSEuD8Oh6boSevIN4xzdL+UAAltf23XGDPMkHpUaBnShIu+zE7FuPo8qCHBDTYQ
+         l56Zw2eEaTfpZlnRg8sDvXCZrWvGverXP/NLCuOy/36K/WOURv/3zdScTp8DEnG9bbqS
+         JHCYc8WyiUlIzmIa87IIXSrDsIMO0PjP0QjLKLgxZW+uJGIrnwHwgUe1M1hDap3ehMGW
+         S20g==
+X-Gm-Message-State: APjAAAUcLysQpaOcCF4MH8EySVk/1pLvGdYDHD2JsXyLTRgVQ/PAQQHb
+        bEhIZO6cmpfa17LcLWE876vrSg==
+X-Google-Smtp-Source: APXvYqywnZPsAqbhTw4YweG8UtB2jKgeRWfzTPlFUv0lyPbs/OxJNndVXTYGaW3wwTuW0Pms0EGiGQ==
+X-Received: by 2002:ac8:2617:: with SMTP id u23mr64484715qtu.141.1558378967158;
+        Mon, 20 May 2019 12:02:47 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id v195sm9656912qka.28.2019.05.20.12.02.45
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 20 May 2019 12:02:46 -0700 (PDT)
+Date:   Mon, 20 May 2019 12:02:13 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Boris Pismenny <borisp@mellanox.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
+        "davejwatson@fb.com" <davejwatson@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "vakul.garg@nxp.com" <vakul.garg@nxp.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [PATCH net 3/3] Documentation: add TLS offload documentation
+Message-ID: <20190520120213.35d28f2a@cakuba.netronome.com>
+In-Reply-To: <f9e09ac2-ea5e-5b76-8aaf-ae50b21d3162@mellanox.com>
+References: <20190515204123.5955-1-jakub.kicinski@netronome.com>
+        <20190515204123.5955-4-jakub.kicinski@netronome.com>
+        <2ca1ad39-b2a1-7f40-4bf6-69a1c9f13cc0@mellanox.com>
+        <20190516105652.36c81a1a@cakuba.netronome.com>
+        <f9e09ac2-ea5e-5b76-8aaf-ae50b21d3162@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <1d14e6d9-5cac-064d-aa4e-bad667516c75@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-20_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
- priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
- spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905200118
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/05/2019 17:58, David Ahern wrote:
-> On 5/20/19 2:40 AM, Mike Manning wrote:
->> Since the commit 1893ff20275b ("net/ipv6: Add l3mdev check to
->> ipv6_chk_addr_and_flags"), traceroute using TCP SYN or ICMP ECHO option
->> and ping fail when specifying a source address typically on a loopback
->> /dummy interface in the same VRF, e.g.:
->>
->>     # ip vrf exec vrfgreen ping 3000::1 -I 2222::2
->>     ping: bind icmp socket: Cannot assign requested address
->>     # ip vrf exec vrfgreen traceroute 3000::1 -s 2222::2 -T
->>     bind: Cannot assign requested address
->>
->> IPv6 traceroute using default UDP and IPv4 ping & traceroute continue
->> to work inside a VRF using a source address.
->>
->> The reason is that the source address is provided via bind without a
->> device given by these applications in this case. The call to
->> ipv6_check_addr() in rawv6_bind() returns false as the default VRF is
->> assumed if no dev was given, but the src addr is in a non-default VRF.
->>
->> The solution is to check that the address exists in the L3 domain that
->> the dev is part of only if the dev has been specified.
->>
->> Signed-off-by: Mike Manning <mmanning@vyatta.att-mail.com>
->> ---
->>  net/ipv6/addrconf.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
->> index f96d1de79509..3963306ec27f 100644
->> --- a/net/ipv6/addrconf.c
->> +++ b/net/ipv6/addrconf.c
->> @@ -1908,6 +1908,7 @@ int ipv6_chk_addr_and_flags(struct net *net, const struct in6_addr *addr,
->>  			    int strict, u32 banned_flags)
->>  {
->>  	unsigned int hash = inet6_addr_hash(net, addr);
->> +	const struct net_device *orig_dev = dev;
->>  	const struct net_device *l3mdev;
->>  	struct inet6_ifaddr *ifp;
->>  	u32 ifp_flags;
->> @@ -1922,7 +1923,7 @@ int ipv6_chk_addr_and_flags(struct net *net, const struct in6_addr *addr,
->>  		if (!net_eq(dev_net(ifp->idev->dev), net))
->>  			continue;
->>  
->> -		if (l3mdev_master_dev_rcu(ifp->idev->dev) != l3mdev)
->> +		if (orig_dev && l3mdev_master_dev_rcu(ifp->idev->dev) != l3mdev)
->>  			continue;
->>  
->>  		/* Decouple optimistic from tentative for evaluation here.
->>
-> Wrong fix. When looking up the address you have to give the L3 domain of
-> interest.
->
-> This change:
->
-> diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-> index 84dbe21b71e5..96a3559f2a09 100644
-> --- a/net/ipv6/raw.c
-> +++ b/net/ipv6/raw.c
-> @@ -287,7 +287,9 @@ static int rawv6_bind(struct sock *sk, struct
-> sockaddr *uaddr, int addr_len)
->                         /* Binding to link-local address requires an
-> interface */
->                         if (!sk->sk_bound_dev_if)
->                                 goto out_unlock;
-> +               }
->
-> +               if (sk->sk_bound_dev_if) {
->                         err = -ENODEV;
->                         dev = dev_get_by_index_rcu(sock_net(sk),
->                                                    sk->sk_bound_dev_if);
->
-> make raw binds similar to tcp. See:
->
-> c5ee066333ebc ("ipv6: Consider sk_bound_dev_if when binding a socket to
-> an address")
-> ec90ad334986f ("ipv6: Consider sk_bound_dev_if when binding a socket to
-> a v4 mapped address")
+On Sun, 19 May 2019 06:24:36 +0000, Boris Pismenny wrote:
+> On 5/16/2019 8:56 PM, Jakub Kicinski wrote:
+> > On Thu, 16 May 2019 09:08:52 +0000, Boris Pismenny wrote:  
+> >>> diff --git a/Documentation/networking/tls-offload.rst b/Documentation/networking/tls-offload.rst
+> >>> new file mode 100644
+> >>> index 000000000000..32fecb3fbc4c
+> >>> --- /dev/null
+> >>> +++ b/Documentation/networking/tls-offload.rst
+> >>> @@ -0,0 +1,438 @@  
+> 
+> >>> +RX
+> >>> +--
+> >>> +
+> >>> +Before a packet is DMAed to the host (but after NIC's embedded switching
+> >>> +and packet transformation functions) the device performs a 5-tuple lookup
+> >>> +to find any TLS connection the packet may belong to (technically a 4-tuple
+> >>> +lookup is sufficient - IP addresses and TCP port numbers, as the protocol
+> >>> +is always TCP). If connection is matched device confirms if the TCP sequence
+> >>> +number is the expected one and proceeds to TLS handling (record delineation,
+> >>> +decryption, authentication for each record in the packet).
+> >>> +
+> >>> +If decryption or authentication fails for any record in the packet, the packet
+> >>> +must be passed to the host as it was received on the wire. This means packets  
+> >>
+> >> This is not normal mode of operation, but rather an error handling
+> >> description. Please try to describe only the good flow here, and leave
+> >> the errors for a separate section.  
+> > 
+> > Normal as device is in sync with the stream vs the Resync handling
+> > section.  It is not clear from the name, you're right, I will try
+> > to split further and see how it turns out.
+> 
+> But it is not normal, as decryption or authentication failure are not
+> normal. Such a packet is bound to terminate the TLS connection and
+> forcing hardware to re-encrypt it is too strict IMO. Instead, I think
+> that as long as the driver can provide the stack with the original
+> packet in this case, then it is good enough.
 
-Thanks, I withdraw this submission and have submitted a new one as you
-recommend.
+Sure, you can try to recover original packet in the driver, if device
+provides you with precise enough information (remember there can be
+multiple records in a segment).
 
+> >>> +should not be modified "in place". Splitting segments to handle partial
+> >>> +decryption is not advised. In other words either all records in the packet
+> >>> +had been handled successfully and authenticated or the packet has to be passed
+> >>> +to the host as it was on the wire. The device communicates whether the packet
+> >>> +was successfully decrypted in the per-packet context (descriptor) passed
+> >>> +to the host.
+> >>> +
+> >>> +The device leaves the record framing unmodified, the stack takes care of
+> >>> +record decapsulation.
+> >>> +
+> >>> +Upon reception of a TLS offloaded packet, the driver sets
+> >>> +the :c:member:`decrypted` mark in :c:type:`struct sk_buff <sk_buff>`
+> >>> +corresponding to the segment. Networking stack makes sure decrypted
+> >>> +and non-decrypted segments do not get coalesced and takes care of partial
+> >>> +decryption.  
+> >>
+> >> Please mention checksum handling as well. It would not make any sense to
+> >> use CHECKSUM_COMPLETE here. Instead, CHECKSUM_UNNECESSARY should be
+> >> expected.  
+> > 
+> > I was on the fence about adding the checksum info.  I had the feeling
+> > that even for CHECKSUM_UNNECESSARY it's fairly strange to pass mangled
+> > packets.  Looking at skbuff.h the checksum doc states:
+> > 
+> >   * CHECKSUM_UNNECESSARY:
+> >   *
+> >   *   The hardware you're dealing with doesn't calculate the full checksum
+> >   *   (as in CHECKSUM_COMPLETE), but it does parse headers and verify checksums
+> >   *   for specific protocols. For such packets it will set CHECKSUM_UNNECESSARY
+> >   *   if their checksums are okay. skb->csum is still undefined in this case
+> >   *   though. A driver or device must never modify the checksum field in the
+> >   *   packet even if checksum is verified.
+> > 
+> > My reading of the last sentence is: the checksum in the packet must
+> > still be correct (based on the context in which this comment was
+> > written, which was in the days of UDP tunnel offload work).
+> > IOW UNNECESSARY doesn't mean "don't look at the checksum field",
+> > it means "I've looked at the checksum field and it's correct".
+> >   
+> 
+> This interpretation is far from the text - "A driver or device must 
+> never modify the checksum field". If it is correct, then it needs to be 
+> fixed. 
+
+Context in which these words were written matters.
+
+> Moreover, one could consider the checksum field to be correct,
+> because the encryption can be reverted by the socket/driver on demand.
+
+Sockets (and ULPs) are above TCP checksums.
+
+> AFAIU, CHECKSUM_UNNECESSARY is exactly for cases like this, where the 
+> hardware might have mangled the known payload/headers. But it verified 
+> the checksum before doing so. As a result, checksum fields might be 
+> wrong (but unmodified), and setting CHECKSUM_UNNECESSARY informs the 
+> network stack that it can trust this packet.
+
+If I redirect a packet with CHECKSUM_UNNECESSARY it goes out as is, no
+checksum recalculation.  The checksum should be valid.
+
+> > IMHO CHECKSUM_UNNECESSARY without correcting the TCP header csum field
+> > is only slightly less broken than CHECKSUM_COMPLETE with pre-decrypt
+> > csum and without fixing the TCP header.
+> > 
+> > Not to mention the fact that users may disable RXCSUM offload.  
+> 
+> It does not matter if the user disables RXCSUM, because the HW *must* do 
+> checksum validation for TLS Rx offload regardless of this setting.
+
+Yes, that's what I'm saying, regardless of RXCSUM setting HW has
+to do validation, and in case driver is passing frames with a broken
+checksum driver has to feed CHECKSUM_UNNECESSARY to the stack, again,
+regardless of RXCSUM.
+
+> > Maybe the least broken option is to fix the TCP header csum and pass
+> > CHECKSUM_COMPLETE of the encrypted data?  But then again clearly the HW
+> > has parsed the packet (voiding the non-ossification gain), and we won't
+> > be doing tunnelling on clear text..  
+> 
+> I don't see the point of doing this. TLS Rx offload is for L4 
+> *endpoints*, not for L3 routers. As such, the socket will receive the 
+> packet and process it as part of a TCP stream, thereafter the data can 
+> be forwarded.
+> The socket must perform the TCP checksum verification, and 
+> CHECKSUM_UNNECESSARY makes all of this work without complex changes.
+
+Yes, as I said it works today.  But I'm not documenting stuff that
+happens to work today as the way things should be.  There are routable
+L4 data modifications which _have to_ fix the checksum (tunnels).
+I strongly prefer to have the devices behave the same for all L4 data
+modification, instead of trying to define this behaviour on offload by
+offload bases.  I only leads to confusion and conflicts when two
+offloads are in effect and have different expected behaviour.
+
+> > 
+> > So CHECKSUM_UNNECESSARY "would do".
+> > 
+> > This is a long winded way of saying - I didn't see the perfect solution
+> > here, so I thought it's better not to codify it in this doc.  But
+> > perhaps I can phrase it tentatively enough.  How about:
+> > 
+> > 
+> >    The preferred method of reporting the Layer 4 (TCP) checksum offload
+> >    for packets decrypted by the device is to update the checksum field
+> >    to the correct value for clear text and report CHECKSUM_UNNECESSARY
+> >    or CHECKSUM_COMPLETE computed over clear text. However, the exact
+> >    semantics of RX checksum offload when NIC performs data modification
+> >    are not clear and subject to change.
+> >   
+> 
+> I disagree with this. Modifying the original checksum field erases the 
+> original checksum, which might not be recoverable later.
+
+Checksum covers the data in the packet, if it was valid on arrival to
+the device, and was recalculated to match the modified data - what do
+you want to recover and to what end?
