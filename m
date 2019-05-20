@@ -2,170 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75D7723BF6
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:22:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B61E523C02
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:26:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391731AbfETPW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 11:22:27 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:48976 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730766AbfETPW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:22:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=NdqqC2q7hSYJUHxc0H+N3fnsV1gV9mFelM3P1H8R+14=; b=YUsWo+MvVYsy472PGoumMSq6R3
-        URqYPWgUwJ0WUe1V6bhlPGhjMS4PtF9l6sGsj6/VV7c/oh2niuwNrflSwY5yI8BHRK6txo7PNioUc
-        uJZFxrksFo4aEPNTCzE/5o6s2PxyZ0peTuyAb0kQ2tjZ7SKVwkepzgtE4H7+xYmuWggFFqDbBsvYM
-        3RIaeFPuMsmaMWfI8WPz2xLLBs5WDusDNGityZfn5oCwLEkHTQCcBzJDvbEhPprDNqEyXASuAB+4f
-        HvgZneAlDouw0tCuanN/J6+UIUTd/714QYYdbZlUwvW9F12yLzceO8VKnlxq3BSy3ZP6z9CBPCUyq
-        EfesymRA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:33358 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1hSk7G-0003bS-3G; Mon, 20 May 2019 16:22:18 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1hSk7E-0000wD-LS; Mon, 20 May 2019 16:22:16 +0100
-In-Reply-To: <20190520152134.qyka5t7c2i7drk4a@shell.armlinux.org.uk>
-References: <20190520152134.qyka5t7c2i7drk4a@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH net-next 4/4] net: sfp: remove sfp-bus use of netdevs
+        id S2392131AbfETP0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 11:26:30 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:40314 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730766AbfETP03 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:26:29 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 23D22B4007C;
+        Mon, 20 May 2019 15:26:27 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 20 May
+ 2019 08:26:22 -0700
+Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
+ statistics
+To:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "Pablo Neira Ayuso" <pablo@netfilter.org>,
+        David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+References: <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
+ <f4fdc1f1-bee2-8456-8daa-fbf65aabe0d4@solarflare.com>
+ <cacfe0ec-4a98-b16b-ef30-647b9e50759d@mojatatu.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <f27a6a44-5016-1d17-580c-08682d29a767@solarflare.com>
+Date:   Mon, 20 May 2019 16:26:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <cacfe0ec-4a98-b16b-ef30-647b9e50759d@mojatatu.com>
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1hSk7E-0000wD-LS@rmk-PC.armlinux.org.uk>
-Date:   Mon, 20 May 2019 16:22:16 +0100
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24624.005
+X-TM-AS-Result: No-12.574600-4.000000-10
+X-TMASE-MatchedRID: 0dFPYP4mu5TmLzc6AOD8DfHkpkyUphL9g99C97sXB8BQKAQSutQYXELa
+        GegdJ2bmeNpTbJbSd8fNYmiyRY/XVlvLEDLz4/18fid4LSHtIAPHSOYUp9HFyMa9/IwAq2etAUq
+        wO9pSIT0X2JC8aIIxe6rbiyJcRE9x6WgBZT4x0yr0MaQO2ri8DAebMc7dN8D4tmTuCy5+VUqx/c
+        twRkgblyz8sK84C/nX3LhqCs5FjVBtF6/n498MP5zEHTUOuMX39l9p8mNlkgkELMPQNzyJS+Mmp
+        Z6XwS0ifMtvnnFP0XhBfQPbExiy5w66dAsNpdQEboe6sMfg+k+oJkORSPbbw7KeTtOdjMy6f2+C
+        ruJb3sw0zRzGUuAaePfu0TSNZMLKJ+JZYQfxoHxSOC+TOar9NK2CCashnFx10fRqqiZ4ZleY9g/
+        Nz1T3KT10hssYefLM2YHAy9vdzf5STe2wpWYcpJ4CIKY/Hg3AcmfM3DjaQLHEQdG7H66TyF82MX
+        kEdQ77df4Ft2s9cbhHsjTl0dZQjl32hYWyYVnILE69oroAWljCks0I9/2gCw==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--12.574600-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24624.005
+X-MDID: 1558365988-AI0r5WKzPJwj
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sfp-bus code now no longer has any use for the network device
-structure, so remove its use.
+On 18/05/2019 21:39, Jamal Hadi Salim wrote:
+> On 2019-05-17 1:14 p.m., Edward Cree wrote:
+>> On 17/05/2019 16:27, Edward Cree wrote:
+>>> I'm now leaning towards the
+>>>   approach of adding "unsigned long cookie" to struct flow_action_entry
+>>>   and populating it with (unsigned long)act in tc_setup_flow_action().
+>>
+>> For concreteness, here's what that looks like: patch 1 is replaced with
+>>   the following, the other two are unchanged.
+>> Drivers now have an easier job, as they can just use the cookie directly
+>>   as a hashtable key, rather than worrying about which action types share
+>>   indices.
+>
+> Per my other email, this will break tc semantics. It doesnt look
+> possible to specify an index from user space. Did i miss
+> something?
+Unless *I* missed something, I'm not changing the TC<=>user-space API at
+ all.  If user space specifies an index, then TC will either create a new
+ action with that index, or find an existing one.  Then flow_offload turns
+ that into a cookie; in the 'existing action' case it'll be the same
+ cookie as any previous offloads of that action, in the 'new action' case
+ it'll be a cookie distinct from any existing action.
+Drivers aren't interested in the specific index value, only in "which
+ other actions (counters) I've offloaded are shared with this one?", which
+ the cookie gives them.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/phylink.c |  3 +--
- drivers/net/phy/sfp-bus.c | 10 +++-------
- include/linux/sfp.h       |  6 ++----
- 3 files changed, 6 insertions(+), 13 deletions(-)
+With my (unreleased) driver code, I've successfully tested this with e.g.
+ the following rules:
+tc filter add dev $vfrep parent ffff: protocol arp flower skip_sw \
+    action vlan push id 100 protocol 802.1q \
+    action mirred egress mirror dev $pf index 101 \
+    action vlan pop \
+    action drop index 104
+tc filter add dev $vfrep parent ffff: protocol ipv4 flower skip_sw \
+    action vlan push id 100 protocol 802.1q \
+    action mirred egress mirror dev $pf index 102 \
+    action vlan pop \
+    action drop index 104
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 7161c0fbb03c..e9ffe92c0650 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -518,8 +518,7 @@ static int phylink_register_sfp(struct phylink *pl,
- 		return ret;
- 	}
- 
--	pl->sfp_bus = sfp_register_upstream(ref.fwnode, pl->netdev, pl,
--					    &sfp_phylink_ops);
-+	pl->sfp_bus = sfp_register_upstream(ref.fwnode, pl, &sfp_phylink_ops);
- 	if (!pl->sfp_bus)
- 		return -ENOMEM;
- 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index c664c905830a..5bc8099eaaf1 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -23,7 +23,6 @@ struct sfp_bus {
- 
- 	const struct sfp_upstream_ops *upstream_ops;
- 	void *upstream;
--	struct net_device *netdev;
- 	struct phy_device *phydev;
- 
- 	bool registered;
-@@ -442,13 +441,11 @@ static void sfp_upstream_clear(struct sfp_bus *bus)
- {
- 	bus->upstream_ops = NULL;
- 	bus->upstream = NULL;
--	bus->netdev = NULL;
- }
- 
- /**
-  * sfp_register_upstream() - Register the neighbouring device
-  * @fwnode: firmware node for the SFP bus
-- * @ndev: network device associated with the interface
-  * @upstream: the upstream private data
-  * @ops: the upstream's &struct sfp_upstream_ops
-  *
-@@ -459,7 +456,7 @@ static void sfp_upstream_clear(struct sfp_bus *bus)
-  * On error, returns %NULL.
-  */
- struct sfp_bus *sfp_register_upstream(struct fwnode_handle *fwnode,
--				      struct net_device *ndev, void *upstream,
-+				      void *upstream,
- 				      const struct sfp_upstream_ops *ops)
- {
- 	struct sfp_bus *bus = sfp_bus_get(fwnode);
-@@ -469,7 +466,6 @@ struct sfp_bus *sfp_register_upstream(struct fwnode_handle *fwnode,
- 		rtnl_lock();
- 		bus->upstream_ops = ops;
- 		bus->upstream = upstream;
--		bus->netdev = ndev;
- 
- 		if (bus->sfp) {
- 			ret = sfp_register_bus(bus);
-@@ -591,7 +587,7 @@ struct sfp_bus *sfp_register_socket(struct device *dev, struct sfp *sfp,
- 		bus->sfp = sfp;
- 		bus->socket_ops = ops;
- 
--		if (bus->netdev) {
-+		if (bus->upstream_ops) {
- 			ret = sfp_register_bus(bus);
- 			if (ret)
- 				sfp_socket_clear(bus);
-@@ -611,7 +607,7 @@ EXPORT_SYMBOL_GPL(sfp_register_socket);
- void sfp_unregister_socket(struct sfp_bus *bus)
- {
- 	rtnl_lock();
--	if (bus->netdev)
-+	if (bus->upstream_ops)
- 		sfp_unregister_bus(bus);
- 	sfp_socket_clear(bus);
- 	rtnl_unlock();
-diff --git a/include/linux/sfp.h b/include/linux/sfp.h
-index a3f0336dd703..1c35428e98bc 100644
---- a/include/linux/sfp.h
-+++ b/include/linux/sfp.h
-@@ -464,7 +464,6 @@ enum {
- struct fwnode_handle;
- struct ethtool_eeprom;
- struct ethtool_modinfo;
--struct net_device;
- struct sfp_bus;
- 
- /**
-@@ -510,7 +509,7 @@ int sfp_get_module_eeprom(struct sfp_bus *bus, struct ethtool_eeprom *ee,
- void sfp_upstream_start(struct sfp_bus *bus);
- void sfp_upstream_stop(struct sfp_bus *bus);
- struct sfp_bus *sfp_register_upstream(struct fwnode_handle *fwnode,
--				      struct net_device *ndev, void *upstream,
-+				      void *upstream,
- 				      const struct sfp_upstream_ops *ops);
- void sfp_unregister_upstream(struct sfp_bus *bus);
- #else
-@@ -555,8 +554,7 @@ static inline void sfp_upstream_stop(struct sfp_bus *bus)
- }
- 
- static inline struct sfp_bus *sfp_register_upstream(
--	struct fwnode_handle *fwnode,
--	struct net_device *ndev, void *upstream,
-+	struct fwnode_handle *fwnode, void *upstream,
- 	const struct sfp_upstream_ops *ops)
- {
- 	return (struct sfp_bus *)-1;
--- 
-2.7.4
+Then when viewing with `tc -stats filter show`, the mirreds count their
+ traffic separately (and with an extra 4 bytes per packet for the VLAN),
+ whereas the drops (index 104, shared) show the total count (and without
+ the 4 bytes).
 
+(From your other email)
+> tcfa_index + action identifier seem to be sufficiently global, no?
+The reason I don't like using the action identifier is because flow_offload
+ slightly alters those: mirred gets split into two (FLOW_ACTION_REDIRECT
+ and FLOW_ACTION_MIRRED (mirror)).  Technically it'll still work (a redirect
+ and a mirror are different actions, so can't have the same index, so it
+ doesn't matter if they're treated as the same action-type or not) but it
+ feels like a kludge.
+
+-Ed
