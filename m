@@ -2,88 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F306240B9
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:57:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E6E0240BF
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:57:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726096AbfETS5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 14:57:39 -0400
-Received: from mx0b-00191d01.pphosted.com ([67.231.157.136]:34144 "EHLO
-        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725536AbfETS5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:57:38 -0400
-Received: from pps.filterd (m0083689.ppops.net [127.0.0.1])
-        by m0083689.ppops.net-00191d01. (8.16.0.27/8.16.0.27) with SMTP id x4KIuCRB019705;
-        Mon, 20 May 2019 14:57:37 -0400
-Received: from tlpd255.enaf.dadc.sbc.com (sbcsmtp3.sbc.com [144.160.112.28])
-        by m0083689.ppops.net-00191d01. with ESMTP id 2sm16d1cwg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 20 May 2019 14:57:36 -0400
-Received: from enaf.dadc.sbc.com (localhost [127.0.0.1])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x4KIvZpY109542;
-        Mon, 20 May 2019 13:57:36 -0500
-Received: from zlp30493.vci.att.com (zlp30493.vci.att.com [135.46.181.176])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x4KIvVqI109433
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 20 May 2019 13:57:31 -0500
-Received: from zlp30493.vci.att.com (zlp30493.vci.att.com [127.0.0.1])
-        by zlp30493.vci.att.com (Service) with ESMTP id 60B46400B579;
-        Mon, 20 May 2019 18:57:31 +0000 (GMT)
-Received: from tlpd252.dadc.sbc.com (unknown [135.31.184.157])
-        by zlp30493.vci.att.com (Service) with ESMTP id 4F9B8400B578;
-        Mon, 20 May 2019 18:57:31 +0000 (GMT)
-Received: from dadc.sbc.com (localhost [127.0.0.1])
-        by tlpd252.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x4KIvV3k128512;
-        Mon, 20 May 2019 13:57:31 -0500
-Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
-        by tlpd252.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x4KIvPr0128333;
-        Mon, 20 May 2019 13:57:25 -0500
-Received: from MM-7520.vyatta.net (unknown [10.156.47.136])
-        by mail.eng.vyatta.net (Postfix) with ESMTPA id 07A2A360065;
-        Mon, 20 May 2019 11:57:23 -0700 (PDT)
-From:   Mike Manning <mmanning@vyatta.att-mail.com>
-To:     netdev@vger.kernel.org, dsahern@gmail.com
-Subject: [PATCH net] ipv6: Consider sk_bound_dev_if when binding a raw socket to an address
-Date:   Mon, 20 May 2019 19:57:17 +0100
-Message-Id: <20190520185717.24914-1-mmanning@vyatta.att-mail.com>
-X-Mailer: git-send-email 2.11.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-20_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
- priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
- spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=935 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905200118
+        id S1726316AbfETS5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 14:57:51 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:44706 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726262AbfETS5v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:57:51 -0400
+Received: by mail-lj1-f194.google.com with SMTP id e13so13456322ljl.11
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 11:57:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OmaVPUNIZXzoguiohx42nQv5edtRi7vwn1kzPXHaCDU=;
+        b=fMyll/PYRqDhUKiFB8FWnKnTIEQzIkiza71tvGxxVJhYoLtma2pufkLzZrNJzfHMCQ
+         DEQUyJfZ/FKF9qXw4Gszyc7Cx/Wchwc6YJmaz6m/TMqJHRmLqjSWQnFpmV3uyA7JmLbe
+         merYv5HX8zgk+6qeaa+yLv93n/+XXh57JMhmTAsXu/qsGMm4RTYfTixRoIzrDzByGpEV
+         t498nAncnts0ff/6jHnDXDkJy+A4K6WC7xkUSaeb3OLLNwzfPKZPtPCFmrURE1bnpspH
+         h0Mna6z+leiSlSL+sberZ70d7qdflrvzfoSwWOx88e+dDllUB5N64Y+xGHQt4tv6UOVs
+         yt8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OmaVPUNIZXzoguiohx42nQv5edtRi7vwn1kzPXHaCDU=;
+        b=Kv9z6cQeiUDimBaD1ixhkzid2btK4D70eanhqx7kcw9MgkRyFyp4wqkENSh1YeXUyI
+         E6QVIpWLNttnzWxuXsQK/0USP2audixpzf5tl+PApq12hNj6ayRAK1pCQxQWQTyrrlop
+         2Y0Nb1frl3yg8B/jPjMlkCNWAjbcIOEJK17o9141jnQcOvnQPpoUAt67Yu7rd5nQBU9a
+         EJauVFtA7TKCe9KmCcKF7maTx5hvdahBE4YJOBozvXe1ojCbfZlIEMzAWWsVDYRsYJJe
+         j4QiVKp4Z4JJvxyk94ZVLMhmWzD5Sxq2E0Kz9ZQcRTO2ypfQ7HakjEmF80gvz3h/MvwP
+         vG0g==
+X-Gm-Message-State: APjAAAV0NlJyECPh4CYk9/rGfQq6YVbOg6Fdhk0eAfQeAG/1gvktFkHb
+        seFH4VfrZjP/i7ixe5XxX9sG8hPKH+nTFydusmI4dg==
+X-Google-Smtp-Source: APXvYqy6M9AYAHvKJNCbUtN+nVQJi5irsspzQdgBoUYpuK5uXs+rCoPdY/21xnEcQ0CBbK70aIgXROavyXsEF4+arOE=
+X-Received: by 2002:a2e:9d4e:: with SMTP id y14mr12542742ljj.199.1558378669341;
+ Mon, 20 May 2019 11:57:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190517212117.2792415-1-kafai@fb.com>
+In-Reply-To: <20190517212117.2792415-1-kafai@fb.com>
+From:   Joe Stringer <joe@isovalent.com>
+Date:   Mon, 20 May 2019 11:57:37 -0700
+Message-ID: <CADa=Ryxc8cU8mx7i91GXjT+b4md3c01hqja9oVMZxSbbR+OVPw@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: Check sk_fullsock() before returning from bpf_sk_lookup()
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPv6 does not consider if the socket is bound to a device when binding
-to an address. The result is that a socket can be bound to eth0 and
-then bound to the address of eth1. If the device is a VRF, the result
-is that a socket can only be bound to an address in the default VRF.
+On Fri, May 17, 2019 at 2:21 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> The BPF_FUNC_sk_lookup_xxx helpers return RET_PTR_TO_SOCKET_OR_NULL.
+> Meaning a fullsock ptr and its fullsock's fields in bpf_sock can be
+> accessed, e.g. type, protocol, mark and priority.
+> Some new helper, like bpf_sk_storage_get(), also expects
+> ARG_PTR_TO_SOCKET is a fullsock.
+>
+> bpf_sk_lookup() currently calls sk_to_full_sk() before returning.
+> However, the ptr returned from sk_to_full_sk() is not guaranteed
+> to be a fullsock.  For example, it cannot get a fullsock if sk
+> is in TCP_TIME_WAIT.
+>
+> This patch checks for sk_fullsock() before returning. If it is not
+> a fullsock, sock_gen_put() is called if needed and then returns NULL.
+>
+> Fixes: 6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
+> Cc: Joe Stringer <joe@isovalent.com>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
 
-Resolve by considering the device if sk_bound_dev_if is set.
-
-Signed-off-by: Mike Manning <mmanning@vyatta.att-mail.com>
----
- net/ipv6/raw.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 84dbe21b71e5..96a3559f2a09 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -287,7 +287,9 @@ static int rawv6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 			/* Binding to link-local address requires an interface */
- 			if (!sk->sk_bound_dev_if)
- 				goto out_unlock;
-+		}
- 
-+		if (sk->sk_bound_dev_if) {
- 			err = -ENODEV;
- 			dev = dev_get_by_index_rcu(sock_net(sk),
- 						   sk->sk_bound_dev_if);
--- 
-2.11.0
-
+Acked-by: Joe Stringer <joe@isovalent.com>
