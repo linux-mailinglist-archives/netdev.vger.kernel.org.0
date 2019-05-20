@@ -2,95 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E04023C77
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:44:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD61923C7E
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:46:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388257AbfETPoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 11:44:15 -0400
-Received: from mail.us.es ([193.147.175.20]:34742 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731091AbfETPoP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 May 2019 11:44:15 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 1DE51BEBAC
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 17:44:13 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0E766DA715
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 17:44:13 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 03AB3DA711; Mon, 20 May 2019 17:44:12 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 80A2BDA70C;
-        Mon, 20 May 2019 17:44:10 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 20 May 2019 17:44:10 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2388243AbfETPqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 11:46:24 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45846 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731083AbfETPqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:46:24 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 557B44265A31;
-        Mon, 20 May 2019 17:44:10 +0200 (CEST)
-Date:   Mon, 20 May 2019 17:44:09 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
+        by mx1-us4.ppe-hosted.com (Proofpoint Essentials ESMTP Server) with ESMTPS id A816A4C00D4;
+        Mon, 20 May 2019 15:46:22 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 20 May
+ 2019 08:46:18 -0700
+Subject: Re: [RFC PATCH v2 net-next 2/3] flow_offload: restore ability to
+ collect separate stats per action
+To:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "Pablo Neira Ayuso" <pablo@netfilter.org>,
+        David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Andy Gospodarek <andy@greyhouse.net>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Michael Chan <michael.chan@broadcom.com>,
         Vishal Kulkarni <vishal@chelsio.com>
-Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
- statistics
-Message-ID: <20190520154409.v6viswe47fltv652@salvia>
 References: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
- <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
- <20190519002218.b6bcz224jkrof7c4@salvia>
- <7cdc59fd-e90f-6ff2-f429-257c8844be26@solarflare.com>
+ <b4a13b86-ae18-0801-249a-2831ec08c44c@solarflare.com>
+ <49016cd0-c1c3-2bd7-d807-2b2039e12fa3@mojatatu.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <9790c274-445c-d3d6-a9eb-349af4103937@solarflare.com>
+Date:   Mon, 20 May 2019 16:46:16 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <49016cd0-c1c3-2bd7-d807-2b2039e12fa3@mojatatu.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <7cdc59fd-e90f-6ff2-f429-257c8844be26@solarflare.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24624.005
+X-TM-AS-Result: No-1.822800-4.000000-10
+X-TMASE-MatchedRID: +c13yJDs903mLzc6AOD8DfHkpkyUphL9Ub4EdIZGxuDIxdMnZ7dlOuc8
+        8VmQSVXW0UcWKbs8KfpPwZ7YSLrBJWk5Fql3Faa7oxjrap5AGQtGI9Mwxz8yaQv1OPvvDLzsTh4
+        wP+rrxpO1IKRGwk5D1+IGJZ6+qv8rv1l2Uvx6idrQLWxBF9DMQcRB0bsfrpPI34T9cYMsdwyRwV
+        Syfetr5Hytg1kXzfu7lxSrmZ4J6IgcdyIseFUCqaLya0+fqP3L1DXsKeBNv04EqZlWBkJWd7MZN
+        ZFdSWvHG2wlTHLNY1JWXGvUUmKP2w==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.822800-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24624.005
+X-MDID: 1558367183-dhoD4cMWx8fk
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 20, 2019 at 04:37:10PM +0100, Edward Cree wrote:
-> On 19/05/2019 01:22, Pablo Neira Ayuso wrote:
-> > On Fri, May 17, 2019 at 04:27:29PM +0100, Edward Cree wrote:
-> >> On 15/05/2019 20:39, Edward Cree wrote:
-> > [...]
-> >> Pablo, how do the two options interact with your netfilter offload?  I'm
-> >>  guessing it's easier for you to find a unique pointer than to generate
-> >>  a unique u32 action_index for each action.  I'm also assuming that
-> >>  netfilter doesn't have a notion of shared actions.
-> > It has that shared actions concept, see:
-> >
-> > https://netfilter.org/projects/nfacct/
-> >
-> > Have a look at 'nfacct' in iptables-extensions(8) manpage.
->
-> Thanks.  Looking at net/netfilter/nfnetlink_acct.c, it looks as though you
->  don't have a u32 index in there; for the cookie approach, would the
->  address of the struct nf_acct (casted to unsigned long) work to uniquely
->  identify actions that should be shared?
-> I'm not 100% sure how nf (or nfacct) offload is going to look, so I might
->  be barking up the wrong tree here.  But it seems like the cookie method
->  should work better for you — even if you did have an index, how would you
->  avoid collisions with TC actions using the same indices if both are in
->  use on a box?  Cookies OTOH are pointers, so guaranteed unique :)
+On 18/05/2019 21:35, Jamal Hadi Salim wrote:
+> Your patch doesnt have U32. IIRC, I have seen stats on ixgbe with the
+> u32 classifier last time i mucked around with it
+> (maybe Pablo's changes removed it?).
+I can't see anything stats-offload related in net/sched/cls_u32.c (just
+ SW stats dumping in u32_dump()) and it doesn't call
+ tcf_exts_stats_update() either.  Looking through ixgbe code I also
+ don't see any sign there of stats gathering for offloaded u32 rules.
 
-The cookie approach per-action looks fine to me, there's already a
-cookie to identify the rule, so this looks natural to me.
+-Ed
