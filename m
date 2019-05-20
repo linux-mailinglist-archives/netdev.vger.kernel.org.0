@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BE4C24037
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:23:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D29824039
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:24:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726065AbfETSXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 14:23:24 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:37053 "EHLO
+        id S1726012AbfETSYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 14:24:06 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39612 "EHLO
         mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725554AbfETSXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:23:24 -0400
-Received: by mail-pg1-f195.google.com with SMTP id n27so4570389pgm.4
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 11:23:23 -0700 (PDT)
+        with ESMTP id S1725601AbfETSYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:24:05 -0400
+Received: by mail-pg1-f195.google.com with SMTP id w22so7163874pgi.6
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 11:24:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=SYTBA5R/bn5VVOokd8IiyR32tfALvjr4vc9kMLw64vM=;
-        b=cBO2ydGqARuXDb+FGcLOGOc38WLpEr36hZpxaPKZTaMDn2kGat4EdqzWXsp1CNo7x4
-         EwQ5hPkP563FTOBWakLo9p4REobrG87g7AaCZzPM4dF96IaGjMV3lwux+4DoCCG1vpqa
-         lfG3ceC20mmcJfjwvcah7NOY2xmZp3VfzxS+xm1ZsLDhDgEbB8R0IfeNLpqAgCpvEI37
-         xcDhmiVzhSD3TXMUYhBjFVXpmnVxKavF7+lGPncXQUb8i1sPXcLREyBpYNhvuHiK7H/7
-         UxpPnz3rj76N+dKx9Z4BDWRCLfXDjEKISWXjVNEBGZCtQ1enKJ5MdjoWz/fk/Ov5bfaq
-         wR2A==
+        bh=p5PGq7quaJ4YwD2HT7JA6gFjt/BB8aCX9Yo+srq7+CA=;
+        b=Q74ieeFz3B8wiM+o5j1Fm9nLayCTkjq31ZtE+xE5aPd0ow8S8xOoY4m/8TOfRdSeaW
+         xKZeaQc1X2WWSXjyiAmjtZ8OsiH/vm4yVjBowhNPHsOfa1lVJjiQ6cRbt6MEq5TVHHw3
+         dM62mu7rcXFP7bYLjE+5kvTWM5cQEmxavOkq5/l8UnNjjxYTanPKj/gxgiAHRDt5n6Ec
+         ARIXJV7Pp8Qs07JQK99Mb211pYAb4rJrTQN/EcEjQmhHGvAL6pxWCnINtr9MfzV0VTdc
+         fYhSdsffjwYofX3GMLOcO2eDzmWKkHA+RktHMGxsQ2jnik2Qh8KP9K+PF6qEIIV4pM4V
+         h4Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=SYTBA5R/bn5VVOokd8IiyR32tfALvjr4vc9kMLw64vM=;
-        b=hHWycZKfk1+HJh8GAvzRr2G7aiZ7ytlPbmSY/98zWvEK5uMpTcCsPQ87o8SRp1qGn+
-         it2nvp4CtY1wFPCN61kEhoAugVT4rGOWq+gvn5t4+b2UJe5h7pyunGWiItjyEhJEAp/u
-         jN4jtr8xVKf1XDOGKyX4SW2eCWVQGI2gSsztO/g+YzWAU8vH6xpAvH+vcdJULjoiLWHd
-         D/6tVKBX7kcurEKzXR8u+P0S9kdxkjZMzt39yIaWEUszCWRKUp7qbAQF77RpuSNuQmLb
-         lJrJ//dQp+7EVA5m08jRn7MrB9MK4dvAXFjBFAHQZ2p/9LxX2te19fVcqPuRAy6Tkqei
-         HsgQ==
-X-Gm-Message-State: APjAAAWfv878Ds8oK3uwHdH/xoBXsK/jtdIUyjRxa5DqZAisbBoCZirT
-        lgSrj9KfqNZIv/d2Ol1dWwxJLfoZ
-X-Google-Smtp-Source: APXvYqwbkP+gGX9VuKnY9YXEG032O4a/R3+3vkdAdPLdjlXjp5WBy4e4NFxUq9za9BvK40FoafLnjA==
-X-Received: by 2002:a62:1a0f:: with SMTP id a15mr61740712pfa.111.1558376603024;
-        Mon, 20 May 2019 11:23:23 -0700 (PDT)
+        bh=p5PGq7quaJ4YwD2HT7JA6gFjt/BB8aCX9Yo+srq7+CA=;
+        b=lTkmWhlaEyYSZJoBCzeD+qlRGFSNLaUTb53osyPc3apZONcsL116FSjVcHnE9ScBrX
+         G1SGhWOJwOED3KdlufW1VirvkUSw+DN8KTcpPX4IxN8d/CWobVNaA6rNvPZIAwzZN7SH
+         U4PDl5H8m34gV27ZqdZWGikhG4NJriMcYTdHZ5YOv79kAj2I6poA3clXZg/nIkB+1d9F
+         X0lDhpZ0pWF+CYQXIFGEiElnQ5RqMNYnMBSeQELpsQgwD3sK34z92901azz4pp0XLg3Z
+         DFbtnMXMkkNTZnd198Jmo0uEXr/yGKH7bdvTNhFBHFoE5cIz9xIQb+zqm6VoNixZal8a
+         aEsw==
+X-Gm-Message-State: APjAAAX2kU1SLzIKjiO3whAHZhfkpXzGTemuvAsg986dniCs5JYMQ1wh
+        mDgNK7xS/t0C7oLS/4aQuEheWAU9
+X-Google-Smtp-Source: APXvYqxI/2LqvsWNIg1pB2uzJ8tMw5uDJ951L7mJM17al8vQ930o5Bm1EnWugTIzQ/pt7JvD71FRYQ==
+X-Received: by 2002:aa7:9a99:: with SMTP id w25mr42501663pfi.249.1558376644757;
+        Mon, 20 May 2019 11:24:04 -0700 (PDT)
 Received: from [10.67.49.52] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 125sm26224890pge.45.2019.05.20.11.23.21
+        by smtp.googlemail.com with ESMTPSA id b3sm32090931pfr.146.2019.05.20.11.24.03
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 11:23:22 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/4] net: phy: allow Clause 45 access via mii
- ioctl
+        Mon, 20 May 2019 11:24:04 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/4] net: sfp: add mandatory attach/detach
+ methods for sfp buses
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
 References: <20190520152134.qyka5t7c2i7drk4a@shell.armlinux.org.uk>
- <E1hSk73-0000vz-UE@rmk-PC.armlinux.org.uk>
+ <E1hSk79-0000w6-9j@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -110,12 +110,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <f09b6837-fdd1-b872-0534-b0edbc80da97@gmail.com>
-Date:   Mon, 20 May 2019 11:23:21 -0700
+Message-ID: <f01afe1d-3001-2e1f-15d8-d00c67ed4502@gmail.com>
+Date:   Mon, 20 May 2019 11:24:02 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <E1hSk73-0000vz-UE@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1hSk79-0000w6-9j@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -125,9 +125,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 5/20/19 8:22 AM, Russell King wrote:
-> Allow userspace to generate Clause 45 MII access cycles via phylib.
-> This is useful for tools such as mii-diag to be able to inspect Clause
-> 45 PHYs.
+> Add attach and detach methods for SFP buses, which will allow us to get
+> rid of the netdev storage in sfp-bus.
 > 
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
