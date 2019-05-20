@@ -2,115 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A911E23C96
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2519323C9D
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392379AbfETPxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 11:53:44 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:34523 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389246AbfETPxn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:53:43 -0400
-Received: by mail-pl1-f194.google.com with SMTP id w7so6929305plz.1
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 08:53:43 -0700 (PDT)
+        id S2388994AbfETPzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 11:55:36 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:35746 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388959AbfETPzg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:55:36 -0400
+Received: by mail-qk1-f193.google.com with SMTP id c15so9142314qkl.2
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 08:55:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LEDUdN4h7CJGbK0Ho7cpn+GdpkHhGHnX5CljcvGCU28=;
-        b=AknxJqb/SvO7MqGBjcbD3Q1MrhxlWuhNtNr6+if4RueqArvk0CaDdrnmY3fJWXn+PH
-         Wn2By67kwExDmGrJuxC7i7lAiu4aN/Gz2pM2idLEHGiK7GGtEYl6CHQSTNJ2IOnixVBQ
-         gWJsZCVndjFeXvUq19Aia0n/90IZ+u7MKhIOmjwui8Df4Ni1hlIGXOkJGeBC7890Rwhk
-         oOuYKiFBQEa/i/MJLlJnmhoxupX3/STPHXewb5RJVCG/c2kAlGdZE6eYl808/W+er2wV
-         N6R88Wh7JzsQBslYCC/s/0l9lWpc1RJmETX5OW7984KGJh242Z2qjx2xHDheH975Vv62
-         vN5w==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ON2YtlFsVLvgFwFlhXuoenRtE/RSH29xHhK5C/ojunw=;
+        b=utundO2y++gRgk5k4lTK2CLs52oXDmBHUxCI/s+Nu8kj9bdFLvWskR3yjl8oz5qx1F
+         cKOS1KWYvo4HlBHGl+48XRmQJ2ZuxYIp8fhWYatEr3zPUe1Ye1fQEeArBtGd0mp3ASJq
+         AyqfMtt4wT4FdalFh2rcFUq8J3fbNJa+oNIn9M8yHaHLhKLlf8OlbfAl1RiGEMXr4euH
+         nJ8mfJ+Ez08ywZwKolHM+EeLySNAYZCXjZ5iMCTqMNMbkWQIiHIoVIz6UVPUkAOJ4/JA
+         u5lc3KkDntzkptg9HXw8XcUtrTsCqhzoXUfXT/HlWYDEcY2o+MExxeKm3IMrinMEwvKd
+         VGUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LEDUdN4h7CJGbK0Ho7cpn+GdpkHhGHnX5CljcvGCU28=;
-        b=rW/qj3fB+BsK6duYkGUe56OnX9Q9bz5Wk7aab6usSLPubkiP5Tf3ecNQOadPnrN9Qz
-         T6cKkO3BtJHCYR5UR/zlhvouvzYVkCFxhnT+62qK8pH75iPM2UZwBghlgNDzifsUCXDb
-         dB6S/SVXNH5fB/WPBHfi6tBHJ8lew2q7xJTaYMBYWy1iOjvzt4A+Xr9tZPRwVwnp0nPM
-         pjVJ46XMkGkUyAjmnqcNrSW6jsqIcA+mX0R0YUJ7RBr6HlUqU5qU0Ih/GFuoeO8p+QaY
-         DjspLBR/wYlWRZKG1BfkTPL9XZgB/y+zsfNsSlrVkMPRtE5se3B7aSTasiP3fbapsFGt
-         LZAw==
-X-Gm-Message-State: APjAAAWVRUtRhjhDb7AtnNAGQdaN+v6oZiHcDoAmCjSzrqOlA2Vw4Kh2
-        TyTltq/WnaCch8pjhZPbatiz8A==
-X-Google-Smtp-Source: APXvYqyh4/B+y5Lf+Lfk4HdOTVWT/2Awv4SRzSG/urGvGWOvhpdahEasiW01kKZGNmwbPY01L+UzvQ==
-X-Received: by 2002:a17:902:6a83:: with SMTP id n3mr77206034plk.109.1558367622948;
-        Mon, 20 May 2019 08:53:42 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id f5sm19798150pfn.161.2019.05.20.08.53.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 May 2019 08:53:42 -0700 (PDT)
-Date:   Mon, 20 May 2019 08:53:40 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        xdp-newbies@vger.kernel.org, bpf@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v2 net 2/2] net: core: generic XDP support for stacked
- device
-Message-ID: <20190520085340.4f44ac8b@hermes.lan>
-In-Reply-To: <20190520091105.GA2142@nanopsycho>
-References: <20190519031046.4049-1-sthemmin@microsoft.com>
-        <20190519031046.4049-3-sthemmin@microsoft.com>
-        <20190520091105.GA2142@nanopsycho>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ON2YtlFsVLvgFwFlhXuoenRtE/RSH29xHhK5C/ojunw=;
+        b=mSowg1cy1rRx7lBTa+LAUm9lXtBX3eW5T/3UwNQvY/Ko50aDArJ1a81WfBeD/CfiuQ
+         fWMpcHMyXx4op3MXZRKDH1yprMLhJ4DwCDJqT3H2uVhdvSoeZTNSKybCQ1+sqrq2qkl+
+         v/GL8ERxcTYexPLdy2biqm3r5CmfA0isoBrFRnd/DXcenxLoopWrJC8dF73r4CrpVEKp
+         dmUo43HZT3iklREWfevErS4qf5eAcO3M7jLDzk6R3LGg2P/u+/W4Yf3pqfZANGDgJfsx
+         cbNGkoO9dVFAWR3f7EuGky8+HoB6Y8IJdWBjyuFoVmHcrm5Y7SwcbhbamrclzJP0QrYH
+         MNTg==
+X-Gm-Message-State: APjAAAXHg5jSp9/c/LZuVMeY54/5pRldY787v8a31m98a8mqncXLgRJT
+        JnQmn2K/oq6F5p3GhOaS61UnGA==
+X-Google-Smtp-Source: APXvYqwuXOMd4+//M/atmzuW1kiCEgLrrjTc7tt04tFFJAPLBYDT/jk0Azq6dl8c3hHfdReyQqzscA==
+X-Received: by 2002:a05:620a:12b9:: with SMTP id x25mr58210847qki.248.1558367735145;
+        Mon, 20 May 2019 08:55:35 -0700 (PDT)
+Received: from [192.168.0.124] (24-212-162-241.cable.teksavvy.com. [24.212.162.241])
+        by smtp.googlemail.com with ESMTPSA id s12sm8704685qkm.38.2019.05.20.08.55.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 20 May 2019 08:55:34 -0700 (PDT)
+Subject: Re: [RFC PATCH v2 net-next 2/3] flow_offload: restore ability to
+ collect separate stats per action
+To:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Amritha Nambiar <amritha.nambiar@intel.com>
+References: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
+ <b4a13b86-ae18-0801-249a-2831ec08c44c@solarflare.com>
+ <49016cd0-c1c3-2bd7-d807-2b2039e12fa3@mojatatu.com>
+ <9790c274-445c-d3d6-a9eb-349af4103937@solarflare.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <146f15e6-402f-63ac-5e7d-98e7c6da9ea6@mojatatu.com>
+Date:   Mon, 20 May 2019 11:55:33 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <9790c274-445c-d3d6-a9eb-349af4103937@solarflare.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 May 2019 11:11:05 +0200
-Jiri Pirko <jiri@resnulli.us> wrote:
+On 2019-05-20 11:46 a.m., Edward Cree wrote:
 
-> Sun, May 19, 2019 at 05:10:46AM CEST, stephen@networkplumber.org wrote:
-> >When a device is stacked like (team, bonding, failsafe or netvsc) the
-> >XDP generic program for the parent device is not called.  In these
-> >cases, the rx handler changes skb->dev to its own in the receive
-> >handler, and returns RX_HANDLER_ANOTHER.  Fix this by calling
-> >do_xdp_generic if necessary before starting another round.
-> >
-> >Review of all the places RX_HANDLER_ANOTHER is returned
-> >show that the current devices do correctly change skb->dev.
-> >
-> >There was an older patch that got abandoned that did the
-> >same thing, this is just a rewrite.
-> >
-> >Suggested-by: Jason Wang <jasowang@redhat.com>
-> >Fixes: d445516966dc ("net: xdp: support xdp generic on virtual devices")
-> >Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
-> >Acked-by: Jason Wang <jasowang@redhat.com>
-> >---
+> I can't see anything stats-offload related in net/sched/cls_u32.c (just
+>   SW stats dumping in u32_dump()) and it doesn't call
+>   tcf_exts_stats_update() either.  Looking through ixgbe code I also
+>   don't see any sign there of stats gathering for offloaded u32 rules.
 
-> I'm always scarred of changes like this. The history tells us that this
-> codepaths are very fragile. It took us non-trivial efford to fix bonding
-> here, not to mention vlans (that was pain).
-> 
-> The reason for troubles was often fact that different flows were treated
-> differently (vlan accel/non-accel).
+Will look into into (also Cc some of the intel folks). I was sure I
+have seen at least the flow stats updating when i last used it
+to offload. They may be using a different path.
 
-Yes, this is a sensitive path. Another alternative is to fix it
-inside each device (netvsc). That is what my earlier patch did and that
-is what is being done now (probably will make it into the RHEL on Azure
-drivers).
- 
-> This patch calls do_xdp_generic for master device in different point in
-> the receive patch comparing to lower device. Would it be possible to
-> unify this? E.g. by moving do_xdp_generice() call from
-> netif_rx_internal()/netif_receive_skb_internal() here,
-> to the beginning of __netif_receive_skb_core()?
-> 
-
-That could work, but has the question about doing XDP farther down
-call stack (lower performance).
-
-There is also the case what if both paths support XDP in driver.
-This would be the ideal case, how would this work?
-
-
+cheers,
+jamal
