@@ -2,121 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F4C822F71
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 10:55:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80DFF22F8D
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 10:58:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731649AbfETIzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 04:55:18 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:46595 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731576AbfETIzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 04:55:18 -0400
-Received: by mail-ed1-f65.google.com with SMTP id f37so22607701edb.13
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 01:55:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vFTt0M6+AyIysvwKwIils2X+lM/meF2sxJjj46Wd1sg=;
-        b=B8xJgG9Mfe/9MxL0HtY4ca/tirLNmh0C9lj/ex3fDZnQ/Z3N+iZcFmu5S4eMsAkmPs
-         9RAJQWBHGH5GhRDnKoHem++eVfSdl+KDJPtcw1herR9fhhgxrP2D3m+xKdRfMPEMMJ84
-         JjtKJ6FHMv3vFq5XsnkSq3Esh6InwnFnUWBaI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vFTt0M6+AyIysvwKwIils2X+lM/meF2sxJjj46Wd1sg=;
-        b=i2TRBZ5BXwaA4mIgZ2q4ad8urwUIvmdgo23vpouH/GWzls1pS3hvxmksq6ylTjWdVB
-         GfX0sylsj/utg3EnNT221SMaUfma9NEsZ4rv8KChE/a5GoTZYIUIr61LkywhgRukFmvu
-         c5T8U0mMyMRBbzDwkIVBirORh4i74TTFlk6RjeFxKpbi+9MKkjnzHNU5ffFSZSy3LHD9
-         Cg9MrWt37K05fHwa+NtWJSjNfy98sIE6VCnGrnm/GniLVtVjAvGjbS/4ImnOnnXYrZhB
-         DELwnhyrhFmbxTvUBnGda1miApzn4Oa3McOM8sV6tAlTTqP5XchG1QIKun8Q8N3E065A
-         vZeA==
-X-Gm-Message-State: APjAAAVrgKRY4S8W6UWE+xBj26vTBDusO9ujSwfQVVhvbkTeZtiv9Gss
-        aSFnwiItp1iiM6R0zw1LcLtGoA==
-X-Google-Smtp-Source: APXvYqx4flRS6cM748otmtPJ0wEKEab4DlGo6iNP+Fai8ttXEGXbq+CZSmv1FMlVMKWOwJno0wfUnA==
-X-Received: by 2002:a50:aef6:: with SMTP id f51mr73838766edd.225.1558342516174;
-        Mon, 20 May 2019 01:55:16 -0700 (PDT)
-Received: from [10.176.68.125] ([192.19.248.250])
-        by smtp.gmail.com with ESMTPSA id g30sm5412048edg.57.2019.05.20.01.55.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 01:55:15 -0700 (PDT)
-Subject: Re: [PATCH 0/3] brcmfmac: sdio: Deal better w/ transmission errors
- waking from sleep
-To:     Douglas Anderson <dianders@chromium.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Adrian Hunter <adrian.hunter@intel.com>
-Cc:     linux-rockchip@lists.infradead.org,
-        Double Lo <double.lo@cypress.com>, briannorris@chromium.org,
-        Madhan Mohan R <madhanmohan.r@cypress.com>, mka@chromium.org,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        linux-mmc@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>,
-        brcm80211-dev-list@cypress.com, YueHaibing <yuehaibing@huawei.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Martin Hicks <mort@bork.org>,
-        Ritesh Harjani <riteshh@codeaurora.org>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Jiong Wu <lohengrin1024@gmail.com>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        Avri Altman <avri.altman@wdc.com>
-References: <20190517225420.176893-1-dianders@chromium.org>
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <8c3fa57a-3843-947c-ec6b-a6144ccde1e9@broadcom.com>
-Date:   Mon, 20 May 2019 10:55:12 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1731708AbfETI5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 04:57:47 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40668 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731080AbfETI5r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 May 2019 04:57:47 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8B11D307D90F;
+        Mon, 20 May 2019 08:57:38 +0000 (UTC)
+Received: from localhost (unknown [10.36.118.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 00EB75D719;
+        Mon, 20 May 2019 08:57:32 +0000 (UTC)
+Date:   Mon, 20 May 2019 09:57:31 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>
+Subject: Re: [PATCH v2 1/8] vsock/virtio: limit the memory used per-socket
+Message-ID: <20190520085731.GA22546@stefanha-x1.localdomain>
+References: <20190510125843.95587-1-sgarzare@redhat.com>
+ <20190510125843.95587-2-sgarzare@redhat.com>
+ <20190516152533.GB29808@stefanha-x1.localdomain>
+ <20190517082505.ibjkuh7zibumen77@steredhat>
 MIME-Version: 1.0
-In-Reply-To: <20190517225420.176893-1-dianders@chromium.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wRRV7LY7NUeQGEoC"
+Content-Disposition: inline
+In-Reply-To: <20190517082505.ibjkuh7zibumen77@steredhat>
+User-Agent: Mutt/1.11.4 (2019-03-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Mon, 20 May 2019 08:57:46 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/18/2019 12:54 AM, Douglas Anderson wrote:
-> This series attempts to deal better with the expected transmission
-> errors that we get when waking up the SDIO-based WiFi on
-> rk3288-veyron-minnie, rk3288-veyron-speedy, and rk3288-veyron-mickey.
-> 
-> Some details about those errors can be found in
-> <https://crbug.com/960222>, but to summarize it here: if we try to
-> send the wakeup command to the WiFi card at the same time it has
-> decided to wake up itself then it will behave badly on the SDIO bus.
-> This can cause timeouts or CRC errors.
-> 
-> When I tested on 4.19 and 4.20 these CRC errors can be seen to cause
-> re-tuning.  Since I am currently developing on 4.19 this was the
-> original problem I attempted to solve.
-> 
-> On mainline it turns out that you don't see the retuning errors but
-> you see tons of spam about timeouts trying to wakeup from sleep.  I
-> tracked down the commit that was causing that and have partially
-> reverted it here.  I have no real knowledge about Broadcom WiFi, but
-> the commit that was causing problems sounds (from the descriptioin) to
-> be a hack commit penalizing all Broadcom WiFi users because of a bug
-> in a Cypress SD controller.  I will let others comment if this is
-> truly the case and, if so, what the right solution should be.
 
-Let me give a bit of background. The brcmfmac driver implements its own 
-runtime-pm like functionality, ie. if the driver is idle for some time 
-it will put the device in a low-power state. When it does that it powers 
-down several cores in the chip among which the SDIO core. However, the 
-SDIO bus used be very bad at handling devices that do that so instead it 
-has the Always-On-Station (AOS) block take over the SDIO core in 
-handling the bus. Default is will send a R1 response, but only for CMD52 
-(and CMD14 but no host is using that cruft). In noCmdDecode it does not 
-respond and simply wakes up the SDIO core, which takes over again. 
-Because it does not respond timeouts (-110) are kinda expected in this mode.
+--wRRV7LY7NUeQGEoC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Regards,
-Arend
+On Fri, May 17, 2019 at 10:25:05AM +0200, Stefano Garzarella wrote:
+> On Thu, May 16, 2019 at 04:25:33PM +0100, Stefan Hajnoczi wrote:
+> > On Fri, May 10, 2019 at 02:58:36PM +0200, Stefano Garzarella wrote:
+> > > +static struct virtio_vsock_buf *
+> > > +virtio_transport_alloc_buf(struct virtio_vsock_pkt *pkt, bool zero_c=
+opy)
+> > > +{
+> > > +	struct virtio_vsock_buf *buf;
+> > > +
+> > > +	if (pkt->len =3D=3D 0)
+> > > +		return NULL;
+> > > +
+> > > +	buf =3D kzalloc(sizeof(*buf), GFP_KERNEL);
+> > > +	if (!buf)
+> > > +		return NULL;
+> > > +
+> > > +	/* If the buffer in the virtio_vsock_pkt is full, we can move it to
+> > > +	 * the new virtio_vsock_buf avoiding the copy, because we are sure =
+that
+> > > +	 * we are not use more memory than that counted by the credit mecha=
+nism.
+> > > +	 */
+> > > +	if (zero_copy && pkt->len =3D=3D pkt->buf_len) {
+> > > +		buf->addr =3D pkt->buf;
+> > > +		pkt->buf =3D NULL;
+> > > +	} else {
+> > > +		buf->addr =3D kmalloc(pkt->len, GFP_KERNEL);
+> >=20
+> > buf and buf->addr could be allocated in a single call, though I'm not
+> > sure how big an optimization this is.
+> >=20
+>=20
+> IIUC, in the case of zero-copy I should allocate only the buf,
+> otherwise I should allocate both buf and buf->addr in a single call
+> when I'm doing a full-copy.
+>=20
+> Is it correct?
+
+Yes, but it's your choice whether optimization is worthwhile.  If it
+increases the complexity of the code and doesn't result in a measurable
+improvement, then it's not worth it.
+
+Stefan
+
+--wRRV7LY7NUeQGEoC
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAlzia/sACgkQnKSrs4Gr
+c8j8/Qf+NOeZJ2tO8MN+lVvjuwE3gShPAFPc2joqHrqQkZPrfOMHyxNPWBjmd06G
+mJaov5ZMGAQQdvkkJatcCbnrnV2IuYLbZyGpfQAGrjVZ4S5RtU8/2VpksfxRJNDV
+KrRPS/HoPQrDfJcMnsRxXSpf0dFcG/WptgKFMOlzLPAKiwWZ62dpc/m8ghrHXbzz
+/x/TaT4NA9m4S3NwFqZYq/kTQwiXtrSU40sPo/QGk6Wn5o4sTcgNDEveJK3KsLI+
+p8KQrt7muGMn9FbRrLjwq2VytiLXksXrdFAeWugUon0qEkmxaKiUSNvbgof0/qi3
+4DwGQi4FYh6hvSyjckKOVP/y/F8jSg==
+=1IhX
+-----END PGP SIGNATURE-----
+
+--wRRV7LY7NUeQGEoC--
