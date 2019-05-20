@@ -2,89 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D1CF23DFB
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 19:03:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6AA423E03
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 19:05:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390330AbfETRDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 13:03:30 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46964 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390006AbfETRDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 13:03:30 -0400
-Received: by mail-pg1-f193.google.com with SMTP id t187so7053519pgb.13
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 10:03:30 -0700 (PDT)
+        id S2392713AbfETRFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 13:05:38 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41759 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390006AbfETRFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 13:05:38 -0400
+Received: by mail-ed1-f68.google.com with SMTP id m4so24908908edd.8;
+        Mon, 20 May 2019 10:05:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=x8ttiJZRDFEXEXr3dvnIQip5we4nIXnwRMovXRxRh7U=;
-        b=pASffhFBDpb//4tW1cU1pgZYxu3HPsJ/CtgRGQXCWM6mVdCjviLkqd7NL5ATzIUxM1
-         T7oC6uwbxA9Bw3oF8EUgoOx3lSmfFPRsEXM4Qe001VTkxxvPfVheOn0h/R6/DYiuORoz
-         +Ae39uBYKcAIliYymLdeFpu+GivRuSnwDFBcp/kk7NLFesyBsJMUF9iY0R1M5GlXDcuw
-         MTvS9RAzx/XKpldmQk0XEv7tyL/KuMkWflWIk0eMV22sTAuAyJcP0sssHG0+AY94XtYn
-         3QqqfCUw29iXorolhixWKCt2SiK3x+Ja4cYNBuZPZnBbsCLlvQufHkz2LoPPWSEx90hg
-         FMvg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OXzVLW5EpqxY+BN5u1Vsu4+duiB4QcdQ8sWM4u2JA90=;
+        b=Gwww3aaU7y7zOHYkwmwbAcjKvlfAz1HeiKD4eRIU+qd+YGOBBI56iOegMUzaDNtS5/
+         tPdvuZ3Z+U/Io2cAZF/KT1/OhZRlGWqAePyYuoxibxy28XmvUa0kxOgh6T7RgglrPGjG
+         ZOKjTrS7GzJ1yAFQpgUYCNziSE6qCu4+dCczcnc1f4vXlrCz3tDiJHEuCa6rIN/99t2I
+         2Pq2mxvREq1171PWoBo8NTGIKLqwoZ3Lt1isLRShBUuSm1ly6sTpJ4yizWr0I6UQ6qTO
+         J2PEj3xurmc1ZCYOa9ndBgma1FoXnWlh222pMhCthpz+2QI8/Ih09tLUTXyodLk3h/vF
+         hmxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=x8ttiJZRDFEXEXr3dvnIQip5we4nIXnwRMovXRxRh7U=;
-        b=keV/Mbkgn89LbDeYozc0McPiaYlK/sTtXc258F3tZnGybmckZDlLV1pu9iUxoiRt+r
-         xEIoynAn+YpFR0e87e25ppH5uhKJqtYpGDZDbih3vvoGeJKjZF9MKzec2+oF/wLSZqux
-         mjx4CJUv0dTmKQM6U8/LK6Kf0uR++wOJy9mLr+7nhJa+eN2crCIFa1a+3h7Bv3og/Ev4
-         KknvqEu8zsjQQ7nqcKa9Nc6vg2q7Qf4S847/E5mL7bhglK15DkirZWGYUVKRfctI6Oyv
-         HSzYzSMpmB/iDR3X+kqTcpcoPuYtUHKI1C3FJ/4aXqKNqh0rI1pHekyCA+tD3agtjHUp
-         Ju2g==
-X-Gm-Message-State: APjAAAVbfj7kb6nGRVVb+AD5qcs2EcFxVixchY5Ea/sURsbTi8FCwgc8
-        2puzun0GpfRxy7a2s+ztwLvMVair7mc=
-X-Google-Smtp-Source: APXvYqwcLNWSh73q8yvFMy+xsBsWeQXPr81v/rq17eTkrcq7pwW1fAe5Lz8cxkrPp5Zm+Lawm/zufg==
-X-Received: by 2002:a63:8b4b:: with SMTP id j72mr76374031pge.318.1558371809586;
-        Mon, 20 May 2019 10:03:29 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id y13sm23435729pfb.143.2019.05.20.10.03.29
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 May 2019 10:03:29 -0700 (PDT)
-Date:   Mon, 20 May 2019 10:03:22 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
-        Phil Sutter <phil@nwl.cc>
-Subject: Re: [PATCH iproute2 net-next] ip: add a new parameter -Numeric
-Message-ID: <20190520100322.2276a76d@hermes.lan>
-In-Reply-To: <4e2e8ba7-7c80-4d35-9255-c6dac47df4e7@gmail.com>
-References: <20190520075648.15882-1-liuhangbin@gmail.com>
-        <4e2e8ba7-7c80-4d35-9255-c6dac47df4e7@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OXzVLW5EpqxY+BN5u1Vsu4+duiB4QcdQ8sWM4u2JA90=;
+        b=YlvnNKFUM0nntVAKwUzpk1j8ANkdMn1/Lpx2t0skSJk/sMxDKfa0+fEzxmAEC1vQi5
+         ofuiQJapCuaCNG1KGaHtIb/haCBFzel0UC6cJ3H38VEutmIXyJlVQME+qJFrv3+4y87v
+         yflTHPYsS9rrPZqJWajCSUIa8RvGKe2uywsLeiYiZyq1xRD973gZr90wxluO89LxG2fd
+         9T/ceLM7YebJjoVC3tXniLkqIY93Zx2Ln3RFmm2JU5/vAg7j2RSrBL6Xo3nuSNG22RSO
+         Kbk/m2uGZgPhHujDJTxtvVCqF8tN2g2aX8v9XkPmiNCQGXE24uAVy4vJ8DscZEk6s6ad
+         9wmQ==
+X-Gm-Message-State: APjAAAWLGLdsWW+eKUwTqsVgxCDioulOB9fMAysGdme2QS4Ce+pm1KuP
+        3XyzkQRIxYxxOy4b+W6gZayVWQveITjDzZrPdOo=
+X-Google-Smtp-Source: APXvYqwAWYjUqNwga3IGqyvDXRz6Ayeuvbmx8E0yma/gdydaSLC2gGlrdIps5FN3Mr4TU31/EVCepxajOSqZgABdl9g=
+X-Received: by 2002:a50:9968:: with SMTP id l37mr76248294edb.143.1558371936408;
+ Mon, 20 May 2019 10:05:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190520093157.59825-1-anirudh.gupta@sophos.com> <20190520153219.oq3se5wvkasgbtkp@gondor.apana.org.au>
+In-Reply-To: <20190520153219.oq3se5wvkasgbtkp@gondor.apana.org.au>
+From:   Anirudh Gupta <anirudhrudr@gmail.com>
+Date:   Mon, 20 May 2019 22:35:24 +0530
+Message-ID: <CAN2cbVc3bbEcDB87S4UpySnMtC7oi40bWPK8bd4wW_nv5qEDJg@mail.gmail.com>
+Subject: Re: [PATCH net] xfrm: Fix xfrm sel prefix length validation
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Anirudh Gupta <anirudh.gupta@sophos.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 May 2019 09:18:08 -0600
-David Ahern <dsahern@gmail.com> wrote:
+Hi Herbert,
+Yes, I notice that is the only verification of p->family from userspace.
+However, the underlying conditions added in commit '07bf7908950a',
+validates the selector src/dest prefix len.
 
-> On 5/20/19 1:56 AM, Hangbin Liu wrote:
-> > When calles rtnl_dsfield_n2a(), we get the dsfield name from
-> > /etc/iproute2/rt_dsfield. But different distribution may have
-> > different names. So add a new parameter '-Numeric' to only show
-> > the dsfield number.
-> > 
-> > This parameter is only used for tos value at present. We could enable
-> > this for other fields if needed in the future.
-> > 
-> 
-> It does not make sense to add this flag just for 1 field.
-> 
-> 3 years ago I started a patch to apply this across the board. never
-> finished it. see attached. The numeric variable should be moved to
-> lib/rt_names.c. It handles all of the conversions in that file - at
-> least as of May 2016.
+So, In case when adding a new SA entry, the family of Selector src/dst
+is IPv6 and state id src/dst family is IPv4.
+Then, the IPv6 selector prefix verification falls in IPv4 switch case.
+This results in not being able to provide prefix length of more than
+32, even for IPv6 src/dst.
+
+The above mentioned behaviour can easily be reproduced using below
+command having IPv6 selector src/dst with greater than 32 prefix
+length.
+ip xfrm state add src 1.1.6.1 dst 1.1.6.2 proto esp spi 4260196 \
+reqid 20004 mode tunnel aead "rfc4106(gcm(aes))" \
+0x1111016400000000000000000000000044440001 128 \
+sel src 1011:1:4::2/128 sel dst 1021:1:4::2/128 dev Port5
+
+Please let me know, if I fail to explain my point or I am overlooking anything.
+
+Thanks & Regards,
+Anirudh
 
 
-Agree, if you are going to do it, go all in.
-Handle all types and in same manner for ip, tc, bridge, and devlink.
-ss already has -numeric option.
+On Mon, May 20, 2019 at 9:02 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> On Mon, May 20, 2019 at 03:01:56PM +0530, Anirudh Gupta wrote:
+> >
+> > diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+> > index eb8d14389601..fc2a8c08091b 100644
+> > --- a/net/xfrm/xfrm_user.c
+> > +++ b/net/xfrm/xfrm_user.c
+> > @@ -149,7 +149,7 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
+> >       int err;
+> >
+> >       err = -EINVAL;
+> > -     switch (p->family) {
+> > +     switch (p->sel.family) {
+> >       case AF_INET:
+> >               if (p->sel.prefixlen_d > 32 || p->sel.prefixlen_s > 32)
+> >                       goto out;
+>
+> You just removed the only verification of p->family...
+> --
+> Email: Herbert Xu <herbert@gondor.apana.org.au>
+> Home Page: http://gondor.apana.org.au/~herbert/
+> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
 
-Wish that -n wasn't used for netns, should have been -N...
+
+
+-- 
+Regards
+
+Anirudh Gupta
