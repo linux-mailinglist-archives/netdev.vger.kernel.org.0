@@ -2,70 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44E8D230D2
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 11:58:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 022C623141
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 12:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730039AbfETJ6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 05:58:12 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:38862 "EHLO mx1.redhat.com"
+        id S1730795AbfETKY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 06:24:28 -0400
+Received: from orbyte.nwl.cc ([151.80.46.58]:35158 "EHLO orbyte.nwl.cc"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725951AbfETJ6M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 May 2019 05:58:12 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 4D2EF356E7;
-        Mon, 20 May 2019 09:58:12 +0000 (UTC)
-Received: from localhost.localdomain.com (unknown [10.32.181.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 53B4561D0E;
-        Mon, 20 May 2019 09:58:11 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     stephen@networkplumber.org, netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@mellanox.com>, Phil Sutter <phil@nwl.cc>
-Subject: [PATCH iproute2 v2] m_mirred: don't bail if the control action is missing
-Date:   Mon, 20 May 2019 11:56:52 +0200
-Message-Id: <fb92be6e671450d181f552c883feae849f840283.1558345901.git.pabeni@redhat.com>
+        id S1727108AbfETKY2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 May 2019 06:24:28 -0400
+Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.91)
+        (envelope-from <n0-1@orbyte.nwl.cc>)
+        id 1hSfT0-0007Ka-4K; Mon, 20 May 2019 12:24:26 +0200
+Date:   Mon, 20 May 2019 12:24:26 +0200
+From:   Phil Sutter <phil@nwl.cc>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH iproute2 net-next] ip: add a new parameter -Numeric
+Message-ID: <20190520102426.GM4851@orbyte.nwl.cc>
+Mail-Followup-To: Phil Sutter <phil@nwl.cc>,
+        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+References: <20190520075648.15882-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Mon, 20 May 2019 09:58:12 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190520075648.15882-1-liuhangbin@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mirred act admits an optional control action, defaulting
-to TC_ACT_PIPE. The parsing code currently emits an error message
-if the control action is not provided on the command line, even
-if the command itself completes with no error.
+Hi,
 
-This change shuts down the error message, using the appropriate
-parsing helper.
+On Mon, May 20, 2019 at 03:56:48PM +0800, Hangbin Liu wrote:
+> When calles rtnl_dsfield_n2a(), we get the dsfield name from
+> /etc/iproute2/rt_dsfield. But different distribution may have
+> different names. So add a new parameter '-Numeric' to only show
+> the dsfield number.
+> 
+> This parameter is only used for tos value at present. We could enable
+> this for other fields if needed in the future.
 
-Fixes: e67aba559581 ("tc: actions: add helpers to parse and print control actions")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
-v1 -> v2:
- - add missing recipients, sorry for the unneeded duplicates to
-   the initial, partial list
----
- tc/m_mirred.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Rationale is to ensure expected output irrespective of host
+configuration, especially in test scripts. Concrete example motivating
+this patch was net/fib_rule_tests.sh in kernel self-tests.
 
-diff --git a/tc/m_mirred.c b/tc/m_mirred.c
-index c7f7318b..23ba638a 100644
---- a/tc/m_mirred.c
-+++ b/tc/m_mirred.c
-@@ -202,7 +202,8 @@ parse_direction(struct action_util *a, int *argc_p, char ***argv_p,
- 
- 
- 	if (p.eaction == TCA_EGRESS_MIRROR || p.eaction == TCA_INGRESS_MIRROR)
--		parse_action_control(&argc, &argv, &p.action, false);
-+		parse_action_control_dflt(&argc, &argv, &p.action, false,
-+					  TC_ACT_PIPE);
- 
- 	if (argc) {
- 		if (iok && matches(*argv, "index") == 0) {
--- 
-2.20.1
+> Suggested-by: Phil Sutter <phil@nwl.cc>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
+Acked-by: Phil Sutter <phil@nwl.cc>
+
+Thanks for doing this, Hangbin!
+
+Phil
