@@ -2,114 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D37FF22FF0
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 11:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FFE023066
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 11:33:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731937AbfETJLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 05:11:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36816 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731095AbfETJLe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 May 2019 05:11:34 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CC74420656;
-        Mon, 20 May 2019 09:11:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558343494;
-        bh=U76uCPWwkjAlQMoQuk81T5lqeD1YoluVf7Go70H7KkY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RVY8Ip1ZIHJa47llpQIR+xlhZFIjFM2mNqU7bQOaQCZKKmr0HZdum/SK2Ufw9j+N5
-         haRFjmJW2ZHWFyjvr9ABoHwQBGKA8ZCvG5A/7WjMFZSnzObB2AtBY/VIwBGeg8QNzv
-         16GBOD3fLTHAClbFFk6ZinGouARHnBWxm2nl6RmQ=
-Date:   Mon, 20 May 2019 11:11:31 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Thomas Haller <thaller@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH 4.9 41/51] fib_rules: return 0 directly if an exactly
- same rule exists when NLM_F_EXCL not supplied
-Message-ID: <20190520091131.GA1593@kroah.com>
-References: <20190515090616.669619870@linuxfoundation.org>
- <20190515090628.066392616@linuxfoundation.org>
- <20190519154348.GA113991@archlinux-epyc>
- <a36e3204-b52d-0bf0-f956-654189a18156@gmail.com>
- <20190520090429.GA25812@kroah.com>
+        id S1732206AbfETJdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 05:33:03 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:40483 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729030AbfETJdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 05:33:03 -0400
+Received: by mail-pg1-f196.google.com with SMTP id d30so6518566pgm.7;
+        Mon, 20 May 2019 02:33:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BikJ1LqRGkhlGlmQU7THI1KaCDjHN3UGQHGSJZ6WA6g=;
+        b=J3MG2YP03SsO1qXFGAn18jiLeOIAZKbuUAmVf8TReg9hr8zgctqHFzViHxpq2gC0tY
+         36pvwXRsbT/4UCMYRnfO9qEMu11ogdiZyszY6xfl3EHJV1shVwKI3pjY3PX2Pl8XcrP+
+         6GPs3ujoS6y+08+8yvK9RK8grOWM9nQL4l4ywllQFmpkpn9rtiCIBAZZiA3PkN/m2rFM
+         j4gyCECQkqM2GMKeRoAlBs2GBWjSrflpZZowYoiSQQ0fXdEtVfZuYLNEFrtzmPI3neUC
+         JWVtug+EtI3GGNZxDbIyyx2rict/Oe5SDrtO/WqbAQ9r7fUxfXeghj8S50Un3VkAkohX
+         3ZGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BikJ1LqRGkhlGlmQU7THI1KaCDjHN3UGQHGSJZ6WA6g=;
+        b=gE/ugULGr0JlST60PrqpdNAGoRrIIUSa0+A5qiYagqJxBjLc7UFFMOjxYDxhkAXQwI
+         KftenFbMSXzvvuxmFjqcleY6oWfPaa+BQnInbDpGMm3N+DVtO4s8HP5+bo5kceaXflZF
+         udQRNJa627W/xpKXGm/8C+s+Qca4zwgERyXl70gB2RsZEW7XyawxMYHR3YAABTYYLhAO
+         XxSY2zZZ6NiJG+Ht3jtuf2lqRxpIQpHmr/YFpTD3EaLRxuTApIJKfnRNXKP8zjp7q3FS
+         W40y0F4IA6grSVSyJsAnCgJzQ3OuPlOtTJAG5PRYkULD/D/y0lWTcAbwMEybIplzvE9m
+         49EA==
+X-Gm-Message-State: APjAAAXotKEhBuUB/+abobMbUVRbL0Pmrx++ryXnbpD12XuqU9q7Z8Gj
+        jdt/wg0x1GV/AN5xTMU6ccQRhLpYp0w=
+X-Google-Smtp-Source: APXvYqyzIU/ujLG3HBRbWQPkBok00jmmEnwQ4j4xgXmrKgCz7JSxOX/jz1RzDyLA8VSktbRK+5tsuw==
+X-Received: by 2002:a63:d016:: with SMTP id z22mr75145505pgf.116.1558344782769;
+        Mon, 20 May 2019 02:33:02 -0700 (PDT)
+Received: from localhost.localdomain ([27.61.168.215])
+        by smtp.googlemail.com with ESMTPSA id f36sm17649707pgb.76.2019.05.20.02.32.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 20 May 2019 02:33:02 -0700 (PDT)
+From:   Anirudh Gupta <anirudhrudr@gmail.com>
+X-Google-Original-From: Anirudh Gupta <anirudh.gupta@sophos.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Anirudh Gupta <anirudh.gupta@sophos.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] xfrm: Fix xfrm sel prefix length validation
+Date:   Mon, 20 May 2019 15:01:56 +0530
+Message-Id: <20190520093157.59825-1-anirudh.gupta@sophos.com>
+X-Mailer: git-send-email 2.19.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190520090429.GA25812@kroah.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 20, 2019 at 11:04:29AM +0200, Greg Kroah-Hartman wrote:
-> On Sun, May 19, 2019 at 06:29:19PM -0600, David Ahern wrote:
-> > On 5/19/19 9:43 AM, Nathan Chancellor wrote:
-> > > Hi all,
-> > > 
-> > > This commit is causing issues on Android devices when Wi-Fi and mobile
-> > > data are both enabled. The device will do a soft reboot consistently.
-> > > So far, I've had reports on the Pixel 3 XL, OnePlus 6, Pocophone, and
-> > > Note 9 and I can reproduce on my OnePlus 6.
-> > > 
-> > > Sorry for taking so long to report this, I just figured out how to
-> > > reproduce it today and I didn't want to report it without that.
-> > > 
-> > > Attached is a full dmesg and the relevant snippet from Android's logcat.
-> > > 
-> > > Let me know what I can do to help debug,
-> > > Nathan
-> > > 
-> > 
-> > It's a backport problem. err needs to be reset to 0 before the goto.
-> 
-> Ah, I see it, let me go queue up a fix for this.
+Family of src/dst can be different from family of selector src/dst.
+Use xfrm selector family to validate address prefix length,
+while verifying new sa from userspace.
 
-Here's the fix I'm queueing up now:
+Validated patch with this command:
+ip xfrm state add src 1.1.6.1 dst 1.1.6.2 proto esp spi 4260196 \
+reqid 20004 mode tunnel aead "rfc4106(gcm(aes))" \
+0x1111016400000000000000000000000044440001 128 \
+sel src 1011:1:4::2/128 sel dst 1021:1:4::2/128 dev Port5
 
-
-From b42f0ebbe4431ff7ce99c916555418f4a4c2be67 Mon Sep 17 00:00:00 2001
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Mon, 20 May 2019 11:07:29 +0200
-Subject: [PATCH] fib_rules: fix error in backport of e9919a24d302 ("fib_rules:
- return 0...")
-
-When commit e9919a24d302 ("fib_rules: return 0 directly if an exactly
-same rule exists when NLM_F_EXCL not supplied") was backported to 4.9.y,
-it changed the logic a bit as err should have been reset before exiting
-the test, like it happens in the original logic.
-
-If this is not set, errors happen :(
-
-Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-Reported-by: David Ahern <dsahern@gmail.com>
-Reported-by: Florian Westphal <fw@strlen.de>
-Cc: Hangbin Liu <liuhangbin@gmail.com>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 07bf7908950a ("xfrm: Validate address prefix lengths in the xfrm selector.")
+Signed-off-by: Anirudh Gupta <anirudh.gupta@sophos.com>
 ---
- net/core/fib_rules.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/xfrm/xfrm_user.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
-index bb26457e8c21..c03dd2104d33 100644
---- a/net/core/fib_rules.c
-+++ b/net/core/fib_rules.c
-@@ -430,6 +430,7 @@ int fib_nl_newrule(struct sk_buff *skb, struct nlmsghdr *nlh)
- 		goto errout_free;
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index eb8d14389601..fc2a8c08091b 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -149,7 +149,7 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
+ 	int err;
  
- 	if (rule_exists(ops, frh, tb, rule)) {
-+		err = 0;
- 		if (nlh->nlmsg_flags & NLM_F_EXCL)
- 			err = -EEXIST;
- 		goto errout_free;
+ 	err = -EINVAL;
+-	switch (p->family) {
++	switch (p->sel.family) {
+ 	case AF_INET:
+ 		if (p->sel.prefixlen_d > 32 || p->sel.prefixlen_s > 32)
+ 			goto out;
 -- 
-2.21.0
+2.19.0
 
