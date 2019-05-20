@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD8AD2449E
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 01:50:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33E26244A5
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 01:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727204AbfETXuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 19:50:14 -0400
-Received: from vps.xff.cz ([195.181.215.36]:58508 "EHLO vps.xff.cz"
+        id S1727507AbfETXul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 19:50:41 -0400
+Received: from vps.xff.cz ([195.181.215.36]:58544 "EHLO vps.xff.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726575AbfETXuN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 May 2019 19:50:13 -0400
+        id S1726703AbfETXuO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 May 2019 19:50:14 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=megous.com; s=mail;
-        t=1558396211; bh=+aeg2Woz3+t2JiBhDAFfN1sYNAy9B08eCt2djEk7ne0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pybKZZw/LV6TBhvgmgqJqq0Elr1IZbcbZjytlPDYuLCiQrEktOxUx9aYh+OKJP7iB
-         HktF4znuabQM0ww4K6UTzqoCzjgVM7nEb8lDvTGNExpmE6acHDjcakz3c6EYxVHJUx
-         pggpD1ZjE7l1h6Kcx5kXciPEgUleZpI6+ahkEyLs=
+        t=1558396211; bh=W1eysqnIHUZkksJlW6Nnyz1rUD5/k0fxV0/y2AwBQ70=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KWEviyahsEjLVuUlatHPmAGNs/v+gXdFNXAQeIPBRYiu29UWwYVGVtcHd6EKOt3nY
+         ajO+RdF2gPLR2dKSkWDQBQUbs4RMVoreWG/hFuLn+pm0HLElUrk/ozTNyEwONfqYER
+         2747mF41pq6c7eGqIzAfMh+CXMPzZ/HZwM5/mkSc=
 From:   megous@megous.com
 To:     linux-sunxi@googlegroups.com,
         Maxime Ripard <maxime.ripard@bootlin.com>,
         Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>
-Cc:     Ondrej Jirman <megous@megous.com>, David Airlie <airlied@linux.ie>,
+Cc:     Icenowy Zheng <icenowy@aosc.io>, David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         Mark Rutland <mark.rutland@arm.com>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -31,10 +31,13 @@ Cc:     Ondrej Jirman <megous@megous.com>, David Airlie <airlied@linux.ie>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH v5 0/6] Add support for Orange Pi 3
-Date:   Tue, 21 May 2019 01:50:03 +0200
-Message-Id: <20190520235009.16734-1-megous@megous.com>
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        Ondrej Jirman <megous@megous.com>
+Subject: [PATCH v5 1/6] net: stmmac: sun8i: add support for Allwinner H6 EMAC
+Date:   Tue, 21 May 2019 01:50:04 +0200
+Message-Id: <20190520235009.16734-2-megous@megous.com>
+In-Reply-To: <20190520235009.16734-1-megous@megous.com>
+References: <20190520235009.16734-1-megous@megous.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -42,87 +45,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ondrej Jirman <megous@megous.com>
+From: Icenowy Zheng <icenowy@aosc.io>
 
-This series implements support for Xunlong Orange Pi 3 board.
+The EMAC on Allwinner H6 is just like the one on A64. The "internal PHY" on
+H6 is on a co-packaged AC200 chip, and it's not really internal (it's
+connected via RMII at PA GPIO bank).
 
-Unfortunately, this board needs some small driver patches, so I have
-split the boards DT patch into chunks that require patches for drivers
-in various subsystems.
+Add support for the Allwinner H6 EMAC in the dwmac-sun8i driver.
 
-Suggested merging plan/dependencies:
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+Signed-off-by: Ondrej Jirman <megous@megous.com>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c    | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-- stmmac patches are needed for ethernet support (patches 1-3)
-  - these should be ready now
-- HDMI support (patches 4-6)
-  - needs DT and driver review
-
-Changes in v2:
-- added dt-bindings documentation for the board's compatible string
-  (suggested by Clement)
-- addressed checkpatch warnings and code formatting issues (on Maxime's
-  suggestions)
-- stmmac: dropped useless parenthesis, reworded description of the patch
-  (suggested by Sergei)
-- drop useles dev_info() about the selected io bias voltage
-- docummented io voltage bias selection variant macros
-- wifi: marked WiFi DTS patch and realted mmc1_pins as "DO NOT MERGE",
-  because wifi depends on H6 RTC support that's not merged yet (suggested
-  by Clement)
-- added missing signed-of-bys
-- changed &usb2otg dr_mode to otg, and added a note about VBUS
-- improved wording of HDMI driver's DDC power supply patch
-
-Changes in v3:
-- dropped already applied patches
-- changed pinctrl I/O bias selection constants to enum and renamed
-- added /omit-if-no-ref/ to mmc1_pins
-- made mmc1_pins default pinconf for mmc1 in H6 dtsi
-- move ddc-supply to HDMI connector node, updated patch descriptions,
-  changed dt-bindings docs
-
-Changes in v4:
-- fix checkpatch warnings/style issues
-- use enum in struct sunxi_desc_function for io_bias_cfg_variant
-- collected acked-by's
-- fix compile error in drivers/pinctrl/sunxi/pinctrl-sun9i-a80-r.c:156
-  caused by missing conversion from has_io_bias_cfg struct member
-  (I've kept the acked-by, because it's a trivial change, but feel free
-  to object.) (reported by Martin A. on github)
-  I did not have A80 pinctrl enabled for some reason, so I did not catch
-  this sooner.
-- dropped brcm firmware patch (was already applied)
-- dropped the wifi dts patch (will re-send after H6 RTC gets merged,
-  along with bluetooth support, in a separate series)
-
-Changes in v5:
-- dropped already applied patches (pinctrl patches, mmc1 pinconf patch)
-- rename GMAC-3V3 -> GMAC-3V to match the schematic (Jagan)
-- changed hdmi-connector's ddc-supply property to ddc-en-gpios
-  (Rob Herring)
-
-Please take a look.
-
-thank you and regards,
-  Ondrej Jirman
-
-Icenowy Zheng (2):
-  net: stmmac: sun8i: add support for Allwinner H6 EMAC
-  net: stmmac: sun8i: force select external PHY when no internal one
-
-Ondrej Jirman (4):
-  arm64: dts: allwinner: orange-pi-3: Enable ethernet
-  dt-bindings: display: hdmi-connector: Support DDC bus enable
-  drm: sun4i: Add support for enabling DDC I2C bus to sun8i_dw_hdmi glue
-  arm64: dts: allwinner: orange-pi-3: Enable HDMI output
-
- .../display/connector/hdmi-connector.txt      |  1 +
- .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 70 +++++++++++++++++++
- drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c         | 55 ++++++++++++++-
- drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h         |  3 +
- .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 21 ++++++
- 5 files changed, 147 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index ba124a4da793..3258dec84d55 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -147,6 +147,20 @@ static const struct emac_variant emac_variant_a64 = {
+ 	.tx_delay_max = 7,
+ };
+ 
++static const struct emac_variant emac_variant_h6 = {
++	.default_syscon_value = 0x50000,
++	.syscon_field = &sun8i_syscon_reg_field,
++	/* The "Internal PHY" of H6 is not on the die. It's on the
++	 * co-packaged AC200 chip instead.
++	 */
++	.soc_has_internal_phy = false,
++	.support_mii = true,
++	.support_rmii = true,
++	.support_rgmii = true,
++	.rx_delay_max = 31,
++	.tx_delay_max = 7,
++};
++
+ #define EMAC_BASIC_CTL0 0x00
+ #define EMAC_BASIC_CTL1 0x04
+ #define EMAC_INT_STA    0x08
+@@ -1212,6 +1226,8 @@ static const struct of_device_id sun8i_dwmac_match[] = {
+ 		.data = &emac_variant_r40 },
+ 	{ .compatible = "allwinner,sun50i-a64-emac",
+ 		.data = &emac_variant_a64 },
++	{ .compatible = "allwinner,sun50i-h6-emac",
++		.data = &emac_variant_h6 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, sun8i_dwmac_match);
 -- 
 2.21.0
 
