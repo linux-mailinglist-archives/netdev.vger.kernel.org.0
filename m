@@ -2,90 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F395622987
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 02:29:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7569F229BE
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 03:33:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729715AbfETA3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 May 2019 20:29:25 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:41093 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727852AbfETA3Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 May 2019 20:29:25 -0400
-Received: by mail-pg1-f194.google.com with SMTP id z3so5887535pgp.8;
-        Sun, 19 May 2019 17:29:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hBaYYOgHBn5Iq/to9VwGy7dRm9N+B3reJ/FtJOoZbpE=;
-        b=r2M4jtdbalke0beP4MXcM1cAhBkOWSLrP9AhggPcnbqfJEuQXFXXs1hVki0nIFrZkr
-         CtaKjKEjNs1O+lf5KZtPkKTUEs90AlqEUheG9+qhTpFSJLJf0F1dyIGH1BtJkWUwsFG0
-         6UhgtLNq63jsiqpDGLOzUstFBoOjYCtRDNBuIQvkVXsVLRn36IOzCae/fxIqZbiu1iCl
-         4b2sAgIlLDxxMUpNNxZvizLZmPTozXq5mUenSB7PfpSt4GmVY01Xv3o+ziPEUKRAN0f+
-         AsYXPt1X61mby+nLPEXKzKT/bMj7i/3ZpEGWFZhCVaJWc2qZXIjKg+wYkgX8sS/x2cKh
-         l2LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hBaYYOgHBn5Iq/to9VwGy7dRm9N+B3reJ/FtJOoZbpE=;
-        b=m/2DLbWYGy2TbwVTPedXyV9KOODGXPN9lLzHNNcM0fPw6JN/afC9GoX0YK4V4lPY8m
-         w/WaI1CROAP1eSUxfeSAfTR9BJMylonsmXBvo0fDTv4neJjvAiy2sWlENmEqt0HaBXYF
-         +ht5kRv0XOAmAYD2VU4g6hacw8q7pM74rgyVn/2j3O83zhzZacWremQuPY4iTQpQa6Ah
-         m4u796YFmjWWVeIGDFxem3LyugPbGNi1Q5kfFk9B2B5xnpMZSSpMq5923htbsEcyuzn7
-         bS0nprPPexM5P2lWt3KrZZ72EnDnJIFajnfTYAPiE/J3VChQRox99gKkdxkC8Y0qLW80
-         S/XQ==
-X-Gm-Message-State: APjAAAU3y7eofmlO+QresrdigSv2M+qeqOc7yCc0+0pb3MvuBrK33UyS
-        BpY8OYVceyf6Z6FYKAoEInR6enoR
-X-Google-Smtp-Source: APXvYqzXS8Kfg7+hoCIkTxpThWBlABRdcXxloJXFPPWjqikBFnMvV6LpBzSY+vOyezOanyJ+ow9F8g==
-X-Received: by 2002:a63:9d8d:: with SMTP id i135mr72466722pgd.245.1558312164132;
-        Sun, 19 May 2019 17:29:24 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:319f:d85a:786b:cab7? ([2601:282:800:fd80:319f:d85a:786b:cab7])
-        by smtp.googlemail.com with ESMTPSA id l65sm25918110pfb.7.2019.05.19.17.29.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 19 May 2019 17:29:22 -0700 (PDT)
-Subject: Re: [PATCH 4.9 41/51] fib_rules: return 0 directly if an exactly same
- rule exists when NLM_F_EXCL not supplied
-To:     Nathan Chancellor <natechancellor@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Thomas Haller <thaller@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20190515090616.669619870@linuxfoundation.org>
- <20190515090628.066392616@linuxfoundation.org>
- <20190519154348.GA113991@archlinux-epyc>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a36e3204-b52d-0bf0-f956-654189a18156@gmail.com>
-Date:   Sun, 19 May 2019 18:29:19 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1729432AbfETBdy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 19 May 2019 21:33:54 -0400
+Received: from mx2.lagunaphuket.com ([223.27.254.7]:49680 "EHLO
+        mx2.lagunaphuket.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725947AbfETBdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 May 2019 21:33:54 -0400
+X-Greylist: delayed 1562 seconds by postgrey-1.27 at vger.kernel.org; Sun, 19 May 2019 21:33:51 EDT
+Received: from mx2.lagunaphuket.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6806F38656;
+        Mon, 20 May 2019 08:07:45 +0700 (ICT)
+Received: from mx2.lagunaphuket.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 47EE038654;
+        Mon, 20 May 2019 08:07:45 +0700 (ICT)
+Received-SPF: Pass (mx2.lagunaphuket.com: domain of dtlp-hostdesk@lagunaphuket.com designates 223.27.254.9 as permitted sender) identity=MAILFROM; client-ip=223.27.254.9; envelope-from=dtlp-hostdesk@lagunaphuket.com; helo=mail.lagunaphuket.com)
+Received: from mail.lagunaphuket.com (unknown [223.27.254.9])
+        by mx2.lagunaphuket.com (Postfix) with ESMTP;
+        Mon, 20 May 2019 08:07:45 +0700 (ICT)
+Received: from mail.lagunaphuket.com (localhost [127.0.0.1])
+        by mail.lagunaphuket.com (Postfix) with ESMTPS id 6A565E5B460;
+        Mon, 20 May 2019 07:33:37 +0700 (ICT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.lagunaphuket.com (Postfix) with ESMTP id C7CE2E5C1D7;
+        Mon, 20 May 2019 07:33:07 +0700 (ICT)
+Received: from mail.lagunaphuket.com ([127.0.0.1])
+        by localhost (mail.lagunaphuket.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 8sPit044g94B; Mon, 20 May 2019 07:33:07 +0700 (ICT)
+Received: from mail.lagunaphuket.com (mail.lagunaphuket.com [223.27.254.9])
+        by mail.lagunaphuket.com (Postfix) with ESMTP id 3F8CBE5C0BC;
+        Mon, 20 May 2019 07:32:37 +0700 (ICT)
+Date:   Mon, 20 May 2019 07:32:37 +0700 (ICT)
+From:   Mr ASSOGBA <dtlp-hostdesk@lagunaphuket.com>
+Reply-To: Mr ASSOGBA <assogba.aurel1@gmail.com>
+Message-ID: <1274364359.803905.1558312357122.JavaMail.zimbra@lagunaphuket.com>
+Subject: Proposition d'investissement
 MIME-Version: 1.0
-In-Reply-To: <20190519154348.GA113991@archlinux-epyc>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [223.27.254.9]
+X-Mailer: Zimbra 8.7.0_GA_1659 (zclient/8.7.0_GA_1659)
+Thread-Index: j8K/yiGkyKwRf40C1m78pW4NW/69OA==
+Thread-Topic: Proposition d'investissement
+To:     undisclosed-recipients:;
+X-TM-AS-GCONF: 11111101
+X-TM-AS-SMTP: 1.0 bWFpbC5sYWd1bmFwaHVrZXQuY29t ZHRscC1ob3N0ZGVza0BsYWd1bmFwaHVrZXQuY29t
+X-TM-AS-ERS: 223.27.254.9-127.9.0.1
+X-TM-AS-Product-Ver: IMSVA-9.1.0.1631-8.2.0.1013-24624.004
+X-TM-AS-Result: No-0.157-5.0-31-10
+X-imss-scan-details: No-0.157-5.0-31-10
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Version: IMSVA-9.1.0.1631-8.2.1013-24624.004
+X-TMASE-Result: 10-0.156700-10.000000
+X-TMASE-MatchedRID: 6dz8Df8YtQtxHEsn3sNejAxwtiB7jvN88LJJrQZ5GnYWg/UWYlm6oKp9
+        QRglv6lk3rxtEh2EgVEDqAkaq676CclKghqU3z7t8cAgrd4mNFYzJpB5U4Fi5y9ABOFdGRZNwU7
+        vStr6AdahKjPklfZh6P7Nr/2QkLnDXHEPHmpuRH1RGaeOJTnMW5whktVkBBrQ51WRwlfp0oTQ0u
+        ETEY1RBgAhdqSKv2g13EXLFZRkHif6C0ePs7A07fcUt5lc1lLgCBQkRI79aLxKT8oifZ4rWkrJD
+        P/gyxcF7M3Vv8SIOVoozBRHGCUYUT3mx298TJnpw+6e24PmBYCEdaaH5hpfnsQLMYPzWEd2v077
+        0QKtItMn2Q36OkhHfoiFaYB1NKtMN/wRETG2MZjpwJ9KCiZIOsPINhwTXBeZ
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-12:0,22:0,33:0,34:0-0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/19/19 9:43 AM, Nathan Chancellor wrote:
-> Hi all,
-> 
-> This commit is causing issues on Android devices when Wi-Fi and mobile
-> data are both enabled. The device will do a soft reboot consistently.
-> So far, I've had reports on the Pixel 3 XL, OnePlus 6, Pocophone, and
-> Note 9 and I can reproduce on my OnePlus 6.
-> 
-> Sorry for taking so long to report this, I just figured out how to
-> reproduce it today and I didn't want to report it without that.
-> 
-> Attached is a full dmesg and the relevant snippet from Android's logcat.
-> 
-> Let me know what I can do to help debug,
-> Nathan
-> 
+Bonjour
+Je soussigné Mr ASSOGBA Aurel de nationalité béninoise. Je vous envoie ce message  pour vous proposer une affaire importante.
+Je viens de bénéficier d’un important capital financier  après la mort de mon père qui était collaborateur d'un pétrolier libyen. Je désire investir ce  capital financier dans vos activités dans votre pays.
+  Veuillez me donner votre accord en me laissant vos coordonnées  téléphoniques privées pour une discussion à vive voix à ce sujet.
 
-It's a backport problem. err needs to be reset to 0 before the goto.
+Sincèrement
+Mr ASSOGBA
+E-mail: assogba.aurel1@gmail.com
+**********************************************************************************
+
+This email is intended only for the individual/s to whom it is addressed and may contain information 
+that is confidential or privileged. If you are not the intended recipient/s, or the employee or person 
+responsible for delivering it to the intended recipient/s you are hereby notified that any dissemination, 
+distribution, copying or use is strictly prohibited. If you have received this communication in error, 
+please notify the sender immediately by telephone and return the original email to the sender.
+
+**********************************************************************************
+
