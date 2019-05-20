@@ -2,91 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBCD323AAA
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 16:44:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9A123AB2
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 16:44:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391935AbfETOnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 10:43:09 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:47751 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732661AbfETOnJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 10:43:09 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from tariqt@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 20 May 2019 17:43:03 +0300
-Received: from dev-l-vrt-206-006.mtl.labs.mlnx (dev-l-vrt-206-006.mtl.labs.mlnx [10.134.206.6])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x4KEh308026598;
-        Mon, 20 May 2019 17:43:03 +0300
-From:   Tariq Toukan <tariqt@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Erez Alfasi <ereza@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH net] net/mlx4_en: ethtool, Remove unsupported SFP EEPROM high pages query
-Date:   Mon, 20 May 2019 17:42:52 +0300
-Message-Id: <1558363372-31719-1-git-send-email-tariqt@mellanox.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S2391962AbfETOoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 10:44:22 -0400
+Received: from iolanthe.rowland.org ([192.131.102.54]:58818 "HELO
+        iolanthe.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S2388776AbfETOoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 10:44:22 -0400
+Received: (qmail 2121 invoked by uid 2102); 20 May 2019 10:44:21 -0400
+Received: from localhost (sendmail-bs@127.0.0.1)
+  by localhost with SMTP; 20 May 2019 10:44:21 -0400
+Date:   Mon, 20 May 2019 10:44:21 -0400 (EDT)
+From:   Alan Stern <stern@rowland.harvard.edu>
+X-X-Sender: stern@iolanthe.rowland.org
+To:     Christian Lamparter <chunkeey@gmail.com>
+cc:     syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>,
+        <kvalo@codeaurora.org>, <davem@davemloft.net>,
+        <andreyknvl@google.com>, <syzkaller-bugs@googlegroups.com>,
+        Kernel development list <linux-kernel@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH] network: wireless: p54u: Fix race between disconnect and
+ firmware loading
+In-Reply-To: <5014675.0cgHOJIxtM@debian64>
+Message-ID: <Pine.LNX.4.44L0.1905201042110.1498-100000@iolanthe.rowland.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Erez Alfasi <ereza@mellanox.com>
+The syzbot fuzzer found a bug in the p54 USB wireless driver.  The
+issue involves a race between disconnect and the firmware-loader
+callback routine, and it has several aspects.
 
-Querying EEPROM high pages data for SFP module is currently
-not supported by our driver but is still tried, resulting in
-invalid FW queries.
+One big problem is that when the firmware can't be loaded, the
+callback routine tries to unbind the driver from the USB _device_ (by
+calling device_release_driver) instead of from the USB _interface_ to
+which it is actually bound (by calling usb_driver_release_interface).
 
-Set the EEPROM ethtool data length to 256 for SFP module to
-limit the reading for page 0 only and prevent invalid FW queries.
+The race involves access to the private data structure.  The driver's
+disconnect handler waits for a completion that is signalled by the
+firmware-loader callback routine.  As soon as the completion is
+signalled, you have to assume that the private data structure may have
+been deallocated by the disconnect handler -- even if the firmware was
+loaded without errors.  However, the callback routine does access the
+private data several times after that point.
 
-Fixes: 7202da8b7f71 ("ethtool, net/mlx4_en: Cable info, get_module_info/eeprom ethtool support")
-Signed-off-by: Erez Alfasi <ereza@mellanox.com>
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+Another problem is that, in order to ensure that the USB device
+structure hasn't been freed when the callback routine runs, the driver
+takes a reference to it.  This isn't good enough any more, because now
+that the callback routine calls usb_driver_release_interface, it has
+to ensure that the interface structure hasn't been freed.
+
+Finally, the driver takes an unnecessary reference to the USB device
+structure in the probe function and drops the reference in the
+disconnect handler.  This extra reference doesn't accomplish anything,
+because the USB core already guarantees that a device structure won't
+be deallocated while a driver is still bound to any of its interfaces.
+
+To fix these problems, this patch makes the following changes:
+
+	Call usb_driver_release_interface() rather than
+	device_release_driver().
+
+	Don't signal the completion until after the important
+	information has been copied out of the private data structure,
+	and don't refer to the private data at all thereafter.
+
+	Lock udev (the interface's parent) before unbinding the driver
+	instead of locking udev->parent.
+
+	During the firmware loading process, take a reference to the
+	USB interface instead of the USB device.
+
+	Don't take an unnecessary reference to the device during probe
+	(and then don't drop it during disconnect).
+
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Reported-and-tested-by: syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com
+CC: <stable@vger.kernel.org>
+
 ---
 
-Hi Dave, please queue for -stable.
 
- drivers/net/ethernet/mellanox/mlx4/en_ethtool.c | 4 +++-
- drivers/net/ethernet/mellanox/mlx4/port.c       | 5 -----
- 2 files changed, 3 insertions(+), 6 deletions(-)
+[as1899]
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-index d290f0787dfb..94c59939a8cf 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-@@ -2010,6 +2010,8 @@ static int mlx4_en_set_tunable(struct net_device *dev,
- 	return ret;
+
+ drivers/net/wireless/intersil/p54/p54usb.c |   43 ++++++++++++-----------------
+ 1 file changed, 18 insertions(+), 25 deletions(-)
+
+Index: usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+===================================================================
+--- usb-devel.orig/drivers/net/wireless/intersil/p54/p54usb.c
++++ usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+@@ -33,6 +33,8 @@ MODULE_ALIAS("prism54usb");
+ MODULE_FIRMWARE("isl3886usb");
+ MODULE_FIRMWARE("isl3887usb");
+ 
++static struct usb_driver p54u_driver;
++
+ /*
+  * Note:
+  *
+@@ -921,9 +923,9 @@ static void p54u_load_firmware_cb(const
+ {
+ 	struct p54u_priv *priv = context;
+ 	struct usb_device *udev = priv->udev;
++	struct usb_interface *intf = priv->intf;
+ 	int err;
+ 
+-	complete(&priv->fw_wait_load);
+ 	if (firmware) {
+ 		priv->fw = firmware;
+ 		err = p54u_start_ops(priv);
+@@ -932,26 +934,22 @@ static void p54u_load_firmware_cb(const
+ 		dev_err(&udev->dev, "Firmware not found.\n");
+ 	}
+ 
+-	if (err) {
+-		struct device *parent = priv->udev->dev.parent;
+-
+-		dev_err(&udev->dev, "failed to initialize device (%d)\n", err);
+-
+-		if (parent)
+-			device_lock(parent);
++	complete(&priv->fw_wait_load);
++	/*
++	 * At this point p54u_disconnect may have already freed
++	 * the "priv" context. Do not use it anymore!
++	 */
++	priv = NULL;
+ 
+-		device_release_driver(&udev->dev);
+-		/*
+-		 * At this point p54u_disconnect has already freed
+-		 * the "priv" context. Do not use it anymore!
+-		 */
+-		priv = NULL;
++	if (err) {
++		dev_err(&intf->dev, "failed to initialize device (%d)\n", err);
+ 
+-		if (parent)
+-			device_unlock(parent);
++		usb_lock_device(udev);
++		usb_driver_release_interface(&p54u_driver, intf);
++		usb_unlock_device(udev);
+ 	}
+ 
+-	usb_put_dev(udev);
++	usb_put_intf(intf);
  }
  
-+#define MLX4_EEPROM_PAGE_LEN 256
-+
- static int mlx4_en_get_module_info(struct net_device *dev,
- 				   struct ethtool_modinfo *modinfo)
- {
-@@ -2044,7 +2046,7 @@ static int mlx4_en_get_module_info(struct net_device *dev,
- 		break;
- 	case MLX4_MODULE_ID_SFP:
- 		modinfo->type = ETH_MODULE_SFF_8472;
--		modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN;
-+		modinfo->eeprom_len = MLX4_EEPROM_PAGE_LEN;
- 		break;
- 	default:
- 		return -EINVAL;
-diff --git a/drivers/net/ethernet/mellanox/mlx4/port.c b/drivers/net/ethernet/mellanox/mlx4/port.c
-index 10fcc22f4590..ba6ac31a339d 100644
---- a/drivers/net/ethernet/mellanox/mlx4/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/port.c
-@@ -2077,11 +2077,6 @@ int mlx4_get_module_info(struct mlx4_dev *dev, u8 port,
- 		size -= offset + size - I2C_PAGE_SIZE;
+ static int p54u_load_firmware(struct ieee80211_hw *dev,
+@@ -972,14 +970,14 @@ static int p54u_load_firmware(struct iee
+ 	dev_info(&priv->udev->dev, "Loading firmware file %s\n",
+ 	       p54u_fwlist[i].fw);
  
- 	i2c_addr = I2C_ADDR_LOW;
--	if (offset >= I2C_PAGE_SIZE) {
--		/* Reset offset to high page */
--		i2c_addr = I2C_ADDR_HIGH;
--		offset -= I2C_PAGE_SIZE;
+-	usb_get_dev(udev);
++	usb_get_intf(intf);
+ 	err = request_firmware_nowait(THIS_MODULE, 1, p54u_fwlist[i].fw,
+ 				      device, GFP_KERNEL, priv,
+ 				      p54u_load_firmware_cb);
+ 	if (err) {
+ 		dev_err(&priv->udev->dev, "(p54usb) cannot load firmware %s "
+ 					  "(%d)!\n", p54u_fwlist[i].fw, err);
+-		usb_put_dev(udev);
++		usb_put_intf(intf);
+ 	}
+ 
+ 	return err;
+@@ -1011,8 +1009,6 @@ static int p54u_probe(struct usb_interfa
+ 	skb_queue_head_init(&priv->rx_queue);
+ 	init_usb_anchor(&priv->submitted);
+ 
+-	usb_get_dev(udev);
+-
+ 	/* really lazy and simple way of figuring out if we're a 3887 */
+ 	/* TODO: should just stick the identification in the device table */
+ 	i = intf->altsetting->desc.bNumEndpoints;
+@@ -1053,10 +1049,8 @@ static int p54u_probe(struct usb_interfa
+ 		priv->upload_fw = p54u_upload_firmware_net2280;
+ 	}
+ 	err = p54u_load_firmware(dev, intf);
+-	if (err) {
+-		usb_put_dev(udev);
++	if (err)
+ 		p54_free_common(dev);
 -	}
+ 	return err;
+ }
  
- 	cable_info = (struct mlx4_cable_info *)inmad->data;
- 	cable_info->dev_mem_address = cpu_to_be16(offset);
--- 
-1.8.3.1
+@@ -1072,7 +1066,6 @@ static void p54u_disconnect(struct usb_i
+ 	wait_for_completion(&priv->fw_wait_load);
+ 	p54_unregister_common(dev);
+ 
+-	usb_put_dev(interface_to_usbdev(intf));
+ 	release_firmware(priv->fw);
+ 	p54_free_common(dev);
+ }
 
