@@ -2,120 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B61E523C02
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4319323C2D
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392131AbfETP0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 11:26:30 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:40314 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730766AbfETP03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:26:29 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 23D22B4007C;
-        Mon, 20 May 2019 15:26:27 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 20 May
- 2019 08:26:22 -0700
-Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
- statistics
-To:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>
-CC:     netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Vishal Kulkarni <vishal@chelsio.com>
-References: <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
- <f4fdc1f1-bee2-8456-8daa-fbf65aabe0d4@solarflare.com>
- <cacfe0ec-4a98-b16b-ef30-647b9e50759d@mojatatu.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <f27a6a44-5016-1d17-580c-08682d29a767@solarflare.com>
-Date:   Mon, 20 May 2019 16:26:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <cacfe0ec-4a98-b16b-ef30-647b9e50759d@mojatatu.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24624.005
-X-TM-AS-Result: No-12.574600-4.000000-10
-X-TMASE-MatchedRID: 0dFPYP4mu5TmLzc6AOD8DfHkpkyUphL9g99C97sXB8BQKAQSutQYXELa
-        GegdJ2bmeNpTbJbSd8fNYmiyRY/XVlvLEDLz4/18fid4LSHtIAPHSOYUp9HFyMa9/IwAq2etAUq
-        wO9pSIT0X2JC8aIIxe6rbiyJcRE9x6WgBZT4x0yr0MaQO2ri8DAebMc7dN8D4tmTuCy5+VUqx/c
-        twRkgblyz8sK84C/nX3LhqCs5FjVBtF6/n498MP5zEHTUOuMX39l9p8mNlkgkELMPQNzyJS+Mmp
-        Z6XwS0ifMtvnnFP0XhBfQPbExiy5w66dAsNpdQEboe6sMfg+k+oJkORSPbbw7KeTtOdjMy6f2+C
-        ruJb3sw0zRzGUuAaePfu0TSNZMLKJ+JZYQfxoHxSOC+TOar9NK2CCashnFx10fRqqiZ4ZleY9g/
-        Nz1T3KT10hssYefLM2YHAy9vdzf5STe2wpWYcpJ4CIKY/Hg3AcmfM3DjaQLHEQdG7H66TyF82MX
-        kEdQ77df4Ft2s9cbhHsjTl0dZQjl32hYWyYVnILE69oroAWljCks0I9/2gCw==
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--12.574600-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24624.005
-X-MDID: 1558365988-AI0r5WKzPJwj
+        id S2388797AbfETPbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 11:31:19 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:38417 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731262AbfETPbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:31:18 -0400
+Received: by mail-wm1-f65.google.com with SMTP id t5so12147902wmh.3;
+        Mon, 20 May 2019 08:31:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=U14r5RuHwz6CW9kWdqe1Yxv8qr6791SEzbYW5ZFfNqk=;
+        b=X42kXwwsyIepoPQ5+7f0C8mITSC9q9M4R3X6qzcOZJ+6VSrtBKWV3ZYEviRARRlQJ7
+         UzHjPebLhixIVOSb6DT/Ks5hOQjyBSeqOnR/Pc0iiBtpLvXdIdODVy0/sp1pEe51rCOS
+         WWHVhmU6BxArfJMfK1Fqh+5ntdjK84WS0UR++HrqeOd7SEBrkJqHt/uJEkd4eZNsXCPf
+         3LrdntUh6Oh5JlGtwXGyhR/epNkW0eM7fnBi/IvEZogP8tsvVqoVjJRZzb/jdBBr5WLn
+         glyCeIOZMlQUY7KZGZLi9Ce67PklCxkwKyJp37W5N1UEo/ZiLxqqA16zwla+l8dj3NfH
+         UWKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=U14r5RuHwz6CW9kWdqe1Yxv8qr6791SEzbYW5ZFfNqk=;
+        b=B0F1i/Mk4YyKX5j4CxOByeHD4dGEozyFE9C657Rc1Y74/jKOKro8ZO5wUaUJGPOEvg
+         slrs0rxkY/8s5b0SP2L205Cx01faeIP+wgJ1zZupGIDXjQwnNtPzetXAGeN7f8ivTm2h
+         +QPhjVmuzsnFIWlmdFGi/XshpUWY9BhavERX0vzQ8ulKDQxNRw3adMsZ9h/QLXLeu7z1
+         rofQarvsRu71aZo/OYH1aHXBW8UcH45R9L0btGBjlMELrXQz4GPKE/K0M93Pnuz+hzZA
+         MKGJ4YXgMKjBxXJPSfa/iOo74BhONlGDlSIFiD2e+KeLDbfRWa2bPBp0xML5VDgNQY4Q
+         NFnQ==
+X-Gm-Message-State: APjAAAXUdq0Sqt68kEm2eBGfIDAr5CncW1O+hsyU+gd6a2VnlBBD0ewE
+        tv+VZK7Nt/8391Z3dM0G8hhyYI7A
+X-Google-Smtp-Source: APXvYqzBLCxDCKBc93FboPBqTKnxofoRQHsgqJbVB8qp+LrOaxz2zsTmBoFWRhfw3rS0EiN1U5ZXVQ==
+X-Received: by 2002:a1c:7511:: with SMTP id o17mr5112701wmc.39.1558366276038;
+        Mon, 20 May 2019 08:31:16 -0700 (PDT)
+Received: from ubuntu.faroeurope.com (mail.faroeurope.com. [213.61.174.138])
+        by smtp.gmail.com with ESMTPSA id x1sm11666555wrp.35.2019.05.20.08.31.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 20 May 2019 08:31:15 -0700 (PDT)
+From:   Bernd Eckstein <3erndeckstein@gmail.com>
+X-Google-Original-From: Bernd Eckstein <3ernd.Eckstein@gmail.com>
+To:     davem@davemloft.net
+Cc:     linux@roeck-us.net, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        corsac@corsac.net, Oliver.Zweigle@faro.com,
+        3ernd.Eckstein@gmail.com
+Subject: [PATCH] usbnet: ipheth: fix racing condition
+Date:   Mon, 20 May 2019 17:31:09 +0200
+Message-Id: <1558366269-17787-1-git-send-email-3ernd.Eckstein@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/05/2019 21:39, Jamal Hadi Salim wrote:
-> On 2019-05-17 1:14 p.m., Edward Cree wrote:
->> On 17/05/2019 16:27, Edward Cree wrote:
->>> I'm now leaning towards the
->>>   approach of adding "unsigned long cookie" to struct flow_action_entry
->>>   and populating it with (unsigned long)act in tc_setup_flow_action().
->>
->> For concreteness, here's what that looks like: patch 1 is replaced with
->>   the following, the other two are unchanged.
->> Drivers now have an easier job, as they can just use the cookie directly
->>   as a hashtable key, rather than worrying about which action types share
->>   indices.
->
-> Per my other email, this will break tc semantics. It doesnt look
-> possible to specify an index from user space. Did i miss
-> something?
-Unless *I* missed something, I'm not changing the TC<=>user-space API at
- all.  If user space specifies an index, then TC will either create a new
- action with that index, or find an existing one.  Then flow_offload turns
- that into a cookie; in the 'existing action' case it'll be the same
- cookie as any previous offloads of that action, in the 'new action' case
- it'll be a cookie distinct from any existing action.
-Drivers aren't interested in the specific index value, only in "which
- other actions (counters) I've offloaded are shared with this one?", which
- the cookie gives them.
+Fix a racing condition in ipheth.c that can lead to slow performance.
 
-With my (unreleased) driver code, I've successfully tested this with e.g.
- the following rules:
-tc filter add dev $vfrep parent ffff: protocol arp flower skip_sw \
-    action vlan push id 100 protocol 802.1q \
-    action mirred egress mirror dev $pf index 101 \
-    action vlan pop \
-    action drop index 104
-tc filter add dev $vfrep parent ffff: protocol ipv4 flower skip_sw \
-    action vlan push id 100 protocol 802.1q \
-    action mirred egress mirror dev $pf index 102 \
-    action vlan pop \
-    action drop index 104
+Bug: In ipheth_tx(), netif_wake_queue() may be called on the callback
+ipheth_sndbulk_callback(), _before_ netif_stop_queue() is called.
+When this happens, the queue is stopped longer than it needs to be,
+thus reducing network performance.
 
-Then when viewing with `tc -stats filter show`, the mirreds count their
- traffic separately (and with an extra 4 bytes per packet for the VLAN),
- whereas the drops (index 104, shared) show the total count (and without
- the 4 bytes).
+Fix: Move netif_stop_queue() in front of usb_submit_urb(). Now the order
+is always correct. In case, usb_submit_urb() fails, the queue is woken up
+again as callback will not fire.
 
-(From your other email)
-> tcfa_index + action identifier seem to be sufficiently global, no?
-The reason I don't like using the action identifier is because flow_offload
- slightly alters those: mirred gets split into two (FLOW_ACTION_REDIRECT
- and FLOW_ACTION_MIRRED (mirror)).  Technically it'll still work (a redirect
- and a mirror are different actions, so can't have the same index, so it
- doesn't matter if they're treated as the same action-type or not) but it
- feels like a kludge.
+Testing: This racing condition is usually not noticeable, as it has to
+occur very frequently to slowdown the network. The callback from the USB
+is usually triggered slow enough, so the situation does not appear.
+However, on a Ubuntu Linux on VMWare Workstation, running on Windows 10,
+the we loose the race quite often and the following speedup can be noticed:
 
--Ed
+Without this patch: Download:  4.10 Mbit/s, Upload:  4.01 Mbit/s
+With this patch:    Download: 36.23 Mbit/s, Upload: 17.61 Mbit/s
+
+Signed-off-by: Oliver Zweigle <Oliver.Zweigle@faro.com>
+Signed-off-by: Bernd Eckstein <3ernd.Eckstein@gmail.com>
+
+---
+ drivers/net/usb/ipheth.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
+index c247aed..8c01fbf 100644
+--- a/drivers/net/usb/ipheth.c
++++ b/drivers/net/usb/ipheth.c
+@@ -383,17 +383,18 @@ static int ipheth_tx(struct sk_buff *skb, struct net_device *net)
+ 			  dev);
+ 	dev->tx_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+ 
++	netif_stop_queue(net);
+ 	retval = usb_submit_urb(dev->tx_urb, GFP_ATOMIC);
+ 	if (retval) {
+ 		dev_err(&dev->intf->dev, "%s: usb_submit_urb: %d\n",
+ 			__func__, retval);
+ 		dev->net->stats.tx_errors++;
+ 		dev_kfree_skb_any(skb);
++		netif_wake_queue(net);
+ 	} else {
+ 		dev->net->stats.tx_packets++;
+ 		dev->net->stats.tx_bytes += skb->len;
+ 		dev_consume_skb_any(skb);
+-		netif_stop_queue(net);
+ 	}
+ 
+ 	return NETDEV_TX_OK;
+-- 
+2.7.4
+
