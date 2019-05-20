@@ -2,133 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B84F229CC
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 04:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3572222A08
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 04:45:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727204AbfETCA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 May 2019 22:00:28 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:40011 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726901AbfETCA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 May 2019 22:00:28 -0400
-Received: by mail-pl1-f193.google.com with SMTP id g69so5935046plb.7;
-        Sun, 19 May 2019 19:00:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=szNHxG8meqm9etTBVqy2eCrpsCzhCZREkY37myKt80c=;
-        b=eaLcUgnXbgIvmnq47LUhcV9OwlPzBl3XBB+DlelTQLrzU9J2HUNlEDtEYAIxcsHK2C
-         3PuEP0Pz60lQ9TT38cIkYupC9iozwP5FjXbMSoEEYRi+APurkuKHg3N3QTM4vMHRUWeu
-         Htjtc0Ez7Ncbn+8WE5qEw0DKciLm9hLyZnFIZMLSXgu+C+CcaQ9TtOMFGm/VJHXqwAEe
-         ivXCo1m6EX59TMn24QPWiD+eJ43ipiLGNHhURZdcU4QOtucwQQavJoS13QEGWSe33RFo
-         nhBwchrGgn0Afs3sTsgiJ+G6ObQYIEFFYM2HuzUBq7iMxueKgylzIOapgeyQg38xNbOt
-         3Snw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=szNHxG8meqm9etTBVqy2eCrpsCzhCZREkY37myKt80c=;
-        b=eGyXG8bU6b6N3AVlN6JKl6zZ9VLUPVz9OMKg1v2dfqAjuRQ0rIVLtjdqoAj3YYupwo
-         ap0VyTHa+i9Yjh+0OAVBBS+2q2ZKYFk7vgodwOYrYJ6Q+H2XMuVpHWu1A5FcVF0/8O5E
-         Z/ZKS/agW/W9a86FBImv7G84LdMnmDQ0DS8Mao9PA/+cdWTkd+eQ+2CzQldMzavgxrlj
-         444pRDKLBJvQonNuVLz/tmT41j7CunPcWiHSYs20TmuXyfFNjqrwMMFfnDBnBPhZ4hat
-         /mqO4zHWaNcwmNE/KwSWmVyAGVq/7cUs/bF7ft5mSwA3SCqXHHS7fJndvT10/ohhmM/h
-         Vz4w==
-X-Gm-Message-State: APjAAAVGNKFG6QlRaC3SJj+JKr/sLs6qePUZev9Wd4s9RFd8ole+mqJH
-        3xqwkh6TnwPVrdvEa+DKTDg=
-X-Google-Smtp-Source: APXvYqybcv39OBAsitwlWlgiNXxZ0xtqorujhjy1k3bkomTh4rbMJ73GBX1J7FSkwaBG4LFU5OJrIQ==
-X-Received: by 2002:a17:902:e9:: with SMTP id a96mr46448758pla.37.1558317627612;
-        Sun, 19 May 2019 19:00:27 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id r18sm36509937pfg.141.2019.05.19.19.00.24
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 19 May 2019 19:00:26 -0700 (PDT)
-Date:   Mon, 20 May 2019 10:00:16 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Thomas Haller <thaller@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH 4.9 41/51] fib_rules: return 0 directly if an exactly
- same rule exists when NLM_F_EXCL not supplied
-Message-ID: <20190520020016.GU18865@dhcp-12-139.nay.redhat.com>
-References: <20190515090616.669619870@linuxfoundation.org>
- <20190515090628.066392616@linuxfoundation.org>
- <20190519154348.GA113991@archlinux-epyc>
- <20190519202753.p5hsfe2uqmgsfbcq@breakpoint.cc>
+        id S1730121AbfETCpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 May 2019 22:45:13 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7660 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730076AbfETCpN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 May 2019 22:45:13 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 385CCC396D7FB5628B17;
+        Mon, 20 May 2019 10:45:11 +0800 (CST)
+Received: from [127.0.0.1] (10.184.191.73) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Mon, 20 May 2019
+ 10:45:04 +0800
+Subject: Re: [PATCH v3] tipc: fix modprobe tipc failed after switch order of
+ device registration
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+CC:     <davem@davemloft.net>, <willemdebruijn.kernel@gmail.com>,
+        <jon.maloy@ericsson.com>, <ying.xue@windriver.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        <mingfangsen@huawei.com>
+References: <529aff15-5f3a-1bf1-76fa-691911ff6170@huawei.com>
+ <20190519214805.520960ec@canb.auug.org.au>
+From:   hujunwei <hujunwei4@huawei.com>
+Message-ID: <3eaefb19-eb72-06a7-04c2-3378d9c2c1a6@huawei.com>
+Date:   Mon, 20 May 2019 10:43:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190519202753.p5hsfe2uqmgsfbcq@breakpoint.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190519214805.520960ec@canb.auug.org.au>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.191.73]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 19, 2019 at 10:27:53PM +0200, Florian Westphal wrote:
-> Nathan Chancellor <natechancellor@gmail.com> wrote:
-> > On Wed, May 15, 2019 at 12:56:16PM +0200, Greg Kroah-Hartman wrote:
-> > > From: Hangbin Liu <liuhangbin@gmail.com>
-> > > 
-> > > [ Upstream commit e9919a24d3022f72bcadc407e73a6ef17093a849 ]
-> 
-> [..]
-> 
-> > > Fixes: 153380ec4b9 ("fib_rules: Added NLM_F_EXCL support to fib_nl_newrule")
-> > > Reported-by: Thomas Haller <thaller@redhat.com>
-> > > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> > > Signed-off-by: David S. Miller <davem@davemloft.net>
-> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > ---
-> > >  net/core/fib_rules.c |    6 +++---
-> > >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > > 
-> > > --- a/net/core/fib_rules.c
-> > > +++ b/net/core/fib_rules.c
-> > > @@ -429,9 +429,9 @@ int fib_nl_newrule(struct sk_buff *skb,
-> > >  	if (rule->l3mdev && rule->table)
-> > >  		goto errout_free;
-> > >  
-> > > -	if ((nlh->nlmsg_flags & NLM_F_EXCL) &&
-> > > -	    rule_exists(ops, frh, tb, rule)) {
-> > > -		err = -EEXIST;
-> > > +	if (rule_exists(ops, frh, tb, rule)) {
-> > > +		if (nlh->nlmsg_flags & NLM_F_EXCL)
-> > > +			err = -EEXIST;
-> > This commit is causing issues on Android devices when Wi-Fi and mobile
-> > data are both enabled. The device will do a soft reboot consistently.
-> 
-> Not surprising, the patch can't be applied to 4.9 as-is.
-> 
-> In 4.9, code looks like this:
-> 
->  err = -EINVAL;
->  /* irrelevant */
->  if (rule_exists(ops, frh, tb, rule)) {
->   if (nlh->nlmsg_flags & NLM_F_EXCL)
->     err = -EEXIST;
->     goto errout_free;
->  }
-> 
-> So, if rule_exists() is true, we return -EINVAL to caller
-> instead of 0, unlike upstream.
-> 
-> I don't think this commit is stable material.
 
-Thanks Florian for helping check it. So we need either revert this patch,
-or at least backport adeb45cbb505 ("fib_rules: fix error return code") and
-f9d4b0c1e969 ("fib_rules: move common handling of newrule delrule
-msgs into fib_nl2rule").
 
-For me, I agree to revert this patch from stable tree as it's a small fix. The
-issue has been there for a long time and I didn't see much complain from
-customer.
+On 2019/5/19 19:48, Stephen Rothwell wrote:
+> Hi,
+> 
+> On Sun, 19 May 2019 17:13:45 +0800 hujunwei <hujunwei4@huawei.com> wrote:
+>>
+>> Fixes: 7e27e8d6130c
+>> ("tipc: switch order of device registration to fix a crash")
+> 
+> Please don't split Fixes tags over more than one line.  It is OK if
+> they are too long.
+> 
 
-Thanks
-Hangbin
+Hi, Stephen
+Thanks for your suggestion, I will update it later.
+
+Regards,
+Junwei
 
