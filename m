@@ -2,91 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 836F723A1E
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 16:35:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBCD323AAA
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 16:44:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732990AbfETOfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 10:35:00 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:38042 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731959AbfETOe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 10:34:59 -0400
-Received: by mail-wm1-f66.google.com with SMTP id t5so11947080wmh.3
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 07:34:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jL8EOSTC/B97Q4hYmRDMBEhteRV4Llk3yLW6XJX3YpI=;
-        b=WOQGo5E3cBke6q8UgR21NkLOtOUFmM9cJSAy8j0HGje6MfYqcjKkfQ6zQhG+HrG6yP
-         tVTmu021qWNJ0EP6J/uvHe/UnTsSzLi58ScfYOr8hRnQr1aEligQKbtbWPPuK0zd66MP
-         OgqWP2IGRpvc7D6/qBR6k95C6yNMuUtOYM9cBWSH6Lrj4MFrDPneMgbYJIvK6/rXx1S/
-         ZB6nb4s0sRBxmATJZi2b+oG+T3TB9sJTG0jbi0xUo12BwK8Lz/Ze/0t4jJLf1yn5CICi
-         ClQSm0KVnlq8x/QxBtZ6K4ZNrpSOiB7b3gvmL0sd4Xg7uOjpyms8cGcVg+5y/SmlEesx
-         R40w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jL8EOSTC/B97Q4hYmRDMBEhteRV4Llk3yLW6XJX3YpI=;
-        b=TqOaiIKNoIDDEJReubqb04Q085tvpk4gvLKDt61PIVXeUH19jqxpj82UiOHNJhJDPM
-         Idd+H1KpfDhDLHC1QYL82BTuE3bIe5GjFddBlCm97U6VDW0NFPLPRWd9tSf2v3R0QfHs
-         2iaTLM9YNFvhQbAfcW8EeSg2P02B3/0hrGIqrem5CIGTIkIXUsuIuB4K99hnSHM14ky2
-         AgY7mrUTfw25ah5diu2F6Jl+MrIpga0tasvbp5ks6wmnJ9VS3TFKgN5Qs3SuUY9qih2q
-         bVS4yKZ/5LsHjYqqY00jrFVayD86LBM+c60VTT7qGLD9NPGs0zbH9A7ZIz5GxHJHgiQN
-         RtEw==
-X-Gm-Message-State: APjAAAUUT6mPvKqPMLsiMpJ9Ylth79C9rZ5fj2yeW79q3eeruCEtmHx4
-        ibTKMqJH2aVg+F0oRT7o6gyRBA==
-X-Google-Smtp-Source: APXvYqxZ3+v/oE9giWxGxEusI5X93pq9x7W3ufJ2uNkz5Lh5e9NxuHzhkG+fIq3auPMxo0dZb4l8gw==
-X-Received: by 2002:a7b:cd0e:: with SMTP id f14mr28896695wmj.127.1558362897942;
-        Mon, 20 May 2019 07:34:57 -0700 (PDT)
-Received: from bender.baylibre.local (lmontsouris-657-1-212-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id c2sm12756186wrr.13.2019.05.20.07.34.57
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 20 May 2019 07:34:57 -0700 (PDT)
-From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>
-Subject: [PATCH net-next 2/2] net: stmmac: dwmac-meson8b: update with SPDX Licence identifier
-Date:   Mon, 20 May 2019 16:34:50 +0200
-Message-Id: <20190520143450.2143-3-narmstrong@baylibre.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190520143450.2143-1-narmstrong@baylibre.com>
-References: <20190520143450.2143-1-narmstrong@baylibre.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S2391935AbfETOnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 10:43:09 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:47751 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732661AbfETOnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 10:43:09 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from tariqt@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 20 May 2019 17:43:03 +0300
+Received: from dev-l-vrt-206-006.mtl.labs.mlnx (dev-l-vrt-206-006.mtl.labs.mlnx [10.134.206.6])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x4KEh308026598;
+        Mon, 20 May 2019 17:43:03 +0300
+From:   Tariq Toukan <tariqt@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Erez Alfasi <ereza@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: [PATCH net] net/mlx4_en: ethtool, Remove unsupported SFP EEPROM high pages query
+Date:   Mon, 20 May 2019 17:42:52 +0300
+Message-Id: <1558363372-31719-1-git-send-email-tariqt@mellanox.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+From: Erez Alfasi <ereza@mellanox.com>
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-index c5979569fd60..c06295ec1ef0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-@@ -1,14 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * Amlogic Meson8b, Meson8m2 and GXBB DWMAC glue layer
-  *
-  * Copyright (C) 2016 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  */
+Querying EEPROM high pages data for SFP module is currently
+not supported by our driver but is still tried, resulting in
+invalid FW queries.
+
+Set the EEPROM ethtool data length to 256 for SFP module to
+limit the reading for page 0 only and prevent invalid FW queries.
+
+Fixes: 7202da8b7f71 ("ethtool, net/mlx4_en: Cable info, get_module_info/eeprom ethtool support")
+Signed-off-by: Erez Alfasi <ereza@mellanox.com>
+Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+---
+
+Hi Dave, please queue for -stable.
+
+ drivers/net/ethernet/mellanox/mlx4/en_ethtool.c | 4 +++-
+ drivers/net/ethernet/mellanox/mlx4/port.c       | 5 -----
+ 2 files changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
+index d290f0787dfb..94c59939a8cf 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
+@@ -2010,6 +2010,8 @@ static int mlx4_en_set_tunable(struct net_device *dev,
+ 	return ret;
+ }
  
- #include <linux/clk.h>
++#define MLX4_EEPROM_PAGE_LEN 256
++
+ static int mlx4_en_get_module_info(struct net_device *dev,
+ 				   struct ethtool_modinfo *modinfo)
+ {
+@@ -2044,7 +2046,7 @@ static int mlx4_en_get_module_info(struct net_device *dev,
+ 		break;
+ 	case MLX4_MODULE_ID_SFP:
+ 		modinfo->type = ETH_MODULE_SFF_8472;
+-		modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN;
++		modinfo->eeprom_len = MLX4_EEPROM_PAGE_LEN;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+diff --git a/drivers/net/ethernet/mellanox/mlx4/port.c b/drivers/net/ethernet/mellanox/mlx4/port.c
+index 10fcc22f4590..ba6ac31a339d 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/port.c
++++ b/drivers/net/ethernet/mellanox/mlx4/port.c
+@@ -2077,11 +2077,6 @@ int mlx4_get_module_info(struct mlx4_dev *dev, u8 port,
+ 		size -= offset + size - I2C_PAGE_SIZE;
+ 
+ 	i2c_addr = I2C_ADDR_LOW;
+-	if (offset >= I2C_PAGE_SIZE) {
+-		/* Reset offset to high page */
+-		i2c_addr = I2C_ADDR_HIGH;
+-		offset -= I2C_PAGE_SIZE;
+-	}
+ 
+ 	cable_info = (struct mlx4_cable_info *)inmad->data;
+ 	cable_info->dev_mem_address = cpu_to_be16(offset);
 -- 
-2.21.0
+1.8.3.1
 
