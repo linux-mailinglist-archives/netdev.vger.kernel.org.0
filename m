@@ -2,141 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EE72240A3
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:48:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D672C240B7
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 20:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726111AbfETSsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 14:48:07 -0400
-Received: from gateway24.websitewelcome.com ([192.185.51.228]:45914 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726067AbfETSsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:48:07 -0400
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 055511BDA5
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 13:48:06 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id SnKPhHa3K2qH7SnKPhX2tx; Mon, 20 May 2019 13:48:06 -0500
-X-Authority-Reason: nr=8
-Received: from [189.250.71.100] (port=36576 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hSnKP-002qhk-Hh; Mon, 20 May 2019 13:48:05 -0500
-Subject: Re: [PATCH net-next] macvlan: Mark expected switch fall-through
-To:     David Miller <davem@davemloft.net>
-Cc:     liuhangbin@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190520144449.GA4843@embeddedor>
- <20190520.113812.944855298869290023.davem@davemloft.net>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <d623aa39-4c5c-addb-0cf7-d0c8aed63515@embeddedor.com>
-Date:   Mon, 20 May 2019 13:48:04 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1725983AbfETS4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 14:56:37 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:40921 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725536AbfETS4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 14:56:37 -0400
+Received: by mail-lf1-f65.google.com with SMTP id h13so11127761lfc.7
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 11:56:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sPnAzJbYkBxZ8GdLkM+Cr/sPicvKMWcZppjXGTnVZX8=;
+        b=LSx305Nu3IrD2dMJAv14+RebdtFXbRlKjH16vpgsnr1BWcLHn5AGef1ZERw2LZmqav
+         v6Q/6SpscteB0afThA2AKhUFBDyIVoijzj3RHsaND2ls5+F5MkBJOsxrr3NSRnR1n1KT
+         4vxu5CuTQfh8ptUcHNc+YdYwBaWG4CHD20Vi/tTYYaMSc03wscu7WyBiZrQRxHo02q4D
+         ypZItg1gSlgWoc90pPwr/kYV5pZEBdeh+XZich2lfsKo2aLP/vlo1NrJsmaI3f/QxI65
+         6nh1IAaqtmjRr7cmyDVRD/FPCsvnAG8hZ2PLKmLQQlNhjYEA+gR9/qFnnNoc092yGFE5
+         blQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sPnAzJbYkBxZ8GdLkM+Cr/sPicvKMWcZppjXGTnVZX8=;
+        b=ipKrVXCpe2lg+nINcUtwTmWaDFOmpbZsRoRKA0tGZFXepu9ARij3ke3fkvurAwkmB/
+         cuk54Z+EbqRqbeC1JqSDYQTAFTVzzEFWJIzZo+dj+5PHeW6Sdd20Ssolvhu8CLM+gTFB
+         ceiwZnOmLCi9gSez6UUWBLCmqvdPWwdTyxeeGcy8uB25uZJBR53KQNlnAdDH76qmjQi5
+         N2b0swVbbYVWhqe3NF10/P1nHLTTuJJPsiUnc8rLoelIb2TvJLiDxAb4rRvPyWSo13yn
+         xVq4NjR9eDJZUOoPVNO562rTUstsvVfXwh4C70oaE+D1wovvB4Cq2WOjSNqwVOqA0iFS
+         mTFA==
+X-Gm-Message-State: APjAAAUEH3pulqA7fTBkMpPObte2WU3TYuwx6TDA89GCwGkKkDvQct0V
+        RkDSL54arQoRw3flomVgfMMtMSF8gR005jDGyzXsuA==
+X-Google-Smtp-Source: APXvYqzFCQA9rfaqCCSb6la6cyH0OpQBYXSqiW9H/Ur20IPIqN6zbgZ+XmhN0Oc/KV6DKKuNLbLFEYdI5EenJ72mK3E=
+X-Received: by 2002:ac2:47e3:: with SMTP id b3mr4015452lfp.56.1558378594234;
+ Mon, 20 May 2019 11:56:34 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190520.113812.944855298869290023.davem@davemloft.net>
-Content-Type: text/plain; charset=iso-8859-7
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.71.100
-X-Source-L: No
-X-Exim-ID: 1hSnKP-002qhk-Hh
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.71.100]:36576
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 15
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <20190517212117.2792415-1-kafai@fb.com> <6dc01cb7-cdd4-8a71-b602-0052b7aadfb7@gmail.com>
+ <20190517220145.pkpkt7f5b72vvfyk@kafai-mbp> <CADa=RyxisbcVeXL7yq6o02XOgWd87QCzq-6zDXRnm9RoD2WM=A@mail.gmail.com>
+ <20190518190520.53mrvat4c4y6cnbf@kafai-mbp> <CADa=RyxfhK+XhAwf_C_an=+RnsQCPCXV23Qrwk-3OC1oLdHM=A@mail.gmail.com>
+ <20190519020703.nbioindo5krpgupi@kafai-mbp>
+In-Reply-To: <20190519020703.nbioindo5krpgupi@kafai-mbp>
+From:   Joe Stringer <joe@isovalent.com>
+Date:   Mon, 20 May 2019 11:56:22 -0700
+Message-ID: <CADa=RywmyZ1s5hjpUibx0Qi+C8=51zz0uCYnYv_KjEK+BW-Q=g@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: Check sk_fullsock() before returning from bpf_sk_lookup()
+To:     Martin Lau <kafai@fb.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, May 18, 2019 at 7:08 PM Martin Lau <kafai@fb.com> wrote:
+>
+> On Sat, May 18, 2019 at 06:52:48PM -0700, Joe Stringer wrote:
+> > On Sat, May 18, 2019, 09:05 Martin Lau <kafai@fb.com> wrote:
+> > >
+> > > On Sat, May 18, 2019 at 08:38:46AM -1000, Joe Stringer wrote:
+> > > > On Fri, May 17, 2019, 12:02 Martin Lau <kafai@fb.com> wrote:
+> > > >
+> > > > > On Fri, May 17, 2019 at 02:51:48PM -0700, Eric Dumazet wrote:
+> > > > > >
+> > > > > >
+> > > > > > On 5/17/19 2:21 PM, Martin KaFai Lau wrote:
+> > > > > > > The BPF_FUNC_sk_lookup_xxx helpers return RET_PTR_TO_SOCKET_OR_NULL.
+> > > > > > > Meaning a fullsock ptr and its fullsock's fields in bpf_sock can be
+> > > > > > > accessed, e.g. type, protocol, mark and priority.
+> > > > > > > Some new helper, like bpf_sk_storage_get(), also expects
+> > > > > > > ARG_PTR_TO_SOCKET is a fullsock.
+> > > > > > >
+> > > > > > > bpf_sk_lookup() currently calls sk_to_full_sk() before returning.
+> > > > > > > However, the ptr returned from sk_to_full_sk() is not guaranteed
+> > > > > > > to be a fullsock.  For example, it cannot get a fullsock if sk
+> > > > > > > is in TCP_TIME_WAIT.
+> > > > > > >
+> > > > > > > This patch checks for sk_fullsock() before returning. If it is not
+> > > > > > > a fullsock, sock_gen_put() is called if needed and then returns NULL.
+> > > > > > >
+> > > > > > > Fixes: 6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
+> > > > > > > Cc: Joe Stringer <joe@isovalent.com>
+> > > > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > > > ---
+> > > > > > >  net/core/filter.c | 16 ++++++++++++++--
+> > > > > > >  1 file changed, 14 insertions(+), 2 deletions(-)
+> > > > > > >
+> > > > > > > diff --git a/net/core/filter.c b/net/core/filter.c
+> > > > > > > index 55bfc941d17a..85def5a20aaf 100644
+> > > > > > > --- a/net/core/filter.c
+> > > > > > > +++ b/net/core/filter.c
+> > > > > > > @@ -5337,8 +5337,14 @@ __bpf_sk_lookup(struct sk_buff *skb, struct
+> > > > > bpf_sock_tuple *tuple, u32 len,
+> > > > > > >     struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
+> > > > > > >                                        ifindex, proto, netns_id,
+> > > > > flags);
+> > > > > > >
+> > > > > > > -   if (sk)
+> > > > > > > +   if (sk) {
+> > > > > > >             sk = sk_to_full_sk(sk);
+> > > > > > > +           if (!sk_fullsock(sk)) {
+> > > > > > > +                   if (!sock_flag(sk, SOCK_RCU_FREE))
+> > > > > > > +                           sock_gen_put(sk);
+> > > > > >
+> > > > > > This looks a bit convoluted/weird.
+> > > > > >
+> > > > > > What about telling/asking __bpf_skc_lookup() to not return a non
+> > > > > fullsock instead ?
+> > > > > It is becausee some other helpers, like BPF_FUNC_skc_lookup_tcp,
+> > > > > can return non fullsock
+> > > > >
+> > > >
+> > > > FYI this is necessary for finding a transparently proxied socket for a
+> > > > non-local connection (tproxy use case).
+> > > You meant it is necessary to return a non fullsock from the
+> > > BPF_FUNC_sk_lookup_xxx helpers?
+> >
+> > Yes, that's what I want to associate with the skb so that the delivery
+> > to the SO_TRANSPARENT is received properly.
+> >
+> > For the first packet of a connection, we look up the socket using the
+> > tproxy socket port as the destination, and deliver the packet there.
+> > The SO_TRANSPARENT logic then kicks in and sends back the ack and
+> > creates the non-full sock for the connection tuple, which can be
+> > entirely unrelated to local addresses or ports.
+> >
+> > For the second forward-direction packet, (ie ACK in 3-way handshake)
+> > then we must deliver the packet to this non-full sock as that's what
+> > is negotiating the proxied connection. If you look up using the packet
+> > tuple then get the full sock from it, it will go back to the
+> > SO_TRANSPARENT parent socket. Delivering the ACK there will result in
+> > a RST being sent back, because the SO_TRANSPARENT socket is just there
+> > to accept new connections for connections to be proxied. So this is
+> > the case where I need the non-full sock.
+> >
+> > (In practice, the lookup logic attempts the packet tuple first then if
+> > that fails, uses the tproxy port for lookup to achieve the above).
+> hmm...I am likely missing something.
+>
+> 1) The above can be done by the "BPF_FUNC_skC_lookup_tcp" which
+>    returns a non fullsock (RET_PTR_TO_SOCK_COMMON_OR_NULL), no?
 
+Correct, I meant to send as response to Eric as to use cases for
+__bpf_skc_lookup() returning non fullsock.
 
-On 5/20/19 1:38 PM, David Miller wrote:
-> From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-> Date: Mon, 20 May 2019 09:44:49 -0500
-> 
->> In preparation to enabling -Wimplicit-fallthrough, mark switch
->> cases where we are expecting to fall through.
->>
->> This patch fixes the following warning:
->>
->> drivers/net/macvlan.c: In function ¡macvlan_do_ioctl¢:
->> drivers/net/macvlan.c:839:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>    if (!net_eq(dev_net(dev), &init_net))
->>       ^
->> drivers/net/macvlan.c:841:2: note: here
->>   case SIOCGHWTSTAMP:
->>   ^~~~
->>
->> Warning level 3 was used: -Wimplicit-fallthrough=3
->>
->> This patch is part of the ongoing efforts to enable
->> -Wimplicit-fallthrough.
->>
->> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> 
-> I'll apply this to 'net' since it was introduced actually by arecent
-> change.
-> 
+> 2) The bpf_func_proto of "BPF_FUNC_sk_lookup_tcp" returns
+>    fullsock (RET_PTR_TO_SOCKET_OR_NULL) and the bpf_prog (and
+>    the verifier) is expecting that.  How to address the bug here?
 
-OK, great. :)
-
-Thank you.
---
-Gsutavo
+Your proposal seems fine to me.
