@@ -2,144 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEFA223C4C
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DCCD23C4F
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:38:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392219AbfETPiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 11:38:17 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:41891 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730766AbfETPiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:38:17 -0400
-Received: by mail-qt1-f193.google.com with SMTP id y22so16787553qtn.8
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 08:38:16 -0700 (PDT)
+        id S2392230AbfETPiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 11:38:22 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39500 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730766AbfETPiV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:38:21 -0400
+Received: by mail-pg1-f195.google.com with SMTP id w22so6968586pgi.6
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 08:38:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BI5a9u3gRGjDiVaCG9ohml9bqGbyDXBPGAywSXYi+Ms=;
-        b=aeWPNa8xQZgiewEj1WhOiqGMUU7HC+qjed8vT6BKFI/8rADHAwwOcyaZLCHsTJs0oU
-         +t6ZMsstWhz9XGNVg68je+vixMZnsbz7ZC2UPneZmOFtNi0+xYY++Qc8zoECwMkDcLZe
-         UiMNpyIP3HWwtsZ2QFyZe4TazlVBmi8oeS+kJVW4mp7up/qL+g2gsD9vaegAuhJrhokd
-         1dwqCOGa5PYZ7ZWji6UravGhmsJF5vMroDW925RsDuroY+AGSx9h9vYgppUCxLr9LZH5
-         FC2yDyGzbWfIN5hNJyHFK6aLNXesNnB1SVSxCBXIgQPE8pHQJIr28nLtsgzyDf4Fe9Qq
-         MGtQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=uCWJzdwhd+1tcKYTw9hbwn1gSRk4OfXO/IfxBU/gQqU=;
+        b=RitRrcORQKf+bf+V7kUhKt/VteE8EfoRgt6oDx2NkazjO092KWhyXfIY8cz5KRbghJ
+         DcRA19lvMkL8cE+Tgz+8inpbO252vrn1vn6b2VC6u28Gb3mVoCTriA0eX6wvYkfem+SZ
+         Ls/RvRHjLd28SZWWXGdgUP0zwz6+cvcXx+TMYCcpvMsx/ea99XtJ6rh89MVMTzrSz9s7
+         r+R7cw5ZPYHyN0abG/lwThCl+sJ8q8dF9i0O1fM+4q9hxOdEaXry7Q71Uc+PbqX1e78U
+         t8niY6F3SXz43iWmsZqeTGTxte2bKw5nYdNQCKBqLm0xBvCygJRBgg93g6c3lVMBJxWp
+         jWwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BI5a9u3gRGjDiVaCG9ohml9bqGbyDXBPGAywSXYi+Ms=;
-        b=pPYNWTRGxDfhtGCxfcet0dVfEQmdR69Qy06+cE8FvqQ5El25gAvDVEn5TwJu9Hbsym
-         kCm/539O1NdtkO55eN5VV1Fg4vQmkIyMRHfkfG3x0amhLR/kf/+Kb4Il3hQZhsucMpdc
-         hqdoxPF0QPjrUD19dGQJd0Evrw2fs5eEK7D9y28JCnIjaqEM6RQgMZOXNGlNO+XHtSMg
-         EC40vKhXCoG8os0kmSrIpxvorA/PWN/rTxr3BV0YBSC7HrB2YiIHV39VBE1Zh6JymHZW
-         8lcazo0SF6ns//etIP97pCPAP0F+I0xRFx3bFC9mAVj74vlw5l7tGFWndgng2YgMvwO1
-         oe7Q==
-X-Gm-Message-State: APjAAAXskbG/fbV0eJOY4PRbR5aSKll9xXN3yedPIouYA8Ht5EjY2Xm+
-        Xi4QUHqQkILHpeAfo+t1B5EZIA==
-X-Google-Smtp-Source: APXvYqyU70fP35PwYZEzR6I6DlPDx+Q4poKbNAMdPy9zoPqPjX7Zuq38lJuyrkwgi8sxvc/uAzs1tQ==
-X-Received: by 2002:a0c:b89d:: with SMTP id y29mr14326659qvf.170.1558366696498;
-        Mon, 20 May 2019 08:38:16 -0700 (PDT)
-Received: from [192.168.0.124] (24-212-162-241.cable.teksavvy.com. [24.212.162.241])
-        by smtp.googlemail.com with ESMTPSA id i13sm7565224qkm.68.2019.05.20.08.38.15
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 08:38:15 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
- statistics
-To:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Vishal Kulkarni <vishal@chelsio.com>
-References: <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
- <f4fdc1f1-bee2-8456-8daa-fbf65aabe0d4@solarflare.com>
- <cacfe0ec-4a98-b16b-ef30-647b9e50759d@mojatatu.com>
- <f27a6a44-5016-1d17-580c-08682d29a767@solarflare.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <3db2e5bf-4142-de4b-7085-f86a592e2e09@mojatatu.com>
-Date:   Mon, 20 May 2019 11:38:14 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uCWJzdwhd+1tcKYTw9hbwn1gSRk4OfXO/IfxBU/gQqU=;
+        b=CBtODqfyavCNZJ/n1Ewu+hB6C1d1n0ZabcEi6OWTQp2rLtSfr1yAEc9nzdvSyKqkiK
+         vfnuIx+kFcgCYauo7PdZM75HVfvolDdy9sOLEypgMGx+IfMVHjO2+FRtQXDIMYe3RX3n
+         5fl9PEyGVtKYrPKXUJtBRjb/1oVug2CRLBicbs/L1LhmUqE33DgIsUxhp/b0ZRwPpxlI
+         an+Bhc1MLWM6Q0kh8h5d/SMSAIPAgfHcAo9sGmoLIw85bcTjyqxsdtICoAKSwaQOtYew
+         iSIC4x3Zqvv49xXLXoVDtW1HnbYRnEwEge7eEExyp/ZNwI1hUWPdWLXLAfieJg/o1qKk
+         7d1Q==
+X-Gm-Message-State: APjAAAXZfS7vBCkcVdR77qDGBTJqUOS01k8pwl45nk5EyJ22m4HA1Eaz
+        wc3FGGZu9x/GMjb48o7Jou5Eig==
+X-Google-Smtp-Source: APXvYqz3pl2TAuMTOYMc3sgPvfPgTTg/TRNOne3MjnLr9w2cCjHNOmjNjfTZKgGDGgKwzoKkFxJEhg==
+X-Received: by 2002:a65:60c7:: with SMTP id r7mr73970975pgv.22.1558366700866;
+        Mon, 20 May 2019 08:38:20 -0700 (PDT)
+Received: from tuxbook-pro (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id e10sm37179794pfm.137.2019.05.20.08.38.19
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 20 May 2019 08:38:20 -0700 (PDT)
+Date:   Mon, 20 May 2019 08:38:47 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     arnd@arndb.de, subashab@codeaurora.org, david.brown@linaro.org,
+        agross@kernel.org, davem@davemloft.net,
+        ilias.apalodimas@linaro.org, cpratapa@codeaurora.org,
+        syadagir@codeaurora.org, evgreen@chromium.org, benchan@google.com,
+        ejcaruso@google.com, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/8] net: qualcomm: rmnet: fix struct rmnet_map_header
+Message-ID: <20190520153847.GP2085@tuxbook-pro>
+References: <20190520135354.18628-1-elder@linaro.org>
+ <20190520135354.18628-2-elder@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <f27a6a44-5016-1d17-580c-08682d29a767@solarflare.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190520135354.18628-2-elder@linaro.org>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-20 11:26 a.m., Edward Cree wrote:
-> On 18/05/2019 21:39, Jamal Hadi Salim wrote:
->> On 2019-05-17 1:14 p.m., Edward Cree wrote:
->>> On 17/05/2019 16:27, Edward Cree wrote:
+On Mon 20 May 06:53 PDT 2019, Alex Elder wrote:
 
-> Unless *I* missed something, I'm not changing the TC<=>user-space API at
->   all.  If user space specifies an index, then TC will either create a new
->   action with that index, or find an existing one.  Then flow_offload turns
->   that into a cookie; in the 'existing action' case it'll be the same
->   cookie as any previous offloads of that action, in the 'new action' case
->   it'll be a cookie distinct from any existing action.
-
-That is fine then if i could do:
-
-tc actions add action drop index 104
-then
-followed by for example the two filters you show below..
-
-Is your hardware not using explicit indices into a stats table?
-
-> Drivers aren't interested in the specific index value, only in "which
->   other actions (counters) I've offloaded are shared with this one?", which
->   the cookie gives them.
+> The C bit-fields in the first byte of the rmnet_map_header structure
+> are defined in the wrong order.  The first byte should be formatted
+> this way:
+>                  +------- reserved_bit
+>                  | +----- cd_bit
+>                  | |
+>                  v v
+>     +-----------+-+-+
+>     |  pad_len  |R|C|
+>     +-----------+-+-+
+>      7 6 5 4 3 2 1 0  <-- bit position
 > 
-> With my (unreleased) driver code, I've successfully tested this with e.g.
->   the following rules:
-> tc filter add dev $vfrep parent ffff: protocol arp flower skip_sw \
->      action vlan push id 100 protocol 802.1q \
->      action mirred egress mirror dev $pf index 101 \
->      action vlan pop \
->      action drop index 104
-> tc filter add dev $vfrep parent ffff: protocol ipv4 flower skip_sw \
->      action vlan push id 100 protocol 802.1q \
->      action mirred egress mirror dev $pf index 102 \
->      action vlan pop \
->      action drop index 104
+> But the C bit-fields that define the first byte are defined this way:
+>     u8 pad_len:6;
+>     u8 reserved_bit:1;
+>     u8 cd_bit:1;
 > 
-> Then when viewing with `tc -stats filter show`, the mirreds count their
->   traffic separately (and with an extra 4 bytes per packet for the VLAN),
->   whereas the drops (index 104, shared) show the total count (and without
->   the 4 bytes).
->
-
-Beauty.  Assuming the stats are being synced to the kernel?
-Test 1:
-What does "tc -s actions ls action drop index 104" show?
-Test 2:
-Delete one of the filters above then dump actions again as above.
-
-> (From your other email)
->> tcfa_index + action identifier seem to be sufficiently global, no?
-> The reason I don't like using the action identifier is because flow_offload
->   slightly alters those: mirred gets split into two (FLOW_ACTION_REDIRECT
->   and FLOW_ACTION_MIRRED (mirror)).  Technically it'll still work (a redirect
->   and a mirror are different actions, so can't have the same index, so it
->   doesn't matter if they're treated as the same action-type or not) but it
->   feels like a kludge.
+> And although this isn't portable, I can state that when I build it
+> the result puts the bit-fields in the wrong location (e.g., the
+> cd_bit is in bit position 7, when it should be position 0).
+> 
+> Fix this by reordering the definitions of these struct members.
+> Upcoming patches will reimplement these definitions portably.
 > 
 
-As long as uapi semantics are not broken (which you are demonstrating it
-is not) then we are good.
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-cheers,
-jamal
+Regards,
+Bjorn
 
-> -Ed
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
+> index 884f1f52dcc2..b1ae9499c0b2 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
+> @@ -40,9 +40,9 @@ enum rmnet_map_commands {
+>  };
+>  
+>  struct rmnet_map_header {
+> -	u8  pad_len:6;
+> -	u8  reserved_bit:1;
+>  	u8  cd_bit:1;
+> +	u8  reserved_bit:1;
+> +	u8  pad_len:6;
+>  	u8  mux_id;
+>  	__be16 pkt_len;
+>  }  __aligned(1);
+> -- 
+> 2.20.1
+> 
