@@ -2,97 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC02623C60
+	by mail.lfdr.de (Postfix) with ESMTP id 4139723C5F
 	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392271AbfETPky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 11:40:54 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:43342 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388939AbfETPkx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:40:53 -0400
-Received: by mail-qt1-f196.google.com with SMTP id i26so16776174qtr.10
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 08:40:53 -0700 (PDT)
+        id S2392262AbfETPkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 11:40:43 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38481 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392252AbfETPkm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:40:42 -0400
+Received: by mail-pg1-f193.google.com with SMTP id j26so6980593pgl.5
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 08:40:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8THvH1WQJtGVoUK6eqZtfhWJEkUnsc5JWCjWKhLHCHM=;
-        b=iRtdO800nb71u7XH9vkSQBSmfW75oGi5o+6I3+Gc7Bq4kTPYxM3A5TtWP5uVSn3PCR
-         PPAYjIBHWgN3fZVV1XCu4Hzegbwuwhw9DnxFqPIVl4ETEMKLRhAkvooeGX0vjOa/mxjU
-         Y3Z7/l/xJdbTxg2f2Snt4qknt8iCLvAbAdaKewQzk7sdqzQy37w/ox2LY5NLgzTTLBiW
-         l8ETiS2Xc/u/UTjzjqTGaMvcfNJwNBWIJVxXuJBSOkRgkL7V5vbLMrbyQJumoYsvWMYV
-         DllKCqNKBjm20Zks5Twp8zKetSwFD63l5AASpkaq/ZddLA3t4Kk8GcBW0R77x7A9n7Fy
-         tNFg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=k/heyaUqeKgmsqNyqFuRQhrCnWAaJChzuChioekfYFU=;
+        b=szsaZEAWQZBAPa/oSIDZup6Sf3jSi3AJ76WcSsZC1BgEtPm2HRp1c+w0lJQChX3EX6
+         hX/GoTqMK+0+zx/9R5rDkf5m5aZmhpybbpZJQBdSeK5uTi3+UvGjBlOQcsZMpnKl4AzR
+         qlGDJn7Oq7xYDgi8LQsdENsNMpNdnWWnty6fDhrh/VjIO0o5tu81pgh8/DOF5kR34az6
+         KABjDG9DI7NtDSB5JsYly4sD4iTg3dk/qU8HG67UhbEngTVIYwRYPstU4hFei2dlyvNx
+         n7fhc7CgCLg7Z/rik+tGZirioJ5jwOUhd9dYcpPxgvLI1JGroSd3ozTGxA9XV5aVgnZs
+         VIJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8THvH1WQJtGVoUK6eqZtfhWJEkUnsc5JWCjWKhLHCHM=;
-        b=eHqLZmCnWUj7q4I2qylMvDW3dhnpHnjDOtHvd+5CvXl0j0bcDaYWQLK3UVHGbNeO2Y
-         ovkvJS9LFt3zgWmoRFdN7m6TTlnB8hygag2on1H7OU/b4e0L7I9oXY8kqCdghQnZuWSe
-         ohiGO3kdyCk0NN4LXNApcX4i8aw84/gfb1P2sf5QsTOzha62yapfy+w11/jNNKnAa3G+
-         ryrcRn648x2yAzQkatlNAAhnZR3YbQZC9bzMZ3Q3DYzDXarHW49pMa4BOHNItkAUHIJN
-         OCbWjJgSZcqEv7QEwB1gV4JeJOtyh5ryNyXrzo9Sggp4as4ZXWvjg4ezIP+cb4zyorAo
-         EOOA==
-X-Gm-Message-State: APjAAAXs8k+RUUf0zgJY+qthnuF18UNCRZjClOPau4UygVe3LuOUSuSG
-        PmV+JyspyQ+8ByJq/MFipOJ4EA==
-X-Google-Smtp-Source: APXvYqySN0Kq8+rwlU8QK019f9YHQZaFlKuXLku+Mu6CHtQe6/acd3cpy68C2D52smLScuuTB26gjw==
-X-Received: by 2002:a0c:b64a:: with SMTP id q10mr6670572qvf.59.1558366852910;
-        Mon, 20 May 2019 08:40:52 -0700 (PDT)
-Received: from [192.168.0.124] (24-212-162-241.cable.teksavvy.com. [24.212.162.241])
-        by smtp.googlemail.com with ESMTPSA id x126sm9035928qkd.34.2019.05.20.08.40.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 08:40:52 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
- statistics
-To:     Edward Cree <ecree@solarflare.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Vishal Kulkarni <vishal@chelsio.com>
-References: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
- <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
- <20190519002218.b6bcz224jkrof7c4@salvia>
- <7cdc59fd-e90f-6ff2-f429-257c8844be26@solarflare.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <c9f578f4-4dc9-f640-d4ed-fce264e65adf@mojatatu.com>
-Date:   Mon, 20 May 2019 11:40:51 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=k/heyaUqeKgmsqNyqFuRQhrCnWAaJChzuChioekfYFU=;
+        b=BDXzKD6EJdUvsRcM+RTnTbriTVa2oi4cD9s1gmSd+5UKETVHHUXc4R5KNapjTWk3gg
+         IozIDH8noOsUn5HAIMKtXGteXtUXe8FGXhnlFuAiU19zDG9nDqumKitbDpo8O7PIMPox
+         aIZJn8NAMkeUkaGXzXSULsAWeDRNMh+KHfrK8apxkZB8nNewHZCnCEWZnfD/dOjZ8isR
+         HmAlYaqF1aJobRHvPGN8Zy03LEtfGWVqk3ZeAGgBJv416cVlPyjayZv7vuVpk86BvW0n
+         LlLpIUylpOXgA7BfAEL2rNSHGVS0HUCWtMlVcKXhpdIgMX6n6ivWa8v2H2XpDkNZXquF
+         tmFA==
+X-Gm-Message-State: APjAAAX3D5rNDJMy/+UtjBVKpUsUkCARu7THv2zuI4h34MZ+5F6Pa62q
+        NquQIbc9usaj2FAWI6stB++iUg==
+X-Google-Smtp-Source: APXvYqzB4o9I2xZFF8x25ug5HF4C3D7MauyyGIjq+J9XrCQDbuj+gG89I5cVtID1X4Jo1vMXmLyuqA==
+X-Received: by 2002:aa7:9a8c:: with SMTP id w12mr80346129pfi.187.1558366841456;
+        Mon, 20 May 2019 08:40:41 -0700 (PDT)
+Received: from tuxbook-pro (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id a69sm47830937pfa.81.2019.05.20.08.40.39
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 20 May 2019 08:40:40 -0700 (PDT)
+Date:   Mon, 20 May 2019 08:41:08 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     arnd@arndb.de, subashab@codeaurora.org, david.brown@linaro.org,
+        agross@kernel.org, davem@davemloft.net,
+        ilias.apalodimas@linaro.org, cpratapa@codeaurora.org,
+        syadagir@codeaurora.org, evgreen@chromium.org, benchan@google.com,
+        ejcaruso@google.com, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/8] net: qualcomm: rmnet: kill RMNET_MAP_GET_*()
+ accessor macros
+Message-ID: <20190520154108.GQ2085@tuxbook-pro>
+References: <20190520135354.18628-1-elder@linaro.org>
+ <20190520135354.18628-3-elder@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <7cdc59fd-e90f-6ff2-f429-257c8844be26@solarflare.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190520135354.18628-3-elder@linaro.org>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-20 11:37 a.m., Edward Cree wrote:
-> On 19/05/2019 01:22, Pablo Neira Ayuso wrote:
->> On Fri, May 17, 2019 at 04:27:29PM +0100, Edward Cree wrote:
+On Mon 20 May 06:53 PDT 2019, Alex Elder wrote:
 
-> Thanks.  Looking at net/netfilter/nfnetlink_acct.c, it looks as though you
->   don't have a u32 index in there; for the cookie approach, would the
->   address of the struct nf_acct (casted to unsigned long) work to uniquely
->   identify actions that should be shared?
-> I'm not 100% sure how nf (or nfacct) offload is going to look, so I might
->   be barking up the wrong tree here.  But it seems like the cookie method
->   should work better for you — even if you did have an index, how would you
->   avoid collisions with TC actions using the same indices if both are in
->   use on a box?  Cookies OTOH are pointers, so guaranteed unique :)
+> The following macros, defined in "rmnet_map.h", assume a socket
+> buffer is provided as an argument without any real indication this
+> is the case.
+>     RMNET_MAP_GET_MUX_ID()
+>     RMNET_MAP_GET_CD_BIT()
+>     RMNET_MAP_GET_PAD()
+>     RMNET_MAP_GET_CMD_START()
+>     RMNET_MAP_GET_LENGTH()
+> What they hide is pretty trivial accessing of fields in a structure,
+> and it's much clearer to see this if we do these accesses directly.
+> 
+> So rather than using these accessor macros, assign a local
+> variable of the map header pointer type to the socket buffer data
+> pointer, and derereference that pointer variable.
+> 
+> Use the network byte order macros (e.g., ntohs()), not the Linux
+> byte order functions (e.g. be_to_cpu16()) to convert the big-endian
+> packet length field, to match the convention used elswhere in the
+> driver.
+> 
+> There's no need to byte swap 0; it's all zeros irrespective of
+> endianness.
+> 
 
-A little concerned:
-Hopefully all these can be manipulated by tc as well - otherwise we are
-opening some other big pandora box of two subsystems fighting each
-other.
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-cheers,
-jamal
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c |  9 +++++----
+>  drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h      | 12 ------------
+>  .../net/ethernet/qualcomm/rmnet/rmnet_map_command.c  | 11 ++++++++---
+>  drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c |  4 ++--
+>  4 files changed, 15 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
+> index 11167abe5934..4c1b62b72504 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
+> @@ -65,20 +65,21 @@ static void
+>  __rmnet_map_ingress_handler(struct sk_buff *skb,
+>  			    struct rmnet_port *port)
+>  {
+> +	struct rmnet_map_header *map_header = (void *)skb->data;
+>  	struct rmnet_endpoint *ep;
+>  	u16 len, pad;
+>  	u8 mux_id;
+>  
+> -	if (RMNET_MAP_GET_CD_BIT(skb)) {
+> +	if (map_header->cd_bit) {
+>  		if (port->data_format & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
+>  			return rmnet_map_command(skb, port);
+>  
+>  		goto free_skb;
+>  	}
+>  
+> -	mux_id = RMNET_MAP_GET_MUX_ID(skb);
+> -	pad = RMNET_MAP_GET_PAD(skb);
+> -	len = RMNET_MAP_GET_LENGTH(skb) - pad;
+> +	mux_id = map_header->mux_id;
+> +	pad = map_header->pad_len;
+> +	len = ntohs(map_header->pkt_len) - pad;
+>  
+>  	if (mux_id >= RMNET_MAX_LOGICAL_EP)
+>  		goto free_skb;
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
+> index b1ae9499c0b2..a30a7b405a11 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
+> @@ -63,18 +63,6 @@ struct rmnet_map_ul_csum_header {
+>  	u16 csum_enabled:1;
+>  } __aligned(1);
+>  
+> -#define RMNET_MAP_GET_MUX_ID(Y) (((struct rmnet_map_header *) \
+> -				 (Y)->data)->mux_id)
+> -#define RMNET_MAP_GET_CD_BIT(Y) (((struct rmnet_map_header *) \
+> -				(Y)->data)->cd_bit)
+> -#define RMNET_MAP_GET_PAD(Y) (((struct rmnet_map_header *) \
+> -				(Y)->data)->pad_len)
+> -#define RMNET_MAP_GET_CMD_START(Y) ((struct rmnet_map_control_command *) \
+> -				    ((Y)->data + \
+> -				      sizeof(struct rmnet_map_header)))
+> -#define RMNET_MAP_GET_LENGTH(Y) (ntohs(((struct rmnet_map_header *) \
+> -					(Y)->data)->pkt_len))
+> -
+>  #define RMNET_MAP_COMMAND_REQUEST     0
+>  #define RMNET_MAP_COMMAND_ACK         1
+>  #define RMNET_MAP_COMMAND_UNSUPPORTED 2
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
+> index f6cf59aee212..f675f47c3495 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_command.c
+> @@ -20,12 +20,13 @@ static u8 rmnet_map_do_flow_control(struct sk_buff *skb,
+>  				    struct rmnet_port *port,
+>  				    int enable)
+>  {
+> +	struct rmnet_map_header *map_header = (void *)skb->data;
+>  	struct rmnet_endpoint *ep;
+>  	struct net_device *vnd;
+>  	u8 mux_id;
+>  	int r;
+>  
+> -	mux_id = RMNET_MAP_GET_MUX_ID(skb);
+> +	mux_id = map_header->mux_id;
+>  
+>  	if (mux_id >= RMNET_MAX_LOGICAL_EP) {
+>  		kfree_skb(skb);
+> @@ -57,6 +58,7 @@ static void rmnet_map_send_ack(struct sk_buff *skb,
+>  			       unsigned char type,
+>  			       struct rmnet_port *port)
+>  {
+> +	struct rmnet_map_header *map_header = (void *)skb->data;
+>  	struct rmnet_map_control_command *cmd;
+>  	struct net_device *dev = skb->dev;
+>  
+> @@ -66,7 +68,8 @@ static void rmnet_map_send_ack(struct sk_buff *skb,
+>  
+>  	skb->protocol = htons(ETH_P_MAP);
+>  
+> -	cmd = RMNET_MAP_GET_CMD_START(skb);
+> +	/* Command data immediately follows the header */
+> +	cmd = (struct rmnet_map_control_command *)(map_header + 1);
+>  	cmd->cmd_type = type & 0x03;
+>  
+>  	netif_tx_lock(dev);
+> @@ -79,11 +82,13 @@ static void rmnet_map_send_ack(struct sk_buff *skb,
+>   */
+>  void rmnet_map_command(struct sk_buff *skb, struct rmnet_port *port)
+>  {
+> +	struct rmnet_map_header *map_header = (void *)skb->data;
+>  	struct rmnet_map_control_command *cmd;
+>  	unsigned char command_name;
+>  	unsigned char rc = 0;
+>  
+> -	cmd = RMNET_MAP_GET_CMD_START(skb);
+> +	/* Command data immediately follows the header */
+> +	cmd = (struct rmnet_map_control_command *)(map_header + 1);
+>  	command_name = cmd->command_name;
+>  
+>  	switch (command_name) {
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> index 57a9c314a665..498f20ba1826 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> @@ -323,7 +323,7 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
+>  		return NULL;
+>  
+>  	maph = (struct rmnet_map_header *)skb->data;
+> -	packet_len = ntohs(maph->pkt_len) + sizeof(struct rmnet_map_header);
+> +	packet_len = ntohs(maph->pkt_len) + sizeof(*maph);
+>  
+>  	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
+>  		packet_len += sizeof(struct rmnet_map_dl_csum_trailer);
+> @@ -332,7 +332,7 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
+>  		return NULL;
+>  
+>  	/* Some hardware can send us empty frames. Catch them */
+> -	if (ntohs(maph->pkt_len) == 0)
+> +	if (!maph->pkt_len)
+>  		return NULL;
+>  
+>  	skbn = alloc_skb(packet_len + RMNET_MAP_DEAGGR_SPACING, GFP_ATOMIC);
+> -- 
+> 2.20.1
+> 
