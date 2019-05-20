@@ -2,107 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC6323C59
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC02623C60
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388808AbfETPkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 11:40:35 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:45423 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731091AbfETPkf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:40:35 -0400
-Received: by mail-ed1-f66.google.com with SMTP id g57so24482416edc.12
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 08:40:34 -0700 (PDT)
+        id S2392271AbfETPky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 11:40:54 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:43342 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388939AbfETPkx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:40:53 -0400
+Received: by mail-qt1-f196.google.com with SMTP id i26so16776174qtr.10
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 08:40:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jP6daD5wGfF6Yv5hjVkyCjRza/unbAeRgr5gAnYelDw=;
-        b=Lvr5DCYG0Q7ZKYgFBt9BGDSD6TWTikz7uYGZkk8YVW/lnqrWLTa/91fMe1cXDD8Flc
-         ddRdjMdp06XnkCBea6qDaV/uKLwBqhM3Th41aSAHJtbN6zVWNaiO74n/hDJs+eUYeKH1
-         1ckamoXJ8GWUP0/7uKVTtnHBjqolwr1t9XY33S+2j0M/eBXgLw33jdsS5kx4KL4OrWtB
-         eDSmHAST7gx7p0j8rNNHq8XY7yDVsf2b+gU+nDkEbRPR3rrKm4qNQsBaz+MJT1LfNZ96
-         s+QoglJrdBVVlb5ZElSJeEL1vlwx877dnOOJH6H6YuWLCAIibEJOLc2vWgshCYPKDZ7H
-         4FUA==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8THvH1WQJtGVoUK6eqZtfhWJEkUnsc5JWCjWKhLHCHM=;
+        b=iRtdO800nb71u7XH9vkSQBSmfW75oGi5o+6I3+Gc7Bq4kTPYxM3A5TtWP5uVSn3PCR
+         PPAYjIBHWgN3fZVV1XCu4Hzegbwuwhw9DnxFqPIVl4ETEMKLRhAkvooeGX0vjOa/mxjU
+         Y3Z7/l/xJdbTxg2f2Snt4qknt8iCLvAbAdaKewQzk7sdqzQy37w/ox2LY5NLgzTTLBiW
+         l8ETiS2Xc/u/UTjzjqTGaMvcfNJwNBWIJVxXuJBSOkRgkL7V5vbLMrbyQJumoYsvWMYV
+         DllKCqNKBjm20Zks5Twp8zKetSwFD63l5AASpkaq/ZddLA3t4Kk8GcBW0R77x7A9n7Fy
+         tNFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jP6daD5wGfF6Yv5hjVkyCjRza/unbAeRgr5gAnYelDw=;
-        b=BEgtMALWCffh35iZyhKzGnpYk4zTFRhyueOH9cwmS/H7iFJJyiWyFCl5Z6RUw/GgS5
-         7AdBSELXVZbrW4N8OgPlq9W6SNtiTN68+cTSF/B+DSHgsCZmUfXO1sShR6dY8vMJjXvo
-         ++NtP8eS5PRa2uXesEH1WT7dAEu380Wcl2Ie0VdPhJm3nXK2bjYyESb/w/1CAuoFF30x
-         A4egA0pkJOwetviq4xSkE9FiMmoU3Qt1s3QVOrtzYdJGZUxbLbJZmZT2h6PGEPz3/ehH
-         dqfHNiGerSauBvbzOgLbhlHYSF/xtg3Q0np97vmcVen8aHPvyUrBd9GsY+TXsoNK+8oT
-         pRJw==
-X-Gm-Message-State: APjAAAWnBh666Sgx3+MHeCEliuBo/FFeDeqN7gVbTW5qLjeV0rkX54iu
-        UMgZnNsFT9snPe2GjF5UCB39q16vG9hCtlafPDs=
-X-Google-Smtp-Source: APXvYqySJpKfk5ei6JIc3790A2e4wMebE5BQ/wUaY14o/7jn8YSWWrVfCNYpScS17zIzOIr+xwthu1jtLD4qvdRfsOQ=
-X-Received: by 2002:a17:906:f19a:: with SMTP id gs26mr52217363ejb.78.1558366833897;
- Mon, 20 May 2019 08:40:33 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8THvH1WQJtGVoUK6eqZtfhWJEkUnsc5JWCjWKhLHCHM=;
+        b=eHqLZmCnWUj7q4I2qylMvDW3dhnpHnjDOtHvd+5CvXl0j0bcDaYWQLK3UVHGbNeO2Y
+         ovkvJS9LFt3zgWmoRFdN7m6TTlnB8hygag2on1H7OU/b4e0L7I9oXY8kqCdghQnZuWSe
+         ohiGO3kdyCk0NN4LXNApcX4i8aw84/gfb1P2sf5QsTOzha62yapfy+w11/jNNKnAa3G+
+         ryrcRn648x2yAzQkatlNAAhnZR3YbQZC9bzMZ3Q3DYzDXarHW49pMa4BOHNItkAUHIJN
+         OCbWjJgSZcqEv7QEwB1gV4JeJOtyh5ryNyXrzo9Sggp4as4ZXWvjg4ezIP+cb4zyorAo
+         EOOA==
+X-Gm-Message-State: APjAAAXs8k+RUUf0zgJY+qthnuF18UNCRZjClOPau4UygVe3LuOUSuSG
+        PmV+JyspyQ+8ByJq/MFipOJ4EA==
+X-Google-Smtp-Source: APXvYqySN0Kq8+rwlU8QK019f9YHQZaFlKuXLku+Mu6CHtQe6/acd3cpy68C2D52smLScuuTB26gjw==
+X-Received: by 2002:a0c:b64a:: with SMTP id q10mr6670572qvf.59.1558366852910;
+        Mon, 20 May 2019 08:40:52 -0700 (PDT)
+Received: from [192.168.0.124] (24-212-162-241.cable.teksavvy.com. [24.212.162.241])
+        by smtp.googlemail.com with ESMTPSA id x126sm9035928qkd.34.2019.05.20.08.40.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 20 May 2019 08:40:52 -0700 (PDT)
+Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
+ statistics
+To:     Edward Cree <ecree@solarflare.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+References: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
+ <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
+ <20190519002218.b6bcz224jkrof7c4@salvia>
+ <7cdc59fd-e90f-6ff2-f429-257c8844be26@solarflare.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <c9f578f4-4dc9-f640-d4ed-fce264e65adf@mojatatu.com>
+Date:   Mon, 20 May 2019 11:40:51 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190520152134.qyka5t7c2i7drk4a@shell.armlinux.org.uk>
-In-Reply-To: <20190520152134.qyka5t7c2i7drk4a@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 20 May 2019 18:40:22 +0300
-Message-ID: <CA+h21hrVzeVq6RTtGAaLGnxug8wPcU34iJHJEDjQ04EJmQ-8Zw@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/4] phylink/sfp updates
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>, ioana.ciornei@nxp.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <7cdc59fd-e90f-6ff2-f429-257c8844be26@solarflare.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 May 2019 at 18:21, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> Hi,
->
-> I realise that net-next probably isn't open yet, but I believe folk
-> will find these patches "interesting" so I'm sending them to share
-> them with people working on this code, rather than expecting them to
-> be picked up this week.
->
-> The first patch adds support for using interrupts when using a GPIO
-> for link status tracking, rather than polling it at one second
-> intervals.  This reduces the need to wakeup the CPU every second.
->
-> The second patch adds support to the MII ioctl API to read and write
-> Clause 45 PHY registers.  I don't know how desirable this is for
-> mainline, but I have used this facility extensively to investigate
-> the Marvell 88x3310 PHY.
->
-> There have been discussions about removing "netdev" from phylink.
-> The last two patches remove netdev from the sfp code, which would be
-> a necessary step in that direction.
+On 2019-05-20 11:37 a.m., Edward Cree wrote:
+> On 19/05/2019 01:22, Pablo Neira Ayuso wrote:
+>> On Fri, May 17, 2019 at 04:27:29PM +0100, Edward Cree wrote:
 
-Hi Russell,
+> Thanks.  Looking at net/netfilter/nfnetlink_acct.c, it looks as though you
+>   don't have a u32 index in there; for the cookie approach, would the
+>   address of the struct nf_acct (casted to unsigned long) work to uniquely
+>   identify actions that should be shared?
+> I'm not 100% sure how nf (or nfacct) offload is going to look, so I might
+>   be barking up the wrong tree here.  But it seems like the cookie method
+>   should work better for you — even if you did have an index, how would you
+>   avoid collisions with TC actions using the same indices if both are in
+>   use on a box?  Cookies OTOH are pointers, so guaranteed unique :)
 
-I've been working with Ioana to introduce a
-phylink_create_raw/phylink_attach_raw set of function that work in the
-absence of an attached_dev. It does not remove the netdev references
-from the existing code, just guards the few places that needed that.
-Then we plugged it into DSA (via a notifier block) and now phylink is
-used for both the user and non-user ports. Next step is to make the
-dpaa2-mac driver use this new API and send the patchset for review.
-Hopefully that will happen tomorrow.
+A little concerned:
+Hopefully all these can be manipulated by tc as well - otherwise we are
+opening some other big pandora box of two subsystems fighting each
+other.
 
--Vladimir
-
->
->  drivers/net/phy/phy.c     | 33 ++++++++++++++++++++--------
->  drivers/net/phy/phylink.c | 55 +++++++++++++++++++++++++++++++++++++++++------
->  drivers/net/phy/sfp-bus.c | 14 +++++-------
->  include/linux/sfp.h       | 12 +++++++----
->  4 files changed, 86 insertions(+), 28 deletions(-)
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> According to speedtest.net: 11.9Mbps down 500kbps up
+cheers,
+jamal
