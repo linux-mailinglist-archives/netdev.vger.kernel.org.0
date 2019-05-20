@@ -2,132 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 785BC23CD7
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 18:04:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D78C23CE9
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 18:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392527AbfETQEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 12:04:13 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:39899 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392520AbfETQEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 12:04:12 -0400
-Received: by mail-pl1-f196.google.com with SMTP id g9so6921602plm.6
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 09:04:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=H+BJB3XofyjMBzl6IuBWPmnMj0izyvSUxO/CpTKK1zc=;
-        b=hnL9NVzjCWe2lIwkTEcU8KVQ+Et0kXRD9UuFtdPunRg3hk3tjlam3RPbbB7k52ubqL
-         tJ38XwwbGOwH0AFpm4VtJHOZ+i6MNUOninMm2lstGeaRpOLEeyOvLnrJYNdA9jqLZ0jY
-         LHevsiFGHFOXT4fUVtNvpSO/Orq9J6LMMgTrqRUDfKku5XyrjTmM+ikDyPsDLHkboD1W
-         7988lHv+oLm+6uWXyDqdpVvv0PAAgPoQtAVZkqBtVyqy4hC6zsxG2qlrnK0TuVNQxMRK
-         4fzWHuzRdJLHkjrAw8oal5ZYTEPPHRekNvYDcZsSQpv5v3FpUnA8eEjrd5QBFiAuV75c
-         Jrwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=H+BJB3XofyjMBzl6IuBWPmnMj0izyvSUxO/CpTKK1zc=;
-        b=H5RzSLbmSlaTizKPW2qNJEo5T0zFdmK15Ex2LhVTBaukZL3xDCeuXbwdBbUyPkvZOd
-         KuNNBuuHMlamewSaO/JTN14mmjoRTsp5LhcCJ3zvRWvVKn1+m+qJASS184gs/q9tIA9d
-         GWQVTwsKOgwyZpU7Xx4GfazYm8KWUprbML0fMhx+lQ0le90kBKjR4nHwAXVRE5fDb4tQ
-         YRb6khFZuRGgWhFvnTaWnXPsG+luLkyaLiQ7ZmMg7kmJoghx0vtyB3FWOn1TMq55++2U
-         nEKPcQKM+Qsg3jt/YwyK4CWMtxxBn45sy67goEQsOVNaiYiFcwtYo9jyv83BIorpAVWf
-         sdkA==
-X-Gm-Message-State: APjAAAWn2PnGMwa9xjZ8OzL2iy86ZABA6ReowqGVHVez0rQrEYs21/AM
-        6nm8yo7ASVoPHzaWDMSkSV3tsw==
-X-Google-Smtp-Source: APXvYqztibCADGVODRmEk4szKd4AhYTmp8cMzoPSJaz0RvoWX47dzIWQ3dzVLfUF1pFx8gIkGKmncQ==
-X-Received: by 2002:a17:902:728d:: with SMTP id d13mr34154496pll.337.1558368252119;
-        Mon, 20 May 2019 09:04:12 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id v81sm36546287pfa.16.2019.05.20.09.04.11
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 May 2019 09:04:12 -0700 (PDT)
-Date:   Mon, 20 May 2019 09:04:05 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        xdp-newbies@vger.kernel.org, bpf@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v2 net 2/2] net: core: generic XDP support for stacked
- device
-Message-ID: <20190520090405.69b419e5@hermes.lan>
-In-Reply-To: <20190520091105.GA2142@nanopsycho>
-References: <20190519031046.4049-1-sthemmin@microsoft.com>
-        <20190519031046.4049-3-sthemmin@microsoft.com>
-        <20190520091105.GA2142@nanopsycho>
+        id S2389042AbfETQLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 12:11:06 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:52744 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387513AbfETQLG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 12:11:06 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id DDF6B7800B5;
+        Mon, 20 May 2019 16:11:04 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 20 May
+ 2019 09:10:44 -0700
+Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
+ statistics
+To:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "Pablo Neira Ayuso" <pablo@netfilter.org>,
+        David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+References: <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
+ <f4fdc1f1-bee2-8456-8daa-fbf65aabe0d4@solarflare.com>
+ <cacfe0ec-4a98-b16b-ef30-647b9e50759d@mojatatu.com>
+ <f27a6a44-5016-1d17-580c-08682d29a767@solarflare.com>
+ <3db2e5bf-4142-de4b-7085-f86a592e2e09@mojatatu.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <17cf3488-6f17-cb59-42a3-6b73f7a0091e@solarflare.com>
+Date:   Mon, 20 May 2019 17:10:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <3db2e5bf-4142-de4b-7085-f86a592e2e09@mojatatu.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24624.005
+X-TM-AS-Result: No-14.360900-4.000000-10
+X-TMASE-MatchedRID: WMT2WRIkHPPmLzc6AOD8DfHkpkyUphL9NV9S7O+u3Ka2ZO4LLn5VShAa
+        tES/U7wV9376qnd+Dz7k0pQKEYGk1EKPluOEKT3/Iwk7p1qp3JahmhSedX3bwmmJ+7V5rRczT5j
+        NhKqBMgabcLuvF7mKkMKztThuQn/GXHYbXzCVxL43X0+M8lqGUrK2BPB+RqJ9ommsqZ2nyk8MmM
+        T/PJy+pOg2MNGKY1m996I4JfaNu8kM5WJq5oHS2Yrkmrf0Igi/4sNkJLS+x0QrVk6u1Q5ye+DGR
+        KQQH0piGNopF9Up6vyMA/tn63EgdjC8Z6yBHvVBJDcimQIrvHhqzXAAkex/IuhIuiTtbcXXLN7Y
+        /j9rSN/7cwVpwiGNaySeeEG0FurMBy0s9WEbFp5yFiJvyj8nUI19AQoYrNi9QTf+q86OAUsjJxw
+        pT9SCm26lKwpaJzZceHmJYxnmx2hccQ8eam5EfYMbH85DUZXy3QfwsVk0UbvdirxFVpmK9Ti9gl
+        VqlHsn4TXbx8uRI5191PrW4g6U1DFEXBryO0v86FWB09b9RE0=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--14.360900-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24624.005
+X-MDID: 1558368665-rntPvnwvqkLQ
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 May 2019 11:11:05 +0200
-Jiri Pirko <jiri@resnulli.us> wrote:
+On 20/05/2019 16:38, Jamal Hadi Salim wrote:
+> That is fine then if i could do:
+>
+> tc actions add action drop index 104
+> then
+> followed by for example the two filters you show below..
+That seems to work.
 
-> Sun, May 19, 2019 at 05:10:46AM CEST, stephen@networkplumber.org wrote:
-> >When a device is stacked like (team, bonding, failsafe or netvsc) the
-> >XDP generic program for the parent device is not called.  In these
-> >cases, the rx handler changes skb->dev to its own in the receive
-> >handler, and returns RX_HANDLER_ANOTHER.  Fix this by calling
-> >do_xdp_generic if necessary before starting another round.
-> >
-> >Review of all the places RX_HANDLER_ANOTHER is returned
-> >show that the current devices do correctly change skb->dev.
-> >
-> >There was an older patch that got abandoned that did the
-> >same thing, this is just a rewrite.
-> >
-> >Suggested-by: Jason Wang <jasowang@redhat.com>
-> >Fixes: d445516966dc ("net: xdp: support xdp generic on virtual devices")
-> >Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
-> >Acked-by: Jason Wang <jasowang@redhat.com>
-> >---
-> > net/core/dev.c | 10 ++++++++++
-> > 1 file changed, 10 insertions(+)
-> >
-> >diff --git a/net/core/dev.c b/net/core/dev.c
-> >index b6b8505cfb3e..240d0b2de1a8 100644
-> >--- a/net/core/dev.c
-> >+++ b/net/core/dev.c
-> >@@ -4921,6 +4921,16 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
-> > 			ret = NET_RX_SUCCESS;
-> > 			goto out;
-> > 		case RX_HANDLER_ANOTHER:
-> >+			if (static_branch_unlikely(&generic_xdp_needed_key)) {
-> >+				struct bpf_prog *xdp_prog;
-> >+
-> >+				xdp_prog = rcu_dereference(skb->dev->xdp_prog);
-> >+				ret = do_xdp_generic(xdp_prog, skb);
-> >+				if (ret != XDP_PASS) {
-> >+					ret = NET_RX_SUCCESS;
-> >+					goto out;
-> >+				}
-> >+			}  
-> 
-> I'm always scarred of changes like this. The history tells us that this
-> codepaths are very fragile. It took us non-trivial efford to fix bonding
-> here, not to mention vlans (that was pain).
-> 
-> The reason for troubles was often fact that different flows were treated
-> differently (vlan accel/non-accel).
-> 
-> This patch calls do_xdp_generic for master device in different point in
-> the receive patch comparing to lower device. Would it be possible to
-> unify this? E.g. by moving do_xdp_generice() call from
-> netif_rx_internal()/netif_receive_skb_internal() here,
-> to the beginning of __netif_receive_skb_core()?
-> 
+> Is your hardware not using explicit indices into a stats table?
+No; we ask the HW to allocate a counter and it returns us a counter ID (which
+ bears no relation to the action index).  So I have an rhashtable keyed on
+ the cookie (or on the action-type & action_index, when using the other
+ version of my patches) which stores the HW counter ID; and the entry in that
+ hashtable is what I attach to the driver's action struct.
 
-I am trying that now. But one problem is that it would break the case
-where XDP was being run on one leg of a bridge. For example if eth1 is
-part of br0; then it would no longer be possible to run XDP on eth1.
+> Beauty.  Assuming the stats are being synced to the kernel?
+> Test 1:
+> What does "tc -s actions ls action drop index 104" show?
+It produces no output, but
+    `tc -s actions get action drop index 104`
+or
+    `tc -s actions list action gact index 104`
+shows the same stats as `tc -s filter show ...` did for that action.
+> Test 2:
+> Delete one of the filters above then dump actions again as above.
+Ok, that's weird: after I delete one, the other (in `tc -s filter show ...`)
+ no longer shows the shared action.
 
-Running XDP on eth1 might be used to do some kind of ILA or overlay
-network. That change would break it.
+# tc filter del dev $vfrep parent ffff: pref 49151
+# tc -stats filter show dev $vfrep parent ffff:
+filter protocol arp pref 49152 flower chain 0
+filter protocol arp pref 49152 flower chain 0 handle 0x1
+  eth_type arp
+  skip_sw
+  in_hw in_hw_count 1
+        action order 1: vlan  push id 100 protocol 802.1Q priority 0 pipe
+         index 1 ref 1 bind 1 installed 180 sec used 180 sec
+        Action statistics:
+        Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+        backlog 0b 0p requeues 0
 
+        action order 2: mirred (Egress Mirror to device $pf) pipe
+        index 101 ref 1 bind 1 installed 180 sec used 169 sec
+        Action statistics:
+        Sent 256 bytes 4 pkt (dropped 0, overlimits 0 requeues 0)
+        Sent software 0 bytes 0 pkt
+        Sent hardware 256 bytes 4 pkt
+        backlog 0b 0p requeues 0
 
+        action order 3: vlan  pop pipe
+         index 2 ref 1 bind 1 installed 180 sec used 180 sec
+        Action statistics:
+        Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+        backlog 0b 0p requeues 0
+
+#
+
+Yet `tc -s actions get` still shows it...
+
+# tc -s actions get action drop index 104
+total acts 0
+
+        action order 1: gact action drop
+         random type none pass val 0
+         index 104 ref 2 bind 1 installed 812 sec used 797 sec
+        Action statistics:
+        Sent 534 bytes 7 pkt (dropped 7, overlimits 0 requeues 0)
+        Sent software 0 bytes 0 pkt
+        Sent hardware 534 bytes 7 pkt
+        backlog 0b 0p requeues 0
+# tc filter show dev $vfrep parent ffff:
+filter protocol arp pref 49152 flower chain 0
+filter protocol arp pref 49152 flower chain 0 handle 0x1
+  eth_type arp
+  skip_sw
+  in_hw in_hw_count 1
+        action order 1: vlan  push id 100 protocol 802.1Q priority 0 pipe
+         index 1 ref 1 bind 1
+
+        action order 3: vlan  pop pipe
+         index 2 ref 1 bind 1
+
+# tc -s actions get action mirred index 101
+total acts 0
+
+        action order 1: mirred (Egress Mirror to device $pf) pipe
+        index 101 ref 1 bind 1 installed 796 sec used 785 sec
+        Action statistics:
+        Sent 256 bytes 4 pkt (dropped 0, overlimits 0 requeues 0)
+        Sent software 0 bytes 0 pkt
+        Sent hardware 256 bytes 4 pkt
+        backlog 0b 0p requeues 0
+#
+
+Curiouser and curiouser... it seems that after I delete one of the rules,
+ TC starts to get very confused and actions start disappearing from rule
+ dumps.  Yet those actions still exist according to `tc actions list`.
+I don't *think* my changes can have caused this, but I'll try a test on a
+ vanilla kernel just to make sure the same thing happens there.
+
+-Ed
