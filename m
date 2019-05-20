@@ -2,143 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EC6523DE8
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 18:58:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D1CF23DFB
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 19:03:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390002AbfETQ6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 12:58:08 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34034 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388204AbfETQ6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 12:58:07 -0400
-Received: by mail-pg1-f195.google.com with SMTP id c13so7076900pgt.1
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 09:58:07 -0700 (PDT)
+        id S2390330AbfETRDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 13:03:30 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:46964 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390006AbfETRDa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 13:03:30 -0400
+Received: by mail-pg1-f193.google.com with SMTP id t187so7053519pgb.13
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 10:03:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=QkODJEttn5U4TiN+Jib+y6Ur/e6sPblJJkX63+IVXiQ=;
-        b=sSyVttRxBNaAF2DW1T32Ps+2Iv+PxLQjiLidFh1l01mAeedKMArmZvKVSxFOhipVoY
-         3B4Wywe5VoeElqx8D05f5uiIhpa7YbHSrstexxaoqeMV0g+WbtL7qqnaIR20ruZd1kir
-         hF5MspVgl6L1MLFP52n/kZ+p6JgVO+3GEB6Q+O1lmkLa+SaV+02AKrwpAwUmrC6wPxhL
-         NvrAzinNrDgCggqrXQo0IoRr8CQqzpJjlQX4abt753EF3HXNWBZIvxchc/V0iJK9pfpj
-         +8Org28btTWfMs5dyB88KSUT4joVpOduB837yt0DUgvbLNsEYRzHGbJaBfJRy9JVMyC1
-         3KKQ==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=x8ttiJZRDFEXEXr3dvnIQip5we4nIXnwRMovXRxRh7U=;
+        b=pASffhFBDpb//4tW1cU1pgZYxu3HPsJ/CtgRGQXCWM6mVdCjviLkqd7NL5ATzIUxM1
+         T7oC6uwbxA9Bw3oF8EUgoOx3lSmfFPRsEXM4Qe001VTkxxvPfVheOn0h/R6/DYiuORoz
+         +Ae39uBYKcAIliYymLdeFpu+GivRuSnwDFBcp/kk7NLFesyBsJMUF9iY0R1M5GlXDcuw
+         MTvS9RAzx/XKpldmQk0XEv7tyL/KuMkWflWIk0eMV22sTAuAyJcP0sssHG0+AY94XtYn
+         3QqqfCUw29iXorolhixWKCt2SiK3x+Ja4cYNBuZPZnBbsCLlvQufHkz2LoPPWSEx90hg
+         FMvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QkODJEttn5U4TiN+Jib+y6Ur/e6sPblJJkX63+IVXiQ=;
-        b=ls0fuki643zluRsxCulJvtS21IZVcvblpOBO1x6giD6Aquzcc2BLpchYUUdCXon1Ni
-         /W6EoIBoO+fwg45t7YWOmDjWj4Fl62JErBOWmSY9+DBWWyrn+JcPlMI+hDRdEOBj+Fd1
-         WF5Hp5e5hDX2MV4yd3rSv1Me5DmT8t7Pp4yfvnPU+f0st6J+AIhfUR8/MfP1cpjhXiqb
-         HgfnB5BxjramHE0Yu/gWCr9QXFb1OfJ5nL4xuFKK1RjZpurE6D9eylocdLfkozucI6Eb
-         Lu2yqj+z2E/s+bH4TiGURhn68r3gv1eMVnFNUwkRlRbWsEsoWq0IGUA1Rbka0vTJjRBK
-         dH0g==
-X-Gm-Message-State: APjAAAUlUx2PuinbIdyQIGnCBbKC54On9FQNzDcJDRq2kR/3JAHRksDk
-        nmPM1aHU454+qmdqd0GI5fXNcTzR
-X-Google-Smtp-Source: APXvYqxTEWVIPZ72UakUTTxLktsU7orh2lE3y9Xt3Uwb9J+cP7Cfjn9MedGYhbVygGEqyhM62wHKOQ==
-X-Received: by 2002:a63:7c55:: with SMTP id l21mr52047689pgn.121.1558371486963;
-        Mon, 20 May 2019 09:58:06 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:4813:9811:27e6:a3ed? ([2601:282:800:fd80:4813:9811:27e6:a3ed])
-        by smtp.googlemail.com with ESMTPSA id i12sm22373216pfd.33.2019.05.20.09.58.05
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 09:58:05 -0700 (PDT)
-Subject: Re: [PATCH net] net/ipv6: Reinstate ping/traceroute use with source
- address in VRF
-To:     Mike Manning <mmanning@vyatta.att-mail.com>, netdev@vger.kernel.org
-References: <20190520084041.10393-1-mmanning@vyatta.att-mail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <1d14e6d9-5cac-064d-aa4e-bad667516c75@gmail.com>
-Date:   Mon, 20 May 2019 10:58:04 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=x8ttiJZRDFEXEXr3dvnIQip5we4nIXnwRMovXRxRh7U=;
+        b=keV/Mbkgn89LbDeYozc0McPiaYlK/sTtXc258F3tZnGybmckZDlLV1pu9iUxoiRt+r
+         xEIoynAn+YpFR0e87e25ppH5uhKJqtYpGDZDbih3vvoGeJKjZF9MKzec2+oF/wLSZqux
+         mjx4CJUv0dTmKQM6U8/LK6Kf0uR++wOJy9mLr+7nhJa+eN2crCIFa1a+3h7Bv3og/Ev4
+         KknvqEu8zsjQQ7nqcKa9Nc6vg2q7Qf4S847/E5mL7bhglK15DkirZWGYUVKRfctI6Oyv
+         HSzYzSMpmB/iDR3X+kqTcpcoPuYtUHKI1C3FJ/4aXqKNqh0rI1pHekyCA+tD3agtjHUp
+         Ju2g==
+X-Gm-Message-State: APjAAAVbfj7kb6nGRVVb+AD5qcs2EcFxVixchY5Ea/sURsbTi8FCwgc8
+        2puzun0GpfRxy7a2s+ztwLvMVair7mc=
+X-Google-Smtp-Source: APXvYqwcLNWSh73q8yvFMy+xsBsWeQXPr81v/rq17eTkrcq7pwW1fAe5Lz8cxkrPp5Zm+Lawm/zufg==
+X-Received: by 2002:a63:8b4b:: with SMTP id j72mr76374031pge.318.1558371809586;
+        Mon, 20 May 2019 10:03:29 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id y13sm23435729pfb.143.2019.05.20.10.03.29
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 20 May 2019 10:03:29 -0700 (PDT)
+Date:   Mon, 20 May 2019 10:03:22 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        Phil Sutter <phil@nwl.cc>
+Subject: Re: [PATCH iproute2 net-next] ip: add a new parameter -Numeric
+Message-ID: <20190520100322.2276a76d@hermes.lan>
+In-Reply-To: <4e2e8ba7-7c80-4d35-9255-c6dac47df4e7@gmail.com>
+References: <20190520075648.15882-1-liuhangbin@gmail.com>
+        <4e2e8ba7-7c80-4d35-9255-c6dac47df4e7@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190520084041.10393-1-mmanning@vyatta.att-mail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/20/19 2:40 AM, Mike Manning wrote:
-> Since the commit 1893ff20275b ("net/ipv6: Add l3mdev check to
-> ipv6_chk_addr_and_flags"), traceroute using TCP SYN or ICMP ECHO option
-> and ping fail when specifying a source address typically on a loopback
-> /dummy interface in the same VRF, e.g.:
-> 
->     # ip vrf exec vrfgreen ping 3000::1 -I 2222::2
->     ping: bind icmp socket: Cannot assign requested address
->     # ip vrf exec vrfgreen traceroute 3000::1 -s 2222::2 -T
->     bind: Cannot assign requested address
-> 
-> IPv6 traceroute using default UDP and IPv4 ping & traceroute continue
-> to work inside a VRF using a source address.
-> 
-> The reason is that the source address is provided via bind without a
-> device given by these applications in this case. The call to
-> ipv6_check_addr() in rawv6_bind() returns false as the default VRF is
-> assumed if no dev was given, but the src addr is in a non-default VRF.
-> 
-> The solution is to check that the address exists in the L3 domain that
-> the dev is part of only if the dev has been specified.
-> 
-> Signed-off-by: Mike Manning <mmanning@vyatta.att-mail.com>
-> ---
->  net/ipv6/addrconf.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> index f96d1de79509..3963306ec27f 100644
-> --- a/net/ipv6/addrconf.c
-> +++ b/net/ipv6/addrconf.c
-> @@ -1908,6 +1908,7 @@ int ipv6_chk_addr_and_flags(struct net *net, const struct in6_addr *addr,
->  			    int strict, u32 banned_flags)
->  {
->  	unsigned int hash = inet6_addr_hash(net, addr);
-> +	const struct net_device *orig_dev = dev;
->  	const struct net_device *l3mdev;
->  	struct inet6_ifaddr *ifp;
->  	u32 ifp_flags;
-> @@ -1922,7 +1923,7 @@ int ipv6_chk_addr_and_flags(struct net *net, const struct in6_addr *addr,
->  		if (!net_eq(dev_net(ifp->idev->dev), net))
->  			continue;
->  
-> -		if (l3mdev_master_dev_rcu(ifp->idev->dev) != l3mdev)
-> +		if (orig_dev && l3mdev_master_dev_rcu(ifp->idev->dev) != l3mdev)
->  			continue;
->  
->  		/* Decouple optimistic from tentative for evaluation here.
-> 
+On Mon, 20 May 2019 09:18:08 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-Wrong fix. When looking up the address you have to give the L3 domain of
-interest.
+> On 5/20/19 1:56 AM, Hangbin Liu wrote:
+> > When calles rtnl_dsfield_n2a(), we get the dsfield name from
+> > /etc/iproute2/rt_dsfield. But different distribution may have
+> > different names. So add a new parameter '-Numeric' to only show
+> > the dsfield number.
+> > 
+> > This parameter is only used for tos value at present. We could enable
+> > this for other fields if needed in the future.
+> > 
+> 
+> It does not make sense to add this flag just for 1 field.
+> 
+> 3 years ago I started a patch to apply this across the board. never
+> finished it. see attached. The numeric variable should be moved to
+> lib/rt_names.c. It handles all of the conversions in that file - at
+> least as of May 2016.
 
-This change:
 
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 84dbe21b71e5..96a3559f2a09 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -287,7 +287,9 @@ static int rawv6_bind(struct sock *sk, struct
-sockaddr *uaddr, int addr_len)
-                        /* Binding to link-local address requires an
-interface */
-                        if (!sk->sk_bound_dev_if)
-                                goto out_unlock;
-+               }
+Agree, if you are going to do it, go all in.
+Handle all types and in same manner for ip, tc, bridge, and devlink.
+ss already has -numeric option.
 
-+               if (sk->sk_bound_dev_if) {
-                        err = -ENODEV;
-                        dev = dev_get_by_index_rcu(sock_net(sk),
-                                                   sk->sk_bound_dev_if);
-
-make raw binds similar to tcp. See:
-
-c5ee066333ebc ("ipv6: Consider sk_bound_dev_if when binding a socket to
-an address")
-ec90ad334986f ("ipv6: Consider sk_bound_dev_if when binding a socket to
-a v4 mapped address")
+Wish that -n wasn't used for netns, should have been -N...
