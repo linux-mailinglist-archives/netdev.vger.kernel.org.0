@@ -2,88 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9931E22B1B
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 07:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B26722B33
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 07:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729642AbfETFXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 01:23:22 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:43944 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727130AbfETFXV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 01:23:21 -0400
-Received: by mail-pg1-f195.google.com with SMTP id t22so6170432pgi.10;
-        Sun, 19 May 2019 22:23:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Y7ZsJ7M69axo8UKSCozRvOH3tnMtWuejv94ZVramP6w=;
-        b=usm8wQMNdzjZB+l6nd/d0ORDrW+TAPL82hhxIddbmP3cYWXw9qs2wXwnzs4p6RiJw1
-         +/gdBmgJxxjOeqBHVWIXl4xfUnl6FhM7rTQkDJSR0742f2oWKFW7miKib4mYXxxAcZG7
-         fhOQ4z/CAeikHPbrTs0g5LoZ08gkPD2gTnB8qhmd+Lnrjoj9kOk+p6bNToTgMxQb8Qfs
-         8TQ8B0+NLJzhSIhJz1VJRvunWSbtjIhFaW4CaiLnRNa9q0YfcFkRETGIA9HFAN9kptj/
-         0xmUPWyvBigWxKASjjgiT1kYdPTOF050jAUXz4ffCTOe6AV5bfPuSpEpKYQ2tjdm/xfX
-         4YxA==
+        id S1730417AbfETFiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 01:38:18 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:34956 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730407AbfETFiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 01:38:17 -0400
+Received: from mail-pl1-f197.google.com ([209.85.214.197])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1hSb03-0004Mq-4x
+        for netdev@vger.kernel.org; Mon, 20 May 2019 05:38:15 +0000
+Received: by mail-pl1-f197.google.com with SMTP id y9so8449980plt.11
+        for <netdev@vger.kernel.org>; Sun, 19 May 2019 22:38:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Y7ZsJ7M69axo8UKSCozRvOH3tnMtWuejv94ZVramP6w=;
-        b=KDJCmNl44kL7r33QIKX81mXpwd9N0khLX0cZT/vwVgZO+6yhTQypNWDX4hR6NQ5kqD
-         b/gLbbJ6C+mydAuadLt2SXYIXG8fNyFZ3bmpY68Qk6tYXVDvACJF/NSZkk+urrutoWEy
-         LBEoiZ2i7vd3BOPhWIqqo1Q3b1rW6OaMRo45dZOKkEVum4E6mXttsxGE87qKbApaGD0i
-         w1O6DWYUldF6Rn7pgKpvLO5uHNGSu5Zdo8GZm+4j1QxbedCzPS8ksUWQuMrku+zRUqux
-         RkNOxaLAvldU7t8SXglCcpFEst9EjSzdp/vUuWef2AHChTsvjafBtgaldsmNhj4AnT9F
-         9EpQ==
-X-Gm-Message-State: APjAAAWdzWr3THtwxmG7sSbuwO8KPAWYlRiX8J53s4yV2v4SG7y1H7A8
-        WE7biBFKM/uK2P48tqRzRj4=
-X-Google-Smtp-Source: APXvYqxARzCoDPWyje1XFLKlr+mnGu94stmycRegc+EF5IVhpI0UmKvFwt8hFKBOO68hK8MLV/4JYA==
-X-Received: by 2002:a63:9d83:: with SMTP id i125mr67552518pgd.229.1558329801284;
-        Sun, 19 May 2019 22:23:21 -0700 (PDT)
-Received: from localhost ([43.224.245.181])
-        by smtp.gmail.com with ESMTPSA id q27sm24714424pfg.49.2019.05.19.22.23.20
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=TVP/8CjCXvNl5tuRgdDmjBu0TWoLXb8FSZYhC65xlcg=;
+        b=PXYirPRN+g/f4l9ezfQJbWOaM09RP2okMMxHwuhQYCeHTnKmCSbVDNwEaGZNBdoRxM
+         bHJDMvsSpLuQPCQ+CwVu+3ilKLQnnCcr4MCZ164yjHLOeXQHd7qJv3wz/QDkrmiy9hHm
+         txCKhoxeWPohcFqLktHzhdukoFiUlJB3mGTFdZyfmiYhw+SdYg/puIiX7Edeq1TQ5ej4
+         HHBvWQnmM4QCfpafZNdV3EWbRlbCnY3+vI3NyPg8hDgRwUGO0jeoCoYkYZKnkkJSW6qb
+         3zV89z7hnGlpm0fx8UnIl9LrbEyhwP4OmA2QZMLjkuPvUEC9bXpFXQHIKdViU9+53SAt
+         EDdg==
+X-Gm-Message-State: APjAAAU/zAPyg+e2oIAOBHnTvXYlSKXmGmTH8j8wYzpADpl2xS7/f4dY
+        t1rp8E7lPJli1Qayf3Tq65a4LOV+8F9tZVI+J0iwsVA1m6gpfuhlF+VosR7wu2mrqFggGm6fjdU
+        5rj6Bi7xZCMLq21AkI8QHVoFVk1ZZhyfrLQ==
+X-Received: by 2002:a17:902:8c8f:: with SMTP id t15mr17648154plo.87.1558330693934;
+        Sun, 19 May 2019 22:38:13 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwW4rcstBi9GEFLzD4rZyhuz/ctWFdZ1iAZP63YVh839OqFhd0yW4KEi9QKAq2SrllBN+PV+w==
+X-Received: by 2002:a17:902:8c8f:: with SMTP id t15mr17648146plo.87.1558330693701;
+        Sun, 19 May 2019 22:38:13 -0700 (PDT)
+Received: from 2001-b011-380f-14b9-00f9-1d4c-cebb-931f.dynamic-ip6.hinet.net (2001-b011-380f-14b9-00f9-1d4c-cebb-931f.dynamic-ip6.hinet.net. [2001:b011:380f:14b9:f9:1d4c:cebb:931f])
+        by smtp.gmail.com with ESMTPSA id q20sm17908184pgq.66.2019.05.19.22.38.12
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 19 May 2019 22:23:20 -0700 (PDT)
-From:   Weitao Hou <houweitaoo@gmail.com>
-To:     davem@davemloft.net, corbet@lwn.net
-Cc:     netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Weitao Hou <houweitaoo@gmail.com>
-Subject: [PATCH] networking: : fix typos in code comments
-Date:   Mon, 20 May 2019 13:23:17 +0800
-Message-Id: <20190520052317.27871-1-houweitaoo@gmail.com>
-X-Mailer: git-send-email 2.18.0
+        Sun, 19 May 2019 22:38:13 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii;
+        delsp=yes;
+        format=flowed
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.8\))
+Subject: Re: Latitude 5495's tg3 hangs under heavy load
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <CAMet4B57L7HfceQXTQtO8_SkBt5L90TaduguAvN57V+0Jb0qBw@mail.gmail.com>
+Date:   Mon, 20 May 2019 13:38:10 +0800
+Cc:     Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Chih-Hsyuan Ho <chih.ho@canonical.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <1D496D12-FE86-427A-A8B8-6A17D229A941@canonical.com>
+References: <693030CB-35F4-41C3-9511-CF6C99F5C964@canonical.com>
+ <83AB6905-89A7-4F1D-AE88-BA3A1CA28B19@canonical.com>
+ <CAMet4B6OXOcz3CZxuY59G4mJoN_LW3gj4r0LJbdT1ePR-BQN2w@mail.gmail.com>
+ <7E14D23E-92C4-4D9E-B891-4F08075DF382@canonical.com>
+ <94C0FE2C-8B9A-4DCA-91AE-78E16331672E@canonical.com>
+ <B9FBFFF9-5765-4EA1-ACD5-87CD43723392@canonical.com>
+ <CAMet4B57L7HfceQXTQtO8_SkBt5L90TaduguAvN57V+0Jb0qBw@mail.gmail.com>
+To:     Siva Reddy Kallam <siva.kallam@broadcom.com>
+X-Mailer: Apple Mail (2.3445.104.8)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fix accelleration to acceleration
+Hi Siva,
 
-Signed-off-by: Weitao Hou <houweitaoo@gmail.com>
----
- Documentation/networking/segmentation-offloads.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+at 21:42, Siva Reddy Kallam <siva.kallam@broadcom.com> wrote:
 
-diff --git a/Documentation/networking/segmentation-offloads.rst b/Documentation/networking/segmentation-offloads.rst
-index 89d1ee933e9f..085e8fab03fd 100644
---- a/Documentation/networking/segmentation-offloads.rst
-+++ b/Documentation/networking/segmentation-offloads.rst
-@@ -18,7 +18,7 @@ The following technologies are described:
-  * Generic Segmentation Offload - GSO
-  * Generic Receive Offload - GRO
-  * Partial Generic Segmentation Offload - GSO_PARTIAL
-- * SCTP accelleration with GSO - GSO_BY_FRAGS
-+ * SCTP acceleration with GSO - GSO_BY_FRAGS
- 
- 
- TCP Segmentation Offload
-@@ -148,7 +148,7 @@ that the IPv4 ID field is incremented in the case that a given header does
- not have the DF bit set.
- 
- 
--SCTP accelleration with GSO
-+SCTP acceleration with GSO
- ===========================
- 
- SCTP - despite the lack of hardware support - can still take advantage of
--- 
-2.18.0
+> On Mon, Mar 11, 2019 at 9:23 AM Kai-Heng Feng
+> <kai.heng.feng@canonical.com> wrote:
+>> [snipped]
+>>
+>> Hi again,
+>>
+>> Any update?
+>>
+>> Kai-Heng
+> Sorry for the late reply. We will provide our feedback soon.
 
+Any good news? It still happens on latest mainline kernel.
+
+Kai-Heng
