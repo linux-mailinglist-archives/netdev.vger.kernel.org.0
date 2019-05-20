@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0D62244A6
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 01:50:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C25424494
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 01:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727486AbfETXul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 19:50:41 -0400
-Received: from vps.xff.cz ([195.181.215.36]:58574 "EHLO vps.xff.cz"
+        id S1727342AbfETXuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 19:50:15 -0400
+Received: from vps.xff.cz ([195.181.215.36]:58602 "EHLO vps.xff.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726879AbfETXuO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726913AbfETXuO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 20 May 2019 19:50:14 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=megous.com; s=mail;
-        t=1558396212; bh=lmN/vA2/QcSdUuzR1xKNkZ8E+T7fPttQ3k8QpH5igsQ=;
+        t=1558396212; bh=nngIr0xvxUzPFucWAhkm6BkX4oH0a0zOi33I9wUZi5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=icuRmovmqEiyTkx1kZjdynNoQSk4c78preJIjNGDecNXCTpka+1z9503Aodfx2L88
-         6sOPPpp5L2sC2XXN6VuIHqWX1c97ZiYpULA+xILVHEybnqSj3gIIu2jnLkXhLVSlH5
-         V6knXlNvxgV1UUKlgvFu1bsGDIuZjLwsN46MtJdw=
+        b=STZwqenh+hcS4VvkiPwY2gYZcgyNBXrh82fYCw72misXCUKrGohmgP9HydVdYYVIw
+         9/4If2BSLtBWH3P1/OcmVr8K1ZWEYtQ14dve4djJ14iPSc/pA+cj++EdgdofDQ3Ke4
+         xvaHOm7Xtw+YdxQYO71sxrUk/PA+mBXOTnWY5jog=
 From:   megous@megous.com
 To:     linux-sunxi@googlegroups.com,
         Maxime Ripard <maxime.ripard@bootlin.com>,
         Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>
-Cc:     Icenowy Zheng <icenowy@aosc.io>, David Airlie <airlied@linux.ie>,
+Cc:     Ondrej Jirman <megous@megous.com>, David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         Mark Rutland <mark.rutland@arm.com>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -31,11 +31,10 @@ Cc:     Icenowy Zheng <icenowy@aosc.io>, David Airlie <airlied@linux.ie>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        Ondrej Jirman <megous@megous.com>
-Subject: [PATCH v5 2/6] net: stmmac: sun8i: force select external PHY when no internal one
-Date:   Tue, 21 May 2019 01:50:05 +0200
-Message-Id: <20190520235009.16734-3-megous@megous.com>
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH v5 3/6] arm64: dts: allwinner: orange-pi-3: Enable ethernet
+Date:   Tue, 21 May 2019 01:50:06 +0200
+Message-Id: <20190520235009.16734-4-megous@megous.com>
 In-Reply-To: <20190520235009.16734-1-megous@megous.com>
 References: <20190520235009.16734-1-megous@megous.com>
 MIME-Version: 1.0
@@ -45,41 +44,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Icenowy Zheng <icenowy@aosc.io>
+From: Ondrej Jirman <megous@megous.com>
 
-The PHY selection bit also exists on SoCs without an internal PHY; if it's
-set to 1 (internal PHY, default value) then the MAC will not make use of
-any PHY such SoCs.
+Orange Pi 3 has two regulators that power the Realtek RTL8211E. According
+to the phy datasheet, both regulators need to be enabled at the same time,
+but we can only specify a single phy-supply in the DT.
 
-This problem appears when adapting for H6, which has no real internal PHY
-(the "internal PHY" on H6 is not on-die, but on a co-packaged AC200 chip,
-connected via RMII interface at GPIO bank A).
+This can be achieved by making one regulator depedning on the other via
+vin-supply. While it's not a technically correct description of the
+hardware, it achieves the purpose.
 
-Force the PHY selection bit to 0 when the SOC doesn't have an internal PHY,
-to address the problem of a wrong default value.
+All values of RX/TX delay were tested exhaustively and a middle one of the
+working values was chosen.
 
-Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
 Signed-off-by: Ondrej Jirman <megous@megous.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 44 +++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 3258dec84d55..0484c289f328 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -907,6 +907,11 @@ static int sun8i_dwmac_set_syscon(struct stmmac_priv *priv)
- 		 * address. No need to mask it again.
- 		 */
- 		reg |= 1 << H3_EPHY_ADDR_SHIFT;
-+	} else {
-+		/* For SoCs without internal PHY the PHY selection bit should be
-+		 * set to 0 (external PHY).
-+		 */
-+		reg &= ~H3_EPHY_SELECT;
- 	}
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+index 17d496990108..2c6807b74ff6 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -15,6 +15,7 @@
  
- 	if (!of_property_read_u32(node, "allwinner,tx-delay-ps", &val)) {
+ 	aliases {
+ 		serial0 = &uart0;
++		ethernet0 = &emac;
+ 	};
+ 
+ 	chosen {
+@@ -44,6 +45,27 @@
+ 		regulator-max-microvolt = <5000000>;
+ 		regulator-always-on;
+ 	};
++
++	/*
++	 * The board uses 2.5V RGMII signalling. Power sequence to enable
++	 * the phy is to enable GMAC-2V5 and GMAC-3V (aldo2) power rails
++	 * at the same time and to wait 100ms.
++	 */
++	reg_gmac_2v5: gmac-2v5 {
++		compatible = "regulator-fixed";
++		regulator-name = "gmac-2v5";
++		regulator-min-microvolt = <2500000>;
++		regulator-max-microvolt = <2500000>;
++		startup-delay-us = <100000>;
++		enable-active-high;
++		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
++
++		/* The real parent of gmac-2v5 is reg_vcc5v, but we need to
++		 * enable two regulators to power the phy. This is one way
++		 * to achieve that.
++		 */
++		vin-supply = <&reg_aldo2>; /* GMAC-3V */
++	};
+ };
+ 
+ &cpu0 {
+@@ -58,6 +80,28 @@
+ 	status = "okay";
+ };
+ 
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&ext_rgmii_pins>;
++	phy-mode = "rgmii";
++	phy-handle = <&ext_rgmii_phy>;
++	phy-supply = <&reg_gmac_2v5>;
++	allwinner,rx-delay-ps = <1500>;
++	allwinner,tx-delay-ps = <700>;
++	status = "okay";
++};
++
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <1>;
++
++		reset-gpios = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
++		reset-assert-us = <15000>;
++		reset-deassert-us = <40000>;
++	};
++};
++
+ &mmc0 {
+ 	vmmc-supply = <&reg_cldo1>;
+ 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */
 -- 
 2.21.0
 
