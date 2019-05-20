@@ -2,167 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B6523C75
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E04023C77
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 17:44:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392359AbfETPnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 11:43:11 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:46167 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732399AbfETPnK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 11:43:10 -0400
-Received: by mail-pl1-f193.google.com with SMTP id r18so6884756pls.13
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 08:43:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=dSszR7FrS692VH1z85mprElPR4g7J+3WPMn0YI2hzUI=;
-        b=HSS0bspW251VHBhx+bFWcDCC75vF9KJwGQzVTl9d4San6LcNcwdYICYfpp794IKztA
-         FnI+z4SX2Q+CznDpIdXTgBbDMmt05+kCyS6BqDHY+2XEaBwnNzZ8HOM5tdcbZh9zZ7t1
-         PqJPxNW/EmMHcCzpoXDTeT8y9wyQpaFs3Bn15wIzeuASXGu1ZSC+h45ZKKphgYIormmx
-         IvlwPSQAkPUniEuwUi58BWkT7XL7e0QPFg+aHKbUl1T2n+bLyW0+RHMsN9QaBrrjueOm
-         2stUFYKEvT0rkuAMuiP2bYQA9JkA4D2HmkEf+17aP/iDhT/oFW6LZz/zyVFeahHcwkGS
-         nqTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=dSszR7FrS692VH1z85mprElPR4g7J+3WPMn0YI2hzUI=;
-        b=FqfTGVvM2nHB5//bpUqwXn9v2avev/a1P5yy5HAv+125kc9XJEwZ7s/sZZo+0ZEjEc
-         jb7CMSN/08qGeo/iiAWkaFDQUo7k3lzwxL26XKRV1vZRxyptCQOtQZ0sgnXsa5ktb0n7
-         ahNSU/367f0OcA2cIZI9jlPzLjHunGwVoOsf+MfhM3tlYnvc+w8COef4UYl+wx1ijnak
-         8B65aP5+T5PdyFp75JtT5GIbb7TLHOhwaNZa/5V+IUyXGJKrHiCelY0xt1PylsucUn97
-         ILbwcBSnBosdk0/k33kYR/tY+xO0d86+C2Jk7/mhYEriUCp94VPa+J7mwXdi0z7gQyKB
-         zGDA==
-X-Gm-Message-State: APjAAAULNqFOYADZhKLvXOBEXItn8s8fkHGMfhYPsg+iCDqc8NTw24l8
-        XG3jigrtclmOP9f9hUndL8ytsA==
-X-Google-Smtp-Source: APXvYqycTna/AM0jQoiDLo0k1zmLzle59j2ZRtnmZwWIASAjkruy8oLXgvEcXBUk0hCRZBVN+OFylw==
-X-Received: by 2002:a17:902:7002:: with SMTP id y2mr76588597plk.75.1558366989673;
-        Mon, 20 May 2019 08:43:09 -0700 (PDT)
-Received: from tuxbook-pro (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id e14sm21365631pff.60.2019.05.20.08.43.08
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 May 2019 08:43:09 -0700 (PDT)
-Date:   Mon, 20 May 2019 08:43:36 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     arnd@arndb.de, subashab@codeaurora.org, david.brown@linaro.org,
-        agross@kernel.org, davem@davemloft.net,
-        ilias.apalodimas@linaro.org, cpratapa@codeaurora.org,
-        syadagir@codeaurora.org, evgreen@chromium.org, benchan@google.com,
-        ejcaruso@google.com, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/8] net: qualcomm: rmnet: use field masks instead of C
- bit-fields
-Message-ID: <20190520154336.GR2085@tuxbook-pro>
-References: <20190520135354.18628-1-elder@linaro.org>
- <20190520135354.18628-4-elder@linaro.org>
+        id S2388257AbfETPoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 11:44:15 -0400
+Received: from mail.us.es ([193.147.175.20]:34742 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731091AbfETPoP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 May 2019 11:44:15 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 1DE51BEBAC
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 17:44:13 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0E766DA715
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 17:44:13 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 03AB3DA711; Mon, 20 May 2019 17:44:12 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 80A2BDA70C;
+        Mon, 20 May 2019 17:44:10 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 20 May 2019 17:44:10 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 557B44265A31;
+        Mon, 20 May 2019 17:44:10 +0200 (CEST)
+Date:   Mon, 20 May 2019 17:44:09 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
+ statistics
+Message-ID: <20190520154409.v6viswe47fltv652@salvia>
+References: <88b3c1de-b11c-ee9b-e251-43e1ac47592a@solarflare.com>
+ <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
+ <20190519002218.b6bcz224jkrof7c4@salvia>
+ <7cdc59fd-e90f-6ff2-f429-257c8844be26@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190520135354.18628-4-elder@linaro.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7cdc59fd-e90f-6ff2-f429-257c8844be26@solarflare.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 20 May 06:53 PDT 2019, Alex Elder wrote:
+On Mon, May 20, 2019 at 04:37:10PM +0100, Edward Cree wrote:
+> On 19/05/2019 01:22, Pablo Neira Ayuso wrote:
+> > On Fri, May 17, 2019 at 04:27:29PM +0100, Edward Cree wrote:
+> >> On 15/05/2019 20:39, Edward Cree wrote:
+> > [...]
+> >> Pablo, how do the two options interact with your netfilter offload?  I'm
+> >>  guessing it's easier for you to find a unique pointer than to generate
+> >>  a unique u32 action_index for each action.  I'm also assuming that
+> >>  netfilter doesn't have a notion of shared actions.
+> > It has that shared actions concept, see:
+> >
+> > https://netfilter.org/projects/nfacct/
+> >
+> > Have a look at 'nfacct' in iptables-extensions(8) manpage.
+>
+> Thanks.  Looking at net/netfilter/nfnetlink_acct.c, it looks as though you
+>  don't have a u32 index in there; for the cookie approach, would the
+>  address of the struct nf_acct (casted to unsigned long) work to uniquely
+>  identify actions that should be shared?
+> I'm not 100% sure how nf (or nfacct) offload is going to look, so I might
+>  be barking up the wrong tree here.  But it seems like the cookie method
+>  should work better for you — even if you did have an index, how would you
+>  avoid collisions with TC actions using the same indices if both are in
+>  use on a box?  Cookies OTOH are pointers, so guaranteed unique :)
 
-> Using C bitfields (e.g. int foo : 3) is not portable.  So stop
-> using them for the command/data flag and the pad length fields in
-> the rmnet_map structure.  Instead, use the functions defined in
-> <linux/bitfield.h> along with field mask constants to extract or
-> assign values within an integral structure member of a known size.
-> 
-
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-
-> Signed-off-by: Alex Elder <elder@linaro.org>
-> ---
->  drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c | 5 +++--
->  drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h      | 8 +++++---
->  drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c | 5 ++++-
->  3 files changed, 12 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-> index 4c1b62b72504..5fff6c78ecd5 100644
-> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-> @@ -13,6 +13,7 @@
->   *
->   */
->  
-> +#include <linux/bitfield.h>
->  #include <linux/netdevice.h>
->  #include <linux/netdev_features.h>
->  #include <linux/if_arp.h>
-> @@ -70,7 +71,7 @@ __rmnet_map_ingress_handler(struct sk_buff *skb,
->  	u16 len, pad;
->  	u8 mux_id;
->  
-> -	if (map_header->cd_bit) {
-> +	if (u8_get_bits(map_header->cmd_pad_len, RMNET_MAP_CMD_FMASK)) {
->  		if (port->data_format & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
->  			return rmnet_map_command(skb, port);
->  
-> @@ -78,7 +79,7 @@ __rmnet_map_ingress_handler(struct sk_buff *skb,
->  	}
->  
->  	mux_id = map_header->mux_id;
-> -	pad = map_header->pad_len;
-> +	pad = u8_get_bits(map_header->cmd_pad_len, RMNET_MAP_PAD_LEN_FMASK);
->  	len = ntohs(map_header->pkt_len) - pad;
->  
->  	if (mux_id >= RMNET_MAX_LOGICAL_EP)
-> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-> index a30a7b405a11..a56209645c81 100644
-> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-> @@ -40,13 +40,15 @@ enum rmnet_map_commands {
->  };
->  
->  struct rmnet_map_header {
-> -	u8  cd_bit:1;
-> -	u8  reserved_bit:1;
-> -	u8  pad_len:6;
-> +	u8  cmd_pad_len;	/* RMNET_MAP_* */
->  	u8  mux_id;
->  	__be16 pkt_len;
->  }  __aligned(1);
->  
-> +#define RMNET_MAP_CMD_FMASK		GENMASK(0, 0)   /* 0: data; 1: cmd */
-> +#define RMNET_MAP_RESERVED_FMASK	GENMASK(1, 1)
-> +#define RMNET_MAP_PAD_LEN_FMASK		GENMASK(7, 2)
-> +
->  struct rmnet_map_dl_csum_trailer {
->  	u8  reserved1;
->  	u8  valid:1;
-> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-> index 498f20ba1826..10d2d582a9ce 100644
-> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-> @@ -13,6 +13,7 @@
->   *
->   */
->  
-> +#include <linux/bitfield.h>
->  #include <linux/netdevice.h>
->  #include <linux/ip.h>
->  #include <linux/ipv6.h>
-> @@ -301,7 +302,9 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
->  
->  done:
->  	map_header->pkt_len = htons(map_datalen + padding);
-> -	map_header->pad_len = padding & 0x3F;
-> +	/* This is a data packet, so cmd field is 0 */
-> +	map_header->cmd_pad_len =
-> +			u8_encode_bits(padding, RMNET_MAP_PAD_LEN_FMASK);
->  
->  	return map_header;
->  }
-> -- 
-> 2.20.1
-> 
+The cookie approach per-action looks fine to me, there's already a
+cookie to identify the rule, so this looks natural to me.
