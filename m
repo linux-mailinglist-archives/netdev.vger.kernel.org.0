@@ -2,68 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 337F322E04
-	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 10:10:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69FFD22E05
+	for <lists+netdev@lfdr.de>; Mon, 20 May 2019 10:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730549AbfETIKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 04:10:00 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38730 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727626AbfETIKA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 04:10:00 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from tariqt@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 20 May 2019 11:09:53 +0300
-Received: from dev-l-vrt-206-006.mtl.labs.mlnx (dev-l-vrt-206-006.mtl.labs.mlnx [10.134.206.6])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x4K89rBh000406;
-        Mon, 20 May 2019 11:09:53 +0300
-From:   Tariq Toukan <tariqt@mellanox.com>
-To:     "John W. Linville" <linville@tuxdriver.com>
-Cc:     netdev@vger.kernel.org, Mikhael Goikhman <migo@mellanox.com>,
-        Tzafrir Cohen <tzafrirc@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH ethtool] ethtool.spec: Use standard file location macros
-Date:   Mon, 20 May 2019 11:09:40 +0300
-Message-Id: <1558339780-8314-1-git-send-email-tariqt@mellanox.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1730628AbfETIKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 04:10:08 -0400
+Received: from mail-pl1-f177.google.com ([209.85.214.177]:38309 "EHLO
+        mail-pl1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730045AbfETIKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 04:10:08 -0400
+Received: by mail-pl1-f177.google.com with SMTP id f97so6340460plb.5
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 01:10:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=gQkNzRm6X1JfoZN8498JaZxcKv6dV7q/RTuKdIJWNDk=;
+        b=jpmS/coZsRqH7dyxXavonU7oSamQROVq52rQ4DeHQCTghf/QE3v9idKusZTCmAxY8G
+         aPe7ZwkK9/PLPzGaS7szfYnr61JFZI6EqNjG3V+0y9hm6wHr1eyB2aZ2RbIXh84ZZ3Kv
+         aAt7iiCrF03omLHbcvuvN/CJxoucPXg1wMfrUNTX3vXD5cHiSSJvNBEZ8/Nb0kOCClTr
+         F/DxjaESHNWnAnvayFcuccX/kPywnHwDmSy+QgLO89EtjrpBV7/+2F6ZCZQX2eCi0DBg
+         jXcXWduh5J6fBI7oDnrFnOwSuyHoIEWGzRQ4H/NRtnguh1PRJb1CLplUv4doV9VqRdMf
+         PjDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=gQkNzRm6X1JfoZN8498JaZxcKv6dV7q/RTuKdIJWNDk=;
+        b=tQU2/bt8b/4kEuzaxBwCvRY35JU+OrXk2a8UFmsJSU0weY+jTmZAjj6O3SSKBzgmYB
+         InRYxPSqFdcvu/5SaywGog9TBrC3g/YpAMQHK46v9BK5YDTqm2mNlSfigCN5IthjwUOu
+         r8ayxgG/JaijyrIAg5+n2ndkIvfWf/vseqMhtB1vM/Db4bxHKrng9jREHQuzM5bb8nhA
+         9hzwKpXs8gyy2DPKOJXdqlr1m3FBtq7ornAipAA2cW6MZDPkiFGZzBTrA1akG96w9tGG
+         TcPaYZTXKR6tNx+7mb2nnnXMgPLLZvRGvCm5oXm9PZvawPjih2R3PGvaU6aazdsduJ1T
+         DNgA==
+X-Gm-Message-State: APjAAAW6K459K7iyuxtNdR68bDSX2Chv9Leu+Vt6MUnHvXL31lYUSlWm
+        OmgQc9nBCU4XbuO+la1YECe5DtVZVJg=
+X-Google-Smtp-Source: APXvYqz8iFjzWHHD8LmCgyz8rgU5l5QrrHTITg95hn/0ckkqiAWWGsEUEmaByuOjoBVKGVE5bAehcg==
+X-Received: by 2002:a17:902:9884:: with SMTP id s4mr75740141plp.179.1558339807791;
+        Mon, 20 May 2019 01:10:07 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.64])
+        by smtp.gmail.com with ESMTPSA id w6sm18089070pge.30.2019.05.20.01.10.06
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 20 May 2019 01:10:07 -0700 (PDT)
+Date:   Mon, 20 May 2019 16:09:58 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Martin Kealey <martin@kurahaupo.gen.nz>
+Cc:     netdev@vger.kernel.org
+Subject: Re: patch for iproute2
+Message-ID: <20190520080958.GV18865@dhcp-12-139.nay.redhat.com>
+References: <alpine.DEB.2.00.1905181350500.8326@feathers.ext.sig.nz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.00.1905181350500.8326@feathers.ext.sig.nz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mikhael Goikhman <migo@mellanox.com>
+On Sat, May 18, 2019 at 01:52:36PM +1000, Martin Kealey wrote:
+> 
+> Hello iproute2 maintainer.
+> 
+> (Sorry, I don't know your name)
+> 
+> I recently noticed a discrepancy: the internal documentation for the ip
+> command says that an *RTT* value can be sufficed with "s" (second) or "ms"
+> (millisecond), but in practice no suffix of any kind is accepted.
+> 
+> I found that that commit 697ac63905cb5ca5389cd840462ee9868123b77f to
+> git://git.kernel.org/pub/scm/network/iproute2/iproute2.git caused this
+> regression; it was over-zealous in disallowing non-digits in *all* contexts
+> where a number is expected.
+> 
+> As far as I can tell, this does not have any kernel-related impact, merely
+> it affects what arguments are accepted by the "ip" command.
+> 
+> I have a suitable patch for fixing this; what is the procedure for
+> submitting it?
 
-Use _prefix and _sbindir macros to allow building the package under a
-different prefix.
+It's the same process with submitting patch to netdev[1]. If you are familiar
+with git. Just format a patch and send it to detdev@. Be careful with the
+subject prefix, Signed-off info and fixes tags.
 
-Signed-off-by: Mikhael Goikhman <migo@mellanox.com>
-Signed-off-by: Tzafrir Cohen <tzafrirc@mellanox.com>
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
----
- ethtool.spec.in | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/tree/Documentation/networking/netdev-FAQ.rst#n257
 
-diff --git a/ethtool.spec.in b/ethtool.spec.in
-index 6e9e1f591240..9c01b07abf2b 100644
---- a/ethtool.spec.in
-+++ b/ethtool.spec.in
-@@ -22,7 +22,7 @@ network devices, especially Ethernet devices.
- 
- 
- %build
--CFLAGS="${RPM_OPT_FLAGS}" ./configure --prefix=/usr --mandir=%{_mandir}
-+CFLAGS="${RPM_OPT_FLAGS}" ./configure --prefix=%{_prefix} --mandir=%{_mandir}
- make
- 
- 
-@@ -32,7 +32,7 @@ make install DESTDIR=${RPM_BUILD_ROOT}
- 
- %files
- %defattr(-,root,root)
--/usr/sbin/ethtool
-+%{_sbindir}/ethtool
- %{_mandir}/man8/ethtool.8*
- %doc AUTHORS COPYING NEWS README
- 
--- 
-1.8.3.1
-
+Thanks
+Hangbin
