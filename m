@@ -2,126 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 661AC24F1B
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 14:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FEB624F7E
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 14:59:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727534AbfEUMqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 08:46:14 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39087 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726740AbfEUMqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 08:46:14 -0400
-Received: by mail-qt1-f195.google.com with SMTP id y42so20260285qtk.6
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 05:46:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language;
-        bh=4meJroJoQfpvCvcpmMqgZ0OtGGf/R3Ivp0naS+Yel3Q=;
-        b=jc+ZZ8dHAOg5/OKKag/9MJFMxm0FpUxEiw9/l1M2CNCaKnaL8U6RIoqPvXWNQhBhXT
-         mSlE1X+R7SKuif1nxChQFD1md0eGIs9H0TAhw/RVMvIQP7EWfyH9lfaMjsnhcUGb8f7g
-         EBrrbp11dss8QzySXC2xqqp63gbqh9+SXUlXEYtKK0JVFIYrZsSI+QK71k97593WOI4a
-         sRynDeoueA6kdHYoEgFCohySXIO+hefZWxhuTVhvXpnns2OzoOgrzYrdTdibS89XrJ5G
-         3WPAGI5QQtcvIKz6ZQKfIksdV1d5+4q5BtPFQZ2XPJBbMjA6kQLl+kUUh25hC1Jk1khT
-         tYtQ==
+        id S1728067AbfEUM7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 08:59:52 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53328 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726995AbfEUM7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 08:59:52 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 198so2900916wme.3
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 05:59:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language;
-        bh=4meJroJoQfpvCvcpmMqgZ0OtGGf/R3Ivp0naS+Yel3Q=;
-        b=ZfQGCWEcWaIZ7DT3Dhxt7rJvxtiABKQ2MS9JkFoW+/LpB6g9paCgMb9cM0JiQ1vwPF
-         mx4cdzHV6dbhanJHksPiAQfV2xLT96/RbW2mTSvwzaUG38Vazh799ZU/vVCr84iKD3bY
-         q6qJcCFktwSSgcJOF82UxNZtxgO1S2vYZz8hBvZQ1ttS/VpRW9ckCEUhD1eIXea2s7YT
-         88dVENkw/7AKHNFQ8OIwAVj2KXEgeu5qMXZJ2ZwlSNk6M8OzIov/kwKgtIYrrB5jHJAX
-         simK4azpjyXZsI28sKx/1gwQ/H3I687ldXtHHALnoIKzCp5xVm8UY/4olvARTImglXnn
-         /sng==
-X-Gm-Message-State: APjAAAXldnhxdL96fAbUPndCr2CfoKeWyRdwnAKc6MJwBj69NdHTjXPB
-        8mBBOXZpJbaZqD84WAm7eYAUWw==
-X-Google-Smtp-Source: APXvYqx4NjBjQ/LgDlUzS7eMJX18QAmHvg32V1bb/wF2/AZUH+KN42qRt8UvSjSXsOETjArqqkVFsQ==
-X-Received: by 2002:a0c:d917:: with SMTP id p23mr50975136qvj.162.1558442773383;
-        Tue, 21 May 2019 05:46:13 -0700 (PDT)
-Received: from [192.168.0.124] (24-212-162-241.cable.teksavvy.com. [24.212.162.241])
-        by smtp.googlemail.com with ESMTPSA id x30sm13337698qtx.35.2019.05.21.05.46.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 May 2019 05:46:11 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
- statistics
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-To:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Lucas Bates <lucasb@mojatatu.com>
-References: <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
- <f4fdc1f1-bee2-8456-8daa-fbf65aabe0d4@solarflare.com>
- <cacfe0ec-4a98-b16b-ef30-647b9e50759d@mojatatu.com>
- <f27a6a44-5016-1d17-580c-08682d29a767@solarflare.com>
- <3db2e5bf-4142-de4b-7085-f86a592e2e09@mojatatu.com>
- <17cf3488-6f17-cb59-42a3-6b73f7a0091e@solarflare.com>
- <b4b5e1e7-ebef-5d20-67b6-a3324e886942@mojatatu.com>
- <d70ed72f-69db-dfd0-3c0d-42728dbf45c7@solarflare.com>
- <e0603687-272d-6d41-1c3a-9ea14aa8cfad@mojatatu.com>
-Message-ID: <b1a0d4b5-7262-a5a0-182d-54778f9d176a@mojatatu.com>
-Date:   Tue, 21 May 2019 08:46:10 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PslXDngNuE7q+1VpAQcWwQGeQKB+6MQNfpmE6oTyQ18=;
+        b=AjgoYxF0wMuZBdxlKZ2heDLdfTcONX/kpq891dsj19u8nEysnAUHIsr6SjGz2Vw0p4
+         gD8o/SntcGx2ksece/Zc10Q3UJ6afsFIR132cQcnkTs/kG5CHK2ryfewEuIxFlzRRx7S
+         LuNFmHRPQrUENXNxXnY9DXB0f2c8n2yate01V7Jk3r5nnUuil3Dut/27pySOw44fCng8
+         +280Tve8VC9ookZAfRRUW0Ebinf/JGL1VBxPGrgq9qRFLIJD95APH6jsYpfTNSEZNEl7
+         jdElg1zCgsYr4pgexlRrFcCi0+AQ1WX/qgbcArPw08DBmGaXbDBaaauVcAM41+8feOdi
+         eVUQ==
+X-Gm-Message-State: APjAAAXXZaiLCOGUrSKpD6QcvACiwKFDiuPvlfDlYQYEWJ7RvqXO+p6A
+        vymHuNBqG95yd/AI95zqrWQz2Q==
+X-Google-Smtp-Source: APXvYqyGxYyg/jCjvETi+ofHRYA9wzGOZ5QXiHA7FA79Lu5W/XWabxBCYKK5YDnKhHM28oDO6cRRcQ==
+X-Received: by 2002:a1c:2109:: with SMTP id h9mr3377750wmh.68.1558443590427;
+        Tue, 21 May 2019 05:59:50 -0700 (PDT)
+Received: from localhost.localdomain.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.gmail.com with ESMTPSA id i17sm22118765wrr.46.2019.05.21.05.59.49
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 21 May 2019 05:59:49 -0700 (PDT)
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us
+Subject: [PATCH net] net: sched: sch_ingress: do not report ingress filter info in egress path
+Date:   Tue, 21 May 2019 14:59:29 +0200
+Message-Id: <738244fd5863e6228275ee8f71e81d6baafca243.1558442828.git.lorenzo.bianconi@redhat.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <cover.1558442828.git.lorenzo.bianconi@redhat.com>
+References: <cover.1558442828.git.lorenzo.bianconi@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <e0603687-272d-6d41-1c3a-9ea14aa8cfad@mojatatu.com>
-Content-Type: multipart/mixed;
- boundary="------------CD4011A5DF84DDE204190860"
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------CD4011A5DF84DDE204190860
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Currently if we add a filter to the ingress qdisc (e.g matchall) the
+filter data are reported even in the egress path. The issue can be
+triggered with the following reproducer:
 
-On 2019-05-20 5:12 p.m., Jamal Hadi Salim wrote:
-> On 2019-05-20 2:36 p.m., Edward Cree wrote:
->> On 20/05/2019 17:29, Jamal Hadi Salim wrote:
+$tc qdisc add dev lo ingress
+$tc filter add dev lo ingress matchall action ok
+$tc filter show dev lo ingress
+filter protocol all pref 49152 matchall chain 0
+filter protocol all pref 49152 matchall chain 0 handle 0x1
+  not_in_hw
+	action order 1: gact action pass
+		 random type none pass val 0
+		 	 index 1 ref 1 bind 1
 
-> Ok, so the "get" does it. Will try to reproduce when i get some
-> cycles. Meantime CCing Cong and Vlad.
-> 
+$tc filter show dev lo egress
+filter protocol all pref 49152 matchall chain 0
+filter protocol all pref 49152 matchall chain 0 handle 0x1
+  not_in_hw
+	action order 1: gact action pass
+		 random type none pass val 0
+		 	 index 1 ref 1 bind 1
 
+Fix it reporting NULL for non-ingress filters in ingress_tcf_block
+routine
 
-I have reproduced it in a simpler setup. See attached. Vlad this is
-likely from your changes. Sorry no cycles to dig more.
-Lucas, can we add this to the testcases?
+Fixes: 6529eaba33f0 ("net: sched: introduce tcf block infrastructure")
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+---
+ net/sched/sch_ingress.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
+diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
+index 0bac926b46c7..1825347fed3a 100644
+--- a/net/sched/sch_ingress.c
++++ b/net/sched/sch_ingress.c
+@@ -31,7 +31,7 @@ static struct Qdisc *ingress_leaf(struct Qdisc *sch, unsigned long arg)
+ 
+ static unsigned long ingress_find(struct Qdisc *sch, u32 classid)
+ {
+-	return TC_H_MIN(classid) + 1;
++	return TC_H_MIN(classid);
+ }
+ 
+ static unsigned long ingress_bind_filter(struct Qdisc *sch,
+@@ -53,7 +53,12 @@ static struct tcf_block *ingress_tcf_block(struct Qdisc *sch, unsigned long cl,
+ {
+ 	struct ingress_sched_data *q = qdisc_priv(sch);
+ 
+-	return q->block;
++	switch (cl) {
++	case TC_H_MIN(TC_H_MIN_INGRESS):
++		return q->block;
++	default:
++		return NULL;
++	}
+ }
+ 
+ static void clsact_chain_head_change(struct tcf_proto *tp_head, void *priv)
+-- 
+2.20.1
 
-cheers,
-jamal
-
---------------CD4011A5DF84DDE204190860
-Content-Type: text/plain; charset=UTF-8;
- name="ed-shared-actions"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="ed-shared-actions"
-
-CnN1ZG8gdGMgcWRpc2MgZGVsIGRldiBsbyBpbmdyZXNzCnN1ZG8gdGMgcWRpc2MgYWRkIGRl
-diBsbyBpbmdyZXNzCgpzdWRvIHRjIGZpbHRlciBhZGQgZGV2IGxvIHBhcmVudCBmZmZmOiBw
-cm90b2NvbCBpcCBwcmlvIDggdTMyIFwKbWF0Y2ggaXAgZHN0IDEyNy4wLjAuOC8zMiBmbG93
-aWQgMToxMCBcCmFjdGlvbiB2bGFuIHB1c2ggaWQgMTAwIHByb3RvY29sIDgwMi4xcSBcCmFj
-dGlvbiBkcm9wIGluZGV4IDEwNAoKc3VkbyB0YyBmaWx0ZXIgYWRkIGRldiBsbyBwYXJlbnQg
-ZmZmZjogcHJvdG9jb2wgaXAgcHJpbyA4IHUzMiBcCm1hdGNoIGlwIGRzdCAxMjcuMC4wLjEw
-LzMyIGZsb3dpZCAxOjEwIFwKYWN0aW9uIHZsYW4gcHVzaCBpZCAxMDEgcHJvdG9jb2wgODAy
-LjFxIFwKYWN0aW9uIGRyb3AgaW5kZXggMTA0CgojCnN1ZG8gdGMgLXMgZmlsdGVyIGxzIGRl
-diBsbyBwYXJlbnQgZmZmZjogcHJvdG9jb2wgaXAKCiN0aGlzIHdpbGwgbm93IGRlbGV0ZSBh
-Y3Rpb24gZ2FjdCBpbmRleCAxMDQoZHJvcCkgZnJvbSBkaXNwbGF5CnN1ZG8gdGMgLXMgYWN0
-aW9ucyBnZXQgYWN0aW9uIGRyb3AgaW5kZXggMTA0CgpzdWRvIHRjIC1zIGZpbHRlciBscyBk
-ZXYgbG8gcGFyZW50IGZmZmY6IHByb3RvY29sIGlwCgojQnV0IHlvdSBjYW4gc3RpbGwgc2Vl
-IGl0IGlmIHlvdSBkbyB0aGlzOgpzdWRvIHRjIC1zIGFjdGlvbnMgZ2V0IGFjdGlvbiBkcm9w
-IGluZGV4IDEwNAoK
---------------CD4011A5DF84DDE204190860--
