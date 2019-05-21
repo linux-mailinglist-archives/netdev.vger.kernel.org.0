@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 274D6251D1
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 16:22:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E40D1251D7
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 16:23:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728273AbfEUOWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 10:22:54 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:57748 "EHLO
+        id S1728337AbfEUOW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 10:22:58 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:57780 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726900AbfEUOWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 10:22:54 -0400
+        with ESMTP id S1728293AbfEUOW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 10:22:57 -0400
 Received: from Internal Mail-Server by MTLPINE2 (envelope-from parav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 21 May 2019 17:22:51 +0300
+        with ESMTPS (AES256-SHA encrypted); 21 May 2019 17:22:52 +0300
 Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x4LEMlHs023035;
-        Tue, 21 May 2019 17:22:49 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x4LEMlHt023035;
+        Tue, 21 May 2019 17:22:51 +0300
 From:   Parav Pandit <parav@mellanox.com>
 To:     dsahern@gmail.com
 Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
         stephen@networkplumber.org, leonro@mellanox.com, parav@mellanox.com
-Subject: [PATCH iproute2-next 1/4] rdma: Add an option to query,set net namespace sharing sys parameter
-Date:   Tue, 21 May 2019 09:22:41 -0500
-Message-Id: <20190521142244.8452-2-parav@mellanox.com>
+Subject: [PATCH iproute2-next 2/4] rdma: Add man pages for rdma system commands
+Date:   Tue, 21 May 2019 09:22:42 -0500
+Message-Id: <20190521142244.8452-3-parav@mellanox.com>
 X-Mailer: git-send-email 2.19.2
 In-Reply-To: <20190521142244.8452-1-parav@mellanox.com>
 References: <20190521142244.8452-1-parav@mellanox.com>
@@ -33,238 +33,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enrich rdma tool with an option to query rdma subsystem parameter
-whether rdma devices are shared among multiple network namespaces
-or exclusive to single network namespace.
-
-rdma tool command examples and output.
-
-$ rdma system show
-netns shared
-
-$ rdma system set netns exclusive
-
-$ rdma system show
-netns exclusive
-
 Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
 Signed-off-by: Parav Pandit <parav@mellanox.com>
 ---
- rdma/Makefile |   2 +-
- rdma/rdma.c   |   3 +-
- rdma/rdma.h   |   1 +
- rdma/sys.c    | 143 ++++++++++++++++++++++++++++++++++++++++++++++++++
- rdma/utils.c  |   1 +
- 5 files changed, 148 insertions(+), 2 deletions(-)
- create mode 100644 rdma/sys.c
+ man/man8/rdma-system.8 | 82 ++++++++++++++++++++++++++++++++++++++++++
+ man/man8/rdma.8        |  7 +++-
+ 2 files changed, 88 insertions(+), 1 deletion(-)
+ create mode 100644 man/man8/rdma-system.8
 
-diff --git a/rdma/Makefile b/rdma/Makefile
-index 6a424234..4847f27e 100644
---- a/rdma/Makefile
-+++ b/rdma/Makefile
-@@ -7,7 +7,7 @@ ifeq ($(HAVE_MNL),y)
- CFLAGS += -I./include/uapi/
- 
- RDMA_OBJ = rdma.o utils.o dev.o link.o res.o res-pd.o res-mr.o res-cq.o \
--	   res-cmid.o res-qp.o
-+	   res-cmid.o res-qp.o sys.o
- 
- TARGETS += rdma
- endif
-diff --git a/rdma/rdma.c b/rdma/rdma.c
-index 676e03c2..e9f1b4bb 100644
---- a/rdma/rdma.c
-+++ b/rdma/rdma.c
-@@ -11,7 +11,7 @@ static void help(char *name)
- {
- 	pr_out("Usage: %s [ OPTIONS ] OBJECT { COMMAND | help }\n"
- 	       "       %s [ -f[orce] ] -b[atch] filename\n"
--	       "where  OBJECT := { dev | link | resource | help }\n"
-+	       "where  OBJECT := { dev | link | resource | system | help }\n"
- 	       "       OPTIONS := { -V[ersion] | -d[etails] | -j[son] | -p[retty]}\n", name, name);
- }
- 
-@@ -29,6 +29,7 @@ static int rd_cmd(struct rd *rd, int argc, char **argv)
- 		{ "dev",	cmd_dev },
- 		{ "link",	cmd_link },
- 		{ "resource",	cmd_res },
-+		{ "system",	cmd_sys },
- 		{ 0 }
- 	};
- 
-diff --git a/rdma/rdma.h b/rdma/rdma.h
-index 9ed9e045..885a751e 100644
---- a/rdma/rdma.h
-+++ b/rdma/rdma.h
-@@ -93,6 +93,7 @@ char *rd_argv(struct rd *rd);
- int cmd_dev(struct rd *rd);
- int cmd_link(struct rd *rd);
- int cmd_res(struct rd *rd);
-+int cmd_sys(struct rd *rd);
- int rd_exec_cmd(struct rd *rd, const struct rd_cmd *c, const char *str);
- int rd_exec_dev(struct rd *rd, int (*cb)(struct rd *rd));
- int rd_exec_require_dev(struct rd *rd, int (*cb)(struct rd *rd));
-diff --git a/rdma/sys.c b/rdma/sys.c
+diff --git a/man/man8/rdma-system.8 b/man/man8/rdma-system.8
 new file mode 100644
-index 00000000..78e5198f
+index 00000000..a6873b52
 --- /dev/null
-+++ b/rdma/sys.c
-@@ -0,0 +1,143 @@
-+/*
-+ * sys.c	RDMA tool
-+ *
-+ *              This program is free software; you can redistribute it and/or
-+ *              modify it under the terms of the GNU General Public License
-+ *              as published by the Free Software Foundation; either version
-+ *              2 of the License, or (at your option) any later version.
-+ */
++++ b/man/man8/rdma-system.8
+@@ -0,0 +1,82 @@
++.TH RDMA\-SYSTEM 8 "06 Jul 2017" "iproute2" "Linux"
++.SH NAME
++rdma-system \- RDMA subsystem configuration
++.SH SYNOPSIS
++.sp
++.ad l
++.in +8
++.ti -8
++.B rdma
++.RI "[ " OPTIONS " ]"
++.B sys
++.RI  " { " COMMAND " | "
++.BR help " }"
++.sp
 +
-+#include "rdma.h"
++.ti -8
++.IR OPTIONS " := { "
++\fB\-V\fR[\fIersion\fR] |
++\fB\-d\fR[\fIetails\fR] }
 +
-+static int sys_help(struct rd *rd)
-+{
-+	pr_out("Usage: %s system show [ netns ]\n", rd->filename);
-+	pr_out("       %s system set netns { shared | exclusive }\n", rd->filename);
-+	return 0;
-+}
++.ti -8
++.B rdma system show
 +
-+static const char *netns_modes_str[] = {
-+	"exclusive",
-+	"shared",
-+};
++.ti -8
++.B rdma system set
++.BR netns
++.BR NEWMODE
 +
-+static int sys_show_parse_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX] = {};
-+	struct rd *rd = data;
++.ti -8
++.B rdma system help
 +
-+	mnl_attr_parse(nlh, 0, rd_attr_cb, tb);
++.SH "DESCRIPTION"
++.SS rdma system set - set RDMA subsystem network namespace mode
 +
-+	if (tb[RDMA_NLDEV_SYS_ATTR_NETNS_MODE]) {
-+		const char *mode_str;
-+		uint8_t netns_mode;
++.SS rdma system show - display RDMA subsystem network namespace mode
 +
-+		netns_mode =
-+			mnl_attr_get_u8(tb[RDMA_NLDEV_SYS_ATTR_NETNS_MODE]);
++.PP
++.I "NEWMODE"
++- specifies the RDMA subsystem mode. Either exclusive or shared.
++When user wants to assign dedicated RDMA device to a particular
++network namespace, exclusive mode should be set before creating
++any network namespace. If there are active network namespaces and if
++one or more RDMA devices exist, changing mode from shared to
++exclusive returns error code EBUSY.
 +
-+		if (netns_mode <= ARRAY_SIZE(netns_modes_str))
-+			mode_str = netns_modes_str[netns_mode];
-+		else
-+			mode_str = "unknown";
++When RDMA subsystem is in shared mode, RDMA device is accessible in
++all network namespace. When RDMA device isolation among multiple
++network namespaces is not needed, shared mode can be used.
 +
-+		if (rd->json_output)
-+			jsonw_string_field(rd->jw, "netns", mode_str);
-+		else
-+			pr_out("netns %s\n", mode_str);
-+	}
-+	return MNL_CB_OK;
-+}
++It is preferred to not change the subsystem mode when there is active
++RDMA traffic running, even though it is supported.
 +
-+static int sys_show_no_args(struct rd *rd)
-+{
-+	uint32_t seq;
-+	int ret;
++.SH "EXAMPLES"
++.PP
++rdma system show
++.RS 4
++Shows the state of RDMA subsystem network namespace mode on the system.
++.RE
++.PP
++rdma system set netns exclusive
++.RS 4
++Sets the RDMA subsystem in network namespace exclusive mode. In this mode RDMA devices
++are visible only in single network namespace.
++.RE
++.PP
++rdma system set netns shared
++.RS 4
++Sets the RDMA subsystem in network namespace shared mode. In this mode RDMA devices
++are shared among network namespaces.
++.RE
++.PP
 +
-+	rd_prepare_msg(rd, RDMA_NLDEV_CMD_SYS_GET,
-+		       &seq, (NLM_F_REQUEST | NLM_F_ACK));
-+	ret = rd_send_msg(rd);
-+	if (ret)
-+		return ret;
++.SH SEE ALSO
++.BR rdma (8),
++.BR rdma-link (8),
++.BR rdma-resource (8),
++.BR network_namespaces(7),
++.BR namespaces(7),
++.br
 +
-+	ret = rd_recv_msg(rd, sys_show_parse_cb, rd, seq);
-+	return ret;
-+}
-+
-+static int sys_show(struct rd *rd)
-+{
-+	const struct rd_cmd cmds[] = {
-+		{ NULL,		sys_show_no_args},
-+		{ "netns",	sys_show_no_args},
-+		{ 0 }
-+	};
-+
-+	return rd_exec_cmd(rd, cmds, "parameter");
-+}
-+
-+static int sys_set_netns_cmd(struct rd *rd, bool enable)
-+{
-+	uint32_t seq;
-+
-+	rd_prepare_msg(rd, RDMA_NLDEV_CMD_SYS_SET,
-+		       &seq, (NLM_F_REQUEST | NLM_F_ACK));
-+	mnl_attr_put_u8(rd->nlh, RDMA_NLDEV_SYS_ATTR_NETNS_MODE, enable);
-+
-+	return rd_sendrecv_msg(rd, seq);
-+}
-+
-+static bool sys_valid_netns_cmd(const char *cmd)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(netns_modes_str); i++) {
-+		if (!strcmp(cmd, netns_modes_str[i]))
-+			return true;
-+	}
-+	return false;
-+}
-+
-+static int sys_set_netns_args(struct rd *rd)
-+{
-+	bool cmd;
-+
-+	if (rd_no_arg(rd) || !sys_valid_netns_cmd(rd_argv(rd))) {
-+		pr_err("valid options are: { shared | exclusive }\n");
-+		return -EINVAL;
-+	}
-+
-+	cmd = (strcmp(rd_argv(rd), "shared") == 0) ? true : false;
-+
-+	return sys_set_netns_cmd(rd, cmd);
-+}
-+
-+static int sys_set_help(struct rd *rd)
-+{
-+	pr_out("Usage: %s system set [PARAM] value\n", rd->filename);
-+	pr_out("            system set netns { shared | exclusive }\n");
-+	return 0;
-+}
-+
-+static int sys_set(struct rd *rd)
-+{
-+	const struct rd_cmd cmds[] = {
-+		{ NULL,			sys_set_help },
-+		{ "help",		sys_set_help },
-+		{ "netns",		sys_set_netns_args},
-+		{ 0 }
-+	};
-+
-+	return rd_exec_cmd(rd, cmds, "parameter");
-+}
-+
-+int cmd_sys(struct rd *rd)
-+{
-+	const struct rd_cmd cmds[] = {
-+		{ NULL,		sys_show },
-+		{ "show",	sys_show },
-+		{ "set",	sys_set },
-+		{ "help",	sys_help },
-+		{ 0 }
-+	};
-+
-+	return rd_exec_cmd(rd, cmds, "system command");
-+}
-diff --git a/rdma/utils.c b/rdma/utils.c
-index 11ed8a73..558d1c29 100644
---- a/rdma/utils.c
-+++ b/rdma/utils.c
-@@ -435,6 +435,7 @@ static const enum mnl_attr_data_type nldev_policy[RDMA_NLDEV_ATTR_MAX] = {
- 	[RDMA_NLDEV_ATTR_DRIVER_U32] = MNL_TYPE_U32,
- 	[RDMA_NLDEV_ATTR_DRIVER_S64] = MNL_TYPE_U64,
- 	[RDMA_NLDEV_ATTR_DRIVER_U64] = MNL_TYPE_U64,
-+	[RDMA_NLDEV_SYS_ATTR_NETNS_MODE] = MNL_TYPE_U8,
- };
++.SH AUTHOR
++Parav Pandit <parav@mellanox.com>
+diff --git a/man/man8/rdma.8 b/man/man8/rdma.8
+index b2b5aef8..3ae33987 100644
+--- a/man/man8/rdma.8
++++ b/man/man8/rdma.8
+@@ -19,7 +19,7 @@ rdma \- RDMA tool
  
- int rd_attr_check(const struct nlattr *attr, int *typep)
+ .ti -8
+ .IR OBJECT " := { "
+-.BR dev " | " link " }"
++.BR dev " | " link " | " system " }"
+ .sp
+ 
+ .ti -8
+@@ -70,6 +70,10 @@ Generate JSON output.
+ .B link
+ - RDMA port related.
+ 
++.TP
++.B sys
++- RDMA subsystem related.
++
+ .PP
+ The names of all objects may be written in full or
+ abbreviated form, for example
+@@ -107,6 +111,7 @@ Exit status is 0 if command was successful or a positive integer upon failure.
+ .BR rdma-dev (8),
+ .BR rdma-link (8),
+ .BR rdma-resource (8),
++.BR rdma-system (8),
+ .br
+ 
+ .SH REPORTING BUGS
 -- 
 2.19.2
 
