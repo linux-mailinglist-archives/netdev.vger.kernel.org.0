@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9398325851
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 21:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEF4325850
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 21:31:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727582AbfEUTbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 15:31:05 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:36803 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727547AbfEUTbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 15:31:01 -0400
-Received: by mail-qt1-f193.google.com with SMTP id a17so21982339qth.3
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 12:31:00 -0700 (PDT)
+        id S1727464AbfEUTbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 15:31:04 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:46096 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727525AbfEUTbC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 15:31:02 -0400
+Received: by mail-qt1-f194.google.com with SMTP id z19so21859120qtz.13
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 12:31:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=u6/zSX/Gw7YsP1ocusCRs1UUOU2UPlGX11FqD3iD25E=;
-        b=KZtg/OFwgJ9uZ3aafbgSNIETQWscYJ6EzScqQ7s3C0vOZyrbfpuNCeHZ0itYjayF/5
-         HH4rDYr9wI+6CBZ9C1rBgROzkku6K9fH07xZ0zSjc1Uidofk3sEsNC8fmrWIN9nVS6Dp
-         QtiJbbP01QB3fyep17JOMhmuGzjph060mFXyLLwapdUjurwFMdtzviAc47Sf3fKYbmAF
-         sqfhhkrowb8wTPEOVFKZaF2F05e26gb5N6i+JyIymdPkl7LB8W2f7QTCCkslmj7Juhw2
-         5TUhzfeL2OkLj+NS0QF1oQwK25CrzL/rpdXbg7R/J/0+L+4CLaujBtwE2btmvEil6nqK
-         3uIQ==
+        bh=9yKfmidWdFQ7Ab3WtemRxXKGth/A6gmZuXkX6QohwHs=;
+        b=qtLtHLV26BZVdXEKkkWd40sSYdpCMFAzqyXxuxpjWgXIuk5u9FuHDlEkWZLWEbQxcs
+         nOnYtfesQx5Pbam1KOGslU1e2NEUsHgMNBODw/ClcpwB+zNnIpuFNglNvWxgJTWcisFk
+         bzLiZv8ISoTrpGfkmzpc9nfYb2yFxeFt6Dnk9oav46/ug/hJlidWQUSUiLZeN7PqhJYC
+         qHRiKh/QltKqqFOwO1BI318hiW0qCjzoyZ2ug6dVbzUhbsDLeIEQvcUzM3Wozp/x+g1M
+         NEdaK5W/oFZY9UCr/fqzaoviJ33i99dwQkHH+Z6/TQCEwFkUUSJaoPcv1X4LgPk+LA+F
+         5bwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=u6/zSX/Gw7YsP1ocusCRs1UUOU2UPlGX11FqD3iD25E=;
-        b=tqVj2ozt+DSMGM9Ja2NZNZyDpLF2qJParpYjSl1SHVksFLP3dwAyvPRFwzcB2ALYFd
-         1ozceshWYtkEDMspf4McWZi+rN2Abl+gUwmP+Xjgp3Xhb2YI0jm8C5DOUllBIBZGGS2V
-         wg6VL4f4x27LpIa9v9cD6J/7AWwLQJ9D4QZnNiHZJXtSsD5/+sB66j/qkbMnk/Wc4GAq
-         mEBrd+ads04J4oW7ZAUab4lqWptoIz2kp55KqMUDB3W6VWN1xZ1WS2Cvk9UBAAzZz2xT
-         w8Gq0s+XFfSi4dzePRq2SyMiQI3weSTHdLoagKIgkUGZoOxep5FnhRgfuFoIBtxsNuGV
-         dw3g==
-X-Gm-Message-State: APjAAAVI6dNhzbGQiouldGWTMEEoilbRmWBNKgSh3ZEV+kSKvx+lzUwh
-        LMlAy6MV9MvI0QNxwxXviSca5bHz
-X-Google-Smtp-Source: APXvYqyxwPohvoay1JQhRMJwqHdcG3Dbllj2ivK3BDTW/Nvj59pQAxdFAdhgVnw8O3BjVVxyciaatw==
-X-Received: by 2002:ac8:31e2:: with SMTP id i31mr70130930qte.294.1558467060121;
-        Tue, 21 May 2019 12:31:00 -0700 (PDT)
+        bh=9yKfmidWdFQ7Ab3WtemRxXKGth/A6gmZuXkX6QohwHs=;
+        b=nOsrWxk3tqrSp7t0uFMFhfDM7U7QHOlMFtskW5IeorWCuR1qP9xPMfgnJRKc+VMFfc
+         EtV88VOw0hs6+XzUk9lTdFS8kMX6t2pfP2NiEc3ob87N0mIOJbQxDnU8bNqfh9FcT5b8
+         XOp7WMWq+GveRpWIWNrVwmhS7E9WXrT9diyOV6X3Tt95/lfQfvQTTypf5wwEt088hNqz
+         EnSbROUWFpOX3MxvLE8HOj2mZTUO85Sqd+/f0FVKjpjTSJa7tYP+JkAZoxov+Hao6Rw+
+         kLOENtHAHreR24sNn1m2wE3hXcFKmTfP3Yyi0MgDwfIwvj1hYkQV8EpOc+Pcrz7fFLjj
+         zdCA==
+X-Gm-Message-State: APjAAAXO/HXzLNkFSBXhWnKkr+LziKSiH8pUngDv1aEGGmBREX+08OLY
+        QnP3drGDvD/w03qf+VbeVlSYHuUp
+X-Google-Smtp-Source: APXvYqzmJS6QD6KYFLxlSVVYhVHbxiMXpxAKi8d361wIYh7jj7kKgsdJLWucHYeFwUFNH7RYpQj0Mw==
+X-Received: by 2002:a0c:b8a7:: with SMTP id y39mr63868948qvf.66.1558467061688;
+        Tue, 21 May 2019 12:31:01 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id s3sm12196985qtb.12.2019.05.21.12.30.59
+        by smtp.gmail.com with ESMTPSA id p37sm14048002qtj.90.2019.05.21.12.31.00
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 21 May 2019 12:30:59 -0700 (PDT)
+        Tue, 21 May 2019 12:31:01 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     cphealy@gmail.com, Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [RFC net-next 6/9] net: dsa: mv88e6xxx: add default bus operations
-Date:   Tue, 21 May 2019 15:30:01 -0400
-Message-Id: <20190521193004.10767-7-vivien.didelot@gmail.com>
+Subject: [RFC net-next 7/9] net: dsa: mv88e6xxx: implement RMU enable
+Date:   Tue, 21 May 2019 15:30:02 -0400
+Message-Id: <20190521193004.10767-8-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190521193004.10767-1-vivien.didelot@gmail.com>
 References: <20190521193004.10767-1-vivien.didelot@gmail.com>
@@ -63,101 +63,200 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to prepare the introduction of alternative busses, add a
-default mv88e6xxx_bus_ops pointer to the mv88e6xxx_chip structure.
-
-A bus may set the default operations if they aren't already set.
+Implement a new operation to enable the Remote Management Unit (RMU)
+on a specified port. Add such support for 88E6352 and 88E6390 switches.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 10 ++++++++--
- drivers/net/dsa/mv88e6xxx/chip.h |  3 +++
- drivers/net/dsa/mv88e6xxx/smi.c  |  3 +++
- drivers/net/dsa/mv88e6xxx/smi.h  | 18 ------------------
- 4 files changed, 14 insertions(+), 20 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c    | 10 ++++++
+ drivers/net/dsa/mv88e6xxx/chip.h    |  1 +
+ drivers/net/dsa/mv88e6xxx/global1.c | 56 +++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/global1.h |  2 ++
+ 4 files changed, 69 insertions(+)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 28414db979b0..96e1886e05f0 100644
+index 96e1886e05f0..3aa2b315b96d 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -59,7 +59,10 @@ int mv88e6xxx_read(struct mv88e6xxx_chip *chip, int addr, int reg, u16 *val)
- 
- 	assert_reg_lock(chip);
- 
--	err = mv88e6xxx_smi_read(chip, addr, reg, val);
-+	if (unlikely(!(chip->ops && chip->ops->read)))
-+		return -EOPNOTSUPP;
-+
-+	err = chip->ops->read(chip, addr, reg, val);
- 	if (err)
- 		return err;
- 
-@@ -75,7 +78,10 @@ int mv88e6xxx_write(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val)
- 
- 	assert_reg_lock(chip);
- 
--	err = mv88e6xxx_smi_write(chip, addr, reg, val);
-+	if (unlikely(!(chip->ops && chip->ops->write)))
-+		return -EOPNOTSUPP;
-+
-+	err = chip->ops->write(chip, addr, reg, val);
- 	if (err)
- 		return err;
- 
+@@ -3142,6 +3142,7 @@ static const struct mv88e6xxx_ops mv88e6172_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6352_g2_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6352_g1_rmu_enable,
+ 	.rmu_disable = mv88e6352_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
+@@ -3225,6 +3226,7 @@ static const struct mv88e6xxx_ops mv88e6176_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6352_g2_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6352_g1_rmu_enable,
+ 	.rmu_disable = mv88e6352_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
+@@ -3305,6 +3307,7 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6390_g1_rmu_enable,
+ 	.rmu_disable = mv88e6390_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+@@ -3350,6 +3353,7 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6390_g1_rmu_enable,
+ 	.rmu_disable = mv88e6390_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+@@ -3395,6 +3399,7 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6390_g1_rmu_enable,
+ 	.rmu_disable = mv88e6390_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+@@ -3442,6 +3447,7 @@ static const struct mv88e6xxx_ops mv88e6240_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6352_g2_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6352_g1_rmu_enable,
+ 	.rmu_disable = mv88e6352_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
+@@ -3489,6 +3495,7 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6390_g1_rmu_enable,
+ 	.rmu_disable = mv88e6390_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+@@ -3747,6 +3754,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6352_g2_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6352_g1_rmu_enable,
+ 	.rmu_disable = mv88e6352_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
+@@ -3799,6 +3807,7 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6390_g1_rmu_enable,
+ 	.rmu_disable = mv88e6390_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+@@ -3848,6 +3857,7 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
+ 	.mgmt_rsvd2cpu = mv88e6390_g1_mgmt_rsvd2cpu,
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
++	.rmu_enable = mv88e6390_g1_rmu_enable,
+ 	.rmu_disable = mv88e6390_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index faa3fa889f19..860816ebb7ee 100644
+index 860816ebb7ee..2af574169e14 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.h
 +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -204,6 +204,9 @@ struct mv88e6xxx_chip {
- 	/* This mutex protects the access to the switch registers */
- 	struct mutex reg_lock;
+@@ -459,6 +459,7 @@ struct mv88e6xxx_ops {
+ 	const struct mv88e6xxx_avb_ops *avb_ops;
  
-+	/* The default registered bus operations */
-+	const struct mv88e6xxx_bus_ops *ops;
-+
- 	/* The MII bus and the address on the bus that is used to
- 	 * communication with the switch
- 	 */
-diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
-index 96f7d2685bdc..77c40596b678 100644
---- a/drivers/net/dsa/mv88e6xxx/smi.c
-+++ b/drivers/net/dsa/mv88e6xxx/smi.c
-@@ -154,5 +154,8 @@ int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
- 	chip->bus = bus;
- 	chip->sw_addr = sw_addr;
+ 	/* Remote Management Unit operations */
++	int (*rmu_enable)(struct mv88e6xxx_chip *chip, int port, bool da_check);
+ 	int (*rmu_disable)(struct mv88e6xxx_chip *chip);
  
-+	if (!chip->ops)
-+		chip->ops = chip->smi_ops;
-+
- 	return 0;
+ 	/* Precision Time Protocol operations */
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
+index 38e399e0f30e..523a7e297577 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.c
++++ b/drivers/net/dsa/mv88e6xxx/global1.c
+@@ -443,12 +443,68 @@ int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip)
+ 				      MV88E6352_G1_CTL2_RMU_MODE_DISABLED);
  }
-diff --git a/drivers/net/dsa/mv88e6xxx/smi.h b/drivers/net/dsa/mv88e6xxx/smi.h
-index 35e6403b65dc..566bfa174354 100644
---- a/drivers/net/dsa/mv88e6xxx/smi.h
-+++ b/drivers/net/dsa/mv88e6xxx/smi.h
-@@ -38,22 +38,4 @@
- int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
- 		       struct mii_bus *bus, int sw_addr);
  
--static inline int mv88e6xxx_smi_read(struct mv88e6xxx_chip *chip,
--				     int dev, int reg, u16 *data)
--{
--	if (chip->smi_ops && chip->smi_ops->read)
--		return chip->smi_ops->read(chip, dev, reg, data);
--
--	return -EOPNOTSUPP;
--}
--
--static inline int mv88e6xxx_smi_write(struct mv88e6xxx_chip *chip,
--				      int dev, int reg, u16 data)
--{
--	if (chip->smi_ops && chip->smi_ops->write)
--		return chip->smi_ops->write(chip, dev, reg, data);
--
--	return -EOPNOTSUPP;
--}
--
- #endif /* _MV88E6XXX_SMI_H */
++int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip, int port, bool da_check)
++{
++	u16 mask = MV88E6352_G1_CTL2_RMU_MODE_MASK | MV88E6352_G1_CTL2_DA_CHECK;
++	u16 val;
++
++	switch (port) {
++	case 4:
++		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_4;
++		break;
++	case 5:
++		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_5;
++		break;
++	case 6:
++		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_6;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if (da_check)
++		val |= MV88E6352_G1_CTL2_DA_CHECK;
++
++	return mv88e6xxx_g1_ctl2_mask(chip, mask, val);
++}
++
+ int mv88e6390_g1_rmu_disable(struct mv88e6xxx_chip *chip)
+ {
+ 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_RMU_MODE_MASK,
+ 				      MV88E6390_G1_CTL2_RMU_MODE_DISABLED);
+ }
+ 
++int mv88e6390_g1_rmu_enable(struct mv88e6xxx_chip *chip, int port, bool da_check)
++{
++	u16 mask = MV88E6390_G1_CTL2_RMU_MODE_MASK | MV88E6352_G1_CTL2_DA_CHECK;
++	u16 val;
++
++	switch (port) {
++	case 0:
++		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_0;
++		break;
++	case 1:
++		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_1;
++		break;
++	case 9:
++		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_9;
++		break;
++	case 10:
++		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_10;
++		break;
++	default:
++		/* 88E6390X can enable RMU on all (E)DSA ports as well,
++                 * but let's request a specific port for the moment.
++                 */
++		return -EINVAL;
++	}
++
++	if (da_check)
++		val |= MV88E6352_G1_CTL2_DA_CHECK;
++
++	return mv88e6xxx_g1_ctl2_mask(chip, mask, val);
++}
++
+ int mv88e6390_g1_stats_set_histogram(struct mv88e6xxx_chip *chip)
+ {
+ 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_HIST_MODE_MASK,
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
+index bef01331266f..c6057cdd547f 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.h
++++ b/drivers/net/dsa/mv88e6xxx/global1.h
+@@ -283,7 +283,9 @@ int mv88e6085_g1_ieee_pri_map(struct mv88e6xxx_chip *chip);
+ int mv88e6185_g1_set_cascade_port(struct mv88e6xxx_chip *chip, int port);
+ 
+ int mv88e6085_g1_rmu_disable(struct mv88e6xxx_chip *chip);
++int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip, int port, bool da_check);
+ int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip);
++int mv88e6390_g1_rmu_enable(struct mv88e6xxx_chip *chip, int port, bool da_check);
+ int mv88e6390_g1_rmu_disable(struct mv88e6xxx_chip *chip);
+ 
+ int mv88e6xxx_g1_set_device_number(struct mv88e6xxx_chip *chip, int index);
 -- 
 2.21.0
 
