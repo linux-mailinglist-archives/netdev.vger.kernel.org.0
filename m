@@ -2,102 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4EA0247B0
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 07:54:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA5F6247CE
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 08:08:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726252AbfEUFyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 01:54:32 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36802 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725794AbfEUFyc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 May 2019 01:54:32 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 17A85C057E9F;
-        Tue, 21 May 2019 05:54:32 +0000 (UTC)
-Received: from [10.72.12.36] (ovpn-12-36.pek2.redhat.com [10.72.12.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 43FD51001F5B;
-        Tue, 21 May 2019 05:54:27 +0000 (UTC)
-Subject: Re: [PATCH v2 net 2/2] net: core: generic XDP support for stacked
- device
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        id S1727947AbfEUGI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 02:08:57 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34233 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726633AbfEUGI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 02:08:56 -0400
+Received: by mail-wm1-f67.google.com with SMTP id j187so1474597wma.1
+        for <netdev@vger.kernel.org>; Mon, 20 May 2019 23:08:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=exCu3QKdPXG3iAIqpcvr8DtpfdrIsoLY0jQqeeMKEUc=;
+        b=gmU67eDkeeqBzP0M8Qcsycwi/62mK8W5tsJHuv1oAr1OTB1JTLYcLq4nvdaGqdSf3V
+         pGe3VPYCvpKM8EhrEPIRODMtxU5vTClXNkmJlPGgk3wZD7EJgEmhfYbUEMkXF4t3SrnP
+         jjpnLYbdIyNdYNIVA5G9sZAh2887027RGI2ktvgugxLbCGhsUXUeh9/Uw3lrCSD5vf/u
+         0EOtSQze1e4gJgkjjWfpyMnS//r9d1KHMnXYUmCdonFn4IzUaoTuTTx4Eo81OkpyYQTX
+         oEN8rofLHzsYB+8gblSJbNIk6VrKwR+vO3A9q0QhCPvz5uOJYjHBmA+FUNjCxA/IvtyN
+         zskQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=exCu3QKdPXG3iAIqpcvr8DtpfdrIsoLY0jQqeeMKEUc=;
+        b=YiPdxNA2CyNmYVSS/bZCcoJgIgs2SLU5ZyZpCjQN8yYW1GdujO96GW3krekiC3WBRa
+         ySnfK3nZjcoy85S9M1dTi2uA/1zkjL4A7I8iktSgvaZt7hH08fbOpaYh11UPlrtb5xNB
+         gWw2ZSkGafa9nSdXFpUqZyTa+73A8oiT1+nmqbTKoNXnBgxApcS6CwEEsCpcz3Yz8hZB
+         QmhIXvIBfubsVqEg4avcSFg/XpOemTg/1jSXg+nuv8tsAI+y7GFlCaXW7YbqvgjacQvr
+         xi5n/QN0ymLBBupzG9pc9BfdU//6vcscbm+DXkvEncMsUWi21vuHdM1EzMbPN2fZ8mK8
+         5a0w==
+X-Gm-Message-State: APjAAAXrkQQBWr12QTa/5yq6XYqB0urErllPlfjHMY4RRRWTsB+AKC+K
+        xgGvyVazLDaaNLEe1GsATHfKMw==
+X-Google-Smtp-Source: APXvYqwSEbNc2NPFa2mP57c05IYJ8Zpjrn942MM5szoSC6xFaqh4p2NExi6ZHYY3wh6fFLstjhPEWg==
+X-Received: by 2002:a1c:7dd6:: with SMTP id y205mr1861594wmc.90.1558418934716;
+        Mon, 20 May 2019 23:08:54 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id q11sm2299728wmc.15.2019.05.20.23.08.54
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 20 May 2019 23:08:54 -0700 (PDT)
+Date:   Tue, 21 May 2019 08:08:53 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org, davem@davemloft.net,
         xdp-newbies@vger.kernel.org, bpf@vger.kernel.org,
         Stephen Hemminger <sthemmin@microsoft.com>
+Subject: Re: [PATCH v2 net 2/2] net: core: generic XDP support for stacked
+ device
+Message-ID: <20190521060853.GA2210@nanopsycho.orion>
 References: <20190519031046.4049-1-sthemmin@microsoft.com>
  <20190519031046.4049-3-sthemmin@microsoft.com>
- <20190520091105.GA2142@nanopsycho> <20190520085340.4f44ac8b@hermes.lan>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <2abc3bd0-dccb-9885-b152-ef144ad12f29@redhat.com>
-Date:   Tue, 21 May 2019 13:54:26 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+ <20190520091105.GA2142@nanopsycho>
+ <cdfec194-30f3-f040-3bb2-98bb08add759@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20190520085340.4f44ac8b@hermes.lan>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Tue, 21 May 2019 05:54:32 +0000 (UTC)
+In-Reply-To: <cdfec194-30f3-f040-3bb2-98bb08add759@redhat.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/5/20 下午11:53, Stephen Hemminger wrote:
-> On Mon, 20 May 2019 11:11:05 +0200
-> Jiri Pirko <jiri@resnulli.us> wrote:
+Tue, May 21, 2019 at 06:47:23AM CEST, jasowang@redhat.com wrote:
 >
+>On 2019/5/20 下午5:11, Jiri Pirko wrote:
 >> Sun, May 19, 2019 at 05:10:46AM CEST, stephen@networkplumber.org wrote:
->>> When a device is stacked like (team, bonding, failsafe or netvsc) the
->>> XDP generic program for the parent device is not called.  In these
->>> cases, the rx handler changes skb->dev to its own in the receive
->>> handler, and returns RX_HANDLER_ANOTHER.  Fix this by calling
->>> do_xdp_generic if necessary before starting another round.
->>>
->>> Review of all the places RX_HANDLER_ANOTHER is returned
->>> show that the current devices do correctly change skb->dev.
->>>
->>> There was an older patch that got abandoned that did the
->>> same thing, this is just a rewrite.
->>>
->>> Suggested-by: Jason Wang <jasowang@redhat.com>
->>> Fixes: d445516966dc ("net: xdp: support xdp generic on virtual devices")
->>> Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
->>> Acked-by: Jason Wang <jasowang@redhat.com>
->>> ---
+>> > When a device is stacked like (team, bonding, failsafe or netvsc) the
+>> > XDP generic program for the parent device is not called.  In these
+>> > cases, the rx handler changes skb->dev to its own in the receive
+>> > handler, and returns RX_HANDLER_ANOTHER.  Fix this by calling
+>> > do_xdp_generic if necessary before starting another round.
+>> > 
+>> > Review of all the places RX_HANDLER_ANOTHER is returned
+>> > show that the current devices do correctly change skb->dev.
+>> > 
+>> > There was an older patch that got abandoned that did the
+>> > same thing, this is just a rewrite.
+>> > 
+>> > Suggested-by: Jason Wang <jasowang@redhat.com>
+>> > Fixes: d445516966dc ("net: xdp: support xdp generic on virtual devices")
+>> > Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
+>> > Acked-by: Jason Wang <jasowang@redhat.com>
+>> > ---
+>> > net/core/dev.c | 10 ++++++++++
+>> > 1 file changed, 10 insertions(+)
+>> > 
+>> > diff --git a/net/core/dev.c b/net/core/dev.c
+>> > index b6b8505cfb3e..240d0b2de1a8 100644
+>> > --- a/net/core/dev.c
+>> > +++ b/net/core/dev.c
+>> > @@ -4921,6 +4921,16 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
+>> > 			ret = NET_RX_SUCCESS;
+>> > 			goto out;
+>> > 		case RX_HANDLER_ANOTHER:
+>> > +			if (static_branch_unlikely(&generic_xdp_needed_key)) {
+>> > +				struct bpf_prog *xdp_prog;
+>> > +
+>> > +				xdp_prog = rcu_dereference(skb->dev->xdp_prog);
+>> > +				ret = do_xdp_generic(xdp_prog, skb);
+>> > +				if (ret != XDP_PASS) {
+>> > +					ret = NET_RX_SUCCESS;
+>> > +					goto out;
+>> > +				}
+>> > +			}
 >> I'm always scarred of changes like this. The history tells us that this
 >> codepaths are very fragile. It took us non-trivial efford to fix bonding
 >> here, not to mention vlans (that was pain).
->>
+>
+>
+>I may miss something, did you see any issue for bonding with this patch?
+
+No, I was talking about past.
+
+
+>
+>
+>> 
 >> The reason for troubles was often fact that different flows were treated
 >> differently (vlan accel/non-accel).
-> Yes, this is a sensitive path. Another alternative is to fix it
-> inside each device (netvsc). That is what my earlier patch did and that
-> is what is being done now (probably will make it into the RHEL on Azure
-> drivers).
->   
+>
+>
+>Do you mean we need do something similar after vlan_do_receive() returns
+>true?
+
+No.
+
+
+>
+>
 >> This patch calls do_xdp_generic for master device in different point in
 >> the receive patch comparing to lower device. Would it be possible to
 >> unify this? E.g. by moving do_xdp_generice() call from
 >> netif_rx_internal()/netif_receive_skb_internal() here,
 >> to the beginning of __netif_receive_skb_core()?
->>
-> That could work, but has the question about doing XDP farther down
-> call stack (lower performance).
->
-> There is also the case what if both paths support XDP in driver.
-> This would be the ideal case, how would this work?
 >
 >
+>Probably just after another_round label. And this means generic XDP is done
+>after RPS which could be even better.
 
-I think we have a clear request of allowing native XDP to work on 
-stacked device. We're missing some generic building blocks (like XDP rx 
-handler) here.
-
-Thanks
+Yes. That is exactly the place I have in mind.
 
 
+>
+>Thanks
+>
+>
+>> 
+>> 
+>> 
+>> > 			goto another_round;
+>> > 		case RX_HANDLER_EXACT:
+>> > 			deliver_exact = true;
+>> > -- 
+>> > 2.20.1
+>> > 
