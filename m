@@ -2,226 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1B09247DE
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 08:15:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5863424836
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 08:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727895AbfEUGPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 02:15:40 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40566 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727871AbfEUGPk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 02:15:40 -0400
-Received: by mail-wm1-f68.google.com with SMTP id 15so1496120wmg.5
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 23:15:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wVURcngxHaUKK2/6DcO63462w2MMfQtg1uggxqLYhQw=;
-        b=dEUklpcSZJw0JKdU1qOtpFIq2HjB90fX/plfKjqUeat+/giiCHodVyp/Z1mw23OH6S
-         aOSs2njV6rbNgWJnxwjlGJkXDbNb5q4WWJetyHRVEbmJD68d0K3NteaH+L5XSBibmaGb
-         xbu4cHE+H9CRpnI5uKtMEVYmVRTJaMiwQc/qi9AxQsw5g+ZrLfYAJQFbOE36O6Q7zgrw
-         fn3E4uq/VlR13yQFfML58qqB4m1989AOXRi0SWVPwLb4t1//Ahcz1F3PNjQckfgH11tj
-         JaqQJv2HuxFMrJ9mxazFaJSriCE+9mFFFHemZHfkIBSkeWxKfdhPasGJ3aRzBC7w5Q1f
-         dwoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wVURcngxHaUKK2/6DcO63462w2MMfQtg1uggxqLYhQw=;
-        b=apXUkbgRSa0V/eymGPZrK+WmAAWNL2jlERfTlyJbSbztqPF3Kb6vcYYMCZGmOsjVu0
-         YRbrD9JLX7CERt9GR6W1j3Gy94ZVYcEqZY0bP7W4BtC4qd2yQ7Y3uLJXHb92Vzk6Zyzo
-         UleAHL45eDDrk5K36YBHS6BkQVFtJszlq4lSnv0ezCmTY7Sz2qZ0TgIs7/BsitTrC3tY
-         DVDRVgFHXexlEDNjHNGbb0+BV/O7QqU8nmGOMazhRTat/wxDhr9arILM+H6et+rlAauH
-         bsvxHWlC7vNXGCIUOmgtYxTGtEYkLzU9gVtCMSzco46bi+2qgo1lE0F8lHWb96TMYx2L
-         0IOw==
-X-Gm-Message-State: APjAAAUrFHh73t+GKwJoYVPLAXyshejzYlmW+e3md0sryk8EcrVU8LwK
-        iDI93xlVTDy39e8zg71MLaL+zA==
-X-Google-Smtp-Source: APXvYqx0iy748Edu6ClBYQEDwgmMkaq7Im/sFwn2kAs5W3W6NItdo3My9kmAFcXEZSwBc2FCIG8f8Q==
-X-Received: by 2002:a1c:6342:: with SMTP id x63mr2082200wmb.58.1558419337178;
-        Mon, 20 May 2019 23:15:37 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id t13sm43781124wra.81.2019.05.20.23.15.36
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 May 2019 23:15:36 -0700 (PDT)
-Date:   Tue, 21 May 2019 08:15:36 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        xdp-newbies@vger.kernel.org, bpf@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v2 net 2/2] net: core: generic XDP support for stacked
- device
-Message-ID: <20190521061536.GB2210@nanopsycho.orion>
-References: <20190519031046.4049-1-sthemmin@microsoft.com>
- <20190519031046.4049-3-sthemmin@microsoft.com>
- <20190520091105.GA2142@nanopsycho>
- <20190520090405.69b419e5@hermes.lan>
+        id S1726466AbfEUGkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 02:40:09 -0400
+Received: from mail-eopbgr140077.outbound.protection.outlook.com ([40.107.14.77]:53379
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726028AbfEUGkJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 May 2019 02:40:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aPy6zuy6WtcS/8RrsGPUQLQypXpJgx5VvcCf4j+e3Ck=;
+ b=GeeM7WIKrpU+UpWmkf9b4tyizA7V+coIRKLclSLTxHgw7hk9xE2ANa5wbuU1chv38Icq9so2OP1ng1bCv1TItZRSbtk9qSsKPBp0tCy/bLEIgBcDeE1XvlgZLOfqJI61JguxxFq/5nxynLCvy0fZmRUt8B3IgsnajrA3SVbDhjg=
+Received: from AM6PR05MB5879.eurprd05.prod.outlook.com (20.179.0.76) by
+ AM6PR05MB5112.eurprd05.prod.outlook.com (20.177.190.161) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.17; Tue, 21 May 2019 06:40:04 +0000
+Received: from AM6PR05MB5879.eurprd05.prod.outlook.com
+ ([fe80::3cb0:9252:d790:51e2]) by AM6PR05MB5879.eurprd05.prod.outlook.com
+ ([fe80::3cb0:9252:d790:51e2%7]) with mapi id 15.20.1922.013; Tue, 21 May 2019
+ 06:40:04 +0000
+From:   Maxim Mikityanskiy <maximmi@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+Subject: [PATCH net v2] Validate required parameters in inet6_validate_link_af
+Thread-Topic: [PATCH net v2] Validate required parameters in
+ inet6_validate_link_af
+Thread-Index: AQHVD6AFTi+u8kJV8UmGG73D0HNr4w==
+Date:   Tue, 21 May 2019 06:40:04 +0000
+Message-ID: <20190521063941.7451-1-maximmi@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0127.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:9f::19) To AM6PR05MB5879.eurprd05.prod.outlook.com
+ (2603:10a6:20b:a2::12)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=maximmi@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.19.1
+x-originating-ip: [141.226.120.58]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 80574553-323d-44ca-2381-08d6ddb727f2
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB5112;
+x-ms-traffictypediagnostic: AM6PR05MB5112:
+x-microsoft-antispam-prvs: <AM6PR05MB5112F429A656CC3F1815D6BCD1070@AM6PR05MB5112.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0044C17179
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(346002)(39860400002)(396003)(366004)(136003)(199004)(189003)(66946007)(71190400001)(71200400001)(52116002)(99286004)(73956011)(36756003)(102836004)(1076003)(7736002)(66556008)(14444005)(68736007)(478600001)(6486002)(256004)(66476007)(6506007)(386003)(66446008)(64756008)(305945005)(8676002)(81166006)(81156014)(110136005)(2616005)(5660300002)(53936002)(54906003)(107886003)(86362001)(476003)(4326008)(8936002)(50226002)(15650500001)(14454004)(66066001)(6116002)(3846002)(486006)(6436002)(2906002)(6512007)(316002)(25786009)(186003)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5112;H:AM6PR05MB5879.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: UU/af5wf9nMZGKCAhxCZXci8zvroXvxIunNfowxqita49u5k90GjdnbYRk3jrVQh5oaaoxcHtZpCd8dfXC+fqDlYuwAYEiorGJmlCmxe5Yoj9LO0DtNckScXw0NcIUirhyo0cMC+8LJgr2q+9obJo0kzhbJG0T5BB0cwiD6BIVazQMt+NViiBjBQ7qDkiO8yXg9a2R6wyccPEkvMwjwVmdDWLjZXc4vYY+GFdeDV3Cyt59mNL7j1EEN+JlbPd3NQ0sPZU7O+vPdBt7gP4WITydkVkHUnLI5YiOmrpSkwEZmEv7kdckzFoskBL3tBmCcxQf/l5fQRLOSLyDgQXEYooDftX7urWZJ/zFwJ2xS+1rpGN046Q+ZEn59hGXkoi+1iiO5I7XdyZcqC/UGlgLoffjW3D1hxust8wiIrKo3yvbE=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190520090405.69b419e5@hermes.lan>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80574553-323d-44ca-2381-08d6ddb727f2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2019 06:40:04.1625
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5112
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, May 20, 2019 at 06:04:05PM CEST, stephen@networkplumber.org wrote:
->On Mon, 20 May 2019 11:11:05 +0200
->Jiri Pirko <jiri@resnulli.us> wrote:
->
->> Sun, May 19, 2019 at 05:10:46AM CEST, stephen@networkplumber.org wrote:
->> >When a device is stacked like (team, bonding, failsafe or netvsc) the
->> >XDP generic program for the parent device is not called.  In these
->> >cases, the rx handler changes skb->dev to its own in the receive
->> >handler, and returns RX_HANDLER_ANOTHER.  Fix this by calling
->> >do_xdp_generic if necessary before starting another round.
->> >
->> >Review of all the places RX_HANDLER_ANOTHER is returned
->> >show that the current devices do correctly change skb->dev.
->> >
->> >There was an older patch that got abandoned that did the
->> >same thing, this is just a rewrite.
->> >
->> >Suggested-by: Jason Wang <jasowang@redhat.com>
->> >Fixes: d445516966dc ("net: xdp: support xdp generic on virtual devices")
->> >Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
->> >Acked-by: Jason Wang <jasowang@redhat.com>
->> >---
->> > net/core/dev.c | 10 ++++++++++
->> > 1 file changed, 10 insertions(+)
->> >
->> >diff --git a/net/core/dev.c b/net/core/dev.c
->> >index b6b8505cfb3e..240d0b2de1a8 100644
->> >--- a/net/core/dev.c
->> >+++ b/net/core/dev.c
->> >@@ -4921,6 +4921,16 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
->> > 			ret = NET_RX_SUCCESS;
->> > 			goto out;
->> > 		case RX_HANDLER_ANOTHER:
->> >+			if (static_branch_unlikely(&generic_xdp_needed_key)) {
->> >+				struct bpf_prog *xdp_prog;
->> >+
->> >+				xdp_prog = rcu_dereference(skb->dev->xdp_prog);
->> >+				ret = do_xdp_generic(xdp_prog, skb);
->> >+				if (ret != XDP_PASS) {
->> >+					ret = NET_RX_SUCCESS;
->> >+					goto out;
->> >+				}
->> >+			}  
->> 
->> I'm always scarred of changes like this. The history tells us that this
->> codepaths are very fragile. It took us non-trivial efford to fix bonding
->> here, not to mention vlans (that was pain).
->> 
->> The reason for troubles was often fact that different flows were treated
->> differently (vlan accel/non-accel).
->> 
->> This patch calls do_xdp_generic for master device in different point in
->> the receive patch comparing to lower device. Would it be possible to
->> unify this? E.g. by moving do_xdp_generice() call from
->> netif_rx_internal()/netif_receive_skb_internal() here,
->> to the beginning of __netif_receive_skb_core()?
->> 
->
->I am trying that now. But one problem is that it would break the case
->where XDP was being run on one leg of a bridge. For example if eth1 is
->part of br0; then it would no longer be possible to run XDP on eth1.
-
-I don't see why not. The xdp is still run in __netif_receive_skb_core()
-before goto another_round.
-
-I was thinking about patch similar to this:
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b6b8505cfb3e..4c3fdda85544 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4502,23 +4502,6 @@ static int netif_rx_internal(struct sk_buff *skb)
- 
- 	trace_netif_rx(skb);
- 
--	if (static_branch_unlikely(&generic_xdp_needed_key)) {
--		int ret;
--
--		preempt_disable();
--		rcu_read_lock();
--		ret = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
--		rcu_read_unlock();
--		preempt_enable();
--
--		/* Consider XDP consuming the packet a success from
--		 * the netdev point of view we do not want to count
--		 * this as an error.
--		 */
--		if (ret != XDP_PASS)
--			return NET_RX_SUCCESS;
--	}
--
- #ifdef CONFIG_RPS
- 	if (static_branch_unlikely(&rps_needed)) {
- 		struct rps_dev_flow voidflow, *rflow = &voidflow;
-@@ -4858,6 +4841,19 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
- 
- 	__this_cpu_inc(softnet_data.processed);
- 
-+	if (static_branch_unlikely(&generic_xdp_needed_key)) {
-+		int ret2;
-+
-+		preempt_disable();
-+		rcu_read_lock();
-+		ret2 = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
-+		rcu_read_unlock();
-+		preempt_enable();
-+
-+		if (ret2 != XDP_PASS)
-+			return NET_RX_DROP;
-+	}
-+
- 	if (skb->protocol == cpu_to_be16(ETH_P_8021Q) ||
- 	    skb->protocol == cpu_to_be16(ETH_P_8021AD)) {
- 		skb = skb_vlan_untag(skb);
-@@ -5178,19 +5174,6 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
- 	if (skb_defer_rx_timestamp(skb))
- 		return NET_RX_SUCCESS;
- 
--	if (static_branch_unlikely(&generic_xdp_needed_key)) {
--		int ret;
--
--		preempt_disable();
--		rcu_read_lock();
--		ret = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
--		rcu_read_unlock();
--		preempt_enable();
--
--		if (ret != XDP_PASS)
--			return NET_RX_DROP;
--	}
--
- 	rcu_read_lock();
- #ifdef CONFIG_RPS
- 	if (static_branch_unlikely(&rps_needed)) {
-@@ -5224,21 +5207,6 @@ static void netif_receive_skb_list_internal(struct list_head *head)
- 	}
- 	list_splice_init(&sublist, head);
- 
--	if (static_branch_unlikely(&generic_xdp_needed_key)) {
--		preempt_disable();
--		rcu_read_lock();
--		list_for_each_entry_safe(skb, next, head, list) {
--			xdp_prog = rcu_dereference(skb->dev->xdp_prog);
--			skb_list_del_init(skb);
--			if (do_xdp_generic(xdp_prog, skb) == XDP_PASS)
--				list_add_tail(&skb->list, &sublist);
--		}
--		rcu_read_unlock();
--		preempt_enable();
--		/* Put passed packets back on main list */
--		list_splice_init(&sublist, head);
--	}
--
- 	rcu_read_lock();
- #ifdef CONFIG_RPS
- 	if (static_branch_unlikely(&rps_needed)) {
+aW5ldDZfc2V0X2xpbmtfYWYgcmVxdWlyZXMgdGhhdCBhdCBsZWFzdCBvbmUgb2YgSUZMQV9JTkVU
+Nl9UT0tFTiBvcg0KSUZMQV9JTkVUNl9BRERSX0dFVF9NT0RFIGlzIHBhc3NlZC4gSWYgbm9uZSBv
+ZiB0aGVtIGlzIHBhc3NlZCwgaXQNCnJldHVybnMgLUVJTlZBTCwgd2hpY2ggbWF5IGNhdXNlIGRv
+X3NldGxpbmsoKSB0byBmYWlsIGluIHRoZSBtaWRkbGUgb2YNCnByb2Nlc3Npbmcgb3RoZXIgY29t
+bWFuZHMgYW5kIGdpdmUgdGhlIGZvbGxvd2luZyB3YXJuaW5nIG1lc3NhZ2U6DQoNCiAgQSBsaW5r
+IGNoYW5nZSByZXF1ZXN0IGZhaWxlZCB3aXRoIHNvbWUgY2hhbmdlcyBjb21taXR0ZWQgYWxyZWFk
+eS4NCiAgSW50ZXJmYWNlIGV0aDAgbWF5IGhhdmUgYmVlbiBsZWZ0IHdpdGggYW4gaW5jb25zaXN0
+ZW50IGNvbmZpZ3VyYXRpb24sDQogIHBsZWFzZSBjaGVjay4NCg0KQ2hlY2sgdGhlIHByZXNlbmNl
+IG9mIGF0IGxlYXN0IG9uZSBvZiB0aGVtIGluIGluZXQ2X3ZhbGlkYXRlX2xpbmtfYWYgdG8NCmRl
+dGVjdCBpbnZhbGlkIHBhcmFtZXRlcnMgYXQgYW4gZWFybHkgc3RhZ2UsIGJlZm9yZSBkb19zZXRs
+aW5rIGRvZXMNCmFueXRoaW5nLiBBbHNvIHZhbGlkYXRlIHRoZSBhZGRyZXNzIGdlbmVyYXRpb24g
+bW9kZSBhdCBhbiBlYXJseSBzdGFnZS4NCg0KU2lnbmVkLW9mZi1ieTogTWF4aW0gTWlraXR5YW5z
+a2l5IDxtYXhpbW1pQG1lbGxhbm94LmNvbT4NCi0tLQ0KIG5ldC9pcHY2L2FkZHJjb25mLmMgfCA1
+NyArKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0NCiAxIGZpbGUg
+Y2hhbmdlZCwgMzUgaW5zZXJ0aW9ucygrKSwgMjIgZGVsZXRpb25zKC0pDQoNCkNoYW5nZXM6IE1h
+ZGUgdGhlIHZhbGlkYXRpb24gY29kZSBtb3JlIHJlYWRhYmxlIGFmdGVyIEpha3ViJ3MgcmVxdWVz
+dCwNCnJldmVyc2VkIGEgQ2hyaXN0bWFzIHRyZWUuDQoNCmRpZmYgLS1naXQgYS9uZXQvaXB2Ni9h
+ZGRyY29uZi5jIGIvbmV0L2lwdjYvYWRkcmNvbmYuYw0KaW5kZXggZjk2ZDFkZTc5NTA5Li5iNTE2
+MzBkZGI3MjggMTAwNjQ0DQotLS0gYS9uZXQvaXB2Ni9hZGRyY29uZi5jDQorKysgYi9uZXQvaXB2
+Ni9hZGRyY29uZi5jDQpAQCAtNTY2MSwxOCArNTY2MSw2IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3Qg
+bmxhX3BvbGljeSBpbmV0Nl9hZl9wb2xpY3lbSUZMQV9JTkVUNl9NQVggKyAxXSA9IHsNCiAJW0lG
+TEFfSU5FVDZfVE9LRU5dCQk9IHsgLmxlbiA9IHNpemVvZihzdHJ1Y3QgaW42X2FkZHIpIH0sDQog
+fTsNCiANCi1zdGF0aWMgaW50IGluZXQ2X3ZhbGlkYXRlX2xpbmtfYWYoY29uc3Qgc3RydWN0IG5l
+dF9kZXZpY2UgKmRldiwNCi0JCQkJICBjb25zdCBzdHJ1Y3QgbmxhdHRyICpubGEpDQotew0KLQlz
+dHJ1Y3QgbmxhdHRyICp0YltJRkxBX0lORVQ2X01BWCArIDFdOw0KLQ0KLQlpZiAoZGV2ICYmICFf
+X2luNl9kZXZfZ2V0KGRldikpDQotCQlyZXR1cm4gLUVBRk5PU1VQUE9SVDsNCi0NCi0JcmV0dXJu
+IG5sYV9wYXJzZV9uZXN0ZWRfZGVwcmVjYXRlZCh0YiwgSUZMQV9JTkVUNl9NQVgsIG5sYSwNCi0J
+CQkJCSAgIGluZXQ2X2FmX3BvbGljeSwgTlVMTCk7DQotfQ0KLQ0KIHN0YXRpYyBpbnQgY2hlY2tf
+YWRkcl9nZW5fbW9kZShpbnQgbW9kZSkNCiB7DQogCWlmIChtb2RlICE9IElONl9BRERSX0dFTl9N
+T0RFX0VVSTY0ICYmDQpAQCAtNTY5MywxNCArNTY4MSw0NCBAQCBzdGF0aWMgaW50IGNoZWNrX3N0
+YWJsZV9wcml2YWN5KHN0cnVjdCBpbmV0Nl9kZXYgKmlkZXYsIHN0cnVjdCBuZXQgKm5ldCwNCiAJ
+cmV0dXJuIDE7DQogfQ0KIA0KK3N0YXRpYyBpbnQgaW5ldDZfdmFsaWRhdGVfbGlua19hZihjb25z
+dCBzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LA0KKwkJCQkgIGNvbnN0IHN0cnVjdCBubGF0dHIgKm5s
+YSkNCit7DQorCXN0cnVjdCBubGF0dHIgKnRiW0lGTEFfSU5FVDZfTUFYICsgMV07DQorCXN0cnVj
+dCBpbmV0Nl9kZXYgKmlkZXYgPSBOVUxMOw0KKwlpbnQgZXJyOw0KKw0KKwlpZiAoZGV2KSB7DQor
+CQlpZGV2ID0gX19pbjZfZGV2X2dldChkZXYpOw0KKwkJaWYgKCFpZGV2KQ0KKwkJCXJldHVybiAt
+RUFGTk9TVVBQT1JUOw0KKwl9DQorDQorCWVyciA9IG5sYV9wYXJzZV9uZXN0ZWRfZGVwcmVjYXRl
+ZCh0YiwgSUZMQV9JTkVUNl9NQVgsIG5sYSwNCisJCQkJCSAgaW5ldDZfYWZfcG9saWN5LCBOVUxM
+KTsNCisJaWYgKGVycikNCisJCXJldHVybiBlcnI7DQorDQorCWlmICghdGJbSUZMQV9JTkVUNl9U
+T0tFTl0gJiYgIXRiW0lGTEFfSU5FVDZfQUREUl9HRU5fTU9ERV0pDQorCQlyZXR1cm4gLUVJTlZB
+TDsNCisNCisJaWYgKHRiW0lGTEFfSU5FVDZfQUREUl9HRU5fTU9ERV0pIHsNCisJCXU4IG1vZGUg
+PSBubGFfZ2V0X3U4KHRiW0lGTEFfSU5FVDZfQUREUl9HRU5fTU9ERV0pOw0KKw0KKwkJaWYgKGNo
+ZWNrX2FkZHJfZ2VuX21vZGUobW9kZSkgPCAwKQ0KKwkJCXJldHVybiAtRUlOVkFMOw0KKwkJaWYg
+KGRldiAmJiBjaGVja19zdGFibGVfcHJpdmFjeShpZGV2LCBkZXZfbmV0KGRldiksIG1vZGUpIDwg
+MCkNCisJCQlyZXR1cm4gLUVJTlZBTDsNCisJfQ0KKw0KKwlyZXR1cm4gMDsNCit9DQorDQogc3Rh
+dGljIGludCBpbmV0Nl9zZXRfbGlua19hZihzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LCBjb25zdCBz
+dHJ1Y3QgbmxhdHRyICpubGEpDQogew0KLQlpbnQgZXJyID0gLUVJTlZBTDsNCiAJc3RydWN0IGlu
+ZXQ2X2RldiAqaWRldiA9IF9faW42X2Rldl9nZXQoZGV2KTsNCiAJc3RydWN0IG5sYXR0ciAqdGJb
+SUZMQV9JTkVUNl9NQVggKyAxXTsNCi0NCi0JaWYgKCFpZGV2KQ0KLQkJcmV0dXJuIC1FQUZOT1NV
+UFBPUlQ7DQorCWludCBlcnI7DQogDQogCWlmIChubGFfcGFyc2VfbmVzdGVkX2RlcHJlY2F0ZWQo
+dGIsIElGTEFfSU5FVDZfTUFYLCBubGEsIE5VTEwsIE5VTEwpIDwgMCkNCiAJCUJVRygpOw0KQEAg
+LTU3MTQsMTUgKzU3MzIsMTAgQEAgc3RhdGljIGludCBpbmV0Nl9zZXRfbGlua19hZihzdHJ1Y3Qg
+bmV0X2RldmljZSAqZGV2LCBjb25zdCBzdHJ1Y3QgbmxhdHRyICpubGEpDQogCWlmICh0YltJRkxB
+X0lORVQ2X0FERFJfR0VOX01PREVdKSB7DQogCQl1OCBtb2RlID0gbmxhX2dldF91OCh0YltJRkxB
+X0lORVQ2X0FERFJfR0VOX01PREVdKTsNCiANCi0JCWlmIChjaGVja19hZGRyX2dlbl9tb2RlKG1v
+ZGUpIDwgMCB8fA0KLQkJICAgIGNoZWNrX3N0YWJsZV9wcml2YWN5KGlkZXYsIGRldl9uZXQoZGV2
+KSwgbW9kZSkgPCAwKQ0KLQkJCXJldHVybiAtRUlOVkFMOw0KLQ0KIAkJaWRldi0+Y25mLmFkZHJf
+Z2VuX21vZGUgPSBtb2RlOw0KLQkJZXJyID0gMDsNCiAJfQ0KIA0KLQlyZXR1cm4gZXJyOw0KKwly
+ZXR1cm4gMDsNCiB9DQogDQogc3RhdGljIGludCBpbmV0Nl9maWxsX2lmaW5mbyhzdHJ1Y3Qgc2tf
+YnVmZiAqc2tiLCBzdHJ1Y3QgaW5ldDZfZGV2ICppZGV2LA0KLS0gDQoyLjE5LjENCg0K
