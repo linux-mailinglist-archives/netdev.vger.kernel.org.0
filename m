@@ -2,90 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F0772466B
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 05:41:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCB372466D
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 05:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727604AbfEUDlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 23:41:31 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:45626 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727078AbfEUDlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 23:41:31 -0400
-Received: by mail-pl1-f193.google.com with SMTP id a5so7685070pls.12;
-        Mon, 20 May 2019 20:41:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oIMygyD3sInPQMcnYmQjxiYJQKnfeII4uM7qe57TIWY=;
-        b=OAy03SuHPZvHf9eiWYtJiWyRxvX8P7yOnlWRu6A2YcGpkcPnBT9R7OQxiZVaQQMzxS
-         jCmK/wyiIKgyihj7dSyKGNDijnO4DrhtWsFvimvIG1I88zQ6V2Jq4aAxSxeXMb/j7dPG
-         VsJ93FYEiREdwlWLXGxhv/A5IXpFJE7P5WYYUP/RaVdXsjB8AbJi/jUaxs98p3mJFK9k
-         UjB7v284fbm6dy1CKz7ktmXUNITj6pT8JzMNj1bh0jkcvCJjnFHTLpSvqTqWKjA14gnx
-         gsmPbvLTBVNx78c/DZ4K/gMci9q2UataRghBaISrLDc8OMXfSFum3/o2CbIWu7OOx80T
-         +ulg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oIMygyD3sInPQMcnYmQjxiYJQKnfeII4uM7qe57TIWY=;
-        b=oEUlCaGp0bccS4DrXYPP67+UUCHC73oYtxdBmwgL2Gbl4MjJzs79hwZMgmqBTFfd6G
-         VgXK4L3d4dwo7aPaUR0qzFjGMZagghgzdwurTGXdgwFw73V7XuRbFBRYmvV84BnHA/rn
-         HzwlGl3bEztn6fMfiS6AWBj1NkAa63HTLzrUbydvbfvrRKGJeFWuo1zYx91yZqRbNAst
-         3K2AI/9N2ROCkzw3PizpxDn5cZkdUJVDRlJ8b2hwGg2wnV+x04ta5EQaJ4tUJe5IwcTi
-         FbsAjeCoD/4pu4VW9GMCafT7Iannrk1PTkiHzz3Atzpgpp7ZbJbXjw+4UdIoOnFeO57b
-         xLiA==
-X-Gm-Message-State: APjAAAXgPhYgcVNKD8VRX83YMgcdzRwGz8JpxU3FVf4ElyZM5H3yi/Av
-        ntyATBqBvSgvGyRL8BuXUWRrG5ZJAh8=
-X-Google-Smtp-Source: APXvYqzWjyywKwMRH7ExnVj2HvsLeLCpGjAlErCfjtV2Jt82i9xkXMi9kB0QNpru7Ak/5phso1h3Gw==
-X-Received: by 2002:a17:902:7202:: with SMTP id ba2mr25990766plb.177.1558410090897;
-        Mon, 20 May 2019 20:41:30 -0700 (PDT)
-Received: from masabert (150-66-66-201m5.mineo.jp. [150.66.66.201])
-        by smtp.gmail.com with ESMTPSA id 19sm22635975pfz.84.2019.05.20.20.41.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 May 2019 20:41:30 -0700 (PDT)
-Received: by masabert (Postfix, from userid 1000)
-        id BC43F2011A2; Tue, 21 May 2019 12:41:16 +0900 (JST)
-From:   Masanari Iida <standby24x7@gmail.com>
-To:     corbet@lwn.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net
-Cc:     Masanari Iida <standby24x7@gmail.com>
-Subject: [PATCH] net-next: net: Fix typos in ip-sysctl.txt
-Date:   Tue, 21 May 2019 12:41:15 +0900
-Message-Id: <20190521034115.18896-1-standby24x7@gmail.com>
-X-Mailer: git-send-email 2.22.0.rc1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727108AbfEUDmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 23:42:31 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:13256 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727047AbfEUDmb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 23:42:31 -0400
+Received: from dalmore.blr.asicdesigners.com ([10.193.186.161])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x4L3gFK7019944;
+        Mon, 20 May 2019 20:42:21 -0700
+From:   Vishal Kulkarni <vishal@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     nirranjan@chelsio.com, indranil@chelsio.com, dt@chelsio.com,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: [PATCH net-next] cxgb4: Revert "cxgb4: Remove SGE_HOST_PAGE_SIZE dependency on page size"
+Date:   Tue, 21 May 2019 09:12:02 +0530
+Message-Id: <1558410122-29341-1-git-send-email-vishal@chelsio.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes some spelling typos found in ip-sysctl.txt
+This reverts commit 2391b0030e241386d710df10e53e2cfc3c5d4fc1
+SGE's BAR2 Doorbell/GTS Page Size is now interpreted correctly in the
+firmware itself by using actual host page size. Hence previous commit
+needs to be reverted.
 
-Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
 ---
- Documentation/networking/ip-sysctl.txt | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 725b8bea58a7..14fe93049d28 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -560,10 +560,10 @@ tcp_comp_sack_delay_ns - LONG INTEGER
- 	Default : 1,000,000 ns (1 ms)
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+index f9b70be..93feb25 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+@@ -7253,10 +7253,21 @@ int t4_fixup_host_params(struct adapter *adap, unsigned int page_size,
+ 			 unsigned int cache_line_size)
+ {
+ 	unsigned int page_shift = fls(page_size) - 1;
++	unsigned int sge_hps = page_shift - 10;
+ 	unsigned int stat_len = cache_line_size > 64 ? 128 : 64;
+ 	unsigned int fl_align = cache_line_size < 32 ? 32 : cache_line_size;
+ 	unsigned int fl_align_log = fls(fl_align) - 1;
  
- tcp_comp_sack_nr - INTEGER
--	Max numer of SACK that can be compressed.
-+	Max number of SACK that can be compressed.
- 	Using 0 disables SACK compression.
- 
--	Detault : 44
-+	Default : 44
- 
- tcp_slow_start_after_idle - BOOLEAN
- 	If set, provide RFC2861 behavior and time out the congestion
++	t4_write_reg(adap, SGE_HOST_PAGE_SIZE_A,
++		     HOSTPAGESIZEPF0_V(sge_hps) |
++		     HOSTPAGESIZEPF1_V(sge_hps) |
++		     HOSTPAGESIZEPF2_V(sge_hps) |
++		     HOSTPAGESIZEPF3_V(sge_hps) |
++		     HOSTPAGESIZEPF4_V(sge_hps) |
++		     HOSTPAGESIZEPF5_V(sge_hps) |
++		     HOSTPAGESIZEPF6_V(sge_hps) |
++		     HOSTPAGESIZEPF7_V(sge_hps));
++
+ 	if (is_t4(adap->params.chip)) {
+ 		t4_set_reg_field(adap, SGE_CONTROL_A,
+ 				 INGPADBOUNDARY_V(INGPADBOUNDARY_M) |
 -- 
-2.22.0.rc1
+1.8.3.1
 
