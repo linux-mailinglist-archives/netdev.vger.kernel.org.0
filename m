@@ -2,118 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 551CB24FF6
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 15:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 928C925007
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 15:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728249AbfEUNTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 09:19:00 -0400
-Received: from mail01.preh.com ([80.149.130.22]:42938 "EHLO mail01.preh.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726692AbfEUNS7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 May 2019 09:18:59 -0400
-From:   Kloetzke Jan <Jan.Kloetzke@preh.de>
-To:     Oliver Neukum <oneukum@suse.com>,
-        David Miller <davem@davemloft.net>
-CC:     =?utf-8?B?SmFuIEtsw7Z0emtl?= <jan@kloetzke.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        Kloetzke Jan <Jan.Kloetzke@preh.de>
-Subject: [PATCH v3] usbnet: fix kernel crash after disconnect
-Thread-Topic: [PATCH v3] usbnet: fix kernel crash after disconnect
-Thread-Index: AQHVD9e0yfwldPJKrkOozCggfUiRSQ==
-Date:   Tue, 21 May 2019 13:18:40 +0000
-Message-ID: <20190521131826.30475-1-Jan.Kloetzke@preh.de>
-References: <1558438944.12672.13.camel@suse.com>
-In-Reply-To: <1558438944.12672.13.camel@suse.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-tm-snts-smtp: 0057CAAE3B5C9ED69887D59E986334810166454D7D941CDCF57AE75E0021741E2000:8
-x-exclaimer-md-config: 142fe46c-4d13-4ac1-9970-1f36f118897a
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <7AD7AA868E63D944A5F07209F4FA09B3@preh.de>
-Content-Transfer-Encoding: base64
+        id S1728226AbfEUNX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 09:23:26 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:44514 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728006AbfEUNX0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 09:23:26 -0400
+Received: by mail-qk1-f193.google.com with SMTP id w25so10973215qkj.11
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 06:23:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KBDJLPZk/tlNjyKsasnuF8ZkxJ37zHjz9CBGzBVukHM=;
+        b=TpkXgsgonXCMjoJcO65Q3CE8uyIsQHzLq6yG/+/DFhai8Wd1JQHrGOPVTIyrOZe0IB
+         RZaQenxeuk4K+08StwLfmdHQKS9DX6ViC9vPXc/KdywLw7IuZu3NccAv6ViX7euKawuF
+         oBoiMyavJwrt2AUHSH5R5Ug6kzBLfAIhTdx4WUjllhmxstqCH+C8GwcQ8B4EJI2tgisr
+         lSE0441O4TcOZyCLj0AdtZJD3rA1r2M82mqbgjZ3SN0vDdlCI41mTGbjgbeZKSddsknc
+         rhjRcl6ahw+P68mdrQnqBaTyZ1kCmdlR77xZRvdVJokZJ0Y9Vybl7ipM/yPNlFwMGGrd
+         YYlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KBDJLPZk/tlNjyKsasnuF8ZkxJ37zHjz9CBGzBVukHM=;
+        b=nktRJ6u6wNbDqjYTH4+xqIY2EYE44R9nz7CrMLsWlzt3wAIPe4V5NZWmXVhjjUJ+1w
+         /qrthZSJQJO7nXYgQ0pxlVtM+nV/+rcLR77MSwHAeax/a9zJMWr7jOsbnxRo1vwSXFjQ
+         V1Ny+VNvLrftkX4s3VC9IRz5A0K1XWKOhvWYmmdxyhS72L1QKU/ezACEeLbz5kLTnjTI
+         82rIOPhy9UtDclul7i7YBslJJwIurQzhIPsGDWaAKH9+pg3GOLSVOsxmkjDi0wfDwpJD
+         5BN8RcNCgaeoqXtMmWF3bVbUUfJtP3VzD1Mj5bVYHXMxAh3qmw+b+PFjUCpMY72/62+M
+         fhCg==
+X-Gm-Message-State: APjAAAWD/UyXisjtg2CXlnis2081fo2vHyi9FQXW8QjTcTSqtuQ/NOLY
+        qbEdHYFAc5ugXVmA+6pTb8r3Clv0FAKVH8kJKOQ=
+X-Google-Smtp-Source: APXvYqxdC1MZY2nqL36/rke7AUuhsPtbhBnudyawqLyN+3rLSEINKyxPvpIS3WxiBVhrOBFj2OJzLq9fCwQ5wiF0MWk=
+X-Received: by 2002:a05:620a:133c:: with SMTP id p28mr62362347qkj.165.1558445005547;
+ Tue, 21 May 2019 06:23:25 -0700 (PDT)
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=preh.de; s=key1; c=relaxed/relaxed;
- h=from:to:cc:subject:date:message-id:references:content-type:mime-version;
- bh=1jmU4MUGKrogGk+Rb1I7p4KEjxRh1MCE6RhCh5YD+AE=;
- b=oGxj932i+4q9UjJ+ntwTPXCb3OmPnml8cTWwz1aAeK2QbO6XHlUsIninKjo35XbrCH6bYweeILxD
-        cz5W4UCRG8nERMxbzRaD+7CxoLJHfLn7LAlg5bFi0MogzdtTwlhDb7cKqfPJm46/ahlqlLp7p1vO
-        rp1li6d6Q2EFQjG2EeWe5R+Ts0dwRbYUS4D2zznPV0nnj1k7OlTRs+nqgd1NKx49T4KuOT46TApZ
-        oITopd5xIieL9lvgqQ23fr4yZBzLpJDR/LKXgnbuzW0PlOYEjiag4/mv/u+jCyjNOoFv9C8Yk1D/
-        GpsrZR2XkDJh2sZVRORhhweGg7QtiaEMLdDn0g==
+References: <ba3ef670-a8ff-abfd-5e86-9b14af626112@infradead.org>
+In-Reply-To: <ba3ef670-a8ff-abfd-5e86-9b14af626112@infradead.org>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 21 May 2019 15:23:13 +0200
+Message-ID: <CAJ+HfNjAjCsQViE=t-M6s-d2yN86YYg8c0iO+BVXB9TW42LtuQ@mail.gmail.com>
+Subject: Re: [PATCH] Documentation/networking: fix af_xdp.rst Sphinx warnings
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-V2hlbiBkaXNjb25uZWN0aW5nIGNkY19uY20gdGhlIGtlcm5lbCBzcG9yYWRpY2FsbHkgY3Jhc2hl
-cyBzaG9ydGx5DQphZnRlciB0aGUgZGlzY29ubmVjdDoNCg0KICBbICAgNTcuODY4ODEyXSBVbmFi
-bGUgdG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQgdmlydHVhbCBh
-ZGRyZXNzIDAwMDAwMDAwDQogIC4uLg0KICBbICAgNTguMDA2NjUzXSBQQyBpcyBhdCAweDANCiAg
-WyAgIDU4LjAwOTIwMl0gTFIgaXMgYXQgY2FsbF90aW1lcl9mbisweGVjLzB4MWI0DQogIFsgICA1
-OC4wMTM1NjddIHBjIDogWzwwMDAwMDAwMDAwMDAwMDAwPl0gbHIgOiBbPGZmZmZmZjgwMDgwZjUx
-MzA+XSBwc3RhdGU6IDAwMDAwMTQ1DQogIFsgICA1OC4wMjA5NzZdIHNwIDogZmZmZmZmODAwODAw
-M2RhMA0KICBbICAgNTguMDI0Mjk1XSB4Mjk6IGZmZmZmZjgwMDgwMDNkYTAgeDI4OiAwMDAwMDAw
-MDAwMDAwMDAxDQogIFsgICA1OC4wMjk2MThdIHgyNzogMDAwMDAwMDAwMDAwMDAwYSB4MjY6IDAw
-MDAwMDAwMDAwMDAxMDANCiAgWyAgIDU4LjAzNDk0MV0geDI1OiAwMDAwMDAwMDAwMDAwMDAwIHgy
-NDogZmZmZmZmODAwODAwM2U2OA0KICBbICAgNTguMDQwMjYzXSB4MjM6IDAwMDAwMDAwMDAwMDAw
-MDAgeDIyOiAwMDAwMDAwMDAwMDAwMDAwDQogIFsgICA1OC4wNDU1ODddIHgyMTogMDAwMDAwMDAw
-MDAwMDAwMCB4MjA6IGZmZmZmZmM2OGZhYzE4MDgNCiAgWyAgIDU4LjA1MDkxMF0geDE5OiAwMDAw
-MDAwMDAwMDAwMTAwIHgxODogMDAwMDAwMDAwMDAwMDAwMA0KICBbICAgNTguMDU2MjMyXSB4MTc6
-IDAwMDAwMDdmODg1YWZmOGMgeDE2OiAwMDAwMDA3Zjg4M2E5ZjEwDQogIFsgICA1OC4wNjE1NTZd
-IHgxNTogMDAwMDAwMDAwMDAwMDAwMSB4MTQ6IDAwMDAwMDAwMDAwMDAwNmUNCiAgWyAgIDU4LjA2
-Njg3OF0geDEzOiAwMDAwMDAwMDAwMDAwMDAwIHgxMjogMDAwMDAwMDAwMDAwMDBiYQ0KICBbICAg
-NTguMDcyMjAxXSB4MTE6IGZmZmZmZmM2OWZmMWRiMzAgeDEwOiAwMDAwMDAwMDAwMDAwMDIwDQog
-IFsgICA1OC4wNzc1MjRdIHg5IDogODAwMDEwMDAwODAwMTAwMCB4OCA6IDAwMDAwMDAwMDAwMDAw
-MDENCiAgWyAgIDU4LjA4Mjg0N10geDcgOiAwMDAwMDAwMDAwMDAwODAwIHg2IDogZmZmZmZmODAw
-ODAwM2U3MA0KICBbICAgNTguMDg4MTY5XSB4NSA6IGZmZmZmZmM2OWZmMTdhMjggeDQgOiAwMDAw
-MDAwMGZmZmYxMzhiDQogIFsgICA1OC4wOTM0OTJdIHgzIDogMDAwMDAwMDAwMDAwMDAwMCB4MiA6
-IDAwMDAwMDAwMDAwMDAwMDANCiAgWyAgIDU4LjA5ODgxNF0geDEgOiAwMDAwMDAwMDAwMDAwMDAw
-IHgwIDogMDAwMDAwMDAwMDAwMDAwMA0KICAuLi4NCiAgWyAgIDU4LjIwNTgwMF0gWzwgICAgICAg
-ICAgKG51bGwpPl0gICAgICAgICAgIChudWxsKQ0KICBbICAgNTguMjEwNTIxXSBbPGZmZmZmZjgw
-MDgwZjUyOTg+XSBleHBpcmVfdGltZXJzKzB4YTAvMHgxNGMNCiAgWyAgIDU4LjIxNTkzN10gWzxm
-ZmZmZmY4MDA4MGY1NDJjPl0gcnVuX3RpbWVyX3NvZnRpcnErMHhlOC8weDEyOA0KICBbICAgNTgu
-MjIxNzAyXSBbPGZmZmZmZjgwMDgwODExMjA+XSBfX2RvX3NvZnRpcnErMHgyOTgvMHgzNDgNCiAg
-WyAgIDU4LjIyNzExOF0gWzxmZmZmZmY4MDA4MGE2MzA0Pl0gaXJxX2V4aXQrMHg3NC8weGJjDQog
-IFsgICA1OC4yMzIwMDldIFs8ZmZmZmZmODAwODBlMTdkYz5dIF9faGFuZGxlX2RvbWFpbl9pcnEr
-MHg3OC8weGFjDQogIFsgICA1OC4yMzc4NTddIFs8ZmZmZmZmODAwODA4MGNmND5dIGdpY19oYW5k
-bGVfaXJxKzB4ODAvMHhhYw0KICAuLi4NCg0KVGhlIGNyYXNoIGhhcHBlbnMgcm91Z2hseSAxMjUu
-LjEzMG1zIGFmdGVyIHRoZSBkaXNjb25uZWN0LiBUaGlzDQpjb3JyZWxhdGVzIHdpdGggdGhlICdk
-ZWxheScgdGltZXIgdGhhdCBpcyBzdGFydGVkIG9uIGNlcnRhaW4gVVNCIHR4L3J4DQplcnJvcnMg
-aW4gdGhlIFVSQiBjb21wbGV0aW9uIGhhbmRsZXIuDQoNClRoZSBwcm9ibGVtIGlzIGEgcmFjZSBv
-ZiB1c2JuZXRfc3RvcCgpIHdpdGggdXNibmV0X3N0YXJ0X3htaXQoKS4gSW4NCnVzYm5ldF9zdG9w
-KCkgd2UgY2FsbCB1c2JuZXRfdGVybWluYXRlX3VyYnMoKSB0byBjYW5jZWwgYWxsIFVSQnMgaW4N
-CmZsaWdodC4gVGhpcyBvbmx5IG1ha2VzIHNlbnNlIGlmIG5vIG5ldyBVUkJzIGFyZSBzdWJtaXR0
-ZWQNCmNvbmN1cnJlbnRseSwgdGhvdWdoLiBCdXQgdGhlIHVzYm5ldF9zdGFydF94bWl0KCkgY2Fu
-IHJ1biBhdCB0aGUgc2FtZQ0KdGltZSBvbiBhbm90aGVyIENQVSB3aGljaCBhbG1vc3QgdW5jb25k
-aXRpb25hbGx5IHN1Ym1pdHMgYW4gVVJCLiBUaGUNCmVycm9yIGNhbGxiYWNrIG9mIHRoZSBuZXcg
-VVJCIHdpbGwgdGhlbiBzY2hlZHVsZSB0aGUgdGltZXIgYWZ0ZXIgaXQgd2FzDQphbHJlYWR5IHN0
-b3BwZWQuDQoNClRoZSBmaXggYWRkcyBhIGNoZWNrIGlmIHRoZSB0eCBxdWV1ZSBpcyBzdG9wcGVk
-IGFmdGVyIHRoZSB0eCBsaXN0IGxvY2sNCmhhcyBiZWVuIHRha2VuLiBUaGlzIHNob3VsZCByZWxp
-YWJseSBwcmV2ZW50IHRoZSBzdWJtaXNzaW9uIG9mIG5ldyBVUkJzDQp3aGlsZSB1c2JuZXRfdGVy
-bWluYXRlX3VyYnMoKSBkb2VzIGl0cyBqb2IuIFRoZSBzYW1lIHRoaW5nIGlzIGRvbmUgb24NCnRo
-ZSByeCBzaWRlIGV2ZW4gdGhvdWdoIGl0IG1pZ2h0IGJlIHNhZmUgZHVlIHRvIG90aGVyIGZsYWdz
-IHRoYXQgYXJlDQpjaGVja2VkIHRoZXJlLg0KDQpTaWduZWQtb2ZmLWJ5OiBKYW4gS2zDtnR6a2Ug
-PEphbi5LbG9ldHprZUBwcmVoLmRlPg0KLS0tDQoNCnYzOiByZW1vdmVkIFdBUk5fT04oKSBiZWNh
-dXNlIHRoZSByYWNlIGlzIGV4cGVjdGVkIHRvIGhhcHBlbg0KdjI6IGFkZCBXQVJOX09OKCkgYXMg
-b2YgT2xpdmVycyBzdWdnZXN0aW9uDQoNCiBkcml2ZXJzL25ldC91c2IvdXNibmV0LmMgfCA2ICsr
-KysrKw0KIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvbmV0L3VzYi91c2JuZXQuYyBiL2RyaXZlcnMvbmV0L3VzYi91c2JuZXQuYw0KaW5kZXgg
-NTA0MjgyYWYyN2U1Li45MjFjYzA1NzFiZDAgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC91c2Iv
-dXNibmV0LmMNCisrKyBiL2RyaXZlcnMvbmV0L3VzYi91c2JuZXQuYw0KQEAgLTUwNiw2ICs1MDYs
-NyBAQCBzdGF0aWMgaW50IHJ4X3N1Ym1pdCAoc3RydWN0IHVzYm5ldCAqZGV2LCBzdHJ1Y3QgdXJi
-ICp1cmIsIGdmcF90IGZsYWdzKQ0KIA0KIAlpZiAobmV0aWZfcnVubmluZyAoZGV2LT5uZXQpICYm
-DQogCSAgICBuZXRpZl9kZXZpY2VfcHJlc2VudCAoZGV2LT5uZXQpICYmDQorCSAgICB0ZXN0X2Jp
-dChFVkVOVF9ERVZfT1BFTiwgJmRldi0+ZmxhZ3MpICYmDQogCSAgICAhdGVzdF9iaXQgKEVWRU5U
-X1JYX0hBTFQsICZkZXYtPmZsYWdzKSAmJg0KIAkgICAgIXRlc3RfYml0IChFVkVOVF9ERVZfQVNM
-RUVQLCAmZGV2LT5mbGFncykpIHsNCiAJCXN3aXRjaCAocmV0dmFsID0gdXNiX3N1Ym1pdF91cmIg
-KHVyYiwgR0ZQX0FUT01JQykpIHsNCkBAIC0xNDMxLDYgKzE0MzIsMTEgQEAgbmV0ZGV2X3R4X3Qg
-dXNibmV0X3N0YXJ0X3htaXQgKHN0cnVjdCBza19idWZmICpza2IsDQogCQlzcGluX3VubG9ja19p
-cnFyZXN0b3JlKCZkZXYtPnR4cS5sb2NrLCBmbGFncyk7DQogCQlnb3RvIGRyb3A7DQogCX0NCisJ
-aWYgKG5ldGlmX3F1ZXVlX3N0b3BwZWQobmV0KSkgew0KKwkJdXNiX2F1dG9wbV9wdXRfaW50ZXJm
-YWNlX2FzeW5jKGRldi0+aW50Zik7DQorCQlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZkZXYtPnR4
-cS5sb2NrLCBmbGFncyk7DQorCQlnb3RvIGRyb3A7DQorCX0NCiANCiAjaWZkZWYgQ09ORklHX1BN
-DQogCS8qIGlmIHRoaXMgdHJpZ2dlcnMgdGhlIGRldmljZSBpcyBzdGlsbCBhIHNsZWVwICovDQot
-LSANCjIuMTEuMA0K
+On Mon, 20 May 2019 at 23:23, Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> From: Randy Dunlap <rdunlap@infradead.org>
+>
+> Fix Sphinx warnings in Documentation/networking/af_xdp.rst by
+> adding indentation:
+>
+> Documentation/networking/af_xdp.rst:319: WARNING: Literal block expected;=
+ none found.
+> Documentation/networking/af_xdp.rst:326: WARNING: Literal block expected;=
+ none found.
+>
+> Fixes: 0f4a9b7d4ecb ("xsk: add FAQ to facilitate for first time users")
+>
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+>  Documentation/networking/af_xdp.rst |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> --- lnx-52-rc1.orig/Documentation/networking/af_xdp.rst
+> +++ lnx-52-rc1/Documentation/networking/af_xdp.rst
+> @@ -316,16 +316,16 @@ A: When a netdev of a physical NIC is in
+>     all the traffic, you can force the netdev to only have 1 queue, queue
+>     id 0, and then bind to queue 0. You can use ethtool to do this::
+>
+> -   sudo ethtool -L <interface> combined 1
+> +     sudo ethtool -L <interface> combined 1
+>
+>     If you want to only see part of the traffic, you can program the
+>     NIC through ethtool to filter out your traffic to a single queue id
+>     that you can bind your XDP socket to. Here is one example in which
+>     UDP traffic to and from port 4242 are sent to queue 2::
+>
+> -   sudo ethtool -N <interface> rx-flow-hash udp4 fn
+> -   sudo ethtool -N <interface> flow-type udp4 src-port 4242 dst-port \
+> -   4242 action 2
+> +     sudo ethtool -N <interface> rx-flow-hash udp4 fn
+> +     sudo ethtool -N <interface> flow-type udp4 src-port 4242 dst-port \
+> +     4242 action 2
+>
+>     A number of other ways are possible all up to the capabilitites of
+>     the NIC you have.
+>
+>
+
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
