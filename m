@@ -2,132 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3085625679
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 19:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CE3C2570D
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 19:55:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728980AbfEURTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 13:19:33 -0400
-Received: from mail-wr1-f47.google.com ([209.85.221.47]:44375 "EHLO
-        mail-wr1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728103AbfEURTd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 13:19:33 -0400
-Received: by mail-wr1-f47.google.com with SMTP id w13so8762214wru.11;
-        Tue, 21 May 2019 10:19:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yYiHtVzcH8+oDGrOjuw5R5rU8RKAgIeX4CeODaqMJ4M=;
-        b=Ne1dIIi/0NUT85wJNtonUyHl7lOCxJtd0M/+g1UBlqjatV1IeLCMN1VCpXmG4JsZ5B
-         E13dUwtvDZ8FFVJ5AbdS/WsDhWo/GU6k1TlMsVhZlzwuT+r3oFF7ZvUOdQ3BpZekYrMT
-         twb0Pvz+dxUP05Ocy3R/Iq32WgSWnfCsqHJsENgOL8A7EirNVXdhio8yXKwG9XNzC5uA
-         aMgZiDXl5z+aJrH2tvFfHtHwiZLNXF+eiGKTaMRnb6z681x19MOZf4Lg5wgffftGXsbd
-         cJ+katGXHU8YIygETdHBkyn4fDXW2IKSxBFBpNbntbkFi+A0COZ/1462kYnz2MpiBauB
-         pHfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yYiHtVzcH8+oDGrOjuw5R5rU8RKAgIeX4CeODaqMJ4M=;
-        b=ktgS2kUcPg97NsMTif1KNiv/NnfHBMFWu/9oAqZt+TuzhxSCN1KYldJt2WxmwsFwrI
-         Ilxbgj/d3U4V6mm7yCrBwzBQ2X5X510GkHjQJ6Ag9muflsxFmommWDL0ABjLOZysNNma
-         Kc6FRpwGVCv/B4rG44M52A0HUPz9/dXNh1XmvO/aFNNv1YtKvKbNFB9vPzaeABoodyG1
-         MupUnMTbyyszZTbJrZRueDkDq+LE0oujSzSBNiLIL00okQp3KBfoZYLvmMU0dQcXQ4Z5
-         G1JXYMwU0UJUAnWq0SGYPCvqrNLbb8fWsP8WgJGL3dIEt8hCQ+wrOpjVXrTnVm8XVlaw
-         V2iA==
-X-Gm-Message-State: APjAAAUiVPvFvf3pxyT2VHMzpc8l34OEqbWbYdjKicoCzyIB1m6H3gku
-        dUlo/Vfe3VQ88u6OSCTkjOWgJAdL
-X-Google-Smtp-Source: APXvYqzsYPlXykNQpbVcHvP5WWk5i31JjYltp2INleEpH+vZ/zblSkXrN30+FD87y0uQbGjndN3PWA==
-X-Received: by 2002:adf:c601:: with SMTP id n1mr46010087wrg.49.1558459170867;
-        Tue, 21 May 2019 10:19:30 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd4:5700:305e:9966:b713:e8fc? (p200300EA8BD45700305E9966B713E8FC.dip0.t-ipconnect.de. [2003:ea:8bd4:5700:305e:9966:b713:e8fc])
-        by smtp.googlemail.com with ESMTPSA id t7sm27923253wrq.76.2019.05.21.10.19.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 May 2019 10:19:29 -0700 (PDT)
-Subject: Re: net: phy: improve pause mode reporting in phy_print_status
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <git-mailbomb-linux-master-23bfaa594002f4bba085e0a1ae3c9847b988d816@kernel.org>
- <CAMuHMdXH4A96CUuSkmnL8RVubRyd9eswz9VPqBsDqXGbNCWncw@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <ca30d4db-628b-f70f-5849-1b1fcbc44ad9@gmail.com>
-Date:   Tue, 21 May 2019 19:19:22 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1729139AbfEURy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 13:54:59 -0400
+Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:38971 "EHLO
+        caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729098AbfEURy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 13:54:58 -0400
+Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
+        id DDF5F460279; Tue, 21 May 2019 13:54:56 -0400 (EDT)
+Date:   Tue, 21 May 2019 13:54:56 -0400
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec
+ packets
+Message-ID: <20190521175456.zlkiiov5hry2l4q2@csclub.uwaterloo.ca>
+References: <20190514163443.glfjva3ofqcy7lbg@csclub.uwaterloo.ca>
+ <CAKgT0UdPDyCBsShQVwwE5C8fBKkMcfS6_S5m3T7JP-So9fzVgA@mail.gmail.com>
+ <20190516183407.qswotwyjwtjqfdqm@csclub.uwaterloo.ca>
+ <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca>
+ <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com>
+ <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
+ <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca>
+ <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
+ <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca>
+ <CAKgT0UfpZ-ve3Hx26gDkb+YTDHvN3=MJ7NZd2NE7ewF5g=kHHw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdXH4A96CUuSkmnL8RVubRyd9eswz9VPqBsDqXGbNCWncw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UfpZ-ve3Hx26gDkb+YTDHvN3=MJ7NZd2NE7ewF5g=kHHw@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21.05.2019 15:07, Geert Uytterhoeven wrote:
-> Hi Heiner,
+On Tue, May 21, 2019 at 09:51:33AM -0700, Alexander Duyck wrote:
+> I think we need to narrow this down a bit more. Let's try forcing the
+> lookup table all to one value and see if traffic is still going to
+> queue 0.
 > 
-Hi Geert,
+> Specifically what we need to is run the following command to try and
+> force all RSS traffic to queue 8, you can verify the result with
+> "ethtool -x":
+> ethtool -X <iface> weight 0 0 0 0 0 0 0 0 1
+> 
+> If that works and the IPSec traffic goes to queue 8 then we are likely
+> looking at some sort of input issue, either in the parsing or the
+> population of things like the input mask that we can then debug
+> further.
+> 
+> If traffic still goes to queue 0 then that tells us the output of the
+> RSS hash and lookup table are being ignored, this would imply either
+> some other filter is rerouting the traffic or is directing us to limit
+> the queue index to 0 bits.
 
-> On Wed, May 8, 2019 at 8:02 AM Linux Kernel Mailing List
-> <linux-kernel@vger.kernel.org> wrote:
->> Commit:     23bfaa594002f4bba085e0a1ae3c9847b988d816
->> Parent:     5db9c74042e3c2168b1f1104d691063f5b662a8b
->> Refname:    refs/heads/master
->> Web:        https://git.kernel.org/torvalds/c/23bfaa594002f4bba085e0a1ae3c9847b988d816
->> Author:     Heiner Kallweit <hkallweit1@gmail.com>
->> AuthorDate: Sun May 5 19:03:51 2019 +0200
->> Committer:  David S. Miller <davem@davemloft.net>
->> CommitDate: Tue May 7 12:40:39 2019 -0700
->>
->>     net: phy: improve pause mode reporting in phy_print_status
->>
->>     So far we report symmetric pause only, and we don't consider the local
->>     pause capabilities. Let's properly consider local and remote
->>     capabilities, and report also asymmetric pause.
->>
->>     Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->>     Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-> Due to this commit, I see the folllowing change on Renesas development
-> boards using either the sh_eth or ravb Ethernet driver:
-> 
->     -sh-eth ee700000.ethernet eth0: Link is Up - 100Mbps/Full - flow
-> control rx/tx
->     +sh-eth ee700000.ethernet eth0: Link is Up - 100Mbps/Full - flow control off
-> 
-> and
-> 
->     -ravb e6800000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
->     +ravb e6800000.ethernet eth0: Link is Up - 1Gbps/Full - flow control off
-> 
-> Adding debug prints reveals that:
-> 
->     phydev->autoneg = 1
->     phydev->pause = 1
->     phydev->asym_pause = 0 or 1 (depending on the board)
->     local_pause = 0
->     local_asym_pause = 0
-> 
-> Is this expected behavior?
-> 
-Yes. Both local pause parameters being 0 means no pause support is advertised.
-Seems like both network drivers miss calls to phy_support_sym_pause or
-phy_support_asym_pause respectively to indicate if and which pause modes
-the MAC supports.
-Before this patch only the remote pause capability was considered.
+# ethtool -x eth2
+RX flow hash indirection table for eth2 with 12 RX ring(s):
+    0:      7     7     7     7     7     7     7     7
+    8:      7     7     7     7     7     7     7     7
+   16:      7     7     7     7     7     7     7     7
+   24:      7     7     7     7     7     7     7     7
+   32:      7     7     7     7     7     7     7     7
+...
+  472:      7     7     7     7     7     7     7     7
+  480:      7     7     7     7     7     7     7     7
+  488:      7     7     7     7     7     7     7     7
+  496:      7     7     7     7     7     7     7     7
+  504:      7     7     7     7     7     7     7     7
+RSS hash key:
+0b:1f:ae:ed:60:04:7d:e5:8a:2b:43:3f:1d:ee:6c:99:89:29:94:b0:25:db:c7:4b:fa:da:4d:3f:e8:cc:bc:00:ad:32:01:d6:1c:30:3f:f8:79:3e:f4:48:04:1f:51:d2:5a:39:f0:90
+root@ECA:~# ethtool --show-priv-flags eth2
+Private flags for eth2:
+MFP              : off
+LinkPolling      : off
+flow-director-atr: off
+veb-stats        : off
+hw-atr-eviction  : on
+legacy-rx        : off
 
-> Thanks!
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-Heiner
+All ipsec packets are still hitting queue 0.
+
+Seems it is completely ignoring RSS for these packets.  That is
+impressively weird.
+
+-- 
+Len Sorensen
