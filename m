@@ -2,157 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8323F2513F
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 15:56:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A9AF25164
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 16:02:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728289AbfEUN4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 09:56:51 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:37904 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726692AbfEUN4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 09:56:51 -0400
-Received: by mail-qt1-f194.google.com with SMTP id l3so9780816qtj.5
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 06:56:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pYTaum3CP12CnNl2l2SARLRYzz24Z2DkyaBwwLZT8fg=;
-        b=bECRBjhM+nKf8JuCDviqApupzpWq6NJIyFTrdmC1wNbpmYahWHhwXGbjupTkKviZ9f
-         9WsDrcwMSas0FVModyJ15t+iMz/m35MWYrW+d6wTHf+hue203lJA/JxXav0JqAdOSbUq
-         vtSWriFwmA8KRoeTClawlDVZUw2m3oPagFMCBN46lvITve0XQVjUdt81doBh1iE5kmPb
-         Cz7v7pj4No1gX3kuYw/7hoT8fNCacGgl+r1qZspqzCf+WWPMxSdYIlv7kote3PfFq8Ha
-         GmdPHyUYj9ClJ38TQeku9NpoyOPL0WMrT4aDAAU4FyyurpuZIGr5FZOKKwhoJstQ2JJH
-         +axQ==
-X-Gm-Message-State: APjAAAWzaMuZpljJkSPb0FhZUxYASAOgjVBEAAFq87bWW6b8AmIyXmHl
-        h0eOJtAXc+FF4/XTda/BeOJOnw==
-X-Google-Smtp-Source: APXvYqyjROqqBcwmASxlAI9VU7w+aszGFaCH3E/iShso0EmvHY3NlE1r+Z/BxGRgQ8swy30L/IwCBw==
-X-Received: by 2002:ac8:1ae2:: with SMTP id h31mr68116988qtk.75.1558447010171;
-        Tue, 21 May 2019 06:56:50 -0700 (PDT)
-Received: from redhat.com (pool-173-76-105-71.bstnma.fios.verizon.net. [173.76.105.71])
-        by smtp.gmail.com with ESMTPSA id l40sm13534232qtc.32.2019.05.21.06.56.48
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 21 May 2019 06:56:48 -0700 (PDT)
-Date:   Tue, 21 May 2019 09:56:42 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: Question about IRQs during the .remove() of virtio-vsock driver
-Message-ID: <20190521095206-mutt-send-email-mst@kernel.org>
-References: <20190521094407.ltij4ggbd7xw25ge@steredhat>
- <20190521055650-mutt-send-email-mst@kernel.org>
- <20190521134920.pulvy5pqnertbafd@steredhat>
+        id S1728053AbfEUOCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 10:02:10 -0400
+Received: from mail.us.es ([193.147.175.20]:53368 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727262AbfEUOCK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 May 2019 10:02:10 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9CA9E103253
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:02:06 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8E643DA707
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:02:06 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 74736DA717; Tue, 21 May 2019 16:02:06 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 59D4CDA707;
+        Tue, 21 May 2019 16:02:04 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 21 May 2019 16:02:04 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [31.4.195.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 208D24265A31;
+        Tue, 21 May 2019 16:02:04 +0200 (CEST)
+Date:   Tue, 21 May 2019 16:02:02 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jagdish Motwani <j.k.motwani@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Jagdish Motwani <jagdish.motwani@sophos.com>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3] netfilter: nf_queue:fix reinject verdict handling
+Message-ID: <20190521140202.yjqjygtw3l36pi6h@salvia>
+References: <20190513181740.5929-1-j.k.motwani@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190521134920.pulvy5pqnertbafd@steredhat>
+In-Reply-To: <20190513181740.5929-1-j.k.motwani@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 03:49:20PM +0200, Stefano Garzarella wrote:
-> On Tue, May 21, 2019 at 06:05:31AM -0400, Michael S. Tsirkin wrote:
-> > On Tue, May 21, 2019 at 11:44:07AM +0200, Stefano Garzarella wrote:
-> > > Hi Micheal, Jason,
-> > > as suggested by Stefan, I'm checking if we have some races in the
-> > > virtio-vsock driver. We found some races in the .probe() and .remove()
-> > > with the upper layer (socket) and I'll fix it.
-> > > 
-> > > Now my attention is on the bottom layer (virtio device) and my question is:
-> > > during the .remove() of virtio-vsock driver (virtio_vsock_remove), could happen
-> > > that an IRQ comes and one of our callback (e.g. virtio_vsock_rx_done()) is
-> > > executed, queueing new works?
-> > > 
-> > > I tried to follow the code in both cases (device unplugged or module removed)
-> > > and maybe it couldn't happen because we remove it from bus's knowledge,
-> > > but I'm not sure and your advice would be very helpful.
-> > > 
-> > > Thanks in advance,
-> > > Stefano
-> > 
-> > 
-> > Great question! This should be better documented: patches welcome!
+On Mon, May 13, 2019 at 11:47:40PM +0530, Jagdish Motwani wrote:
+> From: Jagdish Motwani <jagdish.motwani@sophos.com>
 > 
-> When I'm clear, I'll be happy to document this.
-> 
-> > 
-> > Here's my understanding:
-> > 
-> > 
-> > A typical removal flow works like this:
-> > 
-> > - prevent linux from sending new kick requests to device
-> >   and flush such outstanding requests if any
-> >   (device can still send notifications to linux)
-> > 
-> > - call
-> >           vi->vdev->config->reset(vi->vdev);
-> >   this will flush all device writes and interrupts.
-> >   device will not use any more buffers.
-> >   previously outstanding callbacks might still be active.
-> > 
-> > - Then call
-> >           vdev->config->del_vqs(vdev);
-> >   to flush outstanding callbacks if any.
-> 
-> Thanks for sharing these useful information.
-> 
-> So, IIUC between step 1 (e.g. in virtio-vsock we flush all work-queues) and
-> step 2, new IRQs could happen, and in the virtio-vsock driver new work
-> will be queued.
-> 
-> In order to handle this case, I'm thinking to add a new variable
-> 'work_enabled' in the struct virtio_vsock, put it to false at the start
-> of the .remove(), then call synchronize_rcu() before to flush all work
-> queues
-> and use an helper function virtio_transport_queue_work() to queue
-> a new work, where the check of work_enabled and the queue_work are in the
-> RCU read critical section.
-> 
-> Here a pseudo code to explain better the idea:
-> 
-> virtio_vsock_remove() {
->     vsock->work_enabled = false;
-> 
->     /* Wait for other CPUs to finish to queue works */
->     synchronize_rcu();
-> 
->     flush_works();
-> 
->     vdev->config->reset(vdev);
-> 
->     ...
-> 
->     vdev->config->del_vqs(vdev);
-> }
-> 
-> virtio_vsock_queue_work(vsock, work) {
->     rcu_read_lock();
-> 
->     if (!vsock->work_enabled) {
->         goto out;
->     }
-> 
->     queue_work(virtio_vsock_workqueue, work);
-> 
-> out:
->     rcu_read_unlock();
-> }
-> 
-> 
-> Do you think can work?
-> Please tell me if there is a better way to handle this case.
-> 
-> Thanks,
-> Stefano
+> This patch fixes netfilter hook traversal when there are more than 1 hooks
+> returning NF_QUEUE verdict. When the first queue reinjects the packet,
+> 'nf_reinject' starts traversing hooks with a proper hook_index. However,
+> if it again receives a NF_QUEUE verdict (by some other netfilter hook), it
+> queues the packet with a wrong hook_index. So, when the second queue 
+> reinjects the packet, it re-executes hooks in between.
 
-
-instead of rcu tricks I would just have rx_run and tx_run and check it
-within the queued work - presumably under tx or rx lock.
-
-then queueing an extra work becomes harmless,
-and you flush it after del vqs which flushes everything for you.
-
-
+Applied, thanks.
