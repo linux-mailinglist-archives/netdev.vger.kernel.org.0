@@ -2,65 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDE7B24BE9
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 11:44:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2E6724C1D
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 12:01:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726829AbfEUJoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 05:44:17 -0400
-Received: from mail-wm1-f54.google.com ([209.85.128.54]:52365 "EHLO
-        mail-wm1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726347AbfEUJoR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 05:44:17 -0400
-Received: by mail-wm1-f54.google.com with SMTP id y3so2242410wmm.2
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 02:44:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=Lqi+2RvkejiwpJE56bqExuPUsrCsCJFu+oJsSyc1US0=;
-        b=Yg+W+kejon17TuM2/dMhFsOLVfZrtDBLQA6l5VDoWBRdmGqp1kNut0MD4Zj6Yq/fuB
-         6WqaWoqfVJ9dbnMRLaSd7TK73s2+Lq8lkzosFfhuZeEoDuwYkphQqc00WHWatL1cWfuQ
-         fzhcrFv2Afgavh6p1dhPEjssrMpyw9QjQq3EeM812A+/vj2AVH62edTzvkybf5saBYLo
-         Rp6l+zoegcFm7OOgcvEu2ZWj52WYgj3eiyI0yhw6WKxBVdJ+BAVL1ZYs9qrpCISwGybz
-         aXzgPP+CLpdik3hsxVoaxJ/sFT4obYKoESzhfIFB4HLV8SShFxxd2c+l7L83xBBiNmq+
-         1h6g==
-X-Gm-Message-State: APjAAAX4tmLN6AJltoNdTagLALouAzB1uoCy3QY+jKcyYlHx4XvhNv1J
-        asbJFTxDnAOsShskARk6vw74QHgH3I0=
-X-Google-Smtp-Source: APXvYqxRTx7pbc0N4W+f+4WVPBKijSEiV9kZbxmb6bUbb2npL0uTJc+Rj5GvWpH8QWPmGo6+PTnLWw==
-X-Received: by 2002:a1c:a002:: with SMTP id j2mr2615808wme.131.1558431855141;
-        Tue, 21 May 2019 02:44:15 -0700 (PDT)
-Received: from steredhat (host253-229-dynamic.248-95-r.retail.telecomitalia.it. [95.248.229.253])
-        by smtp.gmail.com with ESMTPSA id g3sm2443854wmf.9.2019.05.21.02.44.14
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 21 May 2019 02:44:14 -0700 (PDT)
-Date:   Tue, 21 May 2019 11:44:07 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Michael Tsirkin <mst@redhat.com>, Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Question about IRQs during the .remove() of virtio-vsock driver
-Message-ID: <20190521094407.ltij4ggbd7xw25ge@steredhat>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+        id S1726705AbfEUKBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 06:01:42 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57630 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726138AbfEUKBl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 May 2019 06:01:41 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 981ADAE48;
+        Tue, 21 May 2019 10:01:40 +0000 (UTC)
+Message-ID: <1558432122.12672.12.camel@suse.com>
+Subject: Re: [PATCH v2] usbnet: fix kernel crash after disconnect
+From:   Oliver Neukum <oneukum@suse.com>
+To:     Kloetzke Jan <Jan.Kloetzke@preh.de>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Cc:     "jan@kloetzke.net" <jan@kloetzke.net>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Date:   Tue, 21 May 2019 11:48:42 +0200
+In-Reply-To: <1557990629.19453.7.camel@preh.de>
+References: <1556563688.20085.31.camel@suse.com>
+         <20190430141440.9469-1-Jan.Kloetzke@preh.de>
+         <20190505.004556.492323065607253635.davem@davemloft.net>
+         <1557130666.12778.3.camel@suse.com> <1557990629.19453.7.camel@preh.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Micheal, Jason,
-as suggested by Stefan, I'm checking if we have some races in the
-virtio-vsock driver. We found some races in the .probe() and .remove()
-with the upper layer (socket) and I'll fix it.
+On Do, 2019-05-16 at 07:10 +0000, Kloetzke Jan wrote:
+> Am Montag, den 06.05.2019, 10:17 +0200 schrieb Oliver Neukum:
+> > On So, 2019-05-05 at 00:45 -0700, David Miller wrote:
+> > > From: Kloetzke Jan <Jan.Kloetzke@preh.de>
+> > > Date: Tue, 30 Apr 2019 14:15:07 +0000
+> > > 
+> > > > @@ -1431,6 +1432,11 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
+> > > >               spin_unlock_irqrestore(&dev->txq.lock, flags);
+> > > >               goto drop;
+> > > >       }
+> > > > +     if (WARN_ON(netif_queue_stopped(net))) {
+> > > > +             usb_autopm_put_interface_async(dev->intf);
+> > > > +             spin_unlock_irqrestore(&dev->txq.lock, flags);
+> > > > +             goto drop;
+> > > > +     }
+> > > 
+> > > If this is known to happen and is expected, then we should not warn.
+> > > 
+> > 
+> > Hi,
+> > 
+> > yes this is the point. Can ndo_start_xmit() and ndo_stop() race?
+> > If not, why does the patch fix the observed issue and what
+> > prevents the race? Something is not clear here.
+> 
+> Dave, could you shed some light on Olivers question? If the race can
+> happen then we can stick to v1 because the WARN_ON is indeed pointless.
+> Otherwise it's not clear why it made the problem go away for us and v2
+> may be the better option...
 
-Now my attention is on the bottom layer (virtio device) and my question is:
-during the .remove() of virtio-vsock driver (virtio_vsock_remove), could happen
-that an IRQ comes and one of our callback (e.g. virtio_vsock_rx_done()) is
-executed, queueing new works?
+Hi,
 
-I tried to follow the code in both cases (device unplugged or module removed)
-and maybe it couldn't happen because we remove it from bus's knowledge,
-but I'm not sure and your advice would be very helpful.
+as Dave confirmed that the race exists, could you resubmit without
+the WARN ?
 
-Thanks in advance,
-Stefano
+	Regards
+		Oliver
+
