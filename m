@@ -2,186 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E60125399
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 17:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14AB6253A2
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 17:18:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728649AbfEUPPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 11:15:41 -0400
-Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:36455 "EHLO
-        caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727969AbfEUPPl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 11:15:41 -0400
-Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
-        id C7A46460279; Tue, 21 May 2019 11:15:37 -0400 (EDT)
-Date:   Tue, 21 May 2019 11:15:37 -0400
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
-Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec
- packets
-Message-ID: <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca>
-References: <20190513165547.alkkgcsdelaznw6v@csclub.uwaterloo.ca>
- <CAKgT0Uf_nqZtCnHmC=-oDFz-3PuSM6=30BvJSDiAgzK062OY6w@mail.gmail.com>
- <20190514163443.glfjva3ofqcy7lbg@csclub.uwaterloo.ca>
- <CAKgT0UdPDyCBsShQVwwE5C8fBKkMcfS6_S5m3T7JP-So9fzVgA@mail.gmail.com>
- <20190516183407.qswotwyjwtjqfdqm@csclub.uwaterloo.ca>
- <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca>
- <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com>
- <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
- <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca>
- <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
+        id S1728581AbfEUPSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 11:18:12 -0400
+Received: from kirsty.vergenet.net ([202.4.237.240]:45758 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727969AbfEUPSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 11:18:11 -0400
+Received: from reginn.horms.nl (watermunt.horms.nl [80.127.179.77])
+        by kirsty.vergenet.net (Postfix) with ESMTPA id 34F5625AD7A;
+        Wed, 22 May 2019 01:18:08 +1000 (AEST)
+Received: by reginn.horms.nl (Postfix, from userid 7100)
+        id 38869940553; Tue, 21 May 2019 17:18:06 +0200 (CEST)
+Date:   Tue, 21 May 2019 17:18:06 +0200
+From:   Simon Horman <horms@verge.net.au>
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
+        wensong@linux-vs.org, pablo@netfilter.org,
+        kadlec@blackhole.kfki.hu, fw@strlen.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: Re: [PATCH v2] ipvs: Fix use-after-free in ip_vs_in
+Message-ID: <20190521151805.xidqtvohi4sfgaja@verge.net.au>
+References: <alpine.LFD.2.21.1905171015040.2233@ja.home.ssi.bg>
+ <20190517143149.17016-1-yuehaibing@huawei.com>
+ <alpine.LFD.2.21.1905191258160.2448@ja.home.ssi.bg>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
+In-Reply-To: <alpine.LFD.2.21.1905191258160.2448@ja.home.ssi.bg>
+Organisation: Horms Solutions BV
 User-Agent: NeoMutt/20170113 (1.7.2)
-From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 17, 2019 at 03:20:02PM -0700, Alexander Duyck wrote:
-> I was hoping it would work too. It seemed like it should have been the
-> answer since it definitely didn't seem right. Now it has me wondering
-> about some of the other code in the driver.
+On Sun, May 19, 2019 at 01:09:24PM +0300, Julian Anastasov wrote:
 > 
-> By any chance have you run anything like DPDK on any of the X722
-> interfaces on this system recently? I ask because it occurs to me that
-> if you had and it loaded something like a custom parsing profile it
-> could cause issues similar to this.
-
-I have never used DPDK on anything.  I was hoping never to do so. :)
-
-This system has so far booted Debian (with a 4.19 kernel) and our own OS
-(which has a 4.9 kernel).
-
-> A debugging step you might try would be to revert back to my earlier
-> patch that only displayed the input mask instead of changing it. Once
-> you have done that you could look at doing a full power cycle on the
-> system by either physically disconnecting the power, or using the
-> power switch on the power supply itself if one is available. It is
-> necessary to disconnect the motherboard/NIC from power in order to
-> fully clear the global state stored in the device as it is retained
-> when the system is in standby.
+> 	Hello,
 > 
-> What I want to verify is if the input mask that we have ran into is
-> the natural power-on input mask of if that is something that was
-> overridden by something else. The mask change I made should be reset
-> if the system loses power, and then it will either default back to the
-> value with the 6's if that is it's natural state, or it will match
-> what I had if it was not.
+> On Fri, 17 May 2019, YueHaibing wrote:
 > 
-> Other than that I really can't think up too much else. I suppose there
-> is the possibility of the NVM either setting up a DCB setting or
-> HREGION register causing an override that is limiting the queues to 1.
-> However, the likelihood of that should be really low.
+> > BUG: KASAN: use-after-free in ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
+> > Read of size 4 at addr ffff8881e9b26e2c by task sshd/5603
+> > 
+> > CPU: 0 PID: 5603 Comm: sshd Not tainted 4.19.39+ #30
+> > Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+> > Call Trace:
+> >  dump_stack+0x71/0xab
+> >  print_address_description+0x6a/0x270
+> >  kasan_report+0x179/0x2c0
+> >  ip_vs_in.part.29+0xe8/0xd20 [ip_vs]
+> >  ip_vs_in+0xd8/0x170 [ip_vs]
+> >  nf_hook_slow+0x5f/0xe0
+> >  __ip_local_out+0x1d5/0x250
+> >  ip_local_out+0x19/0x60
+> >  __tcp_transmit_skb+0xba1/0x14f0
+> >  tcp_write_xmit+0x41f/0x1ed0
+> >  ? _copy_from_iter_full+0xca/0x340
+> >  __tcp_push_pending_frames+0x52/0x140
+> >  tcp_sendmsg_locked+0x787/0x1600
+> >  ? tcp_sendpage+0x60/0x60
+> >  ? inet_sk_set_state+0xb0/0xb0
+> >  tcp_sendmsg+0x27/0x40
+> >  sock_sendmsg+0x6d/0x80
+> >  sock_write_iter+0x121/0x1c0
+> >  ? sock_sendmsg+0x80/0x80
+> >  __vfs_write+0x23e/0x370
+> >  vfs_write+0xe7/0x230
+> >  ksys_write+0xa1/0x120
+> >  ? __ia32_sys_read+0x50/0x50
+> >  ? __audit_syscall_exit+0x3ce/0x450
+> >  do_syscall_64+0x73/0x200
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > RIP: 0033:0x7ff6f6147c60
+> > Code: 73 01 c3 48 8b 0d 28 12 2d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 5d 73 2d 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83
+> > RSP: 002b:00007ffd772ead18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> > RAX: ffffffffffffffda RBX: 0000000000000034 RCX: 00007ff6f6147c60
+> > RDX: 0000000000000034 RSI: 000055df30a31270 RDI: 0000000000000003
+> > RBP: 000055df30a31270 R08: 0000000000000000 R09: 0000000000000000
+> > R10: 00007ffd772ead70 R11: 0000000000000246 R12: 00007ffd772ead74
+> > R13: 00007ffd772eae20 R14: 00007ffd772eae24 R15: 000055df2f12ddc0
+> > 
+> > Allocated by task 6052:
+> >  kasan_kmalloc+0xa0/0xd0
+> >  __kmalloc+0x10a/0x220
+> >  ops_init+0x97/0x190
+> >  register_pernet_operations+0x1ac/0x360
+> >  register_pernet_subsys+0x24/0x40
+> >  0xffffffffc0ea016d
+> >  do_one_initcall+0x8b/0x253
+> >  do_init_module+0xe3/0x335
+> >  load_module+0x2fc0/0x3890
+> >  __do_sys_finit_module+0x192/0x1c0
+> >  do_syscall_64+0x73/0x200
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > 
+> > Freed by task 6067:
+> >  __kasan_slab_free+0x130/0x180
+> >  kfree+0x90/0x1a0
+> >  ops_free_list.part.7+0xa6/0xc0
+> >  unregister_pernet_operations+0x18b/0x1f0
+> >  unregister_pernet_subsys+0x1d/0x30
+> >  ip_vs_cleanup+0x1d/0xd2f [ip_vs]
+> >  __x64_sys_delete_module+0x20c/0x300
+> >  do_syscall_64+0x73/0x200
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > 
+> > The buggy address belongs to the object at ffff8881e9b26600 which belongs to the cache kmalloc-4096 of size 4096
+> > The buggy address is located 2092 bytes inside of 4096-byte region [ffff8881e9b26600, ffff8881e9b27600)
+> > The buggy address belongs to the page:
+> > page:ffffea0007a6c800 count:1 mapcount:0 mapping:ffff888107c0e600 index:0x0 compound_mapcount: 0
+> > flags: 0x17ffffc0008100(slab|head)
+> > raw: 0017ffffc0008100 dead000000000100 dead000000000200 ffff888107c0e600
+> > raw: 0000000000000000 0000000080070007 00000001ffffffff 0000000000000000
+> > page dumped because: kasan: bad access detected
+> > 
+> > while unregistering ipvs module, ops_free_list calls
+> > __ip_vs_cleanup, then nf_unregister_net_hooks be called to
+> > do remove nf hook entries. It need a RCU period to finish,
+> > however net->ipvs is set to NULL immediately, which will
+> > trigger NULL pointer dereference when a packet is hooked
+> > and handled by ip_vs_in where net->ipvs is dereferenced.
+> > 
+> > Another scene is ops_free_list call ops_free to free the
+> > net_generic directly while __ip_vs_cleanup finished, then
+> > calling ip_vs_in will triggers use-after-free.
+> > 
+> > This patch moves nf_unregister_net_hooks from __ip_vs_cleanup()
+> > to __ip_vs_dev_cleanup(),  where rcu_barrier() is called by
+> > unregister_pernet_device -> unregister_pernet_operations,
+> > that will do the needed grace period.
+> > 
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Fixes: efe41606184e ("ipvs: convert to use pernet nf_hook api")
+> > Suggested-by: Julian Anastasov <ja@ssi.bg>
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> 
+> 	Looks good to me, thanks!
+> 
+> Acked-by: Julian Anastasov <ja@ssi.bg>
+> 
+> 	It should restore the order of unregistrations before
+> the mentioned commit and to ensure grace period before stopping
+> the traffic and unregistering ipvs_core_ops where traffic is not
+> expected.
 
-Here is the register dump after a full power off:
+Signed-off-by: Simon Horman <horms@verge.net.au>
 
-40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
-i40e: Copyright (c) 2013 - 2014 Intel Corporation.
-i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
-i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
-i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
-i40e 0000:3d:00.0: flow_type: 63 input_mask:0x0000000000004000
-i40e 0000:3d:00.0: flow_type: 46 input_mask:0x0007fff800000000
-i40e 0000:3d:00.0: flow_type: 45 input_mask:0x0007fff800000000
-i40e 0000:3d:00.0: flow_type: 44 input_mask:0x0007ffff80000000
-i40e 0000:3d:00.0: flow_type: 43 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 42 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 41 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 40 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 39 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 36 input_mask:0x0006060000000000
-i40e 0000:3d:00.0: flow_type: 35 input_mask:0x0006060000000000
-i40e 0000:3d:00.0: flow_type: 34 input_mask:0x0006060780000000
-i40e 0000:3d:00.0: flow_type: 33 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: flow_type: 32 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: flow_type: 31 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: flow_type: 30 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: flow_type: 29 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: Features: PF-id[0] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
-i40e 0000:3d:00.1: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
-i40e 0000:3d:00.1: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
-i40e 0000:3d:00.1: MAC address: a4:bf:01:4e:0c:88
-i40e 0000:3d:00.1: flow_type: 63 input_mask:0x0000000000004000
-i40e 0000:3d:00.1: flow_type: 46 input_mask:0x0007fff800000000
-i40e 0000:3d:00.1: flow_type: 45 input_mask:0x0007fff800000000
-i40e 0000:3d:00.1: flow_type: 44 input_mask:0x0007ffff80000000
-i40e 0000:3d:00.1: flow_type: 43 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.1: flow_type: 42 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.1: flow_type: 41 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.1: flow_type: 40 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.1: flow_type: 39 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.1: flow_type: 36 input_mask:0x0006060000000000
-i40e 0000:3d:00.1: flow_type: 35 input_mask:0x0006060000000000
-i40e 0000:3d:00.1: flow_type: 34 input_mask:0x0006060780000000
-i40e 0000:3d:00.1: flow_type: 33 input_mask:0x0006060600000000
-i40e 0000:3d:00.1: flow_type: 32 input_mask:0x0006060600000000
-i40e 0000:3d:00.1: flow_type: 31 input_mask:0x0006060600000000
-i40e 0000:3d:00.1: flow_type: 30 input_mask:0x0006060600000000
-i40e 0000:3d:00.1: flow_type: 29 input_mask:0x0006060600000000
-i40e 0000:3d:00.1: Features: PF-id[1] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
-i40e 0000:3d:00.1 eth2: NIC Link is Up, 1000 Mbps Full Duplex, Flow Control: None
+Pablo, could you consider applying this to nf?
 
-Pretty sure that is identical to before.
-
-If I dump the registers after doing the update I see this (just did a
-reboot this time, not a power cycle):
-
-i40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
-i40e: Copyright (c) 2013 - 2014 Intel Corporation.
-i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
-i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
-i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
-i40e 0000:3d:00.0: flow_type: 63 input_mask:0x0000000000004000
-i40e 0000:3d:00.0: flow_type: 46 input_mask:0x0007fff800000000
-i40e 0000:3d:00.0: flow_type: 45 input_mask:0x0007fff800000000
-i40e 0000:3d:00.0: flow_type: 44 input_mask:0x0007ffff80000000
-i40e 0000:3d:00.0: flow_type: 43 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 42 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 41 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 40 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 39 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type: 36 input_mask:0x0006060000000000
-i40e 0000:3d:00.0: flow_type: 35 input_mask:0x0006060000000000
-i40e 0000:3d:00.0: flow_type: 34 input_mask:0x0006060780000000
-i40e 0000:3d:00.0: flow_type: 33 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: flow_type: 32 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: flow_type: 31 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: flow_type: 30 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: flow_type: 29 input_mask:0x0006060600000000
-i40e 0000:3d:00.0: flow type: 36 update input mask from:0x0006060000000000, to:0x0001801800000000
-i40e 0000:3d:00.0: flow type: 35 update input mask from:0x0006060000000000, to:0x0001801800000000
-i40e 0000:3d:00.0: flow type: 34 update input mask from:0x0006060780000000, to:0x0001801f80000000
-i40e 0000:3d:00.0: flow type: 33 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: flow type: 32 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: flow type: 31 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: flow type: 30 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: flow type: 29 update input mask from:0x0006060600000000, to:0x0001801e00000000
-i40e 0000:3d:00.0: flow_type after update: 63 input_mask:0x0000000000004000
-i40e 0000:3d:00.0: flow_type after update: 46 input_mask:0x0007fff800000000
-i40e 0000:3d:00.0: flow_type after update: 45 input_mask:0x0007fff800000000
-i40e 0000:3d:00.0: flow_type after update: 44 input_mask:0x0007ffff80000000
-i40e 0000:3d:00.0: flow_type after update: 43 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type after update: 42 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type after update: 41 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type after update: 40 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type after update: 39 input_mask:0x0007fffe00000000
-i40e 0000:3d:00.0: flow_type after update: 36 input_mask:0x0001801800000000
-i40e 0000:3d:00.0: flow_type after update: 35 input_mask:0x0001801800000000
-i40e 0000:3d:00.0: flow_type after update: 34 input_mask:0x0001801f80000000
-i40e 0000:3d:00.0: flow_type after update: 33 input_mask:0x0001801e00000000
-i40e 0000:3d:00.0: flow_type after update: 32 input_mask:0x0001801e00000000
-i40e 0000:3d:00.0: flow_type after update: 31 input_mask:0x0001801e00000000
-i40e 0000:3d:00.0: flow_type after update: 30 input_mask:0x0001801e00000000
-i40e 0000:3d:00.0: flow_type after update: 29 input_mask:0x0001801e00000000
-i40e 0000:3d:00.0: Features: PF-id[0] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
-
-So at least it appears the update did apply.
-
--- 
-Len Sorensen
+> 
+> > ---
+> > v2: fix by moving nf_unregister_net_hooks from __ip_vs_cleanup() to __ip_vs_dev_cleanup()
+> > ---
+> >  net/netfilter/ipvs/ip_vs_core.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+> > index 14457551bcb4..8ebf21149ec3 100644
+> > --- a/net/netfilter/ipvs/ip_vs_core.c
+> > +++ b/net/netfilter/ipvs/ip_vs_core.c
+> > @@ -2312,7 +2312,6 @@ static void __net_exit __ip_vs_cleanup(struct net *net)
+> >  {
+> >  	struct netns_ipvs *ipvs = net_ipvs(net);
+> >  
+> > -	nf_unregister_net_hooks(net, ip_vs_ops, ARRAY_SIZE(ip_vs_ops));
+> >  	ip_vs_service_net_cleanup(ipvs);	/* ip_vs_flush() with locks */
+> >  	ip_vs_conn_net_cleanup(ipvs);
+> >  	ip_vs_app_net_cleanup(ipvs);
+> > @@ -2327,6 +2326,7 @@ static void __net_exit __ip_vs_dev_cleanup(struct net *net)
+> >  {
+> >  	struct netns_ipvs *ipvs = net_ipvs(net);
+> >  	EnterFunction(2);
+> > +	nf_unregister_net_hooks(net, ip_vs_ops, ARRAY_SIZE(ip_vs_ops));
+> >  	ipvs->enable = 0;	/* Disable packet reception */
+> >  	smp_wmb();
+> >  	ip_vs_sync_net_cleanup(ipvs);
+> > -- 
+> > 2.20.1
+> 
+> Regards
+> 
+> --
+> Julian Anastasov <ja@ssi.bg>
+> 
