@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BBEC2595C
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 22:48:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AE1525966
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 22:48:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727453AbfEUUqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 16:46:05 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:35179 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727341AbfEUUqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 16:46:04 -0400
-Received: by mail-qt1-f194.google.com with SMTP id a39so22255367qtk.2
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 13:46:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rC2JACh+/sXFYvPs0HovLWPgyg+9I7Oj1wsQYpOKjFE=;
-        b=IlVjp5FAkotmAarAoeKBm5VyT6Il6JLdZDMq3PgBpFBGb6RI2WdkanCxKAudI94d+V
-         UB8SQy2GN+VbxFhpZA+xKZZR7aMhzh87tTVq2xYxyzs0CzmDURNhl67D6MqFHqVbp4qo
-         4lKYQpLE6l7kL7iKy5k0gYCYfS7lg/Rh/aOP7QYthoy5cnQEVSpE/D9FHyE+tbRA6mRm
-         xWtUZZmm+xRItnElzMpyPjVv6SmkWFvSSRM5Jqts3xjfRIe2RQt72nEGf++LzbEDEJVH
-         fF6eLoKfG728TGOklokDI4/ABKvj/8H4zD0AjeT321vypQ9SQPS5zWb/AV8pLBMfbi0j
-         RdZg==
-X-Gm-Message-State: APjAAAUwm8QWeg6Z1JsThi97EQC1CBbxWC+TBwMYpPaHdFN1RqTYaq7D
-        KZpZFyyhfDjXAYtgILnS9hsCPSlWZTY/C4h9fHmrOSkh
-X-Google-Smtp-Source: APXvYqwNd8+rFAtedH5LBodQ10W9l4kH/LbTnnWQiBXXGTBLZ/TkUtTyFZ0S7fJEpvfUxKCzjm9PHKPAkKfNKiPvNuM=
-X-Received: by 2002:ac8:2433:: with SMTP id c48mr56225862qtc.18.1558471563691;
- Tue, 21 May 2019 13:46:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <1558467302-17072-1-git-send-email-subashab@codeaurora.org>
-In-Reply-To: <1558467302-17072-1-git-send-email-subashab@codeaurora.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 21 May 2019 22:45:46 +0200
-Message-ID: <CAK8P3a0JpCnV59uWmrot7KeLPCOq_FqPb--xD_fMpaPd7x0zRg@mail.gmail.com>
-Subject: Re: [PATCH RFC] net: qualcomm: rmnet: Move common struct definitions
- to include
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Cc:     Alex Elder <elder@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728016AbfEUUrF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 May 2019 16:47:05 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:45050 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727350AbfEUUrF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 16:47:05 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B282E14CEC900;
+        Tue, 21 May 2019 13:47:04 -0700 (PDT)
+Date:   Tue, 21 May 2019 13:47:04 -0700 (PDT)
+Message-Id: <20190521.134704.1456978856134153782.davem@davemloft.net>
+To:     Jan.Kloetzke@preh.de
+Cc:     oneukum@suse.com, jan@kloetzke.net, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH v3] usbnet: fix kernel crash after disconnect
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190521131826.30475-1-Jan.Kloetzke@preh.de>
+References: <1558438944.12672.13.camel@suse.com>
+        <20190521131826.30475-1-Jan.Kloetzke@preh.de>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 May 2019 13:47:04 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 9:35 PM Subash Abhinov Kasiviswanathan
-<subashab@codeaurora.org> wrote:
->
-> Create if_rmnet.h and move the rmnet MAP packet structs to this
-> common include file. To account for portability, add little and
-> big endian bitfield definitions similar to the ip & tcp headers.
->
-> The definitions in the headers can now be re-used by the
-> upcoming ipa driver series as well as qmi_wwan.
->
-> Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-> ---
-> This patch is an alternate implementation of the series posted by Elder.
-> This eliminates the changes needed in the rmnet packet parsing
-> while maintaining portability.
-> ---
+From: Kloetzke Jan <Jan.Kloetzke@preh.de>
+Date: Tue, 21 May 2019 13:18:40 +0000
 
-I think I'd just duplicate the structure definitions then, to avoid having
-the bitfield definitions in a common header and using them in the new
-driver.
+> When disconnecting cdc_ncm the kernel sporadically crashes shortly
+> after the disconnect:
+ ...
+> The crash happens roughly 125..130ms after the disconnect. This
+> correlates with the 'delay' timer that is started on certain USB tx/rx
+> errors in the URB completion handler.
+> 
+> The problem is a race of usbnet_stop() with usbnet_start_xmit(). In
+> usbnet_stop() we call usbnet_terminate_urbs() to cancel all URBs in
+> flight. This only makes sense if no new URBs are submitted
+> concurrently, though. But the usbnet_start_xmit() can run at the same
+> time on another CPU which almost unconditionally submits an URB. The
+> error callback of the new URB will then schedule the timer after it was
+> already stopped.
+> 
+> The fix adds a check if the tx queue is stopped after the tx list lock
+> has been taken. This should reliably prevent the submission of new URBs
+> while usbnet_terminate_urbs() does its job. The same thing is done on
+> the rx side even though it might be safe due to other flags that are
+> checked there.
+> 
+> Signed-off-by: Jan Klötzke <Jan.Kloetzke@preh.de>
 
-       Arnd
+Applied.
