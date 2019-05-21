@@ -2,101 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F9A25612
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 18:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E48B925617
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 18:53:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729055AbfEUQvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 12:51:55 -0400
-Received: from mga09.intel.com ([134.134.136.24]:31932 "EHLO mga09.intel.com"
+        id S1729090AbfEUQw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 12:52:59 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:60004 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728961AbfEUQvz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 May 2019 12:51:55 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 May 2019 09:51:54 -0700
-X-ExtLoop1: 1
-Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
-  by fmsmga004.fm.intel.com with ESMTP; 21 May 2019 09:51:53 -0700
-Received: from orsmsx151.amr.corp.intel.com (10.22.226.38) by
- ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
- id 14.3.408.0; Tue, 21 May 2019 09:51:53 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
- ORSMSX151.amr.corp.intel.com ([169.254.7.185]) with mapi id 14.03.0415.000;
- Tue, 21 May 2019 09:51:53 -0700
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "luto@kernel.org" <luto@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "mroos@linux.ee" <mroos@linux.ee>,
-        "redgecombe.lkml@gmail.com" <redgecombe.lkml@gmail.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "namit@vmware.com" <namit@vmware.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] vmalloc: Remove work as from vfree path
-Thread-Topic: [PATCH v2 2/2] vmalloc: Remove work as from vfree path
-Thread-Index: AQHVD2U3KZTtLX0Fp0SruELxCLk0rqZ2N/EAgAAJloA=
-Date:   Tue, 21 May 2019 16:51:52 +0000
-Message-ID: <4e353614f017c7c13a21d168992852dae1762aba.camel@intel.com>
-References: <20190520233841.17194-1-rick.p.edgecombe@intel.com>
-         <20190520233841.17194-3-rick.p.edgecombe@intel.com>
-         <CALCETrUdfBrTV3kMjdVHv2JDtEOGSkVvoV++96x4zjvue0GpZA@mail.gmail.com>
-In-Reply-To: <CALCETrUdfBrTV3kMjdVHv2JDtEOGSkVvoV++96x4zjvue0GpZA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.30.1 (3.30.1-1.fc29) 
-x-originating-ip: [10.254.114.95]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <DACEB64281EDB048B2BD8C11B17A6282@intel.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S1727817AbfEUQw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 May 2019 12:52:59 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7894B1A01D3;
+        Tue, 21 May 2019 18:52:56 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6C3CD1A01C4;
+        Tue, 21 May 2019 18:52:56 +0200 (CEST)
+Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 2B6A720612;
+        Tue, 21 May 2019 18:52:56 +0200 (CEST)
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Pavel Machek <pavel@denx.de>, UNGLinuxDriver@microchip.com
+Subject: [PATCH net] ocelot: Dont allocate another multicast list, use __dev_mc_sync
+Date:   Tue, 21 May 2019 19:52:55 +0300
+Message-Id: <1558457575-13784-1-git-send-email-claudiu.manoil@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTA1LTIxIGF0IDA5OjE3IC0wNzAwLCBBbmR5IEx1dG9taXJza2kgd3JvdGU6
-DQo+IE9uIE1vbiwgTWF5IDIwLCAyMDE5IGF0IDQ6MzkgUE0gUmljayBFZGdlY29tYmUNCj4gPHJp
-Y2sucC5lZGdlY29tYmVAaW50ZWwuY29tPiB3cm90ZToNCj4gPiBGcm9tOiBSaWNrIEVkZ2Vjb21i
-ZSA8cmVkZ2Vjb21iZS5sa21sQGdtYWlsLmNvbT4NCj4gPiANCj4gPiBDYWxsaW5nIHZtX3VubWFw
-X2FsaWFzKCkgaW4gdm1fcmVtb3ZlX21hcHBpbmdzKCkgY291bGQgcG90ZW50aWFsbHkNCj4gPiBi
-ZSBhDQo+ID4gbG90IG9mIHdvcmsgdG8gZG8gb24gYSBmcmVlIG9wZXJhdGlvbi4gU2ltcGx5IGZs
-dXNoaW5nIHRoZSBUTEINCj4gPiBpbnN0ZWFkIG9mDQo+ID4gdGhlIHdob2xlIHZtX3VubWFwX2Fs
-aWFzKCkgb3BlcmF0aW9uIG1ha2VzIHRoZSBmcmVlcyBmYXN0ZXIgYW5kDQo+ID4gcHVzaGVzDQo+
-ID4gdGhlIGhlYXZ5IHdvcmsgdG8gaGFwcGVuIG9uIGFsbG9jYXRpb24gd2hlcmUgaXQgd291bGQg
-YmUgbW9yZQ0KPiA+IGV4cGVjdGVkLg0KPiA+IEluIGFkZGl0aW9uIHRvIHRoZSBleHRyYSB3b3Jr
-LCB2bV91bm1hcF9hbGlhcygpIHRha2VzIHNvbWUgbG9ja3MNCj4gPiBpbmNsdWRpbmcNCj4gPiBh
-IGxvbmcgaG9sZCBvZiB2bWFwX3B1cmdlX2xvY2ssIHdoaWNoIHdpbGwgbWFrZSBhbGwgb3RoZXIN
-Cj4gPiBWTV9GTFVTSF9SRVNFVF9QRVJNUyB2ZnJlZXMgd2FpdCB3aGlsZSB0aGUgcHVyZ2Ugb3Bl
-cmF0aW9uIGhhcHBlbnMuDQo+ID4gDQo+ID4gTGFzdGx5LCBwYWdlX2FkZHJlc3MoKSBjYW4gaW52
-b2x2ZSBsb2NraW5nIGFuZCBsb29rdXBzIG9uIHNvbWUNCj4gPiBjb25maWd1cmF0aW9ucywgc28g
-c2tpcCBjYWxsaW5nIHRoaXMgYnkgZXhpdGluZyBvdXQgZWFybHkgd2hlbg0KPiA+ICFDT05GSUdf
-QVJDSF9IQVNfU0VUX0RJUkVDVF9NQVAuDQo+IA0KPiBIbW0uICBJIHdvdWxkIGhhdmUgZXhwZWN0
-ZWQgdGhhdCB0aGUgbWFqb3IgY29zdCBvZiB2bV91bm1hcF9hbGlhc2VzKCkNCj4gd291bGQgYmUg
-dGhlIGZsdXNoLCBhbmQgYXQgbGVhc3QgaW5mb3JtaW5nIHRoZSBjb2RlIHRoYXQgdGhlIGZsdXNo
-DQo+IGhhcHBlbmVkIHNlZW1zIHZhbHVhYmxlLiAgU28gd291bGQgZ3Vlc3MgdGhhdCB0aGlzIHBh
-dGNoIGlzIGFjdHVhbGx5DQo+IGENCj4gbG9zcyBpbiB0aHJvdWdocHV0Lg0KPiANCllvdSBhcmUg
-cHJvYmFibHkgcmlnaHQgYWJvdXQgdGhlIGZsdXNoIHRha2luZyB0aGUgbG9uZ2VzdC4gVGhlIG9y
-aWdpbmFsDQppZGVhIG9mIHVzaW5nIGl0IHdhcyBleGFjdGx5IHRvIGltcHJvdmUgdGhyb3VnaHB1
-dCBieSBzYXZpbmcgYSBmbHVzaC4NCkhvd2V2ZXIgd2l0aCB2bV91bm1hcF9hbGlhc2VzKCkgdGhl
-IGZsdXNoIHdpbGwgYmUgb3ZlciBhIGxhcmdlciByYW5nZQ0KdGhhbiBiZWZvcmUgZm9yIG1vc3Qg
-YXJjaCdzIHNpbmNlIGl0IHdpbGwgbGlrbGV5IHNwYW4gZnJvbSB0aGUgbW9kdWxlDQpzcGFjZSB0
-byB2bWFsbG9jLiBGcm9tIHBva2luZyBhcm91bmQgdGhlIHNwYXJjIHRsYiBmbHVzaCBoaXN0b3J5
-LCBJDQpndWVzcyB0aGUgbGF6eSBwdXJnZXMgdXNlZCB0byBiZSAoc3RpbGwgYXJlPykgYSBwcm9i
-bGVtIGZvciB0aGVtDQpiZWNhdXNlIGl0IHdvdWxkIHRyeSB0byBmbHVzaCBlYWNoIHBhZ2UgaW5k
-aXZpZHVhbGx5IGZvciBzb21lIENQVXMuIE5vdA0Kc3VyZSBhYm91dCBhbGwgb2YgdGhlIG90aGVy
-IGFyY2hpdGVjdHVyZXMsIGJ1dCBmb3IgYW55IGltcGxlbWVudGF0aW9uDQpsaWtlIHRoYXQsIHVz
-aW5nIHZtX3VubWFwX2FsaWFzKCkgd291bGQgdHVybiBhbiBvY2Nhc2lvbmFsIGxvbmcNCm9wZXJh
-dGlvbiBpbnRvIGEgbW9yZSBmcmVxdWVudCBvbmUuDQoNCk9uIHg4NiwgaXQgc2hvdWxkbid0IGJl
-IGEgcHJvYmxlbSB0byB1c2UgaXQuIFdlIGFscmVhZHkgdXNlZCB0byBjYWxsDQp0aGlzIGZ1bmN0
-aW9uIHNldmVyYWwgdGltZXMgYXJvdW5kIGEgZXhlYyBwZXJtaXNzaW9uIHZmcmVlLiANCg0KSSBn
-dWVzcyBpdHMgYSB0cmFkZW9mZiB0aGF0IGRlcGVuZHMgb24gaG93IGZhc3QgbGFyZ2UgcmFuZ2Ug
-VExCIGZsdXNoZXMNCnVzdWFsbHkgYXJlIGNvbXBhcmVkIHRvIHNtYWxsIG9uZXMuIEkgYW0gb2sg
-ZHJvcHBpbmcgaXQsIGlmIGl0IGRvZXNuJ3QNCnNlZW0gd29ydGggaXQuDQo=
+Doing kmalloc in atomic context is always an issue,
+more so for a list that can grow significantly.
+Turns out that the driver only uses the duplicated
+list of multicast mac addresses to keep track of
+what addresses to delete from h/w before committing
+the new list from kernel to h/w back again via set_rx_mode,
+every time this list gets updated by the kernel.
+Given that the h/w knows how to add and delete mac addresses
+based on the mac address value alone, __dev_mc_sync should be
+the much better choice of kernel API for these operations
+avoiding the considerable overhead of maintaining a duplicated
+list in the driver.
+
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+---
+Maybe this should go to net, since there were objections
+for abusing kmalloc(GFP_ATOMIC).
+
+ drivers/net/ethernet/mscc/ocelot.c | 43 ++++++------------------------
+ drivers/net/ethernet/mscc/ocelot.h |  4 ---
+ 2 files changed, 8 insertions(+), 39 deletions(-)
+
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index d715ef4fc92f..02ad11e0b0d8 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -593,45 +593,25 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
+ }
+ 
+-static void ocelot_mact_mc_reset(struct ocelot_port *port)
++static int ocelot_mc_unsync(struct net_device *dev, const unsigned char *addr)
+ {
+-	struct ocelot *ocelot = port->ocelot;
+-	struct netdev_hw_addr *ha, *n;
++	struct ocelot_port *port = netdev_priv(dev);
+ 
+-	/* Free and forget all the MAC addresses stored in the port private mc
+-	 * list. These are mc addresses that were previously added by calling
+-	 * ocelot_mact_mc_add().
+-	 */
+-	list_for_each_entry_safe(ha, n, &port->mc, list) {
+-		ocelot_mact_forget(ocelot, ha->addr, port->pvid);
+-		list_del(&ha->list);
+-		kfree(ha);
+-	}
++	return ocelot_mact_forget(port->ocelot, addr, port->pvid);
+ }
+ 
+-static int ocelot_mact_mc_add(struct ocelot_port *port,
+-			      struct netdev_hw_addr *hw_addr)
++static int ocelot_mc_sync(struct net_device *dev, const unsigned char *addr)
+ {
+-	struct ocelot *ocelot = port->ocelot;
+-	struct netdev_hw_addr *ha = kzalloc(sizeof(*ha), GFP_ATOMIC);
+-
+-	if (!ha)
+-		return -ENOMEM;
+-
+-	memcpy(ha, hw_addr, sizeof(*ha));
+-	list_add_tail(&ha->list, &port->mc);
+-
+-	ocelot_mact_learn(ocelot, PGID_CPU, ha->addr, port->pvid,
+-			  ENTRYTYPE_LOCKED);
++	struct ocelot_port *port = netdev_priv(dev);
+ 
+-	return 0;
++	return ocelot_mact_learn(port->ocelot, PGID_CPU, addr, port->pvid,
++				 ENTRYTYPE_LOCKED);
+ }
+ 
+ static void ocelot_set_rx_mode(struct net_device *dev)
+ {
+ 	struct ocelot_port *port = netdev_priv(dev);
+ 	struct ocelot *ocelot = port->ocelot;
+-	struct netdev_hw_addr *ha;
+ 	int i;
+ 	u32 val;
+ 
+@@ -643,13 +623,7 @@ static void ocelot_set_rx_mode(struct net_device *dev)
+ 	for (i = ocelot->num_phys_ports + 1; i < PGID_CPU; i++)
+ 		ocelot_write_rix(ocelot, val, ANA_PGID_PGID, i);
+ 
+-	/* Handle the device multicast addresses. First remove all the
+-	 * previously installed addresses and then add the latest ones to the
+-	 * mac table.
+-	 */
+-	ocelot_mact_mc_reset(port);
+-	netdev_for_each_mc_addr(ha, dev)
+-		ocelot_mact_mc_add(port, ha);
++	__dev_mc_sync(dev, ocelot_mc_sync, ocelot_mc_unsync);
+ }
+ 
+ static int ocelot_port_get_phys_port_name(struct net_device *dev,
+@@ -1657,7 +1631,6 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
+ 	ocelot_port->regs = regs;
+ 	ocelot_port->chip_port = port;
+ 	ocelot_port->phy = phy;
+-	INIT_LIST_HEAD(&ocelot_port->mc);
+ 	ocelot->ports[port] = ocelot_port;
+ 
+ 	dev->netdev_ops = &ocelot_port_netdev_ops;
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index ba3b3380b4d0..541fe41e60b0 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -441,10 +441,6 @@ struct ocelot_port {
+ 	struct phy_device *phy;
+ 	void __iomem *regs;
+ 	u8 chip_port;
+-	/* Keep a track of the mc addresses added to the mac table, so that they
+-	 * can be removed when needed.
+-	 */
+-	struct list_head mc;
+ 
+ 	/* Ingress default VLAN (pvid) */
+ 	u16 pvid;
+-- 
+2.17.1
+
