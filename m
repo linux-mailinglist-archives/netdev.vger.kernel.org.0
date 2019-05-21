@@ -2,142 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84CFA246ED
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 06:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C4F246FE
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 06:47:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727156AbfEUEgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 00:36:25 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:43616 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725804AbfEUEgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 00:36:25 -0400
-Received: by mail-ot1-f66.google.com with SMTP id i8so15083500oth.10
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 21:36:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R4GPvP+YFrEqy8aOBVWOF1zSCy+nFlcbScDTG7+E9Xc=;
-        b=uVs3iKDC6N1uuuFZ2hM+1IGzj/Amf09ZXdt13wtK0GAuNPsTnTcM3rYRLGBQ2GGa4q
-         LWD88AKvgm8pZjMV7GRR8unP/0DIwwtoG7UqQZ+MHG4Z1dOV3FeBBX9UrU5Pu49UyGKL
-         kS03+oGDqeT1YjGEuuvviacmmCBrixIj/43U9++FVCEm0XQfB5DTwziKc4cNi9xEZ3sO
-         BSsGayYQJZPsZpLWJNxHOxkZQ4DUrKaPr97zP/2VwUpLEGCv/KeCfVldRAQXv3xNxCvO
-         QlpMNTUGM7NouYro/fsXsnxse2SkZ81q2X9rIA3ccOicNWoYlrxAmBiT2VGHg2HhK0tX
-         UpAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R4GPvP+YFrEqy8aOBVWOF1zSCy+nFlcbScDTG7+E9Xc=;
-        b=SeU8D1gjmfacsP4arwZ0z6dVfYD7RgheQghohoePlC+qU9to595NVxpJZTceiZD1Th
-         PiAR+Y+0wN0yRd03raW3WhqohClw0Yt00syebD71unu0G689LsUeKFLPzX3faa+gT4fC
-         mfF6P1wICR/qIchJkwaeMJnVlVJy93nNGTZcLvn2mgQJTxSr/lvpxrFSQxxafzkIL8xB
-         wsNJjsHA7HMid4IMRaHANar7GWmsOHbD+jVFtuoR3rNH7xb6I004RHg99dK21EY1RG7H
-         4p+aBz4lsDseCuZNMHLFmYLKolt7DTjCo73AthavWWnyDt2PgBwD8bx3JCfI0mhVp7ol
-         ieVA==
-X-Gm-Message-State: APjAAAUXba4fOhQGezqU5nbmm8vrCpQbmYTcEsXIwpH0HPQrva8M+BFA
-        wWCMaLTMKK5GDPHEDM7ZCMwBuWr9QluHakQC+1o=
-X-Google-Smtp-Source: APXvYqx3m3xdhAdJ2FMb2fI2IIqAeXrRjdpNO2VHKmrZ9oxV4FhR5D5x7G44QNkkZZ+tXz/0t0lWZm33FL1JqbzE/mg=
-X-Received: by 2002:a9d:638f:: with SMTP id w15mr35811144otk.16.1558413384740;
- Mon, 20 May 2019 21:36:24 -0700 (PDT)
+        id S1727047AbfEUErg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 00:47:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47604 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725982AbfEUErg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 May 2019 00:47:36 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id BE8CB81DEE;
+        Tue, 21 May 2019 04:47:30 +0000 (UTC)
+Received: from [10.72.12.36] (ovpn-12-36.pek2.redhat.com [10.72.12.36])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DC7EE5DA34;
+        Tue, 21 May 2019 04:47:25 +0000 (UTC)
+Subject: Re: [PATCH v2 net 2/2] net: core: generic XDP support for stacked
+ device
+To:     Jiri Pirko <jiri@resnulli.us>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        xdp-newbies@vger.kernel.org, bpf@vger.kernel.org,
+        Stephen Hemminger <sthemmin@microsoft.com>
+References: <20190519031046.4049-1-sthemmin@microsoft.com>
+ <20190519031046.4049-3-sthemmin@microsoft.com>
+ <20190520091105.GA2142@nanopsycho>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <cdfec194-30f3-f040-3bb2-98bb08add759@redhat.com>
+Date:   Tue, 21 May 2019 12:47:23 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <1558140881-91716-1-git-send-email-xiangxia.m.yue@gmail.com> <CAJ3xEMhAEMBBW=s_iWA=qD23w8q4PWzWT-QowGBNtCJJzHUysA@mail.gmail.com>
-In-Reply-To: <CAJ3xEMhAEMBBW=s_iWA=qD23w8q4PWzWT-QowGBNtCJJzHUysA@mail.gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 21 May 2019 12:35:48 +0800
-Message-ID: <CAMDZJNV6S5Wk5jsS5DiHMYGywU2df0Lyey9QYzcdwGZDJbjSeg@mail.gmail.com>
-Subject: Re: [PATCH] net/mlx5e: Allow removing representors netdev to other namespace
-To:     Or Gerlitz <gerlitz.or@gmail.com>
-Cc:     Roi Dayan <roid@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190520091105.GA2142@nanopsycho>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Tue, 21 May 2019 04:47:35 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 4:24 AM Or Gerlitz <gerlitz.or@gmail.com> wrote:
->
-> On Mon, May 20, 2019 at 3:19 PM <xiangxia.m.yue@gmail.com> wrote:
-> >
-> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >
-> > At most case, we use the ConnectX-5 NIC on compute node for VMs,
-> > but we will offload forwarding rules to NICs on gateway node.
-> > On the gateway node, we will install multiple NICs and set them to
-> > different dockers which contain different net namespace, different
-> > routing table. In this way, we can specify the agent process on one
-> > docker. More dockers mean more high throughput.
->
-> The vport (uplink and VF) representor netdev stands for the e-switch
-> side of things. If you put different
-> vport devices to different namespaces, you will not be able to forward
-> between them. It's the NIC side of things
-> (VF netdevice) which can/should be put to namespaces.
->
-> For example, with SW veth devices, suppose I we have two pairs
-> (v0,v1), (v2, v3) -- we create
-> a SW switch (linux bridge, ovs) with the uplink and v0/v2 as ports all
-> in a single name space
-> and we map v1 and v3 into application containers.
->
-> I am missing how can you make any use with vport reps belonging to the
-> same HW e-switch
-> on different name-spaces, maybe send chart?
-   +---------------------------------------------------------+
-   |                                                         |
-   |                                                         |
-   |       docker01                 docker02                 |
-   |                                                         |
-   | +-----------------+      +------------------+           |
-   | |    NIC (rep/vf) |      |       NIC        |           |
-   | |                 |      |                  |   host    |
-   | |   +--------+    |      |   +---------+    |           |
-   | +-----------------+      +------------------+           |
-   |     |        |               |         |                |
-   +---------------------------------------------------------+
-         |        |               |         |
-         |        |         phy_port2       | phy_port3
-         |        |               |         |
-         |        |               |         |
-phy_port0|        |phy_port1      |         |
-         |        |               |         |
-         v        +               v         +
 
-For example, there are two NIC(4 phy ports) on the host, we set the
-one NIC to docker01(all rep and vf of this nic are set to docker01).
-and other one NIC are set to docker02. The docker01/docker02 run our
-agent which use the tc command to offload the rule. The NIC of
-docker01 will receive packets from phy_port1
-and do the QoS , NAT(pedit action) and then forward them to phy_port0.
-The NIC of docker02 do this in the same way.
+On 2019/5/20 下午5:11, Jiri Pirko wrote:
+> Sun, May 19, 2019 at 05:10:46AM CEST, stephen@networkplumber.org wrote:
+>> When a device is stacked like (team, bonding, failsafe or netvsc) the
+>> XDP generic program for the parent device is not called.  In these
+>> cases, the rx handler changes skb->dev to its own in the receive
+>> handler, and returns RX_HANDLER_ANOTHER.  Fix this by calling
+>> do_xdp_generic if necessary before starting another round.
+>>
+>> Review of all the places RX_HANDLER_ANOTHER is returned
+>> show that the current devices do correctly change skb->dev.
+>>
+>> There was an older patch that got abandoned that did the
+>> same thing, this is just a rewrite.
+>>
+>> Suggested-by: Jason Wang <jasowang@redhat.com>
+>> Fixes: d445516966dc ("net: xdp: support xdp generic on virtual devices")
+>> Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
+>> Acked-by: Jason Wang <jasowang@redhat.com>
+>> ---
+>> net/core/dev.c | 10 ++++++++++
+>> 1 file changed, 10 insertions(+)
+>>
+>> diff --git a/net/core/dev.c b/net/core/dev.c
+>> index b6b8505cfb3e..240d0b2de1a8 100644
+>> --- a/net/core/dev.c
+>> +++ b/net/core/dev.c
+>> @@ -4921,6 +4921,16 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
+>> 			ret = NET_RX_SUCCESS;
+>> 			goto out;
+>> 		case RX_HANDLER_ANOTHER:
+>> +			if (static_branch_unlikely(&generic_xdp_needed_key)) {
+>> +				struct bpf_prog *xdp_prog;
+>> +
+>> +				xdp_prog = rcu_dereference(skb->dev->xdp_prog);
+>> +				ret = do_xdp_generic(xdp_prog, skb);
+>> +				if (ret != XDP_PASS) {
+>> +					ret = NET_RX_SUCCESS;
+>> +					goto out;
+>> +				}
+>> +			}
+> I'm always scarred of changes like this. The history tells us that this
+> codepaths are very fragile. It took us non-trivial efford to fix bonding
+> here, not to mention vlans (that was pain).
 
+
+I may miss something, did you see any issue for bonding with this patch?
 
 
 >
-> >
-> > The commit abd3277287c7 ("net/mlx5e: Disallow changing name-space for VF representors")
-> > disallow it, but we can change it now for gateway use case.
-> >
-> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > ---
-> >  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> > index 91e24f1..15e932f 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> > @@ -1409,7 +1409,7 @@ static void mlx5e_build_rep_netdev(struct net_device *netdev)
-> >         netdev->watchdog_timeo    = 15 * HZ;
-> >
-> >
-> > -       netdev->features         |= NETIF_F_HW_TC | NETIF_F_NETNS_LOCAL;
-> > +       netdev->features         |= NETIF_F_HW_TC;
-> >         netdev->hw_features      |= NETIF_F_HW_TC;
-> >
-> >         netdev->hw_features    |= NETIF_F_SG;
-> > --
-> > 1.8.3.1
-> >
+> The reason for troubles was often fact that different flows were treated
+> differently (vlan accel/non-accel).
+
+
+Do you mean we need do something similar after vlan_do_receive() returns 
+true?
+
+
+> This patch calls do_xdp_generic for master device in different point in
+> the receive patch comparing to lower device. Would it be possible to
+> unify this? E.g. by moving do_xdp_generice() call from
+> netif_rx_internal()/netif_receive_skb_internal() here,
+> to the beginning of __netif_receive_skb_core()?
+
+
+Probably just after another_round label. And this means generic XDP is 
+done after RPS which could be even better.
+
+Thanks
+
+
+>
+>
+>
+>> 			goto another_round;
+>> 		case RX_HANDLER_EXACT:
+>> 			deliver_exact = true;
+>> -- 
+>> 2.20.1
+>>
