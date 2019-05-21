@@ -2,56 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9929F2483B
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 08:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B2FE2496B
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 09:53:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726389AbfEUGlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 02:41:10 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:34997 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfEUGlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 02:41:10 -0400
-Received: by mail-pf1-f194.google.com with SMTP id t87so8536150pfa.2
-        for <netdev@vger.kernel.org>; Mon, 20 May 2019 23:41:10 -0700 (PDT)
+        id S1726705AbfEUHxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 03:53:30 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37782 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbfEUHx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 03:53:29 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 7so1783499wmo.2
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 00:53:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=rZ86+W0ZjsVIrEO8Snz1pgVa5nGYQZAyw36iDFXbT08=;
-        b=rrM7I8+m+PHuvf8Vdj9QGZXUFJDWGa6bV450Ss+ZSGb5Mm9/f1hREugDspeID2NsoG
-         u0SSWlMgSOg5O0VJuFM5sfZvx2wL5tCdO8UO+He6nFdBwOk7nrO0i3XEj/+rgG76e52v
-         X8Sie0kwgEFnSFxkSO3+M0JI3ai6Fi6hoIoZaBrzi3FsIJAjlo6Zimbr+R5PLtFPmV79
-         wVxrAw0fiDSWE3k+0vHmVnzSGnOr0UslDHKD4SNEssKfGRJgrTa55g7e0Okxz1eMNH1o
-         cgRm4xw/73wS8X6HD4VxcehjGqIm7R4DF6RswXLGgaREULtb3lmiY7fFzbSfrzVxCNnw
-         lIkA==
+        bh=1VmwFFsbqJK3+lRSkFVmV7bpMeUDcybN8WqYfoV1sqU=;
+        b=fh/ODLpu818axlZwJplBcIXfLxWCw1MDDaMvyMdY7OZiqk5ux9ysGSuTc8ZdNtHQgw
+         V0ZPljVgnSzv8u80v4/0gyOnK6DaRHzSyKhof2oW3wPv6Y2OtXPKPeDkr8665jqbPBTG
+         fS7TQzE+1r8D0w4xOM3YBV8NXSZs6fQbZ0E08=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=rZ86+W0ZjsVIrEO8Snz1pgVa5nGYQZAyw36iDFXbT08=;
-        b=pQ2hbIwR6fkoyY8ajtk8XK8uj1Iz+QH1DT5JrV1mn9znCJTXlSVNL7/pN19QnIW1La
-         ib1D69jNeZGf+NPFzaj3Cb7jE7Jokmqn8hzV4MquazZGGiHNnML0QaGfkyYGwDYb49jQ
-         UA/m1RGj+TJZdyQ5yckQi2BXSeiHlz9IFR9C+YoTZL4PHka8qbtNfaQej4P0VYl5yhlD
-         P9uISeH0vxcUzD0C2BhtOpQyKR1LkFdeNOovMZPYgRciuM3Vc8l1MmpWdg+0OHJ6bxiT
-         7kqOuJ67r0rkGuT0Eq/yviE92RPdpmQrsJmjQXA+PeOBx4LFG2cZp9eB/rMU229MbzlF
-         YQ7w==
-X-Gm-Message-State: APjAAAUE2TLLOS9ETo+PAM7K7u2zr8wypvGBi1tSjq7GmXgJjLYOSHc2
-        +J8JA1gm19IiqFpsRdo9deyU6vvD3p4=
-X-Google-Smtp-Source: APXvYqzAdiURTJkw+wL5INQCHGwebytUCxosFh0Rxy8MyZd3Ipcw6PQhyLiwIClrbMUXLI8uU5p50A==
-X-Received: by 2002:a63:10d:: with SMTP id 13mr53810981pgb.176.1558420869739;
-        Mon, 20 May 2019 23:41:09 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id u11sm21553991pfh.130.2019.05.20.23.41.07
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 May 2019 23:41:09 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>, davem@davemloft.net,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] selftests: fib_rule_tests: use pre-defined DEV_ADDR
-Date:   Tue, 21 May 2019 14:40:47 +0800
-Message-Id: <20190521064047.10002-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        bh=1VmwFFsbqJK3+lRSkFVmV7bpMeUDcybN8WqYfoV1sqU=;
+        b=X447ANEQIweUxW+QG1/SGwHcxwTeS30+cmrmsrvFCErp487KLdBD9brKMV8a54MX7H
+         ZM0cF7ZN+QY1PdO+1V2HyhPmNAmDgDvKXc8ALnDOs2mUP33R+F6XtMel2DdBVBaBXCV4
+         aq7LJ836ZRXxxs4/HoLV73uiYDk5n4r7leLDHIDI6kwiLp0iTPGTg3M7EYCHC4QSOIjl
+         kdgy8YqsxI4SoXH13RGMB7b1EyvUQSfZAfUvy3HlJBwaDSBmO4HuT9HTTTECQBL9ma+Y
+         8/TG+zZ5KKlcXm84IZE19kCsF7m5DqlGrKWrvHBMZQSnQKzW7xkcMdXeG+szQxdQqTBY
+         OH/A==
+X-Gm-Message-State: APjAAAWRBQqcmtFaIdXQ/2qbW0aUGFOtISVBXZHKesUYxu5uoVoKn7DR
+        7OdFnoSdX9A435v78lGnDq8ksNFoNr4vEw==
+X-Google-Smtp-Source: APXvYqylOBVBlr4HUSfame1dJJqGIkr2/KIsfH7YcS0OSUKYlcLzyXSh3YrdTKiWRwlzdHNRuzvaKQ==
+X-Received: by 2002:a1c:f507:: with SMTP id t7mr2308565wmh.149.1558425207226;
+        Tue, 21 May 2019 00:53:27 -0700 (PDT)
+Received: from antares.lan (0.1.1.1.3.c.d.b.3.8.f.6.0.5.4.d.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:d450:6f83:bdc3:1110])
+        by smtp.gmail.com with ESMTPSA id d198sm2259295wmd.1.2019.05.21.00.53.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 May 2019 00:53:26 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.com
+Cc:     joe@isovalent.com, Lorenz Bauer <lmb@cloudflare.com>
+Subject: [PATCH bpf] bpf: fix out-of-bounds read in __bpf_skc_lookup
+Date:   Tue, 21 May 2019 08:52:38 +0100
+Message-Id: <20190521075238.26803-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,39 +56,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DEV_ADDR is defined but not used. Use it in address setting.
-Do the same with IPv6 for consistency.
+__bpf_skc_lookup takes a socket tuple and the length of the
+tuple as an argument. Based on the length, it decides which
+address family to pass to the helper function sk_lookup.
 
-Reported-by: David Ahern <dsahern@gmail.com>
-Fixes: fc82d93e57e3 ("selftests: fib_rule_tests: fix local IPv4 address typo")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+In case of AF_INET6, it fails to verify that the length
+of the tuple is long enough. sk_lookup may therefore access
+data past the end of the tuple.
+
+Fixes: 6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 ---
- tools/testing/selftests/net/fib_rule_tests.sh | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/core/filter.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
-index 617321d3b801..a93e6b690e06 100755
---- a/tools/testing/selftests/net/fib_rule_tests.sh
-+++ b/tools/testing/selftests/net/fib_rule_tests.sh
-@@ -15,6 +15,7 @@ GW_IP6=2001:db8:1::2
- SRC_IP6=2001:db8:1::3
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 55bfc941d17a..76f1d99640e2 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5304,7 +5304,13 @@ __bpf_skc_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+ 	struct net *net;
+ 	int sdif;
  
- DEV_ADDR=192.51.100.1
-+DEV_ADDR6=2001:db8:1::1
- DEV=dummy0
- 
- log_test()
-@@ -55,8 +56,8 @@ setup()
- 
- 	$IP link add dummy0 type dummy
- 	$IP link set dev dummy0 up
--	$IP address add 192.51.100.1/24 dev dummy0
--	$IP -6 address add 2001:db8:1::1/64 dev dummy0
-+	$IP address add $DEV_ADDR/24 dev dummy0
-+	$IP -6 address add $DEV_ADDR6/64 dev dummy0
- 
- 	set +e
- }
+-	family = len == sizeof(tuple->ipv4) ? AF_INET : AF_INET6;
++	if (len == sizeof(tuple->ipv4))
++		family = AF_INET;
++	else if (len == sizeof(tuple->ipv6))
++		family = AF_INET6;
++	else
++		return NULL;
++
+ 	if (unlikely(family == AF_UNSPEC || flags ||
+ 		     !((s32)netns_id < 0 || netns_id <= S32_MAX)))
+ 		goto out;
 -- 
-2.19.2
+2.19.1
 
