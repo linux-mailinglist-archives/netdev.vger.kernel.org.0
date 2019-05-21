@@ -2,168 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB40257FF
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 21:07:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3459F25849
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 21:30:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728711AbfEUTHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 15:07:22 -0400
-Received: from gateway34.websitewelcome.com ([192.185.149.46]:32386 "EHLO
-        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728144AbfEUTHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 15:07:22 -0400
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id 813DD14200
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 14:06:57 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id TA6DhHVGp4FKpTA6DheFqJ; Tue, 21 May 2019 14:06:57 -0500
-X-Authority-Reason: nr=8
-Received: from [189.250.47.159] (port=33246 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hTA6C-003W0t-O4; Tue, 21 May 2019 14:06:56 -0500
-Subject: Re: [PATCH] can: mark expected switch fall-throughs
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Kees Cook <keescook@chromium.org>
-References: <20190129180612.GA28650@embeddedor>
- <31d206cd-65f2-66be-ed79-583210a88d57@pengutronix.de>
- <0527d7c5-78f8-d581-1960-7ceda8bc3f49@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <0f2d0366-d384-c247-e144-32a2480e0817@embeddedor.com>
-Date:   Tue, 21 May 2019 14:06:55 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727224AbfEUTaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 15:30:52 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:37316 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726771AbfEUTaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 15:30:52 -0400
+Received: by mail-qt1-f195.google.com with SMTP id o7so21951865qtp.4
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 12:30:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Dx1OUrkFZEbY4LmB5VdTN5Ytb3/nVdfIt7IUkl6z0bM=;
+        b=h3VgnCAjJ1MgBDGDPP9s8e/B3tOD6PgDhbyOzSYL2zrG+HsCwD2ABDXR3F61q5/Lrr
+         i/gbprUMzz+aZsuU+L3mZdCDHYFEEQn288xCLSbITmKU0yhlZdhvw35gP0eeJx+sUX9P
+         azOs4glPJNLse1FTPqn+Xkt7or8VRyw5hf0F4Vr9Dkss4Kcgw+ZAdD3Hre7qfhJQlwTk
+         Z+Cksf+9es6ruJgqwOEZ18nydqSrdNGk2IcBqZ+e5+SwxNpM/A527o+yULZhX2i0fI9f
+         l4MzPNzfINfmXXVH9ghLinApNaGUjTQI21/wqtkSPb+cjK40SCcShxJo0ribUEXKYTfC
+         bfQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Dx1OUrkFZEbY4LmB5VdTN5Ytb3/nVdfIt7IUkl6z0bM=;
+        b=oK4RaAAhTiBb4JGv0TYoXerJftEuCjVnDsOvvGuHfku0nldM0ZbKGmAkiQcp7sddyD
+         KCWaoPx6N6KNsvUbWML3h1drvASmFYCVDMfObjXpdbMjAfPhZtZTuG1s/oCL+7IwPQeE
+         JHll6cvxUWC0HcXeDwKUcjBqAzxNkwgujFvrpod2x7eFyig5gUdD+D1qzQOMR8PfDWaS
+         PCXKcmkg2FJz3ED7ykjvC3HbW8TrPnNekWesjM9qip1HyRSHfmplQx8DepzhLMgIJIaU
+         JsJjsEQWQa5hJ0Vld0mp5no4yUJQtEpUpgQnJm7ONR90DlBQXDsAm2ss5RWJrm9ML8ga
+         TPBQ==
+X-Gm-Message-State: APjAAAWDLyPm+7acznkyDualxxssM89TvqWe1Xm6yucvo0v6/dsCTvFg
+        BcZliRlq14Y4Y43weqqcfe/GHWax
+X-Google-Smtp-Source: APXvYqzhN95S2fP4KXDpExIvtJz3rH9wPJWOW3BbX+LSIPzNZ7yc226Ik72iq4EhpMNlasG5/RyTnA==
+X-Received: by 2002:a0c:9bae:: with SMTP id o46mr8768497qve.196.1558467049826;
+        Tue, 21 May 2019 12:30:49 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id y47sm6529558qtb.55.2019.05.21.12.30.48
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 21 May 2019 12:30:48 -0700 (PDT)
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     cphealy@gmail.com, Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [RFC net-next 0/9] net: dsa: mv88e6xxx: add RMU support
+Date:   Tue, 21 May 2019 15:29:55 -0400
+Message-Id: <20190521193004.10767-1-vivien.didelot@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <0527d7c5-78f8-d581-1960-7ceda8bc3f49@embeddedor.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.47.159
-X-Source-L: No
-X-Exim-ID: 1hTA6C-003W0t-O4
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.47.159]:33246
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 8
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+This series is a request for comment for the support for sending
+and receiving special management frames between Linux and Ethernet
+switch drivers.
 
-This patch has been in linux-can-next since February, but for some reason
-it hasn't been merged into net yet, not even once into linux-next.
+The (Marvell) Ethernet switches can respond to special control
+frames used to access the internal switch registers. This provides
+an alternative control bus for the switches, in addition to SMI. This
+is called Remote Management Unit (RMU) and must be activated on
+choosen port(s). Here's an illustration of what we may see:
 
-I can add it to my tree if you don't mind.
+        +-----------+
+        |    CPU    +-----+
+        +----+ +----+     |             Control path via port 1.
+        |eth0| |eth1|     | MDIO        Data path via port port 3.
+        +-+--+-+--+-+     |(optional)   eth1 is a dedicated DSA master,
+(optional)|       |       |             eth0 is a normal interface,
+    +---+-+-+---+-+-+---+ |             doing normal traffic + MGMT.
+    | 0 | 1 | 2 | 3 | 4 | | (optional)
+    +---+---+---+---+---+ | +--------+  There can also be several
+    |  Ethernet Switch  +-+ | EEPROM |  interconnected switches using
+    +-----------------+-+   +-+------+  a single control interface.
+                      +-------+
 
-Thanks
---
-Gustavo
+Working examples for RMU are the vf610-zii-dev boards where the Control
+and Data paths are both using the single DSA master interface wired
+to 2 or 3 interconnected switches.
 
-On 5/8/19 12:30 PM, Gustavo A. R. Silva wrote:
-> Hi Marc,
-> 
-> On 2/26/19 2:02 AM, Marc Kleine-Budde wrote:
->> On 1/29/19 7:06 PM, Gustavo A. R. Silva wrote:
->>> In preparation to enabling -Wimplicit-fallthrough, mark switch cases
->>> where we are expecting to fall through.
->>>
->>> This patch fixes the following warnings:
->>>
->>> drivers/net/can/peak_canfd/peak_pciefd_main.c:668:3: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>> drivers/net/can/spi/mcp251x.c:875:7: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>> drivers/net/can/usb/peak_usb/pcan_usb.c:422:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>> drivers/net/can/at91_can.c:895:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>> drivers/net/can/at91_can.c:953:15: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>> drivers/net/can/usb/peak_usb/pcan_usb.c: In function ‘pcan_usb_decode_error’:
->>> drivers/net/can/usb/peak_usb/pcan_usb.c:422:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>>    if (n & PCAN_USB_ERROR_BUS_LIGHT) {
->>>       ^
->>> drivers/net/can/usb/peak_usb/pcan_usb.c:428:2: note: here
->>>   case CAN_STATE_ERROR_WARNING:
->>>   ^~~~
->>>
->>> Warning level 3 was used: -Wimplicit-fallthrough=3
->>>
->>> This patch is part of the ongoing efforts to enabling
->>> -Wimplicit-fallthrough.
->>>
->>> Notice that in some cases spelling mistakes were fixed.
->>> In other cases, the /* fall through */ comment is placed
->>> at the bottom of the case statement, which is what GCC
->>> is expecting to find.
->>>
->>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
->>
->> Added to linux-can-next.
->>
-> 
-> I wonder if there is any chance for this patch to be queued up for 5.2-rc1.
-> 
-> Thanks
-> --
-> Gustavo
-> 
+Having access to both SMI and Ethernet busses in the driver is
+interesting because they each have specific operations which can
+be more efficient in certain scenarios. For example, SMI has an ATU
+GetNext operation which is handy to lookup a particular FDB entry,
+but is expensive for dumping the whole database. RMU has no ATU
+GetNext operation, but a Dump ATU operation allowing to retrieve up
+to 48 entries per frame. RMU also has a Wait Bit implementation and
+statistics dump operations. Ideally the driver would choose which
+bus to use depending on the operation.
+
+This RFC only implements the hooks in DSA to allow a switch driver to
+send and receive frames it is interested in, as well as the register
+read and write operations through RMU in mv88e6xxx as an illustration.
+
+Please do not spend too much time reviewing the frame crafting itself
+(in rmu.c), which currently hardcodes values and must share code with
+the (E)DSA taggers. This part will be polished later.
+
+The purpose of this RFC is not to discuss the implementation of RMU
+frames in mv88e6xxx, but to discuss the appropriate way to implement
+such control bus in the kernel and allow switch drivers to use it.
+
+The master of such Ethernet bus could be any network interface,
+doing normal traffic plus control frames for the switch(es) it is
+(directly or indirectly) connected to. A proper virtual Ethernet
+bus allowing switches to be probed can be implemented, plus DTS
+properties to describe which interface to use as a bus master and
+on which switch port the remote management must be enabled. In the
+meantime, this RFC hooks into DSA.
+
+My concerns are how to properly add hooks to filter frames on the
+receive path of any struct net_device (including but not necessarily
+a DSA master)? Are there other device drivers out there making use
+of multiple control bus at the same time? Is this implementation
+sufficient for the moment?
+
+
+Cheers,
+
+Vivien Didelot (9):
+  net: dsa: introduce dsa_master_find_switch
+  net: dsa: allow switches to receive frames
+  net: dsa: allow switches to transmit frames
+  net: dsa: introduce dsa_is_upstream_port
+  net: dsa: introduce dsa_to_master
+  net: dsa: mv88e6xxx: add default bus operations
+  net: dsa: mv88e6xxx: implement RMU enable
+  net: dsa: mv88e6xxx: setup RMU port
+  net: dsa: mv88e6xxx: setup RMU bus
+
+ drivers/net/dsa/mv88e6xxx/Makefile  |   1 +
+ drivers/net/dsa/mv88e6xxx/chip.c    |  43 +++-
+ drivers/net/dsa/mv88e6xxx/chip.h    |  14 ++
+ drivers/net/dsa/mv88e6xxx/global1.c |  56 +++++
+ drivers/net/dsa/mv88e6xxx/global1.h |   2 +
+ drivers/net/dsa/mv88e6xxx/rmu.c     | 314 ++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/rmu.h     |  34 +++
+ drivers/net/dsa/mv88e6xxx/smi.c     |   3 +
+ drivers/net/dsa/mv88e6xxx/smi.h     |  18 --
+ include/net/dsa.h                   |  32 +++
+ net/dsa/dsa2.c                      |   6 +
+ net/dsa/dsa_priv.h                  |  19 +-
+ net/dsa/switch.c                    |  15 ++
+ net/dsa/tag_dsa.c                   |   6 +
+ net/dsa/tag_edsa.c                  |   6 +
+ 15 files changed, 536 insertions(+), 33 deletions(-)
+ create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.c
+ create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.h
+
+-- 
+2.21.0
+
