@@ -2,131 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F37250F8
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 15:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 703A32510D
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 15:49:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728324AbfEUNq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 09:46:57 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:42403 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727534AbfEUNq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 09:46:56 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 13so9107623pfw.9;
-        Tue, 21 May 2019 06:46:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lI/jv0cKdLTVm7f1etTSpFXRa1zlfZqLSdICL8eVFUw=;
-        b=lCAUPhaIJyF7T7TW04duCQ1C/wP2Y+cJlgG5rd5N3NIcld0N4VZFJJQBQF7J++5d7Q
-         2rZXu0V10I9YsLnYMN6RowqjmkCY7dQbFYhNXibShcrGu1X9bj8FzjyvVXsLeLCQEw54
-         uPxXzxN3eUqWiAE++zFWF55PYe0XysKtlWzL7bPydyad26MOaK8mWoQ22ne18w2Y2cEt
-         UnQkYn4qDcUsM7gDWPsL+8dowsHhrz5BHHuxEGcP/MR6FP0Sk2l5s4W3ZgijENMPbyPP
-         d8gUXgVyE7ZjZJKDajKptNtxJ0B67G2pokldLIwaA1vWJVRYaP+VdA/Lzoa7NKOcm5k/
-         wcoQ==
+        id S1728316AbfEUNta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 09:49:30 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:36695 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727262AbfEUNt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 09:49:29 -0400
+Received: by mail-wm1-f65.google.com with SMTP id j187so2984255wmj.1
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 06:49:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lI/jv0cKdLTVm7f1etTSpFXRa1zlfZqLSdICL8eVFUw=;
-        b=EfH5aGu2eX3c/fg7GKW6dF1IIv0V1uFH7/AWjs7wvxSbhMLpV6VYiJqkBrMtGMshar
-         +VJLJI8IXnW9zEbS5mZZTwblhi39Md5QKOJhnLV/8l2/+IOJLZ9Lom54AmPSaraz4VjJ
-         45XXLU9q81b+VK1C24JZ51oJ5bFVQOh8nxPXHlluAlYr+6tCW+xr2gbc93cTCeTtaZMo
-         2PJz9PL8nIYE9f8v+dwdr606seab/xsc2bvNiJ/grXRS6ftkGKAF/JbcpHmaQdzQmXUm
-         hviKtGwo5wwF5BJctS4hcSQxYSlCC/FWiZWJW9omMLb/f4u0eaY/Mui2Fxclw9HBarqS
-         3atg==
-X-Gm-Message-State: APjAAAXPMztbzlnPIjexMNsZNnp1s44waaYW0guyP+kUKLTgSl+pI60B
-        twz6ONpx0yriaC0strcsXrE=
-X-Google-Smtp-Source: APXvYqw2+j6d1zPFsjQLOI4MpHishChca1g7J1s/r/q2nqond5Z/8tIZ/+UrzhLBM0v/KnAAiounUg==
-X-Received: by 2002:a63:d613:: with SMTP id q19mr47586203pgg.339.1558446416048;
-        Tue, 21 May 2019 06:46:56 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.54.43])
-        by smtp.gmail.com with ESMTPSA id i16sm8437701pfd.100.2019.05.21.06.46.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 May 2019 06:46:55 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
-        linux-riscv@lists.infradead.org, bpf@vger.kernel.org,
-        Jiong Wang <jiong.wang@netronome.com>
-Subject: [PATCH bpf] bpf, riscv: clear target register high 32-bits for and/or/xor on ALU32
-Date:   Tue, 21 May 2019 15:46:22 +0200
-Message-Id: <20190521134622.18358-1-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=iwI6dv33dhDTJKR9IFcZzhH4iqPm6pf4TcHSpe6e9o0=;
+        b=cMR2H7sVEC4d0th+FA+/8VFqjXM1Gi53gX1torPSY8MX+8wpazPUovy4/DF0vqy7pW
+         tvm7aQZr2++NdOTG/wsgJzQBqqaOKQwpLvMCpPh685uGNQYRkYNyaOnCCZx+wLTH/dms
+         9/KWCM8FrerNCznW/nij/xAUgaJEJ/9Bd20Qm3yAjagBdM2zuQeNWyRt1jsByVCQ7laf
+         tIOFops6XagoFq1kqvXf72+VH7ImJIcF+5V8v4zPGrFZKE3Xreq38elk3DcptcoEZ322
+         UgjJ/06LmmwXygg5ar70laUeS577rejIu2rhcBICSZexwtFIEN1m1D/qtWsTH82SS8l0
+         iYsw==
+X-Gm-Message-State: APjAAAV25uPxCAI2xQcgvhN6noxPJxc3NMp6UkhlA1FX0n3DwvP5N/Q/
+        pZlBdS2mwfiiXqyJPeoe8MlWiA==
+X-Google-Smtp-Source: APXvYqxvRpylp4iEHybQ7cg/NCOtt2MzAJH0MlkI1kGu66bbBRJBRsPdxwyH0dlBSy0wirO/9eTCJQ==
+X-Received: by 2002:a7b:cb57:: with SMTP id v23mr2736912wmj.60.1558446567765;
+        Tue, 21 May 2019 06:49:27 -0700 (PDT)
+Received: from steredhat (host253-229-dynamic.248-95-r.retail.telecomitalia.it. [95.248.229.253])
+        by smtp.gmail.com with ESMTPSA id b12sm6195653wmg.27.2019.05.21.06.49.26
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 21 May 2019 06:49:27 -0700 (PDT)
+Date:   Tue, 21 May 2019 15:49:20 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: Question about IRQs during the .remove() of virtio-vsock driver
+Message-ID: <20190521134920.pulvy5pqnertbafd@steredhat>
+References: <20190521094407.ltij4ggbd7xw25ge@steredhat>
+ <20190521055650-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190521055650-mutt-send-email-mst@kernel.org>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using 32-bit subregisters (ALU32), the RISC-V JIT would not clear
-the high 32-bits of the target register and therefore generate
-incorrect code.
+On Tue, May 21, 2019 at 06:05:31AM -0400, Michael S. Tsirkin wrote:
+> On Tue, May 21, 2019 at 11:44:07AM +0200, Stefano Garzarella wrote:
+> > Hi Micheal, Jason,
+> > as suggested by Stefan, I'm checking if we have some races in the
+> > virtio-vsock driver. We found some races in the .probe() and .remove()
+> > with the upper layer (socket) and I'll fix it.
+> > 
+> > Now my attention is on the bottom layer (virtio device) and my question is:
+> > during the .remove() of virtio-vsock driver (virtio_vsock_remove), could happen
+> > that an IRQ comes and one of our callback (e.g. virtio_vsock_rx_done()) is
+> > executed, queueing new works?
+> > 
+> > I tried to follow the code in both cases (device unplugged or module removed)
+> > and maybe it couldn't happen because we remove it from bus's knowledge,
+> > but I'm not sure and your advice would be very helpful.
+> > 
+> > Thanks in advance,
+> > Stefano
+> 
+> 
+> Great question! This should be better documented: patches welcome!
 
-E.g., in the following code:
+When I'm clear, I'll be happy to document this.
 
-  $ cat test.c
-  unsigned int f(unsigned long long a,
-  	       unsigned int b)
-  {
-  	return (unsigned int)a & b;
-  }
+> 
+> Here's my understanding:
+> 
+> 
+> A typical removal flow works like this:
+> 
+> - prevent linux from sending new kick requests to device
+>   and flush such outstanding requests if any
+>   (device can still send notifications to linux)
+> 
+> - call
+>           vi->vdev->config->reset(vi->vdev);
+>   this will flush all device writes and interrupts.
+>   device will not use any more buffers.
+>   previously outstanding callbacks might still be active.
+> 
+> - Then call
+>           vdev->config->del_vqs(vdev);
+>   to flush outstanding callbacks if any.
 
-  $ clang-9 -target bpf -O2 -emit-llvm -S test.c -o - | \
-  	llc-9 -mattr=+alu32 -mcpu=v3
-  	.text
-  	.file	"test.c"
-  	.globl	f
-  	.p2align	3
-  	.type	f,@function
-  f:
-  	r0 = r1
-  	w0 &= w2
-  	exit
-  .Lfunc_end0:
-  	.size	f, .Lfunc_end0-f
+Thanks for sharing these useful information.
 
-The JIT would not clear the high 32-bits of r0 after the
-and-operation, which in this case might give an incorrect return
-value.
+So, IIUC between step 1 (e.g. in virtio-vsock we flush all work-queues) and
+step 2, new IRQs could happen, and in the virtio-vsock driver new work
+will be queued.
 
-After this patch, that is not the case, and the upper 32-bits are
-cleared.
+In order to handle this case, I'm thinking to add a new variable
+'work_enabled' in the struct virtio_vsock, put it to false at the start
+of the .remove(), then call synchronize_rcu() before to flush all work
+queues and use an helper function virtio_transport_queue_work() to queue
+a new work, where the check of work_enabled and the queue_work are in the
+RCU read critical section.
 
-Reported-by: Jiong Wang <jiong.wang@netronome.com>
-Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
-Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
----
- arch/riscv/net/bpf_jit_comp.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Here a pseudo code to explain better the idea:
 
-diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
-index 80b12aa5e10d..e5c8d675bd6e 100644
---- a/arch/riscv/net/bpf_jit_comp.c
-+++ b/arch/riscv/net/bpf_jit_comp.c
-@@ -759,14 +759,20 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 	case BPF_ALU | BPF_AND | BPF_X:
- 	case BPF_ALU64 | BPF_AND | BPF_X:
- 		emit(rv_and(rd, rd, rs), ctx);
-+		if (!is64)
-+			emit_zext_32(rd, ctx);
- 		break;
- 	case BPF_ALU | BPF_OR | BPF_X:
- 	case BPF_ALU64 | BPF_OR | BPF_X:
- 		emit(rv_or(rd, rd, rs), ctx);
-+		if (!is64)
-+			emit_zext_32(rd, ctx);
- 		break;
- 	case BPF_ALU | BPF_XOR | BPF_X:
- 	case BPF_ALU64 | BPF_XOR | BPF_X:
- 		emit(rv_xor(rd, rd, rs), ctx);
-+		if (!is64)
-+			emit_zext_32(rd, ctx);
- 		break;
- 	case BPF_ALU | BPF_MUL | BPF_X:
- 	case BPF_ALU64 | BPF_MUL | BPF_X:
--- 
-2.20.1
+virtio_vsock_remove() {
+    vsock->work_enabled = false;
 
+    /* Wait for other CPUs to finish to queue works */
+    synchronize_rcu();
+
+    flush_works();
+
+    vdev->config->reset(vdev);
+
+    ...
+
+    vdev->config->del_vqs(vdev);
+}
+
+virtio_vsock_queue_work(vsock, work) {
+    rcu_read_lock();
+
+    if (!vsock->work_enabled) {
+        goto out;
+    }
+
+    queue_work(virtio_vsock_workqueue, work);
+
+out:
+    rcu_read_unlock();
+}
+
+
+Do you think can work?
+Please tell me if there is a better way to handle this case.
+
+Thanks,
+Stefano
