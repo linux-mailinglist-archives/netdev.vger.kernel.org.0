@@ -2,132 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E705425423
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 17:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1AE72543C
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 17:42:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728784AbfEUPg6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 May 2019 11:36:58 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:44276 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728104AbfEUPgz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 11:36:55 -0400
-Received: by mail-lj1-f194.google.com with SMTP id e13so16239309ljl.11
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 08:36:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xHcmjVDAiLTnPECUNX89YGAM+as77xb3JfSt8ueMttg=;
-        b=ZkwQuH6EsmcmnIK2jvbhTc55//aVTIUAaQ6cXlFxe0QAVXIJDwhafBlAf+X1NG6UDM
-         9UabpayRpn8JS9wDkD1Vpg9AS2uim9p7eC7DbNLjKcRPro4gNKIux0P3X4VEPITw1Hz+
-         TUzQqrFUd/msIpzIAMF3unLYXfE3L/Dvk3ohbe1ra1mVNcT2cmVThx3/hVeJckaETd5m
-         zLTdN+gdgGB2DMoCOHYG3Vn2X215/XuMu9SnyR/Q7JG9XBmLeENkUvCiFRkvkT8wOhG5
-         mLS8vqhazGGQGvTfvjeELe0yKHEaKRLeBhQdh8/ZuU2VjyJCRl6ESYhgKP3dKGvbEE0t
-         JaEA==
-X-Gm-Message-State: APjAAAW48OzRfBq7/PZk6XUQolVlVYDiPB73D+29sgG5OvqoJGXOs6VX
-        LS8WGhZb47ju4Vp4ZGUX/0+NgLg2CRL6qb54LUkaXg==
-X-Google-Smtp-Source: APXvYqxId1+Y+bq1lPj/Yok6ty2jTLWDK5G0XffsUKbymfGbxMl73FDP+m7u8QVhacYIjtFI63q52PwI7BY03+/Ek5A=
-X-Received: by 2002:a2e:8741:: with SMTP id q1mr19418098ljj.97.1558453013827;
- Tue, 21 May 2019 08:36:53 -0700 (PDT)
+        id S1728488AbfEUPmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 11:42:42 -0400
+Received: from rp02.intra2net.com ([62.75.181.28]:55050 "EHLO
+        rp02.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728295AbfEUPmm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 11:42:42 -0400
+Received: from mail.m.i2n (unknown [172.17.128.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by rp02.intra2net.com (Postfix) with ESMTPS id 98326100097;
+        Tue, 21 May 2019 17:42:39 +0200 (CEST)
+Received: from localhost (mail.m.i2n [127.0.0.1])
+        by localhost (Postfix) with ESMTP id 6CFEF84C;
+        Tue, 21 May 2019 17:42:39 +0200 (CEST)
+X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.54.32,VDF=8.16.15.54)
+X-Spam-Status: 
+X-Spam-Level: 0
+Received: from rocinante.m.i2n (rocinante.m.i2n [172.16.1.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: smtp-auth-user)
+        by mail.m.i2n (Postfix) with ESMTPSA id 985FD6C7;
+        Tue, 21 May 2019 17:42:37 +0200 (CEST)
+From:   Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+To:     "Neftin, Sasha" <sasha.neftin@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, thomas.jarosch@intra2net.com,
+        netdev@vger.kernel.org
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: Work around hardware unit hang by disabling TSO
+Date:   Tue, 21 May 2019 17:42:37 +0200
+Message-ID: <3878056.TXPIU5uV5l@rocinante.m.i2n>
+In-Reply-To: <d308eb17-98ab-13e7-6c74-d701288e43b5@intel.com>
+References: <1623942.pXzBnfQ100@rocinante.m.i2n> <d308eb17-98ab-13e7-6c74-d701288e43b5@intel.com>
 MIME-Version: 1.0
-References: <20190518004639.20648-1-mcroce@redhat.com> <CAGnkfhxt=nq-JV+D5Rrquvn8BVOjHswEJmuVVZE78p9HvAg9qQ@mail.gmail.com>
- <20190520133830.1ac11fc8@cakuba.netronome.com> <dfb6cf40-81f4-237e-9a43-646077e020f7@iogearbox.net>
-In-Reply-To: <dfb6cf40-81f4-237e-9a43-646077e020f7@iogearbox.net>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Tue, 21 May 2019 17:36:17 +0200
-Message-ID: <CAGnkfhxZPXUvBemRxAFfoq+y-UmtdQH=dvnyeLBJQo43U2=sTg@mail.gmail.com>
-Subject: Re: [PATCH 1/5] samples/bpf: fix test_lru_dist build
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        xdp-newbies@vger.kernel.org, bpf@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 5:21 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 05/20/2019 10:38 PM, Jakub Kicinski wrote:
-> > On Mon, 20 May 2019 19:46:27 +0200, Matteo Croce wrote:
-> >> On Sat, May 18, 2019 at 2:46 AM Matteo Croce <mcroce@redhat.com> wrote:
-> >>>
-> >>> Fix the following error by removing a duplicate struct definition:
-> >>
-> >> Hi all,
-> >>
-> >> I forget to send a cover letter for this series, but basically what I
-> >> wanted to say is that while patches 1-3 are very straightforward,
-> >> patches 4-5 are a bit rough and I accept suggstions to make a cleaner
-> >> work.
-> >
-> > samples depend on headers being locally installed:
-> >
-> > make headers_install
-> >
-> > Are you intending to change that?
->
-> +1, Matteo, could you elaborate?
->
-> On latest bpf tree, everything compiles just fine:
->
-> [root@linux bpf]# make headers_install
-> [root@linux bpf]# make -C samples/bpf/
-> make: Entering directory '/home/darkstar/trees/bpf/samples/bpf'
-> make -C ../../ /home/darkstar/trees/bpf/samples/bpf/ BPF_SAMPLES_PATH=/home/darkstar/trees/bpf/samples/bpf
-> make[1]: Entering directory '/home/darkstar/trees/bpf'
->   CALL    scripts/checksyscalls.sh
->   CALL    scripts/atomic/check-atomics.sh
->   DESCEND  objtool
-> make -C /home/darkstar/trees/bpf/samples/bpf/../../tools/lib/bpf/ RM='rm -rf' LDFLAGS= srctree=/home/darkstar/trees/bpf/samples/bpf/../../ O=
->   HOSTCC  /home/darkstar/trees/bpf/samples/bpf/test_lru_dist
->   HOSTCC  /home/darkstar/trees/bpf/samples/bpf/sock_example
->
+Hello Sasha,
 
-Hi all,
+On Wednesday, 15 May 2019 07:39:46 CEST Neftin, Sasha wrote:
+> You are right, in some particular configurations e1000e devices stuck at
+> Tx hang while TCP segmentation offload is on. But for all other users we
+> should keep the TCP segmentation option is enabled as default. I suggest
+> to use 'ethtool' command: ethtool -K <adapter> tso on/off to workaround
+> Tx hang in your situation.
+> Thanks,
+> Sasha
 
-I have kernel-headers installed from master, but yet the samples fail to build:
+thank you for your reply.
 
-matteo@turbo:~/src/linux/samples/bpf$ rpm -q kernel-headers
-kernel-headers-5.2.0_rc1-38.x86_64
+I did consider using "ethtool" to disable TSO for my use cases. However, I 
+have no guarantees that a machine with the PCH2 device will not hang and 
+render my system inaccessible before anything in userspace runs. No amount of 
+connection outage is acceptable.
 
-matteo@turbo:~/src/linux/samples/bpf$ git describe HEAD
-v5.2-rc1-97-g5bdd9ad875b6
+The problem escalates when we take into consideration that the exact 
+circumstances that bring the device into an unrecoverable state don't seem to 
+be known even by the Intel developers themselves.
 
-matteo@turbo:~/src/linux/samples/bpf$ make
-make -C ../../ /home/matteo/src/linux/samples/bpf/
-BPF_SAMPLES_PATH=/home/matteo/src/linux/samples/bpf
-make[1]: Entering directory '/home/matteo/src/linux'
-  CALL    scripts/checksyscalls.sh
-  CALL    scripts/atomic/check-atomics.sh
-  DESCEND  objtool
-make -C /home/matteo/src/linux/samples/bpf/../../tools/lib/bpf/ RM='rm
--rf' LDFLAGS= srctree=/home/matteo/src/linux/samples/bpf/../../ O=
-  HOSTCC  /home/matteo/src/linux/samples/bpf/test_lru_dist
-/home/matteo/src/linux/samples/bpf/test_lru_dist.c:39:8: error:
-redefinition of ‘struct list_head’
-   39 | struct list_head {
-      |        ^~~~~~~~~
-In file included from /home/matteo/src/linux/samples/bpf/test_lru_dist.c:9:
-./tools/include/linux/types.h:69:8: note: originally defined here
-   69 | struct list_head {
-      |        ^~~~~~~~~
-make[2]: *** [scripts/Makefile.host:90:
-/home/matteo/src/linux/samples/bpf/test_lru_dist] Error 1
-make[1]: *** [Makefile:1762: /home/matteo/src/linux/samples/bpf/] Error 2
-make[1]: Leaving directory '/home/matteo/src/linux'
-make: *** [Makefile:231: all] Error 2
+This patch keeps the problematic device stable for all configurations.
 
-Am I missing something obvious?
+So I ask myself, how actually feasible is it to gamble the usage of "ethtool" 
+to turn on or off TSO every time the network configuration changes?
+
+Why should we let the users run into an open knife instead of preemptively fix 
+a known hardware bug via the kernel? Otherwise all Linux distributions would 
+need to apply the magic ethtool fix for this specific PCI id.
+
+Best regards,
+Juliana
 
 
-Regards,
-
-
---
-Matteo Croce
-per aspera ad upstream
