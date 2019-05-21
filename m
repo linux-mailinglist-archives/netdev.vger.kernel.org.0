@@ -2,67 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C93A25319
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 16:56:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0CA825375
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 17:05:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728309AbfEUO4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 10:56:37 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52614 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727986AbfEUO4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 10:56:37 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hT6Bv-0002I1-KH; Tue, 21 May 2019 16:56:35 +0200
-Received: from [178.197.249.20] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hT6Bv-000M6d-Cs; Tue, 21 May 2019 16:56:35 +0200
-Subject: Re: [PATCH bpf] samples/bpf: suppress compiler warning
-To:     Matteo Croce <mcroce@redhat.com>, xdp-newbies@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>
-References: <20190520214938.16889-1-mcroce@redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f874efcb-f2a2-1d5f-7c43-cebdb828e465@iogearbox.net>
-Date:   Tue, 21 May 2019 16:56:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
-MIME-Version: 1.0
-In-Reply-To: <20190520214938.16889-1-mcroce@redhat.com>
-Content-Type: text/plain; charset=utf-8
+        id S1728928AbfEUPFi convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 May 2019 11:05:38 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:42152 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728901AbfEUPFh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 11:05:37 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-21-_M09KjGmMdmqceX7-0YdFg-1; Tue, 21 May 2019 16:05:32 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
+ (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue,
+ 21 May 2019 16:05:31 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 21 May 2019 16:05:31 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Chang-Hsien Tsai' <luke.tw@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>
+Subject: RE: [PATCH] samples: bpf: fix: change the buffer size for read()
+Thread-Topic: [PATCH] samples: bpf: fix: change the buffer size for read()
+Thread-Index: AQHVDmrXJNlfWPhJGUGAbU++g5yjzKZ1sAZw
+Date:   Tue, 21 May 2019 15:05:31 +0000
+Message-ID: <bf57f48d5318450b95746f9f91418153@AcuMS.aculab.com>
+References: <20190519090544.26971-1-luke.tw@gmail.com>
+In-Reply-To: <20190519090544.26971-1-luke.tw@gmail.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25456/Tue May 21 09:56:54 2019)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-MC-Unique: _M09KjGmMdmqceX7-0YdFg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/20/2019 11:49 PM, Matteo Croce wrote:
-> GCC 9 fails to calculate the size of local constant strings and produces a
-> false positive:
+From: Chang-Hsien Tsai
+> Sent: 19 May 2019 10:06
+> If the trace for read is larger than 4096,
+> the return value sz will be 4096.
+> This results in off-by-one error on buf.
 > 
-> samples/bpf/task_fd_query_user.c: In function ‘test_debug_fs_uprobe’:
-> samples/bpf/task_fd_query_user.c:242:67: warning: ‘%s’ directive output may be truncated writing up to 255 bytes into a region of size 215 [-Wformat-truncation=]
->   242 |  snprintf(buf, sizeof(buf), "/sys/kernel/debug/tracing/events/%ss/%s/id",
->       |                                                                   ^~
->   243 |    event_type, event_alias);
->       |                ~~~~~~~~~~~
-> samples/bpf/task_fd_query_user.c:242:2: note: ‘snprintf’ output between 45 and 300 bytes into a destination of size 256
->   242 |  snprintf(buf, sizeof(buf), "/sys/kernel/debug/tracing/events/%ss/%s/id",
->       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->   243 |    event_type, event_alias);
->       |    ~~~~~~~~~~~~~~~~~~~~~~~~
+>     static char buf[4096];
+>     ssize_t sz;
 > 
-> Workaround this by lowering the buffer size to a reasonable value.
-> Related GCC Bugzilla: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83431
+>     sz = read(trace_fd, buf, sizeof(buf));
+>     if (sz > 0) {
+>         buf[sz] = 0;
+>         puts(buf);
+>     }
 > 
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> Signed-off-by: Chang-Hsien Tsai <luke.tw@gmail.com>
+> ---
+>  samples/bpf/bpf_load.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
+> index eae7b635343d..d4da90070b58 100644
+> --- a/samples/bpf/bpf_load.c
+> +++ b/samples/bpf/bpf_load.c
+> @@ -678,7 +678,7 @@ void read_trace_pipe(void)
+>  		static char buf[4096];
+>  		ssize_t sz;
+> 
+> -		sz = read(trace_fd, buf, sizeof(buf));
+> +		sz = read(trace_fd, buf, sizeof(buf)-1);
+>  		if (sz > 0) {
+>  			buf[sz] = 0;
+>  			puts(buf);
 
-Applied, thanks!
+Why not change the puts() to fwrite(buf, sz, 1, stdout) ?
+Then you don't need the '\0' terminator.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
