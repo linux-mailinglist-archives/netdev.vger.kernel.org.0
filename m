@@ -2,93 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07D45244ED
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 02:09:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EDE9244F6
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 02:12:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbfEUAJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 20:09:24 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:59690 "EHLO
+        id S1727235AbfEUAMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 20:12:03 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:59728 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725681AbfEUAJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 20:09:24 -0400
+        with ESMTP id S1726586AbfEUAMD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 20:12:03 -0400
 Received: from localhost (50-78-161-185-static.hfc.comcastbusiness.net [50.78.161.185])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 73B4C13F61587;
-        Mon, 20 May 2019 17:09:23 -0700 (PDT)
-Date:   Mon, 20 May 2019 20:09:22 -0400 (EDT)
-Message-Id: <20190520.200922.2277656639346033061.davem@davemloft.net>
-To:     Jan.Kloetzke@preh.de
-Cc:     oneukum@suse.com, jan@kloetzke.net, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH v2] usbnet: fix kernel crash after disconnect
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C25F613F3ABBB;
+        Mon, 20 May 2019 17:12:02 -0700 (PDT)
+Date:   Mon, 20 May 2019 20:12:02 -0400 (EDT)
+Message-Id: <20190520.201202.368431080157706787.davem@davemloft.net>
+To:     felipe@felipegasper.com
+Cc:     viro@zeniv.linux.org.uk, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-api@vger.kernel.org
+Subject: Re: [PATCH v3] net: Add UNIX_DIAG_UID to Netlink UNIX socket
+ diagnostics.
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1557990629.19453.7.camel@preh.de>
-References: <20190505.004556.492323065607253635.davem@davemloft.net>
-        <1557130666.12778.3.camel@suse.com>
-        <1557990629.19453.7.camel@preh.de>
+In-Reply-To: <20190519013839.20355-1-felipe@felipegasper.com>
+References: <20190519013839.20355-1-felipe@felipegasper.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 May 2019 17:09:23 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 May 2019 17:12:03 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kloetzke Jan <Jan.Kloetzke@preh.de>
-Date: Thu, 16 May 2019 07:10:30 +0000
+From: Felipe Gasper <felipe@felipegasper.com>
+Date: Sat, 18 May 2019 20:38:39 -0500
 
-> Am Montag, den 06.05.2019, 10:17 +0200 schrieb Oliver Neukum:
->> On So, 2019-05-05 at 00:45 -0700, David Miller wrote:
->> > From: Kloetzke Jan <Jan.Kloetzke@preh.de>
->> > Date: Tue, 30 Apr 2019 14:15:07 +0000
->> > 
->> > > @@ -1431,6 +1432,11 @@ netdev_tx_t usbnet_start_xmit (struct sk_buff *skb,
->> > >               spin_unlock_irqrestore(&dev->txq.lock, flags);
->> > >               goto drop;
->> > >       }
->> > > +     if (WARN_ON(netif_queue_stopped(net))) {
->> > > +             usb_autopm_put_interface_async(dev->intf);
->> > > +             spin_unlock_irqrestore(&dev->txq.lock, flags);
->> > > +             goto drop;
->> > > +     }
->> > 
->> > If this is known to happen and is expected, then we should not warn.
->> > 
->> 
->> yes this is the point. Can ndo_start_xmit() and ndo_stop() race?
->> If not, why does the patch fix the observed issue and what
->> prevents the race? Something is not clear here.
+> Author: Felipe Gasper <felipe@felipegasper.com>
+> Date:   Sat May 18 20:04:40 2019 -0500
 > 
-> Dave, could you shed some light on Olivers question? If the race can
-> happen then we can stick to v1 because the WARN_ON is indeed pointless.
-> Otherwise it's not clear why it made the problem go away for us and v2
-> may be the better option...
+>    net: Add UNIX_DIAG_UID to Netlink UNIX socket diagnostics.
 
-Yes I think they can race.   ->ndo_stop() executes and stops the queue,
-then we get an RCU grace period so that all parallel executions of
-->ndo_start_xmit() complete.
+Please format your patch submission properly.
 
-But I wonder, this can probably cause problems because some drivers have
-"stop queue and re-check" logic, f.e. in drivers/net/tg3.c we have:
+This Author: and Date: should not be here in the commit message.
 
-	if (unlikely(tg3_tx_avail(tnapi) <= (MAX_SKB_FRAGS + 1))) {
-		netif_tx_stop_queue(txq);
+The "net: Add UNIX_DIAG_UID to Netlink UNIX socket diagnostics." should
+be exclusively in your Subject line.
 
-		/* netif_tx_stop_queue() must be done before checking
-		 * checking tx index in tg3_tx_avail() below, because in
-		 * tg3_tx(), we update tx index before checking for
-		 * netif_tx_queue_stopped().
-		 */
-		smp_mb();
-		if (tg3_tx_avail(tnapi) > TG3_TX_WAKEUP_THRESH(tnapi))
-			netif_tx_wake_queue(txq);
-	}
+And:
 
-which in the racey scenerio would undo ->ndo_stop()'s work which is
-completely unexpected.
+>    This adds the ability for Netlink to report a socket's UID along with the
+>    other UNIX diagnostic information that is already available. This will
+>    allow diagnostic tools greater insight into which users control which
+>    socket.
+> 
+>    To test this, do the following as a non-root user:
+> 
+>         unshare -U -r bash
+>         nc -l -U user.socket.$$ &
+> 
+>    .. and verify from within that same session that Netlink UNIX socket
+>    diagnostics report the socket's UID as 0. Also verify that Netlink UNIX
+>    socket diagnostics report the socket's UID as the user's UID from an
+>    unprivileged process in a different session. Verify the same from
+>    a root process.
+> 
+>    Signed-off-by: Felipe Gasper <felipe@felipegasper.com>
 
-Hmmm...
+This is all unnecessarily indented.
+
+I know what you did, you took something like "git show" output and
+just posted it to the list here.
+
+But that's not what you're supposed to do.
+
+Thanks.
