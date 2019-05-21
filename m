@@ -2,95 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0CA825375
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 17:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E60125399
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 17:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728928AbfEUPFi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 May 2019 11:05:38 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:42152 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728901AbfEUPFh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 11:05:37 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-21-_M09KjGmMdmqceX7-0YdFg-1; Tue, 21 May 2019 16:05:32 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
- (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue,
- 21 May 2019 16:05:31 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 21 May 2019 16:05:31 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Chang-Hsien Tsai' <luke.tw@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>
-Subject: RE: [PATCH] samples: bpf: fix: change the buffer size for read()
-Thread-Topic: [PATCH] samples: bpf: fix: change the buffer size for read()
-Thread-Index: AQHVDmrXJNlfWPhJGUGAbU++g5yjzKZ1sAZw
-Date:   Tue, 21 May 2019 15:05:31 +0000
-Message-ID: <bf57f48d5318450b95746f9f91418153@AcuMS.aculab.com>
-References: <20190519090544.26971-1-luke.tw@gmail.com>
-In-Reply-To: <20190519090544.26971-1-luke.tw@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728649AbfEUPPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 11:15:41 -0400
+Received: from caffeine.csclub.uwaterloo.ca ([129.97.134.17]:36455 "EHLO
+        caffeine.csclub.uwaterloo.ca" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727969AbfEUPPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 11:15:41 -0400
+Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
+        id C7A46460279; Tue, 21 May 2019 11:15:37 -0400 (EDT)
+Date:   Tue, 21 May 2019 11:15:37 -0400
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec
+ packets
+Message-ID: <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca>
+References: <20190513165547.alkkgcsdelaznw6v@csclub.uwaterloo.ca>
+ <CAKgT0Uf_nqZtCnHmC=-oDFz-3PuSM6=30BvJSDiAgzK062OY6w@mail.gmail.com>
+ <20190514163443.glfjva3ofqcy7lbg@csclub.uwaterloo.ca>
+ <CAKgT0UdPDyCBsShQVwwE5C8fBKkMcfS6_S5m3T7JP-So9fzVgA@mail.gmail.com>
+ <20190516183407.qswotwyjwtjqfdqm@csclub.uwaterloo.ca>
+ <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca>
+ <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com>
+ <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
+ <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca>
+ <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
 MIME-Version: 1.0
-X-MC-Unique: _M09KjGmMdmqceX7-0YdFg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chang-Hsien Tsai
-> Sent: 19 May 2019 10:06
-> If the trace for read is larger than 4096,
-> the return value sz will be 4096.
-> This results in off-by-one error on buf.
+On Fri, May 17, 2019 at 03:20:02PM -0700, Alexander Duyck wrote:
+> I was hoping it would work too. It seemed like it should have been the
+> answer since it definitely didn't seem right. Now it has me wondering
+> about some of the other code in the driver.
 > 
->     static char buf[4096];
->     ssize_t sz;
-> 
->     sz = read(trace_fd, buf, sizeof(buf));
->     if (sz > 0) {
->         buf[sz] = 0;
->         puts(buf);
->     }
-> 
-> Signed-off-by: Chang-Hsien Tsai <luke.tw@gmail.com>
-> ---
->  samples/bpf/bpf_load.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
-> index eae7b635343d..d4da90070b58 100644
-> --- a/samples/bpf/bpf_load.c
-> +++ b/samples/bpf/bpf_load.c
-> @@ -678,7 +678,7 @@ void read_trace_pipe(void)
->  		static char buf[4096];
->  		ssize_t sz;
-> 
-> -		sz = read(trace_fd, buf, sizeof(buf));
-> +		sz = read(trace_fd, buf, sizeof(buf)-1);
->  		if (sz > 0) {
->  			buf[sz] = 0;
->  			puts(buf);
+> By any chance have you run anything like DPDK on any of the X722
+> interfaces on this system recently? I ask because it occurs to me that
+> if you had and it loaded something like a custom parsing profile it
+> could cause issues similar to this.
 
-Why not change the puts() to fwrite(buf, sz, 1, stdout) ?
-Then you don't need the '\0' terminator.
+I have never used DPDK on anything.  I was hoping never to do so. :)
 
-	David
+This system has so far booted Debian (with a 4.19 kernel) and our own OS
+(which has a 4.9 kernel).
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+> A debugging step you might try would be to revert back to my earlier
+> patch that only displayed the input mask instead of changing it. Once
+> you have done that you could look at doing a full power cycle on the
+> system by either physically disconnecting the power, or using the
+> power switch on the power supply itself if one is available. It is
+> necessary to disconnect the motherboard/NIC from power in order to
+> fully clear the global state stored in the device as it is retained
+> when the system is in standby.
+> 
+> What I want to verify is if the input mask that we have ran into is
+> the natural power-on input mask of if that is something that was
+> overridden by something else. The mask change I made should be reset
+> if the system loses power, and then it will either default back to the
+> value with the 6's if that is it's natural state, or it will match
+> what I had if it was not.
+> 
+> Other than that I really can't think up too much else. I suppose there
+> is the possibility of the NVM either setting up a DCB setting or
+> HREGION register causing an override that is limiting the queues to 1.
+> However, the likelihood of that should be really low.
 
+Here is the register dump after a full power off:
+
+40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
+i40e: Copyright (c) 2013 - 2014 Intel Corporation.
+i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
+i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
+i40e 0000:3d:00.0: flow_type: 63 input_mask:0x0000000000004000
+i40e 0000:3d:00.0: flow_type: 46 input_mask:0x0007fff800000000
+i40e 0000:3d:00.0: flow_type: 45 input_mask:0x0007fff800000000
+i40e 0000:3d:00.0: flow_type: 44 input_mask:0x0007ffff80000000
+i40e 0000:3d:00.0: flow_type: 43 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 42 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 41 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 40 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 39 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 36 input_mask:0x0006060000000000
+i40e 0000:3d:00.0: flow_type: 35 input_mask:0x0006060000000000
+i40e 0000:3d:00.0: flow_type: 34 input_mask:0x0006060780000000
+i40e 0000:3d:00.0: flow_type: 33 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: flow_type: 32 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: flow_type: 31 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: flow_type: 30 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: flow_type: 29 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: Features: PF-id[0] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
+i40e 0000:3d:00.1: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
+i40e 0000:3d:00.1: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+i40e 0000:3d:00.1: MAC address: a4:bf:01:4e:0c:88
+i40e 0000:3d:00.1: flow_type: 63 input_mask:0x0000000000004000
+i40e 0000:3d:00.1: flow_type: 46 input_mask:0x0007fff800000000
+i40e 0000:3d:00.1: flow_type: 45 input_mask:0x0007fff800000000
+i40e 0000:3d:00.1: flow_type: 44 input_mask:0x0007ffff80000000
+i40e 0000:3d:00.1: flow_type: 43 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.1: flow_type: 42 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.1: flow_type: 41 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.1: flow_type: 40 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.1: flow_type: 39 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.1: flow_type: 36 input_mask:0x0006060000000000
+i40e 0000:3d:00.1: flow_type: 35 input_mask:0x0006060000000000
+i40e 0000:3d:00.1: flow_type: 34 input_mask:0x0006060780000000
+i40e 0000:3d:00.1: flow_type: 33 input_mask:0x0006060600000000
+i40e 0000:3d:00.1: flow_type: 32 input_mask:0x0006060600000000
+i40e 0000:3d:00.1: flow_type: 31 input_mask:0x0006060600000000
+i40e 0000:3d:00.1: flow_type: 30 input_mask:0x0006060600000000
+i40e 0000:3d:00.1: flow_type: 29 input_mask:0x0006060600000000
+i40e 0000:3d:00.1: Features: PF-id[1] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
+i40e 0000:3d:00.1 eth2: NIC Link is Up, 1000 Mbps Full Duplex, Flow Control: None
+
+Pretty sure that is identical to before.
+
+If I dump the registers after doing the update I see this (just did a
+reboot this time, not a power cycle):
+
+i40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
+i40e: Copyright (c) 2013 - 2014 Intel Corporation.
+i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
+i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
+i40e 0000:3d:00.0: flow_type: 63 input_mask:0x0000000000004000
+i40e 0000:3d:00.0: flow_type: 46 input_mask:0x0007fff800000000
+i40e 0000:3d:00.0: flow_type: 45 input_mask:0x0007fff800000000
+i40e 0000:3d:00.0: flow_type: 44 input_mask:0x0007ffff80000000
+i40e 0000:3d:00.0: flow_type: 43 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 42 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 41 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 40 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 39 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type: 36 input_mask:0x0006060000000000
+i40e 0000:3d:00.0: flow_type: 35 input_mask:0x0006060000000000
+i40e 0000:3d:00.0: flow_type: 34 input_mask:0x0006060780000000
+i40e 0000:3d:00.0: flow_type: 33 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: flow_type: 32 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: flow_type: 31 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: flow_type: 30 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: flow_type: 29 input_mask:0x0006060600000000
+i40e 0000:3d:00.0: flow type: 36 update input mask from:0x0006060000000000, to:0x0001801800000000
+i40e 0000:3d:00.0: flow type: 35 update input mask from:0x0006060000000000, to:0x0001801800000000
+i40e 0000:3d:00.0: flow type: 34 update input mask from:0x0006060780000000, to:0x0001801f80000000
+i40e 0000:3d:00.0: flow type: 33 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: flow type: 32 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: flow type: 31 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: flow type: 30 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: flow type: 29 update input mask from:0x0006060600000000, to:0x0001801e00000000
+i40e 0000:3d:00.0: flow_type after update: 63 input_mask:0x0000000000004000
+i40e 0000:3d:00.0: flow_type after update: 46 input_mask:0x0007fff800000000
+i40e 0000:3d:00.0: flow_type after update: 45 input_mask:0x0007fff800000000
+i40e 0000:3d:00.0: flow_type after update: 44 input_mask:0x0007ffff80000000
+i40e 0000:3d:00.0: flow_type after update: 43 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type after update: 42 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type after update: 41 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type after update: 40 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type after update: 39 input_mask:0x0007fffe00000000
+i40e 0000:3d:00.0: flow_type after update: 36 input_mask:0x0001801800000000
+i40e 0000:3d:00.0: flow_type after update: 35 input_mask:0x0001801800000000
+i40e 0000:3d:00.0: flow_type after update: 34 input_mask:0x0001801f80000000
+i40e 0000:3d:00.0: flow_type after update: 33 input_mask:0x0001801e00000000
+i40e 0000:3d:00.0: flow_type after update: 32 input_mask:0x0001801e00000000
+i40e 0000:3d:00.0: flow_type after update: 31 input_mask:0x0001801e00000000
+i40e 0000:3d:00.0: flow_type after update: 30 input_mask:0x0001801e00000000
+i40e 0000:3d:00.0: flow_type after update: 29 input_mask:0x0001801e00000000
+i40e 0000:3d:00.0: Features: PF-id[0] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
+
+So at least it appears the update did apply.
+
+-- 
+Len Sorensen
