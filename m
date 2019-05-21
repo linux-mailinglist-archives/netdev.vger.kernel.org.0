@@ -2,214 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C613825AC3
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 01:26:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BEC525AE4
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 01:33:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727179AbfEUX0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 19:26:22 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:45032 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725797AbfEUX0W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 19:26:22 -0400
-Received: by mail-pg1-f193.google.com with SMTP id n2so266014pgp.11;
-        Tue, 21 May 2019 16:26:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+jEH5+d8gh3EEWabNlTjkYWVuxTiUAw1dI2jCebfQRs=;
-        b=ZZy5LGOJO0qA79KHXB4jWuD1P7o+ZhAacfEr11XA01KLjq54wUwLsbmKKg+2RqZkT7
-         yOhWS7TghCvchiprGM3Ra/COUcDk15qgz+2D40ISX9qPHbw/A/DPsdxzYnMO3/Uc6LoQ
-         cNOh81jOnTfTrAId8e+msfPaXmRQ7gKcme6/6DiEyHHMYhHbBYLy+xoovfVG9f/O0e58
-         Rf43z6riEZmt/ua10cb7QagEwiXGCD+EzUBuAm3EwLl2ZPteYUwfh6lBJ2re+ycHQXXS
-         VbHbP4DLTfc/1CENcxDeQe1/7S87UeTG76RwzRTmgHdQvjbv0vXnAVCKEzeMVJaNTctR
-         W7DQ==
+        id S1728109AbfEUXdg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 May 2019 19:33:36 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:45018 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728107AbfEUXdg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 19:33:36 -0400
+Received: by mail-lf1-f65.google.com with SMTP id n134so206367lfn.11
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:33:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+jEH5+d8gh3EEWabNlTjkYWVuxTiUAw1dI2jCebfQRs=;
-        b=XqP9ccqe51fdPNujw7hbKDimCNEn1J1NC/deKKQPpn7qUmi6a86vAo4YCMIATY7QD1
-         gdbvjXvO2JYPFUzf87u4vwqyIUbaxvNM/N0YP0j8h4n/WT2Km9j1A8HT3CVOzIWYzP2G
-         0IOuUMum3n9sRB1Fa7yqlJt5sgjlrcd+7uJDfiodLiWMUE7yN9XhtgQCzSjAl5VoHHNZ
-         hs3kHZYcj/EdPSa19/aOPM5XoPBc7SuZUHQkQRe0Pd6uTrN1VuusQl52dLjMA9wNZ+10
-         FPhrVZTiP5vS9EpkLnBTPhsm9yhQDcEYilKlh3hPq/5yhXCz9ltvTeauxEKCsLStAjUE
-         3doA==
-X-Gm-Message-State: APjAAAVLL+34eRbFWDoQD6G0Wgsu7LV0P0+J2SzLXb0q0X0mwrDzDDEg
-        BsPXiFsYG5bTritiLANznBc=
-X-Google-Smtp-Source: APXvYqwp8VO044xtiY0pXHfIf2NHknLMPpSRrKrFBqL+RJj3GYlSxkQdYFnoQ6Q+nWjg0btM+aWChg==
-X-Received: by 2002:aa7:8652:: with SMTP id a18mr89511170pfo.167.1558481181149;
-        Tue, 21 May 2019 16:26:21 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:1eff])
-        by smtp.gmail.com with ESMTPSA id a18sm34874391pfr.22.2019.05.21.16.26.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 May 2019 16:26:20 -0700 (PDT)
-Date:   Tue, 21 May 2019 16:26:19 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kris Van Hees <kris.van.hees@oracle.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        dtrace-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
-        rostedt@goodmis.org, mhiramat@kernel.org, acme@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, peterz@infradead.org
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-Message-ID: <20190521232618.xyo6w3e6nkwu3h5v@ast-mbp.dhcp.thefacebook.com>
-References: <201905202347.x4KNl0cs030532@aserv0121.oracle.com>
- <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
- <20190521184137.GH2422@oracle.com>
- <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
- <20190521213648.GK2422@oracle.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EWNs7FuLz+EBZGJHO+hMowOuxfAj3IDqhoBMiSjNTxE=;
+        b=GB9OM6HAPI6/qzY4FvveFBw4ojui4DZtz5op1+xbw3Zw56AMnLoeejI5wTE+8TLH3l
+         4qjYEnn51OdNa+c86XV3M98kwl/1HeVq9mtExpeQ2O1QOAmct3DhrXNVaSVncwFqNuNL
+         LUCtr7bO70APhY/6sNDuTyYr2I95hHOuiuqMhBOcRSD/VsK5kz2j1CDS4cbdQ4CknXt6
+         X4VOvRr+716QxysKrXe3OJvV+yfU5e6384yyzMU6toRlxAelEYG7bQXUC59rbDNYhc7C
+         QBbK+SgCJrYGYhyRY1qGLYghhvS/QS6Gd4X1DCgigxlD7f3NO7MpcJxgcD5ySMYU/IFs
+         Oj1Q==
+X-Gm-Message-State: APjAAAXzRa66wfKME/5R/fjQz7CmapYcYVcMkEUjs2UXLwhsnVBHxtGT
+        H1OkuyWJpN4mjUFXrIK+ZRnlIJrTnTRiEn8LW+3Wew==
+X-Google-Smtp-Source: APXvYqxFOiQvAinejUQ5bQ+2ojPr4fXIqRhnzNKwRhVX51VwyZMoF/JudQtgNeOShJ06lSXqL67pZtMOqVe6jVwhGe0=
+X-Received: by 2002:a19:a50b:: with SMTP id o11mr28367269lfe.2.1558481613710;
+ Tue, 21 May 2019 16:33:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190521213648.GK2422@oracle.com>
-User-Agent: NeoMutt/20180223
+References: <20190518004639.20648-1-mcroce@redhat.com> <CAGnkfhxt=nq-JV+D5Rrquvn8BVOjHswEJmuVVZE78p9HvAg9qQ@mail.gmail.com>
+ <20190520133830.1ac11fc8@cakuba.netronome.com> <dfb6cf40-81f4-237e-9a43-646077e020f7@iogearbox.net>
+ <CAGnkfhxZPXUvBemRxAFfoq+y-UmtdQH=dvnyeLBJQo43U2=sTg@mail.gmail.com> <20190521100648.1ce9b5be@cakuba.netronome.com>
+In-Reply-To: <20190521100648.1ce9b5be@cakuba.netronome.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Wed, 22 May 2019 01:32:57 +0200
+Message-ID: <CAGnkfhzkRXF6WDYj9W2sffuLSYys_zbv9QekfuZWvc4VBCMKUA@mail.gmail.com>
+Subject: Re: [PATCH 1/5] samples/bpf: fix test_lru_dist build
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        xdp-newbies@vger.kernel.org, bpf@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 05:36:49PM -0400, Kris Van Hees wrote:
-> On Tue, May 21, 2019 at 01:55:34PM -0700, Alexei Starovoitov wrote:
-> > On Tue, May 21, 2019 at 02:41:37PM -0400, Kris Van Hees wrote:
-> > > On Tue, May 21, 2019 at 10:56:18AM -0700, Alexei Starovoitov wrote:
-> > > > On Mon, May 20, 2019 at 11:47:00PM +0000, Kris Van Hees wrote:
-> > > > > 
-> > > > >     2. bpf: add BPF_PROG_TYPE_DTRACE
-> > > > > 
-> > > > > 	This patch adds BPF_PROG_TYPE_DTRACE as a new BPF program type, without
-> > > > > 	actually providing an implementation.  The actual implementation is
-> > > > > 	added in patch 4 (see below).  We do it this way because the
-> > > > > 	implementation is being added to the tracing subsystem as a component
-> > > > > 	that I would be happy to maintain (if merged) whereas the declaration
-> > > > > 	of the program type must be in the bpf subsystem.  Since the two
-> > > > > 	subsystems are maintained by different people, we split the
-> > > > > 	implementing patches across maintainer boundaries while ensuring that
-> > > > > 	the kernel remains buildable between patches.
-> > > > 
-> > > > None of these kernel patches are necessary for what you want to achieve.
-> > > 
-> > > I disagree.  The current support for BPF programs for probes associates a
-> > > specific BPF program type with a specific set of probes, which means that I
-> > > cannot write BPF programs based on a more general concept of a 'DTrace probe'
-> > > and provide functionality based on that.  It also means that if I have a D
-> > > clause (DTrace probe action code associated with probes) that is to be executed
-> > > for a list of probes of different types, I need to duplicate the program
-> > > because I cannot cross program type boundaries.
-> > 
-> > tracepoint vs kprobe vs raw_tracepoint vs perf event work on different input.
-> > There is no common denominator to them that can serve as single 'generic' context.
-> > We're working on the concept of bpf libraries where different bpf program
-> > with different types can call single bpf function with arbitrary arguments.
-> > This concept already works in bpf2bpf calls. We're working on extending it
-> > to different program types.
-> > You're more then welcome to help in that direction,
-> > but type casting of tracepoint into kprobe is no go.
-> 
-> I am happy to hear about the direction you are going in adding functionality.
-> Please note though that I am not type casting tracepoint into kprobe or
-> anything like that.  I am making it possible to transfer execution from
-> tracepoint, kprobe, raw-tracepoint, perf event, etc into a BPF program of
-> a different type (BPF_PROG_TYPE_DTRACE) which operates as a general probe
-> action execution program type.  It provides functionality that is used to
-> implement actions to be executed when a probe fires, independent of the
-> actual probe type that fired.
-> 
-> What you describe seems to me to be rather equivalent to what I already
-> implement in my patch.
+On Tue, May 21, 2019 at 7:07 PM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Tue, 21 May 2019 17:36:17 +0200, Matteo Croce wrote:
+> > On Tue, May 21, 2019 at 5:21 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> > >
+> > > On 05/20/2019 10:38 PM, Jakub Kicinski wrote:
+> > > > On Mon, 20 May 2019 19:46:27 +0200, Matteo Croce wrote:
+> > > >> On Sat, May 18, 2019 at 2:46 AM Matteo Croce <mcroce@redhat.com> wrote:
+> > > >>>
+> > > >>> Fix the following error by removing a duplicate struct definition:
+> > > >>
+> > > >> Hi all,
+> > > >>
+> > > >> I forget to send a cover letter for this series, but basically what I
+> > > >> wanted to say is that while patches 1-3 are very straightforward,
+> > > >> patches 4-5 are a bit rough and I accept suggstions to make a cleaner
+> > > >> work.
+> > > >
+> > > > samples depend on headers being locally installed:
+> > > >
+> > > > make headers_install
+> > > >
+> > > > Are you intending to change that?
+> > >
+> > > +1, Matteo, could you elaborate?
+> > >
+> > > On latest bpf tree, everything compiles just fine:
+> > >
+> > > [root@linux bpf]# make headers_install
+> > > [root@linux bpf]# make -C samples/bpf/
+> > > make: Entering directory '/home/darkstar/trees/bpf/samples/bpf'
+> > > make -C ../../ /home/darkstar/trees/bpf/samples/bpf/ BPF_SAMPLES_PATH=/home/darkstar/trees/bpf/samples/bpf
+> > > make[1]: Entering directory '/home/darkstar/trees/bpf'
+> > >   CALL    scripts/checksyscalls.sh
+> > >   CALL    scripts/atomic/check-atomics.sh
+> > >   DESCEND  objtool
+> > > make -C /home/darkstar/trees/bpf/samples/bpf/../../tools/lib/bpf/ RM='rm -rf' LDFLAGS= srctree=/home/darkstar/trees/bpf/samples/bpf/../../ O=
+> > >   HOSTCC  /home/darkstar/trees/bpf/samples/bpf/test_lru_dist
+> > >   HOSTCC  /home/darkstar/trees/bpf/samples/bpf/sock_example
+> > >
+> >
+> > Hi all,
+> >
+> > I have kernel-headers installed from master, but yet the samples fail to build:
+> >
+> > matteo@turbo:~/src/linux/samples/bpf$ rpm -q kernel-headers
+> > kernel-headers-5.2.0_rc1-38.x86_64
+> >
+> > matteo@turbo:~/src/linux/samples/bpf$ git describe HEAD
+> > v5.2-rc1-97-g5bdd9ad875b6
+> >
+> > matteo@turbo:~/src/linux/samples/bpf$ make
+> > make -C ../../ /home/matteo/src/linux/samples/bpf/
+> > BPF_SAMPLES_PATH=/home/matteo/src/linux/samples/bpf
+> > make[1]: Entering directory '/home/matteo/src/linux'
+> >   CALL    scripts/checksyscalls.sh
+> >   CALL    scripts/atomic/check-atomics.sh
+> >   DESCEND  objtool
+> > make -C /home/matteo/src/linux/samples/bpf/../../tools/lib/bpf/ RM='rm
+> > -rf' LDFLAGS= srctree=/home/matteo/src/linux/samples/bpf/../../ O=
+> >   HOSTCC  /home/matteo/src/linux/samples/bpf/test_lru_dist
+> > /home/matteo/src/linux/samples/bpf/test_lru_dist.c:39:8: error:
+> > redefinition of ‘struct list_head’
+> >    39 | struct list_head {
+> >       |        ^~~~~~~~~
+> > In file included from /home/matteo/src/linux/samples/bpf/test_lru_dist.c:9:
+> > ./tools/include/linux/types.h:69:8: note: originally defined here
+> >    69 | struct list_head {
+> >       |        ^~~~~~~~~
+> > make[2]: *** [scripts/Makefile.host:90:
+> > /home/matteo/src/linux/samples/bpf/test_lru_dist] Error 1
+> > make[1]: *** [Makefile:1762: /home/matteo/src/linux/samples/bpf/] Error 2
+> > make[1]: Leaving directory '/home/matteo/src/linux'
+> > make: *** [Makefile:231: all] Error 2
+> >
+> > Am I missing something obvious?
+>
+> Yes ;)  Samples use a local installation of headers in $objtree/usr (I
+> think, maybe $srctree/usr).  So you need to do make headers_install in
+> your kernel source tree, otherwise the include path from tools/ takes
+> priority over your global /usr/include and causes these issues.  I had
+> this path in my tree for some time, but I don't like enough to post it:
+>
+> commit 35fb614049e93d46af708c0eaae6601df54017b3
+> Author: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Date:   Mon Dec 3 15:00:24 2018 -0800
+>
+>     bpf: maybe warn ppl about hrds_install
+>
+>     Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+>
+> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+> index 4f0a1cdbfe7c..f79a4ed2f9f7 100644
+> --- a/samples/bpf/Makefile
+> +++ b/samples/bpf/Makefile
+> @@ -208,6 +208,15 @@ HOSTCC = $(CROSS_COMPILE)gcc
+>  CLANG_ARCH_ARGS = -target $(ARCH)
+>  endif
+>
+> +HDR_PROBE := $(shell echo "\#include <linux/types.h>\n struct list_head { int a; }; int main() { return 0; }" | \
+> +       gcc $(KBUILD_HOSTCFLAGS) -x c - -o /dev/null 2>/dev/null && \
+> +       echo okay)
+> +
+> +ifeq ($(HDR_PROBE),)
+> +$(warning Detected possible issues with include path.)
+> +$(warning Please install kernel headers locally (make headers_install))
+> +endif
+> +
+>  BTF_LLC_PROBE := $(shell $(LLC) -march=bpf -mattr=help 2>&1 | grep dwarfris)
+>  BTF_PAHOLE_PROBE := $(shell $(BTF_PAHOLE) --help 2>&1 | grep BTF)
+>  BTF_OBJCOPY_PROBE := $(shell $(LLVM_OBJCOPY) --help 2>&1 | grep -i 'usage.*llvm')
 
-except they're not.
-you're converting to one new prog type only that no one else can use.
-Whereas bpf infra is aiming to be as generic as possible and
-fit networking, tracing, security use case all at once.
+Hi Jakub,
 
-> > > The reasons for these patches is because I cannot do the same with the existing
-> > > implementation.  Yes, I can do some of it or use some workarounds to accomplish
-> > > kind of the same thing, but at the expense of not being able to do what I need
-> > > to do but rather do some kind of best effort alternative.  That is not the goal
-> > > here.
-> > 
-> > what you call 'workaround' other people call 'feature'.
-> > The kernel community doesn't accept extra code into the kernel
-> > when user space can do the same.
-> 
-> Sure, but userspace cannot do the same because in the case of DTrace much
-> of this needs to execute at the kernel level within the context of the probe
-> firing, because once you get back to userspace, the system has moved on.  We
-> need to capture information and perform processing of that information at the
-> time of probe firing.  I am spending quite a lot of my time in the design of
-> DTrace based on BPF and other kernel features to avoid adding more to the
-> kernel than is really needed, to certainly also to avoid duplicating code.
-> 
-> But I am not designing and implementing a new tracer - I am making an
-> existing one available based on existing features (as much as possible).  So,
-> something that comes close but doesn't quite do what we need is not a
-> solution.
+I see now, It worked, thanks. This is a bit error prone IMHO, if you
+ever think about sending this patch, consider it ACKed by me.
 
-Your patches disagree with your words.
-This dtrace buffer is a redundant feature.
-per-cpu array plus perf_event_output achieve _exactly_ the same.
-
-> 
-> > > > Feel free to add tools/dtrace/ directory and maintain it though.
-> > > 
-> > > Thank you.
-> > > 
-> > > > The new dtrace_buffer doesn't need to replicate existing bpf+kernel functionality
-> > > > and no changes are necessary in kernel/events/ring_buffer.c either.
-> > > > tools/dtrace/ user space component can use either per-cpu array map
-> > > > or hash map as a buffer to store arbitrary data into and use
-> > > > existing bpf_perf_event_output() to send it to user space via perf ring buffer.
-> > > > 
-> > > > See, for example, how bpftrace does that.
-> > > 
-> > > When using bpf_perf_event_output() you need to construct the sample first,
-> > > and then send it off to user space using the perf ring-buffer.  That is extra
-> > > work that is unnecessary.  Also, storing arbitrary data from userspace in maps
-> > > is not relevant here because this is about data that is generated at the level
-> > > of the kernel and sent to userspace as part of the probe action that is
-> > > executed when the probe fires.
-> > > 
-> > > Bpftrace indeed uses maps and ways to construct the sample and then uses the
-> > > perf ring-buffer to pass data to userspace.  And that is not the way DTrace
-> > > works and that is not the mechanism that we need here,  So, while this may be
-> > > satisfactory for bpftrace, it is not for DTrace.  We need more fine-grained
-> > > control over how we write data to the buffer (doing direct stores from BPF
-> > > code) and without the overhead of constructing a complete sample that can just
-> > > be handed over to bpf_perf_event_output().
-> > 
-> > I think we're not on the same page vs how bpftrace and bpf_perf_event_output work.
-> > What you're proposing in these patches is _slower_ than existing mechanism.
-> 
-> How can it be slower?  Is a sequence of BPF store instructions, writing
-> directly to memory in the ring-buffer slower than using BPF store instructions
-> to write data into a temporary location from which data is then copied into
-> the ring-buffer by bpf_perf_event_output()?
-> 
-> Other than this, my implementation uses exactly the same functions at the
-> perf ring-buffer level as bpf_perf_event_output() does.  In my case, the
-> buffer reserve work is done with one helper, and the final commit is done
-> with another helper.  So yes, I use two helper calls vs one helper call if
-> you use bpf_perf_event_output() but as I mention above, I avoid the creation
-> and copying of the sample data.
-
-What stops you from using per-cpu array and perf_event_output?
-No 'reserve' call necessary. lookup from per-cpu array gives a pointer
-to large buffer that can be feed into perf_event_output.
-It's also faster for small buffers and has no issues with multi-page.
-No hacks on perf side necessary.
-
-> 
-> > > Also, please note that I am not duplicating any kernel functionality when it
-> > > comes to buffer handling, and in fact, I found it very easy to be able to
-> > > tap into the perf event ring-buffer implementation and add a feature that I
-> > > need for DTrace.  That was a very pleasant experience for sure!
-> > 
-> > Let's agree to disagree. All I see is a code duplication and lack of understanding
-> > of existing bpf features.
-> 
-> Could you point out to me where you believe I am duplicating code?  I'd really
-> like to address that.
-
-see above.
-
+Thanks,
+-- 
+Matteo Croce
+per aspera ad upstream
