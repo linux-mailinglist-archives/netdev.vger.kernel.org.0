@@ -2,74 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B935F25995
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 22:57:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9330259AB
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 23:08:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727599AbfEUU4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 16:56:38 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44729 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727222AbfEUU4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 16:56:37 -0400
-Received: by mail-pg1-f194.google.com with SMTP id n2so93221pgp.11;
-        Tue, 21 May 2019 13:56:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=tQTbtkzqmYegpqRvxuRfeadiqq1RDM6i5Y0h/tP6c/0=;
-        b=n2tCXEko04S+of6kuuGqYQOABJoTLuospRLNdBxGSE1wrMSSRSsgMSH3y9PmVXfHpr
-         swlFKR6aBYjVBdKIFHNuBj/EjZqJ4ZV2gBcfV6MoMAOtkcQJkvMKl/UwvEvI92btiMzr
-         0FhC1urrNN5rEocDEgpDYQyYGbgxgkEse8sXbOucvvJVAUxPmkO2aqNVQDtdjScBFXSI
-         x48gTm4C2ZtREIOs8wA6Zj/pZqcWGyyn1a1BgX/IQ9kTc+fOLmPDNyAg22j/qOwD7I0F
-         QvHvKyb+OOWB5ocjaFSQRsy/dQP17jtF4De6GqhbMGIszT/pTtbtBHCBKkLWwMgkDVsb
-         1drg==
+        id S1727525AbfEUVIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 17:08:01 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:32908 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727156AbfEUVIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 17:08:01 -0400
+Received: by mail-io1-f70.google.com with SMTP id s24so77626iot.0
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 14:08:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tQTbtkzqmYegpqRvxuRfeadiqq1RDM6i5Y0h/tP6c/0=;
-        b=eRtnWe5XLwB0xe6BNZIQ+OQ+MFNRltWhzzzxWOZadhAY9NIi9Ps328TfngU6/9+lNM
-         gnp/nDWLTa69c6wEjC6JGGrnSdocHF8D6ImNXCZoVL9oPQQpdI8NzYHSYoQVtlnG3vOG
-         XLpqYCrJ2NeG3GFSYVjYoCqex6k7klE3J6+T/lsOiQ7mfToyFzHBjZ/x7tLxYthK5SSK
-         Gp4J6hdyytCWrs80H8VWWPO6dskgPQSFXCYkatpTeXAOnpiizk7jTmgj30KGPciJ/9WA
-         RufVf6MxoiaIKWUZSeTJQC5ZN18jTlbJI3KHEOMpaEsFGPJcmQu0YijYl9reNzjVDE3n
-         uMpA==
-X-Gm-Message-State: APjAAAUhYQApkzJhG4Av/hWJ3cqcfIawJK1MW//X7IDxTBo1PY62CvbJ
-        6NnG3hj7uZffNlicSQaQOz4=
-X-Google-Smtp-Source: APXvYqzCbeQQPsRl+Dxcp8TJo9Iccuz+QYV9zYovrc3LO51FjRCSOGTygo5cSic7PxrWCrf9neTH9A==
-X-Received: by 2002:a63:e042:: with SMTP id n2mr83608716pgj.201.1558472197114;
-        Tue, 21 May 2019 13:56:37 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:1eff])
-        by smtp.gmail.com with ESMTPSA id d15sm27976791pfr.179.2019.05.21.13.56.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 May 2019 13:56:36 -0700 (PDT)
-Date:   Tue, 21 May 2019 13:56:34 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kris Van Hees <kris.van.hees@oracle.com>
-Cc:     dtrace-devel@oss.oracle.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        daniel@iogearbox.net, acme@kernel.org, mhiramat@kernel.org,
-        rostedt@goodmis.org, ast@kernel.org
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-Message-ID: <20190521205633.jbnewdpz7p772sfa@ast-mbp.dhcp.thefacebook.com>
-References: <201905202347.x4KNl0cs030532@aserv0121.oracle.com>
- <20190521204848.GJ2422@oracle.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=UzmPeUGaB8JKZJ9CS0AWltu9MikJ5xxP1GF6GVzJW6I=;
+        b=fy2qgwu5tXIp3v5QPK2psIkriwk/y/YM+2WOxOhhjlh/4VyY78e7s6buFzGGyA6IZz
+         5mLCnttJqDUdFanWUzSFYptU3xfk0Qdt8h6jbtqC74ArmYpL69MeA3RFqPCKtbGswpb+
+         FxE2uZTKEllDDZnAXi4cU422m1uEo6N2Di7IUMfC8fS3zkcYZAi1+cUpoPp+kG/fz2SN
+         gxroTgDWEQ0kKe0By4t6CDaKuKKh5XAp4XpVqL54NhshpI3+dZ1Hq/H8jJAvnLI5/muL
+         ZR3aQr99ZNTRHjbHLS+HE29WyC7HvLEGqTdG7OWpgkhAwW4IhYv1LM1ahBR1rS6SfeoF
+         ti4A==
+X-Gm-Message-State: APjAAAU7yJq/rbPbDyTVrt1VZQaPTZtE/iistgLM3wH9A5QW6+V9I1nH
+        aAokhyAJFBaSOMsfCjix5RZIJHqK9npgze25tH1rum1m9YT6
+X-Google-Smtp-Source: APXvYqwtcVeO8IOlYtpHb+pYSw2wdqPB0c8EwcnSxnMt61P6oQuZ5TprV3iiiFbK3fSCqQiDaNir0ZBnxV+7ib/d+4hx9iNpXOLP
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190521204848.GJ2422@oracle.com>
-User-Agent: NeoMutt/20180223
+X-Received: by 2002:a24:7309:: with SMTP id y9mr5819441itb.162.1558472880669;
+ Tue, 21 May 2019 14:08:00 -0700 (PDT)
+Date:   Tue, 21 May 2019 14:08:00 -0700
+In-Reply-To: <000000000000ac9447058924709c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000071c8a105896c3ef2@google.com>
+Subject: Re: WARNING: locking bug in rhashtable_walk_enter
+From:   syzbot <syzbot+6440134c13554d3abfb0@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, hujunwei4@huawei.com, jon.maloy@ericsson.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, wangxiaogang3@huawei.com,
+        ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 04:48:48PM -0400, Kris Van Hees wrote:
-> As suggested, I resent the patch set as replies to the cover letter post
-> to support threaded access to the patches.
+syzbot has bisected this bug to:
 
-As explained in the other email it's a Nack.
-Please stop this email spam.
+commit 7e27e8d6130c5e88fac9ddec4249f7f2337fe7f8
+Author: Junwei Hu <hujunwei4@huawei.com>
+Date:   Thu May 16 02:51:15 2019 +0000
 
+     tipc: switch order of device registration to fix a crash
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1285d39ca00000
+start commit:   f49aa1de Merge tag 'for-5.2-rc1-tag' of git://git.kernel.o..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1185d39ca00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1685d39ca00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fc045131472947d7
+dashboard link: https://syzkaller.appspot.com/bug?extid=6440134c13554d3abfb0
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10c586bca00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14759fb2a00000
+
+Reported-by: syzbot+6440134c13554d3abfb0@syzkaller.appspotmail.com
+Fixes: 7e27e8d6130c ("tipc: switch order of device registration to fix a  
+crash")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
