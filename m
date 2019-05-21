@@ -2,73 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A9AF25164
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 16:02:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD69E2516D
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 16:02:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728053AbfEUOCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 10:02:10 -0400
-Received: from mail.us.es ([193.147.175.20]:53368 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727262AbfEUOCK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 May 2019 10:02:10 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 9CA9E103253
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:02:06 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8E643DA707
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:02:06 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 74736DA717; Tue, 21 May 2019 16:02:06 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 59D4CDA707;
-        Tue, 21 May 2019 16:02:04 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 21 May 2019 16:02:04 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [31.4.195.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 208D24265A31;
-        Tue, 21 May 2019 16:02:04 +0200 (CEST)
-Date:   Tue, 21 May 2019 16:02:02 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jagdish Motwani <j.k.motwani@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Jagdish Motwani <jagdish.motwani@sophos.com>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3] netfilter: nf_queue:fix reinject verdict handling
-Message-ID: <20190521140202.yjqjygtw3l36pi6h@salvia>
-References: <20190513181740.5929-1-j.k.motwani@gmail.com>
+        id S1728628AbfEUOC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 10:02:57 -0400
+Received: from www62.your-server.de ([213.133.104.62]:41750 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728589AbfEUOC4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 10:02:56 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hT5Ly-0006DJ-9f; Tue, 21 May 2019 16:02:54 +0200
+Received: from [178.197.249.20] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hT5Ly-000IeH-3T; Tue, 21 May 2019 16:02:54 +0200
+Subject: Re: [PATCH bpf] bpf, riscv: clear target register high 32-bits for
+ and/or/xor on ALU32
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, netdev@vger.kernel.org
+Cc:     linux-riscv@lists.infradead.org, bpf@vger.kernel.org,
+        Jiong Wang <jiong.wang@netronome.com>
+References: <20190521134622.18358-1-bjorn.topel@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <49999b2d-f025-894a-be61-a52d13b24678@iogearbox.net>
+Date:   Tue, 21 May 2019 16:02:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190513181740.5929-1-j.k.motwani@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20190521134622.18358-1-bjorn.topel@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25456/Tue May 21 09:56:54 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 13, 2019 at 11:47:40PM +0530, Jagdish Motwani wrote:
-> From: Jagdish Motwani <jagdish.motwani@sophos.com>
+On 05/21/2019 03:46 PM, Björn Töpel wrote:
+> When using 32-bit subregisters (ALU32), the RISC-V JIT would not clear
+> the high 32-bits of the target register and therefore generate
+> incorrect code.
 > 
-> This patch fixes netfilter hook traversal when there are more than 1 hooks
-> returning NF_QUEUE verdict. When the first queue reinjects the packet,
-> 'nf_reinject' starts traversing hooks with a proper hook_index. However,
-> if it again receives a NF_QUEUE verdict (by some other netfilter hook), it
-> queues the packet with a wrong hook_index. So, when the second queue 
-> reinjects the packet, it re-executes hooks in between.
+> E.g., in the following code:
+> 
+>   $ cat test.c
+>   unsigned int f(unsigned long long a,
+>   	       unsigned int b)
+>   {
+>   	return (unsigned int)a & b;
+>   }
+> 
+>   $ clang-9 -target bpf -O2 -emit-llvm -S test.c -o - | \
+>   	llc-9 -mattr=+alu32 -mcpu=v3
+>   	.text
+>   	.file	"test.c"
+>   	.globl	f
+>   	.p2align	3
+>   	.type	f,@function
+>   f:
+>   	r0 = r1
+>   	w0 &= w2
+>   	exit
+>   .Lfunc_end0:
+>   	.size	f, .Lfunc_end0-f
+> 
+> The JIT would not clear the high 32-bits of r0 after the
+> and-operation, which in this case might give an incorrect return
+> value.
+> 
+> After this patch, that is not the case, and the upper 32-bits are
+> cleared.
+> 
+> Reported-by: Jiong Wang <jiong.wang@netronome.com>
+> Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
+> Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
 
-Applied, thanks.
+Was this missed because test_verifier did not have test coverage?
+If so, could you follow-up with alu32 test cases for it, so other
+JITs can be tracked for these kind of issue as well. We should
+probably have one for every alu32 alu op to make sure it's not
+forgotten anywhere.
+
+Thanks,
+Daniel
