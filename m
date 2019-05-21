@@ -2,122 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C870F255F1
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 18:45:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB20425610
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 18:51:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728318AbfEUQpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 12:45:06 -0400
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:45965 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726900AbfEUQpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 12:45:06 -0400
-Received: by mail-yw1-f66.google.com with SMTP id w18so7521513ywa.12
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 09:45:05 -0700 (PDT)
+        id S1728104AbfEUQvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 12:51:47 -0400
+Received: from mail-it1-f196.google.com ([209.85.166.196]:35503 "EHLO
+        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727817AbfEUQvq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 12:51:46 -0400
+Received: by mail-it1-f196.google.com with SMTP id u186so5806931ith.0;
+        Tue, 21 May 2019 09:51:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gtQiFJwRqTS2zQ5F/k0dr2/nxeZZ+dGh17LJ03jzC+k=;
-        b=ifqz3q5Zkl8TTjm1D6oemSQ9+BNkhPvwRdtisTRoUFo106rvlea9X3tL+aR3+FzYP8
-         UunmLx3AXt/P7J/6v5z9x1sSl/QhyPnnvw7BLJdwskGiyYEw92tbYgUdrtVkPKZOjFso
-         MNEAvDhMOvLyOLbqHQ7ls2h3K9AxFZH1fd3GSYoepMafIgHoJGU2Lv/mk4IWT2xnI2M2
-         m7MLVEFWHG7BR2AO14uT+pJCO9bC+d9bcDVf0OOz3VHBrrtz4XFEUph/sN45CjPkd+z6
-         cgMmmkFG96xXShImRMRieiD/xP8zG6pTfWTwzu8lfopau6yb0LAw6+OdC8O8y9cBeYw7
-         9GXg==
+        bh=FyOEggHwGzPI5qEnDbJv+1Xb8QlwlUcmzeEqPbicyUA=;
+        b=u1jKMVRbtJBmfof4As6O7aK/n5DJHoN1RkBbgLPJ12GTHexL3FSA6GqhEQOEr/S+Ei
+         f8WYNH3c/dVflKHHGT7VFCxbZ7oncpC1cLiaNcdxq3ye9xdkAzRa6dGP++Uu4yISItUl
+         yugJX952CTJiJilOjOTgflgIZ6JX/9kgPVa0VhXBFXonGGAPd8W3PDbw62nqC9kgEE6o
+         ky+KOzsretWDUqLJGFjLO22mYHbuct+WMXRb+cTY60GEA9X74bzAV2KO2TrHwtSH2Jdp
+         joseLLL1BzBoqal0FoS8rs5d0D5EaOLWZtvwr/yoQAL3SRXpquKcT5qos4aVz5xaYEKA
+         oLpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gtQiFJwRqTS2zQ5F/k0dr2/nxeZZ+dGh17LJ03jzC+k=;
-        b=kUi+ZhKirJGmYcJcq/q8vOnMFzFyqPLMtYLa3nx6COBGgJiOU/foMPi7H/Dzkn5NVo
-         /yhy+3720C3hJFa+ThuyBlhusV2FDK8dlgQfzfjJw6vYE8B4eUbz3Uoyw98TfmW13kDE
-         pW+i+ZveQL9BOlT/jotigTrebEyhpq6rz+1PGyiuh+5VEDLwAg50CM3hfKKDmekSPz0I
-         BbjcNHxxGFolKBx69LuEnu3i92ZK5FUQk3b26TTmaumJL6QqfuioHB0JAkdSXP0Em/t9
-         siZErBGkudkYBqzWrNnHJd5MilLVtrpL6SyUhn8a5Bcr2PzNsCzHOh5zasxc/NvOs6u0
-         jAOQ==
-X-Gm-Message-State: APjAAAUx5CxnyiRuaPedMnzuTE0cgvfUVS+T8H90BYIDqzSF49mooukr
-        PkGQ2jaXF+N854+ydZn6qGD3kYwwB3dU/e68YkI=
-X-Google-Smtp-Source: APXvYqyQXiq2MbcTv8VQ5PFm+rkcBC6uhP88SsyNH86YtZjKzh8tmKIVJH5tcyloMUgByyATrmuj2ELCQ8VOQsFjg+A=
-X-Received: by 2002:a81:34c8:: with SMTP id b191mr38612122ywa.500.1558457105288;
- Tue, 21 May 2019 09:45:05 -0700 (PDT)
+        bh=FyOEggHwGzPI5qEnDbJv+1Xb8QlwlUcmzeEqPbicyUA=;
+        b=KDiZradTmyyDHD8ir5lBJMsAlBlgnmxwKsGOdN62CYMRGS8IvCAsJyKVbFE/b6FODQ
+         sxpUBLcdjRPROWVNJ/WGhFvsjisidUCWcGBbZD9XBZaICzDZIlZR37p1WU3y5A9K8EzV
+         C1EhnR1yR1CUqhM4iXIwx33uqSLFpW+T43EzEy62dIdlvpN4Ex6KSLXpv4tZnB6w89bJ
+         IyiOmeB2EgX26NA/sCJK9tXWiUNFWckP8WbDF4lSnXBt/fOSX3j1+HRKk6+Ys052Erie
+         DQS4mv2j5KfDtiwZhWHoxNOT7Zv2WeG34LIfX3vgTPFUQmqm4yiaTAjZwK9Vn8yhl19n
+         hSaQ==
+X-Gm-Message-State: APjAAAURkyGKKy/Cd4nyJAi5JN/3wE+DpK7CGq79k5bnZOWGSC2KVsys
+        3jdUiQhNIXpYT07y5AQLUx666NB5Owhz0gL0pu/gnTeeQeA=
+X-Google-Smtp-Source: APXvYqxamx5g6o4eRosmxSKjsEYvCnrZmu9IaKMISy6htP3zIasonmkK6/+9dhv2dSFq3k0NmtaTGn4dSxPzq1zIlcI=
+X-Received: by 2002:a24:d145:: with SMTP id w66mr4482319itg.71.1558457505431;
+ Tue, 21 May 2019 09:51:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <1558140881-91716-1-git-send-email-xiangxia.m.yue@gmail.com>
- <CAJ3xEMhAEMBBW=s_iWA=qD23w8q4PWzWT-QowGBNtCJJzHUysA@mail.gmail.com> <CAMDZJNV6S5Wk5jsS5DiHMYGywU2df0Lyey9QYzcdwGZDJbjSeg@mail.gmail.com>
-In-Reply-To: <CAMDZJNV6S5Wk5jsS5DiHMYGywU2df0Lyey9QYzcdwGZDJbjSeg@mail.gmail.com>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Tue, 21 May 2019 19:44:53 +0300
-Message-ID: <CAJ3xEMgc6j=+AxRUwdYOT6_cP69fY-ThVVbF+4EqtZGQ+-Sjnw@mail.gmail.com>
-Subject: Re: [PATCH] net/mlx5e: Allow removing representors netdev to other namespace
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Roi Dayan <roid@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
+References: <20190513165547.alkkgcsdelaznw6v@csclub.uwaterloo.ca>
+ <CAKgT0Uf_nqZtCnHmC=-oDFz-3PuSM6=30BvJSDiAgzK062OY6w@mail.gmail.com>
+ <20190514163443.glfjva3ofqcy7lbg@csclub.uwaterloo.ca> <CAKgT0UdPDyCBsShQVwwE5C8fBKkMcfS6_S5m3T7JP-So9fzVgA@mail.gmail.com>
+ <20190516183407.qswotwyjwtjqfdqm@csclub.uwaterloo.ca> <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca>
+ <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com>
+ <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
+ <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca> <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
+ <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca>
+In-Reply-To: <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 21 May 2019 09:51:33 -0700
+Message-ID: <CAKgT0UfpZ-ve3Hx26gDkb+YTDHvN3=MJ7NZd2NE7ewF5g=kHHw@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec packets
+To:     Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 7:36 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> On Tue, May 21, 2019 at 4:24 AM Or Gerlitz <gerlitz.or@gmail.com> wrote:
-> >
-> > On Mon, May 20, 2019 at 3:19 PM <xiangxia.m.yue@gmail.com> wrote:
-> > >
-> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > >
-> > > At most case, we use the ConnectX-5 NIC on compute node for VMs,
-> > > but we will offload forwarding rules to NICs on gateway node.
-> > > On the gateway node, we will install multiple NICs and set them to
-> > > different dockers which contain different net namespace, different
-> > > routing table. In this way, we can specify the agent process on one
-> > > docker. More dockers mean more high throughput.
-> >
-> > The vport (uplink and VF) representor netdev stands for the e-switch
-> > side of things. If you put different
-> > vport devices to different namespaces, you will not be able to forward
-> > between them. It's the NIC side of things
-> > (VF netdevice) which can/should be put to namespaces.
-> >
-> > For example, with SW veth devices, suppose I we have two pairs
-> > (v0,v1), (v2, v3) -- we create
-> > a SW switch (linux bridge, ovs) with the uplink and v0/v2 as ports all
-> > in a single name space
-> > and we map v1 and v3 into application containers.
-> >
-> > I am missing how can you make any use with vport reps belonging to the
-> > same HW e-switch
-> > on different name-spaces, maybe send chart?
->    +---------------------------------------------------------+
->    |                                                         |
->    |                                                         |
->    |       docker01                 docker02                 |
->    |                                                         |
->    | +-----------------+      +------------------+           |
->    | |    NIC (rep/vf) |      |       NIC        |           |
->    | |                 |      |                  |   host    |
->    | |   +--------+    |      |   +---------+    |           |
->    | +-----------------+      +------------------+           |
->    |     |        |               |         |                |
->    +---------------------------------------------------------+
->          |        |               |         |
->          |        |         phy_port2       | phy_port3
->          |        |               |         |
->          |        |               |         |
-> phy_port0|        |phy_port1      |         |
->          |        |               |         |
->          v        +               v         +
+On Tue, May 21, 2019 at 8:15 AM Lennart Sorensen
+<lsorense@csclub.uwaterloo.ca> wrote:
 >
-> For example, there are two NIC(4 phy ports) on the host, we set the
-> one NIC to docker01(all rep and vf of this nic are set to docker01).
-> and other one NIC are set to docker02. The docker01/docker02 run our
-> agent which use the tc command to offload the rule. The NIC of
-> docker01 will receive packets from phy_port1
-> and do the QoS , NAT(pedit action) and then forward them to phy_port0.
-> The NIC of docker02 do this in the same way.
+> On Fri, May 17, 2019 at 03:20:02PM -0700, Alexander Duyck wrote:
+> > I was hoping it would work too. It seemed like it should have been the
+> > answer since it definitely didn't seem right. Now it has me wondering
+> > about some of the other code in the driver.
+> >
+> > By any chance have you run anything like DPDK on any of the X722
+> > interfaces on this system recently? I ask because it occurs to me that
+> > if you had and it loaded something like a custom parsing profile it
+> > could cause issues similar to this.
+>
+> I have never used DPDK on anything.  I was hoping never to do so. :)
+>
+> This system has so far booted Debian (with a 4.19 kernel) and our own OS
+> (which has a 4.9 kernel).
+>
+> > A debugging step you might try would be to revert back to my earlier
+> > patch that only displayed the input mask instead of changing it. Once
+> > you have done that you could look at doing a full power cycle on the
+> > system by either physically disconnecting the power, or using the
+> > power switch on the power supply itself if one is available. It is
+> > necessary to disconnect the motherboard/NIC from power in order to
+> > fully clear the global state stored in the device as it is retained
+> > when the system is in standby.
+> >
+> > What I want to verify is if the input mask that we have ran into is
+> > the natural power-on input mask of if that is something that was
+> > overridden by something else. The mask change I made should be reset
+> > if the system loses power, and then it will either default back to the
+> > value with the 6's if that is it's natural state, or it will match
+> > what I had if it was not.
+> >
+> > Other than that I really can't think up too much else. I suppose there
+> > is the possibility of the NVM either setting up a DCB setting or
+> > HREGION register causing an override that is limiting the queues to 1.
+> > However, the likelihood of that should be really low.
+>
+> Here is the register dump after a full power off:
+>
+> 40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
+> i40e: Copyright (c) 2013 - 2014 Intel Corporation.
+> i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
+> i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+> i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
+> i40e 0000:3d:00.0: flow_type: 63 input_mask:0x0000000000004000
+> i40e 0000:3d:00.0: flow_type: 46 input_mask:0x0007fff800000000
+> i40e 0000:3d:00.0: flow_type: 45 input_mask:0x0007fff800000000
+> i40e 0000:3d:00.0: flow_type: 44 input_mask:0x0007ffff80000000
+> i40e 0000:3d:00.0: flow_type: 43 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 42 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 41 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 40 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 39 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 36 input_mask:0x0006060000000000
+> i40e 0000:3d:00.0: flow_type: 35 input_mask:0x0006060000000000
+> i40e 0000:3d:00.0: flow_type: 34 input_mask:0x0006060780000000
+> i40e 0000:3d:00.0: flow_type: 33 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: flow_type: 32 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: flow_type: 31 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: flow_type: 30 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: flow_type: 29 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: Features: PF-id[0] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
+> i40e 0000:3d:00.1: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
+> i40e 0000:3d:00.1: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+> i40e 0000:3d:00.1: MAC address: a4:bf:01:4e:0c:88
+> i40e 0000:3d:00.1: flow_type: 63 input_mask:0x0000000000004000
+> i40e 0000:3d:00.1: flow_type: 46 input_mask:0x0007fff800000000
+> i40e 0000:3d:00.1: flow_type: 45 input_mask:0x0007fff800000000
+> i40e 0000:3d:00.1: flow_type: 44 input_mask:0x0007ffff80000000
+> i40e 0000:3d:00.1: flow_type: 43 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.1: flow_type: 42 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.1: flow_type: 41 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.1: flow_type: 40 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.1: flow_type: 39 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.1: flow_type: 36 input_mask:0x0006060000000000
+> i40e 0000:3d:00.1: flow_type: 35 input_mask:0x0006060000000000
+> i40e 0000:3d:00.1: flow_type: 34 input_mask:0x0006060780000000
+> i40e 0000:3d:00.1: flow_type: 33 input_mask:0x0006060600000000
+> i40e 0000:3d:00.1: flow_type: 32 input_mask:0x0006060600000000
+> i40e 0000:3d:00.1: flow_type: 31 input_mask:0x0006060600000000
+> i40e 0000:3d:00.1: flow_type: 30 input_mask:0x0006060600000000
+> i40e 0000:3d:00.1: flow_type: 29 input_mask:0x0006060600000000
+> i40e 0000:3d:00.1: Features: PF-id[1] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
+> i40e 0000:3d:00.1 eth2: NIC Link is Up, 1000 Mbps Full Duplex, Flow Control: None
+>
+> Pretty sure that is identical to before.
+>
+> If I dump the registers after doing the update I see this (just did a
+> reboot this time, not a power cycle):
+>
+> i40e: Intel(R) Ethernet Connection XL710 Network Driver - version 2.1.7-k
+> i40e: Copyright (c) 2013 - 2014 Intel Corporation.
+> i40e 0000:3d:00.0: fw 3.10.52896 api 1.6 nvm 4.00 0x80001577 1.1767.0
+> i40e 0000:3d:00.0: The driver for the device detected a newer version of the NVM image than expected. Please install the most recent version of the network driver.
+> i40e 0000:3d:00.0: MAC address: a4:bf:01:4e:0c:87
+> i40e 0000:3d:00.0: flow_type: 63 input_mask:0x0000000000004000
+> i40e 0000:3d:00.0: flow_type: 46 input_mask:0x0007fff800000000
+> i40e 0000:3d:00.0: flow_type: 45 input_mask:0x0007fff800000000
+> i40e 0000:3d:00.0: flow_type: 44 input_mask:0x0007ffff80000000
+> i40e 0000:3d:00.0: flow_type: 43 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 42 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 41 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 40 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 39 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type: 36 input_mask:0x0006060000000000
+> i40e 0000:3d:00.0: flow_type: 35 input_mask:0x0006060000000000
+> i40e 0000:3d:00.0: flow_type: 34 input_mask:0x0006060780000000
+> i40e 0000:3d:00.0: flow_type: 33 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: flow_type: 32 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: flow_type: 31 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: flow_type: 30 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: flow_type: 29 input_mask:0x0006060600000000
+> i40e 0000:3d:00.0: flow type: 36 update input mask from:0x0006060000000000, to:0x0001801800000000
+> i40e 0000:3d:00.0: flow type: 35 update input mask from:0x0006060000000000, to:0x0001801800000000
+> i40e 0000:3d:00.0: flow type: 34 update input mask from:0x0006060780000000, to:0x0001801f80000000
+> i40e 0000:3d:00.0: flow type: 33 update input mask from:0x0006060600000000, to:0x0001801e00000000
+> i40e 0000:3d:00.0: flow type: 32 update input mask from:0x0006060600000000, to:0x0001801e00000000
+> i40e 0000:3d:00.0: flow type: 31 update input mask from:0x0006060600000000, to:0x0001801e00000000
+> i40e 0000:3d:00.0: flow type: 30 update input mask from:0x0006060600000000, to:0x0001801e00000000
+> i40e 0000:3d:00.0: flow type: 29 update input mask from:0x0006060600000000, to:0x0001801e00000000
+> i40e 0000:3d:00.0: flow_type after update: 63 input_mask:0x0000000000004000
+> i40e 0000:3d:00.0: flow_type after update: 46 input_mask:0x0007fff800000000
+> i40e 0000:3d:00.0: flow_type after update: 45 input_mask:0x0007fff800000000
+> i40e 0000:3d:00.0: flow_type after update: 44 input_mask:0x0007ffff80000000
+> i40e 0000:3d:00.0: flow_type after update: 43 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type after update: 42 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type after update: 41 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type after update: 40 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type after update: 39 input_mask:0x0007fffe00000000
+> i40e 0000:3d:00.0: flow_type after update: 36 input_mask:0x0001801800000000
+> i40e 0000:3d:00.0: flow_type after update: 35 input_mask:0x0001801800000000
+> i40e 0000:3d:00.0: flow_type after update: 34 input_mask:0x0001801f80000000
+> i40e 0000:3d:00.0: flow_type after update: 33 input_mask:0x0001801e00000000
+> i40e 0000:3d:00.0: flow_type after update: 32 input_mask:0x0001801e00000000
+> i40e 0000:3d:00.0: flow_type after update: 31 input_mask:0x0001801e00000000
+> i40e 0000:3d:00.0: flow_type after update: 30 input_mask:0x0001801e00000000
+> i40e 0000:3d:00.0: flow_type after update: 29 input_mask:0x0001801e00000000
+> i40e 0000:3d:00.0: Features: PF-id[0] VSIs: 34 QP: 12 TXQ: 13 RSS VxLAN Geneve VEPA
+>
+> So at least it appears the update did apply.
+>
+> --
+> Len Sorensen
 
-I see, so in the case you described about, you are going to move **all** the
-representors of a certain e-switch into **one** name-space -- this is something
-we don't have to block. However, I think we did wanted to disallow moving
-sub-set of the port reps into a name-space. Should look into that.
+I think we need to narrow this down a bit more. Let's try forcing the
+lookup table all to one value and see if traffic is still going to
+queue 0.
 
-Or.
+Specifically what we need to is run the following command to try and
+force all RSS traffic to queue 8, you can verify the result with
+"ethtool -x":
+ethtool -X <iface> weight 0 0 0 0 0 0 0 0 1
+
+If that works and the IPSec traffic goes to queue 8 then we are likely
+looking at some sort of input issue, either in the parsing or the
+population of things like the input mask that we can then debug
+further.
+
+If traffic still goes to queue 0 then that tells us the output of the
+RSS hash and lookup table are being ignored, this would imply either
+some other filter is rerouting the traffic or is directing us to limit
+the queue index to 0 bits.
+
+Thanks.
+
+- Alex
