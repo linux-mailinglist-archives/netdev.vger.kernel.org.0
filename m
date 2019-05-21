@@ -2,53 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2830424C0C
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 11:57:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42ADE24C36
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 12:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727228AbfEUJ5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 05:57:13 -0400
-Received: from smtprelay0119.hostedemail.com ([216.40.44.119]:56608 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726242AbfEUJ5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 05:57:13 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 83549180A8876;
-        Tue, 21 May 2019 09:57:12 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::,RULES_HIT:41:69:355:379:599:968:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1567:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3622:3865:3866:3867:3868:3870:3872:4321:4823:5007:7903:10004:10400:10848:11232:11658:11914:12043:12683:12740:12760:12895:13069:13311:13357:13439:14095:14110:14659:14721:21080:21627:30012:30054:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:27,LUA_SUMMARY:none
-X-HE-Tag: rake41_5be978daa584c
-X-Filterd-Recvd-Size: 1208
-Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf10.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 21 May 2019 09:57:11 +0000 (UTC)
-Message-ID: <60901822e34c6c715668dbcf7adbded312d19ea4.camel@perches.com>
-Subject: Re: [PATCH net] mISDN: Fix indenting in dsp_cmx.c
-From:   Joe Perches <joe@perches.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Karsten Keil <isdn@linux-pingi.de>
-Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Date:   Tue, 21 May 2019 02:57:10 -0700
-In-Reply-To: <20190521094256.GA11899@mwanda>
-References: <20190521094256.GA11899@mwanda>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.1-1build1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1727624AbfEUKFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 06:05:35 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:39564 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726750AbfEUKFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 06:05:35 -0400
+Received: by mail-qt1-f193.google.com with SMTP id y42so19750237qtk.6
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 03:05:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z7qgAEipoJrrDBwx15qY8meLZixvE2IB+wvZftGohQA=;
+        b=l31IMnOPCSBlBd6PFPhc67y4iIsEDB/EJDU4qQ/XTwJHIxW3R2HkfYxPMrLLNXWwhH
+         6mwVd8N4gtOTqn8C11zab7/5nerUQUYAWGgoz3++EoYkTtS8q5P5ZLTY/sA6pKzPP15B
+         1fwwbe/VgcboAAkOzOAN1z/C7SQrD2jEc4gwrRkhWrmDZixJejOCi4tXMiyG+uGdlqgw
+         Qb+oNV/9PrzuP9rBAgJ9UTdG2PgfQ/52ghK9QcFpmybiUbpOgIKKWKtTLm+pdeEVu89t
+         I1ztLp2b/DMPyPaZN4bgLhPS5ca0g0qJwtbNEwPaWaGps8hm2VyJcEmXha+ReV79b+wi
+         L8NA==
+X-Gm-Message-State: APjAAAXkMHhmsGjsHEC6ZZdhvpvMDr/e1LC1XCe594MYdKAmc2av2SoN
+        pWCgXsB32zl05yZb2t1cbxGUkw==
+X-Google-Smtp-Source: APXvYqxhw2pKUAxdbWZkgFPeBFcnr+Q2DKys+vYhH7Q3g4kz280LK8KEPNj3LcHryY+PFGUyu77RhA==
+X-Received: by 2002:ac8:36cc:: with SMTP id b12mr65886400qtc.193.1558433134611;
+        Tue, 21 May 2019 03:05:34 -0700 (PDT)
+Received: from redhat.com (pool-173-76-105-71.bstnma.fios.verizon.net. [173.76.105.71])
+        by smtp.gmail.com with ESMTPSA id s12sm9862956qkm.38.2019.05.21.03.05.32
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 21 May 2019 03:05:33 -0700 (PDT)
+Date:   Tue, 21 May 2019 06:05:31 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: Question about IRQs during the .remove() of virtio-vsock driver
+Message-ID: <20190521055650-mutt-send-email-mst@kernel.org>
+References: <20190521094407.ltij4ggbd7xw25ge@steredhat>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190521094407.ltij4ggbd7xw25ge@steredhat>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-05-21 at 12:42 +0300, Dan Carpenter wrote:
-> We used a script to indent this code back in 2012, but I guess it got
-> confused by the ifdefs and added some extra tabs.  This patch removes
-> them.
+On Tue, May 21, 2019 at 11:44:07AM +0200, Stefano Garzarella wrote:
+> Hi Micheal, Jason,
+> as suggested by Stefan, I'm checking if we have some races in the
+> virtio-vsock driver. We found some races in the .probe() and .remove()
+> with the upper layer (socket) and I'll fix it.
+> 
+> Now my attention is on the bottom layer (virtio device) and my question is:
+> during the .remove() of virtio-vsock driver (virtio_vsock_remove), could happen
+> that an IRQ comes and one of our callback (e.g. virtio_vsock_rx_done()) is
+> executed, queueing new works?
+> 
+> I tried to follow the code in both cases (device unplugged or module removed)
+> and maybe it couldn't happen because we remove it from bus's knowledge,
+> but I'm not sure and your advice would be very helpful.
+> 
+> Thanks in advance,
+> Stefano
 
-Yup, thanks Dan.
-Emacs indent-region made a mess of it.
 
->  drivers/isdn/mISDN/dsp_cmx.c | 427 +++++++++++++++++------------------
->  1 file changed, 213 insertions(+), 214 deletions(-)
+Great question! This should be better documented: patches welcome!
+
+Here's my understanding:
 
 
+A typical removal flow works like this:
+
+- prevent linux from sending new kick requests to device
+  and flush such outstanding requests if any
+  (device can still send notifications to linux)
+
+- call
+          vi->vdev->config->reset(vi->vdev);
+  this will flush all device writes and interrupts.
+  device will not use any more buffers.
+  previously outstanding callbacks might still be active.
+
+- Then call
+          vdev->config->del_vqs(vdev);
+  to flush outstanding callbacks if any.
+
+-- 
+MST
