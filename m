@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E106D24D94
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 13:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89B8524D71
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 13:01:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727805AbfEULIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 07:08:21 -0400
-Received: from david.siemens.de ([192.35.17.14]:55994 "EHLO david.siemens.de"
+        id S1727857AbfEULBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 07:01:36 -0400
+Received: from mga01.intel.com ([192.55.52.88]:4115 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726042AbfEULIV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 May 2019 07:08:21 -0400
-X-Greylist: delayed 905 seconds by postgrey-1.27 at vger.kernel.org; Tue, 21 May 2019 07:08:20 EDT
-Received: from mail2.siemens.de (mail2.siemens.de [139.25.208.11])
-        by david.siemens.de (8.15.2/8.15.2) with ESMTPS id x4LAr51R025424
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 May 2019 12:53:05 +0200
-Received: from pluscontrol-debian-server.ppmd.SIEMENS.NET (pluscontrol-debian-server.ppmd.siemens.net [146.254.63.6])
-        by mail2.siemens.de (8.15.2/8.15.2) with ESMTP id x4LAr2dW031303;
-        Tue, 21 May 2019 12:53:02 +0200
-From:   Andreas Oetken <andreas.oetken@siemens.com>
-Cc:     andreas@oetken.name, Andreas Oetken <andreas.oetken@siemens.com>,
-        Arvid Brodin <arvid.brodin@alten.se>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] hsr: fix don't prune the master node from the node_db
-Date:   Tue, 21 May 2019 12:52:41 +0200
-Message-Id: <20190521105241.16234-1-andreas.oetken@siemens.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726242AbfEULBf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 May 2019 07:01:35 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 May 2019 04:01:34 -0700
+X-ExtLoop1: 1
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 21 May 2019 04:01:33 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1hT2WS-0009Mw-Ls; Tue, 21 May 2019 19:01:32 +0800
+Date:   Tue, 21 May 2019 19:01:12 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Vishal Kulkarni <vishal@chelsio.com>
+Cc:     kbuild-all@01.org, netdev@vger.kernel.org, davem@davemloft.net,
+        nirranjan@chelsio.com, indranil@chelsio.com, dt@chelsio.com,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [PATCH net-next] cxgb4: Enable hash filter with offload
+Message-ID: <201905211845.3ECR6kq7%lkp@intel.com>
+References: <1558410037-29161-1-git-send-email-vishal@chelsio.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1558410037-29161-1-git-send-email-vishal@chelsio.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't prune master node in the hsr_prune_nodes function.
-Neither time_in[HSR_PT_SLAVE_A], nor time_in[HSR_PT_SLAVE_B],
-will ever be updated by hsr_register_frame_in for the master port.
-Thus the master node will be repeatedly pruned leading to
-repeated packet loss.
-This bug never appeared because the hsr_prune_nodes function
-was only called once. Since commit 5150b45fd355
-("net: hsr: Fix node prune function for forget time expiry") this issue
-is fixed unvealing the issue described above.
+Hi Vishal,
 
-Signed-off-by: Andreas Oetken <andreas.oetken@siemens.com>
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on net-next/master]
+
+url:    https://github.com/0day-ci/linux/commits/Vishal-Kulkarni/cxgb4-Enable-hash-filter-with-offload/20190521-171528
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:6216:14: sparse: sparse: symbol 't4_get_tp_e2c_map' was not declared. Should it be static?
+   drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:3838:9: sparse: sparse: context imbalance in 't4_load_phy_fw' - different lock contexts for basic block
+
+Please review and possibly fold the followup patch.
+
 ---
- net/hsr/hsr_framereg.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index 9af16cb68f76..317cddda494e 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -387,6 +387,14 @@ void hsr_prune_nodes(struct timer_list *t)
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(node, &hsr->node_db, mac_list) {
-+		/* Don't prune own node. Neither time_in[HSR_PT_SLAVE_A]
-+		 * nor time_in[HSR_PT_SLAVE_B], will ever be updated for
-+		 * the master port. Thus the master node will be repeatedly
-+		 * pruned leading to packet loss.
-+		 */
-+		if (hsr_addr_is_self(hsr, node->MacAddressA))
-+			continue;
-+
- 		/* Shorthand */
- 		time_a = node->time_in[HSR_PT_SLAVE_A];
- 		time_b = node->time_in[HSR_PT_SLAVE_B];
--- 
-2.20.1
-
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
