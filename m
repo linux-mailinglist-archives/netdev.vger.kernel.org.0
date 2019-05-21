@@ -2,53 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80B872453D
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 02:53:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D3024541
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 02:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727477AbfEUAxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 20:53:18 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:60222 "EHLO
+        id S1727257AbfEUAzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 20:55:15 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:60242 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726586AbfEUAxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 20:53:17 -0400
+        with ESMTP id S1726586AbfEUAzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 May 2019 20:55:15 -0400
 Received: from localhost (50-78-161-185-static.hfc.comcastbusiness.net [50.78.161.185])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 07C13140F844A;
-        Mon, 20 May 2019 17:53:16 -0700 (PDT)
-Date:   Mon, 20 May 2019 20:53:16 -0400 (EDT)
-Message-Id: <20190520.205316.2191376307434511568.davem@davemloft.net>
-To:     bjorn.andersson@linaro.org
-Cc:     aneela@codeaurora.org, hofrat@osadl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH] net: qrtr: Fix message type of outgoing packets
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 20E5F140F8462;
+        Mon, 20 May 2019 17:55:14 -0700 (PDT)
+Date:   Mon, 20 May 2019 20:55:13 -0400 (EDT)
+Message-Id: <20190520.205513.1314405241609671077.davem@davemloft.net>
+To:     weifeng.voon@intel.com
+Cc:     mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joabreu@synopsys.com,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        boon.leong.ong@intel.com, tee.min.tan@intel.com
+Subject: Re: [PATCH net] net: stmmac: fix ethtool flow control not able to
+ get/set
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190520235156.28902-1-bjorn.andersson@linaro.org>
-References: <20190520235156.28902-1-bjorn.andersson@linaro.org>
+In-Reply-To: <1558414542-28550-1-git-send-email-weifeng.voon@intel.com>
+References: <1558414542-28550-1-git-send-email-weifeng.voon@intel.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+Content-Type: Text/Plain; charset=iso-2022-jp
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 May 2019 17:53:17 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 May 2019 17:55:14 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-Date: Mon, 20 May 2019 16:51:56 -0700
+From: Weifeng Voon <weifeng.voon@intel.com>
+Date: Tue, 21 May 2019 12:55:42 +0800
 
-> QRTR packets has a message type in the header, which is repeated in the
-> control header. For control packets we therefor copy the type from
-> beginning of the outgoing payload and use that as message type.
+> From: "Tan, Tee Min" <tee.min.tan@intel.com>
 > 
-> For non-control messages an endianness fix introduced in v5.2-rc1 caused the
-> type to be 0, rather than QRTR_TYPE_DATA, causing all messages to be dropped by
-> the receiver. Fix this by converting and using qrtr_type, which will remain
-> QRTR_TYPE_DATA for non-control messages.
+> Currently ethtool was not able to get/set the flow control due to a
+> missing "!". It will always return -EOPNOTSUPP even the device is
+> flow control supported.
 > 
-> Fixes: 8f5e24514cbd ("net: qrtr: use protocol endiannes variable")
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> This patch fixes the condition check for ethtool flow control get/set
+> function for ETHTOOL_LINK_MODE_Asym_Pause_BIT.
+> 
+> Fixes: 3c1bcc8614db (“net: ethernet: Convert phydev advertize and supported from u32 to link mode”)
+> Signed-off-by: Tan, Tee Min <tee.min.tan@intel.com>
+> Reviewed-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> Signed-off-by: Voon, Weifeng <weifeng.voon@intel.com@intel.com>
 
-Applied, thank you.
+Applied and queued up for -stable.
