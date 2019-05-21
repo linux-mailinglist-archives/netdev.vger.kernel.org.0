@@ -2,440 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38A3925AB0
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 01:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A054625ABE
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 01:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726218AbfEUXJv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 May 2019 19:09:51 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:49866 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726434AbfEUXJt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 19:09:49 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4LMupm4013870
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:09:48 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2smmmssfjv-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:09:48 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 21 May 2019 16:09:46 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id D87B0760BE8; Tue, 21 May 2019 16:09:45 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 3/3] selftests/bpf: add pyperf scale test
-Date:   Tue, 21 May 2019 16:09:39 -0700
-Message-ID: <20190521230939.2149151-4-ast@kernel.org>
-X-Mailer: git-send-email 2.20.0
-In-Reply-To: <20190521230939.2149151-1-ast@kernel.org>
-References: <20190521230939.2149151-1-ast@kernel.org>
+        id S1726875AbfEUXWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 19:22:30 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:43331 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725797AbfEUXWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 19:22:30 -0400
+Received: by mail-io1-f68.google.com with SMTP id v7so320936iob.10;
+        Tue, 21 May 2019 16:22:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Q+TOxNvlX4OyviLA1RMMAnEUapjGz0Q82sfanM+skJc=;
+        b=qFPZr7y8GrOhJHCOmJ3nl//kksO7Ebe0V5SvKXhxrHvLgqsYt0/PoHOll73otofgsW
+         V7L5WBRmxFahltaw21GCDLJQH2mI++72GFrCmcGEIS8jIDmN5UHxxQyUZzfgggL/qr6M
+         HJeVzUElcvBQcWkeaOlyrvh+sg8rsshA0vwOf4jpCEZRJ2UDLrl5WkKsHgSTxGrDdxAL
+         KUKVAyRx+fg9QnE174rHa2USw6MWmBpZs0SfCx6r0oOExOHYuKT13z74YE6giP1h/00S
+         TjmdwxYrmQGbQLwAbKee9Ic9LaPzlF3AKLKYItgRcXPiMvbD+l4z6pxETYvYkrUvIjHt
+         N5kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q+TOxNvlX4OyviLA1RMMAnEUapjGz0Q82sfanM+skJc=;
+        b=qLT7z8EGK/+RZOXMY0phQKRhg2q0Ubco6sInkcygzGnnYj69IuIDCFLoMz9ti8p1UA
+         SpCbh68OW4flpn7ZIzvUvZKhnksG1TzEHbSBosFhI8XinHcZ+66yJCECZh8kvmt9UDAn
+         TSNoK7z5D/CsDQZ+TFwQFULSYKL5Lj/OPBYhkJjGgqhb0P+vh/YqyaGYOM5dkMEZVShM
+         UlsxlVdtjqa+LqgJp46oz34+5SWNKmhXPISLbmzwrnCnXWvc7FsvXyHAW3d0WZHgyClp
+         UMf13XC7g3mI6RR5z2Vl934/lDAbYDZMAAXyVjc6uSUdw47wXbPTWGOn69yj9CV0C8mq
+         Ef3g==
+X-Gm-Message-State: APjAAAXHRaKhSj7xZGnTDet4tspsh1CBOYlw3xbW6Q4UEeSJ7QXPSQVG
+        342WDfdg8hYqNkErNWeep6NEDNI1iuitkCorg5o=
+X-Google-Smtp-Source: APXvYqxBxEvRd9YFi6LWWFlur28HCvHHngZH+09V593lwkjxHdf3uJ5kPx5QMVyC/invnOt9PlR8dZVq5a4PAm0/JQw=
+X-Received: by 2002:a5e:db08:: with SMTP id q8mr29298563iop.64.1558480948862;
+ Tue, 21 May 2019 16:22:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-21_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905210143
-X-FB-Internal: deliver
+References: <20190514163443.glfjva3ofqcy7lbg@csclub.uwaterloo.ca>
+ <CAKgT0UdPDyCBsShQVwwE5C8fBKkMcfS6_S5m3T7JP-So9fzVgA@mail.gmail.com>
+ <20190516183407.qswotwyjwtjqfdqm@csclub.uwaterloo.ca> <20190516183705.e4zflbli7oujlbek@csclub.uwaterloo.ca>
+ <CAKgT0UfSa-dM2+7xntK9tB7Zw5N8nDd3U1n4OSK0gbWbkNSKJQ@mail.gmail.com>
+ <CAKgT0Ucd0s_0F5_nwqXknRngwROyuecUt+4bYzWvp1-2cNSg7g@mail.gmail.com>
+ <20190517172317.amopafirjfizlgej@csclub.uwaterloo.ca> <CAKgT0UdM28pSTCsaT=TWqmQwCO44NswS0PqFLAzgs9pmn41VeQ@mail.gmail.com>
+ <20190521151537.xga4aiq3gjtiif4j@csclub.uwaterloo.ca> <CAKgT0UfpZ-ve3Hx26gDkb+YTDHvN3=MJ7NZd2NE7ewF5g=kHHw@mail.gmail.com>
+ <20190521175456.zlkiiov5hry2l4q2@csclub.uwaterloo.ca>
+In-Reply-To: <20190521175456.zlkiiov5hry2l4q2@csclub.uwaterloo.ca>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 21 May 2019 16:22:17 -0700
+Message-ID: <CAKgT0UcR3q1maBmJz7xj_i+_oux_6FQxua9DOjXQSZzyq6FhkQ@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] i40e X722 RSS problem with NAT-Traversal IPsec packets
+To:     Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        e1000-devel@lists.sourceforge.net
+Content-Type: multipart/mixed; boundary="00000000000059aa6005896e1fad"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a snippet of pyperf bpf program used to collect python stack traces
-as a scale test for the verifier.
+--00000000000059aa6005896e1fad
+Content-Type: text/plain; charset="UTF-8"
 
-At 189 loop iterations llvm 9.0 starts ignoring '#pragma unroll'
-and generates partially unrolled loop instead.
-Hence use 50, 100, and 180 loop iterations to stress test.
+On Tue, May 21, 2019 at 10:55 AM Lennart Sorensen
+<lsorense@csclub.uwaterloo.ca> wrote:
+>
+> On Tue, May 21, 2019 at 09:51:33AM -0700, Alexander Duyck wrote:
+> > I think we need to narrow this down a bit more. Let's try forcing the
+> > lookup table all to one value and see if traffic is still going to
+> > queue 0.
+> >
+> > Specifically what we need to is run the following command to try and
+> > force all RSS traffic to queue 8, you can verify the result with
+> > "ethtool -x":
+> > ethtool -X <iface> weight 0 0 0 0 0 0 0 0 1
+> >
+> > If that works and the IPSec traffic goes to queue 8 then we are likely
+> > looking at some sort of input issue, either in the parsing or the
+> > population of things like the input mask that we can then debug
+> > further.
+> >
+> > If traffic still goes to queue 0 then that tells us the output of the
+> > RSS hash and lookup table are being ignored, this would imply either
+> > some other filter is rerouting the traffic or is directing us to limit
+> > the queue index to 0 bits.
+>
+> # ethtool -x eth2
+> RX flow hash indirection table for eth2 with 12 RX ring(s):
+>     0:      7     7     7     7     7     7     7     7
+>     8:      7     7     7     7     7     7     7     7
+>    16:      7     7     7     7     7     7     7     7
+>    24:      7     7     7     7     7     7     7     7
+>    32:      7     7     7     7     7     7     7     7
+> ...
+>   472:      7     7     7     7     7     7     7     7
+>   480:      7     7     7     7     7     7     7     7
+>   488:      7     7     7     7     7     7     7     7
+>   496:      7     7     7     7     7     7     7     7
+>   504:      7     7     7     7     7     7     7     7
+> RSS hash key:
+> 0b:1f:ae:ed:60:04:7d:e5:8a:2b:43:3f:1d:ee:6c:99:89:29:94:b0:25:db:c7:4b:fa:da:4d:3f:e8:cc:bc:00:ad:32:01:d6:1c:30:3f:f8:79:3e:f4:48:04:1f:51:d2:5a:39:f0:90
+> root@ECA:~# ethtool --show-priv-flags eth2
+> Private flags for eth2:
+> MFP              : off
+> LinkPolling      : off
+> flow-director-atr: off
+> veb-stats        : off
+> hw-atr-eviction  : on
+> legacy-rx        : off
+>
+> All ipsec packets are still hitting queue 0.
+>
+> Seems it is completely ignoring RSS for these packets.  That is
+> impressively weird.
+>
+> --
+> Len Sorensen
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- .../bpf/prog_tests/bpf_verif_scale.c          |  31 +-
- tools/testing/selftests/bpf/progs/pyperf.h    | 268 ++++++++++++++++++
- tools/testing/selftests/bpf/progs/pyperf100.c |   4 +
- tools/testing/selftests/bpf/progs/pyperf180.c |   4 +
- tools/testing/selftests/bpf/progs/pyperf50.c  |   4 +
- 5 files changed, 298 insertions(+), 13 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/pyperf.h
- create mode 100644 tools/testing/selftests/bpf/progs/pyperf100.c
- create mode 100644 tools/testing/selftests/bpf/progs/pyperf180.c
- create mode 100644 tools/testing/selftests/bpf/progs/pyperf50.c
+So we are either using 0 bits of the LUT or we are just not performing
+hashing because this is somehow being parsed into a type that doesn't
+support it.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-index b74e2f6e96d0..6a64c77d5af7 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-@@ -12,7 +12,7 @@ static int libbpf_debug_print(enum libbpf_print_level level,
- 	return vfprintf(stderr, "%s", args);
- }
- 
--static int check_load(const char *file)
-+static int check_load(const char *file, enum bpf_prog_type type)
- {
- 	struct bpf_prog_load_attr attr;
- 	struct bpf_object *obj = NULL;
-@@ -20,7 +20,7 @@ static int check_load(const char *file)
- 
- 	memset(&attr, 0, sizeof(struct bpf_prog_load_attr));
- 	attr.file = file;
--	attr.prog_type = BPF_PROG_TYPE_SCHED_CLS;
-+	attr.prog_type = type;
- 	attr.log_level = 4;
- 	err = bpf_prog_load_xattr(&attr, &obj, &prog_fd);
- 	bpf_object__close(obj);
-@@ -31,19 +31,24 @@ static int check_load(const char *file)
- 
- void test_bpf_verif_scale(void)
- {
--	const char *file1 = "./test_verif_scale1.o";
--	const char *file2 = "./test_verif_scale2.o";
--	const char *file3 = "./test_verif_scale3.o";
--	int err;
-+	const char *scale[] = {
-+		"./test_verif_scale1.o", "./test_verif_scale2.o", "./test_verif_scale3.o"
-+	};
-+	const char *pyperf[] = {
-+		"./pyperf50.o",	"./pyperf100.o", "./pyperf180.o"
-+	};
-+	int err, i;
- 
- 	if (verifier_stats)
- 		libbpf_set_print(libbpf_debug_print);
- 
--	err = check_load(file1);
--	err |= check_load(file2);
--	err |= check_load(file3);
--	if (!err)
--		printf("test_verif_scale:OK\n");
--	else
--		printf("test_verif_scale:FAIL\n");
-+	for (i = 0; i < 3; i++) {
-+		err = check_load(scale[i], BPF_PROG_TYPE_SCHED_CLS);
-+		printf("test_scale:%s:%s\n", scale[i], err ? "FAIL" : "OK");
-+	}
-+
-+	for (i = 0; i < 3; i++) {
-+		err = check_load(pyperf[i], BPF_PROG_TYPE_RAW_TRACEPOINT);
-+		printf("test_scale:%s:%s\n", pyperf[i], err ? "FAIL" : "OK");
-+	}
- }
-diff --git a/tools/testing/selftests/bpf/progs/pyperf.h b/tools/testing/selftests/bpf/progs/pyperf.h
-new file mode 100644
-index 000000000000..0cc5e4ee90bd
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/pyperf.h
-@@ -0,0 +1,268 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#include <linux/sched.h>
-+#include <linux/ptrace.h>
-+#include <stdint.h>
-+#include <stddef.h>
-+#include <stdbool.h>
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+#define FUNCTION_NAME_LEN 64
-+#define FILE_NAME_LEN 128
-+#define TASK_COMM_LEN 16
-+
-+typedef struct {
-+	int PyThreadState_frame;
-+	int PyThreadState_thread;
-+	int PyFrameObject_back;
-+	int PyFrameObject_code;
-+	int PyFrameObject_lineno;
-+	int PyCodeObject_filename;
-+	int PyCodeObject_name;
-+	int String_data;
-+	int String_size;
-+} OffsetConfig;
-+
-+typedef struct {
-+	uintptr_t current_state_addr;
-+	uintptr_t tls_key_addr;
-+	OffsetConfig offsets;
-+	bool use_tls;
-+} PidData;
-+
-+typedef struct {
-+	uint32_t success;
-+} Stats;
-+
-+typedef struct {
-+	char name[FUNCTION_NAME_LEN];
-+	char file[FILE_NAME_LEN];
-+} Symbol;
-+
-+typedef struct {
-+	uint32_t pid;
-+	uint32_t tid;
-+	char comm[TASK_COMM_LEN];
-+	int32_t kernel_stack_id;
-+	int32_t user_stack_id;
-+	bool thread_current;
-+	bool pthread_match;
-+	bool stack_complete;
-+	int16_t stack_len;
-+	int32_t stack[STACK_MAX_LEN];
-+
-+	int has_meta;
-+	int metadata;
-+	char dummy_safeguard;
-+} Event;
-+
-+
-+struct bpf_elf_map {
-+	__u32 type;
-+	__u32 size_key;
-+	__u32 size_value;
-+	__u32 max_elem;
-+	__u32 flags;
-+};
-+
-+typedef int pid_t;
-+
-+typedef struct {
-+	void* f_back; // PyFrameObject.f_back, previous frame
-+	void* f_code; // PyFrameObject.f_code, pointer to PyCodeObject
-+	void* co_filename; // PyCodeObject.co_filename
-+	void* co_name; // PyCodeObject.co_name
-+} FrameData;
-+
-+static inline __attribute__((__always_inline__)) void*
-+get_thread_state(void* tls_base, PidData* pidData)
-+{
-+	void* thread_state;
-+	int key;
-+
-+	bpf_probe_read(&key, sizeof(key), (void*)(long)pidData->tls_key_addr);
-+	bpf_probe_read(&thread_state, sizeof(thread_state),
-+		       tls_base + 0x310 + key * 0x10 + 0x08);
-+	return thread_state;
-+}
-+
-+static inline __attribute__((__always_inline__)) bool
-+get_frame_data(void* frame_ptr, PidData* pidData, FrameData* frame, Symbol* symbol)
-+{
-+	// read data from PyFrameObject
-+	bpf_probe_read(&frame->f_back,
-+		       sizeof(frame->f_back),
-+		       frame_ptr + pidData->offsets.PyFrameObject_back);
-+	bpf_probe_read(&frame->f_code,
-+		       sizeof(frame->f_code),
-+		       frame_ptr + pidData->offsets.PyFrameObject_code);
-+
-+	// read data from PyCodeObject
-+	if (!frame->f_code)
-+		return false;
-+	bpf_probe_read(&frame->co_filename,
-+		       sizeof(frame->co_filename),
-+		       frame->f_code + pidData->offsets.PyCodeObject_filename);
-+	bpf_probe_read(&frame->co_name,
-+		       sizeof(frame->co_name),
-+		       frame->f_code + pidData->offsets.PyCodeObject_name);
-+	// read actual names into symbol
-+	if (frame->co_filename)
-+		bpf_probe_read_str(&symbol->file,
-+				   sizeof(symbol->file),
-+				   frame->co_filename + pidData->offsets.String_data);
-+	if (frame->co_name)
-+		bpf_probe_read_str(&symbol->name,
-+				   sizeof(symbol->name),
-+				   frame->co_name + pidData->offsets.String_data);
-+	return true;
-+}
-+
-+struct bpf_elf_map SEC("maps") pidmap = {
-+	.type = BPF_MAP_TYPE_HASH,
-+	.size_key = sizeof(int),
-+	.size_value = sizeof(PidData),
-+	.max_elem = 1,
-+};
-+
-+struct bpf_elf_map SEC("maps") eventmap = {
-+	.type = BPF_MAP_TYPE_HASH,
-+	.size_key = sizeof(int),
-+	.size_value = sizeof(Event),
-+	.max_elem = 1,
-+};
-+
-+struct bpf_elf_map SEC("maps") symbolmap = {
-+	.type = BPF_MAP_TYPE_HASH,
-+	.size_key = sizeof(Symbol),
-+	.size_value = sizeof(int),
-+	.max_elem = 1,
-+};
-+
-+struct bpf_elf_map SEC("maps") statsmap = {
-+	.type = BPF_MAP_TYPE_ARRAY,
-+	.size_key = sizeof(Stats),
-+	.size_value = sizeof(int),
-+	.max_elem = 1,
-+};
-+
-+struct bpf_elf_map SEC("maps") perfmap = {
-+	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
-+	.size_key = sizeof(int),
-+	.size_value = sizeof(int),
-+	.max_elem = 32,
-+};
-+
-+struct bpf_elf_map SEC("maps") stackmap = {
-+	.type = BPF_MAP_TYPE_STACK_TRACE,
-+	.size_key = sizeof(int),
-+	.size_value = sizeof(long long) * 127,
-+	.max_elem = 1000,
-+};
-+
-+static inline __attribute__((__always_inline__)) int __on_event(struct pt_regs *ctx)
-+{
-+	uint64_t pid_tgid = bpf_get_current_pid_tgid();
-+	pid_t pid = (pid_t)(pid_tgid >> 32);
-+	PidData* pidData = bpf_map_lookup_elem(&pidmap, &pid);
-+	if (!pidData)
-+		return 0;
-+
-+	int zero = 0;
-+	Event* event = bpf_map_lookup_elem(&eventmap, &zero);
-+	if (!event)
-+		return 0;
-+
-+	event->pid = pid;
-+
-+	event->tid = (pid_t)pid_tgid;
-+	bpf_get_current_comm(&event->comm, sizeof(event->comm));
-+
-+	event->user_stack_id = bpf_get_stackid(ctx, &stackmap, BPF_F_USER_STACK);
-+	event->kernel_stack_id = bpf_get_stackid(ctx, &stackmap, 0);
-+
-+	void* thread_state_current = (void*)0;
-+	bpf_probe_read(&thread_state_current,
-+		       sizeof(thread_state_current),
-+		       (void*)(long)pidData->current_state_addr);
-+
-+	struct task_struct* task = (struct task_struct*)bpf_get_current_task();
-+	void* tls_base = (void*)task;
-+
-+	void* thread_state = pidData->use_tls ? get_thread_state(tls_base, pidData)
-+		: thread_state_current;
-+	event->thread_current = thread_state == thread_state_current;
-+
-+	if (pidData->use_tls) {
-+		uint64_t pthread_created;
-+		uint64_t pthread_self;
-+		bpf_probe_read(&pthread_self, sizeof(pthread_self), tls_base + 0x10);
-+
-+		bpf_probe_read(&pthread_created,
-+			       sizeof(pthread_created),
-+			       thread_state + pidData->offsets.PyThreadState_thread);
-+		event->pthread_match = pthread_created == pthread_self;
-+	} else {
-+		event->pthread_match = 1;
-+	}
-+
-+	if (event->pthread_match || !pidData->use_tls) {
-+		void* frame_ptr;
-+		FrameData frame;
-+		Symbol sym = {};
-+		int cur_cpu = bpf_get_smp_processor_id();
-+
-+		bpf_probe_read(&frame_ptr,
-+			       sizeof(frame_ptr),
-+			       thread_state + pidData->offsets.PyThreadState_frame);
-+
-+		int32_t* symbol_counter = bpf_map_lookup_elem(&symbolmap, &sym);
-+		if (symbol_counter == NULL)
-+			return 0;
-+#pragma unroll
-+		/* Unwind python stack */
-+		for (int i = 0; i < STACK_MAX_LEN; ++i) {
-+			if (frame_ptr && get_frame_data(frame_ptr, pidData, &frame, &sym)) {
-+				int32_t new_symbol_id = *symbol_counter * 64 + cur_cpu;
-+				int32_t *symbol_id = bpf_map_lookup_elem(&symbolmap, &sym);
-+				if (!symbol_id) {
-+					bpf_map_update_elem(&symbolmap, &sym, &zero, 0);
-+					symbol_id = bpf_map_lookup_elem(&symbolmap, &sym);
-+					if (!symbol_id)
-+						return 0;
-+				}
-+				if (*symbol_id == new_symbol_id)
-+					(*symbol_counter)++;
-+				event->stack[i] = *symbol_id;
-+				event->stack_len = i + 1;
-+				frame_ptr = frame.f_back;
-+			}
-+		}
-+		event->stack_complete = frame_ptr == NULL;
-+	} else {
-+		event->stack_complete = 1;
-+	}
-+
-+	Stats* stats = bpf_map_lookup_elem(&statsmap, &zero);
-+	if (stats)
-+		stats->success++;
-+
-+	event->has_meta = 0;
-+	bpf_perf_event_output(ctx, &perfmap, 0, event, offsetof(Event, metadata));
-+	return 0;
-+}
-+
-+SEC("raw_tracepoint/kfree_skb")
-+int on_event(struct pt_regs* ctx)
-+{
-+	int i, ret = 0;
-+	ret |= __on_event(ctx);
-+	ret |= __on_event(ctx);
-+	ret |= __on_event(ctx);
-+	ret |= __on_event(ctx);
-+	ret |= __on_event(ctx);
-+	return ret;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/pyperf100.c b/tools/testing/selftests/bpf/progs/pyperf100.c
-new file mode 100644
-index 000000000000..29786325db54
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/pyperf100.c
-@@ -0,0 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#define STACK_MAX_LEN 100
-+#include "pyperf.h"
-diff --git a/tools/testing/selftests/bpf/progs/pyperf180.c b/tools/testing/selftests/bpf/progs/pyperf180.c
-new file mode 100644
-index 000000000000..c39f559d3100
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/pyperf180.c
-@@ -0,0 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#define STACK_MAX_LEN 180
-+#include "pyperf.h"
-diff --git a/tools/testing/selftests/bpf/progs/pyperf50.c b/tools/testing/selftests/bpf/progs/pyperf50.c
-new file mode 100644
-index 000000000000..ef7ce340a292
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/pyperf50.c
-@@ -0,0 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#define STACK_MAX_LEN 50
-+#include "pyperf.h"
--- 
-2.20.0
+I have attached 2 more patches we can test. The first enables hashing
+on what are called "OAM" packets, The thing is we shouldn't be
+identifying these packets as "OAM", Operations Administration &
+Management, as normally it would have to be recognized as a tunnel
+first and then have a specific flag set in either the GENEVE or
+VXLAN-GPE header. The second patch will dump the contents of the
+HREGION registers. They should all be 0, however I thought it best to
+dump the contents and verify that since I know that these registers
+can be used to change the traffic class of a given packet type and if
+we are encountering that it might be moving it to an uninitialized TC
+which would be using queue offset 0 with 0 bits of the LUT.
 
+These last 2 patches would pretty much eliminate the entire RSS
+subsystem. If we don't see HREGION values set and the OAM flags have
+no effect I can only assume there is something going on with the
+parser in the NIC since it isn't recognizing the packet type.
+
+Thanks.
+
+- Alex
+
+--00000000000059aa6005896e1fad
+Content-Type: text/x-patch; charset="US-ASCII"; name="i40e-enable-oam-flag-tunnel.patch"
+Content-Disposition: attachment; 
+	filename="i40e-enable-oam-flag-tunnel.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_jvydbsln1>
+X-Attachment-Id: f_jvydbsln1
+
+aTQwZTogRW5hYmxlIE9BTSBmbGFnIHR1bm5lbCBoYXNoaW5nCgpGcm9tOiBBbGV4YW5kZXIgRHV5
+Y2sgPGFsZXhhbmRlci5oLmR1eWNrQGxpbnV4LmludGVsLmNvbT4KCkFkZCBzdXBwb3J0IGZvciBo
+YXNoaW5nIHBhY2tldCB0eXBlcyAyNiBhbmQgMjcgb24gWDcyMiBhZGFwdGVycy4gVGhlCmRlZmF1
+bHQgaW5wdXQgc2V0IGlzIHN1cHBvc2VkIHRvIGJlIHNvdXJjZSBvdXRlciBVRFAgYW5kIFZOSS4g
+Rm9yIG5vdyBhbGwgSQpjYXJlIGFib3V0IGlzIGVuYWJsaW5nIGhhc2hpbmcgb24gdGhpcyB0byBz
+ZWUgaWYgd2UgY2FuIGdldCBFU1AgdHJhZmZpYyB0bwpub3QgaGl0IHF1ZXVlIDAgZm9yIGV2ZXJ5
+dGhpbmcuCi0tLQogZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaTQwZS9pNDBlX3R4cnguaCB8
+ICAgIDMgKystCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0p
+CgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaTQwZS9pNDBlX3R4cngu
+aCBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2k0MGUvaTQwZV90eHJ4LmgKaW5kZXggMTAw
+ZTkyZDI5ODJmLi5hZDNlMTZlOGNkN2EgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0
+L2ludGVsL2k0MGUvaTQwZV90eHJ4LmgKKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwv
+aTQwZS9pNDBlX3R4cnguaApAQCAtOTUsNyArOTUsOCBAQCBlbnVtIGk0MGVfZHluX2lkeF90IHsK
+IAlCSVRfVUxMKEk0MEVfRklMVEVSX1BDVFlQRV9OT05GX01VTFRJQ0FTVF9JUFY0X1VEUCkgfCBc
+CiAJQklUX1VMTChJNDBFX0ZJTFRFUl9QQ1RZUEVfTk9ORl9JUFY2X1RDUF9TWU5fTk9fQUNLKSB8
+IFwKIAlCSVRfVUxMKEk0MEVfRklMVEVSX1BDVFlQRV9OT05GX1VOSUNBU1RfSVBWNl9VRFApIHwg
+XAotCUJJVF9VTEwoSTQwRV9GSUxURVJfUENUWVBFX05PTkZfTVVMVElDQVNUX0lQVjZfVURQKSkK
+KwlCSVRfVUxMKEk0MEVfRklMVEVSX1BDVFlQRV9OT05GX01VTFRJQ0FTVF9JUFY2X1VEUCkgfCBc
+CisJQklUX1VMTCgyNikgfCBCSVRfVUxMKDI3KSkgLyogQWRkZWQgYml0cyBmb3IgdHVubmVsIE9B
+TSAqLwogCiAjZGVmaW5lIGk0MGVfcGZfZ2V0X2RlZmF1bHRfcnNzX2hlbmEocGYpIFwKIAkoKChw
+ZiktPmh3X2ZlYXR1cmVzICYgSTQwRV9IV19NVUxUSVBMRV9UQ1BfVURQX1JTU19QQ1RZUEUpID8g
+XAo=
+--00000000000059aa6005896e1fad
+Content-Type: text/x-patch; charset="US-ASCII"; name="i40e-dump-extra-hregion.patch"
+Content-Disposition: attachment; filename="i40e-dump-extra-hregion.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_jvydbslb0>
+X-Attachment-Id: f_jvydbslb0
+
+aTQwZTogRHVtcCBIUkVHSU9OIGVudHJpZXMKCkZyb206IEFsZXhhbmRlciBEdXljayA8YWxleGFu
+ZGVyLmguZHV5Y2tAbGludXguaW50ZWwuY29tPgoKCi0tLQogZHJpdmVycy9uZXQvZXRoZXJuZXQv
+aW50ZWwvaTQwZS9pNDBlX21haW4uYyB8ICAgIDggKysrKysrKysKIDEgZmlsZSBjaGFuZ2VkLCA4
+IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9p
+NDBlL2k0MGVfbWFpbi5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaTQwZS9pNDBlX21h
+aW4uYwppbmRleCAzMjA1NjJiMzk2ODYuLjM3MGY2NmRmNGU0ZiAxMDA2NDQKLS0tIGEvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvaW50ZWwvaTQwZS9pNDBlX21haW4uYworKysgYi9kcml2ZXJzL25ldC9l
+dGhlcm5ldC9pbnRlbC9pNDBlL2k0MGVfbWFpbi5jCkBAIC0xMTA5NCw2ICsxMTA5NCwxNCBAQCBz
+dGF0aWMgaW50IGk0MGVfcGZfY29uZmlnX3JzcyhzdHJ1Y3QgaTQwZV9wZiAqcGYpCiAJdTY0IGhl
+bmE7CiAJaW50IHJldDsKIAorCS8qIFRoZXNlIHNob3VsZCBhbGwgYmUgMCwgZHVtcCB0aGVtIHRv
+IHZlcmlmeSB0aGV5IGFyZSAqLworCWZvciAocmV0ID0gODsgcmV0LS07KSB7CisJCXJlZ192YWwg
+PSBpNDBlX3JlYWRfcnhfY3RsKGh3LCBJNDBFX1BGUUZfSFJFR0lPTihyZXQpKTsKKworCQlkZXZf
+aW5mbygmcGYtPnBkZXYtPmRldiwKKwkJCSAiUEZRRl9IUkVHSU9OWyVkXTogMHglMDh4XG4iLCBy
+ZXQsIHJlZ192YWwpOworCX0KKwogCS8qIEJ5IGRlZmF1bHQgd2UgZW5hYmxlIFRDUC9VRFAgd2l0
+aCBJUHY0L0lQdjYgcHR5cGVzICovCiAJaGVuYSA9ICh1NjQpaTQwZV9yZWFkX3J4X2N0bChodywg
+STQwRV9QRlFGX0hFTkEoMCkpIHwKIAkJKCh1NjQpaTQwZV9yZWFkX3J4X2N0bChodywgSTQwRV9Q
+RlFGX0hFTkEoMSkpIDw8IDMyKTsK
+--00000000000059aa6005896e1fad--
