@@ -2,80 +2,593 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1C612458F
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 03:20:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E460F24594
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 03:22:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727257AbfEUBUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 May 2019 21:20:35 -0400
-Received: from mga02.intel.com ([134.134.136.20]:10495 "EHLO mga02.intel.com"
+        id S1727538AbfEUBVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 May 2019 21:21:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54254 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726677AbfEUBUf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 May 2019 21:20:35 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 May 2019 18:20:34 -0700
-X-ExtLoop1: 1
-Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
-  by orsmga006.jf.intel.com with ESMTP; 20 May 2019 18:20:34 -0700
-Received: from orsmsx114.amr.corp.intel.com (10.22.240.10) by
- ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
- id 14.3.408.0; Mon, 20 May 2019 18:20:34 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
- ORSMSX114.amr.corp.intel.com ([169.254.8.116]) with mapi id 14.03.0415.000;
- Mon, 20 May 2019 18:20:34 -0700
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "mroos@linux.ee" <mroos@linux.ee>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "namit@vmware.com" <namit@vmware.com>,
-        "luto@kernel.org" <luto@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
-Subject: Re: [PATCH v2] vmalloc: Fix issues with flush flag
-Thread-Topic: [PATCH v2] vmalloc: Fix issues with flush flag
-Thread-Index: AQHVD0ezpbXySuUS5EinefGl750kkaZ0/uwAgAALkwCAAAiygIAAGYEAgAADqwCAAA0vgA==
-Date:   Tue, 21 May 2019 01:20:33 +0000
-Message-ID: <a43f9224e6b245ade4b587a018c8a21815091f0f.camel@intel.com>
-References: <c6020a01e81d08342e1a2b3ae7e03d55858480ba.camel@intel.com>
-         <20190520.154855.2207738976381931092.davem@davemloft.net>
-         <3e7e674c1fe094cd8dbe0c8933db18be1a37d76d.camel@intel.com>
-         <20190520.203320.621504228022195532.davem@davemloft.net>
-In-Reply-To: <20190520.203320.621504228022195532.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.30.1 (3.30.1-1.fc29) 
-x-originating-ip: [10.254.114.95]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D49A9B049E5A1C4885E25064E440A746@intel.com>
-Content-Transfer-Encoding: base64
+        id S1726677AbfEUBVj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 May 2019 21:21:39 -0400
+Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 68DE22173C;
+        Tue, 21 May 2019 01:21:36 +0000 (UTC)
+Date:   Mon, 20 May 2019 21:21:34 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Kris Van Hees <kris.van.hees@oracle.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        dtrace-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
+        mhiramat@kernel.org, acme@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [RFC PATCH 07/11] bpf: implement writable buffers in contexts
+Message-ID: <20190520212134.7a4ee15f@oasis.local.home>
+In-Reply-To: <201905202352.x4KNqOjS025227@userv0121.oracle.com>
+References: <201905202352.x4KNqOjS025227@userv0121.oracle.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTA1LTIwIGF0IDIwOjMzIC0wNDAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
-IEZyb206ICJFZGdlY29tYmUsIFJpY2sgUCIgPHJpY2sucC5lZGdlY29tYmVAaW50ZWwuY29tPg0K
-PiBEYXRlOiBUdWUsIDIxIE1heSAyMDE5IDAwOjIwOjEzICswMDAwDQo+IA0KPiA+IFRoaXMgYmVo
-YXZpb3Igc2hvdWxkbid0IGhhcHBlbiB1bnRpbCBtb2R1bGVzIG9yIEJQRiBhcmUgYmVpbmcNCj4g
-PiBmcmVlZC4NCj4gDQo+IFRoZW4gdGhhdCB3b3VsZCBydWxlIG91dCBteSB0aGVvcnkuDQo+IA0K
-PiBUaGUgb25seSB0aGluZyBsZWZ0IGlzIHdoZXRoZXIgdGhlIHBlcm1pc3Npb25zIGFyZSBhY3R1
-YWxseSBzZXQNCj4gcHJvcGVybHkuICBJZiB0aGV5IGFyZW4ndCB3ZSdsbCB0YWtlIGFuIGV4Y2Vw
-dGlvbiB3aGVuIHRoZSBCUEYNCj4gcHJvZ3JhbQ0KPiBpcyBydW4gYW5kIEknbSBub3QgJTEwMCBz
-dXJlIHRoYXQga2VybmVsIGV4ZWN1dGUgcGVybWlzc2lvbg0KPiB2aW9sYXRpb25zDQo+IGFyZSB0
-b3RhbGx5IGhhbmRsZWQgY2xlYW5seS4NClBlcm1pc3Npb25zIHNob3VsZG4ndCBiZSBhZmZlY3Rl
-ZCB3aXRoIHRoaXMgZXhjZXB0IG9uIGZyZWUuIEJ1dCByZWFkaW5nDQp0aGUgY29kZSBpdCBsb29r
-ZWQgbGlrZSBzcGFyYyBoYWQgYWxsIFBBR0VfS0VSTkVMIGFzIGV4ZWN1dGFibGUgYW5kIG5vDQpz
-ZXRfbWVtb3J5XygpIGltcGxlbWVudGF0aW9ucy4gSXMgdGhlcmUgc29tZSBwbGFjZXMgd2hlcmUg
-cGVybWlzc2lvbnMNCmFyZSBiZWluZyBzZXQ/DQoNClNob3VsZCBpdCBoYW5kbGUgZXhlY3V0aW5n
-IGFuIHVubWFwcGVkIHBhZ2UgZ3JhY2VmdWxseT8gQmVjYXVzZSB0aGlzDQpjaGFuZ2UgaXMgY2F1
-c2luZyB0aGF0IHRvIGhhcHBlbiBtdWNoIGVhcmxpZXIuIElmIHNvbWV0aGluZyB3YXMgcmVseWlu
-Zw0Kb24gYSBjYWNoZWQgdHJhbnNsYXRpb24gdG8gZXhlY3V0ZSBzb21ldGhpbmcgaXQgY291bGQg
-ZmluZCB0aGUgbWFwcGluZw0KZGlzYXBwZWFyLg0KDQoNCg0KDQoNCg0KDQoNCg0K
+
+Hi Kris,
+
+Note, it's best to thread patches. Otherwise they get spread out in
+mail boxes and hard to manage. That is, every patch should be a reply
+to the 00/11 header patch.
+
+Also, Peter Ziljstra (Cc'd) is the maintainer of perf on the kernel
+side. Please include him on Ccing perf changes that are done inside the
+kernel.
+
+-- Steve
+
+
+On Mon, 20 May 2019 23:52:24 +0000 (UTC)
+Kris Van Hees <kris.van.hees@oracle.com> wrote:
+
+> Currently, BPF supports writes to packet data in very specific cases.
+> The implementation can be of more general use and can be extended to any
+> number of writable buffers in a context.  The implementation adds two new
+> register types: PTR_TO_BUFFER and PTR_TO_BUFFER_END, similar to the types
+> PTR_TO_PACKET and PTR_TO_PACKET_END.  In addition, a field 'buf_id' is
+> added to the reg_state structure as a way to distinguish between different
+> buffers in a single context.
+> 
+> Buffers are specified in the context by a pair of members:
+> - a pointer to the start of the buffer (type PTR_TO_BUFFER)
+> - a pointer to the first byte beyond the buffer (type PTR_TO_BUFFER_END)
+> 
+> A context can contain multiple buffers.  Each buffer/buffer_end pair is
+> identified by a unique id (buf_id).  The start-of-buffer member offset is
+> usually a good unique identifier.
+> 
+> The semantics for using a writable buffer are the same as for packet data.
+> The BPF program must contain a range test (buf + num > buf_end) to ensure
+> that the verifier can verify that offsets are within the allowed range.
+> 
+> Whenever a helper is called that might update the content of the context
+> all range information for registers that hold pointers to a buffer is
+> cleared, just as it is done for packet pointers.
+> 
+> Signed-off-by: Kris Van Hees <kris.van.hees@oracle.com>
+> Reviewed-by: Nick Alcock <nick.alcock@oracle.com>
+> ---
+>  include/linux/bpf.h          |   3 +
+>  include/linux/bpf_verifier.h |   4 +-
+>  kernel/bpf/verifier.c        | 198 ++++++++++++++++++++++++-----------
+>  3 files changed, 145 insertions(+), 60 deletions(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index e4bcb79656c4..fc3eda0192fb 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -275,6 +275,8 @@ enum bpf_reg_type {
+>  	PTR_TO_TCP_SOCK,	 /* reg points to struct tcp_sock */
+>  	PTR_TO_TCP_SOCK_OR_NULL, /* reg points to struct tcp_sock or NULL */
+>  	PTR_TO_TP_BUFFER,	 /* reg points to a writable raw tp's buffer */
+> +	PTR_TO_BUFFER,		 /* reg points to ctx buffer */
+> +	PTR_TO_BUFFER_END,	 /* reg points to ctx buffer end */
+>  };
+>  
+>  /* The information passed from prog-specific *_is_valid_access
+> @@ -283,6 +285,7 @@ enum bpf_reg_type {
+>  struct bpf_insn_access_aux {
+>  	enum bpf_reg_type reg_type;
+>  	int ctx_field_size;
+> +	u32 buf_id;
+>  };
+>  
+>  static inline void
+> diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+> index 1305ccbd8fe6..3538382184f3 100644
+> --- a/include/linux/bpf_verifier.h
+> +++ b/include/linux/bpf_verifier.h
+> @@ -45,7 +45,7 @@ struct bpf_reg_state {
+>  	/* Ordering of fields matters.  See states_equal() */
+>  	enum bpf_reg_type type;
+>  	union {
+> -		/* valid when type == PTR_TO_PACKET */
+> +		/* valid when type == PTR_TO_PACKET | PTR_TO_BUFFER */
+>  		u16 range;
+>  
+>  		/* valid when type == CONST_PTR_TO_MAP | PTR_TO_MAP_VALUE |
+> @@ -132,6 +132,8 @@ struct bpf_reg_state {
+>  	 */
+>  	u32 frameno;
+>  	enum bpf_reg_liveness live;
+> +	/* For PTR_TO_BUFFER, to identify distinct buffers in a context. */
+> +	u32 buf_id;
+>  };
+>  
+>  enum bpf_stack_slot_type {
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index f9e5536fd1af..5fba4e6f5424 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -406,6 +406,8 @@ static const char * const reg_type_str[] = {
+>  	[PTR_TO_TCP_SOCK]	= "tcp_sock",
+>  	[PTR_TO_TCP_SOCK_OR_NULL] = "tcp_sock_or_null",
+>  	[PTR_TO_TP_BUFFER]	= "tp_buffer",
+> +	[PTR_TO_BUFFER]		= "buf",
+> +	[PTR_TO_BUFFER_END]	= "buf_end",
+>  };
+>  
+>  static char slot_type_char[] = {
+> @@ -467,6 +469,9 @@ static void print_verifier_state(struct bpf_verifier_env *env,
+>  				verbose(env, ",off=%d", reg->off);
+>  			if (type_is_pkt_pointer(t))
+>  				verbose(env, ",r=%d", reg->range);
+> +			else if (t == PTR_TO_BUFFER)
+> +				verbose(env, ",r=%d,bid=%d", reg->range,
+> +					reg->buf_id);
+>  			else if (t == CONST_PTR_TO_MAP ||
+>  				 t == PTR_TO_MAP_VALUE ||
+>  				 t == PTR_TO_MAP_VALUE_OR_NULL)
+> @@ -855,6 +860,12 @@ static bool reg_is_pkt_pointer_any(const struct bpf_reg_state *reg)
+>  	       reg->type == PTR_TO_PACKET_END;
+>  }
+>  
+> +static bool reg_is_buf_pointer_any(const struct bpf_reg_state *reg)
+> +{
+> +	return reg_is_pkt_pointer_any(reg) ||
+> +	       reg->type == PTR_TO_BUFFER || reg->type == PTR_TO_BUFFER_END;
+> +}
+> +
+>  /* Unmodified PTR_TO_PACKET[_META,_END] register from ctx access. */
+>  static bool reg_is_init_pkt_pointer(const struct bpf_reg_state *reg,
+>  				    enum bpf_reg_type which)
+> @@ -1550,7 +1561,7 @@ static int check_map_access(struct bpf_verifier_env *env, u32 regno,
+>  	return err;
+>  }
+>  
+> -#define MAX_PACKET_OFF 0xffff
+> +#define MAX_BUFFER_OFF 0xffff
+>  
+>  static bool may_access_direct_pkt_data(struct bpf_verifier_env *env,
+>  				       const struct bpf_call_arg_meta *meta,
+> @@ -1585,7 +1596,7 @@ static bool may_access_direct_pkt_data(struct bpf_verifier_env *env,
+>  	}
+>  }
+>  
+> -static int __check_packet_access(struct bpf_verifier_env *env, u32 regno,
+> +static int __check_buffer_access(struct bpf_verifier_env *env, u32 regno,
+>  				 int off, int size, bool zero_size_allowed)
+>  {
+>  	struct bpf_reg_state *regs = cur_regs(env);
+> @@ -1593,14 +1604,15 @@ static int __check_packet_access(struct bpf_verifier_env *env, u32 regno,
+>  
+>  	if (off < 0 || size < 0 || (size == 0 && !zero_size_allowed) ||
+>  	    (u64)off + size > reg->range) {
+> -		verbose(env, "invalid access to packet, off=%d size=%d, R%d(id=%d,off=%d,r=%d)\n",
+> -			off, size, regno, reg->id, reg->off, reg->range);
+> +		verbose(env, "invalid access to %s, off=%d size=%d, R%d(id=%d,off=%d,r=%d)\n",
+> +			reg_is_pkt_pointer(reg) ? "packet" : "buffer", off,
+> +			size, regno, reg->id, reg->off, reg->range);
+>  		return -EACCES;
+>  	}
+>  	return 0;
+>  }
+>  
+> -static int check_packet_access(struct bpf_verifier_env *env, u32 regno, int off,
+> +static int check_buffer_access(struct bpf_verifier_env *env, u32 regno, int off,
+>  			       int size, bool zero_size_allowed)
+>  {
+>  	struct bpf_reg_state *regs = cur_regs(env);
+> @@ -1620,35 +1632,37 @@ static int check_packet_access(struct bpf_verifier_env *env, u32 regno, int off,
+>  			regno);
+>  		return -EACCES;
+>  	}
+> -	err = __check_packet_access(env, regno, off, size, zero_size_allowed);
+> +	err = __check_buffer_access(env, regno, off, size, zero_size_allowed);
+>  	if (err) {
+> -		verbose(env, "R%d offset is outside of the packet\n", regno);
+> +		verbose(env, "R%d offset is outside of the %s\n",
+> +			regno, reg_is_pkt_pointer(reg) ? "packet" : "buffer");
+>  		return err;
+>  	}
+>  
+> -	/* __check_packet_access has made sure "off + size - 1" is within u16.
+> -	 * reg->umax_value can't be bigger than MAX_PACKET_OFF which is 0xffff,
+> -	 * otherwise find_good_pkt_pointers would have refused to set range info
+> -	 * that __check_packet_access would have rejected this pkt access.
+> -	 * Therefore, "off + reg->umax_value + size - 1" won't overflow u32.
+> -	 */
+> -	env->prog->aux->max_pkt_offset =
+> -		max_t(u32, env->prog->aux->max_pkt_offset,
+> -		      off + reg->umax_value + size - 1);
+> +	if (reg_is_pkt_pointer(reg)) {
+> +		/* __check_buffer_access ensures "off + size - 1" is within u16
+> +		 * reg->umax_value can't be bigger than * MAX_BUFFER_OFF which
+> +		 * is 0xffff, otherwise find_good_buf_pointers would have
+> +		 * refused to set range info and __check_buffer_access would
+> +		 * have rejected this pkt access.
+> +		 * Therefore, "off + reg->umax_value + size - 1" won't overflow
+> +		 * u32.
+> +		 */
+> +		env->prog->aux->max_pkt_offset =
+> +			max_t(u32, env->prog->aux->max_pkt_offset,
+> +			      off + reg->umax_value + size - 1);
+> +	}
+>  
+>  	return err;
+>  }
+>  
+>  /* check access to 'struct bpf_context' fields.  Supports fixed offsets only */
+> -static int check_ctx_access(struct bpf_verifier_env *env, int insn_idx, int off, int size,
+> -			    enum bpf_access_type t, enum bpf_reg_type *reg_type)
+> +static int check_ctx_access(struct bpf_verifier_env *env, int insn_idx,
+> +			    int off, int size, enum bpf_access_type t,
+> +			    struct bpf_insn_access_aux *info)
+>  {
+> -	struct bpf_insn_access_aux info = {
+> -		.reg_type = *reg_type,
+> -	};
+> -
+>  	if (env->ops->is_valid_access &&
+> -	    env->ops->is_valid_access(off, size, t, env->prog, &info)) {
+> +	    env->ops->is_valid_access(off, size, t, env->prog, info)) {
+>  		/* A non zero info.ctx_field_size indicates that this field is a
+>  		 * candidate for later verifier transformation to load the whole
+>  		 * field and then apply a mask when accessed with a narrower
+> @@ -1656,9 +1670,7 @@ static int check_ctx_access(struct bpf_verifier_env *env, int insn_idx, int off,
+>  		 * will only allow for whole field access and rejects any other
+>  		 * type of narrower access.
+>  		 */
+> -		*reg_type = info.reg_type;
+> -
+> -		env->insn_aux_data[insn_idx].ctx_field_size = info.ctx_field_size;
+> +		env->insn_aux_data[insn_idx].ctx_field_size = info->ctx_field_size;
+>  		/* remember the offset of last byte accessed in ctx */
+>  		if (env->prog->aux->max_ctx_offset < off + size)
+>  			env->prog->aux->max_ctx_offset = off + size;
+> @@ -1870,6 +1882,10 @@ static int check_ptr_alignment(struct bpf_verifier_env *env,
+>  	case PTR_TO_TCP_SOCK:
+>  		pointer_desc = "tcp_sock ";
+>  		break;
+> +	case PTR_TO_BUFFER:
+> +		pointer_desc = "buffer ";
+> +		strict = true;
+> +		break;
+>  	default:
+>  		break;
+>  	}
+> @@ -2084,7 +2100,11 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+>  			mark_reg_unknown(env, regs, value_regno);
+>  
+>  	} else if (reg->type == PTR_TO_CTX) {
+> -		enum bpf_reg_type reg_type = SCALAR_VALUE;
+> +		struct bpf_insn_access_aux info = {
+> +			.reg_type = SCALAR_VALUE,
+> +			.buf_id = 0,
+> +		};
+> +
+>  
+>  		if (t == BPF_WRITE && value_regno >= 0 &&
+>  		    is_pointer_value(env, value_regno)) {
+> @@ -2096,21 +2116,22 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+>  		if (err < 0)
+>  			return err;
+>  
+> -		err = check_ctx_access(env, insn_idx, off, size, t, &reg_type);
+> +		err = check_ctx_access(env, insn_idx, off, size, t, &info);
+>  		if (!err && t == BPF_READ && value_regno >= 0) {
+>  			/* ctx access returns either a scalar, or a
+>  			 * PTR_TO_PACKET[_META,_END]. In the latter
+>  			 * case, we know the offset is zero.
+>  			 */
+> -			if (reg_type == SCALAR_VALUE) {
+> +			if (info.reg_type == SCALAR_VALUE) {
+>  				mark_reg_unknown(env, regs, value_regno);
+>  			} else {
+>  				mark_reg_known_zero(env, regs,
+>  						    value_regno);
+> -				if (reg_type_may_be_null(reg_type))
+> +				if (reg_type_may_be_null(info.reg_type))
+>  					regs[value_regno].id = ++env->id_gen;
+>  			}
+> -			regs[value_regno].type = reg_type;
+> +			regs[value_regno].type = info.reg_type;
+> +			regs[value_regno].buf_id = info.buf_id;
+>  		}
+>  
+>  	} else if (reg->type == PTR_TO_STACK) {
+> @@ -2141,7 +2162,17 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+>  				value_regno);
+>  			return -EACCES;
+>  		}
+> -		err = check_packet_access(env, regno, off, size, false);
+> +		err = check_buffer_access(env, regno, off, size, false);
+> +		if (!err && t == BPF_READ && value_regno >= 0)
+> +			mark_reg_unknown(env, regs, value_regno);
+> +	} else if (reg->type == PTR_TO_BUFFER) {
+> +		if (t == BPF_WRITE && value_regno >= 0 &&
+> +		    is_pointer_value(env, value_regno)) {
+> +			verbose(env, "R%d leaks addr into buffer\n",
+> +				value_regno);
+> +			return -EACCES;
+> +		}
+> +		err = check_buffer_access(env, regno, off, size, false);
+>  		if (!err && t == BPF_READ && value_regno >= 0)
+>  			mark_reg_unknown(env, regs, value_regno);
+>  	} else if (reg->type == PTR_TO_FLOW_KEYS) {
+> @@ -2382,7 +2413,7 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+>  	switch (reg->type) {
+>  	case PTR_TO_PACKET:
+>  	case PTR_TO_PACKET_META:
+> -		return check_packet_access(env, regno, reg->off, access_size,
+> +		return check_buffer_access(env, regno, reg->off, access_size,
+>  					   zero_size_allowed);
+>  	case PTR_TO_MAP_VALUE:
+>  		if (check_map_access_type(env, regno, reg->off, access_size,
+> @@ -2962,34 +2993,35 @@ static int check_func_proto(const struct bpf_func_proto *fn, int func_id)
+>  	       check_refcount_ok(fn, func_id) ? 0 : -EINVAL;
+>  }
+>  
+> -/* Packet data might have moved, any old PTR_TO_PACKET[_META,_END]
+> - * are now invalid, so turn them into unknown SCALAR_VALUE.
+> +/* Packet or buffer data might have moved, any old PTR_TO_PACKET[_META,_END]
+> + * and/or PTR_TO_BUFFER[_END] are now invalid, so turn them into unknown
+> + * SCALAR_VALUE.
+>   */
+> -static void __clear_all_pkt_pointers(struct bpf_verifier_env *env,
+> +static void __clear_all_buf_pointers(struct bpf_verifier_env *env,
+>  				     struct bpf_func_state *state)
+>  {
+>  	struct bpf_reg_state *regs = state->regs, *reg;
+>  	int i;
+>  
+>  	for (i = 0; i < MAX_BPF_REG; i++)
+> -		if (reg_is_pkt_pointer_any(&regs[i]))
+> +		if (reg_is_buf_pointer_any(&regs[i]))
+>  			mark_reg_unknown(env, regs, i);
+>  
+>  	bpf_for_each_spilled_reg(i, state, reg) {
+>  		if (!reg)
+>  			continue;
+> -		if (reg_is_pkt_pointer_any(reg))
+> +		if (reg_is_buf_pointer_any(reg))
+>  			__mark_reg_unknown(reg);
+>  	}
+>  }
+>  
+> -static void clear_all_pkt_pointers(struct bpf_verifier_env *env)
+> +static void clear_all_buf_pointers(struct bpf_verifier_env *env)
+>  {
+>  	struct bpf_verifier_state *vstate = env->cur_state;
+>  	int i;
+>  
+>  	for (i = 0; i <= vstate->curframe; i++)
+> -		__clear_all_pkt_pointers(env, vstate->frame[i]);
+> +		__clear_all_buf_pointers(env, vstate->frame[i]);
+>  }
+>  
+>  static void release_reg_references(struct bpf_verifier_env *env,
+> @@ -3417,7 +3449,7 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
+>  	}
+>  
+>  	if (changes_data)
+> -		clear_all_pkt_pointers(env);
+> +		clear_all_buf_pointers(env);
+>  	return 0;
+>  }
+>  
+> @@ -4349,7 +4381,7 @@ static int check_alu_op(struct bpf_verifier_env *env, struct bpf_insn *insn)
+>  	return 0;
+>  }
+>  
+> -static void __find_good_pkt_pointers(struct bpf_func_state *state,
+> +static void __find_good_buf_pointers(struct bpf_func_state *state,
+>  				     struct bpf_reg_state *dst_reg,
+>  				     enum bpf_reg_type type, u16 new_range)
+>  {
+> @@ -4358,7 +4390,11 @@ static void __find_good_pkt_pointers(struct bpf_func_state *state,
+>  
+>  	for (i = 0; i < MAX_BPF_REG; i++) {
+>  		reg = &state->regs[i];
+> -		if (reg->type == type && reg->id == dst_reg->id)
+> +		if (reg->type != type)
+> +			continue;
+> +		if (type == PTR_TO_BUFFER && reg->buf_id != dst_reg->buf_id)
+> +			continue;
+> +		if (reg->id == dst_reg->id)
+>  			/* keep the maximum range already checked */
+>  			reg->range = max(reg->range, new_range);
+>  	}
+> @@ -4366,12 +4402,16 @@ static void __find_good_pkt_pointers(struct bpf_func_state *state,
+>  	bpf_for_each_spilled_reg(i, state, reg) {
+>  		if (!reg)
+>  			continue;
+> -		if (reg->type == type && reg->id == dst_reg->id)
+> +		if (reg->type != type)
+> +			continue;
+> +		if (type == PTR_TO_BUFFER && reg->buf_id != dst_reg->buf_id)
+> +			continue;
+> +		if (reg->id == dst_reg->id)
+>  			reg->range = max(reg->range, new_range);
+>  	}
+>  }
+>  
+> -static void find_good_pkt_pointers(struct bpf_verifier_state *vstate,
+> +static void find_good_buf_pointers(struct bpf_verifier_state *vstate,
+>  				   struct bpf_reg_state *dst_reg,
+>  				   enum bpf_reg_type type,
+>  				   bool range_right_open)
+> @@ -4384,8 +4424,8 @@ static void find_good_pkt_pointers(struct bpf_verifier_state *vstate,
+>  		/* This doesn't give us any range */
+>  		return;
+>  
+> -	if (dst_reg->umax_value > MAX_PACKET_OFF ||
+> -	    dst_reg->umax_value + dst_reg->off > MAX_PACKET_OFF)
+> +	if (dst_reg->umax_value > MAX_BUFFER_OFF ||
+> +	    dst_reg->umax_value + dst_reg->off > MAX_BUFFER_OFF)
+>  		/* Risk of overflow.  For instance, ptr + (1<<63) may be less
+>  		 * than pkt_end, but that's because it's also less than pkt.
+>  		 */
+> @@ -4440,10 +4480,10 @@ static void find_good_pkt_pointers(struct bpf_verifier_state *vstate,
+>  	/* If our ids match, then we must have the same max_value.  And we
+>  	 * don't care about the other reg's fixed offset, since if it's too big
+>  	 * the range won't allow anything.
+> -	 * dst_reg->off is known < MAX_PACKET_OFF, therefore it fits in a u16.
+> +	 * dst_reg->off is known < MAX_BUFFER_OFF, therefore it fits in a u16.
+>  	 */
+>  	for (i = 0; i <= vstate->curframe; i++)
+> -		__find_good_pkt_pointers(vstate->frame[i], dst_reg, type,
+> +		__find_good_buf_pointers(vstate->frame[i], dst_reg, type,
+>  					 new_range);
+>  }
+>  
+> @@ -4934,7 +4974,7 @@ static void __mark_ptr_or_null_regs(struct bpf_func_state *state, u32 id,
+>  	}
+>  }
+>  
+> -/* The logic is similar to find_good_pkt_pointers(), both could eventually
+> +/* The logic is similar to find_good_buf_pointers(), both could eventually
+>   * be folded together at some point.
+>   */
+>  static void mark_ptr_or_null_regs(struct bpf_verifier_state *vstate, u32 regno,
+> @@ -4977,14 +5017,24 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
+>  		    (dst_reg->type == PTR_TO_PACKET_META &&
+>  		     reg_is_init_pkt_pointer(src_reg, PTR_TO_PACKET))) {
+>  			/* pkt_data' > pkt_end, pkt_meta' > pkt_data */
+> -			find_good_pkt_pointers(this_branch, dst_reg,
+> +			find_good_buf_pointers(this_branch, dst_reg,
+>  					       dst_reg->type, false);
+>  		} else if ((dst_reg->type == PTR_TO_PACKET_END &&
+>  			    src_reg->type == PTR_TO_PACKET) ||
+>  			   (reg_is_init_pkt_pointer(dst_reg, PTR_TO_PACKET) &&
+>  			    src_reg->type == PTR_TO_PACKET_META)) {
+>  			/* pkt_end > pkt_data', pkt_data > pkt_meta' */
+> -			find_good_pkt_pointers(other_branch, src_reg,
+> +			find_good_buf_pointers(other_branch, src_reg,
+> +					       src_reg->type, true);
+> +		} else if (dst_reg->type == PTR_TO_BUFFER &&
+> +			   src_reg->type == PTR_TO_BUFFER_END) {
+> +			/* buf' > buf_end */
+> +			find_good_buf_pointers(this_branch, dst_reg,
+> +					       dst_reg->type, false);
+> +		} else if (dst_reg->type == PTR_TO_BUFFER_END &&
+> +			   src_reg->type == PTR_TO_BUFFER) {
+> +			/* buf_end > buf' */
+> +			find_good_buf_pointers(other_branch, src_reg,
+>  					       src_reg->type, true);
+>  		} else {
+>  			return false;
+> @@ -4996,14 +5046,24 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
+>  		    (dst_reg->type == PTR_TO_PACKET_META &&
+>  		     reg_is_init_pkt_pointer(src_reg, PTR_TO_PACKET))) {
+>  			/* pkt_data' < pkt_end, pkt_meta' < pkt_data */
+> -			find_good_pkt_pointers(other_branch, dst_reg,
+> +			find_good_buf_pointers(other_branch, dst_reg,
+>  					       dst_reg->type, true);
+>  		} else if ((dst_reg->type == PTR_TO_PACKET_END &&
+>  			    src_reg->type == PTR_TO_PACKET) ||
+>  			   (reg_is_init_pkt_pointer(dst_reg, PTR_TO_PACKET) &&
+>  			    src_reg->type == PTR_TO_PACKET_META)) {
+>  			/* pkt_end < pkt_data', pkt_data > pkt_meta' */
+> -			find_good_pkt_pointers(this_branch, src_reg,
+> +			find_good_buf_pointers(this_branch, src_reg,
+> +					       src_reg->type, false);
+> +		} else if (dst_reg->type == PTR_TO_BUFFER &&
+> +			   src_reg->type == PTR_TO_BUFFER_END) {
+> +			/* buf' < buf_end */
+> +			find_good_buf_pointers(other_branch, dst_reg,
+> +					       dst_reg->type, true);
+> +		} else if (dst_reg->type == PTR_TO_BUFFER_END &&
+> +			   src_reg->type == PTR_TO_BUFFER) {
+> +			/* buf_end < buf' */
+> +			find_good_buf_pointers(this_branch, src_reg,
+>  					       src_reg->type, false);
+>  		} else {
+>  			return false;
+> @@ -5015,14 +5075,24 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
+>  		    (dst_reg->type == PTR_TO_PACKET_META &&
+>  		     reg_is_init_pkt_pointer(src_reg, PTR_TO_PACKET))) {
+>  			/* pkt_data' >= pkt_end, pkt_meta' >= pkt_data */
+> -			find_good_pkt_pointers(this_branch, dst_reg,
+> +			find_good_buf_pointers(this_branch, dst_reg,
+>  					       dst_reg->type, true);
+>  		} else if ((dst_reg->type == PTR_TO_PACKET_END &&
+>  			    src_reg->type == PTR_TO_PACKET) ||
+>  			   (reg_is_init_pkt_pointer(dst_reg, PTR_TO_PACKET) &&
+>  			    src_reg->type == PTR_TO_PACKET_META)) {
+>  			/* pkt_end >= pkt_data', pkt_data >= pkt_meta' */
+> -			find_good_pkt_pointers(other_branch, src_reg,
+> +			find_good_buf_pointers(other_branch, src_reg,
+> +					       src_reg->type, false);
+> +		} else if (dst_reg->type == PTR_TO_BUFFER &&
+> +			   src_reg->type == PTR_TO_BUFFER_END) {
+> +			/* buf' >= buf_end */
+> +			find_good_buf_pointers(this_branch, dst_reg,
+> +					       dst_reg->type, true);
+> +		} else if (dst_reg->type == PTR_TO_BUFFER_END &&
+> +			   src_reg->type == PTR_TO_BUFFER) {
+> +			/* buf_end >= buf' */
+> +			find_good_buf_pointers(other_branch, src_reg,
+>  					       src_reg->type, false);
+>  		} else {
+>  			return false;
+> @@ -5034,15 +5104,25 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
+>  		    (dst_reg->type == PTR_TO_PACKET_META &&
+>  		     reg_is_init_pkt_pointer(src_reg, PTR_TO_PACKET))) {
+>  			/* pkt_data' <= pkt_end, pkt_meta' <= pkt_data */
+> -			find_good_pkt_pointers(other_branch, dst_reg,
+> +			find_good_buf_pointers(other_branch, dst_reg,
+>  					       dst_reg->type, false);
+>  		} else if ((dst_reg->type == PTR_TO_PACKET_END &&
+>  			    src_reg->type == PTR_TO_PACKET) ||
+>  			   (reg_is_init_pkt_pointer(dst_reg, PTR_TO_PACKET) &&
+>  			    src_reg->type == PTR_TO_PACKET_META)) {
+>  			/* pkt_end <= pkt_data', pkt_data <= pkt_meta' */
+> -			find_good_pkt_pointers(this_branch, src_reg,
+> +			find_good_buf_pointers(this_branch, src_reg,
+>  					       src_reg->type, true);
+> +		} else if (dst_reg->type == PTR_TO_BUFFER &&
+> +			   src_reg->type == PTR_TO_BUFFER_END) {
+> +			/* buf' <= buf_end */
+> +			find_good_buf_pointers(other_branch, dst_reg,
+> +					       dst_reg->type, true);
+> +		} else if (dst_reg->type == PTR_TO_BUFFER_END &&
+> +			   src_reg->type == PTR_TO_BUFFER) {
+> +			/* buf_end <= buf' */
+> +			find_good_buf_pointers(this_branch, src_reg,
+> +					       src_reg->type, false);
+>  		} else {
+>  			return false;
+>  		}
+> @@ -7972,7 +8052,7 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+>  			 */
+>  			prog->cb_access = 1;
+>  			env->prog->aux->stack_depth = MAX_BPF_STACK;
+> -			env->prog->aux->max_pkt_offset = MAX_PACKET_OFF;
+> +			env->prog->aux->max_pkt_offset = MAX_BUFFER_OFF;
+>  
+>  			/* mark bpf_tail_call as different opcode to avoid
+>  			 * conditional branch in the interpeter for every normal
+
