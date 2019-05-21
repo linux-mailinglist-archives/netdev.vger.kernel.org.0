@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D78124C6B
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 12:12:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10E2A24CA5
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 12:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727251AbfEUKMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 06:12:39 -0400
-Received: from mail01.preh.com ([80.149.130.22]:50804 "EHLO mail01.preh.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726448AbfEUKMj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 May 2019 06:12:39 -0400
-From:   Kloetzke Jan <Jan.Kloetzke@preh.de>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "oneukum@suse.com" <oneukum@suse.com>
-CC:     "jan@kloetzke.net" <jan@kloetzke.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH v2] usbnet: fix kernel crash after disconnect
-Thread-Topic: [PATCH v2] usbnet: fix kernel crash after disconnect
-Thread-Index: AQHU/18dyV1WEybtp0WgCkArhegqtKZcDN8AgAGbOgCAD6SEgIAIB9wAgAAGnQA=
-Date:   Tue, 21 May 2019 10:12:23 +0000
-Message-ID: <1558433542.19453.33.camel@preh.de>
-References: <1556563688.20085.31.camel@suse.com>
-         <20190430141440.9469-1-Jan.Kloetzke@preh.de>
-         <20190505.004556.492323065607253635.davem@davemloft.net>
-         <1557130666.12778.3.camel@suse.com> <1557990629.19453.7.camel@preh.de>
-         <1558432122.12672.12.camel@suse.com>
-In-Reply-To: <1558432122.12672.12.camel@suse.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-tm-snts-smtp: E766891CAA47C511B3ACF51FFF83D97C99B6D1BBDEE79F336CAB83929E6DDA6D2000:8
-x-exclaimer-md-config: 142fe46c-4d13-4ac1-9970-1f36f118897a
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C544988B646F2E438DB82C8B97E734CA@preh.de>
-Content-Transfer-Encoding: base64
+        id S1727673AbfEUK2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 06:28:02 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:56814 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726344AbfEUK2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 06:28:02 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4LANVHW036941;
+        Tue, 21 May 2019 10:27:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=t4iGz702FxiPoqBJZC20mzL6PDTkQtNdAFMfDZKsF2g=;
+ b=YShbBBNoTnFakj3j1idMUC/2meM33xYeZIVO0G4gBK1aWB9is8qdj54m4cp7VZEvJWtO
+ ddN9IYcMk6ZtCchwlUYbB6zChlcp3LPvfmzd6fkRZKqMGdGLZOYLkY0kVTqOLI4T/s80
+ mescmliPSjmvEjQh1sCsjmoU4gB0yMizxq9bONnrRpiXzCyU/LEN2k5v7E07OxD58UIJ
+ coUS4Gn2CWkkE9zH6jWfpwmXExvKQFXLtOaJ0V/Wz/EH+AnxXzfi/hWrjUJoljU233/D
+ ECTBltIX+jE3FArfJwO2idgAPQFT/mJ/ZmOwCtZOOUQr4z8ytsuWd6B5ALQrowHvwy0U 9Q== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2130.oracle.com with ESMTP id 2sj9ftce50-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 21 May 2019 10:27:57 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4LARdR5135175;
+        Tue, 21 May 2019 10:27:57 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 2sks1jcg1a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 21 May 2019 10:27:56 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x4LARoRb002994;
+        Tue, 21 May 2019 10:27:50 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 21 May 2019 10:27:49 +0000
+Date:   Tue, 21 May 2019 13:27:42 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Karsten Keil <isdn@linux-pingi.de>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] mISDN: Fix indenting in dsp_cmx.c
+Message-ID: <20190521102742.GJ19380@kadam>
+References: <20190521094256.GA11899@mwanda>
+ <60901822e34c6c715668dbcf7adbded312d19ea4.camel@perches.com>
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=preh.de; s=key1; c=relaxed/relaxed;
- h=from:to:cc:subject:date:message-id:references:content-type:mime-version;
- bh=9wyZw08aJ2US/GZIzCzxf42QZpwuiDAuMmCgt4oeGqc=;
- b=Xf5Bzq63XAX30L5Uwvs6QsIBYZ+znN2z+lCLKYY70YGo6/VqBRjijo9dmaLGVbb2d3jouIJpG185
-        4Eozy8AV5sAohsQTH96Wl5iUAVy0mVqSNoo3tRrTYCgBZ3+hSeyeWNs6mM8Nk7BmTMdqG86UwlBr
-        QEIXBA3LnCg4SvLMYb2xyM5q1XlORT2edfdNtptrmrJKXh6ub9RcLSOC5Uskb4H5SLh1DahisOgv
-        hdwX1JIDqDcxVrRmEM9qUGk+O2pc20Mv6oJQ3BF4oYllOrwdqbLfzoWjnKJjY47QsYXZYhhh0U8Z
-        /5vTGGZ/3AXp6RoLYSX7HDnM5w54ftlzKG+Ebw==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <60901822e34c6c715668dbcf7adbded312d19ea4.camel@perches.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9263 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=864
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1905210066
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9263 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=916 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1905210066
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGksDQoNCkFtIERpZW5zdGFnLCBkZW4gMjEuMDUuMjAxOSwgMTE6NDggKzAyMDAgc2NocmllYiBP
-bGl2ZXIgTmV1a3VtOg0KPiBPbiBEbywgMjAxOS0wNS0xNiBhdCAwNzoxMCArMDAwMCwgS2xvZXR6
-a2UgSmFuIHdyb3RlOg0KPiA+IEFtIE1vbnRhZywgZGVuIDA2LjA1LjIwMTksIDEwOjE3ICswMjAw
-IHNjaHJpZWIgT2xpdmVyIE5ldWt1bToNCj4gPiA+IE9uIFNvLCAyMDE5LTA1LTA1IGF0IDAwOjQ1
-IC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+ID4gPiA+IEZyb206IEtsb2V0emtlIEphbiA8
-SmFuLktsb2V0emtlQHByZWguZGU+DQo+ID4gPiA+IERhdGU6IFR1ZSwgMzAgQXByIDIwMTkgMTQ6
-MTU6MDcgKzAwMDANCj4gPiA+ID4gDQo+ID4gPiA+ID4gQEAgLTE0MzEsNiArMTQzMiwxMSBAQCBu
-ZXRkZXZfdHhfdCB1c2JuZXRfc3RhcnRfeG1pdCAoc3RydWN0IHNrX2J1ZmYgKnNrYiwNCj4gPiA+
-ID4gPiAgICAgICAgICAgICAgIHNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmRldi0+dHhxLmxvY2ss
-IGZsYWdzKTsNCj4gPiA+ID4gPiAgICAgICAgICAgICAgIGdvdG8gZHJvcDsNCj4gPiA+ID4gPiAg
-ICAgICB9DQo+ID4gPiA+ID4gKyAgICAgaWYgKFdBUk5fT04obmV0aWZfcXVldWVfc3RvcHBlZChu
-ZXQpKSkgew0KPiA+ID4gPiA+ICsgICAgICAgICAgICAgdXNiX2F1dG9wbV9wdXRfaW50ZXJmYWNl
-X2FzeW5jKGRldi0+aW50Zik7DQo+ID4gPiA+ID4gKyAgICAgICAgICAgICBzcGluX3VubG9ja19p
-cnFyZXN0b3JlKCZkZXYtPnR4cS5sb2NrLCBmbGFncyk7DQo+ID4gPiA+ID4gKyAgICAgICAgICAg
-ICBnb3RvIGRyb3A7DQo+ID4gPiA+ID4gKyAgICAgfQ0KPiA+ID4gPiANCj4gPiA+ID4gSWYgdGhp
-cyBpcyBrbm93biB0byBoYXBwZW4gYW5kIGlzIGV4cGVjdGVkLCB0aGVuIHdlIHNob3VsZCBub3Qg
-d2Fybi4NCj4gPiA+ID4gDQo+ID4gPiANCj4gPiA+IEhpLA0KPiA+ID4gDQo+ID4gPiB5ZXMgdGhp
-cyBpcyB0aGUgcG9pbnQuIENhbiBuZG9fc3RhcnRfeG1pdCgpIGFuZCBuZG9fc3RvcCgpIHJhY2U/
-DQo+ID4gPiBJZiBub3QsIHdoeSBkb2VzIHRoZSBwYXRjaCBmaXggdGhlIG9ic2VydmVkIGlzc3Vl
-IGFuZCB3aGF0DQo+ID4gPiBwcmV2ZW50cyB0aGUgcmFjZT8gU29tZXRoaW5nIGlzIG5vdCBjbGVh
-ciBoZXJlLg0KPiA+IA0KPiA+IERhdmUsIGNvdWxkIHlvdSBzaGVkIHNvbWUgbGlnaHQgb24gT2xp
-dmVycyBxdWVzdGlvbj8gSWYgdGhlIHJhY2UgY2FuDQo+ID4gaGFwcGVuIHRoZW4gd2UgY2FuIHN0
-aWNrIHRvIHYxIGJlY2F1c2UgdGhlIFdBUk5fT04gaXMgaW5kZWVkIHBvaW50bGVzcy4NCj4gPiBP
-dGhlcndpc2UgaXQncyBub3QgY2xlYXIgd2h5IGl0IG1hZGUgdGhlIHByb2JsZW0gZ28gYXdheSBm
-b3IgdXMgYW5kIHYyDQo+ID4gbWF5IGJlIHRoZSBiZXR0ZXIgb3B0aW9uLi4uDQo+IA0KPiBIaSwN
-Cj4gDQo+IGFzIERhdmUgY29uZmlybWVkIHRoYXQgdGhlIHJhY2UgZXhpc3RzLCBjb3VsZCB5b3Ug
-cmVzdWJtaXQgd2l0aG91dA0KPiB0aGUgV0FSTiA/DQoNCldoeSBub3QganVzdCB0YWtlIHYxIG9m
-IHRoZSBwYXRjaD8NCg0KICBodHRwczovL2xvcmUua2VybmVsLm9yZy9uZXRkZXYvMjAxOTA0MTcw
-OTE4NDkuNzQ3NS0xLUphbi5LbG9ldHprZUBwcmVoLmRlLw0KDQpUaGUgb3JpZ2luYWwgdmVyc2lv
-biB3YXMgZXhhY3RseSB0aGUgc2FtZSwganVzdCB3aXRob3V0IHRoZSBXQVJOX09OKCkuDQpPciBp
-cyBpdCByZXF1aXJlZCB0byBzZW5kIGEgdjMgaW4gdGhpcyBjYXNlPw0KDQpSZWdhcmRzLA0KSmFu
+On Tue, May 21, 2019 at 02:57:10AM -0700, Joe Perches wrote:
+> On Tue, 2019-05-21 at 12:42 +0300, Dan Carpenter wrote:
+> > We used a script to indent this code back in 2012, but I guess it got
+> > confused by the ifdefs and added some extra tabs.  This patch removes
+> > them.
+> 
+> Yup, thanks Dan.
+> Emacs indent-region made a mess of it.
+> 
+
+The re-indent generally made things better and even in this case it
+didn't really make it worse, just different.
+
+regards,
+dan carpenter
+
