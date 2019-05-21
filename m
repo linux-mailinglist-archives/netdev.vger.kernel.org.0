@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D7852584A
+	by mail.lfdr.de (Postfix) with ESMTP id CE7EE2584B
 	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 21:30:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727347AbfEUTay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 15:30:54 -0400
-Received: from mail-qt1-f182.google.com ([209.85.160.182]:35451 "EHLO
-        mail-qt1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726771AbfEUTaw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 15:30:52 -0400
-Received: by mail-qt1-f182.google.com with SMTP id a39so21972604qtk.2
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 12:30:52 -0700 (PDT)
+        id S1727434AbfEUTaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 15:30:55 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:45824 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727350AbfEUTay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 15:30:54 -0400
+Received: by mail-qk1-f195.google.com with SMTP id j1so11776632qkk.12
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 12:30:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=I0RFzJ7PTW4DzoSDTFs51KVDvNPekS1Mv43PXPJwjwo=;
-        b=GwdTjcfO0HwO3JHseyJtNfZjcihVDAzt4wcoanyt/PNSYHHC6zNZEt6ShCaW+5jQyI
-         TUTHDjszIGOxPoKnkrrt7W17uSUwLDiw3GHVJ55G+TLuG7tEAFr7n3VHofkti4ZBwj/q
-         CYGl7RKSds07JlhjeRJOYCR4/y8ZawWPer6b35Ei/jJpKBLDwgqK+Xby9N7GZ8x+ylcG
-         tLCqHA++A5baQZwXrehhyFTJnw3uY8MOhHB4nAi4Qx2hX5C6YBKE6v3UJW6OoBTpkh9E
-         M+gcZ2RSks4Fhjq959K+pjRnpz3se1Gi14DTukXHCeW0uHpSQUndKJOazGK6t/ecRt96
-         aCZw==
+        bh=E9qpYWzMct/oNX/WojYYzQyUR7f9T+jjfQePTtF04G4=;
+        b=H+a/FVsNXjX4L40NoPsX86+kmRHvzLA6A3JMlohLHS/sl63F+KNQh1W+NyVi2pnCxr
+         S5Jqvc+bJ5DpHOJvZB/Ip5m9AfX/3x+ug0WTuFwczwecAydozweq+RoS8vXxZ/5VrzmO
+         Y2t485B9WXME4LE5MROcJNmhxoZK9ukvkXBvkwiKbiE7LCJQtKWpUw/O9jqHRSkrXUd5
+         iRzECLC+OBBKCu1ziM6RuiI5F32Y02bUQw9xycPBGFmePiWDBqUhLYqvV5OI/F69f+qa
+         u6nZKS+ulQyJa4RGhR0poPM4nO8uZr9u2Bx4jcDKgVfANOXcJIcyjDtGSKYxDsQMFJQQ
+         4Ozw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=I0RFzJ7PTW4DzoSDTFs51KVDvNPekS1Mv43PXPJwjwo=;
-        b=rpfJUbRoPHQT/9bXifKgXzaJAfqO3TVfsURBBXA7qcc7Mag6NZI3XuvUa1WgnRevad
-         Z7hxpmzaIYNbcPXVSHXpPqtukdI9i8H2ysIwn/ePzcW3i90BCtep9gLPqCow5ORcRMia
-         8vjMHSS3hBuxkuC4ERrjCYrR4dd2GmEZyjUv+0iJBGR5CByZoscJ+Nhm1OuU94PHsYq9
-         w9qDElZeWvFCkgbnGqvGZ0dRwv7YPbXBCJ5TP1nEkTF+PRyh+pxRhKWlD4olUkZ52n+r
-         euMPe/Q4BBJNkGOtPG2M5P87BBeMdRAZVGWkM6G5ki5EtM2J/damX6gRPCjKR7QEFv8t
-         MaHw==
-X-Gm-Message-State: APjAAAUpdOh+qXxFclPFgBi0pn+o7nJARc7Voq8PvJ20cdEVcCbiWH5a
-        hbJOmWLYMoikTI/sRuudJUOLzP9O
-X-Google-Smtp-Source: APXvYqxKqSu6qnQfI+gekAg2yIqKOkIM84WE2Ltbm7TqbbMr4fc2T74vC7DCOEuAPjs2IRMEb3Xo/w==
-X-Received: by 2002:ac8:97b:: with SMTP id z56mr68945840qth.259.1558467051656;
-        Tue, 21 May 2019 12:30:51 -0700 (PDT)
+        bh=E9qpYWzMct/oNX/WojYYzQyUR7f9T+jjfQePTtF04G4=;
+        b=j7h6FX5mmBqdZ5Sl9Ngx9YYqnufN+3cPQHaaqoPptUjZtzgMeg3H63onNh4C04v9v5
+         7oUQScmsdeFUTNkkuB4Z082YmOxEYH/eqDfxMza9bZM0h940j9VbDoby81aN7PoEeHEl
+         Hb3qmIfg5LgIkOuCFtRUrqVICl6YUw7r9IZGb089LNctDfFv6gbM1H7gkXSX2yH2gMcr
+         xypP5+feFmbTLJrN2hutd0fikpr1qUONPAJSqh9fSDZsO/yss2VGWLOTW9doZfaS/J7e
+         gIvzrdt7UQb67gsLf6AEpgWFbeCv/zRfdDY9U7AahBuXey2OVm2HbgXPsRh0q2UoMSNA
+         H+2g==
+X-Gm-Message-State: APjAAAU3ftt4/S1KfUOl74e4enrDuJfapexoqmrZSdgBv/ZF4zOj2p/Q
+        Knj4SxmCs3sltdj83P6Z48kKIVUb
+X-Google-Smtp-Source: APXvYqzFAsz4RxMvRdoKv1BThI1eCtMvRi4k72xp/1Cq27pur5tGbFS2Ip1HorN3YZemREN//YH4uA==
+X-Received: by 2002:a37:4e8d:: with SMTP id c135mr13759336qkb.120.1558467053347;
+        Tue, 21 May 2019 12:30:53 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id f33sm14544526qtf.64.2019.05.21.12.30.50
+        by smtp.gmail.com with ESMTPSA id j10sm9450962qth.8.2019.05.21.12.30.52
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 21 May 2019 12:30:51 -0700 (PDT)
+        Tue, 21 May 2019 12:30:52 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     cphealy@gmail.com, Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [RFC net-next 1/9] net: dsa: introduce dsa_master_find_switch
-Date:   Tue, 21 May 2019 15:29:56 -0400
-Message-Id: <20190521193004.10767-2-vivien.didelot@gmail.com>
+Subject: [RFC net-next 2/9] net: dsa: allow switches to receive frames
+Date:   Tue, 21 May 2019 15:29:57 -0400
+Message-Id: <20190521193004.10767-3-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190521193004.10767-1-vivien.didelot@gmail.com>
 References: <20190521193004.10767-1-vivien.didelot@gmail.com>
@@ -63,50 +63,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce a DSA helper to find a dsa_switch structure by ID from a
-master interface, that will be useful for frames with a switch ID
-but no port ID.
+Add a rcv DSA switch operation to allow taggers to let the driver of
+the source switch to process the received frame on its own.
+
+At the moment, only DSA and EDSA taggers make use of this hook.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- net/dsa/dsa_priv.h | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ include/net/dsa.h  | 5 +++++
+ net/dsa/tag_dsa.c  | 6 ++++++
+ net/dsa/tag_edsa.c | 6 ++++++
+ 3 files changed, 17 insertions(+)
 
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 8f1222324646..2a8ee4c6adc5 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -103,18 +103,25 @@ int dsa_legacy_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
- int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp);
- void dsa_master_teardown(struct net_device *dev);
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 685294817712..027bb67ebaf7 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -543,6 +543,11 @@ struct dsa_switch_ops {
+ 	 */
+ 	netdev_tx_t (*port_deferred_xmit)(struct dsa_switch *ds, int port,
+ 					  struct sk_buff *skb);
++
++	/*
++         * SKB Rx hooks
++         */
++	bool (*rcv)(struct dsa_switch *ds, struct sk_buff *skb);
+ };
  
--static inline struct net_device *dsa_master_find_slave(struct net_device *dev,
--						       int device, int port)
-+static inline struct dsa_switch *dsa_master_find_switch(struct net_device *dev,
-+							int device)
+ struct dsa_switch_driver {
+diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
+index 7ddec9794477..20688674e00f 100644
+--- a/net/dsa/tag_dsa.c
++++ b/net/dsa/tag_dsa.c
+@@ -63,6 +63,7 @@ static struct sk_buff *dsa_xmit(struct sk_buff *skb, struct net_device *dev)
+ static struct sk_buff *dsa_rcv(struct sk_buff *skb, struct net_device *dev,
+ 			       struct packet_type *pt)
  {
- 	struct dsa_port *cpu_dp = dev->dsa_ptr;
- 	struct dsa_switch_tree *dst = cpu_dp->dst;
--	struct dsa_switch *ds;
--	struct dsa_port *slave_port;
- 
- 	if (device < 0 || device >= DSA_MAX_SWITCHES)
- 		return NULL;
- 
--	ds = dst->ds[device];
-+	return dst->ds[device];
-+}
-+
-+static inline struct net_device *dsa_master_find_slave(struct net_device *dev,
-+						       int device, int port)
-+{
-+	struct dsa_port *slave_port;
 +	struct dsa_switch *ds;
-+
-+	ds = dsa_master_find_switch(dev, device);
- 	if (!ds)
- 		return NULL;
+ 	u8 *dsa_header;
+ 	int source_device;
+ 	int source_port;
+@@ -87,6 +88,11 @@ static struct sk_buff *dsa_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	source_device = dsa_header[0] & 0x1f;
+ 	source_port = (dsa_header[1] >> 3) & 0x1f;
  
++	/* Allow the source switch device to process the frame on its own */
++	ds = dsa_master_find_switch(dev, source_device);
++	if (ds && ds->ops->rcv && ds->ops->rcv(ds, skb))
++		return NULL;
++
+ 	skb->dev = dsa_master_find_slave(dev, source_device, source_port);
+ 	if (!skb->dev)
+ 		return NULL;
+diff --git a/net/dsa/tag_edsa.c b/net/dsa/tag_edsa.c
+index e8eaa804ccb9..2ba3d48a23e2 100644
+--- a/net/dsa/tag_edsa.c
++++ b/net/dsa/tag_edsa.c
+@@ -76,6 +76,7 @@ static struct sk_buff *edsa_xmit(struct sk_buff *skb, struct net_device *dev)
+ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
+ 				struct packet_type *pt)
+ {
++	struct dsa_switch *ds;
+ 	u8 *edsa_header;
+ 	int source_device;
+ 	int source_port;
+@@ -100,6 +101,11 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	source_device = edsa_header[0] & 0x1f;
+ 	source_port = (edsa_header[1] >> 3) & 0x1f;
+ 
++	/* Allow the target switch device to process the frame on its own */
++	ds = dsa_master_find_switch(dev, source_device);
++	if (ds && ds->ops->rcv && ds->ops->rcv(ds, skb))
++		return NULL;
++
+ 	skb->dev = dsa_master_find_slave(dev, source_device, source_port);
+ 	if (!skb->dev)
+ 		return NULL;
 -- 
 2.21.0
 
