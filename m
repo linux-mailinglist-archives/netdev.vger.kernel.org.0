@@ -2,134 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3475B253CB
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 17:22:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93AAB253EC
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 17:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728695AbfEUPWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 11:22:30 -0400
-Received: from www62.your-server.de ([213.133.104.62]:59412 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728127AbfEUPWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 11:22:30 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hT6ax-0005Vp-Jx; Tue, 21 May 2019 17:22:27 +0200
-Received: from [178.197.249.20] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hT6ax-0008sl-E5; Tue, 21 May 2019 17:22:27 +0200
-Subject: Re: [PATCH 4/5] samples/bpf: fix tracex5_user build error
-To:     Matteo Croce <mcroce@redhat.com>, xdp-newbies@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>
-References: <20190518004639.20648-1-mcroce@redhat.com>
- <20190518004639.20648-4-mcroce@redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3accecfb-4743-4ac0-1a35-053c25f00e7e@iogearbox.net>
-Date:   Tue, 21 May 2019 17:22:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1728505AbfEUPay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 11:30:54 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40148 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728298AbfEUPay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 11:30:54 -0400
+Received: by mail-pf1-f193.google.com with SMTP id u17so9255766pfn.7;
+        Tue, 21 May 2019 08:30:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KWOHZODUUyunDgNs5B1B0Qzkf/SDTn0BMnr1ZqAsBvs=;
+        b=c4qL9fxKUhzVGcf7gk/+Tr6l41IYLs4L+0yu4O0LYsMXgzld3/DyDvBEdZfFdHFY+k
+         OfINvcBKVUzsHFL2i0oBVfHX7cwjY5QrbttT9gmZKW20FoTQwCmIOnQ+4JJHfohuKGgT
+         ypWtvcIxZN+5gZrjtbpAxwF31iGqB8fF3mXxgst1m/J6Q1CrPGYYtvYkdYJ3fBP8HneD
+         EsvC75dHreCPr3S/8tLO63oHYp9LHPk50eDwmDAwNNzmHpMZylIRfdIvPk5ahH3FUaYJ
+         obDfXL97SpBtUsP/WUPmkHeeKKAtzmydI3HLF8RJOpoOTmErO4nSbrwYAwVk5ONuxFDk
+         u+NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KWOHZODUUyunDgNs5B1B0Qzkf/SDTn0BMnr1ZqAsBvs=;
+        b=f3npvPhpyPCYdKlKxvFPTd8ND2ff+M+KkA5u8DzakSjHHk0zikO/9DxYjPmqcIUxw8
+         MWXlJPftZeAxYZCb7AqZBk4OBi8M94iPI7nz6D7lyDveONou1b6UvKNfRU8Xahuez0aW
+         vIaftV7SArhsRf/vv10nxxPKh6XjnG8SgX/AV4cNT9gQZ+y+tej33tah4CA+rOSx48g6
+         qJL8AdCE92anntKC/4AifEf7hu10oYMSkNg9J5MIx/Uv1al1+6AMrEWSjMrXhTnO1V2x
+         XQxaSK5wgFHXZTSs1fI+vntDdGvGCA65I2T9pgxU7G1sEmnocPFxO017BvvciElwwSWc
+         5afQ==
+X-Gm-Message-State: APjAAAWjIDFf4Mbt4/YUmdSBOBhzNpGbJ6Ni3v765CykG9esoQRlsKbA
+        CsKcEvpHpWViUAlq0glfZKiAqXrkodQ=
+X-Google-Smtp-Source: APXvYqzz9y1jHan1nYFnx1sfA1DdFuL6DaMEy/Fwxaf1XY/fwEzvvd+hazrVeDyJfsAlLvm7mGlPXg==
+X-Received: by 2002:a63:d150:: with SMTP id c16mr82709090pgj.439.1558452653182;
+        Tue, 21 May 2019 08:30:53 -0700 (PDT)
+Received: from localhost.localdomain ([27.61.167.91])
+        by smtp.googlemail.com with ESMTPSA id e62sm25543035pfa.50.2019.05.21.08.30.49
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 May 2019 08:30:52 -0700 (PDT)
+From:   Anirudh Gupta <anirudhrudr@gmail.com>
+X-Google-Original-From: Anirudh Gupta <anirudh.gupta@sophos.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Anirudh Gupta <anirudh.gupta@sophos.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] xfrm: Fix xfrm sel prefix length validation
+Date:   Tue, 21 May 2019 20:59:47 +0530
+Message-Id: <20190521152947.75014-1-anirudh.gupta@sophos.com>
+X-Mailer: git-send-email 2.19.0
 MIME-Version: 1.0
-In-Reply-To: <20190518004639.20648-4-mcroce@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25456/Tue May 21 09:56:54 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/18/2019 02:46 AM, Matteo Croce wrote:
-> Add missing symbols to tools/include/linux/filter.h to fix a build failure:
-> 
-> make -C samples/bpf/../../tools/lib/bpf/ RM='rm -rf' LDFLAGS= srctree=samples/bpf/../../ O=
->   HOSTCC  samples/bpf/tracex5_user.o
-> samples/bpf/tracex5_user.c: In function ‘install_accept_all_seccomp’:
-> samples/bpf/tracex5_user.c:17:21: error: array type has incomplete element type ‘struct sock_filter’
->    17 |  struct sock_filter filter[] = {
->       |                     ^~~~~~
-> samples/bpf/tracex5_user.c:18:3: warning: implicit declaration of function ‘BPF_STMT’; did you mean ‘BPF_STX’? [-Wimplicit-function-declaration]
->    18 |   BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW),
->       |   ^~~~~~~~
->       |   BPF_STX
-> samples/bpf/tracex5_user.c:20:9: error: variable ‘prog’ has initializer but incomplete type
->    20 |  struct sock_fprog prog = {
->       |         ^~~~~~~~~~
-> samples/bpf/tracex5_user.c:21:4: error: ‘struct sock_fprog’ has no member named ‘len’
->    21 |   .len = (unsigned short)(sizeof(filter)/sizeof(filter[0])),
->       |    ^~~
-> samples/bpf/tracex5_user.c:21:10: warning: excess elements in struct initializer
->    21 |   .len = (unsigned short)(sizeof(filter)/sizeof(filter[0])),
->       |          ^
-> samples/bpf/tracex5_user.c:21:10: note: (near initialization for ‘prog’)
-> samples/bpf/tracex5_user.c:22:4: error: ‘struct sock_fprog’ has no member named ‘filter’
->    22 |   .filter = filter,
->       |    ^~~~~~
-> samples/bpf/tracex5_user.c:22:13: warning: excess elements in struct initializer
->    22 |   .filter = filter,
->       |             ^~~~~~
-> samples/bpf/tracex5_user.c:22:13: note: (near initialization for ‘prog’)
-> samples/bpf/tracex5_user.c:20:20: error: storage size of ‘prog’ isn’t known
->    20 |  struct sock_fprog prog = {
->       |                    ^~~~
-> samples/bpf/tracex5_user.c:20:20: warning: unused variable ‘prog’ [-Wunused-variable]
-> samples/bpf/tracex5_user.c:17:21: warning: unused variable ‘filter’ [-Wunused-variable]
->    17 |  struct sock_filter filter[] = {
->       |                     ^~~~~~
-> make[2]: *** [scripts/Makefile.host:109: samples/bpf/tracex5_user.o] Error 1
-> make[1]: *** [Makefile:1763: samples/bpf/] Error 2
-> 
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> ---
->  tools/include/linux/filter.h | 27 +++++++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
-> 
-> diff --git a/tools/include/linux/filter.h b/tools/include/linux/filter.h
-> index ca28b6ab8db7..6b2ed7eccfa5 100644
-> --- a/tools/include/linux/filter.h
-> +++ b/tools/include/linux/filter.h
-> @@ -7,6 +7,33 @@
->  
->  #include <linux/bpf.h>
+Family of src/dst can be different from family of selector src/dst.
+Use xfrm selector family to validate address prefix length,
+while verifying new sa from userspace.
 
-This here is also mixing UAPI code below into non-UAPI headers in
-tooling infrastructure ..
+Validated patch with this command:
+ip xfrm state add src 1.1.6.1 dst 1.1.6.2 proto esp spi 4260196 \
+reqid 20004 mode tunnel aead "rfc4106(gcm(aes))" \
+0x1111016400000000000000000000000044440001 128 \
+sel src 1011:1:4::2/128 sel dst 1021:1:4::2/128 dev Port5
 
-> +/*
-> + *	Try and keep these values and structures similar to BSD, especially
-> + *	the BPF code definitions which need to match so you can share filters
-> + */
-> +
-> +struct sock_filter {	/* Filter block */
-> +	__u16	code;   /* Actual filter code */
-> +	__u8	jt;	/* Jump true */
-> +	__u8	jf;	/* Jump false */
-> +	__u32	k;      /* Generic multiuse field */
-> +};
-> +
-> +struct sock_fprog {	/* Required for SO_ATTACH_FILTER. */
-> +	unsigned short		len;	/* Number of filter blocks */
-> +	struct sock_filter __user *filter;
-> +};
-> +
-> +/*
-> + * Macros for filter block array initializers.
-> + */
-> +#ifndef BPF_STMT
-> +#define BPF_STMT(code, k) { (unsigned short)(code), 0, 0, k }
-> +#endif
-> +#ifndef BPF_JUMP
-> +#define BPF_JUMP(code, k, jt, jf) { (unsigned short)(code), jt, jf, k }
-> +#endif
-> +
->  /* ArgX, context and stack frame pointer register positions. Note,
->   * Arg1, Arg2, Arg3, etc are used as argument mappings of function
->   * calls in BPF_CALL instruction.
-> 
+Fixes: 07bf7908950a ("xfrm: Validate address prefix lengths in the xfrm selector.")
+Signed-off-by: Anirudh Gupta <anirudh.gupta@sophos.com>
+---
+ net/xfrm/xfrm_user.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index eb8d14389601..74a3d1e0ff63 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -150,6 +150,22 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
+ 
+ 	err = -EINVAL;
+ 	switch (p->family) {
++	case AF_INET:
++		break;
++
++	case AF_INET6:
++#if IS_ENABLED(CONFIG_IPV6)
++		break;
++#else
++		err = -EAFNOSUPPORT;
++		goto out;
++#endif
++
++	default:
++		goto out;
++	}
++
++	switch (p->sel.family) {
+ 	case AF_INET:
+ 		if (p->sel.prefixlen_d > 32 || p->sel.prefixlen_s > 32)
+ 			goto out;
+-- 
+2.19.0
 
