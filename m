@@ -2,103 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B06F24EB7
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 14:13:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 942BA24EBF
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 14:15:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727044AbfEUMNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 08:13:22 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:35318 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726705AbfEUMNW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 08:13:22 -0400
-Received: by mail-pl1-f196.google.com with SMTP id p1so2990310plo.2
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 05:13:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=BdI5OKQNREhHr46z4bmgW+gyEyU73Oy5E+QBj4m8GOQ=;
-        b=o6ewLPiGh1VwABP8pK4hdKvEN4N+A8cjjuCmeW3BBlbyFxLWXC5Jv0AjYaVWSxgloy
-         n8/JOhVx2CvBziVqUhSti/QcZKx3zV5aHlthWlLH0l/FqccTwWSgc6aQs2HCx/wfKja6
-         7/c0EnruDbpb3oIIVo7lpFhsrT1jtXiDOj3kFuZzV/7TVb2bI0qVGAu1q4Cimg6mpJu7
-         Oy7OBO3/SWoQUgc09nDbGTWmMOtZbFUEkqxLExq4s9W1R3D/1YYJA3/TAgQ7mZiL06RJ
-         xisVOe6bdSa/kLIwy5g5VoD+1YRGncJbFSxp6o0RGt/tghLZHUOIgagsdRuyNpDbJMM5
-         QM5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=BdI5OKQNREhHr46z4bmgW+gyEyU73Oy5E+QBj4m8GOQ=;
-        b=AwQNALnTN8F5LD7mutHFfmSDR7RmW+QXT59IvP/yetq7BbG2LnudySFxihNYLq/HSc
-         tlvrfPVRISWqzBj9t2THCH+1CxOZJHmtiqo8z+KmiHpovaUNXO4M0qeyUiuQKTqOH9JY
-         HqHHtXWcA9mvtUQT3a02+JloZsbZV/UR9PYzbd87PJOtoeEodFOtLNyugusiBRgB1t7r
-         +IpaVUNMGLvNytioaS6XBscagtPQFdjan1ym8oFiIrSZPJS55kDZjH3ksXDQ3C5eOeMF
-         k7h1IzyN1BP+FfKg4MST4DlhakUFftdq9OxRC00fUStYYhif4YL/NZQNIRdcucf8l7bY
-         1kJA==
-X-Gm-Message-State: APjAAAVbkpm8IeqDV1S5480J7dNub8ZgOzKmMaRR7q6efTJJ+Kma/IP8
-        Tm5zjLKOggFTpCQ7Z1wAwKk=
-X-Google-Smtp-Source: APXvYqzbYbpXYANvqp65SX6zFdcm46V1k2MFkzHxfn1QY9LFf/RTQGBo6hw/aZALDjdQXnrY//YWRg==
-X-Received: by 2002:a17:902:46a:: with SMTP id 97mr54077787ple.66.1558440801881;
-        Tue, 21 May 2019 05:13:21 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id s19sm21320184pfh.176.2019.05.21.05.13.19
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 21 May 2019 05:13:21 -0700 (PDT)
-Date:   Tue, 21 May 2019 20:13:11 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        Phil Sutter <phil@nwl.cc>
-Subject: Re: [PATCH iproute2 net-next] ip: add a new parameter -Numeric
-Message-ID: <20190521121311.GW18865@dhcp-12-139.nay.redhat.com>
-References: <20190520075648.15882-1-liuhangbin@gmail.com>
- <4e2e8ba7-7c80-4d35-9255-c6dac47df4e7@gmail.com>
- <20190520100322.2276a76d@hermes.lan>
+        id S1728047AbfEUMPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 08:15:23 -0400
+Received: from vps.xff.cz ([195.181.215.36]:38886 "EHLO vps.xff.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726692AbfEUMPX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 May 2019 08:15:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=megous.com; s=mail;
+        t=1558440920; bh=VGlJ9wO7InEXoKlQsJrI3YYXQgBrZfsVum4dwV9O/qw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H8itSFBTgfJexSfOsuGiRevevVee8AWok+TNwvYGh7+dE1NYC7HRI8brRhf87wLga
+         d9QkGESJyeoaSCyRYs3EQ2grPw+h1Uha56OooMFMOlk4Sm5xTp26Bz32P9/VowQFZP
+         xDHQqFWmk/FSFXR/1nm1hEhj9MMSZ7GIUAjIabwA=
+Date:   Tue, 21 May 2019 14:15:19 +0200
+From:   =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>
+To:     Maxime Ripard <maxime.ripard@bootlin.com>
+Cc:     linux-sunxi@googlegroups.com, Chen-Yu Tsai <wens@csie.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH v5 5/6] drm: sun4i: Add support for enabling DDC I2C bus
+ to sun8i_dw_hdmi glue
+Message-ID: <20190521121519.k343dgv3cgpewjl2@core.my.home>
+Mail-Followup-To: Maxime Ripard <maxime.ripard@bootlin.com>,
+        linux-sunxi@googlegroups.com, Chen-Yu Tsai <wens@csie.org>,
+        Rob Herring <robh+dt@kernel.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+References: <20190520235009.16734-1-megous@megous.com>
+ <20190520235009.16734-6-megous@megous.com>
+ <20190521114611.ylmbo2oqeanveil4@flea>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190520100322.2276a76d@hermes.lan>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190521114611.ylmbo2oqeanveil4@flea>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 20, 2019 at 10:03:22AM -0700, Stephen Hemminger wrote:
-> On Mon, 20 May 2019 09:18:08 -0600
-> David Ahern <dsahern@gmail.com> wrote:
+Hi Maxime,
+
+On Tue, May 21, 2019 at 01:46:11PM +0200, Maxime Ripard wrote:
+> Hi,
 > 
-> > On 5/20/19 1:56 AM, Hangbin Liu wrote:
-> > > When calles rtnl_dsfield_n2a(), we get the dsfield name from
-> > > /etc/iproute2/rt_dsfield. But different distribution may have
-> > > different names. So add a new parameter '-Numeric' to only show
-> > > the dsfield number.
-> > > 
-> > > This parameter is only used for tos value at present. We could enable
-> > > this for other fields if needed in the future.
-> > > 
-> > 
-> > It does not make sense to add this flag just for 1 field.
-> > 
-> > 3 years ago I started a patch to apply this across the board. never
-> > finished it. see attached. The numeric variable should be moved to
-> > lib/rt_names.c. It handles all of the conversions in that file - at
-> > least as of May 2016.
+> On Tue, May 21, 2019 at 01:50:08AM +0200, megous@megous.com wrote:
+> > From: Ondrej Jirman <megous@megous.com>
+> >
+> > Orange Pi 3 board requires enabling a voltage shifting circuit via GPIO
+> > for the DDC bus to be usable.
+> >
+> > Add support for hdmi-connector node's optional ddc-en-gpios property to
+> > support this use case.
+> >
+> > Signed-off-by: Ondrej Jirman <megous@megous.com>
+> > ---
+> >  drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c | 55 +++++++++++++++++++++++++--
+> >  drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h |  3 ++
+> >  2 files changed, 55 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+> > index 39d8509d96a0..59b81ba02d96 100644
+> > --- a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+> > +++ b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+> > @@ -98,6 +98,30 @@ static u32 sun8i_dw_hdmi_find_possible_crtcs(struct drm_device *drm,
+> >  	return crtcs;
+> >  }
+> >
+> > +static int sun8i_dw_hdmi_find_connector_pdev(struct device *dev,
+> > +					     struct platform_device **pdev_out)
+> > +{
+> > +	struct platform_device *pdev;
+> > +	struct device_node *remote;
+> > +
+> > +	remote = of_graph_get_remote_node(dev->of_node, 1, -1);
+> > +	if (!remote)
+> > +		return -ENODEV;
+> > +
+> > +	if (!of_device_is_compatible(remote, "hdmi-connector")) {
+> > +		of_node_put(remote);
+> > +		return -ENODEV;
+> > +	}
+> > +
+> > +	pdev = of_find_device_by_node(remote);
+> > +	of_node_put(remote);
+> > +	if (!pdev)
+> > +		return -ENODEV;
+> > +
+> > +	*pdev_out = pdev;
+> > +	return 0;
+> > +}
+> > +
+> >  static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
+> >  			      void *data)
+> >  {
+> > @@ -151,16 +175,29 @@ static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
+> >  		return PTR_ERR(hdmi->regulator);
+> >  	}
+> >
+> > +	ret = sun8i_dw_hdmi_find_connector_pdev(dev, &hdmi->connector_pdev);
+> > +	if (!ret) {
+> > +		hdmi->ddc_en = gpiod_get_optional(&hdmi->connector_pdev->dev,
+> > +						  "ddc-en", GPIOD_OUT_HIGH);
+> > +		if (IS_ERR(hdmi->ddc_en)) {
+> > +			platform_device_put(hdmi->connector_pdev);
+> > +			dev_err(dev, "Couldn't get ddc-en gpio\n");
+> > +			return PTR_ERR(hdmi->ddc_en);
+> > +		}
+> > +	}
+> > +
+> >  	ret = regulator_enable(hdmi->regulator);
+> >  	if (ret) {
+> >  		dev_err(dev, "Failed to enable regulator\n");
+> > -		return ret;
+> > +		goto err_unref_ddc_en;
+> >  	}
+> >
+> > +	gpiod_set_value(hdmi->ddc_en, 1);
+> > +
 > 
+> Do you really need this to be done all the time? I'm guessing you
+> would only need this when running .get_modes, right?
+
+I don't think it hurts anything. Enabled voltage shifting circuit doesn't
+draw any current, unless DDC is actually transmitting data. On most boards
+I'd imagine this circuit is always on anyway (Orange Pi 3 schematic even has
+an option to tie this signal to VCC-IO instead of GPIO).
+
+Schematic: https://megous.com/dl/tmp/bfcdd32d655aaa76.png
+
+thank you and regards,
+	o.
+
+> Maxime
 > 
-> Agree, if you are going to do it, go all in.
-> Handle all types and in same manner for ip, tc, bridge, and devlink.
-> ss already has -numeric option.
+> --
+> Maxime Ripard, Bootlin
+> Embedded Linux and Kernel engineering
+> https://bootlin.com
 
-OK, I will do it.
 
-BTW, for some pre-defined names in iproute2, like rtnl_rtprot_tab,
-nl_proto_tab. Should we also print the number directly or just keep
-using the human readable names?
-
-I would like to keep them as this is defined in iproute and we can control
-them. But this may make people feel confused with the -Numeric parameter.
-So what do you think?
-
-Thanks
-Hangbin
