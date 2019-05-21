@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C465525A6B
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 00:47:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6F725A6C
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 00:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbfEUWr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 18:47:26 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35805 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725797AbfEUWr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 18:47:26 -0400
-Received: by mail-pl1-f194.google.com with SMTP id p1so59854plo.2;
-        Tue, 21 May 2019 15:47:26 -0700 (PDT)
+        id S1727121AbfEUWr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 18:47:28 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46722 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725797AbfEUWr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 18:47:27 -0400
+Received: by mail-pg1-f196.google.com with SMTP id o11so37506pgm.13;
+        Tue, 21 May 2019 15:47:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=CotgpyzHvMKFTZ/K9lN0mdRgMD7feyc9SXYeONncL/o=;
-        b=o4a5cYRy18GFiA/2I/gKRgwNPhCgij27hCMQ5jVz+doF8MVtQfcd5wXj/lCZS6OiX9
-         CfHvWZRy57PtzaQmKFzYqM4yL4sil1cuGmxYoApTxCfkRbf3oD/iUaB0nbNs6UI5ZwIx
-         DyERHNaf3QhF1nOhPMXSsLk80+5syIjibTz7R5FXrBAqk9owxBEFFMcq2hcY6sr5YI9X
-         DnXCdJ17rwv1nOC849Mu1+dMXO19I3M0zmoUXyo69U4LHV+0ZKMjsguQ/uJbaGJYGwoo
-         y9ViikeRvDX3UMMb1Ws5+ieWinHLUXEntALlsjHVeuST6wofF298Fk6oCW8tJWM+Q0dS
-         8esg==
+        bh=Cx8Ilw4znmXClRGpigbzhVQkcqiKWTMxkBato++bvpI=;
+        b=af+kvdp65tgUyPMboBW1Z0GJVgDD8UdGu7tCC8ncdg71Ufga4yGKAOE4eRuZPDuy0L
+         MIoWMyzlRhw8nE9zlBFxNenmRSMzQECGjuLm6EBoHsogG5oVvCqlF5PuwKo3CUACmeaa
+         IuDnb7ZBzCDDVLsqyzfgj7+vo9MdLZpeOUK8I7ro/EZIp1dV7WyrIQIvr2Lxk/11zRAl
+         1WE4LzrWN/fJ01KxvCF6AhEXZq8Xm6OdgR7PbxVR9gnNAP+6udEhTomm0wgDdfSRJpac
+         vaPq6JkPgIFypNeVBESbbMx+kf7L1y1bRDVfuy9Sie8622hUhAx9TpoojCsldlKY37pG
+         0zDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=CotgpyzHvMKFTZ/K9lN0mdRgMD7feyc9SXYeONncL/o=;
-        b=oKaZVNA13cqA8vf7fP7hM6nL5aa50SG5Zj/6QvMGPZquRgsJ8teGfJSmPoWWaBHulI
-         vMNHmLuwPKWM/iA+A6GSi1hbX7ApyG/WUikFwQt2roLoa4eI95XUWcc5Uk2Q7D6r4TyJ
-         x486f781oZcksLzmnTK9Op4BABCmuMXVjIvzVMcGBIWp8ZD3kQE0xNxE2AV0D5A6hzWC
-         PP0Opa3pUrU+Qe1ZtM/XGoe4PB/pMJqAjzONzHXpzcf0i25tvXz4L8l7K3VhDeb+bS6Y
-         fbR9I8A9doegZm4qHmu6r7sPdJ7klKTrGh8FWP6oOk2966Hhs/2lPNYG6XY4EZ4UUiuh
-         Ct3Q==
-X-Gm-Message-State: APjAAAWdEkToErfqv9OwZHS7Std558ieqZUXLSKW1KB50nl2y4mO6Mdi
-        pITVpYZB73wafjcR3PX6i5YAxF9j
-X-Google-Smtp-Source: APXvYqwIXd0Rr3JbWRcSCnSpFyYAJ4zlDzmi4QaXNGllka+plJyS/cN3mblpxlsf3gDGP2EA90Xb1Q==
-X-Received: by 2002:a17:902:4481:: with SMTP id l1mr73044372pld.121.1558478845497;
-        Tue, 21 May 2019 15:47:25 -0700 (PDT)
+        bh=Cx8Ilw4znmXClRGpigbzhVQkcqiKWTMxkBato++bvpI=;
+        b=GZMtyc8J6wki4pieLfGM2nwcl0ydHH3nOqq+T4iexBl7MEI4dDgXw4doYyBE6VANNv
+         FHiWgoBvQDEGOcC3/oZnsswz8iI7I7SefrL0L1/Gp+ZfWtq6VAaH5VsWqKYpsqBRQ4qu
+         aOJ+ufNPmv4HFkaU7W5jZyTja25CFYTso5LZubP5xXPXQfR2sKZ/H1KuCm7als7bPv60
+         tsjxFqozlAeiD0lawr0EgyP39JitdeqO9q436E41ZuB2Jx0+evWut1VWSoAxwoOd5eE0
+         Jv1ozidSWuJGWzDgssVs7E9NjmvhG0H2/AgE8nhl9/Y6c+UNw70vdOsqry19nStXkdTW
+         M3nQ==
+X-Gm-Message-State: APjAAAVIwQE7aHm3e73kpjUqTd/N5cY7HKOrdewzObIHc71JjoqvihWs
+        rdoS6Bop5tGX3RQ7XDl6Bwa1XhPZ
+X-Google-Smtp-Source: APXvYqzvWq2+3p9w+uqawukog64IsHDi/8LATPvfFsRVF7ThFpza32XdJsn+FswyWeju0osqCa2J3A==
+X-Received: by 2002:a63:42:: with SMTP id 63mr86289620pga.337.1558478846799;
+        Tue, 21 May 2019 15:47:26 -0700 (PDT)
 Received: from localhost.localdomain (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id r29sm34122419pgn.14.2019.05.21.15.47.24
+        by smtp.gmail.com with ESMTPSA id r29sm34122419pgn.14.2019.05.21.15.47.25
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 21 May 2019 15:47:24 -0700 (PDT)
+        Tue, 21 May 2019 15:47:26 -0700 (PDT)
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
@@ -52,86 +52,70 @@ Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
         Miroslav Lichvar <mlichvar@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
         Willem de Bruijn <willemb@google.com>
-Subject: [PATCH V3 net-next 0/6] Peer to Peer One-Step time stamping
-Date:   Tue, 21 May 2019 15:47:17 -0700
-Message-Id: <20190521224723.6116-1-richardcochran@gmail.com>
+Subject: [PATCH V3 net-next 1/6] net: Introduce peer to peer one step PTP time stamping.
+Date:   Tue, 21 May 2019 15:47:18 -0700
+Message-Id: <20190521224723.6116-2-richardcochran@gmail.com>
 X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds support for PTP (IEEE 1588) P2P one-step time
-stamping along with a driver for a hardware device that supports this.
+The 1588 standard defines one step operation for both Sync and
+PDelay_Resp messages.  Up until now, hardware with P2P one step has
+been rare, and kernel support was lacking.  This patch adds support of
+the mode in anticipation of new hardware developments.
 
-If the hardware supports p2p one-step, it subtracts the ingress time
-stamp value from the Pdelay_Request correction field.  The user space
-software stack then simply copies the correction field into the
-Pdelay_Response, and on transmission the hardware adds the egress time
-stamp into the correction field.
+Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 1 +
+ include/uapi/linux/net_tstamp.h                  | 8 ++++++++
+ net/core/dev_ioctl.c                             | 1 +
+ 3 files changed, 10 insertions(+)
 
-This new functionality extends CONFIG_NETWORK_PHY_TIMESTAMPING to
-cover MII snooping devices, but it still depends on phylib, just as
-that option does.  Expanding beyond phylib is not within the scope of
-the this series.
-
-User space support is available in the current linuxptp master branch.
-
-- Patch 1 adds the new option.
-- Patches 2-5 add support for MII time stamping in non-PHY devices.
-- Patch 6 adds a driver implementing the new option.
-
-Thanks,
-Richard
-
-Changed in v3:
-~~~~~~~~~~~~~~
-
-- Simplify the device tree binding and document the time stamping
-  phandle by itself.
-
-Changed in v2:
-~~~~~~~~~~~~~~
-
-- Per the v1 review, changed the modeling of MII time stamping
-  devices.  They are no longer a kind of mdio device.
-
-
-Richard Cochran (6):
-  net: Introduce peer to peer one step PTP time stamping.
-  net: Introduce a new MII time stamping interface.
-  net: Add a layer for non-PHY MII time stamping drivers.
-  dt-bindings: ptp: Introduce MII time stamping devices.
-  net: mdio: of: Register discovered MII time stampers.
-  ptp: Add a driver for InES time stamping IP core.
-
- Documentation/devicetree/bindings/ptp/ptp-ines.txt |  35 +
- .../devicetree/bindings/ptp/timestamper.txt        |  41 +
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   |   1 +
- drivers/net/phy/Makefile                           |   2 +
- drivers/net/phy/dp83640.c                          |  47 +-
- drivers/net/phy/mii_timestamper.c                  | 121 +++
- drivers/net/phy/phy.c                              |   4 +-
- drivers/net/phy/phy_device.c                       |   5 +
- drivers/of/of_mdio.c                               |  24 +
- drivers/ptp/Kconfig                                |  10 +
- drivers/ptp/Makefile                               |   1 +
- drivers/ptp/ptp_ines.c                             | 870 +++++++++++++++++++++
- include/linux/mii_timestamper.h                    | 116 +++
- include/linux/phy.h                                |  25 +-
- include/uapi/linux/net_tstamp.h                    |   8 +
- net/8021q/vlan_dev.c                               |   4 +-
- net/Kconfig                                        |   7 +-
- net/core/dev_ioctl.c                               |   1 +
- net/core/ethtool.c                                 |   4 +-
- net/core/timestamping.c                            |  20 +-
- 20 files changed, 1289 insertions(+), 57 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/ptp/ptp-ines.txt
- create mode 100644 Documentation/devicetree/bindings/ptp/timestamper.txt
- create mode 100644 drivers/net/phy/mii_timestamper.c
- create mode 100644 drivers/ptp/ptp_ines.c
- create mode 100644 include/linux/mii_timestamper.h
-
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index 03ac10b1cd1e..44a378f26bbd 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -15380,6 +15380,7 @@ int bnx2x_configure_ptp_filters(struct bnx2x *bp)
+ 		REG_WR(bp, rule, BNX2X_PTP_TX_ON_RULE_MASK);
+ 		break;
+ 	case HWTSTAMP_TX_ONESTEP_SYNC:
++	case HWTSTAMP_TX_ONESTEP_P2P:
+ 		BNX2X_ERR("One-step timestamping is not supported\n");
+ 		return -ERANGE;
+ 	}
+diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
+index e5b39721c6e4..f96e650d0af9 100644
+--- a/include/uapi/linux/net_tstamp.h
++++ b/include/uapi/linux/net_tstamp.h
+@@ -90,6 +90,14 @@ enum hwtstamp_tx_types {
+ 	 * queue.
+ 	 */
+ 	HWTSTAMP_TX_ONESTEP_SYNC,
++
++	/*
++	 * Same as HWTSTAMP_TX_ONESTEP_SYNC, but also enables time
++	 * stamp insertion directly into PDelay_Resp packets. In this
++	 * case, neither transmitted Sync nor PDelay_Resp packets will
++	 * receive a time stamp via the socket error queue.
++	 */
++	HWTSTAMP_TX_ONESTEP_P2P,
+ };
+ 
+ /* possible values for hwtstamp_config->rx_filter */
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index 5163d900bb4f..dbaebbe573f0 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -187,6 +187,7 @@ static int net_hwtstamp_validate(struct ifreq *ifr)
+ 	case HWTSTAMP_TX_OFF:
+ 	case HWTSTAMP_TX_ON:
+ 	case HWTSTAMP_TX_ONESTEP_SYNC:
++	case HWTSTAMP_TX_ONESTEP_P2P:
+ 		tx_type_valid = 1;
+ 		break;
+ 	}
 -- 
 2.11.0
 
