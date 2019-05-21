@@ -2,111 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FEB624F7E
-	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 14:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5262324F88
+	for <lists+netdev@lfdr.de>; Tue, 21 May 2019 15:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728067AbfEUM7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 08:59:52 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53328 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726995AbfEUM7w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 08:59:52 -0400
-Received: by mail-wm1-f66.google.com with SMTP id 198so2900916wme.3
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 05:59:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PslXDngNuE7q+1VpAQcWwQGeQKB+6MQNfpmE6oTyQ18=;
-        b=AjgoYxF0wMuZBdxlKZ2heDLdfTcONX/kpq891dsj19u8nEysnAUHIsr6SjGz2Vw0p4
-         gD8o/SntcGx2ksece/Zc10Q3UJ6afsFIR132cQcnkTs/kG5CHK2ryfewEuIxFlzRRx7S
-         LuNFmHRPQrUENXNxXnY9DXB0f2c8n2yate01V7Jk3r5nnUuil3Dut/27pySOw44fCng8
-         +280Tve8VC9ookZAfRRUW0Ebinf/JGL1VBxPGrgq9qRFLIJD95APH6jsYpfTNSEZNEl7
-         jdElg1zCgsYr4pgexlRrFcCi0+AQ1WX/qgbcArPw08DBmGaXbDBaaauVcAM41+8feOdi
-         eVUQ==
-X-Gm-Message-State: APjAAAXXZaiLCOGUrSKpD6QcvACiwKFDiuPvlfDlYQYEWJ7RvqXO+p6A
-        vymHuNBqG95yd/AI95zqrWQz2Q==
-X-Google-Smtp-Source: APXvYqyGxYyg/jCjvETi+ofHRYA9wzGOZ5QXiHA7FA79Lu5W/XWabxBCYKK5YDnKhHM28oDO6cRRcQ==
-X-Received: by 2002:a1c:2109:: with SMTP id h9mr3377750wmh.68.1558443590427;
-        Tue, 21 May 2019 05:59:50 -0700 (PDT)
-Received: from localhost.localdomain.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id i17sm22118765wrr.46.2019.05.21.05.59.49
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 21 May 2019 05:59:49 -0700 (PDT)
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us
-Subject: [PATCH net] net: sched: sch_ingress: do not report ingress filter info in egress path
-Date:   Tue, 21 May 2019 14:59:29 +0200
-Message-Id: <738244fd5863e6228275ee8f71e81d6baafca243.1558442828.git.lorenzo.bianconi@redhat.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1558442828.git.lorenzo.bianconi@redhat.com>
-References: <cover.1558442828.git.lorenzo.bianconi@redhat.com>
+        id S1728249AbfEUNBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 09:01:05 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41853 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727534AbfEUNBE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 May 2019 09:01:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=kiheRmbJwdSSS6MbG97WbRFjTMnk82PDnA5kIng1yE4=; b=PLUVW7rskILZEnwXWJPNl3ACrk
+        ZGLf5epz4ySN73QrNYT644tZiNkYMnFdOt8/EEtu46x95PE5p5nN7KB6hDdOWWtg8NidyDILbDcvE
+        sy4+8sm3C52pde16SliFP1yWRD9NSMWG9Vm3/ekhEeNhWqYXl0zHS5iu7gvzqDAvBuoI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hT4O5-0002LQ-8r; Tue, 21 May 2019 15:01:01 +0200
+Date:   Tue, 21 May 2019 15:01:01 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-block@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Jonas Gorski <jonas.gorski@gmail.com>,
+        Jo-Philipp Wich <jo@mein.io>, Felix Fietkau <nbd@nbd.name>
+Subject: Re: ARM router NAT performance affected by random/unrelated commits
+Message-ID: <20190521130101.GC6577@lunn.ch>
+References: <9a9ba4c9-3cb7-eb64-4aac-d43b59224442@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9a9ba4c9-3cb7-eb64-4aac-d43b59224442@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently if we add a filter to the ingress qdisc (e.g matchall) the
-filter data are reported even in the egress path. The issue can be
-triggered with the following reproducer:
+> I also tried running cachestat but didn't get anything interesting:
+> Counting cache functions... Output every 1 seconds.
+> TIME         HITS   MISSES  DIRTIES    RATIO   BUFFERS_MB   CACHE_MB
+> 10:06:59     1020        5        0    99.5%            0          2
+> 10:07:00     1029        0        0   100.0%            0          2
+> 10:07:01     1013        0        0   100.0%            0          2
+> 10:07:02     1029        0        0   100.0%            0          2
+> 10:07:03     1029        0        0   100.0%            0          2
+> 10:07:04      997        0        0   100.0%            0          2
+> 10:07:05     1013        0        0   100.0%            0          2
+> (I started iperf at 10:07:00).
 
-$tc qdisc add dev lo ingress
-$tc filter add dev lo ingress matchall action ok
-$tc filter show dev lo ingress
-filter protocol all pref 49152 matchall chain 0
-filter protocol all pref 49152 matchall chain 0 handle 0x1
-  not_in_hw
-	action order 1: gact action pass
-		 random type none pass val 0
-		 	 index 1 ref 1 bind 1
+Try looking at the L1 cache performance. For this class of device, the
+L1 code cache is probably too small to contain the active parts of the
+network stack. The less cache thrashing you have, the faster the stack
+will go.
 
-$tc filter show dev lo egress
-filter protocol all pref 49152 matchall chain 0
-filter protocol all pref 49152 matchall chain 0 handle 0x1
-  not_in_hw
-	action order 1: gact action pass
-		 random type none pass val 0
-		 	 index 1 ref 1 bind 1
+Maybe try compiling with -Os so it optimises for size.
 
-Fix it reporting NULL for non-ingress filters in ingress_tcf_block
-routine
+Build a custom kernel with everything you don't need turned off.
 
-Fixes: 6529eaba33f0 ("net: sched: introduce tcf block infrastructure")
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
----
- net/sched/sch_ingress.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Look at the work being done to batch process packets. Rather than
+passing one packet at a time through the network stack, it passes a
+linked list of packets to each stage in the stack. That should result
+in less cache misses per packet. But not all layers in the stack
+support this batching. See if you can find out where it is being
+unbatched, and why. Can you influence this, disable build options, or
+work on the code to pass batches further along the stack.
 
-diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
-index 0bac926b46c7..1825347fed3a 100644
---- a/net/sched/sch_ingress.c
-+++ b/net/sched/sch_ingress.c
-@@ -31,7 +31,7 @@ static struct Qdisc *ingress_leaf(struct Qdisc *sch, unsigned long arg)
- 
- static unsigned long ingress_find(struct Qdisc *sch, u32 classid)
- {
--	return TC_H_MIN(classid) + 1;
-+	return TC_H_MIN(classid);
- }
- 
- static unsigned long ingress_bind_filter(struct Qdisc *sch,
-@@ -53,7 +53,12 @@ static struct tcf_block *ingress_tcf_block(struct Qdisc *sch, unsigned long cl,
- {
- 	struct ingress_sched_data *q = qdisc_priv(sch);
- 
--	return q->block;
-+	switch (cl) {
-+	case TC_H_MIN(TC_H_MIN_INGRESS):
-+		return q->block;
-+	default:
-+		return NULL;
-+	}
- }
- 
- static void clsact_chain_head_change(struct tcf_proto *tp_head, void *priv)
--- 
-2.20.1
-
+     Andrew
