@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 090FE25AA3
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 01:06:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BAAD25AA5
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 01:06:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727269AbfEUXGn convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 May 2019 19:06:43 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52710 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727015AbfEUXGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 19:06:43 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4LMuOol011115
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:06:41 -0700
+        id S1727434AbfEUXGr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 May 2019 19:06:47 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45472 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727015AbfEUXGr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 19:06:47 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x4LMvlLF015439
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:06:45 -0700
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2smb4mk92w-2
+        by m0089730.ppops.net with ESMTP id 2smqj20mxy-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:06:41 -0700
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 16:06:45 -0700
 Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 21 May 2019 16:06:40 -0700
+ 15.1.1713.5; Tue, 21 May 2019 16:06:44 -0700
 Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id B1836760B85; Tue, 21 May 2019 16:06:39 -0700 (PDT)
+        id BC03E760B85; Tue, 21 May 2019 16:06:41 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Alexei Starovoitov <ast@kernel.org>
 Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
@@ -31,9 +31,9 @@ To:     <davem@davemloft.net>
 CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 2/3] bpf: split explored_states
-Date:   Tue, 21 May 2019 16:06:34 -0700
-Message-ID: <20190521230635.2142522-3-ast@kernel.org>
+Subject: [PATCH bpf-next 3/3] bpf: convert explored_states to hash table
+Date:   Tue, 21 May 2019 16:06:35 -0700
+Message-ID: <20190521230635.2142522-4-ast@kernel.org>
 X-Mailer: git-send-email 2.20.0
 In-Reply-To: <20190521230635.2142522-1-ast@kernel.org>
 References: <20190521230635.2142522-1-ast@kernel.org>
@@ -54,105 +54,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-split explored_states into prune_point boolean mark
-and link list of explored states.
-This removes STATE_LIST_MARK hack and allows marks to be separate from states.
+All prune points inside a callee bpf function most likely will have
+different callsites. For example, if function foo() is called from
+two callsites the half of explored states in all prune points in foo()
+will be useless for subsequent walking of one of those callsites.
+Fortunately explored_states pruning heuristics keeps the number of states
+per prune point small, but walking these states is still a waste of cpu
+time when the callsite of the current state is different from the callsite
+of the explored state.
+
+To improve pruning logic convert explored_states into hash table and
+use simple insn_idx ^ callsite hash to select hash bucket.
+This optimization has no effect on programs without bpf2bpf calls
+and drastically improves programs with calls.
+In the later case it reduces total memory consumption in 1M scale tests
+by almost 3 times (peak_states drops from 5752 to 2016).
+
+Care should be taken when comparing the states for equivalency.
+Since the same hash bucket can now contain states with different indices
+the insn_idx has to be part of verifier_state and compared.
+
+Different hash table sizes and different hash functions were explored,
+but the results were not significantly better vs this patch.
+They can be improved in the future.
+
+Hit/miss heuristic is not counting index miscompare as a miss.
+Otherwise verifier stats become unstable when experimenting
+with different hash functions.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
  include/linux/bpf_verifier.h |  1 +
- kernel/bpf/verifier.c        | 31 +++++++++++++------------------
- 2 files changed, 14 insertions(+), 18 deletions(-)
+ kernel/bpf/verifier.c        | 23 ++++++++++++++++++-----
+ 2 files changed, 19 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index 1305ccbd8fe6..02bba09a0ea1 100644
+index 02bba09a0ea1..405b502283c5 100644
 --- a/include/linux/bpf_verifier.h
 +++ b/include/linux/bpf_verifier.h
-@@ -233,6 +233,7 @@ struct bpf_insn_aux_data {
- 	int sanitize_stack_off; /* stack slot to be cleared */
- 	bool seen; /* this insn was processed by the verifier */
- 	u8 alu_state; /* used in combination with alu_limit */
-+	bool prune_point;
- 	unsigned int orig_idx; /* original instruction index */
- };
- 
+@@ -187,6 +187,7 @@ struct bpf_func_state {
+ struct bpf_verifier_state {
+ 	/* call stack tracking */
+ 	struct bpf_func_state *frame[MAX_CALL_FRAMES];
++	u32 insn_idx;
+ 	u32 curframe;
+ 	u32 active_spin_lock;
+ 	bool speculative;
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index a171b2940382..89097a4b1bf3 100644
+index 89097a4b1bf3..082f6eefb1c4 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -5435,7 +5435,6 @@ enum {
+@@ -5435,11 +5435,19 @@ enum {
  	BRANCH = 2,
  };
  
--#define STATE_LIST_MARK ((struct bpf_verifier_state_list *) -1L)
++static u32 state_htab_size(struct bpf_verifier_env *env)
++{
++	return env->prog->len;
++}
++
  static struct bpf_verifier_state_list **explored_state(
  					struct bpf_verifier_env *env,
  					int idx)
-@@ -5445,7 +5444,7 @@ static struct bpf_verifier_state_list **explored_state(
- 
- static void init_explored_state(struct bpf_verifier_env *env, int idx)
  {
--	env->explored_states[idx] = STATE_LIST_MARK;
-+	env->insn_aux_data[idx].prune_point = true;
+-	return &env->explored_states[idx];
++	struct bpf_verifier_state *cur = env->cur_state;
++	struct bpf_func_state *state = cur->frame[cur->curframe];
++
++	return &env->explored_states[(idx ^ state->callsite) % state_htab_size(env)];
  }
  
- 
-@@ -6018,10 +6017,7 @@ static void clean_live_states(struct bpf_verifier_env *env, int insn,
- 	int i;
+ static void init_explored_state(struct bpf_verifier_env *env, int idx)
+@@ -6018,7 +6026,8 @@ static void clean_live_states(struct bpf_verifier_env *env, int insn,
  
  	sl = *explored_state(env, insn);
--	if (!sl)
--		return;
--
--	while (sl != STATE_LIST_MARK) {
-+	while (sl) {
- 		if (sl->state.curframe != cur->curframe)
+ 	while (sl) {
+-		if (sl->state.curframe != cur->curframe)
++		if (sl->state.insn_idx != insn ||
++		    sl->state.curframe != cur->curframe)
  			goto next;
  		for (i = 0; i <= cur->curframe; i++)
-@@ -6376,18 +6372,18 @@ static int is_state_visited(struct bpf_verifier_env *env, int insn_idx)
- 	struct bpf_verifier_state *cur = env->cur_state, *new;
- 	int i, j, err, states_cnt = 0;
- 
--	pprev = explored_state(env, insn_idx);
--	sl = *pprev;
--
--	if (!sl)
-+	if (!env->insn_aux_data[insn_idx].prune_point)
- 		/* this 'insn_idx' instruction wasn't marked, so we will not
- 		 * be doing state search here
- 		 */
- 		return 0;
- 
-+	pprev = explored_state(env, insn_idx);
-+	sl = *pprev;
-+
+ 			if (sl->state.frame[i]->callsite != cur->frame[i]->callsite)
+@@ -6384,6 +6393,9 @@ static int is_state_visited(struct bpf_verifier_env *env, int insn_idx)
  	clean_live_states(env, insn_idx, cur);
  
--	while (sl != STATE_LIST_MARK) {
-+	while (sl) {
+ 	while (sl) {
++		states_cnt++;
++		if (sl->state.insn_idx != insn_idx)
++			goto next;
  		if (states_equal(env, &sl->state, cur)) {
  			sl->hit_cnt++;
  			/* reached equivalent register/stack state,
-@@ -8145,13 +8141,12 @@ static void free_states(struct bpf_verifier_env *env)
- 	for (i = 0; i < env->prog->len; i++) {
+@@ -6401,7 +6413,6 @@ static int is_state_visited(struct bpf_verifier_env *env, int insn_idx)
+ 				return err;
+ 			return 1;
+ 		}
+-		states_cnt++;
+ 		sl->miss_cnt++;
+ 		/* heuristic to determine whether this state is beneficial
+ 		 * to keep checking from state equivalence point of view.
+@@ -6428,6 +6439,7 @@ static int is_state_visited(struct bpf_verifier_env *env, int insn_idx)
+ 			sl = *pprev;
+ 			continue;
+ 		}
++next:
+ 		pprev = &sl->next;
+ 		sl = *pprev;
+ 	}
+@@ -6459,6 +6471,7 @@ static int is_state_visited(struct bpf_verifier_env *env, int insn_idx)
+ 		kfree(new_sl);
+ 		return err;
+ 	}
++	new->insn_idx = insn_idx;
+ 	new_sl->next = *explored_state(env, insn_idx);
+ 	*explored_state(env, insn_idx) = new_sl;
+ 	/* connect new state to parentage chain. Current frame needs all
+@@ -8138,7 +8151,7 @@ static void free_states(struct bpf_verifier_env *env)
+ 	if (!env->explored_states)
+ 		return;
+ 
+-	for (i = 0; i < env->prog->len; i++) {
++	for (i = 0; i < state_htab_size(env); i++) {
  		sl = env->explored_states[i];
  
--		if (sl)
--			while (sl != STATE_LIST_MARK) {
--				sln = sl->next;
--				free_verifier_state(&sl->state, false);
--				kfree(sl);
--				sl = sln;
--			}
-+		while (sl) {
-+			sln = sl->next;
-+			free_verifier_state(&sl->state, false);
-+			kfree(sl);
-+			sl = sln;
-+		}
+ 		while (sl) {
+@@ -8246,7 +8259,7 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
+ 			goto skip_full_check;
  	}
  
- 	kvfree(env->explored_states);
+-	env->explored_states = kvcalloc(env->prog->len,
++	env->explored_states = kvcalloc(state_htab_size(env),
+ 				       sizeof(struct bpf_verifier_state_list *),
+ 				       GFP_USER);
+ 	ret = -ENOMEM;
 -- 
 2.20.0
 
