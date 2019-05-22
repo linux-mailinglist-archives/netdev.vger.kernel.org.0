@@ -2,127 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11B6A269AB
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 20:13:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F007A269C4
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 20:23:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729534AbfEVSNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 14:13:45 -0400
-Received: from mail-it1-f196.google.com ([209.85.166.196]:55661 "EHLO
-        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728450AbfEVSNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 14:13:45 -0400
-Received: by mail-it1-f196.google.com with SMTP id g24so4852235iti.5;
-        Wed, 22 May 2019 11:13:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Rz2dSbeGWBZXaCl2XQeKwFmbE5ofP96gu1WBM/jQ9QY=;
-        b=QrHdb7Y0Zr/EXrSCRICqA94lEejhJalJLFRVG2+s8TO5eZC6zpTHfkWz3zl5xwVtVa
-         myenCPSfFFrFWojRRDBhzg+e1nN7HBvJWhxoQonKCO9096WXSvPENxm26zhcfObQkGhd
-         6TmYvOof7I5B0/CBB3I4ZNIv0+tZ4ylFdAesUPPtG7VcHSrO+NwY2ca7rQ06gcRgp+U5
-         OvbEfJkFZ2bK7MYxKOaem1RfiwTxzj+ygVyCd3c1qFuS1cVss77jtE3fIyKCNnILjqCn
-         PYsmzotO+4WOCQZ8bsoILXlAmq293uKI9U7SoW7JXBfD2wArSvomayx59xuF0AES0pqO
-         2YIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Rz2dSbeGWBZXaCl2XQeKwFmbE5ofP96gu1WBM/jQ9QY=;
-        b=VP10UtGLRpt/JyUzFXubn4W6lqdpj5iVY8i1Bob3oqJrwCZyMl4LxfaB0IX3nrfNPE
-         e7k7ATiX8Lpt04spJ2WzmIm3dQGCjL62qFnSOEtJgR/31wJOLt5Cf935jW85gjGnbHNP
-         ZLEiET5LclOxTjSc68x9W65eVm2Fi8Si9s+hI5XeipSxq9iQe0BxNIQkOKtqRMM4V+Dl
-         jdtstW6u2NchAr/SQkv1F3pH3GG4QzTk7/nG7Z/7RzkpZKcYXFih1I85t3biYZnvZkMh
-         /5FQo4yShfpci3Fx+DwZGGJGZs3SshanT3ceAaKBgUl39fI/G031OWcNB8+p9XEdQZZ0
-         O2EQ==
-X-Gm-Message-State: APjAAAUUjIbQuiiye610VnPQtTxJH/u1rBmGQKe8J2fICrB04lbR9BK7
-        0VOjFqcVEaSV8e3FybcqsNJtbR3rRsWKrMYB8A6NQ5A7
-X-Google-Smtp-Source: APXvYqw1JnAWO9SKRvsecyCAejnKREejDxDcBfL/zZejo2BiSDSslFQ9/9orfVqPrKyDiilrllvRjj2+JOfBBKNgsiQ=
-X-Received: by 2002:a05:6638:390:: with SMTP id y16mr3470538jap.18.1558548824441;
- Wed, 22 May 2019 11:13:44 -0700 (PDT)
+        id S1729519AbfEVSXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 14:23:23 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:34754 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728272AbfEVSXX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 14:23:23 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4MIJ5uZ071020;
+        Wed, 22 May 2019 18:22:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=r5KZMuAu+51JUTI2ohhapWR6r+UgqS3aDYLLXOt7kLM=;
+ b=goDtFo0Rr/Ds1O+vpv8kzreIVzaXr2FwgjQ/MipPKL+JxYC4bAn329mQEOpa6Ky7VBjy
+ qpfzJWdvOvMbMACb6c8cVqsHSgZYWTsM7gYnJHSnNNXza+L3wAqSLhgIClBequuaoZ8R
+ a9BJ9lgJHsqs/lfkaZIPiW1Y6v8zzOGISsxwZkr/ceVxjfTCKt5g3e2RzyY2ytzJ969Z
+ Iuo7oTzQVEog543lhQ9fVgaAtHZk5LYKyrndey6nLACYxGLT4PdWq5BCteyBAmeFELyO
+ 8RwA3ln39aSxeoeWZBCEek/X1VJaXZnLIt0CWl/nJ5QEOVuZdpe1DrT+4/6JXZhu9znF 9g== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 2smsk55syx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 22 May 2019 18:22:25 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4MILhUW043670;
+        Wed, 22 May 2019 18:22:25 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 2smsgv13ax-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 22 May 2019 18:22:25 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x4MIMOoo045618;
+        Wed, 22 May 2019 18:22:24 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3020.oracle.com with ESMTP id 2smsgv13aq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 22 May 2019 18:22:24 +0000
+Received: from abhmp0022.oracle.com (abhmp0022.oracle.com [141.146.116.28])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x4MIMI50023367;
+        Wed, 22 May 2019 18:22:18 GMT
+Received: from localhost (/10.159.211.99)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 22 May 2019 18:22:17 +0000
+Date:   Wed, 22 May 2019 14:22:15 -0400
+From:   Kris Van Hees <kris.van.hees@oracle.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Kris Van Hees <kris.van.hees@oracle.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        dtrace-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
+        rostedt@goodmis.org, mhiramat@kernel.org, acme@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net
+Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
+ implementation and sample use
+Message-ID: <20190522182215.GO2422@oracle.com>
+References: <201905202347.x4KNl0cs030532@aserv0121.oracle.com>
+ <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
+ <20190522142531.GE16275@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <20190522092323.17435-1-bjorn.topel@gmail.com>
-In-Reply-To: <20190522092323.17435-1-bjorn.topel@gmail.com>
-From:   Y Song <ys114321@gmail.com>
-Date:   Wed, 22 May 2019 11:13:08 -0700
-Message-ID: <CAH3MdRWGeYZDCEPrw2HFpnq+8j+ehMj2uhNJS9HnFDw=LmK6PQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests: bpf: add zero extend checks for ALU32 and/or/xor
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190522142531.GE16275@worktop.programming.kicks-ass.net>
+User-Agent: Mutt/1.5.23 (2014-03-12)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9265 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1905220128
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 2:25 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.co=
-m> wrote:
->
-> Add three tests to test_verifier/basic_instr that make sure that the
-> high 32-bits of the destination register is cleared after an ALU32
-> and/or/xor.
->
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+On Wed, May 22, 2019 at 04:25:32PM +0200, Peter Zijlstra wrote:
+> On Tue, May 21, 2019 at 10:56:18AM -0700, Alexei Starovoitov wrote:
+> 
+> > and no changes are necessary in kernel/events/ring_buffer.c either.
+> 
+> Let me just NAK them on the principle that I don't see them in my inbox.
 
-I think the patch intends for bpf-next, right? The patch itself looks
-good to me.
-Acked-by: Yonghong Song <yhs@fb.com>
+My apologies for failing to include you on the Cc for the patches.  That was
+an oversight on my end and certainly not intentional.
 
-> ---
->  .../selftests/bpf/verifier/basic_instr.c      | 39 +++++++++++++++++++
->  1 file changed, 39 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/verifier/basic_instr.c b/tools/t=
-esting/selftests/bpf/verifier/basic_instr.c
-> index ed91a7b9a456..4d844089938e 100644
-> --- a/tools/testing/selftests/bpf/verifier/basic_instr.c
-> +++ b/tools/testing/selftests/bpf/verifier/basic_instr.c
-> @@ -132,3 +132,42 @@
->         .prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
->         .result =3D ACCEPT,
->  },
-> +{
-> +       "and32 reg zero extend check",
-> +       .insns =3D {
-> +       BPF_MOV64_IMM(BPF_REG_0, -1),
-> +       BPF_MOV64_IMM(BPF_REG_2, -2),
-> +       BPF_ALU32_REG(BPF_AND, BPF_REG_0, BPF_REG_2),
-> +       BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-> +       BPF_EXIT_INSN(),
-> +       },
-> +       .prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
-> +       .result =3D ACCEPT,
-> +       .retval =3D 0,
-> +},
-> +{
-> +       "or32 reg zero extend check",
-> +       .insns =3D {
-> +       BPF_MOV64_IMM(BPF_REG_0, -1),
-> +       BPF_MOV64_IMM(BPF_REG_2, -2),
-> +       BPF_ALU32_REG(BPF_OR, BPF_REG_0, BPF_REG_2),
-> +       BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-> +       BPF_EXIT_INSN(),
-> +       },
-> +       .prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
-> +       .result =3D ACCEPT,
-> +       .retval =3D 0,
-> +},
-> +{
-> +       "xor32 reg zero extend check",
-> +       .insns =3D {
-> +       BPF_MOV64_IMM(BPF_REG_0, -1),
-> +       BPF_MOV64_IMM(BPF_REG_2, 0),
-> +       BPF_ALU32_REG(BPF_XOR, BPF_REG_0, BPF_REG_2),
-> +       BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-> +       BPF_EXIT_INSN(),
-> +       },
-> +       .prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
-> +       .result =3D ACCEPT,
-> +       .retval =3D 0,
-> +},
-> --
-> 2.20.1
->
+> Let me further NAK it for adding all sorts of garbage to the code --
+> we're not going to do gaps and stay_in_page nonsense.
+
+Could you give some guidance in terms of an alternative?  The ring buffer code
+provides both non-contiguous page allocation support and a vmalloc-based
+allocation, and the vmalloc version certainly would avoid the entire gap and
+page boundary stuff.  But since the allocator is chosen at build time based on
+the arch capabilities, there is no way to select a specific memory allocator.
+I'd be happy to use an alternative approach that allows direct writing into
+the ring buffer.
+
+	Thanks,
+	Kris
