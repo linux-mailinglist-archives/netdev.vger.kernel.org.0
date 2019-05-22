@@ -2,419 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43DAA269E1
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 20:32:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 707F726A12
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 20:49:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729626AbfEVScT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 14:32:19 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36073 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729538AbfEVScS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 14:32:18 -0400
-Received: by mail-qt1-f194.google.com with SMTP id a17so3619848qth.3
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 11:32:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=wFeaHwzHOOjE/+JjNpQHfgZdne1cp9+Ug09Nq03Kz5o=;
-        b=IEic7pzSJJ022kACjvzZ8vpiOg9J1L+3N2mYq8s966h5yvaUf87BuziSuMV1CecR5/
-         UXMhJVPR1ApEnDFAUqWpHc7lOivPzBGnO9p0XWDZzmw3pNsbGnCg9g1l3rjvrNVPQmq0
-         +cZP1tukRPpdMWq2txEBB/F/XPkV8k29jG+cio5et73ofS9sgoBaPz7dvdUF/Ggl3oN8
-         8tx3/L/A7Aiv2NHztVAdRtPgYfw68YukcET6gbctLU6ba6GrTvaWLSZ1+rOWIPWOzkcm
-         SWlu1cL5R6p2szz7DTZHQPdYeEm1ncWFM0QsMMfhsT5vPfYf67b5v3KLByfVAg05hKl0
-         odgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=wFeaHwzHOOjE/+JjNpQHfgZdne1cp9+Ug09Nq03Kz5o=;
-        b=GbID3tjY2f1p2hLaWHh6swzpegPpDD/ihLn1r2r+S4zNm04DZa1Yqk8PdQMNwFSJgl
-         JABLtUqTuhGJP7UIbVobo6WyKF0lJbXv057oYlfsZLvClM19uwQUGA64Bisfu489W86s
-         +bllMBtUMKS7WR2WMz9hOw1lVp63roJLtFeQljWgxija0ZlmisL/1TbTm6ryTFuurwww
-         q2CprhBCD92SFVYaaSnh6YYf5fy3lEfuMfqUnX1RghZwzDvqbgDwoHWt0oWsyF4+PUas
-         1/ed7YjsGNmapyKY46HhBoE1J0Z+i+t99hkn55Dla8H6j60YUaaEucvfRz/NR5crM5Bv
-         nDPg==
-X-Gm-Message-State: APjAAAUTiMvHJWk1R96aU4dHU+Q+VjcfYOXPnIqHRfAsDFQEVY6p1TTT
-        fgWrAbCWGLvr1CphhLX/7DaNDg==
-X-Google-Smtp-Source: APXvYqyq1Q6hectze4/JbUXooduK5ISp2JfEJLAuJC0Z6pGB9JgcEg6pO2QMf1kVNCHyloy4zveveg==
-X-Received: by 2002:a0c:fe48:: with SMTP id u8mr71734548qvs.234.1558549936779;
-        Wed, 22 May 2019 11:32:16 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s12sm12175487qkm.38.2019.05.22.11.32.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 22 May 2019 11:32:16 -0700 (PDT)
-Date:   Wed, 22 May 2019 11:32:12 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     toke@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, brouer@redhat.com, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW} to
- netdev
-Message-ID: <20190522113212.68aea474@cakuba.netronome.com>
-In-Reply-To: <20190522125353.6106-2-bjorn.topel@gmail.com>
-References: <20190522125353.6106-1-bjorn.topel@gmail.com>
-        <20190522125353.6106-2-bjorn.topel@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1729591AbfEVStg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 14:49:36 -0400
+Received: from us-smtp-delivery-213.mimecast.com ([63.128.21.213]:60513 "EHLO
+        us-smtp-delivery-213.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729538AbfEVStf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 14:49:35 -0400
+X-Greylist: delayed 367 seconds by postgrey-1.27 at vger.kernel.org; Wed, 22 May 2019 14:49:34 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=impinj.com;
+        s=mimecast20190405; t=1558550974;
+        h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:in-reply-to:
+         references:openpgp:autocrypt; bh=50ym4gNo4KsOAc/i9tEFA9JrWKrWXI25B1sR3bTGOCE=;
+        b=hwGu00KxzV+xQWzK83zcWve9Yh5xIkZ1KELO/dgQVMod3jCHp2CCrtE648ZpOQycwjaNhB
+        +U2XslA+fqT8qf2T+utwrl/b4AdU9i/F1Fgx9ERHJSt8HBG+grqRyAra5r7CvYdkMCihYb
+        D9WPE2Eod+96uCf+sf01w60NM9vtlxw=
+Received: from NAM05-BY2-obe.outbound.protection.outlook.com
+ (mail-by2nam05lp2052.outbound.protection.outlook.com [104.47.50.52]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ us-mta-226-oDt9bvAnMbKVRmx8_UopWw-1; Wed, 22 May 2019 14:43:26 -0400
+Received: from MWHPR0601MB3708.namprd06.prod.outlook.com (10.167.236.38) by
+ MWHPR0601MB3627.namprd06.prod.outlook.com (10.167.236.17) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.15; Wed, 22 May 2019 18:43:20 +0000
+Received: from MWHPR0601MB3708.namprd06.prod.outlook.com
+ ([fe80::88d1:40e0:d1be:1daf]) by MWHPR0601MB3708.namprd06.prod.outlook.com
+ ([fe80::88d1:40e0:d1be:1daf%7]) with mapi id 15.20.1900.020; Wed, 22 May 2019
+ 18:43:20 +0000
+From:   Trent Piepho <tpiepho@impinj.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+CC:     Trent Piepho <tpiepho@impinj.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: [PATCH net-next v2 1/8] dt-bindings: phy: dp83867: Describe how
+ driver behaves w.r.t rgmii delay
+Thread-Topic: [PATCH net-next v2 1/8] dt-bindings: phy: dp83867: Describe how
+ driver behaves w.r.t rgmii delay
+Thread-Index: AQHVEM45yXbzkDzkREabh22/y4lJIQ==
+Date:   Wed, 22 May 2019 18:43:19 +0000
+Message-ID: <20190522184255.16323-1-tpiepho@impinj.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BY5PR13CA0008.namprd13.prod.outlook.com
+ (2603:10b6:a03:180::21) To MWHPR0601MB3708.namprd06.prod.outlook.com
+ (2603:10b6:301:7c::38)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.14.5
+x-originating-ip: [216.207.205.253]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9b14d342-a48c-4512-1a69-08d6dee55c32
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:MWHPR0601MB3627;
+x-ms-traffictypediagnostic: MWHPR0601MB3627:
+x-microsoft-antispam-prvs: <MWHPR0601MB36274C62A39DE9F54721E36BD3000@MWHPR0601MB3627.namprd06.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0045236D47
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39850400004)(346002)(376002)(396003)(136003)(189003)(199004)(6486002)(6436002)(66476007)(14454004)(66556008)(66446008)(256004)(64756008)(6506007)(8936002)(386003)(73956011)(102836004)(66946007)(71190400001)(50226002)(71200400001)(6116002)(3846002)(2906002)(478600001)(6512007)(4326008)(305945005)(7736002)(316002)(26005)(186003)(36756003)(2501003)(66066001)(5660300002)(25786009)(53936002)(86362001)(110136005)(54906003)(52116002)(1076003)(81156014)(81166006)(8676002)(99286004)(2616005)(476003)(68736007)(486006);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR0601MB3627;H:MWHPR0601MB3708.namprd06.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: BAjrFVqvayezmV/AVGzvW9sOIfXPOpkg9DtO8uREkXjQCM0NGV6EGwQAGN1/cWUegUZrLE2tEjz2VdIaO7PEm73EusZ5J4HXMHClmTWjc1sSDdFkeJalGyiYkI7f42XhCo2Tqqp+XgOLTguDkiU09WEuwSISq8dlvIuqVdChY0LdWWCsI/uGEC0ECF3mIKG3FP9ePqdMBEotfmfT+90D3BqiuUOm/V8Me+AiAUkneqIcw6gX0DGPbDjMBvU5a/6b1XgLRpeNX6pTofk6L1PnG5XkU45fAP277kTsKDdkXXpPTqHs0LL7HwO+fehJVu4NPe8Y5eX3dL1PkMmorswpQDNDyL8wP3sedAWr3+tkBiEEUjTXsO1tJmHZXTcpI0Uxn+BF/9hqgZsWQU1vDlOlPNY0drwLirNiDHskojL/ZzU=
 MIME-Version: 1.0
+X-OriginatorOrg: impinj.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9b14d342-a48c-4512-1a69-08d6dee55c32
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2019 18:43:20.5392
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 6de70f0f-7357-4529-a415-d8cbb7e93e5e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR0601MB3627
+X-MC-Unique: oDt9bvAnMbKVRmx8_UopWw-1
+X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 May 2019 14:53:51 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->=20
-> All XDP capable drivers need to implement the XDP_QUERY_PROG{,_HW}
-> command of ndo_bpf. The query code is fairly generic. This commit
-> refactors the query code up from the drivers to the netdev level.
->=20
-> The struct net_device has gained four new members tracking the XDP
-> program, the corresponding program flags, and which programs
-> (SKB_MODE, DRV_MODE or HW_MODE) that are activated.
->=20
-> The xdp_prog member, previously only used for SKB_MODE, is shared with
-> DRV_MODE, since they are mutually exclusive.
->=20
-> The program query operations is all done under the rtnl lock. However,
-> the xdp_prog member is __rcu annotated, and used in a lock-less manner
-> for the SKB_MODE. This is because the xdp_prog member is shared from a
-> query program perspective (again, SKB and DRV are mutual exclusive),
-> RCU read and assignments functions are still used when altering
-> xdp_prog, even when only for queries in DRV_MODE. This is for
-> sparse/lockdep correctness.
->=20
-> A minor behavioral change was done during this refactorization; When
-> passing a negative file descriptor to a netdev to disable XDP, the
-> same program flag as the running program is required. An example.
->=20
-> The eth0 is DRV_DRV capable. Previously, this was OK, but confusing:
->=20
->   # ip link set dev eth0 xdp obj foo.o sec main
->   # ip link set dev eth0 xdpgeneric off
->=20
-> Now, the same commands give:
->=20
->   # ip link set dev eth0 xdp obj foo.o sec main
->   # ip link set dev eth0 xdpgeneric off
->   Error: native and generic XDP can't be active at the same time.
+QWRkIGEgbm90ZSB0byBtYWtlIGl0IG1vcmUgY2xlYXIgaG93IHRoZSBkcml2ZXIgYmVoYXZlcyB3
+aGVuICJyZ21paSIgdnMKInJnbWlpLWlkIiwgInJnbWlpLWlkcngiLCBvciAicmdtaWktaWR0eCIg
+aW50ZXJmYWNlIG1vZGVzIGFyZSBzZWxlY3RlZC4KCkNjOiBSb2IgSGVycmluZyA8cm9iaCtkdEBr
+ZXJuZWwub3JnPgpDYzogTWFyayBSdXRsYW5kIDxtYXJrLnJ1dGxhbmRAYXJtLmNvbT4KU2lnbmVk
+LW9mZi1ieTogVHJlbnQgUGllcGhvIDx0cGllcGhvQGltcGluai5jb20+Ci0tLQoKTm90ZXM6CiAg
+ICBDaGFuZ2VzIGZyb20gdjE6CiAgICAgIENsYXJpZnkgYmVoYXZpb3IgbWF5IGNoYW5nZSB0byBl
+bmZvcmNlIG5vIGRlbGF5IGluICJyZ21paSIgbW9kZQoKIERvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9uZXQvdGksZHA4Mzg2Ny50eHQgfCA4ICsrKysrKysrCiAxIGZpbGUgY2hhbmdl
+ZCwgOCBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVl
+L2JpbmRpbmdzL25ldC90aSxkcDgzODY3LnR4dCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
+aW5kaW5ncy9uZXQvdGksZHA4Mzg2Ny50eHQKaW5kZXggOWVmOTMzOGFhZWUxLi45OWI4NjgxYmRl
+NDkgMTAwNjQ0Ci0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9uZXQvdGks
+ZHA4Mzg2Ny50eHQKKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC90
+aSxkcDgzODY3LnR4dApAQCAtMTEsNiArMTEsMTQgQEAgUmVxdWlyZWQgcHJvcGVydGllczoKIAkt
+IHRpLGZpZm8tZGVwdGggLSBUcmFuc21pdHQgRklGTyBkZXB0aC0gc2VlIGR0LWJpbmRpbmdzL25l
+dC90aS1kcDgzODY3LmgKIAkJZm9yIGFwcGxpY2FibGUgdmFsdWVzCiAKK05vdGU6IElmIHRoZSBp
+bnRlcmZhY2UgdHlwZSBpcyBQSFlfSU5URVJGQUNFX01PREVfUkdNSUkgdGhlIFRYL1JYIGNsb2Nr
+IGRlbGF5cworICAgICAgd2lsbCBiZSBsZWZ0IGF0IHRoZWlyIGRlZmF1bHQgdmFsdWVzLCBhcyBz
+ZXQgYnkgdGhlIFBIWSdzIHBpbiBzdHJhcHBpbmcuCisgICAgICBUaGUgZGVmYXVsdCBzdHJhcHBp
+bmcgd2lsbCB1c2UgYSBkZWxheSBvZiAyLjAwIG5zLiAgVGh1cworICAgICAgUEhZX0lOVEVSRkFD
+RV9NT0RFX1JHTUlJLCBieSBkZWZhdWx0LCBkb2VzIG5vdCBiZWhhdmUgYXMgUkdNSUkgd2l0aCBu
+bworICAgICAgaW50ZXJuYWwgZGVsYXksIGJ1dCBhcyBQSFlfSU5URVJGQUNFX01PREVfUkdNSUlf
+SUQuICBUaGUgZGV2aWNlIHRyZWUKKyAgICAgIHNob3VsZCB1c2UgInJnbWlpLWlkIiBpZiBpbnRl
+cm5hbCBkZWxheXMgYXJlIGRlc2lyZWQgYXMgdGhpcyBtYXkgYmUKKyAgICAgIGNoYW5nZWQgaW4g
+ZnV0dXJlIHRvIGNhdXNlICJyZ21paSIgbW9kZSB0byBkaXNhYmxlIGRlbGF5cy4KKwogT3B0aW9u
+YWwgcHJvcGVydHk6CiAJLSB0aSxtaW4tb3V0cHV0LWltcGVkYW5jZSAtIE1BQyBJbnRlcmZhY2Ug
+SW1wZWRhbmNlIGNvbnRyb2wgdG8gc2V0CiAJCQkJICAgIHRoZSBwcm9ncmFtbWFibGUgb3V0cHV0
+IGltcGVkYW5jZSB0bwotLSAKMi4xNC41Cgo=
 
-I'm not clear why this change is necessary? It is a change in
-behaviour, and if anything returning ENOENT would seem cleaner=20
-in this case.
-
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> ---
->  include/linux/netdevice.h |  13 +++--
->  net/core/dev.c            | 120 ++++++++++++++++++++------------------
->  net/core/rtnetlink.c      |  33 ++---------
->  3 files changed, 76 insertions(+), 90 deletions(-)
->=20
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 44b47e9df94a..bdcb20a3946c 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1940,6 +1940,11 @@ struct net_device {
->  #endif
->  	struct hlist_node	index_hlist;
-> =20
-> +	struct bpf_prog		*xdp_prog_hw;
-> +	unsigned int		xdp_flags;
-> +	u32			xdp_prog_flags;
-> +	u32			xdp_prog_hw_flags;
-
-Do we really need 3 xdp flags variables?  Offloaded programs
-realistically must have only the HW mode flag set (not sure if=20
-netdevsim still pretends we can do offload of code after rewrites,
-but if it does it can be changed :)).  Non-offloaded programs need
-flags, but we don't need the "all ORed" flags either, AFAICT.  No?
-
-> +
->  /*
->   * Cache lines mostly used on transmit path
->   */
-> @@ -2045,9 +2050,8 @@ struct net_device {
-> =20
->  static inline bool netif_elide_gro(const struct net_device *dev)
->  {
-> -	if (!(dev->features & NETIF_F_GRO) || dev->xdp_prog)
-> -		return true;
-> -	return false;
-> +	return !(dev->features & NETIF_F_GRO) ||
-> +		dev->xdp_flags & XDP_FLAGS_SKB_MODE;
->  }
-> =20
->  #define	NETDEV_ALIGN		32
-> @@ -3684,8 +3688,7 @@ struct sk_buff *dev_hard_start_xmit(struct sk_buff =
-*skb, struct net_device *dev,
->  typedef int (*bpf_op_t)(struct net_device *dev, struct netdev_bpf *bpf);
->  int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *ex=
-tack,
->  		      int fd, u32 flags);
-> -u32 __dev_xdp_query(struct net_device *dev, bpf_op_t xdp_op,
-> -		    enum bpf_netdev_command cmd);
-> +u32 dev_xdp_query(struct net_device *dev, unsigned int flags);
->  int xdp_umem_query(struct net_device *dev, u16 queue_id);
-> =20
->  int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index b6b8505cfb3e..ead16c3f955c 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -8005,31 +8005,31 @@ int dev_change_proto_down_generic(struct net_devi=
-ce *dev, bool proto_down)
->  }
->  EXPORT_SYMBOL(dev_change_proto_down_generic);
-> =20
-> -u32 __dev_xdp_query(struct net_device *dev, bpf_op_t bpf_op,
-> -		    enum bpf_netdev_command cmd)
-> +u32 dev_xdp_query(struct net_device *dev, unsigned int flags)
-
-You only pass the mode here, so perhaps rename the flags argument to
-mode?
-
->  {
-> -	struct netdev_bpf xdp;
-> +	struct bpf_prog *prog =3D NULL;
-> =20
-> -	if (!bpf_op)
-> +	if (hweight32(flags) !=3D 1)
->  		return 0;
-
-This looks superfluous, given callers will always pass mode, right?
-
-> -	memset(&xdp, 0, sizeof(xdp));
-> -	xdp.command =3D cmd;
-> -
-> -	/* Query must always succeed. */
-> -	WARN_ON(bpf_op(dev, &xdp) < 0 && cmd =3D=3D XDP_QUERY_PROG);
-> +	if (flags & (XDP_FLAGS_SKB_MODE | XDP_FLAGS_DRV_MODE))
-> +		prog =3D rtnl_dereference(dev->xdp_prog);
-> +	else if (flags & XDP_FLAGS_HW_MODE)
-> +		prog =3D dev->xdp_prog_hw;
-
-Perhaps use a switch statement here?
-
-> -	return xdp.prog_id;
-> +	return prog ? prog->aux->id : 0;
->  }
-> =20
-> -static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
-> +static int dev_xdp_install(struct net_device *dev, unsigned int target,
-
-Could you say mode instead of target everywhere?
-
->  			   struct netlink_ext_ack *extack, u32 flags,
->  			   struct bpf_prog *prog)
->  {
-> +	bpf_op_t bpf_op =3D dev->netdev_ops->ndo_bpf;
-
-The point of passing bpf_op around is to have the right one (generic or
-driver) this is lost with the ternary statement below :S
-
->  	struct netdev_bpf xdp;
-> +	int err;
-> =20
->  	memset(&xdp, 0, sizeof(xdp));
-> -	if (flags & XDP_FLAGS_HW_MODE)
-> +	if (target =3D=3D XDP_FLAGS_HW_MODE)
-
-Is this change necessary?
-
->  		xdp.command =3D XDP_SETUP_PROG_HW;
->  	else
->  		xdp.command =3D XDP_SETUP_PROG;
-> @@ -8037,35 +8037,41 @@ static int dev_xdp_install(struct net_device *dev=
-, bpf_op_t bpf_op,
->  	xdp.flags =3D flags;
->  	xdp.prog =3D prog;
-> =20
-> -	return bpf_op(dev, &xdp);
-> +	err =3D (target =3D=3D XDP_FLAGS_SKB_MODE) ?
-
-Brackets unnecessary.
-
-> +	      generic_xdp_install(dev, &xdp) :
-> +	      bpf_op(dev, &xdp);
-> +	if (!err) {
-
-Keep success path unindented, save indentation.
-
-	if (err)
-		return err;
-
-	bla bla
-
-	return 0;
-
-> +		if (prog)
-> +			dev->xdp_flags |=3D target;
-> +		else
-> +			dev->xdp_flags &=3D ~target;
-
-These "all ORed" flags are not needed, AFAICT, as mentioned above.
-
-> +		if (target =3D=3D XDP_FLAGS_HW_MODE) {
-> +			dev->xdp_prog_hw =3D prog;
-> +			dev->xdp_prog_hw_flags =3D flags;
-> +		} else if (target =3D=3D XDP_FLAGS_DRV_MODE) {
-> +			rcu_assign_pointer(dev->xdp_prog, prog);
-> +			dev->xdp_prog_flags =3D flags;
-> +		}
-> +	}
-> +
-> +	return err;
->  }
-> =20
->  static void dev_xdp_uninstall(struct net_device *dev)
->  {
-> -	struct netdev_bpf xdp;
-> -	bpf_op_t ndo_bpf;
-> -
-> -	/* Remove generic XDP */
-> -	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL, 0, NULL));
-> -
-> -	/* Remove from the driver */
-> -	ndo_bpf =3D dev->netdev_ops->ndo_bpf;
-> -	if (!ndo_bpf)
-> -		return;
-> -
-> -	memset(&xdp, 0, sizeof(xdp));
-> -	xdp.command =3D XDP_QUERY_PROG;
-> -	WARN_ON(ndo_bpf(dev, &xdp));
-> -	if (xdp.prog_id)
-> -		WARN_ON(dev_xdp_install(dev, ndo_bpf, NULL, xdp.prog_flags,
-> -					NULL));
-> -
-> -	/* Remove HW offload */
-> -	memset(&xdp, 0, sizeof(xdp));
-> -	xdp.command =3D XDP_QUERY_PROG_HW;
-> -	if (!ndo_bpf(dev, &xdp) && xdp.prog_id)
-> -		WARN_ON(dev_xdp_install(dev, ndo_bpf, NULL, xdp.prog_flags,
-> -					NULL));
-> +	if (dev->xdp_flags & XDP_FLAGS_SKB_MODE) {
-> +		WARN_ON(dev_xdp_install(dev, XDP_FLAGS_SKB_MODE,
-> +					NULL, 0, NULL));
-> +	}
-
-Brackets unnecessary.
-
-> +	if (dev->xdp_flags & XDP_FLAGS_DRV_MODE) {
-> +		WARN_ON(dev_xdp_install(dev, XDP_FLAGS_DRV_MODE,
-> +					NULL, dev->xdp_prog_flags, NULL));
-> +	}
-
-You should be able to just call install with the original flags, and
-install handler should do the right maths again to direct it either to
-drv or generic, no?
-
-> +	if (dev->xdp_flags & XDP_FLAGS_HW_MODE) {
-> +		WARN_ON(dev_xdp_install(dev, XDP_FLAGS_HW_MODE,
-> +					NULL, dev->xdp_prog_hw_flags, NULL));
-> +	}
->  }
-> =20
->  /**
-> @@ -8080,41 +8086,41 @@ static void dev_xdp_uninstall(struct net_device *=
-dev)
->  int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *ex=
-tack,
->  		      int fd, u32 flags)
->  {
-> -	const struct net_device_ops *ops =3D dev->netdev_ops;
-> -	enum bpf_netdev_command query;
-> +	bool offload, drv_supp =3D !!dev->netdev_ops->ndo_bpf;
-
-Please avoid calculations in init.  If the function gets complicated
-this just ends up as a weirdly indented code, which is hard to read.
-
->  	struct bpf_prog *prog =3D NULL;
-> -	bpf_op_t bpf_op, bpf_chk;
-> -	bool offload;
-> +	unsigned int target;
->  	int err;
-> =20
->  	ASSERT_RTNL();
-> =20
->  	offload =3D flags & XDP_FLAGS_HW_MODE;
-> -	query =3D offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
-> +	target =3D offload ? XDP_FLAGS_HW_MODE : XDP_FLAGS_DRV_MODE;
-> =20
-> -	bpf_op =3D bpf_chk =3D ops->ndo_bpf;
-> -	if (!bpf_op && (flags & (XDP_FLAGS_DRV_MODE | XDP_FLAGS_HW_MODE))) {
-> +	if (!drv_supp && (flags & (XDP_FLAGS_DRV_MODE | XDP_FLAGS_HW_MODE))) {
-
-Here you have a bracket for & inside an &&..
-
->  		NL_SET_ERR_MSG(extack, "underlying driver does not support XDP in nati=
-ve mode");
->  		return -EOPNOTSUPP;
->  	}
-> -	if (!bpf_op || (flags & XDP_FLAGS_SKB_MODE))
-> -		bpf_op =3D generic_xdp_install;
-> -	if (bpf_op =3D=3D bpf_chk)
-> -		bpf_chk =3D generic_xdp_install;
-> +
-> +	if (!drv_supp || (flags & XDP_FLAGS_SKB_MODE))
-> +		target =3D XDP_FLAGS_SKB_MODE;
-> +
-> +	if ((mode =3D=3D XDP_FLAGS_SKB_MODE &&
-> +	     dev->xdp_flags & XDP_FLAGS_DRV_MODE) ||
-
-.. and here you don't :)
-
-> +	    (target =3D=3D XDP_FLAGS_DRV_MODE &&
-> +	     dev->xdp_flags & XDP_FLAGS_SKB_MODE)) {
-
-I think this condition can be shortened.  You can't get a conflict if
-the driver has no support.  So the only conflicting case is:
-
-	rcu_access_pointer(dev->xdp_prog) && drv_supp &&
-	(flags ^ dev->xdp_flags) & XDP_FLAGS_SKB_MODE
-
-> +		NL_SET_ERR_MSG(extack, "native and generic XDP can't be active at the =
-same time");
-> +		return -EEXIST;
-> +	}
-> =20
->  	if (fd >=3D 0) {
-> -		if (!offload && __dev_xdp_query(dev, bpf_chk, XDP_QUERY_PROG)) {
-> -			NL_SET_ERR_MSG(extack, "native and generic XDP can't be active at the=
- same time");
-> -			return -EEXIST;
-> -		}
-> -		if ((flags & XDP_FLAGS_UPDATE_IF_NOEXIST) &&
-> -		    __dev_xdp_query(dev, bpf_op, query)) {
-> +		if (flags & XDP_FLAGS_UPDATE_IF_NOEXIST &&
-> +		    dev_xdp_query(dev, target)) {
->  			NL_SET_ERR_MSG(extack, "XDP program already attached");
->  			return -EBUSY;
->  		}
-> =20
-> -		prog =3D bpf_prog_get_type_dev(fd, BPF_PROG_TYPE_XDP,
-> -					     bpf_op =3D=3D ops->ndo_bpf);
-> +		prog =3D bpf_prog_get_type_dev(fd, BPF_PROG_TYPE_XDP, drv_supp);
-> +
-
-Extra new line.
-
->  		if (IS_ERR(prog))
->  			return PTR_ERR(prog);
-> =20
-> @@ -8125,7 +8131,7 @@ int dev_change_xdp_fd(struct net_device *dev, struc=
-t netlink_ext_ack *extack,
->  		}
->  	}
-> =20
-> -	err =3D dev_xdp_install(dev, bpf_op, extack, flags, prog);
-> +	err =3D dev_xdp_install(dev, target, extack, flags, prog);
->  	if (err < 0 && prog)
->  		bpf_prog_put(prog);
-> =20
-
-I think apart from returning the new error it looks functionally
-correct :)
