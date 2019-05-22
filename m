@@ -2,123 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A526025EC8
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 09:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9359025EE2
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 09:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728323AbfEVHpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 03:45:08 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:45750 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726358AbfEVHpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 03:45:08 -0400
-Received: by mail-lf1-f67.google.com with SMTP id n22so894680lfe.12
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 00:45:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=15aURh5b05zdmtYRIIBYT5TwHdQmTOmGD+VB861zuSQ=;
-        b=n/Q1xW2UkGhX8oSqIV7zGnFCzm0Rjz9tfXhXf1d0MCU5rhqZ5mT6BN1G8U0YUsF9h1
-         v5cbaRM3c6OR72luo08wv/PVy7EfOPY/IKRGugEst3PQzjEGCQafeGRh/A9CkWlO9XU6
-         RNXmdmnHW52J9G2aPX4g2gsuM7Kc8k2SA51ok=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=15aURh5b05zdmtYRIIBYT5TwHdQmTOmGD+VB861zuSQ=;
-        b=QpG/ADEJ4adYvqASyTb/xrmHZxLDsC3RyUDpGvp3Qjxc6UJjHzwLpI83ok5Emw+6mT
-         Q4zGiPs4oyWWD6MlOjZcaOtq5PN/xkJfaFlEUPzuc9WhUpiiGaRz5Ld1N/IHrGdoLOmf
-         DdMNJy78fD5MpxGZNbhr/7Jsq9/sNiOU8Zt7n+DZLPyKOUAbjV2l1woVc4WCNYcGQ6pS
-         B4cPq0OAx9tkmYTP2EUcaJKQYydb3NifslwwxqUsmvqVO6SUk78KAzofzXaQQphHc4mE
-         L3/jl/XaIXU+6dIfZ1/a97PffvqHZ/N8h4DwRpJQDogOzUI7XeYoX+nsxkYcidhoMCpy
-         8DXg==
-X-Gm-Message-State: APjAAAVczImNi6zGkeo+WBVeZu8/HPFI5k0bb4U2vkQvYB/uG3TfuYup
-        GBljbnGylopqsvYjlN6MCDQ4mQ==
-X-Google-Smtp-Source: APXvYqyIYn30nswvm8u0sbDWQELTLK2uoUfB/fe3LCeN8/wMiamYUsmeBy+Oh1eguWObQMQd7Nt5Qg==
-X-Received: by 2002:a19:700d:: with SMTP id h13mr5006682lfc.39.1558511106411;
-        Wed, 22 May 2019 00:45:06 -0700 (PDT)
-Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id v4sm139960lfi.49.2019.05.22.00.45.05
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 22 May 2019 00:45:05 -0700 (PDT)
-References: <20190522002457.10181-1-danieltimlee@gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.1
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH] samples: bpf: fix style in bpf_load
-In-reply-to: <20190522002457.10181-1-danieltimlee@gmail.com>
-Date:   Wed, 22 May 2019 09:45:04 +0200
-Message-ID: <87woijyltr.fsf@cloudflare.com>
+        id S1728717AbfEVH6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 03:58:16 -0400
+Received: from mail.windriver.com ([147.11.1.11]:52566 "EHLO
+        mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727453AbfEVH6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 03:58:15 -0400
+Received: from ALA-HCA.corp.ad.wrs.com ([147.11.189.40])
+        by mail.windriver.com (8.15.2/8.15.1) with ESMTPS id x4M7vurP026148
+        (version=TLSv1 cipher=AES128-SHA bits=128 verify=FAIL);
+        Wed, 22 May 2019 00:57:56 -0700 (PDT)
+Received: from [128.224.155.90] (128.224.155.90) by ALA-HCA.corp.ad.wrs.com
+ (147.11.189.50) with Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 22 May
+ 2019 00:57:55 -0700
+Subject: Re: [PATCH v2] tipc: Avoid copying bytes beyond the supplied data
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        <jon.maloy@ericsson.com>, <davem@davemloft.net>,
+        <niveditas98@gmail.com>
+CC:     <netdev@vger.kernel.org>, <tipc-discussion@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>
+References: <20190520034536.22782-1-chris.packham@alliedtelesis.co.nz>
+From:   Ying Xue <ying.xue@windriver.com>
+Message-ID: <2830aab3-3fa9-36d2-5646-d5e4672ae263@windriver.com>
+Date:   Wed, 22 May 2019 15:47:46 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20190520034536.22782-1-chris.packham@alliedtelesis.co.nz>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [128.224.155.90]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 02:24 AM CEST, Daniel T. Lee wrote:
-> This commit fixes style problem in samples/bpf/bpf_load.c
->
-> Styles that have been changed are:
->  - Magic string use of 'DEBUGFS'
->  - Useless zero initialization of a global variable
->  - Minor style fix with whitespace
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+On 5/20/19 11:45 AM, Chris Packham wrote:
+> TLV_SET is called with a data pointer and a len parameter that tells us
+> how many bytes are pointed to by data. When invoking memcpy() we need
+> to careful to only copy len bytes.
+> 
+> Previously we would copy TLV_LENGTH(len) bytes which would copy an extra
+> 4 bytes past the end of the data pointer which newer GCC versions
+> complain about.
+> 
+>  In file included from test.c:17:
+>  In function 'TLV_SET',
+>      inlined from 'test' at test.c:186:5:
+>  /usr/include/linux/tipc_config.h:317:3:
+>  warning: 'memcpy' forming offset [33, 36] is out of the bounds [0, 32]
+>  of object 'bearer_name' with type 'char[32]' [-Warray-bounds]
+>      memcpy(TLV_DATA(tlv_ptr), data, tlv_len);
+>      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>  test.c: In function 'test':
+>  test.c::161:10: note:
+>  'bearer_name' declared here
+>      char bearer_name[TIPC_MAX_BEARER_NAME];
+>           ^~~~~~~~~~~
+> 
+> We still want to ensure any padding bytes at the end are initialised, do
+> this with a explicit memset() rather than copy bytes past the end of
+> data. Apply the same logic to TCM_SET.
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+
+Acked-by: Ying Xue <ying.xue@windriver.com>
+
+
+But please make the same changes in usr/include/linux/tipc_config.h
+
 > ---
->  samples/bpf/bpf_load.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
->
-> diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
-> index eae7b635343d..e71d23d2a0ff 100644
-> --- a/samples/bpf/bpf_load.c
-> +++ b/samples/bpf/bpf_load.c
-> @@ -40,7 +40,7 @@ int prog_cnt;
->  int prog_array_fd = -1;
->
->  struct bpf_map_data map_data[MAX_MAPS];
-> -int map_data_count = 0;
-> +int map_data_count;
->
->  static int populate_prog_array(const char *event, int prog_fd)
->  {
-> @@ -57,6 +57,7 @@ static int populate_prog_array(const char *event, int prog_fd)
->  static int write_kprobe_events(const char *val)
->  {
->  	int fd, ret, flags;
-> +	char buf[256];
->
->  	if (val == NULL)
->  		return -1;
-> @@ -65,7 +66,9 @@ static int write_kprobe_events(const char *val)
->  	else
->  		flags = O_WRONLY | O_APPEND;
->
-> -	fd = open("/sys/kernel/debug/tracing/kprobe_events", flags);
-> +	strcpy(buf, DEBUGFS);
-> +	strcat(buf, "kprobe_events");
-> +	fd = open(buf, flags);
-
-No need to build the path at run-time. Compile-time string literal
-concatenation will do in this case:
-
-  fd = open(DEBUGFS "kprobe_events", flags);
-
--Jakub
-
->
->  	ret = write(fd, val, strlen(val));
->  	close(fd);
-> @@ -490,8 +493,8 @@ static int load_elf_maps_section(struct bpf_map_data *maps, int maps_shndx,
->
->  		/* Verify no newer features were requested */
->  		if (validate_zero) {
-> -			addr = (unsigned char*) def + map_sz_copy;
-> -			end  = (unsigned char*) def + map_sz_elf;
-> +			addr = (unsigned char *) def + map_sz_copy;
-> +			end  = (unsigned char *) def + map_sz_elf;
->  			for (; addr < end; addr++) {
->  				if (*addr != 0) {
->  					free(sym);
+> 
+> Changes in v2:
+> - Ensure padding bytes are initialised in both TLV_SET and TCM_SET
+> 
+>  include/uapi/linux/tipc_config.h | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/uapi/linux/tipc_config.h b/include/uapi/linux/tipc_config.h
+> index 4b2c93b1934c..4955e1a9f1bc 100644
+> --- a/include/uapi/linux/tipc_config.h
+> +++ b/include/uapi/linux/tipc_config.h
+> @@ -307,8 +307,10 @@ static inline int TLV_SET(void *tlv, __u16 type, void *data, __u16 len)
+>  	tlv_ptr = (struct tlv_desc *)tlv;
+>  	tlv_ptr->tlv_type = htons(type);
+>  	tlv_ptr->tlv_len  = htons(tlv_len);
+> -	if (len && data)
+> -		memcpy(TLV_DATA(tlv_ptr), data, tlv_len);
+> +	if (len && data) {
+> +		memcpy(TLV_DATA(tlv_ptr), data, len);
+> +		memset(TLV_DATA(tlv_ptr) + len, 0, TLV_SPACE(len) - tlv_len);
+> +	}
+>  	return TLV_SPACE(len);
+>  }
+>  
+> @@ -405,8 +407,10 @@ static inline int TCM_SET(void *msg, __u16 cmd, __u16 flags,
+>  	tcm_hdr->tcm_len   = htonl(msg_len);
+>  	tcm_hdr->tcm_type  = htons(cmd);
+>  	tcm_hdr->tcm_flags = htons(flags);
+> -	if (data_len && data)
+> +	if (data_len && data) {
+>  		memcpy(TCM_DATA(msg), data, data_len);
+> +		memset(TCM_DATA(msg) + data_len, 0, TCM_SPACE(data_len) - msg_len);
+> +	}
+>  	return TCM_SPACE(data_len);
+>  }
+>  
+> 
