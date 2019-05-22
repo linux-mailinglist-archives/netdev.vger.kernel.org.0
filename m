@@ -2,91 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B085B25B68
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 02:56:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51AE325B6A
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 02:58:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728027AbfEVA4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 20:56:15 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:33067 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726083AbfEVA4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 20:56:14 -0400
-Received: by mail-qk1-f195.google.com with SMTP id p18so463751qkk.0;
-        Tue, 21 May 2019 17:56:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UcsW6XhQiuBgEwwFMZJ9DR9uDKMcByzy/BIkt2l5OFk=;
-        b=p8mPEg2vUVu5GGyCDVr0SxAmjGzOTpSjCAURKnck5YIwNOcPmnSSG7Vqu2kKk6o/0D
-         gWHr6pgaQylnDKs8yLWt/GaCgIxdAiAHKtMH4Qrs5xmn6nyJiNwalH2/y5r2qp3PZKcO
-         I6u5H3OBMEvvAbvIHnsJ+WzHkTt7MXCN4fYCgFVTKan6voy9AdJTwzs5P4SO6qA+rM77
-         2Dx9PfPyBsxqoN0St1o79vjrDbM7OK2vsrTjI72h8mkGyXPOEI9bkAvYYH2+EZ+KV7En
-         Zlhz4coqKnMeYK57i2JISid+B9CNq1F/+M9umwKPCFVR4kQNBKGBMswxDSUIMBLngX5V
-         WOdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UcsW6XhQiuBgEwwFMZJ9DR9uDKMcByzy/BIkt2l5OFk=;
-        b=uEWQryVsbasb4BmrvYPlwUgV5lcMNz6/uRZidJKKdGd5LFADLbUGP8woKgjF42c6yd
-         i1fs4FUsa4LulGqNnbfiALcFlpruxmGRVxqnZmUxtQz2oV3STuYfLA52UsswxGtnozd+
-         c5AYhlqmIr/pZTJ7BhG/ggOTytNkC3aIAdBsShF+rVtVyTj4U80EgmuAvTkF+YubgIfU
-         LAfnwbDiRA5qeRlK/uF6PmIHR2LXl2pFdlDEvKRujl9LnYvkYzuY/bruJq923PvIzpXA
-         M7UY1W611No0eJXeaHuFEJ4LZgv8qv2z10Lqaj5F0FUW7bNcwmbaPKHUPSF5xWqNSfqd
-         J8sw==
-X-Gm-Message-State: APjAAAVpTUfwMQSt5AZmSUAOzTAilbjKkWOiZnag8KQYCExoDzY/FULf
-        uuod7nYl9S0h2WMDkj907TJb2LeehpRePyjddjfqDx8hQ4o=
-X-Google-Smtp-Source: APXvYqzZvfLS+8VnKHXJ/gKRV68+/+ZR0qAM+q3szoJTvYMSf7xZjvmvXkY8/dwYTxinJNbbv1kWxEhXGa1cLdaHsHE=
-X-Received: by 2002:a37:66c7:: with SMTP id a190mr67245391qkc.44.1558486573857;
- Tue, 21 May 2019 17:56:13 -0700 (PDT)
+        id S1727936AbfEVA63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 20:58:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42645 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726083AbfEVA63 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 May 2019 20:58:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=uH7z7SdNeyDoUf5r859hF8EPzjC5LH/pj2/RE9xsuW4=; b=rsV8Zr0cStPXks7/iFjwDPyLzm
+        9c9e9ctybxet2iqxwcYEfRbQnTOk7XWtymsH7PKGSjgAH/32jZh5ypkzbrxea4viukvSU6OlXGq3b
+        LbdbN5aGkvT5yX5X83iSOHv3/1gV+C+buzRYJtWNz/giaXlqqD3whL+mKvK+tEhduprk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hTFaJ-0008Qv-Jx; Wed, 22 May 2019 02:58:23 +0200
+Date:   Wed, 22 May 2019 02:58:23 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH V3 net-next 2/6] net: Introduce a new MII time stamping
+ interface.
+Message-ID: <20190522005823.GD6577@lunn.ch>
+References: <20190521224723.6116-3-richardcochran@gmail.com>
 MIME-Version: 1.0
-References: <20190521230939.2149151-1-ast@kernel.org> <20190521230939.2149151-4-ast@kernel.org>
- <CAEf4BzZrK1Fw211ef9psBxOoP_vV9tH2Hre1DJSqUsp7iX7bSg@mail.gmail.com> <2a067f93-c607-34fc-1c34-611ed4a8f6a0@fb.com>
-In-Reply-To: <2a067f93-c607-34fc-1c34-611ed4a8f6a0@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 21 May 2019 17:56:02 -0700
-Message-ID: <CAEf4BzZ1r2brvaJvdXnpUD=Et9Ysp6361esRrDD_rPG4u4h7tA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: add pyperf scale test
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190521224723.6116-3-richardcochran@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 5:50 PM Alexei Starovoitov <ast@fb.com> wrote:
->
-> On 5/21/19 5:36 PM, Andrii Nakryiko wrote:
-> >> --- /dev/null
-> >> +++ b/tools/testing/selftests/bpf/progs/pyperf.h
-> >> @@ -0,0 +1,268 @@
-> >> +// SPDX-License-Identifier: GPL-2.0
-> >> +// Copyright (c) 2019 Facebook
-> >
-> > Maybe let's include a link to an up-to-date real tool, that was used
-> > to create this scale test in BCC:
-> > https://github.com/iovisor/bcc/blob/master/examples/cpp/pyperf/PyPerfBPFProgram.cc
->
-> I thought about it, but decided not to,
-> since this hack is not exactly the same.
-> I tried to keep an idea of the loop though
-> with roughly the same number of probe_reads
-> and 'if' conditions, but was chopping all bcc-ism out of it.
-> In the commit log: "Add a snippet of pyperf bpf program"
-> By "a snippet" I meant that it's not the same thing,
-> but close enough from verifier complexity point of view.
-> Existing pyperf works around the lack of loops with tail-calls :(
-> I'm thinking to reuse this hack as future bounded loop test too.
->
-> Another reason to avoid the link is I'm hoping that pyperf
-> will move from 'examples' directory there into proper tool,
-> so the link will become broken.
+> -static int dp83640_hwtstamp(struct phy_device *phydev, struct ifreq *ifr)
+> +static int dp83640_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
+>  {
+> -	struct dp83640_private *dp83640 = phydev->priv;
+> +	struct dp83640_private *dp83640 =
+> +		container_of(mii_ts, struct dp83640_private, mii_ts);
+>  	struct hwtstamp_config cfg;
+>  	u16 txcfg0, rxcfg0;
 
-Ok, fair enough.
+Hi Richard
+
+David might complain about reverse christmas tree. Maybe define a
+macro, to_dp83640() which takes mii_ts?
+
+> +/**
+> + * struct mii_timestamper - Callback interface to MII time stamping devices.
+> + *
+> + * @rxtstamp:	Requests a Rx timestamp for 'skb'.  If the skb is accepted,
+> + *		the MII time stamping device promises to deliver it using
+> + *		netif_rx() as soon as a timestamp becomes available. One of
+> + *		the PTP_CLASS_ values is passed in 'type'.  The function
+> + *		must return true if the skb is accepted for delivery.
+> + *
+> + * @txtstamp:	Requests a Tx timestamp for 'skb'.  The MII time stamping
+> + *		device promises to deliver it using skb_complete_tx_timestamp()
+> + *		as soon as a timestamp becomes available. One of the PTP_CLASS_
+> + *		values is passed in 'type'.
+> + *
+> + * @hwtstamp:	Handles SIOCSHWTSTAMP ioctl for hardware time stamping.
+> + * @link_state:	Allows the device to respond to changes in the link state.
+> + * @ts_info:	Handles ethtool queries for hardware time stamping.
+> + *
+> + * Drivers for PHY time stamping devices should embed their
+> + * mii_timestamper within a private structure, obtaining a reference
+> + * to it using container_of().
+> + */
+
+I wonder if it is worth mentioning that link_state() is called with
+the phy lock held, but none of the others are?
+
+Otherwise this looks good.
+
+	  Andrew
