@@ -2,121 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA9827216
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 00:14:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A581427218
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 00:14:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727899AbfEVWOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 18:14:05 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:37728 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727269AbfEVWOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 18:14:05 -0400
-Received: by mail-qt1-f196.google.com with SMTP id o7so4426999qtp.4;
-        Wed, 22 May 2019 15:14:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6v5ZNf+eM3rr/ZvYNB7ePCdQNiBWhUlLdtbZnWmsYV0=;
-        b=KUZSWPIXZBWenGsoO+okfQnoVWHiWghlht30mYlXHu9YXNwRPrOrYCSBkrj5LRIFFN
-         hNWPmwuZ0cPAshLnjiJsKiYTtJ7TpXX7WmczuBikwedUS58RRyljL6qg6D6w9z5DJCF4
-         gdosCXLJuSbgvbbLg7VhbZUD8iXIcmKJnl3UeCh769tFHo5yd8Qk3Geit1TPCWcomdPJ
-         ZkM/yyYhjdHYbbPOXu/157jkittGY83bVaEiTiSGMuvoELwqTraS7KEy54GDyBz3i8gZ
-         na7o2SYjC/3cR1cCs1ZtQDsHLC3XhGqdLtolXUahokAN3tWvWh9+FsgkD20rgLK6wGWF
-         5YGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6v5ZNf+eM3rr/ZvYNB7ePCdQNiBWhUlLdtbZnWmsYV0=;
-        b=Q9lsqliqO20rjJS/VC4cf8iPg0S86NKhEldiHKLeBAkk0AkOoma7Hl8XQ0XQdBfuxB
-         uMig9nEJvqmfsFHxsw9GmxA2HUufpK6ViNdK1Dgd0iAwRzlQ12QNp5D7PmriMWitdHb9
-         T90LKn59hVT3DWkgS5Xy9vuxi031A1hl40CXzeyiNNqs5XCKFnKtIrZanvYYv7nY3e9o
-         FDeCwyqaWz2LGjlXzmaqFvCetQOAOVfV0DsoSADyLN6n76djC9U9QIk0Dk7eEqaBYQlM
-         O3tErNkZblhiGapBDagy77vGI6Mfkkh53/MJ3FBBGVP1GMg7E94JZ7sedFKq/yVggY3T
-         YG/g==
-X-Gm-Message-State: APjAAAXdSySdo20InAAfAyOcrQOQeK4gq91mZUXUmc+TkcaB3NK0c3Pu
-        bmi93Gc8M+vfKm+pHyI92UTqGNbnO8HLxs8eLS4=
-X-Google-Smtp-Source: APXvYqy8+K2+PfNHGAVENI3jNl0h8clZoNcOHf4SImy580BlRq5IxtA8YK74PTkY2Y0YfM57v3JqdFJWSkuz1LZ4aMw=
-X-Received: by 2002:ac8:30d3:: with SMTP id w19mr75006726qta.171.1558563244163;
- Wed, 22 May 2019 15:14:04 -0700 (PDT)
+        id S1728109AbfEVWOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 18:14:18 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44026 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728027AbfEVWOS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 18:14:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=M6/V4Ln58iaBP2dK063ZH7jTVRU4CX4qclMImPWh5nw=; b=Fpp15kRuim/5sce+Py/VvJm/P9
+        o5vfbEaWOSiw1QB7NVZp2lu/rBf5a7dlQkLz6oDISh/ch+Z2vzGymLYVHrUdROJpgEfo50ompuzia
+        fxXDrjEixxycy51IgSWlT2Yx3Cnyoq/fxijCw7t2Srw/hI6WSYhdsZ42mIc8I0WDIqsk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hTZUt-0005JA-FC; Thu, 23 May 2019 00:14:07 +0200
+Date:   Thu, 23 May 2019 00:14:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH V5] net: phy: tja11xx: Add TJA11xx PHY driver
+Message-ID: <20190522221407.GB15257@lunn.ch>
+References: <20190517235123.32261-1-marex@denx.de>
+ <20190518141456.GK14298@lunn.ch>
+ <f5ab2d22-a7ab-aa6d-77e1-a3a73e334b04@denx.de>
 MIME-Version: 1.0
-References: <20190522195053.4017624-1-andriin@fb.com> <20190522195053.4017624-6-andriin@fb.com>
- <20190522203032.GO10244@mini-arch>
-In-Reply-To: <20190522203032.GO10244@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 22 May 2019 15:13:53 -0700
-Message-ID: <CAEf4BzZi6A1vcFUFdwSQrbag_ptoU9+imdWhHdVKCLB8yvPSTw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 05/12] libbpf: add resizable non-thread safe
- internal hashmap
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f5ab2d22-a7ab-aa6d-77e1-a3a73e334b04@denx.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 1:30 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 05/22, Andrii Nakryiko wrote:
-> > There is a need for fast point lookups inside libbpf for multiple use
-> > cases (e.g., name resolution for BTF-to-C conversion, by-name lookups in
-> > BTF for upcoming BPF CO-RE relocation support, etc). This patch
-> > implements simple resizable non-thread safe hashmap using single linked
-> > list chains.
-> Didn't really look into the details, but any reason you're not using
-> linux/hashtable.h? It's exported in tools/include and I think perf
-> is using it. It's probably not resizable, but should be easy to
-> implement rebalancing on top of it.
+On Wed, May 22, 2019 at 11:48:06PM +0200, Marek Vasut wrote:
+> On 5/18/19 4:14 PM, Andrew Lunn wrote:
+> > On Sat, May 18, 2019 at 01:51:23AM +0200, Marek Vasut wrote:
+> >> Add driver for the NXP TJA1100 and TJA1101 PHYs. These PHYs are special
+> >> BroadRReach 100BaseT1 PHYs used in automotive.
+> > 
+> > Hi Marek
+> > 
+> >> +	}, {
+> >> +		PHY_ID_MATCH_MODEL(PHY_ID_TJA1101),
+> >> +		.name		= "NXP TJA1101",
+> >> +		.features       = PHY_BASIC_T1_FEATURES,
+> > 
+> > One thing i would like to do before this patch goes in is define
+> > ETHTOOL_LINK_MODE_100baseT1_Full_BIT in ethtool.h, and use it here.
+> > We could not do it earlier because were ran out of bits. But with
+> > PHYLIB now using bitmaps, rather than u32, we can.
+> 
+> So now that "[PATCH net-next 0/2] net: phy: T1 support" is posted, does
+> this patch require any change ? I don't think it does ?
 
-There are multiple reasons.
-1. linux/hashtable.h is pretty bare-bones, it's just hlist_node and a
-bunch of macro to manipulate array or chains of them. I wanted to have
-higher-level API with lookup by key, insertion w/ various strategies,
-etc. Preferrably one not requiring to manipulate hlist_node directly
-as part of its API, even if at some performance cost of hiding that
-low-level detail.
-2. Resizing is a big chunk of resizable hashmap logic, so I'd need to
-write a bunch of additional code anyway.
-3. Licensing. linux/hashtable.h is under GPL, while libbpf is
-dual-licensed under GPL and BSD. When syncing libbpf from kernel to
-github, we have to re-implement all the parts from kernel that are not
-under BSD license anyway.
-4. hlist_node keeps two pointers per item, which is unnecessary for
-hashmap which does deletion by key (by searching for node first, then
-deleting), so we can also have lower memory overhead per entry.
+Hi Marek
 
-So in general, I feel like there is little benefit to reusing
-linux/hashlist.h for use cases I'm targeting this hashmap for.
+In the end, no it does not need any changes because of my patchset.
 
->
-> > Four different insert strategies are supported:
-> >  - HASHMAP_ADD - only add key/value if key doesn't exist yet;
-> >  - HASHMAP_SET - add key/value pair if key doesn't exist yet; otherwise,
-> >    update value;
-> >  - HASHMAP_UPDATE - update value, if key already exists; otherwise, do
-> >    nothing and return -ENOENT;
-> >  - HASHMAP_APPEND - always add key/value pair, even if key already exists.
-> >    This turns hashmap into a multimap by allowing multiple values to be
-> >    associated with the same key. Most useful read API for such hashmap is
-> >    hashmap__for_each_key_entry() iteration. If hashmap__find() is still
-> >    used, it will return last inserted key/value entry (first in a bucket
-> >    chain).
-> >
-> > For HASHMAP_SET and HASHMAP_UPDATE, old key/value pair is returned, so
-> > that calling code can handle proper memory management, if necessary.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  tools/lib/bpf/Build     |   2 +-
-> >  tools/lib/bpf/hashmap.c | 229 ++++++++++++++++++++++++++++++++++++++++
-> >  tools/lib/bpf/hashmap.h | 173 ++++++++++++++++++++++++++++++
-> >  3 files changed, 403 insertions(+), 1 deletion(-)
-> >  create mode 100644 tools/lib/bpf/hashmap.c
-> >  create mode 100644 tools/lib/bpf/hashmap.h
-> >
-> >
+   Andrew
