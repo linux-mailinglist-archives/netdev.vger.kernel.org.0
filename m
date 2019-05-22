@@ -2,91 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B9A3272C7
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 01:13:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5545F272D3
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 01:16:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729649AbfEVXNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 19:13:13 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:36409 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727634AbfEVXNN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 19:13:13 -0400
-Received: by mail-pl1-f193.google.com with SMTP id d21so1784790plr.3
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 16:13:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=KkQgVdvCOoF50iyMP3OA5p0OEAkg8ZCf5G6/SJ29fD4=;
-        b=XF/Ks417nTNBi/jQmc0/juPGGSORnCbOKawyRhXG1h4OWCzJ8zmoTN0PgOnhVmPQ06
-         cv4J4GJt2InKA89pY1eDEKx6OJGKa67ovhV1WkFkDQF0lz/BEC2SBKlmgq/jT+xOIp8a
-         sZJamonGlikNLi65E/MyG+rq3xr774O5z3Im0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=KkQgVdvCOoF50iyMP3OA5p0OEAkg8ZCf5G6/SJ29fD4=;
-        b=RwNo2zAE4Oazu8VK9jX9KVcyCfvVXrGxR6u39HyaoRWqOb5WausKrOPJYQvsO9w4U8
-         +XqWZwT5s01RfzBH3LsLa2DD+mz/jL8Eq33G/sQSJUlxSfVaiwkeq7xOu1SEHbkuDA5b
-         xz8s4WIjGquf4J7WNFu21TdijEsjkVCYjJM1PowcEwIzKyu/sG8uCtb8bMtZCKCT+FbY
-         2byVebtOXjxA9BskrLbDQON240v+6QB8O1MrkCRjDsbIZWRKW1xnaHpHNfPl9XNNtrAF
-         +Wu13tlD2jS5sYwSiz+75uedDF9/wqADVaULnTZK93IE+4HPvLOeYCgOBpBYn1vWuFij
-         fyXg==
-X-Gm-Message-State: APjAAAUcSBPsifGA+jD/f1N1iTo/FReNUuO8FIuh3xgF0CKd2HgYlyhg
-        /HheCAQRYI8ehcMI8NQE8oXgmrMowuM=
-X-Google-Smtp-Source: APXvYqxBuTC4dJM2apW9CWemLy1HUcnJjMByfz+uO+4liI3rY7d71kbkFcgjLjRy1UTw+GSaJL2P7Q==
-X-Received: by 2002:a17:902:2aab:: with SMTP id j40mr70239910plb.238.1558566792589;
-        Wed, 22 May 2019 16:13:12 -0700 (PDT)
-Received: from localhost.localdomain.dhcp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q20sm27750419pgq.66.2019.05.22.16.13.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 May 2019 16:13:11 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 4/4] bnxt_en: Device serial number is supported only for PFs.
-Date:   Wed, 22 May 2019 19:12:57 -0400
-Message-Id: <1558566777-23429-5-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1558566777-23429-1-git-send-email-michael.chan@broadcom.com>
-References: <1558566777-23429-1-git-send-email-michael.chan@broadcom.com>
+        id S1729454AbfEVXQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 19:16:52 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:53420 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727634AbfEVXQw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 19:16:52 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MND6ND015061;
+        Wed, 22 May 2019 16:16:29 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=i1feLUhwGMQVGZL9+X7Ze3YL3PYK8dLOen4Caa/0J0U=;
+ b=OWp98crVwHBBgbwapMKdWSEEZNbF4N/kDbJp47sjVwcz1+d+t3fsaMVUSS/tvLnq6aB5
+ o39mg6/Kn4w4ftiVmKK8z/qCfCMKm9lj1jYyD6Dj4IrM8OuES/i3ZyIPP1e1Nyu0rY9h
+ QH5L1tSL7PAI2w6yvBJhhsQoIQEHjQJXwDs= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sn8rt9s6s-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 22 May 2019 16:16:28 -0700
+Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
+ ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 22 May 2019 16:16:23 -0700
+Received: from NAM05-DM3-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Wed, 22 May 2019 16:16:23 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i1feLUhwGMQVGZL9+X7Ze3YL3PYK8dLOen4Caa/0J0U=;
+ b=e9u1LePRwc9N4pN6zpw/O7w/dBn3S0ptxA28LNXHvR5QToS1yjttCbNn9OulPHvSa8lSMNRI4JJkbCsocX2jXptH5yDQRrPAappydXiCVI/l2eB1pXt1KSi1My3B2HW1yd1SL5KEAT2YiKPpLfYbcSTEv1eI/bP3rRhPG2+7P9o=
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com (20.179.156.24) by
+ BYAPR15MB2615.namprd15.prod.outlook.com (20.179.155.220) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.16; Wed, 22 May 2019 23:16:20 +0000
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::d4f6:b485:69ee:fd9a]) by BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::d4f6:b485:69ee:fd9a%7]) with mapi id 15.20.1900.020; Wed, 22 May 2019
+ 23:16:20 +0000
+From:   Roman Gushchin <guro@fb.com>
+To:     Stanislav Fomichev <sdf@fomichev.me>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tejun Heo <tj@kernel.org>, Kernel Team <Kernel-team@fb.com>,
+        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 3/4] selftests/bpf: enable all available cgroup
+ v2 controllers
+Thread-Topic: [PATCH bpf-next 3/4] selftests/bpf: enable all available cgroup
+ v2 controllers
+Thread-Index: AQHVEOV3yJF4QzvIUEOnOJLgcH8376Z3ttaAgAAQE4A=
+Date:   Wed, 22 May 2019 23:16:20 +0000
+Message-ID: <20190522231613.GA20167@tower.DHCP.thefacebook.com>
+References: <20190522212932.2646247-1-guro@fb.com>
+ <20190522212932.2646247-4-guro@fb.com> <20190522221843.GA3032@mini-arch>
+In-Reply-To: <20190522221843.GA3032@mini-arch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR22CA0065.namprd22.prod.outlook.com
+ (2603:10b6:300:12a::27) To BYAPR15MB2631.namprd15.prod.outlook.com
+ (2603:10b6:a03:152::24)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::7d4f]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e5f68467-f1cf-4721-0e5d-08d6df0b7fac
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR15MB2615;
+x-ms-traffictypediagnostic: BYAPR15MB2615:
+x-microsoft-antispam-prvs: <BYAPR15MB26159C3A51704EBEEF42E4FABE000@BYAPR15MB2615.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1728;
+x-forefront-prvs: 0045236D47
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(136003)(376002)(39860400002)(396003)(346002)(199004)(189003)(229853002)(46003)(54906003)(53936002)(2906002)(6246003)(478600001)(8936002)(81166006)(81156014)(6436002)(9686003)(186003)(6486002)(8676002)(6916009)(11346002)(33656002)(446003)(6116002)(486006)(316002)(476003)(6512007)(305945005)(99286004)(5660300002)(6506007)(71190400001)(14444005)(68736007)(71200400001)(7736002)(76176011)(102836004)(386003)(73956011)(52116002)(4326008)(86362001)(1076003)(14454004)(25786009)(66556008)(66446008)(64756008)(66476007)(66946007)(256004);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2615;H:BYAPR15MB2631.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 0YpKLZlQO1drDY6ASohoV9NLDqeMA5PcPF2nYZZYKDnhsCEh499buZIJSlscNdewxKes2qdJZga2QlgmM/d4TcCMYapHco/VjGKbg5ck86Pt9xs2aNbAahHf1qKZ+Xf/yah9pObk2y0p865WC92u5vIeL2ZzMRl1J/xkkgcqCrLnYuRIvYpBq0P3UqV7+XKSJhqcW0nSESfalZyacutRlJkSQUZiIH84WQfMTxKuX9jz/0FQKAHDbpSUb11+i4/JKTd9a/07jfq68GULXm3Tb91nA4lPlHBns8jaNKmxTFIBZeql9TRCwvoySjXEkBjfrqaB6N/tpD35qCwsuBkFll9oAdO52xkaO4kRrruo/NeJcNzMWR3yWYfYjEwG7gbcN8xflrMV5oFUOrXXs4J52JBc1LZ/N2vVHKihXUBSXp0=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <FA7BB09FF47CAE4A81E46F24346899CE@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5f68467-f1cf-4721-0e5d-08d6df0b7fac
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2019 23:16:20.3487
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2615
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-22_14:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905220162
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+On Wed, May 22, 2019 at 03:18:43PM -0700, Stanislav Fomichev wrote:
+> On 05/22, Roman Gushchin wrote:
+> > Enable all available cgroup v2 controllers when setting up
+> > the environment for the bpf kselftests. It's required to properly test
+> > the bpf prog auto-detach feature. Also it will generally increase
+> > the code coverage.
+> >=20
+> > Signed-off-by: Roman Gushchin <guro@fb.com>
+> > ---
+> >  tools/testing/selftests/bpf/cgroup_helpers.c | 58 ++++++++++++++++++++
+> >  1 file changed, 58 insertions(+)
+> >=20
+> > diff --git a/tools/testing/selftests/bpf/cgroup_helpers.c b/tools/testi=
+ng/selftests/bpf/cgroup_helpers.c
+> > index 6692a40a6979..4533839c0ce0 100644
+> > --- a/tools/testing/selftests/bpf/cgroup_helpers.c
+> > +++ b/tools/testing/selftests/bpf/cgroup_helpers.c
+> > @@ -33,6 +33,61 @@
+> >  	snprintf(buf, sizeof(buf), "%s%s%s", CGROUP_MOUNT_PATH, \
+> >  		 CGROUP_WORK_DIR, path)
+> > =20
+> > +/**
+> > + * enable_all_controllers() - Enable all available cgroup v2 controlle=
+rs
+> > + *
+> > + * Enable all available cgroup v2 controllers in order to increase
+> > + * the code coverage.
+> > + *
+> > + * If successful, 0 is returned.
+> > + */
+> > +int enable_all_controllers(char *cgroup_path)
+> > +{
+> > +	char path[PATH_MAX + 1];
+> > +	char buf[PATH_MAX];
+> > +	char *c, *c2;
+> > +	int fd, cfd;
+> > +	size_t len;
+> > +
+> > +	snprintf(path, sizeof(path), "%s/cgroup.controllers", cgroup_path);
+> > +	fd =3D open(path, O_RDONLY);
+> > +	if (fd < 0) {
+> > +		log_err("Opening cgroup.controllers: %s", path);
+> > +		return -1;
+> > +	}
+> > +
+> > +	len =3D read(fd, buf, sizeof(buf) - 1);
+> > +	if (len < 0) {
+> > +		close(fd);
+> > +		log_err("Reading cgroup.controllers: %s", path);
+> > +		return -1;
+> > +	}
+> > +
+> > +	close(fd);
+> > +
+> > +	/* No controllers available? We're probably on cgroup v1. */
+> > +	if (len =3D=3D 0)
+> > +		return 0;
+> > +
+> > +	snprintf(path, sizeof(path), "%s/cgroup.subtree_control", cgroup_path=
+);
+> > +	cfd =3D open(path, O_RDWR);
+> > +	if (cfd < 0) {
+> > +		log_err("Opening cgroup.subtree_control: %s", path);
+> > +		return -1;
+> > +	}
+> > +
+>=20
+> [..]
+> > +	buf[len] =3D 0;
+> nit: move this up a bit? Right after:
 
-Don't read DSN on VFs that do not have the PCI capability.
-
-Fixes: 03213a996531 ("bnxt: move bp->switch_id initialization to PF probe")
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 79812da..f758b2e 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10725,11 +10725,12 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto init_err_pci_clean;
- 	}
- 
--	/* Read the adapter's DSN to use as the eswitch switch_id */
--	rc = bnxt_pcie_dsn_get(bp, bp->switch_id);
--	if (rc)
--		goto init_err_pci_clean;
--
-+	if (BNXT_PF(bp)) {
-+		/* Read the adapter's DSN to use as the eswitch switch_id */
-+		rc = bnxt_pcie_dsn_get(bp, bp->switch_id);
-+		if (rc)
-+			goto init_err_pci_clean;
-+	}
- 	bnxt_hwrm_func_qcfg(bp);
- 	bnxt_hwrm_vnic_qcaps(bp);
- 	bnxt_hwrm_port_led_qcaps(bp);
--- 
-2.5.1
-
+Ok, np. Thanks!
