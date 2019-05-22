@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14797271AC
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 23:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AE5D271B1
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 23:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730108AbfEVV3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 17:29:42 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:35720 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729609AbfEVV3m (ORCPT
+        id S1730560AbfEVVaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 17:30:14 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:56554 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729562AbfEVV3m (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 17:29:42 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MLE7Ns012075
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 14:29:41 -0700
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MLCoNf010264
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 14:29:42 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=7M3KTYgCtux1ge1QjiyZqAfJv7mn0dKoN8WOBcMq0W0=;
- b=YxJevwDWh4zLYydFYhe0lXMny4pnf5Lkmuyo/w7UGqjwSQuWGkOzFkMIxe/aqvWBVhgn
- DRjpCH6KrORbNE4kibD7gJ29qlAO3zh6EWfp8VCnFnSZ9a0CJapU62kMhPB/CuTSkeFl
- fQSgqq1kfxxZjEaA73i7pv5kiLdVsGdnJ2c= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2snbj8gnwg-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 14:29:41 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 22 May 2019 14:29:39 -0700
+ content-type; s=facebook; bh=4TamBFhMxI7eVZDyeQik75QRP7s+XDIcj/PxFC9FCqI=;
+ b=hrSfMQXlWX3e2ugBLp6dlDBdgmdVT07HzTNOYTllL0bU9jxXQgDXIUrNOGahC4qMUO9R
+ /Xxb10Z6dqPx3F4O71Mb0VipIGl19fwl2YeDXI1v2ujVe7sbP43vcIOaguoPGVg+o//D
+ eADmCL4L+FuFQGehqldAcP/bg8mv0Qu9q+w= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sn8rt9f58-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 14:29:42 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 22 May 2019 14:29:40 -0700
 Received: by devvm2643.prn2.facebook.com (Postfix, from userid 111017)
-        id 58F781251A296; Wed, 22 May 2019 14:29:39 -0700 (PDT)
+        id 5D6F31251A298; Wed, 22 May 2019 14:29:39 -0700 (PDT)
 Smtp-Origin-Hostprefix: devvm
 From:   Roman Gushchin <guro@fb.com>
 Smtp-Origin-Hostname: devvm2643.prn2.facebook.com
@@ -38,12 +38,11 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         <netdev@vger.kernel.org>, Tejun Heo <tj@kernel.org>,
         <kernel-team@fb.com>, <cgroups@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Roman Gushchin <guro@fb.com>,
-        <jolsa@redhat.com>
+        <linux-kernel@vger.kernel.org>, Roman Gushchin <guro@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 1/4] bpf: decouple the lifetime of cgroup_bpf from cgroup itself
-Date:   Wed, 22 May 2019 14:29:29 -0700
-Message-ID: <20190522212932.2646247-2-guro@fb.com>
+Subject: [PATCH bpf-next 2/4] selftests/bpf: convert test_cgrp2_attach2 example into kselftest
+Date:   Wed, 22 May 2019 14:29:30 -0700
+Message-ID: <20190522212932.2646247-3-guro@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190522212932.2646247-1-guro@fb.com>
 References: <20190522212932.2646247-1-guro@fb.com>
@@ -53,9 +52,9 @@ Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-22_13:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=38 phishscore=0 bulkscore=0 spamscore=0
+ malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=583 adultscore=0 classifier=spam adjust=0 reason=mlx
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1810050000 definitions=main-1905220148
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -63,213 +62,202 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the lifetime of bpf programs attached to a cgroup is bound
-to the lifetime of the cgroup itself. It means that if a user
-forgets (or intentionally avoids) to detach a bpf program before
-removing the cgroup, it will stay attached up to the release of the
-cgroup. Since the cgroup can stay in the dying state (the state
-between being rmdir()'ed and being released) for a very long time, it
-leads to a waste of memory. Also, it blocks a possibility to implement
-the memcg-based memory accounting for bpf objects, because a circular
-reference dependency will occur. Charged memory pages are pinning the
-corresponding memory cgroup, and if the memory cgroup is pinning
-the attached bpf program, nothing will be ever released.
+Convert test_cgrp2_attach2 example into a proper test_cgroup_attach
+kselftest. It's better because we do run kselftest on a constant
+basis, so there are better chances to spot a potential regression.
 
-A dying cgroup can not contain any processes, so the only chance for
-an attached bpf program to be executed is a live socket associated
-with the cgroup. So in order to release all bpf data early, let's
-count associated sockets using a new percpu refcounter. On cgroup
-removal the counter is transitioned to the atomic mode, and as soon
-as it reaches 0, all bpf programs are detached.
+Also make it slightly less verbose to conform kselftests output style.
 
-The reference counter is not socket specific, and can be used for any
-other types of programs, which can be executed from a cgroup-bpf hook
-outside of the process context, had such a need arise in the future.
+Output example:
+  $ ./test_cgroup_attach
+  #override:PASS
+  #multi:PASS
+  test_cgroup_attach:PASS
 
 Signed-off-by: Roman Gushchin <guro@fb.com>
-Cc: jolsa@redhat.com
 ---
- include/linux/bpf-cgroup.h |  8 ++++++--
- include/linux/cgroup.h     | 18 ++++++++++++++++++
- kernel/bpf/cgroup.c        | 25 ++++++++++++++++++++++---
- kernel/cgroup/cgroup.c     | 11 ++++++++---
- 4 files changed, 54 insertions(+), 8 deletions(-)
+ samples/bpf/Makefile                          |  2 -
+ tools/testing/selftests/bpf/Makefile          |  4 +-
+ .../selftests/bpf/test_cgroup_attach.c        | 48 ++++++++++++-------
+ 3 files changed, 35 insertions(+), 19 deletions(-)
+ rename samples/bpf/test_cgrp2_attach2.c => tools/testing/selftests/bpf/test_cgroup_attach.c (92%)
 
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index cb3c6b3b89c8..a0945de9ba5f 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -6,6 +6,7 @@
- #include <linux/errno.h>
- #include <linux/jump_label.h>
- #include <linux/percpu.h>
-+#include <linux/percpu-refcount.h>
- #include <linux/rbtree.h>
- #include <uapi/linux/bpf.h>
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 4f0a1cdbfe7c..253e5a2856be 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -26,7 +26,6 @@ hostprogs-y += map_perf_test
+ hostprogs-y += test_overhead
+ hostprogs-y += test_cgrp2_array_pin
+ hostprogs-y += test_cgrp2_attach
+-hostprogs-y += test_cgrp2_attach2
+ hostprogs-y += test_cgrp2_sock
+ hostprogs-y += test_cgrp2_sock2
+ hostprogs-y += xdp1
+@@ -81,7 +80,6 @@ map_perf_test-objs := bpf_load.o map_perf_test_user.o
+ test_overhead-objs := bpf_load.o test_overhead_user.o
+ test_cgrp2_array_pin-objs := test_cgrp2_array_pin.o
+ test_cgrp2_attach-objs := test_cgrp2_attach.o
+-test_cgrp2_attach2-objs := test_cgrp2_attach2.o $(CGROUP_HELPERS)
+ test_cgrp2_sock-objs := test_cgrp2_sock.o
+ test_cgrp2_sock2-objs := bpf_load.o test_cgrp2_sock2.o
+ xdp1-objs := xdp1_user.o
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 66f2dca1dee1..e09f419f4d7e 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -23,7 +23,8 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+ 	test_align test_verifier_log test_dev_cgroup test_tcpbpf_user \
+ 	test_sock test_btf test_sockmap test_lirc_mode2_user get_cgroup_id_user \
+ 	test_socket_cookie test_cgroup_storage test_select_reuseport test_section_names \
+-	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl
++	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl \
++	test_cgroup_attach
  
-@@ -72,10 +73,13 @@ struct cgroup_bpf {
+ BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
+ TEST_GEN_FILES = $(BPF_OBJ_FILES)
+@@ -96,6 +97,7 @@ $(OUTPUT)/test_cgroup_storage: cgroup_helpers.c
+ $(OUTPUT)/test_netcnt: cgroup_helpers.c
+ $(OUTPUT)/test_sock_fields: cgroup_helpers.c
+ $(OUTPUT)/test_sysctl: cgroup_helpers.c
++$(OUTPUT)/test_cgroup_attach: cgroup_helpers.c
  
- 	/* temp storage for effective prog array used by prog_attach/detach */
- 	struct bpf_prog_array __rcu *inactive;
+ .PHONY: force
+ 
+diff --git a/samples/bpf/test_cgrp2_attach2.c b/tools/testing/selftests/bpf/test_cgroup_attach.c
+similarity index 92%
+rename from samples/bpf/test_cgrp2_attach2.c
+rename to tools/testing/selftests/bpf/test_cgroup_attach.c
+index 0bb6507256b7..93d4fe295e7d 100644
+--- a/samples/bpf/test_cgrp2_attach2.c
++++ b/tools/testing/selftests/bpf/test_cgroup_attach.c
+@@ -1,3 +1,5 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+	/* reference counter used to detach bpf programs after cgroup removal */
-+	struct percpu_ref refcnt;
- };
+ /* eBPF example program:
+  *
+  * - Creates arraymap in kernel with 4 bytes keys and 8 byte values
+@@ -25,20 +27,27 @@
+ #include <sys/resource.h>
+ #include <sys/time.h>
+ #include <unistd.h>
++#include <linux/filter.h>
  
--void cgroup_bpf_put(struct cgroup *cgrp);
- int cgroup_bpf_inherit(struct cgroup *cgrp);
-+void cgroup_bpf_offline(struct cgroup *cgrp);
+ #include <linux/bpf.h>
+ #include <bpf/bpf.h>
  
- int __cgroup_bpf_attach(struct cgroup *cgrp, struct bpf_prog *prog,
- 			enum bpf_attach_type type, u32 flags);
-@@ -283,8 +287,8 @@ int cgroup_bpf_prog_query(const union bpf_attr *attr,
+-#include "bpf_insn.h"
++#include "bpf_util.h"
+ #include "bpf_rlimit.h"
+ #include "cgroup_helpers.h"
  
- struct bpf_prog;
- struct cgroup_bpf {};
--static inline void cgroup_bpf_put(struct cgroup *cgrp) {}
- static inline int cgroup_bpf_inherit(struct cgroup *cgrp) { return 0; }
-+static inline void cgroup_bpf_offline(struct cgroup *cgrp) {}
+ #define FOO		"/foo"
+ #define BAR		"/foo/bar/"
+-#define PING_CMD	"ping -c1 -w1 127.0.0.1 > /dev/null"
++#define PING_CMD	"ping -q -c1 -w1 127.0.0.1 > /dev/null"
  
- static inline int cgroup_bpf_prog_attach(const union bpf_attr *attr,
- 					 enum bpf_prog_type ptype,
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index c0077adeea83..49e8facf7c4a 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -924,4 +924,22 @@ static inline bool cgroup_task_frozen(struct task_struct *task)
+ char bpf_log_buf[BPF_LOG_BUF_SIZE];
  
- #endif /* !CONFIG_CGROUPS */
- 
-+#ifdef CONFIG_CGROUP_BPF
-+static inline void cgroup_bpf_get(struct cgroup *cgrp)
-+{
-+	percpu_ref_get(&cgrp->bpf.refcnt);
-+}
++#ifdef DEBUG
++#define debug(args...) printf(args)
++#else
++#define debug(args...)
++#endif
 +
-+static inline void cgroup_bpf_put(struct cgroup *cgrp)
-+{
-+	percpu_ref_put(&cgrp->bpf.refcnt);
-+}
-+
-+#else /* CONFIG_CGROUP_BPF */
-+
-+static inline void cgroup_bpf_get(struct cgroup *cgrp) {}
-+static inline void cgroup_bpf_put(struct cgroup *cgrp) {}
-+
-+#endif /* CONFIG_CGROUP_BPF */
-+
- #endif /* _LINUX_CGROUP_H */
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index fcde0f7b2585..65f5c482ed9d 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -22,12 +22,20 @@
- DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
- EXPORT_SYMBOL(cgroup_bpf_enabled_key);
- 
-+void cgroup_bpf_offline(struct cgroup *cgrp)
-+{
-+	cgroup_get(cgrp);
-+	percpu_ref_kill(&cgrp->bpf.refcnt);
-+}
-+
- /**
-- * cgroup_bpf_put() - put references of all bpf programs
-+ * cgroup_bpf_release() - put references of all bpf programs and
-+ *                        release all cgroup bpf data
-  * @cgrp: the cgroup to modify
-  */
--void cgroup_bpf_put(struct cgroup *cgrp)
-+static void cgroup_bpf_release(struct percpu_ref *ref)
+ static int prog_load(int verdict)
  {
-+	struct cgroup *cgrp = container_of(ref, struct cgroup, bpf.refcnt);
- 	enum bpf_cgroup_storage_type stype;
- 	unsigned int type;
- 
-@@ -47,6 +55,9 @@ void cgroup_bpf_put(struct cgroup *cgrp)
- 		}
- 		bpf_prog_array_free(cgrp->bpf.effective[type]);
+ 	int ret;
+@@ -89,7 +98,7 @@ static int test_foo_bar(void)
+ 		goto err;
  	}
-+
-+	percpu_ref_exit(&cgrp->bpf.refcnt);
-+	cgroup_put(cgrp);
+ 
+-	printf("Attached DROP prog. This ping in cgroup /foo should fail...\n");
++	debug("Attached DROP prog. This ping in cgroup /foo should fail...\n");
+ 	assert(system(PING_CMD) != 0);
+ 
+ 	/* Create cgroup /foo/bar, get fd, and join it */
+@@ -100,7 +109,7 @@ static int test_foo_bar(void)
+ 	if (join_cgroup(BAR))
+ 		goto err;
+ 
+-	printf("Attached DROP prog. This ping in cgroup /foo/bar should fail...\n");
++	debug("Attached DROP prog. This ping in cgroup /foo/bar should fail...\n");
+ 	assert(system(PING_CMD) != 0);
+ 
+ 	if (bpf_prog_attach(allow_prog, bar, BPF_CGROUP_INET_EGRESS,
+@@ -109,7 +118,7 @@ static int test_foo_bar(void)
+ 		goto err;
+ 	}
+ 
+-	printf("Attached PASS prog. This ping in cgroup /foo/bar should pass...\n");
++	debug("Attached PASS prog. This ping in cgroup /foo/bar should pass...\n");
+ 	assert(system(PING_CMD) == 0);
+ 
+ 	if (bpf_prog_detach(bar, BPF_CGROUP_INET_EGRESS)) {
+@@ -117,7 +126,7 @@ static int test_foo_bar(void)
+ 		goto err;
+ 	}
+ 
+-	printf("Detached PASS from /foo/bar while DROP is attached to /foo.\n"
++	debug("Detached PASS from /foo/bar while DROP is attached to /foo.\n"
+ 	       "This ping in cgroup /foo/bar should fail...\n");
+ 	assert(system(PING_CMD) != 0);
+ 
+@@ -132,7 +141,7 @@ static int test_foo_bar(void)
+ 		goto err;
+ 	}
+ 
+-	printf("Attached PASS from /foo/bar and detached DROP from /foo.\n"
++	debug("Attached PASS from /foo/bar and detached DROP from /foo.\n"
+ 	       "This ping in cgroup /foo/bar should pass...\n");
+ 	assert(system(PING_CMD) == 0);
+ 
+@@ -199,9 +208,9 @@ static int test_foo_bar(void)
+ 	close(bar);
+ 	cleanup_cgroup_environment();
+ 	if (!rc)
+-		printf("### override:PASS\n");
++		printf("#override:PASS\n");
+ 	else
+-		printf("### override:FAIL\n");
++		printf("#override:FAIL\n");
+ 	return rc;
  }
  
- /* count number of elements in the list.
-@@ -167,7 +178,12 @@ int cgroup_bpf_inherit(struct cgroup *cgrp)
-  */
- #define	NR ARRAY_SIZE(cgrp->bpf.effective)
- 	struct bpf_prog_array __rcu *arrays[NR] = {};
--	int i;
-+	int ret, i;
-+
-+	ret = percpu_ref_init(&cgrp->bpf.refcnt, cgroup_bpf_release, 0,
-+			      GFP_KERNEL);
-+	if (ret)
-+		return -ENOMEM;
- 
- 	for (i = 0; i < NR; i++)
- 		INIT_LIST_HEAD(&cgrp->bpf.progs[i]);
-@@ -183,6 +199,9 @@ int cgroup_bpf_inherit(struct cgroup *cgrp)
- cleanup:
- 	for (i = 0; i < NR; i++)
- 		bpf_prog_array_free(arrays[i]);
-+
-+	percpu_ref_exit(&cgrp->bpf.refcnt);
-+
- 	return -ENOMEM;
+@@ -441,19 +450,26 @@ static int test_multiprog(void)
+ 	close(cg5);
+ 	cleanup_cgroup_environment();
+ 	if (!rc)
+-		printf("### multi:PASS\n");
++		printf("#multi:PASS\n");
+ 	else
+-		printf("### multi:FAIL\n");
++		printf("#multi:FAIL\n");
+ 	return rc;
  }
  
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index 217cec4e22c6..ef9cfbfc82a9 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -4955,8 +4955,6 @@ static void css_release_work_fn(struct work_struct *work)
- 		if (cgrp->kn)
- 			RCU_INIT_POINTER(*(void __rcu __force **)&cgrp->kn->priv,
- 					 NULL);
--
--		cgroup_bpf_put(cgrp);
- 	}
- 
- 	mutex_unlock(&cgroup_mutex);
-@@ -5482,6 +5480,8 @@ static int cgroup_destroy_locked(struct cgroup *cgrp)
- 
- 	cgroup1_check_for_release(parent);
- 
-+	cgroup_bpf_offline(cgrp);
-+
- 	/* put the base reference */
- 	percpu_ref_kill(&cgrp->self.refcnt);
- 
-@@ -6221,6 +6221,7 @@ void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
- 		 * Don't use cgroup_get_live().
- 		 */
- 		cgroup_get(sock_cgroup_ptr(skcd));
-+		cgroup_bpf_get(sock_cgroup_ptr(skcd));
- 		return;
- 	}
- 
-@@ -6232,6 +6233,7 @@ void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
- 		cset = task_css_set(current);
- 		if (likely(cgroup_tryget(cset->dfl_cgrp))) {
- 			skcd->val = (unsigned long)cset->dfl_cgrp;
-+			cgroup_bpf_get(cset->dfl_cgrp);
- 			break;
- 		}
- 		cpu_relax();
-@@ -6242,7 +6244,10 @@ void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
- 
- void cgroup_sk_free(struct sock_cgroup_data *skcd)
+ int main(int argc, char **argv)
  {
--	cgroup_put(sock_cgroup_ptr(skcd));
-+	struct cgroup *cgrp = sock_cgroup_ptr(skcd);
-+
-+	cgroup_bpf_put(cgrp);
-+	cgroup_put(cgrp);
- }
+-	int rc = 0;
++	int (*tests[])(void) = {test_foo_bar, test_multiprog};
++	int errors = 0;
++	int i;
  
- #endif	/* CONFIG_SOCK_CGROUP_DATA */
+-	rc = test_foo_bar();
+-	if (rc)
+-		return rc;
++	for (i = 0; i < ARRAY_SIZE(tests); i++)
++		if (tests[i]())
++			errors++;
++
++	if (errors)
++		printf("test_cgroup_attach:FAIL\n");
++	else
++		printf("test_cgroup_attach:PASS\n");
+ 
+-	return test_multiprog();
++	return errors ? EXIT_FAILURE : EXIT_SUCCESS;
+ }
 -- 
 2.20.1
 
