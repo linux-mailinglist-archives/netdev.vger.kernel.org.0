@@ -2,96 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71D7626E6F
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:49:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 214FE26E2B
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732525AbfEVTtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:49:52 -0400
-Received: from mga05.intel.com ([192.55.52.43]:43391 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732116AbfEVT0t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:26:49 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 May 2019 12:26:46 -0700
-X-ExtLoop1: 1
-Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
-  by orsmga002.jf.intel.com with ESMTP; 22 May 2019 12:26:48 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
- ORSMSX102.amr.corp.intel.com ([169.254.3.72]) with mapi id 14.03.0415.000;
- Wed, 22 May 2019 12:26:47 -0700
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "mroos@linux.ee" <mroos@linux.ee>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "namit@vmware.com" <namit@vmware.com>,
-        "luto@kernel.org" <luto@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
-Subject: Re: [PATCH v2] vmalloc: Fix issues with flush flag
-Thread-Topic: [PATCH v2] vmalloc: Fix issues with flush flag
-Thread-Index: AQHVD0ezpbXySuUS5EinefGl750kkaZ0/uwAgAALkwCAAAiygIAAGYEAgAADqwCAAA0vgIAABnMAgAAEjYCAApkWgIAAHb0A
-Date:   Wed, 22 May 2019 19:26:47 +0000
-Message-ID: <01a23900329e605fcd41ad8962cfd8f2d9b1fa44.camel@intel.com>
-References: <a43f9224e6b245ade4b587a018c8a21815091f0f.camel@intel.com>
-         <20190520.184336.743103388474716249.davem@davemloft.net>
-         <339ef85d984f329aa66f29fa80781624e6e4aecc.camel@intel.com>
-         <20190522.104019.40493905027242516.davem@davemloft.net>
-In-Reply-To: <20190522.104019.40493905027242516.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.30.1 (3.30.1-1.fc29) 
-x-originating-ip: [10.254.91.116]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8DA560705D778D4A9D23CAF3ED2AB2FC@intel.com>
-Content-Transfer-Encoding: base64
+        id S2387613AbfEVTqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:46:44 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:39979 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732380AbfEVT1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 15:27:45 -0400
+Received: by mail-pf1-f194.google.com with SMTP id u17so1835130pfn.7;
+        Wed, 22 May 2019 12:27:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6HMpFkYMLAkJcnVu/PqYynDR+iNuf0Dhku5h2gLjvOk=;
+        b=p6eYoj7X129vSeuFFybTFfzZFwJjIRgE1o2MFLjWEL4dDUC8AOFzc8M82xgTFh2PGg
+         qZPoEGurlVnGRRA6IGQ1fRItBghPRbkwei9a3OVtmevX6D70IqGZjWeE+/TMGdIcn4/D
+         M+2dKrktd0yUIvGmGDyCks1w1o2klhVIbD6/eYtuEpSxoYiUzYuB/vNq0tMVBb7vFCsf
+         QVcKplC3uQ+0YmZy7WdCxRKe+J450QxSqmMrUtamjTcfngLc/CL4vyHbsnbiogU0s6xo
+         hha5oDSA/zJJ0ctY+B48By+45LFen3dgF7BnOEma1xx8I7DyLL41ePFwewxMZYM0ClRO
+         GQ7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6HMpFkYMLAkJcnVu/PqYynDR+iNuf0Dhku5h2gLjvOk=;
+        b=AaYIQEdKmpm8Jw75bYE1JUDSCuLcJ3WV/HAWWaXlo7nH6QFcwX5ivqZvISzzZf5dVn
+         lePN70DmN7KytyBKo5oDpC7VPEphZwsddMgETsc2KcCHOR0BHkAvsvdGQsG2AkTJE7cY
+         YeS2NGYIUNxX4PLwqZKUWySpnAZRfajejM8bTeLr9StWMxLg+MZiZWqjdBPPrOmxGtET
+         ox/CfDwlmm+HRD1zvjgpaL+UcYzZ5Ft1e1axLFuHgKV64Rgimf30RjVwqfT9Pd+pVcn0
+         wNsfHr9Xg8TCAtxxclGH1CtD9NspIatJ01OBWVhiUcta7D4aWDLOTSr92hlSwjRq8VyG
+         Drow==
+X-Gm-Message-State: APjAAAWQeWnQbtrFkVSs/YJO3TFKVi0j0Wx/wX2nxijqptJCOQEIsfBd
+        oh0ksuSqWtOnwSQeESzS0P2YhweC
+X-Google-Smtp-Source: APXvYqy0+W6pCtcQ81NLeFLQ34/AenkcgMa4SwKkkt1YemhDIVil3IDNXhAoy1wgnKjNjU5wTtCW3Q==
+X-Received: by 2002:a63:465b:: with SMTP id v27mr91368935pgk.38.1558553263948;
+        Wed, 22 May 2019 12:27:43 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:f892:82c5:66c:c52c? ([2601:282:800:fd80:f892:82c5:66c:c52c])
+        by smtp.googlemail.com with ESMTPSA id u20sm33577328pfm.145.2019.05.22.12.27.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 May 2019 12:27:43 -0700 (PDT)
+Subject: Re: [PATCH AUTOSEL 5.0 095/317] mlxsw: spectrum_router: Prevent ipv6
+ gateway with v4 route via replace and append
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20190522192338.23715-1-sashal@kernel.org>
+ <20190522192338.23715-95-sashal@kernel.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a953cd53-c396-f20d-73b4-9e06ada0e3ad@gmail.com>
+Date:   Wed, 22 May 2019 13:27:41 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
+In-Reply-To: <20190522192338.23715-95-sashal@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTA1LTIyIGF0IDEwOjQwIC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
-IEZyb206ICJFZGdlY29tYmUsIFJpY2sgUCIgPHJpY2sucC5lZGdlY29tYmVAaW50ZWwuY29tPg0K
-PiBEYXRlOiBUdWUsIDIxIE1heSAyMDE5IDAxOjU5OjU0ICswMDAwDQo+IA0KPiA+IE9uIE1vbiwg
-MjAxOS0wNS0yMCBhdCAxODo0MyAtMDcwMCwgRGF2aWQgTWlsbGVyIHdyb3RlOg0KPiA+ID4gRnJv
-bTogIkVkZ2Vjb21iZSwgUmljayBQIiA8cmljay5wLmVkZ2Vjb21iZUBpbnRlbC5jb20+DQo+ID4g
-PiBEYXRlOiBUdWUsIDIxIE1heSAyMDE5IDAxOjIwOjMzICswMDAwDQo+ID4gPiANCj4gPiA+ID4g
-U2hvdWxkIGl0IGhhbmRsZSBleGVjdXRpbmcgYW4gdW5tYXBwZWQgcGFnZSBncmFjZWZ1bGx5PyBC
-ZWNhdXNlDQo+ID4gPiA+IHRoaXMNCj4gPiA+ID4gY2hhbmdlIGlzIGNhdXNpbmcgdGhhdCB0byBo
-YXBwZW4gbXVjaCBlYXJsaWVyLiBJZiBzb21ldGhpbmcgd2FzDQo+ID4gPiA+IHJlbHlpbmcNCj4g
-PiA+ID4gb24gYSBjYWNoZWQgdHJhbnNsYXRpb24gdG8gZXhlY3V0ZSBzb21ldGhpbmcgaXQgY291
-bGQgZmluZCB0aGUNCj4gPiA+ID4gbWFwcGluZw0KPiA+ID4gPiBkaXNhcHBlYXIuDQo+ID4gPiAN
-Cj4gPiA+IERvZXMgdGhpcyB3b3JrIGJ5IG5vdCBtYXBwaW5nIGFueSBrZXJuZWwgbWFwcGluZ3Mg
-YXQgdGhlDQo+ID4gPiBiZWdpbm5pbmcsDQo+ID4gPiBhbmQgdGhlbiBmaWxsaW5nIGluIHRoZSBC
-UEYgbWFwcGluZ3MgaW4gcmVzcG9uc2UgdG8gZmF1bHRzPw0KPiA+IE5vLCBub3RoaW5nIHRvbyBm
-YW5jeS4gSXQganVzdCBmbHVzaGVzIHRoZSB2bSBtYXBwaW5nIGltbWVkaWF0bHkgaW4NCj4gPiB2
-ZnJlZSBmb3IgZXhlY3V0ZSAoYW5kIFJPKSBtYXBwaW5ncy4gVGhlIG9ubHkgdGhpbmcgdGhhdCBo
-YXBwZW5zDQo+ID4gYXJvdW5kDQo+ID4gYWxsb2NhdGlvbiB0aW1lIGlzIHNldHRpbmcgb2YgYSBu
-ZXcgZmxhZyB0byB0ZWxsIHZtYWxsb2MgdG8gZG8gdGhlDQo+ID4gZmx1c2guDQo+ID4gDQo+ID4g
-VGhlIHByb2JsZW0gYmVmb3JlIHdhcyB0aGF0IHRoZSBwYWdlcyB3b3VsZCBiZSBmcmVlZCBiZWZv
-cmUgdGhlDQo+ID4gZXhlY3V0ZQ0KPiA+IG1hcHBpbmcgd2FzIGZsdXNoZWQuIFNvIHRoZW4gd2hl
-biB0aGUgcGFnZXMgZ290IHJlY3ljbGVkLCByYW5kb20sDQo+ID4gc29tZXRpbWVzIGNvbWluZyBm
-cm9tIHVzZXJzcGFjZSwgZGF0YSB3b3VsZCBiZSBtYXBwZWQgYXMgZXhlY3V0YWJsZQ0KPiA+IGlu
-DQo+ID4gdGhlIGtlcm5lbCBieSB0aGUgdW4tZmx1c2hlZCB0bGIgZW50cmllcy4NCj4gDQo+IElm
-IEkgYW0gdG8gdW5kZXJzdGFuZCB0aGluZ3MgY29ycmVjdGx5LCB0aGVyZSB3YXMgYSBjYXNlIHdo
-ZXJlICdlbmQnDQo+IGNvdWxkIGJlIHNtYWxsZXIgdGhhbiAnc3RhcnQnIHdoZW4gZG9pbmcgYSBy
-YW5nZSBmbHVzaC4gIFRoYXQgd291bGQNCj4gZGVmaW5pdGVseSBraWxsIHNvbWUgb2YgdGhlIHNw
-YXJjNjQgVExCIGZsdXNoIHJvdXRpbmVzLg0KDQpPaywgdGhhbmtzLg0KDQpUaGUgcGF0Y2ggYXQg
-dGhlIGJlZ2lubmluZyBvZiB0aGlzIHRocmVhZCBkb2Vzbid0IGhhdmUgdGhhdCBiZWhhdmlvcg0K
-dGhvdWdoIGFuZCBpdCBhcHBhcmVudGx5IHN0aWxsIGh1bmcuIEkgYXNrZWQgaWYgTWVlbGlzIGNv
-dWxkIHRlc3Qgd2l0aA0KdGhpcyBmZWF0dXJlIGRpc2FibGVkIGFuZCBERUJVR19QQUdFQUxMT0Mg
-b24sIHNpbmNlIGl0IGZsdXNoZXMgb24gZXZlcnkNCnZmcmVlIGFuZCBpcyBub3QgbmV3IGxvZ2lj
-LCBhbmQgYWxzbyB3aXRoIGEgcGF0Y2ggdGhhdCBsb2dzIGV4YWN0IFRMQg0KZmx1c2ggcmFuZ2Vz
-IGFuZCBmYXVsdCBhZGRyZXNzZXMgb24gdG9wIG9mIHRoZSBrZXJuZWwgaGF2aW5nIHRoaXMNCmlz
-c3VlLiBIb3BlZnVsbHkgdGhhdCB3aWxsIHNoZWQgc29tZSBsaWdodC4NCg0KU29ycnkgZm9yIGFs
-bCB0aGUgbm9pc2UgYW5kIHNwZWN1bGF0aW9uIG9uIHRoaXMuIEl0IGhhcyBiZWVuIGRpZmZpY3Vs
-dA0KdG8gZGVidWcgcmVtb3RlbHkgd2l0aCBhIHRlc3RlciBhbmQgZGV2ZWxvcGVyIGluIGRpZmZl
-cmVudCB0aW1lIHpvbmVzLg0KDQoNCg==
+On 5/22/19 1:19 PM, Sasha Levin wrote:
+> From: David Ahern <dsahern@gmail.com>
+> 
+> [ Upstream commit 7973d9e76727aa42f0824f5569e96248a572d50b ]
+> 
+> mlxsw currently does not support v6 gateways with v4 routes. Commit
+> 19a9d136f198 ("ipv4: Flag fib_info with a fib_nh using IPv6 gateway")
+> prevents a route from being added, but nothing stops the replace or
+> append. Add a catch for them too.
+>     $ ip  ro add 172.16.2.0/24 via 10.99.1.2
+>     $ ip  ro replace 172.16.2.0/24 via inet6 fe80::202:ff:fe00:b dev swp1s0
+>     Error: mlxsw_spectrum: IPv6 gateway with IPv4 route is not supported.
+>     $ ip  ro append 172.16.2.0/24 via inet6 fe80::202:ff:fe00:b dev swp1s0
+>     Error: mlxsw_spectrum: IPv6 gateway with IPv4 route is not supported.
+> 
+> Signed-off-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+
+Not needed for 5.0. IPv6 nexthops with an IPv4 gateway is a 5.2 feature.
