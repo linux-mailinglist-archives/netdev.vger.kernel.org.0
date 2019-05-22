@@ -2,200 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3D5A26162
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 12:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3763226199
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 12:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728994AbfEVKG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 06:06:59 -0400
-Received: from mail-eopbgr810058.outbound.protection.outlook.com ([40.107.81.58]:11310
-        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728424AbfEVKG7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 06:06:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector1-Synaptics-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rX18qGluAjpxM1daLsr76kdNOUBKhTLa0+6B0Mh2FiY=;
- b=WeRnJLXzG6w6TgIMuC3C3kBOQYURb7Zq8cR4lWeZC6K+T+Dvq7ZD5R/hv4W9enHAZ7x/4SWtmAfkgYEH7M22P2rEqvwHY1phaMZ7EOsXRW5/B2ZaJEoBJjsXDu10ikwfs/pfjq2k5700HrUIrmakPhhCpZN3w+XUeHAGkZkRVtA=
-Received: from BYAPR03MB4773.namprd03.prod.outlook.com (20.179.92.152) by
- BYAPR03MB4152.namprd03.prod.outlook.com (20.177.184.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.17; Wed, 22 May 2019 10:06:56 +0000
-Received: from BYAPR03MB4773.namprd03.prod.outlook.com
- ([fe80::e484:f15c:c415:5ff9]) by BYAPR03MB4773.namprd03.prod.outlook.com
- ([fe80::e484:f15c:c415:5ff9%7]) with mapi id 15.20.1900.020; Wed, 22 May 2019
- 10:06:56 +0000
-From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net: stmmac: move reset gpio parse & request to
- stmmac_mdio_register
-Thread-Topic: [PATCH] net: stmmac: move reset gpio parse & request to
- stmmac_mdio_register
-Thread-Index: AQHVEIYW+OFyF9L5KEiO6GGfPTpjTw==
-Date:   Wed, 22 May 2019 10:06:56 +0000
-Message-ID: <20190522175752.0cdfe19d@xhacker.debian>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [124.74.246.114]
-x-clientproxiedby: TY2PR04CA0014.apcprd04.prod.outlook.com
- (2603:1096:404:f6::26) To BYAPR03MB4773.namprd03.prod.outlook.com
- (2603:10b6:a03:134::24)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Jisheng.Zhang@synaptics.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: de1886d9-3ed1-4630-c37f-08d6de9d38cd
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR03MB4152;
-x-ms-traffictypediagnostic: BYAPR03MB4152:
-x-microsoft-antispam-prvs: <BYAPR03MB4152E05BA999778BA56FFD28ED000@BYAPR03MB4152.namprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1122;
-x-forefront-prvs: 0045236D47
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(136003)(39860400002)(346002)(396003)(376002)(199004)(189003)(53936002)(14454004)(72206003)(6506007)(486006)(81166006)(71190400001)(71200400001)(6512007)(9686003)(386003)(8676002)(81156014)(478600001)(476003)(8936002)(110136005)(50226002)(6116002)(99286004)(25786009)(54906003)(6486002)(68736007)(6436002)(52116002)(102836004)(4326008)(3846002)(66066001)(66556008)(64756008)(66446008)(256004)(66946007)(66476007)(316002)(14444005)(305945005)(7736002)(186003)(1076003)(86362001)(5660300002)(73956011)(26005)(2906002)(39210200001);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR03MB4152;H:BYAPR03MB4773.namprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;MX:1;
-received-spf: None (protection.outlook.com: synaptics.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: h0Q0+ABRPQBIishFE/Rrcg33EbMVzr4nxEp0RnWwfl5q6Drrxtw0SYXmpnUOhCw/BKUMZ4pP99HPaGMxyvb80BVepC/8yxKXJc64IiYB+Eo4bvf8R+b/jI+4auP67yrC+tsHGwNV+lymbFBWXaNUKc5UPqP+t2v0wpwzPpQ/1Tgzf8RUIPLtbtTYpPIFjOiq+9L0a/MjSuLkkP9YireAPTHMEWWzlZ3dJL4zjg633IMDqofKObbr5owa0CytG5VcWsCDEGdqzU33aAyfqn4b54XStMlFzxTitjQyfBT3A/U9iTrNKrC4vERT4PK/PUWMucrmStNnTKK3Aa3SikTorkrFTYZqJi4pJIwrWFFuYS8WFnIzHUAXz7M90PD8ZMIOp3N8ztcfTNZpqC9QK2acJ88/Ww2k3F7WmneHwzyhoa8=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <14835D012B0BE24989EE140AC858F16C@namprd03.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728843AbfEVKUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 06:20:19 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:44971 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728527AbfEVKUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 06:20:19 -0400
+Received: by mail-wr1-f66.google.com with SMTP id w13so1616043wru.11
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 03:20:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=PT7scLgi4rOTE4CkJS6hF9kBal+Np5uh5KOr7GqkdNI=;
+        b=D8OtjW1xdboeHSXCL/gOljJsXZeiUQ+YQ05SJ7SfvRgRbWeGN8FjSGvfex3aVwgbeN
+         NOIFoAOlIrG8J5Y+BlBO+7nanRXI1wOHMS4D85icSFELrCgHsliT/5rOAgXrZfTAZMyI
+         PcXuiWg9LTgb1EMK9wJBHQBFN40HnUSnpfDlCnvzKx/8cMD0h7VWHJoDZ9nNH36ISVk5
+         6rw+pvo9KcdIjL8nJQ3I83MrNgmLUjkFViWuxt9UuSqvbk+bXTeouoCq0yYqSNoF52So
+         DBNdEo4vYG0LmnSZHjaOb61OITfpTugsZKRiBji8Js1b+fiaELTnFQ3eTwrNYWU+uzdR
+         OvUQ==
+X-Gm-Message-State: APjAAAWRDfVp7H2sdjcCuOsuzAazQjchFVW9vImSqb1Y2oJGpD4PvD3S
+        LZgvB/ykl23e8lTaIeacRe0GAttE15c=
+X-Google-Smtp-Source: APXvYqyb5IryJpkKonAtl+3IMOUKai5+cthQksJnLgWGIWA6AIc0Qysepj2yPIVtjpjzaCWcxsjTgA==
+X-Received: by 2002:adf:eb02:: with SMTP id s2mr48216319wrn.29.1558520417177;
+        Wed, 22 May 2019 03:20:17 -0700 (PDT)
+Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.gmail.com with ESMTPSA id g11sm20074355wrx.62.2019.05.22.03.20.16
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 22 May 2019 03:20:16 -0700 (PDT)
+Date:   Wed, 22 May 2019 12:20:14 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us
+Subject: Re: [PATCH net] net: sched: sch_ingress: do not report ingress
+ filter info in egress path
+Message-ID: <20190522102013.GA3467@localhost.localdomain>
+References: <cover.1558442828.git.lorenzo.bianconi@redhat.com>
+ <738244fd5863e6228275ee8f71e81d6baafca243.1558442828.git.lorenzo.bianconi@redhat.com>
+ <365843b0b605d272a7ec3cf4ebf4cb5ea70b42e6.camel@redhat.com>
 MIME-Version: 1.0
-X-OriginatorOrg: synaptics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: de1886d9-3ed1-4630-c37f-08d6de9d38cd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2019 10:06:56.8273
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 335d1fbc-2124-4173-9863-17e7051a2a0e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB4152
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="zYM0uCDKw75PZbzx"
+Content-Disposition: inline
+In-Reply-To: <365843b0b605d272a7ec3cf4ebf4cb5ea70b42e6.camel@redhat.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move the reset gpio dt parse and request to stmmac_mdio_register(),
-thus makes the mdio code straightforward.
 
-This patch also replace stack var mdio_bus_data with data to simplify
-the code.
+--zYM0uCDKw75PZbzx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 58 ++++++++-----------
- 1 file changed, 25 insertions(+), 33 deletions(-)
+> On Tue, 2019-05-21 at 14:59 +0200, Lorenzo Bianconi wrote:
+> > Currently if we add a filter to the ingress qdisc (e.g matchall) the
+> > filter data are reported even in the egress path. The issue can be
+> > triggered with the following reproducer:
+> >=20
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/ne=
-t/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 093a223fe408..7d1562ec1149 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -250,28 +250,7 @@ int stmmac_mdio_reset(struct mii_bus *bus)
- 	struct stmmac_mdio_bus_data *data =3D priv->plat->mdio_bus_data;
-=20
- #ifdef CONFIG_OF
--	if (priv->device->of_node) {
--		if (data->reset_gpio < 0) {
--			struct device_node *np =3D priv->device->of_node;
--
--			if (!np)
--				return 0;
--
--			data->reset_gpio =3D of_get_named_gpio(np,
--						"snps,reset-gpio", 0);
--			if (data->reset_gpio < 0)
--				return 0;
--
--			data->active_low =3D of_property_read_bool(np,
--						"snps,reset-active-low");
--			of_property_read_u32_array(np,
--				"snps,reset-delays-us", data->delays, 3);
--
--			if (devm_gpio_request(priv->device, data->reset_gpio,
--					      "mdio-reset"))
--				return 0;
--		}
--
-+	if (gpio_is_valid(data->reset_gpio)) {
- 		gpio_direction_output(data->reset_gpio,
- 				      data->active_low ? 1 : 0);
- 		if (data->delays[0])
-@@ -313,24 +292,38 @@ int stmmac_mdio_register(struct net_device *ndev)
- 	int err =3D 0;
- 	struct mii_bus *new_bus;
- 	struct stmmac_priv *priv =3D netdev_priv(ndev);
--	struct stmmac_mdio_bus_data *mdio_bus_data =3D priv->plat->mdio_bus_data;
-+	struct stmmac_mdio_bus_data *data =3D priv->plat->mdio_bus_data;
- 	struct device_node *mdio_node =3D priv->plat->mdio_node;
- 	struct device *dev =3D ndev->dev.parent;
- 	int addr, found, max_addr;
-=20
--	if (!mdio_bus_data)
-+	if (!data)
- 		return 0;
-=20
- 	new_bus =3D mdiobus_alloc();
- 	if (!new_bus)
- 		return -ENOMEM;
-=20
--	if (mdio_bus_data->irqs)
--		memcpy(new_bus->irq, mdio_bus_data->irqs, sizeof(new_bus->irq));
-+	if (data->irqs)
-+		memcpy(new_bus->irq, data->irqs, sizeof(new_bus->irq));
-=20
- #ifdef CONFIG_OF
--	if (priv->device->of_node)
--		mdio_bus_data->reset_gpio =3D -1;
-+	if (priv->device->of_node) {
-+		struct device_node *np =3D priv->device->of_node;
-+
-+		data->reset_gpio =3D of_get_named_gpio(np, "snps,reset-gpio", 0);
-+		if (gpio_is_valid(data->reset_gpio)) {
-+			data->active_low =3D of_property_read_bool(np,
-+						"snps,reset-active-low");
-+			of_property_read_u32_array(np,
-+				"snps,reset-delays-us", data->delays, 3);
-+
-+			devm_gpio_request(priv->device, data->reset_gpio,
-+					  "mdio-reset");
-+		}
-+	} else {
-+		data->reset_gpio =3D -1;
-+	}
- #endif
-=20
- 	new_bus->name =3D "stmmac";
-@@ -356,7 +349,7 @@ int stmmac_mdio_register(struct net_device *ndev)
- 	snprintf(new_bus->id, MII_BUS_ID_SIZE, "%s-%x",
- 		 new_bus->name, priv->plat->bus_id);
- 	new_bus->priv =3D ndev;
--	new_bus->phy_mask =3D mdio_bus_data->phy_mask;
-+	new_bus->phy_mask =3D data->phy_mask;
- 	new_bus->parent =3D priv->device;
-=20
- 	err =3D of_mdiobus_register(new_bus, mdio_node);
-@@ -379,10 +372,9 @@ int stmmac_mdio_register(struct net_device *ndev)
- 		 * If an IRQ was provided to be assigned after
- 		 * the bus probe, do it here.
- 		 */
--		if (!mdio_bus_data->irqs &&
--		    (mdio_bus_data->probed_phy_irq > 0)) {
--			new_bus->irq[addr] =3D mdio_bus_data->probed_phy_irq;
--			phydev->irq =3D mdio_bus_data->probed_phy_irq;
-+		if (!data->irqs && (data->probed_phy_irq > 0)) {
-+			new_bus->irq[addr] =3D data->probed_phy_irq;
-+			phydev->irq =3D data->probed_phy_irq;
- 		}
-=20
- 		/*
---=20
-2.20.1
+[...]
 
+> > diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
+> > index 0bac926b46c7..1825347fed3a 100644
+> > --- a/net/sched/sch_ingress.c
+> > +++ b/net/sched/sch_ingress.c
+> > @@ -31,7 +31,7 @@ static struct Qdisc *ingress_leaf(struct Qdisc *sch, =
+unsigned long arg)
+> > =20
+> >  static unsigned long ingress_find(struct Qdisc *sch, u32 classid)
+> >  {
+> > -	return TC_H_MIN(classid) + 1;
+> > +	return TC_H_MIN(classid);
+>=20
+> probably this breaks a command that was wrong before, but it's worth
+> mentioning. Because of the above hunk, the following command
+>=20
+> # tc qdisc add dev test0 ingress
+> # tc filter add dev test0 parent ffff:fff1 matchall action drop
+> # tc filter add dev test0 parent ffff: matchall action continue
+>=20
+> gave no errors, and dropped packets on unpatched kernel. With this patch,
+> the kernel refuses to add the 'matchall' rules (and because of that,
+> traffic passes).
+>=20
+> running TDC, it seems that a patched kernel does not pass anymore
+> some of the test cases belonging to the 'filter' category:
+>=20
+> # ./tdc.py -e 901f
+> Test 901f: Add fw filter with prio at 32-bit maxixum
+> exit: 2
+> exit: 0
+> RTNETLINK answers: Invalid argument
+> We have an error talking to the kernel, -1
+>=20
+> All test results:
+> 1..1
+> not ok 1 901f - Add fw filter with prio at 32-bit maxixum
+>         Command exited with 2, expected 0
+> RTNETLINK answers: Invalid argument
+> We have an error talking to the kernel, -1
+>=20
+> (the same test is passing on a unpatched kernel)
+>=20
+> Do you think it's worth fixing those test cases too?
+>=20
+> thanks a lot!
+> --=20
+> davide
+
+Hi Davide,
+
+thx to point this out. Applying this patch the ingress qdisc has the same
+behaviour of clsact one.
+
+$tc qdisc add dev lo clsact
+$tc filter add dev lo parent ffff:fff1 matchall action drop
+Error: Specified class doesn't exist.
+We have an error talking to the kernel, -1
+$tc filter add dev lo parent ffff:fff2 matchall action drop
+
+$tc qdisc add dev lo ingress
+$tc filter add dev lo parent ffff:fff2 matchall action drop
+
+is it acceptable? If so I can fix the tests as well
+If not, is there another way to verify the filter is for the ingress path if
+parent identifier is not constant? (ingress_find() reports the TC_H_MIN of
+parent identifier)
+
+Regards,
+Lorenzo
+
+>=20
+> >  }
+> > =20
+> >  static unsigned long ingress_bind_filter(struct Qdisc *sch,
+> > @@ -53,7 +53,12 @@ static struct tcf_block *ingress_tcf_block(struct Qd=
+isc *sch, unsigned long cl,
+> >  {
+> >  	struct ingress_sched_data *q =3D qdisc_priv(sch);
+> > =20
+> > -	return q->block;
+> > +	switch (cl) {
+> > +	case TC_H_MIN(TC_H_MIN_INGRESS):
+> > +		return q->block;
+> > +	default:
+> > +		return NULL;
+> > +	}
+> >  }
+> > =20
+> >  static void clsact_chain_head_change(struct tcf_proto *tp_head, void *=
+priv)
+>=20
+>=20
+
+--zYM0uCDKw75PZbzx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXOUiWAAKCRA6cBh0uS2t
+rM20AQDxW/9Q9bMVDSGdGNFSejkhO+UUtxBOZ1K960+AnysC+AEA+vaxHz2/r1fD
+Y7dg3z1Fm2leNaXq/xwZ9M66E21vNgM=
+=BozJ
+-----END PGP SIGNATURE-----
+
+--zYM0uCDKw75PZbzx--
