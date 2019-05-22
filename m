@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A065026B01
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3D1726FD3
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730878AbfEVTXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:23:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44272 "EHLO mail.kernel.org"
+        id S1730917AbfEVTXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:23:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44388 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730031AbfEVTXX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:23:23 -0400
+        id S1730072AbfEVTXb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:23:31 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 796652184E;
-        Wed, 22 May 2019 19:23:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 00CB120879;
+        Wed, 22 May 2019 19:23:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558553003;
-        bh=71QAfk99M4sfT3rVXD7gj5hEQZsBkP3Vcnj/0ePOejU=;
+        s=default; t=1558553010;
+        bh=P+R2WS1P5K+edrz0F0rQKyDg6nYgS4/rJHr/X8Zb5kw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aZzR7YT7nnDY28GLMKZanOzBpKh81+N2G6H2EaQ6BxmzwCe5OECvRGP/IUy30/VMT
-         2SZGloHMqwAi4TEMFfYzgR+aQdKy+3RE0kFn+jZgg26R1OHFql8WtGpuhk3XumMfMt
-         DwCTBcjOJZnaubzoZ0PeeLajuLsFbDd7sXglnFE8=
+        b=peGvIh1jtRnM31XLtqHZTKxEfBckIK2MUOzWBek8DipbdVnqhEX94ZbWVA3V0OO+V
+         aKXO2L6s02265GP3CSudNpLAb0K14zAhnkk5BRVGmF3tA8u4dcg8CiuMeptUMeDn5s
+         zG7Te2npek3qMbXBrI5X8KWoTl7IYJBvAuKrK/jw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+Cc:     Huazhong Tan <tanhuazhong@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 071/375] net: phy: improve genphy_soft_reset
-Date:   Wed, 22 May 2019 15:16:11 -0400
-Message-Id: <20190522192115.22666-71-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 074/375] net: hns3: use atomic_t replace u32 for arq's count
+Date:   Wed, 22 May 2019 15:16:14 -0400
+Message-Id: <20190522192115.22666-74-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192115.22666-1-sashal@kernel.org>
 References: <20190522192115.22666-1-sashal@kernel.org>
@@ -43,62 +44,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Huazhong Tan <tanhuazhong@huawei.com>
 
-[ Upstream commit 8c90b795e90f7753d23c18e8b95dd71b4a18c5d9 ]
+[ Upstream commit 30780a8b1677e7409b32ae52a9a84f7d41ae6b43 ]
 
-PHY's behave differently when being reset. Some reset registers to
-defaults, some don't. Some trigger an autoneg restart, some don't.
+Since irq handler and mailbox task will both update arq's count,
+so arq's count should use atomic_t instead of u32, otherwise
+its value may go wrong finally.
 
-So let's also set the autoneg restart bit when resetting. Then PHY
-behavior should be more consistent. Clearing BMCR_ISOLATE serves the
-same purpose and is borrowed from genphy_restart_aneg.
-
-BMCR holds the speed / duplex settings in fixed mode. Therefore
-we may have an issue if a soft reset resets BMCR to its default.
-So better call genphy_setup_forced() afterwards in fixed mode.
-We've seen no related complaint in the last >10 yrs, so let's
-treat it as an improvement.
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Fixes: 07a0556a3a73 ("net: hns3: Changes to support ARQ(Asynchronous Receive Queue)")
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy_device.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h          | 2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c | 2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c | 7 ++++---
+ 3 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index cd5966b0db571..f6a6cc5bf118d 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1829,13 +1829,25 @@ EXPORT_SYMBOL(genphy_read_status);
-  */
- int genphy_soft_reset(struct phy_device *phydev)
- {
-+	u16 res = BMCR_RESET;
- 	int ret;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
+index 299b277bc7ae9..589b7ee32bff8 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
+@@ -107,7 +107,7 @@ struct hclgevf_mbx_arq_ring {
+ 	struct hclgevf_dev *hdev;
+ 	u32 head;
+ 	u32 tail;
+-	u32 count;
++	atomic_t count;
+ 	u16 msg_q[HCLGE_MBX_MAX_ARQ_MSG_NUM][HCLGE_MBX_MAX_ARQ_MSG_SIZE];
+ };
  
--	ret = phy_set_bits(phydev, MII_BMCR, BMCR_RESET);
-+	if (phydev->autoneg == AUTONEG_ENABLE)
-+		res |= BMCR_ANRESTART;
-+
-+	ret = phy_modify(phydev, MII_BMCR, BMCR_ISOLATE, res);
- 	if (ret < 0)
- 		return ret;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
+index 9441b453d38df..9a0a501908aec 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
+@@ -327,7 +327,7 @@ int hclgevf_cmd_init(struct hclgevf_dev *hdev)
+ 	hdev->arq.hdev = hdev;
+ 	hdev->arq.head = 0;
+ 	hdev->arq.tail = 0;
+-	hdev->arq.count = 0;
++	atomic_set(&hdev->arq.count, 0);
+ 	hdev->hw.cmq.csq.next_to_clean = 0;
+ 	hdev->hw.cmq.csq.next_to_use = 0;
+ 	hdev->hw.cmq.crq.next_to_clean = 0;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
+index 7dc3c9f79169f..4f2c77283cb43 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
+@@ -208,7 +208,8 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
+ 			/* we will drop the async msg if we find ARQ as full
+ 			 * and continue with next message
+ 			 */
+-			if (hdev->arq.count >= HCLGE_MBX_MAX_ARQ_MSG_NUM) {
++			if (atomic_read(&hdev->arq.count) >=
++			    HCLGE_MBX_MAX_ARQ_MSG_NUM) {
+ 				dev_warn(&hdev->pdev->dev,
+ 					 "Async Q full, dropping msg(%d)\n",
+ 					 req->msg[1]);
+@@ -220,7 +221,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
+ 			memcpy(&msg_q[0], req->msg,
+ 			       HCLGE_MBX_MAX_ARQ_MSG_SIZE * sizeof(u16));
+ 			hclge_mbx_tail_ptr_move_arq(hdev->arq);
+-			hdev->arq.count++;
++			atomic_inc(&hdev->arq.count);
  
--	return phy_poll_reset(phydev);
-+	ret = phy_poll_reset(phydev);
-+	if (ret)
-+		return ret;
-+
-+	/* BMCR may be reset to defaults */
-+	if (phydev->autoneg == AUTONEG_DISABLE)
-+		ret = genphy_setup_forced(phydev);
-+
-+	return ret;
+ 			hclgevf_mbx_task_schedule(hdev);
+ 
+@@ -308,7 +309,7 @@ void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
+ 		}
+ 
+ 		hclge_mbx_head_ptr_move_arq(hdev->arq);
+-		hdev->arq.count--;
++		atomic_dec(&hdev->arq.count);
+ 		msg_q = hdev->arq.msg_q[hdev->arq.head];
+ 	}
  }
- EXPORT_SYMBOL(genphy_soft_reset);
- 
 -- 
 2.20.1
 
