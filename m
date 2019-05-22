@@ -2,106 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 041452611D
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 12:01:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54B2226137
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 12:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729380AbfEVKBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 06:01:09 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:23941 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728406AbfEVKBJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 06:01:09 -0400
-Received: from localhost (mailhub1-int [192.168.12.234])
-        by localhost (Postfix) with ESMTP id 4587SL4VkZz9v2M2;
-        Wed, 22 May 2019 12:01:06 +0200 (CEST)
-Authentication-Results: localhost; dkim=pass
-        reason="1024-bit key; insecure key"
-        header.d=c-s.fr header.i=@c-s.fr header.b=qqOlTXMN; dkim-adsp=pass;
-        dkim-atps=neutral
-X-Virus-Scanned: Debian amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
-        with ESMTP id htw2hqspO0bf; Wed, 22 May 2019 12:01:06 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4587SL3TkDz9v2M1;
-        Wed, 22 May 2019 12:01:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
-        t=1558519266; bh=pOJgHp/KMoeYEIwsOCZddIB2aTQYV+vwh0CSHycpDpI=;
-        h=From:Subject:To:Cc:Date:From;
-        b=qqOlTXMNNHJOMdk1N0HS5Hzpjr/2y4ypZNow5W/PI1QnLs7xTU5AODc1lbH+yW2YQ
-         4sE+CEJBwutOJwezWalBSKhSPl0OETTs8Qdl/cHuf7CvaUOTtcsf5OQ3d+mF1hdRn5
-         mbkCkumtsx09O8bpHrNBhw6w1FgIKFul1ZKY43uU=
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 932128B82C;
-        Wed, 22 May 2019 12:01:07 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id g2u_VzR4Vwh9; Wed, 22 May 2019 12:01:07 +0200 (CEST)
-Received: from po16846vm.idsi0.si.c-s.fr (po15451.idsi0.si.c-s.fr [172.25.231.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 644268B823;
-        Wed, 22 May 2019 12:01:07 +0200 (CEST)
-Received: by po16846vm.idsi0.si.c-s.fr (Postfix, from userid 0)
-        id 2B677684F2; Wed, 22 May 2019 10:01:07 +0000 (UTC)
-Message-Id: <cf280b7ab1f513f03d3908ac9ad194e819f170f5.1558519026.git.christophe.leroy@c-s.fr>
-From:   Christophe Leroy <christophe.leroy@c-s.fr>
-Subject: [PATCH] net: phy: lxt: Add suspend/resume support to LXT971 and
- LXT973.
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Date:   Wed, 22 May 2019 10:01:07 +0000 (UTC)
+        id S1729185AbfEVKBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 06:01:45 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:41565 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729156AbfEVKBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 06:01:45 -0400
+Received: by mail-lf1-f68.google.com with SMTP id d8so1215412lfb.8
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 03:01:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JnVnevi+IXvwZDlS9zws2BfOVOYLG9/iHTFIsiQn0cs=;
+        b=IPxGan8SJsmWqaTkj/PHVIchRnweLfuylpXjADLt/vWxdye6aP1BWX8c8dwzd3z+vo
+         1A8869wttjcflRrpVRbQ8scQyxt6r8rMrvKfwG7RM3mS9UpwWVmUVBlVBGq8FZmA5QyS
+         Hc5GraUJVIOO+fOvguS3iQmKShMLrotp3t+m4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JnVnevi+IXvwZDlS9zws2BfOVOYLG9/iHTFIsiQn0cs=;
+        b=ICRsYXNmf+OUDONBpwtZ0T6Tin/ITO4ODMLSVTQmmDM/gtCgRIHPJnizA9M6WGogMP
+         phTQbXaz02VGn8EV+mdVK4agYhFnm0IJwyv9yeXtwIcFzh8RZcp0IEJSuQDkO2FeIyfp
+         YMkCRUblXEoOtNc8jccvLZ3aPG6cH4jiplnxHkix4aWYGDBeUjtxFzKJFSkQ+Da9DnJj
+         QNNDfHCmqTPUqr6wmI5VfFNHaHb1ArBM+PT/BTvQoN5gFovj10z2E7ems375H/bevArg
+         kIcCAjz6RSJFdXz7tKNIdmo/1JlsB65puXj/C8FZ4KTNqogLtKKUfkj+htrB8Wh6vhK8
+         gEbw==
+X-Gm-Message-State: APjAAAVkoXxbZ7Qp/bFlc/D72aBBxSXKMf2ZDyLRjXKT+PO896VwiXV6
+        FUwN3hNRNA8PJidtPDNo/J0fUuxmI4DOeA==
+X-Google-Smtp-Source: APXvYqxZEtCyQ3p6EHar8xNAw0eXao5afPJv4+gOM9qGtEwOydra7v6g0RKwZA1QiW2F4uvHFlwaiw==
+X-Received: by 2002:a19:2d1a:: with SMTP id k26mr961507lfj.104.1558519303632;
+        Wed, 22 May 2019 03:01:43 -0700 (PDT)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id h22sm332804ljk.86.2019.05.22.03.01.42
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 22 May 2019 03:01:42 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@cloudflare.com
+Subject: [bpf PATCH] bpf: sockmap, restore sk_write_space when psock gets dropped
+Date:   Wed, 22 May 2019 12:01:42 +0200
+Message-Id: <20190522100142.28925-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All LXT PHYs implement the standard "power down" bit 11 of
-BMCR, so this patch adds support using the generic
-genphy_{suspend,resume} functions.
+Once psock gets unlinked from its sock (sk_psock_drop), user-space can
+still trigger a call to sk->sk_write_space by setting TCP_NOTSENT_LOWAT
+socket option. This causes a null-ptr-deref because we try to read
+psock->saved_write_space from sk_psock_write_space:
 
-LXT970 is left aside because all registers get cleared upon
-"power down" exit.
+==================================================================
+BUG: KASAN: null-ptr-deref in sk_psock_write_space+0x69/0x80
+Read of size 8 at addr 00000000000001a0 by task sockmap-echo/131
 
-Fixes: 0f0ca340e57b ("phy: power management support")
-Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+CPU: 0 PID: 131 Comm: sockmap-echo Not tainted 5.2.0-rc1-00094-gf49aa1de9836 #81
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+?-20180724_192412-buildhw-07.phx2.fedoraproject.org-1.fc29 04/01/2014
+Call Trace:
+ ? sk_psock_write_space+0x69/0x80
+ __kasan_report.cold.2+0x5/0x3f
+ ? sk_psock_write_space+0x69/0x80
+ kasan_report+0xe/0x20
+ sk_psock_write_space+0x69/0x80
+ tcp_setsockopt+0x69a/0xfc0
+ ? tcp_shutdown+0x70/0x70
+ ? fsnotify+0x5b0/0x5f0
+ ? remove_wait_queue+0x90/0x90
+ ? __fget_light+0xa5/0xf0
+ __sys_setsockopt+0xe6/0x180
+ ? sockfd_lookup_light+0xb0/0xb0
+ ? vfs_write+0x195/0x210
+ ? ksys_write+0xc9/0x150
+ ? __x64_sys_read+0x50/0x50
+ ? __bpf_trace_x86_fpu+0x10/0x10
+ __x64_sys_setsockopt+0x61/0x70
+ do_syscall_64+0xc5/0x520
+ ? vmacache_find+0xc0/0x110
+ ? syscall_return_slowpath+0x110/0x110
+ ? handle_mm_fault+0xb4/0x110
+ ? entry_SYSCALL_64_after_hwframe+0x3e/0xbe
+ ? trace_hardirqs_off_caller+0x4b/0x120
+ ? trace_hardirqs_off_thunk+0x1a/0x3a
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x7f2e5e7cdcce
+Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb b1 66 2e 0f 1f 84 00 00 00 00 00
+0f 1f 44 00 00 f3 0f 1e fa 49 89 ca b8 36 00 00 00 0f 05 <48> 3d 01 f0 ff
+ff 73 01 c3 48 8b 0d 8a 11 0c 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffed011b778 EFLAGS: 00000206 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f2e5e7cdcce
+RDX: 0000000000000019 RSI: 0000000000000006 RDI: 0000000000000007
+RBP: 00007ffed011b790 R08: 0000000000000004 R09: 00007f2e5e84ee80
+R10: 00007ffed011b788 R11: 0000000000000206 R12: 00007ffed011b78c
+R13: 00007ffed011b788 R14: 0000000000000007 R15: 0000000000000068
+==================================================================
+
+Restore the saved sk_write_space callback when psock is being dropped to
+fix the crash.
+
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- drivers/net/phy/lxt.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ include/linux/skmsg.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/phy/lxt.c b/drivers/net/phy/lxt.c
-index 314486288119..356bd6472f49 100644
---- a/drivers/net/phy/lxt.c
-+++ b/drivers/net/phy/lxt.c
-@@ -262,6 +262,8 @@ static struct phy_driver lxt97x_driver[] = {
- 	/* PHY_BASIC_FEATURES */
- 	.ack_interrupt	= lxt971_ack_interrupt,
- 	.config_intr	= lxt971_config_intr,
-+	.suspend	= genphy_suspend,
-+	.resume		= genphy_resume,
- }, {
- 	.phy_id		= 0x00137a10,
- 	.name		= "LXT973-A2",
-@@ -271,6 +273,8 @@ static struct phy_driver lxt97x_driver[] = {
- 	.probe		= lxt973_probe,
- 	.config_aneg	= lxt973_config_aneg,
- 	.read_status	= lxt973a2_read_status,
-+	.suspend	= genphy_suspend,
-+	.resume		= genphy_resume,
- }, {
- 	.phy_id		= 0x00137a10,
- 	.name		= "LXT973",
-@@ -279,6 +283,8 @@ static struct phy_driver lxt97x_driver[] = {
- 	.flags		= 0,
- 	.probe		= lxt973_probe,
- 	.config_aneg	= lxt973_config_aneg,
-+	.suspend	= genphy_suspend,
-+	.resume		= genphy_resume,
- } };
- 
- module_phy_driver(lxt97x_driver);
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 178a3933a71b..50ced8aba9db 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -351,6 +351,8 @@ static inline void sk_psock_update_proto(struct sock *sk,
+ static inline void sk_psock_restore_proto(struct sock *sk,
+ 					  struct sk_psock *psock)
+ {
++	sk->sk_write_space = psock->saved_write_space;
++
+ 	if (psock->sk_proto) {
+ 		sk->sk_prot = psock->sk_proto;
+ 		psock->sk_proto = NULL;
 -- 
-2.13.3
+2.20.1
 
