@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E01B326A23
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 20:51:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A35B626A24
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 20:52:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729588AbfEVSvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 14:51:11 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43602 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728674AbfEVSvL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 14:51:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=unw5Kx+EnTIGktZp88SvhPqi10+Ihz3WkP0ztD4tlVY=; b=JMRpmABNnZaInh5lzEGOo9rRpN
-        fV/Ci6IJAMUD/gWQ1oX5vN/T0jfCGdhN++Dvg56WYSeiriZLehd0Vpv47dDW1E2j/gGUr6M/VUyxW
-        5dYmfunT5Hu5uUtFcwvujdzHTJPVC4UW13sPGX5blW4ON8emki/fSV4uSkZhXS2dFhYA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hTWKS-00023C-Qe; Wed, 22 May 2019 20:51:08 +0200
-Date:   Wed, 22 May 2019 20:51:08 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Trent Piepho <tpiepho@impinj.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v2 3/8] net: phy: dp83867: Add ability to
- disable output clock
-Message-ID: <20190522185108.GA7281@lunn.ch>
-References: <20190522184255.16323-1-tpiepho@impinj.com>
- <20190522184255.16323-3-tpiepho@impinj.com>
+        id S1729005AbfEVSwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 14:52:32 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:39304 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728533AbfEVSwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 14:52:31 -0400
+Received: by mail-pf1-f193.google.com with SMTP id z26so1796511pfg.6
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 11:52:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DBIfivGfGH9123bC0datQ+AiiQHJvh8OMmix64lJxU4=;
+        b=VbuFffG6zinPIbcDF4Q0Txre1g/BQAo6xvFnM3VE7maWZ4o7E3D6mmdirELmevpLcW
+         lr7vr8IQcONz7QEXzHxQH/yKfGjMR2aSfbSbwUvZjdlq1kansEgNmnZ92HawxM+/+6rk
+         kqal6tpvZRg6b8Gr6p/PQvnLZghh6H4q738gOihEgK/B15Z66RflukCzT2zR3S0xUUWq
+         FbjMf3A/gQIygQJK5btUXRMjI7iOiVV/wgVDyP/m0yrwOmW19IDvfr6yth3wq2E1CTeK
+         x1Llpka2Tyd29EPtLCUS81+XPMLWJ43J4dw+R+9h0qelHb+581aYKsjBmBcfyxwutGWY
+         9ilw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DBIfivGfGH9123bC0datQ+AiiQHJvh8OMmix64lJxU4=;
+        b=T5bMTItUduRKf0M1si0SSptF8D7IXPZN1lvgnfRvIoKuHkWTcsW7CnWxNHKCKUk34v
+         s7Ls/B+/+Uh6tKkciDzRdJSVYVwMrt2pCaYWAZ6Th4E2NASpZZejGk3UijVFj+oF0O0k
+         7wGEiEY+IR4PtWoVoTmCe9qMunYBAV4GBRa43Chn4qy8pQsnClJ0gM+hVHys1uty1ycU
+         XSAq2V9VE9Aj0/seyVr6Fh5kQYZ4pC37uDQWQAVYWRF3si8L89HJ56IPbKb197IJxrM8
+         Q+NhGzveJ10msFrBkCwQy0TLBiNi/XMtNG1a6iDyOlrDZmG5VECGqXWHb52TxFOpMcx0
+         PSiQ==
+X-Gm-Message-State: APjAAAXLALVFS5IFXUE7uYcb9KhVIFQKWSfdEED5GaYS04409Nn68tJI
+        DWSpdqcFe4tgtjHLpDUIxVgRuOSEYV0=
+X-Google-Smtp-Source: APXvYqyik5cEmjtHPih1PDNJU5SbRZVDKnbweVTVaLzu6Y6RplQYOuB8c46Wn7tl+QdMxBSa3KPZdg==
+X-Received: by 2002:a63:da12:: with SMTP id c18mr4255202pgh.268.1558551151078;
+        Wed, 22 May 2019 11:52:31 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id p90sm9327155pfa.18.2019.05.22.11.52.30
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 22 May 2019 11:52:30 -0700 (PDT)
+Date:   Wed, 22 May 2019 11:52:23 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
+        Phil Sutter <phil@nwl.cc>
+Subject: Re: [PATCH iproute2 v2] m_mirred: don't bail if the control action
+ is missing
+Message-ID: <20190522115223.41833661@hermes.lan>
+In-Reply-To: <fb92be6e671450d181f552c883feae849f840283.1558345901.git.pabeni@redhat.com>
+References: <fb92be6e671450d181f552c883feae849f840283.1558345901.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190522184255.16323-3-tpiepho@impinj.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 06:43:22PM +0000, Trent Piepho wrote:
-> Generally, the output clock pin is only used for testing and only serves
-> as a source of RF noise after this.  It could be used to daisy-chain
-> PHYs, but this is uncommon.  Since the PHY can disable the output, make
-> doing so an option.  I do this by adding another enumeration to the
-> allowed values of ti,clk-output-sel.
-> 
-> The code was not using the value DP83867_CLK_O_SEL_REF_CLK as one might
-> expect: to select the REF_CLK as the output.  Rather it meant "keep
-> clock output setting as is", which, depending on PHY strapping, might
-> not be outputting REF_CLK.
-> 
-> Change this so DP83867_CLK_O_SEL_REF_CLK means enable REF_CLK output.
-> Omitting the property will leave the setting as is (which was the
-> previous behavior in this case).
-> 
-> Out of range values were silently converted into
-> DP83867_CLK_O_SEL_REF_CLK.  Change this so they generate an error.
-> 
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Signed-off-by: Trent Piepho <tpiepho@impinj.com>
+On Mon, 20 May 2019 11:56:52 +0200
+Paolo Abeni <pabeni@redhat.com> wrote:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> The mirred act admits an optional control action, defaulting
+> to TC_ACT_PIPE. The parsing code currently emits an error message
+> if the control action is not provided on the command line, even
+> if the command itself completes with no error.
+> 
+> This change shuts down the error message, using the appropriate
+> parsing helper.
+> 
+> Fixes: e67aba559581 ("tc: actions: add helpers to parse and print control actions")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-    Andrew
+Applied
