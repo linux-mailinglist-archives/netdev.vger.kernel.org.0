@@ -2,156 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E13A26BB2
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A181626D08
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:39:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732786AbfEVT3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:29:16 -0400
-Received: from alln-iport-2.cisco.com ([173.37.142.89]:60596 "EHLO
-        alln-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729466AbfEVT3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 15:29:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=872; q=dns/txt; s=iport;
-  t=1558553353; x=1559762953;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=7SE77wYHwG03Jg767C9KD7YEVTpFF93beEhebDVXgsk=;
-  b=Pgc5nO/B5QduzV2bx2BYXK2YBG+Fca+iIqw9Ix47FzBg32YIIbTc63OG
-   pL05PgoJEr+3EeSFc1dJNYQMSVfp8xT6PMmkxgF9UG8sHjAMZlTrdNEqx
-   YHIoWxTt2QuRo6S3+tuLZFitWFSJyBgqtP0RTyISUewLkuRBVMQDBDepQ
-   Q=;
-IronPort-PHdr: =?us-ascii?q?9a23=3A91kOnh1nNqOGU1H3smDT+zVfbzU7u7jyIg8e44?=
- =?us-ascii?q?YmjLQLaKm44pD+JxGDt+51ggrPWoPWo7JfhuzavrqoeFRI4I3J8TgZdYBUER?=
- =?us-ascii?q?oMiMEYhQslVcCEA2XwLeXhaGoxG8ERHFI=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0AGAACyoeVc/5FdJa1lGQEBAQEBAQE?=
- =?us-ascii?q?BAQEBAQcBAQEBAQGBUQQBAQEBAQsBgT1QA4E+IAQLKAqHUAOEUooigleJQI1?=
- =?us-ascii?q?pgS6BJANUCQEBAQwBAS0CAQGEQAKCMSM0CQ4BAwEBBAEBAgEEbRwMhUoBAQE?=
- =?us-ascii?q?DARIoBgEBNwEECwIBCBEEAQEfECERHQgCBAENBQgahGsDDg8BAp0dAoE1iF+?=
- =?us-ascii?q?CIIJ5AQEFhQUNC4IPCRSBIAGLUBeBf4ERRoJMPoIagioCgzqCJo1SjSqNADk?=
- =?us-ascii?q?JAoINjyWDfJYyjF2IS40KAgQCBAUCDgEBBYFPOIFXcBU7gmwTgXwMFxSDOIp?=
- =?us-ascii?q?TcoEpjCYBgSABAQ?=
-X-IronPort-AV: E=Sophos;i="5.60,500,1549929600"; 
-   d="scan'208";a="277582125"
-Received: from rcdn-core-9.cisco.com ([173.37.93.145])
-  by alln-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 22 May 2019 19:29:10 +0000
-Received: from XCH-ALN-015.cisco.com (xch-aln-015.cisco.com [173.36.7.25])
-        by rcdn-core-9.cisco.com (8.15.2/8.15.2) with ESMTPS id x4MJTAuj015185
-        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=FAIL);
-        Wed, 22 May 2019 19:29:10 GMT
-Received: from xhs-aln-001.cisco.com (173.37.135.118) by XCH-ALN-015.cisco.com
- (173.36.7.25) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 22 May
- 2019 14:29:10 -0500
-Received: from xhs-rtp-002.cisco.com (64.101.210.229) by xhs-aln-001.cisco.com
- (173.37.135.118) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 22 May
- 2019 14:29:09 -0500
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (64.101.32.56) by
- xhs-rtp-002.cisco.com (64.101.210.229) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Wed, 22 May 2019 15:29:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cisco.onmicrosoft.com;
- s=selector2-cisco-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UjOytL2SZyled10Jhx6GRQspP79SXFzPuQxJZJLshvw=;
- b=LKU3TDroV/PO4t2iA73ti+T1gDw9tl/ZKS4mlvVFKCR8Vd18y0/nMLunLE3ZfVPlcuuDfg0yG5zipXNOw4XwiQucLz/dTc+Ga6qQBBtARe9hgV6wuSpuocxiEwuWPu+QpA//5yR4/Kb6vZzmYTnO7m0PEBfdS/qJSZrdow7bEQ0=
-Received: from BYAPR11MB3383.namprd11.prod.outlook.com (20.177.186.96) by
- BYAPR11MB2999.namprd11.prod.outlook.com (20.177.224.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.15; Wed, 22 May 2019 19:29:06 +0000
-Received: from BYAPR11MB3383.namprd11.prod.outlook.com
- ([fe80::a116:fc59:1ebf:5843]) by BYAPR11MB3383.namprd11.prod.outlook.com
- ([fe80::a116:fc59:1ebf:5843%5]) with mapi id 15.20.1922.017; Wed, 22 May 2019
- 19:29:06 +0000
-From:   "Ruslan Babayev (fib)" <fib@cisco.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "20190505220524.37266-2-ruslan@babayev.com" 
-        <20190505220524.37266-2-ruslan@babayev.com>
-CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>,
-        "wsa@the-dreams.de" <wsa@the-dreams.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>
-Subject: Re: [PATCH RFC v2 net-next 2/2] net: phy: sfp: enable i2c-bus
- detection on ACPI based systems
-Thread-Topic: [PATCH RFC v2 net-next 2/2] net: phy: sfp: enable i2c-bus
- detection on ACPI based systems
-Thread-Index: AQHVBG1FwjU1WTeEMUumoWKXpb9bbKZe8vkAgAAKMLqAGKLmaw==
-Date:   Wed, 22 May 2019 19:29:06 +0000
-Message-ID: <BYAPR11MB33837495646A3A0BB23AD1B4AD000@BYAPR11MB3383.namprd11.prod.outlook.com>
-References: <20190505220524.37266-2-ruslan@babayev.com>
- <20190507003557.40648-3-ruslan@babayev.com>,<20190507023812.GA12262@lunn.ch>,<BYAPR11MB3383B74F06254EDA7157D314AD310@BYAPR11MB3383.namprd11.prod.outlook.com>
-In-Reply-To: <BYAPR11MB3383B74F06254EDA7157D314AD310@BYAPR11MB3383.namprd11.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is ) smtp.mailfrom=fib@cisco.com; 
-x-originating-ip: [128.107.241.180]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 96dadade-eb8c-4153-f8fe-08d6deebc1b4
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR11MB2999;
-x-ms-traffictypediagnostic: BYAPR11MB2999:
-x-ld-processed: 5ae1af62-9505-4097-a69a-c1553ef7840e,ExtAddr
-x-microsoft-antispam-prvs: <BYAPR11MB2999AE4E49B1EBD6A2A69F14AD000@BYAPR11MB2999.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0045236D47
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(376002)(346002)(396003)(39860400002)(366004)(199004)(189003)(2906002)(6116002)(3846002)(86362001)(2501003)(4326008)(25786009)(256004)(53936002)(107886003)(4744005)(71200400001)(71190400001)(478600001)(6246003)(476003)(446003)(11346002)(14454004)(486006)(99286004)(66066001)(76176011)(102836004)(26005)(54906003)(53546011)(186003)(7696005)(6506007)(33656002)(316002)(229853002)(68736007)(8676002)(5660300002)(81156014)(81166006)(76116006)(110136005)(66476007)(55016002)(66446008)(7736002)(8936002)(74316002)(66556008)(64756008)(9686003)(305945005)(7416002)(6436002)(66946007)(52536014)(73956011);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR11MB2999;H:BYAPR11MB3383.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: cisco.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: VhDXBxD8aPmjkSX3Du5aBnPtuYS5e5SsqABmO44W4ouq1+9mLk7Kc8gWNeEs5Wd9Wm8UN1d7cKxZECrld+/bPyh8jB1je+niLDkqXbJZsLuRV0Lvqv9LPkryxFvcZjueEIuZhY55LaWFrnqNzOtHBQ5+oc5JHkpS6a8w4nMZn2qLgngBqoVKmxwi/ubb74TlqoDK6hb1Ttqg7v+JtbXYqNLZ5hx4NG70rzV4r9s50Msz/Y56XYKQtpwAtE6WwcS210npMxdfGaZ0aUWXlRGriEpbGieh98hTd1aTs6o0q5uScw5GgZP9VaE8Igp3ORhmaV7wjQtvjpjTti4TAXKPTTDi49LSeDOnEhwPUy04GojvYWF+uOVaBxH998+dtbhpkHjAdST5nsp/dat1eeihSXaJZ+3HsEm5uZrxj2iqm4A=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1733298AbfEVTjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:39:00 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:40472 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731503AbfEVT3o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 15:29:44 -0400
+Received: by mail-pg1-f195.google.com with SMTP id d30so1806654pgm.7;
+        Wed, 22 May 2019 12:29:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=N1lt5YyedYDYRxDOevOGqSo7gsUd5bOy8cykHjsLtD4=;
+        b=bY2LHNLCRmlqE7LZ2ALn4Q1gh+SLFN3JLiF2C7Ru1QyZWI8hRcAfSxfGENzxsOGd9X
+         6ReaQDGqY3unNPurFzVA3zpBAQGilVoYCMiZXEWqkWIyI5/h8y92antbZieW37hZGXlL
+         s2xqlbVdokYNc5NtaVdB0hxtLUZQDYvrujL6SjXophticu47GzYEFA2YljihX75dHsp5
+         EwLod7515r5VerNSBs+o2zTOEf3Q2Z64i8umWxxQj8EOGhyWocqyIXHSC0xQqLI6IWx1
+         skdMPrx2Kq1wSG7FmqrTadMHXkHOs0l59PDpeUltrH2bIFhzgui5wPxUX84bKue8CIGa
+         w68A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N1lt5YyedYDYRxDOevOGqSo7gsUd5bOy8cykHjsLtD4=;
+        b=BzQ42hys0EmVlTeUrzyy6YHOOkxD2Va2lncI4vmic0QwVRVAF2LPSLvsQw2CsrFokT
+         GT/Rk8MVJ5FsQLjcFtCxEV9dDWIWYW6mcRBnLM9enZ7olFcR+nF60I3wBtYFlEXMFdJQ
+         l69+qVObPuOFPKTJaJnni12dAdhoChLc2IH87C+UOf8SfhQm65784F2MGYpbjiRrCUwA
+         SDZT2l3RwWHWM+A3SeZCNnTc0c9HVSkH1Ng/d35l88KyYkGWIsDj/QTV7Oivbb+1c+/d
+         1zbQhjTIVzvMxjmxqjhIctWEAIRtNYnMHkaNkxA1lnhH9bSpPFSBuu/1Xy8WLniVcY5J
+         a3vA==
+X-Gm-Message-State: APjAAAW9J38MbzS4r9FWVDvBTkRSlOGk6X4PxsYKcL8qXEwmUlVp8kmp
+        ch2FS8tHal9gou+eghEKZWiH+7Uy
+X-Google-Smtp-Source: APXvYqzEfaOkdYrAL9gJoOJDFyg+POabiHIwhe6pRwJkDrCakMPc5mlZ+G9QyXHGTSMVI1JnZQ5BUQ==
+X-Received: by 2002:a63:cf01:: with SMTP id j1mr87053467pgg.97.1558553383396;
+        Wed, 22 May 2019 12:29:43 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:f892:82c5:66c:c52c? ([2601:282:800:fd80:f892:82c5:66c:c52c])
+        by smtp.googlemail.com with ESMTPSA id 85sm35545612pgb.52.2019.05.22.12.29.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 May 2019 12:29:42 -0700 (PDT)
+Subject: Re: [PATCH AUTOSEL 4.19 077/244] mlxsw: spectrum_router: Prevent ipv6
+ gateway with v4 route via replace and append
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20190522192630.24917-1-sashal@kernel.org>
+ <20190522192630.24917-77-sashal@kernel.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2fbc186d-3ec6-f3d1-a3aa-cf9b36b2fd88@gmail.com>
+Date:   Wed, 22 May 2019 13:29:41 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 96dadade-eb8c-4153-f8fe-08d6deebc1b4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2019 19:29:06.6628
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fib@cisco.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2999
-X-OriginatorOrg: cisco.com
-X-Outbound-SMTP-Client: 173.36.7.25, xch-aln-015.cisco.com
-X-Outbound-Node: rcdn-core-9.cisco.com
+In-Reply-To: <20190522192630.24917-77-sashal@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On 5/22/19 1:23 PM, Sasha Levin wrote:
+> From: David Ahern <dsahern@gmail.com>
+> 
+> [ Upstream commit 7973d9e76727aa42f0824f5569e96248a572d50b ]
+> 
+> mlxsw currently does not support v6 gateways with v4 routes. Commit
+> 19a9d136f198 ("ipv4: Flag fib_info with a fib_nh using IPv6 gateway")
+> prevents a route from being added, but nothing stops the replace or
+> append. Add a catch for them too.
+>     $ ip  ro add 172.16.2.0/24 via 10.99.1.2
+>     $ ip  ro replace 172.16.2.0/24 via inet6 fe80::202:ff:fe00:b dev swp1s0
+>     Error: mlxsw_spectrum: IPv6 gateway with IPv4 route is not supported.
+>     $ ip  ro append 172.16.2.0/24 via inet6 fe80::202:ff:fe00:b dev swp1s0
+>     Error: mlxsw_spectrum: IPv6 gateway with IPv4 route is not supported.
+> 
+> Signed-off-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-Just wanted to follow up on the patch. Does it look good? Do you have any o=
-ther feedback, concerns with this patch?
+This patch is not needed for any release prior to 5.2.
 
-Thanks,
-Ruslan
+IPv6 nexthops with an IPv4 route is a 5.2 feature.
 
-________________________________________
-From: Ruslan Babayev (fib)
-Sent: Monday, May 6, 2019 8:15 PM
-To: Andrew Lunn; 20190505220524.37266-2-ruslan@babayev.com
-Cc: linux@armlinux.org.uk; f.fainelli@gmail.com; hkallweit1@gmail.com; mika=
-.westerberg@linux.intel.com; wsa@the-dreams.de; davem@davemloft.net; netdev=
-@vger.kernel.org; linux-kernel@vger.kernel.org; linux-i2c@vger.kernel.org; =
-linux-acpi@vger.kernel.org; xe-linux-external(mailer list)
-Subject: Re: [PATCH RFC v2 net-next 2/2] net: phy: sfp: enable i2c-bus dete=
-ction on ACPI based systems
-
-
-> As i said before, i know ~0 about ACPI. Does devm_gpiod_get() just
-> work for ACPI?
-> Thanks
->        Andrew
-
-It does.
-
-Regards,
-Ruslan
