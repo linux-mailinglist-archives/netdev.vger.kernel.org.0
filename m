@@ -2,74 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1172F26946
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 19:41:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D400B2694F
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 19:45:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729081AbfEVRlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 13:41:35 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:44794 "EHLO
+        id S1729451AbfEVRpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 13:45:04 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:45550 "EHLO
         mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727984AbfEVRlf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 13:41:35 -0400
-Received: by mail-qt1-f194.google.com with SMTP id f24so3370525qtk.11
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 10:41:34 -0700 (PDT)
+        with ESMTP id S1727984AbfEVRpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 13:45:03 -0400
+Received: by mail-qt1-f194.google.com with SMTP id t1so3386326qtc.12;
+        Wed, 22 May 2019 10:45:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=JJRKr+P1wfA+iLi/HQFVwk+HEdxOEhGs9WJgXP8XA50=;
-        b=tqTDXKt2J4g9sYQGbh5Efv/MQlLP7kauUs9qV+1cJZ+nRNZQIo0ClxbzgsJuLLXOGk
-         u+o+u7WiaFGEUsJ1uU/WZ4AX9vG344jBFd6Dh0CGgldIKjKbSdMMyBPO7mhl6pm100t9
-         9S+EXMkd5yzJ/GDmgzDLaSbATIFV9BhZWq6CWeYo+Pu0Eyijzwg2VkR+EpEdDVBc5Sfg
-         IqczZx9HM2mAf7IJMPLgVNE+/PS88gvt1pOJ603UIl6JNsmuQQp/nF0HQyuoyWKffsLy
-         POB9Ui4Wl44OSNAzioPtC6FXGDetGCVf+0gAYFSAqF/1WC9lMem38dsjebsLXfQW4TRb
-         yaug==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tozdxVPBBTKPFtVyskCMo3XRbMEfZfCDiynnPlMVjdY=;
+        b=J/VXpoNRPYfNv7LDu6rtEcPlwkCXzEvNpP9bh24NzfXmhHVMox+B+Qmf3g7fYjqoLF
+         dBhqPJIQjMQo2tyP1Wfj1pIJhdzTGBb7AoazoF1vDa6Q7Yl7/17P4WinUop3jr1g+ChC
+         PgWShFTaCrIqK/ofePMMl4+/RfSsvdu/TZWulpKAKGyW7iqG8Vk7juyXUAkL5PJUzaoh
+         Du2vZlvr4mE1WENw7x5GAcE9NXWF+kyTHg1EtbGbUyPE6lLog7L0uKPJnFxD0EB93hal
+         R1mcrHbRkhMfBtO/ZuZlc3gAfwncU9jljA8LxpIBS3YtBg1WFzSqEzACjZL80OWMSKXR
+         Hwcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=JJRKr+P1wfA+iLi/HQFVwk+HEdxOEhGs9WJgXP8XA50=;
-        b=hK0veH6CYbA86ZfRn0fkMwwDmJ69fYef5PEr7GG05iPpdg5lFQs7VandLaxM7HL2E2
-         F4SvCZAjwus219J9twl8vggq6qELwfC1rIPNvbfSa+sTlRJEWAT5NCXEUX6i54KIojhf
-         XV/b3D9R7pzi+JjYAu8bJhbkmQvJVmp8kiE5V5UqGc1LodXQzji55Jqf532HHOye6Jd6
-         TyzZxAilLNA4AvYma8wN7HSw2J3stVhEQdr/69dCV3Z+c2anCjEJTZz37y1G9rIxHf6r
-         Ilz/d7oo0MKn1ivhTxQzU92IpnVEQVG5dphO18A4dUV0xsjCdnvbBbe0p7PQVkBAWkYr
-         qJdw==
-X-Gm-Message-State: APjAAAUhKxdidTBtnO1wB8F9fIc3tWqLO2GwpctCimr46jEBKTNUUtSe
-        liF67tfXIZMfOky2SDK35TyA0A==
-X-Google-Smtp-Source: APXvYqxRfOLMPmCC+EuCbr7giLanjpdZIHDEmkpMwdlm2uvVsgLnfU57790Jg8WtVz04gcW1lXDhRg==
-X-Received: by 2002:a05:6214:1047:: with SMTP id l7mr23580380qvr.183.1558546893955;
-        Wed, 22 May 2019 10:41:33 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id n22sm14567168qtb.56.2019.05.22.10.41.32
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 22 May 2019 10:41:33 -0700 (PDT)
-Date:   Wed, 22 May 2019 10:41:29 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     toke@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, brouer@redhat.com, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next 0/2] net: xdp: refactor the XDP_QUERY_PROG and
- XDP_QUERY_PROG_HW code
-Message-ID: <20190522104129.57719c34@cakuba.netronome.com>
-In-Reply-To: <20190522125353.6106-1-bjorn.topel@gmail.com>
-References: <20190522125353.6106-1-bjorn.topel@gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tozdxVPBBTKPFtVyskCMo3XRbMEfZfCDiynnPlMVjdY=;
+        b=labuVfofwQmEShyUJXTEoi6Fpzy2eWef3JGFdNuJKGlJgwHMdHyHW1TJCdIWbcYhXf
+         IUVStF12FCqcmU/6OUMNQS2WEjCQM6MVLbLrBvhaBvWyFlBN+OBZnJePpZoIoLKMhZ5Z
+         cLiDWcmnonvo2dYV2Lm9KiJB3/qCxiQ0GZlne6wVOD1yDoX8XKn6NtdqTjQICoY+/rPG
+         T2U3pPcEUaUhEZKfEhUVejUJS5jW4Cwjwy+AlxxoGKAMOaU+wd9Yish0SMAZI6IcsEN+
+         mBOP8WAa/p+RCijsJT64IXLBYhQNZQKhpN2A/k7pHWmnRb1yky08STD2GLiZkeTs+7dP
+         I/Cw==
+X-Gm-Message-State: APjAAAU5diHPi+BkG1sWO7LuCG04v0XDBzcvtH8lpHOyObSAuApdNZf6
+        OzEtkWiy1ybNm/tvhdcBWlOJpgT0EkzpQ8768xL9wYsxvVk=
+X-Google-Smtp-Source: APXvYqyWJ+pUIANuvovHRTN3MwhiIGlpeVDvtDDOyICvKETMNFaHoUyS/j/7R5lzVQLzT385CPuQG+UOmMCmStJwafU=
+X-Received: by 2002:a0c:d0d4:: with SMTP id b20mr41244173qvh.38.1558547102239;
+ Wed, 22 May 2019 10:45:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20190522161520.3407245-1-andriin@fb.com> <1b027a52-4ac7-daf8-ee4a-eb528f53e526@fb.com>
+In-Reply-To: <1b027a52-4ac7-daf8-ee4a-eb528f53e526@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 22 May 2019 10:44:51 -0700
+Message-ID: <CAEf4BzbdNv-azRNQpyH91-Ms59Uw7-990Dadix-_t851pXRRLQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: emit diff of mismatched public API, if any
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 May 2019 14:53:50 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
-> Shout out to all XDP driver hackers to check that the second patch
-> doesn't break anything (especially Jakub). I've only been able to test
-> on the Intel NICs.
+On Wed, May 22, 2019 at 9:21 AM Alexei Starovoitov <ast@fb.com> wrote:
+>
+> On 5/22/19 9:15 AM, Andrii Nakryiko wrote:
+> > It's easy to have a mismatch of "intended to be public" vs really
+> > exposed API functions. While Makefile does check for this mismatch, if
+> > it actually occurs it's not trivial to determine which functions are
+> > accidentally exposed. This patch dumps out a diff showing what's not
+> > supposed to be exposed facilitating easier fixing.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >   tools/lib/bpf/.gitignore | 2 ++
+> >   tools/lib/bpf/Makefile   | 8 ++++++++
+> >   2 files changed, 10 insertions(+)
+> >
+> > diff --git a/tools/lib/bpf/.gitignore b/tools/lib/bpf/.gitignore
+> > index d9e9dec04605..c7306e858e2e 100644
+> > --- a/tools/lib/bpf/.gitignore
+> > +++ b/tools/lib/bpf/.gitignore
+> > @@ -3,3 +3,5 @@ libbpf.pc
+> >   FEATURE-DUMP.libbpf
+> >   test_libbpf
+> >   libbpf.so.*
+> > +libbpf_global_syms.tmp
+> > +libbpf_versioned_syms.tmp
+> > diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+> > index f91639bf5650..7e7d6d851713 100644
+> > --- a/tools/lib/bpf/Makefile
+> > +++ b/tools/lib/bpf/Makefile
+> > @@ -204,6 +204,14 @@ check_abi: $(OUTPUT)libbpf.so
+> >                    "versioned symbols in $^ ($(VERSIONED_SYM_COUNT))." \
+> >                    "Please make sure all LIBBPF_API symbols are"       \
+> >                    "versioned in $(VERSION_SCRIPT)." >&2;              \
+> > +             readelf -s --wide $(OUTPUT)libbpf-in.o |                 \
+> > +                 awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$8}'|   \
+> > +                 sort -u > $(OUTPUT)libbpf_global_syms.tmp;           \
+> > +             readelf -s --wide $(OUTPUT)libbpf.so |                   \
+> > +                 grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 |             \
+> > +                 sort -u > $(OUTPUT)libbpf_versioned_syms.tmp;        \
+> > +             diff -u $(OUTPUT)libbpf_global_syms.tmp                  \
+> > +                  $(OUTPUT)libbpf_versioned_syms.tmp;                 \
+> >               exit 1;                                                  \
+>
+> good idea.
+> how about removing tmp files instead of adding them to .gitignore?
 
-Please test XDP offload on netdevsim, that's why we have it! :)
-At the minimum please run tools/testing/selftests/bpf/test_offload.py
-
-Now let me look at the code :)
+ok, will remove them
