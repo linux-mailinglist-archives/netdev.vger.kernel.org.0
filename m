@@ -2,180 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19CF925D8C
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 07:24:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D885B25DB6
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 07:39:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728221AbfEVFYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 01:24:33 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:58180 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbfEVFYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 01:24:32 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4M5EDBu160383;
-        Wed, 22 May 2019 05:23:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=7yB1jRRKfJaTqC5CwIRJSAlMgBo0pt+Z3oKjydQnMbA=;
- b=Pdf6HkCpfujIhOnSEKRQckBYu+cLerSuyaUTvpy5Ji9HaoLNXsfTUr+fQErYVTc0qiiJ
- ZvzrCdv/4uxLdg369gHvAaTKruY3BmENC6m5HGe1U08UU85i3St1WVNSWWRAypdhucS+
- 8O41vongb2zciolGPc6rpqYNgA65IO3TWS+uyKY0olBdUO2rpdDOaK2yEvY2lj6plLV3
- C5t3Bcwi1Tca6Xk097sYBlil6dfgeNXAGwqnbxK52bmY94xK8Pq44DEj+PjH+FbJZaTC
- d1CV8v1t868VUFq9SKSXNCd20+C3mhyXkfw1zMU9jm/KEqQqN8hBj9XdwLgcCrkFniJJ Yg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2130.oracle.com with ESMTP id 2smsk597sy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 May 2019 05:23:34 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4M5N9IU133624;
-        Wed, 22 May 2019 05:23:33 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 2smshecvjq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 22 May 2019 05:23:33 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x4M5NXYZ134191;
-        Wed, 22 May 2019 05:23:33 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 2smshecvjh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 May 2019 05:23:33 +0000
-Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x4M5NUSL027017;
-        Wed, 22 May 2019 05:23:30 GMT
-Received: from localhost (/10.159.211.99)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 22 May 2019 05:23:30 +0000
-Date:   Wed, 22 May 2019 01:23:27 -0400
-From:   Kris Van Hees <kris.van.hees@oracle.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Kris Van Hees <kris.van.hees@oracle.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        dtrace-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
-        mhiramat@kernel.org, acme@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, peterz@infradead.org
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-Message-ID: <20190522052327.GN2422@oracle.com>
-References: <201905202347.x4KNl0cs030532@aserv0121.oracle.com>
- <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
- <20190521184137.GH2422@oracle.com>
- <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
- <20190521173618.2ebe8c1f@gandalf.local.home>
- <20190521214325.rr7emn5z3b7wqiiy@ast-mbp.dhcp.thefacebook.com>
- <20190521174757.74ec8937@gandalf.local.home>
+        id S1728237AbfEVFjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 01:39:13 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:50002 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727464AbfEVFjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 01:39:12 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4M5ZFht020489
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 22:39:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=facebook; bh=AK0z8Hf3HEpuTCfgR4ZuQSzrQ+/uqKU4/JHM+4YhqJA=;
+ b=guIy4gUYy1/GhKm5y2m1KZUBxEm/bbJybxts7UFl2+TMBNCLm57nJTLBKGljVIHBX124
+ 2cBC0IpO6lQeG30Cy0V08iMX3vOB7ljcrQxqQqYgk2JnPDThybj5P2CjvyBqmi0hQl9n
+ I4Ev+3yjE564un7k0p+xS4/RA9mHi/2cmWo= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2smp0wt0ns-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 22:39:11 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 21 May 2019 22:39:03 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id F2CC53702E2F; Tue, 21 May 2019 22:39:00 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Yonghong Song <yhs@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next v2 1/3] bpf: implement bpf_send_signal() helper
+Date:   Tue, 21 May 2019 22:39:00 -0700
+Message-ID: <20190522053900.1663537-1-yhs@fb.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190522053900.1663459-1-yhs@fb.com>
+References: <20190522053900.1663459-1-yhs@fb.com>
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190521174757.74ec8937@gandalf.local.home>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9264 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1905220037
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-22_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905220040
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 05:48:11PM -0400, Steven Rostedt wrote:
-> On Tue, 21 May 2019 14:43:26 -0700
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> 
-> > Steve,
-> > sounds like you've missed all prior threads.
-> 
-> I probably have missed them ;-)
-> 
-> > The feedback was given to Kris it was very clear:
-> > implement dtrace the same way as bpftrace is working with bpf.
-> > No changes are necessary to dtrace scripts
-> > and no kernel changes are necessary.
-> 
-> Kris, I haven't been keeping up on all the discussions. But what
-> exactly is the issue where Dtrace can't be done the same way as the
-> bpftrace is done?
+This patch tries to solve the following specific use case.
 
-There are several issues (and I keep finding new ones as I move forward) but
-the biggest one is that I am not trying to re-design and re-implement) DTrace
-from the ground up.  We have an existing userspace component that is getting
-modified to work with a new kernel implementation (based on BPF and various
-other kernel features that are thankfully available these days).  But we need
-to ensure that the userspace component continues to function exactly as one
-would expect.  There should be no need to modify DTrace scripts.  Perhaps
-bpftrace could be taught to parse DTrace scripts (i.e. implement the D script
-language with all its bells and whistles) but it currently cannot and DTrace
-obviously can.  It seems to be a better use of resources to focus on the
-kernel component, where we can really provide a much cleaner implementation
-for DTrace probe execution because BPF is available and very powerful.
+Currently, bpf program can already collect stack traces
+through kernel function get_perf_callchain()
+when certain events happens (e.g., cache miss counter or
+cpu clock counter overflows). But such stack traces are
+not enough for jitted programs, e.g., hhvm (jited php).
+To get real stack trace, jit engine internal data structures
+need to be traversed in order to get the real user functions.
 
-Userspace aside, there are various features that are not currently available
-such as retrieving the ppid of the current task, and various other data items
-that relate to the current task that triggered a probe.  There are ways to
-work around it (using the bpf_probe_read() helper, which actually performs a
-probe_kernel_read()) but that is rather clunky and definitely shouldn't be
-something that can be done from a BPF program if we're doing unprivileged
-tracing (which is a goal that is important for us).  New helpers can be added
-for things like this, but the list grows large very quickly once you look at
-what information DTrace scripts tend to use.
+bpf program itself may not be the best place to traverse
+the jit engine as the traversing logic could be complex and
+it is not a stable interface either.
 
-One of the benefits of DTrace is that probes are largely abstracted entities
-when you get to the script level.  While different probes provide different
-data, they are all represented as probe arguments and they are accessed in a
-very consistent manner that is independent from the actual kind of probe that
-triggered the execution.  Often, a single DTrace clause is associated with
-multiple probes, of different types.  Probes in the kernel (kprobe, perf event,
-tracepoint, ...) are associated with their own BPF program type, so it is not
-possible to load the DTrace clause (translated into BPF code) once and
-associate it with probes of different types.  Instead, I'd have to load it
-as a BPF_PROG_TYPE_KPROBE program to associate it with a kprobe, and I'd have
-to load it as a BPF_PROG_TYPE_TRACEPOINT program to associate it with a
-tracepoint, and so on.  This also means that I suddenly have to add code to
-the userspace component to know about the different program types with more
-detail, like what helpers are available to specific program types.
+Instead, hhvm implements a signal handler,
+e.g. for SIGALARM, and a set of program locations which
+it can dump stack traces. When it receives a signal, it will
+dump the stack in next such program location.
 
-Another advantage of being able to operate on a more abstract probe concept
-that is not tied to a specific probe type is that the userspace component does
-not need to know about the implementation details of the specific probes.
-This avoids a tight coupling between the userspace component and the kernel
-implementation.
+Such a mechanism can be implemented in the following way:
+  . a perf ring buffer is created between bpf program
+    and tracing app.
+  . once a particular event happens, bpf program writes
+    to the ring buffer and the tracing app gets notified.
+  . the tracing app sends a signal SIGALARM to the hhvm.
 
-Another feature that is currently not supported is speculative tracing.  This
-is a feature that is not as commonly used (although I personally have found it
-to be very useful in the past couple of years) but it quite powerful because
-it allows for probe data to be recorded, and have the decision on whether it
-is to be made available to userspace postponed to a later event.  At that time,
-the data can be discarded or committed.
+But this method could have large delays and causing profiling
+results skewed.
 
-These are just some examples of issues I have been working on.  I spent quite
-a bit of time to look for ways to implement what we need for DTrace with a
-minimal amount of patches to the kernel because there really isn't any point
-in doing unnecessary work.  I do not doubt that there are possible clever
-ways to somehow get around some of these issues with clever hacks and
-workarounds, but I am not trying to hack something together that hopefully
-will be close enough to the expected functionality.
+This patch implements bpf_send_signal() helper to send
+a signal to hhvm in real time, resulting in intended stack traces.
 
-DTrace has proven itself to be quite useful and dependable as a tracing
-solution, and I am working on continuing to deliver on that while recognizing
-the significant work that others have put into advancing the tracing
-infrastructure in Linux in recent years.  So many people have contributed
-excellent features - and I am making use of those features as much as I can.
-But as is often the case, not everything that I need is currently implemented.
-As I expressed during last year's Plumbers in Vancouver, I am putting a very
-strong emphasis on ensuring that what I propose as contributions is not
-limited to just DTrace.  My goal is to work in an open, collaborative manner,
-providing features that anyone can use if they want to.
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ include/uapi/linux/bpf.h | 17 +++++++++-
+ kernel/trace/bpf_trace.c | 67 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 83 insertions(+), 1 deletion(-)
 
-I wish that the assertion that "no changes are necessary to dtrace scripts and
-no kernel changes are necessary" were true, but my own findings contradict
-that.  To my knowledge no tool exists right now that can execute any and all
-valid DTrace scripts without any changes to the scripts and without any changes
-to the kernel.  The only tool I know that can execute DTrace scripts right now
-does require rather extensive kernel changes, and the work I am doing right now
-is aimed at doing much better than that.
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 63e0cf66f01a..68d4470523a0 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -2672,6 +2672,20 @@ union bpf_attr {
+  *		0 on success.
+  *
+  *		**-ENOENT** if the bpf-local-storage cannot be found.
++ *
++ * int bpf_send_signal(u32 sig)
++ *	Description
++ *		Send signal *sig* to the current task.
++ *	Return
++ *		0 on success or successfully queued.
++ *
++ *		**-EBUSY** if work queue under nmi is full.
++ *
++ *		**-EINVAL** if *sig* is invalid.
++ *
++ *		**-EPERM** if no permission to send the *sig*.
++ *
++ *		**-EAGAIN** if bpf program can try again.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -2782,7 +2796,8 @@ union bpf_attr {
+ 	FN(strtol),			\
+ 	FN(strtoul),			\
+ 	FN(sk_storage_get),		\
+-	FN(sk_storage_delete),
++	FN(sk_storage_delete),		\
++	FN(send_signal),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index f92d6ad5e080..f8cd0db7289f 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -567,6 +567,58 @@ static const struct bpf_func_proto bpf_probe_read_str_proto = {
+ 	.arg3_type	= ARG_ANYTHING,
+ };
+ 
++struct send_signal_irq_work {
++	struct irq_work irq_work;
++	u32 sig;
++};
++
++static DEFINE_PER_CPU(struct send_signal_irq_work, send_signal_work);
++
++static void do_bpf_send_signal(struct irq_work *entry)
++{
++	struct send_signal_irq_work *work;
++
++	work = container_of(entry, struct send_signal_irq_work, irq_work);
++	group_send_sig_info(work->sig, SEND_SIG_PRIV, current, PIDTYPE_TGID);
++}
++
++BPF_CALL_1(bpf_send_signal, u32, sig)
++{
++	struct send_signal_irq_work *work = NULL;
++
++	/* Similar to bpf_probe_write_user, task needs to be
++	 * in a sound condition and kernel memory access be
++	 * permitted in order to send signal to the current
++	 * task.
++	 */
++	if (unlikely(current->flags & (PF_KTHREAD | PF_EXITING)))
++		return -EPERM;
++	if (unlikely(uaccess_kernel()))
++		return -EPERM;
++	if (unlikely(!nmi_uaccess_okay()))
++		return -EPERM;
++
++	if (in_nmi()) {
++		work = this_cpu_ptr(&send_signal_work);
++		if (work->irq_work.flags & IRQ_WORK_BUSY)
++			return -EBUSY;
++
++		work->sig = sig;
++		irq_work_queue(&work->irq_work);
++		return 0;
++	}
++
++	return group_send_sig_info(sig, SEND_SIG_PRIV, current, PIDTYPE_TGID);
++
++}
++
++static const struct bpf_func_proto bpf_send_signal_proto = {
++	.func		= bpf_send_signal,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_ANYTHING,
++};
++
+ static const struct bpf_func_proto *
+ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ {
+@@ -617,6 +669,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 	case BPF_FUNC_get_current_cgroup_id:
+ 		return &bpf_get_current_cgroup_id_proto;
+ #endif
++	case BPF_FUNC_send_signal:
++		return &bpf_send_signal_proto;
+ 	default:
+ 		return NULL;
+ 	}
+@@ -1343,5 +1397,18 @@ static int __init bpf_event_init(void)
+ 	return 0;
+ }
+ 
++static int __init send_signal_irq_work_init(void)
++{
++	int cpu;
++	struct send_signal_irq_work *work;
++
++	for_each_possible_cpu(cpu) {
++		work = per_cpu_ptr(&send_signal_work, cpu);
++		init_irq_work(&work->irq_work, do_bpf_send_signal);
++	}
++	return 0;
++}
++
+ fs_initcall(bpf_event_init);
++subsys_initcall(send_signal_irq_work_init);
+ #endif /* CONFIG_MODULES */
+-- 
+2.17.1
 
-	Kris
