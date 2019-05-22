@@ -2,97 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4C2227153
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 23:04:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E31082715E
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 23:07:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730151AbfEVVEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 17:04:53 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:40074 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729772AbfEVVEx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 17:04:53 -0400
-Received: by mail-qt1-f193.google.com with SMTP id k24so4186537qtq.7
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 14:04:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=mQra2X37FowSNkGLV4GBrSER5P4VxYF+9KwrlxSHnBk=;
-        b=AvJ2ZfNua/XtrXHJcoJ9tucGfc7y+kaapli+XiRHt8jswzlSYkv6STQYWazo7FR1s+
-         7VT/3q6nbPT3nD7xVsGWFd1Qt1IK5Ly2Id56eQns4fjuTFwkxa0tHUJ9ZECMTe+gOf9k
-         RoH/+9fbCMYIBkWpG7GP82Z4BexPB00ZGvuY1KaBi4UvJPzaI2apFxAdrH9mdQAnwkt5
-         C25gh+pc++stPN9+tE3AB5M9z0WOyYmSy9Y93Xq4OLBSl35WC6KiYh2s/7ISbNGKFEjQ
-         7YYonRxB8jwDcIen0R9rKLg/u7zLQ62QNQ8Sql95JZqRzL28Xa3UL5OqRxO0dwDbHMJP
-         2dSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=mQra2X37FowSNkGLV4GBrSER5P4VxYF+9KwrlxSHnBk=;
-        b=aVlBX0mGEg/rYMZOr8ZMgQj9FnclUDNUSqrhIc2XoV6Qfv2BmQwHuyuZ6gd2HggDY+
-         GIsbHJu3vROKXtAUGJKLEyUcK+1/9XLJrI2q9LLkievh9rGTHq2rc9T9N0sEUu5iwVJq
-         s8v6A7CA6xL+4Y6YJD12Rqv3/tDx5r4lcmwDs9f+UjWA5eauQOAvYo2etN0/KKWv5xwg
-         LGPbJZPQ/5KUJsa/078WSDWC34HkGEP/XpPAVNC6FJrsbgbr/77zNRQHg7bn+BeNCGFu
-         6HRzOtSorFBpTWn8jOjjZlfP3zhdXYbP+VCaP0EK0qoV0snQi2b/dcKNx4R/siXF+4qE
-         Hd5Q==
-X-Gm-Message-State: APjAAAXlt79uoL1NJ3tpE/vHYqSsFBm90njJ75lTm7QAOHBqH0W2ezc2
-        WuPlEhNvWvoWqr8Eg/QUAUdQQw==
-X-Google-Smtp-Source: APXvYqzOnkWQFKIXmFgjGxLlTS2Z85bLEhLAxzzSfEttmuvx6En1NSbQIfP+ZUuI0HPQ/FD+gulPBw==
-X-Received: by 2002:aed:354c:: with SMTP id b12mr78671650qte.251.1558559092556;
-        Wed, 22 May 2019 14:04:52 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s26sm436798qtk.21.2019.05.22.14.04.51
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 22 May 2019 14:04:52 -0700 (PDT)
-Date:   Wed, 22 May 2019 14:04:47 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW} to
- netdev
-Message-ID: <20190522140447.53468a2a@cakuba.netronome.com>
-In-Reply-To: <CAJ+HfNiz5xbhxshWbLXyiLKDEz3ksU5jg54xxurN17=nVPetyg@mail.gmail.com>
-References: <20190522125353.6106-1-bjorn.topel@gmail.com>
-        <20190522125353.6106-2-bjorn.topel@gmail.com>
-        <20190522113212.68aea474@cakuba.netronome.com>
-        <CAJ+HfNiz5xbhxshWbLXyiLKDEz3ksU5jg54xxurN17=nVPetyg@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1730171AbfEVVHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 17:07:14 -0400
+Received: from kadath.azazel.net ([81.187.231.250]:39524 "EHLO
+        kadath.azazel.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729528AbfEVVHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 17:07:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
+         s=20190108; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=loyIBpCBpYjNx+PxzllKAJdf5BD1L45wLQdGNF1bsPk=; b=RbyyoXlrLzJzaN58+An3fib+EL
+        SoJLfKzIZZreHScXXjatp1Hv1Yv/lK+ZSwYRPIfgJEnx3ui8+eJxyGSBjZLLbsWBHK6gIhemO8q1L
+        NNOzGo2iIxRgigLYTXAYWpgWMpJaSJ8JHC6von5zEjO0aMY+Yjjkx401GHBneApJbFKHGvPXsWeK0
+        ReGO91uuf4mBmbaykOxK8EKxb8fUn+I8v/+6Dpzasjpo/MCR3rlvp7M2xaR3kYhPZqm5dZNGMQnNw
+        VRldaB0GQ1cyKzdi/s0C/LBfhMSwnk8ho8OtO2iz1uNz3kTkBR5n7RmY+ukch0W5zrfek6EJFQhjr
+        f2Z8Bp0w==;
+Received: from celephais.dreamlands ([192.168.96.3] helo=azazel.net)
+        by kadath.azazel.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <jeremy@azazel.net>)
+        id 1hTYRz-0000GD-TZ; Wed, 22 May 2019 22:07:03 +0100
+Date:   Wed, 22 May 2019 22:07:02 +0100
+From:   Jeremy Sowden <jeremy@azazel.net>
+To:     Jason Baron <jbaron@akamai.com>
+Cc:     davem@davemloft.net, edumazet@google.com, ycheng@google.com,
+        ilubashe@akamai.com, netdev@vger.kernel.org,
+        Christoph Paasch <cpaasch@apple.com>
+Subject: Re: [PATCH net-next 5/6] Documentation: ip-sysctl.txt: Document
+ tcp_fastopen_key
+Message-ID: <20190522210702.GA28231@azazel.net>
+References: <cover.1558557001.git.jbaron@akamai.com>
+ <aa4defa5f0f75908b140855e4495388468a94c01.1558557001.git.jbaron@akamai.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="PNTmBPCT7hxwcZjr"
+Content-Disposition: inline
+In-Reply-To: <aa4defa5f0f75908b140855e4495388468a94c01.1558557001.git.jbaron@akamai.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 192.168.96.3
+X-SA-Exim-Mail-From: jeremy@azazel.net
+X-SA-Exim-Scanned: No (on kadath.azazel.net); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 May 2019 22:54:44 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
-> > > Now, the same commands give:
-> > >
-> > >   # ip link set dev eth0 xdp obj foo.o sec main
-> > >   # ip link set dev eth0 xdpgeneric off
-> > >   Error: native and generic XDP can't be active at the same time. =20
-> >
-> > I'm not clear why this change is necessary? It is a change in
-> > behaviour, and if anything returning ENOENT would seem cleaner
-> > in this case.
->=20
-> To me, the existing behavior was non-intuitive. If most people *don't*
-> agree, I'll remove this change. So, what do people think about this?
-> :-)
 
-Having things start to fail after they were successful/ignored
-is one of those ABI breakage types Linux and netdev usually takes
-pretty seriously, unfortunately.  Especially when motivation is=20
-"it's more intuitive" :)
+--PNTmBPCT7hxwcZjr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-If nobody chimes in please break out this behaviour change into=20
-a commit of its own.
+On 2019-05-22, at 16:39:37 -0400, Jason Baron wrote:
+> Add docs for /proc/sys/net/ipv4/tcp_fastopen_key
+>
+> Signed-off-by: Christoph Paasch <cpaasch@apple.com>
+> Signed-off-by: Jason Baron <jbaron@akamai.com>
+> ---
+>  Documentation/networking/ip-sysctl.txt | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+>
+> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+> index 14fe930..e8d848e 100644
+> --- a/Documentation/networking/ip-sysctl.txt
+> +++ b/Documentation/networking/ip-sysctl.txt
+> @@ -648,6 +648,26 @@ tcp_fastopen_blackhole_timeout_sec - INTEGER
+>  	0 to disable the blackhole detection.
+>  	By default, it is set to 1hr.
+>
+> +tcp_fastopen_key - list of comma separated 32-digit hexadecimal INTEGERs
+> +	The list consists of a primary key and an optional backup key. The
+> +	primary key is used for both creating and validating cookies, while the
+> +	optional backup key is only used for validating cookies. The purpose of
+> +	the backup key is to maximize TFO validation when keys are rotated.
+> +
+> +	A randomly chosen primary key may be configured by the kernel if
+> +	the tcp_fastopen sysctl is set to 0x400 (see above), or if the
+> +	TCP_FASTOPEN setsockopt() optname is set and a key has not been
+> +	previously configured via sysctl. If keys are configured via
+> +	setsockopt() by using the TCP_FASTOPEN_KEY optname, then those
+> +	per-socket keys will be used instead of any keys that are specified via
+> +	sysctl.
+> +
+> +	A key is specified as 4 8-digit hexadecimal integers which are separted
 
-> ENOENT does make more sense.
+"separated"
+
+> +	by a '-' as: xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx. Leading zeros may be
+> +	omitted. A primary and a backup key may be specified by separting them
+> +	by a comma. If only one key is specified, it becomes the primary key and
+> +	any previous backup keys are removed.
+> +
+>  tcp_syn_retries - INTEGER
+>  	Number of times initial SYNs for an active TCP connection attempt
+>  	will be retransmitted. Should not be higher than 127. Default value
+> --
+> 2.7.4
+>
+>
+
+J.
+
+--PNTmBPCT7hxwcZjr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEZ8d+2N/NBLDbUxIF0Z7UzfnX9sMFAlzlue0ACgkQ0Z7UzfnX
+9sOR+g/+M2NAgCva0b/E5h5qJ1wj1yeVHENtf/wGSSFd3JEJV06KxsOo3O2Wje//
+bVsLmsENcbymAO9MRWK5u9eXfQyoe7uFwBXen3upuo12gNgo3iYD9pzeE1r3FatC
+vqnJ+MUY5F0kPG4lAPFPbpyWBGt2LJOpcf6Z3gdd9phV8C/d7hwy1uikA9eFX9DJ
+83jWFrjgHgA3A3oZ2H1ci3+z9YVMcZO+TU8D/rymNiXw1xOZKp2Q5Iu96HjRP29e
+SbQgNV3yqCGjKP+7VqzljhwLoqW8y5lEN9ZU/YO0WcP2IMadfzerbc/jLGdWLJot
+Tf9iJj0fD5Ghm/R/V/2HMv0BY8pBmwdSKe2ZDAkfeDNDdL4205QN9VVoYNOc6h5a
+yxPK/DJOxRafrzAK1glti8EsKDHEMrMVgozPUDkNNSmEN+1f94GSIu+iWvE+XDjg
+GBSe+XiVZZbJwNMUCXF7+Hir1MKeFwlUQqGCGM1P31/4danw08GXX4P3ldsa62HK
+qt8IxLbkPv7ZxC5IyCDT8zLWMpxlhfAiwXalzFfXXLoRBp52U8MddO8aExo/9I0z
+3UA1R8iiwfBhY+TtyWhZRM4pwUsuPzgrPF8jIMxiDZNnnL70w20QBgICma0CplSD
+5o8PgWvJx//SZeW8L6E89vd7CeuwvoVoS0o3lfX1Jwsg0QQKESI=
+=OwJJ
+-----END PGP SIGNATURE-----
+
+--PNTmBPCT7hxwcZjr--
