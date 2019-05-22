@@ -2,96 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8082B25BB2
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 03:42:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC2725BD0
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 03:57:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728065AbfEVBm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 21:42:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42700 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726466AbfEVBmZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 May 2019 21:42:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=V0i6rM8f3vkwwfHsfAG/etWncROxG9KmVrmT3HvPC0A=; b=ZnZoS6zy61UtpRmvt+fzFYMOP/
-        YmzrirAZKmbrqifFoH1onGdmBpBWs9n1fJnt+fjzk1fEjj6diLC4Y64I4fD6RdQJc9l56phO7Z/m0
-        3+x8qES87NDLrkU4kVIR7cAswpEKdqiUaAkjfwE+EbhNkbDJjhDVoNQteMAUK/E4c8LY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hTGGq-0000OK-IW; Wed, 22 May 2019 03:42:20 +0200
-Date:   Wed, 22 May 2019 03:42:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        devicetree@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH V3 net-next 6/6] ptp: Add a driver for InES time stamping
- IP core.
-Message-ID: <20190522014220.GB734@lunn.ch>
-References: <20190521224723.6116-7-richardcochran@gmail.com>
+        id S1728103AbfEVB51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 21:57:27 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:35538 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726466AbfEVB50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 21:57:26 -0400
+Received: by mail-qt1-f194.google.com with SMTP id a39so559887qtk.2
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 18:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rgMk0/cmHCA+JVdog+AOe34V0MLrhuLGcNb8/ei0dEY=;
+        b=B1n3+tGPYKkUBb9vypC6yjb/Nq+8Bg6DYyxRwSF0pjsUR/4po7eHN+BvMLdoajhsHu
+         ciodQMp8Chq07/Z4m9kmlEKOj+nZkJQsebKviWtQgzWGy6xD4oFiFU4vbyTu+7CTxfGA
+         W2q7NsTJRSbuQ1Rjwu/Y+wNaHf29pdVz00hmRCEvbfRNRjwQFbP4lABMkOkIJjRDRqNf
+         fKdAOMhzxhp/lsm1NTaOz9HoJzvypnnab6NtUbNoNF6mI5OB/Y17RN3W8mRIK/6DeKeP
+         KVNS2A/AqGIfrBc9NVZt/MJLEXGbvdnx2yE35K1opl3SXShTxz5vC9OxLrR/SaYDYRjd
+         Xc6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rgMk0/cmHCA+JVdog+AOe34V0MLrhuLGcNb8/ei0dEY=;
+        b=MqVfpPTCEoknlYrg6k1ZuMkedRrelzwNi5ii/4v7nrIRJmCc2qRu0EbnPbYWVaPA1l
+         1YZtpHp4QmhWdXr9GNz196tuegJBgkEa6q0+qoZ8pQekq/puqdFzow19jr7rycLH6ZOo
+         VkgTy219cPnvG2GWSffZWqx36woBwuuke/wgtSQqUv33ZM03EpXIDbST/LWRCo6hPTzs
+         /aF/bBjJosQWfuNJ0f3cjY5RxOgEvq+B3LQXwT1Ql7730Gjjxn5CK0dA//WrXlRgqjVK
+         9eECGpvtC87SdqEaBJxj8QHLTh7cEhIZn6iOCVtBOg7CXLi2eidomQ+Bep8X7aMRjGKZ
+         uQCQ==
+X-Gm-Message-State: APjAAAU5MDZxtOsWzthf18hN0Ud88/o0m2grLGMuO4RtQSwsjiWpPC+l
+        pGEptVbIOcAjdpxHU73A0MHXiKyLu4Y=
+X-Google-Smtp-Source: APXvYqzqlATJ+1th+z0X7/+hkfYKdNNHyg0piZtjHbfHQ2F+o3hp93hSZWV3EvsWD9Uw0ynLqkQb4g==
+X-Received: by 2002:ac8:2c6a:: with SMTP id e39mr55460113qta.179.1558490245715;
+        Tue, 21 May 2019 18:57:25 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id l16sm9614901qtj.60.2019.05.21.18.57.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 May 2019 18:57:24 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        alexei.starovoitov@gmail.com, davejwatson@fb.com,
+        john.fastabend@gmail.com, vakul.garg@nxp.com, borisp@mellanox.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net v2 0/3] Documentation: tls: add offload documentation
+Date:   Tue, 21 May 2019 18:57:11 -0700
+Message-Id: <20190522015714.4077-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190521224723.6116-7-richardcochran@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static bool ines_match(struct sk_buff *skb, unsigned int ptp_class,
-> +		       struct ines_timestamp *ts);
-> +static int ines_rxfifo_read(struct ines_port *port);
-> +static u64 ines_rxts64(struct ines_port *port, unsigned int words);
-> +static bool ines_timestamp_expired(struct ines_timestamp *ts);
-> +static u64 ines_txts64(struct ines_port *port, unsigned int words);
-> +static void ines_txtstamp_work(struct work_struct *work);
-> +static bool is_sync_pdelay_resp(struct sk_buff *skb, int type);
-> +static u8 tag_to_msgtype(u8 tag);
+Hi!
 
-Hi Richard
+This set adds documentation for TLS offload. It starts
+by making the networking documentation a little easier
+to navigate by hiding driver docs a little deeper.
+It then RSTifys the existing Kernel TLS documentation.
+Last but not least TLS offload documentation is added.
+This should help vendors navigate the TLS offload, and
+help ensure different implementations stay aligned from
+user perspective.
 
-I don't know about the PTP subsystem, but in general, forward
-declarations are frowned upon, and it is generally requested to
-reorder the functions to remove them.
+v2:
+ - address Alexei's and Boris'es commands on patch 3.
 
-> +static struct platform_driver ines_ptp_ctrl_driver = {
-> +	.probe  = ines_ptp_ctrl_probe,
-> +	.remove = ines_ptp_ctrl_remove,
-> +	.driver = {
-> +		.name = "ines_ptp_ctrl",
-> +		.of_match_table = of_match_ptr(ines_ptp_ctrl_of_match),
-> +	},
-> +};
-> +
-> +static int __init ines_ptp_init(void)
-> +{
-> +	return platform_driver_register(&ines_ptp_ctrl_driver);
-> +}
-> +
-> +static void __exit ines_ptp_cleanup(void)
-> +{
-> +	platform_driver_unregister(&ines_ptp_ctrl_driver);
-> +}
+Jakub Kicinski (3):
+  Documentation: net: move device drivers docs to a submenu
+  Documentation: tls: RSTify the ktls documentation
+  Documentation: add TLS offload documentation
 
-include/linux/platform_device.h:
+ .../networking/device_drivers/index.rst       |  30 ++
+ Documentation/networking/index.rst            |  16 +-
+ .../networking/tls-offload-layers.svg         |   1 +
+ .../networking/tls-offload-reorder-bad.svg    |   1 +
+ .../networking/tls-offload-reorder-good.svg   |   1 +
+ Documentation/networking/tls-offload.rst      | 482 ++++++++++++++++++
+ Documentation/networking/{tls.txt => tls.rst} |  44 +-
+ 7 files changed, 549 insertions(+), 26 deletions(-)
+ create mode 100644 Documentation/networking/device_drivers/index.rst
+ create mode 100644 Documentation/networking/tls-offload-layers.svg
+ create mode 100644 Documentation/networking/tls-offload-reorder-bad.svg
+ create mode 100644 Documentation/networking/tls-offload-reorder-good.svg
+ create mode 100644 Documentation/networking/tls-offload.rst
+ rename Documentation/networking/{tls.txt => tls.rst} (88%)
 
-/* module_platform_driver() - Helper macro for drivers that don't do
- * anything special in module init/exit.  This eliminates a lot of
- * boilerplate.  Each module may only use this macro once, and
- * calling it replaces module_init() and module_exit()
- */
-#define module_platform_driver(__platform_driver) \
-        module_driver(__platform_driver, platform_driver_register, \
-                        platform_driver_unregister)
+-- 
+2.21.0
 
-	Andrew
