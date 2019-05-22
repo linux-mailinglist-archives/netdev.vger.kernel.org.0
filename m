@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9D7626DC6
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB43226DBA
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:44:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732696AbfEVTo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:44:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50718 "EHLO mail.kernel.org"
+        id S2387697AbfEVToI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:44:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50792 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732036AbfEVT2K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:28:10 -0400
+        id S1732500AbfEVT2N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:28:13 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 69B1D204FD;
-        Wed, 22 May 2019 19:28:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A6D702173C;
+        Wed, 22 May 2019 19:28:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558553289;
-        bh=dxfPitUvxu3TRZAkUyfaXbU1pxts18BD/lCkf/0FvQQ=;
+        s=default; t=1558553292;
+        bh=l79+2sNKiOAK3KXSdCcqn+BOVv62zZn13N2XWP62LwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V5pc0nPU+GSHxKNDoBLmXaaoJoLafDVlT+tXB+jglGJTLKygUiYPCAJJxJutt3X00
-         4/mOrAEN4qJdRj5O/x7wSXsJpzlqo5oK4DT4YWMPqyoylnFKwOBNpNagAqGca2yj+6
-         jIi9yVishsR3HKcSy0wHwA8aNJKxDk51/4xsuPxQ=
+        b=UQF9cT5RuMq6b1526DGimNRqycNFKUP7Xf2QVdRlJcwA8f5DMRKeo8jIKyxPZ6H4u
+         +WvMDDz3Ec3CdjQl+Ad0FXADErK+xUTC+FTp/nvWeMyv5hskfXLkmdAPZ4XE6F8E8R
+         v4ef4UBGtR2udgMnDYK82lBIzKPIPu3Pm0J/gNbU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 061/244] at76c50x-usb: Don't register led_trigger if usb_register_driver failed
-Date:   Wed, 22 May 2019 15:23:27 -0400
-Message-Id: <20190522192630.24917-61-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 064/244] ssb: Fix possible NULL pointer dereference in ssb_host_pcmcia_exit
+Date:   Wed, 22 May 2019 15:23:30 -0400
+Message-Id: <20190522192630.24917-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192630.24917-1-sashal@kernel.org>
 References: <20190522192630.24917-1-sashal@kernel.org>
@@ -46,89 +47,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 09ac2694b0475f96be895848687ebcbba97eeecf ]
+[ Upstream commit b2c01aab9646ed8ffb7c549afe55d5349c482425 ]
 
 Syzkaller report this:
 
-[ 1213.468581] BUG: unable to handle kernel paging request at fffffbfff83bf338
-[ 1213.469530] #PF error: [normal kernel read fault]
-[ 1213.469530] PGD 237fe4067 P4D 237fe4067 PUD 237e60067 PMD 1c868b067 PTE 0
-[ 1213.473514] Oops: 0000 [#1] SMP KASAN PTI
-[ 1213.473514] CPU: 0 PID: 6321 Comm: syz-executor.0 Tainted: G         C        5.1.0-rc3+ #8
-[ 1213.473514] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-[ 1213.473514] RIP: 0010:strcmp+0x31/0xa0
-[ 1213.473514] Code: 00 00 00 00 fc ff df 55 53 48 83 ec 08 eb 0a 84 db 48 89 ef 74 5a 4c 89 e6 48 89 f8 48 89 fa 48 8d 6f 01 48 c1 e8 03 83 e2 07 <42> 0f b6 04 28 38 d0 7f 04 84 c0 75 50 48 89 f0 48 89 f2 0f b6 5d
-[ 1213.473514] RSP: 0018:ffff8881f2b7f950 EFLAGS: 00010246
-[ 1213.473514] RAX: 1ffffffff83bf338 RBX: ffff8881ea6f7240 RCX: ffffffff825350c6
-[ 1213.473514] RDX: 0000000000000000 RSI: ffffffffc1ee19c0 RDI: ffffffffc1df99c0
-[ 1213.473514] RBP: ffffffffc1df99c1 R08: 0000000000000001 R09: 0000000000000004
-[ 1213.473514] R10: 0000000000000000 R11: ffff8881de353f00 R12: ffff8881ee727900
-[ 1213.473514] R13: dffffc0000000000 R14: 0000000000000001 R15: ffffffffc1eeaaf0
-[ 1213.473514] FS:  00007fa66fa01700(0000) GS:ffff8881f7200000(0000) knlGS:0000000000000000
-[ 1213.473514] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1213.473514] CR2: fffffbfff83bf338 CR3: 00000001ebb9e005 CR4: 00000000007606f0
-[ 1213.473514] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 1213.473514] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[ 1213.473514] PKRU: 55555554
-[ 1213.473514] Call Trace:
-[ 1213.473514]  led_trigger_register+0x112/0x3f0
-[ 1213.473514]  led_trigger_register_simple+0x7a/0x110
-[ 1213.473514]  ? 0xffffffffc1c10000
-[ 1213.473514]  at76_mod_init+0x77/0x1000 [at76c50x_usb]
-[ 1213.473514]  do_one_initcall+0xbc/0x47d
-[ 1213.473514]  ? perf_trace_initcall_level+0x3a0/0x3a0
-[ 1213.473514]  ? kasan_unpoison_shadow+0x30/0x40
-[ 1213.473514]  ? kasan_unpoison_shadow+0x30/0x40
-[ 1213.473514]  do_init_module+0x1b5/0x547
-[ 1213.473514]  load_module+0x6405/0x8c10
-[ 1213.473514]  ? module_frob_arch_sections+0x20/0x20
-[ 1213.473514]  ? kernel_read_file+0x1e6/0x5d0
-[ 1213.473514]  ? find_held_lock+0x32/0x1c0
-[ 1213.473514]  ? cap_capable+0x1ae/0x210
-[ 1213.473514]  ? __do_sys_finit_module+0x162/0x190
-[ 1213.473514]  __do_sys_finit_module+0x162/0x190
-[ 1213.473514]  ? __ia32_sys_init_module+0xa0/0xa0
-[ 1213.473514]  ? __mutex_unlock_slowpath+0xdc/0x690
-[ 1213.473514]  ? wait_for_completion+0x370/0x370
-[ 1213.473514]  ? vfs_write+0x204/0x4a0
-[ 1213.473514]  ? do_syscall_64+0x18/0x450
-[ 1213.473514]  do_syscall_64+0x9f/0x450
-[ 1213.473514]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[ 1213.473514] RIP: 0033:0x462e99
-[ 1213.473514] Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-[ 1213.473514] RSP: 002b:00007fa66fa00c58 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[ 1213.473514] RAX: ffffffffffffffda RBX: 000000000073bf00 RCX: 0000000000462e99
-[ 1213.473514] RDX: 0000000000000000 RSI: 0000000020000300 RDI: 0000000000000003
-[ 1213.473514] RBP: 00007fa66fa00c70 R08: 0000000000000000 R09: 0000000000000000
-[ 1213.473514] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa66fa016bc
-[ 1213.473514] R13: 00000000004bcefa R14: 00000000006f6fb0 R15: 0000000000000004
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] SMP KASAN PTI
+CPU: 0 PID: 4492 Comm: syz-executor.0 Not tainted 5.0.0-rc7+ #45
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+RIP: 0010:sysfs_remove_file_ns+0x27/0x70 fs/sysfs/file.c:468
+Code: 00 00 00 41 54 55 48 89 fd 53 49 89 d4 48 89 f3 e8 ee 76 9c ff 48 8d 7d 30 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 2d 48 89 da 48 b8 00 00 00 00 00 fc ff df 48 8b 6d
+RSP: 0018:ffff8881e9d9fc00 EFLAGS: 00010206
+RAX: dffffc0000000000 RBX: ffffffff900367e0 RCX: ffffffff81a95952
+RDX: 0000000000000006 RSI: ffffc90001405000 RDI: 0000000000000030
+RBP: 0000000000000000 R08: fffffbfff1fa22ed R09: fffffbfff1fa22ed
+R10: 0000000000000001 R11: fffffbfff1fa22ec R12: 0000000000000000
+R13: ffffffffc1abdac0 R14: 1ffff1103d3b3f8b R15: 0000000000000000
+FS:  00007fe409dc1700(0000) GS:ffff8881f1200000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b2d721000 CR3: 00000001e98b6005 CR4: 00000000007606f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+ sysfs_remove_file include/linux/sysfs.h:519 [inline]
+ driver_remove_file+0x40/0x50 drivers/base/driver.c:122
+ pcmcia_remove_newid_file drivers/pcmcia/ds.c:163 [inline]
+ pcmcia_unregister_driver+0x7d/0x2b0 drivers/pcmcia/ds.c:209
+ ssb_modexit+0xa/0x1b [ssb]
+ __do_sys_delete_module kernel/module.c:1018 [inline]
+ __se_sys_delete_module kernel/module.c:961 [inline]
+ __x64_sys_delete_module+0x3dc/0x5e0 kernel/module.c:961
+ do_syscall_64+0x147/0x600 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x462e99
+Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fe409dc0c58 EFLAGS: 00000246 ORIG_RAX: 00000000000000b0
+RAX: ffffffffffffffda RBX: 000000000073bf00 RCX: 0000000000462e99
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000200000c0
+RBP: 0000000000000002 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fe409dc16bc
+R13: 00000000004bccaa R14: 00000000006f6bc8 R15: 00000000ffffffff
+Modules linked in: ssb(-) 3c59x nvme_core macvlan tap pata_hpt3x3 rt2x00pci null_blk tsc40 pm_notifier_error_inject notifier_error_inject mdio cdc_wdm nf_reject_ipv4 ath9k_common ath9k_hw ath pppox ppp_generic slhc ehci_platform wl12xx wlcore tps6507x_ts ioc4 nf_synproxy_core ide_gd_mod ax25 can_dev iwlwifi can_raw atm tm2_touchkey can_gw can sundance adp5588_keys rt2800mmio rt2800lib rt2x00mmio rt2x00lib eeprom_93cx6 pn533 lru_cache elants_i2c ip_set nfnetlink gameport tipc hampshire nhc_ipv6 nhc_hop nhc_udp nhc_fragment nhc_routing nhc_mobility nhc_dest 6lowpan silead brcmutil nfc mt76_usb mt76 mac80211 iptable_security iptable_raw iptable_mangle iptable_nat nf_nat_ipv4 nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 iptable_filter bpfilter ip6_vti ip_gre sit hsr veth vxcan batman_adv cfg80211 rfkill chnl_net caif nlmon vcan bridge stp llc ip6_gre ip6_tunnel tunnel6 tun joydev mousedev serio_raw ide_pci_generic piix floppy ide_core sch_fq_codel ip_tables x_tables ipv6
+ [last unloaded: 3c59x]
+Dumping ftrace buffer:
+   (ftrace buffer empty)
+---[ end trace 3913cbf8011e1c05 ]---
 
-If usb_register failed, no need to call led_trigger_register_simple.
+In ssb_modinit, it does not fail SSB init when ssb_host_pcmcia_init failed,
+however in ssb_modexit, ssb_host_pcmcia_exit calls pcmcia_unregister_driver
+unconditionally, which may tigger a NULL pointer dereference issue as above.
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 1264b951463a ("at76c50x-usb: add driver")
+Fixes: 399500da18f7 ("ssb: pick PCMCIA host code support from b43 driver")
 Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/atmel/at76c50x-usb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/ssb/bridge_pcmcia_80211.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/atmel/at76c50x-usb.c b/drivers/net/wireless/atmel/at76c50x-usb.c
-index e99e766a30285..1cabae424839e 100644
---- a/drivers/net/wireless/atmel/at76c50x-usb.c
-+++ b/drivers/net/wireless/atmel/at76c50x-usb.c
-@@ -2585,8 +2585,8 @@ static int __init at76_mod_init(void)
- 	if (result < 0)
- 		printk(KERN_ERR DRIVER_NAME
- 		       ": usb_register failed (status %d)\n", result);
--
--	led_trigger_register_simple("at76_usb-tx", &ledtrig_tx);
-+	else
-+		led_trigger_register_simple("at76_usb-tx", &ledtrig_tx);
- 	return result;
+diff --git a/drivers/ssb/bridge_pcmcia_80211.c b/drivers/ssb/bridge_pcmcia_80211.c
+index f51f150307dfb..ffa379efff83c 100644
+--- a/drivers/ssb/bridge_pcmcia_80211.c
++++ b/drivers/ssb/bridge_pcmcia_80211.c
+@@ -113,16 +113,21 @@ static struct pcmcia_driver ssb_host_pcmcia_driver = {
+ 	.resume		= ssb_host_pcmcia_resume,
+ };
+ 
++static int pcmcia_init_failed;
++
+ /*
+  * These are not module init/exit functions!
+  * The module_pcmcia_driver() helper cannot be used here.
+  */
+ int ssb_host_pcmcia_init(void)
+ {
+-	return pcmcia_register_driver(&ssb_host_pcmcia_driver);
++	pcmcia_init_failed = pcmcia_register_driver(&ssb_host_pcmcia_driver);
++
++	return pcmcia_init_failed;
  }
  
+ void ssb_host_pcmcia_exit(void)
+ {
+-	pcmcia_unregister_driver(&ssb_host_pcmcia_driver);
++	if (!pcmcia_init_failed)
++		pcmcia_unregister_driver(&ssb_host_pcmcia_driver);
+ }
 -- 
 2.20.1
 
