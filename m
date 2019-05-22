@@ -2,110 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0151227129
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:53:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5A272712D
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:53:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730320AbfEVUxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 16:53:35 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:43323 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729528AbfEVUxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 16:53:34 -0400
-Received: by mail-pl1-f195.google.com with SMTP id gn7so1624844plb.10;
-        Wed, 22 May 2019 13:53:34 -0700 (PDT)
+        id S1730272AbfEVUx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 16:53:56 -0400
+Received: from mail-yw1-f74.google.com ([209.85.161.74]:49400 "EHLO
+        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729728AbfEVUx4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 16:53:56 -0400
+Received: by mail-yw1-f74.google.com with SMTP id y144so3216571ywg.16
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 13:53:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/Ss3XekhoAeJW501j2lZN9cRIVhRSBmA8AmuXwTseos=;
-        b=RjfDSqdM7JMfp+j0CLByP8ahJAWw1TNDM1Ig/33Xu+MNPw7uUoZlzfGFyiC1/rAXnw
-         bC9LRKWe99q/8iAuluWjaUwIsAWXloDLd2LpOh3T4hnwzNdFRWf0RCBefdvaxkNMAlan
-         lrpbYo12CMIlAtogUcyLXP3p7bvlL9ZksNTNb7j3HqeTG3dKGBTPQx+xTEY09zdzh6ZO
-         HA1AzXVmIV4k5BLBgXc5pNFFDyhDi6r3k4IC5A0Y+LKcmx7DTs3MZaekoWUeVF4OgaMx
-         clsjLITtQYnJPVC1/iizueodZvd5gA5QRIcsLS0FbphKeNoHbJzvlI3ge3UZuYbPouzC
-         Vi/A==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=DVGoSBbuSpH+e3WLjrm4JCzo4XlQbDlgH+gaP+mOUGk=;
+        b=jDf21bghdvPavpAiB4qncBrzG9xXbKDUDUzNd491r/2RCa54zMKJJTUB3hXKAsqL0E
+         g/+3l4encMEoH12bkPQAEuxCr5F9d0Gm0l/oKx0PNXfmt65ui40V16HSJA/6ZB5X6Adr
+         Uv+eyVxBtYEjA1TLJ01ULFtqZ4cP/ZWZDDxFDwCAcmt+mJMqEhq6wXTXxq3aRLXfGBDe
+         MJdh+mV5Y8KzTB9SwgdYbqzjzz0RWhFUeV+qy5Qh5/EIhfqkh+efQIIsKgYqzmrxTpQn
+         iOybtSUFdlMRf93zir0N8pYk4si2cXzx6HpNK2OfOjgHLKXXxCpxHm7hZ6pyg2uMtoLi
+         1Z4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/Ss3XekhoAeJW501j2lZN9cRIVhRSBmA8AmuXwTseos=;
-        b=pUlRO0jcmoZXCg/uIGDh0OiP9FeIzTR/55HtJEVz05UIAB2vO2hMs06oDsjUXDW3WC
-         UB4Tf9amuUT0bWWaOmzaZNqyXFJyo2J5VrBHIlUiJ9dNucUsaAKKg3TOzbiB5QRm+fBZ
-         mYAiUHAzFTrxRy6wCFcTRjswHDvK8hr86jx3Uzopv9syAj36olfIO8qtf/jp7htCq2A0
-         ljSoHe5hrtWqR6sKzm2Lz7EcYsAOuC27C32RwC1HdmuvmtQJUcS5hQIJsNiUryUyQacF
-         t8+69jMuPMhkj4pfqjGP0m2Dz0M415v5E6/CPHfpyP3Rksk/9rVDhya++0FI0fmteW36
-         E+mw==
-X-Gm-Message-State: APjAAAVH7pzV8SGAOI5sEOZ9RRud+UhN4PsXZVxUyoZQKvvkPJIFO340
-        M7E7Qnmk6XXWj5tIXqJpnCwmw2oI
-X-Google-Smtp-Source: APXvYqzVG7hCS6Nzs2QqDdx1m8Y/SSCXSMRoPwHkzq4oMVA8lyuBeEmOOJAy6Q2Rx3dmKvansvlUMw==
-X-Received: by 2002:a17:902:e7:: with SMTP id a94mr67793430pla.182.1558558413947;
-        Wed, 22 May 2019 13:53:33 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::6565])
-        by smtp.gmail.com with ESMTPSA id y16sm3811085pfl.140.2019.05.22.13.53.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 May 2019 13:53:32 -0700 (PDT)
-Date:   Wed, 22 May 2019 13:53:31 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kris Van Hees <kris.van.hees@oracle.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org, acme@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, peterz@infradead.org
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-Message-ID: <20190522205329.uu26oq2saj56og5m@ast-mbp.dhcp.thefacebook.com>
-References: <201905202347.x4KNl0cs030532@aserv0121.oracle.com>
- <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
- <20190521184137.GH2422@oracle.com>
- <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
- <20190521173618.2ebe8c1f@gandalf.local.home>
- <20190521214325.rr7emn5z3b7wqiiy@ast-mbp.dhcp.thefacebook.com>
- <20190521174757.74ec8937@gandalf.local.home>
- <20190522052327.GN2422@oracle.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190522052327.GN2422@oracle.com>
-User-Agent: NeoMutt/20180223
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=DVGoSBbuSpH+e3WLjrm4JCzo4XlQbDlgH+gaP+mOUGk=;
+        b=gcysS5dEIG/e0fSG636pHZbpLHpm5k662Iyg2si4oTP4woIZlMhkRxODfq1Vw3DxIN
+         4BzZ8ORFpZ/Ez11dD+TbD3wM0+bIdVM3J3XpBc4deC3x3yG6r+Zqbq8n0isTcGXFvbNq
+         4xLwrxCj0OVmXNlWMThcGQcn4bqTW78yIwETM6BkTXVCyLm/5tkZZQvDQm9k0ExppcdB
+         fRRynzPFNDJmZL0FQ1ad2UT/D3gdEQZeen4jja30Lr4uIq0+N3K8wieORdyf2j+0x1GE
+         KUWXuRlxYtIV4bECaBXExbW5JGdrxA8mC6H/OgLPbGcfXqTa7UzdfXFGB5cPyCyNKl0r
+         OvYg==
+X-Gm-Message-State: APjAAAVVDdy735kkUbXat06oLNL9UsocMz+0CoRho0pXX/CxQXxMYyKe
+        iQx22k0t0XqEImntu+Q75YgIEPm75hjSyPvGkJ08eshzbmOcxvMsLTPa5PBu4+/2JCGnL5wcQ2v
+        saHpsJAg0T88UKrSXNIEiBAhj9Or+4Laa93dDMcfjeBe7CoJEX9GqKw==
+X-Google-Smtp-Source: APXvYqxYwfzjHrzGCfYPGAiIhIGShiyO8nmp/97NXlJv1XT2CANUkMzwfeUS2Rp+R2kyiIUNrSaJtv8=
+X-Received: by 2002:a81:980b:: with SMTP id p11mr10645808ywg.48.1558558435637;
+ Wed, 22 May 2019 13:53:55 -0700 (PDT)
+Date:   Wed, 22 May 2019 13:53:50 -0700
+Message-Id: <20190522205353.140648-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
+Subject: [PATCH bpf-next v2 1/4] bpf: remove __rcu annotations from bpf_prog_array
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Roman Gushchin <guro@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 01:23:27AM -0400, Kris Van Hees wrote:
-> 
-> Userspace aside, there are various features that are not currently available
-> such as retrieving the ppid of the current task, and various other data items
-> that relate to the current task that triggered a probe.  There are ways to
-> work around it (using the bpf_probe_read() helper, which actually performs a
-> probe_kernel_read()) but that is rather clunky
+Drop __rcu annotations and rcu read sections from bpf_prog_array
+helper functions. They are not needed since all existing callers
+call those helpers from the rcu update side while holding a mutex.
+This guarantees that use-after-free could not happen.
 
-Sounds like you're admiting that the access to all kernel data structures
-is actually available, but you don't want to change user space to use it?
+In the next patches I'll fix the callers with missing
+rcu_dereference_protected to make sparse/lockdep happy, the proper
+way to use these helpers is:
 
-> triggered the execution.  Often, a single DTrace clause is associated with
-> multiple probes, of different types.  Probes in the kernel (kprobe, perf event,
-> tracepoint, ...) are associated with their own BPF program type, so it is not
-> possible to load the DTrace clause (translated into BPF code) once and
-> associate it with probes of different types.  Instead, I'd have to load it
-> as a BPF_PROG_TYPE_KPROBE program to associate it with a kprobe, and I'd have
-> to load it as a BPF_PROG_TYPE_TRACEPOINT program to associate it with a
-> tracepoint, and so on.  This also means that I suddenly have to add code to
-> the userspace component to know about the different program types with more
-> detail, like what helpers are available to specific program types.
+	struct bpf_prog_array __rcu *progs = ...;
+	struct bpf_prog_array *p;
 
-That also sounds that there is a solution, but you don't want to change user space ?
+	mutex_lock(&mtx);
+	p = rcu_dereference_protected(progs, lockdep_is_held(&mtx));
+	bpf_prog_array_length(p);
+	bpf_prog_array_copy_to_user(p, ...);
+	bpf_prog_array_delete_safe(p, ...);
+	bpf_prog_array_copy_info(p, ...);
+	bpf_prog_array_copy(p, ...);
+	bpf_prog_array_free(p);
+	mutex_unlock(&mtx);
 
-> Another advantage of being able to operate on a more abstract probe concept
-> that is not tied to a specific probe type is that the userspace component does
-> not need to know about the implementation details of the specific probes.
+No functional changes! rcu_dereference_protected with lockdep_is_held
+should catch any cases where we update prog array without a mutex
+(I've looked at existing call sites and I think we hold a mutex
+everywhere).
 
-If that is indeed the case that dtrace is broken _by design_
-and nothing on the kernel side can fix it.
+One possible complication might be with Roman's set of patches
+to decouple cgroup_bpf lifetime from the cgroup. In that case
+we can use rcu_dereference_check(..., 1) since we know that there
+should not be any existing users when we dismantle the cgroup.
 
-bpf prog attached to NMI is running in NMI.
-That is very different execution context vs kprobe.
-kprobe execution context is also different from syscall.
+v2:
+* remove comment about potential race; that can't happen
+  because all callers are in rcu-update section
 
-The user writing the script has to be aware in what context
-that script will be executing.
+Cc: Roman Gushchin <guro@fb.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ include/linux/bpf.h | 12 ++++++------
+ kernel/bpf/core.c   | 37 +++++++++++++------------------------
+ 2 files changed, 19 insertions(+), 30 deletions(-)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 4fb3aa2dc975..88ea32358593 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -513,17 +513,17 @@ struct bpf_prog_array {
+ };
+ 
+ struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags);
+-void bpf_prog_array_free(struct bpf_prog_array __rcu *progs);
+-int bpf_prog_array_length(struct bpf_prog_array __rcu *progs);
+-int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *progs,
++void bpf_prog_array_free(struct bpf_prog_array *progs);
++int bpf_prog_array_length(struct bpf_prog_array *progs);
++int bpf_prog_array_copy_to_user(struct bpf_prog_array *progs,
+ 				__u32 __user *prog_ids, u32 cnt);
+ 
+-void bpf_prog_array_delete_safe(struct bpf_prog_array __rcu *progs,
++void bpf_prog_array_delete_safe(struct bpf_prog_array *progs,
+ 				struct bpf_prog *old_prog);
+-int bpf_prog_array_copy_info(struct bpf_prog_array __rcu *array,
++int bpf_prog_array_copy_info(struct bpf_prog_array *array,
+ 			     u32 *prog_ids, u32 request_cnt,
+ 			     u32 *prog_cnt);
+-int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
++int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ 			struct bpf_prog *exclude_prog,
+ 			struct bpf_prog *include_prog,
+ 			struct bpf_prog_array **new_array);
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 242a643af82f..aad86c8a0d61 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1795,38 +1795,33 @@ struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags)
+ 	return &empty_prog_array.hdr;
+ }
+ 
+-void bpf_prog_array_free(struct bpf_prog_array __rcu *progs)
++void bpf_prog_array_free(struct bpf_prog_array *progs)
+ {
+-	if (!progs ||
+-	    progs == (struct bpf_prog_array __rcu *)&empty_prog_array.hdr)
++	if (!progs || progs == &empty_prog_array.hdr)
+ 		return;
+ 	kfree_rcu(progs, rcu);
+ }
+ 
+-int bpf_prog_array_length(struct bpf_prog_array __rcu *array)
++int bpf_prog_array_length(struct bpf_prog_array *array)
+ {
+ 	struct bpf_prog_array_item *item;
+ 	u32 cnt = 0;
+ 
+-	rcu_read_lock();
+-	item = rcu_dereference(array)->items;
+-	for (; item->prog; item++)
++	for (item = array->items; item->prog; item++)
+ 		if (item->prog != &dummy_bpf_prog.prog)
+ 			cnt++;
+-	rcu_read_unlock();
+ 	return cnt;
+ }
+ 
+ 
+-static bool bpf_prog_array_copy_core(struct bpf_prog_array __rcu *array,
++static bool bpf_prog_array_copy_core(struct bpf_prog_array *array,
+ 				     u32 *prog_ids,
+ 				     u32 request_cnt)
+ {
+ 	struct bpf_prog_array_item *item;
+ 	int i = 0;
+ 
+-	item = rcu_dereference_check(array, 1)->items;
+-	for (; item->prog; item++) {
++	for (item = array->items; item->prog; item++) {
+ 		if (item->prog == &dummy_bpf_prog.prog)
+ 			continue;
+ 		prog_ids[i] = item->prog->aux->id;
+@@ -1839,7 +1834,7 @@ static bool bpf_prog_array_copy_core(struct bpf_prog_array __rcu *array,
+ 	return !!(item->prog);
+ }
+ 
+-int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *array,
++int bpf_prog_array_copy_to_user(struct bpf_prog_array *array,
+ 				__u32 __user *prog_ids, u32 cnt)
+ {
+ 	unsigned long err = 0;
+@@ -1850,18 +1845,12 @@ int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *array,
+ 	 * cnt = bpf_prog_array_length();
+ 	 * if (cnt > 0)
+ 	 *     bpf_prog_array_copy_to_user(..., cnt);
+-	 * so below kcalloc doesn't need extra cnt > 0 check, but
+-	 * bpf_prog_array_length() releases rcu lock and
+-	 * prog array could have been swapped with empty or larger array,
+-	 * so always copy 'cnt' prog_ids to the user.
+-	 * In a rare race the user will see zero prog_ids
++	 * so below kcalloc doesn't need extra cnt > 0 check.
+ 	 */
+ 	ids = kcalloc(cnt, sizeof(u32), GFP_USER | __GFP_NOWARN);
+ 	if (!ids)
+ 		return -ENOMEM;
+-	rcu_read_lock();
+ 	nospc = bpf_prog_array_copy_core(array, ids, cnt);
+-	rcu_read_unlock();
+ 	err = copy_to_user(prog_ids, ids, cnt * sizeof(u32));
+ 	kfree(ids);
+ 	if (err)
+@@ -1871,19 +1860,19 @@ int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *array,
+ 	return 0;
+ }
+ 
+-void bpf_prog_array_delete_safe(struct bpf_prog_array __rcu *array,
++void bpf_prog_array_delete_safe(struct bpf_prog_array *array,
+ 				struct bpf_prog *old_prog)
+ {
+-	struct bpf_prog_array_item *item = array->items;
++	struct bpf_prog_array_item *item;
+ 
+-	for (; item->prog; item++)
++	for (item = array->items; item->prog; item++)
+ 		if (item->prog == old_prog) {
+ 			WRITE_ONCE(item->prog, &dummy_bpf_prog.prog);
+ 			break;
+ 		}
+ }
+ 
+-int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
++int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ 			struct bpf_prog *exclude_prog,
+ 			struct bpf_prog *include_prog,
+ 			struct bpf_prog_array **new_array)
+@@ -1947,7 +1936,7 @@ int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
+ 	return 0;
+ }
+ 
+-int bpf_prog_array_copy_info(struct bpf_prog_array __rcu *array,
++int bpf_prog_array_copy_info(struct bpf_prog_array *array,
+ 			     u32 *prog_ids, u32 request_cnt,
+ 			     u32 *prog_cnt)
+ {
+-- 
+2.21.0.1020.gf2820cf01a-goog
+
