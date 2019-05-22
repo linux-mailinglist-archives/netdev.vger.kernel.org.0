@@ -2,144 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AD60268FC
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 19:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F66826909
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 19:25:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729511AbfEVRWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 13:22:18 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:46307 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727365AbfEVRWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 13:22:17 -0400
-Received: by mail-qk1-f194.google.com with SMTP id a132so1956779qkb.13
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 10:22:17 -0700 (PDT)
+        id S1729652AbfEVRYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 13:24:55 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38514 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729003AbfEVRYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 13:24:55 -0400
+Received: by mail-qt1-f193.google.com with SMTP id l3so3334780qtj.5
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 10:24:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/9cmKSxWeIgR5fJLUWZ+U+J12wM/zBl4mLbAQy2Q+0U=;
-        b=OXc4Qq6XsKuEn+iypCDBVs75WVhDLp6T5X+qzYhP/MVwQeup8ggDsNQARGaBqT3LBe
-         0doHu3ggDRqEiFkFt6ri6sAgdGDS9WpZPg9b2x/uk1fqrJx4nNW3NZ0Yxd/dms+/SXGf
-         YZwnFYcc2vPNt8uRrdfbEEdmd9Y8nmK2hypd8Zl8OFW7BpukxHGjkqHdlekzp7XaBQCl
-         tSRJoiPW635VtdrmayEBUAx7ctpNuD8KIEaVeDvYTpjchlv/i4voZIvnG7c8i/6vg1hk
-         cPAyVcZCW6QfZEDy0+BWIE1Rux7/UIL0h/Vqfytsp+oNcLNMQEygx5kx3cEgzXKxmE4S
-         nZ8g==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=z8tvaj+tYp7zsGVOYBIpry3gCoah7dPInM7J1NRMaYk=;
+        b=w8wNrDbBR5X6KKWPVe/A+75iSnw0iCCODjYfpQuMb6ecj9+APciMWBY0H1x40GKeZv
+         vyqVCvdi3OX4zeEI69rGhAd7XwVH4qp8CbbPtAJKd4pIbhdQokh3JxvNKoEdZihYBpiN
+         PHvy2q8npEevwf0AbuWecw2+yq5PvqjoQlKneU5WLPQh8Izg8aOkYZ3iQyj2du8o/JIi
+         xK/XzRvJ3YDgiT/BYKe4QVkIOG/A4S4Kqpsj+2K0nBt1UN+Z5ESZ4ExKeCLoEefLHo43
+         gn2+DjG5gGc9GLL17l/Ix9/XW61X1tgtSaWSK0MiQ+dW8IYdtpvWlvhz2Hw00zbshc7d
+         +ZuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/9cmKSxWeIgR5fJLUWZ+U+J12wM/zBl4mLbAQy2Q+0U=;
-        b=fs0pf3WVKjIh+ddE5+0lDG3Jo4V5jWOSOuMtrMY5a18b5cw70qNlqEDmFBUlenwloH
-         NwZOdIZRrxRBwF7EHS8LBpvAP7MB+56BI0ofN8uHETK+8udbQxYaBR0MmOWfriZbA7e0
-         /9yNQ9xCDY3ourjzkUlf2unURGIn6ZkkvU+YUdWNynOqWr/Lt63lfcjncCeK2PKFN2D+
-         JsCzPCyiSHdUb0RqCn1xUGcPH0SDV2JDD+Ew8Z9NrDOwlr1i8qd32udvxW/izbfkBpyq
-         2RiFJjfr0NB/sz91qVCct3I64vn1CeW4U/U+CRdubB6FKJv9zb2HywW3tMrKjrqUBuEf
-         cIqA==
-X-Gm-Message-State: APjAAAWzDbEu1CYaB7B12VOm1hMq1ChtH+ejHo/5fZcpA5gXYbls+QZI
-        w/mUbp/sMmMfUthBc4p5oOu88Q==
-X-Google-Smtp-Source: APXvYqxdJtsK/VJCVK99qUdU9F8acU67rhJdbOlv09gZQumQ7TxyoXG4Qz9OnqhrVV2mgy/PI02aUg==
-X-Received: by 2002:a05:620a:158d:: with SMTP id d13mr12030473qkk.271.1558545736847;
-        Wed, 22 May 2019 10:22:16 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-49-251.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.49.251])
-        by smtp.gmail.com with ESMTPSA id j9sm1340700qkg.30.2019.05.22.10.22.16
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 22 May 2019 10:22:16 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1hTUwS-00042U-37; Wed, 22 May 2019 14:22:16 -0300
-Date:   Wed, 22 May 2019 14:22:16 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Majd Dibbiny <majd@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v2 11/17] RDMA/netlink: Implement counter
- dumpit calback
-Message-ID: <20190522172216.GE15023@ziepe.ca>
-References: <20190429083453.16654-1-leon@kernel.org>
- <20190429083453.16654-12-leon@kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=z8tvaj+tYp7zsGVOYBIpry3gCoah7dPInM7J1NRMaYk=;
+        b=Rn7drUmxwOUcyGhSEllQcIpDU34O++wsSqztIP1J5cGXgaMLGs8ZAAiRfA//jXywI1
+         pkEZbdYLfA1kOy+7/bFQzfCOLgBeJnqUQcKZqlf/AuOw2SpHDJ03mD926Zy0HSVrIWBJ
+         y3gjqWB6H4iGS9I9drTB69IUc+JONuodp0Vx3wh6GfA4cqSXTywFGYXY1+vblSB7S/Sl
+         wZZ/+3KBKkKgOFSDHfCKKSS8dHUF49r+/ThsK8+eBHy0h1FzEsvptucb2P2YpayAjM5g
+         ePWVlVYdvD2GYkHZgfYPAWoHSZKEJFObkZicpPgG9f2u/8UQy99cb/EoKdBRvzx2I4GM
+         Jfuw==
+X-Gm-Message-State: APjAAAWl5xEkW1/DxYr3ZDEMmPZHEb2ddXM9CZEhmF2LwGNidq/8YNHi
+        R/T+GWwKE3XeEOBaNVqirtna5A==
+X-Google-Smtp-Source: APXvYqxIHbArUn3+LQMsql5lCvy6NPo1melgC8n2JSsl1qfKBWhdMU/7OLqbiEDT8k6BD+SKGNgY6A==
+X-Received: by 2002:a0c:9e58:: with SMTP id z24mr18407274qve.214.1558545894591;
+        Wed, 22 May 2019 10:24:54 -0700 (PDT)
+Received: from [10.0.0.169] ([64.26.149.125])
+        by smtp.googlemail.com with ESMTPSA id j58sm11537550qtk.33.2019.05.22.10.24.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 May 2019 10:24:53 -0700 (PDT)
+Subject: Re: [RFC PATCH v2 net-next 0/3] flow_offload: Re-add per-action
+ statistics
+To:     Vlad Buslov <vladbu@mellanox.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Lucas Bates <lucasb@mojatatu.com>
+References: <9b137a90-9bfb-9232-b01b-6b6c10286741@solarflare.com>
+ <f4fdc1f1-bee2-8456-8daa-fbf65aabe0d4@solarflare.com>
+ <cacfe0ec-4a98-b16b-ef30-647b9e50759d@mojatatu.com>
+ <f27a6a44-5016-1d17-580c-08682d29a767@solarflare.com>
+ <3db2e5bf-4142-de4b-7085-f86a592e2e09@mojatatu.com>
+ <17cf3488-6f17-cb59-42a3-6b73f7a0091e@solarflare.com>
+ <b4b5e1e7-ebef-5d20-67b6-a3324e886942@mojatatu.com>
+ <d70ed72f-69db-dfd0-3c0d-42728dbf45c7@solarflare.com>
+ <e0603687-272d-6d41-1c3a-9ea14aa8cfad@mojatatu.com>
+ <b1a0d4b5-7262-a5a0-182d-54778f9d176a@mojatatu.com>
+ <vbfef4slz5k.fsf@mellanox.com> <vbfblzuedcq.fsf@mellanox.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <b147865f-5224-b66b-2824-8c1c8986900f@mojatatu.com>
+Date:   Wed, 22 May 2019 13:24:52 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190429083453.16654-12-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <vbfblzuedcq.fsf@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 11:34:47AM +0300, Leon Romanovsky wrote:
-> From: Mark Zhang <markz@mellanox.com>
+On 2019-05-22 11:08 a.m., Vlad Buslov wrote:
 > 
-> This patch adds the ability to return all available counters
-> together with their properties and hwstats.
-> 
-> Signed-off-by: Mark Zhang <markz@mellanox.com>
-> Reviewed-by: Majd Dibbiny <majd@mellanox.com>
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
->  drivers/infiniband/core/counters.c |  28 +++++
->  drivers/infiniband/core/device.c   |   2 +
->  drivers/infiniband/core/nldev.c    | 173 +++++++++++++++++++++++++++++
->  include/rdma/ib_verbs.h            |  10 ++
->  include/rdma/rdma_counter.h        |   3 +
->  include/uapi/rdma/rdma_netlink.h   |  10 +-
->  6 files changed, 225 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
-> index 665e0d43c21b..36cd9eca1e46 100644
-> +++ b/drivers/infiniband/core/counters.c
-> @@ -62,6 +62,9 @@ static struct rdma_counter *rdma_counter_alloc(struct ib_device *dev, u8 port,
->  {
->  	struct rdma_counter *counter;
->  
-> +	if (!dev->ops.counter_alloc_stats)
-> +		return NULL;
-> +
->  	counter = kzalloc(sizeof(*counter), GFP_KERNEL);
->  	if (!counter)
->  		return NULL;
-> @@ -69,16 +72,25 @@ static struct rdma_counter *rdma_counter_alloc(struct ib_device *dev, u8 port,
->  	counter->device    = dev;
->  	counter->port      = port;
->  	counter->res.type  = RDMA_RESTRACK_COUNTER;
-> +	counter->stats     = dev->ops.counter_alloc_stats(counter);
-> +	if (!counter->stats)
-> +		goto err_stats;
-> +
->  	counter->mode.mode = mode;
->  	atomic_set(&counter->usecnt, 0);
->  	mutex_init(&counter->lock);
->  
->  	return counter;
-> +
-> +err_stats:
-> +	kfree(counter);
-> +	return NULL;
->  }
->  
->  static void rdma_counter_dealloc(struct rdma_counter *counter)
->  {
->  	rdma_restrack_del(&counter->res);
-> +	kfree(counter->stats);
->  	kfree(counter);
->  }
->  
-> @@ -279,6 +291,22 @@ int rdma_counter_unbind_qp(struct ib_qp *qp, bool force)
->  	return 0;
->  }
->  
-> +int rdma_counter_query_stats(struct rdma_counter *counter)
-> +{
-> +	int ret;
-> +
-> +	struct ib_device *dev = counter->device;
-> +
+> On Tue 21 May 2019 at 16:23, Vlad Buslov <vladbu@mellanox.com> wrote:
 
-Extra blank line
-Something about festive trees
+> 
+> It seems that culprit in this case is tc_action->order field. It is used
+> as nla attrtype when dumping actions. Initially it is set according to
+> ordering of actions of filter that creates them. However, it is
+> overwritten in tca_action_gd() each time action is dumped through action
+> API (according to action position in tb array) and when new filter is
+> attached to shared action (according to action order on the filter).
+> With this we have another way to reproduce the bug:
+> 
+> sudo tc qdisc add dev lo ingress
+> 
+> #shared action is the first action (order 1)
+> sudo tc filter add dev lo parent ffff: protocol ip prio 8 u32 \
+> match ip dst 127.0.0.8/32 flowid 1:10 \
+> action drop index 104 \
+> action vlan push id 100 protocol 802.1q
+> 
+> #shared action is the the second action (order 2)
+> sudo tc filter add dev lo parent ffff: protocol ip prio 8 u32 \
+> match ip dst 127.0.0.10/32 flowid 1:10 \
+> action vlan push id 101 protocol 802.1q \
+> action drop index 104
+> 
+> # Now action is only visible on one filter
+> sudo tc -s filter ls dev lo parent ffff: protocol ip
+> 
 
-Jason
+Ok, thanks for chasing this. A test case i had in mind is to
+maybe have 3 actions. Add the drop in the middle for one
+and at the begging for another and see if they are visible
+with the patch.
+If you dont have time I can test maybe AM tommorow.
+
+> The usage of tc_action->order is inherently incorrect for shared actions
+> and I don't really understand the reason for using it in first place.
+> I'm sending RFC patch that fixes the issue by just using action position
+> in tb array for attrtype instead of order field, and it seems to solve
+> both issues for me. Please check it out to verify that I'm not breaking
+> something. Also, please advise on "fixes" tag since this problem doesn't
+> seem to be directly caused by my act API refactoring.
+> 
+
+I dont know when this broke then.
+Seems to be working correctly on the machine i am right now
+(4.4) but broken on 4.19. So somewhere in between things broke.
+I dont have other kernels to compare at the moment.
+
+cheers,
+jamal
