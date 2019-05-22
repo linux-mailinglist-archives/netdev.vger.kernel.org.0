@@ -2,247 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84FED262CF
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 13:14:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE130262EB
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 13:25:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729160AbfEVLOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 07:14:05 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:42319 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728406AbfEVLOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 07:14:04 -0400
-Received: by mail-lj1-f194.google.com with SMTP id 188so1681603ljf.9
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 04:14:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=QeEniV4EuL0vykr3M1RmwiUo4QSOm5HcAZQKjYBaa1c=;
-        b=lXUwiY9qiyeruhpjMPocrK/rdboK0fJnwGxWem1MhPXfdZ8AaAHGkGr+HkwVRZfOWK
-         PshLFJXUUtWjc88Jaxco3cXDhykFpY9EVjQnI7Mp6T2bM6yay1ZhNM2SAfs8CrCPzGd/
-         FQCvZ4iSUnvZedEAkBrl1DFi6TysqB7imV0cE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=QeEniV4EuL0vykr3M1RmwiUo4QSOm5HcAZQKjYBaa1c=;
-        b=bXxGNEV11LhOHqU/z3V6P1SBTV77Lh7lNwtKnlhgCPHjk399G9gevKuP8sV+TvskBo
-         xhoLsNOQCA/7M6ru3wJpYZu8VWIXcd6wwoTupJxFCgTV6oOXGLK7300mRWqAO0SbKGJB
-         4TrCFvMB8DX6lw/SrudrdBchKNWTEi2nARDK1NpIn734mc9xYMNJyGNGe2x3bMU4E5sE
-         fsk7rWBk2+XbjgIe9ohFkNde5ZtMWcmho6URRoL23dcJ84Lka0CgAK6TGkX0Mho5Zhp5
-         zMooyjSaGBDZyn/Lcyg3vKqozN0qlIjoQ3w1O7Ee96vIEfScE5CuvFRYsoZoTMcM6M+k
-         ByZA==
-X-Gm-Message-State: APjAAAXkDDSAGztrcDx5xEgIeHkf1NWdhrEUCRbRGRVmr5xHNkLrG83d
-        rWH5StsSs8+xz/zc8ItyfZKRKg==
-X-Google-Smtp-Source: APXvYqztRG7GJqRWjeyhozQZ3iHCvMUu78dZl/X0nNeIpBR1UZsUbDXLq2Wdsf3NRnK+ys7tTIzLAQ==
-X-Received: by 2002:a2e:4710:: with SMTP id u16mr14811055lja.41.1558523641714;
-        Wed, 22 May 2019 04:14:01 -0700 (PDT)
-Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id 11sm4895988lfr.5.2019.05.22.04.14.00
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 22 May 2019 04:14:00 -0700 (PDT)
-References: <20190211090949.18560-1-jakub@cloudflare.com> <5439765e-1288-c379-0ead-75597092a404@iogearbox.net> <871s423i6d.fsf@cloudflare.com> <5ce45a6fcd82d_48b72ac3337c45b85f@john-XPS-13-9360.notmuch>
-User-agent: mu4e 1.1.0; emacs 26.1
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        Marek Majkowski <marek@cloudflare.com>
-Subject: Re: [PATCH net] sk_msg: Keep reference on socket file while psock lives
-In-reply-to: <5ce45a6fcd82d_48b72ac3337c45b85f@john-XPS-13-9360.notmuch>
-Date:   Wed, 22 May 2019 13:14:00 +0200
-Message-ID: <87v9y2zqpz.fsf@cloudflare.com>
+        id S1729042AbfEVLZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 07:25:08 -0400
+Received: from mail-eopbgr60075.outbound.protection.outlook.com ([40.107.6.75]:39490
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728914AbfEVLZI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 07:25:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VpNJ3TzVO5eENvehfFXAOZmsVrHYId+gwsIvPdOdMhY=;
+ b=BI9rS5jSOLgcPl08lZXtFx+q0wIyNOZJN1uVtxP2tWyKxh5RqvpBgJ6LOMRokQvKMGmYZ+iO7817qC5Q6zPUZJL/aOslLObVtWS42f4cKFaBClOiEds7RnEpdPWnA5j3zyT3Uk7hVcL/qg6CH3L0DZh/1i7Ec5UcyroMR5z3NA4=
+Received: from AM6PR05MB5460.eurprd05.prod.outlook.com (20.177.118.158) by
+ AM6PR05MB5061.eurprd05.prod.outlook.com (20.177.36.79) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.18; Wed, 22 May 2019 11:25:03 +0000
+Received: from AM6PR05MB5460.eurprd05.prod.outlook.com
+ ([fe80::e5a4:1b66:c270:54cf]) by AM6PR05MB5460.eurprd05.prod.outlook.com
+ ([fe80::e5a4:1b66:c270:54cf%4]) with mapi id 15.20.1922.013; Wed, 22 May 2019
+ 11:25:03 +0000
+From:   Boris Pismenny <borisp@mellanox.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
+        "davejwatson@fb.com" <davejwatson@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "vakul.garg@nxp.com" <vakul.garg@nxp.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: Re: [PATCH net v2 3/3] Documentation: add TLS offload documentation
+Thread-Topic: [PATCH net v2 3/3] Documentation: add TLS offload documentation
+Thread-Index: AQHVEEG6C+FSd4zYzUSnhR8UfdoI/KZ3AXeA
+Date:   Wed, 22 May 2019 11:25:02 +0000
+Message-ID: <cda80559-7cac-ae0b-6a23-cec20c041732@mellanox.com>
+References: <20190522015714.4077-1-jakub.kicinski@netronome.com>
+ <20190522015714.4077-4-jakub.kicinski@netronome.com>
+In-Reply-To: <20190522015714.4077-4-jakub.kicinski@netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM5PR0701CA0003.eurprd07.prod.outlook.com
+ (2603:10a6:203:51::13) To AM6PR05MB5460.eurprd05.prod.outlook.com
+ (2603:10a6:20b:5b::30)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=borisp@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bec7c54a-5e67-42ec-ddd5-08d6dea8220b
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB5061;
+x-ms-traffictypediagnostic: AM6PR05MB5061:
+x-microsoft-antispam-prvs: <AM6PR05MB50611CAE26E08FE1BDC9E9B5B0000@AM6PR05MB5061.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0045236D47
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(136003)(396003)(39860400002)(376002)(346002)(189003)(199004)(68736007)(66476007)(73956011)(66946007)(6246003)(64756008)(66446008)(66556008)(71200400001)(71190400001)(5660300002)(4326008)(66066001)(25786009)(2501003)(3846002)(6116002)(53936002)(2906002)(14444005)(256004)(2616005)(186003)(31696002)(229853002)(476003)(26005)(7736002)(36756003)(11346002)(446003)(486006)(305945005)(81166006)(8936002)(8676002)(81156014)(54906003)(86362001)(110136005)(99286004)(316002)(478600001)(14454004)(52116002)(6512007)(386003)(53546011)(6436002)(76176011)(6486002)(31686004)(102836004)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5061;H:AM6PR05MB5460.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: JOggsKuKHjqjsKB/03qgP7eFpUXvxwK3tlKRHdN4Q0MELQnvgQhZWE+GQGHRoDzFOh3OSZvkFW69h2mBJ5mIOtshqByx6f37rKtls1rAwKG1IxGd1PIEO4oFTzMr10HnPWQSgn5Y1nkgr2oJyvUtNTaG9LrrkOTjcKV+lPaxwd1X/d6trbNGK0Nw0U+fI273k4O0AZ+ywGgHbC6f4y4Cagcx3rGDfkPSaL2hKxXpu5OwJe+M9qS2pr6k/9ENI/dBWqZFGBqR4fM4TemUH1v8cCD6vIdDewl3O+xpaJJXAKT1/s/Nl/3IusPWL6PHB8oejIiNoFe1Q/7M4vqniwG2L174br99sJuhTC3DO1h5nQR9UXLQXgAHHGpsEicf9Tp2B4vx14UjTxqbhJB8pahuebdFYDLKzG37OUAMfNigE8A=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CAE8651373FFBA448BED4B8E826BDF91@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bec7c54a-5e67-42ec-ddd5-08d6dea8220b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2019 11:25:03.0166
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5061
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
-
-On Tue, May 21, 2019 at 10:07 PM CEST, John Fastabend wrote:
-> Jakub Sitnicki wrote:
->> Hi Daniel,
->>
->> On Tue, Feb 19, 2019 at 05:00 PM CET, Daniel Borkmann wrote:
->> > On 02/11/2019 10:09 AM, Jakub Sitnicki wrote:
->> >> Backlog work for psock (sk_psock_backlog) might sleep while waiting for
->> >> memory to free up when sending packets. While sleeping, socket can
->> >> disappear from under our feet together with its wait queue because the
->> >> userspace has closed it.
->> >>
->> >> This breaks an assumption in sk_stream_wait_memory, which expects the
->> >> wait queue to be still there when it wakes up resulting in a
->> >> use-after-free:
->> >>
->> >> ==================================================================
->> >> BUG: KASAN: use-after-free in remove_wait_queue+0x31/0x70
->> >> Write of size 8 at addr ffff888069a0c4e8 by task kworker/0:2/110
->> >>
->> >> CPU: 0 PID: 110 Comm: kworker/0:2 Not tainted 5.0.0-rc2-00335-g28f9d1a3d4fe-dirty #14
->> >> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-2.fc27 04/01/2014
->> >> Workqueue: events sk_psock_backlog
->> >> Call Trace:
->> >>  print_address_description+0x6e/0x2b0
->> >>  ? remove_wait_queue+0x31/0x70
->> >>  kasan_report+0xfd/0x177
->> >>  ? remove_wait_queue+0x31/0x70
->> >>  ? remove_wait_queue+0x31/0x70
->> >>  remove_wait_queue+0x31/0x70
->> >>  sk_stream_wait_memory+0x4dd/0x5f0
->> >>  ? sk_stream_wait_close+0x1b0/0x1b0
->> >>  ? wait_woken+0xc0/0xc0
->> >>  ? tcp_current_mss+0xc5/0x110
->> >>  tcp_sendmsg_locked+0x634/0x15d0
->
-> [...]
->
->> >>
->> >> Avoid it by keeping a reference to the socket file until the psock gets
->> >> destroyed.
->> >>
->> >> While at it, rearrange the order of reference grabbing and
->> >> initialization to match the destructor in reverse.
->> >>
->> >> Reported-by: Marek Majkowski <marek@cloudflare.com>
->> >> Link: https://lore.kernel.org/netdev/CAJPywTLwgXNEZ2dZVoa=udiZmtrWJ0q5SuBW64aYs0Y1khXX3A@mail.gmail.com
->> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> >> ---
->> >>  net/core/skmsg.c | 8 +++++++-
->> >>  1 file changed, 7 insertions(+), 1 deletion(-)
->> >>
->> >> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
->> >> index 8c826603bf36..a38442b8580b 100644
->> >> --- a/net/core/skmsg.c
->> >> +++ b/net/core/skmsg.c
->> >> @@ -493,8 +493,13 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
->> >>  	sk_psock_set_state(psock, SK_PSOCK_TX_ENABLED);
->> >>  	refcount_set(&psock->refcnt, 1);
->> >>
->> >> -	rcu_assign_sk_user_data(sk, psock);
->> >> +	/* Hold on to socket wait queue. Backlog work waits on it for
->> >> +	 * memory when sending. We must cancel work before socket wait
->> >> +	 * queue can go away.
->> >> +	 */
->> >> +	get_file(sk->sk_socket->file);
->> >>  	sock_hold(sk);
->> >> +	rcu_assign_sk_user_data(sk, psock);
->> >>
->> >>  	return psock;
->> >>  }
->> >> @@ -558,6 +563,7 @@ static void sk_psock_destroy_deferred(struct work_struct *gc)
->> >>  	if (psock->sk_redir)
->> >>  		sock_put(psock->sk_redir);
->> >>  	sock_put(psock->sk);
->> >> +	fput(psock->sk->sk_socket->file);
->> >
->> > Thanks for the report (and sorry for the late reply). I think holding ref on
->> > the struct file just so we keep it alive till deferred destruction might be
->> > papering over the actual underlying bug. Nothing obvious pops out from staring
->> > at the code right now; as a reproducer to run, did you use the prog in the link
->> > above and hit it after your strparser fix?
->>
->> I get you, I actually sat on this fix for a moment because I had a
->> similar concern, that holding a file ref is a heavy-handed fix and I'm
->> not seeing the real problem.
->>
->> For me it came down to this:
->
->> 1. tcp_sendmsg_locked that we call from psock backlog work can end up
->>    waiting for memory. We somehow need to ensure that the socket wait
->>    queue does not disappear until tcp_sendmsg_locked returns.
->>
->> 2. KCM, which I assume must have the same problem, holds a reference on
->>    the socket file.
->>
->> I'm curious if there is another angle to it.
->>
->> To answer your actual questions - your guesses are correct on both
->> accounts.
->>
->> For the reproducer, I've used the TCP echo program from Marek [1]. On
->> the client side, I had something like:
->>
->>   while :; do
->>     nc 10.0.0.1 12345 > /dev/null < /dev/zero &
->>     pid=$!
->>     sleep 0.1
->>     kill $pid
->>   done
->>
->> I can dig out the test scripts or help testing any patches.
->>
->> I was testing with the strparser fix applied, 1d79895aef18 ("sk_msg:
->> Always cancel strp work before freeing the psock"), which unfortunately
->> was not enough.
->>
->> The explanation there was that the socket descriptor can get closed, and
->> in consequence the socket file can get destroyed, before the deferred
->> destructor for psock runs. So psock backlog work can be still very much
->> alive and running while the socket file is gone.
->>
->> Thanks for looking into it,
->> -Jakub
->>
->> [1] https://gist.github.com/majek/a09bcbeb8ab548cde6c18c930895c3f2
->
-> In the sendpage case we set the MSG_DONTWAIT flag, I think we should
-> set it in the sendmsg case as well. This would result in
-> tcp_sendmsg_locked() setting timeo via sock_sndtimeo to zero and should
-> avoid any waiting. And then we avoid above use after free bug.
->
-> Then handle the error in sk_psock_backlog() correctly it returns an
-> EAGAIN (I think?) in this case so we will deduct any sent bytes and
-> increment the offset as needed and try again here. Except we will
-> have purged the ingress_skb list so we should abort.
->
-> And the work queue should be flushed before destroying psock so we
-> can be assured that the psock reference is not lost.
->
-> Here is what I'm thinking still untested. Because skmsg is the only
-> user of skb_send_sock_locked() this should be OK to do. If you have
-> time running your tests again would be great. I can also try to
-> repro.
->
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index e89be6282693..eadfd16be7db 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -2337,6 +2337,7 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
->                 kv.iov_base = skb->data + offset;
->                 kv.iov_len = slen;
->                 memset(&msg, 0, sizeof(msg));
-> +               msg->flags = MSG_DONTWAIT;
->
->                 ret = kernel_sendmsg_locked(sk, &msg, &kv, 1, slen);
->                 if (ret <= 0)
-
-Thanks for taking a look at it. Setting MSG_DONTWAIT works great for
-me. No more crashes in sk_stream_wait_memory. I've tested it on top of
-current bpf-next (f49aa1de9836). Here's my:
-
-  Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
-
-The actual I've tested is below, for completeness.
-
-BTW. I've ran into another crash which I haven't seen before while
-testing sockmap-echo, but it looks unrelated:
-
-  https://lore.kernel.org/netdev/20190522100142.28925-1-jakub@cloudflare.com/
-
--Jakub
-
---- 8< ---
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index e89be6282693..4a7c656b195b 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -2337,6 +2337,7 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
-                kv.iov_base = skb->data + offset;
-                kv.iov_len = slen;
-                memset(&msg, 0, sizeof(msg));
-+               msg.msg_flags = MSG_DONTWAIT;
-
-                ret = kernel_sendmsg_locked(sk, &msg, &kv, 1, slen);
-                if (ret <= 0)
+SGkgSmFrdWIsDQoNClRoYW5rcyBmb3IgYWxsIHRoZSBmaXhlcy4gVGhpcyB2ZXJzaW9uIGlzIG11
+Y2ggYmV0dGVyLg0KDQpPbiA1LzIyLzIwMTkgNDo1NyBBTSwgSmFrdWIgS2ljaW5za2kgd3JvdGU6
+DQo+IERlc2NyaWJlIGV4aXN0aW5nIGtlcm5lbCBUTFMgb2ZmbG9hZCAoYWRkZWQgYmFjayBpbiBM
+aW51eCA0LjE5KSAtDQo+IHRoZSBtZWNoYW5pc20sIHRoZSBleHBlY3RlZCBiZWhhdmlvciBhbmQg
+dGhlIG5vdGFibGUgY29ybmVyIGNhc2VzLg0KPiANCj4gVGhpcyBkb2N1bWVudGF0aW9uIGlzIG1v
+c3RseSB0YXJnZXRpbmcgaGFyZHdhcmUgdmVuZG9ycyB3aG8gd2FudA0KPiB0byBpbXBsZW1lbnQg
+b2ZmbG9hZCwgdG8gZW5zdXJlIGNvbnNpc3RlbmN5IGJldHdlZW4gaW1wbGVtZW50YXRpb25zLg0K
+PiANCj4gdjI6DQo+ICAgLSBhZGQgZW1waGFzaXMgYXJvdW5kIFRMU19TVy9UTFNfSFcvVExTX0hX
+X1JFQ09SRDsNCj4gICAtIHJlbW92ZSBtZW50aW9ucyBvZiBvbmdvaW5nIHdvcmsgKEJvcmlzKTsN
+Cj4gICAtIHNwbGl0IHRoZSBmbG93IG9mIGRhdGEgaW4gU1cgdnMuIEhXIGNhc2VzIGluIFRYIG92
+ZXJ2aWV3DQo+ICAgICAoQm9yaXMpOw0KPiAgIC0gY2FsbCBvdXQgd2hpY2ggZmllbGRzIGFyZSB1
+cGRhdGVkIGJ5IHRoZSBkZXZpY2UgYW5kIHdoaWNoDQo+ICAgICBhcmUgZmlsbGVkIGJ5IHRoZSBz
+dGFjayAoQm9yaXMpOw0KPiAgIC0gbW92ZSBlcnJvciBoYW5kbGluZyBpbnRvIGl0J3Mgb3duIHNl
+Y3Rpb24gKEJvcmlzKTsNCj4gICAtIGFkZCBtb3JlIHdvcmRzIGFib3V0IGZhbGxiYWNrIChCb3Jp
+cyk7DQo+ICAgLSBub3RlIHRoYXQgY2hlY2tzdW0gdmFsaWRhdGlvbiBpcyByZXF1aXJlZCAoQWxl
+eGVpKTsNCj4gICAtIG5vdGUgdGhhdCBkcml2ZXJzIHNob3VsZG4ndCBwYXkgYXR0ZW50aW9uIHRv
+IHRoZSBUTFMNCj4gICAgIGRldmljZSBmZWF0dXJlcy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEph
+a3ViIEtpY2luc2tpIDxqYWt1Yi5raWNpbnNraUBuZXRyb25vbWUuY29tPg0KPiBBY2tlZC1ieTog
+RGF2ZSBXYXRzb24gPGRhdmVqd2F0c29uQGZiLmNvbT4NCj4gQWNrZWQtYnk6IEFsZXhlaSBTdGFy
+b3ZvaXRvdiA8YXN0QGtlcm5lbC5vcmc+DQo+IC0tLQ0KPiAgIERvY3VtZW50YXRpb24vbmV0d29y
+a2luZy9pbmRleC5yc3QgICAgICAgICAgICB8ICAgMSArDQo+ICAgLi4uL25ldHdvcmtpbmcvdGxz
+LW9mZmxvYWQtbGF5ZXJzLnN2ZyAgICAgICAgIHwgICAxICsNCj4gICAuLi4vbmV0d29ya2luZy90
+bHMtb2ZmbG9hZC1yZW9yZGVyLWJhZC5zdmcgICAgfCAgIDEgKw0KPiAgIC4uLi9uZXR3b3JraW5n
+L3Rscy1vZmZsb2FkLXJlb3JkZXItZ29vZC5zdmcgICB8ICAgMSArDQo+ICAgRG9jdW1lbnRhdGlv
+bi9uZXR3b3JraW5nL3Rscy1vZmZsb2FkLnJzdCAgICAgIHwgNDgyICsrKysrKysrKysrKysrKysr
+Kw0KPiAgIERvY3VtZW50YXRpb24vbmV0d29ya2luZy90bHMucnN0ICAgICAgICAgICAgICB8ICAg
+MiArDQo+ICAgNiBmaWxlcyBjaGFuZ2VkLCA0ODggaW5zZXJ0aW9ucygrKQ0KPiAgIGNyZWF0ZSBt
+b2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL25ldHdvcmtpbmcvdGxzLW9mZmxvYWQtbGF5ZXJzLnN2
+Zw0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL25ldHdvcmtpbmcvdGxzLW9m
+ZmxvYWQtcmVvcmRlci1iYWQuc3ZnDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRp
+b24vbmV0d29ya2luZy90bHMtb2ZmbG9hZC1yZW9yZGVyLWdvb2Quc3ZnDQo+ICAgY3JlYXRlIG1v
+ZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vbmV0d29ya2luZy90bHMtb2ZmbG9hZC5yc3QNCj4gDQo+
+ICtFcnJvciBoYW5kbGluZw0KPiArPT09PT09PT09PT09PT0NCj4gKw0KPiArVFgNCj4gKy0tDQo+
+ICsNCj4gK1BhY2tldHMgbWF5IGJlIHJlZGlyZWN0ZWQgb3IgcmVyb3V0ZWQgYnkgdGhlIHN0YWNr
+IHRvIGEgZGlmZmVyZW50DQo+ICtkZXZpY2UgdGhhbiB0aGUgc2VsZWN0ZWQgVExTIG9mZmxvYWQg
+ZGV2aWNlLiBUaGUgc3RhY2sgd2lsbCBoYW5kbGUNCj4gK3N1Y2ggY29uZGl0aW9uIHVzaW5nIHRo
+ZSA6YzpmdW5jOmBza192YWxpZGF0ZV94bWl0X3NrYmAgaGVscGVyDQo+ICsoVExTIG9mZmxvYWQg
+Y29kZSBpbnN0YWxscyA6YzpmdW5jOmB0bHNfdmFsaWRhdGVfeG1pdF9za2JgIGF0IHRoaXMgaG9v
+aykuDQo+ICtPZmZsb2FkIG1haW50YWlucyBpbmZvcm1hdGlvbiBhYm91dCBhbGwgcmVjb3JkcyB1
+bnRpbCB0aGUgZGF0YSBpcw0KPiArZnVsbHkgYWNrbm93bGVkZ2VkLCBzbyBpZiBza2JzIHJlYWNo
+IHRoZSB3cm9uZyBkZXZpY2UgdGhleSBjYW4gYmUgaGFuZGxlZA0KPiArYnkgc29mdHdhcmUgZmFs
+bGJhY2suDQo+ICsNCj4gK0FueSBkZXZpY2UgVExTIG9mZmxvYWQgaGFuZGxpbmcgZXJyb3Igb24g
+dGhlIHRyYW5zbWlzc2lvbiBzaWRlIG11c3QgcmVzdWx0DQo+ICtpbiB0aGUgcGFja2V0IGJlaW5n
+IGRyb3BwZWQuIEZvciBleGFtcGxlIGlmIGEgcGFja2V0IGdvdCBvdXQgb2Ygb3JkZXINCj4gK2R1
+ZSB0byBhIGJ1ZyBpbiB0aGUgc3RhY2sgb3IgdGhlIGRldmljZSwgcmVhY2hlZCB0aGUgZGV2aWNl
+IGFuZCBjYW4ndA0KPiArYmUgZW5jcnlwdGVkIHN1Y2ggcGFja2V0IG11c3QgYmUgZHJvcHBlZC4N
+Cj4gKw0KPiArUlgNCj4gKy0tDQo+ICsNCj4gK0lmIHRoZSBkZXZpY2UgZW5jb3VudGVycyBhbnkg
+cHJvYmxlbXMgd2l0aCBUTFMgb2ZmbG9hZCBvbiB0aGUgcmVjZWl2ZQ0KPiArc2lkZSBpdCBzaG91
+bGQgcGFzcyB0aGUgcGFja2V0IHRvIHRoZSBob3N0J3MgbmV0d29ya2luZyBzdGFjayBhcyBpdCB3
+YXMNCj4gK3JlY2VpdmVkIG9uIHRoZSB3aXJlLg0KPiArDQo+ICtGb3IgZXhhbXBsZSBhdXRoZW50
+aWNhdGlvbiBmYWlsdXJlIGZvciBhbnkgcmVjb3JkIGluIHRoZSBzZWdtZW50IHNob3VsZA0KPiAr
+cmVzdWx0IGluIHBhc3NpbmcgdGhlIHVubW9kaWZpZWQgcGFja2V0IHRvIHRoZSBzb2Z0d2FyZSBm
+YWxsYmFjay4gVGhpcyBtZWFucw0KPiArcGFja2V0cyBzaG91bGQgbm90IGJlIG1vZGlmaWVkICJp
+biBwbGFjZSIuIFNwbGl0dGluZyBzZWdtZW50cyB0byBoYW5kbGUgcGFydGlhbA0KPiArZGVjcnlw
+dGlvbiBpcyBub3QgYWR2aXNlZC4gSW4gb3RoZXIgd29yZHMgZWl0aGVyIGFsbCByZWNvcmRzIGlu
+IHRoZSBwYWNrZXQNCj4gK2hhZCBiZWVuIGhhbmRsZWQgc3VjY2Vzc2Z1bGx5IGFuZCBhdXRoZW50
+aWNhdGVkIG9yIHRoZSBwYWNrZXQgaGFzIHRvIGJlIHBhc3NlZA0KPiArdG8gdGhlIGhvc3QncyBz
+dGFjayBhcyBpdCB3YXMgb24gdGhlIHdpcmUgKHJlY292ZXJpbmcgb3JpZ2luYWwgcGFja2V0IGlu
+IHRoZQ0KPiArZHJpdmVyIGlmIGRldmljZSBwcm92aWRlcyBwcmVjaXNlIGVycm9yIGlzIHN1ZmZp
+Y2llbnQpLg0KPiArDQo+ICtUaGUgTGludXggbmV0d29ya2luZyBzdGFjayBkb2VzIG5vdCBwcm92
+aWRlIGEgd2F5IG9mIHJlcG9ydGluZyBwZXItcGFja2V0DQo+ICtkZWNyeXB0aW9uIGFuZCBhdXRo
+ZW50aWNhdGlvbiBlcnJvcnMsIHBhY2tldHMgd2l0aCBlcnJvcnMgbXVzdCBzaW1wbHkgbm90DQo+
+ICtoYXZlIHRoZSA6YzptZW1iZXI6YGRlY3J5cHRlZGAgbWFyayBzZXQuDQo+ICsNCj4gK0EgcGFj
+a2V0IHNob3VsZCBhbHNvIG5vdCBiZSBoYW5kbGVkIGJ5IHRoZSBUTFMgb2ZmbG9hZCBpZiBpdCBj
+b250YWlucw0KPiAraW5jb3JyZWN0IGNoZWNrc3Vtcy4NCj4gKw0KDQpJbiB0aGUgZnV0dXJlLCB3
+ZSBtaWdodCBpbnRyb2R1Y2Ugc29tZSBjaGFuZ2VzIGhlcmUgdG8gYXZvaWQgdGhlIA0Kc3RvcmUt
+YW5kLWZvcndhcmQgcmVxdWlyZWQgdG8gY29tcGx5IHdpdGggcHJvdmlkaW5nIHRoZSBvcmlnaW5h
+bCBwYWNrZXQgDQpvbiBlcnJvci4NCg0KPiArUGVyZm9ybWFuY2UgbWV0cmljcw0KPiArPT09PT09
+PT09PT09PT09PT09PQ0KPiArDQo+ICtUTFMgb2ZmbG9hZCBjYW4gYmUgY2hhcmFjdGVyaXplZCBi
+eSB0aGUgZm9sbG93aW5nIGJhc2ljIG1ldHJpY3M6DQo+ICsNCj4gKyAqIG1heCBjb25uZWN0aW9u
+IGNvdW50DQo+ICsgKiBjb25uZWN0aW9uIGluc3RhbGxhdGlvbiByYXRlDQo+ICsgKiBjb25uZWN0
+aW9uIGluc3RhbGxhdGlvbiBsYXRlbmN5DQo+ICsgKiB0b3RhbCBjcnlwdG9ncmFwaGljIHBlcmZv
+cm1hbmNlDQo+ICsNCj4gK05vdGUgdGhhdCBlYWNoIFRDUCBjb25uZWN0aW9uIHJlcXVpcmVzIGEg
+VExTIHNlc3Npb24gaW4gYm90aCBkaXJlY3Rpb25zLA0KPiArdGhlIHBlcmZvcm1hbmNlIG1heSBi
+ZSByZXBvcnRlZCB0cmVhdGluZyBlYWNoIGRpcmVjdGlvbiBzZXBhcmF0ZWx5Lg0KPiArDQo+ICtN
+YXggY29ubmVjdGlvbiBjb3VudA0KPiArLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gKw0KPiArVGhl
+IG51bWJlciBvZiBjb25uZWN0aW9ucyBkZXZpY2UgY2FuIHN1cHBvcnQgY2FuIGJlIGV4cG9zZWQg
+dmlhDQo+ICtgYGRldmxpbmsgcmVzb3VyY2VgYCBBUEkuDQoNClRoaXMgaXMgZnV0dXJlIGNoYW5n
+ZXMsIGxldCdzIGRvY3VtZW50IHdoZW4gd2UgaW1wbGVtZW50IHRoaXMuDQoNCj4gKw0KPiArVG90
+YWwgY3J5cHRvZ3JhcGhpYyBwZXJmb3JtYW5jZQ0KPiArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLQ0KPiArDQo+ICtPZmZsb2FkIHBlcmZvcm1hbmNlIG1heSBkZXBlbmQgb24gc2VnbWVu
+dCBhbmQgcmVjb3JkIHNpemUuDQo+ICsNCj4gK092ZXJsb2FkIG9mIHRoZSBjcnlwdG9ncmFwaGlj
+IHN1YnN5c3RlbSBvZiB0aGUgZGV2aWNlIHNob3VsZCBub3QgaGF2ZQ0KPiArc2lnbmlmaWNhbnQg
+cGVyZm9ybWFuY2UgaW1wYWN0IG9uIG5vbi1vZmZsb2FkZWQgc3RyZWFtcy4NCj4gKw0KPiArU3Rh
+dGlzdGljcw0KPiArPT09PT09PT09PQ0KPiArDQo+ICtGb2xsb3dpbmcgbWluaW11bSBzZXQgb2Yg
+VExTLXJlbGF0ZWQgc3RhdGlzdGljcyBzaG91bGQgYmUgcmVwb3J0ZWQNCj4gK2J5IHRoZSBkcml2
+ZXI6DQo+ICsNCj4gKyAqIGBgcnhfdGxzX2RlY3J5cHRlZGBgIC0gbnVtYmVyIG9mIHN1Y2Nlc3Nm
+dWxseSBkZWNyeXB0ZWQgVExTIHNlZ21lbnRzDQo+ICsgKiBgYHR4X3Rsc19lbmNyeXB0ZWRgYCAt
+IG51bWJlciBvZiBpbi1vcmRlciBUTFMgc2VnbWVudHMgcGFzc2VkIHRvIGRldmljZQ0KPiArICAg
+Zm9yIGVuY3J5cHRpb24NCj4gKyAqIGBgdHhfdGxzX29vb2BgIC0gbnVtYmVyIG9mIFRYIHBhY2tl
+dHMgd2hpY2ggd2VyZSBwYXJ0IG9mIGEgVExTIHN0cmVhbQ0KPiArICAgYnV0IGRpZCBub3QgYXJy
+aXZlIGluIHRoZSBleHBlY3RlZCBvcmRlcg0KPiArICogYGB0eF90bHNfZHJvcF9ub19zeW5jX2Rh
+dGFgYCAtIG51bWJlciBvZiBUWCBwYWNrZXRzIGRyb3BwZWQgYmVjYXVzZQ0KPiArICAgdGhleSBh
+cnJpdmVkIG91dCBvZiBvcmRlciBhbmQgYXNzb2NpYXRlZCByZWNvcmQgY291bGQgbm90IGJlIGZv
+dW5kDQo+ICsgICAoc2VlIGFsc28gOnJlZjpgcHJlX3Rsc19kYXRhYCkNCj4gKw0KPiArTm90YWJs
+ZSBjb3JuZXIgY2FzZXMsIGV4Y2VwdGlvbnMgYW5kIGFkZGl0aW9uYWwgcmVxdWlyZW1lbnRzDQo+
+ICs9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT0NCj4gKw0KPiArLi4gXzV0dXBsZV9wcm9ibGVtczoNCj4gKw0KPiArNS10dXBsZSBtYXRj
+aGluZyBsaW1pdGF0aW9ucw0KPiArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiArDQo+
+ICtUaGUgZGV2aWNlIGNhbiBvbmx5IHJlY29nbml6ZSByZWNlaXZlZCBwYWNrZXRzIGJhc2VkIG9u
+IHRoZSA1LXR1cGxlDQo+ICtvZiB0aGUgc29ja2V0LiBDdXJyZW50IGBga3Rsc2BgIGltcGxlbWVu
+dGF0aW9uIHdpbGwgbm90IG9mZmxvYWQgc29ja2V0cw0KPiArcm91dGVkIHRocm91Z2ggc29mdHdh
+cmUgaW50ZXJmYWNlcyBzdWNoIGFzIHRob3NlIHVzZWQgZm9yIHR1bm5lbGluZw0KPiArb3Igdmly
+dHVhbCBuZXR3b3JraW5nLiBIb3dldmVyLCBtYW55IHBhY2tldCB0cmFuc2Zvcm1hdGlvbnMgcGVy
+Zm9ybWVkDQo+ICtieSB0aGUgbmV0d29ya2luZyBzdGFjayAobW9zdCBub3RhYmx5IGFueSBCUEYg
+bG9naWMpIGRvIG5vdCByZXF1aXJlDQo+ICthbnkgaW50ZXJtZWRpYXRlIHNvZnR3YXJlIGRldmlj
+ZSwgdGhlcmVmb3JlIGEgNS10dXBsZSBtYXRjaCBtYXkNCj4gK2NvbnNpc3RlbnRseSBtaXNzIGF0
+IHRoZSBkZXZpY2UgbGV2ZWwuIEluIHN1Y2ggY2FzZXMgdGhlIGRldmljZQ0KPiArc2hvdWxkIHN0
+aWxsIGJlIGFibGUgdG8gcGVyZm9ybSBUWCBvZmZsb2FkIChlbmNyeXB0aW9uKSBhbmQgc2hvdWxk
+DQo+ICtmYWxsYmFjayBjbGVhbmx5IHRvIHNvZnR3YXJlIGRlY3J5cHRpb24gKFJYKS4NCj4gKw0K
+PiArT3V0IG9mIG9yZGVyDQo+ICstLS0tLS0tLS0tLS0NCj4gKw0KPiArSW50cm9kdWNpbmcgZXh0
+cmEgcHJvY2Vzc2luZyBpbiBOSUNzIHNob3VsZCBub3QgY2F1c2UgcGFja2V0cyB0byBiZQ0KPiAr
+dHJhbnNtaXR0ZWQgb3IgcmVjZWl2ZWQgb3V0IG9mIG9yZGVyLCBmb3IgZXhhbXBsZSBwdXJlIEFD
+SyBwYWNrZXRzDQo+ICtzaG91bGQgbm90IGJlIHJlb3JkZXJlZCB3aXRoIHJlc3BlY3QgdG8gZGF0
+YSBzZWdtZW50cy4NCj4gKw0KPiArSW5ncmVzcyByZW9yZGVyDQo+ICstLS0tLS0tLS0tLS0tLS0N
+Cj4gKw0KPiArQSBkZXZpY2UgaXMgcGVybWl0dGVkIHRvIHBlcmZvcm0gcGFja2V0IHJlb3JkZXJp
+bmcgZm9yIGNvbnNlY3V0aXZlDQo+ICtUQ1Agc2VnbWVudHMgKGkuZS4gcGxhY2luZyBwYWNrZXRz
+IGluIHRoZSBjb3JyZWN0IG9yZGVyKSBidXQgYW55IGZvcm0NCj4gK29mIGFkZGl0aW9uYWwgYnVm
+ZmVyaW5nIGlzIGRpc2FsbG93ZWQuDQo+ICsNCj4gK0NvZXhpc3RlbmNlIHdpdGggc3RhbmRhcmQg
+bmV0d29ya2luZyBvZmZsb2FkIGZlYXR1cmVzDQo+ICstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiArDQo+ICtPZmZsb2FkZWQgYGBrdGxzYGAg
+c29ja2V0cyBzaG91bGQgc3VwcG9ydCBzdGFuZGFyZCBUQ1Agc3RhY2sgZmVhdHVyZXMNCj4gK3Ry
+YW5zcGFyZW50bHkuIEVuYWJsaW5nIGRldmljZSBUTFMgb2ZmbG9hZCBzaG91bGQgbm90IGNhdXNl
+IGFueSBkaWZmZXJlbmNlDQo+ICtpbiBwYWNrZXRzIGFzIHNlZW4gb24gdGhlIHdpcmUuDQo+ICsN
+Cj4gK1RyYW5zcG9ydCBsYXllciB0cmFuc3BhcmVuY3kNCj4gKy0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0NCj4gKw0KPiArVGhlIGRldmljZSBzaG91bGQgbm90IG1vZGlmeSBhbnkgcGFja2V0
+IGhlYWRlcnMgZm9yIHRoZSBwdXJwb3NlDQo+ICtvZiB0aGUgc2ltcGxpZnlpbmcgVExTIG9mZmxv
+YWQuDQo+ICsNCj4gK1RoZSBkZXZpY2Ugc2hvdWxkIG5vdCBkZXBlbmQgb24gYW55IHBhY2tldCBo
+ZWFkZXJzIGJleW9uZCB3aGF0IGlzIHN0cmljdGx5DQo+ICtuZWNlc3NhcnkgZm9yIFRMUyBvZmZs
+b2FkLg0KPiArDQo+ICtTZWdtZW50IGRyb3BzDQo+ICstLS0tLS0tLS0tLS0tDQo+ICsNCj4gK0Ry
+b3BwaW5nIHBhY2tldHMgaXMgYWNjZXB0YWJsZSBvbmx5IGluIHRoZSBldmVudCBvZiBjYXRhc3Ry
+b3BoaWMNCj4gK3N5c3RlbSBlcnJvcnMgYW5kIHNob3VsZCBuZXZlciBiZSB1c2VkIGFzIGFuIGVy
+cm9yIGhhbmRsaW5nIG1lY2hhbmlzbQ0KPiAraW4gY2FzZXMgYXJpc2luZyBmcm9tIG5vcm1hbCBv
+cGVyYXRpb24uIEluIG90aGVyIHdvcmRzLCByZWxpYW5jZQ0KPiArb24gVENQIHJldHJhbnNtaXNz
+aW9ucyB0byBoYW5kbGUgY29ybmVyIGNhc2VzIGlzIG5vdCBhY2NlcHRhYmxlLg0KPiArDQo+ICtU
+TFMgZGV2aWNlIGZlYXR1cmVzDQo+ICstLS0tLS0tLS0tLS0tLS0tLS0tDQo+ICsNCj4gK0RyaXZl
+cnMgc2hvdWxkIGlnbm9yZSB0aGUgY2hhbmdlcyB0byBUTFMgdGhlIGRldmljZSBmZWF0dXJlIGZs
+YWdzLg0KPiArVGhlc2UgZmxhZ3Mgd2lsbCBiZSBhY3RlZCB1cG9uIGFjY29yZGluZ2x5IGJ5IHRo
+ZSBjb3JlIGBga3Rsc2BgIGNvZGUuDQo+ICtUTFMgZGV2aWNlIGZlYXR1cmUgZmxhZ3Mgb25seSBj
+b250cm9sIGFkZGluZyBvZiBuZXcgVExTIGNvbm5lY3Rpb24NCj4gK29mZmxvYWRzLCBvbGQgY29u
+bmVjdGlvbnMgd2lsbCByZW1haW4gYWN0aXZlIGFmdGVyIGZsYWdzIGFyZSBjbGVhcmVkLg0KPiAr
+DQo+ICtLbm93biBidWdzDQo+ICs9PT09PT09PT09DQo+ICsNCj4gK3NrYl9vcnBoYW4oKSBsZWFr
+cyBjbGVhciB0ZXh0DQo+ICstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiArDQo+ICtD
+dXJyZW50bHkgZHJpdmVycyBkZXBlbmQgb24gdGhlIDpjOm1lbWJlcjpgc2tgIG1lbWJlciBvZg0K
+PiArOmM6dHlwZTpgc3RydWN0IHNrX2J1ZmYgPHNrX2J1ZmY+YCB0byBpZGVudGlmeSBzZWdtZW50
+cyByZXF1aXJpbmcNCj4gK2VuY3J5cHRpb24uIEFueSBvcGVyYXRpb24gd2hpY2ggcmVtb3ZlcyBv
+ciBkb2VzIG5vdCBwcmVzZXJ2ZSB0aGUgc29ja2V0DQo+ICthc3NvY2lhdGlvbiBzdWNoIGFzIDpj
+OmZ1bmM6YHNrYl9vcnBoYW5gIG9yIDpjOmZ1bmM6YHNrYl9jbG9uZWANCj4gK3dpbGwgY2F1c2Ug
+dGhlIGRyaXZlciB0byBtaXNzIHRoZSBwYWNrZXRzIGFuZCBsZWFkIHRvIGNsZWFyIHRleHQgbGVh
+a3MuDQo+ICsNCj4gK1JlZGlyZWN0cyBsZWFrIGNsZWFyIHRleHQNCj4gKy0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0NCj4gKw0KPiArSW4gdGhlIFJYIGRpcmVjdGlvbiwgaWYgc2VnbWVudCBoYXMg
+YWxyZWFkeSBiZWVuIGRlY3J5cHRlZCBieSB0aGUgZGV2aWNlDQo+ICthbmQgaXQgZ2V0cyByZWRp
+cmVjdGVkIG9yIG1pcnJvcmVkIC0gY2xlYXIgdGV4dCB3aWxsIGJlIHRyYW5zbWl0dGVkIG91dC4N
+Cg0KTm90IHN1cmUgaWYgaXQgaXMgYSBidWcgb3IgYSBmZWF0dXJlIGFzIGl0IG5lZWRzIGFkbWlu
+aXN0cmF0b3IgDQppbnRlcnZlbnRpb24gOykNCg0KT3ZlcmFsbCwgbG9va3MgZ29vZCB0byBtZS4N
+CkFja2VkLWJ5OiBCb3JpcyBQaXNtZW5ueSA8Ym9yaXNwQG1lbGxhbm94LmNvbT4NCg==
