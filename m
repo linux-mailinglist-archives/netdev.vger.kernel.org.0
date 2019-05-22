@@ -2,59 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17C3426A70
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:03:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA16E26A72
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729620AbfEVTDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:03:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43656 "EHLO vps0.lunn.ch"
+        id S1729372AbfEVTE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:04:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34994 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728533AbfEVTDN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:03:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=XJoZtimdgB+EH9wdXCPAmcGFb9M+rwAdu+b7oSmUxzQ=; b=xjGfVFQofgRgHwOpVt5sLLBO+j
-        VCGnhwVQW1s+hZDqyCTydlyWtF5ek1RTRfwkziyFaXf4/8LpcQyJbU9VsEc4GkW0fHJ3Kaw8uwnD/
-        UECk+pY+771l2U42JKLtYKCwLGmffACcs2fGfg9eMLIgn06pBFFXJWqTqq5lQzP1nJCw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hTWW6-0002Iy-Pk; Wed, 22 May 2019 21:03:10 +0200
-Date:   Wed, 22 May 2019 21:03:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Trent Piepho <tpiepho@impinj.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v2 6/8] net: phy: dp83867: IO impedance is not
- dependent on RGMII delay
-Message-ID: <20190522190310.GD7281@lunn.ch>
-References: <20190522184255.16323-1-tpiepho@impinj.com>
- <20190522184255.16323-6-tpiepho@impinj.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190522184255.16323-6-tpiepho@impinj.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1728533AbfEVTE5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:04:57 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 168B820862;
+        Wed, 22 May 2019 19:04:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1558551897;
+        bh=SiNeIDZKPxr4Qbs0ek4jtgXkPdPts811iHlh2QhaM3Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=k2/yFfZj6vLi3DLrCmSmVf3wj+WillJnKBACalEbGDeDIAm7k+flvQuXQ6cgolgYB
+         UDWW11zlHrha7HsLTp3QQE/nqyoltKUeORcM5lBgJ9zwI7J3wPySQTqes+9stCwUaX
+         P0V9DoX3h8Xmkprkyz6mi/LcQ+TSs4P+FJaAv8Bs=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     idosch@mellanox.com, David Ahern <dsahern@gmail.com>
+Subject: [PATCH v2 net-next 0/8] net: Export functions for nexthop code
+Date:   Wed, 22 May 2019 12:04:38 -0700
+Message-Id: <20190522190446.15486-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 06:43:25PM +0000, Trent Piepho wrote:
-> The driver would only set the IO impedance value when RGMII internal
-> delays were enabled.  There is no reason for this.  Move the IO
-> impedance block out of the RGMII delay block.
-> 
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Signed-off-by: Trent Piepho <tpiepho@impinj.com>
+From: David Ahern <dsahern@gmail.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This set exports ipv4 and ipv6 fib functions for use by the nexthop
+code. It also adds new ones to send route notifications if a nexthop
+configuration changes.
 
-    Andrew
+v2
+- repost of patches dropped at the end of the last dev window
+  added patch 8 which exports nh_update_mtu since it is inline with
+  the other patches
+
+David Ahern (8):
+  ipv6: Add delete route hook to stubs
+  ipv6: Add hook to bump sernum for a route to stubs
+  ipv6: export function to send route updates
+  ipv4: Add function to send route updates
+  ipv4: export fib_check_nh
+  ipv4: export fib_flush
+  ipv4: export fib_info_update_nh_saddr
+  ipv4: Rename and export nh_update_mtu
+
+ include/net/ip6_fib.h    |  7 +++++
+ include/net/ip_fib.h     |  9 +++++-
+ include/net/ipv6_stubs.h |  5 ++++
+ net/ipv4/fib_frontend.c  |  2 +-
+ net/ipv4/fib_semantics.c | 27 +++++++++---------
+ net/ipv4/fib_trie.c      | 72 ++++++++++++++++++++++++++++++++++++++++++++++++
+ net/ipv6/addrconf_core.c |  6 ++++
+ net/ipv6/af_inet6.c      |  3 ++
+ net/ipv6/ip6_fib.c       | 16 ++++++++---
+ net/ipv6/route.c         | 32 +++++++++++++++++++++
+ 10 files changed, 159 insertions(+), 20 deletions(-)
+
+-- 
+2.11.0
+
