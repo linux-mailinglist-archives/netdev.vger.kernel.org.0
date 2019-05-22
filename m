@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74AF426AD8
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B3972701C
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:01:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730224AbfEVTV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:21:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42522 "EHLO mail.kernel.org"
+        id S1730415AbfEVTWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:22:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42970 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730194AbfEVTVy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:21:54 -0400
+        id S1730399AbfEVTWT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:22:19 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 868652177E;
-        Wed, 22 May 2019 19:21:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 903CF2186A;
+        Wed, 22 May 2019 19:22:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558552913;
-        bh=ajUm6U1R2VGsGUXl4ra8Lhgj4SgyVQf4N8g+j6z+/U4=;
+        s=default; t=1558552938;
+        bh=dhFMV9qvLi/ZkAM71bphlJObVyLSfI97rd7uk47wU/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UUHnOo3gf7O4G3tydEUJ3CBDrgdkxLEck1RUgDq8jH0Qjqr/EdHl9rZYFRix+TqdV
-         uPZrZNjKZ3bck2E4a/kMcQnH9rt2neNqQ81TSnogMC8pxU0y+512on0koHvasSXGcH
-         2MXuEqzodAa5+UUTeaV89LZ0Bb0hWLyxF3e+0Yr4=
+        b=EnvWDYgjSNO+zpvCBtTXgfY0nXROgWVRLZKHqiH86W7vm6w+oPS4I7LyKeqYQmUD3
+         iuKVS0S01Yz29B+1j2+1YnmNP2nQnb8vDCGRIX9yUgiuX45N+zYF1KJH8oGnfSex++
+         AprZR5qecyWR0FnANDYVte8XxyVzlN+5etGSA304=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Jo=C3=A3o=20Paulo=20Rechi=20Vita?= <jprvita@gmail.com>,
-        =?UTF-8?q?Jo=C3=A3o=20Paulo=20Rechi=20Vita?= <jprvita@endlessm.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 026/375] Bluetooth: Ignore CC events not matching the last HCI command
-Date:   Wed, 22 May 2019 15:15:26 -0400
-Message-Id: <20190522192115.22666-26-sashal@kernel.org>
+Cc:     Bodong Wang <bodong@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Vu Pham <vuhuong@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 040/375] net/mlx5: E-Switch, Use atomic rep state to serialize state change
+Date:   Wed, 22 May 2019 15:15:40 -0400
+Message-Id: <20190522192115.22666-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192115.22666-1-sashal@kernel.org>
 References: <20190522192115.22666-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,192 +46,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: João Paulo Rechi Vita <jprvita@gmail.com>
+From: Bodong Wang <bodong@mellanox.com>
 
-[ Upstream commit f80c5dad7b6467b884c445ffea45985793b4b2d0 ]
+[ Upstream commit 6f4e02193c9a9ea54dd3151cf97489fa787cd0e6 ]
 
-This commit makes the kernel not send the next queued HCI command until
-a command complete arrives for the last HCI command sent to the
-controller. This change avoids a problem with some buggy controllers
-(seen on two SKUs of QCA9377) that send an extra command complete event
-for the previous command after the kernel had already sent a new HCI
-command to the controller.
+When the state of rep was introduced, it was also designed to prevent
+duplicate unloading of the same rep. Considering the following two
+flows when an eswitch manager is at switchdev mode with n VF reps loaded.
 
-The problem was reproduced when starting an active scanning procedure,
-where an extra command complete event arrives for the LE_SET_RANDOM_ADDR
-command. When this happends the kernel ends up not processing the
-command complete for the following commmand, LE_SET_SCAN_PARAM, and
-ultimately behaving as if a passive scanning procedure was being
-performed, when in fact controller is performing an active scanning
-procedure. This makes it impossible to discover BLE devices as no device
-found events are sent to userspace.
++--------------------------------------+--------------------------------+
+| cpu-0                                | cpu-1                          |
+| --------                             | --------                       |
+| mlx5_ib_remove                       | mlx5_eswitch_disable_sriov     |
+|  mlx5_ib_unregister_vport_reps       |  esw_offloads_cleanup          |
+|   mlx5_eswitch_unregister_vport_reps |   esw_offloads_unload_all_reps |
+|    __unload_reps_all_vport           |    __unload_reps_all_vport     |
++--------------------------------------+--------------------------------+
 
-This problem is reproducible on 100% of the attempts on the affected
-controllers. The extra command complete event can be seen at timestamp
-27.420131 on the btmon logs bellow.
+These two flows will try to unload the same rep. Per original design,
+once one flow unloads the rep, the state moves to REGISTERED. The 2nd
+flow will no longer needs to do the unload and bails out. However, as
+read and write of the state is not atomic, when 1st flow is doing the
+unload, the state is still LOADED, 2nd flow is able to do the same
+unload action. Kernel crash will happen.
 
-Bluetooth monitor ver 5.50
-= Note: Linux version 5.0.0+ (x86_64)                                  0.352340
-= Note: Bluetooth subsystem version 2.22                               0.352343
-= New Index: 80:C5:F2:8F:87:84 (Primary,USB,hci0)               [hci0] 0.352344
-= Open Index: 80:C5:F2:8F:87:84                                 [hci0] 0.352345
-= Index Info: 80:C5:F2:8F:87:84 (Qualcomm)                      [hci0] 0.352346
-@ MGMT Open: bluetoothd (privileged) version 1.14             {0x0001} 0.352347
-@ MGMT Open: btmon (privileged) version 1.14                  {0x0002} 0.352366
-@ MGMT Open: btmgmt (privileged) version 1.14                {0x0003} 27.302164
-@ MGMT Command: Start Discovery (0x0023) plen 1       {0x0003} [hci0] 27.302310
-        Address type: 0x06
-          LE Public
-          LE Random
-< HCI Command: LE Set Random Address (0x08|0x0005) plen 6   #1 [hci0] 27.302496
-        Address: 15:60:F2:91:B2:24 (Non-Resolvable)
-> HCI Event: Command Complete (0x0e) plen 4                 #2 [hci0] 27.419117
-      LE Set Random Address (0x08|0x0005) ncmd 1
-        Status: Success (0x00)
-< HCI Command: LE Set Scan Parameters (0x08|0x000b) plen 7  #3 [hci0] 27.419244
-        Type: Active (0x01)
-        Interval: 11.250 msec (0x0012)
-        Window: 11.250 msec (0x0012)
-        Own address type: Random (0x01)
-        Filter policy: Accept all advertisement (0x00)
-> HCI Event: Command Complete (0x0e) plen 4                 #4 [hci0] 27.420131
-      LE Set Random Address (0x08|0x0005) ncmd 1
-        Status: Success (0x00)
-< HCI Command: LE Set Scan Enable (0x08|0x000c) plen 2      #5 [hci0] 27.420259
-        Scanning: Enabled (0x01)
-        Filter duplicates: Enabled (0x01)
-> HCI Event: Command Complete (0x0e) plen 4                 #6 [hci0] 27.420969
-      LE Set Scan Parameters (0x08|0x000b) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Command Complete (0x0e) plen 4                 #7 [hci0] 27.421983
-      LE Set Scan Enable (0x08|0x000c) ncmd 1
-        Status: Success (0x00)
-@ MGMT Event: Command Complete (0x0001) plen 4        {0x0003} [hci0] 27.422059
-      Start Discovery (0x0023) plen 1
-        Status: Success (0x00)
-        Address type: 0x06
-          LE Public
-          LE Random
-@ MGMT Event: Discovering (0x0013) plen 2             {0x0003} [hci0] 27.422067
-        Address type: 0x06
-          LE Public
-          LE Random
-        Discovery: Enabled (0x01)
-@ MGMT Event: Discovering (0x0013) plen 2             {0x0002} [hci0] 27.422067
-        Address type: 0x06
-          LE Public
-          LE Random
-        Discovery: Enabled (0x01)
-@ MGMT Event: Discovering (0x0013) plen 2             {0x0001} [hci0] 27.422067
-        Address type: 0x06
-          LE Public
-          LE Random
-        Discovery: Enabled (0x01)
+To solve this, driver should do atomic test-and-set for the state. So
+that only one flow can change the rep state from LOADED to REGISTERED,
+and proceed to do the actual unloading.
 
-Signed-off-by: João Paulo Rechi Vita <jprvita@endlessm.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Since the state is changing to atomic type, all other read/write should
+be atomic action as well.
+
+Fixes: f121e0ea9586 (net/mlx5: E-Switch, Add state to eswitch vport representors)
+Signed-off-by: Bodong Wang <bodong@mellanox.com>
+Reviewed-by: Parav Pandit <parav@mellanox.com>
+Reviewed-by: Vu Pham <vuhuong@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/hci.h |  1 +
- net/bluetooth/hci_core.c    |  5 +++++
- net/bluetooth/hci_event.c   | 12 ++++++++++++
- net/bluetooth/hci_request.c |  5 +++++
- net/bluetooth/hci_request.h |  1 +
- 5 files changed, 24 insertions(+)
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 36 +++++++++----------
+ include/linux/mlx5/eswitch.h                  |  2 +-
+ 2 files changed, 18 insertions(+), 20 deletions(-)
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index fbba43e9bef5b..9a5330eed7944 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -282,6 +282,7 @@ enum {
- 	HCI_FORCE_BREDR_SMP,
- 	HCI_FORCE_STATIC_ADDR,
- 	HCI_LL_RPA_RESOLUTION,
-+	HCI_CMD_PENDING,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 9b2d78ee22b88..d2d8da133082c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -363,7 +363,7 @@ static int esw_set_global_vlan_pop(struct mlx5_eswitch *esw, u8 val)
+ 	esw_debug(esw->dev, "%s applying global %s policy\n", __func__, val ? "pop" : "none");
+ 	for (vf_vport = 1; vf_vport < esw->enabled_vports; vf_vport++) {
+ 		rep = &esw->offloads.vport_reps[vf_vport];
+-		if (rep->rep_if[REP_ETH].state != REP_LOADED)
++		if (atomic_read(&rep->rep_if[REP_ETH].state) != REP_LOADED)
+ 			continue;
  
- 	__HCI_NUM_FLAGS,
- };
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index d6b2540ba7f8b..f275c99056507 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -4383,6 +4383,9 @@ void hci_req_cmd_complete(struct hci_dev *hdev, u16 opcode, u8 status,
- 		return;
+ 		err = __mlx5_eswitch_set_vport_vlan(esw, rep->vport, 0, 0, val);
+@@ -1306,7 +1306,8 @@ int esw_offloads_init_reps(struct mlx5_eswitch *esw)
+ 		ether_addr_copy(rep->hw_id, hw_id);
+ 
+ 		for (rep_type = 0; rep_type < NUM_REP_TYPES; rep_type++)
+-			rep->rep_if[rep_type].state = REP_UNREGISTERED;
++			atomic_set(&rep->rep_if[rep_type].state,
++				   REP_UNREGISTERED);
  	}
  
-+	/* If we reach this point this event matches the last command sent */
-+	hci_dev_clear_flag(hdev, HCI_CMD_PENDING);
-+
- 	/* If the command succeeded and there's still more commands in
- 	 * this request the request is not yet complete.
- 	 */
-@@ -4493,6 +4496,8 @@ static void hci_cmd_work(struct work_struct *work)
- 
- 		hdev->sent_cmd = skb_clone(skb, GFP_KERNEL);
- 		if (hdev->sent_cmd) {
-+			if (hci_req_status_pend(hdev))
-+				hci_dev_set_flag(hdev, HCI_CMD_PENDING);
- 			atomic_dec(&hdev->cmd_cnt);
- 			hci_send_frame(hdev, skb);
- 			if (test_bit(HCI_RESET, &hdev->flags))
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 609fd6871c5ad..8b893baf9bbe2 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -3404,6 +3404,12 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb,
- 	hci_req_cmd_complete(hdev, *opcode, *status, req_complete,
- 			     req_complete_skb);
- 
-+	if (hci_dev_test_flag(hdev, HCI_CMD_PENDING)) {
-+		bt_dev_err(hdev,
-+			   "unexpected event for opcode 0x%4.4x", *opcode);
-+		return;
-+	}
-+
- 	if (atomic_read(&hdev->cmd_cnt) && !skb_queue_empty(&hdev->cmd_q))
- 		queue_work(hdev->workqueue, &hdev->cmd_work);
- }
-@@ -3511,6 +3517,12 @@ static void hci_cmd_status_evt(struct hci_dev *hdev, struct sk_buff *skb,
- 		hci_req_cmd_complete(hdev, *opcode, ev->status, req_complete,
- 				     req_complete_skb);
- 
-+	if (hci_dev_test_flag(hdev, HCI_CMD_PENDING)) {
-+		bt_dev_err(hdev,
-+			   "unexpected event for opcode 0x%4.4x", *opcode);
-+		return;
-+	}
-+
- 	if (atomic_read(&hdev->cmd_cnt) && !skb_queue_empty(&hdev->cmd_q))
- 		queue_work(hdev->workqueue, &hdev->cmd_work);
- }
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index ca73d36cc1494..e9a95ed654915 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -46,6 +46,11 @@ void hci_req_purge(struct hci_request *req)
- 	skb_queue_purge(&req->cmd_q);
- }
- 
-+bool hci_req_status_pend(struct hci_dev *hdev)
-+{
-+	return hdev->req_status == HCI_REQ_PEND;
-+}
-+
- static int req_run(struct hci_request *req, hci_req_complete_t complete,
- 		   hci_req_complete_skb_t complete_skb)
+ 	return 0;
+@@ -1315,11 +1316,9 @@ int esw_offloads_init_reps(struct mlx5_eswitch *esw)
+ static void __esw_offloads_unload_rep(struct mlx5_eswitch *esw,
+ 				      struct mlx5_eswitch_rep *rep, u8 rep_type)
  {
-diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
-index 692cc8b133682..55b2050cc9ff0 100644
---- a/net/bluetooth/hci_request.h
-+++ b/net/bluetooth/hci_request.h
-@@ -37,6 +37,7 @@ struct hci_request {
+-	if (rep->rep_if[rep_type].state != REP_LOADED)
+-		return;
+-
+-	rep->rep_if[rep_type].unload(rep);
+-	rep->rep_if[rep_type].state = REP_REGISTERED;
++	if (atomic_cmpxchg(&rep->rep_if[rep_type].state,
++			   REP_LOADED, REP_REGISTERED) == REP_LOADED)
++		rep->rep_if[rep_type].unload(rep);
+ }
  
- void hci_req_init(struct hci_request *req, struct hci_dev *hdev);
- void hci_req_purge(struct hci_request *req);
-+bool hci_req_status_pend(struct hci_dev *hdev);
- int hci_req_run(struct hci_request *req, hci_req_complete_t complete);
- int hci_req_run_skb(struct hci_request *req, hci_req_complete_skb_t complete);
- void hci_req_add(struct hci_request *req, u16 opcode, u32 plen,
+ static void __unload_reps_special_vport(struct mlx5_eswitch *esw, u8 rep_type)
+@@ -1380,16 +1379,15 @@ static int __esw_offloads_load_rep(struct mlx5_eswitch *esw,
+ {
+ 	int err = 0;
+ 
+-	if (rep->rep_if[rep_type].state != REP_REGISTERED)
+-		return 0;
+-
+-	err = rep->rep_if[rep_type].load(esw->dev, rep);
+-	if (err)
+-		return err;
+-
+-	rep->rep_if[rep_type].state = REP_LOADED;
++	if (atomic_cmpxchg(&rep->rep_if[rep_type].state,
++			   REP_REGISTERED, REP_LOADED) == REP_REGISTERED) {
++		err = rep->rep_if[rep_type].load(esw->dev, rep);
++		if (err)
++			atomic_set(&rep->rep_if[rep_type].state,
++				   REP_REGISTERED);
++	}
+ 
+-	return 0;
++	return err;
+ }
+ 
+ static int __load_reps_special_vport(struct mlx5_eswitch *esw, u8 rep_type)
+@@ -2076,7 +2074,7 @@ void mlx5_eswitch_register_vport_reps(struct mlx5_eswitch *esw,
+ 		rep_if->get_proto_dev = __rep_if->get_proto_dev;
+ 		rep_if->priv = __rep_if->priv;
+ 
+-		rep_if->state = REP_REGISTERED;
++		atomic_set(&rep_if->state, REP_REGISTERED);
+ 	}
+ }
+ EXPORT_SYMBOL(mlx5_eswitch_register_vport_reps);
+@@ -2091,7 +2089,7 @@ void mlx5_eswitch_unregister_vport_reps(struct mlx5_eswitch *esw, u8 rep_type)
+ 		__unload_reps_all_vport(esw, max_vf, rep_type);
+ 
+ 	mlx5_esw_for_all_reps(esw, i, rep)
+-		rep->rep_if[rep_type].state = REP_UNREGISTERED;
++		atomic_set(&rep->rep_if[rep_type].state, REP_UNREGISTERED);
+ }
+ EXPORT_SYMBOL(mlx5_eswitch_unregister_vport_reps);
+ 
+@@ -2111,7 +2109,7 @@ void *mlx5_eswitch_get_proto_dev(struct mlx5_eswitch *esw,
+ 
+ 	rep = mlx5_eswitch_get_rep(esw, vport);
+ 
+-	if (rep->rep_if[rep_type].state == REP_LOADED &&
++	if (atomic_read(&rep->rep_if[rep_type].state) == REP_LOADED &&
+ 	    rep->rep_if[rep_type].get_proto_dev)
+ 		return rep->rep_if[rep_type].get_proto_dev(rep);
+ 	return NULL;
+diff --git a/include/linux/mlx5/eswitch.h b/include/linux/mlx5/eswitch.h
+index 96d8435421de8..0ca77dd1429c0 100644
+--- a/include/linux/mlx5/eswitch.h
++++ b/include/linux/mlx5/eswitch.h
+@@ -35,7 +35,7 @@ struct mlx5_eswitch_rep_if {
+ 	void		       (*unload)(struct mlx5_eswitch_rep *rep);
+ 	void		       *(*get_proto_dev)(struct mlx5_eswitch_rep *rep);
+ 	void			*priv;
+-	u8			state;
++	atomic_t		state;
+ };
+ 
+ struct mlx5_eswitch_rep {
 -- 
 2.20.1
 
