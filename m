@@ -2,46 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0534C270E9
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:41:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EF31270E8
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729859AbfEVUlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 16:41:03 -0400
-Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:59452 "EHLO
-        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729528AbfEVUlC (ORCPT
+        id S1729830AbfEVUlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 16:41:02 -0400
+Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:52700 "EHLO
+        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728761AbfEVUlC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 16:41:02 -0400
-Received: from pps.filterd (m0122333.ppops.net [127.0.0.1])
-        by mx0a-00190b01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MKarq4016997;
+Received: from pps.filterd (m0122331.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MKbW0w014653;
         Wed, 22 May 2019 21:40:57 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
- subject : date : message-id; s=jan2016.eng;
- bh=FmHMVBT0zKoYMfsU5AfjlU72gf0eepn7ZbKOb+8WUwY=;
- b=grNoqAijnwY3rgnVIWXyXx07KOgayr0lLPchM9bqlB2rQV/ZOwK0siRtVXMNgwdHT2T2
- kSEl355vxT8HNpE2tp2fVIuSvz9Rdp/lgG6Ir9te+OWy0DZeNB3zVMkw5ialVbD/6IRL
- EHAeAI4qsVWVp7fkup3vlCduzvJy/fXg7KiGgZvcJOQbklZsY1DS1vl3nU7spG2JY0KJ
- lumagt86sUnLFQXwO/F5GxevZIRFZv6rExM/VJD4EaTWYqBwQE17LVQBKPLYe88QR3zM
- LgLd4KEI+mmo/tIis3c/wA8WBK+uIA8KGCGefFjS9BTY0jUTb+LKIZ5udYK945HEkyCX SQ== 
+ subject : date : message-id : in-reply-to : references : in-reply-to :
+ references; s=jan2016.eng;
+ bh=w3o6UDBZW5sIaAHSCFHSLi4ZpymISa/BQ7tBDlbblZ4=;
+ b=io+6buc14Plg8bTLTMdS6v8zDzpbH9f8lriB2RMcAndrmIwXKt5RtdCPkhNDXN0/ZsbN
+ 0uCuKd+kayHyYeNdpkUSgMEo937GCCzQGBJZyRlEHZ/aeBL4rQ263o7hGDMMbMzWT5ak
+ poYILp005RoknAw098otNEUCiQbIs9u5NfkTRjHOlSUENZWJ5odRM2XbmP/iAA/zJx/F
+ JvYlE57H/tHltfAfdvucV3xCV19NU0DTYjuWsqh+g5QUXT3IJnbT+aV1LHG/pE+i4T6l
+ 3jmstg1a3XUR2hXuPELuPlX5NYRhFoXAM2cYDEI/jM7FK9GD9FYkAtecWoKGDNwmBeHJ KA== 
 Received: from prod-mail-ppoint1 (prod-mail-ppoint1.akamai.com [184.51.33.18] (may be forged))
-        by mx0a-00190b01.pphosted.com with ESMTP id 2sn8r5170v-1
+        by mx0b-00190b01.pphosted.com with ESMTP id 2snaqf0hxe-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Wed, 22 May 2019 21:40:57 +0100
 Received: from pps.filterd (prod-mail-ppoint1.akamai.com [127.0.0.1])
-        by prod-mail-ppoint1.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x4MKX5o4011403;
+        by prod-mail-ppoint1.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x4MKX5o5011403;
         Wed, 22 May 2019 16:40:56 -0400
 Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
-        by prod-mail-ppoint1.akamai.com with ESMTP id 2sjdcvsjuf-1;
-        Wed, 22 May 2019 16:40:55 -0400
+        by prod-mail-ppoint1.akamai.com with ESMTP id 2sjdcvsjuf-2;
+        Wed, 22 May 2019 16:40:56 -0400
 Received: from bos-lpjec.kendall.corp.akamai.com (bos-lpjec.kendall.corp.akamai.com [172.29.170.83])
-        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id EE8161FC6C;
-        Wed, 22 May 2019 20:40:25 +0000 (GMT)
+        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id 24BD71FC72;
+        Wed, 22 May 2019 20:40:28 +0000 (GMT)
 From:   Jason Baron <jbaron@akamai.com>
 To:     davem@davemloft.net, edumazet@google.com
-Cc:     ycheng@google.com, ilubashe@akamai.com, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/6] add TFO backup key
-Date:   Wed, 22 May 2019 16:39:32 -0400
-Message-Id: <cover.1558557001.git.jbaron@akamai.com>
+Cc:     ycheng@google.com, ilubashe@akamai.com, netdev@vger.kernel.org,
+        Christoph Paasch <cpaasch@apple.com>
+Subject: [PATCH net-next 1/6] tcp: introduce __tcp_fastopen_cookie_gen_cipher()
+Date:   Wed, 22 May 2019 16:39:33 -0400
+Message-Id: <60c068635077623e588fc7f1c84d37ef4f86afbd.1558557001.git.jbaron@akamai.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <cover.1558557001.git.jbaron@akamai.com>
+References: <cover.1558557001.git.jbaron@akamai.com>
+In-Reply-To: <cover.1558557001.git.jbaron@akamai.com>
+References: <cover.1558557001.git.jbaron@akamai.com>
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-22_12:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
@@ -51,7 +57,7 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 ma
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-22_12:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
  lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
  definitions=main-1905220144
@@ -60,43 +66,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Christoph Paasch <cpaasch@apple.com>
 
-Christoph, Igor, and I have worked on an API that facilitates TFO key 
-rotation. This is a follow up to the series that Christoph previously
-posted, with an API that meets both of our use-cases. Here's a
-link to the previous work:
-https://patchwork.ozlabs.org/cover/1013753/
+Restructure __tcp_fastopen_cookie_gen() to take a 'struct crypto_cipher'
+argument and rename it as __tcp_fastopen_cookie_gen_cipher(). Subsequent
+patches will provide different ciphers based on which key is being used for
+the cookie generation.
 
-Thanks,
+Signed-off-by: Jason Baron <jbaron@akamai.com>
+Signed-off-by: Christoph Paasch <cpaasch@apple.com>
+---
+ net/ipv4/tcp_fastopen.c | 73 +++++++++++++++++++++++++------------------------
+ 1 file changed, 37 insertions(+), 36 deletions(-)
 
--Jason
-
-Christoph Paasch (1):
-  tcp: introduce __tcp_fastopen_cookie_gen_cipher()
-
-Jason Baron (5):
-  tcp: add backup TFO key infrastructure
-  tcp: add support to TCP_FASTOPEN_KEY for optional backup key
-  tcp: add support for optional TFO backup key to /proc/sys/net/ipv4/tcp_fastopen_key
-  Documentation: ip-sysctl.txt: Document tcp_fastopen_key
-  selftests/net: add TFO key rotation selftest
-
- Documentation/networking/ip-sysctl.txt             |  20 ++
- include/net/tcp.h                                  |  41 ++-
- include/uapi/linux/snmp.h                          |   1 +
- net/ipv4/proc.c                                    |   1 +
- net/ipv4/sysctl_net_ipv4.c                         |  93 ++++--
- net/ipv4/tcp.c                                     |  29 +-
- net/ipv4/tcp_fastopen.c                            | 233 +++++++++-----
- tools/testing/selftests/net/.gitignore             |   1 +
- tools/testing/selftests/net/Makefile               |   3 +-
- .../selftests/net/tcp_fastopen_backup_key.c        | 336 +++++++++++++++++++++
- .../selftests/net/tcp_fastopen_backup_key.sh       |  55 ++++
- 11 files changed, 694 insertions(+), 119 deletions(-)
- create mode 100644 tools/testing/selftests/net/tcp_fastopen_backup_key.c
- create mode 100644 tools/testing/selftests/net/tcp_fastopen_backup_key.sh
-
+diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+index 018a484..3889ad2 100644
+--- a/net/ipv4/tcp_fastopen.c
++++ b/net/ipv4/tcp_fastopen.c
+@@ -111,25 +111,38 @@ error:		kfree(ctx);
+ 	return err;
+ }
+ 
+-static bool __tcp_fastopen_cookie_gen(struct sock *sk, const void *path,
+-				      struct tcp_fastopen_cookie *foc)
++static bool __tcp_fastopen_cookie_gen_cipher(struct request_sock *req,
++					     struct sk_buff *syn,
++					     struct crypto_cipher *tfm,
++					     struct tcp_fastopen_cookie *foc)
+ {
+-	struct tcp_fastopen_context *ctx;
+-	bool ok = false;
+-
+-	rcu_read_lock();
++	if (req->rsk_ops->family == AF_INET) {
++		const struct iphdr *iph = ip_hdr(syn);
++		__be32 path[4] = { iph->saddr, iph->daddr, 0, 0 };
+ 
+-	ctx = rcu_dereference(inet_csk(sk)->icsk_accept_queue.fastopenq.ctx);
+-	if (!ctx)
+-		ctx = rcu_dereference(sock_net(sk)->ipv4.tcp_fastopen_ctx);
++		crypto_cipher_encrypt_one(tfm, foc->val, (void *)path);
++		foc->len = TCP_FASTOPEN_COOKIE_SIZE;
++		return true;
++	}
+ 
+-	if (ctx) {
+-		crypto_cipher_encrypt_one(ctx->tfm, foc->val, path);
++#if IS_ENABLED(CONFIG_IPV6)
++	if (req->rsk_ops->family == AF_INET6) {
++		const struct ipv6hdr *ip6h = ipv6_hdr(syn);
++		struct tcp_fastopen_cookie tmp;
++		struct in6_addr *buf;
++		int i;
++
++		crypto_cipher_encrypt_one(tfm, tmp.val,
++					  (void *)&ip6h->saddr);
++		buf = &tmp.addr;
++		for (i = 0; i < 4; i++)
++			buf->s6_addr32[i] ^= ip6h->daddr.s6_addr32[i];
++		crypto_cipher_encrypt_one(tfm, foc->val, (void *)buf);
+ 		foc->len = TCP_FASTOPEN_COOKIE_SIZE;
+-		ok = true;
++		return true;
+ 	}
+-	rcu_read_unlock();
+-	return ok;
++#endif
++	return false;
+ }
+ 
+ /* Generate the fastopen cookie by doing aes128 encryption on both
+@@ -143,29 +156,17 @@ static bool tcp_fastopen_cookie_gen(struct sock *sk,
+ 				    struct sk_buff *syn,
+ 				    struct tcp_fastopen_cookie *foc)
+ {
+-	if (req->rsk_ops->family == AF_INET) {
+-		const struct iphdr *iph = ip_hdr(syn);
+-
+-		__be32 path[4] = { iph->saddr, iph->daddr, 0, 0 };
+-		return __tcp_fastopen_cookie_gen(sk, path, foc);
+-	}
+-
+-#if IS_ENABLED(CONFIG_IPV6)
+-	if (req->rsk_ops->family == AF_INET6) {
+-		const struct ipv6hdr *ip6h = ipv6_hdr(syn);
+-		struct tcp_fastopen_cookie tmp;
+-
+-		if (__tcp_fastopen_cookie_gen(sk, &ip6h->saddr, &tmp)) {
+-			struct in6_addr *buf = &tmp.addr;
+-			int i;
++	struct tcp_fastopen_context *ctx;
++	bool ok = false;
+ 
+-			for (i = 0; i < 4; i++)
+-				buf->s6_addr32[i] ^= ip6h->daddr.s6_addr32[i];
+-			return __tcp_fastopen_cookie_gen(sk, buf, foc);
+-		}
+-	}
+-#endif
+-	return false;
++	rcu_read_lock();
++	ctx = rcu_dereference(inet_csk(sk)->icsk_accept_queue.fastopenq.ctx);
++	if (!ctx)
++		ctx = rcu_dereference(sock_net(sk)->ipv4.tcp_fastopen_ctx);
++	if (ctx)
++		ok = __tcp_fastopen_cookie_gen_cipher(req, syn, ctx->tfm, foc);
++	rcu_read_unlock();
++	return ok;
+ }
+ 
+ 
 -- 
 2.7.4
 
