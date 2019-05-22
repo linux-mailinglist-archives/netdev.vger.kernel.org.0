@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61B3526E9E
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:51:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 490BF26EA1
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:51:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387768AbfEVTvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:51:04 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:40056 "EHLO
+        id S1731313AbfEVTvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:51:08 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60140 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387897AbfEVTvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 15:51:03 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MJiYjm024156
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 12:51:02 -0700
+        by vger.kernel.org with ESMTP id S1732161AbfEVTvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 15:51:06 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MJcEhB024043
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 12:51:06 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=09zR1jbBVhYXt9NleKvpqzItnvPFECoeoIX74novJLM=;
- b=e8uiXc14dRpCusBDkd/TqDkECUt9/EywF9tF9Lh5+wO4rvFSLkYXxEifzp8gkmUDuP2W
- exbQncadJcxFe2UBaR0El5a8WM1D9TkpX/37GumGoLyt7QQM8cPJHl7iYuFQu893eEgm
- M4yytghVOGZvWwNv1Won3E7j/hpXyLthOuQ= 
+ content-type; s=facebook; bh=+mILvYwWaBUx7FgpXAhY0YoQRQqTm6Z7WFLbUfSA5hQ=;
+ b=qxRqHZznoxfLvhePOld5UVRcUgh97XTfNvi/+fdmGfbleWkyYciTL1/ZTja1fGPgt+Ef
+ XLnUSt1K4/2QkSHdtElLOjK277NFzqDA+YoGEwtrpO6MyiUDF6yFFT5QljKawgo56vxK
+ KLBlL8J2FFYoYxuvC39h0yj9z6VPRfluGgA= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sn81p195y-2
+        by mx0a-00082601.pphosted.com with ESMTP id 2sn8rt93a1-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 12:51:02 -0700
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 12:51:06 -0700
 Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 22 May 2019 12:51:00 -0700
+ 15.1.1713.5; Wed, 22 May 2019 12:51:04 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 23E3E862334; Wed, 22 May 2019 12:50:59 -0700 (PDT)
+        id 2DA6B862334; Wed, 22 May 2019 12:51:01 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,9 +38,9 @@ To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
         <kernel-team@fb.com>
 CC:     Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 02/12] libbpf: add btf__parse_elf API to load .BTF and .BTF.ext
-Date:   Wed, 22 May 2019 12:50:43 -0700
-Message-ID: <20190522195053.4017624-3-andriin@fb.com>
+Subject: [PATCH bpf-next 03/12] bpftool: use libbpf's btf__parse_elf API
+Date:   Wed, 22 May 2019 12:50:44 -0700
+Message-ID: <20190522195053.4017624-4-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190522195053.4017624-1-andriin@fb.com>
 References: <20190522195053.4017624-1-andriin@fb.com>
@@ -53,201 +53,165 @@ X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 pri
  malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
  mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905220138
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905220137
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Loading BTF and BTF.ext from ELF file is a common need. Instead of
-requiring every user to re-implement it, let's provide this API from
-libbpf itself. It's mostly copy/paste from `bpftool btf dump`
-implementation, which will be switched to libbpf's version in next
-patch. btf__parse_elf allows to load BTF and optionally BTF.ext.
-This is also useful for tests that need to load/work with BTF, loaded
-from test ELF files.
+Use btf__parse_elf() API, provided by libbpf, instead of implementing
+ELF parsing by itself.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/btf.c      | 128 +++++++++++++++++++++++++++++++++++++++
- tools/lib/bpf/btf.h      |   2 +
- tools/lib/bpf/libbpf.map |   1 +
- 3 files changed, 131 insertions(+)
+ tools/bpf/bpftool/btf.c | 117 +++-------------------------------------
+ 1 file changed, 8 insertions(+), 109 deletions(-)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 03348c4d6bd4..6139550810a1 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -4,10 +4,12 @@
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index 7317438ecd9e..a22ef6587ebe 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -8,8 +8,8 @@
  #include <stdio.h>
- #include <stdlib.h>
  #include <string.h>
-+#include <fcntl.h>
  #include <unistd.h>
- #include <errno.h>
- #include <linux/err.h>
+-#include <gelf.h>
+ #include <bpf.h>
++#include <libbpf.h>
  #include <linux/btf.h>
-+#include <gelf.h>
+ 
  #include "btf.h"
- #include "bpf.h"
- #include "libbpf.h"
-@@ -417,6 +419,132 @@ struct btf *btf__new(__u8 *data, __u32 size)
- 	return btf;
+@@ -340,112 +340,6 @@ static int dump_btf_raw(const struct btf *btf,
+ 	return 0;
  }
  
-+static bool btf_check_endianness(const GElf_Ehdr *ehdr)
-+{
-+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-+	return ehdr->e_ident[EI_DATA] == ELFDATA2LSB;
-+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-+	return ehdr->e_ident[EI_DATA] == ELFDATA2MSB;
-+#else
-+# error "Unrecognized __BYTE_ORDER__"
-+#endif
-+}
-+
-+struct btf *btf__parse_elf(const char *path, struct btf_ext **btf_ext)
-+{
-+	Elf_Data *btf_data = NULL, *btf_ext_data = NULL;
-+	int err = 0, fd = -1, idx = 0;
-+	struct btf *btf = NULL;
-+	Elf_Scn *scn = NULL;
-+	Elf *elf = NULL;
-+	GElf_Ehdr ehdr;
-+
-+	if (elf_version(EV_CURRENT) == EV_NONE) {
-+		pr_warning("failed to init libelf for %s\n", path);
-+		return ERR_PTR(-LIBBPF_ERRNO__LIBELF);
-+	}
-+
-+	fd = open(path, O_RDONLY);
-+	if (fd < 0) {
-+		err = -errno;
-+		pr_warning("failed to open %s: %s\n", path, strerror(errno));
-+		return ERR_PTR(err);
-+	}
-+
-+	err = -LIBBPF_ERRNO__FORMAT;
-+
-+	elf = elf_begin(fd, ELF_C_READ, NULL);
-+	if (!elf) {
-+		pr_warning("failed to open %s as ELF file\n", path);
-+		goto done;
-+	}
-+	if (!gelf_getehdr(elf, &ehdr)) {
-+		pr_warning("failed to get EHDR from %s\n", path);
-+		goto done;
-+	}
-+	if (!btf_check_endianness(&ehdr)) {
-+		pr_warning("non-native ELF endianness is not supported\n");
-+		goto done;
-+	}
-+	if (!elf_rawdata(elf_getscn(elf, ehdr.e_shstrndx), NULL)) {
-+		pr_warning("failed to get e_shstrndx from %s\n", path);
-+		goto done;
-+	}
-+
-+	while ((scn = elf_nextscn(elf, scn)) != NULL) {
-+		GElf_Shdr sh;
-+		char *name;
-+
-+		idx++;
-+		if (gelf_getshdr(scn, &sh) != &sh) {
-+			pr_warning("failed to get section(%d) header from %s\n",
-+				   idx, path);
-+			goto done;
-+		}
-+		name = elf_strptr(elf, ehdr.e_shstrndx, sh.sh_name);
-+		if (!name) {
-+			pr_warning("failed to get section(%d) name from %s\n",
-+				   idx, path);
-+			goto done;
-+		}
-+		if (strcmp(name, BTF_ELF_SEC) == 0) {
-+			btf_data = elf_getdata(scn, 0);
-+			if (!btf_data) {
-+				pr_warning("failed to get section(%d, %s) data from %s\n",
-+					   idx, name, path);
-+				goto done;
-+			}
-+			continue;
-+		} else if (btf_ext && strcmp(name, BTF_EXT_ELF_SEC) == 0) {
-+			btf_ext_data = elf_getdata(scn, 0);
-+			if (!btf_ext_data) {
-+				pr_warning("failed to get section(%d, %s) data from %s\n",
-+					   idx, name, path);
-+				goto done;
-+			}
-+			continue;
-+		}
-+	}
-+
-+	err = 0;
-+
-+	if (!btf_data) {
-+		err = -ENOENT;
-+		goto done;
-+	}
-+	btf = btf__new(btf_data->d_buf, btf_data->d_size);
-+	if (IS_ERR(btf))
-+		goto done;
-+
-+	if (btf_ext && btf_ext_data) {
-+		*btf_ext = btf_ext__new(btf_ext_data->d_buf,
-+					btf_ext_data->d_size);
-+		if (IS_ERR(*btf_ext))
-+			goto done;
-+	} else if (btf_ext) {
-+		*btf_ext = NULL;
-+	}
-+done:
-+	if (elf)
-+		elf_end(elf);
-+	close(fd);
-+
-+	if (err)
-+		return ERR_PTR(err);
-+	/*
-+	 * btf is always parsed before btf_ext, so no need to clean up
-+	 * btf_ext, if btf loading failed
-+	 */
-+	if (IS_ERR(btf))
-+		return btf;
-+	if (btf_ext && IS_ERR(*btf_ext)) {
-+		btf__free(btf);
-+		err = PTR_ERR(*btf_ext);
-+		return ERR_PTR(err);
-+	}
-+	return btf;
-+}
-+
- static int compare_vsi_off(const void *_a, const void *_b)
+-static bool check_btf_endianness(GElf_Ehdr *ehdr)
+-{
+-	static unsigned int const endian = 1;
+-
+-	switch (ehdr->e_ident[EI_DATA]) {
+-	case ELFDATA2LSB:
+-		return *(unsigned char const *)&endian == 1;
+-	case ELFDATA2MSB:
+-		return *(unsigned char const *)&endian == 0;
+-	default:
+-		return 0;
+-	}
+-}
+-
+-static int btf_load_from_elf(const char *path, struct btf **btf)
+-{
+-	int err = -1, fd = -1, idx = 0;
+-	Elf_Data *btf_data = NULL;
+-	Elf_Scn *scn = NULL;
+-	Elf *elf = NULL;
+-	GElf_Ehdr ehdr;
+-
+-	if (elf_version(EV_CURRENT) == EV_NONE) {
+-		p_err("failed to init libelf for %s", path);
+-		return -1;
+-	}
+-
+-	fd = open(path, O_RDONLY);
+-	if (fd < 0) {
+-		p_err("failed to open %s: %s", path, strerror(errno));
+-		return -1;
+-	}
+-
+-	elf = elf_begin(fd, ELF_C_READ, NULL);
+-	if (!elf) {
+-		p_err("failed to open %s as ELF file", path);
+-		goto done;
+-	}
+-	if (!gelf_getehdr(elf, &ehdr)) {
+-		p_err("failed to get EHDR from %s", path);
+-		goto done;
+-	}
+-	if (!check_btf_endianness(&ehdr)) {
+-		p_err("non-native ELF endianness is not supported");
+-		goto done;
+-	}
+-	if (!elf_rawdata(elf_getscn(elf, ehdr.e_shstrndx), NULL)) {
+-		p_err("failed to get e_shstrndx from %s\n", path);
+-		goto done;
+-	}
+-
+-	while ((scn = elf_nextscn(elf, scn)) != NULL) {
+-		GElf_Shdr sh;
+-		char *name;
+-
+-		idx++;
+-		if (gelf_getshdr(scn, &sh) != &sh) {
+-			p_err("failed to get section(%d) header from %s",
+-			      idx, path);
+-			goto done;
+-		}
+-		name = elf_strptr(elf, ehdr.e_shstrndx, sh.sh_name);
+-		if (!name) {
+-			p_err("failed to get section(%d) name from %s",
+-			      idx, path);
+-			goto done;
+-		}
+-		if (strcmp(name, BTF_ELF_SEC) == 0) {
+-			btf_data = elf_getdata(scn, 0);
+-			if (!btf_data) {
+-				p_err("failed to get section(%d, %s) data from %s",
+-				      idx, name, path);
+-				goto done;
+-			}
+-			break;
+-		}
+-	}
+-
+-	if (!btf_data) {
+-		p_err("%s ELF section not found in %s", BTF_ELF_SEC, path);
+-		goto done;
+-	}
+-
+-	*btf = btf__new(btf_data->d_buf, btf_data->d_size);
+-	if (IS_ERR(*btf)) {
+-		err = PTR_ERR(*btf);
+-		*btf = NULL;
+-		p_err("failed to load BTF data from %s: %s",
+-		      path, strerror(err));
+-		goto done;
+-	}
+-
+-	err = 0;
+-done:
+-	if (err) {
+-		if (*btf) {
+-			btf__free(*btf);
+-			*btf = NULL;
+-		}
+-	}
+-	if (elf)
+-		elf_end(elf);
+-	close(fd);
+-	return err;
+-}
+-
+ static int do_dump(int argc, char **argv)
  {
- 	const struct btf_var_secinfo *a = _a;
-diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-index c7b399e81fce..bded210df9e8 100644
---- a/tools/lib/bpf/btf.h
-+++ b/tools/lib/bpf/btf.h
-@@ -59,6 +59,8 @@ struct btf_ext_header {
- 
- LIBBPF_API void btf__free(struct btf *btf);
- LIBBPF_API struct btf *btf__new(__u8 *data, __u32 size);
-+LIBBPF_API struct btf *btf__parse_elf(const char *path,
-+				      struct btf_ext **btf_ext);
- LIBBPF_API int btf__finalize_data(struct bpf_object *obj, struct btf *btf);
- LIBBPF_API int btf__load(struct btf *btf);
- LIBBPF_API __s32 btf__find_by_name(const struct btf *btf,
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 673001787cba..e0ec3fa52255 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -163,4 +163,5 @@ LIBBPF_0.0.3 {
- 		bpf_map__is_internal;
- 		bpf_map_freeze;
- 		btf__finalize_data;
-+		btf__parse_elf;
- } LIBBPF_0.0.2;
+ 	struct btf *btf = NULL;
+@@ -522,9 +416,14 @@ static int do_dump(int argc, char **argv)
+ 		}
+ 		NEXT_ARG();
+ 	} else if (is_prefix(src, "file")) {
+-		err = btf_load_from_elf(*argv, &btf);
+-		if (err)
++		btf = btf__parse_elf(*argv, NULL);
++		if (IS_ERR(btf)) {
++			err = PTR_ERR(btf);
++			btf = NULL;
++			p_err("failed to load BTF from %s: %s", 
++			      *argv, strerror(err));
+ 			goto done;
++		}
+ 		NEXT_ARG();
+ 	} else {
+ 		err = -1;
 -- 
 2.17.1
 
