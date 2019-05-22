@@ -2,129 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4229925AF4
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 01:52:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 393E325B22
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 02:25:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727809AbfEUXwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 19:52:47 -0400
-Received: from mail-eopbgr700088.outbound.protection.outlook.com ([40.107.70.88]:28128
-        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726434AbfEUXwq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 May 2019 19:52:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stackpath.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yXXOQhsgg5LPvRdht5kSoMp26m2VTfh23n8+xQGUTog=;
- b=cMPtQOlyl0fyrtSmjvF+c14TFYtQLO6qTTDMUhyJc1McMcD388DqCNJDwP1hOu3QxqWif72g6TkSYKA8cXlaTIvn21/sOsiC0tV8qbelbilsdL7ZQqH0JLPhhmKyW0ypNUf1OqmQLkYFhsn4qNaDnMmOBJmoy3WzuV+AgbI6fGA=
-Received: from BYAPR10MB2680.namprd10.prod.outlook.com (52.135.217.31) by
- BYAPR10MB3429.namprd10.prod.outlook.com (20.177.187.204) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.20; Tue, 21 May 2019 23:52:43 +0000
-Received: from BYAPR10MB2680.namprd10.prod.outlook.com
- ([fe80::ec8c:9c6a:c83f:43db]) by BYAPR10MB2680.namprd10.prod.outlook.com
- ([fe80::ec8c:9c6a:c83f:43db%7]) with mapi id 15.20.1900.020; Tue, 21 May 2019
- 23:52:43 +0000
-From:   Matthew Cover <matthew.cover@stackpath.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Matthew Cover <werekraken@gmail.com>
-Subject: tc_classid access in skb bpf context
-Thread-Topic: tc_classid access in skb bpf context
-Thread-Index: AQHVEC09Nj6ajF14HkezzoiQKGhG0Q==
-Date:   Tue, 21 May 2019 23:52:43 +0000
-Message-ID: <BYAPR10MB2680B63C684345098E6E7669E3070@BYAPR10MB2680.namprd10.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=matthew.cover@stackpath.com; 
-x-originating-ip: [24.56.44.135]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f3918b74-848a-47d1-c15a-08d6de476a8f
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR10MB3429;
-x-ms-traffictypediagnostic: BYAPR10MB3429:
-x-microsoft-antispam-prvs: <BYAPR10MB34291AB998FDF23F58C62129E3070@BYAPR10MB3429.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0044C17179
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(366004)(346002)(39850400004)(396003)(136003)(199004)(189003)(55016002)(9686003)(66066001)(26005)(44832011)(102836004)(99286004)(7696005)(71190400001)(81166006)(81156014)(8936002)(8676002)(53936002)(2906002)(7416002)(6116002)(6436002)(2201001)(86362001)(2501003)(71200400001)(316002)(305945005)(7736002)(3846002)(4326008)(478600001)(68736007)(186003)(74316002)(76116006)(66556008)(64756008)(66476007)(73956011)(66946007)(66446008)(14454004)(256004)(14444005)(5660300002)(52536014)(486006)(6506007)(25786009)(110136005)(476003)(33656002);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR10MB3429;H:BYAPR10MB2680.namprd10.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: stackpath.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: wkBwGHbzXDI8/GbNp6m8b1WWwWNrsFaIMYPdMWKw3EaYi3vV5NnbIp+6pN7HGVve2/e5UUrCkAT+jbldZSifdszr1ToelWDKvjuu/+CpTQSX0raGNZ/KMdjYgrugNMZjbrb5Hs3uvCsAYM3oM547GB61vhtVMbf5l4/MPAHYwMR3JtXe9a8zL+U5jCK0pEf9whdChIspzY/FAF6F/rCqwwKV8/ZE6YO+MphvgJF8LtNMQCu80iFFbncanRfEquNR6VWxgkJkfdi+Axei4L515pnVBZceRXEj8u0pmOkF06z+jjhmhH4zyltbyXV+KEgxd13ATPC3oIq8ZhtymNYlkD8z2Vdp/mhzaKGcuSpmGCY1NzBWRSClfSa9HY+zal3NRjc5hYE6zcIGc8DMMx2PwO7SDCUoUckMaz0V6fonA+o=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: stackpath.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3918b74-848a-47d1-c15a-08d6de476a8f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2019 23:52:43.0494
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: fd04f7e7-8712-48a5-bd2d-688fe1861f4b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3429
+        id S1727578AbfEVAZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 20:25:13 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:39923 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726083AbfEVAZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 20:25:12 -0400
+Received: by mail-pf1-f194.google.com with SMTP id z26so314637pfg.6
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 17:25:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=WKdP+UEeopxgjQSMgreuh4UMPqlIGzPch7aMirej5P8=;
+        b=FOEQ3T6KV+Zm+HLCKhE9E2PDvii1TMhAmtQjDsikEJm1s79QoDSjDJt4Cad3R7+9rc
+         HE/Uv371YdzVJl1/pypCWFd8ppLHjPnuIm4TYAZZcrvGVt5zXy2Y5SI6MD88+AGN2sK5
+         PDo4NCIE46howHVdeHO+6mccbk5izq8VH8M2CAPim7qqJU9Zya8I0kF0pG5umeuL0A9s
+         cess3wJ8fj7tRqXYspbTwBIXNdr7hljz9xfwjfivfJKIs8wlctNJanbKm5iqejiEO5mA
+         BDx/gFR9HBgNCib6r1N1DW+ZoFghU7ymdwK3OU9sOK18yY5T/WtCVQd7xat6kaL+sPVY
+         MNIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=WKdP+UEeopxgjQSMgreuh4UMPqlIGzPch7aMirej5P8=;
+        b=GvgQgD2g701uMt4r+ZRL/gmPyUv6SDhsvtgUt+PeVuXMOJu9eBCiJVwYqpAwyxBOcw
+         03I1TdkIaoKy4bWrDbgatP8sjfKXmjt/bEl7VmA7TJJJUkqjEz/gLqhZ6+UguLWSvnIc
+         OiYcf5lI2QAguVMkBTz7pya3+NJS6/ZMEdMXAhViuYVr7RM5x8xfhM+9ypq6K5wndXzs
+         JY62DO0+OKi1w76Lj+wdK1+lg5c2gwYQ6xWvkS98Dbp7Hya8tlYaWO0GHo7ZzannqvH7
+         QdtlVSqZiaVWLk/Cqd0zJOmCnnH5DXAp5fiRI3vJyNmE6Qyt4qyxqd90W823Ae3dJP5g
+         163A==
+X-Gm-Message-State: APjAAAVNmxmH7U8l3R6Uu9OwsK+hOHJ2dBFlMe2ECyfZp3rhjprHwFdG
+        sFyxcn9SXqiQIb4vusdXaTNG7s2vbg==
+X-Google-Smtp-Source: APXvYqxA6xx2iNLtVXLyRD2XgE8zWijBHNWThbYBKbfZqEpDfWQXud+Y5KN8sozkyN9pvUmOppA7uw==
+X-Received: by 2002:a62:4e86:: with SMTP id c128mr91271980pfb.39.1558484711831;
+        Tue, 21 May 2019 17:25:11 -0700 (PDT)
+Received: from localhost.localdomain ([114.71.48.108])
+        by smtp.gmail.com with ESMTPSA id e24sm35488433pgl.94.2019.05.21.17.25.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 May 2019 17:25:10 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] samples: bpf: fix style in bpf_load
+Date:   Wed, 22 May 2019 09:24:57 +0900
+Message-Id: <20190522002457.10181-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__sk_buff has a member tc_classid which I'm interested in accessing from th=
-e skb bpf context.
+This commit fixes style problem in samples/bpf/bpf_load.c
 
-A bpf program which accesses skb->tc_classid compiles, but fails verificati=
-on; the specific failure is "invalid bpf_context access".
+Styles that have been changed are:
+ - Magic string use of 'DEBUGFS'
+ - Useless zero initialization of a global variable
+ - Minor style fix with whitespace
 
-if (skb->tc_classid !=3D 0)
- return 1;
-return 0;
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+---
+ samples/bpf/bpf_load.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Some of the tests in tools/testing/selftests/bpf/verifier/ (those on tc_cla=
-ssid) further confirm that this is, in all likelihood, intentional behavior=
-.
+diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
+index eae7b635343d..e71d23d2a0ff 100644
+--- a/samples/bpf/bpf_load.c
++++ b/samples/bpf/bpf_load.c
+@@ -40,7 +40,7 @@ int prog_cnt;
+ int prog_array_fd = -1;
+ 
+ struct bpf_map_data map_data[MAX_MAPS];
+-int map_data_count = 0;
++int map_data_count;
+ 
+ static int populate_prog_array(const char *event, int prog_fd)
+ {
+@@ -57,6 +57,7 @@ static int populate_prog_array(const char *event, int prog_fd)
+ static int write_kprobe_events(const char *val)
+ {
+ 	int fd, ret, flags;
++	char buf[256];
+ 
+ 	if (val == NULL)
+ 		return -1;
+@@ -65,7 +66,9 @@ static int write_kprobe_events(const char *val)
+ 	else
+ 		flags = O_WRONLY | O_APPEND;
+ 
+-	fd = open("/sys/kernel/debug/tracing/kprobe_events", flags);
++	strcpy(buf, DEBUGFS);
++	strcat(buf, "kprobe_events");
++	fd = open(buf, flags);
+ 
+ 	ret = write(fd, val, strlen(val));
+ 	close(fd);
+@@ -490,8 +493,8 @@ static int load_elf_maps_section(struct bpf_map_data *maps, int maps_shndx,
+ 
+ 		/* Verify no newer features were requested */
+ 		if (validate_zero) {
+-			addr = (unsigned char*) def + map_sz_copy;
+-			end  = (unsigned char*) def + map_sz_elf;
++			addr = (unsigned char *) def + map_sz_copy;
++			end  = (unsigned char *) def + map_sz_elf;
+ 			for (; addr < end; addr++) {
+ 				if (*addr != 0) {
+ 					free(sym);
+-- 
+2.17.1
 
-The very similar bpf program which instead accesses skb->mark works as desi=
-red.
-
-if (skb->mark !=3D 0)
- return 1;
-return 0;
-
-I built a kernel (v5.1) with 4 instances of the following line removed from=
- net/core/filter.c to test the behavior when the instructions pass verifica=
-tion.
-
-    switch (off) {
--    case bpf_ctx_range(struct __sk_buff, tc_classid):
-...
-        return false;
-
-It appears skb->tc_classid is always zero within my bpf program, even when =
-I verify by other means (e.g. netfilter) that the value is set non-zero.
-
-I gather that sk_buff proper sometimes (i.e. at some layers) has qdisc_skb_=
-cb stored in skb->cb, but not always.
-
-I suspect that the tc_classid is available at l3 (and therefore to utils li=
-ke netfilter, ip route, tc), but not at l2 (and not to AF_PACKET).
-
-Is it impractical to make skb->tc_classid available in this bpf context or =
-is there just some plumbing which hasn't been connected yet?
-
-Is my suspicion that skb->cb no longer contains qdisc_skb_cb due to crossin=
-g a layer boundary well founded?
-
-I'm willing to look into hooking things together as time permits if it's a =
-feasible task.
-
-It's trivial to have iptables match on tc_classid and set a mark which is a=
-vailable to bpf at l2, but I'd like to better understand this.
-
-Thanks,
-Matt C.=
