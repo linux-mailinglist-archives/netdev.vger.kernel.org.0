@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D1726FD3
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 726C926B0C
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:23:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730917AbfEVTXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:23:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44388 "EHLO mail.kernel.org"
+        id S1730957AbfEVTXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:23:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44436 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730072AbfEVTXb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:23:31 -0400
+        id S1730920AbfEVTXd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:23:33 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 00CB120879;
-        Wed, 22 May 2019 19:23:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3187E21473;
+        Wed, 22 May 2019 19:23:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558553010;
-        bh=P+R2WS1P5K+edrz0F0rQKyDg6nYgS4/rJHr/X8Zb5kw=;
+        s=default; t=1558553012;
+        bh=9kA7/3NfFEuzmb1BGqSNJEJHToYnF5TiQxVFRt+cegs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=peGvIh1jtRnM31XLtqHZTKxEfBckIK2MUOzWBek8DipbdVnqhEX94ZbWVA3V0OO+V
-         aKXO2L6s02265GP3CSudNpLAb0K14zAhnkk5BRVGmF3tA8u4dcg8CiuMeptUMeDn5s
-         zG7Te2npek3qMbXBrI5X8KWoTl7IYJBvAuKrK/jw=
+        b=N7Hcjh1AOO9RclKxv9O30zyGewpf33YY5ebhaKXbwJykoqRTJCYuS9ESBGkTlGfoz
+         OIttdH9CDrw8YPf3dXEJAnfjY7AibfR5e5tKOQpJQMUjdsWu9MKz/fg3eExvl833fA
+         4KbPbYxZhfN6w/V8scE/LRCJVCUQZk1vh1/2Z3qM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huazhong Tan <tanhuazhong@huawei.com>,
-        Peng Li <lipeng321@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 074/375] net: hns3: use atomic_t replace u32 for arq's count
-Date:   Wed, 22 May 2019 15:16:14 -0400
-Message-Id: <20190522192115.22666-74-sashal@kernel.org>
+Cc:     Sergey Matyukevich <sergey.matyukevich.os@quantenna.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 076/375] mac80211/cfg80211: update bss channel on channel switch
+Date:   Wed, 22 May 2019 15:16:16 -0400
+Message-Id: <20190522192115.22666-76-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192115.22666-1-sashal@kernel.org>
 References: <20190522192115.22666-1-sashal@kernel.org>
@@ -44,82 +44,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huazhong Tan <tanhuazhong@huawei.com>
+From: Sergey Matyukevich <sergey.matyukevich.os@quantenna.com>
 
-[ Upstream commit 30780a8b1677e7409b32ae52a9a84f7d41ae6b43 ]
+[ Upstream commit 5dc8cdce1d722c733f8c7af14c5fb595cfedbfa8 ]
 
-Since irq handler and mailbox task will both update arq's count,
-so arq's count should use atomic_t instead of u32, otherwise
-its value may go wrong finally.
+FullMAC STAs have no way to update bss channel after CSA channel switch
+completion. As a result, user-space tools may provide inconsistent
+channel info. For instance, consider the following two commands:
+$ sudo iw dev wlan0 link
+$ sudo iw dev wlan0 info
+The latter command gets channel info from the hardware, so most probably
+its output will be correct. However the former command gets channel info
+from scan cache, so its output will contain outdated channel info.
+In fact, current bss channel info will not be updated until the
+next [re-]connect.
 
-Fixes: 07a0556a3a73 ("net: hns3: Changes to support ARQ(Asynchronous Receive Queue)")
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Note that mac80211 STAs have a workaround for this, but it requires
+access to internal cfg80211 data, see ieee80211_chswitch_work:
+
+	/* XXX: shouldn't really modify cfg80211-owned data! */
+	ifmgd->associated->channel = sdata->csa_chandef.chan;
+
+This patch suggests to convert mac80211 workaround into cfg80211 behavior
+and to update current bss channel in cfg80211_ch_switch_notify.
+
+Signed-off-by: Sergey Matyukevich <sergey.matyukevich.os@quantenna.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h          | 2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c | 2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c | 7 ++++---
- 3 files changed, 6 insertions(+), 5 deletions(-)
+ net/mac80211/mlme.c    | 3 ---
+ net/wireless/nl80211.c | 5 +++++
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-index 299b277bc7ae9..589b7ee32bff8 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-@@ -107,7 +107,7 @@ struct hclgevf_mbx_arq_ring {
- 	struct hclgevf_dev *hdev;
- 	u32 head;
- 	u32 tail;
--	u32 count;
-+	atomic_t count;
- 	u16 msg_q[HCLGE_MBX_MAX_ARQ_MSG_NUM][HCLGE_MBX_MAX_ARQ_MSG_SIZE];
- };
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-index 9441b453d38df..9a0a501908aec 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-@@ -327,7 +327,7 @@ int hclgevf_cmd_init(struct hclgevf_dev *hdev)
- 	hdev->arq.hdev = hdev;
- 	hdev->arq.head = 0;
- 	hdev->arq.tail = 0;
--	hdev->arq.count = 0;
-+	atomic_set(&hdev->arq.count, 0);
- 	hdev->hw.cmq.csq.next_to_clean = 0;
- 	hdev->hw.cmq.csq.next_to_use = 0;
- 	hdev->hw.cmq.crq.next_to_clean = 0;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-index 7dc3c9f79169f..4f2c77283cb43 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-@@ -208,7 +208,8 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
- 			/* we will drop the async msg if we find ARQ as full
- 			 * and continue with next message
- 			 */
--			if (hdev->arq.count >= HCLGE_MBX_MAX_ARQ_MSG_NUM) {
-+			if (atomic_read(&hdev->arq.count) >=
-+			    HCLGE_MBX_MAX_ARQ_MSG_NUM) {
- 				dev_warn(&hdev->pdev->dev,
- 					 "Async Q full, dropping msg(%d)\n",
- 					 req->msg[1]);
-@@ -220,7 +221,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
- 			memcpy(&msg_q[0], req->msg,
- 			       HCLGE_MBX_MAX_ARQ_MSG_SIZE * sizeof(u16));
- 			hclge_mbx_tail_ptr_move_arq(hdev->arq);
--			hdev->arq.count++;
-+			atomic_inc(&hdev->arq.count);
- 
- 			hclgevf_mbx_task_schedule(hdev);
- 
-@@ -308,7 +309,7 @@ void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
- 		}
- 
- 		hclge_mbx_head_ptr_move_arq(hdev->arq);
--		hdev->arq.count--;
-+		atomic_dec(&hdev->arq.count);
- 		msg_q = hdev->arq.msg_q[hdev->arq.head];
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index 2dbcf5d5512ef..b7a9fe3d5fcb7 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -1188,9 +1188,6 @@ static void ieee80211_chswitch_work(struct work_struct *work)
+ 		goto out;
  	}
+ 
+-	/* XXX: shouldn't really modify cfg80211-owned data! */
+-	ifmgd->associated->channel = sdata->csa_chandef.chan;
+-
+ 	ifmgd->csa_waiting_bcn = true;
+ 
+ 	ieee80211_sta_reset_beacon_monitor(sdata);
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 47e30a58566c2..d2a7459a5da43 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -15727,6 +15727,11 @@ void cfg80211_ch_switch_notify(struct net_device *dev,
+ 
+ 	wdev->chandef = *chandef;
+ 	wdev->preset_chandef = *chandef;
++
++	if (wdev->iftype == NL80211_IFTYPE_STATION &&
++	    !WARN_ON(!wdev->current_bss))
++		wdev->current_bss->pub.channel = chandef->chan;
++
+ 	nl80211_ch_switch_notify(rdev, dev, chandef, GFP_KERNEL,
+ 				 NL80211_CMD_CH_SWITCH_NOTIFY, 0);
  }
 -- 
 2.20.1
