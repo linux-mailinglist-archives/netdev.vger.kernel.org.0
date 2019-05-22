@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92BB4270EC
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 958E7270F0
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:42:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730114AbfEVUlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 16:41:08 -0400
-Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:59466 "EHLO
-        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729938AbfEVUlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 16:41:07 -0400
-Received: from pps.filterd (m0122333.ppops.net [127.0.0.1])
-        by mx0a-00190b01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MKbTG3017123;
-        Wed, 22 May 2019 21:41:02 +0100
+        id S1730145AbfEVUmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 16:42:13 -0400
+Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:60798 "EHLO
+        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729528AbfEVUmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 16:42:13 -0400
+Received: from pps.filterd (m0050096.ppops.net [127.0.0.1])
+        by m0050096.ppops.net-00190b01. (8.16.0.27/8.16.0.27) with SMTP id x4MKb3Sk004269;
+        Wed, 22 May 2019 21:42:07 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : in-reply-to :
  references; s=jan2016.eng;
- bh=FwvXBlslcYLmy3AG7mrdtPV1pU+TP2G/tCNgxUsboGM=;
- b=Y/wA8zCvyZWF2XHqxrtpdjQk9oxTcZsZMH9R2EIKfm2kWUpDiVTm4DXWAzTbZdFUF9/3
- cRuqWrj3dEdu2aW+D+kZNATqqibH9l1Qp+IQXw2nFBAWRxp929usq5TViG3Y/5cZ7Jh9
- TbE430sq59F8tNXdrsOCMqVEjzD/Plfz8tN2hxzg8M5xEstQnMVisiHT1j1eSVoyuTTZ
- fTo18C9lfRispfe73t5WQr/AxKYvwRKuB5fOsw9RGJhyY24m/mMcNwGncfzgSuetlAUo
- KNAl42anFZObTphRbzJyifypwQ+29tUfCdxJcs0dk16sU239XPOa7vqJONN6P01Sk8WW zA== 
+ bh=/mLXx6iwCW5XOYkc/piGc+DI17jP3DsArxx8sw+T1GM=;
+ b=BuRunKIGPrR59r/nHAvWNA0F+NNPS/SuI9rP67qgE+PnGoEZEd41zIxD71ZgYKVbGW5J
+ ny4nxbYqJVoKbCVD6JbSnkTG8J+skQcu5Ya9luWfmjViVPCd12C4AhWMYYAmsHAwlyiy
+ 3tx2yS8ytSd2aUtwcLJD8C8q/hyMd9rk+kDaqGQ2up43V4sxL6/VA9eddDetmFWBFaeq
+ jRwjeXJOV0J0ryrZaO58U2JQ020//dWnYrLWNHoeKMjQn+JJt7fV0WpxPAp0ZH8oDBD0
+ irpijEcDqF4LcWAGzHmaP9BjVFxQOMRcKxexb/ORKLyfaNXN4jJGNUjrJf+0DI/OTRuV dA== 
 Received: from prod-mail-ppoint1 (prod-mail-ppoint1.akamai.com [184.51.33.18] (may be forged))
-        by mx0a-00190b01.pphosted.com with ESMTP id 2sn8r5170x-1
+        by m0050096.ppops.net-00190b01. with ESMTP id 2smxegwvju-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 May 2019 21:41:01 +0100
+        Wed, 22 May 2019 21:42:07 +0100
 Received: from pps.filterd (prod-mail-ppoint1.akamai.com [127.0.0.1])
-        by prod-mail-ppoint1.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x4MKX5oF011403;
-        Wed, 22 May 2019 16:41:00 -0400
+        by prod-mail-ppoint1.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x4MKXCg5011409;
+        Wed, 22 May 2019 16:42:06 -0400
 Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
-        by prod-mail-ppoint1.akamai.com with ESMTP id 2sjdcvsjuf-4;
-        Wed, 22 May 2019 16:41:00 -0400
+        by prod-mail-ppoint1.akamai.com with ESMTP id 2sjdcvsk0m-1;
+        Wed, 22 May 2019 16:42:06 -0400
 Received: from bos-lpjec.kendall.corp.akamai.com (bos-lpjec.kendall.corp.akamai.com [172.29.170.83])
-        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id 536021FC76;
+        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id DC04032A88;
         Wed, 22 May 2019 20:40:30 +0000 (GMT)
 From:   Jason Baron <jbaron@akamai.com>
 To:     davem@davemloft.net, edumazet@google.com
 Cc:     ycheng@google.com, ilubashe@akamai.com, netdev@vger.kernel.org,
         Christoph Paasch <cpaasch@apple.com>
-Subject: [PATCH net-next 4/6] tcp: add support for optional TFO backup key to /proc/sys/net/ipv4/tcp_fastopen_key
-Date:   Wed, 22 May 2019 16:39:36 -0400
-Message-Id: <9cfe2b526d51324770c52510e2bbaf7e7d9b4d27.1558557001.git.jbaron@akamai.com>
+Subject: [PATCH net-next 5/6] Documentation: ip-sysctl.txt: Document tcp_fastopen_key
+Date:   Wed, 22 May 2019 16:39:37 -0400
+Message-Id: <aa4defa5f0f75908b140855e4495388468a94c01.1558557001.git.jbaron@akamai.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1558557001.git.jbaron@akamai.com>
 References: <cover.1558557001.git.jbaron@akamai.com>
@@ -66,164 +66,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the ability to add a backup TFO key as:
-
-# echo "x-x-x-x,x-x-x-x" > /proc/sys/net/ipv4/tcp_fastopen_key
-
-The key before the comma acks as the primary TFO key and the key after the
-comma is the backup TFO key. This change is intended to be backwards
-compatible since if only one key is set, userspace will simply read back
-that single key as follows:
-
-# echo "x-x-x-x" > /proc/sys/net/ipv4/tcp_fastopen_key
-# cat /proc/sys/net/ipv4/tcp_fastopen_key
-x-x-x-x
+Add docs for /proc/sys/net/ipv4/tcp_fastopen_key
 
 Signed-off-by: Christoph Paasch <cpaasch@apple.com>
 Signed-off-by: Jason Baron <jbaron@akamai.com>
 ---
- net/ipv4/sysctl_net_ipv4.c | 95 ++++++++++++++++++++++++++++++++++------------
- 1 file changed, 71 insertions(+), 24 deletions(-)
+ Documentation/networking/ip-sysctl.txt | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 72dc8ca..90f09e4 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -277,55 +277,97 @@ static int proc_allowed_congestion_control(struct ctl_table *ctl,
- 	return ret;
- }
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index 14fe930..e8d848e 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -648,6 +648,26 @@ tcp_fastopen_blackhole_timeout_sec - INTEGER
+ 	0 to disable the blackhole detection.
+ 	By default, it is set to 1hr.
  
-+static int sscanf_key(char *buf, __le32 *key)
-+{
-+	u32 user_key[4];
-+	int i, ret = 0;
++tcp_fastopen_key - list of comma separated 32-digit hexadecimal INTEGERs
++	The list consists of a primary key and an optional backup key. The
++	primary key is used for both creating and validating cookies, while the
++	optional backup key is only used for validating cookies. The purpose of
++	the backup key is to maximize TFO validation when keys are rotated.
 +
-+	if (sscanf(buf, "%x-%x-%x-%x", user_key, user_key + 1,
-+		   user_key + 2, user_key + 3) != 4) {
-+		ret = -EINVAL;
-+	} else {
-+		for (i = 0; i < ARRAY_SIZE(user_key); i++)
-+			key[i] = cpu_to_le32(user_key[i]);
-+	}
-+	pr_debug("proc TFO key set 0x%x-%x-%x-%x <- 0x%s: %u\n",
-+		 user_key[0], user_key[1], user_key[2], user_key[3], buf, ret);
++	A randomly chosen primary key may be configured by the kernel if
++	the tcp_fastopen sysctl is set to 0x400 (see above), or if the
++	TCP_FASTOPEN setsockopt() optname is set and a key has not been
++	previously configured via sysctl. If keys are configured via
++	setsockopt() by using the TCP_FASTOPEN_KEY optname, then those
++	per-socket keys will be used instead of any keys that are specified via
++	sysctl.
 +
-+	return ret;
-+}
++	A key is specified as 4 8-digit hexadecimal integers which are separted
++	by a '-' as: xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx. Leading zeros may be
++	omitted. A primary and a backup key may be specified by separting them
++	by a comma. If only one key is specified, it becomes the primary key and
++	any previous backup keys are removed.
 +
- static int proc_tcp_fastopen_key(struct ctl_table *table, int write,
- 				 void __user *buffer, size_t *lenp,
- 				 loff_t *ppos)
- {
- 	struct net *net = container_of(table->data, struct net,
- 	    ipv4.sysctl_tcp_fastopen);
--	struct ctl_table tbl = { .maxlen = (TCP_FASTOPEN_KEY_LENGTH * 2 + 10) };
--	struct tcp_fastopen_context *ctxt;
--	u32  user_key[4]; /* 16 bytes, matching TCP_FASTOPEN_KEY_LENGTH */
--	__le32 key[4];
--	int ret, i;
-+	/* maxlen to print the list of keys in hex (*2), with dashes
-+	 * separating doublewords and a comma in between keys.
-+	 */
-+	struct ctl_table tbl = { .maxlen = ((TCP_FASTOPEN_KEY_LENGTH *
-+					    2 * TCP_FASTOPEN_KEY_MAX) +
-+					    (TCP_FASTOPEN_KEY_MAX * 5)) };
-+	struct tcp_fastopen_context *ctx;
-+	u32 user_key[TCP_FASTOPEN_KEY_MAX * 4];
-+	__le32 key[TCP_FASTOPEN_KEY_MAX * 4];
-+	char *backup_data;
-+	int ret, i = 0, off = 0, n_keys = 0;
- 
- 	tbl.data = kmalloc(tbl.maxlen, GFP_KERNEL);
- 	if (!tbl.data)
- 		return -ENOMEM;
- 
- 	rcu_read_lock();
--	ctxt = rcu_dereference(net->ipv4.tcp_fastopen_ctx);
--	if (ctxt)
--		memcpy(key, ctxt->key, TCP_FASTOPEN_KEY_LENGTH);
--	else
--		memset(key, 0, sizeof(key));
-+	ctx = rcu_dereference(net->ipv4.tcp_fastopen_ctx);
-+	if (ctx) {
-+		n_keys = tcp_fastopen_context_len(ctx);
-+		memcpy(&key[0], &ctx->key[0], TCP_FASTOPEN_KEY_LENGTH * n_keys);
-+	}
- 	rcu_read_unlock();
- 
--	for (i = 0; i < ARRAY_SIZE(key); i++)
-+	if (!n_keys) {
-+		memset(&key[0], 0, TCP_FASTOPEN_KEY_LENGTH);
-+		n_keys = 1;
-+	}
-+
-+	for (i = 0; i < n_keys * 4; i++)
- 		user_key[i] = le32_to_cpu(key[i]);
- 
--	snprintf(tbl.data, tbl.maxlen, "%08x-%08x-%08x-%08x",
--		user_key[0], user_key[1], user_key[2], user_key[3]);
-+	for (i = 0; i < n_keys; i++) {
-+		off += snprintf(tbl.data + off, tbl.maxlen - off,
-+				"%08x-%08x-%08x-%08x",
-+				user_key[i * 4],
-+				user_key[i * 4 + 1],
-+				user_key[i * 4 + 2],
-+				user_key[i * 4 + 3]);
-+		if (i + 1 < n_keys)
-+			off += snprintf(tbl.data + off, tbl.maxlen - off, ",");
-+	}
-+
- 	ret = proc_dostring(&tbl, write, buffer, lenp, ppos);
- 
- 	if (write && ret == 0) {
--		if (sscanf(tbl.data, "%x-%x-%x-%x", user_key, user_key + 1,
--			   user_key + 2, user_key + 3) != 4) {
-+		backup_data = strchr(tbl.data, ',');
-+		if (backup_data) {
-+			*backup_data = '\0';
-+			backup_data++;
-+		}
-+		if (sscanf_key(tbl.data, key)) {
- 			ret = -EINVAL;
- 			goto bad_key;
- 		}
--
--		for (i = 0; i < ARRAY_SIZE(user_key); i++)
--			key[i] = cpu_to_le32(user_key[i]);
--
--		tcp_fastopen_reset_cipher(net, NULL, key, NULL,
-+		if (backup_data) {
-+			if (sscanf_key(backup_data, key + 4)) {
-+				ret = -EINVAL;
-+				goto bad_key;
-+			}
-+		}
-+		tcp_fastopen_reset_cipher(net, NULL, key,
-+					  backup_data ? key + 4 : NULL,
- 					  TCP_FASTOPEN_KEY_LENGTH);
- 	}
- 
- bad_key:
--	pr_debug("proc FO key set 0x%x-%x-%x-%x <- 0x%s: %u\n",
--		user_key[0], user_key[1], user_key[2], user_key[3],
--	       (char *)tbl.data, ret);
- 	kfree(tbl.data);
- 	return ret;
- }
-@@ -933,7 +975,12 @@ static struct ctl_table ipv4_net_table[] = {
- 		.procname	= "tcp_fastopen_key",
- 		.mode		= 0600,
- 		.data		= &init_net.ipv4.sysctl_tcp_fastopen,
--		.maxlen		= ((TCP_FASTOPEN_KEY_LENGTH * 2) + 10),
-+		/* maxlen to print the list of keys in hex (*2), with dashes
-+		 * separating doublewords and a comma in between keys.
-+		 */
-+		.maxlen		= ((TCP_FASTOPEN_KEY_LENGTH *
-+				   2 * TCP_FASTOPEN_KEY_MAX) +
-+				   (TCP_FASTOPEN_KEY_MAX * 5)),
- 		.proc_handler	= proc_tcp_fastopen_key,
- 	},
- 	{
+ tcp_syn_retries - INTEGER
+ 	Number of times initial SYNs for an active TCP connection attempt
+ 	will be retransmitted. Should not be higher than 127. Default value
 -- 
 2.7.4
 
