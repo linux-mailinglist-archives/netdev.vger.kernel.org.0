@@ -2,90 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 414FF25BD4
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 04:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E30425BD5
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 04:02:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728097AbfEVB77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 May 2019 21:59:59 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:33604 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726466AbfEVB77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 21:59:59 -0400
-Received: by mail-qk1-f196.google.com with SMTP id p18so534697qkk.0
-        for <netdev@vger.kernel.org>; Tue, 21 May 2019 18:59:58 -0700 (PDT)
+        id S1728091AbfEVCCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 May 2019 22:02:13 -0400
+Received: from mail-qt1-f176.google.com ([209.85.160.176]:38334 "EHLO
+        mail-qt1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726466AbfEVCCN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 May 2019 22:02:13 -0400
+Received: by mail-qt1-f176.google.com with SMTP id l3so551785qtj.5
+        for <netdev@vger.kernel.org>; Tue, 21 May 2019 19:02:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dHZZ6RAQNWBNs9T3V3H/VBDcHcHicFdtwaSrNqnH0Uo=;
-        b=GaZEBVb9Yamu+97wBxSz1bAwDhunSSgI+EAKA+opF3MNdiaw5jNvmQMvVxx5m48Egt
-         CuABuTwNBNW3THzj1PO2HNrfGxjBGgQVgefcEjYvAOqhlmGJWR/3tUQMBk31AM8R4J+g
-         R8UspKlOy+VwSJiDO2Eq0ZmBFjJb3DW8XNOGSvFVrB0cwpLZ5bSUGvYFRqu8pjjOR4KM
-         7Z6vUoYhmC58PagajuLstbSrsFjq1b4KNFqqNiI0aVx8gM/s68vX1RHAnjO5JUWo2P0b
-         o9fDv7xLuOWpnjKeGr6Qksvie3c0gT7UsRqFhFOv/qtRmIqg0bZW/KUtJnWCaXeOOTnx
-         BTuQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LgJiNqIQYe4dm+RTF/vNdCAbo3J6Na+8TIs8YuTA9pU=;
+        b=CxpdHltDHaItZyQohe2SIxiTM8Nvbs/aPr2+5XSoMFVMGZxhDYUwtqfKru/J7ijaJp
+         HzRxQ+Grr7tXZYF6LnKKHaaehF+2boBJbBZOGT5McAc04b26gGMQjcR61A7n04zeaP/b
+         ezjkcBpATKfxfo/JhTNt23lqfzVxBgxtl2kzoU2Rkr8h/5F2ehuFTQTMXmJIL+YHLhwC
+         1Nwms97boEXEhIvsRCNwx1fklFTBSkqvfn+wGs3XU5q8umjoplVa73vA9jpl8agi3rVw
+         AIQ/77Wbd+efuYH+z8VgR1f2Xc+ScS0l3ZDtJq6q+EL1HSFAuDEvNMy0Ns6EqDlWb6pq
+         t8Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dHZZ6RAQNWBNs9T3V3H/VBDcHcHicFdtwaSrNqnH0Uo=;
-        b=Nm7ysLEfil/TV96aKEeNgn14rGgjB9bY9TR2rmX5YI5/ru0uuXMX/6S1ZLSG/A6GUr
-         6vULllyQ3+7qOt/L26+HABYuP0rqUP8NOKq7aZ2HPYnOUjil0cB+uLsJImeLsRdvbZEI
-         8XpaJz+OltEgkE1V1xVSgN9zXCHHblaNACy++eSq4pkEnb/FC3Vk9F/Cou/oBrKvcCW/
-         wbCKTEdpv9udm6vNlziq1P6qhxvVU12YTuPD0S6hgI0VY/ra75iDMsdEAndeapT3UxVv
-         Zje/d8ZwWd/Yuwqiew2SfDN04wT14GuSc7sCkqXHaF22eGOU3jHzDnBhUqcssKCtTGjk
-         ILuA==
-X-Gm-Message-State: APjAAAXJ+1D6I7WERij2QyU5UzTgtQqPpaiHGsN1HXfNe4RNRwMBBC/z
-        zimGLIrH2OFJp7n2bU3hmethLfh5rSpHumDOjHc=
-X-Google-Smtp-Source: APXvYqwsgoDOxC808Luqsg6nGqXvmpgcQGnO/3jUXnS389adlBGniXaAnKskQ9IG5uyVhc/IEXmPHRffmbwqNQDBEwo=
-X-Received: by 2002:a37:c401:: with SMTP id d1mr27476171qki.119.1558490398123;
- Tue, 21 May 2019 18:59:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LgJiNqIQYe4dm+RTF/vNdCAbo3J6Na+8TIs8YuTA9pU=;
+        b=HgrMWpsTO+vSPS/c25fJ7QXMkcpGRBGls7aOYCPehDpJlMNHan8GvKJuY9VFF0N28G
+         ZRDalI5BLU/aXqNAwnh7ioHz1DLVcYXP0g+aeuMKqMAue5rbqekdHaE0emjn+g7mXFBR
+         8irXHbl2Avnbz213GTzldca+N3C+NyQrMQjUU8JRnUHCviyWkbb7cPsnArqNi5Xnttkm
+         IaFk4B9UFgfI+lUfIslOAv8WQWcEQlJRSjEKT7RZXTWzGw8JpWJqnOTaB3gy+VnQtHpv
+         kQz7Gap1Yg3Zh7io1ga80scXKe0kH+lTyJmYD+jI6Oon7V44Ke4iHIMajo4lEgSYI6lY
+         spWA==
+X-Gm-Message-State: APjAAAXKloHnJFdfqyEiWchPWKztTcxiZ/yn7ZnUhNSrKepuNwcLZVEg
+        GASwQQj19zTT2wPnemG3gooe4w==
+X-Google-Smtp-Source: APXvYqxTeZ2xT4ciZAe+C/j2X1HlrLCA8fq8DI5IErFAtCLxqRIC2d92mR/oQoNDZcTKeCVMnN7UOA==
+X-Received: by 2002:aed:3bc5:: with SMTP id s5mr32948517qte.2.1558490532674;
+        Tue, 21 May 2019 19:02:12 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id w195sm11440663qkb.54.2019.05.21.19.02.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 May 2019 19:02:11 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        borisp@mellanox.com, alexei.starovoitov@gmail.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net 0/3] net/tls: fix device surprise removal with offload
+Date:   Tue, 21 May 2019 19:01:59 -0700
+Message-Id: <20190522020202.4792-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190519090544.26971-1-luke.tw@gmail.com> <bf57f48d5318450b95746f9f91418153@AcuMS.aculab.com>
-In-Reply-To: <bf57f48d5318450b95746f9f91418153@AcuMS.aculab.com>
-From:   luke <luke.tw@gmail.com>
-Date:   Wed, 22 May 2019 09:59:32 +0800
-Message-ID: <CAGVycpbBAWUz2xCRG82ZH3EfmSR277kqgRfAznY+3Kq-iumf0Q@mail.gmail.com>
-Subject: Re: [PATCH] samples: bpf: fix: change the buffer size for read()
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 11:05 PM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Chang-Hsien Tsai
-> > @@ -678,7 +678,7 @@ void read_trace_pipe(void)
-> >               static char buf[4096];
-> >               ssize_t sz;
-> >
-> > -             sz = read(trace_fd, buf, sizeof(buf));
-> > +             sz = read(trace_fd, buf, sizeof(buf)-1);
-> >               if (sz > 0) {
-> >                       buf[sz] = 0;
-> >                       puts(buf);
->
-> Why not change the puts() to fwrite(buf, sz, 1, stdout) ?
-> Then you don't need the '\0' terminator.
->
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
->
+Hi!
 
-Yes.
-But, this will be different with the original code.
-puts(buf) prints buf and a terminating newline character.
+This series fixes two issues with device surprise removal.
+First we need to take a read lock around resync, otherwise
+netdev notifier handler may clear the structures from under
+our feet.
 
---
-Chang-Hsien Tsai
+Secondly we need to be careful about the interpretation
+of device features.  Offload has to be properly cleaned
+up even if the TLS device features got cleared after
+connection state was installed.
+
+Jakub Kicinski (3):
+  net/tls: avoid NULL-deref on resync during device removal
+  net/tls: fix state removal with feature flags off
+  net/tls: don't ignore netdev notifications if no TLS features
+
+ net/tls/tls_device.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+-- 
+2.21.0
+
