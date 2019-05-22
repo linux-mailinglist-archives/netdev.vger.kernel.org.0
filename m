@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED7B926AD3
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:22:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 778F226AD4
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:22:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730070AbfEVTVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:21:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42282 "EHLO mail.kernel.org"
+        id S1730111AbfEVTVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:21:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42428 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730027AbfEVTVk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:21:40 -0400
+        id S1730091AbfEVTVr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:21:47 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 671ED2177E;
-        Wed, 22 May 2019 19:21:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 91E1F21473;
+        Wed, 22 May 2019 19:21:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558552900;
-        bh=eykYNv6pdyHVJDIhpL5jl/+NPZPjsRX9ZsWonZ/WAVc=;
+        s=default; t=1558552907;
+        bh=C0r+/pATXVdBaBIXsTrqqwu3xhz3epE8VJyDmAubfoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hI9jma/XAUPPHLgo4yfxUsIntTtSC1WCsywj+Vlw5D0YNA9U+ZAc5JUxUEISrVG5M
-         u/Ff/0IPwqthoRjzZ25iqjSOCUXwtNo9UNmmdtibFclqsXAlCL3wkGdjIj40v+JD2T
-         XYdjwFmhYy6m/lYSb1kkt7PeVdHtv+hMhENFAKJ8=
+        b=VwxXnqzGoxGiLts5EhtWGQ1lqzIrILr34BpWweYUjMn3WTsYlF/zmB+8/PF0NYzMK
+         ro+17DVE6woI0M3qau8h3FQuBigdQwpO3ErgJWZ169OSacUmwYTCe1MyezX+4ptGsg
+         vjOiaQHKhfHLiV1HEnZXWSrllFU0k/pJhubsSWKI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+Cc:     Sameeh Jubran <sameehj@amazon.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 018/375] ice: Preserve VLAN Rx stripping settings
-Date:   Wed, 22 May 2019 15:15:18 -0400
-Message-Id: <20190522192115.22666-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 022/375] net: ena: gcc 8: fix compilation warning
+Date:   Wed, 22 May 2019 15:15:22 -0400
+Message-Id: <20190522192115.22666-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192115.22666-1-sashal@kernel.org>
 References: <20190522192115.22666-1-sashal@kernel.org>
@@ -45,38 +43,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
+From: Sameeh Jubran <sameehj@amazon.com>
 
-[ Upstream commit e80e76db6c5bbc7a8f8512f3dc630a2170745b0b ]
+[ Upstream commit f913308879bc6ae437ce64d878c7b05643ddea44 ]
 
-When Tx insertion is set, we are not accounting for the state of Rx
-stripping.  This causes Rx stripping to be enabled any time Tx
-insertion is changed, even when it's supposed to be disabled.
+GCC 8 contains a number of new warnings as well as enhancements to existing
+checkers. The warning - Wstringop-truncation - warns for calls to bounded
+string manipulation functions such as strncat, strncpy, and stpncpy that
+may either truncate the copied string or leave the destination unchanged.
 
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+In our case the destination string length (32 bytes) is much shorter than
+the source string (64 bytes) which causes this warning to show up. In
+general the destination has to be at least a byte larger than the length
+of the source string with strncpy for this warning not to showup.
+
+This can be easily fixed by using strlcpy instead which already does the
+truncation to the string. Documentation for this function can be
+found here:
+
+https://elixir.bootlin.com/linux/latest/source/lib/string.c#L141
+
+Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
+Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index fa61203bee269..b710545cf7d1a 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -1848,6 +1848,10 @@ int ice_vsi_manage_vlan_insertion(struct ice_vsi *vsi)
- 	 */
- 	ctxt->info.vlan_flags = ICE_AQ_VSI_VLAN_MODE_ALL;
- 
-+	/* Preserve existing VLAN strip setting */
-+	ctxt->info.vlan_flags |= (vsi->info.vlan_flags &
-+				  ICE_AQ_VSI_VLAN_EMOD_M);
-+
- 	ctxt->info.valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_VLAN_VALID);
- 
- 	status = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index a6eacf2099c30..41c1c9acb3246 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -2292,7 +2292,7 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev,
+ 	host_info->bdf = (pdev->bus->number << 8) | pdev->devfn;
+ 	host_info->os_type = ENA_ADMIN_OS_LINUX;
+ 	host_info->kernel_ver = LINUX_VERSION_CODE;
+-	strncpy(host_info->kernel_ver_str, utsname()->version,
++	strlcpy(host_info->kernel_ver_str, utsname()->version,
+ 		sizeof(host_info->kernel_ver_str) - 1);
+ 	host_info->os_dist = 0;
+ 	strncpy(host_info->os_dist_str, utsname()->release,
 -- 
 2.20.1
 
