@@ -2,123 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB87026FEF
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1921426E85
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:50:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730703AbfEVTXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:23:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43866 "EHLO mail.kernel.org"
+        id S1732024AbfEVT0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:26:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48116 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730694AbfEVTXA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:23:00 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        id S1731008AbfEVT0e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:26:34 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 69D1B217D7;
-        Wed, 22 May 2019 19:23:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3884A20879;
+        Wed, 22 May 2019 19:26:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558552980;
-        bh=bhYOpl2XhpHUCnwhwNtWLrHBHt936mFKINToYf84/hE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JBhl1B11vbkxMDvXirFS4nJ5zT+3PVAWxssQp/MUR05QRgo/7uwDW8fjS8VN+/bd0
-         oero/nHOWlJz79ELthWEPfHpRUHh9BniKFZ9LFlbUF1v6MlMGsE7rCT1RYtXgsXAu3
-         3cXkhJGUCkbpPrLBpxkv5+Cb9MV+DTg8ydr9A+/0=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next] neighbor: Add tracepoint to __neigh_create
-Date:   Wed, 22 May 2019 12:22:21 -0700
-Message-Id: <20190522192221.24825-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        s=default; t=1558553192;
+        bh=1e2ZxXyq6xUejxOhiDqPn0Rka+bJAvrPAXq8C4fzOZk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=k4Bph2gAyP9uod0EQxbsPIlDJMdSDgtwMAHw7cOPDloMSwqQ30s3XZDfCy4i9yzgs
+         1FCk9/e2NLCC6D1WwUIkcn9SBEdZyjdi+XBG27lEgjnYj0d8ZN+MI0G3u8hvyWhoI5
+         9BwMfsX7VQeh+IHReDRYCtCSvrF4U4HElGqdc6MI=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     YueHaibing <yuehaibing@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 002/244] cxgb4: Fix error path in cxgb4_init_module
+Date:   Wed, 22 May 2019 15:22:28 -0400
+Message-Id: <20190522192630.24917-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190522192630.24917-1-sashal@kernel.org>
+References: <20190522192630.24917-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-Add tracepoint to __neigh_create to enable debugging of new entries.
+[ Upstream commit a3147770bea76c8dbad73eca3a24c2118da5e719 ]
 
-Signed-off-by: David Ahern <dsahern@gmail.com>
+BUG: unable to handle kernel paging request at ffffffffa016a270
+PGD 3270067 P4D 3270067 PUD 3271063 PMD 230bbd067 PTE 0
+Oops: 0000 [#1
+CPU: 0 PID: 6134 Comm: modprobe Not tainted 5.1.0+ #33
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.9.3-0-ge2fc41e-prebuilt.qemu-project.org 04/01/2014
+RIP: 0010:atomic_notifier_chain_register+0x24/0x60
+Code: 1f 80 00 00 00 00 55 48 89 e5 41 54 49 89 f4 53 48 89 fb e8 ae b4 38 01 48 8b 53 38 48 8d 4b 38 48 85 d2 74 20 45 8b 44 24 10 <44> 3b 42 10 7e 08 eb 13 44 39 42 10 7c 0d 48 8d 4a 08 48 8b 52 08
+RSP: 0018:ffffc90000e2bc60 EFLAGS: 00010086
+RAX: 0000000000000292 RBX: ffffffff83467240 RCX: ffffffff83467278
+RDX: ffffffffa016a260 RSI: ffffffff83752140 RDI: ffffffff83467240
+RBP: ffffc90000e2bc70 R08: 0000000000000000 R09: 0000000000000001
+R10: 0000000000000000 R11: 00000000014fa61f R12: ffffffffa01c8260
+R13: ffff888231091e00 R14: 0000000000000000 R15: ffffc90000e2be78
+FS:  00007fbd8d7cd540(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffa016a270 CR3: 000000022c7e3000 CR4: 00000000000006f0
+Call Trace:
+ register_inet6addr_notifier+0x13/0x20
+ cxgb4_init_module+0x6c/0x1000 [cxgb4
+ ? 0xffffffffa01d7000
+ do_one_initcall+0x6c/0x3cc
+ ? do_init_module+0x22/0x1f1
+ ? rcu_read_lock_sched_held+0x97/0xb0
+ ? kmem_cache_alloc_trace+0x325/0x3b0
+ do_init_module+0x5b/0x1f1
+ load_module+0x1db1/0x2690
+ ? m_show+0x1d0/0x1d0
+ __do_sys_finit_module+0xc5/0xd0
+ __x64_sys_finit_module+0x15/0x20
+ do_syscall_64+0x6b/0x1d0
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+If pci_register_driver fails, register inet6addr_notifier is
+pointless. This patch fix the error path in cxgb4_init_module.
+
+Fixes: b5a02f503caa ("cxgb4 : Update ipv6 address handling api")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/neigh.h | 49 ++++++++++++++++++++++++++++++++++++++++++++
- net/core/neighbour.c         |  2 ++
- 2 files changed, 51 insertions(+)
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/include/trace/events/neigh.h b/include/trace/events/neigh.h
-index 0bdb08557763..62bb17516713 100644
---- a/include/trace/events/neigh.h
-+++ b/include/trace/events/neigh.h
-@@ -20,6 +20,55 @@
- 		{ NUD_NOARP, "noarp" },			\
- 		{ NUD_PERMANENT, "permanent"})
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index 961e3087d1d38..bb04c695ab9fd 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -6010,15 +6010,24 @@ static int __init cxgb4_init_module(void)
  
-+TRACE_EVENT(neigh_create,
-+
-+	TP_PROTO(struct neigh_table *tbl, struct net_device *dev,
-+		 const void *pkey, const struct neighbour *n,
-+		 bool exempt_from_gc),
-+
-+	TP_ARGS(tbl, dev, pkey, n, exempt_from_gc),
-+
-+	TP_STRUCT__entry(
-+		__field(u32, family)
-+		__dynamic_array(char,  dev,   IFNAMSIZ )
-+		__field(int, entries)
-+		__field(u8, created)
-+		__field(u8, gc_exempt)
-+		__array(u8, primary_key4, 4)
-+		__array(u8, primary_key6, 16)
-+	),
-+
-+	TP_fast_assign(
-+		struct in6_addr *pin6;
-+		__be32 *p32;
-+
-+		__entry->family = tbl->family;
-+		__assign_str(dev, (dev ? dev->name : "NULL"));
-+		__entry->entries = atomic_read(&tbl->gc_entries);
-+		__entry->created = n != NULL;
-+		__entry->gc_exempt = exempt_from_gc;
-+		pin6 = (struct in6_addr *)__entry->primary_key6;
-+		p32 = (__be32 *)__entry->primary_key4;
-+
-+		if (tbl->family == AF_INET)
-+			*p32 = *(__be32 *)pkey;
+ 	ret = pci_register_driver(&cxgb4_driver);
+ 	if (ret < 0)
+-		debugfs_remove(cxgb4_debugfs_root);
++		goto err_pci;
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	if (!inet6addr_registered) {
+-		register_inet6addr_notifier(&cxgb4_inet6addr_notifier);
+-		inet6addr_registered = true;
++		ret = register_inet6addr_notifier(&cxgb4_inet6addr_notifier);
++		if (ret)
++			pci_unregister_driver(&cxgb4_driver);
 +		else
-+			*p32 = 0;
-+
-+#if IS_ENABLED(CONFIG_IPV6)
-+		if (tbl->family == AF_INET6) {
-+			pin6 = (struct in6_addr *)__entry->primary_key6;
-+			*pin6 = *(struct in6_addr *)pkey;
-+		}
-+#endif
-+	),
-+
-+	TP_printk("family %d dev %s entries %d primary_key4 %pI4 primary_key6 %pI6c created %d gc_exempt %d",
-+		  __entry->family, __get_str(dev), __entry->entries,
-+		  __entry->primary_key4, __entry->primary_key6,
-+		  __entry->created, __entry->gc_exempt)
-+);
-+
- TRACE_EVENT(neigh_update,
++			inet6addr_registered = true;
+ 	}
+ #endif
  
- 	TP_PROTO(struct neighbour *n, const u8 *lladdr, u8 new,
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index dfa871061f14..a5556e4d3f96 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -587,6 +587,8 @@ static struct neighbour *___neigh_create(struct neigh_table *tbl,
- 	int error;
- 	struct neigh_hash_table *nht;
- 
-+	trace_neigh_create(tbl, dev, pkey, n, exempt_from_gc);
++	if (ret == 0)
++		return ret;
 +
- 	if (!n) {
- 		rc = ERR_PTR(-ENOBUFS);
- 		goto out;
++err_pci:
++	debugfs_remove(cxgb4_debugfs_root);
++
+ 	return ret;
+ }
+ 
 -- 
-2.11.0
+2.20.1
 
