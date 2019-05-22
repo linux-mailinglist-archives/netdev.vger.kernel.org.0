@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A66026FAA
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:59:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B6526FB9
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731070AbfEVTX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:23:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44888 "EHLO mail.kernel.org"
+        id S1732573AbfEVT62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:58:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44912 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731054AbfEVTX4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:23:56 -0400
+        id S1731062AbfEVTX5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:23:57 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 090EA21872;
-        Wed, 22 May 2019 19:23:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 388B821850;
+        Wed, 22 May 2019 19:23:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558553035;
-        bh=SXkz2rRTYygGWZhwmXK4TDRIYfU0p6emAJwWwaDRWIA=;
+        s=default; t=1558553037;
+        bh=NnjnBCFSojtYw67bWA3o/Gh/vuEZod/eDSGe2vdg5E0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KcyGbPSCedoRZeGWwlTEtAKVkVv/rnLbjr5RpY9JikTsyh14LRCg+BtZzBGyZ8rpL
-         7f0Krc4k475eXTN/RuVACtoKPf40H6VEMuKv5WLRvejXXARdZvqjjnpAmrBMsf1EuA
-         53SArFgtWXOXh5KK0qp+A73FHA6wHkpN6Z0bExJc=
+        b=p6RXiiwZF37yolHvnzmlj6mm6bTn8ub0kQ6CGbQgufbRk3cFWr7W0TWbR7fefxAA6
+         Tm2dNL225AsCCldkQQZRKHr7yOqrpNlvbc+MdMjx281tllOd9Z4j6g15aylZYbYt0U
+         a5zEw2OTXNtik5UTKRfvqPrCAoM3nJCgKXO2irXE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 012/317] bpftool: exclude bash-completion/bpftool from .gitignore pattern
-Date:   Wed, 22 May 2019 15:18:33 -0400
-Message-Id: <20190522192338.23715-12-sashal@kernel.org>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.0 013/317] ice: Separate if conditions for ice_set_features()
+Date:   Wed, 22 May 2019 15:18:34 -0400
+Message-Id: <20190522192338.23715-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192338.23715-1-sashal@kernel.org>
 References: <20190522192338.23715-1-sashal@kernel.org>
@@ -45,57 +45,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
+From: Tony Nguyen <anthony.l.nguyen@intel.com>
 
-[ Upstream commit a7d006714724de4334c5e3548701b33f7b12ca96 ]
+[ Upstream commit 8f529ff912073f778e3cd74e87fb69a36499fc2f ]
 
-tools/bpf/bpftool/.gitignore has the "bpftool" pattern, which is
-intended to ignore the following build artifact:
+Set features can have multiple features turned on|off in a single
+call.  Grouping these all in an if/else means after one condition
+is met, other conditions/features will not be evaluated.  Break
+the if/else statements by feature to ensure all features will be
+handled properly.
 
-  tools/bpf/bpftool/bpftool
-
-However, the .gitignore entry is effective not only for the current
-directory, but also for any sub-directories.
-
-So, from the point of .gitignore grammar, the following check-in file
-is also considered to be ignored:
-
-  tools/bpf/bpftool/bash-completion/bpftool
-
-As the manual gitignore(5) says "Files already tracked by Git are not
-affected", this is not a problem as far as Git is concerned.
-
-However, Git is not the only program that parses .gitignore because
-.gitignore is useful to distinguish build artifacts from source files.
-
-For example, tar(1) supports the --exclude-vcs-ignore option. As of
-writing, this option does not work perfectly, but it intends to create
-a tarball excluding files specified by .gitignore.
-
-So, I believe it is better to fix this issue.
-
-You can fix it by prefixing the pattern with a slash; the leading slash
-means the specified pattern is relative to the current directory.
-
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/.gitignore | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/tools/bpf/bpftool/.gitignore b/tools/bpf/bpftool/.gitignore
-index 67167e44b7266..8248b8dd89d4b 100644
---- a/tools/bpf/bpftool/.gitignore
-+++ b/tools/bpf/bpftool/.gitignore
-@@ -1,5 +1,5 @@
- *.d
--bpftool
-+/bpftool
- bpftool*.8
- bpf-helpers.*
- FEATURE-DUMP.bpftool
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 8725569d11f0a..d083979acc22c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -2490,6 +2490,9 @@ static int ice_set_features(struct net_device *netdev,
+ 	struct ice_vsi *vsi = np->vsi;
+ 	int ret = 0;
+ 
++	/* Multiple features can be changed in one call so keep features in
++	 * separate if/else statements to guarantee each feature is checked
++	 */
+ 	if (features & NETIF_F_RXHASH && !(netdev->features & NETIF_F_RXHASH))
+ 		ret = ice_vsi_manage_rss_lut(vsi, true);
+ 	else if (!(features & NETIF_F_RXHASH) &&
+@@ -2502,8 +2505,9 @@ static int ice_set_features(struct net_device *netdev,
+ 	else if (!(features & NETIF_F_HW_VLAN_CTAG_RX) &&
+ 		 (netdev->features & NETIF_F_HW_VLAN_CTAG_RX))
+ 		ret = ice_vsi_manage_vlan_stripping(vsi, false);
+-	else if ((features & NETIF_F_HW_VLAN_CTAG_TX) &&
+-		 !(netdev->features & NETIF_F_HW_VLAN_CTAG_TX))
++
++	if ((features & NETIF_F_HW_VLAN_CTAG_TX) &&
++	    !(netdev->features & NETIF_F_HW_VLAN_CTAG_TX))
+ 		ret = ice_vsi_manage_vlan_insertion(vsi);
+ 	else if (!(features & NETIF_F_HW_VLAN_CTAG_TX) &&
+ 		 (netdev->features & NETIF_F_HW_VLAN_CTAG_TX))
 -- 
 2.20.1
 
