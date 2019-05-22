@@ -2,139 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD7B126C83
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:35:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E13A26BB2
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:29:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733129AbfEVTf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:35:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733000AbfEVTbA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:31:00 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DC6BC20879;
-        Wed, 22 May 2019 19:30:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558553458;
-        bh=bUV7btzIiYVMzojYWVtdJYvd+jQvuHheVwfOPfUHK5o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=owoVJJFW0NgUAlYQ2tqSml05tb/1ohZ4Py2sw4DlhCZPfjKWxc2P0fYfa2bhFG5Xo
-         gRcT2aFBWWYKHUwK7pE0q1waVw0heGwJieChjUGdsP5IbSUB5iGJX26qOk9MJ//Eu3
-         t7aUOS/SY/20oVNzzRnJlz7H+nJedkCtYf+wj7Bs=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 026/114] ssb: Fix possible NULL pointer dereference in ssb_host_pcmcia_exit
-Date:   Wed, 22 May 2019 15:28:49 -0400
-Message-Id: <20190522193017.26567-26-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190522193017.26567-1-sashal@kernel.org>
-References: <20190522193017.26567-1-sashal@kernel.org>
+        id S1732786AbfEVT3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:29:16 -0400
+Received: from alln-iport-2.cisco.com ([173.37.142.89]:60596 "EHLO
+        alln-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729466AbfEVT3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 15:29:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=872; q=dns/txt; s=iport;
+  t=1558553353; x=1559762953;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=7SE77wYHwG03Jg767C9KD7YEVTpFF93beEhebDVXgsk=;
+  b=Pgc5nO/B5QduzV2bx2BYXK2YBG+Fca+iIqw9Ix47FzBg32YIIbTc63OG
+   pL05PgoJEr+3EeSFc1dJNYQMSVfp8xT6PMmkxgF9UG8sHjAMZlTrdNEqx
+   YHIoWxTt2QuRo6S3+tuLZFitWFSJyBgqtP0RTyISUewLkuRBVMQDBDepQ
+   Q=;
+IronPort-PHdr: =?us-ascii?q?9a23=3A91kOnh1nNqOGU1H3smDT+zVfbzU7u7jyIg8e44?=
+ =?us-ascii?q?YmjLQLaKm44pD+JxGDt+51ggrPWoPWo7JfhuzavrqoeFRI4I3J8TgZdYBUER?=
+ =?us-ascii?q?oMiMEYhQslVcCEA2XwLeXhaGoxG8ERHFI=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0AGAACyoeVc/5FdJa1lGQEBAQEBAQE?=
+ =?us-ascii?q?BAQEBAQcBAQEBAQGBUQQBAQEBAQsBgT1QA4E+IAQLKAqHUAOEUooigleJQI1?=
+ =?us-ascii?q?pgS6BJANUCQEBAQwBAS0CAQGEQAKCMSM0CQ4BAwEBBAEBAgEEbRwMhUoBAQE?=
+ =?us-ascii?q?DARIoBgEBNwEECwIBCBEEAQEfECERHQgCBAENBQgahGsDDg8BAp0dAoE1iF+?=
+ =?us-ascii?q?CIIJ5AQEFhQUNC4IPCRSBIAGLUBeBf4ERRoJMPoIagioCgzqCJo1SjSqNADk?=
+ =?us-ascii?q?JAoINjyWDfJYyjF2IS40KAgQCBAUCDgEBBYFPOIFXcBU7gmwTgXwMFxSDOIp?=
+ =?us-ascii?q?TcoEpjCYBgSABAQ?=
+X-IronPort-AV: E=Sophos;i="5.60,500,1549929600"; 
+   d="scan'208";a="277582125"
+Received: from rcdn-core-9.cisco.com ([173.37.93.145])
+  by alln-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 22 May 2019 19:29:10 +0000
+Received: from XCH-ALN-015.cisco.com (xch-aln-015.cisco.com [173.36.7.25])
+        by rcdn-core-9.cisco.com (8.15.2/8.15.2) with ESMTPS id x4MJTAuj015185
+        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=FAIL);
+        Wed, 22 May 2019 19:29:10 GMT
+Received: from xhs-aln-001.cisco.com (173.37.135.118) by XCH-ALN-015.cisco.com
+ (173.36.7.25) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 22 May
+ 2019 14:29:10 -0500
+Received: from xhs-rtp-002.cisco.com (64.101.210.229) by xhs-aln-001.cisco.com
+ (173.37.135.118) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 22 May
+ 2019 14:29:09 -0500
+Received: from NAM04-SN1-obe.outbound.protection.outlook.com (64.101.32.56) by
+ xhs-rtp-002.cisco.com (64.101.210.229) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 22 May 2019 15:29:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cisco.onmicrosoft.com;
+ s=selector2-cisco-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UjOytL2SZyled10Jhx6GRQspP79SXFzPuQxJZJLshvw=;
+ b=LKU3TDroV/PO4t2iA73ti+T1gDw9tl/ZKS4mlvVFKCR8Vd18y0/nMLunLE3ZfVPlcuuDfg0yG5zipXNOw4XwiQucLz/dTc+Ga6qQBBtARe9hgV6wuSpuocxiEwuWPu+QpA//5yR4/Kb6vZzmYTnO7m0PEBfdS/qJSZrdow7bEQ0=
+Received: from BYAPR11MB3383.namprd11.prod.outlook.com (20.177.186.96) by
+ BYAPR11MB2999.namprd11.prod.outlook.com (20.177.224.160) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.15; Wed, 22 May 2019 19:29:06 +0000
+Received: from BYAPR11MB3383.namprd11.prod.outlook.com
+ ([fe80::a116:fc59:1ebf:5843]) by BYAPR11MB3383.namprd11.prod.outlook.com
+ ([fe80::a116:fc59:1ebf:5843%5]) with mapi id 15.20.1922.017; Wed, 22 May 2019
+ 19:29:06 +0000
+From:   "Ruslan Babayev (fib)" <fib@cisco.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "20190505220524.37266-2-ruslan@babayev.com" 
+        <20190505220524.37266-2-ruslan@babayev.com>
+CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>,
+        "wsa@the-dreams.de" <wsa@the-dreams.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>
+Subject: Re: [PATCH RFC v2 net-next 2/2] net: phy: sfp: enable i2c-bus
+ detection on ACPI based systems
+Thread-Topic: [PATCH RFC v2 net-next 2/2] net: phy: sfp: enable i2c-bus
+ detection on ACPI based systems
+Thread-Index: AQHVBG1FwjU1WTeEMUumoWKXpb9bbKZe8vkAgAAKMLqAGKLmaw==
+Date:   Wed, 22 May 2019 19:29:06 +0000
+Message-ID: <BYAPR11MB33837495646A3A0BB23AD1B4AD000@BYAPR11MB3383.namprd11.prod.outlook.com>
+References: <20190505220524.37266-2-ruslan@babayev.com>
+ <20190507003557.40648-3-ruslan@babayev.com>,<20190507023812.GA12262@lunn.ch>,<BYAPR11MB3383B74F06254EDA7157D314AD310@BYAPR11MB3383.namprd11.prod.outlook.com>
+In-Reply-To: <BYAPR11MB3383B74F06254EDA7157D314AD310@BYAPR11MB3383.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is ) smtp.mailfrom=fib@cisco.com; 
+x-originating-ip: [128.107.241.180]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 96dadade-eb8c-4153-f8fe-08d6deebc1b4
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR11MB2999;
+x-ms-traffictypediagnostic: BYAPR11MB2999:
+x-ld-processed: 5ae1af62-9505-4097-a69a-c1553ef7840e,ExtAddr
+x-microsoft-antispam-prvs: <BYAPR11MB2999AE4E49B1EBD6A2A69F14AD000@BYAPR11MB2999.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 0045236D47
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(376002)(346002)(396003)(39860400002)(366004)(199004)(189003)(2906002)(6116002)(3846002)(86362001)(2501003)(4326008)(25786009)(256004)(53936002)(107886003)(4744005)(71200400001)(71190400001)(478600001)(6246003)(476003)(446003)(11346002)(14454004)(486006)(99286004)(66066001)(76176011)(102836004)(26005)(54906003)(53546011)(186003)(7696005)(6506007)(33656002)(316002)(229853002)(68736007)(8676002)(5660300002)(81156014)(81166006)(76116006)(110136005)(66476007)(55016002)(66446008)(7736002)(8936002)(74316002)(66556008)(64756008)(9686003)(305945005)(7416002)(6436002)(66946007)(52536014)(73956011);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR11MB2999;H:BYAPR11MB3383.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: cisco.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: VhDXBxD8aPmjkSX3Du5aBnPtuYS5e5SsqABmO44W4ouq1+9mLk7Kc8gWNeEs5Wd9Wm8UN1d7cKxZECrld+/bPyh8jB1je+niLDkqXbJZsLuRV0Lvqv9LPkryxFvcZjueEIuZhY55LaWFrnqNzOtHBQ5+oc5JHkpS6a8w4nMZn2qLgngBqoVKmxwi/ubb74TlqoDK6hb1Ttqg7v+JtbXYqNLZ5hx4NG70rzV4r9s50Msz/Y56XYKQtpwAtE6WwcS210npMxdfGaZ0aUWXlRGriEpbGieh98hTd1aTs6o0q5uScw5GgZP9VaE8Igp3ORhmaV7wjQtvjpjTti4TAXKPTTDi49LSeDOnEhwPUy04GojvYWF+uOVaBxH998+dtbhpkHjAdST5nsp/dat1eeihSXaJZ+3HsEm5uZrxj2iqm4A=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96dadade-eb8c-4153-f8fe-08d6deebc1b4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2019 19:29:06.6628
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fib@cisco.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2999
+X-OriginatorOrg: cisco.com
+X-Outbound-SMTP-Client: 173.36.7.25, xch-aln-015.cisco.com
+X-Outbound-Node: rcdn-core-9.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+Hi Andrew,
 
-[ Upstream commit b2c01aab9646ed8ffb7c549afe55d5349c482425 ]
+Just wanted to follow up on the patch. Does it look good? Do you have any o=
+ther feedback, concerns with this patch?
 
-Syzkaller report this:
+Thanks,
+Ruslan
 
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] SMP KASAN PTI
-CPU: 0 PID: 4492 Comm: syz-executor.0 Not tainted 5.0.0-rc7+ #45
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-RIP: 0010:sysfs_remove_file_ns+0x27/0x70 fs/sysfs/file.c:468
-Code: 00 00 00 41 54 55 48 89 fd 53 49 89 d4 48 89 f3 e8 ee 76 9c ff 48 8d 7d 30 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 2d 48 89 da 48 b8 00 00 00 00 00 fc ff df 48 8b 6d
-RSP: 0018:ffff8881e9d9fc00 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffffffff900367e0 RCX: ffffffff81a95952
-RDX: 0000000000000006 RSI: ffffc90001405000 RDI: 0000000000000030
-RBP: 0000000000000000 R08: fffffbfff1fa22ed R09: fffffbfff1fa22ed
-R10: 0000000000000001 R11: fffffbfff1fa22ec R12: 0000000000000000
-R13: ffffffffc1abdac0 R14: 1ffff1103d3b3f8b R15: 0000000000000000
-FS:  00007fe409dc1700(0000) GS:ffff8881f1200000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2d721000 CR3: 00000001e98b6005 CR4: 00000000007606f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- sysfs_remove_file include/linux/sysfs.h:519 [inline]
- driver_remove_file+0x40/0x50 drivers/base/driver.c:122
- pcmcia_remove_newid_file drivers/pcmcia/ds.c:163 [inline]
- pcmcia_unregister_driver+0x7d/0x2b0 drivers/pcmcia/ds.c:209
- ssb_modexit+0xa/0x1b [ssb]
- __do_sys_delete_module kernel/module.c:1018 [inline]
- __se_sys_delete_module kernel/module.c:961 [inline]
- __x64_sys_delete_module+0x3dc/0x5e0 kernel/module.c:961
- do_syscall_64+0x147/0x600 arch/x86/entry/common.c:290
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x462e99
-Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fe409dc0c58 EFLAGS: 00000246 ORIG_RAX: 00000000000000b0
-RAX: ffffffffffffffda RBX: 000000000073bf00 RCX: 0000000000462e99
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000200000c0
-RBP: 0000000000000002 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fe409dc16bc
-R13: 00000000004bccaa R14: 00000000006f6bc8 R15: 00000000ffffffff
-Modules linked in: ssb(-) 3c59x nvme_core macvlan tap pata_hpt3x3 rt2x00pci null_blk tsc40 pm_notifier_error_inject notifier_error_inject mdio cdc_wdm nf_reject_ipv4 ath9k_common ath9k_hw ath pppox ppp_generic slhc ehci_platform wl12xx wlcore tps6507x_ts ioc4 nf_synproxy_core ide_gd_mod ax25 can_dev iwlwifi can_raw atm tm2_touchkey can_gw can sundance adp5588_keys rt2800mmio rt2800lib rt2x00mmio rt2x00lib eeprom_93cx6 pn533 lru_cache elants_i2c ip_set nfnetlink gameport tipc hampshire nhc_ipv6 nhc_hop nhc_udp nhc_fragment nhc_routing nhc_mobility nhc_dest 6lowpan silead brcmutil nfc mt76_usb mt76 mac80211 iptable_security iptable_raw iptable_mangle iptable_nat nf_nat_ipv4 nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 iptable_filter bpfilter ip6_vti ip_gre sit hsr veth vxcan batman_adv cfg80211 rfkill chnl_net caif nlmon vcan bridge stp llc ip6_gre ip6_tunnel tunnel6 tun joydev mousedev serio_raw ide_pci_generic piix floppy ide_core sch_fq_codel ip_tables x_tables ipv6
- [last unloaded: 3c59x]
-Dumping ftrace buffer:
-   (ftrace buffer empty)
----[ end trace 3913cbf8011e1c05 ]---
+________________________________________
+From: Ruslan Babayev (fib)
+Sent: Monday, May 6, 2019 8:15 PM
+To: Andrew Lunn; 20190505220524.37266-2-ruslan@babayev.com
+Cc: linux@armlinux.org.uk; f.fainelli@gmail.com; hkallweit1@gmail.com; mika=
+.westerberg@linux.intel.com; wsa@the-dreams.de; davem@davemloft.net; netdev=
+@vger.kernel.org; linux-kernel@vger.kernel.org; linux-i2c@vger.kernel.org; =
+linux-acpi@vger.kernel.org; xe-linux-external(mailer list)
+Subject: Re: [PATCH RFC v2 net-next 2/2] net: phy: sfp: enable i2c-bus dete=
+ction on ACPI based systems
 
-In ssb_modinit, it does not fail SSB init when ssb_host_pcmcia_init failed,
-however in ssb_modexit, ssb_host_pcmcia_exit calls pcmcia_unregister_driver
-unconditionally, which may tigger a NULL pointer dereference issue as above.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 399500da18f7 ("ssb: pick PCMCIA host code support from b43 driver")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/ssb/bridge_pcmcia_80211.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+> As i said before, i know ~0 about ACPI. Does devm_gpiod_get() just
+> work for ACPI?
+> Thanks
+>        Andrew
 
-diff --git a/drivers/ssb/bridge_pcmcia_80211.c b/drivers/ssb/bridge_pcmcia_80211.c
-index d70568ea02d53..2ff7d90e166ac 100644
---- a/drivers/ssb/bridge_pcmcia_80211.c
-+++ b/drivers/ssb/bridge_pcmcia_80211.c
-@@ -113,16 +113,21 @@ static struct pcmcia_driver ssb_host_pcmcia_driver = {
- 	.resume		= ssb_host_pcmcia_resume,
- };
- 
-+static int pcmcia_init_failed;
-+
- /*
-  * These are not module init/exit functions!
-  * The module_pcmcia_driver() helper cannot be used here.
-  */
- int ssb_host_pcmcia_init(void)
- {
--	return pcmcia_register_driver(&ssb_host_pcmcia_driver);
-+	pcmcia_init_failed = pcmcia_register_driver(&ssb_host_pcmcia_driver);
-+
-+	return pcmcia_init_failed;
- }
- 
- void ssb_host_pcmcia_exit(void)
- {
--	pcmcia_unregister_driver(&ssb_host_pcmcia_driver);
-+	if (!pcmcia_init_failed)
-+		pcmcia_unregister_driver(&ssb_host_pcmcia_driver);
- }
--- 
-2.20.1
+It does.
 
+Regards,
+Ruslan
