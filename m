@@ -2,120 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E4426068
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 11:23:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 041452611D
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 12:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728784AbfEVJXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 05:23:39 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36152 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728680AbfEVJXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 05:23:39 -0400
-Received: by mail-pg1-f196.google.com with SMTP id a3so1024088pgb.3;
-        Wed, 22 May 2019 02:23:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N/1KBPT1+OjeRtVqyUS/9NJB0EJipW28c5JPC8vqkRE=;
-        b=S3CERENoilx4F5W4DmH+S/6jVnY0dHoTXovTtyvSi+2cwL1QHW/3WuXgXtykvCSnH8
-         02USGmwl2/ZD62kdrc7qiWbS65aR21b8nZ3EWdguG4y2pNJwXzR4hrg7b8XpfiG7VL6F
-         7sM4XXaU/AMhAeXMlooiqKyebPUZ7S7I5Bc9guqv/7O9GLpYu4eB4xcSc+gTmfk7EJQy
-         88P+FdVwFay5dwsngX4BIS2tEHYid68SdE1iTHsQ/Y7cUWpzQeRUB3SsSe4PN9YBgm9a
-         zRtGaxKhNzrOzHxQIdwE4OQ4bP+Dv53yl3BQuaNuY7tOmuXEPEFAVoAddi63ysE7b+bs
-         GSnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N/1KBPT1+OjeRtVqyUS/9NJB0EJipW28c5JPC8vqkRE=;
-        b=SIfhhSNSorzlvwgW7e9Z3bT7kNHlcDRMpu46T5uHucVwi1yIEMlPY7/Q2rQwMlkSL+
-         CkjjYlHYM5BmyPK7w6o3KazRj1JWH2rA7Ebv8BbEtfGMdi+XNM6fLuKCzAqz+IAx77uD
-         whm5tLfmkg2wWW1fK4LJj0YIPPym/IyO5u/5IT8olu+by9a0a0DPRjb7gwqwisqkAS3y
-         thaAlO0wHIJuAoFf+ogUuf7lxSh6YuH53s+oqpud2mI7fjGXcrGeWdIE8pNJmEuo7waH
-         wgGpcK4A4bTZe/9N2y02qqdZ7mo2+dIn66+iLKxJBwQjKvduu/J4jYewrDFpLtpGyF98
-         v2Aw==
-X-Gm-Message-State: APjAAAXrq1t0Dpa/Yo2omj+GecwXBChc6k6wrCCASghoptUXemm/Jzg7
-        a2zk6nte74j94l7bQGpLpgU=
-X-Google-Smtp-Source: APXvYqxPQZYenu6bB6IN/w4n7LBSZKAX/2nlTet3oAAr2dQ83jXLXB3Idqwrnax/0PsLo6w7rjgudA==
-X-Received: by 2002:a63:c64a:: with SMTP id x10mr88295161pgg.195.1558517018622;
-        Wed, 22 May 2019 02:23:38 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com (jfdmzpr05-ext.jf.intel.com. [134.134.139.74])
-        by smtp.gmail.com with ESMTPSA id z4sm28795200pfa.142.2019.05.22.02.23.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 May 2019 02:23:38 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
-        bpf@vger.kernel.org
-Subject: [PATCH bpf] selftests: bpf: add zero extend checks for ALU32 and/or/xor
-Date:   Wed, 22 May 2019 11:23:23 +0200
-Message-Id: <20190522092323.17435-1-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1729380AbfEVKBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 06:01:09 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:23941 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728406AbfEVKBJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 06:01:09 -0400
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 4587SL4VkZz9v2M2;
+        Wed, 22 May 2019 12:01:06 +0200 (CEST)
+Authentication-Results: localhost; dkim=pass
+        reason="1024-bit key; insecure key"
+        header.d=c-s.fr header.i=@c-s.fr header.b=qqOlTXMN; dkim-adsp=pass;
+        dkim-atps=neutral
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id htw2hqspO0bf; Wed, 22 May 2019 12:01:06 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4587SL3TkDz9v2M1;
+        Wed, 22 May 2019 12:01:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
+        t=1558519266; bh=pOJgHp/KMoeYEIwsOCZddIB2aTQYV+vwh0CSHycpDpI=;
+        h=From:Subject:To:Cc:Date:From;
+        b=qqOlTXMNNHJOMdk1N0HS5Hzpjr/2y4ypZNow5W/PI1QnLs7xTU5AODc1lbH+yW2YQ
+         4sE+CEJBwutOJwezWalBSKhSPl0OETTs8Qdl/cHuf7CvaUOTtcsf5OQ3d+mF1hdRn5
+         mbkCkumtsx09O8bpHrNBhw6w1FgIKFul1ZKY43uU=
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 932128B82C;
+        Wed, 22 May 2019 12:01:07 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id g2u_VzR4Vwh9; Wed, 22 May 2019 12:01:07 +0200 (CEST)
+Received: from po16846vm.idsi0.si.c-s.fr (po15451.idsi0.si.c-s.fr [172.25.231.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 644268B823;
+        Wed, 22 May 2019 12:01:07 +0200 (CEST)
+Received: by po16846vm.idsi0.si.c-s.fr (Postfix, from userid 0)
+        id 2B677684F2; Wed, 22 May 2019 10:01:07 +0000 (UTC)
+Message-Id: <cf280b7ab1f513f03d3908ac9ad194e819f170f5.1558519026.git.christophe.leroy@c-s.fr>
+From:   Christophe Leroy <christophe.leroy@c-s.fr>
+Subject: [PATCH] net: phy: lxt: Add suspend/resume support to LXT971 and
+ LXT973.
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Date:   Wed, 22 May 2019 10:01:07 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add three tests to test_verifier/basic_instr that make sure that the
-high 32-bits of the destination register is cleared after an ALU32
-and/or/xor.
+All LXT PHYs implement the standard "power down" bit 11 of
+BMCR, so this patch adds support using the generic
+genphy_{suspend,resume} functions.
 
-Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
+LXT970 is left aside because all registers get cleared upon
+"power down" exit.
+
+Fixes: 0f0ca340e57b ("phy: power management support")
+Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
 ---
- .../selftests/bpf/verifier/basic_instr.c      | 39 +++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ drivers/net/phy/lxt.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/verifier/basic_instr.c b/tools/testing/selftests/bpf/verifier/basic_instr.c
-index ed91a7b9a456..4d844089938e 100644
---- a/tools/testing/selftests/bpf/verifier/basic_instr.c
-+++ b/tools/testing/selftests/bpf/verifier/basic_instr.c
-@@ -132,3 +132,42 @@
- 	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
- 	.result = ACCEPT,
- },
-+{
-+	"and32 reg zero extend check",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_0, -1),
-+	BPF_MOV64_IMM(BPF_REG_2, -2),
-+	BPF_ALU32_REG(BPF_AND, BPF_REG_0, BPF_REG_2),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"or32 reg zero extend check",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_0, -1),
-+	BPF_MOV64_IMM(BPF_REG_2, -2),
-+	BPF_ALU32_REG(BPF_OR, BPF_REG_0, BPF_REG_2),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
-+{
-+	"xor32 reg zero extend check",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_0, -1),
-+	BPF_MOV64_IMM(BPF_REG_2, 0),
-+	BPF_ALU32_REG(BPF_XOR, BPF_REG_0, BPF_REG_2),
-+	BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = ACCEPT,
-+	.retval = 0,
-+},
+diff --git a/drivers/net/phy/lxt.c b/drivers/net/phy/lxt.c
+index 314486288119..356bd6472f49 100644
+--- a/drivers/net/phy/lxt.c
++++ b/drivers/net/phy/lxt.c
+@@ -262,6 +262,8 @@ static struct phy_driver lxt97x_driver[] = {
+ 	/* PHY_BASIC_FEATURES */
+ 	.ack_interrupt	= lxt971_ack_interrupt,
+ 	.config_intr	= lxt971_config_intr,
++	.suspend	= genphy_suspend,
++	.resume		= genphy_resume,
+ }, {
+ 	.phy_id		= 0x00137a10,
+ 	.name		= "LXT973-A2",
+@@ -271,6 +273,8 @@ static struct phy_driver lxt97x_driver[] = {
+ 	.probe		= lxt973_probe,
+ 	.config_aneg	= lxt973_config_aneg,
+ 	.read_status	= lxt973a2_read_status,
++	.suspend	= genphy_suspend,
++	.resume		= genphy_resume,
+ }, {
+ 	.phy_id		= 0x00137a10,
+ 	.name		= "LXT973",
+@@ -279,6 +283,8 @@ static struct phy_driver lxt97x_driver[] = {
+ 	.flags		= 0,
+ 	.probe		= lxt973_probe,
+ 	.config_aneg	= lxt973_config_aneg,
++	.suspend	= genphy_suspend,
++	.resume		= genphy_resume,
+ } };
+ 
+ module_phy_driver(lxt97x_driver);
 -- 
-2.20.1
+2.13.3
 
