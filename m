@@ -2,42 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 116DB26EB9
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:52:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB87026FEF
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:00:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731934AbfEVT0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:26:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47770 "EHLO mail.kernel.org"
+        id S1730703AbfEVTXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:23:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43866 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731923AbfEVT0R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:26:17 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        id S1730694AbfEVTXA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:23:00 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0EAA7217D7;
-        Wed, 22 May 2019 19:26:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 69D1B217D7;
+        Wed, 22 May 2019 19:23:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558553176;
-        bh=Buqndm3cxnXvPQ8zzQzt0Zoz3x/wpACFG1jlQ2chfdc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HY+nEmXV0OP05yfvN+cBnyGu+lDjDNZGbWkHumTgk19zVWtMLh8usvbCuBKDKdmy/
-         gVAk01UXK0ZuJQaUHRHC1jCeBpm8FlqfwGqvyBi0fMHHq45MpaccuSQzFU0v9cRcUA
-         eM1i8jcNf6z3Xrn4PY0bVCJz4PTPyHFrnW8eNtA4=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 095/317] mlxsw: spectrum_router: Prevent ipv6 gateway with v4 route via replace and append
-Date:   Wed, 22 May 2019 15:19:56 -0400
-Message-Id: <20190522192338.23715-95-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190522192338.23715-1-sashal@kernel.org>
-References: <20190522192338.23715-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        s=default; t=1558552980;
+        bh=bhYOpl2XhpHUCnwhwNtWLrHBHt936mFKINToYf84/hE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JBhl1B11vbkxMDvXirFS4nJ5zT+3PVAWxssQp/MUR05QRgo/7uwDW8fjS8VN+/bd0
+         oero/nHOWlJz79ELthWEPfHpRUHh9BniKFZ9LFlbUF1v6MlMGsE7rCT1RYtXgsXAu3
+         3cXkhJGUCkbpPrLBpxkv5+Cb9MV+DTg8ydr9A+/0=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next] neighbor: Add tracepoint to __neigh_create
+Date:   Wed, 22 May 2019 12:22:21 -0700
+Message-Id: <20190522192221.24825-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -45,38 +38,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-[ Upstream commit 7973d9e76727aa42f0824f5569e96248a572d50b ]
-
-mlxsw currently does not support v6 gateways with v4 routes. Commit
-19a9d136f198 ("ipv4: Flag fib_info with a fib_nh using IPv6 gateway")
-prevents a route from being added, but nothing stops the replace or
-append. Add a catch for them too.
-    $ ip  ro add 172.16.2.0/24 via 10.99.1.2
-    $ ip  ro replace 172.16.2.0/24 via inet6 fe80::202:ff:fe00:b dev swp1s0
-    Error: mlxsw_spectrum: IPv6 gateway with IPv4 route is not supported.
-    $ ip  ro append 172.16.2.0/24 via inet6 fe80::202:ff:fe00:b dev swp1s0
-    Error: mlxsw_spectrum: IPv6 gateway with IPv4 route is not supported.
+Add tracepoint to __neigh_create to enable debugging of new entries.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/trace/events/neigh.h | 49 ++++++++++++++++++++++++++++++++++++++++++++
+ net/core/neighbour.c         |  2 ++
+ 2 files changed, 51 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 2f6afbfd689fd..3827f6288271a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -6065,6 +6065,8 @@ static int mlxsw_sp_router_fib_event(struct notifier_block *nb,
- 			return notifier_from_errno(err);
- 		break;
- 	case FIB_EVENT_ENTRY_ADD:
-+	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
-+	case FIB_EVENT_ENTRY_APPEND:  /* fall through */
- 		if (router->aborted) {
- 			NL_SET_ERR_MSG_MOD(info->extack, "FIB offload was aborted. Not configuring route");
- 			return notifier_from_errno(-EINVAL);
+diff --git a/include/trace/events/neigh.h b/include/trace/events/neigh.h
+index 0bdb08557763..62bb17516713 100644
+--- a/include/trace/events/neigh.h
++++ b/include/trace/events/neigh.h
+@@ -20,6 +20,55 @@
+ 		{ NUD_NOARP, "noarp" },			\
+ 		{ NUD_PERMANENT, "permanent"})
+ 
++TRACE_EVENT(neigh_create,
++
++	TP_PROTO(struct neigh_table *tbl, struct net_device *dev,
++		 const void *pkey, const struct neighbour *n,
++		 bool exempt_from_gc),
++
++	TP_ARGS(tbl, dev, pkey, n, exempt_from_gc),
++
++	TP_STRUCT__entry(
++		__field(u32, family)
++		__dynamic_array(char,  dev,   IFNAMSIZ )
++		__field(int, entries)
++		__field(u8, created)
++		__field(u8, gc_exempt)
++		__array(u8, primary_key4, 4)
++		__array(u8, primary_key6, 16)
++	),
++
++	TP_fast_assign(
++		struct in6_addr *pin6;
++		__be32 *p32;
++
++		__entry->family = tbl->family;
++		__assign_str(dev, (dev ? dev->name : "NULL"));
++		__entry->entries = atomic_read(&tbl->gc_entries);
++		__entry->created = n != NULL;
++		__entry->gc_exempt = exempt_from_gc;
++		pin6 = (struct in6_addr *)__entry->primary_key6;
++		p32 = (__be32 *)__entry->primary_key4;
++
++		if (tbl->family == AF_INET)
++			*p32 = *(__be32 *)pkey;
++		else
++			*p32 = 0;
++
++#if IS_ENABLED(CONFIG_IPV6)
++		if (tbl->family == AF_INET6) {
++			pin6 = (struct in6_addr *)__entry->primary_key6;
++			*pin6 = *(struct in6_addr *)pkey;
++		}
++#endif
++	),
++
++	TP_printk("family %d dev %s entries %d primary_key4 %pI4 primary_key6 %pI6c created %d gc_exempt %d",
++		  __entry->family, __get_str(dev), __entry->entries,
++		  __entry->primary_key4, __entry->primary_key6,
++		  __entry->created, __entry->gc_exempt)
++);
++
+ TRACE_EVENT(neigh_update,
+ 
+ 	TP_PROTO(struct neighbour *n, const u8 *lladdr, u8 new,
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index dfa871061f14..a5556e4d3f96 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -587,6 +587,8 @@ static struct neighbour *___neigh_create(struct neigh_table *tbl,
+ 	int error;
+ 	struct neigh_hash_table *nht;
+ 
++	trace_neigh_create(tbl, dev, pkey, n, exempt_from_gc);
++
+ 	if (!n) {
+ 		rc = ERR_PTR(-ENOBUFS);
+ 		goto out;
 -- 
-2.20.1
+2.11.0
 
