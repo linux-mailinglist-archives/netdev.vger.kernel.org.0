@@ -2,104 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB16826EC0
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:52:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BD5626F3B
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388010AbfEVTv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:51:27 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:43360 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732095AbfEVTvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 15:51:23 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MJlLhW028296
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 12:51:22 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=zadAt1aXztVRcYLP4/pIlA8/YTNS3mRm3Oc6W03zeiU=;
- b=golMVzduOoKGqg0/wfEKOVO3ls/4T7NKq9QTlGDzdJMw9lCIixTpLlt+Cm2d4i0IVytH
- HUHPleMAvsHrGuT9KRq5vkRu/CRqbIvU31HfcPX++xuw0B4MaP3K+Cyj8jLOtAUwEdvo
- hWXCiBP1bkjxOXmPzOGTrVfSaKa3ScyqqWY= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sn9bgryss-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 12:51:22 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 22 May 2019 12:51:21 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 8E488862334; Wed, 22 May 2019 12:51:19 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <kernel-team@fb.com>
-CC:     Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 12/12] bpftool: update bash-completion w/ new c option for btf dump
-Date:   Wed, 22 May 2019 12:50:53 -0700
-Message-ID: <20190522195053.4017624-13-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190522195053.4017624-1-andriin@fb.com>
-References: <20190522195053.4017624-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1729886AbfEVTzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:55:33 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41857 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730197AbfEVTzb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 15:55:31 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q17so1869182pfq.8;
+        Wed, 22 May 2019 12:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=dkz+uMfQ4vVtX4Z57u9xC58rrVWkexD1pHBhDv3CnWw=;
+        b=HvudDPF+KevQPPLS50w5VVfYbTyT/HSSccgs7KNEDiQlGjjGVza2G1drC4CnVs+CcJ
+         K2WQk3HlAiAiK7afohlFEfA7AmqIsaVgAEOb/bSfWVKDDnXCAaJzofoV15AGCWxN6UbC
+         wU60jUxa/ajyydKuvPWfILaGtLw7J25wuxlFfSpdELB0YHwA3v/NCE6BQsOVBzc2dky/
+         Aeb8EvG8EnI6Xwzx3V+dvOodQz1+jxAKvxPsaJwBrq5xzUX1ENgbt42IC3NE2T1OBVYp
+         u9AgscgfhH2vNiCQCKMtlrbj4WMghTu8RuMmZV2v5rvP4fGyM+PdThKoOAA9ad+orqQM
+         0pGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=dkz+uMfQ4vVtX4Z57u9xC58rrVWkexD1pHBhDv3CnWw=;
+        b=pCf3Wd6KgnBpoNYz8d6JYt2ZboL1hqmdiVufxpIfck1cjSrGxIiluuDlXb+u6ut7/s
+         9kh2BQqCqHu88DpRoxK25uJQ9yp3Kbta1UJAjmJMxcrv3Gtiq4NLeTjBbb0rwvG2PkWY
+         3TRgLPDk77i7OWvqCLaGuxoWLP1MrigWvHLgJRe7Xxgv/fYk8YuL+H/Ig/jwzI73o0La
+         84VJHKxnT7tmcfmjHw4OxnFwVg+AsGQyTC6vddb4G0zqSbAmmi7Il5HRfclmGcPciAkQ
+         ekkvpIzF8ybyjSogFu2lXoCPDWHgiPXilkiebQnJZP6SpI177y6R09+0cOEGSZ6g+hNY
+         q9Ng==
+X-Gm-Message-State: APjAAAUM2halQ+f2U0DdRgYQjfpxf5gC1j74b70NiJ7lgggdPYBnMn3s
+        EflODPgW0Y56bMUSzST5i0oMzSbH
+X-Google-Smtp-Source: APXvYqzuFNwwqWce3oARO3MYbQ8QDsnhxBa3bPsJce9d8mfJhpoeRGDAkM1CNEoTvjLbDrHsL1Pbjw==
+X-Received: by 2002:a63:7413:: with SMTP id p19mr89950878pgc.259.1558554930988;
+        Wed, 22 May 2019 12:55:30 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::6565])
+        by smtp.gmail.com with ESMTPSA id x18sm32697904pfj.17.2019.05.22.12.55.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 May 2019 12:55:30 -0700 (PDT)
+Date:   Wed, 22 May 2019 12:55:27 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Kris Van Hees <kris.van.hees@oracle.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        mhiramat@kernel.org, acme@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net
+Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
+ implementation and sample use
+Message-ID: <20190522195526.mayamzc7gstqzcpr@ast-mbp.dhcp.thefacebook.com>
+References: <201905202347.x4KNl0cs030532@aserv0121.oracle.com>
+ <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
+ <20190522142531.GE16275@worktop.programming.kicks-ass.net>
+ <20190522182215.GO2422@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-22_11:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=979 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905220138
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190522182215.GO2422@oracle.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bash completion for new C btf dump option.
+On Wed, May 22, 2019 at 02:22:15PM -0400, Kris Van Hees wrote:
+> On Wed, May 22, 2019 at 04:25:32PM +0200, Peter Zijlstra wrote:
+> > On Tue, May 21, 2019 at 10:56:18AM -0700, Alexei Starovoitov wrote:
+> > 
+> > > and no changes are necessary in kernel/events/ring_buffer.c either.
+> > 
+> > Let me just NAK them on the principle that I don't see them in my inbox.
+> 
+> My apologies for failing to include you on the Cc for the patches.  That was
+> an oversight on my end and certainly not intentional.
+> 
+> > Let me further NAK it for adding all sorts of garbage to the code --
+> > we're not going to do gaps and stay_in_page nonsense.
+> 
+> Could you give some guidance in terms of an alternative?  The ring buffer code
+> provides both non-contiguous page allocation support and a vmalloc-based
+> allocation, and the vmalloc version certainly would avoid the entire gap and
+> page boundary stuff.  But since the allocator is chosen at build time based on
+> the arch capabilities, there is no way to select a specific memory allocator.
+> I'd be happy to use an alternative approach that allows direct writing into
+> the ring buffer.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/bash-completion/bpftool | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
-
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 50e402a5a9c8..391ded1df8cd 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -639,10 +639,24 @@ _bpftool()
-                             return 0
-                             ;;
-                         *)
--                            if [[ $cword == 6 ]] && [[ ${words[3]} == "map" ]]; then
--                                 COMPREPLY+=( $( compgen -W 'key value kv all' -- \
--                                     "$cur" ) )
--                            fi
-+                            # emit extra options
-+                            case ${words[3]} in
-+                                id|file)
-+                                    if [[ $cword > 4 ]]; then
-+                                        _bpftool_once_attr 'c'
-+                                    fi
-+                                    ;;
-+                                map|prog)
-+                                    if [[ ${words[3]} == "map" ]] && [[ $cword == 6 ]]; then
-+                                        COMPREPLY+=( $( compgen -W "key value kv all" -- "$cur" ) )
-+                                    fi
-+                                    if [[ $cword > 5 ]]; then
-+                                        _bpftool_once_attr 'c'
-+                                    fi
-+                                    ;;
-+                                *)
-+                                    ;;
-+                            esac
-                             return 0
-                             ;;
-                     esac
--- 
-2.17.1
+You do not _need_ direct write from bpf prog.
+dtrace language doesn't mandate direct write.
+'direct write into ring buffer form bpf prog' is an interesting idea and
+may be nice performance optimization, but in no way it's a blocker for dtrace scripts.
+Also it's far from clear that it actually brings performance benefits.
+Letting bpf progs write directly into ring buffer comes with
+a lot of corner cases. It's something to carefully analyze.
+I suggest to proceed with user space dtrace conversion to bpf
+without introducing kernel changes.
 
