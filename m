@@ -2,292 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 027402639F
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 14:17:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37D7826405
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 14:50:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729252AbfEVMRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 08:17:38 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:52658 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728438AbfEVMRi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 08:17:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=XRRgdQBJ/m9hgBIL0+vqNyzCsUJrXLqFJLRgNNPO7vw=; b=Wq6xO1sANWcBwPamElkQu2Y/r
-        bkPQQyr4IGWcpM9D+ubD8c0xiMiPGBPPX0fplOwBjmPx9YvpFeuFb5J9VzDyjzBaWurrcHjnPDPoN
-        w4WJs40ixrpw3o790FJHTJPicLMMcEtzvmNug49BPpQuO5ZD7nsuOkPEpQE78oqWIHZlvkgm0HDcK
-        dFyxR/s903Xp7ETectuAHVpTXTYMabNTRgy2WtP/kM5zpEIMdJ2NquDSpILAYl++aPDjrksVLLcp6
-        fBiack2GMrfLt2h0yf2azhpnVPhwz0gDfAOMIRP+ubcHQ+wzR0B7kLLi79Aa6px4CqAK/e15u5ZWV
-        MfIs6814w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52576)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hTQBa-0007Ya-1f; Wed, 22 May 2019 13:17:34 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hTQBW-0006f9-UC; Wed, 22 May 2019 13:17:30 +0100
-Date:   Wed, 22 May 2019 13:17:30 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-block@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Jonas Gorski <jonas.gorski@gmail.com>,
-        Jo-Philipp Wich <jo@mein.io>, Felix Fietkau <nbd@nbd.name>
-Subject: Re: ARM router NAT performance affected by random/unrelated commits
-Message-ID: <20190522121730.fhswxkw4gbflkhei@shell.armlinux.org.uk>
-References: <9a9ba4c9-3cb7-eb64-4aac-d43b59224442@gmail.com>
- <20190521104512.2r67fydrgniwqaja@shell.armlinux.org.uk>
- <de262f71-748f-d242-f1d4-ea10188a0438@gmail.com>
+        id S1729300AbfEVMtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 08:49:53 -0400
+Received: from mout.gmx.net ([212.227.15.18]:60825 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728744AbfEVMtx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 08:49:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1558529376;
+        bh=Q97bXc/PPktmqP9qjjGjOSaN7RwZuTwBfD1GaTGlWT8=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=jMlxg8/EHFenJktXveeQ7h682zslXJJpcwLmk0IJTiS6bn+3vznj+AzYJ07DP6xZC
+         iuLUc85WS8skPMBZZiEgpy8yR9Nu6jW6+dzOmNIFdj0eywFZ6bxkLgkePikYA8X4Vc
+         uWXqGU6/9qevTsK/hLjsNCKtchk3Cy7SlwmV0ER4=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [10.10.11.100] ([95.88.214.118]) by mail.gmx.com (mrgmx001
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 0MF5FT-1hRZ8m49Pf-00GHMz; Wed, 22
+ May 2019 14:49:36 +0200
+Subject: Re: stmmac / meson8b-dwmac
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Sebastian Gottschall <s.gottschall@newmedia-net.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     "linux-amlogic@lists.infradead.org" 
+        <linux-amlogic@lists.infradead.org>,
+        "Gpeppe.cavallaro@st.com" <Gpeppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        Emiliano Ingrassia <ingrassia@epigenesys.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <a38e643c-ed9f-c306-cc95-84f70ebc1f10@gmx.de>
+ <45e73e8c-a0fb-6f8f-8dc6-3aa2103fdda3@gmx.de>
+ <e1d75e7f-1747-d0ce-0ee7-4fa688b90d13@synopsys.com>
+ <4493b245-de93-46cd-327b-8091a3babc3a@gmx.de>
+ <adafe6d7-e619-45e9-7ecb-76f003b0c7d9@synopsys.com>
+ <cd0b3dec-af3f-af69-50b7-6ca6f7256900@gmx.de>
+ <fa35fb4a-b9d5-9bbb-437d-47e8819d0f27@synopsys.com>
+ <244d7c74-e0ca-a9c7-f4b0-3de7bec4024b@gmx.de>
+ <1426d8ed40be0927c135aff25dcf989a11326932.camel@baylibre.com>
+ <9074d29b-4cc9-87b6-009f-48280a4692c0@gmx.de>
+ <d7de65c614ee788152300f6d3799fd537b438496.camel@baylibre.com>
+ <8ec64936-c8fa-1f0e-68bf-2ad1d6e8f5d9@gmx.de>
+ <f08f2659-dde0-41ec-9233-6b4d5f375ffe@newmedia-net.de>
+ <3a040370-e7e5-990e-81dc-8e9bb0ab7761@gmx.de>
+ <c21c30e9-e53e-02a5-c367-25898c4614e9@synopsys.com>
+ <12d1d6de-2905-46a8-6481-d6f20c8e9d85@gmx.de>
+ <2c4d9726-6c2a-cd95-0493-323f5f09e14a@synopsys.com>
+ <2d7a5c80-3134-ebc0-3c44-9ca9900eade8@gmx.de>
+ <78EB27739596EE489E55E81C33FEC33A0B91BAAE@DE02WEMBXB.internal.synopsys.com>
+From:   Simon Huelck <simonmail@gmx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=simonmail@gmx.de; prefer-encrypt=mutual; keydata=
+ mQGiBD/bCNARBACE3URTBXZ/AA03NwRNtz03ewQn3uhvYSTjfqgplBtb3dfC4a79BXDRIWVX
+ xPGH9Ewios1c8gMu3/RI2l3JzXoISfw5b0L/5igyPKV+sGuUA2FD27kYtPaaF/TqEWIv+Yxp
+ 9DCjCX5IQSYyvCfcxcyEkY8eVWxnaAlV3zKRR8wn0wCglWIOtAugBcg1YXmoLpFZE8Ca0fkD
+ /jG+n4U9DPfCgkbgjQ/dv2W2a0ZDHccA9N8AW/FTXGyXXO0e7ql9/kORJnp7jD7/Z9HCKpeS
+ HajgxuX9Vhfx6bH1dAMfsg88+K8pOO9oulNX1+YffQyZWOfdbmnZDUzBt9HKR9Wgh8WoIyw9
+ TVluclzn6hYz+z9jbqHWMOsiCu8zA/0apHbW8vaIDT4+nNUxNdqU1TKa9kW47vNjwYYL0jZW
+ TXNjDIRpqJVSugYVc/U847GoVoxyvtzre4TAbBV8h0BAOeMdxI5En67RGWzeNaMDJV1bwapj
+ qdfj3e/X8rnGIfwz47rwztLNKoAIUlKrATwroiI7UNT+84G7H5qalu+Eu7QqU2ltb24gSHVl
+ bGNrIDxzaW1vbi5odWVsY2tAZ29vZ2xlbWFpbC5jb20+iGIEExECACIFAlH7wL4CGyMGCwkI
+ BwMCBhUIAgkKCwQWAgMBAh4BAheAAAoJEJNSVvfBt05KlBQAn1JDO7e4H3N0WFJkZnxvObhk
+ 2kiAAJwPdDd6T1TuGo4iDIENRhAX4AH2KrkBDQQ/2wjSEAQAj6JnDDQzIIYzPGsrHRvaq8vw
+ n8VrZCbPRvkngGvtQIss5pH/MLeu9jLepDGO9WHByFSg4QJh8cINYwTLtX8Bu0naA6ZI46hn
+ GyfxdRlxSU9dRqHpU3G0tymL1w3AER6aVSfdXQTmFgf61anKunbIIptkqzZurkjnxkwCE/RM
+ RscABA0D/jhglpj8siSIAxs8XLVfKJrjzbYM9/wS0NfdSXBeQJiYtKrY0WMNsqjY50wDnLMg
+ anORN/odT6mCwKI6xChzxEv/ta4+teZl92aitziSuqmtl+jm23DpOcUC7UBz2W1+TvnrhPR+
+ MKu8pPKAgsE8AI5uwCcNJx7V3bczYkIGaXybiEYEGBECAAYFAj/bCNIACgkQk1JW98G3Tko6
+ 3wCfZBpZAUhUz/Rcp2rfg/YSKl4YLlEAoJN7e322OvHc2GQ9n1+tKLi6Og4c
+Message-ID: <4f204468-67f4-6d88-ea02-c48f869d8ae3@gmx.de>
+Date:   Wed, 22 May 2019 14:48:42 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
+In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B91BAAE@DE02WEMBXB.internal.synopsys.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <de262f71-748f-d242-f1d4-ea10188a0438@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:ShOus8Fo/Ar2hBlTIZy9YCIsXOftcGWHyXjUmtHlhlXVE0DBcFx
+ ANpfUj7K0TdRfoyDKUYtnfEzzUSKgOcEXcPfXcL0XVQxs2qSDnUYUclVj4Dkie9zH5enO+B
+ Bde3hWcKbpaOVbJxiWXrOpvVY2NobKj3od6iCuetnSKqIqNJePwuNcW4K575eygohoPF4G2
+ RC4sew3XIxVoc3953e6/g==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:HjuxOAuueoU=:vBu8B3L3BhhBaJwR09OZeR
+ iZPGfWDYTxU/J9DMmvjLoQ3lAak+rZfa346rt9Xk4EQ5l8BO64fXZtRhxvXhaGDxSmPQU8FCr
+ XcUdAYI94DzCTU0IlSsE3imYdZsnHR25wSBTOKcJZtTUNqgLCgtZ2pXKJ0K8WjvZbB8mmVhBO
+ jiC0hxZE32SZvmwA9PokMvArPAao9YcJ5oTklrhuW8PgM0fQGV1p9kTlHbN2ngN60qMIvqgxi
+ iYp3VnJ7IK1fx7uljagEYFpxzdiPc9ngZe4MM3RewTfjQQwwurNg0OA8DUrAFg4bLWp+x9Fvc
+ QfbIqvcabw/L9R3kQfCY6idt89TB/lcuDPfeQTjGzCdOb0q/pPcvLxJfUOkiBXrjGPVycunEU
+ KRXa7kvHcN7TaWUB8Wdn/JEPFmj5VuFCxG0mtoiL1BG4x9+K9EecGgjp1I+VgXIMNk9JE/Jjh
+ BRNEntS4OrMifM1irdh6RjtaBcU2h3B2/ZE4CyS6Zz0XzvztmYGG3qsRkw+gopKBfLcyPrEjb
+ 6pC1O/OyvkhmAHrhJlWlKnjCqi348qrOkkyUd/ZOeLc5R8gTMnFHGIGTeuxutqn1lVYLoFWHV
+ fWk9fYCb1yNRMFD1uyYp58oGcCwgyPDf5829pTHEB5UYFpsREj9pfUWC3ITzg/tn03Q6mWur7
+ 2r0ivJNCpZujnW70MdQNVfUPEiwazcWQTKZjW6bZvVgv1QID7W9ObztcXpyZb3Uw0ujbuxglZ
+ Dpnc5hwNsLJBiDly8VwCO7XuSdV1TmSsIwrOA0SbhY+FT/aFnIn4ziHEhzGTzHc31QWplic/6
+ zAe1qcsoWmbSdFp3MBsUSmS1YKUJYg4PeffujgIK0V8JKc/G6eFyrZrEZqvnFib8xlezAXfHI
+ aM+ptL7kNgbf2IGHgdflCzhOZ1EMHADIYWnZr/5EnHMvUZCiLIJ/09FKVrSwgdt+B46bKrJd8
+ CISMv/hemJ3/qcAPSH5TG7GuzhatHtSxJxW4IB8UUBGWOa7o9rTzX
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 01:51:01PM +0200, Rafał Miłecki wrote:
-> On 21.05.2019 12:45, Russell King - ARM Linux admin wrote:> On Tue, May 21, 2019 at 12:28:48PM +0200, Rafał Miłecki wrote:
-> >> I work on home routers based on Broadcom's Northstar SoCs. Those devices
-> >> have ARM Cortex-A9 and most of them are dual-core.
-> >>
-> >> As for home routers, my main concern is network performance. That CPU
-> >> isn't powerful enough to handle gigabit traffic so all kind of
-> >> optimizations do matter. I noticed some unexpected changes in NAT
-> >> performance when switching between kernels.
-> >>
-> >> My hardware is BCM47094 SoC (dual core ARM) with integrated network
-> >> controller and external BCM53012 switch.
-> >
-> > Guessing, I'd say it's to do with the placement of code wrt cachelines.
-> > You could try aligning some of the cache flushing code to a cache line
-> > and see what effect that has.
-> 
-> Is System.map a good place to check for functions code alignment?
-> 
-> With Linux 4.19 + OpenWrt mtd patches I have:
-> (...)
-> c010ea94 t v7_dma_inv_range
-> c010eae0 t v7_dma_clean_range
-> (...)
-> c02ca3d0 T blk_mq_update_nr_hw_queues
-> c02ca69c T blk_mq_alloc_tag_set
-> c02ca94c T blk_mq_release
-> c02ca9b4 T blk_mq_free_queue
-> c02caa88 T blk_mq_update_nr_requests
-> c02cab50 T blk_mq_unique_tag
-> (...)
-> 
-> After cherry-picking 9316a9ed6895 ("blk-mq: provide helper for setting
-> up an SQ queue and tag set"):
-> (...)
-> c010ea94 t v7_dma_inv_range
-> c010eae0 t v7_dma_clean_range
-> (...)
-> c02ca3d0 T blk_mq_update_nr_hw_queues
-> c02ca69c T blk_mq_alloc_tag_set
-> c02ca94c T blk_mq_init_sq_queue <-- NEW
-> c02ca9c0 T blk_mq_release <-- Different address of this & all below
-> c02caa28 T blk_mq_free_queue
-> c02caafc T blk_mq_update_nr_requests
-> c02cabc4 T blk_mq_unique_tag
-> (...)
-> 
-> As you can see blk_mq_init_sq_queue has appeared in the System.map and
-> it affected addresses of ~30000 symbols. I can believe some frequently
-> used symbols got luckily aligned and that improved overall performance.
-> 
-> Interestingly v7_dma_inv_range() and v7_dma_clean_range() were not
-> relocated.
-> 
-> *****
-> 
-> I followed Russell's suggestion and added .align 5 to cache-v7.S (see
-> two attached diffs).
-> 
-> 1) v4.19 + OpenWrt mtd patches
-> > egrep -B 1 -A 1 "v7_dma_(inv|clean)_range" System.map
-> c010ea58 T v7_flush_kern_dcache_area
-> c010ea94 t v7_dma_inv_range
-> c010eae0 t v7_dma_clean_range
-> c010eb18 T b15_dma_flush_range
-> 
-> 2) v4.19 + OpenWrt mtd patches + two .align 5 in cache-v7.S
-> c010ea6c T v7_flush_kern_dcache_area
-> c010eac0 t v7_dma_inv_range
-> c010eb20 t v7_dma_clean_range
-> c010eb58 T b15_dma_flush_range
-> (actually 15 symbols above v7_dma_inv_range were replaced)
-> 
-> This method seems to be somehow working (at least affects addresses in
-> System.map).
-> 
-> *****
-> 
-> I run 2 tests for each combination of changes. Each test consisted of
-> 10 sequences of: 30 seconds iperf session + reboot.
-> 
-> 
-> > git reset --hard v4.19
-> > git am OpenWrt-mtd-chages.patch
-> Test #1: 738 Mb/s
-> Test #2: 737 Mb/s
-> 
-> > git reset --hard v4.19
-> > git am OpenWrt-mtd-chages.patch
-> patch -p1 < v7_dma_clean_range-align.diff
-> Test #1: 746 Mb/s
-> Test #2: 747 Mb/s
-> 
-> > git reset --hard v4.19
-> > git am OpenWrt-mtd-chages.patch
-> > patch -p1 < v7_dma_inv_range-align.diff
-> Test #1: 745 Mb/s
-> Test #2: 746 Mb/s
-> 
-> > git reset --hard v4.19
-> > git am OpenWrt-mtd-chages.patch
-> > patch -p1 < v7_dma_clean_range-align.diff
-> > patch -p1 < v7_dma_inv_range-align.diff
-> Test #1: 762 Mb/s
-> Test #2: 761 Mb/s
-> 
-> As you can see I got a quite nice performance improvement after aligning
-> both: v7_dma_clean_range() and v7_dma_inv_range().
+Hi,
 
-This is an improvement of about 3.3%.
+what exactly do you mean with this DT binding ? i cant find this for
+meson gxbb somewhere in the DTS ?
 
-> It still wasn't as good as with 9316a9ed6895 cherry-picked but pretty
-> close.
-> 
-> 
-> > git reset --hard v4.19
-> > git am OpenWrt-mtd-chages.patch
-> > git cherry-pick -x 9316a9ed6895
-> Test #1: 770 Mb/s
-> Test #2: 766 Mb/s
-> 
-> > git reset --hard v4.19
-> > git am OpenWrt-mtd-chages.patch
-> > git cherry-pick -x 9316a9ed6895
-> > patch -p1 < v7_dma_clean_range-align.diff
-> Test #1: 756 Mb/s
-> Test #2: 759 Mb/s
-> 
-> > git reset --hard v4.19
-> > git am OpenWrt-mtd-chages.patch
-> > git cherry-pick -x 9316a9ed6895
-> > patch -p1 < v7_dma_inv_range-align.diff
-> Test #1: 758 Mb/s
-> Test #2: 759 Mb/s
-> 
-> > git reset --hard v4.19
-> > git am OpenWrt-mtd-chages.patch
-> > git cherry-pick -x 9316a9ed6895
-> > patch -p1 < v7_dma_clean_range-align.diff
-> > patch -p1 < v7_dma_inv_range-align.diff
-> Test #1: 767 Mb/s
-> Test #2: 763 Mb/s
-> 
-> Now you can see how unpredictable it is. If I cherry-pick 9316a9ed6895
-> and do an extra alignment of v7_dma_clean_range() and v7_dma_inv_range()
-> that extra alignment can actually *hurt* NAT performance.
+regards,
 
-You have a maximum variance of 4Mb/s in your tests which is around
-0.5%, and this shows a reduction of 3Mb/s, or 0.4%.
-
-If we look at it a different way:
-- Without the alignment patches, there is a difference of 4% in
-  performance depending on whether 9316a9ed6895 is applied.
-- With the alignment patches, there is a difference of 0.4% in
-  performance depending on whether 9316a9ed6895 is applied.
-
-How can this not be beneficial?
-
-> 
-> My guess is that:
-> 1) 9316a9ed6895 provides alignment of some very important function(s)
-> 2) DMA alignments on top ^^ provide some gain but also break some align
-> 
-> *****
-> 
-> SUMMARY
-> 
-> It seems that for Linux 4.19 + my .config I can get a very lucky &
-> optimal alignment of functions by cherry-picking 9316a9ed6895.
-> 
-> I thought of checking functions reported by the "perf" tool with CPU
-> usage of 2%+.
-> 
-> All following functions keep their original address with 9316a9ed6895:
-> __irqentry_text_end
-> arch_cpu_idle
-> l2c210_clean_range
-> l2c210_inv_range
-> v7_dma_clean_range
-> v7_dma_inv_range
-> 
-> Remaining 3 functions got reallocated:
-> -c03e5038 t __netif_receive_skb_core
-> +c03e50b0 t __netif_receive_skb_core
-> -c03c8b1c t bcma_host_soc_read32
-> +c03c8b94 t bcma_host_soc_read32
-> -c0475620 T fib_table_lookup
-> +c0475698 T fib_table_lookup
-> 
-> I tried aligning all 3 above functions using:
-> __attribute__((aligned(32)))
-> and got 756 Mb/s. It's better but still not ~770 Mb/s.
-> 
-> Is there any easy way of identifying which of function alignments got
-> such a big impact on NAT performance? I'd like to get those functions
-> explicitly aligned using assembler/__attribute__/something.
-> 
-> What I'm also afraid are false positives. I may end up aligning some
-> unrelated function that just happens to align other ones. Just like
-> cherry-picking 9316a9ed6895 having side-effects and not really fixing
-> anything explicitly.
-
-> diff --git a/arch/arm/mm/cache-v7.S b/arch/arm/mm/cache-v7.S
-> index 215df435bfb9..c60046cd34aa 100644
-> --- a/arch/arm/mm/cache-v7.S
-> +++ b/arch/arm/mm/cache-v7.S
-> @@ -373,6 +373,8 @@ v7_dma_inv_range:
->  	ret	lr
->  ENDPROC(v7_dma_inv_range)
->  
-> +	.align	5
-> +
->  /*
->   *	v7_dma_clean_range(start,end)
->   *	- start   - virtual start address of region
-
-> diff --git a/arch/arm/mm/cache-v7.S b/arch/arm/mm/cache-v7.S
-> index 215df435bfb9..0c3999f219ab 100644
-> --- a/arch/arm/mm/cache-v7.S
-> +++ b/arch/arm/mm/cache-v7.S
-> @@ -340,6 +340,8 @@ ENTRY(v7_flush_kern_dcache_area)
->  	ret	lr
->  ENDPROC(v7_flush_kern_dcache_area)
->  
-> +	.align	5
-> +
->  /*
->   *	v7_dma_inv_range(start,end)
->   *
+Simon
 
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Am 13.05.2019 um 11:07 schrieb Jose Abreu:
+> From: Simon Huelck <simonmail@gmx.de>
+> Date: Sat, May 11, 2019 at 15:53:34
+>
+>> ethtool -S gave me some counts for mmc_rx_fifo_overflow, which i didnt
+>> recognize before.
+> Flow Control can prevent this to happen. Please check if your DT FIFO
+> bindings are >=3D 4096.
+>
+>> Do we have new ideas / new direction to dig for ?
+> GIT Bisect is the best direction to follow.
+>
+> Thanks,
+> Jose Miguel Abreu
+
+
