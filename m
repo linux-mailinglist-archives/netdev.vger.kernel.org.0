@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ACE926E61
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:49:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69A0126B7D
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732155AbfEVT0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:26:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48476 "EHLO mail.kernel.org"
+        id S1732172AbfEVT0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:26:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48520 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730243AbfEVT0t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:26:49 -0400
+        id S1732148AbfEVT0u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:26:50 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DEEC8217D7;
-        Wed, 22 May 2019 19:26:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E4E97217F9;
+        Wed, 22 May 2019 19:26:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558553208;
-        bh=R6v1aA3Ic/WVnvJ6wLhYL66yF3yvqaKXoKHmMFCyvnk=;
+        s=default; t=1558553209;
+        bh=OPj4hyP2iivzFkdQtG2vtTeYaImKjX+wHPT3oJiMBX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BEo/E9lHwlr4VlqnB/ap5VU9+VtIz6ZEwH9g71EMnfmpHlR07VcqFYIvvOsvcIZET
-         g0bJuyz3W7e2TYrX1DAgtVDrdxLAdXeDvekOowGCGUGOiyGq8FBhjYv90toowEGZRe
-         04oqqGG3zyB/8mKUI/AFCjv3Jul0u2Zfi8TFXVec=
+        b=jz5kAajdS9PJfdusH0fHOm1UHCMOPv97p1XZb6+V8pb6E/f7K+yO+HLZXCFeTPabK
+         NiGTFIUKxMsNhMqh3E0BfetINBRhnNolDt3ub56f9OeJfxr+OtI5yEwVJpqdN42Chy
+         8jGCt1rUhVxFV/kFfwIC59dUu5E/4MSQ3lg84HBk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sameeh Jubran <sameehj@amazon.com>,
+Cc:     Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephan Klein <stephan.klein@wegfinder.at>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 012/244] net: ena: gcc 8: fix compilation warning
-Date:   Wed, 22 May 2019 15:22:38 -0400
-Message-Id: <20190522192630.24917-12-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 013/244] hv_netvsc: fix race that may miss tx queue wakeup
+Date:   Wed, 22 May 2019 15:22:39 -0400
+Message-Id: <20190522192630.24917-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192630.24917-1-sashal@kernel.org>
 References: <20190522192630.24917-1-sashal@kernel.org>
@@ -43,47 +45,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+From: Haiyang Zhang <haiyangz@microsoft.com>
 
-[ Upstream commit f913308879bc6ae437ce64d878c7b05643ddea44 ]
+[ Upstream commit 93aa4792c3908eac87ddd368ee0fe0564148232b ]
 
-GCC 8 contains a number of new warnings as well as enhancements to existing
-checkers. The warning - Wstringop-truncation - warns for calls to bounded
-string manipulation functions such as strncat, strncpy, and stpncpy that
-may either truncate the copied string or leave the destination unchanged.
+When the ring buffer is almost full due to RX completion messages, a
+TX packet may reach the "low watermark" and cause the queue stopped.
+If the TX completion arrives earlier than queue stopping, the wakeup
+may be missed.
 
-In our case the destination string length (32 bytes) is much shorter than
-the source string (64 bytes) which causes this warning to show up. In
-general the destination has to be at least a byte larger than the length
-of the source string with strncpy for this warning not to showup.
+This patch moves the check for the last pending packet to cover both
+EAGAIN and success cases, so the queue will be reliably waked up when
+necessary.
 
-This can be easily fixed by using strlcpy instead which already does the
-truncation to the string. Documentation for this function can be
-found here:
-
-https://elixir.bootlin.com/linux/latest/source/lib/string.c#L141
-
-Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+Reported-and-tested-by: Stephan Klein <stephan.klein@wegfinder.at>
+Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/hyperv/netvsc.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 1b5f591cf0a23..b5d72815776cb 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -2223,7 +2223,7 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev)
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index fb12b63439c67..35413041dcf81 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -872,12 +872,6 @@ static inline int netvsc_send_pkt(
+ 	} else if (ret == -EAGAIN) {
+ 		netif_tx_stop_queue(txq);
+ 		ndev_ctx->eth_stats.stop_queue++;
+-		if (atomic_read(&nvchan->queue_sends) < 1 &&
+-		    !net_device->tx_disable) {
+-			netif_tx_wake_queue(txq);
+-			ndev_ctx->eth_stats.wake_queue++;
+-			ret = -ENOSPC;
+-		}
+ 	} else {
+ 		netdev_err(ndev,
+ 			   "Unable to send packet pages %u len %u, ret %d\n",
+@@ -885,6 +879,15 @@ static inline int netvsc_send_pkt(
+ 			   ret);
+ 	}
  
- 	host_info->os_type = ENA_ADMIN_OS_LINUX;
- 	host_info->kernel_ver = LINUX_VERSION_CODE;
--	strncpy(host_info->kernel_ver_str, utsname()->version,
-+	strlcpy(host_info->kernel_ver_str, utsname()->version,
- 		sizeof(host_info->kernel_ver_str) - 1);
- 	host_info->os_dist = 0;
- 	strncpy(host_info->os_dist_str, utsname()->release,
++	if (netif_tx_queue_stopped(txq) &&
++	    atomic_read(&nvchan->queue_sends) < 1 &&
++	    !net_device->tx_disable) {
++		netif_tx_wake_queue(txq);
++		ndev_ctx->eth_stats.wake_queue++;
++		if (ret == -EAGAIN)
++			ret = -ENOSPC;
++	}
++
+ 	return ret;
+ }
+ 
 -- 
 2.20.1
 
