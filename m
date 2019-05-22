@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D2C27067
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:04:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D431327074
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:04:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729964AbfEVTVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:21:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41970 "EHLO mail.kernel.org"
+        id S1730886AbfEVUEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 16:04:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42008 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729924AbfEVTVb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729937AbfEVTVb (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 22 May 2019 15:21:31 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6A82D2173C;
-        Wed, 22 May 2019 19:21:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DC801217D4;
+        Wed, 22 May 2019 19:21:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558552889;
-        bh=q45bGC7eS5ClWtkYK6X1HWzi/ijAvwG+ED5Bqf85fyM=;
+        s=default; t=1558552890;
+        bh=LCKP4eDolnwtBjnan8oPnWRJSNMCYpIpwhcShYyVK8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MddxJICHIcH3ebIwRxE8h4ySOdzqcmjQco6MgsZf4J+MJgZZzWqHlwWsyEsIrGwXf
-         EGAbcmm8TOMRF37GBvyWBfttl/Aj2SuDz+KZxKo+qTSxGKZFu55psD3GHMFqMXIaN/
-         FEaBhI0wAFra+BkrQTJiVUd2n5xSthaMhUezKYv4=
+        b=xdAgm7dZHCdVyVxTxbB5Ce2ayCiimN532eiCfruEp/jBjVqe7XFLsGVhSBr0FNUvK
+         IyyH+Qm+8M2YleregqFaI1iu3IczHbcbgmEdacdH0czO25cYV2ewxBTGvNJ9cFJJrE
+         4e4Gq1yb/57OXLZ7zfMX/SWJVMYvfd5ciYi7KjOw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
-        syzbot+83f2d54ec6b7e417e13f@syzkaller.appspotmail.com,
-        syzbot+050927a651272b145a5d@syzkaller.appspotmail.com,
-        syzbot+979ffc89b87309b1b94b@syzkaller.appspotmail.com,
-        syzbot+f9f3f388440283da2965@syzkaller.appspotmail.com,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Stefan Bader <stefan.bader@canonical.com>,
+        Peter Oskolkov <posk@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 010/375] batman-adv: mcast: fix multicast tt/tvlv worker locking
-Date:   Wed, 22 May 2019 15:15:10 -0400
-Message-Id: <20190522192115.22666-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 011/375] ip6: fix skb leak in ip6frag_expire_frag_queue()
+Date:   Wed, 22 May 2019 15:15:11 -0400
+Message-Id: <20190522192115.22666-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192115.22666-1-sashal@kernel.org>
 References: <20190522192115.22666-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -49,114 +46,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Linus Lüssing <linus.luessing@c0d3.blue>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit a3c7cd0cdf1107f891aff847ad481e34df727055 ]
+[ Upstream commit 47d3d7fdb10a21c223036b58bd70ffdc24a472c4 ]
 
-Syzbot has reported some issues with the locking assumptions made for
-the multicast tt/tvlv worker: It was able to trigger the WARN_ON() in
-batadv_mcast_mla_tt_retract() and batadv_mcast_mla_tt_add().
-While hard/not reproduceable for us so far it seems that the
-delayed_work_pending() we use might not be quite safe from reordering.
+Since ip6frag_expire_frag_queue() now pulls the head skb
+from frag queue, we should no longer use skb_get(), since
+this leads to an skb leak.
 
-Therefore this patch adds an explicit, new spinlock to protect the
-update of the mla_list and flags in bat_priv and then removes the
-WARN_ON(delayed_work_pending()).
+Stefan Bader initially reported a problem in 4.4.stable [1] caused
+by the skb_get(), so this patch should also fix this issue.
 
-Reported-by: syzbot+83f2d54ec6b7e417e13f@syzkaller.appspotmail.com
-Reported-by: syzbot+050927a651272b145a5d@syzkaller.appspotmail.com
-Reported-by: syzbot+979ffc89b87309b1b94b@syzkaller.appspotmail.com
-Reported-by: syzbot+f9f3f388440283da2965@syzkaller.appspotmail.com
-Fixes: cbebd363b2e9 ("batman-adv: Use own timer for multicast TT and TVLV updates")
-Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+296583.091021] kernel BUG at /build/linux-6VmqmP/linux-4.4.0/net/core/skbuff.c:1207!
+[296583.091734] Call Trace:
+[296583.091749]  [<ffffffff81740e50>] __pskb_pull_tail+0x50/0x350
+[296583.091764]  [<ffffffff8183939a>] _decode_session6+0x26a/0x400
+[296583.091779]  [<ffffffff817ec719>] __xfrm_decode_session+0x39/0x50
+[296583.091795]  [<ffffffff818239d0>] icmpv6_route_lookup+0xf0/0x1c0
+[296583.091809]  [<ffffffff81824421>] icmp6_send+0x5e1/0x940
+[296583.091823]  [<ffffffff81753238>] ? __netif_receive_skb+0x18/0x60
+[296583.091838]  [<ffffffff817532b2>] ? netif_receive_skb_internal+0x32/0xa0
+[296583.091858]  [<ffffffffc0199f74>] ? ixgbe_clean_rx_irq+0x594/0xac0 [ixgbe]
+[296583.091876]  [<ffffffffc04eb260>] ? nf_ct_net_exit+0x50/0x50 [nf_defrag_ipv6]
+[296583.091893]  [<ffffffff8183d431>] icmpv6_send+0x21/0x30
+[296583.091906]  [<ffffffff8182b500>] ip6_expire_frag_queue+0xe0/0x120
+[296583.091921]  [<ffffffffc04eb27f>] nf_ct_frag6_expire+0x1f/0x30 [nf_defrag_ipv6]
+[296583.091938]  [<ffffffff810f3b57>] call_timer_fn+0x37/0x140
+[296583.091951]  [<ffffffffc04eb260>] ? nf_ct_net_exit+0x50/0x50 [nf_defrag_ipv6]
+[296583.091968]  [<ffffffff810f5464>] run_timer_softirq+0x234/0x330
+[296583.091982]  [<ffffffff8108a339>] __do_softirq+0x109/0x2b0
+
+Fixes: d4289fcc9b16 ("net: IP6 defrag: use rbtrees for IPv6 defrag")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Stefan Bader <stefan.bader@canonical.com>
+Cc: Peter Oskolkov <posk@google.com>
+Cc: Florian Westphal <fw@strlen.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/main.c      |  1 +
- net/batman-adv/multicast.c | 11 +++--------
- net/batman-adv/types.h     |  5 +++++
- 3 files changed, 9 insertions(+), 8 deletions(-)
+ include/net/ipv6_frag.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/batman-adv/main.c b/net/batman-adv/main.c
-index 75750870cf048..f8725786b5961 100644
---- a/net/batman-adv/main.c
-+++ b/net/batman-adv/main.c
-@@ -161,6 +161,7 @@ int batadv_mesh_init(struct net_device *soft_iface)
- 	spin_lock_init(&bat_priv->tt.commit_lock);
- 	spin_lock_init(&bat_priv->gw.list_lock);
- #ifdef CONFIG_BATMAN_ADV_MCAST
-+	spin_lock_init(&bat_priv->mcast.mla_lock);
- 	spin_lock_init(&bat_priv->mcast.want_lists_lock);
- #endif
- 	spin_lock_init(&bat_priv->tvlv.container_list_lock);
-diff --git a/net/batman-adv/multicast.c b/net/batman-adv/multicast.c
-index f91b1b6265cfe..1b985ab89c087 100644
---- a/net/batman-adv/multicast.c
-+++ b/net/batman-adv/multicast.c
-@@ -325,8 +325,6 @@ static void batadv_mcast_mla_list_free(struct hlist_head *mcast_list)
-  * translation table except the ones listed in the given mcast_list.
-  *
-  * If mcast_list is NULL then all are retracted.
-- *
-- * Do not call outside of the mcast worker! (or cancel mcast worker first)
-  */
- static void batadv_mcast_mla_tt_retract(struct batadv_priv *bat_priv,
- 					struct hlist_head *mcast_list)
-@@ -334,8 +332,6 @@ static void batadv_mcast_mla_tt_retract(struct batadv_priv *bat_priv,
- 	struct batadv_hw_addr *mcast_entry;
- 	struct hlist_node *tmp;
+diff --git a/include/net/ipv6_frag.h b/include/net/ipv6_frag.h
+index 28aa9b30aecea..1f77fb4dc79df 100644
+--- a/include/net/ipv6_frag.h
++++ b/include/net/ipv6_frag.h
+@@ -94,7 +94,6 @@ ip6frag_expire_frag_queue(struct net *net, struct frag_queue *fq)
+ 		goto out;
  
--	WARN_ON(delayed_work_pending(&bat_priv->mcast.work));
--
- 	hlist_for_each_entry_safe(mcast_entry, tmp, &bat_priv->mcast.mla_list,
- 				  list) {
- 		if (mcast_list &&
-@@ -359,8 +355,6 @@ static void batadv_mcast_mla_tt_retract(struct batadv_priv *bat_priv,
-  *
-  * Adds multicast listener announcements from the given mcast_list to the
-  * translation table if they have not been added yet.
-- *
-- * Do not call outside of the mcast worker! (or cancel mcast worker first)
-  */
- static void batadv_mcast_mla_tt_add(struct batadv_priv *bat_priv,
- 				    struct hlist_head *mcast_list)
-@@ -368,8 +362,6 @@ static void batadv_mcast_mla_tt_add(struct batadv_priv *bat_priv,
- 	struct batadv_hw_addr *mcast_entry;
- 	struct hlist_node *tmp;
+ 	head->dev = dev;
+-	skb_get(head);
+ 	spin_unlock(&fq->q.lock);
  
--	WARN_ON(delayed_work_pending(&bat_priv->mcast.work));
--
- 	if (!mcast_list)
- 		return;
- 
-@@ -658,7 +650,10 @@ static void batadv_mcast_mla_update(struct work_struct *work)
- 	priv_mcast = container_of(delayed_work, struct batadv_priv_mcast, work);
- 	bat_priv = container_of(priv_mcast, struct batadv_priv, mcast);
- 
-+	spin_lock(&bat_priv->mcast.mla_lock);
- 	__batadv_mcast_mla_update(bat_priv);
-+	spin_unlock(&bat_priv->mcast.mla_lock);
-+
- 	batadv_mcast_start_timer(bat_priv);
- }
- 
-diff --git a/net/batman-adv/types.h b/net/batman-adv/types.h
-index a21b34ed6548f..ed0f6a519de55 100644
---- a/net/batman-adv/types.h
-+++ b/net/batman-adv/types.h
-@@ -1223,6 +1223,11 @@ struct batadv_priv_mcast {
- 	/** @bridged: whether the soft interface has a bridge on top */
- 	unsigned char bridged:1;
- 
-+	/**
-+	 * @mla_lock: a lock protecting mla_list and mla_flags
-+	 */
-+	spinlock_t mla_lock;
-+
- 	/**
- 	 * @num_want_all_unsnoopables: number of nodes wanting unsnoopable IP
- 	 *  traffic
+ 	icmpv6_send(head, ICMPV6_TIME_EXCEED, ICMPV6_EXC_FRAGTIME, 0);
 -- 
 2.20.1
 
