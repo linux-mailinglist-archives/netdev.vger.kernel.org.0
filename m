@@ -2,116 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99F462726C
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 00:40:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8775627271
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 00:42:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728677AbfEVWkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 18:40:04 -0400
-Received: from mga12.intel.com ([192.55.52.136]:12447 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726218AbfEVWkE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 18:40:04 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 May 2019 15:40:03 -0700
-X-ExtLoop1: 1
-Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
-  by fmsmga006.fm.intel.com with ESMTP; 22 May 2019 15:40:03 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
- ORSMSX110.amr.corp.intel.com ([169.254.10.7]) with mapi id 14.03.0415.000;
- Wed, 22 May 2019 15:40:02 -0700
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "mroos@linux.ee" <mroos@linux.ee>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "namit@vmware.com" <namit@vmware.com>,
-        "luto@kernel.org" <luto@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
-Subject: Re: [PATCH v2] vmalloc: Fix issues with flush flag
-Thread-Topic: [PATCH v2] vmalloc: Fix issues with flush flag
-Thread-Index: AQHVD0ezpbXySuUS5EinefGl750kkaZ0/uwAgAALkwCAAAiygIAAGYEAgAADqwCAAA0vgIAABnMAgAAEjYCAApkWgIAAHb0AgAA1/4A=
-Date:   Wed, 22 May 2019 22:40:02 +0000
-Message-ID: <2d8c59be7e591a0d0ff17627ea34ea1eaa110a09.camel@intel.com>
-References: <a43f9224e6b245ade4b587a018c8a21815091f0f.camel@intel.com>
-         <20190520.184336.743103388474716249.davem@davemloft.net>
-         <339ef85d984f329aa66f29fa80781624e6e4aecc.camel@intel.com>
-         <20190522.104019.40493905027242516.davem@davemloft.net>
-         <01a23900329e605fcd41ad8962cfd8f2d9b1fa44.camel@intel.com>
-In-Reply-To: <01a23900329e605fcd41ad8962cfd8f2d9b1fa44.camel@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.30.1 (3.30.1-1.fc29) 
-x-originating-ip: [10.254.91.116]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <92CE99CE339FFD40BC573E4C2B685475@intel.com>
-Content-Transfer-Encoding: base64
+        id S1728022AbfEVWmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 18:42:10 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:42514 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726218AbfEVWmK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 18:42:10 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 458SLQ43L5z1rJhT;
+        Thu, 23 May 2019 00:42:06 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 458SLQ3KDGz1qqkx;
+        Thu, 23 May 2019 00:42:06 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id YWtccwBrdzjd; Thu, 23 May 2019 00:42:05 +0200 (CEST)
+X-Auth-Info: Q2L9pDM9bIpeM8qwM8z1Mr5gLVK/BrPDbpA/8VTHsSg=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Thu, 23 May 2019 00:42:05 +0200 (CEST)
+Subject: Re: [PATCH V5] net: phy: tja11xx: Add TJA11xx PHY driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+References: <20190517235123.32261-1-marex@denx.de>
+ <20190518141456.GK14298@lunn.ch>
+ <f5ab2d22-a7ab-aa6d-77e1-a3a73e334b04@denx.de>
+ <20190522221407.GB15257@lunn.ch>
+From:   Marek Vasut <marex@denx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <f65b53b4-ecbf-a35b-2da8-2722b063e8b3@denx.de>
+Date:   Thu, 23 May 2019 00:42:04 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
+In-Reply-To: <20190522221407.GB15257@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTA1LTIyIGF0IDEyOjI2IC0wNzAwLCBSaWNrIEVkZ2Vjb21iZSB3cm90ZToN
-Cj4gT24gV2VkLCAyMDE5LTA1LTIyIGF0IDEwOjQwIC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6
-DQo+ID4gRnJvbTogIkVkZ2Vjb21iZSwgUmljayBQIiA8cmljay5wLmVkZ2Vjb21iZUBpbnRlbC5j
-b20+DQo+ID4gRGF0ZTogVHVlLCAyMSBNYXkgMjAxOSAwMTo1OTo1NCArMDAwMA0KPiA+IA0KPiA+
-ID4gT24gTW9uLCAyMDE5LTA1LTIwIGF0IDE4OjQzIC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6
-DQo+ID4gPiA+IEZyb206ICJFZGdlY29tYmUsIFJpY2sgUCIgPHJpY2sucC5lZGdlY29tYmVAaW50
-ZWwuY29tPg0KPiA+ID4gPiBEYXRlOiBUdWUsIDIxIE1heSAyMDE5IDAxOjIwOjMzICswMDAwDQo+
-ID4gPiA+IA0KPiA+ID4gPiA+IFNob3VsZCBpdCBoYW5kbGUgZXhlY3V0aW5nIGFuIHVubWFwcGVk
-IHBhZ2UgZ3JhY2VmdWxseT8NCj4gPiA+ID4gPiBCZWNhdXNlDQo+ID4gPiA+ID4gdGhpcw0KPiA+
-ID4gPiA+IGNoYW5nZSBpcyBjYXVzaW5nIHRoYXQgdG8gaGFwcGVuIG11Y2ggZWFybGllci4gSWYg
-c29tZXRoaW5nDQo+ID4gPiA+ID4gd2FzDQo+ID4gPiA+ID4gcmVseWluZw0KPiA+ID4gPiA+IG9u
-IGEgY2FjaGVkIHRyYW5zbGF0aW9uIHRvIGV4ZWN1dGUgc29tZXRoaW5nIGl0IGNvdWxkIGZpbmQN
-Cj4gPiA+ID4gPiB0aGUNCj4gPiA+ID4gPiBtYXBwaW5nDQo+ID4gPiA+ID4gZGlzYXBwZWFyLg0K
-PiA+ID4gPiANCj4gPiA+ID4gRG9lcyB0aGlzIHdvcmsgYnkgbm90IG1hcHBpbmcgYW55IGtlcm5l
-bCBtYXBwaW5ncyBhdCB0aGUNCj4gPiA+ID4gYmVnaW5uaW5nLA0KPiA+ID4gPiBhbmQgdGhlbiBm
-aWxsaW5nIGluIHRoZSBCUEYgbWFwcGluZ3MgaW4gcmVzcG9uc2UgdG8gZmF1bHRzPw0KPiA+ID4g
-Tm8sIG5vdGhpbmcgdG9vIGZhbmN5LiBJdCBqdXN0IGZsdXNoZXMgdGhlIHZtIG1hcHBpbmcgaW1t
-ZWRpYXRseQ0KPiA+ID4gaW4NCj4gPiA+IHZmcmVlIGZvciBleGVjdXRlIChhbmQgUk8pIG1hcHBp
-bmdzLiBUaGUgb25seSB0aGluZyB0aGF0IGhhcHBlbnMNCj4gPiA+IGFyb3VuZA0KPiA+ID4gYWxs
-b2NhdGlvbiB0aW1lIGlzIHNldHRpbmcgb2YgYSBuZXcgZmxhZyB0byB0ZWxsIHZtYWxsb2MgdG8g
-ZG8NCj4gPiA+IHRoZQ0KPiA+ID4gZmx1c2guDQo+ID4gPiANCj4gPiA+IFRoZSBwcm9ibGVtIGJl
-Zm9yZSB3YXMgdGhhdCB0aGUgcGFnZXMgd291bGQgYmUgZnJlZWQgYmVmb3JlIHRoZQ0KPiA+ID4g
-ZXhlY3V0ZQ0KPiA+ID4gbWFwcGluZyB3YXMgZmx1c2hlZC4gU28gdGhlbiB3aGVuIHRoZSBwYWdl
-cyBnb3QgcmVjeWNsZWQsIHJhbmRvbSwNCj4gPiA+IHNvbWV0aW1lcyBjb21pbmcgZnJvbSB1c2Vy
-c3BhY2UsIGRhdGEgd291bGQgYmUgbWFwcGVkIGFzDQo+ID4gPiBleGVjdXRhYmxlDQo+ID4gPiBp
-bg0KPiA+ID4gdGhlIGtlcm5lbCBieSB0aGUgdW4tZmx1c2hlZCB0bGIgZW50cmllcy4NCj4gPiAN
-Cj4gPiBJZiBJIGFtIHRvIHVuZGVyc3RhbmQgdGhpbmdzIGNvcnJlY3RseSwgdGhlcmUgd2FzIGEg
-Y2FzZSB3aGVyZQ0KPiA+ICdlbmQnDQo+ID4gY291bGQgYmUgc21hbGxlciB0aGFuICdzdGFydCcg
-d2hlbiBkb2luZyBhIHJhbmdlIGZsdXNoLiAgVGhhdCB3b3VsZA0KPiA+IGRlZmluaXRlbHkga2ls
-bCBzb21lIG9mIHRoZSBzcGFyYzY0IFRMQiBmbHVzaCByb3V0aW5lcy4NCj4gDQo+IE9rLCB0aGFu
-a3MuDQo+IA0KPiBUaGUgcGF0Y2ggYXQgdGhlIGJlZ2lubmluZyBvZiB0aGlzIHRocmVhZCBkb2Vz
-bid0IGhhdmUgdGhhdCBiZWhhdmlvcg0KPiB0aG91Z2ggYW5kIGl0IGFwcGFyZW50bHkgc3RpbGwg
-aHVuZy4gSSBhc2tlZCBpZiBNZWVsaXMgY291bGQgdGVzdA0KPiB3aXRoDQo+IHRoaXMgZmVhdHVy
-ZSBkaXNhYmxlZCBhbmQgREVCVUdfUEFHRUFMTE9DIG9uLCBzaW5jZSBpdCBmbHVzaGVzIG9uDQo+
-IGV2ZXJ5DQo+IHZmcmVlIGFuZCBpcyBub3QgbmV3IGxvZ2ljLCBhbmQgYWxzbyB3aXRoIGEgcGF0
-Y2ggdGhhdCBsb2dzIGV4YWN0IFRMQg0KPiBmbHVzaCByYW5nZXMgYW5kIGZhdWx0IGFkZHJlc3Nl
-cyBvbiB0b3Agb2YgdGhlIGtlcm5lbCBoYXZpbmcgdGhpcw0KPiBpc3N1ZS4gSG9wZWZ1bGx5IHRo
-YXQgd2lsbCBzaGVkIHNvbWUgbGlnaHQuDQo+IA0KPiBTb3JyeSBmb3IgYWxsIHRoZSBub2lzZSBh
-bmQgc3BlY3VsYXRpb24gb24gdGhpcy4gSXQgaGFzIGJlZW4NCj4gZGlmZmljdWx0DQo+IHRvIGRl
-YnVnIHJlbW90ZWx5IHdpdGggYSB0ZXN0ZXIgYW5kIGRldmVsb3BlciBpbiBkaWZmZXJlbnQgdGlt
-ZQ0KPiB6b25lcy4NCj4gDQo+IA0KT2ssIHNvIHdpdGggYSBwYXRjaCB0byBkaXNhYmxlIHNldHRp
-bmcgdGhlIG5ldyB2bWFsbG9jIGZsdXNoIGZsYWcgb24NCmFyY2hpdGVjdHVyZXMgdGhhdCBoYXZl
-IG5vcm1hbCBtZW1vcnkgYXMgZXhlY3V0YWJsZSAoaW5jbHVkZXMgc3BhcmMpLA0KYm9vdCBzdWNj
-ZWVkcy4NCg0KV2l0aCB0aGlzIGRpc2FibGUgcGF0Y2ggYW5kIERFQlVHX1BBR0VBTExPQyBvbiwg
-aXQgaGFuZ3MgZWFybGllciB0aGFuDQpiZWZvcmUuIEdvaW5nIGZyb20gY2x1ZXMgaW4gb3RoZXIg
-bG9ncywgaXQgbG9va3MgbGlrZSBpdCBoYW5ncyByaWdodCBhdA0KdGhlIGZpcnN0IG5vcm1hbCB2
-ZnJlZS4NCg0KVGhhbmtzIGZvciBhbGwgdGhlIHRlc3RpbmcgTWVlbGlzIQ0KDQpTbyBpdCBzZWVt
-cyBsaWtlIG90aGVyLCBub3QgbmV3LCBUTEIgZmx1c2hlcyBhbHNvIHRyaWdnZXIgdGhlIGhhbmcu
-DQoNCkZyb20gZWFybGllciBsb2dzIHByb3ZpZGVkLCB0aGlzIHZmcmVlIHdvdWxkIGJlIHRoZSBm
-aXJzdCBjYWxsIHRvDQpmbHVzaF90bGJfa2VybmVsX3JhbmdlKCksIGFuZCBiZWZvcmUgYW55IEJQ
-RiBhbGxvY2F0aW9ucyBhcHBlYXIgaW4gdGhlDQpsb2dzLiBTbyBJIGFtIHN1c3BlY3Rpbmcgc29t
-ZSBvdGhlciBjYXVzZSB0aGFuIHRoZSBiaXNlY3RlZCBwYXRjaCBhdA0KdGhpcyBwb2ludCwgYnV0
-IEkgZ3Vlc3MgaXQncyBub3QgZnVsbHkgY29uY2x1c2l2ZS4NCg0KSXQgY291bGQgYmUgaW5mb3Jt
-YXRpdmUgdG8gYmlzZWN0IHVwc3RyZWFtIGFnYWluIHdpdGggdGhlDQpERUJVR19QQUdFQUxMT0Mg
-Y29uZmlncyBvbiwgdG8gc2VlIGlmIGl0IGluZGVlZCBwb2ludHMgdG8gYW4gZWFybGllcg0KY29t
-bWl0Lg0K
+On 5/23/19 12:14 AM, Andrew Lunn wrote:
+> On Wed, May 22, 2019 at 11:48:06PM +0200, Marek Vasut wrote:
+>> On 5/18/19 4:14 PM, Andrew Lunn wrote:
+>>> On Sat, May 18, 2019 at 01:51:23AM +0200, Marek Vasut wrote:
+>>>> Add driver for the NXP TJA1100 and TJA1101 PHYs. These PHYs are special
+>>>> BroadRReach 100BaseT1 PHYs used in automotive.
+>>>
+>>> Hi Marek
+>>>
+>>>> +	}, {
+>>>> +		PHY_ID_MATCH_MODEL(PHY_ID_TJA1101),
+>>>> +		.name		= "NXP TJA1101",
+>>>> +		.features       = PHY_BASIC_T1_FEATURES,
+>>>
+>>> One thing i would like to do before this patch goes in is define
+>>> ETHTOOL_LINK_MODE_100baseT1_Full_BIT in ethtool.h, and use it here.
+>>> We could not do it earlier because were ran out of bits. But with
+>>> PHYLIB now using bitmaps, rather than u32, we can.
+>>
+>> So now that "[PATCH net-next 0/2] net: phy: T1 support" is posted, does
+>> this patch require any change ? I don't think it does ?
+> 
+> Hi Marek
+> 
+> In the end, no it does not need any changes because of my patchset.
+
+OK, thanks.
+
+-- 
+Best regards,
+Marek Vasut
