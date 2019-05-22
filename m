@@ -2,86 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E184426A7C
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C2826A83
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:05:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729707AbfEVTFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:05:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35062 "EHLO mail.kernel.org"
+        id S1729646AbfEVTFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:05:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43671 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729641AbfEVTE7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:04:59 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CF4F8217F9;
-        Wed, 22 May 2019 19:04:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558551898;
-        bh=ngtFcyO/eM0a2DYgpvx+qpEEgnBZZvNw0/3LTnNC8G4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o5mteEeA8FPOuUhgTky2bSAx4NAveNvOraCVOQAFrEHtEc7pS7TOhB9YC2nt0J+VS
-         I5Ny130DblWSEGbUEqOkW9BEflexSBrqHpjLOW47aa4/CO1YzfND6+QeHoJcGlFMYR
-         dJ5yi0UQVprPuosxUnKxYEa7kBdcoVG+00eWbOhE=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     idosch@mellanox.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v2 net-next 8/8] ipv4: Rename and export nh_update_mtu
-Date:   Wed, 22 May 2019 12:04:46 -0700
-Message-Id: <20190522190446.15486-9-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190522190446.15486-1-dsahern@kernel.org>
-References: <20190522190446.15486-1-dsahern@kernel.org>
+        id S1729018AbfEVTFf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:05:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=uHhRD469FWqJR123aT/Zmax6X0frnHJyojtyxHF7F40=; b=A9e6pO0CYRkxEyaWOTnErVYyUy
+        ytsVJEq5IiBLNSdsSNLuojaXhAXOLhWrV+1xc+9r20XZL5d7sGTsf5A57Ygv3CWkpRIiXjeP5Es5K
+        qFtcvqN9ddnsPzZnoTMAMwb4OqbUAhr4uybyE/v3Yjbmsle+N7YvleK/YnYFIh/vo7LI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hTWYP-0002Mz-57; Wed, 22 May 2019 21:05:33 +0200
+Date:   Wed, 22 May 2019 21:05:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Trent Piepho <tpiepho@impinj.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v2 7/8] net: phy: dp83867: Validate FIFO depth
+ property
+Message-ID: <20190522190533.GE7281@lunn.ch>
+References: <20190522184255.16323-1-tpiepho@impinj.com>
+ <20190522184255.16323-7-tpiepho@impinj.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190522184255.16323-7-tpiepho@impinj.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+On Wed, May 22, 2019 at 06:43:26PM +0000, Trent Piepho wrote:
+> Insure property is in valid range and fail when reading DT if it is not.
+> Also add error message for existing failure if required property is not
+> present.
+> 
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Signed-off-by: Trent Piepho <tpiepho@impinj.com>
 
-Rename nh_update_mtu to fib_nhc_update_mtu and export for use by the
-nexthop code.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- include/net/ip_fib.h     | 1 +
- net/ipv4/fib_semantics.c | 4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index 8511ebb6f7be..70ba0302c8c9 100644
---- a/include/net/ip_fib.h
-+++ b/include/net/ip_fib.h
-@@ -432,6 +432,7 @@ int fib_sync_down_dev(struct net_device *dev, unsigned long event, bool force);
- int fib_sync_down_addr(struct net_device *dev, __be32 local);
- int fib_sync_up(struct net_device *dev, unsigned char nh_flags);
- void fib_sync_mtu(struct net_device *dev, u32 orig_mtu);
-+void fib_nhc_update_mtu(struct fib_nh_common *nhc, u32 new, u32 orig);
- 
- #ifdef CONFIG_IP_ROUTE_MULTIPATH
- int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index bd8c51d2c59b..78648072783e 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1712,7 +1712,7 @@ static int call_fib_nh_notifiers(struct fib_nh *nh,
-  * - if the new MTU is greater than the PMTU, don't make any change
-  * - otherwise, unlock and set PMTU
-  */
--static void nh_update_mtu(struct fib_nh_common *nhc, u32 new, u32 orig)
-+void fib_nhc_update_mtu(struct fib_nh_common *nhc, u32 new, u32 orig)
- {
- 	struct fnhe_hash_bucket *bucket;
- 	int i;
-@@ -1748,7 +1748,7 @@ void fib_sync_mtu(struct net_device *dev, u32 orig_mtu)
- 
- 	hlist_for_each_entry(nh, head, nh_hash) {
- 		if (nh->fib_nh_dev == dev)
--			nh_update_mtu(&nh->nh_common, dev->mtu, orig_mtu);
-+			fib_nhc_update_mtu(&nh->nh_common, dev->mtu, orig_mtu);
- 	}
- }
- 
--- 
-2.11.0
-
+    Andrew
