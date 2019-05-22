@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E74926FD6
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:00:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87C3426FDF
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:00:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730859AbfEVTXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:23:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44208 "EHLO mail.kernel.org"
+        id S1731130AbfEVT7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:59:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729898AbfEVTXV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:23:21 -0400
+        id S1730034AbfEVTXW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:23:22 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3500020879;
-        Wed, 22 May 2019 19:23:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4C39E21473;
+        Wed, 22 May 2019 19:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558553000;
-        bh=ohwL04BOh4ZgawOxZX/3E1Brr5PMk/Jb/8Hs5x/j9lQ=;
+        s=default; t=1558553002;
+        bh=QePx1IMak/j1YkCE6t2wjbBLa/k4asf6AK8gETWFaGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1of2dmi5lXNNjQ+1lGnt38HrbzVV6yYwYDaoxQ64foH+zX08t9+JHw0okQ25HeSCC
-         BNpcxWdjW4BXrVbQDRa5eQ7Hd1WdJB8TGL4t4JP1XdXSeB/14p6B2mrLolqE1eMD9j
-         sO01YMcaOqAcUGyohIvrv5404smCoG6bK/HwrAoU=
+        b=DiJfk4gRAVwwrliMb2Oi9lMvlMrZQX76LLW24yzHfWatDX2Cfy7iABclH8c1w9ztS
+         8usCGbkGLPNEWPTejB5s4gkgucqt5QQPloH7NV3KLAEpzR9tquKtW8qImsiW1u7Rod
+         NZmUKdubpKu5nbRKo2JhCJhIKOIvMo5uJrpyD7W0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huazhong Tan <tanhuazhong@huawei.com>,
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
         Peng Li <lipeng321@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 069/375] net: hns3: fix pause configure fail problem
-Date:   Wed, 22 May 2019 15:16:09 -0400
-Message-Id: <20190522192115.22666-69-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 070/375] net: hns3: fix for TX clean num when cleaning TX BD
+Date:   Wed, 22 May 2019 15:16:10 -0400
+Message-Id: <20190522192115.22666-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192115.22666-1-sashal@kernel.org>
 References: <20190522192115.22666-1-sashal@kernel.org>
@@ -44,41 +45,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huazhong Tan <tanhuazhong@huawei.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-[ Upstream commit fba2efdae8b4f998f66a2ff4c9f0575e1c4bbc40 ]
+[ Upstream commit 63380a1ae4ced8aef67659ff9547c69ef8b9613a ]
 
-When configure pause, current implementation returns directly
-after setup PFC without setup BP, which is not sufficient.
+hns3_desc_unused() returns how many BD have been cleaned, but new
+buffer has not been attached to them. The register of
+HNS3_RING_RX_RING_FBDNUM_REG returns how many BD need allocating new
+buffer to or need to cleaned. So the remaining BD need to be clean
+is HNS3_RING_RX_RING_FBDNUM_REG - hns3_desc_unused().
 
-So this patch fixes it, only return while setting PFC failed.
+Also, new buffer can not attach to the pending BD when the last BD is
+not handled, because memcpy has not been done on the first pending BD.
 
-Fixes: 44e59e375bf7 ("net: hns3: do not return GE PFC setting err when initializing")
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+This patch fixes by subtracting the pending BD num from unused_count
+after 'HNS3_RING_RX_RING_FBDNUM_REG - unused_count' is used to calculate
+the BD bum need to be clean.
+
+Fixes: e55970950556 ("net: hns3: Add handling of GRO Pkts not fully RX'ed in NAPI poll")
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index aafc69f4bfdd6..a7bbb6d3091a6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -1331,8 +1331,11 @@ int hclge_pause_setup_hw(struct hclge_dev *hdev, bool init)
- 	ret = hclge_pfc_setup_hw(hdev);
- 	if (init && ret == -EOPNOTSUPP)
- 		dev_warn(&hdev->pdev->dev, "GE MAC does not support pfc\n");
--	else
-+	else if (ret) {
-+		dev_err(&hdev->pdev->dev, "config pfc failed! ret = %d\n",
-+			ret);
- 		return ret;
-+	}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 162cb9afa0e70..0208efe282775 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -2705,7 +2705,7 @@ int hns3_clean_rx_ring(
+ #define RCB_NOF_ALLOC_RX_BUFF_ONCE 16
+ 	struct net_device *netdev = ring->tqp->handle->kinfo.netdev;
+ 	int recv_pkts, recv_bds, clean_count, err;
+-	int unused_count = hns3_desc_unused(ring) - ring->pending_buf;
++	int unused_count = hns3_desc_unused(ring);
+ 	struct sk_buff *skb = ring->skb;
+ 	int num;
  
- 	return hclge_tm_bp_setup(hdev);
- }
+@@ -2714,6 +2714,7 @@ int hns3_clean_rx_ring(
+ 
+ 	recv_pkts = 0, recv_bds = 0, clean_count = 0;
+ 	num -= unused_count;
++	unused_count -= ring->pending_buf;
+ 
+ 	while (recv_pkts < budget && recv_bds < num) {
+ 		/* Reuse or realloc buffers */
 -- 
 2.20.1
 
