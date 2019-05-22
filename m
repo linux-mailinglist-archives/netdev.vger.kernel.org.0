@@ -2,133 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 402EF27256
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 00:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F462726C
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 00:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbfEVWaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 18:30:15 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:47062 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbfEVWaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 18:30:15 -0400
-Received: by mail-pl1-f196.google.com with SMTP id r18so1725249pls.13
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 15:30:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nomqC9wm5tKuFrywoJSBZU7V59BqM/V7+n7l0RLilrI=;
-        b=hpTtArzyg9yCaaL49Lq91oOAB6AXDpHvXuwPd+tZwEqUACpEou2KNhmOjQMSyXMPFz
-         iNo+w62eh3kqA2TwABPkH34q2RjfuIykzW99bVT6/DgB9s3eaZOU0qkW9RG/kloRUZaR
-         qaqQGUXB8zb6hRIdaSh0OSKIW7ZL68HlwgMsiSqkoomVnD9cmuvIdrzb139C8UHa6QgF
-         Ie+AWutMSYGdo9RcJ2oGiMM11dZChiov7RcbLkCEmQ+JlViwJ1DNLtbBvOcHDH32LCSK
-         CLJ+kW0pF4wykSRK6lJ9ga3o14j+ZFHIhwR+sKeJI5Dh3QOc7huPUwA81sEODxXU4oxU
-         STcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nomqC9wm5tKuFrywoJSBZU7V59BqM/V7+n7l0RLilrI=;
-        b=LO3dhiRxRhjrzIp/IknMI9k8GiC+2mZZaA9PYrSfWk+LptCsuRUMoeEQBAsVF2hBTy
-         v/woPSTONvcRnoJSOwQH8kfEx6hM8lSMx66UdYEVsDS/JhVbHMIboQ8pcjEoQzskLV2p
-         druGO7xX7Fk+JYcfx+JwL7dadJE9D3pM/XDiCv+Zc6mreiK/7UgDxrnPup71QdyHWt7H
-         IuCREQLM5lxSu07gb9U54MFOeCg1d4I9e5viLZh3OoLDwv2s5ZVBNAYHoLR3BS8kvjkU
-         eZPgOXzdVwHhseXXdIcXrqhQEhpVHjAzZ6Ex+zjG5cgkKV5TML7IPuo56zfI8CNMaj+8
-         dv2g==
-X-Gm-Message-State: APjAAAWBm8SbXCJU65VoKTVOHJ8r84N+YN7s0sxbvkXvRBnrne8Oqkp7
-        jKYBZyvYpJ0zKmamLBWjJ/5JnQ==
-X-Google-Smtp-Source: APXvYqzRH9ynCDvis8JkHjoUh5xNSbhqtE0xxa1qUjd/rVGEWIQAYqoVDGCBfN8KUqlOJyXCsLo8ww==
-X-Received: by 2002:a17:902:760f:: with SMTP id k15mr17935549pll.125.1558564215019;
-        Wed, 22 May 2019 15:30:15 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id m12sm22418831pgi.56.2019.05.22.15.30.14
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 22 May 2019 15:30:14 -0700 (PDT)
-Date:   Wed, 22 May 2019 15:30:13 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 05/12] libbpf: add resizable non-thread safe
- internal hashmap
-Message-ID: <20190522223013.GC3032@mini-arch>
-References: <20190522195053.4017624-1-andriin@fb.com>
- <20190522195053.4017624-6-andriin@fb.com>
- <20190522203032.GO10244@mini-arch>
- <CAEf4BzZi6A1vcFUFdwSQrbag_ptoU9+imdWhHdVKCLB8yvPSTw@mail.gmail.com>
+        id S1728677AbfEVWkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 18:40:04 -0400
+Received: from mga12.intel.com ([192.55.52.136]:12447 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726218AbfEVWkE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 18:40:04 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 May 2019 15:40:03 -0700
+X-ExtLoop1: 1
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+  by fmsmga006.fm.intel.com with ESMTP; 22 May 2019 15:40:03 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
+ ORSMSX110.amr.corp.intel.com ([169.254.10.7]) with mapi id 14.03.0415.000;
+ Wed, 22 May 2019 15:40:02 -0700
+From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "mroos@linux.ee" <mroos@linux.ee>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "namit@vmware.com" <namit@vmware.com>,
+        "luto@kernel.org" <luto@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
+Subject: Re: [PATCH v2] vmalloc: Fix issues with flush flag
+Thread-Topic: [PATCH v2] vmalloc: Fix issues with flush flag
+Thread-Index: AQHVD0ezpbXySuUS5EinefGl750kkaZ0/uwAgAALkwCAAAiygIAAGYEAgAADqwCAAA0vgIAABnMAgAAEjYCAApkWgIAAHb0AgAA1/4A=
+Date:   Wed, 22 May 2019 22:40:02 +0000
+Message-ID: <2d8c59be7e591a0d0ff17627ea34ea1eaa110a09.camel@intel.com>
+References: <a43f9224e6b245ade4b587a018c8a21815091f0f.camel@intel.com>
+         <20190520.184336.743103388474716249.davem@davemloft.net>
+         <339ef85d984f329aa66f29fa80781624e6e4aecc.camel@intel.com>
+         <20190522.104019.40493905027242516.davem@davemloft.net>
+         <01a23900329e605fcd41ad8962cfd8f2d9b1fa44.camel@intel.com>
+In-Reply-To: <01a23900329e605fcd41ad8962cfd8f2d9b1fa44.camel@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.30.1 (3.30.1-1.fc29) 
+x-originating-ip: [10.254.91.116]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <92CE99CE339FFD40BC573E4C2B685475@intel.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZi6A1vcFUFdwSQrbag_ptoU9+imdWhHdVKCLB8yvPSTw@mail.gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/22, Andrii Nakryiko wrote:
-> On Wed, May 22, 2019 at 1:30 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> >
-> > On 05/22, Andrii Nakryiko wrote:
-> > > There is a need for fast point lookups inside libbpf for multiple use
-> > > cases (e.g., name resolution for BTF-to-C conversion, by-name lookups in
-> > > BTF for upcoming BPF CO-RE relocation support, etc). This patch
-> > > implements simple resizable non-thread safe hashmap using single linked
-> > > list chains.
-> > Didn't really look into the details, but any reason you're not using
-> > linux/hashtable.h? It's exported in tools/include and I think perf
-> > is using it. It's probably not resizable, but should be easy to
-> > implement rebalancing on top of it.
-> 
-> There are multiple reasons.
-> 1. linux/hashtable.h is pretty bare-bones, it's just hlist_node and a
-> bunch of macro to manipulate array or chains of them. I wanted to have
-> higher-level API with lookup by key, insertion w/ various strategies,
-> etc. Preferrably one not requiring to manipulate hlist_node directly
-> as part of its API, even if at some performance cost of hiding that
-> low-level detail.
-> 2. Resizing is a big chunk of resizable hashmap logic, so I'd need to
-> write a bunch of additional code anyway.
-> 3. Licensing. linux/hashtable.h is under GPL, while libbpf is
-> dual-licensed under GPL and BSD. When syncing libbpf from kernel to
-> github, we have to re-implement all the parts from kernel that are not
-> under BSD license anyway.
-> 4. hlist_node keeps two pointers per item, which is unnecessary for
-> hashmap which does deletion by key (by searching for node first, then
-> deleting), so we can also have lower memory overhead per entry.
-> 
-> So in general, I feel like there is little benefit to reusing
-> linux/hashlist.h for use cases I'm targeting this hashmap for.
-Makes sense. Licensing is probably the biggest issue here because
-my original suggestion was to use linux/hashtable.h internally,
-just wrap it in a nice api.
-But agree on all points, thanks for clarification!
-
-> > > Four different insert strategies are supported:
-> > >  - HASHMAP_ADD - only add key/value if key doesn't exist yet;
-> > >  - HASHMAP_SET - add key/value pair if key doesn't exist yet; otherwise,
-> > >    update value;
-> > >  - HASHMAP_UPDATE - update value, if key already exists; otherwise, do
-> > >    nothing and return -ENOENT;
-> > >  - HASHMAP_APPEND - always add key/value pair, even if key already exists.
-> > >    This turns hashmap into a multimap by allowing multiple values to be
-> > >    associated with the same key. Most useful read API for such hashmap is
-> > >    hashmap__for_each_key_entry() iteration. If hashmap__find() is still
-> > >    used, it will return last inserted key/value entry (first in a bucket
-> > >    chain).
-> > >
-> > > For HASHMAP_SET and HASHMAP_UPDATE, old key/value pair is returned, so
-> > > that calling code can handle proper memory management, if necessary.
-> > >
-> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > ---
-> > >  tools/lib/bpf/Build     |   2 +-
-> > >  tools/lib/bpf/hashmap.c | 229 ++++++++++++++++++++++++++++++++++++++++
-> > >  tools/lib/bpf/hashmap.h | 173 ++++++++++++++++++++++++++++++
-> > >  3 files changed, 403 insertions(+), 1 deletion(-)
-> > >  create mode 100644 tools/lib/bpf/hashmap.c
-> > >  create mode 100644 tools/lib/bpf/hashmap.h
-> > >
-> > >
+T24gV2VkLCAyMDE5LTA1LTIyIGF0IDEyOjI2IC0wNzAwLCBSaWNrIEVkZ2Vjb21iZSB3cm90ZToN
+Cj4gT24gV2VkLCAyMDE5LTA1LTIyIGF0IDEwOjQwIC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6
+DQo+ID4gRnJvbTogIkVkZ2Vjb21iZSwgUmljayBQIiA8cmljay5wLmVkZ2Vjb21iZUBpbnRlbC5j
+b20+DQo+ID4gRGF0ZTogVHVlLCAyMSBNYXkgMjAxOSAwMTo1OTo1NCArMDAwMA0KPiA+IA0KPiA+
+ID4gT24gTW9uLCAyMDE5LTA1LTIwIGF0IDE4OjQzIC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6
+DQo+ID4gPiA+IEZyb206ICJFZGdlY29tYmUsIFJpY2sgUCIgPHJpY2sucC5lZGdlY29tYmVAaW50
+ZWwuY29tPg0KPiA+ID4gPiBEYXRlOiBUdWUsIDIxIE1heSAyMDE5IDAxOjIwOjMzICswMDAwDQo+
+ID4gPiA+IA0KPiA+ID4gPiA+IFNob3VsZCBpdCBoYW5kbGUgZXhlY3V0aW5nIGFuIHVubWFwcGVk
+IHBhZ2UgZ3JhY2VmdWxseT8NCj4gPiA+ID4gPiBCZWNhdXNlDQo+ID4gPiA+ID4gdGhpcw0KPiA+
+ID4gPiA+IGNoYW5nZSBpcyBjYXVzaW5nIHRoYXQgdG8gaGFwcGVuIG11Y2ggZWFybGllci4gSWYg
+c29tZXRoaW5nDQo+ID4gPiA+ID4gd2FzDQo+ID4gPiA+ID4gcmVseWluZw0KPiA+ID4gPiA+IG9u
+IGEgY2FjaGVkIHRyYW5zbGF0aW9uIHRvIGV4ZWN1dGUgc29tZXRoaW5nIGl0IGNvdWxkIGZpbmQN
+Cj4gPiA+ID4gPiB0aGUNCj4gPiA+ID4gPiBtYXBwaW5nDQo+ID4gPiA+ID4gZGlzYXBwZWFyLg0K
+PiA+ID4gPiANCj4gPiA+ID4gRG9lcyB0aGlzIHdvcmsgYnkgbm90IG1hcHBpbmcgYW55IGtlcm5l
+bCBtYXBwaW5ncyBhdCB0aGUNCj4gPiA+ID4gYmVnaW5uaW5nLA0KPiA+ID4gPiBhbmQgdGhlbiBm
+aWxsaW5nIGluIHRoZSBCUEYgbWFwcGluZ3MgaW4gcmVzcG9uc2UgdG8gZmF1bHRzPw0KPiA+ID4g
+Tm8sIG5vdGhpbmcgdG9vIGZhbmN5LiBJdCBqdXN0IGZsdXNoZXMgdGhlIHZtIG1hcHBpbmcgaW1t
+ZWRpYXRseQ0KPiA+ID4gaW4NCj4gPiA+IHZmcmVlIGZvciBleGVjdXRlIChhbmQgUk8pIG1hcHBp
+bmdzLiBUaGUgb25seSB0aGluZyB0aGF0IGhhcHBlbnMNCj4gPiA+IGFyb3VuZA0KPiA+ID4gYWxs
+b2NhdGlvbiB0aW1lIGlzIHNldHRpbmcgb2YgYSBuZXcgZmxhZyB0byB0ZWxsIHZtYWxsb2MgdG8g
+ZG8NCj4gPiA+IHRoZQ0KPiA+ID4gZmx1c2guDQo+ID4gPiANCj4gPiA+IFRoZSBwcm9ibGVtIGJl
+Zm9yZSB3YXMgdGhhdCB0aGUgcGFnZXMgd291bGQgYmUgZnJlZWQgYmVmb3JlIHRoZQ0KPiA+ID4g
+ZXhlY3V0ZQ0KPiA+ID4gbWFwcGluZyB3YXMgZmx1c2hlZC4gU28gdGhlbiB3aGVuIHRoZSBwYWdl
+cyBnb3QgcmVjeWNsZWQsIHJhbmRvbSwNCj4gPiA+IHNvbWV0aW1lcyBjb21pbmcgZnJvbSB1c2Vy
+c3BhY2UsIGRhdGEgd291bGQgYmUgbWFwcGVkIGFzDQo+ID4gPiBleGVjdXRhYmxlDQo+ID4gPiBp
+bg0KPiA+ID4gdGhlIGtlcm5lbCBieSB0aGUgdW4tZmx1c2hlZCB0bGIgZW50cmllcy4NCj4gPiAN
+Cj4gPiBJZiBJIGFtIHRvIHVuZGVyc3RhbmQgdGhpbmdzIGNvcnJlY3RseSwgdGhlcmUgd2FzIGEg
+Y2FzZSB3aGVyZQ0KPiA+ICdlbmQnDQo+ID4gY291bGQgYmUgc21hbGxlciB0aGFuICdzdGFydCcg
+d2hlbiBkb2luZyBhIHJhbmdlIGZsdXNoLiAgVGhhdCB3b3VsZA0KPiA+IGRlZmluaXRlbHkga2ls
+bCBzb21lIG9mIHRoZSBzcGFyYzY0IFRMQiBmbHVzaCByb3V0aW5lcy4NCj4gDQo+IE9rLCB0aGFu
+a3MuDQo+IA0KPiBUaGUgcGF0Y2ggYXQgdGhlIGJlZ2lubmluZyBvZiB0aGlzIHRocmVhZCBkb2Vz
+bid0IGhhdmUgdGhhdCBiZWhhdmlvcg0KPiB0aG91Z2ggYW5kIGl0IGFwcGFyZW50bHkgc3RpbGwg
+aHVuZy4gSSBhc2tlZCBpZiBNZWVsaXMgY291bGQgdGVzdA0KPiB3aXRoDQo+IHRoaXMgZmVhdHVy
+ZSBkaXNhYmxlZCBhbmQgREVCVUdfUEFHRUFMTE9DIG9uLCBzaW5jZSBpdCBmbHVzaGVzIG9uDQo+
+IGV2ZXJ5DQo+IHZmcmVlIGFuZCBpcyBub3QgbmV3IGxvZ2ljLCBhbmQgYWxzbyB3aXRoIGEgcGF0
+Y2ggdGhhdCBsb2dzIGV4YWN0IFRMQg0KPiBmbHVzaCByYW5nZXMgYW5kIGZhdWx0IGFkZHJlc3Nl
+cyBvbiB0b3Agb2YgdGhlIGtlcm5lbCBoYXZpbmcgdGhpcw0KPiBpc3N1ZS4gSG9wZWZ1bGx5IHRo
+YXQgd2lsbCBzaGVkIHNvbWUgbGlnaHQuDQo+IA0KPiBTb3JyeSBmb3IgYWxsIHRoZSBub2lzZSBh
+bmQgc3BlY3VsYXRpb24gb24gdGhpcy4gSXQgaGFzIGJlZW4NCj4gZGlmZmljdWx0DQo+IHRvIGRl
+YnVnIHJlbW90ZWx5IHdpdGggYSB0ZXN0ZXIgYW5kIGRldmVsb3BlciBpbiBkaWZmZXJlbnQgdGlt
+ZQ0KPiB6b25lcy4NCj4gDQo+IA0KT2ssIHNvIHdpdGggYSBwYXRjaCB0byBkaXNhYmxlIHNldHRp
+bmcgdGhlIG5ldyB2bWFsbG9jIGZsdXNoIGZsYWcgb24NCmFyY2hpdGVjdHVyZXMgdGhhdCBoYXZl
+IG5vcm1hbCBtZW1vcnkgYXMgZXhlY3V0YWJsZSAoaW5jbHVkZXMgc3BhcmMpLA0KYm9vdCBzdWNj
+ZWVkcy4NCg0KV2l0aCB0aGlzIGRpc2FibGUgcGF0Y2ggYW5kIERFQlVHX1BBR0VBTExPQyBvbiwg
+aXQgaGFuZ3MgZWFybGllciB0aGFuDQpiZWZvcmUuIEdvaW5nIGZyb20gY2x1ZXMgaW4gb3RoZXIg
+bG9ncywgaXQgbG9va3MgbGlrZSBpdCBoYW5ncyByaWdodCBhdA0KdGhlIGZpcnN0IG5vcm1hbCB2
+ZnJlZS4NCg0KVGhhbmtzIGZvciBhbGwgdGhlIHRlc3RpbmcgTWVlbGlzIQ0KDQpTbyBpdCBzZWVt
+cyBsaWtlIG90aGVyLCBub3QgbmV3LCBUTEIgZmx1c2hlcyBhbHNvIHRyaWdnZXIgdGhlIGhhbmcu
+DQoNCkZyb20gZWFybGllciBsb2dzIHByb3ZpZGVkLCB0aGlzIHZmcmVlIHdvdWxkIGJlIHRoZSBm
+aXJzdCBjYWxsIHRvDQpmbHVzaF90bGJfa2VybmVsX3JhbmdlKCksIGFuZCBiZWZvcmUgYW55IEJQ
+RiBhbGxvY2F0aW9ucyBhcHBlYXIgaW4gdGhlDQpsb2dzLiBTbyBJIGFtIHN1c3BlY3Rpbmcgc29t
+ZSBvdGhlciBjYXVzZSB0aGFuIHRoZSBiaXNlY3RlZCBwYXRjaCBhdA0KdGhpcyBwb2ludCwgYnV0
+IEkgZ3Vlc3MgaXQncyBub3QgZnVsbHkgY29uY2x1c2l2ZS4NCg0KSXQgY291bGQgYmUgaW5mb3Jt
+YXRpdmUgdG8gYmlzZWN0IHVwc3RyZWFtIGFnYWluIHdpdGggdGhlDQpERUJVR19QQUdFQUxMT0Mg
+Y29uZmlncyBvbiwgdG8gc2VlIGlmIGl0IGluZGVlZCBwb2ludHMgdG8gYW4gZWFybGllcg0KY29t
+bWl0Lg0K
