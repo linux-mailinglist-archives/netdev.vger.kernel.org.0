@@ -2,202 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC9C6272EA
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 01:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ABC0272F0
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 01:23:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729844AbfEVXVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 19:21:12 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:54900 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729654AbfEVXU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 19:20:58 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x4MNIEvZ013613
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 16:20:57 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=JUaLacIUau6Nx5Fy096Qj5WLvuTqbFiSOX145LGNSQQ=;
- b=ptDXiR7wa+4uVhOvQ12HJ6+z51vxeKRfqVeLtOGJn2gqxR2BUGgIQR/JjgcrdijsM4VL
- RpdsgE2HkaucgJ+Gn48beB9pI0t+WKdMcCR76Wd2lzAgstIXwKVsTt4l3jPBM1I5m7zR
- iG1g7o6LF/9Aat57JCp3KhM83LRXpUUvFHo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2sn5ta2e04-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 16:20:57 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 22 May 2019 16:20:55 -0700
-Received: by devvm2643.prn2.facebook.com (Postfix, from userid 111017)
-        id EFAFE12526D4E; Wed, 22 May 2019 16:20:53 -0700 (PDT)
-Smtp-Origin-Hostprefix: devvm
-From:   Roman Gushchin <guro@fb.com>
-Smtp-Origin-Hostname: devvm2643.prn2.facebook.com
-To:     Alexei Starovoitov <ast@kernel.org>, <bpf@vger.kernel.org>
-CC:     Daniel Borkmann <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        Tejun Heo <tj@kernel.org>, <kernel-team@fb.com>,
-        <cgroups@vger.kernel.org>, Stanislav Fomichev <sdf@fomichev.me>,
-        <linux-kernel@vger.kernel.org>, Roman Gushchin <guro@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next 4/4] selftests/bpf: add auto-detach test
-Date:   Wed, 22 May 2019 16:20:51 -0700
-Message-ID: <20190522232051.2938491-5-guro@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190522232051.2938491-1-guro@fb.com>
-References: <20190522232051.2938491-1-guro@fb.com>
-X-FB-Internal: Safe
+        id S1728027AbfEVXXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 19:23:11 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:34435 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727179AbfEVXXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 19:23:11 -0400
+Received: from mail-it1-f197.google.com ([209.85.166.197])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <dann.frazier@canonical.com>)
+        id 1hTaZh-0004B8-Jd
+        for netdev@vger.kernel.org; Wed, 22 May 2019 23:23:09 +0000
+Received: by mail-it1-f197.google.com with SMTP id m14so3611513itl.3
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 16:23:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s85uEhKAu1jS0Q+P5fZlz+A7fx6iSmj4/T3oMaYK86c=;
+        b=WEbOCqOdwyzkegI2maTO3u68G/euCk6sbJMS1QDuEa/bFsr7Tmn0HGa3AVZSM9MKJ4
+         FMaAvPmfiP6/n7tyCsaK+CPTGJX324bRFtIQ59U+yMyeo0qBsrCzU4DvColyV5mnb1Q7
+         trNcit4kq25WEF3A2omoaXBh9FvDjECVnk9sJzY8bRPGVB2AuERBpUtHEMtfeb1V4kXL
+         NaBt6b6Xwle7bCUIeVspfGw0rOSXOFgCzTbrc1TOFfYaLpf1fyqDUblnWLJbz+HoRwD7
+         nik5ccCVomsABHsfncrEnf2nSGgxYRrvI06KWHhftwDMNbODcgZ5kKp1f0VeQU6dPm5q
+         sCZg==
+X-Gm-Message-State: APjAAAVwvmghdy79HuTKambVoSODaNekjbPeBazZORLElzYYrNImfnXW
+        YKolYLCi2VextonuQ7SZYBLvIz6PvmQrP6ujYkEOqNaPwTa0etzwAGVR8p4AILfBDnYrSXt7MLs
+        +4wX5y4+62xAer9CSIYOUW+MttP8QSO7LFg==
+X-Received: by 2002:a24:1c8f:: with SMTP id c137mr11721312itc.165.1558567387394;
+        Wed, 22 May 2019 16:23:07 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxdHnME/HIKTNtYrhxUlkHJbYT/xO74MAdU3gQ2zPhx1GksIreKy7VV6aO1robz0W5ehzpp4A==
+X-Received: by 2002:a24:1c8f:: with SMTP id c137mr11721292itc.165.1558567387007;
+        Wed, 22 May 2019 16:23:07 -0700 (PDT)
+Received: from xps13.canonical.com (c-71-56-235-36.hsd1.co.comcast.net. [71.56.235.36])
+        by smtp.gmail.com with ESMTPSA id c22sm8517424ioa.41.2019.05.22.16.23.06
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 22 May 2019 16:23:06 -0700 (PDT)
+From:   dann frazier <dann.frazier@canonical.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shannon Nelson <shannon.nelson@oracle.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ixgbe: Avoid NULL pointer dereference with VF on non-IPsec hw
+Date:   Wed, 22 May 2019 17:22:58 -0600
+Message-Id: <20190522232258.10353-1-dann.frazier@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-22_14:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=500 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905220162
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a kselftest to cover bpf auto-detachment functionality.
-The test creates a cgroup, associates some resources with it,
-attaches a couple of bpf programs and deletes the cgroup.
+An ipsec structure will not be allocated if the hardware does not support
+offload. Fixes the following Oops:
 
-Then it checks that bpf programs are going away in 5 seconds.
+[  191.045452] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+[  191.054232] Mem abort info:
+[  191.057014]   ESR = 0x96000004
+[  191.060057]   Exception class = DABT (current EL), IL = 32 bits
+[  191.065963]   SET = 0, FnV = 0
+[  191.069004]   EA = 0, S1PTW = 0
+[  191.072132] Data abort info:
+[  191.074999]   ISV = 0, ISS = 0x00000004
+[  191.078822]   CM = 0, WnR = 0
+[  191.081780] user pgtable: 4k pages, 48-bit VAs, pgdp = 0000000043d9e467
+[  191.088382] [0000000000000000] pgd=0000000000000000
+[  191.093252] Internal error: Oops: 96000004 [#1] SMP
+[  191.098119] Modules linked in: vhost_net vhost tap vfio_pci vfio_virqfd vfio_iommu_type1 vfio xt_CHECKSUM iptable_mangle ipt_MASQUERADE iptable_nat nf_nat_ipv4 nf_nat xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ipt_REJECT nf_reject_ipv4 xt_tcpudp bridge stp llc ebtable_filter devlink ebtables ip6table_filter ip6_tables iptable_filter bpfilter ipmi_ssif nls_iso8859_1 input_leds joydev ipmi_si hns_roce_hw_v2 ipmi_devintf hns_roce ipmi_msghandler cppc_cpufreq sch_fq_codel ib_iser rdma_cm iw_cm ib_cm ib_core iscsi_tcp libiscsi_tcp libiscsi scsi_transport_iscsi ip_tables x_tables autofs4 ses enclosure btrfs zstd_compress raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor hid_generic usbhid hid raid6_pq libcrc32c raid1 raid0 multipath linear ixgbevf hibmc_drm ttm
+[  191.168607]  drm_kms_helper aes_ce_blk aes_ce_cipher syscopyarea crct10dif_ce sysfillrect ghash_ce qla2xxx sysimgblt sha2_ce sha256_arm64 hisi_sas_v3_hw fb_sys_fops sha1_ce uas nvme_fc mpt3sas ixgbe drm hisi_sas_main nvme_fabrics usb_storage hclge scsi_transport_fc ahci libsas hnae3 raid_class libahci xfrm_algo scsi_transport_sas mdio aes_neon_bs aes_neon_blk crypto_simd cryptd aes_arm64
+[  191.202952] CPU: 94 PID: 0 Comm: swapper/94 Not tainted 4.19.0-rc1+ #11
+[  191.209553] Hardware name: Huawei D06 /D06, BIOS Hisilicon D06 UEFI RC0 - V1.20.01 04/26/2019
+[  191.218064] pstate: 20400089 (nzCv daIf +PAN -UAO)
+[  191.222873] pc : ixgbe_ipsec_vf_clear+0x60/0xd0 [ixgbe]
+[  191.228093] lr : ixgbe_msg_task+0x2d0/0x1088 [ixgbe]
+[  191.233044] sp : ffff000009b3bcd0
+[  191.236346] x29: ffff000009b3bcd0 x28: 0000000000000000
+[  191.241647] x27: ffff000009628000 x26: 0000000000000000
+[  191.246946] x25: ffff803f652d7600 x24: 0000000000000004
+[  191.252246] x23: ffff803f6a718900 x22: 0000000000000000
+[  191.257546] x21: 0000000000000000 x20: 0000000000000000
+[  191.262845] x19: 0000000000000000 x18: 0000000000000000
+[  191.268144] x17: 0000000000000000 x16: 0000000000000000
+[  191.273443] x15: 0000000000000000 x14: 0000000100000026
+[  191.278742] x13: 0000000100000025 x12: ffff8a5f7fbe0df0
+[  191.284042] x11: 000000010000000b x10: 0000000000000040
+[  191.289341] x9 : 0000000000001100 x8 : ffff803f6a824fd8
+[  191.294640] x7 : ffff803f6a825098 x6 : 0000000000000001
+[  191.299939] x5 : ffff000000f0ffc0 x4 : 0000000000000000
+[  191.305238] x3 : ffff000028c00000 x2 : ffff803f652d7600
+[  191.310538] x1 : 0000000000000000 x0 : ffff000000f205f0
+[  191.315838] Process swapper/94 (pid: 0, stack limit = 0x00000000addfed5a)
+[  191.322613] Call trace:
+[  191.325055]  ixgbe_ipsec_vf_clear+0x60/0xd0 [ixgbe]
+[  191.329927]  ixgbe_msg_task+0x2d0/0x1088 [ixgbe]
+[  191.334536]  ixgbe_msix_other+0x274/0x330 [ixgbe]
+[  191.339233]  __handle_irq_event_percpu+0x78/0x270
+[  191.343924]  handle_irq_event_percpu+0x40/0x98
+[  191.348355]  handle_irq_event+0x50/0xa8
+[  191.352180]  handle_fasteoi_irq+0xbc/0x148
+[  191.356263]  generic_handle_irq+0x34/0x50
+[  191.360259]  __handle_domain_irq+0x68/0xc0
+[  191.364343]  gic_handle_irq+0x84/0x180
+[  191.368079]  el1_irq+0xe8/0x180
+[  191.371208]  arch_cpu_idle+0x30/0x1a8
+[  191.374860]  do_idle+0x1dc/0x2a0
+[  191.378077]  cpu_startup_entry+0x2c/0x30
+[  191.381988]  secondary_start_kernel+0x150/0x1e0
+[  191.386506] Code: 6b15003f 54000320 f1404a9f 54000060 (79400260)
 
-Expected output:
-  $ ./test_cgroup_attach
-  #override:PASS
-  #multi:PASS
-  #autodetach:PASS
-  test_cgroup_attach:PASS
-
-On a kernel without auto-detaching:
-  $ ./test_cgroup_attach
-  #override:PASS
-  #multi:PASS
-  #autodetach:FAIL
-  test_cgroup_attach:FAIL
-
-Signed-off-by: Roman Gushchin <guro@fb.com>
+Fixes: eda0333ac2930 ("ixgbe: add VF IPsec management")
+Signed-off-by: dann frazier <dann.frazier@canonical.com>
 ---
- .../selftests/bpf/test_cgroup_attach.c        | 99 ++++++++++++++++++-
- 1 file changed, 98 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/test_cgroup_attach.c b/tools/testing/selftests/bpf/test_cgroup_attach.c
-index 93d4fe295e7d..bc5bd0f1728e 100644
---- a/tools/testing/selftests/bpf/test_cgroup_attach.c
-+++ b/tools/testing/selftests/bpf/test_cgroup_attach.c
-@@ -456,9 +456,106 @@ static int test_multiprog(void)
- 	return rc;
- }
- 
-+static int test_autodetach(void)
-+{
-+	__u32 prog_cnt = 4, attach_flags;
-+	int allow_prog[2] = {0};
-+	__u32 prog_ids[2] = {0};
-+	int cg = 0, i, rc = -1;
-+	void *ptr = NULL;
-+	int attempts;
-+
-+
-+	for (i = 0; i < ARRAY_SIZE(allow_prog); i++) {
-+		allow_prog[i] = prog_load_cnt(1, 1 << i);
-+		if (!allow_prog[i])
-+			goto err;
-+	}
-+
-+	if (setup_cgroup_environment())
-+		goto err;
-+
-+	/* create a cgroup, attach two programs and remember their ids */
-+	cg = create_and_get_cgroup("/cg_autodetach");
-+	if (cg < 0)
-+		goto err;
-+
-+	if (join_cgroup("/cg_autodetach"))
-+		goto err;
-+
-+	for (i = 0; i < ARRAY_SIZE(allow_prog); i++) {
-+		if (bpf_prog_attach(allow_prog[i], cg, BPF_CGROUP_INET_EGRESS,
-+				    BPF_F_ALLOW_MULTI)) {
-+			log_err("Attaching prog[%d] to cg:egress", i);
-+			goto err;
-+		}
-+	}
-+
-+	/* make sure that programs are attached and run some traffic */
-+	assert(bpf_prog_query(cg, BPF_CGROUP_INET_EGRESS, 0, &attach_flags,
-+			      prog_ids, &prog_cnt) == 0);
-+	assert(system(PING_CMD) == 0);
-+
-+	/* allocate some memory (4Mb) to pin the original cgroup */
-+	ptr = malloc(4 * (1 << 20));
-+	if (!ptr)
-+		goto err;
-+
-+	/* close programs and cgroup fd */
-+	for (i = 0; i < ARRAY_SIZE(allow_prog); i++) {
-+		close(allow_prog[i]);
-+		allow_prog[i] = 0;
-+	}
-+
-+	close(cg);
-+	cg = 0;
-+
-+	/* leave the cgroup and remove it. don't detach programs */
-+	cleanup_cgroup_environment();
-+
-+	/* wait for the asynchronous auto-detachment.
-+	 * wait for no more than 5 sec and give up.
-+	 */
-+	for (i = 0; i < ARRAY_SIZE(prog_ids); i++) {
-+		for (attempts = 5; attempts >= 0; attempts--) {
-+			int fd = bpf_prog_get_fd_by_id(prog_ids[i]);
-+
-+			if (fd < 0)
-+				break;
-+
-+			/* don't leave the fd open */
-+			close(fd);
-+
-+			if (!attempts)
-+				goto err;
-+
-+			sleep(1);
-+		}
-+	}
-+
-+	rc = 0;
-+err:
-+	for (i = 0; i < ARRAY_SIZE(allow_prog); i++)
-+		if (allow_prog[i] > 0)
-+			close(allow_prog[i]);
-+	if (cg)
-+		close(cg);
-+	free(ptr);
-+	cleanup_cgroup_environment();
-+	if (!rc)
-+		printf("#autodetach:PASS\n");
-+	else
-+		printf("#autodetach:FAIL\n");
-+	return rc;
-+}
-+
- int main(int argc, char **argv)
- {
--	int (*tests[])(void) = {test_foo_bar, test_multiprog};
-+	int (*tests[])(void) = {
-+		test_foo_bar,
-+		test_multiprog,
-+		test_autodetach,
-+	};
- 	int errors = 0;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+index ff85ce5791a36..31629fc7e820f 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+@@ -842,6 +842,9 @@ void ixgbe_ipsec_vf_clear(struct ixgbe_adapter *adapter, u32 vf)
+ 	struct ixgbe_ipsec *ipsec = adapter->ipsec;
  	int i;
  
++	if (!ipsec)
++		return;
++
+ 	/* search rx sa table */
+ 	for (i = 0; i < IXGBE_IPSEC_MAX_SA_COUNT && ipsec->num_rx_sa; i++) {
+ 		if (!ipsec->rx_tbl[i].used)
 -- 
 2.20.1
 
