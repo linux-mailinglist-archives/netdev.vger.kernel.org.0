@@ -2,140 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ABC0272F0
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 01:23:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A1A4272FF
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 01:31:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728027AbfEVXXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 19:23:11 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:34435 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727179AbfEVXXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 19:23:11 -0400
-Received: from mail-it1-f197.google.com ([209.85.166.197])
-        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <dann.frazier@canonical.com>)
-        id 1hTaZh-0004B8-Jd
-        for netdev@vger.kernel.org; Wed, 22 May 2019 23:23:09 +0000
-Received: by mail-it1-f197.google.com with SMTP id m14so3611513itl.3
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 16:23:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s85uEhKAu1jS0Q+P5fZlz+A7fx6iSmj4/T3oMaYK86c=;
-        b=WEbOCqOdwyzkegI2maTO3u68G/euCk6sbJMS1QDuEa/bFsr7Tmn0HGa3AVZSM9MKJ4
-         FMaAvPmfiP6/n7tyCsaK+CPTGJX324bRFtIQ59U+yMyeo0qBsrCzU4DvColyV5mnb1Q7
-         trNcit4kq25WEF3A2omoaXBh9FvDjECVnk9sJzY8bRPGVB2AuERBpUtHEMtfeb1V4kXL
-         NaBt6b6Xwle7bCUIeVspfGw0rOSXOFgCzTbrc1TOFfYaLpf1fyqDUblnWLJbz+HoRwD7
-         nik5ccCVomsABHsfncrEnf2nSGgxYRrvI06KWHhftwDMNbODcgZ5kKp1f0VeQU6dPm5q
-         sCZg==
-X-Gm-Message-State: APjAAAVwvmghdy79HuTKambVoSODaNekjbPeBazZORLElzYYrNImfnXW
-        YKolYLCi2VextonuQ7SZYBLvIz6PvmQrP6ujYkEOqNaPwTa0etzwAGVR8p4AILfBDnYrSXt7MLs
-        +4wX5y4+62xAer9CSIYOUW+MttP8QSO7LFg==
-X-Received: by 2002:a24:1c8f:: with SMTP id c137mr11721312itc.165.1558567387394;
-        Wed, 22 May 2019 16:23:07 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxdHnME/HIKTNtYrhxUlkHJbYT/xO74MAdU3gQ2zPhx1GksIreKy7VV6aO1robz0W5ehzpp4A==
-X-Received: by 2002:a24:1c8f:: with SMTP id c137mr11721292itc.165.1558567387007;
-        Wed, 22 May 2019 16:23:07 -0700 (PDT)
-Received: from xps13.canonical.com (c-71-56-235-36.hsd1.co.comcast.net. [71.56.235.36])
-        by smtp.gmail.com with ESMTPSA id c22sm8517424ioa.41.2019.05.22.16.23.06
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 22 May 2019 16:23:06 -0700 (PDT)
-From:   dann frazier <dann.frazier@canonical.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        id S1727691AbfEVXbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 19:31:52 -0400
+Received: from mail-eopbgr1300124.outbound.protection.outlook.com ([40.107.130.124]:63660
+        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726215AbfEVXbv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 19:31:51 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
+ b=M7v8LeIr95AHFJBqyTbP4JBDLw7dqj65lAwIKaqeyAPmpso3VUz30K6AAEkXR+/+Pw+SwgKSDhqxheHU+5VVLpwfzufKEX1kOnKKJsBY9GaLk+byptkCt0eHthOumod+R5k00CQbuolBzRnJmx3/uoOYhmXxQBf1/+/aCpuYPw4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=testarcselector01;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SiJKAVXxVy5gDyY2F5z+qKOfPRII1FfBsEs3X3qSrHE=;
+ b=uQn5d+f/irFiJzM9jcyItmczidFObAFg9SBwsgTjQ4Osf6hY82cSoGIIwi40nUSAe3o5QPESasnWUixDEqHk3Phw7FfV1DixQ3P+yvKL04cT+ol1pVAVwEbSv89BQlRqrd2im7dYcR6v+81DOhRs4/Kx9iOywdT5FMBCu0SLSpU=
+ARC-Authentication-Results: i=1; test.office365.com
+ 1;spf=none;dmarc=none;dkim=none;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SiJKAVXxVy5gDyY2F5z+qKOfPRII1FfBsEs3X3qSrHE=;
+ b=Tddqb2NLAPwNfvO2tWIZ5vLDmsS9ZWPWLzCt/Bif/Q4isK80PrMIdKEZRlDLMGwjtPcMhEhv8zRuXMAldeh36WcJQnnd0hZtnnN1xvxG/Zzjl8fiV6pWMOXDjulFftlcEbRXytIksI7wL0PN20NuKx8sg29mYYC44GzwyaOfAag=
+Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM (10.170.189.13) by
+ PU1P153MB0170.APCP153.PROD.OUTLOOK.COM (10.170.189.14) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1943.6; Wed, 22 May 2019 23:31:45 +0000
+Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
+ ([fe80::d896:4219:e493:b04]) by PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
+ ([fe80::d896:4219:e493:b04%3]) with mapi id 15.20.1943.007; Wed, 22 May 2019
+ 23:31:45 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Sunil Muthuswamy <sunilmut@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Shannon Nelson <shannon.nelson@oracle.com>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ixgbe: Avoid NULL pointer dereference with VF on non-IPsec hw
-Date:   Wed, 22 May 2019 17:22:58 -0600
-Message-Id: <20190522232258.10353-1-dann.frazier@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        Michael Kelley <mikelley@microsoft.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next] hv_sock: perf: loop in send() to maximize
+ bandwidth
+Thread-Topic: [PATCH net-next] hv_sock: perf: loop in send() to maximize
+ bandwidth
+Thread-Index: AdUQ82kcrZ0lH8wWQ6mgUr9BJIMYLQAAwLXA
+Date:   Wed, 22 May 2019 23:31:44 +0000
+Message-ID: <PU1P153MB016970E96C1FCE1B42FBFB6CBF000@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
+References: <BN6PR21MB0465FA591662A8B580AEF7D9C0000@BN6PR21MB0465.namprd21.prod.outlook.com>
+In-Reply-To: <BN6PR21MB0465FA591662A8B580AEF7D9C0000@BN6PR21MB0465.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-05-22T23:31:42.5201528Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4553db3f-2df2-4389-a7a5-bc8944e9569f;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=decui@microsoft.com; 
+x-originating-ip: [2001:4898:80e8:a:f13e:15cc:fc47:db6b]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f3ade817-4dad-4c96-37c5-08d6df0da72f
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:PU1P153MB0170;
+x-ms-traffictypediagnostic: PU1P153MB0170:
+x-microsoft-antispam-prvs: <PU1P153MB0170EE149E05F98FCC6AAD2BBF000@PU1P153MB0170.APCP153.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0045236D47
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(396003)(39860400002)(366004)(346002)(136003)(199004)(189003)(54906003)(8990500004)(110136005)(10090500001)(478600001)(6636002)(186003)(74316002)(52536014)(5660300002)(305945005)(7736002)(55016002)(476003)(86362001)(446003)(11346002)(46003)(99286004)(14454004)(4326008)(8936002)(1511001)(86612001)(33656002)(4744005)(486006)(316002)(76116006)(81166006)(81156014)(66946007)(68736007)(66446008)(8676002)(73956011)(2906002)(64756008)(10290500003)(66556008)(66476007)(6436002)(9686003)(6246003)(229853002)(6116002)(7696005)(76176011)(71190400001)(22452003)(25786009)(6506007)(71200400001)(53936002)(256004)(102836004)(14963001);DIR:OUT;SFP:1102;SCL:1;SRVR:PU1P153MB0170;H:PU1P153MB0169.APCP153.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: vwzCU7d+XfM/pZMGzXJKDHt9e4ZffG1+DN72eZDOjBSV/D6cKnqLmtVJt0QmY3jJuH4zhDCUF3QIhc1+cY/Ob6n4g1LrTYXegQnW8gwtHd5ky0DV2fkxDgDGMVi7ZeZDuCPcCc4mFIuP41/lmmNPCuwfFOy7Hs5xN2+ELjkzrrK49y6xoqj9tPIqavll7LOB8ViekZ/MHvrjfggjgq2shG8D3bN+3GGRtSuqooHuCnvX2foH0q1125aCpfLcsZvrzffhn+cMrNy8evpc1nktwQQK0H09iL2Da624SAr1i1VcJ3xkksbXIyrZoHZI30VY5qojPuwgoQCSpftxV3ULDdb2dyH3dL5rYKXLhDbO+VrUuzQ+uL1XYlSDS8b1xtqKlATDLcE+mNjhVR4+zXkr8eXpni2DwnFZp6Cx6NqF6H0=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3ade817-4dad-4c96-37c5-08d6df0da72f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2019 23:31:44.7165
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: decui@microsoft.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0170
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An ipsec structure will not be allocated if the hardware does not support
-offload. Fixes the following Oops:
+> From: linux-hyperv-owner@vger.kernel.org
+> <linux-hyperv-owner@vger.kernel.org> On Behalf Of Sunil Muthuswamy
+>=20
+> Currently, the hv_sock send() iterates once over the buffer, puts data in=
+to
+> the VMBUS channel and returns. It doesn't maximize on the case when there
+> is a simultaneous reader draining data from the channel. In such a case,
+> the send() can maximize the bandwidth (and consequently minimize the cpu
+> cycles) by iterating until the channel is found to be full.
+=20
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
 
-[  191.045452] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-[  191.054232] Mem abort info:
-[  191.057014]   ESR = 0x96000004
-[  191.060057]   Exception class = DABT (current EL), IL = 32 bits
-[  191.065963]   SET = 0, FnV = 0
-[  191.069004]   EA = 0, S1PTW = 0
-[  191.072132] Data abort info:
-[  191.074999]   ISV = 0, ISS = 0x00000004
-[  191.078822]   CM = 0, WnR = 0
-[  191.081780] user pgtable: 4k pages, 48-bit VAs, pgdp = 0000000043d9e467
-[  191.088382] [0000000000000000] pgd=0000000000000000
-[  191.093252] Internal error: Oops: 96000004 [#1] SMP
-[  191.098119] Modules linked in: vhost_net vhost tap vfio_pci vfio_virqfd vfio_iommu_type1 vfio xt_CHECKSUM iptable_mangle ipt_MASQUERADE iptable_nat nf_nat_ipv4 nf_nat xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ipt_REJECT nf_reject_ipv4 xt_tcpudp bridge stp llc ebtable_filter devlink ebtables ip6table_filter ip6_tables iptable_filter bpfilter ipmi_ssif nls_iso8859_1 input_leds joydev ipmi_si hns_roce_hw_v2 ipmi_devintf hns_roce ipmi_msghandler cppc_cpufreq sch_fq_codel ib_iser rdma_cm iw_cm ib_cm ib_core iscsi_tcp libiscsi_tcp libiscsi scsi_transport_iscsi ip_tables x_tables autofs4 ses enclosure btrfs zstd_compress raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor hid_generic usbhid hid raid6_pq libcrc32c raid1 raid0 multipath linear ixgbevf hibmc_drm ttm
-[  191.168607]  drm_kms_helper aes_ce_blk aes_ce_cipher syscopyarea crct10dif_ce sysfillrect ghash_ce qla2xxx sysimgblt sha2_ce sha256_arm64 hisi_sas_v3_hw fb_sys_fops sha1_ce uas nvme_fc mpt3sas ixgbe drm hisi_sas_main nvme_fabrics usb_storage hclge scsi_transport_fc ahci libsas hnae3 raid_class libahci xfrm_algo scsi_transport_sas mdio aes_neon_bs aes_neon_blk crypto_simd cryptd aes_arm64
-[  191.202952] CPU: 94 PID: 0 Comm: swapper/94 Not tainted 4.19.0-rc1+ #11
-[  191.209553] Hardware name: Huawei D06 /D06, BIOS Hisilicon D06 UEFI RC0 - V1.20.01 04/26/2019
-[  191.218064] pstate: 20400089 (nzCv daIf +PAN -UAO)
-[  191.222873] pc : ixgbe_ipsec_vf_clear+0x60/0xd0 [ixgbe]
-[  191.228093] lr : ixgbe_msg_task+0x2d0/0x1088 [ixgbe]
-[  191.233044] sp : ffff000009b3bcd0
-[  191.236346] x29: ffff000009b3bcd0 x28: 0000000000000000
-[  191.241647] x27: ffff000009628000 x26: 0000000000000000
-[  191.246946] x25: ffff803f652d7600 x24: 0000000000000004
-[  191.252246] x23: ffff803f6a718900 x22: 0000000000000000
-[  191.257546] x21: 0000000000000000 x20: 0000000000000000
-[  191.262845] x19: 0000000000000000 x18: 0000000000000000
-[  191.268144] x17: 0000000000000000 x16: 0000000000000000
-[  191.273443] x15: 0000000000000000 x14: 0000000100000026
-[  191.278742] x13: 0000000100000025 x12: ffff8a5f7fbe0df0
-[  191.284042] x11: 000000010000000b x10: 0000000000000040
-[  191.289341] x9 : 0000000000001100 x8 : ffff803f6a824fd8
-[  191.294640] x7 : ffff803f6a825098 x6 : 0000000000000001
-[  191.299939] x5 : ffff000000f0ffc0 x4 : 0000000000000000
-[  191.305238] x3 : ffff000028c00000 x2 : ffff803f652d7600
-[  191.310538] x1 : 0000000000000000 x0 : ffff000000f205f0
-[  191.315838] Process swapper/94 (pid: 0, stack limit = 0x00000000addfed5a)
-[  191.322613] Call trace:
-[  191.325055]  ixgbe_ipsec_vf_clear+0x60/0xd0 [ixgbe]
-[  191.329927]  ixgbe_msg_task+0x2d0/0x1088 [ixgbe]
-[  191.334536]  ixgbe_msix_other+0x274/0x330 [ixgbe]
-[  191.339233]  __handle_irq_event_percpu+0x78/0x270
-[  191.343924]  handle_irq_event_percpu+0x40/0x98
-[  191.348355]  handle_irq_event+0x50/0xa8
-[  191.352180]  handle_fasteoi_irq+0xbc/0x148
-[  191.356263]  generic_handle_irq+0x34/0x50
-[  191.360259]  __handle_domain_irq+0x68/0xc0
-[  191.364343]  gic_handle_irq+0x84/0x180
-[  191.368079]  el1_irq+0xe8/0x180
-[  191.371208]  arch_cpu_idle+0x30/0x1a8
-[  191.374860]  do_idle+0x1dc/0x2a0
-[  191.378077]  cpu_startup_entry+0x2c/0x30
-[  191.381988]  secondary_start_kernel+0x150/0x1e0
-[  191.386506] Code: 6b15003f 54000320 f1404a9f 54000060 (79400260)
+The patch looks good. Thanks, Sunil!
 
-Fixes: eda0333ac2930 ("ixgbe: add VF IPsec management")
-Signed-off-by: dann frazier <dann.frazier@canonical.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-index ff85ce5791a36..31629fc7e820f 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-@@ -842,6 +842,9 @@ void ixgbe_ipsec_vf_clear(struct ixgbe_adapter *adapter, u32 vf)
- 	struct ixgbe_ipsec *ipsec = adapter->ipsec;
- 	int i;
- 
-+	if (!ipsec)
-+		return;
-+
- 	/* search rx sa table */
- 	for (i = 0; i < IXGBE_IPSEC_MAX_SA_COUNT && ipsec->num_rx_sa; i++) {
- 		if (!ipsec->rx_tbl[i].used)
--- 
-2.20.1
-
+Thanks,
+-- Dexuan
