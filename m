@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E7326FF0
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:00:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDA8F26FE2
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:00:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730737AbfEVTXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:23:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43878 "EHLO mail.kernel.org"
+        id S1730835AbfEVTXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:23:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729958AbfEVTXC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:23:02 -0400
+        id S1729898AbfEVTXS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:23:18 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 66E45217D7;
-        Wed, 22 May 2019 19:23:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8CFCC21473;
+        Wed, 22 May 2019 19:23:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558552982;
-        bh=JuG4cjSrEiAD9uqYd6JALzbBa+2Lcldn3NuzaOE46iY=;
+        s=default; t=1558552997;
+        bh=Na5zua+BMhBNFZNBRjS6szXtRLjVmifaB5T4ebTYgO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WQUSTudSoj39MiXHnicfsmGIWdcLNGugPZPj+tyIf/hRZCNaIw3s2kVXUh7VmALJg
-         Jsgy1Tu5CCyLOE2Ht207ogIil7vsYGHfNf+17bhncTgBdX68egWzj6x/j8ZcVt7FLi
-         8T3JpK4SnTWcRr+erAnKQVVz/ZRFzFZNCAEtXOgk=
+        b=alVOEaX6foa6mn7l0lMrz1xYWC35/d/M1qFAMo7P0JG/lgl9LhZhXEMJey1ZH9o8P
+         v6ogVDJTmGU2+AK/kNj1RSVXCiYS4NRJFR7EV0NTL5oMvUVAG9LG7B/4qrizEtHC0+
+         Eg3IkPTOSFPSpGsRFDNklJw3kwUMVARn2LZcQRn8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 060/375] iwlwifi: pcie: don't crash on invalid RX interrupt
-Date:   Wed, 22 May 2019 15:16:00 -0400
-Message-Id: <20190522192115.22666-60-sashal@kernel.org>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 067/375] net: ethernet: ti: cpsw: fix allmulti cfg in dual_mac mode
+Date:   Wed, 22 May 2019 15:16:07 -0400
+Message-Id: <20190522192115.22666-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192115.22666-1-sashal@kernel.org>
 References: <20190522192115.22666-1-sashal@kernel.org>
@@ -44,45 +44,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Grygorii Strashko <grygorii.strashko@ti.com>
 
-[ Upstream commit 30f24eabab8cd801064c5c37589d803cb4341929 ]
+[ Upstream commit 06095f34f8a0a2c4c83a19514c272699edd5f80b ]
 
-If for some reason the device gives us an RX interrupt before we're
-ready for it, perhaps during device power-on with misconfigured IRQ
-causes mapping or so, we can crash trying to access the queues.
+Now CPSW ALE will set/clean Host port bit in Unregistered Multicast Flood
+Mask (UNREG_MCAST_FLOOD_MASK) for every VLAN without checking if this port
+belongs to VLAN or not when ALLMULTI mode flag is set for nedev. This is
+working in non dual_mac mode, but in dual_mac - it causes
+enabling/disabling ALLMULTI flag for both ports.
 
-Prevent that by checking that we actually have RXQs and that they
-were properly allocated.
+Hence fix it by adding additional parameter to cpsw_ale_set_allmulti() to
+specify ALE port number for which ALLMULTI has to be enabled and check if
+port belongs to VLAN before modifying UNREG_MCAST_FLOOD_MASK.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/rx.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/ti/cpsw.c     | 12 +++++++++---
+ drivers/net/ethernet/ti/cpsw_ale.c | 19 ++++++++++---------
+ drivers/net/ethernet/ti/cpsw_ale.h |  3 +--
+ 3 files changed, 20 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-index 8d4f0628622bb..12f02aaf923ed 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-@@ -1434,10 +1434,15 @@ static struct iwl_rx_mem_buffer *iwl_pcie_get_rxb(struct iwl_trans *trans,
- static void iwl_pcie_rx_handle(struct iwl_trans *trans, int queue)
- {
- 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
--	struct iwl_rxq *rxq = &trans_pcie->rxq[queue];
-+	struct iwl_rxq *rxq;
- 	u32 r, i, count = 0;
- 	bool emergency = false;
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index a591583d120e1..dd12b73a88530 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -800,12 +800,17 @@ static int cpsw_purge_all_mc(struct net_device *ndev, const u8 *addr, int num)
  
-+	if (WARN_ON_ONCE(!trans_pcie->rxq || !trans_pcie->rxq[queue].bd))
-+		return;
+ static void cpsw_ndo_set_rx_mode(struct net_device *ndev)
+ {
+-	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
++	struct cpsw_priv *priv = netdev_priv(ndev);
++	struct cpsw_common *cpsw = priv->cpsw;
++	int slave_port = -1;
 +
-+	rxq = &trans_pcie->rxq[queue];
++	if (cpsw->data.dual_emac)
++		slave_port = priv->emac_port + 1;
+ 
+ 	if (ndev->flags & IFF_PROMISC) {
+ 		/* Enable promiscuous mode */
+ 		cpsw_set_promiscious(ndev, true);
+-		cpsw_ale_set_allmulti(cpsw->ale, IFF_ALLMULTI);
++		cpsw_ale_set_allmulti(cpsw->ale, IFF_ALLMULTI, slave_port);
+ 		return;
+ 	} else {
+ 		/* Disable promiscuous mode */
+@@ -813,7 +818,8 @@ static void cpsw_ndo_set_rx_mode(struct net_device *ndev)
+ 	}
+ 
+ 	/* Restore allmulti on vlans if necessary */
+-	cpsw_ale_set_allmulti(cpsw->ale, ndev->flags & IFF_ALLMULTI);
++	cpsw_ale_set_allmulti(cpsw->ale,
++			      ndev->flags & IFF_ALLMULTI, slave_port);
+ 
+ 	/* add/remove mcast address either for real netdev or for vlan */
+ 	__hw_addr_ref_sync_dev(&ndev->mc, ndev, cpsw_add_mc_addr,
+diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
+index 798c989d5d934..b3d9591b4824a 100644
+--- a/drivers/net/ethernet/ti/cpsw_ale.c
++++ b/drivers/net/ethernet/ti/cpsw_ale.c
+@@ -482,24 +482,25 @@ int cpsw_ale_del_vlan(struct cpsw_ale *ale, u16 vid, int port_mask)
+ }
+ EXPORT_SYMBOL_GPL(cpsw_ale_del_vlan);
+ 
+-void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti)
++void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti, int port)
+ {
+ 	u32 ale_entry[ALE_ENTRY_WORDS];
+-	int type, idx;
+ 	int unreg_mcast = 0;
+-
+-	/* Only bother doing the work if the setting is actually changing */
+-	if (ale->allmulti == allmulti)
+-		return;
+-
+-	/* Remember the new setting to check against next time */
+-	ale->allmulti = allmulti;
++	int type, idx;
+ 
+ 	for (idx = 0; idx < ale->params.ale_entries; idx++) {
++		int vlan_members;
 +
- restart:
- 	spin_lock(&rxq->lock);
- 	/* uCode's read index (stored in shared DRAM) indicates the last Rx
+ 		cpsw_ale_read(ale, idx, ale_entry);
+ 		type = cpsw_ale_get_entry_type(ale_entry);
+ 		if (type != ALE_TYPE_VLAN)
+ 			continue;
++		vlan_members =
++			cpsw_ale_get_vlan_member_list(ale_entry,
++						      ale->vlan_field_bits);
++
++		if (port != -1 && !(vlan_members & BIT(port)))
++			continue;
+ 
+ 		unreg_mcast =
+ 			cpsw_ale_get_vlan_unreg_mcast(ale_entry,
+diff --git a/drivers/net/ethernet/ti/cpsw_ale.h b/drivers/net/ethernet/ti/cpsw_ale.h
+index cd07a3e96d576..1fe196d8a5e42 100644
+--- a/drivers/net/ethernet/ti/cpsw_ale.h
++++ b/drivers/net/ethernet/ti/cpsw_ale.h
+@@ -37,7 +37,6 @@ struct cpsw_ale {
+ 	struct cpsw_ale_params	params;
+ 	struct timer_list	timer;
+ 	unsigned long		ageout;
+-	int			allmulti;
+ 	u32			version;
+ 	/* These bits are different on NetCP NU Switch ALE */
+ 	u32			port_mask_bits;
+@@ -116,7 +115,7 @@ int cpsw_ale_del_mcast(struct cpsw_ale *ale, const u8 *addr, int port_mask,
+ int cpsw_ale_add_vlan(struct cpsw_ale *ale, u16 vid, int port, int untag,
+ 			int reg_mcast, int unreg_mcast);
+ int cpsw_ale_del_vlan(struct cpsw_ale *ale, u16 vid, int port);
+-void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti);
++void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti, int port);
+ 
+ int cpsw_ale_control_get(struct cpsw_ale *ale, int port, int control);
+ int cpsw_ale_control_set(struct cpsw_ale *ale, int port,
 -- 
 2.20.1
 
