@@ -2,241 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5A272712D
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:53:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F74927130
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:54:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730272AbfEVUx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 16:53:56 -0400
-Received: from mail-yw1-f74.google.com ([209.85.161.74]:49400 "EHLO
-        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729728AbfEVUx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 16:53:56 -0400
-Received: by mail-yw1-f74.google.com with SMTP id y144so3216571ywg.16
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 13:53:56 -0700 (PDT)
+        id S1730406AbfEVUyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 16:54:00 -0400
+Received: from mail-qt1-f202.google.com ([209.85.160.202]:33423 "EHLO
+        mail-qt1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730021AbfEVUx7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 16:53:59 -0400
+Received: by mail-qt1-f202.google.com with SMTP id m15so3310802qtc.0
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 13:53:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=DVGoSBbuSpH+e3WLjrm4JCzo4XlQbDlgH+gaP+mOUGk=;
-        b=jDf21bghdvPavpAiB4qncBrzG9xXbKDUDUzNd491r/2RCa54zMKJJTUB3hXKAsqL0E
-         g/+3l4encMEoH12bkPQAEuxCr5F9d0Gm0l/oKx0PNXfmt65ui40V16HSJA/6ZB5X6Adr
-         Uv+eyVxBtYEjA1TLJ01ULFtqZ4cP/ZWZDDxFDwCAcmt+mJMqEhq6wXTXxq3aRLXfGBDe
-         MJdh+mV5Y8KzTB9SwgdYbqzjzz0RWhFUeV+qy5Qh5/EIhfqkh+efQIIsKgYqzmrxTpQn
-         iOybtSUFdlMRf93zir0N8pYk4si2cXzx6HpNK2OfOjgHLKXXxCpxHm7hZ6pyg2uMtoLi
-         1Z4w==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=ukNWyZpQEscAlXdUip/QWXhs5cbXEziRRf5YyJhah4M=;
+        b=YNNVPbSx7FsOwk16jCPbtBA2G+ZPpu8SLkw0MknnLWZEzpx3k3DQ24qU05oO58WL6/
+         Z3l/BWk0m2bqB2K7kjkcu2kFTiiSFUPaofTqH+Ct/OXdNXdY5jrYgET3PSnvoKLV6YsV
+         HPayFURnBcfIEAK0D4VLrSsrs+q/kTNes9QTKFDjUVSpa/Yju1xDE7/Xlid8W0NEqX7I
+         BRPnjfmY9tImK6Runjp2fQl0RHt53RpT1MPLuqRn333dWhZgbJRDa41ppTyfbyzAZ6fz
+         URyIlnrJyVefkwaIo5PNLvNKJ8riAjHPlW1+VpMWGXP9P565Hqa4wpp1GScQEybwh+u2
+         hmlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=DVGoSBbuSpH+e3WLjrm4JCzo4XlQbDlgH+gaP+mOUGk=;
-        b=gcysS5dEIG/e0fSG636pHZbpLHpm5k662Iyg2si4oTP4woIZlMhkRxODfq1Vw3DxIN
-         4BzZ8ORFpZ/Ez11dD+TbD3wM0+bIdVM3J3XpBc4deC3x3yG6r+Zqbq8n0isTcGXFvbNq
-         4xLwrxCj0OVmXNlWMThcGQcn4bqTW78yIwETM6BkTXVCyLm/5tkZZQvDQm9k0ExppcdB
-         fRRynzPFNDJmZL0FQ1ad2UT/D3gdEQZeen4jja30Lr4uIq0+N3K8wieORdyf2j+0x1GE
-         KUWXuRlxYtIV4bECaBXExbW5JGdrxA8mC6H/OgLPbGcfXqTa7UzdfXFGB5cPyCyNKl0r
-         OvYg==
-X-Gm-Message-State: APjAAAVVDdy735kkUbXat06oLNL9UsocMz+0CoRho0pXX/CxQXxMYyKe
-        iQx22k0t0XqEImntu+Q75YgIEPm75hjSyPvGkJ08eshzbmOcxvMsLTPa5PBu4+/2JCGnL5wcQ2v
-        saHpsJAg0T88UKrSXNIEiBAhj9Or+4Laa93dDMcfjeBe7CoJEX9GqKw==
-X-Google-Smtp-Source: APXvYqxYwfzjHrzGCfYPGAiIhIGShiyO8nmp/97NXlJv1XT2CANUkMzwfeUS2Rp+R2kyiIUNrSaJtv8=
-X-Received: by 2002:a81:980b:: with SMTP id p11mr10645808ywg.48.1558558435637;
- Wed, 22 May 2019 13:53:55 -0700 (PDT)
-Date:   Wed, 22 May 2019 13:53:50 -0700
-Message-Id: <20190522205353.140648-1-sdf@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=ukNWyZpQEscAlXdUip/QWXhs5cbXEziRRf5YyJhah4M=;
+        b=GgY5xDCbRKLAE51jBU9HOo97+n5M596HZk/pMB7UjL7rQZcPCPrbm0if4CJte3lx+8
+         sKben42DgYgsOhvDLVNTQiKkO6YExPNWLjRQNsFvIlQb3tSTXzYq4nz4gMjJ5DT7YaE9
+         wkNhabpal7ZFdXk6RLV/nwKXUkBo3u8gc5a4W0HrUup8K8gUfFDTi4hdDX/i1IvBuMhf
+         pcwNUnXYnKvuhj5M36LmH89LDyZe3pzdht2PePxoi7s331Xac2EOL/NnRZ0gBmNMJcPe
+         Id0m3fIJgSRNAfiFly+4HNJhDlJBDrto7lCrCo4wfbS7PHN74zTM196MAgGZRmLkyEe9
+         /GRQ==
+X-Gm-Message-State: APjAAAW9MNOAt72B0i6am44S1m4ra7toy/XqqmVkXv8E67jfQwWhJZ+o
+        gFzTeMDUB3rPuj7cp1mXibZlaVvOnGvR2AR2o3SNySAxtXo5yecNnxTZON7GBV3V/gPT/tfHlGi
+        PeO4vl7vk3A6QG/scdJghr2zFZDK03GAZnLyzoI4Ypl3QFPpV8FAuYQ==
+X-Google-Smtp-Source: APXvYqx9x1/i9RddXIFy8UKRAw7tdSzqIGW+3fgcjqiypNTjBQ0QyE3Nol6HJXkiMDN9Q2UXUhI54Uo=
+X-Received: by 2002:ac8:1a04:: with SMTP id v4mr77233094qtj.63.1558558438027;
+ Wed, 22 May 2019 13:53:58 -0700 (PDT)
+Date:   Wed, 22 May 2019 13:53:51 -0700
+In-Reply-To: <20190522205353.140648-1-sdf@google.com>
+Message-Id: <20190522205353.140648-2-sdf@google.com>
 Mime-Version: 1.0
+References: <20190522205353.140648-1-sdf@google.com>
 X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
-Subject: [PATCH bpf-next v2 1/4] bpf: remove __rcu annotations from bpf_prog_array
+Subject: [PATCH bpf-next v2 2/4] bpf: media: properly use bpf_prog_array api
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
         Stanislav Fomichev <sdf@google.com>,
-        Roman Gushchin <guro@fb.com>
+        linux-media@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sean Young <sean@mess.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drop __rcu annotations and rcu read sections from bpf_prog_array
-helper functions. They are not needed since all existing callers
-call those helpers from the rcu update side while holding a mutex.
-This guarantees that use-after-free could not happen.
+Now that we don't have __rcu markers on the bpf_prog_array helpers,
+let's use proper rcu_dereference_protected to obtain array pointer
+under mutex.
 
-In the next patches I'll fix the callers with missing
-rcu_dereference_protected to make sparse/lockdep happy, the proper
-way to use these helpers is:
-
-	struct bpf_prog_array __rcu *progs = ...;
-	struct bpf_prog_array *p;
-
-	mutex_lock(&mtx);
-	p = rcu_dereference_protected(progs, lockdep_is_held(&mtx));
-	bpf_prog_array_length(p);
-	bpf_prog_array_copy_to_user(p, ...);
-	bpf_prog_array_delete_safe(p, ...);
-	bpf_prog_array_copy_info(p, ...);
-	bpf_prog_array_copy(p, ...);
-	bpf_prog_array_free(p);
-	mutex_unlock(&mtx);
-
-No functional changes! rcu_dereference_protected with lockdep_is_held
-should catch any cases where we update prog array without a mutex
-(I've looked at existing call sites and I think we hold a mutex
-everywhere).
-
-One possible complication might be with Roman's set of patches
-to decouple cgroup_bpf lifetime from the cgroup. In that case
-we can use rcu_dereference_check(..., 1) since we know that there
-should not be any existing users when we dismantle the cgroup.
-
-v2:
-* remove comment about potential race; that can't happen
-  because all callers are in rcu-update section
-
-Cc: Roman Gushchin <guro@fb.com>
+Cc: linux-media@vger.kernel.org
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Sean Young <sean@mess.org>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- include/linux/bpf.h | 12 ++++++------
- kernel/bpf/core.c   | 37 +++++++++++++------------------------
- 2 files changed, 19 insertions(+), 30 deletions(-)
+ drivers/media/rc/bpf-lirc.c | 30 +++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 4fb3aa2dc975..88ea32358593 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -513,17 +513,17 @@ struct bpf_prog_array {
- };
+diff --git a/drivers/media/rc/bpf-lirc.c b/drivers/media/rc/bpf-lirc.c
+index ee657003c1a1..0a0ce620e4a2 100644
+--- a/drivers/media/rc/bpf-lirc.c
++++ b/drivers/media/rc/bpf-lirc.c
+@@ -8,6 +8,9 @@
+ #include <linux/bpf_lirc.h>
+ #include "rc-core-priv.h"
  
- struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags);
--void bpf_prog_array_free(struct bpf_prog_array __rcu *progs);
--int bpf_prog_array_length(struct bpf_prog_array __rcu *progs);
--int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *progs,
-+void bpf_prog_array_free(struct bpf_prog_array *progs);
-+int bpf_prog_array_length(struct bpf_prog_array *progs);
-+int bpf_prog_array_copy_to_user(struct bpf_prog_array *progs,
- 				__u32 __user *prog_ids, u32 cnt);
++#define lirc_rcu_dereference(p)						\
++	rcu_dereference_protected(p, lockdep_is_held(&ir_raw_handler_lock))
++
+ /*
+  * BPF interface for raw IR
+  */
+@@ -136,7 +139,7 @@ const struct bpf_verifier_ops lirc_mode2_verifier_ops = {
  
--void bpf_prog_array_delete_safe(struct bpf_prog_array __rcu *progs,
-+void bpf_prog_array_delete_safe(struct bpf_prog_array *progs,
- 				struct bpf_prog *old_prog);
--int bpf_prog_array_copy_info(struct bpf_prog_array __rcu *array,
-+int bpf_prog_array_copy_info(struct bpf_prog_array *array,
- 			     u32 *prog_ids, u32 request_cnt,
- 			     u32 *prog_cnt);
--int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
-+int bpf_prog_array_copy(struct bpf_prog_array *old_array,
- 			struct bpf_prog *exclude_prog,
- 			struct bpf_prog *include_prog,
- 			struct bpf_prog_array **new_array);
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 242a643af82f..aad86c8a0d61 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1795,38 +1795,33 @@ struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags)
- 	return &empty_prog_array.hdr;
- }
- 
--void bpf_prog_array_free(struct bpf_prog_array __rcu *progs)
-+void bpf_prog_array_free(struct bpf_prog_array *progs)
+ static int lirc_bpf_attach(struct rc_dev *rcdev, struct bpf_prog *prog)
  {
--	if (!progs ||
--	    progs == (struct bpf_prog_array __rcu *)&empty_prog_array.hdr)
-+	if (!progs || progs == &empty_prog_array.hdr)
+-	struct bpf_prog_array __rcu *old_array;
++	struct bpf_prog_array *old_array;
+ 	struct bpf_prog_array *new_array;
+ 	struct ir_raw_event_ctrl *raw;
+ 	int ret;
+@@ -154,12 +157,12 @@ static int lirc_bpf_attach(struct rc_dev *rcdev, struct bpf_prog *prog)
+ 		goto unlock;
+ 	}
+ 
+-	if (raw->progs && bpf_prog_array_length(raw->progs) >= BPF_MAX_PROGS) {
++	old_array = lirc_rcu_dereference(raw->progs);
++	if (old_array && bpf_prog_array_length(old_array) >= BPF_MAX_PROGS) {
+ 		ret = -E2BIG;
+ 		goto unlock;
+ 	}
+ 
+-	old_array = raw->progs;
+ 	ret = bpf_prog_array_copy(old_array, NULL, prog, &new_array);
+ 	if (ret < 0)
+ 		goto unlock;
+@@ -174,7 +177,7 @@ static int lirc_bpf_attach(struct rc_dev *rcdev, struct bpf_prog *prog)
+ 
+ static int lirc_bpf_detach(struct rc_dev *rcdev, struct bpf_prog *prog)
+ {
+-	struct bpf_prog_array __rcu *old_array;
++	struct bpf_prog_array *old_array;
+ 	struct bpf_prog_array *new_array;
+ 	struct ir_raw_event_ctrl *raw;
+ 	int ret;
+@@ -192,7 +195,7 @@ static int lirc_bpf_detach(struct rc_dev *rcdev, struct bpf_prog *prog)
+ 		goto unlock;
+ 	}
+ 
+-	old_array = raw->progs;
++	old_array = lirc_rcu_dereference(raw->progs);
+ 	ret = bpf_prog_array_copy(old_array, prog, NULL, &new_array);
+ 	/*
+ 	 * Do not use bpf_prog_array_delete_safe() as we would end up
+@@ -223,21 +226,22 @@ void lirc_bpf_run(struct rc_dev *rcdev, u32 sample)
+ /*
+  * This should be called once the rc thread has been stopped, so there can be
+  * no concurrent bpf execution.
++ *
++ * Should be called with the ir_raw_handler_lock held.
+  */
+ void lirc_bpf_free(struct rc_dev *rcdev)
+ {
+ 	struct bpf_prog_array_item *item;
++	struct bpf_prog_array *array;
+ 
+-	if (!rcdev->raw->progs)
++	array = lirc_rcu_dereference(rcdev->raw->progs);
++	if (!array)
  		return;
- 	kfree_rcu(progs, rcu);
- }
  
--int bpf_prog_array_length(struct bpf_prog_array __rcu *array)
-+int bpf_prog_array_length(struct bpf_prog_array *array)
- {
- 	struct bpf_prog_array_item *item;
- 	u32 cnt = 0;
- 
--	rcu_read_lock();
--	item = rcu_dereference(array)->items;
--	for (; item->prog; item++)
+-	item = rcu_dereference(rcdev->raw->progs)->items;
+-	while (item->prog) {
 +	for (item = array->items; item->prog; item++)
- 		if (item->prog != &dummy_bpf_prog.prog)
- 			cnt++;
--	rcu_read_unlock();
- 	return cnt;
+ 		bpf_prog_put(item->prog);
+-		item++;
+-	}
+ 
+-	bpf_prog_array_free(rcdev->raw->progs);
++	bpf_prog_array_free(array);
  }
  
- 
--static bool bpf_prog_array_copy_core(struct bpf_prog_array __rcu *array,
-+static bool bpf_prog_array_copy_core(struct bpf_prog_array *array,
- 				     u32 *prog_ids,
- 				     u32 request_cnt)
+ int lirc_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+@@ -290,7 +294,7 @@ int lirc_prog_detach(const union bpf_attr *attr)
+ int lirc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr)
  {
- 	struct bpf_prog_array_item *item;
- 	int i = 0;
+ 	__u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
+-	struct bpf_prog_array __rcu *progs;
++	struct bpf_prog_array *progs;
+ 	struct rc_dev *rcdev;
+ 	u32 cnt, flags = 0;
+ 	int ret;
+@@ -311,7 +315,7 @@ int lirc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr)
+ 	if (ret)
+ 		goto put;
  
--	item = rcu_dereference_check(array, 1)->items;
--	for (; item->prog; item++) {
-+	for (item = array->items; item->prog; item++) {
- 		if (item->prog == &dummy_bpf_prog.prog)
- 			continue;
- 		prog_ids[i] = item->prog->aux->id;
-@@ -1839,7 +1834,7 @@ static bool bpf_prog_array_copy_core(struct bpf_prog_array __rcu *array,
- 	return !!(item->prog);
- }
+-	progs = rcdev->raw->progs;
++	progs = lirc_rcu_dereference(rcdev->raw->progs);
+ 	cnt = progs ? bpf_prog_array_length(progs) : 0;
  
--int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *array,
-+int bpf_prog_array_copy_to_user(struct bpf_prog_array *array,
- 				__u32 __user *prog_ids, u32 cnt)
- {
- 	unsigned long err = 0;
-@@ -1850,18 +1845,12 @@ int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *array,
- 	 * cnt = bpf_prog_array_length();
- 	 * if (cnt > 0)
- 	 *     bpf_prog_array_copy_to_user(..., cnt);
--	 * so below kcalloc doesn't need extra cnt > 0 check, but
--	 * bpf_prog_array_length() releases rcu lock and
--	 * prog array could have been swapped with empty or larger array,
--	 * so always copy 'cnt' prog_ids to the user.
--	 * In a rare race the user will see zero prog_ids
-+	 * so below kcalloc doesn't need extra cnt > 0 check.
- 	 */
- 	ids = kcalloc(cnt, sizeof(u32), GFP_USER | __GFP_NOWARN);
- 	if (!ids)
- 		return -ENOMEM;
--	rcu_read_lock();
- 	nospc = bpf_prog_array_copy_core(array, ids, cnt);
--	rcu_read_unlock();
- 	err = copy_to_user(prog_ids, ids, cnt * sizeof(u32));
- 	kfree(ids);
- 	if (err)
-@@ -1871,19 +1860,19 @@ int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *array,
- 	return 0;
- }
- 
--void bpf_prog_array_delete_safe(struct bpf_prog_array __rcu *array,
-+void bpf_prog_array_delete_safe(struct bpf_prog_array *array,
- 				struct bpf_prog *old_prog)
- {
--	struct bpf_prog_array_item *item = array->items;
-+	struct bpf_prog_array_item *item;
- 
--	for (; item->prog; item++)
-+	for (item = array->items; item->prog; item++)
- 		if (item->prog == old_prog) {
- 			WRITE_ONCE(item->prog, &dummy_bpf_prog.prog);
- 			break;
- 		}
- }
- 
--int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
-+int bpf_prog_array_copy(struct bpf_prog_array *old_array,
- 			struct bpf_prog *exclude_prog,
- 			struct bpf_prog *include_prog,
- 			struct bpf_prog_array **new_array)
-@@ -1947,7 +1936,7 @@ int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
- 	return 0;
- }
- 
--int bpf_prog_array_copy_info(struct bpf_prog_array __rcu *array,
-+int bpf_prog_array_copy_info(struct bpf_prog_array *array,
- 			     u32 *prog_ids, u32 request_cnt,
- 			     u32 *prog_cnt)
- {
+ 	if (copy_to_user(&uattr->query.prog_cnt, &cnt, sizeof(cnt))) {
 -- 
 2.21.0.1020.gf2820cf01a-goog
 
