@@ -2,82 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E13E25DD2
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 07:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 105F025DE3
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 08:10:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728402AbfEVFyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 01:54:25 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:42017 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbfEVFyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 01:54:24 -0400
-Received: by mail-qt1-f193.google.com with SMTP id j53so951395qta.9;
-        Tue, 21 May 2019 22:54:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DqGZmH5U35Dv5bwyTyiCYAuusP/EQsaROTmJmPCQsKs=;
-        b=Urse73IjNLmstfQV9wFT1opPjk6RlFiBHx2ITzhNWYfnyisCW9qdKJZfgjMt3r0Fdw
-         huo+z7g4nn70opDL0sSFrAr2HcwJUW4VhYuLcaGgaoURYUnpXDP0S3Qygq3b6gGaUmoc
-         KG782LvfePPINOb3rYPb69ZTDHbpm1tGjotBM0K3BWHn1LtrUVDtI07xNaDTGedYbE6a
-         d1U31GgmW1VbgE/PgLnjahJ7ajI26STRHToREp5YqzatKBXEPjLseN4dpCD+DzZarAPf
-         ONAvR8SIoWQlI2cLVkEdZUF/TNXTAnlkYO3XEhFMRBpahCVXl6I0H0V9988dNDcaiWM8
-         FUvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DqGZmH5U35Dv5bwyTyiCYAuusP/EQsaROTmJmPCQsKs=;
-        b=V3reosd8rJeb4zNcQjEDK+WwOm3xqUzLVshiQ66I6KWbYpSB0eSfBa8/KPwzMB0186
-         tDEyx7DdhSfP/YPIiFn2/OQoYIyWFMWVggA0EHImNNOJxKYawnWPMtWr6Pb6YHJR0Oqy
-         kxSCHYfiGUh0ddhqtqvOTej3Y/Y/XG0pe+duh1Ige632K16+jMPipD8CDd3MnUlFbbaS
-         j0IOM8Z8ANJYIU2+cxT7XSX5gduwJVvPWC2lNpR73v72+cXVXes6iIiw56QB5F8C9m92
-         HbRhEMmlZYqu485W5c8Lt5HvAWCOZ7KUzsLrigZnL5gbnGALujf5c65jZSlZwXzRlj43
-         UjMA==
-X-Gm-Message-State: APjAAAUaU4Kzhl5YJlxx5/XlvKP+VN/1pl6TmUB0M5CC4olcVfIP8SNA
-        sqY4is6P2hshdJ5KynsLbsGUKPII56LOFh1uy+Q=
-X-Google-Smtp-Source: APXvYqwB80FGeP6lOXlASL4MJihH/f7ozAdrki+ynOFPAVXrdBxuOzvhQNpAm6cxrNUWMS9p80pE+iQOsZYDpG3DX7Y=
-X-Received: by 2002:ac8:668d:: with SMTP id d13mr71539302qtp.59.1558504463755;
- Tue, 21 May 2019 22:54:23 -0700 (PDT)
+        id S1728359AbfEVGJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 02:09:59 -0400
+Received: from goliath.siemens.de ([192.35.17.28]:45408 "EHLO
+        goliath.siemens.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726208AbfEVGJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 02:09:59 -0400
+Received: from mail1.siemens.de (mail1.siemens.de [139.23.33.14])
+        by goliath.siemens.de (8.15.2/8.15.2) with ESMTPS id x4M69h2m009749
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 22 May 2019 08:09:44 +0200
+Received: from pluscontrol-debian-server.ppmd.SIEMENS.NET (pluscontrol-debian-server.ppmd.siemens.net [146.254.63.6])
+        by mail1.siemens.de (8.15.2/8.15.2) with ESMTP id x4M69fhU012177;
+        Wed, 22 May 2019 08:09:41 +0200
+From:   Andreas Oetken <andreas.oetken@siemens.com>
+Cc:     andreas@oetken.name, m-karicheri2@ti.com, a-kramer@ti.com,
+        Andreas Oetken <andreas.oetken@siemens.com>,
+        Arvid Brodin <arvid.brodin@alten.se>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] hsr: fix don't prune the master node from the node_db
+Date:   Wed, 22 May 2019 08:07:46 +0200
+Message-Id: <20190522060746.30074-1-andreas.oetken@siemens.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190522031707.2834254-1-ast@kernel.org>
-In-Reply-To: <20190522031707.2834254-1-ast@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 21 May 2019 22:54:12 -0700
-Message-ID: <CAEf4BzbZyTiF8KZBdPS0pxfCHfTEZSjgDLFDywR7yi5=M_86wQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 0/3] bpf: optimize explored_states
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     davem@davemloft.net, Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 8:17 PM Alexei Starovoitov <ast@kernel.org> wrote:
->
-> Convert explored_states array into hash table and use simple hash to
-> reduce verifier peak memory consumption for programs with bpf2bpf calls.
-> More details in patch 3.
->
-> v1->v2: fixed Jakub's small nit in patch 1
->
-> Alexei Starovoitov (3):
->   bpf: cleanup explored_states
->   bpf: split explored_states
->   bpf: convert explored_states to hash table
->
->  include/linux/bpf_verifier.h |  2 +
->  kernel/bpf/verifier.c        | 77 ++++++++++++++++++++++--------------
->  2 files changed, 50 insertions(+), 29 deletions(-)
->
-> --
-> 2.20.0
->
+Don't prune master node in the hsr_prune_nodes function.
+Neither time_in[HSR_PT_SLAVE_A], nor time_in[HSR_PT_SLAVE_B],
+will ever be updated by hsr_register_frame_in for the master port.
+Thus the master node will be repeatedly pruned leading to
+repeated packet loss.
+This bug never appeared because the hsr_prune_nodes function
+was only called once. Since commit 5150b45fd355
+("net: hsr: Fix node prune function for forget time expiry") this issue
+is fixed unvealing the issue described above.
 
-For the series:
+Signed-off-by: Andreas Oetken <andreas.oetken@siemens.com>
+---
+ net/hsr/hsr_framereg.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+index 9fa9abd83018..2d7a19750436 100644
+--- a/net/hsr/hsr_framereg.c
++++ b/net/hsr/hsr_framereg.c
+@@ -365,6 +365,14 @@ void hsr_prune_nodes(struct timer_list *t)
+ 
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(node, &hsr->node_db, mac_list) {
++		/* Don't prune own node. Neither time_in[HSR_PT_SLAVE_A]
++		 * nor time_in[HSR_PT_SLAVE_B], will ever be updated for
++		 * the master port. Thus the master node will be repeatedly
++		 * pruned leading to packet loss.
++		 */
++		if (hsr_addr_is_self(hsr, node->macaddress_A))
++			continue;
++
+ 		/* Shorthand */
+ 		time_a = node->time_in[HSR_PT_SLAVE_A];
+ 		time_b = node->time_in[HSR_PT_SLAVE_B];
+-- 
+2.20.1
+
