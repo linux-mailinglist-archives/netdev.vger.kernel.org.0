@@ -2,177 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F8C270C5
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:21:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7867B270D1
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 22:29:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729841AbfEVUVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 16:21:23 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:51806 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729679AbfEVUVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 16:21:23 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id DF13B61706; Wed, 22 May 2019 20:21:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1558556480;
-        bh=EYAzGoVUf8AWTf32k+lAUyEBKf4l8OQNm2fLWDi/DvQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=SdHIzjdmG5xoE4DOBD16O2pNUl0DZYNktQ4RjFueCobPgks2OAT/wnKQfPyOJH/Ul
-         o2l4Q2qlLAB4Ct7WRXtMvUiHx6eWZqWRWvum+emT+ygFUVo3zkPE++I/VPBbaK5Qmi
-         z6KrCysy1B54XY1i2W4f4Sc5xen3eq062WDBfaZ4=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from subashab-lnx.qualcomm.com (unknown [129.46.15.92])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab@codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 10B5D616F5;
-        Wed, 22 May 2019 20:21:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1558556478;
-        bh=EYAzGoVUf8AWTf32k+lAUyEBKf4l8OQNm2fLWDi/DvQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dlcWdePs04IjdJ2vx/g9bzaB0+q2rT50hTMeLcj0rGhnPahXMh8nQQVys6zH8lnVk
-         CPw/jRgbQ4TpSR9iesFYgk3lYxmuLqol/pbHot32cDFmU5fJLAIoK/z6iuPYVK/pU7
-         aDcZD0fJZ/Npbq+Ej3UjJquefTjhzb9d/cvsXEHU=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 10B5D616F5
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=subashab@codeaurora.org
-From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-To:     elder@linaro.org, bjorn.andersson@linaro.org, arnd@arndb.de,
-        davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Subject: [PATCH net-next] net: qualcomm: rmnet: Move common struct definitions to include
-Date:   Wed, 22 May 2019 14:21:07 -0600
-Message-Id: <1558556467-12007-1-git-send-email-subashab@codeaurora.org>
-X-Mailer: git-send-email 1.9.1
+        id S1729908AbfEVU36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 16:29:58 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37139 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728761AbfEVU35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 16:29:57 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 7so3537865wmo.2;
+        Wed, 22 May 2019 13:29:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KlVZNryM8pB5f8q8+hboTK/K1z9nBq5Ad03d8AAJxNY=;
+        b=Qa+RiDdXXDFrn6uJ4Tz7/YwbR58+zwe5dbQ9DWQ9F2aSIwRl2T4VDlxv38BVeNG8Zc
+         GDGdsnO9KsRdi7lMbvnozmUN8IbrQl1AqzcekGYGrtwgpcnMhj9UmU7m51jRdTagJbVz
+         Dl8ZvHWqli0fMyuotJgeMrKnBWdrHTIVAiRYfvfHDU1TMtto/qBPYSEVfACgIqPUt0Zg
+         +R01+GmAPqqBfR1gS+oACttndBCmTFy98thXX/GFwagwPTs919ct21aA8g3orm/Upc7x
+         Nwlgak9CMNTm+XX+IPdR4CJgbQOAMnWyyGNUuEf99fbJK4DWQ7SaCW2H2L42CPnX5WiM
+         67Bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=KlVZNryM8pB5f8q8+hboTK/K1z9nBq5Ad03d8AAJxNY=;
+        b=akTrPqrMY2cnjRpo7SFoc4E6FGdYAj/9LIRVq2sUOS+AkNrEa8nhyWdN7jSoCaouYK
+         agejeH4Gn6pLeCHz5HCzfd+d+Oh59DQ/SmVCWSf99MbWygX9EFOnLcjF+TcdyQXTQIN/
+         7gG0VTogBnh64X6CJP5lOuwzqu6sGuSqERGDn+NPdeJmAkVmgUNuXGrdm1/ZzZN9n8me
+         vEJNBMRoGuL6tlv0RALpfbCSFgP3T1jSkYlD96z40aPA2hfWJvcNSLlQfiIrG8yexXJ8
+         ou5uoxOaV9Bl9brLDzHP46KdKG75f5zbCJzVaut7i3vAcY2hKVRGeLmJAbSP5pju51KR
+         dQig==
+X-Gm-Message-State: APjAAAXVpZKAnMSXonBnVA+xsopoFB+Ej5S2Eqf54ByQer50VNQ+zClM
+        YQGbcDqp2XJnMzgWYZKRkbOdQos9
+X-Google-Smtp-Source: APXvYqx79L4dLdho3RmjNNG05YSYjceSOmhjzMUTlKEy95bjxcsugoi4VURK8x0TN4yK9rRlxQE+uw==
+X-Received: by 2002:a1c:200a:: with SMTP id g10mr9091671wmg.121.1558556994603;
+        Wed, 22 May 2019 13:29:54 -0700 (PDT)
+Received: from [10.67.49.213] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id h6sm4578132wrm.47.2019.05.22.13.29.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 May 2019 13:29:53 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] net: phy: aquantia: add USXGMII support
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Madalin-cristian Bucur <madalin.bucur@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+References: <110a1e45-56a7-a646-7b63-f39fe3083c28@gmail.com>
+ <2c68bdb1-9b53-ce0b-74d3-c7ea2d9e7ac0@gmail.com>
+ <46a141c7-f838-ae4b-4a47-5b1fb44ef063@gmail.com>
+ <e7a7c38c-ebe7-1cea-4099-3cf3a4483ac7@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <abdf67f6-3b7b-fab4-ed7c-779f5685ab58@gmail.com>
+Date:   Wed, 22 May 2019 13:29:45 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <e7a7c38c-ebe7-1cea-4099-3cf3a4483ac7@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create if_rmnet.h and move the rmnet MAP packet structs to this
-common include file. To account for portablity, add little and
-big endian bitfield definitions similar to the ip & tcp headers.
+On 5/22/19 1:18 PM, Heiner Kallweit wrote:
+> On 22.05.2019 22:07, Florian Fainelli wrote:
+>> On 5/22/19 12:58 PM, Heiner Kallweit wrote:
+>>> So far we didn't support mode USXGMII, and in order to not break the
+>>> two Freescale boards mode XGMII was accepted for the AQR107 family
+>>> even though it doesn't support XGMII. Add USXGMII support to the
+>>> Aquantia PHY driver and change the phy connection type for the two
+>>> boards.
+>>>
+>>> As an additional note: Even though the handle is named aqr106
+>>> there seem to be LS1046A boards with an AQR107.
+>>>
+>>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>>
+>> You can probably split the DTS changes and the PHY driver changes into a
+>> separate commits and just have the DTS changes come last? With that:
+>>
+> To split the patches I would have to do:
+> 1. Add USXGMII support to Aquantia PHY driver
+> 2. DTS changes
+> 3. Don't accept XGMII any longer in Aquantia PHY driver
+> This seemed to me to be too much overhead considering the very small
+> change.
+> 
+> Just making the DTS changes a separate patch would break bisecting.
 
-The definitions in the headers can now be re-used by the
-upcoming ipa driver series as well as qmi_wwan.
+I fail to see how, you can't make use of "usxgmii" in DTS unless you
+define that as as a valid phy-mode property value (patch #1), and you
+can't have that possibly working until patch #2. Until then using
+"xgmii" is still supported and going to work.
 
-Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
----
- drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h | 25 +----------
- include/linux/if_rmnet.h                        | 55 +++++++++++++++++++++++++
- 2 files changed, 56 insertions(+), 24 deletions(-)
- create mode 100644 include/linux/if_rmnet.h
-
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-index 884f1f5..991d7e2 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-@@ -12,6 +12,7 @@
- 
- #ifndef _RMNET_MAP_H_
- #define _RMNET_MAP_H_
-+#include <linux/if_rmnet.h>
- 
- struct rmnet_map_control_command {
- 	u8  command_name;
-@@ -39,30 +40,6 @@ enum rmnet_map_commands {
- 	RMNET_MAP_COMMAND_ENUM_LENGTH
- };
- 
--struct rmnet_map_header {
--	u8  pad_len:6;
--	u8  reserved_bit:1;
--	u8  cd_bit:1;
--	u8  mux_id;
--	__be16 pkt_len;
--}  __aligned(1);
--
--struct rmnet_map_dl_csum_trailer {
--	u8  reserved1;
--	u8  valid:1;
--	u8  reserved2:7;
--	u16 csum_start_offset;
--	u16 csum_length;
--	__be16 csum_value;
--} __aligned(1);
--
--struct rmnet_map_ul_csum_header {
--	__be16 csum_start_offset;
--	u16 csum_insert_offset:14;
--	u16 udp_ip4_ind:1;
--	u16 csum_enabled:1;
--} __aligned(1);
--
- #define RMNET_MAP_GET_MUX_ID(Y) (((struct rmnet_map_header *) \
- 				 (Y)->data)->mux_id)
- #define RMNET_MAP_GET_CD_BIT(Y) (((struct rmnet_map_header *) \
-diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
-new file mode 100644
-index 0000000..b4f5403
---- /dev/null
-+++ b/include/linux/if_rmnet.h
-@@ -0,0 +1,55 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (c) 2013-2019, The Linux Foundation. All rights reserved.
-+ */
-+
-+#ifndef _LINUX_IF_RMNET_H_
-+#define _LINUX_IF_RMNET_H_
-+
-+struct rmnet_map_header {
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	u8  pad_len:6;
-+	u8  reserved_bit:1;
-+	u8  cd_bit:1;
-+#elif defined (__BIG_ENDIAN_BITFIELD)
-+	u8  cd_bit:1;
-+	u8  reserved_bit:1;
-+	u8  pad_len:6;
-+#else
-+#error	"Please fix <asm/byteorder.h>"
-+#endif
-+	u8  mux_id;
-+	__be16 pkt_len;
-+}  __aligned(1);
-+
-+struct rmnet_map_dl_csum_trailer {
-+	u8  reserved1;
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	u8  valid:1;
-+	u8  reserved2:7;
-+#elif defined (__BIG_ENDIAN_BITFIELD)
-+	u8  reserved2:7;
-+	u8  valid:1;
-+#else
-+#error	"Please fix <asm/byteorder.h>"
-+#endif
-+	u16 csum_start_offset;
-+	u16 csum_length;
-+	__be16 csum_value;
-+} __aligned(1);
-+
-+struct rmnet_map_ul_csum_header {
-+	__be16 csum_start_offset;
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	u16 csum_insert_offset:14;
-+	u16 udp_ip4_ind:1;
-+	u16 csum_enabled:1;
-+#elif defined (__BIG_ENDIAN_BITFIELD)
-+	u16 csum_enabled:1;
-+	u16 udp_ip4_ind:1;
-+	u16 csum_insert_offset:14;
-+#else
-+#error	"Please fix <asm/byteorder.h>"
-+#endif
-+} __aligned(1);
-+
-+#endif /* !(_LINUX_IF_RMNET_H_) */
+Once patch #3 which brings DTS lands in, you could possibly deprecate
+"xgmii" in the Aquantia PHY driver (or rather issue a big warning).
 -- 
-1.9.1
-
+Florian
