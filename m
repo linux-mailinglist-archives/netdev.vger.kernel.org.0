@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6E826F27
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:55:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6E5F26F2C
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:55:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731584AbfEVTZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:25:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46796 "EHLO mail.kernel.org"
+        id S1730854AbfEVTZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:25:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46812 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730485AbfEVTZ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 15:25:27 -0400
+        id S1731579AbfEVTZ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 15:25:29 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6D37321841;
-        Wed, 22 May 2019 19:25:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B25D421473;
+        Wed, 22 May 2019 19:25:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558553127;
-        bh=nscVMH09LO/QAotKKZRmEY1pRACra33svaPbY7gSXPc=;
+        s=default; t=1558553128;
+        bh=z3MDV60291LlBWj453hvcf3H7YFDWQlBi73KyBFq4n0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mxsv7YUnUxHntskOiZi7a5EfnfYkOrYeQxWBCHXwRKE0Tc+siIeHGrl4AQGRH0SCN
-         /jmJvGfZLrbOOO8+FRemDBsbeeessBKFz33EsEFMFaBQw7kuXckI+b8wHPsD0GTEzI
-         dcbOUSw1Mtf34z2kHY/KEA2S73wnm5dslptpP1l4=
+        b=TIRXdsgMHdF5gKBSk1CUhWdqVSBGYgDoiJOLsMi57WSz6FF6uqbQv0y5wFa86JWD4
+         2XmMZ6G+EZSZD+XFa+MUungzh9X+rUfS4Oz5V5Njsk/yZzTajFirv8VodOas11mXuB
+         fCetvcJA3l401fum137EC5ux1bTTOaU3HnyvpxEE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Peng Li <lipeng321@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 061/317] net: hns3: fix for TX clean num when cleaning TX BD
-Date:   Wed, 22 May 2019 15:19:22 -0400
-Message-Id: <20190522192338.23715-61-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 062/317] net: phy: improve genphy_soft_reset
+Date:   Wed, 22 May 2019 15:19:23 -0400
+Message-Id: <20190522192338.23715-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190522192338.23715-1-sashal@kernel.org>
 References: <20190522192338.23715-1-sashal@kernel.org>
@@ -45,54 +43,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit 63380a1ae4ced8aef67659ff9547c69ef8b9613a ]
+[ Upstream commit 8c90b795e90f7753d23c18e8b95dd71b4a18c5d9 ]
 
-hns3_desc_unused() returns how many BD have been cleaned, but new
-buffer has not been attached to them. The register of
-HNS3_RING_RX_RING_FBDNUM_REG returns how many BD need allocating new
-buffer to or need to cleaned. So the remaining BD need to be clean
-is HNS3_RING_RX_RING_FBDNUM_REG - hns3_desc_unused().
+PHY's behave differently when being reset. Some reset registers to
+defaults, some don't. Some trigger an autoneg restart, some don't.
 
-Also, new buffer can not attach to the pending BD when the last BD is
-not handled, because memcpy has not been done on the first pending BD.
+So let's also set the autoneg restart bit when resetting. Then PHY
+behavior should be more consistent. Clearing BMCR_ISOLATE serves the
+same purpose and is borrowed from genphy_restart_aneg.
 
-This patch fixes by subtracting the pending BD num from unused_count
-after 'HNS3_RING_RX_RING_FBDNUM_REG - unused_count' is used to calculate
-the BD bum need to be clean.
+BMCR holds the speed / duplex settings in fixed mode. Therefore
+we may have an issue if a soft reset resets BMCR to its default.
+So better call genphy_setup_forced() afterwards in fixed mode.
+We've seen no related complaint in the last >10 yrs, so let's
+treat it as an improvement.
 
-Fixes: e55970950556 ("net: hns3: Add handling of GRO Pkts not fully RX'ed in NAPI poll")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Peng Li <lipeng321@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy_device.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 40b69eaf2cb3f..ecadd280ab28d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2708,7 +2708,7 @@ int hns3_clean_rx_ring(
- #define RCB_NOF_ALLOC_RX_BUFF_ONCE 16
- 	struct net_device *netdev = ring->tqp->handle->kinfo.netdev;
- 	int recv_pkts, recv_bds, clean_count, err;
--	int unused_count = hns3_desc_unused(ring) - ring->pending_buf;
-+	int unused_count = hns3_desc_unused(ring);
- 	struct sk_buff *skb = ring->skb;
- 	int num;
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index ff2426e00682c..67a06fa7566bd 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1830,13 +1830,25 @@ EXPORT_SYMBOL(genphy_read_status);
+  */
+ int genphy_soft_reset(struct phy_device *phydev)
+ {
++	u16 res = BMCR_RESET;
+ 	int ret;
  
-@@ -2717,6 +2717,7 @@ int hns3_clean_rx_ring(
+-	ret = phy_set_bits(phydev, MII_BMCR, BMCR_RESET);
++	if (phydev->autoneg == AUTONEG_ENABLE)
++		res |= BMCR_ANRESTART;
++
++	ret = phy_modify(phydev, MII_BMCR, BMCR_ISOLATE, res);
+ 	if (ret < 0)
+ 		return ret;
  
- 	recv_pkts = 0, recv_bds = 0, clean_count = 0;
- 	num -= unused_count;
-+	unused_count -= ring->pending_buf;
+-	return phy_poll_reset(phydev);
++	ret = phy_poll_reset(phydev);
++	if (ret)
++		return ret;
++
++	/* BMCR may be reset to defaults */
++	if (phydev->autoneg == AUTONEG_DISABLE)
++		ret = genphy_setup_forced(phydev);
++
++	return ret;
+ }
+ EXPORT_SYMBOL(genphy_soft_reset);
  
- 	while (recv_pkts < budget && recv_bds < num) {
- 		/* Reuse or realloc buffers */
 -- 
 2.20.1
 
