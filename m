@@ -2,118 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF39025FBF
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 10:45:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0BDC26039
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 11:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728598AbfEVIpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 04:45:43 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:55500 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727946AbfEVIpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 04:45:42 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4M8hqLA137897;
-        Wed, 22 May 2019 08:45:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2018-07-02;
- bh=rLT9olIu6zNtNMMyHRkUQBkMEZ9LLWui5FRwcXMEYnE=;
- b=y6wZuUc9PEOOkwU5h6GjP+LBm3nvi9f+wv+JLr/SNsPwhwCvjrqu9dHUzABVF6HaAF06
- aB747ojaMazNwxzSVN8tMIxH1aR9/aKyljnGNznpeihVcenu+dWuoXFzsob40lMrJyHG
- Kh5D4/xD/kPUiPthtBwNdKMrhTx8njynKnn7vqK1zXj7MT7ALCK4DdwftlzvD0PYZE7T
- YiyuudYiosQ5KLhFThoSQp3mIPBf6rz9mwDpDepEo704e2YX3QP79Ol8S1U1vrN504t4
- e7UtWv8CKmKjKqG9UdQh5RR+R2exEa1HjHYwl6nk8je3S+D5Gk/Md70CyDDJa1wAfuMI qw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 2smsk5283y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 May 2019 08:45:25 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4M8j9kH035071;
-        Wed, 22 May 2019 08:45:24 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 2smshefsg1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 May 2019 08:45:24 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x4M8jLHI029368;
-        Wed, 22 May 2019 08:45:22 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 22 May 2019 08:45:21 +0000
-Date:   Wed, 22 May 2019 11:45:13 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Karsten Keil <isdn@linux-pingi.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        zhong jiang <zhongjiang@huawei.com>,
-        Deepa Dinamani <deepa.kernel@gmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] mISDN: make sure device name is NUL terminated
-Message-ID: <20190522084513.GA2129@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9264 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1905220064
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9264 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1905220064
+        id S1728960AbfEVJOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 05:14:49 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34218 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726552AbfEVJOt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 05:14:49 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id B8ADD309264F;
+        Wed, 22 May 2019 09:14:43 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.32.181.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7E0B666D3B;
+        Wed, 22 May 2019 09:14:38 +0000 (UTC)
+Message-ID: <365843b0b605d272a7ec3cf4ebf4cb5ea70b42e6.camel@redhat.com>
+Subject: Re: [PATCH net] net: sched: sch_ingress: do not report ingress
+ filter info in egress path
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us
+In-Reply-To: <738244fd5863e6228275ee8f71e81d6baafca243.1558442828.git.lorenzo.bianconi@redhat.com>
+References: <cover.1558442828.git.lorenzo.bianconi@redhat.com>
+         <738244fd5863e6228275ee8f71e81d6baafca243.1558442828.git.lorenzo.bianconi@redhat.com>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Wed, 22 May 2019 11:14:37 +0200
+Mime-Version: 1.0
+User-Agent: Evolution 3.30.3 (3.30.3-1.fc29) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Wed, 22 May 2019 09:14:48 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The user can change the device_name with the IMSETDEVNAME ioctl, but we
-need to ensure that the user's name is NUL terminated.  Otherwise it
-could result in a buffer overflow when we copy the name back to the user
-with IMGETDEVINFO ioctl.
+On Tue, 2019-05-21 at 14:59 +0200, Lorenzo Bianconi wrote:
+> Currently if we add a filter to the ingress qdisc (e.g matchall) the
+> filter data are reported even in the egress path. The issue can be
+> triggered with the following reproducer:
+> 
+> $tc qdisc add dev lo ingress
+> $tc filter add dev lo ingress matchall action ok
+> $tc filter show dev lo ingress
+> filter protocol all pref 49152 matchall chain 0
+> filter protocol all pref 49152 matchall chain 0 handle 0x1
+>   not_in_hw
+> 	action order 1: gact action pass
+> 		 random type none pass val 0
+> 		 	 index 1 ref 1 bind 1
+> 
+> $tc filter show dev lo egress
+> filter protocol all pref 49152 matchall chain 0
+> filter protocol all pref 49152 matchall chain 0 handle 0x1
+>   not_in_hw
+> 	action order 1: gact action pass
+> 		 random type none pass val 0
+> 		 	 index 1 ref 1 bind 1
+> 
+> Fix it reporting NULL for non-ingress filters in ingress_tcf_block
+> routine
+> 
+> Fixes: 6529eaba33f0 ("net: sched: introduce tcf block infrastructure")
+> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+> ---
+>  net/sched/sch_ingress.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
+> index 0bac926b46c7..1825347fed3a 100644
+> --- a/net/sched/sch_ingress.c
+> +++ b/net/sched/sch_ingress.c
+> @@ -31,7 +31,7 @@ static struct Qdisc *ingress_leaf(struct Qdisc *sch, unsigned long arg)
+>  
+>  static unsigned long ingress_find(struct Qdisc *sch, u32 classid)
+>  {
+> -	return TC_H_MIN(classid) + 1;
+> +	return TC_H_MIN(classid);
 
-I also changed two strcpy() calls which handle the name to strscpy().
-Hopefully, there aren't any other ways to create a too long name, but
-it's nice to do this as a kernel hardening measure.
+probably this breaks a command that was wrong before, but it's worth
+mentioning. Because of the above hunk, the following command
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/isdn/mISDN/socket.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+# tc qdisc add dev test0 ingress
+# tc filter add dev test0 parent ffff:fff1 matchall action drop
+# tc filter add dev test0 parent ffff: matchall action continue
 
-diff --git a/drivers/isdn/mISDN/socket.c b/drivers/isdn/mISDN/socket.c
-index a14e35d40538..84e1d4c2db66 100644
---- a/drivers/isdn/mISDN/socket.c
-+++ b/drivers/isdn/mISDN/socket.c
-@@ -393,7 +393,7 @@ data_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 			memcpy(di.channelmap, dev->channelmap,
- 			       sizeof(di.channelmap));
- 			di.nrbchan = dev->nrbchan;
--			strcpy(di.name, dev_name(&dev->dev));
-+			strscpy(di.name, dev_name(&dev->dev), sizeof(di.name));
- 			if (copy_to_user((void __user *)arg, &di, sizeof(di)))
- 				err = -EFAULT;
- 		} else
-@@ -676,7 +676,7 @@ base_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 			memcpy(di.channelmap, dev->channelmap,
- 			       sizeof(di.channelmap));
- 			di.nrbchan = dev->nrbchan;
--			strcpy(di.name, dev_name(&dev->dev));
-+			strscpy(di.name, dev_name(&dev->dev), sizeof(di.name));
- 			if (copy_to_user((void __user *)arg, &di, sizeof(di)))
- 				err = -EFAULT;
- 		} else
-@@ -690,6 +690,7 @@ base_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 			err = -EFAULT;
- 			break;
- 		}
-+		dn.name[sizeof(dn.name) - 1] = '\0';
- 		dev = get_mdevice(dn.id);
- 		if (dev)
- 			err = device_rename(&dev->dev, dn.name);
+gave no errors, and dropped packets on unpatched kernel. With this patch,
+the kernel refuses to add the 'matchall' rules (and because of that,
+traffic passes).
+
+running TDC, it seems that a patched kernel does not pass anymore
+some of the test cases belonging to the 'filter' category:
+
+# ./tdc.py -e 901f
+Test 901f: Add fw filter with prio at 32-bit maxixum
+exit: 2
+exit: 0
+RTNETLINK answers: Invalid argument
+We have an error talking to the kernel, -1
+
+All test results:
+1..1
+not ok 1 901f - Add fw filter with prio at 32-bit maxixum
+        Command exited with 2, expected 0
+RTNETLINK answers: Invalid argument
+We have an error talking to the kernel, -1
+
+(the same test is passing on a unpatched kernel)
+
+Do you think it's worth fixing those test cases too?
+
+thanks a lot!
 -- 
-2.20.1
+davide
+
+>  }
+>  
+>  static unsigned long ingress_bind_filter(struct Qdisc *sch,
+> @@ -53,7 +53,12 @@ static struct tcf_block *ingress_tcf_block(struct Qdisc *sch, unsigned long cl,
+>  {
+>  	struct ingress_sched_data *q = qdisc_priv(sch);
+>  
+> -	return q->block;
+> +	switch (cl) {
+> +	case TC_H_MIN(TC_H_MIN_INGRESS):
+> +		return q->block;
+> +	default:
+> +		return NULL;
+> +	}
+>  }
+>  
+>  static void clsact_chain_head_change(struct tcf_proto *tp_head, void *priv)
+
 
