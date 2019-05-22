@@ -2,340 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58F07267DE
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 18:16:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0878526817
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 18:21:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730026AbfEVQQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 12:16:28 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:7904 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729576AbfEVQQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 12:16:28 -0400
-Received: from dalmore.blr.asicdesigners.com ([10.193.186.161])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x4MGGMre031870;
-        Wed, 22 May 2019 09:16:22 -0700
-From:   Vishal Kulkarni <vishal@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     nirranjan@chelsio.com, indranil@chelsio.com, dt@chelsio.com,
-        Vishal Kulkarni <vishal@chelsio.com>
-Subject: [PATCH net-next v2] cxgb4: Enable hash filter with offload
-Date:   Wed, 22 May 2019 21:46:12 +0530
-Message-Id: <1558541772-14745-1-git-send-email-vishal@chelsio.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1730178AbfEVQVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 12:21:36 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:42576 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729603AbfEVQVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 12:21:35 -0400
+Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4MGIfQ8030532;
+        Wed, 22 May 2019 09:21:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : subject :
+ date : message-id : references : in-reply-to : content-type : content-id :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=L7W3QcE9VlGbS/EWUQOxDW1OqiWeqQ33TqEP3U1Qub4=;
+ b=Oj3W/gunt54BVMhzgOLug4UgfyQVAC52eCPuPMuhQiQR4wL0e2ze9bdAcw2smhpCvpyb
+ Po4IYuV1W6bf4ZQtUWdpiHz1RXsBLBB8bN4gb9EfUPRJGi+QNXF1CSLECv1tz9+PKGhF
+ O+BAduJPlMSwhgda42REvdg7ypnNjMOgEiw= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sn8b0rd1d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 22 May 2019 09:21:16 -0700
+Received: from prn-hub05.TheFacebook.com (2620:10d:c081:35::129) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Wed, 22 May 2019 09:21:15 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.29) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Wed, 22 May 2019 09:21:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L7W3QcE9VlGbS/EWUQOxDW1OqiWeqQ33TqEP3U1Qub4=;
+ b=PmMFSahAljwHxjfzQ0NAhU+UXu/bKtHk/CDIt8QIOd1P9pNpgtKd0VdE050pGP1FkVhZhlXThStGOz5rq4irIstxzCIWEhhIenoc5jr+iYTh262qyXaHHQM3WSab6Wq2AL7ql88QSok91XMmd9aZ1UysxCtnPtiOSPiD8lxTPCw=
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
+ BYAPR15MB3064.namprd15.prod.outlook.com (20.178.238.214) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.16; Wed, 22 May 2019 16:21:13 +0000
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::140e:9c62:f2d3:7f27]) by BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::140e:9c62:f2d3:7f27%7]) with mapi id 15.20.1900.020; Wed, 22 May 2019
+ 16:21:13 +0000
+From:   Alexei Starovoitov <ast@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf-next] libbpf: emit diff of mismatched public API, if
+ any
+Thread-Topic: [PATCH bpf-next] libbpf: emit diff of mismatched public API, if
+ any
+Thread-Index: AQHVELmfsHjD4ZU0U0K3xT5bDXZlfaZ3U0gA
+Date:   Wed, 22 May 2019 16:21:13 +0000
+Message-ID: <1b027a52-4ac7-daf8-ee4a-eb528f53e526@fb.com>
+References: <20190522161520.3407245-1-andriin@fb.com>
+In-Reply-To: <20190522161520.3407245-1-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR21CA0026.namprd21.prod.outlook.com
+ (2603:10b6:300:129::12) To BYAPR15MB2501.namprd15.prod.outlook.com
+ (2603:10b6:a02:88::11)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::9fb6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2c393f51-7f23-4c49-6dd9-08d6ded1822d
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR15MB3064;
+x-ms-traffictypediagnostic: BYAPR15MB3064:
+x-microsoft-antispam-prvs: <BYAPR15MB30649F553E1D85215DB584D7D7000@BYAPR15MB3064.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:63;
+x-forefront-prvs: 0045236D47
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(39860400002)(396003)(366004)(136003)(346002)(189003)(199004)(66946007)(71190400001)(71200400001)(76176011)(52116002)(99286004)(36756003)(102836004)(73956011)(7736002)(6506007)(386003)(6486002)(66556008)(66446008)(478600001)(64756008)(53546011)(229853002)(68736007)(256004)(305945005)(66476007)(31686004)(2616005)(5660300002)(11346002)(53936002)(110136005)(81156014)(81166006)(31696002)(8676002)(476003)(8936002)(446003)(6246003)(86362001)(2201001)(316002)(6116002)(14454004)(2906002)(6436002)(25786009)(486006)(2501003)(46003)(6512007)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3064;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: J0KLsR+t2tKDanUGEruMvlaMmwkX7IHtaXtgBLgfHmuxt6bU7Yu4DIy6hB6rG+Ql8g5czjJjqQ+edbYR/iatBsl3hzm1lVQj5tnaKyUmh7GWeED438nwu0cuiZuIRCxW/fdV0D6c4G+kGz1mdnpA0ZhTfGCjvrfAKHI3CStq04QszsmRJUt0P4CCJK5H8c7irZkq9Jlz5+upfkbqDmMaSW6/xPJPnmSJ617vhKMrnNV3TsC186Qph6XhUkUMfnfgjrB2MuE6CtgexMicOd3XEf1Qb5mOstyOuCd048Zu1CzSpaxzoZTHyEzhtk7V5eVLVHjhlDZSJee8P33c//vkLhlM1SuHJECuCVktEnk7j9ZIYMeyoL7MOaNWhe15T3vu8qzeFeVb+jAJ0Mn0cvjw6GDuXCvmqZSWzpkRgRsLqys=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <17E8621EDD53EC4F858C81B42A3E1A02@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c393f51-7f23-4c49-6dd9-08d6ded1822d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2019 16:21:13.6458
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3064
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-22_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905220115
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hash (exact-match) filters used for offloading flows share the
-same active region resources on the chip with upper layer drivers,
-like iw_cxgb4, chcr, etc. Currently, only either Hash filters
-or ULDs can use the active region resources, but not both. Hence,
-use the new firmware configuration parameters (when available)
-to allow both the Hash filters and ULDs to share the
-active region simultaneously.
-
-Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
-
----
-v2:
-- Updated commit message with more information.
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h        |  1 +
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c | 38 +++++++++++------
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h |  2 +-
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c   | 52 +++++++++++++++++++----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h    |  1 +
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c        | 32 ++++++++++++++
- drivers/net/ethernet/chelsio/cxgb4/t4_regs.h      |  4 ++
- drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h     |  2 +
- 8 files changed, 110 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index a8fe080..a707a65 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -600,6 +600,7 @@ struct port_info {
- 	u8 vin;
- 	u8 vivld;
- 	u8 smt_idx;
-+	u8 rx_cchan;
- };
- 
- struct dentry;
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
-index 4107007..0f0b3f4 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
-@@ -1041,7 +1041,7 @@ static void mk_act_open_req6(struct filter_entry *f, struct sk_buff *skb,
- 			    RSS_QUEUE_V(f->fs.iq) |
- 			    TX_QUEUE_V(f->fs.nat_mode) |
- 			    T5_OPT_2_VALID_F |
--			    RX_CHANNEL_F |
-+			    RX_CHANNEL_V(cxgb4_port_e2cchan(f->dev)) |
- 			    CONG_CNTRL_V((f->fs.action == FILTER_DROP) |
- 					 (f->fs.dirsteer << 1)) |
- 			    PACE_V((f->fs.maskhash) |
-@@ -1081,7 +1081,7 @@ static void mk_act_open_req(struct filter_entry *f, struct sk_buff *skb,
- 			    RSS_QUEUE_V(f->fs.iq) |
- 			    TX_QUEUE_V(f->fs.nat_mode) |
- 			    T5_OPT_2_VALID_F |
--			    RX_CHANNEL_F |
-+			    RX_CHANNEL_V(cxgb4_port_e2cchan(f->dev)) |
- 			    CONG_CNTRL_V((f->fs.action == FILTER_DROP) |
- 					 (f->fs.dirsteer << 1)) |
- 			    PACE_V((f->fs.maskhash) |
-@@ -1833,24 +1833,38 @@ void filter_rpl(struct adapter *adap, const struct cpl_set_tcb_rpl *rpl)
- 	}
- }
- 
--int init_hash_filter(struct adapter *adap)
-+void init_hash_filter(struct adapter *adap)
- {
-+	u32 reg;
-+
- 	/* On T6, verify the necessary register configs and warn the user in
- 	 * case of improper config
- 	 */
- 	if (is_t6(adap->params.chip)) {
--		if (TCAM_ACTV_HIT_G(t4_read_reg(adap, LE_DB_RSP_CODE_0_A)) != 4)
--			goto err;
-+		if (is_offload(adap)) {
-+			if (!(t4_read_reg(adap, TP_GLOBAL_CONFIG_A)
-+			   & ACTIVEFILTERCOUNTS_F)) {
-+				dev_err(adap->pdev_dev, "Invalid hash filter + ofld config\n");
-+				return;
-+			}
-+		} else {
-+			reg = t4_read_reg(adap, LE_DB_RSP_CODE_0_A);
-+			if (TCAM_ACTV_HIT_G(reg) != 4) {
-+				dev_err(adap->pdev_dev, "Invalid hash filter config\n");
-+				return;
-+			}
-+
-+			reg = t4_read_reg(adap, LE_DB_RSP_CODE_1_A);
-+			if (HASH_ACTV_HIT_G(reg) != 4) {
-+				dev_err(adap->pdev_dev, "Invalid hash filter config\n");
-+				return;
-+			}
-+		}
- 
--		if (HASH_ACTV_HIT_G(t4_read_reg(adap, LE_DB_RSP_CODE_1_A)) != 4)
--			goto err;
- 	} else {
- 		dev_err(adap->pdev_dev, "Hash filter supported only on T6\n");
--		return -EINVAL;
-+		return;
- 	}
-+
- 	adap->params.hash_filter = 1;
--	return 0;
--err:
--	dev_warn(adap->pdev_dev, "Invalid hash filter config!\n");
--	return -EINVAL;
- }
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h
-index 8db5fca..b0751c0 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h
-@@ -50,7 +50,7 @@ void hash_del_filter_rpl(struct adapter *adap,
- 
- int writable_filter(struct filter_entry *f);
- void clear_all_filters(struct adapter *adapter);
--int init_hash_filter(struct adapter *adap);
-+void init_hash_filter(struct adapter *adap);
- bool is_filter_exact_match(struct adapter *adap,
- 			   struct ch_filter_specification *fs);
- #endif /* __CXGB4_FILTER_H */
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 715e4ed..7d7df59 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -1646,6 +1646,18 @@ unsigned int cxgb4_port_chan(const struct net_device *dev)
- }
- EXPORT_SYMBOL(cxgb4_port_chan);
- 
-+/**
-+ *      cxgb4_port_e2cchan - get the HW c-channel of a port
-+ *      @dev: the net device for the port
-+ *
-+ *      Return the HW RX c-channel of the given port.
-+ */
-+unsigned int cxgb4_port_e2cchan(const struct net_device *dev)
-+{
-+	return netdev2pinfo(dev)->rx_cchan;
-+}
-+EXPORT_SYMBOL(cxgb4_port_e2cchan);
-+
- unsigned int cxgb4_dbfifo_count(const struct net_device *dev, int lpfifo)
- {
- 	struct adapter *adap = netdev2adap(dev);
-@@ -3905,14 +3917,14 @@ static int adap_init0_phy(struct adapter *adap)
-  */
- static int adap_init0_config(struct adapter *adapter, int reset)
- {
-+	char *fw_config_file, fw_config_file_path[256];
-+	u32 finiver, finicsum, cfcsum, param, val;
- 	struct fw_caps_config_cmd caps_cmd;
--	const struct firmware *cf;
- 	unsigned long mtype = 0, maddr = 0;
--	u32 finiver, finicsum, cfcsum;
--	int ret;
--	int config_issued = 0;
--	char *fw_config_file, fw_config_file_path[256];
-+	const struct firmware *cf;
- 	char *config_name = NULL;
-+	int config_issued = 0;
-+	int ret;
- 
- 	/*
- 	 * Reset device if necessary.
-@@ -4020,6 +4032,24 @@ static int adap_init0_config(struct adapter *adapter, int reset)
- 			goto bye;
- 	}
- 
-+	val = 0;
-+
-+	/* Ofld + Hash filter is supported. Older fw will fail this request and
-+	 * it is fine.
-+	 */
-+	param = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
-+		 FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_HASHFILTER_WITH_OFLD));
-+	ret = t4_set_params(adapter, adapter->mbox, adapter->pf, 0,
-+			    1, &param, &val);
-+
-+	/* FW doesn't know about Hash filter + ofld support,
-+	 * it's not a problem, don't return an error.
-+	 */
-+	if (ret < 0) {
-+		dev_warn(adapter->pdev_dev,
-+			 "Hash filter with ofld is not supported by FW\n");
-+	}
-+
- 	/*
- 	 * Issue a Capability Configuration command to the firmware to get it
- 	 * to parse the Configuration File.  We don't use t4_fw_config_file()
-@@ -4580,6 +4610,13 @@ static int adap_init0(struct adapter *adap)
- 	if (ret < 0)
- 		goto bye;
- 
-+	/* hash filter has some mandatory register settings to be tested and for
-+	 * that it needs to test whether offload is enabled or not, hence
-+	 * checking and setting it here.
-+	 */
-+	if (caps_cmd.ofldcaps)
-+		adap->params.offload = 1;
-+
- 	if (caps_cmd.ofldcaps ||
- 	    (caps_cmd.niccaps & htons(FW_CAPS_CONFIG_NIC_HASHFILTER))) {
- 		/* query offload-related parameters */
-@@ -4619,11 +4656,8 @@ static int adap_init0(struct adapter *adap)
- 		adap->params.ofldq_wr_cred = val[5];
- 
- 		if (caps_cmd.niccaps & htons(FW_CAPS_CONFIG_NIC_HASHFILTER)) {
--			ret = init_hash_filter(adap);
--			if (ret < 0)
--				goto bye;
-+			init_hash_filter(adap);
- 		} else {
--			adap->params.offload = 1;
- 			adap->num_ofld_uld += 1;
- 		}
- 	}
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-index 21da34a..42ae28d 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-@@ -393,6 +393,7 @@ int cxgb4_immdata_send(struct net_device *dev, unsigned int idx,
- int cxgb4_crypto_send(struct net_device *dev, struct sk_buff *skb);
- unsigned int cxgb4_dbfifo_count(const struct net_device *dev, int lpfifo);
- unsigned int cxgb4_port_chan(const struct net_device *dev);
-+unsigned int cxgb4_port_e2cchan(const struct net_device *dev);
- unsigned int cxgb4_port_viid(const struct net_device *dev);
- unsigned int cxgb4_tp_smt_idx(enum chip_type chip, unsigned int viid);
- unsigned int cxgb4_port_idx(const struct net_device *dev);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index f9b70be..866ee31 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -6209,6 +6209,37 @@ unsigned int t4_get_mps_bg_map(struct adapter *adapter, int pidx)
- }
- 
- /**
-+ *      t4_get_tp_e2c_map - return the E2C channel map associated with a port
-+ *      @adapter: the adapter
-+ *      @pidx: the port index
-+ */
-+unsigned int t4_get_tp_e2c_map(struct adapter *adapter, int pidx)
-+{
-+	unsigned int nports;
-+	u32 param, val = 0;
-+	int ret;
-+
-+	nports = 1 << NUMPORTS_G(t4_read_reg(adapter, MPS_CMN_CTL_A));
-+	if (pidx >= nports) {
-+		CH_WARN(adapter, "TP E2C Channel Port Index %d >= Nports %d\n",
-+			pidx, nports);
-+		return 0;
-+	}
-+
-+	/* FW version >= 1.16.44.0 can determine E2C channel map using
-+	 * FW_PARAMS_PARAM_DEV_TPCHMAP API.
-+	 */
-+	param = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
-+		 FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_TPCHMAP));
-+	ret = t4_query_params_ns(adapter, adapter->mbox, adapter->pf,
-+				 0, 1, &param, &val);
-+	if (!ret)
-+		return (val >> (8 * pidx)) & 0xff;
-+
-+	return 0;
-+}
-+
-+/**
-  *	t4_get_tp_ch_map - return TP ingress channels associated with a port
-  *	@adapter: the adapter
-  *	@pidx: the port index
-@@ -9583,6 +9614,7 @@ int t4_init_portinfo(struct port_info *pi, int mbox,
- 	pi->tx_chan = port;
- 	pi->lport = port;
- 	pi->rss_size = rss_size;
-+	pi->rx_cchan = t4_get_tp_e2c_map(pi->adapter, port);
- 
- 	/* If fw supports returning the VIN as part of FW_VI_CMD,
- 	 * save the returned values.
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-index eb222d4..a957a6e 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-@@ -1334,6 +1334,10 @@
- #define TP_OUT_CONFIG_A		0x7d04
- #define TP_GLOBAL_CONFIG_A	0x7d08
- 
-+#define ACTIVEFILTERCOUNTS_S    22
-+#define ACTIVEFILTERCOUNTS_V(x) ((x) << ACTIVEFILTERCOUNTS_S)
-+#define ACTIVEFILTERCOUNTS_F    ACTIVEFILTERCOUNTS_V(1U)
-+
- #define TP_CMM_TCB_BASE_A 0x7d10
- #define TP_CMM_MM_BASE_A 0x7d14
- #define TP_CMM_TIMER_BASE_A 0x7d18
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h b/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
-index b2a618e..6a10e95 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
-@@ -1250,10 +1250,12 @@ enum fw_params_param_dev {
- 	FW_PARAMS_PARAM_DEV_RI_FR_NSMR_TPTE_WR	= 0x1C,
- 	FW_PARAMS_PARAM_DEV_FILTER2_WR  = 0x1D,
- 	FW_PARAMS_PARAM_DEV_MPSBGMAP	= 0x1E,
-+	FW_PARAMS_PARAM_DEV_TPCHMAP     = 0x1F,
- 	FW_PARAMS_PARAM_DEV_HMA_SIZE	= 0x20,
- 	FW_PARAMS_PARAM_DEV_RDMA_WRITE_WITH_IMM = 0x21,
- 	FW_PARAMS_PARAM_DEV_RI_WRITE_CMPL_WR    = 0x24,
- 	FW_PARAMS_PARAM_DEV_OPAQUE_VIID_SMT_EXTN = 0x27,
-+	FW_PARAMS_PARAM_DEV_HASHFILTER_WITH_OFLD = 0x28,
- 	FW_PARAMS_PARAM_DEV_DBQ_TIMER	= 0x29,
- 	FW_PARAMS_PARAM_DEV_DBQ_TIMERTICK = 0x2A,
- };
--- 
-1.8.3.1
-
+T24gNS8yMi8xOSA5OjE1IEFNLCBBbmRyaWkgTmFrcnlpa28gd3JvdGU6DQo+IEl0J3MgZWFzeSB0
+byBoYXZlIGEgbWlzbWF0Y2ggb2YgImludGVuZGVkIHRvIGJlIHB1YmxpYyIgdnMgcmVhbGx5DQo+
+IGV4cG9zZWQgQVBJIGZ1bmN0aW9ucy4gV2hpbGUgTWFrZWZpbGUgZG9lcyBjaGVjayBmb3IgdGhp
+cyBtaXNtYXRjaCwgaWYNCj4gaXQgYWN0dWFsbHkgb2NjdXJzIGl0J3Mgbm90IHRyaXZpYWwgdG8g
+ZGV0ZXJtaW5lIHdoaWNoIGZ1bmN0aW9ucyBhcmUNCj4gYWNjaWRlbnRhbGx5IGV4cG9zZWQuIFRo
+aXMgcGF0Y2ggZHVtcHMgb3V0IGEgZGlmZiBzaG93aW5nIHdoYXQncyBub3QNCj4gc3VwcG9zZWQg
+dG8gYmUgZXhwb3NlZCBmYWNpbGl0YXRpbmcgZWFzaWVyIGZpeGluZy4NCj4gDQo+IFNpZ25lZC1v
+ZmYtYnk6IEFuZHJpaSBOYWtyeWlrbyA8YW5kcmlpbkBmYi5jb20+DQo+IC0tLQ0KPiAgIHRvb2xz
+L2xpYi9icGYvLmdpdGlnbm9yZSB8IDIgKysNCj4gICB0b29scy9saWIvYnBmL01ha2VmaWxlICAg
+fCA4ICsrKysrKysrDQo+ICAgMiBmaWxlcyBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspDQo+IA0K
+PiBkaWZmIC0tZ2l0IGEvdG9vbHMvbGliL2JwZi8uZ2l0aWdub3JlIGIvdG9vbHMvbGliL2JwZi8u
+Z2l0aWdub3JlDQo+IGluZGV4IGQ5ZTlkZWMwNDYwNS4uYzczMDZlODU4ZTJlIDEwMDY0NA0KPiAt
+LS0gYS90b29scy9saWIvYnBmLy5naXRpZ25vcmUNCj4gKysrIGIvdG9vbHMvbGliL2JwZi8uZ2l0
+aWdub3JlDQo+IEBAIC0zLDMgKzMsNSBAQCBsaWJicGYucGMNCj4gICBGRUFUVVJFLURVTVAubGli
+YnBmDQo+ICAgdGVzdF9saWJicGYNCj4gICBsaWJicGYuc28uKg0KPiArbGliYnBmX2dsb2JhbF9z
+eW1zLnRtcA0KPiArbGliYnBmX3ZlcnNpb25lZF9zeW1zLnRtcA0KPiBkaWZmIC0tZ2l0IGEvdG9v
+bHMvbGliL2JwZi9NYWtlZmlsZSBiL3Rvb2xzL2xpYi9icGYvTWFrZWZpbGUNCj4gaW5kZXggZjkx
+NjM5YmY1NjUwLi43ZTdkNmQ4NTE3MTMgMTAwNjQ0DQo+IC0tLSBhL3Rvb2xzL2xpYi9icGYvTWFr
+ZWZpbGUNCj4gKysrIGIvdG9vbHMvbGliL2JwZi9NYWtlZmlsZQ0KPiBAQCAtMjA0LDYgKzIwNCwx
+NCBAQCBjaGVja19hYmk6ICQoT1VUUFVUKWxpYmJwZi5zbw0KPiAgIAkJICAgICAidmVyc2lvbmVk
+IHN5bWJvbHMgaW4gJF4gKCQoVkVSU0lPTkVEX1NZTV9DT1VOVCkpLiIgXA0KPiAgIAkJICAgICAi
+UGxlYXNlIG1ha2Ugc3VyZSBhbGwgTElCQlBGX0FQSSBzeW1ib2xzIGFyZSIJIFwNCj4gICAJCSAg
+ICAgInZlcnNpb25lZCBpbiAkKFZFUlNJT05fU0NSSVBUKS4iID4mMjsJCSBcDQo+ICsJCXJlYWRl
+bGYgLXMgLS13aWRlICQoT1VUUFVUKWxpYmJwZi1pbi5vIHwJCSBcDQo+ICsJCSAgICBhd2sgJy9H
+TE9CQUwvICYmIC9ERUZBVUxULyAmJiAhL1VORC8ge3ByaW50ICQkOH0nfCAgIFwNCj4gKwkJICAg
+IHNvcnQgLXUgPiAkKE9VVFBVVClsaWJicGZfZ2xvYmFsX3N5bXMudG1wOwkJIFwNCj4gKwkJcmVh
+ZGVsZiAtcyAtLXdpZGUgJChPVVRQVVQpbGliYnBmLnNvIHwJCQkgXA0KPiArCQkgICAgZ3JlcCAt
+RW8gJ1teIF0rQExJQkJQRl8nIHwgY3V0IC1kQCAtZjEgfAkJIFwNCj4gKwkJICAgIHNvcnQgLXUg
+PiAkKE9VVFBVVClsaWJicGZfdmVyc2lvbmVkX3N5bXMudG1wOyAJIFwNCj4gKwkJZGlmZiAtdSAk
+KE9VVFBVVClsaWJicGZfZ2xvYmFsX3N5bXMudG1wCQkJIFwNCj4gKwkJICAgICAkKE9VVFBVVCls
+aWJicGZfdmVyc2lvbmVkX3N5bXMudG1wOwkJIFwNCj4gICAJCWV4aXQgMTsJCQkJCQkJIFwNCg0K
+Z29vZCBpZGVhLg0KaG93IGFib3V0IHJlbW92aW5nIHRtcCBmaWxlcyBpbnN0ZWFkIG9mIGFkZGlu
+ZyB0aGVtIHRvIC5naXRpZ25vcmU/DQo=
