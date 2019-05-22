@@ -2,203 +2,292 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 409E926387
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 14:13:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 027402639F
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 14:17:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729092AbfEVMNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 08:13:20 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40578 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727975AbfEVMNU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 08:13:20 -0400
-Received: by mail-wm1-f68.google.com with SMTP id 15so1953179wmg.5
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 05:13:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bJ/T2gYKVNslQdPNYfkMQEjQ6hpfjvxWlwmhVEqRBCQ=;
-        b=R7zLzO36Rej5x/02PCozvilfVmSIc+19Zz5RYA0zIwvzPguOxkz97/cXwcYhOTudho
-         WdAHLaOuyUO+Zpzdk/j04hcUi4JzMjJgRLRIwzZoxeHXSfK2CByEpWlv5+a6eI4XaW5O
-         pLEftFy9JtpEYwjON94OiK+pXb30hMO+pZ4XcPgfLqw8GsUSiN+qY7gbejOz+aykbOJj
-         LrUERe+NO6J6y6Z6vAmq53WW7kJlogecebvFaCRn6rUnnf5SakJVHzErsWo0yNP1ZWC+
-         YHDUs1OuZ+NOTolgb3QgFb7DDxiof9WQnkNbnWRs1GIKBMRDXvyBYfI9224l6NXGNvvI
-         zggg==
-X-Gm-Message-State: APjAAAUQKD2W5RvUgAC1DIg5FAddoB5bpNoqjR8M5mffMGTa+n9urlN7
-        DBWEqYcnR/ExkK/vlJtcHgLOIQ==
-X-Google-Smtp-Source: APXvYqwtYhADN3+XJPVDq05kW20Ju3rAuy3AsEehEBSQFPEByY1YBQ2sDy5ZaB7sFOqgKZ5zAHAi3A==
-X-Received: by 2002:a1c:3c2:: with SMTP id 185mr7458907wmd.91.1558527197474;
-        Wed, 22 May 2019 05:13:17 -0700 (PDT)
-Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id h6sm2944088wrm.47.2019.05.22.05.13.16
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 22 May 2019 05:13:16 -0700 (PDT)
-Date:   Wed, 22 May 2019 14:13:14 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Davide Caratti <dcaratti@redhat.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, jiri@resnulli.us,
-        alexei.starovoitov@gmail.com
-Subject: Re: [PATCH net] net: sched: sch_ingress: do not report ingress
- filter info in egress path
-Message-ID: <20190522121313.GB3467@localhost.localdomain>
-References: <cover.1558442828.git.lorenzo.bianconi@redhat.com>
- <738244fd5863e6228275ee8f71e81d6baafca243.1558442828.git.lorenzo.bianconi@redhat.com>
- <365843b0b605d272a7ec3cf4ebf4cb5ea70b42e6.camel@redhat.com>
- <20190522102013.GA3467@localhost.localdomain>
- <ac3120ae-245b-05ab-2abf-6c0710827fc5@iogearbox.net>
+        id S1729252AbfEVMRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 08:17:38 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:52658 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728438AbfEVMRi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 08:17:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=XRRgdQBJ/m9hgBIL0+vqNyzCsUJrXLqFJLRgNNPO7vw=; b=Wq6xO1sANWcBwPamElkQu2Y/r
+        bkPQQyr4IGWcpM9D+ubD8c0xiMiPGBPPX0fplOwBjmPx9YvpFeuFb5J9VzDyjzBaWurrcHjnPDPoN
+        w4WJs40ixrpw3o790FJHTJPicLMMcEtzvmNug49BPpQuO5ZD7nsuOkPEpQE78oqWIHZlvkgm0HDcK
+        dFyxR/s903Xp7ETectuAHVpTXTYMabNTRgy2WtP/kM5zpEIMdJ2NquDSpILAYl++aPDjrksVLLcp6
+        fBiack2GMrfLt2h0yf2azhpnVPhwz0gDfAOMIRP+ubcHQ+wzR0B7kLLi79Aa6px4CqAK/e15u5ZWV
+        MfIs6814w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52576)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hTQBa-0007Ya-1f; Wed, 22 May 2019 13:17:34 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hTQBW-0006f9-UC; Wed, 22 May 2019 13:17:30 +0100
+Date:   Wed, 22 May 2019 13:17:30 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-block@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Jonas Gorski <jonas.gorski@gmail.com>,
+        Jo-Philipp Wich <jo@mein.io>, Felix Fietkau <nbd@nbd.name>
+Subject: Re: ARM router NAT performance affected by random/unrelated commits
+Message-ID: <20190522121730.fhswxkw4gbflkhei@shell.armlinux.org.uk>
+References: <9a9ba4c9-3cb7-eb64-4aac-d43b59224442@gmail.com>
+ <20190521104512.2r67fydrgniwqaja@shell.armlinux.org.uk>
+ <de262f71-748f-d242-f1d4-ea10188a0438@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="p4qYPpj5QlsIQJ0K"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ac3120ae-245b-05ab-2abf-6c0710827fc5@iogearbox.net>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <de262f71-748f-d242-f1d4-ea10188a0438@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, May 22, 2019 at 01:51:01PM +0200, Rafał Miłecki wrote:
+> On 21.05.2019 12:45, Russell King - ARM Linux admin wrote:> On Tue, May 21, 2019 at 12:28:48PM +0200, Rafał Miłecki wrote:
+> >> I work on home routers based on Broadcom's Northstar SoCs. Those devices
+> >> have ARM Cortex-A9 and most of them are dual-core.
+> >>
+> >> As for home routers, my main concern is network performance. That CPU
+> >> isn't powerful enough to handle gigabit traffic so all kind of
+> >> optimizations do matter. I noticed some unexpected changes in NAT
+> >> performance when switching between kernels.
+> >>
+> >> My hardware is BCM47094 SoC (dual core ARM) with integrated network
+> >> controller and external BCM53012 switch.
+> >
+> > Guessing, I'd say it's to do with the placement of code wrt cachelines.
+> > You could try aligning some of the cache flushing code to a cache line
+> > and see what effect that has.
+> 
+> Is System.map a good place to check for functions code alignment?
+> 
+> With Linux 4.19 + OpenWrt mtd patches I have:
+> (...)
+> c010ea94 t v7_dma_inv_range
+> c010eae0 t v7_dma_clean_range
+> (...)
+> c02ca3d0 T blk_mq_update_nr_hw_queues
+> c02ca69c T blk_mq_alloc_tag_set
+> c02ca94c T blk_mq_release
+> c02ca9b4 T blk_mq_free_queue
+> c02caa88 T blk_mq_update_nr_requests
+> c02cab50 T blk_mq_unique_tag
+> (...)
+> 
+> After cherry-picking 9316a9ed6895 ("blk-mq: provide helper for setting
+> up an SQ queue and tag set"):
+> (...)
+> c010ea94 t v7_dma_inv_range
+> c010eae0 t v7_dma_clean_range
+> (...)
+> c02ca3d0 T blk_mq_update_nr_hw_queues
+> c02ca69c T blk_mq_alloc_tag_set
+> c02ca94c T blk_mq_init_sq_queue <-- NEW
+> c02ca9c0 T blk_mq_release <-- Different address of this & all below
+> c02caa28 T blk_mq_free_queue
+> c02caafc T blk_mq_update_nr_requests
+> c02cabc4 T blk_mq_unique_tag
+> (...)
+> 
+> As you can see blk_mq_init_sq_queue has appeared in the System.map and
+> it affected addresses of ~30000 symbols. I can believe some frequently
+> used symbols got luckily aligned and that improved overall performance.
+> 
+> Interestingly v7_dma_inv_range() and v7_dma_clean_range() were not
+> relocated.
+> 
+> *****
+> 
+> I followed Russell's suggestion and added .align 5 to cache-v7.S (see
+> two attached diffs).
+> 
+> 1) v4.19 + OpenWrt mtd patches
+> > egrep -B 1 -A 1 "v7_dma_(inv|clean)_range" System.map
+> c010ea58 T v7_flush_kern_dcache_area
+> c010ea94 t v7_dma_inv_range
+> c010eae0 t v7_dma_clean_range
+> c010eb18 T b15_dma_flush_range
+> 
+> 2) v4.19 + OpenWrt mtd patches + two .align 5 in cache-v7.S
+> c010ea6c T v7_flush_kern_dcache_area
+> c010eac0 t v7_dma_inv_range
+> c010eb20 t v7_dma_clean_range
+> c010eb58 T b15_dma_flush_range
+> (actually 15 symbols above v7_dma_inv_range were replaced)
+> 
+> This method seems to be somehow working (at least affects addresses in
+> System.map).
+> 
+> *****
+> 
+> I run 2 tests for each combination of changes. Each test consisted of
+> 10 sequences of: 30 seconds iperf session + reboot.
+> 
+> 
+> > git reset --hard v4.19
+> > git am OpenWrt-mtd-chages.patch
+> Test #1: 738 Mb/s
+> Test #2: 737 Mb/s
+> 
+> > git reset --hard v4.19
+> > git am OpenWrt-mtd-chages.patch
+> patch -p1 < v7_dma_clean_range-align.diff
+> Test #1: 746 Mb/s
+> Test #2: 747 Mb/s
+> 
+> > git reset --hard v4.19
+> > git am OpenWrt-mtd-chages.patch
+> > patch -p1 < v7_dma_inv_range-align.diff
+> Test #1: 745 Mb/s
+> Test #2: 746 Mb/s
+> 
+> > git reset --hard v4.19
+> > git am OpenWrt-mtd-chages.patch
+> > patch -p1 < v7_dma_clean_range-align.diff
+> > patch -p1 < v7_dma_inv_range-align.diff
+> Test #1: 762 Mb/s
+> Test #2: 761 Mb/s
+> 
+> As you can see I got a quite nice performance improvement after aligning
+> both: v7_dma_clean_range() and v7_dma_inv_range().
 
---p4qYPpj5QlsIQJ0K
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is an improvement of about 3.3%.
 
-> On 05/22/2019 12:20 PM, Lorenzo Bianconi wrote:
-> >> On Tue, 2019-05-21 at 14:59 +0200, Lorenzo Bianconi wrote:
-> >>> Currently if we add a filter to the ingress qdisc (e.g matchall) the
-> >>> filter data are reported even in the egress path. The issue can be
-> >>> triggered with the following reproducer:
-> >=20
-> > [...]
-> >=20
-> >>> diff --git a/net/sched/sch_ingress.c b/net/sched/sch_ingress.c
-> >>> index 0bac926b46c7..1825347fed3a 100644
-> >>> --- a/net/sched/sch_ingress.c
-> >>> +++ b/net/sched/sch_ingress.c
-> >>> @@ -31,7 +31,7 @@ static struct Qdisc *ingress_leaf(struct Qdisc *sch=
-, unsigned long arg)
-> >>> =20
-> >>>  static unsigned long ingress_find(struct Qdisc *sch, u32 classid)
-> >>>  {
-> >>> -	return TC_H_MIN(classid) + 1;
-> >>> +	return TC_H_MIN(classid);
-> >>
-> >> probably this breaks a command that was wrong before, but it's worth
-> >> mentioning. Because of the above hunk, the following command
-> >>
-> >> # tc qdisc add dev test0 ingress
-> >> # tc filter add dev test0 parent ffff:fff1 matchall action drop
-> >> # tc filter add dev test0 parent ffff: matchall action continue
-> >>
-> >> gave no errors, and dropped packets on unpatched kernel. With this pat=
-ch,
-> >> the kernel refuses to add the 'matchall' rules (and because of that,
-> >> traffic passes).
-> >>
-> >> running TDC, it seems that a patched kernel does not pass anymore
-> >> some of the test cases belonging to the 'filter' category:
-> >>
-> >> # ./tdc.py -e 901f
-> >> Test 901f: Add fw filter with prio at 32-bit maxixum
-> >> exit: 2
-> >> exit: 0
-> >> RTNETLINK answers: Invalid argument
-> >> We have an error talking to the kernel, -1
-> >>
-> >> All test results:
-> >> 1..1
-> >> not ok 1 901f - Add fw filter with prio at 32-bit maxixum
-> >>         Command exited with 2, expected 0
-> >> RTNETLINK answers: Invalid argument
-> >> We have an error talking to the kernel, -1
-> >>
-> >> (the same test is passing on a unpatched kernel)
-> >>
-> >> Do you think it's worth fixing those test cases too?
-> >>
-> >> thanks a lot!
-> >> --=20
-> >> davide
-> >=20
-> > Hi Davide,
-> >=20
-> > thx to point this out. Applying this patch the ingress qdisc has the sa=
-me
-> > behaviour of clsact one.
-> >=20
-> > $tc qdisc add dev lo clsact
-> > $tc filter add dev lo parent ffff:fff1 matchall action drop
-> > Error: Specified class doesn't exist.
-> > We have an error talking to the kernel, -1
-> > $tc filter add dev lo parent ffff:fff2 matchall action drop
-> >=20
-> > $tc qdisc add dev lo ingress
-> > $tc filter add dev lo parent ffff:fff2 matchall action drop
-> >=20
-> > is it acceptable? If so I can fix the tests as well
-> > If not, is there another way to verify the filter is for the ingress pa=
-th if
-> > parent identifier is not constant? (ingress_find() reports the TC_H_MIN=
- of
-> > parent identifier)
->=20
-> As far as I know this would break sch_ingress users ... For sch_ingress
-> any minor should be accepted. For sch_clsact, only 0xFFF2U and 0xFFF3U
-> are accepted, so it can be extended in future if needed. For old sch_ingr=
-ess
-> that ship has sailed, which is why sch_clsact was needed in order to have
-> such selectors, see also 1f211a1b929c ("net, sched: add clsact qdisc").
-> Meaning, minors for sch_ingress are a superset of sch_clsact and not
-> compatible in that sense. If you adapt sch_ingress to the same behavior
-> as sch_clsact, things might break indeed as Davide pointed out.
+> It still wasn't as good as with 9316a9ed6895 cherry-picked but pretty
+> close.
+> 
+> 
+> > git reset --hard v4.19
+> > git am OpenWrt-mtd-chages.patch
+> > git cherry-pick -x 9316a9ed6895
+> Test #1: 770 Mb/s
+> Test #2: 766 Mb/s
+> 
+> > git reset --hard v4.19
+> > git am OpenWrt-mtd-chages.patch
+> > git cherry-pick -x 9316a9ed6895
+> > patch -p1 < v7_dma_clean_range-align.diff
+> Test #1: 756 Mb/s
+> Test #2: 759 Mb/s
+> 
+> > git reset --hard v4.19
+> > git am OpenWrt-mtd-chages.patch
+> > git cherry-pick -x 9316a9ed6895
+> > patch -p1 < v7_dma_inv_range-align.diff
+> Test #1: 758 Mb/s
+> Test #2: 759 Mb/s
+> 
+> > git reset --hard v4.19
+> > git am OpenWrt-mtd-chages.patch
+> > git cherry-pick -x 9316a9ed6895
+> > patch -p1 < v7_dma_clean_range-align.diff
+> > patch -p1 < v7_dma_inv_range-align.diff
+> Test #1: 767 Mb/s
+> Test #2: 763 Mb/s
+> 
+> Now you can see how unpredictable it is. If I cherry-pick 9316a9ed6895
+> and do an extra alignment of v7_dma_clean_range() and v7_dma_inv_range()
+> that extra alignment can actually *hurt* NAT performance.
 
-Hi Daniel,
+You have a maximum variance of 4Mb/s in your tests which is around
+0.5%, and this shows a reduction of 3Mb/s, or 0.4%.
 
-right, thx the clarification. So for the moment let's just drop this patch
-and I will investigate if it is possible to not dump ingress info on egress
-path in a different way.
+If we look at it a different way:
+- Without the alignment patches, there is a difference of 4% in
+  performance depending on whether 9316a9ed6895 is applied.
+- With the alignment patches, there is a difference of 0.4% in
+  performance depending on whether 9316a9ed6895 is applied.
 
-Regards,
-Lorenzo
+How can this not be beneficial?
 
->=20
-> > Regards,
-> > Lorenzo
-> >=20
-> >>
-> >>>  }
-> >>> =20
-> >>>  static unsigned long ingress_bind_filter(struct Qdisc *sch,
-> >>> @@ -53,7 +53,12 @@ static struct tcf_block *ingress_tcf_block(struct =
-Qdisc *sch, unsigned long cl,
-> >>>  {
-> >>>  	struct ingress_sched_data *q =3D qdisc_priv(sch);
-> >>> =20
-> >>> -	return q->block;
-> >>> +	switch (cl) {
-> >>> +	case TC_H_MIN(TC_H_MIN_INGRESS):
-> >>> +		return q->block;
-> >>> +	default:
-> >>> +		return NULL;
-> >>> +	}
-> >>>  }
-> >>> =20
-> >>>  static void clsact_chain_head_change(struct tcf_proto *tp_head, void=
- *priv)
-> >>
-> >>
->=20
+> 
+> My guess is that:
+> 1) 9316a9ed6895 provides alignment of some very important function(s)
+> 2) DMA alignments on top ^^ provide some gain but also break some align
+> 
+> *****
+> 
+> SUMMARY
+> 
+> It seems that for Linux 4.19 + my .config I can get a very lucky &
+> optimal alignment of functions by cherry-picking 9316a9ed6895.
+> 
+> I thought of checking functions reported by the "perf" tool with CPU
+> usage of 2%+.
+> 
+> All following functions keep their original address with 9316a9ed6895:
+> __irqentry_text_end
+> arch_cpu_idle
+> l2c210_clean_range
+> l2c210_inv_range
+> v7_dma_clean_range
+> v7_dma_inv_range
+> 
+> Remaining 3 functions got reallocated:
+> -c03e5038 t __netif_receive_skb_core
+> +c03e50b0 t __netif_receive_skb_core
+> -c03c8b1c t bcma_host_soc_read32
+> +c03c8b94 t bcma_host_soc_read32
+> -c0475620 T fib_table_lookup
+> +c0475698 T fib_table_lookup
+> 
+> I tried aligning all 3 above functions using:
+> __attribute__((aligned(32)))
+> and got 756 Mb/s. It's better but still not ~770 Mb/s.
+> 
+> Is there any easy way of identifying which of function alignments got
+> such a big impact on NAT performance? I'd like to get those functions
+> explicitly aligned using assembler/__attribute__/something.
+> 
+> What I'm also afraid are false positives. I may end up aligning some
+> unrelated function that just happens to align other ones. Just like
+> cherry-picking 9316a9ed6895 having side-effects and not really fixing
+> anything explicitly.
 
---p4qYPpj5QlsIQJ0K
-Content-Type: application/pgp-signature; name="signature.asc"
+> diff --git a/arch/arm/mm/cache-v7.S b/arch/arm/mm/cache-v7.S
+> index 215df435bfb9..c60046cd34aa 100644
+> --- a/arch/arm/mm/cache-v7.S
+> +++ b/arch/arm/mm/cache-v7.S
+> @@ -373,6 +373,8 @@ v7_dma_inv_range:
+>  	ret	lr
+>  ENDPROC(v7_dma_inv_range)
+>  
+> +	.align	5
+> +
+>  /*
+>   *	v7_dma_clean_range(start,end)
+>   *	- start   - virtual start address of region
 
------BEGIN PGP SIGNATURE-----
+> diff --git a/arch/arm/mm/cache-v7.S b/arch/arm/mm/cache-v7.S
+> index 215df435bfb9..0c3999f219ab 100644
+> --- a/arch/arm/mm/cache-v7.S
+> +++ b/arch/arm/mm/cache-v7.S
+> @@ -340,6 +340,8 @@ ENTRY(v7_flush_kern_dcache_area)
+>  	ret	lr
+>  ENDPROC(v7_flush_kern_dcache_area)
+>  
+> +	.align	5
+> +
+>  /*
+>   *	v7_dma_inv_range(start,end)
+>   *
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXOU81gAKCRA6cBh0uS2t
-rJlfAP9f/9gcMP6vVwcEcMjfJzShvCqrPnp4rerf/+uLCwbFFwEA+CF7Lzditraa
-42Z/fa945sp1m18Edc59mkhuq7wG9QE=
-=LPNK
------END PGP SIGNATURE-----
 
---p4qYPpj5QlsIQJ0K--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
