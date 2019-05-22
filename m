@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9252C26A74
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:05:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48CCC26A81
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 21:05:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729698AbfEVTFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 15:05:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35034 "EHLO mail.kernel.org"
+        id S1729749AbfEVTFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 15:05:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35044 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729483AbfEVTE6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729538AbfEVTE6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 22 May 2019 15:04:58 -0400
 Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ED2DF2177E;
-        Wed, 22 May 2019 19:04:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2F15F217D4;
+        Wed, 22 May 2019 19:04:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1558551898;
-        bh=21pTRCLDyund9EF+uumu/pPtLQ/N4CA4IZ0cMNz8Zdg=;
+        bh=NHYwx/lArxHWha4AoCpgHlXLpISiIEpclrFvtMtsAU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UF5r8n+UdbKfssRf+3xs5+jonpitBIbVpTlixxPSNX1o+GDpXCQAtk1RQNsxxADIB
-         +b1No/nbOjbyL+6DdKJPdx59rUsQOVamZ+CxLQLJE+Z2iC3WTqVOrhgWur+DdB/fND
-         HWNjCDG27gTdCKiZ4bQOn43YSBqDBg8ZEMFSiMOY=
+        b=z1FKl7WvxS2vO46xLVeSmwDinRuTMHVCXIZqLjKuQmpMVrmws7HuwnpSePtOfwtt9
+         lo1OOoX1+WuJFo3WVQ8V0iPEK66x371eXdrq5eTRHZi0LXvhWTeKdi9KM+XmXF7wG4
+         Dxi0HCVWQ/HjcgaBa3CvVLibokCyvWcwFADX+peE=
 From:   David Ahern <dsahern@kernel.org>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     idosch@mellanox.com, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v2 net-next 4/8] ipv4: Add function to send route updates
-Date:   Wed, 22 May 2019 12:04:42 -0700
-Message-Id: <20190522190446.15486-5-dsahern@kernel.org>
+Subject: [PATCH v2 net-next 5/8] ipv4: export fib_check_nh
+Date:   Wed, 22 May 2019 12:04:43 -0700
+Message-Id: <20190522190446.15486-6-dsahern@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190522190446.15486-1-dsahern@kernel.org>
 References: <20190522190446.15486-1-dsahern@kernel.org>
@@ -39,130 +39,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add fib_info_notify_update to walk the fib and send RTM_NEWROUTE
-notifications with NLM_F_REPLACE set for entries linked to a fib_info
-that have nh_updated flag set. This helper will be used by the nexthop
-code to notify userspace of routes that are impacted when a nexthop
-config is updated via replace. The new function and its helper are
-similar to how fib_flush and fib_table_flush work for address delete
-and link down events.
-
-This notification is needed for legacy apps that do not understand
-the new nexthop object. Apps that are nexthop aware can use the
-RTA_NH_ID attribute in the route notification to just ignore it.
-
-In the future this should be wrapped in a sysctl to allow OS'es that
-are fully updated to avoid the notificaton storm.
+Change fib_check_nh to take net, table and scope as input arguments
+over struct fib_config and export for use by nexthop code.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- include/net/ip_fib.h |  2 ++
- net/ipv4/fib_trie.c  | 72 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 74 insertions(+)
+ include/net/ip_fib.h     |  2 ++
+ net/ipv4/fib_semantics.c | 12 ++++++------
+ 2 files changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index d0e28f4ab099..ec6496c08f48 100644
+index ec6496c08f48..27d7c89ca9c4 100644
 --- a/include/net/ip_fib.h
 +++ b/include/net/ip_fib.h
-@@ -150,6 +150,7 @@ struct fib_info {
- #define fib_advmss fib_metrics->metrics[RTAX_ADVMSS-1]
- 	int			fib_nhs;
- 	bool			fib_nh_is_v6;
-+	bool			nh_updated;
- 	struct rcu_head		rcu;
- 	struct fib_nh		fib_nh[0];
- #define fib_dev		fib_nh[0].fib_nh_dev
-@@ -231,6 +232,7 @@ int call_fib4_notifiers(struct net *net, enum fib_event_type event_type,
- int __net_init fib4_notifier_init(struct net *net);
- void __net_exit fib4_notifier_exit(struct net *net);
- 
-+void fib_info_notify_update(struct net *net, struct nl_info *info);
- void fib_notify(struct net *net, struct notifier_block *nb);
- 
- struct fib_table {
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index 334f723bdf80..ea7df7ebf597 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -1943,6 +1943,78 @@ int fib_table_flush(struct net *net, struct fib_table *tb, bool flush_all)
- 	return found;
+@@ -436,6 +436,8 @@ void fib_sync_mtu(struct net_device *dev, u32 orig_mtu);
+ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
+ 		       const struct sk_buff *skb, struct flow_keys *flkeys);
+ #endif
++int fib_check_nh(struct net *net, struct fib_nh *nh, u32 table, u8 scope,
++		 struct netlink_ext_ack *extack);
+ void fib_select_multipath(struct fib_result *res, int hash);
+ void fib_select_path(struct net *net, struct fib_result *res,
+ 		     struct flowi4 *fl4, const struct sk_buff *skb);
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index d3da6a10f86f..4541121426fb 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -1092,15 +1092,13 @@ static int fib_check_nh_nongw(struct net *net, struct fib_nh *nh,
+ 	return err;
  }
  
-+/* derived from fib_trie_free */
-+static void __fib_info_notify_update(struct net *net, struct fib_table *tb,
-+				     struct nl_info *info)
-+{
-+	struct trie *t = (struct trie *)tb->tb_data;
-+	struct key_vector *pn = t->kv;
-+	unsigned long cindex = 1;
-+	struct fib_alias *fa;
-+
-+	for (;;) {
-+		struct key_vector *n;
-+
-+		if (!(cindex--)) {
-+			t_key pkey = pn->key;
-+
-+			if (IS_TRIE(pn))
-+				break;
-+
-+			n = pn;
-+			pn = node_parent(pn);
-+			cindex = get_index(pkey, pn);
-+			continue;
-+		}
-+
-+		/* grab the next available node */
-+		n = get_child(pn, cindex);
-+		if (!n)
-+			continue;
-+
-+		if (IS_TNODE(n)) {
-+			/* record pn and cindex for leaf walking */
-+			pn = n;
-+			cindex = 1ul << n->bits;
-+
-+			continue;
-+		}
-+
-+		hlist_for_each_entry(fa, &n->leaf, fa_list) {
-+			struct fib_info *fi = fa->fa_info;
-+
-+			if (!fi || !fi->nh_updated || fa->tb_id != tb->tb_id)
-+				continue;
-+
-+			rtmsg_fib(RTM_NEWROUTE, htonl(n->key), fa,
-+				  KEYLENGTH - fa->fa_slen, tb->tb_id,
-+				  info, NLM_F_REPLACE);
-+
-+			/* call_fib_entry_notifiers will be removed when
-+			 * in-kernel notifier is implemented and supported
-+			 * for nexthop objects
-+			 */
-+			call_fib_entry_notifiers(net, FIB_EVENT_ENTRY_REPLACE,
-+						 n->key,
-+						 KEYLENGTH - fa->fa_slen, fa,
-+						 NULL);
-+		}
-+	}
-+}
-+
-+void fib_info_notify_update(struct net *net, struct nl_info *info)
-+{
-+	unsigned int h;
-+
-+	for (h = 0; h < FIB_TABLE_HASHSZ; h++) {
-+		struct hlist_head *head = &net->ipv4.fib_table_hash[h];
-+		struct fib_table *tb;
-+
-+		hlist_for_each_entry_rcu(tb, head, tb_hlist)
-+			__fib_info_notify_update(net, tb, info);
-+	}
-+}
-+
- static void fib_leaf_notify(struct net *net, struct key_vector *l,
- 			    struct fib_table *tb, struct notifier_block *nb)
+-static int fib_check_nh(struct fib_config *cfg, struct fib_nh *nh,
+-			struct netlink_ext_ack *extack)
++int fib_check_nh(struct net *net, struct fib_nh *nh, u32 table, u8 scope,
++		 struct netlink_ext_ack *extack)
  {
+-	struct net *net = cfg->fc_nlinfo.nl_net;
+-	u32 table = cfg->fc_table;
+ 	int err;
+ 
+ 	if (nh->fib_nh_gw_family == AF_INET)
+-		err = fib_check_nh_v4_gw(net, nh, table, cfg->fc_scope, extack);
++		err = fib_check_nh_v4_gw(net, nh, table, scope, extack);
+ 	else if (nh->fib_nh_gw_family == AF_INET6)
+ 		err = fib_check_nh_v6_gw(net, nh, table, extack);
+ 	else
+@@ -1377,7 +1375,9 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
+ 		int linkdown = 0;
+ 
+ 		change_nexthops(fi) {
+-			err = fib_check_nh(cfg, nexthop_nh, extack);
++			err = fib_check_nh(cfg->fc_nlinfo.nl_net, nexthop_nh,
++					   cfg->fc_table, cfg->fc_scope,
++					   extack);
+ 			if (err != 0)
+ 				goto failure;
+ 			if (nexthop_nh->fib_nh_flags & RTNH_F_LINKDOWN)
 -- 
 2.11.0
 
