@@ -2,173 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFCAB268DD
-	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 19:10:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF620268E2
+	for <lists+netdev@lfdr.de>; Wed, 22 May 2019 19:11:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729852AbfEVRKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 13:10:45 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:33514 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729155AbfEVRKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 13:10:45 -0400
-Received: by mail-qk1-f196.google.com with SMTP id p18so1985076qkk.0
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 10:10:44 -0700 (PDT)
+        id S1730315AbfEVRLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 13:11:23 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:44439 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730280AbfEVRLX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 13:11:23 -0400
+Received: by mail-pf1-f194.google.com with SMTP id g9so1644986pfo.11
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 10:11:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=g4EyfT6p5FwfZYyG+l5P03rDlwoWAmrsZLFPciaeXRM=;
-        b=W/KLuJZP0NRPc5fGkoEtpXBXGKQxRin1N6vGt/I4Uo0L9X3MosUo9RSM+/nPQdr0XP
-         a+2sYthD8ZhxU3FL/Dh0itkBt5CigdV+H+f1SRUyfeH9p8GgEySLFkVOgM5D1NRuvtAZ
-         n5HuznPgT8FYifzlt5LDriom1pQeeqNztiSO5s57CSMxYJAWeclSYfw1VvzNicaYGTVr
-         gwRD3AWbB1zCEABTw2xnjNReabz7RO4KOXkGHOZFhGfRGjUIG31hKuuglUQ3z9kpthS5
-         /h45xdg6DwBipg+9C+43WoCdQt9//cwyMEfBlUC3/C9QrfIckSkcqhUwLKqDAfOQ7qfe
-         jEVQ==
+        bh=mVlTJpxzfZ0C9GbqnMOqEkJrjw8EzvZweQIzEARpbMQ=;
+        b=NkF6qPFH4H7psNNREA0ntZoKV9aZE5uYr0VY7W0qomqfGceotUEXPo/7fobRqw95VR
+         xQkvckDM0qTYAJMSmK7+SHUZ+U3ta3DxxQONB7H3gJb4NUmRW6wKYwP0gJgnDzPtE/AB
+         gRhVSLayfabI1haulCRHGVadWJiJFNixF6imCUojEWsxZa4TGvXnkuMNxq1Q5kKFbcW3
+         cj7dMpReEsXNKRTKJRd+NZUBES+Y552GbG82WB65nLiqX2FpgXEjDTdPwv1OFxkMwGgM
+         RLe8+ygK3iOXBVMnvb/4cpkiOXfg1RlZ5KHANb0iOB+oTemRl6rstRcvAEmLfZFwCeDY
+         ruMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=g4EyfT6p5FwfZYyG+l5P03rDlwoWAmrsZLFPciaeXRM=;
-        b=pgHFzkiUoM1A0f6ESBbusneIjNqwoVp1JUJQE2Hvx42A5cNFU16S+wkGdE9gjlGEnQ
-         OOvARLe9t7TjRJb+p8QgNE0qvsvtH0nZcDG00EMsdN8RNHl5OiZPQM4IGIAPue6QnfRW
-         hbB8VWCWhVYZzBIeGb0tosDSN5wUzzFXasSbsve7n9DYDS8qrBFWdqm/RYqNuD1WsKfL
-         RSb5x+JDXs/6PlUQu5G1/4Hpr0lYDQm+wB0S0xTztFqdz/zPYfBLjgyAkkhPNsIYLVMW
-         GKrAfBfXnPeNpLJFTw0KXtuAqN2yw9Bzq2JTbcFLakJRh518J3gkq6y0B1k6vhd2Bscl
-         jZ5w==
-X-Gm-Message-State: APjAAAUoMU5PuD8O2PcNAfSC4YR2GoCvirHVLZpw5y2frbeSd4y/VR39
-        +CdoBSHuMPS6vnE2oSCUJsx22w==
-X-Google-Smtp-Source: APXvYqytVKZZ4ui0xZ1VusHhA/020Xjj6SKTQ3TKIyS2BAkiv/Y4ZZgqGSp/TfCmOmdL5og0Sykvag==
-X-Received: by 2002:a05:620a:146d:: with SMTP id j13mr3848060qkl.222.1558545043992;
-        Wed, 22 May 2019 10:10:43 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-49-251.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.49.251])
-        by smtp.gmail.com with ESMTPSA id l40sm15886693qtc.32.2019.05.22.10.10.43
+        bh=mVlTJpxzfZ0C9GbqnMOqEkJrjw8EzvZweQIzEARpbMQ=;
+        b=sg40Hp3HQrQU69Nf9kgD+X3YypXn9JW0W9p4SgOTxp0/7jgbU/XinbF2eZK1bmRnoJ
+         /nhrSQ7UPM0709wowmn+k00aAwyS6Mmz94KrwBsrshijVt+mvU46jM75ghhRGnnVapgD
+         npppThE6YN9GeZRRYwf61/ZnPHUALKtexzVSIXdnlCLmIfQFmnKqWj2mt91TN9Mz+EkA
+         LL+yPuP8myF4XjAEXhuqUS4MCryM3yQs9SXw6k818XgkHB4nmm/eJByPTFr6xZ1Fuce7
+         K9ZLcHFOiDxArtqywBwkQoS3K2thUhkyGJLzXWhVNzcOV6XvvjeWfDUOIIHKSZij7txW
+         ajXg==
+X-Gm-Message-State: APjAAAWCisqsL3/EC8xfBdjTRiSW4Qwhh3/G3peRtvQZmPcitRMqqheQ
+        tkiexqJfInzsTngU4wn85Suyvg==
+X-Google-Smtp-Source: APXvYqw9lKJzwtEdT5SRa0PjEq7lhKRSLRqmoYO3PBjGV+iwPFFPoDHeTx7AwwYRX2jZVtX9JSGfkg==
+X-Received: by 2002:a65:6116:: with SMTP id z22mr91869626pgu.50.1558545082403;
+        Wed, 22 May 2019 10:11:22 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id d13sm22870441pfh.113.2019.05.22.10.11.21
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 22 May 2019 10:10:43 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1hTUlH-0003wv-0E; Wed, 22 May 2019 14:10:43 -0300
-Date:   Wed, 22 May 2019 14:10:42 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Majd Dibbiny <majd@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v2 13/17] RDMA/core: Get sum value of all
- counters when perform a sysfs stat read
-Message-ID: <20190522171042.GA15023@ziepe.ca>
-References: <20190429083453.16654-1-leon@kernel.org>
- <20190429083453.16654-14-leon@kernel.org>
+        Wed, 22 May 2019 10:11:21 -0700 (PDT)
+Date:   Wed, 22 May 2019 10:11:21 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Yonghong Song <yhs@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH bpf-next v2 0/3] bpf: implement bpf_send_signal() helper
+Message-ID: <20190522171121.GL10244@mini-arch>
+References: <20190522053900.1663459-1-yhs@fb.com>
+ <20190522163854.GJ10244@mini-arch>
+ <01865520-1963-9acd-b404-8eac03905baf@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190429083453.16654-14-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <01865520-1963-9acd-b404-8eac03905baf@fb.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 11:34:49AM +0300, Leon Romanovsky wrote:
-> From: Mark Zhang <markz@mellanox.com>
+On 05/22, Alexei Starovoitov wrote:
+> On 5/22/19 9:38 AM, Stanislav Fomichev wrote:
+> > On 05/21, Yonghong Song wrote:
+> >> This patch tries to solve the following specific use case.
+> >>
+> >> Currently, bpf program can already collect stack traces
+> >> through kernel function get_perf_callchain()
+> >> when certain events happens (e.g., cache miss counter or
+> >> cpu clock counter overflows). But such stack traces are
+> >> not enough for jitted programs, e.g., hhvm (jited php).
+> >> To get real stack trace, jit engine internal data structures
+> >> need to be traversed in order to get the real user functions.
+> >>
+> >> bpf program itself may not be the best place to traverse
+> >> the jit engine as the traversing logic could be complex and
+> >> it is not a stable interface either.
+> >>
+> >> Instead, hhvm implements a signal handler,
+> >> e.g. for SIGALARM, and a set of program locations which
+> >> it can dump stack traces. When it receives a signal, it will
+> >> dump the stack in next such program location.
+> >>
+> > 
+> > [..]
+> >> This patch implements bpf_send_signal() helper to send
+> >> a signal to hhvm in real time, resulting in intended stack traces.
+> > Series looks good. One minor nit/question: maybe rename bpf_send_signal
+> > to something like bpf_send_signal_to_current/bpf_current_send_signal/etc?
+> > bpf_send_signal is too generic now that you send the signal
+> > to the current process..
 > 
-> Since a QP can only be bound to one counter, then if it is bound to a
-> separate counter, for backward compatibility purpose, the statistic
-> value must be:
-> * stat of default counter
-> + stat of all running allocated counters
-> + stat of all deallocated counters (history stats)
-> 
-> Signed-off-by: Mark Zhang <markz@mellanox.com>
-> Reviewed-by: Majd Dibbiny <majd@mellanox.com>
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
->  drivers/infiniband/core/counters.c | 99 +++++++++++++++++++++++++++++-
->  drivers/infiniband/core/device.c   |  8 ++-
->  drivers/infiniband/core/sysfs.c    | 10 ++-
->  include/rdma/rdma_counter.h        |  5 +-
->  4 files changed, 113 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
-> index 36cd9eca1e46..f598b1cdb241 100644
-> +++ b/drivers/infiniband/core/counters.c
-> @@ -146,6 +146,20 @@ static int __rdma_counter_bind_qp(struct rdma_counter *counter,
->  	return ret;
->  }
->  
-> +static void counter_history_stat_update(const struct rdma_counter *counter)
-> +{
-> +	struct ib_device *dev = counter->device;
-> +	struct rdma_port_counter *port_counter;
-> +	int i;
-> +
-> +	port_counter = &dev->port_data[counter->port].port_counter;
-> +	if (!port_counter->hstats)
-> +		return;
-> +
-> +	for (i = 0; i < counter->stats->num_counters; i++)
-> +		port_counter->hstats->value[i] += counter->stats->value[i];
-> +}
-> +
->  static int __rdma_counter_unbind_qp(struct ib_qp *qp, bool force)
->  {
->  	struct rdma_counter *counter = qp->counter;
-> @@ -285,8 +299,10 @@ int rdma_counter_unbind_qp(struct ib_qp *qp, bool force)
->  		return ret;
->  
->  	rdma_restrack_put(&counter->res);
-> -	if (atomic_dec_and_test(&counter->usecnt))
-> +	if (atomic_dec_and_test(&counter->usecnt)) {
-> +		counter_history_stat_update(counter);
->  		rdma_counter_dealloc(counter);
-> +	}
->  
->  	return 0;
->  }
-> @@ -307,21 +323,98 @@ int rdma_counter_query_stats(struct rdma_counter *counter)
->  	return ret;
->  }
->  
-> -void rdma_counter_init(struct ib_device *dev)
-> +static u64 get_running_counters_hwstat_sum(struct ib_device *dev,
-> +					   u8 port, u32 index)
-> +{
-> +	struct rdma_restrack_entry *res;
-> +	struct rdma_restrack_root *rt;
-> +	struct rdma_counter *counter;
-> +	unsigned long id = 0;
-> +	u64 sum = 0;
-> +
-> +	rt = &dev->res[RDMA_RESTRACK_COUNTER];
-> +	xa_lock(&rt->xa);
-> +	xa_for_each(&rt->xa, id, res) {
-> +		if (!rdma_restrack_get(res))
-> +			continue;
+> bpf_send_signal_to_current was Yonghong's original name
+> and I asked him to rename it to bpf_send_signal :)
+> I don't see bpf sending signals to arbitrary processes
+> in the near future.
+:) I was thinking that it might be a bit more clear if we communicate
+target process in the name, but I don't feel strongly about it.
 
-Why do we need to get refcounts if we are holding the xa_lock?
-
-> +
-> +		counter = container_of(res, struct rdma_counter, res);
-> +		if ((counter->device != dev) || (counter->port != port))
-> +			goto next;
-> +
-> +		if (rdma_counter_query_stats(counter))
-> +			goto next;
-
-And rdma_counter_query_stats does
-
-+	mutex_lock(&counter->lock);
-
-So this was never tested as it will insta-crash with lockdep.
-
-Presumably this is why it is using xa_for_each and restrack_get - but
-it needs to drop the lock after successful get.
-
-This sort of comment applies to nearly evey place in this series that
-uses xa_for_each. 
-
-This needs to be tested with lockdep.
-
-Jason
+So it's not about the future. OTOH, who knows, I remember when people
+said there would not be any locking/loops in bpf. And here we are :)
