@@ -2,124 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A3F028D40
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D94E228D45
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:36:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388320AbfEWWfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 18:35:21 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:48508 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387546AbfEWWfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 18:35:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ew8xy4i//m1i2IQG+g3sgcqn6gyWD36gj6XvX/yCd/U=; b=CjS664REjuaWcSZ/ZsJILYIEV
-        Fw9p17vCoS+4hPxhvgMaMg1Hb1bUFK/gv2fV/8nCVxW0vqjwUy2lg0RWVDQeXM7aT830S4IurQrO0
-        zIo2NOTnl7lRbB+SOHj6Kf7VTILGWfJuMd5bbPo6htsAz5wv4K3rGa/jzIYdoD17xpw4wHe8GP1V4
-        UBfWdQxfDliw/Fo8UIRdq+DixxdY5/Rn/kIiBi5YvOjuie7ooVJmI3CWUHts2SwBYuQwd5I085sfg
-        Re0/JDKNcVQIOq54EyapKuv/iGJUJvhHTRmuHwo7jg68SWqRT8NRqxAH67tP5/vftYlnki+5ON17W
-        ZaNbMA2+A==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:55968)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hTwIs-0008VG-OS; Thu, 23 May 2019 23:35:14 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hTwIp-0007vm-B8; Thu, 23 May 2019 23:35:11 +0100
-Date:   Thu, 23 May 2019 23:35:11 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next 5/9] net: phylink: Add phylink_create_raw
-Message-ID: <20190523223511.hjk5m3mxadkra26z@shell.armlinux.org.uk>
-References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
- <20190523011958.14944-6-ioana.ciornei@nxp.com>
- <20190523215522.gnz6l342zhzpi2ld@shell.armlinux.org.uk>
- <CA+h21hpU7-kcsX9Z4DA116qcMz2DjE3G2Fwj03=JDRyE7sAcwQ@mail.gmail.com>
+        id S2388496AbfEWWgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 18:36:07 -0400
+Received: from gateway24.websitewelcome.com ([192.185.50.93]:42931 "EHLO
+        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387546AbfEWWgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 18:36:06 -0400
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 55D3D723D
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 17:36:04 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id TwJghmMWliQerTwJghNu8Y; Thu, 23 May 2019 17:36:04 -0500
+X-Authority-Reason: nr=8
+Received: from [189.250.47.159] (port=37812 helo=[192.168.1.76])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.91)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hTwJf-001NXA-BB; Thu, 23 May 2019 17:36:03 -0500
+Subject: Re: [PATCH net-next] xprtrdma: Use struct_size() in kzalloc()
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Chuck Lever <chuck.lever@oracle.com>
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Bruce Fields <bfields@fieldses.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190131004622.GA30261@embeddedor>
+ <07CB966E-A946-4956-8480-C0FC13E13E4E@oracle.com>
+ <ad9eccc7-afd2-3419-b886-6210eeabd5b5@embeddedor.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ VtSixD1uOgytAP7RWS474w==
+Message-ID: <70ca0dea-6f1f-922c-7c5d-e79c6cf6ecb5@embeddedor.com>
+Date:   Thu, 23 May 2019 17:36:00 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpU7-kcsX9Z4DA116qcMz2DjE3G2Fwj03=JDRyE7sAcwQ@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <ad9eccc7-afd2-3419-b886-6210eeabd5b5@embeddedor.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.47.159
+X-Source-L: No
+X-Exim-ID: 1hTwJf-001NXA-BB
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.1.76]) [189.250.47.159]:37812
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 16
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 01:04:01AM +0300, Vladimir Oltean wrote:
-> On Fri, 24 May 2019 at 00:55, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> >
-> > On Thu, May 23, 2019 at 01:20:40AM +0000, Ioana Ciornei wrote:
-> > > +     if (pl->ops) {
-> > > +             pl->ops->mac_link_up(ndev, pl->link_an_mode,
-> > >                            pl->phy_state.interface,
-> > >                            pl->phydev);
-> > >
-> > > +             netif_carrier_on(ndev);
-> > >
-> > > +             netdev_info(ndev,
-> > > +                         "Link is Up - %s/%s - flow control %s\n",
-> > > +                         phy_speed_to_str(link_state.speed),
-> > > +                         phy_duplex_to_str(link_state.duplex),
-> > > +                         phylink_pause_to_str(link_state.pause));
-> > > +     } else {
-> > > +             blocking_notifier_call_chain(&pl->notifier_chain,
-> > > +                                          PHYLINK_MAC_LINK_UP, &info);
-> > > +             phydev_info(pl->phydev,
-> > > +                         "Link is Up - %s/%s - flow control %s\n",
-> > > +                         phy_speed_to_str(link_state.speed),
-> > > +                         phy_duplex_to_str(link_state.duplex),
-> > > +                         phylink_pause_to_str(link_state.pause));
-> > > +     }
-> >
-> > So if we don't have pl->ops, what happens when we call phydev_info()
-> > with a NULL phydev, which is a very real possibility: one of phylink's
-> > whole points is to support dynamic presence of a PHY.
-> >
-> > What will happen in that case is this will oops, due to dereferencing
-> > an offset NULL pointer via:
-> >
-> > #define phydev_info(_phydev, format, args...)   \
-> >         dev_info(&_phydev->mdio.dev, format, ##args)
-> >
-> > You can't just decide that if there's no netdev, we will be guaranteed
-> > a phy.
-> >
-> > --
-> > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> > FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> > According to speedtest.net: 11.9Mbps down 500kbps up
+Hi Dave,
+
+I wonder if you can take this patch.
+
+Thanks
+--
+Gustavo
+
+On 3/28/19 3:41 PM, Gustavo A. R. Silva wrote:
+> Hi all,
 > 
-> True, however it does not crash:
+> Friendly ping:
 > 
-> [    2.539949] (NULL device *): Link is Up - 1Gbps/Full - flow control off
+> Who can take this?
 > 
-> I agree that a better printing system has to be established though.
-
-The only reason that happens is because struct mdio_device is at the
-start of struct phy_device, and struct device is at the start of
-struct mdio_device.
-
-Should either of these move, that breaks and we get an oops.  Sorry,
-that's way too fragile.
-
-Plus, of course, do we think that printing "(NULL device *):" is
-really acceptable?  We completely lose any information about _what_
-link came up or went down.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+> Thanks
+> --
+> Gustavo
+> 
+> On 1/31/19 8:11 AM, Chuck Lever wrote:
+>>
+>>
+>>> On Jan 30, 2019, at 7:46 PM, Gustavo A. R. Silva <gustavo@embeddedor.com> wrote:
+>>>
+>>> One of the more common cases of allocation size calculations is finding
+>>> the size of a structure that has a zero-sized array at the end, along
+>>> with memory for some number of elements for that array. For example:
+>>>
+>>> struct foo {
+>>>    int stuff;
+>>>    struct boo entry[];
+>>> };
+>>>
+>>> instance = kzalloc(sizeof(struct foo) + count * sizeof(struct boo), GFP_KERNEL);
+>>>
+>>> Instead of leaving these open-coded and prone to type mistakes, we can
+>>> now use the new struct_size() helper:
+>>>
+>>> instance = kzalloc(struct_size(instance, entry, count), GFP_KERNEL);
+>>>
+>>> This code was detected with the help of Coccinelle.
+>>>
+>>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+>>
+>> Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
+>>
+>>
+>>> ---
+>>> net/sunrpc/xprtrdma/verbs.c | 3 +--
+>>> 1 file changed, 1 insertion(+), 2 deletions(-)
+>>>
+>>> diff --git a/net/sunrpc/xprtrdma/verbs.c b/net/sunrpc/xprtrdma/verbs.c
+>>> index 4994e75945b8..9e8cf7456840 100644
+>>> --- a/net/sunrpc/xprtrdma/verbs.c
+>>> +++ b/net/sunrpc/xprtrdma/verbs.c
+>>> @@ -811,8 +811,7 @@ static struct rpcrdma_sendctx *rpcrdma_sendctx_create(struct rpcrdma_ia *ia)
+>>> {
+>>> 	struct rpcrdma_sendctx *sc;
+>>>
+>>> -	sc = kzalloc(sizeof(*sc) +
+>>> -		     ia->ri_max_send_sges * sizeof(struct ib_sge),
+>>> +	sc = kzalloc(struct_size(sc, sc_sges, ia->ri_max_send_sges),
+>>> 		     GFP_KERNEL);
+>>> 	if (!sc)
+>>> 		return NULL;
+>>> -- 
+>>> 2.20.1
+>>>
+>>
+>> --
+>> Chuck Lever
+>>
+>>
+>>
