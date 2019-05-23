@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3F4527C61
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 14:03:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F418727C5F
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 14:02:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730703AbfEWMCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 08:02:41 -0400
-Received: from first.geanix.com ([116.203.34.67]:60966 "EHLO first.geanix.com"
+        id S1730732AbfEWMCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 08:02:44 -0400
+Received: from first.geanix.com ([116.203.34.67]:60988 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730602AbfEWMCk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 08:02:40 -0400
+        id S1730718AbfEWMCn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 08:02:43 -0400
 Received: from localhost (unknown [193.163.1.7])
-        by first.geanix.com (Postfix) with ESMTPSA id 0AC531175;
-        Thu, 23 May 2019 12:01:47 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id 9CC971173;
+        Thu, 23 May 2019 12:01:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1558612908; bh=LfwnnfieQzBuyg6h9W7Y1rNS6lVNSdfd8KNtUtWZaJ8=;
+        t=1558612910; bh=4qHd8Py9Up+qZTBH6TcBDfKSmHpp4v/tKKzuTrnyayg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=kJ9FPLj5cx2w28szRXrBMPa80YBVClPnPnf8PgMldxwNQNVQjcQVsb9GXwrNpHk8N
-         tJw+foiDGU3AlHxlwy1KxgylPLUXJ8l0/4v7k97mTXKebpU6xDh/tqDNzdbCpthRYC
-         lVoruh+96ZhSW95HeTTMGmNngDsvtq/IfG93U7ZyOzze5deytBIZ2xSUsxE+36Y9hD
-         0joBBVPV4ZE+gs8wNK4t2ySBpADW9+OAeZtB6SDZg1HKniPNL6FtMqKOlMSxUSEMsJ
-         mETqg/v7SetcrogeS3zMkJOkKZKLGfwYAiCP/uPwj35XXH4APyC7zG6CIG1mm7UuHp
-         7kmjkQI1dM+KQ==
+        b=SaXnObYzu6eGVxxRWGAjvw1VwK9pIMe87nh05+w8EmbgK4z8skYuqic6khjFx7h2K
+         S2I+nK61H8PBRBu3wtK77mwo0HQtFYPIb+OhEdxiAx5MUwgJb5E5vBiAVhqw8xpOiS
+         5ch5kIVOWPYK7rcVGM+Oi4X65oF4/yeIflIHqO7odryCv6EbyzgFqvfvQCV2kGpr3G
+         /4FSMI1xy/4hcU/g4Jk7wYa90wMTET7u43QigNbT+x0YAzTWpcZopZByjkvqJyKden
+         F4Ljg6HFOv1SneD7IpypXmtX0hTdcYXgmOpoKufFew/csKDormdgkpGXNF/3d8fty5
+         8JXjBxqHi9KWQ==
 From:   Esben Haabendal <esben@geanix.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Michal Simek <michal.simek@xilinx.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>,
         YueHaibing <yuehaibing@huawei.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>,
         Yang Wei <yang.wei9@zte.com.cn>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] net: ll_temac: Cleanup multicast filter on change
-Date:   Thu, 23 May 2019 14:02:21 +0200
-Message-Id: <20190523120222.3807-4-esben@geanix.com>
+Subject: [PATCH 4/4] net: ll_temac: Enable multicast support
+Date:   Thu, 23 May 2019 14:02:22 +0200
+Message-Id: <20190523120222.3807-5-esben@geanix.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190523120222.3807-1-esben@geanix.com>
 References: <20190523120222.3807-1-esben@geanix.com>
@@ -50,35 +50,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid leaving old address table entries when using multicast.  If more than
-one multicast address were removed, only the first removed address would
-actually be cleared.
+Multicast support have been tested and is working now.
 
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/net/ethernet/xilinx/ll_temac_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 9d43be3..75da604 100644
+index 75da604..5d8894d 100644
 --- a/drivers/net/ethernet/xilinx/ll_temac_main.c
 +++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -484,10 +484,13 @@ static void temac_set_multicast_list(struct net_device *ndev)
- 						    multi_addr_lsw);
- 			i++;
- 		}
--	} else {
-+	}
-+
-+	/* Clear all or remaining/unused address table entries */
-+	while (i < MULTICAST_CAM_TABLE_NUM) {
- 		temac_indirect_out32_locked(lp, XTE_MAW0_OFFSET, 0);
- 		temac_indirect_out32_locked(lp, XTE_MAW1_OFFSET, i << 16);
--		}
-+		i++;
- 	}
+@@ -21,7 +21,6 @@
+  *
+  * TODO:
+  * - Factor out locallink DMA code into separate driver
+- * - Fix multicast assignment.
+  * - Fix support for hardware checksumming.
+  * - Testing.  Lots and lots of testing.
+  *
+@@ -1096,6 +1095,7 @@ static const struct net_device_ops temac_netdev_ops = {
+ 	.ndo_open = temac_open,
+ 	.ndo_stop = temac_stop,
+ 	.ndo_start_xmit = temac_start_xmit,
++	.ndo_set_rx_mode = temac_set_multicast_list,
+ 	.ndo_set_mac_address = temac_set_mac_address,
+ 	.ndo_validate_addr = eth_validate_addr,
+ 	.ndo_do_ioctl = temac_ioctl,
+@@ -1161,7 +1161,6 @@ static int temac_probe(struct platform_device *pdev)
  
- 	/* Enable address filter block if currently disabled */
+ 	platform_set_drvdata(pdev, ndev);
+ 	SET_NETDEV_DEV(ndev, &pdev->dev);
+-	ndev->flags &= ~IFF_MULTICAST;  /* clear multicast */
+ 	ndev->features = NETIF_F_SG;
+ 	ndev->netdev_ops = &temac_netdev_ops;
+ 	ndev->ethtool_ops = &temac_ethtool_ops;
 -- 
 2.4.11
 
