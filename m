@@ -2,141 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF622745C
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 04:29:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50E2D27467
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 04:33:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728761AbfEWC3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 22:29:12 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:35717 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728022AbfEWC3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 22:29:12 -0400
-Received: by mail-pf1-f196.google.com with SMTP id d126so151022pfd.2
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 19:29:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Cly1plf9xhA+ZTMnASKax1m0Hs+ws3b5nd6+ZNFQ+2o=;
-        b=diGa3O20WjrlWBODsD6y0uzmqawHfxr68TfzNMSMzZs2/7Iv7V0WuVloniEDyvDU2D
-         M8Z/Peh5zVjaZ9rWC/okpAzQ53HMyfeAkWqzDga2Ibs4Shz+2mpRUXXuvL4v2MCpEogz
-         MHnwQ38qBqpEp//JNUpZGNMO/Mw2BWt4ElAdpx8Dk5TEln6ltiUwPIMyNhGMLSpVVySz
-         /P42q1QncbhlEvXNMkFWHGU8Vx3qpOccMczguWvMXYnZrcCplUcVzpkg+GPrd/6V5bHy
-         PDpKOGlmf0u60EArOsO8jzrpRl4Rv2vIxjOB1XyuvKW+AFuvg+A3PhwXT5TGlNe9j5Ti
-         uoww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Cly1plf9xhA+ZTMnASKax1m0Hs+ws3b5nd6+ZNFQ+2o=;
-        b=Ql29ey1MwPjjcZqCEtX72IKLnpAAZH6Q72XcH/OAU6b/6IzgvHk/nfshOR8hlDceq/
-         UdMqZUZs3uCSblnUP4nsnK1kGDJVWrnDmAtXOJFsPp48O0hMDFmUzQXi8QlUNsJ4DC7E
-         0M6FXd0ndTRUG2JwM4rT6k7dr+BGewjIL1M0q/KNjGgtEaHTw4ajueTzCMgRZ7dPrqmh
-         DKgdkbpyfKa0W3Ek7HUtADBPUwhKcmm0g6+jWNYFZnOw+BIbgAeYeoZct7EoSnE3a+i5
-         LTMk0A6W2cX93YCG8gq2wCci87IfHlIavrt6vhvdccrWt9Bj/D144Ek42lyqMsAcLZ78
-         ukkw==
-X-Gm-Message-State: APjAAAXlEpy3x8TBERP9pl1vUfMFAw+rjynR1k27gloBTumZvZ/BXnNf
-        5yK/AwJ/SWYNa9c8coodUftmAyJD
-X-Google-Smtp-Source: APXvYqzqstrPiXS5BIiPqJA48ZYOz0t0qahs+p3pTgySlyhiCIfJWx8g1BVOuhE7JqeFUW3EbkvSuA==
-X-Received: by 2002:a62:bd11:: with SMTP id a17mr16227298pff.126.1558578551236;
-        Wed, 22 May 2019 19:29:11 -0700 (PDT)
-Received: from [10.230.28.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z125sm37750440pfb.75.2019.05.22.19.29.09
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 May 2019 19:29:10 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 5/9] net: phylink: Add phylink_create_raw
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
- <20190523011958.14944-6-ioana.ciornei@nxp.com>
- <c2712523-f1b9-47f8-672b-d35e62bf35ea@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <0d29a5ee-8a68-d0be-c524-6e3ee1f46802@gmail.com>
-Date:   Wed, 22 May 2019 19:29:07 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <c2712523-f1b9-47f8-672b-d35e62bf35ea@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1729662AbfEWCda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 22:33:30 -0400
+Received: from mail-eopbgr40063.outbound.protection.outlook.com ([40.107.4.63]:4985
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727305AbfEWCd3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 22:33:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u2pK2nk+jKWXtZXdvMZZ3y8Ol+oaNT6tFDKhSdeVfHI=;
+ b=k663+5f2Q231UU38NjSEWWeaDUivRdcGOt/PwSTQd/388AYdqJL+g5oHcYhExYIkAzR3q64G2IRs88pNBUfhxk4JXN/CD9rEv3FCm/zt4dGjK0HXKPPHyCLmLxHcmA1Km/pfaGvUFc3KYWLPM+kxCZZSnQU/Ssidh447Bsl2/BE=
+Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com (10.169.132.138) by
+ VI1PR0401MB2494.eurprd04.prod.outlook.com (10.168.65.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.18; Thu, 23 May 2019 02:33:25 +0000
+Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com
+ ([fe80::b091:6395:e853:5986]) by VI1PR0401MB2237.eurprd04.prod.outlook.com
+ ([fe80::b091:6395:e853:5986%3]) with mapi id 15.20.1922.016; Thu, 23 May 2019
+ 02:33:25 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>
+Subject: [PATCH net-next v2, 0/4] ENETC: support hardware timestamping
+Thread-Topic: [PATCH net-next v2, 0/4] ENETC: support hardware timestamping
+Thread-Index: AQHVEQ/lOru7YbqaqUKfl9qTVlpeDA==
+Date:   Thu, 23 May 2019 02:33:24 +0000
+Message-ID: <20190523023451.2933-1-yangbo.lu@nxp.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: HK2PR04CA0053.apcprd04.prod.outlook.com
+ (2603:1096:202:14::21) To VI1PR0401MB2237.eurprd04.prod.outlook.com
+ (2603:10a6:800:27::10)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yangbo.lu@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.17.1
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c2e3befc-ba54-4aac-9fb5-08d6df27079a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR0401MB2494;
+x-ms-traffictypediagnostic: VI1PR0401MB2494:
+x-microsoft-antispam-prvs: <VI1PR0401MB2494730BBFBD78B84F6D6792F8010@VI1PR0401MB2494.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 00462943DE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(396003)(366004)(346002)(376002)(136003)(189003)(199004)(2616005)(54906003)(66066001)(86362001)(478600001)(110136005)(26005)(476003)(52116002)(486006)(8676002)(66476007)(25786009)(81166006)(81156014)(186003)(66946007)(66556008)(64756008)(66446008)(99286004)(73956011)(2906002)(102836004)(3846002)(6116002)(6512007)(386003)(53936002)(2501003)(6506007)(256004)(14444005)(36756003)(68736007)(50226002)(305945005)(6486002)(7736002)(8936002)(71200400001)(71190400001)(6636002)(5660300002)(316002)(1076003)(14454004)(4326008)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0401MB2494;H:VI1PR0401MB2237.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 4UB/wrpE2ABEeUwvDWknJ5GvAcSjcW24nZjCDsO1kCOuY55Eg24gt9x/M34ZDJsen9JYNlacySmrSllk8Dq0oe+ZzWHLqILw5P+E14iZ6MACzuEvT4+xjhvVjJGMcED/jaRZ3scCj2L+XyQ78tSsN/VLiY8srgrBIGaZ+ZVA5SVH6iG4hOiQAg7fTszLMBxa8IiMbIxayKOyMcpucXxQ+Ch3NWRNF4j76PBEjfARupmHnVGQ15G3ptV65cUQzKtallGlHrYWdseX9O1AzEnb0ohdI/l7tbA3vslR41ICW9mzUvC5vThaZQ0dBdK61sttwZQ6B5WD0dnEl8s/5hyELJhSgi+L/M4fLEEVoqret13GsiqE0LdHFuj8izDqwVyw0MIgJ1fsh9U4p7pjKneAInBzjZyaGsG+R0DDQe3iW3o=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2e3befc-ba54-4aac-9fb5-08d6df27079a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2019 02:33:25.0872
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yangbo.lu@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2494
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/22/2019 7:25 PM, Florian Fainelli wrote:
-> 
-> 
-> On 5/22/2019 6:20 PM, Ioana Ciornei wrote:
->> This adds a new entry point to PHYLINK that does not require a
->> net_device structure.
->>
->> The main intended use are DSA ports that do not have net devices
->> registered for them (mainly because doing so would be redundant - see
->> Documentation/networking/dsa/dsa.rst for details). So far DSA has been
->> using PHYLIB fixed PHYs for these ports, driven manually with genphy
->> instead of starting a full PHY state machine, but this does not scale
->> well when there are actual PHYs that need a driver on those ports, or
->> when a fixed-link is requested in DT that has a speed unsupported by the
->> fixed PHY C22 emulation (such as SGMII-2500).
->>
->> The proposed solution comes in the form of a notifier chain owned by the
->> PHYLINK instance, and the passing of phylink_notifier_info structures
->> back to the driver through a blocking notifier call.
->>
->> The event API exposed by the new notifier mechanism is a 1:1 mapping to
->> the existing PHYLINK mac_ops, plus the PHYLINK fixed-link callback.
->>
->> Both the standard phylink_create() function, as well as its raw variant,
->> call the same underlying function which initializes either the netdev
->> field or the notifier block of the PHYLINK instance.
->>
->> All PHYLINK driver callbacks have been extended to call the notifier
->> chain in case the instance is a raw one.
->>
->> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
->> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
->> ---
-> 
-> [snip]
-> 
->> +	struct phylink_notifier_info info = {
->> +		.link_an_mode = pl->link_an_mode,
->> +		/* Discard const pointer */
->> +		.state = (struct phylink_link_state *)state,
->> +	};
->> +
->>  	netdev_dbg(pl->netdev,
->>  		   "%s: mode=%s/%s/%s/%s adv=%*pb pause=%02x link=%u an=%u\n",
->>  		   __func__, phylink_an_mode_str(pl->link_an_mode),
->> @@ -299,7 +317,12 @@ static void phylink_mac_config(struct phylink *pl,
->>  		   __ETHTOOL_LINK_MODE_MASK_NBITS, state->advertising,
->>  		   state->pause, state->link, state->an_enabled);
-> 
-> Don't you need to guard that netdev_dbg() with an if (pl->ops) to avoid
-> de-referencing a NULL net_device?
-> 
-> Another possibility could be to change the signature of the
-> phylink_mac_ops to take an opaque pointer and in the case where we
-> called phylink_create() and passed down a net_device pointer, we somehow
-> remember that for doing any operation that requires a net_device
-> (printing, setting carrier). We lose strict typing in doing that, but
-> we'd have fewer places to patch for a blocking notifier call.
-> 
-
-Or even make those functions part of phylink_mac_ops such that the
-caller could pass an .carrier_ok callback which is netif_carrier_ok()
-for a net_device, else it's NULL, same with printing functions if desired...
--- 
-Florian
+VGhpcyBwYXRjaC1zZXQgaXMgdG8gc3VwcG9ydCBoYXJkd2FyZSB0aW1lc3RhbXBpbmcgZm9yIEVO
+RVRDDQphbmQgYWxzbyB0byBhZGQgRU5FVEMgMTU4OCB0aW1lciBkZXZpY2UgdHJlZSBub2RlIGZv
+ciBsczEwMjhhLg0KDQpCZWNhdXNlIHRoZSBFTkVUQyBSWCBCRCByaW5nIGR5bmFtaWMgYWxsb2Nh
+dGlvbiBoYXMgbm90IGJlZW4NCnN1cHBvcnRlZCBhbmQgaXQgaXMgdG9vIGV4cGVuc2l2ZSB0byB1
+c2UgZXh0ZW5kZWQgUlggQkRzDQppZiB0aW1lc3RhbXBpbmcgaXMgbm90IHVzZWQsIGEgS2NvbmZp
+ZyBvcHRpb24gaXMgdXNlZCB0bw0KZW5hYmxlIGV4dGVuZGVkIFJYIEJEcyBpbiBvcmRlciB0byBz
+dXBwb3J0IGhhcmR3YXJlDQp0aW1lc3RhbXBpbmcuIFRoaXMgb3B0aW9uIHdpbGwgYmUgcmVtb3Zl
+ZCBvbmNlIFJYIEJEDQpyaW5nIGR5bmFtaWMgYWxsb2NhdGlvbiBpcyBpbXBsZW1lbnRlZC4NCg0K
+WWFuZ2JvIEx1ICg0KToNCiAgZW5ldGM6IGFkZCBoYXJkd2FyZSB0aW1lc3RhbXBpbmcgc3VwcG9y
+dA0KICBlbmV0YzogYWRkIGdldF90c19pbmZvIGludGVyZmFjZSBmb3IgZXRodG9vbA0KICBkdC1i
+aW5kaW5nOiBwdHBfcW9yaXE6IHN1cHBvcnQgRU5FVEMgUFRQIGNvbXBhdGlibGUNCiAgYXJtNjQ6
+IGR0czogZnNsOiBsczEwMjhhOiBhZGQgRU5FVEMgMTU4OCB0aW1lciBub2RlDQoNCiAuLi4vZGV2
+aWNldHJlZS9iaW5kaW5ncy9wdHAvcHRwLXFvcmlxLnR4dCAgICAgfCAgIDEgKw0KIC4uLi9hcm02
+NC9ib290L2R0cy9mcmVlc2NhbGUvZnNsLWxzMTAyOGEuZHRzaSB8ICAgNiArDQogZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2VuZXRjL0tjb25maWcgIHwgIDEwICsrDQogZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2VuZXRjL2VuZXRjLmMgIHwgMTU4ICsrKysrKysrKysrKysr
+KysrLQ0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9lbmV0Yy9lbmV0Yy5oICB8ICAx
+NSArLQ0KIC4uLi9ldGhlcm5ldC9mcmVlc2NhbGUvZW5ldGMvZW5ldGNfZXRodG9vbC5jICB8ICAz
+MSArKysrDQogLi4uL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZW5ldGMvZW5ldGNfaHcuaCAgIHwg
+IDEzICsrDQogLi4uL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZW5ldGMvZW5ldGNfcGYuYyAgIHwg
+ICAxICsNCiAuLi4vbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9lbmV0Yy9lbmV0Y19wdHAuYyAgfCAg
+IDUgKw0KIC4uLi9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2VuZXRjL2VuZXRjX3ZmLmMgICB8ICAg
+MSArDQogMTAgZmlsZXMgY2hhbmdlZCwgMjM1IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0p
+DQoNCi0tIA0KMi4xNy4xDQoNCg==
