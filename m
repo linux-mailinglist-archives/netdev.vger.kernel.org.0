@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AFC728E05
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 01:45:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E337728E0F
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 01:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388395AbfEWXp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 19:45:27 -0400
-Received: from gateway34.websitewelcome.com ([192.185.148.164]:27955 "EHLO
+        id S2388591AbfEWXu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 19:50:27 -0400
+Received: from gateway34.websitewelcome.com ([192.185.148.164]:36671 "EHLO
         gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388232AbfEWXp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 19:45:27 -0400
-X-Greylist: delayed 1374 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 May 2019 19:45:26 EDT
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id B6EF710779F0
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 18:22:31 -0500 (CDT)
+        by vger.kernel.org with ESMTP id S2388232AbfEWXu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 19:50:27 -0400
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id ED5ED11178B7
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 18:25:48 -0500 (CDT)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id Tx2dhHK9N90onTx2dhLSNz; Thu, 23 May 2019 18:22:31 -0500
+        id Tx5ohsrX72PzOTx5ohGizI; Thu, 23 May 2019 18:25:48 -0500
 X-Authority-Reason: nr=8
-Received: from [189.250.47.159] (port=41698 helo=[192.168.1.76])
+Received: from [189.250.47.159] (port=41936 helo=[192.168.1.76])
         by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
         (Exim 4.91)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1hTx2d-001jOI-BI; Thu, 23 May 2019 18:22:31 -0500
+        id 1hTx5o-001kdy-J8; Thu, 23 May 2019 18:25:48 -0500
 Subject: Re: [PATCH net-next] net: sched: cls_u32: use struct_size() helper
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 To:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20190501162315.GA27166@embeddedor>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+ <be6196ae-01b3-e23e-f504-d3e53324da9b@embeddedor.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=gustavo@embeddedor.com; keydata=
  mQINBFssHAwBEADIy3ZoPq3z5UpsUknd2v+IQud4TMJnJLTeXgTf4biSDSrXn73JQgsISBwG
@@ -76,12 +76,12 @@ Autocrypt: addr=gustavo@embeddedor.com; keydata=
  YJWH93PN+ZUh6i6Rd2U/i8jH5WvzR57UeWxE4P8bQc0hNGrUsHQH6bpHV2lbuhDdqo+cM9eh
  GZEO3+gCDFmKrjspZjkJbB5Gadzvts5fcWGOXEvuT8uQSvl+vEL0g6vczsyPBtqoBLa9SNrS
  VtSixD1uOgytAP7RWS474w==
-Message-ID: <be6196ae-01b3-e23e-f504-d3e53324da9b@embeddedor.com>
-Date:   Thu, 23 May 2019 18:22:29 -0500
+Message-ID: <e7a69638-f085-a4ec-17e8-5a9203d76316@embeddedor.com>
+Date:   Thu, 23 May 2019 18:25:47 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190501162315.GA27166@embeddedor>
+In-Reply-To: <be6196ae-01b3-e23e-f504-d3e53324da9b@embeddedor.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -93,13 +93,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 189.250.47.159
 X-Source-L: No
-X-Exim-ID: 1hTx2d-001jOI-BI
+X-Exim-ID: 1hTx5o-001kdy-J8
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.47.159]:41698
+X-Source-Sender: ([192.168.1.76]) [189.250.47.159]:41936
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 5
+X-Email-Count: 11
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -107,47 +107,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+Hi,
 
-Friendly ping:
-
-Who can take this?
+Sorry about the noise. I just noticed that Dave took this a while ago.
 
 Thanks
 --
-Gustavo
 
-On 5/1/19 11:23 AM, Gustavo A. R. Silva wrote:
-> Make use of the struct_size() helper instead of an open-coded version
-> in order to avoid any potential type mistakes, in particular in the
-> context in which this code is being used.
+On 5/23/19 6:22 PM, Gustavo A. R. Silva wrote:
+> Hi all,
 > 
-> So, replace code of the following form:
+> Friendly ping:
 > 
-> sizeof(*s) + s->nkeys*sizeof(struct tc_u32_key)
+> Who can take this?
 > 
-> with:
+> Thanks
+> --
+> Gustavo
 > 
-> struct_size(s, keys, s->nkeys)
-> 
-> This code was detected with the help of Coccinelle.
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> ---
->  net/sched/cls_u32.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-> index 04e9ef088535..4b8710a266cc 100644
-> --- a/net/sched/cls_u32.c
-> +++ b/net/sched/cls_u32.c
-> @@ -847,7 +847,7 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
->  	/* Similarly success statistics must be moved as pointers */
->  	new->pcpu_success = n->pcpu_success;
->  #endif
-> -	memcpy(&new->sel, s, sizeof(*s) + s->nkeys*sizeof(struct tc_u32_key));
-> +	memcpy(&new->sel, s, struct_size(s, keys, s->nkeys));
->  
->  	if (tcf_exts_init(&new->exts, net, TCA_U32_ACT, TCA_U32_POLICE)) {
->  		kfree(new);
-> 
+> On 5/1/19 11:23 AM, Gustavo A. R. Silva wrote:
+>> Make use of the struct_size() helper instead of an open-coded version
+>> in order to avoid any potential type mistakes, in particular in the
+>> context in which this code is being used.
+>>
+>> So, replace code of the following form:
+>>
+>> sizeof(*s) + s->nkeys*sizeof(struct tc_u32_key)
+>>
+>> with:
+>>
+>> struct_size(s, keys, s->nkeys)
+>>
+>> This code was detected with the help of Coccinelle.
+>>
+>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+>> ---
+>>  net/sched/cls_u32.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+>> index 04e9ef088535..4b8710a266cc 100644
+>> --- a/net/sched/cls_u32.c
+>> +++ b/net/sched/cls_u32.c
+>> @@ -847,7 +847,7 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
+>>  	/* Similarly success statistics must be moved as pointers */
+>>  	new->pcpu_success = n->pcpu_success;
+>>  #endif
+>> -	memcpy(&new->sel, s, sizeof(*s) + s->nkeys*sizeof(struct tc_u32_key));
+>> +	memcpy(&new->sel, s, struct_size(s, keys, s->nkeys));
+>>  
+>>  	if (tcf_exts_init(&new->exts, net, TCA_U32_ACT, TCA_U32_POLICE)) {
+>>  		kfree(new);
+>>
