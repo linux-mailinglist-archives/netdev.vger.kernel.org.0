@@ -2,106 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6106628C7C
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 23:38:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A097628C7F
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 23:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388059AbfEWVhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 17:37:34 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:36423 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387709AbfEWVhe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 17:37:34 -0400
-Received: by mail-ed1-f67.google.com with SMTP id a8so11237719edx.3
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 14:37:32 -0700 (PDT)
+        id S2388229AbfEWVkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 17:40:14 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:36724 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388209AbfEWVkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 17:40:14 -0400
+Received: by mail-ed1-f65.google.com with SMTP id a8so11246779edx.3;
+        Thu, 23 May 2019 14:40:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CjeLPVQUdb2YrgOLFR+owyppinGBKhQmpADhM8cREX4=;
-        b=NlO0htqWzqOst36h9VdMhNClxRiF3FxH7cFHHaeLB/0JTNeEGzGe9ai2gKvi/02QRM
-         UpAdtr3NIlGL1VKedvd19R2IQPwIc/aYEY4lwsDQQlQQRI80pC7NRdFSlUqvV3YiWzPI
-         nNgmVGx20QhtPn5G0b5UAhvhGezJaAgaPPS9IdhLcWEnNGDn/92Gx7yVbtzVANnCHBRr
-         mWcONYZdg0c2TejXX5k1suH+0BXMwfV139vgf57a9YiE5H32Hf5c4/lwwkegrgbmD+Fd
-         AvQ5dnHupn0Lo5Z2nL74OqXeIhwTFVsf+cmgjzyIx8yAa4B9jifrq0THKXgTUB1VIHS8
-         0s8A==
+        bh=7sFc7ThnmJhmVClW066IBr+ugXYu56ow2YaUneJliW0=;
+        b=tq/Xl4TibAUmg94VVJF+gOJisGDmKCiLyMJc14nMfPZXdAJk7ERCF8P96Ymgh0G9ju
+         zXfESZcUOdHw0qbjIn8kgfN9S4+lvq5/vMKpP6M82gr6SHBkrTgVUQhs0QNEMIxwxe8N
+         2j+eWa81owMg/n74R5C77rAc9jQb6LWfVby6ACsv9lcAtfUHnwFDS3A+9/jRCEIoveRY
+         MfMW9uZxa7+GykS8GsasAk04ID42oxnsUV7kuhdCFAvu9mRHLy9Haubsy3sMrzW5eDjP
+         OfKwdv4B+UW0LmdQBDxtKEzrgqb5I0+T4I8zqmypqL+X0WktI7lX4nAPz9rsFv2G3q6u
+         IP7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CjeLPVQUdb2YrgOLFR+owyppinGBKhQmpADhM8cREX4=;
-        b=cbobzPQcEgJOq3DROkppSiynmc+kMGlBoMVztWaJcijCHdtaafAZgQurQFytWgsJ4q
-         ZvV1dMWRaeKLt0w8JZawwaH1lFGkCu5m+lS3Fhf3lr2dthbUw1g4x7++A471xBlSRUFI
-         67mfGiqykekb0MI71TlD1GvxjqkiXBhFrWA/ykHXDAd5LkDj+W1O7JPZ0cAuxqOpVI5Y
-         W9yi+9xvrjab4tMnSOO6sZ+9DIxN9mrV5LVgXHMdUxIOtzuOXT7CA9ysqGb3JLHHwhEI
-         dAOEEFrw4JGIZHp1garAC2S/DkFpt40SeZWLa1a4jd07ARhh+PBKZh5z2xreRLd2WzT1
-         PTaQ==
-X-Gm-Message-State: APjAAAXuuSoKxlKVaBFCWyIOBzJj8ut7MpovhPoTcLs5Nz+NYTSmUtm9
-        45lR0dvmC/LMVq4+rh/XWfpC7iCczq/RS9jMV8I=
-X-Google-Smtp-Source: APXvYqyp3vpDX/PWsaH/de3mFeddEaOJqYyF8GId5wRN8NlyhUSkyQw2cbKhxn7h5tZuqGdM7mWLItUG5hBYDD6ety8=
-X-Received: by 2002:a50:ad98:: with SMTP id a24mr99806579edd.235.1558647452293;
- Thu, 23 May 2019 14:37:32 -0700 (PDT)
+        bh=7sFc7ThnmJhmVClW066IBr+ugXYu56ow2YaUneJliW0=;
+        b=Q9pQfLxHZIaxU3VmFV1UIyRDA23AIyPz7tcMEwRZ0NU6l37CRpn4+M1bmct6PWBVAR
+         k+7qRKI9NkFiNQGNRg7t+TaARJsNgOOX504Z/z4srf1ms9IRbdP6iHpsBvxSJAzVj4T0
+         9fyZm505/j+xNcjr/3OWwmpgiRi9Rd5Er/3IHnQLfZXHJpET4oyHh80Z8Zemz1/bw+TC
+         PeEVpyTAioaA6ylU3Yw3uk9IfFXnNYR7C+O+0+tL3eFJlYmcptdpDwoTlcZ9vWBOnx/r
+         EdvLUeZYiBBVKC1f+KWx2+LXOMFbTep4iZ29WgWH2uuFGcWYz6HiCg9iVfmZhOuUjjPS
+         afBQ==
+X-Gm-Message-State: APjAAAWaMwRhNeB6Dg8BclYGm2eICRjlt0xYTXPMbcnkz6Nva8d1FUMC
+        Rt0Cxd+9xij1n67//Oik85UQXwe9ZKgGhW+JEkQ=
+X-Google-Smtp-Source: APXvYqw8tJGqA5c5wGFLyYEPWR/Y+2qo9DCjgzJefGelQCRumPO9B4e5aArLC4cN0khqMzdogT8yU2UsLQPAfJH85tg=
+X-Received: by 2002:a17:906:699:: with SMTP id u25mr41633599ejb.245.1558647612145;
+ Thu, 23 May 2019 14:40:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190523011958.14944-1-ioana.ciornei@nxp.com> <20190523011958.14944-6-ioana.ciornei@nxp.com>
- <20190523212756.4b25giji4vkxdl5q@shell.armlinux.org.uk>
-In-Reply-To: <20190523212756.4b25giji4vkxdl5q@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 24 May 2019 00:37:21 +0300
-Message-ID: <CA+h21hpYWHrVu7t49dSPM7O7SoVwM+svcm+hO+Ox2fWwkDonkQ@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 5/9] net: phylink: Add phylink_create_raw
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
+References: <20190523210651.80902-1-fklassen@appneta.com> <20190523210651.80902-2-fklassen@appneta.com>
+In-Reply-To: <20190523210651.80902-2-fklassen@appneta.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 23 May 2019 17:39:36 -0400
+Message-ID: <CAF=yD-Jf95De=z_nx9WFkGDa6+nRUqM_1PqGkjwaFPzOe+PfXg@mail.gmail.com>
+Subject: Re: [PATCH net 1/4] net/udp_gso: Allow TX timestamp with UDP GSO
+To:     Fred Klassen <fklassen@appneta.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 May 2019 at 00:28, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
+On Thu, May 23, 2019 at 5:09 PM Fred Klassen <fklassen@appneta.com> wrote:
 >
-> On Thu, May 23, 2019 at 01:20:40AM +0000, Ioana Ciornei wrote:
-> > @@ -111,7 +114,16 @@ static const char *phylink_an_mode_str(unsigned int mode)
-> >  static int phylink_validate(struct phylink *pl, unsigned long *supported,
-> >                           struct phylink_link_state *state)
-> >  {
-> > -     pl->ops->validate(pl->netdev, supported, state);
-> > +     struct phylink_notifier_info info = {
-> > +             .supported = supported,
-> > +             .state = state,
-> > +     };
-> > +
-> > +     if (pl->ops)
-> > +             pl->ops->validate(pl->netdev, supported, state);
-> > +     else
-> > +             blocking_notifier_call_chain(&pl->notifier_chain,
-> > +                                          PHYLINK_VALIDATE, &info);
+> Fixes an issue where TX Timestamps are not arriving on the error queue
+> when UDP_SEGMENT CMSG type is combined with CMSG type SO_TIMESTAMPING.
+> This can be illustrated with an updated updgso_bench_tx program which
+> includes the '-T' option to test for this condition.
 >
-> I don't like this use of notifiers for several reasons:
+>     ./udpgso_bench_tx -4ucTPv -S 1472 -l2 -D 172.16.120.18
+>     poll timeout
+>     udp tx:      0 MB/s        1 calls/s      1 msg/s
 >
-> 1. It becomes harder to grep for users of this.
-> 2. We lose documentation about what is passed for each method.
-> 3. We lose const-ness for parameters, which then allows users to
->    modify phylink-internal data structures inappropriately from
->    these notifier calls.
+> The "poll timeout" message above indicates that TX timestamp never
+> arrived.
 >
-> Please find another way.
+> It also appears that other TX CMSG types cause similar issues, for
+> example trying to set SOL_IP/IP_TOS.
 >
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> According to speedtest.net: 11.9Mbps down 500kbps up
+>     ./udpgso_bench_tx -4ucPv -S 1472 -q 182 -l2 -D 172.16.120.18
+>     poll timeout
+>     udp tx:      0 MB/s        1 calls/s      1 msg/s
+>
+> This patch preserves tx_flags for the first UDP GSO segment. This
+> mirrors the stack's behaviour for IPv4 fragments.
+>
+> Fixes: ee80d1ebe5ba ("udp: add udp gso")
+> Signed-off-by: Fred Klassen <fklassen@appneta.com>
+> ---
+>  net/ipv4/udp_offload.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+> index 065334b41d57..33de347695ae 100644
+> --- a/net/ipv4/udp_offload.c
+> +++ b/net/ipv4/udp_offload.c
+> @@ -228,6 +228,10 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+>         seg = segs;
+>         uh = udp_hdr(seg);
+>
+> +       /* preserve TX timestamp and zero-copy info for first segment */
+> +       skb_shinfo(seg)->tskey = skb_shinfo(gso_skb)->tskey;
+> +       skb_shinfo(seg)->tx_flags = skb_shinfo(gso_skb)->tx_flags;
+> +
 
-Hi Russell,
+Thanks for the report.
 
-Items 2 and 3 can be addressed by creating an union of structures in
-struct phylink_notifier_info, just like switchdev does.
-For 1 (grep), you mean that the notifiers are upper-case and the
-regular callbacks are lower-case?
+Zerocopy notification reference count is managed in skb_segment. That
+should work.
 
--Vladimir
+Support for timestamping with the new GSO feature is indeed an
+oversight. The solution is similar to how TCP associates the timestamp
+with the right segment in tcp_gso_tstamp.
+
+Only, I think we want to transfer the timestamp request to the last
+datagram, not the first. For send timestamp, the final byte leaving
+the host is usually more interesting.
