@@ -2,104 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ECB828B18
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 21:59:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBF8C28B33
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:01:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387718AbfEWTye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 15:54:34 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:35943 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387715AbfEWTye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 15:54:34 -0400
-Received: from localhost (lfbn-1-10718-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 915DD240004;
-        Thu, 23 May 2019 19:54:26 +0000 (UTC)
-Date:   Thu, 23 May 2019 21:54:26 +0200
-From:   Maxime Ripard <maxime.ripard@bootlin.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>
-Subject: Re: [PATCH 1/8] dt-bindings: net: Add YAML schemas for the generic
- Ethernet options
-Message-ID: <20190523195426.jmlpmofvm3mqw247@flea>
-References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
- <CAL_JsqJnFUt55b+AGpcNNjvsKsHNz9PY+b7FJ4+6CMNppzb3vg@mail.gmail.com>
+        id S2387649AbfEWUBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 16:01:39 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:37232 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387414AbfEWUBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:01:39 -0400
+Received: by mail-ed1-f67.google.com with SMTP id w37so10908171edw.4
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 13:01:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=80zf75DdX5M3jvMYUCTei7zky28CQX5+iLZa0ltqO78=;
+        b=Ad74pGSaQTvbbkd84Drq16Rsvx6+eF6OOFve7QkHMCeuUgf5K38D7h9aQQGRapEryT
+         DJrFTJDZe+++bjGbT796RGOF9gfP+lZyN2Jl4Qojs33lVq+WLtVM0miK/WpqD12IC9MG
+         8QMDNxk6cLCB50P4AmuFIDA1ZDbx6j5fiMZYQz1whomFfrvLc6M0gzhzELlQaXmXZ8L8
+         RLUJOCpAEEc10gOrdMLS2alNvET0Xh1CzzHIWTQXGWr9UhggUGqp3UyeCruA7bqg5Vip
+         97+rsrugNJgR702OvHVCuiutUNUNm0DmpgyB5UfaPahHp8HipaHTmUBfE/TuC2j2titA
+         d6bQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=80zf75DdX5M3jvMYUCTei7zky28CQX5+iLZa0ltqO78=;
+        b=sIaun/GA/LVai2LiPRU3eq9DGPaR5PyvaoIJN4ZDl5d7rYFp6PvD3NOAVgoYITfvsn
+         KzAzrXUKJHKxmPwQmvU+BKLmPFHRm+RcbTvmCiEj949ZIMKWAI6dBpgN9N1dYYSVRIvH
+         tFNKhKcLi+ZrsAHxdqXXfWD7YQBiZVXihth8+fy4lm0i4WFhvKz6ejy8BygjXrU9sJ96
+         7xJ+J/t7QtimmMnUbRoH8eK7UnOScb6YZ2GWA3M7kuD4UUeUh6ZnjdC5AMXVVmAvlWza
+         qlypVxN0FjiwA3Zc8HSxlxW3ncYDqi0Xdb8Tc0frQ1uSpeBANp8xhPP8jK2HLja21IAq
+         /Iug==
+X-Gm-Message-State: APjAAAXirk7FEY3F0+SoNAP5sysoHXZhqVWXs7tlGgJa7bw0nqZ5h9XW
+        T5CU9QzRR/nL+gx9egtRQfLVyn7ZKPH53ItvY9g=
+X-Google-Smtp-Source: APXvYqwdhnc0Fxf9lpDKS7kWZuoXlqM1X2JzOJvVk06msCej66qRxt0lO3eoOQ8hTOf/I9BFr5x0dFWgol1fsrOqK/s=
+X-Received: by 2002:a17:906:69cb:: with SMTP id g11mr35246591ejs.29.1558641697318;
+ Thu, 23 May 2019 13:01:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqJnFUt55b+AGpcNNjvsKsHNz9PY+b7FJ4+6CMNppzb3vg@mail.gmail.com>
-User-Agent: NeoMutt/20180716
+References: <20190523011958.14944-1-ioana.ciornei@nxp.com> <20190523011958.14944-9-ioana.ciornei@nxp.com>
+ <9c953f4f-af27-d87d-8964-16b7e32ce80f@gmail.com>
+In-Reply-To: <9c953f4f-af27-d87d-8964-16b7e32ce80f@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 23 May 2019 23:01:26 +0300
+Message-ID: <CA+h21hpPyk=BYxBXDH5-SGfJdS-E+X9PfZHAMLYNwhL-1stumA@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 8/9] net: dsa: Use PHYLINK for the CPU/DSA ports
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
-
-Thanks for the review,
-
-On Thu, May 23, 2019 at 08:10:22AM -0500, Rob Herring wrote:
-> > +  fixed-link:
-> > +    allOf:
-> > +      - if:
-> > +          type: array
-> > +        then:
-> > +          minItems: 1
-> > +          maxItems: 1
-> > +          items:
-> > +            type: array
-> > +            minItems: 5
-> > +            maxItems: 5
-> > +          description:
-> > +            An array of 5 cells, with the following accepted values
-> > +              - At index 0, the emulated PHY ID, choose any but but
-> > +                unique to the all specified fixed-links, from 0 to 31
-> > +              - at index 1, duplex configuration with 0 for half duplex
-> > +                or 1 for full duplex
-> > +              - at index 2, link speed in Mbits/sec, accepted values are
-> > +                10, 100 and 1000
-> > +              - at index 3, pause configuration with 0 for no pause, 1
-> > +                for pause
-> > +              - at index 4, asymmetric pause configuration with 0 for no
-> > +                asymmetric pause, 1 for asymmetric pause
+On Thu, 23 May 2019 at 05:17, Florian Fainelli <f.fainelli@gmail.com> wrote:
 >
-> Looks like constraints to me:
+> On 5/22/2019 6:20 PM, Ioana Ciornei wrote:
+> > This completely removes the usage of PHYLIB from DSA, namely for the
+> > aforementioned switch ports which used to drive a software PHY manually
+> > using genphy operations.
+> >
+> > For these ports, the newly introduced phylink_create_raw API must be
+> > used, and the callbacks are received through a notifier block registered
+> > per dsa_port, but otherwise the implementation is fairly
+> > straightforward, and the handling of the regular vs raw PHYLINK
+> > instances is common from the perspective of the driver.
+> >
+> > What changes for drivers:
+> >
+> > The .adjust_link callback is no longer called for the fixed-link CPU/DSA
+> > ports and drivers must migrate to standard PHYLINK operations (e.g.
+> > .phylink_mac_config).  The reason why we can't do anything for them is
+> > because PHYLINK does not wrap the fixed link state behind a phydev
+> > object, so we cannot wrap .phylink_mac_config into .adjust_link unless
+> > we fabricate a phy_device structure.
 >
-> items:
->   - minimum: 0
->     maximum: 31
->   - enum: [ 0, 1 ]
->   - enum: [ 10, 100, 1000 ]
-> ...
-
-Yeah, we should definitely do something like that. I tried and failed,
-but that looks like the right solution.
-
-> > +
-> > +
-> > +      - if:
+> Can't we offer a slightly nicer transition period for DSA switch drivers:
 >
-> Couldn't this be an 'else' and avoid the allOf?
+> - if adjust_link and phylink_mac_ops are both supported, prefer
+> phylink_mac_ops
+> - if phylink_mac_ops is defined alone use it, we're good
+> - if adjust_link alone is defined, keep using it with the existing code
+> but print a warning inviting to migrate?
+>
+> The changes look fine but the transition path needs to be a little more
+> gentle IMHO.
+> --
+> Florian
 
-I don't really know, we could go both ways. Which one would be the
-more verbose in the case where someone would just have a boolean
-instead of the node or the array?
+Hi Florian,
 
-Thanks!
-Maxime
+Yes we could, but since most of the adjust_link -> phylink_mac_ops
+changes appear trivial, and we have the knowledge behind b53 right
+here, can't we just migrate everything in the next patchset and remove
+adjust_link altogether from DSA?
+...So why does b53 configure the SGMII SerDes in phylink_mac_config,
+and RGMII delays for the CPU port in adjust_link? Why are pause frames
+only configured for the CPU port?
+A migration from my side would be rather mechanical, so could you
+please share some suggestions?
 
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+-Vladimir
