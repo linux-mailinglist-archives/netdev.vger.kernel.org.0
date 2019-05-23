@@ -2,212 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A1E12862E
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 20:57:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DCE22879A
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 21:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731521AbfEWS4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 14:56:52 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:45669 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731261AbfEWS4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 14:56:52 -0400
-Received: by mail-qk1-f194.google.com with SMTP id j1so4456364qkk.12
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 11:56:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=tpvuJFfMZp6SvK9KDKtENhr68QaXMeztIkCmID+gkbc=;
-        b=TpJGQEtdvImqGvhe/eKjEO8QDgPwfoiipVfYsvu8wdLwgtVuQs8kpIoEKSmy0n5AAB
-         mmDdZeaG38F886HVHK0E7IZLM15b7j60azRHwJv9MkHjE5Nh2NWaG+wJeuz6JNMsZ0Xv
-         642umB9Dyh86aGukWzlCnmdW4YNJ65xUcN/wnwAnt7zF3TZBZBd70jSEXjY6RowpwQea
-         F3uOh5s2mo7Q5mTv7secDzKi88+CoKoQEm5gvuwoHDKH3U1sqEFonAVu8tY3/LS8U4fx
-         x1Brb8t6+vZ0sxn9c/N8shWB+d1dE7ghsqb8jhpX2ihTcwnJ2iwL1TVB4+OD3Sw4Pq0M
-         e3kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=tpvuJFfMZp6SvK9KDKtENhr68QaXMeztIkCmID+gkbc=;
-        b=tS67Nj2BJLxqNa84wwXDG/X3NnyzumQyqZaOFCMhuZGxtslMiLZw5XiaiIw/OtmHsX
-         afVi4LGKJhY9GtXlhDoR5QjhQ2YxFqQZYPtFO/gWWeQBJ+UcT0o//a1UWnMK9VuIng3j
-         NSo8Aijkz3HSRAh9wcQbDUfQghe15SWs6Kgk407xxW6vFHBxpnqUd4deFEfLuXXmSwlR
-         ePBq9J4Z+Btt939ogiYWi4hyw948NgEIRCE+K0h2LTG06quyBVkFeWFqwbGLLrr3NrIi
-         IkPzinH/a2DZSajqdT/CfStRSQO6GDA9RxDyz643EfLNglUd6jR2k/uFpcErMP9KKdj1
-         OFmA==
-X-Gm-Message-State: APjAAAXlkTkbMsmBrJuAIkvOZlXDsqyOHXvQqC0XMowDW4EJFPqWqpN4
-        TPczEFDihnqFUBaNG4VARO3/XA==
-X-Google-Smtp-Source: APXvYqzkCsMoxGu6ex5VfOPsujiJXvHMJTP9UN3a4hrFq/rsvsUHT12F9+IcJpnaX/OqFYYGhuK/pg==
-X-Received: by 2002:a37:de07:: with SMTP id h7mr4343499qkj.41.1558637811222;
-        Thu, 23 May 2019 11:56:51 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id e133sm127413qkb.76.2019.05.23.11.56.50
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 23 May 2019 11:56:51 -0700 (PDT)
-Date:   Thu, 23 May 2019 11:56:46 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Joergen Andreasen <joergen.andreasen@microchip.com>
-Cc:     <netdev@vger.kernel.org>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 1/1] net: mscc: ocelot: Implement port
- policers via tc command
-Message-ID: <20190523115630.7710cc49@cakuba.netronome.com>
-In-Reply-To: <20190523104939.2721-2-joergen.andreasen@microchip.com>
-References: <20190502094029.22526-1-joergen.andreasen@microchip.com>
-        <20190523104939.2721-1-joergen.andreasen@microchip.com>
-        <20190523104939.2721-2-joergen.andreasen@microchip.com>
-Organization: Netronome Systems, Ltd.
+        id S2390202AbfEWTVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 15:21:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58326 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389795AbfEWTVK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 15:21:10 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3B48F205ED;
+        Thu, 23 May 2019 19:21:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1558639268;
+        bh=k5a2uGeSV8BCZEQP5DMuv8ykv8Uyr3yo+lrxvYUCLfE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jtk63p1Z7mS1/6whjVVFJtKGeqrqxQiaiGH04xbIwoN5m5fSIQWAScNxkNnDsB9Y4
+         xqWFQ5OU4IsymDUnHiXQYTGTtjJmALdEcGeGI3ViWvslwKhsYMAvQXp9rsY//hdWL7
+         NZWgl+Oh9WCK3vEGWocIvu2pE5WEkGYkh+zajOUQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kernel-team@android.com, "Jorge E. Moreira" <jemoreira@google.com>
+Subject: [PATCH 5.0 014/139] vsock/virtio: Initialize core virtio vsock before registering the driver
+Date:   Thu, 23 May 2019 21:05:02 +0200
+Message-Id: <20190523181722.326937126@linuxfoundation.org>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190523181720.120897565@linuxfoundation.org>
+References: <20190523181720.120897565@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 May 2019 12:49:39 +0200, Joergen Andreasen wrote:
-> Hardware offload of matchall classifier and police action are now
-> supported via the tc command.
-> Supported police parameters are: rate and burst.
-> 
-> Example:
-> 
-> Add:
-> tc qdisc add dev eth3 handle ffff: ingress
-> tc filter add dev eth3 parent ffff: prio 1 handle 2	\
-> 	matchall skip_sw				\
-> 	action police rate 100Mbit burst 10000
-> 
-> Show:
-> tc -s -d qdisc show dev eth3
-> tc -s -d filter show dev eth3 ingress
-> 
-> Delete:
-> tc filter del dev eth3 parent ffff: prio 1
-> tc qdisc del dev eth3 handle ffff: ingress
-> 
-> Signed-off-by: Joergen Andreasen <joergen.andreasen@microchip.com>
+From: "Jorge E. Moreira" <jemoreira@google.com>
 
-> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> index d715ef4fc92f..3ec7864d9dc8 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.c
-> +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -943,6 +943,7 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
->  	.ndo_vlan_rx_kill_vid		= ocelot_vlan_rx_kill_vid,
->  	.ndo_set_features		= ocelot_set_features,
->  	.ndo_get_port_parent_id		= ocelot_get_port_parent_id,
-> +	.ndo_setup_tc			= ocelot_setup_tc,
->  };
->  
->  static void ocelot_get_strings(struct net_device *netdev, u32 sset, u8 *data)
-> @@ -1663,8 +1664,9 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
->  	dev->netdev_ops = &ocelot_port_netdev_ops;
->  	dev->ethtool_ops = &ocelot_ethtool_ops;
->  
-> -	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS;
-> -	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
-> +	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS |
-> +		NETIF_F_HW_TC;
-> +	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_TC;
->  
->  	memcpy(dev->dev_addr, ocelot->base_mac, ETH_ALEN);
->  	dev->dev_addr[ETH_ALEN - 1] += port;
+[ Upstream commit ba95e5dfd36647622d8897a2a0470dde60e59ffd ]
 
-You need to add a check in set_features to make sure nobody clears the
-NETIF_F_TC flag while something is offloaded, otherwise you will miss
-the REMOVE callback (it will bounce from the
-tc_cls_can_offload_and_chain0() check).
+Avoid a race in which static variables in net/vmw_vsock/af_vsock.c are
+accessed (while handling interrupts) before they are initialized.
 
-> diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
-> new file mode 100644
-> index 000000000000..2412e0dbc267
-> --- /dev/null
-> +++ b/drivers/net/ethernet/mscc/ocelot_tc.c
-> @@ -0,0 +1,164 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/* Microsemi Ocelot Switch TC driver
-> + *
-> + * Copyright (c) 2019 Microsemi Corporation
-> + */
-> +
-> +#include "ocelot_tc.h"
-> +#include "ocelot_police.h"
-> +#include <net/pkt_cls.h>
-> +
-> +static int ocelot_setup_tc_cls_matchall(struct ocelot_port *port,
-> +					struct tc_cls_matchall_offload *f,
-> +					bool ingress)
-> +{
-> +	struct netlink_ext_ack *extack = f->common.extack;
-> +	struct ocelot_policer pol = { 0 };
-> +	struct flow_action_entry *action;
-> +	int err;
-> +
-> +	netdev_dbg(port->dev, "%s: port %u command %d cookie %lu\n",
-> +		   __func__, port->chip_port, f->command, f->cookie);
-> +
-> +	if (!ingress) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Only ingress is supported");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	switch (f->command) {
-> +	case TC_CLSMATCHALL_REPLACE:
-> +		if (!flow_offload_has_one_action(&f->rule->action)) {
-> +			NL_SET_ERR_MSG_MOD(extack,
-> +					   "Only one action is supported");
-> +			return -EOPNOTSUPP;
-> +		}
-> +
-> +		action = &f->rule->action.entries[0];
-> +
-> +		if (action->id != FLOW_ACTION_POLICE) {
-> +			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
-> +			return -EOPNOTSUPP;
-> +		}
+[    4.201410] BUG: unable to handle kernel paging request at ffffffffffffffe8
+[    4.207829] IP: vsock_addr_equals_addr+0x3/0x20
+[    4.211379] PGD 28210067 P4D 28210067 PUD 28212067 PMD 0
+[    4.211379] Oops: 0000 [#1] PREEMPT SMP PTI
+[    4.211379] Modules linked in:
+[    4.211379] CPU: 1 PID: 30 Comm: kworker/1:1 Not tainted 4.14.106-419297-gd7e28cc1f241 #1
+[    4.211379] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
+[    4.211379] Workqueue: virtio_vsock virtio_transport_rx_work
+[    4.211379] task: ffffa3273d175280 task.stack: ffffaea1800e8000
+[    4.211379] RIP: 0010:vsock_addr_equals_addr+0x3/0x20
+[    4.211379] RSP: 0000:ffffaea1800ebd28 EFLAGS: 00010286
+[    4.211379] RAX: 0000000000000002 RBX: 0000000000000000 RCX: ffffffffb94e42f0
+[    4.211379] RDX: 0000000000000400 RSI: ffffffffffffffe0 RDI: ffffaea1800ebdd0
+[    4.211379] RBP: ffffaea1800ebd58 R08: 0000000000000001 R09: 0000000000000001
+[    4.211379] R10: 0000000000000000 R11: ffffffffb89d5d60 R12: ffffaea1800ebdd0
+[    4.211379] R13: 00000000828cbfbf R14: 0000000000000000 R15: ffffaea1800ebdc0
+[    4.211379] FS:  0000000000000000(0000) GS:ffffa3273fd00000(0000) knlGS:0000000000000000
+[    4.211379] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    4.211379] CR2: ffffffffffffffe8 CR3: 000000002820e001 CR4: 00000000001606e0
+[    4.211379] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    4.211379] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    4.211379] Call Trace:
+[    4.211379]  ? vsock_find_connected_socket+0x6c/0xe0
+[    4.211379]  virtio_transport_recv_pkt+0x15f/0x740
+[    4.211379]  ? detach_buf+0x1b5/0x210
+[    4.211379]  virtio_transport_rx_work+0xb7/0x140
+[    4.211379]  process_one_work+0x1ef/0x480
+[    4.211379]  worker_thread+0x312/0x460
+[    4.211379]  kthread+0x132/0x140
+[    4.211379]  ? process_one_work+0x480/0x480
+[    4.211379]  ? kthread_destroy_worker+0xd0/0xd0
+[    4.211379]  ret_from_fork+0x35/0x40
+[    4.211379] Code: c7 47 08 00 00 00 00 66 c7 07 28 00 c7 47 08 ff ff ff ff c7 47 04 ff ff ff ff c3 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 8b 47 08 <3b> 46 08 75 0a 8b 47 04 3b 46 04 0f 94 c0 c3 31 c0 c3 90 66 2e
+[    4.211379] RIP: vsock_addr_equals_addr+0x3/0x20 RSP: ffffaea1800ebd28
+[    4.211379] CR2: ffffffffffffffe8
+[    4.211379] ---[ end trace f31cc4a2e6df3689 ]---
+[    4.211379] Kernel panic - not syncing: Fatal exception in interrupt
+[    4.211379] Kernel Offset: 0x37000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[    4.211379] Rebooting in 5 seconds..
 
-Please also reject the offload if block is shared, as HW policer state
-cannot be shared between ports, the way it is in SW.  You have to save
-whether the block is shared or not at bind time, see:
+Fixes: 22b5c0b63f32 ("vsock/virtio: fix kernel panic after device hot-unplug")
+Cc: Stefan Hajnoczi <stefanha@redhat.com>
+Cc: Stefano Garzarella <sgarzare@redhat.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: kvm@vger.kernel.org
+Cc: virtualization@lists.linux-foundation.org
+Cc: netdev@vger.kernel.org
+Cc: kernel-team@android.com
+Cc: stable@vger.kernel.org [4.9+]
+Signed-off-by: Jorge E. Moreira <jemoreira@google.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Acked-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/vmw_vsock/virtio_transport.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-d6787147e15d ("net/sched: remove block pointer from common offload structure")
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -702,28 +702,27 @@ static int __init virtio_vsock_init(void
+ 	if (!virtio_vsock_workqueue)
+ 		return -ENOMEM;
+ 
+-	ret = register_virtio_driver(&virtio_vsock_driver);
++	ret = vsock_core_init(&virtio_transport.transport);
+ 	if (ret)
+ 		goto out_wq;
+ 
+-	ret = vsock_core_init(&virtio_transport.transport);
++	ret = register_virtio_driver(&virtio_vsock_driver);
+ 	if (ret)
+-		goto out_vdr;
++		goto out_vci;
+ 
+ 	return 0;
+ 
+-out_vdr:
+-	unregister_virtio_driver(&virtio_vsock_driver);
++out_vci:
++	vsock_core_exit();
+ out_wq:
+ 	destroy_workqueue(virtio_vsock_workqueue);
+ 	return ret;
+-
+ }
+ 
+ static void __exit virtio_vsock_exit(void)
+ {
+-	vsock_core_exit();
+ 	unregister_virtio_driver(&virtio_vsock_driver);
++	vsock_core_exit();
+ 	destroy_workqueue(virtio_vsock_workqueue);
+ }
+ 
 
-> +		if (port->tc.police_id && port->tc.police_id != f->cookie) {
-> +			NL_SET_ERR_MSG_MOD(extack,
-> +					   "Only one policer per port is supported\n");
-> +			return -EEXIST;
-> +		}
-> +
-> +		pol.rate = (u32)div_u64(action->police.rate_bytes_ps, 1000) * 8;
-> +		pol.burst = (u32)div_u64(action->police.rate_bytes_ps *
-> +					 PSCHED_NS2TICKS(action->police.burst),
-> +					 PSCHED_TICKS_PER_SEC);
-> +
-> +		err = ocelot_port_policer_add(port, &pol);
-> +		if (err) {
-> +			NL_SET_ERR_MSG_MOD(extack, "Could not add policer\n");
-> +			return err;
-> +		}
-> +
-> +		port->tc.police_id = f->cookie;
-> +		return 0;
-> +	case TC_CLSMATCHALL_DESTROY:
-> +		if (port->tc.police_id != f->cookie)
-> +			return -ENOENT;
-> +
-> +		err = ocelot_port_policer_del(port);
-> +		if (err) {
-> +			NL_SET_ERR_MSG_MOD(extack,
-> +					   "Could not delete policer\n");
-> +			return err;
-> +		}
-> +		port->tc.police_id = 0;
-> +		return 0;
-> +	case TC_CLSMATCHALL_STATS: /* fall through */
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
+
