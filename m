@@ -2,79 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B931527B5E
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 13:07:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFD1B27B73
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 13:11:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729962AbfEWLHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 07:07:23 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:33441 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726429AbfEWLHX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 07:07:23 -0400
-X-Originating-IP: 90.88.22.185
-Received: from localhost (aaubervilliers-681-1-80-185.w90-88.abo.wanadoo.fr [90.88.22.185])
-        (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 13C8C1BF211;
-        Thu, 23 May 2019 11:07:15 +0000 (UTC)
-Date:   Thu, 23 May 2019 13:07:15 +0200
-From:   Maxime Ripard <maxime.ripard@bootlin.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>
-Subject: Re: [PATCH 6/8] dt-bindings: net: stmmac: Convert the binding to a
- schemas
-Message-ID: <20190523110715.ckyzpec3quxr26cp@flea>
-References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
- <ba1a5d8ad34a8c9ab99f504c04fbe65bde42081b.1558605170.git-series.maxime.ripard@bootlin.com>
- <78EB27739596EE489E55E81C33FEC33A0B92B864@DE02WEMBXB.internal.synopsys.com>
+        id S1728309AbfEWLLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 07:11:24 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:43578 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728518AbfEWLLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 07:11:24 -0400
+Received: by mail-ed1-f67.google.com with SMTP id w33so5299804edb.10
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 04:11:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=TEcYx4e8I1IBeEOAlN0GMJ9nUk33G79fZt9bS9b3jQw=;
+        b=R7r9sepU0OIjJsvBEnxyCj9QjM9C/wujdP528ef8E1yjBTSKW7Tt/tPjXogVmZNEj9
+         auFIAl2Pf2T2roo+4Qhx49PAbw0Krx6zFswCI6aZpl2fR/Auzifu5IEYBUhQV09v+lwA
+         MMQRixZDxJyg70M3eAHhSwfJf+762WIV2KS2Pa2T46To3drHHqqbmmvHSCxmzEeY6u7O
+         PfHsBIRSCIv+zCf/DL52daNUmITEadQgRNkMDrTigCc+LtRtUV4k3YsA/wvR855p42qa
+         4VFkcwbkMqwJ3lNwMk3iTCcqXm9Bu+cwmZu5vEHZVDFbn3tGM7FDW1fpX85/h3J8mPPy
+         KQPw==
+X-Gm-Message-State: APjAAAXN6IT5MT9GVeHJz50VJ0H+bOVT5N/AlZQ2BOUIS78w+JXVMoxj
+        AZnnZqyktTroMdUflKPXTRyUFw==
+X-Google-Smtp-Source: APXvYqzVQN2E/n7NMyN+o7d/FeA07G5C5giBp7Fy4y1Q2TrCQUrXc3jEJ0axiPSawB/9FYlrw10fug==
+X-Received: by 2002:a50:a389:: with SMTP id s9mr95264723edb.113.1558609882589;
+        Thu, 23 May 2019 04:11:22 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id 26sm4272690ejy.78.2019.05.23.04.11.21
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 23 May 2019 04:11:21 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E4AEC1800B1; Thu, 23 May 2019 13:11:20 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 1/3] xdp: Add bulk XDP_TX queue
+In-Reply-To: <1558609008-2590-2-git-send-email-makita.toshiaki@lab.ntt.co.jp>
+References: <1558609008-2590-1-git-send-email-makita.toshiaki@lab.ntt.co.jp> <1558609008-2590-2-git-send-email-makita.toshiaki@lab.ntt.co.jp>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 23 May 2019 13:11:20 +0200
+Message-ID: <8736l52zon.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B92B864@DE02WEMBXB.internal.synopsys.com>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> writes:
 
-On Thu, May 23, 2019 at 10:11:39AM +0000, Jose Abreu wrote:
-> From: Maxime Ripard <maxime.ripard@bootlin.com>
-> Date: Thu, May 23, 2019 at 10:56:49
+> XDP_TX is similar to XDP_REDIRECT as it essentially redirects packets to
+> the device itself. XDP_REDIRECT has bulk transmit mechanism to avoid the
+> heavy cost of indirect call but it also reduces lock acquisition on the
+> destination device that needs locks like veth and tun.
 >
-> > Switch the STMMAC / Synopsys DesignWare MAC controller binding to a YAML
-> > schema to enable the DT validation.
-> >
-> > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
->
-> How exactly can I see the final results of this ? Do you have any link ?
-> (I'm no expert in YAML at all).
+> XDP_TX does not use indirect calls but drivers which require locks can
+> benefit from the bulk transmit for XDP_TX as well.
 
-You need some extra tooling, that you can find here:
-https://github.com/devicetree-org/dt-schema
+XDP_TX happens on the same device, so there's an implicit bulking
+happening because of the NAPI cycle. So why is an additional mechanism
+needed (in the general case)?
 
-You can then run make dtbs_check, and those YAML files will be used to
-validate that any devicetree using those properties are doing it
-properly. That implies having the right node names, properties, types,
-ranges of values when relevant, and so on.
-
-Maxime
-
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+-Toke
