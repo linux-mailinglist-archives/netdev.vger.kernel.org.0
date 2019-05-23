@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4692527B38
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 12:58:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 986F727B3D
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 12:59:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730328AbfEWK6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 06:58:39 -0400
-Received: from tama500.ecl.ntt.co.jp ([129.60.39.148]:35441 "EHLO
-        tama500.ecl.ntt.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726310AbfEWK6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 06:58:39 -0400
+        id S1730379AbfEWK7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 06:59:02 -0400
+Received: from tama50.ecl.ntt.co.jp ([129.60.39.147]:48950 "EHLO
+        tama50.ecl.ntt.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726310AbfEWK7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 06:59:02 -0400
 Received: from vc2.ecl.ntt.co.jp (vc2.ecl.ntt.co.jp [129.60.86.154])
-        by tama500.ecl.ntt.co.jp (8.13.8/8.13.8) with ESMTP id x4NAwHWn029945;
-        Thu, 23 May 2019 19:58:17 +0900
+        by tama50.ecl.ntt.co.jp (8.13.8/8.13.8) with ESMTP id x4NAwdNp024516;
+        Thu, 23 May 2019 19:58:39 +0900
 Received: from vc2.ecl.ntt.co.jp (localhost [127.0.0.1])
-        by vc2.ecl.ntt.co.jp (Postfix) with ESMTP id 5B4B9639047;
-        Thu, 23 May 2019 19:58:17 +0900 (JST)
+        by vc2.ecl.ntt.co.jp (Postfix) with ESMTP id 4D5D8639047;
+        Thu, 23 May 2019 19:58:39 +0900 (JST)
 Received: from jcms-pop21.ecl.ntt.co.jp (jcms-pop21.ecl.ntt.co.jp [129.60.87.134])
-        by vc2.ecl.ntt.co.jp (Postfix) with ESMTP id 50022638C92;
-        Thu, 23 May 2019 19:58:17 +0900 (JST)
+        by vc2.ecl.ntt.co.jp (Postfix) with ESMTP id 41CC7639042;
+        Thu, 23 May 2019 19:58:39 +0900 (JST)
 Received: from makita-ubuntu.m.ecl.ntt.co.jp (eb8460w-makita.sic.ecl.ntt.co.jp [129.60.241.47])
-        by jcms-pop21.ecl.ntt.co.jp (Postfix) with ESMTPSA id 45B314007AA;
-        Thu, 23 May 2019 19:58:17 +0900 (JST)
+        by jcms-pop21.ecl.ntt.co.jp (Postfix) with ESMTPSA id 372EF4007AA;
+        Thu, 23 May 2019 19:58:39 +0900 (JST)
 From:   Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
-Subject: [PATCH bpf-next 2/3] xdp: Add tracepoint for bulk XDP_TX
-Date:   Thu, 23 May 2019 19:56:47 +0900
-Message-Id: <1558609008-2590-3-git-send-email-makita.toshiaki@lab.ntt.co.jp>
+Subject: [PATCH bpf-next 3/3] veth: Support bulk XDP_TX
+Date:   Thu, 23 May 2019 19:56:48 +0900
+Message-Id: <1558609008-2590-4-git-send-email-makita.toshiaki@lab.ntt.co.jp>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1558609008-2590-1-git-send-email-makita.toshiaki@lab.ntt.co.jp>
 References: <1558609008-2590-1-git-send-email-makita.toshiaki@lab.ntt.co.jp>
@@ -46,60 +46,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is introduced for admins to check what is happening on XDP_TX when
-bulk XDP_TX is in use.
+This improves XDP_TX performance by about 8%.
+
+Here are single core XDP_TX test results. CPU consumptions are taken
+from "perf report --no-child".
+
+- Before:
+
+  7.26 Mpps
+
+  _raw_spin_lock  7.83%
+  veth_xdp_xmit  12.23%
+
+- After:
+
+  7.84 Mpps
+
+  _raw_spin_lock  1.17%
+  veth_xdp_xmit   6.45%
 
 Signed-off-by: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
 ---
- include/trace/events/xdp.h | 25 +++++++++++++++++++++++++
- kernel/bpf/core.c          |  1 +
- 2 files changed, 26 insertions(+)
+ drivers/net/veth.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
-index e95cb86..e06ea65 100644
---- a/include/trace/events/xdp.h
-+++ b/include/trace/events/xdp.h
-@@ -50,6 +50,31 @@
- 		  __entry->ifindex)
- );
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 52110e5..4edc75f 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -442,6 +442,23 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
+ 	return ret;
+ }
  
-+TRACE_EVENT(xdp_bulk_tx,
++static void veth_xdp_flush_bq(struct net_device *dev)
++{
++	struct xdp_tx_bulk_queue *bq = this_cpu_ptr(&xdp_tx_bq);
++	int sent, i, err = 0;
 +
-+	TP_PROTO(const struct net_device *dev,
-+		 int sent, int drops, int err),
++	sent = veth_xdp_xmit(dev, bq->count, bq->q, 0);
++	if (sent < 0) {
++		err = sent;
++		sent = 0;
++		for (i = 0; i < bq->count; i++)
++			xdp_return_frame(bq->q[i]);
++	}
++	trace_xdp_bulk_tx(dev, sent, bq->count - sent, err);
 +
-+	TP_ARGS(dev, sent, drops, err),
++	bq->count = 0;
++}
 +
-+	TP_STRUCT__entry(
-+		__field(int, ifindex)
-+		__field(int, drops)
-+		__field(int, sent)
-+		__field(int, err)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->ifindex	= dev->ifindex;
-+		__entry->drops		= drops;
-+		__entry->sent		= sent;
-+		__entry->err		= err;
-+	),
-+
-+	TP_printk("ifindex=%d sent=%d drops=%d err=%d",
-+		  __entry->ifindex, __entry->sent, __entry->drops, __entry->err)
-+);
-+
- DECLARE_EVENT_CLASS(xdp_redirect_template,
+ static void veth_xdp_flush(struct net_device *dev)
+ {
+ 	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
+@@ -449,6 +466,7 @@ static void veth_xdp_flush(struct net_device *dev)
+ 	struct veth_rq *rq;
  
- 	TP_PROTO(const struct net_device *dev,
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 242a643..7687488 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2108,3 +2108,4 @@ int __weak skb_copy_bits(const struct sk_buff *skb, int offset, void *to,
- #include <linux/bpf_trace.h>
+ 	rcu_read_lock();
++	veth_xdp_flush_bq(dev);
+ 	rcv = rcu_dereference(priv->peer);
+ 	if (unlikely(!rcv))
+ 		goto out;
+@@ -466,12 +484,18 @@ static void veth_xdp_flush(struct net_device *dev)
  
- EXPORT_TRACEPOINT_SYMBOL_GPL(xdp_exception);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(xdp_bulk_tx);
+ static int veth_xdp_tx(struct net_device *dev, struct xdp_buff *xdp)
+ {
++	struct xdp_tx_bulk_queue *bq = this_cpu_ptr(&xdp_tx_bq);
+ 	struct xdp_frame *frame = convert_to_xdp_frame(xdp);
+ 
+ 	if (unlikely(!frame))
+ 		return -EOVERFLOW;
+ 
+-	return veth_xdp_xmit(dev, 1, &frame, 0);
++	if (unlikely(bq->count == XDP_TX_BULK_SIZE))
++		veth_xdp_flush_bq(dev);
++
++	bq->q[bq->count++] = frame;
++
++	return 0;
+ }
+ 
+ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
 -- 
 1.8.3.1
 
