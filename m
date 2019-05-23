@@ -2,153 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0AB28DF6
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 01:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3356528E3F
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 02:08:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388492AbfEWXnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 19:43:25 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:49542 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388129AbfEWXnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 19:43:25 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4NNea3u006535;
-        Thu, 23 May 2019 16:43:03 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=f056jcvQEMd8XhBuxKG3eAcSjUdhkSgLRalk/El0N+A=;
- b=F4T0GEL1HOFBoMyaZLkCnbWi57oAi5qJzhOOsf+TsXSqgM2aUV5isfi1KP99pIko6SRg
- GnH1oE8bl4iP/CD5aJi525wNhogjZS6ZE8HMgdHXuLtzt7sgKE8eO1eIvew0otokB7P1
- PqM4MiBv5w0dCMgWmX0pfBZ/vk4irk1qbIA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sp3e0rcjh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 23 May 2019 16:43:03 -0700
-Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
- ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 23 May 2019 16:43:02 -0700
-Received: from ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) by
- ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 23 May 2019 16:43:02 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 23 May 2019 16:43:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f056jcvQEMd8XhBuxKG3eAcSjUdhkSgLRalk/El0N+A=;
- b=GiO2qQwpaobSq+eJipapKcGrkwbwGvuBZ2A7X+ocKiXnnGTH35BEct8xvFDZCUmYv6mqKC4A1AEz7hQIgv8/6LBrucAHtqtaIuNDvgAMvqWt+Ngiz0vSo2iZUL8wJdfL7623/ulDzwCCOsViIUFlrbmWTFtaG82/bc1RpBxg9+A=
-Received: from BYAPR15MB2631.namprd15.prod.outlook.com (20.179.156.24) by
- BYAPR15MB3142.namprd15.prod.outlook.com (20.178.239.215) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.18; Thu, 23 May 2019 23:43:00 +0000
-Received: from BYAPR15MB2631.namprd15.prod.outlook.com
- ([fe80::d4f6:b485:69ee:fd9a]) by BYAPR15MB2631.namprd15.prod.outlook.com
- ([fe80::d4f6:b485:69ee:fd9a%7]) with mapi id 15.20.1922.018; Thu, 23 May 2019
- 23:43:00 +0000
-From:   Roman Gushchin <guro@fb.com>
-To:     Yonghong Song <yhs@fb.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tejun Heo <tj@kernel.org>, Kernel Team <Kernel-team@fb.com>,
-        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 bpf-next 4/4] selftests/bpf: add auto-detach test
-Thread-Topic: [PATCH v3 bpf-next 4/4] selftests/bpf: add auto-detach test
-Thread-Index: AQHVEaCPg78JwYs3bk+j5PuTlvgUDqZ5VeUAgAAJVwA=
-Date:   Thu, 23 May 2019 23:43:00 +0000
-Message-ID: <20190523234254.GA17907@tower.DHCP.thefacebook.com>
-References: <20190523194532.2376233-1-guro@fb.com>
- <20190523194532.2376233-5-guro@fb.com>
- <4ff840cb-7e24-62d5-4ea7-fbca34218800@fb.com>
-In-Reply-To: <4ff840cb-7e24-62d5-4ea7-fbca34218800@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR0201CA0078.namprd02.prod.outlook.com
- (2603:10b6:301:75::19) To BYAPR15MB2631.namprd15.prod.outlook.com
- (2603:10b6:a03:152::24)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:3036]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8a2cdaf1-f1b0-4ac0-4db2-08d6dfd863de
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR15MB3142;
-x-ms-traffictypediagnostic: BYAPR15MB3142:
-x-microsoft-antispam-prvs: <BYAPR15MB3142D0BF135F4F5CC5E64E5DBE010@BYAPR15MB3142.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 00462943DE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(136003)(39860400002)(346002)(396003)(376002)(189003)(199004)(486006)(81156014)(81166006)(33656002)(8936002)(6862004)(4326008)(25786009)(14454004)(316002)(186003)(99286004)(53936002)(68736007)(54906003)(66446008)(6246003)(256004)(2906002)(64756008)(5024004)(66476007)(66556008)(8676002)(66946007)(6116002)(73956011)(76176011)(6512007)(46003)(9686003)(386003)(6506007)(53546011)(71200400001)(71190400001)(1076003)(5660300002)(446003)(4744005)(6486002)(476003)(102836004)(52116002)(478600001)(86362001)(11346002)(6436002)(229853002)(6636002)(7736002)(305945005);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3142;H:BYAPR15MB2631.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: csUhtAAKF1/GJtflklgpZYsuPVt80h40oYov75PbRGEc0l1h7slRAcK0dYQtkmfPxg0Bti3Dk4l6m/hPhKewY2Bv/yY/BKcFiUpxk8z/8Nu9X1RVbC3zqkgPkR2WK5ioVYWVmHn7PM5VuHv4kR4p3rgvjRZHmj53CQhzOFUkNSV93cE5e7O8S2jyPDap1/6AxrHHi6MHrKFrWyOqfEy1WYijLQBoLXT4Vn77m56qxnWx4ciSQ1ecGaTke3wKYKU/12hzZnGHtHYemvopPHgDCbmScCSiJPFvizd7reV8T8OuaedcOyd8TirGPTiXL1VnRiu5bfNKFokQ3RchrTE+OTSRhH948VXvoNJxcvOCUo6192U3wA1oTqDjO9u22PMmcbGauaMdXowXt0VJbi/ctmL196pjJhI9Atyz8HE8iZM=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <939DF126ABA27447928EED9237DE1734@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S2388785AbfEXAIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 20:08:36 -0400
+Received: from gateway23.websitewelcome.com ([192.185.48.104]:23459 "EHLO
+        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388653AbfEXAIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 20:08:35 -0400
+X-Greylist: delayed 1496 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 May 2019 20:08:34 EDT
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 33BBD1015B
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 18:43:37 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id TxN3hHYHF90onTxN3hLgM5; Thu, 23 May 2019 18:43:37 -0500
+X-Authority-Reason: nr=8
+Received: from [189.250.47.159] (port=44276 helo=[192.168.1.76])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.91)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hTxN2-001tlo-Mo; Thu, 23 May 2019 18:43:36 -0500
+Subject: Re: [PATCH net-next] xprtrdma: Use struct_size() in kzalloc()
+To:     David Miller <davem@davemloft.net>
+Cc:     chuck.lever@oracle.com, trond.myklebust@hammerspace.com,
+        anna.schumaker@netapp.com, bfields@fieldses.org,
+        jlayton@kernel.org, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <07CB966E-A946-4956-8480-C0FC13E13E4E@oracle.com>
+ <ad9eccc7-afd2-3419-b886-6210eeabd5b5@embeddedor.com>
+ <70ca0dea-6f1f-922c-7c5d-e79c6cf6ecb5@embeddedor.com>
+ <20190523.163229.1499181553844972278.davem@davemloft.net>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ mQINBFssHAwBEADIy3ZoPq3z5UpsUknd2v+IQud4TMJnJLTeXgTf4biSDSrXn73JQgsISBwG
+ 2Pm4wnOyEgYUyJd5tRWcIbsURAgei918mck3tugT7AQiTUN3/5aAzqe/4ApDUC+uWNkpNnSV
+ tjOx1hBpla0ifywy4bvFobwSh5/I3qohxDx+c1obd8Bp/B/iaOtnq0inli/8rlvKO9hp6Z4e
+ DXL3PlD0QsLSc27AkwzLEc/D3ZaqBq7ItvT9Pyg0z3Q+2dtLF00f9+663HVC2EUgP25J3xDd
+ 496SIeYDTkEgbJ7WYR0HYm9uirSET3lDqOVh1xPqoy+U9zTtuA9NQHVGk+hPcoazSqEtLGBk
+ YE2mm2wzX5q2uoyptseSNceJ+HE9L+z1KlWW63HhddgtRGhbP8pj42bKaUSrrfDUsicfeJf6
+ m1iJRu0SXYVlMruGUB1PvZQ3O7TsVfAGCv85pFipdgk8KQnlRFkYhUjLft0u7CL1rDGZWDDr
+ NaNj54q2CX9zuSxBn9XDXvGKyzKEZ4NY1Jfw+TAMPCp4buawuOsjONi2X0DfivFY+ZsjAIcx
+ qQMglPtKk/wBs7q2lvJ+pHpgvLhLZyGqzAvKM1sVtRJ5j+ARKA0w4pYs5a5ufqcfT7dN6TBk
+ LXZeD9xlVic93Ju08JSUx2ozlcfxq+BVNyA+dtv7elXUZ2DrYwARAQABtCxHdXN0YXZvIEEu
+ IFIuIFNpbHZhIDxndXN0YXZvQGVtYmVkZGVkb3IuY29tPokCPQQTAQgAJwUCWywcDAIbIwUJ
+ CWYBgAULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRBHBbTLRwbbMZ6tEACk0hmmZ2FWL1Xi
+ l/bPqDGFhzzexrdkXSfTTZjBV3a+4hIOe+jl6Rci/CvRicNW4H9yJHKBrqwwWm9fvKqOBAg9
+ obq753jydVmLwlXO7xjcfyfcMWyx9QdYLERTeQfDAfRqxir3xMeOiZwgQ6dzX3JjOXs6jHBP
+ cgry90aWbaMpQRRhaAKeAS14EEe9TSIly5JepaHoVdASuxklvOC0VB0OwNblVSR2S5i5hSsh
+ ewbOJtwSlonsYEj4EW1noQNSxnN/vKuvUNegMe+LTtnbbocFQ7dGMsT3kbYNIyIsp42B5eCu
+ JXnyKLih7rSGBtPgJ540CjoPBkw2mCfhj2p5fElRJn1tcX2McsjzLFY5jK9RYFDavez5w3lx
+ JFgFkla6sQHcrxH62gTkb9sUtNfXKucAfjjCMJ0iuQIHRbMYCa9v2YEymc0k0RvYr43GkA3N
+ PJYd/vf9vU7VtZXaY4a/dz1d9dwIpyQARFQpSyvt++R74S78eY/+lX8wEznQdmRQ27kq7BJS
+ R20KI/8knhUNUJR3epJu2YFT/JwHbRYC4BoIqWl+uNvDf+lUlI/D1wP+lCBSGr2LTkQRoU8U
+ 64iK28BmjJh2K3WHmInC1hbUucWT7Swz/+6+FCuHzap/cjuzRN04Z3Fdj084oeUNpP6+b9yW
+ e5YnLxF8ctRAp7K4yVlvA7kCDQRbLBwMARAAsHCE31Ffrm6uig1BQplxMV8WnRBiZqbbsVJB
+ H1AAh8tq2ULl7udfQo1bsPLGGQboJSVN9rckQQNahvHAIK8ZGfU4Qj8+CER+fYPp/MDZj+t0
+ DbnWSOrG7z9HIZo6PR9z4JZza3Hn/35jFggaqBtuydHwwBANZ7A6DVY+W0COEU4of7CAahQo
+ 5NwYiwS0lGisLTqks5R0Vh+QpvDVfuaF6I8LUgQR/cSgLkR//V1uCEQYzhsoiJ3zc1HSRyOP
+ otJTApqGBq80X0aCVj1LOiOF4rrdvQnj6iIlXQssdb+WhSYHeuJj1wD0ZlC7ds5zovXh+FfF
+ l5qH5RFY/qVn3mNIVxeO987WSF0jh+T5ZlvUNdhedGndRmwFTxq2Li6GNMaolgnpO/CPcFpD
+ jKxY/HBUSmaE9rNdAa1fCd4RsKLlhXda+IWpJZMHlmIKY8dlUybP+2qDzP2lY7kdFgPZRU+e
+ zS/pzC/YTzAvCWM3tDgwoSl17vnZCr8wn2/1rKkcLvTDgiJLPCevqpTb6KFtZosQ02EGMuHQ
+ I6Zk91jbx96nrdsSdBLGH3hbvLvjZm3C+fNlVb9uvWbdznObqcJxSH3SGOZ7kCHuVmXUcqoz
+ ol6ioMHMb+InrHPP16aVDTBTPEGwgxXI38f7SUEn+NpbizWdLNz2hc907DvoPm6HEGCanpcA
+ EQEAAYkCJQQYAQgADwUCWywcDAIbDAUJCWYBgAAKCRBHBbTLRwbbMdsZEACUjmsJx2CAY+QS
+ UMebQRFjKavwXB/xE7fTt2ahuhHT8qQ/lWuRQedg4baInw9nhoPE+VenOzhGeGlsJ0Ys52sd
+ XvUjUocKgUQq6ekOHbcw919nO5L9J2ejMf/VC/quN3r3xijgRtmuuwZjmmi8ct24TpGeoBK4
+ WrZGh/1hAYw4ieARvKvgjXRstcEqM5thUNkOOIheud/VpY+48QcccPKbngy//zNJWKbRbeVn
+ imua0OpqRXhCrEVm/xomeOvl1WK1BVO7z8DjSdEBGzbV76sPDJb/fw+y+VWrkEiddD/9CSfg
+ fBNOb1p1jVnT2mFgGneIWbU0zdDGhleI9UoQTr0e0b/7TU+Jo6TqwosP9nbk5hXw6uR5k5PF
+ 8ieyHVq3qatJ9K1jPkBr8YWtI5uNwJJjTKIA1jHlj8McROroxMdI6qZ/wZ1ImuylpJuJwCDC
+ ORYf5kW61fcrHEDlIvGc371OOvw6ejF8ksX5+L2zwh43l/pKkSVGFpxtMV6d6J3eqwTafL86
+ YJWH93PN+ZUh6i6Rd2U/i8jH5WvzR57UeWxE4P8bQc0hNGrUsHQH6bpHV2lbuhDdqo+cM9eh
+ GZEO3+gCDFmKrjspZjkJbB5Gadzvts5fcWGOXEvuT8uQSvl+vEL0g6vczsyPBtqoBLa9SNrS
+ VtSixD1uOgytAP7RWS474w==
+Message-ID: <c8d7982b-cf18-adc0-aa70-81b8ee5ae780@embeddedor.com>
+Date:   Thu, 23 May 2019 18:43:34 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a2cdaf1-f1b0-4ac0-4db2-08d6dfd863de
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2019 23:43:00.3605
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: guro@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3142
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-23_18:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=471 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905230153
-X-FB-Internal: deliver
+In-Reply-To: <20190523.163229.1499181553844972278.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.47.159
+X-Source-L: No
+X-Exim-ID: 1hTxN2-001tlo-Mo
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.1.76]) [189.250.47.159]:44276
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 20
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 04:09:30PM -0700, Yonghong Song wrote:
->=20
->=20
-> On 5/23/19 12:45 PM, Roman Gushchin wrote:
-> > Add a kselftest to cover bpf auto-detachment functionality.
-> > The test creates a cgroup, associates some resources with it,
-> > attaches a couple of bpf programs and deletes the cgroup.
-> >=20
-> > Then it checks that bpf programs are going away in 5 seconds.
-> >=20
-> > Expected output:
-> >    $ ./test_cgroup_attach
-> >    #override:PASS
-> >    #multi:PASS
-> >    #autodetach:PASS
-> >    test_cgroup_attach:PASS
-> >=20
-> > On a kernel without auto-detaching:
-> >    $ ./test_cgroup_attach
-> >    #override:PASS
-> >    #multi:PASS
-> >    #autodetach:FAIL
-> >    test_cgroup_attach:FAIL
-> >=20
-> > Signed-off-by: Roman Gushchin <guro@fb.com>
->=20
-> Looks good to me. It will be good if you can add test_cgroup_attach
-> to .gitignore to avoid it shows up in `git status`. With that,
 
-I don't think it deserves a new version, I'll prepare a separate patch
-for it.
 
->=20
-> Acked-by: Yonghong Song <yhs@fb.com>
+On 5/23/19 6:32 PM, David Miller wrote:
+> From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+> Date: Thu, 23 May 2019 17:36:00 -0500
+> 
+>> Hi Dave,
+>>
+>> I wonder if you can take this patch.
+> 
+> The sunrpc/nfs maintainer should take this.  I never take patches in that
+> area.
+> 
 
-Thank you for the review!
+Yep. Chuck just let me know that Anna is who take these patches.
+
+Hopefully, she will take this one soon.
+
+Thanks
+--
+Gustavo
