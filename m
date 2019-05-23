@@ -2,78 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7B39281DD
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 17:55:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A718281F9
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 17:58:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730918AbfEWPzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 11:55:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46362 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730752AbfEWPzR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 11:55:17 -0400
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D071217F9;
-        Thu, 23 May 2019 15:55:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558626916;
-        bh=JUOPRAHlxD37cj7X5mjXujgKukJ+EI5g3Of9neklXRc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Ocp40sto8Gq6/0uRuAdHyZHHkF2oG0CIBODLzqqtKumSJxpWuCby6vxTFj19gf+eG
-         9FIWW+5EJzp220GZ5j8OH62sdyNyEuCD+eRtoGun/U2S9jWpB4JlUEt4bCAxHyel/w
-         mZK/3l5p6LCRP+bLZqB9mlMk2s0vqj6Wz6G6CFcM=
-Received: by mail-qt1-f178.google.com with SMTP id y42so7315177qtk.6;
-        Thu, 23 May 2019 08:55:16 -0700 (PDT)
-X-Gm-Message-State: APjAAAUJ1Ge1xsbBmY44FJDZ8D2eFqS4uXMmq5mgoTW+4u246I65MU22
-        j6wFwbZkFkIGly6g68LIDx1AQxZWss69dj26zQ==
-X-Google-Smtp-Source: APXvYqwEEihkSXSYkUOGNw6QZNJ7c5VF8WdzMUhYcRqzxhUuKrUfiTJdsCIvlXDQgQ80MHzHtm0PBbhB4PgJSALMZ1k=
-X-Received: by 2002:ac8:6b14:: with SMTP id w20mr60341941qts.110.1558626915748;
- Thu, 23 May 2019 08:55:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
- <6f16585ffdc75af4e023c4d3ebba68feb65cc26e.1558605170.git-series.maxime.ripard@bootlin.com>
-In-Reply-To: <6f16585ffdc75af4e023c4d3ebba68feb65cc26e.1558605170.git-series.maxime.ripard@bootlin.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 23 May 2019 10:55:04 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+PMT99aw5bkp515XDpKELdpXB2BH_n6e-BwQS+KAHy0Q@mail.gmail.com>
-Message-ID: <CAL_Jsq+PMT99aw5bkp515XDpKELdpXB2BH_n6e-BwQS+KAHy0Q@mail.gmail.com>
-Subject: Re: [PATCH 7/8] dt-bindings: net: sun7i-gmac: Convert the binding to
- a schemas
-To:     Maxime Ripard <maxime.ripard@bootlin.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1731093AbfEWP6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 11:58:36 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46981 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730782AbfEWP6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 11:58:36 -0400
+Received: by mail-pg1-f196.google.com with SMTP id o11so3169026pgm.13
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 08:58:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=MxXnx92be2nvF7xZ7bbdR68LKvIJOLf//2lMxqyf48g=;
+        b=hvpc3gpukMGUq7Ov7toOO2z72FB9I2W7YDgyHfAiOKYca1iuBFnk5QPEsd9GHXq274
+         sJJUHpt/T0Gg8VyN3OW4jH0sc1nwtlkbp/kSq5cP2H+juRnkiJgkCpSo5iDB/hjagTiD
+         C6eY5g1OnjrWQeYLm073BWKjsNIHqu4QxqedH6QNni9MKpCZIp1EP5+1S6BET0sYb1U6
+         lJDU+ZBrS/NDJaKGXf2z1aifOz/ELvG4x2ixvreJlJDJs+4C+bCzJlSswgIiGRv0LRbf
+         N6zCo/9Fe6iaTLXNbWp/k4ogW5SWZhX8GrezbmCOuwR9J4TbjoQeIFtzn0EtDBIoyatt
+         ZUQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=MxXnx92be2nvF7xZ7bbdR68LKvIJOLf//2lMxqyf48g=;
+        b=MHt56yhCPIVqMd7wB62B6HGZmXlgCUwjN8QRq15l5olvOtc3V5dcQisZhOSllvlzqd
+         eebDdPOHe8SbyOnKokisSwmm0SllshSDw3DgJmYWL3uEAfTsLJ/ku3I0rXRlGGpxa0tn
+         QIxtlnjc7dyU3tLhXLMOkHs0+NvnI47U8Qw3bPYEKAzdAH9kOQzka3RkiIB5/po9eCH3
+         A2QlH2el5HrymGsPQQXId4e+Qt6Arxfjoihk24Ohww7fM9JKOxtkQK1YLx7YZJjASKYc
+         nEKNyXqH0lfNXn7vmLM/+no8oKj1OAJAFEOB/kZK+NJotnNlB20qknMeojt67IWCaxfg
+         O2TA==
+X-Gm-Message-State: APjAAAXYBOvL2mxYFdDMflltX6yzHN2B7NVD3nPRGVqzUS6nuMFsjfts
+        wIlsIm2QWrK+1vOVZ3Vlt680/SzZJa4=
+X-Google-Smtp-Source: APXvYqxKT5iJ2j9LMwVeDWUW8iR9cwvkqzhrpKiKd/iYF3iW8UnkDLJzt5wn59B0vm++qVruStUCCQ==
+X-Received: by 2002:a62:e205:: with SMTP id a5mr67429492pfi.40.1558627115892;
+        Thu, 23 May 2019 08:58:35 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id a3sm30701760pgl.74.2019.05.23.08.58.33
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 23 May 2019 08:58:35 -0700 (PDT)
+Date:   Thu, 23 May 2019 08:58:28 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        Marek Majkowski <marek@cloudflare.com>
+Message-ID: <5ce6c32418618_64ba2ad730e1a5b44@john-XPS-13-9360.notmuch>
+In-Reply-To: <87v9y2zqpz.fsf@cloudflare.com>
+References: <20190211090949.18560-1-jakub@cloudflare.com>
+ <5439765e-1288-c379-0ead-75597092a404@iogearbox.net>
+ <871s423i6d.fsf@cloudflare.com>
+ <5ce45a6fcd82d_48b72ac3337c45b85f@john-XPS-13-9360.notmuch>
+ <87v9y2zqpz.fsf@cloudflare.com>
+Subject: Re: [PATCH net] sk_msg: Keep reference on socket file while psock
+ lives
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 4:57 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
->
-> Switch our Allwinner A20 GMAC controller binding to a YAML schema to enable
-> the DT validation. Since that controller is based on a Synopsys IP, let's
-> add the validation to that schemas with a bunch of conditionals.
->
-> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-> ---
->  Documentation/devicetree/bindings/net/allwinner,sun7i-a20-gmac.txt | 27 ---------------------------
->  Documentation/devicetree/bindings/net/snps,dwmac.yaml              | 45 +++++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 45 insertions(+), 27 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/allwinner,sun7i-a20-gmac.txt
+[...]
 
-I think it would be better to keep these as separate files and either
-include snps,dwmac.yaml from it or only add the compatible to
-snps,dwmac.yaml.
+> 
+> Thanks for taking a look at it. Setting MSG_DONTWAIT works great for
+> me. No more crashes in sk_stream_wait_memory. I've tested it on top of
+> current bpf-next (f49aa1de9836). Here's my:
+> 
+>   Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
+> 
+> The actual I've tested is below, for completeness.
+> 
+> BTW. I've ran into another crash which I haven't seen before while
+> testing sockmap-echo, but it looks unrelated:
+> 
+>   https://lore.kernel.org/netdev/20190522100142.28925-1-jakub@cloudflare.com/
+> 
+> -Jakub
+> 
+> --- 8< ---
+> 
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index e89be6282693..4a7c656b195b 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -2337,6 +2337,7 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
+>                 kv.iov_base = skb->data + offset;
+>                 kv.iov_len = slen;
+>                 memset(&msg, 0, sizeof(msg));
+> +               msg.msg_flags = MSG_DONTWAIT;
+> 
+>                 ret = kernel_sendmsg_locked(sk, &msg, &kv, 1, slen);
+>                 if (ret <= 0)
 
-Rob
+I went ahead and submitted this feel free to add your signed-off-by.
+
+Thanks,
+John
