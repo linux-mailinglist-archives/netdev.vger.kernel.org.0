@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2896E28A14
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 21:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE72428873
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 21:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731977AbfEWTI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 15:08:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41888 "EHLO mail.kernel.org"
+        id S2391343AbfEWT01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 15:26:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731943AbfEWTI5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 15:08:57 -0400
+        id S2391322AbfEWT0Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 15:26:25 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 94A322133D;
-        Thu, 23 May 2019 19:08:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2C88A21855;
+        Thu, 23 May 2019 19:26:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558638536;
-        bh=Wl7opC0CjVbygYdQj18DNmpz8altT6vI1ljmtm2dfDE=;
+        s=default; t=1558639583;
+        bh=k5a2uGeSV8BCZEQP5DMuv8ykv8Uyr3yo+lrxvYUCLfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E6na2KSTsr9lAe65ql3OEhCh1HwOkwkxebW1uQBi/SHaeccuOnt/PziMB5mL8w0eh
-         Pi05qmtHc+Pr3q12Ngzl83ApFb/A1UKNfuNSydbQ+i05tPhOfuZCy7dR93j8cT+dUn
-         SZSUwF7oPsTKJQMw355UduOLEwwYPsJrBqTAW/qo=
+        b=yrb4Fu0/fWK+K7SsmBIR39UL9yw7wEpfdQdXrjsu+QHqiktSbtFgn5qUaovgQXybB
+         4x5Jz2DoRasXjzhpYZKtTHEZQQO4ciJzgxZ4E6H5nQxWdXC2LMWDvD14koabjktmHu
+         DdL8J7zlzE1kcUJjqNh3JNjV8Zh0zD39TgwQRk8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -31,12 +31,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S. Miller" <davem@davemloft.net>, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kernel-team@android.com, "Jorge E. Moreira" <jemoreira@google.com>
-Subject: [PATCH 4.9 07/53] vsock/virtio: Initialize core virtio vsock before registering the driver
-Date:   Thu, 23 May 2019 21:05:31 +0200
-Message-Id: <20190523181712.037112440@linuxfoundation.org>
+Subject: [PATCH 5.1 019/122] vsock/virtio: Initialize core virtio vsock before registering the driver
+Date:   Thu, 23 May 2019 21:05:41 +0200
+Message-Id: <20190523181707.367273069@linuxfoundation.org>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190523181710.981455400@linuxfoundation.org>
-References: <20190523181710.981455400@linuxfoundation.org>
+In-Reply-To: <20190523181705.091418060@linuxfoundation.org>
+References: <20190523181705.091418060@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -114,7 +114,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/net/vmw_vsock/virtio_transport.c
 +++ b/net/vmw_vsock/virtio_transport.c
-@@ -600,28 +600,27 @@ static int __init virtio_vsock_init(void
+@@ -702,28 +702,27 @@ static int __init virtio_vsock_init(void
  	if (!virtio_vsock_workqueue)
  		return -ENOMEM;
  
