@@ -2,146 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 460702761C
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 08:39:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54717276AD
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 09:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726237AbfEWGjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 02:39:01 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:43744 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725806AbfEWGjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 02:39:01 -0400
-Received: by mail-io1-f68.google.com with SMTP id v7so3939486iob.10;
-        Wed, 22 May 2019 23:39:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=cd4nIxL8cIdTtSfJ8zlgayG/NlTJsxYK4pUmR0DUFBM=;
-        b=MW1eC6dZ2sztolccPFu+mxN1WXnWPfIVVnKOxypJW0LmbZkypJyOjCHECVKfzjdZAg
-         77FcGNqb9ggMM90DzFuyy8ojHzYARaWEiIuzZmy83pViE3+wkZF3OczFtBw8yGLItk/n
-         jNPPYNPm0oQwddfGCCdxDXyrkNwirrLeGsZm7yplsFzVUyEVYYC0s8f2GlCLsy6roBPb
-         nfuLx8ytfJHW1JrRiODQiXchuUiMk6HOdNPSKAGDEyXhweO8W05qftBZTe3oKXNZ1LKo
-         tVo+AWDmp568392vkaHWULbVTT4Xp9Sn4kkXDTG5r2t7upzQe/HPjlaGL237Leic4T2e
-         7e3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=cd4nIxL8cIdTtSfJ8zlgayG/NlTJsxYK4pUmR0DUFBM=;
-        b=dbB0PrHp+z2QbhPKwVgWOpMuarSuovBHBaPw5BCIiNpzlWchHrXOWzlP/oB4Uat5je
-         daIh1DLESLxuA2kjvidID5Wk/B+y0FIKb94kxlJDGuDNLszfM0Vhir9TWKXSKR+g3i4m
-         w0OB5JxffQwKMoa6NHf8n/3sWZ6/BxJLL2EpcyvmKg70nD3F6n3i6S4gECYVvde2bB+q
-         ZMYS15ii64aizk9jdzxrtY2OdfVlncibJr9fwmXh22dFSSFoQAHAeF7deGiziktSHiN2
-         GT49UMTK8zlqN9z9p18hAIiBRrdrHyrKXoA38V1ZkgyUY23qUGmfD1urTuOwI4g6kqSv
-         6r1A==
-X-Gm-Message-State: APjAAAXzmgsLNcBcDxlrJz2wOXb0w/nfQT1UOGeFKOkD/CjBR9/N624S
-        1au56WPVuqXyM2jckCz6dKjVvBS6cEGfiPCnMFE=
-X-Google-Smtp-Source: APXvYqyZny2pWBnwjK1nAWdAG8D9+sUGbvRCrOcW7wMjAJekYfqeQPkCovp6HpdibEkbvL9bxXOuonu8BvtwVFGSe0Y=
-X-Received: by 2002:a05:6602:e:: with SMTP id b14mr3000473ioa.116.1558593540093;
- Wed, 22 May 2019 23:39:00 -0700 (PDT)
+        id S1726310AbfEWHE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 03:04:27 -0400
+Received: from david.siemens.de ([192.35.17.14]:53130 "EHLO david.siemens.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726070AbfEWHE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 03:04:27 -0400
+Received: from mail3.siemens.de (mail3.siemens.de [139.25.208.14])
+        by david.siemens.de (8.15.2/8.15.2) with ESMTPS id x4N74DYI003735
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 23 May 2019 09:04:13 +0200
+Received: from pluscontrol-debian-server.ppmd.SIEMENS.NET (pluscontrol-debian-server.ppmd.siemens.net [146.254.63.6])
+        by mail3.siemens.de (8.15.2/8.15.2) with ESMTP id x4N74A5C013555;
+        Thu, 23 May 2019 09:04:10 +0200
+From:   Andreas Oetken <andreas.oetken@siemens.com>
+Cc:     andreas@oetken.name, m-karicheri2@ti.com, a-kramer@ti.com,
+        Andreas Oetken <andreas.oetken@siemens.com>,
+        Arvid Brodin <arvid.brodin@alten.se>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3] hsr: fix don't prune the master node from the node_db
+Date:   Thu, 23 May 2019 09:02:37 +0200
+Message-Id: <20190523070238.17560-1-andreas.oetken@siemens.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190522092323.17435-1-bjorn.topel@gmail.com> <CAH3MdRWGeYZDCEPrw2HFpnq+8j+ehMj2uhNJS9HnFDw=LmK6PQ@mail.gmail.com>
- <CAJ+HfNhR2UozhqTrhDTmZNntmjRCWFyPyU2AaRdo-E6sJUZCKg@mail.gmail.com>
-In-Reply-To: <CAJ+HfNhR2UozhqTrhDTmZNntmjRCWFyPyU2AaRdo-E6sJUZCKg@mail.gmail.com>
-From:   Y Song <ys114321@gmail.com>
-Date:   Wed, 22 May 2019 23:38:24 -0700
-Message-ID: <CAH3MdRX6gocSFJCkuMuhko+0eheWqKq4Y4X-Tb3q=hzMW5buyw@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests: bpf: add zero extend checks for ALU32 and/or/xor
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 1:46 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.co=
-m> wrote:
->
-> On Wed, 22 May 2019 at 20:13, Y Song <ys114321@gmail.com> wrote:
-> >
-> > On Wed, May 22, 2019 at 2:25 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmai=
-l.com> wrote:
-> > >
-> > > Add three tests to test_verifier/basic_instr that make sure that the
-> > > high 32-bits of the destination register is cleared after an ALU32
-> > > and/or/xor.
-> > >
-> > > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
-> >
-> > I think the patch intends for bpf-next, right? The patch itself looks
-> > good to me.
-> > Acked-by: Yonghong Song <yhs@fb.com>
-> >
->
-> Thank you. Actually, it was intended for the bpf tree, as a test
-> follow up for this [1] fix.
-Then maybe you want to add a Fixes tag and resubmit?
->
->
-> Cheers,
-> Bj=C3=B6rn
->
-> [1] https://lore.kernel.org/bpf/CAJ+HfNifkxKz8df7gLBuqWA6+t6awrrRK6oW6m1n=
-AYETJD+Vfg@mail.gmail.com/
->
-> > > ---
-> > >  .../selftests/bpf/verifier/basic_instr.c      | 39 +++++++++++++++++=
-++
-> > >  1 file changed, 39 insertions(+)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/verifier/basic_instr.c b/too=
-ls/testing/selftests/bpf/verifier/basic_instr.c
-> > > index ed91a7b9a456..4d844089938e 100644
-> > > --- a/tools/testing/selftests/bpf/verifier/basic_instr.c
-> > > +++ b/tools/testing/selftests/bpf/verifier/basic_instr.c
-> > > @@ -132,3 +132,42 @@
-> > >         .prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
-> > >         .result =3D ACCEPT,
-> > >  },
-> > > +{
-> > > +       "and32 reg zero extend check",
-> > > +       .insns =3D {
-> > > +       BPF_MOV64_IMM(BPF_REG_0, -1),
-> > > +       BPF_MOV64_IMM(BPF_REG_2, -2),
-> > > +       BPF_ALU32_REG(BPF_AND, BPF_REG_0, BPF_REG_2),
-> > > +       BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-> > > +       BPF_EXIT_INSN(),
-> > > +       },
-> > > +       .prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
-> > > +       .result =3D ACCEPT,
-> > > +       .retval =3D 0,
-> > > +},
-> > > +{
-> > > +       "or32 reg zero extend check",
-> > > +       .insns =3D {
-> > > +       BPF_MOV64_IMM(BPF_REG_0, -1),
-> > > +       BPF_MOV64_IMM(BPF_REG_2, -2),
-> > > +       BPF_ALU32_REG(BPF_OR, BPF_REG_0, BPF_REG_2),
-> > > +       BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-> > > +       BPF_EXIT_INSN(),
-> > > +       },
-> > > +       .prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
-> > > +       .result =3D ACCEPT,
-> > > +       .retval =3D 0,
-> > > +},
-> > > +{
-> > > +       "xor32 reg zero extend check",
-> > > +       .insns =3D {
-> > > +       BPF_MOV64_IMM(BPF_REG_0, -1),
-> > > +       BPF_MOV64_IMM(BPF_REG_2, 0),
-> > > +       BPF_ALU32_REG(BPF_XOR, BPF_REG_0, BPF_REG_2),
-> > > +       BPF_ALU64_IMM(BPF_RSH, BPF_REG_0, 32),
-> > > +       BPF_EXIT_INSN(),
-> > > +       },
-> > > +       .prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
-> > > +       .result =3D ACCEPT,
-> > > +       .retval =3D 0,
-> > > +},
-> > > --
-> > > 2.20.1
-> > >
+Don't prune master node in the hsr_prune_nodes function.
+Neither time_in[HSR_PT_SLAVE_A], nor time_in[HSR_PT_SLAVE_B],
+will ever be updated by hsr_register_frame_in for the master port.
+Thus the master node will be repeatedly pruned leading to
+repeated packet loss.
+This bug never appeared because the hsr_prune_nodes function
+was only called once. Since commit 5150b45fd355
+("net: hsr: Fix node prune function for forget time expiry") this issue
+is fixed unvealing the issue described above.
+
+Fixes: 5150b45fd355 ("net: hsr: Fix node prune function for forget time expiry")
+Signed-off-by: Andreas Oetken <andreas.oetken@siemens.com>
+Tested-by: Murali Karicheri <m-karicheri2@ti.com>
+---
+ net/hsr/hsr_framereg.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+index 9fa9abd83018..2d7a19750436 100644
+--- a/net/hsr/hsr_framereg.c
++++ b/net/hsr/hsr_framereg.c
+@@ -365,6 +365,14 @@ void hsr_prune_nodes(struct timer_list *t)
+ 
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(node, &hsr->node_db, mac_list) {
++		/* Don't prune own node. Neither time_in[HSR_PT_SLAVE_A]
++		 * nor time_in[HSR_PT_SLAVE_B], will ever be updated for
++		 * the master port. Thus the master node will be repeatedly
++		 * pruned leading to packet loss.
++		 */
++		if (hsr_addr_is_self(hsr, node->macaddress_A))
++			continue;
++
+ 		/* Shorthand */
+ 		time_a = node->time_in[HSR_PT_SLAVE_A];
+ 		time_b = node->time_in[HSR_PT_SLAVE_B];
+-- 
+2.20.1
+
