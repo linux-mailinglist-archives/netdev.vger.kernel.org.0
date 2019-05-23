@@ -2,168 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AA41273E8
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 03:21:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 479E6273F1
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 03:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729781AbfEWBVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 21:21:03 -0400
-Received: from mail-eopbgr140079.outbound.protection.outlook.com ([40.107.14.79]:16354
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727305AbfEWBVC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 May 2019 21:21:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XKXLI8LZP3mvoxWJLTOYXXX5jX8l4mVBtl3lhiuTu3E=;
- b=XS9UBe0Iq7FcGrB41ljRRrpKyqfWbKLwp7gbGN5pV0WbnDxCnbbXeLFH3GDr+lEsVQ3BHx6qB3JF/a2et+AAbpygpzrDMUIjBPu09MgTJUKKi9vrko1O/RBZgcgwBGbA/+DpbCwl+aAyi5TZmvxp7OVjuyb5CPd9rEjMWoH998E=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB3677.eurprd04.prod.outlook.com (52.134.15.19) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.18; Thu, 23 May 2019 01:20:43 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::f494:9fa1:ebae:6053]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::f494:9fa1:ebae:6053%8]) with mapi id 15.20.1900.020; Thu, 23 May 2019
- 01:20:43 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [RFC PATCH net-next 9/9] net: dsa: sja1105: Fix broken fixed-link
- interfaces on user ports
-Thread-Topic: [RFC PATCH net-next 9/9] net: dsa: sja1105: Fix broken
- fixed-link interfaces on user ports
-Thread-Index: AQHVEQW9DS1DMtkTyEezAnqhFkmpow==
-Date:   Thu, 23 May 2019 01:20:43 +0000
-Message-ID: <20190523011958.14944-10-ioana.ciornei@nxp.com>
-References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
-In-Reply-To: <20190523011958.14944-1-ioana.ciornei@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: VI1P18901CA0009.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:801::19) To VI1PR0402MB2800.eurprd04.prod.outlook.com
- (2603:10a6:800:b8::10)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [5.12.225.227]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e59ca706-0b43-41d2-260e-08d6df1ce013
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB3677;
-x-ms-traffictypediagnostic: VI1PR0402MB3677:
-x-microsoft-antispam-prvs: <VI1PR0402MB3677097D5A29F139FF637D05E0010@VI1PR0402MB3677.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2043;
-x-forefront-prvs: 00462943DE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(136003)(396003)(366004)(346002)(376002)(199004)(189003)(25786009)(6512007)(316002)(2201001)(26005)(186003)(86362001)(2501003)(1076003)(36756003)(71200400001)(256004)(71190400001)(5660300002)(4326008)(66066001)(6486002)(14444005)(6436002)(3846002)(7736002)(305945005)(71446004)(99286004)(52116002)(50226002)(81156014)(8676002)(81166006)(8936002)(54906003)(110136005)(2906002)(6116002)(478600001)(68736007)(102836004)(76176011)(53936002)(486006)(2616005)(66446008)(6506007)(386003)(66946007)(73956011)(66556008)(44832011)(14454004)(476003)(11346002)(66476007)(64756008)(446003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3677;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: jx4AVBYmDt9Lx0gp55sknhQDHtYskdM+5YB///cHTuwJ2H2XFt3kEIWlYhFQuYZ77IHS5dVLCH7feVpLF70bEWM3PxaEP0ynrDZZMMpzuDFYETzXC5dTDzL9nltxmWOYWU+P1FAJOn/djq9PE3VQrGZAtUC9ZGiaeEISA4GDxUfo23aV3uMsPRpKyra99gTrT2tQOkz1Mmcw7G1JTAFl/dl3qv958zpwZvRbwc9tFvxA8UEcFi1LGGr1U5Ra64Tq9WFIbQttOzyUSI4mLRBJ+fFJ5a8GHSOX/pZJ/AsVepty1YsbPq11UdYqG1AE3n4bXZQcEBQpC1o3VIF7Bz2so+pGzeEEEZhSqR/YmWzTtN0tQ1mqG2bHnh8543hESBjRc2ii6Ey+nr5Vg6/QgKAHOaA6pP38QurXzUS+TH4IsTM=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <8815CBCC343E864B8EEE7ABCAD9B6F3A@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728352AbfEWBXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 21:23:51 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:38000 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727691AbfEWBXv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 21:23:51 -0400
+Received: by mail-qk1-f195.google.com with SMTP id p26so254986qkj.5
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 18:23:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=si8OKFhnQ+kH25iJ4HV6LVLS2U48yHnqV6NvEw4pY9k=;
+        b=WD8kZhNEewbOtb6xUbjSKNkQCXl7eFuFTGgRF0j2fTe7QvJRBsOVVjNgSX//8ihDJx
+         VF/dHPUM73B2Ws99zV+w49XZj0PJPBfdn2vY7AcBDtoU7maXjDS+lNSWEhK5mxY9bYBl
+         gJEX1lkD0YHOnpHIqqhb2XJvmlGDsTlmrnU0UKumGsN01k8S2YxQJ9S+6ZD3R4WdzXlx
+         1gfpKQgy2M0za63BGm9fNCiWVNFuEux7N0uRNefupKIPwu37oZiCgjIYPvM++oAPYu0Y
+         mMcHxyVdTj8L+A/3SmnC2mFi32kLtjF2djWQB+YdTcZ8slQuM8nkH8Mb4sbWd4XcjFJ7
+         wB5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=si8OKFhnQ+kH25iJ4HV6LVLS2U48yHnqV6NvEw4pY9k=;
+        b=DkMOpzmFire5ao5S2a/1JFKjsEUVpTO0N29gm3mMNpn9QNYFpyHFR4ClCojN+QobWB
+         gAa6Zs9kivNKyeKbyQ0yMwjuAFWOZgFMuXfl2Tz+cGYgPI7hd9mwnkmviBR53y+t6+HN
+         vhROsil4iIHVPXjJyligMauaFzK0YXkGqSBT5gc7HqQUwc2Ihi9WM0CX549eiEv0yPZj
+         F3uTFbAsJ5dlrM/a+mOO3fnk9+sUXv0EwLsW3CWardNz23+WQzbFRwgMnyEQxoT1D0fQ
+         ItKEQVQoz5+LVT58z25NpB60hDMxbA0LpLufYfOg3igMsNNe3AdeoRzdNuW+X40X8TvB
+         buoA==
+X-Gm-Message-State: APjAAAVwkPMtjKBxGdFExcNsyGbMmOys0C/RFQyKTMsui+T5qNKSKB83
+        6rbTdnYyKBwHdqUy96Ys+JuQyQ==
+X-Google-Smtp-Source: APXvYqyejQQQ9rTFJdBjro7GcWPUBmCogJIYUAfGr3q6tVD6WqjT5CtKKKLbOkeO5J9PfMiG8d71DA==
+X-Received: by 2002:a05:620a:403:: with SMTP id 3mr71678603qkp.221.1558574629403;
+        Wed, 22 May 2019 18:23:49 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id h20sm14924479qtc.16.2019.05.22.18.23.48
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 22 May 2019 18:23:49 -0700 (PDT)
+Date:   Wed, 22 May 2019 18:23:28 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 10/12] bpftool: add C output format option to
+ btf dump subcommand
+Message-ID: <20190522182328.7c8621ec@cakuba.netronome.com>
+In-Reply-To: <CAEf4BzZ36rcVuKabefWD-CaJ-BUECiYM_=3mzNAi3XMAR=49fQ@mail.gmail.com>
+References: <20190522195053.4017624-1-andriin@fb.com>
+        <20190522195053.4017624-11-andriin@fb.com>
+        <20190522172553.6f057e51@cakuba.netronome.com>
+        <CAEf4BzZ36rcVuKabefWD-CaJ-BUECiYM_=3mzNAi3XMAR=49fQ@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e59ca706-0b43-41d2-260e-08d6df1ce013
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2019 01:20:43.3935
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3677
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
+On Wed, 22 May 2019 17:58:23 -0700, Andrii Nakryiko wrote:
+> On Wed, May 22, 2019 at 5:25 PM Jakub Kicinski wrote:
+> > On Wed, 22 May 2019 12:50:51 -0700, Andrii Nakryiko wrote: =20
+> > > + * Copyright (C) 2019 Facebook
+> > > + */
+> > >
+> > >  #include <errno.h>
+> > >  #include <fcntl.h>
+> > > @@ -340,11 +347,48 @@ static int dump_btf_raw(const struct btf *btf,
+> > >       return 0;
+> > >  }
+> > >
+> > > +static void btf_dump_printf(void *ctx, const char *fmt, va_list args)
+> > > +{
+> > > +     vfprintf(stdout, fmt, args);
+> > > +}
+> > > +
+> > > +static int dump_btf_c(const struct btf *btf,
+> > > +                   __u32 *root_type_ids, int root_type_cnt) =20
+> >
+> > Please break the line after static int. =20
+>=20
+> I don't mind, but it seems that prevalent formatting for such cases
+> (at least in bpftool code base) is aligning arguments and not break
+> static <return type> into separate line:
+>=20
+> // multi-line function definitions with static on the same line
+> $ rg '^static \w+.*\([^\)]*$' | wc -l
+> 45
+> // multi-line function definitions with static on separate line
+> $ rg '^static \w+[^\(\{;]*$' | wc -l
+> 12
+>=20
+> So I don't mind changing, but which one is canonical way of formatting?
 
-PHYLIB and PHYLINK handle fixed-link interfaces differently. PHYLIB
-wraps them in a software PHY ("pseudo fixed link") phydev construct such
-that .adjust_link driver callbacks see an unified API. Whereas PHYLINK
-simply creates a phylink_link_state structure and passes it to
-.mac_config.
+Not really, just my preference :)
 
-At the time the driver was introduced, DSA was using PHYLIB for the
-CPU/cascade ports (the ones with no net devices) and PHYLINK for
-everything else.
+In my experience having the return type on a separate line if its
+longer than a few chars is the simplest rule for consistent and good
+looking code.
 
-As explained below:
+> > > +     d =3D btf_dump__new(btf, NULL, NULL, btf_dump_printf);
+> > > +     if (IS_ERR(d))
+> > > +             return PTR_ERR(d);
+> > > +
+> > > +     if (root_type_cnt) {
+> > > +             for (i =3D 0; i < root_type_cnt; i++) {
+> > > +                     err =3D btf_dump__dump_type(d, root_type_ids[i]=
+);
+> > > +                     if (err)
+> > > +                             goto done;
+> > > +             }
+> > > +     } else {
+> > > +             int cnt =3D btf__get_nr_types(btf);
+> > > +
+> > > +             for (id =3D 1; id <=3D cnt; id++) {
+> > > +                     err =3D btf_dump__dump_type(d, id);
+> > > +                     if (err)
+> > > +                             goto done;
+> > > +             }
+> > > +     }
+> > > +
+> > > +done:
+> > > +     btf_dump__free(d);
+> > > +     return err; =20
+> >
+> > What do we do for JSON output? =20
+>=20
+> Still dump C syntax. What do you propose? Error out if json enabled?
 
-commit aab9c4067d2389d0adfc9c53806437df7b0fe3d5
-Author: Florian Fainelli <f.fainelli@gmail.com>
-Date:   Thu May 10 13:17:36 2018 -0700
+I wonder.  Letting it just print C is going to confuse anything that
+just feeds the output into a JSON parser.  I'd err on the side of
+returning an error, we can always relax that later if we find a use
+case of returning C syntax via JSON.
 
-  net: dsa: Plug in PHYLINK support
+> > > +}
+> > > +
+> > >  static int do_dump(int argc, char **argv)
+> > >  {
+> > >       struct btf *btf =3D NULL;
+> > >       __u32 root_type_ids[2];
+> > >       int root_type_cnt =3D 0;
+> > > +     bool dump_c =3D false;
+> > >       __u32 btf_id =3D -1;
+> > >       const char *src;
+> > >       int fd =3D -1;
+> > > @@ -431,6 +475,16 @@ static int do_dump(int argc, char **argv)
+> > >               goto done;
+> > >       }
+> > >
+> > > +     while (argc) {
+> > > +             if (strcmp(*argv, "c") =3D=3D 0) {
+> > > +                     dump_c =3D true;
+> > > +                     NEXT_ARG();
+> > > +             } else {
+> > > +                     p_err("unrecognized option: '%s'", *argv);
+> > > +                     goto done;
+> > > +             }
+> > > +     } =20
+> >
+> > This code should have checked there are no arguments and return an
+> > error from the start :S =20
+>=20
+> I might be missing your point here. Lack of extra options is not an
+> error, they are optional. It's just if there is an option, that we
+> can't recognize - then we error out.
 
-  Drivers that utilize fixed links for user-facing ports (e.g: bcm_sf2)
-  will need to implement phylink_mac_ops from now on to preserve
-  functionality, since PHYLINK *does not* create a phy_device instance
-  for fixed links.
+Oh, I was just remarking that before your patch bpftool would not error
+if garbage options were passed, it'd be better if we errored from the
+start.  But too late now, your code is good =F0=9F=91=8D
 
-In the above patch, DSA guards the .phylink_mac_config callback against
-a NULL phydev pointer.  Therefore, .adjust_link is not called in case of
-a fixed-link user port.
+> > >       if (!btf) {
+> > >               err =3D btf__get_from_id(btf_id, &btf);
+> > >               if (err) {
+> > > @@ -444,7 +498,10 @@ static int do_dump(int argc, char **argv)
+> > >               }
+> > >       }
+> > >
+> > > -     dump_btf_raw(btf, root_type_ids, root_type_cnt);
+> > > +     if (dump_c)
+> > > +             dump_btf_c(btf, root_type_ids, root_type_cnt);
+> > > +     else
+> > > +             dump_btf_raw(btf, root_type_ids, root_type_cnt);
+> > >
+> > >  done:
+> > >       close(fd);
+> > > @@ -460,7 +517,7 @@ static int do_help(int argc, char **argv)
+> > >       }
+> > >
+> > >       fprintf(stderr,
+> > > -             "Usage: %s btf dump BTF_SRC\n"
+> > > +             "Usage: %s btf dump BTF_SRC [c]\n" =20
+> >
+> > bpftool generally uses <key value> formats.  So perhaps we could do
+> > something like "[format raw|c]" here for consistency, defaulting to raw=
+? =20
+>=20
+> That's not true for options, though. I see that at cgroup, prog, and
+> some map subcommands (haven't checked all other) just accept a list of
+> options without extra identifying key.
 
-This patch fixes the situation by converting the driver from using
-.adjust_link to .phylink_mac_config.  This can be done now in a unified
-fashion for both slave and CPU/cascade ports because DSA now uses
-PHYLINK for all ports.
+Yeah, we weren't 100% enforcing this rule and it's a bit messy now :/
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105_main.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja11=
-05/sja1105_main.c
-index 0663b78a2f6c..cfdefd9f1905 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -734,15 +734,16 @@ static int sja1105_adjust_port_config(struct sja1105_=
-private *priv, int port,
- 	return sja1105_clocking_setup_port(priv, port);
- }
-=20
--static void sja1105_adjust_link(struct dsa_switch *ds, int port,
--				struct phy_device *phydev)
-+static void sja1105_mac_config(struct dsa_switch *ds, int port,
-+			       unsigned int link_an_mode,
-+			       const struct phylink_link_state *state)
- {
- 	struct sja1105_private *priv =3D ds->priv;
-=20
--	if (!phydev->link)
-+	if (!state->link)
- 		sja1105_adjust_port_config(priv, port, 0, false);
- 	else
--		sja1105_adjust_port_config(priv, port, phydev->speed, true);
-+		sja1105_adjust_port_config(priv, port, state->speed, true);
- }
-=20
- static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
-@@ -1515,9 +1516,9 @@ static int sja1105_set_ageing_time(struct dsa_switch =
-*ds,
- static const struct dsa_switch_ops sja1105_switch_ops =3D {
- 	.get_tag_protocol	=3D sja1105_get_tag_protocol,
- 	.setup			=3D sja1105_setup,
--	.adjust_link		=3D sja1105_adjust_link,
- 	.set_ageing_time	=3D sja1105_set_ageing_time,
- 	.phylink_validate	=3D sja1105_phylink_validate,
-+	.phylink_mac_config	=3D sja1105_mac_config,
- 	.get_strings		=3D sja1105_get_strings,
- 	.get_ethtool_stats	=3D sja1105_get_ethtool_stats,
- 	.get_sset_count		=3D sja1105_get_sset_count,
---=20
-2.21.0
-
+> > >               "       %s btf help\n"
+> > >               "\n"
+> > >               "       BTF_SRC :=3D { id BTF_ID | prog PROG | map MAP =
+[{key | value | kv | all}] | file FILE }\n" =20
