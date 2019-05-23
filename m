@@ -2,76 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7945027C48
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 13:57:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51ADF27C5A
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 14:02:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730595AbfEWL5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 07:57:11 -0400
-Received: from thoth.sbs.de ([192.35.17.2]:55478 "EHLO thoth.sbs.de"
+        id S1730611AbfEWMC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 08:02:26 -0400
+Received: from first.geanix.com ([116.203.34.67]:60894 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729902AbfEWL5K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 07:57:10 -0400
-Received: from mail3.siemens.de (mail3.siemens.de [139.25.208.14])
-        by thoth.sbs.de (8.15.2/8.15.2) with ESMTPS id x4NBuu8j004284
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 23 May 2019 13:56:56 +0200
-Received: from pluscontrol-debian-server.ppmd.SIEMENS.NET (pluscontrol-debian-server.ppmd.siemens.net [146.254.63.6])
-        by mail3.siemens.de (8.15.2/8.15.2) with ESMTP id x4NBurG0026241;
-        Thu, 23 May 2019 13:56:53 +0200
-From:   Andreas Oetken <andreas.oetken@siemens.com>
-Cc:     andreas@oetken.name, m-karicheri2@ti.com, a-kramer@ti.com,
-        Andreas Oetken <andreas.oetken@siemens.com>,
-        Arvid Brodin <arvid.brodin@alten.se>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V4] hsr: fix don't prune the master node from the node_db
-Date:   Thu, 23 May 2019 13:57:14 +0200
-Message-Id: <20190523115714.19412-1-andreas.oetken@siemens.com>
-X-Mailer: git-send-email 2.20.1
+        id S1728309AbfEWMCZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 08:02:25 -0400
+Received: from localhost (unknown [193.163.1.7])
+        by first.geanix.com (Postfix) with ESMTPSA id 9A6DE10F8;
+        Thu, 23 May 2019 12:01:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1558612893; bh=HrgnYYnHur/QLHWQbAmloKtt+lKZPpX++QwH57NdTfI=;
+        h=From:To:Cc:Subject:Date;
+        b=fjaoAzU0+IDDhfO5SOuOsLZnHkxr+4kKq3ehop+3Kauko16FBvtoTsEQWBinbT+P8
+         +CYrLnpiQH7TYim20uSgfMmCW/Hb2sUGzCpyclE+7CjPu495j42tsSIHbgiBvlZ5/A
+         tTX3zPB9xccknptd6tAn9baC67Grzabh88wqWVVBuoKqEp7qZaCwpqfNKILMwzbLb8
+         zwV9F208VPbwaXXMzVyIFTDpquTINyjbpHyyJApieOLNm1s/+3ODEKDgAwQiGr6Yoo
+         1/rWJ/ztr73+47S3UsLm9VQ4B+DhHpPwzBUnVFBOZPy+MPm94tfSU5W1aDHss8sI9j
+         fTmqZKanHN0Hg==
+From:   Esben Haabendal <esben@geanix.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] net: ll_temac: Fix and enable multicast support
+Date:   Thu, 23 May 2019 14:02:18 +0200
+Message-Id: <20190523120222.3807-1-esben@geanix.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,UNPARSEABLE_RELAY,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 796779db2bec
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't prune the master node in the hsr_prune_nodes function.
-Neither time_in[HSR_PT_SLAVE_A] nor time_in[HSR_PT_SLAVE_B]
-will ever be updated by hsr_register_frame_in for the master port.
-Thus, the master node will be repeatedly pruned leading to
-repeated packet loss.
-This bug never appeared because the hsr_prune_nodes function
-was only called once. Since commit 5150b45fd355
-("net: hsr: Fix node prune function for forget time expiry") this issue
-is fixed unveiling the issue described above.
+This patch series makes the necessary fixes to ll_temac driver to make
+multicast work, and enables support for it.so that multicast support can
 
-Fixes: 5150b45fd355 ("net: hsr: Fix node prune function for forget time expiry")
-Signed-off-by: Andreas Oetken <andreas.oetken@siemens.com>
-Tested-by: Murali Karicheri <m-karicheri2@ti.com>
----
- net/hsr/hsr_framereg.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+The main change is the change from mutex to spinlock of the lock used to
+synchronize access to the shared indirect register access.
 
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index 9fa9abd83018..2d7a19750436 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -365,6 +365,14 @@ void hsr_prune_nodes(struct timer_list *t)
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(node, &hsr->node_db, mac_list) {
-+		/* Don't prune own node. Neither time_in[HSR_PT_SLAVE_A]
-+		 * nor time_in[HSR_PT_SLAVE_B], will ever be updated for
-+		 * the master port. Thus the master node will be repeatedly
-+		 * pruned leading to packet loss.
-+		 */
-+		if (hsr_addr_is_self(hsr, node->macaddress_A))
-+			continue;
-+
- 		/* Shorthand */
- 		time_a = node->time_in[HSR_PT_SLAVE_A];
- 		time_b = node->time_in[HSR_PT_SLAVE_B];
+Esben Haabendal (4):
+  net: ll_temac: Do not make promiscuous mode sticky on multicast
+  net: ll_temac: Prepare indirect register access for multicast support
+  net: ll_temac: Cleanup multicast filter on change
+  net: ll_temac: Enable multicast support
+
+ drivers/net/ethernet/xilinx/ll_temac.h        |   5 +-
+ drivers/net/ethernet/xilinx/ll_temac_main.c   | 255 +++++++++++++++++---------
+ drivers/net/ethernet/xilinx/ll_temac_mdio.c   |  20 +-
+ include/linux/platform_data/xilinx-ll-temac.h |   3 +-
+ 4 files changed, 184 insertions(+), 99 deletions(-)
+
 -- 
-2.20.1
+2.4.11
 
