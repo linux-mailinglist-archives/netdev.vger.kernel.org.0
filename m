@@ -2,357 +2,393 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77816279A9
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 11:47:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7DB4279CF
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 11:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730461AbfEWJrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 05:47:16 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:33036 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729863AbfEWJrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 05:47:15 -0400
-Received: by mail-wr1-f67.google.com with SMTP id d9so5536127wrx.0
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 02:47:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0VQMnZMOAnp0JU5L1hgvyx90p71jJ8VbfxYTGNaE6Sg=;
-        b=H5dGy1UpeQlho05+utGgH85bqsoVE4GplNtA3IzocwWkDOyGgduym9WkwWgvPZfyun
-         PWHdxMNdiM2RoNxVR5g8LeqzzbLODTIA3xg8MdzFB+smt/1zScOtZ/EU0aKC3vIDONy+
-         kRSdoLHDKl6/tRQEgoPQYEUgVHVclnyFuAEnPZF0q4647mt/f01yYz8t5kF/Djp1+uZE
-         rUIrVZGafS0F3Ejb3TPaI2LWwoyVRdCLq1wa+Hm9MI7k0HGmUMlZ9kdH2GGgB+FMyUri
-         LAffDcMnUTThpAHvrTe8DQw4q2YEz/t9BvMR29G2MHLItTQAoVcM3FJ3+zN9ePdBr8dx
-         d8kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=0VQMnZMOAnp0JU5L1hgvyx90p71jJ8VbfxYTGNaE6Sg=;
-        b=OCP2HyjxKHhkMMpXJPLAc9DwTNaeIq4H62wgoolWg07LEqTldQttL0wh+le+vYJP+m
-         6AGVqQZbU6DJoCGAONP6h0y/eXhgLwB6WeKhgZvCGuPd6kWjiKa9YexASBIF+096hVos
-         EJwzRwEhyMCb9yv8fGkwN/Zu5J2lCtcN3rJesGptUQ0XFOQ0yVHu0f51kJNZYBx2xBTT
-         xj/Emimh3TQts1TV4gzZQ5VPLzeRnxkBiiI8l/kc1+hnR9M3c3HrXhnFG9TGLLvFKE3P
-         f9L8Pd6JMnNAG5eG73QGPvYw5+E5WC19k75L+qCZgbZQVZXX/HLp5dxTyucFka8e90vG
-         Q8Hw==
-X-Gm-Message-State: APjAAAUsSptlOspYE73flCNXghl4pJstxsW4bAX2Ypr3bi/HNiLrXY/N
-        UqOyJ2Nb0JdwjlyJnYUpBBdQWostMnw=
-X-Google-Smtp-Source: APXvYqydfwV+qANNSUbc1wqwZGQhfeNAAt7jeXJzM23cGQLszvMLT3G8fN3e55td2fiBUMw7Ezyqpg==
-X-Received: by 2002:adf:e3d0:: with SMTP id k16mr2014390wrm.228.1558604833388;
-        Thu, 23 May 2019 02:47:13 -0700 (PDT)
-Received: from localhost (ip-89-176-222-123.net.upcbroadband.cz. [89.176.222.123])
-        by smtp.gmail.com with ESMTPSA id n15sm29470627wru.67.2019.05.23.02.47.12
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 23 May 2019 02:47:13 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, mlxsw@mellanox.com,
-        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
-        dsahern@gmail.com, saeedm@mellanox.com, leon@kernel.org
-Subject: [patch iproute2 3/3] devlink: implement flash status monitoring
-Date:   Thu, 23 May 2019 11:47:10 +0200
-Message-Id: <20190523094710.2410-3-jiri@resnulli.us>
-X-Mailer: git-send-email 2.17.2
-In-Reply-To: <20190523094510.2317-1-jiri@resnulli.us>
-References: <20190523094510.2317-1-jiri@resnulli.us>
+        id S1730353AbfEWJ50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 05:57:26 -0400
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:55893 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727466AbfEWJ50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 05:57:26 -0400
+X-Originating-IP: 90.88.22.185
+Received: from localhost (aaubervilliers-681-1-80-185.w90-88.abo.wanadoo.fr [90.88.22.185])
+        (Authenticated sender: maxime.ripard@bootlin.com)
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 741AD240014;
+        Thu, 23 May 2019 09:56:57 +0000 (UTC)
+From:   Maxime Ripard <maxime.ripard@bootlin.com>
+To:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <maxime.ripard@bootlin.com>
+Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        =?UTF-8?q?Antoine=20T=C3=A9nart?= <antoine.tenart@bootlin.com>
+Subject: [PATCH 1/8] dt-bindings: net: Add YAML schemas for the generic Ethernet options
+Date:   Thu, 23 May 2019 11:56:44 +0200
+Message-Id: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+The Ethernet controllers have a good number of generic options that can be
+needed in a device tree. Add a YAML schemas for those.
 
-Listen to status notifications coming from kernel during flashing and
-put them on stdout to inform user about the status.
-
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
 ---
- devlink/devlink.c | 209 +++++++++++++++++++++++++++++++++++++++++++++-
- devlink/mnlg.c    |   5 ++
- devlink/mnlg.h    |   1 +
- 3 files changed, 211 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/net/ethernet-controller.yaml | 197 +++++++-
+ Documentation/devicetree/bindings/net/ethernet.txt             |  68 +--
+ Documentation/devicetree/bindings/net/fixed-link.txt           |  55 +--
+ 3 files changed, 199 insertions(+), 121 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/ethernet-controller.yaml
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 55cbc01189db..8078e8801e98 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -24,6 +24,7 @@
- #include <netinet/ether.h>
- #include <sys/sysinfo.h>
- #include <sys/queue.h>
-+#include <sys/types.h>
- 
- #include "SNAPSHOT.h"
- #include "list.h"
-@@ -68,6 +69,12 @@ static int g_new_line_count;
- 		g_new_line_count = 0;				\
- 	} while (0)
- 
-+#define pr_out_tty(args...)					\
-+	do {							\
-+		if (isatty(STDOUT_FILENO))			\
-+			fprintf(stdout, ##args);		\
-+	} while (0)
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+new file mode 100644
+index 000000000000..1c6e9e755481
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -0,0 +1,197 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/ethernet-controller.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- static int g_indent_level;
- static bool g_indent_newline;
- #define INDENT_STR_STEP 2
-@@ -113,9 +120,8 @@ static int _mnlg_socket_recv_run(struct mnlg_socket *nlg,
- 	return 0;
- }
- 
--static int _mnlg_socket_sndrcv(struct mnlg_socket *nlg,
--			       const struct nlmsghdr *nlh,
--			       mnl_cb_t data_cb, void *data)
-+static int _mnlg_socket_send(struct mnlg_socket *nlg,
-+			     const struct nlmsghdr *nlh)
- {
- 	int err;
- 
-@@ -124,6 +130,18 @@ static int _mnlg_socket_sndrcv(struct mnlg_socket *nlg,
- 		pr_err("Failed to call mnlg_socket_send\n");
- 		return -errno;
- 	}
-+	return 0;
-+}
++title: Ethernet Controller Generic Binding
 +
-+static int _mnlg_socket_sndrcv(struct mnlg_socket *nlg,
-+			       const struct nlmsghdr *nlh,
-+			       mnl_cb_t data_cb, void *data)
-+{
-+	int err;
++maintainers:
++  - David S. Miller <davem@davemloft.net>
 +
-+	err = _mnlg_socket_send(nlg, nlh);
-+	if (err)
-+		return err;
- 	return _mnlg_socket_recv_run(nlg, data_cb, data);
- }
- 
-@@ -2697,9 +2715,151 @@ static void cmd_dev_flash_help(void)
- 	pr_err("Usage: devlink dev flash DEV file PATH [ component NAME ]\n");
- }
- 
++properties:
++  $nodename:
++    pattern: "^ethernet(@.*)?$"
 +
-+struct cmd_dev_flash_status_ctx {
-+	struct dl *dl;
-+	char *last_msg;
-+	char *last_component;
-+	uint8_t not_first:1,
-+		last_pc:1,
-+		received_end:1,
-+		flash_done:1;
-+};
++  local-mac-address:
++    allOf:
++      - $ref: /schemas/types.yaml#definitions/uint8-array
++      - minItems: 6
++        maxItems: 6
++    description:
++      Specifies the MAC address that was assigned to the network device.
 +
-+static int nullstrcmp(const char *str1, const char *str2)
-+{
-+	if (str1 && str2)
-+		return strcmp(str1, str2);
-+	if (!str1 && !str2)
-+		return 0;
-+	return str1 ? 1 : -1;
-+}
++  mac-address:
++    allOf:
++      - $ref: /schemas/types.yaml#definitions/uint8-array
++      - minItems: 6
++        maxItems: 6
++    description:
++      Specifies the MAC address that was last used by the boot
++      program; should be used in cases where the MAC address assigned
++      to the device by the boot program is different from the
++      local-mac-address property.
 +
-+static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct cmd_dev_flash_status_ctx *ctx = data;
-+	struct dl_opts *opts = &ctx->dl->opts;
-+	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
-+	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
-+	const char *component = NULL;
-+	uint64_t done = 0, total = 0;
-+	const char *msg = NULL;
-+	const char *bus_name;
-+	const char *dev_name;
++  max-frame-size:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description:
++      Maximum transfer unit (IEEE defined MTU), rather than the
++      maximum frame size (there\'s contradiction in the Devicetree
++      Specification).
 +
-+	if (genl->cmd != DEVLINK_CMD_FLASH_UPDATE_STATUS &&
-+	    genl->cmd != DEVLINK_CMD_FLASH_UPDATE_END)
-+		return MNL_CB_STOP;
++  max-speed:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description:
++      Specifies maximum speed in Mbit/s supported by the device.
 +
-+	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME])
-+		return MNL_CB_ERROR;
-+	bus_name = mnl_attr_get_str(tb[DEVLINK_ATTR_BUS_NAME]);
-+	dev_name = mnl_attr_get_str(tb[DEVLINK_ATTR_DEV_NAME]);
-+	if (strcmp(bus_name, opts->bus_name) ||
-+	    strcmp(dev_name, opts->dev_name))
-+		return MNL_CB_ERROR;
++  nvmem-cells:
++    maxItems: 1
++    description:
++      Reference to an nvmem node for the MAC address
 +
-+	if (genl->cmd == DEVLINK_CMD_FLASH_UPDATE_END && ctx->not_first) {
-+		pr_out("\n");
-+		free(ctx->last_msg);
-+		free(ctx->last_component);
-+		ctx->received_end = 1;
-+		return MNL_CB_STOP;
-+	}
++  nvmem-cells-names:
++    const: mac-address
 +
-+	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG])
-+		msg = mnl_attr_get_str(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG]);
-+	if (tb[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT])
-+		component = mnl_attr_get_str(tb[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT]);
-+	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE])
-+		done = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE]);
-+	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL])
-+		total = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL]);
++  phy-connection-type:
++    description:
++      Operation mode of the PHY interface
++    oneOf:
++      - const: internal
++        description:
++          there is not a standard bus between the MAC and the PHY,
++          something proprietary is being used to embed the PHY in the
++          MAC.
++      - const: mii
++      - const: gmii
++      - const: sgmii
++      - const: qsgmii
++      - const: tbi
++      - const: rev-mii
++      - const: rmii
++      - const: rgmii
++        description:
++          RX and TX delays are added by the MAC when required
++      - const: rgmii-id
++        description:
++          RGMII with internal RX and TX delays provided by the PHY,
++          the MAC should not add the RX or TX delays in this case
++      - const: rgmii-rxid
++        description:
++          RGMII with internal RX delay provided by the PHY, the MAC
++          should not add an RX delay in this case
++      - const: rgmii-txid
++        description:
++          RGMII with internal TX delay provided by the PHY, the MAC
++          should not add an TX delay in this case
++      - const: rtbi
++      - const: smii
++      - const: xgmii
++      - const: trgmii
++      - const: 1000base-x
++      - const: 2500base-x
++      - const: rxaui
++      - const: xaui
++      - const: 10gbase-kr
++        description:
++          10GBASE-KR, XFI, SFI
 +
-+	if (!nullstrcmp(msg, ctx->last_msg) &&
-+	    !nullstrcmp(component, ctx->last_component) &&
-+	    ctx->last_pc && ctx->not_first) {
-+		pr_out_tty("\b\b\b\b\b"); /* clean percentage */
-+	} else {
-+		if (ctx->not_first)
-+			pr_out("\n");
-+		if (component) {
-+			pr_out("[%s] ", component);
-+			free(ctx->last_component);
-+			ctx->last_component = strdup(component);
-+		}
-+		if (msg) {
-+			pr_out("%s", msg);
-+			free(ctx->last_msg);
-+			ctx->last_msg = strdup(msg);
-+		}
-+	}
-+	if (total) {
-+		pr_out_tty(" %3lu%%", (done * 100) / total);
-+		ctx->last_pc = 1;
-+	} else {
-+		ctx->last_pc = 0;
-+	}
-+	fflush(stdout);
-+	ctx->not_first = 1;
++  phy-mode:
++    $ref: "#/properties/phy-connection-type"
++    description:
++      Deprecated in favor of phy-connection-type
 +
-+	return MNL_CB_STOP;
-+}
++  phy-handle:
++    $ref: /schemas/types.yaml#definitions/phandle
++    description:
++      Specifies a reference to a node representing a PHY device.
 +
-+static int cmd_dev_flash_fds_process(struct cmd_dev_flash_status_ctx *ctx,
-+				     struct mnlg_socket *nlg_ntf,
-+				     int pipe_r)
-+{
-+	int nlfd = mnlg_socket_get_fd(nlg_ntf);
-+	fd_set fds[3];
-+	int fdmax;
-+	int i;
-+	int err;
-+	int err2;
++  phy:
++    $ref: "#/properties/phy-handle"
++    description:
++      Deprecated in favor of phy-handle
 +
-+	for (i = 0; i < 3; i++)
-+		FD_ZERO(&fds[i]);
-+	FD_SET(pipe_r, &fds[0]);
-+	fdmax = pipe_r + 1;
-+	FD_SET(nlfd, &fds[0]);
-+	if (nlfd >= fdmax)
-+		fdmax = nlfd + 1;
++  phy-device:
++    $ref: "#/properties/phy-handle"
++    description:
++      Deprecated in favor of phy-handle
 +
-+	while (select(fdmax, &fds[0], &fds[1], &fds[2], NULL) < 0) {
-+		if (errno == EINTR)
-+			continue;
-+		pr_err("select() failed\n");
-+		return -errno;
-+	}
-+	if (FD_ISSET(nlfd, &fds[0])) {
-+		err = _mnlg_socket_recv_run(nlg_ntf,
-+					    cmd_dev_flash_status_cb, ctx);
-+		if (err)
-+			return err;
-+	}
-+	if (FD_ISSET(pipe_r, &fds[0])) {
-+		err = read(pipe_r, &err2, sizeof(err2));
-+		if (err == -1) {
-+			pr_err("Failed to read pipe\n");
-+			return -errno;
-+		}
-+		if (err2)
-+			return err2;
-+		ctx->flash_done = 1;
-+	}
-+	return 0;
-+}
++  rx-fifo-depth:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description:
++      The size of the controller\'s receive fifo in bytes. This is used
++      for components that can have configurable receive fifo sizes,
++      and is useful for determining certain configuration settings
++      such as flow control thresholds.
++
++  tx-fifo-depth:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description:
++      The size of the controller\'s transmit fifo in bytes. This
++      is used for components that can have configurable fifo sizes.
++
++  managed:
++    allOf:
++      - $ref: /schemas/types.yaml#definitions/string
++      - default: auto
++        enum:
++          - auto
++          - in-band-status
++    description:
++      Specifies the PHY management type. If auto is set and fixed-link
++      is not specified, it uses MDIO for management.
++
++  fixed-link:
++    allOf:
++      - if:
++          type: array
++        then:
++          minItems: 1
++          maxItems: 1
++          items:
++            type: array
++            minItems: 5
++            maxItems: 5
++          description:
++            An array of 5 cells, with the following accepted values
++              - At index 0, the emulated PHY ID, choose any but but
++                unique to the all specified fixed-links, from 0 to 31
++              - at index 1, duplex configuration with 0 for half duplex
++                or 1 for full duplex
++              - at index 2, link speed in Mbits/sec, accepted values are
++                10, 100 and 1000
++              - at index 3, pause configuration with 0 for no pause, 1
++                for pause
++              - at index 4, asymmetric pause configuration with 0 for no
++                asymmetric pause, 1 for asymmetric pause
 +
 +
- static int cmd_dev_flash(struct dl *dl)
- {
-+	struct cmd_dev_flash_status_ctx ctx = {.dl = dl,};
-+	struct mnlg_socket *nlg_ntf;
- 	struct nlmsghdr *nlh;
-+	int pipe_r, pipe_w;
-+	int pipe_fds[2];
-+	pid_t pid;
- 	int err;
- 
- 	if (dl_argv_match(dl, "help") || dl_no_arg(dl)) {
-@@ -2715,7 +2875,48 @@ static int cmd_dev_flash(struct dl *dl)
- 	if (err)
- 		return err;
- 
--	return _mnlg_socket_sndrcv(dl->nlg, nlh, NULL, NULL);
-+	nlg_ntf = mnlg_socket_open(DEVLINK_GENL_NAME, DEVLINK_GENL_VERSION);
-+	if (!nlg_ntf)
-+		return err;
++      - if:
++          type: object
++        then:
++          properties:
++            speed:
++              allOf:
++                - $ref: /schemas/types.yaml#definitions/uint32
++                - enum: [10, 100, 1000]
++              description:
++                Link speed.
 +
-+	err = _mnlg_socket_group_add(nlg_ntf, DEVLINK_GENL_MCGRP_CONFIG_NAME);
-+	if (err)
-+		return err;
++            full-duplex:
++              $ref: /schemas/types.yaml#definitions/flag
++              description:
++                Indicates that full-duplex is used. When absent, half
++                duplex is assumed.
 +
-+	err = pipe(pipe_fds);
-+	if (err == -1)
-+		return -errno;
-+	pipe_r = pipe_fds[0];
-+	pipe_w = pipe_fds[1];
++            asym-pause:
++              $ref: /schemas/types.yaml#definitions/flag
++              description:
++                Indicates that asym_pause should be enabled.
 +
-+	pid = fork();
-+	if (pid == -1) {
-+		close(pipe_r);
-+		close(pipe_w);
-+		return -errno;
-+	} else if (!pid) {
-+		/* In child, just execute the flash and pass returned
-+		 * value through pipe once it is done.
-+		 */
-+		close(pipe_r);
-+		err = _mnlg_socket_send(dl->nlg, nlh);
-+		write(pipe_w, &err, sizeof(err));
-+		close(pipe_w);
-+		exit(0);
-+	}
-+	close(pipe_w);
++            link-gpios:
++              description:
++                GPIO to determine if the link is up
 +
-+	do {
-+		err = cmd_dev_flash_fds_process(&ctx, nlg_ntf, pipe_r);
-+		if (err)
-+			goto out;
-+	} while (!ctx.flash_done || !ctx.received_end);
++          required:
++            - speed
 +
-+	err = _mnlg_socket_recv_run(dl->nlg, NULL, NULL);
-+out:
-+	close(pipe_r);
-+	mnlg_socket_close(nlg_ntf);
-+	return err;
- }
- 
- static int cmd_dev(struct dl *dl)
-diff --git a/devlink/mnlg.c b/devlink/mnlg.c
-index 37cc25ddf490..f5a5dbe7f64f 100644
---- a/devlink/mnlg.c
-+++ b/devlink/mnlg.c
-@@ -313,3 +313,8 @@ void mnlg_socket_close(struct mnlg_socket *nlg)
- 	free(nlg->buf);
- 	free(nlg);
- }
-+
-+int mnlg_socket_get_fd(struct mnlg_socket *nlg)
-+{
-+	return mnl_socket_get_fd(nlg->nl);
-+}
-diff --git a/devlink/mnlg.h b/devlink/mnlg.h
-index 4d1babf3b4c2..61bc5a3f31aa 100644
---- a/devlink/mnlg.h
-+++ b/devlink/mnlg.h
-@@ -23,5 +23,6 @@ int mnlg_socket_recv_run(struct mnlg_socket *nlg, mnl_cb_t data_cb, void *data);
- int mnlg_socket_group_add(struct mnlg_socket *nlg, const char *group_name);
- struct mnlg_socket *mnlg_socket_open(const char *family_name, uint8_t version);
- void mnlg_socket_close(struct mnlg_socket *nlg);
-+int mnlg_socket_get_fd(struct mnlg_socket *nlg);
- 
- #endif /* _MNLG_H_ */
++...
+diff --git a/Documentation/devicetree/bindings/net/ethernet.txt b/Documentation/devicetree/bindings/net/ethernet.txt
+index e88c3641d613..5df413d01be2 100644
+--- a/Documentation/devicetree/bindings/net/ethernet.txt
++++ b/Documentation/devicetree/bindings/net/ethernet.txt
+@@ -1,67 +1 @@
+-The following properties are common to the Ethernet controllers:
+-
+-NOTE: All 'phy*' properties documented below are Ethernet specific. For the
+-generic PHY 'phys' property, see
+-Documentation/devicetree/bindings/phy/phy-bindings.txt.
+-
+-- mac-address: array of 6 bytes, specifies the MAC address that was last used by
+-  the boot program; should be used in cases where the MAC address assigned to
+-  the device by the boot program is different from the "local-mac-address"
+-  property;
+-- local-mac-address: array of 6 bytes, specifies the MAC address that was
+-  assigned to the network device;
+-- nvmem-cells: phandle, reference to an nvmem node for the MAC address
+-- nvmem-cell-names: string, should be "mac-address" if nvmem is to be used
+-- max-speed: number, specifies maximum speed in Mbit/s supported by the device;
+-- max-frame-size: number, maximum transfer unit (IEEE defined MTU), rather than
+-  the maximum frame size (there's contradiction in the Devicetree
+-  Specification).
+-- phy-mode: string, operation mode of the PHY interface. This is now a de-facto
+-  standard property; supported values are:
+-  * "internal" (Internal means there is not a standard bus between the MAC and
+-     the PHY, something proprietary is being used to embed the PHY in the MAC.)
+-  * "mii"
+-  * "gmii"
+-  * "sgmii"
+-  * "qsgmii"
+-  * "tbi"
+-  * "rev-mii"
+-  * "rmii"
+-  * "rgmii" (RX and TX delays are added by the MAC when required)
+-  * "rgmii-id" (RGMII with internal RX and TX delays provided by the PHY, the
+-     MAC should not add the RX or TX delays in this case)
+-  * "rgmii-rxid" (RGMII with internal RX delay provided by the PHY, the MAC
+-     should not add an RX delay in this case)
+-  * "rgmii-txid" (RGMII with internal TX delay provided by the PHY, the MAC
+-     should not add an TX delay in this case)
+-  * "rtbi"
+-  * "smii"
+-  * "xgmii"
+-  * "trgmii"
+-  * "1000base-x",
+-  * "2500base-x",
+-  * "rxaui"
+-  * "xaui"
+-  * "10gbase-kr" (10GBASE-KR, XFI, SFI)
+-- phy-connection-type: the same as "phy-mode" property but described in the
+-  Devicetree Specification;
+-- phy-handle: phandle, specifies a reference to a node representing a PHY
+-  device; this property is described in the Devicetree Specification and so
+-  preferred;
+-- phy: the same as "phy-handle" property, not recommended for new bindings.
+-- phy-device: the same as "phy-handle" property, not recommended for new
+-  bindings.
+-- rx-fifo-depth: the size of the controller's receive fifo in bytes. This
+-  is used for components that can have configurable receive fifo sizes,
+-  and is useful for determining certain configuration settings such as
+-  flow control thresholds.
+-- tx-fifo-depth: the size of the controller's transmit fifo in bytes. This
+-  is used for components that can have configurable fifo sizes.
+-- managed: string, specifies the PHY management type. Supported values are:
+-  "auto", "in-band-status". "auto" is the default, it usess MDIO for
+-  management if fixed-link is not specified.
+-
+-Child nodes of the Ethernet controller are typically the individual PHY devices
+-connected via the MDIO bus (sometimes the MDIO bus controller is separate).
+-They are described in the phy.txt file in this same directory.
+-For non-MDIO PHY management see fixed-link.txt.
++This file has moved to ethernet-controller.yaml.
+diff --git a/Documentation/devicetree/bindings/net/fixed-link.txt b/Documentation/devicetree/bindings/net/fixed-link.txt
+index ec5d889fe3d8..5df413d01be2 100644
+--- a/Documentation/devicetree/bindings/net/fixed-link.txt
++++ b/Documentation/devicetree/bindings/net/fixed-link.txt
+@@ -1,54 +1 @@
+-Fixed link Device Tree binding
+-------------------------------
+-
+-Some Ethernet MACs have a "fixed link", and are not connected to a
+-normal MDIO-managed PHY device. For those situations, a Device Tree
+-binding allows to describe a "fixed link".
+-
+-Such a fixed link situation is described by creating a 'fixed-link'
+-sub-node of the Ethernet MAC device node, with the following
+-properties:
+-
+-* 'speed' (integer, mandatory), to indicate the link speed. Accepted
+-  values are 10, 100 and 1000
+-* 'full-duplex' (boolean, optional), to indicate that full duplex is
+-  used. When absent, half duplex is assumed.
+-* 'pause' (boolean, optional), to indicate that pause should be
+-  enabled.
+-* 'asym-pause' (boolean, optional), to indicate that asym_pause should
+-  be enabled.
+-* 'link-gpios' ('gpio-list', optional), to indicate if a gpio can be read
+-  to determine if the link is up.
+-
+-Old, deprecated 'fixed-link' binding:
+-
+-* A 'fixed-link' property in the Ethernet MAC node, with 5 cells, of the
+-  form <a b c d e> with the following accepted values:
+-  - a: emulated PHY ID, choose any but but unique to the all specified
+-    fixed-links, from 0 to 31
+-  - b: duplex configuration: 0 for half duplex, 1 for full duplex
+-  - c: link speed in Mbits/sec, accepted values are: 10, 100 and 1000
+-  - d: pause configuration: 0 for no pause, 1 for pause
+-  - e: asymmetric pause configuration: 0 for no asymmetric pause, 1 for
+-    asymmetric pause
+-
+-Examples:
+-
+-ethernet@0 {
+-	...
+-	fixed-link {
+-	      speed = <1000>;
+-	      full-duplex;
+-	};
+-	...
+-};
+-
+-ethernet@1 {
+-	...
+-	fixed-link {
+-	      speed = <1000>;
+-	      pause;
+-	      link-gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>;
+-	};
+-	...
+-};
++This file has moved to ethernet-controller.yaml.
+
+base-commit: 47e4b09372425c32ff2b1e699d9f059a16056b3c
 -- 
-2.17.2
-
+git-series 0.9.1
