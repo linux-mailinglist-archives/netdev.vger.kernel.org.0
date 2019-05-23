@@ -2,123 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 419CE27FB4
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 16:31:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A772F27FB9
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 16:32:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730890AbfEWOb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 10:31:29 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:33086 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730708AbfEWOb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 10:31:28 -0400
-Received: by mail-wr1-f66.google.com with SMTP id d9so6565105wrx.0
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 07:31:27 -0700 (PDT)
+        id S1730757AbfEWOch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 10:32:37 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41473 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730708AbfEWOcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 10:32:36 -0400
+Received: by mail-pg1-f193.google.com with SMTP id z3so3236872pgp.8
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 07:32:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=oitixCSyls+WYiarRC0a38mP4/mPHlJWvdjbHhBfuHw=;
-        b=B/Y4fH6Qgs2zYncTUWrRBciMLNiyA1JzQ+6IFRwIVufOmOufnPzzI1bl9Hs37qOk2w
-         APLNK6ED2e/jKD0/9FWVcR8OJkrnxL6OARAdbkmtNXaAGeKFS2XNBTmlIF3UUEITyQYY
-         l5DRGg9Cd2cCXEOeQjDS2fX6CKYTieotF7b6/sI9oatoAJ/wc67l+GFLAxdL0riWCQLm
-         Zil0wZ/8U9gLAvMQvTEI88tWK3D3mtWyX2fb7NavstFsm3wkaoLU0O9yTxeh60wC8Vfa
-         /89K6IQIi3Hw07k3OrJ1OgXHX1I13qX/2/j657OgX1qljfcWjyEO34w4VItOyNs/4UjC
-         PnFA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SqjZD0D4Gu8eJn3pNHblzABsIlVBZYvWwzUma4OPsDM=;
+        b=aK56as8XG7eU6dvBLc7HDGlrMyJq49KLsFflllotM5ooB7u3YImXFzYBh7rhMNRYDG
+         5kY1CJzBN7SlR6oAy3QxIl1cXY7PwXL8OMYcyBGNrFGoR19hCDDlhETlMEJsLL9B/iM6
+         PjQA/tUdWjPi5KhJEav953p5a1osdAJ5qgEITAWNZ51S+HsHZmBiw6gu1rOk1/2kzhp3
+         4IJr1UQeFNYamLKidPBJsHneY+vhqI2mggyUrg1JLLD4fdeSXx4ow9AuQKFuGKPjqdoF
+         SYq3WtNoBoqqX9aoXi0GZE4Dv4EctNUufrPw2YjkTGMKt1dWDeSG8GGrtTSvhI4nbSQb
+         dJNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=oitixCSyls+WYiarRC0a38mP4/mPHlJWvdjbHhBfuHw=;
-        b=LFpWm1MRHaGlPEQVlyjSgmB5hlacNI4QU50o5yvBqxq3bI3sSKmDnU5sH4TDhlNcNi
-         /heRTVNhX6ZkI8PgzhTzcmGsQRt0jhzG8HOchmX+7UbTQgK4cO8g2NLhddrvRQjDxxBD
-         43gf6N4U3MJ0zvwipqcEEuv0Ip5Eu09qxzGIXLuxp/AxcRmvsAL+HCNWLOnwfGMHeYu5
-         bLEvALRpf8XbUmXUdn+W/fwi7RKTQ7gx37D0WDJwtYfBRExnsJKSbvnu2fbVvnoFrqer
-         KToWhZ3B9uraykEksSMFYo98Id647HdFtQk0jR39m+rTzxhmFmy7SUMCvX2Tipv/j9l6
-         ZLzg==
-X-Gm-Message-State: APjAAAUttuQeuLhpgHk6C6BpkauBdEz6PdktcNu3+JiPND3vKsyv1O4O
-        e6/h1IFmBZ/6XnSjfSCJ17HoLZvOFgg=
-X-Google-Smtp-Source: APXvYqzLpgvV703PNCaOR0gIk35TrvPQMaresROkLbWDiJ/l3GB8TuILzZw00e4zoaFvppE2r535cQ==
-X-Received: by 2002:adf:e4c9:: with SMTP id v9mr35521866wrm.147.1558621886783;
-        Thu, 23 May 2019 07:31:26 -0700 (PDT)
-Received: from [172.20.1.229] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id o4sm11751807wmo.20.2019.05.23.07.31.25
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SqjZD0D4Gu8eJn3pNHblzABsIlVBZYvWwzUma4OPsDM=;
+        b=P1hkcYR0Z3xnaq5VPQx4bZYZAVZTL1OdiTGLBqj1NebsmfeRgjLdjZXdT3KT/wmnOP
+         zce05VqU/1IaD7BwjWWshdLULyq5r4NnKqJG311IKComzfyo4YF3maXPiTE10R7F8bA4
+         bCv368Nf9X/pLfve5WgTjkmnWvwO/cpDzD8QNqCOVvsQUSX1nz1zs6eCm76wp/BcqaTz
+         mxLU8OCoQhABa1+/cuZCkqutKHXkRGC+cCj02n5OUVAXU+9Y8aR63OgWZBxH+noY1zCI
+         Rl7sAMz9QqCT7W2jANHD4N3EbsH9gNqvA9/9SaWQs2XbSCcueZ8MSSJN8TkJrztnKrLL
+         HuJg==
+X-Gm-Message-State: APjAAAUB3JZB+z4/f8b8HERWKTPknJxOdwLxip7s6Wd3+LSBvk9tfqEB
+        8MTqzQzUBcihfbMQzz0B/ck=
+X-Google-Smtp-Source: APXvYqwmD8f9YHb9Xqf62HVnzD74J1u49ObIXBYb8Ox2vOCZeiIAzWs99IYLEno1zbM3nFtp6Yr9gw==
+X-Received: by 2002:a62:ab10:: with SMTP id p16mr72239738pff.222.1558621955785;
+        Thu, 23 May 2019 07:32:35 -0700 (PDT)
+Received: from [10.230.1.150] ([192.19.228.250])
+        by smtp.gmail.com with ESMTPSA id ds14sm674848pjb.32.2019.05.23.07.32.34
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 07:31:26 -0700 (PDT)
+        Thu, 23 May 2019 07:32:34 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 5/9] net: phylink: Add phylink_create_raw
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
+ <20190523011958.14944-6-ioana.ciornei@nxp.com>
+ <c2712523-f1b9-47f8-672b-d35e62bf35ea@gmail.com>
+ <0d29a5ee-8a68-d0be-c524-6e3ee1f46802@gmail.com>
+ <VI1PR0402MB28006FF30E571E71F1AA1278E0010@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <716d26d0-e997-177f-ca35-d39cbd1f67ce@gmail.com>
+Date:   Thu, 23 May 2019 07:32:32 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <VI1PR0402MB28006FF30E571E71F1AA1278E0010@VI1PR0402MB2800.eurprd04.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Subject: Re: [PATCH bpf] selftests: bpf: add zero extend checks for ALU32
- and/or/xor
-From:   Jiong Wang <jiong.wang@netronome.com>
-In-Reply-To: <c1f90672-d2ce-0ac9-10d1-08208575f193@iogearbox.net>
-Date:   Thu, 23 May 2019 15:31:24 +0100
-Cc:     Y Song <ys114321@gmail.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <3ED3A4F8-CC01-4179-9154-6FC5338E83B5@netronome.com>
-References: <20190522092323.17435-1-bjorn.topel@gmail.com>
- <CAH3MdRWGeYZDCEPrw2HFpnq+8j+ehMj2uhNJS9HnFDw=LmK6PQ@mail.gmail.com>
- <CAJ+HfNhR2UozhqTrhDTmZNntmjRCWFyPyU2AaRdo-E6sJUZCKg@mail.gmail.com>
- <CAH3MdRX6gocSFJCkuMuhko+0eheWqKq4Y4X-Tb3q=hzMW5buyw@mail.gmail.com>
- <c1f90672-d2ce-0ac9-10d1-08208575f193@iogearbox.net>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-X-Mailer: Apple Mail (2.3273)
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-> On 23 May 2019, at 15:02, Daniel Borkmann <daniel@iogearbox.net> =
-wrote:
->=20
-> On 05/23/2019 08:38 AM, Y Song wrote:
->> On Wed, May 22, 2019 at 1:46 PM Bj=C3=B6rn T=C3=B6pel =
-<bjorn.topel@gmail.com> wrote:
->>> On Wed, 22 May 2019 at 20:13, Y Song <ys114321@gmail.com> wrote:
->>>> On Wed, May 22, 2019 at 2:25 AM Bj=C3=B6rn T=C3=B6pel =
-<bjorn.topel@gmail.com> wrote:
->>>>>=20
->>>>> Add three tests to test_verifier/basic_instr that make sure that =
-the
->>>>> high 32-bits of the destination register is cleared after an ALU32
->>>>> and/or/xor.
->>>>>=20
->>>>> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
->>>>=20
->>>> I think the patch intends for bpf-next, right? The patch itself =
-looks
->>>> good to me.
->>>> Acked-by: Yonghong Song <yhs@fb.com>
->>>=20
->>> Thank you. Actually, it was intended for the bpf tree, as a test
->>> follow up for this [1] fix.
->> Then maybe you want to add a Fixes tag and resubmit?
->=20
-> Why would the test case need a fixes tag? It's common practice that we =
-have
-> BPF fixes that we queue to bpf tree along with kselftest test cases =
-related
-> to them. Therefore, applied as well, thanks for following up!
->=20
-> Bj=C3=B6rn, in my email from the fix, I mentioned we should have test =
-snippets
-> ideally for all of the alu32 insns to not miss something falling =
-through the
-> cracks when JITs get added or changed. If you have some cycles to add =
-the
-> remaining missing ones, that would be much appreciated.
 
-Bj=C3=B6rn,
+On 5/23/2019 5:10 AM, Ioana Ciornei wrote:
+> 
+>> Subject: Re: [RFC PATCH net-next 5/9] net: phylink: Add phylink_create_raw
+>>
+>>
+>>
+>> On 5/22/2019 7:25 PM, Florian Fainelli wrote:
+>>>
+>>>
+>>> On 5/22/2019 6:20 PM, Ioana Ciornei wrote:
+>>>> This adds a new entry point to PHYLINK that does not require a
+>>>> net_device structure.
+>>>>
+>>>> The main intended use are DSA ports that do not have net devices
+>>>> registered for them (mainly because doing so would be redundant - see
+>>>> Documentation/networking/dsa/dsa.rst for details). So far DSA has
+>>>> been using PHYLIB fixed PHYs for these ports, driven manually with
+>>>> genphy instead of starting a full PHY state machine, but this does
+>>>> not scale well when there are actual PHYs that need a driver on those
+>>>> ports, or when a fixed-link is requested in DT that has a speed
+>>>> unsupported by the fixed PHY C22 emulation (such as SGMII-2500).
+>>>>
+>>>> The proposed solution comes in the form of a notifier chain owned by
+>>>> the PHYLINK instance, and the passing of phylink_notifier_info
+>>>> structures back to the driver through a blocking notifier call.
+>>>>
+>>>> The event API exposed by the new notifier mechanism is a 1:1 mapping
+>>>> to the existing PHYLINK mac_ops, plus the PHYLINK fixed-link callback.
+>>>>
+>>>> Both the standard phylink_create() function, as well as its raw
+>>>> variant, call the same underlying function which initializes either
+>>>> the netdev field or the notifier block of the PHYLINK instance.
+>>>>
+>>>> All PHYLINK driver callbacks have been extended to call the notifier
+>>>> chain in case the instance is a raw one.
+>>>>
+>>>> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+>>>> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+>>>> ---
+>>>
+>>> [snip]
+>>>
+>>>> +	struct phylink_notifier_info info = {
+>>>> +		.link_an_mode = pl->link_an_mode,
+>>>> +		/* Discard const pointer */
+>>>> +		.state = (struct phylink_link_state *)state,
+>>>> +	};
+>>>> +
+>>>>  	netdev_dbg(pl->netdev,
+>>>>  		   "%s: mode=%s/%s/%s/%s adv=%*pb pause=%02x link=%u
+>> an=%u\n",
+>>>>  		   __func__, phylink_an_mode_str(pl->link_an_mode),
+>>>> @@ -299,7 +317,12 @@ static void phylink_mac_config(struct phylink *pl,
+>>>>  		   __ETHTOOL_LINK_MODE_MASK_NBITS, state->advertising,
+>>>>  		   state->pause, state->link, state->an_enabled);
+>>>
+>>> Don't you need to guard that netdev_dbg() with an if (pl->ops) to
+>>> avoid de-referencing a NULL net_device?
+>>>
+> 
+> 
+> The netdev_* print will not dereference a NULL net_device since it has explicit checks agains this.
+> Instead it will just print (net/core/dev.c, __netdev_printk):
+> 
+> 	printk("%s(NULL net_device): %pV", level, vaf);
+> 
+> 
+>>> Another possibility could be to change the signature of the
+>>> phylink_mac_ops to take an opaque pointer and in the case where we
+>>> called phylink_create() and passed down a net_device pointer, we
+>>> somehow remember that for doing any operation that requires a
+>>> net_device (printing, setting carrier). We lose strict typing in doing
+>>> that, but we'd have fewer places to patch for a blocking notifier call.
+>>>
+>>
+>> Or even make those functions part of phylink_mac_ops such that the caller
+>> could pass an .carrier_ok callback which is netif_carrier_ok() for a net_device,
+>> else it's NULL, same with printing functions if desired...
+>> --
+>> Florian
+> 
+> 
+> Let me see if I understood this correctly. I presume that any API that we add should not break any current PHYLINK users.
+> 
+> You suggest to change the prototype of the phylink_mac_ops from
+> 
+> 	void (*validate)(struct net_device *ndev, unsigned long *supported,
+> 			 struct phylink_link_state *state);
+> 
+> to something that takes a void pointer:
+> 
+> 	void (*validate)(void *dev, unsigned long *supported,
+> 			 struct phylink_link_state *state);
 
-  If you don=E2=80=99t have time, I can take this alu32 test case follow =
-up as well.
+That is what I am suggesting, but I am also suggesting passing all
+netdev specific calls that must be made as callbacks as well, so
+something like:
 
-Regards,
-Jiong
+	bool (*carrier_ok)(const void *dev)
+	void (*carrier_set)(const void *dev, bool on)
+	void (*print)(const void *dev, const char *fmt)
 
->=20
-> Thanks,
-> Daniel
+as new members of phylink_mac_ops.
 
+> 
+> This would imply that the any function in PHYLINK would have to somehow differentiate if the dev provided is indeed a net_device or another structure in order to make the decision if netif_carrier_off should be called or not (this is so we do not break any drivers using PHYLINK). I cannot see how this judgement can be made.
+
+You don't have to make the judgement you can just do:
+
+if (pl->ops->carrier_set)
+	pl->ops->carrier_set(dev,
+
+where dev was this opaque pointer passed to phylink_create() the first
+time it was created. Like I wrote, we lose strong typing doing that, but
+we don't have to update all code paths for if (pl->ops) else notifier.
+-- 
+Florian
