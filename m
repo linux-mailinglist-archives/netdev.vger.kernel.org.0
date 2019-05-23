@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AACB827459
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 04:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF622745C
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 04:29:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729683AbfEWC0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 22:26:32 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43425 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727305AbfEWC0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 22:26:32 -0400
-Received: by mail-pl1-f193.google.com with SMTP id gn7so1970599plb.10
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 19:26:32 -0700 (PDT)
+        id S1728761AbfEWC3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 22:29:12 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:35717 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728022AbfEWC3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 22:29:12 -0400
+Received: by mail-pf1-f196.google.com with SMTP id d126so151022pfd.2
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 19:29:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+        h=subject:from:to:cc:references:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WjASiQyN6e1+ppgfl8dNueZd27mnY9bWJ190JnoYfJI=;
-        b=OxrYHxj+jpQTpneVXgW4YT1WkVFEB4WrFWLCzL/EGorQXaMOgKuXH8HWOPiMHPImlB
-         2N+Ph9oPGhuwvJxqFIum2CNq9r6PxCkOnLgdLDWh2T5s+RotWuPoMCKgT+FwVioViARP
-         /MTnMEiUVURI8UGRlPXumFdewXY1nUxvwuK2F2/cHvKrXFe3poQgeKOySx8FCTl+apZ9
-         hJD7FPhqFhTvw0KzvbsOLlvKzenUkoJEehDd+8AbT77+602BMsZEqIYFKpCgw3pxOxuy
-         iLsDP4EqxNUMh/J32iX4TVq6zMJ13BDW7KlMTQuW1fOW6KetACS8JiLpuwXVJYODoK5C
-         pBzw==
+        bh=Cly1plf9xhA+ZTMnASKax1m0Hs+ws3b5nd6+ZNFQ+2o=;
+        b=diGa3O20WjrlWBODsD6y0uzmqawHfxr68TfzNMSMzZs2/7Iv7V0WuVloniEDyvDU2D
+         M8Z/Peh5zVjaZ9rWC/okpAzQ53HMyfeAkWqzDga2Ibs4Shz+2mpRUXXuvL4v2MCpEogz
+         MHnwQ38qBqpEp//JNUpZGNMO/Mw2BWt4ElAdpx8Dk5TEln6ltiUwPIMyNhGMLSpVVySz
+         /P42q1QncbhlEvXNMkFWHGU8Vx3qpOccMczguWvMXYnZrcCplUcVzpkg+GPrd/6V5bHy
+         PDpKOGlmf0u60EArOsO8jzrpRl4Rv2vIxjOB1XyuvKW+AFuvg+A3PhwXT5TGlNe9j5Ti
+         uoww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+        h=x-gm-message-state:subject:from:to:cc:references:openpgp:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=WjASiQyN6e1+ppgfl8dNueZd27mnY9bWJ190JnoYfJI=;
-        b=EfdAd/bxPuiBlDJlZmHPrgkjoE8ygcRnx7UHg0F2IKMorUPeMn+Fzo3xCygZmuBtgc
-         fEWsZcKF1Rn3wvWRYOIv38TCeO/pZSKaAw0/YMVUruxy8o8T7BOTyMS5yk4A13jzVzUI
-         xpDwMGWN6fRmqy/OcyOH6Geg9NHgeix6D/s51FVjRWhii7/Id7JFpg4jGB3ydM1eSWFy
-         9MCmJQWXtw/MvsjjwaB6XZ1GP+ztkocfiPcbd7WqzLqwyQWFMWk3eNvN1vza/WxGI+1k
-         /xob68je94+N6ffD0QkuEzJR1Cfy29fKRpsKvajAi8DNu6ifTWuRyh255BvtT1tCuYS4
-         qJfA==
-X-Gm-Message-State: APjAAAVYBT+xx0ZC/S+nMNtpUfjZ3CO70lW0KO2lh0f7CP19oCPXtMW+
-        93RoLmyfds07wKi4zN6+RsVXM+xc
-X-Google-Smtp-Source: APXvYqzJMRgG7/0P7eDR0qUsmETKEQ6WPq7asLzb2yuR0FTNguSE3liwapieYFBGAylpRF7nY8G3CA==
-X-Received: by 2002:a17:902:8609:: with SMTP id f9mr36786969plo.252.1558578391592;
-        Wed, 22 May 2019 19:26:31 -0700 (PDT)
+        bh=Cly1plf9xhA+ZTMnASKax1m0Hs+ws3b5nd6+ZNFQ+2o=;
+        b=Ql29ey1MwPjjcZqCEtX72IKLnpAAZH6Q72XcH/OAU6b/6IzgvHk/nfshOR8hlDceq/
+         UdMqZUZs3uCSblnUP4nsnK1kGDJVWrnDmAtXOJFsPp48O0hMDFmUzQXi8QlUNsJ4DC7E
+         0M6FXd0ndTRUG2JwM4rT6k7dr+BGewjIL1M0q/KNjGgtEaHTw4ajueTzCMgRZ7dPrqmh
+         DKgdkbpyfKa0W3Ek7HUtADBPUwhKcmm0g6+jWNYFZnOw+BIbgAeYeoZct7EoSnE3a+i5
+         LTMk0A6W2cX93YCG8gq2wCci87IfHlIavrt6vhvdccrWt9Bj/D144Ek42lyqMsAcLZ78
+         ukkw==
+X-Gm-Message-State: APjAAAXlEpy3x8TBERP9pl1vUfMFAw+rjynR1k27gloBTumZvZ/BXnNf
+        5yK/AwJ/SWYNa9c8coodUftmAyJD
+X-Google-Smtp-Source: APXvYqzqstrPiXS5BIiPqJA48ZYOz0t0qahs+p3pTgySlyhiCIfJWx8g1BVOuhE7JqeFUW3EbkvSuA==
+X-Received: by 2002:a62:bd11:: with SMTP id a17mr16227298pff.126.1558578551236;
+        Wed, 22 May 2019 19:29:11 -0700 (PDT)
 Received: from [10.230.28.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r18sm57627981pfg.141.2019.05.22.19.26.27
+        by smtp.gmail.com with ESMTPSA id z125sm37750440pfb.75.2019.05.22.19.29.09
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 May 2019 19:26:30 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 9/9] net: dsa: sja1105: Fix broken fixed-link
- interfaces on user ports
+        Wed, 22 May 2019 19:29:10 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 5/9] net: phylink: Add phylink_create_raw
+From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
         "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
         "andrew@lunn.ch" <andrew@lunn.ch>,
@@ -56,15 +56,15 @@ To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>
 References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
- <20190523011958.14944-10-ioana.ciornei@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
+ <20190523011958.14944-6-ioana.ciornei@nxp.com>
+ <c2712523-f1b9-47f8-672b-d35e62bf35ea@gmail.com>
 Openpgp: preference=signencrypt
-Message-ID: <3472d995-7247-be63-02c2-73515cd1f8ef@gmail.com>
-Date:   Wed, 22 May 2019 19:26:25 -0700
+Message-ID: <0d29a5ee-8a68-d0be-c524-6e3ee1f46802@gmail.com>
+Date:   Wed, 22 May 2019 19:29:07 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190523011958.14944-10-ioana.ciornei@nxp.com>
+In-Reply-To: <c2712523-f1b9-47f8-672b-d35e62bf35ea@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,44 +75,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 5/22/2019 6:20 PM, Ioana Ciornei wrote:
-> From: Vladimir Oltean <olteanv@gmail.com>
+On 5/22/2019 7:25 PM, Florian Fainelli wrote:
 > 
-> PHYLIB and PHYLINK handle fixed-link interfaces differently. PHYLIB
-> wraps them in a software PHY ("pseudo fixed link") phydev construct such
-> that .adjust_link driver callbacks see an unified API. Whereas PHYLINK
-> simply creates a phylink_link_state structure and passes it to
-> .mac_config.
 > 
-> At the time the driver was introduced, DSA was using PHYLIB for the
-> CPU/cascade ports (the ones with no net devices) and PHYLINK for
-> everything else.
+> On 5/22/2019 6:20 PM, Ioana Ciornei wrote:
+>> This adds a new entry point to PHYLINK that does not require a
+>> net_device structure.
+>>
+>> The main intended use are DSA ports that do not have net devices
+>> registered for them (mainly because doing so would be redundant - see
+>> Documentation/networking/dsa/dsa.rst for details). So far DSA has been
+>> using PHYLIB fixed PHYs for these ports, driven manually with genphy
+>> instead of starting a full PHY state machine, but this does not scale
+>> well when there are actual PHYs that need a driver on those ports, or
+>> when a fixed-link is requested in DT that has a speed unsupported by the
+>> fixed PHY C22 emulation (such as SGMII-2500).
+>>
+>> The proposed solution comes in the form of a notifier chain owned by the
+>> PHYLINK instance, and the passing of phylink_notifier_info structures
+>> back to the driver through a blocking notifier call.
+>>
+>> The event API exposed by the new notifier mechanism is a 1:1 mapping to
+>> the existing PHYLINK mac_ops, plus the PHYLINK fixed-link callback.
+>>
+>> Both the standard phylink_create() function, as well as its raw variant,
+>> call the same underlying function which initializes either the netdev
+>> field or the notifier block of the PHYLINK instance.
+>>
+>> All PHYLINK driver callbacks have been extended to call the notifier
+>> chain in case the instance is a raw one.
+>>
+>> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+>> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+>> ---
 > 
-> As explained below:
+> [snip]
 > 
-> commit aab9c4067d2389d0adfc9c53806437df7b0fe3d5
-> Author: Florian Fainelli <f.fainelli@gmail.com>
-> Date:   Thu May 10 13:17:36 2018 -0700
+>> +	struct phylink_notifier_info info = {
+>> +		.link_an_mode = pl->link_an_mode,
+>> +		/* Discard const pointer */
+>> +		.state = (struct phylink_link_state *)state,
+>> +	};
+>> +
+>>  	netdev_dbg(pl->netdev,
+>>  		   "%s: mode=%s/%s/%s/%s adv=%*pb pause=%02x link=%u an=%u\n",
+>>  		   __func__, phylink_an_mode_str(pl->link_an_mode),
+>> @@ -299,7 +317,12 @@ static void phylink_mac_config(struct phylink *pl,
+>>  		   __ETHTOOL_LINK_MODE_MASK_NBITS, state->advertising,
+>>  		   state->pause, state->link, state->an_enabled);
 > 
->   net: dsa: Plug in PHYLINK support
+> Don't you need to guard that netdev_dbg() with an if (pl->ops) to avoid
+> de-referencing a NULL net_device?
 > 
->   Drivers that utilize fixed links for user-facing ports (e.g: bcm_sf2)
->   will need to implement phylink_mac_ops from now on to preserve
->   functionality, since PHYLINK *does not* create a phy_device instance
->   for fixed links.
+> Another possibility could be to change the signature of the
+> phylink_mac_ops to take an opaque pointer and in the case where we
+> called phylink_create() and passed down a net_device pointer, we somehow
+> remember that for doing any operation that requires a net_device
+> (printing, setting carrier). We lose strict typing in doing that, but
+> we'd have fewer places to patch for a blocking notifier call.
 > 
-> In the above patch, DSA guards the .phylink_mac_config callback against
-> a NULL phydev pointer.  Therefore, .adjust_link is not called in case of
-> a fixed-link user port.
-> 
-> This patch fixes the situation by converting the driver from using
-> .adjust_link to .phylink_mac_config.  This can be done now in a unified
-> fashion for both slave and CPU/cascade ports because DSA now uses
-> PHYLINK for all ports.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Or even make those functions part of phylink_mac_ops such that the
+caller could pass an .carrier_ok callback which is netif_carrier_ok()
+for a net_device, else it's NULL, same with printing functions if desired...
 -- 
 Florian
