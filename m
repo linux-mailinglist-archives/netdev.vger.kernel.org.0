@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8236E28BAE
+	by mail.lfdr.de (Postfix) with ESMTP id EBF3328BAF
 	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:42:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388238AbfEWUmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 16:42:43 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60176 "EHLO
+        id S2388244AbfEWUmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 16:42:44 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:39680 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388188AbfEWUmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:42:42 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4NKYjcx016470
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 13:42:40 -0700
+        by vger.kernel.org with ESMTP id S2388196AbfEWUmn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:42:43 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4NKckbq026391
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 13:42:41 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=H9S3WRNKI8dXxl65kpQ6+TyRUXHKLt+ypUjtKZL29oo=;
- b=PJZXEeXltHKiOzB91vKNULinXBzz9dqCwu0kTminiG0x/elOOtmD/hofBpGxjJbiVdzw
- eIcWRxYqssJoPQDJRAimjCM8nKLKWdTOsdvNmK0TsH758VB5TlxiQj7zsKZMcXo9TrM5
- aq+fkvs7Q10/ZA0Or0bnq8ZexZ+L/SrCqP8= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sp15ngc3k-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 13:42:40 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 23 May 2019 13:42:37 -0700
+ content-type; s=facebook; bh=6IkGN47itqvsDgU54e9J/eyqJ7CWK9rhsQzcXCsnF8Q=;
+ b=LLM/TA3SkSvJftZdr6EpqNuMbUn7OUzKf5p1/FFYpmb+u5y1LQrcLGBQrzjbd6LGkEIm
+ SKlsvo9TjOuk0yUiMyvuJis9l7Moeo6nzBLnyYamG5jf9j4LIfrgk6B//cLSxI3j+aJp
+ bvOuOoEtDQPCE3THs4aHOVR+gBFt5469Fck= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sp28cg49a-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 13:42:41 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 23 May 2019 13:42:39 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id D589B861799; Thu, 23 May 2019 13:42:35 -0700 (PDT)
+        id E2166861799; Thu, 23 May 2019 13:42:37 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,9 +38,9 @@ To:     <andrii.nakryiko@gmail.com>, <netdev@vger.kernel.org>,
         <kernel-team@fb.com>
 CC:     Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next 05/12] libbpf: add resizable non-thread safe internal hashmap
-Date:   Thu, 23 May 2019 13:42:15 -0700
-Message-ID: <20190523204222.3998365-6-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 06/12] selftests/bpf: add tests for libbpf's hashmap
+Date:   Thu, 23 May 2019 13:42:16 -0700
+Message-ID: <20190523204222.3998365-7-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190523204222.3998365-1-andriin@fb.com>
 References: <20190523204222.3998365-1-andriin@fb.com>
@@ -52,7 +52,7 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
  malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=837 adultscore=0 classifier=spam adjust=0 reason=mlx
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1810050000 definitions=main-1905230133
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -60,458 +60,426 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a need for fast point lookups inside libbpf for multiple use
-cases (e.g., name resolution for BTF-to-C conversion, by-name lookups in
-BTF for upcoming BPF CO-RE relocation support, etc). This patch
-implements simple resizable non-thread safe hashmap using single linked
-list chains.
-
-Four different insert strategies are supported:
- - HASHMAP_ADD - only add key/value if key doesn't exist yet;
- - HASHMAP_SET - add key/value pair if key doesn't exist yet; otherwise,
-   update value;
- - HASHMAP_UPDATE - update value, if key already exists; otherwise, do
-   nothing and return -ENOENT;
- - HASHMAP_APPEND - always add key/value pair, even if key already exists.
-   This turns hashmap into a multimap by allowing multiple values to be
-   associated with the same key. Most useful read API for such hashmap is
-   hashmap__for_each_key_entry() iteration. If hashmap__find() is still
-   used, it will return last inserted key/value entry (first in a bucket
-   chain).
-
-For HASHMAP_SET and HASHMAP_UPDATE, old key/value pair is returned, so
-that calling code can handle proper memory management, if necessary.
+Test all APIs for internal hashmap implementation.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/Build     |   2 +-
- tools/lib/bpf/hashmap.c | 229 ++++++++++++++++++++++++++++++++++++++++
- tools/lib/bpf/hashmap.h | 173 ++++++++++++++++++++++++++++++
- 3 files changed, 403 insertions(+), 1 deletion(-)
- create mode 100644 tools/lib/bpf/hashmap.c
- create mode 100644 tools/lib/bpf/hashmap.h
+ tools/testing/selftests/bpf/.gitignore     |   1 +
+ tools/testing/selftests/bpf/Makefile       |   2 +-
+ tools/testing/selftests/bpf/test_hashmap.c | 382 +++++++++++++++++++++
+ 3 files changed, 384 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/test_hashmap.c
 
-diff --git a/tools/lib/bpf/Build b/tools/lib/bpf/Build
-index ee9d5362f35b..dcf0d36598e0 100644
---- a/tools/lib/bpf/Build
-+++ b/tools/lib/bpf/Build
-@@ -1 +1 @@
--libbpf-y := libbpf.o bpf.o nlattr.o btf.o libbpf_errno.o str_error.o netlink.o bpf_prog_linfo.o libbpf_probes.o xsk.o
-+libbpf-y := libbpf.o bpf.o nlattr.o btf.o libbpf_errno.o str_error.o netlink.o bpf_prog_linfo.o libbpf_probes.o xsk.o hashmap.o
-diff --git a/tools/lib/bpf/hashmap.c b/tools/lib/bpf/hashmap.c
+diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
+index dd5d69529382..138b6c063916 100644
+--- a/tools/testing/selftests/bpf/.gitignore
++++ b/tools/testing/selftests/bpf/.gitignore
+@@ -35,3 +35,4 @@ test_sysctl
+ alu32
+ libbpf.pc
+ libbpf.so.*
++test_hashmap
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 66f2dca1dee1..ddae06498a00 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -23,7 +23,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+ 	test_align test_verifier_log test_dev_cgroup test_tcpbpf_user \
+ 	test_sock test_btf test_sockmap test_lirc_mode2_user get_cgroup_id_user \
+ 	test_socket_cookie test_cgroup_storage test_select_reuseport test_section_names \
+-	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl
++	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap
+ 
+ BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
+ TEST_GEN_FILES = $(BPF_OBJ_FILES)
+diff --git a/tools/testing/selftests/bpf/test_hashmap.c b/tools/testing/selftests/bpf/test_hashmap.c
 new file mode 100644
-index 000000000000..6122272943e6
+index 000000000000..b64094c981e3
 --- /dev/null
-+++ b/tools/lib/bpf/hashmap.c
-@@ -0,0 +1,229 @@
++++ b/tools/testing/selftests/bpf/test_hashmap.c
+@@ -0,0 +1,382 @@
 +// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 +
 +/*
-+ * Generic non-thread safe hash map implementation.
++ * Tests for libbpf's hashmap.
 + *
 + * Copyright (c) 2019 Facebook
 + */
-+#include <stdint.h>
-+#include <stdlib.h>
 +#include <stdio.h>
 +#include <errno.h>
 +#include <linux/err.h>
 +#include "hashmap.h"
 +
-+/* start with 4 buckets */
-+#define HASHMAP_MIN_CAP_BITS 2
++#define CHECK(condition, format...) ({					\
++	int __ret = !!(condition);					\
++	if (__ret) {							\
++		fprintf(stderr, "%s:%d:FAIL ", __func__, __LINE__);	\
++		fprintf(stderr, format);				\
++	}								\
++	__ret;								\
++})
 +
-+static void hashmap_add_entry(struct hashmap_entry **pprev,
-+			      struct hashmap_entry *entry)
++size_t hash_fn(const void *k, void *ctx)
 +{
-+	entry->next = *pprev;
-+	*pprev = entry;
++	return (long)k;
 +}
 +
-+static void hashmap_del_entry(struct hashmap_entry **pprev,
-+			      struct hashmap_entry *entry)
++bool equal_fn(const void *a, const void *b, void *ctx)
 +{
-+	*pprev = entry->next;
-+	entry->next = NULL;
++	return (long)a == (long)b;
 +}
 +
-+void hashmap__init(struct hashmap *map, hashmap_hash_fn hash_fn,
-+		   hashmap_equal_fn equal_fn, void *ctx)
++static inline size_t next_pow_2(size_t n)
 +{
-+	map->hash_fn = hash_fn;
-+	map->equal_fn = equal_fn;
-+	map->ctx = ctx;
++	size_t r = 1;
 +
-+	map->buckets = NULL;
-+	map->cap = 0;
-+	map->cap_bits = 0;
-+	map->sz = 0;
++	while (r < n)
++		r <<= 1;
++	return r;
 +}
 +
-+struct hashmap *hashmap__new(hashmap_hash_fn hash_fn,
-+			     hashmap_equal_fn equal_fn,
-+			     void *ctx)
++static inline size_t exp_cap(size_t sz)
 +{
-+	struct hashmap *map = malloc(sizeof(struct hashmap));
++	size_t r = next_pow_2(sz);
 +
-+	if (!map)
-+		return ERR_PTR(-ENOMEM);
-+	hashmap__init(map, hash_fn, equal_fn, ctx);
-+	return map;
++	if (sz * 4 / 3 > r)
++		r <<= 1;
++	return r;
 +}
 +
-+void hashmap__clear(struct hashmap *map)
++#define ELEM_CNT 62
++
++int test_hashmap_generic(void)
 +{
-+	free(map->buckets);
-+	map->cap = map->cap_bits = map->sz = 0;
++	struct hashmap_entry *entry, *tmp;
++	int err, bkt, found_cnt, i;
++	long long found_msk;
++	struct hashmap *map;
++
++	fprintf(stderr, "%s: ", __func__);
++
++	map = hashmap__new(hash_fn, equal_fn, NULL);
++	if (CHECK(IS_ERR(map), "failed to create map: %ld\n", PTR_ERR(map)))
++		return 1;
++
++	for (i = 0; i < ELEM_CNT; i++) {
++		const void *oldk, *k = (const void *)(long)i;
++		void *oldv, *v = (void *)(long)(1024 + i);
++
++		err = hashmap__update(map, k, v, &oldk, &oldv);
++		if (CHECK(err != -ENOENT, "unexpected result: %d\n", err))
++			return 1;
++
++		if (i % 2) {
++			err = hashmap__add(map, k, v);
++		} else {
++			err = hashmap__set(map, k, v, &oldk, &oldv);
++			if (CHECK(oldk != NULL || oldv != NULL,
++				  "unexpected k/v: %p=%p\n", oldk, oldv))
++				return 1;
++		}
++
++		if (CHECK(err, "failed to add k/v %ld = %ld: %d\n",
++			       (long)k, (long)v, err))
++			return 1;
++
++		if (CHECK(!hashmap__find(map, k, &oldv),
++			  "failed to find key %ld\n", (long)k))
++			return 1;
++		if (CHECK(oldv != v, "found value is wrong: %ld\n", (long)oldv))
++			return 1;
++	}
++
++	if (CHECK(hashmap__size(map) != ELEM_CNT,
++		  "invalid map size: %zu\n", hashmap__size(map)))
++		return 1;
++	if (CHECK(hashmap__capacity(map) != exp_cap(hashmap__size(map)),
++		  "unexpected map capacity: %zu\n", hashmap__capacity(map)))
++		return 1;
++
++	found_msk = 0;
++	hashmap__for_each_entry(map, entry, bkt) {
++		long k = (long)entry->key;
++		long v = (long)entry->value;
++
++		found_msk |= 1ULL << k;
++		if (CHECK(v - k != 1024, "invalid k/v pair: %ld = %ld\n", k, v))
++			return 1;
++	}
++	if (CHECK(found_msk != (1ULL << ELEM_CNT) - 1,
++		  "not all keys iterated: %llx\n", found_msk))
++		return 1;
++
++	for (i = 0; i < ELEM_CNT; i++) {
++		const void *oldk, *k = (const void *)(long)i;
++		void *oldv, *v = (void *)(long)(256 + i);
++
++		err = hashmap__add(map, k, v);
++		if (CHECK(err != -EEXIST, "unexpected add result: %d\n", err))
++			return 1;
++
++		if (i % 2)
++			err = hashmap__update(map, k, v, &oldk, &oldv);
++		else
++			err = hashmap__set(map, k, v, &oldk, &oldv);
++
++		if (CHECK(err, "failed to update k/v %ld = %ld: %d\n",
++			       (long)k, (long)v, err))
++			return 1;
++		if (CHECK(!hashmap__find(map, k, &oldv),
++			  "failed to find key %ld\n", (long)k))
++			return 1;
++		if (CHECK(oldv != v, "found value is wrong: %ld\n", (long)oldv))
++			return 1;
++	}
++
++	if (CHECK(hashmap__size(map) != ELEM_CNT,
++		  "invalid updated map size: %zu\n", hashmap__size(map)))
++		return 1;
++	if (CHECK(hashmap__capacity(map) != exp_cap(hashmap__size(map)),
++		  "unexpected map capacity: %zu\n", hashmap__capacity(map)))
++		return 1;
++
++	found_msk = 0;
++	hashmap__for_each_entry_safe(map, entry, tmp, bkt) {
++		long k = (long)entry->key;
++		long v = (long)entry->value;
++
++		found_msk |= 1ULL << k;
++		if (CHECK(v - k != 256,
++			  "invalid updated k/v pair: %ld = %ld\n", k, v))
++			return 1;
++	}
++	if (CHECK(found_msk != (1ULL << ELEM_CNT) - 1,
++		  "not all keys iterated after update: %llx\n", found_msk))
++		return 1;
++
++	found_cnt = 0;
++	hashmap__for_each_key_entry(map, entry, (void *)0) {
++		found_cnt++;
++	}
++	if (CHECK(!found_cnt, "didn't find any entries for key 0\n"))
++		return 1;
++
++	found_msk = 0;
++	found_cnt = 0;
++	hashmap__for_each_key_entry_safe(map, entry, tmp, (void *)0) {
++		const void *oldk, *k;
++		void *oldv, *v;
++
++		k = entry->key;
++		v = entry->value;
++
++		found_cnt++;
++		found_msk |= 1ULL << (long)k;
++
++		if (CHECK(!hashmap__delete(map, k, &oldk, &oldv),
++			  "failed to delete k/v %ld = %ld\n",
++			  (long)k, (long)v))
++			return 1;
++		if (CHECK(oldk != k || oldv != v,
++			  "invalid deleted k/v: expected %ld = %ld, got %ld = %ld\n",
++			  (long)k, (long)v, (long)oldk, (long)oldv))
++			return 1;
++		if (CHECK(hashmap__delete(map, k, &oldk, &oldv),
++			  "unexpectedly deleted k/v %ld = %ld\n",
++			  (long)oldk, (long)oldv))
++			return 1;
++	}
++
++	if (CHECK(!found_cnt || !found_msk,
++		  "didn't delete any key entries\n"))
++		return 1;
++	if (CHECK(hashmap__size(map) != ELEM_CNT - found_cnt,
++		  "invalid updated map size (already deleted: %d): %zu\n",
++		  found_cnt, hashmap__size(map)))
++		return 1;
++	if (CHECK(hashmap__capacity(map) != exp_cap(hashmap__size(map)),
++		  "unexpected map capacity: %zu\n", hashmap__capacity(map)))
++		return 1;
++
++	hashmap__for_each_entry_safe(map, entry, tmp, bkt) {
++		const void *oldk, *k;
++		void *oldv, *v;
++
++		k = entry->key;
++		v = entry->value;
++
++		found_cnt++;
++		found_msk |= 1ULL << (long)k;
++
++		if (CHECK(!hashmap__delete(map, k, &oldk, &oldv),
++			  "failed to delete k/v %ld = %ld\n",
++			  (long)k, (long)v))
++			return 1;
++		if (CHECK(oldk != k || oldv != v,
++			  "invalid old k/v: expect %ld = %ld, got %ld = %ld\n",
++			  (long)k, (long)v, (long)oldk, (long)oldv))
++			return 1;
++		if (CHECK(hashmap__delete(map, k, &oldk, &oldv),
++			  "unexpectedly deleted k/v %ld = %ld\n",
++			  (long)k, (long)v))
++			return 1;
++	}
++
++	if (CHECK(found_cnt != ELEM_CNT || found_msk != (1ULL << ELEM_CNT) - 1,
++		  "not all keys were deleted: found_cnt:%d, found_msk:%llx\n",
++		  found_cnt, found_msk))
++		return 1;
++	if (CHECK(hashmap__size(map) != 0,
++		  "invalid updated map size (already deleted: %d): %zu\n",
++		  found_cnt, hashmap__size(map)))
++		return 1;
++
++	found_cnt = 0;
++	hashmap__for_each_entry(map, entry, bkt) {
++		CHECK(false, "unexpected map entries left: %ld = %ld\n",
++			     (long)entry->key, (long)entry->value);
++		return 1;
++	}
++
++	hashmap__free(map);
++	hashmap__for_each_entry(map, entry, bkt) {
++		CHECK(false, "unexpected map entries left: %ld = %ld\n",
++			     (long)entry->key, (long)entry->value);
++		return 1;
++	}
++
++	fprintf(stderr, "OK\n");
++	return 0;
 +}
 +
-+void hashmap__free(struct hashmap *map)
++size_t collision_hash_fn(const void *k, void *ctx)
 +{
-+	if (!map)
-+		return;
-+
-+	hashmap__clear(map);
-+	free(map);
++	return 0;
 +}
 +
-+size_t hashmap__size(const struct hashmap *map)
++int test_hashmap_multimap(void)
 +{
-+	return map->sz;
++	void *k1 = (void *)0, *k2 = (void *)1;
++	struct hashmap_entry *entry;
++	struct hashmap *map;
++	long found_msk;
++	int err, bkt;
++
++	fprintf(stderr, "%s: ", __func__);
++
++	/* force collisions */
++	map = hashmap__new(collision_hash_fn, equal_fn, NULL);
++	if (CHECK(IS_ERR(map), "failed to create map: %ld\n", PTR_ERR(map)))
++		return 1;
++
++
++	/* set up multimap:
++	 * [0] -> 1, 2, 4;
++	 * [1] -> 8, 16, 32;
++	 */
++	err = hashmap__append(map, k1, (void *)1);
++	if (CHECK(err, "failed to add k/v: %d\n", err))
++		return 1;
++	err = hashmap__append(map, k1, (void *)2);
++	if (CHECK(err, "failed to add k/v: %d\n", err))
++		return 1;
++	err = hashmap__append(map, k1, (void *)4);
++	if (CHECK(err, "failed to add k/v: %d\n", err))
++		return 1;
++
++	err = hashmap__append(map, k2, (void *)8);
++	if (CHECK(err, "failed to add k/v: %d\n", err))
++		return 1;
++	err = hashmap__append(map, k2, (void *)16);
++	if (CHECK(err, "failed to add k/v: %d\n", err))
++		return 1;
++	err = hashmap__append(map, k2, (void *)32);
++	if (CHECK(err, "failed to add k/v: %d\n", err))
++		return 1;
++
++	if (CHECK(hashmap__size(map) != 6,
++		  "invalid map size: %zu\n", hashmap__size(map)))
++		return 1;
++
++	/* verify global iteration still works and sees all values */
++	found_msk = 0;
++	hashmap__for_each_entry(map, entry, bkt) {
++		found_msk |= (long)entry->value;
++	}
++	if (CHECK(found_msk != (1 << 6) - 1,
++		  "not all keys iterated: %lx\n", found_msk))
++		return 1;
++
++	/* iterate values for key 1 */
++	found_msk = 0;
++	hashmap__for_each_key_entry(map, entry, k1) {
++		found_msk |= (long)entry->value;
++	}
++	if (CHECK(found_msk != (1 | 2 | 4),
++		  "invalid k1 values: %lx\n", found_msk))
++		return 1;
++
++	/* iterate values for key 2 */
++	found_msk = 0;
++	hashmap__for_each_key_entry(map, entry, k2) {
++		found_msk |= (long)entry->value;
++	}
++	if (CHECK(found_msk != (8 | 16 | 32),
++		  "invalid k2 values: %lx\n", found_msk))
++		return 1;
++
++	fprintf(stderr, "OK\n");
++	return 0;
 +}
 +
-+size_t hashmap__capacity(const struct hashmap *map)
++int test_hashmap_empty()
 +{
-+	return map->cap;
-+}
-+
-+static bool hashmap_needs_to_grow(struct hashmap *map)
-+{
-+	/* grow if empty or more than 75% filled */
-+	return (map->cap == 0) || ((map->sz + 1) * 4 / 3 > map->cap);
-+}
-+
-+static int hashmap_grow(struct hashmap *map)
-+{
-+	struct hashmap_entry **new_buckets;
-+	struct hashmap_entry *cur, *tmp;
-+	size_t new_cap_bits, new_cap;
-+	size_t h;
++	struct hashmap_entry *entry;
 +	int bkt;
++	struct hashmap *map;
++	void *k = (void *)0;
 +
-+	new_cap_bits = map->cap_bits + 1;
-+	if (new_cap_bits < HASHMAP_MIN_CAP_BITS)
-+		new_cap_bits = HASHMAP_MIN_CAP_BITS;
++	fprintf(stderr, "%s: ", __func__);
 +
-+	new_cap = 1UL << new_cap_bits;
-+	new_buckets = calloc(new_cap, sizeof(new_buckets[0]));
-+	if (!new_buckets)
-+		return -ENOMEM;
++	/* force collisions */
++	map = hashmap__new(hash_fn, equal_fn, NULL);
++	if (CHECK(IS_ERR(map), "failed to create map: %ld\n", PTR_ERR(map)))
++		return 1;
 +
-+	hashmap__for_each_entry_safe(map, cur, tmp, bkt) {
-+		h = hash_bits(map->hash_fn(cur->key, map->ctx), new_cap_bits);
-+		hashmap_add_entry(&new_buckets[h], cur);
++	if (CHECK(hashmap__size(map) != 0,
++		  "invalid map size: %zu\n", hashmap__size(map)))
++		return 1;
++	if (CHECK(hashmap__capacity(map) != 0,
++		  "invalid map capacity: %zu\n", hashmap__capacity(map)))
++		return 1;
++	if (CHECK(hashmap__find(map, k, NULL), "unexpected find\n"))
++		return 1;
++	if (CHECK(hashmap__delete(map, k, NULL, NULL), "unexpected delete\n"))
++		return 1;
++
++	hashmap__for_each_entry(map, entry, bkt) {
++		CHECK(false, "unexpected iterated entry\n");
++		return 1;
++	}
++	hashmap__for_each_key_entry(map, entry, k) {
++		CHECK(false, "unexpected key entry\n");
++		return 1;
 +	}
 +
-+	map->cap = new_cap;
-+	map->cap_bits = new_cap_bits;
-+	free(map->buckets);
-+	map->buckets = new_buckets;
-+
++	fprintf(stderr, "OK\n");
 +	return 0;
 +}
 +
-+static bool hashmap_find_entry(const struct hashmap *map,
-+			       const void *key, size_t hash,
-+			       struct hashmap_entry ***pprev,
-+			       struct hashmap_entry **entry)
++int main(int argc, char **argv)
 +{
-+	struct hashmap_entry *cur, **prev_ptr;
++	bool failed = false;
 +
-+	if (!map->buckets)
-+		return false;
++	if (test_hashmap_generic())
++		failed = true;
++	if (test_hashmap_multimap())
++		failed = true;
++	if (test_hashmap_empty())
++		failed = true;
 +
-+	for (prev_ptr = &map->buckets[hash], cur = *prev_ptr;
-+	     cur;
-+	     prev_ptr = &cur->next, cur = cur->next) {
-+		if (map->equal_fn(cur->key, key, map->ctx)) {
-+			if (pprev)
-+				*pprev = prev_ptr;
-+			*entry = cur;
-+			return true;
-+		}
-+	}
-+
-+	return false;
++	return failed;
 +}
-+
-+int hashmap__insert(struct hashmap *map, const void *key, void *value,
-+		    enum hashmap_insert_strategy strategy,
-+		    const void **old_key, void **old_value)
-+{
-+	struct hashmap_entry *entry;
-+	size_t h;
-+	int err;
-+
-+	if (old_key)
-+		*old_key = NULL;
-+	if (old_value)
-+		*old_value = NULL;
-+
-+	h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
-+	if (strategy != HASHMAP_APPEND &&
-+	    hashmap_find_entry(map, key, h, NULL, &entry)) {
-+		if (old_key)
-+			*old_key = entry->key;
-+		if (old_value)
-+			*old_value = entry->value;
-+
-+		if (strategy == HASHMAP_SET || strategy == HASHMAP_UPDATE) {
-+			entry->key = key;
-+			entry->value = value;
-+			return 0;
-+		} else if (strategy == HASHMAP_ADD) {
-+			return -EEXIST;
-+		}
-+	}
-+
-+	if (strategy == HASHMAP_UPDATE)
-+		return -ENOENT;
-+
-+	if (hashmap_needs_to_grow(map)) {
-+		err = hashmap_grow(map);
-+		if (err)
-+			return err;
-+		h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
-+	}
-+
-+	entry = malloc(sizeof(struct hashmap_entry));
-+	if (!entry)
-+		return -ENOMEM;
-+
-+	entry->key = key;
-+	entry->value = value;
-+	hashmap_add_entry(&map->buckets[h], entry);
-+	map->sz++;
-+
-+	return 0;
-+}
-+
-+bool hashmap__find(const struct hashmap *map, const void *key, void **value)
-+{
-+	struct hashmap_entry *entry;
-+	size_t h;
-+
-+	h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
-+	if (!hashmap_find_entry(map, key, h, NULL, &entry))
-+		return false;
-+
-+	if (value)
-+		*value = entry->value;
-+	return true;
-+}
-+
-+bool hashmap__delete(struct hashmap *map, const void *key,
-+		     const void **old_key, void **old_value)
-+{
-+	struct hashmap_entry **pprev, *entry;
-+	size_t h;
-+
-+	h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
-+	if (!hashmap_find_entry(map, key, h, &pprev, &entry))
-+		return false;
-+
-+	if (old_key)
-+		*old_key = entry->key;
-+	if (old_value)
-+		*old_value = entry->value;
-+
-+	hashmap_del_entry(pprev, entry);
-+	free(entry);
-+	map->sz--;
-+
-+	return true;
-+}
-+
-diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
-new file mode 100644
-index 000000000000..03748a742146
---- /dev/null
-+++ b/tools/lib/bpf/hashmap.h
-@@ -0,0 +1,173 @@
-+/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-+
-+/*
-+ * Generic non-thread safe hash map implementation.
-+ *
-+ * Copyright (c) 2019 Facebook
-+ */
-+#ifndef __LIBBPF_HASHMAP_H
-+#define __LIBBPF_HASHMAP_H
-+
-+#include <stdbool.h>
-+#include <stddef.h>
-+#include "libbpf_internal.h"
-+
-+static inline size_t hash_bits(size_t h, int bits)
-+{
-+	/* shuffle bits and return requested number of upper bits */
-+	return (h * 11400714819323198485llu) >> (__WORDSIZE - bits);
-+}
-+
-+typedef size_t (*hashmap_hash_fn)(const void *key, void *ctx);
-+typedef bool (*hashmap_equal_fn)(const void *key1, const void *key2, void *ctx);
-+
-+struct hashmap_entry {
-+	const void *key;
-+	void *value;
-+	struct hashmap_entry *next;
-+};
-+
-+struct hashmap {
-+	hashmap_hash_fn hash_fn;
-+	hashmap_equal_fn equal_fn;
-+	void *ctx;
-+
-+	struct hashmap_entry **buckets;
-+	size_t cap;
-+	size_t cap_bits;
-+	size_t sz;
-+};
-+
-+#define HASHMAP_INIT(hash_fn, equal_fn, ctx) {	\
-+	.hash_fn = (hash_fn),			\
-+	.equal_fn = (equal_fn),			\
-+	.ctx = (ctx),				\
-+	.buckets = NULL,			\
-+	.cap = 0,				\
-+	.cap_bits = 0,				\
-+	.sz = 0,				\
-+}
-+
-+void hashmap__init(struct hashmap *map, hashmap_hash_fn hash_fn,
-+		   hashmap_equal_fn equal_fn, void *ctx);
-+struct hashmap *hashmap__new(hashmap_hash_fn hash_fn,
-+			     hashmap_equal_fn equal_fn,
-+			     void *ctx);
-+void hashmap__clear(struct hashmap *map);
-+void hashmap__free(struct hashmap *map);
-+
-+size_t hashmap__size(const struct hashmap *map);
-+size_t hashmap__capacity(const struct hashmap *map);
-+
-+/*
-+ * Hashmap insertion strategy:
-+ * - HASHMAP_ADD - only add key/value if key doesn't exist yet;
-+ * - HASHMAP_SET - add key/value pair if key doesn't exist yet; otherwise,
-+ *   update value;
-+ * - HASHMAP_UPDATE - update value, if key already exists; otherwise, do
-+ *   nothing and return -ENOENT;
-+ * - HASHMAP_APPEND - always add key/value pair, even if key already exists.
-+ *   This turns hashmap into a multimap by allowing multiple values to be
-+ *   associated with the same key. Most useful read API for such hashmap is
-+ *   hashmap__for_each_key_entry() iteration. If hashmap__find() is still
-+ *   used, it will return last inserted key/value entry (first in a bucket
-+ *   chain).
-+ */
-+enum hashmap_insert_strategy {
-+	HASHMAP_ADD,
-+	HASHMAP_SET,
-+	HASHMAP_UPDATE,
-+	HASHMAP_APPEND,
-+};
-+
-+/*
-+ * hashmap__insert() adds key/value entry w/ various semantics, depending on
-+ * provided strategy value. If a given key/value pair replaced already
-+ * existing key/value pair, both old key and old value will be returned
-+ * through old_key and old_value to allow calling code do proper memory
-+ * management.
-+ */
-+int hashmap__insert(struct hashmap *map, const void *key, void *value,
-+		    enum hashmap_insert_strategy strategy,
-+		    const void **old_key, void **old_value);
-+
-+static inline int hashmap__add(struct hashmap *map,
-+			       const void *key, void *value)
-+{
-+	return hashmap__insert(map, key, value, HASHMAP_ADD, NULL, NULL);
-+}
-+
-+static inline int hashmap__set(struct hashmap *map,
-+			       const void *key, void *value,
-+			       const void **old_key, void **old_value)
-+{
-+	return hashmap__insert(map, key, value, HASHMAP_SET,
-+			       old_key, old_value);
-+}
-+
-+static inline int hashmap__update(struct hashmap *map,
-+				  const void *key, void *value,
-+				  const void **old_key, void **old_value)
-+{
-+	return hashmap__insert(map, key, value, HASHMAP_UPDATE,
-+			       old_key, old_value);
-+}
-+
-+static inline int hashmap__append(struct hashmap *map,
-+				  const void *key, void *value)
-+{
-+	return hashmap__insert(map, key, value, HASHMAP_APPEND, NULL, NULL);
-+}
-+
-+bool hashmap__delete(struct hashmap *map, const void *key,
-+		     const void **old_key, void **old_value);
-+
-+bool hashmap__find(const struct hashmap *map, const void *key, void **value);
-+
-+/*
-+ * hashmap__for_each_entry - iterate over all entries in hashmap
-+ * @map: hashmap to iterate
-+ * @cur: struct hashmap_entry * used as a loop cursor
-+ * @bkt: integer used as a bucket loop cursor
-+ */
-+#define hashmap__for_each_entry(map, cur, bkt)				    \
-+	for (bkt = 0; bkt < map->cap; bkt++)				    \
-+		for (cur = map->buckets[bkt]; cur; cur = cur->next)
-+
-+/*
-+ * hashmap__for_each_entry_safe - iterate over all entries in hashmap, safe
-+ * against removals
-+ * @map: hashmap to iterate
-+ * @cur: struct hashmap_entry * used as a loop cursor
-+ * @tmp: struct hashmap_entry * used as a temporary next cursor storage
-+ * @bkt: integer used as a bucket loop cursor
-+ */
-+#define hashmap__for_each_entry_safe(map, cur, tmp, bkt)		    \
-+	for (bkt = 0; bkt < map->cap; bkt++)				    \
-+		for (cur = map->buckets[bkt];				    \
-+		     cur && ({tmp = cur->next; true; });		    \
-+		     cur = tmp)
-+
-+/*
-+ * hashmap__for_each_key_entry - iterate over entries associated with given key
-+ * @map: hashmap to iterate
-+ * @cur: struct hashmap_entry * used as a loop cursor
-+ * @key: key to iterate entries for
-+ */
-+#define hashmap__for_each_key_entry(map, cur, _key)			    \
-+	for (cur = ({ size_t bkt = hash_bits(map->hash_fn((_key), map->ctx),\
-+					     map->cap_bits);		    \
-+		     map->buckets ? map->buckets[bkt] : NULL; });	    \
-+	     cur;							    \
-+	     cur = cur->next)						    \
-+		if (map->equal_fn(cur->key, (_key), map->ctx))
-+
-+#define hashmap__for_each_key_entry_safe(map, cur, tmp, _key)		    \
-+	for (cur = ({ size_t bkt = hash_bits(map->hash_fn((_key), map->ctx),\
-+					     map->cap_bits);		    \
-+		     cur = map->buckets ? map->buckets[bkt] : NULL; });	    \
-+	     cur && ({ tmp = cur->next; true; });			    \
-+	     cur = tmp)							    \
-+		if (map->equal_fn(cur->key, (_key), map->ctx))
-+
-+#endif /* __LIBBPF_HASHMAP_H */
 -- 
 2.17.1
 
