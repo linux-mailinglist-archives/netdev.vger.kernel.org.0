@@ -2,90 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D44E27A0F
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 12:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E0927A91
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 12:32:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729863AbfEWKLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 06:11:47 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:52220 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726429AbfEWKLq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 06:11:46 -0400
-Received: from mailhost.synopsys.com (dc2-mailhost1.synopsys.com [10.12.135.161])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 3A084C019A;
-        Thu, 23 May 2019 10:11:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1558606292; bh=ZEbZqunZ+rIwViZDW6o7vFr9VUdu0pDj0hPGxzIu6ek=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=cBUJrPawSJA6R+HhDp/hN/3hxkJdWLBnHIrnV6/L4PpYSXb+SRaYhDxUzgq6nHulc
-         k/WbOxllU3Dxi482kElOyiEjTjrBVnIcMZG56vzkxqxRiB6o18bW6y3x+0K+eYRm4W
-         PJqZGaeLrTLn9a3Dhb/1EpC3jT5dTmXy/l3upXuxJrezlwHEM2dUvLIsWSeYlm6AzK
-         ye+r51OCFeMIALLzS58nZWsUHFoJeZSZJ8U9LXv84RpWfIhqoSTspL4OKXgRLoFj+v
-         JRbInyMmArtFabkdmNFACrIHy7TeK5muPFxZBILN27ZNYQ330Pxel6nTNA/GOUmtpU
-         Oy9oIkMw7uyHg==
-Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id C811FA009E;
-        Thu, 23 May 2019 10:11:42 +0000 (UTC)
-Received: from DE02WEHTCB.internal.synopsys.com (10.225.19.94) by
- us01wehtc1.internal.synopsys.com (10.12.239.231) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Thu, 23 May 2019 03:11:42 -0700
-Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCB.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Thu,
- 23 May 2019 12:11:40 +0200
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Maxime Ripard <maxime.ripard@bootlin.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Chen-Yu Tsai" <wens@csie.org>
-CC:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        =?iso-8859-1?Q?Antoine_T=E9nart?= <antoine.tenart@bootlin.com>
-Subject: RE: [PATCH 6/8] dt-bindings: net: stmmac: Convert the binding to a
- schemas
-Thread-Topic: [PATCH 6/8] dt-bindings: net: stmmac: Convert the binding to a
- schemas
-Thread-Index: AQHVEU4TH/U8rGF20keiHF2VDmX4vKZ4fKug
-Date:   Thu, 23 May 2019 10:11:39 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B92B864@DE02WEMBXB.internal.synopsys.com>
-References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
- <ba1a5d8ad34a8c9ab99f504c04fbe65bde42081b.1558605170.git-series.maxime.ripard@bootlin.com>
-In-Reply-To: <ba1a5d8ad34a8c9ab99f504c04fbe65bde42081b.1558605170.git-series.maxime.ripard@bootlin.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.107.19.176]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1729934AbfEWKcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 06:32:50 -0400
+Received: from mail5.windriver.com ([192.103.53.11]:57282 "EHLO mail5.wrs.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727466AbfEWKcu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 06:32:50 -0400
+Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
+        by mail5.wrs.com (8.15.2/8.15.2) with ESMTPS id x4NAUiWV008275
+        (version=TLSv1 cipher=AES128-SHA bits=128 verify=FAIL);
+        Thu, 23 May 2019 03:30:55 -0700
+Received: from [128.224.155.90] (128.224.155.90) by ALA-HCA.corp.ad.wrs.com
+ (147.11.189.50) with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 23 May
+ 2019 03:30:34 -0700
+Subject: Re: [PATCH v2] tipc: Avoid copying bytes beyond the supplied data
+To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
+        "jon.maloy@ericsson.com" <jon.maloy@ericsson.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "niveditas98@gmail.com" <niveditas98@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20190520034536.22782-1-chris.packham@alliedtelesis.co.nz>
+ <2830aab3-3fa9-36d2-5646-d5e4672ae263@windriver.com>
+ <00ce1b1e52ac4b729d982c86127334aa@svr-chch-ex1.atlnz.lc>
+From:   Ying Xue <ying.xue@windriver.com>
+Message-ID: <11c81207-54dd-16d5-3f33-1ccf45a06dac@windriver.com>
+Date:   Thu, 23 May 2019 18:20:45 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
+In-Reply-To: <00ce1b1e52ac4b729d982c86127334aa@svr-chch-ex1.atlnz.lc>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [128.224.155.90]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxime Ripard <maxime.ripard@bootlin.com>
-Date: Thu, May 23, 2019 at 10:56:49
+On 5/23/19 4:46 AM, Chris Packham wrote:
+> On most distros that is generated from include/uapi in the kernel source 
+> and packaged as part of libc or a kernel-headers package. So once this 
+> patch is accepted and makes it into the distros 
+> /usr/include/linux/tipc_config.h will have this fix.
 
-> Switch the STMMAC / Synopsys DesignWare MAC controller binding to a YAML
-> schema to enable the DT validation.
->=20
-> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-
-How exactly can I see the final results of this ? Do you have any link ?=20
-(I'm no expert in YAML at all).
-
-Thanks,
-Jose Miguel Abreu
+Thanks for the clarification. You are right, so it's unnecessary to make
+any change.
