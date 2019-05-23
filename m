@@ -2,296 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 629C228CD2
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 637D728CD5
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:04:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387949AbfEWWD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 18:03:27 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:48156 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387616AbfEWWD0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 18:03:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=HQh4P1qtBdimC5UIRuS8cdTFGvH0ynzH0b+jAgn8+NM=; b=bcCefu4N4kZnh+ffWGjprdSIE
-        nTMgdXw/SaB0bYfX1ru0w4E/vbXbUrlrceRuSIy3YqSrmcsS/vlSLHTWreMQWl8BZrSMsJxgYTvxT
-        eage6hI3mKGSZ8PJobG+wv+4aVl9PmokdZkBLumXfkTfEsrPlgA83ueAPqpW6UWDLehhIuwsp9QxF
-        sLfrwzXW0woQcj4VAK0vepkcifxehCPccldWQtw0ebWKVQ2dfWp+8bzdLZXouEeWhR0CYlrKVMsg0
-        ZQeoeZZBNrKjxa+JIQcGB3D62BCaIeDbzwCf3Y2dqfOrZN9atCQr0wMm5xu3EwA6XlpxlfFP89aCJ
-        arcAf8etg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52612)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hTvnz-0008NP-Op; Thu, 23 May 2019 23:03:20 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hTvnx-0007uf-7D; Thu, 23 May 2019 23:03:17 +0100
-Date:   Thu, 23 May 2019 23:03:17 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        id S2388423AbfEWWEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 18:04:14 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:33134 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388293AbfEWWEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 18:04:14 -0400
+Received: by mail-ed1-f68.google.com with SMTP id n17so11354771edb.0
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 15:04:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0ZOGMkQATVa6hySgn7e8PmVEwWcR3u+Mz/cQOb/DRkA=;
+        b=Et/9IGf9JPPgnIarl8rwxL6y9jKOfsCgMA2M59GgnFg/C9v/G+zu2QXmrdr4b1XfuN
+         I+o9bIxpCosDiigq++OZqibZOj2dNIDLaVLbc7hkqXQBdMpGhMeKpPjGBl4I0ifTI5K/
+         jm6QIrQBFz5/90d2a3XGpf1L59SLTPgiBC2AOZX4diP3gvOkmpZnlschf2+fblFzBOwW
+         6hSb6C1ZmKc/9Y6DhA3GP/U86PGL8JD6ehE1Q9YgqsNFrDNqSDysHsqjVB8tbzG7v3jF
+         dVx48vCHf2fBIo5T/OTgg8ry8hUoUSDzKdeOKnf9LpiYBj3fG+kVECbQm3UBghjzLy1+
+         W55w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0ZOGMkQATVa6hySgn7e8PmVEwWcR3u+Mz/cQOb/DRkA=;
+        b=GezTLa7mgS9g6wvePLzrDOuE/O+mFDil2G5MwTW9pQtf8MkHAq5yXHlMU0jSKGu1PO
+         v82mAjdAOByAkuHAPLKovIrVkkwN3wIDYful1k6qoybBTy19KDfZ4MM64q3elOrGcvSq
+         XmB89yd8W6iwAvfSluXDnxSIhZkawQZe3HbAlv0XCjvsUJea9+jKWCli6J0mgxQ3/y6T
+         jRE3PXPu8Fbdr8NDiQzP2Q9AhffqTgYfPY6C7QYPql2cqTLoFeEdo160iG4dMTRvnjvz
+         ms6vjJcCVKokn/7eemQowGPFNCxbYaAPAsOOIa+KmRDxxTe1CwNKPW4xaRdSnt1ChA4y
+         k3qQ==
+X-Gm-Message-State: APjAAAURjCGQsNDo2ZZXT0HZM0ssofwan4gev8suon4o64cYBX3pPyjc
+        /4JO7gZ+x04IhmUp0Mc9LpDBGL2G8WfWbu6HlcsKUzJpbZ4=
+X-Google-Smtp-Source: APXvYqz1Lk78/B7Smjk+kOoueQMsLbiNbdPpB+w2QzZSmQCSibVlnPiCS4WR8TJaLCQU80gSMKWGNMtiyEf2oQaKURs=
+X-Received: by 2002:a50:92c9:: with SMTP id l9mr100036604eda.75.1558649052334;
+ Thu, 23 May 2019 15:04:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190523011958.14944-1-ioana.ciornei@nxp.com> <20190523011958.14944-6-ioana.ciornei@nxp.com>
+ <20190523215522.gnz6l342zhzpi2ld@shell.armlinux.org.uk>
+In-Reply-To: <20190523215522.gnz6l342zhzpi2ld@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 24 May 2019 01:04:01 +0300
+Message-ID: <CA+h21hpU7-kcsX9Z4DA116qcMz2DjE3G2Fwj03=JDRyE7sAcwQ@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 5/9] net: phylink: Add phylink_create_raw
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
         "andrew@lunn.ch" <andrew@lunn.ch>,
         "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
         "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next 7/9] net: dsa: Move the phylink driver calls
- into port.c
-Message-ID: <20190523220317.g4k7b3k3edcaxod5@shell.armlinux.org.uk>
-References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
- <20190523011958.14944-8-ioana.ciornei@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190523011958.14944-8-ioana.ciornei@nxp.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 01:20:41AM +0000, Ioana Ciornei wrote:
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index ed8ba9daa3ba..d0f955e8b731 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -422,6 +422,102 @@ static struct phy_device *dsa_port_get_phy_device(struct dsa_port *dp)
->  	return phydev;
->  }
->  
-> +void dsa_port_phylink_validate(struct dsa_port *dp,
-> +			       unsigned long *supported,
-> +			       struct phylink_link_state *state)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!ds->ops->phylink_validate)
-> +		return;
+On Fri, 24 May 2019 at 00:55, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> On Thu, May 23, 2019 at 01:20:40AM +0000, Ioana Ciornei wrote:
+> > +     if (pl->ops) {
+> > +             pl->ops->mac_link_up(ndev, pl->link_an_mode,
+> >                            pl->phy_state.interface,
+> >                            pl->phydev);
+> >
+> > +             netif_carrier_on(ndev);
+> >
+> > +             netdev_info(ndev,
+> > +                         "Link is Up - %s/%s - flow control %s\n",
+> > +                         phy_speed_to_str(link_state.speed),
+> > +                         phy_duplex_to_str(link_state.duplex),
+> > +                         phylink_pause_to_str(link_state.pause));
+> > +     } else {
+> > +             blocking_notifier_call_chain(&pl->notifier_chain,
+> > +                                          PHYLINK_MAC_LINK_UP, &info);
+> > +             phydev_info(pl->phydev,
+> > +                         "Link is Up - %s/%s - flow control %s\n",
+> > +                         phy_speed_to_str(link_state.speed),
+> > +                         phy_duplex_to_str(link_state.duplex),
+> > +                         phylink_pause_to_str(link_state.pause));
+> > +     }
+>
+> So if we don't have pl->ops, what happens when we call phydev_info()
+> with a NULL phydev, which is a very real possibility: one of phylink's
+> whole points is to support dynamic presence of a PHY.
+>
+> What will happen in that case is this will oops, due to dereferencing
+> an offset NULL pointer via:
+>
+> #define phydev_info(_phydev, format, args...)   \
+>         dev_info(&_phydev->mdio.dev, format, ##args)
+>
+> You can't just decide that if there's no netdev, we will be guaranteed
+> a phy.
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> According to speedtest.net: 11.9Mbps down 500kbps up
 
-No, really not acceptable.  If there's no phylink_validate function,
-then simply returning is going to produce what I'd term "unpredictable"
-results.  This callback will be called with various modes in
-"supported", and if you simply return without any modification,
-you're basically saying that you support _anything_ that the supported
-mask throws at you.
+True, however it does not crash:
 
-> +
-> +	ds->ops->phylink_validate(ds, dp->index, supported, state);
-> +}
-> +EXPORT_SYMBOL(dsa_port_phylink_validate);
-> +
-> +int dsa_port_phylink_mac_link_state(struct dsa_port *dp,
-> +				    struct phylink_link_state *state)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	/* Only called for SGMII and 802.3z */
-> +	if (!ds->ops->phylink_mac_link_state)
-> +		return -EOPNOTSUPP;
-> +
-> +	return ds->ops->phylink_mac_link_state(ds, dp->index, state);
-> +}
-> +EXPORT_SYMBOL(dsa_port_phylink_mac_link_state);
-> +
-> +void dsa_port_phylink_mac_config(struct dsa_port *dp,
-> +				 unsigned int mode,
-> +				 const struct phylink_link_state *state)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!ds->ops->phylink_mac_config)
-> +		return;
+[    2.539949] (NULL device *): Link is Up - 1Gbps/Full - flow control off
 
-If you don't implement this, what's the point?
+I agree that a better printing system has to be established though.
 
-> +
-> +	ds->ops->phylink_mac_config(ds, dp->index, mode, state);
-> +}
-> +EXPORT_SYMBOL(dsa_port_phylink_mac_config);
-> +
-> +void dsa_port_phylink_mac_an_restart(struct dsa_port *dp)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!ds->ops->phylink_mac_an_restart)
-> +		return;
-> +
-> +	ds->ops->phylink_mac_an_restart(ds, dp->index);
-> +}
-> +EXPORT_SYMBOL(dsa_port_phylink_mac_an_restart);
-> +
-> +void dsa_port_phylink_mac_link_down(struct dsa_port *dp,
-> +				    unsigned int mode,
-> +				    phy_interface_t interface,
-> +				    struct phy_device *phydev)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!ds->ops->phylink_mac_link_down) {
-> +		if (ds->ops->adjust_link && phydev)
-> +			ds->ops->adjust_link(ds, dp->index, phydev);
-> +		return;
-> +	}
-> +
-> +	ds->ops->phylink_mac_link_down(ds, dp->index, mode, interface);
-> +}
-> +EXPORT_SYMBOL(dsa_port_phylink_mac_link_down);
-> +
-> +void dsa_port_phylink_mac_link_up(struct dsa_port *dp,
-> +				  unsigned int mode,
-> +				  phy_interface_t interface,
-> +				  struct phy_device *phydev)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!ds->ops->phylink_mac_link_up) {
-> +		if (ds->ops->adjust_link && phydev)
-> +			ds->ops->adjust_link(ds, dp->index, phydev);
-> +		return;
-> +	}
-> +
-> +	ds->ops->phylink_mac_link_up(ds, dp->index, mode, interface, phydev);
-> +}
-> +EXPORT_SYMBOL(dsa_port_phylink_mac_link_up);
-> +
-> +void dsa_port_phylink_fixed_state(struct dsa_port *dp,
-> +				  struct phylink_link_state *state)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	/* No need to check that this operation is valid, the callback would
-> +	 * not be called if it was not.
-> +	 */
-> +	ds->ops->phylink_fixed_state(ds, dp->index, state);
-> +}
-> +EXPORT_SYMBOL(dsa_port_phylink_fixed_state);
-> +
->  static int dsa_port_setup_phy_of(struct dsa_port *dp, bool enable)
->  {
->  	struct dsa_switch *ds = dp->ds;
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index 9892ca1f6859..308066da8a0f 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -1169,25 +1169,16 @@ static void dsa_slave_phylink_validate(struct net_device *dev,
->  				       struct phylink_link_state *state)
->  {
->  	struct dsa_port *dp = dsa_slave_to_port(dev);
-> -	struct dsa_switch *ds = dp->ds;
-> -
-> -	if (!ds->ops->phylink_validate)
-> -		return;
-
-Ah, this is where it came from - but still wrong for the reasons I
-stated above, though it makes it not a bug you're introducing, but
-one that pre-exists.
-
->  
-> -	ds->ops->phylink_validate(ds, dp->index, supported, state);
-> +	dsa_port_phylink_validate(dp, supported, state);
->  }
->  
->  static int dsa_slave_phylink_mac_link_state(struct net_device *dev,
->  					    struct phylink_link_state *state)
->  {
->  	struct dsa_port *dp = dsa_slave_to_port(dev);
-> -	struct dsa_switch *ds = dp->ds;
-> -
-> -	/* Only called for SGMII and 802.3z */
-> -	if (!ds->ops->phylink_mac_link_state)
-> -		return -EOPNOTSUPP;
->  
-> -	return ds->ops->phylink_mac_link_state(ds, dp->index, state);
-> +	return dsa_port_phylink_mac_link_state(dp, state);
->  }
->  
->  static void dsa_slave_phylink_mac_config(struct net_device *dev,
-> @@ -1195,23 +1186,15 @@ static void dsa_slave_phylink_mac_config(struct net_device *dev,
->  					 const struct phylink_link_state *state)
->  {
->  	struct dsa_port *dp = dsa_slave_to_port(dev);
-> -	struct dsa_switch *ds = dp->ds;
-> -
-> -	if (!ds->ops->phylink_mac_config)
-> -		return;
->  
-> -	ds->ops->phylink_mac_config(ds, dp->index, mode, state);
-> +	dsa_port_phylink_mac_config(dp, mode, state);
->  }
->  
->  static void dsa_slave_phylink_mac_an_restart(struct net_device *dev)
->  {
->  	struct dsa_port *dp = dsa_slave_to_port(dev);
-> -	struct dsa_switch *ds = dp->ds;
-> -
-> -	if (!ds->ops->phylink_mac_an_restart)
-> -		return;
->  
-> -	ds->ops->phylink_mac_an_restart(ds, dp->index);
-> +	dsa_port_phylink_mac_an_restart(dp);
->  }
->  
->  static void dsa_slave_phylink_mac_link_down(struct net_device *dev,
-> @@ -1219,15 +1202,8 @@ static void dsa_slave_phylink_mac_link_down(struct net_device *dev,
->  					    phy_interface_t interface)
->  {
->  	struct dsa_port *dp = dsa_slave_to_port(dev);
-> -	struct dsa_switch *ds = dp->ds;
-> -
-> -	if (!ds->ops->phylink_mac_link_down) {
-> -		if (ds->ops->adjust_link && dev->phydev)
-> -			ds->ops->adjust_link(ds, dp->index, dev->phydev);
-> -		return;
-> -	}
->  
-> -	ds->ops->phylink_mac_link_down(ds, dp->index, mode, interface);
-> +	dsa_port_phylink_mac_link_down(dp, mode, interface, dev->phydev);
->  }
->  
->  static void dsa_slave_phylink_mac_link_up(struct net_device *dev,
-> @@ -1236,15 +1212,8 @@ static void dsa_slave_phylink_mac_link_up(struct net_device *dev,
->  					  struct phy_device *phydev)
->  {
->  	struct dsa_port *dp = dsa_slave_to_port(dev);
-> -	struct dsa_switch *ds = dp->ds;
->  
-> -	if (!ds->ops->phylink_mac_link_up) {
-> -		if (ds->ops->adjust_link && dev->phydev)
-> -			ds->ops->adjust_link(ds, dp->index, dev->phydev);
-> -		return;
-> -	}
-> -
-> -	ds->ops->phylink_mac_link_up(ds, dp->index, mode, interface, phydev);
-> +	dsa_port_phylink_mac_link_up(dp, mode, interface, phydev);
->  }
->  
->  static const struct phylink_mac_ops dsa_slave_phylink_mac_ops = {
-> @@ -1268,12 +1237,8 @@ static void dsa_slave_phylink_fixed_state(struct net_device *dev,
->  					  struct phylink_link_state *state)
->  {
->  	struct dsa_port *dp = dsa_slave_to_port(dev);
-> -	struct dsa_switch *ds = dp->ds;
->  
-> -	/* No need to check that this operation is valid, the callback would
-> -	 * not be called if it was not.
-> -	 */
-> -	ds->ops->phylink_fixed_state(ds, dp->index, state);
-> +	dsa_port_phylink_fixed_state(dp, state);
->  }
->  
->  /* slave device setup *******************************************************/
-> -- 
-> 2.21.0
-> 
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+-Vladimir
