@@ -2,68 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB99D285BC
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 20:17:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F0B0285C2
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 20:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731337AbfEWSRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 14:17:09 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:51693 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731116AbfEWSRJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 14:17:09 -0400
-Received: by mail-wm1-f67.google.com with SMTP id c77so6836340wmd.1;
-        Thu, 23 May 2019 11:17:06 -0700 (PDT)
+        id S1731364AbfEWSSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 14:18:43 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:41681 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731116AbfEWSSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 14:18:43 -0400
+Received: by mail-pl1-f195.google.com with SMTP id f12so3060405plt.8;
+        Thu, 23 May 2019 11:18:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=rOCpAgwSlJyGCM5mQhDHQFFGcbo16Hm2rBki/beRDS0=;
-        b=pAI1FG5dffBe+/l0iXMlrFzmlBeTY06ZDKb/0Ez08L/tZii+3ZP643/7vVQn5t0PTG
-         ceRQoHScfoEAnweHwLe9BjSNHHGwqNnZ7nsUrFTN+xRPBcNIc5putVF3DLyX+B3SDJzm
-         iCZKEzvJxl4JyBmGvdbpgBU37iDo8UOB8vNY1GtwlugDyYFltkw4uLhjTxdT7DKV351L
-         wGx1ySn66b+v9x0Eoz+hPKnqn+o/fherY31RK7Poz7FB9OsqLIDgsGcDNui7FUdljevM
-         2T/JDjDH4Et9UCpBICQw1lxf64+MPwUrgoHkK2HOvVY/bgt4Dvw/sfNPBaHoaRaH+7Ew
-         S3cA==
+        bh=CgkUT1S8m2MNCjfDPnbC1Rro3ap1/tHUWB2hI1G75Vo=;
+        b=rTgTMUr1f3HMDTme0bflwcloNHCtx6Q12x5/kCApk4T51a9PWQmc8zvUPmwaIrZmuX
+         siPjcqcjRw1CUOf3/OPV8sjdsOlkKbJhwcqKZ5R6vIMkEvOiyC/EMKX/uMFuGRmNiykH
+         SVYnEvQovaPoOXlT4smHyAAkRZM0DCvKLG2YQgePnrojydF8rzWTtQdPi/YyavMGRGPf
+         Sd1RboBvL/I4NTUyajPUt3Mt4kRSFf2USyK5nGL8wvIRhgMJ/229KK1u4Y+2HGwH0vlm
+         50a70arUghWHmdMZsPVgthcq1A1sdcUndz/SyAQCeJvo7grVLiaffwbkEly7txlgTsmO
+         KWLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=rOCpAgwSlJyGCM5mQhDHQFFGcbo16Hm2rBki/beRDS0=;
-        b=MEgMGgDKWG1i4GipNiEYP+0OpJqRsSMn5DFuT1W3yOqxOSmkvlijyDummwRUUfPk/4
-         KgLaQl3bumBA2weqPOAbGJOLEVtgpVC1Li9+oAcsJ+h/QsRQRiaaaycUxO3Q5fMBN5ko
-         /CqfGcL+3kg6he4GPa3Bc1T6CyknjP0jRy83p7vi0EFGoPHdXXhTiRX9dbBjbpYMwnVc
-         bUyKcWWqX+Qye35P2/IDUL4xba5xWFxF2b9vr5/3UHw3jYcwx77ApJj9IRhlR44V/7gM
-         ioHYzNSQhxPwl6efzVGw2VwnccP+wmynGgnS1llpgtRYd2+SWhAhRo450xTDDZ8XdHxS
-         JZuw==
-X-Gm-Message-State: APjAAAUOoVcrCn+kZkXTZdEB3UELEmzbOvryxhDTdkZKUnTEgSWA6CcC
-        hg1+hM9/pE5Fu0RChOXpOgZUjpWk
-X-Google-Smtp-Source: APXvYqwolNUTJQNFmkcqVBpyXmCjYo54fGuM1+ACYPhybXi2YjA0EYP06lck56epViJTxq62cWZyoA==
-X-Received: by 2002:a1c:7d8e:: with SMTP id y136mr12493029wmc.129.1558635425947;
-        Thu, 23 May 2019 11:17:05 -0700 (PDT)
+        bh=CgkUT1S8m2MNCjfDPnbC1Rro3ap1/tHUWB2hI1G75Vo=;
+        b=qjcCFZUUoq8Tt88XI7b5QxZsW9wndF/Gcw2Hz3K5+UbeoT+2JbHPSzrazjvqCAiiY5
+         +O4xN0+2iMZd5HUVWDKgU2hGw7sDHbMn1qgwSZ+F4TTwh3nugcF60jNHav9VRDDfk4Mu
+         d8A/Sk8kcxz/Jgd+igsN1QRU/haCX05xSFLuYNKe5ljrqVRNVM7HOnozd5lWcErQ4Y5q
+         0md2GMRer4AUyqk4R7l2Q5cHL7IaszjJz7YGOIPQu+MHIB/VIHS3Ux6tJVoydsVPCUbu
+         6lHsrS5o96svA+S+d7I+fanikVPiydnv57y1aEI3a/Ww367jv8o9EWnoZdmKd/UoEr5Z
+         XweQ==
+X-Gm-Message-State: APjAAAWTdbcr3jeslBmmAYTrWFTDnjkjCgC2d7xtjtDOuMrfE8iFXHDB
+        k7rQdwRacmDX3IYUw+aLt4e0f6pc
+X-Google-Smtp-Source: APXvYqzba3iR+fRTpcBlWdB2qrwCoXlSBo1Icr4+z73Psa0Zv2a4+INvRFk9X/HU7Y5Ln7GXtSzNIw==
+X-Received: by 2002:a17:902:8c82:: with SMTP id t2mr92419656plo.256.1558635521646;
+        Thu, 23 May 2019 11:18:41 -0700 (PDT)
 Received: from [10.67.49.213] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q68sm252189wme.11.2019.05.23.11.17.02
+        by smtp.googlemail.com with ESMTPSA id g22sm117291pfo.28.2019.05.23.11.18.40
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 11:17:04 -0700 (PDT)
-Subject: Re: [PATCH 2/8] dt-bindings: net: Add a YAML schemas for the generic
- PHY options
-To:     Maxime Ripard <maxime.ripard@bootlin.com>,
-        Mark Rutland <mark.rutland@arm.com>,
+        Thu, 23 May 2019 11:18:40 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/3] dt-bindings: net: document new usxgmii
+ phy mode
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Madalin-cristian Bucur <madalin.bucur@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>
-Cc:     devicetree@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        =?UTF-8?Q?Antoine_T=c3=a9nart?= <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
- <aa5ec90854429c2d9e2c565604243e1b10cfd94b.1558605170.git-series.maxime.ripard@bootlin.com>
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+References: <9d284f4d-93ee-fb27-e386-80825f92adc8@gmail.com>
+ <60079a09-670b-268e-9ad5-014a427b60bf@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -120,12 +117,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <e39b7a35-3235-6040-b3c1-648897fabc70@gmail.com>
-Date:   Thu, 23 May 2019 11:16:55 -0700
+Message-ID: <37340f6c-3f42-2678-6ce0-e40faec36203@gmail.com>
+Date:   Thu, 23 May 2019 11:18:39 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <aa5ec90854429c2d9e2c565604243e1b10cfd94b.1558605170.git-series.maxime.ripard@bootlin.com>
+In-Reply-To: <60079a09-670b-268e-9ad5-014a427b60bf@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -134,18 +131,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/23/19 2:56 AM, Maxime Ripard wrote:
-> The networking PHYs have a number of available device tree properties that
-> can be used in their device tree node. Add a YAML schemas for those.
+On 5/23/19 11:07 AM, Heiner Kallweit wrote:
+> Add new interface mode USXGMII to binding documentation.
 > 
-> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-> ---
->  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 148 +++++++++-
->  Documentation/devicetree/bindings/net/phy.txt           |  80 +-----
->  2 files changed, 149 insertions(+), 79 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Updating the PHY Library section of the MAINTAINERS file to include that
-binding document (not sure why it was not there) would be nice.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
