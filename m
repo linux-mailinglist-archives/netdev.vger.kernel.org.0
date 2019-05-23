@@ -2,86 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A53027482
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 04:39:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A45D0274C3
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 05:23:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729572AbfEWCjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 22:39:06 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:40058 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727305AbfEWCjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 22:39:06 -0400
-Received: by mail-pf1-f194.google.com with SMTP id u17so2355127pfn.7;
-        Wed, 22 May 2019 19:39:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=okkKWbqyaWlfW8yrczmJVf2RVVOHp7n/bP3cU4zZ1vY=;
-        b=Pkk4MLe3ihlt/Fk7ne3smny1sUWGcCh3srPmm6tpYqHcKn03ph3YRCvM5YqF76fBYA
-         Y5HuA3X2G4YnzdXupxBkpIZNroDxveZD8VRHGN0h8PAfFbc95nwuMHaAirIdrVZbi0lw
-         vd//oAl4wpJYAgaU2lEgI2iZ3W42ORbX51CCxhlBbmnorEzM60zYPP9UVgCK4Dk1rr8+
-         6oBZdfPH4EwUd52jaIjptulaDjDb8kLWWnY2peKOzdwdyXpMyWaKJ5DhTzKi7oD75fZ5
-         B0zCQhvu+4HxQNKZ0veR5vw1Np36ZSIfUB3TeoaWcx+a/T3Z3TuvGO5MtCDPOBiMxHp3
-         kV1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=okkKWbqyaWlfW8yrczmJVf2RVVOHp7n/bP3cU4zZ1vY=;
-        b=W1OxMrngWsIxvcVh8jlARdWPrrvnCH0QkYuXzH2e6UrFgMhanmpiITF2/7+xvtme9h
-         51FmwFXs5Zm0D5aPUn6m+bKoBrDNeg+iIdpd5Pqqw7FSoPHfoKq5sBzv8VqkwPJ3VBNn
-         2NDAuxwyYvJMIdIecC+VDbGZxmVUVAJhu+l9OCmGVcS0mhkh568Kf7oTIwGJFQfJ4IYj
-         hiOBGwmJ2TPNXcvEu2nHqVibMXMzFEBscodLmBFTnNEbfGU84ERvzzW8czxILRHQXoiA
-         ECUKaDyFuxRnWj+qH+qyJQWYcsFMxy9jyVboAyh73AYBLNQBIqC0hHgWHbdijU/4njvd
-         oY1w==
-X-Gm-Message-State: APjAAAU61DXRfbpsdp7rF5ERAv8zDd71va52FwnB2QTopPC+mwhCbQkM
-        1Zsar4L5iSPwF/pe27V5DJbn0RhY
-X-Google-Smtp-Source: APXvYqz73eaN/IZf6n4DdhsH81Z24caoLUZ4knIMqrzuY5Jb8lgBEE+PgydSpMxTolltNlJFKgrvjQ==
-X-Received: by 2002:a62:7793:: with SMTP id s141mr34249567pfc.21.1558579144946;
-        Wed, 22 May 2019 19:39:04 -0700 (PDT)
-Received: from [10.230.28.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 8sm6972629pfj.93.2019.05.22.19.39.00
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 May 2019 19:39:04 -0700 (PDT)
-Subject: Re: [PATCH V5] net: phy: tja11xx: Add TJA11xx PHY driver
-To:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Guenter Roeck <linux@roeck-us.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-References: <20190517235123.32261-1-marex@denx.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <2c30c9c9-1223-ad91-2837-038e0ee5ae23@gmail.com>
-Date:   Wed, 22 May 2019 19:38:57 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190517235123.32261-1-marex@denx.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1729851AbfEWDXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 23:23:12 -0400
+Received: from mga05.intel.com ([192.55.52.43]:3447 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728237AbfEWDXL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 23:23:11 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 May 2019 20:23:11 -0700
+X-ExtLoop1: 1
+Received: from shbuild888.sh.intel.com ([10.239.147.114])
+  by fmsmga007.fm.intel.com with ESMTP; 22 May 2019 20:23:10 -0700
+From:   Feng Tang <feng.tang@intel.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Aaron F Brown <aaron.f.brown@intel.com>,
+        intel-wired-lan@osuosl.org, netdev@vger.kernel.org
+Cc:     Feng Tang <feng.tang@intel.com>
+Subject: [RESEND PATCH] intel-ethernet: warn when fatal read failure happens
+Date:   Thu, 23 May 2019 11:22:33 +0800
+Message-Id: <20190523032233.29277-1-feng.tang@intel.com>
+X-Mailer: git-send-email 2.14.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+Vladimir,
+Failed in reading the HW register is very serious for igb/igc driver,
+as its hw_addr will be set to NULL and cause the adapter be seen as
+"REMOVED".
 
-On 5/17/2019 4:51 PM, Marek Vasut wrote:
-> Add driver for the NXP TJA1100 and TJA1101 PHYs. These PHYs are special
-> BroadRReach 100BaseT1 PHYs used in automotive.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: linux-hwmon@vger.kernel.org
+We saw the error only a few times in the MTBF test for suspend/resume,
+but can hardly get any useful info to debug.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Adding WARN() so that we can get the necessary information about
+where and how it happens, and use it for root causing and fixing
+this "PCIe link lost issue"
+
+This affects igb, igc.
+
+Signed-off-by: Feng Tang <feng.tang@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Acked-by: Sasha Neftin <sasha.neftin@intel.com>
+---
+ drivers/net/ethernet/intel/igb/igb_main.c | 1 +
+ drivers/net/ethernet/intel/igc/igc_main.c | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 39f33afc479c..e5b7e638df28 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -753,6 +753,7 @@ u32 igb_rd32(struct e1000_hw *hw, u32 reg)
+ 		struct net_device *netdev = igb->netdev;
+ 		hw->hw_addr = NULL;
+ 		netdev_err(netdev, "PCIe link lost\n");
++		WARN(1, "igb: Failed to read reg 0x%x!\n", reg);
+ 	}
+ 
+ 	return value;
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 34fa0e60a780..28072b9aa932 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -3934,6 +3934,7 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
+ 		hw->hw_addr = NULL;
+ 		netif_device_detach(netdev);
+ 		netdev_err(netdev, "PCIe link lost, device now detached\n");
++		WARN(1, "igc: Failed to read reg 0x%x!\n", reg);
+ 	}
+ 
+ 	return value;
 -- 
-Florian
+2.14.1
+
