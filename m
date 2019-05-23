@@ -2,168 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E5A928160
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 17:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E1D32816F
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 17:41:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730972AbfEWPhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 11:37:17 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36724 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730859AbfEWPhR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 11:37:17 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 39E8FAC2E5;
-        Thu, 23 May 2019 15:37:12 +0000 (UTC)
-Received: from localhost (ovpn-116-196.ams2.redhat.com [10.36.116.196])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3FDE75B683;
-        Thu, 23 May 2019 15:37:05 +0000 (UTC)
-Date:   Thu, 23 May 2019 16:37:03 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [RFC] vsock: proposal to support multiple transports at runtime
-Message-ID: <20190523153703.GC19296@stefanha-x1.localdomain>
-References: <20190514081543.f6nphcilgjuemlet@steredhat>
+        id S1730924AbfEWPlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 11:41:24 -0400
+Received: from www62.your-server.de ([213.133.104.62]:42398 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730790AbfEWPlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 11:41:24 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hTpqL-0004pi-DF; Thu, 23 May 2019 17:41:21 +0200
+Received: from [178.197.249.12] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hTpqL-00009K-5e; Thu, 23 May 2019 17:41:21 +0200
+Subject: Re: [PATCH bpf-next v2 1/3] bpf: implement bpf_send_signal() helper
+To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@fb.com>, kernel-team@fb.com,
+        Peter Zijlstra <peterz@infradead.org>
+References: <20190522053900.1663459-1-yhs@fb.com>
+ <20190522053900.1663537-1-yhs@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <2c07890b-9da5-b4e8-dc94-35def14470ad@iogearbox.net>
+Date:   Thu, 23 May 2019 17:41:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="tqI+Z3u+9OQ7kwn0"
-Content-Disposition: inline
-In-Reply-To: <20190514081543.f6nphcilgjuemlet@steredhat>
-User-Agent: Mutt/1.11.4 (2019-03-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 23 May 2019 15:37:17 +0000 (UTC)
+In-Reply-To: <20190522053900.1663537-1-yhs@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25458/Thu May 23 09:58:32 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 05/22/2019 07:39 AM, Yonghong Song wrote:
+> This patch tries to solve the following specific use case.
+> 
+> Currently, bpf program can already collect stack traces
+> through kernel function get_perf_callchain()
+> when certain events happens (e.g., cache miss counter or
+> cpu clock counter overflows). But such stack traces are
+> not enough for jitted programs, e.g., hhvm (jited php).
+> To get real stack trace, jit engine internal data structures
+> need to be traversed in order to get the real user functions.
+> 
+> bpf program itself may not be the best place to traverse
+> the jit engine as the traversing logic could be complex and
+> it is not a stable interface either.
+> 
+> Instead, hhvm implements a signal handler,
+> e.g. for SIGALARM, and a set of program locations which
+> it can dump stack traces. When it receives a signal, it will
+> dump the stack in next such program location.
+> 
+> Such a mechanism can be implemented in the following way:
+>   . a perf ring buffer is created between bpf program
+>     and tracing app.
+>   . once a particular event happens, bpf program writes
+>     to the ring buffer and the tracing app gets notified.
+>   . the tracing app sends a signal SIGALARM to the hhvm.
+> 
+> But this method could have large delays and causing profiling
+> results skewed.
+> 
+> This patch implements bpf_send_signal() helper to send
+> a signal to hhvm in real time, resulting in intended stack traces.
+> 
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  include/uapi/linux/bpf.h | 17 +++++++++-
+>  kernel/trace/bpf_trace.c | 67 ++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 83 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 63e0cf66f01a..68d4470523a0 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -2672,6 +2672,20 @@ union bpf_attr {
+>   *		0 on success.
+>   *
+>   *		**-ENOENT** if the bpf-local-storage cannot be found.
+> + *
+> + * int bpf_send_signal(u32 sig)
+> + *	Description
+> + *		Send signal *sig* to the current task.
+> + *	Return
+> + *		0 on success or successfully queued.
+> + *
+> + *		**-EBUSY** if work queue under nmi is full.
+> + *
+> + *		**-EINVAL** if *sig* is invalid.
+> + *
+> + *		**-EPERM** if no permission to send the *sig*.
+> + *
+> + *		**-EAGAIN** if bpf program can try again.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)		\
+>  	FN(unspec),			\
+> @@ -2782,7 +2796,8 @@ union bpf_attr {
+>  	FN(strtol),			\
+>  	FN(strtoul),			\
+>  	FN(sk_storage_get),		\
+> -	FN(sk_storage_delete),
+> +	FN(sk_storage_delete),		\
+> +	FN(send_signal),
+>  
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index f92d6ad5e080..f8cd0db7289f 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -567,6 +567,58 @@ static const struct bpf_func_proto bpf_probe_read_str_proto = {
+>  	.arg3_type	= ARG_ANYTHING,
+>  };
+>  
+> +struct send_signal_irq_work {
+> +	struct irq_work irq_work;
+> +	u32 sig;
+> +};
+> +
+> +static DEFINE_PER_CPU(struct send_signal_irq_work, send_signal_work);
+> +
+> +static void do_bpf_send_signal(struct irq_work *entry)
+> +{
+> +	struct send_signal_irq_work *work;
+> +
+> +	work = container_of(entry, struct send_signal_irq_work, irq_work);
+> +	group_send_sig_info(work->sig, SEND_SIG_PRIV, current, PIDTYPE_TGID);
+> +}
+> +
+> +BPF_CALL_1(bpf_send_signal, u32, sig)
+> +{
+> +	struct send_signal_irq_work *work = NULL;
+> +
+> +	/* Similar to bpf_probe_write_user, task needs to be
+> +	 * in a sound condition and kernel memory access be
+> +	 * permitted in order to send signal to the current
+> +	 * task.
+> +	 */
+> +	if (unlikely(current->flags & (PF_KTHREAD | PF_EXITING)))
+> +		return -EPERM;
+> +	if (unlikely(uaccess_kernel()))
+> +		return -EPERM;
+> +	if (unlikely(!nmi_uaccess_okay()))
+> +		return -EPERM;
+> +
+> +	if (in_nmi()) {
 
---tqI+Z3u+9OQ7kwn0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hm, bit confused, can't this only be done out of process context in
+general since only there current points to e.g. hhvm? I'm probably
+missing something. Could you elaborate?
 
-On Tue, May 14, 2019 at 10:15:43AM +0200, Stefano Garzarella wrote:
-> Hi guys,
-> I'm currently interested on implement a multi-transport support for VSOCK=
- in
-> order to handle nested VMs.
->=20
-> As Stefan suggested me, I started to look at this discussion:
-> https://lkml.org/lkml/2017/8/17/551
-> Below I tried to summarize a proposal for a discussion, following the ide=
-as
-> from Dexuan, Jorgen, and Stefan.
->=20
->=20
-> We can define two types of transport that we have to handle at the same t=
-ime
-> (e.g. in a nested VM we would have both types of transport running togeth=
-er):
->=20
-> - 'host side transport', it runs in the host and it is used to communicat=
-e with
->   the guests of a specific hypervisor (KVM, VMWare or HyperV)
->=20
->   Should we support multiple 'host side transport' running at the same ti=
-me?
->=20
-> - 'guest side transport'. it runs in the guest and it is used to communic=
-ate
->   with the host transport
+> +		work = this_cpu_ptr(&send_signal_work);
+> +		if (work->irq_work.flags & IRQ_WORK_BUSY)
+> +			return -EBUSY;
+> +
+> +		work->sig = sig;
+> +		irq_work_queue(&work->irq_work);
+> +		return 0;
+> +	}
+> +
+> +	return group_send_sig_info(sig, SEND_SIG_PRIV, current, PIDTYPE_TGID);
+> +
 
-I find this terminology confusing.  Perhaps "host->guest" (your 'host
-side transport') and "guest->host" (your 'guest side transport') is
-clearer?
+Nit: extra newline slipped in
 
-Or maybe the nested virtualization terminology of L2 transport (your
-'host side transport') and L0 transport (your 'guest side transport')?
-Here we are the L1 guest and L0 is the host and L2 is our nested guest.
+> +}
+> +
+> +static const struct bpf_func_proto bpf_send_signal_proto = {
+> +	.func		= bpf_send_signal,
+> +	.gpl_only	= false,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_ANYTHING,
+> +};
+> +
+>  static const struct bpf_func_proto *
+>  tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  {
+> @@ -617,6 +669,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  	case BPF_FUNC_get_current_cgroup_id:
+>  		return &bpf_get_current_cgroup_id_proto;
+>  #endif
+> +	case BPF_FUNC_send_signal:
+> +		return &bpf_send_signal_proto;
+>  	default:
+>  		return NULL;
+>  	}
+> @@ -1343,5 +1397,18 @@ static int __init bpf_event_init(void)
+>  	return 0;
+>  }
+>  
+> +static int __init send_signal_irq_work_init(void)
+> +{
+> +	int cpu;
+> +	struct send_signal_irq_work *work;
+> +
+> +	for_each_possible_cpu(cpu) {
+> +		work = per_cpu_ptr(&send_signal_work, cpu);
+> +		init_irq_work(&work->irq_work, do_bpf_send_signal);
+> +	}
+> +	return 0;
+> +}
+> +
+>  fs_initcall(bpf_event_init);
+> +subsys_initcall(send_signal_irq_work_init);
+>  #endif /* CONFIG_MODULES */
+> 
 
->=20
->=20
-> The main goal is to find a way to decide what transport use in these case=
-s:
-> 1. connect() / sendto()
->=20
-> 	a. use the 'host side transport', if the destination is the guest
-> 	   (dest_cid > VMADDR_CID_HOST).
-> 	   If we want to support multiple 'host side transport' running at the
-> 	   same time, we should assign CIDs uniquely across all transports.
-> 	   In this way, a packet generated by the host side will get directed
-> 	   to the appropriate transport based on the CID
-
-The multiple host side transport case is unlikely to be necessary on x86
-where only one hypervisor uses VMX at any given time.  But eventually it
-may happen so it's wise to at least allow it in the design.
-
->=20
-> 	b. use the 'guest side transport', if the destination is the host
-> 	   (dest_cid =3D=3D VMADDR_CID_HOST)
-
-Makes sense to me.
-
->=20
->=20
-> 2. listen() / recvfrom()
->=20
-> 	a. use the 'host side transport', if the socket is bound to
-> 	   VMADDR_CID_HOST, or it is bound to VMADDR_CID_ANY and there is no
-> 	   guest transport.
-> 	   We could also define a new VMADDR_CID_LISTEN_FROM_GUEST in order to
-> 	   address this case.
-> 	   If we want to support multiple 'host side transport' running at the
-> 	   same time, we should find a way to allow an application to bound a
-> 	   specific host transport (e.g. adding new VMADDR_CID_LISTEN_FROM_KVM,
-> 	   VMADDR_CID_LISTEN_FROM_VMWARE, VMADDR_CID_LISTEN_FROM_HYPERV)
-
-Hmm...VMADDR_CID_LISTEN_FROM_KVM, VMADDR_CID_LISTEN_FROM_VMWARE,
-VMADDR_CID_LISTEN_FROM_HYPERV isn't very flexible.  What if my service
-should only be available to a subset of VMware VMs?
-
-Instead it might be more appropriate to use network namespaces to create
-independent AF_VSOCK addressing domains.  Then you could have two
-separate groups of VMware VMs and selectively listen to just one group.
-
->=20
-> 	b. use the 'guest side transport', if the socket is bound to local CID
-> 	   different from the VMADDR_CID_HOST (guest CID get with
-> 	   IOCTL_VM_SOCKETS_GET_LOCAL_CID), or it is bound to VMADDR_CID_ANY
-> 	   (to be backward compatible).
-> 	   Also in this case, we could define a new VMADDR_CID_LISTEN_FROM_HOST.
-
-Two additional topics:
-
-1. How will loading af_vsock.ko change?  In particular, can an
-   application create a socket in af_vsock.ko without any loaded
-   transport?  Can it enter listen state without any loaded transport
-   (this seems useful with VMADDR_CID_ANY)?
-
-2. Does your proposed behavior match VMware's existing nested vsock
-   semantics?
-
---tqI+Z3u+9OQ7kwn0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAlzmvh8ACgkQnKSrs4Gr
-c8hofwf/Q9vJlFPU32Zvf8ODCDlhKdTsXr+k8K5C9cr/qVQs3ew4TaAXt94rtKlA
-jBJsxwrzVjabofTqlPIWVQm6LqhU9l2r+cR6YaqhH+5RlrgdyfOBHCCuWEKMjaor
-fmWFU1qx5f1UN8jX79edaxwWkZjxULNiMjzeOLIb2LcoXA4RUWSyTqo1/rpFWNoy
-J8BrUBOCl6HW5VzVpCSllIiEVe8Kl1wtSUcq+p//pnWDei2Ww/rl4QJGuT5PxQg2
-Q9ze1wdVHl89uYSHiBCXqo62oKu7uZVUMqSrEpjB2jbBjnul3zYYr5KIz+cfzmJI
-FZD95HkGxgVNUgQcRS1ZpWpic4Z+tA==
-=uaFr
------END PGP SIGNATURE-----
-
---tqI+Z3u+9OQ7kwn0--
