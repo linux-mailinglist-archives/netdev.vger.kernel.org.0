@@ -2,107 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40D46276D8
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 09:24:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FE582772E
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 09:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728668AbfEWHYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 03:24:55 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:45930 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbfEWHYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 03:24:54 -0400
-Received: by mail-pf1-f196.google.com with SMTP id s11so2728277pfm.12
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 00:24:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=u38zJekK9kA19OWA43wigi4i1LlEMbJjn/mvkJzZjfc=;
-        b=Ljey4rKGds29mYsi8HXnGW/lZ5RmZxmaB9lh0D+k2RaSq2vNRev8+BraiwklFPtiiC
-         aNRY9vyobz5K8NFrrcgZDMhX4oUEwKq7I+PwQmkRomO9QLXvd8O63M6y5cCYxXK5uETd
-         icrHrF0hF81Vk2u2hA6YzkztFrBH/o53aLUYnwQ7HpcyDTR8RcZDN06Hz1cLu8j97lJ7
-         sxK1WCZ+oKmSrIYB5ABQB1dKbwr1a/aYN6j+XpGFyFTiAdEvJ934zwt8ohwhMbZgpg8K
-         ljnv7Eu0yBP4oxou/nlwS9JpatoIlyPy3NoyEB3yBshuvrz7eyWZK9mJ1w3RgcL9ww83
-         at7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=u38zJekK9kA19OWA43wigi4i1LlEMbJjn/mvkJzZjfc=;
-        b=PYWRTR3iwqwUJW1GDAdhZmF4tFwhAuPfhmAEqkVpwoXf1G7cnSoMTSnUqGkUeqoC6s
-         H5ah9RaOFTadBHXTJxjaJbLCoI82IuF+hOg9DFdhpOwLGhxfFMZ/Y1CtvSioTkSR1DlX
-         rwws0J7BBjzgVlr9g17CGYmDch3F3LOkJt+HtvAxoXh0KvfOXlsDJx/XSb/GI0Q6YXkr
-         mDXopSIe5giN6c7xIw6RAImoMDOxdC6MhIRp7xpHy260ujjBMwDljHu2kZoPEaj8onqQ
-         iYCnsyW21JG9D7gau7FTZJQ+iYzr+JUqElwloOkPphd1O06hk2hqMI1cJrESxGrS+xQ1
-         DXtQ==
-X-Gm-Message-State: APjAAAXSe4IaPANLCfKNbVV35A1awIHkbvgiy4vIFu+IrSV4Y9UzpCe6
-        m/rHEZpLSyk0fv9HMauRQQ==
-X-Google-Smtp-Source: APXvYqyHfmwLCplDyz+6+dInHwMcOvxClmJCbq8e8K/CYUKz8lgq4+HHiUv4AYX8rLK+hRTBnAYLsw==
-X-Received: by 2002:a62:bd11:: with SMTP id a17mr17941915pff.126.1558596293613;
-        Thu, 23 May 2019 00:24:53 -0700 (PDT)
-Received: from localhost.localdomain ([111.118.56.180])
-        by smtp.gmail.com with ESMTPSA id q5sm32083001pfb.51.2019.05.23.00.24.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 00:24:53 -0700 (PDT)
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH v2] samples: bpf: fix style in bpf_load
-Date:   Thu, 23 May 2019 16:24:48 +0900
-Message-Id: <20190523072448.25269-1-danieltimlee@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1730361AbfEWHhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 03:37:41 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:43648 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726070AbfEWHhd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 03:37:33 -0400
+Received: from mailhost.synopsys.com (dc2-mailhost2.synopsys.com [10.12.135.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id D17AAC019E;
+        Thu, 23 May 2019 07:37:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1558597059; bh=tx/RgSBNhnHOh1Ade5WF0HH1a1AcMDyppC57wRGfoHY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Y7lLSv4nWF+c9EihmPKmOa7DSJJXsSawAPFiFPO2sbEasiWGf6D/35vF9aDVL+fAg
+         43hiifuM6MYjr/MSV7cBumU9LX8R/pPI3Fmk1CYWAVxM2Vjnss29iYxo7wseaV+MbM
+         5jZ7RAo6W/mCJoIkYHOSThyGx4ndRivkphW38fqFWastzUfCKAyKPORjot75WNTt6/
+         cRw7Y5RsN2cKzAPU/ht2Jl5DL/xMZfRrv/tgcA1s6+ASN9b3WU3spRJ240PeD2JmYg
+         8YrQre0iCBqbjpxSTAjC5ufaxxoQF+E75C1msncNBE40/TE+9y2DHi/iOJ+YMpWysa
+         iP7zTwEJxD4zw==
+Received: from de02.synopsys.com (de02.internal.synopsys.com [10.225.17.21])
+        by mailhost.synopsys.com (Postfix) with ESMTP id D07E1A009B;
+        Thu, 23 May 2019 07:37:28 +0000 (UTC)
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by de02.synopsys.com (Postfix) with ESMTP id CBCCD3D92B;
+        Thu, 23 May 2019 09:37:27 +0200 (CEST)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next 00/18] net: stmmac: Improvements and Selftests
+Date:   Thu, 23 May 2019 09:36:50 +0200
+Message-Id: <cover.1558596599.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit fixes style problem in samples/bpf/bpf_load.c
+[ Thanks to the introducion of selftests this series ended up being a misc
+of improvements and the selftests additions per-se. ]
 
-Styles that have been changed are:
- - Magic string use of 'DEBUGFS'
- - Useless zero initialization of a global variable
- - Minor style fix with whitespace
+This introduces selftests support in stmmac driver. We add 9 basic sanity
+checks and MAC loopback support for all cores within the driver. This way
+more tests can easily be added in the future and can be run in virtually
+any MAC/GMAC/QoS/XGMAC platform.
 
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
----
-Changes in v2:
-  - Fix string concatenation from build-time to compile-time.
+Having this we can find regressions and missing features in the driver
+while at the same time we can check if the IP is correctly working.
 
- samples/bpf/bpf_load.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+We have been using this for some time now and I do have more tests to
+submit in the feature. My experience is that although writing the tests
+adds more development time, the gain results are obvious.
 
-diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
-index eae7b635343d..1734ade04f7f 100644
---- a/samples/bpf/bpf_load.c
-+++ b/samples/bpf/bpf_load.c
-@@ -40,7 +40,7 @@ int prog_cnt;
- int prog_array_fd = -1;
- 
- struct bpf_map_data map_data[MAX_MAPS];
--int map_data_count = 0;
-+int map_data_count;
- 
- static int populate_prog_array(const char *event, int prog_fd)
- {
-@@ -65,7 +65,7 @@ static int write_kprobe_events(const char *val)
- 	else
- 		flags = O_WRONLY | O_APPEND;
- 
--	fd = open("/sys/kernel/debug/tracing/kprobe_events", flags);
-+	fd = open(DEBUGFS "kprobe_events", flags);
- 
- 	ret = write(fd, val, strlen(val));
- 	close(fd);
-@@ -490,8 +490,8 @@ static int load_elf_maps_section(struct bpf_map_data *maps, int maps_shndx,
- 
- 		/* Verify no newer features were requested */
- 		if (validate_zero) {
--			addr = (unsigned char*) def + map_sz_copy;
--			end  = (unsigned char*) def + map_sz_elf;
-+			addr = (unsigned char *) def + map_sz_copy;
-+			end  = (unsigned char *) def + map_sz_elf;
- 			for (; addr < end; addr++) {
- 				if (*addr != 0) {
- 					free(sym);
+I let this feature optional within the driver under a Kconfig option.
+
+Cc: Joao Pinto <jpinto@synopsys.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+
+Corentin Labbe (1):
+  net: ethernet: stmmac: dwmac-sun8i: Enable control of loopback
+
+Jose Abreu (17):
+  net: stmmac: Add MAC loopback callback to HWIF
+  net: stmmac: dwmac100: Add MAC loopback support
+  net: stmmac: dwmac1000: Add MAC loopback support
+  net: stmmac: dwmac4/5: Add MAC loopback support
+  net: stmmac: dwxgmac2: Add MAC loopback support
+  net: stmmac: Switch MMC functions to HWIF callbacks
+  net: stmmac: dwmac1000: Also pass control frames while in promisc mode
+  net: stmmac: dwmac4/5: Also pass control frames while in promisc mode
+  net: stmmac: dwxgmac2: Also pass control frames while in promisc mode
+  net: stmmac: Introduce selftests support
+  net: stmmac: dwmac1000: Fix Hash Filter
+  net: stmmac: dwmac1000: Clear unused address entries
+  net: stmmac: dwmac4/5: Fix Hash Filter
+  net: stmmac: dwmac4/5: Do not disable whole RX in dma_stop_rx()
+  net: stmmac: dwxgmac2: Do not disable whole RX in dma_stop_rx()
+  net: stmmac: dwmac4/5: Clear unused address entries
+  net: stmmac: Prevent missing interrupts when running NAPI
+
+ drivers/net/ethernet/stmicro/stmmac/Kconfig        |   9 +
+ drivers/net/ethernet/stmicro/stmmac/Makefile       |   2 +
+ drivers/net/ethernet/stmicro/stmmac/common.h       |   1 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c  |  13 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac1000.h    |   1 +
+ .../net/ethernet/stmicro/stmmac/dwmac1000_core.c   |  22 +-
+ .../net/ethernet/stmicro/stmmac/dwmac100_core.c    |  13 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h       |   3 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |  29 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c   |   4 -
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |   2 +
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    |  15 +-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |   4 -
+ drivers/net/ethernet/stmicro/stmmac/hwif.c         |   9 +
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  21 +
+ drivers/net/ethernet/stmicro/stmmac/mmc.h          |   4 -
+ drivers/net/ethernet/stmicro/stmmac/mmc_core.c     |  13 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |  22 +
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |   8 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |   7 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 837 +++++++++++++++++++++
+ 21 files changed, 1016 insertions(+), 23 deletions(-)
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+
 -- 
-2.17.1
+2.7.4
 
