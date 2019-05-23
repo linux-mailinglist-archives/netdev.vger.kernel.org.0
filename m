@@ -2,76 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54717276AD
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 09:04:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40D46276D8
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 09:24:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726310AbfEWHE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 03:04:27 -0400
-Received: from david.siemens.de ([192.35.17.14]:53130 "EHLO david.siemens.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726070AbfEWHE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 03:04:27 -0400
-Received: from mail3.siemens.de (mail3.siemens.de [139.25.208.14])
-        by david.siemens.de (8.15.2/8.15.2) with ESMTPS id x4N74DYI003735
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 23 May 2019 09:04:13 +0200
-Received: from pluscontrol-debian-server.ppmd.SIEMENS.NET (pluscontrol-debian-server.ppmd.siemens.net [146.254.63.6])
-        by mail3.siemens.de (8.15.2/8.15.2) with ESMTP id x4N74A5C013555;
-        Thu, 23 May 2019 09:04:10 +0200
-From:   Andreas Oetken <andreas.oetken@siemens.com>
-Cc:     andreas@oetken.name, m-karicheri2@ti.com, a-kramer@ti.com,
-        Andreas Oetken <andreas.oetken@siemens.com>,
-        Arvid Brodin <arvid.brodin@alten.se>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3] hsr: fix don't prune the master node from the node_db
-Date:   Thu, 23 May 2019 09:02:37 +0200
-Message-Id: <20190523070238.17560-1-andreas.oetken@siemens.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+        id S1728668AbfEWHYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 03:24:55 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45930 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726390AbfEWHYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 03:24:54 -0400
+Received: by mail-pf1-f196.google.com with SMTP id s11so2728277pfm.12
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 00:24:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=u38zJekK9kA19OWA43wigi4i1LlEMbJjn/mvkJzZjfc=;
+        b=Ljey4rKGds29mYsi8HXnGW/lZ5RmZxmaB9lh0D+k2RaSq2vNRev8+BraiwklFPtiiC
+         aNRY9vyobz5K8NFrrcgZDMhX4oUEwKq7I+PwQmkRomO9QLXvd8O63M6y5cCYxXK5uETd
+         icrHrF0hF81Vk2u2hA6YzkztFrBH/o53aLUYnwQ7HpcyDTR8RcZDN06Hz1cLu8j97lJ7
+         sxK1WCZ+oKmSrIYB5ABQB1dKbwr1a/aYN6j+XpGFyFTiAdEvJ934zwt8ohwhMbZgpg8K
+         ljnv7Eu0yBP4oxou/nlwS9JpatoIlyPy3NoyEB3yBshuvrz7eyWZK9mJ1w3RgcL9ww83
+         at7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=u38zJekK9kA19OWA43wigi4i1LlEMbJjn/mvkJzZjfc=;
+        b=PYWRTR3iwqwUJW1GDAdhZmF4tFwhAuPfhmAEqkVpwoXf1G7cnSoMTSnUqGkUeqoC6s
+         H5ah9RaOFTadBHXTJxjaJbLCoI82IuF+hOg9DFdhpOwLGhxfFMZ/Y1CtvSioTkSR1DlX
+         rwws0J7BBjzgVlr9g17CGYmDch3F3LOkJt+HtvAxoXh0KvfOXlsDJx/XSb/GI0Q6YXkr
+         mDXopSIe5giN6c7xIw6RAImoMDOxdC6MhIRp7xpHy260ujjBMwDljHu2kZoPEaj8onqQ
+         iYCnsyW21JG9D7gau7FTZJQ+iYzr+JUqElwloOkPphd1O06hk2hqMI1cJrESxGrS+xQ1
+         DXtQ==
+X-Gm-Message-State: APjAAAXSe4IaPANLCfKNbVV35A1awIHkbvgiy4vIFu+IrSV4Y9UzpCe6
+        m/rHEZpLSyk0fv9HMauRQQ==
+X-Google-Smtp-Source: APXvYqyHfmwLCplDyz+6+dInHwMcOvxClmJCbq8e8K/CYUKz8lgq4+HHiUv4AYX8rLK+hRTBnAYLsw==
+X-Received: by 2002:a62:bd11:: with SMTP id a17mr17941915pff.126.1558596293613;
+        Thu, 23 May 2019 00:24:53 -0700 (PDT)
+Received: from localhost.localdomain ([111.118.56.180])
+        by smtp.gmail.com with ESMTPSA id q5sm32083001pfb.51.2019.05.23.00.24.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 23 May 2019 00:24:53 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH v2] samples: bpf: fix style in bpf_load
+Date:   Thu, 23 May 2019 16:24:48 +0900
+Message-Id: <20190523072448.25269-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't prune master node in the hsr_prune_nodes function.
-Neither time_in[HSR_PT_SLAVE_A], nor time_in[HSR_PT_SLAVE_B],
-will ever be updated by hsr_register_frame_in for the master port.
-Thus the master node will be repeatedly pruned leading to
-repeated packet loss.
-This bug never appeared because the hsr_prune_nodes function
-was only called once. Since commit 5150b45fd355
-("net: hsr: Fix node prune function for forget time expiry") this issue
-is fixed unvealing the issue described above.
+This commit fixes style problem in samples/bpf/bpf_load.c
 
-Fixes: 5150b45fd355 ("net: hsr: Fix node prune function for forget time expiry")
-Signed-off-by: Andreas Oetken <andreas.oetken@siemens.com>
-Tested-by: Murali Karicheri <m-karicheri2@ti.com>
+Styles that have been changed are:
+ - Magic string use of 'DEBUGFS'
+ - Useless zero initialization of a global variable
+ - Minor style fix with whitespace
+
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
- net/hsr/hsr_framereg.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Changes in v2:
+  - Fix string concatenation from build-time to compile-time.
 
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index 9fa9abd83018..2d7a19750436 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -365,6 +365,14 @@ void hsr_prune_nodes(struct timer_list *t)
+ samples/bpf/bpf_load.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
+index eae7b635343d..1734ade04f7f 100644
+--- a/samples/bpf/bpf_load.c
++++ b/samples/bpf/bpf_load.c
+@@ -40,7 +40,7 @@ int prog_cnt;
+ int prog_array_fd = -1;
  
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(node, &hsr->node_db, mac_list) {
-+		/* Don't prune own node. Neither time_in[HSR_PT_SLAVE_A]
-+		 * nor time_in[HSR_PT_SLAVE_B], will ever be updated for
-+		 * the master port. Thus the master node will be repeatedly
-+		 * pruned leading to packet loss.
-+		 */
-+		if (hsr_addr_is_self(hsr, node->macaddress_A))
-+			continue;
-+
- 		/* Shorthand */
- 		time_a = node->time_in[HSR_PT_SLAVE_A];
- 		time_b = node->time_in[HSR_PT_SLAVE_B];
+ struct bpf_map_data map_data[MAX_MAPS];
+-int map_data_count = 0;
++int map_data_count;
+ 
+ static int populate_prog_array(const char *event, int prog_fd)
+ {
+@@ -65,7 +65,7 @@ static int write_kprobe_events(const char *val)
+ 	else
+ 		flags = O_WRONLY | O_APPEND;
+ 
+-	fd = open("/sys/kernel/debug/tracing/kprobe_events", flags);
++	fd = open(DEBUGFS "kprobe_events", flags);
+ 
+ 	ret = write(fd, val, strlen(val));
+ 	close(fd);
+@@ -490,8 +490,8 @@ static int load_elf_maps_section(struct bpf_map_data *maps, int maps_shndx,
+ 
+ 		/* Verify no newer features were requested */
+ 		if (validate_zero) {
+-			addr = (unsigned char*) def + map_sz_copy;
+-			end  = (unsigned char*) def + map_sz_elf;
++			addr = (unsigned char *) def + map_sz_copy;
++			end  = (unsigned char *) def + map_sz_elf;
+ 			for (; addr < end; addr++) {
+ 				if (*addr != 0) {
+ 					free(sym);
 -- 
-2.20.1
+2.17.1
 
