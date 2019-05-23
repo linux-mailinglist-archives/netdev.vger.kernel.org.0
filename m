@@ -2,123 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B25B2860B
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 20:37:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A1E12862E
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 20:57:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731639AbfEWShe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 14:37:34 -0400
-Received: from mail-eopbgr140055.outbound.protection.outlook.com ([40.107.14.55]:51942
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731383AbfEWShd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 14:37:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=isU6vnB1Oh4zsbKGVZx9uRWskyvXd2dv5b/+1wDiJUI=;
- b=kcSAsZBUBcBLtH4ml8PnfiSgamn7/+54PcFlEdPszZq1UEREB93KQldvMdrs14Wpfa2ZWbcB18sm4WLpJh6M+nPKZ9B3AA8b4sEYD9BXO8YwH/uKldUlFdyEkQG4T+ocIdv/0xQWuDDUyH6DolGpvVuVEldjf7i0i7Wa+K87v7I=
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com (20.179.9.32) by
- DB8PR05MB6043.eurprd05.prod.outlook.com (20.179.11.29) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.17; Thu, 23 May 2019 18:37:28 +0000
-Received: from DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::7159:5f3a:906:6aab]) by DB8PR05MB5898.eurprd05.prod.outlook.com
- ([fe80::7159:5f3a:906:6aab%7]) with mapi id 15.20.1922.013; Thu, 23 May 2019
- 18:37:28 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "jiri@resnulli.us" <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        mlxsw <mlxsw@mellanox.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: Re: [patch net-next 0/7] expose flash update status to user
-Thread-Topic: [patch net-next 0/7] expose flash update status to user
-Thread-Index: AQHVEUw4codgs1S5BkKU8ojCpm54JaZ5CooA
-Date:   Thu, 23 May 2019 18:37:28 +0000
-Message-ID: <c4bd07725a1e5a4d09066eb73094623d8b37082b.camel@mellanox.com>
-References: <20190523094510.2317-1-jiri@resnulli.us>
-In-Reply-To: <20190523094510.2317-1-jiri@resnulli.us>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b07e0700-fe08-416e-127a-08d6dfadb565
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:DB8PR05MB6043;
-x-ms-traffictypediagnostic: DB8PR05MB6043:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <DB8PR05MB604306711147785C41C869EFBE010@DB8PR05MB6043.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 00462943DE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(136003)(366004)(39860400002)(346002)(376002)(199004)(189003)(25786009)(5660300002)(305945005)(6246003)(446003)(8936002)(4326008)(316002)(14454004)(66446008)(66556008)(7736002)(2616005)(118296001)(476003)(71200400001)(486006)(71190400001)(86362001)(256004)(64756008)(66476007)(66946007)(11346002)(14444005)(91956017)(73956011)(76116006)(229853002)(68736007)(6436002)(966005)(53936002)(36756003)(2501003)(478600001)(99286004)(102836004)(6506007)(66066001)(110136005)(76176011)(54906003)(15650500001)(6116002)(6306002)(186003)(3846002)(6486002)(58126008)(2906002)(6512007)(26005)(81166006)(81156014)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB6043;H:DB8PR05MB5898.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 8RR9z23cC8anf4LJi+VFvYBY3xg+kdg6qiXj8kdw/kW2hK8wz+u6Hl0lZhPs4rK5V7jHTAVc0GN++tGVpwvPjR70/ZjoEY3Cygxtl9WUfklkOWKOgQ5RloGheK+SCl8MFdLqb5NRvLOJZOPj9ESAkBTN0Rca9G/gRSrm4tljKgdVL+KUgjfZqw4GJz7Y5qff+9sCI4g9Y0pnu0smyWykRTatcdvuxxFvLtF6E7IKNyaFd2KY4GyCVBybqETFS7VUt+iHCPxMPwkZyrLvhlqxEx4YT882nUufEtI1hKcjqFloPlFIZDdnTw5H8DIxjosjCqavp2ng3vV/IqMutUHSz0EsRZ/4NXgjDF9+KCWyCJG7Scu0UnuNem28E+EZGEAEWsSwAgJNNvIfXPqenc/Pb+Q+StZebTpMudFNtPrNFTM=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <52A92A1EAE44F64E91231BE3F31DAD59@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1731521AbfEWS4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 14:56:52 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:45669 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731261AbfEWS4w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 14:56:52 -0400
+Received: by mail-qk1-f194.google.com with SMTP id j1so4456364qkk.12
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 11:56:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=tpvuJFfMZp6SvK9KDKtENhr68QaXMeztIkCmID+gkbc=;
+        b=TpJGQEtdvImqGvhe/eKjEO8QDgPwfoiipVfYsvu8wdLwgtVuQs8kpIoEKSmy0n5AAB
+         mmDdZeaG38F886HVHK0E7IZLM15b7j60azRHwJv9MkHjE5Nh2NWaG+wJeuz6JNMsZ0Xv
+         642umB9Dyh86aGukWzlCnmdW4YNJ65xUcN/wnwAnt7zF3TZBZBd70jSEXjY6RowpwQea
+         F3uOh5s2mo7Q5mTv7secDzKi88+CoKoQEm5gvuwoHDKH3U1sqEFonAVu8tY3/LS8U4fx
+         x1Brb8t6+vZ0sxn9c/N8shWB+d1dE7ghsqb8jhpX2ihTcwnJ2iwL1TVB4+OD3Sw4Pq0M
+         e3kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=tpvuJFfMZp6SvK9KDKtENhr68QaXMeztIkCmID+gkbc=;
+        b=tS67Nj2BJLxqNa84wwXDG/X3NnyzumQyqZaOFCMhuZGxtslMiLZw5XiaiIw/OtmHsX
+         afVi4LGKJhY9GtXlhDoR5QjhQ2YxFqQZYPtFO/gWWeQBJ+UcT0o//a1UWnMK9VuIng3j
+         NSo8Aijkz3HSRAh9wcQbDUfQghe15SWs6Kgk407xxW6vFHBxpnqUd4deFEfLuXXmSwlR
+         ePBq9J4Z+Btt939ogiYWi4hyw948NgEIRCE+K0h2LTG06quyBVkFeWFqwbGLLrr3NrIi
+         IkPzinH/a2DZSajqdT/CfStRSQO6GDA9RxDyz643EfLNglUd6jR2k/uFpcErMP9KKdj1
+         OFmA==
+X-Gm-Message-State: APjAAAXlkTkbMsmBrJuAIkvOZlXDsqyOHXvQqC0XMowDW4EJFPqWqpN4
+        TPczEFDihnqFUBaNG4VARO3/XA==
+X-Google-Smtp-Source: APXvYqzkCsMoxGu6ex5VfOPsujiJXvHMJTP9UN3a4hrFq/rsvsUHT12F9+IcJpnaX/OqFYYGhuK/pg==
+X-Received: by 2002:a37:de07:: with SMTP id h7mr4343499qkj.41.1558637811222;
+        Thu, 23 May 2019 11:56:51 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id e133sm127413qkb.76.2019.05.23.11.56.50
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 23 May 2019 11:56:51 -0700 (PDT)
+Date:   Thu, 23 May 2019 11:56:46 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Joergen Andreasen <joergen.andreasen@microchip.com>
+Cc:     <netdev@vger.kernel.org>,
+        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 1/1] net: mscc: ocelot: Implement port
+ policers via tc command
+Message-ID: <20190523115630.7710cc49@cakuba.netronome.com>
+In-Reply-To: <20190523104939.2721-2-joergen.andreasen@microchip.com>
+References: <20190502094029.22526-1-joergen.andreasen@microchip.com>
+        <20190523104939.2721-1-joergen.andreasen@microchip.com>
+        <20190523104939.2721-2-joergen.andreasen@microchip.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b07e0700-fe08-416e-127a-08d6dfadb565
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2019 18:37:28.3181
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6043
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTA1LTIzIGF0IDExOjQ1ICswMjAwLCBKaXJpIFBpcmtvIHdyb3RlOg0KPiBG
-cm9tOiBKaXJpIFBpcmtvIDxqaXJpQG1lbGxhbm94LmNvbT4NCj4gDQo+IFdoZW4gdXNlciBpcyBm
-bGFzaGluZyBkZXZpY2UgdXNpbmcgZGV2bGluaywgaGUgY3VycmVubHkgZG9lcyBub3Qgc2VlDQo+
-IGFueQ0KPiBpbmZvcm1hdGlvbiBhYm91dCB3aGF0IGlzIGdvaW5nIG9uLCBwZXJjZW50YWdlcywg
-ZXRjLg0KPiBEcml2ZXJzLCBmb3IgZXhhbXBsZSBtbHhzdyBhbmQgbWx4NSwgaGF2ZSBub3Rpb24g
-YWJvdXQgdGhlIHByb2dyZXNzDQo+IGFuZCB3aGF0IGlzIGhhcHBlbmluZy4gVGhpcyBwYXRjaHNl
-dCBleHBvc2VzIHRoaXMgcHJvZ3Jlc3MNCj4gaW5mb3JtYXRpb24gdG8gdXNlcnNwYWNlLg0KPiAN
-Cg0KVmVyeSBjb29sIHN0dWZmLCBcbGV0J3MgdXBkYXRlIGRldmxpbmsgZG9jcyB3aXRoIHRoZSBu
-ZXcgcG90ZW50aWFsDQpvdXRwdXQgb2YgdGhlIGZ3IGZsYXNoIGNvbW1hbmRzLCBhbmQgc2hvdyB1
-cyBzb21lIG91dHB1dCBleGFtcGxlIGhlcmUNCm9yIG9uIG9uZSBvZiB0aGUgY29tbWl0IG1lc3Nh
-Z2VzLCBpdCB3b3VsZCByZWFsbHkgaGVscCBnZXR0aW5nIGFuIGlkZWENCm9mIHdoYXQgdGhpcyBj
-b29sIHBhdGNoc2V0IHByb3ZpZGVzLiANCg0KPiBTZWUgdGhpcyBjb25zb2xlIHJlY29yZGluZyB3
-aGljaCBzaG93cyBmbGFzaGluZyBGVyBvbiBhIE1lbGxhbm94DQo+IFNwZWN0cnVtIGRldmljZToN
-Cj4gaHR0cHM6Ly9hc2NpaW5lbWEub3JnL2EvMjQ3OTI2DQo+IA0KPiBKaXJpIFBpcmtvICg3KToN
-Cj4gICBtbHhzdzogTW92ZSBmaXJtd2FyZSBmbGFzaCBpbXBsZW1lbnRhdGlvbiB0byBkZXZsaW5r
-DQo+ICAgbWx4NTogTW92ZSBmaXJtd2FyZSBmbGFzaCBpbXBsZW1lbnRhdGlvbiB0byBkZXZsaW5r
-DQo+ICAgbWx4Znc6IFByb3BhZ2F0ZSBlcnJvciBtZXNzYWdlcyB0aHJvdWdoIGV4dGFjaw0KPiAg
-IGRldmxpbms6IGFsbG93IGRyaXZlciB0byB1cGRhdGUgcHJvZ3Jlc3Mgb2YgZmxhc2ggdXBkYXRl
-DQo+ICAgbWx4Znc6IEludHJvZHVjZSBzdGF0dXNfbm90aWZ5IG9wIGFuZCBjYWxsIGl0IHRvIG5v
-dGlmeSBhYm91dCB0aGUNCj4gICAgIHN0YXR1cw0KPiAgIG1seHN3OiBJbXBsZW1lbnQgZmxhc2gg
-dXBkYXRlIHN0YXR1cyBub3RpZmljYXRpb25zDQo+ICAgbmV0ZGV2c2ltOiBpbXBsZW1lbnQgZmFr
-ZSBmbGFzaCB1cGRhdGluZyB3aXRoIG5vdGlmaWNhdGlvbnMNCj4gDQo+ICBkcml2ZXJzL25ldC9l
-dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4uaCAgfCAgIDIgLQ0KPiAgLi4uL2V0aGVybmV0
-L21lbGxhbm94L21seDUvY29yZS9lbl9ldGh0b29sLmMgIHwgIDM1IC0tLS0tLQ0KPiAgZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Z3LmMgIHwgICA2ICstDQo+ICAuLi4v
-bWVsbGFub3gvbWx4NS9jb3JlL2lwb2liL2V0aHRvb2wuYyAgICAgICAgfCAgIDkgLS0NCj4gIC4u
-Li9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL21haW4uYyAgICB8ICAyMCArKysrDQo+
-ICAuLi4vZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL21seDVfY29yZS5oICAgfCAgIDMgKy0N
-Cj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seGZ3L21seGZ3LmggICB8ICAxMSAr
-LQ0KPiAgLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHhmdy9tbHhmd19mc20uYyAgIHwgIDU3
-ICsrKysrKysrLS0NCj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seHN3L2NvcmUu
-YyAgICB8ICAxNSArKysNCj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seHN3L2Nv
-cmUuaCAgICB8ICAgMyArDQo+ICAuLi4vbmV0L2V0aGVybmV0L21lbGxhbm94L21seHN3L3NwZWN0
-cnVtLmMgICAgfCAgNzUgKysrKysrKy0tLS0tLQ0KPiAgZHJpdmVycy9uZXQvbmV0ZGV2c2ltL2Rl
-di5jICAgICAgICAgICAgICAgICAgIHwgIDM1ICsrKysrKw0KPiAgaW5jbHVkZS9uZXQvZGV2bGlu
-ay5oICAgICAgICAgICAgICAgICAgICAgICAgIHwgICA4ICsrDQo+ICBpbmNsdWRlL3VhcGkvbGlu
-dXgvZGV2bGluay5oICAgICAgICAgICAgICAgICAgfCAgIDUgKw0KPiAgbmV0L2NvcmUvZGV2bGlu
-ay5jICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgMTAyDQo+ICsrKysrKysrKysrKysrKysr
-Kw0KPiAgMTUgZmlsZXMgY2hhbmdlZCwgMjk1IGluc2VydGlvbnMoKyksIDkxIGRlbGV0aW9ucygt
-KQ0KPiANCg0KUmV2aWV3ZWQtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29t
-Pg0K
+On Thu, 23 May 2019 12:49:39 +0200, Joergen Andreasen wrote:
+> Hardware offload of matchall classifier and police action are now
+> supported via the tc command.
+> Supported police parameters are: rate and burst.
+> 
+> Example:
+> 
+> Add:
+> tc qdisc add dev eth3 handle ffff: ingress
+> tc filter add dev eth3 parent ffff: prio 1 handle 2	\
+> 	matchall skip_sw				\
+> 	action police rate 100Mbit burst 10000
+> 
+> Show:
+> tc -s -d qdisc show dev eth3
+> tc -s -d filter show dev eth3 ingress
+> 
+> Delete:
+> tc filter del dev eth3 parent ffff: prio 1
+> tc qdisc del dev eth3 handle ffff: ingress
+> 
+> Signed-off-by: Joergen Andreasen <joergen.andreasen@microchip.com>
+
+> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+> index d715ef4fc92f..3ec7864d9dc8 100644
+> --- a/drivers/net/ethernet/mscc/ocelot.c
+> +++ b/drivers/net/ethernet/mscc/ocelot.c
+> @@ -943,6 +943,7 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
+>  	.ndo_vlan_rx_kill_vid		= ocelot_vlan_rx_kill_vid,
+>  	.ndo_set_features		= ocelot_set_features,
+>  	.ndo_get_port_parent_id		= ocelot_get_port_parent_id,
+> +	.ndo_setup_tc			= ocelot_setup_tc,
+>  };
+>  
+>  static void ocelot_get_strings(struct net_device *netdev, u32 sset, u8 *data)
+> @@ -1663,8 +1664,9 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
+>  	dev->netdev_ops = &ocelot_port_netdev_ops;
+>  	dev->ethtool_ops = &ocelot_ethtool_ops;
+>  
+> -	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS;
+> -	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+> +	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS |
+> +		NETIF_F_HW_TC;
+> +	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_TC;
+>  
+>  	memcpy(dev->dev_addr, ocelot->base_mac, ETH_ALEN);
+>  	dev->dev_addr[ETH_ALEN - 1] += port;
+
+You need to add a check in set_features to make sure nobody clears the
+NETIF_F_TC flag while something is offloaded, otherwise you will miss
+the REMOVE callback (it will bounce from the
+tc_cls_can_offload_and_chain0() check).
+
+> diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
+> new file mode 100644
+> index 000000000000..2412e0dbc267
+> --- /dev/null
+> +++ b/drivers/net/ethernet/mscc/ocelot_tc.c
+> @@ -0,0 +1,164 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/* Microsemi Ocelot Switch TC driver
+> + *
+> + * Copyright (c) 2019 Microsemi Corporation
+> + */
+> +
+> +#include "ocelot_tc.h"
+> +#include "ocelot_police.h"
+> +#include <net/pkt_cls.h>
+> +
+> +static int ocelot_setup_tc_cls_matchall(struct ocelot_port *port,
+> +					struct tc_cls_matchall_offload *f,
+> +					bool ingress)
+> +{
+> +	struct netlink_ext_ack *extack = f->common.extack;
+> +	struct ocelot_policer pol = { 0 };
+> +	struct flow_action_entry *action;
+> +	int err;
+> +
+> +	netdev_dbg(port->dev, "%s: port %u command %d cookie %lu\n",
+> +		   __func__, port->chip_port, f->command, f->cookie);
+> +
+> +	if (!ingress) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Only ingress is supported");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	switch (f->command) {
+> +	case TC_CLSMATCHALL_REPLACE:
+> +		if (!flow_offload_has_one_action(&f->rule->action)) {
+> +			NL_SET_ERR_MSG_MOD(extack,
+> +					   "Only one action is supported");
+> +			return -EOPNOTSUPP;
+> +		}
+> +
+> +		action = &f->rule->action.entries[0];
+> +
+> +		if (action->id != FLOW_ACTION_POLICE) {
+> +			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
+> +			return -EOPNOTSUPP;
+> +		}
+
+Please also reject the offload if block is shared, as HW policer state
+cannot be shared between ports, the way it is in SW.  You have to save
+whether the block is shared or not at bind time, see:
+
+d6787147e15d ("net/sched: remove block pointer from common offload structure")
+
+> +		if (port->tc.police_id && port->tc.police_id != f->cookie) {
+> +			NL_SET_ERR_MSG_MOD(extack,
+> +					   "Only one policer per port is supported\n");
+> +			return -EEXIST;
+> +		}
+> +
+> +		pol.rate = (u32)div_u64(action->police.rate_bytes_ps, 1000) * 8;
+> +		pol.burst = (u32)div_u64(action->police.rate_bytes_ps *
+> +					 PSCHED_NS2TICKS(action->police.burst),
+> +					 PSCHED_TICKS_PER_SEC);
+> +
+> +		err = ocelot_port_policer_add(port, &pol);
+> +		if (err) {
+> +			NL_SET_ERR_MSG_MOD(extack, "Could not add policer\n");
+> +			return err;
+> +		}
+> +
+> +		port->tc.police_id = f->cookie;
+> +		return 0;
+> +	case TC_CLSMATCHALL_DESTROY:
+> +		if (port->tc.police_id != f->cookie)
+> +			return -ENOENT;
+> +
+> +		err = ocelot_port_policer_del(port);
+> +		if (err) {
+> +			NL_SET_ERR_MSG_MOD(extack,
+> +					   "Could not delete policer\n");
+> +			return err;
+> +		}
+> +		port->tc.police_id = 0;
+> +		return 0;
+> +	case TC_CLSMATCHALL_STATS: /* fall through */
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +}
