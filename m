@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7648928D37
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:34:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21CD228D34
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:34:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388738AbfEWWdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 18:33:50 -0400
-Received: from mga12.intel.com ([192.55.52.136]:19068 "EHLO mga12.intel.com"
+        id S2388675AbfEWWdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 18:33:43 -0400
+Received: from mga12.intel.com ([192.55.52.136]:19070 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388498AbfEWWdj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 18:33:39 -0400
+        id S2388606AbfEWWdk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 18:33:40 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
@@ -20,14 +20,14 @@ Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga003.jf.intel.com with ESMTP; 23 May 2019 15:33:35 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
         Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 13/15] ice: Reorganize ice_vf struct
-Date:   Thu, 23 May 2019 15:33:38 -0700
-Message-Id: <20190523223340.13449-14-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 14/15] ice: Fix couple of issues in ice_vsi_release
+Date:   Thu, 23 May 2019 15:33:39 -0700
+Message-Id: <20190523223340.13449-15-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190523223340.13449-1-jeffrey.t.kirsher@intel.com>
 References: <20190523223340.13449-1-jeffrey.t.kirsher@intel.com>
@@ -38,79 +38,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Brett Creeley <brett.creeley@intel.com>
 
-The ice_vf struct can be used hundreds of times in our
-driver so it pays to use less memory per struct.
+Currently the driver is calling ice_napi_del() and then
+unregister_netdev(). The call to unregister_netdev() will result in a
+call to ice_stop() and then ice_vsi_close(). This is where we call
+napi_disable() for all the MSI-X vectors. This flow is reversed so make
+the changes to ensure napi_disable() happens prior to napi_del().
 
-ice_vf prior to this commit:
-  /* size: 112, cachelines: 2, members: 25 */
-  /* sum members: 101, holes: 4, sum holes: 8 */
-  /* bit holes: 2, sum bit holes: 11 bits */
-  /* padding: 3 */
-  /* last cacheline: 48 bytes */
+Before calling napi_del() and free_netdev() make sure
+unregister_netdev() was called. This is done by making sure the
+__ICE_DOWN bit is set in the vsi->state for the interested VSI.
 
-ice_vf after this commit:
-  /* size: 104, cachelines: 2, members: 25 */
-  /* sum members: 100, holes: 3, sum holes: 4 */
-  /* bit holes: 1, sum bit holes: 3 bits */
-  /* last cacheline: 40 bytes */
-
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  | 21 ++++++++++++-------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h      |  1 -
+ drivers/net/ethernet/intel/ice/ice_lib.c  | 24 ++++++++++++-----------
+ drivers/net/ethernet/intel/ice/ice_main.c |  2 +-
+ 3 files changed, 14 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 60f024ae281d..9583ad3f6fb6 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -49,29 +49,34 @@ struct ice_vf {
- 	struct ice_pf *pf;
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 23e30a69f5fa..b5990ba0ee4c 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -451,7 +451,6 @@ int ice_set_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size);
+ int ice_get_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size);
+ void ice_fill_rss_lut(u8 *lut, u16 rss_table_size, u16 rss_size);
+ void ice_print_link_msg(struct ice_vsi *vsi, bool isup);
+-void ice_napi_del(struct ice_vsi *vsi);
+ #ifdef CONFIG_DCB
+ int ice_pf_ena_all_vsi(struct ice_pf *pf, bool locked);
+ void ice_pf_dis_all_vsi(struct ice_pf *pf, bool locked);
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index fbf1eba0cc2a..f14fa51cc704 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -2754,19 +2754,14 @@ int ice_vsi_release(struct ice_vsi *vsi)
  
- 	s16 vf_id;			/* VF ID in the PF space */
--	u32 driver_caps;		/* reported by VF driver */
-+	u16 lan_vsi_idx;		/* index into PF struct */
- 	int first_vector_idx;		/* first vector index of this VF */
- 	struct ice_sw *vf_sw_id;	/* switch ID the VF VSIs connect to */
- 	struct virtchnl_version_info vf_ver;
-+	u32 driver_caps;		/* reported by VF driver */
- 	struct virtchnl_ether_addr dflt_lan_addr;
- 	u16 port_vlan_id;
- 	u8 pf_set_mac:1;		/* VF MAC address set by VMM admin */
- 	u8 trusted:1;
--	u16 lan_vsi_idx;		/* index into PF struct */
-+	u8 spoofchk:1;
-+	u8 link_forced:1;
-+	u8 link_up:1;			/* only valid if VF link is forced */
-+	/* VSI indices - actual VSI pointers are maintained in the PF structure
-+	 * When assigned, these will be non-zero, because VSI 0 is always
-+	 * the main LAN VSI for the PF.
-+	 */
- 	u16 lan_vsi_num;		/* ID as used by firmware */
-+	unsigned int tx_rate;		/* Tx bandwidth limit in Mbps */
-+	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
+ 	if (vsi->type == ICE_VSI_VF)
+ 		vf = &pf->vf[vsi->vf_id];
+-	/* do not unregister and free netdevs while driver is in the reset
+-	 * recovery pending state. Since reset/rebuild happens through PF
+-	 * service task workqueue, its not a good idea to unregister netdev
+-	 * that is associated to the PF that is running the work queue items
+-	 * currently. This is done to avoid check_flush_dependency() warning
+-	 * on this wq
++	/* do not unregister while driver is in the reset recovery pending
++	 * state. Since reset/rebuild happens through PF service task workqueue,
++	 * it's not a good idea to unregister netdev that is associated to the
++	 * PF that is running the work queue items currently. This is done to
++	 * avoid check_flush_dependency() warning on this wq
+ 	 */
+-	if (vsi->netdev && !ice_is_reset_in_progress(pf->state)) {
+-		ice_napi_del(vsi);
++	if (vsi->netdev && !ice_is_reset_in_progress(pf->state))
+ 		unregister_netdev(vsi->netdev);
+-		free_netdev(vsi->netdev);
+-		vsi->netdev = NULL;
+-	}
+ 
+ 	if (test_bit(ICE_FLAG_RSS_ENA, pf->flags))
+ 		ice_rss_clean(vsi);
+@@ -2799,6 +2794,13 @@ int ice_vsi_release(struct ice_vsi *vsi)
+ 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
+ 	ice_vsi_delete(vsi);
+ 	ice_vsi_free_q_vectors(vsi);
 +
- 	u64 num_mdd_events;		/* number of MDD events detected */
- 	u64 num_inval_msgs;		/* number of continuous invalid msgs */
- 	u64 num_valid_msgs;		/* number of valid msgs detected */
- 	unsigned long vf_caps;		/* VF's adv. capabilities */
--	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
--	unsigned int tx_rate;		/* Tx bandwidth limit in Mbps */
--	u8 link_forced:1;
--	u8 link_up:1;			/* only valid if VF link is forced */
--	u8 spoofchk:1;
-+	u8 num_req_qs;			/* num of queue pairs requested by VF */
- 	u16 num_mac;
- 	u16 num_vlan;
- 	u16 num_vf_qs;			/* num of queue configured per VF */
--	u8 num_req_qs;			/* num of queue pairs requested by VF */
- };
++	/* make sure unregister_netdev() was called by checking __ICE_DOWN */
++	if (vsi->netdev && test_bit(__ICE_DOWN, vsi->state)) {
++		free_netdev(vsi->netdev);
++		vsi->netdev = NULL;
++	}
++
+ 	ice_vsi_clear_rings(vsi);
  
- #ifdef CONFIG_PCI_IOV
+ 	ice_vsi_put_qs(vsi);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 65def2773313..0a4abc21890c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -1667,7 +1667,7 @@ static int ice_req_irq_msix_misc(struct ice_pf *pf)
+  * ice_napi_del - Remove NAPI handler for the VSI
+  * @vsi: VSI for which NAPI handler is to be removed
+  */
+-void ice_napi_del(struct ice_vsi *vsi)
++static void ice_napi_del(struct ice_vsi *vsi)
+ {
+ 	int v_idx;
+ 
 -- 
 2.21.0
 
