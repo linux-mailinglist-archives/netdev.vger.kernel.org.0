@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADCA92744A
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 04:13:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE1302744D
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 04:17:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729523AbfEWCNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 22:13:10 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41528 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727691AbfEWCNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 22:13:09 -0400
-Received: by mail-pl1-f196.google.com with SMTP id f12so1958926plt.8
-        for <netdev@vger.kernel.org>; Wed, 22 May 2019 19:13:09 -0700 (PDT)
+        id S1728237AbfEWCRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 22:17:08 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:39788 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727305AbfEWCRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 22:17:08 -0400
+Received: by mail-pl1-f194.google.com with SMTP id g9so1973695plm.6
+        for <netdev@vger.kernel.org>; Wed, 22 May 2019 19:17:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1ZHlWro+R7vJaaVo2VdfVIHxxdcC0403PrTMRwaSXwU=;
-        b=uDnHZ9pZq6iu8GgGizEJpEveHjYEBvkYNIVYEgfeXyXyK+tgb56zsyAfyIl9Pmxtp5
-         VPsMDphVRorj5RZWsMIrIAf16zi7LvDeP9lHDCEU8P5za3XqbZ+EL5/42uRlgpSUUAFM
-         NqDr10w225TbrR7Zwkpq5XEEdkT+rqeqaB+zi39wRca54pIihpu8wEMqFP+Pur7x4/tP
-         VsQutjDgdvqgB6sJ5eIu7xKmoBjiTDJ7ju5Zp6lQke2hz1hCy7kuxZtvaeJEtVUQaWfW
-         V/7bemFIq+peDOrvq69V1ErFLaxVsF0uqly3fZAbg7jyrjaCkg+oMzWbdauSTqR/oTsp
-         08OA==
+        bh=Pe211EJ4KpxI3pFIcKkFWxPfP7zNBXaibLXIwFj9bvA=;
+        b=i+f1kLwIzifWgZaB9wfh6vjb32pvYqm458mTnpWmB2/wgp0rFEzbYAHv115uLztmMQ
+         4ngK/ErbR3Of5cwVFAhDJXFVMV9o0KL7sqU/94sAh5xyOzdF6rPnRvMyGnZ+pHJw0Oob
+         BIk3+dtmtEvXqHqxOuzHuAAMAQpb6QwGEXSxYSyxsT+ZqtBVIWxMOjT8wPV8HugYTinC
+         OhDk7No3x5esIAQXn6oRuWlnFak1XwlZ0A1eEhruUMjZvoxVD+UCfc58QSLedb0c2R75
+         pgxYG0ym9gFZszz68rWLi3R0Wh5DONh+2UfhILsZQD8B5lV8bQkIDiRXPGOc86g9abdz
+         /9Hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=1ZHlWro+R7vJaaVo2VdfVIHxxdcC0403PrTMRwaSXwU=;
-        b=j3ZZmSOLQ97p+G4vaLarrdSYbbWnxja7b+NEFbw9EX7gHwgcLribDcd+BQxrAF27Xh
-         97x2pT7IdF0IsRCS5QbETCrsWNrkfEXXSgSBAqo359WCch6F8nhnFHOfpCoqt/UT7Oe3
-         Fqlv2eeUTNXw5CBzeyZ5TOZvT3f+Bx6LkIRHPZA5IEuphAa7bPZHSv+z3ZGgx6FhuWq2
-         Du5GdxADXF8PZO8ukv01kWy3L2hDPuTkfBc+Y2QndyVIj9io9IJcj2MgLSfVELO5rAx+
-         gD3uts8M4v/vhOH8DWoiNEvAo7xyjJ+0JRhiy3+u8Y9sS67Rd0InbyiW39U6LHRuFzSm
-         ULVQ==
-X-Gm-Message-State: APjAAAWYCITwb3FpGbmrZ3MD9oQuYdniWB2aJuBfdcYbZ1o17/DtEL8t
-        GP/tx0DAJDYSS3U9W9bttn21AzV4
-X-Google-Smtp-Source: APXvYqwua1LTcmNQAusdCQQnTi+7WTyz74/z+n3VXXOO8vQYikRW7/v2kX/+mT8nPDK28DqEz6K9Mw==
-X-Received: by 2002:a17:902:8ec3:: with SMTP id x3mr39017004plo.340.1558577589048;
-        Wed, 22 May 2019 19:13:09 -0700 (PDT)
+        bh=Pe211EJ4KpxI3pFIcKkFWxPfP7zNBXaibLXIwFj9bvA=;
+        b=qCjfVGlLJBPgQ93O3GuKdWprwYnepeC8eQ/Y12sJ46Ir+XMFMVyO3G6Ta9Jyp1RMII
+         eiKHSFktiGuzU2GeuOuYXDMW5uWLqiSU3VpxKEvX7NTHF+ZR0yGE9Sx25RT8nV4Wu7wr
+         ZjZJyk7V7bu5MDv1cURESZNgk/aCquK9P7IvZJWK25/R1juEMxHXwz+qH/lWHttrh0Ef
+         5IwlO+girIf6FMv1B+UAbyUk9YpxU1ZOKCWHAPwpz18iMbvLLSYtgJbX92Xhzseh83bt
+         8n+H7ecSWMdKRJ4/kSbcM1Db/s8AGU3U5cKSXgz0QXnIwQTFIXht4B3hvae5Pn6nre9/
+         ukxA==
+X-Gm-Message-State: APjAAAVNDrRvKPfIop2XDAOvZJZp2EViS6++ygxoDCmUY9dvn4rpYejZ
+        QPJ0t96R624oaAku/SRTVaw=
+X-Google-Smtp-Source: APXvYqyFdmJuwA9aqlSg8nucLehEhl9ntxDy7ptb3adXTkR2oD4u1lfd7CCVLS4gFur8zt39Wcv/tA==
+X-Received: by 2002:a17:902:e7:: with SMTP id a94mr69354534pla.182.1558577827576;
+        Wed, 22 May 2019 19:17:07 -0700 (PDT)
 Received: from [10.230.28.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id g71sm32437923pgc.41.2019.05.22.19.13.04
+        by smtp.gmail.com with ESMTPSA id v16sm12171021pfc.26.2019.05.22.19.17.03
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 May 2019 19:13:08 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 7/9] net: dsa: Move the phylink driver calls
- into port.c
+        Wed, 22 May 2019 19:17:06 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 8/9] net: dsa: Use PHYLINK for the CPU/DSA
+ ports
 To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
         "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
         "andrew@lunn.ch" <andrew@lunn.ch>,
@@ -56,15 +56,15 @@ To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>
 References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
- <20190523011958.14944-8-ioana.ciornei@nxp.com>
+ <20190523011958.14944-9-ioana.ciornei@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
-Message-ID: <cef9c200-4bbd-db3e-1e28-f7cf16df0faf@gmail.com>
-Date:   Wed, 22 May 2019 19:13:01 -0700
+Message-ID: <9c953f4f-af27-d87d-8964-16b7e32ce80f@gmail.com>
+Date:   Wed, 22 May 2019 19:17:00 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190523011958.14944-8-ioana.ciornei@nxp.com>
+In-Reply-To: <20190523011958.14944-9-ioana.ciornei@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -76,35 +76,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 5/22/2019 6:20 PM, Ioana Ciornei wrote:
-> In order to have a common handling of PHYLINK for the slave and non-user
-> ports, the DSA core glue logic (between PHYLINK and the driver) must use
-> an API that does not rely on a struct net_device.
+> This completely removes the usage of PHYLIB from DSA, namely for the
+> aforementioned switch ports which used to drive a software PHY manually
+> using genphy operations.
 > 
-> These will also be called by the CPU-port-handling code in a further
-> patch.
+> For these ports, the newly introduced phylink_create_raw API must be
+> used, and the callbacks are received through a notifier block registered
+> per dsa_port, but otherwise the implementation is fairly
+> straightforward, and the handling of the regular vs raw PHYLINK
+> instances is common from the perspective of the driver.
 > 
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
+> What changes for drivers:
+> 
+> The .adjust_link callback is no longer called for the fixed-link CPU/DSA
+> ports and drivers must migrate to standard PHYLINK operations (e.g.
+> .phylink_mac_config).  The reason why we can't do anything for them is
+> because PHYLINK does not wrap the fixed link state behind a phydev
+> object, so we cannot wrap .phylink_mac_config into .adjust_link unless
+> we fabricate a phy_device structure.
 
-[snip]
+Can't we offer a slightly nicer transition period for DSA switch drivers:
 
-> +void dsa_port_phylink_validate(struct dsa_port *dp,
-> +			       unsigned long *supported,
-> +			       struct phylink_link_state *state)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!ds->ops->phylink_validate)
-> +		return;
-> +
-> +	ds->ops->phylink_validate(ds, dp->index, supported, state);
-> +}
-> +EXPORT_SYMBOL(dsa_port_phylink_validate);
+- if adjust_link and phylink_mac_ops are both supported, prefer
+phylink_mac_ops
+- if phylink_mac_ops is defined alone use it, we're good
+- if adjust_link alone is defined, keep using it with the existing code
+but print a warning inviting to migrate?
 
-Those exports should probably be _GPL to follow the PHYLINK exports but
-other than that:
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+The changes look fine but the transition path needs to be a little more
+gentle IMHO.
 -- 
 Florian
