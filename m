@@ -2,152 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E54C27EC6
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 15:51:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 472EB27ED7
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 15:54:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730780AbfEWNvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 09:51:39 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:34070 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730323AbfEWNvi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 09:51:38 -0400
-Received: by mail-pg1-f193.google.com with SMTP id h2so125800pgg.1;
-        Thu, 23 May 2019 06:51:38 -0700 (PDT)
+        id S1730846AbfEWNx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 09:53:58 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44715 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730323AbfEWNx5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 09:53:57 -0400
+Received: by mail-pg1-f196.google.com with SMTP id n2so3172062pgp.11;
+        Thu, 23 May 2019 06:53:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OavM6MumMoRvL9UPRjFZpjMK+yzvoInjaSnzKRdf7us=;
-        b=M+3JiUVZTxT2pFZbK9TVQ81poHvRkWlqD14ZStkrKr3uDKm2RyGabGAKzwKJmFjRpd
-         kOTiWsevrQ+9JJh+k7qz0I+CLTghV1twR/dOTrDOgMe6mhtckrzfiKzOlAOtwTvgk4PE
-         U30Cdx7knc0s+xlOJSyIpkJDry0u5gFt5ARBv58BsFpOXtBvBQrkdZzOVvi1JM/vbtHO
-         vgY+8PmRVPkCHaJBAYAnBoXJo44PZ2dGJqRG5J3eKkLpy1JoZWmE9C7v5PHjESFWn/lH
-         uuqlSj80VufsmeaJhR56An0WikRZFcLEVbpqwOsLb31gX0S1MR/cFHaM0g1szVgVjO9A
-         ktXA==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=wBOus5XnMT/GSFm7Ta2azVSwxrEw9Cm7MC3BR8HqZMQ=;
+        b=AYqyVghC2krw5toK68f4xOM57O3RMbSdGaDaNMebJfETjLn/GEMAAcQ1+mBmNK7dmY
+         ljlsrUa3QizI/pO79Q0a+D9ZxtBFPJINAA3WfdMDmbO7wuqpe/eDcKr/c0BnlYfOnrXa
+         36hY+yot8t+cf59FWTZ8oaW1/5sLEBxOsHzdzDjIODlgJ/Sx1EeCr8+v/SVOg59hBL9q
+         7MKg//dmuoJlbxnZ+uBtuz/Z9FXj6R0MA+KRgL+/hQxR4g/oFHV6OHZW4LuUvfi2LB97
+         7nQMQZtL2Oyhx1B7qaZPxKD3pBgF2PVEst0tGfbE9MLIUtr41utsqNJaltFKndXPZFyv
+         xpJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OavM6MumMoRvL9UPRjFZpjMK+yzvoInjaSnzKRdf7us=;
-        b=MlJW+VvaAiH9rna6EZvkF06DBR5LKv9HqWl5TRAkkM7nYnX7qxbWSRJBdgMNnYB5Ma
-         BXUmKx4K5yj33kRZW5AZmdV0zb7jzHDjivrc+E6+0FRPTzjQsP6x1JFcst8sfpJ6ACs8
-         KpKsArKbkLMBj22JrYMB62ANGi44jGAOwhX32sl6f5gdjRIorAFaBMH0q5EmKXsp41rF
-         NdmkhM0vzJNn72lBp1RRXH0C/h6La+684AbrAWWdG7FNlK6C92ohB+Y5OHwCHr8yPZJX
-         ZfvKkxxhcG64jadt2bo/KdRuaCKFvp3mQOWNwFDxBPSmrkE0f9opJatj49KmrVh7bUis
-         Kgwg==
-X-Gm-Message-State: APjAAAXI1yKHGiuGEk/7U+tfFLC0dgf2wW/o3BSQFLfle6/BVXVjhXYx
-        Vg/0Qd1VkxTbutboeYt9xdNnumkJ
-X-Google-Smtp-Source: APXvYqyUFs+7RvEAMG+TW9I0x/07/AstYaPEVFKFUiV/+Hvf+gSHq5zX2ruBZ6dFqBVF5XOXQ9MKZA==
-X-Received: by 2002:a63:1a03:: with SMTP id a3mr99040179pga.412.1558619497841;
-        Thu, 23 May 2019 06:51:37 -0700 (PDT)
-Received: from [192.168.1.9] (i223-218-240-142.s42.a013.ap.plala.or.jp. [223.218.240.142])
-        by smtp.googlemail.com with ESMTPSA id j10sm28429187pgk.37.2019.05.23.06.51.34
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=wBOus5XnMT/GSFm7Ta2azVSwxrEw9Cm7MC3BR8HqZMQ=;
+        b=ehRd8E93chCojwH/SruG6YBzvqLPLg6/YdztZ+xVKEcTKOwyzHpK5V/RTV7DAc3sdH
+         5wyjdhJVBjYyZQswTlzBNWc44vJ0uwQC+4F0+qpMCuF5bkPQvUTIYp8Xnp5xjGXzUpJ5
+         lvJi7WgxIbZZQXIK4lV/QBwYkJnSPvnix4m73IGaalqpt0fet+Gjrxhar+QTo5jGIpZH
+         AW4DoblVb2kNeeK8Gfz7Vmm0Y1nJzAL6Q5pfdnYgAOw2/ou5gNh20CX6I8GwkbI0kCe7
+         HmWbfBT9RQDZGbcx3+ambNCx8SrkkEdJ3c8Rxj+6xqKb7In6uo3aqxJDfLGDZdt/XpBZ
+         y+Ow==
+X-Gm-Message-State: APjAAAV1VqHDKlO3Ayes0snIg5jYIE/LOwR0aT0zoB2RYSJslLh+2oEu
+        6EY+ktjuC9Hs5czDO09JepZM7QmwXQg=
+X-Google-Smtp-Source: APXvYqyjfGFyvo1lLdMR/jT+jVGxH8yZMja3v8JHFTQYYTIDpJj5qCC6LIDRsy0lm1J2aJ3us2ZShg==
+X-Received: by 2002:a62:2ec4:: with SMTP id u187mr103116784pfu.84.1558619636990;
+        Thu, 23 May 2019 06:53:56 -0700 (PDT)
+Received: from zhanggen-UX430UQ ([66.42.35.75])
+        by smtp.gmail.com with ESMTPSA id q70sm959922pja.31.2019.05.23.06.53.38
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 06:51:37 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 3/3] veth: Support bulk XDP_TX
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <1558609008-2590-1-git-send-email-makita.toshiaki@lab.ntt.co.jp>
- <1558609008-2590-4-git-send-email-makita.toshiaki@lab.ntt.co.jp>
- <87zhnd1kg9.fsf@toke.dk> <599302b2-96d2-b571-01ee-f4914acaf765@lab.ntt.co.jp>
- <20190523152927.14bf7ed1@carbon>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <c902c0f4-947b-ba9e-7baa-628ba87a8f01@gmail.com>
-Date:   Thu, 23 May 2019 22:51:34 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        Thu, 23 May 2019 06:53:56 -0700 (PDT)
+Date:   Thu, 23 May 2019 21:53:26 +0800
+From:   Gen Zhang <blackgod016574@gmail.com>
+To:     kvalo@codeaurora.org, eyalreizer@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] sdio: Fix a memory leaking bug in wl1271_probe()
+Message-ID: <20190523135326.GA25841@zhanggen-UX430UQ>
 MIME-Version: 1.0
-In-Reply-To: <20190523152927.14bf7ed1@carbon>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/05/23 (木) 22:29:27, Jesper Dangaard Brouer wrote:
-> On Thu, 23 May 2019 20:35:50 +0900
-> Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> wrote:
-> 
->> On 2019/05/23 20:25, Toke Høiland-Jørgensen wrote:
->>> Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> writes:
->>>    
->>>> This improves XDP_TX performance by about 8%.
->>>>
->>>> Here are single core XDP_TX test results. CPU consumptions are taken
->>>> from "perf report --no-child".
->>>>
->>>> - Before:
->>>>
->>>>    7.26 Mpps
->>>>
->>>>    _raw_spin_lock  7.83%
->>>>    veth_xdp_xmit  12.23%
->>>>
->>>> - After:
->>>>
->>>>    7.84 Mpps
->>>>
->>>>    _raw_spin_lock  1.17%
->>>>    veth_xdp_xmit   6.45%
->>>>
->>>> Signed-off-by: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
->>>> ---
->>>>   drivers/net/veth.c | 26 +++++++++++++++++++++++++-
->>>>   1 file changed, 25 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
->>>> index 52110e5..4edc75f 100644
->>>> --- a/drivers/net/veth.c
->>>> +++ b/drivers/net/veth.c
->>>> @@ -442,6 +442,23 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
->>>>   	return ret;
->>>>   }
->>>>   
->>>> +static void veth_xdp_flush_bq(struct net_device *dev)
->>>> +{
->>>> +	struct xdp_tx_bulk_queue *bq = this_cpu_ptr(&xdp_tx_bq);
->>>> +	int sent, i, err = 0;
->>>> +
->>>> +	sent = veth_xdp_xmit(dev, bq->count, bq->q, 0);
->>>
->>> Wait, veth_xdp_xmit() is just putting frames on a pointer ring. So
->>> you're introducing an additional per-cpu bulk queue, only to avoid lock
->>> contention around the existing pointer ring. But the pointer ring is
->>> per-rq, so if you have lock contention, this means you must have
->>> multiple CPUs servicing the same rq, no?
->>
->> Yes, it's possible. Not recommended though.
->>
-> 
-> I think the general per-cpu TX bulk queue is overkill.  There is a loop
-> over packets in veth_xdp_rcv(struct veth_rq *rq, budget, *status), and
-> the caller veth_poll() will call veth_xdp_flush(rq->dev).
-> 
-> Why can't you store this "temp" bulk array in struct veth_rq ?
+In wl1271_probe(), 'glue->core' is allocated by platform_device_alloc(),
+when this allocation fails, ENOMEM is returned. However, 'pdev_data'
+and 'glue' are allocated by devm_kzalloc() before 'glue->core'. When
+platform_device_alloc() returns NULL, we should also free 'pdev_data'
+and 'glue' before wl1271_probe() ends to prevent leaking memory.
 
-Of course I can. But I thought tun has the same problem and we can 
-decrease memory footprint by sharing the same storage between devices.
-Or if other devices want to reduce queues so that we can use XDP on 
-many-cpu servers and introduce locks, we can use this storage for that 
-case as well.
-
-Still do you prefer veth-specific solution?
-
-> 
-> You could even alloc/create it on the stack of veth_poll() and send it
-> along via a pointer to veth_xdp_rcv).
-> 
-
-Toshiaki Makita
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+---
+diff --git a/drivers/net/wireless/ti/wlcore/sdio.c b/drivers/net/wireless/ti/wlcore/sdio.c
+index 4d4b0770..e134f30 100644
+--- a/drivers/net/wireless/ti/wlcore/sdio.c
++++ b/drivers/net/wireless/ti/wlcore/sdio.c
+@@ -340,7 +340,7 @@ static int wl1271_probe(struct sdio_func *func,
+ 	if (!glue->core) {
+ 		dev_err(glue->dev, "can't allocate platform_device");
+ 		ret = -ENOMEM;
+-		goto out;
++		goto out_free;
+ 	}
+ 
+ 	glue->core->dev.parent = &func->dev;
+@@ -385,6 +385,10 @@ static int wl1271_probe(struct sdio_func *func,
+ out_dev_put:
+ 	platform_device_put(glue->core);
+ 
++out_free:
++	devm_kfree(&func->dev, pdev_data);
++	devm_kfree(&func->dev, glue);
++
+ out:
+ 	return ret;
+ }
+---
