@@ -2,131 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EB0F28BB3
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:42:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2FD028BC0
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:44:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388288AbfEWUmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 16:42:49 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42479 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388256AbfEWUmq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:42:46 -0400
-Received: by mail-pg1-f193.google.com with SMTP id 33so766481pgv.9;
-        Thu, 23 May 2019 13:42:46 -0700 (PDT)
+        id S2387703AbfEWUo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 16:44:27 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:39150 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387394AbfEWUo1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:44:27 -0400
+Received: by mail-qk1-f194.google.com with SMTP id i125so2577165qkd.6
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 13:44:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=xDSImwvg9ldfjYdR+/w2XlZgxjHNwdCvvVsI912LKls=;
-        b=NPodfj35SL4Vjcp0LFsuY22e1p6dgmX/gWhOwNAvjwWDelpdeg0qL5krgzWdMY+HdK
-         W85cipvVZ3AiphSLvjC1bY4pFImN1PWUS0/yGaB3Vf3WgaSNijQw01wSC0X4xK3yrbOS
-         QMwklU8GP+2O1CCAHPblv70qopR29huGK6Ui3KTuZyZDbSW/W+CROvjJzrWQbCd4Tbhp
-         KLTzUI+MT+nATn1UV1Bzeu0at91vdqiKzpOCFHx7fOAMCETg3gMj8a72Z9bYpn48saW7
-         CSHCXHg8PVXYLFiEb5kcDSUZS+rJbpYSJr/ArmHyC4Ng4sK7aRQeByz68lTpbt+sYJSR
-         55AQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=uyaana4PXc4ejMDebW7jtkm0Ao+gQmvQ960Gba78bNk=;
+        b=ngoKYvpD0MJKfOn2iT9k9sBv8flyGIMu5/aAZFv3p0YHEA1QhFdwYDezrPb3bq3lfU
+         PduqRll4Qgaf4Ut4UeANt2H2SGpz6gB0maeK2C9oAoYX3pxraN4+Ho11G1PYeDfkmShR
+         fnAQdn2JmfwCp1czfK0u42rTLl99H+xjtf4FJI1LzNvjWO75me1/ePjfsandMYhRpDQh
+         SOiSk+SRUPiD7ByfcaDRrExdbf4XRBwykMJMK9Ps2QKQOCQRgTF+ENZtHMWMWpjXQBYO
+         EdIbtal4NVKKCIe0Ha4g/fqcK73fokAK1dXBymu1e9uzHEn30ePCujLpFq2DtJGnuDnl
+         W/wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xDSImwvg9ldfjYdR+/w2XlZgxjHNwdCvvVsI912LKls=;
-        b=oHFy3VteamScAqNX3nHjWSylFILkPUTg7N7vF36JSzEjs3ni3HglVdyBn6vnDYATfK
-         pFyDeMbvHyS344/V5kGu+6qFamSW7+DthqbQTJGCpzC6m9cPJiuWKyLgh2foTFlvpHZI
-         C3d4VPzy4EhQ3U4QtlqGyGwxwnofZ6gqAan/hyrIplxUacnFVggYIcaKIHjfU7nW0/FM
-         bwI4fP12dWU8cAy33SezOOkPcR/vTYjYMdtUBFkUcayRJ6o4HLH/GE2SWg8nr8//hURt
-         9HjiwEZEEt8e26UGzuT2tXBMOUGLIw4d8WGKkvi98HxVZQZld15p5K8nu2ddODVWUJfM
-         7f+w==
-X-Gm-Message-State: APjAAAV8cqnCTImUwjf49eh8bkDxOguFeIDmFCcrg/wI5FpCXmH0DlJb
-        qil29x95wHcSLbKL6njTBuk=
-X-Google-Smtp-Source: APXvYqySLj3uOg01XkiNbxnBt6a/vg3kd/r9XeAat/OPlpUP8SQyyKDl/hgby621y0OTmGuOLYdU1g==
-X-Received: by 2002:aa7:8acb:: with SMTP id b11mr106573588pfd.115.1558644165653;
-        Thu, 23 May 2019 13:42:45 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:d5a9])
-        by smtp.gmail.com with ESMTPSA id j64sm349783pfb.126.2019.05.23.13.42.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 13:42:44 -0700 (PDT)
-Date:   Thu, 23 May 2019 13:42:43 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiong Wang <jiong.wang@netronome.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@netronome.com,
-        davem@davemloft.net, paul.burton@mips.com, udknight@gmail.com,
-        zlim.lnx@gmail.com, illusionist.neo@gmail.com,
-        naveen.n.rao@linux.ibm.com, sandipan@linux.ibm.com,
-        schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com,
-        jakub.kicinski@netronome.com
-Subject: Re: [PATCH v7 bpf-next 01/16] bpf: verifier: mark verified-insn with
- sub-register zext flag
-Message-ID: <20190523204241.b5m2j5ff7gethkhc@ast-mbp.dhcp.thefacebook.com>
-References: <1558551312-17081-1-git-send-email-jiong.wang@netronome.com>
- <1558551312-17081-2-git-send-email-jiong.wang@netronome.com>
- <20190523020757.mwbux72pqjbvpqkh@ast-mbp.dhcp.thefacebook.com>
- <B9C052B7-DFB9-461A-B334-1607A94833D3@netronome.com>
- <20190523161601.mqvkzwjegon2cqku@ast-mbp.dhcp.thefacebook.com>
- <87h89kkjnk.fsf@netronome.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=uyaana4PXc4ejMDebW7jtkm0Ao+gQmvQ960Gba78bNk=;
+        b=dh/R1nFCuoWpM//nNrtJ+BZ5V7GErzy60O48QSR2o0VTfGaKvnOyF7chel4OUC2YOv
+         6mMvCg2LqySL1RFbPwe+OCgCpwYrWUqB3o1qQ8fiKB1j0duxEkeazV8sDdMtGCgWvjX7
+         JW6J6e/k20xe0VDisfBTKZMq4E/QGoBdoUq9lcSrV8qRzv45pH4zfKLWLMhkaCnxHn2w
+         UqMs1pfTztZCOV5givIo3bi19UGF3oMKYnJouPoYFMXPP6ItajOAViSFXSEKxgHT+tjK
+         dGiiIRPzthitPY9cvr4xxWBewQtlwNyNYQsfWC7ZTX2SikOle7doYVK10nEuYazAB5mt
+         A5Kw==
+X-Gm-Message-State: APjAAAV7DCRLvkPIxCF1D6zLctl6FPwYDpuEXPYwt+MLR6h2gwXlH3Lr
+        47ur/Amt8GAaOnS7+sUk/ppdTQ==
+X-Google-Smtp-Source: APXvYqyPGmQpKOnKTMZEVH5e8waTJAv0uMYbqCLdWIKy0FbNjVamD56SWl73FRVmWrw3WuaQGWWF7Q==
+X-Received: by 2002:a37:c409:: with SMTP id d9mr36788684qki.125.1558644266314;
+        Thu, 23 May 2019 13:44:26 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id c18sm204020qkl.78.2019.05.23.13.44.25
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 23 May 2019 13:44:26 -0700 (PDT)
+Date:   Thu, 23 May 2019 13:44:21 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, oss-drivers@netronome.com,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH bpf-next v2 1/3] tools: bpftool: add -d option to get
+ debug output from libbpf
+Message-ID: <20190523134421.38a0da0c@cakuba.netronome.com>
+In-Reply-To: <CAEf4BzZt75Wm29MQKx1g_u8cH2QYRF3HGYgnOpa3yF9NOMXysw@mail.gmail.com>
+References: <20190523105426.3938-1-quentin.monnet@netronome.com>
+        <20190523105426.3938-2-quentin.monnet@netronome.com>
+        <CAEf4BzZt75Wm29MQKx1g_u8cH2QYRF3HGYgnOpa3yF9NOMXysw@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h89kkjnk.fsf@netronome.com>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 09:20:15PM +0100, Jiong Wang wrote:
-> 
-> Alexei Starovoitov writes:
-> 
-> <snip>
-> 
-> > well, it made me realize that we're probably doing it wrong,
-> > since after calling check_reg_arg() we need to re-parse insn encoding.
-> > How about we change check_reg_arg()'s enum reg_arg_type instead?
-> 
-> This is exactly what I had implemented in my initial internal version.
-
-it was long ago :) shrinkers purged it.
-
-> > The caller has much more context and no need to parse insn opcode again.
-> 
-> And I had exactly the same thoughts, is_reg64 is duplicating what has been
-> done.
-> 
-> The code evolved into the current shape mostly because I agreed if we
-> re-centre all checks inside check_reg_arg, then we don't need to touch
-> quite a few call sites of check_reg_arg, the change/patch looks simpler,
-> and I was thinking is_reg64 is a quick check, so the overhead is not big.
-> 
-> > Something like:
-> > enum reg_arg_type {
-> >         SRC_OP64,        
-> >         DST_OP64,       
-> >         DST_OP_NO_MARK, // probably no need to split this one ?
-> >         SRC_OP32,      
-> >         DST_OP32,      
-> > };
+On Thu, 23 May 2019 09:20:52 -0700, Andrii Nakryiko wrote:
+> On Thu, May 23, 2019 at 3:54 AM Quentin Monnet wrote:
 > >
+> > libbpf has three levels of priority for output messages: warn, info,
+> > debug. By default, debug output is not printed to the console.
+> >
+> > Add a new "--debug" (short name: "-d") option to bpftool to print libbpf
+> > logs for all three levels.
+> >
+> > Internally, we simply use the function provided by libbpf to replace the
+> > default printing function by one that prints logs regardless of their
+> > level.
+> >
+> > v2:
+> > - Remove the possibility to select the log-levels to use (v1 offered a
+> >   combination of "warn", "info" and "debug").
+> > - Rename option and offer a short name: -d|--debug.  
 > 
-> Yeah, no need to split DST_OP_NO_MARK, my split was
+> Such and option in CLI tools is usually called -v|--verbose, I'm
+> wondering if it might be a better name choice?
 > 
-> enum reg_arg_type {
->    SRC_OP,
-> +  SRC32_OP,
->    DST_OP,
-> +  DST32_OP,
->    DST_OP_NO_MARK 
-> }
-> 
-> No renaming on existing SRC/DST_OP, they mean 64-bit, the changes are
-> smaller, looks better?
-> 
-> But, we also need to know whether one patch-insn define sub-register, if it
-> is, we then conservatively mark it as needing zero extension. patch-insn
-> doesn't go through check_reg_arg analysis, so still need separate insn
-> parsing.
+> Btw, some tools also use -v, -vv and -vvv to define different levels
+> of verbosity, which is something we can consider in the future, as
+> it's backwards compatible.
 
-Good point.
-Then let's stick with your last is_reg64().
-Re-parsing is annoying, but looks like there is already use case for it
-and more can appear in the future.
-
+That was my weak suggestion.  Sometimes -v is used for version, e.g.
+GCC.  -d is sometimes used for debug, e.g. man, iproute2 uses it as
+short for "detailed".  If the consensus is that -v is better I don't
+really mind.
