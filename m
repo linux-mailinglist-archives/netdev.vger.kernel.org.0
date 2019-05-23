@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A5A727B1D
+	by mail.lfdr.de (Postfix) with ESMTP id 9E64A27B1E
 	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 12:54:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729949AbfEWKyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 06:54:38 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:33033 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726429AbfEWKyi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 06:54:38 -0400
-Received: by mail-wm1-f66.google.com with SMTP id c66so6823674wme.0
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 03:54:37 -0700 (PDT)
+        id S1730260AbfEWKyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 06:54:39 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44764 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729430AbfEWKyj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 06:54:39 -0400
+Received: by mail-wr1-f65.google.com with SMTP id w13so5723343wru.11
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 03:54:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=jWt3hCSKOekJDy2apI7w+4w9KiWdv4oJSw1MUBdXSeA=;
-        b=L5ZV8Q/xja2Oi+RYlFhiWPdqSnBPMmKFS116YfOkoCAs2HXijfMPhU4nUvgL2ndeDa
-         /32vuiKqYMu7mL8bdYIM8xGbfjiHhvFn3QB8ihf60pWb8N+IAQUXFL3KEePcs1tOljrJ
-         qQAubW6o0odIInKCZ6yaFBV9WDrGBU5NF3VOqnTdhAO4YTg5VfD/e3GkF5gxxSx/PP5M
-         qsIXFGE26/A0qPOOHQ6TXIhHZ534dDmKaxjBxUpxQTCK/ueoUrJaRDLOxP6Jem5IsCf7
-         fUztCjFjogVOCx+yb8F7KzhUJ8g9DCDJxfczQ2FxD+Yfb4ExMqyovRvAXPcCE8Rr3a0k
-         MdeA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=OTSFjqFNx6AklxBnrgr6pYSauz+rBQwYZ3SCLe2/oOg=;
+        b=LtCdmPXUehMZlySVtVcnKrdKII6p/uXHF7dwVFkwaPah2Y1myfXi/40/LD7vASJ+Xj
+         0EpQXuuz67yreTLejQkbWXytMGUZNOvaxkC1T6mvDx1SwS9h4xrMr83WZZRWw9zGeqEb
+         9yKA4+GOLoohKDvbdsnBtaX93sERj/n6hgl7VzpSMvkNPpWfRPuKNVTqMmD7NgquP1+n
+         5jhKECdfqKtx0py76u8KgaK8WYH/CGgc4gcJqgIGolIkZO+Lyz71402QVLIpEFibpxZ6
+         CaBGBjQo+ZDexjeY4ufs3DpIoMWcV5iXJPc4yL1plekUAtBfJZa5988d8IRW3+8D4oNv
+         G1qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=jWt3hCSKOekJDy2apI7w+4w9KiWdv4oJSw1MUBdXSeA=;
-        b=qaj8zG+oh82mqOVAUpDa0t7FdIJzjaczrzqSZpy+TR2iMK1vopstOGipO6Vqam8ioe
-         0tu1Yfex0ue/f9yrIX85xZ6fgW8UFIm5IcHUBUXOHQjQXdOnwfQp+RNtdqpJv7j+L8aT
-         cDewiKmbeARCVTzfn4KL1nWANkuw7zPkT1EwUihEE/ZrQmiNVnJFuuz6dLI8Kapbt8fM
-         42uFVpqU71RCmtvzfKbTyJ9pe+L5PJhzvwniMlOdpYZEkY3G1rzBIXOmOrw5a7bVk3GS
-         ee6DuqnESFiekvBY7625iuOvpo+6/sipc8W/6UiAib+FfcOC3phld6tw714PHkb8Y0dZ
-         91Ow==
-X-Gm-Message-State: APjAAAXF51/uu/peeSTuY9yER2Um4g5fbRw4To9Lo0pR5bJUl+0Dr1BD
-        gQrqigOCa0qkg97YxJZf7HNJZw==
-X-Google-Smtp-Source: APXvYqxrn2TAh2M6OFwBWYQCzCftF1+jzFM2PfgugeC0sFgL6vUSOUI823lttwuKgxLLT2tsEmImyA==
-X-Received: by 2002:a1c:4107:: with SMTP id o7mr11530574wma.122.1558608876366;
-        Thu, 23 May 2019 03:54:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=OTSFjqFNx6AklxBnrgr6pYSauz+rBQwYZ3SCLe2/oOg=;
+        b=KUzgKCGErvbRXnCp0HWPcBMYQo6scWcndUH317fNKyOvTUKtAgyd4XrueQs7iDYbLn
+         /nRRYBBqvkgxw+PbasBMXZJDiJf8XvmOYiyz4hbga6fi08Oycrm0EizwjRORiUjK9lXl
+         Uby+2JSGuk59Y8tcJwt4JCsu80/Fx8ODBWCrWCAQlXNj3da3W4Ld2l1ZRRpHpaOKI5xg
+         /T9cidjsTDHcnOZJjZNaeiwfhzdrAZdrsrKNCvLLPd0tpks/k2cSQhHCQwURhwrhZG9n
+         tslO68G+UKDsqMmf1IceL51eXLdabxfrVbAjN661enQYmbd2asE30bHCYlx+jjZSoV1G
+         3aCw==
+X-Gm-Message-State: APjAAAVOBQjSmt2R5G9YS9RyKfZKxE87y9cxs8eHy03GEdHwijG68gq4
+        5ormtoZzo4w12MetSf1FNuPW+w==
+X-Google-Smtp-Source: APXvYqy/S7zfS3astr8UHOWiojz4BTRBI/jtmAMWpsNyh38j2ud5o540sNGJ/tkA1TAWdR4idGMsjg==
+X-Received: by 2002:a5d:4004:: with SMTP id n4mr3290518wrp.240.1558608877682;
+        Thu, 23 May 2019 03:54:37 -0700 (PDT)
 Received: from cbtest32.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id p8sm21285740wro.0.2019.05.23.03.54.35
+        by smtp.gmail.com with ESMTPSA id p8sm21285740wro.0.2019.05.23.03.54.36
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 03:54:35 -0700 (PDT)
+        Thu, 23 May 2019 03:54:36 -0700 (PDT)
 From:   Quentin Monnet <quentin.monnet@netronome.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -49,63 +50,234 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         oss-drivers@netronome.com,
         Quentin Monnet <quentin.monnet@netronome.com>,
         Yonghong Song <yhs@fb.com>
-Subject: [PATCH bpf-next v2 0/3] tools: bpftool: add an option for debug output from libbpf and verifier
-Date:   Thu, 23 May 2019 11:54:23 +0100
-Message-Id: <20190523105426.3938-1-quentin.monnet@netronome.com>
+Subject: [PATCH bpf-next v2 1/3] tools: bpftool: add -d option to get debug output from libbpf
+Date:   Thu, 23 May 2019 11:54:24 +0100
+Message-Id: <20190523105426.3938-2-quentin.monnet@netronome.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190523105426.3938-1-quentin.monnet@netronome.com>
+References: <20190523105426.3938-1-quentin.monnet@netronome.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-This series adds an option to bpftool to make it print additional
-information via libbpf and the kernel verifier when attempting to load
-programs.
+libbpf has three levels of priority for output messages: warn, info,
+debug. By default, debug output is not printed to the console.
 
-A new API function is added to libbpf in order to pass the log_level from
-bpftool with the bpf_object__* part of the API.
+Add a new "--debug" (short name: "-d") option to bpftool to print libbpf
+logs for all three levels.
 
-Options for a finer control over the log levels to use for libbpf and the
-verifier could be added in the future, if desired.
+Internally, we simply use the function provided by libbpf to replace the
+default printing function by one that prints logs regardless of their
+level.
 
 v2:
-- Do not add distinct options for libbpf and verifier logs, just keep the
-  one that sets all log levels to their maximum. Rename the option.
-- Do not offer a way to pick desired log levels. The choice is "use the
-  option to print all logs" or "stick with the defaults".
-- Do not export BPF_LOG_* flags to user header.
-- Update all man pages (most bpftool operations use libbpf and may print
-  libbpf logs). Verifier logs are only used when attempting to load
-  programs for now, so bpftool-prog.rst and bpftool.rst remain the only
-  pages updated in that regard.
+- Remove the possibility to select the log-levels to use (v1 offered a
+  combination of "warn", "info" and "debug").
+- Rename option and offer a short name: -d|--debug.
+- Add option description to all bpftool manual pages (instead of
+  bpftool-prog.rst only), as all commands use libbpf.
 
-Previous discussion available at:
-https://lore.kernel.org/bpf/20190429095227.9745-1-quentin.monnet@netronome.com/
+Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+---
+ tools/bpf/bpftool/Documentation/bpftool-btf.rst    |  4 ++++
+ tools/bpf/bpftool/Documentation/bpftool-cgroup.rst |  4 ++++
+ .../bpf/bpftool/Documentation/bpftool-feature.rst  |  4 ++++
+ tools/bpf/bpftool/Documentation/bpftool-map.rst    |  4 ++++
+ tools/bpf/bpftool/Documentation/bpftool-net.rst    |  4 ++++
+ tools/bpf/bpftool/Documentation/bpftool-perf.rst   |  4 ++++
+ tools/bpf/bpftool/Documentation/bpftool-prog.rst   |  4 ++++
+ tools/bpf/bpftool/Documentation/bpftool.rst        |  3 +++
+ tools/bpf/bpftool/bash-completion/bpftool          |  2 +-
+ tools/bpf/bpftool/main.c                           | 14 +++++++++++++-
+ 10 files changed, 45 insertions(+), 2 deletions(-)
 
-Quentin Monnet (3):
-  tools: bpftool: add -d option to get debug output from libbpf
-  libbpf: add bpf_object__load_xattr() API function to pass log_level
-  tools: bpftool: make -d option print debug output from verifier
-
- .../bpf/bpftool/Documentation/bpftool-btf.rst |  4 +++
- .../bpftool/Documentation/bpftool-cgroup.rst  |  4 +++
- .../bpftool/Documentation/bpftool-feature.rst |  4 +++
- .../bpf/bpftool/Documentation/bpftool-map.rst |  4 +++
- .../bpf/bpftool/Documentation/bpftool-net.rst |  4 +++
- .../bpftool/Documentation/bpftool-perf.rst    |  4 +++
- .../bpftool/Documentation/bpftool-prog.rst    |  5 ++++
- tools/bpf/bpftool/Documentation/bpftool.rst   |  4 +++
- tools/bpf/bpftool/bash-completion/bpftool     |  2 +-
- tools/bpf/bpftool/main.c                      | 16 ++++++++++-
- tools/bpf/bpftool/main.h                      |  1 +
- tools/bpf/bpftool/prog.c                      | 27 ++++++++++++-------
- tools/lib/bpf/Makefile                        |  2 +-
- tools/lib/bpf/libbpf.c                        | 20 +++++++++++---
- tools/lib/bpf/libbpf.h                        |  6 +++++
- tools/lib/bpf/libbpf.map                      |  5 ++++
- 16 files changed, 96 insertions(+), 16 deletions(-)
-
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-btf.rst b/tools/bpf/bpftool/Documentation/bpftool-btf.rst
+index 2dbc1413fabd..00668df1bf7a 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-btf.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-btf.rst
+@@ -67,6 +67,10 @@ OPTIONS
+ 	-p, --pretty
+ 		  Generate human-readable JSON output. Implies **-j**.
+ 
++	-d, --debug
++		  Print all logs available from libbpf, including debug-level
++		  information.
++
+ EXAMPLES
+ ========
+ **# bpftool btf dump id 1226**
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
+index ac26876389c2..36807735e2a5 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
+@@ -113,6 +113,10 @@ OPTIONS
+ 	-f, --bpffs
+ 		  Show file names of pinned programs.
+ 
++	-d, --debug
++		  Print all logs available from libbpf, including debug-level
++		  information.
++
+ EXAMPLES
+ ========
+ |
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-feature.rst b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
+index 14180e887082..4d08f35034a2 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-feature.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
+@@ -73,6 +73,10 @@ OPTIONS
+ 	-p, --pretty
+ 		  Generate human-readable JSON output. Implies **-j**.
+ 
++	-d, --debug
++		  Print all logs available from libbpf, including debug-level
++		  information.
++
+ SEE ALSO
+ ========
+ 	**bpf**\ (2),
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-map.rst b/tools/bpf/bpftool/Documentation/bpftool-map.rst
+index 13ef27b39f20..490b4501cb6e 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-map.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-map.rst
+@@ -152,6 +152,10 @@ OPTIONS
+ 		  Do not automatically attempt to mount any virtual file system
+ 		  (such as tracefs or BPF virtual file system) when necessary.
+ 
++	-d, --debug
++		  Print all logs available from libbpf, including debug-level
++		  information.
++
+ EXAMPLES
+ ========
+ **# bpftool map show**
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-net.rst b/tools/bpf/bpftool/Documentation/bpftool-net.rst
+index 934580850f42..d8e5237a2085 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-net.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-net.rst
+@@ -65,6 +65,10 @@ OPTIONS
+ 	-p, --pretty
+ 		  Generate human-readable JSON output. Implies **-j**.
+ 
++	-d, --debug
++		  Print all logs available from libbpf, including debug-level
++		  information.
++
+ EXAMPLES
+ ========
+ 
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-perf.rst b/tools/bpf/bpftool/Documentation/bpftool-perf.rst
+index 0c7576523a21..e252bd0bc434 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-perf.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-perf.rst
+@@ -53,6 +53,10 @@ OPTIONS
+ 	-p, --pretty
+ 		  Generate human-readable JSON output. Implies **-j**.
+ 
++	-d, --debug
++		  Print all logs available from libbpf, including debug-level
++		  information.
++
+ EXAMPLES
+ ========
+ 
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+index e8118544d118..9a92614569e6 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+@@ -174,6 +174,10 @@ OPTIONS
+ 		  Do not automatically attempt to mount any virtual file system
+ 		  (such as tracefs or BPF virtual file system) when necessary.
+ 
++	-d, --debug
++		  Print all logs available from libbpf, including debug-level
++		  information.
++
+ EXAMPLES
+ ========
+ **# bpftool prog show**
+diff --git a/tools/bpf/bpftool/Documentation/bpftool.rst b/tools/bpf/bpftool/Documentation/bpftool.rst
+index 3e562d7fd56f..43dba0717953 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool.rst
+@@ -66,6 +66,9 @@ OPTIONS
+ 		  Do not automatically attempt to mount any virtual file system
+ 		  (such as tracefs or BPF virtual file system) when necessary.
+ 
++	-d, --debug
++		  Print all logs available from libbpf, including debug-level
++		  information.
+ 
+ SEE ALSO
+ ========
+diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+index 50e402a5a9c8..3a476e25d046 100644
+--- a/tools/bpf/bpftool/bash-completion/bpftool
++++ b/tools/bpf/bpftool/bash-completion/bpftool
+@@ -181,7 +181,7 @@ _bpftool()
+ 
+     # Deal with options
+     if [[ ${words[cword]} == -* ]]; then
+-        local c='--version --json --pretty --bpffs --mapcompat'
++        local c='--version --json --pretty --bpffs --mapcompat --debug'
+         COMPREPLY=( $( compgen -W "$c" -- "$cur" ) )
+         return 0
+     fi
+diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
+index 1ac1fc520e6a..d74293938a05 100644
+--- a/tools/bpf/bpftool/main.c
++++ b/tools/bpf/bpftool/main.c
+@@ -10,6 +10,7 @@
+ #include <string.h>
+ 
+ #include <bpf.h>
++#include <libbpf.h>
+ 
+ #include "main.h"
+ 
+@@ -77,6 +78,13 @@ static int do_version(int argc, char **argv)
+ 	return 0;
+ }
+ 
++static int __printf(2, 0)
++print_all_levels(__maybe_unused enum libbpf_print_level level,
++		 const char *format, va_list args)
++{
++	return vfprintf(stderr, format, args);
++}
++
+ int cmd_select(const struct cmd *cmds, int argc, char **argv,
+ 	       int (*help)(int argc, char **argv))
+ {
+@@ -317,6 +325,7 @@ int main(int argc, char **argv)
+ 		{ "bpffs",	no_argument,	NULL,	'f' },
+ 		{ "mapcompat",	no_argument,	NULL,	'm' },
+ 		{ "nomount",	no_argument,	NULL,	'n' },
++		{ "debug",	no_argument,	NULL,	'd' },
+ 		{ 0 }
+ 	};
+ 	int opt, ret;
+@@ -332,7 +341,7 @@ int main(int argc, char **argv)
+ 	hash_init(map_table.table);
+ 
+ 	opterr = 0;
+-	while ((opt = getopt_long(argc, argv, "Vhpjfmn",
++	while ((opt = getopt_long(argc, argv, "Vhpjfmnd",
+ 				  options, NULL)) >= 0) {
+ 		switch (opt) {
+ 		case 'V':
+@@ -362,6 +371,9 @@ int main(int argc, char **argv)
+ 		case 'n':
+ 			block_mount = true;
+ 			break;
++		case 'd':
++			libbpf_set_print(print_all_levels);
++			break;
+ 		default:
+ 			p_err("unrecognized option '%s'", argv[optind - 1]);
+ 			if (json_output)
 -- 
 2.17.1
 
