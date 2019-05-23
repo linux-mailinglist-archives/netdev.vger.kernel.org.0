@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E81BE28CA4
+	by mail.lfdr.de (Postfix) with ESMTP id 4D9CE28CA3
 	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 23:48:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388398AbfEWVsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 17:48:08 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:51710 "EHLO
+        id S2388357AbfEWVsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 17:48:07 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:51700 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388335AbfEWVsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 17:48:08 -0400
+        by vger.kernel.org with ESMTP id S2388145AbfEWVsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 17:48:07 -0400
 Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4NLm1QB016495
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 14:48:07 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4NLm1Q9016495
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 14:48:06 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=Bi9Mn61+4n9xVTAhzeOUaTg2ujYDpOLQ8R/WnJq6Jj4=;
- b=bSSWdgxvT/NrLQ0GcyjHsRJGhhIb3UYpPmAQufYFiOTO53d+2GiStcQU8vxuzAFTF6ZN
- QVbfCignX+Q4S45+ZzLH9neAk/9SqOCf91LNsWqXBMWNZ0OYCk/EFn5QRnaEXcTX/rqH
- 2eZ7WD1pMxvbhBfNky+aJS80+JI3WFNGL48= 
+ content-type; s=facebook; bh=yizt9Q8A7z7jj7ZW+/YVO2cjHv2FKFea4Krnba4IR58=;
+ b=i/EHbLS6wB23hV6TxbxGtlOiaJjp4iE9pVb7aGmUlCpeM1K96GM/SuCUuiwjTpTcQG3+
+ BW+0LORPtGdrKnbAQ7l9KHBesbzANyJCtfUDzcWvwlj7NMib64eR4CCSOMhxeYpvXlNX
+ ZwHT7M5FnFb6lLEjtlyG2pz5GhD9h3ydkL0= 
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2snx7s99k1-14
+        by mx0a-00082601.pphosted.com with ESMTP id 2snx7s99k1-12
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 14:48:07 -0700
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 14:48:06 -0700
 Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
  mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
  Thu, 23 May 2019 14:47:48 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id A24273701F86; Thu, 23 May 2019 14:47:46 -0700 (PDT)
+        id CFA413701F86; Thu, 23 May 2019 14:47:47 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Yonghong Song <yhs@fb.com>
 Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@fb.com>,
         Peter Zijlstra <peterz@infradead.org>,
         Yonghong Song <yhs@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v5 2/3] tools/bpf: sync bpf uapi header bpf.h to tools directory
-Date:   Thu, 23 May 2019 14:47:46 -0700
-Message-ID: <20190523214746.854484-1-yhs@fb.com>
+Subject: [PATCH bpf-next v5 3/3] tools/bpf: add selftest in test_progs for bpf_send_signal() helper
+Date:   Thu, 23 May 2019 14:47:47 -0700
+Message-ID: <20190523214747.854607-1-yhs@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190523214745.854300-1-yhs@fb.com>
 References: <20190523214745.854300-1-yhs@fb.com>
@@ -53,7 +53,7 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
  malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=950 adultscore=0 classifier=spam adjust=0 reason=mlx
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1810050000 definitions=main-1905230139
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -61,50 +61,300 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpf uapi header include/uapi/linux/bpf.h is sync'ed
-to tools/include/uapi/linux/bpf.h.
+The test covered both nmi and tracepoint perf events.
+  $ ./test_progs
+  ...
+  test_send_signal_tracepoint:PASS:tracepoint 0 nsec
+  ...
+  test_send_signal_common:PASS:tracepoint 0 nsec
+  ...
+  test_send_signal_common:PASS:perf_event 0 nsec
+  ...
+  test_send_signal:OK
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- tools/include/uapi/linux/bpf.h | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/bpf_helpers.h     |   1 +
+ .../selftests/bpf/prog_tests/send_signal.c    | 198 ++++++++++++++++++
+ .../bpf/progs/test_send_signal_kern.c         |  51 +++++
+ 3 files changed, 250 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/send_signal.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_send_signal_kern.c
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 63e0cf66f01a..68d4470523a0 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2672,6 +2672,20 @@ union bpf_attr {
-  *		0 on success.
-  *
-  *		**-ENOENT** if the bpf-local-storage cannot be found.
-+ *
-+ * int bpf_send_signal(u32 sig)
-+ *	Description
-+ *		Send signal *sig* to the current task.
-+ *	Return
-+ *		0 on success or successfully queued.
-+ *
-+ *		**-EBUSY** if work queue under nmi is full.
-+ *
-+ *		**-EINVAL** if *sig* is invalid.
-+ *
-+ *		**-EPERM** if no permission to send the *sig*.
-+ *
-+ *		**-EAGAIN** if bpf program can try again.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2782,7 +2796,8 @@ union bpf_attr {
- 	FN(strtol),			\
- 	FN(strtoul),			\
- 	FN(sk_storage_get),		\
--	FN(sk_storage_delete),
-+	FN(sk_storage_delete),		\
-+	FN(send_signal),
+diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
+index 5f6f9e7aba2a..cb02521b8e58 100644
+--- a/tools/testing/selftests/bpf/bpf_helpers.h
++++ b/tools/testing/selftests/bpf/bpf_helpers.h
+@@ -216,6 +216,7 @@ static void *(*bpf_sk_storage_get)(void *map, struct bpf_sock *sk,
+ 	(void *) BPF_FUNC_sk_storage_get;
+ static int (*bpf_sk_storage_delete)(void *map, struct bpf_sock *sk) =
+ 	(void *)BPF_FUNC_sk_storage_delete;
++static int (*bpf_send_signal)(unsigned sig) = (void *)BPF_FUNC_send_signal;
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
+ /* llvm builtin functions that eBPF C program may use to
+  * emit BPF_LD_ABS and BPF_LD_IND instructions
+diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+new file mode 100644
+index 000000000000..67cea1686305
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+@@ -0,0 +1,198 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++
++static volatile int sigusr1_received = 0;
++
++static void sigusr1_handler(int signum)
++{
++	sigusr1_received++;
++}
++
++static int test_send_signal_common(struct perf_event_attr *attr,
++				    int prog_type,
++				    const char *test_name)
++{
++	int err = -1, pmu_fd, prog_fd, info_map_fd, status_map_fd;
++	const char *file = "./test_send_signal_kern.o";
++	struct bpf_object *obj = NULL;
++	int pipe_c2p[2], pipe_p2c[2];
++	__u32 key = 0, duration = 0;
++	char buf[256];
++	pid_t pid;
++	__u64 val;
++
++	if (CHECK(pipe(pipe_c2p), test_name,
++		  "pipe pipe_c2p error: %s\n", strerror(errno)))
++		goto no_fork_done;
++
++	if (CHECK(pipe(pipe_p2c), test_name,
++		  "pipe pipe_p2c error: %s\n", strerror(errno))) {
++		close(pipe_c2p[0]);
++		close(pipe_c2p[1]);
++		goto no_fork_done;
++	}
++
++	pid = fork();
++	if (CHECK(pid < 0, test_name, "fork error: %s\n", strerror(errno))) {
++		close(pipe_c2p[0]);
++		close(pipe_c2p[1]);
++		close(pipe_p2c[0]);
++		close(pipe_p2c[1]);
++		goto no_fork_done;
++	}
++
++	if (pid == 0) {
++		/* install signal handler and notify parent */
++		signal(SIGUSR1, sigusr1_handler);
++
++		close(pipe_c2p[0]); /* close read */
++		close(pipe_p2c[1]); /* close write */
++
++		/* notify parent signal handler is installed */
++		write(pipe_c2p[1], buf, 1);
++
++		/* make sure parent enabled bpf program to send_signal */
++		read(pipe_p2c[0], buf, 1);
++
++		/* wait a little for signal handler */
++		sleep(1);
++
++		if (sigusr1_received)
++			write(pipe_c2p[1], "2", 1);
++		else
++			write(pipe_c2p[1], "0", 1);
++
++		/* wait for parent notification and exit */
++		read(pipe_p2c[0], buf, 1);
++
++		close(pipe_c2p[1]);
++		close(pipe_p2c[0]);
++		exit(0);
++	}
++
++	close(pipe_c2p[1]); /* close write */
++	close(pipe_p2c[0]); /* close read */
++
++	err = bpf_prog_load(file, prog_type, &obj, &prog_fd);
++	if (CHECK(err < 0, test_name, "bpf_prog_load error: %s\n",
++		  strerror(errno)))
++		goto prog_load_failure;
++
++	pmu_fd = syscall(__NR_perf_event_open, attr, pid, -1,
++			 -1 /* group id */, 0 /* flags */);
++	if (CHECK(pmu_fd < 0, test_name, "perf_event_open error: %s\n",
++		  strerror(errno))) {
++		err = -1;
++		goto close_prog;
++	}
++
++	err = ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE, 0);
++	if (CHECK(err < 0, test_name, "ioctl perf_event_ioc_enable error: %s\n",
++		  strerror(errno)))
++		goto disable_pmu;
++
++	err = ioctl(pmu_fd, PERF_EVENT_IOC_SET_BPF, prog_fd);
++	if (CHECK(err < 0, test_name, "ioctl perf_event_ioc_set_bpf error: %s\n",
++		  strerror(errno)))
++		goto disable_pmu;
++
++	err = -1;
++	info_map_fd = bpf_object__find_map_fd_by_name(obj, "info_map");
++	if (CHECK(info_map_fd < 0, test_name, "find map %s error\n", "info_map"))
++		goto disable_pmu;
++
++	status_map_fd = bpf_object__find_map_fd_by_name(obj, "status_map");
++	if (CHECK(status_map_fd < 0, test_name, "find map %s error\n", "status_map"))
++		goto disable_pmu;
++
++	/* wait until child signal handler installed */
++	read(pipe_c2p[0], buf, 1);
++
++	/* trigger the bpf send_signal */
++	key = 0;
++	val = (((__u64)(SIGUSR1)) << 32) | pid;
++	bpf_map_update_elem(info_map_fd, &key, &val, 0);
++
++	/* notify child that bpf program can send_signal now */
++	write(pipe_p2c[1], buf, 1);
++
++	/* wait for result */
++	err = read(pipe_c2p[0], buf, 1);
++	if (CHECK(err < 0, test_name, "reading pipe error: %s\n", strerror(errno)))
++		goto disable_pmu;
++	if (CHECK(err == 0, test_name, "reading pipe error: size 0\n")) {
++		err = -1;
++		goto disable_pmu;
++	}
++
++	err = CHECK(buf[0] != '2', test_name, "incorrect result\n");
++
++	/* notify child safe to exit */
++	write(pipe_p2c[1], buf, 1);
++
++disable_pmu:
++	close(pmu_fd);
++close_prog:
++	bpf_object__close(obj);
++prog_load_failure:
++	close(pipe_c2p[0]);
++	close(pipe_p2c[1]);
++	wait(NULL);
++no_fork_done:
++	return err;
++}
++
++static int test_send_signal_tracepoint(void)
++{
++	const char *id_path = "/sys/kernel/debug/tracing/events/syscalls/sys_enter_nanosleep/id";
++	struct perf_event_attr attr = {
++		.type = PERF_TYPE_TRACEPOINT,
++		.sample_type = PERF_SAMPLE_RAW | PERF_SAMPLE_CALLCHAIN,
++		.sample_period = 1,
++		.wakeup_events = 1,
++	};
++	__u32 duration = 0;
++	int bytes, efd;
++	char buf[256];
++
++	efd = open(id_path, O_RDONLY, 0);
++	if (CHECK(efd < 0, "tracepoint",
++		  "open syscalls/sys_enter_nanosleep/id failure: %s\n",
++		  strerror(errno)))
++		return -1;
++
++	bytes = read(efd, buf, sizeof(buf));
++	close(efd);
++	if (CHECK(bytes <= 0 || bytes >= sizeof(buf), "tracepoint",
++		  "read syscalls/sys_enter_nanosleep/id failure: %s\n",
++		  strerror(errno)))
++		return -1;
++
++	attr.config = strtol(buf, NULL, 0);
++
++	return test_send_signal_common(&attr, BPF_PROG_TYPE_TRACEPOINT, "tracepoint");
++}
++
++static int test_send_signal_nmi(void)
++{
++	struct perf_event_attr attr = {
++		.sample_freq = 50,
++		.freq = 1,
++		.type = PERF_TYPE_HARDWARE,
++		.config = PERF_COUNT_HW_CPU_CYCLES,
++	};
++
++	return test_send_signal_common(&attr, BPF_PROG_TYPE_PERF_EVENT, "perf_event");
++}
++
++void test_send_signal(void)
++{
++	int ret = 0;
++
++	ret |= test_send_signal_tracepoint();
++	ret |= test_send_signal_nmi();
++	if (!ret)
++		printf("test_send_signal:OK\n");
++	else
++		printf("test_send_signal:FAIL\n");
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_send_signal_kern.c b/tools/testing/selftests/bpf/progs/test_send_signal_kern.c
+new file mode 100644
+index 000000000000..45a1a1a2c345
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_send_signal_kern.c
+@@ -0,0 +1,51 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2019 Facebook
++#include <linux/bpf.h>
++#include <linux/version.h>
++#include "bpf_helpers.h"
++
++struct bpf_map_def SEC("maps") info_map = {
++	.type = BPF_MAP_TYPE_ARRAY,
++	.key_size = sizeof(__u32),
++	.value_size = sizeof(__u64),
++	.max_entries = 1,
++};
++
++BPF_ANNOTATE_KV_PAIR(info_map, __u32, __u64);
++
++struct bpf_map_def SEC("maps") status_map = {
++	.type = BPF_MAP_TYPE_ARRAY,
++	.key_size = sizeof(__u32),
++	.value_size = sizeof(__u64),
++	.max_entries = 1,
++};
++
++BPF_ANNOTATE_KV_PAIR(status_map, __u32, __u64);
++
++SEC("send_signal_demo")
++int bpf_send_signal_test(void *ctx)
++{
++	__u64 *info_val, *status_val;
++	__u32 key = 0, pid, sig;
++	int ret;
++
++	status_val = bpf_map_lookup_elem(&status_map, &key);
++	if (!status_val || *status_val != 0)
++		return 0;
++
++	info_val = bpf_map_lookup_elem(&info_map, &key);
++	if (!info_val || *info_val == 0)
++		return 0;
++
++	sig = *info_val >> 32;
++	pid = *info_val & 0xffffFFFF;
++
++	if ((bpf_get_current_pid_tgid() >> 32) == pid) {
++		ret = bpf_send_signal(sig);
++		if (ret == 0)
++			*status_val = 1;
++	}
++
++	return 0;
++}
++char __license[] SEC("license") = "GPL";
 -- 
 2.17.1
 
