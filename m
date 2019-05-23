@@ -2,155 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1700828B36
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:02:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41FD828B40
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387705AbfEWUCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 16:02:05 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:50449 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387414AbfEWUCF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:02:05 -0400
-X-Originating-IP: 90.89.68.76
-Received: from localhost (lfbn-1-10718-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 6398FC0006;
-        Thu, 23 May 2019 20:01:53 +0000 (UTC)
-Date:   Thu, 23 May 2019 22:01:52 +0200
-From:   Maxime Ripard <maxime.ripard@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>, devicetree@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 2/8] dt-bindings: net: Add a YAML schemas for the generic
- PHY options
-Message-ID: <20190523200152.c2sz6mrzxgblslya@flea>
-References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
- <aa5ec90854429c2d9e2c565604243e1b10cfd94b.1558605170.git-series.maxime.ripard@bootlin.com>
- <20190523143744.GB19369@lunn.ch>
+        id S2387636AbfEWUGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 16:06:21 -0400
+Received: from bonobo.maple.relay.mailchannels.net ([23.83.214.22]:46413 "EHLO
+        bonobo.maple.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387504AbfEWUGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:06:21 -0400
+X-Sender-Id: dreamhost|x-authsender|wcarlson@wkks.org
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 8BE962C31BE;
+        Thu, 23 May 2019 20:06:15 +0000 (UTC)
+Received: from pdx1-sub0-mail-a91.g.dreamhost.com (100-96-91-22.trex.outbound.svc.cluster.local [100.96.91.22])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id D331F2C28DF;
+        Thu, 23 May 2019 20:06:14 +0000 (UTC)
+X-Sender-Id: dreamhost|x-authsender|wcarlson@wkks.org
+Received: from pdx1-sub0-mail-a91.g.dreamhost.com ([TEMPUNAVAIL].
+ [64.90.62.162])
+        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384)
+        by 0.0.0.0:2500 (trex/5.17.2);
+        Thu, 23 May 2019 20:06:15 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|wcarlson@wkks.org
+X-MailChannels-Auth-Id: dreamhost
+X-Attack-Tank: 08baf4fb6a121ff5_1558641975415_3380961848
+X-MC-Loop-Signature: 1558641975415:3564474585
+X-MC-Ingress-Time: 1558641975414
+Received: from pdx1-sub0-mail-a91.g.dreamhost.com (localhost [127.0.0.1])
+        by pdx1-sub0-mail-a91.g.dreamhost.com (Postfix) with ESMTP id C3E2680251;
+        Thu, 23 May 2019 13:06:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=wkks.org; h=reply-to
+        :subject:to:cc:references:from:message-id:date:mime-version
+        :in-reply-to:content-type:content-transfer-encoding; s=wkks.org;
+         bh=xxJ5kwn95N82L1Dg5g1mjMY7u9U=; b=NuTVLviWA29Chv7qTFUsFCQ1RXZQ
+        nPEwK5mj4BMvw8J68e6Z45Wg15k3iRvAGG9lh8KKNLztiL/+sQaAcIrLMLKpgAnf
+        /36qYQJO78mgxTNu9DC1Il0MBeK7H2INstp3xlI/422rT8Cisb4Q7drIEdfri+ep
+        en6lXWSDhkBKnIY=
+Received: from blade.c.c (173-21-244-129.client.mchsi.com [173.21.244.129])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: wcarlson@wkks.org)
+        by pdx1-sub0-mail-a91.g.dreamhost.com (Postfix) with ESMTPSA id 1FECC8024E;
+        Thu, 23 May 2019 13:06:12 -0700 (PDT)
+Reply-To: billcarlson@wkks.org
+Subject: Re: bonding-devel mail list?
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <3428f1e4-e9e9-49c6-8ca8-1ea5e9fdd7ed@wkks.org>
+ <18472.1558629973@famine>
+X-DH-BACKEND: pdx1-sub0-mail-a91
+From:   Bill Carlson <billcarlson@wkks.org>
+Message-ID: <ec7a86ec-56e0-7846-ed02-337850fc8478@wkks.org>
+Date:   Thu, 23 May 2019 15:06:11 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190523143744.GB19369@lunn.ch>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <18472.1558629973@famine>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-VR-OUT-STATUS: OK
+X-VR-OUT-SCORE: -100
+X-VR-OUT-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduuddruddugedgudeglecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucggtfgfnhhsuhgsshgtrhhisggvpdfftffgtefojffquffvnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpehruffvfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomhepuehilhhlucevrghrlhhsohhnuceosghilhhltggrrhhlshhonhesfihkkhhsrdhorhhgqeenucfkphepudejfedrvddurddvgeegrdduvdelnecurfgrrhgrmhepmhhouggvpehsmhhtphdphhgvlhhopegslhgruggvrdgtrdgtpdhinhgvthepudejfedrvddurddvgeegrdduvdelpdhrvghtuhhrnhdqphgrthhhpeeuihhllhcuvegrrhhlshhonhcuoegsihhllhgtrghrlhhsohhnseifkhhkshdrohhrgheqpdhmrghilhhfrhhomhepsghilhhltggrrhhlshhonhesfihkkhhsrdhorhhgpdhnrhgtphhtthhopehjrgihrdhvohhssghurhhghhestggrnhhonhhitggrlhdrtghomhenucevlhhushhtvghrufhiiigvpedt
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-(Sorry for not CC'ing you on this)
-
-On Thu, May 23, 2019 at 04:37:44PM +0200, Andrew Lunn wrote:
-> On Thu, May 23, 2019 at 11:56:45AM +0200, Maxime Ripard wrote:
-> > The networking PHYs have a number of available device tree properties that
-> > can be used in their device tree node. Add a YAML schemas for those.
-> >
-> > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-> > ---
-> >  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 148 +++++++++-
-> >  Documentation/devicetree/bindings/net/phy.txt           |  80 +-----
-> >  2 files changed, 149 insertions(+), 79 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> > new file mode 100644
-> > index 000000000000..eb79ee6db977
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> > @@ -0,0 +1,148 @@
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/ethernet-phy.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Ethernet PHY Generic Binding
-> > +
-> > +maintainers:
-> > +  - David S. Miller <davem@davemloft.net>
-> > +
-> > +properties:
-> > +  $nodename:
-> > +    pattern: "^ethernet-phy(@[a-f0-9])?$"
-> > +
-> > +  compatible:
-> > +    oneOf:
+On 5/23/19 11:46 AM, Jay Vosburgh wrote:
+> As far as I'm aware, nesting bonds has no practical benefit; do
+> you have a use case for doing so?
 >
-> I don't know the language. It is valid to have both
-> ethernet-phy-ieee802.3-c45 and
-> ethernet-phy-id[a-f0-9]{4}\\.[a-f0-9]{4}$".  Does this oneOf prevent
-> multiple compatible strings?
-
-I haven't tested it, I will make sure it works
-
-> Also, the general case is no compatible at all.
-
-This is covered already. The description here just mentions the values
-available if the property is set.
-
-The required keyword a bit later lists the required property. In this
-case, compatible is omitted so we just list the available values for
-the compatible property.
-
-> > +      - const: ethernet-phy-ieee802.3-c22
-> > +        description: PHYs that implement IEEE802.3 clause 22
-> > +      - const: ethernet-phy-ieee802.3-c45
-> > +        description: PHYs that implement IEEE802.3 clause 45
-> > +      - pattern: "^ethernet-phy-id[a-f0-9]{4}\\.[a-f0-9]{4}$"
-> > +        description:
-> > +          The first group of digits is the 16 bit Phy Identifier 1
-> > +          register, this is the chip vendor OUI bits 3:18. The
-> > +          second group of digits is the Phy Identifier 2 register,
-> > +          this is the chip vendor OUI bits 19:24, followed by 10
-> > +          bits of a vendor specific ID.
 >
-> Could we try to retain:
->
-> > -  If the PHY reports an incorrect ID (or none at all) then the
-> > -  "compatible" list may contain an entry with the correct PHY ID in the
->      ...
->
-> Using it is generally wrong, and that is not clear in the new text.
+Use case is very specific, but needed in my situation until some 
+switches are stabilized.
 
-Ok, I'll add it back.
+Switches A1..Ax provide LACP, 40G. These are unstable, lose link on one 
+or more interfaces or drop completely. A single bond to the A switches 
+was acceptable at first, including when one interface was down for quite 
+a while. Then all A switches dropped.
 
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +    minimum: 0
-> > +    maximum: 31
-> > +    description:
-> > +      The ID number for the PHY.
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  max-speed:
-> > +    enum:
-> > +      - 10
-> > +      - 100
-> > +      - 1000
->
-> This is outdated in the text description. Any valid speed is
-> supported, currently 10 - 200000, as listed in phy_setting settings().
+Switches B1..Bx provide no LACP, 10G. These are sitting and connected 
+anyway, already in place for backup.
 
-Ack, I'll update it
+All are on the same layer two, as in any MAC is visible on any switch.
 
-Thanks!
-Maxime
+Goal is to use A switches primarily, and drop back to B _IF_ A are 
+completely down. As long as one interface is active on A, that will be used.
 
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+I assume LACP and active-passive can't be used in the same bond, 
+interested to hear if I'm wrong.
+
+My setup I achieved:
+
+bond0 -> switches B, multiple interfaces, active-passive
+bond1 -> switches A, multiple interfaces, LACP
+bond10 -> slaves bond0 and bond1, active-passive
+Various VLANs are using bond10.
+
+Options to bonding:
+
+bond0: mode=1 fail_over_mac=none miimon=100
+bond1: mode=4 lacp_rate=1 miimon=100
+bond10: mode=1 fail_over_mac=1 primary=bond1 updelay=10000 miimon=100
+(I should probably change to arp monitoring, I know.)
+
+updelay in place because LACP takes a long time to link.
+Making sure the MACs switched was the key.
+
+Network performance tests via iperf3 look good, including when dropping 
+bond1. Unfortunately, target test system was on bond0, as its A switches 
+were down.
+
+The only, critical, test I haven't been able to perform is physically 
+dropping A links, can't reach that far. :)
+
+-- 
+
+Bill Carlson
+
+Anything is possible, given Time and Money.
+
