@@ -2,50 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC9C283E2
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 18:36:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9693F283E4
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 18:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731429AbfEWQg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 12:36:27 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:48628 "EHLO
+        id S1731106AbfEWQhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 12:37:33 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:48654 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730752AbfEWQg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 12:36:27 -0400
+        with ESMTP id S1730752AbfEWQhd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 12:37:33 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id EECB21509CAF8;
-        Thu, 23 May 2019 09:36:26 -0700 (PDT)
-Date:   Thu, 23 May 2019 09:36:26 -0700 (PDT)
-Message-Id: <20190523.093626.1602668467328215134.davem@davemloft.net>
-To:     rajur@chelsio.com
-Cc:     netdev@vger.kernel.org, nirranjan@chelsio.com, dt@chelsio.com
-Subject: Re: [PATCH net-next] cxgb4: use firmware API for validating filter
- spec
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1A5C61509CB01;
+        Thu, 23 May 2019 09:37:33 -0700 (PDT)
+Date:   Thu, 23 May 2019 09:37:32 -0700 (PDT)
+Message-Id: <20190523.093732.2092755980021095694.davem@davemloft.net>
+To:     ruxandra.radulescu@nxp.com
+Cc:     netdev@vger.kernel.org, ioana.ciornei@nxp.com
+Subject: Re: [PATCH net-next] Revert "dpaa2-eth: configure the cache
+ stashing amount on a queue"
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190523135121.16045-1-rajur@chelsio.com>
-References: <20190523135121.16045-1-rajur@chelsio.com>
+In-Reply-To: <1558622302-6931-1-git-send-email-ruxandra.radulescu@nxp.com>
+References: <1558622302-6931-1-git-send-email-ruxandra.radulescu@nxp.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 May 2019 09:36:27 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 May 2019 09:37:33 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Raju Rangoju <rajur@chelsio.com>
-Date: Thu, 23 May 2019 19:21:21 +0530
+From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Date: Thu, 23 May 2019 17:38:22 +0300
 
-> Adds support for validating hardware filter spec configured in firmware
-> before offloading exact match flows.
+> This reverts commit f8b995853444aba9c16c1ccdccdd397527fde96d.
 > 
-> Use the new fw api FW_PARAM_DEV_FILTER_MODE_MASK to read the filter mode
-> and mask from firmware. If the api isn't supported, then fall-back to
-> older way of reading just the mode from indirect register.
+> The reverted change instructed the QMan hardware block to fetch
+> RX frame annotation and beginning of frame data to cache before
+> the core would read them.
 > 
-> Signed-off-by: Raju Rangoju <rajur@chelsio.com>
+> It turns out that in rare cases, it's possible that a QMan
+> stashing transaction is delayed long enough such that, by the time
+> it gets executed, the frame in question had already been dequeued
+> by the core and software processing began on it. If the core
+> manages to unmap the frame buffer _before_ the stashing transaction
+> is executed, an SMMU exception will be raised.
+> 
+> Unfortunately there is no easy way to work around this while keeping
+> the performance advantages brought by QMan stashing, so disable
+> it altogether.
+> 
+> Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 
 Applied.
