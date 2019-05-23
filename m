@@ -2,373 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E91328C23
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 23:09:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74FDD28C14
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 23:07:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388270AbfEWVJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 17:09:21 -0400
-Received: from mail-pg1-f171.google.com ([209.85.215.171]:35525 "EHLO
-        mail-pg1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388240AbfEWVJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 17:09:18 -0400
-Received: by mail-pg1-f171.google.com with SMTP id t1so3773259pgc.2
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 14:09:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=appneta.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=SPWxLhLzjbcSJowkJYGTCbYUr1bDlyQ2z2VYymjpXdc=;
-        b=LIzuQYIymhL4BYQ7NXL17oiKjJYJ6LSj5XTF9omLaTOTP5ITMuDiyETQelGrFRTYCC
-         ZIkq0Td0lNyaoUx3Z5LO2dbyA8AUhcX8B9xlHfG26fl50HdaVL8wvqU7/Kx7GcgAVjHo
-         3Kr76/Csstl8wF9wcwHqNMX9OJ5JGJCGOKPTc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=SPWxLhLzjbcSJowkJYGTCbYUr1bDlyQ2z2VYymjpXdc=;
-        b=S0FjqKZjTW0bxt95gHATkiubep10Q34aLNPY++xrRt4cGvLb6ppkM4Pi4v9tSMnCq8
-         /Np4OLvHCacyovRB1ZF8on4TobYMbB8XRgm3cSUOrFqET2y0PqLgN12K0NebXSdDA9OA
-         J3kgbu0VD8ftw1DNewOSBWiPeZxtXI52Udv7WhKEcDPdyn9NJ6eSNHdg8NGy2ynYwvb6
-         Gn5aXlBKfrzq/6YK4WJSxyC4aR8/7yjhpIMnHhsnDWSgnLfVWWpQRJfkb7eTVT5qyA8q
-         3kQpEg0EPtlQJZ0HkvOgy37P4QtPtPh+jI+GuHu6qAT54wLOcyYluj+c6D3LEtsjrj2Z
-         vDaQ==
-X-Gm-Message-State: APjAAAXFai2SOvVIJ82tdFYr5SAcMI1KZhrC4QPSSzxNSJZRmNoI4kvu
-        FeQKzUqC9NJTHjq4ozBQajN9PA==
-X-Google-Smtp-Source: APXvYqyv/H/LE0IdZ5dA9QUiXGDqKw8CMr2yhtC8EeJRZLaWNM9khpAEKcsp666JxO3Q2EEDeik7IQ==
-X-Received: by 2002:a17:90a:c588:: with SMTP id l8mr4336027pjt.59.1558645757359;
-        Thu, 23 May 2019 14:09:17 -0700 (PDT)
-Received: from localhost.localdomain (S010620c9d00fc332.vf.shawcable.net. [70.71.167.160])
-        by smtp.googlemail.com with ESMTPSA id y17sm333481pfn.79.2019.05.23.14.09.15
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 14:09:16 -0700 (PDT)
-From:   Fred Klassen <fklassen@appneta.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Cc:     Fred Klassen <fklassen@appneta.com>
-Subject: [PATCH net 4/4] net/udpgso_bench_tx: audit error queue
-Date:   Thu, 23 May 2019 14:06:51 -0700
-Message-Id: <20190523210651.80902-5-fklassen@appneta.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190523210651.80902-1-fklassen@appneta.com>
-References: <20190523210651.80902-1-fklassen@appneta.com>
+        id S2387533AbfEWVHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 17:07:50 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46358 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730547AbfEWVHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 17:07:49 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4NKw5YZ012592;
+        Thu, 23 May 2019 14:07:22 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=NIDC8/bIz9+xQsoVOLPtYr2D3wZ0JV5INxptFfXKElk=;
+ b=rMUAMjochSo54cdkdduMDvnw8uJGlaZ1UhtQPy4C0WbL88bFQzRmbLl+1jyBa+YiKPpo
+ 0Z3XsqxqizWtw70upyFVtfX23M8iaKaM5pSfsyb1l97lmUsKtJdsNddrfftF3BIebII6
+ 3SsprBydzWvWMZTrsXzKr1VU0rsQm7mvRRc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sp28cg729-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 23 May 2019 14:07:21 -0700
+Received: from ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) by
+ ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 23 May 2019 14:07:20 -0700
+Received: from NAM04-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 23 May 2019 14:07:20 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NIDC8/bIz9+xQsoVOLPtYr2D3wZ0JV5INxptFfXKElk=;
+ b=HWeTXjMA9QsrfUX5Czxj12e/A4D4Cbi/p/5BidzmSIdnIKWvdK2xt5aox+vWEovqp3zFvJU9bbi9BirFcWebg9Jj8Njq58oxH/z+I4upJxMQFPfb2aXbcgEO1M71DN091IB2M5rZyUlraiUWgK2EXtXErsDsMnJaoFsHDWpGHZo=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
+ BYAPR15MB2904.namprd15.prod.outlook.com (20.178.236.203) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.16; Thu, 23 May 2019 21:07:18 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::956e:28a4:f18d:b698]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::956e:28a4:f18d:b698%3]) with mapi id 15.20.1900.020; Thu, 23 May 2019
+ 21:07:18 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>, Kernel Team <Kernel-team@fb.com>,
+        "Peter Zijlstra" <peterz@infradead.org>
+Subject: Re: [PATCH bpf-next v2 1/3] bpf: implement bpf_send_signal() helper
+Thread-Topic: [PATCH bpf-next v2 1/3] bpf: implement bpf_send_signal() helper
+Thread-Index: AQHVEGCw/a92LjZUiEmjMwkqdycEvaZ42yyA//+PhoCAAH2pAIAATdwA
+Date:   Thu, 23 May 2019 21:07:18 +0000
+Message-ID: <bc855846-450f-bc0f-34e3-7219c95fb620@fb.com>
+References: <20190522053900.1663459-1-yhs@fb.com>
+ <20190522053900.1663537-1-yhs@fb.com>
+ <2c07890b-9da5-b4e8-dc94-35def14470ad@iogearbox.net>
+ <6041511a-1628-868f-b4b1-e567c234a4a5@fb.com>
+ <d863ad02-5151-3e3c-a276-404c9dc957b2@iogearbox.net>
+In-Reply-To: <d863ad02-5151-3e3c-a276-404c9dc957b2@iogearbox.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR04CA0199.namprd04.prod.outlook.com
+ (2603:10b6:104:5::29) To BYAPR15MB3384.namprd15.prod.outlook.com
+ (2603:10b6:a03:10e::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::d011]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fbaf8fa6-4ec0-45b7-3903-08d6dfc2a35e
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR15MB2904;
+x-ms-traffictypediagnostic: BYAPR15MB2904:
+x-microsoft-antispam-prvs: <BYAPR15MB29044A89C81457324019275BD3010@BYAPR15MB2904.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 00462943DE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(396003)(136003)(39860400002)(366004)(189003)(199004)(2616005)(86362001)(31696002)(305945005)(66556008)(66476007)(66946007)(73956011)(476003)(99286004)(52116002)(66446008)(186003)(64756008)(46003)(102836004)(486006)(68736007)(446003)(6506007)(53546011)(36756003)(386003)(5660300002)(11346002)(6116002)(2906002)(81166006)(81156014)(76176011)(8676002)(7736002)(478600001)(229853002)(2201001)(14454004)(14444005)(110136005)(8936002)(256004)(54906003)(71190400001)(71200400001)(53936002)(2501003)(6512007)(25786009)(6246003)(6486002)(316002)(31686004)(4326008)(6436002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2904;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: nHhDVreAAKqgtpg2OG67h7iuS1N9WNDn3VebIXmcHFH0TfSgSv8pxcBdF95rb6iX6xkTtA7M3BLnZuX5jGXdLE9vSxZf4pUfHJQe+DTqrVVT/nvFTf80E5MXP+QqPYQUtPGijaVU1Wx4Ov4l9P1HUustty9abB6jGYyKpH/gKzD8+EUrs06/OVwMOX5Z01S9oOkiFjSJ8Yns5GRZ4fNFdqkfuKm+bWjxn5/9wYltlPHSHaMRLvZrfPQYuOD8WG8VK/aDdBn/AkO8KlBaNEBerKP2vbJC5xJaNxiQtqu1Olaj4uMDzN+lO1GIDCKyvKJZMYTjFDsWWPt8MdABjvF2cb9iIluhwwrUxUGzwgqWZyX9RIVzWq512URYyXmB+TcltEW2qJKeVrt/6qIItfmIqW3QV11ZgocBZmsPmaW3JMw=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E95DCE7BD3183E47AD69AE31D45498D8@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: fbaf8fa6-4ec0-45b7-3903-08d6dfc2a35e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2019 21:07:18.3041
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2904
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-23_17:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905230135
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This enhancement adds the '-a' option, which will count all CMSG
-messages on the error queue and print a summary report.
-
-Fixes: 3a687bef148d ("selftests: udp gso benchmark")
-
-Example:
-
-    # ./udpgso_bench_tx -4uT -a -l5 -S 1472 -D 172.16.120.189
-    udp tx:    492 MB/s     8354 calls/s   8354 msg/s
-    udp tx:    477 MB/s     8106 calls/s   8106 msg/s
-    udp tx:    488 MB/s     8288 calls/s   8288 msg/s
-    udp tx:    882 MB/s    14975 calls/s  14975 msg/s
-    Summary over 5.000 seconds ...
-    sum udp tx:    696 MB/s      57696 calls (11539/s)  57696 msgs (11539/s)
-    Tx Timestamps: received:     57696   errors: 0
-
-This can be useful in tracking loss of messages when under load. For example,
-adding the '-z' option results in loss of TX timestamp messages:
-
-    # ./udpgso_bench_tx -4ucT -a -l5 -S 1472 -D 172.16.120.189 -p 3239 -z
-    udp tx:    490 MB/s     8325 calls/s   8325 msg/s
-    udp tx:    500 MB/s     8492 calls/s   8492 msg/s
-    udp tx:    883 MB/s    14985 calls/s  14985 msg/s
-    udp tx:    756 MB/s    12823 calls/s  12823 msg/s
-    Summary over 5.000 seconds ...
-    sum udp tx:    657 MB/s      54429 calls (10885/s)  54429 msgs (10885/s)
-    Tx Timestamps: received:     34046   errors: 0
-    Zerocopy acks: received:     54422   errors: 0
-
-Fixes: 3a687bef148d ("selftests: udp gso benchmark")
-Signed-off-by: Fred Klassen <fklassen@appneta.com>
----
- tools/testing/selftests/net/udpgso_bench_tx.c | 152 +++++++++++++++++++-------
- 1 file changed, 113 insertions(+), 39 deletions(-)
-
-diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
-index 56e0d890b066..9924342a0b03 100644
---- a/tools/testing/selftests/net/udpgso_bench_tx.c
-+++ b/tools/testing/selftests/net/udpgso_bench_tx.c
-@@ -62,10 +62,19 @@ static bool	cfg_tcp;
- static uint32_t	cfg_tx_ts = SOF_TIMESTAMPING_TX_SOFTWARE;
- static bool	cfg_tx_tstamp;
- static uint32_t	cfg_tos;
-+static bool	cfg_audit;
- static bool	cfg_verbose;
- static bool	cfg_zerocopy;
- static int	cfg_msg_nr;
- static uint16_t	cfg_gso_size;
-+static unsigned long total_num_msgs;
-+static unsigned long total_num_sends;
-+static unsigned long stat_tx_ts;
-+static unsigned long stat_tx_ts_errors;
-+static unsigned long tstart;
-+static unsigned long tend;
-+static unsigned long stat_zcopies;
-+static unsigned long stat_zcopy_errors;
- 
- static socklen_t cfg_alen;
- static struct sockaddr_storage cfg_dst_addr;
-@@ -137,8 +146,11 @@ static void flush_cmsg(struct cmsghdr *cmsg)
- 			struct my_scm_timestamping *tss;
- 
- 			tss = (struct my_scm_timestamping *)CMSG_DATA(cmsg);
--			fprintf(stderr, "tx timestamp = %lu.%09lu\n",
--				tss->ts[i].tv_sec, tss->ts[i].tv_nsec);
-+			if (tss->ts[i].tv_sec == 0)
-+				stat_tx_ts_errors++;
-+			if (cfg_verbose)
-+				fprintf(stderr, "tx timestamp = %lu.%09lu\n",
-+					tss->ts[i].tv_sec, tss->ts[i].tv_nsec);
- 		} else {
- 			error(1, 0,
- 			      "unknown SOL_SOCKET cmsg type=%u level=%u\n",
-@@ -157,41 +169,52 @@ static void flush_cmsg(struct cmsghdr *cmsg)
- 			switch (err->ee_origin) {
- 			case SO_EE_ORIGIN_TIMESTAMPING:
- 				// Got a TX timestamp from error queue
--				fprintf(stderr,
--					"got SO_EE_ORIGIN_TIMESTAMPING\n");
-+				stat_tx_ts++;
-+				if (cfg_verbose)
-+					fprintf(stderr,
-+						"got SO_EE_ORIGIN_TIMESTAMPING\n");
- 				break;
- 			case SO_EE_ORIGIN_ICMP:
- 			case SO_EE_ORIGIN_ICMP6:
--				fprintf(stderr,
--					"received ICMP error: type=%u, code=%u\n",
--					err->ee_type, err->ee_code);
-+				if (cfg_verbose)
-+					fprintf(stderr,
-+						"received ICMP error: type=%u, code=%u\n",
-+						err->ee_type, err->ee_code);
- 				break;
- 			case SO_EE_ORIGIN_ZEROCOPY:
- 			{
- 				__u32 lo = err->ee_info;
- 				__u32 hi = err->ee_data;
- 
--				if (hi == lo - 1)
-+				if (hi == lo - 1) {
- 					// TX was aborted
--					fprintf(stderr,
--						"Zerocopy TX aborted: lo=%u hi=%u\n",
--						lo, hi);
--				if (hi == lo)
-+					stat_zcopy_errors++;
-+					if (cfg_verbose)
-+						fprintf(stderr,
-+							"Zerocopy TX aborted: lo=%u hi=%u\n",
-+							lo, hi);
-+				} else if (hi == lo) {
- 					// single ID acknowledged
--					fprintf(stderr,
--						"Zerocopy TX ack ID: %u\n",
--						lo);
--				else
-+					stat_zcopies++;
-+					if (cfg_verbose)
-+						fprintf(stderr,
-+							"Zerocopy TX ack ID: %u\n",
-+							lo);
-+				} else {
- 					// range of IDs acknowledged
--					fprintf(stderr,
--						"Zerocopy TX ack %u IDs %u to %u\n",
--						hi - lo + 1, lo, hi);
-+					stat_zcopies += hi - lo + 1;
-+					if (cfg_verbose)
-+						fprintf(stderr,
-+							"Zerocopy TX ack %u IDs %u to %u\n",
-+							hi - lo + 1, lo, hi);
-+				}
- 				break;
- 			}
- 			case SO_EE_ORIGIN_LOCAL:
--				fprintf(stderr,
--					"received packet with local origin: %u\n",
--					err->ee_origin);
-+				if (cfg_verbose)
-+					fprintf(stderr,
-+						"received packet with local origin: %u\n",
-+						err->ee_origin);
- 				break;
- 			default:
- 				error(0, 1,
-@@ -236,7 +259,7 @@ static void flush_errqueue_recv(int fd)
- 		if (ret == -1)
- 			error(1, errno, "errqueue");
- 		msg.msg_flags = 0;
--		if (cfg_verbose) {
-+		if (cfg_audit || cfg_verbose) {
- 			for (cmsg = CMSG_FIRSTHDR(&msg);
- 					cmsg;
- 					cmsg = CMSG_NXTHDR(&msg, cmsg))
-@@ -245,19 +268,21 @@ static void flush_errqueue_recv(int fd)
- 	}
- }
- 
--static void flush_errqueue(int fd)
-+static void flush_errqueue(int fd, const bool do_poll)
- {
--	if (cfg_poll) {
-+	if (do_poll) {
- 		struct pollfd fds = { 0 };
- 		int ret;
- 
- 		fds.fd = fd;
- 		fds.events = POLLERR;
--		ret = poll(&fds, 1, 1000);
--		if (ret == 0)
--			error(1, 0, "poll timeout");
--		else if (ret < 0)
-+		ret = poll(&fds, 1, 500);
-+		if (ret == 0) {
-+			if (cfg_verbose)
-+				fprintf(stderr, "poll timeout\n");
-+		} else if (ret < 0) {
- 			error(1, errno, "poll");
-+		}
- 	}
- 
- 	flush_errqueue_recv(fd);
-@@ -458,7 +483,7 @@ static int send_udp_segment(int fd, char *data)
- static void usage(const char *filepath)
- {
- 	error(1, 0,
--	      "Usage: %s [-46cmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-M messagenr] [-p port] [-q tos] [-s sendsize] [-S gsosize]",
-+	      "Usage: %s [-46acmHPtTuvz] [-C cpu] [-D dst ip] [-l secs] [-M messagenr] [-p port] [-q tos] [-s sendsize] [-S gsosize]",
- 	      filepath);
- }
- 
-@@ -467,7 +492,7 @@ static void parse_opts(int argc, char **argv)
- 	int max_len, hdrlen;
- 	int c;
- 
--	while ((c = getopt(argc, argv, "46cC:D:Hl:mM:p:s:q:PS:tTuvz")) != -1) {
-+	while ((c = getopt(argc, argv, "46acC:D:Hl:mM:p:s:q:PS:tTuvz")) != -1) {
- 		switch (c) {
- 		case '4':
- 			if (cfg_family != PF_UNSPEC)
-@@ -481,6 +506,9 @@ static void parse_opts(int argc, char **argv)
- 			cfg_family = PF_INET6;
- 			cfg_alen = sizeof(struct sockaddr_in6);
- 			break;
-+		case 'a':
-+			cfg_audit = true;
-+			break;
- 		case 'c':
- 			cfg_cache_trash = true;
- 			break;
-@@ -599,6 +627,51 @@ static void set_tx_timestamping(int fd)
- 		error(1, errno, "setsockopt tx timestamping");
- }
- 
-+static void print_final_report(unsigned long num_msgs, unsigned long num_sends)
-+{
-+	unsigned long tdelta;
-+
-+	tdelta = tend - tstart;
-+	if (!tdelta)
-+		return;
-+
-+	fprintf(stderr, "Summary over %lu.%03lu seconds ...\n", tdelta / 1000,
-+		tdelta % 1000);
-+	fprintf(stderr,
-+		"sum %s tx: %6lu MB/s %10lu calls (%lu/s) %10lu msgs (%lu/s)\n",
-+		cfg_tcp ? "tcp" : "udp",
-+		((num_msgs * cfg_payload_len) >> 10) / tdelta,
-+		num_sends, num_sends * 1000 / tdelta,
-+		num_msgs, num_msgs * 1000 / tdelta);
-+	if (cfg_tx_tstamp)
-+		fprintf(stderr,
-+			"Tx Timestamps: received: %9lu   errors: %lu\n",
-+			stat_tx_ts, stat_tx_ts_errors);
-+
-+	if (cfg_zerocopy)
-+		fprintf(stderr,
-+			"Zerocopy acks: received: %9lu   errors: %lu\n",
-+			stat_zcopies, stat_zcopy_errors);
-+}
-+
-+static void print_report(unsigned long num_msgs, unsigned long num_sends,
-+			 const bool final)
-+{
-+	if (!final)
-+		fprintf(stderr,
-+			"%s tx: %6lu MB/s %8lu calls/s %6lu msg/s\n",
-+			cfg_tcp ? "tcp" : "udp",
-+			(num_msgs * cfg_payload_len) >> 20,
-+			num_sends, num_msgs);
-+
-+	if (cfg_audit) {
-+		total_num_msgs += num_msgs;
-+		total_num_sends += num_sends;
-+		if (final)
-+			print_final_report(total_num_msgs, total_num_sends);
-+	}
-+}
-+
- int main(int argc, char **argv)
- {
- 	unsigned long num_msgs, num_sends;
-@@ -640,6 +713,8 @@ int main(int argc, char **argv)
- 	num_msgs = 0;
- 	num_sends = 0;
- 	tnow = gettimeofday_ms();
-+	tstart = tnow;
-+	tend = tnow;
- 	tstop = tnow + cfg_runtime_ms;
- 	treport = tnow + 1000;
- 
-@@ -654,19 +729,15 @@ int main(int argc, char **argv)
- 		else
- 			num_sends += send_udp(fd, buf[i]);
- 		num_msgs++;
--		if ((cfg_zerocopy && (num_msgs & 0xF) == 0) || cfg_tx_tstamp)
--			flush_errqueue(fd);
-+		if (cfg_tx_tstamp || (cfg_zerocopy && (num_msgs & 0xF) == 0))
-+			flush_errqueue(fd, cfg_poll);
- 
- 		if (cfg_msg_nr && num_msgs >= cfg_msg_nr)
- 			break;
- 
- 		tnow = gettimeofday_ms();
- 		if (tnow > treport) {
--			fprintf(stderr,
--				"%s tx: %6lu MB/s %8lu calls/s %6lu msg/s\n",
--				cfg_tcp ? "tcp" : "udp",
--				(num_msgs * cfg_payload_len) >> 20,
--				num_sends, num_msgs);
-+			print_report(num_msgs, num_sends, false);
- 			num_msgs = 0;
- 			num_sends = 0;
- 			treport = tnow + 1000;
-@@ -679,10 +750,13 @@ int main(int argc, char **argv)
- 	} while (!interrupted && (cfg_runtime_ms == -1 || tnow < tstop));
- 
- 	if (cfg_zerocopy || cfg_tx_tstamp)
--		flush_errqueue(fd);
-+		flush_errqueue(fd, true);
- 
- 	if (close(fd))
- 		error(1, errno, "close");
- 
-+	tend = tnow;
-+	print_report(num_msgs, num_sends, true);
-+
- 	return 0;
- }
--- 
-2.11.0
-
+DQoNCk9uIDUvMjMvMTkgOToyOCBBTSwgRGFuaWVsIEJvcmttYW5uIHdyb3RlOg0KPiBPbiAwNS8y
+My8yMDE5IDA1OjU4IFBNLCBZb25naG9uZyBTb25nIHdyb3RlOg0KPj4gT24gNS8yMy8xOSA4OjQx
+IEFNLCBEYW5pZWwgQm9ya21hbm4gd3JvdGU6DQo+Pj4gT24gMDUvMjIvMjAxOSAwNzozOSBBTSwg
+WW9uZ2hvbmcgU29uZyB3cm90ZToNCj4+Pj4gVGhpcyBwYXRjaCB0cmllcyB0byBzb2x2ZSB0aGUg
+Zm9sbG93aW5nIHNwZWNpZmljIHVzZSBjYXNlLg0KPj4+Pg0KPj4+PiBDdXJyZW50bHksIGJwZiBw
+cm9ncmFtIGNhbiBhbHJlYWR5IGNvbGxlY3Qgc3RhY2sgdHJhY2VzDQo+Pj4+IHRocm91Z2gga2Vy
+bmVsIGZ1bmN0aW9uIGdldF9wZXJmX2NhbGxjaGFpbigpDQo+Pj4+IHdoZW4gY2VydGFpbiBldmVu
+dHMgaGFwcGVucyAoZS5nLiwgY2FjaGUgbWlzcyBjb3VudGVyIG9yDQo+Pj4+IGNwdSBjbG9jayBj
+b3VudGVyIG92ZXJmbG93cykuIEJ1dCBzdWNoIHN0YWNrIHRyYWNlcyBhcmUNCj4+Pj4gbm90IGVu
+b3VnaCBmb3Igaml0dGVkIHByb2dyYW1zLCBlLmcuLCBoaHZtIChqaXRlZCBwaHApLg0KPj4+PiBU
+byBnZXQgcmVhbCBzdGFjayB0cmFjZSwgaml0IGVuZ2luZSBpbnRlcm5hbCBkYXRhIHN0cnVjdHVy
+ZXMNCj4+Pj4gbmVlZCB0byBiZSB0cmF2ZXJzZWQgaW4gb3JkZXIgdG8gZ2V0IHRoZSByZWFsIHVz
+ZXIgZnVuY3Rpb25zLg0KPj4+Pg0KPj4+PiBicGYgcHJvZ3JhbSBpdHNlbGYgbWF5IG5vdCBiZSB0
+aGUgYmVzdCBwbGFjZSB0byB0cmF2ZXJzZQ0KPj4+PiB0aGUgaml0IGVuZ2luZSBhcyB0aGUgdHJh
+dmVyc2luZyBsb2dpYyBjb3VsZCBiZSBjb21wbGV4IGFuZA0KPj4+PiBpdCBpcyBub3QgYSBzdGFi
+bGUgaW50ZXJmYWNlIGVpdGhlci4NCj4+Pj4NCj4+Pj4gSW5zdGVhZCwgaGh2bSBpbXBsZW1lbnRz
+IGEgc2lnbmFsIGhhbmRsZXIsDQo+Pj4+IGUuZy4gZm9yIFNJR0FMQVJNLCBhbmQgYSBzZXQgb2Yg
+cHJvZ3JhbSBsb2NhdGlvbnMgd2hpY2gNCj4+Pj4gaXQgY2FuIGR1bXAgc3RhY2sgdHJhY2VzLiBX
+aGVuIGl0IHJlY2VpdmVzIGEgc2lnbmFsLCBpdCB3aWxsDQo+Pj4+IGR1bXAgdGhlIHN0YWNrIGlu
+IG5leHQgc3VjaCBwcm9ncmFtIGxvY2F0aW9uLg0KPj4+Pg0KPj4+PiBTdWNoIGEgbWVjaGFuaXNt
+IGNhbiBiZSBpbXBsZW1lbnRlZCBpbiB0aGUgZm9sbG93aW5nIHdheToNCj4+Pj4gICAgIC4gYSBw
+ZXJmIHJpbmcgYnVmZmVyIGlzIGNyZWF0ZWQgYmV0d2VlbiBicGYgcHJvZ3JhbQ0KPj4+PiAgICAg
+ICBhbmQgdHJhY2luZyBhcHAuDQo+Pj4+ICAgICAuIG9uY2UgYSBwYXJ0aWN1bGFyIGV2ZW50IGhh
+cHBlbnMsIGJwZiBwcm9ncmFtIHdyaXRlcw0KPj4+PiAgICAgICB0byB0aGUgcmluZyBidWZmZXIg
+YW5kIHRoZSB0cmFjaW5nIGFwcCBnZXRzIG5vdGlmaWVkLg0KPj4+PiAgICAgLiB0aGUgdHJhY2lu
+ZyBhcHAgc2VuZHMgYSBzaWduYWwgU0lHQUxBUk0gdG8gdGhlIGhodm0uDQo+Pj4+DQo+Pj4+IEJ1
+dCB0aGlzIG1ldGhvZCBjb3VsZCBoYXZlIGxhcmdlIGRlbGF5cyBhbmQgY2F1c2luZyBwcm9maWxp
+bmcNCj4+Pj4gcmVzdWx0cyBza2V3ZWQuDQo+Pj4+DQo+Pj4+IFRoaXMgcGF0Y2ggaW1wbGVtZW50
+cyBicGZfc2VuZF9zaWduYWwoKSBoZWxwZXIgdG8gc2VuZA0KPj4+PiBhIHNpZ25hbCB0byBoaHZt
+IGluIHJlYWwgdGltZSwgcmVzdWx0aW5nIGluIGludGVuZGVkIHN0YWNrIHRyYWNlcy4NCj4+Pj4N
+Cj4+Pj4gU2lnbmVkLW9mZi1ieTogWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNvbT4NCj4+Pj4gLS0t
+DQo+Pj4+ICAgIGluY2x1ZGUvdWFwaS9saW51eC9icGYuaCB8IDE3ICsrKysrKysrKy0NCj4+Pj4g
+ICAga2VybmVsL3RyYWNlL2JwZl90cmFjZS5jIHwgNjcgKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKw0KPj4+PiAgICAyIGZpbGVzIGNoYW5nZWQsIDgzIGluc2VydGlvbnMo
+KyksIDEgZGVsZXRpb24oLSkNCj4+Pj4NCj4+Pj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvdWFwaS9s
+aW51eC9icGYuaCBiL2luY2x1ZGUvdWFwaS9saW51eC9icGYuaA0KPj4+PiBpbmRleCA2M2UwY2Y2
+NmYwMWEuLjY4ZDQ0NzA1MjNhMCAxMDA2NDQNCj4+Pj4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4
+L2JwZi5oDQo+Pj4+ICsrKyBiL2luY2x1ZGUvdWFwaS9saW51eC9icGYuaA0KPj4+PiBAQCAtMjY3
+Miw2ICsyNjcyLDIwIEBAIHVuaW9uIGJwZl9hdHRyIHsNCj4+Pj4gICAgICoJCTAgb24gc3VjY2Vz
+cy4NCj4+Pj4gICAgICoNCj4+Pj4gICAgICoJCSoqLUVOT0VOVCoqIGlmIHRoZSBicGYtbG9jYWwt
+c3RvcmFnZSBjYW5ub3QgYmUgZm91bmQuDQo+Pj4+ICsgKg0KPj4+PiArICogaW50IGJwZl9zZW5k
+X3NpZ25hbCh1MzIgc2lnKQ0KPj4+PiArICoJRGVzY3JpcHRpb24NCj4+Pj4gKyAqCQlTZW5kIHNp
+Z25hbCAqc2lnKiB0byB0aGUgY3VycmVudCB0YXNrLg0KPj4+PiArICoJUmV0dXJuDQo+Pj4+ICsg
+KgkJMCBvbiBzdWNjZXNzIG9yIHN1Y2Nlc3NmdWxseSBxdWV1ZWQuDQo+Pj4+ICsgKg0KPj4+PiAr
+ICoJCSoqLUVCVVNZKiogaWYgd29yayBxdWV1ZSB1bmRlciBubWkgaXMgZnVsbC4NCj4+Pj4gKyAq
+DQo+Pj4+ICsgKgkJKiotRUlOVkFMKiogaWYgKnNpZyogaXMgaW52YWxpZC4NCj4+Pj4gKyAqDQo+
+Pj4+ICsgKgkJKiotRVBFUk0qKiBpZiBubyBwZXJtaXNzaW9uIHRvIHNlbmQgdGhlICpzaWcqLg0K
+Pj4+PiArICoNCj4+Pj4gKyAqCQkqKi1FQUdBSU4qKiBpZiBicGYgcHJvZ3JhbSBjYW4gdHJ5IGFn
+YWluLg0KPj4+PiAgICAgKi8NCj4+Pj4gICAgI2RlZmluZSBfX0JQRl9GVU5DX01BUFBFUihGTikJ
+CVwNCj4+Pj4gICAgCUZOKHVuc3BlYyksCQkJXA0KPj4+PiBAQCAtMjc4Miw3ICsyNzk2LDggQEAg
+dW5pb24gYnBmX2F0dHIgew0KPj4+PiAgICAJRk4oc3RydG9sKSwJCQlcDQo+Pj4+ICAgIAlGTihz
+dHJ0b3VsKSwJCQlcDQo+Pj4+ICAgIAlGTihza19zdG9yYWdlX2dldCksCQlcDQo+Pj4+IC0JRk4o
+c2tfc3RvcmFnZV9kZWxldGUpLA0KPj4+PiArCUZOKHNrX3N0b3JhZ2VfZGVsZXRlKSwJCVwNCj4+
+Pj4gKwlGTihzZW5kX3NpZ25hbCksDQo+Pj4+ICAgIA0KPj4+PiAgICAvKiBpbnRlZ2VyIHZhbHVl
+IGluICdpbW0nIGZpZWxkIG9mIEJQRl9DQUxMIGluc3RydWN0aW9uIHNlbGVjdHMgd2hpY2ggaGVs
+cGVyDQo+Pj4+ICAgICAqIGZ1bmN0aW9uIGVCUEYgcHJvZ3JhbSBpbnRlbmRzIHRvIGNhbGwNCj4+
+Pj4gZGlmZiAtLWdpdCBhL2tlcm5lbC90cmFjZS9icGZfdHJhY2UuYyBiL2tlcm5lbC90cmFjZS9i
+cGZfdHJhY2UuYw0KPj4+PiBpbmRleCBmOTJkNmFkNWUwODAuLmY4Y2QwZGI3Mjg5ZiAxMDA2NDQN
+Cj4+Pj4gLS0tIGEva2VybmVsL3RyYWNlL2JwZl90cmFjZS5jDQo+Pj4+ICsrKyBiL2tlcm5lbC90
+cmFjZS9icGZfdHJhY2UuYw0KPj4+PiBAQCAtNTY3LDYgKzU2Nyw1OCBAQCBzdGF0aWMgY29uc3Qg
+c3RydWN0IGJwZl9mdW5jX3Byb3RvIGJwZl9wcm9iZV9yZWFkX3N0cl9wcm90byA9IHsNCj4+Pj4g
+ICAgCS5hcmczX3R5cGUJPSBBUkdfQU5ZVEhJTkcsDQo+Pj4+ICAgIH07DQo+Pj4+ICAgIA0KPj4+
+PiArc3RydWN0IHNlbmRfc2lnbmFsX2lycV93b3JrIHsNCj4+Pj4gKwlzdHJ1Y3QgaXJxX3dvcmsg
+aXJxX3dvcms7DQo+Pj4+ICsJdTMyIHNpZzsNCj4+Pj4gK307DQo+Pj4+ICsNCj4+Pj4gK3N0YXRp
+YyBERUZJTkVfUEVSX0NQVShzdHJ1Y3Qgc2VuZF9zaWduYWxfaXJxX3dvcmssIHNlbmRfc2lnbmFs
+X3dvcmspOw0KPj4+PiArDQo+Pj4+ICtzdGF0aWMgdm9pZCBkb19icGZfc2VuZF9zaWduYWwoc3Ry
+dWN0IGlycV93b3JrICplbnRyeSkNCj4+Pj4gK3sNCj4+Pj4gKwlzdHJ1Y3Qgc2VuZF9zaWduYWxf
+aXJxX3dvcmsgKndvcms7DQo+Pj4+ICsNCj4+Pj4gKwl3b3JrID0gY29udGFpbmVyX29mKGVudHJ5
+LCBzdHJ1Y3Qgc2VuZF9zaWduYWxfaXJxX3dvcmssIGlycV93b3JrKTsNCj4+Pj4gKwlncm91cF9z
+ZW5kX3NpZ19pbmZvKHdvcmstPnNpZywgU0VORF9TSUdfUFJJViwgY3VycmVudCwgUElEVFlQRV9U
+R0lEKTsNCj4+Pj4gK30NCj4+Pj4gKw0KPj4+PiArQlBGX0NBTExfMShicGZfc2VuZF9zaWduYWws
+IHUzMiwgc2lnKQ0KPj4+PiArew0KPj4+PiArCXN0cnVjdCBzZW5kX3NpZ25hbF9pcnFfd29yayAq
+d29yayA9IE5VTEw7DQo+Pj4+ICsNCj4+Pj4gKwkvKiBTaW1pbGFyIHRvIGJwZl9wcm9iZV93cml0
+ZV91c2VyLCB0YXNrIG5lZWRzIHRvIGJlDQo+Pj4+ICsJICogaW4gYSBzb3VuZCBjb25kaXRpb24g
+YW5kIGtlcm5lbCBtZW1vcnkgYWNjZXNzIGJlDQo+Pj4+ICsJICogcGVybWl0dGVkIGluIG9yZGVy
+IHRvIHNlbmQgc2lnbmFsIHRvIHRoZSBjdXJyZW50DQo+Pj4+ICsJICogdGFzay4NCj4+Pj4gKwkg
+Ki8NCj4+Pj4gKwlpZiAodW5saWtlbHkoY3VycmVudC0+ZmxhZ3MgJiAoUEZfS1RIUkVBRCB8IFBG
+X0VYSVRJTkcpKSkNCj4+Pj4gKwkJcmV0dXJuIC1FUEVSTTsNCj4+Pj4gKwlpZiAodW5saWtlbHko
+dWFjY2Vzc19rZXJuZWwoKSkpDQo+Pj4+ICsJCXJldHVybiAtRVBFUk07DQo+Pj4+ICsJaWYgKHVu
+bGlrZWx5KCFubWlfdWFjY2Vzc19va2F5KCkpKQ0KPj4+PiArCQlyZXR1cm4gLUVQRVJNOw0KPj4+
+PiArDQo+Pj4+ICsJaWYgKGluX25taSgpKSB7DQo+Pj4NCj4+PiBIbSwgYml0IGNvbmZ1c2VkLCBj
+YW4ndCB0aGlzIG9ubHkgYmUgZG9uZSBvdXQgb2YgcHJvY2VzcyBjb250ZXh0IGluDQo+Pj4gZ2Vu
+ZXJhbCBzaW5jZSBvbmx5IHRoZXJlIGN1cnJlbnQgcG9pbnRzIHRvIGUuZy4gaGh2bT8gSSdtIHBy
+b2JhYmx5DQo+Pj4gbWlzc2luZyBzb21ldGhpbmcuIENvdWxkIHlvdSBlbGFib3JhdGU/DQo+Pg0K
+Pj4gVGhhdCBpcyB0cnVlLiBJZiBpbiBubWksIGl0IGlzIG91dCBvZiBwcm9jZXNzIGNvbnRleHQg
+YW5kIGluIG5taQ0KPj4gY29udGV4dCwgd2UgdXNlIGFuIGlycV93b3JrIGhlcmUgc2luY2UgZ3Jv
+dXBfc2VuZF9zaWdfaW5mbygpIGhhcw0KPj4gc3BpbmxvY2sgaW5zaWRlLiBUaGUgYnBmIHByb2dy
+YW0gKGUuZy4sIGEgcGVyZl9ldmVudCBwcm9ncmFtKSBuZWVkcyB0bw0KPj4gY2hlY2sgaXQgaXMg
+d2l0aCByaWdodCBjdXJyZW50IChlLmcuLCBieSBwaWQpIGJlZm9yZSBjYWxsaW5nDQo+PiB0aGlz
+IGhlbHBlci4NCj4+DQo+PiBEb2VzIHRoaXMgYWRkcmVzcyB5b3VyIHF1ZXN0aW9uPw0KDQpUaGFu
+a3MsIERhbmllbC4gVGhlIGJlbG93IGFyZSByZWFsbHkgZ29vZCBxdWVzdGlvbnMgd2hpY2ggSSBk
+aWQgbm90DQpyZWFsbHkgdGhpbmsgdGhyb3VnaCB3aXRoIGlycV93b3JrLg0KDQo+IA0KPiBIbSwg
+YnV0IGhvdyBpcyBpdCBndWFyYW50ZWVkIHRoYXQgJ2N1cnJlbnQnIGluc2lkZSB0aGUgY2FsbGJh
+Y2sgaXMgc3RpbGwNCj4gdGhlIHZlcnkgc2FtZSB5b3UgaW50ZW5kIHRvIHNlbmQgdGhlIHNpZ25h
+bCB0bz8NCg0KSSB3ZW50IHRocm91Z2ggaXJxX3dvcmsgaW5mcmFzdHJ1Y3R1cmUuIEl0IGxvb2tz
+IHRoYXQgImN1cnJlbnQiIG1heQ0KY2hhbmdlLiBpcnFfd29yayBpcyByZWdpc3RlcmVkIGFzIGFu
+IGludGVycnVwdCBvbiB4ODYuDQpBZnRlciBubWksIHNvbWUgbG93ZXIgcHJpb3JpdHkNCmludGVy
+cnVwdHMgZ2V0IGNoYW5jZXMgdG8gZXhlY3V0ZSBpbmNsdWRpbmcgaXJxX3dvcmsuIEJ1dCB0aGVy
+ZSBhcmUgc29tZQ0Kb3RoZXIgaW50ZXJydXB0cyBsaWtlIHRpbWVyX2ludGVycnVwdCBhbmQgcmVz
+Y2hlZHVsZV9pbnRlcnJ1cHQgbWF5IA0KY2hhbmdlICJjdXJyZW50Ii4gQnV0IHNpbmNlIHdlIGFy
+ZSBzdGlsbCBpbiBpbnRlcnJ1cHQgY29udGV4dCwgdGFzayANCnNob3VsZCBub3QgYmUgZGVzdHJv
+eWVkLCBzbyB0aGUgdGFzayBzdHJ1Y3R1cmUgcG9pbnRlciBpcyBzdGlsbCB2YWxpZC4NCg0KSSB3
+aWxsIHBhc3MgImN1cnJlbnQiIHRhc2sgc3RydWN0IHBvaW50ZXIgdG8gaXJxX3dvcmsgYXMgd2Vs
+bC4gVGhpcw0KaXMgc2ltaWxhciB0byB3aGF0IHdlIGRpZCBpbiBzdGFja21hcC5jOg0KICAgd29y
+ay0+c2VtID0gJmN1cnJlbnQtPm1tLT5tbWFwX3NlbTsNCiAgIGlycV93b3JrX3F1ZXVlKCZ3b3Jr
+LT5pcnFfd29yayk7DQpBdCBpcnFfd29ya19ydW4oKSB0aW1lLCB0aGUgcHJldmlvdXMgImN1cnJl
+bnQiIGluIG5taSBzaG91bGQgc3RpbGwgYmUNCnZhbGlkLg0KDQo+IA0KPiBXaGF0IGhhcHBlbnMg
+aWYgeW91J3JlIGluIHNvZnRpcnEgYW5kIHNlbmQgU0lHS0lMTCB0byB5b3Vyc2VsZj8gSXMgdGhp
+cw0KPiBpZ25vcmVkL2hhbmRsZWQgZ3JhY2VmdWxseSBpbiBzdWNoIGNhc2U/DQoNCkl0IGlzIG5v
+dCBpZ25vcmVkLiBJdCBoYW5kbGVkIGdyYWNlZnVsbHkgaW4gdGhpcyBjYXNlLiBJIHRyaWVkIG15
+IA0KZXhhbXBsZSB0byBzZW5kIFNJR0tJTEwuIFRoZSBjYWxsIHN0YWNrIGxvb2tzIGJlbG93Lg0K
+DQpbICAgMjQuMjExOTQzXSAgYnBmX3NlbmRfc2lnbmFsKzB4OS8weGIwDQpbICAgMjQuMjEyNDI3
+XSAgYnBmX3Byb2dfZmVjNmU3Y2M2NjRkNWI5MV9icGZfc2VuZF9zaWduYWxfdGVzdCsweDIyOC8w
+eDEwMDANClsgICAyNC4yMTMyNDldICA/IGJwZl9vdmVyZmxvd19oYW5kbGVyKzB4YjcvMHgxODAN
+ClsgICAyNC4yMTM4NTNdICA/IF9fcGVyZl9ldmVudF9vdmVyZmxvdysweDUxLzB4ZTANClsgICAy
+NC4yMTQzODVdICA/IHBlcmZfc3dldmVudF9ocnRpbWVyKzB4MTBhLzB4MTYwDQpbICAgMjQuMjE0
+OTY1XSAgPyBfX3VwZGF0ZV9sb2FkX2F2Z19jZnNfcnErMHgxYTkvMHgxYzANClsgICAyNC4yMTU2
+MDldICA/IHRhc2tfdGlja19mYWlyKzB4NTAvMHg2OTANClsgICAyNC4yMTYxMDRdICA/IHJ1bl90
+aW1lcl9zb2Z0aXJxKzB4MjA4LzB4NDkwDQpbICAgMjQuMjE2NjM3XSAgPyB0aW1lcnF1ZXVlX2Rl
+bCsweDFlLzB4NDANClsgICAyNC4yMTcxMTFdICA/IHRhc2tfY2xvY2tfZXZlbnRfZGVsKzB4MTAv
+MHgxMA0KWyAgIDI0LjIxNzY1OF0gID8gX19ocnRpbWVyX3J1bl9xdWV1ZXMrMHgxMGQvMHgyYzAN
+ClsgICAyNC4yMTgyMTddICA/IGhydGltZXJfaW50ZXJydXB0KzB4MTIyLzB4MjcwDQpbICAgMjQu
+MjE4NzY1XSAgPyByY3VfaXJxX2VudGVyKzB4MzEvMHgxMTANClsgICAyNC4yMTkyMjNdICA/IHNt
+cF9hcGljX3RpbWVyX2ludGVycnVwdCsweDY3LzB4MTYwDQpbICAgMjQuMjE5ODQyXSAgPyBhcGlj
+X3RpbWVyX2ludGVycnVwdCsweGYvMHgyMA0KWyAgIDI0LjIyMDM4M10gIDwvSVJRPg0KWyAgIDI0
+LjIyMDY1NV0gID8gZXZlbnRfc2NoZWRfb3V0LmlzcmEuMTA4KzB4MTUwLzB4MTUwDQpbICAgMjQu
+MjIxMjcxXSAgPyBzbXBfY2FsbF9mdW5jdGlvbl9zaW5nbGUrMHhkYy8weDEwMA0KWyAgIDI0LjIy
+MTg5OF0gID8gcGVyZl9ldmVudF9zeXNmc19zaG93KzB4MjAvMHgyMA0KWyAgIDI0LjIyMjQ2OV0g
+ID8gY3B1X2Z1bmN0aW9uX2NhbGwrMHg0Mi8weDYwDQpbICAgMjQuMjIyOTgyXSAgPyBjcHVfY2xv
+Y2tfZXZlbnRfcmVhZCsweDEwLzB4MTANClsgICAyNC4yMjM1MjVdICA/IGV2ZW50X2Z1bmN0aW9u
+X2NhbGwrMHhlNi8weGYwDQpbICAgMjQuMjI0MDUzXSAgPyBldmVudF9zY2hlZF9vdXQuaXNyYS4x
+MDgrMHgxNTAvMHgxNTANClsgICAyNC4yMjQ2NTddICA/IHBlcmZfcmVtb3ZlX2Zyb21fY29udGV4
+dCsweDIwLzB4NzANClsgICAyNC4yMjUyNjJdICA/IHBlcmZfZXZlbnRfcmVsZWFzZV9rZXJuZWwr
+MHgxMDYvMHgyZTANClsgICAyNC4yMjU4OTZdICA/IHBlcmZfcmVsZWFzZSsweGMvMHgxMA0KWyAg
+IDI0LjIyNjM0N10gID8gX19mcHV0KzB4YzkvMHgyMzANClsgICAyNC4yMjY3NjddICA/IHRhc2tf
+d29ya19ydW4rMHg4My8weGIwDQpbICAgMjQuMjI3MjQzXSAgPyBkb19leGl0KzB4MzAwLzB4YzUw
+DQpbICAgMjQuMjI3Njc0XSAgPyBzeXNjYWxsX3RyYWNlX2VudGVyKzB4MWM5LzB4MmQwDQpbICAg
+MjQuMjI4MjIzXSAgPyBkb19ncm91cF9leGl0KzB4MzkvMHhiMA0KWyAgIDI0LjIyODY5NV0gID8g
+X194NjRfc3lzX2V4aXRfZ3JvdXArMHgxNC8weDIwDQpbICAgMjQuMjI5MjcwXSAgPyBkb19zeXNj
+YWxsXzY0KzB4NDkvMHgxMzANClsgICAyNC4yMjk3NjJdICA/IGVudHJ5X1NZU0NBTExfNjRfYWZ0
+ZXJfaHdmcmFtZSsweDQ0LzB4YTkNCg0KSSBzZWUgdGhlIHRhc2sgaXMga2lsbGVkIGFuZCBvdGhl
+ciBwcm9jZXNzIGlzIG5vdCBpbXBhY3RlZCBhbmQNCm5vIGtlcm5lbCBjcmFzaC93YXJuaW5nLg0K
+DQo+IA0KPiBJIHRoaW5rIHNvbWUgbW9yZSBlbGFib3JhdGUgY29tbWVudCBpbiB0aGUgY29kZSB3
+b3VsZCBkZWZpbml0ZWx5IGJlIGhlbHAuDQoNCkRlZmluaXRlbHkgd2lsbCBhZGQgc29tZSBjb21t
+ZW50cy4NCg0KPiANCj4gQnR3LCB5b3UgcHJvYmFibHkgbmVlZCB0byB3cmFwIGl0IHVuZGVyICNp
+ZmRlZiBDT05GSUdfSVJRX1dPUksuDQoNCkkgd2lsbCBjaGVjayB0aGlzLiBzdGFja21hcHMuYyB1
+c2UgaXJxX3dvcmsgYXMgd2VsbCBhbmQgZGlkIG5vdCBoYXZlDQpDT05GSUdfSVJRX1dPUksuIE1h
+eWJlIHdlIGFyZSBtaXNzaW5nIHRoZXJlIGFzIHdlbGwuDQoNCj4gDQo+Pj4+ICsJCXdvcmsgPSB0
+aGlzX2NwdV9wdHIoJnNlbmRfc2lnbmFsX3dvcmspOw0KPj4+PiArCQlpZiAod29yay0+aXJxX3dv
+cmsuZmxhZ3MgJiBJUlFfV09SS19CVVNZKQ0KPj4+PiArCQkJcmV0dXJuIC1FQlVTWTsNCj4+Pj4g
+Kw0KPj4+PiArCQl3b3JrLT5zaWcgPSBzaWc7DQo+Pj4+ICsJCWlycV93b3JrX3F1ZXVlKCZ3b3Jr
+LT5pcnFfd29yayk7DQo+Pj4+ICsJCXJldHVybiAwOw0KPj4+PiArCX0NCj4+Pj4gKw0KPj4+PiAr
+CXJldHVybiBncm91cF9zZW5kX3NpZ19pbmZvKHNpZywgU0VORF9TSUdfUFJJViwgY3VycmVudCwg
+UElEVFlQRV9UR0lEKTsNCj4+Pj4gKw0KPj4+DQo+Pj4gTml0OiBleHRyYSBuZXdsaW5lIHNsaXBw
+ZWQgaW4NCj4+IFRoYW5rcy4gV2lsbCByZW1vdmUgdGhpcyBpbiB0aGUgbmV4dCByZXZpc2lvbi4N
+Cj4+Pg0KPj4+PiArfQ0KPj4+PiArDQo+Pj4+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGJwZl9mdW5j
+X3Byb3RvIGJwZl9zZW5kX3NpZ25hbF9wcm90byA9IHsNCj4+Pj4gKwkuZnVuYwkJPSBicGZfc2Vu
+ZF9zaWduYWwsDQo+Pj4+ICsJLmdwbF9vbmx5CT0gZmFsc2UsDQo+Pj4+ICsJLnJldF90eXBlCT0g
+UkVUX0lOVEVHRVIsDQo+Pj4+ICsJLmFyZzFfdHlwZQk9IEFSR19BTllUSElORywNCj4+Pj4gK307
+DQo+Pj4+ICsNCj4+Pj4gICAgc3RhdGljIGNvbnN0IHN0cnVjdCBicGZfZnVuY19wcm90byAqDQo+
+Pj4+ICAgIHRyYWNpbmdfZnVuY19wcm90byhlbnVtIGJwZl9mdW5jX2lkIGZ1bmNfaWQsIGNvbnN0
+IHN0cnVjdCBicGZfcHJvZyAqcHJvZykNCj4+Pj4gICAgew0KPj4+PiBAQCAtNjE3LDYgKzY2OSw4
+IEBAIHRyYWNpbmdfZnVuY19wcm90byhlbnVtIGJwZl9mdW5jX2lkIGZ1bmNfaWQsIGNvbnN0IHN0
+cnVjdCBicGZfcHJvZyAqcHJvZykNCj4+Pj4gICAgCWNhc2UgQlBGX0ZVTkNfZ2V0X2N1cnJlbnRf
+Y2dyb3VwX2lkOg0KPj4+PiAgICAJCXJldHVybiAmYnBmX2dldF9jdXJyZW50X2Nncm91cF9pZF9w
+cm90bzsNCj4+Pj4gICAgI2VuZGlmDQo+Pj4+ICsJY2FzZSBCUEZfRlVOQ19zZW5kX3NpZ25hbDoN
+Cj4+Pj4gKwkJcmV0dXJuICZicGZfc2VuZF9zaWduYWxfcHJvdG87DQo+Pj4+ICAgIAlkZWZhdWx0
+Og0KPj4+PiAgICAJCXJldHVybiBOVUxMOw0KPj4+PiAgICAJfQ0KPj4+PiBAQCAtMTM0Myw1ICsx
+Mzk3LDE4IEBAIHN0YXRpYyBpbnQgX19pbml0IGJwZl9ldmVudF9pbml0KHZvaWQpDQo+Pj4+ICAg
+IAlyZXR1cm4gMDsNCj4+Pj4gICAgfQ0KPj4+PiAgICANCj4+Pj4gK3N0YXRpYyBpbnQgX19pbml0
+IHNlbmRfc2lnbmFsX2lycV93b3JrX2luaXQodm9pZCkNCj4+Pj4gK3sNCj4+Pj4gKwlpbnQgY3B1
+Ow0KPj4+PiArCXN0cnVjdCBzZW5kX3NpZ25hbF9pcnFfd29yayAqd29yazsNCj4+Pj4gKw0KPj4+
+PiArCWZvcl9lYWNoX3Bvc3NpYmxlX2NwdShjcHUpIHsNCj4+Pj4gKwkJd29yayA9IHBlcl9jcHVf
+cHRyKCZzZW5kX3NpZ25hbF93b3JrLCBjcHUpOw0KPj4+PiArCQlpbml0X2lycV93b3JrKCZ3b3Jr
+LT5pcnFfd29yaywgZG9fYnBmX3NlbmRfc2lnbmFsKTsNCj4+Pj4gKwl9DQo+Pj4+ICsJcmV0dXJu
+IDA7DQo+Pj4+ICt9DQo+Pj4+ICsNCj4+Pj4gICAgZnNfaW5pdGNhbGwoYnBmX2V2ZW50X2luaXQp
+Ow0KPj4+PiArc3Vic3lzX2luaXRjYWxsKHNlbmRfc2lnbmFsX2lycV93b3JrX2luaXQpOw0KPj4+
+PiAgICAjZW5kaWYgLyogQ09ORklHX01PRFVMRVMgKi8NCj4+Pj4NCj4+Pg0KPiANCg==
