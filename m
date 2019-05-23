@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F0B0285C2
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 20:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DF14285C4
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 20:19:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731364AbfEWSSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 14:18:43 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:41681 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731116AbfEWSSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 14:18:43 -0400
-Received: by mail-pl1-f195.google.com with SMTP id f12so3060405plt.8;
-        Thu, 23 May 2019 11:18:42 -0700 (PDT)
+        id S1731433AbfEWSTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 14:19:13 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41572 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731116AbfEWSTN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 14:19:13 -0400
+Received: by mail-pg1-f195.google.com with SMTP id z3so3547390pgp.8;
+        Thu, 23 May 2019 11:19:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=CgkUT1S8m2MNCjfDPnbC1Rro3ap1/tHUWB2hI1G75Vo=;
-        b=rTgTMUr1f3HMDTme0bflwcloNHCtx6Q12x5/kCApk4T51a9PWQmc8zvUPmwaIrZmuX
-         siPjcqcjRw1CUOf3/OPV8sjdsOlkKbJhwcqKZ5R6vIMkEvOiyC/EMKX/uMFuGRmNiykH
-         SVYnEvQovaPoOXlT4smHyAAkRZM0DCvKLG2YQgePnrojydF8rzWTtQdPi/YyavMGRGPf
-         Sd1RboBvL/I4NTUyajPUt3Mt4kRSFf2USyK5nGL8wvIRhgMJ/229KK1u4Y+2HGwH0vlm
-         50a70arUghWHmdMZsPVgthcq1A1sdcUndz/SyAQCeJvo7grVLiaffwbkEly7txlgTsmO
-         KWLw==
+        bh=yMYz/vJ4wg0Ki+jKUp93JqCwZKvAG0dQBa1nFv8Hsgs=;
+        b=j9806D+DnbQREOJfK/B89AM3fGLksyFwz9tCCs9AuOjaqY569NyHX2u/ZWOGZk/WcN
+         21BlQ5XZYlnkFXOn73J9+sKuqYkI03OxAnKa8l3P5KGd5DUKEP6vc4e8sLigAA034Sgr
+         6eDekKNOH1hHJTcya3W//773OPDyb1uDjEZVWHja+YCLz1kH4XnGXAZxszvDO9nAb0XE
+         gNY1MEPJmmFPbqHwF43G33AZAeL6s+naiivAND/ocmapKn4g9VQIg2s8dwxqhiGWH1Wa
+         Dti5kE4Z7Bex+1NyVRx504vngykWT6uTDu9nS7nBFnno/d7G8aKSufEjWQlrf4JcDOsq
+         dQwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=CgkUT1S8m2MNCjfDPnbC1Rro3ap1/tHUWB2hI1G75Vo=;
-        b=qjcCFZUUoq8Tt88XI7b5QxZsW9wndF/Gcw2Hz3K5+UbeoT+2JbHPSzrazjvqCAiiY5
-         +O4xN0+2iMZd5HUVWDKgU2hGw7sDHbMn1qgwSZ+F4TTwh3nugcF60jNHav9VRDDfk4Mu
-         d8A/Sk8kcxz/Jgd+igsN1QRU/haCX05xSFLuYNKe5ljrqVRNVM7HOnozd5lWcErQ4Y5q
-         0md2GMRer4AUyqk4R7l2Q5cHL7IaszjJz7YGOIPQu+MHIB/VIHS3Ux6tJVoydsVPCUbu
-         6lHsrS5o96svA+S+d7I+fanikVPiydnv57y1aEI3a/Ww367jv8o9EWnoZdmKd/UoEr5Z
-         XweQ==
-X-Gm-Message-State: APjAAAWTdbcr3jeslBmmAYTrWFTDnjkjCgC2d7xtjtDOuMrfE8iFXHDB
-        k7rQdwRacmDX3IYUw+aLt4e0f6pc
-X-Google-Smtp-Source: APXvYqzba3iR+fRTpcBlWdB2qrwCoXlSBo1Icr4+z73Psa0Zv2a4+INvRFk9X/HU7Y5Ln7GXtSzNIw==
-X-Received: by 2002:a17:902:8c82:: with SMTP id t2mr92419656plo.256.1558635521646;
-        Thu, 23 May 2019 11:18:41 -0700 (PDT)
+        bh=yMYz/vJ4wg0Ki+jKUp93JqCwZKvAG0dQBa1nFv8Hsgs=;
+        b=izDtkF5ExSOYyPBqu2j2CpAy0rIW5p/wyUfTQ92e0luc8dauWBbZXSDiiUeqFNceC+
+         bMmTFWJ6W24d4XVDFjhTa2jsCKG3Y3c6yFDO4LWhykj3S+wwbYaZbzG/uV2lFN0g9pHS
+         44PpTvuxSJhtkqceHMEwGDptaROnPnRqjv6GQLqkF7rJoYIaxyHMJSQ+LGJXoAhuwIyJ
+         WXkOXvxuIV7eYz5Bu8LJqciV0QSlBmVqlDWSkOIgSQrtB75WI3lZOcqdS+g5gnkbPXBT
+         3IC1IfUPaf8v6Zq5syyYsq+n2H2JgG8I5SynE/cGq/A0yrGdt2GII/RhX+EZZmnRLkaW
+         NT2g==
+X-Gm-Message-State: APjAAAUhMH8Cfrco+JjkfCA56oL47VD8kUxwgworBmhEJRX6vEG7OUfp
+        QtddZR77s6eEcCJr2OqkAhQ92fzL
+X-Google-Smtp-Source: APXvYqwBTQXGtRcE+69sC6+LFdNFS+5+b5Xz8DcQbo2UOGGMRRjXIZSqRHlh/wUKbSvmANEJ7rZdyA==
+X-Received: by 2002:a17:90a:8089:: with SMTP id c9mr3093805pjn.68.1558635551754;
+        Thu, 23 May 2019 11:19:11 -0700 (PDT)
 Received: from [10.67.49.213] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g22sm117291pfo.28.2019.05.23.11.18.40
+        by smtp.googlemail.com with ESMTPSA id b23sm123111pfi.6.2019.05.23.11.19.10
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 11:18:40 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/3] dt-bindings: net: document new usxgmii
- phy mode
+        Thu, 23 May 2019 11:19:11 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/3] net: phy: aquantia: add USXGMII support
+ and warn if XGMII mode is set
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Madalin-cristian Bucur <madalin.bucur@nxp.com>,
         Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
@@ -60,7 +60,7 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 References: <9d284f4d-93ee-fb27-e386-80825f92adc8@gmail.com>
- <60079a09-670b-268e-9ad5-014a427b60bf@gmail.com>
+ <96437cfa-b1f9-eeae-f9ca-c658c81f61c0@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -117,12 +117,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <37340f6c-3f42-2678-6ce0-e40faec36203@gmail.com>
-Date:   Thu, 23 May 2019 11:18:39 -0700
+Message-ID: <7ae30629-f1c0-db95-87ab-7bc45400c12e@gmail.com>
+Date:   Thu, 23 May 2019 11:19:06 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <60079a09-670b-268e-9ad5-014a427b60bf@gmail.com>
+In-Reply-To: <96437cfa-b1f9-eeae-f9ca-c658c81f61c0@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -131,8 +131,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/23/19 11:07 AM, Heiner Kallweit wrote:
-> Add new interface mode USXGMII to binding documentation.
+On 5/23/19 11:09 AM, Heiner Kallweit wrote:
+> So far we didn't support mode USXGMII, and in order to not break few
+> boards mode XGMII was accepted for the AQR107 family even though it
+> doesn't support XGMII. Add USXGMII support to the Aquantia PHY driver
+> and warn if XGMII mode is set.
+> 
+> v2:
+> - add warning if XGMII mode is set
 > 
 > Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
