@@ -2,205 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 512AE27422
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 03:54:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 691BE27424
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 03:55:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729535AbfEWByU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 21:54:20 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:45209 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727305AbfEWByU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 21:54:20 -0400
-Received: by mail-ed1-f65.google.com with SMTP id g57so6649713edc.12;
-        Wed, 22 May 2019 18:54:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5u0t7AAd+0Akj7skAMQeDcpEP8cSjZVN+OVD/pxT1/E=;
-        b=qFSff1fUSIvDW/T0PQVR2KeYDE888ODYH/Anez7ZdheVJkuNjDBpIH4l6Q2ttyqrb0
-         VS2XM6ivseElqe+dbjZfp87N2UNEyxTNkEIcC8fYyIIaAf2Vd529843lxbGi19ol5VTo
-         cMVjIMH9vpDH0EeDlKljWvoaQrRkl7U7HbIadsZgkQPmSPKNBKihZjB5nKuMwwi+NsE1
-         qJtHSUNdRkcG9yKadt3p4V+5/wKJZkR6X0Dzs23waOKr6O3yMpOhgoJXa4GyiglqybC+
-         El2K7SQnck3DQNqnRY4U2L2j1hjExXTKxtudkmmqy0G0DG+1ORkbRg9PUrSzcVSDzOtm
-         JbIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5u0t7AAd+0Akj7skAMQeDcpEP8cSjZVN+OVD/pxT1/E=;
-        b=KHPmbYb0AhP5mNefpg25ZpifPEjsn4BE7XRQB929Wjxw8uPfsg8Ovaagl7Hv+TC+59
-         89kHqT18Cu6xDHCnyIThgAV5smUdHH08f7Qlnnb+I+jvkmEjiA0zOoMx06EWBowqAdYp
-         +aK3Dhx6/RfDD2X94f+l4sR2gL4y136IRGOnmUXEdFymH7L7x8k9uMV+it5rn5gNX3oi
-         GraZ1zndMEuJUD+LiSc2fO3xPxnnO6ikHEjH2zkakg11lTxPD7toWDBFsZjaCTZRguLh
-         AyTh37xgfbWZSW7AkR1u9xTSJNeNQzwot6zMezbfuGWM23+5Ix6Efh1VrZNkrf0+DfPs
-         VRcA==
-X-Gm-Message-State: APjAAAWgKHNQ/3Fu/aIbJwmYjEjrDINlCHcItoeGiK4fZVbydlHU6bm/
-        x4ENungfvHwHAv1y64qIAn+DjGrMsvM4GA==
-X-Google-Smtp-Source: APXvYqyEWW0X2xH4tHn/Yhfmpkbx+3mH6Knzj1h2CFwUEc8AIQFagt/gm772M4PJCTKvOiJGCVmLXA==
-X-Received: by 2002:a17:906:1303:: with SMTP id w3mr22081885ejb.196.1558576457574;
-        Wed, 22 May 2019 18:54:17 -0700 (PDT)
-Received: from archlinux-epyc ([2a01:4f9:2b:2b15::2])
-        by smtp.gmail.com with ESMTPSA id hk1sm2288680ejb.36.2019.05.22.18.54.16
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 22 May 2019 18:54:16 -0700 (PDT)
-Date:   Wed, 22 May 2019 18:54:15 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Subject: Re: [PATCH] rsi: Properly initialize data in rsi_sdio_ta_reset
-Message-ID: <20190523015415.GA17819@archlinux-epyc>
-References: <20190502151548.11143-1-natechancellor@gmail.com>
- <CAKwvOd=nvKGGW5jvN+WFUXzOm9xeiNNUD0F9--9YcpuRmnWWhA@mail.gmail.com>
- <20190503031718.GB6969@archlinux-i9>
+        id S1729777AbfEWBz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 21:55:28 -0400
+Received: from mail-eopbgr70059.outbound.protection.outlook.com ([40.107.7.59]:64301
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727305AbfEWBz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 21:55:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0BoOIJl2mErbfS2dqa5tJDRJctyMsylwCGEaUF1UR+U=;
+ b=oRuX6x/zpcwFLD4YbC32G9ow33fzw1rfYnZKZuHXM/iT3ii9PAF6GtkETGBEzcqjMzMX5h8+dQcLSnpuX9pvjBp5ZebCgrC0j19Mpz9Cuab3DiEc7vGRRQjYADKqowz/PBCfowoFEFThVEgt3dO/hCwe/MyJjEMDkjjVl0tf/x0=
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.5.23) by
+ VI1PR0402MB3408.eurprd04.prod.outlook.com (52.134.3.24) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.18; Thu, 23 May 2019 01:55:23 +0000
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::4c3e:205:bec9:54ef]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::4c3e:205:bec9:54ef%4]) with mapi id 15.20.1922.013; Thu, 23 May 2019
+ 01:55:23 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "baruch@tkos.co.il" <baruch@tkos.co.il>,
+        Andy Duan <fugang.duan@nxp.com>
+Subject: [PATCH net,stable 1/1] net: fec: add defer probe for
+ of_get_mac_address
+Thread-Topic: [PATCH net,stable 1/1] net: fec: add defer probe for
+ of_get_mac_address
+Thread-Index: AQHVEQqVg7EbGrOZ7EyghRTbLf7Z5Q==
+Date:   Thu, 23 May 2019 01:55:23 +0000
+Message-ID: <1558576444-25080-1-git-send-email-fugang.duan@nxp.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.7.4
+x-clientproxiedby: HK0PR03CA0046.apcprd03.prod.outlook.com
+ (2603:1096:203:2f::34) To VI1PR0402MB3600.eurprd04.prod.outlook.com
+ (2603:10a6:803:a::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=fugang.duan@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ddbc7395-c738-4635-5f1a-08d6df21b7cb
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB3408;
+x-ms-traffictypediagnostic: VI1PR0402MB3408:
+x-microsoft-antispam-prvs: <VI1PR0402MB340875AB4D5305668A02DDD0FF010@VI1PR0402MB3408.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:590;
+x-forefront-prvs: 00462943DE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(376002)(39860400002)(346002)(136003)(366004)(189003)(199004)(6436002)(316002)(66066001)(2501003)(53936002)(86362001)(68736007)(14454004)(5660300002)(478600001)(6486002)(36756003)(6512007)(5640700003)(256004)(71190400001)(71200400001)(2906002)(73956011)(66946007)(66446008)(476003)(2616005)(486006)(64756008)(66556008)(4326008)(66476007)(8676002)(8936002)(186003)(99286004)(50226002)(54906003)(26005)(52116002)(3846002)(305945005)(6116002)(81166006)(81156014)(25786009)(1730700003)(102836004)(6506007)(386003)(6916009)(2351001)(7736002)(142933001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3408;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: c3Kq6+a7HaTBgj0Ie6Lh13GRLAhcNXqVdT6xPvSrfXHH+gQr4Rn69WG3LH9BeI0JTPEeNKdjdgu1vexxTBt+BNanWd5ldPjcYa6prawipEcW/9tBupue+6W/N8t6Pg7eMzKCDgnn5orP4kB+73nCC9n3Cfn1oYwtgkFN/Dv4Uw/vzwHxCSiqGYT+XkZoFuQwGanOXmWrBSlzt9jb3g3aP+W1fj9lZCGEdp06aozbUI+dh3FBL3n2XmJ+lN3JKYD042vAKwNjHpxFpOShXbhEifMtnuzTmf0QkPJ5eRQKYIrB3pAiZZepE67qQfeM3OlHKT3uLznEHh9cp0b25OEnj5pWKWl5hcg0aid0nu5vvFtOmnZ+eViFyMB/jOfQDQVpEMfqQn3ODR7OHRpCAqzTXjbBroxBkRITHmK5Xnsz/LU=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190503031718.GB6969@archlinux-i9>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ddbc7395-c738-4635-5f1a-08d6df21b7cb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2019 01:55:23.2945
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3408
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 02, 2019 at 08:17:18PM -0700, Nathan Chancellor wrote:
-> On Thu, May 02, 2019 at 11:18:01AM -0700, Nick Desaulniers wrote:
-> > On Thu, May 2, 2019 at 8:16 AM Nathan Chancellor
-> > <natechancellor@gmail.com> wrote:
-> > >
-> > > When building with -Wuninitialized, Clang warns:
-> > >
-> > > drivers/net/wireless/rsi/rsi_91x_sdio.c:940:43: warning: variable 'data'
-> > > is uninitialized when used here [-Wuninitialized]
-> > >         put_unaligned_le32(TA_HOLD_THREAD_VALUE, data);
-> > >                                                  ^~~~
-> > > drivers/net/wireless/rsi/rsi_91x_sdio.c:930:10: note: initialize the
-> > > variable 'data' to silence this warning
-> > >         u8 *data;
-> > >                 ^
-> > >                  = NULL
-> > > 1 warning generated.
-> > >
-> > > Using Clang's suggestion of initializing data to NULL wouldn't work out
-> > > because data will be dereferenced by put_unaligned_le32. Use kzalloc to
-> > > properly initialize data, which matches a couple of other places in this
-> > > driver.
-> > >
-> > > Fixes: e5a1ecc97e5f ("rsi: add firmware loading for 9116 device")
-> > > Link: https://github.com/ClangBuiltLinux/linux/issues/464
-> > > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> > > ---
-> > >  drivers/net/wireless/rsi/rsi_91x_sdio.c | 21 ++++++++++++++-------
-> > >  1 file changed, 14 insertions(+), 7 deletions(-)
-> > >
-> > > diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-> > > index f9c67ed473d1..b35728564c7b 100644
-> > > --- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-> > > +++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-> > > @@ -929,11 +929,15 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
-> > >         u32 addr;
-> > >         u8 *data;
-> > >
-> > > +       data = kzalloc(sizeof(u32), GFP_KERNEL);
-> > 
-> > Something fishy is going on here.  We allocate 4 B but declare data as
-> > a u8* (pointer to individual bytes)?  In general, dynamically
-> > allocating that few bytes is a code smell; either you meant to just
-> > use the stack, or this memory's lifetime extends past the lifetime of
-> > this stackframe, at which point you probably just meant to stack
-> > allocate space in a higher parent frame and pass this preallocated
-> > memory down to the child frame to get filled in.
-> > 
-> > Reading through this code, I don't think that the memory is meant to
-> > outlive the stack frame.  Is there a reason why we can't just declare
-> > data as:
-> > 
-> > u8 data [4];
-> 
-> data was __le32 in rsi_reset_chip() before commit f700546682a6 ("rsi:
-> fix nommu_map_sg overflow kernel panic").
-> 
-> I wonder if this would be okay for this function:
-> 
-> -------------------------------------------------
-> 
-> diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-> index f9c67ed473d1..0330c50ab99c 100644
-> --- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-> +++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-> @@ -927,7 +927,7 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
->  {
->         int status;
->         u32 addr;
-> -       u8 *data;
-> +       u8 data;
->  
->         status = rsi_sdio_master_access_msword(adapter, TA_BASE_ADDR);
->         if (status < 0) {
-> @@ -937,7 +937,7 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
->         }
->  
->         rsi_dbg(INIT_ZONE, "%s: Bring TA out of reset\n", __func__);
-> -       put_unaligned_le32(TA_HOLD_THREAD_VALUE, data);
-> +       put_unaligned_le32(TA_HOLD_THREAD_VALUE, &data);
->         addr = TA_HOLD_THREAD_REG | RSI_SD_REQUEST_MASTER;
->         status = rsi_sdio_write_register_multiple(adapter, addr,
->                                                   (u8 *)&data,
-> @@ -947,7 +947,7 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
->                 return status;
->         }
->  
-> -       put_unaligned_le32(TA_SOFT_RST_CLR, data);
-> +       put_unaligned_le32(TA_SOFT_RST_CLR, &data);
->         addr = TA_SOFT_RESET_REG | RSI_SD_REQUEST_MASTER;
->         status = rsi_sdio_write_register_multiple(adapter, addr,
->                                                   (u8 *)&data,
-> @@ -957,7 +957,7 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
->                 return status;
->         }
->  
-> -       put_unaligned_le32(TA_PC_ZERO, data);
-> +       put_unaligned_le32(TA_PC_ZERO, &data);
->         addr = TA_TH0_PC_REG | RSI_SD_REQUEST_MASTER;
->         status = rsi_sdio_write_register_multiple(adapter, addr,
->                                                   (u8 *)&data,
-> @@ -967,7 +967,7 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
->                 return -EINVAL;
->         }
->  
-> -       put_unaligned_le32(TA_RELEASE_THREAD_VALUE, data);
-> +       put_unaligned_le32(TA_RELEASE_THREAD_VALUE, &data);
->         addr = TA_RELEASE_THREAD_REG | RSI_SD_REQUEST_MASTER;
->         status = rsi_sdio_write_register_multiple(adapter, addr,
->                                                   (u8 *)&data,
-> 
-> 
-> > 
-> > then use ARRAY_SIZE(data) or RSI_9116_REG_SIZE in rsi_reset_chip(),
-> > getting rid of the kzalloc/kfree?
-> > 
-> > (Sorry, I hate when a simple fixup becomes a "hey let's rewrite all
-> > this code" thus becoming "that guy.")
-> 
-> If we aren't actually improving the code, then why bother? :)
-> 
-> Thank you for the review!
-> Nathan
-> 
-> > -- 
-> > Thanks,
-> > ~Nick Desaulniers
-
-Hi all,
-
-Did any of the maintainers have any comments on what the correct
-solution is here to resolve this warning? It is one of the few left
-before we can turn on -Wuninitialized for the whole kernel.
-
-Thanks,
-Nathan
+SWYgTUFDIGFkZHJlc3MgcmVhZCBmcm9tIG52bWVtIGVmdXNlIGJ5IGNhbGxpbmcgLm9mX2dldF9t
+YWNfYWRkcmVzcygpLA0KYnV0IG52bWVtIGVmdXNlIGlzIHJlZ2lzdGVycmVkIGxhdGVyIHRoYW4g
+dGhlIGRyaXZlciwgdGhlbiBpdA0KcmV0dXJuIC1FUFJPQkVfREVGRVIgdmFsdWUuIFNvIG1vZGlm
+eSB0aGUgZHJpdmVyIHRvIHN1cHBvcnQNCmRlZmVyIHByb2JlIHdoZW4gcmVhZCBNQUMgYWRkcmVz
+cyBmcm9tIG52bWVtIGVmdXNlLg0KDQpTaWduZWQtb2ZmLWJ5OiBGdWdhbmcgRHVhbiA8ZnVnYW5n
+LmR1YW5AbnhwLmNvbT4NCi0tLQ0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNf
+bWFpbi5jIHwgMTMgKysrKysrKysrKy0tLQ0KIDEgZmlsZSBjaGFuZ2VkLCAxMCBpbnNlcnRpb25z
+KCspLCAzIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQv
+ZnJlZXNjYWxlL2ZlY19tYWluLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVj
+X21haW4uYw0KaW5kZXggODQ4ZGVmYS4uYTc2YjYwOSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0
+L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfbWFpbi5jDQorKysgYi9kcml2ZXJzL25ldC9ldGhlcm5l
+dC9mcmVlc2NhbGUvZmVjX21haW4uYw0KQEAgLTE2MzQsNyArMTYzNCw3IEBAIHN0YXRpYyBpbnQg
+ZmVjX2VuZXRfcnhfbmFwaShzdHJ1Y3QgbmFwaV9zdHJ1Y3QgKm5hcGksIGludCBidWRnZXQpDQog
+fQ0KIA0KIC8qIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gKi8NCi1zdGF0aWMgdm9pZCBmZWNfZ2V0X21hYyhz
+dHJ1Y3QgbmV0X2RldmljZSAqbmRldikNCitzdGF0aWMgaW50IGZlY19nZXRfbWFjKHN0cnVjdCBu
+ZXRfZGV2aWNlICpuZGV2KQ0KIHsNCiAJc3RydWN0IGZlY19lbmV0X3ByaXZhdGUgKmZlcCA9IG5l
+dGRldl9wcml2KG5kZXYpOw0KIAlzdHJ1Y3QgZmVjX3BsYXRmb3JtX2RhdGEgKnBkYXRhID0gZGV2
+X2dldF9wbGF0ZGF0YSgmZmVwLT5wZGV2LT5kZXYpOw0KQEAgLTE2NTcsNiArMTY1Nyw4IEBAIHN0
+YXRpYyB2b2lkIGZlY19nZXRfbWFjKHN0cnVjdCBuZXRfZGV2aWNlICpuZGV2KQ0KIAkJCWNvbnN0
+IGNoYXIgKm1hYyA9IG9mX2dldF9tYWNfYWRkcmVzcyhucCk7DQogCQkJaWYgKCFJU19FUlIobWFj
+KSkNCiAJCQkJaWFwID0gKHVuc2lnbmVkIGNoYXIgKikgbWFjOw0KKwkJCWVsc2UgaWYgKFBUUl9F
+UlIobWFjKSA9PSAtRVBST0JFX0RFRkVSKQ0KKwkJCQlyZXR1cm4gLUVQUk9CRV9ERUZFUjsNCiAJ
+CX0NCiAJfQ0KIA0KQEAgLTE2OTMsNyArMTY5NSw3IEBAIHN0YXRpYyB2b2lkIGZlY19nZXRfbWFj
+KHN0cnVjdCBuZXRfZGV2aWNlICpuZGV2KQ0KIAkJZXRoX2h3X2FkZHJfcmFuZG9tKG5kZXYpOw0K
+IAkJbmV0ZGV2X2luZm8obmRldiwgIlVzaW5nIHJhbmRvbSBNQUMgYWRkcmVzczogJXBNXG4iLA0K
+IAkJCSAgICBuZGV2LT5kZXZfYWRkcik7DQotCQlyZXR1cm47DQorCQlyZXR1cm4gMDsNCiAJfQ0K
+IA0KIAltZW1jcHkobmRldi0+ZGV2X2FkZHIsIGlhcCwgRVRIX0FMRU4pOw0KQEAgLTE3MDEsNiAr
+MTcwMyw4IEBAIHN0YXRpYyB2b2lkIGZlY19nZXRfbWFjKHN0cnVjdCBuZXRfZGV2aWNlICpuZGV2
+KQ0KIAkvKiBBZGp1c3QgTUFDIGlmIHVzaW5nIG1hY2FkZHIgKi8NCiAJaWYgKGlhcCA9PSBtYWNh
+ZGRyKQ0KIAkJIG5kZXYtPmRldl9hZGRyW0VUSF9BTEVOLTFdID0gbWFjYWRkcltFVEhfQUxFTi0x
+XSArIGZlcC0+ZGV2X2lkOw0KKw0KKwlyZXR1cm4gMDsNCiB9DQogDQogLyogLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLSAqLw0KQEAgLTMxNDYsNyArMzE1MCwxMCBAQCBzdGF0aWMgaW50IGZlY19lbmV0X2luaXQo
+c3RydWN0IG5ldF9kZXZpY2UgKm5kZXYpDQogCW1lbXNldChjYmRfYmFzZSwgMCwgYmRfc2l6ZSk7
+DQogDQogCS8qIEdldCB0aGUgRXRoZXJuZXQgYWRkcmVzcyAqLw0KLQlmZWNfZ2V0X21hYyhuZGV2
+KTsNCisJcmV0ID0gZmVjX2dldF9tYWMobmRldik7DQorCWlmIChyZXQpDQorCQlyZXR1cm4gcmV0
+Ow0KKw0KIAkvKiBtYWtlIHN1cmUgTUFDIHdlIGp1c3QgYWNxdWlyZWQgaXMgcHJvZ3JhbW1lZCBp
+bnRvIHRoZSBodyAqLw0KIAlmZWNfc2V0X21hY19hZGRyZXNzKG5kZXYsIE5VTEwpOw0KIA0KLS0g
+DQoyLjcuNA0KDQo=
