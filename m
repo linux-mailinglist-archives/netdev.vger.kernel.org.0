@@ -2,59 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77F592822C
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 18:09:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E43328238
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 18:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731073AbfEWQJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 12:09:31 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:48098 "EHLO
+        id S1730961AbfEWQLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 12:11:07 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:48160 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730980AbfEWQJb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 12:09:31 -0400
+        with ESMTP id S1730782AbfEWQLH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 12:11:07 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D58651509A0E9;
-        Thu, 23 May 2019 09:09:30 -0700 (PDT)
-Date:   Thu, 23 May 2019 09:09:28 -0700 (PDT)
-Message-Id: <20190523.090928.974790678055823460.davem@davemloft.net>
-To:     Jose.Abreu@synopsys.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Joao.Pinto@synopsys.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, clabbe.montjoie@gmail.com, andrew@lunn.ch
-Subject: Re: [PATCH net-next 00/18] net: stmmac: Improvements and Selftests
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2D9D21509A0F5;
+        Thu, 23 May 2019 09:11:07 -0700 (PDT)
+Date:   Thu, 23 May 2019 09:11:06 -0700 (PDT)
+Message-Id: <20190523.091106.645519899189717299.davem@davemloft.net>
+To:     ast@domdv.de
+Cc:     netdev@vger.kernel.org
+Subject: Re: [RESEND][PATCH] Fix MACsec kernel panics, oopses and bugs
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1558596599.git.joabreu@synopsys.com>
-References: <cover.1558596599.git.joabreu@synopsys.com>
+In-Reply-To: <32eb738a0a0f3ed5880911e4ac4ceedca76e3f52.camel@domdv.de>
+References: <32eb738a0a0f3ed5880911e4ac4ceedca76e3f52.camel@domdv.de>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 May 2019 09:09:31 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 May 2019 09:11:07 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jose Abreu <Jose.Abreu@synopsys.com>
-Date: Thu, 23 May 2019 09:36:50 +0200
+From: Andreas Steinmetz <ast@domdv.de>
+Date: Thu, 23 May 2019 09:46:15 +0200
 
-> [ Thanks to the introducion of selftests this series ended up being a misc
-> of improvements and the selftests additions per-se. ]
+> MACsec causes oopses followed by a kernel panic when attached directly or indirectly to a bridge. It causes erroneous
+> checksum messages when attached to vxlan. When I did investigate I did find skb leaks, apparent skb mis-handling and
+> superfluous code. The attached patch fixes all MACsec misbehaviour I could find. As I am no kernel developer somebody
+> with sufficient kernel network knowledge should verify and correct the patch where necessary.
 > 
-> This introduces selftests support in stmmac driver. We add 9 basic sanity
-> checks and MAC loopback support for all cores within the driver. This way
-> more tests can easily be added in the future and can be run in virtually
-> any MAC/GMAC/QoS/XGMAC platform.
-> 
-> Having this we can find regressions and missing features in the driver
-> while at the same time we can check if the IP is correctly working.
-> 
-> We have been using this for some time now and I do have more tests to
-> submit in the feature. My experience is that although writing the tests
-> adds more development time, the gain results are obvious.
-> 
-> I let this feature optional within the driver under a Kconfig option.
+> Signed-off-by: Andreas Steinmetz <ast@domdv.de>
 
-Series applied.
+Subject lines should be of the form:
+
+[PATCH $DST_TREE] $subsystem_prefix: Description.
+
+Where $DST_TREE here would be "net" and $subsystem_prefix would be "macsec".
+
+> +	/* FIXME: any better way to prevent calls to netdev_rx_csum_fault? */
+> +	skb->csum_complete_sw = 1;
+
+Create a helper for this in linux/skbuff.h with very clear and clean comments
+explaining what is going on.
