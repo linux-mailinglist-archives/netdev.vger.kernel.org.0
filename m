@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F04027485
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 04:42:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 477A92747E
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 04:38:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728668AbfEWCl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 May 2019 22:41:56 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:15877 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727305AbfEWCl4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 May 2019 22:41:56 -0400
-Received: from dalmore.blr.asicdesigners.com ([10.193.186.161])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x4N2foYR002540;
-        Wed, 22 May 2019 19:41:51 -0700
-From:   Vishal Kulkarni <vishal@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     nirranjan@chelsio.com, indranil@chelsio.com, dt@chelsio.com,
-        Vishal Kulkarni <vishal@chelsio.com>
-Subject: [PATCH net] cxgb4: Revert "cxgb4: Remove SGE_HOST_PAGE_SIZE dependency on page size"
-Date:   Thu, 23 May 2019 08:07:21 +0530
-Message-Id: <1558579041-23465-1-git-send-email-vishal@chelsio.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1729621AbfEWChs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 May 2019 22:37:48 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:35600 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727305AbfEWChr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 May 2019 22:37:47 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id AA1143082163;
+        Thu, 23 May 2019 02:37:47 +0000 (UTC)
+Received: from [10.72.12.128] (ovpn-12-128.pek2.redhat.com [10.72.12.128])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A6D910AFEC9;
+        Thu, 23 May 2019 02:37:40 +0000 (UTC)
+Subject: Re: [PATCH V2 0/4] Prevent vhost kthread from hogging CPU
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pbonzini@redhat.com, stefanha@redhat.com
+References: <1558067392-11740-1-git-send-email-jasowang@redhat.com>
+ <20190520085207-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <aa132e69-4646-da70-7def-b6ad72d4ebda@redhat.com>
+Date:   Thu, 23 May 2019 10:37:39 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <20190520085207-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Thu, 23 May 2019 02:37:47 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 2391b0030e241386d710df10e53e2cfc3c5d4fc1 which has
-introduced regression. Now SGE's BAR2 Doorbell/GTS Page Size is
-interpreted correctly in the firmware itself by using actual host
-page size. Hence previous commit needs to be reverted.
 
-Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+On 2019/5/20 下午8:52, Michael S. Tsirkin wrote:
+> On Fri, May 17, 2019 at 12:29:48AM -0400, Jason Wang wrote:
+>> Hi:
+>>
+>> This series try to prevent a guest triggerable CPU hogging through
+>> vhost kthread. This is done by introducing and checking the weight
+>> after each requrest. The patch has been tested with reproducer of
+>> vsock and virtio-net. Only compile test is done for vhost-scsi.
+>>
+>> Please review.
+>> This addresses CVE-2019-3900.
+> OK I think we should clean this code some more but given
+> it's a CVE fix maybe it's best to do as a patch on top.
+>
+> Acked-by: Michael S. Tsirkin<mst@redhat.com>
+>
+> Dave do you want to merge this or should I?
+>
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index 866ee31..c36cb6a 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -7284,10 +7284,21 @@ int t4_fixup_host_params(struct adapter *adap, unsigned int page_size,
- 			 unsigned int cache_line_size)
- {
- 	unsigned int page_shift = fls(page_size) - 1;
-+	unsigned int sge_hps = page_shift - 10;
- 	unsigned int stat_len = cache_line_size > 64 ? 128 : 64;
- 	unsigned int fl_align = cache_line_size < 32 ? 32 : cache_line_size;
- 	unsigned int fl_align_log = fls(fl_align) - 1;
- 
-+	t4_write_reg(adap, SGE_HOST_PAGE_SIZE_A,
-+		     HOSTPAGESIZEPF0_V(sge_hps) |
-+		     HOSTPAGESIZEPF1_V(sge_hps) |
-+		     HOSTPAGESIZEPF2_V(sge_hps) |
-+		     HOSTPAGESIZEPF3_V(sge_hps) |
-+		     HOSTPAGESIZEPF4_V(sge_hps) |
-+		     HOSTPAGESIZEPF5_V(sge_hps) |
-+		     HOSTPAGESIZEPF6_V(sge_hps) |
-+		     HOSTPAGESIZEPF7_V(sge_hps));
-+
- 	if (is_t4(adap->params.chip)) {
- 		t4_set_reg_field(adap, SGE_CONTROL_A,
- 				 INGPADBOUNDARY_V(INGPADBOUNDARY_M) |
--- 
-1.8.3.1
+According to David's last reply, it's better for you to merge I think.
+
+Thanks
 
