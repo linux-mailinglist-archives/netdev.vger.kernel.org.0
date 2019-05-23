@@ -2,186 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D94E228D45
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C527328D7A
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388496AbfEWWgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 18:36:07 -0400
-Received: from gateway24.websitewelcome.com ([192.185.50.93]:42931 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387546AbfEWWgG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 18:36:06 -0400
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 55D3D723D
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 17:36:04 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id TwJghmMWliQerTwJghNu8Y; Thu, 23 May 2019 17:36:04 -0500
-X-Authority-Reason: nr=8
-Received: from [189.250.47.159] (port=37812 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hTwJf-001NXA-BB; Thu, 23 May 2019 17:36:03 -0500
-Subject: Re: [PATCH net-next] xprtrdma: Use struct_size() in kzalloc()
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Chuck Lever <chuck.lever@oracle.com>
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Bruce Fields <bfields@fieldses.org>,
-        Jeff Layton <jlayton@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190131004622.GA30261@embeddedor>
- <07CB966E-A946-4956-8480-C0FC13E13E4E@oracle.com>
- <ad9eccc7-afd2-3419-b886-6210eeabd5b5@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <70ca0dea-6f1f-922c-7c5d-e79c6cf6ecb5@embeddedor.com>
-Date:   Thu, 23 May 2019 17:36:00 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S2387966AbfEWWzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 18:55:10 -0400
+Received: from mga07.intel.com ([134.134.136.100]:63184 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387693AbfEWWzK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 18:55:10 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 May 2019 15:55:09 -0700
+X-ExtLoop1: 1
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by orsmga004.jf.intel.com with ESMTP; 23 May 2019 15:55:09 -0700
+Message-ID: <f8d774415fcb66c46ebc08a9b66f32d825c004ac.camel@intel.com>
+Subject: Re: [RESEND PATCH] intel-ethernet: warn when fatal read failure
+ happens
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Reply-To: jeffrey.t.kirsher@intel.com
+To:     Feng Tang <feng.tang@intel.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Aaron F Brown <aaron.f.brown@intel.com>,
+        intel-wired-lan@osuosl.org, netdev@vger.kernel.org
+Date:   Thu, 23 May 2019 15:55:15 -0700
+In-Reply-To: <20190523032233.29277-1-feng.tang@intel.com>
+References: <20190523032233.29277-1-feng.tang@intel.com>
+Organization: Intel
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-y1OFu1nRmlcChIbRxZiy"
+User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
 MIME-Version: 1.0
-In-Reply-To: <ad9eccc7-afd2-3419-b886-6210eeabd5b5@embeddedor.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.47.159
-X-Source-L: No
-X-Exim-ID: 1hTwJf-001NXA-BB
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.47.159]:37812
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 16
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
 
-I wonder if you can take this patch.
+--=-y1OFu1nRmlcChIbRxZiy
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thanks
---
-Gustavo
+On Thu, 2019-05-23 at 11:22 +0800, Feng Tang wrote:
+> Failed in reading the HW register is very serious for igb/igc driver,
+> as its hw_addr will be set to NULL and cause the adapter be seen as
+> "REMOVED".
+>=20
+> We saw the error only a few times in the MTBF test for
+> suspend/resume,
+> but can hardly get any useful info to debug.
+>=20
+> Adding WARN() so that we can get the necessary information about
+> where and how it happens, and use it for root causing and fixing
+> this "PCIe link lost issue"
+>=20
+> This affects igb, igc.
+>=20
+> Signed-off-by: Feng Tang <feng.tang@intel.com>
+> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+> Acked-by: Sasha Neftin <sasha.neftin@intel.com>
+> ---
+>  drivers/net/ethernet/intel/igb/igb_main.c | 1 +
+>  drivers/net/ethernet/intel/igc/igc_main.c | 1 +
+>  2 files changed, 2 insertions(+)
 
-On 3/28/19 3:41 PM, Gustavo A. R. Silva wrote:
-> Hi all,
-> 
-> Friendly ping:
-> 
-> Who can take this?
-> 
-> Thanks
-> --
-> Gustavo
-> 
-> On 1/31/19 8:11 AM, Chuck Lever wrote:
->>
->>
->>> On Jan 30, 2019, at 7:46 PM, Gustavo A. R. Silva <gustavo@embeddedor.com> wrote:
->>>
->>> One of the more common cases of allocation size calculations is finding
->>> the size of a structure that has a zero-sized array at the end, along
->>> with memory for some number of elements for that array. For example:
->>>
->>> struct foo {
->>>    int stuff;
->>>    struct boo entry[];
->>> };
->>>
->>> instance = kzalloc(sizeof(struct foo) + count * sizeof(struct boo), GFP_KERNEL);
->>>
->>> Instead of leaving these open-coded and prone to type mistakes, we can
->>> now use the new struct_size() helper:
->>>
->>> instance = kzalloc(struct_size(instance, entry, count), GFP_KERNEL);
->>>
->>> This code was detected with the help of Coccinelle.
->>>
->>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
->>
->> Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
->>
->>
->>> ---
->>> net/sunrpc/xprtrdma/verbs.c | 3 +--
->>> 1 file changed, 1 insertion(+), 2 deletions(-)
->>>
->>> diff --git a/net/sunrpc/xprtrdma/verbs.c b/net/sunrpc/xprtrdma/verbs.c
->>> index 4994e75945b8..9e8cf7456840 100644
->>> --- a/net/sunrpc/xprtrdma/verbs.c
->>> +++ b/net/sunrpc/xprtrdma/verbs.c
->>> @@ -811,8 +811,7 @@ static struct rpcrdma_sendctx *rpcrdma_sendctx_create(struct rpcrdma_ia *ia)
->>> {
->>> 	struct rpcrdma_sendctx *sc;
->>>
->>> -	sc = kzalloc(sizeof(*sc) +
->>> -		     ia->ri_max_send_sges * sizeof(struct ib_sge),
->>> +	sc = kzalloc(struct_size(sc, sc_sges, ia->ri_max_send_sges),
->>> 		     GFP_KERNEL);
->>> 	if (!sc)
->>> 		return NULL;
->>> -- 
->>> 2.20.1
->>>
->>
->> --
->> Chuck Lever
->>
->>
->>
+This patch is already in my next series of 1GbE patches to push to
+Dave, so you can expect this to be pushed upstream before the weekend.
+
+--=-y1OFu1nRmlcChIbRxZiy
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAlznJNMACgkQ5W/vlVpL
+7c7v5Q/9F2bwo0bdt/sXDiOiWfpgLcTVVN3sYMsjzDHCJCZQAEZuGEvlnhl6GIgc
+KwYrE0Am0ZvnhMtX6KYi29f51EZo3fpZ979hAUAZlIFBLgBVtg4F/j5YdpL283ku
+U2c2MpnoDZEvlRjaOIzUsqygNmif9jNqsTINKazBm2FFm8qBMXPhJ3ivUWAmYx6J
+AyyeoHDUUohDR4JxIdQkOiNumbaFszgNa6Rek5E8VV7jgujCic9TRV+SkvAYNViU
+tDqBgoJJGlyHOUmJEYlW8EiHF+hQ8n03ycAct/57lU0BjDizZVBktdvxdSura3MP
+klr1PTiuMwLMFaH+YzgVD+fuWplAALbrqhDtXpqG471Q+q0twvU1HIWIjOywjzxY
+Lo9G3Ru0HBwyhELGotBi8NzsE3/w950jKefSYv37CzYKIAr6EwgvJydG1tW2VubW
+s5jcDdxrr0qbSY1v5eI8HlKvcFKYRw+LYyHeOEVR0DLs8mXEker9qzluG4OBNm9W
+URQN5F/Myy8pejMOQPCqSFyWSCzxddCzUy1KPaIUN82pIdz3pfMgQZfaseOH4GyV
+/bzaXPU8EXAtjan6/P6XDJ71AW3+VSXIcfEC1UAV/9VAu8GY1N4aJym85NPCRyKD
+tW1jAIXiErijG8ddQ0zHuv2kDT82mG8ggklcjElIIBu/ULE3GPc=
+=3A37
+-----END PGP SIGNATURE-----
+
+--=-y1OFu1nRmlcChIbRxZiy--
+
