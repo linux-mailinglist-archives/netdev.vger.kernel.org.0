@@ -2,75 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C692778E
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 09:58:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D945277A0
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 10:06:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726429AbfEWH6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 03:58:23 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:47904 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725814AbfEWH6X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 03:58:23 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727232AbfEWIGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 04:06:50 -0400
+Received: from guitar.tcltek.co.il ([192.115.133.116]:59656 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726363AbfEWIGu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 04:06:50 -0400
+Received: from sapphire.tkos.co.il (unknown [192.168.100.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8AF6B308FBAF;
-        Thu, 23 May 2019 07:58:23 +0000 (UTC)
-Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E4E4068D3D;
-        Thu, 23 May 2019 07:58:21 +0000 (UTC)
-Date:   Thu, 23 May 2019 09:58:17 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net-next] selftests: pmtu: Simplify cleanup and
- namespace names
-Message-ID: <20190523095817.45ca9cae@redhat.com>
-In-Reply-To: <20190522191106.15789-1-dsahern@kernel.org>
-References: <20190522191106.15789-1-dsahern@kernel.org>
-Organization: Red Hat
+        by mx.tkos.co.il (Postfix) with ESMTPS id BA3C1440360;
+        Thu, 23 May 2019 11:06:47 +0300 (IDT)
+Date:   Thu, 23 May 2019 11:06:46 +0300
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Andy Duan <fugang.duan@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Shawn Guo <shawnguo@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>
+Subject: Re: [PATCH net,stable 1/1] net: fec: fix the clk mismatch in
+ failed_reset path
+Message-ID: <20190523080646.6ty67zmck5xhfdcm@sapphire.tkos.co.il>
+References: <1558576444-25080-1-git-send-email-fugang.duan@nxp.com>
+ <1558576444-25080-2-git-send-email-fugang.duan@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Thu, 23 May 2019 07:58:23 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1558576444-25080-2-git-send-email-fugang.duan@nxp.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Hi Andy,
 
-On Wed, 22 May 2019 12:11:06 -0700
-David Ahern <dsahern@kernel.org> wrote:
-
-> From: David Ahern <dsahern@gmail.com>
+On Thu, May 23, 2019 at 01:55:28AM +0000, Andy Duan wrote:
+> Fix the clk mismatch in the error path "failed_reset" because
+> below error path will disable clk_ahb and clk_ipg directly, it
+> should use pm_runtime_put_noidle() instead of pm_runtime_put()
+> to avoid to call runtime resume callback.
 > 
-> The point of the pause-on-fail argument is to leave the setup as is after
-> a test fails to allow a user to debug why it failed. Move the cleanup
-> after posting the result to the user to make it so.
+> Reported-by: Baruch Siach <baruch@tkos.co.il>
+> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+
+Tested-by: Baruch Siach <baruch@tkos.co.il>
+
+Tested on SolidRun Hummingboard Pulse.
+
+Thanks.
+
+But please avoid sending patched in base64 encoded emails. Plaintext is much 
+easier when dealing with 'git am'.
+
+baruch
+
+> ---
+>  drivers/net/ethernet/freescale/fec_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Random names for the namespaces are not user friendly when trying to
-> debug a failure. Make them simpler and more direct for the tests. Run
-> cleanup at the beginning to ensure they are cleaned up if they already
-> exist.
-
-The reasons for picking per-instance unique names were:
-
-- one can run multiple instances of the script in parallel. I
-  couldn't trigger any bug this way *so far*, though
-
-- cleanup might fail because of e.g. device reference count leaks (this
-  happened quite frequently in the past), which are anyway visible in
-  kernel logs. Unique names avoid the need to reboot
-
-Sure, it's a trade-off with usability, and I also see the value of
-having fixed names, so I'm fine with this too. I just wanted to make
-sure you considered these points.
-
-By the way, the comment to nsname() (that I would keep, it's still
-somewhat convenient) is now inconsistent.
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index f63eb2b..848defa 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -3555,7 +3555,7 @@ fec_probe(struct platform_device *pdev)
+>  	if (fep->reg_phy)
+>  		regulator_disable(fep->reg_phy);
+>  failed_reset:
+> -	pm_runtime_put(&pdev->dev);
+> +	pm_runtime_put_noidle(&pdev->dev);
+>  	pm_runtime_disable(&pdev->dev);
+>  failed_regulator:
+>  	clk_disable_unprepare(fep->clk_ahb);
 
 -- 
-Stefano
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
