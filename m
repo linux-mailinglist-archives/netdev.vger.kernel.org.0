@@ -2,177 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B1028D90
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 01:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1BE728D8C
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 01:02:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388493AbfEWXDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 19:03:16 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:37956 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387725AbfEWXDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 19:03:16 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4NN1FVt059399;
-        Thu, 23 May 2019 23:02:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2018-07-02; bh=61U1g4Qwd+YXNHX5FwhqRFWvGU28Frzm1PU4OuNdzOA=;
- b=oB87+ku4KgSUdUPd4v61zpy+5bs2hMSwlRIWhIviu7YuuLj+QkXfdMN6RgecNnsgbcUK
- b+kwRhKyDblJf0RMk0lkhMjju64jy+4U8Y7y41C3FCD1D5GhJjKHeVCG5eyAePMxkSfD
- lJm3/IfLdf7bA4KN15jOIGrx7pcjEpBUezcUY/Iatighda2YU0Um4LK1DPuoo4B4gYd0
- 9MoJ08yDruASgKnOMQHIAEd7qPdRyqQku0e0AoCxIHyA5cM7p3f9bGFCaCj+aqM+rEZu
- 9ja6s5+oYCoiTLzfSYADK2bBYcyqniZ9A/7KI8NlvEmvwLghG470oUp/maD3MCAPo5Aw rQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2130.oracle.com with ESMTP id 2smsk5ngmk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 23 May 2019 23:02:47 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4NN18uj056885;
-        Thu, 23 May 2019 23:02:46 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2smshfhc0r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 23 May 2019 23:02:46 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x4NN2foL000641;
-        Thu, 23 May 2019 23:02:41 GMT
-Received: from anon-dhcp-171.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 23 May 2019 23:02:41 +0000
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: [PATCH net-next] xprtrdma: Use struct_size() in kzalloc()
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <70ca0dea-6f1f-922c-7c5d-e79c6cf6ecb5@embeddedor.com>
-Date:   Thu, 23 May 2019 19:02:39 -0400
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Bruce Fields <bfields@fieldses.org>,
-        Jeff Layton <jlayton@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <CDDB9617-08B2-43B6-AB03-3BAA7CC27839@oracle.com>
-References: <20190131004622.GA30261@embeddedor>
- <07CB966E-A946-4956-8480-C0FC13E13E4E@oracle.com>
- <ad9eccc7-afd2-3419-b886-6210eeabd5b5@embeddedor.com>
- <70ca0dea-6f1f-922c-7c5d-e79c6cf6ecb5@embeddedor.com>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>
-X-Mailer: Apple Mail (2.3445.104.11)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9266 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1905230148
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9266 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1905230148
+        id S2387997AbfEWXCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 19:02:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43256 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387725AbfEWXCr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 19:02:47 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1A7832175B;
+        Thu, 23 May 2019 23:02:45 +0000 (UTC)
+Date:   Thu, 23 May 2019 19:02:43 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Kris Van Hees <kris.van.hees@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org, mhiramat@kernel.org, acme@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, peterz@infradead.org
+Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
+ implementation and sample use
+Message-ID: <20190523190243.54221053@gandalf.local.home>
+In-Reply-To: <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
+References: <201905202347.x4KNl0cs030532@aserv0121.oracle.com>
+        <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
+        <20190521184137.GH2422@oracle.com>
+        <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
+        <20190521173618.2ebe8c1f@gandalf.local.home>
+        <20190521214325.rr7emn5z3b7wqiiy@ast-mbp.dhcp.thefacebook.com>
+        <20190521174757.74ec8937@gandalf.local.home>
+        <20190522052327.GN2422@oracle.com>
+        <20190522205329.uu26oq2saj56og5m@ast-mbp.dhcp.thefacebook.com>
+        <20190523054610.GR2422@oracle.com>
+        <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Gustavo-
+On Thu, 23 May 2019 14:13:31 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-Anna is supposed to take patches for xprtrdma/ .
+> > In DTrace, people write scripts based on UAPI-style interfaces and they don't
+> > have to concern themselves with e.g. knowing how to get the value of the 3rd
+> > argument that was passed by the firing probe.  All they need to know is that
+> > the probe will have a 3rd argument, and that the 3rd argument to *any* probe
+> > can be accessed as 'arg2' (or args[2] for typed arguments, if the provider is
+> > capable of providing that).  Different probes have different ways of passing
+> > arguments, and only the provider code for each probe type needs to know how
+> > to retrieve the argument values.
+> > 
+> > Does this help bring clarity to the reasons why an abstract (generic) probe
+> > concept is part of DTrace's design?  
+> 
+> It actually sounds worse than I thought.
+> If dtrace script reads some kernel field it's considered to be uapi?! ouch.
+> It means dtrace development philosophy is incompatible with the linux kernel.
+> There is no way kernel is going to bend itself to make dtrace scripts
+> runnable if that means that all dtrace accessible fields become uapi.
 
-
-> On May 23, 2019, at 6:36 PM, Gustavo A. R. Silva =
-<gustavo@embeddedor.com> wrote:
->=20
-> Hi Dave,
->=20
-> I wonder if you can take this patch.
->=20
-> Thanks
-> --
-> Gustavo
->=20
-> On 3/28/19 3:41 PM, Gustavo A. R. Silva wrote:
->> Hi all,
->>=20
->> Friendly ping:
->>=20
->> Who can take this?
->>=20
->> Thanks
->> --
->> Gustavo
->>=20
->> On 1/31/19 8:11 AM, Chuck Lever wrote:
->>>=20
->>>=20
->>>> On Jan 30, 2019, at 7:46 PM, Gustavo A. R. Silva =
-<gustavo@embeddedor.com> wrote:
->>>>=20
->>>> One of the more common cases of allocation size calculations is =
-finding
->>>> the size of a structure that has a zero-sized array at the end, =
-along
->>>> with memory for some number of elements for that array. For =
-example:
->>>>=20
->>>> struct foo {
->>>>   int stuff;
->>>>   struct boo entry[];
->>>> };
->>>>=20
->>>> instance =3D kzalloc(sizeof(struct foo) + count * sizeof(struct =
-boo), GFP_KERNEL);
->>>>=20
->>>> Instead of leaving these open-coded and prone to type mistakes, we =
-can
->>>> now use the new struct_size() helper:
->>>>=20
->>>> instance =3D kzalloc(struct_size(instance, entry, count), =
-GFP_KERNEL);
->>>>=20
->>>> This code was detected with the help of Coccinelle.
->>>>=20
->>>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
->>>=20
->>> Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
->>>=20
->>>=20
->>>> ---
->>>> net/sunrpc/xprtrdma/verbs.c | 3 +--
->>>> 1 file changed, 1 insertion(+), 2 deletions(-)
->>>>=20
->>>> diff --git a/net/sunrpc/xprtrdma/verbs.c =
-b/net/sunrpc/xprtrdma/verbs.c
->>>> index 4994e75945b8..9e8cf7456840 100644
->>>> --- a/net/sunrpc/xprtrdma/verbs.c
->>>> +++ b/net/sunrpc/xprtrdma/verbs.c
->>>> @@ -811,8 +811,7 @@ static struct rpcrdma_sendctx =
-*rpcrdma_sendctx_create(struct rpcrdma_ia *ia)
->>>> {
->>>> 	struct rpcrdma_sendctx *sc;
->>>>=20
->>>> -	sc =3D kzalloc(sizeof(*sc) +
->>>> -		     ia->ri_max_send_sges * sizeof(struct ib_sge),
->>>> +	sc =3D kzalloc(struct_size(sc, sc_sges, ia->ri_max_send_sges),
->>>> 		     GFP_KERNEL);
->>>> 	if (!sc)
->>>> 		return NULL;
->>>> --=20
->>>> 2.20.1
->>>>=20
->>>=20
->>> --
->>> Chuck Lever
->>>=20
->>>=20
->>>=20
-
---
-Chuck Lever
+Now from what I'm reading, it seams that the Dtrace layer may be
+abstracting out fields from the kernel. This is actually something I
+have been thinking about to solve the "tracepoint abi" issue. There's
+usually basic ideas that happen. An interrupt goes off, there's a
+handler, etc. We could abstract that out that we trace when an
+interrupt goes off and the handler happens, and record the vector
+number, and/or what device it was for. We have tracepoints in the
+kernel that do this, but they do depend a bit on the implementation.
+Now, if we could get a layer that abstracts this information away from
+the implementation, then I think that's a *good* thing.
 
 
+> 
+> In stark contrast to dtrace all of bpf tracing scripts (bcc scripts
+> and bpftrace scripts) are written for specific kernel with intimate
+> knowledge of kernel details. They do break all the time when kernel changes.
+> kprobe and tracepoints are NOT uapi. All of them can change.
+> tracepoints are a bit more stable than kprobes, but they are not uapi.
 
+I wish that was totally true, but tracepoints *can* be an abi. I had
+code reverted because powertop required one to be a specific format. To
+this day, the wakeup event has a "success" field that writes in a
+hardcoded "1", because there's tools that depend on it, and they only
+work if there's a success field and the value is 1.
+
+I do definitely agree with you that the Dtrace code shall *never* keep
+the kernel from changing. That is, if Dtrace depends on something that
+changes (let's say we record priority of a task, but someday priority
+is replaced by something else), then Dtrace must cope with it. It must
+not be a blocker like user space applications can be.
+
+
+-- Steve
