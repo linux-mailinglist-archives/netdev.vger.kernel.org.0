@@ -2,102 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1BE728D8C
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 01:02:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD78A28D97
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 01:06:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387997AbfEWXCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 19:02:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43256 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387725AbfEWXCr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 19:02:47 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1A7832175B;
-        Thu, 23 May 2019 23:02:45 +0000 (UTC)
-Date:   Thu, 23 May 2019 19:02:43 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Kris Van Hees <kris.van.hees@oracle.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org, acme@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, peterz@infradead.org
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-Message-ID: <20190523190243.54221053@gandalf.local.home>
-In-Reply-To: <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
-References: <201905202347.x4KNl0cs030532@aserv0121.oracle.com>
-        <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
-        <20190521184137.GH2422@oracle.com>
-        <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
-        <20190521173618.2ebe8c1f@gandalf.local.home>
-        <20190521214325.rr7emn5z3b7wqiiy@ast-mbp.dhcp.thefacebook.com>
-        <20190521174757.74ec8937@gandalf.local.home>
-        <20190522052327.GN2422@oracle.com>
-        <20190522205329.uu26oq2saj56og5m@ast-mbp.dhcp.thefacebook.com>
-        <20190523054610.GR2422@oracle.com>
-        <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S2388137AbfEWXGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 19:06:20 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:56278 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387725AbfEWXGU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 19:06:20 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x4NN3Nxi006423;
+        Thu, 23 May 2019 16:06:06 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=phIreuEgZGB7hQWiDfT5EjSzPgXajjPLmKUroPJW/3o=;
+ b=i8PEXjCTErOrFLbO0ALMQ0L7wXcHg3OD4nWtbBXeBZdK3pZNyQcZ2V0EA7lamYXMu3v9
+ 3Pjgob4yxCL5qIJBb3yYinLylsDLWXYKN7avV2eXZAwkBCYC9M5OsBY3OIu00D/z0ccu
+ xxIWpGg+4YYhJsxU/QwGEJ+xOzk6r7VVSzQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2sp3gm89eg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 23 May 2019 16:06:06 -0700
+Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
+ ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 23 May 2019 16:06:05 -0700
+Received: from ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) by
+ ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 23 May 2019 16:06:05 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 23 May 2019 16:06:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=phIreuEgZGB7hQWiDfT5EjSzPgXajjPLmKUroPJW/3o=;
+ b=M3OmUr98ek40/t9N6LlZebmgfWE530LBmu3qBg7KiP+NIuatCTImUALCF80GgyRMR+EZFr08P871ouMbStX+VVNFBUizMIn5xfUyw/vbDZIYj8U+xrfum+DPq/+LTY8ESux4TCt+FxWjuvvdh4NKPKhjDs/A6VqejIa5RWp8MYU=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
+ BYAPR15MB2247.namprd15.prod.outlook.com (52.135.197.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.18; Thu, 23 May 2019 23:06:03 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::956e:28a4:f18d:b698]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::956e:28a4:f18d:b698%3]) with mapi id 15.20.1900.020; Thu, 23 May 2019
+ 23:06:03 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Roman Gushchin <guro@fb.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tejun Heo <tj@kernel.org>, Kernel Team <Kernel-team@fb.com>,
+        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf-next 4/4] selftests/bpf: add auto-detach test
+Thread-Topic: [PATCH v2 bpf-next 4/4] selftests/bpf: add auto-detach test
+Thread-Index: AQHVEPUtUUkH/nhO2UeBDfLyvw3JgKZ4NA4AgADMVQCAAFXeAA==
+Date:   Thu, 23 May 2019 23:06:02 +0000
+Message-ID: <5a44b791-899b-5638-4c75-235a31a0cb4d@fb.com>
+References: <20190522232051.2938491-1-guro@fb.com>
+ <20190522232051.2938491-5-guro@fb.com>
+ <f7953267-8559-2f58-f39a-b2b0c3bf2e38@fb.com>
+ <20190523175833.GA7107@tower.DHCP.thefacebook.com>
+In-Reply-To: <20190523175833.GA7107@tower.DHCP.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BYAPR02CA0067.namprd02.prod.outlook.com
+ (2603:10b6:a03:54::44) To BYAPR15MB3384.namprd15.prod.outlook.com
+ (2603:10b6:a03:10e::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::d011]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c502961f-2783-4dcc-e7d3-08d6dfd33a31
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR15MB2247;
+x-ms-traffictypediagnostic: BYAPR15MB2247:
+x-microsoft-antispam-prvs: <BYAPR15MB2247192229D6313D1E8FBAE3D3010@BYAPR15MB2247.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 00462943DE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(376002)(39860400002)(366004)(346002)(136003)(189003)(199004)(478600001)(6636002)(25786009)(6862004)(4326008)(102836004)(31686004)(14454004)(229853002)(6116002)(37006003)(2906002)(5660300002)(316002)(68736007)(6506007)(6512007)(66946007)(73956011)(53546011)(31696002)(86362001)(6486002)(66476007)(386003)(66446008)(66556008)(64756008)(54906003)(36756003)(6436002)(486006)(256004)(46003)(5024004)(99286004)(14444005)(446003)(71190400001)(71200400001)(186003)(53936002)(76176011)(305945005)(7736002)(52116002)(2616005)(81156014)(476003)(11346002)(8676002)(81166006)(8936002)(6246003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2247;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: jBckefJ74sVsi0NXxXtCKUIXUnIoE9k6R8wKjsEnEM+SOaVAllSoUlqNdBPfyEUn5l5g2tS1Q/HUjfH3c2y6K+/mJzaHRpSPuBh4qlxgIVPl5pssiAoB5wvj8TnKZLn9qJB2SRgrV/5i1lBAJcL3ZLCWOLxX/7CkL04oAABX35Rmk44D3ivA784T0yWd9ofdqRK1hZ4wqe1n86UZCNHzE/lpOt7qzvewiDElkkZBQ0xCN7Jw7DBcEBpQkjlzE72/uMs/2HMr1Md1TO5CQoLjfV4TaO6yPBYKKyuVu5h2RYdKxUrvzXHFBCk3kFakIxBeobH+OMD8KR2U9txZtXrHLoYrw5ZYjDTeSHlOKofJAgZoM8ktwz5v0HGTqDhq+nV8PXyoS2YfX/woMDDfhiHjFUtVFtJiBJMPff3iLfvq0a0=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <15E0BB2E1DBFAF4DB4358347764A8F5A@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: c502961f-2783-4dcc-e7d3-08d6dfd33a31
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2019 23:06:03.0574
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2247
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-23_17:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905230149
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 May 2019 14:13:31 -0700
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-
-> > In DTrace, people write scripts based on UAPI-style interfaces and they don't
-> > have to concern themselves with e.g. knowing how to get the value of the 3rd
-> > argument that was passed by the firing probe.  All they need to know is that
-> > the probe will have a 3rd argument, and that the 3rd argument to *any* probe
-> > can be accessed as 'arg2' (or args[2] for typed arguments, if the provider is
-> > capable of providing that).  Different probes have different ways of passing
-> > arguments, and only the provider code for each probe type needs to know how
-> > to retrieve the argument values.
-> > 
-> > Does this help bring clarity to the reasons why an abstract (generic) probe
-> > concept is part of DTrace's design?  
-> 
-> It actually sounds worse than I thought.
-> If dtrace script reads some kernel field it's considered to be uapi?! ouch.
-> It means dtrace development philosophy is incompatible with the linux kernel.
-> There is no way kernel is going to bend itself to make dtrace scripts
-> runnable if that means that all dtrace accessible fields become uapi.
-
-Now from what I'm reading, it seams that the Dtrace layer may be
-abstracting out fields from the kernel. This is actually something I
-have been thinking about to solve the "tracepoint abi" issue. There's
-usually basic ideas that happen. An interrupt goes off, there's a
-handler, etc. We could abstract that out that we trace when an
-interrupt goes off and the handler happens, and record the vector
-number, and/or what device it was for. We have tracepoints in the
-kernel that do this, but they do depend a bit on the implementation.
-Now, if we could get a layer that abstracts this information away from
-the implementation, then I think that's a *good* thing.
-
-
-> 
-> In stark contrast to dtrace all of bpf tracing scripts (bcc scripts
-> and bpftrace scripts) are written for specific kernel with intimate
-> knowledge of kernel details. They do break all the time when kernel changes.
-> kprobe and tracepoints are NOT uapi. All of them can change.
-> tracepoints are a bit more stable than kprobes, but they are not uapi.
-
-I wish that was totally true, but tracepoints *can* be an abi. I had
-code reverted because powertop required one to be a specific format. To
-this day, the wakeup event has a "success" field that writes in a
-hardcoded "1", because there's tools that depend on it, and they only
-work if there's a success field and the value is 1.
-
-I do definitely agree with you that the Dtrace code shall *never* keep
-the kernel from changing. That is, if Dtrace depends on something that
-changes (let's say we record priority of a task, but someday priority
-is replaced by something else), then Dtrace must cope with it. It must
-not be a blocker like user space applications can be.
-
-
--- Steve
+DQoNCk9uIDUvMjMvMTkgMTA6NTggQU0sIFJvbWFuIEd1c2hjaGluIHdyb3RlOg0KPiBPbiBXZWQs
+IE1heSAyMiwgMjAxOSBhdCAxMDo0NzoyNFBNIC0wNzAwLCBZb25naG9uZyBTb25nIHdyb3RlOg0K
+Pj4NCj4+DQo+PiBPbiA1LzIyLzE5IDQ6MjAgUE0sIFJvbWFuIEd1c2hjaGluIHdyb3RlOg0KPj4+
+IEFkZCBhIGtzZWxmdGVzdCB0byBjb3ZlciBicGYgYXV0by1kZXRhY2htZW50IGZ1bmN0aW9uYWxp
+dHkuDQo+Pj4gVGhlIHRlc3QgY3JlYXRlcyBhIGNncm91cCwgYXNzb2NpYXRlcyBzb21lIHJlc291
+cmNlcyB3aXRoIGl0LA0KPj4+IGF0dGFjaGVzIGEgY291cGxlIG9mIGJwZiBwcm9ncmFtcyBhbmQg
+ZGVsZXRlcyB0aGUgY2dyb3VwLg0KPj4+DQo+Pj4gVGhlbiBpdCBjaGVja3MgdGhhdCBicGYgcHJv
+Z3JhbXMgYXJlIGdvaW5nIGF3YXkgaW4gNSBzZWNvbmRzLg0KPj4+DQo+Pj4gRXhwZWN0ZWQgb3V0
+cHV0Og0KPj4+ICAgICAkIC4vdGVzdF9jZ3JvdXBfYXR0YWNoDQo+Pj4gICAgICNvdmVycmlkZTpQ
+QVNTDQo+Pj4gICAgICNtdWx0aTpQQVNTDQo+Pj4gICAgICNhdXRvZGV0YWNoOlBBU1MNCj4+PiAg
+ICAgdGVzdF9jZ3JvdXBfYXR0YWNoOlBBU1MNCj4+Pg0KPj4+IE9uIGEga2VybmVsIHdpdGhvdXQg
+YXV0by1kZXRhY2hpbmc6DQo+Pj4gICAgICQgLi90ZXN0X2Nncm91cF9hdHRhY2gNCj4+PiAgICAg
+I292ZXJyaWRlOlBBU1MNCj4+PiAgICAgI211bHRpOlBBU1MNCj4+PiAgICAgI2F1dG9kZXRhY2g6
+RkFJTA0KPj4+ICAgICB0ZXN0X2Nncm91cF9hdHRhY2g6RkFJTA0KPj4NCj4+IEkgcmFuIHRoaXMg
+cHJvYmxlbSB3aXRob3V0IGJvdGggb2xkIGFuZCBuZXcga2VybmVscyBhbmQNCj4+IGJvdGggZ2V0
+IGFsbCBQQVNTZXMuIE15IHRlc3RpbmcgZW52aXJvbm1lbnQgaXMgYSBWTS4NCj4+IENvdWxkIHlv
+dSBzcGVjaWZ5IGhvdyB0byB0cmlnZ2VyIHRoZSBhYm92ZSBmYWlsdXJlPw0KPiANCj4gTW9zdCBs
+aWtlbHkgeW91J3JlIHJ1bm5pbmcgY2dyb3VwIHYxLCBzbyB0aGUgbWVtb3J5IGNvbnRyb2xsZXIN
+Cj4gaXMgbm90IGVuYWJsZWQgb24gdW5pZmllZCBoaWVyYXJjaHkuIFlvdSBuZWVkIHRvIHBhc3MN
+Cj4gImNncm91cF9ub192MT1hbGwgc3lzdGVtZC51bmlmaWVkX2Nncm91cF9oaWVyYXJjaHk9MSIN
+Cj4gYXMgYm9vdCB0aW1lIG9wdGlvbnMgdG8gcnVuIGZ1bGx5IG9uIGNncm91cCB2Mi4NCg0KSSB0
+ZXN0ZWQgb24gYSBjZ3JvdXAgdjIgbWFjaGluZSBhbmQgaXQgaW5kZWVkIGZhaWxlZCB3aXRob3V0
+DQp0aGUgY29yZSBwYXRjaC4gVGhhbmtzIQ0KDQo+IA0KPiBCdXQgZ2VuZXJhbGx5IHNwZWFraW5n
+LCB0aGUgbGlmZWN5Y2xlIG9mIGEgZHlpbmcgY2dyb3VwIGlzDQo+IGNvbXBsZXRlbHkgaW1wbGVt
+ZW50YXRpb24tZGVmaW5lZC4gTm8gZ3VhcmFudGVlcyBhcmUgcHJvdmlkZWQuDQo+IFNvIGZhbHNl
+IHBvc2l0aXZlcyBhcmUgZmluZSBoZXJlLCBhbmQgc2hvdWxkbid0IGJlIGNvbnNpZGVyZWQgYXMN
+Cj4gc29tZXRoaW5nIGJhZC4NCj4gDQo+IEF0IHRoZSBlbmQgYWxsIHdlIHdhbnQgaXQgdG8gZGV0
+YWNoIHByb2dyYW1zIGluIGEgcmVhc29uYWJsZSB0aW1lDQo+IGFmdGVyIHJtZGlyLg0KPiANCj4g
+QnR3LCB0aGFuayB5b3UgZm9yIHRoZSBjYXJlZnVsIHJldmlldyBvZiB0aGUgcGF0Y2hzZXQuIEkn
+bGwNCj4gYWRkcmVzcyB5b3VyIGNvbW1lbnRzLCBhZGQgYWNrcyBhbmQgd2lsbCBzZW5kIG91dCB2
+My4NCj4gDQo+IFRoYW5rcyENCj4gDQo=
