@@ -2,160 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C451227FB2
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 16:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 419CE27FB4
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 16:31:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730796AbfEWObT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 10:31:19 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:47009 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730708AbfEWObT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 10:31:19 -0400
-Received: by mail-pl1-f196.google.com with SMTP id r18so2825971pls.13;
-        Thu, 23 May 2019 07:31:18 -0700 (PDT)
+        id S1730890AbfEWOb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 10:31:29 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33086 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730708AbfEWOb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 10:31:28 -0400
+Received: by mail-wr1-f66.google.com with SMTP id d9so6565105wrx.0
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 07:31:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=OzO5RxAs85LgaOleUXBoRLjXCQwekMSHZAP0cUDWHtg=;
-        b=jVOwhhEJb5le1IMdGM9kPsH/V44mOmocvvXjZUIcPBj8+ylGNBd8RN7RuTlVrd7HqV
-         8zuhWExktEV+QaezF41L5rt9x7FFCyTtdBf6DB7OWiGEXBQQ3hZMKd4fZwGLyVDfsj8h
-         /qpN62uubjW7lQ/GJs2rXKJZYAXjlqJCU9ADo+ZeAKaodrbdpdoqHAAjHkhRrIL2UZVm
-         MohVf0uPAqvR+flYQBiETtqq//jtOB3vSecQexEe967n7OIatP91SFq3OYWnw/OSMQ5T
-         Y6QTnTaTDZpp18F/1AUYP5EJzU5aqkwMWDoHlMe8NnPI2xSjHPXH635j4FSygTN3asHH
-         s94Q==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=oitixCSyls+WYiarRC0a38mP4/mPHlJWvdjbHhBfuHw=;
+        b=B/Y4fH6Qgs2zYncTUWrRBciMLNiyA1JzQ+6IFRwIVufOmOufnPzzI1bl9Hs37qOk2w
+         APLNK6ED2e/jKD0/9FWVcR8OJkrnxL6OARAdbkmtNXaAGeKFS2XNBTmlIF3UUEITyQYY
+         l5DRGg9Cd2cCXEOeQjDS2fX6CKYTieotF7b6/sI9oatoAJ/wc67l+GFLAxdL0riWCQLm
+         Zil0wZ/8U9gLAvMQvTEI88tWK3D3mtWyX2fb7NavstFsm3wkaoLU0O9yTxeh60wC8Vfa
+         /89K6IQIi3Hw07k3OrJ1OgXHX1I13qX/2/j657OgX1qljfcWjyEO34w4VItOyNs/4UjC
+         PnFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=OzO5RxAs85LgaOleUXBoRLjXCQwekMSHZAP0cUDWHtg=;
-        b=XGyMQP/8F0M4RQNhHmOxmZVTOGOTyiy+EyEH+y4kzlon9PZdWyiwzQ6uDEKgz+UWwb
-         2QQeO2blf1BhESHaQKCSKPJcZ2WzMJLfGcAmFEvSEuEZvCPiZj/sWEsjnvT85QVwSzdw
-         FoCDt95JaKOQJTojpnXt/wW8KGBPEqNW4uD2iABj5Q2iByHqIvb6//GXTqUouz5yvtO9
-         OPLBoVZlAk61CXibrpxuXUUsxLfgX7TZsaK9IhHVigZJeWlTrQeTE3ZW4wnsKP5ikd8U
-         52wA+XgjmCjuYkqSqgD9ytysr4eGknWLssEizTheUHxkiXsWAvhQtPZTT/wl3BkhZBGQ
-         g5+A==
-X-Gm-Message-State: APjAAAWqkRJ/e/YJMNe7Xv7WV3cXCSLURdyEpUlI3ADLjNOmIgi4BnaT
-        /moGhyeq7jSnu3aGpT6tdAUwkWrGZ8c=
-X-Google-Smtp-Source: APXvYqxpzb5BE4r9ASutH0halvaxX8CdPejd0RKIzvdRu7HWvgwdf6uNbOj44MJftLqExn5j5LV8ww==
-X-Received: by 2002:a17:902:e18d:: with SMTP id cd13mr31139018plb.301.1558621878491;
-        Thu, 23 May 2019 07:31:18 -0700 (PDT)
-Received: from zhanggen-UX430UQ ([66.42.35.75])
-        by smtp.gmail.com with ESMTPSA id 140sm45674391pfw.123.2019.05.23.07.30.39
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=oitixCSyls+WYiarRC0a38mP4/mPHlJWvdjbHhBfuHw=;
+        b=LFpWm1MRHaGlPEQVlyjSgmB5hlacNI4QU50o5yvBqxq3bI3sSKmDnU5sH4TDhlNcNi
+         /heRTVNhX6ZkI8PgzhTzcmGsQRt0jhzG8HOchmX+7UbTQgK4cO8g2NLhddrvRQjDxxBD
+         43gf6N4U3MJ0zvwipqcEEuv0Ip5Eu09qxzGIXLuxp/AxcRmvsAL+HCNWLOnwfGMHeYu5
+         bLEvALRpf8XbUmXUdn+W/fwi7RKTQ7gx37D0WDJwtYfBRExnsJKSbvnu2fbVvnoFrqer
+         KToWhZ3B9uraykEksSMFYo98Id647HdFtQk0jR39m+rTzxhmFmy7SUMCvX2Tipv/j9l6
+         ZLzg==
+X-Gm-Message-State: APjAAAUttuQeuLhpgHk6C6BpkauBdEz6PdktcNu3+JiPND3vKsyv1O4O
+        e6/h1IFmBZ/6XnSjfSCJ17HoLZvOFgg=
+X-Google-Smtp-Source: APXvYqzLpgvV703PNCaOR0gIk35TrvPQMaresROkLbWDiJ/l3GB8TuILzZw00e4zoaFvppE2r535cQ==
+X-Received: by 2002:adf:e4c9:: with SMTP id v9mr35521866wrm.147.1558621886783;
+        Thu, 23 May 2019 07:31:26 -0700 (PDT)
+Received: from [172.20.1.229] ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id o4sm11751807wmo.20.2019.05.23.07.31.25
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 07:31:17 -0700 (PDT)
-Date:   Thu, 23 May 2019 22:30:22 +0800
-From:   Gen Zhang <blackgod016574@gmail.com>
-To:     kvalo@codeaurora.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] spi: Fix a memory leaking bug in wl1271_probe()
-Message-ID: <20190523143022.GA26485@zhanggen-UX430UQ>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+        Thu, 23 May 2019 07:31:26 -0700 (PDT)
+Content-Type: text/plain; charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Subject: Re: [PATCH bpf] selftests: bpf: add zero extend checks for ALU32
+ and/or/xor
+From:   Jiong Wang <jiong.wang@netronome.com>
+In-Reply-To: <c1f90672-d2ce-0ac9-10d1-08208575f193@iogearbox.net>
+Date:   Thu, 23 May 2019 15:31:24 +0100
+Cc:     Y Song <ys114321@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <3ED3A4F8-CC01-4179-9154-6FC5338E83B5@netronome.com>
+References: <20190522092323.17435-1-bjorn.topel@gmail.com>
+ <CAH3MdRWGeYZDCEPrw2HFpnq+8j+ehMj2uhNJS9HnFDw=LmK6PQ@mail.gmail.com>
+ <CAJ+HfNhR2UozhqTrhDTmZNntmjRCWFyPyU2AaRdo-E6sJUZCKg@mail.gmail.com>
+ <CAH3MdRX6gocSFJCkuMuhko+0eheWqKq4Y4X-Tb3q=hzMW5buyw@mail.gmail.com>
+ <c1f90672-d2ce-0ac9-10d1-08208575f193@iogearbox.net>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+X-Mailer: Apple Mail (2.3273)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In wl1271_probe(), 'glue->core' is allocated by platform_device_alloc(),
-when this allocation fails, ENOMEM is returned. However, 'pdev_data'
-and 'glue' are allocated by devm_kzalloc() before 'glue->core'. When
-platform_device_alloc() returns NULL, we should also free 'pdev_data'
-and 'glue' before wl1271_probe() ends to prevent leaking memory.
 
-Similarly, we shoulf free 'pdev_data' when 'glue' is NULL. And we should
-free 'pdev_data' and 'glue' when 'glue->reg' is error and when 'ret' is
-error.
+> On 23 May 2019, at 15:02, Daniel Borkmann <daniel@iogearbox.net> =
+wrote:
+>=20
+> On 05/23/2019 08:38 AM, Y Song wrote:
+>> On Wed, May 22, 2019 at 1:46 PM Bj=C3=B6rn T=C3=B6pel =
+<bjorn.topel@gmail.com> wrote:
+>>> On Wed, 22 May 2019 at 20:13, Y Song <ys114321@gmail.com> wrote:
+>>>> On Wed, May 22, 2019 at 2:25 AM Bj=C3=B6rn T=C3=B6pel =
+<bjorn.topel@gmail.com> wrote:
+>>>>>=20
+>>>>> Add three tests to test_verifier/basic_instr that make sure that =
+the
+>>>>> high 32-bits of the destination register is cleared after an ALU32
+>>>>> and/or/xor.
+>>>>>=20
+>>>>> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+>>>>=20
+>>>> I think the patch intends for bpf-next, right? The patch itself =
+looks
+>>>> good to me.
+>>>> Acked-by: Yonghong Song <yhs@fb.com>
+>>>=20
+>>> Thank you. Actually, it was intended for the bpf tree, as a test
+>>> follow up for this [1] fix.
+>> Then maybe you want to add a Fixes tag and resubmit?
+>=20
+> Why would the test case need a fixes tag? It's common practice that we =
+have
+> BPF fixes that we queue to bpf tree along with kselftest test cases =
+related
+> to them. Therefore, applied as well, thanks for following up!
+>=20
+> Bj=C3=B6rn, in my email from the fix, I mentioned we should have test =
+snippets
+> ideally for all of the alu32 insns to not miss something falling =
+through the
+> cracks when JITs get added or changed. If you have some cycles to add =
+the
+> remaining missing ones, that would be much appreciated.
 
-Further, we should free 'glue->core', 'pdev_data' and 'glue' when this 
-function normally ends to prevent leaking memory.
+Bj=C3=B6rn,
 
-Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
----
-diff --git a/drivers/net/wireless/ti/wlcore/spi.c b/drivers/net/wireless/ti/wlcore/spi.c
-index 62ce54a..3a020bd 100644
---- a/drivers/net/wireless/ti/wlcore/spi.c
-+++ b/drivers/net/wireless/ti/wlcore/spi.c
-@@ -480,7 +480,7 @@ static int wl1271_probe(struct spi_device *spi)
- 	struct wl12xx_spi_glue *glue;
- 	struct wlcore_platdev_data *pdev_data;
- 	struct resource res[1];
--	int ret;
-+	int ret = -ENOMEM;
- 
- 	pdev_data = devm_kzalloc(&spi->dev, sizeof(*pdev_data), GFP_KERNEL);
- 	if (!pdev_data)
-@@ -491,7 +491,8 @@ static int wl1271_probe(struct spi_device *spi)
- 	glue = devm_kzalloc(&spi->dev, sizeof(*glue), GFP_KERNEL);
- 	if (!glue) {
- 		dev_err(&spi->dev, "can't allocate glue\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto out_free1;
- 	}
- 
- 	glue->dev = &spi->dev;
-@@ -503,31 +504,35 @@ static int wl1271_probe(struct spi_device *spi)
- 	spi->bits_per_word = 32;
- 
- 	glue->reg = devm_regulator_get(&spi->dev, "vwlan");
--	if (PTR_ERR(glue->reg) == -EPROBE_DEFER)
--		return -EPROBE_DEFER;
-+	if (PTR_ERR(glue->reg) == -EPROBE_DEFER) {
-+		ret = -EPROBE_DEFER;
-+		goto out_free2;
-+	}
- 	if (IS_ERR(glue->reg)) {
- 		dev_err(glue->dev, "can't get regulator\n");
--		return PTR_ERR(glue->reg);
-+		ret = PTR_ERR(glue->reg);
-+		goto out_free2;
- 	}
- 
- 	ret = wlcore_probe_of(spi, glue, pdev_data);
- 	if (ret) {
- 		dev_err(glue->dev,
- 			"can't get device tree parameters (%d)\n", ret);
--		return ret;
-+		goto out_free2;
- 	}
- 
- 	ret = spi_setup(spi);
- 	if (ret < 0) {
- 		dev_err(glue->dev, "spi_setup failed\n");
--		return ret;
-+		goto out_free2;
- 	}
- 
- 	glue->core = platform_device_alloc(pdev_data->family->name,
- 					   PLATFORM_DEVID_AUTO);
- 	if (!glue->core) {
- 		dev_err(glue->dev, "can't allocate platform_device\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto out_free2;
- 	}
- 
- 	glue->core->dev.parent = &spi->dev;
-@@ -557,10 +562,18 @@ static int wl1271_probe(struct spi_device *spi)
- 		goto out_dev_put;
- 	}
- 
-+	platform_device_put(glue->core);
-+	devm_kfree(&func->dev, glue);
-+	devm_kfree(&func->dev, pdev_data);
- 	return 0;
- 
- out_dev_put:
- 	platform_device_put(glue->core);
-+out_free2:
-+	devm_kfree(&func->dev, glue);
-+out_free1:
-+	devm_kfree(&func->dev, pdev_data);
-+out:
- 	return ret;
- }
- 
----
+  If you don=E2=80=99t have time, I can take this alu32 test case follow =
+up as well.
+
+Regards,
+Jiong
+
+>=20
+> Thanks,
+> Daniel
+
