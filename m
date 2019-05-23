@@ -2,55 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1E0927A91
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 12:32:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43FE427B12
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 12:51:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729934AbfEWKcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 06:32:50 -0400
-Received: from mail5.windriver.com ([192.103.53.11]:57282 "EHLO mail5.wrs.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727466AbfEWKcu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 06:32:50 -0400
-Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
-        by mail5.wrs.com (8.15.2/8.15.2) with ESMTPS id x4NAUiWV008275
-        (version=TLSv1 cipher=AES128-SHA bits=128 verify=FAIL);
-        Thu, 23 May 2019 03:30:55 -0700
-Received: from [128.224.155.90] (128.224.155.90) by ALA-HCA.corp.ad.wrs.com
- (147.11.189.50) with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 23 May
- 2019 03:30:34 -0700
-Subject: Re: [PATCH v2] tipc: Avoid copying bytes beyond the supplied data
-To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
-        "jon.maloy@ericsson.com" <jon.maloy@ericsson.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "niveditas98@gmail.com" <niveditas98@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20190520034536.22782-1-chris.packham@alliedtelesis.co.nz>
- <2830aab3-3fa9-36d2-5646-d5e4672ae263@windriver.com>
- <00ce1b1e52ac4b729d982c86127334aa@svr-chch-ex1.atlnz.lc>
-From:   Ying Xue <ying.xue@windriver.com>
-Message-ID: <11c81207-54dd-16d5-3f33-1ccf45a06dac@windriver.com>
-Date:   Thu, 23 May 2019 18:20:45 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1729972AbfEWKu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 06:50:57 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:3315 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726310AbfEWKu5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 06:50:57 -0400
+Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
+  Joergen.Andreasen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Joergen.Andreasen@microchip.com";
+  x-sender="Joergen.Andreasen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa6.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Joergen.Andreasen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Joergen.Andreasen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+X-IronPort-AV: E=Sophos;i="5.60,502,1549954800"; 
+   d="scan'208";a="31575768"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 23 May 2019 03:50:56 -0700
+Received: from localhost (10.10.76.4) by chn-sv-exch06.mchp-main.com
+ (10.10.76.107) with Microsoft SMTP Server id 14.3.352.0; Thu, 23 May 2019
+ 03:50:56 -0700
+From:   Joergen Andreasen <joergen.andreasen@microchip.com>
+To:     <netdev@vger.kernel.org>
+CC:     Joergen Andreasen <joergen.andreasen@microchip.com>,
+        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next v2 0/1] Add hw offload of TC police on MSCC ocelot
+Date:   Thu, 23 May 2019 12:49:38 +0200
+Message-ID: <20190523104939.2721-1-joergen.andreasen@microchip.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190502094029.22526-1-joergen.andreasen@microchip.com>
+References: <20190502094029.22526-1-joergen.andreasen@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <00ce1b1e52ac4b729d982c86127334aa@svr-chch-ex1.atlnz.lc>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [128.224.155.90]
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/23/19 4:46 AM, Chris Packham wrote:
-> On most distros that is generated from include/uapi in the kernel source 
-> and packaged as part of libc or a kernel-headers package. So once this 
-> patch is accepted and makes it into the distros 
-> /usr/include/linux/tipc_config.h will have this fix.
+This patch series enables hardware offload of ingress port policing
+on the MSCC ocelot board.
 
-Thanks for the clarification. You are right, so it's unnecessary to make
-any change.
+Changes v1 -> v2:
+
+v2 now consists of only one patch: "[PATCH net-next v2 1/1] net: mscc: ocelot:
+Implement port policers via tc command".
+
+The patch, "[PATCH net-next 00/13] net: act_police offload support", from
+Jakub Kicinski, removed the need for this patch:
+"[PATCH net-next 1/3] net/sched: act_police: move police parameters".
+
+Alexandre Belloni asked me to remove patch,
+"[PATCH net-next 3/3] MIPS: generic: Add police related options to ocelot_defconfig",
+from the series and instead send it through the MIPS tree and I will do that.
+
+The remaining patch is now the only patch in this series and all suggested changes
+have been incorporated.
+
+Joergen Andreasen (1):
+  net: mscc: ocelot: Implement port policers via tc command
+
+ drivers/net/ethernet/mscc/Makefile        |   2 +-
+ drivers/net/ethernet/mscc/ocelot.c        |   6 +-
+ drivers/net/ethernet/mscc/ocelot.h        |   3 +
+ drivers/net/ethernet/mscc/ocelot_police.c | 227 ++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_police.h |  22 +++
+ drivers/net/ethernet/mscc/ocelot_tc.c     | 164 ++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_tc.h     |  19 ++
+ 7 files changed, 440 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_police.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_police.h
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_tc.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_tc.h
+
+-- 
+2.17.1
+
