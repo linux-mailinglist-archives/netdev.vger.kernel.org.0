@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92F6827B21
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 12:54:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 054EE27B24
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 12:54:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730341AbfEWKyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 06:54:41 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:38033 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729966AbfEWKyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 06:54:40 -0400
-Received: by mail-wm1-f66.google.com with SMTP id t5so5291317wmh.3
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 03:54:39 -0700 (PDT)
+        id S1730284AbfEWKyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 06:54:46 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:37671 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730318AbfEWKyl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 06:54:41 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 7so5289323wmo.2
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 03:54:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=SRlyLD/JsDXMbt+om9NK9I/hxdP4mSQPyQCLku7EomI=;
-        b=ezhbs4UpJlX01tvbX6ADZ1U9rHRv7hlS8yOYf9tGI9MbscbbRBaJOCCXkNRDq6pE97
-         yNOnZCcMlKtwciWI3GJqQiUILvvUYeYQV2Tf0+NZazUH3SLwUoMeuILOPp9Cx7N8Dlko
-         W9D9w63ThLJ2ohmaDD/Jaa43mBqOTAdY5p2CSeg1AsVyOFfBpsP+evkL83VanNn1iMAE
-         +0JAPRu4gcpsTrRh7eOZKipAvtTHaxkQWbOoZz28NmmrVyvvWwlPpgx7rdyewCzrza3Q
-         y8mT5yi2y6/E82Sj9UXJmTFXUCUjjFFT8ZB+UPm57gBGH6rmmUsHJPtbgCfWPXCJhiIn
-         bBsg==
+        bh=fUwJHI9sVqnaGnCWZooowg6nUP9siefbX2fmhZBZPYY=;
+        b=JYKjHUYAoGPGajlnvzas1CrlX37peYxC2B0G74el0iJZ9CbHrZicdGGtX/sT5gaVis
+         Iu6nkdiZIP3rxw6CElAUyVU2rhi9G60mxd0zjD2VAA/fxKJhwQTLRS1H/0l3c7hcGqAM
+         /4CZ1mSj8+wl89X1FxRNYkZ5yZlTpyC2l5jnQYRC9CfsHAp5sM5CJkjio1hEHuUR7sIF
+         y19j7AASkbTSuNqGakJdaQ8+pJuTPgV752Zzge3Aen97Eb/45EEneEnTUYImeLafSDjU
+         nV+g53v5SxDkYC4dwOqqkZ5tDSZZapYdh0NTrvngi8lV9hZMcE1NWajtZEZc6rfF3K+2
+         m0Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=SRlyLD/JsDXMbt+om9NK9I/hxdP4mSQPyQCLku7EomI=;
-        b=jaDRyi3Cm94u9M+8KDCCXZnn/sSck7tn/PcT1aT9KScCtd+v5cJcpBCaiwC9Ja0uTx
-         TjXJgtyHvhLuUGtyOT/QYidnzfQu6in2feNNh+qnCgt4Od9F95MF22sa34gU1GISF7Z5
-         Y498ugaOl8QvUVduh6pPz9UgcyRUFYDBYAvp+hKHiDTFE0Rv4XC3KEzMXh68ro0UFm2+
-         bSmyLBBHFJVdKDdhgLOBKBaTsqNwc8qOrxENgRR9RMqDnt+q51cV1qBGaKnxVUwM5bT3
-         U5NBkggHRtGr3PM3jaKGAy7O8WmN95F6ZrRCGSxHK3ibaBuiCGsJnxJXzbVd6T5FGYA2
-         Jjiw==
-X-Gm-Message-State: APjAAAWxbMNLGL/mZ/qzWE0PncE07eG9JK1kxKy4DWF0066Of/KEqHSD
-        HOlZL/D65DfVYz0mMMt+h3z3tg==
-X-Google-Smtp-Source: APXvYqyS0/21TS4HSPxBDLCk3r6/2vJGhdbK7cwloJo/uIWRgcw74U3yt/eCvp8SB8m9/IiAog65LA==
-X-Received: by 2002:a05:600c:2289:: with SMTP id 9mr12045497wmf.106.1558608878758;
-        Thu, 23 May 2019 03:54:38 -0700 (PDT)
+        bh=fUwJHI9sVqnaGnCWZooowg6nUP9siefbX2fmhZBZPYY=;
+        b=hygO2zVGUf3JVDiiRMOBlEruQG5PVKdA8jGEFjcf1xG0lAsrNVcVagXCos31ILsAR7
+         1FlzZ61HGY/gsSXXZ8vKlotKgXDvCEU50wkiVp4hcfQFlitrI7m5ben5GFywqppLLhXg
+         dH5T9TdKlhHOudnqpEe4IbvewYQZQmuoJcWouYdigetD7yJ5C/TLKfFNP6DluHyqZ40X
+         KNSopj3lAxRPVi36fm/lQbQWtWK8llk7Lr0YkCjbZ4MUr0MUcnmZzmjI9AJm2j3ndc7k
+         e6YWZhj3aEb0KDkB/MBa0ygzjRaMQPxEoNh/i5JdGTN16uiixQ2WCkR0/Bt0mo+N5h0k
+         6YPA==
+X-Gm-Message-State: APjAAAUR0YUxs0MRksDzp4U1/pNT1vKFoDRixwrRxYBxhhhCfgzhaBkc
+        J/VlJ/8pxChTKNchFRv+JoeQdw==
+X-Google-Smtp-Source: APXvYqykdFzX1faeciXJgeAeFwierJLHl7bhWPdQeat704Wle3GkqIKt4Pslom8Qyhig7gre2qFlMQ==
+X-Received: by 2002:a1c:1f95:: with SMTP id f143mr11973561wmf.16.1558608879831;
+        Thu, 23 May 2019 03:54:39 -0700 (PDT)
 Received: from cbtest32.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id p8sm21285740wro.0.2019.05.23.03.54.37
+        by smtp.gmail.com with ESMTPSA id p8sm21285740wro.0.2019.05.23.03.54.38
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 03:54:37 -0700 (PDT)
+        Thu, 23 May 2019 03:54:39 -0700 (PDT)
 From:   Quentin Monnet <quentin.monnet@netronome.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -50,9 +50,9 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         oss-drivers@netronome.com,
         Quentin Monnet <quentin.monnet@netronome.com>,
         Yonghong Song <yhs@fb.com>
-Subject: [PATCH bpf-next v2 2/3] libbpf: add bpf_object__load_xattr() API function to pass log_level
-Date:   Thu, 23 May 2019 11:54:25 +0100
-Message-Id: <20190523105426.3938-3-quentin.monnet@netronome.com>
+Subject: [PATCH bpf-next v2 3/3] tools: bpftool: make -d option print debug output from verifier
+Date:   Thu, 23 May 2019 11:54:26 +0100
+Message-Id: <20190523105426.3938-4-quentin.monnet@netronome.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190523105426.3938-1-quentin.monnet@netronome.com>
 References: <20190523105426.3938-1-quentin.monnet@netronome.com>
@@ -61,134 +61,190 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-libbpf was recently made aware of the log_level attribute for programs,
-used to specify the level of information expected to be dumped by the
-verifier.
+The "-d" option is used to require all logs available for bpftool. So
+far it meant telling libbpf to print even debug-level information. But
+there is another source of info that can be made more verbose: when we
+attemt to load programs with bpftool, we can pass a log_level parameter
+to the verifier in order to control the amount of information that is
+printed to the console.
 
-Create an API function to pass additional attributes when loading a
-bpf_object, so we can set this log_level value in programs when loading
-them, and so that so that applications relying on libbpf but not calling
-bpf_prog_load_xattr() can also use that feature.
+Reuse the "-d" option to print all information the verifier can tell. At
+this time, this means logs related to BPF_LOG_LEVEL1, BPF_LOG_LEVEL2 and
+BPF_LOG_STATS. As mentioned in the discussion on the first version of
+this set, these macros are internal to the kernel
+(include/linux/bpf_verifier.h) and are not meant to be part of the
+stable user API, therefore we simply use the related constants to print
+whatever we can at this time, without trying to tell users what is
+log_level1 or what is statistics.
+
+Verifier logs are only used when loading programs for now (in the
+future: for loading BTF objects with bpftool?), so bpftool.rst and
+bpftool-prog.rst are the only man pages to get the update.
 
 v2:
-- We are in a new cycle, bump libbpf extraversion number.
+- Remove the possibility to select the log levels to use (v1 offered a
+  combination of "log_level1", "log_level2" and "stats").
+- The macros from kernel header bpf_verifier.h are not used (and
+  therefore not moved to UAPI header).
+- In v1 this was a distinct option, but is now merged in the only "-d"
+  switch to activate libbpf and verifier debug-level logs all at the
+  same time.
 
 Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- tools/lib/bpf/Makefile   |  2 +-
- tools/lib/bpf/libbpf.c   | 20 +++++++++++++++++---
- tools/lib/bpf/libbpf.h   |  6 ++++++
- tools/lib/bpf/libbpf.map |  5 +++++
- 4 files changed, 29 insertions(+), 4 deletions(-)
+ .../bpftool/Documentation/bpftool-prog.rst    |  5 ++--
+ tools/bpf/bpftool/Documentation/bpftool.rst   |  5 ++--
+ tools/bpf/bpftool/main.c                      |  2 ++
+ tools/bpf/bpftool/main.h                      |  1 +
+ tools/bpf/bpftool/prog.c                      | 27 ++++++++++++-------
+ 5 files changed, 26 insertions(+), 14 deletions(-)
 
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index a2aceadf68db..9312066a1ae3 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -3,7 +3,7 @@
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+index 9a92614569e6..228a5c863cc7 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+@@ -175,8 +175,9 @@ OPTIONS
+ 		  (such as tracefs or BPF virtual file system) when necessary.
  
- BPF_VERSION = 0
- BPF_PATCHLEVEL = 0
--BPF_EXTRAVERSION = 3
-+BPF_EXTRAVERSION = 4
+ 	-d, --debug
+-		  Print all logs available from libbpf, including debug-level
+-		  information.
++		  Print all logs available, even debug-level information. This
++		  includes logs from libbpf as well as from the verifier, when
++		  attempting to load programs.
  
- MAKEFLAGS += --no-print-directory
+ EXAMPLES
+ ========
+diff --git a/tools/bpf/bpftool/Documentation/bpftool.rst b/tools/bpf/bpftool/Documentation/bpftool.rst
+index 43dba0717953..6a9c52ef84a9 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool.rst
+@@ -67,8 +67,9 @@ OPTIONS
+ 		  (such as tracefs or BPF virtual file system) when necessary.
  
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 197b574406b3..1c6fb7a3201e 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2222,7 +2222,7 @@ static bool bpf_program__is_function_storage(struct bpf_program *prog,
- }
+ 	-d, --debug
+-		  Print all logs available from libbpf, including debug-level
+-		  information.
++		  Print all logs available, even debug-level information. This
++		  includes logs from libbpf as well as from the verifier, when
++		  attempting to load programs.
  
- static int
--bpf_object__load_progs(struct bpf_object *obj)
-+bpf_object__load_progs(struct bpf_object *obj, int log_level)
+ SEE ALSO
+ ========
+diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
+index d74293938a05..4879f6395c7e 100644
+--- a/tools/bpf/bpftool/main.c
++++ b/tools/bpf/bpftool/main.c
+@@ -26,6 +26,7 @@ bool pretty_output;
+ bool json_output;
+ bool show_pinned;
+ bool block_mount;
++bool verifier_logs;
+ int bpf_flags;
+ struct pinned_obj_table prog_table;
+ struct pinned_obj_table map_table;
+@@ -373,6 +374,7 @@ int main(int argc, char **argv)
+ 			break;
+ 		case 'd':
+ 			libbpf_set_print(print_all_levels);
++			verifier_logs = true;
+ 			break;
+ 		default:
+ 			p_err("unrecognized option '%s'", argv[optind - 1]);
+diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
+index 3d63feb7f852..28a2a5857e14 100644
+--- a/tools/bpf/bpftool/main.h
++++ b/tools/bpf/bpftool/main.h
+@@ -91,6 +91,7 @@ extern json_writer_t *json_wtr;
+ extern bool json_output;
+ extern bool show_pinned;
+ extern bool block_mount;
++extern bool verifier_logs;
+ extern int bpf_flags;
+ extern struct pinned_obj_table prog_table;
+ extern struct pinned_obj_table map_table;
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index 26336bad0442..1f209c80d906 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -750,10 +750,11 @@ static int do_detach(int argc, char **argv)
+ 
+ static int load_with_options(int argc, char **argv, bool first_prog_only)
  {
- 	size_t i;
- 	int err;
-@@ -2230,6 +2230,7 @@ bpf_object__load_progs(struct bpf_object *obj)
- 	for (i = 0; i < obj->nr_programs; i++) {
- 		if (bpf_program__is_function_storage(&obj->programs[i], obj))
- 			continue;
-+		obj->programs[i].log_level = log_level;
- 		err = bpf_program__load(&obj->programs[i],
- 					obj->license,
- 					obj->kern_version);
-@@ -2381,10 +2382,14 @@ int bpf_object__unload(struct bpf_object *obj)
- 	return 0;
- }
+-	enum bpf_attach_type expected_attach_type;
+-	struct bpf_object_open_attr attr = {
+-		.prog_type	= BPF_PROG_TYPE_UNSPEC,
++	struct bpf_object_load_attr load_attr = { 0 };
++	struct bpf_object_open_attr open_attr = {
++		.prog_type = BPF_PROG_TYPE_UNSPEC,
+ 	};
++	enum bpf_attach_type expected_attach_type;
+ 	struct map_replace *map_replace = NULL;
+ 	struct bpf_program *prog = NULL, *pos;
+ 	unsigned int old_map_fds = 0;
+@@ -767,7 +768,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
  
--int bpf_object__load(struct bpf_object *obj)
-+int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
- {
-+	struct bpf_object *obj;
- 	int err;
+ 	if (!REQ_ARGS(2))
+ 		return -1;
+-	attr.file = GET_ARG();
++	open_attr.file = GET_ARG();
+ 	pinfile = GET_ARG();
  
-+	if (!attr)
-+		return -EINVAL;
-+	obj = attr->obj;
- 	if (!obj)
- 		return -EINVAL;
+ 	while (argc) {
+@@ -776,7 +777,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
  
-@@ -2397,7 +2402,7 @@ int bpf_object__load(struct bpf_object *obj)
+ 			NEXT_ARG();
  
- 	CHECK_ERR(bpf_object__create_maps(obj), err, out);
- 	CHECK_ERR(bpf_object__relocate(obj), err, out);
--	CHECK_ERR(bpf_object__load_progs(obj), err, out);
-+	CHECK_ERR(bpf_object__load_progs(obj, attr->log_level), err, out);
+-			if (attr.prog_type != BPF_PROG_TYPE_UNSPEC) {
++			if (open_attr.prog_type != BPF_PROG_TYPE_UNSPEC) {
+ 				p_err("program type already specified");
+ 				goto err_free_reuse_maps;
+ 			}
+@@ -793,7 +794,8 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 			strcat(type, *argv);
+ 			strcat(type, "/");
  
- 	return 0;
- out:
-@@ -2406,6 +2411,15 @@ int bpf_object__load(struct bpf_object *obj)
- 	return err;
- }
+-			err = libbpf_prog_type_by_name(type, &attr.prog_type,
++			err = libbpf_prog_type_by_name(type,
++						       &open_attr.prog_type,
+ 						       &expected_attach_type);
+ 			free(type);
+ 			if (err < 0)
+@@ -881,16 +883,16 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
  
-+int bpf_object__load(struct bpf_object *obj)
-+{
-+	struct bpf_object_load_attr attr = {
-+		.obj = obj,
-+	};
+ 	set_max_rlimit();
+ 
+-	obj = __bpf_object__open_xattr(&attr, bpf_flags);
++	obj = __bpf_object__open_xattr(&open_attr, bpf_flags);
+ 	if (IS_ERR_OR_NULL(obj)) {
+ 		p_err("failed to open object file");
+ 		goto err_free_reuse_maps;
+ 	}
+ 
+ 	bpf_object__for_each_program(pos, obj) {
+-		enum bpf_prog_type prog_type = attr.prog_type;
++		enum bpf_prog_type prog_type = open_attr.prog_type;
+ 
+-		if (attr.prog_type == BPF_PROG_TYPE_UNSPEC) {
++		if (open_attr.prog_type == BPF_PROG_TYPE_UNSPEC) {
+ 			const char *sec_name = bpf_program__title(pos, false);
+ 
+ 			err = libbpf_prog_type_by_name(sec_name, &prog_type,
+@@ -960,7 +962,12 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 		goto err_close_obj;
+ 	}
+ 
+-	err = bpf_object__load(obj);
++	load_attr.obj = obj;
++	if (verifier_logs)
++		/* log_level1 + log_level2 + stats, but not stable UAPI */
++		load_attr.log_level = 1 + 2 + 4;
 +
-+	return bpf_object__load_xattr(&attr);
-+}
-+
- static int check_path(const char *path)
- {
- 	char *cp, errmsg[STRERR_BUFSIZE];
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index c5ff00515ce7..e1c748db44f6 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -89,8 +89,14 @@ LIBBPF_API int bpf_object__unpin_programs(struct bpf_object *obj,
- LIBBPF_API int bpf_object__pin(struct bpf_object *object, const char *path);
- LIBBPF_API void bpf_object__close(struct bpf_object *object);
- 
-+struct bpf_object_load_attr {
-+	struct bpf_object *obj;
-+	int log_level;
-+};
-+
- /* Load/unload object into/from kernel */
- LIBBPF_API int bpf_object__load(struct bpf_object *obj);
-+LIBBPF_API int bpf_object__load_xattr(struct bpf_object_load_attr *attr);
- LIBBPF_API int bpf_object__unload(struct bpf_object *obj);
- LIBBPF_API const char *bpf_object__name(struct bpf_object *obj);
- LIBBPF_API unsigned int bpf_object__kversion(struct bpf_object *obj);
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 673001787cba..6ce61fa0baf3 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -164,3 +164,8 @@ LIBBPF_0.0.3 {
- 		bpf_map_freeze;
- 		btf__finalize_data;
- } LIBBPF_0.0.2;
-+
-+LIBBPF_0.0.4 {
-+	global:
-+		bpf_object__load_xattr;
-+} LIBBPF_0.0.3;
++	err = bpf_object__load_xattr(&load_attr);
+ 	if (err) {
+ 		p_err("failed to load object file");
+ 		goto err_close_obj;
 -- 
 2.17.1
 
