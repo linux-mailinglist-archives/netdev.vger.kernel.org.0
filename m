@@ -2,20 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6101279DE
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 11:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50914279E1
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 11:58:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730469AbfEWJ5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1730437AbfEWJ5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 23 May 2019 05:57:48 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:42087 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730404AbfEWJ5r (ORCPT
+Received: from relay11.mail.gandi.net ([217.70.178.231]:58851 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727466AbfEWJ5r (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 05:57:47 -0400
-X-Originating-IP: 90.88.22.185
 Received: from localhost (aaubervilliers-681-1-80-185.w90-88.abo.wanadoo.fr [90.88.22.185])
         (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 96BFB1BF210;
-        Thu, 23 May 2019 09:57:36 +0000 (UTC)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 2374E100013;
+        Thu, 23 May 2019 09:57:42 +0000 (UTC)
 From:   Maxime Ripard <maxime.ripard@bootlin.com>
 To:     Mark Rutland <mark.rutland@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -30,9 +29,9 @@ Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         Maxime Chevallier <maxime.chevallier@bootlin.com>,
         =?UTF-8?q?Antoine=20T=C3=A9nart?= <antoine.tenart@bootlin.com>
-Subject: [PATCH 7/8] dt-bindings: net: sun7i-gmac: Convert the binding to a schemas
-Date:   Thu, 23 May 2019 11:56:50 +0200
-Message-Id: <6f16585ffdc75af4e023c4d3ebba68feb65cc26e.1558605170.git-series.maxime.ripard@bootlin.com>
+Subject: [PATCH 8/8] dt-bindings: net: sun8i-emac: Convert the binding to a schemas
+Date:   Thu, 23 May 2019 11:56:51 +0200
+Message-Id: <037bc1e9d87b493db377209ad974e3e313ffed28.1558605170.git-series.maxime.ripard@bootlin.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
 References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
@@ -43,78 +42,257 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Switch our Allwinner A20 GMAC controller binding to a YAML schema to enable
+Switch our Allwinner H3 EMAC controller binding to a YAML schema to enable
 the DT validation. Since that controller is based on a Synopsys IP, let's
 add the validation to that schemas with a bunch of conditionals.
 
 Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
 ---
- Documentation/devicetree/bindings/net/allwinner,sun7i-a20-gmac.txt | 27 ---------------------------
- Documentation/devicetree/bindings/net/snps,dwmac.yaml              | 45 +++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 45 insertions(+), 27 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/allwinner,sun7i-a20-gmac.txt
+ Documentation/devicetree/bindings/net/dwmac-sun8i.txt | 201 +------
+ Documentation/devicetree/bindings/net/snps,dwmac.yaml | 342 +++++++++++-
+ 2 files changed, 342 insertions(+), 201 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/dwmac-sun8i.txt
 
-diff --git a/Documentation/devicetree/bindings/net/allwinner,sun7i-a20-gmac.txt b/Documentation/devicetree/bindings/net/allwinner,sun7i-a20-gmac.txt
+diff --git a/Documentation/devicetree/bindings/net/dwmac-sun8i.txt b/Documentation/devicetree/bindings/net/dwmac-sun8i.txt
 deleted file mode 100644
-index 8b3f953656e3..000000000000
---- a/Documentation/devicetree/bindings/net/allwinner,sun7i-a20-gmac.txt
+index 54c66d0611cb..000000000000
+--- a/Documentation/devicetree/bindings/net/dwmac-sun8i.txt
 +++ /dev/null
-@@ -1,27 +0,0 @@
--* Allwinner GMAC ethernet controller
+@@ -1,201 +0,0 @@
+-* Allwinner sun8i GMAC ethernet controller
 -
 -This device is a platform glue layer for stmmac.
 -Please see stmmac.txt for the other unchanged properties.
 -
 -Required properties:
-- - compatible:  Should be "allwinner,sun7i-a20-gmac"
-- - clocks: Should contain the GMAC main clock, and tx clock
--   The tx clock type should be "allwinner,sun7i-a20-gmac-clk"
-- - clock-names: Should contain the clock names "stmmaceth",
--   and "allwinner_gmac_tx"
+-- compatible: must be one of the following string:
+-		"allwinner,sun8i-a83t-emac"
+-		"allwinner,sun8i-h3-emac"
+-		"allwinner,sun8i-r40-gmac"
+-		"allwinner,sun8i-v3s-emac"
+-		"allwinner,sun50i-a64-emac"
+-		"allwinner,sun50i-h6-emac", "allwinner-sun50i-a64-emac"
+-- reg: address and length of the register for the device.
+-- interrupts: interrupt for the device
+-- interrupt-names: must be "macirq"
+-- clocks: A phandle to the reference clock for this device
+-- clock-names: must be "stmmaceth"
+-- resets: A phandle to the reset control for this device
+-- reset-names: must be "stmmaceth"
+-- phy-mode: See ethernet.txt
+-- phy-handle: See ethernet.txt
+-- syscon: A phandle to the device containing the EMAC or GMAC clock register
 -
 -Optional properties:
--- phy-supply: phandle to a regulator if the PHY needs one
+-- allwinner,tx-delay-ps: TX clock delay chain value in ps.
+-			 Range is 0-700. Default is 0.
+-			 Unavailable for allwinner,sun8i-r40-gmac
+-- allwinner,rx-delay-ps: RX clock delay chain value in ps.
+-			 Range is 0-3100. Default is 0.
+-			 Range is 0-700 for allwinner,sun8i-r40-gmac
+-Both delay properties need to be a multiple of 100. They control the
+-clock delay for external RGMII PHY. They do not apply to the internal
+-PHY or external non-RGMII PHYs.
 -
--Examples:
+-Optional properties for the following compatibles:
+-  - "allwinner,sun8i-h3-emac",
+-  - "allwinner,sun8i-v3s-emac":
+-- allwinner,leds-active-low: EPHY LEDs are active low
 -
--	gmac: ethernet@1c50000 {
--		compatible = "allwinner,sun7i-a20-gmac";
--		reg = <0x01c50000 0x10000>,
--		      <0x01c20164 0x4>;
--		interrupts = <0 85 1>;
--		interrupt-names = "macirq";
--		clocks = <&ahb_gates 49>, <&gmac_tx>;
--		clock-names = "stmmaceth", "allwinner_gmac_tx";
--		phy-mode = "mii";
+-Required child node of emac:
+-- mdio bus node: should be named mdio with compatible "snps,dwmac-mdio"
+-
+-Required properties of the mdio node:
+-- #address-cells: shall be 1
+-- #size-cells: shall be 0
+-
+-The device node referenced by "phy" or "phy-handle" must be a child node
+-of the mdio node. See phy.txt for the generic PHY bindings.
+-
+-The following compatibles require that the emac node have a mdio-mux child
+-node called "mdio-mux":
+-  - "allwinner,sun8i-h3-emac"
+-  - "allwinner,sun8i-v3s-emac":
+-Required properties for the mdio-mux node:
+-  - compatible = "allwinner,sun8i-h3-mdio-mux"
+-  - mdio-parent-bus: a phandle to EMAC mdio
+-  - one child mdio for the integrated mdio with the compatible
+-    "allwinner,sun8i-h3-mdio-internal"
+-  - one child mdio for the external mdio if present (V3s have none)
+-Required properties for the mdio-mux children node:
+-  - reg: 1 for internal MDIO bus, 2 for external MDIO bus
+-
+-The following compatibles require a PHY node representing the integrated
+-PHY, under the integrated MDIO bus node if an mdio-mux node is used:
+-  - "allwinner,sun8i-h3-emac",
+-  - "allwinner,sun8i-v3s-emac":
+-
+-Additional information regarding generic multiplexer properties can be found
+-at Documentation/devicetree/bindings/net/mdio-mux.txt
+-
+-Required properties of the integrated phy node:
+-- clocks: a phandle to the reference clock for the EPHY
+-- resets: a phandle to the reset control for the EPHY
+-- Must be a child of the integrated mdio
+-
+-Example with integrated PHY:
+-emac: ethernet@1c0b000 {
+-	compatible = "allwinner,sun8i-h3-emac";
+-	syscon = <&syscon>;
+-	reg = <0x01c0b000 0x104>;
+-	interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
+-	interrupt-names = "macirq";
+-	resets = <&ccu RST_BUS_EMAC>;
+-	reset-names = "stmmaceth";
+-	clocks = <&ccu CLK_BUS_EMAC>;
+-	clock-names = "stmmaceth";
+-
+-	phy-handle = <&int_mii_phy>;
+-	phy-mode = "mii";
+-	allwinner,leds-active-low;
+-
+-	mdio: mdio {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		compatible = "snps,dwmac-mdio";
 -	};
+-
+-	mdio-mux {
+-		compatible = "mdio-mux", "allwinner,sun8i-h3-mdio-mux";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		mdio-parent-bus = <&mdio>;
+-
+-		int_mdio: mdio@1 {
+-			compatible = "allwinner,sun8i-h3-mdio-internal";
+-			reg = <1>;
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			int_mii_phy: ethernet-phy@1 {
+-				reg = <1>;
+-				clocks = <&ccu CLK_BUS_EPHY>;
+-				resets = <&ccu RST_BUS_EPHY>;
+-				phy-is-integrated;
+-			};
+-		};
+-		ext_mdio: mdio@2 {
+-			reg = <2>;
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-		};
+-	};
+-};
+-
+-Example with external PHY:
+-emac: ethernet@1c0b000 {
+-	compatible = "allwinner,sun8i-h3-emac";
+-	syscon = <&syscon>;
+-	reg = <0x01c0b000 0x104>;
+-	interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
+-	interrupt-names = "macirq";
+-	resets = <&ccu RST_BUS_EMAC>;
+-	reset-names = "stmmaceth";
+-	clocks = <&ccu CLK_BUS_EMAC>;
+-	clock-names = "stmmaceth";
+-
+-	phy-handle = <&ext_rgmii_phy>;
+-	phy-mode = "rgmii";
+-	allwinner,leds-active-low;
+-
+-	mdio: mdio {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		compatible = "snps,dwmac-mdio";
+-	};
+-
+-	mdio-mux {
+-		compatible = "allwinner,sun8i-h3-mdio-mux";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		mdio-parent-bus = <&mdio>;
+-
+-		int_mdio: mdio@1 {
+-			compatible = "allwinner,sun8i-h3-mdio-internal";
+-			reg = <1>;
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			int_mii_phy: ethernet-phy@1 {
+-				reg = <1>;
+-				clocks = <&ccu CLK_BUS_EPHY>;
+-				resets = <&ccu RST_BUS_EPHY>;
+-			};
+-		};
+-		ext_mdio: mdio@2 {
+-			reg = <2>;
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			ext_rgmii_phy: ethernet-phy@1 {
+-				reg = <1>;
+-			};
+-		}:
+-	};
+-};
+-
+-Example with SoC without integrated PHY
+-
+-emac: ethernet@1c0b000 {
+-	compatible = "allwinner,sun8i-a83t-emac";
+-	syscon = <&syscon>;
+-	reg = <0x01c0b000 0x104>;
+-	interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
+-	interrupt-names = "macirq";
+-	resets = <&ccu RST_BUS_EMAC>;
+-	reset-names = "stmmaceth";
+-	clocks = <&ccu CLK_BUS_EMAC>;
+-	clock-names = "stmmaceth";
+-
+-	phy-handle = <&ext_rgmii_phy>;
+-	phy-mode = "rgmii";
+-
+-	mdio: mdio {
+-		compatible = "snps,dwmac-mdio";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		ext_rgmii_phy: ethernet-phy@1 {
+-			reg = <1>;
+-		};
+-	};
+-};
 diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index be3ada5121e1..d213c32ef153 100644
+index d213c32ef153..e56260c84c16 100644
 --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
 +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -14,6 +14,7 @@ maintainers:
- properties:
+@@ -15,6 +15,14 @@ properties:
    compatible:
      oneOf:
-+      - const: allwinner,sun7i-a20-gmac
+       - const: allwinner,sun7i-a20-gmac
++      - const: allwinner,sun8i-a83t-emac
++      - const: allwinner,sun8i-h3-emac
++      - const: allwinner,sun8i-r40-emac
++      - const: allwinner,sun8i-v3s-emac
++      - const: allwinner,sun50i-a64-emac
++      - items:
++          - const: allwinner,sun50i-h6-emac
++          - const: allwinner,sun50i-a64-emac
        - const: snps,dwmac
        - const: snps,dwmac-3.50a
        - const: snps,dwmac-3.610
-@@ -232,6 +233,7 @@ allOf:
-       properties:
-         compatible:
-           enum:
-+            - allwinner,sun7i-a20-gmac
-             - snps,dwxgmac
-             - snps,dwxgmac-2.10
-             - st,spear600-gmac
-@@ -273,6 +275,37 @@ allOf:
-             Enables the TSO feature otherwise it will be managed by
-             MAC HW capability register. Only for GMAC4 and newer.
+@@ -306,6 +314,211 @@ allOf:
+         - clocks
+         - clock-names
  
 +  - if:
 +      properties:
 +        compatible:
-+          const: allwinner,sun7i-a20-gmac
++          contains:
++            enum:
++              - allwinner,sun8i-a83t-emac
++              - allwinner,sun8i-h3-emac
++              - allwinner,sun8i-r40-emac
++              - allwinner,sun8i-v3s-emac
++              - allwinner,sun50i-a64-emac
 +
 +    then:
 +      properties:
@@ -125,40 +303,325 @@ index be3ada5121e1..d213c32ef153 100644
 +          const: macirq
 +
 +        clocks:
-+          items:
-+            - description: GMAC main clock
-+            - description: TX clock
++          maxItems: 1
 +
 +        clock-names:
-+          items:
-+            - const: stmmaceth
-+            - const: allwinner_gmac_tx
++          const: stmmaceth
 +
-+        phy-supply:
++        syscon:
++          $ref: /schemas/types.yaml#definitions/phandle
 +          description:
-+            PHY regulator
++            Phandle to the device containing the EMAC or GMAC clock
++            register
 +
 +      required:
++        - compatible
++        - reg
++        - interrupts
++        - interrupt-names
 +        - clocks
 +        - clock-names
++        - resets
++        - reset-names
++        - phy-mode
++        - phy-handle
++        - syscon
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - allwinner,sun8i-a83t-emac
++              - allwinner,sun8i-h3-emac
++              - allwinner,sun8i-v3s-emac
++              - allwinner,sun50i-a64-emac
++
++    then:
++      properties:
++        allwinner,tx-delay-ps:
++          allOf:
++            - $ref: /schemas/types.yaml#definitions/uint32
++            - enum: [0, 100, 200, 300, 400, 500, 600, 700]
++              default: 0
++          description:
++            External RGMII PHY TX clock delay chain value in ps.
++
++        allwinner,rx-delay-ps:
++          allOf:
++            - $ref: /schemas/types.yaml#definitions/uint32
++            - enum:
++                - 0
++                - 100
++                - 200
++                - 300
++                - 400
++                - 500
++                - 600
++                - 700
++                - 800
++                - 900
++                - 1000
++                - 1100
++                - 1200
++                - 1300
++                - 1400
++                - 1500
++                - 1600
++                - 1700
++                - 1800
++                - 1900
++                - 2000
++                - 2100
++                - 2200
++                - 2300
++                - 2400
++                - 2500
++                - 2600
++                - 2700
++                - 2800
++                - 2900
++                - 3000
++                - 3100
++              default: 0
++          description:
++            External RGMII PHY TX clock delay chain value in ps.
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - allwinner,sun8i-r40-emac
++
++    then:
++      properties:
++        allwinner,rx-delay-ps:
++          allOf:
++            - $ref: /schemas/types.yaml#definitions/uint32
++            - enum: [0, 100, 200, 300, 400, 500, 600, 700]
++              default: 0
++          description:
++            External RGMII PHY TX clock delay chain value in ps.
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - allwinner,sun8i-h3-emac
++              - allwinner,sun8i-v3s-emac
++
++    then:
++      properties:
++        allwinner,leds-active-low:
++          $ref: /schemas/types.yaml#definitions/flag
++          description:
++            EPHY LEDs are active low.
++
++        mdio-mux:
++          type: object
++
++          properties:
++            compatible:
++              const: allwinner,sun8i-h3-mdio-mux
++
++            mdio-parent-bus:
++              $ref: /schemas/types.yaml#definitions/phandle
++              description:
++                Phandle to EMAC MDIO.
++
++            mdio@1:
++              type: object
++              description: Internal MDIO Bus
++
++              properties:
++                "#address-cells":
++                  const: 1
++
++                "#size-cells":
++                  const: 0
++
++                compatible:
++                  const: allwinner,sun8i-h3-mdio-internal
++
++                reg:
++                  const: 1
++
++              patternProperties:
++                "^ethernet-phy@[0-9a-f]$":
++                  type: object
++                  description:
++                    Integrated PHY node
++
++                  properties:
++                    clocks:
++                      maxItems: 1
++
++                    resets:
++                      maxItems: 1
++
++                  required:
++                    - clocks
++                    - resets
++
++
++            mdio@2:
++              type: object
++              description: External MDIO Bus (H3 only)
++
++              properties:
++                "#address-cells":
++                  const: 1
++
++                "#size-cells":
++                  const: 0
++
++                compatible:
++                  const: prout
++
++                reg:
++                  const: 2
++
++          required:
++            - compatible
++            - mdio-parent-bus
++            - mdio@1
 +
  examples:
    - |
      stmmac_axi_setup: stmmac-axi-config {
-@@ -337,6 +370,18 @@ examples:
-         };
+@@ -382,6 +595,135 @@ examples:
+         phy-mode = "mii";
      };
  
 +  - |
-+    gmac: ethernet@1c50000 {
-+        compatible = "allwinner,sun7i-a20-gmac";
-+        reg = <0x01c50000 0x10000>,
-+              <0x01c20164 0x4>;
-+        interrupts = <0 85 1>;
++    ethernet@1c0b000 {
++        compatible = "allwinner,sun8i-h3-emac";
++        syscon = <&syscon>;
++        reg = <0x01c0b000 0x104>;
++        interrupts = <0 82 1>;
 +        interrupt-names = "macirq";
-+        clocks = <&ahb_gates 49>, <&gmac_tx>;
-+        clock-names = "stmmaceth", "allwinner_gmac_tx";
++        resets = <&ccu 12>;
++        reset-names = "stmmaceth";
++        clocks = <&ccu 27>;
++        clock-names = "stmmaceth";
++
++        phy-handle = <&int_mii_phy>;
 +        phy-mode = "mii";
++        allwinner,leds-active-low;
++
++        mdio1: mdio {
++            #address-cells = <1>;
++            #size-cells = <0>;
++            compatible = "snps,dwmac-mdio";
++        };
++
++        mdio-mux {
++            compatible = "allwinner,sun8i-h3-mdio-mux";
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            mdio-parent-bus = <&mdio1>;
++
++            int_mii_phy: mdio@1 {
++                compatible = "allwinner,sun8i-h3-mdio-internal";
++                reg = <1>;
++                #address-cells = <1>;
++                #size-cells = <0>;
++
++                ethernet-phy@1 {
++                    reg = <1>;
++                    clocks = <&ccu 67>;
++                    resets = <&ccu 39>;
++                    phy-is-integrated;
++                };
++            };
++
++            mdio@2 {
++                reg = <2>;
++                #address-cells = <1>;
++                #size-cells = <0>;
++            };
++        };
++    };
++
++  - |
++    ethernet@1c0b000 {
++        compatible = "allwinner,sun8i-h3-emac";
++        syscon = <&syscon>;
++        reg = <0x01c0b000 0x104>;
++        interrupts = <0 82 1>;
++        interrupt-names = "macirq";
++        resets = <&ccu 12>;
++        reset-names = "stmmaceth";
++        clocks = <&ccu 27>;
++        clock-names = "stmmaceth";
++
++        phy-handle = <&ext_rgmii_phy>;
++        phy-mode = "rgmii";
++        allwinner,leds-active-low;
++
++        mdio2: mdio {
++            #address-cells = <1>;
++            #size-cells = <0>;
++            compatible = "snps,dwmac-mdio";
++        };
++
++        mdio-mux {
++            compatible = "allwinner,sun8i-h3-mdio-mux";
++            #address-cells = <1>;
++            #size-cells = <0>;
++            mdio-parent-bus = <&mdio2>;
++
++            mdio@1 {
++                compatible = "allwinner,sun8i-h3-mdio-internal";
++                reg = <1>;
++                #address-cells = <1>;
++                #size-cells = <0>;
++
++                ethernet-phy@1 {
++                    reg = <1>;
++                    clocks = <&ccu 67>;
++                    resets = <&ccu 39>;
++                };
++            };
++
++            mdio@2 {
++                reg = <2>;
++                #address-cells = <1>;
++                #size-cells = <0>;
++
++                ext_rgmii_phy: ethernet-phy@1 {
++                    reg = <1>;
++                };
++            };
++        };
++    };
++
++  - |
++    ethernet@1c0b000 {
++        compatible = "allwinner,sun8i-a83t-emac";
++        syscon = <&syscon>;
++        reg = <0x01c0b000 0x104>;
++        interrupts = <0 82 1>;
++        interrupt-names = "macirq";
++        resets = <&ccu 13>;
++        reset-names = "stmmaceth";
++        clocks = <&ccu 27>;
++        clock-names = "stmmaceth";
++        phy-handle = <&ext_rgmii_phy1>;
++        phy-mode = "rgmii";
++
++        mdio {
++            compatible = "snps,dwmac-mdio";
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            ext_rgmii_phy1: ethernet-phy@1 {
++                reg = <1>;
++            };
++        };
 +    };
 +
  # FIXME: We should set it, but it would report all the generic
