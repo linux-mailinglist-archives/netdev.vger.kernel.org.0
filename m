@@ -2,114 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 637D728CD5
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB6B228CDF
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:19:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388423AbfEWWEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 18:04:14 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:33134 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388293AbfEWWEO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 18:04:14 -0400
-Received: by mail-ed1-f68.google.com with SMTP id n17so11354771edb.0
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 15:04:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0ZOGMkQATVa6hySgn7e8PmVEwWcR3u+Mz/cQOb/DRkA=;
-        b=Et/9IGf9JPPgnIarl8rwxL6y9jKOfsCgMA2M59GgnFg/C9v/G+zu2QXmrdr4b1XfuN
-         I+o9bIxpCosDiigq++OZqibZOj2dNIDLaVLbc7hkqXQBdMpGhMeKpPjGBl4I0ifTI5K/
-         jm6QIrQBFz5/90d2a3XGpf1L59SLTPgiBC2AOZX4diP3gvOkmpZnlschf2+fblFzBOwW
-         6hSb6C1ZmKc/9Y6DhA3GP/U86PGL8JD6ehE1Q9YgqsNFrDNqSDysHsqjVB8tbzG7v3jF
-         dVx48vCHf2fBIo5T/OTgg8ry8hUoUSDzKdeOKnf9LpiYBj3fG+kVECbQm3UBghjzLy1+
-         W55w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0ZOGMkQATVa6hySgn7e8PmVEwWcR3u+Mz/cQOb/DRkA=;
-        b=GezTLa7mgS9g6wvePLzrDOuE/O+mFDil2G5MwTW9pQtf8MkHAq5yXHlMU0jSKGu1PO
-         v82mAjdAOByAkuHAPLKovIrVkkwN3wIDYful1k6qoybBTy19KDfZ4MM64q3elOrGcvSq
-         XmB89yd8W6iwAvfSluXDnxSIhZkawQZe3HbAlv0XCjvsUJea9+jKWCli6J0mgxQ3/y6T
-         jRE3PXPu8Fbdr8NDiQzP2Q9AhffqTgYfPY6C7QYPql2cqTLoFeEdo160iG4dMTRvnjvz
-         ms6vjJcCVKokn/7eemQowGPFNCxbYaAPAsOOIa+KmRDxxTe1CwNKPW4xaRdSnt1ChA4y
-         k3qQ==
-X-Gm-Message-State: APjAAAURjCGQsNDo2ZZXT0HZM0ssofwan4gev8suon4o64cYBX3pPyjc
-        /4JO7gZ+x04IhmUp0Mc9LpDBGL2G8WfWbu6HlcsKUzJpbZ4=
-X-Google-Smtp-Source: APXvYqz1Lk78/B7Smjk+kOoueQMsLbiNbdPpB+w2QzZSmQCSibVlnPiCS4WR8TJaLCQU80gSMKWGNMtiyEf2oQaKURs=
-X-Received: by 2002:a50:92c9:: with SMTP id l9mr100036604eda.75.1558649052334;
- Thu, 23 May 2019 15:04:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190523011958.14944-1-ioana.ciornei@nxp.com> <20190523011958.14944-6-ioana.ciornei@nxp.com>
- <20190523215522.gnz6l342zhzpi2ld@shell.armlinux.org.uk>
-In-Reply-To: <20190523215522.gnz6l342zhzpi2ld@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 24 May 2019 01:04:01 +0300
-Message-ID: <CA+h21hpU7-kcsX9Z4DA116qcMz2DjE3G2Fwj03=JDRyE7sAcwQ@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 5/9] net: phylink: Add phylink_create_raw
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        id S2388199AbfEWWSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 18:18:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54048 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387616AbfEWWSm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 18:18:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=UJPyyNh44s13ewt1UZjcbEcb6jSyME1F4Mxzw3jpWJ8=; b=eCi8gZmuVT+cbetGvduq0SYQUr
+        8d3SYP4STycqzYrK37rT/xO8j3CbHK2AHwKUukk9OZ547HDosYSl8LmTQ1RjVomD4X2FKfFkH2eG7
+        DcjvS3i9REXx1ZtGggpdU9E38uSzd7dqz/y64A96xqv5PVfwk5XPrP3kHtToEjrqvWKg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hTw2l-0005wO-3i; Fri, 24 May 2019 00:18:35 +0200
+Date:   Fri, 24 May 2019 00:18:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
         "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
         "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
         "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [RFC PATCH net-next 2/9] net: phy: Guard against the presence of
+ a netdev
+Message-ID: <20190523221835.GB21208@lunn.ch>
+References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
+ <20190523011958.14944-3-ioana.ciornei@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190523011958.14944-3-ioana.ciornei@nxp.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 May 2019 at 00:55, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> On Thu, May 23, 2019 at 01:20:40AM +0000, Ioana Ciornei wrote:
-> > +     if (pl->ops) {
-> > +             pl->ops->mac_link_up(ndev, pl->link_an_mode,
-> >                            pl->phy_state.interface,
-> >                            pl->phydev);
-> >
-> > +             netif_carrier_on(ndev);
-> >
-> > +             netdev_info(ndev,
-> > +                         "Link is Up - %s/%s - flow control %s\n",
-> > +                         phy_speed_to_str(link_state.speed),
-> > +                         phy_duplex_to_str(link_state.duplex),
-> > +                         phylink_pause_to_str(link_state.pause));
-> > +     } else {
-> > +             blocking_notifier_call_chain(&pl->notifier_chain,
-> > +                                          PHYLINK_MAC_LINK_UP, &info);
-> > +             phydev_info(pl->phydev,
-> > +                         "Link is Up - %s/%s - flow control %s\n",
-> > +                         phy_speed_to_str(link_state.speed),
-> > +                         phy_duplex_to_str(link_state.duplex),
-> > +                         phylink_pause_to_str(link_state.pause));
-> > +     }
->
-> So if we don't have pl->ops, what happens when we call phydev_info()
-> with a NULL phydev, which is a very real possibility: one of phylink's
-> whole points is to support dynamic presence of a PHY.
->
-> What will happen in that case is this will oops, due to dereferencing
-> an offset NULL pointer via:
->
-> #define phydev_info(_phydev, format, args...)   \
->         dev_info(&_phydev->mdio.dev, format, ##args)
->
-> You can't just decide that if there's no netdev, we will be guaranteed
-> a phy.
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> According to speedtest.net: 11.9Mbps down 500kbps up
+On Thu, May 23, 2019 at 01:20:38AM +0000, Ioana Ciornei wrote:
+> A prerequisite for PHYLIB to work in the absence of a struct net_device
+> is to not access pointers to it.
+> 
+> Changes are needed in the following areas:
+> 
+>  - Printing: In some places netdev_err was replaced with phydev_err.
+> 
+>  - Incrementing reference count to the parent MDIO bus driver: If there
+>    is no net device, then the reference count should definitely be
+>    incremented since there is no chance that it was an Ethernet driver
+>    who registered the MDIO bus.
+> 
+>  - Sysfs links are not created in case there is no attached_dev.
+> 
+>  - No netif_carrier_off is done if there is no attached_dev.
 
-True, however it does not crash:
+Hi Ioana
 
-[    2.539949] (NULL device *): Link is Up - 1Gbps/Full - flow control off
+Looking at the functions changed here, they seem to be related to
+phy_attach(), phy_connect(), and phy_detach() etc. Is the intention
+you can call these functions and pass a NULL pointer for the
+net_device?
 
-I agree that a better printing system has to be established though.
-
--Vladimir
+	Andrew
