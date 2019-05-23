@@ -2,96 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C527328D7A
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:55:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA69C28D85
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387966AbfEWWzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 18:55:10 -0400
-Received: from mga07.intel.com ([134.134.136.100]:63184 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387693AbfEWWzK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 18:55:10 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 May 2019 15:55:09 -0700
-X-ExtLoop1: 1
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by orsmga004.jf.intel.com with ESMTP; 23 May 2019 15:55:09 -0700
-Message-ID: <f8d774415fcb66c46ebc08a9b66f32d825c004ac.camel@intel.com>
-Subject: Re: [RESEND PATCH] intel-ethernet: warn when fatal read failure
- happens
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Reply-To: jeffrey.t.kirsher@intel.com
-To:     Feng Tang <feng.tang@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Aaron F Brown <aaron.f.brown@intel.com>,
-        intel-wired-lan@osuosl.org, netdev@vger.kernel.org
-Date:   Thu, 23 May 2019 15:55:15 -0700
-In-Reply-To: <20190523032233.29277-1-feng.tang@intel.com>
-References: <20190523032233.29277-1-feng.tang@intel.com>
-Organization: Intel
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-y1OFu1nRmlcChIbRxZiy"
-User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+        id S2388637AbfEWW45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 18:56:57 -0400
+Received: from gateway32.websitewelcome.com ([192.185.145.18]:28922 "EHLO
+        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388589AbfEWW44 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 18:56:56 -0400
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway32.websitewelcome.com (Postfix) with ESMTP id 8A77DBC1E
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 17:56:54 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id TwdqhsRp82PzOTwdqhGJcu; Thu, 23 May 2019 17:56:54 -0500
+X-Authority-Reason: nr=8
+Received: from [189.250.47.159] (port=48070 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.91)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hTwdp-001XDD-O9; Thu, 23 May 2019 17:56:53 -0500
+Date:   Thu, 23 May 2019 17:56:53 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH net-next] flow_offload: use struct_size() in kzalloc()
+Message-ID: <20190523225653.GA24864@embeddedor>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.47.159
+X-Source-L: No
+X-Exim-ID: 1hTwdp-001XDD-O9
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [189.250.47.159]:48070
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 19
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+One of the more common cases of allocation size calculations is finding
+the size of a structure that has a zero-sized array at the end, along
+with memory for some number of elements for that array. For example:
 
---=-y1OFu1nRmlcChIbRxZiy
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+struct foo {
+   int stuff;
+   struct boo entry[];
+};
 
-On Thu, 2019-05-23 at 11:22 +0800, Feng Tang wrote:
-> Failed in reading the HW register is very serious for igb/igc driver,
-> as its hw_addr will be set to NULL and cause the adapter be seen as
-> "REMOVED".
->=20
-> We saw the error only a few times in the MTBF test for
-> suspend/resume,
-> but can hardly get any useful info to debug.
->=20
-> Adding WARN() so that we can get the necessary information about
-> where and how it happens, and use it for root causing and fixing
-> this "PCIe link lost issue"
->=20
-> This affects igb, igc.
->=20
-> Signed-off-by: Feng Tang <feng.tang@intel.com>
-> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-> Acked-by: Sasha Neftin <sasha.neftin@intel.com>
-> ---
->  drivers/net/ethernet/intel/igb/igb_main.c | 1 +
->  drivers/net/ethernet/intel/igc/igc_main.c | 1 +
->  2 files changed, 2 insertions(+)
+instance = kzalloc(sizeof(struct foo) + count * sizeof(struct boo), GFP_KERNEL);
 
-This patch is already in my next series of 1GbE patches to push to
-Dave, so you can expect this to be pushed upstream before the weekend.
+Instead of leaving these open-coded and prone to type mistakes, we can
+now use the new struct_size() helper:
 
---=-y1OFu1nRmlcChIbRxZiy
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+instance = kzalloc(struct_size(instance, entry, count), GFP_KERNEL);
 
------BEGIN PGP SIGNATURE-----
+This code was detected with the help of Coccinelle.
 
-iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAlznJNMACgkQ5W/vlVpL
-7c7v5Q/9F2bwo0bdt/sXDiOiWfpgLcTVVN3sYMsjzDHCJCZQAEZuGEvlnhl6GIgc
-KwYrE0Am0ZvnhMtX6KYi29f51EZo3fpZ979hAUAZlIFBLgBVtg4F/j5YdpL283ku
-U2c2MpnoDZEvlRjaOIzUsqygNmif9jNqsTINKazBm2FFm8qBMXPhJ3ivUWAmYx6J
-AyyeoHDUUohDR4JxIdQkOiNumbaFszgNa6Rek5E8VV7jgujCic9TRV+SkvAYNViU
-tDqBgoJJGlyHOUmJEYlW8EiHF+hQ8n03ycAct/57lU0BjDizZVBktdvxdSura3MP
-klr1PTiuMwLMFaH+YzgVD+fuWplAALbrqhDtXpqG471Q+q0twvU1HIWIjOywjzxY
-Lo9G3Ru0HBwyhELGotBi8NzsE3/w950jKefSYv37CzYKIAr6EwgvJydG1tW2VubW
-s5jcDdxrr0qbSY1v5eI8HlKvcFKYRw+LYyHeOEVR0DLs8mXEker9qzluG4OBNm9W
-URQN5F/Myy8pejMOQPCqSFyWSCzxddCzUy1KPaIUN82pIdz3pfMgQZfaseOH4GyV
-/bzaXPU8EXAtjan6/P6XDJ71AW3+VSXIcfEC1UAV/9VAu8GY1N4aJym85NPCRyKD
-tW1jAIXiErijG8ddQ0zHuv2kDT82mG8ggklcjElIIBu/ULE3GPc=
-=3A37
------END PGP SIGNATURE-----
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ net/core/flow_offload.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---=-y1OFu1nRmlcChIbRxZiy--
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 5ce7d47a960e..3d93e51b83e0 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -7,8 +7,7 @@ struct flow_rule *flow_rule_alloc(unsigned int num_actions)
+ {
+ 	struct flow_rule *rule;
+ 
+-	rule = kzalloc(sizeof(struct flow_rule) +
+-		       sizeof(struct flow_action_entry) * num_actions,
++	rule = kzalloc(struct_size(rule, action.entries, num_actions),
+ 		       GFP_KERNEL);
+ 	if (!rule)
+ 		return NULL;
+-- 
+2.21.0
 
