@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 125882799C
+	by mail.lfdr.de (Postfix) with ESMTP id 861772799D
 	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 11:45:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730404AbfEWJp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 05:45:29 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:39782 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730363AbfEWJp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 05:45:28 -0400
-Received: by mail-wm1-f67.google.com with SMTP id z23so991917wma.4
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 02:45:27 -0700 (PDT)
+        id S1730412AbfEWJpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 05:45:30 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41603 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730028AbfEWJp3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 05:45:29 -0400
+Received: by mail-wr1-f66.google.com with SMTP id u16so1619791wrn.8
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 02:45:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=XsyipV2nm7850oQ6HrbcxJvkYIRy7UAiY//nsGFXsaM=;
-        b=uhHpm5Da56Bc3J4xcMtspl0/hz5R1/Ry+1jIZ9tu7RVOo/p+YJlcg3Ipmlqwg5mkS/
-         CrQbekJKiA4brXMcEX3ZNMMtr+SFJ/B2KC5NYiZoxBGQYKuU4uYkvkUPxAhDP9zNxYG8
-         01gIBjbxajwEKvzbf2elc7JJJSZHmqOci/E0OBqMjaiWHll3PzBDgJFMNYjLDgZKclcN
-         02vOAWkdOqEHv2VgpWjkxCWCQHYAgGZA2CD8UMVm6EPZ+eZp1d2Csc+EsDgY+BO2ZF4k
-         zqfS8savnWgh0WkF0kIfCavypE5TaGWxnr6pSa7gSkgSA6ckws8DKQzHWFZ/ybcL4VGz
-         LNUA==
+        bh=B0xXqUfMIkHJAVwfzBBQcq55nGXB64HULTsUX85Tw7M=;
+        b=qBJTYEKt4NhuqOGa0YtnqKyAgWsvBazpq4wueTg46nljGZjZToQlh/E/JaKvbKP86i
+         umKcW7/2opBEnLwxbgewl4usnv70IXOLjm9+hT/zYagEk08Bpv+u+9eMdXONlR/pd/0/
+         2prxzNwxvgYA+5LjX+pmQyW27+KqrVeBfmQuf/xnxuQLT2wWyJ75XmAcIPdF8eTbZOjh
+         wTi36KtsSBA9sIViAKzeMP2I+zymie3uFofKLaxe+SF6KaTQs1kujQjF5s2rfooP0ubx
+         pFURj6alUuUEiU3zCOwqkHkqS5ImJOaekkuZP72dEmoA+b3vkHCBW7kXewwWgAmX0JsS
+         LTZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=XsyipV2nm7850oQ6HrbcxJvkYIRy7UAiY//nsGFXsaM=;
-        b=Zf1uLpTn+jage4hZuTO9kkIGJRffw/V2DaHdU8o69g5SXUi3gl/ppXSLLKdoBAH7sy
-         MoA2+hO1AHt448XeJiHOxSDbpuPrJQmLPdxAPrJRNCfGSSpE+2xluBhSf82gPHAyI+tb
-         d7bdkYj/4HHkZkP6HSj6BV+SVE6TeOO50v/IswUbxZKGTkYbhPseTG5gP6L1TG8RP/Pg
-         Lfgs+bVpAswGF4W0ppiYZJSDdVxWxZ0vIqSBztJjDn1P/AGO5BieCCS2ANcZFAK0oL5l
-         caJHz4fx5NEX6aWSZBWwUfUKgfyNQ+qcC3moyoxAD72rOYZqL9CVKz+CM8ZENrRRGW+j
-         KTmw==
-X-Gm-Message-State: APjAAAWUgNfZidYm2oZgj4686qQyV+0DGkbhBgM2FB8iDea14ci/Fvcs
-        sNOgOxWb1vhYUKqQO2OWNy7ePW4wZSo=
-X-Google-Smtp-Source: APXvYqx+0WWDpUPEO4FEasmvY5yxqzgPh79dB66mohfrAl3IgZwb/wudHmnTPM86d1I9i6xiH5kK9w==
-X-Received: by 2002:a1c:1f47:: with SMTP id f68mr11448204wmf.57.1558604726530;
-        Thu, 23 May 2019 02:45:26 -0700 (PDT)
+        bh=B0xXqUfMIkHJAVwfzBBQcq55nGXB64HULTsUX85Tw7M=;
+        b=FXqrM1VyJZch+4yUyO1HC6Lsed+I1gP8A1z3wk8UWPYt6v2r7T1oa3kXFEBLX9wDKI
+         BObhog1EyYEVZpmGxbbSwRsbLvMfiCQ+/LnQ6DGxeuooO6QgFYCruJOXU91ocmkgCG2a
+         hBs1S6y7pUUjmhCyTw7xGX4qDM3Sqn/gobI9XNSomQbSqtipUZ3DIhmPz5MeDKyDOGrj
+         TXDB44ltfizoW1YoasxyC+v8lXHtmN3uYhJJw7IDqNZVvRqUwn/PgLGtPZ99yPuxhDs5
+         KKrjh0xBA+Lb08AjQyBH5LtUfgDgSAgNOhVhlaQWFrtFfJPQ3Nj/lZS5Dvco0a0mJDsH
+         sW3g==
+X-Gm-Message-State: APjAAAXe3FS5DN5WQXZMOLcH+KsN6VWJl1Ft2v8Mn4H+jbm/Dbj2WRMW
+        ZyP9d4UDqZC1WNlbnyijXpZ1JSG18y4=
+X-Google-Smtp-Source: APXvYqyM3YpGx6PVykWacFhw3d9zAOP9p8FOSIyI2ZEedzUwsfCmVeqCeO6RbIet/+QZiFW+9KHFjw==
+X-Received: by 2002:a5d:6710:: with SMTP id o16mr28730774wru.173.1558604727493;
+        Thu, 23 May 2019 02:45:27 -0700 (PDT)
 Received: from localhost (ip-89-176-222-123.net.upcbroadband.cz. [89.176.222.123])
-        by smtp.gmail.com with ESMTPSA id s62sm4448637wmf.24.2019.05.23.02.45.26
+        by smtp.gmail.com with ESMTPSA id o8sm22747759wrx.50.2019.05.23.02.45.27
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 23 May 2019 02:45:26 -0700 (PDT)
+        Thu, 23 May 2019 02:45:27 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, mlxsw@mellanox.com,
         jakub.kicinski@netronome.com, sthemmin@microsoft.com,
         dsahern@gmail.com, saeedm@mellanox.com, leon@kernel.org
-Subject: [patch net-next 6/7] mlxsw: Implement flash update status notifications
-Date:   Thu, 23 May 2019 11:45:09 +0200
-Message-Id: <20190523094510.2317-7-jiri@resnulli.us>
+Subject: [patch net-next 7/7] netdevsim: implement fake flash updating with notifications
+Date:   Thu, 23 May 2019 11:45:10 +0200
+Message-Id: <20190523094510.2317-8-jiri@resnulli.us>
 X-Mailer: git-send-email 2.17.2
 In-Reply-To: <20190523094510.2317-1-jiri@resnulli.us>
 References: <20190523094510.2317-1-jiri@resnulli.us>
@@ -61,59 +61,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Implement mlxfw status_notify op by passing notification down to
-devlink. Also notify about flash update begin and end.
-
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ drivers/net/netdevsim/dev.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 639bb5778ff3..5ac893d9dd12 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -294,6 +294,19 @@ static void mlxsw_sp_fsm_release(struct mlxfw_dev *mlxfw_dev, u32 fwhandle)
- 	mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(mcc), mcc_pl);
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index b509b941d5ca..c15b86f9cd2b 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -220,8 +220,43 @@ static int nsim_dev_reload(struct devlink *devlink,
+ 	return 0;
  }
  
-+static void mlxsw_sp_status_notify(struct mlxfw_dev *mlxfw_dev,
-+				   const char *msg, const char *comp_name,
-+				   u32 done_bytes, u32 total_bytes)
-+{
-+	struct mlxsw_sp_mlxfw_dev *mlxsw_sp_mlxfw_dev =
-+		container_of(mlxfw_dev, struct mlxsw_sp_mlxfw_dev, mlxfw_dev);
-+	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_mlxfw_dev->mlxsw_sp;
++#define NSIM_DEV_FLASH_SIZE 500000
++#define NSIM_DEV_FLASH_CHUNK_SIZE 1000
++#define NSIM_DEV_FLASH_CHUNK_TIME_MS 10
 +
-+	devlink_flash_update_status_notify(priv_to_devlink(mlxsw_sp->core),
-+					   msg, comp_name,
-+					   done_bytes, total_bytes);
++static int nsim_dev_flash_update(struct devlink *devlink, const char *file_name,
++				 const char *component,
++				 struct netlink_ext_ack *extack)
++{
++	int i;
++
++	devlink_flash_update_begin_notify(devlink);
++
++	devlink_flash_update_status_notify(devlink, "Preparing to flash",
++					   component, 0, 0);
++	for (i = 0; i < NSIM_DEV_FLASH_SIZE / NSIM_DEV_FLASH_CHUNK_SIZE; i++) {
++		devlink_flash_update_status_notify(devlink, "Flashing",
++						   component,
++						   i * NSIM_DEV_FLASH_CHUNK_SIZE,
++						   NSIM_DEV_FLASH_SIZE);
++		msleep(NSIM_DEV_FLASH_CHUNK_TIME_MS);
++	}
++	devlink_flash_update_status_notify(devlink, "Flashing",
++					   component,
++					   NSIM_DEV_FLASH_SIZE,
++					   NSIM_DEV_FLASH_SIZE);
++
++	devlink_flash_update_status_notify(devlink, "Flashing done",
++					   component, 0, 0);
++
++	devlink_flash_update_end_notify(devlink);
++
++	return 0;
 +}
 +
- static const struct mlxfw_dev_ops mlxsw_sp_mlxfw_dev_ops = {
- 	.component_query	= mlxsw_sp_component_query,
- 	.fsm_lock		= mlxsw_sp_fsm_lock,
-@@ -303,7 +316,8 @@ static const struct mlxfw_dev_ops mlxsw_sp_mlxfw_dev_ops = {
- 	.fsm_activate		= mlxsw_sp_fsm_activate,
- 	.fsm_query_state	= mlxsw_sp_fsm_query_state,
- 	.fsm_cancel		= mlxsw_sp_fsm_cancel,
--	.fsm_release		= mlxsw_sp_fsm_release
-+	.fsm_release		= mlxsw_sp_fsm_release,
-+	.status_notify		= mlxsw_sp_status_notify,
+ static const struct devlink_ops nsim_dev_devlink_ops = {
+ 	.reload = nsim_dev_reload,
++	.flash_update = nsim_dev_flash_update,
  };
  
- static int mlxsw_sp_firmware_flash(struct mlxsw_sp *mlxsw_sp,
-@@ -321,8 +335,10 @@ static int mlxsw_sp_firmware_flash(struct mlxsw_sp *mlxsw_sp,
- 	int err;
- 
- 	mlxsw_core_fw_flash_start(mlxsw_sp->core);
-+	devlink_flash_update_begin_notify(priv_to_devlink(mlxsw_sp->core));
- 	err = mlxfw_firmware_flash(&mlxsw_sp_mlxfw_dev.mlxfw_dev,
- 				   firmware, extack);
-+	devlink_flash_update_end_notify(priv_to_devlink(mlxsw_sp->core));
- 	mlxsw_core_fw_flash_end(mlxsw_sp->core);
- 
- 	return err;
+ static struct nsim_dev *
 -- 
 2.17.2
 
