@@ -2,179 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48A0228DA4
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 01:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AFC728E05
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 01:45:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388604AbfEWXKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 19:10:10 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38452 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388015AbfEWXKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 19:10:10 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4NN5EFa016319;
-        Thu, 23 May 2019 16:09:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=uq6BJ+pKj6xRhzw5uR8hoMYMFZoGjuFIfP/FnerFbTI=;
- b=FBP8UPGq8ZST0wp2r0ynWPNVLPzV0sXLCSN26nHZL15ND0VgIB7yP3vN8vfzTbB+BsNv
- B6/0PihmM4ZzSvjq0ysiPMriB9sXr373+RLc+YZwfoLI57g+FNY9cc3WVTiBYigvqxSx
- GogbkRXe0DmzZ3V1k5tUk2eyugkG5HHhGlw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2sp15ngtpf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 23 May 2019 16:09:48 -0700
-Received: from ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) by
- ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 23 May 2019 16:09:46 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 23 May 2019 16:09:46 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uq6BJ+pKj6xRhzw5uR8hoMYMFZoGjuFIfP/FnerFbTI=;
- b=i6iy/wNeDqQG/iBu6o6VPvHSp4map3/1po+xKPKmunqnU/6oC4l4s8YU36Taj4ZkVqxicFvL+drehnI0Egg8CkJPefRs/d4whruSfNGN7JqV8BJ04RadKIWuDBmzFYK/E7rLuS7j5GIxvs1mCDwasy7sODLgmbni53TNpcZt7F0=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
- BYAPR15MB2406.namprd15.prod.outlook.com (52.135.198.143) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.18; Thu, 23 May 2019 23:09:31 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::956e:28a4:f18d:b698]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::956e:28a4:f18d:b698%3]) with mapi id 15.20.1900.020; Thu, 23 May 2019
- 23:09:31 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Roman Gushchin <guro@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tejun Heo <tj@kernel.org>, Kernel Team <Kernel-team@fb.com>,
-        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 bpf-next 4/4] selftests/bpf: add auto-detach test
-Thread-Topic: [PATCH v3 bpf-next 4/4] selftests/bpf: add auto-detach test
-Thread-Index: AQHVEaCFg6pXZ47Yn0aCqZKhGzHn/6Z5VeMA
-Date:   Thu, 23 May 2019 23:09:30 +0000
-Message-ID: <4ff840cb-7e24-62d5-4ea7-fbca34218800@fb.com>
-References: <20190523194532.2376233-1-guro@fb.com>
- <20190523194532.2376233-5-guro@fb.com>
-In-Reply-To: <20190523194532.2376233-5-guro@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO1PR15CA0048.namprd15.prod.outlook.com
- (2603:10b6:101:1f::16) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:10e::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::d011]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1f3e2bf3-9f78-49ad-5b8b-08d6dfd3b621
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR15MB2406;
-x-ms-traffictypediagnostic: BYAPR15MB2406:
-x-microsoft-antispam-prvs: <BYAPR15MB240600282376D0ED5868D697D3010@BYAPR15MB2406.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 00462943DE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(346002)(396003)(366004)(376002)(39860400002)(199004)(189003)(7736002)(476003)(2616005)(186003)(256004)(31686004)(14444005)(5024004)(36756003)(486006)(11346002)(54906003)(46003)(305945005)(81156014)(8936002)(81166006)(446003)(8676002)(53936002)(14454004)(110136005)(5660300002)(71190400001)(71200400001)(6246003)(86362001)(102836004)(6512007)(53546011)(68736007)(76176011)(386003)(6506007)(478600001)(6436002)(4326008)(25786009)(2501003)(66946007)(73956011)(99286004)(52116002)(6116002)(66556008)(66446008)(64756008)(66476007)(229853002)(6486002)(31696002)(316002)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2406;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: FNwIImmVTya0d6QVtSeRihb9fZtuGlfQIcepDs79JOWWcRtGB+IgpKCaAYsUQl8mFeHPsyDkA7rBuaUAXLmxjYOYVgBwZqCVD7Jx7+Z9qeSzOzdskz4yLiBpsow9ekAGRrA83zBfvhC4B4mUudFxtFNPnsy+GiOZz7t+YNBqQ+QIRhTuux8qZHMy/u/WJv4NUyoX0sa0L/Sxqzd4AoBLTcTH3iiAo2LbQMAUQlVIew8ZCswJtwynQDMdArTJepLD2fENK+vd3SD9BQPC39iHmEguViAXIXCn1bHQTkpRK7CRYg/M4wVklewiK5cMd0g8VLqgFaLpJYsyePBH5xCisJk5HuL6I1DdVhOXzqA4ZJRBXFlWfr0gImXB8+AWIV50qU9gIOINlAg8a35PQCk+vBgPeZM+0/6fO9CTm9Rghh4=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BC104A1435D9E4498C5C759DF5144600@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2388395AbfEWXp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 19:45:27 -0400
+Received: from gateway34.websitewelcome.com ([192.185.148.164]:27955 "EHLO
+        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388232AbfEWXp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 19:45:27 -0400
+X-Greylist: delayed 1374 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 May 2019 19:45:26 EDT
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id B6EF710779F0
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 18:22:31 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id Tx2dhHK9N90onTx2dhLSNz; Thu, 23 May 2019 18:22:31 -0500
+X-Authority-Reason: nr=8
+Received: from [189.250.47.159] (port=41698 helo=[192.168.1.76])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.91)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1hTx2d-001jOI-BI; Thu, 23 May 2019 18:22:31 -0500
+Subject: Re: [PATCH net-next] net: sched: cls_u32: use struct_size() helper
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190501162315.GA27166@embeddedor>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ mQINBFssHAwBEADIy3ZoPq3z5UpsUknd2v+IQud4TMJnJLTeXgTf4biSDSrXn73JQgsISBwG
+ 2Pm4wnOyEgYUyJd5tRWcIbsURAgei918mck3tugT7AQiTUN3/5aAzqe/4ApDUC+uWNkpNnSV
+ tjOx1hBpla0ifywy4bvFobwSh5/I3qohxDx+c1obd8Bp/B/iaOtnq0inli/8rlvKO9hp6Z4e
+ DXL3PlD0QsLSc27AkwzLEc/D3ZaqBq7ItvT9Pyg0z3Q+2dtLF00f9+663HVC2EUgP25J3xDd
+ 496SIeYDTkEgbJ7WYR0HYm9uirSET3lDqOVh1xPqoy+U9zTtuA9NQHVGk+hPcoazSqEtLGBk
+ YE2mm2wzX5q2uoyptseSNceJ+HE9L+z1KlWW63HhddgtRGhbP8pj42bKaUSrrfDUsicfeJf6
+ m1iJRu0SXYVlMruGUB1PvZQ3O7TsVfAGCv85pFipdgk8KQnlRFkYhUjLft0u7CL1rDGZWDDr
+ NaNj54q2CX9zuSxBn9XDXvGKyzKEZ4NY1Jfw+TAMPCp4buawuOsjONi2X0DfivFY+ZsjAIcx
+ qQMglPtKk/wBs7q2lvJ+pHpgvLhLZyGqzAvKM1sVtRJ5j+ARKA0w4pYs5a5ufqcfT7dN6TBk
+ LXZeD9xlVic93Ju08JSUx2ozlcfxq+BVNyA+dtv7elXUZ2DrYwARAQABtCxHdXN0YXZvIEEu
+ IFIuIFNpbHZhIDxndXN0YXZvQGVtYmVkZGVkb3IuY29tPokCPQQTAQgAJwUCWywcDAIbIwUJ
+ CWYBgAULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRBHBbTLRwbbMZ6tEACk0hmmZ2FWL1Xi
+ l/bPqDGFhzzexrdkXSfTTZjBV3a+4hIOe+jl6Rci/CvRicNW4H9yJHKBrqwwWm9fvKqOBAg9
+ obq753jydVmLwlXO7xjcfyfcMWyx9QdYLERTeQfDAfRqxir3xMeOiZwgQ6dzX3JjOXs6jHBP
+ cgry90aWbaMpQRRhaAKeAS14EEe9TSIly5JepaHoVdASuxklvOC0VB0OwNblVSR2S5i5hSsh
+ ewbOJtwSlonsYEj4EW1noQNSxnN/vKuvUNegMe+LTtnbbocFQ7dGMsT3kbYNIyIsp42B5eCu
+ JXnyKLih7rSGBtPgJ540CjoPBkw2mCfhj2p5fElRJn1tcX2McsjzLFY5jK9RYFDavez5w3lx
+ JFgFkla6sQHcrxH62gTkb9sUtNfXKucAfjjCMJ0iuQIHRbMYCa9v2YEymc0k0RvYr43GkA3N
+ PJYd/vf9vU7VtZXaY4a/dz1d9dwIpyQARFQpSyvt++R74S78eY/+lX8wEznQdmRQ27kq7BJS
+ R20KI/8knhUNUJR3epJu2YFT/JwHbRYC4BoIqWl+uNvDf+lUlI/D1wP+lCBSGr2LTkQRoU8U
+ 64iK28BmjJh2K3WHmInC1hbUucWT7Swz/+6+FCuHzap/cjuzRN04Z3Fdj084oeUNpP6+b9yW
+ e5YnLxF8ctRAp7K4yVlvA7kCDQRbLBwMARAAsHCE31Ffrm6uig1BQplxMV8WnRBiZqbbsVJB
+ H1AAh8tq2ULl7udfQo1bsPLGGQboJSVN9rckQQNahvHAIK8ZGfU4Qj8+CER+fYPp/MDZj+t0
+ DbnWSOrG7z9HIZo6PR9z4JZza3Hn/35jFggaqBtuydHwwBANZ7A6DVY+W0COEU4of7CAahQo
+ 5NwYiwS0lGisLTqks5R0Vh+QpvDVfuaF6I8LUgQR/cSgLkR//V1uCEQYzhsoiJ3zc1HSRyOP
+ otJTApqGBq80X0aCVj1LOiOF4rrdvQnj6iIlXQssdb+WhSYHeuJj1wD0ZlC7ds5zovXh+FfF
+ l5qH5RFY/qVn3mNIVxeO987WSF0jh+T5ZlvUNdhedGndRmwFTxq2Li6GNMaolgnpO/CPcFpD
+ jKxY/HBUSmaE9rNdAa1fCd4RsKLlhXda+IWpJZMHlmIKY8dlUybP+2qDzP2lY7kdFgPZRU+e
+ zS/pzC/YTzAvCWM3tDgwoSl17vnZCr8wn2/1rKkcLvTDgiJLPCevqpTb6KFtZosQ02EGMuHQ
+ I6Zk91jbx96nrdsSdBLGH3hbvLvjZm3C+fNlVb9uvWbdznObqcJxSH3SGOZ7kCHuVmXUcqoz
+ ol6ioMHMb+InrHPP16aVDTBTPEGwgxXI38f7SUEn+NpbizWdLNz2hc907DvoPm6HEGCanpcA
+ EQEAAYkCJQQYAQgADwUCWywcDAIbDAUJCWYBgAAKCRBHBbTLRwbbMdsZEACUjmsJx2CAY+QS
+ UMebQRFjKavwXB/xE7fTt2ahuhHT8qQ/lWuRQedg4baInw9nhoPE+VenOzhGeGlsJ0Ys52sd
+ XvUjUocKgUQq6ekOHbcw919nO5L9J2ejMf/VC/quN3r3xijgRtmuuwZjmmi8ct24TpGeoBK4
+ WrZGh/1hAYw4ieARvKvgjXRstcEqM5thUNkOOIheud/VpY+48QcccPKbngy//zNJWKbRbeVn
+ imua0OpqRXhCrEVm/xomeOvl1WK1BVO7z8DjSdEBGzbV76sPDJb/fw+y+VWrkEiddD/9CSfg
+ fBNOb1p1jVnT2mFgGneIWbU0zdDGhleI9UoQTr0e0b/7TU+Jo6TqwosP9nbk5hXw6uR5k5PF
+ 8ieyHVq3qatJ9K1jPkBr8YWtI5uNwJJjTKIA1jHlj8McROroxMdI6qZ/wZ1ImuylpJuJwCDC
+ ORYf5kW61fcrHEDlIvGc371OOvw6ejF8ksX5+L2zwh43l/pKkSVGFpxtMV6d6J3eqwTafL86
+ YJWH93PN+ZUh6i6Rd2U/i8jH5WvzR57UeWxE4P8bQc0hNGrUsHQH6bpHV2lbuhDdqo+cM9eh
+ GZEO3+gCDFmKrjspZjkJbB5Gadzvts5fcWGOXEvuT8uQSvl+vEL0g6vczsyPBtqoBLa9SNrS
+ VtSixD1uOgytAP7RWS474w==
+Message-ID: <be6196ae-01b3-e23e-f504-d3e53324da9b@embeddedor.com>
+Date:   Thu, 23 May 2019 18:22:29 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f3e2bf3-9f78-49ad-5b8b-08d6dfd3b621
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2019 23:09:30.9554
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2406
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-23_17:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=641 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905230149
-X-FB-Internal: deliver
+In-Reply-To: <20190501162315.GA27166@embeddedor>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.47.159
+X-Source-L: No
+X-Exim-ID: 1hTx2d-001jOI-BI
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.1.76]) [189.250.47.159]:41698
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 5
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDUvMjMvMTkgMTI6NDUgUE0sIFJvbWFuIEd1c2hjaGluIHdyb3RlOg0KPiBBZGQgYSBr
-c2VsZnRlc3QgdG8gY292ZXIgYnBmIGF1dG8tZGV0YWNobWVudCBmdW5jdGlvbmFsaXR5Lg0KPiBU
-aGUgdGVzdCBjcmVhdGVzIGEgY2dyb3VwLCBhc3NvY2lhdGVzIHNvbWUgcmVzb3VyY2VzIHdpdGgg
-aXQsDQo+IGF0dGFjaGVzIGEgY291cGxlIG9mIGJwZiBwcm9ncmFtcyBhbmQgZGVsZXRlcyB0aGUg
-Y2dyb3VwLg0KPiANCj4gVGhlbiBpdCBjaGVja3MgdGhhdCBicGYgcHJvZ3JhbXMgYXJlIGdvaW5n
-IGF3YXkgaW4gNSBzZWNvbmRzLg0KPiANCj4gRXhwZWN0ZWQgb3V0cHV0Og0KPiAgICAkIC4vdGVz
-dF9jZ3JvdXBfYXR0YWNoDQo+ICAgICNvdmVycmlkZTpQQVNTDQo+ICAgICNtdWx0aTpQQVNTDQo+
-ICAgICNhdXRvZGV0YWNoOlBBU1MNCj4gICAgdGVzdF9jZ3JvdXBfYXR0YWNoOlBBU1MNCj4gDQo+
-IE9uIGEga2VybmVsIHdpdGhvdXQgYXV0by1kZXRhY2hpbmc6DQo+ICAgICQgLi90ZXN0X2Nncm91
-cF9hdHRhY2gNCj4gICAgI292ZXJyaWRlOlBBU1MNCj4gICAgI211bHRpOlBBU1MNCj4gICAgI2F1
-dG9kZXRhY2g6RkFJTA0KPiAgICB0ZXN0X2Nncm91cF9hdHRhY2g6RkFJTA0KPiANCj4gU2lnbmVk
-LW9mZi1ieTogUm9tYW4gR3VzaGNoaW4gPGd1cm9AZmIuY29tPg0KDQpMb29rcyBnb29kIHRvIG1l
-LiBJdCB3aWxsIGJlIGdvb2QgaWYgeW91IGNhbiBhZGQgdGVzdF9jZ3JvdXBfYXR0YWNoDQp0byAu
-Z2l0aWdub3JlIHRvIGF2b2lkIGl0IHNob3dzIHVwIGluIGBnaXQgc3RhdHVzYC4gV2l0aCB0aGF0
-LA0KDQpBY2tlZC1ieTogWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNvbT4NCg0KPiAtLS0NCj4gICAu
-Li4vc2VsZnRlc3RzL2JwZi90ZXN0X2Nncm91cF9hdHRhY2guYyAgICAgICAgfCA5OCArKysrKysr
-KysrKysrKysrKystDQo+ICAgMSBmaWxlIGNoYW5nZWQsIDk3IGluc2VydGlvbnMoKyksIDEgZGVs
-ZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYv
-dGVzdF9jZ3JvdXBfYXR0YWNoLmMgYi90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvdGVzdF9j
-Z3JvdXBfYXR0YWNoLmMNCj4gaW5kZXggMmQ2ZDU3ZjUwZTEwLi43NjcxOTA5ZWUxY2IgMTAwNjQ0
-DQo+IC0tLSBhL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi90ZXN0X2Nncm91cF9hdHRhY2gu
-Yw0KPiArKysgYi90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvdGVzdF9jZ3JvdXBfYXR0YWNo
-LmMNCj4gQEAgLTQ1Niw5ICs0NTYsMTA1IEBAIHN0YXRpYyBpbnQgdGVzdF9tdWx0aXByb2codm9p
-ZCkNCj4gICAJcmV0dXJuIHJjOw0KPiAgIH0NCj4gICANCj4gK3N0YXRpYyBpbnQgdGVzdF9hdXRv
-ZGV0YWNoKHZvaWQpDQo+ICt7DQo+ICsJX191MzIgcHJvZ19jbnQgPSA0LCBhdHRhY2hfZmxhZ3M7
-DQo+ICsJaW50IGFsbG93X3Byb2dbMl0gPSB7MH07DQo+ICsJX191MzIgcHJvZ19pZHNbMl0gPSB7
-MH07DQo+ICsJaW50IGNnID0gMCwgaSwgcmMgPSAtMTsNCj4gKwl2b2lkICpwdHIgPSBOVUxMOw0K
-PiArCWludCBhdHRlbXB0czsNCj4gKw0KPiArCWZvciAoaSA9IDA7IGkgPCBBUlJBWV9TSVpFKGFs
-bG93X3Byb2cpOyBpKyspIHsNCj4gKwkJYWxsb3dfcHJvZ1tpXSA9IHByb2dfbG9hZF9jbnQoMSwg
-MSA8PCBpKTsNCj4gKwkJaWYgKCFhbGxvd19wcm9nW2ldKQ0KPiArCQkJZ290byBlcnI7DQo+ICsJ
-fQ0KPiArDQo+ICsJaWYgKHNldHVwX2Nncm91cF9lbnZpcm9ubWVudCgpKQ0KPiArCQlnb3RvIGVy
-cjsNCj4gKw0KPiArCS8qIGNyZWF0ZSBhIGNncm91cCwgYXR0YWNoIHR3byBwcm9ncmFtcyBhbmQg
-cmVtZW1iZXIgdGhlaXIgaWRzICovDQo+ICsJY2cgPSBjcmVhdGVfYW5kX2dldF9jZ3JvdXAoIi9j
-Z19hdXRvZGV0YWNoIik7DQo+ICsJaWYgKGNnIDwgMCkNCj4gKwkJZ290byBlcnI7DQo+ICsNCj4g
-KwlpZiAoam9pbl9jZ3JvdXAoIi9jZ19hdXRvZGV0YWNoIikpDQo+ICsJCWdvdG8gZXJyOw0KPiAr
-DQo+ICsJZm9yIChpID0gMDsgaSA8IEFSUkFZX1NJWkUoYWxsb3dfcHJvZyk7IGkrKykgew0KPiAr
-CQlpZiAoYnBmX3Byb2dfYXR0YWNoKGFsbG93X3Byb2dbaV0sIGNnLCBCUEZfQ0dST1VQX0lORVRf
-RUdSRVNTLA0KPiArCQkJCSAgICBCUEZfRl9BTExPV19NVUxUSSkpIHsNCj4gKwkJCWxvZ19lcnIo
-IkF0dGFjaGluZyBwcm9nWyVkXSB0byBjZzplZ3Jlc3MiLCBpKTsNCj4gKwkJCWdvdG8gZXJyOw0K
-PiArCQl9DQo+ICsJfQ0KPiArDQo+ICsJLyogbWFrZSBzdXJlIHRoYXQgcHJvZ3JhbXMgYXJlIGF0
-dGFjaGVkIGFuZCBydW4gc29tZSB0cmFmZmljICovDQo+ICsJYXNzZXJ0KGJwZl9wcm9nX3F1ZXJ5
-KGNnLCBCUEZfQ0dST1VQX0lORVRfRUdSRVNTLCAwLCAmYXR0YWNoX2ZsYWdzLA0KPiArCQkJICAg
-ICAgcHJvZ19pZHMsICZwcm9nX2NudCkgPT0gMCk7DQo+ICsJYXNzZXJ0KHN5c3RlbShQSU5HX0NN
-RCkgPT0gMCk7DQo+ICsNCj4gKwkvKiBhbGxvY2F0ZSBzb21lIG1lbW9yeSAoNE1iKSB0byBwaW4g
-dGhlIG9yaWdpbmFsIGNncm91cCAqLw0KPiArCXB0ciA9IG1hbGxvYyg0ICogKDEgPDwgMjApKTsN
-Cj4gKwlpZiAoIXB0cikNCj4gKwkJZ290byBlcnI7DQo+ICsNCj4gKwkvKiBjbG9zZSBwcm9ncmFt
-cyBhbmQgY2dyb3VwIGZkICovDQo+ICsJZm9yIChpID0gMDsgaSA8IEFSUkFZX1NJWkUoYWxsb3df
-cHJvZyk7IGkrKykgew0KPiArCQljbG9zZShhbGxvd19wcm9nW2ldKTsNCj4gKwkJYWxsb3dfcHJv
-Z1tpXSA9IDA7DQo+ICsJfQ0KPiArDQo+ICsJY2xvc2UoY2cpOw0KPiArCWNnID0gMDsNCj4gKw0K
-PiArCS8qIGxlYXZlIHRoZSBjZ3JvdXAgYW5kIHJlbW92ZSBpdC4gZG9uJ3QgZGV0YWNoIHByb2dy
-YW1zICovDQo+ICsJY2xlYW51cF9jZ3JvdXBfZW52aXJvbm1lbnQoKTsNCj4gKw0KPiArCS8qIHdh
-aXQgZm9yIHRoZSBhc3luY2hyb25vdXMgYXV0by1kZXRhY2htZW50Lg0KPiArCSAqIHdhaXQgZm9y
-IG5vIG1vcmUgdGhhbiA1IHNlYyBhbmQgZ2l2ZSB1cC4NCj4gKwkgKi8NCj4gKwlmb3IgKGkgPSAw
-OyBpIDwgQVJSQVlfU0laRShwcm9nX2lkcyk7IGkrKykgew0KPiArCQlmb3IgKGF0dGVtcHRzID0g
-NTsgYXR0ZW1wdHMgPj0gMDsgYXR0ZW1wdHMtLSkgew0KPiArCQkJaW50IGZkID0gYnBmX3Byb2df
-Z2V0X2ZkX2J5X2lkKHByb2dfaWRzW2ldKTsNCj4gKw0KPiArCQkJaWYgKGZkIDwgMCkNCj4gKwkJ
-CQlicmVhazsNCj4gKw0KPiArCQkJLyogZG9uJ3QgbGVhdmUgdGhlIGZkIG9wZW4gKi8NCj4gKwkJ
-CWNsb3NlKGZkKTsNCj4gKw0KPiArCQkJaWYgKCFhdHRlbXB0cykNCj4gKwkJCQlnb3RvIGVycjsN
-Cj4gKw0KPiArCQkJc2xlZXAoMSk7DQo+ICsJCX0NCj4gKwl9DQo+ICsNCj4gKwlyYyA9IDA7DQo+
-ICtlcnI6DQo+ICsJZm9yIChpID0gMDsgaSA8IEFSUkFZX1NJWkUoYWxsb3dfcHJvZyk7IGkrKykN
-Cj4gKwkJaWYgKGFsbG93X3Byb2dbaV0gPiAwKQ0KPiArCQkJY2xvc2UoYWxsb3dfcHJvZ1tpXSk7
-DQo+ICsJaWYgKGNnKQ0KPiArCQljbG9zZShjZyk7DQo+ICsJZnJlZShwdHIpOw0KPiArCWNsZWFu
-dXBfY2dyb3VwX2Vudmlyb25tZW50KCk7DQo+ICsJaWYgKCFyYykNCj4gKwkJcHJpbnRmKCIjYXV0
-b2RldGFjaDpQQVNTXG4iKTsNCj4gKwllbHNlDQo+ICsJCXByaW50ZigiI2F1dG9kZXRhY2g6RkFJ
-TFxuIik7DQo+ICsJcmV0dXJuIHJjOw0KPiArfQ0KPiArDQo+ICAgaW50IG1haW4odm9pZCkNCj4g
-ICB7DQo+IC0JaW50ICgqdGVzdHNbXSkodm9pZCkgPSB7dGVzdF9mb29fYmFyLCB0ZXN0X211bHRp
-cHJvZ307DQo+ICsJaW50ICgqdGVzdHNbXSkodm9pZCkgPSB7DQo+ICsJCXRlc3RfZm9vX2JhciwN
-Cj4gKwkJdGVzdF9tdWx0aXByb2csDQo+ICsJCXRlc3RfYXV0b2RldGFjaCwNCj4gKwl9Ow0KPiAg
-IAlpbnQgZXJyb3JzID0gMDsNCj4gICAJaW50IGk7DQo+ICAgDQo+IA0K
+Hi all,
+
+Friendly ping:
+
+Who can take this?
+
+Thanks
+--
+Gustavo
+
+On 5/1/19 11:23 AM, Gustavo A. R. Silva wrote:
+> Make use of the struct_size() helper instead of an open-coded version
+> in order to avoid any potential type mistakes, in particular in the
+> context in which this code is being used.
+> 
+> So, replace code of the following form:
+> 
+> sizeof(*s) + s->nkeys*sizeof(struct tc_u32_key)
+> 
+> with:
+> 
+> struct_size(s, keys, s->nkeys)
+> 
+> This code was detected with the help of Coccinelle.
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+>  net/sched/cls_u32.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+> index 04e9ef088535..4b8710a266cc 100644
+> --- a/net/sched/cls_u32.c
+> +++ b/net/sched/cls_u32.c
+> @@ -847,7 +847,7 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
+>  	/* Similarly success statistics must be moved as pointers */
+>  	new->pcpu_success = n->pcpu_success;
+>  #endif
+> -	memcpy(&new->sel, s, sizeof(*s) + s->nkeys*sizeof(struct tc_u32_key));
+> +	memcpy(&new->sel, s, struct_size(s, keys, s->nkeys));
+>  
+>  	if (tcf_exts_init(&new->exts, net, TCA_U32_ACT, TCA_U32_POLICE)) {
+>  		kfree(new);
+> 
