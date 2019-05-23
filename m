@@ -2,79 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B676F27FED
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 16:38:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEBEE28004
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 16:42:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730930AbfEWOiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 10:38:25 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:55546 "EHLO inva020.nxp.com"
+        id S1730783AbfEWOmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 10:42:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45106 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730860AbfEWOiY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 10:38:24 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B627B1A0091;
-        Thu, 23 May 2019 16:38:22 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A96501A0072;
-        Thu, 23 May 2019 16:38:22 +0200 (CEST)
-Received: from fsr-ub1664-019.ea.freescale.net (fsr-ub1664-019.ea.freescale.net [10.171.71.230])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 5D62F205D5;
-        Thu, 23 May 2019 16:38:22 +0200 (CEST)
-From:   Ioana Radulescu <ruxandra.radulescu@nxp.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     ioana.ciornei@nxp.com
-Subject: [PATCH net-next] Revert "dpaa2-eth: configure the cache stashing amount on a queue"
-Date:   Thu, 23 May 2019 17:38:22 +0300
-Message-Id: <1558622302-6931-1-git-send-email-ruxandra.radulescu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1730741AbfEWOmU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 10:42:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=oe0GIDHTZ2hjKY163zBRnNo0jGG1opp88uh5+/y+h7o=; b=CbpAzPlFGvlp5rI0S6srpIYsZK
+        bu7DUcdO975IKQ5EjySFuo7UeUxwuDBD9uu2On077lOKnW0f2+eoai89nsWoF3XTSj0k0ndY34jfW
+        8vRBDf/DEDlriwcoX+FB8TNNBPFXrJzUwFOLiBqw1393psHPtmv4dbs4Mw7sp5tNRo5Q=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hTov9-0005hY-Pl; Thu, 23 May 2019 16:42:15 +0200
+Date:   Thu, 23 May 2019 16:42:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Maxime Ripard <maxime.ripard@bootlin.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Antoine =?iso-8859-1?Q?T=E9nart?= <antoine.tenart@bootlin.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH 1/8] dt-bindings: net: Add YAML schemas for the generic
+ Ethernet options
+Message-ID: <20190523144215.GC19369@lunn.ch>
+References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
+ <CAL_JsqJnFUt55b+AGpcNNjvsKsHNz9PY+b7FJ4+6CMNppzb3vg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqJnFUt55b+AGpcNNjvsKsHNz9PY+b7FJ4+6CMNppzb3vg@mail.gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit f8b995853444aba9c16c1ccdccdd397527fde96d.
+> > +            link-gpios:
+> > +              description:
+> > +                GPIO to determine if the link is up
+> 
+> Only 1?
 
-The reverted change instructed the QMan hardware block to fetch
-RX frame annotation and beginning of frame data to cache before
-the core would read them.
+Hi Rob
 
-It turns out that in rare cases, it's possible that a QMan
-stashing transaction is delayed long enough such that, by the time
-it gets executed, the frame in question had already been dequeued
-by the core and software processing began on it. If the core
-manages to unmap the frame buffer _before_ the stashing transaction
-is executed, an SMMU exception will be raised.
+Yes, only one.
 
-Unfortunately there is no easy way to work around this while keeping
-the performance advantages brought by QMan stashing, so disable
-it altogether.
-
-Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 63b1ecc1..28a6faa 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -2479,14 +2479,9 @@ static int setup_rx_flow(struct dpaa2_eth_priv *priv,
- 	queue.destination.type = DPNI_DEST_DPCON;
- 	queue.destination.priority = 1;
- 	queue.user_context = (u64)(uintptr_t)fq;
--	queue.flc.stash_control = 1;
--	queue.flc.value &= 0xFFFFFFFFFFFFFFC0;
--	/* 01 01 00 - data, annotation, flow context */
--	queue.flc.value |= 0x14;
- 	err = dpni_set_queue(priv->mc_io, 0, priv->mc_token,
- 			     DPNI_QUEUE_RX, 0, fq->flowid,
--			     DPNI_QUEUE_OPT_USER_CTX | DPNI_QUEUE_OPT_DEST |
--			     DPNI_QUEUE_OPT_FLC,
-+			     DPNI_QUEUE_OPT_USER_CTX | DPNI_QUEUE_OPT_DEST,
- 			     &queue);
- 	if (err) {
- 		dev_err(dev, "dpni_set_queue(RX) failed\n");
--- 
-2.7.4
-
+	Andrew
