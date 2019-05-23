@@ -2,74 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB6B228CDF
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:19:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D440828D26
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 00:32:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388199AbfEWWSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 18:18:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54048 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387616AbfEWWSm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 18:18:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=UJPyyNh44s13ewt1UZjcbEcb6jSyME1F4Mxzw3jpWJ8=; b=eCi8gZmuVT+cbetGvduq0SYQUr
-        8d3SYP4STycqzYrK37rT/xO8j3CbHK2AHwKUukk9OZ547HDosYSl8LmTQ1RjVomD4X2FKfFkH2eG7
-        DcjvS3i9REXx1ZtGggpdU9E38uSzd7dqz/y64A96xqv5PVfwk5XPrP3kHtToEjrqvWKg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hTw2l-0005wO-3i; Fri, 24 May 2019 00:18:35 +0200
-Date:   Fri, 24 May 2019 00:18:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next 2/9] net: phy: Guard against the presence of
- a netdev
-Message-ID: <20190523221835.GB21208@lunn.ch>
-References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
- <20190523011958.14944-3-ioana.ciornei@nxp.com>
+        id S2388738AbfEWWcB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 May 2019 18:32:01 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:60660 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388293AbfEWWb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 18:31:59 -0400
+Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1hTwFi-0000Wl-8Z; Thu, 23 May 2019 22:31:58 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 655235FF12; Thu, 23 May 2019 15:31:56 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 5DACBA6E88;
+        Thu, 23 May 2019 15:31:56 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     billcarlson@wkks.org
+cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: bonding-devel mail list?
+In-reply-to: <ec7a86ec-56e0-7846-ed02-337850fc8478@wkks.org>
+References: <3428f1e4-e9e9-49c6-8ca8-1ea5e9fdd7ed@wkks.org> <18472.1558629973@famine> <ec7a86ec-56e0-7846-ed02-337850fc8478@wkks.org>
+Comments: In-reply-to Bill Carlson <billcarlson@wkks.org>
+   message dated "Thu, 23 May 2019 15:06:11 -0500."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190523011958.14944-3-ioana.ciornei@nxp.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <32363.1558650716.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Thu, 23 May 2019 15:31:56 -0700
+Message-ID: <32364.1558650716@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 01:20:38AM +0000, Ioana Ciornei wrote:
-> A prerequisite for PHYLIB to work in the absence of a struct net_device
-> is to not access pointers to it.
-> 
-> Changes are needed in the following areas:
-> 
->  - Printing: In some places netdev_err was replaced with phydev_err.
-> 
->  - Incrementing reference count to the parent MDIO bus driver: If there
->    is no net device, then the reference count should definitely be
->    incremented since there is no chance that it was an Ethernet driver
->    who registered the MDIO bus.
-> 
->  - Sysfs links are not created in case there is no attached_dev.
-> 
->  - No netif_carrier_off is done if there is no attached_dev.
+Bill Carlson <billcarlson@wkks.org> wrote:
 
-Hi Ioana
+>On 5/23/19 11:46 AM, Jay Vosburgh wrote:
+>> As far as I'm aware, nesting bonds has no practical benefit; do
+>> you have a use case for doing so?
+>>
+>>
+>Use case is very specific, but needed in my situation until some switches
+>are stabilized.
+>
+>Switches A1..Ax provide LACP, 40G. These are unstable, lose link on one or
+>more interfaces or drop completely. A single bond to the A switches was
+>acceptable at first, including when one interface was down for quite a
+>while. Then all A switches dropped.
+>
+>Switches B1..Bx provide no LACP, 10G. These are sitting and connected
+>anyway, already in place for backup.
+>
+>All are on the same layer two, as in any MAC is visible on any switch.
+>
+>Goal is to use A switches primarily, and drop back to B _IF_ A are
+>completely down. As long as one interface is active on A, that will be
+>used.
+>
+>I assume LACP and active-passive can't be used in the same bond,
+>interested to hear if I'm wrong.
 
-Looking at the functions changed here, they seem to be related to
-phy_attach(), phy_connect(), and phy_detach() etc. Is the intention
-you can call these functions and pass a NULL pointer for the
-net_device?
+	Well, yes and no.
 
-	Andrew
+	No, you can't explicitly configure what you describe (in the
+sense of saying "slave A is LACP, slave B is active-backup").
+
+	However, the logic in LACP will attach every slave of the bond
+to an aggregator.  If one or more slaves are connected to a specific
+LACP peer, they will aggregate together.  If any slave is connected to a
+non-LACP peer, it will aggregate as an "individual" port.
+
+	When bonding's LACP mode selects the best aggregator to use,
+"non-individual" (i.e., connected to a LACP peer) ports are preferred,
+but if no such ports are available, an individual port is selected as
+the active aggregator.  The precise logic is found in the
+ad_agg_selection_test() function [1].
+
+	If what you've got works for you, then that's great, but I
+suspect it would still work if all of the interfaces were in a single
+802.3ad bond without the nesting.
+
+	-J
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/tree/drivers/net/bonding/bond_3ad.c#n1562
+
+
+>My setup I achieved:
+>
+>bond0 -> switches B, multiple interfaces, active-passive
+>bond1 -> switches A, multiple interfaces, LACP
+>bond10 -> slaves bond0 and bond1, active-passive
+>Various VLANs are using bond10.
+>
+>Options to bonding:
+>
+>bond0: mode=1 fail_over_mac=none miimon=100
+>bond1: mode=4 lacp_rate=1 miimon=100
+>bond10: mode=1 fail_over_mac=1 primary=bond1 updelay=10000 miimon=100
+>(I should probably change to arp monitoring, I know.)
+>
+>updelay in place because LACP takes a long time to link.
+>Making sure the MACs switched was the key.
+>
+>Network performance tests via iperf3 look good, including when dropping
+>bond1. Unfortunately, target test system was on bond0, as its A switches
+>were down.
+>
+>The only, critical, test I haven't been able to perform is physically
+>dropping A links, can't reach that far. :)
+>
+>-- 
+>
+>Bill Carlson
+>
+>Anything is possible, given Time and Money.
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
