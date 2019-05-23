@@ -2,59 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDFDF27D23
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 14:49:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA8AA27D4E
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 14:53:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730571AbfEWMtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 08:49:19 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38954 "EHLO mx1.suse.de"
+        id S1730967AbfEWMw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 08:52:57 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39478 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728309AbfEWMtT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 08:49:19 -0400
+        id S1730323AbfEWMw4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 08:52:56 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 0EDE5AEBB;
-        Thu, 23 May 2019 12:49:18 +0000 (UTC)
-From:   Andreas Schwab <schwab@suse.de>
-To:     Yash Shah <yash.shah@sifive.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        mark.rutland@arm.com, nicolas.ferre@microchip.com,
-        palmer@sifive.com, aou@eecs.berkeley.edu, ynezz@true.cz,
-        paul.walmsley@sifive.com, sachin.ghadi@sifive.com
-Subject: Re: [PATCH 0/2] net: macb: Add support for SiFive FU540-C000
-References: <1558611952-13295-1-git-send-email-yash.shah@sifive.com>
-X-Yow:  Don't worry, nobody really LISTENS to lectures in MOSCOW, either!
- ..  FRENCH, HISTORY, ADVANCED CALCULUS, COMPUTER PROGRAMMING,
- BLACK STUDIES, SOCIOBIOLOGY!..  Are there any QUESTIONS??
-Date:   Thu, 23 May 2019 14:49:16 +0200
-In-Reply-To: <1558611952-13295-1-git-send-email-yash.shah@sifive.com> (Yash
-        Shah's message of "Thu, 23 May 2019 17:15:50 +0530")
-Message-ID: <mvmwoihfi9f.fsf@suse.de>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
+        by mx1.suse.de (Postfix) with ESMTP id 17DE1AF96;
+        Thu, 23 May 2019 12:52:55 +0000 (UTC)
+From:   Michal Rostecki <mrostecki@opensuse.org>
+Cc:     Michal Rostecki <mrostecki@opensuse.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
+        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        linux-kernel@vger.kernel.org (open list),
+        xdp-newbies@vger.kernel.org (open list:XDP (eXpress Data Path))
+Subject: [PATCH bpf-next v2 RESEND 0/2] Move bpf_printk to bpf_helpers.h
+Date:   Thu, 23 May 2019 14:53:53 +0200
+Message-Id: <20190523125355.18437-1-mrostecki@opensuse.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mai 23 2019, Yash Shah <yash.shah@sifive.com> wrote:
+This series of patches move the commonly used bpf_printk macro to
+bpf_helpers.h which is already included in all BPF programs which
+defined that macro on their own.
 
-> On FU540, the management IP block is tightly coupled with the Cadence
-> MACB IP block. It manages many of the boundary signals from the MACB IP
-> This patchset controls the tx_clk input signal to the MACB IP. It
-> switches between the local TX clock (125MHz) and PHY TX clocks. This
-> is necessary to toggle between 1Gb and 100/10Mb speeds.
+v1->v2:
+- If HBM_DEBUG is not defined in hbm sample, undefine bpf_printk and set
+  an empty macro for it.
 
-Doesn't work for me:
+Michal Rostecki (2):
+  selftests: bpf: Move bpf_printk to bpf_helpers.h
+  samples: bpf: Do not define bpf_printk macro
 
-[  365.842801] macb: probe of 10090000.ethernet failed with error -17
-
-Andreas.
+ samples/bpf/hbm_kern.h                                | 11 ++---------
+ samples/bpf/tcp_basertt_kern.c                        |  7 -------
+ samples/bpf/tcp_bufs_kern.c                           |  7 -------
+ samples/bpf/tcp_clamp_kern.c                          |  7 -------
+ samples/bpf/tcp_cong_kern.c                           |  7 -------
+ samples/bpf/tcp_iw_kern.c                             |  7 -------
+ samples/bpf/tcp_rwnd_kern.c                           |  7 -------
+ samples/bpf/tcp_synrto_kern.c                         |  7 -------
+ samples/bpf/tcp_tos_reflect_kern.c                    |  7 -------
+ samples/bpf/xdp_sample_pkts_kern.c                    |  7 -------
+ tools/testing/selftests/bpf/bpf_helpers.h             |  8 ++++++++
+ .../testing/selftests/bpf/progs/sockmap_parse_prog.c  |  7 -------
+ .../selftests/bpf/progs/sockmap_tcp_msg_prog.c        |  7 -------
+ .../selftests/bpf/progs/sockmap_verdict_prog.c        |  7 -------
+ .../testing/selftests/bpf/progs/test_lwt_seg6local.c  |  7 -------
+ tools/testing/selftests/bpf/progs/test_xdp_noinline.c |  7 -------
+ tools/testing/selftests/bpf/test_sockmap_kern.h       |  7 -------
+ 17 files changed, 10 insertions(+), 114 deletions(-)
 
 -- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+2.21.0
+
