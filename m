@@ -2,131 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D1928010
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 16:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CC5828019
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 16:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730850AbfEWOol (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 10:44:41 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33281 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730709AbfEWOol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 10:44:41 -0400
-Received: by mail-pf1-f196.google.com with SMTP id z28so3381622pfk.0;
-        Thu, 23 May 2019 07:44:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=trLF/Pu76tcs2yNpJEmVVGLKJPxzPf+7/LopwlS1ci8=;
-        b=sf4PXYXeAQSFyn0UVZTTW2ciZr/ivjcuG5sp5GStckkZgxCyuav/So+HN6AeqF2+Uc
-         nA2qq6zG1nYL+fCcfs9sDtvvZniacIHuvyBkk5kKq5XAzEpRRikrZeczPUXmSo5RusWg
-         Vt9krzTu2EUS8SbY3x+ZUlhF5Fo4sT6eVvBIre3nN3PzAwL+hmmTWhnWqvazYVGiaOxS
-         v257kAIWtsYx4eIcnZ+pzmI7Vp8+J1/JS2AuG2NX5f/SHs5U3szZ9QMvIqyuDMT2saD4
-         zHYxtj95orWKnwBRtPaMsdifgQLK3YegNcMf/NU/hvlzQ/EQElhwesRZIuMi8IUUMQzm
-         4bJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=trLF/Pu76tcs2yNpJEmVVGLKJPxzPf+7/LopwlS1ci8=;
-        b=Rjul+5lbuwnu715oVdcNt7U02jpBae4yk+QkGvMkwEikiUS0X6x1hjhhb4cJnRrj4C
-         hikx+b+gxf9SzUSeP4228YDHV+tkBqo3c7UTiaeqo/t11mpmHrEOiI7AT93RNsQ2FQBo
-         rWbcU4PW299HmxqaNNgTzQY6KONBI9ZON93tOvFQsKXiufEmdRvENRHEUF0j6sAAiWQ4
-         xq4mHzScBsFJaH4R6LFQ2UrAAbHnffKUb358wYpZ6K4ab8Sg1Ljd44hPDBWeemNizO/l
-         LU4AjWMqUtTmrocCkT3FJCi9yd0G5PwHgouCfSDOT944EhH89zbG7MtytL+Y4QoNX6Xm
-         4vtg==
-X-Gm-Message-State: APjAAAWcEHBGnmOutXRzNDgEIecXuwxIW3JZWuDJFAsISiOQkyO03IyQ
-        XLoEcSPRmlMTGx8K2+w7rAM=
-X-Google-Smtp-Source: APXvYqzb4lEsv8vtep4ivojq/y0QGSAnx/qVDcHNABBr29g5D97ty1yHiucaSX80WUZQQvYPoGVKzQ==
-X-Received: by 2002:a17:90a:b890:: with SMTP id o16mr1669701pjr.60.1558622680943;
-        Thu, 23 May 2019 07:44:40 -0700 (PDT)
-Received: from zhanggen-UX430UQ ([66.42.35.75])
-        by smtp.gmail.com with ESMTPSA id h6sm42913471pfk.188.2019.05.23.07.44.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 07:44:40 -0700 (PDT)
-Date:   Thu, 23 May 2019 22:44:25 +0800
-From:   Gen Zhang <blackgod016574@gmail.com>
-To:     kvalo@codeaurora.org, eyalreizer@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] sdio: Fix a memory leaking bug in wl1271_probe()
-Message-ID: <20190523144425.GA26766@zhanggen-UX430UQ>
+        id S1730980AbfEWOpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 10:45:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46980 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730709AbfEWOpF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 10:45:05 -0400
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 08C8221851;
+        Thu, 23 May 2019 14:45:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1558622704;
+        bh=UJ6x3F7sdFiOx8Qz/M2AGY26AYeMGeaR3viNAzUA7p4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=JUBp0myiJ7iWl85P2mfSxSP+8boBDZ0T0Qznd0KYDovFON67XvzlmO5HI2uwS3yGM
+         4jCxZsd5xuKN7Fsuc/LcspQVTm4izKpyKkRnHC7yUxgno7WpMQVNP7pdSpN/IpXX5v
+         gMITLGxP3+FH+QMPFqgYsHoWszMEnP6mv62g2Vy4=
+Received: by mail-qk1-f181.google.com with SMTP id t64so3754563qkh.1;
+        Thu, 23 May 2019 07:45:03 -0700 (PDT)
+X-Gm-Message-State: APjAAAXCql+sWrZzAcMKzrk9WgzlegTj+EkiRGL39npv552i7mKC6aT6
+        PJ7re9oyfgvxbQ3vdPfZYQ/gNz4KRhIRNi3xSw==
+X-Google-Smtp-Source: APXvYqyW7iDCtnwbv4EZaFOhy7TBsqR2kCrTlF0HdyA4uTDUp13t2mH2O1gAJ3Mc9pvOziiL7skpu0AaShDUQLHjP+s=
+X-Received: by 2002:ae9:c208:: with SMTP id j8mr2382677qkg.264.1558622703175;
+ Thu, 23 May 2019 07:45:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
+ <aa5ec90854429c2d9e2c565604243e1b10cfd94b.1558605170.git-series.maxime.ripard@bootlin.com>
+In-Reply-To: <aa5ec90854429c2d9e2c565604243e1b10cfd94b.1558605170.git-series.maxime.ripard@bootlin.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 23 May 2019 09:44:51 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJvgUAmON5Vew-mnwkFjNuRkx_f7quiy_7Rv_55JpzOOA@mail.gmail.com>
+Message-ID: <CAL_JsqJvgUAmON5Vew-mnwkFjNuRkx_f7quiy_7Rv_55JpzOOA@mail.gmail.com>
+Subject: Re: [PATCH 2/8] dt-bindings: net: Add a YAML schemas for the generic
+ PHY options
+To:     Maxime Ripard <maxime.ripard@bootlin.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In wl1271_probe(), 'glue->core' is allocated by platform_device_alloc(),
-when this allocation fails, ENOMEM is returned. However, 'pdev_data'
-and 'glue' are allocated by devm_kzalloc() before 'glue->core'. When
-platform_device_alloc() returns NULL, we should also free 'pdev_data'
-and 'glue' before wl1271_probe() ends to prevent leaking memory.
+On Thu, May 23, 2019 at 4:57 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+>
+> The networking PHYs have a number of available device tree properties that
+> can be used in their device tree node. Add a YAML schemas for those.
+>
+> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+> ---
+>  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 148 +++++++++-
+>  Documentation/devicetree/bindings/net/phy.txt           |  80 +-----
+>  2 files changed, 149 insertions(+), 79 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/ethernet-phy.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> new file mode 100644
+> index 000000000000..eb79ee6db977
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> @@ -0,0 +1,148 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/ethernet-phy.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Ethernet PHY Generic Binding
+> +
+> +maintainers:
+> +  - David S. Miller <davem@davemloft.net>
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^ethernet-phy(@[a-f0-9])?$"
+> +
+> +  compatible:
+> +    oneOf:
+> +      - const: ethernet-phy-ieee802.3-c22
+> +        description: PHYs that implement IEEE802.3 clause 22
+> +      - const: ethernet-phy-ieee802.3-c45
+> +        description: PHYs that implement IEEE802.3 clause 45
+> +      - pattern: "^ethernet-phy-id[a-f0-9]{4}\\.[a-f0-9]{4}$"
+> +        description:
+> +          The first group of digits is the 16 bit Phy Identifier 1
+> +          register, this is the chip vendor OUI bits 3:18. The
+> +          second group of digits is the Phy Identifier 2 register,
+> +          this is the chip vendor OUI bits 19:24, followed by 10
+> +          bits of a vendor specific ID.
+> +
+> +  reg:
+> +    maxItems: 1
+> +    minimum: 0
+> +    maximum: 31
 
-Similarly, we should free 'pdev_data' when 'glue' is NULL. And we
-should free 'pdev_data' and 'glue' when 'ret' is error.
+min/max need to be under 'items'. I don't think these would ever be
+valid if the type is an array.
 
-Further, we shoulf free 'glue->dev', 'pdev_data' and 'glue' when this
-function normally ends to prevent memory leaking.
+I've modified the meta-schema to catch this.
 
-Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
----
-diff --git a/drivers/net/wireless/ti/wlcore/sdio.c b/drivers/net/wireless/ti/wlcore/sdio.c
-index 4d4b0770..232ce5f 100644
---- a/drivers/net/wireless/ti/wlcore/sdio.c
-+++ b/drivers/net/wireless/ti/wlcore/sdio.c
-@@ -298,8 +298,10 @@ static int wl1271_probe(struct sdio_func *func,
- 	pdev_data->if_ops = &sdio_ops;
- 
- 	glue = devm_kzalloc(&func->dev, sizeof(*glue), GFP_KERNEL);
--	if (!glue)
--		return -ENOMEM;
-+	if (!glue) {
-+		ret = -ENOMEM;
-+		goto out_free1;
-+	}
- 
- 	glue->dev = &func->dev;
- 
-@@ -311,7 +313,7 @@ static int wl1271_probe(struct sdio_func *func,
- 
- 	ret = wlcore_probe_of(&func->dev, &irq, &wakeirq, pdev_data);
- 	if (ret)
--		goto out;
-+		goto out_free2;
- 
- 	/* if sdio can keep power while host is suspended, enable wow */
- 	mmcflags = sdio_get_host_pm_caps(func);
-@@ -340,7 +342,7 @@ static int wl1271_probe(struct sdio_func *func,
- 	if (!glue->core) {
- 		dev_err(glue->dev, "can't allocate platform_device");
- 		ret = -ENOMEM;
--		goto out;
-+		goto out_free2;
- 	}
- 
- 	glue->core->dev.parent = &func->dev;
-@@ -380,11 +382,20 @@ static int wl1271_probe(struct sdio_func *func,
- 		dev_err(glue->dev, "can't add platform device\n");
- 		goto out_dev_put;
- 	}
-+	platform_device_put(glue->core);
-+	devm_kfree(&func->dev, glue);
-+	devm_kfree(&func->dev, pdev_data);
- 	return 0;
- 
- out_dev_put:
- 	platform_device_put(glue->core);
- 
-+out_free2:
-+	devm_kfree(&func->dev, glue);
-+
-+out_free1:
-+	devm_kfree(&func->dev, pdev_data);
-+
- out:
- 	return ret;
- }
----
+> +    description:
+> +      The ID number for the PHY.
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  max-speed:
+> +    enum:
+> +      - 10
+> +      - 100
+> +      - 1000
+> +    description:
+> +      Maximum PHY supported speed in Mbits / seconds.
+> +
+> +  broken-turn-around:
+> +    $ref: /schemas/types.yaml#definitions/flag
+> +    description:
+> +      If set, indicates the PHY device does not correctly release
+> +      the turn around line low at the end of a MDIO transaction.
+> +
+> +  enet-phy-lane-swap:
+> +    $ref: /schemas/types.yaml#definitions/flag
+> +    description:
+> +      If set, indicates the PHY will swap the TX/RX lanes to
+> +      compensate for the board being designed with the lanes
+> +      swapped.
+> +
+> +  eee-broken-100tx:
+> +    $ref: /schemas/types.yaml#definitions/flag
+> +    description:
+> +      Mark the corresponding energy efficient ethernet mode as
+> +      broken and request the ethernet to stop advertising it.
+> +
+> +  eee-broken-1000t:
+> +    $ref: /schemas/types.yaml#definitions/flag
+> +    description:
+> +      Mark the corresponding energy efficient ethernet mode as
+> +      broken and request the ethernet to stop advertising it.
+> +
+> +  eee-broken-10gt:
+> +    $ref: /schemas/types.yaml#definitions/flag
+> +    description:
+> +      Mark the corresponding energy efficient ethernet mode as
+> +      broken and request the ethernet to stop advertising it.
+> +
+> +  eee-broken-1000kx:
+> +    $ref: /schemas/types.yaml#definitions/flag
+> +    description:
+> +      Mark the corresponding energy efficient ethernet mode as
+> +      broken and request the ethernet to stop advertising it.
+> +
+> +  eee-broken-10gkx4:
+> +    $ref: /schemas/types.yaml#definitions/flag
+> +    description:
+> +      Mark the corresponding energy efficient ethernet mode as
+> +      broken and request the ethernet to stop advertising it.
+> +
+> +  eee-broken-10gkr:
+> +    $ref: /schemas/types.yaml#definitions/flag
+> +    description:
+> +      Mark the corresponding energy efficient ethernet mode as
+> +      broken and request the ethernet to stop advertising it.
+> +
+> +  phy-is-integrated:
+> +    $ref: /schemas/types.yaml#definitions/flag
+> +    description:
+> +      If set, indicates that the PHY is integrated into the same
+> +      physical package as the Ethernet MAC. If needed, muxers
+> +      should be configured to ensure the integrated PHY is
+> +      used. The absence of this property indicates the muxers
+> +      should be configured so that the external PHY is used.
+> +
+> +  resets:
+> +    maxItems: 1
+> +
+> +  reset-names:
+> +    const: phy
+> +
+> +  reset-gpios:
+> +    description:
+> +      The GPIO phandle and specifier for the PHY reset signal.
+
+maxItems: 1
+
+I have a meta-schema change to catch this, but It will require updates
+to some existing cases.
+
+
+> +
+> +  reset-assert-us:
+> +    description:
+> +      Delay after the reset was asserted in microseconds. If this
+> +      property is missing the delay will be skipped.
+> +
+> +  reset-deassert-us:
+> +    description:
+> +      Delay after the reset was deasserted in microseconds. If
+> +      this property is missing the delay will be skipped.
+> +
+> +required:
+> +  - reg
+> +  - interrupts
+> +
+> +examples:
+> +  - |
+> +    ethernet {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        ethernet-phy@0 {
+> +            compatible = "ethernet-phy-id0141.0e90", "ethernet-phy-ieee802.3-c22";
+> +            interrupt-parent = <&PIC>;
+> +            interrupts = <35 1>;
+> +            reg = <0>;
+> +
+> +            resets = <&rst 8>;
+> +            reset-names = "phy";
+> +            reset-gpios = <&gpio1 4 1>;
+> +            reset-assert-us = <1000>;
+> +            reset-deassert-us = <2000>;
+> +        };
+> +    };
