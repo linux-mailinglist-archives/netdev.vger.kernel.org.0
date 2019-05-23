@@ -2,127 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41FD828B40
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7C8A28B6A
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:15:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387636AbfEWUGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 16:06:21 -0400
-Received: from bonobo.maple.relay.mailchannels.net ([23.83.214.22]:46413 "EHLO
-        bonobo.maple.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387504AbfEWUGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:06:21 -0400
-X-Sender-Id: dreamhost|x-authsender|wcarlson@wkks.org
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 8BE962C31BE;
-        Thu, 23 May 2019 20:06:15 +0000 (UTC)
-Received: from pdx1-sub0-mail-a91.g.dreamhost.com (100-96-91-22.trex.outbound.svc.cluster.local [100.96.91.22])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id D331F2C28DF;
-        Thu, 23 May 2019 20:06:14 +0000 (UTC)
-X-Sender-Id: dreamhost|x-authsender|wcarlson@wkks.org
-Received: from pdx1-sub0-mail-a91.g.dreamhost.com ([TEMPUNAVAIL].
- [64.90.62.162])
-        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384)
-        by 0.0.0.0:2500 (trex/5.17.2);
-        Thu, 23 May 2019 20:06:15 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|wcarlson@wkks.org
-X-MailChannels-Auth-Id: dreamhost
-X-Attack-Tank: 08baf4fb6a121ff5_1558641975415_3380961848
-X-MC-Loop-Signature: 1558641975415:3564474585
-X-MC-Ingress-Time: 1558641975414
-Received: from pdx1-sub0-mail-a91.g.dreamhost.com (localhost [127.0.0.1])
-        by pdx1-sub0-mail-a91.g.dreamhost.com (Postfix) with ESMTP id C3E2680251;
-        Thu, 23 May 2019 13:06:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=wkks.org; h=reply-to
-        :subject:to:cc:references:from:message-id:date:mime-version
-        :in-reply-to:content-type:content-transfer-encoding; s=wkks.org;
-         bh=xxJ5kwn95N82L1Dg5g1mjMY7u9U=; b=NuTVLviWA29Chv7qTFUsFCQ1RXZQ
-        nPEwK5mj4BMvw8J68e6Z45Wg15k3iRvAGG9lh8KKNLztiL/+sQaAcIrLMLKpgAnf
-        /36qYQJO78mgxTNu9DC1Il0MBeK7H2INstp3xlI/422rT8Cisb4Q7drIEdfri+ep
-        en6lXWSDhkBKnIY=
-Received: from blade.c.c (173-21-244-129.client.mchsi.com [173.21.244.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: wcarlson@wkks.org)
-        by pdx1-sub0-mail-a91.g.dreamhost.com (Postfix) with ESMTPSA id 1FECC8024E;
-        Thu, 23 May 2019 13:06:12 -0700 (PDT)
-Reply-To: billcarlson@wkks.org
-Subject: Re: bonding-devel mail list?
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <3428f1e4-e9e9-49c6-8ca8-1ea5e9fdd7ed@wkks.org>
- <18472.1558629973@famine>
-X-DH-BACKEND: pdx1-sub0-mail-a91
-From:   Bill Carlson <billcarlson@wkks.org>
-Message-ID: <ec7a86ec-56e0-7846-ed02-337850fc8478@wkks.org>
-Date:   Thu, 23 May 2019 15:06:11 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S2387894AbfEWUPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 16:15:54 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:44807 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387454AbfEWUPy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:15:54 -0400
+Received: by mail-pf1-f194.google.com with SMTP id g9so3842224pfo.11
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 13:15:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=T+Fi07rL0yHY3bEW+6OOr73hVLQP4WIs0yW0wcsEK6o=;
+        b=FM/Q/Ed9xqnyedNJ0+dMD6JyCxDhNoPgpI96oJks/IgRrlNFqT5zdPjd5iKLpmB02o
+         71sydt0RHn5QCYg/5UDHrFP+C3tRUsWOwDEuR5chzS3/qaQgYCCo2eHHAO1iTTmX4yMR
+         61wQyJEG6AEiVPAunlF6v3JkXZJhqGQTSDjk+WhSunZohkaOP1QceqM68c7W2SV5iwpz
+         XAEStFrpH1cDZrd+930HsTazqTM63XoiukisTzA1P+IMrStnjSv0wIQTN5kBJzED0EOD
+         pXrR6WZ2UTbqTPt32Gv4dLsJtG3ibqjP1ukYAnTtl3dfBatBlxFSy38q70xvaQZ21V6Y
+         KSaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=T+Fi07rL0yHY3bEW+6OOr73hVLQP4WIs0yW0wcsEK6o=;
+        b=NtNOQHvIjLVxas39KI1jfZD8cJywj4tJ/eipVdoG4HESE0sBKTwHEKIhlPD9rAoQ9C
+         nlVhlr+WIJjmDLcZaaR7gwt82UkXIoXpZ3sTB1vxyl4327PO/4mdG2kcNjrL4ir3riHc
+         bno1FgS0aNhXsM0VeIAYGIzf7tcaCifQG9/PxF8+GUiPg/FzV5camH5qQMalXBVmKzqf
+         7vWD+7WCSH694AYyGdf6tHB03GfQXGmDtF3Y3IZG2ib2v+UBlVg405qq6EI0EGgt2ISs
+         vY+LijxWMsIP8ZLxQJQ53kmpknSEIyKaz0ofh13RWn7SK0NTKDb7PD5bx57wH2+F18Sq
+         T4tw==
+X-Gm-Message-State: APjAAAXnWTTEUviaBlY+MiylDoysuVLirwrNvPUDl1dH+c1xwURXdWIe
+        mWCeHU7x83vstVnbdNF+PcqhNQ==
+X-Google-Smtp-Source: APXvYqxK4XgC4avXmSlD0adsEUE5TRHwpDU48ShkJmbTDQX6WTjR6R6fpx2X6scsW4jrBB2nSi+j/Q==
+X-Received: by 2002:a17:90a:308e:: with SMTP id h14mr3843253pjb.13.1558642553495;
+        Thu, 23 May 2019 13:15:53 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id g8sm190628pgq.33.2019.05.23.13.15.53
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 23 May 2019 13:15:53 -0700 (PDT)
+Date:   Thu, 23 May 2019 13:15:44 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "jiri@resnulli.us" <jiri@resnulli.us>,
+        "jesper.brouer@gmail.com" <jesper.brouer@gmail.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 2/2] net: core: support XDP generic on stacked
+ devices.
+Message-ID: <20190523131544.6d8a28f7@hermes.lan>
+In-Reply-To: <3dbe4e29bf1ec71809e9dd2b32ec16272957a4cd.camel@mellanox.com>
+References: <20190523175429.13302-1-sthemmin@microsoft.com>
+        <20190523175429.13302-3-sthemmin@microsoft.com>
+        <3dbe4e29bf1ec71809e9dd2b32ec16272957a4cd.camel@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <18472.1558629973@famine>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-VR-OUT-STATUS: OK
-X-VR-OUT-SCORE: -100
-X-VR-OUT-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduuddruddugedgudeglecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucggtfgfnhhsuhgsshgtrhhisggvpdfftffgtefojffquffvnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpehruffvfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomhepuehilhhlucevrghrlhhsohhnuceosghilhhltggrrhhlshhonhesfihkkhhsrdhorhhgqeenucfkphepudejfedrvddurddvgeegrdduvdelnecurfgrrhgrmhepmhhouggvpehsmhhtphdphhgvlhhopegslhgruggvrdgtrdgtpdhinhgvthepudejfedrvddurddvgeegrdduvdelpdhrvghtuhhrnhdqphgrthhhpeeuihhllhcuvegrrhhlshhonhcuoegsihhllhgtrghrlhhsohhnseifkhhkshdrohhrgheqpdhmrghilhhfrhhomhepsghilhhltggrrhhlshhonhesfihkkhhsrdhorhhgpdhnrhgtphhtthhopehjrgihrdhvohhssghurhhghhestggrnhhonhhitggrlhdrtghomhenucevlhhushhtvghrufhiiigvpedt
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/23/19 11:46 AM, Jay Vosburgh wrote:
-> As far as I'm aware, nesting bonds has no practical benefit; do
-> you have a use case for doing so?
->
->
-Use case is very specific, but needed in my situation until some 
-switches are stabilized.
+On Thu, 23 May 2019 19:19:40 +0000
+Saeed Mahameed <saeedm@mellanox.com> wrote:
 
-Switches A1..Ax provide LACP, 40G. These are unstable, lose link on one 
-or more interfaces or drop completely. A single bond to the A switches 
-was acceptable at first, including when one interface was down for quite 
-a while. Then all A switches dropped.
+> On Thu, 2019-05-23 at 10:54 -0700, Stephen Hemminger wrote:
+> > When a device is stacked like (team, bonding, failsafe or netvsc) the
+> > XDP generic program for the parent device was not called.
+> > 
+> > Move the call to XDP generic inside __netif_receive_skb_core where
+> > it can be done multiple times for stacked case.
+> > 
+> > Suggested-by: Jiri Pirko <jiri@resnulli.us>
+> > Fixes: d445516966dc ("net: xdp: support xdp generic on virtual
+> > devices")
+> > Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
+> > ---
+> > v1 - call xdp_generic in netvsc handler
+> > v2 - do xdp_generic in generic rx handler processing
+> > v3 - move xdp_generic call inside the another pass loop
+> > 
+> >  net/core/dev.c | 56 ++++++++++------------------------------------
+> > ----
+> >  1 file changed, 11 insertions(+), 45 deletions(-)
+> > 
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index b6b8505cfb3e..696776e14d00 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -4502,23 +4502,6 @@ static int netif_rx_internal(struct sk_buff
+> > *skb)
+> >  
+> >  	trace_netif_rx(skb);
+> >  
+> > -	if (static_branch_unlikely(&generic_xdp_needed_key)) {
+> > -		int ret;
+> > -
+> > -		preempt_disable();
+> > -		rcu_read_lock();
+> > -		ret = do_xdp_generic(rcu_dereference(skb->dev-  
+> > >xdp_prog), skb);  
+> > -		rcu_read_unlock();
+> > -		preempt_enable();
+> > -
+> > -		/* Consider XDP consuming the packet a success from
+> > -		 * the netdev point of view we do not want to count
+> > -		 * this as an error.
+> > -		 */
+> > -		if (ret != XDP_PASS)
+> > -			return NET_RX_SUCCESS;
+> > -	}
+> > -  
+> 
+> Adding Jesper, 
+> 
+> There is a small behavioral change due to this patch, 
+> the XDP program after this patch will run on the RPS CPU, if
+> configured, which could cause some behavioral changes in
+> xdp_redirect_cpu: bpf_redirect_map(cpu_map).
+> 
+> Maybe this is acceptable, but it should be documented, as the current
+> assumption dictates: XDP program runs on the core where the XDP
+> frame/SKB was first seen.
 
-Switches B1..Bx provide no LACP, 10G. These are sitting and connected 
-anyway, already in place for backup.
-
-All are on the same layer two, as in any MAC is visible on any switch.
-
-Goal is to use A switches primarily, and drop back to B _IF_ A are 
-completely down. As long as one interface is active on A, that will be used.
-
-I assume LACP and active-passive can't be used in the same bond, 
-interested to hear if I'm wrong.
-
-My setup I achieved:
-
-bond0 -> switches B, multiple interfaces, active-passive
-bond1 -> switches A, multiple interfaces, LACP
-bond10 -> slaves bond0 and bond1, active-passive
-Various VLANs are using bond10.
-
-Options to bonding:
-
-bond0: mode=1 fail_over_mac=none miimon=100
-bond1: mode=4 lacp_rate=1 miimon=100
-bond10: mode=1 fail_over_mac=1 primary=bond1 updelay=10000 miimon=100
-(I should probably change to arp monitoring, I know.)
-
-updelay in place because LACP takes a long time to link.
-Making sure the MACs switched was the key.
-
-Network performance tests via iperf3 look good, including when dropping 
-bond1. Unfortunately, target test system was on bond0, as its A switches 
-were down.
-
-The only, critical, test I haven't been able to perform is physically 
-dropping A links, can't reach that far. :)
-
--- 
-
-Bill Carlson
-
-Anything is possible, given Time and Money.
-
+Or maybe XDP should just force off RPS (like it does gro)
