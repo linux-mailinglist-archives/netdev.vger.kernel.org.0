@@ -2,110 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7612828BBD
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:43:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EB0F28BB3
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388329AbfEWUm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 16:42:58 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:51132 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2387722AbfEWUm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:42:57 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x4NKdvFO011983
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 13:42:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=iYlFozGIsl9DErC7xjhT1GGyGcAkR/5D0+S/AwNjyik=;
- b=BlD78F0lULuxohqJGDBCY1L1iaBXesVyEEiGobx4Gb2TlKzzXxVuo6Wv3xVwPildCnyC
- gZ+PPQj/S+feGHcL4jnBJQ8i8iFc9/yI71jipIl3D3CbQV4pXmLklvaCRo+/Oq4onofM
- I40AYo8j3LCjXYuR5w9xnxiiy09zi5a9oEM= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2snwyh94wy-11
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 13:42:56 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 23 May 2019 13:42:54 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 334BA861799; Thu, 23 May 2019 13:42:50 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>,
-        <kernel-team@fb.com>
-CC:     Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next 12/12] bpftool: update bash-completion w/ new c option for btf dump
-Date:   Thu, 23 May 2019 13:42:22 -0700
-Message-ID: <20190523204222.3998365-13-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190523204222.3998365-1-andriin@fb.com>
-References: <20190523204222.3998365-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S2388288AbfEWUmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 16:42:49 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42479 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388256AbfEWUmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:42:46 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 33so766481pgv.9;
+        Thu, 23 May 2019 13:42:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xDSImwvg9ldfjYdR+/w2XlZgxjHNwdCvvVsI912LKls=;
+        b=NPodfj35SL4Vjcp0LFsuY22e1p6dgmX/gWhOwNAvjwWDelpdeg0qL5krgzWdMY+HdK
+         W85cipvVZ3AiphSLvjC1bY4pFImN1PWUS0/yGaB3Vf3WgaSNijQw01wSC0X4xK3yrbOS
+         QMwklU8GP+2O1CCAHPblv70qopR29huGK6Ui3KTuZyZDbSW/W+CROvjJzrWQbCd4Tbhp
+         KLTzUI+MT+nATn1UV1Bzeu0at91vdqiKzpOCFHx7fOAMCETg3gMj8a72Z9bYpn48saW7
+         CSHCXHg8PVXYLFiEb5kcDSUZS+rJbpYSJr/ArmHyC4Ng4sK7aRQeByz68lTpbt+sYJSR
+         55AQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xDSImwvg9ldfjYdR+/w2XlZgxjHNwdCvvVsI912LKls=;
+        b=oHFy3VteamScAqNX3nHjWSylFILkPUTg7N7vF36JSzEjs3ni3HglVdyBn6vnDYATfK
+         pFyDeMbvHyS344/V5kGu+6qFamSW7+DthqbQTJGCpzC6m9cPJiuWKyLgh2foTFlvpHZI
+         C3d4VPzy4EhQ3U4QtlqGyGwxwnofZ6gqAan/hyrIplxUacnFVggYIcaKIHjfU7nW0/FM
+         bwI4fP12dWU8cAy33SezOOkPcR/vTYjYMdtUBFkUcayRJ6o4HLH/GE2SWg8nr8//hURt
+         9HjiwEZEEt8e26UGzuT2tXBMOUGLIw4d8WGKkvi98HxVZQZld15p5K8nu2ddODVWUJfM
+         7f+w==
+X-Gm-Message-State: APjAAAV8cqnCTImUwjf49eh8bkDxOguFeIDmFCcrg/wI5FpCXmH0DlJb
+        qil29x95wHcSLbKL6njTBuk=
+X-Google-Smtp-Source: APXvYqySLj3uOg01XkiNbxnBt6a/vg3kd/r9XeAat/OPlpUP8SQyyKDl/hgby621y0OTmGuOLYdU1g==
+X-Received: by 2002:aa7:8acb:: with SMTP id b11mr106573588pfd.115.1558644165653;
+        Thu, 23 May 2019 13:42:45 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:d5a9])
+        by smtp.gmail.com with ESMTPSA id j64sm349783pfb.126.2019.05.23.13.42.44
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 23 May 2019 13:42:44 -0700 (PDT)
+Date:   Thu, 23 May 2019 13:42:43 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jiong Wang <jiong.wang@netronome.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@netronome.com,
+        davem@davemloft.net, paul.burton@mips.com, udknight@gmail.com,
+        zlim.lnx@gmail.com, illusionist.neo@gmail.com,
+        naveen.n.rao@linux.ibm.com, sandipan@linux.ibm.com,
+        schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com,
+        jakub.kicinski@netronome.com
+Subject: Re: [PATCH v7 bpf-next 01/16] bpf: verifier: mark verified-insn with
+ sub-register zext flag
+Message-ID: <20190523204241.b5m2j5ff7gethkhc@ast-mbp.dhcp.thefacebook.com>
+References: <1558551312-17081-1-git-send-email-jiong.wang@netronome.com>
+ <1558551312-17081-2-git-send-email-jiong.wang@netronome.com>
+ <20190523020757.mwbux72pqjbvpqkh@ast-mbp.dhcp.thefacebook.com>
+ <B9C052B7-DFB9-461A-B334-1607A94833D3@netronome.com>
+ <20190523161601.mqvkzwjegon2cqku@ast-mbp.dhcp.thefacebook.com>
+ <87h89kkjnk.fsf@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-23_16:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=889 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905230133
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87h89kkjnk.fsf@netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bash completion for new C btf dump option.
+On Thu, May 23, 2019 at 09:20:15PM +0100, Jiong Wang wrote:
+> 
+> Alexei Starovoitov writes:
+> 
+> <snip>
+> 
+> > well, it made me realize that we're probably doing it wrong,
+> > since after calling check_reg_arg() we need to re-parse insn encoding.
+> > How about we change check_reg_arg()'s enum reg_arg_type instead?
+> 
+> This is exactly what I had implemented in my initial internal version.
 
-Cc: Quentin Monnet <quentin.monnet@netronome.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/bash-completion/bpftool | 25 +++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+it was long ago :) shrinkers purged it.
 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 50e402a5a9c8..5b65e0309d2a 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -638,11 +638,28 @@ _bpftool()
-                             esac
-                             return 0
-                             ;;
-+                        format)
-+                            COMPREPLY=( $( compgen -W "c raw" -- "$cur" ) )
-+                            ;;
-                         *)
--                            if [[ $cword == 6 ]] && [[ ${words[3]} == "map" ]]; then
--                                 COMPREPLY+=( $( compgen -W 'key value kv all' -- \
--                                     "$cur" ) )
--                            fi
-+                            # emit extra options
-+                            case ${words[3]} in
-+                                id|file)
-+                                    if [[ $cword > 4 ]]; then
-+                                        _bpftool_once_attr 'format'
-+                                    fi
-+                                    ;;
-+                                map|prog)
-+                                    if [[ ${words[3]} == "map" ]] && [[ $cword == 6 ]]; then
-+                                        COMPREPLY+=( $( compgen -W "key value kv all" -- "$cur" ) )
-+                                    fi
-+                                    if [[ $cword > 5 ]]; then
-+                                        _bpftool_once_attr 'format'
-+                                    fi
-+                                    ;;
-+                                *)
-+                                    ;;
-+                            esac
-                             return 0
-                             ;;
-                     esac
--- 
-2.17.1
+> > The caller has much more context and no need to parse insn opcode again.
+> 
+> And I had exactly the same thoughts, is_reg64 is duplicating what has been
+> done.
+> 
+> The code evolved into the current shape mostly because I agreed if we
+> re-centre all checks inside check_reg_arg, then we don't need to touch
+> quite a few call sites of check_reg_arg, the change/patch looks simpler,
+> and I was thinking is_reg64 is a quick check, so the overhead is not big.
+> 
+> > Something like:
+> > enum reg_arg_type {
+> >         SRC_OP64,        
+> >         DST_OP64,       
+> >         DST_OP_NO_MARK, // probably no need to split this one ?
+> >         SRC_OP32,      
+> >         DST_OP32,      
+> > };
+> >
+> 
+> Yeah, no need to split DST_OP_NO_MARK, my split was
+> 
+> enum reg_arg_type {
+>    SRC_OP,
+> +  SRC32_OP,
+>    DST_OP,
+> +  DST32_OP,
+>    DST_OP_NO_MARK 
+> }
+> 
+> No renaming on existing SRC/DST_OP, they mean 64-bit, the changes are
+> smaller, looks better?
+> 
+> But, we also need to know whether one patch-insn define sub-register, if it
+> is, we then conservatively mark it as needing zero extension. patch-insn
+> doesn't go through check_reg_arg analysis, so still need separate insn
+> parsing.
+
+Good point.
+Then let's stick with your last is_reg64().
+Re-parsing is annoying, but looks like there is already use case for it
+and more can appear in the future.
 
