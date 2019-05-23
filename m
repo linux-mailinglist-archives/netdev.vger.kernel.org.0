@@ -2,109 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55FC8284DE
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 19:25:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C6E284E5
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 19:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731157AbfEWRZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 13:25:20 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:35012 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730752AbfEWRZU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 13:25:20 -0400
-Received: by mail-qt1-f195.google.com with SMTP id a39so7701823qtk.2
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 10:25:19 -0700 (PDT)
+        id S1731192AbfEWR1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 13:27:15 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:43431 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730957AbfEWR1P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 13:27:15 -0400
+Received: by mail-qt1-f194.google.com with SMTP id g17so1614876qtq.10;
+        Thu, 23 May 2019 10:27:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=jw3ieHIpiuuN2gVceKM+TXlU9vbb3kKDQJUo2RRdTmk=;
-        b=jYb7nn5AKKzM1t9e1Ppg16EcjfJUxpFBAzxgq93doctILDNiEflj9dkYWDxD5Lfcvc
-         lSX+uajkEg+LwkCdNyQxdnoWkRT7gtxAtjKkkV029TutvbYM5nCIMdAGgr0d9f7ub1bp
-         2zDx2QSrmmT4BHH0lr8pARiXQ1ij/GIAnCf3Q0WFqeBa2VEBr3URAsB3gy7OF7rFJS7P
-         LcvdFnox0o9qClKwPEtTybbw39BTkAPZtkrHKzJ4jQP816p3+YW4Ds47eBtMofG7m8AS
-         o+SUWck9lJyW+Dwmd3wdwMsW/aC8En6/GhcpUGPhW2xQjrMjUFXNOf03S0QYI0PqzN/x
-         Vo+Q==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TqPNIQV81Fx52FbEQQovh1n28JKFcLxe0c7FwLU1GsM=;
+        b=eMTGZDArJCg0sDzunB9THn28VA9ypu+NLKr+DdZqHHdwuyjVbZglGpV9OjMhi7yTpn
+         BINASj6tgVoBz1an90WaxhGCMjPhYT9nBZqaayETsuSfCNi+V9ZeCT2KARisgRgD+v/c
+         T2Ick9SZf6gPx65NjY4Z9tQTu0MWo/ZyHYOmh2+jYS1WFQ/VejgW8sqNa2ZjPDQdQPPc
+         pdOa2iHgw02WEmbR8vQPs8EhLoAgr4j41xCvkNhUHzfl4R3Rqg67b2uwmL7ogeO06ja/
+         50m61V/22kXB0+v46Kk/T1TiDsHtuEisVeP22mWAjhi2Vyi+Fc6VhxJdAsjYMmsri45S
+         vEaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=jw3ieHIpiuuN2gVceKM+TXlU9vbb3kKDQJUo2RRdTmk=;
-        b=Ty05mJDTon791ETUsVeDmbb1Phtb0eUeRJSs4Fvy8j4sLQ2BKL/wJCoFuQnNvbsiYZ
-         K4UFFh07ItvEnkSFBpXX5NPRFnQPgIqcLejKwF5tPc/T4+dgKadp6mzvF1D+V4khL1+e
-         oMGvrO4wOja0m0LkP7VpatpVAk3vDLoA8PSKuzdjZVlegbkmr70TjPFXl4rxxOV5GTcR
-         sppFS0qYIxKkpCsiF5AlODHegklfijwafr/dwgMN56ZQYFeXJcd9bacnkIpcXlLW/bGk
-         zgMFz1YHTs3LKt33RzEmcWEmHxnju8BF2Gmg61MtHOEzKjFyfe4R+N7b74ohy9TN2fYf
-         0fhg==
-X-Gm-Message-State: APjAAAWvo5Z5BAjZgCS6SIsQXtay4Fxp58WMcEC96Z1+7Qi3hsha/ABR
-        Hh2OSpnzLVdXY49yx7c4lm6suQ==
-X-Google-Smtp-Source: APXvYqzp3aHv77dTPDSx0+JDHbtSxm+mRyo1vJO0TtNRtUjqx0YE7zoQOREamS4Q5ddEtmnTly4+nw==
-X-Received: by 2002:ac8:243:: with SMTP id o3mr53402403qtg.104.1558632319270;
-        Thu, 23 May 2019 10:25:19 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id v3sm20535184qtc.97.2019.05.23.10.25.17
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 23 May 2019 10:25:19 -0700 (PDT)
-Date:   Thu, 23 May 2019 10:25:13 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        "Cong Wang" <xiyou.wangcong@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Vishal Kulkarni <vishal@chelsio.com>
-Subject: Re: [PATCH v3 net-next 0/3] flow_offload: Re-add per-action
- statistics
-Message-ID: <20190523102513.363c2557@cakuba.netronome.com>
-In-Reply-To: <1718a74b-3684-0160-466f-04495be5f0ca@solarflare.com>
-References: <9804a392-c9fd-8d03-7900-e01848044fea@solarflare.com>
-        <20190522152001.436bed61@cakuba.netronome.com>
-        <fa8a9bde-51c1-0418-5f1b-5af28c4a67c1@mojatatu.com>
-        <20190523091154.73ec6ccd@cakuba.netronome.com>
-        <1718a74b-3684-0160-466f-04495be5f0ca@solarflare.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TqPNIQV81Fx52FbEQQovh1n28JKFcLxe0c7FwLU1GsM=;
+        b=TLOwtuMGJsQEZby0z8JBdlBvvPnuM+E+oDRTkAcVSMwN9PwTG29joJpQH9Go0+ibYT
+         i6faYZUjXP7J0xsKdxW4BNIiG8wHOZ33xXUYe/Yfk1Jrx+PsweX8EGOJYMjF62EZiXjy
+         ZbCdVKqa4oO9ldrEJegwO3PuROVfDWrJYQF6fMpApATz4gta+NfJUeCC6Uqut39KSN78
+         2aMZY5nKeDrG/w6pEl3K0CdynKxGDGia7SWELuUy08gH5BPtn3pqAXBcsRbKyR1dDUnB
+         PZLZjacvNGNSKL0w7ejU/dNgnMo9w/SxxR43zCO0YK7MeRrR6/qJGNWsqs7xZRH3SkEp
+         GvcQ==
+X-Gm-Message-State: APjAAAVqLIrH+T5KBlQzbyOQQnzgDyiU9sRWhDrNEkABmNhTXqthWnkW
+        xb/ftQaD+gnaRbyluEjwnAEO3vuih3TDvrqxjj167BVZnpc=
+X-Google-Smtp-Source: APXvYqxQLmRaIPOp0XneiR/Zxk8JUSVAw1ocpR9kopvIDwAAlp1P9EDlrztvXiVMepnJ3isHEOAsNFtoEB6esEYzP5U=
+X-Received: by 2002:a0c:d917:: with SMTP id p23mr63716226qvj.162.1558632429964;
+ Thu, 23 May 2019 10:27:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20190522195053.4017624-1-andriin@fb.com> <20190522195053.4017624-11-andriin@fb.com>
+ <20190522172553.6f057e51@cakuba.netronome.com> <CAEf4BzZ36rcVuKabefWD-CaJ-BUECiYM_=3mzNAi3XMAR=49fQ@mail.gmail.com>
+ <20190522182328.7c8621ec@cakuba.netronome.com> <CAEf4BzaOAxKRNQasQtvAyLnvKtRLCpAcBq2q651PKG6b6r5Ktw@mail.gmail.com>
+ <20190523092700.00c1cdaf@cakuba.netronome.com>
+In-Reply-To: <20190523092700.00c1cdaf@cakuba.netronome.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 23 May 2019 10:26:57 -0700
+Message-ID: <CAEf4BzbH700V1TcvcVufKD8v9PBZRoDDgZXs7JWbWccSDaGtZg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 10/12] bpftool: add C output format option to btf
+ dump subcommand
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 May 2019 17:40:08 +0100, Edward Cree wrote:
-> On 23/05/2019 17:11, Jakub Kicinski wrote:
-> > On Thu, 23 May 2019 09:19:49 -0400, Jamal Hadi Salim wrote: =20
-> >> That would still work here, no? There will be some latency
-> >> based on the frequency of hardware->kernel stats updates. =20
-> > I don't think so, I think the stats are only updated on classifier
-> > dumps in Ed's code. =20
-> Yep currently that's the case, but not as an inherent restriction (see
-> =C2=A0my other mail).
+On Thu, May 23, 2019 at 9:27 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Wed, 22 May 2019 21:43:43 -0700, Andrii Nakryiko wrote:
+> > On Wed, May 22, 2019 at 6:23 PM Jakub Kicinski wrote:
+> > > On Wed, 22 May 2019 17:58:23 -0700, Andrii Nakryiko wrote:
+> > > > On Wed, May 22, 2019 at 5:25 PM Jakub Kicinski wrote:
+> > > > > On Wed, 22 May 2019 12:50:51 -0700, Andrii Nakryiko wrote:
+> > > > > > + * Copyright (C) 2019 Facebook
+> > > > > > + */
+> > > > > >
+> > > > > >  #include <errno.h>
+> > > > > >  #include <fcntl.h>
+> > > > > > @@ -340,11 +347,48 @@ static int dump_btf_raw(const struct btf *btf,
+> > > > > >       return 0;
+> > > > > >  }
+> > > > > >
+> > > > > > +static void btf_dump_printf(void *ctx, const char *fmt, va_list args)
+> > > > > > +{
+> > > > > > +     vfprintf(stdout, fmt, args);
+> > > > > > +}
+> > > > > > +
+> > > > > > +static int dump_btf_c(const struct btf *btf,
+> > > > > > +                   __u32 *root_type_ids, int root_type_cnt)
+> > > > >
+> > > > > Please break the line after static int.
+> > > >
+> > > > I don't mind, but it seems that prevalent formatting for such cases
+> > > > (at least in bpftool code base) is aligning arguments and not break
+> > > > static <return type> into separate line:
+> > > >
+> > > > // multi-line function definitions with static on the same line
+> > > > $ rg '^static \w+.*\([^\)]*$' | wc -l
+> > > > 45
+> > > > // multi-line function definitions with static on separate line
+> > > > $ rg '^static \w+[^\(\{;]*$' | wc -l
+> > > > 12
+> > > >
+> > > > So I don't mind changing, but which one is canonical way of formatting?
+> > >
+> > > Not really, just my preference :)
+> >
+> > I'll stick to majority :) I feel like it's also a preferred style in
+> > libbpf, so I'd rather converge to that.
+>
+> Majority is often wrong or at least lazy.  But yeah, this is a waste of
+> time.  Do whatever.  You also use inline keyword in C files in your
+> libbpf patches..  I think kernel style rules should apply.
 
-I think we can all agree that the current stats offload only reporting
-up-to-date HW stats when classifiers are dumped makes slight mockery of
-the kernel API guarantees.  I feel like HW vendors found a subset of
-the ABI to poke things in and out of the hardware, and things work
-correctly if you limit yourself to that very subset.  So you only get
-up-to-date stats if you dump classifiers, if you dump actions - no dice.
+I'll remove inlines.
 
-Whether it's on you to fix this is debatable :)  Since you're diving
-into actions and adding support for shared ones, I'd say it's time to
-rectify the situation.
+>
+> > > In my experience having the return type on a separate line if its
+> > > longer than a few chars is the simplest rule for consistent and good
+> > > looking code.
+> > >
+> > > > > > +     d = btf_dump__new(btf, NULL, NULL, btf_dump_printf);
+> > > > > > +     if (IS_ERR(d))
+> > > > > > +             return PTR_ERR(d);
+> > > > > > +
+> > > > > > +     if (root_type_cnt) {
+> > > > > > +             for (i = 0; i < root_type_cnt; i++) {
+> > > > > > +                     err = btf_dump__dump_type(d, root_type_ids[i]);
+> > > > > > +                     if (err)
+> > > > > > +                             goto done;
+> > > > > > +             }
+> > > > > > +     } else {
+> > > > > > +             int cnt = btf__get_nr_types(btf);
+> > > > > > +
+> > > > > > +             for (id = 1; id <= cnt; id++) {
+> > > > > > +                     err = btf_dump__dump_type(d, id);
+> > > > > > +                     if (err)
+> > > > > > +                             goto done;
+> > > > > > +             }
+> > > > > > +     }
+> > > > > > +
+> > > > > > +done:
+> > > > > > +     btf_dump__free(d);
+> > > > > > +     return err;
+> > > > >
+> > > > > What do we do for JSON output?
+> > > >
+> > > > Still dump C syntax. What do you propose? Error out if json enabled?
+> > >
+> > > I wonder.  Letting it just print C is going to confuse anything that
+> > > just feeds the output into a JSON parser.  I'd err on the side of
+> > > returning an error, we can always relax that later if we find a use
+> > > case of returning C syntax via JSON.
+> >
+> > Ok, I'll emit error (seems like pr_err automatically handles JSON
+> > output, which is very nice).
+>
+> Thanks
+>
+> > > > > >       if (!btf) {
+> > > > > >               err = btf__get_from_id(btf_id, &btf);
+> > > > > >               if (err) {
+> > > > > > @@ -444,7 +498,10 @@ static int do_dump(int argc, char **argv)
+> > > > > >               }
+> > > > > >       }
+> > > > > >
+> > > > > > -     dump_btf_raw(btf, root_type_ids, root_type_cnt);
+> > > > > > +     if (dump_c)
+> > > > > > +             dump_btf_c(btf, root_type_ids, root_type_cnt);
+> > > > > > +     else
+> > > > > > +             dump_btf_raw(btf, root_type_ids, root_type_cnt);
+> > > > > >
+> > > > > >  done:
+> > > > > >       close(fd);
+> > > > > > @@ -460,7 +517,7 @@ static int do_help(int argc, char **argv)
+> > > > > >       }
+> > > > > >
+> > > > > >       fprintf(stderr,
+> > > > > > -             "Usage: %s btf dump BTF_SRC\n"
+> > > > > > +             "Usage: %s btf dump BTF_SRC [c]\n"
+> > > > >
+> > > > > bpftool generally uses <key value> formats.  So perhaps we could do
+> > > > > something like "[format raw|c]" here for consistency, defaulting to raw?
+> > > >
+> > > > That's not true for options, though. I see that at cgroup, prog, and
+> > > > some map subcommands (haven't checked all other) just accept a list of
+> > > > options without extra identifying key.
+> > >
+> > > Yeah, we weren't 100% enforcing this rule and it's a bit messy now :/
+> >
+> > Unless you feel very strongly about this, it seems ok to me to allow
+> > "boolean options" (similarly to boolean --flag args) as a stand-alone
+> > set of tags. bpftool invocations are already very verbose, no need to
+> > add to that. Plus it also makes bash-completion simpler, it's always
+> > good not to complicate bash script unnecessarily :)
+>
+> It's more of a question if we're going to have more formats.  If not
+> then c as keyword is probably fine (although its worryingly short).
+> If we start adding more then a key value would be better.  Let's take a
+> gamble and if we add 2 more output types I'll say "I told you so"? :)
 
-Let's look at it this way - if you fix the RTM_GETACTION you will
-necessarily add the cookie and all the other stuff you need in your
-upcoming driver :)
-
-> > But we can't be 100% sure without seeing driver code. =20
-> Would it help if I posted my driver code to the list?=C2=A0 It's gonna be
-> =C2=A0upstream eventually anyway, it's just that the driver as a whole
-> =C2=A0isn't really in a shape to be merged just yet (mainly 'cos the
-> =C2=A0hardware folks are planning some breaking changes).=C2=A0 But I can=
- post
-> =C2=A0my TC handling code, or even the whole driver, if demonstrating how
-> =C2=A0these interfaces can be used will help matters.
-
-=46rom my perspective - you answered the question so I'm at 100% now ;)
+Ok, that's fair :) There were talks about emitting Go, so it's not
+unimaginable that we'll have another format. I'll switch that to
+`format [c|raw]`.
