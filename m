@@ -2,116 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B522928109
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 17:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78C0428138
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 17:31:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730913AbfEWPTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 11:19:50 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42039 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730709AbfEWPTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 11:19:49 -0400
-Received: by mail-pg1-f193.google.com with SMTP id 33so340768pgv.9
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 08:19:49 -0700 (PDT)
+        id S1730987AbfEWPba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 11:31:30 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:36756 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730760AbfEWPb3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 11:31:29 -0400
+Received: by mail-ed1-f66.google.com with SMTP id a8so9831471edx.3;
+        Thu, 23 May 2019 08:31:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HadvNzh2RBaOBmVIPsYUPnrsCvq9qjFe/WS9f2Qr80U=;
-        b=tCpgJiLrlTdYNYrmAJCK2rVMJP0UQbCGTORdvDjvQjLcWtRfSaO+jdWlxn6G0hlu2H
-         jGPHITHY99a61WqT4hFnnX4IQnui8tQWud1d1zgPUopJzbO1TlLwZ276//B3sQWxYth+
-         XO0iuExwafN7Shnv4VMsQBhUl9zlhGiVCG0Q4qclR2bCcByQt6CR0Z5kIk331kl8j+Vk
-         GTG5UB7gA57YPMKqF4Qb6vY1KnNFtW7kPdWm4bIvt2uE0rvjsS8VLdj1yhXE2P9nMQTO
-         vlLrvb3YO23ruzQO8DvOAXP1Qx42K9QMj0hYynfwVP0pu1t0ao8nT1LRT9t1bPEL8Yej
-         pSTg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PiGyHyQZ8LHM1OYtHic8yAJxd7r19cMB3vpmM17O/Tk=;
+        b=OEstBFl6Pv5yiCjvX2V1LFuTtKFeAPY5Fm3hPe3+FLcRM7XuCG8Rst9B6j85OMvBUy
+         /0pQxT9n5M4qEqyib/2VTTznI1oVtk5L6U0XJgZne/3lkTey62apoBzMCFB8MCA6ezJ+
+         Qy6W1JIBKMbzyMjRrDghrsGeWh1rNQ6/619CVIy21T1T7/KqUmsYi6FZbZV185/l7JFO
+         WjBwfDLYbLemYGGYODwvap1dXV0XtscTFei7zPDjNSueCQLzrdf8Y2/ZU+CmdnTdQFQH
+         1mrLMioFHh3XM9DNbX/mfpcouT6Kt30Q0Sko7jSlGRL3qR5UccTHFjO0JLi0kcOIUDR1
+         RDaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HadvNzh2RBaOBmVIPsYUPnrsCvq9qjFe/WS9f2Qr80U=;
-        b=o+/AFojByi3e9XWeIm/IhA7p47JaXSMpij9BbwNtGV3opBL4QVLML7f9LqOB+DTyIN
-         BsxBkmycL3PlWzdtNuDLnl/57/EwA7CXvF2ri60XCZqcuBFl2AB8o7/MnWWnGwp7aURw
-         2CEhUn9CjaPN4V96BIkne9lmJQv0nHnLmSpZhaTPuBDHz8iw1cM7DlWmAw9biSeWgsO+
-         fQeHLvq4smubGg/JHCj/l2K/qXFT9lX7RwX5XM1Yq9FAA5G4MT8fYWF8gO6Hib4Z0tuf
-         PUCz5+kcWkQMrNf64DOUPb7CtPdyaAc8z2PvQhc08eUJeV8pR11szN08YxHSMULfDGFj
-         +iUw==
-X-Gm-Message-State: APjAAAWQpj0XY2NKe3vp4ESrXL/GvL+JP2PtrNf+GJNe50ULQfPQGLpE
-        eh+rlIkrmSrE9juaOzmkODg=
-X-Google-Smtp-Source: APXvYqwmls6l2uYHYK/mUh8NT46pJmDz5cWLSxQbpAOtH/+Ie3vGBdqJYoP4FKrz0+ETMZiogYgc6A==
-X-Received: by 2002:a17:90a:9504:: with SMTP id t4mr1951655pjo.100.1558624789231;
-        Thu, 23 May 2019 08:19:49 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:6c53:cc13:22bf:e3cd? ([2601:282:800:fd80:6c53:cc13:22bf:e3cd])
-        by smtp.googlemail.com with ESMTPSA id d4sm816808pju.19.2019.05.23.08.19.47
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PiGyHyQZ8LHM1OYtHic8yAJxd7r19cMB3vpmM17O/Tk=;
+        b=O9S4c7/dzmovZiKzk3P4O/zmTOIn9fw5Z1RTyhTEov/pQ+Zn7VAYA0Q3bvOTHb5urn
+         KA3/BicGjtROV8ZUirl3Lp3dmFrjjL/119paOW9EtBYHmqRyNKsNy69JJ0ylV1SdRAvp
+         jtw0U/6qzuQwXE+d1i/FcIlvoxfwL1Xvzn/CzgYFDw1RDNl8R8roVXV+PgUU0CXPT1Yw
+         F5zrB6fWeUUTV2dndMxqG4NrLAu0Jy125EoQ2j6XpH/mD/RwlOeCu+mlybajo/+nc5CY
+         VNFg+otLnDHF3uP2RFxox6YeDbpJb9tQs6WXTHnWfLhARHT2TSgQF+F7RnRwbKM4obGg
+         Pb3g==
+X-Gm-Message-State: APjAAAW/eG0cfl6eFFaUz3P5KqzeIgSD0o4fTXoNL4MemCnPaia749eh
+        GUdfI/B3vf7nRf05ySwIic0=
+X-Google-Smtp-Source: APXvYqziauBYmeiv1KJjJonuVENYXzwdeuIYXeli6zRcLXfp+aqM29rGxkCEPB7y4q2vIDY2TbsO7Q==
+X-Received: by 2002:a50:bb24:: with SMTP id y33mr97321551ede.116.1558625487453;
+        Thu, 23 May 2019 08:31:27 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:4f9:2b:2b15::2])
+        by smtp.gmail.com with ESMTPSA id c20sm4498011ejr.69.2019.05.23.08.31.26
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 08:19:48 -0700 (PDT)
-Subject: Re: [patch net-next 3/7] mlxfw: Propagate error messages through
- extack
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, mlxsw@mellanox.com,
-        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
-        saeedm@mellanox.com, leon@kernel.org
-References: <20190523094510.2317-1-jiri@resnulli.us>
- <20190523094510.2317-4-jiri@resnulli.us>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7f3362de-baaf-99ee-1b53-55675aaf00fe@gmail.com>
-Date:   Thu, 23 May 2019 09:19:46 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        Thu, 23 May 2019 08:31:26 -0700 (PDT)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH v2 5.2] rsi: Properly initialize data in rsi_sdio_ta_reset
+Date:   Thu, 23 May 2019 08:30:08 -0700
+Message-Id: <20190523153007.112231-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.22.0.rc1
+In-Reply-To: <20190502151548.11143-1-natechancellor@gmail.com>
+References: <20190502151548.11143-1-natechancellor@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190523094510.2317-4-jiri@resnulli.us>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/23/19 3:45 AM, Jiri Pirko wrote:
-> @@ -57,11 +58,13 @@ static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
->  	if (fsm_state_err != MLXFW_FSM_STATE_ERR_OK) {
->  		pr_err("Firmware flash failed: %s\n",
->  		       mlxfw_fsm_state_err_str[fsm_state_err]);
-> +		NL_SET_ERR_MSG_MOD(extack, "Firmware flash failed");
->  		return -EINVAL;
->  	}
->  	if (curr_fsm_state != fsm_state) {
->  		if (--times == 0) {
->  			pr_err("Timeout reached on FSM state change");
-> +			NL_SET_ERR_MSG_MOD(extack, "Timeout reached on FSM state change");
+When building with -Wuninitialized, Clang warns:
 
-FSM? Is the meaning obvious to users?
+drivers/net/wireless/rsi/rsi_91x_sdio.c:940:43: warning: variable 'data'
+is uninitialized when used here [-Wuninitialized]
+        put_unaligned_le32(TA_HOLD_THREAD_VALUE, data);
+                                                 ^~~~
+drivers/net/wireless/rsi/rsi_91x_sdio.c:930:10: note: initialize the
+variable 'data' to silence this warning
+        u8 *data;
+                ^
+                 = NULL
+1 warning generated.
 
->  			return -ETIMEDOUT;
->  		}
->  		msleep(MLXFW_FSM_STATE_WAIT_CYCLE_MS);
-> @@ -76,7 +79,8 @@ static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
->  
->  static int mlxfw_flash_component(struct mlxfw_dev *mlxfw_dev,
->  				 u32 fwhandle,
-> -				 struct mlxfw_mfa2_component *comp)
-> +				 struct mlxfw_mfa2_component *comp,
-> +				 struct netlink_ext_ack *extack)
->  {
->  	u16 comp_max_write_size;
->  	u8 comp_align_bits;
-> @@ -96,6 +100,7 @@ static int mlxfw_flash_component(struct mlxfw_dev *mlxfw_dev,
->  	if (comp->data_size > comp_max_size) {
->  		pr_err("Component %d is of size %d which is bigger than limit %d\n",
->  		       comp->index, comp->data_size, comp_max_size);
-> +		NL_SET_ERR_MSG_MOD(extack, "Component is which is bigger than limit");
+Using Clang's suggestion of initializing data to NULL wouldn't work out
+because data will be dereferenced by put_unaligned_le32. Use kzalloc to
+properly initialize data, which matches a couple of other places in this
+driver.
 
-Need to drop 'is which'.
+Fixes: e5a1ecc97e5f ("rsi: add firmware loading for 9116 device")
+Link: https://github.com/ClangBuiltLinux/linux/issues/464
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
 
+v1 -> v2:
 
-...
+* Use RSI_9116_REG_SIZE instead of sizeof(u32) for kzalloc thanks to
+  review from Arnd.
 
-> @@ -156,6 +163,7 @@ static int mlxfw_flash_components(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
->  					      &component_count);
->  	if (err) {
->  		pr_err("Could not find device PSID in MFA2 file\n");
-> +		NL_SET_ERR_MSG_MOD(extack, "Could not find device PSID in MFA2 file");
+ drivers/net/wireless/rsi/rsi_91x_sdio.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-same here, is PSID understood by user?
+diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
+index f9c67ed473d1..b42cd50b837e 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
++++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
+@@ -929,11 +929,15 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
+ 	u32 addr;
+ 	u8 *data;
+ 
++	data = kzalloc(RSI_9116_REG_SIZE, GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
+ 	status = rsi_sdio_master_access_msword(adapter, TA_BASE_ADDR);
+ 	if (status < 0) {
+ 		rsi_dbg(ERR_ZONE,
+ 			"Unable to set ms word to common reg\n");
+-		return status;
++		goto err;
+ 	}
+ 
+ 	rsi_dbg(INIT_ZONE, "%s: Bring TA out of reset\n", __func__);
+@@ -944,7 +948,7 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
+ 						  RSI_9116_REG_SIZE);
+ 	if (status < 0) {
+ 		rsi_dbg(ERR_ZONE, "Unable to hold TA threads\n");
+-		return status;
++		goto err;
+ 	}
+ 
+ 	put_unaligned_le32(TA_SOFT_RST_CLR, data);
+@@ -954,7 +958,7 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
+ 						  RSI_9116_REG_SIZE);
+ 	if (status < 0) {
+ 		rsi_dbg(ERR_ZONE, "Unable to get TA out of reset\n");
+-		return status;
++		goto err;
+ 	}
+ 
+ 	put_unaligned_le32(TA_PC_ZERO, data);
+@@ -964,7 +968,8 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
+ 						  RSI_9116_REG_SIZE);
+ 	if (status < 0) {
+ 		rsi_dbg(ERR_ZONE, "Unable to Reset TA PC value\n");
+-		return -EINVAL;
++		status = -EINVAL;
++		goto err;
+ 	}
+ 
+ 	put_unaligned_le32(TA_RELEASE_THREAD_VALUE, data);
+@@ -974,17 +979,19 @@ static int rsi_sdio_ta_reset(struct rsi_hw *adapter)
+ 						  RSI_9116_REG_SIZE);
+ 	if (status < 0) {
+ 		rsi_dbg(ERR_ZONE, "Unable to release TA threads\n");
+-		return status;
++		goto err;
+ 	}
+ 
+ 	status = rsi_sdio_master_access_msword(adapter, MISC_CFG_BASE_ADDR);
+ 	if (status < 0) {
+ 		rsi_dbg(ERR_ZONE, "Unable to set ms word to common reg\n");
+-		return status;
++		goto err;
+ 	}
+ 	rsi_dbg(INIT_ZONE, "***** TA Reset done *****\n");
+ 
+-	return 0;
++err:
++	kfree(data);
++	return status;
+ }
+ 
+ static struct rsi_host_intf_ops sdio_host_intf_ops = {
+-- 
+2.22.0.rc1
 
