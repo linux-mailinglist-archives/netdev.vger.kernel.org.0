@@ -2,104 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D3FE28BFE
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 22:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29F3728C15
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 23:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729797AbfEWU5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 16:57:30 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:44023 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726222AbfEWU5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 16:57:30 -0400
-Received: by mail-qt1-f194.google.com with SMTP id g17so2414323qtq.10;
-        Thu, 23 May 2019 13:57:29 -0700 (PDT)
+        id S2387810AbfEWVI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 17:08:57 -0400
+Received: from mail-pf1-f176.google.com ([209.85.210.176]:44636 "EHLO
+        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730547AbfEWVI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 17:08:56 -0400
+Received: by mail-pf1-f176.google.com with SMTP id g9so3914751pfo.11
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 14:08:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c/A3o95sGGdl+Wp91GEMs1+11L3d+M6mnqGMfYpccU8=;
-        b=CvEScRquhaybu8exnTU0oYvHv5x90Tgon8Vtf8bAGPIgjkhbPiFlfvJZPlwHmhLXmg
-         hS+4x5cbh+1mfKJq2MChkGD8KV7EciLEqYaP7G1gQlqpqqA7Y3kvCFJYbcjzMxabzEur
-         KoxI69PX/Pru66hkQZOAF07fzLv+X6AiRPcb33FSFiYNQgNcmPAC18OE1P6Jlb2/MoTY
-         sHYCjD1L/o190tVoJNY6vG/OZnqXEoolWQaJpzKY+Es9RKiL3XIcOIwn5Ybck5AhrcV+
-         x0tJzG/Ge2LYhV3NIfg3Hl5DnrcjwG93NZtVbQWTob5qZ7L/C3pz780uvGVJnQdAWtS3
-         CdQA==
+        d=appneta.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=wMax+lenzyUHPsKlaw2Xwz1J2fIjhyjCZs+l8WeZZIk=;
+        b=UaMnrdv9kxUyUAoeV3obdkbGuhYqC5UwxazWF+3nuF1UF3pQcc1gr+roilgZcHYFp2
+         bvy5U/V0Qg5qe2Vf8zvxxGxiM2RPdhg7SaQAWwaDSYiYW006jUvPXKh2pzgTXNEQqpEg
+         lw0XlMmuZgMdv568WatuxBTKK0UtQYWf7pLN0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c/A3o95sGGdl+Wp91GEMs1+11L3d+M6mnqGMfYpccU8=;
-        b=m2V5aXtjWCtpvs02UhCUiP0GmrZ+fEuJp4fOyQlh81JDmAFZEJOkNo8Ayb2qrNt/mN
-         +bfQnAzSIPR7NnsjSv0XiWdt+WqYs8fHserwAMAzyXPbTZkBos3tx5DavQeA4K8tYwhY
-         3/TMW2S0MrWy9iNL1CtkvIwdo1b+1R5DmAHQsyMoAIMFVJEjpE6A10OS9EMjI/aGZkrx
-         giotR5TC4gEx4PG56tR5IlrH+lFsjQNn2nSyfelADLDEyWg/ZvJRRcoNAlT5oP78Mjas
-         J77zNGVciU/yEcjzDCDb8MvMJbhegV6SdYtHKmthmODZHoTZS4DrpboZr+QL1zFzAhVh
-         GJgQ==
-X-Gm-Message-State: APjAAAX4aQCrRMRyL9fGdhY4oS5DldAIUCPr8BozaiZITPVv8XuGZ7jL
-        ZQr7qubBq98SKFKszTUw+gE0jLR6XdB68+qh5uA=
-X-Google-Smtp-Source: APXvYqz4YBdNM1P1vyj5RXDmouo546y7tb3K87McDDaVmlul8/TIX1wu8nuso++2tVGZuY6kL6Ran/4pVUVuFj3xvvk=
-X-Received: by 2002:a0c:986e:: with SMTP id e43mr67804725qvd.78.1558645049262;
- Thu, 23 May 2019 13:57:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190523105426.3938-1-quentin.monnet@netronome.com>
- <20190523105426.3938-2-quentin.monnet@netronome.com> <CAEf4BzZt75Wm29MQKx1g_u8cH2QYRF3HGYgnOpa3yF9NOMXysw@mail.gmail.com>
- <20190523134421.38a0da0c@cakuba.netronome.com>
-In-Reply-To: <20190523134421.38a0da0c@cakuba.netronome.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 23 May 2019 13:57:18 -0700
-Message-ID: <CAEf4BzbyE8w1wLN33OfUgu8qGqRbxE5LbXFniucyqW4mH7mQFw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/3] tools: bpftool: add -d option to get
- debug output from libbpf
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, oss-drivers@netronome.com,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=wMax+lenzyUHPsKlaw2Xwz1J2fIjhyjCZs+l8WeZZIk=;
+        b=UwdfXEb7QEmTT8v0srqGd5aSWBPw92A1f7VphP5qwHBw1n9C4mAslP2EsQJlvYx8cd
+         nyTaPIXh8DyomBj3h2otevk0m2dUfLD0lIAnLRzvkadvRtXn5rqwI/LEhobHefAtcR9x
+         YMG50pLCo6TMvctNi7KmTigJYEkEzi/6bXju43JHL4CIz/1uRrVVEWJ/T+xj0JeBmCD9
+         Hey4ctgpA//in3kvIRUlSb26uIBO0VFQON0mHJqzbaMjNPxRI+KwJ4dZWlLyp8zyE9A3
+         zbZVFdxgCDaeC01ULpeIEW+GrxwCtPj8iFs+XWwp0GjeWbvLt+zqn732isiOowfVNWvP
+         ta3g==
+X-Gm-Message-State: APjAAAWMuH0Q+kcqodJnicPDBJXfHNLxCqhFtnj8qVWdUbRs3aFkSv6A
+        nS92Xz0lMt802cCTbrNOZ2B+yg==
+X-Google-Smtp-Source: APXvYqyjISI5Ny9VN8A309FwPymfZ7VE0AtfDET3WweMMKUW9iebMfPJRFf0OgH8RwPdpvmO2ZLLZw==
+X-Received: by 2002:a17:90a:350d:: with SMTP id q13mr4321522pjb.20.1558645735962;
+        Thu, 23 May 2019 14:08:55 -0700 (PDT)
+Received: from localhost.localdomain (S010620c9d00fc332.vf.shawcable.net. [70.71.167.160])
+        by smtp.googlemail.com with ESMTPSA id y17sm333481pfn.79.2019.05.23.14.08.54
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 23 May 2019 14:08:55 -0700 (PDT)
+From:   Fred Klassen <fklassen@appneta.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Cc:     Fred Klassen <fklassen@appneta.com>
+Subject: [PATCH net 0/4] Allow TX timestamp with UDP GSO
+Date:   Thu, 23 May 2019 14:06:47 -0700
+Message-Id: <20190523210651.80902-1-fklassen@appneta.com>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 1:44 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Thu, 23 May 2019 09:20:52 -0700, Andrii Nakryiko wrote:
-> > On Thu, May 23, 2019 at 3:54 AM Quentin Monnet wrote:
-> > >
-> > > libbpf has three levels of priority for output messages: warn, info,
-> > > debug. By default, debug output is not printed to the console.
-> > >
-> > > Add a new "--debug" (short name: "-d") option to bpftool to print libbpf
-> > > logs for all three levels.
-> > >
-> > > Internally, we simply use the function provided by libbpf to replace the
-> > > default printing function by one that prints logs regardless of their
-> > > level.
-> > >
-> > > v2:
-> > > - Remove the possibility to select the log-levels to use (v1 offered a
-> > >   combination of "warn", "info" and "debug").
-> > > - Rename option and offer a short name: -d|--debug.
-> >
-> > Such and option in CLI tools is usually called -v|--verbose, I'm
-> > wondering if it might be a better name choice?
-> >
-> > Btw, some tools also use -v, -vv and -vvv to define different levels
-> > of verbosity, which is something we can consider in the future, as
-> > it's backwards compatible.
->
-> That was my weak suggestion.  Sometimes -v is used for version, e.g.
-> GCC.  -d is sometimes used for debug, e.g. man, iproute2 uses it as
-> short for "detailed".  If the consensus is that -v is better I don't
-> really mind.
+Fixes an issue where TX Timestamps are not arriving on the error queue
+when UDP_SEGMENT CMSG type is combined with CMSG type SO_TIMESTAMPING.
 
-It's minor, so I'm not insisting at all, just wasn't sure it was
-brought up. bpftool is sufficiently different in its conventions from
-other modern CLIs anyways.
+Also this updates the UDP GSO selftests to optionally stress test
+this condition, and report the reliability and performance of both
+TX Timestamping and ZEROCOPY messages.
 
-As for -v for version. It seems like the trend is to use -V|--version
-for version, and -v|--verbose for verbosity. I've also seen some tools
-option for `cli version` (subcommand) for version. Anyway, no strong
-preferences from me either.
+Fred Klassen (4):
+  net/udp_gso: Allow TX timestamp with UDP GSO
+  net/udpgso_bench_tx: options to exercise TX CMSG
+  net/udpgso_bench_tx: fix sendmmsg on unconnected socket
+  net/udpgso_bench_tx: audit error queue
+
+ net/ipv4/udp_offload.c                        |   4 +
+ tools/testing/selftests/net/udpgso_bench_tx.c | 376 ++++++++++++++++++++++++--
+ 2 files changed, 358 insertions(+), 22 deletions(-)
+
+-- 
+2.11.0
+
