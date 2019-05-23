@@ -2,126 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 074A1284FF
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 19:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F1328511
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 19:39:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387396AbfEWReC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 13:34:02 -0400
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:36941 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730904AbfEWReC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 13:34:02 -0400
-Received: by mail-yb1-f193.google.com with SMTP id z12so2583856ybr.4
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 10:34:01 -0700 (PDT)
+        id S1731291AbfEWRjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 13:39:35 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:43605 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731037AbfEWRjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 13:39:35 -0400
+Received: by mail-qk1-f195.google.com with SMTP id z6so4294678qkl.10
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 10:39:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f5KppckN56sMdYhz8xvqsrI+Y0WLZHTGOGk/50MNd+Y=;
-        b=mUJcuguNcVjaPgObFwmvI4CASe+SqsrXOE/B7sLjKhhEMtRDMJV+koFUZVYD96M/Yj
-         /9llkbG6zcopYRxNVJC8AGJN54Th2oX87pxFftG5XsfPiq7ALnYqhs9R0wV0+aGC8AJw
-         yPoKgZ+KKHeKfIRk5GyMfkiUSongR5B7vxdFMvVgIuY+pCXwbhRNJ2vHM2mQ0q4qEqhr
-         uEUuL/mSzUbmfoHju1bHoBaDPz7tVWtgl7ywoq3YWsv0uBVEpeeaH+2xWo1/ti25L9x1
-         wZ6gedra3/EXc1Uv8wB7o9N0+LhKgvXfsxbC6FXRZ9Ae7LgJQldTKwp3vGTAnPdv5ToE
-         6n1Q==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=SwBcBJ1JdKjPfMSahtjNaMXPeRzrxoV9MYxtIaEgdMM=;
+        b=oTVMqjNKDFY21eUWWUN8MhAa5T/30LWts97BBx0YdIEp/BxAOFqiS/oXKmo5wJVzhH
+         xc7N0OIphYohfk94PyO2KMjPKuWdMb9Bn5VRTyCUZpkOCnDHZDeCbCGdWT8+fajWqhJ8
+         B3wnU/cQRo5uXrrvXkdyBj1Hrw/onIBn+eR7hKoqQbM8dbTBk9jH7gsJH/Y0h3Y5g5Q0
+         UZ4eLRXOOffILItPgwoMm9Ug5J7ZFJY+r/XBeLJrIbGTrlhnq4yXdBYg1fFKh0qlztV+
+         4Ek8Ss7hQ1ZSqztUt/1+Yq+8otiyaWHh2d1hzIutFOJr4C4MZylo2V0stwDwUpanJpY/
+         FtCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f5KppckN56sMdYhz8xvqsrI+Y0WLZHTGOGk/50MNd+Y=;
-        b=aq1t1Wz89Y7RHyerYkHhDt7LND6iQah8/Zco4QG7grDiUONkQstWAmg9VIty5Mlx4T
-         HvYogiI6zz4GzyWtwQgxbL/KGDngUhD6sVynBktTCKN32+mWJ2WiiB6RVBEmbwivS5GV
-         r1s9Dd6yJZghFQ7ZQoXzuR+p2TQFDAC5+uk9Zp345B5Cd4Fl/zzdMihT7QZUq36ahNd1
-         jEqrhIuotsIGPzX9XpNugJaFCu3IhHCaObBXrKIDKWjaPDvzDbE2WvEzX3ODkmKs9Mj1
-         AaZ2GhbK5bK3jrz1b7kVRveJde6wJqvUuxd/ALNUX4ay/Cl222GH3Rw8G682JifDVl5Q
-         nFRA==
-X-Gm-Message-State: APjAAAXhDNF2m5sWgomcaq9on1CEKoAPVovNVTNE0YhLNu7xzO+sTTQF
-        qjEgmMUVVApWjkWYDhjuJTSmsXvc
-X-Google-Smtp-Source: APXvYqyQkFbY7XkCT3D3gmwsvJ6jLoSZaaELR8/WuDqKwKc8gukoGa2lX5gTxsO8TddNp0TLRZMJ2Q==
-X-Received: by 2002:a25:1144:: with SMTP id 65mr45027701ybr.142.1558632840442;
-        Thu, 23 May 2019 10:34:00 -0700 (PDT)
-Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
-        by smtp.gmail.com with ESMTPSA id l192sm7425321ywl.107.2019.05.23.10.33.59
-        for <netdev@vger.kernel.org>
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 10:33:59 -0700 (PDT)
-Received: by mail-yb1-f176.google.com with SMTP id a3so2578248ybr.6
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 10:33:59 -0700 (PDT)
-X-Received: by 2002:a25:ed02:: with SMTP id k2mr14578195ybh.125.1558632838656;
- Thu, 23 May 2019 10:33:58 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=SwBcBJ1JdKjPfMSahtjNaMXPeRzrxoV9MYxtIaEgdMM=;
+        b=jjpJ77hIQ/fOiamIxhPcnYqtX4nnH8WP2BViPLodnY0BsceVEOCx685z6liEmdfvZe
+         5hJDKLU0GYiEtKjUYQYxJj7608aKhg22+8cSV6OlY/cDVUfcKaz19wBgfxyLf6USRe9Y
+         naFjEWhm2OFsUA5qIsnTMCRowhQbcJkETuEMiysEc47IzNDQaAViEBP7QFAbSXx3i2d6
+         f1IkGzk7LJAPspKRa3jrGWMkg3Ya2XqHDeUozevuqt0PAnNw0j8MuffCjssvwrf16zl7
+         1gaWs2UPtFrR+wrTtWbbRkwyyuXQjGOJdBVBHlKpBd1ZoS7DvJyiqHlGbKZTx9XyTz4K
+         FOSg==
+X-Gm-Message-State: APjAAAX9+1zf7Dv/USG/4egMVIFlkpjycXprq9bsXvDubDXGl56C/9bN
+        WeYGg34hIDTDg2qUUOLFxkk6uQ==
+X-Google-Smtp-Source: APXvYqx/mh4RmUB//ciIOt77mpGMAmKDSF7tcTL78BR0uZauAu0UiDttmnF8was2dT+RBB+VvDVMwg==
+X-Received: by 2002:ae9:c21a:: with SMTP id j26mr54117829qkg.310.1558633174594;
+        Thu, 23 May 2019 10:39:34 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id j10sm12062923qth.8.2019.05.23.10.39.33
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 23 May 2019 10:39:34 -0700 (PDT)
+Date:   Thu, 23 May 2019 10:39:29 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
+        sthemmin@microsoft.com, dsahern@gmail.com, saeedm@mellanox.com,
+        leon@kernel.org
+Subject: Re: [patch net-next 4/7] devlink: allow driver to update progress
+ of flash update
+Message-ID: <20190523103929.3dd7cccd@cakuba.netronome.com>
+In-Reply-To: <20190523094510.2317-5-jiri@resnulli.us>
+References: <20190523094510.2317-1-jiri@resnulli.us>
+        <20190523094510.2317-5-jiri@resnulli.us>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190523164507.50208-1-willemb@google.com> <1c4e190f-5f9c-be8e-a560-9aef7f483bb4@gmail.com>
-In-Reply-To: <1c4e190f-5f9c-be8e-a560-9aef7f483bb4@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 23 May 2019 13:33:22 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSd11kyWjQ9V+TfgCEutzAFCheL=POq7kL0chkObcdk05Q@mail.gmail.com>
-Message-ID: <CA+FuTSd11kyWjQ9V+TfgCEutzAFCheL=POq7kL0chkObcdk05Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] selftests/net: SO_TXTIME with ETF and FQ
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 1:06 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 5/23/19 9:45 AM, Willem de Bruijn wrote:
-> > The SO_TXTIME API enables packet tranmission with delayed delivery.
-> > This is currently supported by the ETF and FQ packet schedulers.
-> >
-> > Evaluate the interface with both schedulers. Install the scheduler
-> > and send a variety of packets streams: without delay, with one
-> > delayed packet, with multiple ordered delays and with reordering.
-> > Verify that packets are released by the scheduler in expected order.
-> >
-> > The ETF qdisc requires a timestamp in the future on every packet. It
-> > needs a delay on the qdisc else the packet is dropped on dequeue for
-> > having a delivery time in the past. The test value is experimentally
-> > derived. ETF requires clock_id CLOCK_TAI. It checks this base and
-> > drops for non-conformance.
-> >
-> > The FQ qdisc expects clock_id CLOCK_MONOTONIC, the base used by TCP
-> > as of commit fb420d5d91c1 ("tcp/fq: move back to CLOCK_MONOTONIC").
-> > Within a flow there is an expecation of ordered delivery, as shown by
-> > delivery times of test 4. The FQ qdisc does not require all packets to
-> > have timestamps and does not drop for non-conformance.
-> >
-> > The large (msec) delays are chosen to avoid flakiness.
-> >
-> >       Output:
-> >
-> >       SO_TXTIME ipv6 clock monolithic
->
-> s/monolithic/monotonic/
+On Thu, 23 May 2019 11:45:07 +0200, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@mellanox.com>
+> 
+> Introduce a function to be called from drivers during flash. It sends
+> notification to userspace about flash update progress.
+> 
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 
-Oops. That's actually fixed in the latest version, just not in the
-commit message. I'll send a v2 just to update that. Thanks Eric.
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-Having some trouble with git send-email and gmail today, hence the
-email from my google.com account, too.
-
-
-
->
-> >       payload:a delay:33 expected:0 (us)
-> >
-> >       SO_TXTIME ipv4 clock monolithic
-> >       payload:a delay:44 expected:0 (us)
-> >
-> >       SO_TXTIME ipv6 clock monolithic
-> >       payload:a delay:10049 expected:10000 (us)
-> >
-> >       SO_TXTIME ipv4 clock monolithic
-> >       payload:a delay:10105 expected:10000 (us)
->
->
-> Thanks for the test Willem.
->
-> Acked-by: Eric Dumazet <edumazet@google.com>
->
+Very cool!
