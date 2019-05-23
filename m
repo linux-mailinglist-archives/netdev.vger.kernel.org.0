@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A097628C7F
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 23:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E54DB28C9A
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 23:46:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388229AbfEWVkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 17:40:14 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:36724 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388209AbfEWVkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 17:40:14 -0400
-Received: by mail-ed1-f65.google.com with SMTP id a8so11246779edx.3;
-        Thu, 23 May 2019 14:40:12 -0700 (PDT)
+        id S2388372AbfEWVq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 17:46:28 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:35050 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388232AbfEWVq2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 17:46:28 -0400
+Received: by mail-ed1-f67.google.com with SMTP id p26so11282000edr.2;
+        Thu, 23 May 2019 14:46:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7sFc7ThnmJhmVClW066IBr+ugXYu56ow2YaUneJliW0=;
-        b=tq/Xl4TibAUmg94VVJF+gOJisGDmKCiLyMJc14nMfPZXdAJk7ERCF8P96Ymgh0G9ju
-         zXfESZcUOdHw0qbjIn8kgfN9S4+lvq5/vMKpP6M82gr6SHBkrTgVUQhs0QNEMIxwxe8N
-         2j+eWa81owMg/n74R5C77rAc9jQb6LWfVby6ACsv9lcAtfUHnwFDS3A+9/jRCEIoveRY
-         MfMW9uZxa7+GykS8GsasAk04ID42oxnsUV7kuhdCFAvu9mRHLy9Haubsy3sMrzW5eDjP
-         OfKwdv4B+UW0LmdQBDxtKEzrgqb5I0+T4I8zqmypqL+X0WktI7lX4nAPz9rsFv2G3q6u
-         IP7w==
+        bh=hS1J+L8InX8t+S5g40fUDrEZZWAutsMmjF58rVNfY4A=;
+        b=vF7wzIafOwzPH1p6LsShpR37Mg3sBS7pnLiT2O9iV6X1EtYSjTwLFwI1Br/cLiMXt2
+         RwhRLJ6sJ8W8XSai7YLJK5m3TJbd46SuWj7BgeZG4WUd4KKSpPrpTbI+ff62ThALF71C
+         odj8iC1OSSKR/yrb1wuok+xjLsOJO0qivUJqCPfh9PBISpU6oulbKPK4Vf1ZdTq4f//q
+         3N4a0kdGoEHNkmU/wZx5V5PaWeMeebWVmHcI783Ik9w5f+UmCmSyThzR/d02njmGhDq+
+         XzHD//Fm/PwpHXQf1ljwBKIyq9nnSNpVikR1A3hDfePxb8GaqeIJCk4D8XaeNI1moqnl
+         5qCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7sFc7ThnmJhmVClW066IBr+ugXYu56ow2YaUneJliW0=;
-        b=Q9pQfLxHZIaxU3VmFV1UIyRDA23AIyPz7tcMEwRZ0NU6l37CRpn4+M1bmct6PWBVAR
-         k+7qRKI9NkFiNQGNRg7t+TaARJsNgOOX504Z/z4srf1ms9IRbdP6iHpsBvxSJAzVj4T0
-         9fyZm505/j+xNcjr/3OWwmpgiRi9Rd5Er/3IHnQLfZXHJpET4oyHh80Z8Zemz1/bw+TC
-         PeEVpyTAioaA6ylU3Yw3uk9IfFXnNYR7C+O+0+tL3eFJlYmcptdpDwoTlcZ9vWBOnx/r
-         EdvLUeZYiBBVKC1f+KWx2+LXOMFbTep4iZ29WgWH2uuFGcWYz6HiCg9iVfmZhOuUjjPS
-         afBQ==
-X-Gm-Message-State: APjAAAWaMwRhNeB6Dg8BclYGm2eICRjlt0xYTXPMbcnkz6Nva8d1FUMC
-        Rt0Cxd+9xij1n67//Oik85UQXwe9ZKgGhW+JEkQ=
-X-Google-Smtp-Source: APXvYqw8tJGqA5c5wGFLyYEPWR/Y+2qo9DCjgzJefGelQCRumPO9B4e5aArLC4cN0khqMzdogT8yU2UsLQPAfJH85tg=
-X-Received: by 2002:a17:906:699:: with SMTP id u25mr41633599ejb.245.1558647612145;
- Thu, 23 May 2019 14:40:12 -0700 (PDT)
+        bh=hS1J+L8InX8t+S5g40fUDrEZZWAutsMmjF58rVNfY4A=;
+        b=d1AEp2ysj2JLc09oB3E281wUGCkk8dSHQr50i0HT73+zlJeJ0HIJPrdthuh55zALl3
+         wP79v8SfzlWt8+lnXpbUHu5OpoX+aOfKbi+Kibd/PbbcLzyK8Anb9QQ3DRL82edUpsUk
+         Q2eCpGgogHh2fGbSu5gQSV0ygokG7FFYVC5I4PvNBrpcfINJxptvtc1JIPaBI4M6E45D
+         /nWr2Ma0LZsHyMI1FFvOkNsHlZ361LpQwJGJXAsO4wJBHCiKYXOPYG/zudObp8xQ777h
+         LM8xjaa9kNnnPSOjmF9+K2uHyShs+nEvSrlmKxto+8b3VYHwfZUz0ow4yA2sszcvj9Pu
+         ge1g==
+X-Gm-Message-State: APjAAAXF3YXgeRx22mGBGVM9aUwu41zPAZ9GJNPq/hhiJ9sn1R706iSh
+        DI7g73mqhy/scJdvOLUGqVdEw1QoGvIMboUVrLA=
+X-Google-Smtp-Source: APXvYqwRs1XOL8neFbNGaC+e+ESBojE/AQYVeCKksTEz4shDZdYlC7mr4NocdxwmtEAjUnfC/5JJpyz2nvSkbDYoeDo=
+X-Received: by 2002:a50:b665:: with SMTP id c34mr99149662ede.148.1558647986054;
+ Thu, 23 May 2019 14:46:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190523210651.80902-1-fklassen@appneta.com> <20190523210651.80902-2-fklassen@appneta.com>
-In-Reply-To: <20190523210651.80902-2-fklassen@appneta.com>
+References: <20190523210651.80902-1-fklassen@appneta.com> <20190523210651.80902-3-fklassen@appneta.com>
+In-Reply-To: <20190523210651.80902-3-fklassen@appneta.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 23 May 2019 17:39:36 -0400
-Message-ID: <CAF=yD-Jf95De=z_nx9WFkGDa6+nRUqM_1PqGkjwaFPzOe+PfXg@mail.gmail.com>
-Subject: Re: [PATCH net 1/4] net/udp_gso: Allow TX timestamp with UDP GSO
+Date:   Thu, 23 May 2019 17:45:49 -0400
+Message-ID: <CAF=yD-Lcg2wkGoKm8yGNnb_z5925PJztEAej-ahvz=2G35ke4g@mail.gmail.com>
+Subject: Re: [PATCH net 2/4] net/udpgso_bench_tx: options to exercise TX CMSG
 To:     Fred Klassen <fklassen@appneta.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
@@ -62,58 +62,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 5:09 PM Fred Klassen <fklassen@appneta.com> wrote:
+On Thu, May 23, 2019 at 5:11 PM Fred Klassen <fklassen@appneta.com> wrote:
 >
-> Fixes an issue where TX Timestamps are not arriving on the error queue
-> when UDP_SEGMENT CMSG type is combined with CMSG type SO_TIMESTAMPING.
-> This can be illustrated with an updated updgso_bench_tx program which
-> includes the '-T' option to test for this condition.
+> This enhancement adds options that facilitate load testing with
+> additional TX CMSG options, and to optionally print results of
+> various send CMSG operations.
 >
->     ./udpgso_bench_tx -4ucTPv -S 1472 -l2 -D 172.16.120.18
->     poll timeout
->     udp tx:      0 MB/s        1 calls/s      1 msg/s
+> These options are especially useful in isolating situations
+> where error-queue messages are lost when combined with other
+> CMSG operations (e.g. SO_ZEROCOPY).
 >
-> The "poll timeout" message above indicates that TX timestamp never
-> arrived.
+> New options:
 >
-> It also appears that other TX CMSG types cause similar issues, for
-> example trying to set SOL_IP/IP_TOS.
+>     -T - add TX CMSG that requests TX software timestamps
+>     -H - similar to -T except request TX hardware timestamps
+>     -q - add IP_TOS/IPV6_TCLASS TX CMSG
+>     -P - call poll() before reading error queue
+>     -v - print detailed results
 >
->     ./udpgso_bench_tx -4ucPv -S 1472 -q 182 -l2 -D 172.16.120.18
->     poll timeout
->     udp tx:      0 MB/s        1 calls/s      1 msg/s
->
-> This patch preserves tx_flags for the first UDP GSO segment. This
-> mirrors the stack's behaviour for IPv4 fragments.
->
-> Fixes: ee80d1ebe5ba ("udp: add udp gso")
+> Fixes: 3a687bef148d ("selftests: udp gso benchmark")
+
+This is not a fix, but an extension. Fixes tags help with backporting
+to stable kernels. There is something to be said to backport the main
+change and support SO_TIMESTAMPING + UDP_GSO on older kernels,
+especially since it is very concise. But the tests should probably be
+in a separate patch set targeting net-next.
+
+
 > Signed-off-by: Fred Klassen <fklassen@appneta.com>
 > ---
->  net/ipv4/udp_offload.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  tools/testing/selftests/net/udpgso_bench_tx.c | 290 ++++++++++++++++++++++++--
+>  1 file changed, 273 insertions(+), 17 deletions(-)
 >
-> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-> index 065334b41d57..33de347695ae 100644
-> --- a/net/ipv4/udp_offload.c
-> +++ b/net/ipv4/udp_offload.c
-> @@ -228,6 +228,10 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
->         seg = segs;
->         uh = udp_hdr(seg);
+> diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
+> index 4074538b5df5..a900f016b9e7 100644
+> --- a/tools/testing/selftests/net/udpgso_bench_tx.c
+> +++ b/tools/testing/selftests/net/udpgso_bench_tx.c
+> @@ -5,6 +5,8 @@
+>  #include <arpa/inet.h>
+>  #include <errno.h>
+>  #include <error.h>
+> +#include <linux/errqueue.h>
+> +#include <linux/net_tstamp.h>
+>  #include <netinet/if_ether.h>
+>  #include <netinet/in.h>
+>  #include <netinet/ip.h>
+> @@ -19,6 +21,7 @@
+>  #include <string.h>
+>  #include <sys/socket.h>
+>  #include <sys/time.h>
+> +#include <sys/poll.h>
+>  #include <sys/types.h>
+>  #include <unistd.h>
 >
-> +       /* preserve TX timestamp and zero-copy info for first segment */
-> +       skb_shinfo(seg)->tskey = skb_shinfo(gso_skb)->tskey;
-> +       skb_shinfo(seg)->tx_flags = skb_shinfo(gso_skb)->tx_flags;
+> @@ -34,6 +37,10 @@
+>  #define SO_ZEROCOPY    60
+>  #endif
+>
+> +#ifndef SO_EE_ORIGIN_ZEROCOPY
+> +#define SO_EE_ORIGIN_ZEROCOPY 5
+> +#endif
+> +
+>  #ifndef MSG_ZEROCOPY
+>  #define MSG_ZEROCOPY   0x4000000
+>  #endif
+> @@ -48,9 +55,14 @@ static uint16_t      cfg_mss;
+>  static int     cfg_payload_len = (1472 * 42);
+>  static int     cfg_port        = 8000;
+>  static int     cfg_runtime_ms  = -1;
+> +static bool    cfg_poll;
+>  static bool    cfg_segment;
+>  static bool    cfg_sendmmsg;
+>  static bool    cfg_tcp;
+> +static uint32_t        cfg_tx_ts = SOF_TIMESTAMPING_TX_SOFTWARE;
+> +static bool    cfg_tx_tstamp;
+> +static uint32_t        cfg_tos;
+> +static bool    cfg_verbose;
+>  static bool    cfg_zerocopy;
+>  static int     cfg_msg_nr;
+>  static uint16_t        cfg_gso_size;
+> @@ -58,6 +70,10 @@ static uint16_t      cfg_gso_size;
+>  static socklen_t cfg_alen;
+>  static struct sockaddr_storage cfg_dst_addr;
+>
+> +struct my_scm_timestamping {
+> +       struct timespec ts[3];
+> +};
 > +
 
-Thanks for the report.
+This and the above should not be needed if including <linux/errqueue.h>
 
-Zerocopy notification reference count is managed in skb_segment. That
-should work.
+It may be absent if relying on the host header files, but the
+kselftest build system should correctly use the files from the kernel
+source tree.
 
-Support for timestamping with the new GSO feature is indeed an
-oversight. The solution is similar to how TCP associates the timestamp
-with the right segment in tcp_gso_tstamp.
+>  static bool interrupted;
+>  static char buf[NUM_PKT][ETH_MAX_MTU];
+>
+> @@ -89,20 +105,20 @@ static int set_cpu(int cpu)
+>
+>  static void setup_sockaddr(int domain, const char *str_addr, void *sockaddr)
+>  {
+> -       struct sockaddr_in6 *addr6 = (void *) sockaddr;
+> -       struct sockaddr_in *addr4 = (void *) sockaddr;
+> +       struct sockaddr_in6 *addr6 = (void *)sockaddr;
+> +       struct sockaddr_in *addr4 = (void *)sockaddr;
+>
+>         switch (domain) {
+>         case PF_INET:
+>                 addr4->sin_family = AF_INET;
+>                 addr4->sin_port = htons(cfg_port);
+> -               if (inet_pton(AF_INET, str_addr, &(addr4->sin_addr)) != 1)
+> +               if (inet_pton(AF_INET, str_addr, &addr4->sin_addr) != 1)
+>                         error(1, 0, "ipv4 parse error: %s", str_addr);
+>                 break;
+>         case PF_INET6:
+>                 addr6->sin6_family = AF_INET6;
+>                 addr6->sin6_port = htons(cfg_port);
+> -               if (inet_pton(AF_INET6, str_addr, &(addr6->sin6_addr)) != 1)
+> +               if (inet_pton(AF_INET6, str_addr, &addr6->sin6_addr) != 1)
 
-Only, I think we want to transfer the timestamp request to the last
-datagram, not the first. For send timestamp, the final byte leaving
-the host is usually more interesting.
+Please do not include style changes like these. Try to minimize
+changes required to add the new feature.
