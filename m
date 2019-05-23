@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B3E128592
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 20:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D400B285A2
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 20:09:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387485AbfEWSGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 14:06:18 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:41912 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387459AbfEWSGS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 14:06:18 -0400
-Received: by mail-wr1-f68.google.com with SMTP id u16so3395013wrn.8;
-        Thu, 23 May 2019 11:06:17 -0700 (PDT)
+        id S1731278AbfEWSJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 14:09:24 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:56293 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731117AbfEWSJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 14:09:24 -0400
+Received: by mail-wm1-f67.google.com with SMTP id x64so6789626wmb.5;
+        Thu, 23 May 2019 11:09:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=Kmj1SfRwUw9u9puwf4cpgVRacLw8HccKeSb6z3yZrWA=;
-        b=fpFi2bU4KezKy9w+iThls3IxbCD6Mte2c+I79JHI/ElfTMKj3/3LRh648w+SpvBnyY
-         9zcRq5B9tWPIhkXwy96KPsveApq/X1AbKCoBhjnbySa7BzIUZYAGzXC8Ym1UOe8BUydz
-         SGLzUtauv/Idi0QD88S+jMy+VinRjky38aOWPw0a+qnDLt2w60RJYHSayQk6TNYXKUIV
-         Fo0MIaRDe51JjNNGIg1RQ4bCcJ7Ajjm+xI0pQnnaQfNz0j4XiWinutoZNCikUGH7dxYA
-         y8AaSdthKzqJuC1Q4ymFOq3+vplekJ3GgCpV5rIZ9YQ7is7dUUNQcbFMf0Vh8UJ+fuQj
-         5rmQ==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sOizVTvn298iqjSRIp3glGwvPvP9G7hNhxiAnwHpvqc=;
+        b=HT6PtgZ6wal7rH84TWBdE51xCeto45OrsGyFFDtrbFmNmcgEAA1B2EBwKF8VC5xOkb
+         7uOUIKrnz9F1TSPHPVm5QQqW2woKrLheB47BUr/1eTGeohIB70SxmuuNFulA3gxrsl8F
+         GYqzNO/3OiY/ilaAScYRcCRDuw9JURz/VR1IsMDW3t89JD/s2OqB5WUFuHi9M9n4ZLnh
+         MYP1IPRAnvHuqovoQvzUHmqL0uHWn+m49qPR5c/9ErFB7lSnl2HHv8fYOTVRp6BkMVeK
+         x71H1lKbrLZn8i8wOG2nTEZ/K9R+Em39arssLJ9d2Q8Na99qY74T3P32gWd7OXR2PzNi
+         Z0cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=Kmj1SfRwUw9u9puwf4cpgVRacLw8HccKeSb6z3yZrWA=;
-        b=AUG6mCl3gfBZh599WhTnfOZnANXRXjL3b3uylhlY9Ga+4pdVlq1MYwMHTRD9nEtQcT
-         gIzsTX1nsa+m8qcajvrZBVeH0UEO/KCQ8aTBJAVea35dYxFumwQk7g1QNjpG208twTs1
-         IB3iunwgNzlhy9fYcJqIQ1gZbDd1CR+iCBQQmhoU1FeL0BMEkpbnaJ6jTrZlAxswSolC
-         2nTxsiQ4koTAYnRr0nnY8XrdjNBipTuEn3UOXkz2bdjgYiWwNfjDix/7NDJ2MIQt0U6G
-         lFFUK8EBIH+yu3IlzRSKNf4ZprJ5JzKRLg9wyvqhcNMC6+1T6F+m6JC5iNg/TSZVTswl
-         wkHg==
-X-Gm-Message-State: APjAAAXQ8cjHPM1FI3gE1ttmFWyTSQvSXoK5jN4IXiBfyQjpY4QIIqWE
-        amwLcN7nFDqEhbfh0q+FlI5Ix3Oh
-X-Google-Smtp-Source: APXvYqyAN4LtfivBu324JAIFzsV9rNdYkmUQmvr7cU+zLh1m7y0XYm5wA5lO3KlKdXT9bze/AeU2WA==
-X-Received: by 2002:a5d:4907:: with SMTP id x7mr47122036wrq.199.1558634776314;
-        Thu, 23 May 2019 11:06:16 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sOizVTvn298iqjSRIp3glGwvPvP9G7hNhxiAnwHpvqc=;
+        b=cNaT9tE2lUpuWUBO2oInRFzZpSs9rMUlZZpFAP8YOjEoF10aHy3FKAF82xIkxMdgnT
+         WSeUG2faaJgswHxzcd8p7gK9UvPsKkYyConUWTo6dCSMdbqBQTq8SvEYQDlv+c9goLQM
+         tyBiGVU/aq6Xa/7cbkLhIJGnLb5ppTrCEuU/hYxIAe8+sMXSL0rtiSfef8yTZ3CdwL30
+         87ye4/xenpHpe/KNkpHTBZ+8uwQ9LuwuOqBYogdiaa7lgPQBlWit5Zt8qh5y5AMgIos2
+         rEJArqplGXdt1hQ+6Fw3NqZTIR9mP3ONcnnpN9kIqZqJZJpRifS42au8fzQn/8+1/gY4
+         tdaw==
+X-Gm-Message-State: APjAAAWFkfcsLKNIA14bhGsEmQfhf19oE3yT+8mTXQeDBRscyvqCaHSl
+        u6N1abdQhaFa2j3Yp0/uZ7DIM4LC
+X-Google-Smtp-Source: APXvYqy147/NpI75h/2GI1OtYxZdgY6B6QxWwtQHLXxbCBDNL5Qo9H3CMyCRV+mfMbejpfCFouvBpA==
+X-Received: by 2002:a1c:7dcf:: with SMTP id y198mr12219750wmc.94.1558634961344;
+        Thu, 23 May 2019 11:09:21 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8be9:7a00:3cd1:e8fe:d810:b3f0? (p200300EA8BE97A003CD1E8FED810B3F0.dip0.t-ipconnect.de. [2003:ea:8be9:7a00:3cd1:e8fe:d810:b3f0])
-        by smtp.googlemail.com with ESMTPSA id w185sm189225wma.39.2019.05.23.11.06.15
+        by smtp.googlemail.com with ESMTPSA id y10sm451116wmg.8.2019.05.23.11.09.20
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 11:06:15 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next v2 0/3] net: phy: add interface mode
+        Thu, 23 May 2019 11:09:20 -0700 (PDT)
+Subject: [PATCH net-next v2 1/3] net: phy: add interface mode
  PHY_INTERFACE_MODE_USXGMII
+From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Madalin-cristian Bucur <madalin.bucur@nxp.com>,
         Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -58,11 +59,13 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Message-ID: <9d284f4d-93ee-fb27-e386-80825f92adc8@gmail.com>
-Date:   Thu, 23 May 2019 20:06:10 +0200
+References: <9d284f4d-93ee-fb27-e386-80825f92adc8@gmail.com>
+Message-ID: <10f0f749-ec92-2ec6-45bf-a4f40163a19a@gmail.com>
+Date:   Thu, 23 May 2019 20:06:49 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
+In-Reply-To: <9d284f4d-93ee-fb27-e386-80825f92adc8@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,22 +74,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for interface mode USXGMII.
+Add support for interface mode PHY_INTERFACE_MODE_USXGMII.
 
-On Freescale boards LS1043A and LS1046A a warning may pop up now
-because mode xgmii should be changed to usxgmii (as the used
-Aquantia PHY doesn't support XGMII).
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ include/linux/phy.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Heiner Kallweit (3):
-  net: phy: add interface mode PHY_INTERFACE_MODE_USXGMII
-  dt-bindings: net: document new usxgmii phy mode
-  net: phy: aquantia: add USXGMII support and warn if XGMII mode is set
-
- Documentation/devicetree/bindings/net/ethernet.txt | 1 +
- drivers/net/phy/aquantia_main.c                    | 8 ++++++++
- include/linux/phy.h                                | 3 +++
- 3 files changed, 12 insertions(+)
-
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 073fb151b..7180b1d1e 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -103,6 +103,7 @@ typedef enum {
+ 	PHY_INTERFACE_MODE_XAUI,
+ 	/* 10GBASE-KR, XFI, SFI - single lane 10G Serdes */
+ 	PHY_INTERFACE_MODE_10GKR,
++	PHY_INTERFACE_MODE_USXGMII,
+ 	PHY_INTERFACE_MODE_MAX,
+ } phy_interface_t;
+ 
+@@ -178,6 +179,8 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 		return "xaui";
+ 	case PHY_INTERFACE_MODE_10GKR:
+ 		return "10gbase-kr";
++	case PHY_INTERFACE_MODE_USXGMII:
++		return "usxgmii";
+ 	default:
+ 		return "unknown";
+ 	}
 -- 
 2.21.0
+
 
