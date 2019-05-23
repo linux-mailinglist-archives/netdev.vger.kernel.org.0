@@ -2,74 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B638A27D09
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 14:43:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20FFD28028
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 16:47:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730046AbfEWMnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 08:43:50 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44907 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729361AbfEWMnt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 08:43:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=6h1D4Ud/7r70N6KTznuJt38cxPCFT7J0mt36Y7aCy1M=; b=wJO2sGD0T6Xqve2m0J4I9ZDHZF
-        090A/YSc9PS+ej6Q1E4e05jB1eID9pC+RksuSLRBctWBk856DZxRbrM0lh5pSSX3XyDBGJ/rzp3au
-        kg8JwChYSPQo8M6O6w0aoO0t9aYVgHHW5ot5nZzGFDr9YIcLPn9bH0hhMtTgHzbbIY3c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hTn4W-0004Bk-Cy; Thu, 23 May 2019 14:43:48 +0200
-Date:   Thu, 23 May 2019 14:43:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Benjamin Beckmeyer <beb@eks-engel.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: DSA setup IMX6ULL and Marvell 88E6390 with 2 Ethernet Phys - CPU
- Port is not working
-Message-ID: <20190523124348.GB15531@lunn.ch>
-References: <944bfcc1-b118-3b4a-9bd7-53e1ca85be0a@eks-engel.de>
- <20190523050909.B87FB134148@control02-haj2.antispameurope.com>
- <25a1f661-277b-e4b3-ffee-9092af6abf5d@eks-engel.de>
+        id S1730818AbfEWOrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 10:47:03 -0400
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:50336 "EHLO
+        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730757AbfEWOrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 10:47:02 -0400
+X-Greylist: delayed 4865 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 May 2019 10:47:01 EDT
+Received: from relay11.mail.gandi.net (unknown [217.70.178.231])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id 2FAA73ACB8F;
+        Thu, 23 May 2019 12:46:01 +0000 (UTC)
+Received: from localhost (aaubervilliers-681-1-80-185.w90-88.abo.wanadoo.fr [90.88.22.185])
+        (Authenticated sender: maxime.ripard@bootlin.com)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id CD9B2100022;
+        Thu, 23 May 2019 12:45:46 +0000 (UTC)
+Date:   Thu, 23 May 2019 14:45:46 +0200
+From:   Maxime Ripard <maxime.ripard@bootlin.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>
+Subject: Re: [PATCH 6/8] dt-bindings: net: stmmac: Convert the binding to a
+ schemas
+Message-ID: <20190523124546.6agw7fu5qteag3ol@flea>
+References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
+ <ba1a5d8ad34a8c9ab99f504c04fbe65bde42081b.1558605170.git-series.maxime.ripard@bootlin.com>
+ <78EB27739596EE489E55E81C33FEC33A0B92B864@DE02WEMBXB.internal.synopsys.com>
+ <20190523110715.ckyzpec3quxr26cp@flea>
+ <78EB27739596EE489E55E81C33FEC33A0B92BA5B@DE02WEMBXB.internal.synopsys.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="tf5grxv2ddxyomh6"
 Content-Disposition: inline
-In-Reply-To: <25a1f661-277b-e4b3-ffee-9092af6abf5d@eks-engel.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B92BA5B@DE02WEMBXB.internal.synopsys.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> thanks for your reply. You're right, both PHYs are 10/100.
-> 
-> I already added a fixed-link like this:
-> 
-> 			port@0 {
-> 				reg = <0>;
-> 				label = "cpu";
-> 				ethernet = <&fec1>;
-> 				phy-mode = "rmii";
-> 				phy-handle = <&switch0phy0>;
->                                 fixed-link {
->                                         speed = <100>;
->                                         full-duplex;
->                                 };
-> 			};
-> 
-> I hope you mean that with fixed-phy? But this doesn't changed anything.
 
-You probably have multiple issues, and it is not going to work until
-you have them all solved.
+--tf5grxv2ddxyomh6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-You can get access to the registers etc, using patches from:
+On Thu, May 23, 2019 at 11:25:09AM +0000, Jose Abreu wrote:
+> From: Maxime Ripard <maxime.ripard@bootlin.com>
+> Date: Thu, May 23, 2019 at 12:07:15
+>
+> > You can then run make dtbs_check, and those YAML files will be used to
+> > validate that any devicetree using those properties are doing it
+> > properly. That implies having the right node names, properties, types,
+> > ranges of values when relevant, and so on.
+>
+> Thanks but how can one that's developing know which bindings it shall use?
 
-https://github.com/vivien/linux.git dsa/debugfs
+I'm not quite sure what you mean here. Are you talking about which
+file to use, or which property are required, or something else?
 
-I've only seen the external MDIO bus on the 6390 used for C45 PHYs. So
-there is a chance the driver code for C22 is broken?
+> Is this not parsed/prettified and displayed in some kind of webpage ?
 
-      Andrew
+Not at the moment, but it's one of the things that are made much
+easier by using a formal data format.
 
+> Just that now that the TXT is gone its kind of "strange" to look at YAML
+> instead of plain text and develop/use the bindings.
+
+Well, it's kind of the point though. Free-form text was impossible to
+parse in a generic way, and you couldn't build any generic tools upon
+it. YAML provides that.
+
+Maxime
+
+--
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--tf5grxv2ddxyomh6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXOaV+gAKCRDj7w1vZxhR
+xbIiAQDiQ/YoNNi0GkGaqteHf9TnQ2HqpEptDspMMmoMtI/iUQD9GIkc5JePBFh2
+kcr5Fwff9irX+EB/TCiw12tiyLODug8=
+=9C+d
+-----END PGP SIGNATURE-----
+
+--tf5grxv2ddxyomh6--
