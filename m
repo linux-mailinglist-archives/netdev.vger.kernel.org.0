@@ -2,83 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7941928135
-	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 17:31:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C7E827705
+	for <lists+netdev@lfdr.de>; Thu, 23 May 2019 09:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730904AbfEWPbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 11:31:16 -0400
-Received: from bonobo.maple.relay.mailchannels.net ([23.83.214.22]:64174 "EHLO
-        bonobo.maple.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730760AbfEWPbQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 11:31:16 -0400
-X-Sender-Id: dreamhost|x-authsender|wcarlson@wkks.org
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 7BCB65E1887
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 15:31:14 +0000 (UTC)
-Received: from pdx1-sub0-mail-a91.g.dreamhost.com (100-96-95-11.trex.outbound.svc.cluster.local [100.96.95.11])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id AE3B45E1D3E
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 15:31:13 +0000 (UTC)
-X-Sender-Id: dreamhost|x-authsender|wcarlson@wkks.org
-Received: from pdx1-sub0-mail-a91.g.dreamhost.com ([TEMPUNAVAIL].
- [64.90.62.162])
-        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384)
-        by 0.0.0.0:2500 (trex/5.17.2);
-        Thu, 23 May 2019 15:31:14 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|wcarlson@wkks.org
-X-MailChannels-Auth-Id: dreamhost
-X-Continue-Interest: 74d12ece6875f64f_1558625474199_225217031
-X-MC-Loop-Signature: 1558625474199:3646967219
-X-MC-Ingress-Time: 1558625474199
-Received: from pdx1-sub0-mail-a91.g.dreamhost.com (localhost [127.0.0.1])
-        by pdx1-sub0-mail-a91.g.dreamhost.com (Postfix) with ESMTP id 510A57FAF8
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 08:31:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=wkks.org; h=to:reply-to
-        :from:subject:message-id:date:mime-version:content-type
-        :content-transfer-encoding; s=wkks.org; bh=Aa0sSgAkVBJ8xo9t3vHUA
-        bqxZkA=; b=JOmk8zkfYH0f2h34zDmHaf1hbk+pNzGL+9yWanBlAMPuIXtsdBfrm
-        bZVk9w28lcaMUVzWmo1zX6Hn0M7/0YVkEK2OjHotUhyFCPgaFo7iolcd0R+x9iCA
-        8JcLW44TZ+Z8tLW5hmJe88Ufw0/CcB8uj/vT9zunDPZdgd3KI6gqMY=
-Received: from blade.c.c (173-21-244-129.client.mchsi.com [173.21.244.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: wcarlson@wkks.org)
-        by pdx1-sub0-mail-a91.g.dreamhost.com (Postfix) with ESMTPSA id BFAD27FAC7
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 08:31:10 -0700 (PDT)
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Reply-To: billcarlson@wkks.org
-X-DH-BACKEND: pdx1-sub0-mail-a91
-From:   Bill Carlson <billcarlson@wkks.org>
-Subject: bonding-devel mail list?
-Message-ID: <3428f1e4-e9e9-49c6-8ca8-1ea5e9fdd7ed@wkks.org>
-Date:   Thu, 23 May 2019 10:31:09 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-VR-OUT-STATUS: OK
-X-VR-OUT-SCORE: 0
-X-VR-OUT-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduuddruddugedgledvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuggftfghnshhusghstghrihgsvgdpffftgfetoffjqffuvfenuceurghilhhouhhtmecufedttdenucenucfjughrpefvrhfhuffkffgfgggtgfesthejredttdefjeenucfhrhhomhepuehilhhlucevrghrlhhsohhnuceosghilhhltggrrhhlshhonhesfihkkhhsrdhorhhgqeenucfkphepudejfedrvddurddvgeegrdduvdelnecurfgrrhgrmhepmhhouggvpehsmhhtphdphhgvlhhopegslhgruggvrdgtrdgtpdhinhgvthepudejfedrvddurddvgeegrdduvdelpdhrvghtuhhrnhdqphgrthhhpeeuihhllhcuvegrrhhlshhonhcuoegsihhllhgtrghrlhhsohhnseifkhhkshdrohhrgheqpdhmrghilhhfrhhomhepsghilhhltggrrhhlshhonhesfihkkhhsrdhorhhgpdhnrhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+        id S1729632AbfEWHcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 03:32:15 -0400
+Received: from mga03.intel.com ([134.134.136.65]:36471 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726081AbfEWHcP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 03:32:15 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 May 2019 00:32:14 -0700
+X-ExtLoop1: 1
+Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
+  by fmsmga005.fm.intel.com with ESMTP; 23 May 2019 00:32:08 -0700
+From:   Voon Weifeng <weifeng.voon@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        biao huang <biao.huang@mediatek.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Kweh Hock Leong <hock.leong.kweh@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>
+Subject: [PATCH net-next v2 0/5] net: stmmac: enable EHL SGMII
+Date:   Thu, 23 May 2019 23:32:42 +0800
+Message-Id: <1558625567-21653-1-git-send-email-weifeng.voon@intel.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+012345678901234567890123456789012345678901234567890123456789012345678901234
+This patch-set is to enable Ethernet controller
+(DW Ethernet QoS and DW Ethernet PCS) with SGMII interface in Elkhart Lake.
+The DW Ethernet PCS is the Physical Coding Sublayer that is between Ethernet
+MAC and PHY and uses MDIO Clause-45 as Communication.
 
-Noted the old bonding-devel mail list at sourceforge is no more, is 
-there an alternate?
+Kweh Hock Leong (1):
+  net: stmmac: enable clause 45 mdio support
 
-Chasing whether a bond of bonds has an issue my testing hasn't revealed.
+Ong Boon Leong (3):
+  net: stmmac: introducing support for DWC xPCS logics
+  net: stmmac: add xpcs function hooks into main driver and ethtool
+  net: stmmac: add xPCS functions for device with DWMACv5.1
 
-Thanks,
+Voon Weifeng (1):
+  net: stmmac: add EHL SGMII 1Gbps PCI info and PCI ID
+
+ drivers/net/ethernet/stmicro/stmmac/Makefile       |   2 +-
+ drivers/net/ethernet/stmicro/stmmac/common.h       |   1 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |  33 ++++
+ drivers/net/ethernet/stmicro/stmmac/dwxpcs.c       | 198 +++++++++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwxpcs.h       |  51 ++++++
+ drivers/net/ethernet/stmicro/stmmac/hwif.c         |  41 ++++-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  21 +++
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |   2 +
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |  50 ++++--
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 152 ++++++++++++----
+ drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c  |  40 ++++-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c   | 111 ++++++++++++
+ include/linux/phy.h                                |   2 +
+ include/linux/stmmac.h                             |   3 +
+ 14 files changed, 649 insertions(+), 58 deletions(-)
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwxpcs.c
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwxpcs.h
 
 -- 
-
-Bill Carlson
-
-Anything is possible, given Time and Money.
+Changelog v2:
+*Added support for the C37 AN for 1000BASE-X and SGMII (MAC side SGMII only)
+*removed and submitted the fix patch to net
+ "net: stmmac: dma channel control register need to be init first"
+*Squash the following 2 patches and move it to the end of the patch set:
+ "net: stmmac: add EHL SGMII 1Gbps platform data and PCI ID"
+ "net: stmmac: add xPCS platform data for EHL"
+1.9.1
 
