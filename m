@@ -2,146 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B29B929F37
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 21:41:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE72329F39
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 21:42:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732008AbfEXTlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 15:41:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52784 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729597AbfEXTlv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 15:41:51 -0400
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A36732184E;
-        Fri, 24 May 2019 19:41:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558726909;
-        bh=CkGzYYO+vGgbv0d+nRAEF3GYLYvk85XbDtSLeEjkPq4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=wJ2EFxVFh2WeG6rUfgp6P/V3ObUJVG290SC5oaznWPy/Ay1wlCEXjZdD/HBD4uAv7
-         2Lw0EPluNUS3LjELueSW6G41HIGvz7obiqUTCCCW4cbKBUGxjHt97L1OM1LciQWqin
-         IUaKG2tThRXdDXZ3Tqk6jv4dNm0vSciLeKZZQ/oU=
-Received: by mail-qk1-f173.google.com with SMTP id p26so6660365qkj.5;
-        Fri, 24 May 2019 12:41:49 -0700 (PDT)
-X-Gm-Message-State: APjAAAXrl1ZEnarCX7K7yKGCwb5ezDflgbmxYtkZ2VWsg2DriqPP7phC
-        BHoLXpD1gL8l/Dca1Q3egDrke3tCuYevk/2SdA==
-X-Google-Smtp-Source: APXvYqw9CzhKv4gwvm0e+yC8SQI5HZrcGpsWEfdqVf/JQYaDYeEHbOhQseeOXnlPKf/EjH1EIdSLrtfahMdHnv9GdQQ=
-X-Received: by 2002:ac8:7688:: with SMTP id g8mr59817341qtr.224.1558726908834;
- Fri, 24 May 2019 12:41:48 -0700 (PDT)
+        id S1732098AbfEXTmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 15:42:05 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52569 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729597AbfEXTmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 15:42:04 -0400
+Received: by mail-wm1-f66.google.com with SMTP id y3so10498729wmm.2
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 12:42:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=bOyztbvPs1WDB8t01stjKvIzsOPGX3DvWoR6Ee1uwQc=;
+        b=B/YigiU7lOIbxbI+oZjq3PrdVGG18kK7A4KCC4bIP9MMpaiYgNrOQhFQPkBmGjRokW
+         3X6BykKbYYahsAI5plZs/KFictnM2XH2RsXR9h+2V7P0p0IEj5pepeNYx1Univ3YEWBh
+         aI4YQxRwpI67f4dqP8N/fVVmWwW9OnpOrVODDhFhA0xTYVFjM5m9jVPS43jmMPNHF7GK
+         LXtzAl1mRNmhsWihINUQ99cS1cP6k5LaXbvgH6QhXFDEIUO17EccD11Ty6cns3RWEGOv
+         /+26chX/ckWuBDuifApu8obtZfqoa43wL/A2l9eV8VHBAPe/JEDm219pzZUqjTXMUAJx
+         cCgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bOyztbvPs1WDB8t01stjKvIzsOPGX3DvWoR6Ee1uwQc=;
+        b=U6kvSdzZtwBKienCGuBbwbGRru/xbFnq34sPx49Uy1wAn2aNgUNuRSCUDhuHCViwOZ
+         IMiJAZfOGgRquWG11Y3cnZ8y8+r9DvaZNWhLKE8vw36me21gDrUL0EhhLgBnMCDaXqPP
+         fBOtHRm9yQ3vSb/9PFW0/bHw3KWn12WejnEkRo1Yi7/T/hGsGSnd+6vpFT7DRce9F1c8
+         lH3LgdIN+9Cse5nZSyCIIwu1xdM1krCOl2kAq4OJ+cxjRvIX2UcePke3tyVRe2Kn+dNU
+         Ukm+ueX5B1FEjwKuvRjxBEQzbqCvxP5bNqgcmf3u1GOUoYs/GQpGqlrVKXdc/xJQGv+a
+         ZP/g==
+X-Gm-Message-State: APjAAAX8mjjsSRgmmHLrdIpA22UM2EcctdYbX8g/fZlw7PmIgRI/rPw/
+        iymSUgEhhab6Ll43v2gmTKx9yg==
+X-Google-Smtp-Source: APXvYqxGUcuSuIClvixbgN9gLXOTvyO3R0mzzD6sgGP6Q3xuNSaSO2BKh070XvCt1tlB0INxrIp12g==
+X-Received: by 2002:a7b:cb85:: with SMTP id m5mr1000010wmi.85.1558726922720;
+        Fri, 24 May 2019 12:42:02 -0700 (PDT)
+Received: from [192.168.1.2] ([194.53.186.20])
+        by smtp.gmail.com with ESMTPSA id h8sm7297149wmf.5.2019.05.24.12.42.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2019 12:42:02 -0700 (PDT)
+Subject: Re: [PATCH v2 bpf-next 10/12] bpftool: add C output format option to
+ btf dump subcommand
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+References: <20190523204222.3998365-1-andriin@fb.com>
+ <20190523204222.3998365-11-andriin@fb.com>
+ <eb690c2d-14d4-9c6f-2138-44f8cd027860@netronome.com>
+ <CAEf4Bza9ikV+SnBOE-h8J7ggw--1M3L8ak-VQ6-RxO71x0YUhw@mail.gmail.com>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Message-ID: <72fbdb59-4b3b-0e7f-20e1-2ced103fdc46@netronome.com>
+Date:   Fri, 24 May 2019 20:42:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190524162229.9185-1-linus.walleij@linaro.org>
-In-Reply-To: <20190524162229.9185-1-linus.walleij@linaro.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 24 May 2019 14:41:36 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+bZsJ+SBiJa2hzXU9RkTNBhDk_Uv_Fk6V6DqRGh-xPRg@mail.gmail.com>
-Message-ID: <CAL_Jsq+bZsJ+SBiJa2hzXU9RkTNBhDk_Uv_Fk6V6DqRGh-xPRg@mail.gmail.com>
-Subject: Re: [PATCH 7/8] net: ethernet: ixp4xx: Add DT bindings
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Krzysztof Halasa <khalasa@piap.pl>, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAEf4Bza9ikV+SnBOE-h8J7ggw--1M3L8ak-VQ6-RxO71x0YUhw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 11:22 AM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> This adds device tree bindings for the IXP4xx ethernet.
->
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  .../bindings/net/intel,ixp4xx-ethernet.yaml   | 53 +++++++++++++++++++
->  1 file changed, 53 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
->
-> diff --git a/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
-> new file mode 100644
-> index 000000000000..4575a7e5aa4a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
-> @@ -0,0 +1,53 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +# Copyright 2018 Linaro Ltd.
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/net/intel-ixp4xx-ethernet.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Intel IXP4xx ethernet
-> +
-> +maintainers:
-> +  - Linus Walleij <linus.walleij@linaro.org>
-> +
-> +description: |
-> +  The Intel IXP4xx ethernet makes use of the IXP4xx NPE (Network
-> +  Processing Engine) and the IXP4xx Queue Mangager to process
-> +  the ethernet frames. It can optionally contain an MDIO bus to
-> +  talk to PHYs.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +        - const: intel,ixp4xx-ethernet
+2019-05-24 10:14 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> On Fri, May 24, 2019 at 2:14 AM Quentin Monnet
+> <quentin.monnet@netronome.com> wrote:
+>>
+>> Hi Andrii,
+>>
+>> Some nits inline, nothing blocking though.
+>>
+>> 2019-05-23 13:42 UTC-0700 ~ Andrii Nakryiko <andriin@fb.com>
+>>> Utilize new libbpf's btf_dump API to emit BTF as a C definitions.
+>>>
+>>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>>> ---
+>>>  tools/bpf/bpftool/btf.c | 74 +++++++++++++++++++++++++++++++++++++++--
+>>>  1 file changed, 72 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+>>> index a22ef6587ebe..1cdbfad42b38 100644
+>>> --- a/tools/bpf/bpftool/btf.c
+>>> +++ b/tools/bpf/bpftool/btf.c
+>>> @@ -340,11 +340,48 @@ static int dump_btf_raw(const struct btf *btf,
+>>>       return 0;
+>>>  }
+>>>
+>>> +static void btf_dump_printf(void *ctx, const char *fmt, va_list args)
+>>
+>> Nit: This function could have a printf attribute ("__printf(2, 0)").
+> 
+> added, though I don't think it matters as it's only used as a callback function.
 
-You can drop the oneOf and items.
+Thanks. Yes, true... But the attribute does not hurt, and we have it
+case it changes in the future and the function is reused. Ok, unlikely,
+but...
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +    description: Ethernet MMIO address range
-> +
-> +  queue-rx:
-> +    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-> +    maxItems: 1
+> 
+>>
+>>> +{
+>>> +     vfprintf(stdout, fmt, args);
+>>> +}
+>>> +
 
-This doesn't actually do what you think it is doing. A $ref plus
-additional constraints need to be under an 'allOf' list.
 
-> +    description: phandle to the RX queue on the NPE
+>>> @@ -431,6 +468,29 @@ static int do_dump(int argc, char **argv)
+>>>               goto done;
+>>>       }
+>>>
+>>> +     while (argc) {
+>>> +             if (is_prefix(*argv, "format")) {
+>>> +                     NEXT_ARG();
+>>> +                     if (argc < 1) {
+>>> +                             p_err("expecting value for 'format' option\n");
+>>> +                             goto done;
+>>> +                     }
+>>> +                     if (strcmp(*argv, "c") == 0) {
+>>> +                             dump_c = true;
+>>> +                     } else if (strcmp(*argv, "raw") == 0) {
+>>
+>> Do you think we could use is_prefix() instead of strcmp() here?
+> 
+> So I considered it, and then decided against it, though I can still be
+> convinced otherwise. Right now we have raw and c, but let's say we add
+> rust as an option. r will become ambiguous, but actually will be
+> resolved to whatever we check first: either raw or rust, which is not
+> great. So given that those format specifiers will tend to be short, I
+> decided it's ok to require to specify them fully. Does it make sense?
 
-But this is a phandle plus 1 cell, right?
+It does make sense. I thought about that too. I think I would add prefix
+handling anyway, especially because "raw" is the default so it makes
+sense defaulting to it in case there is a collision in the future. This
+is what happens already between "bpftool prog" and "bpftool perf". But I
+don't really mind, so ok, let's keep the full keyword for now if you prefer.
 
-- allOf:
-    - $ref: '/schemas/types.yaml#/definitions/phandle-array'
-    - items:
-        - items:
-            - description: phandle to the RX queue on the NPE
-            - description: whatever the cell contains
-              enum: [ 1, 2, 3, 4 ] # any constraints you can put on the cell
+> 
+>>
+>>> +                             dump_c = false;
+>>> +                     } else {
+>>> +                             p_err("unrecognized format specifier: '%s'",
+>>> +                                   *argv);
+>>
+>> Would it be worth reminding the user about the valid specifiers in that
+>> message? (But then we already have it in do_help(), so maybe not.)
+> 
+> Added possible options to the message.
 
-This implicitly says you have 1 of a phandle + 1 cell.
-
-I need to add this to example-schema.yaml...
-
-> +
-> +  queue-txready:
-> +    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-> +    maxItems: 1
-> +    description: phandle to the TX READY queue on the NPE
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - queue-rx
-> +  - queue-txready
-> +
-> +examples:
-> +  - |
-> +    ethernet@c8009000 {
-> +        compatible = "intel,ixp4xx-ethernet";
-> +        reg = <0xc8009000 0x1000>;
-> +        status = "disabled";
-
-Don't show status in examples.
-
-> +        queue-rx = <&qmgr 3>;
-> +        queue-txready = <&qmgr 20>;
-> +    };
-> --
-> 2.20.1
->
+Cool, thanks!
