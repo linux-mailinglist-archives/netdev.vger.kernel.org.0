@@ -2,231 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 555F22A07D
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 23:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55F0F2A088
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 23:41:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404297AbfEXVja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 17:39:30 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52390 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404266AbfEXVj3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 17:39:29 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hUHuQ-0001BJ-W2; Fri, 24 May 2019 23:39:27 +0200
-Received: from [178.197.249.12] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hUHuQ-000NbE-Q3; Fri, 24 May 2019 23:39:26 +0200
-Subject: Re: [PATCH bpf-next v5 1/3] bpf: implement bpf_send_signal() helper
-To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@fb.com>, kernel-team@fb.com,
-        Peter Zijlstra <peterz@infradead.org>
-References: <20190523214745.854300-1-yhs@fb.com>
- <20190523214745.854355-1-yhs@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <54257f88-b088-2330-ba49-a78ce06d08bf@iogearbox.net>
-Date:   Fri, 24 May 2019 23:39:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
-MIME-Version: 1.0
-In-Reply-To: <20190523214745.854355-1-yhs@fb.com>
-Content-Type: text/plain; charset=utf-8
+        id S2404318AbfEXVlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 17:41:04 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:48918 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2404277AbfEXVlD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 17:41:03 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4OLbehw010636;
+        Fri, 24 May 2019 14:40:43 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=833M6gQ2Lc6X7v1EvYyqYf2ze/A0atFyhkbjTieKZoY=;
+ b=AK5XWV5G4EOoxW13QnMyCxFvplkw89yIBF8aaWwGNHUkB/h/YN/r3hqiU5seg7efJCvJ
+ eNNLoxohr6OGJDwjdpsziYsBkDKIwuKsGXEek9C14sq9b48iEUQjCTo+mpgbQHjVrFBO
+ 3tKMVGTPPlchFfdrifvYlY1iY/8vqqCZWs8= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2spk3u9841-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 24 May 2019 14:40:43 -0700
+Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
+ prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Fri, 24 May 2019 14:40:41 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Fri, 24 May 2019 14:40:41 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=833M6gQ2Lc6X7v1EvYyqYf2ze/A0atFyhkbjTieKZoY=;
+ b=qSIuk9ZG7+33t1+eALaCAnwb3/BeLYrYju9ZRKg6Ep9PrY+XHSI3gYgPgWyK9xhWZ9qv399AUOiopPgPr7C56vlb2LFzOr5uzWvbREfEpOFvC0aFmygiHf5Jhuewcbz2b9wOW4sfJh4kTPYElFoQNN4j4igSAXM4hNEGF9PzS8U=
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com (20.179.156.24) by
+ BYAPR15MB2839.namprd15.prod.outlook.com (20.178.206.24) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.15; Fri, 24 May 2019 21:40:39 +0000
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::d4f6:b485:69ee:fd9a]) by BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::d4f6:b485:69ee:fd9a%7]) with mapi id 15.20.1922.018; Fri, 24 May 2019
+ 21:40:39 +0000
+From:   Roman Gushchin <guro@fb.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tejun Heo <tj@kernel.org>, Kernel Team <Kernel-team@fb.com>,
+        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        "Yonghong Song" <yhs@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 bpf-next 0/4] cgroup bpf auto-detachment
+Thread-Topic: [PATCH v3 bpf-next 0/4] cgroup bpf auto-detachment
+Thread-Index: AQHVEaBBRG5VueSSb0OqGPP4SAddC6Z6xP6AgAAKYwA=
+Date:   Fri, 24 May 2019 21:40:39 +0000
+Message-ID: <20190524214032.GA15067@castle>
+References: <20190523194532.2376233-1-guro@fb.com>
+ <20190524210321.tzpt7ilaasaagtou@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20190524210321.tzpt7ilaasaagtou@ast-mbp.dhcp.thefacebook.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25459/Fri May 24 09:59:21 2019)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR22CA0026.namprd22.prod.outlook.com
+ (2603:10b6:300:69::12) To BYAPR15MB2631.namprd15.prod.outlook.com
+ (2603:10b6:a03:152::24)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::b702]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 550932dd-bd39-4835-1407-08d6e09076be
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BYAPR15MB2839;
+x-ms-traffictypediagnostic: BYAPR15MB2839:
+x-microsoft-antispam-prvs: <BYAPR15MB2839EB58CB8CCD4523441649BE020@BYAPR15MB2839.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0047BC5ADE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(396003)(346002)(136003)(376002)(39860400002)(366004)(199004)(189003)(46003)(6916009)(11346002)(14454004)(5660300002)(76176011)(446003)(102836004)(33656002)(486006)(478600001)(386003)(68736007)(33716001)(25786009)(6506007)(66556008)(66476007)(66446008)(66946007)(64756008)(305945005)(9686003)(6512007)(1076003)(73956011)(6486002)(229853002)(256004)(14444005)(5024004)(186003)(71200400001)(316002)(71190400001)(8676002)(7736002)(53936002)(6246003)(476003)(2906002)(6436002)(4326008)(81156014)(81166006)(99286004)(8936002)(52116002)(86362001)(6116002)(54906003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2839;H:BYAPR15MB2631.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: RGlk/k4wjY1EuEZijMOvBg4nfI9BvBJ2rhQO0ySL7lxqMRIwRKmJZudDQQ4HaQXSm5dUKYKQH2sDGnDdltyysb4Hs6fAC+PctQQlNhyvfdfqaSyfbIi/GngKRBQJnEqiIbBirVfvNEPsAMWoDlNu3dwiRsvAGCfZVOnAawyidP4pA/OSDYwbBmS/AQPcdFaPBa2uYNYWCSjorwLxLvte5FVD6XIVtPtmC13NKy+E0tU885ibgUpuMmD9VvApKn6m3VKT3oRf+X/Q9XNJ9P1LZ+MKOVUWOyaato+vL+qEN1yGZE+pPkyN1P4uX7Z/NqRg1cMQeuRUESOc20j8F8J+Qu2VpFgxwT9t9x3m5W5KjIl0k06ntUMLIeR+WTl6mo7USJn69dsOaXnFYi3QbHLVwPSkFGXQCm1A18Pn5EiDodU=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4B9034D8D4595A4EAB3AEF55618767B8@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 550932dd-bd39-4835-1407-08d6e09076be
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 May 2019 21:40:39.4543
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: guro@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2839
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-24_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905240141
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/23/2019 11:47 PM, Yonghong Song wrote:
-> This patch tries to solve the following specific use case.
-> 
-> Currently, bpf program can already collect stack traces
-> through kernel function get_perf_callchain()
-> when certain events happens (e.g., cache miss counter or
-> cpu clock counter overflows). But such stack traces are
-> not enough for jitted programs, e.g., hhvm (jited php).
-> To get real stack trace, jit engine internal data structures
-> need to be traversed in order to get the real user functions.
-> 
-> bpf program itself may not be the best place to traverse
-> the jit engine as the traversing logic could be complex and
-> it is not a stable interface either.
-> 
-> Instead, hhvm implements a signal handler,
-> e.g. for SIGALARM, and a set of program locations which
-> it can dump stack traces. When it receives a signal, it will
-> dump the stack in next such program location.
-> 
-> Such a mechanism can be implemented in the following way:
->   . a perf ring buffer is created between bpf program
->     and tracing app.
->   . once a particular event happens, bpf program writes
->     to the ring buffer and the tracing app gets notified.
->   . the tracing app sends a signal SIGALARM to the hhvm.
-> 
-> But this method could have large delays and causing profiling
-> results skewed.
-> 
-> This patch implements bpf_send_signal() helper to send
-> a signal to hhvm in real time, resulting in intended stack traces.
-> 
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  include/uapi/linux/bpf.h | 17 +++++++++-
->  kernel/trace/bpf_trace.c | 72 ++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 88 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 63e0cf66f01a..68d4470523a0 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -2672,6 +2672,20 @@ union bpf_attr {
->   *		0 on success.
->   *
->   *		**-ENOENT** if the bpf-local-storage cannot be found.
-> + *
-> + * int bpf_send_signal(u32 sig)
-> + *	Description
-> + *		Send signal *sig* to the current task.
-> + *	Return
-> + *		0 on success or successfully queued.
-> + *
-> + *		**-EBUSY** if work queue under nmi is full.
-> + *
-> + *		**-EINVAL** if *sig* is invalid.
-> + *
-> + *		**-EPERM** if no permission to send the *sig*.
-> + *
-> + *		**-EAGAIN** if bpf program can try again.
->   */
->  #define __BPF_FUNC_MAPPER(FN)		\
->  	FN(unspec),			\
-> @@ -2782,7 +2796,8 @@ union bpf_attr {
->  	FN(strtol),			\
->  	FN(strtoul),			\
->  	FN(sk_storage_get),		\
-> -	FN(sk_storage_delete),
-> +	FN(sk_storage_delete),		\
-> +	FN(send_signal),
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index f92d6ad5e080..70029eafc71f 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -567,6 +567,63 @@ static const struct bpf_func_proto bpf_probe_read_str_proto = {
->  	.arg3_type	= ARG_ANYTHING,
->  };
->  
-> +struct send_signal_irq_work {
-> +	struct irq_work irq_work;
-> +	struct task_struct *task;
-> +	u32 sig;
-> +};
-> +
-> +static DEFINE_PER_CPU(struct send_signal_irq_work, send_signal_work);
-> +
-> +static void do_bpf_send_signal(struct irq_work *entry)
-> +{
-> +	struct send_signal_irq_work *work;
-> +
-> +	work = container_of(entry, struct send_signal_irq_work, irq_work);
-> +	group_send_sig_info(work->sig, SEND_SIG_PRIV, work->task, PIDTYPE_TGID);
-> +}
-> +
-> +BPF_CALL_1(bpf_send_signal, u32, sig)
-> +{
-> +	struct send_signal_irq_work *work = NULL;
-> +
-> +	/* Similar to bpf_probe_write_user, task needs to be
-> +	 * in a sound condition and kernel memory access be
-> +	 * permitted in order to send signal to the current
-> +	 * task.
-> +	 */
-> +	if (unlikely(current->flags & (PF_KTHREAD | PF_EXITING)))
-> +		return -EPERM;
-> +	if (unlikely(uaccess_kernel()))
-> +		return -EPERM;
-> +	if (unlikely(!nmi_uaccess_okay()))
-> +		return -EPERM;
-> +
-> +	if (in_nmi()) {
-> +		work = this_cpu_ptr(&send_signal_work);
-> +		if (work->irq_work.flags & IRQ_WORK_BUSY)
+On Fri, May 24, 2019 at 02:03:23PM -0700, Alexei Starovoitov wrote:
+> On Thu, May 23, 2019 at 12:45:28PM -0700, Roman Gushchin wrote:
+> > This patchset implements a cgroup bpf auto-detachment functionality:
+> > bpf programs are detached as soon as possible after removal of the
+> > cgroup, without waiting for the release of all associated resources.
+>=20
+> The idea looks great, but doesn't quite work:
+>=20
+> $ ./test_cgroup_attach
+> #override:PASS
+> [   66.475219] BUG: sleeping function called from invalid context at ../i=
+nclude/linux/percpu-rwsem.h:34
+> [   66.476095] in_atomic(): 1, irqs_disabled(): 0, pid: 21, name: ksoftir=
+qd/2
+> [   66.476706] CPU: 2 PID: 21 Comm: ksoftirqd/2 Not tainted 5.2.0-rc1-002=
+11-g1861420d0162 #1564
+> [   66.477595] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S 1.11.0-2.el7 04/01/2014
+> [   66.478360] Call Trace:
+> [   66.478591]  dump_stack+0x5b/0x8b
+> [   66.478892]  ___might_sleep+0x22f/0x290
+> [   66.479230]  cpus_read_lock+0x18/0x50
+> [   66.479550]  static_key_slow_dec+0x41/0x70
+> [   66.479914]  cgroup_bpf_release+0x1a6/0x400
+> [   66.480285]  percpu_ref_switch_to_atomic_rcu+0x203/0x330
+> [   66.480754]  rcu_core+0x475/0xcc0
+> [   66.481047]  ? switch_mm_irqs_off+0x684/0xa40
+> [   66.481422]  ? rcu_note_context_switch+0x260/0x260
+> [   66.481842]  __do_softirq+0x1cf/0x5ff
+> [   66.482174]  ? takeover_tasklets+0x5f0/0x5f0
+> [   66.482542]  ? smpboot_thread_fn+0xab/0x780
+> [   66.482911]  run_ksoftirqd+0x1a/0x40
+> [   66.483225]  smpboot_thread_fn+0x3ad/0x780
+> [   66.483583]  ? sort_range+0x20/0x20
+> [   66.483894]  ? __kthread_parkme+0xb0/0x190
+> [   66.484253]  ? sort_range+0x20/0x20
+> [   66.484562]  ? sort_range+0x20/0x20
+> [   66.484878]  kthread+0x2e2/0x3e0
+> [   66.485166]  ? kthread_create_worker_on_cpu+0xb0/0xb0
+> [   66.485620]  ret_from_fork+0x1f/0x30
+>=20
+> Same test runs fine before the patches.
+>=20
 
-Given here and in stackmap are the only two users outside of kernel/irq_work.c,
-it may probably be good to add a small helper to include/linux/irq_work.h and
-use it for both.
+Ouch, static_branch_dec() might block, so it's not possible to call it from
+percpu ref counter release callback. It's not what I expected, tbh.
 
-Perhaps something like ...
-
-static inline bool irq_work_busy(struct irq_work *work)
-{
-	return READ_ONCE(work->flags) & IRQ_WORK_BUSY;
-}
-
-> +			return -EBUSY;
-> +
-> +		/* Add the current task, which is the target of sending signal,
-> +		 * to the irq_work. The current task may change when queued
-> +		 * irq works get executed.
-> +		 */
-> +		work->task = current;
-> +		work->sig = sig;
-> +		irq_work_queue(&work->irq_work);
-> +		return 0;
-> +	}
-> +
-> +	return group_send_sig_info(sig, SEND_SIG_PRIV, current, PIDTYPE_TGID);
-> +}
-> +
-> +static const struct bpf_func_proto bpf_send_signal_proto = {
-> +	.func		= bpf_send_signal,
-> +	.gpl_only	= false,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type	= ARG_ANYTHING,
-> +};
-> +
->  static const struct bpf_func_proto *
->  tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  {
-> @@ -617,6 +674,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  	case BPF_FUNC_get_current_cgroup_id:
->  		return &bpf_get_current_cgroup_id_proto;
->  #endif
-> +	case BPF_FUNC_send_signal:
-> +		return &bpf_send_signal_proto;
->  	default:
->  		return NULL;
->  	}
-> @@ -1343,5 +1402,18 @@ static int __init bpf_event_init(void)
->  	return 0;
->  }
->  
-> +static int __init send_signal_irq_work_init(void)
-> +{
-> +	int cpu;
-> +	struct send_signal_irq_work *work;
-> +
-> +	for_each_possible_cpu(cpu) {
-> +		work = per_cpu_ptr(&send_signal_work, cpu);
-> +		init_irq_work(&work->irq_work, do_bpf_send_signal);
-> +	}
-> +	return 0;
-> +}
-> +
->  fs_initcall(bpf_event_init);
-> +subsys_initcall(send_signal_irq_work_init);
->  #endif /* CONFIG_MODULES */
-> 
-
+Good catch, thanks!
