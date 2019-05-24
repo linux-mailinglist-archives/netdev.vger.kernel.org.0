@@ -2,118 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4900928EF2
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 03:57:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F84028EF4
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 03:58:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387867AbfEXB5m convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 23 May 2019 21:57:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52688 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731617AbfEXB5m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 21:57:42 -0400
-Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 482142177E;
-        Fri, 24 May 2019 01:57:39 +0000 (UTC)
-Date:   Thu, 23 May 2019 21:57:37 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Kris Van Hees <kris.van.hees@oracle.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org, acme@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, peterz@infradead.org
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-Message-ID: <20190523215737.6601ab7c@oasis.local.home>
-In-Reply-To: <20190524003148.pk7qbxn7ysievhym@ast-mbp.dhcp.thefacebook.com>
-References: <20190521184137.GH2422@oracle.com>
-        <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
-        <20190521173618.2ebe8c1f@gandalf.local.home>
-        <20190521214325.rr7emn5z3b7wqiiy@ast-mbp.dhcp.thefacebook.com>
-        <20190521174757.74ec8937@gandalf.local.home>
-        <20190522052327.GN2422@oracle.com>
-        <20190522205329.uu26oq2saj56og5m@ast-mbp.dhcp.thefacebook.com>
-        <20190523054610.GR2422@oracle.com>
-        <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
-        <20190523190243.54221053@gandalf.local.home>
-        <20190524003148.pk7qbxn7ysievhym@ast-mbp.dhcp.thefacebook.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S2388449AbfEXB6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 21:58:01 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:48170 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388307AbfEXB6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 21:58:01 -0400
+Received: by mail-io1-f70.google.com with SMTP id l6so6310539ioc.15
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 18:58:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=955OHyvWfWzvm1GRTftGUzdKB7MA3Z4tCp1YPcfjoEE=;
+        b=T+Eq6XxnDzT7gzsz6JF/vH/C0RgNm7rN1uA2S8JEA7H9xoAAAkdB4k85R06cGTnWB2
+         e5no8/suynss+1wNunzF5mfZ8WpkTcyv+Bao6Hfva/Bkg1YCXbpWsqrOxIhqSFI8X103
+         VNxQ/MOz9vvhQ2UMadM4hpIpzTtJ9uuUT6iTzddikUzkv4xYudS/JPzjiFUMQY0ZnE+r
+         D45qTbCQAuRXQ6624j78M2Jc8dseAxHiPY01+NVnHSKszpJOf7oggdZeymfAVXw8pv1m
+         V7nN0omZr4JP803LHZvAGq3Yojcb+9M2pj2ZP6gjqlZAGAFHhCG+jkDd5n5grDzuYym1
+         pTDA==
+X-Gm-Message-State: APjAAAW6fO2c5rm4iMRDCUY2FiPQYo1mgChmIo1gYwA5shx1xso5GXmO
+        1+RPRVqMwBbUDVdk0Ln4EKtMz25bWqd8V4Fca+mtniPU1gk2
+X-Google-Smtp-Source: APXvYqwaoXSCXsvV1QYH0vRAsKbXKMU3okraTaYo4SkwkMm0SrYG4erFBFg8bbcy+0lpOO4en1vA0texEuQay7Fz+tlfQjlA6QXh
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8BIT
+X-Received: by 2002:a24:d845:: with SMTP id b66mr16266145itg.94.1558663080569;
+ Thu, 23 May 2019 18:58:00 -0700 (PDT)
+Date:   Thu, 23 May 2019 18:58:00 -0700
+In-Reply-To: <000000000000af6c020589247060@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003df61e05899887d3@google.com>
+Subject: Re: BUG: spinlock bad magic in rhashtable_walk_enter
+From:   syzbot <syzbot+01dd5c4b3c34a5cf9308@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, hujunwei4@huawei.com, jon.maloy@ericsson.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, wangxiaogang3@huawei.com,
+        ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 May 2019 17:31:50 -0700
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+syzbot has bisected this bug to:
 
+commit 7e27e8d6130c5e88fac9ddec4249f7f2337fe7f8
+Author: Junwei Hu <hujunwei4@huawei.com>
+Date:   Thu May 16 02:51:15 2019 +0000
 
-> > Now from what I'm reading, it seams that the Dtrace layer may be
-> > abstracting out fields from the kernel. This is actually something I
-> > have been thinking about to solve the "tracepoint abi" issue. There's
-> > usually basic ideas that happen. An interrupt goes off, there's a
-> > handler, etc. We could abstract that out that we trace when an
-> > interrupt goes off and the handler happens, and record the vector
-> > number, and/or what device it was for. We have tracepoints in the
-> > kernel that do this, but they do depend a bit on the implementation.
-> > Now, if we could get a layer that abstracts this information away from
-> > the implementation, then I think that's a *good* thing.  
-> 
-> I don't like this deferred irq idea at all.
+     tipc: switch order of device registration to fix a crash
 
-What do you mean deferred?
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17c22c72a00000
+start commit:   510e2ced ipv6: fix src addr routing with the exception table
+git tree:       net
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=14222c72a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10222c72a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=82f0809e8f0a8c87
+dashboard link: https://syzkaller.appspot.com/bug?extid=01dd5c4b3c34a5cf9308
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16b6373ca00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1251e73ca00000
 
-> Abstracting details from the users is _never_ a good idea.
+Reported-by: syzbot+01dd5c4b3c34a5cf9308@syzkaller.appspotmail.com
+Fixes: 7e27e8d6130c ("tipc: switch order of device registration to fix a  
+crash")
 
-Really? Most everything we do is to abstract details from the user. The
-key is to make the abstraction more meaningful than the raw data.
-
-> A ton of people use bcc scripts and bpftrace because they want those details.
-> They need to know what kernel is doing to make better decisions.
-> Delaying irq record is the opposite.
-
-I never said anything about delaying the record. Just getting the
-information that is needed.
-
-> > 
-> > I wish that was totally true, but tracepoints *can* be an abi. I had
-> > code reverted because powertop required one to be a specific
-> > format. To this day, the wakeup event has a "success" field that
-> > writes in a hardcoded "1", because there's tools that depend on it,
-> > and they only work if there's a success field and the value is 1.  
-> 
-> I really think that you should put powertop nightmares to rest.
-> That was long ago. The kernel is different now.
-
-Is it?
-
-> Linus made it clear several times that it is ok to change _all_
-> tracepoints. Period. Some maintainers somehow still don't believe
-> that they can do it.
-
-From what I remember him saying several times, is that you can change
-all tracepoints, but if it breaks a tool that is useful, then that
-change will get reverted. He will allow you to go and fix that tool and
-bring back the change (which was the solution to powertop).
-
-> 
-> Some tracepoints are used more than others and more people will
-> complain: "ohh I need to change my script" when that tracepoint
-> changes. But the kernel development is not going to be hampered by a
-> tracepoint. No matter how widespread its usage in scripts.
-
-That's because we'll treat bpf (and Dtrace) scripts like modules (no
-abi), at least we better. But if there's a tool that doesn't use the
-script and reads the tracepoint directly via perf, then that's a
-different story.
-
--- Steve
-
-> 
-> Sometimes that pain of change can be mitigated a bit. Like that
-> 'success' field example, but tracepoints still change.
-> Meaningful value before vs hardcoded constant is still a breakage for
-> some scripts.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
