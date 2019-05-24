@@ -2,222 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B62E29773
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 13:41:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2129D2977A
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 13:42:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391204AbfEXLkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 07:40:55 -0400
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:53618 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390743AbfEXLky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 07:40:54 -0400
-Received-SPF: Pass (esa4.microchip.iphmx.com: domain of
-  Joergen.Andreasen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
-  envelope-from="Joergen.Andreasen@microchip.com";
-  x-sender="Joergen.Andreasen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa4.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
-  envelope-from="Joergen.Andreasen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa4.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Joergen.Andreasen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-X-IronPort-AV: E=Sophos;i="5.60,506,1549954800"; 
-   d="scan'208";a="34319525"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 24 May 2019 04:40:53 -0700
-Received: from localhost (10.10.76.4) by chn-sv-exch02.mchp-main.com
- (10.10.76.38) with Microsoft SMTP Server id 14.3.352.0; Fri, 24 May 2019
- 04:40:53 -0700
-Date:   Fri, 24 May 2019 13:40:52 +0200
-From:   Joergen Andreasen <joergen.andreasen@microchip.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 1/1] net: mscc: ocelot: Implement port
- policers via tc command
-Message-ID: <20190524114050.rznhisqcgdm5c2e6@soft-dev16>
-References: <20190502094029.22526-1-joergen.andreasen@microchip.com>
- <20190523104939.2721-1-joergen.andreasen@microchip.com>
- <20190523104939.2721-2-joergen.andreasen@microchip.com>
- <20190523115630.7710cc49@cakuba.netronome.com>
+        id S2391246AbfEXLlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 07:41:46 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:32847 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391124AbfEXLlp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 07:41:45 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 459PbR3VYDz1rLl7;
+        Fri, 24 May 2019 13:41:39 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 459PbR2c6Vz1qql9;
+        Fri, 24 May 2019 13:41:39 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id 1kzboJ2zfoOz; Fri, 24 May 2019 13:41:38 +0200 (CEST)
+X-Auth-Info: yx3UXn3lQuesaTfM3b8G4otNXag8KTXHrLsc8ru6ARY=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Fri, 24 May 2019 13:41:38 +0200 (CEST)
+Subject: Re: [PATCH V5] net: phy: tja11xx: Add TJA11xx PHY driver
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+References: <20190517235123.32261-1-marex@denx.de>
+ <2c30c9c9-1223-ad91-2837-038e0ee5ae23@gmail.com>
+ <CA+h21hq6OW2fX_m3rGvhuumhwCj7MM+VjVH_G4RO85hgGa4p7Q@mail.gmail.com>
+From:   Marek Vasut <marex@denx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <e7539c77-72ea-5c7f-16e3-27840b040702@denx.de>
+Date:   Fri, 24 May 2019 13:41:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20190523115630.7710cc49@cakuba.netronome.com>
-User-Agent: NeoMutt/20171215
+In-Reply-To: <CA+h21hq6OW2fX_m3rGvhuumhwCj7MM+VjVH_G4RO85hgGa4p7Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+On 5/23/19 9:48 PM, Vladimir Oltean wrote:
+> On Thu, 23 May 2019 at 05:39, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>>
+>> +Vladimir,
+>>
+>> On 5/17/2019 4:51 PM, Marek Vasut wrote:
+>>> Add driver for the NXP TJA1100 and TJA1101 PHYs. These PHYs are special
+>>> BroadRReach 100BaseT1 PHYs used in automotive.
+>>>
+>>> Signed-off-by: Marek Vasut <marex@denx.de>
+>>> Cc: Andrew Lunn <andrew@lunn.ch>
+>>> Cc: Florian Fainelli <f.fainelli@gmail.com>
+>>> Cc: Guenter Roeck <linux@roeck-us.net>
+>>> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+>>> Cc: Jean Delvare <jdelvare@suse.com>
+>>> Cc: linux-hwmon@vger.kernel.org
+>>
+>> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+>> --
+>> Florian
+> 
+> My only feedback is: keep up the good work!
 
-The 05/23/2019 11:56, Jakub Kicinski wrote:
-> External E-Mail
-> 
-> 
-> On Thu, 23 May 2019 12:49:39 +0200, Joergen Andreasen wrote:
-> > Hardware offload of matchall classifier and police action are now
-> > supported via the tc command.
-> > Supported police parameters are: rate and burst.
-> > 
-> > Example:
-> > 
-> > Add:
-> > tc qdisc add dev eth3 handle ffff: ingress
-> > tc filter add dev eth3 parent ffff: prio 1 handle 2	\
-> > 	matchall skip_sw				\
-> > 	action police rate 100Mbit burst 10000
-> > 
-> > Show:
-> > tc -s -d qdisc show dev eth3
-> > tc -s -d filter show dev eth3 ingress
-> > 
-> > Delete:
-> > tc filter del dev eth3 parent ffff: prio 1
-> > tc qdisc del dev eth3 handle ffff: ingress
-> > 
-> > Signed-off-by: Joergen Andreasen <joergen.andreasen@microchip.com>
-> 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> > index d715ef4fc92f..3ec7864d9dc8 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot.c
-> > @@ -943,6 +943,7 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
-> >  	.ndo_vlan_rx_kill_vid		= ocelot_vlan_rx_kill_vid,
-> >  	.ndo_set_features		= ocelot_set_features,
-> >  	.ndo_get_port_parent_id		= ocelot_get_port_parent_id,
-> > +	.ndo_setup_tc			= ocelot_setup_tc,
-> >  };
-> >  
-> >  static void ocelot_get_strings(struct net_device *netdev, u32 sset, u8 *data)
-> > @@ -1663,8 +1664,9 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
-> >  	dev->netdev_ops = &ocelot_port_netdev_ops;
-> >  	dev->ethtool_ops = &ocelot_ethtool_ops;
-> >  
-> > -	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS;
-> > -	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
-> > +	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS |
-> > +		NETIF_F_HW_TC;
-> > +	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_TC;
-> >  
-> >  	memcpy(dev->dev_addr, ocelot->base_mac, ETH_ALEN);
-> >  	dev->dev_addr[ETH_ALEN - 1] += port;
-> 
-> You need to add a check in set_features to make sure nobody clears the
-> NETIF_F_TC flag while something is offloaded, otherwise you will miss
-> the REMOVE callback (it will bounce from the
-> tc_cls_can_offload_and_chain0() check).
-
-I will add this check in v3
-
-> 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
-> > new file mode 100644
-> > index 000000000000..2412e0dbc267
-> > --- /dev/null
-> > +++ b/drivers/net/ethernet/mscc/ocelot_tc.c
-> > @@ -0,0 +1,164 @@
-> > +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> > +/* Microsemi Ocelot Switch TC driver
-> > + *
-> > + * Copyright (c) 2019 Microsemi Corporation
-> > + */
-> > +
-> > +#include "ocelot_tc.h"
-> > +#include "ocelot_police.h"
-> > +#include <net/pkt_cls.h>
-> > +
-> > +static int ocelot_setup_tc_cls_matchall(struct ocelot_port *port,
-> > +					struct tc_cls_matchall_offload *f,
-> > +					bool ingress)
-> > +{
-> > +	struct netlink_ext_ack *extack = f->common.extack;
-> > +	struct ocelot_policer pol = { 0 };
-> > +	struct flow_action_entry *action;
-> > +	int err;
-> > +
-> > +	netdev_dbg(port->dev, "%s: port %u command %d cookie %lu\n",
-> > +		   __func__, port->chip_port, f->command, f->cookie);
-> > +
-> > +	if (!ingress) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Only ingress is supported");
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	switch (f->command) {
-> > +	case TC_CLSMATCHALL_REPLACE:
-> > +		if (!flow_offload_has_one_action(&f->rule->action)) {
-> > +			NL_SET_ERR_MSG_MOD(extack,
-> > +					   "Only one action is supported");
-> > +			return -EOPNOTSUPP;
-> > +		}
-> > +
-> > +		action = &f->rule->action.entries[0];
-> > +
-> > +		if (action->id != FLOW_ACTION_POLICE) {
-> > +			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
-> > +			return -EOPNOTSUPP;
-> > +		}
-> 
-> Please also reject the offload if block is shared, as HW policer state
-> cannot be shared between ports, the way it is in SW.  You have to save
-> whether the block is shared or not at bind time, see:
-> 
-> d6787147e15d ("net/sched: remove block pointer from common offload structure")
-
-I will fix this in v3.
-
-> 
-> > +		if (port->tc.police_id && port->tc.police_id != f->cookie) {
-> > +			NL_SET_ERR_MSG_MOD(extack,
-> > +					   "Only one policer per port is supported\n");
-> > +			return -EEXIST;
-> > +		}
-> > +
-> > +		pol.rate = (u32)div_u64(action->police.rate_bytes_ps, 1000) * 8;
-> > +		pol.burst = (u32)div_u64(action->police.rate_bytes_ps *
-> > +					 PSCHED_NS2TICKS(action->police.burst),
-> > +					 PSCHED_TICKS_PER_SEC);
-> > +
-> > +		err = ocelot_port_policer_add(port, &pol);
-> > +		if (err) {
-> > +			NL_SET_ERR_MSG_MOD(extack, "Could not add policer\n");
-> > +			return err;
-> > +		}
-> > +
-> > +		port->tc.police_id = f->cookie;
-> > +		return 0;
-> > +	case TC_CLSMATCHALL_DESTROY:
-> > +		if (port->tc.police_id != f->cookie)
-> > +			return -ENOENT;
-> > +
-> > +		err = ocelot_port_policer_del(port);
-> > +		if (err) {
-> > +			NL_SET_ERR_MSG_MOD(extack,
-> > +					   "Could not delete policer\n");
-> > +			return err;
-> > +		}
-> > +		port->tc.police_id = 0;
-> > +		return 0;
-> > +	case TC_CLSMATCHALL_STATS: /* fall through */
-> > +	default:
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +}
-> 
+Well, it seems this patch is flagged in patchwork as "changes requested"
+. I don't know what changes are requested though :-(
 
 -- 
-Joergen Andreasen, Microchip
+Best regards,
+Marek Vasut
