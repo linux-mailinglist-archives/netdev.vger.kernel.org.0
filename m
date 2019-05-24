@@ -2,186 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D45BA28FCD
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 06:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 649E328FDE
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 06:18:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725981AbfEXEGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 00:06:37 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:42052 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfEXEGg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 00:06:36 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4O43pD0068348;
-        Fri, 24 May 2019 04:05:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=GCTsI00gkNvHBP4Xpk/j0wuaNXUl5LjVwQVHtGmjRyU=;
- b=ocHCDk5DdkOxbzHxWTr4+wIHXxwBq2vHM7kuECEQlftnbtOWhqdtE7Syft5Jsd5/MndE
- 64IG8H40SCsXKansF2xDHMW31I7x/Obutno8Zz+dSN/IjFp6NL3t3OnbTQWvt4S5YyFb
- SU5TbxBsCLvhMoIaGVkEXpQDxYZL+rKWJbW0clZj1D4vzt5O3l+Nbb2B5VRPSamV6QQ5
- bHTMzYF5uyIYLCJiGcoMnd5lieCnQexED7oaXJZlNtVQND2+v3crsn4oFb+O5sZVANYf
- iltccHN5E8Z40977hvVEg/5kzrBzMAg2tShTPRRnHcYmFwP4FJSryfH7EBTsMwC7tt0Q ug== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2130.oracle.com with ESMTP id 2smsk5pc4b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 May 2019 04:05:38 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4O43krk107841;
-        Fri, 24 May 2019 04:05:37 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 2smsgvvhcu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 24 May 2019 04:05:37 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x4O45alM113125;
-        Fri, 24 May 2019 04:05:36 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 2smsgvvhcq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 May 2019 04:05:36 +0000
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x4O45YEk025803;
-        Fri, 24 May 2019 04:05:34 GMT
-Received: from localhost (/10.159.211.99)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 24 May 2019 04:05:33 +0000
-Date:   Fri, 24 May 2019 00:05:27 -0400
-From:   Kris Van Hees <kris.van.hees@oracle.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Kris Van Hees <kris.van.hees@oracle.com>,
-        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org, acme@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, peterz@infradead.org
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-Message-ID: <20190524040527.GU2422@oracle.com>
-References: <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
- <20190521184137.GH2422@oracle.com>
- <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
- <20190521173618.2ebe8c1f@gandalf.local.home>
- <20190521214325.rr7emn5z3b7wqiiy@ast-mbp.dhcp.thefacebook.com>
- <20190521174757.74ec8937@gandalf.local.home>
- <20190522052327.GN2422@oracle.com>
- <20190522205329.uu26oq2saj56og5m@ast-mbp.dhcp.thefacebook.com>
- <20190523054610.GR2422@oracle.com>
- <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
+        id S1725864AbfEXERf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 00:17:35 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47176 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725828AbfEXERf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 May 2019 00:17:35 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 495873079B9F;
+        Fri, 24 May 2019 04:17:34 +0000 (UTC)
+Received: from [10.72.12.217] (ovpn-12-217.pek2.redhat.com [10.72.12.217])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2E02619724;
+        Fri, 24 May 2019 04:17:30 +0000 (UTC)
+Subject: Re: [PATCH v3 2/2] net: core: support XDP generic on stacked devices.
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "jesper.brouer@gmail.com" <jesper.brouer@gmail.com>
+Cc:     "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20190523175429.13302-1-sthemmin@microsoft.com>
+ <20190523175429.13302-3-sthemmin@microsoft.com>
+ <3dbe4e29bf1ec71809e9dd2b32ec16272957a4cd.camel@mellanox.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ebf12468-504c-fae7-b62d-2b6db47391f9@redhat.com>
+Date:   Fri, 24 May 2019 12:17:27 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9266 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1905240026
+In-Reply-To: <3dbe4e29bf1ec71809e9dd2b32ec16272957a4cd.camel@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 24 May 2019 04:17:34 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 02:13:31PM -0700, Alexei Starovoitov wrote:
-> On Thu, May 23, 2019 at 01:46:10AM -0400, Kris Van Hees wrote:
-> > 
-> > I think there is a difference between a solution and a good solution.  Adding
-> > a lot of knowledge in the userspace component about how things are imeplemented
-> > at the kernel level makes for a more fragile infrastructure and involves
-> > breaking down well established boundaries in DTrace that are part of the design
-> > specifically to ensure that userspace doesn't need to depend on such intimate
-> > knowledge.
-> 
-> argh. see more below. This is fundamental disagreement.
-> 
-> > > > Another advantage of being able to operate on a more abstract probe concept
-> > > > that is not tied to a specific probe type is that the userspace component does
-> > > > not need to know about the implementation details of the specific probes.
-> > > 
-> > > If that is indeed the case that dtrace is broken _by design_
-> > > and nothing on the kernel side can fix it.
-> > > 
-> > > bpf prog attached to NMI is running in NMI.
-> > > That is very different execution context vs kprobe.
-> > > kprobe execution context is also different from syscall.
-> > > 
-> > > The user writing the script has to be aware in what context
-> > > that script will be executing.
-> > 
-> > The design behind DTrace definitely recognizes that different types of probes
-> > operate in different ways and have different data associated with them.  That
-> > is why probes (in legacy DTrace) are managed by providers, one for each type
-> > of probe.  The providers handle the specifics of a probe type, and provide a
-> > generic probe API to the processing component of DTrace:
-> > 
-> >     SDT probes -----> SDT provider -------+
-> >                                           |
-> >     FBT probes -----> FBT provider -------+--> DTrace engine
-> >                                           |
-> >     syscall probes -> systrace provider --+
-> > 
-> > This means that the DTrace processing component can be implemented based on a
-> > generic probe concept, and the providers will take care of the specifics.  In
-> > that sense, it is similar to so many other parts of the kernel where a generic
-> > API is exposed so that higher level components don't need to know implementation
-> > details.
-> > 
-> > In DTrace, people write scripts based on UAPI-style interfaces and they don't
-> > have to concern themselves with e.g. knowing how to get the value of the 3rd
-> > argument that was passed by the firing probe.  All they need to know is that
-> > the probe will have a 3rd argument, and that the 3rd argument to *any* probe
-> > can be accessed as 'arg2' (or args[2] for typed arguments, if the provider is
-> > capable of providing that).  Different probes have different ways of passing
-> > arguments, and only the provider code for each probe type needs to know how
-> > to retrieve the argument values.
-> > 
-> > Does this help bring clarity to the reasons why an abstract (generic) probe
-> > concept is part of DTrace's design?
-> 
-> It actually sounds worse than I thought.
-> If dtrace script reads some kernel field it's considered to be uapi?! ouch.
-> It means dtrace development philosophy is incompatible with the linux kernel.
-> There is no way kernel is going to bend itself to make dtrace scripts
-> runnable if that means that all dtrace accessible fields become uapi.
 
-No, no, that is not at all what I am saying.  In DTrace, the particulars of
-how you get to e.g. probe arguments or current task information are not
-something that script writers need to concern themselves about.  Similar to
-how BPF contexts have a public (uapi) declaration and a kernel-level context
-declaration taht is used to actually implement accessing the data (using the
-is_valid_access and convert_ctx_access functions that prog types implement).
-DTrace exposes an abstract probe entity to script writers where they can
-access probe arguments as arg0 through arg9.  Nothing in the userspace needs
-to know how you obtain the value of those arguments.  So, scripts can be
-written for any kind of probe, and the only information that is used to
-verify programs is obtained from the abstract probe description (things like
-its unique id, number of arguments, and possible type information for each
-argument).  The knowledge of how to get to the value of the probe arguments
-is only known at the level of the kernel, so that when the implementation of
-the probe in the kernel is modified, the mapping from actual probe to abstract
-representation of the probe (in the kernel) can be modified along with it,
-and userspace won't even notice that anything changed.
+On 2019/5/24 上午3:19, Saeed Mahameed wrote:
+> On Thu, 2019-05-23 at 10:54 -0700, Stephen Hemminger wrote:
+>> When a device is stacked like (team, bonding, failsafe or netvsc) the
+>> XDP generic program for the parent device was not called.
+>>
+>> Move the call to XDP generic inside __netif_receive_skb_core where
+>> it can be done multiple times for stacked case.
+>>
+>> Suggested-by: Jiri Pirko <jiri@resnulli.us>
+>> Fixes: d445516966dc ("net: xdp: support xdp generic on virtual
+>> devices")
+>> Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
+>> ---
+>> v1 - call xdp_generic in netvsc handler
+>> v2 - do xdp_generic in generic rx handler processing
+>> v3 - move xdp_generic call inside the another pass loop
+>>
+>>   net/core/dev.c | 56 ++++++++++------------------------------------
+>> ----
+>>   1 file changed, 11 insertions(+), 45 deletions(-)
+>>
+>> diff --git a/net/core/dev.c b/net/core/dev.c
+>> index b6b8505cfb3e..696776e14d00 100644
+>> --- a/net/core/dev.c
+>> +++ b/net/core/dev.c
+>> @@ -4502,23 +4502,6 @@ static int netif_rx_internal(struct sk_buff
+>> *skb)
+>>   
+>>   	trace_netif_rx(skb);
+>>   
+>> -	if (static_branch_unlikely(&generic_xdp_needed_key)) {
+>> -		int ret;
+>> -
+>> -		preempt_disable();
+>> -		rcu_read_lock();
+>> -		ret = do_xdp_generic(rcu_dereference(skb->dev-
+>>> xdp_prog), skb);
+>> -		rcu_read_unlock();
+>> -		preempt_enable();
+>> -
+>> -		/* Consider XDP consuming the packet a success from
+>> -		 * the netdev point of view we do not want to count
+>> -		 * this as an error.
+>> -		 */
+>> -		if (ret != XDP_PASS)
+>> -			return NET_RX_SUCCESS;
+>> -	}
+>> -
+> Adding Jesper,
+>
+> There is a small behavioral change due to this patch,
 
-Many parts of the kernel work the same way.  E.g. file system implementations
-change, yet the API to use the file systems remains the same.
 
-> In stark contrast to dtrace all of bpf tracing scripts (bcc scripts
-> and bpftrace scripts) are written for specific kernel with intimate
-> knowledge of kernel details. They do break all the time when kernel changes.
-> kprobe and tracepoints are NOT uapi. All of them can change.
-> tracepoints are a bit more stable than kprobes, but they are not uapi.
+At least not for current code. We don't support skb in cpumap (though 
+the fix should not be hard), in dp_do_generic_redirect_map() we had:
 
-Sure, and I understand why.  And in DTrace, there is an extra layer in the
-design of the tracing framework that isolates implementation changes at the
-level of the probes from what is exposed to userspace.  That way changes can
-be made at the kernel level without worrying about the implications for
-userspace.  Of course one can simply not care about userspace altogether,
-whether there is an abstraction in place or not, but the added bonus of the
-abstraction is that not caring about userspace won't affect userspace much :)
+         } else {
+                 /* TODO: Handle BPF_MAP_TYPE_CPUMAP */
+                 err = -EBADRQC;
+                 goto err;
+         }
 
-By the way, the point behind this design is also that it doesn't enforce the
-use of that abstraction.  Nothing prevents people from using probes directly.
-But it provides a generic probe concept that isolates the probe implementation
-details from the tracing tool.
+
+> the XDP program after this patch will run on the RPS CPU, if
+> configured, which could cause some behavioral changes in
+> xdp_redirect_cpu: bpf_redirect_map(cpu_map).
+>
+> Maybe this is acceptable, but it should be documented, as the current
+> assumption dictates: XDP program runs on the core where the XDP
+> frame/SKB was first seen.
+
+
+At lest for TUN, this is not true. XDP frames were built by vhost_net 
+and passed to TUN. There's no guarantee that vhost_net kthread won't 
+move to another core.
+
+Thanks
+
+
+
