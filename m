@@ -2,78 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D73022A0B7
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 23:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E41E22A0BE
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 23:55:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404450AbfEXVyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 17:54:50 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:46096 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404265AbfEXVyu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 17:54:50 -0400
-Received: by mail-ot1-f65.google.com with SMTP id j49so9973461otc.13;
-        Fri, 24 May 2019 14:54:49 -0700 (PDT)
+        id S2404331AbfEXVzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 17:55:51 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:43971 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404259AbfEXVzv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 17:55:51 -0400
+Received: by mail-ot1-f66.google.com with SMTP id i8so9993501oth.10;
+        Fri, 24 May 2019 14:55:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WwRWeH6o4e0zEUidM8+Mp3KiI/hAFcVnEjbVX8vBMvc=;
-        b=NR+6h/mZ388JZn47DxAtfXlAwspc4zwQhx8h0j2rrCLC+3cfTKdygvLx9wgSRALoc2
-         fm84ThsYvuBya9Nc9zJIJooMBFpuuFSbxY6zyRM4NJM7okbCAWks2kJOzhOMaw3rXesd
-         NzUpBir/uXMiilWCzGHG8BHRm6AQUK79j0WTMbIchSjnaE49FMu+qG/zrh9ivoSyP0L3
-         bMjNhQTV16qenavvZKBCQq+WgoAVCmCp/0hc+KEQwF49LRa8F2SNyL+VwLZDBsmgD87T
-         p+mx3jtElupMkK2bnf2HsGWGiB7jvy867YKDTiORXyR5FQ1FyjJ+h1rAuJ2f3DADFLiE
-         rAIQ==
-X-Gm-Message-State: APjAAAVPWps14D6EHhiNcTXY3JL/ZebRSk+FSbwlIV2Q5QEhFf21hRRe
-        OeDWMxLBZexx3nYVjcXJMQ==
-X-Google-Smtp-Source: APXvYqxfYQC+exjUSNJQHKb3wOaN746sP+WD7kMTf/uk/I7m4GfAAdcQaxmAayNlguFMhN8AXAnZMQ==
-X-Received: by 2002:a9d:7cd2:: with SMTP id r18mr223772otn.345.1558734889169;
-        Fri, 24 May 2019 14:54:49 -0700 (PDT)
+        bh=1Hd5HUE8FtAVIHZ0zOMuprsDH1qucHlAidVwNXNR0kE=;
+        b=BcVJGqM10NqxsRnBFu3wEP26yf3AVll/Pjy/3Q+Q2g9YNIntg5Pb9/TR06pk57L2Pl
+         ICoYnrvZEW5aFu5jpMCYt3RfKRMyQkXiM0t6FB+3RCfGCiIgFRaKkvXE5Xe6NKuISssL
+         vYTPaO6j6Ny3H75TOIcAmroLtziJlWwtdb7xIEin9R+cg/Q2Cw37P+/M7XI/ogwH53mU
+         cjH62njcllRoksuf1igvVD+6gV3NnQo2+U+AwL5XjRYefd/gbF9JbpXcY53MmxfSKPj4
+         0LAXdsqApFcIGBHw/uduQE1nUdvjOecz3ObcPHGrW8V9OpIzcVqcauzLbdyKBOJriTAR
+         kCxQ==
+X-Gm-Message-State: APjAAAUXyrGBdf/d0vE9L7UXoUw4DjNRx5gbx8XL/kwYVxVvg3Ui/TR0
+        GGrIpesQm5aD9blUbbOEcCjrt4w=
+X-Google-Smtp-Source: APXvYqx38nwGxFFCwmvC358jGtt2sCWNYPbMOthN/1AGAmXZzhMX9GG7akLemxmhb6zk5JKBh2ArBw==
+X-Received: by 2002:a9d:6312:: with SMTP id q18mr14150968otk.45.1558734950429;
+        Fri, 24 May 2019 14:55:50 -0700 (PDT)
 Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id 80sm1585634otj.2.2019.05.24.14.54.48
+        by smtp.gmail.com with ESMTPSA id b25sm1193569otq.65.2019.05.24.14.55.49
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 24 May 2019 14:54:48 -0700 (PDT)
-Date:   Fri, 24 May 2019 16:54:47 -0500
+        Fri, 24 May 2019 14:55:49 -0700 (PDT)
+Date:   Fri, 24 May 2019 16:55:49 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Paul Burton <paul.burton@mips.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        James Hogan <jhogan@kernel.org>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     megous@megous.com
+Cc:     linux-sunxi@googlegroups.com,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Ondrej Jirman <megous@megous.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
         Mark Rutland <mark.rutland@arm.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Chuanhong Guo <gch981213@gmail.com>,
-        info@freifunk-bad-gandersheim.net
-Subject: Re: [PATCH v6 1/3] dt-bindings: net: add qca,ar71xx.txt documentation
-Message-ID: <20190524215447.GA12009@bogus>
-References: <20190524111224.24819-1-o.rempel@pengutronix.de>
- <20190524111224.24819-2-o.rempel@pengutronix.de>
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH v5 4/6] dt-bindings: display: hdmi-connector: Support DDC
+ bus enable
+Message-ID: <20190524215549.GA13928@bogus>
+References: <20190520235009.16734-1-megous@megous.com>
+ <20190520235009.16734-5-megous@megous.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190524111224.24819-2-o.rempel@pengutronix.de>
+In-Reply-To: <20190520235009.16734-5-megous@megous.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 May 2019 13:12:22 +0200, Oleksij Rempel wrote:
-> Add binding documentation for Atheros/QCA networking IP core used
-> in many routers.
+On Tue, 21 May 2019 01:50:07 +0200, megous@megous.com wrote:
+> From: Ondrej Jirman <megous@megous.com>
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Some Allwinner SoC using boards (Orange Pi 3 for example) need to enable
+> on-board voltage shifting logic for the DDC bus using a gpio to be able
+> to access DDC bus. Use ddc-en-gpios property on the hdmi-connector to
+> model this.
+> 
+> Add binding documentation for optional ddc-en-gpios property.
+> 
+> Signed-off-by: Ondrej Jirman <megous@megous.com>
 > ---
->  .../devicetree/bindings/net/qca,ar71xx.txt    | 45 +++++++++++++++++++
->  1 file changed, 45 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/qca,ar71xx.txt
+>  .../devicetree/bindings/display/connector/hdmi-connector.txt     | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
