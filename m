@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED676296DC
+	by mail.lfdr.de (Postfix) with ESMTP id 19E10296DA
 	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 13:13:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391085AbfEXLM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 07:12:59 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:38049 "EHLO
+        id S2390997AbfEXLM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 07:12:58 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:50811 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391077AbfEXLMi (ORCPT
+        with ESMTP id S2391081AbfEXLMi (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 07:12:38 -0400
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.89)
         (envelope-from <ore@pengutronix.de>)
-        id 1hU87g-0000GY-QJ; Fri, 24 May 2019 13:12:28 +0200
+        id 1hU87g-0000GZ-QJ; Fri, 24 May 2019 13:12:28 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1hU87e-0007Fj-4K; Fri, 24 May 2019 13:12:26 +0200
+        id 1hU87e-0007Fr-5M; Fri, 24 May 2019 13:12:26 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Paul Burton <paul.burton@mips.com>,
         Ralf Baechle <ralf@linux-mips.org>,
@@ -36,10 +36,12 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
         Andrew Lunn <andrew@lunn.ch>,
         Chuanhong Guo <gch981213@gmail.com>,
         info@freifunk-bad-gandersheim.net
-Subject: [PATCH v6 0/3] MIPS: ath79: add ag71xx support
-Date:   Fri, 24 May 2019 13:12:21 +0200
-Message-Id: <20190524111224.24819-1-o.rempel@pengutronix.de>
+Subject: [PATCH v6 1/3] dt-bindings: net: add qca,ar71xx.txt documentation
+Date:   Fri, 24 May 2019 13:12:22 +0200
+Message-Id: <20190524111224.24819-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190524111224.24819-1-o.rempel@pengutronix.de>
+References: <20190524111224.24819-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
@@ -51,74 +53,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019.05.24 v6:
-- ag71xx: remove double union
-- ag71xx: reverse Christmas tree for all functions
-- ag71xx: add Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Add binding documentation for Atheros/QCA networking IP core used
+in many routers.
 
-2019.05.20 v5:
-- ag71xx: remove MII_CMD_WRITE, the name is confusing. It is
-  actually disables MII_CMD_READ.
-- ag71xx: rework ag71xx_mdio_mii_read/write
-- ag71xx: set proper mask for the addr in ag71xx_mdio_mii_read/write
-- Kconfig: remove MDIO_BITBANG
-- ag71xx: ./scripts/checkpatch.pl it.
-
-2019.05.19 v4:
-- DT: define eth and mdio clocks
-- ag71xx: remove module parameters
-- ag71xx: return proper error value on mdio_read/write
-- ag71xx: use proper mdio clock registration
-- ag71xx: add ag71xx_dma_wait_stop() for ag71xx_dma_reset()
-- ag71xx: remove ag71xx_speed_str()
-- ag71xx: use phydev->link/sped/duplex instead of ag-> variants
-- ag71xx: use WARN() instead of BUG()
-- ag71xx: drop big part of ag71xx_phy_link_adjust()
-- ag71xx: drop most of ag71xx_do_ioctl()
-- ag71xx: register eth clock
-- ag71xx: remove AG71XX_ETH0_NO_MDIO quirk.
-
-2019.04.22 v3:
-- ag71xx: use phy_modes() instead of ag71xx_get_phy_if_mode_name()
-- ag71xx: remove .ndo_poll_controller support
-- ag71xx: unregister_netdev before disconnecting phy.
-
-2019.04.18 v2:
-- ag71xx: add list of openwrt authors
-- ag71xx: remove redundant PHY_POLL assignment
-- ag71xx: use phy_attached_info instead of netif_info
-- ag71xx: remove redundant netif_carrier_off() on .stop.
-- DT: use "ethernet" instead of "eth"
-
-This patch series provide ethernet support for many Atheros/QCA
-MIPS based SoCs.
-
-I reworked ag71xx driver which was previously maintained within OpenWRT
-repository. So far, following changes was made to make upstreaming
-easier:
-- everything what can be some how used in user space was removed. Most
-  of it was debug functionality.
-- most of deficetree bindings was removed. Not every thing made sense
-  and most of it is SoC specific, so it is possible to detect it by
-  compatible.
-- mac and mdio parts are merged in to one driver. It makes easier to
-  maintaine SoC specific quirks.
-
-Oleksij Rempel (3):
-  dt-bindings: net: add qca,ar71xx.txt documentation
-  MIPS: ath79: ar9331: add Ethernet nodes
-  net: ethernet: add ag71xx driver
-
- .../devicetree/bindings/net/qca,ar71xx.txt    |   45 +
- arch/mips/boot/dts/qca/ar9331.dtsi            |   26 +
- arch/mips/boot/dts/qca/ar9331_dpt_module.dts  |    8 +
- drivers/net/ethernet/atheros/Kconfig          |   10 +-
- drivers/net/ethernet/atheros/Makefile         |    1 +
- drivers/net/ethernet/atheros/ag71xx.c         | 1898 +++++++++++++++++
- 6 files changed, 1987 insertions(+), 1 deletion(-)
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ .../devicetree/bindings/net/qca,ar71xx.txt    | 45 +++++++++++++++++++
+ 1 file changed, 45 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/qca,ar71xx.txt
- create mode 100644 drivers/net/ethernet/atheros/ag71xx.c
 
+diff --git a/Documentation/devicetree/bindings/net/qca,ar71xx.txt b/Documentation/devicetree/bindings/net/qca,ar71xx.txt
+new file mode 100644
+index 000000000000..2a33e71ba72b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/qca,ar71xx.txt
+@@ -0,0 +1,45 @@
++Required properties:
++- compatible:	Should be "qca,<soc>-eth". Currently support compatibles are:
++		qca,ar7100-eth - Atheros AR7100
++		qca,ar7240-eth - Atheros AR7240
++		qca,ar7241-eth - Atheros AR7241
++		qca,ar7242-eth - Atheros AR7242
++		qca,ar9130-eth - Atheros AR9130
++		qca,ar9330-eth - Atheros AR9330
++		qca,ar9340-eth - Atheros AR9340
++		qca,qca9530-eth - Qualcomm Atheros QCA9530
++		qca,qca9550-eth - Qualcomm Atheros QCA9550
++		qca,qca9560-eth - Qualcomm Atheros QCA9560
++
++- reg : Address and length of the register set for the device
++- interrupts : Should contain eth interrupt
++- phy-mode : See ethernet.txt file in the same directory
++- clocks: the clock used by the core
++- clock-names: the names of the clock listed in the clocks property. These are
++	"eth" and "mdio".
++- resets: Should contain phandles to the reset signals
++- reset-names: Should contain the names of reset signal listed in the resets
++		property. These are "mac" and "mdio"
++
++Optional properties:
++- phy-handle : phandle to the PHY device connected to this device.
++- fixed-link : Assume a fixed link. See fixed-link.txt in the same directory.
++  Use instead of phy-handle.
++
++Optional subnodes:
++- mdio : specifies the mdio bus, used as a container for phy nodes
++  according to phy.txt in the same directory
++
++Example:
++
++ethernet@1a000000 {
++	compatible = "qca,ar9330-eth";
++	reg = <0x1a000000 0x200>;
++	interrupts = <5>;
++	resets = <&rst 13>, <&rst 23>;
++	reset-names = "mac", "mdio";
++	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_MDIO>;
++	clock-names = "eth", "mdio";
++
++	phy-mode = "gmii";
++};
 -- 
 2.20.1
 
