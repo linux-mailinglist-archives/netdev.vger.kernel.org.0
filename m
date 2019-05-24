@@ -2,290 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81C0F29428
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 11:05:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B3F62944D
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 11:14:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389630AbfEXJFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 05:05:36 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:45153 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389279AbfEXJFg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 05:05:36 -0400
-X-Originating-IP: 90.88.147.134
-Received: from localhost (aaubervilliers-681-1-27-134.w90-88.abo.wanadoo.fr [90.88.147.134])
-        (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id B1F24C0017;
-        Fri, 24 May 2019 09:05:29 +0000 (UTC)
-Date:   Fri, 24 May 2019 11:05:29 +0200
-From:   Maxime Ripard <maxime.ripard@bootlin.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>
-Subject: Re: [PATCH 6/8] dt-bindings: net: stmmac: Convert the binding to a
- schemas
-Message-ID: <20190524090529.bvjzapgy35pfcow5@flea>
-References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
- <ba1a5d8ad34a8c9ab99f504c04fbe65bde42081b.1558605170.git-series.maxime.ripard@bootlin.com>
- <CAL_JsqLrE31vWVhApGgr8JU56sDc1TWWm9HiH=Z-tn5C1GwXQA@mail.gmail.com>
+        id S2389841AbfEXJOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 05:14:03 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38621 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389425AbfEXJOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 05:14:03 -0400
+Received: by mail-wr1-f67.google.com with SMTP id d18so9189367wrs.5
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 02:14:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=RVyNKOVt/EDGtTx6flclwysXbFv+GBmE5TT4j3sW4NE=;
+        b=sPvQUKah7KvdTV9VnrbgB3U4s7Zv3heVClibO4EQkv7YuQ7aeJiji0m3BgP9PZwkd6
+         ROdH2f71/rY5IvDB/UzqROC4/vwyxwNLHsboIehDvm7Ofy9eo3B329v5CoWE64wanP4l
+         QcymLLAaIjbobUbTxYWppEeauhudujD+ElNDGbKhSzSEFJp1uz2ispXwlzOYO6jVF/7b
+         IzFUeUmhcuVva/b4KePM+GK9QlHoFQVvKiZ05NMXm1dVDN0bq90mFCwMV21JVKpb9bP+
+         DAzLA2agLXbxTj1uOSU4GEeUz/xZS46LoQBTE71ZShMZ4g//7CQOlgsWHTEvlxfgdCgw
+         szCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RVyNKOVt/EDGtTx6flclwysXbFv+GBmE5TT4j3sW4NE=;
+        b=TqKAJUBmcXyJB6LRkKXYj9kuMIcuUQZl4Rz+Wg1+s8oiTo6uP/XzmnYs1+dFhmmYrw
+         iGAa2dAEeSveqpjjalvkhaQO0Gveep5SjkMIcVHD2un3x/ZnRadeYYcIvNxGxSeb7BJo
+         OVgb+/P0hN/81AjuNRTep/ydTXKBL1B+ew1DE//obNNmZA4nKfxPjoFK0g1w2XB63pfk
+         vFuWA0EDzhkivhodx/r8jb+mk86jeET5exvmebj0bdmYz5z7ZcS/NWoXCuBgUhgCWUFi
+         05Dv8OiGwE61e2frOnXjaZLwAsRpL7AtvakR6oPFbLwDElFIphshsSzYbH2c03H8UMoN
+         hTTA==
+X-Gm-Message-State: APjAAAVZfzSzcH0SdYYcLX4AG0iivYLGBxHwfJWOOIIOr1/MauUzbNFc
+        2D9BtICSBYQgPaKJmfJJSwngsA==
+X-Google-Smtp-Source: APXvYqyunrGNj9PV/AL0GvIyehpLXsHRaC7JaZkKj0sb0carin2AgfWSg5X6FnyRTZ9Ta67mdFGT0A==
+X-Received: by 2002:adf:fa88:: with SMTP id h8mr11675952wrr.32.1558689240982;
+        Fri, 24 May 2019 02:14:00 -0700 (PDT)
+Received: from [192.168.1.2] ([194.53.186.20])
+        by smtp.gmail.com with ESMTPSA id 34sm4111036wre.32.2019.05.24.02.14.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2019 02:14:00 -0700 (PDT)
+Subject: Re: [PATCH v2 bpf-next 10/12] bpftool: add C output format option to
+ btf dump subcommand
+To:     Andrii Nakryiko <andriin@fb.com>, andrii.nakryiko@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, kernel-team@fb.com
+References: <20190523204222.3998365-1-andriin@fb.com>
+ <20190523204222.3998365-11-andriin@fb.com>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Message-ID: <eb690c2d-14d4-9c6f-2138-44f8cd027860@netronome.com>
+Date:   Fri, 24 May 2019 10:13:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="feqnt36fgpyz3hlk"
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqLrE31vWVhApGgr8JU56sDc1TWWm9HiH=Z-tn5C1GwXQA@mail.gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20190523204222.3998365-11-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Andrii,
 
---feqnt36fgpyz3hlk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Some nits inline, nothing blocking though.
 
-Hi Rob,
+2019-05-23 13:42 UTC-0700 ~ Andrii Nakryiko <andriin@fb.com>
+> Utilize new libbpf's btf_dump API to emit BTF as a C definitions.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  tools/bpf/bpftool/btf.c | 74 +++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 72 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+> index a22ef6587ebe..1cdbfad42b38 100644
+> --- a/tools/bpf/bpftool/btf.c
+> +++ b/tools/bpf/bpftool/btf.c
+> @@ -340,11 +340,48 @@ static int dump_btf_raw(const struct btf *btf,
+>  	return 0;
+>  }
+>  
+> +static void btf_dump_printf(void *ctx, const char *fmt, va_list args)
 
-On Thu, May 23, 2019 at 10:33:05AM -0500, Rob Herring wrote:
-> On Thu, May 23, 2019 at 4:57 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
-> >
-> > Switch the STMMAC / Synopsys DesignWare MAC controller binding to a YAML
-> > schema to enable the DT validation.
->
-> You picked an easy one. ;)
+Nit: This function could have a printf attribute ("__printf(2, 0)").
 
-Yeah, that's what happens when you run out of trivial bindings, you
-end up with only the hard ones left to work on :)
+> +{
+> +	vfprintf(stdout, fmt, args);
+> +}
+> +
+> +static int dump_btf_c(const struct btf *btf,
+> +		      __u32 *root_type_ids, int root_type_cnt)
+> +{
+> +	struct btf_dump *d;
+> +	int err = 0, i;
+> +
+> +	d = btf_dump__new(btf, NULL, NULL, btf_dump_printf);
+> +	if (IS_ERR(d))
+> +		return PTR_ERR(d);
+> +
+> +	if (root_type_cnt) {
+> +		for (i = 0; i < root_type_cnt; i++) {
+> +			err = btf_dump__dump_type(d, root_type_ids[i]);
+> +			if (err)
+> +				goto done;
+> +		}
+> +	} else {
+> +		int cnt = btf__get_nr_types(btf);
+> +
+> +		for (i = 1; i <= cnt; i++) {
+> +			err = btf_dump__dump_type(d, i);
+> +			if (err)
+> +				goto done;
+> +		}
+> +	}
+> +
+> +done:
+> +	btf_dump__free(d);
+> +	return err;
+> +}
+> +
+>  static int do_dump(int argc, char **argv)
+>  {
+>  	struct btf *btf = NULL;
+>  	__u32 root_type_ids[2];
+>  	int root_type_cnt = 0;
+> +	bool dump_c = false;
+>  	__u32 btf_id = -1;
+>  	const char *src;
+>  	int fd = -1;
+> @@ -431,6 +468,29 @@ static int do_dump(int argc, char **argv)
+>  		goto done;
+>  	}
+>  
+> +	while (argc) {
+> +		if (is_prefix(*argv, "format")) {
+> +			NEXT_ARG();
+> +			if (argc < 1) {
+> +				p_err("expecting value for 'format' option\n");
+> +				goto done;
+> +			}
+> +			if (strcmp(*argv, "c") == 0) {
+> +				dump_c = true;
+> +			} else if (strcmp(*argv, "raw") == 0) {
 
-> > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-> > ---
-> >  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 344 +++++++++++-
-> >  Documentation/devicetree/bindings/net/stmmac.txt      | 179 +------
-> >  2 files changed, 345 insertions(+), 178 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > new file mode 100644
-> > index 000000000000..be3ada5121e1
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > @@ -0,0 +1,344 @@
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/snps,dwmac.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Synopsys DesignWare MAC Device Tree Bindings
-> > +
-> > +maintainers:
-> > +  - Alexandre Torgue <alexandre.torgue@st.com>
-> > +  - Giuseppe Cavallaro <peppe.cavallaro@st.com>
-> > +  - Jose Abreu <joabreu@synopsys.com>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    oneOf:
-> > +      - const: snps,dwmac
-> > +      - const: snps,dwmac-3.50a
-> > +      - const: snps,dwmac-3.610
-> > +      - const: snps,dwmac-3.70a
-> > +      - const: snps,dwmac-3.710
-> > +      - const: snps,dwmac-4.00
-> > +      - const: snps,dwmac-4.10a
-> > +      - const: snps,dwxgmac
-> > +      - const: snps,dwxgmac-2.10
-> > +      - const: st,spear600-gmac
-> > +        description: Deprecated
->
-> Like the other, just make this an enum.
+Do you think we could use is_prefix() instead of strcmp() here?
 
-Ack.
+> +				dump_c = false;
+> +			} else {
+> +				p_err("unrecognized format specifier: '%s'",
+> +				      *argv);
 
-I did this initially because the sun8i-emac bindings also have
-multiple compatibles we can use, and thus I needed an items here, but
-since we will move them away in separate files, we can just use an
-enum (with a contains).
+Would it be worth reminding the user about the valid specifiers in that
+message? (But then we already have it in do_help(), so maybe not.)
 
-> Though, what to do on deprecated things? If we expect dts files to be
-> updated, then we should remove or disallow in the schema (e.g. 'prop:
-> false' for properties).
+> +				goto done;
+> +			}
+> +			NEXT_ARG();
+> +		} else {
+> +			p_err("unrecognized option: '%s'", *argv);
+> +			goto done;
+> +		}
+> +	}
+> +
+>  	if (!btf) {
+>  		err = btf__get_from_id(btf_id, &btf);
+>  		if (err) {
+> @@ -444,7 +504,16 @@ static int do_dump(int argc, char **argv)
+>  		}
+>  	}
+>  
+> -	dump_btf_raw(btf, root_type_ids, root_type_cnt);
+> +	if (dump_c) {
+> +		if (json_output) {
+> +			p_err("JSON output for C-syntax dump is not supported");
+> +			err = -ENOTSUP;
+> +			goto done;
+> +		}
+> +		err = dump_btf_c(btf, root_type_ids, root_type_cnt);
+> +	} else {
+> +		err = dump_btf_raw(btf, root_type_ids, root_type_cnt);
+> +	}
+>  
+>  done:
+>  	close(fd);
+> @@ -460,10 +529,11 @@ static int do_help(int argc, char **argv)
+>  	}
+>  
+>  	fprintf(stderr,
+> -		"Usage: %s btf dump BTF_SRC\n"
+> +		"Usage: %s btf dump BTF_SRC [format FORMAT]\n"
+>  		"       %s btf help\n"
+>  		"\n"
+>  		"       BTF_SRC := { id BTF_ID | prog PROG | map MAP [{key | value | kv | all}] | file FILE }\n"
+> +		"       FORMAT  := { raw | c }\n"
+>  		"       " HELP_SPEC_MAP "\n"
+>  		"       " HELP_SPEC_PROGRAM "\n"
+>  		"       " HELP_SPEC_OPTIONS "\n"
+> 
 
-Oh, so that's what the false are here for. I wanted to send a PR to
-the meta-schemas because *-gpio was not working, and that binding uses
-one, but I guess that solves it.
-
-For the deprecation process, I haven't made up my mind yet. We could
-put in comment the deprecated properties and compatibles, but that has
-two significant drawbacks:
-
-  - for the compatibles, we wouldn't have the nodes with a deprecated
-    compatible validated, and thus we wouldn't even have a warning
-    that our compatible is deprecated in the first place. And any
-    property we might have not used properly will be ignored as well.
-
-  - for the other properties, it's still pretty hard to disable
-    additionalProperties, so any deprecated property wouldn't be
-    validated if they were in a comment, and we wouldn't have a
-    warning either if additionalProperties is true, because we
-    tolerate them.
-
-I guess we can workaround the first one with a custom select that has
-all the supported compatibles (including the deprecated ones), but
-only list the non-deprecated options in the compatible properties.
-
-I don't really see a solution for the second one.
-
-> The issue with updating dts files, is it may break old kernels with
-> new dtbs.
-
-While this is something that is mentionned by some people, and I can
-see how it's problematic to some, it's also something we never really
-committed to, so I'm fine with that.
-
-> > +  snps,axi-config:
-> > +    $ref: /schemas/types.yaml#definitions/phandle
-> > +    description:
-> > +      AXI BUS Mode parameters. Phandle to a node that can contain the
-> > +      following properties
-> > +        * snps,lpi_en, enable Low Power Interface
-> > +        * snps,xit_frm, unlock on WoL
-> > +        * snps,wr_osr_lmt, max write outstanding req. limit
-> > +        * snps,rd_osr_lmt, max read outstanding req. limit
-> > +        * snps,kbbe, do not cross 1KiB boundary.
-> > +        * snps,blen, this is a vector of supported burst length.
-> > +        * snps,fb, fixed-burst
-> > +        * snps,mb, mixed-burst
-> > +        * snps,rb, rebuild INCRx Burst
->
-> This obviously needs its own schema, but that can come latter.
-
-I haven't been able to describe a node that doesn't have any
-particular copmatible or node name, but we just need to follow a
-phandle.
-
-How could we do this?
-
-> > +  snps,reset-gpio:
-> > +    description:
-> > +      PHY Reset GPIO
->
-> maxItems: 1
->
-> > +
-> > +  snps,reset-active-low:
-> > +    $ref: /schemas/types.yaml#definitions/flag
-> > +    description:
-> > +      Indicates that the PHY Reset is active low
->
-> Would be nice to deprecate these 2 properties for just 'reset-gpios'.
-> Though really, this should be in the phy node as this is a phy reset.
-
-The PHYs already have such a property, so we should just deprecate
-them.
-
-> > +
-> > +  snps,reset-delay-us:
-> > +    allOf:
-> > +      - $ref: /schemas/types.yaml#definitions/uint32-array
-> > +      - minItems: 3
-> > +        maxItems: 3
-> > +    description:
-> > +      Triplet of delays. The 1st cell is reset pre-delay in micro
-> > +      seconds. The 2nd cell is reset pulse in micro seconds. The 3rd
-> > +      cell is reset post-delay in micro seconds.
-
-And this one too I guess?
-
-> > +  snps,aal:
-> > +    $ref: /schemas/types.yaml#definitions/flag
-> > +    description:
-> > +      Use Address-Aligned Beats
-> > +
-> > +  snps,fixed-burst:
-> > +    $ref: /schemas/types.yaml#definitions/flag
-> > +    description:
-> > +      Program the DMA to use the fixed burst mode
-> > +
-> > +  snps,mixed-burst:
-> > +    $ref: /schemas/types.yaml#definitions/flag
-> > +    description:
-> > +      Program the DMA to use the mixed burst mode
-> > +
-> > +  snps,force_thresh_dma_mode:
-> > +    $ref: /schemas/types.yaml#definitions/flag
-> > +    description:
-> > +      Force DMA to use the threshold mode for both tx and rx
-> > +
-> > +  snps,force_sf_dma_mode:
-> > +    $ref: /schemas/types.yaml#definitions/flag
-> > +    description:
-> > +      Force DMA to use the Store and Forward mode for both tx and
-> > +      rx. This flag is ignored if force_thresh_dma_mode is set.
-> > +
-> > +  snps,en-tx-lpi-clockgating:
-> > +    $ref: /schemas/types.yaml#definitions/flag
-> > +    description:
-> > +      Enable gating of the MAC TX clock during TX low-power mode
-> > +
-> > +  snps,multicast-filter-bins:
-> > +    $ref: /schemas/types.yaml#definitions/uint32
-> > +    description:
-> > +      Number of multicast filter hash bins supported by this device
-> > +      instance
-> > +
-> > +  snps,perfect-filter-entries:
-> > +    $ref: /schemas/types.yaml#definitions/uint32
-> > +    description:
-> > +      Number of perfect filter entries supported by this device
-> > +      instance
-> > +
-> > +  snps,ps-speed:
-> > +    $ref: /schemas/types.yaml#definitions/uint32
-> > +    description:
-> > +      Port selection speed that can be passed to the core when PCS
-> > +      is supported. For example, this is used in case of SGMII and
-> > +      MAC2MAC connection.
-> > +
-> > +  mdio:
-> > +    type: object
-> > +    description:
-> > +      Creates and registers an MDIO bus.
-> > +
-> > +    properties:
-> > +      compatible:
-> > +        const: snps,dwmac-mdio
->
-> required?
-
-Yep, I'll add it.
-
-Thanks!
-Maxime
-
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---feqnt36fgpyz3hlk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXOez2QAKCRDj7w1vZxhR
-xe/NAPwPdSE4B39GjzI0+sjp0j/vK4Hlg4A+3uLLJjEAO/CpowD/cRbzLnJfLN2U
-cEJXc12nJ54M6GHljxzLwfapQynBkQU=
-=sFc+
------END PGP SIGNATURE-----
-
---feqnt36fgpyz3hlk--
