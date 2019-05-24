@@ -2,91 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C3229DAA
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 20:02:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 214A929DB3
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 20:04:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728044AbfEXSCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 14:02:10 -0400
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:42595 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726079AbfEXSCJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 14:02:09 -0400
-Received: by mail-vs1-f66.google.com with SMTP id z11so6417925vsq.9;
-        Fri, 24 May 2019 11:02:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=/c0F+parR6bN86hWiP5Ifn7/OM8gtFo/WuXGn5Kkvqs=;
-        b=dUwYBvqs93lG4d1TS6FrWkYK9tjJF9joMVDSL+Frt8pUlxzut/kmSCA5F9x/IU5HLf
-         OoBHrLOkbUQma48nVJBleDgqrJYVB9bno19PtnMIXm5MSRl+TW2Y9qNDWFMqQv5ma4Ol
-         WjSdzrRhIc2CGzwiPCiZ2vtm9QVt+AVcUFbE7KvdItXF/0I04vXPptA8DVj/hUxjHexf
-         YACmhaHjnhH2pLJZ2Uh0kdLkjx5ur8m8pq0I2Y9zjKutjG8gBC5Ikse6SIkFwjELriH2
-         bm0n3PU56/N2S+xOvd76Mmap0xep4s7CWFnsdlLexmCAlLuPb8MA15WBen61ogxWozmJ
-         GYOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=/c0F+parR6bN86hWiP5Ifn7/OM8gtFo/WuXGn5Kkvqs=;
-        b=YnOAhwv+EO5OXsiRI2nnMyos/TAiNnlrtySkCLPlJyB2SURJTA6RC8SbPelX0cOFOe
-         4BRIgPzTqnhu/Fsf1J0VT72EsenYM/xtl429YQFESu/UgZDA5/02GFVP3ZyCcfxx8plJ
-         TN5CE94v4JFYxD/ptLzOV/x0bdZ56MZng5U8gOWsvd0wC7be7w6KcJOSMZaVeHbM8KJk
-         PZWKYL+J9GG4uS0DibSMoW4dZ+3PU+zmP4zWCyl5tqbNIvP+gDZANLGI1rBQ+fY0KX7u
-         /IHWf/cSOpxAE5+sYdJUTMlqRInQ0SQBHOpChkhWiwqOufAeN/1XgIxYWKVD9g5qIp0l
-         HKLA==
-X-Gm-Message-State: APjAAAUr3yJnN6bS09lbR00nQUPT28xQTs+JehxOTQ1bYFvOch85aCCU
-        Wnhd88q6XnyJUKs8Tn55Rqc=
-X-Google-Smtp-Source: APXvYqxS4mzDEMERjcL67EgtD6e5diif4cIUBmshIzjF+TLMxZDmVbuWnI4nfhb3p3xAxtS9dD6oDw==
-X-Received: by 2002:a67:f303:: with SMTP id p3mr41457576vsf.166.1558720928663;
-        Fri, 24 May 2019 11:02:08 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id w9sm1537289vkh.53.2019.05.24.11.02.07
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 24 May 2019 11:02:07 -0700 (PDT)
-Date:   Fri, 24 May 2019 14:02:06 -0400
-Message-ID: <20190524140206.GF17138@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/5] net: dsa: implement vtu_getnext and vtu_loadpurge
- for mv88e6250
-In-Reply-To: <20190524085921.11108-4-rasmus.villemoes@prevas.dk>
-References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
- <20190524085921.11108-1-rasmus.villemoes@prevas.dk>
- <20190524085921.11108-4-rasmus.villemoes@prevas.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        id S1732009AbfEXSEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 14:04:49 -0400
+Received: from smtprelay0230.hostedemail.com ([216.40.44.230]:60685 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726139AbfEXSEs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 14:04:48 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 303EE18047635;
+        Fri, 24 May 2019 18:04:47 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::,RULES_HIT:41:355:379:599:877:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1801:2198:2199:2393:2553:2559:2562:2731:2828:2902:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3873:3874:4321:4605:5007:7902:10004:10400:10471:10848:11026:11232:11473:11658:11914:12295:12438:12555:12740:12760:12895:12986:13069:13255:13311:13357:13439:14659:21080:21212:21627:30029:30054:30060:30070:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:34,LUA_SUMMARY:none
+X-HE-Tag: food21_c878d8e4561b
+X-Filterd-Recvd-Size: 2257
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf16.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 24 May 2019 18:04:45 +0000 (UTC)
+Message-ID: <8c138b300290efbff43631f2c527a37390c504d8.camel@perches.com>
+Subject: Re: r8169: Link only up after 16 s (A link change request failed
+ with some changes committed already. Interface enp3s0 may have been left
+ with an inconsistent configuration, please check.)
+From:   Joe Perches <joe@perches.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Date:   Fri, 24 May 2019 11:04:43 -0700
+In-Reply-To: <5d25b4f3-20d3-6c93-2c0a-b95fde9e4c40@gmail.com>
+References: <a05b0b6c-505c-db61-96ac-813e68a26cc6@molgen.mpg.de>
+         <abb2d596-d9fe-5426-8f1d-2ef4a7eb9e1a@gmail.com>
+         <48ad419a-65f4-40ca-d7a9-01fafee33d83@molgen.mpg.de>
+         <5d25b4f3-20d3-6c93-2c0a-b95fde9e4c40@gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.1-1build1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 May 2019 09:00:27 +0000, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
-> These are almost identical to the 6185 variants, but have fewer bits
-> for the FID.
-> 
-> Bit 10 of the VTU_OP register (offset 0x05) is the VidPolicy bit,
-> which one should probably preserve in mv88e6xxx_g1_vtu_op(), instead
-> of always writing a 0. However, on the 6352 family, that bit is
-> located at bit 12 in the VTU FID register (offset 0x02), and is always
-> unconditionally cleared by the mv88e6xxx_g1_vtu_fid_write()
-> function.
-> 
-> Since nothing in the existing driver seems to know or care about that
-> bit, it seems reasonable to not add the boilerplate to preserve it for
-> the 6250 (which would require adding a chip-specific vtu_op function,
-> or adding chip-quirks to the existing one).
-> 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+On Fri, 2019-05-24 at 19:55 +0200, Heiner Kallweit wrote:
+> On 24.05.2019 17:14, Paul Menzel wrote:
+> > I applied the simple change below to `net/core/rtnetlink.c`.
+> > 
+> >                 if (err < 0)
+> > -                       net_warn_ratelimited("A link change request failed with some changes committed already. Interface %s may have been left with an inconsistent configuration, please check.\n",
+> > -                                            dev->name);
+> > +                       net_warn_ratelimited("A link change request failed with some changes committed already (err = %i). Interface %s may have been left with an inconsistent configuration, please check.\n",
+> > +                                            dev->name, err);
+> > 
+> > I get different results each time.
+> > 
+> > -304123904
+> > -332128256
+> > 
+> > Any idea, how that can happen?
+> > 
+> Instead of %i you should use %d, and the order of arguments needs to be reversed.
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+Doesn't the patch generate a compilation warning?
+
+
