@@ -2,57 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ECAA29F52
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 21:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBFE229F5B
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 21:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391712AbfEXTqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 15:46:40 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56994 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391181AbfEXTqk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 15:46:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=npdTHUhEtUEHQ08Cj3LyglYIMvauLPD/ArqXgRmDhxc=; b=gjis12TqBU1Vj2YTkxwl495ZWn
-        KhopAjZMv0HuHQBcE3xlfjfS6MyJd6JDMuWts4D1OcBNZjfc+1xMeX/YtrsFZaLXwfrm+/xha1t4P
-        n9PCuSUS21Lq8vhSB9JL4kwA8JDC7GvI4lbP6bJZvkou7YnCJXfOWkn1Vb+341hcsEcI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hUG9E-0004BB-I8; Fri, 24 May 2019 21:46:36 +0200
-Date:   Fri, 24 May 2019 21:46:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Krzysztof Halasa <khalasa@piap.pl>
-Subject: Re: [PATCH 1/8] net: ethernet: ixp4xx: Standard module init
-Message-ID: <20190524194636.GN21208@lunn.ch>
-References: <20190524162023.9115-1-linus.walleij@linaro.org>
- <20190524162023.9115-2-linus.walleij@linaro.org>
+        id S2403785AbfEXTtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 15:49:05 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:53195 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731979AbfEXTtF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 15:49:05 -0400
+Received: by mail-wm1-f68.google.com with SMTP id y3so10513684wmm.2
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 12:49:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=EfzrOSL6BVqiSM/a8+/TRo2VDaFC4vu+8iZJ/oCCQW8=;
+        b=H+jjTyI7YjmvnJjPFC3Vx0UEph67Z3FRA92MLLGd0GbOoJyNlvtRzTL0RxVT+3uex4
+         OPnOtV/KXPke3Jh8bJCXHvxlC+uYFDmoW8oDNyjEraDd8x6Xcs6gMn9mbmcpaJ8igaE9
+         r3tDkJQbN4c+bATOAX9flvT67QrvWh+jGUDSeNDDO0H7OhWZM1E7WKblHzjKpgbS977s
+         yTvBQ8FVX1qy+34I104AkGoszzYlnVEp8diVj8c/sahsUzNOW2+N7tjLGVdTCsyn79xP
+         t7vwa+3/SRxATiTtsj5YHUec1s8Hr+A5IFupyUT983Bdl/0LneUCQLv6x/ta5EBN8hcl
+         BSSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EfzrOSL6BVqiSM/a8+/TRo2VDaFC4vu+8iZJ/oCCQW8=;
+        b=PJWga/yf59AMxau2zgw7K+y7/MlIgaLVo0wyLpQJtOBWr9yuMSJ0mk2sQzF4HCcWfH
+         48et24ClEfz2pn7dLK+tGrxMphkxPHVxLE2yfcQKt9Yuv89vQwS5we/9qQHuB8ETzzhv
+         +f++ekE6dad8XsoOtHw5D3Hs8q7N/qRViifkjnP2EI4KhRS5VpcZ8fpBRiGm68CyQO/B
+         zCvC0G/+NUhpqhsw/dhsvwfx0C3jixVzb7xqvdpoji8RfWMGLcWCae1Jji2XQEhJAFuD
+         ZuGGxSgU3x7CTPKb1uW0WnvCup5KQSfPMcIZBnT/B3XFHSDTixd+YKzVlhvzOMyXFBll
+         62mw==
+X-Gm-Message-State: APjAAAVpLEUFYnQcMJmHSi8YF7v3bPZRBjLSZNpDoMZAmaYgTXOA9XdP
+        llNlGgjP7bKF8lsl1FoTA24+6w==
+X-Google-Smtp-Source: APXvYqw27HQ48VgLNcgxtiLVchDR0pRvMv44DVLBvk21TR/gj+lVNDHzAkIysMHJrQnKLss0zCRDPA==
+X-Received: by 2002:a1c:7dd6:: with SMTP id y205mr1157493wmc.90.1558727343345;
+        Fri, 24 May 2019 12:49:03 -0700 (PDT)
+Received: from [192.168.1.2] ([194.53.186.20])
+        by smtp.gmail.com with ESMTPSA id u11sm3524376wrn.1.2019.05.24.12.49.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2019 12:49:02 -0700 (PDT)
+Subject: Re: [PATCH v3 bpf-next 10/12] bpftool: add C output format option to
+ btf dump subcommand
+To:     Andrii Nakryiko <andriin@fb.com>, andrii.nakryiko@gmail.com,
+        ast@fb.com, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+References: <20190524185908.3562231-1-andriin@fb.com>
+ <20190524185908.3562231-11-andriin@fb.com>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Message-ID: <4d7cd84c-9e6c-c13c-3549-c490407ee615@netronome.com>
+Date:   Fri, 24 May 2019 20:49:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190524162023.9115-2-linus.walleij@linaro.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190524185908.3562231-11-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 06:20:16PM +0200, Linus Walleij wrote:
-> The IXP4xx driver was initializing the MDIO bus before even
-> probing, in the callbacks supposed to be used for setting up
-> the module itself, and with the side effect of trying to
-> register the MDIO bus as soon as this module was loaded or
-> compiled into the kernel whether the device was discovered
-> or not.
+2019-05-24 11:59 UTC-0700 ~ Andrii Nakryiko <andriin@fb.com>
+> Utilize new libbpf's btf_dump API to emit BTF as a C definitions.
+> 
+> Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Hi Linus
+Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
 
-What is the address space like? Could the mdio driver be pull out into
-a standalone driver?
-
-  Andrew
+Thanks for the changes!
