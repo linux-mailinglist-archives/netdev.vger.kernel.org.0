@@ -2,152 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D240328EFE
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 04:09:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B34828F01
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 04:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387921AbfEXCI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 22:08:56 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:45214 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731617AbfEXCI4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 22:08:56 -0400
-Received: by mail-pf1-f194.google.com with SMTP id s11so4299621pfm.12;
-        Thu, 23 May 2019 19:08:55 -0700 (PDT)
+        id S2388221AbfEXCKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 22:10:09 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:34262 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731617AbfEXCKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 22:10:08 -0400
+Received: by mail-pf1-f195.google.com with SMTP id n19so4326507pfa.1
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 19:10:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=qX6qpOZsXihdwTRBrj5mAunPkMtIF5dGKvhQdTgjz2c=;
-        b=UPIiEpM7mXq16QBlzPPNOmoWTK00tzjPjfSzpJlZdA9UuAeK8fJ0FT0iATHSMAPTK1
-         bgj+ccIq20X/ymFYzvQqQZ6wdL2HdPjGuFJS904ge37OtZA7ULqztfjprkUZWAVuJ9B3
-         QMifWtabkToxgEU31Hg6IVrU+U7o3Ac8y0kMtAyOkp2l72B49AGAq66sFxCFK9L1LbDO
-         gq7bh1mhZcU565Ij9H4KbvMiS9uLWg6RUreKnvNMg+wlgRDBaVedSIwm70knEqrsNdHu
-         gR7Fi0FJ16vK1meIAW3IMBpWg5Hzf4JX3xC73CXKJ7ilG6l5D9RHViZsYRAR8plr880S
-         pvqg==
+        d=appneta.com; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=r8aR7hYQG+ubgZWmIyHO8z2MgnIQ/QsQT2Ue4fje7os=;
+        b=rF/c4EZ8c3QOZMdL+RJCZhR79P0PB+UO/3P9pS47gYj6fG0TNXB9sIyNUYrxLSYbbE
+         Vqf74VN+TN/R1V5tWM0jX3W/4fJOy37GCogiOKVydMill6Qotfiut3jywy58ReSv0Yl6
+         tdn8gTiMRDrMoStFUJM6JGjBCgY43E9vrv62o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qX6qpOZsXihdwTRBrj5mAunPkMtIF5dGKvhQdTgjz2c=;
-        b=PrexxGnkear+quzmZIfrxUyPMPSj5sAWi+ikEt8pVm2GBON0yJtunTF/PZkg9+o5Ry
-         9lcHpoNhLvMjVIVpaooFVJvT5C4rsFbaMs+VOIiXb246b876RkPaQs9tiE6J7FCj1LnY
-         7W9IfsbFdGtOtLhLvMkpu3zuvH+3gZBAHtupPSrpglebObMW/fh37VPQGNgs1XBqDTNE
-         JyGpCcytlhrnbMAnUjSAQFEVb4Sp+fIljfS9dVwrWgDRl4BpuLua1TtjU1SxxYRcx/w/
-         HjpOtYV0ZX1+P0lwvaoxgSKDmeaRe9Hxr/YVhdEp7YW7FUhxdfhovGUtYf8eTMrBzY0f
-         HRDQ==
-X-Gm-Message-State: APjAAAUq3mImMuf3GuSZYWVV7C+nvYpT1qWYr5W/6kOdYqgY575E8Eio
-        843yvRsloy9ibVRssHgT6lw=
-X-Google-Smtp-Source: APXvYqzYys6ZpOh9I3WxTzaNNbv9Z/RK6q+WmhALNjXFVKQDbiI+8Ag10LYZ7vrpenpO9sDhwbgM0A==
-X-Received: by 2002:a63:5608:: with SMTP id k8mr101840369pgb.393.1558663734442;
-        Thu, 23 May 2019 19:08:54 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:d5a9])
-        by smtp.gmail.com with ESMTPSA id k22sm752739pfk.54.2019.05.23.19.08.52
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=r8aR7hYQG+ubgZWmIyHO8z2MgnIQ/QsQT2Ue4fje7os=;
+        b=CvwQ0FNmQf9uMJfFjOLkX+z3EJvXWoEQpDnt9t+38HBMEpNcxngo9DUVTPFONuubCG
+         h9AXOYm4llqCtSsNhYHdu5g63leGjz9KiVJuU5fscX/tyn7U3wB9yvv7Bs85zuN/rC/J
+         o/iSrP0uTntiVE0ITktyygOiRIEeynZzK3S542dOgYnCxkGUVIrxKkMW6Fbv08rxkaB6
+         KgID0kXIPUkHCa/kNV4znSAMIG0DyVDjq5GPtgGCm+C/8JlUv//f3dsidAcY5om+GF2P
+         bBn79VPPNCuSGARWdHOy1WB63gV8Ie50q2jTbiKwN6sZ8eU6XfRLe+gnjAy3C3iZyui2
+         EBRA==
+X-Gm-Message-State: APjAAAV8B1/fC0lrdETIHEzVsot4YXLsqcqFgUkPZkBmBKRdqqGxFS5I
+        3BEuqwCa1ySZiGi6qo+VsG7Gfw==
+X-Google-Smtp-Source: APXvYqzpLMGgRoPIpMdu2vTVvILTyJ/GmRZUoOY2DKkOgL3PRqdmfMmZtuVofLdgdW3OqFBzbbJFUA==
+X-Received: by 2002:a63:b1d:: with SMTP id 29mr102378028pgl.103.1558663807475;
+        Thu, 23 May 2019 19:10:07 -0700 (PDT)
+Received: from [10.0.1.19] (S010620c9d00fc332.vf.shawcable.net. [70.71.167.160])
+        by smtp.gmail.com with ESMTPSA id m11sm537865pjv.21.2019.05.23.19.10.05
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 19:08:52 -0700 (PDT)
-Date:   Thu, 23 May 2019 19:08:51 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Kris Van Hees <kris.van.hees@oracle.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
-        linux-kernel@vger.kernel.org, mhiramat@kernel.org, acme@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, peterz@infradead.org
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-Message-ID: <20190524020849.vxg3hqjtnhnicyzp@ast-mbp.dhcp.thefacebook.com>
-References: <20190521173618.2ebe8c1f@gandalf.local.home>
- <20190521214325.rr7emn5z3b7wqiiy@ast-mbp.dhcp.thefacebook.com>
- <20190521174757.74ec8937@gandalf.local.home>
- <20190522052327.GN2422@oracle.com>
- <20190522205329.uu26oq2saj56og5m@ast-mbp.dhcp.thefacebook.com>
- <20190523054610.GR2422@oracle.com>
- <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
- <20190523190243.54221053@gandalf.local.home>
- <20190524003148.pk7qbxn7ysievhym@ast-mbp.dhcp.thefacebook.com>
- <20190523215737.6601ab7c@oasis.local.home>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190523215737.6601ab7c@oasis.local.home>
-User-Agent: NeoMutt/20180223
+        Thu, 23 May 2019 19:10:06 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.8\))
+Subject: Re: [PATCH net 2/4] net/udpgso_bench_tx: options to exercise TX CMSG
+From:   Fred Klassen <fklassen@appneta.com>
+In-Reply-To: <CAF=yD-JBf6k7VLa6FQowuD5xDFbq5cB4ScTi7kb1hieQFDKnbg@mail.gmail.com>
+Date:   Thu, 23 May 2019 19:10:05 -0700
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <5061E2A7-EF7A-4C3C-9819-34AA8DE2CD0F@appneta.com>
+References: <20190523210651.80902-1-fklassen@appneta.com>
+ <20190523210651.80902-3-fklassen@appneta.com>
+ <CAF=yD-JBf6k7VLa6FQowuD5xDFbq5cB4ScTi7kb1hieQFDKnbg@mail.gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+X-Mailer: Apple Mail (2.3445.104.8)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 09:57:37PM -0400, Steven Rostedt wrote:
-> On Thu, 23 May 2019 17:31:50 -0700
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> 
-> 
-> > > Now from what I'm reading, it seams that the Dtrace layer may be
-> > > abstracting out fields from the kernel. This is actually something I
-> > > have been thinking about to solve the "tracepoint abi" issue. There's
-> > > usually basic ideas that happen. An interrupt goes off, there's a
-> > > handler, etc. We could abstract that out that we trace when an
-> > > interrupt goes off and the handler happens, and record the vector
-> > > number, and/or what device it was for. We have tracepoints in the
-> > > kernel that do this, but they do depend a bit on the implementation.
-> > > Now, if we could get a layer that abstracts this information away from
-> > > the implementation, then I think that's a *good* thing.  
-> > 
-> > I don't like this deferred irq idea at all.
-> 
-> What do you mean deferred?
+>=20
+> To ensure that we do not regress, when adding options, please consider
+> (just a general suggestion, not a strong request for this patch set)
+> updating the kselftest to run a variant of the test with the new code
+> coverage. In this case, make the code pass/fail instead of only user
+> interpretable and add variants to udpgso.sh.
 
-that's how I interpreted your proposal: 
-"interrupt goes off and the handler happens, and record the vector number"
-It's not a good thing to tell about irq later.
-Just like saying lets record perf counter event and report it later.
+I had a look at how kselftest works, and I absolutely want to see this
+work with these changes. I=E2=80=99ll investigate and implement in v2 =
+patch.
 
-> > Abstracting details from the users is _never_ a good idea.
-> 
-> Really? Most everything we do is to abstract details from the user. The
-> key is to make the abstraction more meaningful than the raw data.
-> 
-> > A ton of people use bcc scripts and bpftrace because they want those details.
-> > They need to know what kernel is doing to make better decisions.
-> > Delaying irq record is the opposite.
-> 
-> I never said anything about delaying the record. Just getting the
-> information that is needed.
-> 
-> > > 
-> > > I wish that was totally true, but tracepoints *can* be an abi. I had
-> > > code reverted because powertop required one to be a specific
-> > > format. To this day, the wakeup event has a "success" field that
-> > > writes in a hardcoded "1", because there's tools that depend on it,
-> > > and they only work if there's a success field and the value is 1.  
-> > 
-> > I really think that you should put powertop nightmares to rest.
-> > That was long ago. The kernel is different now.
-> 
-> Is it?
-> 
-> > Linus made it clear several times that it is ok to change _all_
-> > tracepoints. Period. Some maintainers somehow still don't believe
-> > that they can do it.
-> 
-> From what I remember him saying several times, is that you can change
-> all tracepoints, but if it breaks a tool that is useful, then that
-> change will get reverted. He will allow you to go and fix that tool and
-> bring back the change (which was the solution to powertop).
+I will most likely do a 5 second test. This seems to be sufficient to =
+get
+meaningful results
 
-my interpretation is different.
-We changed tracepoints. It broke scripts. People changed scripts.
-
-> 
-> > 
-> > Some tracepoints are used more than others and more people will
-> > complain: "ohh I need to change my script" when that tracepoint
-> > changes. But the kernel development is not going to be hampered by a
-> > tracepoint. No matter how widespread its usage in scripts.
-> 
-> That's because we'll treat bpf (and Dtrace) scripts like modules (no
-> abi), at least we better. But if there's a tool that doesn't use the
-> script and reads the tracepoint directly via perf, then that's a
-> different story.
-
-absolutely not.
-tracepoint is a tracepoint. It can change regardless of what
-and how is using it.
+> can use more precise CMSG_SPACE based on worst case expectations, like
+> in udp_sendmmsg
+>=20
+>> +       char buf[1500];
+>=20
+> no need for payload
+>=20
+>> +static void flush_errqueue(int fd)
+>> +{
+>> +       if (cfg_poll) {
+>> +               struct pollfd fds =3D { 0 };
+>> +               int ret;
+>> +
+>> +               fds.fd =3D fd;
+>> +               fds.events =3D POLLERR;
+>=20
+> no need to pass POLLERR, it is always returned in revents.
 
