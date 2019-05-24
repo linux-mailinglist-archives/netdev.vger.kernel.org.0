@@ -2,542 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E5A7299F9
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 16:22:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B839299FC
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 16:23:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403984AbfEXOW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 10:22:56 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:33554 "EHLO
+        id S2404010AbfEXOXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 10:23:47 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:37103 "EHLO
         mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403917AbfEXOWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 10:22:55 -0400
+        with ESMTP id S2403917AbfEXOXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 10:23:46 -0400
 Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 459T9R1Xk8z1rcqn;
-        Fri, 24 May 2019 16:22:51 +0200 (CEST)
+        by mail-out.m-online.net (Postfix) with ESMTP id 459TBS1Fwmz1rbkq;
+        Fri, 24 May 2019 16:23:44 +0200 (CEST)
 Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 459T9R0m91z1qr95;
-        Fri, 24 May 2019 16:22:51 +0200 (CEST)
+        by mail.m-online.net (Postfix) with ESMTP id 459TBS0Vc5z1qr9H;
+        Fri, 24 May 2019 16:23:44 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at mnet-online.de
 Received: from mail.mnet-online.de ([192.168.8.182])
         by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id VLu-3dhRoROX; Fri, 24 May 2019 16:22:49 +0200 (CEST)
-X-Auth-Info: YyeMdU/2i1HRZh3h93NYkzqXNVk/50ZiTN5REJ5a/Ag=
-Received: from kurokawa.lan (ip-86-49-110-70.net.upcbroadband.cz [86.49.110.70])
+        with ESMTP id HRXsPZUxvVry; Fri, 24 May 2019 16:23:43 +0200 (CEST)
+X-Auth-Info: SxGQ0Sm6o57/jgh1fAGW8GcI2zEuT7kKRc2a1ZCb448=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Fri, 24 May 2019 16:22:49 +0200 (CEST)
-From:   Marek Vasut <marex@denx.de>
-To:     netdev@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Fri, 24 May 2019 16:23:42 +0200 (CEST)
+Subject: Re: [PATCH V5] net: phy: tja11xx: Add TJA11xx PHY driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
         Guenter Roeck <linux@roeck-us.net>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-Subject: [PATCH V6] net: phy: tja11xx: Add TJA11xx PHY driver
-Date:   Fri, 24 May 2019 16:22:28 +0200
-Message-Id: <20190524142228.4003-1-marex@denx.de>
-X-Mailer: git-send-email 2.20.1
+References: <20190517235123.32261-1-marex@denx.de>
+ <2c30c9c9-1223-ad91-2837-038e0ee5ae23@gmail.com>
+ <CA+h21hq6OW2fX_m3rGvhuumhwCj7MM+VjVH_G4RO85hgGa4p7Q@mail.gmail.com>
+ <e7539c77-72ea-5c7f-16e3-27840b040702@denx.de>
+ <20190524135209.GG2979@lunn.ch>
+From:   Marek Vasut <marex@denx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <837d8b8e-cb69-1d27-cc10-4a4f66a5c0c5@denx.de>
+Date:   Fri, 24 May 2019 16:23:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190524135209.GG2979@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add driver for the NXP TJA1100 and TJA1101 PHYs. These PHYs are special
-BroadRReach 100BaseT1 PHYs used in automotive.
+On 5/24/19 3:52 PM, Andrew Lunn wrote:
+>> Well, it seems this patch is flagged in patchwork as "changes requested"
+>> . I don't know what changes are requested though :-(
+> 
+> Hi Marek
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: linux-hwmon@vger.kernel.org
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
-V2: - Use phy_modify(), phy_{set,clear}_bits()
-    - Drop enable argument of tja11xx_enable_link_control()
-    - Use PHY_BASIC_T1_FEATURES and dont modify supported/advertised
-      features in config_init callback
-    - Use genphy_soft_reset() instead of opencoding the reset sequence.
-    - Drop the aneg parts, since the PHY datasheet claims it does not
-      support aneg
-V3: - Replace clr with mask
-    - Add hwmon support
-    - Check commstat in tja11xx_read_status() only if link is up
-    - Use PHY_ID_MATCH_MODEL()
-V4: - Use correct bit in tja11xx_hwmon_read() hwmon_temp_crit_alarm
-    - Use ENOMEM if devm_kstrdup() fails
-    - Check $type in tja11xx_hwmon_read() in addition to $attr
-V5: - Drop assignment of phydev->irq,pause,asym_pause
-V6: - Add R-B from Florian.
----
- drivers/net/phy/Kconfig       |   6 +
- drivers/net/phy/Makefile      |   1 +
- drivers/net/phy/nxp-tja11xx.c | 423 ++++++++++++++++++++++++++++++++++
- 3 files changed, 430 insertions(+)
- create mode 100644 drivers/net/phy/nxp-tja11xx.c
+Hi,
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index f99f27800fdb..db5645b0c898 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -416,6 +416,12 @@ config NATIONAL_PHY
- 	---help---
- 	  Currently supports the DP83865 PHY.
- 
-+config NXP_TJA11XX_PHY
-+	tristate "NXP TJA11xx PHYs support"
-+	depends on HWMON
-+	---help---
-+	  Currently supports the NXP TJA1100 and TJA1101 PHY.
-+
- config QSEMI_PHY
- 	tristate "Quality Semiconductor PHYs"
- 	---help---
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index 27d7f9f3b0de..bac339e09042 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -82,6 +82,7 @@ obj-$(CONFIG_MICROCHIP_PHY)	+= microchip.o
- obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
- obj-$(CONFIG_MICROSEMI_PHY)	+= mscc.o
- obj-$(CONFIG_NATIONAL_PHY)	+= national.o
-+obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
- obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
- obj-$(CONFIG_REALTEK_PHY)	+= realtek.o
- obj-$(CONFIG_RENESAS_PHY)	+= uPD60620.o
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-new file mode 100644
-index 000000000000..11b8701e78fd
---- /dev/null
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -0,0 +1,423 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* NXP TJA1100 BroadRReach PHY driver
-+ *
-+ * Copyright (C) 2018 Marek Vasut <marex@denx.de>
-+ */
-+#include <linux/delay.h>
-+#include <linux/ethtool.h>
-+#include <linux/kernel.h>
-+#include <linux/mii.h>
-+#include <linux/module.h>
-+#include <linux/phy.h>
-+#include <linux/hwmon.h>
-+#include <linux/bitfield.h>
-+
-+#define PHY_ID_MASK			0xfffffff0
-+#define PHY_ID_TJA1100			0x0180dc40
-+#define PHY_ID_TJA1101			0x0180dd00
-+
-+#define MII_ECTRL			17
-+#define MII_ECTRL_LINK_CONTROL		BIT(15)
-+#define MII_ECTRL_POWER_MODE_MASK	GENMASK(14, 11)
-+#define MII_ECTRL_POWER_MODE_NO_CHANGE	(0x0 << 11)
-+#define MII_ECTRL_POWER_MODE_NORMAL	(0x3 << 11)
-+#define MII_ECTRL_POWER_MODE_STANDBY	(0xc << 11)
-+#define MII_ECTRL_CONFIG_EN		BIT(2)
-+#define MII_ECTRL_WAKE_REQUEST		BIT(0)
-+
-+#define MII_CFG1			18
-+#define MII_CFG1_AUTO_OP		BIT(14)
-+#define MII_CFG1_SLEEP_CONFIRM		BIT(6)
-+#define MII_CFG1_LED_MODE_MASK		GENMASK(5, 4)
-+#define MII_CFG1_LED_MODE_LINKUP	0
-+#define MII_CFG1_LED_ENABLE		BIT(3)
-+
-+#define MII_CFG2			19
-+#define MII_CFG2_SLEEP_REQUEST_TO	GENMASK(1, 0)
-+#define MII_CFG2_SLEEP_REQUEST_TO_16MS	0x3
-+
-+#define MII_INTSRC			21
-+#define MII_INTSRC_TEMP_ERR		BIT(1)
-+#define MII_INTSRC_UV_ERR		BIT(3)
-+
-+#define MII_COMMSTAT			23
-+#define MII_COMMSTAT_LINK_UP		BIT(15)
-+
-+#define MII_GENSTAT			24
-+#define MII_GENSTAT_PLL_LOCKED		BIT(14)
-+
-+#define MII_COMMCFG			27
-+#define MII_COMMCFG_AUTO_OP		BIT(15)
-+
-+struct tja11xx_priv {
-+	char		*hwmon_name;
-+	struct device	*hwmon_dev;
-+};
-+
-+struct tja11xx_phy_stats {
-+	const char	*string;
-+	u8		reg;
-+	u8		off;
-+	u16		mask;
-+};
-+
-+static struct tja11xx_phy_stats tja11xx_hw_stats[] = {
-+	{ "phy_symbol_error_count", 20, 0, GENMASK(15, 0) },
-+	{ "phy_polarity_detect", 25, 6, BIT(6) },
-+	{ "phy_open_detect", 25, 7, BIT(7) },
-+	{ "phy_short_detect", 25, 8, BIT(8) },
-+	{ "phy_rem_rcvr_count", 26, 0, GENMASK(7, 0) },
-+	{ "phy_loc_rcvr_count", 26, 8, GENMASK(15, 8) },
-+};
-+
-+static int tja11xx_check(struct phy_device *phydev, u8 reg, u16 mask, u16 set)
-+{
-+	int i, ret;
-+
-+	for (i = 0; i < 200; i++) {
-+		ret = phy_read(phydev, reg);
-+		if (ret < 0)
-+			return ret;
-+
-+		if ((ret & mask) == set)
-+			return 0;
-+
-+		usleep_range(100, 150);
-+	}
-+
-+	return -ETIMEDOUT;
-+}
-+
-+static int phy_modify_check(struct phy_device *phydev, u8 reg,
-+			    u16 mask, u16 set)
-+{
-+	int ret;
-+
-+	ret = phy_modify(phydev, reg, mask, set);
-+	if (ret)
-+		return ret;
-+
-+	return tja11xx_check(phydev, reg, mask, set);
-+}
-+
-+static int tja11xx_enable_reg_write(struct phy_device *phydev)
-+{
-+	return phy_set_bits(phydev, MII_ECTRL, MII_ECTRL_CONFIG_EN);
-+}
-+
-+static int tja11xx_enable_link_control(struct phy_device *phydev)
-+{
-+	return phy_set_bits(phydev, MII_ECTRL, MII_ECTRL_LINK_CONTROL);
-+}
-+
-+static int tja11xx_wakeup(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = phy_read(phydev, MII_ECTRL);
-+	if (ret < 0)
-+		return ret;
-+
-+	switch (ret & MII_ECTRL_POWER_MODE_MASK) {
-+	case MII_ECTRL_POWER_MODE_NO_CHANGE:
-+		break;
-+	case MII_ECTRL_POWER_MODE_NORMAL:
-+		ret = phy_set_bits(phydev, MII_ECTRL, MII_ECTRL_WAKE_REQUEST);
-+		if (ret)
-+			return ret;
-+
-+		ret = phy_clear_bits(phydev, MII_ECTRL, MII_ECTRL_WAKE_REQUEST);
-+		if (ret)
-+			return ret;
-+		break;
-+	case MII_ECTRL_POWER_MODE_STANDBY:
-+		ret = phy_modify_check(phydev, MII_ECTRL,
-+				       MII_ECTRL_POWER_MODE_MASK,
-+				       MII_ECTRL_POWER_MODE_STANDBY);
-+		if (ret)
-+			return ret;
-+
-+		ret = phy_modify(phydev, MII_ECTRL, MII_ECTRL_POWER_MODE_MASK,
-+				 MII_ECTRL_POWER_MODE_NORMAL);
-+		if (ret)
-+			return ret;
-+
-+		ret = phy_modify_check(phydev, MII_GENSTAT,
-+				       MII_GENSTAT_PLL_LOCKED,
-+				       MII_GENSTAT_PLL_LOCKED);
-+		if (ret)
-+			return ret;
-+
-+		return tja11xx_enable_link_control(phydev);
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static int tja11xx_soft_reset(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = tja11xx_enable_reg_write(phydev);
-+	if (ret)
-+		return ret;
-+
-+	return genphy_soft_reset(phydev);
-+}
-+
-+static int tja11xx_config_init(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = tja11xx_enable_reg_write(phydev);
-+	if (ret)
-+		return ret;
-+
-+	phydev->autoneg = AUTONEG_DISABLE;
-+	phydev->speed = SPEED_100;
-+	phydev->duplex = DUPLEX_FULL;
-+
-+	switch (phydev->phy_id & PHY_ID_MASK) {
-+	case PHY_ID_TJA1100:
-+		ret = phy_modify(phydev, MII_CFG1,
-+				 MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_MASK |
-+				 MII_CFG1_LED_ENABLE,
-+				 MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_LINKUP |
-+				 MII_CFG1_LED_ENABLE);
-+		if (ret)
-+			return ret;
-+		break;
-+	case PHY_ID_TJA1101:
-+		ret = phy_set_bits(phydev, MII_COMMCFG, MII_COMMCFG_AUTO_OP);
-+		if (ret)
-+			return ret;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	ret = phy_clear_bits(phydev, MII_CFG1, MII_CFG1_SLEEP_CONFIRM);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_modify(phydev, MII_CFG2, MII_CFG2_SLEEP_REQUEST_TO,
-+			 MII_CFG2_SLEEP_REQUEST_TO_16MS);
-+	if (ret)
-+		return ret;
-+
-+	ret = tja11xx_wakeup(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* ACK interrupts by reading the status register */
-+	ret = phy_read(phydev, MII_INTSRC);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int tja11xx_read_status(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = genphy_update_link(phydev);
-+	if (ret)
-+		return ret;
-+
-+	if (phydev->link) {
-+		ret = phy_read(phydev, MII_COMMSTAT);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (!(ret & MII_COMMSTAT_LINK_UP))
-+			phydev->link = 0;
-+	}
-+
-+	return 0;
-+}
-+
-+static int tja11xx_get_sset_count(struct phy_device *phydev)
-+{
-+	return ARRAY_SIZE(tja11xx_hw_stats);
-+}
-+
-+static void tja11xx_get_strings(struct phy_device *phydev, u8 *data)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(tja11xx_hw_stats); i++) {
-+		strncpy(data + i * ETH_GSTRING_LEN,
-+			tja11xx_hw_stats[i].string, ETH_GSTRING_LEN);
-+	}
-+}
-+
-+static void tja11xx_get_stats(struct phy_device *phydev,
-+			      struct ethtool_stats *stats, u64 *data)
-+{
-+	int i, ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(tja11xx_hw_stats); i++) {
-+		ret = phy_read(phydev, tja11xx_hw_stats[i].reg);
-+		if (ret < 0)
-+			data[i] = U64_MAX;
-+		else {
-+			data[i] = ret & tja11xx_hw_stats[i].mask;
-+			data[i] >>= tja11xx_hw_stats[i].off;
-+		}
-+	}
-+}
-+
-+static int tja11xx_hwmon_read(struct device *dev,
-+			      enum hwmon_sensor_types type,
-+			      u32 attr, int channel, long *value)
-+{
-+	struct phy_device *phydev = dev_get_drvdata(dev);
-+	int ret;
-+
-+	if (type == hwmon_in && attr == hwmon_in_lcrit_alarm) {
-+		ret = phy_read(phydev, MII_INTSRC);
-+		if (ret < 0)
-+			return ret;
-+
-+		*value = !!(ret & MII_INTSRC_TEMP_ERR);
-+		return 0;
-+	}
-+
-+	if (type == hwmon_temp && attr == hwmon_temp_crit_alarm) {
-+		ret = phy_read(phydev, MII_INTSRC);
-+		if (ret < 0)
-+			return ret;
-+
-+		*value = !!(ret & MII_INTSRC_UV_ERR);
-+		return 0;
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+static umode_t tja11xx_hwmon_is_visible(const void *data,
-+					enum hwmon_sensor_types type,
-+					u32 attr, int channel)
-+{
-+	if (type == hwmon_in && attr == hwmon_in_lcrit_alarm)
-+		return 0444;
-+
-+	if (type == hwmon_temp && attr == hwmon_temp_crit_alarm)
-+		return 0444;
-+
-+	return 0;
-+}
-+
-+static u32 tja11xx_hwmon_in_config[] = {
-+	HWMON_I_LCRIT_ALARM,
-+	0
-+};
-+
-+static const struct hwmon_channel_info tja11xx_hwmon_in = {
-+	.type		= hwmon_in,
-+	.config		= tja11xx_hwmon_in_config,
-+};
-+
-+static u32 tja11xx_hwmon_temp_config[] = {
-+	HWMON_T_CRIT_ALARM,
-+	0
-+};
-+
-+static const struct hwmon_channel_info tja11xx_hwmon_temp = {
-+	.type		= hwmon_temp,
-+	.config		= tja11xx_hwmon_temp_config,
-+};
-+
-+static const struct hwmon_channel_info *tja11xx_hwmon_info[] = {
-+	&tja11xx_hwmon_in,
-+	&tja11xx_hwmon_temp,
-+	NULL
-+};
-+
-+static const struct hwmon_ops tja11xx_hwmon_hwmon_ops = {
-+	.is_visible	= tja11xx_hwmon_is_visible,
-+	.read		= tja11xx_hwmon_read,
-+};
-+
-+static const struct hwmon_chip_info tja11xx_hwmon_chip_info = {
-+	.ops		= &tja11xx_hwmon_hwmon_ops,
-+	.info		= tja11xx_hwmon_info,
-+};
-+
-+static int tja11xx_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct tja11xx_priv *priv;
-+	int i;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->hwmon_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
-+	if (!priv->hwmon_name)
-+		return -ENOMEM;
-+
-+	for (i = 0; priv->hwmon_name[i]; i++)
-+		if (hwmon_is_bad_char(priv->hwmon_name[i]))
-+			priv->hwmon_name[i] = '_';
-+
-+	priv->hwmon_dev =
-+		devm_hwmon_device_register_with_info(dev, priv->hwmon_name,
-+						     phydev,
-+						     &tja11xx_hwmon_chip_info,
-+						     NULL);
-+
-+	return PTR_ERR_OR_ZERO(priv->hwmon_dev);
-+}
-+
-+static struct phy_driver tja11xx_driver[] = {
-+	{
-+		PHY_ID_MATCH_MODEL(PHY_ID_TJA1100),
-+		.name		= "NXP TJA1100",
-+		.features       = PHY_BASIC_T1_FEATURES,
-+		.probe		= tja11xx_probe,
-+		.soft_reset	= tja11xx_soft_reset,
-+		.config_init	= tja11xx_config_init,
-+		.read_status	= tja11xx_read_status,
-+		.suspend	= genphy_suspend,
-+		.resume		= genphy_resume,
-+		.set_loopback   = genphy_loopback,
-+		/* Statistics */
-+		.get_sset_count = tja11xx_get_sset_count,
-+		.get_strings	= tja11xx_get_strings,
-+		.get_stats	= tja11xx_get_stats,
-+	}, {
-+		PHY_ID_MATCH_MODEL(PHY_ID_TJA1101),
-+		.name		= "NXP TJA1101",
-+		.features       = PHY_BASIC_T1_FEATURES,
-+		.probe		= tja11xx_probe,
-+		.soft_reset	= tja11xx_soft_reset,
-+		.config_init	= tja11xx_config_init,
-+		.read_status	= tja11xx_read_status,
-+		.suspend	= genphy_suspend,
-+		.resume		= genphy_resume,
-+		.set_loopback   = genphy_loopback,
-+		/* Statistics */
-+		.get_sset_count = tja11xx_get_sset_count,
-+		.get_strings	= tja11xx_get_strings,
-+		.get_stats	= tja11xx_get_stats,
-+	}
-+};
-+
-+module_phy_driver(tja11xx_driver);
-+
-+static struct mdio_device_id __maybe_unused tja11xx_tbl[] = {
-+	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1100) },
-+	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1101) },
-+	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(mdio, tja11xx_tbl);
-+
-+MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
-+MODULE_DESCRIPTION("NXP TJA11xx BoardR-Reach PHY driver");
-+MODULE_LICENSE("GPL");
+> The patch was submitted while net-next as closed. That is pretty much
+> an automatic reject.
+> 
+> Please submit it again, and add on the review tags you have received.
+> It should then get accepted.
+
+Would be nice to get some sort of notification.
+
+Are all these subtleties documented anywhere ?
+Is there some calendar when to send / not-send patches ?
+
 -- 
-2.20.1
-
+Best regards,
+Marek Vasut
