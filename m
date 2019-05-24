@@ -2,83 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C90A12992A
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 15:44:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7FA92992D
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 15:44:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403834AbfEXNoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 09:44:14 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55932 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391124AbfEXNoO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 09:44:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=NXhrt9pEKadEEIbbXle9xK39f4cdcNeGcn2+kAlso1k=; b=yOjCjNIKKxuVXGIB2CrZa5er7G
-        kCQL8hsyzTYC6GBgfsjAv5L4M2FmcJKjhVPlwh6kaUnNebIL0SSXJ8vmH1u3uZBQwaQhjb6KpmVS5
-        /hu2A4v5oxO1JOJ/tq09GuYlh7o4U76udpD1c2ZxZ+A1X3MAJuEhVCZZAXe9ocqJdxRA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hUAUW-00017M-1g; Fri, 24 May 2019 15:44:12 +0200
-Date:   Fri, 24 May 2019 15:44:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Greg Ungerer <gerg@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Set correct interface mode for
- CPU/DSA ports
-Message-ID: <20190524134412.GE2979@lunn.ch>
-References: <e27eeebb-44fb-ae42-d43d-b42b47510f76@kernel.org>
+        id S2403851AbfEXNoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 09:44:30 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:39853 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391124AbfEXNoa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 09:44:30 -0400
+Received: by mail-ed1-f66.google.com with SMTP id e24so14483792edq.6
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 06:44:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QZ2lKwb3aHTxlALTR9iITxCF8HqdmRq6I5puhbR75tQ=;
+        b=Po1aAwry2QWMbnjQ7HsbYlFz+/4E2X/gvYp4ny+wEd8fOtqVcB2jS/693owoHGpY81
+         Y9DccriNJm5FqGxelp5zw2sXu58xOCS8n770dgkF7ydJCWKKQxDzOdVLdqpefBzCE66O
+         39YuQ5+TnJI4lUCnCSw9kPLm7OtB0lE1iNKXCFgwW9Fr9YtvSYRvN/dOsUOHqqsV0aEG
+         sFZ/6f6UWnedGkQlfQZz5teFzcq3M89evKN6+PF6nW/NOrdugUZkRm8CJYO/ZxXzI8yS
+         RQpdMBqyPUZ5UQS2cFh7fBRp5PjJP7mxvj9lGtqtPfLYpSN+ssTzrNBzs/RGEPcK++Iy
+         PBBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QZ2lKwb3aHTxlALTR9iITxCF8HqdmRq6I5puhbR75tQ=;
+        b=iUyUhB9RYDSMRWCz2W4Ypri5yh2WjZbh0C2mACRNdY21daUfqM6PtIFInXjItZce9m
+         RCfhecF5Mf889a462E2BrcFaMKEbPF7mcXCcQwEYApw5gEkksNbauOBJDChwC+eN8Ssh
+         zw54QYszVF+xTwncaMAA48Zr4m3NHyoh0zvawhPNU+1yD3zjZKsp4rQgdqPNdDPqwiIL
+         gTTWQftos0mdr67qwaldjIfl6x2VTknYshlOC1Zl1bHDHMFgN7NmUyKd/uOSX31ObS0N
+         1NJ0OgwjV02JQW1OWPHTdPoG2JR4jlsv1578J/FV9cKPZc6BqpWb1EHwvyV5EUD7lPmK
+         E8mA==
+X-Gm-Message-State: APjAAAWaqK7a2u44hBFwL7q+c59TguYv5+kHWt7J1bhNSmh3siCkT+C2
+        dWKwGv00iWgJ96qD11dHjh1HguWg+g3V8Wa8Xkc=
+X-Google-Smtp-Source: APXvYqwstCwGHet2+IBFZw08tlR83OZTExFcd2B8KWf06NvQ4ihKF0zP1XfM0lraFRzVsVz8SRyaOxhL56tDXH8JqzI=
+X-Received: by 2002:a17:906:1ec2:: with SMTP id m2mr79687824ejj.47.1558705468096;
+ Fri, 24 May 2019 06:44:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e27eeebb-44fb-ae42-d43d-b42b47510f76@kernel.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190523011958.14944-1-ioana.ciornei@nxp.com> <20190523011958.14944-9-ioana.ciornei@nxp.com>
+ <9c953f4f-af27-d87d-8964-16b7e32ce80f@gmail.com> <CA+h21hpPyk=BYxBXDH5-SGfJdS-E+X9PfZHAMLYNwhL-1stumA@mail.gmail.com>
+ <20190524131937.GB2979@lunn.ch>
+In-Reply-To: <20190524131937.GB2979@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 24 May 2019 16:44:17 +0300
+Message-ID: <CA+h21hpRrEqe82iMp5euimdBbKMAW2M6T3kr09z7L=S9kkOrGQ@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 8/9] net: dsa: Use PHYLINK for the CPU/DSA ports
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 11:25:03AM +1000, Greg Ungerer wrote:
-> Hi Andrew,
-> 
-> I have a problem with a Marvell 6390 switch that I have bisected
-> back to commit 7cbbee050c95, "[PATCH] net: dsa: mv88e6xxx: Set correct
-> interface mode for CPU/DSA ports".
-> 
-> I have a Marvell 380 SoC based platform with a Marvell 6390 10 port
-> switch, everything works with kernel 5.0 and older. As of 5.1 the
-> switch ports no longer work - no packets are ever received and
-> none get sent out.
-> 
-> The ports are probed and all discovered ok, they just don't work.
-> 
->   mv88e6085 f1072004.mdio-mii:10: switch 0x3900 detected: Marvell 88E6390, revision 1
->   libphy: mv88e6xxx SMI: probed
->   mv88e6085 f1072004.mdio-mii:10 lan1 (uninitialized): PHY [mv88e6xxx-1:01] driver [Marvell 88E6390]
->   mv88e6085 f1072004.mdio-mii:10 lan2 (uninitialized): PHY [mv88e6xxx-1:02] driver [Marvell 88E6390]
->   mv88e6085 f1072004.mdio-mii:10 lan3 (uninitialized): PHY [mv88e6xxx-1:03] driver [Marvell 88E6390]
->   mv88e6085 f1072004.mdio-mii:10 lan4 (uninitialized): PHY [mv88e6xxx-1:04] driver [Marvell 88E6390]
->   mv88e6085 f1072004.mdio-mii:10 lan5 (uninitialized): PHY [mv88e6xxx-1:05] driver [Marvell 88E6390]
->   mv88e6085 f1072004.mdio-mii:10 lan6 (uninitialized): PHY [mv88e6xxx-1:06] driver [Marvell 88E6390]
->   mv88e6085 f1072004.mdio-mii:10 lan7 (uninitialized): PHY [mv88e6xxx-1:07] driver [Marvell 88E6390]
->   mv88e6085 f1072004.mdio-mii:10 lan8 (uninitialized): PHY [mv88e6xxx-1:08] driver [Marvell 88E6390]
->   DSA: tree 0 setup
-> 
-> Things like ethtool on the ports seem to work ok, reports link correctly.
-> Configuring ports as part of a bridge or individually gets the same result.
+On Fri, 24 May 2019 at 16:19, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > Hi Florian,
+> >
+> > Yes we could, but since most of the adjust_link -> phylink_mac_ops
+> > changes appear trivial, and we have the knowledge behind b53 right
+> > here, can't we just migrate everything in the next patchset and remove
+> > adjust_link altogether from DSA?
+>
+> I agree with Florian, we either need to support both, or their needs
+> to be another patchset which comes first and converts all DSA drivers
+> to PHYLINK. And it is this conversion patchset which is likely to
+> break things, so it would be good to sit in net-next for a week or two
+> to allow testing, before the second patchset is applied.
+>
+>    Andrew
 
-Hi Greg
+Hi Andrew,
 
-DSA by default should configure the CPU port and DSA ports to there
-maximum speed. For port 10, that is 10Gbps. Your 380 cannot do that
-speed. So you need to tell the switch driver to slow down. Add a fixed
-link node to port ten, with speed 1000. You might also need to set the
-phy-mode to rgmii.
+I think that converting drivers to PHYLINK in a separate patchset is
+going to introduce useless work, since the complete migration to
+PHYLINK is necessarily going to take 2 steps. As of now, the CPU and
+DSA ports still use the PHYLIB adjust_link callback exclusively.
+So let's see what the drivers need to do in adjust_link now and how to
+map that over phylink_mac_config, and in v2 we can just remove the
+adjust_link wrappers completely from DSA.
 
-Can the 380 do 2500BaseX? There is work in progress to support this
-speed, so maybe next cycle you can change to that.
-
-     Andrew
+-Vladimir
