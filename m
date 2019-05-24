@@ -2,71 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A6C72A042
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 23:12:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C25C2A046
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 23:17:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391782AbfEXVMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 17:12:36 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:45196 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391765AbfEXVMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 17:12:36 -0400
-Received: by mail-lj1-f194.google.com with SMTP id r76so4377888lja.12;
-        Fri, 24 May 2019 14:12:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mnO/3dMMYrqeh5q3XQqxFXSGbOB5cTFdvh8nhmTed2g=;
-        b=mjqmNifl2XKUkgrfNXwI+AkFempUWdOxrx7CvnrxyfAafYj877hgdWLwoO7gl+L8v4
-         fJ4tlhbylEfjtyud9kS3TMFL7h9knP/Os94BQyxdLA3rlQy9DhLFC8jJpNBAzvW3yQjf
-         aMey56SJ3cj3/kxGspZ8AzlOpntbqB4dyeUMn+Akrqn1AupDkcp7tddobfE/T3iosz/G
-         YZn+7+PaKDmCTZ3MwTB5vYw1jKS1p06N/lYADvwjjYVQI+nk4arNOQAbhlGp1rVWvaAK
-         geCexSqBwnt3h4+YntZGUkwGKjBS+EHikuYWojfLZwH6KOS9VkrKXWmmPNd34IEN/DfO
-         nTXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mnO/3dMMYrqeh5q3XQqxFXSGbOB5cTFdvh8nhmTed2g=;
-        b=RF/y8/3+AGN1PTjIi0n527kZB8tlQyicNvpxGgl4ui8+eCvrohn0iWlHhXQr657yYT
-         NuS/Vu8U72YCl6YM5XHxrynipn1mhbPWLkTWHjHqssFTzSwkuP0WN0Yi8GLreyWcNp3W
-         dbbd/j0MUGGbyfCMc67/pmECMpQsL6+jlJsYlgrybCO0C10asn+pxe/YVphNI7g6Gihc
-         fXmV9PhzH1jT3LQgEwXUgm4D/HOxBsO45rwwFI2FLIMpDlXi1iJxqvLUxoE6GhSJLenJ
-         8/2L1PGGZ2rxPAno0BmDXXhyYA9VRVM+EtJrStfOqeA9Ozn8CHAdEuzv1EZ86BAxaTTG
-         PXxw==
-X-Gm-Message-State: APjAAAVHdKmsBzPMmQuYZZp1RMfXiuPux/qefndbhtrRsdIfWddNq3G+
-        ubJjJLGH77ewau1cJovANHo/gxmSXmrCjSc8+zY=
-X-Google-Smtp-Source: APXvYqyiDKO8As8voWE8lkCaEE73GnCSOHxjDW7wEoRSK3c0c2vXRa+ZOCWMxjjkk0e5Q534zuUlTUAf3kCYKu7fM6k=
-X-Received: by 2002:a2e:9d09:: with SMTP id t9mr21086168lji.151.1558732354088;
- Fri, 24 May 2019 14:12:34 -0700 (PDT)
+        id S2404165AbfEXVRF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 24 May 2019 17:17:05 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:58664 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391745AbfEXVRF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 17:17:05 -0400
+Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1hUHYg-0006si-1e; Fri, 24 May 2019 21:16:58 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 3C3875FF12; Fri, 24 May 2019 14:16:56 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 344B9A6E88;
+        Fri, 24 May 2019 14:16:56 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jarod Wilson <jarod@redhat.com>
+cc:     linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Heesoon Kim <Heesoon.Kim@stratus.com>
+Subject: Re: [PATCH net] bonding/802.3ad: fix slave link initialization transition states
+In-reply-to: <20190524134928.16834-1-jarod@redhat.com>
+References: <20190524134928.16834-1-jarod@redhat.com>
+Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
+   message dated "Fri, 24 May 2019 09:49:28 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-References: <20190524185908.3562231-1-andriin@fb.com>
-In-Reply-To: <20190524185908.3562231-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 24 May 2019 14:12:22 -0700
-Message-ID: <CAADnVQ+kvMpERwtPJWQFymBDPGJmODXTw1-Dd5H6tQpDzHtBCw@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 00/12] BTF-to-C converter
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <30881.1558732616.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Fri, 24 May 2019 14:16:56 -0700
+Message-ID: <30882.1558732616@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 11:59 AM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> This patch set adds BTF-to-C dumping APIs to libbpf, allowing to output
-> a subset of BTF types as a compilable C type definitions. This is useful by
-> itself, as raw BTF output is not easy to inspect and comprehend. But it's also
-> a big part of BPF CO-RE (compile once - run everywhere) initiative aimed at
-> allowing to write relocatable BPF programs, that won't require on-the-host
-> kernel headers (and would be able to inspect internal kernel structures, not
-> exposed through kernel headers).
+Jarod Wilson <jarod@redhat.com> wrote:
 
-Tested. Works. Applied. Thanks!
+>Once in a while, with just the right timing, 802.3ad slaves will fail to
+>properly initialize, winding up in a weird state, with a partner system
+>mac address of 00:00:00:00:00:00. This started happening after a fix to
+>properly track link_failure_count tracking, where an 802.3ad slave that
+>reported itself as link up in the miimon code, but wasn't able to get a
+>valid speed/duplex, started getting set to BOND_LINK_FAIL instead of
+>BOND_LINK_DOWN. That was the proper thing to do for the general "my link
+>went down" case, but has created a link initialization race that can put
+>the interface in this odd state.
+
+	Reading back in the git history, the ultimate cause of this
+"weird state" appears to be devices that assert NETDEV_UP prior to
+actually being able to supply sane speed/duplex values, correct?
+
+	Presuming that this is the case, I don't see that there's much
+else to be done here, and so:
+
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+
+>The simple fix is to instead set the slave link to BOND_LINK_DOWN again,
+>if the link has never been up (last_link_up == 0), so the link state
+>doesn't bounce from BOND_LINK_DOWN to BOND_LINK_FAIL -- it hasn't failed
+>in this case, it simply hasn't been up yet, and this prevents the
+>unnecessary state change from DOWN to FAIL and getting stuck in an init
+>failure w/o a partner mac.
+>
+>Fixes: ea53abfab960 ("bonding/802.3ad: fix link_failure_count tracking")
+>CC: Jay Vosburgh <j.vosburgh@gmail.com>
+>CC: Veaceslav Falico <vfalico@gmail.com>
+>CC: Andy Gospodarek <andy@greyhouse.net>
+>CC: "David S. Miller" <davem@davemloft.net>
+>CC: netdev@vger.kernel.org
+>Tested-by: Heesoon Kim <Heesoon.Kim@stratus.com>
+>Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+
+
+>---
+> drivers/net/bonding/bond_main.c | 15 ++++++++++-----
+> 1 file changed, 10 insertions(+), 5 deletions(-)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>index 062fa7e3af4c..407f4095a37a 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -3122,13 +3122,18 @@ static int bond_slave_netdev_event(unsigned long event,
+> 	case NETDEV_CHANGE:
+> 		/* For 802.3ad mode only:
+> 		 * Getting invalid Speed/Duplex values here will put slave
+>-		 * in weird state. So mark it as link-fail for the time
+>-		 * being and let link-monitoring (miimon) set it right when
+>-		 * correct speeds/duplex are available.
+>+		 * in weird state. Mark it as link-fail if the link was
+>+		 * previously up or link-down if it hasn't yet come up, and
+>+		 * let link-monitoring (miimon) set it right when correct
+>+		 * speeds/duplex are available.
+> 		 */
+> 		if (bond_update_speed_duplex(slave) &&
+>-		    BOND_MODE(bond) == BOND_MODE_8023AD)
+>-			slave->link = BOND_LINK_FAIL;
+>+		    BOND_MODE(bond) == BOND_MODE_8023AD) {
+>+			if (slave->last_link_up)
+>+				slave->link = BOND_LINK_FAIL;
+>+			else
+>+				slave->link = BOND_LINK_DOWN;
+>+		}
+> 
+> 		if (BOND_MODE(bond) == BOND_MODE_8023AD)
+> 			bond_3ad_adapter_speed_duplex_changed(slave);
+>-- 
+>2.20.1
+>
