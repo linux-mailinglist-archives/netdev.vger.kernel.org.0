@@ -2,65 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0775298C1
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 15:19:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80864298DB
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 15:25:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391549AbfEXNTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 09:19:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55844 "EHLO vps0.lunn.ch"
+        id S2391470AbfEXNZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 09:25:56 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:37936 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391124AbfEXNTo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 09:19:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=nJHMm8ephNoiwFoCA10ZBbTHvz6Psv+u5TytHl2at20=; b=wqHHraoYrCCizoKrTf5ZTIZm4N
-        Iyc87TBAMpk2LNVLK7BMPwV2fwvuoGX2K6KD1QDJT1AAVGN3yP5gkt0x1fTJ0aIKSuIE2mB1angO8
-        WM3H3OkEWrb4VJpl24R2DGoopLP9mvGV/AECJ0WYh4t1KBKsIjx9bLbuRFxJ7M2j+XhU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hUA6j-0000v4-4d; Fri, 24 May 2019 15:19:37 +0200
-Date:   Fri, 24 May 2019 15:19:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
+        id S2391124AbfEXNZz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 May 2019 09:25:55 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 0AC4E30820E6;
+        Fri, 24 May 2019 13:25:51 +0000 (UTC)
+Received: from [10.72.12.217] (ovpn-12-217.pek2.redhat.com [10.72.12.217])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 110E87BE82;
+        Fri, 24 May 2019 13:25:28 +0000 (UTC)
+Subject: Re: [PATCH v3 2/2] net: core: support XDP generic on stacked devices.
+To:     Jesper Dangaard Brouer <netdev@brouer.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next 8/9] net: dsa: Use PHYLINK for the CPU/DSA
- ports
-Message-ID: <20190524131937.GB2979@lunn.ch>
-References: <20190523011958.14944-1-ioana.ciornei@nxp.com>
- <20190523011958.14944-9-ioana.ciornei@nxp.com>
- <9c953f4f-af27-d87d-8964-16b7e32ce80f@gmail.com>
- <CA+h21hpPyk=BYxBXDH5-SGfJdS-E+X9PfZHAMLYNwhL-1stumA@mail.gmail.com>
+        Tom Herbert <tom@herbertland.com>,
+        John Fastabend <john.fastabend@gmail.com>
+References: <20190523175429.13302-1-sthemmin@microsoft.com>
+ <20190523175429.13302-3-sthemmin@microsoft.com>
+ <3dbe4e29bf1ec71809e9dd2b32ec16272957a4cd.camel@mellanox.com>
+ <20190523131544.6d8a28f7@hermes.lan> <20190524113306.28b83b1f@carbon>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <935e9d1b-c01e-a2fb-e83b-e2900140f484@redhat.com>
+Date:   Fri, 24 May 2019 21:25:19 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpPyk=BYxBXDH5-SGfJdS-E+X9PfZHAMLYNwhL-1stumA@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190524113306.28b83b1f@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Fri, 24 May 2019 13:25:55 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Florian,
-> 
-> Yes we could, but since most of the adjust_link -> phylink_mac_ops
-> changes appear trivial, and we have the knowledge behind b53 right
-> here, can't we just migrate everything in the next patchset and remove
-> adjust_link altogether from DSA?
 
-I agree with Florian, we either need to support both, or their needs
-to be another patchset which comes first and converts all DSA drivers
-to PHYLINK. And it is this conversion patchset which is likely to
-break things, so it would be good to sit in net-next for a week or two
-to allow testing, before the second patchset is applied.
+On 2019/5/24 下午5:33, Jesper Dangaard Brouer wrote:
+> On Thu, 23 May 2019 13:15:44 -0700
+> Stephen Hemminger <stephen@networkplumber.org> wrote:
+>
+>> On Thu, 23 May 2019 19:19:40 +0000
+>> Saeed Mahameed <saeedm@mellanox.com> wrote:
+>>
+>>> On Thu, 2019-05-23 at 10:54 -0700, Stephen Hemminger wrote:
+>>>> When a device is stacked like (team, bonding, failsafe or netvsc) the
+>>>> XDP generic program for the parent device was not called.
+>>>>
+>>>> Move the call to XDP generic inside __netif_receive_skb_core where
+>>>> it can be done multiple times for stacked case.
+>>>>
+>>>> Suggested-by: Jiri Pirko <jiri@resnulli.us>
+>>>> Fixes: d445516966dc ("net: xdp: support xdp generic on virtual
+>>>> devices")
+>>>> Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
+>>>> ---
+>>>> v1 - call xdp_generic in netvsc handler
+>>>> v2 - do xdp_generic in generic rx handler processing
+>>>> v3 - move xdp_generic call inside the another pass loop
+>>>>
+>>>>   net/core/dev.c | 56 ++++++++++------------------------------------
+>>>> ----
+>>>>   1 file changed, 11 insertions(+), 45 deletions(-)
+>>>>
+>>>> diff --git a/net/core/dev.c b/net/core/dev.c
+>>>> index b6b8505cfb3e..696776e14d00 100644
+>>>> --- a/net/core/dev.c
+>>>> +++ b/net/core/dev.c
+>>>> @@ -4502,23 +4502,6 @@ static int netif_rx_internal(struct sk_buff
+>>>> *skb)
+>>>>   
+>>>>   	trace_netif_rx(skb);
+>>>>   
+>>>> -	if (static_branch_unlikely(&generic_xdp_needed_key)) {
+>>>> -		int ret;
+>>>> -
+>>>> -		preempt_disable();
+>>>> -		rcu_read_lock();
+>>>> -		ret = do_xdp_generic(rcu_dereference(skb->dev-
+>>>>> xdp_prog), skb);
+>>>> -		rcu_read_unlock();
+>>>> -		preempt_enable();
+>>>> -
+>>>> -		/* Consider XDP consuming the packet a success from
+>>>> -		 * the netdev point of view we do not want to count
+>>>> -		 * this as an error.
+>>>> -		 */
+>>>> -		if (ret != XDP_PASS)
+>>>> -			return NET_RX_SUCCESS;
+>>>> -	}
+>>>> -
+>>> Adding Jesper,
+>>>
+>>> There is a small behavioral change due to this patch,
+>>> the XDP program after this patch will run on the RPS CPU, if
+>>> configured, which could cause some behavioral changes in
+>>> xdp_redirect_cpu: bpf_redirect_map(cpu_map).
+>>>
+>>> Maybe this is acceptable, but it should be documented, as the current
+>>> assumption dictates: XDP program runs on the core where the XDP
+>>> frame/SKB was first seen.
+> This does break some assumptions, that I worry about.  I've not
+> optimized generic XDP much, as this is suppose to be slow-path, but as
+> you can see in my evaluation[1] generic-XDP do have a performance
+> potential (XDP drop: native=12Mpps and generic=8.4Mpps), but the
+> XDP-generic performance dies as soon as we e.g. do XDP_TX
+> (native=10Mpps and generic=4Mpps).  The reason is lack of bulking.
+>
+> We could implement the same kind of RX-bulking tricks as we do for
+> XDP_REDIRECT, where bpf_redirect_map store frames in the map and send
+> them once NAPI-poll exit via a xdp_do_flush_map().  These tricks
+> depend on per-CPU data (bpf_redirect_info), thus I cannot see how this
+> could work if XDP-generic now happens after RPS on a remote CPU.
 
-   Andrew
+
+RPS uses backlog NAPI so per-CPU is probably not an issue.
+
+Thanks
+
+
+>
+> Notice, that TX bulking at XDP-generic level, is actually rather
+> simple, as netstack TX path-code support xmit_more via creating a list
+> of SKBs... Last time I hacked it up, I saw 20%-30% speedup... anyone
+> motivated to do this?
+>
+>> Or maybe XDP should just force off RPS (like it does gro)
+> I guess, we could force off RPS.  But I do see one valid use-case of
+> combining CPUMAP redirect with RFS (Receive Flow Steering) which is part
+> of RPS.  Yes, I know we/I *also* have to implement generic-XDP-cpumap
+> support. But for native-XDP CPUMAP redirect, from 1-2 RX-CPUs into
+> N-remote CPUs via CPUMAP, and then lets RFS send SKBs to where the
+> application runs, does make sense to me. (I do have an "assignment" to
+> implement this in eBPF here[2]).
+>
+>
+> [1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/Documentation/blogposts/xdp25_eval_generic_xdp_tx.rst
+>
+> [2] https://github.com/xdp-project/xdp-project/blob/master/areas/cpumap.org#cpumap-implement-dynamic-load-balancer-that-is-ooo-safe
