@@ -2,158 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D74928F5E
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 05:02:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C98A28F7E
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 05:13:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388275AbfEXDCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 23:02:47 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:46788 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387408AbfEXDCq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 23:02:46 -0400
-Received: by mail-pg1-f196.google.com with SMTP id o11so4001952pgm.13;
-        Thu, 23 May 2019 20:02:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=9i4cdB60faPnhj45QCC3TV0kbSmOz80HuRNljtezoro=;
-        b=Pl6kuPKCqT2Q2oqWLMY2G/Aqvgnsz1h3rLNo9Ip+f9K51gbOm4wbz4gzPIh23B4zFt
-         de0y8r8yLnm3vrKDEWnPBcABSrqVskubxL6cCsSlrxHKVUTt8u3oYJL9Thh8UEHrNfav
-         95GYHvUmUtKe15ViJGyKHxPtAgSCFPmKWL2Y69uhBVG7HR/5FPJY0crXj5ov2e8OKZrL
-         YZvvfdWJ9zrwUBTu65KHkfVsX36i09gyOtxEVN01SPznbDnETM2CzOvCeCgxs0kX8Uvg
-         eLzcUUHht/UaG+ZFqXyOZ1cRuc7X3TDMM0m+/AT+avXiAp+RowA83sUCkju/J3odSk7W
-         agYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=9i4cdB60faPnhj45QCC3TV0kbSmOz80HuRNljtezoro=;
-        b=MffBXsMNSlzxP29rE85Ekcy1r2wkEGCdaIVqWlAfet2Y6fp+3tGrnAt1gg6EmSJeJq
-         LTqoUJ8InV8ZKBhR3D82ufb1r+0kPyEi6upzve30FhxUK69B4rN9x/OeHhL2Sn/QYz76
-         FPGOp6Ja3CVS88xelXieUI1foTIlttsIqcWxun3PgkFSFd3SvKIy1pZviu/YLvLsb+1r
-         W0s3junLaTM8FRvJS60lU5QV5rDqgIL+N0zlnujS7xUfvFy4GYAe7V9316xob44KN0jn
-         SGkza8BFx7Se04z743O6xYdboOZUaysNkB8UDW0wfPL1Eq9gI29c4gHD4C8ybipKfIzH
-         rGzg==
-X-Gm-Message-State: APjAAAWKNqL2id9bNtv8nyL7GiMYviAbRBo29CF6Lk1W0BM4gj2QEfZV
-        8f2Yto9dB48o5dEzy64acEg=
-X-Google-Smtp-Source: APXvYqxFnZzo4mqSLdYWWn4mWlqTNetxBxGG8ORG2e9Mz6qv9InBYuy1nKjifzuIF79F+cfmc+Zk1g==
-X-Received: by 2002:a65:62d8:: with SMTP id m24mr8026193pgv.141.1558666965582;
-        Thu, 23 May 2019 20:02:45 -0700 (PDT)
-Received: from zhanggen-UX430UQ ([66.42.35.75])
-        by smtp.gmail.com with ESMTPSA id e184sm857669pfa.169.2019.05.23.20.02.40
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 20:02:45 -0700 (PDT)
-Date:   Fri, 24 May 2019 11:02:35 +0800
-From:   Gen Zhang <blackgod016574@gmail.com>
-To:     kvalo@codeaurora.org, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] wlcore: spi: Fix a memory leaking bug in wl1271_probe()
-Message-ID: <20190524030117.GA6024@zhanggen-UX430UQ>
+        id S2388826AbfEXDNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 23:13:21 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42558 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387885AbfEXDNU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 23:13:20 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 675B030024A4;
+        Fri, 24 May 2019 03:13:19 +0000 (UTC)
+Received: from [10.72.12.217] (ovpn-12-217.pek2.redhat.com [10.72.12.217])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BBB895C219;
+        Fri, 24 May 2019 03:13:05 +0000 (UTC)
+Subject: Re: [PATCH bpf-next 3/3] veth: Support bulk XDP_TX
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <1558609008-2590-1-git-send-email-makita.toshiaki@lab.ntt.co.jp>
+ <1558609008-2590-4-git-send-email-makita.toshiaki@lab.ntt.co.jp>
+ <87zhnd1kg9.fsf@toke.dk> <599302b2-96d2-b571-01ee-f4914acaf765@lab.ntt.co.jp>
+ <20190523152927.14bf7ed1@carbon>
+ <c902c0f4-947b-ba9e-7baa-628ba87a8f01@gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <94046143-f05d-77db-88c4-7bd62f2c98d4@redhat.com>
+Date:   Fri, 24 May 2019 11:13:03 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <c902c0f4-947b-ba9e-7baa-628ba87a8f01@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Fri, 24 May 2019 03:13:19 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In wl1271_probe(), 'glue->core' is allocated by platform_device_alloc(),
-when this allocation fails, ENOMEM is returned. However, 'pdev_data'
-and 'glue' are allocated by devm_kzalloc() before 'glue->core'. When
-platform_device_alloc() returns NULL, we should also free 'pdev_data'
-and 'glue' before wl1271_probe() ends to prevent leaking memory.
 
-Similarly, we shoulf free 'pdev_data' when 'glue' is NULL. And we should
-free 'pdev_data' and 'glue' when 'glue->reg' is error and when 'ret' is
-error.
+On 2019/5/23 下午9:51, Toshiaki Makita wrote:
+> On 19/05/23 (木) 22:29:27, Jesper Dangaard Brouer wrote:
+>> On Thu, 23 May 2019 20:35:50 +0900
+>> Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> wrote:
+>>
+>>> On 2019/05/23 20:25, Toke Høiland-Jørgensen wrote:
+>>>> Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> writes:
+>>>>> This improves XDP_TX performance by about 8%.
+>>>>>
+>>>>> Here are single core XDP_TX test results. CPU consumptions are taken
+>>>>> from "perf report --no-child".
+>>>>>
+>>>>> - Before:
+>>>>>
+>>>>>    7.26 Mpps
+>>>>>
+>>>>>    _raw_spin_lock  7.83%
+>>>>>    veth_xdp_xmit  12.23%
+>>>>>
+>>>>> - After:
+>>>>>
+>>>>>    7.84 Mpps
+>>>>>
+>>>>>    _raw_spin_lock  1.17%
+>>>>>    veth_xdp_xmit   6.45%
+>>>>>
+>>>>> Signed-off-by: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
+>>>>> ---
+>>>>>   drivers/net/veth.c | 26 +++++++++++++++++++++++++-
+>>>>>   1 file changed, 25 insertions(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+>>>>> index 52110e5..4edc75f 100644
+>>>>> --- a/drivers/net/veth.c
+>>>>> +++ b/drivers/net/veth.c
+>>>>> @@ -442,6 +442,23 @@ static int veth_xdp_xmit(struct net_device 
+>>>>> *dev, int n,
+>>>>>       return ret;
+>>>>>   }
+>>>>>   +static void veth_xdp_flush_bq(struct net_device *dev)
+>>>>> +{
+>>>>> +    struct xdp_tx_bulk_queue *bq = this_cpu_ptr(&xdp_tx_bq);
+>>>>> +    int sent, i, err = 0;
+>>>>> +
+>>>>> +    sent = veth_xdp_xmit(dev, bq->count, bq->q, 0);
+>>>>
+>>>> Wait, veth_xdp_xmit() is just putting frames on a pointer ring. So
+>>>> you're introducing an additional per-cpu bulk queue, only to avoid 
+>>>> lock
+>>>> contention around the existing pointer ring. But the pointer ring is
+>>>> per-rq, so if you have lock contention, this means you must have
+>>>> multiple CPUs servicing the same rq, no?
+>>>
+>>> Yes, it's possible. Not recommended though.
+>>>
+>>
+>> I think the general per-cpu TX bulk queue is overkill.  There is a loop
+>> over packets in veth_xdp_rcv(struct veth_rq *rq, budget, *status), and
+>> the caller veth_poll() will call veth_xdp_flush(rq->dev).
+>>
+>> Why can't you store this "temp" bulk array in struct veth_rq ?
+>
+> Of course I can. But I thought tun has the same problem and we can 
+> decrease memory footprint by sharing the same storage between devices.
 
-Further, we should free 'glue->core', 'pdev_data' and 'glue' when this 
-function normally ends to prevent leaking memory.
 
-Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
----
-diff --git a/drivers/net/wireless/ti/wlcore/spi.c b/drivers/net/wireless/ti/wlcore/spi.c
-index 62ce54a..ea0ec26 100644
---- a/drivers/net/wireless/ti/wlcore/spi.c
-+++ b/drivers/net/wireless/ti/wlcore/spi.c
-@@ -480,7 +480,7 @@ static int wl1271_probe(struct spi_device *spi)
- 	struct wl12xx_spi_glue *glue;
- 	struct wlcore_platdev_data *pdev_data;
- 	struct resource res[1];
--	int ret;
-+	int ret = -ENOMEM;
- 
- 	pdev_data = devm_kzalloc(&spi->dev, sizeof(*pdev_data), GFP_KERNEL);
- 	if (!pdev_data)
-@@ -491,7 +491,8 @@ static int wl1271_probe(struct spi_device *spi)
- 	glue = devm_kzalloc(&spi->dev, sizeof(*glue), GFP_KERNEL);
- 	if (!glue) {
- 		dev_err(&spi->dev, "can't allocate glue\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto out_free1;
- 	}
- 
- 	glue->dev = &spi->dev;
-@@ -503,31 +504,35 @@ static int wl1271_probe(struct spi_device *spi)
- 	spi->bits_per_word = 32;
- 
- 	glue->reg = devm_regulator_get(&spi->dev, "vwlan");
--	if (PTR_ERR(glue->reg) == -EPROBE_DEFER)
--		return -EPROBE_DEFER;
-+	if (PTR_ERR(glue->reg) == -EPROBE_DEFER) {
-+		ret = -EPROBE_DEFER;
-+		goto out_free2;
-+	}
- 	if (IS_ERR(glue->reg)) {
- 		dev_err(glue->dev, "can't get regulator\n");
--		return PTR_ERR(glue->reg);
-+		ret = PTR_ERR(glue->reg);
-+		goto out_free2;
- 	}
- 
- 	ret = wlcore_probe_of(spi, glue, pdev_data);
- 	if (ret) {
- 		dev_err(glue->dev,
- 			"can't get device tree parameters (%d)\n", ret);
--		return ret;
-+		goto out_free2;
- 	}
- 
- 	ret = spi_setup(spi);
- 	if (ret < 0) {
- 		dev_err(glue->dev, "spi_setup failed\n");
--		return ret;
-+		goto out_free2;
- 	}
- 
- 	glue->core = platform_device_alloc(pdev_data->family->name,
- 					   PLATFORM_DEVID_AUTO);
- 	if (!glue->core) {
- 		dev_err(glue->dev, "can't allocate platform_device\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto out_free2;
- 	}
- 
- 	glue->core->dev.parent = &spi->dev;
-@@ -557,10 +562,14 @@ static int wl1271_probe(struct spi_device *spi)
- 		goto out_dev_put;
- 	}
- 
--	return 0;
-+	ret =  0;
- 
- out_dev_put:
- 	platform_device_put(glue->core);
-+out_free2:
-+	devm_kfree(&func->dev, glue);
-+out_free1:
-+	devm_kfree(&func->dev, pdev_data);
- 	return ret;
- }
- 
----
+For TUN and for its fast path where vhost passes a bulk of XDP frames 
+(through msg_control) to us, we probably just need a temporary bulk 
+array in tun_xdp_one() instead of a global one. I can post patch or 
+maybe you if you're interested in this.
+
+Thanks
+
+
+> Or if other devices want to reduce queues so that we can use XDP on 
+> many-cpu servers and introduce locks, we can use this storage for that 
+> case as well.
+>
+> Still do you prefer veth-specific solution?
+>
+>>
+>> You could even alloc/create it on the stack of veth_poll() and send it
+>> along via a pointer to veth_xdp_rcv).
+>>
+>
+> Toshiaki Makita
