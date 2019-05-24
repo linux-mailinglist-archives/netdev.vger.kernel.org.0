@@ -2,242 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B16B2A0D2
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 00:00:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E312A0D8
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 00:01:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404334AbfEXWAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 18:00:04 -0400
-Received: from www62.your-server.de ([213.133.104.62]:55088 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404303AbfEXWAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 18:00:03 -0400
-Received: from [88.198.220.132] (helo=sslproxy03.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hUIEL-0002Ld-Fn; Sat, 25 May 2019 00:00:01 +0200
-Received: from [178.197.249.12] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hUIEL-0006c1-18; Sat, 25 May 2019 00:00:01 +0200
-Subject: Re: [PATCH bpf-next v5 1/3] bpf: implement bpf_send_signal() helper
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@fb.com>, kernel-team@fb.com,
-        Peter Zijlstra <peterz@infradead.org>
-References: <20190523214745.854300-1-yhs@fb.com>
- <20190523214745.854355-1-yhs@fb.com>
- <54257f88-b088-2330-ba49-a78ce06d08bf@iogearbox.net>
-Message-ID: <2f7fe79b-0e3f-2be3-aede-bd8eb369c91e@iogearbox.net>
-Date:   Fri, 24 May 2019 23:59:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
-MIME-Version: 1.0
-In-Reply-To: <54257f88-b088-2330-ba49-a78ce06d08bf@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25459/Fri May 24 09:59:21 2019)
+        id S2404368AbfEXWB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 18:01:27 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:35364 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404315AbfEXWB0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 18:01:26 -0400
+Received: by mail-pg1-f193.google.com with SMTP id t1so5748837pgc.2
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 15:01:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=appneta.com; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=Nt1Bto+RuKAe8F0XKPOQ+MhI4MGCp3IBcqE1bNWm624=;
+        b=CP3pG9ifqRjFBc0YzSgRZhosVC3X/Gn1RGmFGqOzuMcKIczmIs/OCyyjYxWltNsfFk
+         4mycd8lZIITJoEB+fcpjf8FT1kv+xkBDmO6lK+fhB4wuUjsW2BKF02fS2SVSabb57vwh
+         ANBUCNIjYnb5tPURfcu15IQNfhbH/7OJVk0es=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=Nt1Bto+RuKAe8F0XKPOQ+MhI4MGCp3IBcqE1bNWm624=;
+        b=umRemHeivW6xI3mT6VSmvoOrK36xVfZQV3n86+uCaACONtc3Qb/XIxIiY9udfaENsZ
+         sqCxi4Vjq5kHmi9CTVAuSQ73fbXK3nAGRfwBsUIk5OcAyG1zmdy9n6J1NqZzf74e0fYT
+         7Eh8EYWkL2MdrKrPCrDuMTlGkKxKJkOk5XUck+IUNAOTl4j0KIGxvfMgeRBjn43iDMC4
+         AuIf6NG11X1YCKyErnv3mR2K4PVxtqVzs8lWOdHZHd3PkWPGYIe9GxuVFlyS+2vB6D40
+         ss14u7KVEUCNRHfsXx5X+sOFhEr3Kcev2DVC3ukgsX+pR3M4wj3kG6z+28zOr6toW8yF
+         jJmw==
+X-Gm-Message-State: APjAAAU6yLExKYqGw0emuJTTWEwOSIy3l0Mw69KN06xBfH38fIdcZuWW
+        /P6dHD/xY19cuvzM/nYrkBchzw==
+X-Google-Smtp-Source: APXvYqx1AU7WlE+4JCn2Y/DvThwLZLnoOhh2EBVLKjNWpqmzprHergerEz/Wt2MlbcL6sAcU78Bqng==
+X-Received: by 2002:a17:90a:216d:: with SMTP id a100mr12026144pje.6.1558735285565;
+        Fri, 24 May 2019 15:01:25 -0700 (PDT)
+Received: from jltm109.jaalam.net (vancouver-a.appneta.com. [209.139.228.33])
+        by smtp.gmail.com with ESMTPSA id e123sm3645702pgc.29.2019.05.24.15.01.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2019 15:01:24 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.8\))
+Subject: Re: [PATCH net 1/4] net/udp_gso: Allow TX timestamp with UDP GSO
+From:   Fred Klassen <fklassen@appneta.com>
+In-Reply-To: <CAF=yD-Le-eTadOi7PL8WFEQCG=yLqb5gvKiks+s5Akeq8TenBQ@mail.gmail.com>
+Date:   Fri, 24 May 2019 15:01:24 -0700
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <90E3853F-107D-45BA-93DC-D0BE8AC6FCBB@appneta.com>
+References: <20190523210651.80902-1-fklassen@appneta.com>
+ <20190523210651.80902-2-fklassen@appneta.com>
+ <CAF=yD-Jf95De=z_nx9WFkGDa6+nRUqM_1PqGkjwaFPzOe+PfXg@mail.gmail.com>
+ <AE8E0772-7256-4B9C-A990-96930E834AEE@appneta.com>
+ <CAF=yD-LtAKpND601LQrC1+=iF6spSUXVdUapcsbJdv5FYa=5Jg@mail.gmail.com>
+ <AFC1ECC8-BFAC-4718-B0C9-97CC4BD1F397@appneta.com>
+ <CAF=yD-Le-eTadOi7PL8WFEQCG=yLqb5gvKiks+s5Akeq8TenBQ@mail.gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+X-Mailer: Apple Mail (2.3445.104.8)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/24/2019 11:39 PM, Daniel Borkmann wrote:
-> On 05/23/2019 11:47 PM, Yonghong Song wrote:
->> This patch tries to solve the following specific use case.
->>
->> Currently, bpf program can already collect stack traces
->> through kernel function get_perf_callchain()
->> when certain events happens (e.g., cache miss counter or
->> cpu clock counter overflows). But such stack traces are
->> not enough for jitted programs, e.g., hhvm (jited php).
->> To get real stack trace, jit engine internal data structures
->> need to be traversed in order to get the real user functions.
->>
->> bpf program itself may not be the best place to traverse
->> the jit engine as the traversing logic could be complex and
->> it is not a stable interface either.
->>
->> Instead, hhvm implements a signal handler,
->> e.g. for SIGALARM, and a set of program locations which
->> it can dump stack traces. When it receives a signal, it will
->> dump the stack in next such program location.
->>
->> Such a mechanism can be implemented in the following way:
->>   . a perf ring buffer is created between bpf program
->>     and tracing app.
->>   . once a particular event happens, bpf program writes
->>     to the ring buffer and the tracing app gets notified.
->>   . the tracing app sends a signal SIGALARM to the hhvm.
->>
->> But this method could have large delays and causing profiling
->> results skewed.
->>
->> This patch implements bpf_send_signal() helper to send
->> a signal to hhvm in real time, resulting in intended stack traces.
->>
->> Acked-by: Andrii Nakryiko <andriin@fb.com>
->> Signed-off-by: Yonghong Song <yhs@fb.com>
->> ---
->>  include/uapi/linux/bpf.h | 17 +++++++++-
->>  kernel/trace/bpf_trace.c | 72 ++++++++++++++++++++++++++++++++++++++++
->>  2 files changed, 88 insertions(+), 1 deletion(-)
->>
->> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->> index 63e0cf66f01a..68d4470523a0 100644
->> --- a/include/uapi/linux/bpf.h
->> +++ b/include/uapi/linux/bpf.h
->> @@ -2672,6 +2672,20 @@ union bpf_attr {
->>   *		0 on success.
->>   *
->>   *		**-ENOENT** if the bpf-local-storage cannot be found.
->> + *
->> + * int bpf_send_signal(u32 sig)
->> + *	Description
->> + *		Send signal *sig* to the current task.
->> + *	Return
->> + *		0 on success or successfully queued.
->> + *
->> + *		**-EBUSY** if work queue under nmi is full.
->> + *
->> + *		**-EINVAL** if *sig* is invalid.
->> + *
->> + *		**-EPERM** if no permission to send the *sig*.
->> + *
->> + *		**-EAGAIN** if bpf program can try again.
->>   */
->>  #define __BPF_FUNC_MAPPER(FN)		\
->>  	FN(unspec),			\
->> @@ -2782,7 +2796,8 @@ union bpf_attr {
->>  	FN(strtol),			\
->>  	FN(strtoul),			\
->>  	FN(sk_storage_get),		\
->> -	FN(sk_storage_delete),
->> +	FN(sk_storage_delete),		\
->> +	FN(send_signal),
->>  
->>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->>   * function eBPF program intends to call
->> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
->> index f92d6ad5e080..70029eafc71f 100644
->> --- a/kernel/trace/bpf_trace.c
->> +++ b/kernel/trace/bpf_trace.c
->> @@ -567,6 +567,63 @@ static const struct bpf_func_proto bpf_probe_read_str_proto = {
->>  	.arg3_type	= ARG_ANYTHING,
->>  };
->>  
->> +struct send_signal_irq_work {
->> +	struct irq_work irq_work;
->> +	struct task_struct *task;
->> +	u32 sig;
->> +};
->> +
->> +static DEFINE_PER_CPU(struct send_signal_irq_work, send_signal_work);
->> +
->> +static void do_bpf_send_signal(struct irq_work *entry)
->> +{
->> +	struct send_signal_irq_work *work;
->> +
->> +	work = container_of(entry, struct send_signal_irq_work, irq_work);
->> +	group_send_sig_info(work->sig, SEND_SIG_PRIV, work->task, PIDTYPE_TGID);
->> +}
->> +
->> +BPF_CALL_1(bpf_send_signal, u32, sig)
->> +{
->> +	struct send_signal_irq_work *work = NULL;
->> +
 
-Oh, and one more thing:
 
-	if (!valid_signal(sig))
-		return -EINVAL;
+> On May 24, 2019, at 12:29 PM, Willem de Bruijn =
+<willemdebruijn.kernel@gmail.com> wrote:
+>=20
+> It is the last moment that a timestamp can be generated for the last
+> byte, I don't see how that is "neither the start nor the end of a GSO
+> packet=E2=80=9D.
 
-Otherwise when deferring the work, you don't have any such feedback.
+My misunderstanding. I thought TCP did last segment timestamping, not
+last byte. In that case, your statements make sense.
 
->> +	/* Similar to bpf_probe_write_user, task needs to be
->> +	 * in a sound condition and kernel memory access be
->> +	 * permitted in order to send signal to the current
->> +	 * task.
->> +	 */
->> +	if (unlikely(current->flags & (PF_KTHREAD | PF_EXITING)))
->> +		return -EPERM;
->> +	if (unlikely(uaccess_kernel()))
->> +		return -EPERM;
->> +	if (unlikely(!nmi_uaccess_okay()))
->> +		return -EPERM;
->> +
->> +	if (in_nmi()) {
->> +		work = this_cpu_ptr(&send_signal_work);
->> +		if (work->irq_work.flags & IRQ_WORK_BUSY)
-> 
-> Given here and in stackmap are the only two users outside of kernel/irq_work.c,
-> it may probably be good to add a small helper to include/linux/irq_work.h and
-> use it for both.
-> 
-> Perhaps something like ...
-> 
-> static inline bool irq_work_busy(struct irq_work *work)
-> {
-> 	return READ_ONCE(work->flags) & IRQ_WORK_BUSY;
-> }
-> 
->> +			return -EBUSY;
->> +
->> +		/* Add the current task, which is the target of sending signal,
->> +		 * to the irq_work. The current task may change when queued
->> +		 * irq works get executed.
->> +		 */
->> +		work->task = current;
->> +		work->sig = sig;
->> +		irq_work_queue(&work->irq_work);
->> +		return 0;
->> +	}
->> +
->> +	return group_send_sig_info(sig, SEND_SIG_PRIV, current, PIDTYPE_TGID);
->> +}
->> +
->> +static const struct bpf_func_proto bpf_send_signal_proto = {
->> +	.func		= bpf_send_signal,
->> +	.gpl_only	= false,
->> +	.ret_type	= RET_INTEGER,
->> +	.arg1_type	= ARG_ANYTHING,
->> +};
->> +
->>  static const struct bpf_func_proto *
->>  tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->>  {
->> @@ -617,6 +674,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->>  	case BPF_FUNC_get_current_cgroup_id:
->>  		return &bpf_get_current_cgroup_id_proto;
->>  #endif
->> +	case BPF_FUNC_send_signal:
->> +		return &bpf_send_signal_proto;
->>  	default:
->>  		return NULL;
->>  	}
->> @@ -1343,5 +1402,18 @@ static int __init bpf_event_init(void)
->>  	return 0;
->>  }
->>  
->> +static int __init send_signal_irq_work_init(void)
->> +{
->> +	int cpu;
->> +	struct send_signal_irq_work *work;
->> +
->> +	for_each_possible_cpu(cpu) {
->> +		work = per_cpu_ptr(&send_signal_work, cpu);
->> +		init_irq_work(&work->irq_work, do_bpf_send_signal);
->> +	}
->> +	return 0;
->> +}
->> +
->>  fs_initcall(bpf_event_init);
->> +subsys_initcall(send_signal_irq_work_init);
->>  #endif /* CONFIG_MODULES */
->>
-> 
+>> It would be interesting if a practical case can be made for =
+timestamping
+>> the last segment. In my mind, I don=E2=80=99t see how that would be =
+valuable.
+>=20
+> It depends whether you are interested in measuring network latency or
+> host transmit path latency.
+>=20
+> For the latter, knowing the time from the start of the sendmsg call to
+> the moment the last byte hits the wire is most relevant. Or in absence
+> of (well defined) hardware support, the last byte being queued to the
+> device is the next best thing.
+>=20
+> It would make sense for this software implementation to follow
+> established hardware behavior. But as far as I know, the exact time a
+> hardware timestamp is taken is not consistent across devices, either.
+>=20
+> For fine grained timestamped data, perhaps GSO is simply not a good
+> mechanism. That said, it still has to queue a timestamp if requested.
+
+I see your point. Makes sense to me.
+
+>> When using hardware timestamping, I think you will find that nearly =
+all
+>> adapters only allow one timestamp at a time. Therefore only one
+>> packet in a burst would get timestamped.
+>=20
+> Can you elaborate? When the host queues N packets all with hardware
+> timestamps requested, all N completions will have a timestamp? Or is
+> that not guaranteed?
+>=20
+
+It is not guaranteed. The best example is in ixgbe_main.c and search for
+=E2=80=98SKBTX_HW_TSTAMP=E2=80=99.  If there is a PTP TX timestamp in =
+progress,
+=E2=80=98__IXGBE_PTP_TX_IN_PROGRESS=E2=80=99 is set and no other =
+timestamps
+are possible. The flag is cleared after transmit softirq, and only then
+can another TX timestamp be taken. =20
+
+>> There are exceptions, for
+>> example I am playing with a 100G Mellanox adapter that has
+>> per-packet TX timestamping. However, I suspect that when I am
+>> done testing, all I will see is timestamps that are representing wire
+>> rate (e.g. 123nsec per 1500 byte packet).
+>>=20
+>> Beyond testing the accuracy of a NIC=E2=80=99s timestamping =
+capabilities, I
+>> see very little value in doing per-segment timestamping.
+>=20
+> Ack. Great detailed argument, thanks.
+
+Thanks. I=E2=80=99m a timestamping nerd and have learned lots with this=20=
+
+discussion.
 
