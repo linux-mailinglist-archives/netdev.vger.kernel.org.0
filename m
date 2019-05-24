@@ -2,94 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B14629A0E
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 16:27:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C9C29A10
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 16:29:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391663AbfEXO1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 10:27:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56108 "EHLO vps0.lunn.ch"
+        id S2391597AbfEXO3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 10:29:07 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56122 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390885AbfEXO1c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 10:27:32 -0400
+        id S2391271AbfEXO3G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 May 2019 10:29:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=Qg8YPqC0sLWiiM2apj3tRNk0cAK9VGI3Riy94bmfmbk=; b=NH9RDoNq1BbwA3D+/zz9k9LOFC
-        HaPaDOrD60MJ7EjI/YPI7N2i2XgqptON4aeWgXA1l9aqzwW5VC75rEz3KMQAzpdTpjwgfNHTLJlqI
-        Wwa58E47QFJAFtiSYhkYhkCAxLzdU80uaQE4922ZLA8DuZ2cOmxtA9HgRkBPyHX8Cfko=;
+        bh=U3lhL7C21RlQ3Y8fqHe72if9AlIjCzKH0geVW9Mq48M=; b=5Vuw6f+/InbNYvGHy/t4l1ctwv
+        NICaMYKZFU7S3zNcru+lf4o+rFfBiaawTIDAW60nnNGx+OTkL8xLvxqbURqVu/zZxQ0LB4ywk8uY0
+        HIN8kW+qAVIiByvvyxy8qaFmxjNPdpPdh5fTXKJ4HkHINSHjJT08jptEhEJu4NqWNs/c=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hUBAO-0001b5-N0; Fri, 24 May 2019 16:27:28 +0200
-Date:   Fri, 24 May 2019 16:27:28 +0200
+        id 1hUBBq-0001dE-VD; Fri, 24 May 2019 16:28:58 +0200
+Date:   Fri, 24 May 2019 16:28:58 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+To:     Marek Vasut <marex@denx.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 5/5] net: dsa: add support for mv88e6250
-Message-ID: <20190524142728.GL2979@lunn.ch>
-References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
- <20190524085921.11108-1-rasmus.villemoes@prevas.dk>
- <20190524085921.11108-6-rasmus.villemoes@prevas.dk>
+        netdev <netdev@vger.kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH V5] net: phy: tja11xx: Add TJA11xx PHY driver
+Message-ID: <20190524142858.GM2979@lunn.ch>
+References: <20190517235123.32261-1-marex@denx.de>
+ <2c30c9c9-1223-ad91-2837-038e0ee5ae23@gmail.com>
+ <CA+h21hq6OW2fX_m3rGvhuumhwCj7MM+VjVH_G4RO85hgGa4p7Q@mail.gmail.com>
+ <e7539c77-72ea-5c7f-16e3-27840b040702@denx.de>
+ <20190524135209.GG2979@lunn.ch>
+ <837d8b8e-cb69-1d27-cc10-4a4f66a5c0c5@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190524085921.11108-6-rasmus.villemoes@prevas.dk>
+In-Reply-To: <837d8b8e-cb69-1d27-cc10-4a4f66a5c0c5@denx.de>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -4841,6 +4910,10 @@ static const struct of_device_id mv88e6xxx_of_match[] = {
->  		.compatible = "marvell,mv88e6190",
->  		.data = &mv88e6xxx_table[MV88E6190],
->  	},
-> +	{
-> +		.compatible = "marvell,mv88e6250",
-> +		.data = &mv88e6xxx_table[MV88E6250],
-> +	},
->  	{ /* sentinel */ },
->  };
+> Are all these subtleties documented anywhere ?
 
-Ah, yes. I had not thought about that. A device at address 0 would be
-found, but a device at address 16 would be missed.
+The netdev FAQ.
 
-Please add this compatible string to Documentation/devicetree/bindings/net/dsa/marvell.txt 
-
-> +++ b/drivers/net/dsa/mv88e6xxx/global1.c
-> @@ -182,6 +182,25 @@ int mv88e6185_g1_reset(struct mv88e6xxx_chip *chip)
->  	return mv88e6185_g1_wait_ppu_polling(chip);
->  }
->  
-> +int mv88e6250_g1_reset(struct mv88e6xxx_chip *chip)
-> +{
-> +	u16 val;
-> +	int err;
-> +
-> +	/* Set the SWReset bit 15 */
-> +	err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_CTL1, &val);
-> +	if (err)
-> +		return err;
-> +
-> +	val |= MV88E6XXX_G1_CTL1_SW_RESET;
-> +
-> +	err = mv88e6xxx_g1_write(chip, MV88E6XXX_G1_CTL1, val);
-> +	if (err)
-> +		return err;
-> +
-> +	return mv88e6xxx_g1_wait_init_ready(chip);
-> +}
-
-It looks like you could refactor mv88e6352_g1_reset() to call
-this function, and then mv88e6352_g1_wait_ppu_polling(chip);
-
-Otherwise, this looks good.
-
-   Andrew
+    Andrew
