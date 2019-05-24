@@ -2,111 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF7BF2A018
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 22:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B722A031
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 23:03:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404212AbfEXUtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 16:49:42 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:36853 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404182AbfEXUtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 16:49:41 -0400
-Received: by mail-lj1-f195.google.com with SMTP id z1so4327960ljb.3;
-        Fri, 24 May 2019 13:49:39 -0700 (PDT)
+        id S1732099AbfEXVD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 17:03:28 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41891 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727115AbfEXVD1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 17:03:27 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q17so1155358pfq.8;
+        Fri, 24 May 2019 14:03:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VhdT2Uy3Pi6rfMZvbQxZ0OsYh/yykRYbEqsyaHR8QXw=;
-        b=COq1Qwldga6qm3NHELwVkj4YtfxbMalPMy+X/x1ci3lZmksF7YOH0oBtRhxmSMpRPm
-         76d69IC6iVHUG1kUE3dNdYX85VdTLQwrxmoAHtWgU1qjH58cQWQtVODsBC6HhVUOy2A7
-         J91dQdJ5GPzdpc7/49JCkRVJDYLeq2EsFjCotWlDIgKGHIhLo0/ZGt5mNi6Q1nXj6VQ8
-         VJOmQyFTMwnFQhK9le/Ept7NaW2YxFQTnr7eBmmskdnxmf7Wl6O6pTazLsC9jyHzECeU
-         hIw4Q0yv63wrkTTEKIdntzMpXd28nCQAzmwKpPpxtVzRXbTe+q6q9iDh67H2ntMlE1RM
-         iIaw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=veCSDwIU7Xf8XfmuNtrrDmEH89bB2GKhK9A6gPb0QBQ=;
+        b=Xvnk4WTmydtuFb0RyGDZKhWc3ExxFqVv7ezG/mmUmkVCCtF/hUKBOl8UVVEHqoTZjr
+         TW5Af5FcpTcmy5+sW/IQm8EyyF1mD9A2B3bA4Nuv/k8XRCA9M+7pu9wTJOLeLsFOV2RR
+         N4Yu077B5V8hQVtKNnDA3B5NFq+KTAl6JfPBEdVsn/1EurfX6X511EiATEcQzceWWk1g
+         n0JDHHrlNWnPzKnPj/sjphXkrRosoIMqqvg0bfJQW0WTxwwJrcONCdQzmkOWQNqUJkW6
+         sTiMfuXkgYHbbxX59nBcLJRCoY4Kfor6nrwx8VJNTSkEwX/NNOV3OCkca3Q6PYR/hpgL
+         RNzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VhdT2Uy3Pi6rfMZvbQxZ0OsYh/yykRYbEqsyaHR8QXw=;
-        b=jt/H/pOwcNIhaMcT5YolWzGtXJCl8q2vcbHigerXfow5Qy7ZDN9KAqmR6BDf4/uGKD
-         9/iQlTdAHR9Qt6I1fd3pRTpeidhJ9INn4q49dckMvp3pG8C8bgIjDYowzJgc0Cx0CvST
-         Wl4GOx+Bi+YQ5pbjfuDzzPpchZ7/8/tmfcD1eUV1IaBF1nUv0D6Yjd1d8mEgrq8sJnO4
-         cND+ulJHimCy2tp1DC1uZy8ucP5HsfPbmoonLYJAIonciOwiqWGjI+RJgFWVD6CWRo79
-         D9A5az2cqSKQ2p3VQIIE1rjEJlKXECCiVr9g3nKQTr1EEaNkv6dQwH5mjSub1iVeDmt8
-         cQbw==
-X-Gm-Message-State: APjAAAV1l+K66yUyYl+ioE/5O3+7mEGL4JnVvfPh3gGYUoSZ3UnBmZ/F
-        A6uChP1a6M+47lcGWzsf2a3bBnEsGjZKX4Ef9Fg=
-X-Google-Smtp-Source: APXvYqy2UI/rZfZDvCke9BTAdI57OyrfDA2hvmMsq1QhIxpqi/JV9Ex2oV/fsS9k3ekCpzrzVLBvDGQaY1eTz2e6A1E=
-X-Received: by 2002:a2e:9d09:: with SMTP id t9mr21035214lji.151.1558730979076;
- Fri, 24 May 2019 13:49:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190523125355.18437-1-mrostecki@opensuse.org> <4642ca96-22ab-ad61-a6a1-1d2ef7239cb8@fb.com>
-In-Reply-To: <4642ca96-22ab-ad61-a6a1-1d2ef7239cb8@fb.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=veCSDwIU7Xf8XfmuNtrrDmEH89bB2GKhK9A6gPb0QBQ=;
+        b=TYE4sSNKC1bYpvCCwaqsE8rqNuowMSi5w1Ec5lfIkmOwL9BCdoga7f1iVMs/M2eaKm
+         g61Jt0xDGxQVuPCCxnNZ92oQGQaJ+wjLt4ZzbiL6VLP9jAs937aVkOsvLKeW8e7SYrqV
+         6hHH9Afbh0V5iQqMsbCoUvSVcte5l5s58xpN3wRBdozpdj2dkiFOJxLoLiMtRRhryfa0
+         dBEGBo9rVTSYnxkimmdqfQLdUA28HOV1Wp7FwDDUcrU3YhuEfTZY0sZp5JcdZQq1nhQn
+         51uDpcGRDpNAaEDTCMHVHHW40kDtf4Y+GXk/YRFC6tc57kHJ/dB9m0deYpkpJRTA6i4m
+         oByw==
+X-Gm-Message-State: APjAAAVYqdcQ/U3NgWarmxfbBEuO3l7nPpR+2n255UZp9DLIw0NSIO6F
+        T6iw9b6MoQJpQ7NBqAvXdzs=
+X-Google-Smtp-Source: APXvYqw42MFYkbCooFVMUAGBY57ttz0aR8EW2m0ewulYbSLfJYwi9uLvW1I2bXMi/7GygcEDbx3qWA==
+X-Received: by 2002:a17:90a:8e86:: with SMTP id f6mr11922584pjo.66.1558731806109;
+        Fri, 24 May 2019 14:03:26 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::93e9])
+        by smtp.gmail.com with ESMTPSA id x23sm3369575pfn.160.2019.05.24.14.03.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2019 14:03:25 -0700 (PDT)
+Date:   Fri, 24 May 2019 14:03:23 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 24 May 2019 13:49:26 -0700
-Message-ID: <CAADnVQKYiv2ZMTLcJ6ZAoSA8u7+GZe+o-00qidefuNPa7KsbbA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 RESEND 0/2] Move bpf_printk to bpf_helpers.h
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Michal Rostecki <mrostecki@opensuse.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <xdp-newbies@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     Roman Gushchin <guro@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        Tejun Heo <tj@kernel.org>, kernel-team@fb.com,
+        cgroups@vger.kernel.org, Stanislav Fomichev <sdf@fomichev.me>,
+        Yonghong Song <yhs@fb.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 bpf-next 0/4] cgroup bpf auto-detachment
+Message-ID: <20190524210321.tzpt7ilaasaagtou@ast-mbp.dhcp.thefacebook.com>
+References: <20190523194532.2376233-1-guro@fb.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190523194532.2376233-1-guro@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 9:52 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 5/23/19 5:53 AM, Michal Rostecki wrote:
-> > This series of patches move the commonly used bpf_printk macro to
-> > bpf_helpers.h which is already included in all BPF programs which
-> > defined that macro on their own.
-> >
-> > v1->v2:
-> > - If HBM_DEBUG is not defined in hbm sample, undefine bpf_printk and set
-> >    an empty macro for it.
-> >
-> > Michal Rostecki (2):
-> >    selftests: bpf: Move bpf_printk to bpf_helpers.h
-> >    samples: bpf: Do not define bpf_printk macro
-> >
-> >   samples/bpf/hbm_kern.h                                | 11 ++---------
-> >   samples/bpf/tcp_basertt_kern.c                        |  7 -------
-> >   samples/bpf/tcp_bufs_kern.c                           |  7 -------
-> >   samples/bpf/tcp_clamp_kern.c                          |  7 -------
-> >   samples/bpf/tcp_cong_kern.c                           |  7 -------
-> >   samples/bpf/tcp_iw_kern.c                             |  7 -------
-> >   samples/bpf/tcp_rwnd_kern.c                           |  7 -------
-> >   samples/bpf/tcp_synrto_kern.c                         |  7 -------
-> >   samples/bpf/tcp_tos_reflect_kern.c                    |  7 -------
-> >   samples/bpf/xdp_sample_pkts_kern.c                    |  7 -------
-> >   tools/testing/selftests/bpf/bpf_helpers.h             |  8 ++++++++
-> >   .../testing/selftests/bpf/progs/sockmap_parse_prog.c  |  7 -------
-> >   .../selftests/bpf/progs/sockmap_tcp_msg_prog.c        |  7 -------
-> >   .../selftests/bpf/progs/sockmap_verdict_prog.c        |  7 -------
-> >   .../testing/selftests/bpf/progs/test_lwt_seg6local.c  |  7 -------
-> >   tools/testing/selftests/bpf/progs/test_xdp_noinline.c |  7 -------
-> >   tools/testing/selftests/bpf/test_sockmap_kern.h       |  7 -------
-> >   17 files changed, 10 insertions(+), 114 deletions(-)
->
-> Ack for the whole series.
-> Acked-by: Yonghong Song <yhs@fb.com>
+On Thu, May 23, 2019 at 12:45:28PM -0700, Roman Gushchin wrote:
+> This patchset implements a cgroup bpf auto-detachment functionality:
+> bpf programs are detached as soon as possible after removal of the
+> cgroup, without waiting for the release of all associated resources.
 
-Applied. Thanks
+The idea looks great, but doesn't quite work:
+
+$ ./test_cgroup_attach
+#override:PASS
+[   66.475219] BUG: sleeping function called from invalid context at ../include/linux/percpu-rwsem.h:34
+[   66.476095] in_atomic(): 1, irqs_disabled(): 0, pid: 21, name: ksoftirqd/2
+[   66.476706] CPU: 2 PID: 21 Comm: ksoftirqd/2 Not tainted 5.2.0-rc1-00211-g1861420d0162 #1564
+[   66.477595] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2.el7 04/01/2014
+[   66.478360] Call Trace:
+[   66.478591]  dump_stack+0x5b/0x8b
+[   66.478892]  ___might_sleep+0x22f/0x290
+[   66.479230]  cpus_read_lock+0x18/0x50
+[   66.479550]  static_key_slow_dec+0x41/0x70
+[   66.479914]  cgroup_bpf_release+0x1a6/0x400
+[   66.480285]  percpu_ref_switch_to_atomic_rcu+0x203/0x330
+[   66.480754]  rcu_core+0x475/0xcc0
+[   66.481047]  ? switch_mm_irqs_off+0x684/0xa40
+[   66.481422]  ? rcu_note_context_switch+0x260/0x260
+[   66.481842]  __do_softirq+0x1cf/0x5ff
+[   66.482174]  ? takeover_tasklets+0x5f0/0x5f0
+[   66.482542]  ? smpboot_thread_fn+0xab/0x780
+[   66.482911]  run_ksoftirqd+0x1a/0x40
+[   66.483225]  smpboot_thread_fn+0x3ad/0x780
+[   66.483583]  ? sort_range+0x20/0x20
+[   66.483894]  ? __kthread_parkme+0xb0/0x190
+[   66.484253]  ? sort_range+0x20/0x20
+[   66.484562]  ? sort_range+0x20/0x20
+[   66.484878]  kthread+0x2e2/0x3e0
+[   66.485166]  ? kthread_create_worker_on_cpu+0xb0/0xb0
+[   66.485620]  ret_from_fork+0x1f/0x30
+
+Same test runs fine before the patches.
+
