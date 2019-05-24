@@ -2,153 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80864298DB
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 15:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F600298EB
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 15:29:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391470AbfEXNZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 09:25:56 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37936 "EHLO mx1.redhat.com"
+        id S2403769AbfEXN3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 09:29:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37518 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391124AbfEXNZz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 09:25:55 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S2391395AbfEXN3A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 May 2019 09:29:00 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 0AC4E30820E6;
-        Fri, 24 May 2019 13:25:51 +0000 (UTC)
-Received: from [10.72.12.217] (ovpn-12-217.pek2.redhat.com [10.72.12.217])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 110E87BE82;
-        Fri, 24 May 2019 13:25:28 +0000 (UTC)
-Subject: Re: [PATCH v3 2/2] net: core: support XDP generic on stacked devices.
-To:     Jesper Dangaard Brouer <netdev@brouer.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tom Herbert <tom@herbertland.com>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <20190523175429.13302-1-sthemmin@microsoft.com>
- <20190523175429.13302-3-sthemmin@microsoft.com>
- <3dbe4e29bf1ec71809e9dd2b32ec16272957a4cd.camel@mellanox.com>
- <20190523131544.6d8a28f7@hermes.lan> <20190524113306.28b83b1f@carbon>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <935e9d1b-c01e-a2fb-e83b-e2900140f484@redhat.com>
-Date:   Fri, 24 May 2019 21:25:19 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        by mail.kernel.org (Postfix) with ESMTPSA id 2F75D217F9;
+        Fri, 24 May 2019 13:28:58 +0000 (UTC)
+Date:   Fri, 24 May 2019 09:28:55 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Kris Van Hees <kris.van.hees@oracle.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        dtrace-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
+        mhiramat@kernel.org, acme@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, peterz@infradead.org
+Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
+ implementation and sample use
+Message-ID: <20190524092855.356020f7@gandalf.local.home>
+In-Reply-To: <20190524040527.GU2422@oracle.com>
+References: <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
+        <20190521184137.GH2422@oracle.com>
+        <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
+        <20190521173618.2ebe8c1f@gandalf.local.home>
+        <20190521214325.rr7emn5z3b7wqiiy@ast-mbp.dhcp.thefacebook.com>
+        <20190521174757.74ec8937@gandalf.local.home>
+        <20190522052327.GN2422@oracle.com>
+        <20190522205329.uu26oq2saj56og5m@ast-mbp.dhcp.thefacebook.com>
+        <20190523054610.GR2422@oracle.com>
+        <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
+        <20190524040527.GU2422@oracle.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20190524113306.28b83b1f@carbon>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Fri, 24 May 2019 13:25:55 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 24 May 2019 00:05:27 -0400
+Kris Van Hees <kris.van.hees@oracle.com> wrote:
 
-On 2019/5/24 下午5:33, Jesper Dangaard Brouer wrote:
-> On Thu, 23 May 2019 13:15:44 -0700
-> Stephen Hemminger <stephen@networkplumber.org> wrote:
->
->> On Thu, 23 May 2019 19:19:40 +0000
->> Saeed Mahameed <saeedm@mellanox.com> wrote:
->>
->>> On Thu, 2019-05-23 at 10:54 -0700, Stephen Hemminger wrote:
->>>> When a device is stacked like (team, bonding, failsafe or netvsc) the
->>>> XDP generic program for the parent device was not called.
->>>>
->>>> Move the call to XDP generic inside __netif_receive_skb_core where
->>>> it can be done multiple times for stacked case.
->>>>
->>>> Suggested-by: Jiri Pirko <jiri@resnulli.us>
->>>> Fixes: d445516966dc ("net: xdp: support xdp generic on virtual
->>>> devices")
->>>> Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
->>>> ---
->>>> v1 - call xdp_generic in netvsc handler
->>>> v2 - do xdp_generic in generic rx handler processing
->>>> v3 - move xdp_generic call inside the another pass loop
->>>>
->>>>   net/core/dev.c | 56 ++++++++++------------------------------------
->>>> ----
->>>>   1 file changed, 11 insertions(+), 45 deletions(-)
->>>>
->>>> diff --git a/net/core/dev.c b/net/core/dev.c
->>>> index b6b8505cfb3e..696776e14d00 100644
->>>> --- a/net/core/dev.c
->>>> +++ b/net/core/dev.c
->>>> @@ -4502,23 +4502,6 @@ static int netif_rx_internal(struct sk_buff
->>>> *skb)
->>>>   
->>>>   	trace_netif_rx(skb);
->>>>   
->>>> -	if (static_branch_unlikely(&generic_xdp_needed_key)) {
->>>> -		int ret;
->>>> -
->>>> -		preempt_disable();
->>>> -		rcu_read_lock();
->>>> -		ret = do_xdp_generic(rcu_dereference(skb->dev-
->>>>> xdp_prog), skb);
->>>> -		rcu_read_unlock();
->>>> -		preempt_enable();
->>>> -
->>>> -		/* Consider XDP consuming the packet a success from
->>>> -		 * the netdev point of view we do not want to count
->>>> -		 * this as an error.
->>>> -		 */
->>>> -		if (ret != XDP_PASS)
->>>> -			return NET_RX_SUCCESS;
->>>> -	}
->>>> -
->>> Adding Jesper,
->>>
->>> There is a small behavioral change due to this patch,
->>> the XDP program after this patch will run on the RPS CPU, if
->>> configured, which could cause some behavioral changes in
->>> xdp_redirect_cpu: bpf_redirect_map(cpu_map).
->>>
->>> Maybe this is acceptable, but it should be documented, as the current
->>> assumption dictates: XDP program runs on the core where the XDP
->>> frame/SKB was first seen.
-> This does break some assumptions, that I worry about.  I've not
-> optimized generic XDP much, as this is suppose to be slow-path, but as
-> you can see in my evaluation[1] generic-XDP do have a performance
-> potential (XDP drop: native=12Mpps and generic=8.4Mpps), but the
-> XDP-generic performance dies as soon as we e.g. do XDP_TX
-> (native=10Mpps and generic=4Mpps).  The reason is lack of bulking.
->
-> We could implement the same kind of RX-bulking tricks as we do for
-> XDP_REDIRECT, where bpf_redirect_map store frames in the map and send
-> them once NAPI-poll exit via a xdp_do_flush_map().  These tricks
-> depend on per-CPU data (bpf_redirect_info), thus I cannot see how this
-> could work if XDP-generic now happens after RPS on a remote CPU.
+> No, no, that is not at all what I am saying.  In DTrace, the particulars of
+> how you get to e.g. probe arguments or current task information are not
+> something that script writers need to concern themselves about.  Similar to
+> how BPF contexts have a public (uapi) declaration and a kernel-level context
+> declaration taht is used to actually implement accessing the data (using the
+> is_valid_access and convert_ctx_access functions that prog types implement).
+> DTrace exposes an abstract probe entity to script writers where they can
+> access probe arguments as arg0 through arg9.  Nothing in the userspace needs
+> to know how you obtain the value of those arguments.  So, scripts can be
+> written for any kind of probe, and the only information that is used to
+> verify programs is obtained from the abstract probe description (things like
+> its unique id, number of arguments, and possible type information for each
+> argument).  The knowledge of how to get to the value of the probe arguments
+> is only known at the level of the kernel, so that when the implementation of
+> the probe in the kernel is modified, the mapping from actual probe to abstract
+> representation of the probe (in the kernel) can be modified along with it,
+> and userspace won't even notice that anything changed.
+> 
+> Many parts of the kernel work the same way.  E.g. file system implementations
+> change, yet the API to use the file systems remains the same.
 
+Another example is actually the tracefs events directory. It represents
+normal trace events (tracepoints), kprobes, uprobes, and synthetic
+events. You don't need to know what they are to use them as soon as
+they are created. You can even add triggers and such on top of each,
+and there shouldn't be any difference.
 
-RPS uses backlog NAPI so per-CPU is probably not an issue.
-
-Thanks
-
-
->
-> Notice, that TX bulking at XDP-generic level, is actually rather
-> simple, as netstack TX path-code support xmit_more via creating a list
-> of SKBs... Last time I hacked it up, I saw 20%-30% speedup... anyone
-> motivated to do this?
->
->> Or maybe XDP should just force off RPS (like it does gro)
-> I guess, we could force off RPS.  But I do see one valid use-case of
-> combining CPUMAP redirect with RFS (Receive Flow Steering) which is part
-> of RPS.  Yes, I know we/I *also* have to implement generic-XDP-cpumap
-> support. But for native-XDP CPUMAP redirect, from 1-2 RX-CPUs into
-> N-remote CPUs via CPUMAP, and then lets RFS send SKBs to where the
-> application runs, does make sense to me. (I do have an "assignment" to
-> implement this in eBPF here[2]).
->
->
-> [1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/Documentation/blogposts/xdp25_eval_generic_xdp_tx.rst
->
-> [2] https://github.com/xdp-project/xdp-project/blob/master/areas/cpumap.org#cpumap-implement-dynamic-load-balancer-that-is-ooo-safe
+-- Steve
