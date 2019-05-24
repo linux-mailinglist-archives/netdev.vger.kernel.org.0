@@ -2,142 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C98A28F7E
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 05:13:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65FE228F8B
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 05:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388826AbfEXDNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 23:13:21 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42558 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387885AbfEXDNU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 May 2019 23:13:20 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 675B030024A4;
-        Fri, 24 May 2019 03:13:19 +0000 (UTC)
-Received: from [10.72.12.217] (ovpn-12-217.pek2.redhat.com [10.72.12.217])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BBB895C219;
-        Fri, 24 May 2019 03:13:05 +0000 (UTC)
-Subject: Re: [PATCH bpf-next 3/3] veth: Support bulk XDP_TX
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <1558609008-2590-1-git-send-email-makita.toshiaki@lab.ntt.co.jp>
- <1558609008-2590-4-git-send-email-makita.toshiaki@lab.ntt.co.jp>
- <87zhnd1kg9.fsf@toke.dk> <599302b2-96d2-b571-01ee-f4914acaf765@lab.ntt.co.jp>
- <20190523152927.14bf7ed1@carbon>
- <c902c0f4-947b-ba9e-7baa-628ba87a8f01@gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <94046143-f05d-77db-88c4-7bd62f2c98d4@redhat.com>
-Date:   Fri, 24 May 2019 11:13:03 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1731778AbfEXDUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 23:20:22 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41917 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729972AbfEXDUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 23:20:22 -0400
+Received: by mail-pg1-f193.google.com with SMTP id z3so4214391pgp.8;
+        Thu, 23 May 2019 20:20:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=/46rsZ0TTMrZw/Frg4uFqjjAL1q6S8X5odognbNJDoY=;
+        b=U0zV4CMfeMlVJWaUSgQ8PLNxvkC7aaW5aY89tbgl4GaWQU9Hytv9KaCr4wB7cP/3+/
+         eyAmLSx0MVQv7+FYZGKEGkuPZf5ajCwkatcsePz56UoZvUHrRM8tJQb5uIyI4JMs5rcy
+         zci/srp1GX2M7ji6XHLLZsnDq2xYpEkh9K+2h6NHRzYlpuUB8W55RzrpezKijTRg1w21
+         q76WbfjwE3llc4+aE8ZYtT4uI9t0yJz3dJLl1TUxsq24iJC3nf0d9mv4AYGoB8tAZn8v
+         l8Den+dLrfUoExfU8Z49Hzn2Jw7ZFwgdykpVDRkwSjL1i0NrjKsRHDV9CVNZSz5ViTQw
+         CZCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=/46rsZ0TTMrZw/Frg4uFqjjAL1q6S8X5odognbNJDoY=;
+        b=kP+KagRvX8r008BxAjA6xJxIJs123Rzb8U+bLvGuMV+TgUIcs3DtpRxOh2fz3tVWZI
+         MQeLDL9rfRvYbeS6Oi/bR2lePCsXDNhbWCx4U4/Nrtzw7CM19tYI4DATIoFJRibZOab0
+         x7EUbNIsbS/FsjA9esDZAIDwo/o0ewxt0BTwEN25XtIE8gmdTjsw4u/fPReR8ALFoGJr
+         W1G75N8ucs3to44bsRvzhNBoJZZvccTB9NDDzoeWRO2tqlI8hNIy0KP6pHqerScZD2P+
+         N4HM5wz+ZbwquiwjOUi0+LQIbgPrpIRZTNK/IsvIC7RK9u06O3IM4DWSuL+cexJoA8ir
+         7CKg==
+X-Gm-Message-State: APjAAAVt88D6oNEDP2X/9dsgb8+I7iCId1IToZw/jK8DeOlQCEztyIHu
+        f6NwIxGJeGIb8eG88389fjW7wABwLSA=
+X-Google-Smtp-Source: APXvYqxbWSM+hI4uIW27uLHuDqC0XCB3kIbdcREdqzqdWBfwnTb7NoUXPaJHLvecNEQncC+9q1QBmQ==
+X-Received: by 2002:aa7:8219:: with SMTP id k25mr16878817pfi.38.1558668021303;
+        Thu, 23 May 2019 20:20:21 -0700 (PDT)
+Received: from zhanggen-UX430UQ ([66.42.35.75])
+        by smtp.gmail.com with ESMTPSA id g17sm902746pfb.56.2019.05.23.20.20.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 23 May 2019 20:20:20 -0700 (PDT)
+Date:   Fri, 24 May 2019 11:19:46 +0800
+From:   Gen Zhang <blackgod016574@gmail.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ipv6_sockglue: Fix a missing-check bug in ip6_ra_control()
+Message-ID: <20190524031946.GA6463@zhanggen-UX430UQ>
 MIME-Version: 1.0
-In-Reply-To: <c902c0f4-947b-ba9e-7baa-628ba87a8f01@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Fri, 24 May 2019 03:13:19 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In function ip6_ra_control(), the pointer new_ra is allocated a memory 
+space via kmalloc(). And it is used in the following codes. However, 
+when there is a memory allocation error, kmalloc() fails. Thus null 
+pointer dereference may happen. And it will cause the kernel to crash. 
+Therefore, we should check the return value and handle the error.
 
-On 2019/5/23 下午9:51, Toshiaki Makita wrote:
-> On 19/05/23 (木) 22:29:27, Jesper Dangaard Brouer wrote:
->> On Thu, 23 May 2019 20:35:50 +0900
->> Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> wrote:
->>
->>> On 2019/05/23 20:25, Toke Høiland-Jørgensen wrote:
->>>> Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> writes:
->>>>> This improves XDP_TX performance by about 8%.
->>>>>
->>>>> Here are single core XDP_TX test results. CPU consumptions are taken
->>>>> from "perf report --no-child".
->>>>>
->>>>> - Before:
->>>>>
->>>>>    7.26 Mpps
->>>>>
->>>>>    _raw_spin_lock  7.83%
->>>>>    veth_xdp_xmit  12.23%
->>>>>
->>>>> - After:
->>>>>
->>>>>    7.84 Mpps
->>>>>
->>>>>    _raw_spin_lock  1.17%
->>>>>    veth_xdp_xmit   6.45%
->>>>>
->>>>> Signed-off-by: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
->>>>> ---
->>>>>   drivers/net/veth.c | 26 +++++++++++++++++++++++++-
->>>>>   1 file changed, 25 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
->>>>> index 52110e5..4edc75f 100644
->>>>> --- a/drivers/net/veth.c
->>>>> +++ b/drivers/net/veth.c
->>>>> @@ -442,6 +442,23 @@ static int veth_xdp_xmit(struct net_device 
->>>>> *dev, int n,
->>>>>       return ret;
->>>>>   }
->>>>>   +static void veth_xdp_flush_bq(struct net_device *dev)
->>>>> +{
->>>>> +    struct xdp_tx_bulk_queue *bq = this_cpu_ptr(&xdp_tx_bq);
->>>>> +    int sent, i, err = 0;
->>>>> +
->>>>> +    sent = veth_xdp_xmit(dev, bq->count, bq->q, 0);
->>>>
->>>> Wait, veth_xdp_xmit() is just putting frames on a pointer ring. So
->>>> you're introducing an additional per-cpu bulk queue, only to avoid 
->>>> lock
->>>> contention around the existing pointer ring. But the pointer ring is
->>>> per-rq, so if you have lock contention, this means you must have
->>>> multiple CPUs servicing the same rq, no?
->>>
->>> Yes, it's possible. Not recommended though.
->>>
->>
->> I think the general per-cpu TX bulk queue is overkill.  There is a loop
->> over packets in veth_xdp_rcv(struct veth_rq *rq, budget, *status), and
->> the caller veth_poll() will call veth_xdp_flush(rq->dev).
->>
->> Why can't you store this "temp" bulk array in struct veth_rq ?
->
-> Of course I can. But I thought tun has the same problem and we can 
-> decrease memory footprint by sharing the same storage between devices.
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
 
-
-For TUN and for its fast path where vhost passes a bulk of XDP frames 
-(through msg_control) to us, we probably just need a temporary bulk 
-array in tun_xdp_one() instead of a global one. I can post patch or 
-maybe you if you're interested in this.
-
-Thanks
-
-
-> Or if other devices want to reduce queues so that we can use XDP on 
-> many-cpu servers and introduce locks, we can use this storage for that 
-> case as well.
->
-> Still do you prefer veth-specific solution?
->
->>
->> You could even alloc/create it on the stack of veth_poll() and send it
->> along via a pointer to veth_xdp_rcv).
->>
->
-> Toshiaki Makita
+---
+diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+index 40f21fe..0a3d035 100644
+--- a/net/ipv6/ipv6_sockglue.c
++++ b/net/ipv6/ipv6_sockglue.c
+@@ -68,6 +68,8 @@ int ip6_ra_control(struct sock *sk, int sel)
+ 		return -ENOPROTOOPT;
+ 
+ 	new_ra = (sel >= 0) ? kmalloc(sizeof(*new_ra), GFP_KERNEL) : NULL;
++	if (sel >= 0 && !new_ra)
++		return -ENOMEM;
+ 
+ 	write_lock_bh(&ip6_ra_lock);
+ 	for (rap = &ip6_ra_chain; (ra = *rap) != NULL; rap = &ra->next) {
