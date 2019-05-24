@@ -2,140 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C296F2A14D
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 00:29:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6937F2A158
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 00:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404378AbfEXW27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 18:28:59 -0400
-Received: from mail-yb1-f201.google.com ([209.85.219.201]:41854 "EHLO
-        mail-yb1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404308AbfEXW27 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 18:28:59 -0400
-Received: by mail-yb1-f201.google.com with SMTP id q185so9571916ybc.8
-        for <netdev@vger.kernel.org>; Fri, 24 May 2019 15:28:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=qMovpOHh9UtpX8EWlQ95Jzm7k03iPOrye3cAHpJ3zYQ=;
-        b=KfgHzn9r8xCSmWgerdWxC8Ns29cWdiSikWuFUwitGwmhONaLHS8vDzNGD8UqZpU7IS
-         CiXXVjqxt/wNr6RibGUY6Q8gfwCNm0DDp8fR8EjUA/fFGkWXNMWEXcZ3ETWDIzFHW2Oc
-         ckEZH43uNfspsOS+/EdsCpVNhE/y0GPrma8tiYmDoo+cC1u9+FTszylquvZvDmVLu+Ph
-         eLKAjqXauuarecZ8q+nqjDRKbHaHA+O9zK9i+g4fpGULddgX9PDKgyFIpnKj2OJWZH2L
-         xcmjJPYUM3dkdpWfVt9o8Fti563DgSjfbfSoN+Ep852SM9gmbf6wJP1erHU1NXAjn0Lj
-         gR8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=qMovpOHh9UtpX8EWlQ95Jzm7k03iPOrye3cAHpJ3zYQ=;
-        b=NPQtnI8iklTFgvkNj4k7xaoFrWDw85RPip/j3rQlxg9GvLKiz5VG9+cPAmnmpTQXUx
-         u+skIHGco9rW+1v4i5Ja/3hq69LKx9i5YJTtH9VQAb37/URpKRn1ATvMGVWsWala64bT
-         vqohGmhBGyjOUed/lLLY8eoDqI18E0lFz1J32tCr+wtS8DnQeViSq1Q7vCdqoMbx9jLH
-         bSzPwplo/0iKjsB9Gf3IGKR3gp6dyfHc4nmyq/gGyZAWLZXe19vXf9MZ9pFq8jrz5IrQ
-         C8L+E6Toj0PRRXNmFbz5uzb0/tbZbsU1sZnehreRbqsy5/1YSu2/gr1gGGhemqpWd6Xk
-         +UDg==
-X-Gm-Message-State: APjAAAVXOsV0Lk3A2VgPs0sWUrU3CssIiEkzNEHVUjs8hNh+zjK5e+XR
-        PeVIN4O8ntlTrQ9gvmAH8BfmVusRsg5Xr4BsMnxQTyXQznSkflR22MydEYxu6yFli0hsquxWAon
-        Uqm6N/sUTUgX5WyCXCQMPy6OSjA1DQRWUwGRWr6woyJBg+hnnQvnBOg==
-X-Google-Smtp-Source: APXvYqwvw2SZ5X/QNkZ6/+2TCJlkZZPZce/COZVnliwqSeRGjFGUS4SdX93WAElCjn8NvDmGmjp5zJk=
-X-Received: by 2002:a25:2487:: with SMTP id k129mr9156184ybk.91.1558736938114;
- Fri, 24 May 2019 15:28:58 -0700 (PDT)
-Date:   Fri, 24 May 2019 15:28:56 -0700
-Message-Id: <20190524222856.60646-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
-Subject: [PATCH bpf-next] selftests/bpf: fail test_tunnel.sh if subtests fail
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2404363AbfEXWhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 18:37:42 -0400
+Received: from www62.your-server.de ([213.133.104.62]:60076 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404233AbfEXWhl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 18:37:41 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hUIok-0006XU-CG; Sat, 25 May 2019 00:37:38 +0200
+Received: from [178.197.249.12] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hUIok-000UbG-6I; Sat, 25 May 2019 00:37:38 +0200
+Subject: Re: [PATCH bpf-next v5 1/3] bpf: implement bpf_send_signal() helper
+To:     Yonghong Song <yhs@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Alexei Starovoitov <ast@fb.com>, Kernel Team <Kernel-team@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>
+References: <20190523214745.854300-1-yhs@fb.com>
+ <20190523214745.854355-1-yhs@fb.com>
+ <54257f88-b088-2330-ba49-a78ce06d08bf@iogearbox.net>
+ <fe5ed98c-0cc2-b126-25e6-84774c03bcb9@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <289e2279-8a88-8046-d4e0-c29cf79080a5@iogearbox.net>
+Date:   Sat, 25 May 2019 00:37:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
+MIME-Version: 1.0
+In-Reply-To: <fe5ed98c-0cc2-b126-25e6-84774c03bcb9@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25459/Fri May 24 09:59:21 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Right now test_tunnel.sh always exits with success even if some
-of the subtests fail. Since the output is very verbose, it's
-hard to spot the issues with subtests. Let's fail the script
-if any subtest fails.
+On 05/25/2019 12:20 AM, Yonghong Song wrote:
+> On 5/24/19 2:39 PM, Daniel Borkmann wrote:
+>> On 05/23/2019 11:47 PM, Yonghong Song wrote:
+>>> This patch tries to solve the following specific use case.
+>>>
+>>> Currently, bpf program can already collect stack traces
+>>> through kernel function get_perf_callchain()
+>>> when certain events happens (e.g., cache miss counter or
+>>> cpu clock counter overflows). But such stack traces are
+>>> not enough for jitted programs, e.g., hhvm (jited php).
+>>> To get real stack trace, jit engine internal data structures
+>>> need to be traversed in order to get the real user functions.
+>>>
+>>> bpf program itself may not be the best place to traverse
+>>> the jit engine as the traversing logic could be complex and
+>>> it is not a stable interface either.
+>>>
+>>> Instead, hhvm implements a signal handler,
+>>> e.g. for SIGALARM, and a set of program locations which
+>>> it can dump stack traces. When it receives a signal, it will
+>>> dump the stack in next such program location.
+>>>
+>>> Such a mechanism can be implemented in the following way:
+>>>    . a perf ring buffer is created between bpf program
+>>>      and tracing app.
+>>>    . once a particular event happens, bpf program writes
+>>>      to the ring buffer and the tracing app gets notified.
+>>>    . the tracing app sends a signal SIGALARM to the hhvm.
+>>>
+>>> But this method could have large delays and causing profiling
+>>> results skewed.
+>>>
+>>> This patch implements bpf_send_signal() helper to send
+>>> a signal to hhvm in real time, resulting in intended stack traces.
+>>>
+>>> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>>> Signed-off-by: Yonghong Song <yhs@fb.com>
+>>> ---
+>>>   include/uapi/linux/bpf.h | 17 +++++++++-
+>>>   kernel/trace/bpf_trace.c | 72 ++++++++++++++++++++++++++++++++++++++++
+>>>   2 files changed, 88 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>>> index 63e0cf66f01a..68d4470523a0 100644
+>>> --- a/include/uapi/linux/bpf.h
+>>> +++ b/include/uapi/linux/bpf.h
+>>> @@ -2672,6 +2672,20 @@ union bpf_attr {
+>>>    *		0 on success.
+>>>    *
+>>>    *		**-ENOENT** if the bpf-local-storage cannot be found.
+>>> + *
+>>> + * int bpf_send_signal(u32 sig)
+>>> + *	Description
+>>> + *		Send signal *sig* to the current task.
+>>> + *	Return
+>>> + *		0 on success or successfully queued.
+>>> + *
+>>> + *		**-EBUSY** if work queue under nmi is full.
+>>> + *
+>>> + *		**-EINVAL** if *sig* is invalid.
+>>> + *
+>>> + *		**-EPERM** if no permission to send the *sig*.
+>>> + *
+>>> + *		**-EAGAIN** if bpf program can try again.
+>>>    */
+>>>   #define __BPF_FUNC_MAPPER(FN)		\
+>>>   	FN(unspec),			\
+>>> @@ -2782,7 +2796,8 @@ union bpf_attr {
+>>>   	FN(strtol),			\
+>>>   	FN(strtoul),			\
+>>>   	FN(sk_storage_get),		\
+>>> -	FN(sk_storage_delete),
+>>> +	FN(sk_storage_delete),		\
+>>> +	FN(send_signal),
+>>>   
+>>>   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>>>    * function eBPF program intends to call
+>>> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+>>> index f92d6ad5e080..70029eafc71f 100644
+>>> --- a/kernel/trace/bpf_trace.c
+>>> +++ b/kernel/trace/bpf_trace.c
+>>> @@ -567,6 +567,63 @@ static const struct bpf_func_proto bpf_probe_read_str_proto = {
+>>>   	.arg3_type	= ARG_ANYTHING,
+>>>   };
+>>>   
+>>> +struct send_signal_irq_work {
+>>> +	struct irq_work irq_work;
+>>> +	struct task_struct *task;
+>>> +	u32 sig;
+>>> +};
+>>> +
+>>> +static DEFINE_PER_CPU(struct send_signal_irq_work, send_signal_work);
+>>> +
+>>> +static void do_bpf_send_signal(struct irq_work *entry)
+>>> +{
+>>> +	struct send_signal_irq_work *work;
+>>> +
+>>> +	work = container_of(entry, struct send_signal_irq_work, irq_work);
+>>> +	group_send_sig_info(work->sig, SEND_SIG_PRIV, work->task, PIDTYPE_TGID);
+>>> +}
+>>> +
+>>> +BPF_CALL_1(bpf_send_signal, u32, sig)
+>>> +{
+>>> +	struct send_signal_irq_work *work = NULL;
+>>> +
+>>> +	/* Similar to bpf_probe_write_user, task needs to be
+>>> +	 * in a sound condition and kernel memory access be
+>>> +	 * permitted in order to send signal to the current
+>>> +	 * task.
+>>> +	 */
+>>> +	if (unlikely(current->flags & (PF_KTHREAD | PF_EXITING)))
+>>> +		return -EPERM;
+>>> +	if (unlikely(uaccess_kernel()))
+>>> +		return -EPERM;
+>>> +	if (unlikely(!nmi_uaccess_okay()))
+>>> +		return -EPERM;
+>>> +
+>>> +	if (in_nmi()) {
+>>> +		work = this_cpu_ptr(&send_signal_work);
+>>> +		if (work->irq_work.flags & IRQ_WORK_BUSY)
+>>
+>> Given here and in stackmap are the only two users outside of kernel/irq_work.c,
+>> it may probably be good to add a small helper to include/linux/irq_work.h and
+>> use it for both.
+>>
+>> Perhaps something like ...
+>>
+>> static inline bool irq_work_busy(struct irq_work *work)
+>> {
+>> 	return READ_ONCE(work->flags) & IRQ_WORK_BUSY;
+>> }
+> 
+> Not sure whether READ_ONCE is needed here or not.
+> 
+> The irq_work is per cpu data structure,
+>    static DEFINE_PER_CPU(struct send_signal_irq_work, send_signal_work);
+> so presumably no collision for work->flags memory reference.
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/testing/selftests/bpf/test_tunnel.sh | 32 ++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+The busy bit you're testing is cleared via cmpxchg(), kernel/irq_work.c +169:
 
-diff --git a/tools/testing/selftests/bpf/test_tunnel.sh b/tools/testing/selftests/bpf/test_tunnel.sh
-index 546aee3e9fb4..bd12ec97a44d 100755
---- a/tools/testing/selftests/bpf/test_tunnel.sh
-+++ b/tools/testing/selftests/bpf/test_tunnel.sh
-@@ -696,30 +696,57 @@ check_err()
- 
- bpf_tunnel_test()
- {
-+	local errors=0
-+
- 	echo "Testing GRE tunnel..."
- 	test_gre
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing IP6GRE tunnel..."
- 	test_ip6gre
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing IP6GRETAP tunnel..."
- 	test_ip6gretap
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing ERSPAN tunnel..."
- 	test_erspan v2
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing IP6ERSPAN tunnel..."
- 	test_ip6erspan v2
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing VXLAN tunnel..."
- 	test_vxlan
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing IP6VXLAN tunnel..."
- 	test_ip6vxlan
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing GENEVE tunnel..."
- 	test_geneve
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing IP6GENEVE tunnel..."
- 	test_ip6geneve
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing IPIP tunnel..."
- 	test_ipip
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing IPIP6 tunnel..."
- 	test_ipip6
-+	errors=$(( $errors + $? ))
-+
- 	echo "Testing IPSec tunnel..."
- 	test_xfrm_tunnel
-+	errors=$(( $errors + $? ))
-+
-+	return $errors
- }
- 
- trap cleanup 0 3 6
-@@ -728,4 +755,9 @@ trap cleanup_exit 2 9
- cleanup
- bpf_tunnel_test
- 
-+if [ $? -ne 0 ]; then
-+	echo -e "$(basename $0): ${RED}FAIL${NC}"
-+	exit 1
-+fi
-+echo -e "$(basename $0): ${GREEN}PASS${NC}"
- exit 0
--- 
-2.22.0.rc1.257.g3120a18244-goog
-
+cmpxchg(&work->flags, flags, flags & ~IRQ_WORK_BUSY);
