@@ -2,168 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00C8C2A15A
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 00:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 207272A15B
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 00:39:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404264AbfEXWid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 18:38:33 -0400
-Received: from www62.your-server.de ([213.133.104.62]:60186 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727091AbfEXWic (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 18:38:32 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hUIpa-0006b0-Jq; Sat, 25 May 2019 00:38:30 +0200
-Received: from [178.197.249.12] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hUIpa-00018C-CN; Sat, 25 May 2019 00:38:30 +0200
-Subject: Re: [PATCH bpf-next v5 1/3] bpf: implement bpf_send_signal() helper
-To:     Yonghong Song <yhs@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@fb.com>, Kernel Team <Kernel-team@fb.com>,
-        Peter Zijlstra <peterz@infradead.org>
-References: <20190523214745.854300-1-yhs@fb.com>
- <20190523214745.854355-1-yhs@fb.com>
- <54257f88-b088-2330-ba49-a78ce06d08bf@iogearbox.net>
- <2f7fe79b-0e3f-2be3-aede-bd8eb369c91e@iogearbox.net>
- <816d5531-2a4c-3f73-040b-0c46d3961980@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <06c3da63-72ef-c37e-ba20-b82130df34bd@iogearbox.net>
-Date:   Sat, 25 May 2019 00:38:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S2404386AbfEXWjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 18:39:00 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34272 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727182AbfEXWjA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 18:39:00 -0400
+Received: by mail-wm1-f67.google.com with SMTP id e19so2862126wme.1
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 15:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fyZi6v0mcgKSC16RURy0qopnByCgnXY1K2U9goxfA1Q=;
+        b=JNQS/PTGqlUgYcpzMAYHuZqlDvD2sNfGPlDoRvlyNpPQfxbTZutYHgHCSjsSJCCw05
+         5YmVB59KP6XFcHrAKqxOqRTk6Hr9wRl/t3WLBPgNtb3FGdbcbWTLcHAG8wVVbZqX5ja4
+         9e08U9URC16u5tUAjjOWPTrjp9emoLdkHQ0gikVaBB/CDY/xofJWr5/JmNvBDV7cHUTw
+         XcxwQUgNMMwd8fo0Eas9iV1pSTWD3TghtD0rDuSCLTb3c3Fn4yeh1DBbBaVGUgyKG3tK
+         opPLbHpuRD8/V0Rlas0cihCTst7HIoJ/xDApIijjD/5PGhOoh/stcZc5gpOkc5HLQSYP
+         wI9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fyZi6v0mcgKSC16RURy0qopnByCgnXY1K2U9goxfA1Q=;
+        b=D1plcMFugeXv8vGZPRYqGaH3XeEiJXjtU9YCvJr9iRrhBs8l2A9g25HDFu7KnTkN31
+         ndDZNbozKP5ZSavlOpIWTTBvfgCsqfwjbIDGZmB942L2ScJKz3PfYHgw0a+gCVng/Bzg
+         iiqzshIlaYV+gErTkCmoGehqQFyyYdvuoT8s4ihklcwdeAbix6qFAJ/GVIyLMlJjlLIB
+         1QOGCK0SoSrdXh00AEnH2exBetUB2IQyrBi4AimSem4QINkcg/EHMoJ6gGtGbZSI52lC
+         ke034Py3Wcp4DCp1nuIhEhp3ynxrsIQp/brjEIg+g/rB3bf/DE5Vg7XyQt6K75T8Fiq7
+         vOWA==
+X-Gm-Message-State: APjAAAWlIj3jmiil7oVcbne6XR6Z7/BXjcF2BsItk7B2oLnKFC8StUVl
+        djtk51G9Yr3fquGZwZfMgWRZMe9YxsTSKQKvEqDgmQ==
+X-Google-Smtp-Source: APXvYqxW2n5H9vt7mX4JNr8xeJxdoAikSxRfwl4bvPXYtUPI7AS/sOyLcEt10h951ycbvpy5lE6/mmoD6w3q9rCJBPA=
+X-Received: by 2002:a1c:2e0a:: with SMTP id u10mr63993wmu.92.1558737537847;
+ Fri, 24 May 2019 15:38:57 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <816d5531-2a4c-3f73-040b-0c46d3961980@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25459/Fri May 24 09:59:21 2019)
+References: <20190524134928.16834-1-jarod@redhat.com> <30882.1558732616@famine>
+In-Reply-To: <30882.1558732616@famine>
+From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Date:   Fri, 24 May 2019 15:38:46 -0700
+Message-ID: <CAF2d9jhGmsaOZsDWNFihsD4EuEVq9s0xwY22d+FuhBz=A2JpKA@mail.gmail.com>
+Subject: Re: [PATCH net] bonding/802.3ad: fix slave link initialization
+ transition states
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Jarod Wilson <jarod@redhat.com>, linux-kernel@vger.kernel.org,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Heesoon Kim <Heesoon.Kim@stratus.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/25/2019 12:23 AM, Yonghong Song wrote:
-> On 5/24/19 2:59 PM, Daniel Borkmann wrote:
->> On 05/24/2019 11:39 PM, Daniel Borkmann wrote:
->>> On 05/23/2019 11:47 PM, Yonghong Song wrote:
->>>> This patch tries to solve the following specific use case.
->>>>
->>>> Currently, bpf program can already collect stack traces
->>>> through kernel function get_perf_callchain()
->>>> when certain events happens (e.g., cache miss counter or
->>>> cpu clock counter overflows). But such stack traces are
->>>> not enough for jitted programs, e.g., hhvm (jited php).
->>>> To get real stack trace, jit engine internal data structures
->>>> need to be traversed in order to get the real user functions.
->>>>
->>>> bpf program itself may not be the best place to traverse
->>>> the jit engine as the traversing logic could be complex and
->>>> it is not a stable interface either.
->>>>
->>>> Instead, hhvm implements a signal handler,
->>>> e.g. for SIGALARM, and a set of program locations which
->>>> it can dump stack traces. When it receives a signal, it will
->>>> dump the stack in next such program location.
->>>>
->>>> Such a mechanism can be implemented in the following way:
->>>>    . a perf ring buffer is created between bpf program
->>>>      and tracing app.
->>>>    . once a particular event happens, bpf program writes
->>>>      to the ring buffer and the tracing app gets notified.
->>>>    . the tracing app sends a signal SIGALARM to the hhvm.
->>>>
->>>> But this method could have large delays and causing profiling
->>>> results skewed.
->>>>
->>>> This patch implements bpf_send_signal() helper to send
->>>> a signal to hhvm in real time, resulting in intended stack traces.
->>>>
->>>> Acked-by: Andrii Nakryiko <andriin@fb.com>
->>>> Signed-off-by: Yonghong Song <yhs@fb.com>
->>>> ---
->>>>   include/uapi/linux/bpf.h | 17 +++++++++-
->>>>   kernel/trace/bpf_trace.c | 72 ++++++++++++++++++++++++++++++++++++++++
->>>>   2 files changed, 88 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->>>> index 63e0cf66f01a..68d4470523a0 100644
->>>> --- a/include/uapi/linux/bpf.h
->>>> +++ b/include/uapi/linux/bpf.h
->>>> @@ -2672,6 +2672,20 @@ union bpf_attr {
->>>>    *		0 on success.
->>>>    *
->>>>    *		**-ENOENT** if the bpf-local-storage cannot be found.
->>>> + *
->>>> + * int bpf_send_signal(u32 sig)
->>>> + *	Description
->>>> + *		Send signal *sig* to the current task.
->>>> + *	Return
->>>> + *		0 on success or successfully queued.
->>>> + *
->>>> + *		**-EBUSY** if work queue under nmi is full.
->>>> + *
->>>> + *		**-EINVAL** if *sig* is invalid.
->>>> + *
->>>> + *		**-EPERM** if no permission to send the *sig*.
->>>> + *
->>>> + *		**-EAGAIN** if bpf program can try again.
->>>>    */
->>>>   #define __BPF_FUNC_MAPPER(FN)		\
->>>>   	FN(unspec),			\
->>>> @@ -2782,7 +2796,8 @@ union bpf_attr {
->>>>   	FN(strtol),			\
->>>>   	FN(strtoul),			\
->>>>   	FN(sk_storage_get),		\
->>>> -	FN(sk_storage_delete),
->>>> +	FN(sk_storage_delete),		\
->>>> +	FN(send_signal),
->>>>   
->>>>   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->>>>    * function eBPF program intends to call
->>>> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
->>>> index f92d6ad5e080..70029eafc71f 100644
->>>> --- a/kernel/trace/bpf_trace.c
->>>> +++ b/kernel/trace/bpf_trace.c
->>>> @@ -567,6 +567,63 @@ static const struct bpf_func_proto bpf_probe_read_str_proto = {
->>>>   	.arg3_type	= ARG_ANYTHING,
->>>>   };
->>>>   
->>>> +struct send_signal_irq_work {
->>>> +	struct irq_work irq_work;
->>>> +	struct task_struct *task;
->>>> +	u32 sig;
->>>> +};
->>>> +
->>>> +static DEFINE_PER_CPU(struct send_signal_irq_work, send_signal_work);
->>>> +
->>>> +static void do_bpf_send_signal(struct irq_work *entry)
->>>> +{
->>>> +	struct send_signal_irq_work *work;
->>>> +
->>>> +	work = container_of(entry, struct send_signal_irq_work, irq_work);
->>>> +	group_send_sig_info(work->sig, SEND_SIG_PRIV, work->task, PIDTYPE_TGID);
->>>> +}
->>>> +
->>>> +BPF_CALL_1(bpf_send_signal, u32, sig)
->>>> +{
->>>> +	struct send_signal_irq_work *work = NULL;
->>>> +
->>
->> Oh, and one more thing:
->>
->> 	if (!valid_signal(sig))
->> 		return -EINVAL;
->>
->> Otherwise when deferring the work, you don't have any such feedback.
-> 
-> Good advice! Do you want me send a followup patch or
-> resend the whole series?
+On Fri, May 24, 2019 at 2:17 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>
+> Jarod Wilson <jarod@redhat.com> wrote:
+>
+> >Once in a while, with just the right timing, 802.3ad slaves will fail to
+> >properly initialize, winding up in a weird state, with a partner system
+> >mac address of 00:00:00:00:00:00. This started happening after a fix to
+> >properly track link_failure_count tracking, where an 802.3ad slave that
+> >reported itself as link up in the miimon code, but wasn't able to get a
+> >valid speed/duplex, started getting set to BOND_LINK_FAIL instead of
+> >BOND_LINK_DOWN. That was the proper thing to do for the general "my link
+> >went down" case, but has created a link initialization race that can put
+> >the interface in this odd state.
+>
+Are there any notification consequences because of this change?
 
-Lets do follow-up.
+>        Reading back in the git history, the ultimate cause of this
+> "weird state" appears to be devices that assert NETDEV_UP prior to
+> actually being able to supply sane speed/duplex values, correct?
+>
+>         Presuming that this is the case, I don't see that there's much
+> else to be done here, and so:
+>
+> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+>
+> >The simple fix is to instead set the slave link to BOND_LINK_DOWN again,
+> >if the link has never been up (last_link_up == 0), so the link state
+> >doesn't bounce from BOND_LINK_DOWN to BOND_LINK_FAIL -- it hasn't failed
+> >in this case, it simply hasn't been up yet, and this prevents the
+> >unnecessary state change from DOWN to FAIL and getting stuck in an init
+> >failure w/o a partner mac.
+> >
+> >Fixes: ea53abfab960 ("bonding/802.3ad: fix link_failure_count tracking")
+> >CC: Jay Vosburgh <j.vosburgh@gmail.com>
+> >CC: Veaceslav Falico <vfalico@gmail.com>
+> >CC: Andy Gospodarek <andy@greyhouse.net>
+> >CC: "David S. Miller" <davem@davemloft.net>
+> >CC: netdev@vger.kernel.org
+> >Tested-by: Heesoon Kim <Heesoon.Kim@stratus.com>
+> >Signed-off-by: Jarod Wilson <jarod@redhat.com>
+>
+>
+>
+> >---
+> > drivers/net/bonding/bond_main.c | 15 ++++++++++-----
+> > 1 file changed, 10 insertions(+), 5 deletions(-)
+> >
+> >diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> >index 062fa7e3af4c..407f4095a37a 100644
+> >--- a/drivers/net/bonding/bond_main.c
+> >+++ b/drivers/net/bonding/bond_main.c
+> >@@ -3122,13 +3122,18 @@ static int bond_slave_netdev_event(unsigned long event,
+> >       case NETDEV_CHANGE:
+> >               /* For 802.3ad mode only:
+> >                * Getting invalid Speed/Duplex values here will put slave
+> >-               * in weird state. So mark it as link-fail for the time
+> >-               * being and let link-monitoring (miimon) set it right when
+> >-               * correct speeds/duplex are available.
+> >+               * in weird state. Mark it as link-fail if the link was
+> >+               * previously up or link-down if it hasn't yet come up, and
+> >+               * let link-monitoring (miimon) set it right when correct
+> >+               * speeds/duplex are available.
+> >                */
+> >               if (bond_update_speed_duplex(slave) &&
+> >-                  BOND_MODE(bond) == BOND_MODE_8023AD)
+> >-                      slave->link = BOND_LINK_FAIL;
+> >+                  BOND_MODE(bond) == BOND_MODE_8023AD) {
+> >+                      if (slave->last_link_up)
+> >+                              slave->link = BOND_LINK_FAIL;
+> >+                      else
+> >+                              slave->link = BOND_LINK_DOWN;
+> >+              }
+> >
+> >               if (BOND_MODE(bond) == BOND_MODE_8023AD)
+> >                       bond_3ad_adapter_speed_duplex_changed(slave);
+> >--
+> >2.20.1
+> >
