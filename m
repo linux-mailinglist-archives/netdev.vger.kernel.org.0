@@ -2,110 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E752A162
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 00:41:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC442A191
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 01:17:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404416AbfEXWl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 18:41:27 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:59797 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727113AbfEXWl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 18:41:26 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hUIsO-0005Bm-I1; Fri, 24 May 2019 22:41:24 +0000
-To:     "David S. Miller" <davem@davemloft.net>,
-        Esben Haabendal <esben@geanix.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Subject: re: net: ll_temac: Cleanup multicast filter on change
-Message-ID: <6b57d3a1-98b6-c20d-355d-87c2f52b0f31@canonical.com>
-Date:   Fri, 24 May 2019 23:41:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726335AbfEXXRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 19:17:45 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:43833 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726258AbfEXXRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 19:17:45 -0400
+Received: by mail-wr1-f66.google.com with SMTP id l17so3047636wrm.10
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 16:17:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Du8pm3zNT/C4eFKl/KOYJJmVkIdZ5Zf24+raNq+GceM=;
+        b=p6vavkciQnzTE37MaWyk6pe1LmA0wH285vnQ8MXUIj89sKorz1mHsgdP7+wNO05xw+
+         bpwTwy9HgflAhMFiERT98+jcx6R6zmtXG3tHd2KH1IvCSr6eXqeB9/xv7A78mCeQI7Kr
+         ngyT+2M6UI2g0pOobcxBWCJ1TqhOSuNS9QH/R5YgiFRT2L8x4B3WmUcE5oc13/zlOGdx
+         dmyuWArVjvQyZNHbB/Fw4OnOy3tIjdOpEUffu92fAw5d5VuyU3XPwCAuruIISGk2Mz1X
+         9ABE4m4WYvd7EEZlo2bRp5jyeASJBu2VpqEI9Ho+poVIRXZdiVdnol2tKpOxBZMIy4PN
+         /BAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Du8pm3zNT/C4eFKl/KOYJJmVkIdZ5Zf24+raNq+GceM=;
+        b=e09kObvJ29oYcE6M3YrjSqKCcrJ3BQ6UPZI/zVYlmUXz72PTKFqIdRFY+pnSN6RRdw
+         pOXOzW7nxy+gwQH3hUGCehlX+Mp1n27krKto4MGTH9zSJ8h5Af/5XLnXLD+B5CdHj7rT
+         N3c2Xldqk6t71tUg6XX7mIhCMFtgyIp9PMSLxO8LqPxdx+m+5ELpjuZEp04NXwRFiFqw
+         TiJsp9lxhZyEdOWsaH5UwnOdbwiQRCmL1T3TJkxxCAF7wbtDmtRcTJTEh9wo04ovVV9e
+         GrGEY9fWJSXUCVY7TAP/ruzrjAwpf0a5//mpEqjrPgIsbb6I+u8hucrWFqComOKuqy2D
+         F7EA==
+X-Gm-Message-State: APjAAAUd03cu9L4q6Cbq03sqpwTmrMF3SCqrUe3iYqAICUTJXKtp8Prx
+        vKrm0SULFPxI4HbI80SCCiFv7yiP7SLu9OZFUPAMOQ==
+X-Google-Smtp-Source: APXvYqzpOV2Ul4CMhcf8lP1A+weWf6b+IDItKiDJhkpq3w0azoEiG2yhQCvtbyfjpdl39FonelQ8Gd+UcVmuVNwKDvQ=
+X-Received: by 2002:adf:f841:: with SMTP id d1mr1222359wrq.62.1558739863241;
+ Fri, 24 May 2019 16:17:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <cover.1558557001.git.jbaron@akamai.com> <20190523.121435.1508515031987363334.davem@davemloft.net>
+ <CAK6E8=fXs5kHVhcNyVHY5V3ZDkn3_FBcMPSnFoe4Fir-qU_1BA@mail.gmail.com>
+In-Reply-To: <CAK6E8=fXs5kHVhcNyVHY5V3ZDkn3_FBcMPSnFoe4Fir-qU_1BA@mail.gmail.com>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Fri, 24 May 2019 16:17:06 -0700
+Message-ID: <CAK6E8=dEtKU49wMJbTCQnS+=O9Gt8GZh4KOQ2QTawxnACtzX+g@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/6] add TFO backup key
+To:     David Miller <davem@davemloft.net>
+Cc:     jbaron@akamai.com, Eric Dumazet <edumazet@google.com>,
+        ilubashe@akamai.com, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, May 23, 2019 at 4:31 PM Yuchung Cheng <ycheng@google.com> wrote:
+>
+> On Thu, May 23, 2019 at 12:14 PM David Miller <davem@davemloft.net> wrote:
+> >
+> > From: Jason Baron <jbaron@akamai.com>
+> > Date: Wed, 22 May 2019 16:39:32 -0400
+> >
+> > > Christoph, Igor, and I have worked on an API that facilitates TFO key
+> > > rotation. This is a follow up to the series that Christoph previously
+> > > posted, with an API that meets both of our use-cases. Here's a
+> > > link to the previous work:
+> > > https://patchwork.ozlabs.org/cover/1013753/
+> >
+> > I have no objections.
+> >
+> > Yuchung and Eric, please review.
+> >
+> > And anyways there will be another spin of this to fix the typo in the documentation
+> > patch #5.
+> patch set looks fine. I am testing them w/ our internal TFO packetdrill tests.
+> >
+> > Thanks.
+The patch series pass the packetdrill TFO tests :-) It'd be great to
+support of TCP_FASTOPEN_KEY sock opt additionally.
 
-static analysis with Coverity has detected a potential issue with the
-following commit:
-
-commit 1b3fa5cf859bce7094ac18d32f54af8a7148ad51
-Author: Esben Haabendal <esben@geanix.com>
-Date:   Thu May 23 14:02:21 2019 +0200
-
-    net: ll_temac: Cleanup multicast filter on change
-
-In function temac_set_multicast_list
-(drivers/net/ethernet/xilinx/ll_temac_main.c), loop counter i is *only*
-initialized in the code block:
-
-	if (!netdev_mc_empty(ndev)) {
-		...
-	}
-
-Following this if code block there is a while-loop that iterates using i
-as counter which will be problematic if i has not been correctly
-initialized:
-
-        while (i < MULTICAST_CAM_TABLE_NUM) {
-                temac_indirect_out32_locked(lp, XTE_MAW0_OFFSET, 0);
-                temac_indirect_out32_locked(lp, XTE_MAW1_OFFSET, i << 16);
-                i++;
-        }
-
-Colin
+Acked-by: Yuchung Cheng <ycheng@google.com>
