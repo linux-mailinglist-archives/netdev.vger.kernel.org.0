@@ -2,75 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2BC829A25
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 16:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7748F29A28
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 16:38:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404138AbfEXOgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 10:36:14 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56140 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403997AbfEXOgO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 10:36:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=3fJgvTqEhmBwQWcm4Ec4SKbVrWb5SDjuLaLyk06Zp2Y=; b=01B7wquOI6uQQAIirCyjpSwXbz
-        nl6zSyrZOSxmzY/UUp4Q5FlKlIv5LTxypGJI/czt7WvtlUrQu1I8CdHNvaQMc+nOXoH+jO4ARLgAx
-        QICRH/VVE/OJU/kGX3+TLA0AC2gM45XBWUEj1eNRgvhXlpgjtoMmQZ02Ue32Ew36Iivk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hUBIk-0001fA-Rm; Fri, 24 May 2019 16:36:06 +0200
-Date:   Fri, 24 May 2019 16:36:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH V6] net: phy: tja11xx: Add TJA11xx PHY driver
-Message-ID: <20190524143606.GN2979@lunn.ch>
-References: <20190524142228.4003-1-marex@denx.de>
+        id S2391617AbfEXOiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 10:38:00 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:36891 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390885AbfEXOiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 10:38:00 -0400
+Received: by mail-oi1-f195.google.com with SMTP id f4so7189443oib.4
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 07:37:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=CFrjmDnqzNNFxq7deh1hPBcok1l+5oaCp9KNgtEyRok=;
+        b=mQl7Pw6eyhvnZn05JHEzHbMMXoJ0FHmZoBzUrcgCM3Px36sEc+lJlKSzZwBZ5JkIa5
+         syeKoqbqZnyaf342f7g66BFV2wdqdnIxGi/XDJi+5KWdkjUUrUTz5ZSbS2vJHq5isagj
+         XXvm1bANIPMHBgYMN6j6Si7a9XO4bXYHhKSIfGg+wJy7zsmiupQKAdEQiAgBxnlZRCnh
+         +60cjc8pOqO4JYlBE8vxzIDRk9NyzNGKBgLLmpr7G71D8YwUF4uFZX5SZsBzMBM4Jk/d
+         tmQP779CkC/sVEsqGEJsax57drsScfi+Da9zmUGuvFyE+oNyBlCVKxbuVnfxZs8EUP9L
+         KkDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=CFrjmDnqzNNFxq7deh1hPBcok1l+5oaCp9KNgtEyRok=;
+        b=Z0v3whbr8NmTgrVAPTA2hwnfrZuVsovOcTpsSChHt+cMp2ohY+Q1hI92MrO1DLalXV
+         X1UKN3FypNlxvhcco0y+1dCM7hUUhl9C93D6f6I1iILaMzSbAXTBATMJ2xl9Cxrs/eAX
+         XMIKmpmghCE5aM9pOWE8KQq51nCVFRGue0/whYNPcUri5aSSpUlvOzDfiFeTL2ZQKQBi
+         WeJAGrZItf9AoixjDp3GxoLO3eafH7qrlAVT6bZwX3eNRewHN4rUz21OFMkHCSW473tz
+         QWs9fbHh3sXGMIFDQtSbjAmV5PvwCRYlFBecdXLUL2+LwuTJY9CMTMXQLD52/ocdI7DJ
+         Ipcw==
+X-Gm-Message-State: APjAAAUD9iTh+W1JHaEtFpmULwTcoXrwm+OzbVTSmMKXrkUJzsrYucVf
+        EF/VglUaHqumYrol/sQiCrk=
+X-Google-Smtp-Source: APXvYqw4pzOuVacpDFaIawHi1BOQR208nQMWdivnC+7xkAOYIYIiDo/0aOQ144mOFOqrZYqXGCFFrw==
+X-Received: by 2002:aca:ccd0:: with SMTP id c199mr1541oig.63.1558708679366;
+        Fri, 24 May 2019 07:37:59 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
+        by smtp.gmail.com with ESMTPSA id f4sm1176222oih.39.2019.05.24.07.37.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2019 07:37:58 -0700 (PDT)
+Subject: Re: [PATCH] net:phy:dp83867: set up rgmii tx delay
+To:     Max Uvarov <muvarov@gmail.com>, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net
+References: <20190524103523.8459-1-muvarov@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <748ce02b-985d-54ad-8cfe-736f38622e25@gmail.com>
+Date:   Fri, 24 May 2019 07:37:58 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190524142228.4003-1-marex@denx.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190524103523.8459-1-muvarov@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 04:22:28PM +0200, Marek Vasut wrote:
-> Add driver for the NXP TJA1100 and TJA1101 PHYs. These PHYs are special
-> BroadRReach 100BaseT1 PHYs used in automotive.
+
+
+On 5/24/2019 3:35 AM, Max Uvarov wrote:
+> PHY_INTERFACE_MODE_RGMII_RXID is less then TXID
+> so code to set tx delay is never called.
 > 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: linux-hwmon@vger.kernel.org
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Max Uvarov <muvarov@gmail.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Could you provide an appropriate Fixes: tag for this as well as fix the
+subject to be:
 
-> +static struct tja11xx_phy_stats tja11xx_hw_stats[] = {
-> +	{ "phy_symbol_error_count", 20, 0, GENMASK(15, 0) },
-> +	{ "phy_polarity_detect", 25, 6, BIT(6) },
-> +	{ "phy_open_detect", 25, 7, BIT(7) },
-> +	{ "phy_short_detect", 25, 8, BIT(8) },
-> +	{ "phy_rem_rcvr_count", 26, 0, GENMASK(7, 0) },
-> +	{ "phy_loc_rcvr_count", 26, 8, GENMASK(15, 8) },
-> +};
+net: phy: dp83867: Set up RGMII TX delay
 
-I don't like phy_polarity_detect, phy_open_detect and phy_short_detect
-since they are not actually counters. But we don't have cable test
-support yet. That is coming soon, but it is hard to say when, if it
-will get merged this cycle. So lets keep them, but don't be too
-surprised if they get removed later.
+(sorry for being uber nitpicking on this)
 
-	Andrew
+> ---
+>  drivers/net/phy/dp83867.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+> index 2984fd5ae495..5fed837665ea 100644
+> --- a/drivers/net/phy/dp83867.c
+> +++ b/drivers/net/phy/dp83867.c
+> @@ -251,10 +251,8 @@ static int dp83867_config_init(struct phy_device *phydev)
+>  		ret = phy_write(phydev, MII_DP83867_PHYCTRL, val);
+>  		if (ret)
+>  			return ret;
+> -	}
+>  
+
+Is this hunk ^ intentional?
+
+> -	if ((phydev->interface >= PHY_INTERFACE_MODE_RGMII_ID) &&
+> -	    (phydev->interface <= PHY_INTERFACE_MODE_RGMII_RXID)) {
+> +		/* Set up RGMII delays */
+>  		val = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_RGMIICTL);
+>  
+>  		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+> 
+
+-- 
+Florian
