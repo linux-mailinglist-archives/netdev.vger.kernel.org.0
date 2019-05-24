@@ -2,103 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2860228ED5
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 03:35:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 761D328EDB
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 03:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388580AbfEXBfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 21:35:23 -0400
-Received: from tama50.ecl.ntt.co.jp ([129.60.39.147]:49618 "EHLO
-        tama50.ecl.ntt.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388378AbfEXBfX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 21:35:23 -0400
-Received: from vc1.ecl.ntt.co.jp (vc1.ecl.ntt.co.jp [129.60.86.153])
-        by tama50.ecl.ntt.co.jp (8.13.8/8.13.8) with ESMTP id x4O1YXBI028947;
-        Fri, 24 May 2019 10:34:33 +0900
-Received: from vc1.ecl.ntt.co.jp (localhost [127.0.0.1])
-        by vc1.ecl.ntt.co.jp (Postfix) with ESMTP id D29F7EA7ABE;
-        Fri, 24 May 2019 10:34:33 +0900 (JST)
-Received: from jcms-pop21.ecl.ntt.co.jp (jcms-pop21.ecl.ntt.co.jp [129.60.87.134])
-        by vc1.ecl.ntt.co.jp (Postfix) with ESMTP id C7894EA79E3;
-        Fri, 24 May 2019 10:34:33 +0900 (JST)
-Received: from [IPv6:::1] (eb8460w-makita.sic.ecl.ntt.co.jp [129.60.241.47])
-        by jcms-pop21.ecl.ntt.co.jp (Postfix) with ESMTPSA id BAB76400870;
-        Fri, 24 May 2019 10:34:33 +0900 (JST)
-Subject: Re: [PATCH bpf-next 2/3] xdp: Add tracepoint for bulk XDP_TX
-References: <1558609008-2590-1-git-send-email-makita.toshiaki@lab.ntt.co.jp>
- <1558609008-2590-3-git-send-email-makita.toshiaki@lab.ntt.co.jp>
- <20190523151237.190fe76e@carbon>
-From:   Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
-Message-ID: <9ac8402e-fd27-519c-0c1c-d1b306b3441b@lab.ntt.co.jp>
-Date:   Fri, 24 May 2019 10:33:47 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190523151237.190fe76e@carbon>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-CC-Mail-RelayStamp: 1
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        bpf@vger.kernel.org
-X-TM-AS-MML: disable
+        id S2388740AbfEXBis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 May 2019 21:38:48 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:45308 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731676AbfEXBis (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 21:38:48 -0400
+Received: by mail-pg1-f196.google.com with SMTP id i21so4072802pgi.12
+        for <netdev@vger.kernel.org>; Thu, 23 May 2019 18:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=appneta.com; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=fIG1/oNez6GVfieaNVvRGqClWbB80a7VpaI4ZVWlUTY=;
+        b=kGOO7QJjYShPVPBvs/ZZX4VQ4eRHKxuNroC1T1gSIH+LURunL1GYc8S5KkMJ4304nt
+         D0vjJP1zY0itozAzVofvfnp6vwc37FxbJCWVEjzCPHkvqiNeBjdFsXbkJdDIa+f/G+o7
+         l2A9DZTeNt5XJA8Qxui7ybi7g1aIi80biu8DQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=fIG1/oNez6GVfieaNVvRGqClWbB80a7VpaI4ZVWlUTY=;
+        b=fSk63gu1kyz6owlTe8lgBXSjWJDO1SA8h+ApwwmiOik3rUxsx1mpBYSTzNNBldijLx
+         JcpN/JukOlDiofWP17v2W9VuuoFy/MYUCqmld98VJGM+/sYnuFtCOycLqcVA28FLrhcV
+         Ahhrt99yhkXei/2F6EY0h7SITWo1Xu37N3fK6gzNpIixohY0CPflKU+yTOrs8vPvQwsC
+         YwCcSYlIglyCDe663G479FrnApz7Oc73uIl71fYRoKOoBeZpkUHHioEqCep48nmpvOEE
+         sKuFYxSXr05fnocHlXlgqn4xBaGp4DhF/abRd7IwL9NkgNkry6MOuNpW3n2mZDf3LjEl
+         UXmw==
+X-Gm-Message-State: APjAAAU/kCWkMs1PmCsTOYYZp5qHMDZ1wqSk+2ckKqo6KXVF1Xsl60RA
+        HJUGDYBXZvQINRZS4FGn6N9oug==
+X-Google-Smtp-Source: APXvYqxbCF0d1RN2Gw85wpBkrv/MWoagSl5+oFwhvvoDBMmfB9ADuQlYwD4bfak3BfVpG5B/MM3VLA==
+X-Received: by 2002:a63:d016:: with SMTP id z22mr102922046pgf.116.1558661926884;
+        Thu, 23 May 2019 18:38:46 -0700 (PDT)
+Received: from [10.0.1.19] (S010620c9d00fc332.vf.shawcable.net. [70.71.167.160])
+        by smtp.gmail.com with ESMTPSA id f36sm524732pgb.76.2019.05.23.18.38.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 23 May 2019 18:38:46 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.8\))
+Subject: Re: [PATCH net 1/4] net/udp_gso: Allow TX timestamp with UDP GSO
+From:   Fred Klassen <fklassen@appneta.com>
+In-Reply-To: <CAF=yD-Jf95De=z_nx9WFkGDa6+nRUqM_1PqGkjwaFPzOe+PfXg@mail.gmail.com>
+Date:   Thu, 23 May 2019 18:38:44 -0700
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <AE8E0772-7256-4B9C-A990-96930E834AEE@appneta.com>
+References: <20190523210651.80902-1-fklassen@appneta.com>
+ <20190523210651.80902-2-fklassen@appneta.com>
+ <CAF=yD-Jf95De=z_nx9WFkGDa6+nRUqM_1PqGkjwaFPzOe+PfXg@mail.gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+X-Mailer: Apple Mail (2.3445.104.8)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/05/23 22:12, Jesper Dangaard Brouer wrote:
-> On Thu, 23 May 2019 19:56:47 +0900
-> Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> wrote:
-> 
->> This is introduced for admins to check what is happening on XDP_TX when
->> bulk XDP_TX is in use.
->>
->> Signed-off-by: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
->> ---
->>  include/trace/events/xdp.h | 25 +++++++++++++++++++++++++
->>  kernel/bpf/core.c          |  1 +
->>  2 files changed, 26 insertions(+)
->>
->> diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
->> index e95cb86..e06ea65 100644
->> --- a/include/trace/events/xdp.h
->> +++ b/include/trace/events/xdp.h
->> @@ -50,6 +50,31 @@
->>  		  __entry->ifindex)
->>  );
->>  
->> +TRACE_EVENT(xdp_bulk_tx,
->> +
-> 
-> You are using this tracepoint like/instead of trace_xdp_devmap_xmit if
-> I understand correctly?  Or maybe the trace_xdp_redirect tracepoint.
+> Thanks for the report.
+>=20
+> Zerocopy notification reference count is managed in skb_segment. That
+> should work.
+>=20
+> Support for timestamping with the new GSO feature is indeed an
+> oversight. The solution is similar to how TCP associates the timestamp
+> with the right segment in tcp_gso_tstamp.
+>=20
+> Only, I think we want to transfer the timestamp request to the last
+> datagram, not the first. For send timestamp, the final byte leaving
+> the host is usually more interesting.
 
-Yes, I have trace_xdp_devmap_xmit in mind, which is for XDP_REDIRECT.
+TX Timestamping the last packet of a datagram is something that would
+work poorly for our application. We need to measure the time it takes
+for the first bit that is sent until the first bit of the last packet is =
+received.
+Timestaming the last packet of a burst seems somewhat random to me
+and would not be useful. Essentially we would be timestamping a=20
+random byte in a UDP GSO buffer.
 
-> The point is that is will be good if the tracepoints can share the
-> TP_STRUCT layout beginning, as it allows for attaching and reusing eBPF
-> code that is only interested in the top part of the struct.
-
-It's good, but this tracepoint does not have map concept so differs from
-xdp_devmap_xmit.
-
-> I would also want to see some identifier, that trace programs can use
-> to group and corrolate these events, you do have ifindex, but most
-> other XDP tracepoints also have "prog_id".
-
-I have considered that too. The problem is that we cannot pass a
-reliable prog_id since bulk xmit happens after RCU critical section of
-XDP_TX.
-xdp_devmap_xmit does not have prog_id and I guess there is a similar
-reason for it?
-
--- 
-Toshiaki Makita
-
+I believe there is a precedence for timestamping the first packet. With
+IPv4 packets, the first packet is timestamped and the remaining =
+fragments
+are not.=
