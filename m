@@ -2,145 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4EC729B83
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 17:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8469029B84
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 17:51:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389765AbfEXPuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 11:50:51 -0400
-Received: from mga17.intel.com ([192.55.52.151]:55161 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389496AbfEXPuu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 11:50:50 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 May 2019 08:50:50 -0700
-X-ExtLoop1: 1
-Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
-  by fmsmga001.fm.intel.com with ESMTP; 24 May 2019 08:50:49 -0700
-Received: from orsmsx126.amr.corp.intel.com (10.22.240.126) by
- ORSMSX102.amr.corp.intel.com (10.22.225.129) with Microsoft SMTP Server (TLS)
- id 14.3.408.0; Fri, 24 May 2019 08:50:49 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.79]) by
- ORSMSX126.amr.corp.intel.com ([169.254.4.35]) with mapi id 14.03.0415.000;
- Fri, 24 May 2019 08:50:49 -0700
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "mroos@linux.ee" <mroos@linux.ee>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "namit@vmware.com" <namit@vmware.com>,
-        "luto@kernel.org" <luto@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
-Subject: Re: [PATCH v2] vmalloc: Fix issues with flush flag
-Thread-Topic: [PATCH v2] vmalloc: Fix issues with flush flag
-Thread-Index: AQHVD0ezpbXySuUS5EinefGl750kkaZ0/uwAgAALkwCAAAiygIAAGYEAgAADqwCAAA0vgIAABnMAgAAEjYCAApkWgIAAHb0AgAA1/4CAArJUAA==
-Date:   Fri, 24 May 2019 15:50:48 +0000
-Message-ID: <c9c96d83838beab6eb3a5309ad6b4b409fbce0f3.camel@intel.com>
-References: <a43f9224e6b245ade4b587a018c8a21815091f0f.camel@intel.com>
-         <20190520.184336.743103388474716249.davem@davemloft.net>
-         <339ef85d984f329aa66f29fa80781624e6e4aecc.camel@intel.com>
-         <20190522.104019.40493905027242516.davem@davemloft.net>
-         <01a23900329e605fcd41ad8962cfd8f2d9b1fa44.camel@intel.com>
-         <2d8c59be7e591a0d0ff17627ea34ea1eaa110a09.camel@intel.com>
-In-Reply-To: <2d8c59be7e591a0d0ff17627ea34ea1eaa110a09.camel@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.30.1 (3.30.1-1.fc29) 
-x-originating-ip: [10.251.0.167]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3FAE5003E9627F419617E9DC8A2441C1@intel.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S2389948AbfEXPvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 11:51:45 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:39741 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389496AbfEXPvp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 11:51:45 -0400
+Received: by mail-pg1-f194.google.com with SMTP id w22so5276444pgi.6
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 08:51:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=0kwzGKqYhyU21EREFW1b/eYq/9XAO88Z6a4x2Pv5o4Y=;
+        b=nga1CjOZWPF2fHBlNwJG9LVG8wRVEeUzH1VPL4t36HAfbSsiqDQbDSXhjXwEzfsFbc
+         wZ63An0NIatKwM3Ta7eQXvx32vWbuMJbw3v+ENz9OhSi6iKGhABHWUrp06svz+vs510Q
+         +t+IopLXwNrnFm02/jYK6Hfts43/PAAdzJ8xMRkawH3K0ssqwyYF7hxT/2ulJi9FcVZm
+         g+GiA5rUz8zQ5+iH4LSBQ7TBXxnBkXDmpQ8n66n59qfKmf9gHS6h5TMiSrsJmV8SNfn/
+         WexLxQbn1srT0gxZYWt6rNJBKvED7NjXMyZ1QaKv9HNpZt8Rrd4nIJk+IRMhOY9NWDke
+         iDyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=0kwzGKqYhyU21EREFW1b/eYq/9XAO88Z6a4x2Pv5o4Y=;
+        b=aE0Mo4yZbOMLEx83YuJZqH6aglmodZk9abrtQ89oG8WwIikIs+B8NOo2Szh4OzhS9u
+         d7B8pVV7H6aGIfUpLK/iBIbg3vdhQPfE+w8NC0WKdestgCtnQ/sohz1tOh+k7Y8rq5VX
+         bDiHe2IaivtqL3owmw26kT2Zk/z1ngfMbZEORuYD7JW4ZtGtVW+HgA57xgPQJ9w/Z6ZN
+         7aI0RjzrvYawk/X4ihnn6daWWnDNQYAA6QoqvIxPRRWhv38d0QFcpRv92Jor969Y+fKx
+         bwqByeLmG+SI8ezZAZ51vtgR1jFm3gBRbWC8Hcy3iwEp0se6a1GbWYaYACif66zQxkEy
+         W9bA==
+X-Gm-Message-State: APjAAAXD3UfQUrGnHMbXELgGC/uazLoozSPEIxfhkQ3ZMslE2P6SVF/U
+        OtW9kCU++6A/DkyrZWnXRUI=
+X-Google-Smtp-Source: APXvYqx3AQy7bl6qbCss8/DsKCHCdE4Pli4iISLo913MkA/j5HYAlBm2uKi0TURq1UUgAIyidMyOXw==
+X-Received: by 2002:a63:f710:: with SMTP id x16mr92354430pgh.216.1558713104014;
+        Fri, 24 May 2019 08:51:44 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id p64sm3711246pfp.72.2019.05.24.08.51.40
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 24 May 2019 08:51:43 -0700 (PDT)
+Date:   Fri, 24 May 2019 08:51:34 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        Marek Majkowski <marek@cloudflare.com>
+Message-ID: <5ce81306aacbe_39402ae86c50a5bc2f@john-XPS-13-9360.notmuch>
+In-Reply-To: <87r28oz398.fsf@cloudflare.com>
+References: <20190211090949.18560-1-jakub@cloudflare.com>
+ <5439765e-1288-c379-0ead-75597092a404@iogearbox.net>
+ <871s423i6d.fsf@cloudflare.com>
+ <5ce45a6fcd82d_48b72ac3337c45b85f@john-XPS-13-9360.notmuch>
+ <87v9y2zqpz.fsf@cloudflare.com>
+ <5ce6c32418618_64ba2ad730e1a5b44@john-XPS-13-9360.notmuch>
+ <87r28oz398.fsf@cloudflare.com>
+Subject: Re: [PATCH net] sk_msg: Keep reference on socket file while psock
+ lives
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTA1LTIyIGF0IDE1OjQwIC0wNzAwLCBSaWNrIEVkZ2Vjb21iZSB3cm90ZToN
-Cj4gT24gV2VkLCAyMDE5LTA1LTIyIGF0IDEyOjI2IC0wNzAwLCBSaWNrIEVkZ2Vjb21iZSB3cm90
-ZToNCj4gPiBPbiBXZWQsIDIwMTktMDUtMjIgYXQgMTA6NDAgLTA3MDAsIERhdmlkIE1pbGxlciB3
-cm90ZToNCj4gPiA+IEZyb206ICJFZGdlY29tYmUsIFJpY2sgUCIgPHJpY2sucC5lZGdlY29tYmVA
-aW50ZWwuY29tPg0KPiA+ID4gRGF0ZTogVHVlLCAyMSBNYXkgMjAxOSAwMTo1OTo1NCArMDAwMA0K
-PiA+ID4gDQo+ID4gPiA+IE9uIE1vbiwgMjAxOS0wNS0yMCBhdCAxODo0MyAtMDcwMCwgRGF2aWQg
-TWlsbGVyIHdyb3RlOg0KPiA+ID4gPiA+IEZyb206ICJFZGdlY29tYmUsIFJpY2sgUCIgPHJpY2su
-cC5lZGdlY29tYmVAaW50ZWwuY29tPg0KPiA+ID4gPiA+IERhdGU6IFR1ZSwgMjEgTWF5IDIwMTkg
-MDE6MjA6MzMgKzAwMDANCj4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IFNob3VsZCBpdCBoYW5kbGUg
-ZXhlY3V0aW5nIGFuIHVubWFwcGVkIHBhZ2UgZ3JhY2VmdWxseT8NCj4gPiA+ID4gPiA+IEJlY2F1
-c2UNCj4gPiA+ID4gPiA+IHRoaXMNCj4gPiA+ID4gPiA+IGNoYW5nZSBpcyBjYXVzaW5nIHRoYXQg
-dG8gaGFwcGVuIG11Y2ggZWFybGllci4gSWYgc29tZXRoaW5nDQo+ID4gPiA+ID4gPiB3YXMNCj4g
-PiA+ID4gPiA+IHJlbHlpbmcNCj4gPiA+ID4gPiA+IG9uIGEgY2FjaGVkIHRyYW5zbGF0aW9uIHRv
-IGV4ZWN1dGUgc29tZXRoaW5nIGl0IGNvdWxkIGZpbmQNCj4gPiA+ID4gPiA+IHRoZQ0KPiA+ID4g
-PiA+ID4gbWFwcGluZw0KPiA+ID4gPiA+ID4gZGlzYXBwZWFyLg0KPiA+ID4gPiA+IA0KPiA+ID4g
-PiA+IERvZXMgdGhpcyB3b3JrIGJ5IG5vdCBtYXBwaW5nIGFueSBrZXJuZWwgbWFwcGluZ3MgYXQg
-dGhlDQo+ID4gPiA+ID4gYmVnaW5uaW5nLA0KPiA+ID4gPiA+IGFuZCB0aGVuIGZpbGxpbmcgaW4g
-dGhlIEJQRiBtYXBwaW5ncyBpbiByZXNwb25zZSB0byBmYXVsdHM/DQo+ID4gPiA+IE5vLCBub3Ro
-aW5nIHRvbyBmYW5jeS4gSXQganVzdCBmbHVzaGVzIHRoZSB2bSBtYXBwaW5nDQo+ID4gPiA+IGlt
-bWVkaWF0bHkNCj4gPiA+ID4gaW4NCj4gPiA+ID4gdmZyZWUgZm9yIGV4ZWN1dGUgKGFuZCBSTykg
-bWFwcGluZ3MuIFRoZSBvbmx5IHRoaW5nIHRoYXQNCj4gPiA+ID4gaGFwcGVucw0KPiA+ID4gPiBh
-cm91bmQNCj4gPiA+ID4gYWxsb2NhdGlvbiB0aW1lIGlzIHNldHRpbmcgb2YgYSBuZXcgZmxhZyB0
-byB0ZWxsIHZtYWxsb2MgdG8gZG8NCj4gPiA+ID4gdGhlDQo+ID4gPiA+IGZsdXNoLg0KPiA+ID4g
-PiANCj4gPiA+ID4gVGhlIHByb2JsZW0gYmVmb3JlIHdhcyB0aGF0IHRoZSBwYWdlcyB3b3VsZCBi
-ZSBmcmVlZCBiZWZvcmUgdGhlDQo+ID4gPiA+IGV4ZWN1dGUNCj4gPiA+ID4gbWFwcGluZyB3YXMg
-Zmx1c2hlZC4gU28gdGhlbiB3aGVuIHRoZSBwYWdlcyBnb3QgcmVjeWNsZWQsDQo+ID4gPiA+IHJh
-bmRvbSwNCj4gPiA+ID4gc29tZXRpbWVzIGNvbWluZyBmcm9tIHVzZXJzcGFjZSwgZGF0YSB3b3Vs
-ZCBiZSBtYXBwZWQgYXMNCj4gPiA+ID4gZXhlY3V0YWJsZQ0KPiA+ID4gPiBpbg0KPiA+ID4gPiB0
-aGUga2VybmVsIGJ5IHRoZSB1bi1mbHVzaGVkIHRsYiBlbnRyaWVzLg0KPiA+ID4gDQo+ID4gPiBJ
-ZiBJIGFtIHRvIHVuZGVyc3RhbmQgdGhpbmdzIGNvcnJlY3RseSwgdGhlcmUgd2FzIGEgY2FzZSB3
-aGVyZQ0KPiA+ID4gJ2VuZCcNCj4gPiA+IGNvdWxkIGJlIHNtYWxsZXIgdGhhbiAnc3RhcnQnIHdo
-ZW4gZG9pbmcgYSByYW5nZSBmbHVzaC4gIFRoYXQNCj4gPiA+IHdvdWxkDQo+ID4gPiBkZWZpbml0
-ZWx5IGtpbGwgc29tZSBvZiB0aGUgc3BhcmM2NCBUTEIgZmx1c2ggcm91dGluZXMuDQo+ID4gDQo+
-ID4gT2ssIHRoYW5rcy4NCj4gPiANCj4gPiBUaGUgcGF0Y2ggYXQgdGhlIGJlZ2lubmluZyBvZiB0
-aGlzIHRocmVhZCBkb2Vzbid0IGhhdmUgdGhhdA0KPiA+IGJlaGF2aW9yDQo+ID4gdGhvdWdoIGFu
-ZCBpdCBhcHBhcmVudGx5IHN0aWxsIGh1bmcuIEkgYXNrZWQgaWYgTWVlbGlzIGNvdWxkIHRlc3QN
-Cj4gPiB3aXRoDQo+ID4gdGhpcyBmZWF0dXJlIGRpc2FibGVkIGFuZCBERUJVR19QQUdFQUxMT0Mg
-b24sIHNpbmNlIGl0IGZsdXNoZXMgb24NCj4gPiBldmVyeQ0KPiA+IHZmcmVlIGFuZCBpcyBub3Qg
-bmV3IGxvZ2ljLCBhbmQgYWxzbyB3aXRoIGEgcGF0Y2ggdGhhdCBsb2dzIGV4YWN0DQo+ID4gVExC
-DQo+ID4gZmx1c2ggcmFuZ2VzIGFuZCBmYXVsdCBhZGRyZXNzZXMgb24gdG9wIG9mIHRoZSBrZXJu
-ZWwgaGF2aW5nIHRoaXMNCj4gPiBpc3N1ZS4gSG9wZWZ1bGx5IHRoYXQgd2lsbCBzaGVkIHNvbWUg
-bGlnaHQuDQo+ID4gDQo+ID4gU29ycnkgZm9yIGFsbCB0aGUgbm9pc2UgYW5kIHNwZWN1bGF0aW9u
-IG9uIHRoaXMuIEl0IGhhcyBiZWVuDQo+ID4gZGlmZmljdWx0DQo+ID4gdG8gZGVidWcgcmVtb3Rl
-bHkgd2l0aCBhIHRlc3RlciBhbmQgZGV2ZWxvcGVyIGluIGRpZmZlcmVudCB0aW1lDQo+ID4gem9u
-ZXMuDQo+ID4gDQo+ID4gDQo+IE9rLCBzbyB3aXRoIGEgcGF0Y2ggdG8gZGlzYWJsZSBzZXR0aW5n
-IHRoZSBuZXcgdm1hbGxvYyBmbHVzaCBmbGFnIG9uDQo+IGFyY2hpdGVjdHVyZXMgdGhhdCBoYXZl
-IG5vcm1hbCBtZW1vcnkgYXMgZXhlY3V0YWJsZSAoaW5jbHVkZXMgc3BhcmMpLA0KPiBib290IHN1
-Y2NlZWRzLg0KPiANCj4gV2l0aCB0aGlzIGRpc2FibGUgcGF0Y2ggYW5kIERFQlVHX1BBR0VBTExP
-QyBvbiwgaXQgaGFuZ3MgZWFybGllciB0aGFuDQo+IGJlZm9yZS4gR29pbmcgZnJvbSBjbHVlcyBp
-biBvdGhlciBsb2dzLCBpdCBsb29rcyBsaWtlIGl0IGhhbmdzIHJpZ2h0DQo+IGF0DQo+IHRoZSBm
-aXJzdCBub3JtYWwgdmZyZWUuDQo+IA0KPiBUaGFua3MgZm9yIGFsbCB0aGUgdGVzdGluZyBNZWVs
-aXMhDQo+IA0KPiBTbyBpdCBzZWVtcyBsaWtlIG90aGVyLCBub3QgbmV3LCBUTEIgZmx1c2hlcyBh
-bHNvIHRyaWdnZXIgdGhlIGhhbmcuDQo+IA0KPiBGcm9tIGVhcmxpZXIgbG9ncyBwcm92aWRlZCwg
-dGhpcyB2ZnJlZSB3b3VsZCBiZSB0aGUgZmlyc3QgY2FsbCB0bw0KPiBmbHVzaF90bGJfa2VybmVs
-X3JhbmdlKCksIGFuZCBiZWZvcmUgYW55IEJQRiBhbGxvY2F0aW9ucyBhcHBlYXIgaW4NCj4gdGhl
-DQo+IGxvZ3MuIFNvIEkgYW0gc3VzcGVjdGluZyBzb21lIG90aGVyIGNhdXNlIHRoYW4gdGhlIGJp
-c2VjdGVkIHBhdGNoIGF0DQo+IHRoaXMgcG9pbnQsIGJ1dCBJIGd1ZXNzIGl0J3Mgbm90IGZ1bGx5
-IGNvbmNsdXNpdmUuDQo+IA0KPiBJdCBjb3VsZCBiZSBpbmZvcm1hdGl2ZSB0byBiaXNlY3QgdXBz
-dHJlYW0gYWdhaW4gd2l0aCB0aGUNCj4gREVCVUdfUEFHRUFMTE9DIGNvbmZpZ3Mgb24sIHRvIHNl
-ZSBpZiBpdCBpbmRlZWQgcG9pbnRzIHRvIGFuIGVhcmxpZXINCj4gY29tbWl0Lg0KDQpTbyBub3cg
-TWVlbGlzIGhhcyBmb3VuZCB0aGF0IHRoZSBjb21taXQgYmVmb3JlIGFueSBvZiBteSB2bWFsbG9j
-DQpjaGFuZ2VzIGFsc28gaGFuZ3MgZHVyaW5nIGJvb3Qgd2l0aCBERUJVR19QQUdFQUxMT0Mgb24u
-IEl0IGRvZXMgdGhpcw0Kc2hvcnRseSBhZnRlciB0aGUgZmlyc3QgdmZyZWUsIHdoaWNoIERFQlVH
-X1BBR0VBTExPQyB3b3VsZCBvZiBjb3Vyc2UNCm1ha2UgdHJpZ2dlciBhIGZsdXNoX3RsYl9rZXJu
-ZWxfcmFuZ2UoKSBvbiB0aGUgYWxsb2NhdGlvbiBqdXN0IGxpa2UgbXkNCnZtYWxsb2MgY2hhbmdl
-cyBkbyBvbiBjZXJ0YWluIHZtYWxsb2NzLiBUaGUgdXBzdHJlYW0gY29kZSBjYWxscw0Kdm1fdW5t
-YXBfYWxpYXNlcygpIGluc3RlYWQgb2YgdGhlIGZsdXNoX3RsYl9rZXJuZWxfcmFuZ2UoKSBkaXJl
-Y3RseSwNCmJ1dCB3ZSBhbHNvIHRlc3RlZCBhIHZlcnNpb24gdGhhdCBjYWxsZWQgdGhlIGZsdXNo
-IGRpcmVjdGx5IG9uIGp1c3QgdGhlDQphbGxvY2F0aW9uIGFuZCBpdCBhbHNvIGh1bmcuIFNvIGl0
-IHNlZW1zIGxpa2UgaXNzdWVzIGZsdXNoaW5nIHZtYWxsb2NzDQpvbiB0aGlzIHBsYXRmb3JtIGV4
-aXN0IG91dHNpZGUgbXkgY29tbWl0cy4NCg0KSG93IGRvIHBlb3BsZSBmZWVsIGFib3V0IGNhbGxp
-bmcgdGhpcyBhIHNwYXJjIHNwZWNpZmljIGlzc3VlIHVuY292ZXJlZA0KYnkgbXkgcGF0Y2ggaW5z
-dGVhZCBvZiBjYXVzZWQgYnkgaXQgYXQgdGhpcyBwb2ludD8NCg0KSWYgcGVvcGxlIGFncmVlIHdp
-dGggdGhpcyBhc3Nlc21lbnQsIGl0IG9mIGNvdXJzZSBzdGlsbCBzZWVtcyBsaWtlIHRoZQ0KbmV3
-IGNoYW5nZXMgdHVybiB0aGUgcm9vdCBjYXVzZSBpbnRvIGEgbW9yZSBpbXBhY3RmdWwgaXNzdWUg
-Zm9yIHRoaXMNCnNwZWNpZmljIGNvbWJpbmF0aW9uLiBPbiB0aGUgb3RoZXIgaGFuZCBJIGFtIG5v
-dCB0aGUgcmlnaHQgcGVyc29uIHRvDQpmaXggdGhlIHJvb3QgY2F1c2UgZm9yIHNldmVyYWwgcmVh
-c29ucyBpbmNsdWRpbmcgbm8gaGFyZHdhcmUgYWNjZXNzLiANCg0KT3RoZXJ3aXNlIEkgY291bGQg
-c3VibWl0IGEgcGF0Y2ggdG8gZGlzYWJsZSB0aGlzIGZvciBzcGFyYyBzaW5jZSBpdA0KZG9lc24n
-dCByZWFsbHkgZ2V0IGEgc2VjdXJpdHkgYmVuZWZpdCBmcm9tIGl0IGFueXdheS4gV2hhdCBkbyBw
-ZW9wbGUNCnRoaW5rPw0K
+Jakub Sitnicki wrote:
+> On Thu, May 23, 2019 at 05:58 PM CEST, John Fastabend wrote:
+> > [...]
+> >
+> >>
+> >> Thanks for taking a look at it. Setting MSG_DONTWAIT works great for
+> >> me. No more crashes in sk_stream_wait_memory. I've tested it on top of
+> >> current bpf-next (f49aa1de9836). Here's my:
+> >>
+> >>   Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
+> >>
+> >> The actual I've tested is below, for completeness.
+> >>
+> >> BTW. I've ran into another crash which I haven't seen before while
+> >> testing sockmap-echo, but it looks unrelated:
+> >>
+> >>   https://lore.kernel.org/netdev/20190522100142.28925-1-jakub@cloudflare.com/
+> >>
+> >> -Jakub
+> >>
+> >> --- 8< ---
+> >>
+> >> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> >> index e89be6282693..4a7c656b195b 100644
+> >> --- a/net/core/skbuff.c
+> >> +++ b/net/core/skbuff.c
+> >> @@ -2337,6 +2337,7 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
+> >>                 kv.iov_base = skb->data + offset;
+> >>                 kv.iov_len = slen;
+> >>                 memset(&msg, 0, sizeof(msg));
+> >> +               msg.msg_flags = MSG_DONTWAIT;
+> >>
+> >>                 ret = kernel_sendmsg_locked(sk, &msg, &kv, 1, slen);
+> >>                 if (ret <= 0)
+> >
+> > I went ahead and submitted this feel free to add your signed-off-by.
+> 
+> Thanks! The fix was all your idea :-)
+
+If I can push the correct patch to Daniel it should be in bpf tree
+soon.
+
+> 
+> Now that those pesky crashes are gone, we plan to look into drops when
+> doing echo with sockmap. Marek tried running echo-sockmap [1] with
+> latest bpf-next (plus mentioned crash fixes) and reports that not all
+> data bounces back:
+> 
+> $ yes| head -c $[1024*1024] | nc -q2 192.168.1.33 1234 |wc -c
+> 971832
+> $ yes| head -c $[1024*1024] | nc -q2 192.168.1.33 1234 |wc -c
+> 867352
+> $ yes| head -c $[1024*1024] | nc -q2 192.168.1.33 1234 |wc -c
+> 952648
+> 
+> I'm tring to turn echo-sockmap into a selftest but as you can probably
+> guess over loopback all works fine.
+> 
+
+Right, sockmap when used from recvmsg with redirect is lossy. This
+was a design choice I made that apparently caught a few people
+by surprise. The original rationale for this was when doing a
+multiplex operation, e.g. single ingress socket to many egress
+sockets blocking would cause head of line blocking on all
+sockets. To resolve this I simply dropped the packet and then allow
+the flow to continue. This pushes the logic up to the application
+to do retries, etc. when this happens. FWIW userspace proxies I
+tested also had similar points where they fell over and dropped
+packets. In hind sight though it probably would have made more
+sense to make this behavior opt-in vs the default. But, the
+use case I was solving at the time I wrote this could handle
+drops and was actually a NxM sockets with N ingress sockets and M
+egress sockets so head of line blocking was a real problem.
+
+Adding a flag to turn this into a blocking op has been on my
+todo list for awhile. Especially when sockmap is being used as
+a single ingress to single egress socket then blocking vs dropping
+makes much more sense.
+
+The place to look is in sk_psock_verdict_apply() in __SK_REDIRECT
+case there is a few checks and notice we can fallthrough to a
+kfree_skb(skb). This is most likely the drops you are hitting.
+Maybe annotate it with a dbg statement to check.
+
+To fix this we could have a flag to _not_ drop but enqueue the
+packet regardless of the test or hold it until space is
+available. I even think sk_psock_strp_read could push back
+on the stream parser which would eventually push back via TCP
+and get the behavior you want.
+
+Also, I have a couple items on my TODO list that I'll eventually
+get to. First we run without stream parsers in some Cilium
+use cases. I'll push some patches to allow this in the next
+months or so. This avoids the annoying stream parser prog that
+simply returns skb->len. This is mostly an optimizations. A
+larger change I want to make at some point is to remove the
+backlog workqueue altogether. Originally it was added for
+simplicity but actually causes some latency spikes when
+looking at 99+ percentiles. It really doesn't need to be
+there it was a hold over from some original architecture that
+got pushed upstream. If you have time and want to let me know
+if you would like to tackle removing it.
+
+Thanks,
+John
