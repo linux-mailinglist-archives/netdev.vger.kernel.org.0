@@ -2,212 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6F0F29416
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 11:00:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81C0F29428
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 11:05:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390177AbfEXJAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 05:00:46 -0400
-Received: from mail-eopbgr30131.outbound.protection.outlook.com ([40.107.3.131]:58510
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389836AbfEXJAp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 05:00:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.se;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o3jtvENMitYVPJaR+bAOhlim3LacrwVyWeqGIOxapPQ=;
- b=PzAOC5lr25ApWX80GRqLEG9zGAYBbfxMIcuKp0RKTFy+lZyrNENhT6Al+qLbyzDtsLsnOTxutbut66J+f+0ykSKSwEE3Z4FCucts5nUZ13tJLeW5eZ2hiKG9LAWrwk1iIvrOfVZkENbYQgnzRZQWzVbBRTqM8f4ZE+sh6K1ixRo=
-Received: from VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM (20.178.126.212) by
- VI1PR10MB1535.EURPRD10.PROD.OUTLOOK.COM (10.166.146.23) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1900.17; Fri, 24 May 2019 09:00:31 +0000
-Received: from VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::c81b:1b10:f6ab:fee5]) by VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::c81b:1b10:f6ab:fee5%3]) with mapi id 15.20.1922.016; Fri, 24 May 2019
- 09:00:31 +0000
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 5/5] net: dsa: add support for mv88e6250
-Thread-Topic: [PATCH v2 5/5] net: dsa: add support for mv88e6250
-Thread-Index: AQHVEg8jEsslq8o0eEGsKLQNDGbj7w==
-Date:   Fri, 24 May 2019 09:00:31 +0000
-Message-ID: <20190524085921.11108-6-rasmus.villemoes@prevas.dk>
-References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
- <20190524085921.11108-1-rasmus.villemoes@prevas.dk>
-In-Reply-To: <20190524085921.11108-1-rasmus.villemoes@prevas.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1PR0802CA0015.eurprd08.prod.outlook.com
- (2603:10a6:3:bd::25) To VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:803:e3::20)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Rasmus.Villemoes@prevas.se; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.20.1
-x-originating-ip: [81.216.59.226]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2914b6b0-ecfa-4e79-232b-08d6e0264618
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:VI1PR10MB1535;
-x-ms-traffictypediagnostic: VI1PR10MB1535:
-x-microsoft-antispam-prvs: <VI1PR10MB153507E759D5F85A5C5160CE8A020@VI1PR10MB1535.EURPRD10.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0047BC5ADE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(979002)(39850400004)(136003)(366004)(396003)(376002)(346002)(189003)(199004)(42882007)(66946007)(73956011)(81166006)(102836004)(66066001)(6116002)(76176011)(1076003)(25786009)(52116002)(478600001)(386003)(6512007)(6506007)(186003)(3846002)(74482002)(72206003)(4326008)(66556008)(64756008)(66446008)(66476007)(316002)(26005)(36756003)(68736007)(50226002)(305945005)(5660300002)(7736002)(6436002)(44832011)(256004)(14444005)(486006)(53936002)(8676002)(81156014)(8976002)(110136005)(476003)(6486002)(8936002)(446003)(2906002)(11346002)(54906003)(2616005)(99286004)(71190400001)(71200400001)(14454004)(138113003)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR10MB1535;H:VI1PR10MB2672.EURPRD10.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: prevas.se does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 0abLNmnqlMW7dC1RZbQGW6QN3ofCV4nO/GsR+GQdSEomgYkkDz8gq6495NXNbg4eS0IaLa5pvrr4Paj/sL250AWHpWlEom4HNGfdzXn5WXPfcJMbs7sAj0Gq7lqUECipNZZ6mHgiftB3xRPiwqTrRR4JcprzppQGrOatkGLfNt1GN8bu//EshmGFGw8B05OpwqD2X4yRagopOt2iC5FzxEArmvvarF8wyReA37lHaACMyLlKn9BdYE010RUIBsAYGhfyiMmWV/JT2rLQtOjVP4E+QBbad4W0/ierwSHP+OXDr17jh9J18TjaUqwAr6oKaWHuUz3lGIr5oW6/KMXpofqvzoUyHXqnfyhMNJLZtQLYq9/garZhTVCkyuQi2/9OfMxqvmqETvqGWzUMQrd9qu0xu2PHTNkVNZuMSoidVmw=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S2389630AbfEXJFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 05:05:36 -0400
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:45153 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389279AbfEXJFg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 05:05:36 -0400
+X-Originating-IP: 90.88.147.134
+Received: from localhost (aaubervilliers-681-1-27-134.w90-88.abo.wanadoo.fr [90.88.147.134])
+        (Authenticated sender: maxime.ripard@bootlin.com)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id B1F24C0017;
+        Fri, 24 May 2019 09:05:29 +0000 (UTC)
+Date:   Fri, 24 May 2019 11:05:29 +0200
+From:   Maxime Ripard <maxime.ripard@bootlin.com>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>
+Subject: Re: [PATCH 6/8] dt-bindings: net: stmmac: Convert the binding to a
+ schemas
+Message-ID: <20190524090529.bvjzapgy35pfcow5@flea>
+References: <74d98cc3c744d53710c841381efd41cf5f15e656.1558605170.git-series.maxime.ripard@bootlin.com>
+ <ba1a5d8ad34a8c9ab99f504c04fbe65bde42081b.1558605170.git-series.maxime.ripard@bootlin.com>
+ <CAL_JsqLrE31vWVhApGgr8JU56sDc1TWWm9HiH=Z-tn5C1GwXQA@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2914b6b0-ecfa-4e79-232b-08d6e0264618
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 May 2019 09:00:31.3637
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB1535
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="feqnt36fgpyz3hlk"
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqLrE31vWVhApGgr8JU56sDc1TWWm9HiH=Z-tn5C1GwXQA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhpcyBpcyBhIHZlcnkgcm91Z2ggYXR0ZW1wdCBhdCBhZGRpbmcgc3VwcG9ydCBmb3IgdGhlIE1h
-cnZlbGwNCjg4RTYyNTAuIFRoZSBfaW5mbyBhbmQgX29wcyBzdHJ1Y3R1cmVzIGFyZSBiYXNlZCBv
-biB0aG9zZSBmb3IgNjI0MCAoYXMNCkkgaGF2ZSBkYXRhIHNoZWV0cyBmb3IgYm90aCB0aGUgNjI0
-MCBhbmQgNjI1MCksIGZpeGluZyB0aGUgdGhpbmdzIHRoYXQNCkkgaGF2ZSBkZXRlcm1pbmVkIHRv
-IGJlIGRpZmZlcmVudCBmb3IgdGhlIHR3byBjaGlwcyAtIGJ1dCBzb21lIHRoaW5ncw0KYXJlIGFs
-bW9zdCBjZXJ0YWluIHRvIHN0aWxsIGJlIHdyb25nLg0KDQpUaGUgY2hpcCB1c2VzIHRoZSBuZXcg
-ZHVhbF9jaGlwIG9wdGlvbiwgYW5kIHNpbmNlIGl0cyBwb3J0IHJlZ2lzdGVycw0Kc3RhcnQgYXQg
-U01JIGFkZHJlc3MgMHgwOCBvciAweDE4IChpLmUuLCBhbHdheXMgMHgwOCArIHN3X2FkZHIpLCB3
-ZQ0KbmVlZCB0byBpbnRyb2R1Y2UgaXQgYXMgYSBuZXcgZmFtaWx5IGluIG9yZGVyIGZvciB0aGUN
-CmF1dG8taWRlbnRpZmljYXRpb24gaW4gbXY4OGU2eHh4X2RldGVjdCgpIHRvIHdvcmsuDQoNClNp
-Z25lZC1vZmYtYnk6IFJhc211cyBWaWxsZW1vZXMgPHJhc211cy52aWxsZW1vZXNAcHJldmFzLmRr
-Pg0KLS0tDQogZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9jaGlwLmMgICAgfCA3MyArKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKw0KIGRyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvY2hpcC5o
-ICAgIHwgIDIgKw0KIGRyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5jIHwgMTkgKysr
-KysrKysNCiBkcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEuaCB8ICAxICsNCiBkcml2
-ZXJzL25ldC9kc2EvbXY4OGU2eHh4L3BvcnQuaCAgICB8ICAxICsNCiA1IGZpbGVzIGNoYW5nZWQs
-IDk2IGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4
-eHgvY2hpcC5jIGIvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9jaGlwLmMNCmluZGV4IDI4NDE0
-ZGI5NzliMC4uOGNjOWE3NjU1OWFiIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZHNhL212ODhl
-Nnh4eC9jaGlwLmMNCisrKyBiL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvY2hpcC5jDQpAQCAt
-MzQ0OCw2ICszNDQ4LDUxIEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgbXY4OGU2eHh4X29wcyBtdjg4
-ZTYyNDBfb3BzID0gew0KIAkucGh5bGlua192YWxpZGF0ZSA9IG12ODhlNjM1Ml9waHlsaW5rX3Zh
-bGlkYXRlLA0KIH07DQogDQorc3RhdGljIGNvbnN0IHN0cnVjdCBtdjg4ZTZ4eHhfb3BzIG12ODhl
-NjI1MF9vcHMgPSB7DQorCS8qIE1WODhFNlhYWF9GQU1JTFlfNjI1MCAqLw0KKwkuaWVlZV9wcmlf
-bWFwID0gbXY4OGU2MDg1X2cxX2llZWVfcHJpX21hcCwNCisJLmlwX3ByaV9tYXAgPSBtdjg4ZTYw
-ODVfZzFfaXBfcHJpX21hcCwNCisJLmlybF9pbml0X2FsbCA9IG12ODhlNjM1Ml9nMl9pcmxfaW5p
-dF9hbGwsDQorCS5nZXRfZWVwcm9tID0gbXY4OGU2eHh4X2cyX2dldF9lZXByb20xNiwNCisJLnNl
-dF9lZXByb20gPSBtdjg4ZTZ4eHhfZzJfc2V0X2VlcHJvbTE2LA0KKwkuc2V0X3N3aXRjaF9tYWMg
-PSBtdjg4ZTZ4eHhfZzJfc2V0X3N3aXRjaF9tYWMsDQorCS5waHlfcmVhZCA9IG12ODhlNnh4eF9n
-Ml9zbWlfcGh5X3JlYWQsDQorCS5waHlfd3JpdGUgPSBtdjg4ZTZ4eHhfZzJfc21pX3BoeV93cml0
-ZSwNCisJLnBvcnRfc2V0X2xpbmsgPSBtdjg4ZTZ4eHhfcG9ydF9zZXRfbGluaywNCisJLnBvcnRf
-c2V0X2R1cGxleCA9IG12ODhlNnh4eF9wb3J0X3NldF9kdXBsZXgsDQorCS5wb3J0X3NldF9yZ21p
-aV9kZWxheSA9IG12ODhlNjM1Ml9wb3J0X3NldF9yZ21paV9kZWxheSwNCisJLnBvcnRfc2V0X3Nw
-ZWVkID0gbXY4OGU2MzUyX3BvcnRfc2V0X3NwZWVkLA0KKwkucG9ydF90YWdfcmVtYXAgPSBtdjg4
-ZTYwOTVfcG9ydF90YWdfcmVtYXAsDQorCS5wb3J0X3NldF9mcmFtZV9tb2RlID0gbXY4OGU2MzUx
-X3BvcnRfc2V0X2ZyYW1lX21vZGUsDQorCS5wb3J0X3NldF9lZ3Jlc3NfZmxvb2RzID0gbXY4OGU2
-MzUyX3BvcnRfc2V0X2VncmVzc19mbG9vZHMsDQorCS5wb3J0X3NldF9ldGhlcl90eXBlID0gbXY4
-OGU2MzUxX3BvcnRfc2V0X2V0aGVyX3R5cGUsDQorCS5wb3J0X3NldF9qdW1ib19zaXplID0gbXY4
-OGU2MTY1X3BvcnRfc2V0X2p1bWJvX3NpemUsDQorCS5wb3J0X2VncmVzc19yYXRlX2xpbWl0aW5n
-ID0gbXY4OGU2MDk3X3BvcnRfZWdyZXNzX3JhdGVfbGltaXRpbmcsDQorCS5wb3J0X3BhdXNlX2xp
-bWl0ID0gbXY4OGU2MDk3X3BvcnRfcGF1c2VfbGltaXQsDQorCS5wb3J0X2Rpc2FibGVfbGVhcm5f
-bGltaXQgPSBtdjg4ZTZ4eHhfcG9ydF9kaXNhYmxlX2xlYXJuX2xpbWl0LA0KKwkucG9ydF9kaXNh
-YmxlX3ByaV9vdmVycmlkZSA9IG12ODhlNnh4eF9wb3J0X2Rpc2FibGVfcHJpX292ZXJyaWRlLA0K
-KwkucG9ydF9saW5rX3N0YXRlID0gbXY4OGU2MzUyX3BvcnRfbGlua19zdGF0ZSwNCisJLnBvcnRf
-Z2V0X2Ntb2RlID0gbXY4OGU2MzUyX3BvcnRfZ2V0X2Ntb2RlLA0KKwkuc3RhdHNfc25hcHNob3Qg
-PSBtdjg4ZTYzMjBfZzFfc3RhdHNfc25hcHNob3QsDQorCS5zdGF0c19zZXRfaGlzdG9ncmFtID0g
-bXY4OGU2MDk1X2cxX3N0YXRzX3NldF9oaXN0b2dyYW0sDQorCS5zdGF0c19nZXRfc3NldF9jb3Vu
-dCA9IG12ODhlNjA5NV9zdGF0c19nZXRfc3NldF9jb3VudCwNCisJLnN0YXRzX2dldF9zdHJpbmdz
-ID0gbXY4OGU2MDk1X3N0YXRzX2dldF9zdHJpbmdzLA0KKwkuc3RhdHNfZ2V0X3N0YXRzID0gbXY4
-OGU2MDk1X3N0YXRzX2dldF9zdGF0cywNCisJLnNldF9jcHVfcG9ydCA9IG12ODhlNjA5NV9nMV9z
-ZXRfY3B1X3BvcnQsDQorCS5zZXRfZWdyZXNzX3BvcnQgPSBtdjg4ZTYwOTVfZzFfc2V0X2VncmVz
-c19wb3J0LA0KKwkud2F0Y2hkb2dfb3BzID0gJm12ODhlNjI1MF93YXRjaGRvZ19vcHMsDQorCS5t
-Z210X3JzdmQyY3B1ID0gbXY4OGU2MzUyX2cyX21nbXRfcnN2ZDJjcHUsDQorCS5wb3RfY2xlYXIg
-PSBtdjg4ZTZ4eHhfZzJfcG90X2NsZWFyLA0KKwkucmVzZXQgPSBtdjg4ZTYyNTBfZzFfcmVzZXQs
-DQorCS5ybXVfZGlzYWJsZSA9IG12ODhlNjM1Ml9nMV9ybXVfZGlzYWJsZSwNCisJLnZ0dV9nZXRu
-ZXh0ID0gbXY4OGU2MjUwX2cxX3Z0dV9nZXRuZXh0LA0KKwkudnR1X2xvYWRwdXJnZSA9IG12ODhl
-NjI1MF9nMV92dHVfbG9hZHB1cmdlLA0KKwkuZ3Bpb19vcHMgPSAmbXY4OGU2MzUyX2dwaW9fb3Bz
-LA0KKwkuYXZiX29wcyA9ICZtdjg4ZTYzNTJfYXZiX29wcywNCisJLnB0cF9vcHMgPSAmbXY4OGU2
-MzUyX3B0cF9vcHMsDQorCS5waHlsaW5rX3ZhbGlkYXRlID0gbXY4OGU2MzUyX3BoeWxpbmtfdmFs
-aWRhdGUsDQorfTsNCisNCiBzdGF0aWMgY29uc3Qgc3RydWN0IG12ODhlNnh4eF9vcHMgbXY4OGU2
-MjkwX29wcyA9IHsNCiAJLyogTVY4OEU2WFhYX0ZBTUlMWV82MzkwICovDQogCS5zZXR1cF9lcnJh
-dGEgPSBtdjg4ZTYzOTBfc2V0dXBfZXJyYXRhLA0KQEAgLTQyMzMsNiArNDI3OCwzMCBAQCBzdGF0
-aWMgY29uc3Qgc3RydWN0IG12ODhlNnh4eF9pbmZvIG12ODhlNnh4eF90YWJsZVtdID0gew0KIAkJ
-Lm9wcyA9ICZtdjg4ZTYyNDBfb3BzLA0KIAl9LA0KIA0KKwlbTVY4OEU2MjUwXSA9IHsNCisJCS5w
-cm9kX251bSA9IE1WODhFNlhYWF9QT1JUX1NXSVRDSF9JRF9QUk9EXzYyNTAsDQorCQkuZmFtaWx5
-ID0gTVY4OEU2WFhYX0ZBTUlMWV82MjUwLA0KKwkJLm5hbWUgPSAiTWFydmVsbCA4OEU2MjUwIiwN
-CisJCS5udW1fZGF0YWJhc2VzID0gNjQsDQorCQkubnVtX3BvcnRzID0gNywNCisJCS5udW1faW50
-ZXJuYWxfcGh5cyA9IDUsDQorCQkubnVtX2dwaW8gPSA4LA0KKwkJLm1heF92aWQgPSA0MDk1LA0K
-KwkJLnBvcnRfYmFzZV9hZGRyID0gMHgwOCwNCisJCS5waHlfYmFzZV9hZGRyID0gMHgwMCwNCisJ
-CS5nbG9iYWwxX2FkZHIgPSAweDBmLA0KKwkJLmdsb2JhbDJfYWRkciA9IDB4MDcsDQorCQkuYWdl
-X3RpbWVfY29lZmYgPSAxNTAwMCwNCisJCS5nMV9pcnFzID0gOSwNCisJCS5nMl9pcnFzID0gMTAs
-DQorCQkuYXR1X21vdmVfcG9ydF9tYXNrID0gMHhmLA0KKwkJLnB2dCA9IGZhbHNlLA0KKwkJLmR1
-YWxfY2hpcCA9IHRydWUsDQorCQkudGFnX3Byb3RvY29sID0gRFNBX1RBR19QUk9UT19EU0EsDQor
-CQkucHRwX3N1cHBvcnQgPSB0cnVlLA0KKwkJLm9wcyA9ICZtdjg4ZTYyNTBfb3BzLA0KKwl9LA0K
-Kw0KIAlbTVY4OEU2MjkwXSA9IHsNCiAJCS5wcm9kX251bSA9IE1WODhFNlhYWF9QT1JUX1NXSVRD
-SF9JRF9QUk9EXzYyOTAsDQogCQkuZmFtaWx5ID0gTVY4OEU2WFhYX0ZBTUlMWV82MzkwLA0KQEAg
-LTQ4NDEsNiArNDkxMCwxMCBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCBtdjg4
-ZTZ4eHhfb2ZfbWF0Y2hbXSA9IHsNCiAJCS5jb21wYXRpYmxlID0gIm1hcnZlbGwsbXY4OGU2MTkw
-IiwNCiAJCS5kYXRhID0gJm12ODhlNnh4eF90YWJsZVtNVjg4RTYxOTBdLA0KIAl9LA0KKwl7DQor
-CQkuY29tcGF0aWJsZSA9ICJtYXJ2ZWxsLG12ODhlNjI1MCIsDQorCQkuZGF0YSA9ICZtdjg4ZTZ4
-eHhfdGFibGVbTVY4OEU2MjUwXSwNCisJfSwNCiAJeyAvKiBzZW50aW5lbCAqLyB9LA0KIH07DQog
-DQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9jaGlwLmggYi9kcml2ZXJz
-L25ldC9kc2EvbXY4OGU2eHh4L2NoaXAuaA0KaW5kZXggNzQ3NzdjM2JjMzEzLi4yZmJlNzJiNzU4
-N2IgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2NoaXAuaA0KKysrIGIv
-ZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9jaGlwLmgNCkBAIC02Miw2ICs2Miw3IEBAIGVudW0g
-bXY4OGU2eHh4X21vZGVsIHsNCiAJTVY4OEU2MTkwWCwNCiAJTVY4OEU2MTkxLA0KIAlNVjg4RTYy
-NDAsDQorCU1WODhFNjI1MCwNCiAJTVY4OEU2MjkwLA0KIAlNVjg4RTYzMjAsDQogCU1WODhFNjMy
-MSwNCkBAIC04MCw2ICs4MSw3IEBAIGVudW0gbXY4OGU2eHh4X2ZhbWlseSB7DQogCU1WODhFNlhY
-WF9GQU1JTFlfNjA5NywJLyogNjA0NiA2MDg1IDYwOTYgNjA5NyAqLw0KIAlNVjg4RTZYWFhfRkFN
-SUxZXzYxNjUsCS8qIDYxMjMgNjE2MSA2MTY1ICovDQogCU1WODhFNlhYWF9GQU1JTFlfNjE4NSwJ
-LyogNjEwOCA2MTIxIDYxMjIgNjEzMSA2MTUyIDYxNTUgNjE4MiA2MTg1ICovDQorCU1WODhFNlhY
-WF9GQU1JTFlfNjI1MCwJLyogNjI1MCAqLw0KIAlNVjg4RTZYWFhfRkFNSUxZXzYzMjAsCS8qIDYz
-MjAgNjMyMSAqLw0KIAlNVjg4RTZYWFhfRkFNSUxZXzYzNDEsCS8qIDYxNDEgNjM0MSAqLw0KIAlN
-Vjg4RTZYWFhfRkFNSUxZXzYzNTEsCS8qIDYxNzEgNjE3NSA2MzUwIDYzNTEgKi8NCmRpZmYgLS1n
-aXQgYS9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEuYyBiL2RyaXZlcnMvbmV0L2Rz
-YS9tdjg4ZTZ4eHgvZ2xvYmFsMS5jDQppbmRleCAzOGUzOTllMGYzMGUuLmIzNzNmZWVlZDA2YyAx
-MDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5jDQorKysgYi9k
-cml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEuYw0KQEAgLTE4Miw2ICsxODIsMjUgQEAg
-aW50IG12ODhlNjE4NV9nMV9yZXNldChzdHJ1Y3QgbXY4OGU2eHh4X2NoaXAgKmNoaXApDQogCXJl
-dHVybiBtdjg4ZTYxODVfZzFfd2FpdF9wcHVfcG9sbGluZyhjaGlwKTsNCiB9DQogDQoraW50IG12
-ODhlNjI1MF9nMV9yZXNldChzdHJ1Y3QgbXY4OGU2eHh4X2NoaXAgKmNoaXApDQorew0KKwl1MTYg
-dmFsOw0KKwlpbnQgZXJyOw0KKw0KKwkvKiBTZXQgdGhlIFNXUmVzZXQgYml0IDE1ICovDQorCWVy
-ciA9IG12ODhlNnh4eF9nMV9yZWFkKGNoaXAsIE1WODhFNlhYWF9HMV9DVEwxLCAmdmFsKTsNCisJ
-aWYgKGVycikNCisJCXJldHVybiBlcnI7DQorDQorCXZhbCB8PSBNVjg4RTZYWFhfRzFfQ1RMMV9T
-V19SRVNFVDsNCisNCisJZXJyID0gbXY4OGU2eHh4X2cxX3dyaXRlKGNoaXAsIE1WODhFNlhYWF9H
-MV9DVEwxLCB2YWwpOw0KKwlpZiAoZXJyKQ0KKwkJcmV0dXJuIGVycjsNCisNCisJcmV0dXJuIG12
-ODhlNnh4eF9nMV93YWl0X2luaXRfcmVhZHkoY2hpcCk7DQorfQ0KKw0KIGludCBtdjg4ZTYzNTJf
-ZzFfcmVzZXQoc3RydWN0IG12ODhlNnh4eF9jaGlwICpjaGlwKQ0KIHsNCiAJdTE2IHZhbDsNCmRp
-ZmYgLS1naXQgYS9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEuaCBiL2RyaXZlcnMv
-bmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5oDQppbmRleCBiMjA1YjBiYmExNTguLmUxYjdhNmI2
-ODM2NSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvZ2xvYmFsMS5oDQor
-KysgYi9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDEuaA0KQEAgLTI1OSw2ICsyNTks
-NyBAQCBpbnQgbXY4OGU2eHh4X2cxX3NldF9zd2l0Y2hfbWFjKHN0cnVjdCBtdjg4ZTZ4eHhfY2hp
-cCAqY2hpcCwgdTggKmFkZHIpOw0KIA0KIGludCBtdjg4ZTYxODVfZzFfcmVzZXQoc3RydWN0IG12
-ODhlNnh4eF9jaGlwICpjaGlwKTsNCiBpbnQgbXY4OGU2MzUyX2cxX3Jlc2V0KHN0cnVjdCBtdjg4
-ZTZ4eHhfY2hpcCAqY2hpcCk7DQoraW50IG12ODhlNjI1MF9nMV9yZXNldChzdHJ1Y3QgbXY4OGU2
-eHh4X2NoaXAgKmNoaXApOw0KIA0KIGludCBtdjg4ZTYxODVfZzFfcHB1X2VuYWJsZShzdHJ1Y3Qg
-bXY4OGU2eHh4X2NoaXAgKmNoaXApOw0KIGludCBtdjg4ZTYxODVfZzFfcHB1X2Rpc2FibGUoc3Ry
-dWN0IG12ODhlNnh4eF9jaGlwICpjaGlwKTsNCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9kc2Ev
-bXY4OGU2eHh4L3BvcnQuaCBiL2RyaXZlcnMvbmV0L2RzYS9tdjg4ZTZ4eHgvcG9ydC5oDQppbmRl
-eCAzOWM4NWU5OGZiOTIuLjU0MWVmNWMzZjFkMSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2Rz
-YS9tdjg4ZTZ4eHgvcG9ydC5oDQorKysgYi9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L3BvcnQu
-aA0KQEAgLTExMiw2ICsxMTIsNyBAQA0KICNkZWZpbmUgTVY4OEU2WFhYX1BPUlRfU1dJVENIX0lE
-X1BST0RfNjE5MQkweDE5MTANCiAjZGVmaW5lIE1WODhFNlhYWF9QT1JUX1NXSVRDSF9JRF9QUk9E
-XzYxODUJMHgxYTcwDQogI2RlZmluZSBNVjg4RTZYWFhfUE9SVF9TV0lUQ0hfSURfUFJPRF82MjQw
-CTB4MjQwMA0KKyNkZWZpbmUgTVY4OEU2WFhYX1BPUlRfU1dJVENIX0lEX1BST0RfNjI1MAkweDI1
-MDANCiAjZGVmaW5lIE1WODhFNlhYWF9QT1JUX1NXSVRDSF9JRF9QUk9EXzYyOTAJMHgyOTAwDQog
-I2RlZmluZSBNVjg4RTZYWFhfUE9SVF9TV0lUQ0hfSURfUFJPRF82MzIxCTB4MzEwMA0KICNkZWZp
-bmUgTVY4OEU2WFhYX1BPUlRfU1dJVENIX0lEX1BST0RfNjE0MQkweDM0MDANCi0tIA0KMi4yMC4x
-DQoNCg==
+
+--feqnt36fgpyz3hlk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Rob,
+
+On Thu, May 23, 2019 at 10:33:05AM -0500, Rob Herring wrote:
+> On Thu, May 23, 2019 at 4:57 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+> >
+> > Switch the STMMAC / Synopsys DesignWare MAC controller binding to a YAML
+> > schema to enable the DT validation.
+>
+> You picked an easy one. ;)
+
+Yeah, that's what happens when you run out of trivial bindings, you
+end up with only the hard ones left to work on :)
+
+> > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+> > ---
+> >  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 344 +++++++++++-
+> >  Documentation/devicetree/bindings/net/stmmac.txt      | 179 +------
+> >  2 files changed, 345 insertions(+), 178 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > new file mode 100644
+> > index 000000000000..be3ada5121e1
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > @@ -0,0 +1,344 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/snps,dwmac.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Synopsys DesignWare MAC Device Tree Bindings
+> > +
+> > +maintainers:
+> > +  - Alexandre Torgue <alexandre.torgue@st.com>
+> > +  - Giuseppe Cavallaro <peppe.cavallaro@st.com>
+> > +  - Jose Abreu <joabreu@synopsys.com>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    oneOf:
+> > +      - const: snps,dwmac
+> > +      - const: snps,dwmac-3.50a
+> > +      - const: snps,dwmac-3.610
+> > +      - const: snps,dwmac-3.70a
+> > +      - const: snps,dwmac-3.710
+> > +      - const: snps,dwmac-4.00
+> > +      - const: snps,dwmac-4.10a
+> > +      - const: snps,dwxgmac
+> > +      - const: snps,dwxgmac-2.10
+> > +      - const: st,spear600-gmac
+> > +        description: Deprecated
+>
+> Like the other, just make this an enum.
+
+Ack.
+
+I did this initially because the sun8i-emac bindings also have
+multiple compatibles we can use, and thus I needed an items here, but
+since we will move them away in separate files, we can just use an
+enum (with a contains).
+
+> Though, what to do on deprecated things? If we expect dts files to be
+> updated, then we should remove or disallow in the schema (e.g. 'prop:
+> false' for properties).
+
+Oh, so that's what the false are here for. I wanted to send a PR to
+the meta-schemas because *-gpio was not working, and that binding uses
+one, but I guess that solves it.
+
+For the deprecation process, I haven't made up my mind yet. We could
+put in comment the deprecated properties and compatibles, but that has
+two significant drawbacks:
+
+  - for the compatibles, we wouldn't have the nodes with a deprecated
+    compatible validated, and thus we wouldn't even have a warning
+    that our compatible is deprecated in the first place. And any
+    property we might have not used properly will be ignored as well.
+
+  - for the other properties, it's still pretty hard to disable
+    additionalProperties, so any deprecated property wouldn't be
+    validated if they were in a comment, and we wouldn't have a
+    warning either if additionalProperties is true, because we
+    tolerate them.
+
+I guess we can workaround the first one with a custom select that has
+all the supported compatibles (including the deprecated ones), but
+only list the non-deprecated options in the compatible properties.
+
+I don't really see a solution for the second one.
+
+> The issue with updating dts files, is it may break old kernels with
+> new dtbs.
+
+While this is something that is mentionned by some people, and I can
+see how it's problematic to some, it's also something we never really
+committed to, so I'm fine with that.
+
+> > +  snps,axi-config:
+> > +    $ref: /schemas/types.yaml#definitions/phandle
+> > +    description:
+> > +      AXI BUS Mode parameters. Phandle to a node that can contain the
+> > +      following properties
+> > +        * snps,lpi_en, enable Low Power Interface
+> > +        * snps,xit_frm, unlock on WoL
+> > +        * snps,wr_osr_lmt, max write outstanding req. limit
+> > +        * snps,rd_osr_lmt, max read outstanding req. limit
+> > +        * snps,kbbe, do not cross 1KiB boundary.
+> > +        * snps,blen, this is a vector of supported burst length.
+> > +        * snps,fb, fixed-burst
+> > +        * snps,mb, mixed-burst
+> > +        * snps,rb, rebuild INCRx Burst
+>
+> This obviously needs its own schema, but that can come latter.
+
+I haven't been able to describe a node that doesn't have any
+particular copmatible or node name, but we just need to follow a
+phandle.
+
+How could we do this?
+
+> > +  snps,reset-gpio:
+> > +    description:
+> > +      PHY Reset GPIO
+>
+> maxItems: 1
+>
+> > +
+> > +  snps,reset-active-low:
+> > +    $ref: /schemas/types.yaml#definitions/flag
+> > +    description:
+> > +      Indicates that the PHY Reset is active low
+>
+> Would be nice to deprecate these 2 properties for just 'reset-gpios'.
+> Though really, this should be in the phy node as this is a phy reset.
+
+The PHYs already have such a property, so we should just deprecate
+them.
+
+> > +
+> > +  snps,reset-delay-us:
+> > +    allOf:
+> > +      - $ref: /schemas/types.yaml#definitions/uint32-array
+> > +      - minItems: 3
+> > +        maxItems: 3
+> > +    description:
+> > +      Triplet of delays. The 1st cell is reset pre-delay in micro
+> > +      seconds. The 2nd cell is reset pulse in micro seconds. The 3rd
+> > +      cell is reset post-delay in micro seconds.
+
+And this one too I guess?
+
+> > +  snps,aal:
+> > +    $ref: /schemas/types.yaml#definitions/flag
+> > +    description:
+> > +      Use Address-Aligned Beats
+> > +
+> > +  snps,fixed-burst:
+> > +    $ref: /schemas/types.yaml#definitions/flag
+> > +    description:
+> > +      Program the DMA to use the fixed burst mode
+> > +
+> > +  snps,mixed-burst:
+> > +    $ref: /schemas/types.yaml#definitions/flag
+> > +    description:
+> > +      Program the DMA to use the mixed burst mode
+> > +
+> > +  snps,force_thresh_dma_mode:
+> > +    $ref: /schemas/types.yaml#definitions/flag
+> > +    description:
+> > +      Force DMA to use the threshold mode for both tx and rx
+> > +
+> > +  snps,force_sf_dma_mode:
+> > +    $ref: /schemas/types.yaml#definitions/flag
+> > +    description:
+> > +      Force DMA to use the Store and Forward mode for both tx and
+> > +      rx. This flag is ignored if force_thresh_dma_mode is set.
+> > +
+> > +  snps,en-tx-lpi-clockgating:
+> > +    $ref: /schemas/types.yaml#definitions/flag
+> > +    description:
+> > +      Enable gating of the MAC TX clock during TX low-power mode
+> > +
+> > +  snps,multicast-filter-bins:
+> > +    $ref: /schemas/types.yaml#definitions/uint32
+> > +    description:
+> > +      Number of multicast filter hash bins supported by this device
+> > +      instance
+> > +
+> > +  snps,perfect-filter-entries:
+> > +    $ref: /schemas/types.yaml#definitions/uint32
+> > +    description:
+> > +      Number of perfect filter entries supported by this device
+> > +      instance
+> > +
+> > +  snps,ps-speed:
+> > +    $ref: /schemas/types.yaml#definitions/uint32
+> > +    description:
+> > +      Port selection speed that can be passed to the core when PCS
+> > +      is supported. For example, this is used in case of SGMII and
+> > +      MAC2MAC connection.
+> > +
+> > +  mdio:
+> > +    type: object
+> > +    description:
+> > +      Creates and registers an MDIO bus.
+> > +
+> > +    properties:
+> > +      compatible:
+> > +        const: snps,dwmac-mdio
+>
+> required?
+
+Yep, I'll add it.
+
+Thanks!
+Maxime
+
+--
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--feqnt36fgpyz3hlk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXOez2QAKCRDj7w1vZxhR
+xe/NAPwPdSE4B39GjzI0+sjp0j/vK4Hlg4A+3uLLJjEAO/CpowD/cRbzLnJfLN2U
+cEJXc12nJ54M6GHljxzLwfapQynBkQU=
+=sFc+
+-----END PGP SIGNATURE-----
+
+--feqnt36fgpyz3hlk--
