@@ -2,85 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFB5829DB5
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 20:05:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 111FF29DC5
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 20:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727346AbfEXSFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 14:05:44 -0400
-Received: from mail-ua1-f67.google.com ([209.85.222.67]:33007 "EHLO
-        mail-ua1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726071AbfEXSFo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 14:05:44 -0400
-Received: by mail-ua1-f67.google.com with SMTP id 49so3952132uas.0;
-        Fri, 24 May 2019 11:05:43 -0700 (PDT)
+        id S1728739AbfEXSLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 14:11:10 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:39970 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726909AbfEXSLK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 14:11:10 -0400
+Received: by mail-qk1-f193.google.com with SMTP id q197so8847170qke.7;
+        Fri, 24 May 2019 11:11:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=PcoTHdGaQs/oS0l0s0m+vBHryefQqzo0n8dHugWubO8=;
-        b=NeXqS1HvsZSSQRUkTzNHSX6lYJlU04peNsF9phz9BtuIIDoB2w/XG1s+IBZ7NT1GDg
-         L13UfZN1KSPpSTcnH2A1viXbsFRhEAqPmRyq06Dwq67zxoiwxhXW8ZXEnT8tpR5RDf7c
-         uSlOGwi6YYKb909ek9RNaAUXDItdj7n51ZHznUCf9y8tauP4ZERUNpNjP4x9Pl/3NLE3
-         vJR8v6WY6ORryPQmElOTEAxwKm17hjLyrPJF/5t9EJ1TElx3J12ywmOcCijM+N7KYWhj
-         KpLSZNYUhtmNKbgWJv61oXlKMsdz3uxYTpQoUxo9RWVs2xcOsM2pbCd55rVPcm44cP7K
-         F+Kg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0dw7iCdrq5/IWGGfeL9OdT+fgaA92v5lwpPh6renQrQ=;
+        b=I/9+lATeNTr64jB6Vv4bYFBf5k4otwta7n+Fg/IK+kwTYqShKUA83nUV444/J40MRp
+         X5XDEcX4BwLtILlNAUSfEnsZQUYyU8s5Qr7pOoq/XoBNdzUPFvCYFaRByAYbn8VUwzQY
+         oXP1T4GuVj2VODxRNiX43O2AaCZU/dlElektvvCketkb1GTguHO1LqOZD64WcYm3kp5b
+         8nYp4mDKkQZYJikwkcMIckcXCd24hdWUGJwo64GlLv29F0VqG308vn0DQCjlWNdr3yoH
+         aC+c4uTlbtmd7pMZCq6hauBwLCp2yXkgIXC1Q3CYZAtk8Rj0ccnni7C2wbCQGOAKZ2vh
+         cpjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=PcoTHdGaQs/oS0l0s0m+vBHryefQqzo0n8dHugWubO8=;
-        b=WR3QHzmK9SHo5sSVoAuo7u6TmOtNS9wwRjLySoHVpF37PXzRJb7/W+2qfSkW3AHX2S
-         hoihr7GfxQfI94hxfkVUoJihhVlEIGEdNGpo909B7e9JhW2R7SeFMYQVNIAeyRS98Mc8
-         A7Mws6QzHIFQ7KWIFpo2pydOsCIaDJuh8r7SgtSPalsIzZ5AiyWWaplXkRhPt9MfGV8u
-         5nZ5z8s2B4w4ylnFIBbrKumOI+5w22byMxlK2d5U6LVtWgtqn90UDhETuylMatqZujjf
-         KDrPGZDAzG6mbL1r3r2b0qibnRo7tOwLxI4YlP1vswZZioGsImwVhTxk0eUqAyq6Ag3J
-         6cmQ==
-X-Gm-Message-State: APjAAAVOUIKCL/Ov0EPHzIi2qi04BeHFBeGnpdZtHQy2d0pyvLDg9S9M
-        WH8NGINSg1lyE0IQl5wVuZk=
-X-Google-Smtp-Source: APXvYqwkWNCRx3CHExW+IJQePUfT7RZq3BIM6AwWWMLeEth5GJy6I/4peZPF7oluIdgapau0d4poKA==
-X-Received: by 2002:ab0:644d:: with SMTP id j13mr23523976uap.98.1558721143160;
-        Fri, 24 May 2019 11:05:43 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id g41sm1889892uah.12.2019.05.24.11.05.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 24 May 2019 11:05:42 -0700 (PDT)
-Date:   Fri, 24 May 2019 14:05:41 -0400
-Message-ID: <20190524140541.GH17138@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 4/5] net: dsa: mv88e6xxx: implement watchdog_ops for
- mv88e6250
-In-Reply-To: <20190524085921.11108-5-rasmus.villemoes@prevas.dk>
-References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
- <20190524085921.11108-1-rasmus.villemoes@prevas.dk>
- <20190524085921.11108-5-rasmus.villemoes@prevas.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0dw7iCdrq5/IWGGfeL9OdT+fgaA92v5lwpPh6renQrQ=;
+        b=RDGpvXUw8eNu+yw8Vb9LfxyUf0M8jSnweyHgoqeTKQgoIT7EWu6Wl9oy2B7aZskIF7
+         5arSxkOBTT4mMWRCILpr4v0sQ4B1ieT3+PbWNnseJtkLQInsDFafR7aa8gCuOaXZYZlO
+         NaaFRKz4lBXfstvJc0USYfsyE7fd+AO4s4xc92v6LMHtmonFgolEbU5WNctUiacytOdc
+         u6XRhToFDLRbdZr7Uh2A/D8S4zKqAmV2XVRKXmOsmqEGiNTnYbaAKYShrYYsXQREcmAS
+         L0SoB6eifxVwS/vnUVHIC268G96rpiMPzBbA3A5Jm7G4UtDBoXNL+DWSlOsFvg6+tsdN
+         zF+A==
+X-Gm-Message-State: APjAAAWX43jAdav4vkheP05HLSrMe0BT3UMiK3uJyI+6+jpzXts0Itsl
+        iElZyXWMFskiVSSnHYE5gkooisPvpEuZjVue4Vs=
+X-Google-Smtp-Source: APXvYqxUwNWbqkf9RyjeSJfWTjghFhqiEU8NecvXdpSbXkW64z6VNZgjiIv2ZEqhC994LNHFj/pO4zfitvF0izujMVw=
+X-Received: by 2002:a37:ac11:: with SMTP id e17mr75312434qkm.339.1558721468961;
+ Fri, 24 May 2019 11:11:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20190523204222.3998365-1-andriin@fb.com> <20190523204222.3998365-13-andriin@fb.com>
+ <bf418594-0442-fe89-c86b-11d7e5269047@netronome.com>
+In-Reply-To: <bf418594-0442-fe89-c86b-11d7e5269047@netronome.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 24 May 2019 11:10:57 -0700
+Message-ID: <CAEf4BzbfvV6HQ-NZQEk0yxNL75JWKC6nHzofOk6BkfO7EPVStQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 12/12] bpftool: update bash-completion w/ new
+ c option for btf dump
+To:     Quentin Monnet <quentin.monnet@netronome.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 May 2019 09:00:29 +0000, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
-> The MV88E6352_G2_WDOG_CTL_* bits almost, but not quite, describe the
-> watchdog control register on the mv88e6250. Among those actually
-> referenced in the code, only QC_ENABLE differs (bit 6 rather than bit
-> 5).
-> 
-> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+On Fri, May 24, 2019 at 2:15 AM Quentin Monnet
+<quentin.monnet@netronome.com> wrote:
+>
+> 2019-05-23 13:42 UTC-0700 ~ Andrii Nakryiko <andriin@fb.com>
+> > Add bash completion for new C btf dump option.
+> >
+> > Cc: Quentin Monnet <quentin.monnet@netronome.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  tools/bpf/bpftool/bash-completion/bpftool | 25 +++++++++++++++++++----
+> >  1 file changed, 21 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+> > index 50e402a5a9c8..5b65e0309d2a 100644
+> > --- a/tools/bpf/bpftool/bash-completion/bpftool
+> > +++ b/tools/bpf/bpftool/bash-completion/bpftool
+> > @@ -638,11 +638,28 @@ _bpftool()
+> >                              esac
+> >                              return 0
+> >                              ;;
+> > +                        format)
+> > +                            COMPREPLY=( $( compgen -W "c raw" -- "$cur" ) )
+> > +                            ;;
+> >                          *)
+> > -                            if [[ $cword == 6 ]] && [[ ${words[3]} == "map" ]]; then
+> > -                                 COMPREPLY+=( $( compgen -W 'key value kv all' -- \
+> > -                                     "$cur" ) )
+> > -                            fi
+> > +                            # emit extra options
+> > +                            case ${words[3]} in
+> > +                                id|file)
+> > +                                    if [[ $cword > 4 ]]; then
+>
+> Not sure if this "if" is necessary. It seems to me that if $cword is 4
+> then we are just after "id" or "file" in the command line, in which case
+> we hit previous cases and never reach this point?
 
-Clean patch,
+Yep, you are right, removed.
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+>
+> Also, reading the completion code I wonder, do we have completion for
+> BTF ids? It seems to me that we have nothing proposed to complete
+> "bpftool btf dump id <tab>". Any chance to get that in a follow-up patch?
 
-Thanks,
-Vivien
+We currently don't have a way to iterate all BTFs in a system (neither
+in bpftool, nor in libbpf, AFAICT), but I can do that based on btf_id
+field, dumped as part of `bpftool prog list` command. Would that work?
+I'll post that as a separate patch.
+
+>
+> > +                                        _bpftool_once_attr 'format'
+> > +                                    fi
+> > +                                    ;;
+> > +                                map|prog)
+> > +                                    if [[ ${words[3]} == "map" ]] && [[ $cword == 6 ]]; then
+> > +                                        COMPREPLY+=( $( compgen -W "key value kv all" -- "$cur" ) )
+> > +                                    fi
+> > +                                    if [[ $cword > 5 ]]; then
+>
+> Same remark on the "if", I do not believe it is necessary?
+
+Yep, removed.
+
+>
+> > +                                        _bpftool_once_attr 'format'
+> > +                                    fi
+> > +                                    ;;
+> > +                                *)
+> > +                                    ;;
+> > +                            esac
+> >                              return 0
+> >                              ;;
+> >                      esac
+> >
+>
