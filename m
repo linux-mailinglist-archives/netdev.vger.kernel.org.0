@@ -2,79 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB972993C
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 15:49:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75B3B2993F
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 15:50:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403861AbfEXNsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 09:48:55 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55954 "EHLO vps0.lunn.ch"
+        id S2403875AbfEXNt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 09:49:56 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:41998 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403809AbfEXNsz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 09:48:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=bdm8kgXmeh9EF5AOQiQM32qgv2w2u6Wxm0nFHm8Ro9c=; b=U5RHUHJv8X8iYT4p4utPOVNhvL
-        lhdLXlGiQCfmCjjAY9dxWArxBVjjfujLqrStsr2yedxxLcj0jFAKfgD/X0tcLHU9IlaB6RDGwtK0D
-        /bOWGRlOcgkkCMSayMDzT+wRgijnK+orwZQPUdmiYtOCG4LGlawmCc12+rvVFR1B1a44=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hUAYx-00019j-Ak; Fri, 24 May 2019 15:48:47 +0200
-Date:   Fri, 24 May 2019 15:48:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Yash Shah <yash.shah@sifive.com>
-Cc:     mark.rutland@arm.com, devicetree@vger.kernel.org,
-        aou@eecs.berkeley.edu, netdev@vger.kernel.org,
-        Palmer Dabbelt <palmer@sifive.com>,
-        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com,
-        Sachin Ghadi <sachin.ghadi@sifive.com>, robh+dt@kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>, ynezz@true.cz,
-        linux-riscv@lists.infradead.org, davem@davemloft.net
-Subject: Re: [PATCH 2/2] net: macb: Add support for SiFive FU540-C000
-Message-ID: <20190524134847.GF2979@lunn.ch>
-References: <1558611952-13295-1-git-send-email-yash.shah@sifive.com>
- <1558611952-13295-3-git-send-email-yash.shah@sifive.com>
- <20190523145417.GD19369@lunn.ch>
- <CAJ2_jOE0-zK1csRNeiAmag9kEbvOGhbvRa-5ESYif7e15gpRcQ@mail.gmail.com>
+        id S2403809AbfEXNt4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 May 2019 09:49:56 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 6B8E230BB546;
+        Fri, 24 May 2019 13:49:50 +0000 (UTC)
+Received: from hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com (hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com [10.16.210.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 32B3A7D67C;
+        Fri, 24 May 2019 13:49:44 +0000 (UTC)
+From:   Jarod Wilson <jarod@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jarod Wilson <jarod@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Heesoon Kim <Heesoon.Kim@stratus.com>
+Subject: [PATCH net] bonding/802.3ad: fix slave link initialization transition states
+Date:   Fri, 24 May 2019 09:49:28 -0400
+Message-Id: <20190524134928.16834-1-jarod@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ2_jOE0-zK1csRNeiAmag9kEbvOGhbvRa-5ESYif7e15gpRcQ@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Fri, 24 May 2019 13:49:55 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 10:22:06AM +0530, Yash Shah wrote:
-> On Thu, May 23, 2019 at 8:24 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > +static int fu540_macb_tx_set_rate(struct clk_hw *hw, unsigned long rate,
-> > > +                               unsigned long parent_rate)
-> > > +{
-> > > +     rate = fu540_macb_tx_round_rate(hw, rate, &parent_rate);
-> > > +     iowrite32(rate != 125000000, mgmt->reg);
-> >
-> > That looks odd. Writing the result of a comparison to a register?
-> 
-> The idea was to write "1" to the register if the value of rate is
-> anything else than 125000000.
+Once in a while, with just the right timing, 802.3ad slaves will fail to
+properly initialize, winding up in a weird state, with a partner system
+mac address of 00:00:00:00:00:00. This started happening after a fix to
+properly track link_failure_count tracking, where an 802.3ad slave that
+reported itself as link up in the miimon code, but wasn't able to get a
+valid speed/duplex, started getting set to BOND_LINK_FAIL instead of
+BOND_LINK_DOWN. That was the proper thing to do for the general "my link
+went down" case, but has created a link initialization race that can put
+the interface in this odd state.
 
-I'm not a language lawyer. Is it guaranteed that an expression like
-this returns 1? Any value !0 is true, so maybe it actually returns 42?
+The simple fix is to instead set the slave link to BOND_LINK_DOWN again,
+if the link has never been up (last_link_up == 0), so the link state
+doesn't bounce from BOND_LINK_DOWN to BOND_LINK_FAIL -- it hasn't failed
+in this case, it simply hasn't been up yet, and this prevents the
+unnecessary state change from DOWN to FAIL and getting stuck in an init
+failure w/o a partner mac.
 
-> To make it easier to read, I will change this to below:
->     - iowrite32(rate != 125000000, mgmt->reg);
->     + if (rate != 125000000)
->     +     iowrite32(1, mgmt->reg);
->     + else
->     +     iowrite32(0, mgmt->reg);
-> 
-> Hope that's fine. Thanks for your comment
+Fixes: ea53abfab960 ("bonding/802.3ad: fix link_failure_count tracking")
+CC: Jay Vosburgh <j.vosburgh@gmail.com>
+CC: Veaceslav Falico <vfalico@gmail.com>
+CC: Andy Gospodarek <andy@greyhouse.net>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: netdev@vger.kernel.org
+Tested-by: Heesoon Kim <Heesoon.Kim@stratus.com>
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+---
+ drivers/net/bonding/bond_main.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-Yes, that is good.
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 062fa7e3af4c..407f4095a37a 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -3122,13 +3122,18 @@ static int bond_slave_netdev_event(unsigned long event,
+ 	case NETDEV_CHANGE:
+ 		/* For 802.3ad mode only:
+ 		 * Getting invalid Speed/Duplex values here will put slave
+-		 * in weird state. So mark it as link-fail for the time
+-		 * being and let link-monitoring (miimon) set it right when
+-		 * correct speeds/duplex are available.
++		 * in weird state. Mark it as link-fail if the link was
++		 * previously up or link-down if it hasn't yet come up, and
++		 * let link-monitoring (miimon) set it right when correct
++		 * speeds/duplex are available.
+ 		 */
+ 		if (bond_update_speed_duplex(slave) &&
+-		    BOND_MODE(bond) == BOND_MODE_8023AD)
+-			slave->link = BOND_LINK_FAIL;
++		    BOND_MODE(bond) == BOND_MODE_8023AD) {
++			if (slave->last_link_up)
++				slave->link = BOND_LINK_FAIL;
++			else
++				slave->link = BOND_LINK_DOWN;
++		}
+ 
+ 		if (BOND_MODE(bond) == BOND_MODE_8023AD)
+ 			bond_3ad_adapter_speed_duplex_changed(slave);
+-- 
+2.20.1
 
-     Andrew
