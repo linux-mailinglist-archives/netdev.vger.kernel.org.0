@@ -2,115 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DE422922B
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 09:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3964129249
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 10:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389252AbfEXH5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 03:57:03 -0400
-Received: from narfation.org ([79.140.41.39]:46862 "EHLO v3-1039.vlinux.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389193AbfEXH5D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 03:57:03 -0400
-Received: from bentobox.localnet (p200300C5970CBFF65DBBA6E41EE33035.dip0.t-ipconnect.de [IPv6:2003:c5:970c:bff6:5dbb:a6e4:1ee3:3035])
-        by v3-1039.vlinux.de (Postfix) with ESMTPSA id 772481100E1;
-        Fri, 24 May 2019 09:56:59 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1558684620;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sxepySEKhb40R5+oRea/rhZHSEGikD/C+/RJzO11JmE=;
-        b=aLa7guY8qPQNejVipVe/OCYgca/oQYNsu7Y7dfWiBKGgxNow62HIexQrcasGQF//uhM4ba
-        e21zA0tXVAJbaoicNQ16SEjOaWKoPw/qE1R2gbGMQrFcReWshy7nsxTD2GOayuhHt25vdB
-        3IRNEW95z0cLj0Cr1yagBrtyzjNwEfk=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     b.a.t.m.a.n@lists.open-mesh.org
-Cc:     Jeremy Sowden <jeremy@azazel.net>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        netdev@vger.kernel.org,
-        syzbot+d454a826e670502484b8@syzkaller.appspotmail.com,
-        Antonio Quartulli <a@unstable.cc>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] batadv: fix for leaked TVLV handler.
-Date:   Fri, 24 May 2019 09:56:47 +0200
-Message-ID: <3325808.M3JPgbICzP@bentobox>
-In-Reply-To: <2234850.c0QxkmldC6@sven-edge>
-References: <00000000000017d64c058965f966@google.com> <20190521195857.14639-1-jeremy@azazel.net> <2234850.c0QxkmldC6@sven-edge>
+        id S2389366AbfEXIAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 04:00:22 -0400
+Received: from www62.your-server.de ([213.133.104.62]:57596 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389194AbfEXIAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 04:00:19 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hU57h-0006lV-9d; Fri, 24 May 2019 10:00:17 +0200
+Received: from [178.197.249.12] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hU57h-000Rxo-36; Fri, 24 May 2019 10:00:17 +0200
+Subject: Re: [PATCH] bpf: sockmap, fix use after free from sleep in psock
+ backlog workqueue
+To:     John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        jakub@cloudflare.com, ast@kernel.org
+Cc:     netdev@vger.kernel.org, marek@cloudflare
+References: <155862650069.11403.15148410261691250447.stgit@john-Precision-5820-Tower>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <a9a37d43-32ba-5a82-bb02-f02ced179019@iogearbox.net>
+Date:   Fri, 24 May 2019 10:00:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart779344695.vhicoALKBS"; micalg="pgp-sha512"; protocol="application/pgp-signature"
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1558684620;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sxepySEKhb40R5+oRea/rhZHSEGikD/C+/RJzO11JmE=;
-        b=a0hXAkq4J5w0h88Oq6JovD/Af+uWToj5cV1bIxd+nDk5B1BzchFiz9LqypsOQJ2gul5xPz
-        LdWHtHfEJV/yYwBE2+RvL4zfZ7hMYk9HLUdMbUqCaF5jpb+xLF0Dr/PXduGSKLc922ZMTf
-        Ezn+13HTeQgHNbRScd/2wUDI79jmZ3g=
-ARC-Seal: i=1; s=20121; d=narfation.org; t=1558684620; a=rsa-sha256;
-        cv=none;
-        b=kPz4jAqjEs9A4U+D6iGKRv8sGrUwFFKRursJ1KXsRvhaOysOyUUQsWWp3Fo7ceugC5MxdD
-        TlIGZN4nDoYslBAc7Ni8xCUrxEJs863Wobn3gOHLXbVvFg/eA/CpI4BOl/R4/wl1eO9xtG
-        a//plln1TjsoBqyLis57HAsm5Hrpbzk=
-ARC-Authentication-Results: i=1;
-        v3-1039.vlinux.de;
-        auth=pass smtp.auth=sven smtp.mailfrom=sven@narfation.org
+In-Reply-To: <155862650069.11403.15148410261691250447.stgit@john-Precision-5820-Tower>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25458/Thu May 23 09:58:32 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart779344695.vhicoALKBS
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+On 05/23/2019 05:48 PM, John Fastabend wrote:
+> Backlog work for psock (sk_psock_backlog) might sleep while waiting
+> for memory to free up when sending packets. However, while sleeping
+> the socket may be closed and removed from the map by the user space
+> side.
+> 
+> This breaks an assumption in sk_stream_wait_memory, which expects the
+> wait queue to be still there when it wakes up resulting in a
+> use-after-free shown below. To fix his mark sendmsg as MSG_DONTWAIT
+> to avoid the sleep altogether. We already set the flag for the
+> sendpage case but we missed the case were sendmsg is used.
+> Sockmap is currently the only user of skb_send_sock_locked() so only
+> the sockmap paths should be impacted.
+> 
+> ==================================================================
+> BUG: KASAN: use-after-free in remove_wait_queue+0x31/0x70
+> Write of size 8 at addr ffff888069a0c4e8 by task kworker/0:2/110
+> 
+> CPU: 0 PID: 110 Comm: kworker/0:2 Not tainted 5.0.0-rc2-00335-g28f9d1a3d4fe-dirty #14
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-2.fc27 04/01/2014
+> Workqueue: events sk_psock_backlog
+> Call Trace:
+>  print_address_description+0x6e/0x2b0
+>  ? remove_wait_queue+0x31/0x70
+>  kasan_report+0xfd/0x177
+>  ? remove_wait_queue+0x31/0x70
+>  ? remove_wait_queue+0x31/0x70
+>  remove_wait_queue+0x31/0x70
+>  sk_stream_wait_memory+0x4dd/0x5f0
+>  ? sk_stream_wait_close+0x1b0/0x1b0
+>  ? wait_woken+0xc0/0xc0
+>  ? tcp_current_mss+0xc5/0x110
+>  tcp_sendmsg_locked+0x634/0x15d0
+>  ? tcp_set_state+0x2e0/0x2e0
+>  ? __kasan_slab_free+0x1d1/0x230
+>  ? kmem_cache_free+0x70/0x140
+>  ? sk_psock_backlog+0x40c/0x4b0
+>  ? process_one_work+0x40b/0x660
+>  ? worker_thread+0x82/0x680
+>  ? kthread+0x1b9/0x1e0
+>  ? ret_from_fork+0x1f/0x30
+>  ? check_preempt_curr+0xaf/0x130
+>  ? iov_iter_kvec+0x5f/0x70
+>  ? kernel_sendmsg_locked+0xa0/0xe0
+>  skb_send_sock_locked+0x273/0x3c0
+>  ? skb_splice_bits+0x180/0x180
+>  ? start_thread+0xe0/0xe0
+>  ? update_min_vruntime.constprop.27+0x88/0xc0
+>  sk_psock_backlog+0xb3/0x4b0
+>  ? strscpy+0xbf/0x1e0
+>  process_one_work+0x40b/0x660
+>  worker_thread+0x82/0x680
+>  ? process_one_work+0x660/0x660
+>  kthread+0x1b9/0x1e0
+>  ? __kthread_create_on_node+0x250/0x250
+>  ret_from_fork+0x1f/0x30
+> 
+> Fixes: 20bf50de3028c ("skbuff: Function to send an skbuf on a socket")
+> Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
+> Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  net/core/skbuff.c |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index e89be62..c3b03c5 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -2337,6 +2337,7 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
+>  		kv.iov_base = skb->data + offset;
+>  		kv.iov_len = slen;
+>  		memset(&msg, 0, sizeof(msg));
+> +		msg.flags = MSG_DONTWAIT;
+>  
+>  		ret = kernel_sendmsg_locked(sk, &msg, &kv, 1, slen);
+>  		if (ret <= 0)
 
-On Tuesday, 21 May 2019 22:48:32 CEST Sven Eckelmann wrote:
-> Fixes: 122edaa05940 ("batman-adv: tvlv - convert roaming adv packet to use tvlv unicast packets")
-
-This patch was queued up [1] for submission but it is the only queued patch at 
-the moment. And I already saw that David marked this patch as "Under review" 
-in patchwork [2]. May I ask whether this means that you (David) would directly 
-apply it (unless there are objections)? If so then we could save ourselves an 
-extra PR for just this patch. Just depends on what you (David) prefers.
-
-Reviewed-by: Sven Eckelmann <sven@narfation.org>
-
-The only adjustments I personally would like to see when it is applied:
-
-* the Fixes: line
-* prefix "batman-adv:" (at least this still seems the one which is usually 
-  used for net/batman-adv/ related code)
-  But this isn't really a hard  requirement and I also use the shorter 
-  "batadv" all the time in other contexts
-
-Kind regards,
-	Sven
-
-[1] https://git.open-mesh.org/linux-merge.git/commit/17f78dd1bd624a4dd78ed5db3284a63ee807fcc3
-[2] https://patchwork.ozlabs.org/patch/1102982/
---nextPart779344695.vhicoALKBS
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAlzno78ACgkQXYcKB8Em
-e0aPtw/+O0SulpXspnbKNveVpmmTL9ZVMCnwLGvkY6gxRKk/2Qm8dPsGVlhl9z2A
-8CUhfYIoUtDO7fk+9RmezldlK+hvO0FJPDjKKIG2f0XteRBPncnxtnaTRliB87PX
-yScD4ivUNQxbO+aYh3rbtWw9aPvjMAcgjS2Vmlf+i8IiXOp9EQVxQ8ffJuDMpBeH
-Pc4TThVWBFymceZqjGUSJtiQvm9XXphfEH41sTqWra+HLv/YegHahRrJiBVLzV31
-Rtje4Z1ggdQe0OuNeD5S4UrqDOTmCvnOgs4w7j5ts0o0YU3xeYIITClArT+OqkFx
-NmZtgXHAO7nhaoc1Xdv+CttngZfvg2MGDp+AS/mhOtDNCdYkDlLFfl1McuOmxXHv
-5HnD1/LZnpR+mVNs4kPfqRN3UDU/JF6OGN9XrJKTGxWzvoT4Q71K+OL8MSmrqzzZ
-WMeGtgVbHwrV0O+R9P5VDeIqlCnCM0c1t9QVVruhLK1fVghkgyaKEe6+PetWobqW
-CGtUGT2/gVVAS6c6bq4RCcVXmGqh66HsbIDvhYgUzRSNRQ7+v78FPuJFcZRNXpcX
-RCQCWWmAZSjw30uW2pvRYe7aA/HMJVIY8D4wAnlfddMVhvdXvaVnkUVJYZUswsoF
-kcZBHph3OyzKoLzUj9W/ySN1oeYFL/zPx+aeG3STXQs+/i+A2CQ=
-=ec3e
------END PGP SIGNATURE-----
-
---nextPart779344695.vhicoALKBS--
-
-
-
+This doesn't even compile. :( It should have been msg_flags instead ...
