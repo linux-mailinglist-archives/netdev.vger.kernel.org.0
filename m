@@ -2,69 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0609F29FDD
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 22:28:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA4229FDF
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 22:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404108AbfEXU2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 16:28:40 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42772 "EHLO
+        id S2404143AbfEXU2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 16:28:51 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42784 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403852AbfEXU2k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 16:28:40 -0400
+        with ESMTP id S2404104AbfEXU2v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 16:28:51 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D42C814E2A500;
-        Fri, 24 May 2019 13:28:39 -0700 (PDT)
-Date:   Fri, 24 May 2019 13:28:39 -0700 (PDT)
-Message-Id: <20190524.132839.1622018394749383575.davem@davemloft.net>
-To:     dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        idosch@mellanox.com, dsahern@gmail.com
-Subject: Re: [PATCH net-next 0/7] ipv6: Move exceptions to fib6_nh and make
- it optional in a fib6_info
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 48F1614E2A500;
+        Fri, 24 May 2019 13:28:50 -0700 (PDT)
+Date:   Fri, 24 May 2019 13:28:49 -0700 (PDT)
+Message-Id: <20190524.132849.279938218485377665.davem@davemloft.net>
+To:     vladbu@mellanox.com
+Cc:     xiyou.wangcong@gmail.com, netdev@vger.kernel.org, jhs@mojatatu.com,
+        ecree@solarflare.com, jiri@resnulli.us, pablo@netfilter.org,
+        andy@greyhouse.net, jakub.kicinski@netronome.com,
+        michael.chan@broadcom.com, vishal@chelsio.com, lucasb@mojatatu.com,
+        roid@mellanox.com
+Subject: Re: [PATCH net] net: sched: don't use tc_action->order during
+ action dump
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190523032801.11122-1-dsahern@kernel.org>
-References: <20190523032801.11122-1-dsahern@kernel.org>
+In-Reply-To: <20190523063231.11581-1-vladbu@mellanox.com>
+References: <20190523063231.11581-1-vladbu@mellanox.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 24 May 2019 13:28:40 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 24 May 2019 13:28:50 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
-Date: Wed, 22 May 2019 20:27:54 -0700
+From: Vlad Buslov <vladbu@mellanox.com>
+Date: Thu, 23 May 2019 09:32:31 +0300
 
-> From: David Ahern <dsahern@gmail.com>
+> Function tcf_action_dump() relies on tc_action->order field when starting
+> nested nla to send action data to userspace. This approach breaks in
+> several cases:
 > 
-> Patches 1 and 4 move pcpu and exception caches from fib6_info to fib6_nh.
-> With respect to the current FIB entries this is only a movement from one
-> struct to another contained within the first.
+> - When multiple filters point to same shared action, tc_action->order field
+>   is overwritten each time it is attached to filter. This causes filter
+>   dump to output action with incorrect attribute for all filters that have
+>   the action in different position (different order) from the last set
+>   tc_action->order value.
 > 
-> Patch 2 refactors the core logic of fib6_drop_pcpu_from into a helper
-> that is invoked per fib6_nh.
+> - When action data is displayed using tc action API (RTM_GETACTION), action
+>   order is overwritten by tca_action_gd() according to its position in
+>   resulting array of nl attributes, which will break filter dump for all
+>   filters attached to that shared action that expect it to have different
+>   order value.
 > 
-> Patch 3 refactors exception handling in a similar way - creating a bunch
-> of helpers that can be invoked per fib6_nh with the goal of making patch
-> 4 easier to review as well as creating the code needed for nexthop
-> objects.
+> Don't rely on tc_action->order when dumping actions. Set nla according to
+> action position in resulting array of actions instead.
 > 
-> Patch 5 makes a fib6_nh at the end of a fib6_info an array similar to
-> IPv4 and its fib_info. For the current fib entry model, all fib6_info
-> will have a fib6_nh allocated for it.
-> 
-> Patch 6 refactors ip6_route_del moving the code for deleting an
-> exception entry into a new function.
-> 
-> Patch 7 adds tests for redirect route exceptions. The new test was
-> written against 5.1 (before any of the nexthop refactoring). It and the
-> pmtu.sh selftest exercise the exception code paths - from creating
-> exceptions to cleaning them up on device delete. All tests pass without
-> any rcu locking or memleak warnings.
+> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-Series applied, thanks David.
+Applied and queued up for -stable.
