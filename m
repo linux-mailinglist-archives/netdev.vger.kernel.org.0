@@ -2,92 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4602902C
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 06:53:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6931A29031
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 06:54:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731853AbfEXEwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 00:52:54 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:34469 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731773AbfEXEwy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 00:52:54 -0400
-Received: by mail-lj1-f194.google.com with SMTP id j24so7474850ljg.1
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 21:52:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V20z0KsB9cueisqTKMsu9xWIxFvhrK8pRRyFM+6kcXg=;
-        b=KUQBIAgjJy54O12HR/RuHSSIcavrDhN4oFMJxSyw1H5om5949xmqcpUMUM0aXJU4EK
-         xXbGmF35qNp/8LxI91Qi6twy/cbPli9PqZPhLNpqh6as/vgnhChBwNHqEGDRYpOcbYoK
-         FvlTy715Wme6Rct1Jg947fwAsiaxvQ48DjpEmvR3hwtc5YFIjXe5ZdUv5E9VTq8RljSQ
-         vWydQb9aZ3ZnUrGShFzntaJBuebxU1w37/f/1Zxz66M4E6Oo03cx7S+4naQAsfS+IXi0
-         fRydRh3q7XKlnkp3bbjOUT9qC5pftTrdTVDlNPOiLcoVw1KV8MVk1PRDyp8eskBxRdB/
-         0+mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V20z0KsB9cueisqTKMsu9xWIxFvhrK8pRRyFM+6kcXg=;
-        b=f5biB9dCzQxdn4E5mccZ5Lwp/0beP41lTr3hyPodqLfQdoaq5rHuchH2skM/HPn5KG
-         57jT+KruedyLFISK0LARF6nOMjQAnTGhe0ZSMu4NdMVA2JaNVbvTQQ8beulaTlxV4cvW
-         iJlUMJFCaBbxC/ff+J+EpEc0ysgCX86FAEimlVA1LvhD3R+UilchK+jjLfyP9eE7nMD6
-         gbzsixDmH1FD7W9tZmPtatbDj7O8RUSDcn/6cpLkX/VJXG4wbufPv58SqQ7Lmz+Xr1ws
-         csaDUKzUby2cSG2nK8CFBij69RTunE/zOFCuURhghoAtHK/LMZrxDO/oNLrNmYDcYzGI
-         QMRw==
-X-Gm-Message-State: APjAAAX4wOGTLMQJLtJOARNmGwY4Kc88cGbNsEIyJ5KT4RNYdhO3UGHg
-        2aOiSIS4ieUCoaRErwfLUi4tbHw5oqJ4YuoK69qtlw==
-X-Google-Smtp-Source: APXvYqxz0wNQDMda+GtVe5gubvtJUXWkBLq/qX5juG1Eg/5ylGDqqmuLdtNb6543eugrO6i1QFuePfWPqT9od0rGXI4=
-X-Received: by 2002:a2e:9ad1:: with SMTP id p17mr16405025ljj.147.1558673563302;
- Thu, 23 May 2019 21:52:43 -0700 (PDT)
+        id S1731898AbfEXEyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 00:54:43 -0400
+Received: from tama500.ecl.ntt.co.jp ([129.60.39.148]:36499 "EHLO
+        tama500.ecl.ntt.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726115AbfEXEyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 00:54:43 -0400
+Received: from vc1.ecl.ntt.co.jp (vc1.ecl.ntt.co.jp [129.60.86.153])
+        by tama500.ecl.ntt.co.jp (8.13.8/8.13.8) with ESMTP id x4O4sCOR003200;
+        Fri, 24 May 2019 13:54:12 +0900
+Received: from vc1.ecl.ntt.co.jp (localhost [127.0.0.1])
+        by vc1.ecl.ntt.co.jp (Postfix) with ESMTP id 90D65EA7F56;
+        Fri, 24 May 2019 13:54:12 +0900 (JST)
+Received: from jcms-pop21.ecl.ntt.co.jp (jcms-pop21.ecl.ntt.co.jp [129.60.87.134])
+        by vc1.ecl.ntt.co.jp (Postfix) with ESMTP id 85EAEEA7F04;
+        Fri, 24 May 2019 13:54:12 +0900 (JST)
+Received: from [IPv6:::1] (eb8460w-makita.sic.ecl.ntt.co.jp [129.60.241.47])
+        by jcms-pop21.ecl.ntt.co.jp (Postfix) with ESMTPSA id 7A2B4400870;
+        Fri, 24 May 2019 13:54:12 +0900 (JST)
+Subject: Re: [PATCH bpf-next 3/3] veth: Support bulk XDP_TX
+References: <1558609008-2590-1-git-send-email-makita.toshiaki@lab.ntt.co.jp>
+ <1558609008-2590-4-git-send-email-makita.toshiaki@lab.ntt.co.jp>
+ <87zhnd1kg9.fsf@toke.dk> <599302b2-96d2-b571-01ee-f4914acaf765@lab.ntt.co.jp>
+ <20190523152927.14bf7ed1@carbon>
+ <c902c0f4-947b-ba9e-7baa-628ba87a8f01@gmail.com>
+ <94046143-f05d-77db-88c4-7bd62f2c98d4@redhat.com>
+ <c560baa0-8a71-4ab3-7107-c831d6ef8bb8@lab.ntt.co.jp>
+ <1035faf0-3fd2-4986-540e-b76ab53fe99b@redhat.com>
+From:   Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
+Message-ID: <3a3217f2-89d0-fc1e-bca8-953cf83f5e57@lab.ntt.co.jp>
+Date:   Fri, 24 May 2019 13:52:46 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <1558611952-13295-1-git-send-email-yash.shah@sifive.com>
- <1558611952-13295-3-git-send-email-yash.shah@sifive.com> <20190523145417.GD19369@lunn.ch>
-In-Reply-To: <20190523145417.GD19369@lunn.ch>
-From:   Yash Shah <yash.shah@sifive.com>
-Date:   Fri, 24 May 2019 10:22:06 +0530
-Message-ID: <CAJ2_jOE0-zK1csRNeiAmag9kEbvOGhbvRa-5ESYif7e15gpRcQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] net: macb: Add support for SiFive FU540-C000
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     mark.rutland@arm.com, devicetree@vger.kernel.org,
-        aou@eecs.berkeley.edu, netdev@vger.kernel.org,
-        Palmer Dabbelt <palmer@sifive.com>,
-        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com,
-        Sachin Ghadi <sachin.ghadi@sifive.com>, robh+dt@kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>, ynezz@true.cz,
-        linux-riscv@lists.infradead.org, davem@davemloft.net
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1035faf0-3fd2-4986-540e-b76ab53fe99b@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-CC-Mail-RelayStamp: 1
+To:     Jason Wang <jasowang@redhat.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org
+X-TM-AS-MML: disable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 8:24 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > +static int fu540_macb_tx_set_rate(struct clk_hw *hw, unsigned long rate,
-> > +                               unsigned long parent_rate)
-> > +{
-> > +     rate = fu540_macb_tx_round_rate(hw, rate, &parent_rate);
-> > +     iowrite32(rate != 125000000, mgmt->reg);
->
-> That looks odd. Writing the result of a comparison to a register?
+On 2019/05/24 12:54, Jason Wang wrote:
+> On 2019/5/24 上午11:28, Toshiaki Makita wrote:
+>> On 2019/05/24 12:13, Jason Wang wrote:
+>>> On 2019/5/23 下午9:51, Toshiaki Makita wrote:
+>>>> On 19/05/23 (木) 22:29:27, Jesper Dangaard Brouer wrote:
+>>>>> On Thu, 23 May 2019 20:35:50 +0900
+>>>>> Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> wrote:
+>>>>>
+>>>>>> On 2019/05/23 20:25, Toke Høiland-Jørgensen wrote:
+>>>>>>> Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp> writes:
+>>>>>>>> This improves XDP_TX performance by about 8%.
+>>>>>>>>
+>>>>>>>> Here are single core XDP_TX test results. CPU consumptions are
+>>>>>>>> taken
+>>>>>>>> from "perf report --no-child".
+>>>>>>>>
+>>>>>>>> - Before:
+>>>>>>>>
+>>>>>>>>     7.26 Mpps
+>>>>>>>>
+>>>>>>>>     _raw_spin_lock  7.83%
+>>>>>>>>     veth_xdp_xmit  12.23%
+>>>>>>>>
+>>>>>>>> - After:
+>>>>>>>>
+>>>>>>>>     7.84 Mpps
+>>>>>>>>
+>>>>>>>>     _raw_spin_lock  1.17%
+>>>>>>>>     veth_xdp_xmit   6.45%
+>>>>>>>>
+>>>>>>>> Signed-off-by: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
+>>>>>>>> ---
+>>>>>>>>    drivers/net/veth.c | 26 +++++++++++++++++++++++++-
+>>>>>>>>    1 file changed, 25 insertions(+), 1 deletion(-)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+>>>>>>>> index 52110e5..4edc75f 100644
+>>>>>>>> --- a/drivers/net/veth.c
+>>>>>>>> +++ b/drivers/net/veth.c
+>>>>>>>> @@ -442,6 +442,23 @@ static int veth_xdp_xmit(struct net_device
+>>>>>>>> *dev, int n,
+>>>>>>>>        return ret;
+>>>>>>>>    }
+>>>>>>>>    +static void veth_xdp_flush_bq(struct net_device *dev)
+>>>>>>>> +{
+>>>>>>>> +    struct xdp_tx_bulk_queue *bq = this_cpu_ptr(&xdp_tx_bq);
+>>>>>>>> +    int sent, i, err = 0;
+>>>>>>>> +
+>>>>>>>> +    sent = veth_xdp_xmit(dev, bq->count, bq->q, 0);
+>>>>>>> Wait, veth_xdp_xmit() is just putting frames on a pointer ring. So
+>>>>>>> you're introducing an additional per-cpu bulk queue, only to avoid
+>>>>>>> lock
+>>>>>>> contention around the existing pointer ring. But the pointer ring is
+>>>>>>> per-rq, so if you have lock contention, this means you must have
+>>>>>>> multiple CPUs servicing the same rq, no?
+>>>>>> Yes, it's possible. Not recommended though.
+>>>>>>
+>>>>> I think the general per-cpu TX bulk queue is overkill.  There is a
+>>>>> loop
+>>>>> over packets in veth_xdp_rcv(struct veth_rq *rq, budget, *status), and
+>>>>> the caller veth_poll() will call veth_xdp_flush(rq->dev).
+>>>>>
+>>>>> Why can't you store this "temp" bulk array in struct veth_rq ?
+>>>> Of course I can. But I thought tun has the same problem and we can
+>>>> decrease memory footprint by sharing the same storage between devices.
+>>>
+>>> For TUN and for its fast path where vhost passes a bulk of XDP frames
+>>> (through msg_control) to us, we probably just need a temporary bulk
+>>> array in tun_xdp_one() instead of a global one. I can post patch or
+>>> maybe you if you're interested in this.
+>> Of course you/I can. What I'm concerned is that could be waste of cache
+>> line when softirq runs veth napi handler and then tun napi handler.
+>>
+> 
+> Well, technically the bulk queue passed to TUN could be reused. I admit
+> it may save cacheline in ideal case but I wonder how much we could gain
+> on real workload.
 
-The idea was to write "1" to the register if the value of rate is
-anything else than 125000000.
-To make it easier to read, I will change this to below:
-    - iowrite32(rate != 125000000, mgmt->reg);
-    + if (rate != 125000000)
-    +     iowrite32(1, mgmt->reg);
-    + else
-    +     iowrite32(0, mgmt->reg);
+I see veth_rq ptr_ring suffering from cacheline miss, which makes me
+conservative about adding more buffers for xdp_frames.
+I'll wait for some more feedback from others.
 
-Hope that's fine. Thanks for your comment
-- Yash
+> (Note TUN doesn't use napi handler to do XDP, it has a
+> NAPI mode but it was mainly used for hardening and XDP was not
+> implemented there, maybe we should fix this).
 
->
->      Andrew
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+Ah, that's true. Sorry for confusion.
+
+> 
+> Thanks
+> 
+> 
+>>> Thanks
+>>>
+>>>
+>>>> Or if other devices want to reduce queues so that we can use XDP on
+>>>> many-cpu servers and introduce locks, we can use this storage for that
+>>>> case as well.
+>>>>
+>>>> Still do you prefer veth-specific solution?
+>>>>
+>>>>> You could even alloc/create it on the stack of veth_poll() and send it
+>>>>> along via a pointer to veth_xdp_rcv).
+>>>>>
+>>>> Toshiaki Makita
+>>>
+> 
+> 
+
+-- 
+Toshiaki Makita
+
