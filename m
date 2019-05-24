@@ -2,80 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29B1229503
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 11:42:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66BB92950B
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 11:45:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390198AbfEXJm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 05:42:29 -0400
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:18430 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389677AbfEXJm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 05:42:29 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5ce7bc850000>; Fri, 24 May 2019 02:42:29 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Fri, 24 May 2019 02:42:28 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Fri, 24 May 2019 02:42:28 -0700
-Received: from [10.21.132.148] (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 24 May
- 2019 09:42:26 +0000
-Subject: Re: [PATCH] spi: Fix a memory leaking bug in wl1271_probe()
-To:     Gen Zhang <blackgod016574@gmail.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20190523143022.GA26485@zhanggen-UX430UQ>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <279050e0-39e4-173d-ffe8-c1837951f4d1@nvidia.com>
-Date:   Fri, 24 May 2019 10:42:25 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190523143022.GA26485@zhanggen-UX430UQ>
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL103.nvidia.com (172.20.187.11) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        id S2389911AbfEXJpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 05:45:00 -0400
+Received: from mailgw01.mediatek.com ([210.61.82.183]:7320 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2389582AbfEXJpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 05:45:00 -0400
+X-UUID: daf92e84950644cfa0396206d837043a-20190524
+X-UUID: daf92e84950644cfa0396206d837043a-20190524
+Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by mailgw01.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (mhqrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 1523258147; Fri, 24 May 2019 17:44:48 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by mtkmbs01n2.mediatek.inc
+ (172.21.101.79) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 May
+ 2019 17:44:46 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS32.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Fri, 24 May 2019 17:44:44 +0800
+Message-ID: <1558691084.24897.51.camel@mhfsdcap03>
+Subject: RE: [v2, PATCH] net: stmmac: add support for hash table size
+ 128/256 in dwmac4
+From:   biao huang <biao.huang@mediatek.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "yt.shen@mediatek.com" <yt.shen@mediatek.com>,
+        "jianguo.zhang@mediatek.comi" <jianguo.zhang@mediatek.comi>,
+        "boon.leong.ong@intel.com" <boon.leong.ong@intel.com>
+Date:   Fri, 24 May 2019 17:44:44 +0800
+In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B92D26F@DE02WEMBXB.internal.synopsys.com>
+References: <1557802843-31718-1-git-send-email-biao.huang@mediatek.com>
+         <78EB27739596EE489E55E81C33FEC33A0B92D26F@DE02WEMBXB.internal.synopsys.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1558690949; bh=f+gDnXlt84op+cO+SWUow2VW/jdTpsnQIMrQpyyMGgg=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=IrJmjsCmpX60wzUFmVgEp/9UJN9UZ8CYieGXNOttBYSl0DHZVc5tniuH7PieaTg0L
-         cJXXy8DPE0qVjF1PnDEITchM8yIkJEFsYMapIUL9UsWWd+dMOtabN/lijwIuBZ3Jij
-         Mu4J588ig4jERKcaDk7drT7tzEVEzG/U7TNC/zdCjRzUG8L90N+JypogQwWKx55x5Z
-         YCxh4Y/K04ckhNUH8R26DDGms6OsVpA1sGDPrUn8bOnFCW9ryGsS0pSgO0b2FBQrKw
-         aFumIbRFnHWe6UetgEZ9eC/5jqDNktD2ofYnSpMQWYZXu6qDRfXm4d4LRCN63HLRLc
-         oOuMI+pveu4oQ==
+MIME-Version: 1.0
+X-TM-SNTS-SMTP: 238D8347CAB595BF80BC7F148B95AD8BE5BE1F4F748A6570F199B0DC4BF2A9D82000:8
+X-MTK:  N
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Seems I should modify this patch base on
+"https://patchwork.ozlabs.org/project/netdev/list/?series=109699"
 
-On 23/05/2019 15:30, Gen Zhang wrote:
-> In wl1271_probe(), 'glue->core' is allocated by platform_device_alloc(),
-> when this allocation fails, ENOMEM is returned. However, 'pdev_data'
-> and 'glue' are allocated by devm_kzalloc() before 'glue->core'. When
-> platform_device_alloc() returns NULL, we should also free 'pdev_data'
-> and 'glue' before wl1271_probe() ends to prevent leaking memory.
+On Fri, 2019-05-24 at 09:24 +0000, Jose Abreu wrote:
+> From: biao huang <biao.huang@mediatek.com>
+> Date: Fri, May 24, 2019 at 09:31:44
 > 
-> Similarly, we shoulf free 'pdev_data' when 'glue' is NULL. And we should
-> free 'pdev_data' and 'glue' when 'glue->reg' is error and when 'ret' is
-> error.
+> > On Fri, 2019-05-24 at 08:24 +0000, Jose Abreu wrote:
+> > > From: biao huang <biao.huang@mediatek.com>
+> > > Date: Fri, May 24, 2019 at 07:33:37
+> > > 
+> > > > any comments about this patch?
+> > > 
+> > > Can you please test your series on top of this one [1] and let me know 
+> > > the output of :
+> > > # ethtool -t eth0
+> > "ethtol -T eth0"? This patch only affect hash table filter, seems no
+> > relation to timestamp.
+> > > 
+execute "ethtool -t eth0", then we got "Cannot test: Operation not
+supported", is there any config should be enabled?
+> > > Just to make sure that this patch does not introduce any regressions. The 
+> > > remaining ones of the series look fine by me!
+> > > 
+> > > [1] 
+> > which one? Did I miss anything here?
 > 
-> Further, we should free 'glue->core', 'pdev_data' and 'glue' when this 
-> function normally ends to prevent leaking memory.
+> Sorry, my mail client tried to wrap the long link and ended up in a 
+> loooong email.
 > 
-> Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
-I have seen several of these patches now, and this is not correct. I
-think you need to understand how devm_kzalloc() works.
+> [1] https://patchwork.ozlabs.org/project/netdev/list/?series=109699
+> 
+Got it.
+> Thanks,
+> Jose Miguel Abreu
 
-Jon
 
--- 
-nvpublic
