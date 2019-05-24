@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87B1B29CF8
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 19:27:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE6C029D09
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 19:34:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731977AbfEXR1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 13:27:48 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:48712 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731958AbfEXR1s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 13:27:48 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 883C9800089;
-        Fri, 24 May 2019 17:27:45 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 24 May
- 2019 10:27:40 -0700
-Subject: Re: [PATCH v3 net-next 0/3] flow_offload: Re-add per-action
- statistics
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "Andy Gospodarek" <andy@greyhouse.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Vishal Kulkarni <vishal@chelsio.com>
-References: <9804a392-c9fd-8d03-7900-e01848044fea@solarflare.com>
- <20190522152001.436bed61@cakuba.netronome.com>
- <fa8a9bde-51c1-0418-5f1b-5af28c4a67c1@mojatatu.com>
- <20190523091154.73ec6ccd@cakuba.netronome.com>
- <1718a74b-3684-0160-466f-04495be5f0ca@solarflare.com>
- <20190523102513.363c2557@cakuba.netronome.com>
- <bf4c9a41-ea81-4d87-2731-372e93f8d53d@solarflare.com>
- <1506061d-6ced-4ca2-43fa-09dad30dc7e6@solarflare.com>
- <20190524100329.4e1f0ce4@cakuba.netronome.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <355202da-6c69-1034-eb29-e03edfe0fe2c@solarflare.com>
-Date:   Fri, 24 May 2019 18:27:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S2390483AbfEXReo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 13:34:44 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:35602 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725923AbfEXReo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 13:34:44 -0400
+Received: by mail-vs1-f65.google.com with SMTP id q13so6366246vso.2
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 10:34:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GQaSpiIxbKy5UlGRdPSgaQ4pt4Z1le4Cnao3BsjrRIY=;
+        b=nHHl9Z6e5RN/hFk8JcC+SPVhR2GdtS6ZPJDSbKHn54wng8ZDQA8rhqVg0uQFFfQBhq
+         4rlooWtpcvrxoClWSvP77VCdwxzhvKveoztAM7YLPZnYmoJFFFgAiZ0TwjF1PFlBMzP4
+         NmcnxQTZVaGIjR8s3qEUNT0ZhSLnGkY0ZHDtgSUPl9KpheuiBHO452eGDoqvabcTgCUS
+         e38ggdmcWmbuyAYlwoRO+PgVI2fJKNze18YI84MsxqrQ92Ebdk3/6sjIxgkJz63tCyPD
+         hZzw+ZlF35jWi67ZIFDWljieixj8Ax9oi+xSbwDBV/1lej7yui70tjEYYvGSt+cOhSg1
+         W8kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GQaSpiIxbKy5UlGRdPSgaQ4pt4Z1le4Cnao3BsjrRIY=;
+        b=TsKH5YR11dD5epw+OgmspqT/SMOPXTj8fRdXUTMwUHEBOHbi5A3c4nT8hTLl/RaVcm
+         JUtREztpvPDjaVmd3MmahZYe3LIrYI2qtT0M22VNL04j1OoOMtXzO4sZQ1NG8WgaUSKK
+         Q7Wg2GQJloPJyaZJQaOreWgE5dkck7qelRLrLRYXA/xEsJrgL91i4P1PQGWQWdjkgjh1
+         /on9rn3pnqwFz1XtadHi2njlyzf/fu7RXeqAxJrPWIb8VT495Xb8Ph9BdWlhYvtg1olJ
+         kBTRNtJDglo5HOz8rIPFiIBpHdJhHBBRNpS4u3tKRJYB8KTJj859yMJciY9R3xB2X+m/
+         omjw==
+X-Gm-Message-State: APjAAAXF7seV2ijaQu8eNuLTR3mvG4rjYFBZTKoDa+8ZnZjOKj2CbDtt
+        NGs+U2FLf+7vgJTk+lcJTF28pw==
+X-Google-Smtp-Source: APXvYqxkbhb0e5y9vBFJOIG5N9dcL0uvfy3ayd4UfE7CeIwIDh4W8P7ZfqChYwXvAVfvrg84lQ5++Q==
+X-Received: by 2002:a67:f59a:: with SMTP id i26mr42183011vso.168.1558719282961;
+        Fri, 24 May 2019 10:34:42 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id n23sm2025647vsj.27.2019.05.24.10.34.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2019 10:34:42 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        davejwatson@fb.com, john.fastabend@gmail.com, vakul.garg@nxp.com,
+        alexei.starovoitov@gmail.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net 0/4] net/tls: two fixes for rx_list pre-handling
+Date:   Fri, 24 May 2019 10:34:29 -0700
+Message-Id: <20190524173433.9196-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190524100329.4e1f0ce4@cakuba.netronome.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24634.005
-X-TM-AS-Result: No-2.351800-4.000000-10
-X-TMASE-MatchedRID: zGP2F0O7j/vmLzc6AOD8DfHkpkyUphL9B4Id7CiQcz9/Z0SyQdcmEOph
-        8zS0iA+p+KorrBfM6XeqXAcmxyWE1TR43n0ulJJBwY28o+cGA5rIA07iVUpi2xA8kNzNeyM+Il2
-        Yw4siuJQ1+FbwCpLVjNyO08Nryc0cQ/zBhy7ptN4ZSUX8zcPGn0xAi7xkncUqsp3MDWRc+JhlWG
-        AuNI6SxpCNI3ki9tiCUzF6SznhnLTtwKI0w5dMrZ4CIKY/Hg3AcmfM3DjaQLHEQdG7H66TyJ8TM
-        nmE+d0ZdMj7GxkDom3AY2JceLhtqRgpYCBjLDE5wY1gWMkPa5ye7Pn80/rNR/rIbf9oiV+Je/r4
-        VlMlGUFkMj1HJ8se5dq99md0N7ZW1DXsKeBNv04EqZlWBkJWd7MZNZFdSWvHG2wlTHLNY1JWXGv
-        UUmKP2w==
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.351800-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24634.005
-X-MDID: 1558718867-ZeDgYwOsosh3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/05/2019 18:03, Jakub Kicinski wrote:
-> On Fri, 24 May 2019 14:57:24 +0100, Edward Cree wrote:
->> Argh, there's a problem: an action doesn't have a (directly) associated
->>  block, and all the TC offload machinery nowadays is built around blocks.
->> Since this action might have been used in _any_ block (and afaik there's
->>  no way, from the action, to find which) we'd have to make callbacks on
->>  _every_ block in the system, which sounds like it'd perform even worse
->>  than the rule-dumping approach.
->> Any ideas?
-> Simplest would be to keep a list of offloaders per action, but maybe
-> something more clever would appear as one rummages through the code.
-Problem with that is where to put the list heads; you'd need something that
- was allocated per action x block, for those blocks on which at least one
- offloader handled the rule (in_hw_count > 0).
-Then you'd also have to update that when a driver bound/unbound from a
- block (fl_reoffload() time).
-Best I can think of is keeping the cls_flower.rule allocated in
- fl_hw_replace_filter() around instead of immediately freeing it, and
- having a list_head in each flow_action_entry.  But that really looks like
- an overcomplicated mess.
-TBH I'm starting to wonder if just calling all tc blocks in existence is
- really all that bad.  Is there a plausible use case with huge numbers of
- bound blocks?
+Hi!
 
--Ed
+tls_sw_recvmsg() had been modified to cater better to async decrypt.
+Partially read records now live on the rx_list. Data is copied from
+this list before the old do {} while loop, and the not included
+correctly in deciding whether to sleep or not and lowat threshold
+handling. These modifications, unfortunately, added some bugs.
+
+First patch fixes lowat - we need to calculate the threshold early
+and make sure all copied data is compared to the threshold, not just
+the freshly decrypted data.
+
+Third patch fixes sleep - if data is picked up from rx_list and
+no flags are set, we should not put the process to sleep, but
+rather return the partial read.
+
+Patches 2 and 4 add test cases for these bugs, both will cause
+a sleep and test timeout before the fix.
+
+Jakub Kicinski (4):
+  net/tls: fix lowat calculation if some data came from previous record
+  selftests/tls: test for lowat overshoot with multiple records
+  net/tls: fix no wakeup on partial reads
+  selftests/tls: add test for sleeping even though there is data
+
+ net/tls/tls_sw.c                  | 19 +++++++-----------
+ tools/testing/selftests/net/tls.c | 33 +++++++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+), 12 deletions(-)
+
+-- 
+2.21.0
+
