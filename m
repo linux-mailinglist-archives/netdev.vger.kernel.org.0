@@ -2,486 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C48EF29753
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 13:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B62E29773
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 13:41:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391246AbfEXLgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 07:36:09 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35059 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391204AbfEXLgI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 07:36:08 -0400
-Received: by mail-wr1-f66.google.com with SMTP id m3so9671172wrv.2
-        for <netdev@vger.kernel.org>; Fri, 24 May 2019 04:36:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=P5M/sOCzka2qT+p4DDAjrnnn2G6z55p/ok/4haADAMQ=;
-        b=iLFpwtITEkCPfi7oz+Ak0Eczt31+d9CgqNuPfkAJCvehfmBO5TkfYjI/eMSG7XTNQg
-         AmNXC2im5uDHgL7X+YaEXdHYOYKoqfXi4Y4QDZGOQB3Ldo6P/zaR/Sou1XTiGusLBhig
-         rS8jmNwy+i41Ve5s1X/Ip3fn7Ha6jFJi/5yKn6+9+pEWzrtHZpzrXpNu7oD5aiJztLnE
-         8ftMrxupAROjtNqDh622mW2YjbVatobEpdCQepJpAcO2VYiuC0FXl/rqOecZQWOxGNyw
-         cQp5Aw2HxWCpf1aTxd6QnP6J/MJQZJZuYv55T/f+ACyyAsLZjIzN5Q/RlzwmecFC2TDl
-         R7zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=P5M/sOCzka2qT+p4DDAjrnnn2G6z55p/ok/4haADAMQ=;
-        b=Fyyd344JcgqlqAnMH8jGiSJAvYoMy+x+iYJFMoP2nviVMqfOy9rYwHg74zb0nD86zP
-         URL9yY/OpuJL/gfBpl41FS0dP2d8QY/k5EXc1se4IH9qVcJULCBuMxfOdPXU2cTxaPjO
-         3lx1kZ0TEjgbgq3ieYw28W5AARvy+hw0FcBOGheUh0sF9sXBQ5LfXM8uer4MUMykE0X8
-         r/Y3lx0CkNGdi4KUtypse+N22tsp9+UVsObEMSXYJw1Miuf+THsFZjUrMpWxwVFZH/P6
-         HsmLWzf84IK/P4xmoMi2/wVRZijobHsFT0JJ/W7pGO30VKqPG4e1Crol67xxzd+zYi4V
-         b8Gg==
-X-Gm-Message-State: APjAAAX8rIBqOsViPd17RMpd3y83lMvwIml0Lt6QGJZq1kzrdGCSw0Zx
-        A0HeDk8do75fT2n9GL2/IOVE5w==
-X-Google-Smtp-Source: APXvYqzyxfVDQ6AmCw8m/iIlvemYXP6mcN4fk02pEl8qT4IlyzpsInVW+gP6hOeJFbqxpSFTU952xw==
-X-Received: by 2002:a5d:6406:: with SMTP id z6mr19984105wru.87.1558697765555;
-        Fri, 24 May 2019 04:36:05 -0700 (PDT)
-Received: from cbtest28.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id x22sm2462902wmi.4.2019.05.24.04.36.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 24 May 2019 04:36:04 -0700 (PDT)
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, davem@davemloft.net,
-        paul.burton@mips.com, udknight@gmail.com, zlim.lnx@gmail.com,
-        illusionist.neo@gmail.com, naveen.n.rao@linux.ibm.com,
-        sandipan@linux.ibm.com, schwidefsky@de.ibm.com,
-        heiko.carstens@de.ibm.com, jakub.kicinski@netronome.com,
-        Jiong Wang <jiong.wang@netronome.com>
-Subject: [PATCH v8 bpf-next 16/16] nfp: bpf: eliminate zero extension code-gen
-Date:   Fri, 24 May 2019 12:35:26 +0100
-Message-Id: <1558697726-4058-17-git-send-email-jiong.wang@netronome.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1558697726-4058-1-git-send-email-jiong.wang@netronome.com>
-References: <1558697726-4058-1-git-send-email-jiong.wang@netronome.com>
+        id S2391204AbfEXLkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 07:40:55 -0400
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:53618 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390743AbfEXLky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 07:40:54 -0400
+Received-SPF: Pass (esa4.microchip.iphmx.com: domain of
+  Joergen.Andreasen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Joergen.Andreasen@microchip.com";
+  x-sender="Joergen.Andreasen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa4.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Joergen.Andreasen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa4.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Joergen.Andreasen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+X-IronPort-AV: E=Sophos;i="5.60,506,1549954800"; 
+   d="scan'208";a="34319525"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 24 May 2019 04:40:53 -0700
+Received: from localhost (10.10.76.4) by chn-sv-exch02.mchp-main.com
+ (10.10.76.38) with Microsoft SMTP Server id 14.3.352.0; Fri, 24 May 2019
+ 04:40:53 -0700
+Date:   Fri, 24 May 2019 13:40:52 +0200
+From:   Joergen Andreasen <joergen.andreasen@microchip.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 1/1] net: mscc: ocelot: Implement port
+ policers via tc command
+Message-ID: <20190524114050.rznhisqcgdm5c2e6@soft-dev16>
+References: <20190502094029.22526-1-joergen.andreasen@microchip.com>
+ <20190523104939.2721-1-joergen.andreasen@microchip.com>
+ <20190523104939.2721-2-joergen.andreasen@microchip.com>
+ <20190523115630.7710cc49@cakuba.netronome.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20190523115630.7710cc49@cakuba.netronome.com>
+User-Agent: NeoMutt/20171215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch eliminate zero extension code-gen for instructions including
-both alu and load/store. The only exception is for ctx load, because
-offload target doesn't go through host ctx convert logic so we do
-customized load and ignores zext flag set by verifier.
+Hi Jakub,
 
-Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
----
- drivers/net/ethernet/netronome/nfp/bpf/jit.c      | 115 +++++++++++++---------
- drivers/net/ethernet/netronome/nfp/bpf/main.h     |   2 +
- drivers/net/ethernet/netronome/nfp/bpf/verifier.c |  12 +++
- 3 files changed, 81 insertions(+), 48 deletions(-)
+The 05/23/2019 11:56, Jakub Kicinski wrote:
+> External E-Mail
+> 
+> 
+> On Thu, 23 May 2019 12:49:39 +0200, Joergen Andreasen wrote:
+> > Hardware offload of matchall classifier and police action are now
+> > supported via the tc command.
+> > Supported police parameters are: rate and burst.
+> > 
+> > Example:
+> > 
+> > Add:
+> > tc qdisc add dev eth3 handle ffff: ingress
+> > tc filter add dev eth3 parent ffff: prio 1 handle 2	\
+> > 	matchall skip_sw				\
+> > 	action police rate 100Mbit burst 10000
+> > 
+> > Show:
+> > tc -s -d qdisc show dev eth3
+> > tc -s -d filter show dev eth3 ingress
+> > 
+> > Delete:
+> > tc filter del dev eth3 parent ffff: prio 1
+> > tc qdisc del dev eth3 handle ffff: ingress
+> > 
+> > Signed-off-by: Joergen Andreasen <joergen.andreasen@microchip.com>
+> 
+> > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+> > index d715ef4fc92f..3ec7864d9dc8 100644
+> > --- a/drivers/net/ethernet/mscc/ocelot.c
+> > +++ b/drivers/net/ethernet/mscc/ocelot.c
+> > @@ -943,6 +943,7 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
+> >  	.ndo_vlan_rx_kill_vid		= ocelot_vlan_rx_kill_vid,
+> >  	.ndo_set_features		= ocelot_set_features,
+> >  	.ndo_get_port_parent_id		= ocelot_get_port_parent_id,
+> > +	.ndo_setup_tc			= ocelot_setup_tc,
+> >  };
+> >  
+> >  static void ocelot_get_strings(struct net_device *netdev, u32 sset, u8 *data)
+> > @@ -1663,8 +1664,9 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
+> >  	dev->netdev_ops = &ocelot_port_netdev_ops;
+> >  	dev->ethtool_ops = &ocelot_ethtool_ops;
+> >  
+> > -	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS;
+> > -	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+> > +	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS |
+> > +		NETIF_F_HW_TC;
+> > +	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_TC;
+> >  
+> >  	memcpy(dev->dev_addr, ocelot->base_mac, ETH_ALEN);
+> >  	dev->dev_addr[ETH_ALEN - 1] += port;
+> 
+> You need to add a check in set_features to make sure nobody clears the
+> NETIF_F_TC flag while something is offloaded, otherwise you will miss
+> the REMOVE callback (it will bounce from the
+> tc_cls_can_offload_and_chain0() check).
 
-diff --git a/drivers/net/ethernet/netronome/nfp/bpf/jit.c b/drivers/net/ethernet/netronome/nfp/bpf/jit.c
-index d4bf0e6..4054b70 100644
---- a/drivers/net/ethernet/netronome/nfp/bpf/jit.c
-+++ b/drivers/net/ethernet/netronome/nfp/bpf/jit.c
-@@ -623,6 +623,13 @@ static void wrp_immed(struct nfp_prog *nfp_prog, swreg dst, u32 imm)
- }
- 
- static void
-+wrp_zext(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta, u8 dst)
-+{
-+	if (meta->flags & FLAG_INSN_DO_ZEXT)
-+		wrp_immed(nfp_prog, reg_both(dst + 1), 0);
-+}
-+
-+static void
- wrp_immed_relo(struct nfp_prog *nfp_prog, swreg dst, u32 imm,
- 	       enum nfp_relo_type relo)
- {
-@@ -858,7 +865,8 @@ static int nfp_cpp_memcpy(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- }
- 
- static int
--data_ld(struct nfp_prog *nfp_prog, swreg offset, u8 dst_gpr, int size)
-+data_ld(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta, swreg offset,
-+	u8 dst_gpr, int size)
- {
- 	unsigned int i;
- 	u16 shift, sz;
-@@ -881,14 +889,15 @@ data_ld(struct nfp_prog *nfp_prog, swreg offset, u8 dst_gpr, int size)
- 			wrp_mov(nfp_prog, reg_both(dst_gpr + i), reg_xfer(i));
- 
- 	if (i < 2)
--		wrp_immed(nfp_prog, reg_both(dst_gpr + 1), 0);
-+		wrp_zext(nfp_prog, meta, dst_gpr);
- 
- 	return 0;
- }
- 
- static int
--data_ld_host_order(struct nfp_prog *nfp_prog, u8 dst_gpr,
--		   swreg lreg, swreg rreg, int size, enum cmd_mode mode)
-+data_ld_host_order(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
-+		   u8 dst_gpr, swreg lreg, swreg rreg, int size,
-+		   enum cmd_mode mode)
- {
- 	unsigned int i;
- 	u8 mask, sz;
-@@ -911,33 +920,34 @@ data_ld_host_order(struct nfp_prog *nfp_prog, u8 dst_gpr,
- 			wrp_mov(nfp_prog, reg_both(dst_gpr + i), reg_xfer(i));
- 
- 	if (i < 2)
--		wrp_immed(nfp_prog, reg_both(dst_gpr + 1), 0);
-+		wrp_zext(nfp_prog, meta, dst_gpr);
- 
- 	return 0;
- }
- 
- static int
--data_ld_host_order_addr32(struct nfp_prog *nfp_prog, u8 src_gpr, swreg offset,
--			  u8 dst_gpr, u8 size)
-+data_ld_host_order_addr32(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
-+			  u8 src_gpr, swreg offset, u8 dst_gpr, u8 size)
- {
--	return data_ld_host_order(nfp_prog, dst_gpr, reg_a(src_gpr), offset,
--				  size, CMD_MODE_32b);
-+	return data_ld_host_order(nfp_prog, meta, dst_gpr, reg_a(src_gpr),
-+				  offset, size, CMD_MODE_32b);
- }
- 
- static int
--data_ld_host_order_addr40(struct nfp_prog *nfp_prog, u8 src_gpr, swreg offset,
--			  u8 dst_gpr, u8 size)
-+data_ld_host_order_addr40(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
-+			  u8 src_gpr, swreg offset, u8 dst_gpr, u8 size)
- {
- 	swreg rega, regb;
- 
- 	addr40_offset(nfp_prog, src_gpr, offset, &rega, &regb);
- 
--	return data_ld_host_order(nfp_prog, dst_gpr, rega, regb,
-+	return data_ld_host_order(nfp_prog, meta, dst_gpr, rega, regb,
- 				  size, CMD_MODE_40b_BA);
- }
- 
- static int
--construct_data_ind_ld(struct nfp_prog *nfp_prog, u16 offset, u16 src, u8 size)
-+construct_data_ind_ld(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
-+		      u16 offset, u16 src, u8 size)
- {
- 	swreg tmp_reg;
- 
-@@ -953,10 +963,12 @@ construct_data_ind_ld(struct nfp_prog *nfp_prog, u16 offset, u16 src, u8 size)
- 	emit_br_relo(nfp_prog, BR_BLO, BR_OFF_RELO, 0, RELO_BR_GO_ABORT);
- 
- 	/* Load data */
--	return data_ld(nfp_prog, imm_b(nfp_prog), 0, size);
-+	return data_ld(nfp_prog, meta, imm_b(nfp_prog), 0, size);
- }
- 
--static int construct_data_ld(struct nfp_prog *nfp_prog, u16 offset, u8 size)
-+static int
-+construct_data_ld(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
-+		  u16 offset, u8 size)
- {
- 	swreg tmp_reg;
- 
-@@ -967,7 +979,7 @@ static int construct_data_ld(struct nfp_prog *nfp_prog, u16 offset, u8 size)
- 
- 	/* Load data */
- 	tmp_reg = re_load_imm_any(nfp_prog, offset, imm_b(nfp_prog));
--	return data_ld(nfp_prog, tmp_reg, 0, size);
-+	return data_ld(nfp_prog, meta, tmp_reg, 0, size);
- }
- 
- static int
-@@ -1204,7 +1216,7 @@ mem_op_stack(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
- 	}
- 
- 	if (clr_gpr && size < 8)
--		wrp_immed(nfp_prog, reg_both(gpr + 1), 0);
-+		wrp_zext(nfp_prog, meta, gpr);
- 
- 	while (size) {
- 		u32 slice_end;
-@@ -1305,9 +1317,10 @@ wrp_alu32_imm(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
- 	      enum alu_op alu_op)
- {
- 	const struct bpf_insn *insn = &meta->insn;
-+	u8 dst = insn->dst_reg * 2;
- 
--	wrp_alu_imm(nfp_prog, insn->dst_reg * 2, alu_op, insn->imm);
--	wrp_immed(nfp_prog, reg_both(insn->dst_reg * 2 + 1), 0);
-+	wrp_alu_imm(nfp_prog, dst, alu_op, insn->imm);
-+	wrp_zext(nfp_prog, meta, dst);
- 
- 	return 0;
- }
-@@ -1319,7 +1332,7 @@ wrp_alu32_reg(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
- 	u8 dst = meta->insn.dst_reg * 2, src = meta->insn.src_reg * 2;
- 
- 	emit_alu(nfp_prog, reg_both(dst), reg_a(dst), alu_op, reg_b(src));
--	wrp_immed(nfp_prog, reg_both(meta->insn.dst_reg * 2 + 1), 0);
-+	wrp_zext(nfp_prog, meta, dst);
- 
- 	return 0;
- }
-@@ -2396,12 +2409,14 @@ static int neg_reg(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- 	u8 dst = meta->insn.dst_reg * 2;
- 
- 	emit_alu(nfp_prog, reg_both(dst), reg_imm(0), ALU_OP_SUB, reg_b(dst));
--	wrp_immed(nfp_prog, reg_both(meta->insn.dst_reg * 2 + 1), 0);
-+	wrp_zext(nfp_prog, meta, dst);
- 
- 	return 0;
- }
- 
--static int __ashr_imm(struct nfp_prog *nfp_prog, u8 dst, u8 shift_amt)
-+static int
-+__ashr_imm(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta, u8 dst,
-+	   u8 shift_amt)
- {
- 	if (shift_amt) {
- 		/* Set signedness bit (MSB of result). */
-@@ -2410,7 +2425,7 @@ static int __ashr_imm(struct nfp_prog *nfp_prog, u8 dst, u8 shift_amt)
- 		emit_shf(nfp_prog, reg_both(dst), reg_none(), SHF_OP_ASHR,
- 			 reg_b(dst), SHF_SC_R_SHF, shift_amt);
- 	}
--	wrp_immed(nfp_prog, reg_both(dst + 1), 0);
-+	wrp_zext(nfp_prog, meta, dst);
- 
- 	return 0;
- }
-@@ -2425,7 +2440,7 @@ static int ashr_reg(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- 	umin = meta->umin_src;
- 	umax = meta->umax_src;
- 	if (umin == umax)
--		return __ashr_imm(nfp_prog, dst, umin);
-+		return __ashr_imm(nfp_prog, meta, dst, umin);
- 
- 	src = insn->src_reg * 2;
- 	/* NOTE: the first insn will set both indirect shift amount (source A)
-@@ -2434,7 +2449,7 @@ static int ashr_reg(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- 	emit_alu(nfp_prog, reg_none(), reg_a(src), ALU_OP_OR, reg_b(dst));
- 	emit_shf_indir(nfp_prog, reg_both(dst), reg_none(), SHF_OP_ASHR,
- 		       reg_b(dst), SHF_SC_R_SHF);
--	wrp_immed(nfp_prog, reg_both(dst + 1), 0);
-+	wrp_zext(nfp_prog, meta, dst);
- 
- 	return 0;
- }
-@@ -2444,15 +2459,17 @@ static int ashr_imm(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- 	const struct bpf_insn *insn = &meta->insn;
- 	u8 dst = insn->dst_reg * 2;
- 
--	return __ashr_imm(nfp_prog, dst, insn->imm);
-+	return __ashr_imm(nfp_prog, meta, dst, insn->imm);
- }
- 
--static int __shr_imm(struct nfp_prog *nfp_prog, u8 dst, u8 shift_amt)
-+static int
-+__shr_imm(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta, u8 dst,
-+	  u8 shift_amt)
- {
- 	if (shift_amt)
- 		emit_shf(nfp_prog, reg_both(dst), reg_none(), SHF_OP_NONE,
- 			 reg_b(dst), SHF_SC_R_SHF, shift_amt);
--	wrp_immed(nfp_prog, reg_both(dst + 1), 0);
-+	wrp_zext(nfp_prog, meta, dst);
- 	return 0;
- }
- 
-@@ -2461,7 +2478,7 @@ static int shr_imm(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- 	const struct bpf_insn *insn = &meta->insn;
- 	u8 dst = insn->dst_reg * 2;
- 
--	return __shr_imm(nfp_prog, dst, insn->imm);
-+	return __shr_imm(nfp_prog, meta, dst, insn->imm);
- }
- 
- static int shr_reg(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
-@@ -2474,22 +2491,24 @@ static int shr_reg(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- 	umin = meta->umin_src;
- 	umax = meta->umax_src;
- 	if (umin == umax)
--		return __shr_imm(nfp_prog, dst, umin);
-+		return __shr_imm(nfp_prog, meta, dst, umin);
- 
- 	src = insn->src_reg * 2;
- 	emit_alu(nfp_prog, reg_none(), reg_a(src), ALU_OP_OR, reg_imm(0));
- 	emit_shf_indir(nfp_prog, reg_both(dst), reg_none(), SHF_OP_NONE,
- 		       reg_b(dst), SHF_SC_R_SHF);
--	wrp_immed(nfp_prog, reg_both(dst + 1), 0);
-+	wrp_zext(nfp_prog, meta, dst);
- 	return 0;
- }
- 
--static int __shl_imm(struct nfp_prog *nfp_prog, u8 dst, u8 shift_amt)
-+static int
-+__shl_imm(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta, u8 dst,
-+	  u8 shift_amt)
- {
- 	if (shift_amt)
- 		emit_shf(nfp_prog, reg_both(dst), reg_none(), SHF_OP_NONE,
- 			 reg_b(dst), SHF_SC_L_SHF, shift_amt);
--	wrp_immed(nfp_prog, reg_both(dst + 1), 0);
-+	wrp_zext(nfp_prog, meta, dst);
- 	return 0;
- }
- 
-@@ -2498,7 +2517,7 @@ static int shl_imm(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- 	const struct bpf_insn *insn = &meta->insn;
- 	u8 dst = insn->dst_reg * 2;
- 
--	return __shl_imm(nfp_prog, dst, insn->imm);
-+	return __shl_imm(nfp_prog, meta, dst, insn->imm);
- }
- 
- static int shl_reg(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
-@@ -2511,11 +2530,11 @@ static int shl_reg(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- 	umin = meta->umin_src;
- 	umax = meta->umax_src;
- 	if (umin == umax)
--		return __shl_imm(nfp_prog, dst, umin);
-+		return __shl_imm(nfp_prog, meta, dst, umin);
- 
- 	src = insn->src_reg * 2;
- 	shl_reg64_lt32_low(nfp_prog, dst, src);
--	wrp_immed(nfp_prog, reg_both(dst + 1), 0);
-+	wrp_zext(nfp_prog, meta, dst);
- 	return 0;
- }
- 
-@@ -2577,34 +2596,34 @@ static int imm_ld8(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- 
- static int data_ld1(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- {
--	return construct_data_ld(nfp_prog, meta->insn.imm, 1);
-+	return construct_data_ld(nfp_prog, meta, meta->insn.imm, 1);
- }
- 
- static int data_ld2(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- {
--	return construct_data_ld(nfp_prog, meta->insn.imm, 2);
-+	return construct_data_ld(nfp_prog, meta, meta->insn.imm, 2);
- }
- 
- static int data_ld4(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- {
--	return construct_data_ld(nfp_prog, meta->insn.imm, 4);
-+	return construct_data_ld(nfp_prog, meta, meta->insn.imm, 4);
- }
- 
- static int data_ind_ld1(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- {
--	return construct_data_ind_ld(nfp_prog, meta->insn.imm,
-+	return construct_data_ind_ld(nfp_prog, meta, meta->insn.imm,
- 				     meta->insn.src_reg * 2, 1);
- }
- 
- static int data_ind_ld2(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- {
--	return construct_data_ind_ld(nfp_prog, meta->insn.imm,
-+	return construct_data_ind_ld(nfp_prog, meta, meta->insn.imm,
- 				     meta->insn.src_reg * 2, 2);
- }
- 
- static int data_ind_ld4(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta)
- {
--	return construct_data_ind_ld(nfp_prog, meta->insn.imm,
-+	return construct_data_ind_ld(nfp_prog, meta, meta->insn.imm,
- 				     meta->insn.src_reg * 2, 4);
- }
- 
-@@ -2682,7 +2701,7 @@ mem_ldx_data(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
- 
- 	tmp_reg = re_load_imm_any(nfp_prog, meta->insn.off, imm_b(nfp_prog));
- 
--	return data_ld_host_order_addr32(nfp_prog, meta->insn.src_reg * 2,
-+	return data_ld_host_order_addr32(nfp_prog, meta, meta->insn.src_reg * 2,
- 					 tmp_reg, meta->insn.dst_reg * 2, size);
- }
- 
-@@ -2694,7 +2713,7 @@ mem_ldx_emem(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
- 
- 	tmp_reg = re_load_imm_any(nfp_prog, meta->insn.off, imm_b(nfp_prog));
- 
--	return data_ld_host_order_addr40(nfp_prog, meta->insn.src_reg * 2,
-+	return data_ld_host_order_addr40(nfp_prog, meta, meta->insn.src_reg * 2,
- 					 tmp_reg, meta->insn.dst_reg * 2, size);
- }
- 
-@@ -2755,7 +2774,7 @@ mem_ldx_data_from_pktcache_unaligned(struct nfp_prog *nfp_prog,
- 	wrp_reg_subpart(nfp_prog, dst_lo, src_lo, len_lo, off);
- 
- 	if (!len_mid) {
--		wrp_immed(nfp_prog, dst_hi, 0);
-+		wrp_zext(nfp_prog, meta, dst_gpr);
- 		return 0;
- 	}
- 
-@@ -2763,7 +2782,7 @@ mem_ldx_data_from_pktcache_unaligned(struct nfp_prog *nfp_prog,
- 
- 	if (size <= REG_WIDTH) {
- 		wrp_reg_or_subpart(nfp_prog, dst_lo, src_mid, len_mid, len_lo);
--		wrp_immed(nfp_prog, dst_hi, 0);
-+		wrp_zext(nfp_prog, meta, dst_gpr);
- 	} else {
- 		swreg src_hi = reg_xfer(idx + 2);
- 
-@@ -2794,10 +2813,10 @@ mem_ldx_data_from_pktcache_aligned(struct nfp_prog *nfp_prog,
- 
- 	if (size < REG_WIDTH) {
- 		wrp_reg_subpart(nfp_prog, dst_lo, src_lo, size, 0);
--		wrp_immed(nfp_prog, dst_hi, 0);
-+		wrp_zext(nfp_prog, meta, dst_gpr);
- 	} else if (size == REG_WIDTH) {
- 		wrp_mov(nfp_prog, dst_lo, src_lo);
--		wrp_immed(nfp_prog, dst_hi, 0);
-+		wrp_zext(nfp_prog, meta, dst_gpr);
- 	} else {
- 		swreg src_hi = reg_xfer(idx + 1);
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/bpf/main.h b/drivers/net/ethernet/netronome/nfp/bpf/main.h
-index e54d1ac..57d6ff5 100644
---- a/drivers/net/ethernet/netronome/nfp/bpf/main.h
-+++ b/drivers/net/ethernet/netronome/nfp/bpf/main.h
-@@ -238,6 +238,8 @@ struct nfp_bpf_reg_state {
- #define FLAG_INSN_SKIP_PREC_DEPENDENT		BIT(4)
- /* Instruction is optimized by the verifier */
- #define FLAG_INSN_SKIP_VERIFIER_OPT		BIT(5)
-+/* Instruction needs to zero extend to high 32-bit */
-+#define FLAG_INSN_DO_ZEXT			BIT(6)
- 
- #define FLAG_INSN_SKIP_MASK		(FLAG_INSN_SKIP_NOOP | \
- 					 FLAG_INSN_SKIP_PREC_DEPENDENT | \
-diff --git a/drivers/net/ethernet/netronome/nfp/bpf/verifier.c b/drivers/net/ethernet/netronome/nfp/bpf/verifier.c
-index 36f56eb..e92ee51 100644
---- a/drivers/net/ethernet/netronome/nfp/bpf/verifier.c
-+++ b/drivers/net/ethernet/netronome/nfp/bpf/verifier.c
-@@ -744,6 +744,17 @@ static unsigned int nfp_bpf_get_stack_usage(struct nfp_prog *nfp_prog)
- 	goto continue_subprog;
- }
- 
-+static void nfp_bpf_insn_flag_zext(struct nfp_prog *nfp_prog,
-+				   struct bpf_insn_aux_data *aux)
-+{
-+	struct nfp_insn_meta *meta;
-+
-+	list_for_each_entry(meta, &nfp_prog->insns, l) {
-+		if (aux[meta->n].zext_dst)
-+			meta->flags |= FLAG_INSN_DO_ZEXT;
-+	}
-+}
-+
- int nfp_bpf_finalize(struct bpf_verifier_env *env)
- {
- 	struct bpf_subprog_info *info;
-@@ -784,6 +795,7 @@ int nfp_bpf_finalize(struct bpf_verifier_env *env)
- 		return -EOPNOTSUPP;
- 	}
- 
-+	nfp_bpf_insn_flag_zext(nfp_prog, env->insn_aux_data);
- 	return 0;
- }
- 
+I will add this check in v3
+
+> 
+> > diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
+> > new file mode 100644
+> > index 000000000000..2412e0dbc267
+> > --- /dev/null
+> > +++ b/drivers/net/ethernet/mscc/ocelot_tc.c
+> > @@ -0,0 +1,164 @@
+> > +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> > +/* Microsemi Ocelot Switch TC driver
+> > + *
+> > + * Copyright (c) 2019 Microsemi Corporation
+> > + */
+> > +
+> > +#include "ocelot_tc.h"
+> > +#include "ocelot_police.h"
+> > +#include <net/pkt_cls.h>
+> > +
+> > +static int ocelot_setup_tc_cls_matchall(struct ocelot_port *port,
+> > +					struct tc_cls_matchall_offload *f,
+> > +					bool ingress)
+> > +{
+> > +	struct netlink_ext_ack *extack = f->common.extack;
+> > +	struct ocelot_policer pol = { 0 };
+> > +	struct flow_action_entry *action;
+> > +	int err;
+> > +
+> > +	netdev_dbg(port->dev, "%s: port %u command %d cookie %lu\n",
+> > +		   __func__, port->chip_port, f->command, f->cookie);
+> > +
+> > +	if (!ingress) {
+> > +		NL_SET_ERR_MSG_MOD(extack, "Only ingress is supported");
+> > +		return -EOPNOTSUPP;
+> > +	}
+> > +
+> > +	switch (f->command) {
+> > +	case TC_CLSMATCHALL_REPLACE:
+> > +		if (!flow_offload_has_one_action(&f->rule->action)) {
+> > +			NL_SET_ERR_MSG_MOD(extack,
+> > +					   "Only one action is supported");
+> > +			return -EOPNOTSUPP;
+> > +		}
+> > +
+> > +		action = &f->rule->action.entries[0];
+> > +
+> > +		if (action->id != FLOW_ACTION_POLICE) {
+> > +			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
+> > +			return -EOPNOTSUPP;
+> > +		}
+> 
+> Please also reject the offload if block is shared, as HW policer state
+> cannot be shared between ports, the way it is in SW.  You have to save
+> whether the block is shared or not at bind time, see:
+> 
+> d6787147e15d ("net/sched: remove block pointer from common offload structure")
+
+I will fix this in v3.
+
+> 
+> > +		if (port->tc.police_id && port->tc.police_id != f->cookie) {
+> > +			NL_SET_ERR_MSG_MOD(extack,
+> > +					   "Only one policer per port is supported\n");
+> > +			return -EEXIST;
+> > +		}
+> > +
+> > +		pol.rate = (u32)div_u64(action->police.rate_bytes_ps, 1000) * 8;
+> > +		pol.burst = (u32)div_u64(action->police.rate_bytes_ps *
+> > +					 PSCHED_NS2TICKS(action->police.burst),
+> > +					 PSCHED_TICKS_PER_SEC);
+> > +
+> > +		err = ocelot_port_policer_add(port, &pol);
+> > +		if (err) {
+> > +			NL_SET_ERR_MSG_MOD(extack, "Could not add policer\n");
+> > +			return err;
+> > +		}
+> > +
+> > +		port->tc.police_id = f->cookie;
+> > +		return 0;
+> > +	case TC_CLSMATCHALL_DESTROY:
+> > +		if (port->tc.police_id != f->cookie)
+> > +			return -ENOENT;
+> > +
+> > +		err = ocelot_port_policer_del(port);
+> > +		if (err) {
+> > +			NL_SET_ERR_MSG_MOD(extack,
+> > +					   "Could not delete policer\n");
+> > +			return err;
+> > +		}
+> > +		port->tc.police_id = 0;
+> > +		return 0;
+> > +	case TC_CLSMATCHALL_STATS: /* fall through */
+> > +	default:
+> > +		return -EOPNOTSUPP;
+> > +	}
+> > +}
+> 
+
 -- 
-2.7.4
-
+Joergen Andreasen, Microchip
