@@ -2,89 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1E7F29BD8
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 18:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACB6129C08
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 18:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390163AbfEXQKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 12:10:46 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46994 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389588AbfEXQKq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 12:10:46 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 39D2ADF26;
-        Fri, 24 May 2019 16:10:41 +0000 (UTC)
-Received: from Hades.local (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EAB7310027B9;
-        Fri, 24 May 2019 16:10:39 +0000 (UTC)
-Subject: Re: [PATCH net] bonding: make debugging output more succinct
-To:     Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20190524135623.17326-1-jarod@redhat.com>
- <f6286af05b1eda38b103ef1337cd7086d3ea4372.camel@perches.com>
-From:   Jarod Wilson <jarod@redhat.com>
-Message-ID: <c6555d3b-6e78-73b0-4fde-e39189149d18@redhat.com>
-Date:   Fri, 24 May 2019 12:10:39 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
+        id S2390731AbfEXQUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 12:20:32 -0400
+Received: from mail-lf1-f54.google.com ([209.85.167.54]:41259 "EHLO
+        mail-lf1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389588AbfEXQUc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 12:20:32 -0400
+Received: by mail-lf1-f54.google.com with SMTP id d8so7577356lfb.8
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 09:20:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hvZ6fxFBO47PjH65Gpr3+W3352NyyTt1SMOx+Km6tTk=;
+        b=j8HpfpNL7dYcUrFGJGskxvtZnkWE2mQwJEdDLV1qI4amSVemWzLD6AYqUw2kseanKw
+         s+0hR7BYtUaNhwv0gQ5GdopRmdExLH3Zd/vDIuGao2U9wfY2pZMEOUk6HqAsc92wDryV
+         MtnYLaOIOn4CGiG4SS10rtnjHmGN5SXaN+x0rsnxYDRaOKuvQObJe9vKgP5q1oCr/NMt
+         eag6yyH9cWoCv/Yo8b5m58729Q0Wlu+wqGONM+MurkC4QMAxCtETu7jPGgM8VggvYmCW
+         NmZtQdiE9KSnoOuHl68KPlEo7HKF6d0KLWCz9p59NCw1HJZpLKhEEyq8C+eyY6Pvp5X9
+         LtNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hvZ6fxFBO47PjH65Gpr3+W3352NyyTt1SMOx+Km6tTk=;
+        b=SGaD01Wd6lUKzAshDQ3omo/oB718ETTDAh8qEYEznB9Jd5XJdEyYYK3aAS695smPR4
+         +VJMKW9u7Xry2UK0j7VXckSaZPn12kInEpcBlZ+Gj7oNjXonbmtKAExJkvwbFm7JACdQ
+         opioonG6N5QmZlLh7pmLtJGMf6Gi5+1R41MdjulXzb2t7NVv3VhG3Vvo5VMNyykHx8Oj
+         MaubOlDf3sBjSiDA09ctKJtANvFOTnblPL86i/EID/acApmLHyEKh1q0z9B3bTp/63kg
+         rfa60llL7USmAvY8orBo357KrQ4QUHbnISjEwSl8sfZgYPzEdAIx/SWmwfNvxllHJ1bX
+         ADmQ==
+X-Gm-Message-State: APjAAAVirnCqBRmhvrjha6xyzIslFhFmyEJZScthIJjyzMfI40M+5Krq
+        4ZIVUPI6SKD+VybDoQXbIE3oj7OdVHU=
+X-Google-Smtp-Source: APXvYqxCvHpgfDSeLSElqXzMuh4m4W9qM94hJ4ywiFC+gya6f4U6+2ZzGQYi1UJAZKutzOXVRudEVg==
+X-Received: by 2002:ac2:4a6e:: with SMTP id q14mr14803412lfp.46.1558714830475;
+        Fri, 24 May 2019 09:20:30 -0700 (PDT)
+Received: from localhost.bredbandsbolaget (c-d2cd225c.014-348-6c756e10.bbcust.telenor.se. [92.34.205.210])
+        by smtp.gmail.com with ESMTPSA id y4sm618075lje.24.2019.05.24.09.20.29
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 24 May 2019 09:20:29 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Krzysztof Halasa <khalasa@piap.pl>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 0/8] Xscale IXP4xx ethernet refurbishing
+Date:   Fri, 24 May 2019 18:20:15 +0200
+Message-Id: <20190524162023.9115-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <f6286af05b1eda38b103ef1337cd7086d3ea4372.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Fri, 24 May 2019 16:10:46 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/24/19 11:19 AM, Joe Perches wrote:
-> On Fri, 2019-05-24 at 09:56 -0400, Jarod Wilson wrote:
->> Seeing bonding debug log data along the lines of "event: 5" is a bit spartan,
->> and often requires a lookup table if you don't remember what every event is.
->> Make use of netdev_cmd_to_name for an improved debugging experience, so for
->> the prior example, you'll see: "bond_netdev_event received NETDEV_REGISTER"
->> instead (both are prefixed with the device for which the event pertains).
->>
->> There are also quite a few places that the netdev_dbg output could stand to
->> mention exactly which slave the message pertains to (gets messy if you have
->> multiple slaves all spewing at once to know which one they pertain to).
-> []
->> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> []
->> @@ -1515,7 +1515,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
->>   	new_slave->original_mtu = slave_dev->mtu;
->>   	res = dev_set_mtu(slave_dev, bond->dev->mtu);
->>   	if (res) {
->> -		netdev_dbg(bond_dev, "Error %d calling dev_set_mtu\n", res);
->> +		netdev_dbg(bond_dev, "Error %d calling dev_set_mtu for slave %s\n",
->> +			   res, slave_dev->name);
-> 
-> Perhaps better to add and use helper mechanisms like:
-> 
-> #define slave_dbg(bond_dev, slave_dev, fmt, ...)				\
-> 	netdev_dbg(bond_dev, "(slave %s) " fmt, (slave_dev)->name, ##__VA_ARGS__)
-> 
-> So this might be
-> 		slave_dbg(bond_dev, slave_dev, "Error %d calling dev_set_mtu\n",
-> 			  res);
-> etc...
-> 
-> So there would be a unified style to grep in the logs.
+We are switching the IXP4xx architecture to use device tree
+so this patch set makes is possible to probe the ethernet from
+the device tree.
 
-I do kind of like that idea. Might also need slave_info and friends as 
-well if you really want to get consistent, and eliminate bond_dev as an 
-arg to it, since you can figure that out from slave_dev. I'd be game to 
-take that little project on. Might be worth peeling out the 
-netdev_cmd_to_name() bit from this for consideration right now, since 
-it's not quite part of that same conversion.
+We will delete the non-devicetree code path once all peripherals
+are working with device tree and all boards are converted
+over.
+
+Linus Walleij (8):
+  net: ethernet: ixp4xx: Standard module init
+  net: ethernet: ixp4xx: Use distinct local variable
+  net: ehernet: ixp4xx: Use devm_alloc_etherdev()
+  ARM/net: ixp4xx: Pass ethernet physical base as resource
+  net: ethernet: ixp4xx: Get port ID from base address
+  net: ethernet: ixp4xx: Use parent dev for DMA pool
+  net: ethernet: ixp4xx: Add DT bindings
+  net: ethernet: ixp4xx: Support device tree probing
+
+ .../bindings/net/intel,ixp4xx-ethernet.yaml   |  53 ++++
+ arch/arm/mach-ixp4xx/fsg-setup.c              |  20 ++
+ arch/arm/mach-ixp4xx/goramo_mlr.c             |  20 ++
+ arch/arm/mach-ixp4xx/ixdp425-setup.c          |  20 ++
+ arch/arm/mach-ixp4xx/nas100d-setup.c          |  10 +
+ arch/arm/mach-ixp4xx/nslu2-setup.c            |  10 +
+ arch/arm/mach-ixp4xx/omixp-setup.c            |  20 ++
+ arch/arm/mach-ixp4xx/vulcan-setup.c           |  20 ++
+ drivers/net/ethernet/xscale/ixp4xx_eth.c      | 245 +++++++++++-------
+ 9 files changed, 321 insertions(+), 97 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
 
 -- 
-Jarod Wilson
-jarod@redhat.com
+2.20.1
+
