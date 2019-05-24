@@ -2,171 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E449229D8C
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 19:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABABA29D95
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 19:56:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731979AbfEXRyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 13:54:11 -0400
-Received: from mail-vs1-f68.google.com ([209.85.217.68]:40137 "EHLO
-        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbfEXRyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 13:54:11 -0400
-Received: by mail-vs1-f68.google.com with SMTP id c24so6396017vsp.7;
-        Fri, 24 May 2019 10:54:10 -0700 (PDT)
+        id S1727217AbfEXR4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 13:56:09 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42953 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726071AbfEXR4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 13:56:08 -0400
+Received: by mail-wr1-f65.google.com with SMTP id l2so10861018wrb.9;
+        Fri, 24 May 2019 10:56:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=z/GiW9YkKP3qylPckCwFQzVR25kk7Ib6EX6x6dIKwWY=;
-        b=dpjVyjFq+TRJtqkLPUE5puUr3vkNMM/zUwEXNQ81LFDh07pAI60TXaj7OkiPMtkFOS
-         iV462lc72G4/dL4seUCt4FrtE/JDeqObHt7ba/tWHzOfi9+3u7jk01MQnE91zASKuRR/
-         L1zmCQGqTbX46t9pyz/ejsbRJCYikuBKGcOwOSFjumHIstxknfdO7RASj2lwK4lGGlJr
-         GN0am1EMMxcpuOVwtBAul6/F2SeKt+414zVgTdykwu9XzovRIJQ7ylE1jnFHaLQhu0UD
-         FZqq4iCD8HL9HXjPNShoUo+oH6ebvxXAH6LCl/sQRXNadqdr6uZyNRWBesyZp4lHV//s
-         iL3Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=WB6mvyC+JVnZd7zMcQh/gqdtDtbu3lgSONOBy+nJ5Ak=;
+        b=ScJ3yLS9gwhM1VHwfsM8qrJOYEmre/pEdCzHs2vPomQ72/6ixwj5Q2aZFfpzaaRZ6z
+         To30YvZMavQUTENMbi0U+obduB7597rsq0BqSOorKwbA1P1Ehh3eS6+dOIFWOLsQQLoX
+         CTd9rNvmr/VpolTQa0MJPfaK9BtdUmfAG82mCIsAGGPylQRJMoQiAmjUPza8VcpHTyPt
+         dpztb0UoRizCwoItPa63jgPicsjeu7gzdCmHHrR7w9j0Q+IU0r241YpGvxZNYoKOWJ2k
+         5lCgTI0pgW8w8vhz3uVVu2JvxkKBu2L4v33vPUxQ7JuLXd2TLSFb35oASDed9onqSnvW
+         j1HQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=z/GiW9YkKP3qylPckCwFQzVR25kk7Ib6EX6x6dIKwWY=;
-        b=k8ckdxTXaGDHWmBCTyp1YJnsykq67DuMNS2WbFylNPo/dLXTCEpoIuW3bbr6LUFuEJ
-         VIrxcTCi3aKiKaM7rgnWA1foMuN+xyPVeyBPcmA6zU5cwCumwdyBHWxUJk8eyxi5LYT4
-         cg/fxAIlxE3nPhxfNQojcQqozVKNz3DODEXZjWYFQBFfQKelyHI1+5drmSMYaab906rY
-         o5wxDTK5HC8a3xVBP6tMNXq07AVicWf+mtCHU07zTUiGeaxYVn6EV4LRcQNwqhRTiY+L
-         ND4lg32Xf/1YapISLNZCN0fpFqpxH8rbtJzHwNQf/GGKNMF4qRKFf5DJf2O98Ea/jMJa
-         iQGw==
-X-Gm-Message-State: APjAAAXxRQTHC18ECN39v7zqwXz2mbWvcwhU6lpcud4b15xI13Hg1rnT
-        3SHkdjQ0f2rnhS55i8v8uNw=
-X-Google-Smtp-Source: APXvYqx2FtFxLzeAVdjsO+APUeOuwrh1AIJiq7GeETKG+Fsc8hIpj5f7udh3JFVWICgM0bMtD64k4A==
-X-Received: by 2002:a67:eb8b:: with SMTP id e11mr25080730vso.115.1558720449839;
-        Fri, 24 May 2019 10:54:09 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id c71sm1322139vke.19.2019.05.24.10.54.08
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 24 May 2019 10:54:08 -0700 (PDT)
-Date:   Fri, 24 May 2019 13:54:07 -0400
-Message-ID: <20190524135407.GB17138@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/5] net: dsa: mv88e6xxx: introduce support for two
- chips using direct smi addressing
-In-Reply-To: <20190524085921.11108-2-rasmus.villemoes@prevas.dk>
-References: <20190501193126.19196-1-rasmus.villemoes@prevas.dk>
- <20190524085921.11108-1-rasmus.villemoes@prevas.dk>
- <20190524085921.11108-2-rasmus.villemoes@prevas.dk>
+        bh=WB6mvyC+JVnZd7zMcQh/gqdtDtbu3lgSONOBy+nJ5Ak=;
+        b=K+/hhKzn1ynAmtXpIy1+lJsX+GVRvL5xztgM0ExaOOD6o3kasz0E2WnuliYJ9FHV7e
+         wCTTy9EpgWBPgxCaJNkSsY6x5oAylu+hcUkj+/bTrywa/vDjAg3/k+7jxnPPrcscWHTh
+         HsePERDDKgj+oHh0bEIm/GYnGpDZ8bNF+vOE0IUBmMNjux496tSeXVdzcjs5W+JM4wLy
+         FDB7OkKaJ8CMvi7XSXeNwCQVWxzb+GLo6apog2rq9aiv6EApK0kH9J9aA1BWfgsj+N2n
+         ttI1JOMMbb66IVkVJP/6Ib+y/n23uDda39OezpDgMXo4w7xgGugOVjAqbq2scCyDUsGp
+         PqAQ==
+X-Gm-Message-State: APjAAAXf9gw5rnAS/iXn8cyWsx9G0lC2EBHHgzIsQI6QITDSuRvPELZh
+        ffhTQ1RRTtv+1iDJ0/LfIxfRWc4v
+X-Google-Smtp-Source: APXvYqxVCoHANdCz9gKAloT/0sEvb0FSEfiWh6j5MSH44DlW0n+kCHjbKKV8Z0nFLNGIoG35Tjjzew==
+X-Received: by 2002:a5d:45c4:: with SMTP id b4mr222841wrs.291.1558720565961;
+        Fri, 24 May 2019 10:56:05 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8be9:7a00:e8aa:5f65:936f:3a1f? (p200300EA8BE97A00E8AA5F65936F3A1F.dip0.t-ipconnect.de. [2003:ea:8be9:7a00:e8aa:5f65:936f:3a1f])
+        by smtp.googlemail.com with ESMTPSA id y132sm4417953wmd.35.2019.05.24.10.56.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2019 10:56:05 -0700 (PDT)
+Subject: Re: r8169: Link only up after 16 s (A link change request failed with
+ some changes committed already. Interface enp3s0 may have been left with an
+ inconsistent configuration, please check.)
+To:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <a05b0b6c-505c-db61-96ac-813e68a26cc6@molgen.mpg.de>
+ <abb2d596-d9fe-5426-8f1d-2ef4a7eb9e1a@gmail.com>
+ <48ad419a-65f4-40ca-d7a9-01fafee33d83@molgen.mpg.de>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <5d25b4f3-20d3-6c93-2c0a-b95fde9e4c40@gmail.com>
+Date:   Fri, 24 May 2019 19:55:59 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
+In-Reply-To: <48ad419a-65f4-40ca-d7a9-01fafee33d83@molgen.mpg.de>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rasmus,
-
-On Fri, 24 May 2019 09:00:24 +0000, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
-> The 88e6250 (as well as 6220, 6071, 6070, 6020) do not support
-> multi-chip (indirect) addressing. However, one can still have two of
-> them on the same mdio bus, since the device only uses 16 of the 32
-> possible addresses, either addresses 0x00-0x0F or 0x10-0x1F depending
-> on the ADDR4 pin at reset [since ADDR4 is internally pulled high, the
-> latter is the default].
+On 24.05.2019 17:14, Paul Menzel wrote:
+> Dear Heiner,
 > 
-> In order to prepare for supporting the 88e6250 and friends, introduce
-> mv88e6xxx_info::dual_chip to allow having a non-zero sw_addr while
-> still using direct addressing.
 > 
-> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.h |  6 ++++++
->  drivers/net/dsa/mv88e6xxx/smi.c  | 25 ++++++++++++++++++++++++-
->  2 files changed, 30 insertions(+), 1 deletion(-)
+> Thank you for the quick reply.
 > 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-> index faa3fa889f19..74777c3bc313 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.h
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-> @@ -112,6 +112,12 @@ struct mv88e6xxx_info {
->  	 * when it is non-zero, and use indirect access to internal registers.
->  	 */
->  	bool multi_chip;
-> +	/* Dual-chip Addressing Mode
-> +	 * Some chips respond to only half of the 32 SMI addresses,
-> +	 * allowing two to coexist on the same SMI interface.
-> +	 */
-> +	bool dual_chip;
-> +
->  	enum dsa_tag_protocol tag_protocol;
->  
->  	/* Mask for FromPort and ToPort value of PortVec used in ATU Move
-> diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
-> index 96f7d2685bdc..1151b5b493ea 100644
-> --- a/drivers/net/dsa/mv88e6xxx/smi.c
-> +++ b/drivers/net/dsa/mv88e6xxx/smi.c
-> @@ -24,6 +24,10 @@
->   * When ADDR is non-zero, the chip uses Multi-chip Addressing Mode, allowing
->   * multiple devices to share the SMI interface. In this mode it responds to only
->   * 2 registers, used to indirectly access the internal SMI devices.
-> + *
-> + * Some chips use a different scheme: Only the ADDR4 pin is used for
-> + * configuration, and the device responds to 16 of the 32 SMI
-> + * addresses, allowing two to coexist on the same SMI interface.
->   */
->  
->  static int mv88e6xxx_smi_direct_read(struct mv88e6xxx_chip *chip,
-> @@ -76,6 +80,23 @@ static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_direct_ops = {
->  	.write = mv88e6xxx_smi_direct_write,
->  };
->  
-> +static int mv88e6xxx_smi_dual_direct_read(struct mv88e6xxx_chip *chip,
-> +					  int dev, int reg, u16 *data)
-> +{
-> +	return mv88e6xxx_smi_direct_read(chip, dev + chip->sw_addr, reg, data);
+> On 05/23/19 19:44, Heiner Kallweit wrote:
+>> On 23.05.2019 13:00, Paul Menzel wrote:
+> 
+>>> I optimized the Linux kernel configuration on my ASRock E350M1, and it now
+>>> boots really fast.
+>>>
+>>> Unfortunately, that seems to cause the network driver to hit some corner
+>>> case, so that the link is supposedly down, although it should be up. The
+>>> cable is plugged in the whole time.
+>>>
+>>> ```
+>>> [    2.990757] libphy: r8169: probed
+>>> [    2.992661] r8169 0000:03:00.0 eth0: RTL8168e/8111e, bc:5f:f4:c8:d3:98, XID 2c2, IRQ 28
+>>> [    2.992669] r8169 0000:03:00.0 eth0: jumbo features [frames: 9200 bytes, tx checksumming: ko]
+>>> [    3.294484] usb 5-2: new low-speed USB device number 2 using ohci-pci
+>>> [    3.458711] usb 5-2: New USB device found, idVendor=1241, idProduct=1122, bcdDevice= 1.00
+>>> [    3.458718] usb 5-2: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+>>> [    3.485065] input: HID 1241:1122 as /devices/pci0000:00/0000:00:12.0/usb5/5-2/5-2:1.0/0003:1241:1122.0001/input/input14
+>>> [    3.485320] hid-generic 0003:1241:1122.0001: input,hidraw0: USB HID v1.00 Mouse [HID 1241:1122] on usb-0000:00:12.0-2/input0
+>>> [    3.967622] random: crng init done
+>>> [    3.967628] random: 7 urandom warning(s) missed due to ratelimiting
+>>> [    4.323449] r8169 0000:03:00.0 enp3s0: renamed from eth0
+>>> [    4.363774] RTL8211DN Gigabit Ethernet r8169-300:00: attached PHY driver [RTL8211DN Gigabit Ethernet] (mii_bus:phy_addr=r8169-300:00, irq=IGNORE)
+>>> [    4.576887] r8169 0000:03:00.0 enp3s0: Link is Down
+>>> [    4.577167] A link change request failed with some changes committed already. Interface enp3s0 may have been left with an inconsistent configuration, please check.
+>>> [   16.377520] r8169 0000:03:00.0 enp3s0: Link is Up - 100Mbps/Full - flow control rx/tx
+>>> [   16.377553] IPv6: ADDRCONF(NETDEV_CHANGE): enp3s0: link becomes ready
+>>> ```
+>>>
+>>> It happens with all Linux kernels I tried. Please find all Linux
+>>> messages attached.
+>>>
+>>> Could you please tell me, how this can be debugged and solved?
+>>>
+>> This warning is triggered by errors in do_setlink() in net/core/rtnetlink.c
+>> I'd say:
+>> 1. Which kernel config options did you change as part of the optimization?
+>>    (If I understand you correctly the warning didn't pop up before.)
+> 
+> Sorry for being unclear. The same problem happens with Debian
+> Sid/unstable’s default Linux kernel 4.19.0-5 (4.19.37) [1]. With the fast
+> boot (six seconds from pressing power button to Weston) I just noticed, that
+> the network was not set up when wanting to use it.
+> 
+>> 2. Try to find out which call in do_setlink() fails and which errno
+>> is returned.
+> 
+> Yeah, that’s where I need help. ;-)
+> 
+> I applied the simple change below to `net/core/rtnetlink.c`.
+> 
+>                 if (err < 0)
+> -                       net_warn_ratelimited("A link change request failed with some changes committed already. Interface %s may have been left with an inconsistent configuration, please check.\n",
+> -                                            dev->name);
+> +                       net_warn_ratelimited("A link change request failed with some changes committed already (err = %i). Interface %s may have been left with an inconsistent configuration, please check.\n",
+> +                                            dev->name, err);
+> 
+> I get different results each time.
+> 
+> -304123904
+> -332128256
+> 
+> Any idea, how that can happen?
+> 
+Instead of %i you should use %d, and the order of arguments needs to be reversed.
+But this won't help you to find out which call in do_setlink() failed.
+There are several occurrences of code like this:
 
-Using chip->sw_addr + dev seems more idiomatic to me than dev + chip->sw_addr.
+err = fct();
+if (err < 0)
+	goto errout;
 
-> +}
-> +
-> +static int mv88e6xxx_smi_dual_direct_write(struct mv88e6xxx_chip *chip,
-> +					   int dev, int reg, u16 data)
-> +{
-> +	return mv88e6xxx_smi_direct_write(chip, dev + chip->sw_addr, reg, data);
-> +}
-> +
-> +static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_dual_direct_ops = {
-> +	.read = mv88e6xxx_smi_dual_direct_read,
-> +	.write = mv88e6xxx_smi_dual_direct_write,
-> +};
-> +
->  /* Offset 0x00: SMI Command Register
->   * Offset 0x01: SMI Data Register
->   */
-> @@ -144,7 +165,9 @@ static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_indirect_ops = {
->  int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
->  		       struct mii_bus *bus, int sw_addr)
->  {
-> -	if (sw_addr == 0)
-> +	if (chip->info->dual_chip)
-> +		chip->smi_ops = &mv88e6xxx_smi_dual_direct_ops;
-> +	else if (sw_addr == 0)
->  		chip->smi_ops = &mv88e6xxx_smi_direct_ops;
->  	else if (chip->info->multi_chip)
->  		chip->smi_ops = &mv88e6xxx_smi_indirect_ops;
+Best change each such occurrence to the following to find out which call failed.
 
-Please submit respins (v2, v3, and so on) as independent threads,
-not as a reply to the previous version.
+err = fct();
+if (err < 0) {
+	pr_err("do_setlink: <fct>: err %d\n", err)
+	goto errout;
+}
 
-Otherwise this looks good to me:
+> Is there a better way to debug `do_setlink()` in `rtnetlink.c` than
+> printf debugging?
+> 
+Not really
+> 
+> Kind regards,
+> 
+> Paul
+> 
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
-
-Thanks,
-Vivien
