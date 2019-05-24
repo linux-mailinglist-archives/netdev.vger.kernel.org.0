@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF9542A13C
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 00:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C73922A133
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 00:27:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404508AbfEXW1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 18:27:52 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:40366 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404466AbfEXW1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 18:27:38 -0400
-Received: by mail-wm1-f66.google.com with SMTP id 15so10556038wmg.5
-        for <netdev@vger.kernel.org>; Fri, 24 May 2019 15:27:37 -0700 (PDT)
+        id S2404482AbfEXW1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 18:27:43 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:42474 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404481AbfEXW1l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 18:27:41 -0400
+Received: by mail-wr1-f66.google.com with SMTP id l2so11385973wrb.9
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 15:27:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VM5kQ5xTvrcmLaizE6FBV/hPB0ZSdjwt/JEn0M8IaOQ=;
-        b=RQDuWdlfYHx07X3S0rBLvVN3lYNpgVK/Hz/xKhvEoEKdEx5KVFdkpRSsPRASE0Dh0J
-         iARBm6S5Z+mr3nKHvDxcprfXsIKNk1X47ghB+5HYZHGysBoSBtml31Yt0B05Dy2bJGGj
-         yVbkGRajjLxgyf2Seajqedq17vWfyDXPA0/2jK2uQaytj9EJmHTRXfjhl4z0TCJV6ac/
-         vqiaS7vGPsbd/+Li+bbZWAeP9Y7w0Rxr20QZBMWqeFagqRYdp+dR75hmx8VlvFDBTRyR
-         NnGKEwCgEcJ8snH755Ck3Csil3pRug3p8tXPvdIbmtsknfmRhWu/1KEUpMq53222OYr2
-         hlQQ==
+        bh=hs3aOXFP5cwZuVX8rZkOSW6so6CJzEV3XFJOjgmDQIk=;
+        b=O0MFbnlthZAe6XUWB6hFq2BBXANGh+qSqwGg7erWZj6bKt7/jj/m/Zng1b7rRk88I0
+         smnFwO7W4zQY7K4OABMveAG+xANhSi4Ph1tEL0seCd7oo59ZXMO+GKEtQRIsboVyUdxk
+         t+kOfRROG1d8j5g10TioNqajkdb46HqZ3uwEIj1s+nlB8SQSzMmif/xG+Hy8C4WjkUHF
+         TAeVh8IAqt1plmbkWXHHyL/5CdidZ05v6uQyPLgWhWQrShZPVNphopX6BvPMdqc5QUeo
+         8qtCtLDYXvBg9axxDMRPDYa8gOQJ+7LkJCCelzX84gBGe6P8/PsKGt52gPIHzIrRXMIL
+         s7+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=VM5kQ5xTvrcmLaizE6FBV/hPB0ZSdjwt/JEn0M8IaOQ=;
-        b=QggoJ+zJr2nce6l2bP3qW5Fc/XJqhJXwUQQ8+tPycHNyOCWyMnYe1IedihEsVeKK2l
-         jbWsPLKixx01yajoY1p5uF57tSgNc79g7Xaqqtz3bb6Xv/HoJj4eQntlCOmTc/KyzcOF
-         vmAOKTqpmLyWU2vZb+WztF/01koj9tq48qv6ZU9mrl3S3QWmB8ANcnzo0psgyTiaCqjM
-         1a7/zvLHPqqx7MxOQQV2MxPsRNK/74+q+T7Kj2HU9PGDioZWJaOQ0ecgPBmfR5GCF0IA
-         kI5Cat3ef9l8d2RDHwIt/Xn3clt74H6r7BSyg1qucLNnqhBukW4arMeSz2MDd5Bc7VZH
-         AssA==
-X-Gm-Message-State: APjAAAUalUk3UMoV10GlI7JEwd0CZska/VfF4tdKPPBjXl9NYVBTSPPH
-        IBFBH5MsziIVquRtniu125i8QA==
-X-Google-Smtp-Source: APXvYqyk5eHbjw8XK6/UwFNXoBnhqY/KvlcdHgY0C9eguTkDd8eWkiAoLFMVFrAAxj+amBqsVjm2oQ==
-X-Received: by 2002:a7b:ce1a:: with SMTP id m26mr16680656wmc.137.1558736857359;
-        Fri, 24 May 2019 15:27:37 -0700 (PDT)
+        bh=hs3aOXFP5cwZuVX8rZkOSW6so6CJzEV3XFJOjgmDQIk=;
+        b=Ru6njEWjYzJsodGLbb0wDuR8c9ljkcYVpSpjFUTl6nfq3yNNh4On1X8+pQGNNF8hnn
+         vJ7VG1vOP0C2Cc3IbTjSFn6cDrQWWW4+60R/Kt9ygdtELnVe3KSy713M9ljZSdSCJXlC
+         h2bP5DAF8JtKGz4p7vQwbYMwu6nCb6oC9l5A21Xa9F1CSP2IkBbBzR+W2Q2sk53b49AV
+         +g2WeJGIdIf/rDlabw5wzqslvOCgCpzGUE/DZ56BK1dv69EhL6kcT+slJOliKF6HJhM2
+         l/oJ0K+SQlN3QrKGoCuiJdDW0iaJmkTQQHSUOgfnQfaFGQCqMIp6s1a1f/OJ1PxpNGwc
+         zT/w==
+X-Gm-Message-State: APjAAAW/VSCeiT6VqwH60WGVtHISJFakKmkc+r7SSyuMg44iRMYmbqPw
+        Gdgm08euWdbu0EgBXqWeUWpKKg==
+X-Google-Smtp-Source: APXvYqwt8QmjwwnpgSzD7L8mrC/H9ie7BysN1cPsaMtQwJjWQteLD6ttf2UUQ+drAWOVlZqMqQax4g==
+X-Received: by 2002:a5d:638a:: with SMTP id p10mr9248149wru.273.1558736858647;
+        Fri, 24 May 2019 15:27:38 -0700 (PDT)
 Received: from cbtest28.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id y10sm7194961wmg.8.2019.05.24.15.27.36
+        by smtp.gmail.com with ESMTPSA id y10sm7194961wmg.8.2019.05.24.15.27.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 24 May 2019 15:27:36 -0700 (PDT)
+        Fri, 24 May 2019 15:27:38 -0700 (PDT)
 From:   Jiong Wang <jiong.wang@netronome.com>
 To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
@@ -52,9 +52,9 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         sandipan@linux.ibm.com, schwidefsky@de.ibm.com,
         heiko.carstens@de.ibm.com, jakub.kicinski@netronome.com,
         Jiong Wang <jiong.wang@netronome.com>
-Subject: [PATCH v9 bpf-next 13/17] s390: bpf: eliminate zero extension code-gen
-Date:   Fri, 24 May 2019 23:25:24 +0100
-Message-Id: <1558736728-7229-14-git-send-email-jiong.wang@netronome.com>
+Subject: [PATCH v9 bpf-next 14/17] sparc: bpf: eliminate zero extension code-gen
+Date:   Fri, 24 May 2019 23:25:25 +0100
+Message-Id: <1558736728-7229-15-git-send-email-jiong.wang@netronome.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1558736728-7229-1-git-send-email-jiong.wang@netronome.com>
 References: <1558736728-7229-1-git-send-email-jiong.wang@netronome.com>
@@ -63,127 +63,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cc: Martin Schwidefsky <schwidefsky@de.ibm.com>
-Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
+Cc: David S. Miller <davem@davemloft.net>
 Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
 ---
- arch/s390/net/bpf_jit_comp.c | 41 ++++++++++++++++++++++++++++++++++-------
- 1 file changed, 34 insertions(+), 7 deletions(-)
+ arch/sparc/net/bpf_jit_comp_64.c | 29 +++++++++++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
 
-diff --git a/arch/s390/net/bpf_jit_comp.c b/arch/s390/net/bpf_jit_comp.c
-index 5e7c630..e636728 100644
---- a/arch/s390/net/bpf_jit_comp.c
-+++ b/arch/s390/net/bpf_jit_comp.c
-@@ -299,9 +299,11 @@ static inline void reg_set_seen(struct bpf_jit *jit, u32 b1)
- 
- #define EMIT_ZERO(b1)						\
- ({								\
--	/* llgfr %dst,%dst (zero extend to 64 bit) */		\
--	EMIT4(0xb9160000, b1, b1);				\
--	REG_SET_SEEN(b1);					\
-+	if (!fp->aux->verifier_zext) {				\
-+		/* llgfr %dst,%dst (zero extend to 64 bit) */	\
-+		EMIT4(0xb9160000, b1, b1);			\
-+		REG_SET_SEEN(b1);				\
-+	}							\
- })
- 
- /*
-@@ -520,6 +522,8 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
- 	case BPF_ALU | BPF_MOV | BPF_X: /* dst = (u32) src */
- 		/* llgfr %dst,%src */
- 		EMIT4(0xb9160000, dst_reg, src_reg);
+diff --git a/arch/sparc/net/bpf_jit_comp_64.c b/arch/sparc/net/bpf_jit_comp_64.c
+index 65428e7..3364e2a 100644
+--- a/arch/sparc/net/bpf_jit_comp_64.c
++++ b/arch/sparc/net/bpf_jit_comp_64.c
+@@ -908,6 +908,8 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 	/* dst = src */
+ 	case BPF_ALU | BPF_MOV | BPF_X:
+ 		emit_alu3_K(SRL, src, 0, dst, ctx);
 +		if (insn_is_zext(&insn[1]))
-+			insn_count = 2;
++			return 1;
  		break;
- 	case BPF_ALU64 | BPF_MOV | BPF_X: /* dst = src */
- 		/* lgr %dst,%src */
-@@ -528,6 +532,8 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
- 	case BPF_ALU | BPF_MOV | BPF_K: /* dst = (u32) imm */
- 		/* llilf %dst,imm */
- 		EMIT6_IMM(0xc00f0000, dst_reg, imm);
+ 	case BPF_ALU64 | BPF_MOV | BPF_X:
+ 		emit_reg_move(src, dst, ctx);
+@@ -942,6 +944,8 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 	case BPF_ALU | BPF_DIV | BPF_X:
+ 		emit_write_y(G0, ctx);
+ 		emit_alu(DIV, src, dst, ctx);
 +		if (insn_is_zext(&insn[1]))
-+			insn_count = 2;
++			return 1;
  		break;
- 	case BPF_ALU64 | BPF_MOV | BPF_K: /* dst = imm */
- 		/* lgfi %dst,imm */
-@@ -639,6 +645,8 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
- 		EMIT4(0xb9970000, REG_W0, src_reg);
- 		/* llgfr %dst,%rc */
- 		EMIT4(0xb9160000, dst_reg, rc_reg);
+ 	case BPF_ALU64 | BPF_DIV | BPF_X:
+ 		emit_alu(UDIVX, src, dst, ctx);
+@@ -975,6 +979,8 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 		break;
+ 	case BPF_ALU | BPF_RSH | BPF_X:
+ 		emit_alu(SRL, src, dst, ctx);
 +		if (insn_is_zext(&insn[1]))
-+			insn_count = 2;
++			return 1;
+ 		break;
+ 	case BPF_ALU64 | BPF_RSH | BPF_X:
+ 		emit_alu(SRLX, src, dst, ctx);
+@@ -997,9 +1003,12 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 		case 16:
+ 			emit_alu_K(SLL, dst, 16, ctx);
+ 			emit_alu_K(SRL, dst, 16, ctx);
++			if (insn_is_zext(&insn[1]))
++				return 1;
+ 			break;
+ 		case 32:
+-			emit_alu_K(SRL, dst, 0, ctx);
++			if (!ctx->prog->aux->verifier_zext)
++				emit_alu_K(SRL, dst, 0, ctx);
+ 			break;
+ 		case 64:
+ 			/* nop */
+@@ -1021,6 +1030,8 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 			emit_alu3_K(AND, dst, 0xff, dst, ctx);
+ 			emit_alu3_K(SLL, tmp, 8, tmp, ctx);
+ 			emit_alu(OR, tmp, dst, ctx);
++			if (insn_is_zext(&insn[1]))
++				return 1;
+ 			break;
+ 
+ 		case 32:
+@@ -1037,6 +1048,8 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 			emit_alu3_K(AND, dst, 0xff, dst, ctx);	/* dst	= dst & 0xff */
+ 			emit_alu3_K(SLL, dst, 24, dst, ctx);	/* dst  = dst << 24 */
+ 			emit_alu(OR, tmp, dst, ctx);		/* dst  = dst | tmp */
++			if (insn_is_zext(&insn[1]))
++				return 1;
+ 			break;
+ 
+ 		case 64:
+@@ -1050,6 +1063,8 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 	/* dst = imm */
+ 	case BPF_ALU | BPF_MOV | BPF_K:
+ 		emit_loadimm32(imm, dst, ctx);
++		if (insn_is_zext(&insn[1]))
++			return 1;
+ 		break;
+ 	case BPF_ALU64 | BPF_MOV | BPF_K:
+ 		emit_loadimm_sext(imm, dst, ctx);
+@@ -1132,6 +1147,8 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 		break;
+ 	case BPF_ALU | BPF_RSH | BPF_K:
+ 		emit_alu_K(SRL, dst, imm, ctx);
++		if (insn_is_zext(&insn[1]))
++			return 1;
+ 		break;
+ 	case BPF_ALU64 | BPF_RSH | BPF_K:
+ 		emit_alu_K(SRLX, dst, imm, ctx);
+@@ -1144,7 +1161,8 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 		break;
+ 
+ 	do_alu32_trunc:
+-		if (BPF_CLASS(code) == BPF_ALU)
++		if (BPF_CLASS(code) == BPF_ALU &&
++		    !ctx->prog->aux->verifier_zext)
+ 			emit_alu_K(SRL, dst, 0, ctx);
+ 		break;
+ 
+@@ -1265,6 +1283,8 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
+ 			rs2 = RS2(tmp);
+ 		}
+ 		emit(opcode | RS1(src) | rs2 | RD(dst), ctx);
++		if (opcode != LD64 && insn_is_zext(&insn[1]))
++			return 1;
  		break;
  	}
- 	case BPF_ALU64 | BPF_DIV | BPF_X: /* dst = dst / src */
-@@ -676,6 +684,8 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
- 			      EMIT_CONST_U32(imm));
- 		/* llgfr %dst,%rc */
- 		EMIT4(0xb9160000, dst_reg, rc_reg);
-+		if (insn_is_zext(&insn[1]))
-+			insn_count = 2;
- 		break;
- 	}
- 	case BPF_ALU64 | BPF_DIV | BPF_K: /* dst = dst / imm */
-@@ -864,10 +874,13 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
- 		case 16: /* dst = (u16) cpu_to_be16(dst) */
- 			/* llghr %dst,%dst */
- 			EMIT4(0xb9850000, dst_reg, dst_reg);
-+			if (insn_is_zext(&insn[1]))
-+				insn_count = 2;
- 			break;
- 		case 32: /* dst = (u32) cpu_to_be32(dst) */
--			/* llgfr %dst,%dst */
--			EMIT4(0xb9160000, dst_reg, dst_reg);
-+			if (!fp->aux->verifier_zext)
-+				/* llgfr %dst,%dst */
-+				EMIT4(0xb9160000, dst_reg, dst_reg);
- 			break;
- 		case 64: /* dst = (u64) cpu_to_be64(dst) */
- 			break;
-@@ -882,12 +895,15 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
- 			EMIT4_DISP(0x88000000, dst_reg, REG_0, 16);
- 			/* llghr %dst,%dst */
- 			EMIT4(0xb9850000, dst_reg, dst_reg);
-+			if (insn_is_zext(&insn[1]))
-+				insn_count = 2;
- 			break;
- 		case 32: /* dst = (u32) cpu_to_le32(dst) */
- 			/* lrvr %dst,%dst */
- 			EMIT4(0xb91f0000, dst_reg, dst_reg);
--			/* llgfr %dst,%dst */
--			EMIT4(0xb9160000, dst_reg, dst_reg);
-+			if (!fp->aux->verifier_zext)
-+				/* llgfr %dst,%dst */
-+				EMIT4(0xb9160000, dst_reg, dst_reg);
- 			break;
- 		case 64: /* dst = (u64) cpu_to_le64(dst) */
- 			/* lrvgr %dst,%dst */
-@@ -968,16 +984,22 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
- 		/* llgc %dst,0(off,%src) */
- 		EMIT6_DISP_LH(0xe3000000, 0x0090, dst_reg, src_reg, REG_0, off);
- 		jit->seen |= SEEN_MEM;
-+		if (insn_is_zext(&insn[1]))
-+			insn_count = 2;
- 		break;
- 	case BPF_LDX | BPF_MEM | BPF_H: /* dst = *(u16 *)(ul) (src + off) */
- 		/* llgh %dst,0(off,%src) */
- 		EMIT6_DISP_LH(0xe3000000, 0x0091, dst_reg, src_reg, REG_0, off);
- 		jit->seen |= SEEN_MEM;
-+		if (insn_is_zext(&insn[1]))
-+			insn_count = 2;
- 		break;
- 	case BPF_LDX | BPF_MEM | BPF_W: /* dst = *(u32 *)(ul) (src + off) */
- 		/* llgf %dst,off(%src) */
- 		jit->seen |= SEEN_MEM;
- 		EMIT6_DISP_LH(0xe3000000, 0x0016, dst_reg, src_reg, REG_0, off);
-+		if (insn_is_zext(&insn[1]))
-+			insn_count = 2;
- 		break;
- 	case BPF_LDX | BPF_MEM | BPF_DW: /* dst = *(u64 *)(ul) (src + off) */
- 		/* lg %dst,0(off,%src) */
-@@ -1282,6 +1304,11 @@ static int bpf_jit_prog(struct bpf_jit *jit, struct bpf_prog *fp)
- 	return 0;
+ 	/* ST: *(size *)(dst + off) = imm */
+@@ -1432,6 +1452,11 @@ static void jit_fill_hole(void *area, unsigned int size)
+ 		*ptr++ = 0x91d02005; /* ta 5 */
  }
  
 +bool bpf_jit_needs_zext(void)
@@ -191,9 +178,9 @@ index 5e7c630..e636728 100644
 +	return true;
 +}
 +
- /*
-  * Compile eBPF program "fp"
-  */
+ struct sparc64_jit_data {
+ 	struct bpf_binary_header *header;
+ 	u8 *image;
 -- 
 2.7.4
 
