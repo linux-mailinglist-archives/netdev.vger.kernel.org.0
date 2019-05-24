@@ -2,147 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEA6B29BA7
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 18:00:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C31C29BB6
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 18:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390789AbfEXP7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 11:59:55 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41444 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390662AbfEXP7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 11:59:50 -0400
-Received: by mail-wr1-f67.google.com with SMTP id u16so6652018wrn.8
-        for <netdev@vger.kernel.org>; Fri, 24 May 2019 08:59:49 -0700 (PDT)
+        id S2390210AbfEXQDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 12:03:44 -0400
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:44804 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389706AbfEXQDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 12:03:44 -0400
+Received: by mail-pg1-f202.google.com with SMTP id b24so6564825pgh.11
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 09:03:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=a4BYbY0H/gJ/SBV0pW9HBq0oWfzuEg4LxLjaui3637c=;
-        b=E9gKK7YmH0pR7gk3fLXm/ealfjAQNJ0sgX7bsR0M8h9rsjPzo2jBg/Dit9A2OTUzGU
-         XZmGXfZ3u/SFQ8a7AdJZUk8tqhFc5M9wKvDy1/TBykNAv77+kYmhe8JPB0Cmh19SrITx
-         GGKi/V+syqcDUQVs9V3ZxOt0Dom732G+0ESyE=
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=OHF1GBrQyCg37n+zTf7JtBh7lIA83IKUgru/zJSPRic=;
+        b=agWDUwFj+uzG3SUxflCtUnaJfJd3ImXvZelYq19tknsF+UsHDce7qMAEU9BzQCs38g
+         4tnSuh+WI6whWbjgkv+uLPHv/xYcLYw3C0XhKk8llLYM6aDbZ9I0X3/yQszyHoLxh8Nl
+         N6WGl92YIpYSpu3AUTFXCSpH661mgHaSXZ9c/XasxCVf6pQx6e+T5gD0efl9sZk6/CTo
+         KcX78WXmc4emwPVu752/fk2U0csKBzTF38u3ByCD98/G0SvMQamIKUPNcZlhbtmDcSEy
+         s4Rrk5Dx36j+chU/8l0lEAJv7hIz+IjWsw1k7wKQz7XF/f/Wk1I8aCgc6Pll3Lpzd/tq
+         7jzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=a4BYbY0H/gJ/SBV0pW9HBq0oWfzuEg4LxLjaui3637c=;
-        b=PO1qlt3AtQ0HKyVcRfC36jncw6rVk9+1ClfOHIYyZxb2ujM/GKD/Y+5u6PFT06WNvz
-         VjZlxAV7PXqdmcTCQzrb+ydrK1ICTq1GwSEE5igYlk0xzjR8f5A3DcPlTdoWG6vbODlT
-         WHue/g8leCYy9zk1kX+2F/8UnQsEPbHVeTN4TScdR6dBZEpUw1iAQtKMONvAvcuW9zLE
-         B6QYpHsfbctkqj6DDduEGGS2iDYZFepOGi/EQ4ro/79EXjXOCegsCAAR0sNQGbbCeb8D
-         izCoLUvx9VFZI1NP7r7PzicksDVeAr3B3Jpf+iY+pffxtnYo8suH9TdGxIznLdDa+Um4
-         zx9A==
-X-Gm-Message-State: APjAAAWFIx6CEAFBwlOJEA+yq9MaavM4oI62427AXVS0L8n0zwbn03Zz
-        govKg+itpUM3cBsLI1B6fRI/CA==
-X-Google-Smtp-Source: APXvYqywt/PoLflYA+NpdNVy44D4ERB1Ci5BUNDxQ1MXj4L11orInMGwVat9DDAcLlir0teyGDpJ1A==
-X-Received: by 2002:adf:f988:: with SMTP id f8mr3227533wrr.254.1558713588616;
-        Fri, 24 May 2019 08:59:48 -0700 (PDT)
-Received: from locke-xps13.localdomain (69.pool85-58-237.dynamic.orange.es. [85.58.237.69])
-        by smtp.gmail.com with ESMTPSA id i185sm4535054wmg.32.2019.05.24.08.59.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 24 May 2019 08:59:47 -0700 (PDT)
-From:   =?UTF-8?q?Iago=20L=C3=B3pez=20Galeiras?= <iago@kinvolk.io>
-To:     john.fastabend@gmail.com, ast@kernel.org, daniel@iogearbox.net
-Cc:     alban@kinvolk.io, krzesimir@kinvolk.io, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v4 4/4] selftests: bpf: verifier: read netns_dev and netns_ino from struct bpf_sock_ops
-Date:   Fri, 24 May 2019 17:59:31 +0200
-Message-Id: <20190524155931.7946-5-iago@kinvolk.io>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190524155931.7946-1-iago@kinvolk.io>
-References: <20190524155931.7946-1-iago@kinvolk.io>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=OHF1GBrQyCg37n+zTf7JtBh7lIA83IKUgru/zJSPRic=;
+        b=U9/P//ZCHp0xu0fUyjvKkdCPqrmZbBpWCxoJiwcn0HOCBjRmxgCBJP1bCnNzphFyvI
+         cxlixmTDGbr5VkLCToxJHKDrw710A1GAHrofdyxGdwIl7Ks1Nwnlp5AM7q947AsWn/CI
+         kFax+vtpyd80qlpF5soqYQyHMkkI3Lsjt8Gp2Ut3rpShvz0ldInIvS6HEf/au9ByrW94
+         SS8+fCh0dqWBPV5tKXNiWfjxkV0VKKd/C+rtjXXOtQurLoUbHG74PuEFOq0YhU41sVF2
+         f+H45oUgsaYeKg1ZgZvSWQzyLefKt9DhXjLg5lFQjrkF248rQqsAosPbj2obwpeMKgkC
+         270A==
+X-Gm-Message-State: APjAAAX5a+i7SzckMzEfXeUQPTKabtG26PFAgEGmCtqe+H+7IC2+7VpB
+        fvNwigHoY3BkcCO1Egii/fv3PHGXTKJ1FA==
+X-Google-Smtp-Source: APXvYqzOvfHUBh0rw8HkCoo2GpZytd9oMI63DY12qtrLCEejS+DqJGnVzJywYmI+AVYr/oGndJI/+LFkEr1p5w==
+X-Received: by 2002:a65:4246:: with SMTP id d6mr63431231pgq.156.1558713823631;
+ Fri, 24 May 2019 09:03:43 -0700 (PDT)
+Date:   Fri, 24 May 2019 09:03:29 -0700
+Message-Id: <20190524160340.169521-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
+Subject: [PATCH net-next 00/11] inet: frags: avoid possible races at netns dismantle
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alban Crequy <alban@kinvolk.io>
+This patch series fixes a race happening on netns dismantle with
+frag queues. While rhashtable_free_and_destroy() is running,
+concurrent timers might run inet_frag_kill() and attempt
+rhashtable_remove_fast() calls. This is not allowed by
+rhashtable logic.
 
-Tested with:
-> $ sudo ./test_verifier
-> ...
-> #905/p sockops accessing bpf_sock_ops->netns_dev, ok OK
-> #906/p sockops accessing bpf_sock_ops->netns_ino, ok OK
-> ...
-> Summary: 1421 PASSED, 0 SKIPPED, 0 FAILED
+Since I do not want to add expensive synchronize_rcu() calls
+in the netns dismantle path, I had to no longer inline
+netns_frags structures, but dynamically allocate them.
 
-Signed-off-by: Alban Crequy <alban@kinvolk.io>
+The ten first patches make this preparation, so that
+the last patch clearly shows the fix.
 
----
+As this patch series is not exactly trivial, I chose to
+target 5.3. We will backport it once soaked a bit.
 
-Changes since v1:
-- This is a new selftest (review from Song)
+Eric Dumazet (11):
+  inet: rename netns_frags to fqdir
+  net: rename inet_frags_exit_net() to fqdir_exit()
+  net: rename struct fqdir fields
+  ipv4: no longer reference init_net in ip4_frags_ns_ctl_table[]
+  ipv6: no longer reference init_net in ip6_frags_ns_ctl_table[]
+  netfilter: ipv6: nf_defrag: no longer reference init_net in
+    nf_ct_frag6_sysctl_table
+  ieee820154: 6lowpan: no longer reference init_net in
+    lowpan_frags_ns_ctl_table
+  net: rename inet_frags_init_net() to fdir_init()
+  net: add a net pointer to struct fqdir
+  net: dynamically allocate fqdir structures
+  inet: frags: rework rhashtable dismantle
 
-Changes since v2:
-- test partial reads on netns_dev (review from Y Song)
-- split in two tests
----
- .../testing/selftests/bpf/verifier/var_off.c  | 53 +++++++++++++++++++
- 1 file changed, 53 insertions(+)
+ include/net/inet_frag.h                 | 48 ++++++++----
+ include/net/netns/ieee802154_6lowpan.h  |  2 +-
+ include/net/netns/ipv4.h                |  2 +-
+ include/net/netns/ipv6.h                |  4 +-
+ net/ieee802154/6lowpan/reassembly.c     | 36 ++++-----
+ net/ipv4/inet_fragment.c                | 98 ++++++++++++++++---------
+ net/ipv4/ip_fragment.c                  | 67 +++++++----------
+ net/ipv4/proc.c                         |  4 +-
+ net/ipv6/netfilter/nf_conntrack_reasm.c | 43 +++++------
+ net/ipv6/proc.c                         |  4 +-
+ net/ipv6/reassembly.c                   | 40 ++++------
+ 11 files changed, 181 insertions(+), 167 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/verifier/var_off.c b/tools/testing/selftests/bpf/verifier/var_off.c
-index 8504ac937809..9e4c6c78eb9d 100644
---- a/tools/testing/selftests/bpf/verifier/var_off.c
-+++ b/tools/testing/selftests/bpf/verifier/var_off.c
-@@ -246,3 +246,56 @@
- 	.result = ACCEPT,
- 	.prog_type = BPF_PROG_TYPE_LWT_IN,
- },
-+{
-+	"sockops accessing bpf_sock_ops->netns_dev, ok",
-+	.insns = {
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev)),
-+
-+	BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev)),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 4),
-+
-+	BPF_LDX_MEM(BPF_H, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev)),
-+	BPF_LDX_MEM(BPF_H, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 2),
-+	BPF_LDX_MEM(BPF_H, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 4),
-+	BPF_LDX_MEM(BPF_H, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 6),
-+
-+	BPF_LDX_MEM(BPF_B, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev)),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 1),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 2),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 3),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 4),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 5),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 6),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_dev) + 7),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_SOCK_OPS,
-+},
-+{
-+	"sockops accessing bpf_sock_ops->netns_ino, ok",
-+	.insns = {
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_4, BPF_REG_1, offsetof(struct bpf_sock_ops,
-+							   netns_ino)),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_SOCK_OPS,
-+},
 -- 
-2.21.0
+2.22.0.rc1.257.g3120a18244-goog
 
