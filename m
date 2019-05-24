@@ -2,94 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 761D328EDB
-	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 03:38:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4900928EF2
+	for <lists+netdev@lfdr.de>; Fri, 24 May 2019 03:57:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388740AbfEXBis (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 May 2019 21:38:48 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:45308 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731676AbfEXBis (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 May 2019 21:38:48 -0400
-Received: by mail-pg1-f196.google.com with SMTP id i21so4072802pgi.12
-        for <netdev@vger.kernel.org>; Thu, 23 May 2019 18:38:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=appneta.com; s=google;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=fIG1/oNez6GVfieaNVvRGqClWbB80a7VpaI4ZVWlUTY=;
-        b=kGOO7QJjYShPVPBvs/ZZX4VQ4eRHKxuNroC1T1gSIH+LURunL1GYc8S5KkMJ4304nt
-         D0vjJP1zY0itozAzVofvfnp6vwc37FxbJCWVEjzCPHkvqiNeBjdFsXbkJdDIa+f/G+o7
-         l2A9DZTeNt5XJA8Qxui7ybi7g1aIi80biu8DQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=fIG1/oNez6GVfieaNVvRGqClWbB80a7VpaI4ZVWlUTY=;
-        b=fSk63gu1kyz6owlTe8lgBXSjWJDO1SA8h+ApwwmiOik3rUxsx1mpBYSTzNNBldijLx
-         JcpN/JukOlDiofWP17v2W9VuuoFy/MYUCqmld98VJGM+/sYnuFtCOycLqcVA28FLrhcV
-         Ahhrt99yhkXei/2F6EY0h7SITWo1Xu37N3fK6gzNpIixohY0CPflKU+yTOrs8vPvQwsC
-         YwCcSYlIglyCDe663G479FrnApz7Oc73uIl71fYRoKOoBeZpkUHHioEqCep48nmpvOEE
-         sKuFYxSXr05fnocHlXlgqn4xBaGp4DhF/abRd7IwL9NkgNkry6MOuNpW3n2mZDf3LjEl
-         UXmw==
-X-Gm-Message-State: APjAAAU/kCWkMs1PmCsTOYYZp5qHMDZ1wqSk+2ckKqo6KXVF1Xsl60RA
-        HJUGDYBXZvQINRZS4FGn6N9oug==
-X-Google-Smtp-Source: APXvYqxbCF0d1RN2Gw85wpBkrv/MWoagSl5+oFwhvvoDBMmfB9ADuQlYwD4bfak3BfVpG5B/MM3VLA==
-X-Received: by 2002:a63:d016:: with SMTP id z22mr102922046pgf.116.1558661926884;
-        Thu, 23 May 2019 18:38:46 -0700 (PDT)
-Received: from [10.0.1.19] (S010620c9d00fc332.vf.shawcable.net. [70.71.167.160])
-        by smtp.gmail.com with ESMTPSA id f36sm524732pgb.76.2019.05.23.18.38.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 May 2019 18:38:46 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.8\))
-Subject: Re: [PATCH net 1/4] net/udp_gso: Allow TX timestamp with UDP GSO
-From:   Fred Klassen <fklassen@appneta.com>
-In-Reply-To: <CAF=yD-Jf95De=z_nx9WFkGDa6+nRUqM_1PqGkjwaFPzOe+PfXg@mail.gmail.com>
-Date:   Thu, 23 May 2019 18:38:44 -0700
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <AE8E0772-7256-4B9C-A990-96930E834AEE@appneta.com>
-References: <20190523210651.80902-1-fklassen@appneta.com>
- <20190523210651.80902-2-fklassen@appneta.com>
- <CAF=yD-Jf95De=z_nx9WFkGDa6+nRUqM_1PqGkjwaFPzOe+PfXg@mail.gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-X-Mailer: Apple Mail (2.3445.104.8)
+        id S2387867AbfEXB5m convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 May 2019 21:57:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52688 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731617AbfEXB5m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 May 2019 21:57:42 -0400
+Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 482142177E;
+        Fri, 24 May 2019 01:57:39 +0000 (UTC)
+Date:   Thu, 23 May 2019 21:57:37 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Kris Van Hees <kris.van.hees@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org, mhiramat@kernel.org, acme@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, peterz@infradead.org
+Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
+ implementation and sample use
+Message-ID: <20190523215737.6601ab7c@oasis.local.home>
+In-Reply-To: <20190524003148.pk7qbxn7ysievhym@ast-mbp.dhcp.thefacebook.com>
+References: <20190521184137.GH2422@oracle.com>
+        <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
+        <20190521173618.2ebe8c1f@gandalf.local.home>
+        <20190521214325.rr7emn5z3b7wqiiy@ast-mbp.dhcp.thefacebook.com>
+        <20190521174757.74ec8937@gandalf.local.home>
+        <20190522052327.GN2422@oracle.com>
+        <20190522205329.uu26oq2saj56og5m@ast-mbp.dhcp.thefacebook.com>
+        <20190523054610.GR2422@oracle.com>
+        <20190523211330.hng74yi75ixmcznc@ast-mbp.dhcp.thefacebook.com>
+        <20190523190243.54221053@gandalf.local.home>
+        <20190524003148.pk7qbxn7ysievhym@ast-mbp.dhcp.thefacebook.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Thanks for the report.
->=20
-> Zerocopy notification reference count is managed in skb_segment. That
-> should work.
->=20
-> Support for timestamping with the new GSO feature is indeed an
-> oversight. The solution is similar to how TCP associates the timestamp
-> with the right segment in tcp_gso_tstamp.
->=20
-> Only, I think we want to transfer the timestamp request to the last
-> datagram, not the first. For send timestamp, the final byte leaving
-> the host is usually more interesting.
+On Thu, 23 May 2019 17:31:50 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-TX Timestamping the last packet of a datagram is something that would
-work poorly for our application. We need to measure the time it takes
-for the first bit that is sent until the first bit of the last packet is =
-received.
-Timestaming the last packet of a burst seems somewhat random to me
-and would not be useful. Essentially we would be timestamping a=20
-random byte in a UDP GSO buffer.
 
-I believe there is a precedence for timestamping the first packet. With
-IPv4 packets, the first packet is timestamped and the remaining =
-fragments
-are not.=
+> > Now from what I'm reading, it seams that the Dtrace layer may be
+> > abstracting out fields from the kernel. This is actually something I
+> > have been thinking about to solve the "tracepoint abi" issue. There's
+> > usually basic ideas that happen. An interrupt goes off, there's a
+> > handler, etc. We could abstract that out that we trace when an
+> > interrupt goes off and the handler happens, and record the vector
+> > number, and/or what device it was for. We have tracepoints in the
+> > kernel that do this, but they do depend a bit on the implementation.
+> > Now, if we could get a layer that abstracts this information away from
+> > the implementation, then I think that's a *good* thing.  
+> 
+> I don't like this deferred irq idea at all.
+
+What do you mean deferred?
+
+> Abstracting details from the users is _never_ a good idea.
+
+Really? Most everything we do is to abstract details from the user. The
+key is to make the abstraction more meaningful than the raw data.
+
+> A ton of people use bcc scripts and bpftrace because they want those details.
+> They need to know what kernel is doing to make better decisions.
+> Delaying irq record is the opposite.
+
+I never said anything about delaying the record. Just getting the
+information that is needed.
+
+> > 
+> > I wish that was totally true, but tracepoints *can* be an abi. I had
+> > code reverted because powertop required one to be a specific
+> > format. To this day, the wakeup event has a "success" field that
+> > writes in a hardcoded "1", because there's tools that depend on it,
+> > and they only work if there's a success field and the value is 1.  
+> 
+> I really think that you should put powertop nightmares to rest.
+> That was long ago. The kernel is different now.
+
+Is it?
+
+> Linus made it clear several times that it is ok to change _all_
+> tracepoints. Period. Some maintainers somehow still don't believe
+> that they can do it.
+
+From what I remember him saying several times, is that you can change
+all tracepoints, but if it breaks a tool that is useful, then that
+change will get reverted. He will allow you to go and fix that tool and
+bring back the change (which was the solution to powertop).
+
+> 
+> Some tracepoints are used more than others and more people will
+> complain: "ohh I need to change my script" when that tracepoint
+> changes. But the kernel development is not going to be hampered by a
+> tracepoint. No matter how widespread its usage in scripts.
+
+That's because we'll treat bpf (and Dtrace) scripts like modules (no
+abi), at least we better. But if there's a tool that doesn't use the
+script and reads the tracepoint directly via perf, then that's a
+different story.
+
+-- Steve
+
+> 
+> Sometimes that pain of change can be mitigated a bit. Like that
+> 'success' field example, but tracepoints still change.
+> Meaningful value before vs hardcoded constant is still a breakage for
+> some scripts.
