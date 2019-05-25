@@ -2,231 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1B02A1FF
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 02:08:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3B872A201
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 02:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbfEYAIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 20:08:39 -0400
-Received: from mga02.intel.com ([134.134.136.20]:57462 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726055AbfEYAIi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 20:08:38 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 May 2019 17:08:37 -0700
-X-ExtLoop1: 1
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 24 May 2019 17:08:36 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1hUKEm-0004ms-4K; Sat, 25 May 2019 08:08:36 +0800
-Date:   Sat, 25 May 2019 08:08:23 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     kbuild-all@01.org, netdev@vger.kernel.org
-Subject: [net-next:master 86/94]
- drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:127:26: sparse:
- sparse: incorrect type in assignment (different base types)
-Message-ID: <201905250819.rXBikZsC%lkp@intel.com>
+        id S1726194AbfEYAI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 20:08:57 -0400
+Received: from mail-vs1-f44.google.com ([209.85.217.44]:44240 "EHLO
+        mail-vs1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726166AbfEYAI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 20:08:56 -0400
+Received: by mail-vs1-f44.google.com with SMTP id w124so7010361vsb.11
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 17:08:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=UhpTZ0DAyxwQy2pYL5mrd5rwWTTXgLbenh/CMM+EB9s=;
+        b=GVL3dgHzHvYvfN6H4Vws2xTD+0JAknspSUZ4lifAyZ4v6iS7PmRt1TcfF8wmZmsn3X
+         NLoSjrdASaz24vvgsUkKrGC29ZSyeAytgqVXJuAkU0cAarPOHupF2u0B4N/NaDwTyDkH
+         fW/D2Fo66z39+XewYUra6pMzIqs0PwpKKY2bqM3//UFUKp3s+p0mKS7BWevU1GEY90kp
+         2clCrDvmsvpo4O989PEc1YDGLuMGTv1pN8zv0+BOBDa28q4kLMhrczLsTCO3/5pWb9Fh
+         +BmGjLmF1fMgQUgQB7i0Rmc/+Qevh7skzv5f6TsKYQl6AsBt4yfrUVWeHiVvA3c3cA4v
+         MgFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=UhpTZ0DAyxwQy2pYL5mrd5rwWTTXgLbenh/CMM+EB9s=;
+        b=W5ub81EdTBHVk1UaZCWMiUAfrtfKeikinq1jaAZFGVoP+5MoFbsj5TPEqcQNl27Ss5
+         R/BGju560/h0rCyCVLN77ERWTo2JXCmeV8rySg1A1ktDo8XGXkHamk0lv7H3LLUYJoay
+         KfGRWBO0BZeyxYfZQD606z5wJf/5nANCK3IijAG9DPvLY+mHLltt55sBcc0JfMg2w0T6
+         L7ys6WrfXutJEL7A0QQFwrGU81Qcpn2BGlPKpSchVmVtT9TcklAyip0oKndYdmQa0VIi
+         oqs7m+ciP+sxuDLOqFSCXRy2vOcwWoEFVo3+j4srk5/HtpSSkAAtOvGGxUH9GroIfNxG
+         oQkg==
+X-Gm-Message-State: APjAAAWj16DouK+jI7QFVt9L7leX67AJSuSS5vN8/aeiE1dLYy3O50lY
+        v95nkuk++peQ+LFexBGA+nT7+w==
+X-Google-Smtp-Source: APXvYqz6RYIsWgHQaPn+SMWVSKk7rK/4nb5JPJaRjjDGRjih2Z7v/BdB+pH4HQ/Wcz/qFbKJwy3iKw==
+X-Received: by 2002:a67:f3c5:: with SMTP id j5mr3432366vsn.232.1558742935717;
+        Fri, 24 May 2019 17:08:55 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id c192sm2910289vkd.31.2019.05.24.17.08.54
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 24 May 2019 17:08:55 -0700 (PDT)
+Date:   Fri, 24 May 2019 17:08:52 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>, David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
+        sthemmin@microsoft.com, saeedm@mellanox.com, leon@kernel.org
+Subject: Re: [patch net-next 3/7] mlxfw: Propagate error messages through
+ extack
+Message-ID: <20190524170852.4fea5e77@cakuba.netronome.com>
+In-Reply-To: <20190524222635.GA2284@nanopsycho.orion>
+References: <20190523094510.2317-1-jiri@resnulli.us>
+        <20190523094510.2317-4-jiri@resnulli.us>
+        <7f3362de-baaf-99ee-1b53-55675aaf00fe@gmail.com>
+        <20190524081110.GB2904@nanopsycho>
+        <20190524085446.59dc6f2f@cakuba.netronome.com>
+        <20190524222635.GA2284@nanopsycho.orion>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   22942498ccebf13b076859f8746be161dc0c6d89
-commit: 091810dbded96c2af81f645e386e4262553e3493 [86/94] net: stmmac: Introduce selftests support
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
-        git checkout 091810dbded96c2af81f645e386e4262553e3493
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+On Sat, 25 May 2019 00:26:35 +0200, Jiri Pirko wrote:
+> Fri, May 24, 2019 at 05:54:46PM CEST, jakub.kicinski@netronome.com wrote:
+> >On Fri, 24 May 2019 10:11:10 +0200, Jiri Pirko wrote:  
+> >> Thu, May 23, 2019 at 05:19:46PM CEST, dsahern@gmail.com wrote:  
+> >> >On 5/23/19 3:45 AM, Jiri Pirko wrote:    
+> >> >> @@ -57,11 +58,13 @@ static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
+> >> >>  	if (fsm_state_err != MLXFW_FSM_STATE_ERR_OK) {
+> >> >>  		pr_err("Firmware flash failed: %s\n",
+> >> >>  		       mlxfw_fsm_state_err_str[fsm_state_err]);
+> >> >> +		NL_SET_ERR_MSG_MOD(extack, "Firmware flash failed");
+> >> >>  		return -EINVAL;
+> >> >>  	}
+> >> >>  	if (curr_fsm_state != fsm_state) {
+> >> >>  		if (--times == 0) {
+> >> >>  			pr_err("Timeout reached on FSM state change");
+> >> >> +			NL_SET_ERR_MSG_MOD(extack, "Timeout reached on FSM state change");    
+> >> >
+> >> >FSM? Is the meaning obvious to users?    
+> >> 
+> >> It is specific to mlx drivers.  
+> >
+> >What does it stand for?  Isn't it just Finite State Machine?  
+> 
+> I believe so.
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
+In which case it doesn't really add much, no?  I second David's request
+to make the messages as easy to understand as possible.  
 
+PSID for better or worse I have previously capitulated on, so I guess
+the ship has indeed sailed there :)
 
-sparse warnings: (new ones prefixed by >>)
+$ grep -A4 psid -- Documentation/networking/devlink-info-versions.rst 
+fw.psid
+=======
 
->> drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:127:26: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] @@    got resunsigned short [usertype] @@
->> drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:127:26: sparse:    expected unsigned short [usertype]
->> drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:127:26: sparse:    got restricted __be16 [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:128:24: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] @@    got resunsigned short [usertype] @@
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:128:24: sparse:    expected unsigned short [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:128:24: sparse:    got restricted __be16 [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:129:24: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] @@    got resunsigned short [usertype] @@
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:129:24: sparse:    expected unsigned short [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:129:24: sparse:    got restricted __be16 [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:131:34: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] @@    got resunsigned short [usertype] @@
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:131:34: sparse:    expected unsigned short [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:131:34: sparse:    got restricted __be16 [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:132:32: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] @@    got resunsigned short [usertype] @@
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:132:32: sparse:    expected unsigned short [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:132:32: sparse:    got restricted __be16 [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:133:32: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] @@    got resunsigned short [usertype] @@
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:133:32: sparse:    expected unsigned short [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:133:32: sparse:    got restricted __be16 [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:134:32: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] @@    got resunsigned short [usertype] @@
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:134:32: sparse:    expected unsigned short [usertype]
-   drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:134:32: sparse:    got restricted __be16 [usertype]
-
-vim +127 drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-
-    49	
-    50	static struct sk_buff *stmmac_test_get_udp_skb(struct stmmac_priv *priv,
-    51						       struct stmmac_packet_attrs *attr)
-    52	{
-    53		struct sk_buff *skb = NULL;
-    54		struct udphdr *uhdr = NULL;
-    55		struct tcphdr *thdr = NULL;
-    56		struct stmmachdr *shdr;
-    57		struct ethhdr *ehdr;
-    58		struct iphdr *ihdr;
-    59		int iplen, size;
-    60	
-    61		size = attr->size + STMMAC_TEST_PKT_SIZE;
-    62		if (attr->vlan) {
-    63			size += 4;
-    64			if (attr->vlan > 1)
-    65				size += 4;
-    66		}
-    67	
-    68		if (attr->tcp)
-    69			size += sizeof(struct tcphdr);
-    70		else
-    71			size += sizeof(struct udphdr);
-    72	
-    73		skb = netdev_alloc_skb(priv->dev, size);
-    74		if (!skb)
-    75			return NULL;
-    76	
-    77		prefetchw(skb->data);
-    78		skb_reserve(skb, NET_IP_ALIGN);
-    79	
-    80		if (attr->vlan > 1)
-    81			ehdr = skb_push(skb, ETH_HLEN + 8);
-    82		else if (attr->vlan)
-    83			ehdr = skb_push(skb, ETH_HLEN + 4);
-    84		else if (attr->remove_sa)
-    85			ehdr = skb_push(skb, ETH_HLEN - 6);
-    86		else
-    87			ehdr = skb_push(skb, ETH_HLEN);
-    88		skb_reset_mac_header(skb);
-    89	
-    90		skb_set_network_header(skb, skb->len);
-    91		ihdr = skb_put(skb, sizeof(*ihdr));
-    92	
-    93		skb_set_transport_header(skb, skb->len);
-    94		if (attr->tcp)
-    95			thdr = skb_put(skb, sizeof(*thdr));
-    96		else
-    97			uhdr = skb_put(skb, sizeof(*uhdr));
-    98	
-    99		if (!attr->remove_sa)
-   100			eth_zero_addr(ehdr->h_source);
-   101		eth_zero_addr(ehdr->h_dest);
-   102		if (attr->src && !attr->remove_sa)
-   103			ether_addr_copy(ehdr->h_source, attr->src);
-   104		if (attr->dst)
-   105			ether_addr_copy(ehdr->h_dest, attr->dst);
-   106	
-   107		if (!attr->remove_sa) {
-   108			ehdr->h_proto = htons(ETH_P_IP);
-   109		} else {
-   110			__be16 *ptr = (__be16 *)ehdr;
-   111	
-   112			/* HACK */
-   113			ptr[3] = htons(ETH_P_IP);
-   114		}
-   115	
-   116		if (attr->vlan) {
-   117			u16 *tag, *proto;
-   118	
-   119			if (!attr->remove_sa) {
-   120				tag = (void *)ehdr + ETH_HLEN;
-   121				proto = (void *)ehdr + (2 * ETH_ALEN);
-   122			} else {
-   123				tag = (void *)ehdr + ETH_HLEN - 6;
-   124				proto = (void *)ehdr + ETH_ALEN;
-   125			}
-   126	
- > 127			proto[0] = htons(ETH_P_8021Q);
-   128			tag[0] = htons(attr->vlan_id_out);
-   129			tag[1] = htons(ETH_P_IP);
-   130			if (attr->vlan > 1) {
-   131				proto[0] = htons(ETH_P_8021AD);
-   132				tag[1] = htons(ETH_P_8021Q);
-   133				tag[2] = htons(attr->vlan_id_in);
-   134				tag[3] = htons(ETH_P_IP);
-   135			}
-   136		}
-   137	
-   138		if (attr->tcp) {
-   139			thdr->source = htons(attr->sport);
-   140			thdr->dest = htons(attr->dport);
-   141			thdr->doff = sizeof(struct tcphdr) / 4;
-   142			thdr->check = 0;
-   143		} else {
-   144			uhdr->source = htons(attr->sport);
-   145			uhdr->dest = htons(attr->dport);
-   146			uhdr->len = htons(sizeof(*shdr) + sizeof(*uhdr) + attr->size);
-   147			uhdr->check = 0;
-   148		}
-   149	
-   150		ihdr->ihl = 5;
-   151		ihdr->ttl = 32;
-   152		ihdr->version = 4;
-   153		if (attr->tcp)
-   154			ihdr->protocol = IPPROTO_TCP;
-   155		else
-   156			ihdr->protocol = IPPROTO_UDP;
-   157		iplen = sizeof(*ihdr) + sizeof(*shdr) + attr->size;
-   158		if (attr->tcp)
-   159			iplen += sizeof(*thdr);
-   160		else
-   161			iplen += sizeof(*uhdr);
-   162		ihdr->tot_len = htons(iplen);
-   163		ihdr->frag_off = 0;
-   164		ihdr->saddr = 0;
-   165		ihdr->daddr = htonl(attr->ip_dst);
-   166		ihdr->tos = 0;
-   167		ihdr->id = 0;
-   168		ip_send_check(ihdr);
-   169	
-   170		shdr = skb_put(skb, sizeof(*shdr));
-   171		shdr->version = 0;
-   172		shdr->magic = cpu_to_be64(STMMAC_TEST_PKT_MAGIC);
-   173		attr->id = stmmac_test_next_id;
-   174		shdr->id = stmmac_test_next_id++;
-   175	
-   176		if (attr->size)
-   177			skb_put(skb, attr->size);
-   178	
-   179		skb->csum = 0;
-   180		skb->ip_summed = CHECKSUM_PARTIAL;
-   181		if (attr->tcp) {
-   182			thdr->check = ~tcp_v4_check(skb->len, ihdr->saddr, ihdr->daddr, 0);
-   183			skb->csum_start = skb_transport_header(skb) - skb->head;
-   184			skb->csum_offset = offsetof(struct tcphdr, check);
-   185		} else {
-   186			udp4_hwcsum(skb, ihdr->saddr, ihdr->daddr);
-   187		}
-   188	
-   189		skb->protocol = htons(ETH_P_IP);
-   190		skb->pkt_type = PACKET_HOST;
-   191		skb->dev = priv->dev;
-   192	
-   193		return skb;
-   194	}
-   195	
-
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+Unique identifier of the firmware parameter set.
