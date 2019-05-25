@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C21752A274
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 04:59:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 390A62A28C
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 05:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbfEYC7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 22:59:02 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:38917 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726452AbfEYC7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 22:59:01 -0400
-Received: by mail-lf1-f65.google.com with SMTP id f1so8429613lfl.6;
-        Fri, 24 May 2019 19:59:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I42CaPGNEMCFp3CHpIjUQ2oZUjvywz2zdl78AKj9zEo=;
-        b=Npl7JritObxy1JJtlBqRQBvGcd9kLRUokl3Hh45MqZDJO+4MrshCR34M05VrIvOl5Y
-         7f9W+Y1KJ86KiuCVz9dvL0lNdu9ZB0+6wfr1n4Ik1zPE/CqBALBGRxFt9/0+iL3+vlLV
-         +l4y/No601fB74ol5PrSq7LUUCjkSanJhME/4DlQgANAb0rAnO/AczsBVXIhfAu4iq86
-         OiVQZctd9z6t9w6I32409WzNDlo+fNLX7t/y8in8Kvqq1sJp8BYRt/xSrZmNwXZFm1Gt
-         +bFok46TVwxJQKsLBcMyCBz3IRZK709ykkEj1oG3cA+YFod+3jEhl1X9VeJCalvWbnOQ
-         uoZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I42CaPGNEMCFp3CHpIjUQ2oZUjvywz2zdl78AKj9zEo=;
-        b=uIbf4Lv2zMdso44WPiDq8Nz/90msMFojMHBcbEi9Lw/UxCNGCgXngPcexWu4uZq6Uj
-         bdCiYmlGJmqpk92POJhRBfzzsGLgLEF+KA1LA0mzx38u6woZy7o9Kv2Enml3VuyT2zJv
-         3vpAUv4jEWltjFbxhwFUtXlpjVERxAsaKNShurzCZIMyYmtgq9ZtzqM9zVMZ/QwwjxmZ
-         8gw79dAhBWLu73O1t+/acJtamJbiSzP7rYlZlKWPgvEjbzwxtmlBuoLFXZ07tf47pmmH
-         21CfwEpaGXykK1tRkykD/W6eI56Val2O9QVG2NSsFaWfKYWRRKvMBmrfITC4xdnJu74V
-         zzOA==
-X-Gm-Message-State: APjAAAVfGWqJIIfAoZDtAAi2+YpXeVP39x5P/97pGjYa5ZBbMqG8pKnl
-        i4gKeYltN9nUfY47EnmbBMmWCtP3AsFvyKh+87Q=
-X-Google-Smtp-Source: APXvYqynMZ4i/b/sNcnC/qUMa8ryVMxbvDaU/zePZGwG5YMv1GIvEFr8MFNfQCSXwi4k+SgGsgWFtuR4Yx6yDk7DpWA=
-X-Received: by 2002:ac2:4252:: with SMTP id m18mr19148041lfl.100.1558753139417;
- Fri, 24 May 2019 19:58:59 -0700 (PDT)
+        id S1726606AbfEYDVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 23:21:50 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:57716 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726425AbfEYDVu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 May 2019 23:21:50 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 015C8308424C;
+        Sat, 25 May 2019 03:21:50 +0000 (UTC)
+Received: from Hades.local (dhcp-17-185.bos.redhat.com [10.18.17.185])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A4D13503EF;
+        Sat, 25 May 2019 03:21:48 +0000 (UTC)
+Subject: Re: [PATCH net] bonding/802.3ad: fix slave link initialization
+ transition states
+To:     =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS1?=
+         =?UTF-8?B?4KS+4KSwKQ==?= <maheshb@google.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Heesoon Kim <Heesoon.Kim@stratus.com>
+References: <20190524134928.16834-1-jarod@redhat.com>
+ <30882.1558732616@famine>
+ <CAF2d9jhGmsaOZsDWNFihsD4EuEVq9s0xwY22d+FuhBz=A2JpKA@mail.gmail.com>
+From:   Jarod Wilson <jarod@redhat.com>
+Message-ID: <ab368b61-226e-0353-6481-18a5e289419d@redhat.com>
+Date:   Fri, 24 May 2019 23:21:47 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20190524195912.4966-1-mcroce@redhat.com>
-In-Reply-To: <20190524195912.4966-1-mcroce@redhat.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 24 May 2019 19:58:47 -0700
-Message-ID: <CAADnVQJzb7ruKZu1Wr8=S6J4Yp9tw_kX0tKEL1FrZroUwy4j7Q@mail.gmail.com>
-Subject: Re: [PATCH bpf] samples: bpf: add ibumad sample to .gitignore
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     Xdp <xdp-newbies@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAF2d9jhGmsaOZsDWNFihsD4EuEVq9s0xwY22d+FuhBz=A2JpKA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Sat, 25 May 2019 03:21:50 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 12:59 PM Matteo Croce <mcroce@redhat.com> wrote:
->
-> This commit adds ibumad to .gitignore which is
-> currently ommited from the ignore file.
->
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+On 5/24/19 6:38 PM, Mahesh Bandewar (महेश बंडेवार) wrote:
+> On Fri, May 24, 2019 at 2:17 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>>
+>> Jarod Wilson <jarod@redhat.com> wrote:
+>>
+>>> Once in a while, with just the right timing, 802.3ad slaves will fail to
+>>> properly initialize, winding up in a weird state, with a partner system
+>>> mac address of 00:00:00:00:00:00. This started happening after a fix to
+>>> properly track link_failure_count tracking, where an 802.3ad slave that
+>>> reported itself as link up in the miimon code, but wasn't able to get a
+>>> valid speed/duplex, started getting set to BOND_LINK_FAIL instead of
+>>> BOND_LINK_DOWN. That was the proper thing to do for the general "my link
+>>> went down" case, but has created a link initialization race that can put
+>>> the interface in this odd state.
+>>
+> Are there any notification consequences because of this change?
 
-Applied. Thanks
+No, there shouldn't be, it just makes initial link-up cleaner, 
+everything during runtime once the link is initialized should remain the 
+same.
+
+-- 
+Jarod Wilson
+jarod@redhat.com
