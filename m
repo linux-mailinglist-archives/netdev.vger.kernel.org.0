@@ -2,74 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF242A26A
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 04:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 155EC2A26E
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 04:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbfEYCkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 22:40:47 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:60740 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726454AbfEYCkr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 22:40:47 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 0B0673082DDD;
-        Sat, 25 May 2019 02:40:47 +0000 (UTC)
-Received: from Hades.local (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C0C7019C4F;
-        Sat, 25 May 2019 02:40:45 +0000 (UTC)
-Subject: Re: [PATCH net] bonding/802.3ad: fix slave link initialization
- transition states
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Heesoon Kim <Heesoon.Kim@stratus.com>
-References: <20190524134928.16834-1-jarod@redhat.com>
- <30882.1558732616@famine>
-From:   Jarod Wilson <jarod@redhat.com>
-Message-ID: <babab0b4-7d12-15f1-e4ae-70a2ed832d78@redhat.com>
-Date:   Fri, 24 May 2019 22:40:44 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
+        id S1726557AbfEYC5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 22:57:32 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:40168 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbfEYC5c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 22:57:32 -0400
+Received: by mail-lj1-f194.google.com with SMTP id q62so10237833ljq.7;
+        Fri, 24 May 2019 19:57:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=riyApgsTYeHf2zY9V/AMEGkb7h3Dl4SpcWBAI87ws7o=;
+        b=Cr2EYgUjkeLHCtvqjSOGW9oFUeSPO02ig9NkKOBRRNy0fICJ7Ng/0FaVg2RY/yn8+m
+         fz1gqwEe5Nghmb5/L0O5hssEIMkWS1e+FyPTKJK9O30frk2ZuXUF4A7Sv0KDahcfE8zk
+         YtliVApzcXpsSSdDiNfKn6Sw5q+kJFunCzZVbDdOtbLiZwofrEhlj/bp58LcT/3UnmF0
+         2/ydota/TCeN+DqRA829wZP16pG24a5l/A9vt+NrcUhcK1FAB9OpXT6DXYRCXKa5H0+K
+         2rBqm9geg/dPXJDCyYojiykzXs+Q4uq2kfpSoHY55opQgPFJZNGpg74TUPicJdisQ2Ei
+         eBvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=riyApgsTYeHf2zY9V/AMEGkb7h3Dl4SpcWBAI87ws7o=;
+        b=SV/bm9xe+oglb96lZKDhl3ETHKm19yf2hrQqWNfwRTH/IXVqwvg/+8YNINRPB7/woN
+         JIh7PmJpoMbULffmtpSyhbw+PXp4vRMd5y89fj2hXddpiYqr33hfZ8rkatvS5H08ibhU
+         QRvDSnqJ4Yzw3KmrSz3/Qud/5JS8LhGUbFlNsc8CeLKyygGRJLYbfXOxaTIXh8wsV4b9
+         u6oloT8zVsHRgxD9Sz9Bbn07g/ID+HIwz+NvDIa4TJonvhLaXzW0Zkk+droPIOVuvoNs
+         2wV9PGbaOy96p7tPkAzGiIYfsFz5xH7hPBFy9EzNhc1V5lY0gq4WcFO/Yi4bLi8OcwIw
+         zkRQ==
+X-Gm-Message-State: APjAAAUnN3NaxC91uy5bz6/PCQFpbDAXp6Gp94L1HJT/FDXKHCIovS1K
+        N/weBK+6J1w0iSLdu9uz0RzMhqo5aH5Tllo5jqc=
+X-Google-Smtp-Source: APXvYqxnGOe4vLPIZGxJNiD7SeAsy+hRtoTVLawKiMP0eSxVoqpe33uxazI46OQ4KvRMCNOsqH+AWDLowdcftJ0FSLQ=
+X-Received: by 2002:a2e:96d7:: with SMTP id d23mr1867375ljj.206.1558753049339;
+ Fri, 24 May 2019 19:57:29 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <30882.1558732616@famine>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Sat, 25 May 2019 02:40:47 +0000 (UTC)
+References: <20190524235156.4076591-1-guro@fb.com>
+In-Reply-To: <20190524235156.4076591-1-guro@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 24 May 2019 19:57:17 -0700
+Message-ID: <CAADnVQK7uukL5=S=96BrU7YOyxidA4Pnm3rPRoGy45bJU=_8tA@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 0/4] cgroup bpf auto-detachment
+To:     Roman Gushchin <guro@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Tejun Heo <tj@kernel.org>, Kernel Team <kernel-team@fb.com>,
+        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        Yonghong Song <yhs@fb.com>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/24/19 5:16 PM, Jay Vosburgh wrote:
-> Jarod Wilson <jarod@redhat.com> wrote:
-> 
->> Once in a while, with just the right timing, 802.3ad slaves will fail to
->> properly initialize, winding up in a weird state, with a partner system
->> mac address of 00:00:00:00:00:00. This started happening after a fix to
->> properly track link_failure_count tracking, where an 802.3ad slave that
->> reported itself as link up in the miimon code, but wasn't able to get a
->> valid speed/duplex, started getting set to BOND_LINK_FAIL instead of
->> BOND_LINK_DOWN. That was the proper thing to do for the general "my link
->> went down" case, but has created a link initialization race that can put
->> the interface in this odd state.
-> 
-> 	Reading back in the git history, the ultimate cause of this
-> "weird state" appears to be devices that assert NETDEV_UP prior to
-> actually being able to supply sane speed/duplex values, correct?
-> 
-> 	Presuming that this is the case, I don't see that there's much
-> else to be done here, and so:
-> 
-> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+On Fri, May 24, 2019 at 4:52 PM Roman Gushchin <guro@fb.com> wrote:
+>
+> This patchset implements a cgroup bpf auto-detachment functionality:
+> bpf programs are detached as soon as possible after removal of the
+> cgroup, without waiting for the release of all associated resources.
+>
+> Patches 2 and 3 are required to implement a corresponding kselftest
+> in patch 4.
+>
+> v4:
+>   1) release cgroup bpf data using a workqueue
+>   2) add test_cgroup_attach to .gitignore
 
-Correct, we've got an miimon "device is up", but still can't get speed 
-and/or duplex in this case.
-
--- 
-Jarod Wilson
-jarod@redhat.com
+There is a conflict in tools/testing/selftests/bpf/Makefile
+Please rebase
