@@ -2,94 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC1FA2A615
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 20:10:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2BF92A68D
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 20:42:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727524AbfEYSKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 May 2019 14:10:08 -0400
-Received: from kadath.azazel.net ([81.187.231.250]:56872 "EHLO
-        kadath.azazel.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727408AbfEYSJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 14:09:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
-         s=20190108; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=qG6F8hivqd22vYumF3SNYdpcZ6QPt9V2/5v6Rmzo8JU=; b=PuWFOEqDd2dV81M0vg5L1rVvpn
-        mHPYeazpAqpRu5D/6w8Eg07Sgo0L39Ua7ASm8g6X2/+QA+MrLyxZwts1Pui6EzCAZfjC6zajcCYzy
-        8pcu4nOFzdaa9ofITU5h9KIR2cQnjtJptQ4p/o1VURAc+wwCP2YktYKdnvfqTzUAAG7f+eRaC1tVp
-        nBP3B4TSWD4SQZP0gFMjKp+x4xVfTlPeHn+mHK1dhNL9MzEaxA9PU0TbxgfYy0k8P09KkmSlaA2/S
-        fdwHr0n/5KRG4Hy5Z6w03REqYIbFckTwsGDaq2UguP5XI633gvWVz7/YuRlFCEUKt/eG93D2IsRol
-        Ba3DXVcg==;
-Received: from ulthar.dreamlands ([192.168.96.2])
-        by kadath.azazel.net with esmtp (Exim 4.89)
-        (envelope-from <jeremy@azazel.net>)
-        id 1hUb6t-0004k1-HM; Sat, 25 May 2019 19:09:35 +0100
-From:   Jeremy Sowden <jeremy@azazel.net>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     syzbot+4f0529365f7f2208d9f0@syzkaller.appspotmail.com
-Subject: [PATCH net v2] af_key: fix leaks in key_pol_get_resp and dump_sp.
-Date:   Sat, 25 May 2019 19:09:35 +0100
-Message-Id: <20190525180935.7919-1-jeremy@azazel.net>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190525180204.6936-1-jeremy@azazel.net>
-References: <20190525180204.6936-1-jeremy@azazel.net>
+        id S1727149AbfEYSmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 May 2019 14:42:38 -0400
+Received: from mail-wr1-f46.google.com ([209.85.221.46]:37642 "EHLO
+        mail-wr1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725838AbfEYSmi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 14:42:38 -0400
+Received: by mail-wr1-f46.google.com with SMTP id e15so13004068wrs.4
+        for <netdev@vger.kernel.org>; Sat, 25 May 2019 11:42:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=9FHoGWKnhXV1Xj9GIBtVqwRjJF5D8+QirRgzz7WyGEA=;
+        b=u9p5tCKitQQ+3N3B9SsX82eOLACsRepZdL13lZNGwRE78enQ5vcGSEti1meeC5Jr8U
+         zME6Wf/EMkKOvHjoLRUKCnt99nQI9Dku52lYYYhwF7mwkHe/MK4InhpqEU2Xh7/FxatM
+         wa1BfNbI8yQdUZBGyehVgTLpTUGoAF6P7bhpI8dIHuQBCpHa00fYMAMvWTvjY/yoe0xZ
+         +jUvTRehQcR8nQxOgMf0iBdOsLyUxHvR72fwpIyHWwg+E09FQgg6lwcHTMVRzgAQ+k5O
+         xO/SWGCB5Icd8tJMyv7SPndDX3m2pHsx0/FUlq2Vu7EUPflSSabNkT1AtANpZjHctzZC
+         XZJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=9FHoGWKnhXV1Xj9GIBtVqwRjJF5D8+QirRgzz7WyGEA=;
+        b=WMbyd8gf3mQnEe74SGKy87X17iRKo1guZOiVaVVNVPo/iQUIjHSnjc7AyXxlnVVfAw
+         u/EXjSpvUq8FCTUl0a2Q8cIRQaXqsCe+vRcDhsrbEFMbHwUH96ubqmMI4JygUPDm/0c/
+         mia3DmaXv37jw2PKOzPpJUnFwpDHg3da/4etW8Ar6GWDoi6q2BJd/WAOim7TpnrwAEZV
+         WNK7hN0N+DNfzqmt5SwbcoP7BOKNiJRFMU7yW3InmKUev3thXUVu/nkoWlgR3SGBoYAC
+         TWh33VD40mmslmLb3uUqluACt0fuGW299tPJGEpZOUoicSNxzicGViFEv7StTWMXFWXv
+         qJ9w==
+X-Gm-Message-State: APjAAAXHgtXDOoMgeEmaE3w26qyO5csYCo7Ii+bY3GddWm1qsWu4PhEG
+        w8CvrEAEyYHQcSEkRsfmMbCyGl4P
+X-Google-Smtp-Source: APXvYqxCoXAQdl04Oi8skR9A0zSyq0PPHZGL4RgLBBFJBnuzUJ0tnvXjipFt+9PVtsACZu1dw8l3KA==
+X-Received: by 2002:adf:ce90:: with SMTP id r16mr17237524wrn.156.1558809756664;
+        Sat, 25 May 2019 11:42:36 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8be9:7a00:74ed:7635:d853:6c47? (p200300EA8BE97A0074ED7635D8536C47.dip0.t-ipconnect.de. [2003:ea:8be9:7a00:74ed:7635:d853:6c47])
+        by smtp.googlemail.com with ESMTPSA id n3sm4025187wrt.44.2019.05.25.11.42.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 25 May 2019 11:42:35 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/3] r8169: small improvements
+Message-ID: <b959316e-562f-c2a8-af20-78e27ba2c8e3@gmail.com>
+Date:   Sat, 25 May 2019 20:42:30 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 192.168.96.2
-X-SA-Exim-Mail-From: jeremy@azazel.net
-X-SA-Exim-Scanned: No (on kadath.azazel.net); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In both functions, if pfkey_xfrm_policy2msg failed we leaked the newly
-allocated sk_buff.  Free it on error.
+Series with small improvements.
 
-Fixes: 55569ce256ce ("Fix conversion between IPSEC_MODE_xxx and XFRM_MODE_xxx.")
-Reported-by: syzbot+4f0529365f7f2208d9f0@syzkaller.appspotmail.com
-Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
----
-Since v1.
+Heiner Kallweit (3):
+  r8169: remove rtl_hw_init_8168ep
+  r8169: remove unneeded return statement in rtl_hw_init_8168g
+  r8169: change type of member mac_version in rtl8169_private
 
-  * Changed return back to goto in key_pol_get_resp.
+ drivers/net/ethernet/realtek/r8169.c | 23 ++++++++++-------------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
 
- net/key/af_key.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 4af1e1d60b9f..51c0f10bb131 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2442,8 +2442,10 @@ static int key_pol_get_resp(struct sock *sk, struct xfrm_policy *xp, const struc
- 		goto out;
- 	}
- 	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
--	if (err < 0)
-+	if (err < 0) {
-+		kfree_skb(out_skb);
- 		goto out;
-+	}
- 
- 	out_hdr = (struct sadb_msg *) out_skb->data;
- 	out_hdr->sadb_msg_version = hdr->sadb_msg_version;
-@@ -2694,8 +2696,10 @@ static int dump_sp(struct xfrm_policy *xp, int dir, int count, void *ptr)
- 		return PTR_ERR(out_skb);
- 
- 	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
--	if (err < 0)
-+	if (err < 0) {
-+		kfree_skb(out_skb);
- 		return err;
-+	}
- 
- 	out_hdr = (struct sadb_msg *) out_skb->data;
- 	out_hdr->sadb_msg_version = pfk->dump.msg_version;
 -- 
-2.20.1
+2.21.0
 
