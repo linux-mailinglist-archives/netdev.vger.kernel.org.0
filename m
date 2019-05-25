@@ -2,100 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C48E22A23B
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 03:05:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D53952A258
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 04:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726394AbfEYBFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 21:05:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57564 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726220AbfEYBE7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 21:04:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=/leK6BrYDpRbnBbfmgnP0FFU1Et8b8QTAuc98yARIyk=; b=NT3VV33a2rMFOcZQZMsHb19cFA
-        znq0wrszYxlCKa1v7J/h5hnX8syLQlW9zskdtp2ehW/yxFLtT9yXtRJuhirKTI4AB1+wacebppBnY
-        NvXBiIWIsDUNIjP8PIcv56m6CbarlsemgzvO6Z4WfqsVqEUiAj4dgBNP7Iet2kI+lUgU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hUL79-00064G-PH; Sat, 25 May 2019 03:04:47 +0200
-Date:   Sat, 25 May 2019 03:04:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ruslan Babayev <ruslan@babayev.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        xe-linux-external@cisco.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/2] net: phy: sfp: enable i2c-bus detection
- on ACPI based systems
-Message-ID: <20190525010447.GQ2979@lunn.ch>
-References: <20190505193435.3248-1-ruslan@babayev.com>
- <20190525005302.27164-2-ruslan@babayev.com>
+        id S1726449AbfEYCHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 May 2019 22:07:42 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43741 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726267AbfEYCHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 May 2019 22:07:41 -0400
+Received: by mail-pg1-f194.google.com with SMTP id f25so5966750pgv.10;
+        Fri, 24 May 2019 19:07:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=f/rPQU5iU7Vv0FUS2+DXMBiiQI1yztk+kw7hy8YbcMA=;
+        b=ditw4KNh4hSV5GK6MO3eR/T212Zai3HXPZk1X7GDiSzWFH60yy/jP7Gg/hNYfuCpv4
+         qIof+UEg/WfaaQ+bMW5SfFAfhqvi3UsC698VG24++I/xQKpTguzh1Ti5yukTrctcGKq7
+         Vp6Yd6+dxy2wL67sF3kLoClaWp2BjnXOELK3Eb5hml5MiFixCPvQfwscYEdTc4WIp4va
+         6394U7ZtVhrdMIZbM2m2OiopDLbMd4/ziYApESUQ08H/3doTMR0mAM6WWDr4oTH4fDV6
+         Z/2HMTsx+0JX1GrLV/bycWON3azmqHkieWOGqiMX71C8TQmg8suJLjo7rkvPjIB7q3FY
+         A7yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=f/rPQU5iU7Vv0FUS2+DXMBiiQI1yztk+kw7hy8YbcMA=;
+        b=g6pVu5PsueQzlO+8TgWw6pofq0WtWsdQVbQWEYs3txBQj/FAuEcMFF0tYLKzKFZtzs
+         XJriIACxkzA7TIL8rw45RznrGNeZLhApog32hAlI7bjhRr2p/4ehHgi9j17cHgbtx26E
+         CxBtAWms0d8HqT9EyfOCLySZH9es3rLApTXykxoNuVeELfb2j/7thuI0aU1+w7DgKBKt
+         6o38aW04LPIv0pnyM6SpwgGGlik7YaHIv24ALyDVgetIWZWS9TQxFBzhcddAbHZ9v2jS
+         Lsuu4IEqELU3nOVr/xi1grRVJxa7HgjWO4QLNgx55K4LFfmA5yE4sj/Yi5KlLHpG1kcd
+         MvdQ==
+X-Gm-Message-State: APjAAAX12fvvG/T37H8nu9RGdQUW3Nl6Yi866pXIsEk0RQUowJGR9gZe
+        OUC0JQohxAMlV3zdLeIeJ98=
+X-Google-Smtp-Source: APXvYqxUN7CPjOellvE1NxJEEICT3nCI8m8kbjiFtmal6DKoH5fbcb/lb+yAvtyUJYnt/7MTGQji3A==
+X-Received: by 2002:a17:90a:248:: with SMTP id t8mr13607099pje.119.1558750061249;
+        Fri, 24 May 2019 19:07:41 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::c3a5])
+        by smtp.gmail.com with ESMTPSA id t5sm1203620pgh.46.2019.05.24.19.07.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 May 2019 19:07:40 -0700 (PDT)
+Date:   Fri, 24 May 2019 19:07:38 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jiong Wang <jiong.wang@netronome.com>
+Cc:     daniel@iogearbox.net, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, davem@davemloft.net,
+        paul.burton@mips.com, udknight@gmail.com, zlim.lnx@gmail.com,
+        illusionist.neo@gmail.com, naveen.n.rao@linux.ibm.com,
+        sandipan@linux.ibm.com, schwidefsky@de.ibm.com,
+        heiko.carstens@de.ibm.com, jakub.kicinski@netronome.com
+Subject: Re: [PATCH v9 bpf-next 00/17] bpf: eliminate zero extensions for
+ sub-register writes
+Message-ID: <20190525020736.gty5sdcu5jakffet@ast-mbp.dhcp.thefacebook.com>
+References: <1558736728-7229-1-git-send-email-jiong.wang@netronome.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190525005302.27164-2-ruslan@babayev.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <1558736728-7229-1-git-send-email-jiong.wang@netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 05:53:02PM -0700, Ruslan Babayev wrote:
-> Lookup I2C adapter using the "i2c-bus" device property on ACPI based
-> systems similar to how it's done with DT.
-> 
-> An example DSD describing an SFP on an ACPI based system:
-> 
-> Device (SFP0)
-> {
->     Name (_HID, "PRP0001")
->     Name (_CRS, ResourceTemplate()
->     {
->         GpioIo(Exclusive, PullDefault, 0, 0, IoRestrictionNone,
->                "\\_SB.PCI0.RP01.GPIO", 0, ResourceConsumer)
->             { 0, 1, 2, 3, 4 }
->     })
->     Name (_DSD, Package ()
->     {
->         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->         Package () {
->             Package () { "compatible", "sff,sfp" },
->             Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
->             Package () { "maximum-power-milliwatt", 1000 },
->             Package () { "tx-disable-gpios", Package () { ^SFP0, 0, 0, 1} },
->             Package () { "reset-gpio",       Package () { ^SFP0, 0, 1, 1} },
->             Package () { "mod-def0-gpios",   Package () { ^SFP0, 0, 2, 1} },
->             Package () { "tx-fault-gpios",   Package () { ^SFP0, 0, 3, 0} },
->             Package () { "los-gpios",        Package () { ^SFP0, 0, 4, 1} },
->         },
->     })
-> }
-> 
-> Device (PHY0)
-> {
->     Name (_HID, "PRP0001")
->     Name (_DSD, Package ()
->     {
->         ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->         Package () {
->             Package () { "compatible", "ethernet-phy-ieee802.3-c45" },
->             Package () { "sfp", \_SB.PCI0.RP01.SFP0 },
->             Package () { "managed", "in-band-status" },
->             Package () { "phy-mode", "sgmii" },
->         },
->     })
-> }
-> 
-> Signed-off-by: Ruslan Babayev <ruslan@babayev.com>
-> Cc: xe-linux-external@cisco.com
+On Fri, May 24, 2019 at 11:25:11PM +0100, Jiong Wang wrote:
+> v9:
+>   - Split patch 5 in v8.
+>     make bpf uapi header file sync a separate patch. (Alexei)
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+9th time's a charm? ;)
 
-    Andrew
+Applied.
+Thanks a lot for all the hard work.
+It's a great milestone.
+
+Please follow up with an optimization for bpf_patch_insn_data()
+to make it scaleable and undo that workaround in scale tests.
+
+Thanks!
+
