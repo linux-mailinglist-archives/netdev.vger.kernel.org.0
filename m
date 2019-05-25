@@ -2,60 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C38FE2A5EA
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 19:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C2B02A5EE
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 20:00:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727021AbfEYR7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 May 2019 13:59:15 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:57460 "EHLO
+        id S1727297AbfEYSAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 May 2019 14:00:30 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57478 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbfEYR7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 13:59:14 -0400
+        with ESMTP id S1726321AbfEYSAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 14:00:30 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5162D14FC7143;
-        Sat, 25 May 2019 10:59:14 -0700 (PDT)
-Date:   Sat, 25 May 2019 10:59:13 -0700 (PDT)
-Message-Id: <20190525.105913.171587221359582814.davem@davemloft.net>
-To:     gustavo@embeddedor.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] flow_offload: use struct_size() in kzalloc()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7345712B05D2E;
+        Sat, 25 May 2019 11:00:29 -0700 (PDT)
+Date:   Sat, 25 May 2019 11:00:29 -0700 (PDT)
+Message-Id: <20190525.110029.1339691720534150701.davem@davemloft.net>
+To:     blackgod016574@gmail.com
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ipv6_sockglue: Fix a missing-check bug in
+ ip6_ra_control()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190523225653.GA24864@embeddedor>
-References: <20190523225653.GA24864@embeddedor>
+In-Reply-To: <20190524031946.GA6463@zhanggen-UX430UQ>
+References: <20190524031946.GA6463@zhanggen-UX430UQ>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 25 May 2019 10:59:14 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 25 May 2019 11:00:29 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Date: Thu, 23 May 2019 17:56:53 -0500
+From: Gen Zhang <blackgod016574@gmail.com>
+Date: Fri, 24 May 2019 11:19:46 +0800
 
-> One of the more common cases of allocation size calculations is finding
-> the size of a structure that has a zero-sized array at the end, along
-> with memory for some number of elements for that array. For example:
+> In function ip6_ra_control(), the pointer new_ra is allocated a memory 
+> space via kmalloc(). And it is used in the following codes. However, 
+> when there is a memory allocation error, kmalloc() fails. Thus null 
+> pointer dereference may happen. And it will cause the kernel to crash. 
+> Therefore, we should check the return value and handle the error.
 > 
-> struct foo {
->    int stuff;
->    struct boo entry[];
-> };
-> 
-> instance = kzalloc(sizeof(struct foo) + count * sizeof(struct boo), GFP_KERNEL);
-> 
-> Instead of leaving these open-coded and prone to type mistakes, we can
-> now use the new struct_size() helper:
-> 
-> instance = kzalloc(struct_size(instance, entry, count), GFP_KERNEL);
-> 
-> This code was detected with the help of Coccinelle.
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
 
 Applied.
