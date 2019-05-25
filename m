@@ -2,262 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 521812A6A7
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 20:57:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B9252A6A9
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 20:58:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727196AbfEYS5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 May 2019 14:57:50 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40697 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726343AbfEYS5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 14:57:50 -0400
-Received: by mail-wm1-f67.google.com with SMTP id 15so12099938wmg.5
-        for <netdev@vger.kernel.org>; Sat, 25 May 2019 11:57:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=nhDr/+pv7qLlrKMuQ84kiF6ULJaq9JthdEesTy9k5sQ=;
-        b=C9qtzC1+wi9pKpfmJFUvHA0vTICG6by94EBsphHWtw/jFe6ho0U8Gp+8JqRQ9lbTsY
-         rTEFlvsJK6LxPjuSZczwhe25hHoldd2kZrx6xMP8kLgqwcEsT49kBAYhX7lcyQraZeCe
-         UVLjg89sMQVVou26+u67Dxe5Oi5KDRWWOSufaomIlrezSqVlSKPggG5UOc3JVZx9S6o0
-         aLZLB7I+56+0OFOVFlAhkAi8DjVDGXL/PZzcLu9ejYjia844uW2f9FyAA/hejaMkI7GY
-         p9x7r2XDhN63vOCi+mcJoU/5FNPlhMRmPJtU5VuG+r0ieme8bxr6177oBJJXR6b8vvzS
-         E7yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=nhDr/+pv7qLlrKMuQ84kiF6ULJaq9JthdEesTy9k5sQ=;
-        b=VtOragKgwq4yL+O5MaCpDASLhYhZ9LIZ6zXBQKaszaM9+t5LRqLa9WskFdFeBU/9ms
-         HTwonXtofWUpLRXjtBt7lA+lWjQtm1mcKHHVRiaPt2LgYv66hKiThuPH6JW+quxEMpJE
-         WvODNXP8rWOTkozFroslXBWTqrpSpjSVJwAoVh5Gs2PmXGWeh9j4TerbqsperadTz7nV
-         ZQjJIDE9BYggG2aehmj78HraQhjvKYuNVIAf2FNwBLHSWoziQsVogcH90ukycv6bIteo
-         6MpvlpX0l8nT342JSCOq8YTAy8USsrOH2NdMChRuPVbtP69rDmdBjbPSVQM0mghTrls0
-         64/Q==
-X-Gm-Message-State: APjAAAWL2gINftbp7SpI6UJUt7zfUvdvwnwsbwEH2W86ab0Rl67mN5X5
-        ogzoOUEM2y176Qc4aLmstpcV+GXk
-X-Google-Smtp-Source: APXvYqxQBbxAZpZRDVg74Kcrs2THsMgY7NxKp20Vw6y97rj1xSERyTy9WAD0m/lwD1IzJW+72nqsNA==
-X-Received: by 2002:a1c:e718:: with SMTP id e24mr4306659wmh.27.1558810667240;
-        Sat, 25 May 2019 11:57:47 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8be9:7a00:74ed:7635:d853:6c47? (p200300EA8BE97A0074ED7635D8536C47.dip0.t-ipconnect.de. [2003:ea:8be9:7a00:74ed:7635:d853:6c47])
-        by smtp.googlemail.com with ESMTPSA id l13sm5490621wme.37.2019.05.25.11.57.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 25 May 2019 11:57:46 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: improve RTL8168d PHY initialization
-Message-ID: <a0697e71-d695-19af-974d-56e53cb1a3a0@gmail.com>
-Date:   Sat, 25 May 2019 20:57:42 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727342AbfEYS56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 May 2019 14:57:58 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:34774 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727253AbfEYS56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 14:57:58 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4PIvu01019093
+        for <netdev@vger.kernel.org>; Sat, 25 May 2019 11:57:57 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=MxshrTqJ1tg+MhJ29Zqgr/S0R9JGfxxn5YyX9W2lDL4=;
+ b=dYUx5llNYxUG3jRLh3LJwGNR861qSoWCVbYFlUaGWrCDy8w9y2g8bsTFDqD8rmFCRqf2
+ 9/mmSbg/Z0TFt48KK/fI3hqVz/r36I9iiMbPrVYo8xY2nNeL06kMv+Je1d1W1RhqveVC
+ 1slNsVLvE9SCzgaEANjsJQopPinObelhrCo= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sq3ha8vh3-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 25 May 2019 11:57:57 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Sat, 25 May 2019 11:57:55 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id 03D993701F13; Sat, 25 May 2019 11:57:53 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Yonghong Song <yhs@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] bpf: check signal validity in nmi for bpf_send_signal() helper
+Date:   Sat, 25 May 2019 11:57:53 -0700
+Message-ID: <20190525185753.2467090-1-yhs@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-25_13:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=903 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905250134
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Certain parts of the PHY initialization are the same for sub versions
-1 and 2 of RTL8168d. So let's factor this out to simplify the code.
+Commit 8b401f9ed244 ("bpf: implement bpf_send_signal() helper")
+introduced bpf_send_signal() helper. If the context is nmi,
+the sending signal work needs to be deferred to irq_work.
+If the signal is invalid, the error will appear in irq_work
+and it won't be propagated to user.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+This patch did an early check in the helper itself to
+notify user invalid signal, as suggested by Daniel.
+
+Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- drivers/net/ethernet/realtek/r8169.c | 153 +++++++++------------------
- 1 file changed, 52 insertions(+), 101 deletions(-)
+ kernel/trace/bpf_trace.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
-index 1a6b50c3f..940ff0898 100644
---- a/drivers/net/ethernet/realtek/r8169.c
-+++ b/drivers/net/ethernet/realtek/r8169.c
-@@ -2910,50 +2910,59 @@ static void rtl8168c_4_hw_phy_config(struct rtl8169_private *tp)
- 	rtl8168c_3_hw_phy_config(tp);
- }
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 70029eafc71f..fe73926a07cd 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -600,6 +600,12 @@ BPF_CALL_1(bpf_send_signal, u32, sig)
+ 		return -EPERM;
  
--static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp)
--{
--	static const struct phy_reg phy_reg_init_0[] = {
--		/* Channel Estimation */
--		{ 0x1f, 0x0001 },
--		{ 0x06, 0x4064 },
--		{ 0x07, 0x2863 },
--		{ 0x08, 0x059c },
--		{ 0x09, 0x26b4 },
--		{ 0x0a, 0x6a19 },
--		{ 0x0b, 0xdcc8 },
--		{ 0x10, 0xf06d },
--		{ 0x14, 0x7f68 },
--		{ 0x18, 0x7fd9 },
--		{ 0x1c, 0xf0ff },
--		{ 0x1d, 0x3d9c },
--		{ 0x1f, 0x0003 },
--		{ 0x12, 0xf49f },
--		{ 0x13, 0x070b },
--		{ 0x1a, 0x05ad },
--		{ 0x14, 0x94c0 },
-+static const struct phy_reg rtl8168d_1_phy_reg_init_0[] = {
-+	/* Channel Estimation */
-+	{ 0x1f, 0x0001 },
-+	{ 0x06, 0x4064 },
-+	{ 0x07, 0x2863 },
-+	{ 0x08, 0x059c },
-+	{ 0x09, 0x26b4 },
-+	{ 0x0a, 0x6a19 },
-+	{ 0x0b, 0xdcc8 },
-+	{ 0x10, 0xf06d },
-+	{ 0x14, 0x7f68 },
-+	{ 0x18, 0x7fd9 },
-+	{ 0x1c, 0xf0ff },
-+	{ 0x1d, 0x3d9c },
-+	{ 0x1f, 0x0003 },
-+	{ 0x12, 0xf49f },
-+	{ 0x13, 0x070b },
-+	{ 0x1a, 0x05ad },
-+	{ 0x14, 0x94c0 },
- 
--		/*
--		 * Tx Error Issue
--		 * Enhance line driver power
--		 */
--		{ 0x1f, 0x0002 },
--		{ 0x06, 0x5561 },
--		{ 0x1f, 0x0005 },
--		{ 0x05, 0x8332 },
--		{ 0x06, 0x5561 },
-+	/*
-+	 * Tx Error Issue
-+	 * Enhance line driver power
-+	 */
-+	{ 0x1f, 0x0002 },
-+	{ 0x06, 0x5561 },
-+	{ 0x1f, 0x0005 },
-+	{ 0x05, 0x8332 },
-+	{ 0x06, 0x5561 },
- 
--		/*
--		 * Can not link to 1Gbps with bad cable
--		 * Decrease SNR threshold form 21.07dB to 19.04dB
--		 */
--		{ 0x1f, 0x0001 },
--		{ 0x17, 0x0cc0 },
-+	/*
-+	 * Can not link to 1Gbps with bad cable
-+	 * Decrease SNR threshold form 21.07dB to 19.04dB
-+	 */
-+	{ 0x1f, 0x0001 },
-+	{ 0x17, 0x0cc0 },
- 
--		{ 0x1f, 0x0000 },
--		{ 0x0d, 0xf880 }
--	};
-+	{ 0x1f, 0x0000 },
-+	{ 0x0d, 0xf880 }
-+};
- 
--	rtl_writephy_batch(tp, phy_reg_init_0);
-+static const struct phy_reg rtl8168d_1_phy_reg_init_1[] = {
-+	{ 0x1f, 0x0002 },
-+	{ 0x05, 0x669a },
-+	{ 0x1f, 0x0005 },
-+	{ 0x05, 0x8330 },
-+	{ 0x06, 0x669a },
-+	{ 0x1f, 0x0002 }
-+};
+ 	if (in_nmi()) {
++		/* Do an early check on signal validity. Otherwise,
++		 * the error is lost in deferred irq_work.
++		 */
++		if (unlikely(!valid_signal(sig)))
++			return -EINVAL;
 +
-+static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp)
-+{
-+	rtl_writephy_batch(tp, rtl8168d_1_phy_reg_init_0);
- 
- 	/*
- 	 * Rx Error Issue
-@@ -2964,17 +2973,9 @@ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp)
- 	rtl_w0w1_phy(tp, 0x0c, 0xa200, 0x5d00);
- 
- 	if (rtl8168d_efuse_read(tp, 0x01) == 0xb1) {
--		static const struct phy_reg phy_reg_init[] = {
--			{ 0x1f, 0x0002 },
--			{ 0x05, 0x669a },
--			{ 0x1f, 0x0005 },
--			{ 0x05, 0x8330 },
--			{ 0x06, 0x669a },
--			{ 0x1f, 0x0002 }
--		};
- 		int val;
- 
--		rtl_writephy_batch(tp, phy_reg_init);
-+		rtl_writephy_batch(tp, rtl8168d_1_phy_reg_init_1);
- 
- 		val = rtl_readphy(tp, 0x0d);
- 
-@@ -3023,62 +3024,12 @@ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp)
- 
- static void rtl8168d_2_hw_phy_config(struct rtl8169_private *tp)
- {
--	static const struct phy_reg phy_reg_init_0[] = {
--		/* Channel Estimation */
--		{ 0x1f, 0x0001 },
--		{ 0x06, 0x4064 },
--		{ 0x07, 0x2863 },
--		{ 0x08, 0x059c },
--		{ 0x09, 0x26b4 },
--		{ 0x0a, 0x6a19 },
--		{ 0x0b, 0xdcc8 },
--		{ 0x10, 0xf06d },
--		{ 0x14, 0x7f68 },
--		{ 0x18, 0x7fd9 },
--		{ 0x1c, 0xf0ff },
--		{ 0x1d, 0x3d9c },
--		{ 0x1f, 0x0003 },
--		{ 0x12, 0xf49f },
--		{ 0x13, 0x070b },
--		{ 0x1a, 0x05ad },
--		{ 0x14, 0x94c0 },
--
--		/*
--		 * Tx Error Issue
--		 * Enhance line driver power
--		 */
--		{ 0x1f, 0x0002 },
--		{ 0x06, 0x5561 },
--		{ 0x1f, 0x0005 },
--		{ 0x05, 0x8332 },
--		{ 0x06, 0x5561 },
--
--		/*
--		 * Can not link to 1Gbps with bad cable
--		 * Decrease SNR threshold form 21.07dB to 19.04dB
--		 */
--		{ 0x1f, 0x0001 },
--		{ 0x17, 0x0cc0 },
--
--		{ 0x1f, 0x0000 },
--		{ 0x0d, 0xf880 }
--	};
--
--	rtl_writephy_batch(tp, phy_reg_init_0);
-+	rtl_writephy_batch(tp, rtl8168d_1_phy_reg_init_0);
- 
- 	if (rtl8168d_efuse_read(tp, 0x01) == 0xb1) {
--		static const struct phy_reg phy_reg_init[] = {
--			{ 0x1f, 0x0002 },
--			{ 0x05, 0x669a },
--			{ 0x1f, 0x0005 },
--			{ 0x05, 0x8330 },
--			{ 0x06, 0x669a },
--
--			{ 0x1f, 0x0002 }
--		};
- 		int val;
- 
--		rtl_writephy_batch(tp, phy_reg_init);
-+		rtl_writephy_batch(tp, rtl8168d_1_phy_reg_init_1);
- 
- 		val = rtl_readphy(tp, 0x0d);
- 		if ((val & 0x00ff) != 0x006c) {
+ 		work = this_cpu_ptr(&send_signal_work);
+ 		if (work->irq_work.flags & IRQ_WORK_BUSY)
+ 			return -EBUSY;
 -- 
-2.21.0
+2.17.1
 
