@@ -2,91 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7CD32A5F2
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 20:02:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FB352A5F5
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 20:03:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726856AbfEYSCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 May 2019 14:02:19 -0400
-Received: from kadath.azazel.net ([81.187.231.250]:56540 "EHLO
-        kadath.azazel.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbfEYSCS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 14:02:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
-         s=20190108; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=6NOgK7FT/we+ISsPK3hXp1mMPGNuZAXRawMukl9aF0k=; b=izNQGYOgVH4tn59Vu3GmaopMwp
-        c9YcJOONT5sdFhUO/ZvtT9bU5AVwlCNuU9EuG6odqtY0G4HvMdf2NsjfgiPK5drFhnUTs4mSqVsYp
-        v4A292m6dht63DNZqUAOlUL1qf+5S+IkbKpnLVsJ6Au+40sR/AlovwMdgE4iVo/E8l34APHssgFx4
-        pXhUCst8uOONcrtJXq7mUhSxqdLPYupAKQDkaPSTsHRxJMP5XZT5+o3cyFKgpSIJ5iK+79RKnIHlm
-        3w2DcgjmQCuKKduP570LwjHTPcHF4opgHd+RDhIJ4Rq2SllglHf5BV2eCL4epRc2IUGC//Ovij1ZY
-        KOyQw7FA==;
-Received: from ulthar.dreamlands ([192.168.96.2])
-        by kadath.azazel.net with esmtp (Exim 4.89)
-        (envelope-from <jeremy@azazel.net>)
-        id 1hUazc-0004dA-Ni; Sat, 25 May 2019 19:02:04 +0100
-From:   Jeremy Sowden <jeremy@azazel.net>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     syzbot+4f0529365f7f2208d9f0@syzkaller.appspotmail.com
-Subject: [PATCH net] af_key: fix leaks in key_pol_get_resp and dump_sp.
-Date:   Sat, 25 May 2019 19:02:04 +0100
-Message-Id: <20190525180204.6936-1-jeremy@azazel.net>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <000000000000113abb0589b9c77c@google.com>
-References: <000000000000113abb0589b9c77c@google.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 192.168.96.2
-X-SA-Exim-Mail-From: jeremy@azazel.net
-X-SA-Exim-Scanned: No (on kadath.azazel.net); SAEximRunCond expanded to false
+        id S1727278AbfEYSCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 May 2019 14:02:54 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57518 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726321AbfEYSCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 14:02:54 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 282C814FC9282;
+        Sat, 25 May 2019 11:02:53 -0700 (PDT)
+Date:   Sat, 25 May 2019 11:02:52 -0700 (PDT)
+Message-Id: <20190525.110252.292904127953775877.davem@davemloft.net>
+To:     biao.huang@mediatek.com
+Cc:     joabreu@synopsys.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, mcoquelin.stm32@gmail.com,
+        matthias.bgg@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, yt.shen@mediatek.com,
+        jianguo.zhang@mediatek.comi, boon.leong.ong@intel.com
+Subject: Re: [v4, PATCH 0/3] fix some bugs in stmmac
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1558679169-26752-1-git-send-email-biao.huang@mediatek.com>
+References: <1558679169-26752-1-git-send-email-biao.huang@mediatek.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 25 May 2019 11:02:53 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In both functions, if pfkey_xfrm_policy2msg failed we leaked the newly
-allocated sk_buff.  Free it on error.
+From: Biao Huang <biao.huang@mediatek.com>
+Date: Fri, 24 May 2019 14:26:06 +0800
 
-Fixes: 55569ce256ce ("Fix conversion between IPSEC_MODE_xxx and XFRM_MODE_xxx.")
-Reported-by: syzbot+4f0529365f7f2208d9f0@syzkaller.appspotmail.com
-Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
----
- net/key/af_key.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+> changes in v4:                                                                  
+>         since MTL_OPERATION_MODE write back issue has be fixed in the latest driver,
+> remove original patch#3                                                         
+>                                                                                 
+> changes in v3:                                                                  
+>         add a Fixes:tag for each patch                                          
+>                                                                                 
+> changes in v2:                                                                  
+>         1. update rx_tail_addr as Jose's comment                                
+>         2. changes clk_csr condition as Alex's proposition                      
+>         3. remove init lines in dwmac-mediatek, get clk_csr from dts instead.   
+>                                                                                 
+> v1:                                                                             
+> This series fix some bugs in stmmac driver                                      
+> 3 patches are for common stmmac or dwmac4:                                      
+>         1. update rx tail pointer to fix rx dma hang issue.                     
+>         2. change condition for mdc clock to fix csr_clk can't be zero issue.   
+>         3. write the modified value back to MTL_OPERATION_MODE.                 
+> 1 patch is for dwmac-mediatek:                                                  
+>         modify csr_clk value to fix mdio read/write fail issue for dwmac-mediatek
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 4af1e1d60b9f..4cca397fd032 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2442,8 +2442,10 @@ static int key_pol_get_resp(struct sock *sk, struct xfrm_policy *xp, const struc
- 		goto out;
- 	}
- 	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
--	if (err < 0)
--		goto out;
-+	if (err < 0) {
-+		kfree_skb(out_skb);
-+		return err;
-+	}
- 
- 	out_hdr = (struct sadb_msg *) out_skb->data;
- 	out_hdr->sadb_msg_version = hdr->sadb_msg_version;
-@@ -2694,8 +2696,10 @@ static int dump_sp(struct xfrm_policy *xp, int dir, int count, void *ptr)
- 		return PTR_ERR(out_skb);
- 
- 	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
--	if (err < 0)
-+	if (err < 0) {
-+		kfree_skb(out_skb);
- 		return err;
-+	}
- 
- 	out_hdr = (struct sadb_msg *) out_skb->data;
- 	out_hdr->sadb_msg_version = pfk->dump.msg_version;
--- 
-2.20.1
-
+Series applied, thanks.
