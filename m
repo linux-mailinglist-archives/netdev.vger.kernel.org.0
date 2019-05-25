@@ -2,228 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9083F2A6C0
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 21:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 940FB2A6C8
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 21:34:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727455AbfEYTOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 May 2019 15:14:51 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:56200 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725791AbfEYTOv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 15:14:51 -0400
-Received: by mail-wm1-f67.google.com with SMTP id x64so12387913wmb.5
-        for <netdev@vger.kernel.org>; Sat, 25 May 2019 12:14:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=2QRHaDBeJqQMoSKXrS2cXteybH4NmXxtmYvZ6vcqiRk=;
-        b=Njl3pQoPsn9fwreWuigttWPHlXgCe+5R7VmjXzgegpnhxZn0GYTkOY+4uUrkp0x/YE
-         fERxNa3AKou1ByoX7s8BTX2UCkzqDhDf/IM3p+fzlrPzuD78lLyD+WzwaF1iVEjONa1P
-         0FXfJWclmMwq5Y74MA/0HOaMaGaJG9xpD19uAWLcyfB8CYEEW6GiGsGrneSu8D1T+ut6
-         9LYS5TXbBZU9wtuzWm6moNgVbDQJ14+JLAz0Wc4FGnsQT+rjxuok/T+hqIcvtprKg9vy
-         XsUUY3dMolhKoHVZg0fLghsc0YUyL+fEpMTB7V7FNqsmVcEeqL9ybpjrqkEhUYNRtriT
-         plGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=2QRHaDBeJqQMoSKXrS2cXteybH4NmXxtmYvZ6vcqiRk=;
-        b=oI/aczk09kIX07845bRPXYNvrXQ1axjODDbYzSh8KD6enZAOudUBNzdJJi6KAcpRkL
-         accyisfyB4o7pw/xHZo3RwSQ6qxLnBYww2QkdIUj8klezAdj2lp4bOlwtFIVfTu+2cRI
-         mbfdUuVA+Btn7BeBiVFtwQQJ8Ju1xrnZ+EszjXcYan3GwOvJBYqY3PSa/nXYxK2Yd0Ew
-         czWm6i/44ITuscIYW77GkPJTMz1JVGnY8XapL7m6VdKwz5KVVX89rHMnY5AR9zK8cZ1e
-         dVM/gCctdc+98w5FOq7ifLF7KgKo0jeAZHnf7KRUVVRLoUVskPlmzsdQGFqHHB7tE4w1
-         eapw==
-X-Gm-Message-State: APjAAAXN5d7cMBHSpMz+KoVDdvk4HpxRIli76oPjsJbjcDwjDA+cv5CW
-        EyWpwb+h6NtZSaZV2pII8A4KC1wi
-X-Google-Smtp-Source: APXvYqzwzlG7z4bmMrb2yagS6ZOqcwTcAsuW2EkRBwU+zFYltgihmJlSF4vIpzQnkzzYI9kP522Ncw==
-X-Received: by 2002:a1c:f60d:: with SMTP id w13mr4182635wmc.40.1558811687917;
-        Sat, 25 May 2019 12:14:47 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8be9:7a00:74ed:7635:d853:6c47? (p200300EA8BE97A0074ED7635D8536C47.dip0.t-ipconnect.de. [2003:ea:8be9:7a00:74ed:7635:d853:6c47])
-        by smtp.googlemail.com with ESMTPSA id t6sm12148446wmt.34.2019.05.25.12.14.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 25 May 2019 12:14:47 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: remove support for RTL_GIGA_MAC_VER_01
-Message-ID: <48cd2f91-3fbb-00d9-c02f-259b7583ce8e@gmail.com>
-Date:   Sat, 25 May 2019 21:14:39 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S1727408AbfEYTe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 May 2019 15:34:29 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:40046 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726366AbfEYTe3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 15:34:29 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4PJXeTo013917;
+        Sat, 25 May 2019 12:34:03 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : subject :
+ date : message-id : references : in-reply-to : content-type : content-id :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=kjFwkEK44ugJ5yrTvFwAGEcNwMbh3zs6bQNy3KjB/7Y=;
+ b=IDBl5WkrhCDeyn+7Y73lGNFOU34QIo/cYGrVm4rDFQ47kE5V7PgyaF/j4ltbcXxq4UCb
+ he1kCcYSCsaPnylc3Y6cUcjFFlSodBAobZ1ivNJE05OkMDgDglonvpr4v63RIlsaN8V8
+ ktOPgZT53sgPJW7SrFy+M1mOI3uozK4znjQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2sq2t89210-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 25 May 2019 12:34:03 -0700
+Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
+ ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sat, 25 May 2019 12:34:02 -0700
+Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
+ ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sat, 25 May 2019 12:34:02 -0700
+Received: from NAM03-DM3-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Sat, 25 May 2019 12:34:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kjFwkEK44ugJ5yrTvFwAGEcNwMbh3zs6bQNy3KjB/7Y=;
+ b=PdcLVF6uKdL1HnTa96JjeyGVfKqnHnc38oL+oiipbpHwOPofmwvYk+XnO9sHP/r+8t6PpeA1aPrLSTSyEjSkWf56CmH+mUhOWtSYF8kSrLbGzDsKzaefjHhP70eNv6LGvghsRwZjUmAlsMSz98u/alR/rFxFxQvm6bsK8GW9jNI=
+Received: from BN8PR15MB3380.namprd15.prod.outlook.com (20.179.75.139) by
+ BN8PR15MB2753.namprd15.prod.outlook.com (20.179.139.151) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.22; Sat, 25 May 2019 19:33:45 +0000
+Received: from BN8PR15MB3380.namprd15.prod.outlook.com
+ ([fe80::9059:5076:c91d:672a]) by BN8PR15MB3380.namprd15.prod.outlook.com
+ ([fe80::9059:5076:c91d:672a%7]) with mapi id 15.20.1922.021; Sat, 25 May 2019
+ 19:33:45 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Hariprasad Kelam <hariprasad.kelam@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "Jesper Dangaard Brouer" <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>
+Subject: Re: [PATCH] libbpf: fix warning PTR_ERR_OR_ZERO can be used
+Thread-Topic: [PATCH] libbpf: fix warning PTR_ERR_OR_ZERO can be used
+Thread-Index: AQHVEtivAG5/EXh3z0e90A/GY8EZ6aZ8O8cA
+Date:   Sat, 25 May 2019 19:33:44 +0000
+Message-ID: <2d147a2f-ac12-4e97-d281-c0d3463a5405@fb.com>
+References: <20190525090257.GA12104@hari-Inspiron-1545>
+In-Reply-To: <20190525090257.GA12104@hari-Inspiron-1545>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR1401CA0017.namprd14.prod.outlook.com
+ (2603:10b6:301:4b::27) To BN8PR15MB3380.namprd15.prod.outlook.com
+ (2603:10b6:408:a6::11)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::d262]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 74e2ec2c-d58c-4e2a-019f-08d6e147e67b
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN8PR15MB2753;
+x-ms-traffictypediagnostic: BN8PR15MB2753:
+x-microsoft-antispam-prvs: <BN8PR15MB27536AE41B6439059972B685D3030@BN8PR15MB2753.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:213;
+x-forefront-prvs: 0048BCF4DA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(136003)(396003)(39860400002)(376002)(346002)(189003)(199004)(11346002)(446003)(476003)(2616005)(46003)(486006)(2906002)(25786009)(53936002)(14454004)(6246003)(5660300002)(478600001)(66556008)(66476007)(66946007)(73956011)(4744005)(66446008)(64756008)(99286004)(8936002)(81156014)(8676002)(81166006)(110136005)(2501003)(7736002)(305945005)(2201001)(86362001)(14444005)(256004)(7416002)(386003)(6506007)(53546011)(71200400001)(71190400001)(31696002)(76176011)(102836004)(52116002)(229853002)(6486002)(36756003)(6116002)(186003)(6436002)(6512007)(316002)(68736007)(31686004)(921003)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR15MB2753;H:BN8PR15MB3380.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: iqZc0n/XW03W9ThAXTuyoeZFwGp11nEhgq3JT9/TRv7iLzwIG+YHKlPAMcab9hg0Dc2uO+h7aTbm/Mt9tN+6MWMgXGsp9o+qTn84ByzEH1NCZjM3IvZBMWDrDc3cIlE1RX/dTwzIDi//YGGrewvmIhjIYDirfQMbbarMid/zfAumlP5lsAidFhiEcm1OZVUyBOC2/0DN+aUZ9FtldJpRLhpSd/A2MSY1UxTaHcbXSM70GlilRsO9yOeKyfVnzUEnUNBiZdkCHnrJTShiIwTarF54VRcxZPQpoqLJ7X/9j4sYfqq9tJmv3u53UrbXyoTcaKjKAiczIPdxbWwgJGxGTxR/8ej79QHssXginLiJhDdrTaNgoY7o4VXVhvHDHVJT7hEsRSKM34tEsR1TytVOIOpaKP0VXXXb62BGJrL912s=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <39D77CFF63DBDE42824E52F6659BE541@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 74e2ec2c-d58c-4e2a-019f-08d6e147e67b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 May 2019 19:33:44.9619
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yhs@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR15MB2753
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-25_13:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905250138
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RTL_GIGA_MAC_VER_01 is RTL8169, the ancestor of the chip family.
-It didn't have an internal PHY and I've never seen it in the wild.
-What isn't there doesn't need to be maintained, so let's remove
-support for it.
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169.c | 43 ++++++----------------------
- 1 file changed, 9 insertions(+), 34 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
-index 940ff0898..64c25913a 100644
---- a/drivers/net/ethernet/realtek/r8169.c
-+++ b/drivers/net/ethernet/realtek/r8169.c
-@@ -81,7 +81,7 @@ static const int multicast_filter_limit = 32;
- #define RTL_R32(tp, reg)		readl(tp->mmio_addr + (reg))
- 
- enum mac_version {
--	RTL_GIGA_MAC_VER_01 = 0,
-+	/* support for ancient RTL_GIGA_MAC_VER_01 has been removed */
- 	RTL_GIGA_MAC_VER_02,
- 	RTL_GIGA_MAC_VER_03,
- 	RTL_GIGA_MAC_VER_04,
-@@ -146,7 +146,6 @@ static const struct {
- 	const char *fw_name;
- } rtl_chip_infos[] = {
- 	/* PCI devices. */
--	[RTL_GIGA_MAC_VER_01] = {"RTL8169"				},
- 	[RTL_GIGA_MAC_VER_02] = {"RTL8169s"				},
- 	[RTL_GIGA_MAC_VER_03] = {"RTL8110s"				},
- 	[RTL_GIGA_MAC_VER_04] = {"RTL8169sb/8110sb"			},
-@@ -406,8 +405,6 @@ enum rtl_register_content {
- 	RxOK		= 0x0001,
- 
- 	/* RxStatusDesc */
--	RxBOVF	= (1 << 24),
--	RxFOVF	= (1 << 23),
- 	RxRWT	= (1 << 22),
- 	RxRES	= (1 << 21),
- 	RxRUNT	= (1 << 20),
-@@ -503,9 +500,6 @@ enum rtl_register_content {
- 	LinkStatus	= 0x02,
- 	FullDup		= 0x01,
- 
--	/* _TBICSRBit */
--	TBILinkOK	= 0x02000000,
--
- 	/* ResetCounterCommand */
- 	CounterReset	= 0x1,
- 
-@@ -1424,7 +1418,7 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
- 	}
- 
- 	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_01 ... RTL_GIGA_MAC_VER_17:
-+	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_17:
- 		options = RTL_R8(tp, Config1) & ~PMEnable;
- 		if (wolopts)
- 			options |= PMEnable;
-@@ -2252,7 +2246,6 @@ static void rtl8169_get_mac_version(struct rtl8169_private *tp)
- 		{ 0xfc8, 0x100,	RTL_GIGA_MAC_VER_04 },
- 		{ 0xfc8, 0x040,	RTL_GIGA_MAC_VER_03 },
- 		{ 0xfc8, 0x008,	RTL_GIGA_MAC_VER_02 },
--		{ 0xfc8, 0x000,	RTL_GIGA_MAC_VER_01 },
- 
- 		/* Catch-all */
- 		{ 0x000, 0x000,	RTL_GIGA_MAC_NONE   }
-@@ -3936,7 +3929,6 @@ static void rtl_hw_phy_config(struct net_device *dev)
- {
- 	static const rtl_generic_fct phy_configs[] = {
- 		/* PCI devices. */
--		[RTL_GIGA_MAC_VER_01] = NULL,
- 		[RTL_GIGA_MAC_VER_02] = rtl8169s_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_03] = rtl8169s_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_04] = rtl8169sb_hw_phy_config,
-@@ -4001,12 +3993,6 @@ static void rtl_schedule_task(struct rtl8169_private *tp, enum rtl_flag flag)
- 		schedule_work(&tp->wk.work);
- }
- 
--static bool rtl_tbi_enabled(struct rtl8169_private *tp)
--{
--	return (tp->mac_version == RTL_GIGA_MAC_VER_01) &&
--	       (RTL_R8(tp, PHYstatus) & TBI_Enable);
--}
--
- static void rtl8169_init_phy(struct net_device *dev, struct rtl8169_private *tp)
- {
- 	rtl_hw_phy_config(dev);
-@@ -4195,7 +4181,7 @@ static void r8168_pll_power_up(struct rtl8169_private *tp)
- static void rtl_pll_power_down(struct rtl8169_private *tp)
- {
- 	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_01 ... RTL_GIGA_MAC_VER_06:
-+	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_06:
- 	case RTL_GIGA_MAC_VER_13 ... RTL_GIGA_MAC_VER_15:
- 		break;
- 	default:
-@@ -4206,7 +4192,7 @@ static void rtl_pll_power_down(struct rtl8169_private *tp)
- static void rtl_pll_power_up(struct rtl8169_private *tp)
- {
- 	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_01 ... RTL_GIGA_MAC_VER_06:
-+	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_06:
- 	case RTL_GIGA_MAC_VER_13 ... RTL_GIGA_MAC_VER_15:
- 		break;
- 	default:
-@@ -4217,7 +4203,7 @@ static void rtl_pll_power_up(struct rtl8169_private *tp)
- static void rtl_init_rxcfg(struct rtl8169_private *tp)
- {
- 	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_01 ... RTL_GIGA_MAC_VER_06:
-+	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_06:
- 	case RTL_GIGA_MAC_VER_10 ... RTL_GIGA_MAC_VER_17:
- 		RTL_W32(tp, RxConfig, RX_FIFO_THRESH | RX_DMA_BURST);
- 		break;
-@@ -6219,14 +6205,8 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, u32 budget
- 				dev->stats.rx_length_errors++;
- 			if (status & RxCRC)
- 				dev->stats.rx_crc_errors++;
--			/* RxFOVF is a reserved bit on later chip versions */
--			if (tp->mac_version == RTL_GIGA_MAC_VER_01 &&
--			    status & RxFOVF) {
--				rtl_schedule_task(tp, RTL_FLAG_TASK_RESET_PENDING);
--				dev->stats.rx_fifo_errors++;
--			} else if (status & (RxRUNT | RxCRC) &&
--				   !(status & RxRWT) &&
--				   dev->features & NETIF_F_RXALL) {
-+			if (status & (RxRUNT | RxCRC) && !(status & RxRWT) &&
-+			    dev->features & NETIF_F_RXALL) {
- 				goto process_pkt;
- 			}
- 		} else {
-@@ -7019,7 +6999,7 @@ static void rtl_hw_initialize(struct rtl8169_private *tp)
- static bool rtl_chip_supports_csum_v2(struct rtl8169_private *tp)
- {
- 	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_01 ... RTL_GIGA_MAC_VER_06:
-+	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_06:
- 	case RTL_GIGA_MAC_VER_10 ... RTL_GIGA_MAC_VER_17:
- 		return false;
- 	default:
-@@ -7035,7 +7015,7 @@ static int rtl_jumbo_max(struct rtl8169_private *tp)
- 
- 	switch (tp->mac_version) {
- 	/* RTL8169 */
--	case RTL_GIGA_MAC_VER_01 ... RTL_GIGA_MAC_VER_06:
-+	case RTL_GIGA_MAC_VER_02 ... RTL_GIGA_MAC_VER_06:
- 		return JUMBO_7K;
- 	/* RTL8168b */
- 	case RTL_GIGA_MAC_VER_11:
-@@ -7149,11 +7129,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (tp->mac_version == RTL_GIGA_MAC_NONE)
- 		return -ENODEV;
- 
--	if (rtl_tbi_enabled(tp)) {
--		dev_err(&pdev->dev, "TBI fiber mode not supported\n");
--		return -ENODEV;
--	}
--
- 	tp->cp_cmd = RTL_R16(tp, CPlusCmd);
- 
- 	if (sizeof(dma_addr_t) > 4 && tp->mac_version >= RTL_GIGA_MAC_VER_18 &&
--- 
-2.21.0
-
+DQoNCk9uIDUvMjUvMTkgMjowMiBBTSwgSGFyaXByYXNhZCBLZWxhbSB3cm90ZToNCj4gZml4IGJl
+bG93IHdhcm5pbmcgcmVwb3J0ZWQgYnkgY29jY2ljaGVjaw0KPiANCj4gL3Rvb2xzL2xpYi9icGYv
+bGliYnBmLmM6MzQ2MToxLTM6IFdBUk5JTkc6IFBUUl9FUlJfT1JfWkVSTyBjYW4gYmUgdXNlZA0K
+PiANCj4gU2lnbmVkLW9mZi1ieTogSGFyaXByYXNhZCBLZWxhbSA8aGFyaXByYXNhZC5rZWxhbUBn
+bWFpbC5jb20+DQpBY2tlZC1ieTogWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNvbT4NCg0KPiAtLS0N
+Cj4gICB0b29scy9saWIvYnBmL2xpYmJwZi5jIHwgNCArLS0tDQo+ICAgMSBmaWxlIGNoYW5nZWQs
+IDEgaW5zZXJ0aW9uKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL3Rvb2xz
+L2xpYi9icGYvbGliYnBmLmMgYi90b29scy9saWIvYnBmL2xpYmJwZi5jDQo+IGluZGV4IDE5N2I1
+NzQuLjMzYzI1YjYgMTAwNjQ0DQo+IC0tLSBhL3Rvb2xzL2xpYi9icGYvbGliYnBmLmMNCj4gKysr
+IGIvdG9vbHMvbGliL2JwZi9saWJicGYuYw0KPiBAQCAtMzQ1OCw5ICszNDU4LDcgQEAgYnBmX29i
+amVjdF9fZmluZF9tYXBfYnlfb2Zmc2V0KHN0cnVjdCBicGZfb2JqZWN0ICpvYmosIHNpemVfdCBv
+ZmZzZXQpDQo+ICAgDQo+ICAgbG9uZyBsaWJicGZfZ2V0X2Vycm9yKGNvbnN0IHZvaWQgKnB0cikN
+Cj4gICB7DQo+IC0JaWYgKElTX0VSUihwdHIpKQ0KPiAtCQlyZXR1cm4gUFRSX0VSUihwdHIpOw0K
+PiAtCXJldHVybiAwOw0KPiArCXJldHVybiBQVFJfRVJSX09SX1pFUk8ocHRyKTsNCj4gICB9DQo+
+ICAgDQo+ICAgaW50IGJwZl9wcm9nX2xvYWQoY29uc3QgY2hhciAqZmlsZSwgZW51bSBicGZfcHJv
+Z190eXBlIHR5cGUsDQo+IA0K
