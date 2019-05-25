@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 903B22A693
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 20:45:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA8D82A692
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 20:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727420AbfEYSpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727445AbfEYSpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 25 May 2019 14:45:15 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:55320 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725788AbfEYSpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 14:45:14 -0400
-Received: by mail-wm1-f67.google.com with SMTP id x64so12352492wmb.5
-        for <netdev@vger.kernel.org>; Sat, 25 May 2019 11:45:13 -0700 (PDT)
+Received: from mail-wr1-f49.google.com ([209.85.221.49]:42099 "EHLO
+        mail-wr1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727252AbfEYSpP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 14:45:15 -0400
+Received: by mail-wr1-f49.google.com with SMTP id l2so12994907wrb.9
+        for <netdev@vger.kernel.org>; Sat, 25 May 2019 11:45:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ijULekmnbNEDlx1vBWv8xQCVTXOnW6+zoNSXYGivFQ0=;
-        b=c44yT691CDqs7TzhNO8EWGg4nL/UkA4cKk6XmWOXaosfcMNwL00IGOVN9DuknVcspv
-         jevbmBoTkFlkK6dCuAENgBy+NEnwloS+kYb0qhoeHJUver12ggpRKQ2ErPIitWKUYrss
-         gftkn/WZQYtFhSoL4U6ZYQsnIVHrbc6JUeuXZOqSf8gW3WMjzue8uhdZOYW9EUTem9oM
-         Ip1str1T1yy6k+JNhOXi9Rm4uVqTE5g0+Y4miS+xbdIxmQnhfq6MZgW/uyVxkzhoDIgN
-         QGVQ6rZPfC5VSSxTpFVqfeTiwdhSCxUYGIz6G0mEYMmAHy/6oFEHkuy4aXZCtDt4uLBW
-         Zc+w==
+        bh=FUSD8/1bgM98I9Jx088f1SMG9zEG8Rm9P7wEnULXFfQ=;
+        b=mOadBMgzfpcgCKkO7avVw9CbaAEn8EP6sypcfFVndN61rQGyR5THbO1rmRpQyV5ak/
+         h01e9gUbgvOHpGDNKC2nLATQmVFmP2egoA6VLnIRMPIRFfTCURb8RYx5YsHVn+sNGLyc
+         AuWITaNTpaMMgPXJnqkZBgyD00MXAuENH0O74+DaxK6z1WtAwzVorwiBz6sZtDNt87H8
+         INQDl/sZlsC96vrmxiGnf9f12fJMYN5E3/EuYX8U2xowPrW5yqH5TEuU658o5K9m9ZKt
+         3ZbYpD3vvoJB5otn6UTdwZWQCUcLBijtBjTjxZs1kdbu8KgrBASjBWiglC94yL21rWOj
+         8wZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ijULekmnbNEDlx1vBWv8xQCVTXOnW6+zoNSXYGivFQ0=;
-        b=SHVWxsZ2JVRpLrOuYmOi7Jbg9YqbFpIv9mV/S2+xAc8WAq2VsEpRQKBknIN+/9d7kk
-         ttoNLSTX71VvgZfOFuGSVqC3umt7NHTpa81vxX7HtzwBcF8w2OwC95gBwopB1f20so7N
-         m9MjNvBpmBPUGSqKWmRn5GczhaKY0SsPFIgmmQ6R8P7jvc4RFbC/j275PfUj93RmQaJV
-         smhUshIKt/dsUIKEdq582dLAXbCNYj0CDbDd1OtKxwDi6A1jU+iZlRm5a3CKa2cO+v70
-         5OEADlYF38Uvrw7eay0UsD65qbRaZVRyeeRwe0Y26+vp+jD+vV2SA4SVW5gHJKfe+3G6
-         0iLA==
-X-Gm-Message-State: APjAAAV+qlzaY/GKANdAvQCSrSIF8x7e5l5yfzoaGZPOUfwaM5ldeIk8
-        +R3i1Oc+P1HqPuZi6SdVQfPvVPRF
-X-Google-Smtp-Source: APXvYqzom3LYdH6WV0Q/x+IaMWOCI1Z85J2C0qvUzy38bn15J9++cuQGK5YOyfrnx/N6Bq1rW8jc4g==
-X-Received: by 2002:a1c:3:: with SMTP id 3mr21640430wma.44.1558809912251;
-        Sat, 25 May 2019 11:45:12 -0700 (PDT)
+        bh=FUSD8/1bgM98I9Jx088f1SMG9zEG8Rm9P7wEnULXFfQ=;
+        b=XrC+vUpur9hKHvD54eJmUs8sbgSOnyHG8H02JmoJpdT1oQCaIE0fXRiwb0kWu8OrV0
+         1rgkfqnfohikX8ENd1qYfHXVFCIwhyD7CgevIdNS5h1hFqWK94XE3xvbjCGFzZ/Xmml2
+         aBtHaqiirBRD0z+01FAgB3d57vxZC8a8Nevp+mLiDB9uZ5CJtfWc38G/eLnXDL3BN0dr
+         ah711Yjq1rGX6q/0bNt+aWVPVUxzITLMhPezWh++UcNR8snNKB1wC426d99Sgsjm1Q01
+         HUnXC2xAPh/6w3RATkcn1uo6eS/9nov7fZQvLc1i6WUSZCjtgBSmvN1O3FGrIFNBNwhh
+         qnYg==
+X-Gm-Message-State: APjAAAX7ZGvpU5NsODiwJwGDssmM2+gvv7OHy4jQQkRmQOp201gr8gf3
+        QXDxYTwTHBfG2THxn3efcWPjDbQw
+X-Google-Smtp-Source: APXvYqzHnRGEiaELFRB4Q4T6yaY1oppjbUPC6wgVDa+VCmhr3cCcIa0/qkPC/SE39mX7B59luTJkZg==
+X-Received: by 2002:a5d:4d11:: with SMTP id z17mr18511411wrt.308.1558809913547;
+        Sat, 25 May 2019 11:45:13 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8be9:7a00:74ed:7635:d853:6c47? (p200300EA8BE97A0074ED7635D8536C47.dip0.t-ipconnect.de. [2003:ea:8be9:7a00:74ed:7635:d853:6c47])
-        by smtp.googlemail.com with ESMTPSA id o12sm393787wmh.12.2019.05.25.11.45.11
+        by smtp.googlemail.com with ESMTPSA id a5sm5071366wrt.10.2019.05.25.11.45.12
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 25 May 2019 11:45:11 -0700 (PDT)
-Subject: [PATCH net-next 1/3] r8169: remove rtl_hw_init_8168ep
+        Sat, 25 May 2019 11:45:13 -0700 (PDT)
+Subject: [PATCH net-next 2/3] r8169: remove unneeded return statement in
+ rtl_hw_init_8168g
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <b959316e-562f-c2a8-af20-78e27ba2c8e3@gmail.com>
-Message-ID: <7f717d00-16a0-4811-90ad-7ca61ba7e96c@gmail.com>
-Date:   Sat, 25 May 2019 20:43:25 +0200
+Message-ID: <efeb548d-0cff-ad6f-7866-a127819b8a1f@gmail.com>
+Date:   Sat, 25 May 2019 20:44:01 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
@@ -65,42 +66,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtl_hw_init_8168ep() can be removed, this simplifies the code.
+Remove not needed return statement.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/realtek/r8169.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
-index 8e404186e..c69694653 100644
+index c69694653..e861edca2 100644
 --- a/drivers/net/ethernet/realtek/r8169.c
 +++ b/drivers/net/ethernet/realtek/r8169.c
-@@ -7047,21 +7047,15 @@ static void rtl_hw_init_8168g(struct rtl8169_private *tp)
- 		return;
+@@ -7043,8 +7043,7 @@ static void rtl_hw_init_8168g(struct rtl8169_private *tp)
+ 	data |= (1 << 15);
+ 	r8168_mac_ocp_write(tp, 0xe8de, data);
+ 
+-	if (!rtl_udelay_loop_wait_high(tp, &rtl_link_list_ready_cond, 100, 42))
+-		return;
++	rtl_udelay_loop_wait_high(tp, &rtl_link_list_ready_cond, 100, 42);
  }
  
--static void rtl_hw_init_8168ep(struct rtl8169_private *tp)
--{
--	rtl8168ep_stop_cmac(tp);
--	rtl_hw_init_8168g(tp);
--}
--
  static void rtl_hw_initialize(struct rtl8169_private *tp)
- {
- 	switch (tp->mac_version) {
-+	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_51:
-+		rtl8168ep_stop_cmac(tp);
-+		/* fall through */
- 	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_48:
- 		rtl_hw_init_8168g(tp);
- 		break;
--	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_51:
--		rtl_hw_init_8168ep(tp);
--		break;
- 	default:
- 		break;
- 	}
 -- 
 2.21.0
 
