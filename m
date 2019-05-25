@@ -2,74 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 390A62A28C
-	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 05:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B9D2A2FF
+	for <lists+netdev@lfdr.de>; Sat, 25 May 2019 07:38:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726606AbfEYDVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 May 2019 23:21:50 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57716 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726425AbfEYDVu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 May 2019 23:21:50 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 015C8308424C;
-        Sat, 25 May 2019 03:21:50 +0000 (UTC)
-Received: from Hades.local (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A4D13503EF;
-        Sat, 25 May 2019 03:21:48 +0000 (UTC)
-Subject: Re: [PATCH net] bonding/802.3ad: fix slave link initialization
- transition states
-To:     =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS1?=
-         =?UTF-8?B?4KS+4KSwKQ==?= <maheshb@google.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Heesoon Kim <Heesoon.Kim@stratus.com>
-References: <20190524134928.16834-1-jarod@redhat.com>
- <30882.1558732616@famine>
- <CAF2d9jhGmsaOZsDWNFihsD4EuEVq9s0xwY22d+FuhBz=A2JpKA@mail.gmail.com>
-From:   Jarod Wilson <jarod@redhat.com>
-Message-ID: <ab368b61-226e-0353-6481-18a5e289419d@redhat.com>
-Date:   Fri, 24 May 2019 23:21:47 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
+        id S1726321AbfEYFiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 May 2019 01:38:22 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:54668 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726091AbfEYFiW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 May 2019 01:38:22 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x4P5XNQI031323
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 22:38:20 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=6H5JKgxkjq5QbRBdsVmRIPKzSYAfrFHKk4vUQrO+X0o=;
+ b=NVVm6h5gbXznHsE+8kmqDND+WRqnplD3dY+OkC2Q0/VPCtCzecBIS7UmG0PxmlUhMpBH
+ mj42uBW2mHgXo9xOBp/3DwoVq8iQ4xTj1Kg3Q3m6Y8LOKvnZuEnNWX+Vjlw6lpmrpwy9
+ X+q5nZEKGZ01P2Fvnr6BenqwxZ7k5CateIQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2sphh5thnt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 24 May 2019 22:38:20 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 24 May 2019 22:38:14 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id C3C1A86171B; Fri, 24 May 2019 22:38:12 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <quentin.monnet@netronome.com>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next] bpftool: auto-complete BTF IDs for btf dump
+Date:   Fri, 24 May 2019 22:38:09 -0700
+Message-ID: <20190525053809.1207929-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <CAF2d9jhGmsaOZsDWNFihsD4EuEVq9s0xwY22d+FuhBz=A2JpKA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Sat, 25 May 2019 03:21:50 +0000 (UTC)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-25_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=511 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905250038
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/24/19 6:38 PM, Mahesh Bandewar (महेश बंडेवार) wrote:
-> On Fri, May 24, 2019 at 2:17 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
->>
->> Jarod Wilson <jarod@redhat.com> wrote:
->>
->>> Once in a while, with just the right timing, 802.3ad slaves will fail to
->>> properly initialize, winding up in a weird state, with a partner system
->>> mac address of 00:00:00:00:00:00. This started happening after a fix to
->>> properly track link_failure_count tracking, where an 802.3ad slave that
->>> reported itself as link up in the miimon code, but wasn't able to get a
->>> valid speed/duplex, started getting set to BOND_LINK_FAIL instead of
->>> BOND_LINK_DOWN. That was the proper thing to do for the general "my link
->>> went down" case, but has created a link initialization race that can put
->>> the interface in this odd state.
->>
-> Are there any notification consequences because of this change?
+Auto-complete BTF IDs for `btf dump id` sub-command. List of possible BTF
+IDs is scavenged from loaded BPF programs that have associated BTFs, as
+there is currently no API in libbpf to fetch list of all BTFs in the
+system.
 
-No, there shouldn't be, it just makes initial link-up cleaner, 
-everything during runtime once the link is initialized should remain the 
-same.
+Suggested-by: Quentin Monnet <quentin.monnet@netronome.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/bpf/bpftool/bash-completion/bpftool | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
+diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+index 75c01eafd3a1..9fbc33e93689 100644
+--- a/tools/bpf/bpftool/bash-completion/bpftool
++++ b/tools/bpf/bpftool/bash-completion/bpftool
+@@ -71,6 +71,13 @@ _bpftool_get_prog_tags()
+         command sed -n 's/.*"tag": "\(.*\)",$/\1/p' )" -- "$cur" ) )
+ }
+ 
++_bpftool_get_btf_ids()
++{
++    COMPREPLY+=( $( compgen -W "$( bpftool -jp prog 2>&1 | \
++        command sed -n 's/.*"btf_id": \(.*\),\?$/\1/p' | \
++        command sort -nu )" -- "$cur" ) )
++}
++
+ _bpftool_get_obj_map_names()
+ {
+     local obj
+@@ -635,6 +642,9 @@ _bpftool()
+                                 map)
+                                     _bpftool_get_map_ids
+                                     ;;
++                                dump)
++                                    _bpftool_get_btf_ids
++                                    ;;
+                             esac
+                             return 0
+                             ;;
 -- 
-Jarod Wilson
-jarod@redhat.com
+2.17.1
+
