@@ -2,121 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D04C92A998
-	for <lists+netdev@lfdr.de>; Sun, 26 May 2019 14:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00D7F2A99A
+	for <lists+netdev@lfdr.de>; Sun, 26 May 2019 14:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727767AbfEZMVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 May 2019 08:21:38 -0400
-Received: from onstation.org ([52.200.56.107]:34294 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727577AbfEZMVi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 May 2019 08:21:38 -0400
-Received: from localhost (c-98-239-145-235.hsd1.wv.comcast.net [98.239.145.235])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: masneyb)
-        by onstation.org (Postfix) with ESMTPSA id 3D8283E8DE;
-        Sun, 26 May 2019 12:21:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=onstation.org;
-        s=default; t=1558873297;
-        bh=+pZchRi39jPHP0qQqNkASaPmePyovKRsrhb/epkA3O8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H3WM8l28X85rNtXbObGWCc0HVfSkpKpZ4nzWbVIS8dppFuFhg/AlCGbCqvRRNgC8a
-         e8Cj3LHOIuzlbWyJrije+DpG8X8yUbh2/xsmoKgL+auQ0VxtR7cWL3ZJjUe3uPZXTe
-         TgOkNqLbnLUq7YQEo1PjCt7ljwsFbS4hgb/UxgmI=
-Date:   Sun, 26 May 2019 08:21:36 -0400
-From:   Brian Masney <masneyb@onstation.org>
-To:     Adrian Hunter <adrian.hunter@intel.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>
-Cc:     ulf.hansson@linaro.org, faiz_abbas@ti.com,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: Issue with Broadcom wireless in 5.2rc1 (was Re: [PATCH] mmc: sdhci:
- queue work after sdhci_defer_done())
-Message-ID: <20190526122136.GA26456@basecamp>
-References: <20190524111053.12228-1-masneyb@onstation.org>
- <70782901-a9ac-5647-1abe-89c86a44a01b@intel.com>
- <20190524154958.GB16322@basecamp>
+        id S1727772AbfEZMXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 May 2019 08:23:54 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:40518 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727577AbfEZMXy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 08:23:54 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4QCLchB001282;
+        Sun, 26 May 2019 05:23:48 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=HIPHPhbwdNJDlQ0Y1LqTXu0wTZnLIEcsKOh08Mk5LUU=;
+ b=g4myCAvQ1gYUcMjhPBqxjGDYP0s2Tiuct8s/HXOpty5WX3nVtb7hJRifmJFHCKzh4xhE
+ v+EsgKXTqN5/OjBKahURv1dRII5iTEWj8MC7eqnxGQmQwZiDXPueN/pPZ28zjyoaHAZY
+ EgK5QYZwUMaN5gFbOUqPrPudqgXUmK5B+47v4MlR5Bcp0WpfxMD5sNEdKMeC8C5OUfQx
+ VTScLOiSzcdlnfpWfTMYfhZ5teVh9piOCHlfHb4jszDnkBhMSVwIaNQaLW5A+4x5ohHx
+ UvPzlT7agdZ796ACTD1fxuv5OZ7u7zgyp0+Fiy+BUEIz4DHT2QhxZ71qCmtSqfhrackf yw== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2sq57fubsh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 26 May 2019 05:23:48 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Sun, 26 May
+ 2019 05:23:47 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Sun, 26 May 2019 05:23:47 -0700
+Received: from lb-tlvb-michal.il.qlogic.org (unknown [10.5.220.215])
+        by maili.marvell.com (Postfix) with ESMTP id 2410B3F703F;
+        Sun, 26 May 2019 05:23:44 -0700 (PDT)
+From:   Michal Kalderon <michal.kalderon@marvell.com>
+To:     <michal.kalderon@marvell.com>, <ariel.elior@marvell.com>,
+        <davem@davemloft.net>
+CC:     <dledford@redhat.com>, <jgg@ziepe.ca>, <leon@kernel.org>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>
+Subject: [PATCH v2 net-next 00/11] qed*: Improve performance on 100G link for offload protocols
+Date:   Sun, 26 May 2019 15:22:19 +0300
+Message-ID: <20190526122230.30039-1-michal.kalderon@marvell.com>
+X-Mailer: git-send-email 2.14.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190524154958.GB16322@basecamp>
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-26_08:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ Broadcom wireless maintainers
+This patch series modifies the current implementation of PF selection.
+The refactoring of the llh code enables setting additional filters
+(mac / protocol) per PF, and improves performance for offload protocols
+(RoCE, iWARP, iSCSI, fcoe) on 100G link (was capped at 90G per single
+PF).
 
-On Fri, May 24, 2019 at 11:49:58AM -0400, Brian Masney wrote:
-> On Fri, May 24, 2019 at 03:17:13PM +0300, Adrian Hunter wrote:
-> > On 24/05/19 2:10 PM, Brian Masney wrote:
-> > > WiFi stopped working on the LG Nexus 5 phone and the issue was bisected
-> > > to the commit c07a48c26519 ("mmc: sdhci: Remove finish_tasklet") that
-> > > moved from using a tasklet to a work queue. That patch also changed
-> > > sdhci_irq() to return IRQ_WAKE_THREAD instead of finishing the work when
-> > > sdhci_defer_done() is true. Change it to queue work to the complete work
-> > > queue if sdhci_defer_done() is true so that the functionality is
-> > > equilivent to what was there when the finish_tasklet was present. This
-> > > corrects the WiFi breakage on the Nexus 5 phone.
-> > > 
-> > > Signed-off-by: Brian Masney <masneyb@onstation.org>
-> > > Fixes: c07a48c26519 ("mmc: sdhci: Remove finish_tasklet")
-> > > ---
-> > > [ ... ]
-> > > 
-> > >  drivers/mmc/host/sdhci.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
-> > > index 97158344b862..3563c3bc57c9 100644
-> > > --- a/drivers/mmc/host/sdhci.c
-> > > +++ b/drivers/mmc/host/sdhci.c
-> > > @@ -3115,7 +3115,7 @@ static irqreturn_t sdhci_irq(int irq, void *dev_id)
-> > >  			continue;
-> > >  
-> > >  		if (sdhci_defer_done(host, mrq)) {
-> > > -			result = IRQ_WAKE_THREAD;
-> > > +			queue_work(host->complete_wq, &host->complete_work);
-> > 
-> > The IRQ thread has a lot less latency than the work queue, which is why it
-> > is done that way.
-> > 
-> > I am not sure why you say this change is equivalent to what was there
-> > before, nor why it fixes your problem.
-> > 
-> > Can you explain some more?
->
-> [ ... ]
-> 
-> drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c calls
-> sdio_claim_host() and it appears to never return.
+Improved performance on 100G link is achieved by configuring engine
+affinty to each PF.
+The engine affinity is read from the Management FW and hw is configured accordingly.
+A new hw resource called PPFID is exposed and an API is introduced to utilize
+it. This additional resource enables setting the affinity of a PF and providing
+more classification rules per PF.
+qedr,qedi,qedf are also modified as part of the series. Without the
+changes functionality is broken.
 
-When the brcmfmac driver is loaded, the firmware is requested from disk,
-and that's when the deadlock occurs in 5.2rc1. Specifically:
+v1 --> v2
+---------
+- Remove iWARP module parameter. Instead use devlink param infrastructure
+  for setting the iwarp_cmt mode. Additional patch added to the series for
+  adding the devlink support.
 
-1) brcmf_sdio_download_firmware() in
-   drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c calls
-   sdio_claim_host()
+- Fix kbuild test robot warning on qed_llh_filter initialization.
 
-2) brcmf_sdio_firmware_callback() is called and brcmf_sdiod_ramrw()
-   tries to claim the host, but has to wait since its already claimed
-   in #1 and the deadlock occurs.
+- Remove comments inside function calls
 
-I tried to release the host before the firmware is requested, however
-parts of brcmf_chip_set_active() needs the host to be claimed, and a
-similar deadlock occurs in brcmf_sdiod_ramrw() if I claim the host
-before calling brcmf_chip_set_active().
+Chad Dupuis (1):
+  qedf: Use hwfns and affin_hwfn_idx to get MSI-X vector index to use
 
-I started to look at moving the sdio_{claim,release}_host() calls out of
-brcmf_sdiod_ramrw() but there's a fair number of callers, so I'd like to
-get feedback about the best course of action here.
+Manish Rangankar (2):
+  Revert "scsi: qedi: Allocate IRQs based on msix_cnt"
+  qedi: Use hwfns and affin_hwfn_idx to get MSI-X vector index
 
-Brian
+Michal Kalderon (8):
+  qed: Modify api for performing a dmae to another PF
+  qed: Add llh ppfid interface and 100g support for offload protocols
+  qed*: Change hwfn used for sb initialization
+  qed: Modify offload protocols to use the affined engine
+  qedr: Change the MSI-X vectors selection to be based on affined engine
+  qed: Set the doorbell address correctly
+  qed: Add qed devlink parameters table
+  qed*: Add iWARP 100g support
+
+ drivers/infiniband/hw/qedr/main.c              |   25 +-
+ drivers/infiniband/hw/qedr/qedr.h              |    2 +
+ drivers/net/ethernet/qlogic/qed/qed.h          |   24 +-
+ drivers/net/ethernet/qlogic/qed/qed_cxt.c      |    5 +-
+ drivers/net/ethernet/qlogic/qed/qed_debug.c    |    2 +-
+ drivers/net/ethernet/qlogic/qed/qed_dev.c      | 1275 +++++++++++++++++++-----
+ drivers/net/ethernet/qlogic/qed/qed_dev_api.h  |  113 ++-
+ drivers/net/ethernet/qlogic/qed/qed_fcoe.c     |   26 +-
+ drivers/net/ethernet/qlogic/qed/qed_hsi.h      |   16 +-
+ drivers/net/ethernet/qlogic/qed/qed_hw.c       |   44 +-
+ drivers/net/ethernet/qlogic/qed/qed_init_ops.c |    9 +-
+ drivers/net/ethernet/qlogic/qed/qed_int.c      |    8 +-
+ drivers/net/ethernet/qlogic/qed/qed_iscsi.c    |   35 +-
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c    |   24 +-
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.h    |    4 +-
+ drivers/net/ethernet/qlogic/qed/qed_l2.c       |    4 +-
+ drivers/net/ethernet/qlogic/qed/qed_ll2.c      |  406 +++++---
+ drivers/net/ethernet/qlogic/qed/qed_main.c     |  157 ++-
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c      |   65 ++
+ drivers/net/ethernet/qlogic/qed/qed_mcp.h      |   16 +
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c     |   75 +-
+ drivers/net/ethernet/qlogic/qed/qed_reg_addr.h |    6 +
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c    |    3 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c   |    3 +-
+ drivers/scsi/qedf/qedf_main.c                  |   39 +-
+ drivers/scsi/qedi/qedi_main.c                  |   34 +-
+ include/linux/qed/qed_if.h                     |   10 +-
+ include/linux/qed/qed_rdma_if.h                |    2 +
+ 28 files changed, 1810 insertions(+), 622 deletions(-)
+
+-- 
+2.14.5
+
