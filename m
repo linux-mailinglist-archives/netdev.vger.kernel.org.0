@@ -2,152 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94D502A9A9
-	for <lists+netdev@lfdr.de>; Sun, 26 May 2019 14:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15DCF2A9AB
+	for <lists+netdev@lfdr.de>; Sun, 26 May 2019 14:24:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727844AbfEZMYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 May 2019 08:24:08 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:42710 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727793AbfEZMYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 08:24:07 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4QCNtBe028842;
-        Sun, 26 May 2019 05:24:03 -0700
+        id S1727861AbfEZMYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 May 2019 08:24:13 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:40594 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727577AbfEZMYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 08:24:10 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4QCKcvZ000645;
+        Sun, 26 May 2019 05:24:06 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=kFcOCEUtmRIPxXa4GVLGAHkBy8y9IAXOwmnnSpBUudU=;
- b=sWq70UVajvSJPi27fktlaJKUJNqBZx8EstyfhXPXW6LLjB+4i2AvPS/Vvy3sef2ekXFD
- R/rC9sOBOnA0IhMvhK/pYJJjat35EPf0tfhMVnZ5IfbuYbWi48uJZXGf/GW7BqoeGRVM
- 9uqwgGIVpLOjlg5qEv076V7qtmwxG372a72+PGTiAHNlmGQCxotjHVAELMMDBK6GpY4+
- yZ1NOsjOR8sjJrB1M79ecaAGkMLeUAsuHM56jSAJCer+Jno69rkO9rtX2QFgu2NB7Jcr
- rPb5jIcVlDVPFn2lqJVIrL4f1tkVIXqlzuq58cXYj3EzKAX2xthS3g//QSEh+c4rc4X1 zg== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2sqm7r11yr-1
+ content-type; s=pfpt0818; bh=UaxcEuIzqTFWsmPpQTeI9UrKIOvmbVQJ5BlfSMV2pBc=;
+ b=ml8YDDqOhds/au96Z1MQJHNonNeh0ttfCqwMDIpUXTzxBYrcjU2C+ei9bKBXUr6vcjFN
+ oes442R1T9TjyQNxvuNno1gyITJcYae633sOlNOJG017+u7MAZaAzPj44iJMVwCpmMyS
+ IJKF2p4uyzM8njxXsr7wR+AfyldnYvw7CDkQesfsq46gPGJbr6PWS6dhfHefykca/yPP
+ ygRg+RBBXSyOIfcwdPa4E72da/bAS8WP6zAugi7a1igiLxjeOTVacDFQiF3Svvhgse79
+ oL517CgUVLPS8qmEvcmUyVF3gaCijVsjkeNPeVyAemA/8fAsNbK3rcr3Km0kO4kdoHkB Pg== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2sq57fubtn-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 26 May 2019 05:24:03 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Sun, 26 May
- 2019 05:24:02 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Sun, 26 May 2019 05:24:02 -0700
+        Sun, 26 May 2019 05:24:06 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Sun, 26 May
+ 2019 05:24:05 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Sun, 26 May 2019 05:24:05 -0700
 Received: from lb-tlvb-michal.il.qlogic.org (unknown [10.5.220.215])
-        by maili.marvell.com (Postfix) with ESMTP id 636A63F703F;
-        Sun, 26 May 2019 05:24:00 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 2409A3F7040;
+        Sun, 26 May 2019 05:24:02 -0700 (PDT)
 From:   Michal Kalderon <michal.kalderon@marvell.com>
 To:     <michal.kalderon@marvell.com>, <ariel.elior@marvell.com>,
         <davem@davemloft.net>
 CC:     <dledford@redhat.com>, <jgg@ziepe.ca>, <leon@kernel.org>,
         <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>,
-        Denis Bolotin <denis.bolotin@marvell.com>
-Subject: [PATCH v2 net-next 06/11] qed: Set the doorbell address correctly
-Date:   Sun, 26 May 2019 15:22:25 +0300
-Message-ID: <20190526122230.30039-7-michal.kalderon@marvell.com>
+        <linux-scsi@vger.kernel.org>
+Subject: [PATCH v2 net-next 07/11] qed: Add qed devlink parameters table
+Date:   Sun, 26 May 2019 15:22:26 +0300
+Message-ID: <20190526122230.30039-8-michal.kalderon@marvell.com>
 X-Mailer: git-send-email 2.14.5
 In-Reply-To: <20190526122230.30039-1-michal.kalderon@marvell.com>
 References: <20190526122230.30039-1-michal.kalderon@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-26_09:,,
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-26_08:,,
  signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In 100g mode the doorbell bar is united for both engines. Set
-the correct offset in the hwfn so that the doorbell returned
-for RoCE is in the affined hwfn.
+The table currently contains a single parameter for
+configuring whether iWARP should be enabled on a 100g
+device. Enabling iWARP on a 100g device impacts L2
+performance and is therefore not enabled by default.
 
 Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-Signed-off-by: Denis Bolotin <denis.bolotin@marvell.com>
 Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed_dev.c  | 29 ++++++++++++++++++-----------
- drivers/net/ethernet/qlogic/qed/qed_rdma.c |  2 +-
- 2 files changed, 19 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed.h      |   3 +
+ drivers/net/ethernet/qlogic/qed/qed_main.c | 110 +++++++++++++++++++++++++++++
+ 2 files changed, 113 insertions(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index 640214cca1c6..61ca49a967df 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -4426,6 +4426,7 @@ static void qed_nvm_info_free(struct qed_hwfn *p_hwfn)
- static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 				 void __iomem *p_regview,
- 				 void __iomem *p_doorbells,
-+				 u64 db_phys_addr,
- 				 enum qed_pci_personality personality)
- {
- 	struct qed_dev *cdev = p_hwfn->cdev;
-@@ -4434,6 +4435,7 @@ static int qed_hw_prepare_single(struct qed_hwfn *p_hwfn,
- 	/* Split PCI bars evenly between hwfns */
- 	p_hwfn->regview = p_regview;
- 	p_hwfn->doorbells = p_doorbells;
-+	p_hwfn->db_phys_addr = db_phys_addr;
- 
- 	if (IS_VF(p_hwfn->cdev))
- 		return qed_vf_hw_prepare(p_hwfn);
-@@ -4529,7 +4531,9 @@ int qed_hw_prepare(struct qed_dev *cdev,
- 	/* Initialize the first hwfn - will learn number of hwfns */
- 	rc = qed_hw_prepare_single(p_hwfn,
- 				   cdev->regview,
--				   cdev->doorbells, personality);
-+				   cdev->doorbells,
-+				   cdev->db_phys_addr,
-+				   personality);
- 	if (rc)
- 		return rc;
- 
-@@ -4538,22 +4542,25 @@ int qed_hw_prepare(struct qed_dev *cdev,
- 	/* Initialize the rest of the hwfns */
- 	if (cdev->num_hwfns > 1) {
- 		void __iomem *p_regview, *p_doorbell;
--		u8 __iomem *addr;
-+		u64 db_phys_addr;
-+		u32 offset;
- 
- 		/* adjust bar offset for second engine */
--		addr = cdev->regview +
--		       qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
--				       BAR_ID_0) / 2;
--		p_regview = addr;
-+		offset = qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
-+					 BAR_ID_0) / 2;
-+		p_regview = cdev->regview + offset;
- 
--		addr = cdev->doorbells +
--		       qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
--				       BAR_ID_1) / 2;
--		p_doorbell = addr;
-+		offset = qed_hw_bar_size(p_hwfn, p_hwfn->p_main_ptt,
-+					 BAR_ID_1) / 2;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
+index e8e8d7c4af5a..89fe091c958d 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed.h
++++ b/drivers/net/ethernet/qlogic/qed/qed.h
+@@ -863,6 +863,9 @@ struct qed_dev {
+ 	u32 rdma_max_inline;
+ 	u32 rdma_max_srq_sge;
+ 	u16 tunn_feature_mask;
 +
-+		p_doorbell = cdev->doorbells + offset;
++	struct devlink			*dl;
++	bool				iwarp_cmt;
+ };
+ 
+ #define NUM_OF_VFS(dev)         (QED_IS_BB(dev) ? MAX_NUM_VFS_BB \
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+index 7f19fefe0d79..829dd60ab937 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+@@ -48,6 +48,7 @@
+ #include <linux/crc32.h>
+ #include <linux/qed/qed_if.h>
+ #include <linux/qed/qed_ll2_if.h>
++#include <net/devlink.h>
+ 
+ #include "qed.h"
+ #include "qed_sriov.h"
+@@ -342,6 +343,107 @@ static int qed_set_power_state(struct qed_dev *cdev, pci_power_t state)
+ 	return 0;
+ }
+ 
++struct qed_devlink {
++	struct qed_dev *cdev;
++};
 +
-+		db_phys_addr = cdev->db_phys_addr + offset;
++enum qed_devlink_param_id {
++	QED_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
++	QED_DEVLINK_PARAM_ID_IWARP_CMT,
++};
++
++static int qed_dl_param_get(struct devlink *dl, u32 id,
++			    struct devlink_param_gset_ctx *ctx)
++{
++	struct qed_devlink *qed_dl;
++	struct qed_dev *cdev;
++
++	qed_dl = devlink_priv(dl);
++	cdev = qed_dl->cdev;
++	ctx->val.vbool = cdev->iwarp_cmt;
++
++	return 0;
++}
++
++static int qed_dl_param_set(struct devlink *dl, u32 id,
++			    struct devlink_param_gset_ctx *ctx)
++{
++	struct qed_devlink *qed_dl;
++	struct qed_dev *cdev;
++
++	qed_dl = devlink_priv(dl);
++	cdev = qed_dl->cdev;
++	cdev->iwarp_cmt = ctx->val.vbool;
++
++	return 0;
++}
++
++static const struct devlink_param qed_devlink_params[] = {
++	DEVLINK_PARAM_DRIVER(QED_DEVLINK_PARAM_ID_IWARP_CMT,
++			     "iwarp_cmt", DEVLINK_PARAM_TYPE_BOOL,
++			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
++			     qed_dl_param_get, qed_dl_param_set, NULL),
++};
++
++static const struct devlink_ops qed_dl_ops;
++
++static int qed_devlink_register(struct qed_dev *cdev)
++{
++	union devlink_param_value value;
++	struct qed_devlink *qed_dl;
++	struct devlink *dl;
++	int rc;
++
++	dl = devlink_alloc(&qed_dl_ops, sizeof(*qed_dl));
++	if (!dl)
++		return -ENOMEM;
++
++	qed_dl = devlink_priv(dl);
++
++	cdev->dl = dl;
++	qed_dl->cdev = cdev;
++
++	rc = devlink_register(dl, &cdev->pdev->dev);
++	if (rc)
++		goto err_free;
++
++	rc = devlink_params_register(dl, qed_devlink_params,
++				     ARRAY_SIZE(qed_devlink_params));
++	if (rc)
++		goto err_unregister;
++
++	value.vbool = false;
++	devlink_param_driverinit_value_set(dl,
++					   QED_DEVLINK_PARAM_ID_IWARP_CMT,
++					   value);
++
++	devlink_params_publish(dl);
++	cdev->iwarp_cmt = false;
++
++	return 0;
++
++err_unregister:
++	devlink_unregister(dl);
++
++err_free:
++	cdev->dl = NULL;
++	devlink_free(dl);
++
++	return rc;
++}
++
++static void qed_devlink_unregister(struct qed_dev *cdev)
++{
++	if (!cdev->dl)
++		return;
++
++	devlink_params_unregister(cdev->dl, qed_devlink_params,
++				  ARRAY_SIZE(qed_devlink_params));
++
++	devlink_unregister(cdev->dl);
++	devlink_free(cdev->dl);
++}
++
+ /* probing */
+ static struct qed_dev *qed_probe(struct pci_dev *pdev,
+ 				 struct qed_probe_params *params)
+@@ -370,6 +472,12 @@ static struct qed_dev *qed_probe(struct pci_dev *pdev,
+ 	}
+ 	DP_INFO(cdev, "PCI init completed successfully\n");
  
- 		/* prepare second hw function */
- 		rc = qed_hw_prepare_single(&cdev->hwfns[1], p_regview,
--					   p_doorbell, personality);
-+					   p_doorbell, db_phys_addr,
-+					   personality);
++	rc = qed_devlink_register(cdev);
++	if (rc) {
++		DP_INFO(cdev, "Failed to register devlink.\n");
++		goto err2;
++	}
++
+ 	rc = qed_hw_prepare(cdev, QED_PCI_DEFAULT);
+ 	if (rc) {
+ 		DP_ERR(cdev, "hw prepare failed\n");
+@@ -399,6 +507,8 @@ static void qed_remove(struct qed_dev *cdev)
  
- 		/* in case of error, need to free the previously
- 		 * initiliazed hwfn 0.
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-index 4284374daa4f..e4d63359864e 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-@@ -803,7 +803,7 @@ static int qed_rdma_add_user(void *rdma_cxt,
- 				     dpi_start_offset +
- 				     ((out_params->dpi) * p_hwfn->dpi_size));
+ 	qed_set_power_state(cdev, PCI_D3hot);
  
--	out_params->dpi_phys_addr = p_hwfn->cdev->db_phys_addr +
-+	out_params->dpi_phys_addr = p_hwfn->db_phys_addr +
- 				    dpi_start_offset +
- 				    ((out_params->dpi) * p_hwfn->dpi_size);
++	qed_devlink_unregister(cdev);
++
+ 	qed_free_cdev(cdev);
+ }
  
 -- 
 2.14.5
