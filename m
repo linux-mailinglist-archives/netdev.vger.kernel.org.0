@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17CFB2AC49
+	by mail.lfdr.de (Postfix) with ESMTP id A97B22AC4A
 	for <lists+netdev@lfdr.de>; Sun, 26 May 2019 23:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726079AbfEZVPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 May 2019 17:15:33 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:34007 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725788AbfEZVPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 17:15:33 -0400
-Received: by mail-pl1-f195.google.com with SMTP id w7so6218421plz.1
-        for <netdev@vger.kernel.org>; Sun, 26 May 2019 14:15:32 -0700 (PDT)
+        id S1726106AbfEZVPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 May 2019 17:15:35 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:36849 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725788AbfEZVPe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 17:15:34 -0400
+Received: by mail-pl1-f194.google.com with SMTP id d21so6220718plr.3
+        for <netdev@vger.kernel.org>; Sun, 26 May 2019 14:15:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=munnSaDPYGVqlShjlPVQhzMv5d6uTzrKKUH35RVhkXw=;
-        b=gvz2K1gT0oMvIMQYRFjdsqdhtDSFt34x815qZxkl5us+w93A0Ur+YpEizvmeaStxAc
-         NwNEClAQsmlMRxTPOyDpFe7FIrdWOz4ZA+iAfzz7s+9hHshk18IC9RkwVK0HsURGtB2E
-         TNYxD99zWe3V6vs8QwNkjptFHa92mtDQigBK1eneo3HE+IRA6EuCzSr7Z7bSCi6pOTp6
-         tQ2TqfaQFQ27wEhOV8IyV8HIEA80InXQKWce4hO4EyqQbtTlQrv96lHZIa9a1SB/M4pz
-         LxdPyhBbLOF4/Gs4umwXbELaEqsb7OwUbYanyZV/F+UbqH9oN0FOfDM9hSpEi6xd1Y5q
-         BXFw==
+        bh=gymxrhMZW1MlcvQ3Sojp16R+DodTpO8ebx9/FKrBeb8=;
+        b=skU17xqfNqX3/U9F9IErr1T3irC5LacYzLo717gvgkoP39VW97DbHMAmjdHwwrzHIN
+         8U70x3m+m9GMTBWpbqWOBm6lHrqEjeCWJM6yfFOB4Zc6gtj+pFIU5jXOmO6HfRPo085h
+         5xdgMde+ie8/sPydHA9hhk7swBPxAQBHL0b37UrKSGjrUbTTL8BHLTRBMmE3ZnDTuFtH
+         pgrdKEgyRcZG0ZpDjGt+pwdKPrxs2YuNp0hPZ6Nl8xmjldJZyKTOpLx6+909lYTZyoZh
+         YmljdUpCB39yHFNTHz1YxNs8l0M8MFIgJYpKACGDoeg+1+CpNbxuQrpSi4xbs9Tk91In
+         d9Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=munnSaDPYGVqlShjlPVQhzMv5d6uTzrKKUH35RVhkXw=;
-        b=hQOGcMKbdDLRy7DuLEYZg6eu4svqhfMNRAXjRVioV7vFIZ3aAoKkhL5yFZSUsA2XOe
-         Pq9O8arw/ua1OuFMiTRnJMFSrPi3r59tOKa6gxYPchhI21ag+yyUtRElV3HR6TOQoZj3
-         mLC4R2y0p0Feqz24rUtCrTgb/1dXhWJrQk9sim4sYaDVN9RygqnhQkHYYmWwRqgPjp9N
-         76GfI/Rfpm1FiJT/o8tfD08A6pdB7QTSHh2eYrKYID9RZNX8JzCNMCEnwVbubmprC9XT
-         9YJea6ysQUzI1uEcMc+ROqItEHWqbrcGDXRiqCyAbcy2is6EJtYrRiCjHTOmUtxg/qmU
-         qg4A==
-X-Gm-Message-State: APjAAAWswJGFt3PdSA/JfpBIwjsVWpAhzda2/qDaUjNjEer5zsv11ohM
-        MepBQ0JeVwt7wnMczExi6E5ynDJ1IQQzhw==
-X-Google-Smtp-Source: APXvYqwJGUxZoho4AYk/czdYnY0UB94R/qj9GXkmXgC/wOnqS98FepGShHNtHHkhsi9Yxe51NLec2w==
-X-Received: by 2002:a17:902:b094:: with SMTP id p20mr98470677plr.164.1558905332213;
-        Sun, 26 May 2019 14:15:32 -0700 (PDT)
+        bh=gymxrhMZW1MlcvQ3Sojp16R+DodTpO8ebx9/FKrBeb8=;
+        b=M1lfXIWEvbAwjZibaX1zS1cVWv3s4pmgMgVt7xeGMtfUSk3sTWMQgmhLqDnGELO3WW
+         18+6PClznsdh+Gxla23OIq33L6pysMH1FvFM8vJ5tN81/KEOH/D1KE6X/aLYydvt9tP1
+         /hyRvmRALRR0JJIuUNfOzEtn9uAFMjC1nHgm+C3/sTJXFCC5AbqQ7wHdzSJfubyHuvGf
+         W/Z+4NaNKnoVArU58IxK/AU7yRfojJkDKgN7hfpQg7aP6BcVkTpwgcRigdhTKxb1mk/0
+         fR/4LrcRGLnliNQBXxFfZCMKGxhcn0H0ljlhLQKJlg1bFVv9Faw7iQOAlXDhLUyNZ4V9
+         QAqg==
+X-Gm-Message-State: APjAAAX8NpXoR5v2KTxLN1GnpdxzG5hscSTdmVTsTw0dQyctgOBN5KGy
+        XIhzdDlXjf1uT6Q6y7Y5UvPQtplj1YW8Vg==
+X-Google-Smtp-Source: APXvYqzOm/R99BWWljrdhWDyOFJHAFdsnpFy8u4umJGP6TuMsDViSRAi2iIEsaEk1t2q3HPyNNeL3g==
+X-Received: by 2002:a17:902:690b:: with SMTP id j11mr48901092plk.149.1558905333756;
+        Sun, 26 May 2019 14:15:33 -0700 (PDT)
 Received: from localhost.localdomain (c-73-223-249-119.hsd1.ca.comcast.net. [73.223.249.119])
-        by smtp.gmail.com with ESMTPSA id f40sm13325325pjg.9.2019.05.26.14.15.31
+        by smtp.gmail.com with ESMTPSA id f40sm13325325pjg.9.2019.05.26.14.15.32
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 26 May 2019 14:15:31 -0700 (PDT)
+        Sun, 26 May 2019 14:15:33 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 X-Google-Original-From: Tom Herbert <tom@quantonium.net>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [PATCH net-next 2/4] ipv6: Update references from RFC2460 to RFC8200
-Date:   Sun, 26 May 2019 14:15:04 -0700
-Message-Id: <1558905306-2968-3-git-send-email-tom@quantonium.net>
+Subject: [PATCH net-next 3/4] ipv6: Reference RFC8504 for limits in padding and EH
+Date:   Sun, 26 May 2019 14:15:05 -0700
+Message-Id: <1558905306-2968-4-git-send-email-tom@quantonium.net>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1558905306-2968-1-git-send-email-tom@quantonium.net>
 References: <1558905306-2968-1-git-send-email-tom@quantonium.net>
@@ -58,148 +58,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPv6 is now a full Internet standard in RFC8200! Update references
-in the code to reflect that.
+RFC8504 specifies requirements for applying limits to Hop-by-Hop
+and Destination Options extension headers and options (including
+padding). Reference this RFC appropriately.
 
 Signed-off-by: Tom Herbert <tom@quantonium.net>
 ---
- drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c | 2 +-
- drivers/net/usb/smsc95xx.c                           | 2 +-
- net/ipv6/exthdrs.c                                   | 4 ++--
- net/ipv6/netfilter/nf_conntrack_reasm.c              | 2 +-
- net/ipv6/reassembly.c                                | 2 +-
- net/ipv6/syncookies.c                                | 2 +-
- net/ipv6/tcp_ipv6.c                                  | 2 +-
- net/ipv6/udp.c                                       | 2 +-
- net/netfilter/xt_TCPMSS.c                            | 2 +-
- 9 files changed, 10 insertions(+), 10 deletions(-)
+ include/net/ipv6.h | 9 +++++----
+ net/ipv6/exthdrs.c | 3 ++-
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index 57a9c31..4711150 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -163,7 +163,7 @@ rmnet_map_ipv6_dl_csum_trailer(struct sk_buff *skb,
- 	if (unlikely(csum_value_final == 0)) {
- 		switch (ip6h->nexthdr) {
- 		case IPPROTO_UDP:
--			/* RFC 2460 section 8.1
-+			/* RFC 8200 section 8.1
- 			 * DL6 One's complement rule for UDP checksum 0
- 			 */
- 			csum_value_final = ~csum_value_final;
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 355be77..496ed4d 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -1269,7 +1269,7 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
- 	spin_lock_init(&pdata->mac_cr_lock);
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index daf8086..fd01823 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -54,10 +54,11 @@
  
- 	/* LAN95xx devices do not alter the computed checksum of 0 to 0xffff.
--	 * RFC 2460, ipv6 UDP calculated checksum yields a result of zero must
-+	 * RFC 8200, ipv6 UDP calculated checksum yields a result of zero must
- 	 * be changed to 0xffff. RFC 768, ipv4 UDP computed checksum is zero,
- 	 * it is transmitted as all ones. The zero transmitted checksum means
- 	 * transmitter generated no checksum. Hence, enable csum offload only
+ /* Limits on Hop-by-Hop and Destination options.
+  *
+- * Per RFC8200 there is no limit on the maximum number or lengths of options in
+- * Hop-by-Hop or Destination options other then the packet must fit in an MTU.
+- * We allow configurable limits in order to mitigate potential denial of
+- * service attacks.
++ * Section 5.3 of RFC8504 describes limits that may be applied by an
++ * implementation to protect a node from excessive extension header options
++ * (for instance, to protect a node from denial of service attacks where
++ * the attacker sends packets filled with tiny options that will be skipped
++ * by a receiver).
+  *
+  * There are three limits that may be set:
+  *   - Limit the number of options in a Hop-by-Hop or Destination options
 diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 20291c2..fdb4a32 100644
+index fdb4a32..f0e0f7a 100644
 --- a/net/ipv6/exthdrs.c
 +++ b/net/ipv6/exthdrs.c
-@@ -150,7 +150,7 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 			break;
- 
- 		case IPV6_TLV_PADN:
--			/* RFC 2460 states that the purpose of PadN is
-+			/* RFC 8200 states that the purpose of PadN is
+@@ -153,7 +153,8 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
+ 			/* RFC 8200 states that the purpose of PadN is
  			 * to align the containing header to multiples
  			 * of 8. 7 is therefore the highest valid value.
- 			 * See also RFC 4942, Section 2.1.9.5.
-@@ -561,7 +561,7 @@ static int ipv6_rthdr_rcv(struct sk_buff *skb)
- 
- 	/*
- 	 *	This is the routing header forwarding algorithm from
--	 *	RFC 2460, page 16.
-+	 *	Section 4.4, RFC 8200.
- 	 */
- 
- 	n = hdr->hdrlen >> 1;
-diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
-index 3de0e9b..5fc9a5d 100644
---- a/net/ipv6/netfilter/nf_conntrack_reasm.c
-+++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
-@@ -228,7 +228,7 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
- 		 * Required by the RFC.
- 		 */
- 		if (end & 0x7) {
--			/* RFC2460 says always send parameter problem in
-+			/* RFC8200 says always send parameter problem in
- 			 * this case. -DaveM
+-			 * See also RFC 4942, Section 2.1.9.5.
++			 * See also RFC 4942, Section 2.1.9.5, and
++			 * RFC 8504, Section 5.3.
  			 */
- 			pr_debug("end of fragment not rounded to 8 bytes.\n");
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index 1a832f5..bc0a361 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -158,7 +158,7 @@ static int ip6_frag_queue(struct frag_queue *fq, struct sk_buff *skb,
- 		 * Required by the RFC.
- 		 */
- 		if (end & 0x7) {
--			/* RFC2460 says always send parameter problem in
-+			/* RFC8200 says always send parameter problem in
- 			 * this case. -DaveM
- 			 */
- 			*prob_offset = offsetof(struct ipv6hdr, payload_len);
-diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
-index e997141..48e07b2 100644
---- a/net/ipv6/syncookies.c
-+++ b/net/ipv6/syncookies.c
-@@ -27,7 +27,7 @@
- 
- static siphash_key_t syncookie6_secret[2] __read_mostly;
- 
--/* RFC 2460, Section 8.3:
-+/* RFC 8200, Section 8.3:
-  * [ipv6 tcp] MSS must be computed as the maximum packet size minus 60 [..]
-  *
-  * Due to IPV6_MIN_MTU=1280 the lowest possible MSS is 1220, which allows
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index beaf284..d74537f 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -602,7 +602,7 @@ static int tcp_v6_md5_hash_headers(struct tcp_md5sig_pool *hp,
- 	struct tcphdr *_th;
- 
- 	bp = hp->scratch;
--	/* 1. TCP pseudo-header (RFC2460) */
-+	/* 1. TCP pseudo-header (RFC8200) */
- 	bp->saddr = *saddr;
- 	bp->daddr = *daddr;
- 	bp->protocol = cpu_to_be32(IPPROTO_TCP);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 07fa579..f0e0f2a 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -739,7 +739,7 @@ static bool __udp_v6_is_mcast_sock(struct net *net, struct sock *sk,
- 
- static void udp6_csum_zero_error(struct sk_buff *skb)
- {
--	/* RFC 2460 section 8.1 says that we SHOULD log
-+	/* RFC 8200 section 8.1 says that we SHOULD log
- 	 * this error. Well, it is reasonable.
- 	 */
- 	net_dbg_ratelimited("IPv6: udp checksum is 0 for [%pI6c]:%u->[%pI6c]:%u\n",
-diff --git a/net/netfilter/xt_TCPMSS.c b/net/netfilter/xt_TCPMSS.c
-index 98efb20..2fd6ffd 100644
---- a/net/netfilter/xt_TCPMSS.c
-+++ b/net/netfilter/xt_TCPMSS.c
-@@ -167,7 +167,7 @@ tcpmss_mangle_packet(struct sk_buff *skb,
- 	/*
- 	 * IPv4: RFC 1122 states "If an MSS option is not received at
- 	 * connection setup, TCP MUST assume a default send MSS of 536".
--	 * IPv6: RFC 2460 states IPv6 has a minimum MTU of 1280 and a minimum
-+	 * IPv6: RFC 8200 states IPv6 has a minimum MTU of 1280 and a minimum
- 	 * length IPv6 header of 60, ergo the default MSS value is 1220
- 	 * Since no MSS was provided, we must use the default values
- 	 */
+ 			padlen += optlen;
+ 			if (padlen > 7)
 -- 
 2.7.4
 
