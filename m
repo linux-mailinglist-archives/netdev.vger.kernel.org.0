@@ -2,155 +2,438 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 614542A8DC
-	for <lists+netdev@lfdr.de>; Sun, 26 May 2019 08:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5609D2A8E6
+	for <lists+netdev@lfdr.de>; Sun, 26 May 2019 08:49:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725999AbfEZGkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 May 2019 02:40:04 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:38491 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725972AbfEZGkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 02:40:04 -0400
-Received: by mail-io1-f68.google.com with SMTP id x24so10882385ion.5
-        for <netdev@vger.kernel.org>; Sat, 25 May 2019 23:40:03 -0700 (PDT)
+        id S1726837AbfEZGtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 May 2019 02:49:20 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:34230 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726444AbfEZGtU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 02:49:20 -0400
+Received: by mail-pg1-f196.google.com with SMTP id h2so4254559pgg.1;
+        Sat, 25 May 2019 23:49:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Mac88AXIZVYEge7FmGHAzepQi9wUqNvqvrSB29BmdjQ=;
-        b=fkkRsj7VabbXTAJZL4y6jgyxjsVy0dhj2Us0DhIy0PX0ZFbsEo2dzmPlbdYSsHDTN6
-         Fqebs+PA9BFe1dqEIyt2tihBOIKFI+tNFU1BpaGDEYFfZIvKvX5lzypgOqqlbUjm8hMw
-         QaeNxtuYzhIqErrPD2vWPulBffY/8bMj8751DDg0jQ1IYyRgedMcXD0LUm85HqF4sVDH
-         v5tRvpVdzmJpMbHXxP+IQTocSnC9J6oD3u/K3va2KLOi1fu/aaWDuRB89tgdO1XbIRsW
-         09+XppCljPnQk5xBmVE+uxTi1cM7rM6svXhkftra/4lLhSrRD6sIZv1SeJaKLfmJ4FTn
-         NJ3A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9Wd+rg1iuxhOjM4+J2HoOX4WKUM4unGvAPSEjWYl5T0=;
+        b=tcNECKj4ucu7VH/wGpyPGfAgrgjnMSj0+zy5t6Ufh5dMY0PWaV2sGdR1J/0LLNnA2e
+         Y9YBnn0btXOjkulJMYQKp0NuyJodOaWBRt4UIofZb8YjXkB4bqzM3qk3c/9KPnGTeBeO
+         20/CDR9nFpBeJeVdZDNUT+TzD4wJtERC8fOooeedOtGhlOvurRWsMD/GifCBzSntt+Vi
+         q3MofA93Wu7ru8ZtYY6E0854Ti1NV4YKIomR/YyDEyfgNhIUElyruVaRSlv9t6r6wa+b
+         EOD/j0albmvAvOyjCNnBvZTCzIVn0MxzCLV9NDHD8yJ1Fn23vKOFhZmKp+NUEtRspumL
+         LFDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Mac88AXIZVYEge7FmGHAzepQi9wUqNvqvrSB29BmdjQ=;
-        b=HXShx0HFMvRpRj6ZBiJlAddJqzvdRjUngPBgeCD3IwLjFvPz+CcqsTfWBud4hGZ5a0
-         nH+ONjq6VP+MhOCxBiytS1IEWTyuM0Am42r2fDrZ/WW/FXvuV3v5JcQB1BETW0RdMLI2
-         jr5cosblnTfgHLUvFxlNxYS5j3g6oKGnhclagiC22ux9gIZwchAHLU2NNITDzMN3g1YV
-         vo7o+JPnnsmBCUPOKG2se3V/TiFCTUZKgcurQ3LAscGAV5awqy1jhyHS4NtCaufoON6S
-         f6fG5k/Ud9UMweLbKiMqZcTJIqLWUHAX15aPkT3ZlyCREoBjmWuvADj6c0rqkU2Ho9yn
-         0J9Q==
-X-Gm-Message-State: APjAAAVNab5xtvfSHq1BRAxEa/du/bFSoDrsp6Aoak4iL1WtrtjmdwIz
-        ecQvvONXUQzUg8eAebfj2vuadRgO5xCgO5eYKRwhbw==
-X-Google-Smtp-Source: APXvYqwr+Pbfv9HVtVvN4paEdgzLh64zq2Bz4HBoqNNJWROVH+MXUxZ6H6H9tss02/3v7gqNHGb16hV+0Ctqt0bTtCg=
-X-Received: by 2002:a6b:6006:: with SMTP id r6mr2046417iog.231.1558852802751;
- Sat, 25 May 2019 23:40:02 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9Wd+rg1iuxhOjM4+J2HoOX4WKUM4unGvAPSEjWYl5T0=;
+        b=qXurClTN9gX36iQ3XKqugjBz6XJ1ehHQuaje9YFMvVwdf7rt04xU/myNDM/KiSTwKX
+         fzk2rDKRUJC+i9slbpuBERzSOygyc7ATwA7mpoYGD5gfUayzJetta4ogY3vA9arX9ssz
+         kOvV+tVdaNWJriBIOWVWWpWfAVT2M0IEIjOeKIncgbtGsCN5NdfTieRSkUlsM++Vdesf
+         oMjjZg3S/K/90jvmwFlTfL1IIFdQ2HH6Sj9gIwxsCsV7o74Si0oxXnGVR4n4suPz4g3Y
+         GgioXMV+ADFKUnMuei8sce+0+TOCzoRtcQzOezE8+CaJcDULJ7ScmsoHedmtTUNSB7Uv
+         50Gg==
+X-Gm-Message-State: APjAAAWEatolN4pc7YibZiPcDpWilPsj90iTwVV4Sx6wtHcLZM3HA2Ll
+        cKd58gA1WUrGh+WiP4QNkg==
+X-Google-Smtp-Source: APXvYqwZO2zDYVoEd/5ZH2DaoUolDlJ8AAJ+aEEhM0LgFfdtfhqvJXsyhN5sQhmF6adpE5hq3xq+dA==
+X-Received: by 2002:a17:90a:f992:: with SMTP id cq18mr21399031pjb.54.1558853359254;
+        Sat, 25 May 2019 23:49:19 -0700 (PDT)
+Received: from localhost ([2001:19f0:7001:54c5:5400:1ff:fec8:7fc2])
+        by smtp.gmail.com with ESMTPSA id n21sm7139246pff.92.2019.05.25.23.49.17
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 25 May 2019 23:49:18 -0700 (PDT)
+From:   Jacky Hu <hengqing.hu@gmail.com>
+To:     hengqing.hu@gmail.com
+Cc:     jacky.hu@walmart.com, jason.niesz@walmart.com,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCH v2] ipvs: add checksum support for gue encapsulation
+Date:   Sun, 26 May 2019 14:48:19 +0800
+Message-Id: <20190526064819.16420-1-hengqing.hu@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <00000000000016cb560589b9c7c4@google.com>
-In-Reply-To: <00000000000016cb560589b9c7c4@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Sun, 26 May 2019 08:39:50 +0200
-Message-ID: <CACT4Y+Yi=hLvp7MfAnZ2YbGE=pTmqNHFZ0kZ=y7uuUYALnnUbg@mail.gmail.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in class_equal
-To:     syzbot <syzbot+3d04999521633dceb439@syzkaller.appspotmail.com>,
-        bpf <bpf@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 25, 2019 at 7:38 PM syzbot
-<syzbot+3d04999521633dceb439@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    af5136f9 selftests/net: SO_TXTIME with ETF and FQ
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=13164ee4a00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=fc045131472947d7
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3d04999521633dceb439
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1661b6e4a00000
+Add checksum support for gue encapsulation with the tun_flags parameter,
+which could be one of the values below:
+IP_VS_TUNNEL_ENCAP_FLAG_NOCSUM
+IP_VS_TUNNEL_ENCAP_FLAG_CSUM
+IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM
 
-Looking at the reproducer, it may be bpf-related. +bpf mailing list.
+Signed-off-by: Jacky Hu <hengqing.hu@gmail.com>
+---
+v2->v1:
+  1) removed unnecessary changes to ip_vs_core.c
+  2) use correct nla_get/put function for tun_flags
+  3) use correct gue hdrlen for skb_push in ipvs_gue_encap
+  4) moved declaration of gue_hdrlen and gue_optlen
 
+ include/net/ip_vs.h             |   2 +
+ include/uapi/linux/ip_vs.h      |   7 ++
+ net/netfilter/ipvs/ip_vs_ctl.c  |  11 ++-
+ net/netfilter/ipvs/ip_vs_xmit.c | 142 ++++++++++++++++++++++++++++----
+ 4 files changed, 145 insertions(+), 17 deletions(-)
 
-> Bisection is inconclusive: the first bad commit could be any of:
->
-> 7c00e8ae Merge tag 'armsoc-soc' of
-> git://git.kernel.org/pub/scm/linux/kernel/git/arm/arm-soc
-> a2b7ab45 Merge tag 'linux-watchdog-4.18-rc1' of
-> git://www.linux-watchdog.org/linux-watchdog
-> 721afaa2 Merge tag 'armsoc-dt' of
-> git://git.kernel.org/pub/scm/linux/kernel/git/arm/arm-soc
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1062daaaa00000
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+3d04999521633dceb439@syzkaller.appspotmail.com
->
-> ==================================================================
-> BUG: KASAN: slab-out-of-bounds in class_equal+0x40/0x50
-> kernel/locking/lockdep.c:1527
-> Read of size 8 at addr ffff8880813cdab0 by task syz-executor.0/9147
->
-> CPU: 0 PID: 9147 Comm: syz-executor.0 Not tainted 5.2.0-rc1+ #6
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> Call Trace:
->
-> Allocated by task 2266519551:
-> ------------[ cut here ]------------
-> kernel BUG at mm/slab.c:4178!
-> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 9147 Comm: syz-executor.0 Not tainted 5.2.0-rc1+ #6
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> RIP: 0010:__check_heap_object+0xa5/0xb3 mm/slab.c:4178
-> Code: 2b 48 c7 c7 4d fc 61 88 e8 28 ad 07 00 5d c3 41 8b 91 04 01 00 00 48
-> 29 c7 48 39 d7 77 bd 48 01 d0 48 29 c8 4c 39 c0 72 b2 c3 <0f> 0b 48 c7 c7
-> 4d fc 61 88 e8 3c b2 07 00 44 89 e1 48 c7 c7 08 fd
-> RSP: 0018:ffff8880813cd370 EFLAGS: 00010046
-> RAX: 0000000000000001 RBX: 0000000000000001 RCX: 000000000000000c
-> RDX: ffff8880813cc340 RSI: 0000000000000000 RDI: ffff8880813cd468
-> RBP: ffff8880813cd3c0 R08: 0000000000000001 R09: ffff8880aa594c40
-> R10: 0000000000000f23 R11: 0000000000000000 R12: ffff8880813cd468
-> R13: ffffea000204f300 R14: ffff8880813cd469 R15: 0000000000000001
-> FS:  00005555564e1940(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffffffff8c046bd8 CR3: 000000009a952000 CR4: 00000000001406f0
-> Call Trace:
-> Modules linked in:
-> ---[ end trace e78aeeb619bc791b ]---
-> RIP: 0010:__check_heap_object+0xa5/0xb3 mm/slab.c:4178
-> Code: 2b 48 c7 c7 4d fc 61 88 e8 28 ad 07 00 5d c3 41 8b 91 04 01 00 00 48
-> 29 c7 48 39 d7 77 bd 48 01 d0 48 29 c8 4c 39 c0 72 b2 c3 <0f> 0b 48 c7 c7
-> 4d fc 61 88 e8 3c b2 07 00 44 89 e1 48 c7 c7 08 fd
-> RSP: 0018:ffff8880813cd370 EFLAGS: 00010046
-> RAX: 0000000000000001 RBX: 0000000000000001 RCX: 000000000000000c
-> RDX: ffff8880813cc340 RSI: 0000000000000000 RDI: ffff8880813cd468
-> RBP: ffff8880813cd3c0 R08: 0000000000000001 R09: ffff8880aa594c40
-> R10: 0000000000000f23 R11: 0000000000000000 R12: ffff8880813cd468
-> R13: ffffea000204f300 R14: ffff8880813cd469 R15: 0000000000000001
-> FS:  00005555564e1940(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffffffff8c046bd8 CR3: 000000009a952000 CR4: 00000000001406f0
->
->
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> syzbot can test patches for this bug, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/00000000000016cb560589b9c7c4%40google.com.
-> For more options, visit https://groups.google.com/d/optout.
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index b01a94ebfc0e..cb1ad0cc5c7b 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -603,6 +603,7 @@ struct ip_vs_dest_user_kern {
+ 
+ 	u16			tun_type;	/* tunnel type */
+ 	__be16			tun_port;	/* tunnel port */
++	u16			tun_flags;	/* tunnel flags */
+ };
+ 
+ 
+@@ -665,6 +666,7 @@ struct ip_vs_dest {
+ 	atomic_t		last_weight;	/* server latest weight */
+ 	__u16			tun_type;	/* tunnel type */
+ 	__be16			tun_port;	/* tunnel port */
++	__u16			tun_flags;	/* tunnel flags */
+ 
+ 	refcount_t		refcnt;		/* reference counter */
+ 	struct ip_vs_stats      stats;          /* statistics */
+diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
+index e34f436fc79d..fa5cf8498474 100644
+--- a/include/uapi/linux/ip_vs.h
++++ b/include/uapi/linux/ip_vs.h
+@@ -131,6 +131,11 @@ enum {
+ 	IP_VS_CONN_F_TUNNEL_TYPE_MAX,
+ };
+ 
++/* Tunnel encapsulation flags */
++#define IP_VS_TUNNEL_ENCAP_FLAG_NOCSUM		(0)
++#define IP_VS_TUNNEL_ENCAP_FLAG_CSUM		(1<<0)
++#define IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM		(1<<1)
++
+ /*
+  *	The struct ip_vs_service_user and struct ip_vs_dest_user are
+  *	used to set IPVS rules through setsockopt.
+@@ -403,6 +408,8 @@ enum {
+ 
+ 	IPVS_DEST_ATTR_TUN_PORT,	/* tunnel port */
+ 
++	IPVS_DEST_ATTR_TUN_FLAGS,	/* tunnel flags */
++
+ 	__IPVS_DEST_ATTR_MAX,
+ };
+ 
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index d5847e06350f..ad19ac08622f 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -893,6 +893,7 @@ __ip_vs_update_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest,
+ 	/* set the tunnel info */
+ 	dest->tun_type = udest->tun_type;
+ 	dest->tun_port = udest->tun_port;
++	dest->tun_flags = udest->tun_flags;
+ 
+ 	/* set the IP_VS_CONN_F_NOOUTPUT flag if not masquerading/NAT */
+ 	if ((conn_flags & IP_VS_CONN_F_FWD_MASK) != IP_VS_CONN_F_MASQ) {
+@@ -2967,6 +2968,7 @@ static const struct nla_policy ip_vs_dest_policy[IPVS_DEST_ATTR_MAX + 1] = {
+ 	[IPVS_DEST_ATTR_ADDR_FAMILY]	= { .type = NLA_U16 },
+ 	[IPVS_DEST_ATTR_TUN_TYPE]	= { .type = NLA_U8 },
+ 	[IPVS_DEST_ATTR_TUN_PORT]	= { .type = NLA_U16 },
++	[IPVS_DEST_ATTR_TUN_FLAGS]	= { .type = NLA_U16 },
+ };
+ 
+ static int ip_vs_genl_fill_stats(struct sk_buff *skb, int container_type,
+@@ -3273,6 +3275,8 @@ static int ip_vs_genl_fill_dest(struct sk_buff *skb, struct ip_vs_dest *dest)
+ 		       dest->tun_type) ||
+ 	    nla_put_be16(skb, IPVS_DEST_ATTR_TUN_PORT,
+ 			 dest->tun_port) ||
++	    nla_put_u16(skb, IPVS_DEST_ATTR_TUN_FLAGS,
++			dest->tun_flags) ||
+ 	    nla_put_u32(skb, IPVS_DEST_ATTR_U_THRESH, dest->u_threshold) ||
+ 	    nla_put_u32(skb, IPVS_DEST_ATTR_L_THRESH, dest->l_threshold) ||
+ 	    nla_put_u32(skb, IPVS_DEST_ATTR_ACTIVE_CONNS,
+@@ -3393,7 +3397,8 @@ static int ip_vs_genl_parse_dest(struct ip_vs_dest_user_kern *udest,
+ 	/* If a full entry was requested, check for the additional fields */
+ 	if (full_entry) {
+ 		struct nlattr *nla_fwd, *nla_weight, *nla_u_thresh,
+-			      *nla_l_thresh, *nla_tun_type, *nla_tun_port;
++			      *nla_l_thresh, *nla_tun_type, *nla_tun_port,
++			      *nla_tun_flags;
+ 
+ 		nla_fwd		= attrs[IPVS_DEST_ATTR_FWD_METHOD];
+ 		nla_weight	= attrs[IPVS_DEST_ATTR_WEIGHT];
+@@ -3401,6 +3406,7 @@ static int ip_vs_genl_parse_dest(struct ip_vs_dest_user_kern *udest,
+ 		nla_l_thresh	= attrs[IPVS_DEST_ATTR_L_THRESH];
+ 		nla_tun_type	= attrs[IPVS_DEST_ATTR_TUN_TYPE];
+ 		nla_tun_port	= attrs[IPVS_DEST_ATTR_TUN_PORT];
++		nla_tun_flags	= attrs[IPVS_DEST_ATTR_TUN_FLAGS];
+ 
+ 		if (!(nla_fwd && nla_weight && nla_u_thresh && nla_l_thresh))
+ 			return -EINVAL;
+@@ -3416,6 +3422,9 @@ static int ip_vs_genl_parse_dest(struct ip_vs_dest_user_kern *udest,
+ 
+ 		if (nla_tun_port)
+ 			udest->tun_port = nla_get_be16(nla_tun_port);
++
++		if (nla_tun_flags)
++			udest->tun_flags = nla_get_u16(nla_tun_flags);
+ 	}
+ 
+ 	return 0;
+diff --git a/net/netfilter/ipvs/ip_vs_xmit.c b/net/netfilter/ipvs/ip_vs_xmit.c
+index 8d6f94b67772..d3392b5b243f 100644
+--- a/net/netfilter/ipvs/ip_vs_xmit.c
++++ b/net/netfilter/ipvs/ip_vs_xmit.c
+@@ -40,6 +40,7 @@
+ #include <net/ipv6.h>
+ #include <net/ip6_route.h>
+ #include <net/ip_tunnels.h>
++#include <net/ip6_checksum.h>
+ #include <net/addrconf.h>
+ #include <linux/icmpv6.h>
+ #include <linux/netfilter.h>
+@@ -385,8 +386,13 @@ __ip_vs_get_out_rt(struct netns_ipvs *ipvs, int skb_af, struct sk_buff *skb,
+ 		mtu = dst_mtu(&rt->dst) - sizeof(struct iphdr);
+ 		if (!dest)
+ 			goto err_put;
+-		if (dest->tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
++		if (dest->tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
+ 			mtu -= sizeof(struct udphdr) + sizeof(struct guehdr);
++			if ((dest->tun_flags &
++			     IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++			    skb->ip_summed == CHECKSUM_PARTIAL)
++				mtu -= GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		}
+ 		if (mtu < 68) {
+ 			IP_VS_DBG_RL("%s(): mtu less than 68\n", __func__);
+ 			goto err_put;
+@@ -540,8 +546,13 @@ __ip_vs_get_out_rt_v6(struct netns_ipvs *ipvs, int skb_af, struct sk_buff *skb,
+ 		mtu = dst_mtu(&rt->dst) - sizeof(struct ipv6hdr);
+ 		if (!dest)
+ 			goto err_put;
+-		if (dest->tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
++		if (dest->tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
+ 			mtu -= sizeof(struct udphdr) + sizeof(struct guehdr);
++			if ((dest->tun_flags &
++			     IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++			    skb->ip_summed == CHECKSUM_PARTIAL)
++				mtu -= GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		}
+ 		if (mtu < IPV6_MIN_MTU) {
+ 			IP_VS_DBG_RL("%s(): mtu less than %d\n", __func__,
+ 				     IPV6_MIN_MTU);
+@@ -1006,17 +1017,55 @@ ipvs_gue_encap(struct net *net, struct sk_buff *skb,
+ 	__be16 sport = udp_flow_src_port(net, skb, 0, 0, false);
+ 	struct udphdr  *udph;	/* Our new UDP header */
+ 	struct guehdr  *gueh;	/* Our new GUE header */
++	size_t hdrlen, optlen = 0;
++	void *data;
++	bool need_priv = false;
++
++	if ((cp->dest->tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++	    skb->ip_summed == CHECKSUM_PARTIAL) {
++		optlen += GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		need_priv = true;
++	}
+ 
+-	skb_push(skb, sizeof(struct guehdr));
++	hdrlen = sizeof(struct guehdr) + optlen;
++
++	skb_push(skb, hdrlen);
+ 
+ 	gueh = (struct guehdr *)skb->data;
+ 
+ 	gueh->control = 0;
+ 	gueh->version = 0;
+-	gueh->hlen = 0;
++	gueh->hlen = optlen >> 2;
+ 	gueh->flags = 0;
+ 	gueh->proto_ctype = *next_protocol;
+ 
++	data = &gueh[1];
++
++	if (need_priv) {
++		__be32 *flags = data;
++		u16 csum_start = skb_checksum_start_offset(skb);
++		__be16 *pd = data;
++
++		gueh->flags |= GUE_FLAG_PRIV;
++		*flags = 0;
++		data += GUE_LEN_PRIV;
++
++		if (csum_start < hdrlen)
++			return -EINVAL;
++
++		csum_start -= hdrlen;
++		pd[0] = htons(csum_start);
++		pd[1] = htons(csum_start + skb->csum_offset);
++
++		if (!skb_is_gso(skb)) {
++			skb->ip_summed = CHECKSUM_NONE;
++			skb->encapsulation = 0;
++		}
++
++		*flags |= GUE_PFLAG_REMCSUM;
++		data += GUE_PLEN_REMCSUM;
++	}
++
+ 	skb_push(skb, sizeof(struct udphdr));
+ 	skb_reset_transport_header(skb);
+ 
+@@ -1070,6 +1119,7 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 	unsigned int max_headroom;		/* The extra header space needed */
+ 	int ret, local;
+ 	int tun_type, gso_type;
++	int tun_flags;
+ 
+ 	EnterFunction(10);
+ 
+@@ -1092,9 +1142,19 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 	max_headroom = LL_RESERVED_SPACE(tdev) + sizeof(struct iphdr);
+ 
+ 	tun_type = cp->dest->tun_type;
++	tun_flags = cp->dest->tun_flags;
+ 
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		max_headroom += sizeof(struct udphdr) + sizeof(struct guehdr);
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		size_t gue_hdrlen, gue_optlen = 0;
++
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++		    skb->ip_summed == CHECKSUM_PARTIAL) {
++			gue_optlen += GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		}
++		gue_hdrlen = sizeof(struct guehdr) + gue_optlen;
++
++		max_headroom += sizeof(struct udphdr) + gue_hdrlen;
++	}
+ 
+ 	/* We only care about the df field if sysctl_pmtu_disc(ipvs) is set */
+ 	dfp = sysctl_pmtu_disc(ipvs) ? &df : NULL;
+@@ -1105,8 +1165,17 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 		goto tx_error;
+ 
+ 	gso_type = __tun_gso_type_mask(AF_INET, cp->af);
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		gso_type |= SKB_GSO_UDP_TUNNEL;
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_CSUM) ||
++		    (tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM))
++			gso_type |= SKB_GSO_UDP_TUNNEL_CSUM;
++		else
++			gso_type |= SKB_GSO_UDP_TUNNEL;
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++		    skb->ip_summed == CHECKSUM_PARTIAL) {
++			gso_type |= SKB_GSO_TUNNEL_REMCSUM;
++		}
++	}
+ 
+ 	if (iptunnel_handle_offloads(skb, gso_type))
+ 		goto tx_error;
+@@ -1115,8 +1184,19 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 
+ 	skb_set_inner_ipproto(skb, next_protocol);
+ 
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		ipvs_gue_encap(net, skb, cp, &next_protocol);
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		bool check = false;
++
++		if (ipvs_gue_encap(net, skb, cp, &next_protocol))
++			goto tx_error;
++
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_CSUM) ||
++		    (tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM))
++			check = true;
++
++		udp_set_csum(!check, skb, saddr, cp->daddr.ip, skb->len);
++	}
++
+ 
+ 	skb_push(skb, sizeof(struct iphdr));
+ 	skb_reset_network_header(skb);
+@@ -1174,6 +1254,7 @@ ip_vs_tunnel_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 	unsigned int max_headroom;	/* The extra header space needed */
+ 	int ret, local;
+ 	int tun_type, gso_type;
++	int tun_flags;
+ 
+ 	EnterFunction(10);
+ 
+@@ -1197,9 +1278,19 @@ ip_vs_tunnel_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 	max_headroom = LL_RESERVED_SPACE(tdev) + sizeof(struct ipv6hdr);
+ 
+ 	tun_type = cp->dest->tun_type;
++	tun_flags = cp->dest->tun_flags;
+ 
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		max_headroom += sizeof(struct udphdr) + sizeof(struct guehdr);
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		size_t gue_hdrlen, gue_optlen = 0;
++
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++		    skb->ip_summed == CHECKSUM_PARTIAL) {
++			gue_optlen += GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		}
++		gue_hdrlen = sizeof(struct guehdr) + gue_optlen;
++
++		max_headroom += sizeof(struct udphdr) + gue_hdrlen;
++	}
+ 
+ 	skb = ip_vs_prepare_tunneled_skb(skb, cp->af, max_headroom,
+ 					 &next_protocol, &payload_len,
+@@ -1208,8 +1299,17 @@ ip_vs_tunnel_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 		goto tx_error;
+ 
+ 	gso_type = __tun_gso_type_mask(AF_INET6, cp->af);
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		gso_type |= SKB_GSO_UDP_TUNNEL;
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_CSUM) ||
++		    (tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM))
++			gso_type |= SKB_GSO_UDP_TUNNEL_CSUM;
++		else
++			gso_type |= SKB_GSO_UDP_TUNNEL;
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++		    skb->ip_summed == CHECKSUM_PARTIAL) {
++			gso_type |= SKB_GSO_TUNNEL_REMCSUM;
++		}
++	}
+ 
+ 	if (iptunnel_handle_offloads(skb, gso_type))
+ 		goto tx_error;
+@@ -1218,8 +1318,18 @@ ip_vs_tunnel_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 
+ 	skb_set_inner_ipproto(skb, next_protocol);
+ 
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		ipvs_gue_encap(net, skb, cp, &next_protocol);
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		bool check = false;
++
++		if (ipvs_gue_encap(net, skb, cp, &next_protocol))
++			goto tx_error;
++
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_CSUM) ||
++		    (tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM))
++			check = true;
++
++		udp6_set_csum(!check, skb, &saddr, &cp->daddr.in6, skb->len);
++	}
+ 
+ 	skb_push(skb, sizeof(struct ipv6hdr));
+ 	skb_reset_network_header(skb);
+-- 
+2.21.0
+
