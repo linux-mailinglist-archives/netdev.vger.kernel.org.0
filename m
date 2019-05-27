@@ -2,198 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CF0B2ACCC
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 03:31:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CD292ACCD
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 03:32:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726034AbfE0Bbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 May 2019 21:31:36 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:45074 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725859AbfE0Bbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 21:31:35 -0400
-Received: by mail-ed1-f68.google.com with SMTP id g57so9355415edc.12;
-        Sun, 26 May 2019 18:31:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=DqMpY7GvF0ff0IzEGf6ToH+IeTipvCs7U+egaBCK/0c=;
-        b=jIQe8dcq6hfjJasd7rpnQmT1ghPyu3p/8Su5QFmV4goM9hV+Nn7vuFkZ93vME+osiI
-         KOQzACMGTs/oKFdNCQg/orA8VfHbNIc3YEGAiiG1PxMJMxU4gnzzebC2naOO4TMw3mnn
-         GAr1sXbdu+qBeR1BF+PoCyreAi57GUdetoXpt2z/EpPcF5XKs+aYZ3ct2dr97kWtuxNL
-         CeSwWoygSE4djLX/Ealr8p6k0zYXJrFjrmMmwYHMpVCDG6m29PysaLnnDEHp+h+ZTox4
-         fQftEjcYWi9dQjQHtee30se68O1CwK9hCWWFF/A0glQLgiz5s8Ft+iF9LDhbgsrqryJ2
-         No9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=DqMpY7GvF0ff0IzEGf6ToH+IeTipvCs7U+egaBCK/0c=;
-        b=Xqi5Zq4EwWvNxJ6BdDKPSRZAiahZytYFRJYSpbRq1CQgIaI5XubGBnbiPxj8rtfYls
-         m3Xu3+gR88wFC1ZDAti+dGabJNeTrq394RkbacCmOMrqGHXMs3IJ6BI3T3pjtiQyRWDU
-         8nCy4dXgtvPVghHbUTMYol7xpKv1EGeGqXXILXDhHbF+FlBcTB+xDQ1HLFVY8peTm0z/
-         NhV0tmqFCCuQFI8wvo8Rs3fxj5vnJVQmddOY1FPJrv+Uuzec5GbZN/KNSVMPvzdDP8S+
-         CZeGEKUMx08VZNgMBXs7CXdbinPQ9OxrGbyzP1qTjwOWhT/6twbVFpWHmFaaOAfjMy/G
-         OW7w==
-X-Gm-Message-State: APjAAAXISmem5T+S2nehu1YgGd1vaYcqeE7E59finRvqOzhxRKRFW4wr
-        8axCnRorUnTAY4uUjZZdVxkVLor0jpPh4uvlv2M=
-X-Google-Smtp-Source: APXvYqzIR1bAlrXqNU0Qu+lZ2SeGwcZMWRL3HkpFUZ5zOOOC8LaMk9YkapkJQTZ0XrImuiLusC3f53Wp5NeldX9gxuQ=
-X-Received: by 2002:a17:906:aacb:: with SMTP id kt11mr80719301ejb.246.1558920692905;
- Sun, 26 May 2019 18:31:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190523210651.80902-1-fklassen@appneta.com> <20190523210651.80902-2-fklassen@appneta.com>
- <CAF=yD-Jf95De=z_nx9WFkGDa6+nRUqM_1PqGkjwaFPzOe+PfXg@mail.gmail.com>
- <AE8E0772-7256-4B9C-A990-96930E834AEE@appneta.com> <CAF=yD-LtAKpND601LQrC1+=iF6spSUXVdUapcsbJdv5FYa=5Jg@mail.gmail.com>
- <AFC1ECC8-BFAC-4718-B0C9-97CC4BD1F397@appneta.com> <CAF=yD-Le-eTadOi7PL8WFEQCG=yLqb5gvKiks+s5Akeq8TenBQ@mail.gmail.com>
- <90E3853F-107D-45BA-93DC-D0BE8AC6FCBB@appneta.com> <CA+FuTScNr9Srsn9QFBSj=oT4TnMh1QuOZ2h40g=joNjSwccqMg@mail.gmail.com>
- <4032C02B-EA43-4540-8283-8466CDD0B8D2@appneta.com>
-In-Reply-To: <4032C02B-EA43-4540-8283-8466CDD0B8D2@appneta.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 26 May 2019 20:30:56 -0500
-Message-ID: <CAF=yD-KTJGYY-yf=+zwa8SyrCNAfZjqjomJ=B=yFcs+juDeShA@mail.gmail.com>
-Subject: Re: [PATCH net 1/4] net/udp_gso: Allow TX timestamp with UDP GSO
-To:     Fred Klassen <fklassen@appneta.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1726094AbfE0BcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 May 2019 21:32:04 -0400
+Received: from mail-eopbgr00050.outbound.protection.outlook.com ([40.107.0.50]:29920
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725859AbfE0BcE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 May 2019 21:32:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5RtqtaNgvK5bZqGma5TWhdBdyPR9HCC1NQ4lpVScoog=;
+ b=E1FsfJLEqnmo8Eikt5vndIhR6GBhR+hkxzYQeoFD8RA+ShrkEqvoV8w42rX8sCNKFP/lViuWXzYWmw37PaGVl31Yb165IW0tUX6854P6tpz1X4f6UVc+VBN5N5HQiwylNev/DY9aWiwQjRMgWXKYHYi8waPhyFH7L0hMCIgslnk=
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.5.23) by
+ VI1PR0402MB3550.eurprd04.prod.outlook.com (52.134.4.31) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.16; Mon, 27 May 2019 01:32:00 +0000
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::4c3e:205:bec9:54ef]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::4c3e:205:bec9:54ef%4]) with mapi id 15.20.1922.021; Mon, 27 May 2019
+ 01:31:59 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "baruch@tkos.co.il" <baruch@tkos.co.il>
+Subject: RE: [EXT] Re: [PATCH net,stable 1/1] net: fec: add defer probe for
+ of_get_mac_address
+Thread-Topic: [EXT] Re: [PATCH net,stable 1/1] net: fec: add defer probe for
+ of_get_mac_address
+Thread-Index: AQHVEQqVg7EbGrOZ7EyghRTbLf7Z5aZ6t7sAgAN9jlA=
+Date:   Mon, 27 May 2019 01:31:59 +0000
+Message-ID: <VI1PR0402MB36002FA05E1C053B00D9EBD7FF1D0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+References: <1558576444-25080-1-git-send-email-fugang.duan@nxp.com>
+ <20190524.131144.357456710258151289.davem@davemloft.net>
+In-Reply-To: <20190524.131144.357456710258151289.davem@davemloft.net>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=fugang.duan@nxp.com; 
+x-originating-ip: [119.31.174.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9eafbf54-00e0-4f91-c91b-08d6e2431d2d
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR0402MB3550;
+x-ms-traffictypediagnostic: VI1PR0402MB3550:
+x-microsoft-antispam-prvs: <VI1PR0402MB3550D7C91B2BFBC9626B4F39FF1D0@VI1PR0402MB3550.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:350;
+x-forefront-prvs: 0050CEFE70
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(366004)(39860400002)(346002)(396003)(376002)(199004)(189003)(6436002)(86362001)(5660300002)(52536014)(486006)(478600001)(229853002)(446003)(256004)(476003)(316002)(66066001)(6116002)(3846002)(14454004)(11346002)(2906002)(71190400001)(71200400001)(25786009)(8676002)(81166006)(8936002)(7696005)(4744005)(6916009)(76176011)(4326008)(7736002)(76116006)(305945005)(186003)(66476007)(64756008)(66946007)(66556008)(66446008)(73956011)(26005)(68736007)(99286004)(53936002)(55016002)(9686003)(54906003)(102836004)(6246003)(74316002)(6506007)(81156014)(33656002)(142933001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3550;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: q9ylJe7HtcRold5FCoRXHsnTXOhAwdV2Rx1Cd2aHmz77gV7bCI25zTRLU39AhBAmsvRxcAzSbfre1j4Y7HSuPALtyZN2vycDkh5F9qWysVIH0ELq9Yw2Ts56pbrAuewYKv1H1/TEwyRq0GT3US55j+FuHN07v7BDSzBKQVZxGDBRykS2LmbqtkqjOmqEr5b6ZV0jhuwyYu2LpE014WnE5gsn/Ho7tN2foVgwUKJhFt4Z95CkL9aIIJJNnQjNLZhHoTBKsYRD4xksrUtzgN+UMUcQDP5ufkNzrmDUYgErSv7QmGrGTH9QUoPCR75GCdBhCJRn2GC/UvqPFMoWciqWL2gOstaU7YLwjC4YGnErcfak4RaAoa0XB7qa0EwZFAtgWKOCoTMogAyPhAEBA/diwmKUkad84CLx321nirSVP9s=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9eafbf54-00e0-4f91-c91b-08d6e2431d2d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2019 01:31:59.7561
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fugang.duan@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3550
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 25, 2019 at 1:47 PM Fred Klassen <fklassen@appneta.com> wrote:
->
->
->
-> > On May 25, 2019, at 8:20 AM, Willem de Bruijn <willemdebruijn.kernel@gm=
-ail.com> wrote:
+From: David Miller <davem@davemloft.net> Sent: Saturday, May 25, 2019 4:12 =
+AM
+> From: Andy Duan <fugang.duan@nxp.com>
+> Date: Thu, 23 May 2019 01:55:23 +0000
+>=20
+> > @@ -3146,7 +3150,10 @@ static int fec_enet_init(struct net_device *ndev=
+)
+> >       memset(cbd_base, 0, bd_size);
 > >
-> > On Fri, May 24, 2019 at 6:01 PM Fred Klassen <fklassen@appneta.com> wro=
-te:
-> >>
-> >>
-> >>
-> >>> On May 24, 2019, at 12:29 PM, Willem de Bruijn <willemdebruijn.kernel=
-@gmail.com> wrote:
-> >>>
-> >>> It is the last moment that a timestamp can be generated for the last
-> >>> byte, I don't see how that is "neither the start nor the end of a GSO
-> >>> packet=E2=80=9D.
-> >>
-> >> My misunderstanding. I thought TCP did last segment timestamping, not
-> >> last byte. In that case, your statements make sense.
-> >>
-> >>>> It would be interesting if a practical case can be made for timestam=
-ping
-> >>>> the last segment. In my mind, I don=E2=80=99t see how that would be =
-valuable.
-> >>>
-> >>> It depends whether you are interested in measuring network latency or
-> >>> host transmit path latency.
-> >>>
-> >>> For the latter, knowing the time from the start of the sendmsg call t=
-o
-> >>> the moment the last byte hits the wire is most relevant. Or in absenc=
-e
-> >>> of (well defined) hardware support, the last byte being queued to the
-> >>> device is the next best thing.
-> >
-> > Sounds to me like both cases have a legitimate use case, and we want
-> > to support both.
-> >
-> > Implementation constraints are that storage for this timestamp
-> > information is scarce and we cannot add new cold cacheline accesses in
-> > the datapath.
-> >
-> > The simplest approach would be to unconditionally timestamp both the
-> > first and last segment. With the same ID. Not terribly elegant. But it
-> > works.
-> >
-> > If conditional, tx_flags has only one bit left. I think we can harvest
-> > some, as not all defined bits are in use at the same stages in the
-> > datapath, but that is not a trivial change. Some might also better be
-> > set in the skb, instead of skb_shinfo. Which would also avoids
-> > touching that cacheline. We could possibly repurpose bits from u32
-> > tskey.
-> >
-> > All that can come later. Initially, unless we can come up with
-> > something more elegant, I would suggest that UDP follows the rule
-> > established by TCP and timestamps the last byte. And we add an
-> > explicit SOF_TIMESTAMPING_OPT_FIRSTBYTE that is initially only
-> > supported for UDP, sets a new SKBTX_TX_FB_TSTAMP bit in
-> > __sock_tx_timestamp and is interpreted in __udp_gso_segment.
-> >
->
-> I don=E2=80=99t see how to practically TX timestamp the last byte of any =
-packet
-> (UDP GSO or otherwise). The best we could do is timestamp the last
-> segment,  or rather the time that the last segment is queued. Let me
-> attempt to explain.
->
-> First let=E2=80=99s look at software TX timestamps which are for are gene=
-rated
-> by skb_tx_timestamp() in nearly every network driver=E2=80=99s xmit routi=
-ne. It
-> states:
->
-> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94 cut =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
->  * Ethernet MAC Drivers should call this function in their hard_xmit()
->  * function immediately before giving the sk_buff to the MAC hardware.
-> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94 cut =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
->
-> That means that the sk_buff will get timestamped just before rather
-> than just after it is sent. To truly capture the timestamp of the last
-> byte, this routine routine would have to be called a second time, right
-> after sending to MAC hardware. Then the user program would have
-> sort out the 2 timestamps. My guess is that this isn=E2=80=99t something =
-that
-> NIC vendors would be willing to implement in their drivers.
->
-> So, the best we can do is timestamp is just before the last segment.
-> Suppose UDP GSO sends 3000 bytes to a 1500 byte MTU adapter.
-> If we set SKBTX_HW_TSTAMP flag on the last segment, the timestamp
-> occurs half way through the burst. But it may not be exactly half way
-> because the segments may get queued much faster than wire rate.
-> Therefore the time between segment 1 and segment 2 may be much
-> much smaller than their spacing on the wire. I would not find this
-> useful.
+> >       /* Get the Ethernet address */
+> > -     fec_get_mac(ndev);
+> > +     ret =3D fec_get_mac(ndev);
+> > +     if (ret)
+> > +             return ret;
+>=20
+> You're leaking the queues allocated by fec_enet_alloc_queue().
 
-For measuring host queueing latency, a timestamp at the existing
-skb_tx_timestamp() for the last segment is perfectly informative.
-
-> I propose that we stick with the method used for IP fragments, which
-> is timestamping just before the first byte is sent.
-
-I understand that this addresses your workload. It simply ignores the
-other identified earlier in this thread.
-
-> Put another way, I
-> propose that we start the clock in an automobile race just before the
-> front of the first car crosses the start line rather than when the front
-> of the last car crosses the start line.
->
-> TX timestamping in hardware has even more limitations. For the most
-> part, we can only do one timestamp per packet or burst.  If we requested
-> a timestamp of only the last segment of a packet, we would have work
-> backwards to calculate the start time of the packet, but that would
-> only be be a best guess. For extremely time sensitive applications
-> (such as the one we develop), this would not be practical.
-
-Note that for any particularly sensitive measurements, a segment can
-always be sent separately.
-
-> We could still consider setting a flag that would allow the timestamping
-> the last segment rather than the first. However since we cannot
-> truly measure the timestamp of the last byte, I would question the value
-> in doing so.
->
+Good caught, thanks David.
+I will send two patches for the V2 to fix the exisited queue memory leak.
