@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D0812B7FE
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 17:00:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35CDA2B809
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 17:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726435AbfE0O6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 10:58:42 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:44182 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbfE0O6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 10:58:42 -0400
-Received: by mail-pl1-f195.google.com with SMTP id c5so7144515pll.11
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 07:58:41 -0700 (PDT)
+        id S1726956AbfE0O77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 10:59:59 -0400
+Received: from mail-pl1-f169.google.com ([209.85.214.169]:38771 "EHLO
+        mail-pl1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbfE0O77 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 10:59:59 -0400
+Received: by mail-pl1-f169.google.com with SMTP id f97so7154942plb.5
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 07:59:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1HDorn020b95P5QjIbImPQwcjN3fb+vcklwL0uBNOB4=;
-        b=dj+snbli8MeuVtvvWOX0i/MgbvyzGrxJcDF9vmnzSVKk7tykrUDOwHIe0eqGnKqEQF
-         JcPGQ+qnbkHlQvwQeWdUR+LHeDyKaaPE3RFknEp5S1+TQORd4cEyFUq5EMm7dyzR4mFi
-         upaD0ePc29TkvHC5B0c+5ygI+RdqlJNm5tjiPVLJF3vUf1EbGbSJ/HKf62lZMk34fsys
-         MRfCsiCQF+GIlEGEJCP77ri459CbTyQ+FpWZvUXHa3syNXvzxorKjYWboz6cPuZZuNEj
-         rA+DJ0hkB+h5/9Zkst1UTmXo06udSQ/RM9snSQXx7K/Xg4XmeC/cCd30X4X9/fjkm+Xk
-         GByA==
+        bh=cZFkhKMJq+ogRbWzDGzZ+lku5otmTGW7Q1H4giS/V+Y=;
+        b=nXdPsc8tEEUAfxO3iU0c1zuqadN+GgfTvTTpWyChol5enZBUJ+jFHHSGv15qPaO4/u
+         MTp7+ThokofmDQdIr16pBMsHhPUh+1j6K6JstrwFvXLGm6ZsttORDpFCE7p7iloWnXPc
+         Ru/fBJUcQPQabxVaHeg7CKUSeHRcWq5Nbro9UCeaJ3DQVwTtvW1L4L1brEPw3NgknnXq
+         9/rIJakmQkFXA/7DlOBr0sHXZLSC0j9oInMDJthjBXaenVI2GteBLSsRZY1b2L96NbMO
+         ofB5zK89a9wMfk66xChXDzF//YRdN89Wdirui2EdNL2UzAKgcXfCBhkMEqUrHBUI8NHg
+         fYTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1HDorn020b95P5QjIbImPQwcjN3fb+vcklwL0uBNOB4=;
-        b=BZeojAy+NzyQgNXf2fT2StyORjh69pM68lnB8/+5TkA21zTG/RS8/atDisCAw+udnw
-         8Z1rFigQNGUY2fpcur+TY3Eugoj4EJlk5GqjGSL6Y/CrKmk/nJmvbbvjVH7Akwl0xycu
-         DH1oayY/oow0+DMDAZdhGRTf668k3TPMjnEEcse1HKgkatLtGl/kZVxTGIi99LtOcdLs
-         FElDbS43ErZMJwjMu9J32KEuxNCrb5bPXvhmLAUnKXS161gKPm02lTXg5h3HQmtD2DNK
-         5R+1+7kwq1DkIjQemREj7mMbWLhbJvKt0qUnnzQ2Ri+h9mrlLQX3qbx636poOp/A2n/+
-         7SJQ==
-X-Gm-Message-State: APjAAAVR98+zCn4MZY1sM9Ee3nlzsUHWuYY6l0B+VsArfeviEafgSEtw
-        E0iodWUruvnE26o+Dw5nk/l6Cw==
-X-Google-Smtp-Source: APXvYqx7bkmiB37BGw4ZMiueOLTLzrpyuGwvCGpPwUQLdM5HBEpcaRkO1jmZENpeJmV1MMY5gGvmxw==
-X-Received: by 2002:a17:902:9a43:: with SMTP id x3mr3162302plv.35.1558969121537;
-        Mon, 27 May 2019 07:58:41 -0700 (PDT)
+        bh=cZFkhKMJq+ogRbWzDGzZ+lku5otmTGW7Q1H4giS/V+Y=;
+        b=cV7YmnwvK20zfnjKLXjs49yl26FcK1n/FoshpKdo0L5clDsdU0JdGcRVs1WJIiAN7x
+         sYBeLB1zOMqL9rORhGlERSKpd6IWwmin7ayZEH8VarOQrHY7b7KGBzFwX1NhBOkhz7mF
+         8161nPVttb2PiWUs+ZsLujEDID/qP0ho2XWktAHdtG5WQmx+OplHZCr7WiLyYVO5NQyy
+         4igTh6cipCCXgfNEPjmyJKv5VOtwdPeVx7ylmwsyRdhkPQTjOByIe2OLIMo4CCbom+BI
+         LkHNUJiTx1ep0HBbjFp+1AjqHMj3zUvN+vfBWqM86KsvloQy9E+UGFrf7hcIKiamu4pJ
+         +JJg==
+X-Gm-Message-State: APjAAAUJqmSOFcq40kfLTaMjbvfMmXpdIbAimmBsO7xmTiwU2BKBcBwp
+        d/gOHPOd7MBDKkxOmUv88vZGGEDpaz0=
+X-Google-Smtp-Source: APXvYqxlOQ6/ugXNnTxElDQSZlgr2WYT+yHNzNH84HQuBolmiDTk+1+xystaauiQnCdVQbLPLzY6TQ==
+X-Received: by 2002:a17:902:e108:: with SMTP id cc8mr119115455plb.145.1558969198300;
+        Mon, 27 May 2019 07:59:58 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id s12sm9701811pji.30.2019.05.27.07.58.41
+        by smtp.gmail.com with ESMTPSA id f28sm13904148pfk.104.2019.05.27.07.59.58
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 27 May 2019 07:58:41 -0700 (PDT)
-Date:   Mon, 27 May 2019 07:58:38 -0700
+        Mon, 27 May 2019 07:59:58 -0700 (PDT)
+Date:   Mon, 27 May 2019 07:59:56 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     <davem@davemloft.net>, <hkallweit1@gmail.com>,
-        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-Subject: Re: [PATCH net-next] net: link_watch: prevent starvation when
- processing linkwatch wq
-Message-ID: <20190527075838.5a65abf9@hermes.lan>
-In-Reply-To: <1558921674-158349-1-git-send-email-linyunsheng@huawei.com>
-References: <1558921674-158349-1-git-send-email-linyunsheng@huawei.com>
+To:     Arun Kumar Neelakantam <aneela@codeaurora.org>
+Cc:     netdev@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Chris Lew <clew@codeaurora.org>
+Subject: Re: netdev_alloc_skb is failing for 16k length
+Message-ID: <20190527075956.26f869ec@hermes.lan>
+In-Reply-To: <6891cd8b-a3be-91f5-39c4-7a7e7d498921@codeaurora.org>
+References: <6891cd8b-a3be-91f5-39c4-7a7e7d498921@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,20 +62,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 May 2019 09:47:54 +0800
-Yunsheng Lin <linyunsheng@huawei.com> wrote:
+On Mon, 27 May 2019 12:21:51 +0530
+Arun Kumar Neelakantam <aneela@codeaurora.org> wrote:
 
-> When user has configured a large number of virtual netdev, such
-> as 4K vlans, the carrier on/off operation of the real netdev
-> will also cause it's virtual netdev's link state to be processed
-> in linkwatch. Currently, the processing is done in a work queue,
-> which may cause worker starvation problem for other work queue.
+> Hi team,
 > 
-> This patch releases the cpu when link watch worker has processed
-> a fixed number of netdev' link watch event, and schedule the
-> work queue again when there is still link watch event remaining.
+> we are using "skb = netdev_alloc_skb(NULL, len);" which is getting 
+> failed sometimes for len = 16k.
 > 
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> I suspect mostly system memory got fragmented and hence atomic memory 
+> allocation for 16k is failing, can you please suggest best way to handle 
+> this failure case.
+> 
+> Thanks
+> 
+> Arun N
+> 
 
-Why not put link watch in its own workqueue so it is scheduled
-separately from the system workqueue?
+If you are handling big frames, then put the data in page size chunks
+and use build_skb.
