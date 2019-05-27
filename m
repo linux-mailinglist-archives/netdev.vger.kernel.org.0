@@ -2,131 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33F482ACD2
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 03:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F64C2ACD6
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 03:49:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726046AbfE0BkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 May 2019 21:40:15 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:46400 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725864AbfE0BkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 21:40:14 -0400
-Received: by mail-ed1-f66.google.com with SMTP id f37so24145224edb.13;
-        Sun, 26 May 2019 18:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NO8U8m5CSzAayh5gOP2uD7+woZxUgAgpDSZBOZBWMII=;
-        b=TT0SSFfJ9XyvcbkKVpLMR68wDPQAajZCyQneV7tN9UXeOca3yslwQH/BD3wZq4OoMt
-         8ZZryAzzeNXUI+cc99TbEbTqng3q/gzDkbdo7yx/ba+shW4zCoSABRLwLiXK/9TAjfut
-         BGnzDPVOQ2ZDKbiNt/9QSOZakC0Y5X2S6aT7xyxcIYXf6VvGTEcYN5SiwgC/6sHZ1mGh
-         nllh2/RJahrdF7+zoG+zfxAJOg9LXTnfPukY2soQvpNWx5K4RPR8WfAv5qcli3Vj7sms
-         r6CtY3jx1C5VnFXBIEOMEjZ/PkXtuY4ed5lDdxzfCRmafG2g/g3vtSb6Qa1jV7au0oDi
-         QxcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NO8U8m5CSzAayh5gOP2uD7+woZxUgAgpDSZBOZBWMII=;
-        b=D4B0wFoFlChYB58lj/LcztYdrXL/H5kDeyYGsGZMqL1WYPm+cRCXYPLTUTG+fYSbTn
-         R45fHU2frDeLE0KCQFzIj7mOe9OBNOvq5S4LNATcoYknu7vbzeZoe5s1oOcpEu7uHmbQ
-         t1HhfWsMLo2YmPcDquCXEo2rHXLfHH19BPSjszVuCPh8woN1MfP5Yphim0x2EyCEDtTX
-         Hf/HtOvErZO/WxLLfQ8Wgt/dhf8WPnErRNHIdTwwLySOOXlXzPJpEjt+8aSyN3lvgK6p
-         cDqv29tu73rzv9dXbJY6hoRnZJaXOVaIHWo3qpPKQ8Yy1X8xb2EUouk95g9/UTTRi696
-         ssNw==
-X-Gm-Message-State: APjAAAXSxXbSjMSSK81+wHk+2OYBI2U5us0m4i6nSKKtNDxg6nUjnv0B
-        XkU4M9mqdSwqyyX8TFDxH50fgDVSCeSQL8Benu8=
-X-Google-Smtp-Source: APXvYqygJgX+1+G9LnBUoEvC9NE4hIGyhnnxSNmA5vxJcY7JHoHKjOJUMtHe+V1DM18JWSsTJCvJ36wMlERBO/LdBw4=
-X-Received: by 2002:a17:906:2acf:: with SMTP id m15mr78048074eje.31.1558921212695;
- Sun, 26 May 2019 18:40:12 -0700 (PDT)
+        id S1726046AbfE0Bs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 May 2019 21:48:56 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:42436 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725867AbfE0Bsz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 May 2019 21:48:55 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 3BBB134096C981AB2BCB;
+        Mon, 27 May 2019 09:48:52 +0800 (CST)
+Received: from localhost.localdomain (10.67.212.75) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.439.0; Mon, 27 May 2019 09:48:42 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <hkallweit1@gmail.com>, <f.fainelli@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>
+Subject: [PATCH net-next] net: link_watch: prevent starvation when processing linkwatch wq
+Date:   Mon, 27 May 2019 09:47:54 +0800
+Message-ID: <1558921674-158349-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-References: <20190526153357.82293-1-fklassen@appneta.com> <20190526153357.82293-2-fklassen@appneta.com>
-In-Reply-To: <20190526153357.82293-2-fklassen@appneta.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 26 May 2019 20:39:36 -0500
-Message-ID: <CAF=yD-KyJC0ErdyNRtiw5VPhQY+i__sDG5oh0LzWJ4RMYe1zCQ@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/1] net/udp_gso: Allow TX timestamp with UDP GSO
-To:     Fred Klassen <fklassen@appneta.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.67.212.75]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 26, 2019 at 10:37 AM Fred Klassen <fklassen@appneta.com> wrote:
->
-> Fixes an issue where TX Timestamps are not arriving on the error queue
-> when UDP_SEGMENT CMSG type is combined with CMSG type SO_TIMESTAMPING.
-> This can be illustrated with an updated updgso_bench_tx program which
-> includes the '-T' option to test for this condition.
->
->     ./udpgso_bench_tx -4ucTPv -S 1472 -l2 -D 172.16.120.18
->     poll timeout
->     udp tx:      0 MB/s        1 calls/s      1 msg/s
->
-> The "poll timeout" message above indicates that TX timestamp never
-> arrived.
->
-> It also appears that other TX CMSG types cause similar issues, for
-> example trying to set SOL_IP/IP_TOS.
+When user has configured a large number of virtual netdev, such
+as 4K vlans, the carrier on/off operation of the real netdev
+will also cause it's virtual netdev's link state to be processed
+in linkwatch. Currently, the processing is done in a work queue,
+which may cause worker starvation problem for other work queue.
 
-If correct we need to find the root cause. Without that, this is not
-very informative. And likely the fix is not related, as that does not
-involve tx_flags or tskey.
+This patch releases the cpu when link watch worker has processed
+a fixed number of netdev' link watch event, and schedule the
+work queue again when there is still link watch event remaining.
 
-What exact behavior do you observe: tx timestamp notifications go
-missing when enabling IP_TOS?
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+---
+ net/core/link_watch.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
->
->     ./udpgso_bench_tx -4ucPv -S 1472 -q 182 -l2 -D 172.16.120.18
->     poll timeout
->     udp tx:      0 MB/s        1 calls/s      1 msg/s
->
-> This patch preserves tx_flags for the first UDP GSO segment. This
-> mirrors the stack's behaviour for IPv4 fragments.
+diff --git a/net/core/link_watch.c b/net/core/link_watch.c
+index 7f51efb..06276ff 100644
+--- a/net/core/link_watch.c
++++ b/net/core/link_watch.c
+@@ -168,9 +168,16 @@ static void linkwatch_do_dev(struct net_device *dev)
+ 
+ static void __linkwatch_run_queue(int urgent_only)
+ {
++#define MAX_DO_DEV_PER_LOOP	100
++
++	int do_dev = MAX_DO_DEV_PER_LOOP;
+ 	struct net_device *dev;
+ 	LIST_HEAD(wrk);
+ 
++	/* Give urgent case more budget */
++	if (urgent_only)
++		do_dev += MAX_DO_DEV_PER_LOOP;
++
+ 	/*
+ 	 * Limit the number of linkwatch events to one
+ 	 * per second so that a runaway driver does not
+@@ -189,7 +196,7 @@ static void __linkwatch_run_queue(int urgent_only)
+ 	spin_lock_irq(&lweventlist_lock);
+ 	list_splice_init(&lweventlist, &wrk);
+ 
+-	while (!list_empty(&wrk)) {
++	while (!list_empty(&wrk) && do_dev > 0) {
+ 
+ 		dev = list_first_entry(&wrk, struct net_device, link_watch_list);
+ 		list_del_init(&dev->link_watch_list);
+@@ -201,8 +208,13 @@ static void __linkwatch_run_queue(int urgent_only)
+ 		spin_unlock_irq(&lweventlist_lock);
+ 		linkwatch_do_dev(dev);
+ 		spin_lock_irq(&lweventlist_lock);
++
++		do_dev--;
+ 	}
+ 
++	/* Add the remaining work back to lweventlist */
++	list_splice_init(&wrk, &lweventlist);
++
+ 	if (!list_empty(&lweventlist))
+ 		linkwatch_schedule_work(0);
+ 	spin_unlock_irq(&lweventlist_lock);
+-- 
+2.8.1
 
-But deviates from the established behavior of other transport protocol TCP.
-
-I think it's a bit premature to resubmit as is while still discussing
-the original patch.
-
->
-> Fixes: ee80d1ebe5ba ("udp: add udp gso")
-> Signed-off-by: Fred Klassen <fklassen@appneta.com>
-> ---
->  net/ipv4/udp_offload.c | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-> index 065334b41d57..33de347695ae 100644
-> --- a/net/ipv4/udp_offload.c
-> +++ b/net/ipv4/udp_offload.c
-> @@ -228,6 +228,10 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
->         seg = segs;
->         uh = udp_hdr(seg);
->
-> +       /* preserve TX timestamp and zero-copy info for first segment */
-
-As pointed out in v1, zerocopy flags are handled by protocol
-independent skb_segment. It calls skb_zerocopy_clone.
-
-
-
-> +       skb_shinfo(seg)->tskey = skb_shinfo(gso_skb)->tskey;
-> +       skb_shinfo(seg)->tx_flags = skb_shinfo(gso_skb)->tx_flags;
-> +
->         /* compute checksum adjustment based on old length versus new */
->         newlen = htons(sizeof(*uh) + mss);
->         check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
-> --
-> 2.11.0
->
