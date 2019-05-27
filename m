@@ -2,155 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1DAD2BA01
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 20:21:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6AD22BA1C
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 20:27:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727126AbfE0SVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 14:21:21 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:38915 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726647AbfE0SVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 14:21:20 -0400
-Received: by mail-lf1-f65.google.com with SMTP id f1so12679156lfl.6
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 11:21:19 -0700 (PDT)
+        id S1727207AbfE0S1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 14:27:10 -0400
+Received: from mail-wm1-f54.google.com ([209.85.128.54]:55257 "EHLO
+        mail-wm1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726839AbfE0S1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 14:27:10 -0400
+Received: by mail-wm1-f54.google.com with SMTP id i3so306984wml.4
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 11:27:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cIQmYr9qDMcXw/frZVuWSs4Z6gJsQGJv00LJLaCloGU=;
-        b=I08TnzUsf6VHmv0MXTkDHbfoBRdecoRH0TuiyGZxWw8T/dKfvmFxurJh24q+r49R1I
-         uuBsAjEvsYuQVzOoOb3D/N7u7nOScU/WuvpJOoKOonbzLXeyUjVDwST+keiuS7+9Ep+c
-         9q3wN8GM8AMakM+zDHACUii5tQCDFhYO/FT9ju/fCN7i2H2AXkr/xmaXk4OsfwRXGrx9
-         SMfN0Yl8/YCWP4xc2fnnlx3W1HgrN9Etv+qHvLuC+kjaskSvPZkoZ+JxuICxIvBb8k8o
-         s8FkfDAJ9B0HfHyZKf90/w/4Gk6FSEjX1O+4luIDGxWIbdEi5/l2iakNB0XR0tj79Qs2
-         50dg==
+        d=gmail.com; s=20161025;
+        h=to:from:cc:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=sN9QuWTKjO37Ds+bKnSwCLJ7NU8/LG9sLSw2bj39kzA=;
+        b=o6pixEY6Dn/LwRudTcebcKhfo7qXh7iV/8Y5ETK+Dj3BOabH1sjRDkdCGZ4SMRI3Gb
+         b+ozeES032GScYdoojX6OQqIGwLrD2aM81RTeSF9Ad25lvSaLKMJZBGlIOt8m6nOCyR9
+         SEUUnz9/k0KVBZrE3QPleHCd+1d2NfuBkby8iqzPA6p6nXpM1Zf4vgY1g3mGHKgpxhM4
+         ZwrV0vhCzvLoncuIbuEf3a9RCzrKtSB0diDOqxsklqqVrDpx0tr6VOF/ajIdnVHCyr6C
+         CUiydsAYxDw2leuow3AO/3m2hv/yHIp+Y5zrjdW4oRfMYFPNPiibNYOsAIXo/PqbnUwV
+         vTWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=cIQmYr9qDMcXw/frZVuWSs4Z6gJsQGJv00LJLaCloGU=;
-        b=G6q63Nk/F/b/RWrs0BHa+shmkFiUpKKgquLI05w2KOiuddnp0OTB2NTl1V9kkDbjsO
-         ht4rdX9tkaAA+s/oqxFKfn4KpbDfGsSiSBN80c/FlZ+wh9M2VDqb2eW15+nDFaOSKl7Q
-         zli6dFxP5LVQT+3CY6q9CBgVwSKhvHT+eGc6Tbl3trfCW4syrqi2D0sWZY8005xAnlsW
-         PkA89SFYJmD4uE1DF5dzRbtrAv053TBBtHZ87k1noctNcrENiK5//a2eHGbjQMhxbqUN
-         lqeYUg1FhOzAdFVdc+/IVAVPXBCuEdP7IgHCl4QvFv4Jqy+bIfJPdH6GeyttMYfjO4qa
-         Ky+Q==
-X-Gm-Message-State: APjAAAUaNJoe5n4D+ZP+11r+lnw5z5Pu99lTKfGRmQ4f4plpNWCgVwG1
-        f6kKqD5HlxfUeUWfqT153fgMgA==
-X-Google-Smtp-Source: APXvYqxdLRxNn6fN/7LXcm+ASzyV4brjzSwTtHmi8VWTNZ8pZTlZxyv2h5jnYIU7M47O202GgHej3Q==
-X-Received: by 2002:ac2:5595:: with SMTP id v21mr6577390lfg.54.1558981278784;
-        Mon, 27 May 2019 11:21:18 -0700 (PDT)
-Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id w20sm2451515ljd.39.2019.05.27.11.21.17
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 27 May 2019 11:21:17 -0700 (PDT)
-Date:   Mon, 27 May 2019 21:21:15 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com
-Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: cpsw: add XDP support
-Message-ID: <20190527182114.GB4246@khorivan>
-Mail-Followup-To: Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com
-References: <20190523182035.9283-1-ivan.khoronzhuk@linaro.org>
- <20190523182035.9283-4-ivan.khoronzhuk@linaro.org>
- <20190524110511.GA27885@apalos>
+        h=x-gm-message-state:to:from:cc:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=sN9QuWTKjO37Ds+bKnSwCLJ7NU8/LG9sLSw2bj39kzA=;
+        b=W5L6/NbJuFs7XjO2HKUM5RHzefDKAWBcssnEBbs2H/YlftiY4cSVP27r0ZV6NpRBdA
+         jFN/Kjp8RjHp3WaYR9oD0P804JVAs3U3L6qlenL70LQpan+8FG2LNhDzckY0b8RSUK9z
+         UU7RIzJfSfHcKDO6OzgZuaFeLamJjcy72nBfP8rvZgC8+Z/hc7Zg29jYBHlVty+9D5wL
+         kDVFn/RSeIoBKdlkvQZvFMiKBCTYhsD0Ur78jTewxuPqMQB5cLpu3YmsSjJ+Jnigvp/E
+         7Hib1dECK1fKbSPRq6ZC1R0vle7KThCy/DCWrP2GigN0rTE7d2HT6fVdrkBPLWUKDYvo
+         slgQ==
+X-Gm-Message-State: APjAAAVvsihR2zOi+pozkzfCm1FBehWuRLFUtnr7tlPSSJxhTEzoefk6
+        EqCl5W8vWDF/RdRpitIQqXduGTO5
+X-Google-Smtp-Source: APXvYqyQNESHz9Z4PUb5M3Q+hSyfqvNXykVOyYD5e9eo+f1vgtm8EMCTSGBfxxiSmIQ7aBvGx+1CGw==
+X-Received: by 2002:a1c:6a11:: with SMTP id f17mr241797wmc.110.1558981628179;
+        Mon, 27 May 2019 11:27:08 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8be9:7a00:485f:6c34:28a2:1d35? (p200300EA8BE97A00485F6C3428A21D35.dip0.t-ipconnect.de. [2003:ea:8be9:7a00:485f:6c34:28a2:1d35])
+        by smtp.googlemail.com with ESMTPSA id n3sm8681929wrt.44.2019.05.27.11.27.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 27 May 2019 11:27:07 -0700 (PDT)
+To:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH net-next 0/3] net: phy: improve handling of more complex C45
+ PHY's
+Message-ID: <e3ce708d-d841-bd7e-30bb-bff37f3b89ac@gmail.com>
+Date:   Mon, 27 May 2019 20:26:58 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20190524110511.GA27885@apalos>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 02:05:11PM +0300, Ilias Apalodimas wrote:
->On Thu, May 23, 2019 at 09:20:35PM +0300, Ivan Khoronzhuk wrote:
->> Add XDP support based on rx page_pool allocator, one frame per page.
->> Page pool allocator is used with assumption that only one rx_handler
->> is running simultaneously. DMA map/unmap is reused from page pool
->> despite there is no need to map whole page.
->>
->> Due to specific of cpsw, the same TX/RX handler can be used by 2
->> network devices, so special fields in buffer are added to identify
->> an interface the frame is destined to. Thus XDP works for both
->> interfaces, that allows to test xdp redirect between two interfaces
->> easily.
->>
->> XDP prog is common for all channels till appropriate changes are added
->> in XDP infrastructure.
->>
->> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->> ---
->>  drivers/net/ethernet/ti/Kconfig        |   1 +
->>  drivers/net/ethernet/ti/cpsw.c         | 555 ++++++++++++++++++++++---
->>  drivers/net/ethernet/ti/cpsw_ethtool.c |  53 +++
->>  drivers/net/ethernet/ti/cpsw_priv.h    |   7 +
->>  4 files changed, 554 insertions(+), 62 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
->> index bd05a977ee7e..3cb8c5214835 100644
->> --- a/drivers/net/ethernet/ti/Kconfig
->> +++ b/drivers/net/ethernet/ti/Kconfig
->> @@ -50,6 +50,7 @@ config TI_CPSW
->>  	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
->>  	select TI_DAVINCI_MDIO
->>  	select MFD_SYSCON
->> +	select PAGE_POOL
->>  	select REGMAP
->>  	---help---
->>  	  This driver supports TI's CPSW Ethernet Switch.
->> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
->> index 87a600aeee4a..274e6b64ea9e 100644
->> --- a/drivers/net/ethernet/ti/cpsw.c
->> +++ b/drivers/net/ethernet/ti/cpsw.c
->> @@ -31,6 +31,10 @@
->>  #include <linux/if_vlan.h>
->>  #include <linux/kmemleak.h>
->>  #include <linux/sys_soc.h>
->> +#include <net/page_pool.h>
->> +#include <linux/bpf.h>
->> +#include <linux/bpf_trace.h>
->> +#include <linux/filter.h>
->>
->>  #include <linux/pinctrl/consumer.h>
+This series tries to address few problematic aspects raised by
+Russell. Concrete example is the Marvell 88x3310, the changes
+should be helpful for other complex C45 PHY's too.
 
-[...]
+Heiner Kallweit (3):
+  net: phy: export phy_queue_state_machine
+  net: phy: add callback for custom interrupt handler to struct
+    phy_driver
+  net: phy: move handling latched link-down to phylib state machine
 
->> +			start_free = 1;
->> +			continue;
->> +		}
->> +
->> +		/* if refcnt > 1, page has been holding by netstack, it's pity,
->> +		 * so put it to the ring to be consumed later when fast cash is
->s/cash/cache
->
->> +		 * empty. If ring is full then free page by recycling as above.
->> +		 */
->> +		ret = ptr_ring_produce(&pool->ring, page);
->> +		if (ret) {
->> +			page_pool_recycle_direct(pool, page);
->> +			continue;
->> +		}
->Although this should be fine since this part won't be called during the driver
->init, i think i'd prefer unmapping the buffer and let the network stack free it,
->instead of pushing it for recycling. The occurence should be pretty low, so
->allocating a buffer every once in a while shouldn't have a noticeable
->performance impact
->
-
-Ok, I will leave previous version from RFC.
+ drivers/net/phy/phy-c45.c    | 12 ------------
+ drivers/net/phy/phy.c        | 28 +++++++++++++++++++++++-----
+ drivers/net/phy/phy_device.c | 14 +-------------
+ include/linux/phy.h          | 13 ++++++++++++-
+ 4 files changed, 36 insertions(+), 31 deletions(-)
 
 -- 
-Regards,
-Ivan Khoronzhuk
+2.21.0
+
