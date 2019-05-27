@@ -2,93 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F0D62BB96
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 22:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDE6F2BB9A
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 23:04:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727461AbfE0U4R convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 27 May 2019 16:56:17 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:36532 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727018AbfE0U4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 16:56:16 -0400
-Received: by mail-ed1-f67.google.com with SMTP id a8so28375354edx.3
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 13:56:15 -0700 (PDT)
+        id S1726839AbfE0VEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 17:04:15 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:37622 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726346AbfE0VEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 17:04:14 -0400
+Received: by mail-lj1-f195.google.com with SMTP id h19so7316308ljj.4
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 14:04:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=RUXHZKYk5A7u3aeY63C0CmccTMg4cGkXdeY7tvMdnpI=;
+        b=cqAkCudFdpoWmWGUcinDJKt0dHoCRbufbBWDXpIiKK7YI4L4t/fIskoJbb1Cbe4uAl
+         gZILWaxtLMSbo4j04I7n6Ng9JuQocrfdMSllBeVye0yOvbJ/laoIrGhyK0P4uneA5GZO
+         uNzkGyGzTcZlqFXZmHiPCuT7q7+VhK/O8aiA79K1vWpv4NQN89GLWCUG5o5/M4+WDQ65
+         0zRw3WbeLsMsrPXgGMTHKe3P/IAQWLutn68eZuqutzHS+uGXLbetXcMXAAYV1b3LHlgU
+         bnyqZ9b2fDwKNSbNnjfhleRVi26aPFFPi4NJUPYTLaLrkiihiP5Ly7bm79roLipieEsQ
+         g0Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=EuQ8b2S5R3YbI8mza3fhQsrNgy4ILRY0opGI5BO2xXM=;
-        b=QGiVHgUzRZkvOapyOpY+LpJujRhB9zKOljfNC1pN/qt7uHNjgOv9EJ9vV7f78PvGHv
-         FTZMmhuFPKxOnbExlmQwYQc03J1aINjJJ2Z2sktZ08g4yDUTy0hbqgDf58NAxjQWAg7t
-         Ge0HdEA5wUH2qlr+O+rT4iXulXHpYi1/iyfAptmr6u+80a3C9qykQj7sq80HkhLq7VrM
-         mjdT6zxqhDHczkbWfmt+0c7/HMtCWaO73Ur2cmiiuJ5fa9NGTeEsghB2F/tM4Xj6hoHW
-         rKsZQFkO3QkP9rG3REiHMWCGqnlwudumZ3kXW2c0KkmvzroMiFbDh0y02XWAJMPkvXfU
-         W5PA==
-X-Gm-Message-State: APjAAAWFC5GoQy9snaJzLsyE3Gk1+OK9Zp7bYSqQpPwVVabXM2PFRSB3
-        poVGk/ryIZrOEbvQJ790mEwcdPKGNfw=
-X-Google-Smtp-Source: APXvYqzUnRBS7tZrJ2cj09aYaeiNZUBCeQ8sRcsTtIswnwaH37A7/PzY07Gr9EXsW/SVKaHUqMTSVg==
-X-Received: by 2002:a50:b39a:: with SMTP id s26mr119636360edd.39.1558990574529;
-        Mon, 27 May 2019 13:56:14 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id l18sm1906110ejs.44.2019.05.27.13.56.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=RUXHZKYk5A7u3aeY63C0CmccTMg4cGkXdeY7tvMdnpI=;
+        b=gw9PF3o8Pr7Z/uZv4S8enIKPWBhhjSufH+13aTE3smeF/568jaTdArOssk+D621y+m
+         /p6Lh3Zn4sZP3MVUXQeFkm/fnuCulL620s58cFkqkdxPOGZ+PEUhLkH8gIIMevG/5gXL
+         aABQmhIYRPnrwpyeuhs+Q7Iw9Om3JaOe+RrQLnkg9UVww+T3MrK/UOfFxC20AWiBOgcg
+         ftp3NWK2a78BQNlAWq2GOlFoBSliJ+lUgZaoZ/ZJzF6UJDDCZX+1Dn9USzvJTgsSN3LG
+         zVlzZhC0VVhL87mgSDRRnkpm2Wo/7kp7dXvpxZ7ntSAA20xvJZMVRDfqQZmDZjBBNA1f
+         oLTA==
+X-Gm-Message-State: APjAAAUh2QrqeywV3WwkKBezWPUPWF6/y84f2upWSAqkeKQLp6R5Ekp3
+        pCOgzxpKTZ8txf9Si10YC3u65Basbes=
+X-Google-Smtp-Source: APXvYqwzIDX8NM16rtiYpmUIUA4bDTDsBdNjBknIKdEB5EN6E/L/jWxj2BfQ8eM5q4ThvX2e4dr+Dw==
+X-Received: by 2002:a2e:a0d1:: with SMTP id f17mr25179185ljm.117.1558991052886;
+        Mon, 27 May 2019 14:04:12 -0700 (PDT)
+Received: from localhost.localdomain.pl (178235190197.unknown.vectranet.pl. [178.235.190.197])
+        by smtp.googlemail.com with ESMTPSA id n26sm2888444lfi.90.2019.05.27.14.04.11
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 27 May 2019 13:56:13 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C739018031C; Mon, 27 May 2019 22:56:12 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-Cc:     "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v5] net: sched: Introduce act_ctinfo action
-In-Reply-To: <4F2278CE-5197-43FF-B3D5-AF443088D73F@darbyshire-bryant.me.uk>
-References: <87h89kx74q.fsf@toke.dk> <20190527111716.94736-1-ldir@darbyshire-bryant.me.uk> <8736kzyk53.fsf@toke.dk> <4F2278CE-5197-43FF-B3D5-AF443088D73F@darbyshire-bryant.me.uk>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 27 May 2019 22:56:12 +0200
-Message-ID: <87lfyrwr9v.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+        Mon, 27 May 2019 14:04:12 -0700 (PDT)
+From:   Lukasz Czapnik <lukasz.czapnik@gmail.com>
+To:     netdev@vger.kernel.org, stephen@networkplumber.org
+Cc:     Lukasz Czapnik <lukasz.czapnik@gmail.com>,
+        Lukasz Czapnik <lukasz.czapnik@intel.com>
+Subject: [PATCH] tc: flower: fix port value truncation
+Date:   Mon, 27 May 2019 23:03:49 +0200
+Message-Id: <20190527210349.31833-1-lukasz.czapnik@gmail.com>
+X-Mailer: git-send-email 2.17.2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk> writes:
+sscanf truncates read port values silently without any error. As sscanf
+man says:
+(...) sscanf() conform to C89 and C99 and POSIX.1-2001. These standards
+do not specify the ERANGE error.
 
-> I have to call it a day. I have no idea why the patches are becoming
-> corrupt and hence how to fix it, it’s probably something Apple has
-> done to git, or maybe MS to my email server.
+Replace sscanf with safer get_be16 that returns error when value is out
+of range.
 
-Or maybe it's just that your editor saves things with the wrong type of
-line ending (if you're on a Mac)?
+Example:
+tc filter add dev eth0 protocol ip parent ffff: prio 1 flower ip_proto
+tcp dst_port 70000 hw_tc 1
 
-> Sadly I also think that the only way this patch/functionality will
-> ever be acceptable is if someone else writes it, where they or their
-> company can take the credit/blame.
+Would result in filter for port 4464 without any warning.
 
-Not sure why you would think so.
+Fixes: 8930840e678b ("tc: flower: Classify packets based port ranges")
+Signed-off-by: Lukasz Czapnik <lukasz.czapnik@intel.com>
+---
+ tc/f_flower.c | 48 ++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 36 insertions(+), 12 deletions(-)
 
-> I tried very hard to approach the process of upstream submission in a
-> positive way, seeking advice & guidance in the form of RFC patches,
-> many rounds later I feel they’re further away from acceptance than
-> ever.
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 9659e894..e2420d92 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -493,23 +493,40 @@ static int flower_port_range_attr_type(__u8 ip_proto, enum flower_endpoint type,
+ 	return 0;
+ }
+ 
++/* parse range args in format 10-20 */
++static int parse_range(char *str, __be16 *min, __be16 *max)
++{
++	char *sep;
++
++	sep = strchr(str, '-');
++	if (sep) {
++		*sep = '\0';
++
++		if (get_be16(min, str, 10))
++			return -1;
++
++		if (get_be16(max, sep + 1, 10))
++			return -1;
++	} else {
++		if (get_be16(min, str, 10))
++			return -1;
++	}
++	return 0;
++}
++
+ static int flower_parse_port(char *str, __u8 ip_proto,
+ 			     enum flower_endpoint endpoint,
+ 			     struct nlmsghdr *n)
+ {
+-	__u16 min, max;
++	__be16 min = 0;
++	__be16 max = 0;
+ 	int ret;
+ 
+-	ret = sscanf(str, "%hu-%hu", &min, &max);
+-
+-	if (ret == 1) {
+-		int type;
++	ret = parse_range(str, &min, &max);
++	if (ret)
++		return -1;
+ 
+-		type = flower_port_attr_type(ip_proto, endpoint);
+-		if (type < 0)
+-			return -1;
+-		addattr16(n, MAX_MSG, type, htons(min));
+-	} else if (ret == 2) {
++	if (min && max) {
+ 		__be16 min_port_type, max_port_type;
+ 
+ 		if (max <= min) {
+@@ -520,8 +537,15 @@ static int flower_parse_port(char *str, __u8 ip_proto,
+ 						&min_port_type, &max_port_type))
+ 			return -1;
+ 
+-		addattr16(n, MAX_MSG, min_port_type, htons(min));
+-		addattr16(n, MAX_MSG, max_port_type, htons(max));
++		addattr16(n, MAX_MSG, min_port_type, min);
++		addattr16(n, MAX_MSG, max_port_type, max);
++	} else if (min && !max) {
++		int type;
++
++		type = flower_port_attr_type(ip_proto, endpoint);
++		if (type < 0)
++			return -1;
++		addattr16(n, MAX_MSG, type, min);
+ 	} else {
+ 		return -1;
+ 	}
+-- 
+2.17.2
 
-Not sure why you'd think that either; I thought you were rather close,
-actually...
-
-> Clearly it is not desired functionality/code otherwise it would have
-> been written by now and I cannot face another 3 rounds of the same
-> thing for act_ctinfo user space, the x_tables/nf_tables kernel helper
-> to store the DSCP in the first place and the user space code to handle
-> that.
->
-> As a rank outsider, amateur coder I shall leave it that I’ve found the
-> process completely discouraging. The professionals are of course paid
-> to deal with this.
-
-It's up to you if you want to continue, of course; but honestly, I'm not
-actually sure what it is you are finding hard to "deal with"? No one has
-told you "go away, this is junk"; you've gotten a few suggestions for
-improvements, most of which you have already fixed. So what, exactly, is
-the problem? :)
-
--Toke
