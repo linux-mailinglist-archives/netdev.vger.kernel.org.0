@@ -2,80 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 075DD2B98D
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 19:52:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 540A32B9C2
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 20:05:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726966AbfE0RvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 13:51:24 -0400
-Received: from hermes.domdv.de ([193.102.202.1]:3928 "EHLO hermes.domdv.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726346AbfE0RvY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 May 2019 13:51:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=domdv.de;
-         s=dk3; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
-        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=hhLJjZyrWxWbv2nHbTpcVuYfjsiR3xD3ZYf3qZ2XmP4=; b=eSzYuqkA7M7cWqOWs3ePcE2d3a
-        K7ryWpptHEvgUDRjXOU5beGD2oRSmjDI+a3bez7GVypKC8dcGKkAxzHT7QseMRoBq/xQCQx9x8g3o
-        iHAcHGgunG/8RcxFPxx8lNxFcOc7Ogku6YM5GsS286b+A0zwvTC/n8Yc3eVGWu892SHo=;
-Received: from [fd06:8443:81a1:74b0::212] (port=3580 helo=castor.lan.domdv.de)
-        by zeus.domdv.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.91)
-        (envelope-from <ast@domdv.de>)
-        id 1hVJmN-0002m9-Iv; Mon, 27 May 2019 19:51:23 +0200
-Received: from woody.lan.domdv.de ([10.1.9.28] helo=host028-server-9.lan.domdv.de)
-        by castor.lan.domdv.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.91)
-        (envelope-from <ast@domdv.de>)
-        id 1hVJlj-0000sD-Nb; Mon, 27 May 2019 19:50:43 +0200
-Message-ID: <b45afe989054df3a087ea5f21b7b9a62c97fd5bd.camel@domdv.de>
-Subject: Re: [RESEND][PATCH] Fix MACsec kernel panics, oopses and bugs
-From:   Andreas Steinmetz <ast@domdv.de>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Date:   Mon, 27 May 2019 19:50:58 +0200
-In-Reply-To: <20190523.091106.645519899189717299.davem@davemloft.net>
-References: <32eb738a0a0f3ed5880911e4ac4ceedca76e3f52.camel@domdv.de>
-         <20190523.091106.645519899189717299.davem@davemloft.net>
-Organization: D.O.M. Datenverarbeitung GmbH
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 
+        id S1727128AbfE0SEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 14:04:22 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:42960 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726484AbfE0SEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 14:04:21 -0400
+Received: by mail-ot1-f67.google.com with SMTP id i2so15471195otr.9;
+        Mon, 27 May 2019 11:04:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Qc5bwgG1nJlpiXW7qOpXYd6aZ6dtl7PwtbbKYJAwtlk=;
+        b=QT+oR2PzBjtJAJ4Q9xeAgE/GB4/+a9hDfoejIBw07ZAUJYbrWe12KnBXyT6Q5/iLMx
+         Ydgqpnjzkoq0HKSc3sdBbcj592NHjQe33H1nmmu3r2AaqZuH9kSEfW4X1IjSYDJ9MXCs
+         KbWJxL8Yq3sTHtuZ/d8J0BUr3hat6BR4JI1NDD11dQrfaHGgkmjqml3BwckU8DYQfO9n
+         NNh3Daph4Uerkcl1CE1+09Xt7BLTuLkxJBL/6jYBXCOXI9PjnH7J+ihDWH8uCDFjUnT5
+         YkqoQY84Fl86gGlQtIxjqbqRWGwMcDNTQyFQcKnD4RXyGWWCskBQpIqLW0rWVIAxk6jB
+         w55w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Qc5bwgG1nJlpiXW7qOpXYd6aZ6dtl7PwtbbKYJAwtlk=;
+        b=mp0XdHJL60CrZCx94RmVKKjAZXHG/m02fJrdR9zJTsnVvEBO7/ZqChGJp1vZYQXuS1
+         XHKa6AiWqWPcH0W2lv3BjXqSaicjk0pwlveS+5RQbCbRmiRxrVd+grlq2lJRaQbqobGy
+         f5dvmGS8pT9ODsB+F11hYgRNzA0XI50ywmIKrQkaCAE5Lus9D/17McPG1zVwsaiUwsKy
+         FkijvmSYwBhkwbGvqfkvs5yPoowYXvQIrhd71FFcTGJ3dSmcovxIp12MJtJ3Zob7UGHq
+         N9G5yC6goo3k5i4ACqrWVXgKViLX1ivBgl+0u81z2XY51AcThWHe4PduEGugz3Y7NlMO
+         1zcw==
+X-Gm-Message-State: APjAAAX99x0CM6aOxQdcP2BU+arNPgEhGyPxroXeIK5gMZxJSN86IqZx
+        4aJqwnEQlqGfqPHJYFHfL2cuuH2iDdGguhzqVcAPL68U
+X-Google-Smtp-Source: APXvYqyG/5Xo+qXItm0oFZccwmyw4v4GWKwCndcRrcwlFCngOkzbwFAFOT2+r1bf4fzOZCZjIfstm/Kj4oTQvjej1Yc=
+X-Received: by 2002:a9d:744d:: with SMTP id p13mr50944036otk.96.1558980261008;
+ Mon, 27 May 2019 11:04:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20190527134623.5673-1-narmstrong@baylibre.com> <20190527134623.5673-3-narmstrong@baylibre.com>
+In-Reply-To: <20190527134623.5673-3-narmstrong@baylibre.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 27 May 2019 20:04:10 +0200
+Message-ID: <CAFBinCCD93XzMp8gbUUc_Q0pHt84=zyn3_TuPCVUpnB8LK48Fw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: stmmac: dwmac-meson8b: update with SPDX
+ Licence identifier
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Patch will be worked over and split. I'll need to investigate one more
-problem. Split patch will be resent when ready.
-
-On Thu, 2019-05-23 at 09:11 -0700, David Miller wrote:
-> From: Andreas Steinmetz <ast@domdv.de>
-> Date: Thu, 23 May 2019 09:46:15 +0200
-> 
-> > MACsec causes oopses followed by a kernel panic when attached directly or indirectly to
-> a bridge. It causes erroneous
-> > checksum messages when attached to vxlan. When I did investigate I did find skb leaks,
-> apparent skb mis-handling and
-> > superfluous code. The attached patch fixes all MACsec misbehaviour I could find. As I
-> am no kernel developer somebody
-> > with sufficient kernel network knowledge should verify and correct the patch where
-> necessary.
-> > 
-> > Signed-off-by: Andreas Steinmetz <ast@domdv.de>
-> 
-> Subject lines should be of the form:
-> 
-> [PATCH $DST_TREE] $subsystem_prefix: Description.
-> 
-> Where $DST_TREE here would be "net" and $subsystem_prefix would be "macsec".
-> 
-> > +     /* FIXME: any better way to prevent calls to netdev_rx_csum_fault? */
-> > +     skb->csum_complete_sw = 1;
-> 
-> Create a helper for this in linux/skbuff.h with very clear and clean comments
-> explaining what is going on.
-
+On Mon, May 27, 2019 at 3:47 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
+>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
