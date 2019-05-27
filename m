@@ -2,61 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A122ADC1
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 06:47:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80B6A2ADC4
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 06:50:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725940AbfE0Erj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 00:47:39 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:50476 "EHLO
+        id S1726054AbfE0Euh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 00:50:37 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:50536 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbfE0Erj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 00:47:39 -0400
+        with ESMTP id S1725869AbfE0Euh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 00:50:37 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4093214784BF2;
-        Sun, 26 May 2019 21:47:38 -0700 (PDT)
-Date:   Sun, 26 May 2019 21:47:37 -0700 (PDT)
-Message-Id: <20190526.214737.894681363036180862.davem@davemloft.net>
-To:     jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        davejwatson@fb.com, john.fastabend@gmail.com, vakul.garg@nxp.com,
-        alexei.starovoitov@gmail.com
-Subject: Re: [PATCH net 0/4] net/tls: two fixes for rx_list pre-handling
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7ECF91481AD14;
+        Sun, 26 May 2019 21:50:36 -0700 (PDT)
+Date:   Sun, 26 May 2019 21:50:35 -0700 (PDT)
+Message-Id: <20190526.215035.1766035827093417237.davem@davemloft.net>
+To:     keescook@chromium.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: tulip: de4x5: Drop redundant MODULE_DEVICE_TABLE()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190524173433.9196-1-jakub.kicinski@netronome.com>
-References: <20190524173433.9196-1-jakub.kicinski@netronome.com>
+In-Reply-To: <201905241318.229430E@keescook>
+References: <201905241318.229430E@keescook>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 26 May 2019 21:47:38 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 26 May 2019 21:50:36 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Date: Fri, 24 May 2019 10:34:29 -0700
+From: Kees Cook <keescook@chromium.org>
+Date: Fri, 24 May 2019 13:20:19 -0700
 
-> tls_sw_recvmsg() had been modified to cater better to async decrypt.
-> Partially read records now live on the rx_list. Data is copied from
-> this list before the old do {} while loop, and the not included
-> correctly in deciding whether to sleep or not and lowat threshold
-> handling. These modifications, unfortunately, added some bugs.
+> Building with Clang reports the redundant use of MODULE_DEVICE_TABLE():
 > 
-> First patch fixes lowat - we need to calculate the threshold early
-> and make sure all copied data is compared to the threshold, not just
-> the freshly decrypted data.
+> drivers/net/ethernet/dec/tulip/de4x5.c:2110:1: error: redefinition of '__mod_eisa__de4x5_eisa_ids_device_table'
+> MODULE_DEVICE_TABLE(eisa, de4x5_eisa_ids);
+> ^
+> ./include/linux/module.h:229:21: note: expanded from macro 'MODULE_DEVICE_TABLE'
+> extern typeof(name) __mod_##type##__##name##_device_table               \
+>                     ^
+> <scratch space>:90:1: note: expanded from here
+> __mod_eisa__de4x5_eisa_ids_device_table
+> ^
+> drivers/net/ethernet/dec/tulip/de4x5.c:2100:1: note: previous definition is here
+> MODULE_DEVICE_TABLE(eisa, de4x5_eisa_ids);
+> ^
+> ./include/linux/module.h:229:21: note: expanded from macro 'MODULE_DEVICE_TABLE'
+> extern typeof(name) __mod_##type##__##name##_device_table               \
+>                     ^
+> <scratch space>:85:1: note: expanded from here
+> __mod_eisa__de4x5_eisa_ids_device_table
+> ^
 > 
-> Third patch fixes sleep - if data is picked up from rx_list and
-> no flags are set, we should not put the process to sleep, but
-> rather return the partial read.
+> This drops the one further from the table definition to match the common
+> use of MODULE_DEVICE_TABLE().
 > 
-> Patches 2 and 4 add test cases for these bugs, both will cause
-> a sleep and test timeout before the fix.
+> Fixes: 07563c711fbc ("EISA bus MODALIAS attributes support")
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Thanks for the test cases.
-
-Series applied and queued up for -stable.
+Applied.
