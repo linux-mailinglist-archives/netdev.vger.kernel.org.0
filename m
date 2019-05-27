@@ -2,280 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E1422BA22
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 20:29:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4172BA26
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 20:30:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbfE0S3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 14:29:32 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:33055 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726839AbfE0S3b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 14:29:31 -0400
-Received: by mail-lj1-f196.google.com with SMTP id w1so15440845ljw.0
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 11:29:29 -0700 (PDT)
+        id S1727289AbfE0SaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 14:30:03 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:35009 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727274AbfE0SaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 14:30:03 -0400
+Received: by mail-wm1-f67.google.com with SMTP id w9so329087wmi.0
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 11:30:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=CmpzWGArOJzCbtUDsEj3iOJkLX3jRRsxfmP2+PwxFOw=;
-        b=Oxr5AXuI4+EPpurShT2LXwgIb0yVyjwfYRwcfroe2YHT3bNq6xV/cgj5yiSQZPMeTc
-         MJbS0gPkNEYNEtjzem0ej4lG9y09lq1zoLSH+muFqOvuh/whPAUq5D55FJi5aIopu3h6
-         G5C5eM4ARj27GqlDhZFDfjJP3+hnb0lMEgGTU5LR8muG9iqYtnevtQPUaqlm2lY66GlL
-         NBQHo/QZWudT14B2u2oppFMQv3GbZzcMndHKxjxRy+SUjNujyS42qAwGuOX42+1c6Xv6
-         bTdl9ryStQ7NQ7uTLskPmpyos9JWUc9JQaZoy4zJMzv5hvP0WXh8idNwKZ+khNCl/Yh0
-         WJRg==
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6GD8C8d1YYIughSi/qa9hCA+csQvXSQDkcz7sRnKREk=;
+        b=Bs+160TiVPsqoYW5SR8942nHhK3s/VdTTU3LrHUIJGqPbWbJ5DhlKpfEIox/jjvoPW
+         YiMCRvPHJXRDK6rZWlcNUsloNmGb+Wk6SR/F1jBys1PXB4Nr4axZhzX2MEBxgV4EZ0LE
+         iz6mGYMJfS+v4132kR6s2oGQCCJUMMsCdpFZKl9PRNvKoYGaFW3sMWitSTANIWHvHU3Y
+         IOsMnowvBupezNJ2qXjMVIFQSzcxgsCk242nUr+vmZ07Ts23JR62CjTVuOo7aFPvHpq6
+         MEznFsyHOassQ606dHkuavqazk1azYvcD+4OeN7FdmB+UyFc2iuKt9wT+YebZWa1XjUF
+         CIlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=CmpzWGArOJzCbtUDsEj3iOJkLX3jRRsxfmP2+PwxFOw=;
-        b=HjnBCu7fOuC+wxJ5I/7Q5WnWYSUw3qwLBPxnvxPLXITQHGKXxvfPUfhX4LLsAJcD2i
-         08C9UoTw6Ko3sM0q31ThwjnxnTdpvgbcfvMRv73r0TiBq+r+4dpArXOUjlG35+SoxqCR
-         fpz/6ixD0YKxMX21w03gKA73HYlE50KgfIFKKKQZ7jqQaSlqbyF7WPlgXB2ibMGlH8Or
-         QdE3c3405kbH+68xkcKIQUhql3jTSUYeG2Ny0oXNRl6pzlU62ZH03wYPjy1jI6Q875hL
-         VMzrBZC/eiuE/R/zUZFdk6+x+TezZauvAcKyZdzL6e3Hs4GyRD+cViDtVT8ReQp8Cck1
-         anYg==
-X-Gm-Message-State: APjAAAVojWmRXusAof+lBt/jc2KJZ7jWXH1QuBzXegeUyU4yOMsMdtNh
-        i0tEqiU2yPcuNl0N/aTvdj5XtdajSUo=
-X-Google-Smtp-Source: APXvYqysfZOwyQZXIVEJCqO1y539z7o+NHfuVL6GfyHjftA36GY7GAdfP+ejD0p5VnRUBnISGTybwg==
-X-Received: by 2002:a2e:121d:: with SMTP id t29mr52023166lje.29.1558981768615;
-        Mon, 27 May 2019 11:29:28 -0700 (PDT)
-Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id y25sm2437089lfy.59.2019.05.27.11.29.27
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 27 May 2019 11:29:28 -0700 (PDT)
-Date:   Mon, 27 May 2019 21:29:25 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     grygorii <grygorii.strashko@ti.com>
-Cc:     hawk@kernel.org, davem@davemloft.net, ast@kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, ilias.apalodimas@linaro.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com
-Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: cpsw: add XDP support
-Message-ID: <20190527182924.GC4246@khorivan>
-Mail-Followup-To: grygorii <grygorii.strashko@ti.com>, hawk@kernel.org,
-        davem@davemloft.net, ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com
-References: <20190523182035.9283-1-ivan.khoronzhuk@linaro.org>
- <20190523182035.9283-4-ivan.khoronzhuk@linaro.org>
- <6a88616b-9a49-77c3-577e-40670f62f953@ti.com>
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6GD8C8d1YYIughSi/qa9hCA+csQvXSQDkcz7sRnKREk=;
+        b=R8TGYyf/+gxLnBRj82ZDp5UjKnccoSXPGuDDa0BSvKFZOxZQdhO+nRik1QcaGYKah4
+         Sn67+mrmXBThDia+AmFAeGwOjfoTXxDdVBC+QSUezaMf7bN6RKhlnPvWCxm0e0RfK7j4
+         0hcR5OoFHaCch9pcQHCogiuKqWgs1KJ+NeM5LvLkM20tw/jhjFdcVngkHrHuTAW0rWov
+         I9aqslGs+cdlsii+4dLQRhQq1pVsUc4DAvvGF/L9FN9RNCJPMIRCwJcRu830YZaXZUxL
+         1UD4MwqmtzXT9/O4U4G1YwxW1u03DKBAd+lMm9EWd6wvKgi5uWwbM4u1gOojYqdKh/66
+         9x/w==
+X-Gm-Message-State: APjAAAVoMvPd7XnPVBwN+cipq6lIAm7q9Zr8oLKUN+EJVcYbiY9uDI8y
+        YnhfyW/4A8LSD6K7Vqtc3T2jLOtC
+X-Google-Smtp-Source: APXvYqxTiC9vJJ/c5Z8geUT2nPJMLkya0lecpAXtx71laYleI12suAE89K5JzPgh+4/mIDlzNv7APg==
+X-Received: by 2002:a7b:c442:: with SMTP id l2mr281833wmi.50.1558981800639;
+        Mon, 27 May 2019 11:30:00 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8be9:7a00:485f:6c34:28a2:1d35? (p200300EA8BE97A00485F6C3428A21D35.dip0.t-ipconnect.de. [2003:ea:8be9:7a00:485f:6c34:28a2:1d35])
+        by smtp.googlemail.com with ESMTPSA id s10sm10177597wrt.66.2019.05.27.11.29.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 27 May 2019 11:30:00 -0700 (PDT)
+Subject: [PATCH net-next 3/3] net: phy: move handling latched link-down to
+ phylib state machine
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <e3ce708d-d841-bd7e-30bb-bff37f3b89ac@gmail.com>
+Message-ID: <b79f49f8-a42b-11c1-f83e-c198fee49dab@gmail.com>
+Date:   Mon, 27 May 2019 20:29:45 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <6a88616b-9a49-77c3-577e-40670f62f953@ti.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <e3ce708d-d841-bd7e-30bb-bff37f3b89ac@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 08:49:38PM +0300, grygorii wrote:
->Hi Ivan,
->
->On 23/05/2019 21:20, Ivan Khoronzhuk wrote:
->>Add XDP support based on rx page_pool allocator, one frame per page.
->>Page pool allocator is used with assumption that only one rx_handler
->>is running simultaneously. DMA map/unmap is reused from page pool
->>despite there is no need to map whole page.
->>
->>Due to specific of cpsw, the same TX/RX handler can be used by 2
->>network devices, so special fields in buffer are added to identify
->>an interface the frame is destined to. Thus XDP works for both
->>interfaces, that allows to test xdp redirect between two interfaces
->>easily.
->>
->>XDP prog is common for all channels till appropriate changes are added
->>in XDP infrastructure.
->>
->>Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->>---
->>  drivers/net/ethernet/ti/Kconfig        |   1 +
->>  drivers/net/ethernet/ti/cpsw.c         | 555 ++++++++++++++++++++++---
->>  drivers/net/ethernet/ti/cpsw_ethtool.c |  53 +++
->>  drivers/net/ethernet/ti/cpsw_priv.h    |   7 +
->>  4 files changed, 554 insertions(+), 62 deletions(-)
->>
->>diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
->>index bd05a977ee7e..3cb8c5214835 100644
->>--- a/drivers/net/ethernet/ti/Kconfig
->>+++ b/drivers/net/ethernet/ti/Kconfig
->>@@ -50,6 +50,7 @@ config TI_CPSW
->>  	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
->>  	select TI_DAVINCI_MDIO
->>  	select MFD_SYSCON
->>+	select PAGE_POOL
->>  	select REGMAP
->>  	---help---
->>  	  This driver supports TI's CPSW Ethernet Switch.
->>diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
->>index 87a600aeee4a..274e6b64ea9e 100644
->>--- a/drivers/net/ethernet/ti/cpsw.c
->>+++ b/drivers/net/ethernet/ti/cpsw.c
->>@@ -31,6 +31,10 @@
->>  #include <linux/if_vlan.h>
->>  #include <linux/kmemleak.h>
->>  #include <linux/sys_soc.h>
->>+#include <net/page_pool.h>
->>+#include <linux/bpf.h>
->>+#include <linux/bpf_trace.h>
->>+#include <linux/filter.h>
->>  #include <linux/pinctrl/consumer.h>
->>  #include <net/pkt_cls.h>
->>@@ -60,6 +64,10 @@ static int descs_pool_size = CPSW_CPDMA_DESCS_POOL_SIZE_DEFAULT;
->>  module_param(descs_pool_size, int, 0444);
->>  MODULE_PARM_DESC(descs_pool_size, "Number of CPDMA CPPI descriptors in pool");
->>+/* The buf includes headroom compatible with both skb and xdpf */
->>+#define CPSW_HEADROOM_NA (max(XDP_PACKET_HEADROOM, NET_SKB_PAD) + NET_IP_ALIGN)
->>+#define CPSW_HEADROOM  ALIGN(CPSW_HEADROOM_NA, sizeof(long))
->>+
->>  #define for_each_slave(priv, func, arg...)				\
->>  	do {								\
->>  		struct cpsw_slave *slave;				\
->>@@ -74,6 +82,8 @@ MODULE_PARM_DESC(descs_pool_size, "Number of CPDMA CPPI descriptors in pool");
->>  				(func)(slave++, ##arg);			\
->>  	} while (0)
->>+#define CPSW_XMETA_OFFSET	ALIGN(sizeof(struct xdp_frame), sizeof(long))
->>+
->>  static int cpsw_ndo_vlan_rx_add_vid(struct net_device *ndev,
->>  				    __be16 proto, u16 vid);
->>@@ -337,24 +347,58 @@ void cpsw_intr_disable(struct cpsw_common *cpsw)
->>  	return;
->>  }
->
->[..]
->
->>+static int cpsw_xdp_tx_frame_mapped(struct cpsw_priv *priv,
->>+				    struct xdp_frame *xdpf, struct page *page)
->>+{
->>+	struct cpsw_common *cpsw = priv->cpsw;
->>+	struct cpsw_meta_xdp *xmeta;
->>+	struct netdev_queue *txq;
->>+	struct cpdma_chan *txch;
->>+	dma_addr_t dma;
->>+	int ret;
->>+
->>+	xmeta = (void *)xdpf + CPSW_XMETA_OFFSET;
->>+	xmeta->ch = 0;
->>+
->>+	txch = cpsw->txv[0].ch;
->>+	dma = (xdpf->data - (void *)xdpf) + page->dma_addr;
->>+	ret = cpdma_chan_submit_mapped(txch, cpsw_xdpf_to_handle(xdpf), dma,
->>+				       xdpf->len,
->>+				       priv->emac_port + cpsw->data.dual_emac);
->>+	if (ret) {
->>+		xdp_return_frame_rx_napi(xdpf);
->>+		goto stop;
->>+	}
->>+
->>+	/* no tx desc - stop sending us tx frames */
->>+	if (unlikely(!cpdma_check_free_tx_desc(txch)))
->>+		goto stop;
->>+
->>+	return ret;
->>+stop:
->>+	txq = netdev_get_tx_queue(priv->ndev, 0);
->>+	netif_tx_stop_queue(txq);
->>+
->>+	/* Barrier, so that stop_queue visible to other cpus */
->>+	smp_mb__after_atomic();
->>+
->>+	if (cpdma_check_free_tx_desc(txch))
->>+		netif_tx_wake_queue(txq);
->>+
->>+	return ret;
->>+}
->>+
->>+static int cpsw_xdp_tx_frame(struct cpsw_priv *priv, struct xdp_frame *xdpf)
->>+{
->>+	struct cpsw_common *cpsw = priv->cpsw;
->>+	struct cpsw_meta_xdp *xmeta;
->>+	struct netdev_queue *txq;
->>+	struct cpdma_chan *txch;
->>+	int ret;
->>+
->>+	xmeta = (void *)xdpf + CPSW_XMETA_OFFSET;
->>+	if (sizeof(*xmeta) > xdpf->headroom)
->>+		return -EINVAL;
->>+
->>+	xmeta->ndev = priv->ndev;
->>+	xmeta->ch = 0;
->>+
->>+	txch = cpsw->txv[0].ch;
->>+	ret = cpdma_chan_submit(txch, cpsw_xdpf_to_handle(xdpf), xdpf->data,
->>+				xdpf->len,
->>+				priv->emac_port + cpsw->data.dual_emac);
->>+	if (ret) {
->>+		xdp_return_frame_rx_napi(xdpf);
->>+		goto stop;
->>+	}
->>+
->>+	/* no tx desc - stop sending us tx frames */
->>+	if (unlikely(!cpdma_check_free_tx_desc(txch)))
->>+		goto stop;
->>+
->>+	return ret;
->>+stop:
->>+	txq = netdev_get_tx_queue(priv->ndev, 0);
->>+	netif_tx_stop_queue(txq);
->>+
->>+	/* Barrier, so that stop_queue visible to other cpus */
->>+	smp_mb__after_atomic();
->>+
->>+	if (cpdma_check_free_tx_desc(txch))
->>+		netif_tx_wake_queue(txq);
->>+
->>+	return ret;
->>+}
->
->Above 2 functions are mostly identical - could you do smth. with it?
-... I know it should be, but i hadn't found better way for combining them ....
+Especially with fibre links there may be very short link drops. And if
+interrupt handling is slow we may miss such a link drop. To deal with
+this we remove the double link status read from the generic link status
+read functions, and call the state machine twice instead.
+The flag for double-reading link status can be set by phy_mac_interrupt
+from hard irq context, therefore we have to use an atomic operation.
 
->
->>+
->>+static int cpsw_run_xdp(struct cpsw_priv *priv, struct cpsw_vector *rxv,
->>+			struct xdp_buff *xdp, struct page *page)
->>+{
->>+	struct net_device *ndev = priv->ndev;
->>+	struct xdp_frame *xdpf;
->>+	struct bpf_prog *prog;
->>+	int ret = 1;
->>+	u32 act;
->>+
->>+	rcu_read_lock();
->>+
->>+	prog = READ_ONCE(priv->xdp_prog);
->>+	if (!prog) {
->>+		ret = 0;
->>+		goto out;
->>+	}
->>+
->>+	act = bpf_prog_run_xdp(prog, xdp);
->>+	switch (act) {
->>+	case XDP_PASS:
->>+		ret = 0;
->>+		break;
->>+	case XDP_TX:
->>+		xdpf = convert_to_xdp_frame(xdp);
->>+		if (unlikely(!xdpf))
->>+			xdp_return_buff(xdp);
->>+		else
->>+			cpsw_xdp_tx_frame_mapped(priv, xdpf, page);
->>+		break;
->>+	case XDP_REDIRECT:
->>+		if (xdp_do_redirect(ndev, xdp, prog))
->>+			xdp_return_buff(xdp);
->>+		else
->>+			ret = 2;
->
->could we avoid using consts as return values?
->may be some informative defines/enum?
-Ok, for all "const" cases.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Suggested-by: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+---
+ drivers/net/phy/phy-c45.c    | 12 ------------
+ drivers/net/phy/phy.c        | 11 +++++++++++
+ drivers/net/phy/phy_device.c | 14 +-------------
+ include/linux/phy.h          |  8 ++++++++
+ 4 files changed, 20 insertions(+), 25 deletions(-)
 
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index b9d414578..63d9e8483 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -223,18 +223,6 @@ int genphy_c45_read_link(struct phy_device *phydev)
+ 		devad = __ffs(mmd_mask);
+ 		mmd_mask &= ~BIT(devad);
+ 
+-		/* The link state is latched low so that momentary link
+-		 * drops can be detected. Do not double-read the status
+-		 * in polling mode to detect such short link drops.
+-		 */
+-		if (!phy_polling_mode(phydev)) {
+-			val = phy_read_mmd(phydev, devad, MDIO_STAT1);
+-			if (val < 0)
+-				return val;
+-			else if (val & MDIO_STAT1_LSTATUS)
+-				continue;
+-		}
+-
+ 		val = phy_read_mmd(phydev, devad, MDIO_STAT1);
+ 		if (val < 0)
+ 			return val;
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 8030d0a97..575412ff5 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -778,6 +778,7 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
+ 		if (phydev->drv->handle_interrupt(phydev))
+ 			goto phy_err;
+ 	} else {
++		set_bit(PHY_LINK_DOUBLE_READ, &phydev->atomic_flags);
+ 		/* reschedule state queue work to run as soon as possible */
+ 		phy_trigger_machine(phydev);
+ 	}
+@@ -969,6 +970,15 @@ void phy_state_machine(struct work_struct *work)
+ 			phydev->drv->link_change_notify(phydev);
+ 	}
+ 
++	/* link-down is latched, in order not to lose a link-up event we have
++	 * to read the link status twice
++	 */
++	if (test_and_clear_bit(PHY_LINK_DOUBLE_READ, &phydev->atomic_flags)) {
++		if (!phydev->link)
++			phy_trigger_machine(phydev);
++		return;
++	}
++
+ 	/* Only re-schedule a PHY state machine change if we are polling the
+ 	 * PHY, if PHY_IGNORE_INTERRUPT is set, then we will be moving
+ 	 * between states from phy_mac_interrupt().
+@@ -992,6 +1002,7 @@ void phy_state_machine(struct work_struct *work)
+  */
+ void phy_mac_interrupt(struct phy_device *phydev)
+ {
++	set_bit(PHY_LINK_DOUBLE_READ, &phydev->atomic_flags);
+ 	/* Trigger a state machine change */
+ 	phy_trigger_machine(phydev);
+ }
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index dcc93a873..f2a78baa8 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1704,23 +1704,11 @@ int genphy_update_link(struct phy_device *phydev)
+ {
+ 	int status;
+ 
+-	/* The link state is latched low so that momentary link
+-	 * drops can be detected. Do not double-read the status
+-	 * in polling mode to detect such short link drops.
+-	 */
+-	if (!phy_polling_mode(phydev)) {
+-		status = phy_read(phydev, MII_BMSR);
+-		if (status < 0)
+-			return status;
+-		else if (status & BMSR_LSTATUS)
+-			goto done;
+-	}
+-
+ 	/* Read link and autonegotiation status */
+ 	status = phy_read(phydev, MII_BMSR);
+ 	if (status < 0)
+ 		return status;
+-done:
++
+ 	phydev->link = status & BMSR_LSTATUS ? 1 : 0;
+ 	phydev->autoneg_complete = status & BMSR_ANEGCOMPLETE ? 1 : 0;
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index f90158c67..1d1dcfa90 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -332,6 +332,10 @@ struct phy_c45_device_ids {
+ 	u32 device_ids[8];
+ };
+ 
++enum phy_atomic_flags {
++	PHY_LINK_DOUBLE_READ,
++};
++
+ /* phy_device: An instance of a PHY
+  *
+  * drv: Pointer to the driver for this PHY instance
+@@ -346,6 +350,7 @@ struct phy_c45_device_ids {
+  * sysfs_links: Internal boolean tracking sysfs symbolic links setup/removal.
+  * loopback_enabled: Set true if this phy has been loopbacked successfully.
+  * state: state of the PHY for management purposes
++ * atomic_flags: flags accessed in atomic context
+  * dev_flags: Device-specific flags used by the PHY driver.
+  * link_timeout: The number of timer firings to wait before the
+  * giving up on the current attempt at acquiring a link
+@@ -394,6 +399,9 @@ struct phy_device {
+ 
+ 	enum phy_state state;
+ 
++	/* flags used in atomic context */
++	unsigned long atomic_flags;
++
+ 	u32 dev_flags;
+ 
+ 	phy_interface_t interface;
 -- 
-Regards,
-Ivan Khoronzhuk
+2.21.0
+
+
