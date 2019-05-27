@@ -2,140 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1435E2AF4F
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 09:18:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 756442AF8C
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 09:48:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbfE0HSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 03:18:20 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:45978 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725869AbfE0HSU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 03:18:20 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4R7E8Xe013427;
-        Mon, 27 May 2019 07:17:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type : in-reply-to;
- s=corp-2018-07-02; bh=Yx2VRjeZXSx6xPUb6KIMWdDqfm3521/vPjhwGK8e6PY=;
- b=xQp9V9n13S7lvHch+jTTnNt+wiho57TpDvkvWzBGARc1ykONOjNs7QAbA5O2kkFjNSYw
- V+NDbRI22zVn6frsG4PNgOVfnVA3x8HRO+1ZQ+uAzdhNrZ+hVnVZ3LZOLj5+kZ0q0PKk
- Z1kweOLT0FiTNiScNWMjL13pqhBavoeyG+OrPBiIwtUORE6xbTnst3R65nsFG4I4KBeF
- Cr9MOjQ7AJoKDgbvGV5vIzKuQIO63vy9YLT2J7Fq8/ENj++xZvQ0bPwRP/IOWdlAndmy
- bjxUaniT+QfreFJd9xk/DU/0j5xwaSzmlzDziH764EbhlYPVGAPmQi18wzJToJzFiXBZ Vg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 2spw4t4kk1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 May 2019 07:17:38 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x4R7GHat196348;
-        Mon, 27 May 2019 07:17:37 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 2sqh72j24p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 May 2019 07:17:37 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x4R7HYjT014017;
-        Mon, 27 May 2019 07:17:34 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 27 May 2019 00:17:34 -0700
-Date:   Mon, 27 May 2019 10:17:23 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@01.org, Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     kbuild-all@01.org, grygorii.strashko@ti.com, hawk@kernel.org,
-        davem@davemloft.net, ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: cpsw: add XDP support
-Message-ID: <20190527071723.GE24680@kadam>
+        id S1726129AbfE0Hso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 03:48:44 -0400
+Received: from mga11.intel.com ([192.55.52.93]:53221 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725869AbfE0Hsn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 May 2019 03:48:43 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 May 2019 00:48:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,518,1549958400"; 
+   d="scan'208";a="178782694"
+Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.198]) ([10.237.72.198])
+  by fmsmga002.fm.intel.com with ESMTP; 27 May 2019 00:48:39 -0700
+Subject: Re: Issue with Broadcom wireless in 5.2rc1 (was Re: [PATCH] mmc:
+ sdhci: queue work after sdhci_defer_done())
+To:     Brian Masney <masneyb@onstation.org>,
+        Arend Van Spriel <arend.vanspriel@broadcom.com>
+Cc:     Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>, ulf.hansson@linaro.org,
+        faiz_abbas@ti.com, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+References: <20190524111053.12228-1-masneyb@onstation.org>
+ <70782901-a9ac-5647-1abe-89c86a44a01b@intel.com>
+ <20190524154958.GB16322@basecamp> <20190526122136.GA26456@basecamp>
+ <e8c049ce-07e1-8b34-678d-41b3d6d41983@broadcom.com>
+ <20190526195819.GA29665@basecamp>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Message-ID: <e7818bf9-a1d1-24b8-360d-62d7493afa91@intel.com>
+Date:   Mon, 27 May 2019 10:48:24 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190523182035.9283-4-ivan.khoronzhuk@linaro.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9269 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1905270051
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9269 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1905270051
+In-Reply-To: <20190526195819.GA29665@basecamp>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ivan,
+On 26/05/19 10:58 PM, Brian Masney wrote:
+> On Sun, May 26, 2019 at 08:42:21PM +0200, Arend Van Spriel wrote:
+>> On 5/26/2019 2:21 PM, Brian Masney wrote:
+>>> + Broadcom wireless maintainers
+>>>
+>>> On Fri, May 24, 2019 at 11:49:58AM -0400, Brian Masney wrote:
+>>>> On Fri, May 24, 2019 at 03:17:13PM +0300, Adrian Hunter wrote:
+>>>>> On 24/05/19 2:10 PM, Brian Masney wrote:
+>>>>>> WiFi stopped working on the LG Nexus 5 phone and the issue was bisected
+>>>>>> to the commit c07a48c26519 ("mmc: sdhci: Remove finish_tasklet") that
+>>>>>> moved from using a tasklet to a work queue. That patch also changed
+>>>>>> sdhci_irq() to return IRQ_WAKE_THREAD instead of finishing the work when
+>>>>>> sdhci_defer_done() is true. Change it to queue work to the complete work
+>>>>>> queue if sdhci_defer_done() is true so that the functionality is
+>>>>>> equilivent to what was there when the finish_tasklet was present. This
+>>>>>> corrects the WiFi breakage on the Nexus 5 phone.
+>>>>>>
+>>>>>> Signed-off-by: Brian Masney <masneyb@onstation.org>
+>>>>>> Fixes: c07a48c26519 ("mmc: sdhci: Remove finish_tasklet")
+>>>>>> ---
+>>>>>> [ ... ]
+>>>>>>
+>>>>>>   drivers/mmc/host/sdhci.c | 2 +-
+>>>>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>>
+>>>>>> diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
+>>>>>> index 97158344b862..3563c3bc57c9 100644
+>>>>>> --- a/drivers/mmc/host/sdhci.c
+>>>>>> +++ b/drivers/mmc/host/sdhci.c
+>>>>>> @@ -3115,7 +3115,7 @@ static irqreturn_t sdhci_irq(int irq, void *dev_id)
+>>>>>>   			continue;
+>>>>>>   		if (sdhci_defer_done(host, mrq)) {
+>>>>>> -			result = IRQ_WAKE_THREAD;
+>>>>>> +			queue_work(host->complete_wq, &host->complete_work);
+>>>>>
+>>>>> The IRQ thread has a lot less latency than the work queue, which is why it
+>>>>> is done that way.
+>>>>>
+>>>>> I am not sure why you say this change is equivalent to what was there
+>>>>> before, nor why it fixes your problem.
+>>>>>
+>>>>> Can you explain some more?
+>>>>
+>>>> [ ... ]
+>>>>
+>>>> drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c calls
+>>>> sdio_claim_host() and it appears to never return.
 
-Thank you for the patch! Perhaps something to improve:
+This is because SDHCI is using the IRQ thread to process the SDIO card
+interrupt (sdio_run_irqs()).  When the card driver tries to use the card, it
+causes interrupts which deadlocks since c07a48c26519 ("mmc: sdhci: Remove
+finish_tasklet") has moved the tasklet processing to the IRQ thread.
 
-url:    https://github.com/0day-ci/linux/commits/Ivan-Khoronzhuk/net-ethernet-ti-cpsw-Add-XDP-support/20190524-114123
+I would expect to be able to use the IRQ thread to complete requests, and it
+is desirable to do so because it is lower latency.
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Probably, SDHCI should use sdio_signal_irq() which queues a work item, and
+is what other drivers are doing.
 
-smatch warnings:
-drivers/net/ethernet/ti/cpsw_ethtool.c:564 cpsw_xdp_rxq_reg() error: uninitialized symbol 'ret'.
-
-# https://github.com/0day-ci/linux/commit/3cf4eb125ed19d18340fd3b0c4d7eb2f1ebdfb28
-git remote add linux-review https://github.com/0day-ci/linux
-git remote update linux-review
-git checkout 3cf4eb125ed19d18340fd3b0c4d7eb2f1ebdfb28
-vim +/ret +564 drivers/net/ethernet/ti/cpsw_ethtool.c
-
-c24eef28 Grygorii Strashko 2019-04-26  534  
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  535  static int cpsw_xdp_rxq_reg(struct cpsw_common *cpsw, int ch)
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  536  {
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  537  	struct cpsw_slave *slave;
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  538  	struct cpsw_priv *priv;
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  539  	int i, ret;
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  540  
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  541  	/* As channels are common for both ports sharing same queues, xdp_rxq
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  542  	 * information also becomes shared and used by every packet on this
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  543  	 * channel. But exch xdp_rxq holds link on netdev, which by the theory
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  544  	 * can have different memory model and so, network device must hold it's
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  545  	 * own set of rxq and thus both netdevs should be prepared
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  546  	 */
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  547  	for (i = cpsw->data.slaves, slave = cpsw->slaves; i; i--, slave++) {
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  548  		if (!slave->ndev)
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  549  			continue;
-
-Smatch always complains that every loop iteration could continue.  Or
-that cpsw->data.slaves might be zero at the start...  It seems
-implausible.
-
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  550  
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  551  		priv = netdev_priv(slave->ndev);
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  552  
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  553  		ret = xdp_rxq_info_reg(&priv->xdp_rxq[ch], priv->ndev, ch);
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  554  		if (ret)
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  555  			goto err;
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  556  
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  557  		ret = xdp_rxq_info_reg_mem_model(&priv->xdp_rxq[ch],
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  558  						 MEM_TYPE_PAGE_POOL,
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  559  						 cpsw->rx_page_pool);
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  560  		if (ret)
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  561  			goto err;
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  562  	}
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  563  
-3cf4eb12 Ivan Khoronzhuk   2019-05-23 @564  	return ret;
-
-This would be more readable as "return 0;" anyway.
-
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  565  
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  566  err:
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  567  	cpsw_xdp_rxq_unreg(cpsw, ch);
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  568  	return ret;
-3cf4eb12 Ivan Khoronzhuk   2019-05-23  569  }
-
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+I will investigate some more and send a patch.
