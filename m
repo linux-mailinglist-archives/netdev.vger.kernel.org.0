@@ -2,97 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B69C2AECF
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 08:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB8A42AEE5
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 08:44:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726405AbfE0Giw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 02:38:52 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:40776 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726202AbfE0Giv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 02:38:51 -0400
-Received: by mail-qk1-f196.google.com with SMTP id c70so2115999qkg.7
-        for <netdev@vger.kernel.org>; Sun, 26 May 2019 23:38:51 -0700 (PDT)
+        id S1726253AbfE0Go3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 02:44:29 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41735 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726131AbfE0Go2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 02:44:28 -0400
+Received: by mail-wr1-f65.google.com with SMTP id c2so478138wrm.8
+        for <netdev@vger.kernel.org>; Sun, 26 May 2019 23:44:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HHxpS8GHNFczohBNmU/4hGO+nucs8Ap0lRCjYNwMm+U=;
-        b=Z3+ujjmXN4PtI+z7DMZcCXWOgT9fcIZii2m6C0wngPB6ltt55kx7UFgpm7+ldQrDdb
-         M9HmuXhYGolCOseNPBd7ucxDAawtYlZBROSShy6h8NougfZbYckdRpBmYVJikkNi923L
-         Smw/6I1tZquqKSkMC+GlaX/KudPYUh5KQEz/iNSNqjqzZuSG90izIFke6A38g4dj7F0b
-         0dZXj7k8AypGiyssOh4MtMsjYYcsKqdryGoMoqJMFP/l9wb9Bhy4yqM3LhnI/YHx29OA
-         RIbQ3C7biSTc9TSPG2buxIE1BI0vC2Dz1yapS9vuzSJssE1e/f0hNVWOwMJ9Potc0teC
-         fq5g==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=31KZ5mUlT+sZE8A5BH+lWo9VXCzlKEZYnjmfcNQ04E0=;
+        b=CP30FTdNiSP+2Mkm/hNcjbFxupfMZx6uo2ufF+ey3HT/ljwN1opidc8vb7/PcsjJxd
+         iziwuAJUm4pHItrk/MtABD6gNEmXiFsEUsz9blDNcMDyhSzY47tYQglx2V8/T9wOoO5M
+         +mmQHvilUf5huBXQQPJesmXa3VZC7Wn6pzIVocd/+CkhD1dftDyxqEoV5ABCgtEce5Hl
+         ldNpEkePJ1oTshmgKUVYwUaEMAx6r8CnH2aYsQeSxLTb15fEVHJNop4rL67AXvnotviP
+         rQS8qg0BlIAtUI53JeWg301zdFVIunfXOLx8/p8vqMUHB4Fihk2FAACI6chDB34v2EjZ
+         qfmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HHxpS8GHNFczohBNmU/4hGO+nucs8Ap0lRCjYNwMm+U=;
-        b=JVf+fNuuzgpqLDQuD4LMgltA5qOvenvU6wMTkPaNBgFOCk26/8zjuWWA9p3LktQ04W
-         w1qI89RRrlXUVFozE80jLBcvkNBTLd6jEIzDpslnwb27zp2r0RBnj0PG2siK5OoaJX6S
-         GVIZYcj9qSC9BVWLiAZ8KgJJytqgBqFFGcOZ0lGpXcPKvUTyApOsEjAqSyI7NzxlBUQB
-         c9j2NAbbjpWIDFjatUUxOR8UQ1ofM1rqAQTrAWuTnnE33IVjICvAIJPzwZ4g7W0lnmjG
-         hZMcaLkAg7b+uAeTF5cAE8c/Uk5oxGIYvGuYNZaWcFqZT/LsLrEVh2pYG0emqSx0MohR
-         dYhQ==
-X-Gm-Message-State: APjAAAXdAnEqXP23SrB1I3kzFk9491buHQJY0OyGnVAKvZEGqPC+2Mmv
-        n3bGbOfQuEjB8JfVKJatqIRN9tXznNrQ546JUOu9gQ==
-X-Google-Smtp-Source: APXvYqwXmCCSkefGNRFAEBLGtLWO8/FD3BjQ6UIoj//q1bJvMH9lNtKnGCPeUFP7BXWy7Q9aAj3RnvVKFLZBU3RFjug=
-X-Received: by 2002:a05:620a:1ee:: with SMTP id x14mr650094qkn.70.1558939130658;
- Sun, 26 May 2019 23:38:50 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=31KZ5mUlT+sZE8A5BH+lWo9VXCzlKEZYnjmfcNQ04E0=;
+        b=Ed563mYtbX7vq8l5gZEqLYes/jm36agpOne9ibIn1rC1ZIL3h+ppQXuz142GNkl5x5
+         VlhVG1BKMYbAeD4R7lV8Jt41c7pp0rXye2ryJxTWzfnGcotffoMk5Lna1csP1baShYGF
+         xgvI+EjOGWazPdH09WezwHFk3tPsy9IKI3iwrVwMOY0q8cJSMxEto3X/dLVChGoiZ8Ys
+         dufkIOybZ7lYqRnoqzekezd9iaqLX7uTDo6xFv/gJw288eFVpH7PcMF8x7Cujv7HuWLt
+         Mi5Fg5JyxneV5REoXE1MZ3+/MZKw0p0F/aCzH5azPYQHm/fakyL+v40AS4xHyVC5illf
+         9Q7Q==
+X-Gm-Message-State: APjAAAWXy1Rcxm5DmeQ0RNxH49PvMTTcUzWyOf2QKG8XAoMxCuNXfG/c
+        VjBenXlIFv2hCEwdOhj+ERnTktXN
+X-Google-Smtp-Source: APXvYqy8Ge0BvtILykLztrBECXWThivLNFk4SrG+pmHkLdR6t7UUKd8I6MwAIDqW4cYytT5sj6ubZw==
+X-Received: by 2002:a5d:4647:: with SMTP id j7mr38539344wrs.280.1558939467271;
+        Sun, 26 May 2019 23:44:27 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8be9:7a00:c874:5a1e:7ae5:49ce? (p200300EA8BE97A00C8745A1E7AE549CE.dip0.t-ipconnect.de. [2003:ea:8be9:7a00:c874:5a1e:7ae5:49ce])
+        by smtp.googlemail.com with ESMTPSA id v5sm20778942wra.83.2019.05.26.23.44.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 26 May 2019 23:44:26 -0700 (PDT)
+Subject: Re: [PATCH v2 1/4] net: phy: dp83867: fix speed 10 in sgmii mode
+To:     Max Uvarov <muvarov@gmail.com>, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net
+References: <20190527061607.30030-1-muvarov@gmail.com>
+ <20190527061607.30030-2-muvarov@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <2a351166-ae85-eb6d-4fd2-57cfea5fbea9@gmail.com>
+Date:   Mon, 27 May 2019 08:39:32 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20190503072146.49999-1-chiu@endlessm.com> <20190503072146.49999-3-chiu@endlessm.com>
- <CAD8Lp47_-6d2wCAs5QbuR6Mw2w91TyJ9W3kFiJHH4F_6dXqnHg@mail.gmail.com>
- <CAB4CAweQXz=wQGA5t7BwWYdwbRrHCji+BWc0G52SUcZFGc8Pnw@mail.gmail.com>
- <CAD8Lp46hcx0ZHFMUdXdR6unbeMQJsfyuEQ7hUFpHY2jU9R7Gcw@mail.gmail.com>
- <CAB4CAwf26pdCY7FJA5H7d1aEY2xpjSto4JxARwczmVJ==41yng@mail.gmail.com> <CAD8Lp47K0Jn2wotANdQV3kT9yPP7bLnVd0eYhWui-vNDOEXBTA@mail.gmail.com>
-In-Reply-To: <CAD8Lp47K0Jn2wotANdQV3kT9yPP7bLnVd0eYhWui-vNDOEXBTA@mail.gmail.com>
-From:   Chris Chiu <chiu@endlessm.com>
-Date:   Mon, 27 May 2019 14:38:38 +0800
-Message-ID: <CAB4CAwf7O9tyUwc+gPSZrBES+Bt7iTjhE1fbbVxYKqzjtmZBxw@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] rtl8xxxu: Add watchdog to update rate mask by
- signal strength
-To:     Daniel Drake <drake@endlessm.com>
-Cc:     Jes Sorensen <jes.sorensen@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        David Miller <davem@davemloft.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Upstreaming Team <linux@endlessm.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190527061607.30030-2-muvarov@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 22, 2019 at 2:38 AM Daniel Drake <drake@endlessm.com> wrote:
->
-> On Fri, May 10, 2019 at 2:37 AM Chris Chiu <chiu@endlessm.com> wrote:
-> > I've verified that multiple virtual interface can not work simultaneously in
-> > STA mode. I assigned different mac address for different vifs, I can only
-> > bring only one interface up. If I want to bring the second vif up, it always
-> > complains "SIOCSIFFLAGS: Device or resource busy".
->
-> Interesting. Can you go deeper into that so that we can be more
-> confident of this limitation?
->
-> ieee80211_open() is the starting point.
-> ieee80211_check_concurrent_iface() is one candidate to generate -EBUSY
-> but from inspection, I don't think that's happening in this case,
-> perhaps you can keep following through in order to figure out which
-> part of the code is not allowing the 2nd STA interface to come up.
->
-> Daniel
+On 27.05.2019 08:16, Max Uvarov wrote:
+> For support 10Mps sped in SGMII mode DP83867_10M_SGMII_RATE_ADAPT bit
+> of DP83867_10M_SGMII_CFG register has to be cleared by software.
+> That does not affect speeds 100 and 1000 so can be done on init.
+> 
+> Signed-off-by: Max Uvarov <muvarov@gmail.com>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/phy/dp83867.c | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+> 
+> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+> index fd35131a0c39..75861b8f3b4d 100644
+> --- a/drivers/net/phy/dp83867.c
+> +++ b/drivers/net/phy/dp83867.c
+> @@ -30,6 +30,7 @@
+>  #define DP83867_STRAP_STS1	0x006E
+>  #define DP83867_RGMIIDCTL	0x0086
+>  #define DP83867_IO_MUX_CFG	0x0170
+> +#define DP83867_10M_SGMII_CFG  0x016F
+>  
+>  #define DP83867_SW_RESET	BIT(15)
+>  #define DP83867_SW_RESTART	BIT(14)
+> @@ -74,6 +75,9 @@
+>  /* CFG4 bits */
+>  #define DP83867_CFG4_PORT_MIRROR_EN              BIT(0)
+>  
+> +/* 10M_SGMII_CFG bits */
+> +#define DP83867_10M_SGMII_RATE_ADAPT		 BIT(7)
+> +
+>  enum {
+>  	DP83867_PORT_MIRROING_KEEP,
+>  	DP83867_PORT_MIRROING_EN,
+> @@ -277,6 +281,22 @@ static int dp83867_config_init(struct phy_device *phydev)
+>  				       DP83867_IO_MUX_CFG_IO_IMPEDANCE_CTRL);
+>  	}
+>  
+> +	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
+> +		/* For support SPEED_10 in SGMII mode
+> +		 * DP83867_10M_SGMII_RATE_ADAPT bit
+> +		 * has to be cleared by software. That
+> +		 * does not affect SPEED_100 and
+> +		 * SPEED_1000.
+> +		 */
+> +		val = phy_read_mmd(phydev, DP83867_DEVADDR,
+> +				   DP83867_10M_SGMII_CFG);
+> +		val &= ~DP83867_10M_SGMII_RATE_ADAPT;
+> +		ret = phy_write_mmd(phydev, DP83867_DEVADDR,
+> +				    DP83867_10M_SGMII_CFG, val);
 
-The -EBUSY is returned by the ieee80211_check_combinations() in the
-ieee80211_check_concurrent_iface() function which is invoked each time
-doing ieee80211_open().
-The ieee80211_check_combinations() returns the -EBUSY because of
-cfg80211_check_combinations() will iterate all interfaces of different types
-then checks the combination is valid or not, which in this case the number
-of interface combination accumulated by cfg80211_iter_sum_ifcombos is 0
-when I'm trying to bring up the second station interface.
+I think I mentioned it before: This can be simplified by using
+phy_modify_mmd(). Same applies to patch 2.
 
-Chris
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	/* Enable Interrupt output INT_OE in CFG3 register */
+>  	if (phy_interrupt_is_valid(phydev)) {
+>  		val = phy_read(phydev, DP83867_CFG3);
+> 
+
