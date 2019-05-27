@@ -2,96 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6072F2BBAA
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 23:20:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8286E2BBAC
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 23:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726905AbfE0VU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 17:20:29 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:41466 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726772AbfE0VU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 17:20:29 -0400
-Received: by mail-pl1-f195.google.com with SMTP id d14so1896262pls.8
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 14:20:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=40aJElXopBegwzQ8ePRCnoFLtpNJc5rE4Ki98H/K1kU=;
-        b=NPKhxVwWIJx1LBNcBDtLUSddXV3ry9beJwFVJ2YMKrSq1tDX95FVXmKdbkjTxdZI65
-         k/Ig9dYusogLBmCK5MHijRT3qmVmtwUjOLaOAtjQXrfFUIw06exZ4/dTMKIB5zh8iiFW
-         gHunJ6toz742yaS/xOYA/pM+4+/bKfwphM5YufcAwCrF/0ra9kH8RzsRQZVk3Q8FZi7D
-         ThtbNC/duHrziFlzWz8WqCIvla8AZItOYDe8aq/9rZMCQvUzEpr6BZ5sXr3U0NwwoozQ
-         zEsdyNIatSoyweoCvhD5VCgaMa2xssIKzv92fZeqix3IpSV7gF/b92VGQMKdo9eLReQp
-         o+7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=40aJElXopBegwzQ8ePRCnoFLtpNJc5rE4Ki98H/K1kU=;
-        b=d3/0Y0LgXycMrNwOIg/VveRClsQEy9/8y0aUrmoD47+SI6FOluqj1RlFFY2vPssDSL
-         p4YmvHE4pZGvScuFZ8j2HwkYM+oWEPL2khk6olbHIjw0+D1rqiZX1p6uT3qn0tCW9qEJ
-         5qMQa0Y/rUzM8F06bvyJ39gz2nXpoylv+t0w0RMvQgHvUy1mcEVqqLAiNh6H3mA3TQBL
-         yt9U8WAEfTEvaHMN6ZVf2EhpHu4hgAzhh1WUipDoQAVGByCfddwzDFTjjq8S1Kxn60ra
-         +i/zfgq4Nb260lchfomjAKHu4UkU/LBY7QYpMC4deW9nIdKBrWwizcl2nkMDQ6oeWSzr
-         pdCg==
-X-Gm-Message-State: APjAAAXcmaNTizJouAoMASFvckAN8DzypfVM5fZ1IJ0k1qTVkMPclD8U
-        blH2Ixt4NScbuXvD2KZ6w41/gg==
-X-Google-Smtp-Source: APXvYqxjDmo6wDOGUSnTI0w7VelrYirVcIj/BheUlfjtmSE5nkCUUQJ1ZacRrKocZr/TJmNDzlc3cQ==
-X-Received: by 2002:a17:902:324:: with SMTP id 33mr131102396pld.284.1558992028676;
-        Mon, 27 May 2019 14:20:28 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id t24sm10900074pfq.63.2019.05.27.14.20.28
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 27 May 2019 14:20:28 -0700 (PDT)
-Date:   Mon, 27 May 2019 14:20:26 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] macvlan: Replace strncpy() by strscpy()
-Message-ID: <20190527142026.3a07831f@hermes.lan>
-In-Reply-To: <20190527183855.GA32553@embeddedor>
-References: <20190527183855.GA32553@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1727300AbfE0VWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 17:22:50 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:50716 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726346AbfE0VWu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 May 2019 17:22:50 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5F8C720000C;
+        Mon, 27 May 2019 23:22:47 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5235B200C5B;
+        Mon, 27 May 2019 23:22:47 +0200 (CEST)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id B1A962061C;
+        Mon, 27 May 2019 23:22:46 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     linux@armlinux.org.uk, f.fainelli@gmail.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, maxime.chevallier@bootlin.com,
+        olteanv@gmail.com, thomas.petazzoni@bootlin.com,
+        davem@davemloft.net, vivien.didelot@gmail.com
+Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH 00/11] Decoupling PHYLINK from struct net_device
+Date:   Tue, 28 May 2019 00:21:56 +0300
+Message-Id: <1558992127-26008-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 May 2019 13:38:55 -0500
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
+Following two separate discussion threads in:
+  https://www.spinics.net/lists/netdev/msg569087.html
+and:
+  https://www.spinics.net/lists/netdev/msg570450.html
 
-> The strncpy() function is being deprecated. Replace it by the safer
-> strscpy() and fix the following Coverity warning:
-> 
-> "Calling strncpy with a maximum size argument of 16 bytes on destination
-> array ifrr.ifr_ifrn.ifrn_name of size 16 bytes might leave the destination
-> string unterminated."
-> 
-> Notice that, unlike strncpy(), strscpy() always null-terminates the
-> destination string.
-> 
-> Addresses-Coverity-ID: 1445537 ("Buffer not null terminated")
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> ---
->  drivers/net/macvlan.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-> index 61550122b563..0ccabde8e9c9 100644
-> --- a/drivers/net/macvlan.c
-> +++ b/drivers/net/macvlan.c
-> @@ -831,7 +831,7 @@ static int macvlan_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
->  	struct ifreq ifrr;
->  	int err = -EOPNOTSUPP;
->  
-> -	strncpy(ifrr.ifr_name, real_dev->name, IFNAMSIZ);
-> +	strscpy(ifrr.ifr_name, real_dev->name, IFNAMSIZ);
->  	ifrr.ifr_ifru = ifr->ifr_ifru;
->  
->  	switch (cmd) {
+Previous RFC patch set: https://www.spinics.net/lists/netdev/msg571995.html
 
-Why not use strlcpy like all the other places IFNAMSIZ is copied?
+PHYLINK was reworked in order to accept multiple operation types,
+PHYLINK_NETDEV and PHYLINK_DEV, passed through a phylink_config
+structure alongside the corresponding struct device.
+
+One of the main concerns expressed in the RFC was that using notifiers
+to signal the corresponding phylink_mac_ops would break PHYLINK's API
+unity and that it would become harder to grep for its users.
+Using the current approach, we maintain a common API for all users.
+Also, printing useful information in PHYLINK, when decoupled from a
+net_device, is achieved using dev_err&co on the struct device received
+(in DSA's case is the device corresponding to the dsa_switch).
+
+PHYLIB (which PHYLINK uses) was reworked to the extent that it does not
+crash when connecting to a PHY and the net_device pointer is NULL.
+
+Lastly, DSA has been reworked in its way that it handles PHYs for ports
+that lack a net_device (CPU and DSA ports).  For these, it was
+previously using PHYLIB and is now using the PHYLINK_DEV operation type.
+Previously, a driver that wanted to support PHY operations on CPU/DSA
+ports has to implement .adjust_link(). This patch set not only gives
+drivers the options to use PHYLINK uniformly but also urges them to
+convert to it. For compatibility, the old code is kept but it will be
+removed once all drivers switch over.
+
+The patchset was tested on the NXP LS1021A-TSN board having the
+following Ethernet layout:
+  https://lkml.org/lkml/2019/5/5/279
+The CPU port was moved from the internal RGMII fixed-link (enet2 ->
+switch port 4) to an external loopback Cat5 cable between the enet1 port
+and the front-facing swp2 SJA1105 port. In this mode, both the master
+and the CPU port have an attached PHY which detects link change events:
+
+[   49.105426] fsl-gianfar soc:ethernet@2d50000 eth1: Link is Down
+[   50.305486] sja1105 spi0.1: Link is Down
+[   53.265596] fsl-gianfar soc:ethernet@2d50000 eth1: Link is Up - 1Gbps/Full - flow control off
+[   54.466304] sja1105 spi0.1: Link is Up - 1Gbps/Full - flow control off
+
+Ioana Ciornei (9):
+  net: phy: Guard against the presence of a netdev
+  net: phy: Check against net_device being NULL
+  net: phy: Add phy_standalone sysfs entry
+  net: phylink: Add phylink_mac_link_{up,down} wrapper functions
+  net: phylink: Add struct phylink_config to PHYLINK API
+  net: phylink: Add PHYLINK_DEV operation type
+  net: phylink: Add phylink_{printk,err,warn,info,dbg} macros
+  net: dsa: Move the phylink driver calls into port.c
+  net: dsa: Use PHYLINK for the CPU/DSA ports
+
+Vladimir Oltean (2):
+  net: phy: Add phy_sysfs_create_links helper function
+  net: dsa: sja1105: Fix broken fixed-link interfaces on user ports
+
+ Documentation/networking/sfp-phylink.rst      |   5 +-
+ drivers/net/dsa/sja1105/sja1105_main.c        |  11 +-
+ drivers/net/ethernet/marvell/mvneta.c         |  36 ++-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |   1 +
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  43 ++--
+ drivers/net/phy/phy_device.c                  | 100 ++++++--
+ drivers/net/phy/phylink.c                     | 220 +++++++++++-------
+ include/linux/phylink.h                       |  57 +++--
+ include/net/dsa.h                             |   2 +
+ net/dsa/dsa_priv.h                            |  17 ++
+ net/dsa/port.c                                | 157 +++++++++++++
+ net/dsa/slave.c                               |  99 +-------
+ 12 files changed, 491 insertions(+), 257 deletions(-)
+
+-- 
+2.21.0
+
