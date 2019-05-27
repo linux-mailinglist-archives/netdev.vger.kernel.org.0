@@ -2,95 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CD292ACCD
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 03:32:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33F482ACD2
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 03:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726094AbfE0BcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 May 2019 21:32:04 -0400
-Received: from mail-eopbgr00050.outbound.protection.outlook.com ([40.107.0.50]:29920
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725859AbfE0BcE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 May 2019 21:32:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5RtqtaNgvK5bZqGma5TWhdBdyPR9HCC1NQ4lpVScoog=;
- b=E1FsfJLEqnmo8Eikt5vndIhR6GBhR+hkxzYQeoFD8RA+ShrkEqvoV8w42rX8sCNKFP/lViuWXzYWmw37PaGVl31Yb165IW0tUX6854P6tpz1X4f6UVc+VBN5N5HQiwylNev/DY9aWiwQjRMgWXKYHYi8waPhyFH7L0hMCIgslnk=
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.5.23) by
- VI1PR0402MB3550.eurprd04.prod.outlook.com (52.134.4.31) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.16; Mon, 27 May 2019 01:32:00 +0000
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::4c3e:205:bec9:54ef]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::4c3e:205:bec9:54ef%4]) with mapi id 15.20.1922.021; Mon, 27 May 2019
- 01:31:59 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "baruch@tkos.co.il" <baruch@tkos.co.il>
-Subject: RE: [EXT] Re: [PATCH net,stable 1/1] net: fec: add defer probe for
- of_get_mac_address
-Thread-Topic: [EXT] Re: [PATCH net,stable 1/1] net: fec: add defer probe for
- of_get_mac_address
-Thread-Index: AQHVEQqVg7EbGrOZ7EyghRTbLf7Z5aZ6t7sAgAN9jlA=
-Date:   Mon, 27 May 2019 01:31:59 +0000
-Message-ID: <VI1PR0402MB36002FA05E1C053B00D9EBD7FF1D0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-References: <1558576444-25080-1-git-send-email-fugang.duan@nxp.com>
- <20190524.131144.357456710258151289.davem@davemloft.net>
-In-Reply-To: <20190524.131144.357456710258151289.davem@davemloft.net>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=fugang.duan@nxp.com; 
-x-originating-ip: [119.31.174.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9eafbf54-00e0-4f91-c91b-08d6e2431d2d
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR0402MB3550;
-x-ms-traffictypediagnostic: VI1PR0402MB3550:
-x-microsoft-antispam-prvs: <VI1PR0402MB3550D7C91B2BFBC9626B4F39FF1D0@VI1PR0402MB3550.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:350;
-x-forefront-prvs: 0050CEFE70
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(366004)(39860400002)(346002)(396003)(376002)(199004)(189003)(6436002)(86362001)(5660300002)(52536014)(486006)(478600001)(229853002)(446003)(256004)(476003)(316002)(66066001)(6116002)(3846002)(14454004)(11346002)(2906002)(71190400001)(71200400001)(25786009)(8676002)(81166006)(8936002)(7696005)(4744005)(6916009)(76176011)(4326008)(7736002)(76116006)(305945005)(186003)(66476007)(64756008)(66946007)(66556008)(66446008)(73956011)(26005)(68736007)(99286004)(53936002)(55016002)(9686003)(54906003)(102836004)(6246003)(74316002)(6506007)(81156014)(33656002)(142933001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3550;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: q9ylJe7HtcRold5FCoRXHsnTXOhAwdV2Rx1Cd2aHmz77gV7bCI25zTRLU39AhBAmsvRxcAzSbfre1j4Y7HSuPALtyZN2vycDkh5F9qWysVIH0ELq9Yw2Ts56pbrAuewYKv1H1/TEwyRq0GT3US55j+FuHN07v7BDSzBKQVZxGDBRykS2LmbqtkqjOmqEr5b6ZV0jhuwyYu2LpE014WnE5gsn/Ho7tN2foVgwUKJhFt4Z95CkL9aIIJJNnQjNLZhHoTBKsYRD4xksrUtzgN+UMUcQDP5ufkNzrmDUYgErSv7QmGrGTH9QUoPCR75GCdBhCJRn2GC/UvqPFMoWciqWL2gOstaU7YLwjC4YGnErcfak4RaAoa0XB7qa0EwZFAtgWKOCoTMogAyPhAEBA/diwmKUkad84CLx321nirSVP9s=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726046AbfE0BkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 May 2019 21:40:15 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:46400 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725864AbfE0BkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 May 2019 21:40:14 -0400
+Received: by mail-ed1-f66.google.com with SMTP id f37so24145224edb.13;
+        Sun, 26 May 2019 18:40:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NO8U8m5CSzAayh5gOP2uD7+woZxUgAgpDSZBOZBWMII=;
+        b=TT0SSFfJ9XyvcbkKVpLMR68wDPQAajZCyQneV7tN9UXeOca3yslwQH/BD3wZq4OoMt
+         8ZZryAzzeNXUI+cc99TbEbTqng3q/gzDkbdo7yx/ba+shW4zCoSABRLwLiXK/9TAjfut
+         BGnzDPVOQ2ZDKbiNt/9QSOZakC0Y5X2S6aT7xyxcIYXf6VvGTEcYN5SiwgC/6sHZ1mGh
+         nllh2/RJahrdF7+zoG+zfxAJOg9LXTnfPukY2soQvpNWx5K4RPR8WfAv5qcli3Vj7sms
+         r6CtY3jx1C5VnFXBIEOMEjZ/PkXtuY4ed5lDdxzfCRmafG2g/g3vtSb6Qa1jV7au0oDi
+         QxcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NO8U8m5CSzAayh5gOP2uD7+woZxUgAgpDSZBOZBWMII=;
+        b=D4B0wFoFlChYB58lj/LcztYdrXL/H5kDeyYGsGZMqL1WYPm+cRCXYPLTUTG+fYSbTn
+         R45fHU2frDeLE0KCQFzIj7mOe9OBNOvq5S4LNATcoYknu7vbzeZoe5s1oOcpEu7uHmbQ
+         t1HhfWsMLo2YmPcDquCXEo2rHXLfHH19BPSjszVuCPh8woN1MfP5Yphim0x2EyCEDtTX
+         Hf/HtOvErZO/WxLLfQ8Wgt/dhf8WPnErRNHIdTwwLySOOXlXzPJpEjt+8aSyN3lvgK6p
+         cDqv29tu73rzv9dXbJY6hoRnZJaXOVaIHWo3qpPKQ8Yy1X8xb2EUouk95g9/UTTRi696
+         ssNw==
+X-Gm-Message-State: APjAAAXSxXbSjMSSK81+wHk+2OYBI2U5us0m4i6nSKKtNDxg6nUjnv0B
+        XkU4M9mqdSwqyyX8TFDxH50fgDVSCeSQL8Benu8=
+X-Google-Smtp-Source: APXvYqygJgX+1+G9LnBUoEvC9NE4hIGyhnnxSNmA5vxJcY7JHoHKjOJUMtHe+V1DM18JWSsTJCvJ36wMlERBO/LdBw4=
+X-Received: by 2002:a17:906:2acf:: with SMTP id m15mr78048074eje.31.1558921212695;
+ Sun, 26 May 2019 18:40:12 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9eafbf54-00e0-4f91-c91b-08d6e2431d2d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2019 01:31:59.7561
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fugang.duan@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3550
+References: <20190526153357.82293-1-fklassen@appneta.com> <20190526153357.82293-2-fklassen@appneta.com>
+In-Reply-To: <20190526153357.82293-2-fklassen@appneta.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 26 May 2019 20:39:36 -0500
+Message-ID: <CAF=yD-KyJC0ErdyNRtiw5VPhQY+i__sDG5oh0LzWJ4RMYe1zCQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/1] net/udp_gso: Allow TX timestamp with UDP GSO
+To:     Fred Klassen <fklassen@appneta.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller <davem@davemloft.net> Sent: Saturday, May 25, 2019 4:12 =
-AM
-> From: Andy Duan <fugang.duan@nxp.com>
-> Date: Thu, 23 May 2019 01:55:23 +0000
->=20
-> > @@ -3146,7 +3150,10 @@ static int fec_enet_init(struct net_device *ndev=
-)
-> >       memset(cbd_base, 0, bd_size);
-> >
-> >       /* Get the Ethernet address */
-> > -     fec_get_mac(ndev);
-> > +     ret =3D fec_get_mac(ndev);
-> > +     if (ret)
-> > +             return ret;
->=20
-> You're leaking the queues allocated by fec_enet_alloc_queue().
+On Sun, May 26, 2019 at 10:37 AM Fred Klassen <fklassen@appneta.com> wrote:
+>
+> Fixes an issue where TX Timestamps are not arriving on the error queue
+> when UDP_SEGMENT CMSG type is combined with CMSG type SO_TIMESTAMPING.
+> This can be illustrated with an updated updgso_bench_tx program which
+> includes the '-T' option to test for this condition.
+>
+>     ./udpgso_bench_tx -4ucTPv -S 1472 -l2 -D 172.16.120.18
+>     poll timeout
+>     udp tx:      0 MB/s        1 calls/s      1 msg/s
+>
+> The "poll timeout" message above indicates that TX timestamp never
+> arrived.
+>
+> It also appears that other TX CMSG types cause similar issues, for
+> example trying to set SOL_IP/IP_TOS.
 
-Good caught, thanks David.
-I will send two patches for the V2 to fix the exisited queue memory leak.
+If correct we need to find the root cause. Without that, this is not
+very informative. And likely the fix is not related, as that does not
+involve tx_flags or tskey.
+
+What exact behavior do you observe: tx timestamp notifications go
+missing when enabling IP_TOS?
+
+>
+>     ./udpgso_bench_tx -4ucPv -S 1472 -q 182 -l2 -D 172.16.120.18
+>     poll timeout
+>     udp tx:      0 MB/s        1 calls/s      1 msg/s
+>
+> This patch preserves tx_flags for the first UDP GSO segment. This
+> mirrors the stack's behaviour for IPv4 fragments.
+
+But deviates from the established behavior of other transport protocol TCP.
+
+I think it's a bit premature to resubmit as is while still discussing
+the original patch.
+
+>
+> Fixes: ee80d1ebe5ba ("udp: add udp gso")
+> Signed-off-by: Fred Klassen <fklassen@appneta.com>
+> ---
+>  net/ipv4/udp_offload.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+> index 065334b41d57..33de347695ae 100644
+> --- a/net/ipv4/udp_offload.c
+> +++ b/net/ipv4/udp_offload.c
+> @@ -228,6 +228,10 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+>         seg = segs;
+>         uh = udp_hdr(seg);
+>
+> +       /* preserve TX timestamp and zero-copy info for first segment */
+
+As pointed out in v1, zerocopy flags are handled by protocol
+independent skb_segment. It calls skb_zerocopy_clone.
+
+
+
+> +       skb_shinfo(seg)->tskey = skb_shinfo(gso_skb)->tskey;
+> +       skb_shinfo(seg)->tx_flags = skb_shinfo(gso_skb)->tx_flags;
+> +
+>         /* compute checksum adjustment based on old length versus new */
+>         newlen = htons(sizeof(*uh) + mss);
+>         check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
+> --
+> 2.11.0
+>
