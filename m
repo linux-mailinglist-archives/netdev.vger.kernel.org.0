@@ -2,120 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF662B675
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 15:33:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2986F2B6DB
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 15:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbfE0Ndb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 09:33:31 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:55842 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726479AbfE0Ndb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 09:33:31 -0400
-Received: by mail-wm1-f67.google.com with SMTP id u78so3341748wmu.5
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 06:33:29 -0700 (PDT)
+        id S1726568AbfE0Nqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 09:46:31 -0400
+Received: from mail-wr1-f50.google.com ([209.85.221.50]:39771 "EHLO
+        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726115AbfE0Nqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 09:46:31 -0400
+Received: by mail-wr1-f50.google.com with SMTP id e2so8239749wrv.6
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 06:46:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=F+FptfRjbrCVQX/LekX1svHk/Zk6ikkaVuLOvGkNJfU=;
-        b=IBeUYKTImpUhMJ/hYG074WD68wPvaghIGz3Ga9vEA1H1DOE06Z9OVc1NAzULdwkwTR
-         baolD3cm+DnEiR4wS+DaBVkaPDFqfFay600FNy4tpBHR0IZ7tjKHA/p33cgN20z7j9i+
-         BuwFMNl/HZD9dx+P/o2eXZT602WI0zWImSz3AR0w4MR5cKV04jTAm929aKLeC7JZwTAH
-         jmace950+v8rdHnjk2LjKa9WJfehLXL/wzKsONKEyz8cqrXD4KR8QpMgrDcMZCpg1MHr
-         pwEGb5OcUFP46rQFIHgBbkJDdmIt6ggYQ2TJZp+Il2qjElMk3tyZ1jlL/1J1+FL2wRJC
-         UwhQ==
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T+BMa4gsX2SpWHDg4/WOwzhZkAoB1v5cWmwKV6NHcXY=;
+        b=TbUpcoEaxaQNRfmwXB5IYi1gLT7Tc9zBU8dLzJyt0i8tLNngRrgCtRvcHGpKwd7ARZ
+         FDIaVuSHqjDOLFg/TZiIFvE9X/yN2dWV9Vd0qOQRV2tLMSzsKsYgEWg3WmE/v1ad22Yx
+         vPgoELfiDmw9bRNTNNqliE+fL1lojg2lMXjqpzujRu7QdrGf2SwVwOhmdwuMLv3ZWz8F
+         lA0LefZkxQQl5irzBK2ehVX0ndAxrkiAisDKIKEqpknyY1JQUVUxmixTL1wUJYe5Fr3J
+         TJ895UzXCmaWTLBZ74pnJ2I7rvKt3C2JIV6w/MwLoaCaw1c+UUEZlpKSrnnjh1NvNgzW
+         ZwuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=F+FptfRjbrCVQX/LekX1svHk/Zk6ikkaVuLOvGkNJfU=;
-        b=fX4JuxDN9Cdek0u6J1gbOP8/f5IvrGRY5YLoVqlHCBKoUTacjM7Kg6FQaGHEhrctBo
-         9Jzo7TD4fGWbJ3tDSI/FH1ipBHtGvu7vd+moHvNBo0hV+sc7V9vwboaZbFCmjWZbLy2e
-         lbGhmfXfScX/6302YXw+BFWzkxFJ5rqU68IvUxZi/kTZ6cb0LGdLtWqzAc26HKGtXXCv
-         S0lTYfj6XI2NJtOPWFaIA6YU9rUNnbM21D0kFvrn2oPE817ZISr8eo8AqmMpl9gDeR6e
-         0s1RVODWhsoZ0JyF7ejM3eD0m1LW5DapfWLx8y8ukaklSFFJeqaLXcttBbpvCkTea3kv
-         8wGQ==
-X-Gm-Message-State: APjAAAXg7XNEV17zBHgMnqFgfQRGDoDxTzZVieasDzJ+lmsgvgR1p/DD
-        KQz1XsOl6ZBv+LV+niEHLV9v4BEIIv0=
-X-Google-Smtp-Source: APXvYqz2wmGhONoZnZrkdJsvxkzVGR/xTKoJ/ChKr9++P1PvoEfS1NNxf328SOisLUivDpszX57FQQ==
-X-Received: by 2002:a7b:cbcc:: with SMTP id n12mr10455211wmi.167.1558964009064;
-        Mon, 27 May 2019 06:33:29 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id o6sm1253812wrv.22.2019.05.27.06.33.28
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 27 May 2019 06:33:28 -0700 (PDT)
-Date:   Mon, 27 May 2019 15:33:27 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, mlxsw@mellanox.com, sthemmin@microsoft.com,
-        saeedm@mellanox.com, leon@kernel.org
-Subject: Re: [patch net-next 3/7] mlxfw: Propagate error messages through
- extack
-Message-ID: <20190527133327.GA2236@nanopsycho.orion>
-References: <20190523094510.2317-1-jiri@resnulli.us>
- <20190523094510.2317-4-jiri@resnulli.us>
- <7f3362de-baaf-99ee-1b53-55675aaf00fe@gmail.com>
- <20190524081110.GB2904@nanopsycho>
- <20190524085446.59dc6f2f@cakuba.netronome.com>
- <20190524222635.GA2284@nanopsycho.orion>
- <20190524170852.4fea5e77@cakuba.netronome.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T+BMa4gsX2SpWHDg4/WOwzhZkAoB1v5cWmwKV6NHcXY=;
+        b=oHmdmbuDm26ugsW7uPohof8w0IbkLdP26p0gouvSfNycL3AWsLg2F0D3x4r+Mb8X+f
+         XJ+jXMLwPn0/ou8l3R8noKOO6GY/sjLlkfFXT9CImYw2MptqkSnGcxb7hLZvLvn3Issn
+         WzfRIIxrFLG7XCi91xyrmjtByDk05Dr6RtDJ4nXxVoA/qqJJ4AV0jiQb/M0GV+4mWozL
+         VIQg+BmqOXkVp1kT42Ul9C5oL8kWd9Ak+SGK8ZuVVLDu67QAfV/XwLjZDoAKDE93OP4q
+         tl+B+il/qhoL9YdccL+RjnjzwUSnfhAeGiO5/thXp0dTqLWOLfDg559T0f7SUESBGLia
+         UNcQ==
+X-Gm-Message-State: APjAAAV3sTeq4Id5YHdfeS5oaw4jIQUJy2YPPgClFHxQcCvX+hGYsnDS
+        HmlQwZkzNugInEArQjx0aB+RxaZ0j9h7hw==
+X-Google-Smtp-Source: APXvYqxzp/JP29DMv8kL+YY1dvcjW0NVluckIAgiIJ4N5qzyrZ9PpUdQqTEssjjJsKvceApH/B81gw==
+X-Received: by 2002:a5d:644e:: with SMTP id d14mr52019475wrw.42.1558964789627;
+        Mon, 27 May 2019 06:46:29 -0700 (PDT)
+Received: from bender.baylibre.local (lmontsouris-657-1-212-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id w2sm4611311wru.16.2019.05.27.06.46.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 27 May 2019 06:46:29 -0700 (PDT)
+From:   Neil Armstrong <narmstrong@baylibre.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH net-next 0/2] net: stmmac: dwmac-meson: update with SPDX Licence identifier
+Date:   Mon, 27 May 2019 15:46:21 +0200
+Message-Id: <20190527134623.5673-1-narmstrong@baylibre.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190524170852.4fea5e77@cakuba.netronome.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, May 25, 2019 at 02:08:52AM CEST, jakub.kicinski@netronome.com wrote:
->On Sat, 25 May 2019 00:26:35 +0200, Jiri Pirko wrote:
->> Fri, May 24, 2019 at 05:54:46PM CEST, jakub.kicinski@netronome.com wrote:
->> >On Fri, 24 May 2019 10:11:10 +0200, Jiri Pirko wrote:  
->> >> Thu, May 23, 2019 at 05:19:46PM CEST, dsahern@gmail.com wrote:  
->> >> >On 5/23/19 3:45 AM, Jiri Pirko wrote:    
->> >> >> @@ -57,11 +58,13 @@ static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
->> >> >>  	if (fsm_state_err != MLXFW_FSM_STATE_ERR_OK) {
->> >> >>  		pr_err("Firmware flash failed: %s\n",
->> >> >>  		       mlxfw_fsm_state_err_str[fsm_state_err]);
->> >> >> +		NL_SET_ERR_MSG_MOD(extack, "Firmware flash failed");
->> >> >>  		return -EINVAL;
->> >> >>  	}
->> >> >>  	if (curr_fsm_state != fsm_state) {
->> >> >>  		if (--times == 0) {
->> >> >>  			pr_err("Timeout reached on FSM state change");
->> >> >> +			NL_SET_ERR_MSG_MOD(extack, "Timeout reached on FSM state change");    
->> >> >
->> >> >FSM? Is the meaning obvious to users?    
->> >> 
->> >> It is specific to mlx drivers.  
->> >
->> >What does it stand for?  Isn't it just Finite State Machine?  
->> 
->> I believe so.
->
->In which case it doesn't really add much, no?  I second David's request
->to make the messages as easy to understand as possible.  
+Update the SPDX Licence identifier for the Amlogic Meson6 and Meson8 dwmac
+glue drivers.
 
-Well, FSM is something that is used in the code and known. I would
-change it to "finite state machine" (which I'm still not sure it
-really is) but I don't believe that would bring more info to the user.
-Well, nothing. On contrary, a MLX engineer might get confused if customer
-sends him the message, because he is used to "FSM" :)
+Neil Armstrong (2):
+  net: stmmac: dwmac-meson: update with SPDX Licence identifier
+  net: stmmac: dwmac-meson8b: update with SPDX Licence identifier
 
-Same with "MFA2" in the other message. I only know it is the format
-of the binary, have no clue what it actually stands for (other than
-it is version 2).
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson.c   | 8 +-------
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 8 +-------
+ 2 files changed, 2 insertions(+), 14 deletions(-)
 
+-- 
+2.21.0
 
->
->PSID for better or worse I have previously capitulated on, so I guess
->the ship has indeed sailed there :)
->
->$ grep -A4 psid -- Documentation/networking/devlink-info-versions.rst 
->fw.psid
->=======
->
->Unique identifier of the firmware parameter set.
