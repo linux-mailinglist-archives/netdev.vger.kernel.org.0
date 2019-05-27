@@ -2,192 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C89D12B25F
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 12:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F4612B27E
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 12:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726351AbfE0Koy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 06:44:54 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40163 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725943AbfE0Kox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 06:44:53 -0400
-Received: by mail-wr1-f66.google.com with SMTP id t4so8173345wrx.7
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 03:44:52 -0700 (PDT)
+        id S1726234AbfE0Kwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 06:52:55 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:37534 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725814AbfE0Kwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 06:52:55 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 7so15378343wmo.2;
+        Mon, 27 May 2019 03:52:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A1VWy41IvoBarmDwJxKEbfTJGr59Xp9sqvlsdgaxrsc=;
+        b=J5gRHCse3CBmGc8Tbhh4Z7Ego/mItRapUC4tFdD7VIq2E2J6ITKBdnuhX0gOG75Q+F
+         72kdy4TL3OhGPj3aKHq+tD5P4ByOIsYwzzu536W02hsutPmvXPkAF9Px5NLWOJFNqpQR
+         QcDj3KcF/b0UafdyYSj44khXzz4T7KHC1ea/L8+u7XFg/X9IvTe/w+AR+JzS1Kila4eQ
+         UfuV12TR3I4AzYGYWUQ5eE+BR5HQyEyTEEPSk5kyOhhnY9Gbo/aXH8CChft7DJxAyk+0
+         CXS2sFaVuF03N6FoqF7Oo6m/iQ7MIBLu9GbC4Q8S6y0SKJRZXgmsyNo5sWqdxeEsDGI+
+         7nMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=g7/E66m+Y5O11ad07XoDt/U2/tfNbfwyooMkLIABrSc=;
-        b=gy1cZMX4p/hiXttGo19wgAlK6g3hHQYxsLDCuQvrtHBSSTbLiS7bNDSxggAO51GFTn
-         V9lde9tr6wQpG25E8C066ub1GEKeAf1BePhflFM4KpDhwr+ri0KI3VdHq4nYbLUYPfgc
-         3H0rBEoxbALpzjVRt+dYlvkI0QK6Y9GqU97HGj1DV8ObBbNDZzTq2IeUKRZpB3R8tqjl
-         Bel50fXwgGLJEISMyZDRH4ZsLLYV9NA9SGTyuR4Qmmq9o80VcjFjBNIc6RWLJfCQErkS
-         o6p9jdXOA//ghS7SYdd3+z6zsLeY6nnI3QSOMqBTWHYlDs6xH5Qy5FJ6wTf5496+nGn0
-         UljQ==
-X-Gm-Message-State: APjAAAXj7gZB+Vmr20gnpWyQxSZnopCjwE4XSqk/eSYzur1/tDx+8xE4
-        2B1ASyZWSESKg7vxS5ICSk0sUQ==
-X-Google-Smtp-Source: APXvYqx1oj7W4JcA1flQE6/rA6W3MWgDoNHwmWsFdDA1eG7T9OCNKarfuwL///oDSMUce596R4TlPg==
-X-Received: by 2002:adf:eec9:: with SMTP id a9mr21243585wrp.281.1558953890683;
-        Mon, 27 May 2019 03:44:50 -0700 (PDT)
-Received: from steredhat (host253-229-dynamic.248-95-r.retail.telecomitalia.it. [95.248.229.253])
-        by smtp.gmail.com with ESMTPSA id 8sm9120825wmf.18.2019.05.27.03.44.49
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A1VWy41IvoBarmDwJxKEbfTJGr59Xp9sqvlsdgaxrsc=;
+        b=lh4PEzQSoh7LyByoVBIBJ++IPt6bGXWE8zDEa4Ido/RPT0AEIbMqYs+HerQnNrNAz+
+         WsJNnG4IhXgJZlE6DplDxTEBwPLplZNCybOgZbqhYYrJG70t7XTFwLNzSpciwF5JaCUa
+         Ug6fRD3DZ7txXNVYNjDEBcUO9kRTqeXylAaP08Zs8h3Fs4krOOFzgpBLbkGD0/uZ6sdX
+         SdILhCyb55yTH+yRawKOckp+Y6EQe3k6pKYjguuBxKglHvas6gFuK8KezQnWoyPleYRw
+         ZijyiJudu2AGMX1WhWEheRKt1soLta4rTQGeBRgbIOTYfQpZSFwFrGwKVBWJOiWL5tiQ
+         H3Qg==
+X-Gm-Message-State: APjAAAVc7lZpkUFUb2a5x5NpA8aM6noVQ3DGj+9aNPIGPKd1/9OaZZAm
+        w1/H2qC0m8jOXIay6SRwz9o=
+X-Google-Smtp-Source: APXvYqzcLhyjl5mQsT1SZ9iPldQjotTqTvtgR4egYrw0ernmhv1aXyAumiFkr5weubhrHo9ioAOHLQ==
+X-Received: by 2002:a1c:6c04:: with SMTP id h4mr18906175wmc.135.1558954373276;
+        Mon, 27 May 2019 03:52:53 -0700 (PDT)
+Received: from localhost (p2E5BEF36.dip0.t-ipconnect.de. [46.91.239.54])
+        by smtp.gmail.com with ESMTPSA id o8sm25682324wra.4.2019.05.27.03.52.52
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 27 May 2019 03:44:49 -0700 (PDT)
-Date:   Mon, 27 May 2019 12:44:47 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Jorgen Hansen <jhansen@vmware.com>
-Cc:     netdev@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [RFC] vsock: proposal to support multiple transports at runtime
-Message-ID: <20190527104447.gd23h2dsnmit75ry@steredhat>
-References: <20190514081543.f6nphcilgjuemlet@steredhat>
- <20190523153703.GC19296@stefanha-x1.localdomain>
+        Mon, 27 May 2019 03:52:52 -0700 (PDT)
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>
+Cc:     Jon Hunter <jonathanh@nvidia.com>, netdev@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH] net: stmmac: Do not output error on deferred probe
+Date:   Mon, 27 May 2019 12:52:51 +0200
+Message-Id: <20190527105251.11198-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190523153703.GC19296@stefanha-x1.localdomain>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 23, 2019 at 04:37:03PM +0100, Stefan Hajnoczi wrote:
-> On Tue, May 14, 2019 at 10:15:43AM +0200, Stefano Garzarella wrote:
-> > Hi guys,
-> > I'm currently interested on implement a multi-transport support for VSOCK in
-> > order to handle nested VMs.
-> > 
-> > As Stefan suggested me, I started to look at this discussion:
-> > https://lkml.org/lkml/2017/8/17/551
-> > Below I tried to summarize a proposal for a discussion, following the ideas
-> > from Dexuan, Jorgen, and Stefan.
-> > 
-> > 
-> > We can define two types of transport that we have to handle at the same time
-> > (e.g. in a nested VM we would have both types of transport running together):
-> > 
-> > - 'host side transport', it runs in the host and it is used to communicate with
-> >   the guests of a specific hypervisor (KVM, VMWare or HyperV)
-> > 
-> >   Should we support multiple 'host side transport' running at the same time?
-> > 
-> > - 'guest side transport'. it runs in the guest and it is used to communicate
-> >   with the host transport
-> 
-> I find this terminology confusing.  Perhaps "host->guest" (your 'host
-> side transport') and "guest->host" (your 'guest side transport') is
-> clearer?
+From: Thierry Reding <treding@nvidia.com>
 
-I agree, "host->guest" and "guest->host" are better, I'll use them.
+If the subdriver defers probe, do not show an error message. It's
+perfectly fine for this error to occur since the driver will get another
+chance to probe after some time and will usually succeed after all of
+the resources that it requires have been registered.
 
-> 
-> Or maybe the nested virtualization terminology of L2 transport (your
-> 'host side transport') and L0 transport (your 'guest side transport')?
-> Here we are the L1 guest and L0 is the host and L2 is our nested guest.
->
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-I'm confused, if L2 is the nested guest, it should be the
-'guest side transport'. Did I miss anything?
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
+index 3256e5cbad27..5bc224834c77 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
+@@ -455,7 +455,11 @@ static int dwc_eth_dwmac_probe(struct platform_device *pdev)
+ 	priv = data->probe(pdev, plat_dat, &stmmac_res);
+ 	if (IS_ERR(priv)) {
+ 		ret = PTR_ERR(priv);
+-		dev_err(&pdev->dev, "failed to probe subdriver: %d\n", ret);
++
++		if (ret != -EPROBE_DEFER)
++			dev_err(&pdev->dev, "failed to probe subdriver: %d\n",
++				ret);
++
+ 		goto remove_config;
+ 	}
+ 
+-- 
+2.21.0
 
-Maybe it is another point to your first proposal :)
-
-> > 
-> > 
-> > The main goal is to find a way to decide what transport use in these cases:
-> > 1. connect() / sendto()
-> > 
-> > 	a. use the 'host side transport', if the destination is the guest
-> > 	   (dest_cid > VMADDR_CID_HOST).
-> > 	   If we want to support multiple 'host side transport' running at the
-> > 	   same time, we should assign CIDs uniquely across all transports.
-> > 	   In this way, a packet generated by the host side will get directed
-> > 	   to the appropriate transport based on the CID
-> 
-> The multiple host side transport case is unlikely to be necessary on x86
-> where only one hypervisor uses VMX at any given time.  But eventually it
-> may happen so it's wise to at least allow it in the design.
-> 
-
-Okay, I was in doubt, but I'll keep it in the design.
-
-> > 
-> > 	b. use the 'guest side transport', if the destination is the host
-> > 	   (dest_cid == VMADDR_CID_HOST)
-> 
-> Makes sense to me.
-> 
-> > 
-> > 
-> > 2. listen() / recvfrom()
-> > 
-> > 	a. use the 'host side transport', if the socket is bound to
-> > 	   VMADDR_CID_HOST, or it is bound to VMADDR_CID_ANY and there is no
-> > 	   guest transport.
-> > 	   We could also define a new VMADDR_CID_LISTEN_FROM_GUEST in order to
-> > 	   address this case.
-> > 	   If we want to support multiple 'host side transport' running at the
-> > 	   same time, we should find a way to allow an application to bound a
-> > 	   specific host transport (e.g. adding new VMADDR_CID_LISTEN_FROM_KVM,
-> > 	   VMADDR_CID_LISTEN_FROM_VMWARE, VMADDR_CID_LISTEN_FROM_HYPERV)
-> 
-> Hmm...VMADDR_CID_LISTEN_FROM_KVM, VMADDR_CID_LISTEN_FROM_VMWARE,
-> VMADDR_CID_LISTEN_FROM_HYPERV isn't very flexible.  What if my service
-> should only be available to a subset of VMware VMs?
-
-You're right, it is not very flexible.
-
-> 
-> Instead it might be more appropriate to use network namespaces to create
-> independent AF_VSOCK addressing domains.  Then you could have two
-> separate groups of VMware VMs and selectively listen to just one group.
-> 
-
-Does AF_VSOCK support network namespace or it could be another
-improvement to take care? (IIUC is not currently supported)
-
-A possible issue that I'm seeing with netns is if they are used for
-other purpose (e.g. to isolate the network of a VM), we should have
-multiple instances of the application, one per netns.
-
-> > 
-> > 	b. use the 'guest side transport', if the socket is bound to local CID
-> > 	   different from the VMADDR_CID_HOST (guest CID get with
-> > 	   IOCTL_VM_SOCKETS_GET_LOCAL_CID), or it is bound to VMADDR_CID_ANY
-> > 	   (to be backward compatible).
-> > 	   Also in this case, we could define a new VMADDR_CID_LISTEN_FROM_HOST.
-> 
-> Two additional topics:
-> 
-> 1. How will loading af_vsock.ko change?
-
-I'd allow the loading of af_vsock.ko without any transport.
-Maybe we should move the MODULE_ALIAS_NETPROTO(PF_VSOCK) from the
-vmci_transport.ko to the af_vsock.ko, but this can impact the VMware
-driver.
-
->    In particular, can an
->    application create a socket in af_vsock.ko without any loaded
->    transport?  Can it enter listen state without any loaded transport
->    (this seems useful with VMADDR_CID_ANY)?
-
-I'll check if we can allow listen sockets without any loaded transport,
-but I think could be a nice behaviour to have.
-
-> 
-> 2. Does your proposed behavior match VMware's existing nested vsock
->    semantics?
-
-I'm not sure, but I tried to follow the Jorgen's answers to the original
-thread. I hope that this proposal matches the VMware semantic.
-
-@Jorgen, do you have any advice?
-
-Thanks,
-Stefano
