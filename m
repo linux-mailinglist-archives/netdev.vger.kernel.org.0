@@ -2,112 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 080AD2B979
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 19:42:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 075DD2B98D
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 19:52:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbfE0Rmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 13:42:36 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57326 "EHLO mx1.redhat.com"
+        id S1726966AbfE0RvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 13:51:24 -0400
+Received: from hermes.domdv.de ([193.102.202.1]:3928 "EHLO hermes.domdv.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726494AbfE0Rmg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 May 2019 13:42:36 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 161903087929;
-        Mon, 27 May 2019 17:42:35 +0000 (UTC)
-Received: from epycfail.redhat.com (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DB54E1001DDC;
-        Mon, 27 May 2019 17:42:31 +0000 (UTC)
-From:   Stefano Brivio <sbrivio@redhat.com>
+        id S1726346AbfE0RvY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 May 2019 13:51:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=domdv.de;
+         s=dk3; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
+        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=hhLJjZyrWxWbv2nHbTpcVuYfjsiR3xD3ZYf3qZ2XmP4=; b=eSzYuqkA7M7cWqOWs3ePcE2d3a
+        K7ryWpptHEvgUDRjXOU5beGD2oRSmjDI+a3bez7GVypKC8dcGKkAxzHT7QseMRoBq/xQCQx9x8g3o
+        iHAcHGgunG/8RcxFPxx8lNxFcOc7Ogku6YM5GsS286b+A0zwvTC/n8Yc3eVGWu892SHo=;
+Received: from [fd06:8443:81a1:74b0::212] (port=3580 helo=castor.lan.domdv.de)
+        by zeus.domdv.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.91)
+        (envelope-from <ast@domdv.de>)
+        id 1hVJmN-0002m9-Iv; Mon, 27 May 2019 19:51:23 +0200
+Received: from woody.lan.domdv.de ([10.1.9.28] helo=host028-server-9.lan.domdv.de)
+        by castor.lan.domdv.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.91)
+        (envelope-from <ast@domdv.de>)
+        id 1hVJlj-0000sD-Nb; Mon, 27 May 2019 19:50:43 +0200
+Message-ID: <b45afe989054df3a087ea5f21b7b9a62c97fd5bd.camel@domdv.de>
+Subject: Re: [RESEND][PATCH] Fix MACsec kernel panics, oopses and bugs
+From:   Andreas Steinmetz <ast@domdv.de>
 To:     David Miller <davem@davemloft.net>
-Cc:     Xiumei Mu <xmu@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH net] selftests: pmtu: Fix encapsulating device in pmtu_vti6_link_change_mtu
-Date:   Mon, 27 May 2019 19:42:23 +0200
-Message-Id: <a53ca7bdf29b2b265d812adf51168f7c5f4e4e26.1558978791.git.sbrivio@redhat.com>
+Cc:     netdev@vger.kernel.org
+Date:   Mon, 27 May 2019 19:50:58 +0200
+In-Reply-To: <20190523.091106.645519899189717299.davem@davemloft.net>
+References: <32eb738a0a0f3ed5880911e4ac4ceedca76e3f52.camel@domdv.de>
+         <20190523.091106.645519899189717299.davem@davemloft.net>
+Organization: D.O.M. Datenverarbeitung GmbH
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Mon, 27 May 2019 17:42:36 +0000 (UTC)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the pmtu_vti6_link_change_mtu test, both local and remote addresses
-for the vti6 tunnel are assigned to the same address given to the dummy
-interface that we use as encapsulating device with a known MTU.
+Patch will be worked over and split. I'll need to investigate one more
+problem. Split patch will be resent when ready.
 
-This works as long as the dummy interface is actually selected, via
-rt6_lookup(), as encapsulating device. But if the remote address of the
-tunnel is a local address too, the loopback interface could also be
-selected, and there's nothing wrong with it.
-
-This is what some older -stable kernels do (3.18.z, at least), and
-nothing prevents us from subtly changing FIB implementation to revert
-back to that behaviour in the future.
-
-Define an IPv6 prefix instead, and use two separate addresses as local
-and remote for vti6, so that the encapsulating device can't be a
-loopback interface.
-
-Reported-by: Xiumei Mu <xmu@redhat.com>
-Fixes: 1fad59ea1c34 ("selftests: pmtu: Add pmtu_vti6_link_change_mtu test")
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
----
- tools/testing/selftests/net/pmtu.sh | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index b9171a7b3aaa..317dafcd605d 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -208,8 +208,8 @@ tunnel6_a_addr="fd00:2::a"
- tunnel6_b_addr="fd00:2::b"
- tunnel6_mask="64"
- 
--dummy6_0_addr="fc00:1000::0"
--dummy6_1_addr="fc00:1001::0"
-+dummy6_0_prefix="fc00:1000::"
-+dummy6_1_prefix="fc00:1001::"
- dummy6_mask="64"
- 
- cleanup_done=1
-@@ -1005,13 +1005,13 @@ test_pmtu_vti6_link_change_mtu() {
- 	run_cmd ${ns_a} ip link set dummy0 up
- 	run_cmd ${ns_a} ip link set dummy1 up
- 
--	run_cmd ${ns_a} ip addr add ${dummy6_0_addr}/${dummy6_mask} dev dummy0
--	run_cmd ${ns_a} ip addr add ${dummy6_1_addr}/${dummy6_mask} dev dummy1
-+	run_cmd ${ns_a} ip addr add ${dummy6_0_prefix}1/${dummy6_mask} dev dummy0
-+	run_cmd ${ns_a} ip addr add ${dummy6_1_prefix}1/${dummy6_mask} dev dummy1
- 
- 	fail=0
- 
- 	# Create vti6 interface bound to device, passing MTU, check it
--	run_cmd ${ns_a} ip link add vti6_a mtu 1300 type vti6 remote ${dummy6_0_addr} local ${dummy6_0_addr}
-+	run_cmd ${ns_a} ip link add vti6_a mtu 1300 type vti6 remote ${dummy6_0_prefix}2 local ${dummy6_0_prefix}1
- 	mtu="$(link_get_mtu "${ns_a}" vti6_a)"
- 	if [ ${mtu} -ne 1300 ]; then
- 		err "  vti6 MTU ${mtu} doesn't match configured value 1300"
-@@ -1020,7 +1020,7 @@ test_pmtu_vti6_link_change_mtu() {
- 
- 	# Move to another device with different MTU, without passing MTU, check
- 	# MTU is adjusted
--	run_cmd ${ns_a} ip link set vti6_a type vti6 remote ${dummy6_1_addr} local ${dummy6_1_addr}
-+	run_cmd ${ns_a} ip link set vti6_a type vti6 remote ${dummy6_1_prefix}2 local ${dummy6_1_prefix}1
- 	mtu="$(link_get_mtu "${ns_a}" vti6_a)"
- 	if [ ${mtu} -ne $((3000 - 40)) ]; then
- 		err "  vti MTU ${mtu} is not dummy MTU 3000 minus IPv6 header length"
-@@ -1028,7 +1028,7 @@ test_pmtu_vti6_link_change_mtu() {
- 	fi
- 
- 	# Move it back, passing MTU, check MTU is not overridden
--	run_cmd ${ns_a} ip link set vti6_a mtu 1280 type vti6 remote ${dummy6_0_addr} local ${dummy6_0_addr}
-+	run_cmd ${ns_a} ip link set vti6_a mtu 1280 type vti6 remote ${dummy6_0_prefix}2 local ${dummy6_0_prefix}1
- 	mtu="$(link_get_mtu "${ns_a}" vti6_a)"
- 	if [ ${mtu} -ne 1280 ]; then
- 		err "  vti6 MTU ${mtu} doesn't match configured value 1280"
--- 
-2.20.1
+On Thu, 2019-05-23 at 09:11 -0700, David Miller wrote:
+> From: Andreas Steinmetz <ast@domdv.de>
+> Date: Thu, 23 May 2019 09:46:15 +0200
+> 
+> > MACsec causes oopses followed by a kernel panic when attached directly or indirectly to
+> a bridge. It causes erroneous
+> > checksum messages when attached to vxlan. When I did investigate I did find skb leaks,
+> apparent skb mis-handling and
+> > superfluous code. The attached patch fixes all MACsec misbehaviour I could find. As I
+> am no kernel developer somebody
+> > with sufficient kernel network knowledge should verify and correct the patch where
+> necessary.
+> > 
+> > Signed-off-by: Andreas Steinmetz <ast@domdv.de>
+> 
+> Subject lines should be of the form:
+> 
+> [PATCH $DST_TREE] $subsystem_prefix: Description.
+> 
+> Where $DST_TREE here would be "net" and $subsystem_prefix would be "macsec".
+> 
+> > +     /* FIXME: any better way to prevent calls to netdev_rx_csum_fault? */
+> > +     skb->csum_complete_sw = 1;
+> 
+> Create a helper for this in linux/skbuff.h with very clear and clean comments
+> explaining what is going on.
 
