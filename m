@@ -2,149 +2,325 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F7F72BBB9
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 23:28:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 816AC2BBC0
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 23:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727148AbfE0V2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 17:28:12 -0400
-Received: from gateway24.websitewelcome.com ([192.185.50.71]:31757 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727018AbfE0V2M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 17:28:12 -0400
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id BFFE74E314
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 16:28:10 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id VNAAhbErC2qH7VNAAhpLXe; Mon, 27 May 2019 16:28:10 -0500
-X-Authority-Reason: nr=8
-Received: from [189.250.47.159] (port=33896 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1hVNAA-0004pn-DP; Mon, 27 May 2019 16:28:10 -0500
-Subject: Re: [PATCH net-next] macvlan: Replace strncpy() by strscpy()
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190527183855.GA32553@embeddedor>
- <20190527142026.3a07831f@hermes.lan>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- mQINBFssHAwBEADIy3ZoPq3z5UpsUknd2v+IQud4TMJnJLTeXgTf4biSDSrXn73JQgsISBwG
- 2Pm4wnOyEgYUyJd5tRWcIbsURAgei918mck3tugT7AQiTUN3/5aAzqe/4ApDUC+uWNkpNnSV
- tjOx1hBpla0ifywy4bvFobwSh5/I3qohxDx+c1obd8Bp/B/iaOtnq0inli/8rlvKO9hp6Z4e
- DXL3PlD0QsLSc27AkwzLEc/D3ZaqBq7ItvT9Pyg0z3Q+2dtLF00f9+663HVC2EUgP25J3xDd
- 496SIeYDTkEgbJ7WYR0HYm9uirSET3lDqOVh1xPqoy+U9zTtuA9NQHVGk+hPcoazSqEtLGBk
- YE2mm2wzX5q2uoyptseSNceJ+HE9L+z1KlWW63HhddgtRGhbP8pj42bKaUSrrfDUsicfeJf6
- m1iJRu0SXYVlMruGUB1PvZQ3O7TsVfAGCv85pFipdgk8KQnlRFkYhUjLft0u7CL1rDGZWDDr
- NaNj54q2CX9zuSxBn9XDXvGKyzKEZ4NY1Jfw+TAMPCp4buawuOsjONi2X0DfivFY+ZsjAIcx
- qQMglPtKk/wBs7q2lvJ+pHpgvLhLZyGqzAvKM1sVtRJ5j+ARKA0w4pYs5a5ufqcfT7dN6TBk
- LXZeD9xlVic93Ju08JSUx2ozlcfxq+BVNyA+dtv7elXUZ2DrYwARAQABtCxHdXN0YXZvIEEu
- IFIuIFNpbHZhIDxndXN0YXZvQGVtYmVkZGVkb3IuY29tPokCPQQTAQgAJwUCWywcDAIbIwUJ
- CWYBgAULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRBHBbTLRwbbMZ6tEACk0hmmZ2FWL1Xi
- l/bPqDGFhzzexrdkXSfTTZjBV3a+4hIOe+jl6Rci/CvRicNW4H9yJHKBrqwwWm9fvKqOBAg9
- obq753jydVmLwlXO7xjcfyfcMWyx9QdYLERTeQfDAfRqxir3xMeOiZwgQ6dzX3JjOXs6jHBP
- cgry90aWbaMpQRRhaAKeAS14EEe9TSIly5JepaHoVdASuxklvOC0VB0OwNblVSR2S5i5hSsh
- ewbOJtwSlonsYEj4EW1noQNSxnN/vKuvUNegMe+LTtnbbocFQ7dGMsT3kbYNIyIsp42B5eCu
- JXnyKLih7rSGBtPgJ540CjoPBkw2mCfhj2p5fElRJn1tcX2McsjzLFY5jK9RYFDavez5w3lx
- JFgFkla6sQHcrxH62gTkb9sUtNfXKucAfjjCMJ0iuQIHRbMYCa9v2YEymc0k0RvYr43GkA3N
- PJYd/vf9vU7VtZXaY4a/dz1d9dwIpyQARFQpSyvt++R74S78eY/+lX8wEznQdmRQ27kq7BJS
- R20KI/8knhUNUJR3epJu2YFT/JwHbRYC4BoIqWl+uNvDf+lUlI/D1wP+lCBSGr2LTkQRoU8U
- 64iK28BmjJh2K3WHmInC1hbUucWT7Swz/+6+FCuHzap/cjuzRN04Z3Fdj084oeUNpP6+b9yW
- e5YnLxF8ctRAp7K4yVlvA7kCDQRbLBwMARAAsHCE31Ffrm6uig1BQplxMV8WnRBiZqbbsVJB
- H1AAh8tq2ULl7udfQo1bsPLGGQboJSVN9rckQQNahvHAIK8ZGfU4Qj8+CER+fYPp/MDZj+t0
- DbnWSOrG7z9HIZo6PR9z4JZza3Hn/35jFggaqBtuydHwwBANZ7A6DVY+W0COEU4of7CAahQo
- 5NwYiwS0lGisLTqks5R0Vh+QpvDVfuaF6I8LUgQR/cSgLkR//V1uCEQYzhsoiJ3zc1HSRyOP
- otJTApqGBq80X0aCVj1LOiOF4rrdvQnj6iIlXQssdb+WhSYHeuJj1wD0ZlC7ds5zovXh+FfF
- l5qH5RFY/qVn3mNIVxeO987WSF0jh+T5ZlvUNdhedGndRmwFTxq2Li6GNMaolgnpO/CPcFpD
- jKxY/HBUSmaE9rNdAa1fCd4RsKLlhXda+IWpJZMHlmIKY8dlUybP+2qDzP2lY7kdFgPZRU+e
- zS/pzC/YTzAvCWM3tDgwoSl17vnZCr8wn2/1rKkcLvTDgiJLPCevqpTb6KFtZosQ02EGMuHQ
- I6Zk91jbx96nrdsSdBLGH3hbvLvjZm3C+fNlVb9uvWbdznObqcJxSH3SGOZ7kCHuVmXUcqoz
- ol6ioMHMb+InrHPP16aVDTBTPEGwgxXI38f7SUEn+NpbizWdLNz2hc907DvoPm6HEGCanpcA
- EQEAAYkCJQQYAQgADwUCWywcDAIbDAUJCWYBgAAKCRBHBbTLRwbbMdsZEACUjmsJx2CAY+QS
- UMebQRFjKavwXB/xE7fTt2ahuhHT8qQ/lWuRQedg4baInw9nhoPE+VenOzhGeGlsJ0Ys52sd
- XvUjUocKgUQq6ekOHbcw919nO5L9J2ejMf/VC/quN3r3xijgRtmuuwZjmmi8ct24TpGeoBK4
- WrZGh/1hAYw4ieARvKvgjXRstcEqM5thUNkOOIheud/VpY+48QcccPKbngy//zNJWKbRbeVn
- imua0OpqRXhCrEVm/xomeOvl1WK1BVO7z8DjSdEBGzbV76sPDJb/fw+y+VWrkEiddD/9CSfg
- fBNOb1p1jVnT2mFgGneIWbU0zdDGhleI9UoQTr0e0b/7TU+Jo6TqwosP9nbk5hXw6uR5k5PF
- 8ieyHVq3qatJ9K1jPkBr8YWtI5uNwJJjTKIA1jHlj8McROroxMdI6qZ/wZ1ImuylpJuJwCDC
- ORYf5kW61fcrHEDlIvGc371OOvw6ejF8ksX5+L2zwh43l/pKkSVGFpxtMV6d6J3eqwTafL86
- YJWH93PN+ZUh6i6Rd2U/i8jH5WvzR57UeWxE4P8bQc0hNGrUsHQH6bpHV2lbuhDdqo+cM9eh
- GZEO3+gCDFmKrjspZjkJbB5Gadzvts5fcWGOXEvuT8uQSvl+vEL0g6vczsyPBtqoBLa9SNrS
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <e354f8c2-37d2-e76f-872f-853741f2a258@embeddedor.com>
-Date:   Mon, 27 May 2019 16:28:05 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190527142026.3a07831f@hermes.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.47.159
-X-Source-L: No
-X-Exim-ID: 1hVNAA-0004pn-DP
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.47.159]:33896
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 3
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+        id S1727423AbfE0VaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 17:30:20 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:33653 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726772AbfE0VaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 17:30:16 -0400
+Received: by mail-pf1-f195.google.com with SMTP id z28so10155959pfk.0
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 14:30:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=appneta.com; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=zNngeK9yJtL4OMcJcnUljk+BohYrdR732P1fa4qFReg=;
+        b=hNS7mTMiHAcToRuZy/CqRVTAjlwwAdqaObVfvktLzLqIis8X1bgee8RPgyKCFK1dDP
+         rodPjPc4JQ1dkSuFZaRxRe/9tCMg25t4Jfm3oXTUNhtzFj3s+7zhQG3RGjZZFWvSVWH+
+         6rzHf1EdzdzeC8xfw+lWH9bESnRiX1dw1EnzQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=zNngeK9yJtL4OMcJcnUljk+BohYrdR732P1fa4qFReg=;
+        b=By0EiDk0XY5bfZsTScGRcmUhGePjOZpl6n9cuTiKGeh449YgxIx81EowfFTbWKdI50
+         8A5zCKH53pCcYr5CgaiHhW4cdt2iR88XKgpYz8N7cxEzr4W6IZmIEZqPSA1dDhSXPDcB
+         XId2vKo9YDjpZPQnD+pxqLZzOTS8Ioa1n40ZnamHLKZcinLyb83ToO6ABLZzc7+r1M0G
+         FKTLBYu3tC+agX8dOwcwW7W/yi3tGfHdF1krK3kSHaX+eiYjFEeP7kK8InfgCDDPjKGU
+         WFBy11mJzrZI0hdrdZvxU/1lQWRQUnwTZnth3yde6BP+noZdhW2nD30vx4GtIqo/GPX9
+         +lMA==
+X-Gm-Message-State: APjAAAWRzI17bvi0RTz/kl8BTU/bPhpMecK0bOWh0+FrPNFhULsSjVjG
+        dwBVbvpnbqBIciwU2wxbTSfo+g==
+X-Google-Smtp-Source: APXvYqwtzk+/sYeL90Z+i4CKBSqOo//cfnFDZj2leAaAZ9G0Qq1WwUkYjNrFp3MOrZea4/Ynp+22+Q==
+X-Received: by 2002:a63:184d:: with SMTP id 13mr8006876pgy.346.1558992615169;
+        Mon, 27 May 2019 14:30:15 -0700 (PDT)
+Received: from jltm109.jaalam.net (vancouver-a.appneta.com. [209.139.228.33])
+        by smtp.gmail.com with ESMTPSA id g8sm356875pjp.17.2019.05.27.14.30.13
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 27 May 2019 14:30:14 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH net 4/4] net/udpgso_bench_tx: audit error queue
+From:   Fred Klassen <fklassen@appneta.com>
+In-Reply-To: <CAF=yD-KBNLr5KY-YQ1KMmZGCpYNefSJKaJkZNOwd8nRiedpQtA@mail.gmail.com>
+Date:   Mon, 27 May 2019 14:30:11 -0700
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <879E5DA6-3A4F-4CE1-9DA5-480EE30109DE@appneta.com>
+References: <20190523210651.80902-1-fklassen@appneta.com>
+ <20190523210651.80902-5-fklassen@appneta.com>
+ <CAF=yD-KBNLr5KY-YQ1KMmZGCpYNefSJKaJkZNOwd8nRiedpQtA@mail.gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+X-Mailer: Apple Mail (2.3445.104.11)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Willem,
 
+Thanks for spending so much time with me on this patch. I=E2=80=99m =
+pretty
+new to this, so I know I am making lots of mistakes. I have been
+working on a v2 of the selftests in net-next, but want to review the
+layout of the report before I submit (see below).
 
-On 5/27/19 4:20 PM, Stephen Hemminger wrote:
-> On Mon, 27 May 2019 13:38:55 -0500
-> "Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
-> 
->> The strncpy() function is being deprecated. Replace it by the safer
->> strscpy() and fix the following Coverity warning:
->>
->> "Calling strncpy with a maximum size argument of 16 bytes on destination
->> array ifrr.ifr_ifrn.ifrn_name of size 16 bytes might leave the destination
->> string unterminated."
->>
->> Notice that, unlike strncpy(), strscpy() always null-terminates the
->> destination string.
->>
->> Addresses-Coverity-ID: 1445537 ("Buffer not null terminated")
->> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
->> ---
->>  drivers/net/macvlan.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
->> index 61550122b563..0ccabde8e9c9 100644
->> --- a/drivers/net/macvlan.c
->> +++ b/drivers/net/macvlan.c
->> @@ -831,7 +831,7 @@ static int macvlan_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
->>  	struct ifreq ifrr;
->>  	int err = -EOPNOTSUPP;
->>  
->> -	strncpy(ifrr.ifr_name, real_dev->name, IFNAMSIZ);
->> +	strscpy(ifrr.ifr_name, real_dev->name, IFNAMSIZ);
->>  	ifrr.ifr_ifru = ifr->ifr_ifru;
->>  
->>  	switch (cmd) {
-> 
-> Why not use strlcpy like all the other places IFNAMSIZ is copied?
-> 
+Also, I my v2 fix in net is still up for debate. In its current state, =
+it
+meets my application=E2=80=99s requirements, but may not meet all of =
+yours.
+I am still open to suggestions, but so far I don=E2=80=99t have an =
+alternate
+solution that doesn=E2=80=99t break what I need working.
 
-strlcpy() is also being deprecated.
+I also have a question about submitting a fix in net and a related
+enhancement in net-next. I feel I should be referencing the fix
+in net in my net-next commit, but I don=E2=80=99t know how it should be
+done. Any suggestions?   =20
 
---
-Gustavo
+> On May 23, 2019, at 2:56 PM, Willem de Bruijn =
+<willemdebruijn.kernel@gmail.com> wrote:
+>>=20
+>> Example:
+>>=20
+>>    # ./udpgso_bench_tx -4uT -a -l5 -S 1472 -D 172.16.120.189
+>>    udp tx:    492 MB/s     8354 calls/s   8354 msg/s
+>>    udp tx:    477 MB/s     8106 calls/s   8106 msg/s
+>>    udp tx:    488 MB/s     8288 calls/s   8288 msg/s
+>>    udp tx:    882 MB/s    14975 calls/s  14975 msg/s
+>>    Summary over 5.000 seconds ...
+>>    sum udp tx:    696 MB/s      57696 calls (11539/s)  57696 msgs =
+(11539/s)
+>>    Tx Timestamps: received:     57696   errors: 0
+>>=20
+>> This can be useful in tracking loss of messages when under load. For =
+example,
+>> adding the '-z' option results in loss of TX timestamp messages:
+>>=20
+>>    # ./udpgso_bench_tx -4ucT -a -l5 -S 1472 -D 172.16.120.189 -p 3239 =
+-z
+>>    udp tx:    490 MB/s     8325 calls/s   8325 msg/s
+>>    udp tx:    500 MB/s     8492 calls/s   8492 msg/s
+>>    udp tx:    883 MB/s    14985 calls/s  14985 msg/s
+>>    udp tx:    756 MB/s    12823 calls/s  12823 msg/s
+>>    Summary over 5.000 seconds ...
+>>    sum udp tx:    657 MB/s      54429 calls (10885/s)  54429 msgs =
+(10885/s)
+>>    Tx Timestamps: received:     34046   errors: 0
+>>    Zerocopy acks: received:     54422   errors: 0
+>=20
+> This would probably also be more useful as regression test if it is in
+> the form of a pass/fail test: if timestamps are requested and total
+> count is zero, then the feature is broken and the process should exit
+> with an error.
+
+I have it set up as a pass/fail test. Below is a sample output of the
+test, including a failure on IPv6 TCP Zerocopy audit (a failure that may
+lead to a memory leak). I wanted to review the report with you before
+I push up the v2 patch into net-next.
+
+Are these extra tests what you were expecting? Is it OK that it =
+doesn=E2=80=99t
+flow well? Also, there is a failure about every 3rd time I run it,
+indicating that some TX or Zerocopy messages are lost. Is that OK?=20
+
+ipv4
+tcp
+tcp rx:  11665 MB/s   189014 calls/s
+tcp tx:  11665 MB/s   197859 calls/s 197859 msg/s
+tcp rx:  11706 MB/s   190749 calls/s
+tcp tx:  11706 MB/s   198545 calls/s 198545 msg/s
+tcp tx:  11653 MB/s   197645 calls/s 197645 msg/s
+tcp rx:  11653 MB/s   189292 calls/s
+tcp zerocopy
+tcp rx:   6658 MB/s   111849 calls/s
+tcp tx:   6658 MB/s   112940 calls/s 112940 msg/s
+tcp tx:   6824 MB/s   115742 calls/s 115742 msg/s
+tcp rx:   6824 MB/s   115711 calls/s
+tcp rx:   6865 MB/s   116402 calls/s
+tcp tx:   6865 MB/s   116440 calls/s 116440 msg/s
+tcp zerocopy audit
+tcp tx:   6646 MB/s   112729 calls/s 112729 msg/s
+tcp rx:   6646 MB/s   111445 calls/s
+tcp rx:   6672 MB/s   112833 calls/s
+tcp tx:   6672 MB/s   113164 calls/s 113164 msg/s
+tcp tx:   6624 MB/s   112355 calls/s 112355 msg/s
+tcp rx:   6624 MB/s   110877 calls/s
+Summary over 4.000 seconds...
+sum tcp tx:   6813 MB/s     451402 calls (112850/s)     451402 msgs =
+(112850/s)
+Zerocopy acks:              451402 received                 0 errors
+udp
+udp rx:    914 MB/s   651407 calls/s
+udp tx:    925 MB/s   659274 calls/s  15697 msg/s
+udp rx:    919 MB/s   654859 calls/s
+udp tx:    919 MB/s   654864 calls/s  15592 msg/s
+udp rx:    914 MB/s   651668 calls/s
+udp tx:    914 MB/s   651630 calls/s  15515 msg/s
+udp rx:    918 MB/s   654642 calls/s
+udp gso
+udp rx:   2271 MB/s  1618319 calls/s
+udp tx:   2515 MB/s    42658 calls/s  42658 msg/s
+udp rx:   2337 MB/s  1665280 calls/s
+udp tx:   2551 MB/s    43276 calls/s  43276 msg/s
+udp rx:   2338 MB/s  1665792 calls/s
+udp tx:   2557 MB/s    43384 calls/s  43384 msg/s
+udp rx:   2339 MB/s  1666560 calls/s
+udp gso zerocopy
+udp rx:   1725 MB/s  1229087 calls/s
+udp tx:   1840 MB/s    31219 calls/s  31219 msg/s
+udp rx:   1850 MB/s  1318460 calls/s
+udp tx:   1850 MB/s    31388 calls/s  31388 msg/s
+udp rx:   1845 MB/s  1314428 calls/s
+udp tx:   1845 MB/s    31299 calls/s  31299 msg/s
+udp gso timestamp
+udp rx:   2286 MB/s  1628928 calls/s
+udp tx:   2446 MB/s    41499 calls/s  41499 msg/s
+udp rx:   2354 MB/s  1677312 calls/s
+udp tx:   2473 MB/s    41952 calls/s  41952 msg/s
+udp rx:   2342 MB/s  1668864 calls/s
+udp tx:   2471 MB/s    41925 calls/s  41925 msg/s
+udp rx:   2333 MB/s  1662464 calls/s
+udp gso zerocopy audit
+udp rx:   1787 MB/s  1273481 calls/s
+udp tx:   1832 MB/s    31082 calls/s  31082 msg/s
+udp rx:   1881 MB/s  1340476 calls/s
+udp tx:   1881 MB/s    31916 calls/s  31916 msg/s
+udp rx:   1880 MB/s  1339880 calls/s
+udp tx:   1881 MB/s    31904 calls/s  31904 msg/s
+udp rx:   1881 MB/s  1340010 calls/s
+Summary over 4.000 seconds...
+sum udp tx:   1912 MB/s     126694 calls (31673/s)     126694 msgs =
+(31673/s)
+Zerocopy acks:              126694 received                 0 errors
+udp gso timestamp audit
+udp rx:   2259 MB/s  1609327 calls/s
+udp tx:   2410 MB/s    40879 calls/s  40879 msg/s
+udp rx:   2346 MB/s  1671168 calls/s
+udp tx:   2446 MB/s    41491 calls/s  41491 msg/s
+udp rx:   2358 MB/s  1680128 calls/s
+udp tx:   2448 MB/s    41522 calls/s  41522 msg/s
+udp rx:   2356 MB/s  1678848 calls/s
+Summary over 4.000 seconds...
+sum udp tx:   2494 MB/s     165276 calls (41319/s)     165276 msgs =
+(41319/s)
+Tx Timestamps:              165276 received                 0 errors
+udp gso zerocopy timestamp audit
+udp rx:   1658 MB/s  1181647 calls/s
+udp tx:   1678 MB/s    28466 calls/s  28466 msg/s
+udp rx:   1718 MB/s  1224010 calls/s
+udp tx:   1718 MB/s    29146 calls/s  29146 msg/s
+udp rx:   1718 MB/s  1224086 calls/s
+udp tx:   1718 MB/s    29144 calls/s  29144 msg/s
+udp rx:   1717 MB/s  1223464 calls/s
+Summary over 4.000 seconds...
+sum udp tx:   1747 MB/s     115771 calls (28942/s)     115771 msgs =
+(28942/s)
+Tx Timestamps:              115771 received                 0 errors
+Zerocopy acks:              115771 received                 0 errors
+ipv6
+tcp
+tcp tx:  11470 MB/s   194547 calls/s 194547 msg/s
+tcp rx:  11470 MB/s   188442 calls/s
+tcp tx:  11803 MB/s   200193 calls/s 200193 msg/s
+tcp rx:  11803 MB/s   194526 calls/s
+tcp tx:  11832 MB/s   200681 calls/s 200681 msg/s
+tcp rx:  11832 MB/s   194459 calls/s
+tcp zerocopy
+tcp rx:   7482 MB/s    80176 calls/s
+tcp tx:   7482 MB/s   126908 calls/s 126908 msg/s
+tcp rx:   6641 MB/s   112609 calls/s
+tcp tx:   6641 MB/s   112649 calls/s 112649 msg/s
+tcp tx:   6584 MB/s   111683 calls/s 111683 msg/s
+tcp rx:   6584 MB/s   111617 calls/s
+tcp zerocopy audit
+tcp tx:   6719 MB/s   113968 calls/s 113968 msg/s
+tcp rx:   6719 MB/s   113893 calls/s
+tcp rx:   6772 MB/s   114831 calls/s
+tcp tx:   6772 MB/s   114872 calls/s 114872 msg/s
+tcp tx:   6793 MB/s   115226 calls/s 115226 msg/s
+tcp rx:   7075 MB/s   116595 calls/s
+Summary over 4.000 seconds...
+sum tcp tx:   6921 MB/s     458580 calls (114645/s)     458580 msgs =
+(114645/s)
+./udpgso_bench_tx: Unexpected number of Zerocopy completions:    458580 =
+expected    458578 received
+udp
+udp rx:    833 MB/s   607639 calls/s
+udp tx:    851 MB/s   621264 calls/s  14448 msg/s
+udp rx:    860 MB/s   627246 calls/s
+udp tx:    860 MB/s   627284 calls/s  14588 msg/s
+udp rx:    862 MB/s   628718 calls/s
+udp tx:    861 MB/s   628574 calls/s  14618 msg/s
+udp rx:    863 MB/s   630058 calls/s
+udp gso
+udp rx:   2310 MB/s  1683314 calls/s
+udp tx:   2472 MB/s    41931 calls/s  41931 msg/s
+udp rx:   2343 MB/s  1708032 calls/s
+udp tx:   2493 MB/s    42298 calls/s  42298 msg/s
+udp rx:   2322 MB/s  1692160 calls/s
+udp tx:   2496 MB/s    42347 calls/s  42347 msg/s
+udp gso zerocopy
+udp rx:   1752 MB/s  1278423 calls/s
+udp tx:   1778 MB/s    30162 calls/s  30162 msg/s
+udp rx:   1804 MB/s  1316058 calls/s
+udp tx:   1804 MB/s    30605 calls/s  30605 msg/s
+udp rx:   1807 MB/s  1318120 calls/s
+udp tx:   1808 MB/s    30681 calls/s  30681 msg/s
+udp rx:   1730 MB/s  1261819 calls/s
+udp gso timestamp
+udp rx:   2296 MB/s  1673728 calls/s
+udp tx:   2375 MB/s    40284 calls/s  40284 msg/s
+udp rx:   2334 MB/s  1701632 calls/s
+udp tx:   2377 MB/s    40319 calls/s  40319 msg/s
+udp rx:   2335 MB/s  1702093 calls/s
+udp tx:   2377 MB/s    40319 calls/s  40319 msg/s
+udp rx:   2336 MB/s  1702656 calls/s
+udp gso zerocopy audit
+udp rx:   1717 MB/s  1252554 calls/s
+udp tx:   1759 MB/s    29839 calls/s  29839 msg/s
+udp rx:   1811 MB/s  1321003 calls/s
+udp tx:   1811 MB/s    30722 calls/s  30722 msg/s
+udp rx:   1811 MB/s  1320917 calls/s
+udp tx:   1811 MB/s    30719 calls/s  30719 msg/s
+udp rx:   1810 MB/s  1320606 calls/s
+Summary over 4.000 seconds...
+sum udp tx:   1839 MB/s     121868 calls (30467/s)     121868 msgs =
+(30467/s)
+Zerocopy acks:              121868 received                 0 errors
+udp gso timestamp audit
+udp rx:   2231 MB/s  1626112 calls/s
+udp tx:   2337 MB/s    39646 calls/s  39646 msg/s
+udp rx:   2292 MB/s  1670400 calls/s
+udp tx:   2365 MB/s    40122 calls/s  40122 msg/s
+udp rx:   2287 MB/s  1666816 calls/s
+udp tx:   2363 MB/s    40084 calls/s  40084 msg/s
+udp rx:   2288 MB/s  1667840 calls/s
+Summary over 4.000 seconds...
+sum udp tx:   2412 MB/s     159818 calls (39954/s)     159818 msgs =
+(39954/s)
+Tx Timestamps:              159818 received                 0 errors
+udp gso zerocopy timestamp audit
+udp rx:   1592 MB/s  1161479 calls/s
+udp tx:   1624 MB/s    27560 calls/s  27560 msg/s
+udp rx:   1657 MB/s  1208472 calls/s
+udp tx:   1656 MB/s    28103 calls/s  28103 msg/s
+udp rx:   1653 MB/s  1206064 calls/s
+udp tx:   1653 MB/s    28047 calls/s  28047 msg/s
+udp rx:   1648 MB/s  1202151 calls/s
+Summary over 4.000 seconds...
+sum udp tx:   1683 MB/s     111556 calls (27889/s)     111556 msgs =
+(27889/s)
+Tx Timestamps:              111556 received                 0 errors
+Zerocopy acks:              111556 received                 0 errors=
