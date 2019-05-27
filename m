@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 730A32BBA4
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 23:11:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E1DD2BB9F
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 23:11:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727342AbfE0VLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 17:11:35 -0400
+        id S1727261AbfE0VLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 17:11:25 -0400
 Received: from mga04.intel.com ([192.55.52.120]:23653 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726839AbfE0VLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727148AbfE0VLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 27 May 2019 17:11:25 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -27,9 +27,9 @@ Cc:     dave.hansen@intel.com, namit@vmware.com,
         Meelis Roos <mroos@linux.ee>,
         "David S. Miller" <davem@davemloft.net>,
         Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>
-Subject: [PATCH v5 1/2] vmalloc: Fix calculation of direct map addr range
-Date:   Mon, 27 May 2019 14:10:57 -0700
-Message-Id: <20190527211058.2729-2-rick.p.edgecombe@intel.com>
+Subject: [PATCH v5 2/2] vmalloc: Avoid rare case of flushing tlb with weird arguments
+Date:   Mon, 27 May 2019 14:10:58 -0700
+Message-Id: <20190527211058.2729-3-rick.p.edgecombe@intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190527211058.2729-1-rick.p.edgecombe@intel.com>
 References: <20190527211058.2729-1-rick.p.edgecombe@intel.com>
@@ -40,17 +40,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The calculation of the direct map address range to flush was wrong.
-This could cause the RO direct map alias to not get flushed. Today
-this shouldn't be a problem because this flush is only needed on x86
-right now and the spurious fault handler will fix cached RO->RW
-translations. In the future though, it could cause the permissions
-to remain RO in the TLB for the direct map alias, and then the page
-would return from the page allocator to some other component as RO
-and cause a crash.
+In a rare case, flush_tlb_kernel_range() could be called with a start
+higher than the end.
 
-So fix fix the address range calculation so the flush will include the
-direct map range.
+In vm_remove_mappings(), in case page_address() returns 0 for all pages
+(for example they were all in highmem), _vm_unmap_aliases() will be
+called with start = ULONG_MAX, end = 0 and flush = 1.
+
+If at the same time, the vmalloc purge operation is triggered by something
+else while the current operation is between remove_vm_area() and
+_vm_unmap_aliases(), then the vm mapping just removed will be already
+purged. In this case the call of vm_unmap_aliases() may not find any other
+mappings to flush and so end up flushing start = ULONG_MAX, end = 0. So
+only set flush = true if we find something in the direct mapping that we
+need to flush, and this way this can't happen.
 
 Fixes: 868b104d7379 ("mm/vmalloc: Add flag for freeing of special permsissions")
 Cc: Meelis Roos <mroos@linux.ee>
@@ -63,45 +66,37 @@ Cc: Ingo Molnar <mingo@redhat.com>
 Cc: Nadav Amit <namit@vmware.com>
 Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
 ---
- mm/vmalloc.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ mm/vmalloc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 233af6936c93..3ede9c064477 100644
+index 3ede9c064477..7f15a3ebcd74 100644
 --- a/mm/vmalloc.c
 +++ b/mm/vmalloc.c
-@@ -2123,7 +2123,6 @@ static inline void set_area_direct_map(const struct vm_struct *area,
- /* Handle removing and resetting vm mappings related to the vm_struct. */
- static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
+@@ -2125,6 +2125,7 @@ static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
  {
--	unsigned long addr = (unsigned long)area->addr;
  	unsigned long start = ULONG_MAX, end = 0;
  	int flush_reset = area->flags & VM_FLUSH_RESET_PERMS;
++	int flush_dmap = 0;
  	int i;
-@@ -2135,8 +2134,8 @@ static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
- 	 * execute permissions, without leaving a RW+X window.
- 	 */
- 	if (flush_reset && !IS_ENABLED(CONFIG_ARCH_HAS_SET_DIRECT_MAP)) {
--		set_memory_nx(addr, area->nr_pages);
--		set_memory_rw(addr, area->nr_pages);
-+		set_memory_nx((unsigned long)area->addr, area->nr_pages);
-+		set_memory_rw((unsigned long)area->addr, area->nr_pages);
- 	}
  
- 	remove_vm_area(area->addr);
-@@ -2160,9 +2159,11 @@ static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
- 	 * the vm_unmap_aliases() flush includes the direct map.
- 	 */
- 	for (i = 0; i < area->nr_pages; i++) {
--		if (page_address(area->pages[i])) {
-+		unsigned long addr =
-+				(unsigned long)page_address(area->pages[i]);
-+		if (addr) {
+ 	/*
+@@ -2164,6 +2165,7 @@ static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
+ 		if (addr) {
  			start = min(addr, start);
--			end = max(addr, end);
-+			end = max(addr + PAGE_SIZE, end);
+ 			end = max(addr + PAGE_SIZE, end);
++			flush_dmap = 1;
  		}
  	}
+ 
+@@ -2173,7 +2175,7 @@ static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
+ 	 * reset the direct map permissions to the default.
+ 	 */
+ 	set_area_direct_map(area, set_direct_map_invalid_noflush);
+-	_vm_unmap_aliases(start, end, 1);
++	_vm_unmap_aliases(start, end, flush_dmap);
+ 	set_area_direct_map(area, set_direct_map_default_noflush);
+ }
  
 -- 
 2.20.1
