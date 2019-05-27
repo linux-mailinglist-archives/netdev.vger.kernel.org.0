@@ -2,119 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 694042B9F1
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 20:14:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1DAD2BA01
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 20:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbfE0SOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 14:14:35 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:35657 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726647AbfE0SOe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 14:14:34 -0400
-Received: by mail-pl1-f196.google.com with SMTP id p1so7318159plo.2
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 11:14:34 -0700 (PDT)
+        id S1727126AbfE0SVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 14:21:21 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:38915 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726647AbfE0SVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 14:21:20 -0400
+Received: by mail-lf1-f65.google.com with SMTP id f1so12679156lfl.6
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 11:21:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NdiYd8sSPlfrsEZldEib90Y3u4Iolll3AVPF6q1jj6M=;
-        b=GaXppYPWy2JbkrXvZ0zE17sz8MVOfiOrZpU7wCsGeyFAo08IHLeQRCnOtUbxX++CBg
-         TccmzzdooFLNrZhj7pYPQhcv1rpIPmbwl37jcN1D5Ytcp4iYQTQHzq6KZljcKuDhoF6o
-         XxxVqye+dH914LvF8Ah4jBbdgw9Jlkk7E6z2VVhsVJgcRhVXJmqm9OaXZWnEDxkNnLar
-         f4bJrih/k8sOF5zWG9cFWOYVjfW/+Md6xpRbSR8YG0rmPe4teCria8WQ4gW0EjJ43sBZ
-         FGFqGY3UVB9cFO/jQIUtehtHj2XfD4HPVx//wbnpHS8zGbI2gYKN0jGnAB3FyjvtXujc
-         HIGQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=cIQmYr9qDMcXw/frZVuWSs4Z6gJsQGJv00LJLaCloGU=;
+        b=I08TnzUsf6VHmv0MXTkDHbfoBRdecoRH0TuiyGZxWw8T/dKfvmFxurJh24q+r49R1I
+         uuBsAjEvsYuQVzOoOb3D/N7u7nOScU/WuvpJOoKOonbzLXeyUjVDwST+keiuS7+9Ep+c
+         9q3wN8GM8AMakM+zDHACUii5tQCDFhYO/FT9ju/fCN7i2H2AXkr/xmaXk4OsfwRXGrx9
+         SMfN0Yl8/YCWP4xc2fnnlx3W1HgrN9Etv+qHvLuC+kjaskSvPZkoZ+JxuICxIvBb8k8o
+         s8FkfDAJ9B0HfHyZKf90/w/4Gk6FSEjX1O+4luIDGxWIbdEi5/l2iakNB0XR0tj79Qs2
+         50dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NdiYd8sSPlfrsEZldEib90Y3u4Iolll3AVPF6q1jj6M=;
-        b=Lg0TW5bQRL6i16SKhTyyjz45ovKjCWY+1Gb/0Z0/iArTE7qR8BztIJf91ehFNgohbk
-         +zmAW8WFlJ7klkQjLq/RTALEbZJFq0QkAyWhT8n89H2stejr9TcYBLjKqfjZpm2h5GRx
-         ouQ+2jfPMgKFSIGcec5L5YehWn2JlBEW5mPDmBnCYV/BddFKtxftkq8XqnfXXvJvaqjQ
-         5/iqxKBeeEeJBMuiWfhXXRvwFE8LkGpB+AuhIhN1rthitp51QaUPFA3wcJ5rmdHwBk1R
-         oNVRDttvv6tApo/iAP0n3aSvPm339yCpwWWG1wxi2WzJU0UEDpP/AVfoQXtaUVtT7ZHy
-         w2OQ==
-X-Gm-Message-State: APjAAAXgQ3D4+mF7EPGx5vE+KMudBbgywIYwHyYpMtybuudXUZ7uNDdB
-        yLqGz+n7sxuLmMyIA7+1XCw=
-X-Google-Smtp-Source: APXvYqz3+jfEqdZ/4mpBs/It+6KxSY9iczyRN3uAdEbWnLPJxft74SVGvEjFIrOKKDTNpsR45i0qXA==
-X-Received: by 2002:a17:902:a708:: with SMTP id w8mr11382565plq.162.1558980874006;
-        Mon, 27 May 2019 11:14:34 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
-        by smtp.gmail.com with ESMTPSA id u11sm11306728pfh.130.2019.05.27.11.14.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 May 2019 11:14:33 -0700 (PDT)
-Subject: Re: [patch net-next 0/7] expose flash update status to user
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, mlxsw@mellanox.com,
-        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
-        dsahern@gmail.com, saeedm@mellanox.com, leon@kernel.org
-References: <20190523094510.2317-1-jiri@resnulli.us>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <a4a0c438-95e7-9f23-072e-33d55fc9f9a5@gmail.com>
-Date:   Mon, 27 May 2019 11:14:32 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=cIQmYr9qDMcXw/frZVuWSs4Z6gJsQGJv00LJLaCloGU=;
+        b=G6q63Nk/F/b/RWrs0BHa+shmkFiUpKKgquLI05w2KOiuddnp0OTB2NTl1V9kkDbjsO
+         ht4rdX9tkaAA+s/oqxFKfn4KpbDfGsSiSBN80c/FlZ+wh9M2VDqb2eW15+nDFaOSKl7Q
+         zli6dFxP5LVQT+3CY6q9CBgVwSKhvHT+eGc6Tbl3trfCW4syrqi2D0sWZY8005xAnlsW
+         PkA89SFYJmD4uE1DF5dzRbtrAv053TBBtHZ87k1noctNcrENiK5//a2eHGbjQMhxbqUN
+         lqeYUg1FhOzAdFVdc+/IVAVPXBCuEdP7IgHCl4QvFv4Jqy+bIfJPdH6GeyttMYfjO4qa
+         Ky+Q==
+X-Gm-Message-State: APjAAAUaNJoe5n4D+ZP+11r+lnw5z5Pu99lTKfGRmQ4f4plpNWCgVwG1
+        f6kKqD5HlxfUeUWfqT153fgMgA==
+X-Google-Smtp-Source: APXvYqxdLRxNn6fN/7LXcm+ASzyV4brjzSwTtHmi8VWTNZ8pZTlZxyv2h5jnYIU7M47O202GgHej3Q==
+X-Received: by 2002:ac2:5595:: with SMTP id v21mr6577390lfg.54.1558981278784;
+        Mon, 27 May 2019 11:21:18 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id w20sm2451515ljd.39.2019.05.27.11.21.17
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 27 May 2019 11:21:17 -0700 (PDT)
+Date:   Mon, 27 May 2019 21:21:15 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        netdev@vger.kernel.org, daniel@iogearbox.net,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com
+Subject: Re: [PATCH net-next 3/3] net: ethernet: ti: cpsw: add XDP support
+Message-ID: <20190527182114.GB4246@khorivan>
+Mail-Followup-To: Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        netdev@vger.kernel.org, daniel@iogearbox.net,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com
+References: <20190523182035.9283-1-ivan.khoronzhuk@linaro.org>
+ <20190523182035.9283-4-ivan.khoronzhuk@linaro.org>
+ <20190524110511.GA27885@apalos>
 MIME-Version: 1.0
-In-Reply-To: <20190523094510.2317-1-jiri@resnulli.us>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20190524110511.GA27885@apalos>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, May 24, 2019 at 02:05:11PM +0300, Ilias Apalodimas wrote:
+>On Thu, May 23, 2019 at 09:20:35PM +0300, Ivan Khoronzhuk wrote:
+>> Add XDP support based on rx page_pool allocator, one frame per page.
+>> Page pool allocator is used with assumption that only one rx_handler
+>> is running simultaneously. DMA map/unmap is reused from page pool
+>> despite there is no need to map whole page.
+>>
+>> Due to specific of cpsw, the same TX/RX handler can be used by 2
+>> network devices, so special fields in buffer are added to identify
+>> an interface the frame is destined to. Thus XDP works for both
+>> interfaces, that allows to test xdp redirect between two interfaces
+>> easily.
+>>
+>> XDP prog is common for all channels till appropriate changes are added
+>> in XDP infrastructure.
+>>
+>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>> ---
+>>  drivers/net/ethernet/ti/Kconfig        |   1 +
+>>  drivers/net/ethernet/ti/cpsw.c         | 555 ++++++++++++++++++++++---
+>>  drivers/net/ethernet/ti/cpsw_ethtool.c |  53 +++
+>>  drivers/net/ethernet/ti/cpsw_priv.h    |   7 +
+>>  4 files changed, 554 insertions(+), 62 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+>> index bd05a977ee7e..3cb8c5214835 100644
+>> --- a/drivers/net/ethernet/ti/Kconfig
+>> +++ b/drivers/net/ethernet/ti/Kconfig
+>> @@ -50,6 +50,7 @@ config TI_CPSW
+>>  	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
+>>  	select TI_DAVINCI_MDIO
+>>  	select MFD_SYSCON
+>> +	select PAGE_POOL
+>>  	select REGMAP
+>>  	---help---
+>>  	  This driver supports TI's CPSW Ethernet Switch.
+>> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+>> index 87a600aeee4a..274e6b64ea9e 100644
+>> --- a/drivers/net/ethernet/ti/cpsw.c
+>> +++ b/drivers/net/ethernet/ti/cpsw.c
+>> @@ -31,6 +31,10 @@
+>>  #include <linux/if_vlan.h>
+>>  #include <linux/kmemleak.h>
+>>  #include <linux/sys_soc.h>
+>> +#include <net/page_pool.h>
+>> +#include <linux/bpf.h>
+>> +#include <linux/bpf_trace.h>
+>> +#include <linux/filter.h>
+>>
+>>  #include <linux/pinctrl/consumer.h>
 
+[...]
 
-On 5/23/2019 2:45 AM, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> When user is flashing device using devlink, he currenly does not see any
-> information about what is going on, percentages, etc.
-> Drivers, for example mlxsw and mlx5, have notion about the progress
-> and what is happening. This patchset exposes this progress
-> information to userspace.
-> 
-> See this console recording which shows flashing FW on a Mellanox
-> Spectrum device:
-> https://asciinema.org/a/247926
+>> +			start_free = 1;
+>> +			continue;
+>> +		}
+>> +
+>> +		/* if refcnt > 1, page has been holding by netstack, it's pity,
+>> +		 * so put it to the ring to be consumed later when fast cash is
+>s/cash/cache
+>
+>> +		 * empty. If ring is full then free page by recycling as above.
+>> +		 */
+>> +		ret = ptr_ring_produce(&pool->ring, page);
+>> +		if (ret) {
+>> +			page_pool_recycle_direct(pool, page);
+>> +			continue;
+>> +		}
+>Although this should be fine since this part won't be called during the driver
+>init, i think i'd prefer unmapping the buffer and let the network stack free it,
+>instead of pushing it for recycling. The occurence should be pretty low, so
+>allocating a buffer every once in a while shouldn't have a noticeable
+>performance impact
+>
 
-It would be great to explain why you went that route instead of
-implementing a MTD device (like what sfc) which would have presumably
-allowed you to more or less the same thing using a standard device
-driver model that is establish with flash devices.
-
-> 
-> Jiri Pirko (7):
->   mlxsw: Move firmware flash implementation to devlink
->   mlx5: Move firmware flash implementation to devlink
->   mlxfw: Propagate error messages through extack
->   devlink: allow driver to update progress of flash update
->   mlxfw: Introduce status_notify op and call it to notify about the
->     status
->   mlxsw: Implement flash update status notifications
->   netdevsim: implement fake flash updating with notifications
-> 
->  drivers/net/ethernet/mellanox/mlx5/core/en.h  |   2 -
->  .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  35 ------
->  drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   6 +-
->  .../mellanox/mlx5/core/ipoib/ethtool.c        |   9 --
->  .../net/ethernet/mellanox/mlx5/core/main.c    |  20 ++++
->  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   3 +-
->  drivers/net/ethernet/mellanox/mlxfw/mlxfw.h   |  11 +-
->  .../net/ethernet/mellanox/mlxfw/mlxfw_fsm.c   |  57 ++++++++--
->  drivers/net/ethernet/mellanox/mlxsw/core.c    |  15 +++
->  drivers/net/ethernet/mellanox/mlxsw/core.h    |   3 +
->  .../net/ethernet/mellanox/mlxsw/spectrum.c    |  75 +++++++------
->  drivers/net/netdevsim/dev.c                   |  35 ++++++
->  include/net/devlink.h                         |   8 ++
->  include/uapi/linux/devlink.h                  |   5 +
->  net/core/devlink.c                            | 102 ++++++++++++++++++
->  15 files changed, 295 insertions(+), 91 deletions(-)
-> 
+Ok, I will leave previous version from RFC.
 
 -- 
-Florian
+Regards,
+Ivan Khoronzhuk
