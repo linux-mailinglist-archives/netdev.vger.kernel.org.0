@@ -2,140 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B115C2B62C
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 15:20:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CF662B675
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 15:33:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726511AbfE0NUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 09:20:21 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:49206 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726063AbfE0NUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 09:20:20 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hVFY1-0006cw-9c; Mon, 27 May 2019 15:20:17 +0200
-Message-ID: <b59be15f1d0caa4eaa4476bbd8457afc44d57089.camel@sipsolutions.net>
-Subject: cellular modem APIs - take 2
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Dan Williams <dcbw@redhat.com>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Daniele Palmas <dnlplm@gmail.com>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Date:   Mon, 27 May 2019 15:20:16 +0200
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726522AbfE0Ndb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 09:33:31 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:55842 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726479AbfE0Ndb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 09:33:31 -0400
+Received: by mail-wm1-f67.google.com with SMTP id u78so3341748wmu.5
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 06:33:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=F+FptfRjbrCVQX/LekX1svHk/Zk6ikkaVuLOvGkNJfU=;
+        b=IBeUYKTImpUhMJ/hYG074WD68wPvaghIGz3Ga9vEA1H1DOE06Z9OVc1NAzULdwkwTR
+         baolD3cm+DnEiR4wS+DaBVkaPDFqfFay600FNy4tpBHR0IZ7tjKHA/p33cgN20z7j9i+
+         BuwFMNl/HZD9dx+P/o2eXZT602WI0zWImSz3AR0w4MR5cKV04jTAm929aKLeC7JZwTAH
+         jmace950+v8rdHnjk2LjKa9WJfehLXL/wzKsONKEyz8cqrXD4KR8QpMgrDcMZCpg1MHr
+         pwEGb5OcUFP46rQFIHgBbkJDdmIt6ggYQ2TJZp+Il2qjElMk3tyZ1jlL/1J1+FL2wRJC
+         UwhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=F+FptfRjbrCVQX/LekX1svHk/Zk6ikkaVuLOvGkNJfU=;
+        b=fX4JuxDN9Cdek0u6J1gbOP8/f5IvrGRY5YLoVqlHCBKoUTacjM7Kg6FQaGHEhrctBo
+         9Jzo7TD4fGWbJ3tDSI/FH1ipBHtGvu7vd+moHvNBo0hV+sc7V9vwboaZbFCmjWZbLy2e
+         lbGhmfXfScX/6302YXw+BFWzkxFJ5rqU68IvUxZi/kTZ6cb0LGdLtWqzAc26HKGtXXCv
+         S0lTYfj6XI2NJtOPWFaIA6YU9rUNnbM21D0kFvrn2oPE817ZISr8eo8AqmMpl9gDeR6e
+         0s1RVODWhsoZ0JyF7ejM3eD0m1LW5DapfWLx8y8ukaklSFFJeqaLXcttBbpvCkTea3kv
+         8wGQ==
+X-Gm-Message-State: APjAAAXg7XNEV17zBHgMnqFgfQRGDoDxTzZVieasDzJ+lmsgvgR1p/DD
+        KQz1XsOl6ZBv+LV+niEHLV9v4BEIIv0=
+X-Google-Smtp-Source: APXvYqz2wmGhONoZnZrkdJsvxkzVGR/xTKoJ/ChKr9++P1PvoEfS1NNxf328SOisLUivDpszX57FQQ==
+X-Received: by 2002:a7b:cbcc:: with SMTP id n12mr10455211wmi.167.1558964009064;
+        Mon, 27 May 2019 06:33:29 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id o6sm1253812wrv.22.2019.05.27.06.33.28
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 27 May 2019 06:33:28 -0700 (PDT)
+Date:   Mon, 27 May 2019 15:33:27 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, mlxsw@mellanox.com, sthemmin@microsoft.com,
+        saeedm@mellanox.com, leon@kernel.org
+Subject: Re: [patch net-next 3/7] mlxfw: Propagate error messages through
+ extack
+Message-ID: <20190527133327.GA2236@nanopsycho.orion>
+References: <20190523094510.2317-1-jiri@resnulli.us>
+ <20190523094510.2317-4-jiri@resnulli.us>
+ <7f3362de-baaf-99ee-1b53-55675aaf00fe@gmail.com>
+ <20190524081110.GB2904@nanopsycho>
+ <20190524085446.59dc6f2f@cakuba.netronome.com>
+ <20190524222635.GA2284@nanopsycho.orion>
+ <20190524170852.4fea5e77@cakuba.netronome.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190524170852.4fea5e77@cakuba.netronome.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+Sat, May 25, 2019 at 02:08:52AM CEST, jakub.kicinski@netronome.com wrote:
+>On Sat, 25 May 2019 00:26:35 +0200, Jiri Pirko wrote:
+>> Fri, May 24, 2019 at 05:54:46PM CEST, jakub.kicinski@netronome.com wrote:
+>> >On Fri, 24 May 2019 10:11:10 +0200, Jiri Pirko wrote:  
+>> >> Thu, May 23, 2019 at 05:19:46PM CEST, dsahern@gmail.com wrote:  
+>> >> >On 5/23/19 3:45 AM, Jiri Pirko wrote:    
+>> >> >> @@ -57,11 +58,13 @@ static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
+>> >> >>  	if (fsm_state_err != MLXFW_FSM_STATE_ERR_OK) {
+>> >> >>  		pr_err("Firmware flash failed: %s\n",
+>> >> >>  		       mlxfw_fsm_state_err_str[fsm_state_err]);
+>> >> >> +		NL_SET_ERR_MSG_MOD(extack, "Firmware flash failed");
+>> >> >>  		return -EINVAL;
+>> >> >>  	}
+>> >> >>  	if (curr_fsm_state != fsm_state) {
+>> >> >>  		if (--times == 0) {
+>> >> >>  			pr_err("Timeout reached on FSM state change");
+>> >> >> +			NL_SET_ERR_MSG_MOD(extack, "Timeout reached on FSM state change");    
+>> >> >
+>> >> >FSM? Is the meaning obvious to users?    
+>> >> 
+>> >> It is specific to mlx drivers.  
+>> >
+>> >What does it stand for?  Isn't it just Finite State Machine?  
+>> 
+>> I believe so.
+>
+>In which case it doesn't really add much, no?  I second David's request
+>to make the messages as easy to understand as possible.  
 
-Sorry for the long delay in getting back to this. I'm meaning to write
-some code soon also for this, to illustrate better, but I figured I'd
-still get some thoughts out before I do that.
+Well, FSM is something that is used in the code and known. I would
+change it to "finite state machine" (which I'm still not sure it
+really is) but I don't believe that would bring more info to the user.
+Well, nothing. On contrary, a MLX engineer might get confused if customer
+sends him the message, because he is used to "FSM" :)
 
-After more discussion (@Intel) and the previous thread(s), I've pretty
-much come to the conclusion that we should have a small subsystem for
-WWAN, rather than fudging everything like we previously did.
-
-We can debate whether or not that should use 'real' netlink or generic
-netlink - personally I know the latter better and I think it has some
-real advantages like easier message parsing (it's automatic more or
-less) including strict checking and automatic policy introspection (I
-recently wrote the code for this and it's plugged into generic netlink
-family, for other netlink families it needs more hand-written code). But
-I could possibly be convinced of doing something else, and/or perhaps
-building more infrastructure for 'real' netlink to realize those
-benefits there as well.
-
-
-In terms of what I APIs are needed, the kernel-driver side and userspace
-side go pretty much hand in hand (the wwan subsystem just providing the
-glue), so what I say below is pretty much both a method/function call
-(kernel internal API) or a netlink message (userspace API).
-
-1) I think a generic abstraction of WWAN device that is not a netdev
-   is needed. Yes, on the one hand it's quite nice to be able to work on
-   top of a given netdev, but it's also limiting because it requires the
-   data flow to go through there, and packets that are tagged in some
-   way be exchanged there.
-   For VLANs this can be out-of-band (in a sense) with hw-accel, but for
-   rmnet-style it's in-band, and that limits what we can do.
-
-   Now, of course this doesn't mean there shouldn't be a netdev created
-   by default in most cases, but it gives us a way to do additional
-   things that we cannot do with *just* a netdev.
-
-   From a driver POV though, it would register a new "wwan_device", and
-   then get some generic callback to create a netdev on top, maybe by
-   default from the subsystem or from the user.
-
-2) Clearly, one needs to be able to create PDN netdevs, with the PDN
-   given to the command. Here's another advantage: If these are created
-   on top of another abstraction, not another netdev, they can have
-   their own queues, multiqueue RX etc. much more easily.
-
-   Also, things like the "if I have just a single channel, drop the mux
-   headers" can then be entirely done in the driver, and the default
-   netdev no longer has the possibility of muxed and IP frames on the
-   same datapath.
-
-   This also enables more things like handling checksum offload directly
-   in the driver, which doesn't behave so well with VLANs I think.
-
-   All of that will just be easier for 5G too, I believe, with
-   acceleration being handled per PDN, multi-queue working without
-   ndo_select_queue, etc.
-
-   Quite possibly there might be some additional (vendor-dependent?)
-   configuration for when such netdevs are created, but we need to
-   figure out if that really needs to be at creation time, or just
-   ethtool later or something like that. I guess it depends on how
-   generic it needs to be.
-
-3) Separately, we need to have an ability to create "generalized control
-   channels". I'm thinking there would be a general command "create
-   control channel" with a given type (e.g. ATCMD, RPC, MBIM, GNSS) plus
-   a list of vendor-specific channels (e.g. for tracing).
-
-   I'm unsure where this channel should really go - somehow it seems to
-   me that for many (most?) of these registering them as a serial line
-   would be most appropriate, but some, especially vendor-defined
-   channels like tracing, would probably better use a transport that's
-   higher bandwidth than, e.g. netdevs.
-
-   One way I thought of doing this was to create an abstraction in the
-   wwan framework that lets the driver use SKBs anyway (i.e. TX and RX
-   on these channels using SKBs) and then translate them to some channel
-   in the framework - that way, we can even select at runtime if we want
-   a netdev (not really plugged into the network stack, ARPHDR_VOID?) or
-   some other kind of transport. Building that would allow us to add
-   transport types in the future too.
-
-   I guess such a channel should also be created by default, if it's
-   not already created by the driver in some out-of-band way anyway (and
-   most likely it shouldn't be, but I guess drivers might have some
-   entirely different communication channels for AT CMDs?)
-
-4) There was a question about something like pure IP channels that
-   belong to another PDN and apparently now separate netdevs might be
-   used, but it seems to me that could just be a queue reserved on the
-   regular netdevs and then when you say ("enable video streaming on
-   wwan1 interface") that can do some magic to classify the video
-   packets (DSCP?) to another hardware queue for better QoS.
+Same with "MFA2" in the other message. I only know it is the format
+of the binary, have no clue what it actually stands for (other than
+it is version 2).
 
 
-
-Anyway, if all of this doesn't seem completely outlandish I'll try to
-write some code to illustrate it (sooner, rather than later).
-
-Thanks,
-johannes
-
+>
+>PSID for better or worse I have previously capitulated on, so I guess
+>the ship has indeed sailed there :)
+>
+>$ grep -A4 psid -- Documentation/networking/devlink-info-versions.rst 
+>fw.psid
+>=======
+>
+>Unique identifier of the firmware parameter set.
