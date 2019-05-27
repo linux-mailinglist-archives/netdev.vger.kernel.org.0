@@ -2,142 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5E82B4E2
-	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 14:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E20C2B4FA
+	for <lists+netdev@lfdr.de>; Mon, 27 May 2019 14:24:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbfE0MUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 08:20:49 -0400
-Received: from merlin.infradead.org ([205.233.59.134]:39744 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726206AbfE0MUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 08:20:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=tFuM1NJvdZZ5PGdDzchsgFWPXIYp9ioXN9wuNgNAYyg=; b=oUiR0kiDf4WfWEHLhlG/gMa83
-        Hs7r4JFq1+8G928+0OxQ4XKo/m1Gep4RZJuSZ4we14xgB/wGPOdOO3rSNQFZlE635gNPMwDnZ4wmz
-        i20iXquy2HgUh9oalCmOAMudLPp0xnyJZ4dqGx1qZIIT4bFRlmTZoN/399UoMZ/GpEAB0dVe15Gto
-        0dWszejN2xc3RHBA6SU2fQzJxGg0Hl8NjO6NEF7Ut34MvoJzO5zjfRCBkiCjH6dZViJ2c6b8RjkMq
-        N++pTj9EiLSEozG7LGkWm04BhV/uOUGDAaf8K+uoVf1YKz5oIy6Rt0J9LjPLWuUEKqy0+IQBV9PPE
-        W3sV/GUhQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-        id 1hVEc4-00037W-U6; Mon, 27 May 2019 12:20:25 +0000
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 4909520254842; Mon, 27 May 2019 14:20:22 +0200 (CEST)
-Date:   Mon, 27 May 2019 14:20:22 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Rick Edgecombe <rick.p.edgecombe@intel.com>
-Cc:     linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org, luto@kernel.org,
-        dave.hansen@intel.com, namit@vmware.com,
-        Meelis Roos <mroos@linux.ee>,
-        "David S. Miller" <davem@davemloft.net>,
-        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>
-Subject: Re: [PATCH v4 1/2] vmalloc: Fix calculation of direct map addr range
-Message-ID: <20190527122022.GP2606@hirez.programming.kicks-ass.net>
-References: <20190521205137.22029-1-rick.p.edgecombe@intel.com>
- <20190521205137.22029-2-rick.p.edgecombe@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190521205137.22029-2-rick.p.edgecombe@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727117AbfE0MYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 08:24:13 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:38466 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726600AbfE0MYL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 May 2019 08:24:11 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id B6895200B7F;
+        Mon, 27 May 2019 14:24:08 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A82B2200089;
+        Mon, 27 May 2019 14:24:08 +0200 (CEST)
+Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 681052060A;
+        Mon, 27 May 2019 14:24:08 +0200 (CEST)
+From:   Madalin Bucur <madalin.bucur@nxp.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Madalin Bucur <madalin.bucur@nxp.com>
+Subject: [PATCH] dpaa_eth: use only online CPU portals
+Date:   Mon, 27 May 2019 15:24:05 +0300
+Message-Id: <1558959845-30758-1-git-send-email-madalin.bucur@nxp.com>
+X-Mailer: git-send-email 2.1.0
+Reply-to: madalin.bucur@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 21, 2019 at 01:51:36PM -0700, Rick Edgecombe wrote:
-> The calculation of the direct map address range to flush was wrong.
-> This could cause problems on x86 if a RO direct map alias ever got loaded
-> into the TLB. This shouldn't normally happen, but it could cause the
-> permissions to remain RO on the direct map alias, and then the page
-> would return from the page allocator to some other component as RO and
-> cause a crash.
-> 
-> So fix fix the address range calculation so the flush will include the
-> direct map range.
-> 
-> Fixes: 868b104d7379 ("mm/vmalloc: Add flag for freeing of special permsissions")
-> Cc: Meelis Roos <mroos@linux.ee>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Dave Hansen <dave.hansen@intel.com>
-> Cc: Borislav Petkov <bp@alien8.de>
-> Cc: Andy Lutomirski <luto@kernel.org>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Nadav Amit <namit@vmware.com>
-> Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
-> ---
->  mm/vmalloc.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-> index c42872ed82ac..836888ae01f6 100644
-> --- a/mm/vmalloc.c
-> +++ b/mm/vmalloc.c
-> @@ -2159,9 +2159,10 @@ static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
->  	 * the vm_unmap_aliases() flush includes the direct map.
->  	 */
->  	for (i = 0; i < area->nr_pages; i++) {
-> -		if (page_address(area->pages[i])) {
-> +		addr = (unsigned long)page_address(area->pages[i]);
-> +		if (addr) {
->  			start = min(addr, start);
-> -			end = max(addr, end);
-> +			end = max(addr + PAGE_SIZE, end);
->  		}
->  	}
->  
+Make sure only the portals for the online CPUs are used.
+Without this change, there are issues when someone boots with
+maxcpus=n, with n < actual number of cores available as frames
+either received or corresponding to the transmit confirmation
+path would be offered for dequeue to the offline CPU portals,
+getting lost.
 
-Indeed; howevr I'm thinking this bug was caused to exist by the dual use
-of @addr in this function, so should we not, perhaps, do something like
-the below instead?
-
-Also; having looked at this, it makes me question the use of
-flush_tlb_kernel_range() in _vm_unmap_aliases() and
-__purge_vmap_area_lazy(), it's potentially combining multiple ranges,
-which never really works well.
-
-Arguably, we should just do flush_tlb_all() here, but that's for another
-patch I'm thinking.
-
+Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -2123,7 +2123,6 @@ static inline void set_area_direct_map(c
- /* Handle removing and resetting vm mappings related to the vm_struct. */
- static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
- {
--	unsigned long addr = (unsigned long)area->addr;
- 	unsigned long start = ULONG_MAX, end = 0;
- 	int flush_reset = area->flags & VM_FLUSH_RESET_PERMS;
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c     | 9 ++++-----
+ drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 4 ++--
+ 2 files changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index d3f2408dc9e8..f38c3fa7d705 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -780,7 +780,7 @@ static void dpaa_eth_add_channel(u16 channel)
+ 	struct qman_portal *portal;
+ 	int cpu;
+ 
+-	for_each_cpu(cpu, cpus) {
++	for_each_cpu_and(cpu, cpus, cpu_online_mask) {
+ 		portal = qman_get_affine_portal(cpu);
+ 		qman_p_static_dequeue_add(portal, pool);
+ 	}
+@@ -896,7 +896,7 @@ static void dpaa_fq_setup(struct dpaa_priv *priv,
+ 	u16 channels[NR_CPUS];
+ 	struct dpaa_fq *fq;
+ 
+-	for_each_cpu(cpu, affine_cpus)
++	for_each_cpu_and(cpu, affine_cpus, cpu_online_mask)
+ 		channels[num_portals++] = qman_affine_channel(cpu);
+ 
+ 	if (num_portals == 0)
+@@ -2174,7 +2174,6 @@ static int dpaa_eth_poll(struct napi_struct *napi, int budget)
+ 	if (cleaned < budget) {
+ 		napi_complete_done(napi, cleaned);
+ 		qman_p_irqsource_add(np->p, QM_PIRQ_DQRI);
+-
+ 	} else if (np->down) {
+ 		qman_p_irqsource_add(np->p, QM_PIRQ_DQRI);
+ 	}
+@@ -2448,7 +2447,7 @@ static void dpaa_eth_napi_enable(struct dpaa_priv *priv)
+ 	struct dpaa_percpu_priv *percpu_priv;
  	int i;
-@@ -2135,8 +2134,8 @@ static void vm_remove_mappings(struct vm
- 	 * execute permissions, without leaving a RW+X window.
- 	 */
- 	if (flush_reset && !IS_ENABLED(CONFIG_ARCH_HAS_SET_DIRECT_MAP)) {
--		set_memory_nx(addr, area->nr_pages);
--		set_memory_rw(addr, area->nr_pages);
-+		set_memory_nx((unsigned long)area->addr, area->nr_pages);
-+		set_memory_rw((unsigned long)area->addr, area->nr_pages);
- 	}
  
- 	remove_vm_area(area->addr);
-@@ -2160,9 +2159,10 @@ static void vm_remove_mappings(struct vm
- 	 * the vm_unmap_aliases() flush includes the direct map.
- 	 */
- 	for (i = 0; i < area->nr_pages; i++) {
--		if (page_address(area->pages[i])) {
-+		unsigned long addr = (unsigned long)page_address(area->pages[i]);
-+		if (addr) {
- 			start = min(addr, start);
--			end = max(addr, end);
-+			end = max(addr + PAGE_SIZE, end);
- 		}
- 	}
+-	for_each_possible_cpu(i) {
++	for_each_online_cpu(i) {
+ 		percpu_priv = per_cpu_ptr(priv->percpu_priv, i);
  
+ 		percpu_priv->np.down = 0;
+@@ -2461,7 +2460,7 @@ static void dpaa_eth_napi_disable(struct dpaa_priv *priv)
+ 	struct dpaa_percpu_priv *percpu_priv;
+ 	int i;
+ 
+-	for_each_possible_cpu(i) {
++	for_each_online_cpu(i) {
+ 		percpu_priv = per_cpu_ptr(priv->percpu_priv, i);
+ 
+ 		percpu_priv->np.down = 1;
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+index bdee441bc3b7..7ce2e99b594d 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+@@ -569,7 +569,7 @@ static int dpaa_set_coalesce(struct net_device *dev,
+ 	qman_dqrr_get_ithresh(portal, &prev_thresh);
+ 
+ 	/* set new values */
+-	for_each_cpu(cpu, cpus) {
++	for_each_cpu_and(cpu, cpus, cpu_online_mask) {
+ 		portal = qman_get_affine_portal(cpu);
+ 		res = qman_portal_set_iperiod(portal, period);
+ 		if (res)
+@@ -586,7 +586,7 @@ static int dpaa_set_coalesce(struct net_device *dev,
+ 
+ revert_values:
+ 	/* restore previous values */
+-	for_each_cpu(cpu, cpus) {
++	for_each_cpu_and(cpu, cpus, cpu_online_mask) {
+ 		if (!needs_revert[cpu])
+ 			continue;
+ 		portal = qman_get_affine_portal(cpu);
+-- 
+2.1.0
+
