@@ -2,187 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 070422BEB8
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 07:48:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1445B2BF18
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 08:11:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727174AbfE1FsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 01:48:07 -0400
-Received: from mail-it1-f198.google.com ([209.85.166.198]:59632 "EHLO
-        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727082AbfE1FsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 01:48:06 -0400
-Received: by mail-it1-f198.google.com with SMTP id h133so1411723ith.9
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 22:48:06 -0700 (PDT)
+        id S1727653AbfE1GL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 02:11:29 -0400
+Received: from mail-wm1-f54.google.com ([209.85.128.54]:37295 "EHLO
+        mail-wm1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726657AbfE1GL3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 02:11:29 -0400
+Received: by mail-wm1-f54.google.com with SMTP id 7so1376750wmo.2;
+        Mon, 27 May 2019 23:11:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=V2ShQKVShCk9ba4wvUF+geCbfjkCHod2XBaE58B3jlc=;
+        b=DUFWmJQwcWXoX80krafWSvUkS3Js19khPoqh6UZckm6oUBy+UUecV5XuYzWlpcDTBF
+         ayult0TTlD0qx6ZFKu6njaPloew+1sGITUtcn/cPoNQhyQrn3729nNsRFrZmDEB4KWzS
+         zFea91982ma3rC0ilRlfsrMvlK+SXcONazOqP52O71aECK9geUsRu1zNCl+ecaBdGzbQ
+         uy9muDBvOqV1TKgpDmQdB4eGfq5YcxepRMS0fHOGowqFPHKU9tAnMs9s7aLqRL6TCZZu
+         Ki2W5hMNe0F9fy5yDts0qA4JGgyq1GggoWiooQI1+L8Xt7KnTgm1eB75nErdjRHkevmV
+         5g/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=nUKhwxbNxZ9sD3FLYrCIiC9v9dylgsFF4TAhQyd8XCg=;
-        b=pl2AKP1wMlUc92ajbJBmN1vInRyoe67Pfuvk1eBynAtr3vIE3h6Q/7cM8x2tR4dTxG
-         GGd8uz9rGxVjS1z/KvngWx0yUmnF2GLqnkEbN3AcV84n/iuVn3PM3T6ey7zdaCfK3jr9
-         ittdB2BYRzlx+ab/ML+JWkythL4A2pJbqVVR3L463HQOjDe/olW1SfGroZN0eHGnkiFW
-         9M4isepLZFnXCmXPFPXUTL16dWHfZW9SB3MTh4aUEs8NNHpMuakx7W3L+0WlNcahQDW/
-         N3m0WSg1QkUxaCSUAE606XnHpDb+vLOquYaPyehvm1hrMdUcs6jsRX/MzY2nC/bQl8SW
-         Xt8A==
-X-Gm-Message-State: APjAAAVEEN0W9M6iZGN/DMVWDM5sBxN9IPM9vM3eh1nPffov+lPQiYmZ
-        hMwYWPFkiF2md2B6TvDsKlTaaKcv5HX1fI6zAGN7D5gobIlq
-X-Google-Smtp-Source: APXvYqyJLrD7DYVNWJiTDYYbtuxXsWJsrNoyzwRM7gay6qwYJMO2ZRox0siuScV6dA6z25GQJgdwFdMoO4qgBQnxkPV1kLB8/7ui
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=V2ShQKVShCk9ba4wvUF+geCbfjkCHod2XBaE58B3jlc=;
+        b=K7Mgi+v2ZaWTpZwZFBuAXllyIj3i24kEXP1/JBHX0hrlMCIAAP4O1HrdB8z2Z/Hthw
+         2rRYppjoKXdpiIXrsgTr9g34/m7k76BxKn6aPitiL7ZG8HFtQFyNM7M5lXbvRQIQXBTi
+         r986vsVxikZX35uU8HHM0OJ8nNhHT3X6YsYg1EIO/Kpoi06khLwSNLthO6Ru/kc+RTRv
+         TG09cu60Xw4ICdIAQ6i9ApKAn6LmJF04nUwIfUcHE3356D8GMVH9WoyVRhp9aEe7oJaV
+         yTfwnFEuEPKtmDgGiLtAlQGlQIG9CEFobTACvqAAQjFaZgNbDiBPk0tguCVtNuZ5X7P1
+         DPOQ==
+X-Gm-Message-State: APjAAAVjtktk4O4qHrauff0hAKc7CLL4Z/9uK66C4dpK3LjVFhATYNtH
+        pJpYs0s/+DewQA8tAiQxWMYuNp4ErWcdPk4uHa+UG+ZWIGw=
+X-Google-Smtp-Source: APXvYqyHZMybVKz0kPdzmEu45CjadqSgdKu6QuxJV1v+IU/m6opmxFTHtMnZ/KA078Mt6GgzwveKJoA4SbD9cuWp1H0=
+X-Received: by 2002:a1c:7e10:: with SMTP id z16mr1817345wmc.98.1559023887261;
+ Mon, 27 May 2019 23:11:27 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a24:4d1:: with SMTP id 200mr1755606itb.92.1559022485918;
- Mon, 27 May 2019 22:48:05 -0700 (PDT)
-Date:   Mon, 27 May 2019 22:48:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000785e9d0589ec359a@google.com>
-Subject: KASAN: invalid-free in tomoyo_realpath_from_path
-From:   syzbot <syzbot+9742b1c6c7aedf18beda@syzkaller.appspotmail.com>
-To:     jmorris@namei.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        penguin-kernel@I-love.SAKURA.ne.jp, serge@hallyn.com,
-        syzkaller-bugs@googlegroups.com, takedakn@nttdata.co.jp
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+From:   Akshat Kakkar <akshat.1984@gmail.com>
+Date:   Tue, 28 May 2019 11:41:14 +0530
+Message-ID: <CAA5aLPgz2Pzi5qNZkHwtN=fEXEwRpCQYFUkEzRWkdT39+YNWFA@mail.gmail.com>
+Subject: Cake not doing rate limiting in a way it is expected to do
+To:     netdev <netdev@vger.kernel.org>, lartc <lartc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Cake is expected to handle traffic in 2 steps :
+First is on the basis of host
+Second is within every host, on the basis of flow
 
-syzbot found the following crash on:
+So, if I limit traffic to 20Mbps shared across 2 host A & B,
+Following are various scenarios, expectation and observations
+1. If either A or B is downloading, they will be getting speed of 20Mbps
+Observation: Meeting with expectation
 
-HEAD commit:    f4aa8012 cxgb4: Make t4_get_tp_e2c_map static
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=173328baa00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d137eb988ffd93c3
-dashboard link: https://syzkaller.appspot.com/bug?extid=9742b1c6c7aedf18beda
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+2. If both A & B downloads (single download each), each will be
+getting speed of 20Mbps
+Observation: Meeting with expecation but its very jittery (around
+20%), i.e. speed varies from 8Mbps to 12 Mbps. If I use fq_codel speed
+is same BUT jitter is very less (around 1%).
 
-Unfortunately, I don't have any reproducer for this crash yet.
+3. Now if A starts 3 downloads, and B is still having single download,
+A each download should be around 3.3 Mbps and B should be around
+10Mbps
+Observation: Around 5 Mbps for each download with lot of jitter, i.e.
+no advantage of having CAKE!!!
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+9742b1c6c7aedf18beda@syzkaller.appspotmail.com
+Linux Kernel 4.20
+For case 3, output of command : tc -s class show dev eno2
 
-==================================================================
-BUG: KASAN: double-free or invalid-free in  
-tomoyo_realpath_from_path+0x1de/0x7a0 security/tomoyo/realpath.c:319
+class htb 1:1 root leaf 8003: prio 1 rate 20000Kbit ceil 20000Kbit
+burst 200Kb cburst 1600b
+ Sent 688474645 bytes 455058 pkt (dropped 0, overlimits 381196 requeues 0)
+ rate 19874Kbit 1641pps backlog 21196b 14p requeues 0
+ lended: 382532 borrowed: 0 giants: 0
+ tokens: 1260573 ctokens: -9427
 
-CPU: 1 PID: 11697 Comm: syz-executor.3 Not tainted 5.2.0-rc1+ #2
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  print_address_description.cold+0x7c/0x20d mm/kasan/report.c:188
-  kasan_report_invalid_free+0x65/0xa0 mm/kasan/report.c:279
-  __kasan_slab_free+0x13a/0x150 mm/kasan/common.c:430
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
-  __cache_free mm/slab.c:3432 [inline]
-  kfree+0xcf/0x220 mm/slab.c:3755
-  tomoyo_realpath_from_path+0x1de/0x7a0 security/tomoyo/realpath.c:319
-  tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
-  tomoyo_check_open_permission+0x2a8/0x3f0 security/tomoyo/file.c:771
-  tomoyo_file_open security/tomoyo/tomoyo.c:319 [inline]
-  tomoyo_file_open+0xa9/0xd0 security/tomoyo/tomoyo.c:314
-  security_file_open+0x71/0x300 security/security.c:1458
-  do_dentry_open+0x373/0x1250 fs/open.c:765
-  vfs_open+0xa0/0xd0 fs/open.c:887
-  do_last fs/namei.c:3416 [inline]
-  path_openat+0x10e9/0x46d0 fs/namei.c:3533
-  do_filp_open+0x1a1/0x280 fs/namei.c:3563
-  do_sys_open+0x3fe/0x5d0 fs/open.c:1070
-  __do_sys_open fs/open.c:1088 [inline]
-  __se_sys_open fs/open.c:1083 [inline]
-  __x64_sys_open+0x7e/0xc0 fs/open.c:1083
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4571f0
-Code: 31 c0 e9 45 ff ff ff 0f 1f 00 80 3f 00 0f 84 f7 00 00 00 55 53 b9 02  
-00 00 00 be 00 08 09 00 89 c8 48 81 ec 98 00 00 00 0f 05 <48> 3d 00 f0 ff  
-ff 48 89 c3 0f 87 e9 00 00 00 85 db 0f 88 2f 01 00
-RSP: 002b:00007ffee56b06a0 EFLAGS: 00000206 ORIG_RAX: 0000000000000002
-RAX: ffffffffffffffda RBX: 00000000000cb440 RCX: 00000000004571f0
-RDX: 000000000000000c RSI: 0000000000090800 RDI: 00007ffee56b1880
-RBP: 0000000000000002 R08: 0000000000000001 R09: 0000555557133940
-R10: 0000000000000000 R11: 0000000000000206 R12: 00007ffee56b1880
-R13: 00007ffee56b1870 R14: 0000000000000000 R15: 00007ffee56b1880
-
-Allocated by task 11696:
-  save_stack+0x23/0x90 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  __kasan_kmalloc mm/kasan/common.c:489 [inline]
-  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:462
-  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:503
-  __do_kmalloc mm/slab.c:3660 [inline]
-  __kmalloc+0x15c/0x740 mm/slab.c:3669
-  kmalloc include/linux/slab.h:552 [inline]
-  tomoyo_realpath_from_path+0xcd/0x7a0 security/tomoyo/realpath.c:277
-  tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
-  tomoyo_check_open_permission+0x2a8/0x3f0 security/tomoyo/file.c:771
-  tomoyo_file_open security/tomoyo/tomoyo.c:319 [inline]
-  tomoyo_file_open+0xa9/0xd0 security/tomoyo/tomoyo.c:314
-  security_file_open+0x71/0x300 security/security.c:1458
-  do_dentry_open+0x373/0x1250 fs/open.c:765
-  vfs_open+0xa0/0xd0 fs/open.c:887
-  do_last fs/namei.c:3416 [inline]
-  path_openat+0x10e9/0x46d0 fs/namei.c:3533
-  do_filp_open+0x1a1/0x280 fs/namei.c:3563
-  do_sys_open+0x3fe/0x5d0 fs/open.c:1070
-  __do_sys_open fs/open.c:1088 [inline]
-  __se_sys_open fs/open.c:1083 [inline]
-  __x64_sys_open+0x7e/0xc0 fs/open.c:1083
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 11696:
-  save_stack+0x23/0x90 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:451
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
-  __cache_free mm/slab.c:3432 [inline]
-  kfree+0xcf/0x220 mm/slab.c:3755
-  tomoyo_realpath_from_path+0x1de/0x7a0 security/tomoyo/realpath.c:319
-  tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
-  tomoyo_check_open_permission+0x2a8/0x3f0 security/tomoyo/file.c:771
-  tomoyo_file_open security/tomoyo/tomoyo.c:319 [inline]
-  tomoyo_file_open+0xa9/0xd0 security/tomoyo/tomoyo.c:314
-  security_file_open+0x71/0x300 security/security.c:1458
-  do_dentry_open+0x373/0x1250 fs/open.c:765
-  vfs_open+0xa0/0xd0 fs/open.c:887
-  do_last fs/namei.c:3416 [inline]
-  path_openat+0x10e9/0x46d0 fs/namei.c:3533
-  do_filp_open+0x1a1/0x280 fs/namei.c:3563
-  do_sys_open+0x3fe/0x5d0 fs/open.c:1070
-  __do_sys_open fs/open.c:1088 [inline]
-  __se_sys_open fs/open.c:1083 [inline]
-  __x64_sys_open+0x7e/0xc0 fs/open.c:1083
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-The buggy address belongs to the object at ffff88808b756780
-  which belongs to the cache kmalloc-4k of size 4096
-The buggy address is located 1792 bytes inside of
-  4096-byte region [ffff88808b756780, ffff88808b757780)
-The buggy address belongs to the page:
-page:ffffea00022dd580 refcount:1 mapcount:0 mapping:ffff8880aa400dc0  
-index:0x0 compound_mapcount: 0
-flags: 0x1fffc0000010200(slab|head)
-raw: 01fffc0000010200 ffffea0002924e08 ffffea00027a6588 ffff8880aa400dc0
-raw: 0000000000000000 ffff88808b756780 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff88808b756d80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff88808b756e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff88808b756e80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-                    ^
-  ffff88808b756f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  ffff88808b756f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+class cake 8003:44f parent 8003:
+ (dropped 3404, overlimits 0 requeues 0)
+ backlog 9084b 6p requeues 0
+class cake 8003:516 parent 8003:
+ (dropped 3565, overlimits 0 requeues 0)
+ backlog 0b 0p requeues 0
+class cake 8003:590 parent 8003:
+ (dropped 3023, overlimits 0 requeues 0)
+ backlog 4542b 3p requeues 0
+class cake 8003:605 parent 8003:
+ (dropped 1772, overlimits 0 requeues 0)
+ backlog 7570b 5p requeues 0
