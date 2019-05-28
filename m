@@ -2,99 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99DBA2C5F0
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:56:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFC6C2C5F6
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:57:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727066AbfE1Lz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 07:55:56 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:42538 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726809AbfE1Lz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:55:56 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 301E760F3C; Tue, 28 May 2019 11:55:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559044555;
-        bh=k813bqE5/UfBXGr5ARK+Gx4QKOpZv/nuAkDg3b3jzBQ=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=JUZBtdgJYCs5pblKIc0RuQHtvm6TnBNEVhH8aoqE71dcShKITPGDsMnvnPPmPvHla
-         LSWMrEhVGZdChMYtAZcoNU6PYY9OwM6UpZoqLKHS85MtGrrctE2H+Vl6d13GWSLfRK
-         N1hVofqV4A4eBNF1OisaJKWSkL41tfN4nb7JjlSk=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5FD3560EA5;
-        Tue, 28 May 2019 11:55:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559044550;
-        bh=k813bqE5/UfBXGr5ARK+Gx4QKOpZv/nuAkDg3b3jzBQ=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=WOvlO9OiVt/8dVWyeJQBAOLYO+j8JM2gLCQRAgk5U9cO7vYYd2hVBhSBDn8Yic4mP
-         gLeREwi2xjWCnce+jNnmZU1EpjP7pLVFJ65dljaJ1re9TosnZampAEcLgvdHn4Tsc/
-         0HF4c0DbiFI5ds0Qa6wLLVuGDWmuxq+Hh1ntp+Hk=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5FD3560EA5
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtlwifi: Fix null-pointer dereferences in error handling
- code of rtl_pci_probe()
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190514123439.10524-1-baijiaju1990@gmail.com>
-References: <20190514123439.10524-1-baijiaju1990@gmail.com>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     pkshih@realtek.com, davem@davemloft.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190528115555.301E760F3C@smtp.codeaurora.org>
-Date:   Tue, 28 May 2019 11:55:50 +0000 (UTC)
+        id S1726933AbfE1L47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 07:56:59 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45145 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726592AbfE1L47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:56:59 -0400
+Received: by mail-pg1-f194.google.com with SMTP id w34so6186805pga.12;
+        Tue, 28 May 2019 04:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Y0nU1mnDjk5DEaEAqhn6A+e5w54A9UaAagHSxcoB+rI=;
+        b=droyNuncHFCAXk2oz9b91V/DwkejmqPm50x4ZBfqch9PSfHoEpw76fBWY+hcNLkPNG
+         cAs+EV160TX6U78yQ58egeBfws+a5Kl9Vi73WP8uPWje0+UdOI6CSy2I3oK4zn9m5OSm
+         rp0CnbvZF13HQwXk6gfgGlzeSh0pPuBWAAV3SNBT+5GvDKiWKgcqdt4Hz5LnSSLoyozn
+         OW+7OptgTqrxMQwKxrGvbDY3I21Ni6H4sSgK3k/aQj8atL5WEPs2ssJntXR7Dzo+klVf
+         Y6u8YfVBM2PbMjmlw19zeQgjjs1qsSUV3vjPyGFZqmt0zX/WNp+EuY+je7xDsFPoAcfc
+         1YpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Y0nU1mnDjk5DEaEAqhn6A+e5w54A9UaAagHSxcoB+rI=;
+        b=k4erHXWSicV/QX2pyIoZjuFxE3p6932rlB3ec8wGcNfTHSaxnrVB5uk0ddkfcZTM2p
+         Q13AAPIQJbA+A7QuoQobsU6pDsdTDnAwenP2XJHh9bIRdNSaKxfd9OLraysiB+VerZrq
+         Qw0f+vf+XH/t4J4ofgSKWp4/zgDq4nPsq6MlQtPsKKmKEx/ITOhNVlyPcQtaoSgxS0qd
+         5gseQSrN+N4MlmXrC/sJA4bJ97gaFvK9/JDmZ5MO94vJVbhrFkeI4SYNEyI19cWiC1oe
+         dGMLc9JH1JoD4BoWkhos7oF+/wvPvUy8eAXlNsemjqP8LHtx9Lxso2y/Pn3wC7n5Dfpn
+         zgHQ==
+X-Gm-Message-State: APjAAAXqP8bhESgfq74nAbDlgMBY8ddN9hnN1Z69wNAU7DnbrygnB1xs
+        hu1M+8CQY93rkuCugpq18UI=
+X-Google-Smtp-Source: APXvYqx3Up2B1eZPaaTAWMBFlw4GilIcCB4OB4SrH4CoVtGbovwboWob5c34WdwFXy9KG22xN4xmnw==
+X-Received: by 2002:a17:90a:9602:: with SMTP id v2mr5467175pjo.59.1559044618864;
+        Tue, 28 May 2019 04:56:58 -0700 (PDT)
+Received: from xy-data.openstacklocal (ecs-159-138-22-150.compute.hwclouds-dns.com. [159.138.22.150])
+        by smtp.gmail.com with ESMTPSA id r1sm16272313pfg.65.2019.05.28.04.56.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 28 May 2019 04:56:57 -0700 (PDT)
+From:   Young Xiao <92siuyang@gmail.com>
+To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Young Xiao <92siuyang@gmail.com>
+Subject: [PATCH] ixgbevf: fix possible divide by zero in ixgbevf_update_itr
+Date:   Tue, 28 May 2019 19:58:02 +0800
+Message-Id: <1559044682-23446-1-git-send-email-92siuyang@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
+The next call to ixgbevf_update_itr will continue to dynamically
+update ITR.
 
-> *BUG 1:
-> In rtl_pci_probe(), when rtlpriv->cfg->ops->init_sw_vars() fails,
-> rtl_deinit_core() in the error handling code is executed.
-> rtl_deinit_core() calls rtl_free_entries_from_scan_list(), which uses
-> rtlpriv->scan_list.list in list_for_each_entry_safe(), but it has been
-> initialized. Thus a null-pointer dereference occurs.
-> The reason is that rtlpriv->scan_list.list is initialized by
-> INIT_LIST_HEAD() in rtl_init_core(), which has not been called.
-> 
-> To fix this bug, rtl_deinit_core() should not be called when
-> rtlpriv->cfg->ops->init_sw_vars() fails.
-> 
-> *BUG 2:
-> In rtl_pci_probe(), rtl_init_core() can fail when rtl_regd_init() in
-> this function fails, and rtlpriv->scan_list.list has not been
-> initialized by INIT_LIST_HEAD(). Then, rtl_deinit_core() in the error
-> handling code of rtl_pci_probe() is executed. Finally, a null-pointer
-> dereference occurs due to the same reason of the above bug.
-> 
-> To fix this bug, the initialization of lists in rtl_init_core() are
-> performed before the call to rtl_regd_init().
-> 
-> These bugs are found by a runtime fuzzing tool named FIZZER written by
-> us.
-> 
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Copy from commit bdbeefe8ea8c ("ixgbe: fix possible divide by zero in
+ixgbe_update_itr")
 
-Ping & Larry, is this ok to take?
+Signed-off-by: Young Xiao <92siuyang@gmail.com>
+---
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index d189ed2..d2b41f9 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -1423,6 +1423,9 @@ static void ixgbevf_update_itr(struct ixgbevf_q_vector *q_vector,
+ 	 */
+ 	/* what was last interrupt timeslice? */
+ 	timepassed_us = q_vector->itr >> 2;
++	if (timepassed_us == 0)
++		return;
++
+ 	bytes_perint = bytes / timepassed_us; /* bytes/usec */
+ 
+ 	switch (itr_setting) {
 -- 
-https://patchwork.kernel.org/patch/10942971/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.7.4
 
