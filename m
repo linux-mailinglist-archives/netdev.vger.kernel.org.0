@@ -2,182 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04E832D1DB
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 01:02:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67B492D23D
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 01:10:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727878AbfE1XCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 19:02:40 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:40847 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727832AbfE1XCh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 19:02:37 -0400
-Received: by mail-pg1-f193.google.com with SMTP id d30so100466pgm.7
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 16:02:37 -0700 (PDT)
+        id S1726969AbfE1XKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 19:10:17 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:46304 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726693AbfE1XKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 19:10:17 -0400
+Received: by mail-pf1-f196.google.com with SMTP id y11so243460pfm.13
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 16:10:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=babayev.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TApL13/IWHA6p9W6T8SV9xqxLEQgsxufxiO/2MDfUXk=;
-        b=ZJOaWquNqgKZhJQs1PTXJ/31Y1TjjQ9lC9SHCR217UhvWrr4xvnjYN4WTtKJ2Nw7fc
-         oMG1hpBNCnR1QJ5xZK0IarzmvhJG1zAVTZMoIecQ5gD3T4291/3xM8jhLP6dbHvQH2LC
-         FPIFnrlGT5Vckw16/MfPBp5A2TPLouNKttnEs=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=61Rkbxmo9pW7oP4ZNC16z4jaoHmX0Y6vJBi8WuMtzZ4=;
+        b=AwkDjoygDCQI3LTfAxumYP/X0Gi/8IRdwENbCODuKCMOHopNXn2gN8kNOaIe/q+pUL
+         qYF6mJUXWWrVGsPFFF3kljf+ktk/sHxIaMHbz4P9Sz+Hcy3Y0GZp39nk20HpqAAO83T/
+         tS/Tbn0/UdF4zHP0ocGPgDslGPwjtjLavDpl1GeO+C8Dg6/2j++WZHGIQcZGjk/q58R+
+         PybBdd9xCp9yV9KauD/O1z/3GNk8vZHMh1l7xcDzSUTZj7MWAFflII9EXmwq0L7jpq0Y
+         /fYjtkLZLUrHpZPefQMrjsu5331j99YEA1j2HMq0y6TSb4bjevReiIuxbddVW8/mGaba
+         uczg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TApL13/IWHA6p9W6T8SV9xqxLEQgsxufxiO/2MDfUXk=;
-        b=eUNtKC2LaFezOQq4fZYQq0RSETGbF4ZU9JXghlKWWSWe+DmWkd9OF6VeZpBCxKSajb
-         RAC5Py+bKbyf8oKPXOZTeAPzpdrDvtdCYhHsTv06O0kEHd4wTDtM1mmYvlAsGj1obtYB
-         7hzhkrY6ByRrqpJlab+HDNDVQytkg/qny+wbzxexoqI85nh+4HqYhjsJ7TsTYsiv5Nb9
-         7fEYBie2QyI2F1YCeq1oAe/kcDiTTyCBbUCZInpev3Pb9Pl1yg0DOJnKNyXKllIdGcjS
-         Mc7C5N1PKku0R9uGHFm4O7gK5hPI7atYmVEZ+6X2HnOU2DM4Qp3TnbwOHelp3Efutjao
-         nViw==
-X-Gm-Message-State: APjAAAUKXL7qqRsLyb/EtHfPSj/7eSqNDZoevmebMsij9RpSL3pRV2dw
-        LnbsxjEw4E5ZU25uxnLCP1yHhcTQOiQRZw==
-X-Google-Smtp-Source: APXvYqy9yJ3BtjJVCvwuUdO32bTMEQjQdREbeUgAJAa4cyo80WRBRVUwmVf36AEon+bBBhIOd6wDhw==
-X-Received: by 2002:aa7:8f16:: with SMTP id x22mr76577654pfr.202.1559084557329;
-        Tue, 28 May 2019 16:02:37 -0700 (PDT)
-Received: from p50.cisco.com ([128.107.241.183])
-        by smtp.gmail.com with ESMTPSA id p16sm27028196pfq.153.2019.05.28.16.02.35
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=61Rkbxmo9pW7oP4ZNC16z4jaoHmX0Y6vJBi8WuMtzZ4=;
+        b=hyr+oam/cJpz02Fp2D/DnEeww90AviGOSU5/QhnQ6maby3cBikJcTznYBPeSSYbCsM
+         vUEjPmgocjjuCebsB3WLZujceWP08LXnFt3LOdEc6+QIO3A/KlpA67aHJVuXE/n4oFtK
+         9vlbdHSBSiPZd2mlAaU4BQHcCi4vfRgbE+RgSbArDzdvS39FvAViylFvgoWUdhK6zAGY
+         CKM3MHCXGBQi+sD/WKghE015NJtvOl76R7x8uWSzqPhmHQmDIkaZyQTxVlST06TCymy1
+         uD9pUKWIwcz6+3iUdGakT8PVLI++zfPK/vrfPEMfcyN+e0F0+jrnE88uw9z28AMoVlb9
+         aNEw==
+X-Gm-Message-State: APjAAAVuB44LGpMXzLKGDbicYMiqhga3X/CwvLq+sHdIB3fgbouQlpX0
+        fXM2VikaT1xRqeJKaPWmiYsaEq1z
+X-Google-Smtp-Source: APXvYqw8KUb3uwgUruL2frF8bZdHjBe7m1yvi8N9xU7w4Mm7b7udaObZ+veILvRg2tfJ0JJ7WznMJQ==
+X-Received: by 2002:a63:2325:: with SMTP id j37mr133868072pgj.137.1559085015879;
+        Tue, 28 May 2019 16:10:15 -0700 (PDT)
+Received: from [10.67.49.27] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id c127sm16250111pfb.107.2019.05.28.16.10.14
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 16:02:36 -0700 (PDT)
-From:   Ruslan Babayev <ruslan@babayev.com>
-To:     mika.westerberg@linux.intel.com, wsa@the-dreams.de,
-        linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org,
-        xe-linux-external@cisco.com
-Subject: [net-next,v4 2/2] net: phy: sfp: enable i2c-bus detection on ACPI based systems
-Date:   Tue, 28 May 2019 16:02:33 -0700
-Message-Id: <20190528230233.26772-3-ruslan@babayev.com>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20190528230233.26772-1-ruslan@babayev.com>
-References: <20190528230233.26772-1-ruslan@babayev.com>
+        Tue, 28 May 2019 16:10:15 -0700 (PDT)
+Subject: Re: [PATCH net 1/2] net: dsa: tag_8021q: Change order of rx_vid setup
+To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
+        andrew@lunn.ch, davem@davemloft.net
+Cc:     ioana.ciornei@nxp.com, netdev@vger.kernel.org
+References: <20190528225005.10628-1-olteanv@gmail.com>
+ <20190528225005.10628-2-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <72a6d3a2-1ef4-d68e-1c34-610da37975a0@gmail.com>
+Date:   Tue, 28 May 2019 16:10:08 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190528225005.10628-2-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lookup I2C adapter using the "i2c-bus" device property on ACPI based
-systems similar to how it's done with DT.
+On 5/28/19 3:50 PM, Vladimir Oltean wrote:
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> 
+> The 802.1Q tagging performs an unbalanced setup in terms of RX VIDs on
+> the CPU port. For the ingress path of a 802.1Q switch to work, the RX
+> VID of a port needs to be seen as tagged egress on the CPU port.
+> 
+> While configuring the other front-panel ports to be part of this VID,
+> for bridge scenarios, the untagged flag is applied even on the CPU port
+> in dsa_switch_vlan_add.  This happens because DSA applies the same flags
+> on the CPU port as on the (bridge-controlled) slave ports, and the
+> effect in this case is that the CPU port tagged settings get deleted.
+> 
+> Instead of fixing DSA by introducing a way to control VLAN flags on the
+> CPU port (and hence stop inheriting from the slave ports) - a hard,
+> perhaps intractable problem - avoid this situation by moving the setup
+> part of the RX VID on the CPU port after all the other front-panel ports
+> have been added to the VID.
+> 
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> Fixes: f9bbe4477c30 ("net: dsa: Optional VLAN-based port separation for switches without tagging")
 
-An example DSD describing an SFP on an ACPI based system:
-
-Device (SFP0)
-{
-    Name (_HID, "PRP0001")
-    Name (_CRS, ResourceTemplate()
-    {
-        GpioIo(Exclusive, PullDefault, 0, 0, IoRestrictionNone,
-               "\\_SB.PCI0.RP01.GPIO", 0, ResourceConsumer)
-            { 0, 1, 2, 3, 4 }
-    })
-    Name (_DSD, Package ()
-    {
-        ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-        Package () {
-            Package () { "compatible", "sff,sfp" },
-            Package () { "i2c-bus", \_SB.PCI0.RP01.I2C.MUX.CH0 },
-            Package () { "maximum-power-milliwatt", 1000 },
-            Package () { "tx-disable-gpios", Package () { ^SFP0, 0, 0, 1} },
-            Package () { "reset-gpio",       Package () { ^SFP0, 0, 1, 1} },
-            Package () { "mod-def0-gpios",   Package () { ^SFP0, 0, 2, 1} },
-            Package () { "tx-fault-gpios",   Package () { ^SFP0, 0, 3, 0} },
-            Package () { "los-gpios",        Package () { ^SFP0, 0, 4, 1} },
-        },
-    })
-}
-
-Device (PHY0)
-{
-    Name (_HID, "PRP0001")
-    Name (_DSD, Package ()
-    {
-        ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-        Package () {
-            Package () { "compatible", "ethernet-phy-ieee802.3-c45" },
-            Package () { "sfp", \_SB.PCI0.RP01.SFP0 },
-            Package () { "managed", "in-band-status" },
-            Package () { "phy-mode", "sgmii" },
-        },
-    })
-}
-
-Signed-off-by: Ruslan Babayev <ruslan@babayev.com>
-Cc: xe-linux-external@cisco.com
----
- drivers/net/phy/sfp.c | 35 +++++++++++++++++++++++++++--------
- 1 file changed, 27 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index d4635c2178d1..554acc869c25 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
-+#include <linux/acpi.h>
- #include <linux/ctype.h>
- #include <linux/delay.h>
- #include <linux/gpio/consumer.h>
-@@ -1782,6 +1783,7 @@ static void sfp_cleanup(void *data)
- static int sfp_probe(struct platform_device *pdev)
- {
- 	const struct sff_data *sff;
-+	struct i2c_adapter *i2c;
- 	struct sfp *sfp;
- 	bool poll = false;
- 	int irq, err, i;
-@@ -1801,7 +1803,6 @@ static int sfp_probe(struct platform_device *pdev)
- 	if (pdev->dev.of_node) {
- 		struct device_node *node = pdev->dev.of_node;
- 		const struct of_device_id *id;
--		struct i2c_adapter *i2c;
- 		struct device_node *np;
- 
- 		id = of_match_node(sfp_of_match, node);
-@@ -1818,14 +1819,32 @@ static int sfp_probe(struct platform_device *pdev)
- 
- 		i2c = of_find_i2c_adapter_by_node(np);
- 		of_node_put(np);
--		if (!i2c)
--			return -EPROBE_DEFER;
--
--		err = sfp_i2c_configure(sfp, i2c);
--		if (err < 0) {
--			i2c_put_adapter(i2c);
--			return err;
-+	} else if (has_acpi_companion(&pdev->dev)) {
-+		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
-+		struct fwnode_handle *fw = acpi_fwnode_handle(adev);
-+		struct fwnode_reference_args args;
-+		struct acpi_handle *acpi_handle;
-+		int ret;
-+
-+		ret = acpi_node_get_property_reference(fw, "i2c-bus", 0, &args);
-+		if (ACPI_FAILURE(ret) || !is_acpi_device_node(args.fwnode)) {
-+			dev_err(&pdev->dev, "missing 'i2c-bus' property\n");
-+			return -ENODEV;
- 		}
-+
-+		acpi_handle = ACPI_HANDLE_FWNODE(args.fwnode);
-+		i2c = i2c_acpi_find_adapter_by_handle(acpi_handle);
-+	} else {
-+		return -EINVAL;
-+	}
-+
-+	if (!i2c)
-+		return -EPROBE_DEFER;
-+
-+	err = sfp_i2c_configure(sfp, i2c);
-+	if (err < 0) {
-+		i2c_put_adapter(i2c);
-+		return err;
- 	}
- 
- 	for (i = 0; i < GPIO_MAX; i++)
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.19.2
-
+Florian
