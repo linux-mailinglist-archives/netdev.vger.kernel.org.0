@@ -2,138 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C2612CE11
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 488242CE15
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:59:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727680AbfE1R6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 13:58:00 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:36651 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726969AbfE1R6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 13:58:00 -0400
-Received: by mail-pf1-f193.google.com with SMTP id u22so4644318pfm.3
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 10:57:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HU4IQem514JwwX1WO5xwuAs2MCptJTVnVrqJxogFvlo=;
-        b=dAv3SOO5vIbOqJtPdM+zIuju/p+bmK/Zt+BV/82ogMok1HKpBrFRWNB1n9SB8wEsRA
-         r/RLPKVN308Xik86YK/0eSAolPKNBzDW5YvkkoRnjLVtB7rfPw9bu0DCcBznGaSFRa2S
-         qHDlk3l/VNWuUrvsDIuznv4ZD2O8PszH6gasFSWFXT1qvTwwPDzgXXBGdFD8mV0Kcug5
-         FWL4yF/u07BxI0xcLdl2z4WOkTFDAjFKM7SFcQHPXIARZt7TF7vqPQCwcZoMuJ84CW8g
-         VmS6GGiYn9/04JCvELjC6KC3jfTd9zWqLthZA6Tt+m3J+Edt8rOxMiXCnrHsj/ODMyQh
-         NNrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=HU4IQem514JwwX1WO5xwuAs2MCptJTVnVrqJxogFvlo=;
-        b=tKuKCqBaE2iyf/FWIlUWy3sBkmIun6BW5HY+rmHq7vm33rHAqjH/aMgZi9x6cM/xWf
-         tCLvY+aUXjX9TeoDCeMCXewyyN7j4wIsLCw7chMO0H4Sy75Y5Fed3hrt+Xs7lW7j/QzE
-         fy5p6dtFTXhGCqMCBHx1OL5R18FwooNLTyMoNHwKJvEUwawCz6Lwmb+TuvqNCsVsgVan
-         8Q3DWlXJt3w9i8d22TgkrOKQ6dRB2Mr1rLDXu4jgdtDK7CqMXepbV556SIc03YzUanwZ
-         VvbBvH2S0JopiB3ACj3J2UXW8gAga6p5xHszNh6kFDNyAe6+IG7pk7WRkUVV3wfnhmoP
-         ezOg==
-X-Gm-Message-State: APjAAAVcGupIy0BLzJEvfMibVzlJ9PFJNLj3gJ87hnQ6FjWgnxMR5rax
-        89dx84W1noVw3MFDGwqPfFViyabY
-X-Google-Smtp-Source: APXvYqwg54mq7oNwXoEG0O06YbHu27Ox7kL2uWf0xCLBZXsROgtf6Mo6C2GTBq61Lp+gpB+l/kOHZg==
-X-Received: by 2002:a17:90a:5d09:: with SMTP id s9mr7152281pji.120.1559066278680;
-        Tue, 28 May 2019 10:57:58 -0700 (PDT)
-Received: from [10.67.49.27] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m7sm9359728pff.44.2019.05.28.10.57.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 10:57:57 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 03/11] net: phy: Check against net_device
- being NULL
-To:     ioana.ciornei@nxp.com, linux@armlinux.org.uk, andrew@lunn.ch,
-        hkallweit1@gmail.com, maxime.chevallier@bootlin.com,
-        olteanv@gmail.com, thomas.petazzoni@bootlin.com,
-        davem@davemloft.net, vivien.didelot@gmail.com
-Cc:     netdev@vger.kernel.org
-References: <1559065097-31832-1-git-send-email-ioana.ciornei@nxp.com>
- <1559065097-31832-4-git-send-email-ioana.ciornei@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <1e5e6958-f765-c78a-738e-9e8abb948e55@gmail.com>
-Date:   Tue, 28 May 2019 10:57:50 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <1559065097-31832-4-git-send-email-ioana.ciornei@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1727741AbfE1R7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 13:59:07 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:49172 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726827AbfE1R7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 13:59:07 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d8])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 001C112D6BBFD;
+        Tue, 28 May 2019 10:59:05 -0700 (PDT)
+Date:   Tue, 28 May 2019 10:59:05 -0700 (PDT)
+Message-Id: <20190528.105905.1984032479752781822.davem@davemloft.net>
+To:     horatiu.vultur@microchip.com
+Cc:     alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        robh+dt@kernel.org, mark.rutland@arm.com, ralf@linux-mips.org,
+        paul.burton@mips.com, jhogan@kernel.org,
+        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] net: mscc: ocelot: Add support for tcam
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1558944996-23069-2-git-send-email-horatiu.vultur@microchip.com>
+References: <1558944996-23069-1-git-send-email-horatiu.vultur@microchip.com>
+        <1558944996-23069-2-git-send-email-horatiu.vultur@microchip.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 May 2019 10:59:06 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/19 10:38 AM, Ioana Ciornei wrote:
-> In general, we don't want MAC drivers calling phy_attach_direct with the
-> net_device being NULL. Add checks against this in all the functions
-> calling it: phy_attach() and phy_connect_direct().
-> 
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date: Mon, 27 May 2019 10:16:35 +0200
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> +/* Calculate offsets for entry */
+> +static void is2_data_get(struct vcap_data *data, int ix)
+> +{
+> +	const struct vcap_props *vcap = &vcap_is2;
+> +	u32 i, col, offset, count, cnt, base, width = vcap->tg_width;
+
+Reverse christmas tree please.
+
+> +static void is2_entry_set(struct ocelot *ocelot, int ix,
+> +			  struct ocelot_ace_rule *ace)
+> +{
+> +	u32 val, msk, type, type_mask = 0xf, i, count;
+> +	struct ocelot_vcap_u64 payload = { 0 };
+> +	struct ocelot_ace_vlan *tag = &ace->vlan;
+> +	struct vcap_data data = { 0 };
+> +	int row = (ix / 2);
+
+Likewise.
+
+> +static void is2_entry_get(struct ocelot_ace_rule *rule, int ix)
+> +{
+> +	struct vcap_data data;
+> +	struct ocelot *op = rule->port->ocelot;
+> +	int row = (ix / 2);
+> +	u32 cnt;
+
+Likewise.
+
+> +static void ocelot_ace_rule_add(struct ocelot_acl_block *block,
+> +				struct ocelot_ace_rule *rule)
+> +{
+> +	struct list_head *pos, *n;
+> +	struct ocelot_ace_rule *tmp;
+
+Likewise.
+
+And so on and so forth for your entire submission.
+
+Thank you.
