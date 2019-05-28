@@ -2,640 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 908422C739
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 15:02:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68B132C714
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:54:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbfE1NCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 09:02:20 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:20054 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726870AbfE1NCT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 09:02:19 -0400
-Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
-  Joergen.Andreasen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Joergen.Andreasen@microchip.com";
-  x-sender="Joergen.Andreasen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa2.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Joergen.Andreasen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa2.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Joergen.Andreasen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-X-IronPort-AV: E=Sophos;i="5.60,523,1549954800"; 
-   d="scan'208";a="34886027"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 May 2019 06:02:18 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
- chn-vm-ex01.mchp-main.com (10.10.87.71) with ShadowRedundancy id 15.1.1713.5;
- Tue, 28 May 2019 13:02:17 +0000
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex01.mchp-main.com (10.10.87.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 28 May 2019 05:49:48 -0700
-From:   Joergen Andreasen <joergen.andreasen@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v3 1/1] net: mscc: ocelot: Implement port policers via tc command
-Date:   Tue, 28 May 2019 14:49:17 +0200
-Message-ID: <20190528124917.22034-2-joergen.andreasen@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190528124917.22034-1-joergen.andreasen@microchip.com>
-References: <20190502094029.22526-1-joergen.andreasen@microchip.com>
- <20190528124917.22034-1-joergen.andreasen@microchip.com>
+        id S1727133AbfE1Myp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 08:54:45 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:45249 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726943AbfE1Myp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:54:45 -0400
+Received: by mail-ed1-f67.google.com with SMTP id g57so16783617edc.12
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 05:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i6VJCseZr05+MLyjh91JVOItIODV/x8BPJtns6cGxBA=;
+        b=M8CHquhdK7evLgeg1hFY0guvM3aOPO5JyIZv3hHb+Dx209Gq/ZxrML+RyxYas0mD1o
+         ZzOjSNVfj+rOqLWvkxKDIKyYlPhY2GgmUil4zxMPcAp98B1GFjWDf/Y73hbPrH7bdYfn
+         OHbN6w57VTcvAqf+JKKo/61R3gW4jOBLAuufaRbL8ZA27vsA4l5kej17kC0RGsKucZum
+         t0OurD9AEpAWqYkiYTcld0ZLHqpDBTpKG/U8iqMiMHNdo1SVY3jQ2rq1hbm6E/t7ro5K
+         6NIKvHjHsCh96Eh5B6mN4BfFbtdHEumEHxouQDHFrlqBlUlGr+3TzEHrTqq+cPFCFtcQ
+         LMog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i6VJCseZr05+MLyjh91JVOItIODV/x8BPJtns6cGxBA=;
+        b=iMXM8pnjoZ32aMCYL1+cbbZN8dBQbUtlYOcfierUYjGfN5Q2/jo0qZYydlXKYoV6rw
+         CFaTBr//t303H37FpyufADpEM6UrmkO/uc9cFzaDU1o1lPrwZ5iYfh7VNQ7sfHsX3jBq
+         QFNb+mnVIpVWxa5D1HPvmzuzVKeD8gIYWEGcOb4a2OytJMVMKY39V52iT6ckn+i1fqZN
+         R0LjU3I02Y28Ri6NMku5W1dIbF8PKjbgfoXg1GmIHR3UsaiXgr1ELM0aAranLFieSS7K
+         5IvmK3edakLiyy3KBMAJbYhJhAldi+I0N2VDE1aVRYOA2i2gpu5m4qK+mSSB7c1uZyZU
+         Jo0g==
+X-Gm-Message-State: APjAAAWj5SDZKF0f8ZnwwNCC032WKA8B6VX/SvloBBdkU5ZtWXRTgNUc
+        8IFIfslr7FZ+FCHeXva69yL660qaXagQQvhSYH+olMJe
+X-Google-Smtp-Source: APXvYqws1Yko9UzgBXoJzZMQ+SO22JTzxZOZUPf8mv8+w8ZuanL691uwsRjC5+VntxKkkOePQAtZ6UwKZjHpTmT3+BM=
+X-Received: by 2002:a17:906:8397:: with SMTP id p23mr19788193ejx.300.1559048083104;
+ Tue, 28 May 2019 05:54:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20190528095639.kqalmvffsmc5ebs7@shell.armlinux.org.uk> <E1hVYrJ-0005ZA-0S@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1hVYrJ-0005ZA-0S@rmk-PC.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 28 May 2019 15:54:31 +0300
+Message-ID: <CA+h21hpXv7678MuKVfAGiwuQwzZHX_1hjXHpwZUFz8wP5aRabg@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/5] net: phy: allow Clause 45 access via mii ioctl
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hardware offload of matchall classifier and police action are now
-supported via the tc command.
-Supported police parameters are: rate and burst.
+On Tue, 28 May 2019 at 12:58, Russell King <rmk+kernel@armlinux.org.uk> wrote:
+>
+> Allow userspace to generate Clause 45 MII access cycles via phylib.
+> This is useful for tools such as mii-diag to be able to inspect Clause
+> 45 PHYs.
+>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/phy/phy.c | 33 ++++++++++++++++++++++++---------
+>  1 file changed, 24 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> index 3745220c5c98..6d279c2ac1f8 100644
+> --- a/drivers/net/phy/phy.c
+> +++ b/drivers/net/phy/phy.c
+> @@ -386,6 +386,7 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+>         struct mii_ioctl_data *mii_data = if_mii(ifr);
+>         u16 val = mii_data->val_in;
+>         bool change_autoneg = false;
+> +       int prtad, devad;
+>
+>         switch (cmd) {
+>         case SIOCGMIIPHY:
+> @@ -393,14 +394,29 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+>                 /* fall through */
+>
+>         case SIOCGMIIREG:
+> -               mii_data->val_out = mdiobus_read(phydev->mdio.bus,
+> -                                                mii_data->phy_id,
+> -                                                mii_data->reg_num);
+> +               if (mdio_phy_id_is_c45(mii_data->phy_id)) {
+> +                       prtad = mdio_phy_id_prtad(mii_data->phy_id);
+> +                       devad = mdio_phy_id_devad(mii_data->phy_id);
+> +                       devad = MII_ADDR_C45 | devad << 16 | mii_data->reg_num;
+> +               } else {
+> +                       prtad = mii_data->phy_id;
+> +                       devad = mii_data->reg_num;
+> +               }
+> +               mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad,
+> +                                                devad);
+>                 return 0;
+>
+>         case SIOCSMIIREG:
+> -               if (mii_data->phy_id == phydev->mdio.addr) {
+> -                       switch (mii_data->reg_num) {
+> +               if (mdio_phy_id_is_c45(mii_data->phy_id)) {
+> +                       prtad = mdio_phy_id_prtad(mii_data->phy_id);
+> +                       devad = mdio_phy_id_devad(mii_data->phy_id);
+> +                       devad = MII_ADDR_C45 | devad << 16 | mii_data->reg_num;
+> +               } else {
+> +                       prtad = mii_data->phy_id;
+> +                       devad = mii_data->reg_num;
+> +               }
+> +               if (prtad == phydev->mdio.addr) {
+> +                       switch (devad) {
+>                         case MII_BMCR:
+>                                 if ((val & (BMCR_RESET | BMCR_ANENABLE)) == 0) {
+>                                         if (phydev->autoneg == AUTONEG_ENABLE)
+> @@ -433,11 +449,10 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
+>                         }
+>                 }
+>
+> -               mdiobus_write(phydev->mdio.bus, mii_data->phy_id,
+> -                             mii_data->reg_num, val);
+> +               mdiobus_write(phydev->mdio.bus, prtad, devad, val);
+>
+> -               if (mii_data->phy_id == phydev->mdio.addr &&
+> -                   mii_data->reg_num == MII_BMCR &&
+> +               if (prtad == phydev->mdio.addr &&
+> +                   devad == MII_BMCR &&
+>                     val & BMCR_RESET)
+>                         return phy_init_hw(phydev);
+>
+> --
+> 2.7.4
+>
 
-Example:
+Hi Russell,
 
-Add:
-tc qdisc add dev eth3 handle ffff: ingress
-tc filter add dev eth3 parent ffff: prio 1 handle 2	\
-	matchall skip_sw				\
-	action police rate 100Mbit burst 10000
+I find the SIOCGMIIREG/SIOCGMIIPHY ioctls useful for C45 just as much
+as they are for C22, but I think the way they work is a big hack and
+for that reason they're less than useful when you need them most.
+These ioctls work by hijacking the MDIO bus driver of a PHY that is
+attached to a net_device. Hence they can be used to access at most a
+PHY that lies on the same MDIO bus as one you already have a
+phy-handle to.
+If you have a PHY issue that makes of_phy_connect fail and the
+net_device to fail to probe, basically you're SOL because you lose
+that one handle that userspace had to the MDIO bus.
+Similarly if you're doing a bring-up and all PHY interfaces are fixed-link.
+Maybe it would be better to rethink this and expose some sysfs nodes
+for raw MDIO access in the bus drivers.
 
-Show:
-tc -s -d qdisc show dev eth3
-tc -s -d filter show dev eth3 ingress
-
-Delete:
-tc filter del dev eth3 parent ffff: prio 1
-tc qdisc del dev eth3 handle ffff: ingress
-
-Signed-off-by: Joergen Andreasen <joergen.andreasen@microchip.com>
----
- drivers/net/ethernet/mscc/Makefile        |   2 +-
- drivers/net/ethernet/mscc/ocelot.c        |  13 +-
- drivers/net/ethernet/mscc/ocelot.h        |   3 +
- drivers/net/ethernet/mscc/ocelot_police.c | 227 ++++++++++++++++++++++
- drivers/net/ethernet/mscc/ocelot_police.h |  22 +++
- drivers/net/ethernet/mscc/ocelot_tc.c     | 174 +++++++++++++++++
- drivers/net/ethernet/mscc/ocelot_tc.h     |  22 +++
- 7 files changed, 460 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/ethernet/mscc/ocelot_police.c
- create mode 100644 drivers/net/ethernet/mscc/ocelot_police.h
- create mode 100644 drivers/net/ethernet/mscc/ocelot_tc.c
- create mode 100644 drivers/net/ethernet/mscc/ocelot_tc.h
-
-diff --git a/drivers/net/ethernet/mscc/Makefile b/drivers/net/ethernet/mscc/Makefile
-index cb52a3b128ae..5e694dc1f7f8 100644
---- a/drivers/net/ethernet/mscc/Makefile
-+++ b/drivers/net/ethernet/mscc/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: (GPL-2.0 OR MIT)
- obj-$(CONFIG_MSCC_OCELOT_SWITCH) += mscc_ocelot_common.o
- mscc_ocelot_common-y := ocelot.o ocelot_io.o
--mscc_ocelot_common-y += ocelot_regs.o
-+mscc_ocelot_common-y += ocelot_regs.o ocelot_tc.o ocelot_police.o
- obj-$(CONFIG_MSCC_OCELOT_SWITCH_OCELOT) += ocelot_board.o
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index d715ef4fc92f..ab7d9eba6a32 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -910,6 +910,13 @@ static int ocelot_set_features(struct net_device *dev,
- 	struct ocelot_port *port = netdev_priv(dev);
- 	netdev_features_t changed = dev->features ^ features;
- 
-+	if ((dev->features & NETIF_F_HW_TC) > (features & NETIF_F_HW_TC) &&
-+	    port->tc.offload_cnt) {
-+		netdev_err(dev,
-+			   "Cannot disable HW TC offload while offloads active\n");
-+		return -EBUSY;
-+	}
-+
- 	if (changed & NETIF_F_HW_VLAN_CTAG_FILTER)
- 		ocelot_vlan_mode(port, features);
- 
-@@ -943,6 +950,7 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
- 	.ndo_vlan_rx_kill_vid		= ocelot_vlan_rx_kill_vid,
- 	.ndo_set_features		= ocelot_set_features,
- 	.ndo_get_port_parent_id		= ocelot_get_port_parent_id,
-+	.ndo_setup_tc			= ocelot_setup_tc,
- };
- 
- static void ocelot_get_strings(struct net_device *netdev, u32 sset, u8 *data)
-@@ -1663,8 +1671,9 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
- 	dev->netdev_ops = &ocelot_port_netdev_ops;
- 	dev->ethtool_ops = &ocelot_ethtool_ops;
- 
--	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS;
--	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
-+	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXFCS |
-+		NETIF_F_HW_TC;
-+	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_TC;
- 
- 	memcpy(dev->dev_addr, ocelot->base_mac, ETH_ALEN);
- 	dev->dev_addr[ETH_ALEN - 1] += port;
-diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index ba3b3380b4d0..9514979fa075 100644
---- a/drivers/net/ethernet/mscc/ocelot.h
-+++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -22,6 +22,7 @@
- #include "ocelot_rew.h"
- #include "ocelot_sys.h"
- #include "ocelot_qs.h"
-+#include "ocelot_tc.h"
- 
- #define PGID_AGGR    64
- #define PGID_SRC     80
-@@ -458,6 +459,8 @@ struct ocelot_port {
- 
- 	phy_interface_t phy_mode;
- 	struct phy *serdes;
-+
-+	struct ocelot_port_tc tc;
- };
- 
- u32 __ocelot_read_ix(struct ocelot *ocelot, u32 reg, u32 offset);
-diff --git a/drivers/net/ethernet/mscc/ocelot_police.c b/drivers/net/ethernet/mscc/ocelot_police.c
-new file mode 100644
-index 000000000000..701e82dd749a
---- /dev/null
-+++ b/drivers/net/ethernet/mscc/ocelot_police.c
-@@ -0,0 +1,227 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Microsemi Ocelot Switch driver
-+ *
-+ * Copyright (c) 2019 Microsemi Corporation
-+ */
-+
-+#include "ocelot_police.h"
-+
-+enum mscc_qos_rate_mode {
-+	MSCC_QOS_RATE_MODE_DISABLED, /* Policer/shaper disabled */
-+	MSCC_QOS_RATE_MODE_LINE, /* Measure line rate in kbps incl. IPG */
-+	MSCC_QOS_RATE_MODE_DATA, /* Measures data rate in kbps excl. IPG */
-+	MSCC_QOS_RATE_MODE_FRAME, /* Measures frame rate in fps */
-+	__MSCC_QOS_RATE_MODE_END,
-+	NUM_MSCC_QOS_RATE_MODE = __MSCC_QOS_RATE_MODE_END,
-+	MSCC_QOS_RATE_MODE_MAX = __MSCC_QOS_RATE_MODE_END - 1,
-+};
-+
-+/* Types for ANA:POL[0-192]:POL_MODE_CFG.FRM_MODE */
-+#define POL_MODE_LINERATE   0 /* Incl IPG. Unit: 33 1/3 kbps, 4096 bytes */
-+#define POL_MODE_DATARATE   1 /* Excl IPG. Unit: 33 1/3 kbps, 4096 bytes  */
-+#define POL_MODE_FRMRATE_HI 2 /* Unit: 33 1/3 fps, 32.8 frames */
-+#define POL_MODE_FRMRATE_LO 3 /* Unit: 1/3 fps, 0.3 frames */
-+
-+/* Policer indexes */
-+#define POL_IX_PORT    0    /* 0-11    : Port policers */
-+#define POL_IX_QUEUE   32   /* 32-127  : Queue policers  */
-+
-+/* Default policer order */
-+#define POL_ORDER 0x1d3 /* Ocelot policer order: Serial (QoS -> Port -> VCAP) */
-+
-+struct qos_policer_conf {
-+	enum mscc_qos_rate_mode mode;
-+	bool dlb; /* Enable DLB (dual leaky bucket mode */
-+	bool cf;  /* Coupling flag (ignored in SLB mode) */
-+	u32  cir; /* CIR in kbps/fps (ignored in SLB mode) */
-+	u32  cbs; /* CBS in bytes/frames (ignored in SLB mode) */
-+	u32  pir; /* PIR in kbps/fps */
-+	u32  pbs; /* PBS in bytes/frames */
-+	u8   ipg; /* Size of IPG when MSCC_QOS_RATE_MODE_LINE is chosen */
-+};
-+
-+static int qos_policer_conf_set(struct ocelot_port *port, u32 pol_ix,
-+				struct qos_policer_conf *conf)
-+{
-+	u32 cf = 0, cir_ena = 0, frm_mode = POL_MODE_LINERATE;
-+	u32 cir = 0, cbs = 0, pir = 0, pbs = 0;
-+	bool cir_discard = 0, pir_discard = 0;
-+	struct ocelot *ocelot = port->ocelot;
-+	u32 pbs_max = 0, cbs_max = 0;
-+	u8 ipg = 20;
-+	u32 value;
-+
-+	pir = conf->pir;
-+	pbs = conf->pbs;
-+
-+	switch (conf->mode) {
-+	case MSCC_QOS_RATE_MODE_LINE:
-+	case MSCC_QOS_RATE_MODE_DATA:
-+		if (conf->mode == MSCC_QOS_RATE_MODE_LINE) {
-+			frm_mode = POL_MODE_LINERATE;
-+			ipg = min_t(u8, GENMASK(4, 0), conf->ipg);
-+		} else {
-+			frm_mode = POL_MODE_DATARATE;
-+		}
-+		if (conf->dlb) {
-+			cir_ena = 1;
-+			cir = conf->cir;
-+			cbs = conf->cbs;
-+			if (cir == 0 && cbs == 0) {
-+				/* Discard cir frames */
-+				cir_discard = 1;
-+			} else {
-+				cir = DIV_ROUND_UP(cir, 100);
-+				cir *= 3; /* 33 1/3 kbps */
-+				cbs = DIV_ROUND_UP(cbs, 4096);
-+				cbs = (cbs ? cbs : 1); /* No zero burst size */
-+				cbs_max = 60; /* Limit burst size */
-+				cf = conf->cf;
-+				if (cf)
-+					pir += conf->cir;
-+			}
-+		}
-+		if (pir == 0 && pbs == 0) {
-+			/* Discard PIR frames */
-+			pir_discard = 1;
-+		} else {
-+			pir = DIV_ROUND_UP(pir, 100);
-+			pir *= 3;  /* 33 1/3 kbps */
-+			pbs = DIV_ROUND_UP(pbs, 4096);
-+			pbs = (pbs ? pbs : 1); /* No zero burst size */
-+			pbs_max = 60; /* Limit burst size */
-+		}
-+		break;
-+	case MSCC_QOS_RATE_MODE_FRAME:
-+		if (pir >= 100) {
-+			frm_mode = POL_MODE_FRMRATE_HI;
-+			pir = DIV_ROUND_UP(pir, 100);
-+			pir *= 3;  /* 33 1/3 fps */
-+			pbs = (pbs * 10) / 328; /* 32.8 frames */
-+			pbs = (pbs ? pbs : 1); /* No zero burst size */
-+			pbs_max = GENMASK(6, 0); /* Limit burst size */
-+		} else {
-+			frm_mode = POL_MODE_FRMRATE_LO;
-+			if (pir == 0 && pbs == 0) {
-+				/* Discard all frames */
-+				pir_discard = 1;
-+				cir_discard = 1;
-+			} else {
-+				pir *= 3; /* 1/3 fps */
-+				pbs = (pbs * 10) / 3; /* 0.3 frames */
-+				pbs = (pbs ? pbs : 1); /* No zero burst size */
-+				pbs_max = 61; /* Limit burst size */
-+			}
-+		}
-+		break;
-+	default: /* MSCC_QOS_RATE_MODE_DISABLED */
-+		/* Disable policer using maximum rate and zero burst */
-+		pir = GENMASK(15, 0);
-+		pbs = 0;
-+		break;
-+	}
-+
-+	/* Check limits */
-+	if (pir > GENMASK(15, 0)) {
-+		netdev_err(port->dev, "Invalid pir\n");
-+		return -EINVAL;
-+	}
-+
-+	if (cir > GENMASK(15, 0)) {
-+		netdev_err(port->dev, "Invalid cir\n");
-+		return -EINVAL;
-+	}
-+
-+	if (pbs > pbs_max) {
-+		netdev_err(port->dev, "Invalid pbs\n");
-+		return -EINVAL;
-+	}
-+
-+	if (cbs > cbs_max) {
-+		netdev_err(port->dev, "Invalid cbs\n");
-+		return -EINVAL;
-+	}
-+
-+	value = (ANA_POL_MODE_CFG_IPG_SIZE(ipg) |
-+		 ANA_POL_MODE_CFG_FRM_MODE(frm_mode) |
-+		 (cf ? ANA_POL_MODE_CFG_DLB_COUPLED : 0) |
-+		 (cir_ena ? ANA_POL_MODE_CFG_CIR_ENA : 0) |
-+		 ANA_POL_MODE_CFG_OVERSHOOT_ENA);
-+
-+	ocelot_write_gix(ocelot, value, ANA_POL_MODE_CFG, pol_ix);
-+
-+	ocelot_write_gix(ocelot,
-+			 ANA_POL_PIR_CFG_PIR_RATE(pir) |
-+			 ANA_POL_PIR_CFG_PIR_BURST(pbs),
-+			 ANA_POL_PIR_CFG, pol_ix);
-+
-+	ocelot_write_gix(ocelot,
-+			 (pir_discard ? GENMASK(22, 0) : 0),
-+			 ANA_POL_PIR_STATE, pol_ix);
-+
-+	ocelot_write_gix(ocelot,
-+			 ANA_POL_CIR_CFG_CIR_RATE(cir) |
-+			 ANA_POL_CIR_CFG_CIR_BURST(cbs),
-+			 ANA_POL_CIR_CFG, pol_ix);
-+
-+	ocelot_write_gix(ocelot,
-+			 (cir_discard ? GENMASK(22, 0) : 0),
-+			 ANA_POL_CIR_STATE, pol_ix);
-+
-+	return 0;
-+}
-+
-+int ocelot_port_policer_add(struct ocelot_port *port,
-+			    struct ocelot_policer *pol)
-+{
-+	struct ocelot *ocelot = port->ocelot;
-+	struct qos_policer_conf pp = { 0 };
-+	int err;
-+
-+	if (!pol)
-+		return -EINVAL;
-+
-+	pp.mode = MSCC_QOS_RATE_MODE_DATA;
-+	pp.pir = pol->rate;
-+	pp.pbs = pol->burst;
-+
-+	netdev_dbg(port->dev,
-+		   "%s: port %u pir %u kbps, pbs %u bytes\n",
-+		   __func__, port->chip_port, pp.pir, pp.pbs);
-+
-+	err = qos_policer_conf_set(port, POL_IX_PORT + port->chip_port, &pp);
-+	if (err)
-+		return err;
-+
-+	ocelot_rmw_gix(ocelot,
-+		       ANA_PORT_POL_CFG_PORT_POL_ENA |
-+		       ANA_PORT_POL_CFG_POL_ORDER(POL_ORDER),
-+		       ANA_PORT_POL_CFG_PORT_POL_ENA |
-+		       ANA_PORT_POL_CFG_POL_ORDER_M,
-+		       ANA_PORT_POL_CFG, port->chip_port);
-+
-+	return 0;
-+}
-+
-+int ocelot_port_policer_del(struct ocelot_port *port)
-+{
-+	struct ocelot *ocelot = port->ocelot;
-+	struct qos_policer_conf pp = { 0 };
-+	int err;
-+
-+	netdev_dbg(port->dev, "%s: port %u\n", __func__, port->chip_port);
-+
-+	pp.mode = MSCC_QOS_RATE_MODE_DISABLED;
-+
-+	err = qos_policer_conf_set(port, POL_IX_PORT + port->chip_port, &pp);
-+	if (err)
-+		return err;
-+
-+	ocelot_rmw_gix(ocelot,
-+		       ANA_PORT_POL_CFG_POL_ORDER(POL_ORDER),
-+		       ANA_PORT_POL_CFG_PORT_POL_ENA |
-+		       ANA_PORT_POL_CFG_POL_ORDER_M,
-+		       ANA_PORT_POL_CFG, port->chip_port);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/mscc/ocelot_police.h b/drivers/net/ethernet/mscc/ocelot_police.h
-new file mode 100644
-index 000000000000..d1137f79efda
---- /dev/null
-+++ b/drivers/net/ethernet/mscc/ocelot_police.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-+/* Microsemi Ocelot Switch driver
-+ *
-+ * Copyright (c) 2019 Microsemi Corporation
-+ */
-+
-+#ifndef _MSCC_OCELOT_POLICE_H_
-+#define _MSCC_OCELOT_POLICE_H_
-+
-+#include "ocelot.h"
-+
-+struct ocelot_policer {
-+	u32 rate; /* kilobit per second */
-+	u32 burst; /* bytes */
-+};
-+
-+int ocelot_port_policer_add(struct ocelot_port *port,
-+			    struct ocelot_policer *pol);
-+
-+int ocelot_port_policer_del(struct ocelot_port *port);
-+
-+#endif /* _MSCC_OCELOT_POLICE_H_ */
-diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
-new file mode 100644
-index 000000000000..a0eaadccfecc
---- /dev/null
-+++ b/drivers/net/ethernet/mscc/ocelot_tc.c
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Microsemi Ocelot Switch TC driver
-+ *
-+ * Copyright (c) 2019 Microsemi Corporation
-+ */
-+
-+#include "ocelot_tc.h"
-+#include "ocelot_police.h"
-+#include <net/pkt_cls.h>
-+
-+static int ocelot_setup_tc_cls_matchall(struct ocelot_port *port,
-+					struct tc_cls_matchall_offload *f,
-+					bool ingress)
-+{
-+	struct netlink_ext_ack *extack = f->common.extack;
-+	struct ocelot_policer pol = { 0 };
-+	struct flow_action_entry *action;
-+	int err;
-+
-+	netdev_dbg(port->dev, "%s: port %u command %d cookie %lu\n",
-+		   __func__, port->chip_port, f->command, f->cookie);
-+
-+	if (!ingress) {
-+		NL_SET_ERR_MSG_MOD(extack, "Only ingress is supported");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	switch (f->command) {
-+	case TC_CLSMATCHALL_REPLACE:
-+		if (!flow_offload_has_one_action(&f->rule->action)) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Only one action is supported");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		if (port->tc.block_shared) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Rate limit is not supported on shared blocks");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		action = &f->rule->action.entries[0];
-+
-+		if (action->id != FLOW_ACTION_POLICE) {
-+			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		if (port->tc.police_id && port->tc.police_id != f->cookie) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Only one policer per port is supported\n");
-+			return -EEXIST;
-+		}
-+
-+		pol.rate = (u32)div_u64(action->police.rate_bytes_ps, 1000) * 8;
-+		pol.burst = (u32)div_u64(action->police.rate_bytes_ps *
-+					 PSCHED_NS2TICKS(action->police.burst),
-+					 PSCHED_TICKS_PER_SEC);
-+
-+		err = ocelot_port_policer_add(port, &pol);
-+		if (err) {
-+			NL_SET_ERR_MSG_MOD(extack, "Could not add policer\n");
-+			return err;
-+		}
-+
-+		port->tc.police_id = f->cookie;
-+		port->tc.offload_cnt++;
-+		return 0;
-+	case TC_CLSMATCHALL_DESTROY:
-+		if (port->tc.police_id != f->cookie)
-+			return -ENOENT;
-+
-+		err = ocelot_port_policer_del(port);
-+		if (err) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Could not delete policer\n");
-+			return err;
-+		}
-+		port->tc.police_id = 0;
-+		port->tc.offload_cnt--;
-+		return 0;
-+	case TC_CLSMATCHALL_STATS: /* fall through */
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int ocelot_setup_tc_block_cb(enum tc_setup_type type,
-+				    void *type_data,
-+				    void *cb_priv, bool ingress)
-+{
-+	struct ocelot_port *port = cb_priv;
-+
-+	if (!tc_cls_can_offload_and_chain0(port->dev, type_data))
-+		return -EOPNOTSUPP;
-+
-+	switch (type) {
-+	case TC_SETUP_CLSMATCHALL:
-+		netdev_dbg(port->dev, "tc_block_cb: TC_SETUP_CLSMATCHALL %s\n",
-+			   ingress ? "ingress" : "egress");
-+
-+		return ocelot_setup_tc_cls_matchall(port, type_data, ingress);
-+	case TC_SETUP_CLSFLOWER:
-+		netdev_dbg(port->dev, "tc_block_cb: TC_SETUP_CLSFLOWER %s\n",
-+			   ingress ? "ingress" : "egress");
-+
-+		return -EOPNOTSUPP;
-+	default:
-+		netdev_dbg(port->dev, "tc_block_cb: type %d %s\n",
-+			   type,
-+			   ingress ? "ingress" : "egress");
-+
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int ocelot_setup_tc_block_cb_ig(enum tc_setup_type type,
-+				       void *type_data,
-+				       void *cb_priv)
-+{
-+	return ocelot_setup_tc_block_cb(type, type_data,
-+					cb_priv, true);
-+}
-+
-+static int ocelot_setup_tc_block_cb_eg(enum tc_setup_type type,
-+				       void *type_data,
-+				       void *cb_priv)
-+{
-+	return ocelot_setup_tc_block_cb(type, type_data,
-+					cb_priv, false);
-+}
-+
-+static int ocelot_setup_tc_block(struct ocelot_port *port,
-+				 struct tc_block_offload *f)
-+{
-+	tc_setup_cb_t *cb;
-+
-+	netdev_dbg(port->dev, "tc_block command %d, binder_type %d\n",
-+		   f->command, f->binder_type);
-+
-+	if (f->binder_type == TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS) {
-+		cb = ocelot_setup_tc_block_cb_ig;
-+		port->tc.block_shared = tcf_block_shared(f->block);
-+	} else if (f->binder_type == TCF_BLOCK_BINDER_TYPE_CLSACT_EGRESS) {
-+		cb = ocelot_setup_tc_block_cb_eg;
-+	} else {
-+		return -EOPNOTSUPP;
-+	}
-+
-+	switch (f->command) {
-+	case TC_BLOCK_BIND:
-+		return tcf_block_cb_register(f->block, cb, port,
-+					     port, f->extack);
-+	case TC_BLOCK_UNBIND:
-+		tcf_block_cb_unregister(f->block, cb, port);
-+		return 0;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+int ocelot_setup_tc(struct net_device *dev, enum tc_setup_type type,
-+		    void *type_data)
-+{
-+	struct ocelot_port *port = netdev_priv(dev);
-+
-+	switch (type) {
-+	case TC_SETUP_BLOCK:
-+		return ocelot_setup_tc_block(port, type_data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/mscc/ocelot_tc.h b/drivers/net/ethernet/mscc/ocelot_tc.h
-new file mode 100644
-index 000000000000..61757c2250a6
---- /dev/null
-+++ b/drivers/net/ethernet/mscc/ocelot_tc.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-+/* Microsemi Ocelot Switch driver
-+ *
-+ * Copyright (c) 2019 Microsemi Corporation
-+ */
-+
-+#ifndef _MSCC_OCELOT_TC_H_
-+#define _MSCC_OCELOT_TC_H_
-+
-+#include <linux/netdevice.h>
-+
-+struct ocelot_port_tc {
-+	bool block_shared;
-+	unsigned long offload_cnt;
-+
-+	unsigned long police_id;
-+};
-+
-+int ocelot_setup_tc(struct net_device *dev, enum tc_setup_type type,
-+		    void *type_data);
-+
-+#endif /* _MSCC_OCELOT_TC_H_ */
--- 
-2.17.1
-
+-Vladimir
