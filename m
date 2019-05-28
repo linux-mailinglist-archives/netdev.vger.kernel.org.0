@@ -2,122 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08AD62CFC2
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:48:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ED342CFD2
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:55:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbfE1Tsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 15:48:52 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:33518 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726452AbfE1Tsw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:48:52 -0400
-Received: by mail-pl1-f196.google.com with SMTP id g21so8788674plq.0;
-        Tue, 28 May 2019 12:48:52 -0700 (PDT)
+        id S1726802AbfE1Tz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 15:55:26 -0400
+Received: from mail-vs1-f46.google.com ([209.85.217.46]:35699 "EHLO
+        mail-vs1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726453AbfE1Tz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:55:26 -0400
+Received: by mail-vs1-f46.google.com with SMTP id q13so103479vso.2
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 12:55:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wF9HTKTSqjEWD9biAIqmvRFaHV98shxME6q1WLMW/+4=;
-        b=hqiaki/L18RAHsXejAjkskhmBYA+5hAWciscX1QM3DxD8eGqN05EcRZq703tNpJk7m
-         saZX2cundeLlnBd5nP1KrC5iZrd7XATBYsLrzOt4IdLad2Q2h+SdwiCDpSpgkUJMEyLc
-         rzk0xJycl6xfZXCwe7mjYFUYx9LRMLZE9aZFn3YpCVgdFZ1Lx3E0oegpH2rGSuKyc4oQ
-         t6VMjJmvC8pVtsvqwLdIQnmNSO/j3gk6UxbQZU/pmklB9sbc3CIfpFJgK+x32Qb58SdX
-         tbwzIc17oyyZWBwm1f4QcquvYf0xhWW7T5Z+lXCvCu1XJAc+F91NxpjclKpw1HxwBKFb
-         Pcvw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=x6dFwvFcfN/yzg7b/lIRQdOALjxQn0xMPMueNRFJpik=;
+        b=iPZ9wTimgfBr1g9wirumlcNdcExgX/rBxGOORzaEhjV4MqHpyTPI6T3BKH5oQ4j5zo
+         AelKs3rBsCU3DJ3CUFNUo9tnu1DIAprGUNrK8x8cZRYJk5XwDT6LoY1g3BJdDVNxEWF9
+         EzcFp2Wckd/kTGthoigsxZLPwUhBlZ2o4tMU9NshbmFteXzeIR6R1wiH+BrE5O+i6a40
+         AATkBxIqpfEKW6Pi4/WfnDx8LZVLhUeZhBJiyQPGo363E/hiwJAFKeVaehwl0QLy0isX
+         Ekar/WYYrQTgt2tbO8QfCsIwa+8Mbztnuz01TF78bkeXpsGkfDIzLX+perqPeyNFT4qc
+         lDqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wF9HTKTSqjEWD9biAIqmvRFaHV98shxME6q1WLMW/+4=;
-        b=HkbMhtAyenZOpRb1DzN8DA3j3Uz4kYZq/5rjEROPvyNmZzhunC5H5CY3u7bECjdWIS
-         /hv6cjfcf3ZXdc19+w2uu4EzATlOnrw9jqwcYVhEiKB+gujTeRY3FBt7+csm9x+AXEsN
-         xzaA3fy89oPbMW75LgjL395CLqyZ6u7A1up40WCkGOPXU8tl3wQm0VibfYmEpNPVl+9g
-         fE//lHp9wlWhBtiIsE+IHo6vH4pW896gzOhQD0hdlp81VaojtzYloTXWJ4l8z6L+ftS3
-         PesVmVHmZZgO/ZLlwLGKCGayqMg/iaaQc1SN4fCKD4nCi2CiLH/ib/3c8Vx88x7/BcvM
-         3bMw==
-X-Gm-Message-State: APjAAAVonSlOSko3Lo2C8GqEOk3uekKZTmyItrOEHNm4vV8s+PJJOYgC
-        s0VdfWd7WY84AqCl1tkTuFI=
-X-Google-Smtp-Source: APXvYqxBT35dsp3x051eqR+xZigGwx3StF4HGBIas7azqnb4lycmbzpKFUlp4YR9S3RTk/VPeRi70A==
-X-Received: by 2002:a17:902:8609:: with SMTP id f9mr76857704plo.252.1559072931874;
-        Tue, 28 May 2019 12:48:51 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id h123sm16915268pfe.80.2019.05.28.12.48.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 12:48:50 -0700 (PDT)
-Date:   Tue, 28 May 2019 12:48:50 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH] net: phy: tja11xx: Switch to HWMON_CHANNEL_INFO()
-Message-ID: <20190528194850.GF24853@roeck-us.net>
-References: <20190528181541.1946-1-marex@denx.de>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=x6dFwvFcfN/yzg7b/lIRQdOALjxQn0xMPMueNRFJpik=;
+        b=lF61j55YcEOF0hGiDUKO3nzOlWh3gnyR2dWmC8IBC7iEAHTxdlz1uzenZ1kHrqzYsD
+         Kr2qnNKkcOLqdnSVTkODjKa3bZHa8Xp3jlC76iXLQfKms5nS01MHPMXpblMNog6T73/V
+         6OIIZBo6k2cjsZgvhC8ctzPdWsmrK9WgJN7zr+4leipAOzWA6mympG/zqM37BKrbYlAI
+         zhgR2477p4vLYeWWf58nYxHbuY5yjiGUUNFaH6GKOq+JfXX5ilMeC5NZn3I9O96/55Qv
+         Lu+4OY9GDDy4uYp4H/L9v0F7tsjmyp4FiI74NQisfm6IExm7oPeCI9w/jmnSz7f9IURg
+         CLDQ==
+X-Gm-Message-State: APjAAAXUXP8XQj80/HZe2Iy/bjmMCrDClrBxZDv5IBxyT40vgTYvzk9K
+        D0Ip3EeNTSWMAEKh1Sb8+DVDCg==
+X-Google-Smtp-Source: APXvYqyo5htStvL4GUlzhgjFEsdQ/OqafstBEi1svwlr0BrPR5qEWxUgYydeuZeFG5f69sAM8lJmJQ==
+X-Received: by 2002:a67:2ed4:: with SMTP id u203mr36757368vsu.150.1559073325369;
+        Tue, 28 May 2019 12:55:25 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id o66sm8585579vke.17.2019.05.28.12.55.24
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 28 May 2019 12:55:25 -0700 (PDT)
+Date:   Tue, 28 May 2019 12:55:21 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
+        sthemmin@microsoft.com, dsahern@gmail.com, saeedm@mellanox.com,
+        leon@kernel.org, f.fainelli@gmail.com
+Subject: Re: [patch net-next v2 4/7] devlink: allow driver to update
+ progress of flash update
+Message-ID: <20190528125521.08912084@cakuba.netronome.com>
+In-Reply-To: <20190528114846.1983-5-jiri@resnulli.us>
+References: <20190528114846.1983-1-jiri@resnulli.us>
+        <20190528114846.1983-5-jiri@resnulli.us>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190528181541.1946-1-marex@denx.de>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 08:15:41PM +0200, Marek Vasut wrote:
-> The HWMON_CHANNEL_INFO macro simplifies the code, reduces the likelihood
-> of errors, and makes the code easier to read.
+On Tue, 28 May 2019 13:48:43 +0200, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@mellanox.com>
 > 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
+> Introduce a function to be called from drivers during flash. It sends
+> notification to userspace about flash update progress.
+> 
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: linux-hwmon@vger.kernel.org
-> ---
->  drivers/net/phy/nxp-tja11xx.c | 24 ++----------------------
->  1 file changed, 2 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-> index 11b8701e78fd..b705d0bd798b 100644
-> --- a/drivers/net/phy/nxp-tja11xx.c
-> +++ b/drivers/net/phy/nxp-tja11xx.c
-> @@ -311,29 +311,9 @@ static umode_t tja11xx_hwmon_is_visible(const void *data,
->  	return 0;
->  }
->  
-> -static u32 tja11xx_hwmon_in_config[] = {
-> -	HWMON_I_LCRIT_ALARM,
-> -	0
-> -};
-> -
-> -static const struct hwmon_channel_info tja11xx_hwmon_in = {
-> -	.type		= hwmon_in,
-> -	.config		= tja11xx_hwmon_in_config,
-> -};
-> -
-> -static u32 tja11xx_hwmon_temp_config[] = {
-> -	HWMON_T_CRIT_ALARM,
-> -	0
-> -};
-> -
-> -static const struct hwmon_channel_info tja11xx_hwmon_temp = {
-> -	.type		= hwmon_temp,
-> -	.config		= tja11xx_hwmon_temp_config,
-> -};
-> -
->  static const struct hwmon_channel_info *tja11xx_hwmon_info[] = {
-> -	&tja11xx_hwmon_in,
-> -	&tja11xx_hwmon_temp,
-> +	HWMON_CHANNEL_INFO(in, HWMON_I_LCRIT_ALARM),
-> +	HWMON_CHANNEL_INFO(temp, HWMON_T_CRIT_ALARM),
->  	NULL
->  };
->  
-> -- 
-> 2.20.1
-> 
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
