@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C5AE2CD32
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:09:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F98A2CD33
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:09:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbfE1RJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 13:09:21 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:34000 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726452AbfE1RJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 13:09:21 -0400
-Received: by mail-wm1-f66.google.com with SMTP id e19so2786825wme.1
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 10:09:19 -0700 (PDT)
+        id S1727033AbfE1RJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 13:09:45 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:42707 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbfE1RJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 13:09:45 -0400
+Received: by mail-wr1-f68.google.com with SMTP id l2so21092350wrb.9
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 10:09:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=kdZmn8XYtbYO8R7t4TeZTS5Wi0dhIuSSN7Ms3Rj+uIg=;
-        b=Q/UWVBva3Nc+wHvO8X+7yfYieFo0HFHeqOgAm3xU6yJXAIR4QMgZ8XjHJ+iwz5v2uE
-         ebzlZuIi4P1R16AYpFMsDHV0lXGHcGE3K/pRNqMxnukPVRjAm5012R1TRBx+uosOmSgG
-         aYtuMW7bzW2k3yewK/aAStoQ7+HTHTcB7e2pYNWmvP8c6d5LVKS+KV+x73Sl41qrhLjX
-         ga9hc+yB7ciU0PRGcmGOaeG2WYtQ8JCggVC8KoYOaBf/gUY/Ug6IWQG9O7VLJ9tMfgfJ
-         McDwflyIe8j0AP9scu4YOmBcEbrtfJsQQqu4buA+hJItmVRbE3Hvjk70duH8Kgd0yODi
-         DNmg==
+        bh=AMIk1WPmFE46Nnc3ZGM6658ZGc5m9eM9JmI7I/UOr+o=;
+        b=n+BZwokVw13RNUOM7XkN62ujv1lqOkuisrLbphLufVsrBNbGuzDzJJCA8+sASRo1Pk
+         xFPYvX0yjTnFEilN6isuGxdGjARzISSbWRXMxvksThuL0a7MitKtcZ23nFpARDSlx0uk
+         vOpb83Jgnv9m1MJ2sWOEMREgvHuEWY2sgVNsvpmqqKwPg2w+IeY7D0oK9vZk+yobHtiP
+         XoBZHcXTu9CSxhyAVFPeXbmT8av+OsZnNNsWvI2us9xmNLgFwN/73Y8fUXnwPLGKi5/Z
+         hZUXU+RffrHJLDNwZcRjSCtvjstFOvmvLPpNzmSp2wMeo0CXux7FRXoMK/WavSf1Hbmw
+         0r5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=kdZmn8XYtbYO8R7t4TeZTS5Wi0dhIuSSN7Ms3Rj+uIg=;
-        b=ijByTBEE8vQiY+ve2m5i2xz/pB4Y4hs27ptE6YkL6iuNcSB+Zz1GLoAHZHoPlU50wc
-         H9BhmXaDWkWw1vKGFvb5sAdx22lTY/fJl6LPRDvRvEzCbAMqeJ7N5xRAZC5Kt8kBCOiW
-         P8yBHOxNPuqbE2zqU6XuXpVXLpMkQErWmS+juzZbOapIeFsXEpf1Wtkp17nrV8b+GyWG
-         A964jWMTxnztFxLlo68mFVSOts8WpsjvbyEfAldQYWhjfj0RAkGHYhZyhWxDzAh4Pbwf
-         YiEPrBOJV+C8+DSItK+ERkinoOmS7Zy5a+JbG4lfPW5vX38G4xNS6T2Bdsj+anbwca7C
-         Ytjg==
-X-Gm-Message-State: APjAAAVvex9iycRL1x0JA89uuj/8VPkq1bL4gy321TE64cyWYRMZciDp
-        yhUWFZP8zuRsio5bqssVON4=
-X-Google-Smtp-Source: APXvYqwr2hcDu9BEebhdkbDC4XUOq5M2kZaaoLFYKpCTruT3/dX6Ja9JNqp9TrPizsWuXsdV1S6DaA==
-X-Received: by 2002:a05:600c:22cb:: with SMTP id 11mr3896070wmg.159.1559063358364;
-        Tue, 28 May 2019 10:09:18 -0700 (PDT)
+        bh=AMIk1WPmFE46Nnc3ZGM6658ZGc5m9eM9JmI7I/UOr+o=;
+        b=kYBGtSbFvFieC4ERkSDwGeL8ol8g6btUk7+4EAZog53nUSiD1L9sxJC2r/T7ujEyBr
+         ip6jG2+bHwHYyJ0Apw+pwqV/j0GOr1rvhvLzEazq2qv+Cq9PztIFX8smuKDKKqnDkIaV
+         m29vbicYfWxqJiOuLeSkoy4J/swyvt82qq4op8ThvVQaKL9trspU0GbLSICSnmYN/Jtm
+         CjGlbrPhvRa+33wQxuxLt7s82TQDIFSaoQ0gpKjSSAoZMqetA+6Y9YqUs5Ycs2DuFekC
+         FUBQU/yfpWKX4PkynW3vJ+SwIwEgEw77GZuUADsXBwD9I7jnZmSPOL+zzsQpaAzx5Uud
+         q+Kg==
+X-Gm-Message-State: APjAAAWVVyjkeSR1CXVyeTfa4+NAZ7AooXWJsOoyLqgaLoFOS1lECPbO
+        AyTagBJDRxDIyzI3UbIrsjDvFVr4
+X-Google-Smtp-Source: APXvYqw3vMQL/OgrsIWtBx17+QC2z4kvmdHXDlgUZ5QLgUkL8XC8erHSU9RR8q/RunU7kKP2sRaodQ==
+X-Received: by 2002:adf:e70f:: with SMTP id c15mr62580153wrm.311.1559063383057;
+        Tue, 28 May 2019 10:09:43 -0700 (PDT)
 Received: from [10.67.49.27] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y132sm4777324wmd.35.2019.05.28.10.09.16
+        by smtp.googlemail.com with ESMTPSA id t14sm5277220wrr.33.2019.05.28.10.09.40
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 10:09:17 -0700 (PDT)
-Subject: Re: [PATCH v3 3/4] net: phy: dp83867: do not call config_init twice
+        Tue, 28 May 2019 10:09:42 -0700 (PDT)
+Subject: Re: [PATCH v3 4/4] net: phy: dp83867: Set up RGMII TX delay
 To:     Max Uvarov <muvarov@gmail.com>, netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net
 References: <20190528100052.8023-1-muvarov@gmail.com>
- <20190528100052.8023-4-muvarov@gmail.com>
+ <20190528100052.8023-5-muvarov@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -107,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <b4d3e62c-88d5-309e-75cd-808f5eb55c12@gmail.com>
-Date:   Tue, 28 May 2019 10:09:09 -0700
+Message-ID: <95213a2a-faa7-4314-f044-b88d704ec5e3@gmail.com>
+Date:   Tue, 28 May 2019 10:09:39 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190528100052.8023-4-muvarov@gmail.com>
+In-Reply-To: <20190528100052.8023-5-muvarov@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,10 +122,16 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 5/28/19 3:00 AM, Max Uvarov wrote:
-> Phy state machine calls _config_init just after
-> reset.
+> PHY_INTERFACE_MODE_RGMII_RXID is less then TXID
+> so code to set tx delay is never called.
+> Fixes: 2a10154abcb75 ("net: phy: dp83867: Add TI dp83867 phy")
+
+There is no need to put a newline, the Fixes: tag is just like any other
+tag.
+
 > 
 > Signed-off-by: Max Uvarov <muvarov@gmail.com>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
