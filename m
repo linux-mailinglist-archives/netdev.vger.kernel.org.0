@@ -2,28 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E4702D182
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 00:25:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 779B92D190
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 00:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727343AbfE1WZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 18:25:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43140 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726481AbfE1WZc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 18:25:32 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8E4C730C1217;
-        Tue, 28 May 2019 22:25:26 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-16.phx2.redhat.com [10.3.112.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B19415D9CC;
-        Tue, 28 May 2019 22:25:13 +0000 (UTC)
-Date:   Tue, 28 May 2019 18:25:10 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Daniel Walsh <dwalsh@redhat.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
+        id S1727463AbfE1W1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 18:27:06 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46045 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726706AbfE1W1B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 18:27:01 -0400
+Received: by mail-lj1-f194.google.com with SMTP id r76so414612lja.12
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 15:26:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ktt9gYykDzHpqn8jF4Qn7x/F6J4TOsbrfkkqyFVpV5w=;
+        b=n+HTPMYY03EsfqfMQMiANp2md/hDS/jlVuamukt0nOAU7xPknfYtDemk0kZgZuFTHv
+         bRRyBB/UYNm0BKOmBOfzzowydINpzWcs+zehMLezF9i+fjo7UBomNhnCVNZY0EjYJ+5y
+         LmKd1wAWg/jiTQEzLus3rLiA0eqqVE5BX5YSZA2T3ue0t+KGYzatINIK83DcRmdhPCJD
+         VYpI6oVq4rK33VxUzojZ7YDWOJpYL64PE5qMqe7J+W/bnibjK9Pf7iJOmD0adHosNm20
+         IPQPZcunlCxBbtuQ16uU5TccmfLXarLNDZojREYCYpTIyI/q+PK5X7zIKyD4V82AbhxR
+         4d5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ktt9gYykDzHpqn8jF4Qn7x/F6J4TOsbrfkkqyFVpV5w=;
+        b=fB9cv/SixiThycKCdhTRkvf8FiXc31Q56iR82X16k/ZwR7ZsvinseZEHJnURVmlD6b
+         fxHdI7xogjMoX5qsG113ZH484iYblAbLMmDo9kC8R78XO4EFwf7u+cr8+A/cg9L6qUrD
+         jeBwIXcDCFqkazHGO/uSRhWgvAr3qLbUoL5Wd+HOVEXP6iyEBFBOJiq4HOYGMcBKL1Wa
+         UfwY4yUdSkqyNzFKZkVlMd87jNC+LrxpciED+wusgvWjHZw+qn6uupLzKklS1jUHODXv
+         2lDbp8r8lZx3yHtOlNorGa6BJB6zT+WsLH3PeY+x0l3kyFFu5M4g/hrt2GVHpkVC0Ldz
+         RcgQ==
+X-Gm-Message-State: APjAAAVyhieBvm/nz79MI2MS/1EaP37T0Q2ivAAljR7eE1F23BIt9/0d
+        rZk5z5f9ej29IhGkvZxhGo5tZR2p0M+eYoKDKAG4
+X-Google-Smtp-Source: APXvYqxDbW1InkCBbmSLm8KlqXmvlXu3oe3jcdB9CqBRbawDuAW8nu9Cieu8BrGQMf+AwTidy9xNra96kS1tITFYFCY=
+X-Received: by 2002:a2e:9106:: with SMTP id m6mr425785ljg.164.1559082418552;
+ Tue, 28 May 2019 15:26:58 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1554732921.git.rgb@redhat.com> <20190422113810.GA27747@hmswarspite.think-freely.org>
+ <CAHC9VhQYPF2ma_W+hySbQtfTztf=K1LTFnxnyVK0y9VYxj-K=w@mail.gmail.com> <509ea6b0-1ac8-b809-98c2-37c34dd98ca3@redhat.com>
+In-Reply-To: <509ea6b0-1ac8-b809-98c2-37c34dd98ca3@redhat.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 28 May 2019 18:26:47 -0400
+Message-ID: <CAHC9VhRW9f6GbhvvfifbOzd9p=PgdB2gq1E7tACcaqvfb85Y8A@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V6 00/10] audit: implement container identifier
+To:     Dan Walsh <dwalsh@redhat.com>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        Richard Guy Briggs <rgb@redhat.com>,
         containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
         Linux-Audit Mailing List <linux-audit@redhat.com>,
         linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
@@ -32,25 +59,14 @@ Cc:     Paul Moore <paul@paul-moore.com>,
         simo@redhat.com, Eric Paris <eparis@parisplace.org>,
         Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
         Mrunal Patel <mpatel@redhat.com>
-Subject: Re: [PATCH ghak90 V6 00/10] audit: implement container identifier
-Message-ID: <20190528222510.i3emki5ctss7acth@madcap2.tricolour.ca>
-References: <cover.1554732921.git.rgb@redhat.com>
- <20190422113810.GA27747@hmswarspite.think-freely.org>
- <CAHC9VhQYPF2ma_W+hySbQtfTztf=K1LTFnxnyVK0y9VYxj-K=w@mail.gmail.com>
- <509ea6b0-1ac8-b809-98c2-37c34dd98ca3@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <509ea6b0-1ac8-b809-98c2-37c34dd98ca3@redhat.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 28 May 2019 22:25:32 +0000 (UTC)
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-05-28 17:53, Daniel Walsh wrote:
+On Tue, May 28, 2019 at 5:54 PM Daniel Walsh <dwalsh@redhat.com> wrote:
+>
 > On 4/22/19 9:49 AM, Paul Moore wrote:
 > > On Mon, Apr 22, 2019 at 7:38 AM Neil Horman <nhorman@tuxdriver.com> wrote:
 > >> On Mon, Apr 08, 2019 at 11:39:07PM -0400, Richard Guy Briggs wrote:
@@ -86,13 +102,21 @@ On 2019-05-28 17:53, Daniel Walsh wrote:
 > believe this is something we can work on in the container runtimes team
 > to implement the container auditing code in CRI-O and Podman.
 
-Thanks Dan, Mrunal!
+Thanks Dan.  If I pulled this into a branch and built you some test
+kernels to play with, any idea how long it might take to get a proof
+of concept working on the cri-o side?
 
-- RGB
+FWIW, I've also reached out to some of the LXC folks I know to get
+their take on the API.  I think if we can get two different container
+runtimes to give the API a thumbs-up then I think we are in good shape
+with respect to the userspace interface.
 
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+I just finished looking over the last of the pending audit kernel
+patches that were queued waiting for the merge window to open so this
+is next on my list to look at.  I plan to start doing that
+tonight/tomorrow, and as long as the changes between v5/v6 are not
+that big, it shouldn't take too long.
+
+-- 
+paul moore
+www.paul-moore.com
