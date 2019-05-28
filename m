@@ -2,144 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3852C1E2
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 10:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3B32C288
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 11:06:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbfE1I5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 04:57:32 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:59818 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbfE1I5b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 04:57:31 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 91DE460769; Tue, 28 May 2019 08:57:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559033850;
-        bh=TgsQrhlAr8+HGUCtRPh+X0roiBK76Jmwa9FHWZ3CYwk=;
-        h=From:To:Subject:Date:From;
-        b=jWQLv7/yIfMOCqIB7OYFqqD7NWH9ddNquMMJM7BfEVn51RUPPd8B6HT2Ia3+tBZz3
-         Dd6guQPiEPcCWLRiOpohiSms4UzdpfQ7F4Kqv6l3hdDyPprGSwzX5dQ5G0WaE6CPYA
-         Z45N6/HRBg/5DrrU7x0Qifq4qapZCJgHRBI0spYs=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.204.79.132] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: sramana@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id E163960388;
-        Tue, 28 May 2019 08:57:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559033849;
-        bh=TgsQrhlAr8+HGUCtRPh+X0roiBK76Jmwa9FHWZ3CYwk=;
-        h=From:To:Subject:Date:From;
-        b=oe/dIn+8/UU6B1YK8E2iohtQVRl0V6O3zajEK2Cpp70PgWnUCVMtSiNEs7fvXtl9v
-         +WwgNbZDMMgXVxBt6+iu6yGQ1zxLJJbWrGAz2uM5asnK1PUmRwyxfnCc6vNiVWHj+E
-         xxLd+gkcvMg6tZpbmfWTiENruooo/R368IT9mM0o=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E163960388
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=sramana@codeaurora.org
-From:   Srinivas Ramana <sramana@codeaurora.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: samples/bpf compilation failures - 5.2.0
-Message-ID: <faaf8b1c-9552-a0ae-3088-2f4255dff857@codeaurora.org>
-Date:   Tue, 28 May 2019 14:27:25 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727434AbfE1JEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 05:04:35 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:57234 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727179AbfE1JEf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 05:04:35 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 9D46887CCD71EEB7D550;
+        Tue, 28 May 2019 17:04:31 +0800 (CST)
+Received: from localhost.localdomain (10.67.212.132) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.439.0; Tue, 28 May 2019 17:04:25 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 00/12] code optimizations & bugfixes for HNS3 driver
+Date:   Tue, 28 May 2019 17:02:50 +0800
+Message-ID: <1559034182-24737-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.67.212.132]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This patch-set includes code optimizations and bugfixes for the HNS3
+ethernet controller driver.
 
-I am trying to build samples/bpf in kernel(5.2.0-rc1) but unsuccessful 
-with below errors. Can you help to point what i am missing or if there 
-is some known issue?
+[patch 1/12] fixes a compile warning reported by kbuild test robot.
 
-==============================8<===================================
-$ make samples/bpf/ 
-LLC=/local/mnt/workspace/tools/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/llc 
-CLANG=/local/mnt/workspace/tools/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-V=1
-make -C /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel -f 
-/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/Makefile samples/bpf/
-................
-................
-................
-make KBUILD_MODULES=1 -f ./scripts/Makefile.build obj=samples/bpf
-(cat /dev/null; ) > samples/bpf/modules.order
-make -C 
-/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../../tools/lib/bpf/ 
-RM='rm -rf' LDFLAGS= 
-srctree=/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../../ 
-O=
+[patch 2/12] fixes HNS3_RXD_GRO_SIZE_M macro definition error.
 
-Auto-detecting system features:
-...                        libelf: [ on  ]
-...                           bpf: [ on  ]
+[patch 3/12] adds a debugfs command to dump firmware information.
 
-make -C 
-/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../..//tools/build 
-CFLAGS= LDFLAGS= fixdep
-make -f 
-/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../..//tools/build/Makefile.build 
-dir=. obj=fixdep
-    ld -r -o fixdep-in.o  fixdep.o
-ld: fixdep.o: Relocations in generic ELF (EM: 183)
-ld: fixdep.o: Relocations in generic ELF (EM: 183)
-fixdep.o: error adding symbols: File in wrong format
-make[5]: *** [fixdep-in.o] Error 1
-make[4]: *** [fixdep-in.o] Error 2
-make[3]: *** [fixdep] Error 2
-make[2]: *** 
-[/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../../tools/lib/bpf/libbpf.a] 
-Error 2
-make[1]: *** [samples/bpf/] Error 2
-make: *** [sub-make] Error 2
-==============================>8=======================================
+[patch 4/12 - 10/12] adds some code optimizaions and cleanups for
+reset and driver unloading.
 
+[patch 11/12 - 12/12] adds two bugfixes.
 
-I am using the below commands to build:
-========================================================
-export ARCH=arm64
-export CROSS_COMPILE=<path>linaro-toolchain/5.1/bin/aarch64-linux-gnu-
-export CLANG_TRIPLE=arm64-linux-gnu-
+Huazhong Tan (9):
+  net: hns3: use HCLGE_STATE_NIC_REGISTERED to indicate PF NIC client
+    has registered
+  net: hns3: use HCLGE_STATE_ROCE_REGISTERED to indicate PF ROCE client
+    has registered
+  net: hns3: use HCLGEVF_STATE_NIC_REGISTERED to indicate VF NIC client
+    has registered
+  net: hns3: modify hclge_init_client_instance()
+  net: hns3: modify hclgevf_init_client_instance()
+  net: hns3: add handshake with hardware while doing reset
+  net: hns3: stop schedule reset service while unloading driver
+  net: hns3: adjust hns3_uninit_phy()'s location in the
+    hns3_client_uninit()
+  net: hns3: fix a memory leak issue for
+    hclge_map_unmap_ring_to_vf_vector
 
-make 
-CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-defconfig
+Jian Shen (1):
+  net: hns3: fix compile warning without CONFIG_RFS_ACCEL
 
-make 
-CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
--j8
+Yunsheng Lin (1):
+  net: hns3: fix for HNS3_RXD_GRO_SIZE_M macro
 
-make 
-CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-headers_install INSTALL_HDR_PATH=./usr
+Zhongzhu Liu (1):
+  net: hns3: add support for dump firmware statistics by debugfs
 
-make samples/bpf/ 
-LLC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/llc 
-CLANG=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-V=1 
-CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang
-========================================================
-
-Thanks,
--- Srinivas R
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |   1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |   4 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   2 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |   6 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |   8 ++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  57 +++++++++++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 110 ++++++++++++++-------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   2 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c |   4 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |   2 -
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  95 ++++++++++++------
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |   2 +
+ 12 files changed, 213 insertions(+), 80 deletions(-)
 
 -- 
-Qualcomm India Private Limited, on behalf of Qualcomm Innovation
-Center, Inc., is a member of Code Aurora Forum, a Linux Foundation
-Collaborative Project
+2.7.4
+
