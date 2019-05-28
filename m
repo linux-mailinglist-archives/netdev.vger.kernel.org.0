@@ -2,99 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CAFA2BCF6
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 03:48:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FCB82BCFB
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 03:51:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727782AbfE1Bse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 21:48:34 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:17583 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727271AbfE1Bse (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 May 2019 21:48:34 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 560C66BA30B9C8FF9BBD;
-        Tue, 28 May 2019 09:48:32 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Tue, 28 May 2019
- 09:48:22 +0800
-Subject: Re: [PATCH net-next] net: link_watch: prevent starvation when
- processing linkwatch wq
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     <davem@davemloft.net>, <hkallweit1@gmail.com>,
-        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-References: <1558921674-158349-1-git-send-email-linyunsheng@huawei.com>
- <20190527075838.5a65abf9@hermes.lan>
- <a0fe690b-2bfa-7d1a-40c5-5fb95cf57d0b@huawei.com>
- <20190527181744.289c4b2f@hermes.lan>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <bb880dab-16dc-0d4b-fa42-809c40cac43b@huawei.com>
-Date:   Tue, 28 May 2019 09:48:22 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1727699AbfE1Bv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 21:51:29 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42136 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727271AbfE1Bv2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 21:51:28 -0400
+Received: by mail-pg1-f196.google.com with SMTP id 33so6974748pgv.9
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 18:51:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LNkjYrRJA0LchJCQlJOTOeprpPsFgp4/0Y9gTNf5+JI=;
+        b=kU8mF7LQfjwmLb0tIMu2MTDRdf6lOvBj21TYobtSkWHFvVtkWi/W4acmvpwwXPDm9l
+         J6nhxgKq6RyrGR3vT+xZ9iM5Aef72yisE9nyGtFtOE90zD11dAD6RgktRILm1WixKWU5
+         nlavitERQi+iR7hXaaywbnCmFyoCsApZelIe6B3BMBOrGs6Gqlj2Z2TmOd55Ll0KAq/Z
+         KZYZ+Ge9v8gy6ULhFRRS7zhQeAA9/PhjQz5OSg0hVoTOCJ6pz9tE/2v6fW5mxxDg3+zk
+         BrKxDvGESNS5E7jR0iXWaopEBmsDxgvWCHwe0/ougnGiPSA/rHiHhuNli1/aCS/fwBao
+         /FQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LNkjYrRJA0LchJCQlJOTOeprpPsFgp4/0Y9gTNf5+JI=;
+        b=mRV9/evHZ+2nzwdq6q1e48gMLIFFTrQKgI4r6safTer8j2BqIIX4VjsVhPhEVQNRfE
+         2YBvw6lYX8Bqy2lCejQA1QzAmQXJjB0z0yiD+05R3fAMpOd4y+vU+qrY4PomrKYFWdg4
+         n2X/JLCeTUB2QtixNuP2mH/O1U0VbQgMh5e4ualxs+2kk0NFL9CrK4EJTHfiptJAt88N
+         FV1VlwT2RcmMPtBHMJB+IeZ/3X97xgNkoKa08E21TNZfhm+1dG4O72SS4YNj4W4DpaYC
+         oqhW05t2q4TVIY4TVWN4d6rNjuknS5EpllBFZ86i/2Z63eG46H6Vfw3jyQ/4mlcmcPg6
+         ghlQ==
+X-Gm-Message-State: APjAAAVBYNpwyMr/DCljTgU0rSDGtLE/HuPdOcfCZqsmPXRFgx1WPy9d
+        lyZnZ2Wt6xKs2fvdSHGkjbuavWrb
+X-Google-Smtp-Source: APXvYqzCML4FFjUFCsqeZX3YW+SIkkAMkoy52tR5FNkz8Qf5j8Akn4bEqMzBrY/BOVYJEPUsCHhB4A==
+X-Received: by 2002:a62:ab10:: with SMTP id p16mr106510175pff.222.1559008287708;
+        Mon, 27 May 2019 18:51:27 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
+        by smtp.gmail.com with ESMTPSA id f67sm14245225pfa.149.2019.05.27.18.51.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 27 May 2019 18:51:26 -0700 (PDT)
+Subject: Re: [PATCH 06/11] net: phylink: Add struct phylink_config to PHYLINK
+ API
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com,
+        maxime.chevallier@bootlin.com, olteanv@gmail.com,
+        thomas.petazzoni@bootlin.com, davem@davemloft.net,
+        vivien.didelot@gmail.com
+Cc:     netdev@vger.kernel.org
+References: <1558992127-26008-1-git-send-email-ioana.ciornei@nxp.com>
+ <1558992127-26008-7-git-send-email-ioana.ciornei@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <d69527df-cbd8-3575-db70-e5f1166a5060@gmail.com>
+Date:   Mon, 27 May 2019 18:51:26 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190527181744.289c4b2f@hermes.lan>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <1558992127-26008-7-git-send-email-ioana.ciornei@nxp.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/5/28 9:17, Stephen Hemminger wrote:
-> On Tue, 28 May 2019 09:04:18 +0800
-> Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> 
->> On 2019/5/27 22:58, Stephen Hemminger wrote:
->>> On Mon, 27 May 2019 09:47:54 +0800
->>> Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>   
->>>> When user has configured a large number of virtual netdev, such
->>>> as 4K vlans, the carrier on/off operation of the real netdev
->>>> will also cause it's virtual netdev's link state to be processed
->>>> in linkwatch. Currently, the processing is done in a work queue,
->>>> which may cause worker starvation problem for other work queue.
->>>>
->>>> This patch releases the cpu when link watch worker has processed
->>>> a fixed number of netdev' link watch event, and schedule the
->>>> work queue again when there is still link watch event remaining.
->>>>
->>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>  
->>>
->>> Why not put link watch in its own workqueue so it is scheduled
->>> separately from the system workqueue?  
->>
->> From testing and debuging, the workqueue runs on the cpu where the
->> workqueue is schedule when using normal workqueue, even using its
->> own workqueue instead of system workqueue. So if the cpu is busy
->> processing the linkwatch event, it is not able to process other
->> workqueue' work when the workqueue is scheduled on the same cpu.
->>
->> Using unbound workqueue may solve the cpu starvation problem.
->> But the __linkwatch_run_queue is called with rtnl_lock, so if it
->> takes a lot time to process, other need to take the rtnl_lock may
->> not be able to move forward.
-> 
-> Agree with the starvation issue. My cocern is that large number of
-> events that end up being delayed would impact things that are actually
-> watching for link events (like routing daemons).
 
-Agreed. I am not familiar with above use cases, it would be very helpful
-if someone can help testing the impact of above use case.
 
+On 5/27/2019 2:22 PM, Ioana Ciornei wrote:
+> The phylink_config structure will encapsulate a pointer to a struct
+> device and the operation type requested for this instance of PHYLINK.
+> This patch does not make any functional changes, it just transitions the
+> PHYLINK internals and all its users to the new API.
 > 
-> It probably would be not accepted to do rtnl_unlock/sched_yield/rtnl_lock
-> in the loop, but that is another alternative.
+> A pointer to a phylink_config structure will be passed to
+> phylink_create() instead of the net_device directly. Also, the same
+> phylink_config pointer will be passed back to all phylink_mac_ops
+> callbacks instead of the net_device. Using this mechanism, a PHYLINK
+> user can get the original net_device using a structure such as
+> 'to_net_dev(config->dev)' or directly the structure containing the
+> phylink_config using a container_of call.
+> 
+> At the moment, only the PHYLINK_NETDEV is defined as a valid operation
+> type for PHYLINK. In this mode, a valid reference to a struct device
+> linked to the original net_device should be passed to PHYLINK through
+> the phylink_config structure.
+> 
+> This API changes is mainly driven by the necessity of adding a new
+> operation type in PHYLINK that disconnects the phy_device from the
+> net_device and also works when the net_device is lacking.
+> 
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
-Yes. But seems not very efficient to do rtnl_unlock/sched_yield/rtnl_lock
-for very linkwatch_do_dev.
+The PHYLINK and DSA portions look good to me, and this is a lot nicer
+than the notifier, thanks for coming up with that scheme:
 
-> 
-> 
-> 
-> .
-> 
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
