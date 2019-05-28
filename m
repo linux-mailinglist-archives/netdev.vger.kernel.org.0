@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0231F2BD03
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 03:53:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CD892BD0C
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 03:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727865AbfE1Bxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 21:53:31 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:43952 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727651AbfE1Bxa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 21:53:30 -0400
-Received: by mail-pf1-f194.google.com with SMTP id c6so10425711pfa.10
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 18:53:30 -0700 (PDT)
+        id S1727879AbfE1BzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 21:55:06 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:37678 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727654AbfE1BzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 21:55:06 -0400
+Received: by mail-pf1-f195.google.com with SMTP id a23so10450195pff.4
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 18:55:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1SygZIj5RkSxHWlledmPYdZk9WFBSaC0Fte9eb8T3eY=;
-        b=j47EcEWK1AOX1Zzz6K2mV+9LxqUXbkaRleGK8Qyetyw9O60UwmZZXkKAn91ZPoI3PT
-         0Y02+rPOjkvvkrXQ522iPauZ0mXhG+IveA+04sJfCrxXhS7H+a+85/jrWhvlf5p84YoS
-         MJ0DL+UCIjylpxSAe1n3+RnIfd/+oDjDOFwC9fzSr4RYXyflzIXDqRF60qnJdB7kw9Dt
-         zWKH29aUjC6BRC9A72QBmFzKwsownoG6thczwXoG5BYBAG/2j53nj39fpmhO7OT2mWIx
-         bsPqA2yGln5/JQ6WH+7Ir1/Ms0HxgO0Rtsi/YsViOiyLfu6Jik2sC8ixcZgB9FwgS/BT
-         MNBw==
+        bh=dmKrdSjCNedf8ly7Q9DbnPAxE0qkHaQubycOsdOK2IQ=;
+        b=G9oHTQ54+FJA/Tr7HJ2Qw/lRlmHWVYZ6Kr8I1xQspwFMaa7Ws94dmk2XvTPKI/yBX4
+         6WV6nbbo0Ki2RNZDnQNfY1qoFzfMycoEnlXcNQXl9B6ncj35ql8Lh6EfyZ2B0uKQWxVh
+         /kuHoBgoca97/60y48XEWEA52JTVB+mWMMJN7W49iIbojBshkj1xBkuJkp3sH8hgdXto
+         eMBq0jHXmywKlq+KGke9uIfbB63b6+zjZZnrjZ5oWBtDtafz/ofrt6aI2DtmLQA1vFeh
+         1Hxcm4CNJq6EaeQGQX1u05OafW42Bo0dtJp/pv1W7gqg0649jteHlVWPZdem9EaZdU5f
+         hUIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=1SygZIj5RkSxHWlledmPYdZk9WFBSaC0Fte9eb8T3eY=;
-        b=m6q7aM0jJvOsFkLbyvYH+kHacWgkY2HymMBMsYZc8Tl6PDpA6QzgTUQ22KfYRbmXua
-         qvNmBBN2B5F9XUsGjFQRyc3Nuq6MVzBNMz20s8m2qYKkX20KYuz3cKNhvK3vMAz2ATr3
-         Ndznl5AAevRvzbhVxUDEQwqIyd2EefyMlyqhdGVLiCRfW3+H/WeHmrmh9yW+ysCVm/TY
-         KSfbiWQ2ziFahogxk4wyH6OCArfDD+ycRS3+XANdP8CMt4koAnUc8w99an0DDUZwGheo
-         RP25DQqQWo2uC5fm/P9r3nG7IIOCnUs2kH7xueMYwiRQHvqjMeI3fILBbBOZsImizv+X
-         CONw==
-X-Gm-Message-State: APjAAAXGToUzteE29qg4dlqb5Zlyv+0TrZzAKnkyyhIF2iKx4DmLj1qe
-        5leAMrk1eoGD7V68QQz2Cr4vigxd
-X-Google-Smtp-Source: APXvYqycbuFZC+UgrPVYuq/U1Ya/8HWQs+upOmV+Ehr/kuLJlQZioZPAylB9IeYcqTWGiiIT2dVdlA==
-X-Received: by 2002:a65:5003:: with SMTP id f3mr127284619pgo.336.1559008409730;
-        Mon, 27 May 2019 18:53:29 -0700 (PDT)
+        bh=dmKrdSjCNedf8ly7Q9DbnPAxE0qkHaQubycOsdOK2IQ=;
+        b=k9PaEHvnqfyILgpplWNH+P4Xhbjz5Q7nf8DHVrBAW6ZRQqC5DlQygvtL3G7/zgNqfP
+         H5iKB02RNhX3KhqVqFtqTshVUQ77xp74H3BuP8W8HnrKt2D1NhKdQM4SCam/iQklHgSI
+         iEtIrS/R/uq0kqAvhilkDGkwIqsCtem4ToWx5VWWMJT0w0TCJOjFYatRVlENunZgMqGE
+         185x14l5ih7RNeMzmErX0luXPojqPvwbpnYFPyCBAjAsDow6NWJlAl7zhXdRawXMqpcA
+         K1exHByfNNeX0qlnEDLuDXlmSSEeuuD9hFo6lPCQ7JpUzZ5Jy2X9IvnGHaEwRs1vG3GA
+         hBcw==
+X-Gm-Message-State: APjAAAVgd8sk6SogXvgR5qodkWmZGYUVtl5xDe8scxrlNeSviZi8tkEt
+        ly3af+2nn2A4iddzGvFP1ClL1f8b
+X-Google-Smtp-Source: APXvYqziF6Zpv0J0fS7dSeJspAoM8p8MXKD4FuKe1wi6va4w8kLK7sKAxSdfk0wPCTJopayxlfnV8w==
+X-Received: by 2002:a17:90a:207:: with SMTP id c7mr2155175pjc.94.1559008505673;
+        Mon, 27 May 2019 18:55:05 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
-        by smtp.gmail.com with ESMTPSA id s66sm33926705pfb.37.2019.05.27.18.53.27
+        by smtp.gmail.com with ESMTPSA id j97sm672023pje.5.2019.05.27.18.55.04
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 May 2019 18:53:29 -0700 (PDT)
-Subject: Re: [PATCH 08/11] net: phylink: Add
- phylink_{printk,err,warn,info,dbg} macros
+        Mon, 27 May 2019 18:55:05 -0700 (PDT)
+Subject: Re: [PATCH 10/11] net: dsa: Use PHYLINK for the CPU/DSA ports
 To:     Ioana Ciornei <ioana.ciornei@nxp.com>, linux@armlinux.org.uk,
         andrew@lunn.ch, hkallweit1@gmail.com,
         maxime.chevallier@bootlin.com, olteanv@gmail.com,
@@ -54,15 +53,15 @@ To:     Ioana Ciornei <ioana.ciornei@nxp.com>, linux@armlinux.org.uk,
         vivien.didelot@gmail.com
 Cc:     netdev@vger.kernel.org
 References: <1558992127-26008-1-git-send-email-ioana.ciornei@nxp.com>
- <1558992127-26008-9-git-send-email-ioana.ciornei@nxp.com>
+ <1558992127-26008-11-git-send-email-ioana.ciornei@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
-Message-ID: <9b8afa2c-5bc5-322d-3d83-bed374dc7797@gmail.com>
-Date:   Mon, 27 May 2019 18:53:28 -0700
+Message-ID: <abea8843-2e42-c18a-79ef-cef670773b03@gmail.com>
+Date:   Mon, 27 May 2019 18:55:05 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <1558992127-26008-9-git-send-email-ioana.ciornei@nxp.com>
+In-Reply-To: <1558992127-26008-11-git-send-email-ioana.ciornei@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -74,12 +73,20 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 5/27/2019 2:22 PM, Ioana Ciornei wrote:
-> With the latest addition to the PHYLINK infrastructure, we are faced
-> with a decision on when to print necessary info using the struct
-> net_device and when with the struct device.
+> For DSA switches that do not have an .adjust_link callback, aka those
+> who transitioned totally to the PHYLINK-compliant API, use PHYLINK to
+> drive the CPU/DSA ports.
 > 
-> Add a series of macros that encapsulate this decision and replace all
-> uses of netdev_err&co with phylink_err.
+> The PHYLIB usage and .adjust_link are kept but deprecated, and users are
+> asked to transition from it.  The reason why we can't do anything for
+> them is because PHYLINK does not wrap the fixed-link state behind a
+> phydev object, so we cannot wrap .phylink_mac_config into .adjust_link
+> unless we fabricate a phy_device structure.
+> 
+> For these ports, the newly introduced PHYLINK_DEV operation type is
+> used and the dsa_switch device structure is passed to PHYLINK for
+> printing purposes.  The handling of the PHYLINK_NETDEV and PHYLINK_DEV
+> PHYLINK instances is common from the perspective of the driver.
 > 
 > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
