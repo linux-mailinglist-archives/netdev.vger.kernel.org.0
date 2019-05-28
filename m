@@ -2,78 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B5A52D0F7
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51AD12D107
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727934AbfE1VZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 17:25:56 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54294 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726824AbfE1VZ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 17:25:56 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726894AbfE1Vdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 17:33:41 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:52882 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbfE1Vdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:33:40 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 45D6Xb4MXCz1rTc0;
+        Tue, 28 May 2019 23:33:35 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 45D6Xb3XZhz1qqkb;
+        Tue, 28 May 2019 23:33:35 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id hylE-ZdcF7Tt; Tue, 28 May 2019 23:33:34 +0200 (CEST)
+X-Auth-Info: HhHBjJtjCVfI8QAoHl5jBoq2ZHmsxN4MSxSYh3+ZVDw=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2072A307C940;
-        Tue, 28 May 2019 21:25:56 +0000 (UTC)
-Received: from ovpn-116-124.ams2.redhat.com (ovpn-116-124.ams2.redhat.com [10.36.116.124])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B61C2611B7;
-        Tue, 28 May 2019 21:25:53 +0000 (UTC)
-Message-ID: <f921c3efbc3f0266e49a840962816a52e5bcfaf2.camel@redhat.com>
-Subject: Re: [PATCH net] net/sched: act_pedit: fix 'ex munge' on network
- header in case of QinQ packet
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     shuali@redhat.com, Eli Britstein <elibr@mellanox.com>
-In-Reply-To: <290a8e03-1d24-a84f-751c-6fc27f04bba0@gmail.com>
-References: <753b96cc340e4fbae6640da070aac09d7220efe2.1559075758.git.dcaratti@redhat.com>
-         <290a8e03-1d24-a84f-751c-6fc27f04bba0@gmail.com>
-Organization: red hat
-Content-Type: text/plain; charset="UTF-8"
-Date:   Tue, 28 May 2019 23:25:52 +0200
-Mime-Version: 1.0
-User-Agent: Evolution 3.30.3 (3.30.3-1.fc29) 
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Tue, 28 May 2019 23:33:34 +0200 (CEST)
+Subject: Re: [PATCH V2] net: phy: tja11xx: Add IRQ support to the driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+References: <20190528192324.28862-1-marex@denx.de>
+ <96793717-a55c-7844-f7c0-cc357c774a19@gmail.com>
+ <4f33b529-6c3c-07ee-6177-2d332de514c6@denx.de>
+ <cc8db234-4534-674d-eece-5a797a530cdf@gmail.com>
+ <ca63964a-242c-bb46-bd4e-76a270dbedb3@denx.de>
+ <20190528195806.GV18059@lunn.ch>
+ <15906cc0-3d8f-7810-27ed-d64bdbcfa7e7@denx.de>
+ <20190528212252.GW18059@lunn.ch>
+From:   Marek Vasut <marex@denx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <fe6c4f2f-812d-61b8-3ffb-7ed7dd89d151@denx.de>
+Date:   Tue, 28 May 2019 23:33:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <20190528212252.GW18059@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 28 May 2019 21:25:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi Eric, thanks for looking at this!
-
-On Tue, 2019-05-28 at 14:02 -0700, Eric Dumazet wrote:
+On 5/28/19 11:22 PM, Andrew Lunn wrote:
+>> The link detection on the TJA1100 (not TJA1101) seems unstable at best,
+>> so I better use all the interrupt sources to nudge the PHY subsystem and
+>> have it check the link change.
 > 
-> On 5/28/19 1:50 PM, Davide Caratti wrote:
-> > +				vlan = (struct vlan_hdr *)skb->data;
-> > +				protocol = vlan->h_vlan_encapsulated_proto;
-> > +				skb_pull(skb, VLAN_HLEN);
-> > +				skb_reset_network_header(skb);
-> > +				(*vlan_hdr_count)++;
-> > +			}
-> > +			goto again;
-> 
-> What prevents this loop to access data not yet in skb->head ?
+> Then it sounds like you should just ignore interrupts and stay will
+> polling for the TJA1100.
 
-just luck.
+Polling for the link status change is slow(er) than the IRQ driven
+operation, so I would much rather use the interrupts.
 
-'pedit' does skb_header_pointer() later on, when it writes in the packet.
-But indeed, there is no guarantee that all the nested vlan headers are in
-the linear area of the packet. 
-
-Looking at 2ecba2d1e45b and current act_csum.c, probably also tcf_csum_act()
-needs the same check: I will try a patch for that tomorrow.
-
-> skb_header_pointer() (or pskb_may_pull()) seems needed.
-
-pskb_may_pull(), with proper error handling, seems better to me. 
-regards,
 -- 
-davide
-
-
+Best regards,
+Marek Vasut
