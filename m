@@ -2,176 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AADF2C7C3
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 15:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ABD52C7CA
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 15:31:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727133AbfE1N1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 09:27:54 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:38624 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726867AbfE1N1x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 09:27:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=S446MZoSPa7QQDBRXKuMaHAfEibW0fm2rgJ3aNBD6o8=; b=EccWAaQBwzwldLjtPqXB11fao
-        vCo2ER2d7uRpMI07L9xgpzro3yAYVoy21+MCMAQ4dh4B26lWN+x2CF4+tW5bmhwKk8r2fq86N/CwZ
-        TgLSq+yYeOL1RoNBC8IY1GJQnw5YAG4poOJ6pI4SFB2bGXv8jh7X9ya5daNdPqZkNUohWjM2kSPz2
-        CG2LQLDXpj2L5uC6sZh7VnqeDJ+4pwAzp0d3xhmbh8TOngrfZqqyUPa7w9QoRuFaL55T5O0GamCoi
-        +3siG7i5gb5nUmqjCNkY35po6vzyoLEPF5OMpn5zOzAqyNv7AmpwIqDVNfJCnwMEYKPjJuDGZnW//
-        U0i7ZhQZw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52684)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hVc8p-000626-Sz; Tue, 28 May 2019 14:27:48 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hVc8n-0003ed-NB; Tue, 28 May 2019 14:27:45 +0100
-Date:   Tue, 28 May 2019 14:27:45 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/5] net: phy: allow Clause 45 access via mii
- ioctl
-Message-ID: <20190528132745.m4iuh6ggib3a5kiq@shell.armlinux.org.uk>
-References: <20190528095639.kqalmvffsmc5ebs7@shell.armlinux.org.uk>
- <E1hVYrJ-0005ZA-0S@rmk-PC.armlinux.org.uk>
- <CA+h21hpXv7678MuKVfAGiwuQwzZHX_1hjXHpwZUFz8wP5aRabg@mail.gmail.com>
+        id S1727090AbfE1NbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 09:31:13 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:42299 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfE1NbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 09:31:13 -0400
+Received: by mail-yw1-f65.google.com with SMTP id s5so7885257ywd.9
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 06:31:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WIPBWJfuQ7QJHOeh2JjtakcHSwk/OV1epIZhfp+6REw=;
+        b=sbwjTeXV3SZ3WtfXIcb+b6GWrxQ37J6aWMlAWdXA4Uj0QuFB/cWRT6mk5dQ8K3OaIu
+         2rchMohiJF+cvLq4NhLQvR6/89FxBgprZAS9Tg97QYhxmB6rrkTAqv02tnvq9Xi8nx5S
+         Gss52l8We4t+uWz2xyX6D1L9socom1e31t5Iw3NIJaBbrjX25msH52Oj5i9M46LJ/ZQC
+         Ryn14z9mgMtCHVt65YZtjT6/xIUWuGZhRWVTujt2m9ll0P/2J9abUnA82MdtyVeJ0svH
+         GI3H9KJ0j/YPWlFqduJ8xpbzMgp3sWWUc1WjcrleQ6K3Wpg1FvZubIaqR+hKgDnAhYtA
+         Y92Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WIPBWJfuQ7QJHOeh2JjtakcHSwk/OV1epIZhfp+6REw=;
+        b=pL/PeG2UKx0475bN73u+9L0zztBHbj+Kn5iK8LDFbVuXTcdEptsVcbRcCJYx85QyFd
+         jL7QKO6wv8HaEgsdbD2d9nwoMLDEp+xuXCXdiwvYHU4CPa2o0Z5K2eSuCa5ayQjkp0bD
+         xVoKX8t16AE4f0BuTx2dUNz2Yak9bh0SFS8NpvM6MppmFIolZln3wWp+QV2dZfRiiCu5
+         t/z92Y1QrSkp64O1h86qU7DgP+HeGBbMLJqJqlPigqj9uGvuUHi6RyMLDbcKaU693tHx
+         425AvNuw/H96LIpiEzkjowKDKpnr7dsXsgPyXvkXyD26POXDWF9geMvJj09lmWARm+c8
+         6jhg==
+X-Gm-Message-State: APjAAAVtnAWatm+p4V1lUk5vElSm4PvRbQC6NfsGT5JoQkJWhLqdLoTD
+        DyGfrv4OfXQG0rU6eeE+yLOEFAo2kBZ7Fl4/n6h3Eg==
+X-Google-Smtp-Source: APXvYqy1iE6T+E3zyTFVvFFLBR+KYySY7MCoHzVmgQaHSTrmvkgZNItjMA44wRlVluk01vmVaz8NI2/iWzJYOWM9ac4=
+X-Received: by 2002:a81:5245:: with SMTP id g66mr22888633ywb.496.1559050272291;
+ Tue, 28 May 2019 06:31:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpXv7678MuKVfAGiwuQwzZHX_1hjXHpwZUFz8wP5aRabg@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20190524160340.169521-12-edumazet@google.com> <20190528063403.ukfh37igryq4u2u6@gondor.apana.org.au>
+In-Reply-To: <20190528063403.ukfh37igryq4u2u6@gondor.apana.org.au>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 28 May 2019 06:31:00 -0700
+Message-ID: <CANn89i+NfFLHDthLC-=+vWV6fFSqddVqhnAWE_+mHRD9nQsNyw@mail.gmail.com>
+Subject: Re: [PATCH net-next 11/11] inet: frags: rework rhashtable dismantle
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 03:54:31PM +0300, Vladimir Oltean wrote:
-> On Tue, 28 May 2019 at 12:58, Russell King <rmk+kernel@armlinux.org.uk> wrote:
+On Mon, May 27, 2019 at 11:34 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> Hi Eric:
+>
+> Eric Dumazet <edumazet@google.com> wrote:
 > >
-> > Allow userspace to generate Clause 45 MII access cycles via phylib.
-> > This is useful for tools such as mii-diag to be able to inspect Clause
-> > 45 PHYs.
-> >
-> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> >  drivers/net/phy/phy.c | 33 ++++++++++++++++++++++++---------
-> >  1 file changed, 24 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-> > index 3745220c5c98..6d279c2ac1f8 100644
-> > --- a/drivers/net/phy/phy.c
-> > +++ b/drivers/net/phy/phy.c
-> > @@ -386,6 +386,7 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
-> >         struct mii_ioctl_data *mii_data = if_mii(ifr);
-> >         u16 val = mii_data->val_in;
-> >         bool change_autoneg = false;
-> > +       int prtad, devad;
-> >
-> >         switch (cmd) {
-> >         case SIOCGMIIPHY:
-> > @@ -393,14 +394,29 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
-> >                 /* fall through */
-> >
-> >         case SIOCGMIIREG:
-> > -               mii_data->val_out = mdiobus_read(phydev->mdio.bus,
-> > -                                                mii_data->phy_id,
-> > -                                                mii_data->reg_num);
-> > +               if (mdio_phy_id_is_c45(mii_data->phy_id)) {
-> > +                       prtad = mdio_phy_id_prtad(mii_data->phy_id);
-> > +                       devad = mdio_phy_id_devad(mii_data->phy_id);
-> > +                       devad = MII_ADDR_C45 | devad << 16 | mii_data->reg_num;
-> > +               } else {
-> > +                       prtad = mii_data->phy_id;
-> > +                       devad = mii_data->reg_num;
-> > +               }
-> > +               mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad,
-> > +                                                devad);
-> >                 return 0;
-> >
-> >         case SIOCSMIIREG:
-> > -               if (mii_data->phy_id == phydev->mdio.addr) {
-> > -                       switch (mii_data->reg_num) {
-> > +               if (mdio_phy_id_is_c45(mii_data->phy_id)) {
-> > +                       prtad = mdio_phy_id_prtad(mii_data->phy_id);
-> > +                       devad = mdio_phy_id_devad(mii_data->phy_id);
-> > +                       devad = MII_ADDR_C45 | devad << 16 | mii_data->reg_num;
-> > +               } else {
-> > +                       prtad = mii_data->phy_id;
-> > +                       devad = mii_data->reg_num;
-> > +               }
-> > +               if (prtad == phydev->mdio.addr) {
-> > +                       switch (devad) {
-> >                         case MII_BMCR:
-> >                                 if ((val & (BMCR_RESET | BMCR_ANENABLE)) == 0) {
-> >                                         if (phydev->autoneg == AUTONEG_ENABLE)
-> > @@ -433,11 +449,10 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
-> >                         }
-> >                 }
-> >
-> > -               mdiobus_write(phydev->mdio.bus, mii_data->phy_id,
-> > -                             mii_data->reg_num, val);
-> > +               mdiobus_write(phydev->mdio.bus, prtad, devad, val);
-> >
-> > -               if (mii_data->phy_id == phydev->mdio.addr &&
-> > -                   mii_data->reg_num == MII_BMCR &&
-> > +               if (prtad == phydev->mdio.addr &&
-> > +                   devad == MII_BMCR &&
-> >                     val & BMCR_RESET)
-> >                         return phy_init_hw(phydev);
-> >
-> > --
-> > 2.7.4
-> >
-> 
-> Hi Russell,
-> 
-> I find the SIOCGMIIREG/SIOCGMIIPHY ioctls useful for C45 just as much
-> as they are for C22, but I think the way they work is a big hack and
-> for that reason they're less than useful when you need them most.
-> These ioctls work by hijacking the MDIO bus driver of a PHY that is
-> attached to a net_device. Hence they can be used to access at most a
-> PHY that lies on the same MDIO bus as one you already have a
-> phy-handle to.
-> If you have a PHY issue that makes of_phy_connect fail and the
-> net_device to fail to probe, basically you're SOL because you lose
-> that one handle that userspace had to the MDIO bus.
-> Similarly if you're doing a bring-up and all PHY interfaces are fixed-link.
-> Maybe it would be better to rethink this and expose some sysfs nodes
-> for raw MDIO access in the bus drivers.
+> > +void fqdir_exit(struct fqdir *fqdir)
+> > +{
+> > +       fqdir->high_thresh = 0; /* prevent creation of new frags */
+> > +
+> > +       /* paired with READ_ONCE() in inet_frag_kill() :
+> > +        * We want to prevent rhashtable_remove_fast() calls
+> > +        */
+> > +       smp_store_release(&fqdir->dead, true);
+> > +
+> > +       INIT_RCU_WORK(&fqdir->destroy_rwork, fqdir_rwork_fn);
+> > +       queue_rcu_work(system_wq, &fqdir->destroy_rwork);
+> > +
+> > +}
+>
+> What is the smp_store_release supposed to protect here? If it's
+> meant to separate the setting of dead and the subsequent destruction
+> work then it doesn't work because the barrier only protects the code
+> preceding it, not after.
+>
 
-I don't see how putting some attributes in sysfs helps - sysfs is
-fine for exporting structured information, but with PHYs, it's not
-that structured.  ioctls on sysfs attributes are certainly very
-undesirable, and not supported.  So, I don't think sysfs would work.
+This smp_store_release() is a left over of the first version of the patch, where
+there was no rcu grace period enforcement.
 
-debugfs is another option, that is more flexible, but that is also
-based around the idea of exporting stuff in a relatively structured
-way, and I don't think a MII bus with arbitary PHYs with an arbitary
-number of layers would be exportable in a particularly nice way.
-Consider that a Clause 45 PHY can have up to 32 layers, each with
-64Ki of register space - that's a total of 2Mi of 16-bit registers.
+I do not believe there is harm letting this, but if you disagree
+please send a patch ;)
 
-What would be better would be for the MDIO layer to have /dev nodes
-that userspace could use to access the bus independent of the PHY,
-much the same as we have /dev/i2c-* - but I'm not sure if we really
-want to invent a whole new interface to MDIO buses.
-
-The MII interface already exists, works for the most part, and is
-already used for Clause 45 PHYs for a number of NICs.  I do agree
-that it is less than perfect though.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Thanks
