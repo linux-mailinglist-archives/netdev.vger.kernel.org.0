@@ -2,122 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75B442CED0
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:41:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D34572CED2
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:42:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727552AbfE1Sls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 14:41:48 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:35261 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727235AbfE1Sls (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:41:48 -0400
-Received: by mail-vs1-f67.google.com with SMTP id q13so951558vso.2
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:41:47 -0700 (PDT)
+        id S1727581AbfE1SmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 14:42:16 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42750 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727235AbfE1SmQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:42:16 -0400
+Received: by mail-pl1-f195.google.com with SMTP id go2so8684556plb.9
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:42:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=ad1cYkMrOLmBkFfXlRPVZK14/AI50NO7QNYJ86qIXgg=;
-        b=eqA120MHxFxC9dDn/R6icwh4Legj9CtWNTP1fNpuY31VaXR2JrNvkUrUmicL/Q7WDq
-         bASERXEVfxypv5rkMXhK5uQK25HcAvsw0KGxIBLBy+gASYjB40+UpKX8p/4FMSIO5q9g
-         +dhZkOrpnvYkslYOMME4ClkwV6W7NmiQ6XuozAMP166u810zfoQJ3Y84tpLLrhVZdB7c
-         VPCqQ4B7zyXmIZUzgYsglNaa4s1OiL30unmRtAbdAiNEo2t9LE2UcFHgptLE6HGvCYqQ
-         zP+K/Fd7XR6LUGdsEdeOWfNz9iER1hMyD/OHXGFbSL2E2zTOoLvdRhcp2VFPPhm6Fb/3
-         NSbA==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=U2ewQAuwCBDkySUUybTppwFKk1nFEG38Blr8JkptJdw=;
+        b=aJidNVVStZXqRBi7wEJmwe+/I6qoe5jouoQvnc+mtFqv/GMizmVfPN8MKUsSig2I/d
+         W5AKC/TClFaeqHSeJiB6s371V6gJLAhJb+EDiEG2egFbLv5RPxmVQpYDevXojyKLh8Ru
+         aDqPFa9aTAYtzG8MoYkaMDLpcYbjFGQqmLNcXsqmsxJMs2lkiTMrzEi7Zax/T/gm/lkR
+         WGMGOYNITZvZ8iUx002FOONS8jSyAqkVoqf2G9MgtD88gf07Xh+Cr2Ep3CSmy1kHrg0s
+         Flf4+ZCSSu/6Tv1vXCP1sDsnPvISv8oWd1WLdFWbk2mXUu0fLdPac6UKJ4nH3WIk7oVv
+         rK/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=ad1cYkMrOLmBkFfXlRPVZK14/AI50NO7QNYJ86qIXgg=;
-        b=ERIIMgNHOXFR62rjIxLNKtQ8fvazqKaw6NZZHeX6rE3UJLirrcfIN717IE2rPbU97p
-         mRCFJouM1lEDkhtF2wlHffUerkGTZU6wgX/umOAOVHS2SJq+oar6SwthDWNX61UrhzHY
-         saYUx2rXylEvVyfFruqvuMIkkVJ215WTAqNZEy3Y3hgcGMWb+3RofqnqmzzUxw7jhl60
-         i0m3wq3f4Pan6sgmHjba3BYehdHw9g2ZfJmJqsvZ3/aXzyaK5yxrHBYagueBNMZR0Uv3
-         zl6v34Kk4MMtip/XkTHmc/VSZLMIZljRWgSmzP5Yna2zO7TxIIeVlmHQQOhaKiWNju8t
-         hzeQ==
-X-Gm-Message-State: APjAAAWtAOovB4GsmEQuFrupWNrQa+64JI8lYzqBSBg8JJTLgezHochq
-        fNPwRU0as3aT0uxh/TpJL7FCJw==
-X-Google-Smtp-Source: APXvYqzn0fLfEetCoLpgYNjCQ8VY4AI3HXA9ZbyBNViobXop6Dsadvi4Mx8EJgOYzyQURcMvt0GSjw==
-X-Received: by 2002:a67:ca1c:: with SMTP id z28mr25226236vsk.6.1559068907122;
-        Tue, 28 May 2019 11:41:47 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id p75sm7296133vkf.29.2019.05.28.11.41.45
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 28 May 2019 11:41:46 -0700 (PDT)
-Date:   Tue, 28 May 2019 11:41:41 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/2] net: xdp: refactor XDP_QUERY_PROG{,_HW} to
- netdev
-Message-ID: <20190528114141.71efa269@cakuba.netronome.com>
-In-Reply-To: <CAJ+HfNjFPmRuESHE0MYqQ9UUnV+szPK4du4DugUuzQJRVYWtew@mail.gmail.com>
-References: <20190522125353.6106-1-bjorn.topel@gmail.com>
-        <20190522125353.6106-2-bjorn.topel@gmail.com>
-        <20190522113212.68aea474@cakuba.netronome.com>
-        <CAJ+HfNjFPmRuESHE0MYqQ9UUnV+szPK4du4DugUuzQJRVYWtew@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=U2ewQAuwCBDkySUUybTppwFKk1nFEG38Blr8JkptJdw=;
+        b=B36R9tOVSAoPDUhl0lHQUqGlNDQvctqiCZW7KhQX30c2UfTN004E64RULDpOLI2ff4
+         DNlnA/5OVgW8lVT+glZVeDwfCdOZJ4S2ml4JFJ6XU9/qC7CUwepglRNtxGgi/tXTNhdX
+         oF+Qea+qgBCjzn/TwUvR2fpnj4gjL9TU2OUfFfd7Z7geOGirh4/EKO6zwKvSRgOYeKuJ
+         b10sSJJiyW5RKFdSxQPYhKIVdsCfWqUwCDyKWxxqRpYyXEp7JsP4qt7igp4ouPgrZ66l
+         iHPm7X0TA4BdSdysESUWGVyq/pFClSc+kYSRUXt6XDuubq4N7eog2vhBOPE0wZoHCiH/
+         /Qbw==
+X-Gm-Message-State: APjAAAUBC4gwZkyLCeJfdKHUy92yFV58LBIEWjG+bOieDGeA95V4WgsY
+        48E/3+fSjWAzZtaxtM3CJg5Uyq90
+X-Google-Smtp-Source: APXvYqzyw2bXA2MiHfIdTuEDeypjXzS14WKuDJVYbnL+lP2nJQ1olAPDg/MMyhBFZa/QO7wrX/VJCw==
+X-Received: by 2002:a17:902:ab90:: with SMTP id f16mr27022455plr.262.1559068935410;
+        Tue, 28 May 2019 11:42:15 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id r4sm3343428pjd.28.2019.05.28.11.42.14
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 May 2019 11:42:14 -0700 (PDT)
+Subject: Re: [PATCH] v3.19.8: tcp: re-enable high throughput for low pacing
+ rate
+To:     Sergej Benilov <sergej.benilov@googlemail.com>,
+        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org
+References: <20190528183425.31691-1-sergej.benilov@googlemail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a1f47ea3-5f6f-f2b5-f077-139d7ac3a67b@gmail.com>
+Date:   Tue, 28 May 2019 11:42:13 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190528183425.31691-1-sergej.benilov@googlemail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 May 2019 19:06:21 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
-> On Wed, 22 May 2019 at 20:32, Jakub Kicinski wrote:
-> > You should be able to just call install with the original flags, and
-> > install handler should do the right maths again to direct it either to
-> > drv or generic, no?
-> > =20
->=20
-> On a related note: I ran the test_offload.py test (thanks for pointing
-> that out!), and realized that my view of load flags was incorrect. To
-> double-check:
->=20
-> Given an XDP DRV capable netdev "eth0".
->=20
-> # ip link set dev eth0 xdp obj foo.o sec .text
-> # ip link set dev eth0 xdpdrv off
->=20
-> and
->=20
-> # ip link set dev eth0 xdpdrv obj foo.o sec .text
-> # ip link set dev eth0 xdp off
->=20
-> and
->=20
-> # ip link set dev eth0 xdpdrv obj foo.o sec .text
-> # ip link -force set dev eth0 xdp obj foo.o sec .text
->=20
-> and
->=20
-> # ip link set dev eth0 xdp obj foo.o sec .text
-> # ip link -force set dev eth0 xdpdrv obj foo.o sec .text
->=20
-> Should all fail. IOW, there's a distinction between explicit DRV and
-> auto-detected DRV? It's considered to be different flags.
->=20
-> Correct?
 
-I think so.  That's the way drivers which implement offloads work
-(netdevsim and nfp).
 
-However:
+On 5/28/19 11:34 AM, Sergej Benilov wrote:
+> Since commit 605ad7f184b60cfaacbc038aa6c55ee68dee3c89 "tcp: refine TSO autosizing",
+> the TSQ limit is computed as the smaller of
+> sysctl_tcp_limit_output_bytes and max(2 * skb->truesize, sk->sk_pacing_rate >> 10).
+> For low pacing rates, this approach sets a low limit, reducing throughput dramatically.
 
-ip link set dev eth0 xdpdrv obj foo.o sec .text
-ip link set dev eth0 xdpoffload off
-ip link set dev eth0 xdpgeneric off
+...
 
-are fine.  It's just the no flag case that's special, to avoid
-confusion.  If one always uses the flags there should be no errors.
+> 
+> Signed-off-by: Sergej Benilov <sergej.benilov@googlemail.com>
+> ---
+>  net/ipv4/tcp_output.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index e625be56..71efca72 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -2054,7 +2054,7 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+>  		 * One example is wifi aggregation (802.11 AMPDU)
+>  		 */
+>  		limit = max(2 * skb->truesize, sk->sk_pacing_rate >> 10);
+> -		limit = min_t(u32, limit, sysctl_tcp_limit_output_bytes);
+> +		limit = max_t(u32, limit, sysctl_tcp_limit_output_bytes);
+>  
+>  		if (atomic_read(&sk->sk_wmem_alloc) > limit) {
+>  			set_bit(TSQ_THROTTLED, &tp->tsq_flags);
+> 
 
-> This was *not* my view. :-)
+NACK again, for the same reasons.
+
