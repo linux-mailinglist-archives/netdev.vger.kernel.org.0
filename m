@@ -2,175 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F67A2CF7A
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:28:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FD552CF7B
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727866AbfE1T2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 15:28:18 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42712 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727535AbfE1T2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:28:17 -0400
-Received: by mail-wr1-f65.google.com with SMTP id l2so21514102wrb.9;
-        Tue, 28 May 2019 12:28:16 -0700 (PDT)
+        id S1727878AbfE1T21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 15:28:27 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41924 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbfE1T21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:28:27 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q17so7247826pfq.8
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 12:28:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CMXsiVNgko7QGrxcP0nM2gD3dGeneAShDKIZ6YcTRgQ=;
-        b=vKk6yas1sOSw+g2ZI4yh248NxZFsWQcSaUIoLLbhzNfAvWxsW10bDivZRxyXmAvL3C
-         0U75Xh9kllM99KzEHVzPAX5cOLeD6BNYr8jMyV4uX3zZyG6THQocx3Znzdyz3ewCrqPK
-         Sva5ntDVWtpY3jEyouf3/lutFhHl3key7w9y1zdb6wpv1st2aqe5DZhbu+6NpG/nJ6r8
-         anoZHCX9b6oNAwS3sDqv/VtKeCN4GYTh9x15H3UrwpzWbsOYD3rkbBMQovdkEkTOEKMp
-         1/T4Q0mdu1aMT1piDsoxTx+mdUa/JvR1gYb66+FUoDL8sbFz5pgBR6kPeljwoxmIaskH
-         bHUw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BcED/+bBUPI/ra+tiG0FgPuHeGEZGzHs6gwwlQ/TpNM=;
+        b=MUN0Z4jtA8BrMc4IQtpV7aFpeAc7M8L8+glvn8zgHJBLjoCRyxxbwivq8QeCDeyvZK
+         dA12veMpYrF81dcP0q951um4qcnKmbJjxhxN8oQjdx4Tc6dKH+gjGmYRITIV8Lxp5IPx
+         i5pCdp9EQp6Jr1sn0ePbcLwlAfbUfv96IFYwMKkLvB2llN8yvVhxAEdaHzzrxqFwiTwm
+         uRaT0AAIctR4NSRzLaRPr0DXw1ghYTSaQ5Htp4j2Z4h9xCmYGWx0Lo6jibivWwXi3+Yf
+         G0A+rmEOsFzHkefHSjiwvmF5+rHh7WiLDEVMhF4/hAxzZE1EbuO1mIXvPdOp1oMpLRju
+         nziA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=CMXsiVNgko7QGrxcP0nM2gD3dGeneAShDKIZ6YcTRgQ=;
-        b=O74DgPVNPNEE5hV5z07urVzNA1n6PeFskey6+xk/Qy3OPbq0VkUZdc5pzm8wugltZJ
-         aaLJwgVFPqiKggB1U4ypjovnqgE+5XWb4vOpTAlDCDIgP22lU5uTL8BmPjb6SaulA2BT
-         27QSxbRHAFQezCP35tcSpSuGZtS3xHUFqvuyM9RKH5tEZowGu0zQiWLBaIb14QWN5eV4
-         kRzbc10ryx4iDBHbpECUnP7njf1gnwqV3QauxZBkAcXbqo0F0Ax3Zv6gsAt0sBcjSaoN
-         76hkDe3CyeNA/2wwRxUwTFd3YpcjRMYUy+Z0v4V1b7pTQeKePp9lUAvFyF6TJXPFT+cV
-         sutw==
-X-Gm-Message-State: APjAAAUrwENjcBPOOE+W4pwPS5bd9iNY67IzEVggekRQwJmEGmwMMcPr
-        Whvr2V9+oMW9GhvAx7pI22oTRNlg
-X-Google-Smtp-Source: APXvYqzZMao/gYFKB2n4z+RBhVReXk0nCZaSxBm3SltLL57v/5G3nxUKlstBruVIC37V0zhC2A+XgQ==
-X-Received: by 2002:a5d:628d:: with SMTP id k13mr20919424wru.319.1559071695131;
-        Tue, 28 May 2019 12:28:15 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bf3:bd00:fcc3:3d8b:511a:9137? (p200300EA8BF3BD00FCC33D8B511A9137.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:fcc3:3d8b:511a:9137])
-        by smtp.googlemail.com with ESMTPSA id 67sm4829058wmd.38.2019.05.28.12.28.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 12:28:14 -0700 (PDT)
-Subject: Re: [PATCH V2] net: phy: tja11xx: Add IRQ support to the driver
-To:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-References: <20190528192324.28862-1-marex@denx.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <96793717-a55c-7844-f7c0-cc357c774a19@gmail.com>
-Date:   Tue, 28 May 2019 21:28:08 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BcED/+bBUPI/ra+tiG0FgPuHeGEZGzHs6gwwlQ/TpNM=;
+        b=WPubiwGUJMxxZhDq/RWtl+3WX52P8vcPZtAq6HD4P/IV53oM1WMBG04r84a+7Xn1NM
+         vl5nfCRCcN427tfKqHi+9RI8qWa2rFBKtbcmROqRjMpv0z5yXJ0BPjnApokETXxzuXEO
+         vvjFk7VOjCZooX3xIRQXos3KlnYUda8ClqLeunGgM7D+M14i41BAyXUcwJpFjAkvZy6n
+         QW8XFqMFcfzVobU7H61+2/77W74K54P25SzbE5/z7mhWxqWj9DUZoypBn23YLxtn6NXj
+         CoLNmfRuxCpbeEapTSMdj1ChnGfZUYjuuBumafYkt/XhoSlTGBaEfo6agmPkI3/2ZFXw
+         XbkQ==
+X-Gm-Message-State: APjAAAUk1VUNAaN7dTHtaxKYATFVJBpcjqEC7qJzLdtHCQMm+LdVFHWg
+        JpCc3p4cC1xKQrxsUZ0cpRV+wFgpSEI=
+X-Google-Smtp-Source: APXvYqwOwVGUDdjLRn3MUVA1uf7BioQRC2/2OOnfYuIWb++oaSgb+gMn7rjcggS69jMXNfqdDpg8bA==
+X-Received: by 2002:a65:654f:: with SMTP id a15mr117797018pgw.73.1559071706825;
+        Tue, 28 May 2019 12:28:26 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id h71sm4135335pje.11.2019.05.28.12.28.26
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 28 May 2019 12:28:26 -0700 (PDT)
+Date:   Tue, 28 May 2019 12:28:24 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Lukasz Czapnik <lukasz.czapnik@gmail.com>
+Cc:     netdev@vger.kernel.org, Lukasz Czapnik <lukasz.czapnik@intel.com>
+Subject: Re: [PATCH] tc: flower: fix port value truncation
+Message-ID: <20190528122824.3ce628d3@hermes.lan>
+In-Reply-To: <20190527210349.31833-1-lukasz.czapnik@gmail.com>
+References: <20190527210349.31833-1-lukasz.czapnik@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190528192324.28862-1-marex@denx.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.05.2019 21:23, Marek Vasut wrote:
-> Add support for handling the TJA11xx PHY IRQ signal.
+On Mon, 27 May 2019 23:03:49 +0200
+Lukasz Czapnik <lukasz.czapnik@gmail.com> wrote:
+
+> sscanf truncates read port values silently without any error. As sscanf
+> man says:
+> (...) sscanf() conform to C89 and C99 and POSIX.1-2001. These standards
+> do not specify the ERANGE error.
 > 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: linux-hwmon@vger.kernel.org
-> ---
-> V2: - Define each bit of the MII_INTEN register and a mask
->     - Drop IRQ acking from tja11xx_config_intr()
-> ---
->  drivers/net/phy/nxp-tja11xx.c | 48 +++++++++++++++++++++++++++++++++++
->  1 file changed, 48 insertions(+)
+> Replace sscanf with safer get_be16 that returns error when value is out
+> of range.
 > 
-> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-> index b705d0bd798b..b41af609607d 100644
-> --- a/drivers/net/phy/nxp-tja11xx.c
-> +++ b/drivers/net/phy/nxp-tja11xx.c
-> @@ -40,6 +40,29 @@
->  #define MII_INTSRC_TEMP_ERR		BIT(1)
->  #define MII_INTSRC_UV_ERR		BIT(3)
->  
-> +#define MII_INTEN			22
-> +#define MII_INTEN_PWON_EN		BIT(15)
-> +#define MII_INTEN_WAKEUP_EN		BIT(14)
-> +#define MII_INTEN_PHY_INIT_FAIL_EN	BIT(11)
-> +#define MII_INTEN_LINK_STATUS_FAIL_EN	BIT(10)
-> +#define MII_INTEN_LINK_STATUS_UP_EN	BIT(9)
-> +#define MII_INTEN_SYM_ERR_EN		BIT(8)
-> +#define MII_INTEN_TRAINING_FAILED_EN	BIT(7)
-> +#define MII_INTEN_SQI_WARNING_EN	BIT(6)
-> +#define MII_INTEN_CONTROL_ERR_EN	BIT(5)
-> +#define MII_INTEN_UV_ERR_EN		BIT(3)
-> +#define MII_INTEN_UV_RECOVERY_EN	BIT(2)
-> +#define MII_INTEN_TEMP_ERR_EN		BIT(1)
-> +#define MII_INTEN_SLEEP_ABORT_EN	BIT(0)
-> +#define MII_INTEN_MASK							\
-> +	(MII_INTEN_PWON_EN | MII_INTEN_WAKEUP_EN |			\
-> +	MII_INTEN_PHY_INIT_FAIL_EN | MII_INTEN_LINK_STATUS_FAIL_EN |	\
-> +	MII_INTEN_LINK_STATUS_UP_EN | MII_INTEN_SYM_ERR_EN |		\
-> +	MII_INTEN_TRAINING_FAILED_EN | MII_INTEN_SQI_WARNING_EN |	\
-> +	MII_INTEN_CONTROL_ERR_EN | MII_INTEN_UV_ERR_EN |		\
-> +	MII_INTEN_UV_RECOVERY_EN | MII_INTEN_TEMP_ERR_EN |		\
-> +	MII_INTEN_SLEEP_ABORT_EN)
-
-Why do you enable all these interrupt sources? As I said, phylib needs
-link change info only.
-
-> +
->  #define MII_COMMSTAT			23
->  #define MII_COMMSTAT_LINK_UP		BIT(15)
->  
-> @@ -239,6 +262,25 @@ static int tja11xx_read_status(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +static int tja11xx_config_intr(struct phy_device *phydev)
-> +{
-> +	int ret;
-> +
-> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-> +		ret = phy_write(phydev, MII_INTEN, MII_INTEN_MASK);
-> +	else
-> +		ret = phy_write(phydev, MII_INTEN, 0);
-> +
-> +	return ret < 0 ? ret : 0;
-
-phy_write returns only 0 or negative errno. You don't need
-variable ret.
-
-> +}
-> +
-> +static int tja11xx_ack_interrupt(struct phy_device *phydev)
-> +{
-> +	int ret = phy_read(phydev, MII_INTSRC);
-> +
-> +	return ret < 0 ? ret : 0;
-> +}
-> +
->  static int tja11xx_get_sset_count(struct phy_device *phydev)
->  {
->  	return ARRAY_SIZE(tja11xx_hw_stats);
-> @@ -366,6 +408,9 @@ static struct phy_driver tja11xx_driver[] = {
->  		.suspend	= genphy_suspend,
->  		.resume		= genphy_resume,
->  		.set_loopback   = genphy_loopback,
-> +		/* IRQ related */
-> +		.config_intr	= tja11xx_config_intr,
-> +		.ack_interrupt	= tja11xx_ack_interrupt,
->  		/* Statistics */
->  		.get_sset_count = tja11xx_get_sset_count,
->  		.get_strings	= tja11xx_get_strings,
-> @@ -381,6 +426,9 @@ static struct phy_driver tja11xx_driver[] = {
->  		.suspend	= genphy_suspend,
->  		.resume		= genphy_resume,
->  		.set_loopback   = genphy_loopback,
-> +		/* IRQ related */
-> +		.config_intr	= tja11xx_config_intr,
-> +		.ack_interrupt	= tja11xx_ack_interrupt,
->  		/* Statistics */
->  		.get_sset_count = tja11xx_get_sset_count,
->  		.get_strings	= tja11xx_get_strings,
+> Example:
+> tc filter add dev eth0 protocol ip parent ffff: prio 1 flower ip_proto
+> tcp dst_port 70000 hw_tc 1
 > 
+> Would result in filter for port 4464 without any warning.
+> 
+> Fixes: 8930840e678b ("tc: flower: Classify packets based port ranges")
+> Signed-off-by: Lukasz Czapnik <lukasz.czapnik@intel.com>
+
+Looks good, applied.
+
 
