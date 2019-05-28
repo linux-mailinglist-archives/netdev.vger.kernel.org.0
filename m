@@ -2,169 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 898492CFB5
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:44:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2332CFBA
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:46:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727463AbfE1ToH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 15:44:07 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46398 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726452AbfE1ToG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:44:06 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4SJgcEP004415;
-        Tue, 28 May 2019 12:43:49 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=yhUYvJTPSVO43FtV9LuZGVl3h/Mkzvo8J7v5p7WcWxs=;
- b=IhZL1ahsj2py6t6xOeruAz54po4s8RkSnBV+6kEKPBHveXnoR6YjPzSOdxSJu0SvDifT
- SE73cqh1nyfvgkPzcQOStWKoJKjBmy83HomEGVMlDXsRNHmMdmrToK6iucdveB4HSCVI
- a5/Zx/cpVMUPP8QHMnREjaWYFHYSWS8TD2s= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2ss8rd0n6j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 28 May 2019 12:43:49 -0700
-Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 28 May 2019 12:43:48 -0700
-Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
- prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 28 May 2019 12:43:48 -0700
-Received: from NAM03-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Tue, 28 May 2019 12:43:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yhUYvJTPSVO43FtV9LuZGVl3h/Mkzvo8J7v5p7WcWxs=;
- b=rnk/mGqWhksH4h+ZbjYr0y2eUgB4I1ruBfFl/v6m9EU2Onlj1wDYlGKCukhHqhjtyCgKQJP05Q4CIDLcrWyLRCykUOjftaN3Nqr+CLVgU36QrFqIrFIfh6sAdaW2sUwcCL50YbIIsksGNbUIxKlkspy9T+iQ7jLic97epQAO31o=
-Received: from BYAPR15MB2631.namprd15.prod.outlook.com (20.179.156.24) by
- BYAPR15MB3383.namprd15.prod.outlook.com (20.179.59.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1943.16; Tue, 28 May 2019 19:43:46 +0000
-Received: from BYAPR15MB2631.namprd15.prod.outlook.com
- ([fe80::d4f6:b485:69ee:fd9a]) by BYAPR15MB2631.namprd15.prod.outlook.com
- ([fe80::d4f6:b485:69ee:fd9a%7]) with mapi id 15.20.1922.021; Tue, 28 May 2019
- 19:43:46 +0000
-From:   Roman Gushchin <guro@fb.com>
-To:     Stanislav Fomichev <sdf@google.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next v3 3/4] bpf: cgroup: properly use bpf_prog_array
- api
-Thread-Topic: [PATCH bpf-next v3 3/4] bpf: cgroup: properly use bpf_prog_array
- api
-Thread-Index: AQHVFYNuZOejCl/kQUWLljlEI/uGLKaA8EcA
-Date:   Tue, 28 May 2019 19:43:46 +0000
-Message-ID: <20190528194342.GC20578@tower.DHCP.thefacebook.com>
-References: <20190528182946.3633-1-sdf@google.com>
- <20190528182946.3633-3-sdf@google.com>
-In-Reply-To: <20190528182946.3633-3-sdf@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR0201CA0035.namprd02.prod.outlook.com
- (2603:10b6:301:74::48) To BYAPR15MB2631.namprd15.prod.outlook.com
- (2603:10b6:a03:152::24)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::3:3dca]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 14b666cb-3337-4c8a-4af0-08d6e3a4cc8c
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB3383;
-x-ms-traffictypediagnostic: BYAPR15MB3383:
-x-microsoft-antispam-prvs: <BYAPR15MB3383A1E89C1F68A0FE539F15BE1E0@BYAPR15MB3383.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-forefront-prvs: 00514A2FE6
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(366004)(396003)(346002)(376002)(39860400002)(189003)(199004)(76176011)(186003)(66476007)(8936002)(52116002)(81156014)(316002)(68736007)(66446008)(81166006)(486006)(99286004)(46003)(66946007)(73956011)(476003)(6512007)(54906003)(53936002)(9686003)(446003)(11346002)(4326008)(6916009)(2906002)(33656002)(14454004)(6246003)(64756008)(102836004)(386003)(6506007)(66556008)(25786009)(8676002)(305945005)(6116002)(6486002)(6436002)(14444005)(1076003)(5024004)(256004)(229853002)(71190400001)(478600001)(86362001)(71200400001)(5660300002)(7736002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3383;H:BYAPR15MB2631.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 9PaTJpmAN6zLSfxmd2vc2fkTBRjZPdWjpmtA0lgHPDmHi3crdAgxfrYgu6KsEEJr2EmK8OolqAs4UlxyytHAmMhwkP27Dsak2/yN58s2adFY/E0hB2Gwhwn6nF9I7AwX/BasOKzEAybaplnb2PWXv/BulfTpTGjjQo6ompW5kWJh9BMLQR3Em+U5zcfJoNEaJcRlvp3Es+49zsaQYepMNr8Qz7UCHYAZFf9Ugn3F0n3cTICmPsE+WTox82CGEfRYXASYrZBDkR3nYNLf8KjPhxnedOAq4L8xrJ8J8Y49d2cz+uYMQ6/q41+jV88QrzBHTUyeIU+K/vRAG4ZcBeSbbxOp8Qp1/1qGP4P5JE3qgEkFo97k8HpkFLiz12WidGYF/jaY4M5RfcDQx/emoZsWEw+YcUrITVuqOT3ZW/q9KIw=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <4E99262BF8C4F047A2BF72F52272A078@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726947AbfE1Tqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 15:46:53 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:35263 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbfE1Tqx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:46:53 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 45D49P35pBz1rTD9;
+        Tue, 28 May 2019 21:46:49 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 45D49P2Sjgz1qqkZ;
+        Tue, 28 May 2019 21:46:49 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id EcJN0-bL0DV2; Tue, 28 May 2019 21:46:47 +0200 (CEST)
+X-Auth-Info: bY6SZT2qgAfphZOJBw2IB6yzOz7J5oXUePZXdSE9rAo=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Tue, 28 May 2019 21:46:47 +0200 (CEST)
+Subject: Re: [PATCH V2] net: phy: tja11xx: Add IRQ support to the driver
+To:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+References: <20190528192324.28862-1-marex@denx.de>
+ <96793717-a55c-7844-f7c0-cc357c774a19@gmail.com>
+ <4f33b529-6c3c-07ee-6177-2d332de514c6@denx.de>
+ <cc8db234-4534-674d-eece-5a797a530cdf@gmail.com>
+From:   Marek Vasut <marex@denx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <ca63964a-242c-bb46-bd4e-76a270dbedb3@denx.de>
+Date:   Tue, 28 May 2019 21:46:47 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 14b666cb-3337-4c8a-4af0-08d6e3a4cc8c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2019 19:43:46.8060
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: guro@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3383
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-28_09:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=993 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905280123
-X-FB-Internal: deliver
+In-Reply-To: <cc8db234-4534-674d-eece-5a797a530cdf@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 11:29:45AM -0700, Stanislav Fomichev wrote:
-> Now that we don't have __rcu markers on the bpf_prog_array helpers,
-> let's use proper rcu_dereference_protected to obtain array pointer
-> under mutex.
->=20
-> We also don't need __rcu annotations on cgroup_bpf.inactive since
-> it's not read/updated concurrently.
->=20
-> v3:
-> * amend cgroup_rcu_dereference to include percpu_ref_is_dying;
->   cgroup_bpf is now reference counted and we don't hold cgroup_mutex
->   anymore in cgroup_bpf_release
->=20
-> v2:
-> * replace xchg with rcu_swap_protected
->=20
-> Cc: Roman Gushchin <guro@fb.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  include/linux/bpf-cgroup.h |  2 +-
->  kernel/bpf/cgroup.c        | 32 +++++++++++++++++++++-----------
->  2 files changed, 22 insertions(+), 12 deletions(-)
->=20
-> diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-> index 9f100fc422c3..b631ee75762d 100644
-> --- a/include/linux/bpf-cgroup.h
-> +++ b/include/linux/bpf-cgroup.h
-> @@ -72,7 +72,7 @@ struct cgroup_bpf {
->  	u32 flags[MAX_BPF_ATTACH_TYPE];
-> =20
->  	/* temp storage for effective prog array used by prog_attach/detach */
-> -	struct bpf_prog_array __rcu *inactive;
-> +	struct bpf_prog_array *inactive;
-> =20
->  	/* reference counter used to detach bpf programs after cgroup removal *=
-/
->  	struct percpu_ref refcnt;
-> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index d995edbe816d..118b70175dd9 100644
-> --- a/kernel/bpf/cgroup.c
-> +++ b/kernel/bpf/cgroup.c
-> @@ -22,6 +22,13 @@
->  DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
->  EXPORT_SYMBOL(cgroup_bpf_enabled_key);
-> =20
-> +#define cgroup_rcu_dereference(cgrp, p)					\
-> +	rcu_dereference_protected(p, lockdep_is_held(&cgroup_mutex) ||	\
-> +				  percpu_ref_is_dying(&cgrp->bpf.refcnt))
+On 5/28/19 9:35 PM, Heiner Kallweit wrote:
+> On 28.05.2019 21:31, Marek Vasut wrote:
+>> On 5/28/19 9:28 PM, Heiner Kallweit wrote:
+>>> On 28.05.2019 21:23, Marek Vasut wrote:
+>>>> Add support for handling the TJA11xx PHY IRQ signal.
+>>>>
+>>>> Signed-off-by: Marek Vasut <marex@denx.de>
+>>>> Cc: Andrew Lunn <andrew@lunn.ch>
+>>>> Cc: Florian Fainelli <f.fainelli@gmail.com>
+>>>> Cc: Guenter Roeck <linux@roeck-us.net>
+>>>> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+>>>> Cc: Jean Delvare <jdelvare@suse.com>
+>>>> Cc: linux-hwmon@vger.kernel.org
+>>>> ---
+>>>> V2: - Define each bit of the MII_INTEN register and a mask
+>>>>     - Drop IRQ acking from tja11xx_config_intr()
+>>>> ---
+>>>>  drivers/net/phy/nxp-tja11xx.c | 48 +++++++++++++++++++++++++++++++++++
+>>>>  1 file changed, 48 insertions(+)
+>>>>
+>>>> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
+>>>> index b705d0bd798b..b41af609607d 100644
+>>>> --- a/drivers/net/phy/nxp-tja11xx.c
+>>>> +++ b/drivers/net/phy/nxp-tja11xx.c
+>>>> @@ -40,6 +40,29 @@
+>>>>  #define MII_INTSRC_TEMP_ERR		BIT(1)
+>>>>  #define MII_INTSRC_UV_ERR		BIT(3)
+>>>>  
+>>>> +#define MII_INTEN			22
+>>>> +#define MII_INTEN_PWON_EN		BIT(15)
+>>>> +#define MII_INTEN_WAKEUP_EN		BIT(14)
+>>>> +#define MII_INTEN_PHY_INIT_FAIL_EN	BIT(11)
+>>>> +#define MII_INTEN_LINK_STATUS_FAIL_EN	BIT(10)
+>>>> +#define MII_INTEN_LINK_STATUS_UP_EN	BIT(9)
+>>>> +#define MII_INTEN_SYM_ERR_EN		BIT(8)
+>>>> +#define MII_INTEN_TRAINING_FAILED_EN	BIT(7)
+>>>> +#define MII_INTEN_SQI_WARNING_EN	BIT(6)
+>>>> +#define MII_INTEN_CONTROL_ERR_EN	BIT(5)
+>>>> +#define MII_INTEN_UV_ERR_EN		BIT(3)
+>>>> +#define MII_INTEN_UV_RECOVERY_EN	BIT(2)
+>>>> +#define MII_INTEN_TEMP_ERR_EN		BIT(1)
+>>>> +#define MII_INTEN_SLEEP_ABORT_EN	BIT(0)
+>>>> +#define MII_INTEN_MASK							\
+>>>> +	(MII_INTEN_PWON_EN | MII_INTEN_WAKEUP_EN |			\
+>>>> +	MII_INTEN_PHY_INIT_FAIL_EN | MII_INTEN_LINK_STATUS_FAIL_EN |	\
+>>>> +	MII_INTEN_LINK_STATUS_UP_EN | MII_INTEN_SYM_ERR_EN |		\
+>>>> +	MII_INTEN_TRAINING_FAILED_EN | MII_INTEN_SQI_WARNING_EN |	\
+>>>> +	MII_INTEN_CONTROL_ERR_EN | MII_INTEN_UV_ERR_EN |		\
+>>>> +	MII_INTEN_UV_RECOVERY_EN | MII_INTEN_TEMP_ERR_EN |		\
+>>>> +	MII_INTEN_SLEEP_ABORT_EN)
+>>>
+>>> Why do you enable all these interrupt sources? As I said, phylib needs
+>>> link change info only.
+>>
+>> Because I need them to reliably detect that the link state changed.
+>>
+> 
+> Hmm, e.g. this one MII_INTEN_TEMP_ERR_EN doesn't seem to be related
+> to a link status change. Name sounds like it just reports exceeding
+> a temperature threshold.
 
-Some comments why percpu_ref_is_dying(&cgrp->bpf.refcnt) is enough here wil=
-l
-be appreciated.
+It's PHY over-temperature. Whether it tears the link down or not is not
+clear.
 
-Thanks!
+-- 
+Best regards,
+Marek Vasut
