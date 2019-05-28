@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D33A2C688
+	by mail.lfdr.de (Postfix) with ESMTP id F16442C68A
 	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:31:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbfE1Mbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 08:31:32 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:48723 "EHLO
+        id S1727201AbfE1Mbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 08:31:36 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:34777 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727135AbfE1MbW (ORCPT
+        by vger.kernel.org with ESMTP id S1726824AbfE1MbW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:31:22 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id E3F9B211D;
-        Tue, 28 May 2019 08:22:43 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 703412223;
+        Tue, 28 May 2019 08:22:46 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 28 May 2019 08:22:43 -0400
+  by compute3.internal (MEProxy); Tue, 28 May 2019 08:22:46 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=7rU2txfDb0uDs4sYXa/9uIqO5Ud4IP06r0WvU/4vEb8=; b=GCe9QEzE
-        LGLLqvxJx/q2heXVCIebxZGvWSiyFkKcOlZaRPNO4TPyL7DTJTDIuZbIzNOFCuIY
-        SN8KUG6eGfvDImCFm6ygdvJD6qAE5c/ZlzNYWDux7xX8Jhggiu5y+yRL7VyLVo9L
-        K2Vgp1RCq1ST/DArkdtjFHAMpPLu69Rqher3F2yVbH5KpcLE727GcIzmyrWiHsrT
-        UDyJ5BgdtkSI7Dsb+/9R6SW26WWdBRm8npkh4rnfgmdNzAv4e7icdERJ2xH8vS2H
-        GPQVaNzErH1A9nItCUZyHqD/Z5HwaiPXX9M9OOVcim/E3bAF34jjgLMDndQI4D7N
-        RzSX7hmRi6OY3A==
-X-ME-Sender: <xms:EyjtXHtkLUr3aw1CWXxiU076AzSHLJrsMiO8XTo2s9sivaxL4dd5Ww>
+        fm2; bh=AD6uzafDh4BmLukVTzUx4BX1sKNhOb/jsSRmQuiB7UQ=; b=AtRkCnBL
+        OEpXLli3OiVZ1mDP8VbB0+lE/utYIIMIc6r6m8OJSGNNJbVQxqjWOX24/8mTAKyE
+        9+nqiQ3JqcaWgbHv5www5ynWmXBD9QqkXQDzWBaBSJv40KZ1OZpdmCXxUp4proQd
+        FP8rsZnbFkguILP4CT00cS5uHPTILuTrvBqZJef+v2elVC3OUVvWgX5GUwQ8bTjf
+        TcDhS1v8P0kr4mochwKPl9C9YARHNXXXF/ZBsZKaSnlkmhut2flC4wKfJrjYvb6b
+        gmmHWWxF6P4U0lbWQQ5kpJ7tzWwYR5bpPg8FrpRnHsBXDAUhYy6ehQmUasYo8vau
+        bjNvLKBM2tmD6g==
+X-ME-Sender: <xms:FijtXKqN_F56VJEk0qdp_dtPK-_zFG_qQRjc5EB47PdWaMXCBc03Cw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvhedgheduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpedv
-X-ME-Proxy: <xmx:EyjtXKtOzKfOLM5NCdRqDprb4ucpRYK9yUAkySC3HVkhj2h-OtRynQ>
-    <xmx:EyjtXND8krsw4Q2r08WRvaLLhRh2-V9PtD0YDFGeMvFFWA2f005Chg>
-    <xmx:EyjtXMPyJ-tFCScZMQQh0DAqjNUr1lpm21EQUEWQLuK2070VA35RUg>
-    <xmx:EyjtXEoti48sqVbi0cCPl9UAWy5Aa4sCmLDAab97SWGAruBL_ML1Ig>
+    ufhiiigvpeeg
+X-ME-Proxy: <xmx:FijtXJ6OYPlcLILq2CbRTG2sx_1kWtPOodMpt3mQhjw26KtyzcnNAw>
+    <xmx:FijtXEhohrnXj7fhbImTHgpkykM2OdVfY_ynFmQJffjrz1yclBNZ-A>
+    <xmx:FijtXH2ogyGSTij7AHaj_-YHOlxw4gRcRxf5tyzPPSIyz9J5UmWXow>
+    <xmx:FijtXOblyUWv4K6r2HrKZ0bwHdPZOcd4MbWIP4fx1YY6-_SLfxjiUg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2B2C0380085;
-        Tue, 28 May 2019 08:22:41 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id BB9D3380073;
+        Tue, 28 May 2019 08:22:43 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
@@ -51,9 +51,9 @@ Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
         f.fainelli@gmail.com, vivien.didelot@savoirfairelinux.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [RFC PATCH net-next 04/12] Documentation: Add devlink-trap documentation
-Date:   Tue, 28 May 2019 15:21:28 +0300
-Message-Id: <20190528122136.30476-5-idosch@idosch.org>
+Subject: [RFC PATCH net-next 05/12] netdevsim: Add devlink-trap support
+Date:   Tue, 28 May 2019 15:21:29 +0300
+Message-Id: <20190528122136.30476-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190528122136.30476-1-idosch@idosch.org>
 References: <20190528122136.30476-1-idosch@idosch.org>
@@ -66,248 +66,357 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Add initial documentation of the devlink-trap mechanism, explaining the
-background, motivation and the semantics of the interface.
+Have netdevsim register its trap groups and traps with devlink during
+initialization and periodically report trapped packets to devlink core.
+
+Since netdevsim is not a real device, the trapped packets are emulated
+using a workqueue that periodically reports a UDP packet with a random
+5-tuple from each active packet trap and from each running netdev.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- Documentation/networking/devlink-trap.rst | 189 ++++++++++++++++++++++
- Documentation/networking/index.rst        |   1 +
- include/net/devlink.h                     |   6 +
- 3 files changed, 196 insertions(+)
- create mode 100644 Documentation/networking/devlink-trap.rst
+ drivers/net/netdevsim/dev.c       | 270 +++++++++++++++++++++++++++++-
+ drivers/net/netdevsim/netdevsim.h |   1 +
+ 2 files changed, 270 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/devlink-trap.rst b/Documentation/networking/devlink-trap.rst
-new file mode 100644
-index 000000000000..4b3045bc76d1
---- /dev/null
-+++ b/Documentation/networking/devlink-trap.rst
-@@ -0,0 +1,189 @@
-+.. SPDX-License-Identifier: GPL-2.0
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index b509b941d5ca..0115a1ef1ca3 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -17,11 +17,21 @@
+ 
+ #include <linux/debugfs.h>
+ #include <linux/device.h>
++#include <linux/etherdevice.h>
++#include <linux/inet.h>
++#include <linux/jiffies.h>
++#include <linux/kernel.h>
+ #include <linux/list.h>
+ #include <linux/mutex.h>
+ #include <linux/random.h>
++#include <linux/workqueue.h>
++#include <linux/random.h>
+ #include <linux/rtnetlink.h>
+ #include <net/devlink.h>
++#include <net/ip.h>
++#include <uapi/linux/devlink.h>
++#include <uapi/linux/ip.h>
++#include <uapi/linux/udp.h>
+ 
+ #include "netdevsim.h"
+ 
+@@ -194,6 +204,205 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+ 	return err;
+ }
+ 
++struct nsim_trap_item {
++	void *trap_ctx;
++	enum devlink_trap_action action;
++};
 +
-+============
-+Devlink Trap
-+============
++struct nsim_trap_data {
++	struct delayed_work trap_report_dw;
++	struct nsim_trap_item *trap_items_arr;
++	struct nsim_dev *nsim_dev;
++	spinlock_t trap_lock;	/* Protects trap_items_arr */
++};
 +
-+Background
-+==========
++enum {
++	NSIM_TRAP_ID_BASE = DEVLINK_TRAP_GENERIC_ID_MAX,
++	NSIM_TRAP_ID_FID_MISS_EXCEPTION,
++};
 +
-+Devices capable of offloading the kernel's datapath and perform functions such
-+as bridging and routing must also be able to send specific packets to the
-+kernel (i.e., the CPU) for processing.
++#define NSIM_TRAP_NAME_FID_MISS_EXCEPTION "fid_miss_exception"
 +
-+For example, a device acting as a multicast-aware bridge must be able to send
-+IGMP membership reports to the kernel for processing by the bridge module.
-+Without processing such packets, the bridge module could never populate its
-+MDB.
++#define NSIM_TRAP_METADATA DEVLINK_TRAP_METADATA_TYPE_F_IN_PORT
 +
-+As another example, consider a device acting as router which has received an IP
-+packet with a TTL of 1. Upon routing the packet the device must send it to the
-+kernel so that it will route it as well and generate an ICMP Time Exceeded
-+error datagram. Without letting the kernel route such packets itself, utilities
-+such as ``traceroute`` could never work.
++#define NSIM_TRAP_DROP(_id, _group_id)					      \
++	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,				      \
++			     DEVLINK_TRAP_GROUP_GENERIC(_group_id),	      \
++			     NSIM_TRAP_METADATA)
++#define NSIM_TRAP_EXCEPTION(_id, _group_id)				      \
++	DEVLINK_TRAP_GENERIC(EXCEPTION, TRAP, _id,			      \
++			     DEVLINK_TRAP_GROUP_GENERIC(_group_id),	      \
++			     NSIM_TRAP_METADATA)
++#define NSIM_TRAP_DRIVER_EXCEPTION(_id, _group_id)			      \
++	DEVLINK_TRAP_DRIVER(EXCEPTION, TRAP, NSIM_TRAP_ID_##_id,	      \
++			    NSIM_TRAP_NAME_##_id,			      \
++			    DEVLINK_TRAP_GROUP_GENERIC(_group_id),	      \
++			    NSIM_TRAP_METADATA)
 +
-+The fundamental ability of sending certain packets to the kernel for processing
-+is called "packet trapping".
++static const struct devlink_trap nsim_traps_arr[] = {
++	NSIM_TRAP_DROP(INGRESS_SMAC_MC_DROP, L2_DROPS),
++	NSIM_TRAP_DROP(INGRESS_VLAN_TAG_ALLOW_DROP, L2_DROPS),
++	NSIM_TRAP_DROP(INGRESS_VLAN_FILTER_DROP, L2_DROPS),
++	NSIM_TRAP_DROP(INGRESS_STP_FILTER_DROP, L2_DROPS),
++	NSIM_TRAP_DROP(UC_EMPTY_TX_LIST_DROP, L2_DROPS),
++	NSIM_TRAP_DROP(MC_EMPTY_TX_LIST_DROP, L2_DROPS),
++	NSIM_TRAP_DROP(UC_LOOPBACK_FILTER_DROP, L2_DROPS),
++	NSIM_TRAP_DRIVER_EXCEPTION(FID_MISS_EXCEPTION, L2_DROPS),
++	NSIM_TRAP_DROP(BLACKHOLE_ROUTE_DROP, L3_DROPS),
++	NSIM_TRAP_EXCEPTION(TTL_ERROR_EXCEPTION, L3_DROPS),
++	NSIM_TRAP_DROP(TAIL_DROP, BUFFER_DROPS),
++	NSIM_TRAP_DROP(EARLY_DROP, BUFFER_DROPS),
++};
 +
-+Overview
-+========
++static struct sk_buff *nsim_dev_trap_skb_build(void)
++{
++	int tot_len, data_len = 100;
++	struct sk_buff *skb;
++	struct udphdr *udph;
++	struct ethhdr *eth;
++	struct iphdr *iph;
 +
-+The ``devlink-trap`` mechanism allows capable device drivers to register their
-+supported packet traps with ``devlink`` and report trapped packets to
-+``devlink`` for further analysis.
++	skb = alloc_skb(NLMSG_GOODSIZE, GFP_ATOMIC);
++	if (!skb)
++		return NULL;
++	tot_len = sizeof(struct iphdr) + sizeof(struct udphdr) + data_len;
 +
-+Upon receiving trapped packets, ``devlink`` will perform a per-trap packets and
-+bytes accounting and potentially report the packet to user space via a netlink
-+event along with all the provided metadata (e.g., trap reason, timestamp, input
-+port). This is especially useful for drop traps (see :ref:`Trap-Types`)
-+as it allows users to obtain further visibility into packet drops that would
-+otherwise be invisible.
++	eth = skb_put(skb, sizeof(struct ethhdr));
++	eth_random_addr(eth->h_dest);
++	eth_random_addr(eth->h_source);
++	eth->h_proto = htons(ETH_P_IP);
++	skb->protocol = htons(ETH_P_IP);
 +
-+The following diagram provides a general overview of ``devlink-trap``::
++	iph = skb_put(skb, sizeof(struct iphdr));
++	iph->protocol = IPPROTO_UDP;
++	iph->saddr = in_aton("192.0.2.1");
++	iph->daddr = in_aton("198.51.100.1");
++	iph->version = 0x4;
++	iph->frag_off = 0;
++	iph->ihl = 0x5;
++	iph->tot_len = htons(tot_len);
++	ip_send_check(iph);
 +
-+                                    Netlink event: Packet w/ metadata
-+                                  ^
-+                                  |
-+         Userspace                |
-+	+---------------------------------------------------+
-+	 Kernel                   |
-+				  |
-+			     +----+----+
-+			     |         |      Kernel's Rx path
-+			     | devlink |      (non-drop traps)
-+			     |         |
-+			     +----^----+      ^
-+				  |           |
-+				  +-----------+
-+				  |
-+			  +-------+-------+
-+			  |               |
-+			  | Device driver |
-+			  |               |
-+			  +-------^-------+
-+	 Kernel                   |
-+	+---------------------------------------------------+
-+	 Hardware                 |
-+				  | Trapped packet
-+				  |
-+			       +--+---+
-+			       |      |
-+			       | ASIC |
-+			       |      |
-+			       +------+
++	udph = skb_put_zero(skb, sizeof(struct udphdr) + data_len);
++	get_random_bytes(&udph->source, sizeof(u16));
++	get_random_bytes(&udph->dest, sizeof(u16));
++	udph->len = htons(sizeof(struct udphdr) + data_len);
 +
-+.. _Trap-Types:
++	return skb;
++}
 +
-+Trap Types
-+==========
++static void nsim_dev_trap_report(struct nsim_dev_port *nsim_dev_port)
++{
++	struct nsim_dev *nsim_dev = nsim_dev_port->ns->nsim_dev;
++	struct nsim_trap_data *nsim_trap_data = nsim_dev->trap_data;
++	struct devlink *devlink = priv_to_devlink(nsim_dev);
++	int i;
 +
-+The ``devlink-trap`` mechanism supports the following packet trap types:
++	spin_lock(&nsim_trap_data->trap_lock);
++	for (i = 0; i < ARRAY_SIZE(nsim_traps_arr); i++) {
++		struct nsim_trap_item *nsim_trap_item;
++		struct sk_buff *skb;
 +
-+  * ``drop``: Trapped packets were dropped by the underlying device. Packets
-+    are only processed by ``devlink`` and not injected to the kernel's Rx path.
-+    The trap action (see :ref:`Trap-Actions`) can be changed.
-+  * ``exception``: Trapped packets were not forwarded as intended by the
-+    underlying device due to an exception (e.g., TTL error, missing neighbour
-+    entry) and trapped to the control plane for resolution. Packets are
-+    processed by ``devlink`` and injected to the kernel's Rx path. Changing the
-+    action of such traps is not allowed, as it can easily break the control
-+    plane.
++		nsim_trap_item = &nsim_trap_data->trap_items_arr[i];
++		if (nsim_trap_item->action == DEVLINK_TRAP_ACTION_DROP)
++			continue;
 +
-+.. _Trap-Actions:
++		skb = nsim_dev_trap_skb_build();
++		if (!skb)
++			continue;
++		skb->dev = nsim_dev_port->ns->netdev;
 +
-+Trap Actions
-+============
++		devlink_trap_report(devlink, skb, nsim_trap_item->trap_ctx,
++				    &nsim_dev_port->devlink_port);
++		consume_skb(skb);
++	}
++	spin_unlock(&nsim_trap_data->trap_lock);
++}
 +
-+The ``devlink-trap`` mechanism supports the following packet trap actions:
++#define NSIM_TRAP_REPORT_INTERVAL_MS	1000
 +
-+  * ``trap``: The sole copy of the packet is sent to the CPU.
-+  * ``drop``: The packet is dropped by the underlying device and a copy is not
-+    sent to the CPU.
++static void nsim_dev_trap_report_work(struct work_struct *work)
++{
++	struct nsim_trap_data *nsim_trap_data;
++	struct nsim_dev_port *nsim_dev_port;
++	struct nsim_dev *nsim_dev;
 +
-+Generic Packet Traps
-+====================
++	nsim_trap_data = container_of(work, struct nsim_trap_data,
++				      trap_report_dw.work);
++	nsim_dev = nsim_trap_data->nsim_dev;
 +
-+Generic packet traps are used to describe traps that trap well-defined packets
-+or packets that are trapped due to well-defined conditions (e.g., TTL error).
-+Such traps can be shared by multiple device drivers and their description must
-+be added to the following table:
++	/* For each running port and enabled packet trap, generate a UDP
++	 * packet with a random 5-tuple and report it.
++	 */
++	mutex_lock(&nsim_dev->port_list_lock);
++	list_for_each_entry(nsim_dev_port, &nsim_dev->port_list, list) {
++		if (!netif_running(nsim_dev_port->ns->netdev))
++			continue;
 +
-+.. list-table:: List of Generic Packet Traps
-+   :widths: 5 5 90
++		nsim_dev_trap_report(nsim_dev_port);
++	}
++	mutex_unlock(&nsim_dev->port_list_lock);
 +
-+   * - Name
-+     - Type
-+     - Description
-+   * - ``ingress_smac_mc_drop``
-+     - ``drop``
-+     - Traps incoming packets that the device decided to drop because of a
-+       multicast source MAC
-+   * - ``ingress_vlan_tag_allow_drop``
-+     - ``drop``
-+     - Traps incoming packets that the device decided to drop in case the
-+       ingress bridge port is not configured with a PVID and the packet is
-+       untagged or prio-tagged
-+   * - ``ingress_vlan_filter_drop``
-+     - ``drop``
-+     - Traps incoming packets that the device decided to drop in case they are
-+       tagged with a VLAN that is not configured on the ingress bridge port
-+   * - ``ingress_stp_filter_drop``
-+     - ``drop``
-+     - Traps incoming packets that the device decided to drop in case the STP
-+       state of the ingress bridge port is "listening", "disabled" or
-+       "blocking"
-+   * - ``uc_empty_tx_list_drop``
-+     - ``drop``
-+     - Traps packets with a unicast MAC that the device decided to drop in case
-+       they need to be flooded and the flood list is empty
-+   * - ``mc_empty_tx_list_drop``
-+     - ``drop``
-+     - Traps packets with a multicast MAC that the device decided to drop in
-+       case they need to be flooded and the flood list is empty
-+   * - ``uc_loopback_filter_drop``
-+     - ``drop``
-+     - Traps packets with a unicast MAC that the device decided to drop in case
-+       after layer 2 forwarding the only port from which they should be
-+       transmitted through is the port from which they were received
-+   * - ``blackhole_route_drop``
-+     - ``drop``
-+     - Traps packets that the device decided to drop in case they hit a
-+       blackhole route
-+   * - ``ttl_error_exception``
-+     - ``exception``
-+     - Traps unicast packets that should be forwarded by the device whose TTL
-+       was decremented to 0 or less
-+   * - ``tail_drop``
-+     - ``drop``
-+     - Traps packets that the device decided to drop because they could not be
-+       enqueued to a transmission queue which is full
-+   * - ``early_drop``
-+     - ``drop``
-+     - Traps packets that the device decided to drop due to the decision of the
-+       Random Early Detection (RED) queueing discipline to earlydrop the
-+       packet
++	schedule_delayed_work(&nsim_dev->trap_data->trap_report_dw,
++			      msecs_to_jiffies(NSIM_TRAP_REPORT_INTERVAL_MS));
++}
 +
-+Generic Packet Trap Groups
-+==========================
++static int nsim_dev_traps_init(struct devlink *devlink)
++{
++	struct nsim_dev *nsim_dev = devlink_priv(devlink);
++	struct nsim_trap_data *nsim_trap_data;
++	int err;
 +
-+Generic packet trap groups are used to aggregate logically related packet
-+traps. These groups allow the user to batch operations such as setting the
-+trap action and report state of all member traps. In addtion, ``devlink-trap``
-+can report aggregated per-group packets and bytes statistics, in case per-trap
-+statistics are too narrow. The description of these groups must be added to the
-+following table:
++	nsim_trap_data = kzalloc(sizeof(*nsim_trap_data), GFP_KERNEL);
++	if (!nsim_trap_data)
++		return -ENOMEM;
 +
-+.. list-table:: List of Generic Packet Trap Groups
-+   :widths: 10 90
++	nsim_trap_data->trap_items_arr = kcalloc(ARRAY_SIZE(nsim_traps_arr),
++						 sizeof(struct nsim_trap_item),
++						 GFP_KERNEL);
++	if (!nsim_trap_data->trap_items_arr) {
++		err = -ENOMEM;
++		goto err_trap_data_free;
++	}
 +
-+   * - Name
-+     - Description
-+   * - ``l2_drops``
-+     - Contains packet traps for packets that were dropped by the device during
-+       layer 2 forwarding (i.e., bridge)
-+   * - ``l3_drops``
-+     - Contains packet traps for packets that were dropped by the device or hit
-+       an exception (e.g., TTL error) during layer 3 forwarding
-+   * - ``buffer_drops``
-+     - Contains packet traps for packets that were dropped by the device due to
-+       an enqueue decision
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index f390fe3cfdfb..c09bf85ec050 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -26,6 +26,7 @@ Contents:
-    device_drivers/intel/ice
-    dsa/index
-    devlink-info-versions
-+   devlink-trap
-    ieee802154
-    kapi
-    z8530book
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 6cfa1ab36e3f..4e095a70b466 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -524,6 +524,9 @@ struct devlink_trap {
- 	u32 metadata_cap;
++	/* The lock is used to protect the action state of the registered
++	 * traps. The value is written by user and read in delayed work when
++	 * iterating over all the traps.
++	 */
++	spin_lock_init(&nsim_trap_data->trap_lock);
++	nsim_trap_data->nsim_dev = nsim_dev;
++	nsim_dev->trap_data = nsim_trap_data;
++
++	err = devlink_traps_register(devlink, nsim_traps_arr,
++				     ARRAY_SIZE(nsim_traps_arr), NULL);
++	if (err)
++		goto err_trap_items_free;
++
++	INIT_DELAYED_WORK(&nsim_dev->trap_data->trap_report_dw,
++			  nsim_dev_trap_report_work);
++	schedule_delayed_work(&nsim_dev->trap_data->trap_report_dw,
++			      msecs_to_jiffies(NSIM_TRAP_REPORT_INTERVAL_MS));
++
++	return 0;
++
++err_trap_items_free:
++	kfree(nsim_trap_data->trap_items_arr);
++err_trap_data_free:
++	kfree(nsim_trap_data);
++	return err;
++}
++
++static void nsim_dev_traps_exit(struct devlink *devlink)
++{
++	struct nsim_dev *nsim_dev = devlink_priv(devlink);
++
++	cancel_delayed_work_sync(&nsim_dev->trap_data->trap_report_dw);
++	devlink_traps_unregister(devlink, nsim_traps_arr,
++				 ARRAY_SIZE(nsim_traps_arr));
++	kfree(nsim_dev->trap_data->trap_items_arr);
++	kfree(nsim_dev->trap_data);
++}
++
+ static int nsim_dev_reload(struct devlink *devlink,
+ 			   struct netlink_ext_ack *extack)
+ {
+@@ -220,8 +429,60 @@ static int nsim_dev_reload(struct devlink *devlink,
+ 	return 0;
+ }
+ 
++static struct nsim_trap_item *
++nsim_dev_trap_item_lookup(struct nsim_dev *nsim_dev, u16 trap_id)
++{
++	struct nsim_trap_data *nsim_trap_data = nsim_dev->trap_data;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(nsim_traps_arr); i++) {
++		if (nsim_traps_arr[i].id == trap_id)
++			return &nsim_trap_data->trap_items_arr[i];
++	}
++
++	return NULL;
++}
++
++static int nsim_dev_devlink_trap_init(struct devlink *devlink,
++				      const struct devlink_trap *trap,
++				      void *trap_ctx)
++{
++	struct nsim_dev *nsim_dev = devlink_priv(devlink);
++	struct nsim_trap_item *nsim_trap_item;
++
++	nsim_trap_item = nsim_dev_trap_item_lookup(nsim_dev, trap->id);
++	if (WARN_ON(!nsim_trap_item))
++		return -ENOENT;
++
++	nsim_trap_item->trap_ctx = trap_ctx;
++	nsim_trap_item->action = trap->init_action;
++
++	return 0;
++}
++
++static int
++nsim_dev_devlink_trap_action_set(struct devlink *devlink,
++				 const struct devlink_trap *trap,
++				 enum devlink_trap_action action)
++{
++	struct nsim_dev *nsim_dev = devlink_priv(devlink);
++	struct nsim_trap_item *nsim_trap_item;
++
++	nsim_trap_item = nsim_dev_trap_item_lookup(nsim_dev, trap->id);
++	if (WARN_ON(!nsim_trap_item))
++		return -ENOENT;
++
++	spin_lock(&nsim_dev->trap_data->trap_lock);
++	nsim_trap_item->action = action;
++	spin_unlock(&nsim_dev->trap_data->trap_lock);
++
++	return 0;
++}
++
+ static const struct devlink_ops nsim_dev_devlink_ops = {
+ 	.reload = nsim_dev_reload,
++	.trap_init = nsim_dev_devlink_trap_init,
++	.trap_action_set = nsim_dev_devlink_trap_action_set,
  };
  
-+/* All traps must be documented in
-+ * Documentation/networking/devlink-trap.rst
-+ */
- enum devlink_trap_generic_id {
- 	DEVLINK_TRAP_GENERIC_ID_INGRESS_SMAC_MC_DROP,
- 	DEVLINK_TRAP_GENERIC_ID_INGRESS_VLAN_TAG_ALLOW_DROP,
-@@ -542,6 +545,9 @@ enum devlink_trap_generic_id {
- 	DEVLINK_TRAP_GENERIC_ID_MAX = __DEVLINK_TRAP_GENERIC_ID_MAX - 1,
- };
+ static struct nsim_dev *
+@@ -255,10 +516,14 @@ nsim_dev_create(struct nsim_bus_dev *nsim_bus_dev, unsigned int port_count)
+ 	if (err)
+ 		goto err_resources_unregister;
  
-+/* All trap groups must be documented in
-+ * Documentation/networking/devlink-trap.rst
-+ */
- enum devlink_trap_group_generic_id {
- 	DEVLINK_TRAP_GROUP_GENERIC_ID_L2_DROPS,
- 	DEVLINK_TRAP_GROUP_GENERIC_ID_L3_DROPS,
+-	err = nsim_dev_debugfs_init(nsim_dev);
++	err = nsim_dev_traps_init(devlink);
+ 	if (err)
+ 		goto err_dl_unregister;
+ 
++	err = nsim_dev_debugfs_init(nsim_dev);
++	if (err)
++		goto err_traps_exit;
++
+ 	err = nsim_bpf_dev_init(nsim_dev);
+ 	if (err)
+ 		goto err_debugfs_exit;
+@@ -267,6 +532,8 @@ nsim_dev_create(struct nsim_bus_dev *nsim_bus_dev, unsigned int port_count)
+ 
+ err_debugfs_exit:
+ 	nsim_dev_debugfs_exit(nsim_dev);
++err_traps_exit:
++	nsim_dev_traps_exit(devlink);
+ err_dl_unregister:
+ 	devlink_unregister(devlink);
+ err_resources_unregister:
+@@ -284,6 +551,7 @@ static void nsim_dev_destroy(struct nsim_dev *nsim_dev)
+ 
+ 	nsim_bpf_dev_exit(nsim_dev);
+ 	nsim_dev_debugfs_exit(nsim_dev);
++	nsim_dev_traps_exit(devlink);
+ 	devlink_unregister(devlink);
+ 	devlink_resources_unregister(devlink, NULL);
+ 	nsim_fib_destroy(nsim_dev->fib_data);
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index 3f398797c2bc..59eafe529363 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -145,6 +145,7 @@ struct nsim_dev_port {
+ struct nsim_dev {
+ 	struct nsim_bus_dev *nsim_bus_dev;
+ 	struct nsim_fib_data *fib_data;
++	struct nsim_trap_data *trap_data;
+ 	struct dentry *ddir;
+ 	struct dentry *ports_ddir;
+ 	struct bpf_offload_dev *bpf_dev;
 -- 
 2.20.1
 
