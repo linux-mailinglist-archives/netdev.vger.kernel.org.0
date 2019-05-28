@@ -2,53 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F8BC2CDB4
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:35:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67ACD2CDC6
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbfE1Rfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 13:35:33 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36158 "EHLO vps0.lunn.ch"
+        id S1727363AbfE1Rku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 13:40:50 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:60142 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726452AbfE1Rfd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 13:35:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=/sDHNkreaiokSCQawvYTzF63R7CsKODbhkGPPJJxGN0=; b=qfNx8/NGeQ3CDfj/IKWsxJL5/F
-        sfy2ZhsLXIYEY06kN8i3wT+LSOD/g9DghxPDPzbAChsof6iRlEUgC3xZBRJWOSzZjsl/Skpo7n+Qz
-        w2t7XwRRM/YD0n9XNKvE6hdLpj4ba2HTev+f4X5Od62KUxZeIiMGS+N8FzFMSvu/0pzI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hVg0V-0001aS-RM; Tue, 28 May 2019 19:35:27 +0200
-Date:   Tue, 28 May 2019 19:35:27 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] r8169: remove 1000/Half from supported modes
-Message-ID: <20190528173527.GT18059@lunn.ch>
-References: <ac29e5b9-2d8a-f68d-db1b-cdb3d3110922@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ac29e5b9-2d8a-f68d-db1b-cdb3d3110922@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1726481AbfE1Rkt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 13:40:49 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 773C31A0FB7;
+        Tue, 28 May 2019 19:40:47 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6814A1A0FB6;
+        Tue, 28 May 2019 19:40:47 +0200 (CEST)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id E2DE7205F4;
+        Tue, 28 May 2019 19:40:46 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     linux@armlinux.org.uk, f.fainelli@gmail.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, maxime.chevallier@bootlin.com,
+        olteanv@gmail.com, thomas.petazzoni@bootlin.com,
+        davem@davemloft.net, vivien.didelot@gmail.com
+Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH v2 net-next 00/11] Decoupling PHYLINK from struct net_device
+Date:   Tue, 28 May 2019 20:38:06 +0300
+Message-Id: <1559065097-31832-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 06:43:46PM +0200, Heiner Kallweit wrote:
-> MAC on the GBit versions supports 1000/Full only, however the PHY
-> partially claims to support 1000/Half. So let's explicitly remove
-> this mode.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Following two separate discussion threads in:
+  https://www.spinics.net/lists/netdev/msg569087.html
+and:
+  https://www.spinics.net/lists/netdev/msg570450.html
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Previous RFC patch set: https://www.spinics.net/lists/netdev/msg571995.html
 
-    Andrew
+PHYLINK was reworked in order to accept multiple operation types,
+PHYLINK_NETDEV and PHYLINK_DEV, passed through a phylink_config
+structure alongside the corresponding struct device.
+
+One of the main concerns expressed in the RFC was that using notifiers
+to signal the corresponding phylink_mac_ops would break PHYLINK's API
+unity and that it would become harder to grep for its users.
+Using the current approach, we maintain a common API for all users.
+Also, printing useful information in PHYLINK, when decoupled from a
+net_device, is achieved using dev_err&co on the struct device received
+(in DSA's case is the device corresponding to the dsa_switch).
+
+PHYLIB (which PHYLINK uses) was reworked to the extent that it does not
+crash when connecting to a PHY and the net_device pointer is NULL.
+
+Lastly, DSA has been reworked in its way that it handles PHYs for ports
+that lack a net_device (CPU and DSA ports).  For these, it was
+previously using PHYLIB and is now using the PHYLINK_DEV operation type.
+Previously, a driver that wanted to support PHY operations on CPU/DSA
+ports has to implement .adjust_link(). This patch set not only gives
+drivers the options to use PHYLINK uniformly but also urges them to
+convert to it. For compatibility, the old code is kept but it will be
+removed once all drivers switch over.
+
+The patchset was tested on the NXP LS1021A-TSN board having the
+following Ethernet layout:
+  https://lkml.org/lkml/2019/5/5/279
+The CPU port was moved from the internal RGMII fixed-link (enet2 ->
+switch port 4) to an external loopback Cat5 cable between the enet1 port
+and the front-facing swp2 SJA1105 port. In this mode, both the master
+and the CPU port have an attached PHY which detects link change events:
+
+[   49.105426] fsl-gianfar soc:ethernet@2d50000 eth1: Link is Down
+[   50.305486] sja1105 spi0.1: Link is Down
+[   53.265596] fsl-gianfar soc:ethernet@2d50000 eth1: Link is Up - 1Gbps/Full - flow control off
+[   54.466304] sja1105 spi0.1: Link is Up - 1Gbps/Full - flow control off
+
+Changes in v2:
+  - fixed sparse warnings
+  - updated 'Documentation/ABI/testing/sysfs-class-net-phydev'
+
+Ioana Ciornei (9):
+  net: phy: Guard against the presence of a netdev
+  net: phy: Check against net_device being NULL
+  net: phy: Add phy_standalone sysfs entry
+  net: phylink: Add phylink_mac_link_{up,down} wrapper functions
+  net: phylink: Add struct phylink_config to PHYLINK API
+  net: phylink: Add PHYLINK_DEV operation type
+  net: phylink: Add phylink_{printk,err,warn,info,dbg} macros
+  net: dsa: Move the phylink driver calls into port.c
+  net: dsa: Use PHYLINK for the CPU/DSA ports
+
+Vladimir Oltean (2):
+  net: phy: Add phy_sysfs_create_links helper function
+  net: dsa: sja1105: Fix broken fixed-link interfaces on user ports
+
+ Documentation/ABI/testing/sysfs-class-net-phydev |   8 +
+ Documentation/networking/sfp-phylink.rst         |   5 +-
+ drivers/net/dsa/sja1105/sja1105_main.c           |  11 +-
+ drivers/net/ethernet/marvell/mvneta.c            |  36 ++--
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h       |   1 +
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c  |  43 +++--
+ drivers/net/phy/phy_device.c                     | 100 ++++++++---
+ drivers/net/phy/phylink.c                        | 220 ++++++++++++++---------
+ include/linux/phylink.h                          |  57 +++---
+ include/net/dsa.h                                |   2 +
+ net/dsa/dsa_priv.h                               |  17 ++
+ net/dsa/port.c                                   | 157 ++++++++++++++++
+ net/dsa/slave.c                                  |  99 +---------
+ 13 files changed, 499 insertions(+), 257 deletions(-)
+
+-- 
+1.9.1
+
