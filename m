@@ -2,117 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F21DE2C3D6
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 12:02:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 985102C3DA
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 12:02:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726744AbfE1KCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 06:02:23 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:33055 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726400AbfE1KCW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 06:02:22 -0400
-Received: by mail-pl1-f196.google.com with SMTP id g21so8156149plq.0
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 03:02:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=MgEaDmj03PeHH5s0woc9TH9iQfb45IJscaEm4tsIo10=;
-        b=NFRMWN4l5HMrRN8iamOHtu1jy1wkm5rd6XvLiYhgB8PiQ1KSMDFQ4fKr8ywTfba61B
-         QWSZeXlDqU1OciFDe3lVZph2qIaB1AFO/N1yy67YPiQ4jhMG8TdCdwL/Pz6sJqNQ2YtC
-         qTpmbTAOnGg+M5TM/TY55hE+DIU/YiUSyhUbwFOmnx0p0rqEyGeB/fsFaNuCRfnSonnG
-         0nMVeQNQ6JMDYGiGwpwbLJoxW3qgXvf+9n46E2PD+GEP9vHKvxTKrJOLCPd5LQhAQKpn
-         4gOEz47eFBNIpXY4Fdg5RcLH2uw0aHuUdxbSthDVxRWNm/IlA7Ibj1kkR6Ea2MGC0BKD
-         iVzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=MgEaDmj03PeHH5s0woc9TH9iQfb45IJscaEm4tsIo10=;
-        b=GWbno21/eVHUoh6s5u9vtKSUZR192djl+0uVwyJAb1hrBTrjhThSxlM0NMT3DX8Ywj
-         //afzfCTnQyfJMI0yeXWAd8mHfYwVRrgc8R+6rjL4JhLBBEayWV8AvvFyfu+nrNhzakF
-         E1YJZi4LVOaki0f0jvRZQhiaR3DFVBB1mAQH0FefFjOpe9EkRDx7Y+fnjLW3Cz0Q8zd4
-         uxCtHcN9rNqVnb+nKVvPnypcdBHzZzuPs49i67asVKsAQWvy97a9+aXIwKHkLFQQtGZd
-         Dbxjrs8ZnkPSVh0AMmu/ebPc/KmGclOAEhKMxoJihPj43UQO/fAvQM1OKh/1xvhm+uDq
-         VDsQ==
-X-Gm-Message-State: APjAAAVUIxBGcUF6q1d7sn1E+GVkdbrqED1zhK0rBRcDrvL/fctJyPLD
-        ZFOG97QnuREWlotOkWc2SAfNPPOyiGk=
-X-Google-Smtp-Source: APXvYqwjeg7qGlQjaBW13MlPqYixzaUHcricbvE1y+f34Shg6AxoTJB5I7j+/ZotlMbSLi5xWkIQ1g==
-X-Received: by 2002:a17:902:e683:: with SMTP id cn3mr110946830plb.86.1559037741964;
-        Tue, 28 May 2019 03:02:21 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p20sm4996641pgk.7.2019.05.28.03.02.19
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 28 May 2019 03:02:21 -0700 (PDT)
-Date:   Tue, 28 May 2019 18:02:11 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH net-next] team: add ethtool get_link_ksettings
-Message-ID: <20190528100211.GX18865@dhcp-12-139.nay.redhat.com>
-References: <20190527033110.9861-1-liuhangbin@gmail.com>
- <20190528090823.GB2699@nanopsycho>
+        id S1726708AbfE1KC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 06:02:57 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35992 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbfE1KC5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 06:02:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Q1VHDGzgL0w+olXUMQP8460gADhB+uZ7jGkSvHL7CUw=; b=0thbHizvQwcU2jqoA8h2NxF2i
+        nHbpLg5Zv3ytPVXJTcw9yCqxG+XnFjlTFBr8ViP296zm1Ta2IkhnxPhdeknLSX2g/BBH3Aytkm08v
+        qaBOoQXqyLAZvLHOzL6ZjBjglz6VQ7DyO7cJx3/MPoZNRIXKzxBy28v3IluRcbzan0075k+QoLVh7
+        MQDSxJNCy1KPXOr8A+q4R+k7qS3wdGbQ2ztvopZKIgE5T+sgq2w+7+2tRzW5kiEfSAoBnehxFIlj4
+        9PaWJ93awaqgwLYPJcETQUX9hBDRVpGgYoW9uMApVnuN2lfg22fC4cvnEDRlD/uUxrVRe07vOIQm3
+        EDIgJPB8g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52666)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hVYwV-00051E-TS; Tue, 28 May 2019 11:02:52 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hVYwT-0003Sy-9N; Tue, 28 May 2019 11:02:49 +0100
+Date:   Tue, 28 May 2019 11:02:49 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/5] net: phylink: support for link gpio
+ interrupt
+Message-ID: <20190528100249.bpm4gieiatziqwqd@shell.armlinux.org.uk>
+References: <20190528095639.kqalmvffsmc5ebs7@shell.armlinux.org.uk>
+ <E1hVYrD-0005Z1-L0@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190528090823.GB2699@nanopsycho>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <E1hVYrD-0005Z1-L0@rmk-PC.armlinux.org.uk>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 11:08:23AM +0200, Jiri Pirko wrote:
-> >+static int team_ethtool_get_link_ksettings(struct net_device *dev,
-> >+					   struct ethtool_link_ksettings *cmd)
-> >+{
-> >+	struct team *team= netdev_priv(dev);
-> >+	unsigned long speed = 0;
-> >+	struct team_port *port;
-> >+
-> >+	cmd->base.duplex = DUPLEX_UNKNOWN;
-> >+	cmd->base.port = PORT_OTHER;
-> >+
-> >+	list_for_each_entry(port, &team->port_list, list) {
-> >+		if (team_port_txable(port)) {
-> >+			if (port->state.speed != SPEED_UNKNOWN)
-> >+				speed += port->state.speed;
-> >+			if (cmd->base.duplex == DUPLEX_UNKNOWN &&
-> >+			    port->state.duplex != DUPLEX_UNKNOWN)
-> >+				cmd->base.duplex = port->state.duplex;
-> 
-> What is exactly the point of this patch? Why do you need such
-> information. This is hw-related info. If you simply sum-up all txable
-> ports, the value is always highly misleading.
-> 
-> For example for hash-based port selection with 2 100Mbit ports,
-> you will get 200Mbit, but it is not true. It is up to the traffic and
-> hash function what is the actual TX speed you can get.
-> On the RX side, this is even more misleading as the actual speed depends
-> on the other side of the wire.
+Hi David,
 
-The number is the maximum speed in theory. I added it because someone
-said bond interface could show total speed while team could not...
-The usage is customer could get team link-speed and throughput via SNMP.
+I was intending to add a note to this patch indicating that it
+depends on "net: phylink: ensure consistent phy interface mode" but
+failed to do before sending it out - sorry!  If you'd prefer a patch
+that doesn't depend on that, please ask.  The only difference is the
+first two lines of context of the first hunk.
 
-Thanks
-Hangbin
+Russell.
+
+On Tue, May 28, 2019 at 10:57:23AM +0100, Russell King wrote:
+> Add support for using GPIO interrupts with a fixed-link GPIO rather than
+> polling the GPIO every second and invoking the phylink resolution.  This
+> avoids unnecessary calls to mac_config().
+> 
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/phy/phylink.c | 36 ++++++++++++++++++++++++++++++++----
+>  1 file changed, 32 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 219a061572d2..00cd0ed7ff3d 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -56,6 +56,7 @@ struct phylink {
+>  	phy_interface_t cur_interface;
+>  
+>  	struct gpio_desc *link_gpio;
+> +	unsigned int link_irq;
+>  	struct timer_list link_poll;
+>  	void (*get_fixed_state)(struct net_device *dev,
+>  				struct phylink_link_state *s);
+> @@ -612,7 +613,7 @@ void phylink_destroy(struct phylink *pl)
+>  {
+>  	if (pl->sfp_bus)
+>  		sfp_unregister_upstream(pl->sfp_bus);
+> -	if (!IS_ERR_OR_NULL(pl->link_gpio))
+> +	if (pl->link_gpio)
+>  		gpiod_put(pl->link_gpio);
+>  
+>  	cancel_work_sync(&pl->resolve);
+> @@ -875,6 +876,15 @@ void phylink_mac_change(struct phylink *pl, bool up)
+>  }
+>  EXPORT_SYMBOL_GPL(phylink_mac_change);
+>  
+> +static irqreturn_t phylink_link_handler(int irq, void *data)
+> +{
+> +	struct phylink *pl = data;
+> +
+> +	phylink_run_resolve(pl);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  /**
+>   * phylink_start() - start a phylink instance
+>   * @pl: a pointer to a &struct phylink returned from phylink_create()
+> @@ -910,7 +920,22 @@ void phylink_start(struct phylink *pl)
+>  	clear_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state);
+>  	phylink_run_resolve(pl);
+>  
+> -	if (pl->link_an_mode == MLO_AN_FIXED && !IS_ERR(pl->link_gpio))
+> +	if (pl->link_an_mode == MLO_AN_FIXED && pl->link_gpio) {
+> +		int irq = gpiod_to_irq(pl->link_gpio);
+> +
+> +		if (irq > 0) {
+> +			if (!request_irq(irq, phylink_link_handler,
+> +					 IRQF_TRIGGER_RISING |
+> +					 IRQF_TRIGGER_FALLING,
+> +					 "netdev link", pl))
+> +				pl->link_irq = irq;
+> +			else
+> +				irq = 0;
+> +		}
+> +		if (irq <= 0)
+> +			mod_timer(&pl->link_poll, jiffies + HZ);
+> +	}
+> +	if (pl->link_an_mode == MLO_AN_FIXED && pl->get_fixed_state)
+>  		mod_timer(&pl->link_poll, jiffies + HZ);
+>  	if (pl->sfp_bus)
+>  		sfp_upstream_start(pl->sfp_bus);
+> @@ -936,8 +961,11 @@ void phylink_stop(struct phylink *pl)
+>  		phy_stop(pl->phydev);
+>  	if (pl->sfp_bus)
+>  		sfp_upstream_stop(pl->sfp_bus);
+> -	if (pl->link_an_mode == MLO_AN_FIXED && !IS_ERR(pl->link_gpio))
+> -		del_timer_sync(&pl->link_poll);
+> +	del_timer_sync(&pl->link_poll);
+> +	if (pl->link_irq) {
+> +		free_irq(pl->link_irq, pl);
+> +		pl->link_irq = 0;
+> +	}
+>  
+>  	phylink_run_resolve_and_disable(pl, PHYLINK_DISABLE_STOPPED);
+>  }
+> -- 
+> 2.7.4
 > 
 > 
-> >+		}
-> >+	}
-> >+	cmd->base.speed = speed ? : SPEED_UNKNOWN;
-> >+
-> >+	return 0;
-> >+}
-> >+
-> > static const struct ethtool_ops team_ethtool_ops = {
-> > 	.get_drvinfo		= team_ethtool_get_drvinfo,
-> > 	.get_link		= ethtool_op_get_link,
-> >+	.get_link_ksettings	= team_ethtool_get_link_ksettings,
-> > };
-> > 
-> > /***********************
-> >-- 
-> >2.19.2
-> >
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
