@@ -2,149 +2,441 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B492D23D
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 01:10:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BBC42D248
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 01:13:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726969AbfE1XKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 19:10:17 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:46304 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726693AbfE1XKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 19:10:17 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y11so243460pfm.13
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 16:10:16 -0700 (PDT)
+        id S1727339AbfE1XNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 19:13:39 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:38996 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfE1XNj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 19:13:39 -0400
+Received: by mail-pg1-f196.google.com with SMTP id w22so119943pgi.6;
+        Tue, 28 May 2019 16:13:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=61Rkbxmo9pW7oP4ZNC16z4jaoHmX0Y6vJBi8WuMtzZ4=;
-        b=AwkDjoygDCQI3LTfAxumYP/X0Gi/8IRdwENbCODuKCMOHopNXn2gN8kNOaIe/q+pUL
-         qYF6mJUXWWrVGsPFFF3kljf+ktk/sHxIaMHbz4P9Sz+Hcy3Y0GZp39nk20HpqAAO83T/
-         tS/Tbn0/UdF4zHP0ocGPgDslGPwjtjLavDpl1GeO+C8Dg6/2j++WZHGIQcZGjk/q58R+
-         PybBdd9xCp9yV9KauD/O1z/3GNk8vZHMh1l7xcDzSUTZj7MWAFflII9EXmwq0L7jpq0Y
-         /fYjtkLZLUrHpZPefQMrjsu5331j99YEA1j2HMq0y6TSb4bjevReiIuxbddVW8/mGaba
-         uczg==
+        bh=BI7Du5iAm9w0yP+GB/oFh20PQ+Dje/x5TifIT+xhg3o=;
+        b=SKDhhaQj6evLNiumlwkxYXyxxyhy7/quyu3pM9dn/tkIrSpSD3RMJ/0+I9+UlH7xRO
+         EUSZGtPEpyHlYQNdZXyq6VBfCl6ZJtcVu75mhqjB7YZFqKSATepvPYDRDSUBLyiMPVoV
+         xpBz9YdTV8DQThrjs0zqsIPce09s1YwKwhlD8vp2O7PdkzmtVwsNT0ZJOLoZ2eLAWdME
+         qPUgrA9Zf9al9NDcZAm/LXCNeuT7GALU0THUlJa8JJJOloO6mpu2DC3axj9QNd+MoQ5C
+         z1/5Uoug6Wf+UprQQ0K2Ji3kh9IXdHA1mwyUxApokw60VuEiYks5CXPPCIXF1uAU32vk
+         1Cdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=61Rkbxmo9pW7oP4ZNC16z4jaoHmX0Y6vJBi8WuMtzZ4=;
-        b=hyr+oam/cJpz02Fp2D/DnEeww90AviGOSU5/QhnQ6maby3cBikJcTznYBPeSSYbCsM
-         vUEjPmgocjjuCebsB3WLZujceWP08LXnFt3LOdEc6+QIO3A/KlpA67aHJVuXE/n4oFtK
-         9vlbdHSBSiPZd2mlAaU4BQHcCi4vfRgbE+RgSbArDzdvS39FvAViylFvgoWUdhK6zAGY
-         CKM3MHCXGBQi+sD/WKghE015NJtvOl76R7x8uWSzqPhmHQmDIkaZyQTxVlST06TCymy1
-         uD9pUKWIwcz6+3iUdGakT8PVLI++zfPK/vrfPEMfcyN+e0F0+jrnE88uw9z28AMoVlb9
-         aNEw==
-X-Gm-Message-State: APjAAAVuB44LGpMXzLKGDbicYMiqhga3X/CwvLq+sHdIB3fgbouQlpX0
-        fXM2VikaT1xRqeJKaPWmiYsaEq1z
-X-Google-Smtp-Source: APXvYqw8KUb3uwgUruL2frF8bZdHjBe7m1yvi8N9xU7w4Mm7b7udaObZ+veILvRg2tfJ0JJ7WznMJQ==
-X-Received: by 2002:a63:2325:: with SMTP id j37mr133868072pgj.137.1559085015879;
-        Tue, 28 May 2019 16:10:15 -0700 (PDT)
-Received: from [10.67.49.27] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id c127sm16250111pfb.107.2019.05.28.16.10.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 16:10:15 -0700 (PDT)
-Subject: Re: [PATCH net 1/2] net: dsa: tag_8021q: Change order of rx_vid setup
-To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
-        andrew@lunn.ch, davem@davemloft.net
-Cc:     ioana.ciornei@nxp.com, netdev@vger.kernel.org
-References: <20190528225005.10628-1-olteanv@gmail.com>
- <20190528225005.10628-2-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <72a6d3a2-1ef4-d68e-1c34-610da37975a0@gmail.com>
-Date:   Tue, 28 May 2019 16:10:08 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BI7Du5iAm9w0yP+GB/oFh20PQ+Dje/x5TifIT+xhg3o=;
+        b=Q74mhoBgr5zCLX94s99Vs4fh6OlUMIV6CcFfIumCXTwdNjX9umly1y5ufUOyf42VQ1
+         m3aQcmMq49m/jIqtATzAjCtKxMmRaZolepkaSXaeMt+y+LC2dqsJcJDzTKTwqVhugi11
+         jXy0/fFd2UAnJ6j7DEWUyEXJIAMX7Mplw5ZZFnj6CZguPUmIVgdhSc6Braa3jY3/qyV3
+         c0eUNw/EjK5cM0b4HQiXHUdsrqeVJIl3WcvxCGgShZ8pdW10g+FtApDkmCWClQNktgFN
+         95UIqgvT9pEf3pHdWx6y0sFSyijdnitQ1esVoPmAWlGzVVg1gY6nAxIPhBaC5z2EeNPV
+         tZXw==
+X-Gm-Message-State: APjAAAWvVmYWGpaDORyy+oI3QfG6lYymGSdgTgm/BdAPgDKgpcTheSMj
+        rHJl+wzZTMeTBuv2ayOU7Q==
+X-Google-Smtp-Source: APXvYqyDM7f+GBwFCz7qPkr8GK8cRgMx5PiozNiFRiqpO12tsZRArtT9aFBvcrh5rmqdcf/9XURcXQ==
+X-Received: by 2002:a63:2844:: with SMTP id o65mr48959788pgo.297.1559085217901;
+        Tue, 28 May 2019 16:13:37 -0700 (PDT)
+Received: from localhost (2.172.220.35.bc.googleusercontent.com. [35.220.172.2])
+        by smtp.gmail.com with ESMTPSA id l141sm19191876pfd.24.2019.05.28.16.13.36
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 28 May 2019 16:13:36 -0700 (PDT)
+From:   Jacky Hu <hengqing.hu@gmail.com>
+To:     hengqing.hu@gmail.com
+Cc:     jacky.hu@walmart.com, jason.niesz@walmart.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCH v3] ipvs: add checksum support for gue encapsulation
+Date:   Wed, 29 May 2019 07:11:07 +0800
+Message-Id: <20190528231107.14197-1-hengqing.hu@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190528225005.10628-2-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/19 3:50 PM, Vladimir Oltean wrote:
-> From: Ioana Ciornei <ioana.ciornei@nxp.com>
-> 
-> The 802.1Q tagging performs an unbalanced setup in terms of RX VIDs on
-> the CPU port. For the ingress path of a 802.1Q switch to work, the RX
-> VID of a port needs to be seen as tagged egress on the CPU port.
-> 
-> While configuring the other front-panel ports to be part of this VID,
-> for bridge scenarios, the untagged flag is applied even on the CPU port
-> in dsa_switch_vlan_add.  This happens because DSA applies the same flags
-> on the CPU port as on the (bridge-controlled) slave ports, and the
-> effect in this case is that the CPU port tagged settings get deleted.
-> 
-> Instead of fixing DSA by introducing a way to control VLAN flags on the
-> CPU port (and hence stop inheriting from the slave ports) - a hard,
-> perhaps intractable problem - avoid this situation by moving the setup
-> part of the RX VID on the CPU port after all the other front-panel ports
-> have been added to the VID.
-> 
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> Fixes: f9bbe4477c30 ("net: dsa: Optional VLAN-based port separation for switches without tagging")
+Add checksum support for gue encapsulation with the tun_flags parameter,
+which could be one of the values below:
+IP_VS_TUNNEL_ENCAP_FLAG_NOCSUM
+IP_VS_TUNNEL_ENCAP_FLAG_CSUM
+IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Jacky Hu <hengqing.hu@gmail.com>
+---
+v3->v2:
+  1) fixed CHECK: spaces preferred around that '<<' (ctx:VxV)
+
+v2->v1:
+  1) removed unnecessary changes to ip_vs_core.c
+  2) use correct nla_get/put function for tun_flags
+  3) use correct gue hdrlen for skb_push in ipvs_gue_encap
+  4) moved declaration of gue_hdrlen and gue_optlen
+
+ include/net/ip_vs.h             |   2 +
+ include/uapi/linux/ip_vs.h      |   7 ++
+ net/netfilter/ipvs/ip_vs_ctl.c  |  11 ++-
+ net/netfilter/ipvs/ip_vs_xmit.c | 142 ++++++++++++++++++++++++++++----
+ 4 files changed, 145 insertions(+), 17 deletions(-)
+
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index b01a94ebfc0e..cb1ad0cc5c7b 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -603,6 +603,7 @@ struct ip_vs_dest_user_kern {
+ 
+ 	u16			tun_type;	/* tunnel type */
+ 	__be16			tun_port;	/* tunnel port */
++	u16			tun_flags;	/* tunnel flags */
+ };
+ 
+ 
+@@ -665,6 +666,7 @@ struct ip_vs_dest {
+ 	atomic_t		last_weight;	/* server latest weight */
+ 	__u16			tun_type;	/* tunnel type */
+ 	__be16			tun_port;	/* tunnel port */
++	__u16			tun_flags;	/* tunnel flags */
+ 
+ 	refcount_t		refcnt;		/* reference counter */
+ 	struct ip_vs_stats      stats;          /* statistics */
+diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
+index e34f436fc79d..e4f18061a4fd 100644
+--- a/include/uapi/linux/ip_vs.h
++++ b/include/uapi/linux/ip_vs.h
+@@ -131,6 +131,11 @@ enum {
+ 	IP_VS_CONN_F_TUNNEL_TYPE_MAX,
+ };
+ 
++/* Tunnel encapsulation flags */
++#define IP_VS_TUNNEL_ENCAP_FLAG_NOCSUM		(0)
++#define IP_VS_TUNNEL_ENCAP_FLAG_CSUM		(1 << 0)
++#define IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM		(1 << 1)
++
+ /*
+  *	The struct ip_vs_service_user and struct ip_vs_dest_user are
+  *	used to set IPVS rules through setsockopt.
+@@ -403,6 +408,8 @@ enum {
+ 
+ 	IPVS_DEST_ATTR_TUN_PORT,	/* tunnel port */
+ 
++	IPVS_DEST_ATTR_TUN_FLAGS,	/* tunnel flags */
++
+ 	__IPVS_DEST_ATTR_MAX,
+ };
+ 
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index d5847e06350f..ad19ac08622f 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -893,6 +893,7 @@ __ip_vs_update_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest,
+ 	/* set the tunnel info */
+ 	dest->tun_type = udest->tun_type;
+ 	dest->tun_port = udest->tun_port;
++	dest->tun_flags = udest->tun_flags;
+ 
+ 	/* set the IP_VS_CONN_F_NOOUTPUT flag if not masquerading/NAT */
+ 	if ((conn_flags & IP_VS_CONN_F_FWD_MASK) != IP_VS_CONN_F_MASQ) {
+@@ -2967,6 +2968,7 @@ static const struct nla_policy ip_vs_dest_policy[IPVS_DEST_ATTR_MAX + 1] = {
+ 	[IPVS_DEST_ATTR_ADDR_FAMILY]	= { .type = NLA_U16 },
+ 	[IPVS_DEST_ATTR_TUN_TYPE]	= { .type = NLA_U8 },
+ 	[IPVS_DEST_ATTR_TUN_PORT]	= { .type = NLA_U16 },
++	[IPVS_DEST_ATTR_TUN_FLAGS]	= { .type = NLA_U16 },
+ };
+ 
+ static int ip_vs_genl_fill_stats(struct sk_buff *skb, int container_type,
+@@ -3273,6 +3275,8 @@ static int ip_vs_genl_fill_dest(struct sk_buff *skb, struct ip_vs_dest *dest)
+ 		       dest->tun_type) ||
+ 	    nla_put_be16(skb, IPVS_DEST_ATTR_TUN_PORT,
+ 			 dest->tun_port) ||
++	    nla_put_u16(skb, IPVS_DEST_ATTR_TUN_FLAGS,
++			dest->tun_flags) ||
+ 	    nla_put_u32(skb, IPVS_DEST_ATTR_U_THRESH, dest->u_threshold) ||
+ 	    nla_put_u32(skb, IPVS_DEST_ATTR_L_THRESH, dest->l_threshold) ||
+ 	    nla_put_u32(skb, IPVS_DEST_ATTR_ACTIVE_CONNS,
+@@ -3393,7 +3397,8 @@ static int ip_vs_genl_parse_dest(struct ip_vs_dest_user_kern *udest,
+ 	/* If a full entry was requested, check for the additional fields */
+ 	if (full_entry) {
+ 		struct nlattr *nla_fwd, *nla_weight, *nla_u_thresh,
+-			      *nla_l_thresh, *nla_tun_type, *nla_tun_port;
++			      *nla_l_thresh, *nla_tun_type, *nla_tun_port,
++			      *nla_tun_flags;
+ 
+ 		nla_fwd		= attrs[IPVS_DEST_ATTR_FWD_METHOD];
+ 		nla_weight	= attrs[IPVS_DEST_ATTR_WEIGHT];
+@@ -3401,6 +3406,7 @@ static int ip_vs_genl_parse_dest(struct ip_vs_dest_user_kern *udest,
+ 		nla_l_thresh	= attrs[IPVS_DEST_ATTR_L_THRESH];
+ 		nla_tun_type	= attrs[IPVS_DEST_ATTR_TUN_TYPE];
+ 		nla_tun_port	= attrs[IPVS_DEST_ATTR_TUN_PORT];
++		nla_tun_flags	= attrs[IPVS_DEST_ATTR_TUN_FLAGS];
+ 
+ 		if (!(nla_fwd && nla_weight && nla_u_thresh && nla_l_thresh))
+ 			return -EINVAL;
+@@ -3416,6 +3422,9 @@ static int ip_vs_genl_parse_dest(struct ip_vs_dest_user_kern *udest,
+ 
+ 		if (nla_tun_port)
+ 			udest->tun_port = nla_get_be16(nla_tun_port);
++
++		if (nla_tun_flags)
++			udest->tun_flags = nla_get_u16(nla_tun_flags);
+ 	}
+ 
+ 	return 0;
+diff --git a/net/netfilter/ipvs/ip_vs_xmit.c b/net/netfilter/ipvs/ip_vs_xmit.c
+index 8d6f94b67772..d3392b5b243f 100644
+--- a/net/netfilter/ipvs/ip_vs_xmit.c
++++ b/net/netfilter/ipvs/ip_vs_xmit.c
+@@ -40,6 +40,7 @@
+ #include <net/ipv6.h>
+ #include <net/ip6_route.h>
+ #include <net/ip_tunnels.h>
++#include <net/ip6_checksum.h>
+ #include <net/addrconf.h>
+ #include <linux/icmpv6.h>
+ #include <linux/netfilter.h>
+@@ -385,8 +386,13 @@ __ip_vs_get_out_rt(struct netns_ipvs *ipvs, int skb_af, struct sk_buff *skb,
+ 		mtu = dst_mtu(&rt->dst) - sizeof(struct iphdr);
+ 		if (!dest)
+ 			goto err_put;
+-		if (dest->tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
++		if (dest->tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
+ 			mtu -= sizeof(struct udphdr) + sizeof(struct guehdr);
++			if ((dest->tun_flags &
++			     IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++			    skb->ip_summed == CHECKSUM_PARTIAL)
++				mtu -= GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		}
+ 		if (mtu < 68) {
+ 			IP_VS_DBG_RL("%s(): mtu less than 68\n", __func__);
+ 			goto err_put;
+@@ -540,8 +546,13 @@ __ip_vs_get_out_rt_v6(struct netns_ipvs *ipvs, int skb_af, struct sk_buff *skb,
+ 		mtu = dst_mtu(&rt->dst) - sizeof(struct ipv6hdr);
+ 		if (!dest)
+ 			goto err_put;
+-		if (dest->tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
++		if (dest->tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
+ 			mtu -= sizeof(struct udphdr) + sizeof(struct guehdr);
++			if ((dest->tun_flags &
++			     IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++			    skb->ip_summed == CHECKSUM_PARTIAL)
++				mtu -= GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		}
+ 		if (mtu < IPV6_MIN_MTU) {
+ 			IP_VS_DBG_RL("%s(): mtu less than %d\n", __func__,
+ 				     IPV6_MIN_MTU);
+@@ -1006,17 +1017,55 @@ ipvs_gue_encap(struct net *net, struct sk_buff *skb,
+ 	__be16 sport = udp_flow_src_port(net, skb, 0, 0, false);
+ 	struct udphdr  *udph;	/* Our new UDP header */
+ 	struct guehdr  *gueh;	/* Our new GUE header */
++	size_t hdrlen, optlen = 0;
++	void *data;
++	bool need_priv = false;
++
++	if ((cp->dest->tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++	    skb->ip_summed == CHECKSUM_PARTIAL) {
++		optlen += GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		need_priv = true;
++	}
+ 
+-	skb_push(skb, sizeof(struct guehdr));
++	hdrlen = sizeof(struct guehdr) + optlen;
++
++	skb_push(skb, hdrlen);
+ 
+ 	gueh = (struct guehdr *)skb->data;
+ 
+ 	gueh->control = 0;
+ 	gueh->version = 0;
+-	gueh->hlen = 0;
++	gueh->hlen = optlen >> 2;
+ 	gueh->flags = 0;
+ 	gueh->proto_ctype = *next_protocol;
+ 
++	data = &gueh[1];
++
++	if (need_priv) {
++		__be32 *flags = data;
++		u16 csum_start = skb_checksum_start_offset(skb);
++		__be16 *pd = data;
++
++		gueh->flags |= GUE_FLAG_PRIV;
++		*flags = 0;
++		data += GUE_LEN_PRIV;
++
++		if (csum_start < hdrlen)
++			return -EINVAL;
++
++		csum_start -= hdrlen;
++		pd[0] = htons(csum_start);
++		pd[1] = htons(csum_start + skb->csum_offset);
++
++		if (!skb_is_gso(skb)) {
++			skb->ip_summed = CHECKSUM_NONE;
++			skb->encapsulation = 0;
++		}
++
++		*flags |= GUE_PFLAG_REMCSUM;
++		data += GUE_PLEN_REMCSUM;
++	}
++
+ 	skb_push(skb, sizeof(struct udphdr));
+ 	skb_reset_transport_header(skb);
+ 
+@@ -1070,6 +1119,7 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 	unsigned int max_headroom;		/* The extra header space needed */
+ 	int ret, local;
+ 	int tun_type, gso_type;
++	int tun_flags;
+ 
+ 	EnterFunction(10);
+ 
+@@ -1092,9 +1142,19 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 	max_headroom = LL_RESERVED_SPACE(tdev) + sizeof(struct iphdr);
+ 
+ 	tun_type = cp->dest->tun_type;
++	tun_flags = cp->dest->tun_flags;
+ 
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		max_headroom += sizeof(struct udphdr) + sizeof(struct guehdr);
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		size_t gue_hdrlen, gue_optlen = 0;
++
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++		    skb->ip_summed == CHECKSUM_PARTIAL) {
++			gue_optlen += GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		}
++		gue_hdrlen = sizeof(struct guehdr) + gue_optlen;
++
++		max_headroom += sizeof(struct udphdr) + gue_hdrlen;
++	}
+ 
+ 	/* We only care about the df field if sysctl_pmtu_disc(ipvs) is set */
+ 	dfp = sysctl_pmtu_disc(ipvs) ? &df : NULL;
+@@ -1105,8 +1165,17 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 		goto tx_error;
+ 
+ 	gso_type = __tun_gso_type_mask(AF_INET, cp->af);
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		gso_type |= SKB_GSO_UDP_TUNNEL;
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_CSUM) ||
++		    (tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM))
++			gso_type |= SKB_GSO_UDP_TUNNEL_CSUM;
++		else
++			gso_type |= SKB_GSO_UDP_TUNNEL;
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++		    skb->ip_summed == CHECKSUM_PARTIAL) {
++			gso_type |= SKB_GSO_TUNNEL_REMCSUM;
++		}
++	}
+ 
+ 	if (iptunnel_handle_offloads(skb, gso_type))
+ 		goto tx_error;
+@@ -1115,8 +1184,19 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 
+ 	skb_set_inner_ipproto(skb, next_protocol);
+ 
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		ipvs_gue_encap(net, skb, cp, &next_protocol);
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		bool check = false;
++
++		if (ipvs_gue_encap(net, skb, cp, &next_protocol))
++			goto tx_error;
++
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_CSUM) ||
++		    (tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM))
++			check = true;
++
++		udp_set_csum(!check, skb, saddr, cp->daddr.ip, skb->len);
++	}
++
+ 
+ 	skb_push(skb, sizeof(struct iphdr));
+ 	skb_reset_network_header(skb);
+@@ -1174,6 +1254,7 @@ ip_vs_tunnel_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 	unsigned int max_headroom;	/* The extra header space needed */
+ 	int ret, local;
+ 	int tun_type, gso_type;
++	int tun_flags;
+ 
+ 	EnterFunction(10);
+ 
+@@ -1197,9 +1278,19 @@ ip_vs_tunnel_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 	max_headroom = LL_RESERVED_SPACE(tdev) + sizeof(struct ipv6hdr);
+ 
+ 	tun_type = cp->dest->tun_type;
++	tun_flags = cp->dest->tun_flags;
+ 
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		max_headroom += sizeof(struct udphdr) + sizeof(struct guehdr);
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		size_t gue_hdrlen, gue_optlen = 0;
++
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++		    skb->ip_summed == CHECKSUM_PARTIAL) {
++			gue_optlen += GUE_PLEN_REMCSUM + GUE_LEN_PRIV;
++		}
++		gue_hdrlen = sizeof(struct guehdr) + gue_optlen;
++
++		max_headroom += sizeof(struct udphdr) + gue_hdrlen;
++	}
+ 
+ 	skb = ip_vs_prepare_tunneled_skb(skb, cp->af, max_headroom,
+ 					 &next_protocol, &payload_len,
+@@ -1208,8 +1299,17 @@ ip_vs_tunnel_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 		goto tx_error;
+ 
+ 	gso_type = __tun_gso_type_mask(AF_INET6, cp->af);
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		gso_type |= SKB_GSO_UDP_TUNNEL;
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_CSUM) ||
++		    (tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM))
++			gso_type |= SKB_GSO_UDP_TUNNEL_CSUM;
++		else
++			gso_type |= SKB_GSO_UDP_TUNNEL;
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM) &&
++		    skb->ip_summed == CHECKSUM_PARTIAL) {
++			gso_type |= SKB_GSO_TUNNEL_REMCSUM;
++		}
++	}
+ 
+ 	if (iptunnel_handle_offloads(skb, gso_type))
+ 		goto tx_error;
+@@ -1218,8 +1318,18 @@ ip_vs_tunnel_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
+ 
+ 	skb_set_inner_ipproto(skb, next_protocol);
+ 
+-	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE)
+-		ipvs_gue_encap(net, skb, cp, &next_protocol);
++	if (tun_type == IP_VS_CONN_F_TUNNEL_TYPE_GUE) {
++		bool check = false;
++
++		if (ipvs_gue_encap(net, skb, cp, &next_protocol))
++			goto tx_error;
++
++		if ((tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_CSUM) ||
++		    (tun_flags & IP_VS_TUNNEL_ENCAP_FLAG_REMCSUM))
++			check = true;
++
++		udp6_set_csum(!check, skb, &saddr, &cp->daddr.in6, skb->len);
++	}
+ 
+ 	skb_push(skb, sizeof(struct ipv6hdr));
+ 	skb_reset_network_header(skb);
 -- 
-Florian
+2.21.0
+
