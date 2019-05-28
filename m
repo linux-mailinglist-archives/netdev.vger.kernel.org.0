@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3602CF65
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:24:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D00162CF69
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:24:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727792AbfE1TY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 15:24:26 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:50461 "EHLO
+        id S1727812AbfE1TY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 15:24:29 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:38797 "EHLO
         mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727291AbfE1TYY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:24:24 -0400
+        with ESMTP id S1727291AbfE1TY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:24:29 -0400
 Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 45D3gV22q1z1rZRt;
-        Tue, 28 May 2019 21:24:22 +0200 (CEST)
+        by mail-out.m-online.net (Postfix) with ESMTP id 45D3gX3Dv5z1rSYt;
+        Tue, 28 May 2019 21:24:24 +0200 (CEST)
 Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 45D3gV1fwyz1qqkZ;
-        Tue, 28 May 2019 21:24:22 +0200 (CEST)
+        by mail.m-online.net (Postfix) with ESMTP id 45D3gX2xNYz1qqkX;
+        Tue, 28 May 2019 21:24:24 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at mnet-online.de
 Received: from mail.mnet-online.de ([192.168.8.182])
         by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id sIdXRNLD47I4; Tue, 28 May 2019 21:24:21 +0200 (CEST)
-X-Auth-Info: QGMnpzK7jGTj1KUrgdkoWNs2krBYJFMA5rTBbEw8oS0=
+        with ESMTP id JlHxzgTSbg1P; Tue, 28 May 2019 21:24:23 +0200 (CEST)
+X-Auth-Info: DxOAQUkjaA+LJyQLnRzA6SEJPBBJM0AIByOmQSEOMy0=
 Received: from [IPv6:::1] (unknown [195.140.253.167])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Tue, 28 May 2019 21:24:21 +0200 (CEST)
+        Tue, 28 May 2019 21:24:23 +0200 (CEST)
 Subject: Re: [PATCH] net: phy: tja11xx: Add IRQ support to the driver
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, Guenter Roeck <linux@roeck-us.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+To:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
 References: <20190528181616.2019-1-marex@denx.de>
- <482063b4-8c0c-7944-6550-a73d0d9492be@gmail.com>
+ <1768acfc-ed20-68d3-12a0-1e5bfb7b31a3@gmail.com>
 From:   Marek Vasut <marex@denx.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
@@ -78,12 +79,12 @@ Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
  tgPc2T/X/ETe5eCuhxMytIYbt1fK2pDXPoIKbbDK4uEmg9USXZ+pYrac4PFo1d+6D6vmTjRZ
  GRRITOVpKgBndfPyqofxeKNKGdNf9FS/x89RlnDWXsQHm+0pXguSRG9XdB16ZFNgeo8SeZVr
  qc9uLfhyQp/zB6qEnuX1TToug7PuDgcNZdjN3vgTXyno2TFMxp/LKHqg
-Message-ID: <bb5cb34b-1333-27b4-219c-10bbeeb4275e@denx.de>
-Date:   Tue, 28 May 2019 21:13:33 +0200
+Message-ID: <cb1f305b-0ad9-7923-b4eb-24868cce1f48@denx.de>
+Date:   Tue, 28 May 2019 21:14:50 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <482063b4-8c0c-7944-6550-a73d0d9492be@gmail.com>
+In-Reply-To: <1768acfc-ed20-68d3-12a0-1e5bfb7b31a3@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -92,8 +93,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/19 8:21 PM, Florian Fainelli wrote:
-> On 5/28/19 11:16 AM, Marek Vasut wrote:
+On 5/28/19 8:29 PM, Heiner Kallweit wrote:
+> On 28.05.2019 20:16, Marek Vasut wrote:
 >> Add support for handling the TJA11xx PHY IRQ signal.
 >>
 >> Signed-off-by: Marek Vasut <marex@denx.de>
@@ -131,9 +132,24 @@ On 5/28/19 8:21 PM, Florian Fainelli wrote:
 >> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
 >> +		ret = phy_write(phydev, MII_INTEN, 0xcfef);
 > 
-> It would be nice to define the shifts and masks being used here. Other
-> than that, this looks good.
+> As Florian commented already, such magic numbers are not nice.
+> Better add a constant for each bit representing an interrupt
+> source. Please note that phylib is interested in the link
+> change event only. Therefore typically only one bit is set.
 
+With this PHY, it seems all of those bits have impact on the link.
+
+>> +	else
+>> +		ret = phy_write(phydev, MII_INTEN, 0);
+>> +
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	ret = phy_read(phydev, MII_INTSRC);
+>> +
+> 
+> This IRQ ACK can be removed. It's done by phylib, see
+> phy_enable_interrupts().
 OK
 
 -- 
