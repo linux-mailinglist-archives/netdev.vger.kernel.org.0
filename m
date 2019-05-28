@@ -2,105 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3315E2CD48
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:11:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56CF62CD7A
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727133AbfE1RLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 13:11:51 -0400
-Received: from mail-eopbgr60066.outbound.protection.outlook.com ([40.107.6.66]:35975
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726845AbfE1RLv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 13:11:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q9gaJ7YQsbJeInL9gPI0CfV4oPMgZk+CX0uBSzH2Da0=;
- b=ckrkoBWJgoQMPQFTsbX389BmDjztpKaNAnNmxtPDOb9mxKIQLgSZXh5L2OsmwvVn08oE0pVanM03KCOHLMgFV5ZCPffotU/a1ngp3k2MMWuYIvbLaG6sb2wBV1ig0z4x24fVsqq8/kJNmlFBVhLPHfuDdDLv3Jd6r5si7u6q2lQ=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB3405.eurprd04.prod.outlook.com (52.134.1.154) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1922.16; Tue, 28 May 2019 17:11:37 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::f494:9fa1:ebae:6053]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::f494:9fa1:ebae:6053%8]) with mapi id 15.20.1922.019; Tue, 28 May 2019
- 17:11:37 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH 07/11] net: phylink: Add PHYLINK_DEV operation type
-Thread-Topic: [PATCH 07/11] net: phylink: Add PHYLINK_DEV operation type
-Thread-Index: AQHVFNJYuRihsAfx/Uiz7daXejWMlaZ/yQGAgAD8C1A=
-Date:   Tue, 28 May 2019 17:11:37 +0000
-Message-ID: <VI1PR0402MB280021214C0A9FEF4F63AD0AE01E0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <1558992127-26008-1-git-send-email-ioana.ciornei@nxp.com>
- <1558992127-26008-8-git-send-email-ioana.ciornei@nxp.com>
- <1f35604c-6047-082e-814a-72d8739fff12@gmail.com>
-In-Reply-To: <1f35604c-6047-082e-814a-72d8739fff12@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6443256d-048f-4efd-7af4-08d6e38f8b33
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR0402MB3405;
-x-ms-traffictypediagnostic: VI1PR0402MB3405:
-x-microsoft-antispam-prvs: <VI1PR0402MB3405BA665C3A1A043D82D05EE01E0@VI1PR0402MB3405.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 00514A2FE6
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(376002)(396003)(136003)(346002)(39860400002)(189003)(199004)(8676002)(6506007)(33656002)(14454004)(186003)(4326008)(81166006)(53546011)(81156014)(66446008)(8936002)(64756008)(66476007)(256004)(66946007)(76176011)(7696005)(305945005)(74316002)(7736002)(99286004)(6246003)(5024004)(76116006)(478600001)(73956011)(53936002)(71200400001)(71190400001)(26005)(52536014)(446003)(11346002)(476003)(6436002)(5660300002)(6116002)(316002)(68736007)(44832011)(9686003)(66556008)(110136005)(55016002)(102836004)(229853002)(2201001)(2501003)(86362001)(2906002)(66066001)(486006)(25786009)(7416002)(3846002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3405;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: CROLLnJ4eoANh6/e0WwtS4U2K1fYUj1AwKwPfIfJtLbW6lsiuBl9FDs6OM8WLKTm35R3Js24/uDwjZ/Zt8R9TWnIqRa/WctLm+fZsic44Hum6hHAYivoIQ9JIz5Sp+5LVqYVqjiLsafYIhlPXO1gi37+7vy7Y/CH2NJYim77MPpQxO2PhRj0C9k9vpqa7uhEGrfsQx0TGpfkseFkg2QwZySXT5k80D3QqhebZiZkp9tvA3Mo2IreuWQcEaOX7lWx26mpzMAJ17Oo3CYrJD+0Zihvi56K9r9+VfP6eqB5u4Tlr1b+7hYRBakcRnzjILGKHPOpHAU7IE0frhEoVjQl3Qz6xg2U1nDyjBLlKDIjPC6TgjpxcnkgIDMUYH7vyU6GCVwZn+HkVDE63aeU7THgIjL9fg4jauGrsPIJoimG+Hg=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726610AbfE1RTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 13:19:03 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:42598 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbfE1RTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 13:19:02 -0400
+Received: by mail-pl1-f196.google.com with SMTP id go2so8596458plb.9;
+        Tue, 28 May 2019 10:19:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vgUukrIUAW33rXBEBk4q8j6YDX0VbSNRvM27fcNOQus=;
+        b=qiIXD97ZvDql70kTKKS9X4xm3xxDOG35kgByIN/usE5C3DHxjZMHhJv+DHBHl8KBdO
+         TCi0KVHo0oAQmtuu2Q8mD+pxDqAedfY6fUZywhgSHmzXR842hjutueEa/WhwBXsssThC
+         RSIY/VZq60PYW4sXqtc/8hC4HBx0MSTEa2aMRAPKCommtvAjdsjGZXVFlsYZ+YGPMURz
+         Sqy0X5PZO01U2T1Ydgy03yJNavka7E36iFy2jMGqHE/dNdRJRYo4fyo3rdDXShyYCJAw
+         SC2jQcfbcKlGjyjc91nk9GvoooSsdOmkghKOAm+pqxYt/I5rUtWuhEC5Bn+Njhs4O/Fm
+         MYIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vgUukrIUAW33rXBEBk4q8j6YDX0VbSNRvM27fcNOQus=;
+        b=so2qKA0tpVoDrY30K0C6nRGurgKxNs/BdDrx0P1fxLlXsyQyzCkD5ByfZ+czmVp/N4
+         SWcVdowQ+4kxtfT8fouaj3DVzxAzw4mHuvyzFWd4aOd3QZJVInsmVclznnZeRJkjex+M
+         rqCvLk6vwj7AjH+msgjdlSf7kSvZ3HRbTBC/SaTVcBQqY4p+zZHccAok1s+FKbqjlVVZ
+         NXfZ4X1k9HKgXJU0ZLRxa+I5xWYIRTGwg/mCIjz43V5L76CsGFO5BU01fDSDCqQQUat+
+         oODWFPHiOpwUX6sx24RmbORJ8NumiDRU1tmQ3qCzY0OIIgbhmV7bReFdO3z/VoRPAczl
+         xqWA==
+X-Gm-Message-State: APjAAAXtKOvJhwKCxxtshBMITOCdppURkY41niFKYKCXOqZMvhhP/ezf
+        x/BDPtODnJMENb834JCRJd1+Jyt7
+X-Google-Smtp-Source: APXvYqzA7CK7i0ADM4IDLYfQh8F06vK2xmlmKmhowjBNF8rKaCXnzMAhLikVyJirLNZmlN2o+bWiyw==
+X-Received: by 2002:a17:902:27a8:: with SMTP id d37mr27735710plb.150.1559063941574;
+        Tue, 28 May 2019 10:19:01 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id s27sm19253690pfd.18.2019.05.28.10.18.59
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 May 2019 10:19:00 -0700 (PDT)
+Subject: Re: Driver has suspect GRO implementation, TCP performance may be
+ compromised.
+To:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <e070e241-fb65-a5b0-3155-7380a9203bcf@molgen.mpg.de>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <8627ea1e-8e51-c425-97f6-aeb57176e11a@gmail.com>
+Date:   Tue, 28 May 2019 10:18:59 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6443256d-048f-4efd-7af4-08d6e38f8b33
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2019 17:11:37.3588
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3405
+In-Reply-To: <e070e241-fb65-a5b0-3155-7380a9203bcf@molgen.mpg.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBTdWJqZWN0OiBSZTogW1BBVENIIDA3LzExXSBuZXQ6IHBoeWxpbms6IEFkZCBQSFlMSU5LX0RF
-ViBvcGVyYXRpb24gdHlwZQ0KPiANCj4gDQo+IA0KPiBPbiA1LzI3LzIwMTkgMjoyMiBQTSwgSW9h
-bmEgQ2lvcm5laSB3cm90ZToNCj4gPiBJbiB0aGUgUEhZTElOS19ERVYgb3BlcmF0aW9uIHR5cGUs
-IHRoZSBQSFlMSU5LIGluZnJhc3RydWN0dXJlIGNhbiB3b3JrDQo+ID4gd2l0aG91dCBhbiBhdHRh
-Y2hlZCBuZXRfZGV2aWNlLiBGb3IgcHJpbnRpbmcgdXNlY2FzZXMsIGluc3RlYWQsIGENCj4gPiBz
-dHJ1Y3QgZGV2aWNlICogc2hvdWxkIGJlIHBhc3NlZCB0byBQSFlMSU5LIHVzaW5nIHRoZSBwaHls
-aW5rX2NvbmZpZw0KPiBzdHJ1Y3R1cmUuDQo+ID4NCj4gPiBBbHNvLCBuZXRpZl9jYXJyaWVyXyog
-Y2FsbHMgYXIgZ3VhcmRlZCBieSB0aGUgcHJlc2VuY2Ugb2YgYSB2YWxpZA0KPiA+IG5ldF9kZXZp
-Y2UuIFdoZW4gdXNpbmcgdGhlIFBIWUxJTktfREVWIG9wZXJhdGlvbiB0eXBlLCB3ZSBjYW5ub3Qg
-Y2hlY2sNCj4gPiBsaW5rIHN0YXR1cyB1c2luZyB0aGUgbmV0aWZfY2Fycmllcl9vaygpIEFQSSBz
-byBpbnN0ZWFkLCBrZWVwIGFuDQo+ID4gaW50ZXJuYWwgc3RhdGUgb2YgdGhlIE1BQyBhbmQgY2Fs
-bCBtYWNfbGlua197ZG93bix1cH0gb25seSB3aGVuIHRoZQ0KPiA+IGxpbmsgY2hhbmdlZC4NCj4g
-Pg0KPiA+IFNpZ25lZC1vZmYtYnk6IElvYW5hIENpb3JuZWkgPGlvYW5hLmNpb3JuZWlAbnhwLmNv
-bT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBWbGFkaW1pciBPbHRlYW4gPG9sdGVhbnZAZ21haWwuY29t
-Pg0KPiANCj4gU2hvdWxkIG5vdCB0aGlzIHBhdGNoIGJlIHJlLW9yZGVyZWQgdG8gYmUgYWZ0ZXIg
-cGF0Y2ggIzg/IE90aGVyIHRoYW4gdGhhdDoNCj4gDQoNCk5vdCBuZWNlc3NhcmlseS4NCkV2ZW4g
-d2l0aG91dCBwYXRjaCAjOCAoIm5ldDogcGh5bGluazogQWRkIHBoeWxpbmtfe3ByaW50ayxlcnIs
-d2FybixpbmZvLGRiZ30gbWFjcm9zIikgZXZlcnl0aGluZyB3aWxsIGZ1bmN0aW9uIHByb3Blcmx5
-IHdpdGggdGhlIG1lbnRpb24gdGhhdCBpbiBjYXNlIG9mIFBIWUxJTktfREVWIGEgTlVMTCBuZXRf
-ZGV2aWNlIHdpbGwgZ2V0IHByaW50ZWQuDQoNCkkgY2hvc2UgdG8gYWRkIHRoZSBwaHlsaW5rX3By
-aW50ayBhZnRlciB0aGlzIHBhdGNoIGJlY2F1c2Ugbm93IHdlIGhhdmUgdGhlIHdob2xlIHBpY3R1
-cmUuDQoNCi0tDQpJb2FuYQ0KDQo+IFJldmlld2VkLWJ5OiBGbG9yaWFuIEZhaW5lbGxpIDxmLmZh
-aW5lbGxpQGdtYWlsLmNvbT4NCj4gLS0NCj4gRmxvcmlhbg0K
+
+
+On 5/28/19 8:42 AM, Paul Menzel wrote:
+> Dear Linux folks,
+> 
+> 
+> Occasionally, Linux outputs the message below on the workstation Dell
+> OptiPlex 5040 MT.
+> 
+>     TCP: net00: Driver has suspect GRO implementation, TCP performance may be compromised.
+> 
+> Linux 4.14.55 and Linux 5.2-rc2 show the message, and the WWW also
+> gives some hits [1][2].
+> 
+> ```
+> $ sudo ethtool -i net00
+> driver: e1000e
+> version: 3.2.6-k
+> firmware-version: 0.8-4
+> expansion-rom-version: 
+> bus-info: 0000:00:1f.6
+> supports-statistics: yes
+> supports-test: yes
+> supports-eeprom-access: yes
+> supports-register-dump: yes
+> supports-priv-flags: no
+> ```
+> 
+> Can the driver e1000e be improved?
+> 
+> Any idea, what triggers this, as I do not see it every boot? Download
+> of big files?
+>
+Maybe the driver/NIC can receive frames bigger than MTU, although this would be strange.
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index c61edd023b352123e2a77465782e0d32689e96b0..cb0194f66125bcba427e6e7e3cacf0c93040ef61 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -150,8 +150,10 @@ static void tcp_gro_dev_warn(struct sock *sk, const struct sk_buff *skb,
+                rcu_read_lock();
+                dev = dev_get_by_index_rcu(sock_net(sk), skb->skb_iif);
+                if (!dev || len >= dev->mtu)
+-                       pr_warn("%s: Driver has suspect GRO implementation, TCP performance may be compromised.\n",
+-                               dev ? dev->name : "Unknown driver");
++                       pr_warn("%s: Driver has suspect GRO implementation, TCP performance may be compromised."
++                               " len %u mtu %u\n",
++                               dev ? dev->name : "Unknown driver",
++                               len, dev ? dev->mtu : 0);
+                rcu_read_unlock();
+        }
+ }
+
