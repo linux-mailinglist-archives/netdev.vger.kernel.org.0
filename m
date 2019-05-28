@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC672CDCC
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C1AF2CDCE
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727436AbfE1Rk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 13:40:57 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:60384 "EHLO inva020.nxp.com"
+        id S1727443AbfE1RlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 13:41:00 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:60406 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727406AbfE1Rkz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 13:40:55 -0400
+        id S1727418AbfE1Rk4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 13:40:56 -0400
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id F37B01A0FCF;
-        Tue, 28 May 2019 19:40:53 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 841901A0FC8;
+        Tue, 28 May 2019 19:40:54 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E45A71A0FC8;
-        Tue, 28 May 2019 19:40:53 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 771671A0FC2;
+        Tue, 28 May 2019 19:40:54 +0200 (CEST)
 Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 467BD205F4;
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 003BF205F4;
         Tue, 28 May 2019 19:40:53 +0200 (CEST)
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     linux@armlinux.org.uk, f.fainelli@gmail.com, andrew@lunn.ch,
@@ -26,9 +26,9 @@ To:     linux@armlinux.org.uk, f.fainelli@gmail.com, andrew@lunn.ch,
         olteanv@gmail.com, thomas.petazzoni@bootlin.com,
         davem@davemloft.net, vivien.didelot@gmail.com
 Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH v2 net-next 10/11] net: dsa: Use PHYLINK for the CPU/DSA ports
-Date:   Tue, 28 May 2019 20:38:16 +0300
-Message-Id: <1559065097-31832-11-git-send-email-ioana.ciornei@nxp.com>
+Subject: [PATCH v2 net-next 11/11] net: dsa: sja1105: Fix broken fixed-link interfaces on user ports
+Date:   Tue, 28 May 2019 20:38:17 +0300
+Message-Id: <1559065097-31832-12-git-send-email-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1559065097-31832-1-git-send-email-ioana.ciornei@nxp.com>
 References: <1559065097-31832-1-git-send-email-ioana.ciornei@nxp.com>
@@ -39,140 +39,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For DSA switches that do not have an .adjust_link callback, aka those
-who transitioned totally to the PHYLINK-compliant API, use PHYLINK to
-drive the CPU/DSA ports.
+From: Vladimir Oltean <olteanv@gmail.com>
 
-The PHYLIB usage and .adjust_link are kept but deprecated, and users are
-asked to transition from it.  The reason why we can't do anything for
-them is because PHYLINK does not wrap the fixed-link state behind a
-phydev object, so we cannot wrap .phylink_mac_config into .adjust_link
-unless we fabricate a phy_device structure.
+PHYLIB and PHYLINK handle fixed-link interfaces differently. PHYLIB
+wraps them in a software PHY ("pseudo fixed link") phydev construct such
+that .adjust_link driver callbacks see an unified API. Whereas PHYLINK
+simply creates a phylink_link_state structure and passes it to
+.mac_config.
 
-For these ports, the newly introduced PHYLINK_DEV operation type is
-used and the dsa_switch device structure is passed to PHYLINK for
-printing purposes.  The handling of the PHYLINK_NETDEV and PHYLINK_DEV
-PHYLINK instances is common from the perspective of the driver.
+At the time the driver was introduced, DSA was using PHYLIB for the
+CPU/cascade ports (the ones with no net devices) and PHYLINK for
+everything else.
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+As explained below:
+
+commit aab9c4067d2389d0adfc9c53806437df7b0fe3d5
+Author: Florian Fainelli <f.fainelli@gmail.com>
+Date:   Thu May 10 13:17:36 2018 -0700
+
+  net: dsa: Plug in PHYLINK support
+
+  Drivers that utilize fixed links for user-facing ports (e.g: bcm_sf2)
+  will need to implement phylink_mac_ops from now on to preserve
+  functionality, since PHYLINK *does not* create a phy_device instance
+  for fixed links.
+
+In the above patch, DSA guards the .phylink_mac_config callback against
+a NULL phydev pointer.  Therefore, .adjust_link is not called in case of
+a fixed-link user port.
+
+This patch fixes the situation by converting the driver from using
+.adjust_link to .phylink_mac_config.  This can be done now in a unified
+fashion for both slave and CPU/cascade ports because DSA now uses
+PHYLINK for all ports.
+
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v2:
- - make dsa_port_phylink_register() function static
+ - none
 
- net/dsa/port.c | 69 +++++++++++++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 63 insertions(+), 6 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 0051f5006248..d74bc9df1359 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -481,12 +481,15 @@ void dsa_port_phylink_mac_link_down(struct phylink_config *config,
- 				    phy_interface_t interface)
- {
- 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
--	struct net_device *dev = dp->slave;
-+	struct phy_device *phydev = NULL;
- 	struct dsa_switch *ds = dp->ds;
- 
-+	if (dsa_is_user_port(ds, dp->index))
-+		phydev = dp->slave->phydev;
-+
- 	if (!ds->ops->phylink_mac_link_down) {
--		if (ds->ops->adjust_link && dev->phydev)
--			ds->ops->adjust_link(ds, dp->index, dev->phydev);
-+		if (ds->ops->adjust_link && phydev)
-+			ds->ops->adjust_link(ds, dp->index, phydev);
- 		return;
- 	}
- 
-@@ -500,12 +503,11 @@ void dsa_port_phylink_mac_link_up(struct phylink_config *config,
- 				  struct phy_device *phydev)
- {
- 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
--	struct net_device *dev = dp->slave;
- 	struct dsa_switch *ds = dp->ds;
- 
- 	if (!ds->ops->phylink_mac_link_up) {
--		if (ds->ops->adjust_link && dev->phydev)
--			ds->ops->adjust_link(ds, dp->index, dev->phydev);
-+		if (ds->ops->adjust_link && phydev)
-+			ds->ops->adjust_link(ds, dp->index, phydev);
- 		return;
- 	}
- 
-@@ -599,8 +601,53 @@ static int dsa_port_fixed_link_register_of(struct dsa_port *dp)
- 	return 0;
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 0663b78a2f6c..cfdefd9f1905 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -734,15 +734,16 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
+ 	return sja1105_clocking_setup_port(priv, port);
  }
  
-+static int dsa_port_phylink_register(struct dsa_port *dp)
-+{
-+	struct dsa_switch *ds = dp->ds;
-+	struct device_node *port_dn = dp->dn;
-+	int mode, err;
-+
-+	mode = of_get_phy_mode(port_dn);
-+	if (mode < 0)
-+		mode = PHY_INTERFACE_MODE_NA;
-+
-+	dp->pl_config.dev = ds->dev;
-+	dp->pl_config.type = PHYLINK_DEV;
-+
-+	dp->pl = phylink_create(&dp->pl_config, of_fwnode_handle(port_dn),
-+				mode, &dsa_port_phylink_mac_ops);
-+	if (IS_ERR(dp->pl)) {
-+		pr_err("error creating PHYLINK: %ld\n", PTR_ERR(dp->pl));
-+		return PTR_ERR(dp->pl);
-+	}
-+
-+	err = phylink_of_phy_connect(dp->pl, port_dn, 0);
-+	if (err) {
-+		pr_err("could not attach to PHY: %d\n", err);
-+		goto err_phy_connect;
-+	}
-+
-+	rtnl_lock();
-+	phylink_start(dp->pl);
-+	rtnl_unlock();
-+
-+	return 0;
-+
-+err_phy_connect:
-+	phylink_destroy(dp->pl);
-+	return err;
-+}
-+
- int dsa_port_link_register_of(struct dsa_port *dp)
+-static void sja1105_adjust_link(struct dsa_switch *ds, int port,
+-				struct phy_device *phydev)
++static void sja1105_mac_config(struct dsa_switch *ds, int port,
++			       unsigned int link_an_mode,
++			       const struct phylink_link_state *state)
  {
-+	struct dsa_switch *ds = dp->ds;
-+
-+	if (!ds->ops->adjust_link)
-+		return dsa_port_phylink_register(dp);
-+
-+	dev_warn(ds->dev,
-+		 "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
-+
- 	if (of_phy_is_fixed_link(dp->dn))
- 		return dsa_port_fixed_link_register_of(dp);
- 	else
-@@ -609,6 +656,16 @@ int dsa_port_link_register_of(struct dsa_port *dp)
+ 	struct sja1105_private *priv = ds->priv;
  
- void dsa_port_link_unregister_of(struct dsa_port *dp)
- {
-+	struct dsa_switch *ds = dp->ds;
-+
-+	if (!ds->ops->adjust_link) {
-+		rtnl_lock();
-+		phylink_disconnect_phy(dp->pl);
-+		rtnl_unlock();
-+		phylink_destroy(dp->pl);
-+		return;
-+	}
-+
- 	if (of_phy_is_fixed_link(dp->dn))
- 		of_phy_deregister_fixed_link(dp->dn);
+-	if (!phydev->link)
++	if (!state->link)
+ 		sja1105_adjust_port_config(priv, port, 0, false);
  	else
+-		sja1105_adjust_port_config(priv, port, phydev->speed, true);
++		sja1105_adjust_port_config(priv, port, state->speed, true);
+ }
+ 
+ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+@@ -1515,9 +1516,9 @@ static int sja1105_set_ageing_time(struct dsa_switch *ds,
+ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.get_tag_protocol	= sja1105_get_tag_protocol,
+ 	.setup			= sja1105_setup,
+-	.adjust_link		= sja1105_adjust_link,
+ 	.set_ageing_time	= sja1105_set_ageing_time,
+ 	.phylink_validate	= sja1105_phylink_validate,
++	.phylink_mac_config	= sja1105_mac_config,
+ 	.get_strings		= sja1105_get_strings,
+ 	.get_ethtool_stats	= sja1105_get_ethtool_stats,
+ 	.get_sset_count		= sja1105_get_sset_count,
 -- 
 1.9.1
 
