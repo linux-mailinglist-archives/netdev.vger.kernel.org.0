@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D36652C289
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 11:06:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84E722C272
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 11:05:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727447AbfE1JEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 05:04:36 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:57236 "EHLO huawei.com"
+        id S1727418AbfE1JEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 05:04:41 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:17174 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727418AbfE1JEf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 05:04:35 -0400
+        id S1727457AbfE1JEi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 05:04:38 -0400
 Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id A1990200D987D55876F3;
-        Tue, 28 May 2019 17:04:31 +0800 (CST)
+        by Forcepoint Email with ESMTP id 7320177CBAF3EBD60590;
+        Tue, 28 May 2019 17:04:36 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
  14.3.439.0; Tue, 28 May 2019 17:04:25 +0800
@@ -21,11 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>,
+        <linuxarm@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 01/12] net: hns3: fix compile warning without CONFIG_RFS_ACCEL
-Date:   Tue, 28 May 2019 17:02:51 +0800
-Message-ID: <1559034182-24737-2-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 02/12] net: hns3: fix for HNS3_RXD_GRO_SIZE_M macro
+Date:   Tue, 28 May 2019 17:02:52 +0800
+Message-ID: <1559034182-24737-3-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1559034182-24737-1-git-send-email-tanhuazhong@huawei.com>
 References: <1559034182-24737-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,40 +38,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-The ifdef condition of function hclge_add_fd_entry_by_arfs() is
-unnecessary. It may cause compile warning when CONFIG_RFS_ACCEL
-is not chosen. This patch fixes it by removing the ifdef condition.
+According to hardware user menual, the GRO_SIZE is 14 bits width,
+the HNS3_RXD_GRO_SIZE_M is 10 bits width now, which may cause
+hardware GRO received packet error problem.
 
-Fixes: d93ed94fbeaf ("net: hns3: add aRFS support for PF")
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Fixes: a6d53b97a2e7 ("net: hns3: Adds GRO params to SKB for the stack")
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index a3fba7b..fb0dc18 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -5682,7 +5682,6 @@ static void hclge_fd_build_arfs_rule(const struct hclge_fd_rule_tuples *tuples,
- static int hclge_add_fd_entry_by_arfs(struct hnae3_handle *handle, u16 queue_id,
- 				      u16 flow_id, struct flow_keys *fkeys)
- {
--#ifdef CONFIG_RFS_ACCEL
- 	struct hclge_vport *vport = hclge_get_vport(handle);
- 	struct hclge_fd_rule_tuples new_tuples;
- 	struct hclge_dev *hdev = vport->back;
-@@ -5758,7 +5757,6 @@ static int hclge_add_fd_entry_by_arfs(struct hnae3_handle *handle, u16 queue_id,
- 	}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+index c14480f..408efd5 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+@@ -145,7 +145,7 @@ enum hns3_nic_state {
+ #define HNS3_RXD_TSIND_M			(0x7 << HNS3_RXD_TSIND_S)
+ #define HNS3_RXD_LKBK_B				15
+ #define HNS3_RXD_GRO_SIZE_S			16
+-#define HNS3_RXD_GRO_SIZE_M			(0x3ff << HNS3_RXD_GRO_SIZE_S)
++#define HNS3_RXD_GRO_SIZE_M			(0x3fff << HNS3_RXD_GRO_SIZE_S)
  
- 	return rule->location;
--#endif
- }
- 
- static void hclge_rfs_filter_expire(struct hclge_dev *hdev)
+ #define HNS3_TXD_L3T_S				0
+ #define HNS3_TXD_L3T_M				(0x3 << HNS3_TXD_L3T_S)
 -- 
 2.7.4
 
