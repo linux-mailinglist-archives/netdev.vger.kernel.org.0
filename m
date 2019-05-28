@@ -2,146 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 132C72C636
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7B012C63F
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727068AbfE1MLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 08:11:41 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:53298 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfE1MLl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:11:41 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id C21AE60271; Tue, 28 May 2019 12:11:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559045499;
-        bh=2lQySrPSOTMzyxN6pFfdb+ev8cgoIVdkWaHsrsG9+pw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=VZjh4BYAAVpZxfy0yQF0qtQoGet9/5UvUoYvfMpI3Vn5VllXfA8JwdO/lSM7EUw9P
-         VIw0sVaS+HJrHbXxZFR24R1+vvtHk2dDMkFsC2dOs4O726+kdp9t2bP1gaYRMpu9zX
-         7yaolr0o06xDn6rYBGTfdXB+hzhEQGQJqboI+ycM=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from purkki.adurom.net (purkki.adurom.net [80.68.90.206])
-        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 472EB6070D;
-        Tue, 28 May 2019 12:11:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559045499;
-        bh=2lQySrPSOTMzyxN6pFfdb+ev8cgoIVdkWaHsrsG9+pw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=VZjh4BYAAVpZxfy0yQF0qtQoGet9/5UvUoYvfMpI3Vn5VllXfA8JwdO/lSM7EUw9P
-         VIw0sVaS+HJrHbXxZFR24R1+vvtHk2dDMkFsC2dOs4O726+kdp9t2bP1gaYRMpu9zX
-         7yaolr0o06xDn6rYBGTfdXB+hzhEQGQJqboI+ycM=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 472EB6070D
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Christian Lamparter <chunkeey@gmail.com>,
-        syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>,
-        <davem@davemloft.net>, <andreyknvl@google.com>,
-        <syzkaller-bugs@googlegroups.com>,
-        Kernel development list <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH] network: wireless: p54u: Fix race between disconnect and firmware loading
-References: <Pine.LNX.4.44L0.1905201042110.1498-100000@iolanthe.rowland.org>
-Date:   Tue, 28 May 2019 15:11:34 +0300
-In-Reply-To: <Pine.LNX.4.44L0.1905201042110.1498-100000@iolanthe.rowland.org>
-        (Alan Stern's message of "Mon, 20 May 2019 10:44:21 -0400 (EDT)")
-Message-ID: <8736kyvkw9.fsf@purkki.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/23.4 (gnu/linux)
+        id S1726903AbfE1MPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 08:15:13 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:34952 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfE1MPN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:15:13 -0400
+Received: by mail-pf1-f193.google.com with SMTP id d126so9180339pfd.2;
+        Tue, 28 May 2019 05:15:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=+y1LhgybZDo6e2IXKdhcfe/V5jck1KpiR5cRJrvtKo0=;
+        b=DtG4PbHGQBnUfiyVAviztUOKIfL3saDBQQh4xyvVOneHT/0sHTcjWx/hEFk4bLHuuK
+         +bsflLMhkuKL3slI+lwqPv0YyT3OtPuh2lX55HWFFP+CubEFu0J5NyetX7RVyw7ewdNW
+         x+lE8SXILt4aBOxfC7P2BbqcNCh8RSpjNpXjzilESmBTiUXZDg3Q3lqEqF3OYDb9YAqS
+         /0G6rkU4PW4v2YLRyjbcyOEl93BIzVuY5W8++vexLQIAP8+r1PxBq4eHMGubYvhI9pdD
+         IYbscUr4LZcLue6ltYha9S9TP1uw6F2lgqoPxMtScUpoM/xekz9sxvOaoc2uhAXbe98h
+         pEeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+y1LhgybZDo6e2IXKdhcfe/V5jck1KpiR5cRJrvtKo0=;
+        b=pKLOu0UhBwgsf5oVNundHVq7HrcPld8XARyjRdawhUTkkobVaCYh9ju+rWWqY3aIYt
+         dIN5bdTe8z3tDR0G/+04/vh/I9WCAJoKKt13EZGr4BTuAPOPre71q2kdh1tsBxgpQZ0F
+         pxs1v34yPlezhGaczcDWc7pN7NYmOuLWWNVX1CbaEwOmvl4c5+CKGIvrd18UWc11ZERi
+         wETgbu1F+sUHx2DFQnQ9HWB6RpVUE/dgdEh+xtI5QAi3Lj07SkTU3LUbFFJC9RKZQAcS
+         qnAfIFAdlGf6zHBzvSDUNMd09NgMuBBbgr6RbovlmGY4YH4vdeYcdoY4I2J8OVcsnfE/
+         V96A==
+X-Gm-Message-State: APjAAAUxm55l/WNdkA7+I4khElE3ie0MTF2Coi78I7RkIqAiwViFOPVZ
+        sJbuxvpPooJmWmaoEmqqy6o=
+X-Google-Smtp-Source: APXvYqzlp65Uhv+naJGFhpgDeNVCpy6jOHSU7kH7ySVU4j/n6EghxRRxGpwpx2qhbUKg7Ps9yasuuQ==
+X-Received: by 2002:a62:6507:: with SMTP id z7mr26181575pfb.225.1559045712230;
+        Tue, 28 May 2019 05:15:12 -0700 (PDT)
+Received: from zhanggen-UX430UQ ([66.42.35.75])
+        by smtp.gmail.com with ESMTPSA id i16sm13798983pfd.100.2019.05.28.05.15.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 May 2019 05:15:10 -0700 (PDT)
+Date:   Tue, 28 May 2019 20:14:52 +0800
+From:   Gen Zhang <blackgod016574@gmail.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     davem@davemloft.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wlcore: spi: Fix a memory leaking bug in wl1271_probe()
+Message-ID: <20190528121452.GA23464@zhanggen-UX430UQ>
+References: <20190524030117.GA6024@zhanggen-UX430UQ>
+ <20190528113922.E2B1060312@smtp.codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190528113922.E2B1060312@smtp.codeaurora.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alan Stern <stern@rowland.harvard.edu> writes:
+On Tue, May 28, 2019 at 11:39:22AM +0000, Kalle Valo wrote:
+> Gen Zhang <blackgod016574@gmail.com> wrote:
+> 
+> > In wl1271_probe(), 'glue->core' is allocated by platform_device_alloc(),
+> > when this allocation fails, ENOMEM is returned. However, 'pdev_data'
+> > and 'glue' are allocated by devm_kzalloc() before 'glue->core'. When
+> > platform_device_alloc() returns NULL, we should also free 'pdev_data'
+> > and 'glue' before wl1271_probe() ends to prevent leaking memory.
+> > 
+> > Similarly, we shoulf free 'pdev_data' when 'glue' is NULL. And we should
+> > free 'pdev_data' and 'glue' when 'glue->reg' is error and when 'ret' is
+> > error.
+> > 
+> > Further, we should free 'glue->core', 'pdev_data' and 'glue' when this 
+> > function normally ends to prevent leaking memory.
+> > 
+> > Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+> 
+> Same questions as with similar SDIO patch:
+> 
+> https://patchwork.kernel.org/patch/10959049/
+> 
+> Patch set to Changes Requested.
+> 
+> -- 
+> https://patchwork.kernel.org/patch/10959053/
+> 
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> 
+Thanks for your reply, Kalle. I had debate with Jon about this patch. 
+You could kindly refer to lkml: https://lkml.org/lkml/2019/5/23/1547. 
+And I don't think a practical conclusion is made there.
 
-> The syzbot fuzzer found a bug in the p54 USB wireless driver.  The
-> issue involves a race between disconnect and the firmware-loader
-> callback routine, and it has several aspects.
->
-> One big problem is that when the firmware can't be loaded, the
-> callback routine tries to unbind the driver from the USB _device_ (by
-> calling device_release_driver) instead of from the USB _interface_ to
-> which it is actually bound (by calling usb_driver_release_interface).
->
-> The race involves access to the private data structure.  The driver's
-> disconnect handler waits for a completion that is signalled by the
-> firmware-loader callback routine.  As soon as the completion is
-> signalled, you have to assume that the private data structure may have
-> been deallocated by the disconnect handler -- even if the firmware was
-> loaded without errors.  However, the callback routine does access the
-> private data several times after that point.
->
-> Another problem is that, in order to ensure that the USB device
-> structure hasn't been freed when the callback routine runs, the driver
-> takes a reference to it.  This isn't good enough any more, because now
-> that the callback routine calls usb_driver_release_interface, it has
-> to ensure that the interface structure hasn't been freed.
->
-> Finally, the driver takes an unnecessary reference to the USB device
-> structure in the probe function and drops the reference in the
-> disconnect handler.  This extra reference doesn't accomplish anything,
-> because the USB core already guarantees that a device structure won't
-> be deallocated while a driver is still bound to any of its interfaces.
->
-> To fix these problems, this patch makes the following changes:
->
-> 	Call usb_driver_release_interface() rather than
-> 	device_release_driver().
->
-> 	Don't signal the completion until after the important
-> 	information has been copied out of the private data structure,
-> 	and don't refer to the private data at all thereafter.
->
-> 	Lock udev (the interface's parent) before unbinding the driver
-> 	instead of locking udev->parent.
->
-> 	During the firmware loading process, take a reference to the
-> 	USB interface instead of the USB device.
->
-> 	Don't take an unnecessary reference to the device during probe
-> 	(and then don't drop it during disconnect).
->
-> Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-> Reported-and-tested-by: syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com
-> CC: <stable@vger.kernel.org>
->
-> ---
->
->
-> [as1899]
->
->
->  drivers/net/wireless/intersil/p54/p54usb.c |   43 ++++++++++++-----------------
->  1 file changed, 18 insertions(+), 25 deletions(-)
+Further, I e-mailed Greg K-H about when should we use devm_kmalloc().
 
-The correct prefix is "p54:", but I can fix that during commit.
+On Tue, May 28, 2019 at 08:32:57AM +0800, Gen Zhang wrote:
+> devm_kmalloc() is used to allocate memory for a driver dev. Comments
+> above the definition and doc 
+> (https://www.kernel.org/doc/Documentation/driver-model/devres.txt) all
+> imply that allocated the memory is automatically freed on driver attach,
+> no matter allocation fail or not. However, I examined the code, and
+> there are many sites that devm_kfree() is used to free devm_kmalloc().
+> e.g. hisi_sas_debugfs_init() in drivers/scsi/hisi_sas/hisi_sas_main.c.
+> So I am totally confused about this issue. Can anybody give me some
+> guidance? When should we use devm_kfree()?
+He replied: If you "know" you need to free the memory now, 
+call devm_kfree(). If you want to wait for it to be cleaned up latter, 
+like normal, then do not call it.
 
-> Index: usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
-> ===================================================================
-> --- usb-devel.orig/drivers/net/wireless/intersil/p54/p54usb.c
-> +++ usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
-> @@ -33,6 +33,8 @@ MODULE_ALIAS("prism54usb");
->  MODULE_FIRMWARE("isl3886usb");
->  MODULE_FIRMWARE("isl3887usb");
->  
-> +static struct usb_driver p54u_driver;
+So could please look in to this issue?
 
-How is it safe to use static variables from a wireless driver? For
-example, what if there are two p54 usb devices on the host? How do we
-avoid a race in that case?
-
--- 
-Kalle Valo
+Thanks
+Gen
