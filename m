@@ -2,248 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC082CCBA
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 18:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54D8C2CCC1
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 18:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbfE1Q4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 12:56:32 -0400
-Received: from mail-it1-f195.google.com ([209.85.166.195]:36597 "EHLO
-        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726512AbfE1Q4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 12:56:31 -0400
-Received: by mail-it1-f195.google.com with SMTP id e184so5060213ite.1
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 09:56:30 -0700 (PDT)
+        id S1727318AbfE1Q5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 12:57:38 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38940 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726512AbfE1Q5i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 12:57:38 -0400
+Received: by mail-pf1-f195.google.com with SMTP id z26so11849263pfg.6
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 09:57:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DMU8hxlWz4QvGo3NHFJ3rYMjNIzP4+LSL6yM65Zz5jA=;
-        b=XH5etCgW8J35QagIZVKgzUdNd2vIS0fPMb56ud0PyBx3bQHhnDoUH2xXMh8i9mNd1K
-         +CQ/B3CnH+PwseaIj/vrTtuXU81UZOG7B+whjw0g/lit2KVp7KXrKh9Ua5H/LmJI6pUx
-         tSVPs6iJykhzxjkaOGl8tTH+rrQw5X+hklV/BikR+MW4UWIWuzTrWDpvcZbMGxAcPEo1
-         mvKPhnVS6hnzEyhR8w/fnPz8zGrnBuB96nTmqvU5lW1iyLqgOBIGSm9VVs6LA/XYajzd
-         BY5tUpjtBJJ3Scq7wrAyEcZpgUqEIN0bxexxhX9eqMM4FD8vasXgsDBoOnySBpmypsAC
-         Cebw==
+        d=appneta.com; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=lFicemnrxZJjOmAogTHnQIM2MtSG5wRpTZojge/oE6s=;
+        b=UUNfmVG+dl4dsV8GCJXdvUnq74HpLPc5cl3YuUVk4GPLntZVTxPBjZfWYIkjiOzwvi
+         zs5qeIrC1fIXH1W7PYyqTjICOngvh34WOuANDVsZgYdU9IuYMoqzEeoEEKXYIVMaV5Ui
+         f99nhgBOAcoT4Pge69hhdYt4kivvKfZ78Qnoo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DMU8hxlWz4QvGo3NHFJ3rYMjNIzP4+LSL6yM65Zz5jA=;
-        b=bP9vx0WgeviSh+n/ogYcDQICInS+bNopp0B9V279vifd22GZahopBzvXHCBm8PGMZ+
-         66bqUZL5v6S2BZQsrhIZ4Gk7VHnxoJsNGSPMxUZg3vwEySJACgkqiGGK1Es5HZ24+8Ni
-         cXiTVKgd/yUfgTB7lbeq0LlXFZg8jY9j02jOtSkvoCFnlqfgrBjkDPxdSCutXOj+jcWZ
-         ZJK4CDIABvipyxOa4TSMTtg4pk/LBlKRHfeb96CipBlmqjKTf6GIhYA5G3rm3TDUkrkE
-         sJFzyNho/JN+mCRdstH6/3TbprJO8jT2ULED600z06Yty+YuTe8AcBFYEbqOA5+KAcGk
-         qpqA==
-X-Gm-Message-State: APjAAAVYzlbrjIQS8bt05X8o0uabpUv+7JFT3TiWTGc+GbcndH6l53KE
-        3FBTA/TP+oeG+YmR1k5F4Jzxvhfoe/tzG5/knJNBSg==
-X-Google-Smtp-Source: APXvYqzlICI4q27DrJXr1y1Htb3Cxy4JlVCRxkVGTSUFi8yAiK0zDY4//XiVTQ2MRnYgY4U7I87hOpwS+e4Ysp+Qby8=
-X-Received: by 2002:a24:284b:: with SMTP id h72mr3663947ith.72.1559062590425;
- Tue, 28 May 2019 09:56:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <1558713946-25314-1-git-send-email-john.hurley@netronome.com> <531c9565-5e42-3c87-891e-1cae13ae89bf@iogearbox.net>
-In-Reply-To: <531c9565-5e42-3c87-891e-1cae13ae89bf@iogearbox.net>
-From:   John Hurley <john.hurley@netronome.com>
-Date:   Tue, 28 May 2019 17:56:19 +0100
-Message-ID: <CAK+XE=naods2Yhd1roKDcq+8ScZ34NGPBwjoEUXMUr=XcqH4PQ@mail.gmail.com>
-Subject: Re: [RFC net-next 1/1] net: sched: protect against loops in TC filter hooks
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        oss-drivers@netronome.com, alexei.starovoitov@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=lFicemnrxZJjOmAogTHnQIM2MtSG5wRpTZojge/oE6s=;
+        b=FjM/i2QcG6BiEPbLPc1MZS5lMMLMDiXdTiEDtCBWT5sK3QctVnVApulY6BubJVM4O9
+         mBw5elzJ93ldqRl/qMzQy/n0RI2RCG7e6zXLgSYlNreABCLFsdP7UW3OKqn8tCaF5XaY
+         bPjURAtmZU7MoadkcDmorhVyEDMYh/fKwMdR6kHC6dm9H2Qunw2U7wm8eUs6jbInyK1x
+         LFZ3sN70nUJjM+NG9MsRBDgRioqshXrmREBeCKWSTnDpm8RQloV5Ynpt2ejaGk0vRTJx
+         QXfMEsPZhFOiG5lvgs6r+0EDcDvPUH9OsIg+QfxQ2VHiyuamWuyCMGZLorGJEswdMPLM
+         JX6Q==
+X-Gm-Message-State: APjAAAX/03eCZ4De3NWrmE7sya6ubtv335ma8wo2IJxJ6pVnj/TFnd7b
+        2kJTAwjZry6YA5SxZcIvuGSm0w==
+X-Google-Smtp-Source: APXvYqx5jjVcgp8A0NWp+9txe3Qup8abnAwaoeeODau1vlVKM4m9vzUFxHigDyzUk6yBCJxrG4Y9mA==
+X-Received: by 2002:a62:4dc5:: with SMTP id a188mr93983392pfb.8.1559062657044;
+        Tue, 28 May 2019 09:57:37 -0700 (PDT)
+Received: from jltm109.jaalam.net (vancouver-a.appneta.com. [209.139.228.33])
+        by smtp.gmail.com with ESMTPSA id t5sm10996695pgh.46.2019.05.28.09.57.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 May 2019 09:57:36 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH net 4/4] net/udpgso_bench_tx: audit error queue
+From:   Fred Klassen <fklassen@appneta.com>
+In-Reply-To: <CAF=yD-Le0XKCfyDBvHmBRVqkwn1D6ZoG=12gss5T62VcN5+1_w@mail.gmail.com>
+Date:   Tue, 28 May 2019 09:57:35 -0700
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <9811659B-6D5A-4C4F-9CF8-735E9CA6DE4E@appneta.com>
+References: <20190523210651.80902-1-fklassen@appneta.com>
+ <20190523210651.80902-5-fklassen@appneta.com>
+ <CAF=yD-KBNLr5KY-YQ1KMmZGCpYNefSJKaJkZNOwd8nRiedpQtA@mail.gmail.com>
+ <879E5DA6-3A4F-4CE1-9DA5-480EE30109DE@appneta.com>
+ <CAF=yD-LQT7=4vvMwMa96_SFuUd5GywMoae7hGi9n6rQeuhhxuQ@mail.gmail.com>
+ <5BB184F2-6C20-416B-B2AF-A678400CFE3E@appneta.com>
+ <CAF=yD-+6CRyqL6Fq5y2zpw5nnDitYC7G1c2JAVHZTjyw68DYJg@mail.gmail.com>
+ <903DEC70-845B-4C4B-911D-2F203C191C27@appneta.com>
+ <CAF=yD-Le0XKCfyDBvHmBRVqkwn1D6ZoG=12gss5T62VcN5+1_w@mail.gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+X-Mailer: Apple Mail (2.3445.104.11)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 7:32 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 05/24/2019 06:05 PM, John Hurley wrote:
-> > TC hooks allow the application of filters and actions to packets at both
-> > ingress and egress of the network stack. It is possible, with poor
-> > configuration, that this can produce loops whereby an ingress hook calls
-> > a mirred egress action that has an egress hook that redirects back to
-> > the first ingress etc. The TC core classifier protects against loops when
-> > doing reclassifies but, as yet, there is no protection against a packet
-> > looping between multiple hooks. This can lead to stack overflow panics.
-> >
-> > Add a per cpu counter that tracks recursion of packets through TC hooks.
-> > The packet will be dropped if a recursive limit is passed and the counter
-> > reset for the next packet.
->
-> NAK. This is quite a hack in the middle of the fast path. Such redirection
-> usually has a rescheduling point, like in cls_bpf case. If this is not the
-> case for mirred action as I read your commit message above, then fix mirred
-> instead if it's such broken.
->
 
-Hi Daniel,
-Yes, I take your point on the positioning of the code.
-I was trying to cater for all cases here but can look at bringing this
-closer to the cause.
-John
 
-> Thanks,
-> Daniel
->
-> > Signed-off-by: John Hurley <john.hurley@netronome.com>
-> > Reviewed-by: Simon Horman <simon.horman@netronome.com>
-> > ---
-> >  net/core/dev.c | 62 +++++++++++++++++++++++++++++++++++++++++++++++++++-------
-> >  1 file changed, 55 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index b6b8505..a6d9ed7 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -154,6 +154,9 @@
-> >  /* This should be increased if a protocol with a bigger head is added. */
-> >  #define GRO_MAX_HEAD (MAX_HEADER + 128)
-> >
-> > +#define SCH_RECURSION_LIMIT  4
-> > +static DEFINE_PER_CPU(int, sch_recursion_level);
-> > +
-> >  static DEFINE_SPINLOCK(ptype_lock);
-> >  static DEFINE_SPINLOCK(offload_lock);
-> >  struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
-> > @@ -3598,16 +3601,42 @@ int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
-> >  }
-> >  EXPORT_SYMBOL(dev_loopback_xmit);
-> >
-> > +static inline int sch_check_inc_recur_level(void)
-> > +{
-> > +     int rec_level = __this_cpu_inc_return(sch_recursion_level);
-> > +
-> > +     if (rec_level >= SCH_RECURSION_LIMIT) {
-> > +             net_warn_ratelimited("Recursion limit reached on TC datapath, probable configuration error\n");
-> > +             return -ELOOP;
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static inline void sch_dec_recur_level(void)
-> > +{
-> > +     __this_cpu_dec(sch_recursion_level);
-> > +}
-> > +
-> >  #ifdef CONFIG_NET_EGRESS
-> >  static struct sk_buff *
-> >  sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
-> >  {
-> >       struct mini_Qdisc *miniq = rcu_dereference_bh(dev->miniq_egress);
-> >       struct tcf_result cl_res;
-> > +     int err;
-> >
-> >       if (!miniq)
-> >               return skb;
-> >
-> > +     err = sch_check_inc_recur_level();
-> > +     if (err) {
-> > +             sch_dec_recur_level();
-> > +             *ret = NET_XMIT_DROP;
-> > +             consume_skb(skb);
-> > +             return NULL;
-> > +     }
-> > +
-> >       /* qdisc_skb_cb(skb)->pkt_len was already set by the caller. */
-> >       mini_qdisc_bstats_cpu_update(miniq, skb);
-> >
-> > @@ -3620,22 +3649,26 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
-> >               mini_qdisc_qstats_cpu_drop(miniq);
-> >               *ret = NET_XMIT_DROP;
-> >               kfree_skb(skb);
-> > -             return NULL;
-> > +             skb = NULL;
-> > +             break;
-> >       case TC_ACT_STOLEN:
-> >       case TC_ACT_QUEUED:
-> >       case TC_ACT_TRAP:
-> >               *ret = NET_XMIT_SUCCESS;
-> >               consume_skb(skb);
-> > -             return NULL;
-> > +             skb = NULL;
-> > +             break;
-> >       case TC_ACT_REDIRECT:
-> >               /* No need to push/pop skb's mac_header here on egress! */
-> >               skb_do_redirect(skb);
-> >               *ret = NET_XMIT_SUCCESS;
-> > -             return NULL;
-> > +             skb = NULL;
-> > +             break;
-> >       default:
-> >               break;
-> >       }
-> >
-> > +     sch_dec_recur_level();
-> >       return skb;
-> >  }
-> >  #endif /* CONFIG_NET_EGRESS */
-> > @@ -4670,6 +4703,7 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
-> >  #ifdef CONFIG_NET_CLS_ACT
-> >       struct mini_Qdisc *miniq = rcu_dereference_bh(skb->dev->miniq_ingress);
-> >       struct tcf_result cl_res;
-> > +     int err;
-> >
-> >       /* If there's at least one ingress present somewhere (so
-> >        * we get here via enabled static key), remaining devices
-> > @@ -4679,6 +4713,14 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
-> >       if (!miniq)
-> >               return skb;
-> >
-> > +     err = sch_check_inc_recur_level();
-> > +     if (err) {
-> > +             sch_dec_recur_level();
-> > +             *ret = NET_XMIT_DROP;
-> > +             consume_skb(skb);
-> > +             return NULL;
-> > +     }
-> > +
-> >       if (*pt_prev) {
-> >               *ret = deliver_skb(skb, *pt_prev, orig_dev);
-> >               *pt_prev = NULL;
-> > @@ -4696,12 +4738,14 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
-> >       case TC_ACT_SHOT:
-> >               mini_qdisc_qstats_cpu_drop(miniq);
-> >               kfree_skb(skb);
-> > -             return NULL;
-> > +             skb = NULL;
-> > +             break;
-> >       case TC_ACT_STOLEN:
-> >       case TC_ACT_QUEUED:
-> >       case TC_ACT_TRAP:
-> >               consume_skb(skb);
-> > -             return NULL;
-> > +             skb = NULL;
-> > +             break;
-> >       case TC_ACT_REDIRECT:
-> >               /* skb_mac_header check was done by cls/act_bpf, so
-> >                * we can safely push the L2 header back before
-> > @@ -4709,14 +4753,18 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
-> >                */
-> >               __skb_push(skb, skb->mac_len);
-> >               skb_do_redirect(skb);
-> > -             return NULL;
-> > +             skb = NULL;
-> > +             break;
-> >       case TC_ACT_REINSERT:
-> >               /* this does not scrub the packet, and updates stats on error */
-> >               skb_tc_reinsert(skb, &cl_res);
-> > -             return NULL;
-> > +             skb = NULL;
-> > +             break;
-> >       default:
-> >               break;
-> >       }
-> > +
-> > +     sch_dec_recur_level();
-> >  #endif /* CONFIG_NET_CLS_ACT */
-> >       return skb;
-> >  }
-> >
->
+> On May 28, 2019, at 8:08 AM, Willem de Bruijn =
+<willemdebruijn.kernel@gmail.com> wrote:
+>=20
+
+I will push up latest patches soon.
+
+I did some testing and discovered that only TCP audit tests failed. They
+failed much less often when enabling poll.  Once in about 20 runs
+still failed. Therefore I commented out the TCP audit tests.
+
+As for the other tests, this is what I got with poll() disabled=E2=80=A6
+
+udp gso zerocopy timestamp audit
+udp rx:   1611 MB/s  1148129 calls/s
+udp tx:   1659 MB/s    28146 calls/s  28146 msg/s
+udp rx:   1686 MB/s  1201494 calls/s
+udp tx:   1685 MB/s    28579 calls/s  28579 msg/s
+udp rx:   1685 MB/s  1200402 calls/s
+udp tx:   1683 MB/s    28552 calls/s  28552 msg/s
+Summary over 3.000 seconds...
+sum udp tx:   1716 MB/s      85277 calls (28425/s)      85277 msgs =
+(28425/s)
+Tx Timestamps:               85277 received                 0 errors
+Zerocopy acks:               85277 received                 0 errors
+
+Here you see that with poll() enabled, it is a bit slower, so I don=E2=80=99=
+t have it
+enabled in udpgso_bench.sh =E2=80=A6
+
+udp gso zerocopy timestamp audit
+udp rx:   1591 MB/s  1133945 calls/s
+udp tx:   1613 MB/s    27358 calls/s  27358 msg/s
+udp rx:   1644 MB/s  1171674 calls/s
+udp tx:   1643 MB/s    27869 calls/s  27869 msg/s
+udp rx:   1643 MB/s  1170666 calls/s
+udp tx:   1641 MB/s    27845 calls/s  27845 msg/s
+Summary over 3.000 seconds...
+sum udp tx:   1671 MB/s      83072 calls (27690/s)      83072 msgs =
+(27690/s)
+Tx Timestamps:               83072 received                 0 errors
+Zerocopy acks:               83072 received                 0 errors
+
+
+You may be interested that I reduced test lengths from 4 to 3 seconds,
+but I am still getting 3 reports per test. I picked up the extra report =
+by
+changing 'if (tnow > treport)=E2=80=99 to 'if (tnow >=3D treport)=E2=80=99=
+
+
+> The only issue specific to GSO is that xmit_more can forego this
+> doorbell until the last segment. We want to complicate this logic with
+> a special case based on tx_flags. A process that cares should either
+> not use GSO, or the timestamp should be associated with the last
+> segment as I've been arguing so far.
+
+This is the area I was thinking of looking into. I=E2=80=99m not sure it =
+will work
+or that it will be too messy. It may be worth a little bit of digging to
+see if there is anything there. That will be down the road a bu
+
+>>=20
+>> I=E2=80=99ll get back to you when I have tested this more thoroughly. =
+Early results
+>> suggest that adding the -P poll() option has fixed it without any =
+appreciable
+>> performance hit. I=E2=80=99ll share raw results with you, and we can =
+make a final
+>> decision together.
+>=20
+> In the main loop? It still is peculiar that notifications appear to go
+> missing unless the process blocks waiting for them. Nothing in
+> sock_zerocopy_callback or the queueing onto the error queue should
+> cause drops, as far as I know.
+>=20
+
+Now that I know the issue is only in TCP, I can speculate that all bytes =
+are
+being reported, but done with fewer messages. It may warrant some
+investigation in case there is some kind of bug.
+
+> Indeed. Ideally even run all tests, but return error if any failed,
+> like this recent patch
+>=20
+>  selftests/bpf: fail test_tunnel.sh if subtests fail
+>  https://patchwork.ozlabs.org/patch/1105221/
+>=20
+> but that may be a lot of code churn and better left to a separate =
+patch.
+
+I like it. I have it coded up, and it seems to work well. I=E2=80=99ll =
+make a
+separate commit in the patch set so we can yank it out if you feel
+it is too much=
