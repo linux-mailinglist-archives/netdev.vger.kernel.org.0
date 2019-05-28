@@ -2,158 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45F592CEA3
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:29:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48DD92CEAB
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:29:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728086AbfE1S3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 14:29:21 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:47004 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726569AbfE1S3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:29:21 -0400
-Received: by mail-wr1-f66.google.com with SMTP id r7so21305565wrr.13;
-        Tue, 28 May 2019 11:29:20 -0700 (PDT)
+        id S1728148AbfE1S3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 14:29:51 -0400
+Received: from mail-qk1-f201.google.com ([209.85.222.201]:56785 "EHLO
+        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728014AbfE1S3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:29:50 -0400
+Received: by mail-qk1-f201.google.com with SMTP id q17so29117483qkc.23
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:29:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8/KI1KE9vJDVwWIzxwQAdItZoUFzUqcama4dTdkeOyw=;
-        b=bcTNpSygNEs0fNzp/eABcU7RsnTiioHBYXh/JTk+tLpqz+IKX9SNZgovBcKl0hmtn7
-         uM8BLeTxAjZZW1KR8hPb2TpB3kjexalPYqosLG31WNaG91j1fvIHUjAcl/rGEzAqciF9
-         azYJQcENFfYycfghAmSzgt0HUBofMyDS18U2ZHClVauS3JktwmF45Z5rJ/fNYiRy/6b3
-         F56r/rC3Jnk9xEILHTjQZCNFDSQciQlfWR6GdMPH+nRIsn8n7wKmIOHlPcNOGBw6kBOY
-         tE7QZ4Fx55nipkv1qrkKxH8UUeLiltzuOlFGU2SZUGpjc8YpSGV244/bCmKd4vZl6APy
-         BWUA==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Vvfcwr72bSznDRWDW9C8kPGBzuOHzue8v6sDrXmyPUo=;
+        b=tuHckHYG3/skabF1hc7zemawXEEPQIYN7R89X6wsX70HkoxJyTmzcxnXb/6PqnB1NS
+         rW1T0YJvL2P0jt49kQfSXUdxWe28BR6qpF0cQvMB92Fc0lO+GqQf+FWExTLPmcn/k+Hc
+         jdtXwNcjIXwJaJjz1UEVmWKYh36fhMfe+xMyITnPuXICt8/f+7tLfDd6HjaQLMcciwiU
+         83NJzBloY7EEYg/UnTBNP6yNJ/iPCvf+gTGL0321Bv+vI/274w95GEEQAgucWObwfpPG
+         kgYTu4mIIcHCMRJTmiCgqNX+gq3K6xAsInX3yCh2eWUiAZwy/Mddf3cGDzYY/nHecrHl
+         NDow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8/KI1KE9vJDVwWIzxwQAdItZoUFzUqcama4dTdkeOyw=;
-        b=JpB5pu4SjaIeGm4zt7dkf3cEQHwNFwewSTJRcXi5Taax36XrD1O23nfxB9leS3B5Nd
-         MrdIklCM2Pxfj7gEKq9C9/dYV5AGzzWoDnV+kg0DhpjAwoHCkETq2IHu1H+dS3bvL7ia
-         JklmlJitdAbUgQ9bTC0T/a6KIX2BdwXl6oqlrDyE4q8Eat/0eMVXNm1JE0ppEWatmlC+
-         k07+JYHhFEFGi59k/nTEiw+MpzdxWs1BG3mlfPNvRynfMprxKL9QLXtC0vvyVHSLO8u4
-         1Bk2S8KUoWfht4rzlfK2e4mw0NFXvDSzbf3khnXaCwpamct62YBep1cvbIX9mKgeS2PY
-         17Jw==
-X-Gm-Message-State: APjAAAWTGBhq8/1B4m4X1F3+01ASFkf2g/0JKFeip7k/9j5NM2604RaB
-        90dleDZ97E0M2iM+lWpna3f4ahnd
-X-Google-Smtp-Source: APXvYqx2AIjaQbAwpPFU5w7qSZltqNiaYo3dL08nZ1i485RNpBp9vhMQ5npGdI2XP2S0XPccIFKxWw==
-X-Received: by 2002:adf:ed44:: with SMTP id u4mr19340753wro.242.1559068159212;
-        Tue, 28 May 2019 11:29:19 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bf3:bd00:fcc3:3d8b:511a:9137? (p200300EA8BF3BD00FCC33D8B511A9137.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:fcc3:3d8b:511a:9137])
-        by smtp.googlemail.com with ESMTPSA id t4sm2215938wmi.41.2019.05.28.11.29.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 11:29:18 -0700 (PDT)
-Subject: Re: [PATCH] net: phy: tja11xx: Add IRQ support to the driver
-To:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-References: <20190528181616.2019-1-marex@denx.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <1768acfc-ed20-68d3-12a0-1e5bfb7b31a3@gmail.com>
-Date:   Tue, 28 May 2019 20:29:11 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190528181616.2019-1-marex@denx.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Vvfcwr72bSznDRWDW9C8kPGBzuOHzue8v6sDrXmyPUo=;
+        b=eI5x7P1LF5EeJeJo3zE4GEPLuqbBCDgqCuQMSU04Ed2Kfmrc9Nz1PBFi+6b+uQdylY
+         rTrWN1A8Gimd9+VUg56jh9yYReLcX7NVTai+a/zJz5Gh+lMvQKMrrd3cF25pqrgLPSfK
+         hwLDzpT0/3WxqyrBhiJB1v5F0k57CTpB22qFDTuFjxsWprS+INRNdnYwpffaIkEy9OTl
+         i7Vlzy7V6IrM5E6DyOfGJnGtFUnmNUIvXgSxhdzCTsg3u6Ri7jUvmy5j7Y0+zVM2t9UQ
+         /4Jw1sssnrkfDqZPZZvHR0DR0ZuYxQro3oVzpyRGelNGVISjTU94plB01fAko9w5M4DW
+         2awg==
+X-Gm-Message-State: APjAAAXN0ARKoxA+P7lOw8hn1DrxrbQsNZJ4A2qlZemjnHEaBvWvfBYz
+        aLq3RG2X8V06l6bQ5GJm0RrCZ/Zvar9F6PRezVc83SyE5uUaBiNboyuNP+vaGlBU6TSXE8JqJaR
+        gN+L8wj0V+CsxZLz2TWg85OLANLJiMsn+64ZOCyr0Q9qFJogTWvY0uA==
+X-Google-Smtp-Source: APXvYqyh9d/cYnS/xEznpxdQ+BmKNPzrWR9rGYSSTgMknr1Fm9WB+ReMnIKxY7IY7DO4dIg8owSIE9k=
+X-Received: by 2002:a0c:e849:: with SMTP id l9mr3306819qvo.3.1559068189383;
+ Tue, 28 May 2019 11:29:49 -0700 (PDT)
+Date:   Tue, 28 May 2019 11:29:43 -0700
+Message-Id: <20190528182946.3633-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
+Subject: [PATCH bpf-next v3 1/4] bpf: remove __rcu annotations from bpf_prog_array
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Roman Gushchin <guro@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.05.2019 20:16, Marek Vasut wrote:
-> Add support for handling the TJA11xx PHY IRQ signal.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: linux-hwmon@vger.kernel.org
-> ---
->  drivers/net/phy/nxp-tja11xx.c | 32 ++++++++++++++++++++++++++++++++
->  1 file changed, 32 insertions(+)
-> 
-> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-> index b705d0bd798b..0be9fe9a9604 100644
-> --- a/drivers/net/phy/nxp-tja11xx.c
-> +++ b/drivers/net/phy/nxp-tja11xx.c
-> @@ -40,6 +40,8 @@
->  #define MII_INTSRC_TEMP_ERR		BIT(1)
->  #define MII_INTSRC_UV_ERR		BIT(3)
->  
-> +#define MII_INTEN			22
-> +
->  #define MII_COMMSTAT			23
->  #define MII_COMMSTAT_LINK_UP		BIT(15)
->  
-> @@ -239,6 +241,30 @@ static int tja11xx_read_status(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +static int tja11xx_config_intr(struct phy_device *phydev)
-> +{
-> +	int ret;
-> +
-> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-> +		ret = phy_write(phydev, MII_INTEN, 0xcfef);
+Drop __rcu annotations and rcu read sections from bpf_prog_array
+helper functions. They are not needed since all existing callers
+call those helpers from the rcu update side while holding a mutex.
+This guarantees that use-after-free could not happen.
 
-As Florian commented already, such magic numbers are not nice.
-Better add a constant for each bit representing an interrupt
-source. Please note that phylib is interested in the link
-change event only. Therefore typically only one bit is set.
+In the next patches I'll fix the callers with missing
+rcu_dereference_protected to make sparse/lockdep happy, the proper
+way to use these helpers is:
 
-> +	else
-> +		ret = phy_write(phydev, MII_INTEN, 0);
-> +
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = phy_read(phydev, MII_INTSRC);
-> +
+	struct bpf_prog_array __rcu *progs = ...;
+	struct bpf_prog_array *p;
 
-This IRQ ACK can be removed. It's done by phylib, see
-phy_enable_interrupts().
+	mutex_lock(&mtx);
+	p = rcu_dereference_protected(progs, lockdep_is_held(&mtx));
+	bpf_prog_array_length(p);
+	bpf_prog_array_copy_to_user(p, ...);
+	bpf_prog_array_delete_safe(p, ...);
+	bpf_prog_array_copy_info(p, ...);
+	bpf_prog_array_copy(p, ...);
+	bpf_prog_array_free(p);
+	mutex_unlock(&mtx);
 
-> +	return ret < 0 ? ret : 0;
-> +}
-> +
-> +static int tja11xx_ack_interrupt(struct phy_device *phydev)
-> +{
-> +	int ret = phy_read(phydev, MII_INTSRC);
-> +
-> +	return ret < 0 ? ret : 0;
-> +}
-> +
->  static int tja11xx_get_sset_count(struct phy_device *phydev)
->  {
->  	return ARRAY_SIZE(tja11xx_hw_stats);
-> @@ -366,6 +392,9 @@ static struct phy_driver tja11xx_driver[] = {
->  		.suspend	= genphy_suspend,
->  		.resume		= genphy_resume,
->  		.set_loopback   = genphy_loopback,
-> +		/* IRQ related */
-> +		.config_intr	= tja11xx_config_intr,
-> +		.ack_interrupt	= tja11xx_ack_interrupt,
->  		/* Statistics */
->  		.get_sset_count = tja11xx_get_sset_count,
->  		.get_strings	= tja11xx_get_strings,
-> @@ -381,6 +410,9 @@ static struct phy_driver tja11xx_driver[] = {
->  		.suspend	= genphy_suspend,
->  		.resume		= genphy_resume,
->  		.set_loopback   = genphy_loopback,
-> +		/* IRQ related */
-> +		.config_intr	= tja11xx_config_intr,
-> +		.ack_interrupt	= tja11xx_ack_interrupt,
->  		/* Statistics */
->  		.get_sset_count = tja11xx_get_sset_count,
->  		.get_strings	= tja11xx_get_strings,
-> 
+No functional changes! rcu_dereference_protected with lockdep_is_held
+should catch any cases where we update prog array without a mutex
+(I've looked at existing call sites and I think we hold a mutex
+everywhere).
+
+Motivation is to fix sparse warnings:
+kernel/bpf/core.c:1803:9: warning: incorrect type in argument 1 (different address spaces)
+kernel/bpf/core.c:1803:9:    expected struct callback_head *head
+kernel/bpf/core.c:1803:9:    got struct callback_head [noderef] <asn:4> *
+kernel/bpf/core.c:1877:44: warning: incorrect type in initializer (different address spaces)
+kernel/bpf/core.c:1877:44:    expected struct bpf_prog_array_item *item
+kernel/bpf/core.c:1877:44:    got struct bpf_prog_array_item [noderef] <asn:4> *
+kernel/bpf/core.c:1901:26: warning: incorrect type in assignment (different address spaces)
+kernel/bpf/core.c:1901:26:    expected struct bpf_prog_array_item *existing
+kernel/bpf/core.c:1901:26:    got struct bpf_prog_array_item [noderef] <asn:4> *
+kernel/bpf/core.c:1935:26: warning: incorrect type in assignment (different address spaces)
+kernel/bpf/core.c:1935:26:    expected struct bpf_prog_array_item *[assigned] existing
+kernel/bpf/core.c:1935:26:    got struct bpf_prog_array_item [noderef] <asn:4> *
+
+v2:
+* remove comment about potential race; that can't happen
+  because all callers are in rcu-update section
+
+Cc: Roman Gushchin <guro@fb.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ include/linux/bpf.h | 12 ++++++------
+ kernel/bpf/core.c   | 37 +++++++++++++------------------------
+ 2 files changed, 19 insertions(+), 30 deletions(-)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index d98141edb74b..ff3e00ff84d2 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -514,17 +514,17 @@ struct bpf_prog_array {
+ };
+ 
+ struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags);
+-void bpf_prog_array_free(struct bpf_prog_array __rcu *progs);
+-int bpf_prog_array_length(struct bpf_prog_array __rcu *progs);
+-int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *progs,
++void bpf_prog_array_free(struct bpf_prog_array *progs);
++int bpf_prog_array_length(struct bpf_prog_array *progs);
++int bpf_prog_array_copy_to_user(struct bpf_prog_array *progs,
+ 				__u32 __user *prog_ids, u32 cnt);
+ 
+-void bpf_prog_array_delete_safe(struct bpf_prog_array __rcu *progs,
++void bpf_prog_array_delete_safe(struct bpf_prog_array *progs,
+ 				struct bpf_prog *old_prog);
+-int bpf_prog_array_copy_info(struct bpf_prog_array __rcu *array,
++int bpf_prog_array_copy_info(struct bpf_prog_array *array,
+ 			     u32 *prog_ids, u32 request_cnt,
+ 			     u32 *prog_cnt);
+-int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
++int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ 			struct bpf_prog *exclude_prog,
+ 			struct bpf_prog *include_prog,
+ 			struct bpf_prog_array **new_array);
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 3675b19ecb90..33fb292f2e30 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1795,38 +1795,33 @@ struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags)
+ 	return &empty_prog_array.hdr;
+ }
+ 
+-void bpf_prog_array_free(struct bpf_prog_array __rcu *progs)
++void bpf_prog_array_free(struct bpf_prog_array *progs)
+ {
+-	if (!progs ||
+-	    progs == (struct bpf_prog_array __rcu *)&empty_prog_array.hdr)
++	if (!progs || progs == &empty_prog_array.hdr)
+ 		return;
+ 	kfree_rcu(progs, rcu);
+ }
+ 
+-int bpf_prog_array_length(struct bpf_prog_array __rcu *array)
++int bpf_prog_array_length(struct bpf_prog_array *array)
+ {
+ 	struct bpf_prog_array_item *item;
+ 	u32 cnt = 0;
+ 
+-	rcu_read_lock();
+-	item = rcu_dereference(array)->items;
+-	for (; item->prog; item++)
++	for (item = array->items; item->prog; item++)
+ 		if (item->prog != &dummy_bpf_prog.prog)
+ 			cnt++;
+-	rcu_read_unlock();
+ 	return cnt;
+ }
+ 
+ 
+-static bool bpf_prog_array_copy_core(struct bpf_prog_array __rcu *array,
++static bool bpf_prog_array_copy_core(struct bpf_prog_array *array,
+ 				     u32 *prog_ids,
+ 				     u32 request_cnt)
+ {
+ 	struct bpf_prog_array_item *item;
+ 	int i = 0;
+ 
+-	item = rcu_dereference_check(array, 1)->items;
+-	for (; item->prog; item++) {
++	for (item = array->items; item->prog; item++) {
+ 		if (item->prog == &dummy_bpf_prog.prog)
+ 			continue;
+ 		prog_ids[i] = item->prog->aux->id;
+@@ -1839,7 +1834,7 @@ static bool bpf_prog_array_copy_core(struct bpf_prog_array __rcu *array,
+ 	return !!(item->prog);
+ }
+ 
+-int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *array,
++int bpf_prog_array_copy_to_user(struct bpf_prog_array *array,
+ 				__u32 __user *prog_ids, u32 cnt)
+ {
+ 	unsigned long err = 0;
+@@ -1850,18 +1845,12 @@ int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *array,
+ 	 * cnt = bpf_prog_array_length();
+ 	 * if (cnt > 0)
+ 	 *     bpf_prog_array_copy_to_user(..., cnt);
+-	 * so below kcalloc doesn't need extra cnt > 0 check, but
+-	 * bpf_prog_array_length() releases rcu lock and
+-	 * prog array could have been swapped with empty or larger array,
+-	 * so always copy 'cnt' prog_ids to the user.
+-	 * In a rare race the user will see zero prog_ids
++	 * so below kcalloc doesn't need extra cnt > 0 check.
+ 	 */
+ 	ids = kcalloc(cnt, sizeof(u32), GFP_USER | __GFP_NOWARN);
+ 	if (!ids)
+ 		return -ENOMEM;
+-	rcu_read_lock();
+ 	nospc = bpf_prog_array_copy_core(array, ids, cnt);
+-	rcu_read_unlock();
+ 	err = copy_to_user(prog_ids, ids, cnt * sizeof(u32));
+ 	kfree(ids);
+ 	if (err)
+@@ -1871,19 +1860,19 @@ int bpf_prog_array_copy_to_user(struct bpf_prog_array __rcu *array,
+ 	return 0;
+ }
+ 
+-void bpf_prog_array_delete_safe(struct bpf_prog_array __rcu *array,
++void bpf_prog_array_delete_safe(struct bpf_prog_array *array,
+ 				struct bpf_prog *old_prog)
+ {
+-	struct bpf_prog_array_item *item = array->items;
++	struct bpf_prog_array_item *item;
+ 
+-	for (; item->prog; item++)
++	for (item = array->items; item->prog; item++)
+ 		if (item->prog == old_prog) {
+ 			WRITE_ONCE(item->prog, &dummy_bpf_prog.prog);
+ 			break;
+ 		}
+ }
+ 
+-int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
++int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ 			struct bpf_prog *exclude_prog,
+ 			struct bpf_prog *include_prog,
+ 			struct bpf_prog_array **new_array)
+@@ -1947,7 +1936,7 @@ int bpf_prog_array_copy(struct bpf_prog_array __rcu *old_array,
+ 	return 0;
+ }
+ 
+-int bpf_prog_array_copy_info(struct bpf_prog_array __rcu *array,
++int bpf_prog_array_copy_info(struct bpf_prog_array *array,
+ 			     u32 *prog_ids, u32 request_cnt,
+ 			     u32 *prog_cnt)
+ {
+-- 
+2.22.0.rc1.257.g3120a18244-goog
 
