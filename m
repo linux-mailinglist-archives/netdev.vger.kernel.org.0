@@ -2,189 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1052D26B
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 01:33:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD24D2D29C
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 01:59:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726620AbfE1XdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 19:33:01 -0400
-Received: from mail-it1-f194.google.com ([209.85.166.194]:51205 "EHLO
-        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726511AbfE1XdA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 19:33:00 -0400
-Received: by mail-it1-f194.google.com with SMTP id m3so628850itl.1
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 16:32:59 -0700 (PDT)
+        id S1727147AbfE1X6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 19:58:30 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:42934 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726576AbfE1X63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 19:58:29 -0400
+Received: by mail-wr1-f67.google.com with SMTP id l2so338641wrb.9;
+        Tue, 28 May 2019 16:58:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=pRkz65DZ4lUDOKKTUJucdP+aSs3QdflDXVMaZhkJDBU=;
-        b=c54jPc1oHZoxbffd8+I1Mk8Iru1Xnp+l4rWJa5eZuJCB5Crn1chd/iPtvOgQBq/1B1
-         0GDg1c1AwzkVIzMCAAOUrQ6jbLFaOrLpqNCyWShOTVku1xg5GbrqFu3BNQl2TROFTcNh
-         jrkLgxrYFKMOUHON7jBjewhVwAX18D0rsQMonjFe/v6r4xDoecgsNSyyJBpJRi0mLBpo
-         1bEVM732+wvnojtHVwXA4BRTTnad1bKipAbof5auLQ5Of6KuovVxkEILdyjM1eK4/iHP
-         LJu8RJqWOO3xlX/jQ+VP4eWxL7Ms39OYpzUBForDDiBpECHz0Csi1XA1AP5ATy6PMGOM
-         ORsA==
+        bh=wBV1CSR3vVyHfNto7yRouBVz1R8yuynnCNl8Neb34NM=;
+        b=IJ/A94UIsDCM8xWC56JjA3JO1ZE1NUzlU2+UcQNYajTtNbBlDz3qDeeAPfq5/jnuRO
+         MhcP1EjvO1bNX80Nj9wRoK1Fdf2mzQkNhSyHztT/hwnZwirsGMAfmrdplWdQdMBeI4WA
+         ZcQkAJ8HaF1Hx2veNcmySLGK2ShHy2h6Y9mJwjCP74pm4M0kfe+BixR0DIJkYJdKUqle
+         k1u7KTB9MwQhrXsgNPJAHxVh8eCB9EtzckF8fw/1zV8nYmBtY7S+NVltfkc7vJa2iewB
+         Ixtbh/4J39RBNxpOSH77L5mi0+g0fUap9RdVw8h/UKBSSAGr3JNLuzSyrMiLt0YMFpf5
+         MbPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=pRkz65DZ4lUDOKKTUJucdP+aSs3QdflDXVMaZhkJDBU=;
-        b=Oi4vK4RkMK9Mw8Beyb3PbRteRxTIpopabreeLnYzsdPqEMBhLEO8rHbJqsyVxLh41p
-         ShcJDg+gwyR41ev17jLVM4YGX3DctenD8KJ16atQwjug2SZ3T/4ZGwqf6JbhQpxDbKb0
-         ko7RM7oekneA71+AdjdWYYwaBq7dXgKz92+U9lLZqRAGIg1JDVCugorcDzLC7w3L173Q
-         06KLLsEQc7JbPc3ing1D+Z2X2zSusWjDssbruGS1EBNgXtIpPBlIoEDf/I118uIefZBR
-         Fk45my0q6KcbDsBOFQbSuKvvz+HiM9U0Ct/fGfquJdjmn4n+C5X/3VYASzudUGeGysGo
-         lm5g==
-X-Gm-Message-State: APjAAAXsgcKsjAhMszgzG5LTkECCRb0rjiEB6MkSLwFOznyWeWVm23ZD
-        YxU7zQ+rOOEMIgMyvtkldkKPv7DubF4Xlg==
-X-Google-Smtp-Source: APXvYqxrdM9s/rNtnXg6VzzhgT+fsFsq91DfDSu8dujCKL4KMWlhX9bALrWoxgcamyz3V5e8RSmcLQ==
-X-Received: by 2002:a24:2116:: with SMTP id e22mr5281186ita.121.1559086379443;
-        Tue, 28 May 2019 16:32:59 -0700 (PDT)
-Received: from localhost.localdomain (107-0-94-194-ip-static.hfc.comcastbusiness.net. [107.0.94.194])
-        by smtp.gmail.com with ESMTPSA id r22sm4941810ioh.54.2019.05.28.16.32.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 28 May 2019 16:32:58 -0700 (PDT)
-From:   Tom Herbert <tom@herbertland.com>
-X-Google-Original-From: Tom Herbert <tom@quantonium.net>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Tom Herbert <tom@quantonium.net>
-Subject: [PATCH net-next] ipv6: Send ICMP errors for exceeding extension header limits
-Date:   Tue, 28 May 2019 16:32:42 -0700
-Message-Id: <1559086362-2470-1-git-send-email-tom@quantonium.net>
-X-Mailer: git-send-email 2.7.4
+        bh=wBV1CSR3vVyHfNto7yRouBVz1R8yuynnCNl8Neb34NM=;
+        b=EzMGAvo/gGDGAy5K71DkTq8EhPnpH4nQr6XD9Km0EPtlA1LIezNt5jzhNpxayIQyrV
+         Wfcct63fgAFTg8TAV1umowR7tlr5qWNO83z7KRzYmxOH5l7PIJb7WIBiiQWmf9qfAsbH
+         YzDL2XJwaSPYQtENr5EqxfKbpKgrT91ROvmuwbl8yUnh+1f/X6fVJT8h9I98lT2WhqAr
+         rJ0iCLSEmCOncrWUKoiqvPFly1EsS0v3KSHWLJnQy9/PzE8tV9j2BHvLIy0rRSmcr7/s
+         EC/t2unJSsLlW26w93IWsdkQhcNAedSyT9t2ySG3mQiSrasaWVcPrmUvGgCZqHdNx5sG
+         lAig==
+X-Gm-Message-State: APjAAAUB+GdIU8VypZQHnFQPjnIjhrp7n1n7kYeStkv43N1jYAeRDYjs
+        5SdJw8250TSOKJWLgnnbSJM=
+X-Google-Smtp-Source: APXvYqzzwZVUPlF+z3R0vmOrg/BfKllRyS5AJlWrc0w6Fnjgg6XoYMtWQscS/t7L8PSAUA0Wqvr6JQ==
+X-Received: by 2002:adf:a749:: with SMTP id e9mr11524121wrd.64.1559087907529;
+        Tue, 28 May 2019 16:58:27 -0700 (PDT)
+Received: from localhost.localdomain ([86.121.27.188])
+        by smtp.gmail.com with ESMTPSA id f3sm1207505wre.93.2019.05.28.16.58.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 May 2019 16:58:26 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net, richardcochran@gmail.com,
+        john.stultz@linaro.org, tglx@linutronix.de, sboyd@kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
+Date:   Wed, 29 May 2019 02:56:22 +0300
+Message-Id: <20190528235627.1315-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define constants and add support to send ICMPv6 Parameter Problem
-errors as defined in draft-ietf-6man-icmp-limits-02.
+This patchset adds the following:
 
-ICMPV6_TOOBIG_OPTION is sent if a packet exceeding the padding limit
-is received (more than seven consecutive bytes of padding),
-ICMPV6_TOOMANY_OPTIONS is sent if a packet is received and HBH option
-count exceeds ipv6.sysctl.max_hbh_opts_cnt or DO option count exceeds
-ipv6.sysctl.max_dst_opts_cnt. ICMPV6_EXTHDR_TOOBIG is sent if length
-of HBH EH exceeds ipv6.sysctl.max_hbh_opts_len or length of DO EH
-exceeds ipv6.sysctl.max_dst_opts_len.
+ - A timecounter/cyclecounter based PHC for the free-running
+   timestamping clock of this switch.
 
-Additionally, when packets are dropped in the above cases bump
-IPSTATS_MIB_INHDRERRORS.
+ - A state machine implemented in the DSA tagger for SJA1105, which
+   keeps track of metadata follow-up Ethernet frames (the switch's way
+   of transmitting RX timestamps).
 
-Signed-off-by: Tom Herbert <tom@quantonium.net>
----
- include/uapi/linux/icmpv6.h |  6 ++++++
- net/ipv6/exthdrs.c          | 35 ++++++++++++++++++++++++++++++-----
- 2 files changed, 36 insertions(+), 5 deletions(-)
+ - Some common-sense on whether or not frames should be timestamped was
+   taken out of the mv88e6xxx driver (the only other DSA driver with PTP
+   support) and moved to the generic framework.  An option was also
+   added for drivers to override these common-sense decisions, and
+   timestamp some more frames.  This was the path of least resistance
+   after implementing the aforementioned state machine - metadata
+   follow-up frames need to be tracked anyway even if only to discard
+   them and not pass them up the network stack.  And since the switch
+   can't just be told to timestamp only what the kernel wants (PTP
+   frames), simply use all the timestamps it provides.
 
-diff --git a/include/uapi/linux/icmpv6.h b/include/uapi/linux/icmpv6.h
-index 2622b5a..966279b 100644
---- a/include/uapi/linux/icmpv6.h
-+++ b/include/uapi/linux/icmpv6.h
-@@ -124,6 +124,7 @@ struct icmp6hdr {
- #define ICMPV6_PORT_UNREACH		4
- #define ICMPV6_POLICY_FAIL		5
- #define ICMPV6_REJECT_ROUTE		6
-+#define ICMPV6_SRCRT_ERR		7
- 
- /*
-  *	Codes for Time Exceeded
-@@ -137,6 +138,11 @@ struct icmp6hdr {
- #define ICMPV6_HDR_FIELD		0
- #define ICMPV6_UNK_NEXTHDR		1
- #define ICMPV6_UNK_OPTION		2
-+#define ICMPV6_FIRST_FRAG_INCOMP	3
-+#define ICMPV6_EXTHDR_TOOBIG		4
-+#define ICMPV6_EXTHDR_CHAINLONG		5
-+#define ICMPV6_TOOMANY_OPTIONS		6
-+#define ICMPV6_TOOBIG_OPTION		7
- 
- /*
-  *	constants for (set|get)sockopt
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 20291c2..ed0e4f5 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -145,8 +145,11 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 		case IPV6_TLV_PAD1:
- 			optlen = 1;
- 			padlen++;
--			if (padlen > 7)
-+			if (padlen > 7) {
-+				icmpv6_send(skb, ICMPV6_PARAMPROB,
-+					    ICMPV6_TOOBIG_OPTION, off);
- 				goto bad;
-+			}
- 			break;
- 
- 		case IPV6_TLV_PADN:
-@@ -156,8 +159,11 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 			 * See also RFC 4942, Section 2.1.9.5.
- 			 */
- 			padlen += optlen;
--			if (padlen > 7)
-+			if (padlen > 7) {
-+				icmpv6_send(skb, ICMPV6_PARAMPROB,
-+					    ICMPV6_TOOBIG_OPTION, off);
- 				goto bad;
-+			}
- 			/* RFC 4942 recommends receiving hosts to
- 			 * actively check PadN payload to contain
- 			 * only zeroes.
-@@ -173,8 +179,11 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 				goto bad;
- 
- 			tlv_count++;
--			if (tlv_count > max_count)
-+			if (tlv_count > max_count) {
-+				icmpv6_send(skb, ICMPV6_PARAMPROB,
-+					    ICMPV6_TOOMANY_OPTIONS, off);
- 				goto bad;
-+			}
- 
- 			for (curr = procs; curr->type >= 0; curr++) {
- 				if (curr->type == nh[off]) {
-@@ -200,6 +209,8 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
- 	if (len == 0)
- 		return true;
- bad:
-+	__IP6_INC_STATS(dev_net(skb->dev), __in6_dev_get(skb->dev),
-+			IPSTATS_MIB_INHDRERRORS);
- 	kfree_skb(skb);
- 	return false;
- }
-@@ -300,8 +311,15 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
- 	}
- 
- 	extlen = (skb_transport_header(skb)[1] + 1) << 3;
--	if (extlen > net->ipv6.sysctl.max_dst_opts_len)
-+	if (extlen > net->ipv6.sysctl.max_dst_opts_len) {
-+		icmpv6_send(skb, ICMPV6_PARAMPROB,
-+			    ICMPV6_EXTHDR_TOOBIG,
-+			    skb_network_header_len(skb) +
-+				net->ipv6.sysctl.max_dst_opts_len);
-+		__IP6_INC_STATS(dev_net(dst->dev), idev,
-+				IPSTATS_MIB_INHDRERRORS);
- 		goto fail_and_free;
-+	}
- 
- 	opt->lastopt = opt->dst1 = skb_network_header_len(skb);
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
-@@ -843,8 +861,15 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
- 	}
- 
- 	extlen = (skb_transport_header(skb)[1] + 1) << 3;
--	if (extlen > net->ipv6.sysctl.max_hbh_opts_len)
-+	if (extlen > net->ipv6.sysctl.max_hbh_opts_len) {
-+		__IP6_INC_STATS(net, __in6_dev_get(skb->dev),
-+				IPSTATS_MIB_INHDRERRORS);
-+		icmpv6_send(skb, ICMPV6_PARAMPROB,
-+			    ICMPV6_EXTHDR_TOOBIG,
-+			skb_network_header_len(skb) +
-+				net->ipv6.sysctl.max_hbh_opts_len);
- 		goto fail_and_free;
-+	}
- 
- 	opt->flags |= IP6SKB_HOPBYHOP;
- 	if (ip6_parse_tlv(tlvprochopopt_lst, skb,
+ - A generic helper in the timecounter/cyclecounter code for
+   reconstructing partial PTP timestamps, such as those generated by the
+   SJA1105.
+
+Not all is rosy, though.
+
+PTP timestamping will only work when the ports are bridged. Otherwise,
+the metadata follow-up frames holding RX timestamps won't be received
+because they will be blocked by the master port's MAC filter. Linuxptp
+tries to put the net device in ALLMULTI/PROMISC mode, but DSA doesn't
+pass this on to the master port, which does the actual reception.
+The master port is put in promiscous mode when the slave ports are
+enslaved to a bridge.
+
+Also, even with software-corrected timestamps, one can observe a
+negative path delay reported by linuxptp:
+
+ptp4l[55.600]: master offset          8 s2 freq  +83677 path delay     -2390
+ptp4l[56.600]: master offset         17 s2 freq  +83688 path delay     -2391
+ptp4l[57.601]: master offset          6 s2 freq  +83682 path delay     -2391
+ptp4l[58.601]: master offset         -1 s2 freq  +83677 path delay     -2391
+
+Without investigating too deeply, this appears to be introduced by the
+correction applied by linuxptp to t4 (t4c: corrected master rxtstamp)
+during the path delay estimation process (removing the correction makes
+the path delay positive).  This does not appear to have an obvious
+negative effect upon the synchronization.
+
+Lastly, clock manipulations on the actual hardware PTP clock will have
+to be implemented anyway, for the TTEthernet block and the time-based
+ingress policer.
+
+Vladimir Oltean (5):
+  timecounter: Add helper for reconstructing partial timestamps
+  net: dsa: sja1105: Add support for the PTP clock
+  net: dsa: mv88e6xxx: Let taggers specify a can_timestamp function
+  net: dsa: sja1105: Add support for PTP timestamping
+  net: dsa: sja1105: Increase priority of CPU-trapped frames
+
+ drivers/net/dsa/mv88e6xxx/hwtstamp.c          |  25 +-
+ drivers/net/dsa/mv88e6xxx/hwtstamp.h          |   4 +-
+ drivers/net/dsa/sja1105/Kconfig               |   7 +
+ drivers/net/dsa/sja1105/Makefile              |   1 +
+ drivers/net/dsa/sja1105/sja1105.h             |  30 ++
+ .../net/dsa/sja1105/sja1105_dynamic_config.c  |   2 +
+ drivers/net/dsa/sja1105/sja1105_main.c        | 272 ++++++++++++-
+ drivers/net/dsa/sja1105/sja1105_ptp.c         | 357 ++++++++++++++++++
+ drivers/net/dsa/sja1105/sja1105_ptp.h         |  48 +++
+ drivers/net/dsa/sja1105/sja1105_spi.c         |  28 ++
+ .../net/dsa/sja1105/sja1105_static_config.c   |  59 +++
+ .../net/dsa/sja1105/sja1105_static_config.h   |  10 +
+ include/linux/dsa/sja1105.h                   |  15 +
+ include/linux/timecounter.h                   |   7 +
+ include/net/dsa.h                             |   6 +-
+ kernel/time/timecounter.c                     |  33 ++
+ net/dsa/dsa.c                                 |  25 +-
+ net/dsa/slave.c                               |  20 +-
+ net/dsa/tag_sja1105.c                         | 135 ++++++-
+ 19 files changed, 1043 insertions(+), 41 deletions(-)
+ create mode 100644 drivers/net/dsa/sja1105/sja1105_ptp.c
+ create mode 100644 drivers/net/dsa/sja1105/sja1105_ptp.h
+
 -- 
-2.7.4
+2.17.1
 
