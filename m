@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BE2E2C5AB
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:48:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A63B2C5B1
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:49:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbfE1Lsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726809AbfE1Lsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 28 May 2019 07:48:53 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:36751 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726592AbfE1Lsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:48:51 -0400
-Received: by mail-wr1-f68.google.com with SMTP id s17so19883210wru.3
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 04:48:48 -0700 (PDT)
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50466 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726580AbfE1Lsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:48:50 -0400
+Received: by mail-wm1-f68.google.com with SMTP id f204so2576654wme.0
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 04:48:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=oNTD5eUYWhF5lyt/wEm4+kRnQRCfrTX1xw7rfTxlgl4=;
-        b=IpvgvwRONV0GbsyTkgtXZggPZimPZ+MBEgzsfbZOv76wy11+PM19U3P+WEXhuujTVG
-         PRVOZppGMXQ+UronLA345X/PzAQl0+U+y3sCWcT16gpVKNvMLVYwIUrSQVAIOLpi+e6J
-         ikMpmz/aQ/Ipw/5poAML3FSIRsdvsYQvibKoIznZmbCDl82cd1f0/mJhEGcgiDS6Xhbx
-         toly8hnx7TDOF/LiTkpmLo8Lw6yjN/rgNIwjDjM9M6Teh1ABmsge+q2YpsjvwajneFdQ
-         7hwCmq7ud6ATnoSXazs6kAU+TCdUTQGXN2XnSsIyDWBL3tP002Hsz87TNvnCgUAXcPv8
-         7TyQ==
+        bh=8MdLvVGbc73dXdliijtD2+ZfQny/qiSnNWd52ToFvVI=;
+        b=Usrdnoy3O1rn13ARmGAf0hhKoJk0eYQhicakldtOE53B2feq/TVogbqjLjLhcFc8ue
+         6lXar2jMcR4JKcMfxWPFuUJqlRZn32vYDigSIyre0xeXN0H1rZAJ2Zc2TIT+98ZZeAW6
+         UCKAOVioy7e/5i6JCnm82MGWZeTAEse5jreTYdqgZ6nYCYMFzQ0oTIwGBjb+HHVgRYXX
+         7CoL9Wq2wmcKTr8LJuTlt1mek6HYwgN8EvL7mNgepPL7ViZlgBDPIUU87cJMQ9ub6EZc
+         tmmeRD4Ap0e4Tcah7wyAihRAz/M+dSRT+J8rzRTY5Vw2TtfZcG4IcpFfzIolcsVt8a/q
+         yfUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=oNTD5eUYWhF5lyt/wEm4+kRnQRCfrTX1xw7rfTxlgl4=;
-        b=mO5L1avTPfLHFKjCHMrJbErX7RX28B/7ApIbx+SFQkuFUAm73DLp+hjzgP9U98y42Q
-         Xec1IkKTmyDkxtoarOqyD6GU6eXGOHH85lvbhSZyQ+sHWHkJC3YCMxFPiONMyZWfLaOW
-         k2IIGDCKVwMBj1bXOBXbKZQwzR6RnB1ST+YuYUV9lRRuRmFepCHPtDZ9CSxoFcDZzJ1z
-         mO2yURmDJyZtrL5+GdwYmcg6C2r5Hn4x2joTt8+1QdigInbf0DkqtvQXMxnBhfE6y+Pa
-         ph+uO0dYFxC2MvMNdPefwtfjwP5miWQp2AaxQJMwKfJoYhe3x017EKPFNNfaIj7Hr9lM
-         NXkQ==
-X-Gm-Message-State: APjAAAXIBU7+ZECg6zU+y5QktdQsRI/Ttpv3mnAGt3ocuPRmFyZqXtVM
-        FztX/2r6VvnYtreV99TfP9zHNrjAT9Y=
-X-Google-Smtp-Source: APXvYqyTIqUWsJlzcXqf8VYly8VYTcZvGJ4/CkjXZyOIFfNZawz/4UEy6wMjE7BCQbL+N2Ykw57GUw==
-X-Received: by 2002:a5d:688f:: with SMTP id h15mr18377380wru.44.1559044128125;
-        Tue, 28 May 2019 04:48:48 -0700 (PDT)
+        bh=8MdLvVGbc73dXdliijtD2+ZfQny/qiSnNWd52ToFvVI=;
+        b=VeHfrUX4ZTPN/aCeUgpOR8vhVZ36s+UO+khsL2PJrDKZ99VUJp3VlhBubxOUFJEIPo
+         xrQsHznydXqI2l//3V2lsELL2RIr38hi95sZPzAbanLKLnae911xKNeGWLF52BzKZKbk
+         nWUynN5d6+frFaUI1vPg5Z3Qn4K5JtN0b7/Wx4o2HlrloEEyDoz15Z5IADOQCoglpyPG
+         dF+pY3OyxatcCXMir2mpNaR/RFd4guYpb74XN4WR0crTR1qEu0FahxlJZz+yyfNPWqXd
+         l5g2uxgh//mpH82qVUndsX1PMZKh8G//M/LRp5L4KCoTlFrx2bN5xW8vu9IOgURT87Ta
+         WAOg==
+X-Gm-Message-State: APjAAAW2FXHHE0oAR+W1IXywNkffL15UpH/HUTU4JIkDpscqfxE3VWzP
+        Zpt4lzt2FzruKVP8MtrYcaMYeTWU5kY=
+X-Google-Smtp-Source: APXvYqwZsnwL6Rzj9c+JgSS82bAX/ZXNSg2vkU6YWOnjj9Mkp75wqOP8s3xNjkgf7hnPyXjLCE5JDw==
+X-Received: by 2002:a1c:7314:: with SMTP id d20mr2901298wmb.53.1559044129037;
+        Tue, 28 May 2019 04:48:49 -0700 (PDT)
 Received: from localhost (ip-89-177-126-215.net.upcbroadband.cz. [89.177.126.215])
-        by smtp.gmail.com with ESMTPSA id f11sm13927453wrv.93.2019.05.28.04.48.47
+        by smtp.gmail.com with ESMTPSA id f10sm27740312wrg.24.2019.05.28.04.48.48
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 28 May 2019 04:48:47 -0700 (PDT)
+        Tue, 28 May 2019 04:48:48 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, mlxsw@mellanox.com,
         jakub.kicinski@netronome.com, sthemmin@microsoft.com,
         dsahern@gmail.com, saeedm@mellanox.com, leon@kernel.org,
         f.fainelli@gmail.com
-Subject: [patch net-next v2 1/7] mlxsw: Move firmware flash implementation to devlink
-Date:   Tue, 28 May 2019 13:48:40 +0200
-Message-Id: <20190528114846.1983-2-jiri@resnulli.us>
+Subject: [patch net-next v2 2/7] mlx5: Move firmware flash implementation to devlink
+Date:   Tue, 28 May 2019 13:48:41 +0200
+Message-Id: <20190528114846.1983-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.17.2
 In-Reply-To: <20190528114846.1983-1-jiri@resnulli.us>
 References: <20190528114846.1983-1-jiri@resnulli.us>
@@ -67,146 +67,143 @@ fallback to it and move firmware flash implementation there.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c    | 15 ++++++
- drivers/net/ethernet/mellanox/mlxsw/core.h    |  3 ++
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 49 +++++++++----------
- 3 files changed, 41 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  2 --
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 35 -------------------
+ .../mellanox/mlx5/core/ipoib/ethtool.c        |  9 -----
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 20 +++++++++++
+ 4 files changed, 20 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 6ee6de7f0160..a992a7c69b45 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1003,6 +1003,20 @@ static int mlxsw_devlink_core_bus_device_reload(struct devlink *devlink,
- 	return err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index 3a183d690e23..4e417dfe4ee5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -1074,8 +1074,6 @@ u32 mlx5e_ethtool_get_rxfh_key_size(struct mlx5e_priv *priv);
+ u32 mlx5e_ethtool_get_rxfh_indir_size(struct mlx5e_priv *priv);
+ int mlx5e_ethtool_get_ts_info(struct mlx5e_priv *priv,
+ 			      struct ethtool_ts_info *info);
+-int mlx5e_ethtool_flash_device(struct mlx5e_priv *priv,
+-			       struct ethtool_flash *flash);
+ void mlx5e_ethtool_get_pauseparam(struct mlx5e_priv *priv,
+ 				  struct ethtool_pauseparam *pauseparam);
+ int mlx5e_ethtool_set_pauseparam(struct mlx5e_priv *priv,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index dd764e0471f2..ea59097dd4f8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -1867,40 +1867,6 @@ static u32 mlx5e_get_priv_flags(struct net_device *netdev)
+ 	return priv->channels.params.pflags;
  }
  
-+static int mlxsw_devlink_flash_update(struct devlink *devlink,
-+				      const char *file_name,
-+				      const char *component,
-+				      struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
-+	struct mlxsw_driver *mlxsw_driver = mlxsw_core->driver;
-+
-+	if (!mlxsw_driver->flash_update)
-+		return -EOPNOTSUPP;
-+	return mlxsw_driver->flash_update(mlxsw_core, file_name,
-+					  component, extack);
-+}
-+
- static const struct devlink_ops mlxsw_devlink_ops = {
- 	.reload				= mlxsw_devlink_core_bus_device_reload,
- 	.port_type_set			= mlxsw_devlink_port_type_set,
-@@ -1019,6 +1033,7 @@ static const struct devlink_ops mlxsw_devlink_ops = {
- 	.sb_occ_port_pool_get		= mlxsw_devlink_sb_occ_port_pool_get,
- 	.sb_occ_tc_port_bind_get	= mlxsw_devlink_sb_occ_tc_port_bind_get,
- 	.info_get			= mlxsw_devlink_info_get,
-+	.flash_update			= mlxsw_devlink_flash_update,
- };
- 
- static int
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index e3832cb5bdda..a44ad0fb9477 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -284,6 +284,9 @@ struct mlxsw_driver {
- 				       unsigned int sb_index, u16 tc_index,
- 				       enum devlink_sb_pool_type pool_type,
- 				       u32 *p_cur, u32 *p_max);
-+	int (*flash_update)(struct mlxsw_core *mlxsw_core,
-+			    const char *file_name, const char *component,
-+			    struct netlink_ext_ack *extack);
- 	void (*txhdr_construct)(struct sk_buff *skb,
- 				const struct mlxsw_tx_info *tx_info);
- 	int (*resources_register)(struct mlxsw_core *mlxsw_core);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index dbb425717f5e..861a77538859 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -388,6 +388,27 @@ static int mlxsw_sp_fw_rev_validate(struct mlxsw_sp *mlxsw_sp)
- 		return 0;
- }
- 
-+static int mlxsw_sp_flash_update(struct mlxsw_core *mlxsw_core,
-+				 const char *file_name, const char *component,
-+				 struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
-+	const struct firmware *firmware;
-+	int err;
-+
-+	if (component)
-+		return -EOPNOTSUPP;
-+
-+	err = request_firmware_direct(&firmware, file_name,
-+				      mlxsw_sp->bus_info->dev);
-+	if (err)
-+		return err;
-+	err = mlxsw_sp_firmware_flash(mlxsw_sp, firmware);
-+	release_firmware(firmware);
-+
-+	return err;
-+}
-+
- int mlxsw_sp_flow_counter_get(struct mlxsw_sp *mlxsw_sp,
- 			      unsigned int counter_index, u64 *packets,
- 			      u64 *bytes)
-@@ -3155,31 +3176,6 @@ mlxsw_sp_port_set_link_ksettings(struct net_device *dev,
- 	return 0;
- }
- 
--static int mlxsw_sp_flash_device(struct net_device *dev,
--				 struct ethtool_flash *flash)
+-int mlx5e_ethtool_flash_device(struct mlx5e_priv *priv,
+-			       struct ethtool_flash *flash)
 -{
--	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
--	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
--	const struct firmware *firmware;
+-	struct mlx5_core_dev *mdev = priv->mdev;
+-	struct net_device *dev = priv->netdev;
+-	const struct firmware *fw;
 -	int err;
 -
 -	if (flash->region != ETHTOOL_FLASH_ALL_REGIONS)
 -		return -EOPNOTSUPP;
 -
+-	err = request_firmware_direct(&fw, flash->data, &dev->dev);
+-	if (err)
+-		return err;
+-
 -	dev_hold(dev);
 -	rtnl_unlock();
 -
--	err = request_firmware_direct(&firmware, flash->data, &dev->dev);
--	if (err)
--		goto out;
--	err = mlxsw_sp_firmware_flash(mlxsw_sp, firmware);
--	release_firmware(firmware);
--out:
+-	err = mlx5_firmware_flash(mdev, fw);
+-	release_firmware(fw);
+-
 -	rtnl_lock();
 -	dev_put(dev);
 -	return err;
 -}
 -
- static int mlxsw_sp_get_module_info(struct net_device *netdev,
- 				    struct ethtool_modinfo *modinfo)
- {
-@@ -3220,7 +3216,6 @@ static const struct ethtool_ops mlxsw_sp_port_ethtool_ops = {
- 	.get_sset_count		= mlxsw_sp_port_get_sset_count,
- 	.get_link_ksettings	= mlxsw_sp_port_get_link_ksettings,
- 	.set_link_ksettings	= mlxsw_sp_port_set_link_ksettings,
--	.flash_device		= mlxsw_sp_flash_device,
- 	.get_module_info	= mlxsw_sp_get_module_info,
- 	.get_module_eeprom	= mlxsw_sp_get_module_eeprom,
+-static int mlx5e_flash_device(struct net_device *dev,
+-			      struct ethtool_flash *flash)
+-{
+-	struct mlx5e_priv *priv = netdev_priv(dev);
+-
+-	return mlx5e_ethtool_flash_device(priv, flash);
+-}
+-
+ #ifndef CONFIG_MLX5_EN_RXNFC
+ /* When CONFIG_MLX5_EN_RXNFC=n we only support ETHTOOL_GRXRINGS
+  * otherwise this function will be defined from en_fs_ethtool.c
+@@ -1939,7 +1905,6 @@ const struct ethtool_ops mlx5e_ethtool_ops = {
+ #ifdef CONFIG_MLX5_EN_RXNFC
+ 	.set_rxnfc         = mlx5e_set_rxnfc,
+ #endif
+-	.flash_device      = mlx5e_flash_device,
+ 	.get_tunable       = mlx5e_get_tunable,
+ 	.set_tunable       = mlx5e_set_tunable,
+ 	.get_pauseparam    = mlx5e_get_pauseparam,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+index 90cb50fe17fd..ebd81f6b556e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
+@@ -122,14 +122,6 @@ static int mlx5i_get_ts_info(struct net_device *netdev,
+ 	return mlx5e_ethtool_get_ts_info(priv, info);
+ }
+ 
+-static int mlx5i_flash_device(struct net_device *netdev,
+-			      struct ethtool_flash *flash)
+-{
+-	struct mlx5e_priv *priv = mlx5i_epriv(netdev);
+-
+-	return mlx5e_ethtool_flash_device(priv, flash);
+-}
+-
+ enum mlx5_ptys_width {
+ 	MLX5_PTYS_WIDTH_1X	= 1 << 0,
+ 	MLX5_PTYS_WIDTH_2X	= 1 << 1,
+@@ -241,7 +233,6 @@ const struct ethtool_ops mlx5i_ethtool_ops = {
+ 	.get_ethtool_stats  = mlx5i_get_ethtool_stats,
+ 	.get_ringparam      = mlx5i_get_ringparam,
+ 	.set_ringparam      = mlx5i_set_ringparam,
+-	.flash_device       = mlx5i_flash_device,
+ 	.get_channels       = mlx5i_get_channels,
+ 	.set_channels       = mlx5i_set_channels,
+ 	.get_coalesce       = mlx5i_get_coalesce,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 61fa1d162d28..36acd0267a13 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1210,6 +1210,25 @@ static int mlx5_unload_one(struct mlx5_core_dev *dev, bool cleanup)
+ 	return err;
+ }
+ 
++static int mlx5_devlink_flash_update(struct devlink *devlink,
++				     const char *file_name,
++				     const char *component,
++				     struct netlink_ext_ack *extack)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++	const struct firmware *fw;
++	int err;
++
++	if (component)
++		return -EOPNOTSUPP;
++
++	err = request_firmware_direct(&fw, file_name, &dev->pdev->dev);
++	if (err)
++		return err;
++
++	return mlx5_firmware_flash(dev, fw);
++}
++
+ static const struct devlink_ops mlx5_devlink_ops = {
+ #ifdef CONFIG_MLX5_ESWITCH
+ 	.eswitch_mode_set = mlx5_devlink_eswitch_mode_set,
+@@ -1219,6 +1238,7 @@ static const struct devlink_ops mlx5_devlink_ops = {
+ 	.eswitch_encap_mode_set = mlx5_devlink_eswitch_encap_mode_set,
+ 	.eswitch_encap_mode_get = mlx5_devlink_eswitch_encap_mode_get,
+ #endif
++	.flash_update = mlx5_devlink_flash_update,
  };
-@@ -4885,6 +4880,7 @@ static struct mlxsw_driver mlxsw_sp1_driver = {
- 	.sb_occ_max_clear		= mlxsw_sp_sb_occ_max_clear,
- 	.sb_occ_port_pool_get		= mlxsw_sp_sb_occ_port_pool_get,
- 	.sb_occ_tc_port_bind_get	= mlxsw_sp_sb_occ_tc_port_bind_get,
-+	.flash_update			= mlxsw_sp_flash_update,
- 	.txhdr_construct		= mlxsw_sp_txhdr_construct,
- 	.resources_register		= mlxsw_sp1_resources_register,
- 	.kvd_sizes_get			= mlxsw_sp_kvd_sizes_get,
-@@ -4913,6 +4909,7 @@ static struct mlxsw_driver mlxsw_sp2_driver = {
- 	.sb_occ_max_clear		= mlxsw_sp_sb_occ_max_clear,
- 	.sb_occ_port_pool_get		= mlxsw_sp_sb_occ_port_pool_get,
- 	.sb_occ_tc_port_bind_get	= mlxsw_sp_sb_occ_tc_port_bind_get,
-+	.flash_update			= mlxsw_sp_flash_update,
- 	.txhdr_construct		= mlxsw_sp_txhdr_construct,
- 	.resources_register		= mlxsw_sp2_resources_register,
- 	.params_register		= mlxsw_sp2_params_register,
+ 
+ static int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
 -- 
 2.17.2
 
