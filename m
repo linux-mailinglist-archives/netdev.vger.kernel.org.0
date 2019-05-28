@@ -2,107 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ACBB2D0BE
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 22:58:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E13D12D0C0
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 22:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727587AbfE1U54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 16:57:56 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:36210 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726654AbfE1U54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 16:57:56 -0400
-Received: by mail-qt1-f196.google.com with SMTP id u12so27061qth.3;
-        Tue, 28 May 2019 13:57:55 -0700 (PDT)
+        id S1727587AbfE1U7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 16:59:01 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:38197 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726523AbfE1U7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 16:59:00 -0400
+Received: by mail-qk1-f193.google.com with SMTP id a27so37372qkk.5;
+        Tue, 28 May 2019 13:59:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=o1ydLImzsmpkS5F7PlvU5sVhBXF/PklEQqQZqMpZmxE=;
-        b=pUUFYFdhSOjFKlE4+4l7DO7lFTfWN1aoCbBGKyUVb1zddz/d94F+w8Swz99yR7Z+yi
-         JMuV5TFhMLdvWJuUEBwYbuKUJTLJiQBweh9i1EOl3KSECbPvROcAD92Nzu8+lk+4Wj1H
-         Veg8w/g/mxEO9ooewq3DrgMWdw1+Vr35vdmu3em+cXEpVTUNhk7O82mGNdigmcgJZ6xY
-         DTOA1uWJRMCxYnoS7J/BuACvvS81cDojuRxFtxwWjzvUX0+IX7TNR+/C4RdSRQ3xJr6r
-         Hykh8DQekErFOps4eAllmh+qoou+mRcNzmo99/e49QV53zWeNCkSlIchshLsny5H1/NG
-         MpsA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8OG5YTy2amAAS/qn+s2N6XLhUflDWtxdckD99yPf3DI=;
+        b=cSS6Fn0C7CACaxkDp6GLMMcORYCT0EBMBEumNEdHQJTs3K6ZXJTMPKelfAUths/xS8
+         IsWKtNE1Hn7Usqci4YILTUqI/g0mDnmWYgHXBSqUW049PrzONPjVupAUafzm0tvsmdrS
+         f9rfZzHJXK0qWXJyCwFp7enZ7hY3nru0DX6M27E3HtOADNrRnlily9padts4g+V0JTKY
+         CgHeipUgeh36zsqhONMhq1xUSMerLxiKqZZnxtao8VVJ7L0yhzFWyPEAzyvdyvvIZNi6
+         6z0LPlBI+YPrNaZWcmwL8os0HHr9jOqlhDp0WNL427XZ33+BAQEanRpjq/X9BQAhWOcQ
+         Y78g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=o1ydLImzsmpkS5F7PlvU5sVhBXF/PklEQqQZqMpZmxE=;
-        b=V1q2fKJ1tDgYDCATvHUtyniHmgOM9Z8OnGZxnXk9lRCFOpnS/9nzmKN/PeTGA8SulB
-         cDHGX4Fhf3RmE2OWfYWYcXaFr5rAqb2Eans8GX/FkolfnnGBGNyUJrL8XHXsKXCIpkYC
-         sOPK1rhkA80nZJjMGKwhAECDP8mDwVn9VYgLjnZm6Qwjgr3OnDdIOFPFOSQqri79NDMP
-         jnrQ/FeNDekTBqNdE2vhNhhvNBlZZLksxcHzihn4ML3xgXV7Drf4B7ljzt2vSVhowA9k
-         4J8X3+6MmfEtMTMIsBEZNeLZ7zajWDWGhuBKZF/a0QNUQv8zPRKI716ZD9EbEAWbAKJ3
-         192w==
-X-Gm-Message-State: APjAAAUydww0kRlInx5cKAeflE6pBv/sA2ax0yZ8TXwvJPONL7AlYClY
-        RejlbgbLs73uDGjlBE9hrZwfgh9QuRkWn2MJGzg=
-X-Google-Smtp-Source: APXvYqyVyzhSWxFPxx1Q7S/1xkEQOPxvA+Ddzkuz4KVntMBUsTlXhD9T29/yxzB2jQa3duROW2pyJYlgJS46nAlO7dk=
-X-Received: by 2002:a0c:d4ee:: with SMTP id y43mr95878708qvh.26.1559077075184;
- Tue, 28 May 2019 13:57:55 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8OG5YTy2amAAS/qn+s2N6XLhUflDWtxdckD99yPf3DI=;
+        b=H0WjbBXB0zUxeu6FmoxXvkIDMERAP3CXYXCAaeLH4btyhgXtidk8EfkgoNfjylYjOJ
+         p/pCMguKh6drTzpmpik6zg1CtPF9PNf3NLJNpnFPtgD2miYyw2VJ/wpYM7y6i2DITK3E
+         /uXcNgmo23I6zWwAzAxwUBONhskhjNYWbCvTYASnxamS3If8eiDv/u6USnDvJObNCTHh
+         fUNIrmUr35VFh2vr3WHfEmWbbqAjnccIMds+5TQWNsON8bZT1oRIXy0ZX+xQwMqOmqGH
+         12w6/f9OyBXAn8NIm3Aapbma8dwlaO+xQ39WPb8Lsw7xXzUfSs8hYmjOvAcab04Hd9wQ
+         45lA==
+X-Gm-Message-State: APjAAAVx5gnXK6FQkwS6Ck2i3PsUxERmu3AiDcvu9s76lVyDrnOKd2pZ
+        hNk+cwqVSyUXs3s/PsWqdzRECyn/ves=
+X-Google-Smtp-Source: APXvYqy0J1sT5+xUgQmRW/Lf5V0flZu6UcG2znDSxwoH0reffd86ZxYeB12kOA3GlwDdOzUPP6lb8w==
+X-Received: by 2002:a37:a094:: with SMTP id j142mr6443579qke.2.1559077139649;
+        Tue, 28 May 2019 13:58:59 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id k30sm5880055qte.49.2019.05.28.13.58.59
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 28 May 2019 13:58:59 -0700 (PDT)
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel@savoirfairelinux.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, linville@redhat.com,
+        f.fainelli@gmail.com
+Subject: [PATCH net-next] ethtool: copy reglen to userspace
+Date:   Tue, 28 May 2019 16:58:48 -0400
+Message-Id: <20190528205848.21208-1-vivien.didelot@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190528190218.GA6950@ip-172-31-44-144.us-west-2.compute.internal>
-In-Reply-To: <20190528190218.GA6950@ip-172-31-44-144.us-west-2.compute.internal>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Tue, 28 May 2019 13:57:44 -0700
-Message-ID: <CAPhsuW5uVgqVEfpJsCNmQKYgmAksJ+jVTkU7QG2Fz8ofg6Puxg@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] selftests: bpf: fix compiler warning
-To:     Alakesh Haloi <alakesh.haloi@gmail.com>
-Cc:     linux-kselftest@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 12:35 PM Alakesh Haloi <alakesh.haloi@gmail.com> wr=
-ote:
->
-> Add missing header file following compiler warning
->
-> prog_tests/flow_dissector.c: In function =E2=80=98tx_tap=E2=80=99:
-> prog_tests/flow_dissector.c:175:9: warning: implicit declaration of funct=
-ion =E2=80=98writev=E2=80=99; did you mean =E2=80=98write=E2=80=99? [-Wimpl=
-icit-function-declaration]
->   return writev(fd, iov, ARRAY_SIZE(iov));
->          ^~~~~~
->          write
->
-> Fixes: 0905beec9f52 ("selftests/bpf: run flow dissector tests in skb-less=
- mode")
-> Signed-off-by: Alakesh Haloi <alakesh.haloi@gmail.com>
+ethtool_get_regs() allocates a buffer of size reglen obtained from
+ops->get_regs_len(), thus only this value must be used when copying
+the buffer back to userspace. Also no need to check regbuf twice.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+---
+ net/core/ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks for the fix!
+diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+index 4a593853cbf2..f3369f31d93a 100644
+--- a/net/core/ethtool.c
++++ b/net/core/ethtool.c
+@@ -1338,38 +1338,38 @@ static noinline_for_stack int ethtool_set_rxfh(struct net_device *dev,
+ static int ethtool_get_regs(struct net_device *dev, char __user *useraddr)
+ {
+ 	struct ethtool_regs regs;
+ 	const struct ethtool_ops *ops = dev->ethtool_ops;
+ 	void *regbuf;
+ 	int reglen, ret;
+ 
+ 	if (!ops->get_regs || !ops->get_regs_len)
+ 		return -EOPNOTSUPP;
+ 
+ 	if (copy_from_user(&regs, useraddr, sizeof(regs)))
+ 		return -EFAULT;
+ 
+ 	reglen = ops->get_regs_len(dev);
+ 	if (reglen <= 0)
+ 		return reglen;
+ 
+ 	if (regs.len > reglen)
+ 		regs.len = reglen;
+ 
+ 	regbuf = vzalloc(reglen);
+ 	if (!regbuf)
+ 		return -ENOMEM;
+ 
+ 	ops->get_regs(dev, &regs, regbuf);
+ 
+ 	ret = -EFAULT;
+ 	if (copy_to_user(useraddr, &regs, sizeof(regs)))
+ 		goto out;
+ 	useraddr += offsetof(struct ethtool_regs, data);
+-	if (regbuf && copy_to_user(useraddr, regbuf, regs.len))
++	if (copy_to_user(useraddr, regbuf, reglen))
+ 		goto out;
+ 	ret = 0;
+ 
+  out:
+ 	vfree(regbuf);
+ 	return ret;
+ }
+-- 
+2.21.0
 
-> ---
->  tools/testing/selftests/bpf/prog_tests/flow_dissector.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/to=
-ols/testing/selftests/bpf/prog_tests/flow_dissector.c
-> index fbd1d88a6095..c938283ac232 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> @@ -3,6 +3,7 @@
->  #include <error.h>
->  #include <linux/if.h>
->  #include <linux/if_tun.h>
-> +#include <sys/uio.h>
->
->  #define CHECK_FLOW_KEYS(desc, got, expected)                           \
->         CHECK_ATTR(memcmp(&got, &expected, sizeof(got)) !=3D 0,          =
- \
-> --
-> 2.17.1
->
