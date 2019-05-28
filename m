@@ -2,118 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E612CE8A
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B1EF2CE8C
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:22:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727987AbfE1SWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 14:22:03 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:41406 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727811AbfE1SWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:22:02 -0400
-Received: by mail-pg1-f196.google.com with SMTP id z3so6857237pgp.8;
-        Tue, 28 May 2019 11:22:02 -0700 (PDT)
+        id S1728097AbfE1SWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 14:22:45 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:42744 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727963AbfE1SWp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:22:45 -0400
+Received: by mail-wr1-f66.google.com with SMTP id l2so21326269wrb.9
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:22:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vwrCW82lYoS1RG4SghSgoEGARcg250Ly6LTm/6f73Bo=;
-        b=jxjoKvf+KbKlG/x2rK8JxYnou8tG54HpdW6iSoA1n83FLRDH0bvCccb+ojOOA+wcKH
-         WPfUeysh0jg+1sl3xVSI3mxtVPn6KyTqtCCMlYj8EMGeMuXdNCOTMvg7OZ7FeLp4QKpu
-         u90eI47kDV/7FaV82Jd7wJz/RVrtJJyscFJrAUNRzZf5A30u7n/ONmWILnApuKy6Bjlz
-         ogYBC7+BXJZXmLra2rwt2TJPs9Ge2SWzVaZdRoLMZs+U42DT6pQKMk/FJ1zho49corbH
-         XjZlMBaVCZ6DOTvlrohLeud+orY84FGLDUJG4svM8F12WSzHxwwpoPrphWEiRnbOYxAN
-         l53A==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ojRxK9djvYNxFa5zBqX9XaOViJM4soudVbBnnWycGeM=;
+        b=dZgXMVa+2LNfjhK6vWZw3DJYefk929bm1NXEARz7Bxkzj8RebwlN25WTMy1O+3lL3a
+         gDw9cLiPgTxdiAwijkRs5+V22w6kNa3xfT5DxYvEJQcAS5Lyl66MtK+gvXJElQpr2Zgs
+         VDeValB096Kzn9Y+tI1qwCJ4GjgAKiCld2TshWbX8RpkEyJG3rfqqBemQD9Y/YgmX62b
+         319MNRc2F9oMfZJ+f2EVQWgXbSk9+NU0xAiJqpibUKcZs7NL0n5zQiWFlpUTz9KK/WFN
+         WjUwYxENZ8u6hjW2k3l7TA3sz1o/em++3nosfnuUt7dtjVTLOhANvQvNaO/o1NIPbigt
+         oGnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=vwrCW82lYoS1RG4SghSgoEGARcg250Ly6LTm/6f73Bo=;
-        b=HFw1nkcPZ8SqrCq4knqYbgHeABtSWrc2oWkvxz+wcv/6EJ3VkO8nbr4qz8qi/RNKmg
-         7ZD1/kkj0sg0ThkRHW6NHXY+uQ5+TmKEVGbPFOjp2Rwa/U8sUnGdFGG5tdvul60Npz18
-         yKWS9nJs/C6jSD816hJzTzyYt6hAXlZHYZxELejEA9BxH9SNrrN/P2CTwONNINyF4nFN
-         Uv21AJAQcRMQfK6jUj3TtYtcbLOrSkQPDumueDm+4PHO0cm2U05xKqtkTvq7OCmgcNvE
-         +CIJs09DMWmV7+zGqyadHK2irJygt8m7dwVyIlLnHE5a54laufEpi4dvGXc61XDgGGhc
-         gANw==
-X-Gm-Message-State: APjAAAU6zGCNgOYp0JDQ3ayNaPIGW1+Sesnm/mviPJmAG2s//gq4t468
-        8XS/T9rLymdoey1wNonF80IDec6f
-X-Google-Smtp-Source: APXvYqzpePzKVAL249ZWQ82zwu7l+X8jI+M5A9Fz/w/d9l8870VDPfUF/dgXQSJF7Mfk0ekd8f4gaw==
-X-Received: by 2002:a17:90a:778c:: with SMTP id v12mr7148594pjk.141.1559067721675;
-        Tue, 28 May 2019 11:22:01 -0700 (PDT)
-Received: from [10.67.49.27] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id x16sm14541415pff.30.2019.05.28.11.21.59
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ojRxK9djvYNxFa5zBqX9XaOViJM4soudVbBnnWycGeM=;
+        b=ayZn5LJARHjJIfV+o7zUbG7NS4yJv9K92cyau+CVDEWnLq9M/HNFveijmZqDkQotfI
+         anokrWqJKC6wpZ7X6tV93jx6aUPxO4xMWxsEC6BS2gmvDKSntl/FQfopgITSMhazMUSY
+         ofSzAuC6wFw82aTMbIog/a9HGL9PkPXatJHnV3bloQOuK9nptOpww+OYvGf9NTgb1B/o
+         oXkAsh/uXt15vW00CmVa3qIGhMnXSgXiszUzTlnawT+rpEgW/yMaTrhoL0pqzrZTxhuS
+         qfpvpA+TzcxSPGwZQNskVTKc1qds6m98bDS+JGeiH3TcwRsN+sqWymsROllaO7A2xM9O
+         bosQ==
+X-Gm-Message-State: APjAAAU2+LxbP+fK5zc0MnHTvGJb+SQDNqbbrN6vtGJBNiLVwJU/lCAH
+        edFtR+liZK4dScJ8XDIuX88vhiEi
+X-Google-Smtp-Source: APXvYqwqZuEIm449WCMkkStGlKjkRbRBYvGyUTHwh7C+d+5YYn+umIcvH5SpdZ44MqC6pbYJMpxX0g==
+X-Received: by 2002:a5d:4682:: with SMTP id u2mr70047865wrq.202.1559067762954;
+        Tue, 28 May 2019 11:22:42 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bf3:bd00:fcc3:3d8b:511a:9137? (p200300EA8BF3BD00FCC33D8B511A9137.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:fcc3:3d8b:511a:9137])
+        by smtp.googlemail.com with ESMTPSA id o6sm40720520wrh.55.2019.05.28.11.22.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 11:22:00 -0700 (PDT)
-Subject: Re: [PATCH] net: phy: tja11xx: Add IRQ support to the driver
-To:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, Guenter Roeck <linux@roeck-us.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-References: <20190528181616.2019-1-marex@denx.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <482063b4-8c0c-7944-6550-a73d0d9492be@gmail.com>
-Date:   Tue, 28 May 2019 11:21:52 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        Tue, 28 May 2019 11:22:42 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/3] net: phy: move handling latched link-down to
+ phylib state machine
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <e3ce708d-d841-bd7e-30bb-bff37f3b89ac@gmail.com>
+ <b79f49f8-a42b-11c1-f83e-c198fee49dab@gmail.com>
+ <20190528131524.unl7uvgzurcppu7s@shell.armlinux.org.uk>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <c359e2f4-143c-868a-8383-403280b5a7f4@gmail.com>
+Date:   Tue, 28 May 2019 20:22:35 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190528181616.2019-1-marex@denx.de>
+In-Reply-To: <20190528131524.unl7uvgzurcppu7s@shell.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,45 +70,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/28/19 11:16 AM, Marek Vasut wrote:
-> Add support for handling the TJA11xx PHY IRQ signal.
+On 28.05.2019 15:15, Russell King - ARM Linux admin wrote:
+> On Mon, May 27, 2019 at 08:29:45PM +0200, Heiner Kallweit wrote:
+>> Especially with fibre links there may be very short link drops. And if
+>> interrupt handling is slow we may miss such a link drop. To deal with
+>> this we remove the double link status read from the generic link status
+>> read functions, and call the state machine twice instead.
+>> The flag for double-reading link status can be set by phy_mac_interrupt
+>> from hard irq context, therefore we have to use an atomic operation.
 > 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: linux-hwmon@vger.kernel.org
-> ---
->  drivers/net/phy/nxp-tja11xx.c | 32 ++++++++++++++++++++++++++++++++
->  1 file changed, 32 insertions(+)
+> I came up with a different solution to this - I haven't extensively
+> tested it yet though:
 > 
-> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-> index b705d0bd798b..0be9fe9a9604 100644
-> --- a/drivers/net/phy/nxp-tja11xx.c
-> +++ b/drivers/net/phy/nxp-tja11xx.c
-> @@ -40,6 +40,8 @@
->  #define MII_INTSRC_TEMP_ERR		BIT(1)
->  #define MII_INTSRC_UV_ERR		BIT(3)
+>  drivers/net/phy/phy-c45.c    | 12 ------------
+>  drivers/net/phy/phy.c        | 29 +++++++++++++++++++----------
+>  drivers/net/phy/phy_device.c | 14 --------------
+>  3 files changed, 19 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+> index 9e24d9569424..756d7711cbc5 100644
+> --- a/drivers/net/phy/phy-c45.c
+> +++ b/drivers/net/phy/phy-c45.c
+> @@ -222,18 +222,6 @@ int genphy_c45_read_link(struct phy_device *phydev)
+>  		devad = __ffs(mmd_mask);
+>  		mmd_mask &= ~BIT(devad);
 >  
-> +#define MII_INTEN			22
-> +
->  #define MII_COMMSTAT			23
->  #define MII_COMMSTAT_LINK_UP		BIT(15)
+> -		/* The link state is latched low so that momentary link
+> -		 * drops can be detected. Do not double-read the status
+> -		 * in polling mode to detect such short link drops.
+> -		 */
+> -		if (!phy_polling_mode(phydev)) {
+> -			val = phy_read_mmd(phydev, devad, MDIO_STAT1);
+> -			if (val < 0)
+> -				return val;
+> -			else if (val & MDIO_STAT1_LSTATUS)
+> -				continue;
+> -		}
+> -
+>  		val = phy_read_mmd(phydev, devad, MDIO_STAT1);
+>  		if (val < 0)
+>  			return val;
+> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> index 7b3c5eec0129..2e7f0428e8fa 100644
+> --- a/drivers/net/phy/phy.c
+> +++ b/drivers/net/phy/phy.c
+> @@ -507,20 +507,29 @@ static int phy_config_aneg(struct phy_device *phydev)
+>   */
+>  static int phy_check_link_status(struct phy_device *phydev)
+>  {
+> -	int err;
+> +	int err, i;
 >  
-> @@ -239,6 +241,30 @@ static int tja11xx_read_status(struct phy_device *phydev)
->  	return 0;
->  }
+>  	WARN_ON(!mutex_is_locked(&phydev->lock));
 >  
-> +static int tja11xx_config_intr(struct phy_device *phydev)
-> +{
-> +	int ret;
-> +
-> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-> +		ret = phy_write(phydev, MII_INTEN, 0xcfef);
+> -	err = phy_read_status(phydev);
+> -	if (err)
+> -		return err;
+> +	/* The link state is latched low so that momentary link drops can
+> +	 * be detected. If the link has failed, re-read the link status
+> +	 * to ensure that we are up to date with the current link state,
+> +	 * while notifying that the link status has changed.
+> +	 */
+> +	for (i = 0; i < 2; i++) {
+> +		err = phy_read_status(phydev);
+> +		if (err)
+> +			return err;
+>  
+> -	if (phydev->link && phydev->state != PHY_RUNNING) {
+> -		phydev->state = PHY_RUNNING;
+> -		phy_link_up(phydev);
+> -	} else if (!phydev->link && phydev->state != PHY_NOLINK) {
+> -		phydev->state = PHY_NOLINK;
+> -		phy_link_down(phydev, true);
+> +		if (phydev->link && phydev->state != PHY_RUNNING) {
+> +			phydev->state = PHY_RUNNING;
+> +			phy_link_up(phydev);
+> +		} else if (!phydev->link && phydev->state != PHY_NOLINK) {
+> +			phydev->state = PHY_NOLINK;
+> +			phy_link_down(phydev, true);
+> +		}
+> +		if (phydev->link)
+> +			break;
 
-It would be nice to define the shifts and masks being used here. Other
-than that, this looks good.
--- 
-Florian
+One drawback of this approach may be that if we have an up-down-up
+cycle then callback link_change_notify isn't called for either
+transition. In most cases this shouldn't be an issue, but it's not
+the expected behavior.
+
+>  	}
+>  
+>  	return 0;
+> [...]
