@@ -2,146 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A312D0E2
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:15:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 081302D0EF
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:23:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727766AbfE1VOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 17:14:55 -0400
-Received: from mail-qk1-f201.google.com ([209.85.222.201]:38932 "EHLO
-        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727144AbfE1VOy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:14:54 -0400
-Received: by mail-qk1-f201.google.com with SMTP id x68so30354qka.6
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 14:14:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=Sdrk7zv1q4sBRbvsm6ygjzJAHzpOvMNms+yuTgEQ42g=;
-        b=WEiWNt7Xiq8SYHnNq0VkecFYRpbEv+iDrhq5QcrOjaXER/SUu/0rekhS8/MqP0Ult2
-         F/N0jXWn8kFm5/EHZ4Uey+F7uOVmSNoEwhFC5cM919Dy4ZBJ49n+KeuA4dRVnTDufKMc
-         LDvgDDuFRUQa3yftzKguBDFFfQYWhTNImnvLudJhP/eHptKT9VqeHQo/TfsMhnXK6XkN
-         jBKA/VCNfBJR3B2Otc75prMVspST544k6B7g5WTHOZZK2FBexFNLaN8JtvkUGxb7Y+31
-         gEdwVi+jVzT/8sdSHaN61u4Ogf3DWBm6fbvAv94Wjq0+xV3v2TVGTU5pVJN8pXzcBGeY
-         E/mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Sdrk7zv1q4sBRbvsm6ygjzJAHzpOvMNms+yuTgEQ42g=;
-        b=VPNihqN8h0mNMPpwB77BKT4CKJIMQLZbtHW0784BfumE135l+wGKLDTez3ZCSNfLzD
-         HJybUTAQ3GED9RtzbDnDQ0ZR+0+GKsAVYNUURyMq/FgNvUN2O2oQ6cKOYo9uWxNwXPNF
-         zr8eN1q0CmF7rR0maZ0+CUYlhR4Q/EJrj9E2fFC5LbNJk55fu1ThBZI6vyrhmBajfuey
-         CvZH1pFl6afCkCWO2SEudmX4EISyEgPx4LovGNYJD5r0l/HcA35w+GThczVPKfUL0A5K
-         sjJt8uhMfGPzi2/MrS8bM/dAaA1gmAXqRo9QMG6LhNBfDQdXZpwoqvvsJZLQ3I6QHqG6
-         +9yw==
-X-Gm-Message-State: APjAAAWVOdBTObpy/r9Si9JsXaeBA7oSKU4SD0rjwhZm9co1O8d6AkPN
-        bPKb4DKz2LelXoAYp6xNJDzrhB5KvqXa0IgoC2FjYN6koQ32623a5dO5YsRQ83LQiYLIHLlwPks
-        l9USpI1dK6LGBIxn+8Nfaj7NbWew0A5HFd74pFiaSpKqQfNDosh/BBg==
-X-Google-Smtp-Source: APXvYqyNhXGiooi9MTP/MCYlzmx28nHQtDyfhH//O8FtbNBX9BsAQlOBAzy/g0AllKJSEQsyy/fHXA4=
-X-Received: by 2002:aed:353d:: with SMTP id a58mr9562891qte.42.1559078094016;
- Tue, 28 May 2019 14:14:54 -0700 (PDT)
-Date:   Tue, 28 May 2019 14:14:44 -0700
-In-Reply-To: <20190528211444.166437-1-sdf@google.com>
-Message-Id: <20190528211444.166437-4-sdf@google.com>
-Mime-Version: 1.0
-References: <20190528211444.166437-1-sdf@google.com>
-X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
-Subject: [PATCH bpf-next v4 4/4] bpf: tracing: properly use bpf_prog_array api
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727841AbfE1VXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 17:23:14 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36808 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726894AbfE1VXO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 17:23:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=hLzdQvSQZea2/OazsFQ3XOutPinlv9mR5JFfTttDKFM=; b=S7qMwruypPZ+a15XUIUzHYD/V3
+        2l0UptKcECUggtl4ddv9ibv0zp3sxu4I6FTLqyoUpGsmMv/rvNRVOE56Wq4cf+crl18kAeNxHfkyN
+        M+mqpsxLD6Z7oi+waV6sBLd7PvviLD2RhStYtlhLcwR4/vH0m5E5IAciJsbOh9SY4p4s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hVjYa-00039p-JQ; Tue, 28 May 2019 23:22:52 +0200
+Date:   Tue, 28 May 2019 23:22:52 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek Vasut <marex@denx.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH V2] net: phy: tja11xx: Add IRQ support to the driver
+Message-ID: <20190528212252.GW18059@lunn.ch>
+References: <20190528192324.28862-1-marex@denx.de>
+ <96793717-a55c-7844-f7c0-cc357c774a19@gmail.com>
+ <4f33b529-6c3c-07ee-6177-2d332de514c6@denx.de>
+ <cc8db234-4534-674d-eece-5a797a530cdf@gmail.com>
+ <ca63964a-242c-bb46-bd4e-76a270dbedb3@denx.de>
+ <20190528195806.GV18059@lunn.ch>
+ <15906cc0-3d8f-7810-27ed-d64bdbcfa7e7@denx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <15906cc0-3d8f-7810-27ed-d64bdbcfa7e7@denx.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we don't have __rcu markers on the bpf_prog_array helpers,
-let's use proper rcu_dereference_protected to obtain array pointer
-under mutex.
+> The link detection on the TJA1100 (not TJA1101) seems unstable at best,
+> so I better use all the interrupt sources to nudge the PHY subsystem and
+> have it check the link change.
 
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- kernel/trace/bpf_trace.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+Then it sounds like you should just ignore interrupts and stay will
+polling for the TJA1100.
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index fe73926a07cd..3994a231eb92 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -19,6 +19,9 @@
- #include "trace_probe.h"
- #include "trace.h"
- 
-+#define bpf_event_rcu_dereference(p)					\
-+	rcu_dereference_protected(p, lockdep_is_held(&bpf_event_mutex))
-+
- #ifdef CONFIG_MODULES
- struct bpf_trace_module {
- 	struct module *module;
-@@ -1099,7 +1102,7 @@ static DEFINE_MUTEX(bpf_event_mutex);
- int perf_event_attach_bpf_prog(struct perf_event *event,
- 			       struct bpf_prog *prog)
- {
--	struct bpf_prog_array __rcu *old_array;
-+	struct bpf_prog_array *old_array;
- 	struct bpf_prog_array *new_array;
- 	int ret = -EEXIST;
- 
-@@ -1117,7 +1120,7 @@ int perf_event_attach_bpf_prog(struct perf_event *event,
- 	if (event->prog)
- 		goto unlock;
- 
--	old_array = event->tp_event->prog_array;
-+	old_array = bpf_event_rcu_dereference(event->tp_event->prog_array);
- 	if (old_array &&
- 	    bpf_prog_array_length(old_array) >= BPF_TRACE_MAX_PROGS) {
- 		ret = -E2BIG;
-@@ -1140,7 +1143,7 @@ int perf_event_attach_bpf_prog(struct perf_event *event,
- 
- void perf_event_detach_bpf_prog(struct perf_event *event)
- {
--	struct bpf_prog_array __rcu *old_array;
-+	struct bpf_prog_array *old_array;
- 	struct bpf_prog_array *new_array;
- 	int ret;
- 
-@@ -1149,7 +1152,7 @@ void perf_event_detach_bpf_prog(struct perf_event *event)
- 	if (!event->prog)
- 		goto unlock;
- 
--	old_array = event->tp_event->prog_array;
-+	old_array = bpf_event_rcu_dereference(event->tp_event->prog_array);
- 	ret = bpf_prog_array_copy(old_array, event->prog, NULL, &new_array);
- 	if (ret == -ENOENT)
- 		goto unlock;
-@@ -1171,6 +1174,7 @@ int perf_event_query_prog_array(struct perf_event *event, void __user *info)
- {
- 	struct perf_event_query_bpf __user *uquery = info;
- 	struct perf_event_query_bpf query = {};
-+	struct bpf_prog_array *progs;
- 	u32 *ids, prog_cnt, ids_len;
- 	int ret;
- 
-@@ -1195,10 +1199,8 @@ int perf_event_query_prog_array(struct perf_event *event, void __user *info)
- 	 */
- 
- 	mutex_lock(&bpf_event_mutex);
--	ret = bpf_prog_array_copy_info(event->tp_event->prog_array,
--				       ids,
--				       ids_len,
--				       &prog_cnt);
-+	progs = bpf_event_rcu_dereference(event->tp_event->prog_array);
-+	ret = bpf_prog_array_copy_info(progs, ids, ids_len, &prog_cnt);
- 	mutex_unlock(&bpf_event_mutex);
- 
- 	if (copy_to_user(&uquery->prog_cnt, &prog_cnt, sizeof(prog_cnt)) ||
--- 
-2.22.0.rc1.257.g3120a18244-goog
-
+	Andrew
