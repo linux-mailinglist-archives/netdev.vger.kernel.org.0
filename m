@@ -2,99 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A4C02C6BF
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD45A2C6CF
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:43:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727397AbfE1MjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 08:39:19 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:41211 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727218AbfE1MjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:39:19 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q17so6567881pfq.8;
-        Tue, 28 May 2019 05:39:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rdsT8wChIEQo34ZPuzpJxdwcakwW6MiV0N2Abgg/21M=;
-        b=jfk71X0jT4KQozFUVRleMel/vSn6HVF9v9CIfBEUYT0d7j1hfRB7NGAQfdYZoly9L4
-         YUfXmt9SJK8b9RP2F+lnG4/5pfAE8gr4WNpmGp0MOXPgNw7ys4+3YQ/sXyG3wc+vreXi
-         D2WWK2q9zVKRwnqEaLb43DcfhZqDk81WfXA/JIXAMn6qVrpnuc7hsWrM3HEuJqDSdMDB
-         OMh46XHyZjlQDCkj0xQ/kFE7/SysXKMldh8z8yL47Jmklx2+HjVimfq5hdGwUJS9Qcwb
-         5ThDXGhZs3wg/5W7xcHxHs2ZUZKe9hPBPRU6gcUkV7USkHrlVBMANSpOBcenF8xOKdh6
-         awAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rdsT8wChIEQo34ZPuzpJxdwcakwW6MiV0N2Abgg/21M=;
-        b=AbzTlkYGDEA8jaGRn6Iyu4tE09Sm1GBJa/9qJuXHEoA7SDSjDwZS/Ey6yCaIPwrQ2J
-         bpUIdPR113xEjvvgeQW8JCRhRmIFbOaXNlTHvPOF0PrnN2LvxV08dEQBMHKkAGF3qQhD
-         zJlB/GAnno8KsATQwzqwMLm5etC8iwlhhue2fBL1C8xjkCpekAOA5lWPEmXfjTDi2+yV
-         cDVeJ2IQZ9I9mvCc2CWNP2g2g0X3uKDLqpimQdxzW9C4cg6c1gK9UcrEIQEUoinXFziK
-         /93ERXhydBA5lgsCnmKc+0MSf2kEHn+yJpNiermur1XSZfvYYvbQMC0B4zOjfHONzDt4
-         IKRQ==
-X-Gm-Message-State: APjAAAV36CAEVNBQo50s1K3V/Sc9VQAF63UYZs0D4pjB+KxIOVTvu8iL
-        0AfusUFf9PSwP/dfx4kvRIc=
-X-Google-Smtp-Source: APXvYqzVSp9s23hDPVvqtmg5snCCxKVDNaecP5BhPPyak0N4qyp3BTK9nFbnTPQNjmREmPryxRAMmA==
-X-Received: by 2002:a17:90a:80c1:: with SMTP id k1mr5711048pjw.30.1559047158748;
-        Tue, 28 May 2019 05:39:18 -0700 (PDT)
-Received: from zhanggen-UX430UQ ([66.42.35.75])
-        by smtp.gmail.com with ESMTPSA id g8sm2485851pjp.17.2019.05.28.05.39.09
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 05:39:18 -0700 (PDT)
-Date:   Tue, 28 May 2019 20:38:58 +0800
-From:   Gen Zhang <blackgod016574@gmail.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     davem@davemloft.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] wlcore: spi: Fix a memory leaking bug in wl1271_probe()
-Message-ID: <20190528123858.GA23855@zhanggen-UX430UQ>
-References: <20190524030117.GA6024@zhanggen-UX430UQ>
- <20190528113922.E2B1060312@smtp.codeaurora.org>
- <20190528121452.GA23464@zhanggen-UX430UQ>
- <87tvde4v3u.fsf@kamboji.qca.qualcomm.com>
+        id S1727454AbfE1MnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 08:43:09 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:52428 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727201AbfE1MnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:43:09 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 9879C60850; Tue, 28 May 2019 12:43:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1559047388;
+        bh=lCVRucRy9Sh6Z/3jPpo/oYImhufsBY/lliFa5yolGa4=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=o25HtyBqfNi2i01JLZ5hxBYQjJ7vyTAKInSln/u1L+DO0giyKEgKn/FpCsMoR2jaO
+         AcvOYi0p0bedIgz6LLgIUvsX28CApYTkpMxbugUvZdDxiM4Fmt9vjj/n0HdA5Qlc6u
+         nqdxJiet48XhlVRYxzH9dHenkxiu4z5fEtpjs8qo=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7736B6070D;
+        Tue, 28 May 2019 12:43:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1559047387;
+        bh=lCVRucRy9Sh6Z/3jPpo/oYImhufsBY/lliFa5yolGa4=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=awL5ZifMTWVpkswr4/nnP/KgwlWZaQqhJMqj+EwH2ZKy9jFreXTNSPTrqSsNTDnoy
+         ZeXeLFO95+9oBDBHIbTvrC+1Ka7a8mldwzNljH7gnV0ejZmnshlkoX9O2SuEqArqDp
+         /MaJbIZ3YTzR3Fx6TNH+hG/GOmGNsMH6/rMh2oqc=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7736B6070D
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tvde4v3u.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] libertas: fix spelling mistake "Donwloading" ->
+ "Downloading"
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190514211406.6353-1-colin.king@canonical.com>
+References: <20190514211406.6353-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190528124308.9879C60850@smtp.codeaurora.org>
+Date:   Tue, 28 May 2019 12:43:08 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 03:33:09PM +0300, Kalle Valo wrote:
-> Yeah, I don't see how that thread proves that these patches are correct.
-> 
-Sure, I didn't mean that we came to an agreement that these patches are
-correct.
-> > Further, I e-mailed Greg K-H about when should we use devm_kmalloc().
-> >
-> > On Tue, May 28, 2019 at 08:32:57AM +0800, Gen Zhang wrote:
-> >> devm_kmalloc() is used to allocate memory for a driver dev. Comments
-> >> above the definition and doc 
-> >> (https://www.kernel.org/doc/Documentation/driver-model/devres.txt) all
-> >> imply that allocated the memory is automatically freed on driver attach,
-> >> no matter allocation fail or not. However, I examined the code, and
-> >> there are many sites that devm_kfree() is used to free devm_kmalloc().
-> >> e.g. hisi_sas_debugfs_init() in drivers/scsi/hisi_sas/hisi_sas_main.c.
-> >> So I am totally confused about this issue. Can anybody give me some
-> >> guidance? When should we use devm_kfree()?
-> > He replied: If you "know" you need to free the memory now, 
-> > call devm_kfree(). If you want to wait for it to be cleaned up latter, 
-> > like normal, then do not call it.
-> >
-> > So could please look in to this issue?
-> 
-> Sorry, no time to investigate this in detail. If you think the patches
-> are correct you can resend them and get someone familiar with the driver
-> to provide Reviewed-by, then I will apply them.
-> 
-> -- 
-> Kalle Valo
-Ok, thanks for your time. I will follow your suggestions.
+Colin King <colin.king@canonical.com> wrote:
 
-Thanks
-Gen
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> There is are two spelling mistakes in lbtf_deb_usb2 messages, fix these.
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
+
+Patch applied to wireless-drivers-next.git, thanks.
+
+aeffda6b10f8 libertas: fix spelling mistake "Donwloading" -> "Downloading"
+
+-- 
+https://patchwork.kernel.org/patch/10943765/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
