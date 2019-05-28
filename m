@@ -2,104 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B42182D0CB
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B232D0D7
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:04:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727677AbfE1VCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 17:02:36 -0400
-Received: from mail-pg1-f177.google.com ([209.85.215.177]:36959 "EHLO
-        mail-pg1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727070AbfE1VCg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:02:36 -0400
-Received: by mail-pg1-f177.google.com with SMTP id n27so11708584pgm.4
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 14:02:36 -0700 (PDT)
+        id S1727785AbfE1VEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 17:04:49 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:44083 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726878AbfE1VEs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:04:48 -0400
+Received: by mail-qt1-f194.google.com with SMTP id m2so51023qtp.11;
+        Tue, 28 May 2019 14:04:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=c7ceyE43Xyn0ahYiGYoW3/Ms+/K6shUmeLNiiKXE+ls=;
-        b=b6ySIiieuUqst46NfU1GbbB6HCVA/8E9t2dCEiU8Ipft08V/GPmVh/EXk51OawJ3GU
-         C3ujodI+Xy11iocGsJW+tqhIFQpA1YjPQ8VnZdzDBgsts3v5D45i6OzV9n92L0HbE5u4
-         9GLgpA4BPErbLHr4tAZahm0GtFue4P0yyYvVvNxRaOCZGfOzyKZoVm1uJaCqCELCizzw
-         8jLRmO+H9WGPAqQeXS/SwR5XwCg8S49HKbBpbpTCiuvZsRGgWUZG1R0Cdud6Wnl8BTJF
-         No+32G8viI4dMbVACmyEPgSxKZ9gwOBrI0pVTLKVLqSkWLdMrylRNEct9N/s27Z18LEL
-         VPcg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HdLChIagF/mUw9YeOGCyBWe4oSr7/uq03RdN8WKEtoE=;
+        b=t7Z0cnEoHbRttMLaJ2OZYhYrpNVTkmvzkZD1h2FFhSmqVie8V8PN3sWppFcjRqzei0
+         vIRvWZF8NSYs04ntwz0lW0xXYkbIHp3r+Bp7I33ouCQ5W/EiLHYgfh1cXGaTC21I9Ohf
+         tKvBWKKLxO8qOB1isHGkLXB8gXXee2nlbzZdtOcV0YlC2jhEsFUqVwWYnQuoosTqt5ub
+         zgstAhcBiHQu/jBIQKESnoq1X6dXBxu7O4b7LhqIprQwiVNZsqThAcqyocm7BnkfnQ3K
+         acE45duVO4ulHhm4Xfkt1GqSS4qWtvZgZQzTjAtyI6GT/uz9SAtr/ewfKhham7BfG6a6
+         NSCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=c7ceyE43Xyn0ahYiGYoW3/Ms+/K6shUmeLNiiKXE+ls=;
-        b=sShARVMSCibzJIWhRo7QLWWrTO00OPon6FIrNtEJCzzOr0WRHyJYCNjIS4GGnirRsK
-         rXrfLAGCdF/oIZ9rCzF7fuauCXF2pkprEQefp/CP4RuYAx4cL3g/2Ri+V4joROAjiVvq
-         2MfrTx8K5ZvxPedzgPslzR9A6gBpJheOBs1q8YAhwuUHsxIaWCxc74MGEnP/whQic+/+
-         OW+ov3uDxd4LFpaLctw15qRP5RmkTFvFK0ws/fHm0kQr+GOlJP2peGneHfhtPIzBFEKe
-         04D30+I1hGPkyxpW13sMDXBdE8v/zWJj7tAiBb0xnchG++xCNHmPS4Isp3nNsrfrJPX2
-         PuLQ==
-X-Gm-Message-State: APjAAAWoj/kAvTc8irGdWd/jHxuZkiI8/v/wWxEMCKOxaLPX5scMSQM1
-        StOfEnpK3XbPvEb3JrIlyl4=
-X-Google-Smtp-Source: APXvYqyMU7cycacggdcQpLy+VRgdeavqnTSMV3DGIOJPUSOqgtpxdu2GHWoS0KA4uQq+b7qGDbyb8Q==
-X-Received: by 2002:a62:75d8:: with SMTP id q207mr112759856pfc.35.1559077356004;
-        Tue, 28 May 2019 14:02:36 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id n9sm15701406pfq.53.2019.05.28.14.02.34
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 14:02:35 -0700 (PDT)
-Subject: Re: [PATCH net] net/sched: act_pedit: fix 'ex munge' on network
- header in case of QinQ packet
-To:     Davide Caratti <dcaratti@redhat.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     shuali@redhat.com, Eli Britstein <elibr@mellanox.com>
-References: <753b96cc340e4fbae6640da070aac09d7220efe2.1559075758.git.dcaratti@redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <290a8e03-1d24-a84f-751c-6fc27f04bba0@gmail.com>
-Date:   Tue, 28 May 2019 14:02:33 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HdLChIagF/mUw9YeOGCyBWe4oSr7/uq03RdN8WKEtoE=;
+        b=V3mExFUHHEL7al1hp03nbdDTvUsHMhlsfE0km8oMBOoxGwllBlVgMbKX6kG/Wp7Nbq
+         g8C9ApLpv6qHrwEbHeeCib1FFc3pRy3KLl/GNjgL0vXKuqo9SkMZFR98PWI3Gz/tg6ku
+         k8mXZu6dOYc7s6OQRrIKawEj9hf0XLYCjWAq3kp9U2eDwOMfvKlTHtmsAhCcUq8XSibn
+         k3tf3dd/r1VvBKdbH2RcugQiRp7oj9uyrmR0dbss4WoaZ5++/WQabWCnZ7h3S1nao3pM
+         HPKHFhJdqMSjMDpzempNCRuu30tD1zvaZHveE1+IF8qgaisTccgf5+uLj+q6eU8rnr2y
+         DHtw==
+X-Gm-Message-State: APjAAAVNd/ieLK+CZAhvX1qeJe69QzqGOpn7xGeNAO3pMGwdzAVfzDjc
+        9lljhHPpgvQuA5fnaRI772FGuYKyQfCvZtmbhLeA0Es4
+X-Google-Smtp-Source: APXvYqzKlUW5I4Fmxa9kh82xNKHZ7Zj8btGNodhYAGUa9x0xZc3DMkxPUcIksraU56XPkqAalTpqw4C6sO+FlUFn9WM=
+X-Received: by 2002:aed:3b66:: with SMTP id q35mr14897917qte.118.1559077487843;
+ Tue, 28 May 2019 14:04:47 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <753b96cc340e4fbae6640da070aac09d7220efe2.1559075758.git.dcaratti@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <56c1f2f89428b49dad615fc13cc8c120d4ca4abf.camel@domdv.de>
+In-Reply-To: <56c1f2f89428b49dad615fc13cc8c120d4ca4abf.camel@domdv.de>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Tue, 28 May 2019 14:04:36 -0700
+Message-ID: <CAPhsuW4TV5m_E3iO7FNyFoKwsKzGSZizbPfciHOJtun-=H_biA@mail.gmail.com>
+Subject: Re: [RFC][PATCH kernel_bpf] honor CAP_NET_ADMIN for BPF_PROG_LOAD
+To:     Andreas Steinmetz <ast@domdv.de>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, May 28, 2019 at 9:59 AM Andreas Steinmetz <ast@domdv.de> wrote:
+>
+> [sorry for crossposting but this affects both lists]
+>
+> BPF_PROG_TYPE_SCHED_CLS and BPF_PROG_TYPE_XDP should be allowed
+> for CAP_NET_ADMIN capability. Nearly everything one can do with
+> these program types can be done some other way with CAP_NET_ADMIN
+> capability (e.g. NFQUEUE), but only slower.
+>
+> This change is similar in behaviour to the /proc/sys/net
+> CAP_NET_ADMIN exemption.
+>
+> Overall chances are of increased security as network related
+> applications do no longer require to keep CAP_SYS_ADMIN
+> admin capability for network related eBPF operations.
+>
+> It may well be that other program types than BPF_PROG_TYPE_XDP
+> and BPF_PROG_TYPE_SCHED_CLS do need the same exemption, though
+> I do not have sufficient knowledge of other program types
+> to be able to decide this.
+>
+> Preloading BPF programs is not possible in case of application
+> modified or generated BPF programs, so this is no alternative.
+> The verifier does prevent the BPF program from doing harmful
+> things anyway.
+>
+> Signed-off-by: Andreas Steinmetz <ast@domdv.de>
+>
+> --- a/kernel/bpf/syscall.c      2019-05-28 18:00:40.472841432 +0200
+> +++ b/kernel/bpf/syscall.c      2019-05-28 18:17:50.162811510 +0200
+> @@ -1561,8 +1561,13 @@ static int bpf_prog_load(union bpf_attr
+>                 return -E2BIG;
+>         if (type != BPF_PROG_TYPE_SOCKET_FILTER &&
+>             type != BPF_PROG_TYPE_CGROUP_SKB &&
 
+You should extend this if () statement instead of adding another
+if () below.
 
-On 5/28/19 1:50 PM, Davide Caratti wrote:
-> Like it has been done in commit 2ecba2d1e45b ("net: sched: act_csum: Fix
-> csum calc for tagged packets"), also 'pedit' needs to adjust the network
-> offset when multiple tags are present in the packets: otherwise wrong IP
-> headers (but good checksums) can be observed with the following command:
+Thanks,
+Song
 
-...
-
-> +again:
-> +		switch (protocol) {
-> +		case cpu_to_be16(ETH_P_8021AD): /* fall through */
-> +		case cpu_to_be16(ETH_P_8021Q):
-> +			if (skb_vlan_tag_present(skb) &&
-> +			    !orig_vlan_tag_present) {
-> +				protocol = skb->protocol;
-> +				orig_vlan_tag_present = true;
-> +			} else {
-> +				struct vlan_hdr *vlan;
-> +
-> +				vlan = (struct vlan_hdr *)skb->data;
-> +				protocol = vlan->h_vlan_encapsulated_proto;
-> +				skb_pull(skb, VLAN_HLEN);
-> +				skb_reset_network_header(skb);
-> +				(*vlan_hdr_count)++;
-> +			}
-> +			goto again;
-
-What prevents this loop to access data not yet in skb->head ?
-
-skb_header_pointer() (or pskb_may_pull()) seems needed.
-
-
+> -           !capable(CAP_SYS_ADMIN))
+> -               return -EPERM;
+> +           !capable(CAP_SYS_ADMIN)) {
+> +               if (type != BPF_PROG_TYPE_SCHED_CLS &&
+> +                   type != BPF_PROG_TYPE_XDP)
+> +                       return -EPERM;
+> +               if(!capable(CAP_NET_ADMIN))
+> +                       return -EPERM;
+> +       }
+>
+>         bpf_prog_load_fixup_attach_type(attr);
+>         if (bpf_prog_load_check_attach_type(type, attr->expected_attach_type))
+>
