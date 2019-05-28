@@ -2,126 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 080A02BCE4
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 03:36:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CAFA2BCF6
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 03:48:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727694AbfE1BgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 21:36:05 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:42086 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727018AbfE1BgF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 21:36:05 -0400
-Received: by mail-qk1-f196.google.com with SMTP id b18so14192294qkc.9;
-        Mon, 27 May 2019 18:36:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Kj9t4JQJcagW18k4dyge90dwQtqjHOh2tQ9v2UatVwU=;
-        b=rqRqXS8Bn7OA5NpsTq5QVD508b05RK7UY+YSHcgXWsACj98Tb0U+EKfBtcfzlnMa1u
-         mAFSzEv1P6Xlv9oiZ+0R53Irqz5PJwJhpdcOCJjvDn/gI13z+DUj6ovjo5auUZC4EQI9
-         uHmHwLty13Z4+osxXDd10BmEZagAl/wqYDmW42J3PWErpdAv7N+t/baZJFOeUkMzJVEP
-         d+/AAWB2SKfZrv1NbpDJRt+yttmYw1yfwsvqBr5D2XRB3OnFF7UMKomc3u2Xq9zV9TXr
-         lAtnjNRuGm4b+LOPjeCmz+gE0YFDBvMKz98VwKbkH2I69JsGqoISlA3iVBmg3B7+NoDe
-         uyuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Kj9t4JQJcagW18k4dyge90dwQtqjHOh2tQ9v2UatVwU=;
-        b=taEP7jIFrnoKTcgdT6GVFXRkTJ+Ie3OoPC7zBXB0izEAyq1HArf9foa5WB5Q7sksgI
-         T/03pkYvZoMUe2Uw0iNGqhPWTdxh21lDG0OqirCi4NSl15+YRAwQKtkY8KY+PwBViHRq
-         idfXobKAGs7biQ4g0OOkX73UCnXjI8tbOfXN0y3oAjHJYePSpoi5eJCL0NvetESTV4Wd
-         gk7AuZPR8Whh6a6dOfYOxZ9f9Toat7DyZSBGF9Y2WAOieEjv0f1xS4lNFL5LiYp1OPQq
-         onTAYrGSrRJB/ifdQHW+AHRuIwjkjhs0pbSdj2W9GHYJk71sLQqbNozXCc86Ml2JMCbh
-         9vTQ==
-X-Gm-Message-State: APjAAAVf0ZiFI0GqWIWrnJVD+QgX3gJdRaSkVfdwPCKkR5YFxSRvtExw
-        Q7SJzsJHMSy/8hGqauucVk8=
-X-Google-Smtp-Source: APXvYqw0xhgF3f6NkXqVMXN7RG6560O8XISc1F2wIzZjOMx/WjP6gmPNJBaJNH1HyJB27l4Gg5FR3w==
-X-Received: by 2002:ac8:270b:: with SMTP id g11mr65112037qtg.363.1559007364479;
-        Mon, 27 May 2019 18:36:04 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:4abe:239a:2941:e90:181d])
-        by smtp.gmail.com with ESMTPSA id j62sm4482875qte.89.2019.05.27.18.36.02
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 27 May 2019 18:36:03 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 34358C0A7A; Mon, 27 May 2019 22:36:00 -0300 (-03)
-Date:   Mon, 27 May 2019 22:36:00 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     syzbot <syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
-        vyasevich@gmail.com
-Subject: Re: memory leak in sctp_process_init
-Message-ID: <20190528013600.GM5506@localhost.localdomain>
-References: <00000000000097abb90589e804fd@google.com>
+        id S1727782AbfE1Bse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 21:48:34 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:17583 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727271AbfE1Bse (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 May 2019 21:48:34 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 560C66BA30B9C8FF9BBD;
+        Tue, 28 May 2019 09:48:32 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Tue, 28 May 2019
+ 09:48:22 +0800
+Subject: Re: [PATCH net-next] net: link_watch: prevent starvation when
+ processing linkwatch wq
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     <davem@davemloft.net>, <hkallweit1@gmail.com>,
+        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1558921674-158349-1-git-send-email-linyunsheng@huawei.com>
+ <20190527075838.5a65abf9@hermes.lan>
+ <a0fe690b-2bfa-7d1a-40c5-5fb95cf57d0b@huawei.com>
+ <20190527181744.289c4b2f@hermes.lan>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <bb880dab-16dc-0d4b-fa42-809c40cac43b@huawei.com>
+Date:   Tue, 28 May 2019 09:48:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00000000000097abb90589e804fd@google.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190527181744.289c4b2f@hermes.lan>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 27, 2019 at 05:48:06PM -0700, syzbot wrote:
-> Hello,
+On 2019/5/28 9:17, Stephen Hemminger wrote:
+> On Tue, 28 May 2019 09:04:18 +0800
+> Yunsheng Lin <linyunsheng@huawei.com> wrote:
 > 
-> syzbot found the following crash on:
+>> On 2019/5/27 22:58, Stephen Hemminger wrote:
+>>> On Mon, 27 May 2019 09:47:54 +0800
+>>> Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>   
+>>>> When user has configured a large number of virtual netdev, such
+>>>> as 4K vlans, the carrier on/off operation of the real netdev
+>>>> will also cause it's virtual netdev's link state to be processed
+>>>> in linkwatch. Currently, the processing is done in a work queue,
+>>>> which may cause worker starvation problem for other work queue.
+>>>>
+>>>> This patch releases the cpu when link watch worker has processed
+>>>> a fixed number of netdev' link watch event, and schedule the
+>>>> work queue again when there is still link watch event remaining.
+>>>>
+>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>  
+>>>
+>>> Why not put link watch in its own workqueue so it is scheduled
+>>> separately from the system workqueue?  
+>>
+>> From testing and debuging, the workqueue runs on the cpu where the
+>> workqueue is schedule when using normal workqueue, even using its
+>> own workqueue instead of system workqueue. So if the cpu is busy
+>> processing the linkwatch event, it is not able to process other
+>> workqueue' work when the workqueue is scheduled on the same cpu.
+>>
+>> Using unbound workqueue may solve the cpu starvation problem.
+>> But the __linkwatch_run_queue is called with rtnl_lock, so if it
+>> takes a lot time to process, other need to take the rtnl_lock may
+>> not be able to move forward.
 > 
-> HEAD commit:    9c7db500 Merge tag 'selinux-pr-20190521' of git://git.kern..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10388530a00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=61dd9e15a761691d
-> dashboard link: https://syzkaller.appspot.com/bug?extid=f7e9153b037eac9b1df8
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e32f8ca00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177fa530a00000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
-> 
->  0 to HW filter on device batadv0
-> executing program
-> executing program
-> executing program
-> BUG: memory leak
-> unreferenced object 0xffff88810ef68400 (size 1024):
->   comm "syz-executor273", pid 7046, jiffies 4294945598 (age 28.770s)
->   hex dump (first 32 bytes):
->     1d de 28 8d de 0b 1b e3 b5 c2 f9 68 fd 1a 97 25  ..(........h...%
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<00000000a02cebbd>] kmemleak_alloc_recursive
-> include/linux/kmemleak.h:55 [inline]
->     [<00000000a02cebbd>] slab_post_alloc_hook mm/slab.h:439 [inline]
->     [<00000000a02cebbd>] slab_alloc mm/slab.c:3326 [inline]
->     [<00000000a02cebbd>] __do_kmalloc mm/slab.c:3658 [inline]
->     [<00000000a02cebbd>] __kmalloc_track_caller+0x15d/0x2c0 mm/slab.c:3675
->     [<000000009e6245e6>] kmemdup+0x27/0x60 mm/util.c:119
->     [<00000000dfdc5d2d>] kmemdup include/linux/string.h:432 [inline]
->     [<00000000dfdc5d2d>] sctp_process_init+0xa7e/0xc20
-> net/sctp/sm_make_chunk.c:2437
->     [<00000000b58b62f8>] sctp_cmd_process_init net/sctp/sm_sideeffect.c:682
-> [inline]
->     [<00000000b58b62f8>] sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1384
-> [inline]
->     [<00000000b58b62f8>] sctp_side_effects net/sctp/sm_sideeffect.c:1194
-> [inline]
->     [<00000000b58b62f8>] sctp_do_sm+0xbdc/0x1d60
-> net/sctp/sm_sideeffect.c:1165
+> Agree with the starvation issue. My cocern is that large number of
+> events that end up being delayed would impact things that are actually
+> watching for link events (like routing daemons).
 
-Note that this is on the client side. It was handling the INIT_ACK
-chunk, from sctp_sf_do_5_1C_ack().
+Agreed. I am not familiar with above use cases, it would be very helpful
+if someone can help testing the impact of above use case.
 
-I'm not seeing anything else other than sctp_association_free()
-releasing this memory. This means 2 things:
-- Every time the cookie is retransmitted, it leaks. As shown by the
-  repetitive leaks here.
-- The cookie remains allocated throughout the association, which is
-  also not good as that's a 1k that we could have released back to the
-  system right after the handshake.
+> 
+> It probably would be not accepted to do rtnl_unlock/sched_yield/rtnl_lock
+> in the loop, but that is another alternative.
 
-  Marcelo
+Yes. But seems not very efficient to do rtnl_unlock/sched_yield/rtnl_lock
+for very linkwatch_do_dev.
+
+> 
+> 
+> 
+> .
+> 
+
