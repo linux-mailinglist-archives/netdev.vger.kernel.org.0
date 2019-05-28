@@ -2,112 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7222C53D
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:16:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A55B2C557
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:24:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726682AbfE1LQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 07:16:33 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:36292 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbfE1LQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:16:33 -0400
-Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hVa5a-0003j5-P3; Tue, 28 May 2019 07:16:26 -0400
-Date:   Tue, 28 May 2019 07:15:50 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     syzbot <syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com>,
-        davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Subject: Re: memory leak in sctp_process_init
-Message-ID: <20190528111550.GA4658@hmswarspite.think-freely.org>
-References: <00000000000097abb90589e804fd@google.com>
- <20190528013600.GM5506@localhost.localdomain>
+        id S1726553AbfE1LYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 07:24:34 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:40043 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726313AbfE1LYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:24:34 -0400
+Received: by mail-wr1-f65.google.com with SMTP id t4so11514132wrx.7
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 04:24:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=qEcvvgJMFIRPe6aYSSr5145L4noutj1Bp3XNtqqFIXs=;
+        b=lQxotpl2WAPufmz8XbpHwa0CcspzgKN1n7e19D2HcIh71ECDP3d7eKFtUHptgYK9xY
+         kdPDsdNRA7at/vKqdALgdyl2fm2iRbFWMjZJBASICA/XOSA40jG27IQtDnFe8I4D1Agy
+         00r3MiJWquL5gL/8DRZtjOIhpAovNCuSzsA/6ufIXS7imlBY/e0yc78uTspa7CVKSM/R
+         VO6HbQBBqQYvFVvrxjXJV+i8oT1P2KwxFtv4H8B4PrKHg2XB9jIBBlwCYSC1bfpmUZoc
+         STk28sIcnvoHQ6Ccd7EqZoRqLibBid/4koc/W4AEPN7O7p60UaAnphl/Q3T7agucEaRm
+         tLSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qEcvvgJMFIRPe6aYSSr5145L4noutj1Bp3XNtqqFIXs=;
+        b=rh4/nGK9wIc9XdHYNRuY73Yx+1vskQk3S02Qi/uu1xa7/T8Jep9SWpTq6gG+HnIV45
+         wgvveqmUgI950GD0mzICPTYHur7Nxn7YLIcMHYBGysynv/eekP74RdShnLRztkDRHpgc
+         VDumRu3R9M5pOgehP6GVtYsPk/yF9vOxYhMgaKLV7KdJGtgrMaRdtLRqqgAfy2OR1G8r
+         K0dogt64/lJYyF4Km4A9QZFb82MKBc540gN4CphpiPGw/1eu8ZPM43hDPNNzHKtZiNjK
+         XU40CB0xBE7WglkjTDf5SKDAA2AsjfNoKxm8r+nTl1CPKLGqceHF4kTRRVdX1gBVDrB0
+         eAYg==
+X-Gm-Message-State: APjAAAWb8WQ8WeNUxzxjhIUq1BaV/4IzCDbejqKWtFuuhllGGarN0161
+        YRO9UOinAsJ/ZUCPVH2VTKv/nA==
+X-Google-Smtp-Source: APXvYqwNx7PLvpYxsQDFWL4unmyUZKqtbxY+eJhasqg/tYOW3bqofn93WtZ9B9LR2OaTaZl7hZTuZA==
+X-Received: by 2002:adf:ef8d:: with SMTP id d13mr9413056wro.60.1559042672603;
+        Tue, 28 May 2019 04:24:32 -0700 (PDT)
+Received: from localhost (ip-89-177-126-215.net.upcbroadband.cz. [89.177.126.215])
+        by smtp.gmail.com with ESMTPSA id k8sm11684441wrp.74.2019.05.28.04.24.32
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 28 May 2019 04:24:32 -0700 (PDT)
+Date:   Tue, 28 May 2019 13:24:31 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH net-next] team: add ethtool get_link_ksettings
+Message-ID: <20190528112431.GA2252@nanopsycho>
+References: <20190527033110.9861-1-liuhangbin@gmail.com>
+ <20190528090823.GB2699@nanopsycho>
+ <20190528100211.GX18865@dhcp-12-139.nay.redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190528013600.GM5506@localhost.localdomain>
+In-Reply-To: <20190528100211.GX18865@dhcp-12-139.nay.redhat.com>
 User-Agent: Mutt/1.11.3 (2019-02-01)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 27, 2019 at 10:36:00PM -0300, Marcelo Ricardo Leitner wrote:
-> On Mon, May 27, 2019 at 05:48:06PM -0700, syzbot wrote:
-> > Hello,
-> > 
-> > syzbot found the following crash on:
-> > 
-> > HEAD commit:    9c7db500 Merge tag 'selinux-pr-20190521' of git://git.kern..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=10388530a00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=61dd9e15a761691d
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=f7e9153b037eac9b1df8
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e32f8ca00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177fa530a00000
-> > 
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+f7e9153b037eac9b1df8@syzkaller.appspotmail.com
-> > 
-> >  0 to HW filter on device batadv0
-> > executing program
-> > executing program
-> > executing program
-> > BUG: memory leak
-> > unreferenced object 0xffff88810ef68400 (size 1024):
-> >   comm "syz-executor273", pid 7046, jiffies 4294945598 (age 28.770s)
-> >   hex dump (first 32 bytes):
-> >     1d de 28 8d de 0b 1b e3 b5 c2 f9 68 fd 1a 97 25  ..(........h...%
-> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-> >   backtrace:
-> >     [<00000000a02cebbd>] kmemleak_alloc_recursive
-> > include/linux/kmemleak.h:55 [inline]
-> >     [<00000000a02cebbd>] slab_post_alloc_hook mm/slab.h:439 [inline]
-> >     [<00000000a02cebbd>] slab_alloc mm/slab.c:3326 [inline]
-> >     [<00000000a02cebbd>] __do_kmalloc mm/slab.c:3658 [inline]
-> >     [<00000000a02cebbd>] __kmalloc_track_caller+0x15d/0x2c0 mm/slab.c:3675
-> >     [<000000009e6245e6>] kmemdup+0x27/0x60 mm/util.c:119
-> >     [<00000000dfdc5d2d>] kmemdup include/linux/string.h:432 [inline]
-> >     [<00000000dfdc5d2d>] sctp_process_init+0xa7e/0xc20
-> > net/sctp/sm_make_chunk.c:2437
-> >     [<00000000b58b62f8>] sctp_cmd_process_init net/sctp/sm_sideeffect.c:682
-> > [inline]
-> >     [<00000000b58b62f8>] sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1384
-> > [inline]
-> >     [<00000000b58b62f8>] sctp_side_effects net/sctp/sm_sideeffect.c:1194
-> > [inline]
-> >     [<00000000b58b62f8>] sctp_do_sm+0xbdc/0x1d60
-> > net/sctp/sm_sideeffect.c:1165
-> 
-> Note that this is on the client side. It was handling the INIT_ACK
-> chunk, from sctp_sf_do_5_1C_ack().
-> 
-> I'm not seeing anything else other than sctp_association_free()
-> releasing this memory. This means 2 things:
-> - Every time the cookie is retransmitted, it leaks. As shown by the
->   repetitive leaks here.
-> - The cookie remains allocated throughout the association, which is
->   also not good as that's a 1k that we could have released back to the
->   system right after the handshake.
-> 
->   Marcelo
-> 
-If we have an INIT chunk bundled with a COOKIE_ECHO chunk in the same packet,
-this might occur.  Processing for each chunk (via sctp_cmd_process_init and
-sctp_sf_do_5_1D_ce both call sctp_process_init, which would cause a second write
-to asoc->peer.cookie, leaving the first write (set via kmemdup), to be orphaned
-and leak.  Seems like we should set a flag to determine if we've already cloned
-the cookie, and free the old one if its set.  If we wanted to do that on the
-cheap, we might be able to get away with checking asoc->stream->[in|out]cnt for
-being non-zero as an indicator if we've already cloned the cookie
+Tue, May 28, 2019 at 12:02:11PM CEST, liuhangbin@gmail.com wrote:
+>On Tue, May 28, 2019 at 11:08:23AM +0200, Jiri Pirko wrote:
+>> >+static int team_ethtool_get_link_ksettings(struct net_device *dev,
+>> >+					   struct ethtool_link_ksettings *cmd)
+>> >+{
+>> >+	struct team *team= netdev_priv(dev);
+>> >+	unsigned long speed = 0;
+>> >+	struct team_port *port;
+>> >+
+>> >+	cmd->base.duplex = DUPLEX_UNKNOWN;
+>> >+	cmd->base.port = PORT_OTHER;
+>> >+
+>> >+	list_for_each_entry(port, &team->port_list, list) {
+>> >+		if (team_port_txable(port)) {
+>> >+			if (port->state.speed != SPEED_UNKNOWN)
+>> >+				speed += port->state.speed;
+>> >+			if (cmd->base.duplex == DUPLEX_UNKNOWN &&
+>> >+			    port->state.duplex != DUPLEX_UNKNOWN)
+>> >+				cmd->base.duplex = port->state.duplex;
+>> 
+>> What is exactly the point of this patch? Why do you need such
+>> information. This is hw-related info. If you simply sum-up all txable
+>> ports, the value is always highly misleading.
+>> 
+>> For example for hash-based port selection with 2 100Mbit ports,
+>> you will get 200Mbit, but it is not true. It is up to the traffic and
+>> hash function what is the actual TX speed you can get.
+>> On the RX side, this is even more misleading as the actual speed depends
+>> on the other side of the wire.
+>
+>The number is the maximum speed in theory. I added it because someone
 
-Neil
+"in theory" is not what this value should return in my opinion.
 
+
+>said bond interface could show total speed while team could not...
+>The usage is customer could get team link-speed and throughput via SNMP.
+
+Has no meaning though :/
+
+
+>
+>Thanks
+>Hangbin
+>> 
+>> 
+>> >+		}
+>> >+	}
+>> >+	cmd->base.speed = speed ? : SPEED_UNKNOWN;
+>> >+
+>> >+	return 0;
+>> >+}
+>> >+
+>> > static const struct ethtool_ops team_ethtool_ops = {
+>> > 	.get_drvinfo		= team_ethtool_get_drvinfo,
+>> > 	.get_link		= ethtool_op_get_link,
+>> >+	.get_link_ksettings	= team_ethtool_get_link_ksettings,
+>> > };
+>> > 
+>> > /***********************
+>> >-- 
+>> >2.19.2
+>> >
