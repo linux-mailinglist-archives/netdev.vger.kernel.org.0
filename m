@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE122BDF2
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 05:49:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E98912BDF4
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 05:49:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727765AbfE1DtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 23:49:23 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:53646 "EHLO
+        id S1728012AbfE1DtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 23:49:25 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39184 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727320AbfE1DtX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 23:49:23 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4S3iO5g024825
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 20:49:21 -0700
+        by vger.kernel.org with ESMTP id S1727591AbfE1DtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 23:49:24 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4S3gt6Z031021
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 20:49:23 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=zX7L0T/Q5QNRDOwBnrEbqvMND6nXBJs99NpWQEH04vg=;
- b=fy/U7ErGKYCR/rBd8Lx5wW9YGM+UCXw61NUyyRREDT2n12+rQaf4sZ5voImWZxhDB/wi
- ge8yKpyjJqbn7BubQNA404XZZhsGvU28s3mIWKtZSFrzBOjDg0RAZCHDsZW32WuolmpN
- Jld2enNAq48fg/LO496wFanPW/aXO3/oZF0= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2srh8u9msm-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 27 May 2019 20:49:21 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Mon, 27 May 2019 20:49:20 -0700
+ content-type; s=facebook; bh=AGbLlmyS4rBQmvwrhfGrvf9B1RVz43Z78y0ltXwIW/Y=;
+ b=O3abQZrYdlKvGkCmsHK1WFFH7k0aOoSgJEQLahpSvAx4UCoZGClYNLmArwtSt4HKNBfN
+ AWDKEPT0tcpE/hmz7CqEGOqbSKvH5CZq4EKytX/ZybiDh8RCi5KaMba1pHFJACvCoLYQ
+ qOtzAYRDGlYKDbMGw2lw0dVM1+kyi4Z89mk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2srnuqgwmt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 20:49:23 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 27 May 2019 20:49:22 -0700
 Received: by devbig009.ftw2.facebook.com (Postfix, from userid 10340)
-        id B70755AE25F0; Mon, 27 May 2019 20:49:19 -0700 (PDT)
+        id E45935AE25F0; Mon, 27 May 2019 20:49:21 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   brakmo <brakmo@fb.com>
 Smtp-Origin-Hostname: devbig009.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Martin Lau <kafai@fb.com>, Alexei Starovoitov <ast@fb.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Kernel Team <Kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 1/6] bpf: Create BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY
-Date:   Mon, 27 May 2019 20:49:02 -0700
-Message-ID: <20190528034907.1957536-2-brakmo@fb.com>
+Subject: [PATCH v3 bpf-next 2/6] bpf: cgroup inet skb programs can return 0 to 3
+Date:   Mon, 27 May 2019 20:49:03 -0700
+Message-ID: <20190528034907.1957536-3-brakmo@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190528034907.1957536-1-brakmo@fb.com>
 References: <20190528034907.1957536-1-brakmo@fb.com>
@@ -53,7 +53,7 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
  malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=767 adultscore=0 classifier=spam adjust=0 reason=mlx
+ mlxlogscore=829 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1810050000 definitions=main-1905280025
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -61,97 +61,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create new macro BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY() to be used by
-__cgroup_bpf_run_filter_skb for EGRESS BPF progs so BPF programs can
-request cwr for TCP packets.
+Allows cgroup inet skb programs to return values in the range [0, 3].
+The second bit is used to deterine if congestion occurred and higher
+level protocol should decrease rate. E.g. TCP would call tcp_enter_cwr()
 
-Current cgroup skb programs can only return 0 or 1 (0 to drop the
-packet. This macro changes the behavior so the low order bit
-indicates whether the packet should be dropped (0) or not (1)
-and the next bit is used for congestion notification (cn).
+The bpf_prog must set expected_attach_type to BPF_CGROUP_INET_EGRESS
+at load time if it uses the new return values (i.e. 2 or 3).
 
-Hence, new allowed return values of CGROUP EGRESS BPF programs are:
-  0: drop packet
-  1: keep packet
-  2: drop packet and call cwr
-  3: keep packet and call cwr
+The expected_attach_type is currently not enforced for
+BPF_PROG_TYPE_CGROUP_SKB.  e.g Meaning the current bpf_prog with
+expected_attach_type setting to BPF_CGROUP_INET_EGRESS can attach to
+BPF_CGROUP_INET_INGRESS.  Blindly enforcing expected_attach_type will
+break backward compatibility.
 
-This macro then converts it to one of NET_XMIT values or -EPERM
-that has the effect of dropping the packet with no cn.
-  0: NET_XMIT_SUCCESS  skb should be transmitted (no cn)
-  1: NET_XMIT_DROP     skb should be dropped and cwr called
-  2: NET_XMIT_CN       skb should be transmitted and cwr called
-  3: -EPERM            skb should be dropped (no cn)
-
-Note that when more than one BPF program is called, the packet is
-dropped if at least one of programs requests it be dropped, and
-there is cn if at least one program returns cn.
+This patch adds a enforce_expected_attach_type bit to only
+enforce the expected_attach_type when it uses the new
+return value.
 
 Signed-off-by: Lawrence Brakmo <brakmo@fb.com>
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- include/linux/bpf.h | 50 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ include/linux/filter.h |  3 ++-
+ kernel/bpf/syscall.c   | 12 ++++++++++++
+ kernel/bpf/verifier.c  | 16 +++++++++++++---
+ 3 files changed, 27 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index d98141edb74b..49be4f88454c 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -552,6 +552,56 @@ _out:							\
- 		_ret;					\
- 	 })
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index ba8b65270e0d..43b45d6db36d 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -526,7 +526,8 @@ struct bpf_prog {
+ 				blinded:1,	/* Was blinded */
+ 				is_func:1,	/* program is a bpf function */
+ 				kprobe_override:1, /* Do we override a kprobe? */
+-				has_callchain_buf:1; /* callchain buffer allocated? */
++				has_callchain_buf:1, /* callchain buffer allocated? */
++				enforce_expected_attach_type:1; /* Enforce expected_attach_type checking at attach time */
+ 	enum bpf_prog_type	type;		/* Type of BPF program */
+ 	enum bpf_attach_type	expected_attach_type; /* For some prog types */
+ 	u32			len;		/* Number of filter blocks */
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 3d546b6f4646..1539774d78c7 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1585,6 +1585,14 @@ bpf_prog_load_check_attach_type(enum bpf_prog_type prog_type,
+ 		default:
+ 			return -EINVAL;
+ 		}
++	case BPF_PROG_TYPE_CGROUP_SKB:
++		switch (expected_attach_type) {
++		case BPF_CGROUP_INET_INGRESS:
++		case BPF_CGROUP_INET_EGRESS:
++			return 0;
++		default:
++			return -EINVAL;
++		}
+ 	default:
+ 		return 0;
+ 	}
+@@ -1836,6 +1844,10 @@ static int bpf_prog_attach_check_attach_type(const struct bpf_prog *prog,
+ 	case BPF_PROG_TYPE_CGROUP_SOCK:
+ 	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
+ 		return attach_type == prog->expected_attach_type ? 0 : -EINVAL;
++	case BPF_PROG_TYPE_CGROUP_SKB:
++		return prog->enforce_expected_attach_type &&
++			prog->expected_attach_type != attach_type ?
++			-EINVAL : 0;
+ 	default:
+ 		return 0;
+ 	}
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 2778417e6e0c..5c2cb5bd84ce 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5508,11 +5508,16 @@ static int check_ld_abs(struct bpf_verifier_env *env, struct bpf_insn *insn)
  
-+/* To be used by __cgroup_bpf_run_filter_skb for EGRESS BPF progs
-+ * so BPF programs can request cwr for TCP packets.
-+ *
-+ * Current cgroup skb programs can only return 0 or 1 (0 to drop the
-+ * packet. This macro changes the behavior so the low order bit
-+ * indicates whether the packet should be dropped (0) or not (1)
-+ * and the next bit is a congestion notification bit. This could be
-+ * used by TCP to call tcp_enter_cwr()
-+ *
-+ * Hence, new allowed return values of CGROUP EGRESS BPF programs are:
-+ *   0: drop packet
-+ *   1: keep packet
-+ *   2: drop packet and cn
-+ *   3: keep packet and cn
-+ *
-+ * This macro then converts it to one of the NET_XMIT or an error
-+ * code that is then interpreted as drop packet (and no cn):
-+ *   0: NET_XMIT_SUCCESS  skb should be transmitted
-+ *   1: NET_XMIT_DROP     skb should be dropped and cn
-+ *   2: NET_XMIT_CN       skb should be transmitted and cn
-+ *   3: -EPERM            skb should be dropped
-+ */
-+#define BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY(array, ctx, func)		\
-+	({						\
-+		struct bpf_prog_array_item *_item;	\
-+		struct bpf_prog *_prog;			\
-+		struct bpf_prog_array *_array;		\
-+		u32 ret;				\
-+		u32 _ret = 1;				\
-+		u32 _cn = 0;				\
-+		preempt_disable();			\
-+		rcu_read_lock();			\
-+		_array = rcu_dereference(array);	\
-+		_item = &_array->items[0];		\
-+		while ((_prog = READ_ONCE(_item->prog))) {		\
-+			bpf_cgroup_storage_set(_item->cgroup_storage);	\
-+			ret = func(_prog, ctx);		\
-+			_ret &= (ret & 1);		\
-+			_cn |= (ret & 2);		\
-+			_item++;			\
-+		}					\
-+		rcu_read_unlock();			\
-+		preempt_enable_no_resched();		\
-+		if (_ret)				\
-+			_ret = (_cn ? NET_XMIT_CN : NET_XMIT_SUCCESS);	\
-+		else					\
-+			_ret = (_cn ? NET_XMIT_DROP : -EPERM);		\
-+		_ret;					\
-+	})
+ static int check_return_code(struct bpf_verifier_env *env)
+ {
++	struct tnum enforce_attach_type_range = tnum_unknown;
+ 	struct bpf_reg_state *reg;
+ 	struct tnum range = tnum_range(0, 1);
+ 
+ 	switch (env->prog->type) {
+ 	case BPF_PROG_TYPE_CGROUP_SKB:
++		if (env->prog->expected_attach_type == BPF_CGROUP_INET_EGRESS) {
++			range = tnum_range(0, 3);
++			enforce_attach_type_range = tnum_range(2, 3);
++		}
+ 	case BPF_PROG_TYPE_CGROUP_SOCK:
+ 	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
+ 	case BPF_PROG_TYPE_SOCK_OPS:
+@@ -5531,18 +5536,23 @@ static int check_return_code(struct bpf_verifier_env *env)
+ 	}
+ 
+ 	if (!tnum_in(range, reg->var_off)) {
++		char tn_buf[48];
 +
- #define BPF_PROG_RUN_ARRAY(array, ctx, func)		\
- 	__BPF_PROG_RUN_ARRAY(array, ctx, func, false)
+ 		verbose(env, "At program exit the register R0 ");
+ 		if (!tnum_is_unknown(reg->var_off)) {
+-			char tn_buf[48];
+-
+ 			tnum_strn(tn_buf, sizeof(tn_buf), reg->var_off);
+ 			verbose(env, "has value %s", tn_buf);
+ 		} else {
+ 			verbose(env, "has unknown scalar value");
+ 		}
+-		verbose(env, " should have been 0 or 1\n");
++		tnum_strn(tn_buf, sizeof(tn_buf), range);
++		verbose(env, " should have been %s\n", tn_buf);
+ 		return -EINVAL;
+ 	}
++
++	if (!tnum_is_unknown(enforce_attach_type_range) &&
++	    tnum_in(enforce_attach_type_range, reg->var_off))
++		env->prog->enforce_expected_attach_type = 1;
+ 	return 0;
+ }
  
 -- 
 2.17.1
