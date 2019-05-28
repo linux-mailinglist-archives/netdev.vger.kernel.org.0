@@ -2,153 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 997F42BD1C
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 04:06:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ECAE2BD38
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 04:28:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727869AbfE1CGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 22:06:49 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37540 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727651AbfE1CGt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 22:06:49 -0400
-Received: by mail-pf1-f193.google.com with SMTP id a23so10466109pff.4;
-        Mon, 27 May 2019 19:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=qxW1II/TWa1kHc6PXECSj8J6z+9c391dAdBReksgqeU=;
-        b=JH/nrTU/wyfYzKCgVuNaFHqM3IGPWwG7PQJHf/Sw13nsJmsJe5pOZDmfStYntS+RXq
-         Hdhx1SOWgNUxK552+6tlgx+FXzHTYLNDrYVtA/h1DiDhAYkaDoldmafOf6B1rdq39AxD
-         KXbh+s+Pd7K4uem1LxurZg/KSP9pPTVMAJWjXSss4etWsm2ubatXrmDcXIWndaxZqGFu
-         fBB9PO5SF2hsPLZIQJSzqcDTd5FX21jaxO9B8ZXDFj10yAW7/TZWFqfqGe7cqNW27sa3
-         pv/BLW2VoeU96EpwxpVJdZE3fe6gRmz1hUfjn2O3pb7Mc+jX/HJbtjx11cSFtDZy0yth
-         o4dA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=qxW1II/TWa1kHc6PXECSj8J6z+9c391dAdBReksgqeU=;
-        b=Y5bVNtUc1JZaAHgdlo2ZPAelzFHNCoVjDdJVywBduSvq7Lkc4RpVBsVtPSTZPe8aGQ
-         hmRJkjBn3cihynNl3GHsAEDFk/MNNNfZa9/4cUK76kivPLZYUq3bHA91Mm81xNl4vjYp
-         HsKgX1jbDfe1eBGJ2FgIsQGKgdEgYbqCnbcLExI0qOlXw5snDXO0XgSYR6dqcqmzGnhI
-         jQ9dGBhDPJ7HeJIJJc0HDtYS9d7J7zkWmd1aIpa9WcNQFOkHU5Gf7XaYaq2h/V27AfI5
-         TQqeXZqTIr74L19KxluMsxfwCxtJFzf0HUv8DIPGyMydGW/Hf2ThqK0n+PIe5MIDaNO7
-         IF/A==
-X-Gm-Message-State: APjAAAWJvRuQyXcw0rlblP+gfhVy1KeGM+4FOG96cyzOzKZ7DSn8ODqi
-        BykG58ZmlCKmE93RVB6xuINBU4My
-X-Google-Smtp-Source: APXvYqxAYs7s/9irQiNKqkW/hl4q1JbHGJ/MTYwkmLSgNGAZ4Fu6OweBiY6zzqXQrSwoaI2LpyZalA==
-X-Received: by 2002:a62:e310:: with SMTP id g16mr45003473pfh.36.1559009208001;
-        Mon, 27 May 2019 19:06:48 -0700 (PDT)
-Received: from localhost.localdomain (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
-        by smtp.gmail.com with ESMTPSA id t2sm12725808pfh.166.2019.05.27.19.06.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 May 2019 19:06:47 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     ioana.ciornei@nxp.com, olteanv@gmail.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] Documentation: net-sysfs: Remove duplicate PHY device documentation
-Date:   Mon, 27 May 2019 19:06:38 -0700
-Message-Id: <20190528020643.646-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727674AbfE1C2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 22:28:00 -0400
+Received: from mga03.intel.com ([134.134.136.65]:49754 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727525AbfE1C2A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 May 2019 22:28:00 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 May 2019 19:27:59 -0700
+X-ExtLoop1: 1
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 27 May 2019 19:27:57 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1hVRqG-000GUz-9u; Tue, 28 May 2019 10:27:56 +0800
+Date:   Tue, 28 May 2019 10:27:12 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     kbuild-all@01.org, linux@armlinux.org.uk, f.fainelli@gmail.com,
+        andrew@lunn.ch, hkallweit1@gmail.com,
+        maxime.chevallier@bootlin.com, olteanv@gmail.com,
+        thomas.petazzoni@bootlin.com, davem@davemloft.net,
+        vivien.didelot@gmail.com, netdev@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH 03/11] net: phy: Check against net_device being NULL
+Message-ID: <201905281030.nUFia0e7%lkp@intel.com>
+References: <1558992127-26008-4-git-send-email-ioana.ciornei@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1558992127-26008-4-git-send-email-ioana.ciornei@nxp.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both sysfs-bus-mdio and sysfs-class-net-phydev contain the same
-duplication information. There is not currently any MDIO bus specific
-attribute, but there are PHY device (struct phy_device) specific
-attributes. Use the more precise description from sysfs-bus-mdio and
-carry that over to sysfs-class-net-phydev.
+Hi Ioana,
 
-Fixes: 86f22d04dfb5 ("net: sysfs: Document PHY device sysfs attributes")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on net-next/master]
+[also build test WARNING on v5.2-rc2 next-20190524]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+
+url:    https://github.com/0day-ci/linux/commits/Ioana-Ciornei/Decoupling-PHYLINK-from-struct-net_device/20190528-061507
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/net/phy/phy_device.c:952:31: sparse: sparse: incorrect type in return expression (different base types) @@    expected int @@    got voiint @@
+>> drivers/net/phy/phy_device.c:952:31: sparse:    expected int
+>> drivers/net/phy/phy_device.c:952:31: sparse:    got void *
+
+vim +952 drivers/net/phy/phy_device.c
+
+   937	
+   938	/**
+   939	 * phy_connect_direct - connect an ethernet device to a specific phy_device
+   940	 * @dev: the network device to connect
+   941	 * @phydev: the pointer to the phy device
+   942	 * @handler: callback function for state change notifications
+   943	 * @interface: PHY device's interface
+   944	 */
+   945	int phy_connect_direct(struct net_device *dev, struct phy_device *phydev,
+   946			       void (*handler)(struct net_device *),
+   947			       phy_interface_t interface)
+   948	{
+   949		int rc;
+   950	
+   951		if (!dev)
+ > 952			return ERR_PTR(-EINVAL);
+   953	
+   954		rc = phy_attach_direct(dev, phydev, phydev->dev_flags, interface);
+   955		if (rc)
+   956			return rc;
+   957	
+   958		phy_prepare_link(phydev, handler);
+   959		if (phy_interrupt_is_valid(phydev))
+   960			phy_request_interrupt(phydev);
+   961	
+   962		return 0;
+   963	}
+   964	EXPORT_SYMBOL(phy_connect_direct);
+   965	
+
 ---
- Documentation/ABI/testing/sysfs-bus-mdio      | 29 -------------------
- .../ABI/testing/sysfs-class-net-phydev        | 19 ++++++++----
- 2 files changed, 13 insertions(+), 35 deletions(-)
- delete mode 100644 Documentation/ABI/testing/sysfs-bus-mdio
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-mdio b/Documentation/ABI/testing/sysfs-bus-mdio
-deleted file mode 100644
-index 491baaf4285f..000000000000
---- a/Documentation/ABI/testing/sysfs-bus-mdio
-+++ /dev/null
-@@ -1,29 +0,0 @@
--What:		/sys/bus/mdio_bus/devices/.../phy_id
--Date:		November 2012
--KernelVersion:	3.8
--Contact:	netdev@vger.kernel.org
--Description:
--		This attribute contains the 32-bit PHY Identifier as reported
--		by the device during bus enumeration, encoded in hexadecimal.
--		This ID is used to match the device with the appropriate
--		driver.
--
--What:		/sys/bus/mdio_bus/devices/.../phy_interface
--Date:		February 2014
--KernelVersion:	3.15
--Contact:	netdev@vger.kernel.org
--Description:
--		This attribute contains the PHY interface as configured by the
--		Ethernet driver during bus enumeration, encoded in string.
--		This interface mode is used to configure the Ethernet MAC with the
--		appropriate mode for its data lines to the PHY hardware.
--
--What:		/sys/bus/mdio_bus/devices/.../phy_has_fixups
--Date:		February 2014
--KernelVersion:	3.15
--Contact:	netdev@vger.kernel.org
--Description:
--		This attribute contains the boolean value whether a given PHY
--		device has had any "fixup" workaround running on it, encoded as
--		a boolean. This information is provided to help troubleshooting
--		PHY configurations.
-diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
-index 6ebabfb27912..2a5723343aba 100644
---- a/Documentation/ABI/testing/sysfs-class-net-phydev
-+++ b/Documentation/ABI/testing/sysfs-class-net-phydev
-@@ -11,24 +11,31 @@ Date:		February 2014
- KernelVersion:	3.15
- Contact:	netdev@vger.kernel.org
- Description:
--		Boolean value indicating whether the PHY device has
--		any fixups registered against it (phy_register_fixup)
-+		This attribute contains the boolean value whether a given PHY
-+		device has had any "fixup" workaround running on it, encoded as
-+		a boolean. This information is provided to help troubleshooting
-+		PHY configurations.
- 
- What:		/sys/class/mdio_bus/<bus>/<device>/phy_id
- Date:		November 2012
- KernelVersion:	3.8
- Contact:	netdev@vger.kernel.org
- Description:
--		32-bit hexadecimal value corresponding to the PHY device's OUI,
--		model and revision number.
-+		This attribute contains the 32-bit PHY Identifier as reported
-+		by the device during bus enumeration, encoded in hexadecimal.
-+		This ID is used to match the device with the appropriate
-+		driver.
- 
- What:		/sys/class/mdio_bus/<bus>/<device>/phy_interface
- Date:		February 2014
- KernelVersion:	3.15
- Contact:	netdev@vger.kernel.org
- Description:
--		String value indicating the PHY interface, possible
--		values are:.
-+		This attribute contains the PHY interface as configured by the
-+		Ethernet driver during bus enumeration, encoded in string.
-+		This interface mode is used to configure the Ethernet MAC with the
-+		appropriate mode for its data lines to the PHY hardware.
-+		Possible values are:
- 		<empty> (not available), mii, gmii, sgmii, tbi, rev-mii,
- 		rmii, rgmii, rgmii-id, rgmii-rxid, rgmii-txid, rtbi, smii
- 		xgmii, moca, qsgmii, trgmii, 1000base-x, 2500base-x, rxaui,
--- 
-2.17.1
-
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
