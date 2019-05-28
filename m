@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 252DC2CE9A
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:28:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2875C2CE9B
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:28:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728056AbfE1S2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 14:28:07 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:42557 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727945AbfE1S2G (ORCPT
+        id S1728003AbfE1S2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 14:28:06 -0400
+Received: from mail-it1-f198.google.com ([209.85.166.198]:52971 "EHLO
+        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727428AbfE1S2G (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:28:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id v187so16555190ioe.9
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:28:06 -0700 (PDT)
+Received: by mail-it1-f198.google.com with SMTP id z128so3040397itb.2
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:28:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=+ldiqKGHr6yHXLQq0GIJnMrPMY0jgu2oLYPlOl6lC24=;
-        b=gSct77170f2Xpw027MM3v+ya3w8b8kWM3XytbUf5n20aYOmsreiqrC6mTKT3mvIla/
-         zsv6cxcuO8SnuvJogrlKGVnYPsSYYQ9v6C3HRXmRaj00/3lN83paUH7kjia2hOpfF3aa
-         OUXWOUkGNWoRNtlM68xql1xRN8IGTL8DMKgtAzah8KWbEAViSwQZ8WJIGcCc5gHDk13w
-         6vls+e4u551tN60rF16opy24tomTHYS9oyXTT+oi55zIboEQ7FJs2aS6psjYrCiVb7nv
-         EXg+gFGAeBk/ccwvnsaS1Imsjde9v3t20TUrruXS6bpWl7005/LwzUmIdKOERKa6OJE0
-         3VUw==
-X-Gm-Message-State: APjAAAWSXDfDhdrqZQEklaY1YlYfHPBIQHO60aamxvdZ6XNjkTbzTyaR
-        xm4CnhaVoiyIO9k/WcbUkz1t+w/fEHP3sgNGiC2DFp1WeDHS
-X-Google-Smtp-Source: APXvYqwL7c7xW+P7gzgwUx9EHwhUGqmS5Is5gSp6mZQSmOrKqwghTbjBHJ8lwQtnhvrjalR2gBQcgEg0E6pjoT8GpexeXWMq32qx
+        bh=wStfY5SxDIxZd91+yxT/nL82TSXTHhm/NMlB2xHEX/A=;
+        b=My9MYHoeQ121EKhbIP9nkMbQKcGHI9tGbjWqEtTZYUihhNH/iPqgAx0ofJ5ukeuhU7
+         MhqQd+MJ1HKExe+P49lWZq/JXJ9f5wDJU2lLpD78bvRvdAJERs0VXCjsWuGhp9d0rzyU
+         2Q8CnpDO6DK0Y4Oa6H7e3CXfi9LfifuukbzxD6kprdToZ11rkKSqjaC2ZD0+x4BFY/0e
+         GO+D8crOHgdfHQlZuKaviUEKGmF9QrPKM9EHksw8LylduRVwecucSUc43Euic2/ow10h
+         2qC97Ko+kCLkqbLUkCFHU1aSVYk7S4G1jLeQ22mRrozTmKde7xUMlUwPvGDB/AXt8GpO
+         RbHw==
+X-Gm-Message-State: APjAAAWsYHoG/ndzqBEiDY/+y5uHLVALzBi1mwlB1lnYcjCPg0nQkzKW
+        Ijk9Dj3w4mtwPP7cYKexwIzd5MWQ3CtZ1vYla+3Bz3dD0cPX
+X-Google-Smtp-Source: APXvYqyXhAH/FRlDsdV97oRkUMOUekf3d8E19Vn9d1A4DEaa/dY9SeQWsHwrz1YafFdfImJuz4kIZNK3hQK9A4y2zGfX7MsNM/ts
 MIME-Version: 1.0
-X-Received: by 2002:a24:5c5:: with SMTP id 188mr4041686itl.10.1559068085677;
+X-Received: by 2002:a24:1455:: with SMTP id 82mr4455130itg.59.1559068085434;
  Tue, 28 May 2019 11:28:05 -0700 (PDT)
 Date:   Tue, 28 May 2019 11:28:05 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006d7e520589f6d3a9@google.com>
-Subject: memory leak in start_sync_thread
-From:   syzbot <syzbot+7e2e50c8adfccd2e5041@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        horms@verge.net.au, ja@ssi.bg, kadlec@blackhole.kfki.hu,
-        linux-kernel@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
-        wensong@linux-vs.org
+Message-ID: <00000000000069c3140589f6d3b7@google.com>
+Subject: memory leak in sctp_get_port_local
+From:   syzbot <syzbot+079bf326b38072f849d9@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -53,249 +51,45 @@ syzbot found the following crash on:
 
 HEAD commit:    cd6c84d8 Linux 5.2-rc2
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=132bd44aa00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=101a184aa00000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=64479170dcaf0e11
-dashboard link: https://syzkaller.appspot.com/bug?extid=7e2e50c8adfccd2e5041
+dashboard link: https://syzkaller.appspot.com/bug?extid=079bf326b38072f849d9
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=114b1354a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14b7ad26a00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13b5dbbca00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1038444aa00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+7e2e50c8adfccd2e5041@syzkaller.appspotmail.com
+Reported-by: syzbot+079bf326b38072f849d9@syzkaller.appspotmail.com
 
-d started: state = MASTER, mcast_ifn = syz_tun, syncid = 0, id = 0
-BUG: memory leak
-unreferenced object 0xffff8881206bf700 (size 32):
-   comm "syz-executor761", pid 7268, jiffies 4294943441 (age 20.470s)
-   hex dump (first 32 bytes):
-     00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<0000000057619e23>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
-     [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-     [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
-     [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10  
-net/netfilter/ipvs/ip_vs_sync.c:1862
-     [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780  
-net/netfilter/ipvs/ip_vs_ctl.c:2402
-     [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-     [<00000000ece457c8>] nf_setsockopt+0x4c/0x80  
-net/netfilter/nf_sockopt.c:115
-     [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
-     [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
-     [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
-     [<00000000fa895401>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3130
-     [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
-     [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
-     [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
-     [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
-     [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff8881206bf700 (size 32):
-   comm "syz-executor761", pid 7268, jiffies 4294943441 (age 21.530s)
-   hex dump (first 32 bytes):
-     00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<0000000057619e23>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
-     [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-     [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
-     [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10  
-net/netfilter/ipvs/ip_vs_sync.c:1862
-     [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780  
-net/netfilter/ipvs/ip_vs_ctl.c:2402
-     [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-     [<00000000ece457c8>] nf_setsockopt+0x4c/0x80  
-net/netfilter/nf_sockopt.c:115
-     [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
-     [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
-     [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
-     [<00000000fa895401>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3130
-     [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
-     [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
-     [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
-     [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
-     [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff8881206bf700 (size 32):
-   comm "syz-executor761", pid 7268, jiffies 4294943441 (age 22.630s)
-   hex dump (first 32 bytes):
-     00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<0000000057619e23>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
-     [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-     [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
-     [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10  
-net/netfilter/ipvs/ip_vs_sync.c:1862
-     [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780  
-net/netfilter/ipvs/ip_vs_ctl.c:2402
-     [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-     [<00000000ece457c8>] nf_setsockopt+0x4c/0x80  
-net/netfilter/nf_sockopt.c:115
-     [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
-     [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
-     [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
-     [<00000000fa895401>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3130
-     [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
-     [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
-     [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
-     [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
-     [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff8881206bf700 (size 32):
-   comm "syz-executor761", pid 7268, jiffies 4294943441 (age 23.720s)
-   hex dump (first 32 bytes):
-     00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<0000000057619e23>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
-     [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-     [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
-     [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10  
-net/netfilter/ipvs/ip_vs_sync.c:1862
-     [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780  
-net/netfilter/ipvs/ip_vs_ctl.c:2402
-     [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-     [<00000000ece457c8>] nf_setsockopt+0x4c/0x80  
-net/netfilter/nf_sockopt.c:115
-     [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
-     [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
-     [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
-     [<00000000fa895401>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3130
-     [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
-     [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
-     [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
-     [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
-     [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff8881206bf700 (size 32):
-   comm "syz-executor761", pid 7268, jiffies 4294943441 (age 25.770s)
-   hex dump (first 32 bytes):
-     00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<0000000057619e23>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
-     [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-     [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
-     [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10  
-net/netfilter/ipvs/ip_vs_sync.c:1862
-     [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780  
-net/netfilter/ipvs/ip_vs_ctl.c:2402
-     [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-     [<00000000ece457c8>] nf_setsockopt+0x4c/0x80  
-net/netfilter/nf_sockopt.c:115
-     [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
-     [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
-     [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
-     [<00000000fa895401>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3130
-     [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
-     [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
-     [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
-     [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
-     [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff8881206bf700 (size 32):
-   comm "syz-executor761", pid 7268, jiffies 4294943441 (age 26.850s)
-   hex dump (first 32 bytes):
-     00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<0000000057619e23>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
-     [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-     [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
-     [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10  
-net/netfilter/ipvs/ip_vs_sync.c:1862
-     [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780  
-net/netfilter/ipvs/ip_vs_ctl.c:2402
-     [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-     [<00000000ece457c8>] nf_setsockopt+0x4c/0x80  
-net/netfilter/nf_sockopt.c:115
-     [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
-     [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
-     [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
-     [<00000000fa895401>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3130
-     [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
-     [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
-     [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
-     [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
-     [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff8881206bf700 (size 32):
-   comm "syz-executor761", pid 7268, jiffies 4294943441 (age 27.940s)
-   hex dump (first 32 bytes):
-     00 40 7c 09 81 88 ff ff 80 45 b8 21 81 88 ff ff  .@|......E.!....
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<0000000057619e23>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<0000000057619e23>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<0000000057619e23>] slab_alloc mm/slab.c:3326 [inline]
-     [<0000000057619e23>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
-     [<0000000086ce5479>] kmalloc include/linux/slab.h:547 [inline]
-     [<0000000086ce5479>] start_sync_thread+0x5d2/0xe10  
-net/netfilter/ipvs/ip_vs_sync.c:1862
-     [<000000001a9229cc>] do_ip_vs_set_ctl+0x4c5/0x780  
-net/netfilter/ipvs/ip_vs_ctl.c:2402
-     [<00000000ece457c8>] nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-     [<00000000ece457c8>] nf_setsockopt+0x4c/0x80  
-net/netfilter/nf_sockopt.c:115
-     [<00000000942f62d4>] ip_setsockopt net/ipv4/ip_sockglue.c:1258 [inline]
-     [<00000000942f62d4>] ip_setsockopt+0x9b/0xb0 net/ipv4/ip_sockglue.c:1238
-     [<00000000a56a8ffd>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2616
-     [<00000000fa895401>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3130
-     [<0000000095eef4cf>] __sys_setsockopt+0x98/0x120 net/socket.c:2078
-     [<000000009747cf88>] __do_sys_setsockopt net/socket.c:2089 [inline]
-     [<000000009747cf88>] __se_sys_setsockopt net/socket.c:2086 [inline]
-     [<000000009747cf88>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2086
-     [<00000000ded8ba80>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000893b4ac8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
+: Permanently added '10.128.0.127' (ECDSA) to the list of known hosts.
 executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff8881288ca380 (size 64):
+   comm "softirq", pid 0, jiffies 4294944468 (age 13.410s)
+   hex dump (first 32 bytes):
+     21 4e 00 00 00 00 00 00 00 00 00 00 00 00 00 00  !N..............
+     28 ae 85 23 81 88 ff ff 00 00 00 00 00 00 00 00  (..#............
+   backtrace:
+     [<0000000054ece54d>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:55 [inline]
+     [<0000000054ece54d>] slab_post_alloc_hook mm/slab.h:439 [inline]
+     [<0000000054ece54d>] slab_alloc mm/slab.c:3326 [inline]
+     [<0000000054ece54d>] kmem_cache_alloc+0x134/0x270 mm/slab.c:3488
+     [<00000000d992ea84>] sctp_bucket_create net/sctp/socket.c:8395 [inline]
+     [<00000000d992ea84>] sctp_get_port_local+0x189/0x5b0  
+net/sctp/socket.c:8142
+     [<0000000099206d90>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
+     [<00000000b8795757>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
+     [<00000000672a44aa>] inet6_bind+0x40/0xb7 net/ipv6/af_inet6.c:445
+     [<0000000001400e1c>] __sys_bind+0x11c/0x140 net/socket.c:1659
+     [<00000000e69e8036>] __do_sys_bind net/socket.c:1670 [inline]
+     [<00000000e69e8036>] __se_sys_bind net/socket.c:1668 [inline]
+     [<00000000e69e8036>] __x64_sys_bind+0x1e/0x30 net/socket.c:1668
+     [<000000001644bb1f>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:301
+     [<00000000199a1ea2>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
 
 
 ---
