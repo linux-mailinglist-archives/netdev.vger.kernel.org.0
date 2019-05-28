@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE0E2D111
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:37:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 286FD2D126
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:44:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727805AbfE1Vhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 17:37:37 -0400
-Received: from mail-ed1-f42.google.com ([209.85.208.42]:39110 "EHLO
-        mail-ed1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726812AbfE1Vhh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:37:37 -0400
-Received: by mail-ed1-f42.google.com with SMTP id e24so173398edq.6;
-        Tue, 28 May 2019 14:37:35 -0700 (PDT)
+        id S1728091AbfE1Voj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 17:44:39 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41514 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726526AbfE1Voj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:44:39 -0400
+Received: by mail-ed1-f68.google.com with SMTP id m4so183115edd.8;
+        Tue, 28 May 2019 14:44:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+SzQmfEsdNdnW/gwHRsf2NlK+gsoysG5VVC699wH/5g=;
-        b=SrqDnbq/jwnrtf6K/w+IP3kCR3stLry7Fo+17Qkh/wzU4I1dFV1ca8BhnJiuMnYE0X
-         9QpJvPX9BYX8ZfW/4MjyHqpjeiq49jBMoZa5bBgMtL36xRU/H3Zb9DM3zK6QIWsrFs3l
-         ePDwE8eP+Kln3IMVwrhez8HKTjhH8ufKw1cNus45P0H/1fKQmCQvcjx5iOmdlRBU3b3v
-         mS1XWhSZMs+sGq8WPDXWoI+v0oN/hKkZx3V2fUatXovNa5sxREdPCZApeJDHCIYtDw5X
-         cQmT7F72xL+96Xo9NuyzXsGVRWVpo6DklMVLfF0avWt4vfGFcxwkL6TV4OTgnLNfi48P
-         tmiA==
+        bh=3ccx/2mDpV9eWWMwVg+SGrf807l1VCHY5j13bUz46vU=;
+        b=d9exG2Ya6ZrZQxB9PlYWUG19JVleB2q8xKQ7kXz6yJWz3mAgfpTwDyhKR4aCoNcA0a
+         Qem34JLBY8BWw/tJFm5v2NBuu7aIoIq3w/VU8IWcKyszzyi/9X+gSB25Y/QwiLjLS8PP
+         qFvOLitYsArkNVE7+HxSsVvrUhti3A7WMo2zyOOfiSTdlqidZJKTMx/dBh35XjU7atBb
+         qUiaUtYxQT/jD/VybRL1dGocMBxHFA1uMYVOpepWQKNSdyEm9ukJja13eczY27cDDmtC
+         R6tf9TSsfjAtlHzW8+GcSXhqbeSoZfq/zgUb/tZP6CMs8/eiwGMPOTqCD4/xgLggT45Y
+         kElA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=+SzQmfEsdNdnW/gwHRsf2NlK+gsoysG5VVC699wH/5g=;
-        b=cco6ruP3b6H/mtjM55Ns3FDSg2631YHxe/5Z6YMVuKGprmVOxTSjadHOP7YSzL4fXq
-         TB3cNmr+71MwQWzDtdiuZLTKvWJbLp+L7ZPbzNgzUyX3bBFTz3fwJbCy1tkCrJy7eB2b
-         Q3UOFejSUqypWbcrb7AznlEyULv2GVmp9BnroqDDV4CcJYvAGVd774KelmoRUcFL1g5o
-         h8TEfdmwBBr+9nuLDPhc4q2WU5Oh0JVOYeUkn7TyDBxti4Nwukt5XXjJzFMaNIcga/0v
-         0K8WzhXV1Ho7a9z4TH4h1gKVrCGHP017RphMebOEbePDAvchdvicDBXB9u2l4I8qCNwL
-         o0pw==
-X-Gm-Message-State: APjAAAXcZ7PNG1rPgqbTEMeE3+B2Gb0XF96X35RD4IM21eORONJrQdcH
-        gZ18z5HPvqY8YVfAM0pAlddDDljvg/I674tjTLM=
-X-Google-Smtp-Source: APXvYqzPiPdEha9a/8wDQwaIISfKBAzxq2je8/sQO/a1mWCN6wJFBdh82K0gEfkZk6kuPeqK95XobgSG1JLLUKT0ccc=
-X-Received: by 2002:a05:6402:745:: with SMTP id p5mr35984041edy.62.1559079454728;
- Tue, 28 May 2019 14:37:34 -0700 (PDT)
+        bh=3ccx/2mDpV9eWWMwVg+SGrf807l1VCHY5j13bUz46vU=;
+        b=Dh1bg5qnYklMp0+6z3+Fga1rWt+zCGV3MnID6Hg2i+mSVIJ4JEHi0cOixGbCSM+HV3
+         CAaMUPVgG424Ddl9imIfSRfTIiWdheZ1IZlh3H1zJsl96E2Fp6iENcACwaSjx6JUr60g
+         2g8l9qbTXdKMJZRwuDwfAoUHJJtKvX6i+4sXw64NIzEwaUHwAjmjcTOvMF1kI46O1S/+
+         ESXi+gJRph4L2NtYJ1O9rydmitzRb3Cel8njmuz3fZ0obG4Qs6npPuqy74xUIpWR6LAx
+         XV0JIK5wNhWo/6GHQX87DPx7IJagJ1KpFPKuDXVtGrXelhhXzO5DksF3cx2iuoOEW6/g
+         n36w==
+X-Gm-Message-State: APjAAAUenWmxVOrKqyQpHCFLSATBcWvQMEs1RbZtUbHRhIAUaAOfl68N
+        sRKJN0/0a5j5brW66edgvOXWc/pYRZSBzFYRtCSh6g==
+X-Google-Smtp-Source: APXvYqw1C0np1xDokVrH9pm/kPaWV5KeN9jgbuOF77Axq5+iwy+Lr5C1JFIpvGp7WIkD9DfzWrJiaNVJKsKSp3yR15k=
+X-Received: by 2002:a17:906:aacb:: with SMTP id kt11mr90590173ejb.246.1559079877279;
+ Tue, 28 May 2019 14:44:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190528184708.16516-1-fklassen@appneta.com> <20190528184708.16516-2-fklassen@appneta.com>
-In-Reply-To: <20190528184708.16516-2-fklassen@appneta.com>
+References: <20190528184415.16020-1-fklassen@appneta.com> <20190528184415.16020-2-fklassen@appneta.com>
+In-Reply-To: <20190528184415.16020-2-fklassen@appneta.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 28 May 2019 17:36:58 -0400
-Message-ID: <CAF=yD-+r9rqRg5vpO1EEVKDjROe_hZhLCQSQxZCBgro9V28+2g@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/3] net/udpgso_bench_tx: options to exercise
- TX CMSG
+Date:   Tue, 28 May 2019 17:44:01 -0400
+Message-ID: <CAF=yD-JvNFdWCBJ6w1_XWSHu1CDiG_QimrUT8ZCxw=U+OVvBMA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 1/1] net/udp_gso: Allow TX timestamp with UDP GSO
 To:     Fred Klassen <fklassen@appneta.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
@@ -63,122 +62,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 3:24 PM Fred Klassen <fklassen@appneta.com> wrote:
+On Tue, May 28, 2019 at 3:10 PM Fred Klassen <fklassen@appneta.com> wrote:
 >
-> This enhancement adds options that facilitate load testing with
-> additional TX CMSG options, and to optionally print results of
-> various send CMSG operations.
+> Fixes an issue where TX Timestamps are not arriving on the error queue
+> when UDP_SEGMENT CMSG type is combined with CMSG type SO_TIMESTAMPING.
+> This can be illustrated with an updated updgso_bench_tx program which
+> includes the '-T' option to test for this condition.
 >
-> These options are especially useful in isolating situations
-> where error-queue messages are lost when combined with other
-> CMSG operations (e.g. SO_ZEROCOPY).
+>     ./udpgso_bench_tx -4ucTPv -S 1472 -l2 -D 172.16.120.18
+>     poll timeout
+>     udp tx:      0 MB/s        1 calls/s      1 msg/s
 >
-> New options:
+> The "poll timeout" message above indicates that TX timestamp never
+> arrived.
 >
->     -a - count all CMSG messages and match to sent messages
->     -T - add TX CMSG that requests TX software timestamps
->     -H - similar to -T except request TX hardware timestamps
->     -P - call poll() before reading error queue
->     -v - print detailed results
+> It also appears that other TX CMSG types cause similar issues, for
+> example trying to set SOL_IP/IP_TOS.
+
+See previous comment in v2
+
+http://patchwork.ozlabs.org/patch/1105564/
+
 >
-> v2: Enhancements as per Willem de Bruijn <willemb@google.com>
->     - Updated control and buffer parameters for recvmsg
->     - poll() parameter cleanup
->     - fail on bad audit results
->     - remove TOS options
->     - improved reporting
+>     ./udpgso_bench_tx -4ucPv -S 1472 -q 182 -l2 -D 172.16.120.18
+>     poll timeout
+>     udp tx:      0 MB/s        1 calls/s      1 msg/s
 >
+> This patch preserves tx_flags for the first UDP GSO segment.
+>
+> v2: Remove tests as noted by Willem de Bruijn <willemb@google.com>
+>     Moving tests from net to net-next
+>
+> v3: Update only relevant tx_flag bits as per
+>     Willem de Bruijn <willemb@google.com>
+>
+> Fixes: ee80d1ebe5ba ("udp: add udp gso")
 > Signed-off-by: Fred Klassen <fklassen@appneta.com>
+
+FYI, no need for a cover letter for a single patch. Also, I think the
+cc list can be more concise. Mainly netdev.
+
 > ---
+>  net/ipv4/udp_offload.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+> index 065334b41d57..de8ecba42d55 100644
+> --- a/net/ipv4/udp_offload.c
+> +++ b/net/ipv4/udp_offload.c
+> @@ -228,6 +228,11 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+>         seg = segs;
+>         uh = udp_hdr(seg);
+>
+> +       /* preserve TX timestamp and zero-copy info for first segment */
+
+Same as above. This is not about zerocopy.
+
+> +       skb_shinfo(seg)->tskey = skb_shinfo(gso_skb)->tskey;
+> +       skb_shinfo(seg)->tx_flags |=
+> +                       (skb_shinfo(gso_skb)->tx_flags & SKBTX_ANY_TSTAMP);
+
+Asked elsewhere, but best answered here: given that xmit_more delays
+delivery to the NIC until the last segment in a train, is the first
+segment in your opinion still the best to attach the timestamp request
+to?
+
+To reiterate, we do not want to need a follow-up patch to disable
+xmit_more when timestamps are requested.
 
 
-> +static void flush_cmsg(struct cmsghdr *cmsg)
->  {
-> -       struct msghdr msg = {0};        /* flush */
-> +       switch (cmsg->cmsg_level) {
-> +       case SOL_SOCKET:
-> +               if (cmsg->cmsg_type == SO_TIMESTAMPING) {
-> +                       int i;
 > +
-> +                       i = (cfg_tx_ts == SOF_TIMESTAMPING_TX_HARDWARE) ? 2 : 0;
-> +                       struct scm_timestamping *tss;
-> +
-> +                       tss = (struct scm_timestamping *)CMSG_DATA(cmsg);
-> +                       if (tss->ts[i].tv_sec == 0)
-> +                               stat_tx_ts_errors++;
-> +               } else {
-> +                       error(1, 0,
-> +                             "unknown SOL_SOCKET cmsg type=%u level=%u\n",
-> +                             cmsg->cmsg_type, cmsg->cmsg_level);
-> +               }
-> +               break;
-> +       case SOL_IP:
-> +       case SOL_IPV6:
-> +               switch (cmsg->cmsg_type) {
-> +               case IP_RECVERR:
-> +               case IPV6_RECVERR:
-> +               {
-> +                       struct sock_extended_err *err;
-> +
-> +                       err = (struct sock_extended_err *)CMSG_DATA(cmsg);
-> +                       switch (err->ee_origin) {
-> +                       case SO_EE_ORIGIN_TIMESTAMPING:
-> +                               // Got a TX timestamp from error queue
-> +                               stat_tx_ts++;
-> +                               break;
-> +                       case SO_EE_ORIGIN_ICMP:
-> +                       case SO_EE_ORIGIN_ICMP6:
-> +                               if (cfg_verbose)
-> +                                       fprintf(stderr,
-> +                                               "received ICMP error: type=%u, code=%u\n",
-> +                                               err->ee_type, err->ee_code);
-> +                               break;
-> +                       case SO_EE_ORIGIN_ZEROCOPY:
-> +                       {
-> +                               __u32 lo = err->ee_info;
-> +                               __u32 hi = err->ee_data;
-> +
-> +                               if (hi == lo - 1) {
-> +                                       // TX was aborted
-> +                                       stat_zcopy_errors++;
-> +                                       if (cfg_verbose)
-> +                                               fprintf(stderr,
-> +                                                       "Zerocopy TX aborted: lo=%u hi=%u\n",
-> +                                                       lo, hi);
-> +                               } else if (hi == lo) {
-> +                                       // single ID acknowledged
-> +                                       stat_zcopies++;
-> +                               } else {
-> +                                       // range of IDs acknowledged
-> +                                       stat_zcopies += hi - lo + 1;
-> +                               }
-> +                               break;
-> +                       }
-> +                       case SO_EE_ORIGIN_LOCAL:
-> +                               if (cfg_verbose)
-> +                                       fprintf(stderr,
-> +                                               "received packet with local origin: %u\n",
-> +                                               err->ee_origin);
-> +                               break;
-> +                       default:
-> +                               error(0, 1,
-
-here and two following, error(1, 0, ..);
-
-> +                                     "received packet with origin: %u",
-> +                                     err->ee_origin);
-> +                       }
-> +
-> +                       break;
-> +               }
-> +               default:
-> +                       error(0, 1, "unknown IP msg type=%u level=%u\n",
-> +                             cmsg->cmsg_type, cmsg->cmsg_level);
-> +                       break;
-> +               }
-> +               break;
-> +       default:
-> +               error(0, 1, "unknown cmsg type=%u level=%u\n",
-> +                     cmsg->cmsg_type, cmsg->cmsg_level);
-> +       }
-> +}
+>         /* compute checksum adjustment based on old length versus new */
+>         newlen = htons(sizeof(*uh) + mss);
+>         check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
+> --
+> 2.11.0
+>
