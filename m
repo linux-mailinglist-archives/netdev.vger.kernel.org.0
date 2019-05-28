@@ -2,90 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A08692C3F2
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 12:08:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41F312C498
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 12:39:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbfE1KIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 06:08:23 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:45592 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726345AbfE1KIX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 06:08:23 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id C213360769; Tue, 28 May 2019 10:08:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559038102;
-        bh=Sy36uPL5uDHOvP4eZU518Q3ctz2pO1yjVuQ/nWsGUog=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=ezsSCvuHNEZDkI516/Zgf7gtIiADaPsqlu9R/8za4cRiRmrPavvU9s8EsctxgGi2W
-         h4tnO6m48arD4bo239S0New9uSK+FPV8G8VN5WYXDJJbPpw25imeixeMAnMqTiEUYR
-         Fw7oKg5nUsyx8MSw1apCSYSAsU3woWEu4Zgd+G30=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.206.25.51] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: aneela@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 24904604BE;
-        Tue, 28 May 2019 10:08:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559038102;
-        bh=Sy36uPL5uDHOvP4eZU518Q3ctz2pO1yjVuQ/nWsGUog=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=ezsSCvuHNEZDkI516/Zgf7gtIiADaPsqlu9R/8za4cRiRmrPavvU9s8EsctxgGi2W
-         h4tnO6m48arD4bo239S0New9uSK+FPV8G8VN5WYXDJJbPpw25imeixeMAnMqTiEUYR
-         Fw7oKg5nUsyx8MSw1apCSYSAsU3woWEu4Zgd+G30=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 24904604BE
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=aneela@codeaurora.org
-Subject: Re: netdev_alloc_skb is failing for 16k length
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Chris Lew <clew@codeaurora.org>
-References: <6891cd8b-a3be-91f5-39c4-7a7e7d498921@codeaurora.org>
- <20190527075956.26f869ec@hermes.lan>
-From:   Arun Kumar Neelakantam <aneela@codeaurora.org>
-Message-ID: <2ab84730-70ae-4f30-241d-e51bc0c61d16@codeaurora.org>
-Date:   Tue, 28 May 2019 15:38:18 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726610AbfE1Kjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 06:39:41 -0400
+Received: from mga02.intel.com ([134.134.136.20]:3818 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726334AbfE1Kjl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 06:39:41 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 May 2019 03:39:40 -0700
+X-ExtLoop1: 1
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.157])
+  by fmsmga001.fm.intel.com with SMTP; 28 May 2019 03:39:36 -0700
+Received: by lahna (sSMTP sendmail emulation); Tue, 28 May 2019 13:39:36 +0300
+Date:   Tue, 28 May 2019 13:39:36 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Ruslan Babayev <ruslan@babayev.com>
+Cc:     wsa@the-dreams.de, linux@armlinux.org.uk, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org,
+        xe-linux-external@cisco.com
+Subject: Re: [net-next,v3 1/2] i2c: acpi: export
+ i2c_acpi_find_adapter_by_handle
+Message-ID: <20190528103936.GD2781@lahna.fi.intel.com>
+References: <20190528032213.19839-1-ruslan@babayev.com>
+ <20190528032213.19839-2-ruslan@babayev.com>
 MIME-Version: 1.0
-In-Reply-To: <20190527075956.26f869ec@hermes.lan>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190528032213.19839-2-ruslan@babayev.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/27/2019 8:29 PM, Stephen Hemminger wrote:
-> On Mon, 27 May 2019 12:21:51 +0530
-> Arun Kumar Neelakantam <aneela@codeaurora.org> wrote:
->
->> Hi team,
->>
->> we are using "skb = netdev_alloc_skb(NULL, len);" which is getting
->> failed sometimes for len = 16k.
->>
->> I suspect mostly system memory got fragmented and hence atomic memory
->> allocation for 16k is failing, can you please suggest best way to handle
->> this failure case.
->>
->> Thanks
->>
->> Arun N
->>
-> If you are handling big frames, then put the data in page size chunks
-> and use build_skb.
+On Mon, May 27, 2019 at 08:22:12PM -0700, Ruslan Babayev wrote:
+> This allows drivers to lookup i2c adapters on ACPI based systems similar to
+> of_get_i2c_adapter_by_node() with DT based systems.
+> 
+> Signed-off-by: Ruslan Babayev <ruslan@babayev.com>
+> Cc: xe-linux-external@cisco.com
+> ---
+>  drivers/i2c/i2c-core-acpi.c | 3 ++-
+>  include/linux/i2c.h         | 6 ++++++
+>  2 files changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
+> index 272800692088..964687534754 100644
+> --- a/drivers/i2c/i2c-core-acpi.c
+> +++ b/drivers/i2c/i2c-core-acpi.c
+> @@ -337,7 +337,7 @@ static int i2c_acpi_find_match_device(struct device *dev, void *data)
+>  	return ACPI_COMPANION(dev) == data;
+>  }
+>  
+> -static struct i2c_adapter *i2c_acpi_find_adapter_by_handle(acpi_handle handle)
+> +struct i2c_adapter *i2c_acpi_find_adapter_by_handle(acpi_handle handle)
+>  {
+>  	struct device *dev;
+>  
+> @@ -345,6 +345,7 @@ static struct i2c_adapter *i2c_acpi_find_adapter_by_handle(acpi_handle handle)
+>  			      i2c_acpi_find_match_adapter);
+>  	return dev ? i2c_verify_adapter(dev) : NULL;
+>  }
+> +EXPORT_SYMBOL_GPL(i2c_acpi_find_adapter_by_handle);
+>  
+>  static struct i2c_client *i2c_acpi_find_client_by_adev(struct acpi_device *adev)
+>  {
+> diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+> index 1308126fc384..9808993f5fd5 100644
+> --- a/include/linux/i2c.h
+> +++ b/include/linux/i2c.h
+> @@ -21,6 +21,7 @@
+>  #include <linux/rtmutex.h>
+>  #include <linux/irqdomain.h>		/* for Host Notify IRQ */
+>  #include <linux/of.h>		/* for struct device_node */
+> +#include <linux/acpi.h>		/* for acpi_handle */
+>  #include <linux/swab.h>		/* for swab16 */
+>  #include <uapi/linux/i2c.h>
+>  
+> @@ -981,6 +982,7 @@ bool i2c_acpi_get_i2c_resource(struct acpi_resource *ares,
+>  u32 i2c_acpi_find_bus_speed(struct device *dev);
+>  struct i2c_client *i2c_acpi_new_device(struct device *dev, int index,
+>  				       struct i2c_board_info *info);
+> +struct i2c_adapter *i2c_acpi_find_adapter_by_handle(acpi_handle handle);
+>  #else
+>  static inline bool i2c_acpi_get_i2c_resource(struct acpi_resource *ares,
+>  					     struct acpi_resource_i2c_serialbus **i2c)
+> @@ -996,6 +998,10 @@ static inline struct i2c_client *i2c_acpi_new_device(struct device *dev,
+>  {
+>  	return NULL;
+>  }
+> +static inline struct i2c_adapter *i2c_acpi_find_adapter_by_handle(acpi_handle h)
 
-Thank you. Now using alloc_skb_with_frags() with order 0 to allocate the 
-memory fragments
+You should use the same argument naming as with the non-stubbed one:
 
-and skb_store_bits() to store the data to skb from buffer.
+static inline struct i2c_adapter *i2c_acpi_find_adapter_by_handle(acpi_handle handle)
 
+Anyway looks good to me,
+
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
