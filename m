@@ -2,70 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22E162C2CE
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 11:11:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D6CA2C317
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 11:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbfE1JLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 05:11:14 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:17596 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726506AbfE1JLO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 05:11:14 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 5831C91C97D14D4ADA04;
-        Tue, 28 May 2019 17:11:12 +0800 (CST)
-Received: from localhost (10.177.31.96) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Tue, 28 May 2019
- 17:11:03 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <peppe.cavallaro@st.com>, <alexandre.torgue@st.com>,
-        <joabreu@synopsys.com>, <davem@davemloft.net>,
-        <mcoquelin.stm32@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] net: stmmac: Fix build error without CONFIG_INET
-Date:   Tue, 28 May 2019 17:10:40 +0800
-Message-ID: <20190528091040.20288-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1726824AbfE1JYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 05:24:15 -0400
+Received: from www62.your-server.de ([213.133.104.62]:37742 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726279AbfE1JYO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 05:24:14 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hVYL6-0007k6-5H; Tue, 28 May 2019 11:24:12 +0200
+Received: from [178.197.249.12] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hVYL5-0000tA-PE; Tue, 28 May 2019 11:24:11 +0200
+Subject: Re: [PATCH bpf-next] bpftool: auto-complete BTF IDs for btf dump
+To:     Andrii Nakryiko <andriin@fb.com>, andrii.nakryiko@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, ast@fb.com,
+        quentin.monnet@netronome.com, kernel-team@fb.com
+References: <20190526000101.112077-1-andriin@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f84a51a0-09d0-378f-024e-1600674182f7@iogearbox.net>
+Date:   Tue, 28 May 2019 11:24:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.177.31.96]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20190526000101.112077-1-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25463/Tue May 28 09:57:22 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix gcc build error while CONFIG_INET is not set
+On 05/26/2019 02:01 AM, Andrii Nakryiko wrote:
+> Auto-complete BTF IDs for `btf dump id` sub-command. List of possible BTF
+> IDs is scavenged from loaded BPF programs that have associated BTFs, as
+> there is currently no API in libbpf to fetch list of all BTFs in the
+> system.
+> 
+> Suggested-by: Quentin Monnet <quentin.monnet@netronome.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.o: In function `__stmmac_test_loopback':
-stmmac_selftests.c:(.text+0x8ec): undefined reference to `ip_send_check'
-stmmac_selftests.c:(.text+0xacc): undefined reference to `udp4_hwcsum'
+Applied, thanks!
 
-Add CONFIG_INET dependency to fix this.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 091810dbded9 ("net: stmmac: Introduce selftests support")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/ethernet/stmicro/stmmac/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 7791ad5..0b5c8d7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -15,6 +15,7 @@ if STMMAC_ETH
- 
- config STMMAC_SELFTESTS
- 	bool "Support for STMMAC Selftests"
-+	depends on INET
- 	depends on STMMAC_ETH
- 	default n
- 	---help---
--- 
-2.7.4
-
-
+(Please add versioning in the subject in future, e.g. [PATCH v2 bpf-next])
