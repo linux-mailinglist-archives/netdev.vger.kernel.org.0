@@ -2,87 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CD9C2CDDD
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:45:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 878572CDE0
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:47:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727337AbfE1RpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 13:45:25 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:37513 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727229AbfE1RpZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 13:45:25 -0400
-Received: by mail-lj1-f194.google.com with SMTP id h19so10150721ljj.4
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 10:45:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=RXcKDhl1/lg8QsNl5iEDoBd0XtlOjaQwgqCDwv2KMDg=;
-        b=QHdeLAVsj/k0xgjOu78MvnPoW0OGewTnKPEDc6yXnK0I0QMUhgvXkVtehPtfqq3rQp
-         z/jVEBJOswzVIzCI5f4daULX+2taP8XtYqpBQbCZUm/7rQiwCUFaNxFcyENCEG7wNGQZ
-         vKrx8mtFPGGuhdhDpK6WiHcdSbeJDEvD4EHpRVGXbo6VURcLKZvlJMrijPkYvY0NYULd
-         YOxG03EVdbngWJOFUTgQr7B4wbxDuN7shGI7Yd5anwxniD8fYYabJm7eJfm7RyEzJaM3
-         cE/X9qFpQi9Dxeag62dTbnizFN3F3F5g+eMhSxVYvotkEy+dkYpVRC4s8ORlN6wr/qRo
-         tTtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=RXcKDhl1/lg8QsNl5iEDoBd0XtlOjaQwgqCDwv2KMDg=;
-        b=hSaskZouEuu5qaD8yhIPflJHgxEuq/pKv3HDFcDx/4kPVWRFIf1bHbX7o9aRnXao7i
-         hGJtKpcL/TTWclQYuBYPHQIOHQtK2msKh2To5wmnvnDXSX4pKltb7rMe6FhuYdk5LL8x
-         kDKmpgrgtXi0Ztb6cL/aZhdyQwTRqC6Bk4T6NMDgKkFIsfuXy4v70TWh45Et6jsTag/G
-         fcb5d4X2bZdgAkzHKdQEWTzrEBgnDKG+DGsNaWq7GkkDpxUm7N7iF/DggpYZZ2MMrSGd
-         QRtXWnG6NuWE4EeLYSq33HtzeFOlZsT4HSui5uFa35UIrvL9hfAeXy2EsF9bbW0Fg/uX
-         O2Ow==
-X-Gm-Message-State: APjAAAUW9kSbkDG0dBmxoQIQBx7jbCy7wFq1LZZ0lYpIE0sKFlUSFV8m
-        4lYl+cFl9oSU6t/sIZuTsOMpXJ2/gLk=
-X-Google-Smtp-Source: APXvYqxGDMDd1MvOGsC1hoUoR7O9APfjgGZ+8m5LRtBxrC4Ox+HpuKvb+njET9x+zDuYeLOqcrp32Q==
-X-Received: by 2002:a2e:9410:: with SMTP id i16mr36430055ljh.152.1559065523333;
-        Tue, 28 May 2019 10:45:23 -0700 (PDT)
-Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id x16sm3042049lji.3.2019.05.28.10.45.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 10:45:22 -0700 (PDT)
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     grygorii.strashko@ti.com
-Cc:     davem@davemloft.net, linux-omap@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH v2 net-next] net: ethernet: ti: cpsw: correct .ndo_open error path
-Date:   Tue, 28 May 2019 20:45:19 +0300
-Message-Id: <20190528174519.7370-1-ivan.khoronzhuk@linaro.org>
-X-Mailer: git-send-email 2.17.1
+        id S1727371AbfE1Rq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 13:46:58 -0400
+Received: from mga12.intel.com ([192.55.52.136]:35226 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726452AbfE1Rq6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 13:46:58 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 May 2019 10:46:57 -0700
+X-ExtLoop1: 1
+Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
+  by orsmga002.jf.intel.com with ESMTP; 28 May 2019 10:46:57 -0700
+From:   Vedang Patel <vedang.patel@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
+        l@dorileo.org, Vedang Patel <vedang.patel@intel.com>
+Subject: [PATCH net-next v1 0/7] net/sched: Add txtime assist support for taprio
+Date:   Tue, 28 May 2019 10:46:41 -0700
+Message-Id: <1559065608-27888-1-git-send-email-vedang.patel@intel.com>
+X-Mailer: git-send-email 2.7.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's found while review and probably never happens, but real number
-of queues is set per device, and error path should be per device.
-So split error path based on usage_count.
+Currently, we are seeing packets being transmitted outside their timeslices. We
+can confirm that the packets are being dequeued at the right time. So, the
+delay is induced after the packet is dequeued, because taprio, without any
+offloading, has no control of when a packet is actually transmitted.
 
-Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
----
- drivers/net/ethernet/ti/cpsw.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+In order to solve this, we are making use of the txtime feature provided by ETF
+qdisc. Hardware offloading needs to be supported by the ETF qdisc in order to
+take advantage of this feature. The taprio qdisc will assign txtime (in
+skb->tstamp) for all the packets which do not have the txtime allocated via the
+SO_TXTIME socket option. For the packets which already have SO_TXTIME set,
+taprio will validate whether the packet will be transmitted in the correct
+interval.
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 634fc484a0b3..6d3f1f3f90cb 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -1423,8 +1423,11 @@ static int cpsw_ndo_open(struct net_device *ndev)
- 	return 0;
- 
- err_cleanup:
--	cpdma_ctlr_stop(cpsw->dma);
--	for_each_slave(priv, cpsw_slave_stop, cpsw);
-+	if (!cpsw->usage_count) {
-+		cpdma_ctlr_stop(cpsw->dma);
-+		for_each_slave(priv, cpsw_slave_stop, cpsw);
-+	}
-+
- 	pm_runtime_put_sync(cpsw->dev);
- 	netif_carrier_off(priv->ndev);
- 	return ret;
+In order to support this, the following parameters have been added:
+- offload (taprio): This is added in order to support different offloading
+  modes which will be added in the future.
+- txtime-delay (taprio): this is the time the packet takes to traverse through
+  the kernel to adapter card.
+- skip_sock_check (etf): etf qdisc currently drops any packet which does not
+  have the SO_TXTIME socket option set. This check can be skipped by specifying
+  this option.
+
+Following is an example configuration:
+
+$ tc qdisc replace dev $IFACE parent root handle 100 taprio \\
+      num_tc 3 \\
+      map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \\
+      queues 1@0 1@0 1@0 \\
+      base-time $BASE_TIME \\
+      sched-entry S 01 300000 \\
+      sched-entry S 02 300000 \\
+      sched-entry S 04 400000 \\
+      offload 2 \\
+      txtime-delay 40000 \\
+      clockid CLOCK_TAI
+
+$ tc qdisc replace dev $IFACE parent 100:1 etf \\
+      offload delta 200000 clockid CLOCK_TAI skip_sock_check
+
+Here, the "offload" parameter is indicating that the TXTIME_OFFLOAD mode is
+enabled. Also, that all the traffic classes have been assigned the same queue.
+This is to prevent the traffic classes in the lower priority queues from
+getting starved. Note that this configuration is specific to the i210 ethernet
+card. Other network cards where the hardware queues are given the same
+priority, might be able to utilize more than one queue.
+
+Following are some of the other highlights of the series:
+- Fix a bug where hardware timestamping and SO_TXTIME options cannot be used
+  together. (Patch 1)
+- Introduce hardware offloading. This patch introduces offload parameter which
+  can be used to enable the txtime offload mode. It will also support enabling
+  full offload when the support is available in drivers. (Patch 3)
+- Make TxTime assist mode work with TCP packets. (Patch 6 & 7)
+
+
+The following changes are recommended to be done in order to get the best
+performance from taprio in this mode:
+# ip link set dev enp1s0 mtu 1514
+# ethtool -K eth0 gso off
+# ethtool -K eth0 tso off
+# ethtool --set-eee eth0 eee off
+
+Thanks,
+Vedang Patel
+
+Vedang Patel (6):
+  igb: clear out tstamp after sending the packet.
+  etf: Add skip_sock_check
+  taprio: calculate cycle_time when schedule is installed
+  taprio: Add support for txtime offload mode.
+  taprio: make clock reference conversions easier
+  taprio: Adjust timestamps for TCP packets.
+
+Vinicius Costa Gomes (1):
+  taprio: Add the skeleton to enable hardware offloading
+
+ drivers/net/ethernet/intel/igb/igb_main.c |   1 +
+ include/uapi/linux/pkt_sched.h            |   6 +
+ net/sched/sch_etf.c                       |  10 +
+ net/sched/sch_taprio.c                    | 548 ++++++++++++++++++++--
+ 4 files changed, 532 insertions(+), 33 deletions(-)
+
 -- 
-2.17.1
+2.17.0
 
