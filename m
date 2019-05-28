@@ -2,98 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77EB42BD02
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 03:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0231F2BD03
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 03:53:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbfE1BxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 May 2019 21:53:02 -0400
-Received: from mailgw02.mediatek.com ([1.203.163.81]:2188 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727651AbfE1BxC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 21:53:02 -0400
-X-UUID: fd636dd8cdae44f3a0da8defedf6958d-20190528
-X-UUID: fd636dd8cdae44f3a0da8defedf6958d-20190528
-Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLS)
-        with ESMTP id 97317882; Tue, 28 May 2019 09:52:51 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
- (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 28 May
- 2019 09:52:50 +0800
-Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Tue, 28 May 2019 09:52:49 +0800
-Message-ID: <1559008369.24897.66.camel@mhfsdcap03>
-Subject: Re: [v3, PATCH] net: stmmac: add support for hash table size
- 128/256 in dwmac4
-From:   biao huang <biao.huang@mediatek.com>
-To:     David Miller <davem@davemloft.net>
-CC:     <joabreu@synopsys.com>, <peppe.cavallaro@st.com>,
-        <alexandre.torgue@st.com>, <mcoquelin.stm32@gmail.com>,
-        <matthias.bgg@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <yt.shen@mediatek.com>,
-        <jianguo.zhang@mediatek.com>, <boon.leong.ong@intel.com>
-Date:   Tue, 28 May 2019 09:52:49 +0800
-In-Reply-To: <20190527.100800.1719164073038257292.davem@davemloft.net>
-References: <1558926867-16472-1-git-send-email-biao.huang@mediatek.com>
-         <1558926867-16472-2-git-send-email-biao.huang@mediatek.com>
-         <20190527.100800.1719164073038257292.davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
-Content-Transfer-Encoding: 7bit
+        id S1727865AbfE1Bxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 May 2019 21:53:31 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:43952 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727651AbfE1Bxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 May 2019 21:53:30 -0400
+Received: by mail-pf1-f194.google.com with SMTP id c6so10425711pfa.10
+        for <netdev@vger.kernel.org>; Mon, 27 May 2019 18:53:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1SygZIj5RkSxHWlledmPYdZk9WFBSaC0Fte9eb8T3eY=;
+        b=j47EcEWK1AOX1Zzz6K2mV+9LxqUXbkaRleGK8Qyetyw9O60UwmZZXkKAn91ZPoI3PT
+         0Y02+rPOjkvvkrXQ522iPauZ0mXhG+IveA+04sJfCrxXhS7H+a+85/jrWhvlf5p84YoS
+         MJ0DL+UCIjylpxSAe1n3+RnIfd/+oDjDOFwC9fzSr4RYXyflzIXDqRF60qnJdB7kw9Dt
+         zWKH29aUjC6BRC9A72QBmFzKwsownoG6thczwXoG5BYBAG/2j53nj39fpmhO7OT2mWIx
+         bsPqA2yGln5/JQ6WH+7Ir1/Ms0HxgO0Rtsi/YsViOiyLfu6Jik2sC8ixcZgB9FwgS/BT
+         MNBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1SygZIj5RkSxHWlledmPYdZk9WFBSaC0Fte9eb8T3eY=;
+        b=m6q7aM0jJvOsFkLbyvYH+kHacWgkY2HymMBMsYZc8Tl6PDpA6QzgTUQ22KfYRbmXua
+         qvNmBBN2B5F9XUsGjFQRyc3Nuq6MVzBNMz20s8m2qYKkX20KYuz3cKNhvK3vMAz2ATr3
+         Ndznl5AAevRvzbhVxUDEQwqIyd2EefyMlyqhdGVLiCRfW3+H/WeHmrmh9yW+ysCVm/TY
+         KSfbiWQ2ziFahogxk4wyH6OCArfDD+ycRS3+XANdP8CMt4koAnUc8w99an0DDUZwGheo
+         RP25DQqQWo2uC5fm/P9r3nG7IIOCnUs2kH7xueMYwiRQHvqjMeI3fILBbBOZsImizv+X
+         CONw==
+X-Gm-Message-State: APjAAAXGToUzteE29qg4dlqb5Zlyv+0TrZzAKnkyyhIF2iKx4DmLj1qe
+        5leAMrk1eoGD7V68QQz2Cr4vigxd
+X-Google-Smtp-Source: APXvYqycbuFZC+UgrPVYuq/U1Ya/8HWQs+upOmV+Ehr/kuLJlQZioZPAylB9IeYcqTWGiiIT2dVdlA==
+X-Received: by 2002:a65:5003:: with SMTP id f3mr127284619pgo.336.1559008409730;
+        Mon, 27 May 2019 18:53:29 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
+        by smtp.gmail.com with ESMTPSA id s66sm33926705pfb.37.2019.05.27.18.53.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 27 May 2019 18:53:29 -0700 (PDT)
+Subject: Re: [PATCH 08/11] net: phylink: Add
+ phylink_{printk,err,warn,info,dbg} macros
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com,
+        maxime.chevallier@bootlin.com, olteanv@gmail.com,
+        thomas.petazzoni@bootlin.com, davem@davemloft.net,
+        vivien.didelot@gmail.com
+Cc:     netdev@vger.kernel.org
+References: <1558992127-26008-1-git-send-email-ioana.ciornei@nxp.com>
+ <1558992127-26008-9-git-send-email-ioana.ciornei@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <9b8afa2c-5bc5-322d-3d83-bed374dc7797@gmail.com>
+Date:   Mon, 27 May 2019 18:53:28 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-MTK:  N
+In-Reply-To: <1558992127-26008-9-git-send-email-ioana.ciornei@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear David,
 
-On Mon, 2019-05-27 at 10:08 -0700, David Miller wrote:
-> From: Biao Huang <biao.huang@mediatek.com>
-> Date: Mon, 27 May 2019 11:14:27 +0800
+
+On 5/27/2019 2:22 PM, Ioana Ciornei wrote:
+> With the latest addition to the PHYLINK infrastructure, we are faced
+> with a decision on when to print necessary info using the struct
+> net_device and when with the struct device.
 > 
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-> > index 5e98da4..029a3db 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-> > @@ -403,41 +403,50 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
-> >  			      struct net_device *dev)
-> >  {
-> >  	void __iomem *ioaddr = (void __iomem *)dev->base_addr;
-> > -	unsigned int value = 0;
-> > +	unsigned int value;
-> > +	int numhashregs = (hw->multicast_filter_bins >> 5);
-> > +	int mcbitslog2 = hw->mcast_bits_log2;
-> > +	int i;
+> Add a series of macros that encapsulate this decision and replace all
+> uses of netdev_err&co with phylink_err.
 > 
-> Please retain the reverse christmas tree ordering here.
-I'm a little confused about the reverse xmas tree ordering.
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
-should I reorder them only according to the total length like this:
-
-	void __iomem *ioaddr = (void __iomem *)dev->base_addr;
-	int numhashregs = (hw->multicast_filter_bins >> 5);
-	int mcbitslog2 = hw->mcast_bits_log2;
-	unsigned int value;
-	int i;
-
-or should I gather the same type together, and order types as reverse
-xmas tree, then order the same type definitions as reverse xmas tree,
-like this:
-
-	void __iomem *ioaddr = (void __iomem *)dev->base_addr;
-	unsigned int value;
-	int numhashregs = (hw->multicast_filter_bins >> 5);
-	int mcbitslog2 = hw->mcast_bits_log2;
-	int i;
-
-Thank you.
-> 
-> Thank you.
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
