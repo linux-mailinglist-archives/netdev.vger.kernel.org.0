@@ -2,239 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7E072C6A2
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:36:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1CB62C692
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:33:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727191AbfE1MgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 08:36:22 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:43295 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727032AbfE1MgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:36:21 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A2E23179C;
-        Tue, 28 May 2019 08:27:02 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 28 May 2019 08:27:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=y5hBY1qCPWhTL6tIzsaGrdou6R0w+VesX6f+fWBXmPY=; b=Dp/ng1pE
-        lP6bXC2uAM8ALA1pdhBufOKwnGzh1dZWpWPHi/U+A09V2jFcRS4weDPSIGXK0gZB
-        mgG1o4tfc65e7Ej0fPlHjdUgztwiosRdlXsR2VlK3q1wl0H1GV+mLt5yJjW54BM2
-        0Lz0COKhjlN5OuXyo+O2ho2Uh/Rn0ZDEmNkGhGHuH3i/4ATo3GGP9jYD2bw/Xfpl
-        wA7dhDNGuCAyE9SaJkmbAFWT06FueSPxtqGZjcKMne83X8iA+bqy+CvHEtOoqRMm
-        bTWGiqVsjx/44pHGiWHcV3KDE2ykrqBnF1MUiPWMPXT5//nSzZqkYNegc0/UDrTO
-        nDBYgAgs8+Gi+A==
-X-ME-Sender: <xms:FintXFCVQrhfEyAQ0pwuPzWXjuR5GNXUXy_eQ78r9Vel3yuJ5q_E6A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvhedghedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeef
-X-ME-Proxy: <xmx:FintXLS1EScgjAZ6LSi0L4rrk4irxK3Ro3EbSvf-DbbFPjDfNrlC-Q>
-    <xmx:FintXFmFzXwrJSdLQ4tHquqOmbhPsKBTlZrpp_53fAbIeTDXQ7Q7Pw>
-    <xmx:FintXHx3MOdIQO5O_rNc9IW6o7Gek9wCULqPVNnYIg63sL6JhpkLTA>
-    <xmx:FintXJmjStvecg_qZg0plhSMIE6QBTQFxVk-TzfAENioXhDRpI4A3A>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1816580062;
-        Tue, 28 May 2019 08:26:59 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        dsahern@gmail.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, andy@greyhouse.net,
-        pablo@netfilter.org, jakub.kicinski@netronome.com,
-        pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [RFC PATCH iproute2-next 5/5] devlink: Add devlink trap monitor support
-Date:   Tue, 28 May 2019 15:26:18 +0300
-Message-Id: <20190528122618.30769-6-idosch@idosch.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190528122618.30769-1-idosch@idosch.org>
-References: <20190528122136.30476-1-idosch@idosch.org>
- <20190528122618.30769-1-idosch@idosch.org>
+        id S1727169AbfE1MdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 08:33:15 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:44100 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726592AbfE1MdO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:33:14 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 6718A606FC; Tue, 28 May 2019 12:33:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1559046793;
+        bh=bCv8mmjaGHjRz1CnWoZ7MkvsZKR9B/r/zM9ICGN2FzI=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=bPR5FFdHt8arbTjleQmE0qcAT4rZbty8w6d9x6eTol6R5pLoiGXxRgCCRHOrTC++X
+         hgU6GQuWBo5eUIajk9MPoevVLYleDCaMTXTZjDSNzY4Qbw5RKBB5pn11sCv98+YqHV
+         uJamfztJ+a1qJ0/zVgS6LNzy504yPILGrCMNTR/Y=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9710D602FA;
+        Tue, 28 May 2019 12:33:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1559046792;
+        bh=bCv8mmjaGHjRz1CnWoZ7MkvsZKR9B/r/zM9ICGN2FzI=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=Jg1QSY+ATUDIpm6kBbkH5TMWFsrffh5idO6s9lLv/b5ls6mTh3I6ezyveDLaft+JS
+         BLdKrCLxmCEIvyhsaDjjEwYol9wC0UQZpxsOP2+b+/iHLpBmNm3tFsDFSBB+l8ZvFn
+         MenAf/9rpCqoNCj9b171qNhpFXsJTUUGCqOWc4dg=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9710D602FA
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Gen Zhang <blackgod016574@gmail.com>
+Cc:     davem@davemloft.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wlcore: spi: Fix a memory leaking bug in wl1271_probe()
+References: <20190524030117.GA6024@zhanggen-UX430UQ>
+        <20190528113922.E2B1060312@smtp.codeaurora.org>
+        <20190528121452.GA23464@zhanggen-UX430UQ>
+Date:   Tue, 28 May 2019 15:33:09 +0300
+In-Reply-To: <20190528121452.GA23464@zhanggen-UX430UQ> (Gen Zhang's message of
+        "Tue, 28 May 2019 20:14:52 +0800")
+Message-ID: <87tvde4v3u.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+Gen Zhang <blackgod016574@gmail.com> writes:
 
-According to the reporting state of individual traps, a notification is
-sent to user space about each trapped packet. Allow the user to monitor
-such events by having iproute2 subscribe to the
-'DEVLINK_GENL_MCGRP_TRAP_NAME' group. An error is not returned in case
-subscription failed in order not to cause regression with old kernels
-and new iproute2.
+> On Tue, May 28, 2019 at 11:39:22AM +0000, Kalle Valo wrote:
+>> Gen Zhang <blackgod016574@gmail.com> wrote:
+>> 
+>> > In wl1271_probe(), 'glue->core' is allocated by platform_device_alloc(),
+>> > when this allocation fails, ENOMEM is returned. However, 'pdev_data'
+>> > and 'glue' are allocated by devm_kzalloc() before 'glue->core'. When
+>> > platform_device_alloc() returns NULL, we should also free 'pdev_data'
+>> > and 'glue' before wl1271_probe() ends to prevent leaking memory.
+>> > 
+>> > Similarly, we shoulf free 'pdev_data' when 'glue' is NULL. And we should
+>> > free 'pdev_data' and 'glue' when 'glue->reg' is error and when 'ret' is
+>> > error.
+>> > 
+>> > Further, we should free 'glue->core', 'pdev_data' and 'glue' when this 
+>> > function normally ends to prevent leaking memory.
+>> > 
+>> > Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+>> 
+>> Same questions as with similar SDIO patch:
+>> 
+>> https://patchwork.kernel.org/patch/10959049/
+>> 
+>> Patch set to Changes Requested.
+>> 
+>> -- 
+>> https://patchwork.kernel.org/patch/10959053/
+>> 
+>> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>> 
+> Thanks for your reply, Kalle. I had debate with Jon about this patch. 
+> You could kindly refer to lkml: https://lkml.org/lkml/2019/5/23/1547. 
+> And I don't think a practical conclusion is made there.
 
-When '-v' is specified trap metadata (e.g., input port) is also shown.
-Example:
+Yeah, I don't see how that thread proves that these patches are correct.
 
-# devlink -jvp mon trap-report
-[trap-report,report]
-"netdevsim/netdevsim10": {
-    "name": "blackhole_route_drop",
-    "type": "drop",
-    "group": "l3_drops",
-    "length": 146,
-    "timestamp": "Tue May 28 13:03:09 2019 801360651 nsec",
-    "input_port": {
-        "netdevsim/netdevsim10/0": {
-            "type": "eth",
-            "netdev": "eth0"
-        }
-    }
-}
+> Further, I e-mailed Greg K-H about when should we use devm_kmalloc().
+>
+> On Tue, May 28, 2019 at 08:32:57AM +0800, Gen Zhang wrote:
+>> devm_kmalloc() is used to allocate memory for a driver dev. Comments
+>> above the definition and doc 
+>> (https://www.kernel.org/doc/Documentation/driver-model/devres.txt) all
+>> imply that allocated the memory is automatically freed on driver attach,
+>> no matter allocation fail or not. However, I examined the code, and
+>> there are many sites that devm_kfree() is used to free devm_kmalloc().
+>> e.g. hisi_sas_debugfs_init() in drivers/scsi/hisi_sas/hisi_sas_main.c.
+>> So I am totally confused about this issue. Can anybody give me some
+>> guidance? When should we use devm_kfree()?
+> He replied: If you "know" you need to free the memory now, 
+> call devm_kfree(). If you want to wait for it to be cleaned up latter, 
+> like normal, then do not call it.
+>
+> So could please look in to this issue?
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- devlink/devlink.c | 78 +++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 76 insertions(+), 2 deletions(-)
+Sorry, no time to investigate this in detail. If you think the patches
+are correct you can resend them and get someone familiar with the driver
+to provide Reviewed-by, then I will apply them.
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 57b87536ccad..79f6f5c25cae 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -3849,6 +3849,7 @@ static const char *cmd_name(uint8_t cmd)
- 	case DEVLINK_CMD_TRAP_GROUP_SET: return "set";
- 	case DEVLINK_CMD_TRAP_GROUP_NEW: return "new";
- 	case DEVLINK_CMD_TRAP_GROUP_DEL: return "del";
-+	case DEVLINK_CMD_TRAP_REPORT: return "report";
- 	default: return "<unknown cmd>";
- 	}
- }
-@@ -3887,6 +3888,8 @@ static const char *cmd_obj(uint8_t cmd)
- 	case DEVLINK_CMD_TRAP_GROUP_NEW:
- 	case DEVLINK_CMD_TRAP_GROUP_DEL:
- 		return "trap-group";
-+	case DEVLINK_CMD_TRAP_REPORT:
-+		return "trap-report";
- 	default: return "<unknown obj>";
- 	}
- }
-@@ -3914,6 +3917,7 @@ static bool cmd_filter_check(struct dl *dl, uint8_t cmd)
- static void pr_out_region(struct dl *dl, struct nlattr **tb);
- static void pr_out_trap(struct dl *dl, struct nlattr **tb, bool array);
- static void pr_out_trap_group(struct dl *dl, struct nlattr **tb, bool array);
-+static void pr_out_trap_report(struct dl *dl, struct nlattr **tb);
- 
- static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- {
-@@ -3998,6 +4002,18 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_trap_group(dl, tb, false);
- 		break;
-+	case DEVLINK_CMD_TRAP_REPORT:
-+		mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+		if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
-+		    !tb[DEVLINK_ATTR_TRAP_NAME] ||
-+		    !tb[DEVLINK_ATTR_TRAP_TYPE] ||
-+		    !tb[DEVLINK_ATTR_TRAP_GROUP_NAME] ||
-+		    !tb[DEVLINK_ATTR_TRAP_PAYLOAD] ||
-+		    !tb[DEVLINK_ATTR_TRAP_TIMESTAMP])
-+			return MNL_CB_ERROR;
-+		pr_out_mon_header(genl->cmd);
-+		pr_out_trap_report(dl, tb);
-+		break;
- 	}
- 	return MNL_CB_OK;
- }
-@@ -4013,7 +4029,8 @@ static int cmd_mon_show(struct dl *dl)
- 		    strcmp(cur_obj, "dev") != 0 &&
- 		    strcmp(cur_obj, "port") != 0 &&
- 		    strcmp(cur_obj, "trap") != 0 &&
--		    strcmp(cur_obj, "trap-group") != 0) {
-+		    strcmp(cur_obj, "trap-group") != 0 &&
-+		    strcmp(cur_obj, "trap-report") != 0) {
- 			pr_err("Unknown object \"%s\"\n", cur_obj);
- 			return -EINVAL;
- 		}
-@@ -4021,6 +4038,10 @@ static int cmd_mon_show(struct dl *dl)
- 	err = _mnlg_socket_group_add(dl->nlg, DEVLINK_GENL_MCGRP_CONFIG_NAME);
- 	if (err)
- 		return err;
-+	/* Do not bail in order to be compatible with old kernels that do not
-+	 * support this multicast group.
-+	 */
-+	mnlg_socket_group_add(dl->nlg, DEVLINK_GENL_MCGRP_TRAP_NAME);
- 	err = _mnlg_socket_recv_run(dl->nlg, cmd_mon_show_cb, dl);
- 	if (err)
- 		return err;
-@@ -4030,7 +4051,7 @@ static int cmd_mon_show(struct dl *dl)
- static void cmd_mon_help(void)
- {
- 	pr_err("Usage: devlink monitor [ all | OBJECT-LIST ]\n"
--	       "where  OBJECT-LIST := { dev | port | trap | trap-group }\n");
-+	       "where  OBJECT-LIST := { dev | port | trap | trap-group | trap-report }\n");
- }
- 
- static int cmd_mon(struct dl *dl)
-@@ -6486,6 +6507,59 @@ static const char *trap_metadata_name(const struct nlattr *attr)
- 		return "<unknown metadata type>";
- 	}
- }
-+
-+static void pr_out_trap_report_timestamp(struct dl *dl,
-+					 const struct nlattr *attr)
-+{
-+	struct timespec *ts;
-+	struct tm *tm;
-+	char buf[80];
-+	char *tstr;
-+
-+	ts = mnl_attr_get_payload(attr);
-+	tm = localtime(&ts->tv_sec);
-+
-+	tstr = asctime(tm);
-+	tstr[strlen(tstr) - 1] = 0;
-+	snprintf(buf, sizeof(buf), "%s %09ld nsec", tstr, ts->tv_nsec);
-+
-+	pr_out_str(dl, "timestamp", buf);
-+}
-+
-+static void pr_out_trap_report_port(struct dl *dl, struct nlattr *attr,
-+				    const char *name, struct nlattr **tb)
-+{
-+	int err;
-+
-+	if (!dl->verbose)
-+		return;
-+
-+	err = mnl_attr_parse_nested(attr, attr_cb, tb);
-+	if (err != MNL_CB_OK)
-+		return;
-+
-+	pr_out_object_start(dl, name);
-+	pr_out_port(dl, tb);
-+	pr_out_object_end(dl);
-+}
-+
-+static void pr_out_trap_report(struct dl *dl, struct nlattr **tb)
-+{
-+	uint8_t type = mnl_attr_get_u8(tb[DEVLINK_ATTR_TRAP_TYPE]);
-+
-+	__pr_out_handle_start(dl, tb, true, false);
-+	pr_out_str(dl, "name", mnl_attr_get_str(tb[DEVLINK_ATTR_TRAP_NAME]));
-+	pr_out_str(dl, "type", trap_type_name(type));
-+	pr_out_str(dl, "group",
-+		   mnl_attr_get_str(tb[DEVLINK_ATTR_TRAP_GROUP_NAME]));
-+	pr_out_uint(dl, "length", tb[DEVLINK_ATTR_TRAP_PAYLOAD]->nla_len);
-+	pr_out_trap_report_timestamp(dl, tb[DEVLINK_ATTR_TRAP_TIMESTAMP]);
-+	if (tb[DEVLINK_ATTR_TRAP_IN_PORT])
-+		pr_out_trap_report_port(dl, tb[DEVLINK_ATTR_TRAP_IN_PORT],
-+					"input_port", tb);
-+	pr_out_handle_end(dl);
-+}
-+
- static void pr_out_trap_metadata(struct dl *dl, struct nlattr *attr)
- {
- 	struct nlattr *attr_metadata;
 -- 
-2.20.1
-
+Kalle Valo
