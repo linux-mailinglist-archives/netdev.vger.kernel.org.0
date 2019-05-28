@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF84B2C6A8
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 812792C6A3
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727176AbfE1MgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 08:36:21 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:42709 "EHLO
+        id S1727235AbfE1MgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 08:36:23 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:35783 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727084AbfE1MgV (ORCPT
+        by vger.kernel.org with ESMTP id S1726749AbfE1MgV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:36:21 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9930422AD;
-        Tue, 28 May 2019 08:26:53 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 2069A1CAD;
+        Tue, 28 May 2019 08:26:55 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 28 May 2019 08:26:53 -0400
+  by compute3.internal (MEProxy); Tue, 28 May 2019 08:26:55 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=hVKe1y7pY2FNtBBZnep78orj0qdupd3eQqjN2oWn+FM=; b=a04dRuDy
-        0UXA7EolPiie6zax4jrAFf4/hBOq83GLYXqL5MBPJfxWY4BsOh9VWBf03CfOTeY0
-        lN7QoXM5lys8pcTlLZwa6TLjuSqtFou+LDcHN3KRFA3MB3Vz88c3Id9MHNd8TKff
-        a+sN1C3MkirJFPrKut/WpI7ihyM6+ul7zDeTZV0aXjxJIiLUJg/LjOPh3I2AK9RL
-        VKm8dI/lgizvGeSmFng6hZJJsbenhr+aDXGmnLSyqgVhNYppmpxBhfmNvk329jR5
-        Bzw33cYudqJh/703MItKEL1srMmfSAAVOVoFMzeTb8Tpz4Jkfz09xPmgBNss1yIU
-        N60mFDFpuR2Byg==
-X-ME-Sender: <xms:DCntXL5iQQ5Nepc8b1185GiQG7Dd_cXghqz8hLwgEaQ2FWccMWIUSA>
+        fm2; bh=GadX4mFMZIDc4Hk5SoaGcHyunKTVV8COGhQinPxIjeQ=; b=GuDTWE5j
+        aqbkTpLgfxQSpktsWtorunFCmM71QPSPZGG5W7Npsf7FsYlm9vogVH1qxyvmrYao
+        a4OTYyMvKWyHHmuEuKhdL+K1Gp2NUEWPngN0bNg/2Jf8Gr6kuZrVgmeZNyYf/P/Z
+        wb26VAHmP7S9ilwDodjh16IDNzv3o9WGvyIm7gXOcKYU6MpDi6zJEbCARa4rBdeX
+        acIBNn3gOE4pGJt/Vpmz8oADPlD3ZHE0/8gJbHuIZjyiBe6GvdE5v0DshJZkj5MH
+        tWpqIW8f3Zo6kNQFXf6W4bAf3MzkmzJoO6oUP6OCRxQSTj2kZwq3WEp6kH6M09IK
+        3B5zFhyWsCtcZA==
+X-ME-Sender: <xms:DintXKS_LTU1a_Zo1qQmgMNsDP8XV9ASeRez1BX62mvrsWvXCLGsVA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvhedghedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,13 +35,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddruddvhedghedvucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpedu
-X-ME-Proxy: <xmx:DCntXK8eA-4uva1r0MElPDqWlhCSdqjSDd4lBsCN5CHeOvo6OvNpTQ>
-    <xmx:DCntXCWmE6R8SwYEzBHtPsiWsXfBuhLa6V4gC3IPs2r1Cmx5ymd1Iw>
-    <xmx:DCntXNr2J1KFGTey40Wi2XolhpoGE71rZiyZFu8U2_r30oGHh-9jLw>
-    <xmx:DSntXPvWGmOEP5w0GNWirJ4GlQOEabjZd_KE7Ef_0iF-8uJrwyfFYQ>
+X-ME-Proxy: <xmx:DintXKr6qg_O-BP--siznGOt3sgQDpICT0jW65XKvE7U0GTUnqAHYQ>
+    <xmx:DintXPo26Cz3ftUvRlwvF66z22q_13FBD-PwbgNBkt1I-Hc2O_vd4g>
+    <xmx:DintXEMSpqibmLyZCycmsSyeou9on3U2oVaHXh51iXdzVU88E_FvQQ>
+    <xmx:DyntXGJlQUNzBp8QB9tihbTHmqWppFMLaiF9NDQ-JbJXqTrJqOZ-Ww>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id BF9B380061;
-        Tue, 28 May 2019 08:26:49 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3BD1B80064;
+        Tue, 28 May 2019 08:26:52 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
@@ -50,9 +50,9 @@ Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         pablo@netfilter.org, jakub.kicinski@netronome.com,
         pieter.jansenvanvuuren@netronome.com, andrew@lunn.ch,
         f.fainelli@gmail.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [RFC PATCH iproute2-next 1/5] Update kernel headers
-Date:   Tue, 28 May 2019 15:26:14 +0300
-Message-Id: <20190528122618.30769-2-idosch@idosch.org>
+Subject: [RFC PATCH iproute2-next 2/5] devlink: Increase number of supported options
+Date:   Tue, 28 May 2019 15:26:15 +0300
+Message-Id: <20190528122618.30769-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190528122618.30769-1-idosch@idosch.org>
 References: <20190528122136.30476-1-idosch@idosch.org>
@@ -66,114 +66,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Only including this patch so that people could easily apply the series.
-I'm aware David takes care of syncing the kernel headers.
+Currently, the number of supported options is capped at 32 which is a
+problem given we are about to add a few more and go over the limit.
+
+Increase the limit to 64 options.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/uapi/linux/devlink.h | 68 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 68 insertions(+)
+ devlink/devlink.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 3b6a9e6be3ac..bd38d009df0d 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -16,6 +16,7 @@
- #define DEVLINK_GENL_NAME "devlink"
- #define DEVLINK_GENL_VERSION 0x1
- #define DEVLINK_GENL_MCGRP_CONFIG_NAME "config"
-+#define DEVLINK_GENL_MCGRP_TRAP_NAME "trap"
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 436935f88bda..40ad61fd0245 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -213,7 +213,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
+ #define DL_OPT_HEALTH_REPORTER_AUTO_RECOVER	BIT(28)
  
- enum devlink_command {
- 	/* don't change the order or add anything between, this is ABI! */
-@@ -105,6 +106,17 @@ enum devlink_command {
+ struct dl_opts {
+-	uint32_t present; /* flags of present items */
++	uint64_t present; /* flags of present items */
+ 	char *bus_name;
+ 	char *dev_name;
+ 	uint32_t port_index;
+@@ -713,7 +713,7 @@ static int dl_argv_handle_port(struct dl *dl, char **p_bus_name,
  
- 	DEVLINK_CMD_FLASH_UPDATE,
+ static int dl_argv_handle_both(struct dl *dl, char **p_bus_name,
+ 			       char **p_dev_name, uint32_t *p_port_index,
+-			       uint32_t *p_handle_bit)
++			       uint64_t *p_handle_bit)
+ {
+ 	char *str = dl_argv_next(dl);
+ 	unsigned int slash_count;
+@@ -993,7 +993,7 @@ static int param_cmode_get(const char *cmodestr,
+ }
  
-+	DEVLINK_CMD_TRAP_GET,		/* can dump */
-+	DEVLINK_CMD_TRAP_SET,
-+	DEVLINK_CMD_TRAP_NEW,
-+	DEVLINK_CMD_TRAP_DEL,
-+	DEVLINK_CMD_TRAP_REPORT,
-+
-+	DEVLINK_CMD_TRAP_GROUP_GET,	/* can dump */
-+	DEVLINK_CMD_TRAP_GROUP_SET,
-+	DEVLINK_CMD_TRAP_GROUP_NEW,
-+	DEVLINK_CMD_TRAP_GROUP_DEL,
-+
- 	/* add new commands above here */
- 	__DEVLINK_CMD_MAX,
- 	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
-@@ -184,6 +196,47 @@ enum devlink_param_fw_load_policy_value {
- 	DEVLINK_PARAM_FW_LOAD_POLICY_VALUE_FLASH,
+ struct dl_args_metadata {
+-	uint32_t o_flag;
++	uint64_t o_flag;
+ 	char err_msg[DL_ARGS_REQUIRED_MAX_ERR_LEN];
  };
  
-+enum {
-+	DEVLINK_ATTR_STATS_RX_PACKETS,
-+	DEVLINK_ATTR_STATS_RX_BYTES,
-+
-+	__DEVLINK_ATTR_STATS_MAX,
-+	DEVLINK_ATTR_STATS_MAX = __DEVLINK_ATTR_STATS_MAX - 1
-+};
-+
-+/**
-+ * enum devlink_trap_action - Packet trap action.
-+ * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy is not
-+ *                            sent to the CPU.
-+ * @DEVLINK_TRAP_ACTION_TRAP: The sole copy of the packet is sent to the CPU.
-+ */
-+enum devlink_trap_action {
-+	DEVLINK_TRAP_ACTION_DROP,
-+	DEVLINK_TRAP_ACTION_TRAP,
-+};
-+
-+/**
-+ * enum devlink_trap_type - Packet trap type.
-+ * @DEVLINK_TRAP_TYPE_DROP: Trap reason is a drop. Trapped packets are only
-+ *                          processed by devlink and not injected to the
-+ *                          kernel's Rx path.
-+ * @DEVLINK_TRAP_TYPE_EXCEPTION: Trap reason is an exception. Packet was not
-+ *                               forwarded as intended due to an exception
-+ *                               (e.g., missing neighbour entry) and trapped to
-+ *                               control plane for resolution. Trapped packets
-+ *                               are processed by devlink and injected to
-+ *                               the kernel's Rx path.
-+ */
-+enum devlink_trap_type {
-+	DEVLINK_TRAP_TYPE_DROP,
-+	DEVLINK_TRAP_TYPE_EXCEPTION,
-+};
-+
-+enum {
-+	/* Trap can report input port as metadata */
-+	DEVLINK_ATTR_TRAP_METADATA_TYPE_IN_PORT,
-+};
-+
- enum devlink_attr {
- 	/* don't change the order or add anything between, this is ABI! */
- 	DEVLINK_ATTR_UNSPEC,
-@@ -332,6 +385,21 @@ enum devlink_attr {
- 	DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME,	/* string */
- 	DEVLINK_ATTR_FLASH_UPDATE_COMPONENT,	/* string */
+@@ -1020,10 +1020,10 @@ static const struct dl_args_metadata dl_args_required[] = {
+ 	{DL_OPT_HEALTH_REPORTER_NAME, "Reporter's name is expected."},
+ };
  
-+	DEVLINK_ATTR_STATS,				/* nested */
-+
-+	DEVLINK_ATTR_TRAP_NAME,				/* string */
-+	DEVLINK_ATTR_TRAP_REPORT_ENABLED,		/* u8 */
-+	/* enum devlink_trap_action */
-+	DEVLINK_ATTR_TRAP_ACTION,			/* u8 */
-+	/* enum devlink_trap_type */
-+	DEVLINK_ATTR_TRAP_TYPE,				/* u8 */
-+	DEVLINK_ATTR_TRAP_GENERIC,			/* flag */
-+	DEVLINK_ATTR_TRAP_METADATA,			/* nested */
-+	DEVLINK_ATTR_TRAP_TIMESTAMP,			/* struct timespec */
-+	DEVLINK_ATTR_TRAP_IN_PORT,			/* nested */
-+	DEVLINK_ATTR_TRAP_PAYLOAD,			/* binary */
-+	DEVLINK_ATTR_TRAP_GROUP_NAME,			/* string */
-+
- 	/* add new attributes above here, update the policy in devlink.c */
+-static int dl_args_finding_required_validate(uint32_t o_required,
+-					     uint32_t o_found)
++static int dl_args_finding_required_validate(uint64_t o_required,
++					     uint64_t o_found)
+ {
+-	uint32_t o_flag;
++	uint64_t o_flag;
+ 	int i;
  
- 	__DEVLINK_ATTR_MAX,
+ 	for (i = 0; i < ARRAY_SIZE(dl_args_required); i++) {
+@@ -1036,16 +1036,16 @@ static int dl_args_finding_required_validate(uint32_t o_required,
+ 	return 0;
+ }
+ 
+-static int dl_argv_parse(struct dl *dl, uint32_t o_required,
+-			 uint32_t o_optional)
++static int dl_argv_parse(struct dl *dl, uint64_t o_required,
++			 uint64_t o_optional)
+ {
+ 	struct dl_opts *opts = &dl->opts;
+-	uint32_t o_all = o_required | o_optional;
+-	uint32_t o_found = 0;
++	uint64_t o_all = o_required | o_optional;
++	uint64_t o_found = 0;
+ 	int err;
+ 
+ 	if (o_required & DL_OPT_HANDLE && o_required & DL_OPT_HANDLEP) {
+-		uint32_t handle_bit;
++		uint64_t handle_bit;
+ 
+ 		err = dl_argv_handle_both(dl, &opts->bus_name, &opts->dev_name,
+ 					  &opts->port_index, &handle_bit);
+@@ -1424,7 +1424,7 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
+ }
+ 
+ static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
+-			     uint32_t o_required, uint32_t o_optional)
++			     uint64_t o_required, uint64_t o_optional)
+ {
+ 	int err;
+ 
 -- 
 2.20.1
 
