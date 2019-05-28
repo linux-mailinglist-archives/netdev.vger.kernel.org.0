@@ -2,127 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E77812D027
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 22:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6682D098
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 22:43:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727484AbfE1UQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 16:16:49 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34313 "EHLO
+        id S1726925AbfE1UnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 16:43:17 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41909 "EHLO
         mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726619AbfE1UQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 16:16:49 -0400
-Received: by mail-pg1-f195.google.com with SMTP id h2so8583604pgg.1
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 13:16:48 -0700 (PDT)
+        with ESMTP id S1726492AbfE1UnR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 16:43:17 -0400
+Received: by mail-pg1-f195.google.com with SMTP id z3so7062704pgp.8
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 13:43:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=RNQhxNd+JROXqrODcuLDxysNcH9HqprmNQdZcO4o1NA=;
-        b=wjx/J+qQgUbekMBlDjua6slv8T/9Tap3q3hSAIm/TOpMIHaf9ataIWiL4jF5JbU57q
-         KvkfpKcXAmOvY6jiDMK7gmLgQDFwtBbw7qx/a1PvCy+qcnbmNHHvv0jeccuzvVo2aXGM
-         sJFthIClO1Y+5h1HoFqMpu8/rY/ADmIyhsyfpxIG/mkJmdakpwrEvq1iK4Cc6gMGOqDp
-         FpSZw04wCDWXyMrdxPpitnpaWdU6KEHd0NkKPDXQwT0f3u4SG3T49/EqOiTsTs8ARCvT
-         BXEWURrbgASWnbudPNZ4xYJxRCSifaR0tCGHfGnajAR60EdJ0ptAH+uVvzk1QjqJ5g+1
-         ollg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4gvfVtnabcYk/rWSABOoJrM4QZ5d9gZBEGc6X6XZY50=;
+        b=C73ZvzGNH/YisC//wt898V66Bjob6D4l49Pu0V7pn6vnXdDXJszYxGcs6bZ3jGi/rN
+         fWTVqrdQKipVqDhyjPMgsvqGx5JMm9Z3fvWjEEeXHbLCQOEx/bn/QuIyRE+ssD9nIS2h
+         dcQh/lMauhE5YutBCD1KvxdPI89Lvn7Fsi3qwslDHvtbltS+Nc87Cf3idZSDXtQmdFd6
+         kBEf5/szEV3rsQmcfU3jYCYr2miJDdz2g02Fuku968l1JkAH52/GrYNuaMxepvW1Zhjj
+         sLah05Z5TNKnLJvlbOe5bzDgzySr+zTEeUvvysKq5kBdKEyIS6BGuBwtszIU5oARa/zX
+         GEow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=RNQhxNd+JROXqrODcuLDxysNcH9HqprmNQdZcO4o1NA=;
-        b=AuRrohNuUEiVuxXfUYfjwWvaw1CItmpbjrJ2uoTrkIb93NCeW1w+6rR9aDV030wzBO
-         i8va/TTdsRZn7h2IVwEWeaxQrjRqO/yTtV2qdQmWbS0cEwOBi1P8xMGhuzbD8/dwDwC6
-         BkcU4b5TtxmK/tMEtw9DGbEWcbNWs3ITk7Rzcvqdp9l4R7Ay1MA/f+WfF1s85FC4ytEn
-         v7wc7pR7ohTeX8ekBJMzgynFZrIYyepQwZIywAPM3wZ4dnh0rT5Y6Ac8c1o3dFGrZlyh
-         4Hb4I5lA48tqsmBhiKyTw2bEDEl5xVhCw7iuAeOPvUfmLonEmS0diF6zIGRbZ1FRpZ/n
-         TKjw==
-X-Gm-Message-State: APjAAAVWYiuWXZWpGfrfDIzailYMbM/ohttnem2bPjIc28dG+oPVHcp/
-        Leo4OYc08QAb0iO7EqmjnFKjrw==
-X-Google-Smtp-Source: APXvYqzjlP4Ch8Xpbp+7iEhIv9VBjMyntOpLn5/pHv4O2SX44nECftrB2AdEjLwyFwqf4nhd9mZDzg==
-X-Received: by 2002:a62:386:: with SMTP id 128mr121373658pfd.10.1559074608423;
-        Tue, 28 May 2019 13:16:48 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id k3sm3231587pju.27.2019.05.28.13.16.47
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 28 May 2019 13:16:47 -0700 (PDT)
-Date:   Tue, 28 May 2019 13:16:46 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Roman Gushchin <guro@fb.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next v3 3/4] bpf: cgroup: properly use bpf_prog_array
- api
-Message-ID: <20190528201646.GE3032@mini-arch>
-References: <20190528182946.3633-1-sdf@google.com>
- <20190528182946.3633-3-sdf@google.com>
- <20190528194342.GC20578@tower.DHCP.thefacebook.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4gvfVtnabcYk/rWSABOoJrM4QZ5d9gZBEGc6X6XZY50=;
+        b=CpR/gLe3MF95YxNcop20KhLRfKcLJ+gqdTLD5wpi1nHPg4yExt+ucHHbEOtGbZ190G
+         BGRhGfyF2YIYrSZdxPZg0OVwdUVMpctboTXEWA85/yMghIK29DkfLiR3V/4iQ0zSipqe
+         L/74/Lkw91JZu5CXSdA0pjDplcmWcFdfGFGJJL4jTjwq7krKV14uE85fZvhrozOEv+p0
+         cVKGywdatLFxjqU23YbBa+m84WOrO/YpnZtGfe9j6womdWEQwqs049havWo0oY4dEwxw
+         2fGs4+fsoMpbXcojSWgdRgM82675Wv19w2Ys5MBvvsBJXYy3uP52b5YEV3a1AbuApRp7
+         bqug==
+X-Gm-Message-State: APjAAAU7/uK3AfXlfwHu8GOogLzLEGQc4XhP8l/P3jK39xG3UeR8Ctc+
+        M873P8LV6huj3vHw+yNQcU0=
+X-Google-Smtp-Source: APXvYqxpINo5hlSG8EFTMuxKjwNaK3tOIVMDoJzr5on8KeKCsTiW03t3FolwHGgy9uGq+mC9XvV2zw==
+X-Received: by 2002:a17:90a:2a09:: with SMTP id i9mr8298025pjd.103.1559076197011;
+        Tue, 28 May 2019 13:43:17 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id t10sm21528394pfe.2.2019.05.28.13.43.14
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 May 2019 13:43:15 -0700 (PDT)
+Subject: Re: [PATCH v3 bpf-next 1/6] bpf: Create
+ BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY
+To:     Lawrence Brakmo <brakmo@fb.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Martin Lau <kafai@fb.com>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+References: <20190528034907.1957536-1-brakmo@fb.com>
+ <20190528034907.1957536-2-brakmo@fb.com>
+ <75cd4d0a-7cf8-ee63-2662-1664aedcd468@gmail.com>
+ <B962F80F-FF37-4B96-A942-1C78E4D77A1C@fb.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <bb4d491e-324a-a7b0-1e0c-a85d375f1d15@gmail.com>
+Date:   Tue, 28 May 2019 13:43:14 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190528194342.GC20578@tower.DHCP.thefacebook.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <B962F80F-FF37-4B96-A942-1C78E4D77A1C@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/28, Roman Gushchin wrote:
-> On Tue, May 28, 2019 at 11:29:45AM -0700, Stanislav Fomichev wrote:
-> > Now that we don't have __rcu markers on the bpf_prog_array helpers,
-> > let's use proper rcu_dereference_protected to obtain array pointer
-> > under mutex.
-> > 
-> > We also don't need __rcu annotations on cgroup_bpf.inactive since
-> > it's not read/updated concurrently.
-> > 
-> > v3:
-> > * amend cgroup_rcu_dereference to include percpu_ref_is_dying;
-> >   cgroup_bpf is now reference counted and we don't hold cgroup_mutex
-> >   anymore in cgroup_bpf_release
-> > 
-> > v2:
-> > * replace xchg with rcu_swap_protected
-> > 
-> > Cc: Roman Gushchin <guro@fb.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  include/linux/bpf-cgroup.h |  2 +-
-> >  kernel/bpf/cgroup.c        | 32 +++++++++++++++++++++-----------
-> >  2 files changed, 22 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-> > index 9f100fc422c3..b631ee75762d 100644
-> > --- a/include/linux/bpf-cgroup.h
-> > +++ b/include/linux/bpf-cgroup.h
-> > @@ -72,7 +72,7 @@ struct cgroup_bpf {
-> >  	u32 flags[MAX_BPF_ATTACH_TYPE];
-> >  
-> >  	/* temp storage for effective prog array used by prog_attach/detach */
-> > -	struct bpf_prog_array __rcu *inactive;
-> > +	struct bpf_prog_array *inactive;
-> >  
-> >  	/* reference counter used to detach bpf programs after cgroup removal */
-> >  	struct percpu_ref refcnt;
-> > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> > index d995edbe816d..118b70175dd9 100644
-> > --- a/kernel/bpf/cgroup.c
-> > +++ b/kernel/bpf/cgroup.c
-> > @@ -22,6 +22,13 @@
-> >  DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
-> >  EXPORT_SYMBOL(cgroup_bpf_enabled_key);
-> >  
-> > +#define cgroup_rcu_dereference(cgrp, p)					\
-> > +	rcu_dereference_protected(p, lockdep_is_held(&cgroup_mutex) ||	\
-> > +				  percpu_ref_is_dying(&cgrp->bpf.refcnt))
-> 
-> Some comments why percpu_ref_is_dying(&cgrp->bpf.refcnt) is enough here will
-> be appreciated.
-I was actually debating whether to just use raw
-rcu_dereference_protected(p, lockdep_is_held()) in __cgroup_bpf_query and
-rcu_dereference_protected(p, percpu_ref_is_dying()) in cgroup_bpf_release
-instead of having a cgroup_rcu_dereference which covers both cases.
 
-Maybe that should make it more clear (and doesn't require any comment)?
+
+On 5/28/19 11:54 AM, Lawrence Brakmo wrote:
+> On 5/28/19, 6:43 AM, "netdev-owner@vger.kernel.org on behalf of Eric Dumazet" <netdev-owner@vger.kernel.org on behalf of eric.dumazet@gmail.com> wrote:
+> 
+
+>     Why are you using preempt_enable_no_resched() here ?
+> 
+> Because that is what __BPF_PROG_RUN_ARRAY() calls and the macro
+> BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY() is an instantiation of it
+> (with minor changes in the return value).
+
+I do not see this in my tree.
+
+Please rebase your tree, do not bring back an issue that was solved already.
+
+
+
