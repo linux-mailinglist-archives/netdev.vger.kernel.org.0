@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 803F52D10C
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE0E2D111
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:37:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727297AbfE1VgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 17:36:15 -0400
-Received: from mail-ed1-f49.google.com ([209.85.208.49]:35538 "EHLO
-        mail-ed1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726526AbfE1VgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:36:14 -0400
-Received: by mail-ed1-f49.google.com with SMTP id p26so200321edr.2;
-        Tue, 28 May 2019 14:36:12 -0700 (PDT)
+        id S1727805AbfE1Vhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 17:37:37 -0400
+Received: from mail-ed1-f42.google.com ([209.85.208.42]:39110 "EHLO
+        mail-ed1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726812AbfE1Vhh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:37:37 -0400
+Received: by mail-ed1-f42.google.com with SMTP id e24so173398edq.6;
+        Tue, 28 May 2019 14:37:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=uecXIZDcklzAA/OFh3RkZA0lNa/d4a4Fo/G/5x2r9/U=;
-        b=fMsjIGG81xsEdA/DBHHj4AXpArTXtvjcRWFsKFgh07AzA1bkNjW2xPVStuRLXue+JN
-         clpgnkBoD+GgFGC3/uMfQbFAyPqjnWGmBP4iSQl3TR0KuPnfBlue3BQdHNtpIwOXAwi7
-         W0VhkYYwBbs3HwdAfQa2O0tkrHJKsULiVCNxDddcllgoRWmpTMfR2v45nbKDS8iyRUep
-         iUxv4pxXs54sY0fPI7G35lKiFvpnrUJnGDs6JA4ZtU1PUPwAZVAn3TV8f1waMbJpQvJE
-         IOMIaXhFX6P0lsf1QfLxEuZE9S/2UDS6njg7+Bgan41PKQYafFRvTWWzptw9TjOzbaeb
-         z3vg==
+        bh=+SzQmfEsdNdnW/gwHRsf2NlK+gsoysG5VVC699wH/5g=;
+        b=SrqDnbq/jwnrtf6K/w+IP3kCR3stLry7Fo+17Qkh/wzU4I1dFV1ca8BhnJiuMnYE0X
+         9QpJvPX9BYX8ZfW/4MjyHqpjeiq49jBMoZa5bBgMtL36xRU/H3Zb9DM3zK6QIWsrFs3l
+         ePDwE8eP+Kln3IMVwrhez8HKTjhH8ufKw1cNus45P0H/1fKQmCQvcjx5iOmdlRBU3b3v
+         mS1XWhSZMs+sGq8WPDXWoI+v0oN/hKkZx3V2fUatXovNa5sxREdPCZApeJDHCIYtDw5X
+         cQmT7F72xL+96Xo9NuyzXsGVRWVpo6DklMVLfF0avWt4vfGFcxwkL6TV4OTgnLNfi48P
+         tmiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uecXIZDcklzAA/OFh3RkZA0lNa/d4a4Fo/G/5x2r9/U=;
-        b=l9fP15H3KI3olH0BRvCOlytwLpEHYWJo5IAaW6ZZKL3/BiqdT/xDACG9qPe33xr+f1
-         qFZO2uSD63SSDRcZo/0T0Yue0J0y3czNZgtdxZc2079n4QMOMeISvZmGVnKD75nQcM3O
-         U0d1UPmcd9Mgb+qLBmHA3B7e+YGPYyH1zGiulfkEQL7K20mkmU7cHAWwNmW6EWYuTKrK
-         zXGsK7KxFaWwpRwDzUjvTsgzE6ba/ogPHaOBI96RXa6NIn4qt+exbVSo2yANcCLx/3PG
-         VevAskIW0bve/OLtlXUEGKQd9MOOlA8LPFgjm00A3C2DwrYpsTGYDoK0KtjVVHDtO93S
-         O7hg==
-X-Gm-Message-State: APjAAAU3O5f9Cye7+w8uUbS6AFFGPEItN2BiGp+pb8QARM9G5GxDdH63
-        94oLEfcf+Q+UoX2hGs5QmkOSDUa8NF+fMhndjsw=
-X-Google-Smtp-Source: APXvYqxHxoY8doCT8Xl943B0NhZ0oQA/tfutSQ/S2Sg9d0XLQi8EKmPuF2z5B0/clzfxkfW54vgULnxDSyFVmrxEJAk=
-X-Received: by 2002:aa7:ca54:: with SMTP id j20mr131541007edt.23.1559079372032;
- Tue, 28 May 2019 14:36:12 -0700 (PDT)
+        bh=+SzQmfEsdNdnW/gwHRsf2NlK+gsoysG5VVC699wH/5g=;
+        b=cco6ruP3b6H/mtjM55Ns3FDSg2631YHxe/5Z6YMVuKGprmVOxTSjadHOP7YSzL4fXq
+         TB3cNmr+71MwQWzDtdiuZLTKvWJbLp+L7ZPbzNgzUyX3bBFTz3fwJbCy1tkCrJy7eB2b
+         Q3UOFejSUqypWbcrb7AznlEyULv2GVmp9BnroqDDV4CcJYvAGVd774KelmoRUcFL1g5o
+         h8TEfdmwBBr+9nuLDPhc4q2WU5Oh0JVOYeUkn7TyDBxti4Nwukt5XXjJzFMaNIcga/0v
+         0K8WzhXV1Ho7a9z4TH4h1gKVrCGHP017RphMebOEbePDAvchdvicDBXB9u2l4I8qCNwL
+         o0pw==
+X-Gm-Message-State: APjAAAXcZ7PNG1rPgqbTEMeE3+B2Gb0XF96X35RD4IM21eORONJrQdcH
+        gZ18z5HPvqY8YVfAM0pAlddDDljvg/I674tjTLM=
+X-Google-Smtp-Source: APXvYqzPiPdEha9a/8wDQwaIISfKBAzxq2je8/sQO/a1mWCN6wJFBdh82K0gEfkZk6kuPeqK95XobgSG1JLLUKT0ccc=
+X-Received: by 2002:a05:6402:745:: with SMTP id p5mr35984041edy.62.1559079454728;
+ Tue, 28 May 2019 14:37:34 -0700 (PDT)
 MIME-Version: 1.0
 References: <20190528184708.16516-1-fklassen@appneta.com> <20190528184708.16516-2-fklassen@appneta.com>
 In-Reply-To: <20190528184708.16516-2-fklassen@appneta.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 28 May 2019 17:35:35 -0400
-Message-ID: <CAF=yD-KcA5NZ2_tp3zaxW5sbf75a17DLX+VR9hyZo7MTcYAxiw@mail.gmail.com>
+Date:   Tue, 28 May 2019 17:36:58 -0400
+Message-ID: <CAF=yD-+r9rqRg5vpO1EEVKDjROe_hZhLCQSQxZCBgro9V28+2g@mail.gmail.com>
 Subject: Re: [PATCH net-next v2 1/3] net/udpgso_bench_tx: options to exercise
  TX CMSG
 To:     Fred Klassen <fklassen@appneta.com>
@@ -91,7 +91,7 @@ On Tue, May 28, 2019 at 3:24 PM Fred Klassen <fklassen@appneta.com> wrote:
 > Signed-off-by: Fred Klassen <fklassen@appneta.com>
 > ---
 
-> -static void flush_zerocopy(int fd)
+
 > +static void flush_cmsg(struct cmsghdr *cmsg)
 >  {
 > -       struct msghdr msg = {0};        /* flush */
@@ -102,9 +102,6 @@ On Tue, May 28, 2019 at 3:24 PM Fred Klassen <fklassen@appneta.com> wrote:
 > +
 > +                       i = (cfg_tx_ts == SOF_TIMESTAMPING_TX_HARDWARE) ? 2 : 0;
 > +                       struct scm_timestamping *tss;
-
-Please don't mix declarations and code.
-
 > +
 > +                       tss = (struct scm_timestamping *)CMSG_DATA(cmsg);
 > +                       if (tss->ts[i].tv_sec == 0)
@@ -113,8 +110,6 @@ Please don't mix declarations and code.
 > +                       error(1, 0,
 > +                             "unknown SOL_SOCKET cmsg type=%u level=%u\n",
 > +                             cmsg->cmsg_type, cmsg->cmsg_level);
-
-Technically, no need to repeat cmsg_level
 > +               }
 > +               break;
 > +       case SOL_IP:
@@ -145,18 +140,12 @@ Technically, no need to repeat cmsg_level
 > +
 > +                               if (hi == lo - 1) {
 > +                                       // TX was aborted
-
-where does this come from?
-
 > +                                       stat_zcopy_errors++;
 > +                                       if (cfg_verbose)
 > +                                               fprintf(stderr,
 > +                                                       "Zerocopy TX aborted: lo=%u hi=%u\n",
 > +                                                       lo, hi);
 > +                               } else if (hi == lo) {
-
-technically, no need to special case
-
 > +                                       // single ID acknowledged
 > +                                       stat_zcopies++;
 > +                               } else {
@@ -164,10 +153,32 @@ technically, no need to special case
 > +                                       stat_zcopies += hi - lo + 1;
 > +                               }
 > +                               break;
+> +                       }
+> +                       case SO_EE_ORIGIN_LOCAL:
+> +                               if (cfg_verbose)
+> +                                       fprintf(stderr,
+> +                                               "received packet with local origin: %u\n",
+> +                                               err->ee_origin);
+> +                               break;
+> +                       default:
+> +                               error(0, 1,
 
-> +static void set_tx_timestamping(int fd)
-> +{
-> +       int val = SOF_TIMESTAMPING_OPT_CMSG | SOF_TIMESTAMPING_OPT_ID;
+here and two following, error(1, 0, ..);
 
-Could consider adding SOF_TIMESTAMPING_OPT_TSONLY to not have to deal
-with a data buffer on recv from errqueue.
+> +                                     "received packet with origin: %u",
+> +                                     err->ee_origin);
+> +                       }
+> +
+> +                       break;
+> +               }
+> +               default:
+> +                       error(0, 1, "unknown IP msg type=%u level=%u\n",
+> +                             cmsg->cmsg_type, cmsg->cmsg_level);
+> +                       break;
+> +               }
+> +               break;
+> +       default:
+> +               error(0, 1, "unknown cmsg type=%u level=%u\n",
+> +                     cmsg->cmsg_type, cmsg->cmsg_level);
+> +       }
+> +}
