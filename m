@@ -2,96 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0FBF2D017
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 22:09:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B1042D021
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 22:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727512AbfE1UJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 16:09:46 -0400
-Received: from mail-ed1-f44.google.com ([209.85.208.44]:45360 "EHLO
-        mail-ed1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726988AbfE1UJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 16:09:46 -0400
-Received: by mail-ed1-f44.google.com with SMTP id g57so18751971edc.12;
-        Tue, 28 May 2019 13:09:44 -0700 (PDT)
+        id S1727592AbfE1UMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 16:12:38 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:39500 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727327AbfE1UMh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 16:12:37 -0400
+Received: by mail-vs1-f65.google.com with SMTP id m1so128822vsr.6
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 13:12:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lfHCjXdAucK32QgcRHWRo0qGiwkfsWt0JaYloVUGZf8=;
-        b=aMrOykYI9DVuCfBXVLxQVyW1/LvVXswL14cMijeWdx6z6rYgK4R+gUCF8m4QGXl3GC
-         PH2AX2SanfnRTvIcsED/auiDa8GgMJWc1HPb/GzwSeHbf9XbWEJJjCdMCBbhd1tHU5l6
-         oWFtcAnz/UppSHrWFQkMPoclKzVxPe+xPXfICEFPMTT0/zmhf+7vuCsYPO+p5HOp1DTg
-         bVPKFGkYERvF62gaAVv03CueyoCR16ooiBIHG3Cv1ZNsyogwMRLWuXvvxiaXIKEwyn2A
-         wbxe/Cf6WieOJeKpWugbNZ2uuahlrgBUrxYHBYBBqrr6S0K4TBIwbocYz2kpt6Q9pSgw
-         5gUw==
+        bh=gi/kDB0T8blaZ4N3Go9mHKUpJE7iS399aaXlXpsJB/M=;
+        b=JLxYOnmDJcrvrx0TjCujM/n0knfusm2CntjGzV4VPzAD+EFhlo8bMTG9t7aal/sQvQ
+         KPH6TmOjB26vlVux4qFF2O7y0N3OLKr3gAJH/DJGCfmBrsadoIeWKCNpm3fBOPswf3Ba
+         6by4zMVQHchTKPYZV4Sc0dM7vt5MIxMKhWGK8F+toGpf0xixHkbFMljAUDpVxZ/LNjen
+         fxCbCXU8wIgSXM+/Nytt81ZkmCUgDWHkB1l6JSa87KEV9ETuHHhjodSJ1RBbqtHpA8SJ
+         fE8OC9iG1QauEooEVyrRXOLAFESuw9fIG7TkKzagGOcjZoImxM5Z7R51VbDlxDGe0BcB
+         fH2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lfHCjXdAucK32QgcRHWRo0qGiwkfsWt0JaYloVUGZf8=;
-        b=NnPPU/f0afTgF1k7SvjtyAMUNqq0zdTCQznuf7KngD6Os0b845fvyVlSBiAx6rpeHd
-         HtnEKNh9dKOefOqBvY7xy23OvWcHXYJhGXW3IEq3N7qGNWlP1VQVtOzrsoaD9c+JiZkf
-         Nher+UkzaLBKKsg/FPsOz1M3FL5rYuVkg2z0dQ9kQ1q1ivJfEFejCR0OUV8QyTMbR9Va
-         i7XyZf/5+ctFUA0x2FUbt5cErf/yqvIUtS4M21/fXyIW4hakRB0oZJEriAAaxgvaFzfo
-         a/sHRUkWMKt20g51yf62RUwgVrV1rSacP+zNoIk+i3m5rEaVXenfGTzDHJVcDkfhTFi8
-         HTGA==
-X-Gm-Message-State: APjAAAVC/h2+NjjXwiLwCDMKg5ifh/XEtn8myDZ5JFoy6Bp1e76nCcxh
-        jGgZiO6k4ArZB/1rH89JxRUPDi1rGIxI24j+Hkw=
-X-Google-Smtp-Source: APXvYqzEOeZWC9L1vOMmqxVgoI1B8bDBS/QAi758qW8Lu/Q0XsVo+3caRyPLEpsaQ9+8ScyzX8Wa1c4SeLkbV4L9qVg=
-X-Received: by 2002:a17:907:397:: with SMTP id ss23mr6839098ejb.226.1559074184038;
- Tue, 28 May 2019 13:09:44 -0700 (PDT)
+        bh=gi/kDB0T8blaZ4N3Go9mHKUpJE7iS399aaXlXpsJB/M=;
+        b=o3/cqrnLOFMYAy4yYzYPqzZfckv0Bp1JlwawTgreikTJJPJ4x9c4+T2VofDaeSjl1T
+         Ar7v+1kFd1Mwjki6KfOXdshpIJoC98sr/hc2AR9CT3n0u++J5aSR62TqZV093z1d82gp
+         l9r0C+kJKgr33Z8SQoKJLy6hU+fUOT0Alqu3s50wEMTmv0OCuMAedPl5uLh1So6532Hg
+         CmVdMpxDSs9tblnKJ174ZATPJFPDo5iXNokfEwmgY8bsv6f5CkZiJAeBrjRNTIF3jsro
+         X2Ihquw6SNkoFO5pBncP4oAQXd3eR1K/+bUNdFEEViLPZXnTdYn7SBifhZG6WD3i+nEJ
+         2xEQ==
+X-Gm-Message-State: APjAAAVxMn4fQ2cwOaLTYVLTP3bG+AA/OJP/Jib3sDg+6ceWZNNKTXfk
+        T/27iuyJy3FALA8BZx/rI1UwjpTYDDvTwIWMsz+YzA==
+X-Google-Smtp-Source: APXvYqyhr2ApjSz9LQBsYYyEvA4OOcCsPCc4JI8zHRQcvXybJdPh+Anw9su0Trv01Aesw4jSdtAj6GclPuv7+IfWTV0=
+X-Received: by 2002:a67:ebc5:: with SMTP id y5mr75082391vso.34.1559074351753;
+ Tue, 28 May 2019 13:12:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190528184708.16516-1-fklassen@appneta.com> <20190528184708.16516-3-fklassen@appneta.com>
-In-Reply-To: <20190528184708.16516-3-fklassen@appneta.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 28 May 2019 16:09:07 -0400
-Message-ID: <CAF=yD-KozDxhwf1Arkbz5X_dYfZ5M40xr9hcxKGDRmeg1BOE=Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/3] net/udpgso_bench.sh add UDP GSO audit tests
-To:     Fred Klassen <fklassen@appneta.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
+References: <20190524111053.12228-1-masneyb@onstation.org> <70782901-a9ac-5647-1abe-89c86a44a01b@intel.com>
+ <20190524154958.GB16322@basecamp> <20190526122136.GA26456@basecamp>
+ <e8c049ce-07e1-8b34-678d-41b3d6d41983@broadcom.com> <20190526195819.GA29665@basecamp>
+ <20190527093711.GA853@basecamp> <ead7f268-b730-3541-31f7-4499556efec0@intel.com>
+ <20190527125026.GA4272@basecamp>
+In-Reply-To: <20190527125026.GA4272@basecamp>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Tue, 28 May 2019 22:11:55 +0200
+Message-ID: <CAPDyKFrm=NTKjsEPiwzUVbDDzjW5PwZteXbKtPUi9GTUB4kbMQ@mail.gmail.com>
+Subject: Re: Issue with Broadcom wireless in 5.2rc1 (was Re: [PATCH] mmc:
+ sdhci: queue work after sdhci_defer_done())
+To:     Brian Masney <masneyb@onstation.org>,
+        Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arend Van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Faiz Abbas <faiz_abbas@ti.com>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 3:24 PM Fred Klassen <fklassen@appneta.com> wrote:
+On Mon, 27 May 2019 at 14:50, Brian Masney <masneyb@onstation.org> wrote:
 >
-> Audit tests count the total number of messages sent and compares
-> with total number of CMSG received on error queue. Example:
+> On Mon, May 27, 2019 at 03:08:07PM +0300, Adrian Hunter wrote:
+> > On 27/05/19 12:37 PM, Brian Masney wrote:
+> > > On Sun, May 26, 2019 at 03:58:19PM -0400, Brian Masney wrote:
+> > >> I attached a patch that shows how I was able to determine what had
+> > >> already claimed the host.
+> > > On Mon, May 27, 2019 at 10:48:24AM +0300, Adrian Hunter wrote:
+> > >> This is because SDHCI is using the IRQ thread to process the SDIO card
+> > >> interrupt (sdio_run_irqs()).  When the card driver tries to use the card, it
+> > >> causes interrupts which deadlocks since c07a48c26519 ("mmc: sdhci: Remove
+> > >> finish_tasklet") has moved the tasklet processing to the IRQ thread.
+> > >>
+> > >> I would expect to be able to use the IRQ thread to complete requests, and it
+> > >> is desirable to do so because it is lower latency.
+> > >>
+> > >> Probably, SDHCI should use sdio_signal_irq() which queues a work item, and
+> > >> is what other drivers are doing.
+> > >>
+> > >> I will investigate some more and send a patch.
+> >
+> > Please try the patch below:
+> >
+> > From: Adrian Hunter <adrian.hunter@intel.com>
+> > Date: Mon, 27 May 2019 14:45:55 +0300
+> > Subject: [PATCH] mmc: sdhci: Fix SDIO IRQ thread deadlock
+> >
+> > Since commit c07a48c26519 ("mmc: sdhci: Remove finish_tasklet"), the IRQ
+> > thread might be used to complete requests, but the IRQ thread is also used
+> > to process SDIO card interrupts. This can cause a deadlock when the SDIO
+> > processing tries to access the card since that would also require the IRQ
+> > thread. Change SDHCI to use sdio_signal_irq() to schedule a work item
+> > instead. That also requires implementing the ->ack_sdio_irq() mmc host op.
+> >
+> > Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> > Fixes: c07a48c26519 ("mmc: sdhci: Remove finish_tasklet")
 >
->     udp gso zerocopy timestamp audit
->     udp rx:   1599 MB/s  1166414 calls/s
->     udp tx:   1615 MB/s    27395 calls/s  27395 msg/s
->     udp rx:   1634 MB/s  1192261 calls/s
->     udp tx:   1633 MB/s    27699 calls/s  27699 msg/s
->     udp rx:   1633 MB/s  1191358 calls/s
->     udp tx:   1631 MB/s    27678 calls/s  27678 msg/s
->     Summary over 4.000 seconds...
->     sum udp tx:   1665 MB/s      82772 calls (27590/s)      82772 msgs (27590/s)
->     Tx Timestamps:               82772 received                 0 errors
->     Zerocopy acks:               82772 received                 0 errors
+> Yes, this fixes the issue for me. You can add my:
 >
-> Errors are thrown if CMSG count does not equal send count,
-> example:
+> Reported-by: Brian Masney <masneyb@onstation.org>
+> Tested-by: Brian Masney <masneyb@onstation.org>
 >
->     Summary over 4.000 seconds...
->     sum tcp tx:   7451 MB/s     493706 calls (123426/s)     493706 msgs (123426/s)
->     ./udpgso_bench_tx: Unexpected number of Zerocopy completions:    493706 expected    493704 received
->
-> Also reduce individual test time from 4 to 3 seconds so that
-> overall test time does not increase significantly.
->
-> Signed-off-by: Fred Klassen <fklassen@appneta.com>
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+Applied for fixes, thanks!
 
-If respinning the series, please add a comment about adding -P to the
-tcp zerocopy test.
+Kind regards
+Uffe
