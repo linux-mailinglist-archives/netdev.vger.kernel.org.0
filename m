@@ -2,80 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0A952CD4C
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:12:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3315E2CD48
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:11:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726845AbfE1RMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 13:12:03 -0400
-Received: from mail-ed1-f47.google.com ([209.85.208.47]:45417 "EHLO
-        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726452AbfE1RMD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 13:12:03 -0400
-Received: by mail-ed1-f47.google.com with SMTP id g57so18002494edc.12;
-        Tue, 28 May 2019 10:12:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lYImdE1K3cUe2xPFfKctCk0xbs1kFjS1GtFoys4OKEc=;
-        b=elCiHPbeF+3BBhnD/fPMTklieZ6tyszuUka6t0KBE7hW2jdKkIboHAtr25j9U95Ikf
-         SR3t7R2wiTTMWcxf6u57nFDB1rYVtF62i57wVAJy1V+qT3ODXA7vw+48/1p9QfEAw9vY
-         DJl0xtovDV+V4awLz00+qFO1WJDc8lLT7dkPYd6XqRr70FHdTOUG/5hF9qC4mmAkntHu
-         bcyEqiiMQXF9pVYSYJrJI3prNpAgmZBe15Z9fNX+yf9F644uNPXzhU1sSOshy8aDUp/W
-         feiD9ySMIUcHhvNQ6Kb7ctoHYRqqebGN6QPFHqzlxm6aBLO3Y6Wx0OygowJJiPaIpyaQ
-         +aAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lYImdE1K3cUe2xPFfKctCk0xbs1kFjS1GtFoys4OKEc=;
-        b=gkjukjqnUTTW2RRr6sLqd7HEDChRs8F98gW7M4X9Q3p93CzPU9Vio4U9aEeP4j3mpN
-         2WKiLbyMPdNKnO/6VFgLZbP6TA6XyQ7bC5/9235SgJcG1GD5ZK8kiJAcn9TMeJAAI3N2
-         rrIQ83g0WBx7JErCFY0JATzSvqqqwQktboSjZSE/J86urFE7C9jQ19TKIXZgSQpinqSl
-         yqj8P3seFh5mzGnJkDs/JoRG9FiI5wADeBHJIjywPmrXvqmL1MFxY1EYrcNlxz4UwH3s
-         AuFUlsdXN9j5KG11T3ZbbbGHhSpQ10Pqm0W2eFGshSaDFSD1IIrjbb3rpaAiiDPWsRNQ
-         llpg==
-X-Gm-Message-State: APjAAAXl7Ynb9TsUtGqrCzBHaWN+Tp+3Mx53A12D/VcQ1rRJ/IlWtk2Z
-        ntkVoLRLVwXZzbugpSwbXQgWIf0ja37i1cyKBZA=
-X-Google-Smtp-Source: APXvYqyAvOfbFAAK6aMyy93n7UREJlpiHInet91UkneecigYVrJX7593QPls/vDRXj8AibJ87Uas7h5rWHEPU6WqUys=
-X-Received: by 2002:a17:906:76c8:: with SMTP id q8mr70324783ejn.229.1559063521332;
- Tue, 28 May 2019 10:12:01 -0700 (PDT)
+        id S1727133AbfE1RLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 13:11:51 -0400
+Received: from mail-eopbgr60066.outbound.protection.outlook.com ([40.107.6.66]:35975
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726845AbfE1RLv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 13:11:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q9gaJ7YQsbJeInL9gPI0CfV4oPMgZk+CX0uBSzH2Da0=;
+ b=ckrkoBWJgoQMPQFTsbX389BmDjztpKaNAnNmxtPDOb9mxKIQLgSZXh5L2OsmwvVn08oE0pVanM03KCOHLMgFV5ZCPffotU/a1ngp3k2MMWuYIvbLaG6sb2wBV1ig0z4x24fVsqq8/kJNmlFBVhLPHfuDdDLv3Jd6r5si7u6q2lQ=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB3405.eurprd04.prod.outlook.com (52.134.1.154) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.16; Tue, 28 May 2019 17:11:37 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::f494:9fa1:ebae:6053]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::f494:9fa1:ebae:6053%8]) with mapi id 15.20.1922.019; Tue, 28 May 2019
+ 17:11:37 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH 07/11] net: phylink: Add PHYLINK_DEV operation type
+Thread-Topic: [PATCH 07/11] net: phylink: Add PHYLINK_DEV operation type
+Thread-Index: AQHVFNJYuRihsAfx/Uiz7daXejWMlaZ/yQGAgAD8C1A=
+Date:   Tue, 28 May 2019 17:11:37 +0000
+Message-ID: <VI1PR0402MB280021214C0A9FEF4F63AD0AE01E0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <1558992127-26008-1-git-send-email-ioana.ciornei@nxp.com>
+ <1558992127-26008-8-git-send-email-ioana.ciornei@nxp.com>
+ <1f35604c-6047-082e-814a-72d8739fff12@gmail.com>
+In-Reply-To: <1f35604c-6047-082e-814a-72d8739fff12@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6443256d-048f-4efd-7af4-08d6e38f8b33
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR0402MB3405;
+x-ms-traffictypediagnostic: VI1PR0402MB3405:
+x-microsoft-antispam-prvs: <VI1PR0402MB3405BA665C3A1A043D82D05EE01E0@VI1PR0402MB3405.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 00514A2FE6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(376002)(396003)(136003)(346002)(39860400002)(189003)(199004)(8676002)(6506007)(33656002)(14454004)(186003)(4326008)(81166006)(53546011)(81156014)(66446008)(8936002)(64756008)(66476007)(256004)(66946007)(76176011)(7696005)(305945005)(74316002)(7736002)(99286004)(6246003)(5024004)(76116006)(478600001)(73956011)(53936002)(71200400001)(71190400001)(26005)(52536014)(446003)(11346002)(476003)(6436002)(5660300002)(6116002)(316002)(68736007)(44832011)(9686003)(66556008)(110136005)(55016002)(102836004)(229853002)(2201001)(2501003)(86362001)(2906002)(66066001)(486006)(25786009)(7416002)(3846002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3405;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: CROLLnJ4eoANh6/e0WwtS4U2K1fYUj1AwKwPfIfJtLbW6lsiuBl9FDs6OM8WLKTm35R3Js24/uDwjZ/Zt8R9TWnIqRa/WctLm+fZsic44Hum6hHAYivoIQ9JIz5Sp+5LVqYVqjiLsafYIhlPXO1gi37+7vy7Y/CH2NJYim77MPpQxO2PhRj0C9k9vpqa7uhEGrfsQx0TGpfkseFkg2QwZySXT5k80D3QqhebZiZkp9tvA3Mo2IreuWQcEaOX7lWx26mpzMAJ17Oo3CYrJD+0Zihvi56K9r9+VfP6eqB5u4Tlr1b+7hYRBakcRnzjILGKHPOpHAU7IE0frhEoVjQl3Qz6xg2U1nDyjBLlKDIjPC6TgjpxcnkgIDMUYH7vyU6GCVwZn+HkVDE63aeU7THgIjL9fg4jauGrsPIJoimG+Hg=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20190523210651.80902-1-fklassen@appneta.com> <20190523210651.80902-5-fklassen@appneta.com>
- <CAF=yD-KBNLr5KY-YQ1KMmZGCpYNefSJKaJkZNOwd8nRiedpQtA@mail.gmail.com>
- <879E5DA6-3A4F-4CE1-9DA5-480EE30109DE@appneta.com> <CAF=yD-LQT7=4vvMwMa96_SFuUd5GywMoae7hGi9n6rQeuhhxuQ@mail.gmail.com>
- <5BB184F2-6C20-416B-B2AF-A678400CFE3E@appneta.com> <CAF=yD-+6CRyqL6Fq5y2zpw5nnDitYC7G1c2JAVHZTjyw68DYJg@mail.gmail.com>
- <903DEC70-845B-4C4B-911D-2F203C191C27@appneta.com> <CAF=yD-Le0XKCfyDBvHmBRVqkwn1D6ZoG=12gss5T62VcN5+1_w@mail.gmail.com>
- <9811659B-6D5A-4C4F-9CF8-735E9CA6DE4E@appneta.com> <CAF=yD-KcX-zCgZFVVVMU7JFy+gJwRpUoViA_mWdM4QtHNr685g@mail.gmail.com>
-In-Reply-To: <CAF=yD-KcX-zCgZFVVVMU7JFy+gJwRpUoViA_mWdM4QtHNr685g@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 28 May 2019 13:11:24 -0400
-Message-ID: <CAF=yD-J2eNn4xNu37ekXfDGMtzQjOPVrWJ+EaLqdJmFcrnk8pA@mail.gmail.com>
-Subject: Re: [PATCH net 4/4] net/udpgso_bench_tx: audit error queue
-To:     Fred Klassen <fklassen@appneta.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6443256d-048f-4efd-7af4-08d6e38f8b33
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2019 17:11:37.3588
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3405
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- > Now that I know the issue is only in TCP, I can speculate that all bytes are
-> > being reported, but done with fewer messages. It may warrant some
-> > investigation in case there is some kind of bug.
->
-> This would definitely still be a bug and should not happen. We have
-> quite a bit of experience with TCP zerocopy and I have not run into
-> this in practice, so I do think that it is somehow a test artifact.
-
-To be clear, I'm not saying that it is an artifact of your extensions.
-It's quite likely that the zerocopy benchmark was a bit flaky in that
-regard all along. No need to spend further time on that for this
-patchset.
+PiBTdWJqZWN0OiBSZTogW1BBVENIIDA3LzExXSBuZXQ6IHBoeWxpbms6IEFkZCBQSFlMSU5LX0RF
+ViBvcGVyYXRpb24gdHlwZQ0KPiANCj4gDQo+IA0KPiBPbiA1LzI3LzIwMTkgMjoyMiBQTSwgSW9h
+bmEgQ2lvcm5laSB3cm90ZToNCj4gPiBJbiB0aGUgUEhZTElOS19ERVYgb3BlcmF0aW9uIHR5cGUs
+IHRoZSBQSFlMSU5LIGluZnJhc3RydWN0dXJlIGNhbiB3b3JrDQo+ID4gd2l0aG91dCBhbiBhdHRh
+Y2hlZCBuZXRfZGV2aWNlLiBGb3IgcHJpbnRpbmcgdXNlY2FzZXMsIGluc3RlYWQsIGENCj4gPiBz
+dHJ1Y3QgZGV2aWNlICogc2hvdWxkIGJlIHBhc3NlZCB0byBQSFlMSU5LIHVzaW5nIHRoZSBwaHls
+aW5rX2NvbmZpZw0KPiBzdHJ1Y3R1cmUuDQo+ID4NCj4gPiBBbHNvLCBuZXRpZl9jYXJyaWVyXyog
+Y2FsbHMgYXIgZ3VhcmRlZCBieSB0aGUgcHJlc2VuY2Ugb2YgYSB2YWxpZA0KPiA+IG5ldF9kZXZp
+Y2UuIFdoZW4gdXNpbmcgdGhlIFBIWUxJTktfREVWIG9wZXJhdGlvbiB0eXBlLCB3ZSBjYW5ub3Qg
+Y2hlY2sNCj4gPiBsaW5rIHN0YXR1cyB1c2luZyB0aGUgbmV0aWZfY2Fycmllcl9vaygpIEFQSSBz
+byBpbnN0ZWFkLCBrZWVwIGFuDQo+ID4gaW50ZXJuYWwgc3RhdGUgb2YgdGhlIE1BQyBhbmQgY2Fs
+bCBtYWNfbGlua197ZG93bix1cH0gb25seSB3aGVuIHRoZQ0KPiA+IGxpbmsgY2hhbmdlZC4NCj4g
+Pg0KPiA+IFNpZ25lZC1vZmYtYnk6IElvYW5hIENpb3JuZWkgPGlvYW5hLmNpb3JuZWlAbnhwLmNv
+bT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBWbGFkaW1pciBPbHRlYW4gPG9sdGVhbnZAZ21haWwuY29t
+Pg0KPiANCj4gU2hvdWxkIG5vdCB0aGlzIHBhdGNoIGJlIHJlLW9yZGVyZWQgdG8gYmUgYWZ0ZXIg
+cGF0Y2ggIzg/IE90aGVyIHRoYW4gdGhhdDoNCj4gDQoNCk5vdCBuZWNlc3NhcmlseS4NCkV2ZW4g
+d2l0aG91dCBwYXRjaCAjOCAoIm5ldDogcGh5bGluazogQWRkIHBoeWxpbmtfe3ByaW50ayxlcnIs
+d2FybixpbmZvLGRiZ30gbWFjcm9zIikgZXZlcnl0aGluZyB3aWxsIGZ1bmN0aW9uIHByb3Blcmx5
+IHdpdGggdGhlIG1lbnRpb24gdGhhdCBpbiBjYXNlIG9mIFBIWUxJTktfREVWIGEgTlVMTCBuZXRf
+ZGV2aWNlIHdpbGwgZ2V0IHByaW50ZWQuDQoNCkkgY2hvc2UgdG8gYWRkIHRoZSBwaHlsaW5rX3By
+aW50ayBhZnRlciB0aGlzIHBhdGNoIGJlY2F1c2Ugbm93IHdlIGhhdmUgdGhlIHdob2xlIHBpY3R1
+cmUuDQoNCi0tDQpJb2FuYQ0KDQo+IFJldmlld2VkLWJ5OiBGbG9yaWFuIEZhaW5lbGxpIDxmLmZh
+aW5lbGxpQGdtYWlsLmNvbT4NCj4gLS0NCj4gRmxvcmlhbg0K
