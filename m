@@ -2,102 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2875C2CE9B
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAF302CEA0
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:28:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728003AbfE1S2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 14:28:06 -0400
-Received: from mail-it1-f198.google.com ([209.85.166.198]:52971 "EHLO
-        mail-it1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727428AbfE1S2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:28:06 -0400
-Received: by mail-it1-f198.google.com with SMTP id z128so3040397itb.2
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:28:05 -0700 (PDT)
+        id S1728019AbfE1S2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 14:28:46 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:54044 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726569AbfE1S2p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:28:45 -0400
+Received: by mail-wm1-f67.google.com with SMTP id d17so4052094wmb.3
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:28:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=uYaULYBE0EPgfrtNPGGDLcC6oDPFQtCpwrx2CXp6ATk=;
+        b=RZTf1bvdweYMgbRCsPg1j3kj6D3Ai0nimH0pLIjdzD3a8FQacvuujfMoCVfGnO93eW
+         7drm+1AucIa3JAyYR/EyJfz2K1GEqxN7Dx1Sxzrk/8VhdjS44llPBjOm1qrbipH6p1y6
+         KwphMtWt9ls8505XL+2ltgcLKypDVJADyuyo0viVfHUgqJoymIXODNmrerMEu0fkF+wc
+         pDfEeWnMOlKYPJosYHECH1lT1w51uGnusPjERxhGt6lAhXfoZV74OtrGqkOMnS0/NN+7
+         gVQdJk4qGdEfF4Pkb/yQyUOn8MmaveTJh/SUKS0HazEFNhIsLHL2s2SoajvFL7PeK+Fc
+         E5Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=wStfY5SxDIxZd91+yxT/nL82TSXTHhm/NMlB2xHEX/A=;
-        b=My9MYHoeQ121EKhbIP9nkMbQKcGHI9tGbjWqEtTZYUihhNH/iPqgAx0ofJ5ukeuhU7
-         MhqQd+MJ1HKExe+P49lWZq/JXJ9f5wDJU2lLpD78bvRvdAJERs0VXCjsWuGhp9d0rzyU
-         2Q8CnpDO6DK0Y4Oa6H7e3CXfi9LfifuukbzxD6kprdToZ11rkKSqjaC2ZD0+x4BFY/0e
-         GO+D8crOHgdfHQlZuKaviUEKGmF9QrPKM9EHksw8LylduRVwecucSUc43Euic2/ow10h
-         2qC97Ko+kCLkqbLUkCFHU1aSVYk7S4G1jLeQ22mRrozTmKde7xUMlUwPvGDB/AXt8GpO
-         RbHw==
-X-Gm-Message-State: APjAAAWsYHoG/ndzqBEiDY/+y5uHLVALzBi1mwlB1lnYcjCPg0nQkzKW
-        Ijk9Dj3w4mtwPP7cYKexwIzd5MWQ3CtZ1vYla+3Bz3dD0cPX
-X-Google-Smtp-Source: APXvYqyXhAH/FRlDsdV97oRkUMOUekf3d8E19Vn9d1A4DEaa/dY9SeQWsHwrz1YafFdfImJuz4kIZNK3hQK9A4y2zGfX7MsNM/ts
-MIME-Version: 1.0
-X-Received: by 2002:a24:1455:: with SMTP id 82mr4455130itg.59.1559068085434;
- Tue, 28 May 2019 11:28:05 -0700 (PDT)
-Date:   Tue, 28 May 2019 11:28:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000069c3140589f6d3b7@google.com>
-Subject: memory leak in sctp_get_port_local
-From:   syzbot <syzbot+079bf326b38072f849d9@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=uYaULYBE0EPgfrtNPGGDLcC6oDPFQtCpwrx2CXp6ATk=;
+        b=p8yEYOKJg2h2OVbBipt3xxhL0ZaCDaF2R3qw6BQzGFcZQ72EoQOhx2o4r1YhrjpHPb
+         7OHmN8UuEqeZsSrfQqS81noDQ3PyF/dBaLb8mRxUCfsM7I/TqnCgyExObY0pu7ypzxAX
+         rHN0Sid8Ve83/PGcT2B1h0t5IpAJskCW72LLHjee/hSOOJHeQjnE9lh75rBaFbATgKPO
+         VLzKtxPV3nvFaFeQYyxRWFnwJXb4G85DwRVHdeeSGXorj2rt2Ih5qZMF+Th7GabTAvkw
+         CVLzC8evsDpzO+WvhjjLpQTDRoOx+WdnMg2QasEUfoX2DqHwe7jycVNqpcHxzb8wOwl2
+         9sVQ==
+X-Gm-Message-State: APjAAAXcol4T+MN+KvkAuq+zdSKchVJN16PA6jMzL4m14LMzjcf5Q/G0
+        NR/ceP/v0Q//qCw1XDPDVQ==
+X-Google-Smtp-Source: APXvYqzmaswzZFjq88K95fNgUDJ1iE0GKzuysoQ1XnmPBkbqku78x1sYvgAvVVcV5BZv15P0jmWHzQ==
+X-Received: by 2002:a1c:5401:: with SMTP id i1mr4293200wmb.169.1559068123976;
+        Tue, 28 May 2019 11:28:43 -0700 (PDT)
+Received: from x-Inspiron-15-5568.fritz.box (ip-95-223-112-76.hsi16.unitymediagroup.de. [95.223.112.76])
+        by smtp.gmail.com with ESMTPSA id z14sm10504931wrh.86.2019.05.28.11.28.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 May 2019 11:28:43 -0700 (PDT)
+From:   Sergej Benilov <sergej.benilov@googlemail.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org
+Cc:     Sergej Benilov <sergej.benilov@googlemail.com>
+Subject: [PATCH] tcp: re-enable high throughput for low pacing rate
+Date:   Tue, 28 May 2019 20:28:26 +0200
+Message-Id: <20190528182826.31500-1-sergej.benilov@googlemail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Since commit 605ad7f184b60cfaacbc038aa6c55ee68dee3c89 "tcp: refine TSO autosizing",
+the TSQ limit is computed as the smaller of
+sysctl_tcp_limit_output_bytes and max(2 * skb->truesize, sk->sk_pacing_rate >> 10).
+For low pacing rates, this approach sets a low limit, reducing throughput dramatically.
 
-syzbot found the following crash on:
+Compute the limit as the greater of sysctl_tcp_limit_output_bytes and max(2 * skb->truesize, sk->sk_pacing_rate >> 10).
 
-HEAD commit:    cd6c84d8 Linux 5.2-rc2
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=101a184aa00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=64479170dcaf0e11
-dashboard link: https://syzkaller.appspot.com/bug?extid=079bf326b38072f849d9
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13b5dbbca00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1038444aa00000
+Test:
+netperf -H remote -l -2000000 -- -s 1000000
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+079bf326b38072f849d9@syzkaller.appspotmail.com
+before patch:
 
-: Permanently added '10.128.0.127' (ECDSA) to the list of known hosts.
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff8881288ca380 (size 64):
-   comm "softirq", pid 0, jiffies 4294944468 (age 13.410s)
-   hex dump (first 32 bytes):
-     21 4e 00 00 00 00 00 00 00 00 00 00 00 00 00 00  !N..............
-     28 ae 85 23 81 88 ff ff 00 00 00 00 00 00 00 00  (..#............
-   backtrace:
-     [<0000000054ece54d>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:55 [inline]
-     [<0000000054ece54d>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<0000000054ece54d>] slab_alloc mm/slab.c:3326 [inline]
-     [<0000000054ece54d>] kmem_cache_alloc+0x134/0x270 mm/slab.c:3488
-     [<00000000d992ea84>] sctp_bucket_create net/sctp/socket.c:8395 [inline]
-     [<00000000d992ea84>] sctp_get_port_local+0x189/0x5b0  
-net/sctp/socket.c:8142
-     [<0000000099206d90>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
-     [<00000000b8795757>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
-     [<00000000672a44aa>] inet6_bind+0x40/0xb7 net/ipv6/af_inet6.c:445
-     [<0000000001400e1c>] __sys_bind+0x11c/0x140 net/socket.c:1659
-     [<00000000e69e8036>] __do_sys_bind net/socket.c:1670 [inline]
-     [<00000000e69e8036>] __se_sys_bind net/socket.c:1668 [inline]
-     [<00000000e69e8036>] __x64_sys_bind+0x1e/0x30 net/socket.c:1668
-     [<000000001644bb1f>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000199a1ea2>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+MIGRATED TCP STREAM TEST from 0.0.0.0 () port 0 AF_INET to remote () port 0 AF_INET : demo
+Recv   Send    Send
+Socket Socket  Message  Elapsed
+Size   Size    Size     Time     Throughput
+bytes  bytes   bytes    secs.    10^6bits/sec
 
+ 87380 327680 327680    250.17      0.06
 
+after patch:
 
+MIGRATED TCP STREAM TEST from 0.0.0.0 () port 0 AF_INET to remote () port 0 AF_INET : demo
+Recv   Send    Send
+Socket Socket  Message  Elapsed
+Size   Size    Size     Time     Throughput
+bytes  bytes   bytes    secs.    10^6bits/sec
+
+ 87380 327680 327680    1.29       12.54
+
+Signed-off-by: Sergej Benilov <sergej.benilov@googlemail.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ net/ipv4/tcp_output.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index e625be56..71efca72 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2054,7 +2054,7 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+ 		 * One example is wifi aggregation (802.11 AMPDU)
+ 		 */
+ 		limit = max(2 * skb->truesize, sk->sk_pacing_rate >> 10);
+-		limit = min_t(u32, limit, sysctl_tcp_limit_output_bytes);
++		limit = max_t(u32, limit, sysctl_tcp_limit_output_bytes);
+ 
+ 		if (atomic_read(&sk->sk_wmem_alloc) > limit) {
+ 			set_bit(TSQ_THROTTLED, &tp->tsq_flags);
+-- 
+2.17.1
+
