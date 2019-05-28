@@ -2,125 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E2752C566
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:29:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A041C2C575
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726653AbfE1L33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 07:29:29 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:41788 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726341AbfE1L33 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:29:29 -0400
-Received: by mail-wr1-f66.google.com with SMTP id c2so4613566wrm.8
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 04:29:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ju+JmBh6Rz9RnYdNl3ZgSQ2n4Cm6Io+S86LKE2Ndfc0=;
-        b=ydi2A1o22nE9aHkE6n1pV5bhghNjQRxCeAMRZkik1JEWVUWvDYv6txHMzR5ez3w458
-         dgNs7EC3ebc7Gv3TGLGwd5ixzPFOUHpZUeg6z6M6Mp4UoKQDa9oSsoH/Sf714Eieo4br
-         uAoMZHU9w2b2yaUEWqLV7+m5XOLE7+N5jvhSZRN4vIpf0SxeZVXAXuVyoKHz15hLuEB/
-         /Q0K5DiRhIyJ17uWb2/5L3GQ/HA2KqCImbzbqrmNlBzPeXpFWWkDeKd7DV5edWJTnaom
-         ROMTq4hixFU4yaGW0quIauW7FKzJwA/QOYQjDa+vcKru7wtHC8gBUeXmQRtLadAlLkto
-         mlIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ju+JmBh6Rz9RnYdNl3ZgSQ2n4Cm6Io+S86LKE2Ndfc0=;
-        b=JSF+4cUsWPQkVY9WDp9815JisK11nGarOQRXIkKOgci6Thrc1+VorOYO15tlxANgFy
-         Zl6p7uRgBxJWWg6QOVp3TiKt03riP28A9GkCGu8FqHKl6X3OJYQduOJvzQPQz2mlmFK5
-         8fd+Po5t3vwi1AUU3fmFjHLpSgBzZLWGPcRn61JSWHuKzYATtNrLqTXUsbwevhq5zBWA
-         UNUhzYtlN3MvqzOLDG0WD0f+62UN/o0w9Ccv9Lq0B8jNkeiHE5AETXvqLUJHKZ+EzMGB
-         4rPyOCDyhtqNsmz0vFpmAM2ZrX/69Z2UDnQorBH7NULBY7qDkuL5O9qNTyMun9yV7qgd
-         mrCg==
-X-Gm-Message-State: APjAAAX6j91A6rjbRha9WvKeXnAbebKbAB358GHmCT+/vDOmRj5IOUiA
-        hLL1vgkQqfE7WSNfrehm+e0I6A==
-X-Google-Smtp-Source: APXvYqxwx6oYW3kWjoN2hWRpABhVLQRT2Tfou9PDzTKmG6fffflDYenPllH/f6IFbBHa/atyPnbFng==
-X-Received: by 2002:a5d:53c8:: with SMTP id a8mr42324700wrw.152.1559042967244;
-        Tue, 28 May 2019 04:29:27 -0700 (PDT)
-Received: from localhost (ip-89-177-126-215.net.upcbroadband.cz. [89.177.126.215])
-        by smtp.gmail.com with ESMTPSA id u2sm40744679wra.82.2019.05.28.04.29.26
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 28 May 2019 04:29:26 -0700 (PDT)
-Date:   Tue, 28 May 2019 13:29:26 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        mlxsw <mlxsw@mellanox.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: Re: [patch net-next 0/7] expose flash update status to user
-Message-ID: <20190528112926.GB2252@nanopsycho>
-References: <20190523094510.2317-1-jiri@resnulli.us>
- <c4bd07725a1e5a4d09066eb73094623d8b37082b.camel@mellanox.com>
+        id S1726747AbfE1Ldw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 07:33:52 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:52374 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726305AbfE1Ldw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:33:52 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 44BE460388; Tue, 28 May 2019 11:33:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1559043231;
+        bh=L1NbZxiLtq3rlmMS9o/rSgkfR5rPEvxTXSc6OnbhHco=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=fB0H+7YMCFozgKGcSbatyDncJKV7Veu0X1mHZ8K39Jq+kugmwUFfgZQNqIBTx8ZVN
+         IJ05O3cEnl5jGYg3yHO5lfV5gTCgYObImstmFD6XTRFwFP6f1P/LVME/Nnf4rs4B7B
+         Hh2jjmEOuU5AsGHE4GjjCrOPmWCYQVpKXG0hEPzg=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 45EA360E5A;
+        Tue, 28 May 2019 11:33:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1559043228;
+        bh=L1NbZxiLtq3rlmMS9o/rSgkfR5rPEvxTXSc6OnbhHco=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=epXRGH2nFWQAVz/MQJzPp7tO1NHsMRRmGiIUHfBrmUov29KtEeATI6exYBp0Vez7J
+         DESnJG4ayMktH1rOIKkPYAJBZ6eHKgimEi7bLOO3WFcByq4JOvVVUeMbjR8Qshp931
+         egX9WxpIzpV3njFlKh3C2wLfxNhTQm0ZdwkzGW28=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 45EA360E5A
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c4bd07725a1e5a4d09066eb73094623d8b37082b.camel@mellanox.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 5.2] rsi: Properly initialize data in rsi_sdio_ta_reset
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190523153007.112231-1-natechancellor@gmail.com>
+References: <20190523153007.112231-1-natechancellor@gmail.com>
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190528113351.44BE460388@smtp.codeaurora.org>
+Date:   Tue, 28 May 2019 11:33:50 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, May 23, 2019 at 08:37:28PM CEST, saeedm@mellanox.com wrote:
->On Thu, 2019-05-23 at 11:45 +0200, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> When user is flashing device using devlink, he currenly does not see
->> any
->> information about what is going on, percentages, etc.
->> Drivers, for example mlxsw and mlx5, have notion about the progress
->> and what is happening. This patchset exposes this progress
->> information to userspace.
->> 
->
->Very cool stuff, \let's update devlink docs with the new potential
->output of the fw flash commands, and show us some output example here
->or on one of the commit messages, it would really help getting an idea
->of what this cool patchset provides. 
->
->> See this console recording which shows flashing FW on a Mellanox
->> Spectrum device:
->> https://asciinema.org/a/247926
+Nathan Chancellor <natechancellor@gmail.com> wrote:
 
-This should give you the idea :) It's not easy to add it in static
-text...
+> When building with -Wuninitialized, Clang warns:
+> 
+> drivers/net/wireless/rsi/rsi_91x_sdio.c:940:43: warning: variable 'data'
+> is uninitialized when used here [-Wuninitialized]
+>         put_unaligned_le32(TA_HOLD_THREAD_VALUE, data);
+>                                                  ^~~~
+> drivers/net/wireless/rsi/rsi_91x_sdio.c:930:10: note: initialize the
+> variable 'data' to silence this warning
+>         u8 *data;
+>                 ^
+>                  = NULL
+> 1 warning generated.
+> 
+> Using Clang's suggestion of initializing data to NULL wouldn't work out
+> because data will be dereferenced by put_unaligned_le32. Use kzalloc to
+> properly initialize data, which matches a couple of other places in this
+> driver.
+> 
+> Fixes: e5a1ecc97e5f ("rsi: add firmware loading for 9116 device")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/464
+> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 
+Patch applied to wireless-drivers.git, thanks.
 
->> 
->> Jiri Pirko (7):
->>   mlxsw: Move firmware flash implementation to devlink
->>   mlx5: Move firmware flash implementation to devlink
->>   mlxfw: Propagate error messages through extack
->>   devlink: allow driver to update progress of flash update
->>   mlxfw: Introduce status_notify op and call it to notify about the
->>     status
->>   mlxsw: Implement flash update status notifications
->>   netdevsim: implement fake flash updating with notifications
->> 
->>  drivers/net/ethernet/mellanox/mlx5/core/en.h  |   2 -
->>  .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  35 ------
->>  drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   6 +-
->>  .../mellanox/mlx5/core/ipoib/ethtool.c        |   9 --
->>  .../net/ethernet/mellanox/mlx5/core/main.c    |  20 ++++
->>  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   3 +-
->>  drivers/net/ethernet/mellanox/mlxfw/mlxfw.h   |  11 +-
->>  .../net/ethernet/mellanox/mlxfw/mlxfw_fsm.c   |  57 ++++++++--
->>  drivers/net/ethernet/mellanox/mlxsw/core.c    |  15 +++
->>  drivers/net/ethernet/mellanox/mlxsw/core.h    |   3 +
->>  .../net/ethernet/mellanox/mlxsw/spectrum.c    |  75 +++++++------
->>  drivers/net/netdevsim/dev.c                   |  35 ++++++
->>  include/net/devlink.h                         |   8 ++
->>  include/uapi/linux/devlink.h                  |   5 +
->>  net/core/devlink.c                            | 102
->> ++++++++++++++++++
->>  15 files changed, 295 insertions(+), 91 deletions(-)
->> 
->
->Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+f57b5d85ed58 rsi: Properly initialize data in rsi_sdio_ta_reset
+
+-- 
+https://patchwork.kernel.org/patch/10958063/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
