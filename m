@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 021192C3D1
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 12:01:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E13592C3D3
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 12:01:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbfE1KBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 06:01:22 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:43664 "EHLO
+        id S1726797AbfE1KB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 06:01:26 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:33481 "EHLO
         mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726663AbfE1KBV (ORCPT
+        with ESMTP id S1726732AbfE1KBV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 06:01:21 -0400
-Received: by mail-lj1-f196.google.com with SMTP id z5so17078232lji.10
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 03:01:19 -0700 (PDT)
+Received: by mail-lj1-f196.google.com with SMTP id w1so17116269ljw.0
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 03:01:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=om/x3iP5fctWoqvXA+2EZTqv203LFeCCn2e57pz6/x0=;
-        b=loj+qWp22ZPFaWOGMzazF9biVHnD/lhmpI01hRkBqH5I3+EUe7PLUnBPj1b7Ls7RcU
-         SKuwn2KhUIHh9c07aaZE2J41dwxyRyyWZqGx3+58p92olAfhTiC1/6h4DY5mySNkrYhs
-         7OdBGpDkmKUL0JtRr36eOYjStzDu07M9NFxbPFHH91DTk/hr3KK4GmQMXJghGPOYOzl9
-         oRu8s4ykG1yJd9TYKrpVqnZdMU0l0BPlBetmOAdzT9busnnLt/bATRcp81Xk8sNiUQfF
-         znsIMc5Ctu0+nTgcU4zcsMGp38DVEgRBwEzwsuVIuAgYgPO7tS58EDddRRivBDvMSG2j
-         nQ5A==
+        bh=btUIRIm2Br7gBzgIOuLLorySPJ0QGEoHKS/cs7ietDM=;
+        b=rYd+8rzbarYXI7XC6LfHWLwzRzJD1KU0XlrUvBq24k9ctqMgn0kN55VxkjcF57EJkP
+         Z9YUGuTBNYDDew6QOG9F4PBuAu7TG+JO5sBk+lrG8OLjXi6+nZE4hD6dE0HGzz0BgVc9
+         /4G7S2IY6wXZqNDYJgxA8sKyHuxVU+oyZHn4gGQtMUzUwtTpFNgLezrKFMFAOPXVZ6eW
+         3XiR/Hjp4qc4THi315yZum5h9E+u/UoY47Pkvyf2w1ck9EfGC9B+izXnCvwx59EuQVtW
+         tNvwKmSlbXA4v03yikl2XzHHGx7VqndWPsxoJJD2MSINw55zjVHoj9i2uolcC8Hr24cm
+         Injg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=om/x3iP5fctWoqvXA+2EZTqv203LFeCCn2e57pz6/x0=;
-        b=VuoDi3onn48ZGZobHcSLKUnsaf/599AurePqFhBiaiS6woR5Cc1dEWB5TDbXIZ/EQ9
-         xMlJRS/zHNXE0xuCaCpCLYqkX3w4vBwBXQ7wnssnia1/OTGDbJvEADMG2lCf1Z9AVQx9
-         o24derJHzrB2uq3QhDx7gWjb7dD5Gl7YRFZ/ETtRc+5hJVyYWjINBDj+163LtVvLfV8T
-         NuN0De3phsWikfpwB8PEXmtyzY2JnODhlfYNtaguCqLq7UgLPWY6ezpNNz/jKt2E5BFI
-         59gNkZDq0Pq+5CY4EQtQmUzJOosxzSSAN3mD6lxXeeUWoI4Jpvsu+WImr1GFSk5vHbma
-         9iBQ==
-X-Gm-Message-State: APjAAAVBpID5FOkkzqCrd8U0TRPrD8lxWQBtLx7caev+A1ieIlCVn08+
-        nFjsZ9gK+fIb/+QfV+L5SHIiyZ52cV8Gzg==
-X-Google-Smtp-Source: APXvYqwjZTQfttmaC61YXcg6sSG3JISIzPzabbD4cN1/XVF+4jY0bDJb3dHdt1yEQ1XRAMpvGsoHdw==
-X-Received: by 2002:a2e:818b:: with SMTP id e11mr64260208ljg.82.1559037678861;
-        Tue, 28 May 2019 03:01:18 -0700 (PDT)
+        bh=btUIRIm2Br7gBzgIOuLLorySPJ0QGEoHKS/cs7ietDM=;
+        b=XWYjIPgd2+bzp0yB7UJNdc3RI9TSHHDnMBgH3wPeQvSGeliDap61ijjf1rwqpprtPr
+         ngR5t/KhBpTzJopvjM5GoTkWeyjacEt2KQjlNDxaKipcqCh8XvRBeSzvnLkeSY64B/5m
+         +t760447N5pp4a/h8B0GahOWjyV4+TNEZuTcO3+5XIRFenjA0V5/1eoQA1Blv3KIxbOT
+         sIgcbizow3D0d/yYsLi248fzkd+lkJWUGA1c4zikUfGAwTd0DjB7Lat+YbtbLKbbrthx
+         NC2WvM1pUIQXvN1l16M7vEnmBq453vzlToZWBMFJryR1s46XrLPLrT+4FYOsqQfNye7A
+         vi3g==
+X-Gm-Message-State: APjAAAWVuwdvSZcFv8MdSQNb3FviVo7SKWTY4kq54yZp08/X4+xqzEzM
+        FCrtq2hTnPYZVxLo7FtLZbbEBf25h6Ul/w==
+X-Google-Smtp-Source: APXvYqzD7eXLHBrCvJiun0CBAq8TEtQY84KDHVi8NH5pBpmf7yymdRYq113bwNxzVsqhJrBvw6nLPw==
+X-Received: by 2002:a2e:98d5:: with SMTP id s21mr45149788ljj.142.1559037679713;
+        Tue, 28 May 2019 03:01:19 -0700 (PDT)
 Received: from maxim-H61M-D2-B3.d-systems.local ([185.75.190.112])
         by smtp.gmail.com with ESMTPSA id x28sm581816lfc.2.2019.05.28.03.01.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 03:01:18 -0700 (PDT)
+        Tue, 28 May 2019 03:01:19 -0700 (PDT)
 From:   Max Uvarov <muvarov@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         davem@davemloft.net, Max Uvarov <muvarov@gmail.com>
-Subject: [PATCH v3 3/4] net: phy: dp83867: do not call config_init twice
-Date:   Tue, 28 May 2019 13:00:51 +0300
-Message-Id: <20190528100052.8023-4-muvarov@gmail.com>
+Subject: [PATCH v3 4/4] net: phy: dp83867: Set up RGMII TX delay
+Date:   Tue, 28 May 2019 13:00:52 +0300
+Message-Id: <20190528100052.8023-5-muvarov@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190528100052.8023-1-muvarov@gmail.com>
 References: <20190528100052.8023-1-muvarov@gmail.com>
@@ -58,27 +58,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Phy state machine calls _config_init just after
-reset.
+PHY_INTERFACE_MODE_RGMII_RXID is less then TXID
+so code to set tx delay is never called.
+Fixes: 2a10154abcb75 ("net: phy: dp83867: Add TI dp83867 phy")
 
 Signed-off-by: Max Uvarov <muvarov@gmail.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/phy/dp83867.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/dp83867.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 14e9e8a94639..1ec48ecf4133 100644
+index 1ec48ecf4133..c71c7d0f53f0 100644
 --- a/drivers/net/phy/dp83867.c
 +++ b/drivers/net/phy/dp83867.c
-@@ -342,7 +342,7 @@ static int dp83867_phy_reset(struct phy_device *phydev)
+@@ -255,10 +255,8 @@ static int dp83867_config_init(struct phy_device *phydev)
+ 		ret = phy_write(phydev, MII_DP83867_PHYCTRL, val);
+ 		if (ret)
+ 			return ret;
+-	}
  
- 	usleep_range(10, 20);
+-	if ((phydev->interface >= PHY_INTERFACE_MODE_RGMII_ID) &&
+-	    (phydev->interface <= PHY_INTERFACE_MODE_RGMII_RXID)) {
++		/* Set up RGMII delays */
+ 		val = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_RGMIICTL);
  
--	return dp83867_config_init(phydev);
-+	return 0;
- }
- 
- static struct phy_driver dp83867_driver[] = {
+ 		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
 -- 
 2.17.1
 
