@@ -2,143 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD24D2D29C
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 01:59:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FEB72D291
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 01:58:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727147AbfE1X6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 19:58:30 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:42934 "EHLO
+        id S1727339AbfE1X6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 19:58:32 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43740 "EHLO
         mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726576AbfE1X63 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 19:58:29 -0400
-Received: by mail-wr1-f67.google.com with SMTP id l2so338641wrb.9;
-        Tue, 28 May 2019 16:58:28 -0700 (PDT)
+        with ESMTP id S1727036AbfE1X6b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 19:58:31 -0400
+Received: by mail-wr1-f67.google.com with SMTP id l17so334872wrm.10;
+        Tue, 28 May 2019 16:58:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=wBV1CSR3vVyHfNto7yRouBVz1R8yuynnCNl8Neb34NM=;
-        b=IJ/A94UIsDCM8xWC56JjA3JO1ZE1NUzlU2+UcQNYajTtNbBlDz3qDeeAPfq5/jnuRO
-         MhcP1EjvO1bNX80Nj9wRoK1Fdf2mzQkNhSyHztT/hwnZwirsGMAfmrdplWdQdMBeI4WA
-         ZcQkAJ8HaF1Hx2veNcmySLGK2ShHy2h6Y9mJwjCP74pm4M0kfe+BixR0DIJkYJdKUqle
-         k1u7KTB9MwQhrXsgNPJAHxVh8eCB9EtzckF8fw/1zV8nYmBtY7S+NVltfkc7vJa2iewB
-         Ixtbh/4J39RBNxpOSH77L5mi0+g0fUap9RdVw8h/UKBSSAGr3JNLuzSyrMiLt0YMFpf5
-         MbPw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=tmrU/nzbiwy6RxnR7al3LfOUoLnS2vRplPFJ+vSWK7k=;
+        b=BOGu4DWqeqirfeIBaG6w5f5nN8CncXpvt20NeCU+i92yau0OPhEMoIhdlIKP40TM/v
+         LG3fMWkwLkfpiP8p4z9gL4zOWyzFBmRhuzIvBXfUyMzx5OTTTv4/wsR8K6ANukY1XJ9+
+         Tu15kt6bNR7ixen7qHI3W0s//iA8J/oCRLMjurV2Vsc8F6t7d5ubsdsK0Jqwh6wSTOsW
+         WDdbjYL/MvdkIZaTYuM7KASovzGKaU5Jsgttbv4Eu4g2PZpLF95XTqpcjp7oDnTGBZPh
+         cqUDQ8dFGyC6tcKBiT/+w4hMrn/wCsuO7NgwX/kx1vgKySpfU/NdsTSV/97I7u6k0XhO
+         lbpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=wBV1CSR3vVyHfNto7yRouBVz1R8yuynnCNl8Neb34NM=;
-        b=EzMGAvo/gGDGAy5K71DkTq8EhPnpH4nQr6XD9Km0EPtlA1LIezNt5jzhNpxayIQyrV
-         Wfcct63fgAFTg8TAV1umowR7tlr5qWNO83z7KRzYmxOH5l7PIJb7WIBiiQWmf9qfAsbH
-         YzDL2XJwaSPYQtENr5EqxfKbpKgrT91ROvmuwbl8yUnh+1f/X6fVJT8h9I98lT2WhqAr
-         rJ0iCLSEmCOncrWUKoiqvPFly1EsS0v3KSHWLJnQy9/PzE8tV9j2BHvLIy0rRSmcr7/s
-         EC/t2unJSsLlW26w93IWsdkQhcNAedSyT9t2ySG3mQiSrasaWVcPrmUvGgCZqHdNx5sG
-         lAig==
-X-Gm-Message-State: APjAAAUB+GdIU8VypZQHnFQPjnIjhrp7n1n7kYeStkv43N1jYAeRDYjs
-        5SdJw8250TSOKJWLgnnbSJM=
-X-Google-Smtp-Source: APXvYqzzwZVUPlF+z3R0vmOrg/BfKllRyS5AJlWrc0w6Fnjgg6XoYMtWQscS/t7L8PSAUA0Wqvr6JQ==
-X-Received: by 2002:adf:a749:: with SMTP id e9mr11524121wrd.64.1559087907529;
-        Tue, 28 May 2019 16:58:27 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=tmrU/nzbiwy6RxnR7al3LfOUoLnS2vRplPFJ+vSWK7k=;
+        b=LJbdx/uqSuxOVsqrUMI04EwpJBQnuBL9lCEJicoZTsIXw3z+O7bQVowSwWacyH2g3K
+         7QnEccKbLDgrFbyUSOujWhyCZDrJoI26VIyLV0DJE20+k2IHqbWkIxBO1diLssyjEG9S
+         ySZADc0O2icj7VXu8pmiT7v6eqzlJXkgKKGJxuvgm6F9iJ1NlHXK/ZjExTRPWB1VCyuA
+         qQ087uw2YFAbL+TFzgkKxx7dP3yt/IRrcnyyd12eeVBO/LF0k/jfEgJQyM/t3kgSYN3u
+         ZTqVzXC2JUO0jH1mrQ0lknHhbp/p+YbVNhscecJKkV99ySOJwFY8VJfdiWUgdcn3WDlT
+         4vfg==
+X-Gm-Message-State: APjAAAUCNh7aV39olng/FJB4PruqYXjw9KpsTZtCmfP9dEsF+DzpB08l
+        nPXs6z77iuEgwvigBwxejQk=
+X-Google-Smtp-Source: APXvYqxQunx5s6p+SHIyiYDcoAl6YFweZp8qkn+3khqr4GVN2qUDJevkO/Es5T3N6SqUmWQDV6DpXA==
+X-Received: by 2002:a5d:628d:: with SMTP id k13mr21475364wru.319.1559087908681;
+        Tue, 28 May 2019 16:58:28 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.27.188])
-        by smtp.gmail.com with ESMTPSA id f3sm1207505wre.93.2019.05.28.16.58.26
+        by smtp.gmail.com with ESMTPSA id f3sm1207505wre.93.2019.05.28.16.58.27
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 16:58:26 -0700 (PDT)
+        Tue, 28 May 2019 16:58:28 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net, richardcochran@gmail.com,
         john.stultz@linaro.org, tglx@linutronix.de, sboyd@kernel.org
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 0/5] PTP support for the SJA1105 DSA driver
-Date:   Wed, 29 May 2019 02:56:22 +0300
-Message-Id: <20190528235627.1315-1-olteanv@gmail.com>
+Subject: [PATCH net-next 1/5] timecounter: Add helper for reconstructing partial timestamps
+Date:   Wed, 29 May 2019 02:56:23 +0300
+Message-Id: <20190528235627.1315-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190528235627.1315-1-olteanv@gmail.com>
+References: <20190528235627.1315-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset adds the following:
+Some PTP hardware offers a 64-bit free-running counter whose snapshots
+are used for timestamping, but only makes part of that snapshot
+available as timestamps (low-order bits).
 
- - A timecounter/cyclecounter based PHC for the free-running
-   timestamping clock of this switch.
+In that case, timecounter/cyclecounter users must bring the cyclecounter
+and timestamps to the same bit width, and they currently have two
+options of doing so:
 
- - A state machine implemented in the DSA tagger for SJA1105, which
-   keeps track of metadata follow-up Ethernet frames (the switch's way
-   of transmitting RX timestamps).
+- Trim the higher bits of the timecounter itself to the number of bits
+  of the timestamps.  This might work for some setups, but if the
+  wraparound of the timecounter in this case becomes high (~10 times per
+  second) then this causes additional strain on the system, which must
+  read the clock that often just to avoid missing the wraparounds.
 
- - Some common-sense on whether or not frames should be timestamped was
-   taken out of the mv88e6xxx driver (the only other DSA driver with PTP
-   support) and moved to the generic framework.  An option was also
-   added for drivers to override these common-sense decisions, and
-   timestamp some more frames.  This was the path of least resistance
-   after implementing the aforementioned state machine - metadata
-   follow-up frames need to be tracked anyway even if only to discard
-   them and not pass them up the network stack.  And since the switch
-   can't just be told to timestamp only what the kernel wants (PTP
-   frames), simply use all the timestamps it provides.
+- Reconstruct the timestamp by racing to read the PTP time within one
+  wraparound cycle since the timestamp was generated.  This is
+  preferable when the wraparound time is small (do a time-critical
+  readout once vs doing it periodically), and it has no drawback even
+  when the wraparound is comfortably sized.
 
- - A generic helper in the timecounter/cyclecounter code for
-   reconstructing partial PTP timestamps, such as those generated by the
-   SJA1105.
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ include/linux/timecounter.h |  7 +++++++
+ kernel/time/timecounter.c   | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+)
 
-Not all is rosy, though.
-
-PTP timestamping will only work when the ports are bridged. Otherwise,
-the metadata follow-up frames holding RX timestamps won't be received
-because they will be blocked by the master port's MAC filter. Linuxptp
-tries to put the net device in ALLMULTI/PROMISC mode, but DSA doesn't
-pass this on to the master port, which does the actual reception.
-The master port is put in promiscous mode when the slave ports are
-enslaved to a bridge.
-
-Also, even with software-corrected timestamps, one can observe a
-negative path delay reported by linuxptp:
-
-ptp4l[55.600]: master offset          8 s2 freq  +83677 path delay     -2390
-ptp4l[56.600]: master offset         17 s2 freq  +83688 path delay     -2391
-ptp4l[57.601]: master offset          6 s2 freq  +83682 path delay     -2391
-ptp4l[58.601]: master offset         -1 s2 freq  +83677 path delay     -2391
-
-Without investigating too deeply, this appears to be introduced by the
-correction applied by linuxptp to t4 (t4c: corrected master rxtstamp)
-during the path delay estimation process (removing the correction makes
-the path delay positive).  This does not appear to have an obvious
-negative effect upon the synchronization.
-
-Lastly, clock manipulations on the actual hardware PTP clock will have
-to be implemented anyway, for the TTEthernet block and the time-based
-ingress policer.
-
-Vladimir Oltean (5):
-  timecounter: Add helper for reconstructing partial timestamps
-  net: dsa: sja1105: Add support for the PTP clock
-  net: dsa: mv88e6xxx: Let taggers specify a can_timestamp function
-  net: dsa: sja1105: Add support for PTP timestamping
-  net: dsa: sja1105: Increase priority of CPU-trapped frames
-
- drivers/net/dsa/mv88e6xxx/hwtstamp.c          |  25 +-
- drivers/net/dsa/mv88e6xxx/hwtstamp.h          |   4 +-
- drivers/net/dsa/sja1105/Kconfig               |   7 +
- drivers/net/dsa/sja1105/Makefile              |   1 +
- drivers/net/dsa/sja1105/sja1105.h             |  30 ++
- .../net/dsa/sja1105/sja1105_dynamic_config.c  |   2 +
- drivers/net/dsa/sja1105/sja1105_main.c        | 272 ++++++++++++-
- drivers/net/dsa/sja1105/sja1105_ptp.c         | 357 ++++++++++++++++++
- drivers/net/dsa/sja1105/sja1105_ptp.h         |  48 +++
- drivers/net/dsa/sja1105/sja1105_spi.c         |  28 ++
- .../net/dsa/sja1105/sja1105_static_config.c   |  59 +++
- .../net/dsa/sja1105/sja1105_static_config.h   |  10 +
- include/linux/dsa/sja1105.h                   |  15 +
- include/linux/timecounter.h                   |   7 +
- include/net/dsa.h                             |   6 +-
- kernel/time/timecounter.c                     |  33 ++
- net/dsa/dsa.c                                 |  25 +-
- net/dsa/slave.c                               |  20 +-
- net/dsa/tag_sja1105.c                         | 135 ++++++-
- 19 files changed, 1043 insertions(+), 41 deletions(-)
- create mode 100644 drivers/net/dsa/sja1105/sja1105_ptp.c
- create mode 100644 drivers/net/dsa/sja1105/sja1105_ptp.h
-
+diff --git a/include/linux/timecounter.h b/include/linux/timecounter.h
+index 2496ad4cfc99..03eab1f3bb9c 100644
+--- a/include/linux/timecounter.h
++++ b/include/linux/timecounter.h
+@@ -30,6 +30,9 @@
+  *	by the implementor and user of specific instances of this API.
+  *
+  * @read:		returns the current cycle value
++ * @partial_tstamp_mask:bitmask in case the hardware emits timestamps
++ *			which only capture low-order bits of the full
++ *			counter, and should be reconstructed.
+  * @mask:		bitmask for two's complement
+  *			subtraction of non 64 bit counters,
+  *			see CYCLECOUNTER_MASK() helper macro
+@@ -38,6 +41,7 @@
+  */
+ struct cyclecounter {
+ 	u64 (*read)(const struct cyclecounter *cc);
++	u64 partial_tstamp_mask;
+ 	u64 mask;
+ 	u32 mult;
+ 	u32 shift;
+@@ -136,4 +140,7 @@ extern u64 timecounter_read(struct timecounter *tc);
+ extern u64 timecounter_cyc2time(struct timecounter *tc,
+ 				u64 cycle_tstamp);
+ 
++extern u64 cyclecounter_reconstruct(const struct cyclecounter *cc,
++				    u64 ts_partial);
++
+ #endif
+diff --git a/kernel/time/timecounter.c b/kernel/time/timecounter.c
+index 85b98e727306..d4657d64e38d 100644
+--- a/kernel/time/timecounter.c
++++ b/kernel/time/timecounter.c
+@@ -97,3 +97,36 @@ u64 timecounter_cyc2time(struct timecounter *tc,
+ 	return nsec;
+ }
+ EXPORT_SYMBOL_GPL(timecounter_cyc2time);
++
++/**
++ * cyclecounter_reconstruct - reconstructs @ts_partial
++ * @cc:		Pointer to cycle counter.
++ * @ts_partial:	Typically RX or TX NIC timestamp, provided by hardware as
++ *		the lower @partial_tstamp_mask bits of the cycle counter,
++ *		sampled at the time the timestamp was collected.
++ *		To reconstruct into a full @mask bit-wide timestamp, the
++ *		cycle counter is read and the high-order bits (up to @mask) are
++ *		filled in.
++ *		Must be called within one wraparound of @partial_tstamp_mask
++ *		bits of the cycle counter.
++ */
++u64 cyclecounter_reconstruct(const struct cyclecounter *cc, u64 ts_partial)
++{
++	u64 ts_reconstructed;
++	u64 cycle_now;
++
++	cycle_now = cc->read(cc);
++
++	ts_reconstructed = (cycle_now & ~cc->partial_tstamp_mask) |
++			    ts_partial;
++
++	/* Check lower bits of current cycle counter against the timestamp.
++	 * If the current cycle counter is lower than the partial timestamp,
++	 * then wraparound surely occurred and must be accounted for.
++	 */
++	if ((cycle_now & cc->partial_tstamp_mask) <= ts_partial)
++		ts_reconstructed -= (cc->partial_tstamp_mask + 1);
++
++	return ts_reconstructed;
++}
++EXPORT_SYMBOL_GPL(cyclecounter_reconstruct);
 -- 
 2.17.1
 
