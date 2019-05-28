@@ -2,124 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DD7E2CFAB
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:41:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 898492CFB5
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 21:44:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727656AbfE1Tk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 15:40:56 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42043 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726802AbfE1Tk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:40:56 -0400
-Received: by mail-pf1-f196.google.com with SMTP id r22so9233413pfh.9;
-        Tue, 28 May 2019 12:40:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=93NiWg88plww3BEzYyn0ICvR5hG8lZfHE/HYRcLE7m8=;
-        b=uPvok+oSTNyhB8lNqKartxqkRHCvLIVBjUAU/WAo1chSRW/lAL/BhXriszd23uypGv
-         LJL6lOqwCBI0M5yd3oVt1fitkvExyvZsF/XXSQXZO3EqSqSSRmHkVfAyu6usLmOzpFt0
-         /X00PXHarOpSuBzi8Rvg94s/lmKQNjgheEHMuxepkoxoXm2nRe40bUdwi9f1rTm6MRWA
-         AKtvqdZLhKH6iRWAJafmYmhb3qmu2IsA+af/SLQoWpqc1aqvKhsQQaj29stpxQnTb/1x
-         LVD4wotFH+F4t0PX/FHFO8HYimz3TXTt6C7w+2xtmG7I8y37DgaoMS34HG/xMYPBpvvr
-         B1wA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=93NiWg88plww3BEzYyn0ICvR5hG8lZfHE/HYRcLE7m8=;
-        b=OptsLzT+w/qBvF3pHvkReFdZHUOBiPgbcik9hV875q62hiHadTQ68eThLUUfUCaeUo
-         AYZcilmcHj0oSNrM/Qv7qbOwPyfYGRtoSvlFazDvProMT6oN3R/3TUHLQiaZmrPH8glW
-         jlGhYJ+XwOT4MQiwkRBA4C/Y18ZrDpB7ADLY+x1zOZ2Y4o2neGaJ6rQkgdkzHSCkMv+1
-         cS5WSz0aPyLxdq7oBfNlGVYMhg6QSClGwY7NXPhVaiLxUPTpo1wTmMnBH2aoeMAMgVUp
-         WRZOaYWZEa8cB2b9YGAfUbBCQDhawdZC3I0UtBAZTU5noDKLEVUpaaimlvrQUI9br0Xv
-         HWSA==
-X-Gm-Message-State: APjAAAUN/SheOcpOBtSSPPYX3OKbzIQytxz/LqNPN8Z4mehAKgXGoxQJ
-        wrjZhptzvK6GeDrefR8/pDM=
-X-Google-Smtp-Source: APXvYqwtgsrbCEG18fVm8Gokp3KisI3vELC3eMLPrjdBKmLgj/BK318YYXTdUiZvuDF4qitzAzXdtw==
-X-Received: by 2002:a63:e616:: with SMTP id g22mr69232791pgh.61.1559072455122;
-        Tue, 28 May 2019 12:40:55 -0700 (PDT)
-Received: from ip-172-31-44-144.us-west-2.compute.internal (ec2-54-186-128-88.us-west-2.compute.amazonaws.com. [54.186.128.88])
-        by smtp.gmail.com with ESMTPSA id u20sm16266834pfm.145.2019.05.28.12.40.52
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 28 May 2019 12:40:53 -0700 (PDT)
-Date:   Tue, 28 May 2019 19:40:51 +0000
-From:   Alakesh Haloi <alakesh.haloi@gmail.com>
-To:     Song Liu <liu.song.a23@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        linux-kselftest@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] selftests: bpf: fix compiler warning
-Message-ID: <20190528194051.GA7103@ip-172-31-44-144.us-west-2.compute.internal>
-References: <20190524003038.GA69487@ip-172-31-44-144.us-west-2.compute.internal>
- <CAPhsuW7H=w_UMyu5Q5p5+MGogkQ7+7X7sS=vJTiR=+JJy0KuTg@mail.gmail.com>
+        id S1727463AbfE1ToH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 15:44:07 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46398 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726452AbfE1ToG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 15:44:06 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4SJgcEP004415;
+        Tue, 28 May 2019 12:43:49 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=yhUYvJTPSVO43FtV9LuZGVl3h/Mkzvo8J7v5p7WcWxs=;
+ b=IhZL1ahsj2py6t6xOeruAz54po4s8RkSnBV+6kEKPBHveXnoR6YjPzSOdxSJu0SvDifT
+ SE73cqh1nyfvgkPzcQOStWKoJKjBmy83HomEGVMlDXsRNHmMdmrToK6iucdveB4HSCVI
+ a5/Zx/cpVMUPP8QHMnREjaWYFHYSWS8TD2s= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2ss8rd0n6j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 28 May 2019 12:43:49 -0700
+Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Tue, 28 May 2019 12:43:48 -0700
+Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
+ prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Tue, 28 May 2019 12:43:48 -0700
+Received: from NAM03-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Tue, 28 May 2019 12:43:48 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yhUYvJTPSVO43FtV9LuZGVl3h/Mkzvo8J7v5p7WcWxs=;
+ b=rnk/mGqWhksH4h+ZbjYr0y2eUgB4I1ruBfFl/v6m9EU2Onlj1wDYlGKCukhHqhjtyCgKQJP05Q4CIDLcrWyLRCykUOjftaN3Nqr+CLVgU36QrFqIrFIfh6sAdaW2sUwcCL50YbIIsksGNbUIxKlkspy9T+iQ7jLic97epQAO31o=
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com (20.179.156.24) by
+ BYAPR15MB3383.namprd15.prod.outlook.com (20.179.59.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1943.16; Tue, 28 May 2019 19:43:46 +0000
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::d4f6:b485:69ee:fd9a]) by BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::d4f6:b485:69ee:fd9a%7]) with mapi id 15.20.1922.021; Tue, 28 May 2019
+ 19:43:46 +0000
+From:   Roman Gushchin <guro@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf-next v3 3/4] bpf: cgroup: properly use bpf_prog_array
+ api
+Thread-Topic: [PATCH bpf-next v3 3/4] bpf: cgroup: properly use bpf_prog_array
+ api
+Thread-Index: AQHVFYNuZOejCl/kQUWLljlEI/uGLKaA8EcA
+Date:   Tue, 28 May 2019 19:43:46 +0000
+Message-ID: <20190528194342.GC20578@tower.DHCP.thefacebook.com>
+References: <20190528182946.3633-1-sdf@google.com>
+ <20190528182946.3633-3-sdf@google.com>
+In-Reply-To: <20190528182946.3633-3-sdf@google.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR0201CA0035.namprd02.prod.outlook.com
+ (2603:10b6:301:74::48) To BYAPR15MB2631.namprd15.prod.outlook.com
+ (2603:10b6:a03:152::24)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::3:3dca]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 14b666cb-3337-4c8a-4af0-08d6e3a4cc8c
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB3383;
+x-ms-traffictypediagnostic: BYAPR15MB3383:
+x-microsoft-antispam-prvs: <BYAPR15MB3383A1E89C1F68A0FE539F15BE1E0@BYAPR15MB3383.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-forefront-prvs: 00514A2FE6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(366004)(396003)(346002)(376002)(39860400002)(189003)(199004)(76176011)(186003)(66476007)(8936002)(52116002)(81156014)(316002)(68736007)(66446008)(81166006)(486006)(99286004)(46003)(66946007)(73956011)(476003)(6512007)(54906003)(53936002)(9686003)(446003)(11346002)(4326008)(6916009)(2906002)(33656002)(14454004)(6246003)(64756008)(102836004)(386003)(6506007)(66556008)(25786009)(8676002)(305945005)(6116002)(6486002)(6436002)(14444005)(1076003)(5024004)(256004)(229853002)(71190400001)(478600001)(86362001)(71200400001)(5660300002)(7736002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3383;H:BYAPR15MB2631.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 9PaTJpmAN6zLSfxmd2vc2fkTBRjZPdWjpmtA0lgHPDmHi3crdAgxfrYgu6KsEEJr2EmK8OolqAs4UlxyytHAmMhwkP27Dsak2/yN58s2adFY/E0hB2Gwhwn6nF9I7AwX/BasOKzEAybaplnb2PWXv/BulfTpTGjjQo6ompW5kWJh9BMLQR3Em+U5zcfJoNEaJcRlvp3Es+49zsaQYepMNr8Qz7UCHYAZFf9Ugn3F0n3cTICmPsE+WTox82CGEfRYXASYrZBDkR3nYNLf8KjPhxnedOAq4L8xrJ8J8Y49d2cz+uYMQ6/q41+jV88QrzBHTUyeIU+K/vRAG4ZcBeSbbxOp8Qp1/1qGP4P5JE3qgEkFo97k8HpkFLiz12WidGYF/jaY4M5RfcDQx/emoZsWEw+YcUrITVuqOT3ZW/q9KIw=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4E99262BF8C4F047A2BF72F52272A078@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPhsuW7H=w_UMyu5Q5p5+MGogkQ7+7X7sS=vJTiR=+JJy0KuTg@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 14b666cb-3337-4c8a-4af0-08d6e3a4cc8c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2019 19:43:46.8060
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: guro@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3383
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-28_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=993 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905280123
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 09:45:14AM -0700, Song Liu wrote:
-> On Thu, May 23, 2019 at 5:31 PM Alakesh Haloi <alakesh.haloi@gmail.com> wrote:
-> >
-> > Add missing header file following compiler warning
-> >
-> > prog_tests/flow_dissector.c: In function ‘tx_tap’:
-> > prog_tests/flow_dissector.c:175:9: warning: implicit declaration of function ‘writev’; did you mean ‘write’? [-Wimplicit-function-declaration]
-> >   return writev(fd, iov, ARRAY_SIZE(iov));
-> >          ^~~~~~
-> >          write
-> >
-> > Signed-off-by: Alakesh Haloi <alakesh.haloi@gmail.com>
-> 
-> The patch looks good. Please add a "Fixes" tag, so the fix
-> can be back ported properly.
-> 
-> Also, please specify which tree the patch should be applied
-> with [PATCH bpf] or [PATCH bpf-next].
-> 
-> Thanks,
-> Song
-> 
+On Tue, May 28, 2019 at 11:29:45AM -0700, Stanislav Fomichev wrote:
+> Now that we don't have __rcu markers on the bpf_prog_array helpers,
+> let's use proper rcu_dereference_protected to obtain array pointer
+> under mutex.
+>=20
+> We also don't need __rcu annotations on cgroup_bpf.inactive since
+> it's not read/updated concurrently.
+>=20
+> v3:
+> * amend cgroup_rcu_dereference to include percpu_ref_is_dying;
+>   cgroup_bpf is now reference counted and we don't hold cgroup_mutex
+>   anymore in cgroup_bpf_release
+>=20
+> v2:
+> * replace xchg with rcu_swap_protected
+>=20
+> Cc: Roman Gushchin <guro@fb.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  include/linux/bpf-cgroup.h |  2 +-
+>  kernel/bpf/cgroup.c        | 32 +++++++++++++++++++++-----------
+>  2 files changed, 22 insertions(+), 12 deletions(-)
+>=20
+> diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
+> index 9f100fc422c3..b631ee75762d 100644
+> --- a/include/linux/bpf-cgroup.h
+> +++ b/include/linux/bpf-cgroup.h
+> @@ -72,7 +72,7 @@ struct cgroup_bpf {
+>  	u32 flags[MAX_BPF_ATTACH_TYPE];
+> =20
+>  	/* temp storage for effective prog array used by prog_attach/detach */
+> -	struct bpf_prog_array __rcu *inactive;
+> +	struct bpf_prog_array *inactive;
+> =20
+>  	/* reference counter used to detach bpf programs after cgroup removal *=
+/
+>  	struct percpu_ref refcnt;
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index d995edbe816d..118b70175dd9 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -22,6 +22,13 @@
+>  DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
+>  EXPORT_SYMBOL(cgroup_bpf_enabled_key);
+> =20
+> +#define cgroup_rcu_dereference(cgrp, p)					\
+> +	rcu_dereference_protected(p, lockdep_is_held(&cgroup_mutex) ||	\
+> +				  percpu_ref_is_dying(&cgrp->bpf.refcnt))
 
-Thanks for reviewing the patch. My apologies for not following the
-rules. I have sent an updated patch after adding Fixes: tag and
-modifying the subject to reflect that it is for bpf tree.
-The updated patch is here https://lkml.org/lkml/2019/5/28/904
+Some comments why percpu_ref_is_dying(&cgrp->bpf.refcnt) is enough here wil=
+l
+be appreciated.
 
-Thanks
-Alakesh
-> 
-> 
-> 
-> > ---
-> >  tools/testing/selftests/bpf/prog_tests/flow_dissector.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> > index fbd1d88a6095..c938283ac232 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-> > @@ -3,6 +3,7 @@
-> >  #include <error.h>
-> >  #include <linux/if.h>
-> >  #include <linux/if_tun.h>
-> > +#include <sys/uio.h>
-> >
-> >  #define CHECK_FLOW_KEYS(desc, got, expected)                           \
-> >         CHECK_ATTR(memcmp(&got, &expected, sizeof(got)) != 0,           \
-> > --
-> > 2.17.1
-> >
+Thanks!
