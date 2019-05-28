@@ -2,111 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3BFE2C351
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 11:31:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59B4F2C356
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 11:34:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbfE1Jbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 05:31:44 -0400
-Received: from mail-ed1-f53.google.com ([209.85.208.53]:33550 "EHLO
-        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbfE1Jbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 05:31:44 -0400
-Received: by mail-ed1-f53.google.com with SMTP id n17so30807704edb.0
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 02:31:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=FH/R6gNvM8817hAr70N1Gzf78GTZQUDZAlgnxXzC57M=;
-        b=lNgIQIMbr97xVB6StNZtkfSMircOpwU/dYKnYxQ1/oti/ZdQyuuSB3e2i4STaj/LDJ
-         sL54SzjG6Bgc0ZwalM4/HSqZdXJevkNCYLbI9fh7n/uVzsDY3aUrNokZT4yW0nvJt4kL
-         vsvPhdGg3Ukx8nz4YmfiGsck4doTGVvJn73ksprjyXRptc04IXGBzezuvyk2/TCb/KOC
-         wDJOFX6Q/NoPtkxgnCtLotw2do3moEmOK5ROvZ+Ek6f7NGb+UJV36MjzFNt644vrV0Nc
-         ow+qQ8DYIIO2T1BUCBfMshvoqSOcADuJ38B60DZKHFfb1+vkj6BfVb3XWFf1T84Hm3KW
-         mr6A==
-X-Gm-Message-State: APjAAAWrHiMVo/nnwvAxofUfbdLrq4zShyjPALakwHHTKGlYY0dWmAzP
-        gGOSXONWAlysC9lf37TsWmTn+CPBjN4=
-X-Google-Smtp-Source: APXvYqxWuiQzBw14jLn30t2EZeWF+Nb6O72AV5Xzm4E9SXD5K7r1AdAzgPZShqUb/RW4aAjq51Ff4w==
-X-Received: by 2002:a17:906:34da:: with SMTP id h26mr5334314ejb.247.1559035902687;
-        Tue, 28 May 2019 02:31:42 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (alrua-x1.vpn.toke.dk. [2a00:7660:6da:10::2])
-        by smtp.gmail.com with ESMTPSA id f44sm4133104eda.73.2019.05.28.02.31.41
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 28 May 2019 02:31:41 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id DF4BB18031E; Tue, 28 May 2019 11:31:40 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Akshat Kakkar <akshat.1984@gmail.com>,
-        netdev <netdev@vger.kernel.org>, lartc <lartc@vger.kernel.org>
-Cc:     cake@lists.bufferbloat.net
-Subject: Re: Cake not doing rate limiting in a way it is expected to do
-In-Reply-To: <CAA5aLPgz2Pzi5qNZkHwtN=fEXEwRpCQYFUkEzRWkdT39+YNWFA@mail.gmail.com>
-References: <CAA5aLPgz2Pzi5qNZkHwtN=fEXEwRpCQYFUkEzRWkdT39+YNWFA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 28 May 2019 11:31:40 +0200
-Message-ID: <875zpvvsar.fsf@toke.dk>
+        id S1726649AbfE1Jew (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 05:34:52 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35628 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726279AbfE1Jew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 05:34:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=b7EjUgtkYMhbMLswseelCo3NtK+10aHTKWB3H04r1bA=; b=IRUByUvg7sTVD+M/n9G/h4DHX6
+        kbY3dIEXppCOv2NXFuL8TUOmIQha0vhPXIGWzfdlMHVbrfgPVa071YOxYLAKRxT0Ji1brvkRU8jj8
+        xRPZ8JB4267CHWPLCBjCg87zd3eMX7qb9C6GoZ12ATWMr/5PpJzbiT9FPbNIKjfI2PME9tEoV972y
+        aeGSTtY4nLhtGoCKf1ek4cqJ53r8ZWAZUtPXDfZZ7QciwH2l3rAEVOgzq6uD12tBQEDRZdaRXImiU
+        LqXCHml4uooKg2uFOKgD1WVp1FuuoC0aSPl/QnSh+E+05ZHU1ruLTIWO2ziNMhyQvpHG1MrCBCzcp
+        nywusKhw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:39880 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1hVYVH-0004sQ-7A; Tue, 28 May 2019 10:34:43 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.82_1-5b7a7c0-XX)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1hVYVG-0005D8-8w; Tue, 28 May 2019 10:34:42 +0100
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH] net: phy: marvell10g: report if the PHY fails to boot
+ firmware
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1hVYVG-0005D8-8w@rmk-PC.armlinux.org.uk>
+Date:   Tue, 28 May 2019 10:34:42 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ adding cake list ]
+Some boards do not have the PHY firmware programmed in the 3310's flash,
+which leads to the PHY not working as expected.  Warn the user when the
+PHY fails to boot the firmware and refuse to initialise.
 
-Akshat Kakkar <akshat.1984@gmail.com> writes:
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+I think this patch needs testing with the Marvell 88x2110 PHY before
+this can be merged into mainline, but I think it should go into -rc
+and be back-ported to stable trees to avoid user frustration. I spent
+some time last night debugging one such instance, and the user
+afterwards indicated that they'd had the problem for a long time, and
+had thought of throwing the hardware out the window!  Clearly not a
+good user experience.
 
-> Cake is expected to handle traffic in 2 steps :
-> First is on the basis of host
-> Second is within every host, on the basis of flow
->
-> So, if I limit traffic to 20Mbps shared across 2 host A & B,
-> Following are various scenarios, expectation and observations
-> 1. If either A or B is downloading, they will be getting speed of 20Mbps
-> Observation: Meeting with expectation
->
-> 2. If both A & B downloads (single download each), each will be
-> getting speed of 20Mbps
-> Observation: Meeting with expecation but its very jittery (around
-> 20%), i.e. speed varies from 8Mbps to 12 Mbps. If I use fq_codel speed
-> is same BUT jitter is very less (around 1%).
->
-> 3. Now if A starts 3 downloads, and B is still having single download,
-> A each download should be around 3.3 Mbps and B should be around
-> 10Mbps
-> Observation: Around 5 Mbps for each download with lot of jitter, i.e.
-> no advantage of having CAKE!!!
->
-> Linux Kernel 4.20
-> For case 3, output of command : tc -s class show dev eno2
->
-> class htb 1:1 root leaf 8003: prio 1 rate 20000Kbit ceil 20000Kbit
-> burst 200Kb cburst 1600b
->  Sent 688474645 bytes 455058 pkt (dropped 0, overlimits 381196 requeues 0)
->  rate 19874Kbit 1641pps backlog 21196b 14p requeues 0
->  lended: 382532 borrowed: 0 giants: 0
->  tokens: 1260573 ctokens: -9427
->
-> class cake 8003:44f parent 8003:
->  (dropped 3404, overlimits 0 requeues 0)
->  backlog 9084b 6p requeues 0
-> class cake 8003:516 parent 8003:
->  (dropped 3565, overlimits 0 requeues 0)
->  backlog 0b 0p requeues 0
-> class cake 8003:590 parent 8003:
->  (dropped 3023, overlimits 0 requeues 0)
->  backlog 4542b 3p requeues 0
-> class cake 8003:605 parent 8003:
->  (dropped 1772, overlimits 0 requeues 0)
->  backlog 7570b 5p requeues 0
+ drivers/net/phy/marvell10g.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Could you please share some more details of your setup? The output of
-`tc -s qdisc show dev eno2`?
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 100b401b1f4a..754cde873dde 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -31,6 +31,9 @@
+ #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
+ 
+ enum {
++	MV_PMA_BOOT		= 0xc050,
++	MV_PMA_BOOT_FATAL	= BIT(0),
++
+ 	MV_PCS_BASE_T		= 0x0000,
+ 	MV_PCS_BASE_R		= 0x1000,
+ 	MV_PCS_1000BASEX	= 0x2000,
+@@ -211,6 +214,16 @@ static int mv3310_probe(struct phy_device *phydev)
+ 	    (phydev->c45_ids.devices_in_package & mmd_mask) != mmd_mask)
+ 		return -ENODEV;
+ 
++	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_BOOT);
++	if (ret < 0)
++		return ret;
++
++	if (ret & MV_PMA_BOOT_FATAL) {
++		dev_warn(&phydev->mdio.dev,
++			 "PHY failed to boot firmware, status=%04x\n", ret);
++		return -ENODEV;
++	}
++
+ 	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+ 		return -ENOMEM;
+-- 
+2.7.4
 
-How are you running the download tests? Is this over the internet, or in
-a controlled setup? What's your actual line rate? Are you using ingress
-shaping as well?
-
-It looks like you are using HTB for rate limiting on top of CAKE? Why?
-
--Toke
