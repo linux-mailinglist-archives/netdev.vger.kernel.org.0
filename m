@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3041E2C5AD
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B99272C5AC
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:48:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726862AbfE1Lsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 07:48:55 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:40697 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726776AbfE1Lsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:48:51 -0400
-Received: by mail-wr1-f65.google.com with SMTP id t4so11594682wrx.7
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 04:48:50 -0700 (PDT)
+        id S1726844AbfE1Lsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 07:48:54 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40146 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726780AbfE1Lsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:48:52 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 15so2496442wmg.5
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 04:48:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=SoP7/0bO8u2fFwdXz0XMD2PDGr56rbtkkCVukKfoyTk=;
-        b=XuiqnrGgq1a4fM69xTyD1NFgg+x7RC404xcRNZhhhAOj5awTiazutqLPVffbthb3aq
-         4m0fRQyD3E87oOtIsQE+mxO/OMyDklVUgw81nKfCNskgM0tint1A27TutHQqqg3QSNWl
-         TcT5ZdVXNlf4MLbNp5kmZiDCrt87Fb9MlQwawz85bSgRZ7P/ljUDTttUkpKFmOn78ON6
-         OH0ZAvQwseaXGDNZAWYD04t+kixrFXDZcuL2FjOzj40JiF0ycByejz6EVLcvMyJx6LH3
-         AO5ogLmSeRuwuIPxlIGsrFfH+J7wpPmVedI1UgXF/WE8f+p4TTW+A2EZmvmkwdnfIEjx
-         mcJQ==
+        bh=epU2k/cBEMzaegX+zA+I0N6IA/FvNv2FtO4ZKvLQ00Y=;
+        b=udbLjwVUuRU+BaWvf1Kt0IxPiRWDOgbWaayhrkmVNOm79Xob65fzZRMakCCHucLkOH
+         DEL0rhXmrCBr//2RgRYY1/sT+thWwq9z531D2cTUKZOJNYNaZ6cefyUZGtix4XEOtKdG
+         qjt8VdMGMW5Ui7BD0nMuih2tFnCsnT0gYwZBqmD3ZBk0sAMuAbBoDKenTYTpxBQfwCy2
+         0u4lg5sbJcErDtOYqEwbTDDFR20l2Ow2o7oXLOxhc7TXzW/spj6lDWxeZsBdYmKV0hjh
+         9XCQ05dKyddXrrdIXahG01taoOaG4bDIA3wOOwdKKYzg6O8hevJCAAYum9GnNpfCfjCz
+         AazQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=SoP7/0bO8u2fFwdXz0XMD2PDGr56rbtkkCVukKfoyTk=;
-        b=AM9TRuJB8vzOQJSsTSZqQKkgy/D+nkw+CvYTlcEfSMvNN7LC1REuFgGsD5kLBknROO
-         1rj0lzlkPHqiEO57VlKrvqFr+e2AHEvfaMQ75Aqu48b0tTOnbPO4hMDkmZlBKLrRUNLk
-         KywH1Dx5z61yCjpa83xX47+d7Q2q6mxwQdioMoONU9SNQzSxyyLh8iW9nP96PCqwJ2/P
-         uTdH2+ex6mdFFfdcnN4qQNBta63jmLWRXXwYk/ndHuxvxWjjY42h9RSmwVrtagICNb3p
-         IJcbBgZZirAVJw2P+txZGGb0B6PT6phWl0qGVr6B98xvHteJBAKQJRX5Is6xhExPuLcg
-         pP1A==
-X-Gm-Message-State: APjAAAWUlbFvz2C4lHgE3C7RsDOzGLE+2wqD5HUjeTNxn+G+dkqRX6dG
-        HV3cXYbgZDxGZ0oHqoKvVWapQVruj5c=
-X-Google-Smtp-Source: APXvYqy8wUxiAvHYGckwlxbZgWty49GhxMYIfDNZB7bkpeY+u5rutWRZ2EOoedhVoV2jDWOyk7JQog==
-X-Received: by 2002:a5d:6807:: with SMTP id w7mr11417521wru.336.1559044129939;
-        Tue, 28 May 2019 04:48:49 -0700 (PDT)
+        bh=epU2k/cBEMzaegX+zA+I0N6IA/FvNv2FtO4ZKvLQ00Y=;
+        b=KFnK+qvsf+ojhFZ/PXZQhzVFSL1YXpXDu5EXMmbnm7SGdKpQvr2g1J681cE6/4IyfW
+         GcPQFG5rae6CG8yWRitXaENroipx8wYaOuTy+eBlRrQrOuD67xOUKy4F2qVvEBK87V14
+         E1A0XWl5SiCd24mmtBHo803uzdKIO+IBX8dSiTfs2hbdkFhbCNULvsuFY6Ien8qhUnMV
+         wuxEtElS3X2+Hek5qHcWNGuphTG1D+IQJF0GRtSq8Cj9V5k3jRPmY27nSl7Ta79J9dti
+         J8Tt0DahvDolH7ob7C3ST+8aTxULU0u9BoJUjOrliUCoSpy6dO9rpK1fcaQK/Ob4d+yI
+         /GOw==
+X-Gm-Message-State: APjAAAV67jXIRHpf16VGj0Xczf1CE5WpisZIhzc3siyLAfWLsbjMhBmp
+        2javiOMicHmz5A+Vqa2bw+p+ZohLn10=
+X-Google-Smtp-Source: APXvYqwooL2F+KxbqcwNT6yapCtI133MzFI6sOXvASqgxBgyCdm25NE3f8WvARqSH3qRTo8wihajGw==
+X-Received: by 2002:a1c:ed0b:: with SMTP id l11mr2825709wmh.103.1559044130823;
+        Tue, 28 May 2019 04:48:50 -0700 (PDT)
 Received: from localhost (ip-89-177-126-215.net.upcbroadband.cz. [89.177.126.215])
-        by smtp.gmail.com with ESMTPSA id s62sm4911551wmf.24.2019.05.28.04.48.49
+        by smtp.gmail.com with ESMTPSA id p16sm27871811wrg.49.2019.05.28.04.48.50
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 28 May 2019 04:48:49 -0700 (PDT)
+        Tue, 28 May 2019 04:48:50 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, mlxsw@mellanox.com,
         jakub.kicinski@netronome.com, sthemmin@microsoft.com,
         dsahern@gmail.com, saeedm@mellanox.com, leon@kernel.org,
         f.fainelli@gmail.com
-Subject: [patch net-next v2 3/7] mlxfw: Propagate error messages through extack
-Date:   Tue, 28 May 2019 13:48:42 +0200
-Message-Id: <20190528114846.1983-4-jiri@resnulli.us>
+Subject: [patch net-next v2 4/7] devlink: allow driver to update progress of flash update
+Date:   Tue, 28 May 2019 13:48:43 +0200
+Message-Id: <20190528114846.1983-5-jiri@resnulli.us>
 X-Mailer: git-send-email 2.17.2
 In-Reply-To: <20190528114846.1983-1-jiri@resnulli.us>
 References: <20190528114846.1983-1-jiri@resnulli.us>
@@ -62,284 +62,171 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Currently the error messages are printed to dmesg. Propagate them also
-to directly to user doing the flashing through extack.
+Introduce a function to be called from drivers during flash. It sends
+notification to userspace about flash update progress.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
-v1->v2:
-- dropped "is which" from errmsg.
----
- drivers/net/ethernet/mellanox/mlx5/core/fw.c  |  6 ++--
- .../net/ethernet/mellanox/mlx5/core/main.c    |  2 +-
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  3 +-
- drivers/net/ethernet/mellanox/mlxfw/mlxfw.h   |  7 ++--
- .../net/ethernet/mellanox/mlxfw/mlxfw_fsm.c   | 33 +++++++++++++------
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 10 +++---
- 6 files changed, 41 insertions(+), 20 deletions(-)
+ include/net/devlink.h        |   8 +++
+ include/uapi/linux/devlink.h |   5 ++
+ net/core/devlink.c           | 102 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 115 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-index 1ab6f7e3bec6..e8fedb307b2c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-@@ -552,7 +552,8 @@ static const struct mlxfw_dev_ops mlx5_mlxfw_dev_ops = {
- };
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 151eb930d329..8f65356132be 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -741,6 +741,14 @@ void
+ devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
+ 				     enum devlink_health_reporter_state state);
  
- int mlx5_firmware_flash(struct mlx5_core_dev *dev,
--			const struct firmware *firmware)
-+			const struct firmware *firmware,
-+			struct netlink_ext_ack *extack)
- {
- 	struct mlx5_mlxfw_dev mlx5_mlxfw_dev = {
- 		.mlxfw_dev = {
-@@ -571,5 +572,6 @@ int mlx5_firmware_flash(struct mlx5_core_dev *dev,
- 		return -EOPNOTSUPP;
- 	}
++void devlink_flash_update_begin_notify(struct devlink *devlink);
++void devlink_flash_update_end_notify(struct devlink *devlink);
++void devlink_flash_update_status_notify(struct devlink *devlink,
++					const char *status_msg,
++					const char *component,
++					unsigned long done,
++					unsigned long total);
++
+ #if IS_ENABLED(CONFIG_NET_DEVLINK)
  
--	return mlxfw_firmware_flash(&mlx5_mlxfw_dev.mlxfw_dev, firmware);
-+	return mlxfw_firmware_flash(&mlx5_mlxfw_dev.mlxfw_dev,
-+				    firmware, extack);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 36acd0267a13..52fcfc17fcc6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1226,7 +1226,7 @@ static int mlx5_devlink_flash_update(struct devlink *devlink,
- 	if (err)
- 		return err;
+ void devlink_compat_running_version(struct net_device *dev,
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 5bb4ea67d84f..5287b42c181f 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -104,6 +104,8 @@ enum devlink_command {
+ 	DEVLINK_CMD_HEALTH_REPORTER_DUMP_CLEAR,
  
--	return mlx5_firmware_flash(dev, fw);
-+	return mlx5_firmware_flash(dev, fw, extack);
- }
+ 	DEVLINK_CMD_FLASH_UPDATE,
++	DEVLINK_CMD_FLASH_UPDATE_END,		/* notification only */
++	DEVLINK_CMD_FLASH_UPDATE_STATUS,	/* notification only */
  
- static const struct devlink_ops mlx5_devlink_ops = {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index 22e69d4813e4..d4dd8c1ae55c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -184,7 +184,8 @@ int mlx5_set_mtppse(struct mlx5_core_dev *mdev, u8 pin, u8 arm, u8 mode);
- 			    MLX5_CAP_MCAM_FEATURE((mdev), mtpps_fs) &&	\
- 			    MLX5_CAP_MCAM_FEATURE((mdev), mtpps_enh_out_per_adj))
+ 	/* add new commands above here */
+ 	__DEVLINK_CMD_MAX,
+@@ -331,6 +333,9 @@ enum devlink_attr {
  
--int mlx5_firmware_flash(struct mlx5_core_dev *dev, const struct firmware *fw);
-+int mlx5_firmware_flash(struct mlx5_core_dev *dev, const struct firmware *fw,
-+			struct netlink_ext_ack *extack);
+ 	DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME,	/* string */
+ 	DEVLINK_ATTR_FLASH_UPDATE_COMPONENT,	/* string */
++	DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG,	/* string */
++	DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE,	/* u64 */
++	DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL,	/* u64 */
  
- void mlx5e_init(void);
- void mlx5e_cleanup(void);
-diff --git a/drivers/net/ethernet/mellanox/mlxfw/mlxfw.h b/drivers/net/ethernet/mellanox/mlxfw/mlxfw.h
-index 14c0c62f8e73..83286b90593f 100644
---- a/drivers/net/ethernet/mellanox/mlxfw/mlxfw.h
-+++ b/drivers/net/ethernet/mellanox/mlxfw/mlxfw.h
-@@ -5,6 +5,7 @@
- #define _MLXFW_H
+ 	/* add new attributes above here, update the policy in devlink.c */
  
- #include <linux/firmware.h>
-+#include <linux/netlink.h>
- 
- enum mlxfw_fsm_state {
- 	MLXFW_FSM_STATE_IDLE,
-@@ -67,11 +68,13 @@ struct mlxfw_dev {
- 
- #if IS_REACHABLE(CONFIG_MLXFW)
- int mlxfw_firmware_flash(struct mlxfw_dev *mlxfw_dev,
--			 const struct firmware *firmware);
-+			 const struct firmware *firmware,
-+			 struct netlink_ext_ack *extack);
- #else
- static inline
- int mlxfw_firmware_flash(struct mlxfw_dev *mlxfw_dev,
--			 const struct firmware *firmware)
-+			 const struct firmware *firmware,
-+			 struct netlink_ext_ack *extack)
- {
- 	return -EOPNOTSUPP;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c b/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c
-index 240c027e5f07..61c32c43a309 100644
---- a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c
-+++ b/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c
-@@ -40,7 +40,8 @@ static const char * const mlxfw_fsm_state_err_str[] = {
- };
- 
- static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
--				enum mlxfw_fsm_state fsm_state)
-+				enum mlxfw_fsm_state fsm_state,
-+				struct netlink_ext_ack *extack)
- {
- 	enum mlxfw_fsm_state_err fsm_state_err;
- 	enum mlxfw_fsm_state curr_fsm_state;
-@@ -57,11 +58,13 @@ static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
- 	if (fsm_state_err != MLXFW_FSM_STATE_ERR_OK) {
- 		pr_err("Firmware flash failed: %s\n",
- 		       mlxfw_fsm_state_err_str[fsm_state_err]);
-+		NL_SET_ERR_MSG_MOD(extack, "Firmware flash failed");
- 		return -EINVAL;
- 	}
- 	if (curr_fsm_state != fsm_state) {
- 		if (--times == 0) {
- 			pr_err("Timeout reached on FSM state change");
-+			NL_SET_ERR_MSG_MOD(extack, "Timeout reached on FSM state change");
- 			return -ETIMEDOUT;
- 		}
- 		msleep(MLXFW_FSM_STATE_WAIT_CYCLE_MS);
-@@ -76,7 +79,8 @@ static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
- 
- static int mlxfw_flash_component(struct mlxfw_dev *mlxfw_dev,
- 				 u32 fwhandle,
--				 struct mlxfw_mfa2_component *comp)
-+				 struct mlxfw_mfa2_component *comp,
-+				 struct netlink_ext_ack *extack)
- {
- 	u16 comp_max_write_size;
- 	u8 comp_align_bits;
-@@ -96,6 +100,7 @@ static int mlxfw_flash_component(struct mlxfw_dev *mlxfw_dev,
- 	if (comp->data_size > comp_max_size) {
- 		pr_err("Component %d is of size %d which is bigger than limit %d\n",
- 		       comp->index, comp->data_size, comp_max_size);
-+		NL_SET_ERR_MSG_MOD(extack, "Component is bigger than limit");
- 		return -EINVAL;
- 	}
- 
-@@ -110,7 +115,7 @@ static int mlxfw_flash_component(struct mlxfw_dev *mlxfw_dev,
- 		return err;
- 
- 	err = mlxfw_fsm_state_wait(mlxfw_dev, fwhandle,
--				   MLXFW_FSM_STATE_DOWNLOAD);
-+				   MLXFW_FSM_STATE_DOWNLOAD, extack);
- 	if (err)
- 		goto err_out;
- 
-@@ -134,7 +139,8 @@ static int mlxfw_flash_component(struct mlxfw_dev *mlxfw_dev,
- 	if (err)
- 		goto err_out;
- 
--	err = mlxfw_fsm_state_wait(mlxfw_dev, fwhandle, MLXFW_FSM_STATE_LOCKED);
-+	err = mlxfw_fsm_state_wait(mlxfw_dev, fwhandle,
-+				   MLXFW_FSM_STATE_LOCKED, extack);
- 	if (err)
- 		goto err_out;
- 	return 0;
-@@ -145,7 +151,8 @@ static int mlxfw_flash_component(struct mlxfw_dev *mlxfw_dev,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 9716a7f382cb..963178d32dda 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -2673,6 +2673,108 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ 	return devlink->ops->reload(devlink, info->extack);
  }
  
- static int mlxfw_flash_components(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
--				  struct mlxfw_mfa2_file *mfa2_file)
-+				  struct mlxfw_mfa2_file *mfa2_file,
-+				  struct netlink_ext_ack *extack)
++static int devlink_nl_flash_update_fill(struct sk_buff *msg,
++					struct devlink *devlink,
++					enum devlink_command cmd,
++					const char *status_msg,
++					const char *component,
++					unsigned long done, unsigned long total)
++{
++	void *hdr;
++
++	hdr = genlmsg_put(msg, 0, 0, &devlink_nl_family, 0, cmd);
++	if (!hdr)
++		return -EMSGSIZE;
++
++	if (devlink_nl_put_handle(msg, devlink))
++		goto nla_put_failure;
++
++	if (cmd != DEVLINK_CMD_FLASH_UPDATE_STATUS)
++		goto out;
++
++	if (status_msg &&
++	    nla_put_string(msg, DEVLINK_ATTR_FLASH_UPDATE_STATUS_MSG,
++			   status_msg))
++		goto nla_put_failure;
++	if (component &&
++	    nla_put_string(msg, DEVLINK_ATTR_FLASH_UPDATE_COMPONENT,
++			   component))
++		goto nla_put_failure;
++	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE,
++			      done, DEVLINK_ATTR_PAD))
++		goto nla_put_failure;
++	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL,
++			      total, DEVLINK_ATTR_PAD))
++		goto nla_put_failure;
++
++out:
++	genlmsg_end(msg, hdr);
++	return 0;
++
++nla_put_failure:
++	genlmsg_cancel(msg, hdr);
++	return -EMSGSIZE;
++}
++
++static void __devlink_flash_update_notify(struct devlink *devlink,
++					  enum devlink_command cmd,
++					  const char *status_msg,
++					  const char *component,
++					  unsigned long done,
++					  unsigned long total)
++{
++	struct sk_buff *msg;
++	int err;
++
++	WARN_ON(cmd != DEVLINK_CMD_FLASH_UPDATE &&
++		cmd != DEVLINK_CMD_FLASH_UPDATE_END &&
++		cmd != DEVLINK_CMD_FLASH_UPDATE_STATUS);
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return;
++
++	err = devlink_nl_flash_update_fill(msg, devlink, cmd, status_msg,
++					   component, done, total);
++	if (err)
++		goto out_free_msg;
++
++	genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink),
++				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
++	return;
++
++out_free_msg:
++	nlmsg_free(msg);
++}
++
++void devlink_flash_update_begin_notify(struct devlink *devlink)
++{
++	__devlink_flash_update_notify(devlink,
++				      DEVLINK_CMD_FLASH_UPDATE,
++				      NULL, NULL, 0, 0);
++}
++EXPORT_SYMBOL_GPL(devlink_flash_update_begin_notify);
++
++void devlink_flash_update_end_notify(struct devlink *devlink)
++{
++	__devlink_flash_update_notify(devlink,
++				      DEVLINK_CMD_FLASH_UPDATE_END,
++				      NULL, NULL, 0, 0);
++}
++EXPORT_SYMBOL_GPL(devlink_flash_update_end_notify);
++
++void devlink_flash_update_status_notify(struct devlink *devlink,
++					const char *status_msg,
++					const char *component,
++					unsigned long done,
++					unsigned long total)
++{
++	__devlink_flash_update_notify(devlink,
++				      DEVLINK_CMD_FLASH_UPDATE_STATUS,
++				      status_msg, component, done, total);
++}
++EXPORT_SYMBOL_GPL(devlink_flash_update_status_notify);
++
+ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
+ 				       struct genl_info *info)
  {
- 	u32 component_count;
- 	int err;
-@@ -156,6 +163,7 @@ static int mlxfw_flash_components(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
- 					      &component_count);
- 	if (err) {
- 		pr_err("Could not find device PSID in MFA2 file\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Could not find device PSID in MFA2 file");
- 		return err;
- 	}
- 
-@@ -168,7 +176,7 @@ static int mlxfw_flash_components(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
- 			return PTR_ERR(comp);
- 
- 		pr_info("Flashing component type %d\n", comp->index);
--		err = mlxfw_flash_component(mlxfw_dev, fwhandle, comp);
-+		err = mlxfw_flash_component(mlxfw_dev, fwhandle, comp, extack);
- 		mlxfw_mfa2_file_component_put(comp);
- 		if (err)
- 			return err;
-@@ -177,7 +185,8 @@ static int mlxfw_flash_components(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
- }
- 
- int mlxfw_firmware_flash(struct mlxfw_dev *mlxfw_dev,
--			 const struct firmware *firmware)
-+			 const struct firmware *firmware,
-+			 struct netlink_ext_ack *extack)
- {
- 	struct mlxfw_mfa2_file *mfa2_file;
- 	u32 fwhandle;
-@@ -185,6 +194,7 @@ int mlxfw_firmware_flash(struct mlxfw_dev *mlxfw_dev,
- 
- 	if (!mlxfw_mfa2_check(firmware)) {
- 		pr_err("Firmware file is not MFA2\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Firmware file is not MFA2");
- 		return -EINVAL;
- 	}
- 
-@@ -196,15 +206,16 @@ int mlxfw_firmware_flash(struct mlxfw_dev *mlxfw_dev,
- 	err = mlxfw_dev->ops->fsm_lock(mlxfw_dev, &fwhandle);
- 	if (err) {
- 		pr_err("Could not lock the firmware FSM\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Could not lock the firmware FSM");
- 		goto err_fsm_lock;
- 	}
- 
- 	err = mlxfw_fsm_state_wait(mlxfw_dev, fwhandle,
--				   MLXFW_FSM_STATE_LOCKED);
-+				   MLXFW_FSM_STATE_LOCKED, extack);
- 	if (err)
- 		goto err_state_wait_idle_to_locked;
- 
--	err = mlxfw_flash_components(mlxfw_dev, fwhandle, mfa2_file);
-+	err = mlxfw_flash_components(mlxfw_dev, fwhandle, mfa2_file, extack);
- 	if (err)
- 		goto err_flash_components;
- 
-@@ -212,10 +223,12 @@ int mlxfw_firmware_flash(struct mlxfw_dev *mlxfw_dev,
- 	err = mlxfw_dev->ops->fsm_activate(mlxfw_dev, fwhandle);
- 	if (err) {
- 		pr_err("Could not activate the downloaded image\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Could not activate the downloaded image");
- 		goto err_fsm_activate;
- 	}
- 
--	err = mlxfw_fsm_state_wait(mlxfw_dev, fwhandle, MLXFW_FSM_STATE_LOCKED);
-+	err = mlxfw_fsm_state_wait(mlxfw_dev, fwhandle,
-+				   MLXFW_FSM_STATE_LOCKED, extack);
- 	if (err)
- 		goto err_state_wait_activate_to_locked;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 861a77538859..639bb5778ff3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -307,7 +307,8 @@ static const struct mlxfw_dev_ops mlxsw_sp_mlxfw_dev_ops = {
- };
- 
- static int mlxsw_sp_firmware_flash(struct mlxsw_sp *mlxsw_sp,
--				   const struct firmware *firmware)
-+				   const struct firmware *firmware,
-+				   struct netlink_ext_ack *extack)
- {
- 	struct mlxsw_sp_mlxfw_dev mlxsw_sp_mlxfw_dev = {
- 		.mlxfw_dev = {
-@@ -320,7 +321,8 @@ static int mlxsw_sp_firmware_flash(struct mlxsw_sp *mlxsw_sp,
- 	int err;
- 
- 	mlxsw_core_fw_flash_start(mlxsw_sp->core);
--	err = mlxfw_firmware_flash(&mlxsw_sp_mlxfw_dev.mlxfw_dev, firmware);
-+	err = mlxfw_firmware_flash(&mlxsw_sp_mlxfw_dev.mlxfw_dev,
-+				   firmware, extack);
- 	mlxsw_core_fw_flash_end(mlxsw_sp->core);
- 
- 	return err;
-@@ -374,7 +376,7 @@ static int mlxsw_sp_fw_rev_validate(struct mlxsw_sp *mlxsw_sp)
- 		return err;
- 	}
- 
--	err = mlxsw_sp_firmware_flash(mlxsw_sp, firmware);
-+	err = mlxsw_sp_firmware_flash(mlxsw_sp, firmware, NULL);
- 	release_firmware(firmware);
- 	if (err)
- 		dev_err(mlxsw_sp->bus_info->dev, "Could not upgrade firmware\n");
-@@ -403,7 +405,7 @@ static int mlxsw_sp_flash_update(struct mlxsw_core *mlxsw_core,
- 				      mlxsw_sp->bus_info->dev);
- 	if (err)
- 		return err;
--	err = mlxsw_sp_firmware_flash(mlxsw_sp, firmware);
-+	err = mlxsw_sp_firmware_flash(mlxsw_sp, firmware, extack);
- 	release_firmware(firmware);
- 
- 	return err;
 -- 
 2.17.2
 
