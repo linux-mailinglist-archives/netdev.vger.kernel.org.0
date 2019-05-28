@@ -2,102 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C60872C833
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 15:57:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 066862C839
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 16:01:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727579AbfE1N5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 09:57:42 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40909 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727563AbfE1N5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 09:57:41 -0400
-Received: by mail-wr1-f66.google.com with SMTP id t4so12072887wrx.7
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 06:57:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RDHAz/uNRTlAuvbMTky/K+5WAqU95asj2GuckNTPrPw=;
-        b=O0gwBRLE2bvLTTBgVqV1t6bfn+gpJBngDtl+jkFjACXdyByR9CYsKsTs0CAlRupFvj
-         nttTyi6t/YyF4vDKCPEl7IQ1zD6uJwNfcehXxhaYFqwVJ1q55KTyEO0gaZmYv34b9vfx
-         Tr9f3h9ysbRZphO/W83Xmcj0upIXOHrd71r+dnEYtV75ZXTDhTh6zFIcfUNtW7yq2tUP
-         BDdLGXTFKA8voqgPy0iFH6JhSU88eCV/xHpeP1bD7+LmJwClUBX3VkerJweI2gN+q8tp
-         fctvEG/dur8IP3xU3bN4xo5Blz7SimoEz8Go0pIN1HFE8CSrxhz0f8pQVfr6wF+bw+Oq
-         QAqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=RDHAz/uNRTlAuvbMTky/K+5WAqU95asj2GuckNTPrPw=;
-        b=bb36jgT+5hLPAg44yTDiH5dE0tysBHgVZsqPLlv+QPqEo8vH+r5Y0HgvchntvYnW/f
-         AeHg2A3L6O8J2btQm3utgb0Z9sndSdaW10L1c5uJo/gCyrC0FpHLXrgVGnY8bRfzDMD5
-         vpM3ck006iEVkmVGVsfUr+JE2sN33T+Bn/QjbKk7RnyC4HpCPYPViFksWDGZaBleG1kO
-         0HLGg3Rr5dFm53v/HQz8MsHawWPrHOQc8ov1oA6rKkzsIac3LStjg+JJ5U7AO6TncqRQ
-         Jtva3vA/s7aA3CXOOeO6BA5xA5RzdKRPtaCoBf3Ahz1KhdG5mVpCnCtJxX/2U3G/kW5N
-         GzQA==
-X-Gm-Message-State: APjAAAUBtxePKyH/Ke5wjU30oI9td4lethok/IfRrYLJnAQZSp9ISCOt
-        Q+TALBNSq1BJmAZgONyEmQY2uA==
-X-Google-Smtp-Source: APXvYqzCRfQOGvbLesnlwSBxQtBXBVcya0Sa9gKp2gOr2HzpoKcdhNtfsct3zZ/Vfwq/Pxu7K+3PkA==
-X-Received: by 2002:adf:c601:: with SMTP id n1mr73203219wrg.49.1559051859805;
-        Tue, 28 May 2019 06:57:39 -0700 (PDT)
-Received: from ?IPv6:2a01:e35:8b63:dc30:d562:72eb:4113:d5e7? ([2a01:e35:8b63:dc30:d562:72eb:4113:d5e7])
-        by smtp.gmail.com with ESMTPSA id a124sm4034922wmh.3.2019.05.28.06.57.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 06:57:38 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH] netfilter: ctnetlink: Resolve conntrack L3-protocol flush
- regression
-To:     stable <stable@vger.kernel.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Kristian Evensen <kristian.evensen@gmail.com>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-References: <20190503154007.32495-1-kristian.evensen@gmail.com>
- <20190505223229.3ujqpwmuefd3wh7b@salvia>
- <4ecbebbb-0a7f-6d45-c2c0-00dee746e573@6wind.com>
- <20190506131605.kapyns6gkyphbea2@salvia>
- <6dea0101-9267-ae20-d317-649f1f550089@6wind.com>
- <20190524092249.7gatc643noc27qzp@salvia>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <6ad87483-711a-f205-8986-2217dab828d0@6wind.com>
-Date:   Tue, 28 May 2019 15:57:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727250AbfE1OBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 10:01:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35464 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726925AbfE1OBN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 10:01:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=vKGUIXYi/3OQeBSb715W30qlnj13vd2M6rGmCnI+BJc=; b=WAc6Ce3LLQ1k9uSwYyyYazaZIS
+        lmhWRpykIh61J+oNz0y7A2iaWTEQPSeDQ/e6y9kfIqhw33dqirTq3/Y+13pOc4Pdn6I69IF4lWqJL
+        uSYh7TGyA9Od0NRcD1DNBw9Cl1EF3HivRDR/GH76wx4ZCYmVBghcnsIF6lQePG4TcK94=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hVcf3-0006wh-Pv; Tue, 28 May 2019 16:01:05 +0200
+Date:   Tue, 28 May 2019 16:01:05 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH V3 net-next 2/6] net: Introduce a new MII time stamping
+ interface.
+Message-ID: <20190528140105.GH18059@lunn.ch>
+References: <20190521224723.6116-3-richardcochran@gmail.com>
+ <20190522005823.GD6577@lunn.ch>
+ <20190528051750.ub4urccdwmkg2u3c@localhost>
 MIME-Version: 1.0
-In-Reply-To: <20190524092249.7gatc643noc27qzp@salvia>
-Content-Type: text/plain; charset=utf-8
-Content-Language: fr
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190528051750.ub4urccdwmkg2u3c@localhost>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 24/05/2019 à 11:22, Pablo Neira Ayuso a écrit :
-> On Mon, May 20, 2019 at 10:35:07AM +0200, Nicolas Dichtel wrote:
->> Le 06/05/2019 à 15:16, Pablo Neira Ayuso a écrit :
->>> On Mon, May 06, 2019 at 10:49:52AM +0200, Nicolas Dichtel wrote:
->> [snip]
->>>> Is it possible to queue this for stable?
->>>
->>> Sure, as soon as this hits Linus' tree.
->>>
->> FYI, it's now in Linus tree:
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f8e608982022
+On Mon, May 27, 2019 at 10:17:50PM -0700, Richard Cochran wrote:
+> On Wed, May 22, 2019 at 02:58:23AM +0200, Andrew Lunn wrote:
+> > > -static int dp83640_hwtstamp(struct phy_device *phydev, struct ifreq *ifr)
+> > > +static int dp83640_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
+> > >  {
+> > > -	struct dp83640_private *dp83640 = phydev->priv;
+> > > +	struct dp83640_private *dp83640 =
+> > > +		container_of(mii_ts, struct dp83640_private, mii_ts);
+> > >  	struct hwtstamp_config cfg;
+> > >  	u16 txcfg0, rxcfg0;
+> > 
+> > Hi Richard
+> > 
+> > David might complain about reverse christmas tree. Maybe define a
+> > macro, to_dp83640() which takes mii_ts?
 > 
-> Please, send an email requesting this to stable@vger.kernel.org and
-> keep me on CC.
-This is a request to backport the upstream commit f8e608982022 ("netfilter:
-ctnetlink: Resolve conntrack L3-protocol flush regression") in stable trees.
+> That is nice idea for another series, I think.  For now this matches
+> the existing 'container_of' usage within the driver.
 
+Well, David might reject it because it is not reverse christmas tree.
 
-Thank you,
-Nicolas
-
-> 
-> I'll ACK it.
-> 
-> Thanks.
-> 
+      Andrew
