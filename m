@@ -2,139 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 286FD2D126
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:44:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD1E12D12F
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 23:49:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728091AbfE1Voj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 17:44:39 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:41514 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726526AbfE1Voj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:44:39 -0400
-Received: by mail-ed1-f68.google.com with SMTP id m4so183115edd.8;
-        Tue, 28 May 2019 14:44:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3ccx/2mDpV9eWWMwVg+SGrf807l1VCHY5j13bUz46vU=;
-        b=d9exG2Ya6ZrZQxB9PlYWUG19JVleB2q8xKQ7kXz6yJWz3mAgfpTwDyhKR4aCoNcA0a
-         Qem34JLBY8BWw/tJFm5v2NBuu7aIoIq3w/VU8IWcKyszzyi/9X+gSB25Y/QwiLjLS8PP
-         qFvOLitYsArkNVE7+HxSsVvrUhti3A7WMo2zyOOfiSTdlqidZJKTMx/dBh35XjU7atBb
-         qUiaUtYxQT/jD/VybRL1dGocMBxHFA1uMYVOpepWQKNSdyEm9ukJja13eczY27cDDmtC
-         R6tf9TSsfjAtlHzW8+GcSXhqbeSoZfq/zgUb/tZP6CMs8/eiwGMPOTqCD4/xgLggT45Y
-         kElA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3ccx/2mDpV9eWWMwVg+SGrf807l1VCHY5j13bUz46vU=;
-        b=Dh1bg5qnYklMp0+6z3+Fga1rWt+zCGV3MnID6Hg2i+mSVIJ4JEHi0cOixGbCSM+HV3
-         CAaMUPVgG424Ddl9imIfSRfTIiWdheZ1IZlh3H1zJsl96E2Fp6iENcACwaSjx6JUr60g
-         2g8l9qbTXdKMJZRwuDwfAoUHJJtKvX6i+4sXw64NIzEwaUHwAjmjcTOvMF1kI46O1S/+
-         ESXi+gJRph4L2NtYJ1O9rydmitzRb3Cel8njmuz3fZ0obG4Qs6npPuqy74xUIpWR6LAx
-         XV0JIK5wNhWo/6GHQX87DPx7IJagJ1KpFPKuDXVtGrXelhhXzO5DksF3cx2iuoOEW6/g
-         n36w==
-X-Gm-Message-State: APjAAAUenWmxVOrKqyQpHCFLSATBcWvQMEs1RbZtUbHRhIAUaAOfl68N
-        sRKJN0/0a5j5brW66edgvOXWc/pYRZSBzFYRtCSh6g==
-X-Google-Smtp-Source: APXvYqw1C0np1xDokVrH9pm/kPaWV5KeN9jgbuOF77Axq5+iwy+Lr5C1JFIpvGp7WIkD9DfzWrJiaNVJKsKSp3yR15k=
-X-Received: by 2002:a17:906:aacb:: with SMTP id kt11mr90590173ejb.246.1559079877279;
- Tue, 28 May 2019 14:44:37 -0700 (PDT)
+        id S1727342AbfE1Vs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 17:48:59 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:43584 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726492AbfE1Vs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 17:48:59 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x4SLmOxO020024;
+        Tue, 28 May 2019 14:48:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=6XTqEWQhfZeqkJ3i4aWqUY76MUMssW855O/1BlB0Alg=;
+ b=hgbMZzO28QUsXkDXP8lMshmBqoHMhkYvVTZRsd2iPRMbBbAqEfwk4ijTReKXj9r1PgO4
+ sPSV6iaB1lBAUgcySF2WGcY5IYHprn7B2T1W4pz9MXmN+6ISYlg7lr9HpoA8nsf+/9Iw
+ v7PuR5TxObpH1geOmK/CLnfHT7ZmdMm23CQ= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2ss6cssny6-9
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 28 May 2019 14:48:33 -0700
+Received: from prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) by
+ prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Tue, 28 May 2019 14:48:31 -0700
+Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
+ prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Tue, 28 May 2019 14:48:31 -0700
+Received: from NAM05-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Tue, 28 May 2019 14:48:31 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6XTqEWQhfZeqkJ3i4aWqUY76MUMssW855O/1BlB0Alg=;
+ b=qpzCkdKtEwkbnbxYrmrhAczDrKNdv0cXvPF9s2tLJD5T1NQ+UMKopYThGfNnL0NRXSg00yt4fLwVyPHcXegGGY33XW2QgZZDbZBCgaKms9MjQVSl24NQCPIj8tde0qfdK4bmebd6kMKaoM4ttGqWGFFooNVX5juGzqbMFvX4VRM=
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com (20.179.156.24) by
+ BYAPR15MB2566.namprd15.prod.outlook.com (20.179.155.79) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.18; Tue, 28 May 2019 21:48:29 +0000
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::d4f6:b485:69ee:fd9a]) by BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::d4f6:b485:69ee:fd9a%7]) with mapi id 15.20.1922.021; Tue, 28 May 2019
+ 21:48:29 +0000
+From:   Roman Gushchin <guro@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf-next v4 3/4] bpf: cgroup: properly use bpf_prog_array
+ api
+Thread-Topic: [PATCH bpf-next v4 3/4] bpf: cgroup: properly use bpf_prog_array
+ api
+Thread-Index: AQHVFZpp/b439S6XvUGt9RAiotfhBqaBEvKA
+Date:   Tue, 28 May 2019 21:48:29 +0000
+Message-ID: <20190528214823.GC27847@tower.DHCP.thefacebook.com>
+References: <20190528211444.166437-1-sdf@google.com>
+ <20190528211444.166437-3-sdf@google.com>
+In-Reply-To: <20190528211444.166437-3-sdf@google.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR02CA0037.namprd02.prod.outlook.com
+ (2603:10b6:301:60::26) To BYAPR15MB2631.namprd15.prod.outlook.com
+ (2603:10b6:a03:152::24)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::3:3dca]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b71191f3-c83d-44c7-3133-08d6e3b6389d
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:BYAPR15MB2566;
+x-ms-traffictypediagnostic: BYAPR15MB2566:
+x-microsoft-antispam-prvs: <BYAPR15MB2566F1DAEF5F2046CEE64A2ABE1E0@BYAPR15MB2566.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 00514A2FE6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(376002)(346002)(396003)(136003)(366004)(199004)(189003)(71200400001)(71190400001)(6436002)(316002)(25786009)(486006)(54906003)(476003)(86362001)(4326008)(446003)(99286004)(478600001)(6246003)(5660300002)(6486002)(6116002)(229853002)(11346002)(256004)(6512007)(4744005)(102836004)(9686003)(2906002)(68736007)(14454004)(46003)(53936002)(52116002)(6506007)(33656002)(81166006)(386003)(81156014)(8676002)(305945005)(1076003)(66476007)(66556008)(64756008)(66946007)(73956011)(66446008)(7736002)(6916009)(186003)(76176011)(8936002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2566;H:BYAPR15MB2631.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: wLmT2gGFj+oeOZuPmoMbDkWNkcGEDpKqxmZIg+JLOVpzKk44zxRztazzKjNdruhHCjRVTFWJC8tkoqM+xWH5ASu73PSQhnPNpqCWLrCQMaBFMc/mvVqMwCTIfcI/E7DIs4+A7AH5gXVqyoHfn0IQ/ZHnVd0gqwsszEcO8QDXocaLkcNDwO0z5dBYQoa9irEr5NBYvvvihAorxaz6T7lYn3MroIY/SqVr02bfVRYtL88E5yeTVENDKEBF/ARd9dSnFiP8Im08ad1k+tsAYiuBVDcRMfQFHXnEm8LZit6+u0vfbR9wTnO6m1WlmAmNMqTU59Zq5RRxhmz6GjY5OrgSjGP2RoXzoghRkZLAVQPM6UBswpv3iDlRJfoZHegp8X3HcwpQ5KO4UbOuYqhXNJajzrbI19RlAeLYqdnYxBHVHl8=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <21E75D9576662E499F9B0FD1C06BE640@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20190528184415.16020-1-fklassen@appneta.com> <20190528184415.16020-2-fklassen@appneta.com>
-In-Reply-To: <20190528184415.16020-2-fklassen@appneta.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 28 May 2019 17:44:01 -0400
-Message-ID: <CAF=yD-JvNFdWCBJ6w1_XWSHu1CDiG_QimrUT8ZCxw=U+OVvBMA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 1/1] net/udp_gso: Allow TX timestamp with UDP GSO
-To:     Fred Klassen <fklassen@appneta.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-Network-Message-Id: b71191f3-c83d-44c7-3133-08d6e3b6389d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2019 21:48:29.5691
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: guro@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2566
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-28_10:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=556 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905280136
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 3:10 PM Fred Klassen <fklassen@appneta.com> wrote:
->
-> Fixes an issue where TX Timestamps are not arriving on the error queue
-> when UDP_SEGMENT CMSG type is combined with CMSG type SO_TIMESTAMPING.
-> This can be illustrated with an updated updgso_bench_tx program which
-> includes the '-T' option to test for this condition.
->
->     ./udpgso_bench_tx -4ucTPv -S 1472 -l2 -D 172.16.120.18
->     poll timeout
->     udp tx:      0 MB/s        1 calls/s      1 msg/s
->
-> The "poll timeout" message above indicates that TX timestamp never
-> arrived.
->
-> It also appears that other TX CMSG types cause similar issues, for
-> example trying to set SOL_IP/IP_TOS.
+On Tue, May 28, 2019 at 02:14:43PM -0700, Stanislav Fomichev wrote:
+> Now that we don't have __rcu markers on the bpf_prog_array helpers,
+> let's use proper rcu_dereference_protected to obtain array pointer
+> under mutex.
+>=20
+> We also don't need __rcu annotations on cgroup_bpf.inactive since
+> it's not read/updated concurrently.
+>=20
+> v4:
+> * drop cgroup_rcu_xyz wrappers and use rcu APIs directly; presumably
+>   should be more clear to understand which mutex/refcount protects
+>   each particular place
+>=20
+> v3:
+> * amend cgroup_rcu_dereference to include percpu_ref_is_dying;
+>   cgroup_bpf is now reference counted and we don't hold cgroup_mutex
+>   anymore in cgroup_bpf_release
+>=20
+> v2:
+> * replace xchg with rcu_swap_protected
+>=20
+> Cc: Roman Gushchin <guro@fb.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 
-See previous comment in v2
+Yeah, the looks even better.
 
-http://patchwork.ozlabs.org/patch/1105564/
+Acked-by: Roman Gushchin <guro@fb.com>
 
->
->     ./udpgso_bench_tx -4ucPv -S 1472 -q 182 -l2 -D 172.16.120.18
->     poll timeout
->     udp tx:      0 MB/s        1 calls/s      1 msg/s
->
-> This patch preserves tx_flags for the first UDP GSO segment.
->
-> v2: Remove tests as noted by Willem de Bruijn <willemb@google.com>
->     Moving tests from net to net-next
->
-> v3: Update only relevant tx_flag bits as per
->     Willem de Bruijn <willemb@google.com>
->
-> Fixes: ee80d1ebe5ba ("udp: add udp gso")
-> Signed-off-by: Fred Klassen <fklassen@appneta.com>
-
-FYI, no need for a cover letter for a single patch. Also, I think the
-cc list can be more concise. Mainly netdev.
-
-> ---
->  net/ipv4/udp_offload.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-> index 065334b41d57..de8ecba42d55 100644
-> --- a/net/ipv4/udp_offload.c
-> +++ b/net/ipv4/udp_offload.c
-> @@ -228,6 +228,11 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
->         seg = segs;
->         uh = udp_hdr(seg);
->
-> +       /* preserve TX timestamp and zero-copy info for first segment */
-
-Same as above. This is not about zerocopy.
-
-> +       skb_shinfo(seg)->tskey = skb_shinfo(gso_skb)->tskey;
-> +       skb_shinfo(seg)->tx_flags |=
-> +                       (skb_shinfo(gso_skb)->tx_flags & SKBTX_ANY_TSTAMP);
-
-Asked elsewhere, but best answered here: given that xmit_more delays
-delivery to the NIC until the last segment in a train, is the first
-segment in your opinion still the best to attach the timestamp request
-to?
-
-To reiterate, we do not want to need a follow-up patch to disable
-xmit_more when timestamps are requested.
-
-
-> +
->         /* compute checksum adjustment based on old length versus new */
->         newlen = htons(sizeof(*uh) + mss);
->         check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
-> --
-> 2.11.0
->
+Thanks!
