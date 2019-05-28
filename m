@@ -2,85 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC6C2C5F6
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:57:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 132C72C636
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:11:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbfE1L47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 07:56:59 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45145 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726592AbfE1L47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:56:59 -0400
-Received: by mail-pg1-f194.google.com with SMTP id w34so6186805pga.12;
-        Tue, 28 May 2019 04:56:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Y0nU1mnDjk5DEaEAqhn6A+e5w54A9UaAagHSxcoB+rI=;
-        b=droyNuncHFCAXk2oz9b91V/DwkejmqPm50x4ZBfqch9PSfHoEpw76fBWY+hcNLkPNG
-         cAs+EV160TX6U78yQ58egeBfws+a5Kl9Vi73WP8uPWje0+UdOI6CSy2I3oK4zn9m5OSm
-         rp0CnbvZF13HQwXk6gfgGlzeSh0pPuBWAAV3SNBT+5GvDKiWKgcqdt4Hz5LnSSLoyozn
-         OW+7OptgTqrxMQwKxrGvbDY3I21Ni6H4sSgK3k/aQj8atL5WEPs2ssJntXR7Dzo+klVf
-         Y6u8YfVBM2PbMjmlw19zeQgjjs1qsSUV3vjPyGFZqmt0zX/WNp+EuY+je7xDsFPoAcfc
-         1YpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Y0nU1mnDjk5DEaEAqhn6A+e5w54A9UaAagHSxcoB+rI=;
-        b=k4erHXWSicV/QX2pyIoZjuFxE3p6932rlB3ec8wGcNfTHSaxnrVB5uk0ddkfcZTM2p
-         Q13AAPIQJbA+A7QuoQobsU6pDsdTDnAwenP2XJHh9bIRdNSaKxfd9OLraysiB+VerZrq
-         Qw0f+vf+XH/t4J4ofgSKWp4/zgDq4nPsq6MlQtPsKKmKEx/ITOhNVlyPcQtaoSgxS0qd
-         5gseQSrN+N4MlmXrC/sJA4bJ97gaFvK9/JDmZ5MO94vJVbhrFkeI4SYNEyI19cWiC1oe
-         dGMLc9JH1JoD4BoWkhos7oF+/wvPvUy8eAXlNsemjqP8LHtx9Lxso2y/Pn3wC7n5Dfpn
-         zgHQ==
-X-Gm-Message-State: APjAAAXqP8bhESgfq74nAbDlgMBY8ddN9hnN1Z69wNAU7DnbrygnB1xs
-        hu1M+8CQY93rkuCugpq18UI=
-X-Google-Smtp-Source: APXvYqx3Up2B1eZPaaTAWMBFlw4GilIcCB4OB4SrH4CoVtGbovwboWob5c34WdwFXy9KG22xN4xmnw==
-X-Received: by 2002:a17:90a:9602:: with SMTP id v2mr5467175pjo.59.1559044618864;
-        Tue, 28 May 2019 04:56:58 -0700 (PDT)
-Received: from xy-data.openstacklocal (ecs-159-138-22-150.compute.hwclouds-dns.com. [159.138.22.150])
-        by smtp.gmail.com with ESMTPSA id r1sm16272313pfg.65.2019.05.28.04.56.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 28 May 2019 04:56:57 -0700 (PDT)
-From:   Young Xiao <92siuyang@gmail.com>
-To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Young Xiao <92siuyang@gmail.com>
-Subject: [PATCH] ixgbevf: fix possible divide by zero in ixgbevf_update_itr
-Date:   Tue, 28 May 2019 19:58:02 +0800
-Message-Id: <1559044682-23446-1-git-send-email-92siuyang@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1727068AbfE1MLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 08:11:41 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:53298 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfE1MLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:11:41 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id C21AE60271; Tue, 28 May 2019 12:11:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1559045499;
+        bh=2lQySrPSOTMzyxN6pFfdb+ev8cgoIVdkWaHsrsG9+pw=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=VZjh4BYAAVpZxfy0yQF0qtQoGet9/5UvUoYvfMpI3Vn5VllXfA8JwdO/lSM7EUw9P
+         VIw0sVaS+HJrHbXxZFR24R1+vvtHk2dDMkFsC2dOs4O726+kdp9t2bP1gaYRMpu9zX
+         7yaolr0o06xDn6rYBGTfdXB+hzhEQGQJqboI+ycM=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from purkki.adurom.net (purkki.adurom.net [80.68.90.206])
+        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 472EB6070D;
+        Tue, 28 May 2019 12:11:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1559045499;
+        bh=2lQySrPSOTMzyxN6pFfdb+ev8cgoIVdkWaHsrsG9+pw=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=VZjh4BYAAVpZxfy0yQF0qtQoGet9/5UvUoYvfMpI3Vn5VllXfA8JwdO/lSM7EUw9P
+         VIw0sVaS+HJrHbXxZFR24R1+vvtHk2dDMkFsC2dOs4O726+kdp9t2bP1gaYRMpu9zX
+         7yaolr0o06xDn6rYBGTfdXB+hzhEQGQJqboI+ycM=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 472EB6070D
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Alan Stern <stern@rowland.harvard.edu>
+Cc:     Christian Lamparter <chunkeey@gmail.com>,
+        syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>,
+        <davem@davemloft.net>, <andreyknvl@google.com>,
+        <syzkaller-bugs@googlegroups.com>,
+        Kernel development list <linux-kernel@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH] network: wireless: p54u: Fix race between disconnect and firmware loading
+References: <Pine.LNX.4.44L0.1905201042110.1498-100000@iolanthe.rowland.org>
+Date:   Tue, 28 May 2019 15:11:34 +0300
+In-Reply-To: <Pine.LNX.4.44L0.1905201042110.1498-100000@iolanthe.rowland.org>
+        (Alan Stern's message of "Mon, 20 May 2019 10:44:21 -0400 (EDT)")
+Message-ID: <8736kyvkw9.fsf@purkki.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/23.4 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The next call to ixgbevf_update_itr will continue to dynamically
-update ITR.
+Alan Stern <stern@rowland.harvard.edu> writes:
 
-Copy from commit bdbeefe8ea8c ("ixgbe: fix possible divide by zero in
-ixgbe_update_itr")
+> The syzbot fuzzer found a bug in the p54 USB wireless driver.  The
+> issue involves a race between disconnect and the firmware-loader
+> callback routine, and it has several aspects.
+>
+> One big problem is that when the firmware can't be loaded, the
+> callback routine tries to unbind the driver from the USB _device_ (by
+> calling device_release_driver) instead of from the USB _interface_ to
+> which it is actually bound (by calling usb_driver_release_interface).
+>
+> The race involves access to the private data structure.  The driver's
+> disconnect handler waits for a completion that is signalled by the
+> firmware-loader callback routine.  As soon as the completion is
+> signalled, you have to assume that the private data structure may have
+> been deallocated by the disconnect handler -- even if the firmware was
+> loaded without errors.  However, the callback routine does access the
+> private data several times after that point.
+>
+> Another problem is that, in order to ensure that the USB device
+> structure hasn't been freed when the callback routine runs, the driver
+> takes a reference to it.  This isn't good enough any more, because now
+> that the callback routine calls usb_driver_release_interface, it has
+> to ensure that the interface structure hasn't been freed.
+>
+> Finally, the driver takes an unnecessary reference to the USB device
+> structure in the probe function and drops the reference in the
+> disconnect handler.  This extra reference doesn't accomplish anything,
+> because the USB core already guarantees that a device structure won't
+> be deallocated while a driver is still bound to any of its interfaces.
+>
+> To fix these problems, this patch makes the following changes:
+>
+> 	Call usb_driver_release_interface() rather than
+> 	device_release_driver().
+>
+> 	Don't signal the completion until after the important
+> 	information has been copied out of the private data structure,
+> 	and don't refer to the private data at all thereafter.
+>
+> 	Lock udev (the interface's parent) before unbinding the driver
+> 	instead of locking udev->parent.
+>
+> 	During the firmware loading process, take a reference to the
+> 	USB interface instead of the USB device.
+>
+> 	Don't take an unnecessary reference to the device during probe
+> 	(and then don't drop it during disconnect).
+>
+> Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+> Reported-and-tested-by: syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com
+> CC: <stable@vger.kernel.org>
+>
+> ---
+>
+>
+> [as1899]
+>
+>
+>  drivers/net/wireless/intersil/p54/p54usb.c |   43 ++++++++++++-----------------
+>  1 file changed, 18 insertions(+), 25 deletions(-)
 
-Signed-off-by: Young Xiao <92siuyang@gmail.com>
----
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+The correct prefix is "p54:", but I can fix that during commit.
 
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index d189ed2..d2b41f9 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -1423,6 +1423,9 @@ static void ixgbevf_update_itr(struct ixgbevf_q_vector *q_vector,
- 	 */
- 	/* what was last interrupt timeslice? */
- 	timepassed_us = q_vector->itr >> 2;
-+	if (timepassed_us == 0)
-+		return;
-+
- 	bytes_perint = bytes / timepassed_us; /* bytes/usec */
- 
- 	switch (itr_setting) {
+> Index: usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+> ===================================================================
+> --- usb-devel.orig/drivers/net/wireless/intersil/p54/p54usb.c
+> +++ usb-devel/drivers/net/wireless/intersil/p54/p54usb.c
+> @@ -33,6 +33,8 @@ MODULE_ALIAS("prism54usb");
+>  MODULE_FIRMWARE("isl3886usb");
+>  MODULE_FIRMWARE("isl3887usb");
+>  
+> +static struct usb_driver p54u_driver;
+
+How is it safe to use static variables from a wireless driver? For
+example, what if there are two p54 usb devices on the host? How do we
+avoid a race in that case?
+
 -- 
-2.7.4
-
+Kalle Valo
