@@ -2,92 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F6682D098
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 22:43:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE93A2D0B2
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 22:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726925AbfE1UnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 16:43:17 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:41909 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726492AbfE1UnR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 16:43:17 -0400
-Received: by mail-pg1-f195.google.com with SMTP id z3so7062704pgp.8
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 13:43:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4gvfVtnabcYk/rWSABOoJrM4QZ5d9gZBEGc6X6XZY50=;
-        b=C73ZvzGNH/YisC//wt898V66Bjob6D4l49Pu0V7pn6vnXdDXJszYxGcs6bZ3jGi/rN
-         fWTVqrdQKipVqDhyjPMgsvqGx5JMm9Z3fvWjEEeXHbLCQOEx/bn/QuIyRE+ssD9nIS2h
-         dcQh/lMauhE5YutBCD1KvxdPI89Lvn7Fsi3qwslDHvtbltS+Nc87Cf3idZSDXtQmdFd6
-         kBEf5/szEV3rsQmcfU3jYCYr2miJDdz2g02Fuku968l1JkAH52/GrYNuaMxepvW1Zhjj
-         sLah05Z5TNKnLJvlbOe5bzDgzySr+zTEeUvvysKq5kBdKEyIS6BGuBwtszIU5oARa/zX
-         GEow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4gvfVtnabcYk/rWSABOoJrM4QZ5d9gZBEGc6X6XZY50=;
-        b=CpR/gLe3MF95YxNcop20KhLRfKcLJ+gqdTLD5wpi1nHPg4yExt+ucHHbEOtGbZ190G
-         BGRhGfyF2YIYrSZdxPZg0OVwdUVMpctboTXEWA85/yMghIK29DkfLiR3V/4iQ0zSipqe
-         L/74/Lkw91JZu5CXSdA0pjDplcmWcFdfGFGJJL4jTjwq7krKV14uE85fZvhrozOEv+p0
-         cVKGywdatLFxjqU23YbBa+m84WOrO/YpnZtGfe9j6womdWEQwqs049havWo0oY4dEwxw
-         2fGs4+fsoMpbXcojSWgdRgM82675Wv19w2Ys5MBvvsBJXYy3uP52b5YEV3a1AbuApRp7
-         bqug==
-X-Gm-Message-State: APjAAAU7/uK3AfXlfwHu8GOogLzLEGQc4XhP8l/P3jK39xG3UeR8Ctc+
-        M873P8LV6huj3vHw+yNQcU0=
-X-Google-Smtp-Source: APXvYqxpINo5hlSG8EFTMuxKjwNaK3tOIVMDoJzr5on8KeKCsTiW03t3FolwHGgy9uGq+mC9XvV2zw==
-X-Received: by 2002:a17:90a:2a09:: with SMTP id i9mr8298025pjd.103.1559076197011;
-        Tue, 28 May 2019 13:43:17 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id t10sm21528394pfe.2.2019.05.28.13.43.14
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 13:43:15 -0700 (PDT)
-Subject: Re: [PATCH v3 bpf-next 1/6] bpf: Create
- BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY
-To:     Lawrence Brakmo <brakmo@fb.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin Lau <kafai@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-References: <20190528034907.1957536-1-brakmo@fb.com>
- <20190528034907.1957536-2-brakmo@fb.com>
- <75cd4d0a-7cf8-ee63-2662-1664aedcd468@gmail.com>
- <B962F80F-FF37-4B96-A942-1C78E4D77A1C@fb.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <bb4d491e-324a-a7b0-1e0c-a85d375f1d15@gmail.com>
-Date:   Tue, 28 May 2019 13:43:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727738AbfE1Uuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 16:50:50 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:60612 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726683AbfE1Uuu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 16:50:50 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id A47775D672;
+        Tue, 28 May 2019 20:50:44 +0000 (UTC)
+Received: from new-host.redhat.com (ovpn-116-124.ams2.redhat.com [10.36.116.124])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ED9345F5BB;
+        Tue, 28 May 2019 20:50:39 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     shuali@redhat.com, Eli Britstein <elibr@mellanox.com>
+Subject: [PATCH net] net/sched: act_pedit: fix 'ex munge' on network header in case of QinQ packet
+Date:   Tue, 28 May 2019 22:50:33 +0200
+Message-Id: <753b96cc340e4fbae6640da070aac09d7220efe2.1559075758.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <B962F80F-FF37-4B96-A942-1C78E4D77A1C@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Tue, 28 May 2019 20:50:49 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Like it has been done in commit 2ecba2d1e45b ("net: sched: act_csum: Fix
+csum calc for tagged packets"), also 'pedit' needs to adjust the network
+offset when multiple tags are present in the packets: otherwise wrong IP
+headers (but good checksums) can be observed with the following command:
 
+ # tc filter add dev test0 parent ffff: protocol 802.1Q flower \
+   vlan_ethtype ipv4 action \
+   pedit ex munge ip ttl set 10 pipe \
+   csum ip and icmp pipe \
+   mirred egress redirect dev test1
 
-On 5/28/19 11:54 AM, Lawrence Brakmo wrote:
-> On 5/28/19, 6:43 AM, "netdev-owner@vger.kernel.org on behalf of Eric Dumazet" <netdev-owner@vger.kernel.org on behalf of eric.dumazet@gmail.com> wrote:
-> 
+Reported-by: Li Shuang <shuali@redhat.com>
+Fixes: d8b9605d2697 ("net: sched: fix skb->protocol use in case of accelerated vlan path")
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ net/sched/act_pedit.c | 38 ++++++++++++++++++++++++++++++++++----
+ 1 file changed, 34 insertions(+), 4 deletions(-)
 
->     Why are you using preempt_enable_no_resched() here ?
-> 
-> Because that is what __BPF_PROG_RUN_ARRAY() calls and the macro
-> BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY() is an instantiation of it
-> (with minor changes in the return value).
-
-I do not see this in my tree.
-
-Please rebase your tree, do not bring back an issue that was solved already.
-
-
+diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
+index d790c02b9c6c..25dcf9ee092e 100644
+--- a/net/sched/act_pedit.c
++++ b/net/sched/act_pedit.c
+@@ -277,9 +277,12 @@ static bool offset_valid(struct sk_buff *skb, int offset)
+ }
+ 
+ static int pedit_skb_hdr_offset(struct sk_buff *skb,
+-				enum pedit_header_type htype, int *hoffset)
++				enum pedit_header_type htype, int *hoffset,
++				unsigned int *vlan_hdr_count)
+ {
++	bool orig_vlan_tag_present = false;
+ 	int ret = -EINVAL;
++	__be16 protocol;
+ 
+ 	switch (htype) {
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_ETH:
+@@ -291,8 +294,29 @@ static int pedit_skb_hdr_offset(struct sk_buff *skb,
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK:
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_IP4:
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_IP6:
+-		*hoffset = skb_network_offset(skb);
+-		ret = 0;
++		protocol = tc_skb_protocol(skb);
++again:
++		switch (protocol) {
++		case cpu_to_be16(ETH_P_8021AD): /* fall through */
++		case cpu_to_be16(ETH_P_8021Q):
++			if (skb_vlan_tag_present(skb) &&
++			    !orig_vlan_tag_present) {
++				protocol = skb->protocol;
++				orig_vlan_tag_present = true;
++			} else {
++				struct vlan_hdr *vlan;
++
++				vlan = (struct vlan_hdr *)skb->data;
++				protocol = vlan->h_vlan_encapsulated_proto;
++				skb_pull(skb, VLAN_HLEN);
++				skb_reset_network_header(skb);
++				(*vlan_hdr_count)++;
++			}
++			goto again;
++		default:
++			*hoffset = skb_network_offset(skb);
++			ret = 0;
++		}
+ 		break;
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_TCP:
+ 	case TCA_PEDIT_KEY_EX_HDR_TYPE_UDP:
+@@ -313,6 +337,7 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
+ 			 struct tcf_result *res)
+ {
+ 	struct tcf_pedit *p = to_pedit(a);
++	unsigned int vlan_hdr_count = 0;
+ 	int i;
+ 
+ 	if (skb_unclone(skb, GFP_ATOMIC))
+@@ -343,7 +368,8 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
+ 				tkey_ex++;
+ 			}
+ 
+-			rc = pedit_skb_hdr_offset(skb, htype, &hoffset);
++			rc = pedit_skb_hdr_offset(skb, htype, &hoffset,
++						  &vlan_hdr_count);
+ 			if (rc) {
+ 				pr_info("tc action pedit bad header type specified (0x%x)\n",
+ 					htype);
+@@ -407,6 +433,10 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
+ bad:
+ 	p->tcf_qstats.overlimits++;
+ done:
++	while (vlan_hdr_count--) {
++		skb_push(skb, VLAN_HLEN);
++		skb_reset_network_header(skb);
++	}
+ 	bstats_update(&p->tcf_bstats, skb);
+ 	spin_unlock(&p->tcf_lock);
+ 	return p->tcf_action;
+-- 
+2.20.1
 
