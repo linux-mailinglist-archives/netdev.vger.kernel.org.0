@@ -2,87 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33CFF2C59B
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:42:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EF472C5AA
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 13:48:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbfE1LmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 07:42:07 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:59732 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfE1LmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:42:06 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 4275460A50; Tue, 28 May 2019 11:42:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559043726;
-        bh=MHkc4Q+Ua/ipwQsrGjiqtzVzC/Fa0jKvnftGnfpruS4=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=nj8Y8SnPzLatGKnAwSYd7f0EePv9DTETXIU6WU9xXJzWhF2+emWDwRNceydtDhqXt
-         6igeX9sz7Sz6WSVYAW6AjnVd+zfGIzI+yGOFwHlvfJw6+XRfFW658D5tqmDp6KH5zn
-         ovJMLHOi8T9cEyvLA8BPdcaKzKMotNRddoRfwgbg=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1ACD160DA8;
-        Tue, 28 May 2019 11:42:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1559043725;
-        bh=MHkc4Q+Ua/ipwQsrGjiqtzVzC/Fa0jKvnftGnfpruS4=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=XBEEU4W3ilj2YzOEF6z3Tkk7zWxbXEOBFzGBbw3YNYo+Dc69+Kdbl6tJ+DSLoBQtu
-         wn6JFsOAhkOTT2eDY+sDIputj7T1rBn9K3i3fpQtPMG8tOAivrNGzRkQoafIASZAyx
-         CQDfUHCMZefcbbO4opswt5/Zp1xv6yw66slaiY7M=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1ACD160DA8
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtw88: Make some symbols static
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190504103224.27524-1-yuehaibing@huawei.com>
-References: <20190504103224.27524-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <yhchuang@realtek.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
-        <davem@davemloft.net>, YueHaibing <yuehaibing@huawei.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190528114206.4275460A50@smtp.codeaurora.org>
-Date:   Tue, 28 May 2019 11:42:06 +0000 (UTC)
+        id S1726728AbfE1Lst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 07:48:49 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:53530 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726580AbfE1Lst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 07:48:49 -0400
+Received: by mail-wm1-f67.google.com with SMTP id d17so2559620wmb.3
+        for <netdev@vger.kernel.org>; Tue, 28 May 2019 04:48:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=7JSd6VoTAaiDuSQ6CgfNAVENHdH7ChHJqYIRhCoU1IU=;
+        b=zhMtqfa4K5x4PV+NBA/DZIIWZCCN8dySiuFdzGPTQHd1DtY3+gqq3tqDSX+n6ld/C6
+         8N+JY3CX5XSKWRXzsqZLTjy5AbCIAIfte3DLY1avcAwTV0Tz69A7BeskyVPgTDpfO/RM
+         87uxi6epRsPVifCiIq+phGEYb0f823Td/NJ5mfOXAo6v8K7o9Fp7KpM3yxHIzsrsQsnq
+         OGLV2bfuFBYLTJUdV6QY9USyHJQzZrufmc6eMc5CUH+g/z/jU1ArHJ2wf5XpKqbFAhQy
+         X5Pb2JI63T4zSJH/4AWS8rf+l1FwhWIojaDBbPm6Mj7NNg8Yby9RdOSVkCu0NHI3BTNZ
+         McNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=7JSd6VoTAaiDuSQ6CgfNAVENHdH7ChHJqYIRhCoU1IU=;
+        b=oiyc/hqqoEuYj4lN/eRuAZ0FrNGCo9Y0uaRJcrejXrrP4BKdFqVvCAb6WB8MzhIVuR
+         sDE7sK4nctJqGANLOvst5X+LMC+VHf72Dp4VJnlhfhMG3bQZVOFOK37oqy7qrvhcSNg6
+         nZZ0UaDDWvNaXABfwQ3A1f30DakWG06DwkDON9LYdbAkv+KlzMhgsDe/QL/ZqOCBVDZO
+         AB4LhvN/SP/CrU3LrbP3F5FuTRRoyEPehVlm8cJfGneG9QI7+mPAeAj6zHdRRXsyWuTY
+         s9FGtbargM6/yHWq9oZ1UKZwdQrucRzyszvNZIjtSM+T/hYKMpnHQw6HSwNaZN5+n6Si
+         DGrQ==
+X-Gm-Message-State: APjAAAX41NtTpkQf/I96/pIrnwIX1tc2DT0il4JGYiot0pAVlIzRg4o+
+        iXUEfmdhOXXkDUjQeZHDU8hHwbi6ULQ=
+X-Google-Smtp-Source: APXvYqz7BhirSh72B0PjlaMWYNFBZi6fdQWgwhBsB3Yigd4Rc3UHN9M89Dl1G7Qbsqkj5DbjOdyC3Q==
+X-Received: by 2002:a1c:4083:: with SMTP id n125mr2769489wma.54.1559044127247;
+        Tue, 28 May 2019 04:48:47 -0700 (PDT)
+Received: from localhost (ip-89-177-126-215.net.upcbroadband.cz. [89.177.126.215])
+        by smtp.gmail.com with ESMTPSA id c18sm16793337wrm.7.2019.05.28.04.48.46
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 28 May 2019 04:48:46 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, mlxsw@mellanox.com,
+        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
+        dsahern@gmail.com, saeedm@mellanox.com, leon@kernel.org,
+        f.fainelli@gmail.com
+Subject: [patch net-next v2 0/7] expose flash update status to user
+Date:   Tue, 28 May 2019 13:48:39 +0200
+Message-Id: <20190528114846.1983-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.17.2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YueHaibing <yuehaibing@huawei.com> wrote:
+From: Jiri Pirko <jiri@mellanox.com>
 
-> Fix sparse warnings:
-> 
-> drivers/net/wireless/realtek/rtw88/phy.c:851:4: warning: symbol 'rtw_cck_size' was not declared. Should it be static?
-> drivers/net/wireless/realtek/rtw88/phy.c:852:4: warning: symbol 'rtw_ofdm_size' was not declared. Should it be static?
-> drivers/net/wireless/realtek/rtw88/phy.c:853:4: warning: symbol 'rtw_ht_1s_size' was not declared. Should it be static?
-> drivers/net/wireless/realtek/rtw88/phy.c:854:4: warning: symbol 'rtw_ht_2s_size' was not declared. Should it be static?
-> drivers/net/wireless/realtek/rtw88/phy.c:855:4: warning: symbol 'rtw_vht_1s_size' was not declared. Should it be static?
-> drivers/net/wireless/realtek/rtw88/phy.c:856:4: warning: symbol 'rtw_vht_2s_size' was not declared. Should it be static?
-> drivers/net/wireless/realtek/rtw88/fw.c:11:6: warning: symbol 'rtw_fw_c2h_cmd_handle_ext' was not declared. Should it be static?
-> drivers/net/wireless/realtek/rtw88/fw.c:50:6: warning: symbol 'rtw_fw_send_h2c_command' was not declared. Should it be static?
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+When user is flashing device using devlink, he currenly does not see any
+information about what is going on, percentages, etc.
+Drivers, for example mlxsw and mlx5, have notion about the progress
+and what is happening. This patchset exposes this progress
+information to userspace.
 
-Patch applied to wireless-drivers.git, thanks.
+Example output for existing flash command:
+$ devlink dev flash pci/0000:01:00.0 file firmware.bin
+Preparing to flash
+Flashing 100%
+Flashing done
 
-6aca09771db4 rtw88: Make some symbols static
+See this console recording which shows flashing FW on a Mellanox
+Spectrum device:
+https://asciinema.org/a/247926
+
+---
+Please see individual patches for changelog.
+
+Jiri Pirko (7):
+  mlxsw: Move firmware flash implementation to devlink
+  mlx5: Move firmware flash implementation to devlink
+  mlxfw: Propagate error messages through extack
+  devlink: allow driver to update progress of flash update
+  mlxfw: Introduce status_notify op and call it to notify about the
+    status
+  mlxsw: Implement flash update status notifications
+  netdevsim: implement fake flash updating with notifications
+
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |   2 -
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  35 ------
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   6 +-
+ .../mellanox/mlx5/core/ipoib/ethtool.c        |   9 --
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  20 ++++
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   3 +-
+ drivers/net/ethernet/mellanox/mlxfw/mlxfw.h   |  11 +-
+ .../net/ethernet/mellanox/mlxfw/mlxfw_fsm.c   |  57 ++++++++--
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  15 +++
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   3 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  75 +++++++------
+ drivers/net/netdevsim/dev.c                   |  44 ++++++++
+ drivers/net/netdevsim/netdevsim.h             |   1 +
+ include/net/devlink.h                         |   8 ++
+ include/uapi/linux/devlink.h                  |   5 +
+ net/core/devlink.c                            | 102 ++++++++++++++++++
+ 16 files changed, 305 insertions(+), 91 deletions(-)
 
 -- 
-https://patchwork.kernel.org/patch/10929669/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.17.2
 
