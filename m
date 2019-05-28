@@ -2,107 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAF302CEA0
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45F592CEA3
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728019AbfE1S2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 14:28:46 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:54044 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726569AbfE1S2p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:28:45 -0400
-Received: by mail-wm1-f67.google.com with SMTP id d17so4052094wmb.3
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:28:44 -0700 (PDT)
+        id S1728086AbfE1S3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 14:29:21 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:47004 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726569AbfE1S3V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:29:21 -0400
+Received: by mail-wr1-f66.google.com with SMTP id r7so21305565wrr.13;
+        Tue, 28 May 2019 11:29:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=uYaULYBE0EPgfrtNPGGDLcC6oDPFQtCpwrx2CXp6ATk=;
-        b=RZTf1bvdweYMgbRCsPg1j3kj6D3Ai0nimH0pLIjdzD3a8FQacvuujfMoCVfGnO93eW
-         7drm+1AucIa3JAyYR/EyJfz2K1GEqxN7Dx1Sxzrk/8VhdjS44llPBjOm1qrbipH6p1y6
-         KwphMtWt9ls8505XL+2ltgcLKypDVJADyuyo0viVfHUgqJoymIXODNmrerMEu0fkF+wc
-         pDfEeWnMOlKYPJosYHECH1lT1w51uGnusPjERxhGt6lAhXfoZV74OtrGqkOMnS0/NN+7
-         gVQdJk4qGdEfF4Pkb/yQyUOn8MmaveTJh/SUKS0HazEFNhIsLHL2s2SoajvFL7PeK+Fc
-         E5Xw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8/KI1KE9vJDVwWIzxwQAdItZoUFzUqcama4dTdkeOyw=;
+        b=bcTNpSygNEs0fNzp/eABcU7RsnTiioHBYXh/JTk+tLpqz+IKX9SNZgovBcKl0hmtn7
+         uM8BLeTxAjZZW1KR8hPb2TpB3kjexalPYqosLG31WNaG91j1fvIHUjAcl/rGEzAqciF9
+         azYJQcENFfYycfghAmSzgt0HUBofMyDS18U2ZHClVauS3JktwmF45Z5rJ/fNYiRy/6b3
+         F56r/rC3Jnk9xEILHTjQZCNFDSQciQlfWR6GdMPH+nRIsn8n7wKmIOHlPcNOGBw6kBOY
+         tE7QZ4Fx55nipkv1qrkKxH8UUeLiltzuOlFGU2SZUGpjc8YpSGV244/bCmKd4vZl6APy
+         BWUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=uYaULYBE0EPgfrtNPGGDLcC6oDPFQtCpwrx2CXp6ATk=;
-        b=p8yEYOKJg2h2OVbBipt3xxhL0ZaCDaF2R3qw6BQzGFcZQ72EoQOhx2o4r1YhrjpHPb
-         7OHmN8UuEqeZsSrfQqS81noDQ3PyF/dBaLb8mRxUCfsM7I/TqnCgyExObY0pu7ypzxAX
-         rHN0Sid8Ve83/PGcT2B1h0t5IpAJskCW72LLHjee/hSOOJHeQjnE9lh75rBaFbATgKPO
-         VLzKtxPV3nvFaFeQYyxRWFnwJXb4G85DwRVHdeeSGXorj2rt2Ih5qZMF+Th7GabTAvkw
-         CVLzC8evsDpzO+WvhjjLpQTDRoOx+WdnMg2QasEUfoX2DqHwe7jycVNqpcHxzb8wOwl2
-         9sVQ==
-X-Gm-Message-State: APjAAAXcol4T+MN+KvkAuq+zdSKchVJN16PA6jMzL4m14LMzjcf5Q/G0
-        NR/ceP/v0Q//qCw1XDPDVQ==
-X-Google-Smtp-Source: APXvYqzmaswzZFjq88K95fNgUDJ1iE0GKzuysoQ1XnmPBkbqku78x1sYvgAvVVcV5BZv15P0jmWHzQ==
-X-Received: by 2002:a1c:5401:: with SMTP id i1mr4293200wmb.169.1559068123976;
-        Tue, 28 May 2019 11:28:43 -0700 (PDT)
-Received: from x-Inspiron-15-5568.fritz.box (ip-95-223-112-76.hsi16.unitymediagroup.de. [95.223.112.76])
-        by smtp.gmail.com with ESMTPSA id z14sm10504931wrh.86.2019.05.28.11.28.43
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8/KI1KE9vJDVwWIzxwQAdItZoUFzUqcama4dTdkeOyw=;
+        b=JpB5pu4SjaIeGm4zt7dkf3cEQHwNFwewSTJRcXi5Taax36XrD1O23nfxB9leS3B5Nd
+         MrdIklCM2Pxfj7gEKq9C9/dYV5AGzzWoDnV+kg0DhpjAwoHCkETq2IHu1H+dS3bvL7ia
+         JklmlJitdAbUgQ9bTC0T/a6KIX2BdwXl6oqlrDyE4q8Eat/0eMVXNm1JE0ppEWatmlC+
+         k07+JYHhFEFGi59k/nTEiw+MpzdxWs1BG3mlfPNvRynfMprxKL9QLXtC0vvyVHSLO8u4
+         1Bk2S8KUoWfht4rzlfK2e4mw0NFXvDSzbf3khnXaCwpamct62YBep1cvbIX9mKgeS2PY
+         17Jw==
+X-Gm-Message-State: APjAAAWTGBhq8/1B4m4X1F3+01ASFkf2g/0JKFeip7k/9j5NM2604RaB
+        90dleDZ97E0M2iM+lWpna3f4ahnd
+X-Google-Smtp-Source: APXvYqx2AIjaQbAwpPFU5w7qSZltqNiaYo3dL08nZ1i485RNpBp9vhMQ5npGdI2XP2S0XPccIFKxWw==
+X-Received: by 2002:adf:ed44:: with SMTP id u4mr19340753wro.242.1559068159212;
+        Tue, 28 May 2019 11:29:19 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bf3:bd00:fcc3:3d8b:511a:9137? (p200300EA8BF3BD00FCC33D8B511A9137.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:fcc3:3d8b:511a:9137])
+        by smtp.googlemail.com with ESMTPSA id t4sm2215938wmi.41.2019.05.28.11.29.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 11:28:43 -0700 (PDT)
-From:   Sergej Benilov <sergej.benilov@googlemail.com>
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org
-Cc:     Sergej Benilov <sergej.benilov@googlemail.com>
-Subject: [PATCH] tcp: re-enable high throughput for low pacing rate
-Date:   Tue, 28 May 2019 20:28:26 +0200
-Message-Id: <20190528182826.31500-1-sergej.benilov@googlemail.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 28 May 2019 11:29:18 -0700 (PDT)
+Subject: Re: [PATCH] net: phy: tja11xx: Add IRQ support to the driver
+To:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+References: <20190528181616.2019-1-marex@denx.de>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <1768acfc-ed20-68d3-12a0-1e5bfb7b31a3@gmail.com>
+Date:   Tue, 28 May 2019 20:29:11 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <20190528181616.2019-1-marex@denx.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit 605ad7f184b60cfaacbc038aa6c55ee68dee3c89 "tcp: refine TSO autosizing",
-the TSQ limit is computed as the smaller of
-sysctl_tcp_limit_output_bytes and max(2 * skb->truesize, sk->sk_pacing_rate >> 10).
-For low pacing rates, this approach sets a low limit, reducing throughput dramatically.
+On 28.05.2019 20:16, Marek Vasut wrote:
+> Add support for handling the TJA11xx PHY IRQ signal.
+> 
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Cc: Jean Delvare <jdelvare@suse.com>
+> Cc: linux-hwmon@vger.kernel.org
+> ---
+>  drivers/net/phy/nxp-tja11xx.c | 32 ++++++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+> 
+> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
+> index b705d0bd798b..0be9fe9a9604 100644
+> --- a/drivers/net/phy/nxp-tja11xx.c
+> +++ b/drivers/net/phy/nxp-tja11xx.c
+> @@ -40,6 +40,8 @@
+>  #define MII_INTSRC_TEMP_ERR		BIT(1)
+>  #define MII_INTSRC_UV_ERR		BIT(3)
+>  
+> +#define MII_INTEN			22
+> +
+>  #define MII_COMMSTAT			23
+>  #define MII_COMMSTAT_LINK_UP		BIT(15)
+>  
+> @@ -239,6 +241,30 @@ static int tja11xx_read_status(struct phy_device *phydev)
+>  	return 0;
+>  }
+>  
+> +static int tja11xx_config_intr(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +
+> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
+> +		ret = phy_write(phydev, MII_INTEN, 0xcfef);
 
-Compute the limit as the greater of sysctl_tcp_limit_output_bytes and max(2 * skb->truesize, sk->sk_pacing_rate >> 10).
+As Florian commented already, such magic numbers are not nice.
+Better add a constant for each bit representing an interrupt
+source. Please note that phylib is interested in the link
+change event only. Therefore typically only one bit is set.
 
-Test:
-netperf -H remote -l -2000000 -- -s 1000000
+> +	else
+> +		ret = phy_write(phydev, MII_INTEN, 0);
+> +
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = phy_read(phydev, MII_INTSRC);
+> +
 
-before patch:
+This IRQ ACK can be removed. It's done by phylib, see
+phy_enable_interrupts().
 
-MIGRATED TCP STREAM TEST from 0.0.0.0 () port 0 AF_INET to remote () port 0 AF_INET : demo
-Recv   Send    Send
-Socket Socket  Message  Elapsed
-Size   Size    Size     Time     Throughput
-bytes  bytes   bytes    secs.    10^6bits/sec
-
- 87380 327680 327680    250.17      0.06
-
-after patch:
-
-MIGRATED TCP STREAM TEST from 0.0.0.0 () port 0 AF_INET to remote () port 0 AF_INET : demo
-Recv   Send    Send
-Socket Socket  Message  Elapsed
-Size   Size    Size     Time     Throughput
-bytes  bytes   bytes    secs.    10^6bits/sec
-
- 87380 327680 327680    1.29       12.54
-
-Signed-off-by: Sergej Benilov <sergej.benilov@googlemail.com>
----
- net/ipv4/tcp_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index e625be56..71efca72 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2054,7 +2054,7 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
- 		 * One example is wifi aggregation (802.11 AMPDU)
- 		 */
- 		limit = max(2 * skb->truesize, sk->sk_pacing_rate >> 10);
--		limit = min_t(u32, limit, sysctl_tcp_limit_output_bytes);
-+		limit = max_t(u32, limit, sysctl_tcp_limit_output_bytes);
- 
- 		if (atomic_read(&sk->sk_wmem_alloc) > limit) {
- 			set_bit(TSQ_THROTTLED, &tp->tsq_flags);
--- 
-2.17.1
+> +	return ret < 0 ? ret : 0;
+> +}
+> +
+> +static int tja11xx_ack_interrupt(struct phy_device *phydev)
+> +{
+> +	int ret = phy_read(phydev, MII_INTSRC);
+> +
+> +	return ret < 0 ? ret : 0;
+> +}
+> +
+>  static int tja11xx_get_sset_count(struct phy_device *phydev)
+>  {
+>  	return ARRAY_SIZE(tja11xx_hw_stats);
+> @@ -366,6 +392,9 @@ static struct phy_driver tja11xx_driver[] = {
+>  		.suspend	= genphy_suspend,
+>  		.resume		= genphy_resume,
+>  		.set_loopback   = genphy_loopback,
+> +		/* IRQ related */
+> +		.config_intr	= tja11xx_config_intr,
+> +		.ack_interrupt	= tja11xx_ack_interrupt,
+>  		/* Statistics */
+>  		.get_sset_count = tja11xx_get_sset_count,
+>  		.get_strings	= tja11xx_get_strings,
+> @@ -381,6 +410,9 @@ static struct phy_driver tja11xx_driver[] = {
+>  		.suspend	= genphy_suspend,
+>  		.resume		= genphy_resume,
+>  		.set_loopback   = genphy_loopback,
+> +		/* IRQ related */
+> +		.config_intr	= tja11xx_config_intr,
+> +		.ack_interrupt	= tja11xx_ack_interrupt,
+>  		/* Statistics */
+>  		.get_sset_count = tja11xx_get_sset_count,
+>  		.get_strings	= tja11xx_get_strings,
+> 
 
