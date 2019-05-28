@@ -2,181 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C3DE2CEEE
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A14172CEF6
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 20:52:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728241AbfE1Srx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 14:47:53 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:43823 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728236AbfE1Srv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 14:47:51 -0400
-Received: by mail-pg1-f193.google.com with SMTP id f25so11502950pgv.10
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 11:47:50 -0700 (PDT)
+        id S1726943AbfE1Swh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 14:52:37 -0400
+Received: from mail-eopbgr140071.outbound.protection.outlook.com ([40.107.14.71]:25172
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726708AbfE1Swh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 14:52:37 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nbZG+yLKOwlBvMbOmsqIs2xj+EqotYcIlN/hsV/1azU=;
-        b=sWZsOoyzCYCbIQ2EMpR3gdhZPoTT/zd3GtXX9eJbB+UeN9gYVMnutQ5VSIQhj9gM78
-         lNOgFIUOzW5S8rwLjNJwn7je6vl/etniW/a1kDn0+XFcfyTfAqMrGWX30/gsK+5L94Bu
-         ZQz7543xx8UjgJYo1jgg3XhjaRs8R0Sg75A9jWrQgkEA7ogcjjc0AMRVcpIg1KNvm8JA
-         qlQbQrm634RaeOHDId/84rdpRXXbm4YpaI8Wg//vEF0u6NPEssppLcLh82g23/QKhj+8
-         97hC6/AHemU2JIE17MQ4mE44kjQTvbbMLv31CS2pIQvqeT/hq/6ybFp7E3+0+dBn2dbW
-         m8AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nbZG+yLKOwlBvMbOmsqIs2xj+EqotYcIlN/hsV/1azU=;
-        b=MzbQke6KyMwKhX9zvvlHU+Y3rrUp5XAZjnBkiIYmtGpdBf0o78uWTO1ScgGtXSXZnt
-         30l4ZdIQ6SldqnW95y1ANWUYvxdiUBgAKUU4daFcYDpIQC3kKw+lUdfuGsS3c1Qx9JgO
-         LDtJK/omPTh57GPB0bxUC3Gt/L1ZeXK5P1IHfXFLRzdcNnmsu6qupeAr+1mJ9oF93LC7
-         ADt1HI993gIMmS+B1kddrLtR6Kf6+mmU42l2evNlpJfPjP7r4R0UTYZRnK5Zn0jv1Wkq
-         ro8FTCyX6Gr98KUibSgLSgMlbEwBjKQJf+ZRRUpxg33jvPGBhpHir6SnMG2zT+acke44
-         aG3w==
-X-Gm-Message-State: APjAAAXUpYLtyH00mXohaXh0htaTXqMwBQchm9co7zHawwgXqmhFzx2Y
-        0oJ5d1ZtALZoRsVmjRYvwaC4qw==
-X-Google-Smtp-Source: APXvYqyOw+Srdt5vojqAJuQBqi9dURZxNalbsFo0RPXUC9Az/qNRpOFmjCC5HJOCVZ+Rq+vwtfXC5A==
-X-Received: by 2002:a63:ff23:: with SMTP id k35mr103274000pgi.139.1559069270528;
-        Tue, 28 May 2019 11:47:50 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id n12sm14213608pgq.54.2019.05.28.11.47.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 May 2019 11:47:49 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
-To:     davem@davemloft.net, saeedm@mellanox.com, jasowang@redhat.com,
-        brouer@redhat.com
-Cc:     netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>
-Subject: [PATCH PATCH v4 2/2] net: core: support XDP generic on stacked devices.
-Date:   Tue, 28 May 2019 11:47:31 -0700
-Message-Id: <20190528184731.7464-3-sthemmin@microsoft.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190528184731.7464-1-sthemmin@microsoft.com>
-References: <20190528184731.7464-1-sthemmin@microsoft.com>
+ d=darbyshire-bryant.me.uk; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I7a0cHDsrbN6H/WFOTBz3ZcbHLfUcZtkAAokMOcpQuQ=;
+ b=p6DoyKHqTWamVg2acZ+itDZXoAppulvAhT+/ZH2qhmTEjUzn8C0reTJbP211QbYDIAO7EXBf3bXSVaU2miH9450pAWwaTCrsv7zLe6BBrZOnSN0FpMG4WYKYpzNNmqSHXoPqRFItWH71PXYW+ivgeT9xFNF4ccmeO7V0Or8AT/M=
+Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com (10.171.106.21) by
+ VI1PR0302MB2767.eurprd03.prod.outlook.com (10.171.105.148) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1922.18; Tue, 28 May 2019 18:52:33 +0000
+Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com
+ ([fe80::603a:6eb9:2073:bde4]) by VI1PR0302MB2750.eurprd03.prod.outlook.com
+ ([fe80::603a:6eb9:2073:bde4%5]) with mapi id 15.20.1922.021; Tue, 28 May 2019
+ 18:52:33 +0000
+From:   Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v6] net: sched: Introduce act_ctinfo action
+Thread-Topic: [PATCH net-next v6] net: sched: Introduce act_ctinfo action
+Thread-Index: AQHVFXdSefBuJXwkfU6scW4BRrDrCKaA1c+AgAAMRQA=
+Date:   Tue, 28 May 2019 18:52:32 +0000
+Message-ID: <70B35849-D2D4-4B4E-8D3E-8AF089B0947F@darbyshire-bryant.me.uk>
+References: <20190528170236.29340-1-ldir@darbyshire-bryant.me.uk>
+ <87ef4itpsq.fsf@toke.dk>
+In-Reply-To: <87ef4itpsq.fsf@toke.dk>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ldir@darbyshire-bryant.me.uk; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2a02:c7f:1268:6500::dc83]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c8dc2352-4e1f-4246-71cf-08d6e39da49b
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(7021145)(8989299)(4534185)(7022145)(4603075)(4627221)(201702281549075)(8990200)(7048125)(7024125)(7027125)(7023125)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:VI1PR0302MB2767;
+x-ms-traffictypediagnostic: VI1PR0302MB2767:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <VI1PR0302MB276753FD1812329033E89B7FC91E0@VI1PR0302MB2767.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 00514A2FE6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(376002)(366004)(39830400003)(396003)(346002)(189003)(199004)(6116002)(6916009)(82746002)(4744005)(4326008)(5660300002)(25786009)(66476007)(66556008)(64756008)(66446008)(33656002)(91956017)(76116006)(316002)(73956011)(66574012)(256004)(36756003)(14454004)(86362001)(966005)(66946007)(53936002)(2906002)(476003)(6246003)(8936002)(8676002)(486006)(446003)(46003)(71200400001)(81166006)(71190400001)(76176011)(99286004)(229853002)(83716004)(6512007)(6306002)(6436002)(6486002)(53546011)(6506007)(7736002)(305945005)(102836004)(74482002)(186003)(508600001)(81156014)(11346002)(68736007)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0302MB2767;H:VI1PR0302MB2750.eurprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: darbyshire-bryant.me.uk does not
+ designate permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 2wTBTsc4q89gy4gbyuBhuAb4KeuM1PXEuNThhKTZI0H1N991XCki0rysostbYvFsAd93aDID/z+Gd/CsHNmYLh3lMy6fouYMBQ9u0jj4SgyJYrG8iC4ZZqG4852e2sxgnIdp9WVgKJ0IY+VgcTEUJy5jbqqLEB308l2Nu+gfCinBHPLNxTYlSJ3arePOfo5nvqQT2pCTd1qYENc083qXVYTMYUizXqAj07pmX5DxpWyDF5P6jbze01G3aNprfqNDrC0irDEkoccMT9TNxpdnw84XDKZ9XtMtQiN+JHe29feHwUo0JxnyZ1CY2DmURK1y3Bz0FVo9nqhZcg6iNGlYmmRETnq3uekK8j54OtnChL1DWLl0GAr+Oc4K5FucVOI9GzTt95vm0ggJx0szH0r9QhXUME4xk8XwxLNGVcXnflc=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8280DEFA8EA91B4E9D33DD0CFC787ED5@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: darbyshire-bryant.me.uk
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8dc2352-4e1f-4246-71cf-08d6e39da49b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 May 2019 18:52:32.8913
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9151708b-c553-406f-8e56-694f435154a4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kevin@darbyshire-bryant.me.uk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0302MB2767
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a device is stacked like (team, bonding, failsafe or netvsc) the
-XDP generic program for the parent device was not called.
-
-Move the call to XDP generic inside __netif_receive_skb_core where
-it can be done multiple times for stacked case.
-
-Fixes: d445516966dc ("net: xdp: support xdp generic on virtual devices")
-Signed-off-by: Stephen Hemminger <sthemmin@microsoft.com>
----
-v1 - call xdp_generic in netvsc handler
-v2 - do xdp_generic in generic rx handler processing
-v3 - move xdp_generic call inside the another pass loop
-v4 - reset skb mac_len after xdp is called
-
- net/core/dev.c | 58 +++++++++++---------------------------------------
- 1 file changed, 12 insertions(+), 46 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b6b8505cfb3e..cc2a4e257324 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4502,23 +4502,6 @@ static int netif_rx_internal(struct sk_buff *skb)
- 
- 	trace_netif_rx(skb);
- 
--	if (static_branch_unlikely(&generic_xdp_needed_key)) {
--		int ret;
--
--		preempt_disable();
--		rcu_read_lock();
--		ret = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
--		rcu_read_unlock();
--		preempt_enable();
--
--		/* Consider XDP consuming the packet a success from
--		 * the netdev point of view we do not want to count
--		 * this as an error.
--		 */
--		if (ret != XDP_PASS)
--			return NET_RX_SUCCESS;
--	}
--
- #ifdef CONFIG_RPS
- 	if (static_branch_unlikely(&rps_needed)) {
- 		struct rps_dev_flow voidflow, *rflow = &voidflow;
-@@ -4858,6 +4841,18 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
- 
- 	__this_cpu_inc(softnet_data.processed);
- 
-+	if (static_branch_unlikely(&generic_xdp_needed_key)) {
-+		int ret2;
-+
-+		preempt_disable();
-+		ret2 = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
-+		preempt_enable();
-+
-+		if (ret2 != XDP_PASS)
-+			return NET_RX_DROP;
-+		skb_reset_mac_len(skb);
-+	}
-+
- 	if (skb->protocol == cpu_to_be16(ETH_P_8021Q) ||
- 	    skb->protocol == cpu_to_be16(ETH_P_8021AD)) {
- 		skb = skb_vlan_untag(skb);
-@@ -5178,19 +5173,6 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
- 	if (skb_defer_rx_timestamp(skb))
- 		return NET_RX_SUCCESS;
- 
--	if (static_branch_unlikely(&generic_xdp_needed_key)) {
--		int ret;
--
--		preempt_disable();
--		rcu_read_lock();
--		ret = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
--		rcu_read_unlock();
--		preempt_enable();
--
--		if (ret != XDP_PASS)
--			return NET_RX_DROP;
--	}
--
- 	rcu_read_lock();
- #ifdef CONFIG_RPS
- 	if (static_branch_unlikely(&rps_needed)) {
-@@ -5211,7 +5193,6 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
- 
- static void netif_receive_skb_list_internal(struct list_head *head)
- {
--	struct bpf_prog *xdp_prog = NULL;
- 	struct sk_buff *skb, *next;
- 	struct list_head sublist;
- 
-@@ -5224,21 +5205,6 @@ static void netif_receive_skb_list_internal(struct list_head *head)
- 	}
- 	list_splice_init(&sublist, head);
- 
--	if (static_branch_unlikely(&generic_xdp_needed_key)) {
--		preempt_disable();
--		rcu_read_lock();
--		list_for_each_entry_safe(skb, next, head, list) {
--			xdp_prog = rcu_dereference(skb->dev->xdp_prog);
--			skb_list_del_init(skb);
--			if (do_xdp_generic(xdp_prog, skb) == XDP_PASS)
--				list_add_tail(&skb->list, &sublist);
--		}
--		rcu_read_unlock();
--		preempt_enable();
--		/* Put passed packets back on main list */
--		list_splice_init(&sublist, head);
--	}
--
- 	rcu_read_lock();
- #ifdef CONFIG_RPS
- 	if (static_branch_unlikely(&rps_needed)) {
--- 
-2.20.1
-
+DQoNCj4gT24gMjggTWF5IDIwMTksIGF0IDE5OjA4LCBUb2tlIEjDuGlsYW5kLUrDuHJnZW5zZW4g
+PHRva2VAcmVkaGF0LmNvbT4gd3JvdGU6DQo+IA0KPHN0dWZmIHNuaXBwZWQ+DQo+IA0KPiBUaGFu
+ayB5b3UgZm9yIGRvaW5nIGFub3RoZXIgaXRlcmF0aW9uIQ0KPiANCj4gTm8gZnVydGhlciBjb21t
+ZW50cyBvbiB0aGUgYWN0dWFsIGNvZGUsIGJ1dCBJIHN0aWxsIGdldCB0aGUgd2hpdGVzcGFjZQ0K
+PiBpc3N1ZSB3aXRoIHRoZSBwYXRjaC4uLiBBbmQgbm93IGl0IHJlc3VsdHMgaW4gc3RyYXkgXk0g
+Y2hhcmFjdGVycyBpbiB0aGUNCj4gS2NvbmZpZyBmaWxlLCB3aGljaCBtYWtlcyB0aGUgYnVpbGQg
+YmxvdyB1cCA6Lw0KDQpUaGlzIGlzIHZlcnkgb2RkLiAgSSBwcm9kdWNlZCB0aGUgbGFzdCBwYXRj
+aCAodjYpIGZyb20gd2l0aGluIGEgZGViaWFuIFZNDQphbmQgc2VudCBpdCBmcm9tIHRoZXJlIGFs
+c28uICBObyB3ZWlyZCBsaW5lIGVuZGluZ3MgaW4gdGhlIGxvY2FsbHkgcHJvZHVjZWQNCnBhdGNo
+IHRleHQgYW5kIGl0IGFwcGxpZWQgY2xlYW5seSB0byBhIGxvY2FsIHRyZWUuICBJ4oCZdmUgc2Vu
+dCB0ZXN0IHBhdGNoZXMNCmludG8gdGhlIG9wZW53cnQgdHJlZSBhbmQgYXBwbGllZCB0aG9zZSBj
+bGVhbmx5IGRpcmVjdCBmcm9tIHBhdGNod29yay4NCg0KU2ltaWxhcmx5IEnigJl2ZSBkb3dubG9h
+ZGVkIHRoZSB2NSBwYXRjaCBmcm9tIG5ldGRldiBwYXRjaHdvcmsgaHR0cDovL3BhdGNod29yay5v
+emxhYnMub3JnL3BhdGNoLzExMDU3NTUvbWJveC8gYW5kIGFwcGxpZWQgdGhhdCB3aXRoIGdpdA0K
+YW0gd2l0aG91dCBwcm9ibGVtLg0KDQpBbSB0b3RhbGx5IGNvbmZ1c2VkIQ0KDQoNCkNoZWVycywN
+Cg0KS2V2aW4gRC1CDQoNCmdwZzogMDEyQyBBQ0IyIDI4QzYgQzUzRSA5Nzc1ICA5MTIzIEIzQTIg
+Mzg5QiA5REUyIDMzNEENCg0K
