@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 353132CDC9
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 558432CDD2
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 19:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727416AbfE1Rkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 13:40:55 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:42998 "EHLO inva021.nxp.com"
+        id S1727470AbfE1RlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 13:41:09 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:43060 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726723AbfE1Rkw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 May 2019 13:40:52 -0400
+        id S1727368AbfE1Rkv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 13:40:51 -0400
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9CBF2200FDD;
-        Tue, 28 May 2019 19:40:49 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 46D62200FC3;
+        Tue, 28 May 2019 19:40:50 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9A5B8200F77;
-        Tue, 28 May 2019 19:40:49 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 437D9200FA8;
+        Tue, 28 May 2019 19:40:50 +0200 (CEST)
 Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 1954B205F4;
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id AAE1A205F4;
         Tue, 28 May 2019 19:40:49 +0200 (CEST)
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     linux@armlinux.org.uk, f.fainelli@gmail.com, andrew@lunn.ch,
@@ -26,9 +26,9 @@ To:     linux@armlinux.org.uk, f.fainelli@gmail.com, andrew@lunn.ch,
         olteanv@gmail.com, thomas.petazzoni@bootlin.com,
         davem@davemloft.net, vivien.didelot@gmail.com
 Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH v2 net-next 04/11] net: phy: Add phy_standalone sysfs entry
-Date:   Tue, 28 May 2019 20:38:10 +0300
-Message-Id: <1559065097-31832-5-git-send-email-ioana.ciornei@nxp.com>
+Subject: [PATCH v2 net-next 05/11] net: phylink: Add phylink_mac_link_{up,down} wrapper functions
+Date:   Tue, 28 May 2019 20:38:11 +0300
+Message-Id: <1559065097-31832-6-git-send-email-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1559065097-31832-1-git-send-email-ioana.ciornei@nxp.com>
 References: <1559065097-31832-1-git-send-email-ioana.ciornei@nxp.com>
@@ -39,84 +39,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Export a phy_standalone device attribute that is meant to give the
-indication that this PHY lacks an attached_dev and its corresponding
-sysfs link. The attribute will be created only when the
-phy_attach_direct() function will be called with a NULL net_device.
+This is a cosmetic patch that reduces the clutter in phylink_resolve
+around calling the .mac_link_up/.mac_link_down driver callbacks.  In a
+further patch this logic will be extended to emit notifications in case
+a net device does not exist.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v2:
- - add new entry in Documentation/ABI/testing/sysfs-class-net-phydev
+ - none
 
- Documentation/ABI/testing/sysfs-class-net-phydev |  8 ++++++++
- drivers/net/phy/phy_device.c                     | 22 ++++++++++++++++++++++
- 2 files changed, 30 insertions(+)
+ drivers/net/phy/phylink.c | 50 ++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 32 insertions(+), 18 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
-index 6ebabfb27912..b7c46c2f3fd0 100644
---- a/Documentation/ABI/testing/sysfs-class-net-phydev
-+++ b/Documentation/ABI/testing/sysfs-class-net-phydev
-@@ -34,3 +34,11 @@ Description:
- 		xgmii, moca, qsgmii, trgmii, 1000base-x, 2500base-x, rxaui,
- 		xaui, 10gbase-kr, unknown
- 
-+What:		/sys/class/mdio_bus/<bus>/<device>/phy_standalone
-+Date:		May 2019
-+KernelVersion:	5.3
-+Contact:	netdev@vger.kernel.org
-+Description:
-+		Boolean value indicating whether the PHY device is used in
-+		standalone mode, without a net_device associated, by PHYLINK.
-+		Attribute created only when this is the case.
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 1b540ed9b326..8b4fc3b4f269 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1164,6 +1164,16 @@ static void phy_sysfs_create_links(struct phy_device *phydev)
- 	phydev->sysfs_links = true;
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 74983593834b..83ab83c3edba 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -395,6 +395,34 @@ static const char *phylink_pause_to_str(int pause)
+ 	}
  }
  
-+static ssize_t
-+phy_standalone_show(struct device *dev, struct device_attribute *attr,
-+		    char *buf)
++static void phylink_mac_link_up(struct phylink *pl,
++				struct phylink_link_state link_state)
 +{
-+	struct phy_device *phydev = to_phy_device(dev);
++	struct net_device *ndev = pl->netdev;
 +
-+	return sprintf(buf, "%d\n", !phydev->attached_dev);
++	pl->ops->mac_link_up(ndev, pl->link_an_mode,
++			     pl->phy_state.interface,
++			     pl->phydev);
++
++	netif_carrier_on(ndev);
++
++	netdev_info(ndev,
++		    "Link is Up - %s/%s - flow control %s\n",
++		    phy_speed_to_str(link_state.speed),
++		    phy_duplex_to_str(link_state.duplex),
++		    phylink_pause_to_str(link_state.pause));
 +}
-+static DEVICE_ATTR_RO(phy_standalone);
 +
- /**
-  * phy_attach_direct - attach a network device to a given PHY device pointer
-  * @dev: network device to attach
-@@ -1253,6 +1263,13 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
- 
- 	phy_sysfs_create_links(phydev);
- 
-+	if (!phydev->attached_dev) {
-+		err = sysfs_create_file(&phydev->mdio.dev.kobj,
-+					&dev_attr_phy_standalone.attr);
-+		if (err)
-+			phydev_err(phydev, "error creating 'phy_standalone' sysfs entry\n");
-+	}
++static void phylink_mac_link_down(struct phylink *pl)
++{
++	struct net_device *ndev = pl->netdev;
 +
- 	phydev->dev_flags = flags;
- 
- 	phydev->interface = interface;
-@@ -1380,6 +1397,11 @@ void phy_detach(struct phy_device *phydev)
- 			sysfs_remove_link(&dev->dev.kobj, "phydev");
- 		sysfs_remove_link(&phydev->mdio.dev.kobj, "attached_dev");
++	netif_carrier_off(ndev);
++	pl->ops->mac_link_down(ndev, pl->link_an_mode,
++			       pl->phy_state.interface);
++	netdev_info(ndev, "Link is Down\n");
++}
++
+ static void phylink_resolve(struct work_struct *w)
+ {
+ 	struct phylink *pl = container_of(w, struct phylink, resolve);
+@@ -443,24 +471,10 @@ static void phylink_resolve(struct work_struct *w)
  	}
-+
-+	if (!phydev->attached_dev)
-+		sysfs_remove_file(&phydev->mdio.dev.kobj,
-+				  &dev_attr_phy_standalone.attr);
-+
- 	phy_suspend(phydev);
- 	if (dev) {
- 		phydev->attached_dev->phydev = NULL;
+ 
+ 	if (link_state.link != netif_carrier_ok(ndev)) {
+-		if (!link_state.link) {
+-			netif_carrier_off(ndev);
+-			pl->ops->mac_link_down(ndev, pl->link_an_mode,
+-					       pl->phy_state.interface);
+-			netdev_info(ndev, "Link is Down\n");
+-		} else {
+-			pl->ops->mac_link_up(ndev, pl->link_an_mode,
+-					     pl->phy_state.interface,
+-					     pl->phydev);
+-
+-			netif_carrier_on(ndev);
+-
+-			netdev_info(ndev,
+-				    "Link is Up - %s/%s - flow control %s\n",
+-				    phy_speed_to_str(link_state.speed),
+-				    phy_duplex_to_str(link_state.duplex),
+-				    phylink_pause_to_str(link_state.pause));
+-		}
++		if (!link_state.link)
++			phylink_mac_link_down(pl);
++		else
++			phylink_mac_link_up(pl, link_state);
+ 	}
+ 	if (!link_state.link && pl->mac_link_dropped) {
+ 		pl->mac_link_dropped = false;
 -- 
 1.9.1
 
