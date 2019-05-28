@@ -2,73 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E8712CBB4
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 18:20:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F6EF2CBC3
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 18:24:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbfE1QUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 12:20:33 -0400
-Received: from mail-lj1-f176.google.com ([209.85.208.176]:44857 "EHLO
-        mail-lj1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726512AbfE1QUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 12:20:32 -0400
-Received: by mail-lj1-f176.google.com with SMTP id e13so18258866ljl.11
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 09:20:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=QUBK0smUCEmAkLWUMviQy/y2cmdfwPzjFuxose3v4AE=;
-        b=dBNkFZox4YGYP39v4i5KOnXfaDqG/PeuWLXwWzvAsiXhrlOU5TiCNZNDa8eTdpQxEK
-         HS3lqyfSgd2JSEL58AmD2dbwJUopAIjgScyPwjupax/Pj9aNTZSnws6IYsUN/KuKLpSx
-         N2em3KEvPI+8cIxh5kHes03ZljvzFeQewHOCblH+dL63atF/ZoSacj/U52qXUJo+69OG
-         vfigDgDclbgwH1a2djUCodOOw+nU7lfqbNJTxeM7RmYUw5qO6MsIR8iA0EDk60Vc06lj
-         cEwUvCu/praxchEwMsoPozfxiOSE1Mxo3UQ1P/gLhaZapb9IwZuzG9n1deMb2q7X0EIC
-         W5lw==
-X-Gm-Message-State: APjAAAXgUH5hZgZQsAWkEK4dTnV2pvzLl7zqZ9DZxoedI38Q4wXUinXO
-        dT8YoHkkgvhtB8th+eeapE1EEw==
-X-Google-Smtp-Source: APXvYqzVt9C1LB4cbm3+M9Bns2HZLMoJ07zH/TtGTIfCyJBNb8EkZUGWbTwvimZvSCMSIkjZGg8MlA==
-X-Received: by 2002:a2e:5c08:: with SMTP id q8mr15090148ljb.113.1559060430904;
-        Tue, 28 May 2019 09:20:30 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (alrua-x1.vpn.toke.dk. [2a00:7660:6da:10::2])
-        by smtp.gmail.com with ESMTPSA id p6sm2994117lfo.55.2019.05.28.09.20.30
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 28 May 2019 09:20:30 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 881DE18031E; Tue, 28 May 2019 18:20:29 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Akshat Kakkar <akshat.1984@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, lartc <lartc@vger.kernel.org>,
-        cake@lists.bufferbloat.net
-Subject: Re: Cake not doing rate limiting in a way it is expected to do
-In-Reply-To: <CAA5aLPhrDbqJqfVVBWfCZ6TK0ZFMOSsqxK9DS9D1cd4GZJ0ctw@mail.gmail.com>
-References: <CAA5aLPgz2Pzi5qNZkHwtN=fEXEwRpCQYFUkEzRWkdT39+YNWFA@mail.gmail.com> <875zpvvsar.fsf@toke.dk> <CAA5aLPhrDbqJqfVVBWfCZ6TK0ZFMOSsqxK9DS9D1cd4GZJ0ctw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 28 May 2019 18:20:29 +0200
-Message-ID: <87muj6tusy.fsf@toke.dk>
+        id S1726515AbfE1QYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 12:24:05 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:40874 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726243AbfE1QYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 12:24:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=j+NLxTpkLdOok7PHeXKxtJtOVRAPgihczjvzNazPu2w=; b=WRllWTBzxIMBW+rhV+eF6bSRk
+        j+kUfKV6qcrodHnbJz2RPO3hQ+BtE44rxLQ+rewMut3mCaIs2ppgDHk2cUD2khdXIVFcy+T5WH8Nd
+        FxYqFdcJwPosINoqTo4VhN8GNr0wIpFOI9Q2h1PmPdPCwdjOWGri6gEZ1A+s9sudJMjpGNpR6x3Gb
+        KiEA11hoFdy9MjcutMDvlbXxGzBelvR0jgAzTrfNCzppctsv8vPmSvBuk+0rhooDrwoeRdeNvVwec
+        NlKQ3rcL5kHZ/zxpG/LvWfrVzlKfcNR00DACLEpsROnijEOAP7u7uBbu2icMaL5R7HXU27GTttxes
+        hPdRk1thQ==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38344)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hVetK-0006xu-Qv; Tue, 28 May 2019 17:23:58 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hVetI-0003le-Eo; Tue, 28 May 2019 17:23:56 +0100
+Date:   Tue, 28 May 2019 17:23:56 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: phy: marvell10g: report if the PHY fails to boot
+ firmware
+Message-ID: <20190528162356.xjq53h4z7edvr3gl@shell.armlinux.org.uk>
+References: <E1hVYVG-0005D8-8w@rmk-PC.armlinux.org.uk>
+ <20190528154238.ifudfslyofk22xoe@shell.armlinux.org.uk>
+ <20190528161139.GQ18059@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190528161139.GQ18059@lunn.ch>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Akshat Kakkar <akshat.1984@gmail.com> writes:
+On Tue, May 28, 2019 at 06:11:39PM +0200, Andrew Lunn wrote:
+> > One question: are we happy with failing the probe like this, or would it
+> > be better to allow the probe to suceed?
+> > 
+> > As has been pointed out in the C45 MII access patch, we need the PHY
+> > to bind to the network driver for the MII bus to be accessible to
+> > userspace, so if we're going to have userspace tools to upload the
+> > firmware, rather than using u-boot, we need the PHY to be present and
+> > bound to the network interface.
+> 
+> Hi Russell
+> 
+> It is an interesting question. Failing the probe is the simple
+> solution. If we don't fail the probe, we then need to allow the
+> attach, but fail all normal operations, with a noisy kernel log.  That
+> probably means adding a new state to the state machine, PHY_BROKEN.
+> Enter that state if phy_start_aneg() returns an error?
 
-> It's a controlled lab setup. Users connected to eno2 and server on eno1.
-> Link speed 1Gbps.
-> No ingress shaping.
-> Simple http download.
->
-> I am having multiple rates requirement for multiple user groups, which
-> I am controlling using various classes and thus using htb.
+Hi Andrew,
 
-Well, CAKE has its own built-in shaper, so it hasn't seen much testing
-with HTB as a parent. Theoretically it *should* work, though, as long as
-CAKE is running in unlimited mode.
+I don't think we need a new state - I think we can trap it in
+the link_change_notify() method, and force phydev->state to
+PHY_HALTED if it's in phy_is_started() mode.
 
-Could you please share your full config, and the output of `tc -s qdisc`
-after a run?
+Maybe something like:
 
-Thanks,
+	if (phy_is_started(phydev) && priv->firmware_failed) {
+		dev_warn(&phydev->mdio.dev,
+			 "PHY firmware failure: link forced down");
+		phydev->state = PHY_HALTED;
+	}
 
--Toke
+Or maybe we just need to do that if phydev->state == PHY_UP or
+PHY_RESUMING (the two states entered from phy_start())?
+
+Russell.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
