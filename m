@@ -2,155 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68B132C714
-	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 14:54:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 256902C733
+	for <lists+netdev@lfdr.de>; Tue, 28 May 2019 15:00:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727133AbfE1Myp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 08:54:45 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:45249 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726943AbfE1Myp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 08:54:45 -0400
-Received: by mail-ed1-f67.google.com with SMTP id g57so16783617edc.12
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 05:54:43 -0700 (PDT)
+        id S1727505AbfE1NA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 09:00:29 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:40262 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726870AbfE1NA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 09:00:28 -0400
+Received: by mail-ot1-f68.google.com with SMTP id u11so17624135otq.7;
+        Tue, 28 May 2019 06:00:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i6VJCseZr05+MLyjh91JVOItIODV/x8BPJtns6cGxBA=;
-        b=M8CHquhdK7evLgeg1hFY0guvM3aOPO5JyIZv3hHb+Dx209Gq/ZxrML+RyxYas0mD1o
-         ZzOjSNVfj+rOqLWvkxKDIKyYlPhY2GgmUil4zxMPcAp98B1GFjWDf/Y73hbPrH7bdYfn
-         OHbN6w57VTcvAqf+JKKo/61R3gW4jOBLAuufaRbL8ZA27vsA4l5kej17kC0RGsKucZum
-         t0OurD9AEpAWqYkiYTcld0ZLHqpDBTpKG/U8iqMiMHNdo1SVY3jQ2rq1hbm6E/t7ro5K
-         6NIKvHjHsCh96Eh5B6mN4BfFbtdHEumEHxouQDHFrlqBlUlGr+3TzEHrTqq+cPFCFtcQ
-         LMog==
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nyuMvCRbSUhq6xRTrLcgr4MhHdrWBhaLhwL3jkImdAk=;
+        b=kJr6nC6wrPy5BVs3UbPGlGOpYy1mOQInAXwlimyLqnlUIpPK00WuQlilHm9ZkotRJV
+         h1pimdnhh82LoIBRfEUIipy8n2O6qQ0YczA6pgyJoYpGCUygXY678yviVL4fhVkEUgsz
+         +8nfHCoTn/OZjMT7tRrLdZOZ6h61WdEqz8i77woSak5lD9Htc1qXqrRmxKs87NU0T2WV
+         wL0IhC4phxSDwOZ/F2mSVY1uRh7Yc5oaTTly+R19n72jm1/Ap7RexNayfL0Oyrut/+3O
+         e4LNIHxFNNQWMXrXIunt+Fz6Mc6Rle4hsvX8CsJoaw5qoAcy6fsz3uQIhJnaq72WOnwM
+         K9Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i6VJCseZr05+MLyjh91JVOItIODV/x8BPJtns6cGxBA=;
-        b=iMXM8pnjoZ32aMCYL1+cbbZN8dBQbUtlYOcfierUYjGfN5Q2/jo0qZYydlXKYoV6rw
-         CFaTBr//t303H37FpyufADpEM6UrmkO/uc9cFzaDU1o1lPrwZ5iYfh7VNQ7sfHsX3jBq
-         QFNb+mnVIpVWxa5D1HPvmzuzVKeD8gIYWEGcOb4a2OytJMVMKY39V52iT6ckn+i1fqZN
-         R0LjU3I02Y28Ri6NMku5W1dIbF8PKjbgfoXg1GmIHR3UsaiXgr1ELM0aAranLFieSS7K
-         5IvmK3edakLiyy3KBMAJbYhJhAldi+I0N2VDE1aVRYOA2i2gpu5m4qK+mSSB7c1uZyZU
-         Jo0g==
-X-Gm-Message-State: APjAAAWj5SDZKF0f8ZnwwNCC032WKA8B6VX/SvloBBdkU5ZtWXRTgNUc
-        8IFIfslr7FZ+FCHeXva69yL660qaXagQQvhSYH+olMJe
-X-Google-Smtp-Source: APXvYqws1Yko9UzgBXoJzZMQ+SO22JTzxZOZUPf8mv8+w8ZuanL691uwsRjC5+VntxKkkOePQAtZ6UwKZjHpTmT3+BM=
-X-Received: by 2002:a17:906:8397:: with SMTP id p23mr19788193ejx.300.1559048083104;
- Tue, 28 May 2019 05:54:43 -0700 (PDT)
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nyuMvCRbSUhq6xRTrLcgr4MhHdrWBhaLhwL3jkImdAk=;
+        b=p8+ow/gAXKTF/Wd+1yFRaYTFItFLifLRC5qz7uXHLj7/jYh7957QuZtv5bHWxUvveF
+         /pmgE8kmZwbPApDAlmTz7c7qSDFLs+VxKFwxPL5/7XaL7qdceqqACfObMeiofQb8VB6e
+         SH/k2VTKA6sp7GMvYzeEmv3qyRw8mMDjyqt03yWAFpOLH6rRlqeGhoRaG8GgTBC38OuS
+         xmeTZQ8kxDDcBAiMtmXMAOTjw4nBqWs0DUnPBX14Sg/v7ZDbNYj/mEqGpfOAMdVKRl/U
+         Vdl9c14N2/qGQUcE1H0VnSa2R1oXFVC6O9QParxv3YU6FwwWvW3dgmXA+ZbCEjHXJTvs
+         v7/Q==
+X-Gm-Message-State: APjAAAXOKQTyWCC1EmkL5+0kIn4QN4ZXgSid5w6WX4TSjaPwFpPYvaaF
+        /RE6887t6bc3q5P858kPN4x/ramx
+X-Google-Smtp-Source: APXvYqzCcbSRy8Xk4z+5gflTGtO2qnD2GXWsU7hV9w9ZfqG/x4WuJz1gn0nW5TIGH72uN8BHw9aXeA==
+X-Received: by 2002:a05:6830:1692:: with SMTP id k18mr53205otr.73.1559048426883;
+        Tue, 28 May 2019 06:00:26 -0700 (PDT)
+Received: from [192.168.1.112] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
+        by smtp.gmail.com with ESMTPSA id f7sm5385458otb.66.2019.05.28.06.00.25
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 May 2019 06:00:26 -0700 (PDT)
+Subject: Re: [PATCH] rtlwifi: Fix null-pointer dereferences in error handling
+ code of rtl_pci_probe()
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     pkshih@realtek.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190514123439.10524-1-baijiaju1990@gmail.com>
+ <20190528115555.301E760F3C@smtp.codeaurora.org>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+Message-ID: <2658b691-b992-b773-c6cf-85801adc479f@lwfinger.net>
+Date:   Tue, 28 May 2019 08:00:24 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190528095639.kqalmvffsmc5ebs7@shell.armlinux.org.uk> <E1hVYrJ-0005ZA-0S@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1hVYrJ-0005ZA-0S@rmk-PC.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 28 May 2019 15:54:31 +0300
-Message-ID: <CA+h21hpXv7678MuKVfAGiwuQwzZHX_1hjXHpwZUFz8wP5aRabg@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/5] net: phy: allow Clause 45 access via mii ioctl
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190528115555.301E760F3C@smtp.codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 May 2019 at 12:58, Russell King <rmk+kernel@armlinux.org.uk> wrote:
->
-> Allow userspace to generate Clause 45 MII access cycles via phylib.
-> This is useful for tools such as mii-diag to be able to inspect Clause
-> 45 PHYs.
->
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/net/phy/phy.c | 33 ++++++++++++++++++++++++---------
->  1 file changed, 24 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-> index 3745220c5c98..6d279c2ac1f8 100644
-> --- a/drivers/net/phy/phy.c
-> +++ b/drivers/net/phy/phy.c
-> @@ -386,6 +386,7 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
->         struct mii_ioctl_data *mii_data = if_mii(ifr);
->         u16 val = mii_data->val_in;
->         bool change_autoneg = false;
-> +       int prtad, devad;
->
->         switch (cmd) {
->         case SIOCGMIIPHY:
-> @@ -393,14 +394,29 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
->                 /* fall through */
->
->         case SIOCGMIIREG:
-> -               mii_data->val_out = mdiobus_read(phydev->mdio.bus,
-> -                                                mii_data->phy_id,
-> -                                                mii_data->reg_num);
-> +               if (mdio_phy_id_is_c45(mii_data->phy_id)) {
-> +                       prtad = mdio_phy_id_prtad(mii_data->phy_id);
-> +                       devad = mdio_phy_id_devad(mii_data->phy_id);
-> +                       devad = MII_ADDR_C45 | devad << 16 | mii_data->reg_num;
-> +               } else {
-> +                       prtad = mii_data->phy_id;
-> +                       devad = mii_data->reg_num;
-> +               }
-> +               mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad,
-> +                                                devad);
->                 return 0;
->
->         case SIOCSMIIREG:
-> -               if (mii_data->phy_id == phydev->mdio.addr) {
-> -                       switch (mii_data->reg_num) {
-> +               if (mdio_phy_id_is_c45(mii_data->phy_id)) {
-> +                       prtad = mdio_phy_id_prtad(mii_data->phy_id);
-> +                       devad = mdio_phy_id_devad(mii_data->phy_id);
-> +                       devad = MII_ADDR_C45 | devad << 16 | mii_data->reg_num;
-> +               } else {
-> +                       prtad = mii_data->phy_id;
-> +                       devad = mii_data->reg_num;
-> +               }
-> +               if (prtad == phydev->mdio.addr) {
-> +                       switch (devad) {
->                         case MII_BMCR:
->                                 if ((val & (BMCR_RESET | BMCR_ANENABLE)) == 0) {
->                                         if (phydev->autoneg == AUTONEG_ENABLE)
-> @@ -433,11 +449,10 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
->                         }
->                 }
->
-> -               mdiobus_write(phydev->mdio.bus, mii_data->phy_id,
-> -                             mii_data->reg_num, val);
-> +               mdiobus_write(phydev->mdio.bus, prtad, devad, val);
->
-> -               if (mii_data->phy_id == phydev->mdio.addr &&
-> -                   mii_data->reg_num == MII_BMCR &&
-> +               if (prtad == phydev->mdio.addr &&
-> +                   devad == MII_BMCR &&
->                     val & BMCR_RESET)
->                         return phy_init_hw(phydev);
->
-> --
-> 2.7.4
->
+On 5/28/19 6:55 AM, Kalle Valo wrote:
+> Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
+> 
+>> *BUG 1:
+>> In rtl_pci_probe(), when rtlpriv->cfg->ops->init_sw_vars() fails,
+>> rtl_deinit_core() in the error handling code is executed.
+>> rtl_deinit_core() calls rtl_free_entries_from_scan_list(), which uses
+>> rtlpriv->scan_list.list in list_for_each_entry_safe(), but it has been
+>> initialized. Thus a null-pointer dereference occurs.
+>> The reason is that rtlpriv->scan_list.list is initialized by
+>> INIT_LIST_HEAD() in rtl_init_core(), which has not been called.
+>>
+>> To fix this bug, rtl_deinit_core() should not be called when
+>> rtlpriv->cfg->ops->init_sw_vars() fails.
+>>
+>> *BUG 2:
+>> In rtl_pci_probe(), rtl_init_core() can fail when rtl_regd_init() in
+>> this function fails, and rtlpriv->scan_list.list has not been
+>> initialized by INIT_LIST_HEAD(). Then, rtl_deinit_core() in the error
+>> handling code of rtl_pci_probe() is executed. Finally, a null-pointer
+>> dereference occurs due to the same reason of the above bug.
+>>
+>> To fix this bug, the initialization of lists in rtl_init_core() are
+>> performed before the call to rtl_regd_init().
+>>
+>> These bugs are found by a runtime fuzzing tool named FIZZER written by
+>> us.
+>>
+>> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> 
+> Ping & Larry, is this ok to take?
+> 
 
-Hi Russell,
+Kalle,
 
-I find the SIOCGMIIREG/SIOCGMIIPHY ioctls useful for C45 just as much
-as they are for C22, but I think the way they work is a big hack and
-for that reason they're less than useful when you need them most.
-These ioctls work by hijacking the MDIO bus driver of a PHY that is
-attached to a net_device. Hence they can be used to access at most a
-PHY that lies on the same MDIO bus as one you already have a
-phy-handle to.
-If you have a PHY issue that makes of_phy_connect fail and the
-net_device to fail to probe, basically you're SOL because you lose
-that one handle that userspace had to the MDIO bus.
-Similarly if you're doing a bring-up and all PHY interfaces are fixed-link.
-Maybe it would be better to rethink this and expose some sysfs nodes
-for raw MDIO access in the bus drivers.
+Not at the moment. In reviewing the code, I was unable to see how this situation 
+could develop, and his backtrace did not mention any rtlwifi code. For that 
+reason, I asked him to add printk stat4ements to show the last part of rtl_pci 
+that executed correctly. In 
+https://marc.info/?l=linux-wireless&m=155788322631134&w=2, he promised to do 
+that, but I have not seen the result.
 
--Vladimir
+Larry
+
