@@ -2,68 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F080C2D156
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 00:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E4702D182
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 00:25:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726935AbfE1WGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 18:06:17 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33846 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726497AbfE1WGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 May 2019 18:06:16 -0400
-Received: by mail-pf1-f193.google.com with SMTP id n19so174346pfa.1
-        for <netdev@vger.kernel.org>; Tue, 28 May 2019 15:06:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pu/iQIYW7qvgkiNh0J6Znglf1J4UV3RQz2ZlYZ9mdLA=;
-        b=Tul5pCN7qpmfXSFFOfClpPtAJN0N+8mA//Wp0xH6QxpSn8xrT2RKWWU/3eGNcTyF/Y
-         2rhgqhKvJyPJUwck1q0h8/np5sDsw+5qKVir9DuFzvbIB7GBuNUp9ePdMFAXFwKOPH5y
-         qFUm1Io5zWjqMfQRu/xCPqvvCSFVdMkR5k0AP/bNPbhP0OUs7crFT0WcnB6jpx79Wkak
-         sdg3+JJlayVbD6H3pM3lkkcfFvLI9b9y7LzkMyLcXfMIyLUDQwfAl1HWslf0OPo6sZSl
-         jc4p2u3p+3hp9Ag3zYZHOEVVCPVL7LG7v19qt1ZYCzMWCapqRFiELbBMEy3zXipsgPtd
-         Ux7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pu/iQIYW7qvgkiNh0J6Znglf1J4UV3RQz2ZlYZ9mdLA=;
-        b=taWUzXELzupUZ5kE5nuDlXbEEWzCIH8OreU0hzcTrTjr6yCXInkPlhPchiLjEDDbGc
-         FHqow6eOfnDCKMep73zN5ziJzhV+praieFAY0FKVCBB4VYot2jqrSTZmCw7BnhyF2ghN
-         Oh/7/FY2hsd2fG6bwZzNG1d4M+9gOj1D5FYvuv9l3+bu++zDqLdWjTYfeL1bta/NabAk
-         9jIq1SQTawn/p/1F6cl4M05/mv2JQEUVeGn5uYIKS6bbM7AkvyY51o7EFYU+xfwt+aV4
-         ZCralO0yS00RUThRZ9tWBM/VkUgltw29aPOsEOrk9NirFthtkGln/RLXwvjQYZto5RDD
-         Atjw==
-X-Gm-Message-State: APjAAAXMRScsrCVJY0njsXx672TTnMGcFBGQCCKmxpyvUhXY1iU3DhsB
-        xuNiEq/Zdtkw7fj1LQ1HnPqp+VWX0DwU9gcE1adrTw==
-X-Google-Smtp-Source: APXvYqwmrjmAjc2V3qQjlwV36mhNx8G4O68vfC3DzOXPBN+yecGGWiWpuCAHbPzTTZ4j+4461DtDv61IsW9VDNJycC4=
-X-Received: by 2002:a65:62cc:: with SMTP id m12mr79957876pgv.237.1559081175986;
- Tue, 28 May 2019 15:06:15 -0700 (PDT)
+        id S1727343AbfE1WZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 18:25:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43140 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726481AbfE1WZc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 May 2019 18:25:32 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8E4C730C1217;
+        Tue, 28 May 2019 22:25:26 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-112-16.phx2.redhat.com [10.3.112.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B19415D9CC;
+        Tue, 28 May 2019 22:25:13 +0000 (UTC)
+Date:   Tue, 28 May 2019 18:25:10 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Daniel Walsh <dwalsh@redhat.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        Mrunal Patel <mpatel@redhat.com>
+Subject: Re: [PATCH ghak90 V6 00/10] audit: implement container identifier
+Message-ID: <20190528222510.i3emki5ctss7acth@madcap2.tricolour.ca>
+References: <cover.1554732921.git.rgb@redhat.com>
+ <20190422113810.GA27747@hmswarspite.think-freely.org>
+ <CAHC9VhQYPF2ma_W+hySbQtfTztf=K1LTFnxnyVK0y9VYxj-K=w@mail.gmail.com>
+ <509ea6b0-1ac8-b809-98c2-37c34dd98ca3@redhat.com>
 MIME-Version: 1.0
-References: <20190528170236.29340-1-ldir@darbyshire-bryant.me.uk>
-In-Reply-To: <20190528170236.29340-1-ldir@darbyshire-bryant.me.uk>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 28 May 2019 15:06:03 -0700
-Message-ID: <CAM_iQpX2qDK94u8QncVLYrCSvxGHw=PijRy9VPFwPmXx8gAR=Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v6] net: sched: Introduce act_ctinfo action
-To:     "Kevin 'ldir' Darbyshire-Bryant" <ldir@darbyshire-bryant.me.uk>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <509ea6b0-1ac8-b809-98c2-37c34dd98ca3@redhat.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 28 May 2019 22:25:32 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 28, 2019 at 10:05 AM Kevin 'ldir' Darbyshire-Bryant
-<ldir@darbyshire-bryant.me.uk> wrote:
->
-> ctinfo is a new tc filter action module.  It is designed to restore
-> information contained in firewall conntrack marks to other packet fields
-> and is typically used on packet ingress paths.  At present it has two
-> independent sub-functions or operating modes, DSCP restoration mode &
-> skb mark restoration mode.
+On 2019-05-28 17:53, Daniel Walsh wrote:
+> On 4/22/19 9:49 AM, Paul Moore wrote:
+> > On Mon, Apr 22, 2019 at 7:38 AM Neil Horman <nhorman@tuxdriver.com> wrote:
+> >> On Mon, Apr 08, 2019 at 11:39:07PM -0400, Richard Guy Briggs wrote:
+> >>> Implement kernel audit container identifier.
+> >> I'm sorry, I've lost track of this, where have we landed on it? Are we good for
+> >> inclusion?
+> > I haven't finished going through this latest revision, but unless
+> > Richard made any significant changes outside of the feedback from the
+> > v5 patchset I'm guessing we are "close".
+> >
+> > Based on discussions Richard and I had some time ago, I have always
+> > envisioned the plan as being get the kernel patchset, tests, docs
+> > ready (which Richard has been doing) and then run the actual
+> > implemented API by the userland container folks, e.g. cri-o/lxc/etc.,
+> > to make sure the actual implementation is sane from their perspective.
+> > They've already seen the design, so I'm not expecting any real
+> > surprises here, but sometimes opinions change when they have actual
+> > code in front of them to play with and review.
+> >
+> > Beyond that, while the cri-o/lxc/etc. folks are looking it over,
+> > whatever additional testing we can do would be a big win.  I'm
+> > thinking I'll pull it into a separate branch in the audit tree
+> > (audit/working-container ?) and include that in my secnext kernels
+> > that I build/test on a regular basis; this is also a handy way to keep
+> > it based against the current audit/next branch.  If any changes are
+> > needed Richard can either chose to base those changes on audit/next or
+> > the separate audit container ID branch; that's up to him.  I've done
+> > this with other big changes in other trees, e.g. SELinux, and it has
+> > worked well to get some extra testing in and keep the patchset "merge
+> > ready" while others outside the subsystem look things over.
+> >
+> Mrunal Patel (maintainer of CRI-O) and I have reviewed the API, and
+> believe this is something we can work on in the container runtimes team
+> to implement the container auditing code in CRI-O and Podman.
 
-Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+Thanks Dan, Mrunal!
 
-Thanks.
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
