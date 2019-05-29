@@ -2,172 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 838A72E83C
-	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 00:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1272B2E85F
+	for <lists+netdev@lfdr.de>; Thu, 30 May 2019 00:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbfE2W2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 18:28:39 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:35304 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726508AbfE2W2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 18:28:39 -0400
-Received: by mail-pl1-f196.google.com with SMTP id p1so1656356plo.2
-        for <netdev@vger.kernel.org>; Wed, 29 May 2019 15:28:38 -0700 (PDT)
+        id S1726610AbfE2WgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 18:36:15 -0400
+Received: from mail-yw1-f73.google.com ([209.85.161.73]:52539 "EHLO
+        mail-yw1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726054AbfE2WgO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 18:36:14 -0400
+Received: by mail-yw1-f73.google.com with SMTP id b189so3585291ywa.19
+        for <netdev@vger.kernel.org>; Wed, 29 May 2019 15:36:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tycho-ws.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sxlc+0BZVMGJBkklhDGCMx7b3nCRFgQD29T89CaCav0=;
-        b=uDH3DgbAe0Nn6uZaYSAgEAJNiDB6BDF/SuDggKMk+TzPiQYZumu8d83PNR+BSvvkjD
-         Zqgy1VvS2JR173DGBaMMLDmuLhmKeQfKXMNlQBW4bysvH4ieNup9nkRjVZOnltvcIRfr
-         Un/6jJdo23xTg/mEWqa20n0xKot6OMJNahZU8iLMCLL2z7ewLtQbJ+ax8N766OPUalEX
-         LmOHsG+B+hAfQLAOa3r/719u+3/4C10vzjsXK8xSeC0B1qMmi7ercJginmJWLiQ/Du9O
-         CdugUw32bHOBq8kpQNaof0wrf0z5h5vT0lQXg26TskQGxiFnhC9kzmnRUvkeCSa7Mkgu
-         eDtQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=BE7pPN2bmLURSu+DG4gQbNhP1gibIeZGHNV9HZXvfak=;
+        b=b5/p1qbWWkierNQ8l+jmF2vaAixn0OVEUp4OjJxGybUU7GnChmAUWbaEqSFi8FzqKW
+         ebUSmPRk4TK19CpFj0v4jHx7C9uqq4+ujXyVzO0T1L9w8c6xkZSxtZYFIzbfQOfb2DcT
+         fE3QV3Etemsg8+LHTvrlmA2VvKNDl8wagvK807hFJwR9c4nUgHZbwJZUWrwXl9m9eY7a
+         t9v24cg3F5Mkx58tVbmNQ6BE1Vi8P1f14v04q83znSxzaG2qeEAGHJhcmvCp+bLj2F5a
+         CPoVasO7hJTre1bk5zDqcDhU4gOwUPhilaj1bPgARYH7u2lGw0imJJGogEhCwTak0MF9
+         C2lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sxlc+0BZVMGJBkklhDGCMx7b3nCRFgQD29T89CaCav0=;
-        b=Jb/V4y1P+nodXfY93g3sy4QOiOfvH6VRrCXa2+nybv3MJW7ea0JinZokiCI66DiEUO
-         bFNnPaRklzLkmvcV4dAobKS3y+ofYNfb4GbUMWmiVIO9qHUdzW7GCIGtN3gTv4WpMqJx
-         cb92ysqlNEwHYjsFCQL8bfKGHREZna5GF5Tk79DxmUKRkk1QEBgQdr3EEhiWa1jNzCXT
-         jKOmVXyhyOgHLqDsmn8vAaNl9GzO5D4SGOwlmMdEVjSIoOfqsM8ltOtDMlEBY0SPvuYa
-         T4kf6rdM3i0qA3YcmYFLATpg6hH9PlZpfhmWLMNu1XDZiBDBPiNIt+xlBcbLIi+ec42q
-         TqYA==
-X-Gm-Message-State: APjAAAWGsI635oEAdOTITAjciudeI4F+D8hCuY5e9HSEG25d6XkDfGAg
-        MjkP9Nw6aIq1NtfbBcLm1AazlQ==
-X-Google-Smtp-Source: APXvYqx6u4nIn/AIcvxi8a5nOwft+8sm1j1THFLIGuymwboILKVpX0Iml7oLKuGzIYvIJUQMu6yW9g==
-X-Received: by 2002:a17:902:24d:: with SMTP id 71mr340297plc.166.1559168918326;
-        Wed, 29 May 2019 15:28:38 -0700 (PDT)
-Received: from cisco ([2601:280:b:edbb:840:fa90:7243:7032])
-        by smtp.gmail.com with ESMTPSA id w187sm690493pfw.20.2019.05.29.15.28.36
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 29 May 2019 15:28:37 -0700 (PDT)
-Date:   Wed, 29 May 2019 16:28:35 -0600
-From:   Tycho Andersen <tycho@tycho.ws>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com
-Subject: Re: [PATCH ghak90 V6 02/10] audit: add container id
-Message-ID: <20190529222835.GD8959@cisco>
-References: <cover.1554732921.git.rgb@redhat.com>
- <9edad39c40671fb53f28d76862304cc2647029c6.1554732921.git.rgb@redhat.com>
- <20190529145742.GA8959@cisco>
- <CAHC9VhR4fudQanvZGYWMvCf7k2CU3q7e7n1Pi7hzC3v_zpVEdw@mail.gmail.com>
- <20190529153427.GB8959@cisco>
- <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhSF3AjErX37+eeusJ7+XRw8yuPsmqBTRwc9EVoRBh_3Tw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=BE7pPN2bmLURSu+DG4gQbNhP1gibIeZGHNV9HZXvfak=;
+        b=Ass/wgkRLS6+8nf3Nj50ePVTYBI8wcLiUFLRgrLro0pvgMMwPieQv4HgJYTWUCZTAJ
+         HFxOenY34OZULNr+CxlhTCbnNXgB7aAPXIHE7QnNeV/ods+3iBPEmZ3slHKtO6FiP4NA
+         RakT/eAI8H7ux98yTYfDXwynHrHuRGuQtMulVoq91tPx7JO2JZcluyoeSSvy0CWpldPb
+         007Zj0qtDqoLndCiK9cfgY/WOoGIzFlvSzEGJCPk9jBmsX+QXAROJhGMtEJVX4SVbMCl
+         BPLzFD45Ows3XEP3onhFsEFCh7OiQtJ8GKWdYek7MSjgd5IuMy9F3pKjKKfZV9ql6inM
+         70bw==
+X-Gm-Message-State: APjAAAVmcLwKtKS0vS2oHodRai8z6NwA19K+cdvKIFkaXvIN11Lde0Cq
+        +3iesuV1pxx9bEoV/zgEbHJxLzuUTtUyJA==
+X-Google-Smtp-Source: APXvYqzH5tSSBVmAnyq/IbkWn+L8t3dPXk9GfnF0pHyWZg8g8zuPrZiI3rWgIwmw1sKhpCoWQiBc9uLHfOtIvA==
+X-Received: by 2002:a81:283:: with SMTP id 125mr240273ywc.471.1559169373972;
+ Wed, 29 May 2019 15:36:13 -0700 (PDT)
+Date:   Wed, 29 May 2019 15:36:10 -0700
+Message-Id: <20190529223610.141253-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.rc1.257.g3120a18244-goog
+Subject: [PATCH net] net-gro: fix use-after-free read in napi_gro_frags()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 29, 2019 at 12:03:58PM -0400, Paul Moore wrote:
-> On Wed, May 29, 2019 at 11:34 AM Tycho Andersen <tycho@tycho.ws> wrote:
-> >
-> > On Wed, May 29, 2019 at 11:29:05AM -0400, Paul Moore wrote:
-> > > On Wed, May 29, 2019 at 10:57 AM Tycho Andersen <tycho@tycho.ws> wrote:
-> > > >
-> > > > On Mon, Apr 08, 2019 at 11:39:09PM -0400, Richard Guy Briggs wrote:
-> > > > > It is not permitted to unset the audit container identifier.
-> > > > > A child inherits its parent's audit container identifier.
-> > > >
-> > > > ...
-> > > >
-> > > > >  /**
-> > > > > + * audit_set_contid - set current task's audit contid
-> > > > > + * @contid: contid value
-> > > > > + *
-> > > > > + * Returns 0 on success, -EPERM on permission failure.
-> > > > > + *
-> > > > > + * Called (set) from fs/proc/base.c::proc_contid_write().
-> > > > > + */
-> > > > > +int audit_set_contid(struct task_struct *task, u64 contid)
-> > > > > +{
-> > > > > +     u64 oldcontid;
-> > > > > +     int rc = 0;
-> > > > > +     struct audit_buffer *ab;
-> > > > > +     uid_t uid;
-> > > > > +     struct tty_struct *tty;
-> > > > > +     char comm[sizeof(current->comm)];
-> > > > > +
-> > > > > +     task_lock(task);
-> > > > > +     /* Can't set if audit disabled */
-> > > > > +     if (!task->audit) {
-> > > > > +             task_unlock(task);
-> > > > > +             return -ENOPROTOOPT;
-> > > > > +     }
-> > > > > +     oldcontid = audit_get_contid(task);
-> > > > > +     read_lock(&tasklist_lock);
-> > > > > +     /* Don't allow the audit containerid to be unset */
-> > > > > +     if (!audit_contid_valid(contid))
-> > > > > +             rc = -EINVAL;
-> > > > > +     /* if we don't have caps, reject */
-> > > > > +     else if (!capable(CAP_AUDIT_CONTROL))
-> > > > > +             rc = -EPERM;
-> > > > > +     /* if task has children or is not single-threaded, deny */
-> > > > > +     else if (!list_empty(&task->children))
-> > > > > +             rc = -EBUSY;
-> > > > > +     else if (!(thread_group_leader(task) && thread_group_empty(task)))
-> > > > > +             rc = -EALREADY;
-> > > > > +     read_unlock(&tasklist_lock);
-> > > > > +     if (!rc)
-> > > > > +             task->audit->contid = contid;
-> > > > > +     task_unlock(task);
-> > > > > +
-> > > > > +     if (!audit_enabled)
-> > > > > +             return rc;
-> > > >
-> > > > ...but it is allowed to change it (assuming
-> > > > capable(CAP_AUDIT_CONTROL), of course)? Seems like this might be more
-> > > > immediately useful since we still live in the world of majority
-> > > > privileged containers if we didn't allow changing it, in addition to
-> > > > un-setting it.
-> > >
-> > > The idea is that only container orchestrators should be able to
-> > > set/modify the audit container ID, and since setting the audit
-> > > container ID can have a significant effect on the records captured
-> > > (and their routing to multiple daemons when we get there) modifying
-> > > the audit container ID is akin to modifying the audit configuration
-> > > which is why it is gated by CAP_AUDIT_CONTROL.  The current thinking
-> > > is that you would only change the audit container ID from one
-> > > set/inherited value to another if you were nesting containers, in
-> > > which case the nested container orchestrator would need to be granted
-> > > CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
-> > > compromise).
-> >
-> > But then don't you want some kind of ns_capable() instead (probably
-> > not the obvious one, though...)? With capable(), you can't really nest
-> > using the audit-id and user namespaces together.
-> 
-> You want capable() and not ns_capable() because you want to ensure
-> that the orchestrator has the rights in the init_ns as changes to the
-> audit container ID could have an auditing impact that spans the entire
-> system.
+If a network driver provides to napi_gro_frags() an
+skb with a page fragment of exactly 14 bytes, the call
+to gro_pull_from_frag0() will 'consume' the fragment
+by calling skb_frag_unref(skb, 0), and the page might
+be freed and reused.
 
-Ok but,
+Reading eth->h_proto at the end of napi_frags_skb() might
+read mangled data, or crash under specific debugging features.
 
-> > > The current thinking
-> > > is that you would only change the audit container ID from one
-> > > set/inherited value to another if you were nesting containers, in
-> > > which case the nested container orchestrator would need to be granted
-> > > CAP_AUDIT_CONTROL (which everyone to date seems to agree is a workable
-> > > compromise).
+BUG: KASAN: use-after-free in napi_frags_skb net/core/dev.c:5833 [inline]
+BUG: KASAN: use-after-free in napi_gro_frags+0xc6f/0xd10 net/core/dev.c:5841
+Read of size 2 at addr ffff88809366840c by task syz-executor599/8957
 
-won't work in user namespaced containers, because they will never be
-capable(CAP_AUDIT_CONTROL); so I don't think this will work for
-nesting as is. But maybe nobody cares :)
+CPU: 1 PID: 8957 Comm: syz-executor599 Not tainted 5.2.0-rc1+ #32
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ print_address_description.cold+0x7c/0x20d mm/kasan/report.c:188
+ __kasan_report.cold+0x1b/0x40 mm/kasan/report.c:317
+ kasan_report+0x12/0x20 mm/kasan/common.c:614
+ __asan_report_load_n_noabort+0xf/0x20 mm/kasan/generic_report.c:142
+ napi_frags_skb net/core/dev.c:5833 [inline]
+ napi_gro_frags+0xc6f/0xd10 net/core/dev.c:5841
+ tun_get_user+0x2f3c/0x3ff0 drivers/net/tun.c:1991
+ tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2037
+ call_write_iter include/linux/fs.h:1872 [inline]
+ do_iter_readv_writev+0x5f8/0x8f0 fs/read_write.c:693
+ do_iter_write fs/read_write.c:970 [inline]
+ do_iter_write+0x184/0x610 fs/read_write.c:951
+ vfs_writev+0x1b3/0x2f0 fs/read_write.c:1015
+ do_writev+0x15b/0x330 fs/read_write.c:1058
 
-Tycho
+Fixes: a50e233c50db ("net-gro: restore frag0 optimization")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index b6b8505cfb3e2394f74b41b8e01055c697ad384b..af12c434192e73440e2dffb84b87945b515cdf16 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5809,7 +5809,6 @@ static struct sk_buff *napi_frags_skb(struct napi_struct *napi)
+ 	skb_reset_mac_header(skb);
+ 	skb_gro_reset_offset(skb);
+ 
+-	eth = skb_gro_header_fast(skb, 0);
+ 	if (unlikely(skb_gro_header_hard(skb, hlen))) {
+ 		eth = skb_gro_header_slow(skb, hlen, 0);
+ 		if (unlikely(!eth)) {
+@@ -5819,6 +5818,7 @@ static struct sk_buff *napi_frags_skb(struct napi_struct *napi)
+ 			return NULL;
+ 		}
+ 	} else {
++		eth = (const struct ethhdr *)skb->data;
+ 		gro_pull_from_frag0(skb, hlen);
+ 		NAPI_GRO_CB(skb)->frag0 += hlen;
+ 		NAPI_GRO_CB(skb)->frag0_len -= hlen;
+-- 
+2.22.0.rc1.257.g3120a18244-goog
+
