@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3142D2D2BD
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:17:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBCF22D2C0
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 02:17:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727535AbfE2ARc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 May 2019 20:17:32 -0400
-Received: from mga11.intel.com ([192.55.52.93]:59372 "EHLO mga11.intel.com"
+        id S1727631AbfE2ARj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 May 2019 20:17:39 -0400
+Received: from mga11.intel.com ([192.55.52.93]:59374 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727254AbfE2AR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727397AbfE2AR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 28 May 2019 20:17:27 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -22,13 +22,14 @@ From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
 Cc:     Konstantin Khlebnikov <khlebnikov@yandex-team.ru>,
         netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Alexander Duyck <alexander.duyck@gmail.com>,
         Joseph Yasi <joe.yasi@gmail.com>,
         Aaron Brown <aaron.f.brown@intel.com>,
         Oleksandr Natalenko <oleksandr@redhat.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 07/10] Revert "e1000e: fix cyclic resets at link up with active tx"
-Date:   Tue, 28 May 2019 17:17:23 -0700
-Message-Id: <20190529001726.26097-8-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 08/10] e1000e: start network tx queue only when link is up
+Date:   Tue, 28 May 2019 17:17:24 -0700
+Message-Id: <20190529001726.26097-9-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190529001726.26097-1-jeffrey.t.kirsher@intel.com>
 References: <20190529001726.26097-1-jeffrey.t.kirsher@intel.com>
@@ -41,77 +42,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
 
-This reverts commit 0f9e980bf5ee1a97e2e401c846b2af989eb21c61.
+Driver does not want to keep packets in Tx queue when link is lost.
+But present code only reset NIC to flush them, but does not prevent
+queuing new packets. Moreover reset sequence itself could generate
+new packets via netconsole and NIC falls into endless reset loop.
 
-That change cased false-positive warning about hardware hang:
+This patch wakes Tx queue only when NIC is ready to send packets.
 
-e1000e: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
-IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-e1000e 0000:00:1f.6 eth0: Detected Hardware Unit Hang:
-   TDH                  <0>
-   TDT                  <1>
-   next_to_use          <1>
-   next_to_clean        <0>
-buffer_info[next_to_clean]:
-   time_stamp           <fffba7a7>
-   next_to_watch        <0>
-   jiffies              <fffbb140>
-   next_to_watch.status <0>
-MAC Status             <40080080>
-PHY Status             <7949>
-PHY 1000BASE-T Status  <0>
-PHY Extended Status    <3000>
-PCI Status             <10>
-e1000e: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
-
-Besides warning everything works fine.
-Original issue will be fixed property in following patch.
+This is proper fix for problem addressed by commit 0f9e980bf5ee
+("e1000e: fix cyclic resets at link up with active tx").
 
 Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-Reported-by: Joseph Yasi <joe.yasi@gmail.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=203175
+Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
 Tested-by: Joseph Yasi <joe.yasi@gmail.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Tested-by: Oleksandr Natalenko <oleksandr@redhat.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/e1000e/netdev.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/e1000e/netdev.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 0e09bede42a2..e21b2ffd1e92 100644
+index e21b2ffd1e92..b081a1ef6859 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -5308,13 +5308,8 @@ static void e1000_watchdog_task(struct work_struct *work)
- 			/* 8000ES2LAN requires a Rx packet buffer work-around
- 			 * on link down event; reset the controller to flush
- 			 * the Rx packet buffer.
--			 *
--			 * If the link is lost the controller stops DMA, but
--			 * if there is queued Tx work it cannot be done.  So
--			 * reset the controller to flush the Tx packet buffers.
- 			 */
--			if ((adapter->flags & FLAG_RX_NEEDS_RESTART) ||
--			    e1000_desc_unused(tx_ring) + 1 < tx_ring->count)
-+			if (adapter->flags & FLAG_RX_NEEDS_RESTART)
- 				adapter->flags |= FLAG_RESTART_NOW;
- 			else
- 				pm_schedule_suspend(netdev->dev.parent,
-@@ -5337,6 +5332,14 @@ static void e1000_watchdog_task(struct work_struct *work)
- 	adapter->gotc_old = adapter->stats.gotc;
- 	spin_unlock(&adapter->stats64_lock);
+@@ -4208,7 +4208,7 @@ void e1000e_up(struct e1000_adapter *adapter)
+ 		e1000_configure_msix(adapter);
+ 	e1000_irq_enable(adapter);
  
-+	/* If the link is lost the controller stops DMA, but
-+	 * if there is queued Tx work it cannot be done.  So
-+	 * reset the controller to flush the Tx packet buffers.
-+	 */
-+	if (!netif_carrier_ok(netdev) &&
-+	    (e1000_desc_unused(tx_ring) + 1 < tx_ring->count))
-+		adapter->flags |= FLAG_RESTART_NOW;
-+
- 	/* If reset is necessary, do it outside of interrupt context. */
- 	if (adapter->flags & FLAG_RESTART_NOW) {
- 		schedule_work(&adapter->reset_task);
+-	netif_start_queue(adapter->netdev);
++	/* Tx queue started by watchdog timer when link is up */
+ 
+ 	e1000e_trigger_lsc(adapter);
+ }
+@@ -4606,6 +4606,7 @@ int e1000e_open(struct net_device *netdev)
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
+ 	netif_carrier_off(netdev);
++	netif_stop_queue(netdev);
+ 
+ 	/* allocate transmit descriptors */
+ 	err = e1000e_setup_tx_resources(adapter->tx_ring);
+@@ -4666,7 +4667,6 @@ int e1000e_open(struct net_device *netdev)
+ 	e1000_irq_enable(adapter);
+ 
+ 	adapter->tx_hang_recheck = false;
+-	netif_start_queue(netdev);
+ 
+ 	hw->mac.get_link_status = true;
+ 	pm_runtime_put(&pdev->dev);
+@@ -5288,6 +5288,7 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 			if (phy->ops.cfg_on_link_up)
+ 				phy->ops.cfg_on_link_up(hw);
+ 
++			netif_wake_queue(netdev);
+ 			netif_carrier_on(netdev);
+ 
+ 			if (!test_bit(__E1000_DOWN, &adapter->state))
+@@ -5301,6 +5302,7 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 			/* Link status message must follow this format */
+ 			pr_info("%s NIC Link is Down\n", adapter->netdev->name);
+ 			netif_carrier_off(netdev);
++			netif_stop_queue(netdev);
+ 			if (!test_bit(__E1000_DOWN, &adapter->state))
+ 				mod_timer(&adapter->phy_info_timer,
+ 					  round_jiffies(jiffies + 2 * HZ));
 -- 
 2.21.0
 
