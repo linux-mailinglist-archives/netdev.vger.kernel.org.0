@@ -2,237 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30A032D53A
-	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 07:51:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 971552D53E
+	for <lists+netdev@lfdr.de>; Wed, 29 May 2019 07:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725903AbfE2Fve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 May 2019 01:51:34 -0400
-Received: from mga18.intel.com ([134.134.136.126]:12653 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725856AbfE2Fve (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 May 2019 01:51:34 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 May 2019 22:51:33 -0700
-X-ExtLoop1: 1
-Received: from rpedgeco-mobl.amr.corp.intel.com (HELO localhost.intel.com) ([10.252.134.167])
-  by orsmga006.jf.intel.com with ESMTP; 28 May 2019 22:51:32 -0700
-From:   Rick Edgecombe <rick.p.edgecombe@intel.com>
-To:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        davem@davemloft.net, sparclinux@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     dave.hansen@intel.com, jeyu@kernel.org, namit@vmware.com,
-        luto@kernel.org, will.deacon@arm.com, ast@kernel.org,
-        daniel@iogearbox.net, Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Meelis Roos <mroos@linux.ee>,
-        Ard Biesheuvel <ard.biesheuvel@arm.com>
-Subject: [PATCH] vmalloc: Don't use flush flag when no exec perm
-Date:   Tue, 28 May 2019 22:51:04 -0700
-Message-Id: <20190529055104.6822-1-rick.p.edgecombe@intel.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726018AbfE2F6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 May 2019 01:58:11 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:33334 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbfE2F6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 May 2019 01:58:10 -0400
+Received: by mail-pg1-f194.google.com with SMTP id h17so695452pgv.0;
+        Tue, 28 May 2019 22:58:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=orJ8ZO7tYb0c4h/BjgkxaEoMgsYs4zgzsSwG/Ejhacg=;
+        b=V3ltzRXEI6Je/vbiwfHCq0y+tNk1CaP38GKlpXuoIjtb3ZFD2kQ5+JlNgeTz96mvt0
+         DrHC15TE9UyEguGJYE2PN0FYeaNTfBVa+Z/8RQPwmEcS+oyEvKVmywE+vS0erBnCZvB/
+         cr14QL+j7iVzZCJrhHxgHNxqE4VXJ+6IzXR9FN6ZgXTYEGQoidQGOQlmWMfsqfUyVgq3
+         PK0uYguS0hu4OSdQ2FGg1MQq/ttXgXCqAtXx1FSrG17p0uei0vNsOEz9At6Z0RemB7jQ
+         Grc/bs8s9rN8Geq43lAHAPmn6NzKwLwVLU04w+2lf+zV6MhhO6O0AhcZbaX7NWsZ1Bgb
+         qd7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=orJ8ZO7tYb0c4h/BjgkxaEoMgsYs4zgzsSwG/Ejhacg=;
+        b=PMrqzeHFy0N4we6WKFIBOdVbtm+qTmNU4YPDv78ajkZSP/yhu/osQe0zBIdiJnbK4H
+         faArfQ/ZmbJEeMgsHROlyR540I32fTuQ72C2GfBSud7cynrfuJfKRbmkRtNNCqd/8F1f
+         BuYu7yCPLZr46t+4+FlnfiTTxJxa0aUd6zi6EifOeeK7jSTYLQHL+I6K/L33XHKxH71R
+         ZG1NnP5tA1o5tCJ4JLJ1/HlVJEgI8YL1eK69KezR5wVGTQEkUCMD1wbl11W86/FAmoaY
+         GVEUSCKR2TN5yOY+jejteY0XYHaZaVd+RByEye7ANBQfCa/zSeJ3VG0zZZz8Uj2CrzqQ
+         aQ1Q==
+X-Gm-Message-State: APjAAAXhg0YL7VyiARpPs1zZ+pGjkNOs9oUmvuBS6E4jJv0xvAC9lYA+
+        9Ca9SBZalabaMtAnXXZAgfWKqwYa
+X-Google-Smtp-Source: APXvYqznLFwDTHXxzdN8Q28ZLMLCKplUIo6BI1HkjcbnDrlkI+LA4XVVAeGRWtzsG/pwZIhs4uiMzA==
+X-Received: by 2002:a63:1c19:: with SMTP id c25mr12394440pgc.183.1559109489952;
+        Tue, 28 May 2019 22:58:09 -0700 (PDT)
+Received: from localhost.localdomain (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id w1sm19093127pfg.51.2019.05.28.22.58.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 May 2019 22:58:09 -0700 (PDT)
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH V4 net-next 0/6] Peer to Peer One-Step time stamping
+Date:   Tue, 28 May 2019 22:58:01 -0700
+Message-Id: <cover.1559109076.git.richardcochran@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The addition of VM_FLUSH_RESET_PERMS for BPF JIT allocations was
-bisected to prevent boot on an UltraSparc III machine. It was found that
-sometime shortly after the TLB flush this flag does on vfree of the BPF
-program, the machine hung. Further investigation showed that before any of
-the changes for this flag were introduced, with CONFIG_DEBUG_PAGEALLOC
-configured (which does a similar TLB flush of the vmalloc range on
-every vfree), this machine also hung shortly after the first vmalloc
-unmap/free.
+This series adds support for PTP (IEEE 1588) P2P one-step time
+stamping along with a driver for a hardware device that supports this.
 
-So the evidence points to there being some existing issue with the
-vmalloc TLB flushes, but it's still unknown exactly why these hangs are
-happening on sparc. It is also unknown when someone with this hardware
-could resolve this, and in the meantime using this flag on it turns a
-lurking behavior into something that prevents boot.
+If the hardware supports p2p one-step, it subtracts the ingress time
+stamp value from the Pdelay_Request correction field.  The user space
+software stack then simply copies the correction field into the
+Pdelay_Response, and on transmission the hardware adds the egress time
+stamp into the correction field.
 
-However Linux on sparc64 doesn't restrict executable permissions and so
-there is actually not really a need to use this flag. If normal memory is
-executable, any memory copied from the user could be executed without any
-extra steps. There also isn't a need to reset direct map permissions. So
-to work around this issue we can just not use the flag in these cases.
+This new functionality extends CONFIG_NETWORK_PHY_TIMESTAMPING to
+cover MII snooping devices, but it still depends on phylib, just as
+that option does.  Expanding beyond phylib is not within the scope of
+the this series.
 
-So change the helper that sets this flag to simply not set it if the
-architecture has these properties. Do this by comparing if PAGE_KERNEL is
-the same as PAGE_KERNEL_EXEC. Also make the logic always do the flush if
-an architecture has a way to reset direct map permissions by checking
-CONFIG_ARCH_HAS_SET_DIRECT_MAP. Place the helper in vmalloc.c to work
-around header dependency issues. Also, remove VM_FLUSH_RESET_PERMS from
-vmalloc_exec() so it doesn't get set unconditionally anywhere.
+User space support is available in the current linuxptp master branch.
 
-Note, today arm has direct map permissions and no
-CONFIG_ARCH_HAS_SET_DIRECT_MAP, but it also restricts executable
-permissions so this logic will work today. When arm adds
-set_direct_map_() implementations and removes the set_memory_() block from
-from vm_remove_mappings() as currently proposed, then this will be correct
-as well.
+- Patch 1 adds the new option.
+- Patches 2-5 add support for MII time stamping in non-PHY devices.
+- Patch 6 adds a driver implementing the new option.
 
-This logic could be put in vm_remove_mappings() instead, but doing it this
-way leaves the raw flag generic and open for future usages. So change the
-name of the helper to match its new conditional properties.
+Thanks,
+Richard
 
-Fixes: d53d2f7 ("bpf: Use vmalloc special flag")
-Reported-by: Meelis Roos <mroos@linux.ee>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: peterz@infradead.org <peterz@infradead.org>
-Cc: Nadav Amit <namit@vmware.com>
-Cc: Ard Biesheuvel <ard.biesheuvel@arm.com>
-Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
----
+Changed in v4:
+~~~~~~~~~~~~~~
 
-Hi,
+- Correct error paths and PTR_ERR return values in the framework.
+- Expanded KernelDoc comments WRT PHY locking.
+- Pick up Andrew's review tag.
 
-This is what I came up with for working around the sparc issue. The
-other solution I had looked at was making a CONFIG_ARCH_NEEDS_VM_FLUSH
-and just opt out only sparc. Very open to suggestions.
+Changed in v3:
+~~~~~~~~~~~~~~
 
- arch/x86/kernel/ftrace.c       |  2 +-
- arch/x86/kernel/kprobes/core.c |  2 +-
- include/linux/filter.h         |  4 ++--
- include/linux/vmalloc.h        | 10 ++--------
- kernel/module.c                |  4 ++--
- mm/vmalloc.c                   | 25 ++++++++++++++++++++++---
- 6 files changed, 30 insertions(+), 17 deletions(-)
+- Simplify the device tree binding and document the time stamping
+  phandle by itself.
 
-diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
-index 0927bb158ffc..9793f6491882 100644
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -823,7 +823,7 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
- 	/* ALLOC_TRAMP flags lets us know we created it */
- 	ops->flags |= FTRACE_OPS_FL_ALLOC_TRAMP;
- 
--	set_vm_flush_reset_perms(trampoline);
-+	set_vm_flush_if_needed(trampoline);
- 
- 	/*
- 	 * Module allocation needs to be completed by making the page
-diff --git a/arch/x86/kernel/kprobes/core.c b/arch/x86/kernel/kprobes/core.c
-index 9e4fa2484d10..2e3c31c63a6f 100644
---- a/arch/x86/kernel/kprobes/core.c
-+++ b/arch/x86/kernel/kprobes/core.c
-@@ -434,7 +434,7 @@ void *alloc_insn_page(void)
- 	if (!page)
- 		return NULL;
- 
--	set_vm_flush_reset_perms(page);
-+	set_vm_flush_if_needed(page);
- 	/*
- 	 * First make the page read-only, and only then make it executable to
- 	 * prevent it from being W+X in between.
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 7148bab96943..7b20d43a9cf1 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -735,13 +735,13 @@ bpf_ctx_narrow_access_ok(u32 off, u32 size, u32 size_default)
- 
- static inline void bpf_prog_lock_ro(struct bpf_prog *fp)
- {
--	set_vm_flush_reset_perms(fp);
-+	set_vm_flush_if_needed(fp);
- 	set_memory_ro((unsigned long)fp, fp->pages);
- }
- 
- static inline void bpf_jit_binary_lock_ro(struct bpf_binary_header *hdr)
- {
--	set_vm_flush_reset_perms(hdr);
-+	set_vm_flush_if_needed(hdr);
- 	set_memory_ro((unsigned long)hdr, hdr->pages);
- 	set_memory_x((unsigned long)hdr, hdr->pages);
- }
-diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
-index 51e131245379..2fdd1d62a603 100644
---- a/include/linux/vmalloc.h
-+++ b/include/linux/vmalloc.h
-@@ -151,13 +151,7 @@ extern int map_kernel_range_noflush(unsigned long start, unsigned long size,
- 				    pgprot_t prot, struct page **pages);
- extern void unmap_kernel_range_noflush(unsigned long addr, unsigned long size);
- extern void unmap_kernel_range(unsigned long addr, unsigned long size);
--static inline void set_vm_flush_reset_perms(void *addr)
--{
--	struct vm_struct *vm = find_vm_area(addr);
--
--	if (vm)
--		vm->flags |= VM_FLUSH_RESET_PERMS;
--}
-+extern void set_vm_flush_if_needed(void *addr);
- #else
- static inline int
- map_kernel_range_noflush(unsigned long start, unsigned long size,
-@@ -173,7 +167,7 @@ static inline void
- unmap_kernel_range(unsigned long addr, unsigned long size)
- {
- }
--static inline void set_vm_flush_reset_perms(void *addr)
-+static inline void set_vm_flush_if_needed(void *addr)
- {
- }
- #endif
-diff --git a/kernel/module.c b/kernel/module.c
-index 6e6712b3aaf5..d91f03781c41 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -1958,8 +1958,8 @@ void module_enable_ro(const struct module *mod, bool after_init)
- 	if (!rodata_enabled)
- 		return;
- 
--	set_vm_flush_reset_perms(mod->core_layout.base);
--	set_vm_flush_reset_perms(mod->init_layout.base);
-+	set_vm_flush_if_needed(mod->core_layout.base);
-+	set_vm_flush_if_needed(mod->init_layout.base);
- 	frob_text(&mod->core_layout, set_memory_ro);
- 	frob_text(&mod->core_layout, set_memory_x);
- 
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 233af6936c93..c3cac44d96d4 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -1944,6 +1944,26 @@ void unmap_kernel_range(unsigned long addr, unsigned long size)
- }
- EXPORT_SYMBOL_GPL(unmap_kernel_range);
- 
-+void set_vm_flush_if_needed(void *addr)
-+{
-+	struct vm_struct *vm;
-+
-+	/*
-+	 * If all PAGE_KERNEL memory is executable, the mandatory flush
-+	 * doesn't really add any security value, so skip it. However if there
-+	 * is a way to reset direct map permissions, we still need to flush in
-+	 * order to do that.
-+	 */
-+	if (!IS_ENABLED(CONFIG_ARCH_HAS_SET_DIRECT_MAP)
-+		&& pgprot_val(PAGE_KERNEL_EXEC) == pgprot_val(PAGE_KERNEL))
-+		return;
-+
-+	vm = find_vm_area(addr);
-+
-+	if (vm)
-+		vm->flags |= VM_FLUSH_RESET_PERMS;
-+}
-+
- int map_vm_area(struct vm_struct *area, pgprot_t prot, struct page **pages)
- {
- 	unsigned long addr = (unsigned long)area->addr;
-@@ -2633,9 +2653,8 @@ EXPORT_SYMBOL(vzalloc_node);
-  */
- void *vmalloc_exec(unsigned long size)
- {
--	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
--			GFP_KERNEL, PAGE_KERNEL_EXEC, VM_FLUSH_RESET_PERMS,
--			NUMA_NO_NODE, __builtin_return_address(0));
-+	return __vmalloc_node(size, 1, GFP_KERNEL, PAGE_KERNEL_EXEC,
-+			      NUMA_NO_NODE, __builtin_return_address(0));
- }
- 
- #if defined(CONFIG_64BIT) && defined(CONFIG_ZONE_DMA32)
+Changed in v2:
+~~~~~~~~~~~~~~
+
+- Per the v1 review, changed the modeling of MII time stamping
+  devices.  They are no longer a kind of mdio device.
+
+
+Richard Cochran (6):
+  net: Introduce peer to peer one step PTP time stamping.
+  net: Introduce a new MII time stamping interface.
+  net: Add a layer for non-PHY MII time stamping drivers.
+  dt-bindings: ptp: Introduce MII time stamping devices.
+  net: mdio: of: Register discovered MII time stampers.
+  ptp: Add a driver for InES time stamping IP core.
+
+ Documentation/devicetree/bindings/ptp/ptp-ines.txt |  35 +
+ .../devicetree/bindings/ptp/timestamper.txt        |  41 +
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   |   1 +
+ drivers/net/phy/Makefile                           |   2 +
+ drivers/net/phy/dp83640.c                          |  47 +-
+ drivers/net/phy/mii_timestamper.c                  | 121 +++
+ drivers/net/phy/phy.c                              |   4 +-
+ drivers/net/phy/phy_device.c                       |   5 +
+ drivers/of/of_mdio.c                               |  30 +-
+ drivers/ptp/Kconfig                                |  10 +
+ drivers/ptp/Makefile                               |   1 +
+ drivers/ptp/ptp_ines.c                             | 859 +++++++++++++++++++++
+ include/linux/mii_timestamper.h                    | 120 +++
+ include/linux/phy.h                                |  25 +-
+ include/uapi/linux/net_tstamp.h                    |   8 +
+ net/8021q/vlan_dev.c                               |   4 +-
+ net/Kconfig                                        |   7 +-
+ net/core/dev_ioctl.c                               |   1 +
+ net/core/ethtool.c                                 |   4 +-
+ net/core/timestamping.c                            |  20 +-
+ 20 files changed, 1287 insertions(+), 58 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/ptp/ptp-ines.txt
+ create mode 100644 Documentation/devicetree/bindings/ptp/timestamper.txt
+ create mode 100644 drivers/net/phy/mii_timestamper.c
+ create mode 100644 drivers/ptp/ptp_ines.c
+ create mode 100644 include/linux/mii_timestamper.h
+
 -- 
-2.20.1
+2.11.0
 
